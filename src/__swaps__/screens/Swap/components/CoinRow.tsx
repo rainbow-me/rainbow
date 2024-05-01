@@ -38,61 +38,60 @@ export const CoinRow = ({
   output?: boolean;
   symbol: string;
 }) => {
-  const theme = useTheme();
-  const { favoritesMetadata } = useFavorites();
+  // const { favoritesMetadata } = useFavorites();
 
-  const favorites = Object.values(favoritesMetadata);
+  // const favorites = Object.values(favoritesMetadata);
 
-  const isFavorite = (address: string) => {
-    return favorites.find(fav =>
-      fav.address === ETH_ADDRESS ? '0x0000000000000000000000000000000000000000' === address : fav.address === address
-    );
-  };
+  // const isFavorite = (address: string) => {
+  //   return favorites.find(fav =>
+  //     fav.address === ETH_ADDRESS ? '0x0000000000000000000000000000000000000000' === address : fav.address === address
+  //   );
+  // };
 
-  // TODO: actually calculate this from incoming token data
-  const percentChange = useMemo(() => {
-    if (isTrending) {
-      const rawChange = Math.random() * 30;
-      const isNegative = Math.random() < 0.2;
-      const prefix = isNegative ? '-' : '+';
-      const color: TextColor = isNegative ? 'red' : 'green';
-      const change = `${rawChange.toFixed(1)}%`;
+  // // TODO: actually calculate this from incoming token data
+  // const percentChange = useMemo(() => {
+  //   if (isTrending) {
+  //     const rawChange = Math.random() * 30;
+  //     const isNegative = Math.random() < 0.2;
+  //     const prefix = isNegative ? '-' : '+';
+  //     const color: TextColor = isNegative ? 'red' : 'green';
+  //     const change = `${rawChange.toFixed(1)}%`;
 
-      return { change, color, prefix };
-    }
-  }, [isTrending]);
+  //     return { change, color, prefix };
+  //   }
+  // }, [isTrending]);
 
-  return (
-    <ButtonPressAnimation disallowInterruption onPress={onPress} scaleTo={0.95}>
-      <HitSlop vertical="10px">
-        <Box
-          alignItems="center"
-          paddingVertical={'10px'}
-          paddingHorizontal={'20px'}
-          flexDirection="row"
-          justifyContent="space-between"
-          width="full"
-        >
-          <Inline alignVertical="center" space="10px">
-            <SwapCoinIcon
-              iconUrl={iconUrl}
-              address={address}
-              mainnetAddress={mainnetAddress}
-              large
-              network={ethereumUtils.getNetworkFromChainId(chainId)}
-              symbol={symbol}
-              theme={theme}
-              color={color}
-            />
-            <Stack space="10px">
-              <Text color="label" size="17pt" weight="semibold">
-                {name}
-              </Text>
-              <Inline alignVertical="center" space={{ custom: 5 }}>
-                <Text color="labelTertiary" size="13pt" weight="semibold">
-                  {output ? symbol : `${balance}`}
+  return useMemo(
+    () => (
+      <ButtonPressAnimation disallowInterruption onPress={onPress} scaleTo={0.95}>
+        <HitSlop vertical="10px">
+          <Box
+            alignItems="center"
+            paddingVertical={'10px'}
+            paddingHorizontal={'20px'}
+            flexDirection="row"
+            justifyContent="space-between"
+            width="full"
+          >
+            <Inline alignVertical="center" space="10px">
+              <SwapCoinIcon
+                iconUrl={iconUrl}
+                address={address}
+                mainnetAddress={mainnetAddress}
+                large
+                network={ethereumUtils.getNetworkFromChainId(chainId)}
+                symbol={symbol}
+                color={color}
+              />
+              <Stack space="10px">
+                <Text color="label" size="17pt" weight="semibold">
+                  {name}
                 </Text>
-                {isTrending && percentChange && (
+                <Inline alignVertical="center" space={{ custom: 5 }}>
+                  <Text color="labelTertiary" size="13pt" weight="semibold">
+                    {output ? symbol : `${balance}`}
+                  </Text>
+                  {/* {isTrending && percentChange && (
                   <Inline alignVertical="center" space={{ custom: 1 }}>
                     <Text align="center" color={percentChange.color} size="12pt" weight="bold">
                       {percentChange.prefix}
@@ -101,25 +100,27 @@ export const CoinRow = ({
                       {percentChange.change}
                     </Text>
                   </Inline>
-                )}
-              </Inline>
-            </Stack>
-          </Inline>
-          {output ? (
-            <Inline space="8px">
-              <CoinRowButton icon="􀅳" outline size="icon 14px" />
-              <CoinRowButton
-                color={isFavorite(address) ? '#FFCB0F' : undefined}
-                onPress={() => toggleFavorite(address)}
-                icon="􀋃"
-                weight="black"
-              />
+                )} */}
+                </Inline>
+              </Stack>
             </Inline>
-          ) : (
-            <BalancePill balance={nativeBalance} />
-          )}
-        </Box>
-      </HitSlop>
-    </ButtonPressAnimation>
+            {output ? (
+              <Inline space="8px">
+                <CoinRowButton icon="􀅳" outline size="icon 14px" />
+                <CoinRowButton
+                  // color={isFavorite(address) ? '#FFCB0F' : undefined}
+                  onPress={() => toggleFavorite(address)}
+                  icon="􀋃"
+                  weight="black"
+                />
+              </Inline>
+            ) : (
+              <BalancePill balance={nativeBalance} />
+            )}
+          </Box>
+        </HitSlop>
+      </ButtonPressAnimation>
+    ),
+    [address, balance, chainId, color, iconUrl, mainnetAddress, name, nativeBalance, onPress, output, symbol]
   );
 };

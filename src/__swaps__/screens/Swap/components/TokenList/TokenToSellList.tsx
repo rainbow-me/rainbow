@@ -9,7 +9,7 @@ import { parseSearchAsset, isSameAsset } from '@/__swaps__/utils/assets';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { FlashList } from '@shopify/flash-list';
 import { ChainSelection } from './ChainSelection';
-import { swapAssetStore } from '@/state/swaps/assets';
+import { fetchAssetPrices, swapAssetStore } from '@/state/swaps/assets';
 import { useSwapContext } from '../../providers/swap-provider';
 
 const AnimatedFlashListComponent = Animated.createAnimatedComponent(FlashList<ParsedSearchAsset>);
@@ -33,12 +33,11 @@ export const TokenToSellList = () => {
           assetToSell: parsedAsset,
           assetToSellPrice: parsedAsset.native.price?.amount ?? 0,
         });
+
+        fetchAssetPrices();
       }
 
-      // TODO: Fetch asset price if = 0
       // TODO: Trigger asset price refetching on interval
-
-      // TODO: How can we prevent the need to do this?
       runOnUI(SwapNavigation.handleInputPress)();
       const assetToBuy = swapAssetStore.getState().assetToBuy;
       if (!assetToBuy) {

@@ -4,6 +4,11 @@ import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { isSameAsset } from '@/__swaps__/utils/assets';
 import { swapQuoteStore } from './quote';
 import { swapSortByStore } from './sortBy';
+import { queryClient } from '@/react-query';
+import { FormattedExternalAsset, externalTokenQueryKey, fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { ethereumUtils } from '@/utils';
+import { NativeCurrencyKeys } from '@/entities';
+import { RainbowError, logger } from '@/logger';
 
 export interface SwapAssetsState {
   assetToSell: ParsedSearchAsset | null;
@@ -56,6 +61,80 @@ export const swapAssetStore = createStore<SwapAssetsState>((set, get) => ({
   setAssetToSellPrice: (price: number) => set({ assetToSellPrice: price }),
   setAssetToBuyPrice: (price: number) => set({ assetToBuyPrice: price }),
 }));
+
+type AssetPricePromise = Record<string, Promise<FormattedExternalAsset | null>>;
+
+export const fetchAssetPrices = async () => {
+  const promises: AssetPricePromise = {};
+
+  const assetToSell = swapAssetStore.getState().assetToSell;
+  if (assetToSell) {
+    promises[assetToSell.uniqueId] = queryClient.fetchQuery<FormattedExternalAsset | null>(
+      externalTokenQueryKey({
+        address: assetToSell.address,
+        network: ethereumUtils.getNetworkFromChainId(assetToSell.chainId),
+        currency: NativeCurrencyKeys.USD,
+      }),
+      () =>
+        fetchExternalToken({
+          address: assetToSell.address,
+          network: ethereumUtils.getNetworkFromChainId(assetToSell.chainId),
+          currency: NativeCurrencyKeys.USD,
+        }),
+      {
+        staleTime: Infinity,
+      }
+    );
+  }
+
+  const assetToBuy = swapAssetStore.getState().assetToBuy;
+  if (assetToBuy) {
+    promises[assetToBuy.uniqueId] = queryClient.fetchQuery<FormattedExternalAsset | null>(
+      externalTokenQueryKey({
+        address: assetToBuy.address,
+        network: ethereumUtils.getNetworkFromChainId(assetToBuy.chainId),
+        currency: NativeCurrencyKeys.USD,
+      }),
+      () =>
+        fetchExternalToken({
+          address: assetToBuy.address,
+          network: ethereumUtils.getNetworkFromChainId(assetToBuy.chainId),
+          currency: NativeCurrencyKeys.USD,
+        }),
+      {
+        staleTime: Infinity,
+      }
+    );
+  }
+
+  const results = await Promise.all(
+    Object.entries(promises).map(async ([uniqueId, promise]) => {
+      const result = await promise;
+      return { uniqueId, result };
+    })
+  );
+
+  results.forEach(({ uniqueId, result }) => {
+    if (!result) {
+      logger.error(new RainbowError(`[swapAssetStore]: Failed to fetch asset price for asset ${uniqueId}`));
+      return;
+    }
+
+    console.log(`[swapAssetStore]: Fetched price for ${result.name}: ${result.native.price.amount}`);
+
+    if (assetToBuy?.uniqueId === uniqueId) {
+      swapAssetStore.setState({
+        assetToBuyPrice: Number(result.native.price.amount),
+      });
+    }
+
+    if (assetToSell?.uniqueId === uniqueId) {
+      swapAssetStore.setState({
+        assetToSellPrice: Number(result.native.price.amount),
+      });
+    }
+  });
+};
 
 /**
  * TODO:

@@ -15,7 +15,7 @@ import { parseSearchAsset, isSameAsset } from '@/__swaps__/utils/assets';
 
 import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
-import { swapAssetStore } from '@/state/swaps/assets';
+import { fetchAssetPrices, swapAssetStore } from '@/state/swaps/assets';
 import { useSwapSortByStore } from '@/state/swaps/sortBy';
 
 interface SectionProp {
@@ -87,11 +87,11 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
           assetToBuy: parsedAsset,
           assetToBuyPrice: parsedAsset.native.price?.amount ?? 0,
         });
+
+        fetchAssetPrices();
       }
 
-      // TODO: Fetch asset price if = 0
       // TODO: Trigger asset price refetching on interval
-
       const assetToSell = swapAssetStore.getState().assetToSell;
       if (!assetToSell) {
         runOnUI(SwapNavigation.handleInputPress)();

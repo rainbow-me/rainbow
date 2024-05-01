@@ -85,8 +85,6 @@ export const SwapActionButton = ({
       return label.value;
     }
 
-    if (typeof label === 'string') return label;
-
     return label || '';
   });
 

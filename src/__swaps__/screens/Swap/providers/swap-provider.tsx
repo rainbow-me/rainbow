@@ -9,6 +9,9 @@ import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextSty
 import { useSwapNavigation, NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
 import { useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
+import { ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { extractColorValueForColorsWorklet } from '@/__swaps__/utils/swaps';
+import { useColorMode } from '@/design-system';
 
 interface SwapContextType {
   inputProgress: SharedValue<number>;
@@ -36,6 +39,7 @@ interface SwapProviderProps {
 }
 
 export const SwapProvider = ({ children }: SwapProviderProps) => {
+  const { isDarkMode } = useColorMode();
   const isFetching = useSharedValue(false);
   const inputProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
   const outputProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
@@ -43,6 +47,23 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const sliderXPosition = useSharedValue(SLIDER_WIDTH * INITIAL_SLIDER_POSITION);
   const sliderPressProgress = useSharedValue(SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
   const focusedInput = useSharedValue<inputKeys>('inputAmount');
+
+  const internalAssetToSell = useSharedValue<ParsedSearchAsset | null>(null);
+  const internalAassetToBuy = useSharedValue<ParsedSearchAsset | null>(null);
+  // TODO: Function to initialize these ^ to the correct value
+
+  const assetColors = useDerivedValue(() => {
+    return {
+      topColor: extractColorValueForColorsWorklet({
+        colors: internalAssetToSell.value?.colors,
+        isDarkMode,
+      }),
+      bottomColor: extractColorValueForColorsWorklet({
+        colors: internalAassetToBuy.value?.colors,
+        isDarkMode,
+      }),
+    };
+  });
 
   const SwapNavigation = useSwapNavigation({
     inputProgress,
@@ -53,7 +74,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const SwapInputController = useSwapInputsController({
     ...SwapNavigation,
     focusedInput,
-    isFetching,
     sliderXPosition,
   });
 

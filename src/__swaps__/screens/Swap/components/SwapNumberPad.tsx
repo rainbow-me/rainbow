@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Animated, {
   Easing,
   interpolateColor,
@@ -12,7 +12,14 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { Box, Columns, HitSlop, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { opacity, stripCommas } from '@/__swaps__/utils/swaps';
+import {
+  addCommasToNumber,
+  countDecimalPlaces,
+  findNiceIncrement,
+  niceIncrementFormatter,
+  stripCommas,
+  valueBasedDecimalFormatter,
+} from '@/__swaps__/utils/swaps';
 import {
   CUSTOM_KEYBOARD_HEIGHT,
   LIGHT_SEPARATOR_COLOR,
@@ -27,14 +34,82 @@ import { LongPressGestureHandler, LongPressGestureHandlerGestureEvent } from 're
 import { ButtonPressAnimation } from '@/components/animations';
 import { colors } from '@/styles';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { useSwapAssets } from '@/state/swaps/assets';
 
 type numberPadCharacter = number | 'backspace' | '.';
 
 export const SwapNumberPad = () => {
   const { isDarkMode } = useColorMode();
-  const { focusedInput, SwapInputController, reviewProgress } = useSwapContext();
+  const { sliderXPosition, focusedInput, SwapInputController, reviewProgress } = useSwapContext();
+
+  const inputAssetBalance = useSwapAssets(state => state.assetToSell?.balance.amount);
+  const inputAssetNativePrice = useSwapAssets(state => state.assetToSellPrice);
+  const inputAssetStablecoin = useSwapAssets(state => state.assetToSell?.type === 'stablecoin');
+
+  const outputAssetNativePrice = useSwapAssets(state => state.assetToBuyPrice) ?? '0';
+  const outputAssetStablecoin = useSwapAssets(state => state.assetToBuy?.type === 'stablecoin');
+
+  const niceIncrement = useMemo(() => findNiceIncrement(Number(inputAssetBalance)), [inputAssetBalance]);
+  const incrementDecimalPlaces = useMemo(() => countDecimalPlaces(niceIncrement), [niceIncrement]);
 
   const longPressTimer = useSharedValue(0);
+
+  const formattedInputAmount = useDerivedValue(() => {
+    if (SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0) return '0';
+    if (SwapInputController.inputMethod.value === 'inputAmount' || typeof SwapInputController.inputValues.value.inputAmount === 'string') {
+      if (Number(SwapInputController.inputValues.value.inputAmount) === 0) return '0';
+
+      return addCommasToNumber(SwapInputController.inputValues.value.inputAmount);
+    }
+
+    if (SwapInputController.inputMethod.value === 'outputAmount') {
+      if (!Number(inputAssetBalance) || Number(SwapInputController.inputValues.value.inputAmount) === 0) return '0';
+
+      return valueBasedDecimalFormatter(
+        SwapInputController.inputValues.value.inputAmount,
+        Number(inputAssetBalance),
+        'up',
+        -1,
+        inputAssetStablecoin,
+        false
+      );
+    }
+
+    if (!Number(inputAssetBalance) || !Number(inputAssetNativePrice)) return '0';
+
+    return niceIncrementFormatter(
+      incrementDecimalPlaces,
+      Number(inputAssetBalance),
+      Number(inputAssetNativePrice),
+      niceIncrement,
+      SwapInputController.percentageToSwap.value,
+      sliderXPosition.value
+    );
+  });
+
+  const formattedOutputAmount = useDerivedValue(() => {
+    if (SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0) return '0';
+
+    if (
+      SwapInputController.inputMethod.value === 'outputAmount' ||
+      typeof SwapInputController.inputValues.value.outputAmount === 'string'
+    ) {
+      if (Number(SwapInputController.inputValues.value.outputAmount) === 0) return '0';
+
+      return addCommasToNumber(SwapInputController.inputValues.value.outputAmount);
+    }
+
+    if (Number(SwapInputController.inputValues.value.outputAmount) === 0 || !Number(outputAssetNativePrice)) return '0';
+
+    return valueBasedDecimalFormatter(
+      SwapInputController.inputValues.value.outputAmount,
+      Number(outputAssetNativePrice),
+      'down',
+      -1,
+      outputAssetStablecoin,
+      false
+    );
+  });
 
   const addNumber = (number?: number) => {
     'worklet';
@@ -46,10 +121,7 @@ export const SwapNumberPad = () => {
         SwapInputController.inputValues.modify(value => {
           return {
             ...value,
-            [inputKey]:
-              inputKey === 'inputAmount'
-                ? stripCommas(SwapInputController.formattedInputAmount.value)
-                : stripCommas(SwapInputController.formattedOutputAmount.value),
+            [inputKey]: inputKey === 'inputAmount' ? stripCommas(formattedInputAmount.value) : stripCommas(formattedOutputAmount.value),
           };
         });
       }
@@ -76,10 +148,7 @@ export const SwapNumberPad = () => {
         SwapInputController.inputValues.modify(values => {
           return {
             ...values,
-            [inputKey]:
-              inputKey === 'inputAmount'
-                ? stripCommas(SwapInputController.formattedInputAmount.value)
-                : stripCommas(SwapInputController.formattedOutputAmount.value),
+            [inputKey]: inputKey === 'inputAmount' ? stripCommas(formattedInputAmount.value) : stripCommas(formattedOutputAmount.value),
           };
         });
       }
@@ -104,10 +173,7 @@ export const SwapNumberPad = () => {
       SwapInputController.inputValues.modify(values => {
         return {
           ...values,
-          [inputKey]:
-            inputKey === 'inputAmount'
-              ? stripCommas(SwapInputController.formattedInputAmount.value)
-              : stripCommas(SwapInputController.formattedOutputAmount.value),
+          [inputKey]: inputKey === 'inputAmount' ? stripCommas(formattedInputAmount.value) : stripCommas(formattedOutputAmount.value),
         };
       });
     }
