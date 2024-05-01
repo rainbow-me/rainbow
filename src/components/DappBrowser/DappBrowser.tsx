@@ -90,7 +90,6 @@ const NewTabTrigger = () => {
     () => route.params?.url,
     (current, previous) => {
       if (current !== previous && route.params?.url) {
-        console.log('opening new empty tab');
         newTabWorklet(current);
       }
     },
