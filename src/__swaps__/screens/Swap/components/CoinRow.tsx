@@ -103,7 +103,7 @@ export const CoinRow = ({
               <CoinRowButton icon="􀅳" outline size="icon 14px" />
               <CoinRowButton
                 color={isFavorite ? '#FFCB0F' : undefined}
-                onPress={async () => toggleFavorite(address === AddressZero ? ETH_ADDRESS : address)}
+                onPress={() => toggleFavorite(address === AddressZero ? ETH_ADDRESS : address)}
                 icon="􀋃"
                 weight="black"
               />
