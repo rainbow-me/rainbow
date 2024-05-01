@@ -1,5 +1,6 @@
+/* eslint-disable no-nested-ternary */
 import React from 'react';
-import Animated from 'react-native-reanimated';
+import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { StyleSheet } from 'react-native';
 import { Separator, Stack } from '@/design-system';
 import { useDimensions } from '@/hooks';
@@ -10,12 +11,10 @@ import { TokenToBuyList } from '@/__swaps__/screens/Swap/components/TokenList/To
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
 export const TokenList = ({
-  color,
   handleExitSearch,
   handleFocusSearch,
   output,
 }: {
-  color: string;
   handleExitSearch: () => void;
   handleFocusSearch: () => void;
   output?: boolean;
@@ -26,10 +25,18 @@ export const TokenList = ({
   // TODO: fix this since it's referencing a shared value on the JS thread
   const isFocused = output ? outputProgress.value === 2 : inputProgress.value === 2;
 
+  const shouldDisplayTokenListStyles = useAnimatedStyle(() => {
+    return {
+      opacity: interpolate(output ? outputProgress.value : inputProgress.value, [0, 1], [0, 1]),
+      display: output ? (outputProgress.value > 0 ? 'flex' : 'none') : inputProgress.value > 0 ? 'flex' : 'none',
+      pointerEvents: output ? (outputProgress.value > 0 ? 'auto' : 'none') : inputProgress.value > 0 ? 'auto' : 'none',
+    };
+  });
+
   return (
     <Stack>
       <Stack space="20px">
-        <SearchInput color={color} handleExitSearch={handleExitSearch} handleFocusSearch={handleFocusSearch} output={output} />
+        <SearchInput handleExitSearch={handleExitSearch} handleFocusSearch={handleFocusSearch} output={output} />
         <Separator color="separatorTertiary" thickness={1} />
       </Stack>
       <Animated.ScrollView
@@ -38,11 +45,14 @@ export const TokenList = ({
           paddingTop: 20,
         }}
         showsVerticalScrollIndicator={false}
-        style={{
-          alignSelf: 'center',
-          height: EXPANDED_INPUT_HEIGHT - 77,
-          width: deviceWidth - 24,
-        }}
+        style={[
+          shouldDisplayTokenListStyles,
+          {
+            alignSelf: 'center',
+            height: EXPANDED_INPUT_HEIGHT - 77,
+            width: deviceWidth - 24,
+          },
+        ]}
       >
         {!output && <TokenToSellList />}
         {output && <TokenToBuyList />}

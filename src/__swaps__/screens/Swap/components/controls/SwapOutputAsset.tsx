@@ -72,7 +72,7 @@ function SwapOutputActionButton() {
 
 function SwapOutputAmount() {
   const { isDarkMode } = useColorMode();
-  const { focusedInput, SwapTextStyles, SwapInputController, AnimatedSwapStyles } = useSwapContext();
+  const { focusedInput, SwapTextStyles, SwapInputController } = useSwapContext();
 
   const outputAssetNativePrice = useSwapAssets(state => state.assetToBuyPrice) ?? '0';
   const outputAssetStablecoin = useSwapAssets(state => state.assetToBuy?.type === 'stablecoin');
@@ -255,21 +255,10 @@ function OutputAssetBalanceBadge() {
 }
 
 export function SwapOutputAsset() {
-  const { isDarkMode } = useColorMode();
-
   const { outputProgress, inputProgress, AnimatedSwapStyles, SwapNavigation } = useSwapContext();
 
-  const assetToBuyColors = useSwapAssets(state => state.assetToBuy?.colors);
-
-  const color = useMemo(() => {
-    return extractColorValueForColors({
-      colors: assetToBuyColors as TokenColors,
-      isDarkMode,
-    });
-  }, [assetToBuyColors, isDarkMode]);
-
   return (
-    <SwapInput bottomInput color={color} otherInputProgress={inputProgress} progress={outputProgress}>
+    <SwapInput bottomInput otherInputProgress={inputProgress} progress={outputProgress}>
       <Box as={Animated.View} style={AnimatedSwapStyles.outputStyle}>
         <Stack space="16px">
           <Columns alignHorizontal="justify" alignVertical="center">
@@ -299,7 +288,6 @@ export function SwapOutputAsset() {
         width={{ custom: INPUT_INNER_WIDTH }}
       >
         <TokenList
-          color={color}
           handleExitSearch={runOnUI(SwapNavigation.handleExitSearch)}
           handleFocusSearch={runOnUI(SwapNavigation.handleFocusOutputSearch)}
           output

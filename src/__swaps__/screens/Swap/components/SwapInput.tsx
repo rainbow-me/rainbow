@@ -1,23 +1,36 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 import Animated, { SharedValue } from 'react-native-reanimated';
-import { Box } from '@/design-system';
+import { Box, useColorMode } from '@/design-system';
 import { BASE_INPUT_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useSwapInputStyles } from '@/__swaps__/screens/Swap/hooks/useSwapInputStyles';
 import { StyleSheet } from 'react-native';
+import { useSwapAssets } from '@/state/swaps/assets';
+import { extractColorValueForColors } from '@/__swaps__/utils/swaps';
+import { TokenColors } from '@/graphql/__generated__/metadata';
 
 export const SwapInput = ({
   children,
-  color,
   bottomInput,
   otherInputProgress,
   progress,
 }: {
   children?: ReactNode;
-  color: string;
   bottomInput?: boolean;
   otherInputProgress: SharedValue<number>;
   progress: SharedValue<number>;
 }) => {
+  const { isDarkMode } = useColorMode();
+
+  const assetToSellColors = useSwapAssets(state => state.assetToSell?.colors);
+  const assetToBuyColors = useSwapAssets(state => state.assetToBuy?.colors);
+
+  const color = useMemo(() => {
+    return extractColorValueForColors({
+      colors: bottomInput ? (assetToBuyColors as TokenColors) : (assetToSellColors as TokenColors),
+      isDarkMode,
+    });
+  }, [assetToBuyColors, assetToSellColors, bottomInput, isDarkMode]);
+
   const { inputStyle, containerStyle, mixedShadowColor } = useSwapInputStyles({
     bottomInput,
     color,

@@ -5,25 +5,35 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { Input } from '@/components/inputs';
 import { AnimatedText, Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { extractColorValueForColors, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { swapSearchStore } from '@/state/swaps/search';
+import { useSwapAssets } from '@/state/swaps/assets';
+import { TokenColors } from '@/graphql/__generated__/metadata';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 
 export const SearchInput = ({
-  color,
   handleExitSearch,
   handleFocusSearch,
   output,
 }: {
-  color: string;
   handleExitSearch: () => void;
   handleFocusSearch: () => void;
   output?: boolean;
 }) => {
-  const { inputProgress, outputProgress, AnimatedSwapStyles } = useSwapContext();
+  const { inputProgress, outputProgress } = useSwapContext();
   const { isDarkMode } = useColorMode();
+
+  const assetToSellColors = useSwapAssets(state => state.assetToSell?.colors);
+  const assetToBuyColors = useSwapAssets(state => state.assetToBuy?.colors);
+
+  const color = useMemo(() => {
+    return extractColorValueForColors({
+      colors: output ? (assetToBuyColors as TokenColors) : (assetToSellColors as TokenColors),
+      isDarkMode,
+    });
+  }, [assetToBuyColors, assetToSellColors, output, isDarkMode]);
 
   const inputRef = useAnimatedRef<TextInput>();
 
@@ -127,6 +137,11 @@ export const SearchInput = ({
         <Column width="content">
           <ButtonPressAnimation
             onPress={() => {
+              onSearchQueryChange({
+                nativeEvent: {
+                  text: '',
+                },
+              } as NativeSyntheticEvent<TextInputChangeEventData>);
               handleExitSearch();
               inputRef.current?.blur();
             }}

@@ -34,7 +34,7 @@ export function useSwapInputsController({
     if (animationFrameId.current !== null) cancelAnimationFrame(animationFrameId.current);
   }, []);
 
-  // TODO: Move this to live inside the input components
+  // TODO: Move this to live inside the SwapNumberPad component
   const onTypedNumber = useDebouncedCallback((amount: number, inputKey: inputKeys, preserveAmount = true, setStale = true) => {
     resetTimers();
 
@@ -104,6 +104,7 @@ export function useSwapInputsController({
     []
   );
 
+  // TODO: Move this into a different component so we don't rely on asset data here
   // This handles the updating of input values based on the input method
   // useAnimatedReaction(
   //   () => ({ sliderXPosition: sliderXPosition.value, values: inputValues.value }),

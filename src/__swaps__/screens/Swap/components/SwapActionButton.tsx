@@ -75,22 +75,6 @@ export const SwapActionButton = ({
     };
   });
 
-  const buttonWrapperStyles = useAnimatedStyle(() => {
-    return {
-      backgroundColor: outline ? 'transparent' : color || fallbackColor,
-      borderColor: outline ? separatorSecondary : undefined,
-      borderRadius: borderRadius ?? 24,
-      height: small ? 36 : 48,
-      shadowColor: disableShadow || outline ? 'transparent' : color || fallbackColor,
-      shadowOffset: {
-        width: 0,
-        height: isDarkMode ? 13 : small ? 6 : 10,
-      },
-      shadowOpacity: isDarkMode ? 0.2 : small ? 0.2 : 0.36,
-      shadowRadius: isDarkMode ? 26 : small ? 9 : 15,
-    };
-  });
-
   const iconValue = useDerivedValue(() => {
     if (typeof icon === 'string') return icon;
     return icon?.value || '';
@@ -122,7 +106,23 @@ export const SwapActionButton = ({
         paddingHorizontal={{ custom: small ? 14 : 20 - (outline ? 2 : 0) }}
         paddingLeft={small && icon ? '10px' : undefined}
         paddingRight={small && rightIcon ? '10px' : undefined}
-        style={[feedActionButtonStyles.button, outline && feedActionButtonStyles.outlineButton, buttonWrapperStyles]}
+        style={[
+          feedActionButtonStyles.button,
+          outline && feedActionButtonStyles.outlineButton,
+          {
+            backgroundColor: outline ? 'transparent' : color || fallbackColor,
+            borderColor: outline ? separatorSecondary : undefined,
+            borderRadius: borderRadius ?? 24,
+            height: small ? 36 : 48,
+            shadowColor: disableShadow || outline ? 'transparent' : color || fallbackColor,
+            shadowOffset: {
+              width: 0,
+              height: isDarkMode ? 13 : small ? 6 : 10,
+            },
+            shadowOpacity: isDarkMode ? 0.2 : small ? 0.2 : 0.36,
+            shadowRadius: isDarkMode ? 26 : small ? 9 : 15,
+          },
+        ]}
       >
         <Columns alignHorizontal="center" alignVertical="center" space="6px">
           {icon && (

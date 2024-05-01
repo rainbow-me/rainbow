@@ -38,11 +38,11 @@ export const TokenToSellList = () => {
       // TODO: Fetch asset price if = 0
       // TODO: Trigger asset price refetching on interval
 
+      // TODO: How can we prevent the need to do this?
+      runOnUI(SwapNavigation.handleInputPress)();
       const assetToBuy = swapAssetStore.getState().assetToBuy;
       if (!assetToBuy) {
         runOnUI(SwapNavigation.handleOutputPress)();
-      } else {
-        runOnUI(SwapNavigation.handleInputPress)();
       }
     },
     [SwapNavigation.handleInputPress, SwapNavigation.handleOutputPress, userAssets]

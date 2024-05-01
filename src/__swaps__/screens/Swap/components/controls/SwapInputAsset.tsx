@@ -273,20 +273,10 @@ function InputAssetBalanceBadge() {
 }
 
 export function SwapInputAsset() {
-  const { isDarkMode } = useColorMode();
   const { outputProgress, inputProgress, AnimatedSwapStyles, SwapNavigation } = useSwapContext();
 
-  const assetToSellColors = useSwapAssets(state => state.assetToSell?.colors);
-
-  const color = useMemo(() => {
-    return extractColorValueForColors({
-      colors: assetToSellColors as TokenColors,
-      isDarkMode,
-    });
-  }, [assetToSellColors, isDarkMode]);
-
   return (
-    <SwapInput color={color} otherInputProgress={outputProgress} progress={inputProgress}>
+    <SwapInput otherInputProgress={outputProgress} progress={inputProgress}>
       <Box as={Animated.View} style={AnimatedSwapStyles.inputStyle}>
         <Stack space="16px">
           <Columns alignHorizontal="justify" alignVertical="center">
@@ -315,7 +305,6 @@ export function SwapInputAsset() {
         width={{ custom: INPUT_INNER_WIDTH }}
       >
         <TokenList
-          color={color}
           handleExitSearch={runOnUI(SwapNavigation.handleExitSearch)}
           handleFocusSearch={runOnUI(SwapNavigation.handleFocusInputSearch)}
         />
