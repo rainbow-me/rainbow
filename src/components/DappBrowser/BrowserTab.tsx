@@ -26,7 +26,7 @@ import { WebViewEvent } from 'react-native-webview/lib/WebViewTypes';
 import { appMessenger } from '@/browserMessaging/AppMessenger';
 import { useColorMode } from '@/design-system';
 import { IS_DEV, IS_IOS } from '@/env';
-import { Navigation } from '@/navigation';
+import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { Site } from '@/state/browserHistory';
@@ -169,6 +169,7 @@ const FreezableWebViewComponent = ({
 }) => {
   const { activeTabRef, animatedActiveTabIndex, currentlyOpenTabIds, loadProgress, screenshotCaptureRef } = useBrowserContext();
   const { updateTabUrlWorklet } = useBrowserWorkletsContext();
+  const { setParams } = useNavigation();
 
   const currentMessengerRef = useRef<any>(null);
   const logoRef = useRef<string | null>(null);
@@ -299,6 +300,20 @@ const FreezableWebViewComponent = ({
     [tabId, updateTabUrlWorklet]
   );
 
+  const handleOnOpenWindow = useCallback(
+    (syntheticEvent: { nativeEvent: { targetUrl: string } }) => {
+      const { nativeEvent } = syntheticEvent;
+      const { targetUrl } = nativeEvent;
+      console.log('Intercepted OpenWindow for', targetUrl);
+      setParams({ url: targetUrl });
+      // Clear it rigth after, since this is handled inside a worklet and we can't do it there
+      setTimeout(() => {
+        setParams({ url: undefined });
+      }, 1000);
+    },
+    [setParams]
+  );
+
   // useLayoutEffect seems to more reliably assign the WebView ref correctly
   useLayoutEffect(() => {
     if (isActiveTab) {
@@ -340,6 +355,7 @@ const FreezableWebViewComponent = ({
         onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
         ref={webViewRef}
         source={{ uri: tabUrl }}
+        onOpenWindow={handleOnOpenWindow}
       />
     </Freeze>
   );

@@ -76,11 +76,21 @@ const DappBrowserComponent = () => {
 const NewTabTrigger = () => {
   const { newTabWorklet } = useBrowserWorkletsContext();
   const route = useRoute<RouteProp<RouteParams, 'DappBrowserParams'>>();
+  const { goToUrl } = useBrowserContext();
+  // This is a hack for opening a new tab with a URL
+  useEffect(() => {
+    if (route.params?.url) {
+      setTimeout(() => {
+        goToUrl(route.params?.url);
+      }, 50);
+    }
+  }, [goToUrl, route.params?.url]);
 
   useAnimatedReaction(
     () => route.params?.url,
     (current, previous) => {
       if (current !== previous && route.params?.url) {
+        console.log('opening new empty tab');
         newTabWorklet(current);
       }
     },
