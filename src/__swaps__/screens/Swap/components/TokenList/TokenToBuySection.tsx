@@ -132,7 +132,7 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
           keyExtractor={item => `${item.uniqueId}-${section.id}`}
           renderItem={({ item }) => (
             <CoinRow
-              key={item.uniqueId}
+              // key={item.uniqueId}
               chainId={item.chainId}
               color={item.colors?.primary ?? item.colors?.fallback}
               iconUrl={item.icon_url}

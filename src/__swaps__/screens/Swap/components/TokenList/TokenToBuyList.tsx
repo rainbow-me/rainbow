@@ -23,9 +23,13 @@ export const TokenToBuyList = () => {
   return (
     <Stack space="32px">
       <ChainSelection output />
-      {sections.map(section => (
-        <TokenToBuySection key={section.id} section={section} />
-      ))}
+      {sections
+        .filter(section => section.data.length)
+        .map(section => (
+          <Stack key={section.id} space="20px">
+            <TokenToBuySection section={section} />
+          </Stack>
+        ))}
 
       {!assetsCount && <ListEmpty isL2={isL2} />}
     </Stack>

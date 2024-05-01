@@ -36,12 +36,12 @@ export const TokenToSellList = () => {
       <ChainSelection allText="All Networks" output={false} />
 
       <AnimatedFlashListComponent
-        data={userAssets.slice(0, 20)}
+        data={userAssets}
         ListEmptyComponent={<ListEmpty />}
         keyExtractor={item => item.uniqueId}
         renderItem={({ item }) => (
           <CoinRow
-            key={item.uniqueId}
+            // key={item.uniqueId}
             chainId={item.chainId}
             color={item.colors?.primary ?? item.colors?.fallback}
             iconUrl={item.icon_url}
