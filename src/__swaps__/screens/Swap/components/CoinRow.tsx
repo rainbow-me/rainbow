@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Box, HitSlop, Inline, Stack, Text } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
@@ -8,7 +8,7 @@ import { CoinRowButton } from '@/__swaps__/screens/Swap/components/CoinRowButton
 import { BalancePill } from '@/__swaps__/screens/Swap/components/BalancePill';
 import { ChainId } from '@/__swaps__/types/chains';
 import { ethereumUtils } from '@/utils';
-import { isFavorite, toggleFavorite } from '@/resources/favorites';
+import { toggleFavorite } from '@/resources/favorites';
 import { ETH_ADDRESS } from '@/references';
 import { AddressZero } from '@ethersproject/constants';
 
@@ -25,6 +25,7 @@ export const CoinRow = ({
   onPress,
   output,
   symbol,
+  isFavorite,
 }: {
   address: string;
   mainnetAddress: string;
@@ -38,10 +39,9 @@ export const CoinRow = ({
   onPress?: () => void;
   output?: boolean;
   symbol: string;
+  isFavorite?: boolean;
 }) => {
   const theme = useTheme();
-
-  const [isFavorited, setIsFavorited] = useState<boolean>(isFavorite(address));
 
   const percentChange = useMemo(() => {
     if (isTrending) {
@@ -102,10 +102,8 @@ export const CoinRow = ({
             <Inline space="8px">
               <CoinRowButton icon="􀅳" outline size="icon 14px" />
               <CoinRowButton
-                color={isFavorited ? '#FFCB0F' : undefined}
-                onPress={async () => {
-                  setIsFavorited(await toggleFavorite(address === AddressZero ? ETH_ADDRESS : address));
-                }}
+                color={isFavorite ? '#FFCB0F' : undefined}
+                onPress={async () => toggleFavorite(address === AddressZero ? ETH_ADDRESS : address)}
                 icon="􀋃"
                 weight="black"
               />

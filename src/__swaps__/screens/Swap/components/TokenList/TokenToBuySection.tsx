@@ -144,6 +144,7 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
               nativeBalance={''}
               output
               symbol={item.symbol}
+              isFavorite={section.id === 'favorites'}
             />
           )}
         />
