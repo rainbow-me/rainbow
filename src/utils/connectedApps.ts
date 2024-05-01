@@ -8,6 +8,7 @@ export const isValidUrl = (url: string) => {
 };
 
 export const getDappHost = (url: string) => {
+  if (!url) return '';
   const host = new URL(url).host;
   if (host.indexOf('www.') === 0) {
     return host.replace('www.', '');
@@ -16,6 +17,7 @@ export const getDappHost = (url: string) => {
 };
 
 export const getDappHostname = (url: string) => {
+  if (!url) return '';
   const urlObject = new URL(url);
   let hostname;
   const subdomains = urlObject.hostname.split('.');

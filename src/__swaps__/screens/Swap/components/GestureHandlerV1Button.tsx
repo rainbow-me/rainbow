@@ -2,11 +2,12 @@ import ConditionalWrap from 'conditional-wrap';
 import React from 'react';
 import { StyleProp, ViewProps, ViewStyle } from 'react-native';
 import { TapGestureHandler, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
-import Animated, { runOnJS, useAnimatedGestureHandler } from 'react-native-reanimated';
+import Animated, { AnimatedStyle, runOnJS, useAnimatedGestureHandler } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import { IS_IOS } from '@/env';
 
 export type GestureHandlerButtonProps = {
+  buttonPressWrapperStyleIOS?: StyleProp<ViewStyle>;
   children: React.ReactNode;
   disableButtonPressWrapper?: boolean;
   disabled?: boolean;
@@ -15,7 +16,7 @@ export type GestureHandlerButtonProps = {
   onPressWorklet?: () => void;
   pointerEvents?: ViewProps['pointerEvents'];
   scaleTo?: number;
-  style?: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle> | AnimatedStyle;
 };
 
 /**
@@ -57,6 +58,7 @@ export type GestureHandlerButtonProps = {
  */
 export const GestureHandlerV1Button = React.forwardRef(function GestureHandlerV1Button(
   {
+    buttonPressWrapperStyleIOS,
     children,
     disableButtonPressWrapper = false,
     disabled = false,
@@ -67,7 +69,7 @@ export const GestureHandlerV1Button = React.forwardRef(function GestureHandlerV1
     scaleTo = 0.86,
     style,
   }: GestureHandlerButtonProps,
-  forwardedRef: React.LegacyRef<any> | undefined
+  forwardedRef: React.LegacyRef<unknown> | undefined
 ) {
   const pressHandler = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>({
     onStart: () => {
@@ -83,7 +85,7 @@ export const GestureHandlerV1Button = React.forwardRef(function GestureHandlerV1
     <ConditionalWrap
       condition={IS_IOS && !disableButtonPressWrapper}
       wrap={children => (
-        <ButtonPressAnimation scaleTo={disabled ? 1 : scaleTo} useLateHaptic={disabled}>
+        <ButtonPressAnimation scaleTo={disabled ? 1 : scaleTo} style={buttonPressWrapperStyleIOS} useLateHaptic={disabled}>
           {children}
         </ButtonPressAnimation>
       )}

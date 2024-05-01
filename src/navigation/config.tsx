@@ -224,6 +224,19 @@ export const consoleSheetConfig = {
   }),
 };
 
+export const dappBrowserControlPanelConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 0.7,
+      cornerRadius: 0,
+      springDamping: 1,
+      topOffset: 0,
+      transitionDuration: 0.3,
+    }),
+  }),
+};
+
 export const swapConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
