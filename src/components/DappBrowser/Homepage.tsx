@@ -113,11 +113,10 @@ const Favorites = React.memo(function Favorites({ goToUrl }: { goToUrl: (url: st
 });
 
 const Recents = React.memo(function Recents({ goToUrl }: { goToUrl: (url: string) => void }) {
-  const getRecent = useBrowserHistoryStore(state => state.getRecent);
-  const recent = uniqBy(getRecent(), 'url').slice(0, MAX_RECENTS_TO_DISPLAY);
+  const recents = useBrowserHistoryStore(state => uniqBy(state.recents, 'url').slice(0, MAX_RECENTS_TO_DISPLAY));
 
   return (
-    recent.length > 0 && (
+    recents.length > 0 && (
       <Stack space="20px">
         <Inline alignVertical="center" space="6px">
           <Text color="blue" size="15pt" align="center" weight="heavy">
@@ -128,7 +127,7 @@ const Recents = React.memo(function Recents({ goToUrl }: { goToUrl: (url: string
           </Text>
         </Inline>
         <Inline space={{ custom: CARD_PADDING }}>
-          {recent.map(site => (
+          {recents.map(site => (
             <Card key={site.url} site={site} showMenuButton goToUrl={goToUrl} />
           ))}
         </Inline>
