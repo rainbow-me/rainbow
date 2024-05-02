@@ -13,6 +13,7 @@ import PolygonBadge from '../../assets/badges/polygon.png';
 import ZoraBadge from '../../assets/badges/zora.png';
 import AvalancheBadge from '@/assets/badges/avalancheBadge.png';
 import BlastBadge from '@/assets/badges/blastBadge.png';
+import DegenBadge from '@/assets/badges/degenBadge.png';
 
 export function ChainImage({ chain, size = 20 }: { chain: Network | null | undefined; size?: number }) {
   const source = useMemo(() => {
@@ -35,6 +36,8 @@ export function ChainImage({ chain, size = 20 }: { chain: Network | null | undef
       val = IS_IOS ? { uri: 'avalanche' } : AvalancheBadge;
     } else if (chain === Network.blast) {
       val = IS_IOS ? { uri: 'blast' } : BlastBadge;
+    } else if (chain === Network.degen) {
+      val = IS_IOS ? { uri: 'degen' } : DegenBadge;
     }
     return val;
   }, [chain]);
