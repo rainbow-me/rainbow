@@ -87,7 +87,9 @@ export const SearchInput = React.memo(function SearchInput({
     };
   });
 
-  const isFavorite = useFavoriteDappsStore(state => state.isFavorite(formattedUrlValue.value));
+  const activeTabId = useBrowserStore(state => state.getActiveTabId());
+  const tabUrl = useBrowserStore(state => state.getTabData?.(activeTabId)?.url);
+  const isFavorite = useFavoriteDappsStore(state => state.isFavorite(tabUrl || ''));
 
   const handleFavoritePress = useCallback(() => {
     const url = formattedUrlValue.value;
