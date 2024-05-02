@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, { useCallback, useMemo } from 'react';
 import { cloudPlatform } from '@/utils/platform';
 import Menu from '../Menu';
@@ -294,9 +295,7 @@ export const WalletsAndBackup = () => {
             </Menu>
 
             <Stack space={'24px'}>
-              {sortedWallets.map(wallet => {
-                const { name, isBackedUp, accounts, key, numAccounts, backedUp, imported } = wallet;
-                console.log(JSON.stringify(wallet, null, 2));
+              {sortedWallets.map(({ name, isBackedUp, accounts, key, numAccounts, backedUp, imported }) => {
                 return (
                   <Menu key={`wallet-${key}`}>
                     <MenuItem
@@ -663,12 +662,13 @@ export const WalletsAndBackup = () => {
     backupAllNonBackedUpWalletsTocloud,
     sortedWallets,
     onCreateNewSecretPhrase,
+    onViewCloudBackups,
+    manageCloudBackups,
     navigate,
     onNavigateToWalletView,
     allBackedUp,
+    mostRecentBackup,
     lastBackupDate,
-    onViewCloudBackups,
-    manageCloudBackups,
     onPressLearnMoreAboutCloudBackups,
   ]);
 
