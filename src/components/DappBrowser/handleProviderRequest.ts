@@ -115,7 +115,11 @@ export function createTransport<TPayload, TResponse>({ messenger, topic }: { mes
  * @returns {boolean}
  */
 const messengerProviderRequestFn = async (messenger: Messenger, request: ProviderRequestPayload) => {
-  const appSession = appSessionsStore.getState().getActiveSession({ host: getDappHost(request.meta?.sender.url) || '' });
+  const hostSessions = appSessionsStore.getState().getActiveSession({ host: getDappHost(request.meta?.sender.url) || '' });
+  const appSession = {
+    address: hostSessions.activeSessionAddress,
+    network: hostSessions.sessions[hostSessions.activeSessionAddress],
+  };
 
   // Wait for response from the popup.
   let response: unknown | null;
@@ -158,7 +162,12 @@ const messengerProviderRequestFn = async (messenger: Messenger, request: Provide
 
 const isSupportedChainId = (chainId: number) => !!RainbowNetworks.find(network => Number(network.id) === chainId);
 const getActiveSession = ({ host }: { host: string }): ActiveSession => {
-  const appSession = appSessionsStore.getState().getActiveSession({ host });
+  const hostSessions = appSessionsStore.getState().getActiveSession({ host });
+  const appSession = {
+    address: hostSessions.activeSessionAddress,
+    network: hostSessions.sessions[hostSessions.activeSessionAddress],
+  };
+
   if (!appSession) return null;
   return {
     address: appSession?.address || '',
