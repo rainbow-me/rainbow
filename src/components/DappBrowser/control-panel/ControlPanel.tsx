@@ -34,7 +34,7 @@ import { Network } from '@/networks/types';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { colors } from '@/styles';
 import { deviceUtils } from '@/utils';
-import { getNetworkFromChainId } from '@/utils/ethereumUtils';
+import ethereumUtils, { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { TOP_INSET } from '../Dimensions';
@@ -51,7 +51,8 @@ import { handleDappBrowserConnectionPrompt } from '@/utils/requestNavigationHand
 import { useAppSessionsStore } from '@/state/appSessions';
 import { RainbowError, logger } from '@/logger';
 import WebView from 'react-native-webview';
-import { useNavigation } from '@/navigation';
+import { Navigation, useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 const PAGES = {
   HOME: 'home',
@@ -401,16 +402,30 @@ const HomePanel = ({
                 animatedAccentColor={animatedAccentColor}
                 icon="􀖅"
                 label={i18n.t(i18n.l.dapp_browser.control_panel.swap)}
-                onPress={() => {
-                  return;
+                onPress={async () => {
+                  const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(Network.mainnet, selectedWallet);
+                  Navigation.handleAction(Routes.EXCHANGE_MODAL, {
+                    fromDiscover: true,
+                    params: {
+                      inputAsset: mainnetEth,
+                    },
+                    screen: Routes.MAIN_EXCHANGE_SCREEN,
+                  });
                 }}
               />
               <ControlPanelButton
                 animatedAccentColor={animatedAccentColor}
                 icon="􀄹"
                 label={i18n.t(i18n.l.dapp_browser.control_panel.bridge)}
-                onPress={() => {
-                  return;
+                onPress={async () => {
+                  const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(Network.mainnet, selectedWallet);
+                  Navigation.handleAction(Routes.EXCHANGE_MODAL, {
+                    fromDiscover: true,
+                    params: {
+                      inputAsset: mainnetEth,
+                    },
+                    screen: Routes.MAIN_EXCHANGE_SCREEN,
+                  });
                 }}
               />
               <ConnectButton
