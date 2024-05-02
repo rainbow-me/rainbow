@@ -74,7 +74,7 @@ const WalletPill = ({ account }: WalletPillProps) => {
       <Text color={'secondary (Deprecated)'} size="11pt" weight="semibold">
         {label.endsWith('.eth')
           ? abbreviations.abbreviateEnsForDisplay(label, 8, 4) ?? ''
-          : abbreviations.address(account.address, 3, 5) ?? ''}
+          : abbreviations.address(label !== '' ? label : account.address, 3, 5) ?? ''}
       </Text>
     </Box>
   );
@@ -294,7 +294,9 @@ export const WalletsAndBackup = () => {
             </Menu>
 
             <Stack space={'24px'}>
-              {sortedWallets.map(({ name, isBackedUp, accounts, key, numAccounts, backedUp, imported }) => {
+              {sortedWallets.map(wallet => {
+                const { name, isBackedUp, accounts, key, numAccounts, backedUp, imported } = wallet;
+                console.log(JSON.stringify(wallet, null, 2));
                 return (
                   <Menu key={`wallet-${key}`}>
                     <MenuItem

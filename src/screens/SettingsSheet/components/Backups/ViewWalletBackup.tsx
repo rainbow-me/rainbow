@@ -538,12 +538,14 @@ const ViewWalletBackup = () => {
                   disabled
                   leftComponent={<WalletAvatar account={account} />}
                   labelComponent={
-                    account.label.endsWith('.eth') ? <MenuItem.Label text={abbreviations.address(account.address, 3, 5) || ''} /> : null
+                    account.label.endsWith('.eth') || account.label !== '' ? (
+                      <MenuItem.Label text={abbreviations.address(account.address, 3, 5) || ''} />
+                    ) : null
                   }
                   titleComponent={
                     <MenuItem.Title
                       text={
-                        account.label.endsWith('.eth')
+                        account.label.endsWith('.eth') || account.label !== ''
                           ? abbreviations.abbreviateEnsForDisplay(removeFirstEmojiFromString(account.label), 20) ?? ''
                           : abbreviations.address(account.address, 3, 5) ?? ''
                       }
