@@ -223,7 +223,7 @@ export const WalletsAndBackup = () => {
 
       await dispatch(walletsLoadState(profilesEnabled));
 
-      // @ts-ignore
+      // @ts-expect-error - no params
       await initializeWallet();
     } catch (err) {
       logger.error(new RainbowError('Failed to create new secret phrase'), {
