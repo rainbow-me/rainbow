@@ -84,14 +84,15 @@ export const ControlPanel = () => {
   const hostSessions = useAppSessionsStore(state => state.getActiveSession({ host: activeTabHost }));
 
   const currentSession = useMemo(
-    () => ({
-      address: hostSessions.activeSessionAddress,
-      network: hostSessions.sessions[hostSessions.activeSessionAddress],
-    }),
+    () =>
+      hostSessions && hostSessions.sessions[hostSessions.activeSessionAddress]
+        ? {
+            address: hostSessions.activeSessionAddress,
+            network: hostSessions.sessions[hostSessions.activeSessionAddress],
+          }
+        : null,
     [hostSessions]
   );
-
-  console.log('currentSession', currentSession);
 
   // listens to the current active tab and sets the account
   useEffect(() => {

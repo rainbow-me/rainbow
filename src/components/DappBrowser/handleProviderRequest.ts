@@ -10,11 +10,11 @@ import { UserRejectedRequestError } from 'viem';
 import { convertHexToString } from '@/helpers/utilities';
 import { logger } from '@/logger';
 import { ActiveSession } from '@rainbow-me/provider/dist/references/appSession';
-import { appSessionsStore } from '@/state/appSessions';
 import { Network } from '@/helpers';
 import { handleDappBrowserConnectionPrompt, handleDappBrowserRequest } from '@/utils/requestNavigationHandlers';
 import { Tab } from '@rainbow-me/provider/dist/references/messengers';
 import { getDappMetadata } from '@/resources/metadata/dapp';
+import { useAppSessionsStore } from '@/state/appSessions';
 
 export type ProviderRequestPayload = RequestArguments & {
   id: number;
@@ -115,11 +115,14 @@ export function createTransport<TPayload, TResponse>({ messenger, topic }: { mes
  * @returns {boolean}
  */
 const messengerProviderRequestFn = async (messenger: Messenger, request: ProviderRequestPayload) => {
-  const hostSessions = appSessionsStore.getState().getActiveSession({ host: getDappHost(request.meta?.sender.url) || '' });
-  const appSession = {
-    address: hostSessions.activeSessionAddress,
-    network: hostSessions.sessions[hostSessions.activeSessionAddress],
-  };
+  const hostSessions = useAppSessionsStore.getState().getActiveSession({ host: getDappHost(request.meta?.sender.url) || '' });
+  const appSession =
+    hostSessions && hostSessions.sessions[hostSessions.activeSessionAddress]
+      ? {
+          address: hostSessions.activeSessionAddress,
+          network: hostSessions.sessions[hostSessions.activeSessionAddress],
+        }
+      : null;
 
   // Wait for response from the popup.
   let response: unknown | null;
@@ -132,7 +135,7 @@ const messengerProviderRequestFn = async (messenger: Messenger, request: Provide
       dappUrl: request.meta?.sender.url || '',
     });
 
-    appSessionsStore.getState().addSession({
+    useAppSessionsStore.getState().addSession({
       host: getDappHost(request.meta?.sender.url) || '',
       // @ts-ignore
       address: response.address,
@@ -162,11 +165,14 @@ const messengerProviderRequestFn = async (messenger: Messenger, request: Provide
 
 const isSupportedChainId = (chainId: number) => !!RainbowNetworks.find(network => Number(network.id) === chainId);
 const getActiveSession = ({ host }: { host: string }): ActiveSession => {
-  const hostSessions = appSessionsStore.getState().getActiveSession({ host });
-  const appSession = {
-    address: hostSessions.activeSessionAddress,
-    network: hostSessions.sessions[hostSessions.activeSessionAddress],
-  };
+  const hostSessions = useAppSessionsStore.getState().getActiveSession({ host });
+  const appSession =
+    hostSessions && hostSessions.sessions[hostSessions.activeSessionAddress]
+      ? {
+          address: hostSessions.activeSessionAddress,
+          network: hostSessions.sessions[hostSessions.activeSessionAddress],
+        }
+      : null;
 
   if (!appSession) return null;
   return {
@@ -330,7 +336,7 @@ export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger:
       const host = getDappHost(callbackOptions?.sender.url) || '';
       const activeSession = getActiveSession({ host });
       if (activeSession) {
-        appSessionsStore.getState().updateActiveSessionNetwork({ host: host, network: getNetworkFromChainId(Number(numericChainId)) });
+        useAppSessionsStore.getState().updateActiveSessionNetwork({ host: host, network: getNetworkFromChainId(Number(numericChainId)) });
         messenger.send(`chainChanged:${host}`, Number(numericChainId));
       }
       console.warn('PROVIDER TODO: TODO SEND NOTIFICATION');
