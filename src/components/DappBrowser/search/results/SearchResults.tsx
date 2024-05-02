@@ -47,6 +47,10 @@ const search = (query: string, dapps: Dapp[], numberOfResults = 4): Dapp[] => {
     })
     .filter(dapp => dapp !== null)
     .sort((a, b) => {
+      // Prioritize trending
+      if (b?.trending === true && a?.trending !== true) return 1;
+      if (a?.trending === true && b?.trending !== true) return -1;
+
       // @ts-expect-error: Need to fix these types
       const relevanceDiff = b.relevance - a.relevance;
       if (relevanceDiff === 0) {

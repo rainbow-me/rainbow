@@ -13,6 +13,7 @@ export type Dapp = {
   urlDisplay: string;
   iconUrl: string;
   status: string;
+  trending: boolean;
   colors: {
     primary: string;
     fallback?: string | null;
@@ -53,6 +54,7 @@ export function useDapps(): { dapps: Dapp[] } {
               name: dapp!.name,
               shortName: dapp!.shortName,
               description: dapp!.description,
+              trending: dapp!.trending || false,
               url: dapp!.url,
               urlDisplay: formatUrl(dapp!.url),
               iconUrl: dapp!.iconURL,
