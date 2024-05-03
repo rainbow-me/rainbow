@@ -1,5 +1,7 @@
-platform :ios, '13.0'
+platform :ios, '13.4'
 #use_modular_headers!
+
+use_frameworks!
 
 pod 'Firebase', :modular_headers => true
 pod 'FirebaseCore', :modular_headers => true
@@ -12,7 +14,7 @@ pod 'GoogleUtilities', :modular_headers => true
 pod 'nanopb', :modular_headers => true
 
 install! 'cocoapods', :deterministic_uuids => false
-require_relative '../node_modules/react-native/scripts/react_native_pods'
+require_relative '../node_modules/react-native/scripts/react_native_pods.rb'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 # Prevent Cocoapods from collecting stats, which adds time to each pod installation
@@ -42,7 +44,7 @@ target 'Rainbow' do
     :path => config[:reactNativePath],
     # to enable hermes on iOS, change `false` to `true` and then install pods
     :hermes_enabled => ENV['USE_HERMES'] != 'NO',
-    :fabric_enabled => flags[:fabric_enabled],
+    :fabric_enabled => true,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
@@ -66,6 +68,7 @@ target 'Rainbow' do
   pod 'react-native-palette-full', :path => '../node_modules/react-native-palette-full'
   pod 'react-native-ble-plx', :path => '../node_modules/react-native-ble-plx'
   pod 'TOCropViewController', '2.7.3'
+  pod 'boost-iosx', :git => 'https://github.com/apotocki/boost-iosx'
 
   use_native_modules!
 
