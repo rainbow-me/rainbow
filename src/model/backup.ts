@@ -783,9 +783,10 @@ export async function checkIdentifierOnLaunch() {
           Navigation.goBack();
           resolve(true);
         },
-        // NOTE: Detected a phone migration, let's clear the app and send them to the welcome screen
-        onFailure: async () => {
-          await kc.remove(addressKey);
+        // NOTE: Detected a phone migration, let's remove keychain keys and send them back to the welcome screen
+        onFailure: async ({ keys }: { keys: string[] }) => {
+          const promises = keys.map(key => kc.remove(key));
+          await Promise.all(promises);
           await AsyncStorage.clear();
           clearAllStorages();
           Navigation.handleAction(Routes.WELCOME_SCREEN, {});

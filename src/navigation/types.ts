@@ -68,6 +68,6 @@ export type RootStackParamList = {
   };
   [Routes.CHECK_IDENTIFIER_SCREEN]: {
     onSuccess: () => Promise<void>;
-    onFailure: () => Promise<void>;
+    onFailure: (keys: string[]) => Promise<void>;
   };
 };

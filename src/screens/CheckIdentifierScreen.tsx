@@ -7,7 +7,6 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import * as kc from '@/keychain';
-import { addressKey } from '@/utils/keychainConstants';
 import { Alert } from '@/components/alerts';
 import { BackgroundProvider, Bleed, Box, Inline, Inset, Separator, Stack, Text } from '@/design-system';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
@@ -57,98 +56,47 @@ export default function CheckIdentifierScreen() {
     if (isChecking) return;
     setIsChecking(true);
 
-    const selectedAddress = await kc.get(addressKey);
-    if (selectedAddress.error) {
-      switch (selectedAddress.error) {
-        case kc.ErrorType.UserCanceled: {
-          logger.error(new RainbowError('User canceled keychain addressKey check'), {
-            selectedAddress,
-          });
-          ErrorAlert();
-          return;
-        }
-        case kc.ErrorType.Unavailable: {
-          logger.error(new RainbowError('Unavailable error checking keychain addressKey'), {
-            selectedAddress,
-          });
-          ErrorAlert();
-          return;
-        }
-        case kc.ErrorType.NotAuthenticated: {
-          logger.error(new RainbowError('Not authenticated error checking keychain addressKey'), {
-            selectedAddress,
-          });
-          ErrorAlert();
-          return;
-        }
+    const allKeys = await kc.getAllKeys();
 
-        default: {
-          logger.error(new RainbowError('Unknown error checking keychain addressKey'), {
-            selectedAddress,
-          });
-          ErrorAlert();
-          return;
-        }
-      }
-    }
-
-    if (!selectedAddress.value) {
-      logger.error(new RainbowError('Unable to retrieve value for selectedAddress'), {
-        selectedAddress,
-      });
+    if (!allKeys?.length) {
+      logger.error(new RainbowError('Unable to retrieve keychain values'));
       ErrorAlert();
       return;
     }
 
-    const pkey = await kc.get(`${selectedAddress.value}_rainbowPrivateKey`);
-    if (pkey.error) {
-      switch (pkey.error) {
-        case kc.ErrorType.UserCanceled: {
-          logger.error(new RainbowError('User canceled keychain rainbowPrivateKey check'), {
-            selectedAddress,
-          });
-          ErrorAlert();
-          return;
-        }
-        case kc.ErrorType.Unavailable: {
-          logger.error(new RainbowError('Unavailable error checking keychain rainbowPrivateKey'), {
-            selectedAddress,
-          });
-          ErrorAlert();
-          return;
-        }
-        case kc.ErrorType.NotAuthenticated: {
-          logger.error(new RainbowError('Not authenticated error checking keychain rainbowPrivateKey'), {
-            selectedAddress,
-          });
-          ErrorAlert();
-          return;
-        }
-
-        default: {
-          logger.error(new RainbowError('Unknown error checking keychain rainbowPrivateKey'), {
-            selectedAddress,
-          });
-          ErrorAlert();
-          return;
-        }
-      }
-    }
-
-    if (!pkey.value) {
-      logger.error(new RainbowError('Unable to retrieve value for rainbowPrivateKey'), {
-        selectedAddress,
-      });
+    // TODO: Should we clear keychain here? Or what's the right action?
+    const allAccountKeys = allKeys.filter(item => item.username.includes('_rainbowPrivateKey'));
+    if (!allAccountKeys?.length) {
+      logger.error(new RainbowError('No private keys found in keychain'));
       ErrorAlert();
       return;
     }
 
-    const { address, privateKey } = JSON.parse(pkey.value);
-    if (!privateKey || selectedAddress.value !== address) {
-      return onFailure();
+    const keysToRemove = allAccountKeys
+      .map(key => {
+        try {
+          const data: {
+            address: string;
+            privateKey: string;
+          } = JSON.parse(key.password);
+
+          if (!data.privateKey) {
+            return key.username;
+          }
+        } catch (error) {
+          logger.error(new RainbowError('Unable to retrieve private key data'));
+          ErrorAlert();
+        }
+
+        return null;
+      })
+      .filter(Boolean) as string[];
+
+    if (keysToRemove.length) {
+      return onFailure(keysToRemove);
     }
 
-    onSuccess();
+    return onSuccess();
   }, [isChecking, onSuccess, onFailure]);
 
   return (
