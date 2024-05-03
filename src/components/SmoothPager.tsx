@@ -147,8 +147,8 @@ const SmoothPagerComponent = (
       runOnUI(() => {
         const pageIndex = pageIdToIndex[id];
         if (pageIndex !== undefined) {
-          currentPageId.value = id;
           currentPageIndex.value = withTiming(pageIndex, PAGE_ANIMATION_CONFIG);
+          currentPageId.value = id;
         }
       })();
     },

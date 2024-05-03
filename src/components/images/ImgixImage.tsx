@@ -3,11 +3,17 @@ import * as React from 'react';
 import { StyleSheet } from 'react-native';
 import FastImage, { FastImageProps, Source } from 'react-native-fast-image';
 import { maybeSignSource } from '../../handlers/imgix';
-import { TAB_SCREENSHOT_FASTER_IMAGE_CONFIG } from '../DappBrowser/constants';
 
 export type ImgixImageProps = FastImageProps & {
   readonly Component?: React.ElementType;
   readonly size: number;
+};
+
+export const DEFAULT_FASTER_IMAGE_CONFIG: Partial<ImageOptions> = {
+  cachePolicy: 'discWithCacheControl',
+  resizeMode: 'cover',
+  showActivityIndicator: false,
+  transitionDuration: 0.175,
 };
 
 // Here we're emulating the pattern used in react-native-fast-image:
@@ -42,13 +48,10 @@ class ImgixImage extends React.PureComponent<MergedImgixImageProps, ImgixImagePr
       ...(shouldUseFasterImage
         ? {
             source: {
-              base64Placeholder: TAB_SCREENSHOT_FASTER_IMAGE_CONFIG.base64Placeholder,
-              cachePolicy: 'discWithCacheControl',
-              resizeMode: resizeMode && resizeMode !== 'stretch' ? resizeMode : 'cover',
-              showActivityIndicator: false,
-              transitionDuration: 0.175,
-              ...fasterImageConfig,
+              ...DEFAULT_FASTER_IMAGE_CONFIG,
               borderRadius: fasterImageStyle?.borderRadius,
+              resizeMode: resizeMode && resizeMode !== 'stretch' ? resizeMode : DEFAULT_FASTER_IMAGE_CONFIG.resizeMode,
+              ...fasterImageConfig,
               url: !!source && typeof source === 'object' ? maybeSignSource(source, options)?.uri : source,
             },
             style: [

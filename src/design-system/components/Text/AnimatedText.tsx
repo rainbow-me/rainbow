@@ -16,6 +16,8 @@ export type AnimatedTextProps = {
   numberOfLines?: number;
   selectable?: boolean;
   size: TextSize;
+  /** Useful when using `AnimatedText` exclusively to animate text `style`, rather than the text itself. */
+  staticText?: string;
   tabularNumbers?: boolean;
   /** 
    * @deprecated
@@ -40,6 +42,7 @@ export type AnimatedTextProps = {
 } & {
   style?: StyleProp<TextStyle>;
 };
+
 export const AnimatedText = forwardRef<ElementRef<typeof AnimateableText>, AnimatedTextProps>(function Text(
   {
     align,
@@ -49,6 +52,7 @@ export const AnimatedText = forwardRef<ElementRef<typeof AnimateableText>, Anima
     numberOfLines,
     selectable,
     size,
+    staticText,
     tabularNumbers,
     testID,
     text,
@@ -71,7 +75,7 @@ export const AnimatedText = forwardRef<ElementRef<typeof AnimateableText>, Anima
 
   const animatedText = useAnimatedProps(() => {
     return {
-      text: children?.value ?? text?.value ?? '',
+      text: children?.value ?? text?.value ?? staticText ?? '',
     };
   });
 
