@@ -50,8 +50,7 @@ const TheeDotMenu = function TheeDotMenu({
   canGoBack: boolean;
   canGoForward: boolean;
 }) {
-  const activeTabId = useBrowserStore(state => state.getActiveTabId());
-  const tabUrl = useBrowserStore(state => state.getTabData?.(activeTabId)?.url);
+  const tabUrl = useBrowserStore(state => state.getActiveTabUrl());
   const isFavorite = useFavoriteDappsStore(state => state.isFavorite(tabUrl || ''));
 
   const { activeTabInfo, goBack, goForward } = useBrowserContext();

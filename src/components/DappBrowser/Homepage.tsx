@@ -59,7 +59,7 @@ export const Homepage = React.memo(function Homepage() {
 const Trending = React.memo(function Trending({ goToUrl }: { goToUrl: (url: string) => void }) {
   const { dapps } = useDapps();
 
-  const trendingDapps = dapps.filter(dapp => dapp.trending).slice(0, 10);
+  const trendingDapps = dapps.filter(dapp => dapp.trending).slice(0, 8);
 
   return (
     <Stack space="20px">
