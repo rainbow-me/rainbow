@@ -92,6 +92,7 @@ export const backupSheetSizes = {
     : deviceUtils.dimensions.height + safeAreaInsetValues.bottom + sharedCoolModalTopOffset + SheetHandleFixedToTopHeight,
   medium: 550,
   short: 424,
+  check_identifier: 414,
   shorter: 364,
 };
 
@@ -103,9 +104,10 @@ export const getHeightForStep = (step: string) => {
       return backupSheetSizes.long;
     case WalletBackupStepTypes.no_provider:
       return backupSheetSizes.medium;
+    case WalletBackupStepTypes.check_identifier:
+      return backupSheetSizes.check_identifier;
     case WalletBackupStepTypes.backup_now_manually:
       return backupSheetSizes.shorter;
-    case WalletBackupStepTypes.check_identifier:
     default:
       return backupSheetSizes.short;
   }

@@ -154,12 +154,7 @@ export default function CheckIdentifierScreen() {
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
-        <SimpleSheet
-          testID="check-identifier-sheet"
-          backgroundColor={backgroundColor as string}
-          customHeight={sheetHeight}
-          allowDismiss={false}
-        >
+        <SimpleSheet testID="check-identifier-sheet" backgroundColor={backgroundColor as string} customHeight={sheetHeight}>
           <Inset horizontal={'24px'} vertical={'44px'}>
             <Inset bottom={'44px'} horizontal={'16px'}>
               <Stack alignHorizontal="center">
@@ -169,12 +164,12 @@ export default function CheckIdentifierScreen() {
                   marginLeft={{ custom: 0 }}
                   marginRight={{ custom: 0 }}
                   marginTop={{ custom: 0 }}
-                  marginBottom={{ custom: 16 }}
+                  marginBottom={{ custom: 20 }}
                   source={RestoreYourWallet as Source}
                   width={{ custom: imageSize }}
                   size={imageSize}
                 />
-                <Stack space="16px">
+                <Stack space="24px">
                   <Text align="center" size="26pt" weight="bold" color="label">
                     {lang.t(lang.l.check_identifier.title)}
                   </Text>

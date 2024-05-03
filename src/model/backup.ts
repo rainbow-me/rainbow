@@ -20,7 +20,7 @@ import { AllRainbowWallets, allWalletsVersion, createWallet, RainbowWallet } fro
 import { analytics } from '@/analytics';
 import oldLogger from '@/utils/logger';
 import { logger, RainbowError } from '@/logger';
-import { IS_ANDROID } from '@/env';
+import { IS_ANDROID, IS_DEV } from '@/env';
 import AesEncryptor from '../handlers/aesEncryption';
 import { authenticateWithPIN, authenticateWithPINAndCreateIfNeeded, decryptPIN } from '@/handlers/authentication';
 import * as i18n from '@/languages';
@@ -30,6 +30,7 @@ import { setAllWalletsWithIdsAsBackedUp } from '@/redux/wallets';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { clearAllStorages } from './mmkv';
+import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 
 const { DeviceUUID } = NativeModules;
 const encryptor = new AesEncryptor();
@@ -715,9 +716,7 @@ export async function getDeviceUUID(): Promise<string | null> {
  */
 export async function checkIdentifierOnLaunch() {
   // Unable to really persist things on Android, so let's just exit early...
-  if (IS_ANDROID) {
-    return;
-  }
+  if (IS_ANDROID) return;
 
   try {
     const uuid = await getDeviceUUID();
@@ -762,22 +761,26 @@ export async function checkIdentifierOnLaunch() {
     }
 
     // NOTE: This should never happen, but if we don't have a current identifier, let's set it and exit early
-    // if (!currentIdentifier.value) {
-    //   await kc.set(identifierForVendorKey, uuid);
-    //   return;
-    // }
 
-    // // if our identifiers match up, we can assume no reinstall/migration
-    // if (currentIdentifier.value === uuid) {
-    //   return;
-    // }
+    if (!currentIdentifier.value) {
+      await kc.set(identifierForVendorKey, uuid);
+      return;
+    }
+
+    if (!IS_DEV) {
+      // if our identifiers match up, we can assume no reinstall/migration
+      if (currentIdentifier.value === uuid) {
+        return;
+      }
+    }
 
     return new Promise(resolve => {
       Navigation.handleAction(Routes.CHECK_IDENTIFIER_SCREEN, {
+        step: walletBackupStepTypes.check_identifier,
         // NOTE: Just a reinstall, let's update the identifer and send them back to the app
         onSuccess: async () => {
           await kc.set(identifierForVendorKey, uuid);
-          Navigation.handleAction(Routes.WALLET_SCREEN, {});
+          Navigation.goBack();
           resolve(true);
         },
         // NOTE: Detected a phone migration, let's clear the app and send them to the welcome screen
@@ -791,16 +794,12 @@ export async function checkIdentifierOnLaunch() {
       });
     });
   } catch (error) {
-    console.log(error);
     logger.error(new RainbowError('Error while checking identifier on launch'), {
       extra: {
         error,
       },
     });
   }
-
-  // TODO: Should we do something here? Exit the app? Show the user an alert?
-  // For now, let's just return false and let the app continue to load
 
   return false;
 }
