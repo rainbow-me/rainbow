@@ -27,7 +27,7 @@ import {
 } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
+import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { useAccountAccentColor, useAccountSettings, useWalletsWithBalancesAndNames } from '@/hooks';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { Network } from '@/networks/types';
@@ -54,6 +54,7 @@ import WebView from 'react-native-webview';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { address } from '@/utils/abbreviations';
+import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
 
 const PAGES = {
   HOME: 'home',
@@ -122,7 +123,7 @@ export const ControlPanel = () => {
           ) : (
             <ListEmojiAvatar address={account.address} color={account.color} label={account.label} />
           ),
-          label: account.label || address(account.address, 6, 4),
+          label: removeFirstEmojiFromString(account.label) || address(account.address, 6, 4),
           secondaryLabel: !walletBalance ? i18n.t(i18n.l.wallet.change_wallet.no_balance) : nativeCurrencyBalance,
           uniqueId: account.address,
           color: colors.avatarBackgrounds[account.color],
@@ -349,9 +350,10 @@ const HomePanel = ({
   onDisconnect: () => void;
 }) => {
   const actionButtonList = useMemo(() => {
-    const walletIcon = allWalletItems.find(item => item.uniqueId === selectedWallet)?.IconComponent || <></>;
-    const walletLabel = allWalletItems.find(item => item.uniqueId === selectedWallet)?.label || '';
-    const walletSecondaryLabel = allWalletItems.find(item => item.uniqueId === selectedWallet)?.secondaryLabel || '';
+    const selectedWalletProps: ControlPanelMenuItemProps | undefined = allWalletItems.find(item => item.uniqueId === selectedWallet);
+    const walletIcon = selectedWalletProps?.IconComponent || <></>;
+    const walletLabel = selectedWalletProps?.label || '';
+    const walletSecondaryLabel = selectedWalletProps?.secondaryLabel || '';
 
     const network = allNetworkItems.find(item => item.uniqueId === selectedNetwork);
     const networkIcon = <ChainImage chain={(network?.uniqueId as Network) || 'mainnet'} size={36} />;
@@ -463,7 +465,7 @@ const HomePanelLogo = React.memo(function HomePanelLogo() {
       width={{ custom: 44 }}
       height={{ custom: 44 }}
       background="fillTertiary"
-      style={{ borderRadius: 12 }}
+      style={{ borderRadius: IS_ANDROID ? 30 : 12 }}
     />
   );
 });
@@ -607,13 +609,18 @@ const ListHeader = React.memo(function ListHeader({
   const backIconStyle = useAnimatedStyle(() => {
     return {
       color: animatedAccentColor?.value,
+      ...fontWithWidthWorklet('700'),
     };
   });
 
   return (
     <Box style={controlPanelStyles.listHeader}>
       <Box style={controlPanelStyles.listHeaderContent}>
-        <ButtonPressAnimation onPress={goBack} scaleTo={0.8} style={controlPanelStyles.listHeaderButtonWrapper}>
+        <ButtonPressAnimation
+          onPress={goBack}
+          scaleTo={0.8}
+          style={[controlPanelStyles.listHeaderButtonWrapper, { backgroundColor: 'red' }]}
+        >
           <Box alignItems="center" height={{ custom: 20 }} justifyContent="center" width={{ custom: 20 }}>
             <AnimatedText align="center" size="icon 20px" staticText="􀆉" style={backIconStyle} weight="bold" />
           </Box>
@@ -693,7 +700,7 @@ const ControlPanelMenuItem = React.memo(function ControlPanelMenuItem({
     const selected = selectedItemId?.value === uniqueId || variant === 'homePanel';
     return {
       color: selected ? animatedAccentColor?.value : labelTextColor,
-      fontWeight: selected || variant === 'homePanel' ? '700' : '600',
+      ...fontWithWidthWorklet(selected || variant === 'homePanel' ? '700' : '600'),
     };
   });
 
