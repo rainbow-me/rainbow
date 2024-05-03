@@ -53,6 +53,7 @@ import { RainbowError, logger } from '@/logger';
 import WebView from 'react-native-webview';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { address } from '@/utils/abbreviations';
 
 const PAGES = {
   HOME: 'home',
@@ -122,7 +123,7 @@ export const ControlPanel = () => {
           ) : (
             <ListEmojiAvatar address={account.address} color={account.color} label={account.label} />
           ),
-          label: account.label,
+          label: account.label || address(account.address, 6, 4),
           secondaryLabel: !walletBalance ? i18n.t(i18n.l.wallet.change_wallet.no_balance) : nativeCurrencyBalance,
           uniqueId: account.address,
           color: colors.avatarBackgrounds[account.color],
