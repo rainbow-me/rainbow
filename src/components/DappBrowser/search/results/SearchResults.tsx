@@ -10,6 +10,7 @@ import { useSearchContext } from '../SearchContext';
 import { GoogleSearchResult, SearchResult } from './SearchResult';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { isValidURLWorklet } from '../../utils';
 
 const search = (query: string, dapps: Dapp[], numberOfResults = 4): Dapp[] => {
   'worklet';
@@ -63,6 +64,11 @@ const search = (query: string, dapps: Dapp[], numberOfResults = 4): Dapp[] => {
       return relevanceDiff;
     })
     .slice(0, numberOfResults);
+
+  // if the query is a valid URL and is not already in the results, add it to the results
+  if (isValidURLWorklet(query) && !filteredDapps.some(dapp => dapp?.url.includes(query))) {
+    return [{ url: query, urlDisplay: query, name: query } as Dapp, ...(filteredDapps as Dapp[])];
+  }
 
   // @ts-expect-error: Same here
   return filteredDapps;

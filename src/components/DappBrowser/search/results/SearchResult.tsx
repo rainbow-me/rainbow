@@ -43,6 +43,13 @@ export const SearchResult = ({ index, goToUrl }: { index: number; goToUrl: (url:
 
   const onPress = useCallback(() => url.value && goToUrl(url.value), [goToUrl, url.value]);
 
+  const fallbackIconStyle = useAnimatedStyle(() => {
+    if (dapp.value?.iconUrl) {
+      return { display: 'none' };
+    } else {
+      return { display: 'flex' };
+    }
+  });
   return (
     <Animated.View style={animatedStyle}>
       <Box
@@ -66,6 +73,9 @@ export const SearchResult = ({ index, goToUrl }: { index: number; goToUrl: (url:
         <Inline space="12px" alignVertical="center" wrap={false}>
           <Box width={{ custom: 40 }} height={{ custom: 40 }}>
             <Box style={styles.iconContainer}>
+              <Animated.View style={[{ width: 40, height: 40, justifyContent: 'center' }, fallbackIconStyle]}>
+                <AnimatedText color="labelQuaternary" size="icon 28px" weight="black" staticText="􀎭" align="center" />
+              </Animated.View>
               {/* ⚠️ TODO: This works but we should figure out how to type this correctly to avoid this error */}
               {/* @ts-expect-error: Doesn't pick up that its getting a source prop via animatedProps */}
               <AnimatedFasterImage animatedProps={animatedIconSource} style={styles.iconImage} />
