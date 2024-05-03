@@ -83,8 +83,6 @@ export const useVisibleWallets = ({ wallets, walletTypeCount }: UseVisibleWallet
           walletTypeCount.privateKey += 1;
         }
 
-        console.log(wallet.name);
-
         return {
           ...wallet,
           name: isWalletGroupNamed(wallet) ? wallet.name : getTitleForWalletType(wallet.type, walletTypeCount),

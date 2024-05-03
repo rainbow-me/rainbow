@@ -304,7 +304,6 @@ export const WalletsAndBackup = () => {
 
             <Stack space={'24px'}>
               {sortedWallets.map(({ name, isBackedUp, accounts, key, numAccounts, backedUp, imported }) => {
-                console.log({ name });
                 return (
                   <Menu key={`wallet-${key}`}>
                     <MenuItem
