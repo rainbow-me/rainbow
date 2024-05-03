@@ -1,5 +1,6 @@
 import { Messenger } from '@/browserMessaging/AppMessenger';
 import { AddEthereumChainProposedChain, RequestArguments, RequestResponse, handleProviderRequest } from '@rainbow-me/provider';
+import * as lang from '@/languages';
 
 import { Provider } from '@ethersproject/providers';
 
@@ -164,7 +165,7 @@ const messengerProviderRequestFn = async (messenger: Messenger, request: Provide
   return response;
 };
 
-const isSupportedChainId = (chainId: number) => {
+const isSupportedChainId = (chainId: number | string) => {
   const numericChainId = BigNumber.from(chainId).toNumber();
   return !!RainbowNetworks.find(network => Number(network.id) === numericChainId);
 };
@@ -308,11 +309,13 @@ export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger:
     callbackOptions?: CallbackOptions;
   }) => {
     const { chainId } = proposedChain;
-    const supportedChains = RainbowNetworks.filter(network => network.features.walletconnect).map(network => network.id.toString());
-    const numericChainId = convertHexToString(chainId);
-    const supportedChainId = supportedChains.includes(numericChainId);
-    alert('Chain Id not supported');
-    console.warn('PROVIDER TODO: TODO SEND NOTIFICATION');
+    const supportedChain = isSupportedChainId(chainId);
+    if (!supportedChain) {
+      alert(lang.t(lang.l.dapp_browser.provider_error.unsupported_chain));
+    } else {
+      alert(lang.t(lang.l.dapp_browser.provider_error.no_active_session));
+    }
+    // console.warn('PROVIDER TODO: TODO SEND NOTIFICATION');
     // TODO SEND NOTIFICATION
     // inpageMessenger?.send('rainbow_ethereumChainEvent', {
     //     chainId: proposedChainId,

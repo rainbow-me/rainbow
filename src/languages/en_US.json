@@ -2809,6 +2809,10 @@
         "title": "Ooops!",
         "description": "Seems like you're trying to connect to this dapp via WalletConnect. This is no longer necessary with Rainbow's in-app browser. Go back and choose \"MetaMask\" and everything should work just fine.",
         "cta": "Got it"
+      },
+      "provider_error": {
+        "unsupported_chain": "Unsupported Chain",
+        "no_active_session": "You need to connect to the dapp before attempting to switch chains"
       }
     }
   }
