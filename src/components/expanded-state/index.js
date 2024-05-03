@@ -5,3 +5,4 @@ export { default as SwapDetailsState } from './SwapDetailsState';
 export { default as SwapSettingsState } from './swap-settings/SwapSettingsState';
 export { default as UniqueTokenExpandedState } from './UniqueTokenExpandedState';
 export { default as WalletProfileState } from './WalletProfileState';
+export { default as NewWalletGroupState } from './NewWalletGroupState';

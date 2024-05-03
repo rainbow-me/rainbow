@@ -38,6 +38,7 @@ import { useCloudBackups } from '@/components/backup/CloudBackupProvider';
 import { GoogleDriveUserData, getGoogleAccountUserData, isCloudBackupAvailable, login } from '@/handlers/cloudBackup';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { Linking } from 'react-native';
+import { noop } from 'lodash';
 
 type WalletPillProps = {
   account: RainbowAccount;
@@ -213,25 +214,33 @@ export const WalletsAndBackup = () => {
   }, [backups, navigate]);
 
   const onCreateNewSecretPhrase = useCallback(async () => {
-    try {
-      await createWallet({
-        color: null,
-        name: '',
-        clearCallbackOnStartCreation: true,
-      });
+    navigate(Routes.MODAL_SCREEN, {
+      type: 'new_wallet_group',
+      numWalletGroups: walletTypeCount.phrase + 1,
+      onCancel: noop,
+      onCloseModal: async ({ name }: { name: string }) => {
+        const nameValue = name.trim() !== '' ? name.trim() : '';
+        try {
+          await createWallet({
+            color: null,
+            name: nameValue,
+            clearCallbackOnStartCreation: true,
+          });
 
-      await dispatch(walletsLoadState(profilesEnabled));
+          await dispatch(walletsLoadState(profilesEnabled));
 
-      // @ts-ignore
-      await initializeWallet();
-    } catch (err) {
-      logger.error(new RainbowError('Failed to create new secret phrase'), {
-        extra: {
-          error: err,
-        },
-      });
-    }
-  }, [dispatch, initializeWallet, profilesEnabled]);
+          // @ts-expect-error - no params
+          await initializeWallet();
+        } catch (err) {
+          logger.error(new RainbowError('Failed to create new secret phrase'), {
+            extra: {
+              error: err,
+            },
+          });
+        }
+      },
+    });
+  }, [dispatch, initializeWallet, navigate, profilesEnabled, walletTypeCount.phrase]);
 
   const onPressLearnMoreAboutCloudBackups = useCallback(() => {
     navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
@@ -295,6 +304,7 @@ export const WalletsAndBackup = () => {
 
             <Stack space={'24px'}>
               {sortedWallets.map(({ name, isBackedUp, accounts, key, numAccounts, backedUp, imported }) => {
+                console.log({ name });
                 return (
                   <Menu key={`wallet-${key}`}>
                     <MenuItem

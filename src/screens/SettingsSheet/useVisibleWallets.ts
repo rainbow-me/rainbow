@@ -2,7 +2,7 @@ import { useState } from 'react';
 import * as i18n from '@/languages';
 
 import WalletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
-import { RainbowAccount, RainbowWallet } from '@/model/wallet';
+import { DEFAULT_WALLET_NAME, RainbowAccount, RainbowWallet } from '@/model/wallet';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 
 type WalletByKey = {
@@ -48,6 +48,8 @@ export const getTitleForWalletType = (type: EthereumWalletType, walletTypeCount:
   }
 };
 
+const isWalletGroupNamed = (wallet: RainbowWallet) => wallet.name && wallet.name.trim() !== '' && wallet.name !== DEFAULT_WALLET_NAME;
+
 export const useVisibleWallets = ({ wallets, walletTypeCount }: UseVisibleWalletProps): UseVisibleWalletReturnType => {
   const [lastBackupDate, setLastBackupDate] = useState<number | undefined>(undefined);
 
@@ -81,9 +83,11 @@ export const useVisibleWallets = ({ wallets, walletTypeCount }: UseVisibleWallet
           walletTypeCount.privateKey += 1;
         }
 
+        console.log(wallet.name);
+
         return {
           ...wallet,
-          name: getTitleForWalletType(wallet.type, walletTypeCount),
+          name: isWalletGroupNamed(wallet) ? wallet.name : getTitleForWalletType(wallet.type, walletTypeCount),
           isBackedUp: wallet.backedUp,
           accounts: visibleAccounts,
           key,
