@@ -64,7 +64,6 @@ export default function CheckIdentifierScreen() {
       return;
     }
 
-    // TODO: Should we clear keychain here? Or what's the right action?
     const allAccountKeys = allKeys.filter(item => item.username.includes('_rainbowPrivateKey'));
     if (!allAccountKeys?.length) {
       logger.error(new RainbowError('No private keys found in keychain'));
@@ -93,7 +92,7 @@ export default function CheckIdentifierScreen() {
       .filter(Boolean) as string[];
 
     if (keysToRemove.length) {
-      return onFailure(keysToRemove);
+      return onFailure();
     }
 
     return onSuccess();

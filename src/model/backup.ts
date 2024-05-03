@@ -784,11 +784,20 @@ export async function checkIdentifierOnLaunch() {
           resolve(true);
         },
         // NOTE: Detected a phone migration, let's remove keychain keys and send them back to the welcome screen
-        onFailure: async ({ keys }: { keys: string[] }) => {
-          const promises = keys.map(key => kc.remove(key));
-          await Promise.all(promises);
+        onFailure: async () => {
+          // wipe keychain
+          await kc.clear();
+
+          // re-add the IDFA uuid
+          await kc.set(identifierForVendorKey, uuid);
+
+          // clear async storage
           await AsyncStorage.clear();
+
+          // clear mmkv
           clearAllStorages();
+
+          // send user back to welcome screen
           Navigation.handleAction(Routes.WELCOME_SCREEN, {});
           resolve(false);
         },
