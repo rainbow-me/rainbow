@@ -5,15 +5,8 @@ import { endsWith } from 'lodash';
 import { CLOUD_BACKUP_ERRORS, encryptAndSaveDataToCloud, getDataFromCloud } from '@/handlers/cloudBackup';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
-import {
-  allWalletsKey,
-  pinKey,
-  privateKeyKey,
-  seedPhraseKey,
-  selectedWalletKey,
-  identifierForVendorKey,
-  addressKey,
-} from '@/utils/keychainConstants';
+import { Alert } from '@/components/alerts';
+import { allWalletsKey, pinKey, privateKeyKey, seedPhraseKey, selectedWalletKey, identifierForVendorKey } from '@/utils/keychainConstants';
 import * as keychain from '@/model/keychain';
 import * as kc from '@/keychain';
 import { AllRainbowWallets, allWalletsVersion, createWallet, RainbowWallet } from './wallet';
@@ -704,6 +697,18 @@ export async function getDeviceUUID(): Promise<string | null> {
   });
 }
 
+const FailureAlert = () =>
+  Alert({
+    buttons: [
+      {
+        style: 'cancel',
+        text: i18n.t(i18n.l.check_identifier.failure_alert.action),
+      },
+    ],
+    message: i18n.t(i18n.l.check_identifier.failure_alert.message),
+    title: i18n.t(i18n.l.check_identifier.failure_alert.title),
+  });
+
 /**
  * Checks if the identifier is the same as the one stored in localstorage
  * The identifier can get out of sync in two instances:
@@ -736,22 +741,8 @@ export async function checkIdentifierOnLaunch() {
           return;
         }
 
-        case kc.ErrorType.NotAuthenticated: {
-          logger.error(new RainbowError('Not authenticated error while checking identifier on launch'), {
-            error: currentIdentifier.error,
-          });
-          break;
-        }
-
-        case kc.ErrorType.UserCanceled: {
-          logger.error(new RainbowError('User canceled identifier check on launch'), {
-            error: currentIdentifier.error,
-          });
-          break;
-        }
-
         default:
-          logger.error(new RainbowError('Unknown error while checking identifier on launch'), {
+          logger.error(new RainbowError('Error while checking identifier on launch'), {
             error: currentIdentifier.error,
           });
           break;
@@ -760,8 +751,7 @@ export async function checkIdentifierOnLaunch() {
       throw new Error('Unable to retrieve current identifier');
     }
 
-    // NOTE: This should never happen, but if we don't have a current identifier, let's set it and exit early
-
+    // NOTE: This can only happen on a fresh install
     if (!currentIdentifier.value) {
       await kc.set(identifierForVendorKey, uuid);
       return;
@@ -785,6 +775,7 @@ export async function checkIdentifierOnLaunch() {
         },
         // NOTE: Detected a phone migration, let's remove keychain keys and send them back to the welcome screen
         onFailure: async () => {
+          FailureAlert();
           // wipe keychain
           await kc.clear();
 

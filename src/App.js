@@ -119,8 +119,7 @@ class OldApp extends Component {
     const p1 = analyticsV2.initializeRudderstack();
     const p2 = this.setupDeeplinking();
     const p3 = saveFCMToken();
-    const p4 = checkIdentifierOnLaunch();
-    await Promise.all([p1, p2, p3, p4]);
+    await Promise.all([p1, p2, p3]);
 
     /**
      * Needs to be called AFTER FCM token is loaded
@@ -153,6 +152,8 @@ class OldApp extends Component {
           handleReviewPromptAction(ReviewPromptAction.TimesLaunchedSinceInstall);
         }, 10_000);
       });
+
+      checkIdentifierOnLaunch();
     }
 
     const initialRoute = address ? Routes.SWIPE_LAYOUT : Routes.WELCOME_SCREEN;

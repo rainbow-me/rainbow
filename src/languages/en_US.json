@@ -441,6 +441,11 @@
         "message": "We encountered an error while validating your keychain data. Please try again. If the issue persists, please contact support.",
         "contact_support": "Contact Support",
         "cancel": "Cancel"
+      },
+      "failure_alert": {
+        "title": "Invalid Keychain Data",
+        "message": "We were unable to verify the integrity of your keychain data. Please restore your wallet and try again. If the issue persists, please contact support.",
+        "action": "Continue"
       }
     },
     "cloud": {

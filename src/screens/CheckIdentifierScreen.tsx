@@ -67,31 +67,20 @@ export default function CheckIdentifierScreen() {
     const allAccountKeys = allKeys.filter(item => item.username.includes('_rainbowPrivateKey'));
     if (!allAccountKeys?.length) {
       logger.error(new RainbowError('No private keys found in keychain'));
-      ErrorAlert();
-      return;
+      return onFailure();
     }
 
-    const keysToRemove = allAccountKeys
-      .map(key => {
-        try {
-          const data: {
-            address: string;
-            privateKey: string;
-          } = JSON.parse(key.password);
+    const hasAccountWithoutPrivateKey = allAccountKeys.some(key => {
+      const data: {
+        address: string;
+        privateKey: string;
+      } = JSON.parse(key.password);
 
-          if (!data.privateKey) {
-            return key.username;
-          }
-        } catch (error) {
-          logger.error(new RainbowError('Unable to retrieve private key data'));
-          ErrorAlert();
-        }
+      return !data.privateKey;
+    });
 
-        return null;
-      })
-      .filter(Boolean) as string[];
-
-    if (keysToRemove.length) {
+    if (hasAccountWithoutPrivateKey) {
+      logger.error(new RainbowError('Detected account without matching private key'));
       return onFailure();
     }
 
