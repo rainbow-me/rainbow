@@ -15,6 +15,7 @@ import { handleDappBrowserConnectionPrompt, handleDappBrowserRequest } from '@/u
 import { Tab } from '@rainbow-me/provider/dist/references/messengers';
 import { getDappMetadata } from '@/resources/metadata/dapp';
 import { useAppSessionsStore } from '@/state/appSessions';
+import { BigNumber } from '@ethersproject/bignumber';
 
 export type ProviderRequestPayload = RequestArguments & {
   id: number;
@@ -163,7 +164,10 @@ const messengerProviderRequestFn = async (messenger: Messenger, request: Provide
   return response;
 };
 
-const isSupportedChainId = (chainId: number) => !!RainbowNetworks.find(network => Number(network.id) === chainId);
+const isSupportedChainId = (chainId: number) => {
+  const numericChainId = BigNumber.from(chainId).toNumber();
+  !!RainbowNetworks.find(network => Number(network.id) === numericChainId);
+};
 const getActiveSession = ({ host }: { host: string }): ActiveSession => {
   const hostSessions = useAppSessionsStore.getState().getActiveSession({ host });
   const appSession =
