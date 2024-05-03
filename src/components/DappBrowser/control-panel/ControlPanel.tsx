@@ -34,7 +34,7 @@ import { Network } from '@/networks/types';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { colors } from '@/styles';
 import { deviceUtils } from '@/utils';
-import ethereumUtils, { getNetworkFromChainId } from '@/utils/ethereumUtils';
+import ethereumUtils from '@/utils/ethereumUtils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { TOP_INSET } from '../Dimensions';
@@ -47,14 +47,12 @@ import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useSelector } from 'react-redux';
 import store, { AppState } from '@/redux/store';
 import { getDappHost } from '@/utils/connectedApps';
-import { handleDappBrowserConnectionPrompt } from '@/utils/requestNavigationHandlers';
-import { useAppSessionsStore } from '@/state/appSessions';
-import { RainbowError, logger } from '@/logger';
 import WebView from 'react-native-webview';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { address } from '@/utils/abbreviations';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
+import { useAppSessionsStore } from '@/state/appSessions';
 
 const PAGES = {
   HOME: 'home',
@@ -82,7 +80,18 @@ export const ControlPanel = () => {
   const updateActiveSessionNetwork = useAppSessionsStore(state => state.updateActiveSessionNetwork);
   const addSession = useAppSessionsStore(state => state.addSession);
   const removeSession = useAppSessionsStore(state => state.removeSession);
-  const currentSession = useAppSessionsStore(state => state.getActiveSession({ host: activeTabHost }));
+  const hostSessions = useAppSessionsStore(state => state.getActiveSession({ host: activeTabHost }));
+
+  const currentSession = useMemo(
+    () =>
+      hostSessions && hostSessions.sessions[hostSessions.activeSessionAddress]
+        ? {
+            address: hostSessions.activeSessionAddress,
+            network: hostSessions.sessions[hostSessions.activeSessionAddress],
+          }
+        : null,
+    [hostSessions]
+  );
 
   const [isConnected, setIsConnected] = useState(!!(activeTabHost && currentSession?.address));
   const [currentAddress, setCurrentAddress] = useState<string>(currentSession?.address || accountAddress);
@@ -186,40 +195,25 @@ export const ControlPanel = () => {
 
   const handleConnect = useCallback(async () => {
     const activeTabHost = getDappHost(activeTabUrl || '');
-    // @ts-expect-error Property 'title' does not exist on type 'WebView<{}>'
-    const name: string = activeTabRef.current?.title || activeTabHost;
-
-    const response = await handleDappBrowserConnectionPrompt({
-      dappName: name || '',
-      dappUrl: activeTabUrl || '' || '',
+    const address = selectedWalletId.value;
+    const network = selectedNetworkId.value as Network;
+    addSession({
+      host: activeTabHost || '',
+      // @ts-expect-error Type 'string' is not assignable to type '`0x${string}`'
+      address,
+      network,
+      url: activeTabUrl || '',
     });
 
-    if (!(response instanceof Error)) {
-      const connectedToNetwork = getNetworkFromChainId(response.chainId);
-      addSession({
-        host: activeTabHost || '',
-        // @ts-expect-error Type 'string' is not assignable to type '`0x${string}`'
-        address: response.address,
-        network: connectedToNetwork,
-        url: activeTabUrl || '',
-      });
+    const chainId = ethereumUtils.getChainIdFromNetwork(network);
 
-      const selectedAddress = selectedWalletId.value;
-
-      activeTabRef.current?.injectJavaScript(
-        `window.ethereum.emit('accountsChanged', ['${selectedAddress}']); window.ethereum.emit('connect', { address: '${selectedAddress}', chainId: '${toHex(response.chainId)}' }); true;`
-      );
-      setIsConnected(true);
-      setCurrentAddress(selectedAddress);
-      setCurrentNetwork(connectedToNetwork);
-    } else {
-      logger.error(new RainbowError('Dapp browser connection prompt error'), {
-        response,
-        dappName: name,
-        dappUrl: activeTabUrl,
-      });
-    }
-  }, [activeTabRef, activeTabUrl, addSession, selectedWalletId.value]);
+    activeTabRef.current?.injectJavaScript(
+      `window.ethereum.emit('accountsChanged', ['${address}']); window.ethereum.emit('connect', { address: '${address}', chainId: '${toHex(chainId)}' }); true;`
+    );
+    setIsConnected(true);
+    setCurrentAddress(address);
+    setCurrentNetwork(network);
+  }, [activeTabUrl, selectedWalletId.value, selectedNetworkId.value, addSession, activeTabRef]);
 
   const handleDisconnect = useCallback(() => {
     const selectedAddress = selectedWalletId.value;
