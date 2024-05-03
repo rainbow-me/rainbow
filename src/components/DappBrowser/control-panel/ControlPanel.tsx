@@ -73,10 +73,6 @@ export const ControlPanel = () => {
   const {
     params: { activeTabRef },
   } = useRoute<RouteProp<ControlPanelParams, 'ControlPanel'>>();
-  const [isConnected, setIsConnected] = useState(false);
-  const [currentAddress, setCurrentAddress] = useState<string>(accountAddress);
-  const [currentNetwork, setCurrentNetwork] = useState<Network>(RainbowNetworks[0].value);
-
   const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const activeTabUrl = useBrowserStore(state => state.getActiveTabUrl());
@@ -87,6 +83,9 @@ export const ControlPanel = () => {
   const removeSession = useAppSessionsStore(state => state.removeSession);
   const currentSession = useAppSessionsStore(state => state.getActiveSession({ host: activeTabHost }));
 
+  const [isConnected, setIsConnected] = useState(!!(activeTabHost && currentSession?.address));
+  const [currentAddress, setCurrentAddress] = useState<string>(currentSession?.address || accountAddress);
+  const [currentNetwork, setCurrentNetwork] = useState<Network>(currentSession?.network || Network.mainnet);
   // listens to the current active tab and sets the account
   useEffect(() => {
     if (activeTabHost) {
