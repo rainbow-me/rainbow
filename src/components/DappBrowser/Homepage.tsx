@@ -10,7 +10,6 @@ import { IS_IOS } from '@/env';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { useFavoriteDappsStore } from '@/state/favoriteDapps';
-import { TrendingSite, trendingDapps } from '@/resources/trendingDapps/trendingDapps';
 // import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 // import MaskedView from '@react-native-masked-view/masked-view';
 import { Site, useBrowserHistoryStore } from '@/state/browserHistory';
@@ -19,6 +18,7 @@ import { uniqBy } from 'lodash';
 import { useBrowserContext } from './BrowserContext';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { WEBVIEW_HEIGHT } from './Dimensions';
+import { useDapps } from '@/resources/metadata/dapps';
 
 const HORIZONTAL_PAGE_INSET = 24;
 const MAX_RECENTS_TO_DISPLAY = 6;
@@ -57,6 +57,10 @@ export const Homepage = React.memo(function Homepage() {
 });
 
 const Trending = React.memo(function Trending({ goToUrl }: { goToUrl: (url: string) => void }) {
+  const { dapps } = useDapps();
+
+  const trendingDapps = dapps.filter(dapp => dapp.trending).slice(0, 10);
+
   return (
     <Stack space="20px">
       <Inline alignVertical="center" space="6px">
@@ -78,7 +82,7 @@ const Trending = React.memo(function Trending({ goToUrl }: { goToUrl: (url: stri
           <Inset space="24px">
             <Box flexDirection="row" gap={CARD_PADDING}>
               {trendingDapps.map(site => (
-                <Card goToUrl={goToUrl} key={site.url} site={site} />
+                <Card goToUrl={goToUrl} key={site.url} site={{ ...site, image: site.iconUrl }} />
               ))}
             </Box>
           </Inset>
@@ -143,9 +147,10 @@ const Card = React.memo(function Card({
 }: {
   goToUrl: (url: string) => void;
   showMenuButton?: boolean;
-  site: TrendingSite;
+  site: Omit<Site, 'timestamp'>;
 }) {
   const { isDarkMode } = useColorMode();
+  const { dapps } = useDapps();
 
   const menuConfig = {
     menuTitle: '',
@@ -173,9 +178,9 @@ const Card = React.memo(function Card({
     const dappUrl = site.url;
     const iconUrl = site.image;
     const host = getDappHost(dappUrl);
-    const overrideFound = trendingDapps.find(dapp => dapp.url === host);
-    if (overrideFound?.image) {
-      return overrideFound.image;
+    const overrideFound = dapps.find(dapp => dapp.url === host);
+    if (overrideFound?.iconUrl) {
+      return overrideFound.iconUrl;
     }
     return iconUrl;
   }, [site.image, site.url]);
