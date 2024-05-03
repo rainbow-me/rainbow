@@ -25,6 +25,7 @@ import { SignTransactionSheet } from '../screens/SignTransactionSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
+import NoNeedWCSheet from '../screens/NoNeedWCSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
 import { WalletDiagnosticsSheet } from '../screens/Diagnostics';
 import WelcomeScreen from '../screens/WelcomeScreen';
@@ -37,6 +38,7 @@ import {
   hardwareWalletTxNavigatorConfig,
   consoleSheetConfig,
   customGasSheetConfig,
+  dappBrowserControlPanelConfig,
   defaultScreenStackOptions,
   ensAdditionalRecordsSheetConfig,
   ensConfirmRegisterSheetConfig,
@@ -100,6 +102,7 @@ import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { SwapProvider } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import CheckIdentifierScreen from '@/screens/CheckIdentifierScreen';
+import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPanel';
 
 type StackNavigatorParams = {
   [Routes.SEND_SHEET]: unknown;
@@ -294,6 +297,7 @@ function NativeStackNavigator() {
         </>
       )}
       <NativeStack.Screen component={SendFlowNavigator} name={Routes.SEND_SHEET_NAVIGATOR} />
+      <NativeStack.Screen component={NoNeedWCSheet} name={Routes.NO_NEED_WC_SHEET} {...basicSheetConfig} />
       <NativeStack.Screen component={WalletConnectApprovalSheet} name={Routes.WALLET_CONNECT_APPROVAL_SHEET} {...basicSheetConfig} />
       <NativeStack.Screen component={WalletConnectRedirectSheet} name={Routes.WALLET_CONNECT_REDIRECT_SHEET} {...basicSheetConfig} />
       <NativeStack.Screen name={Routes.TRANSACTION_DETAILS} component={TransactionDetails} {...transactionDetailsConfig} />
@@ -303,6 +307,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen name={Routes.MINTS_SHEET} component={MintsSheet} {...mintsSheetConfig} />
       <NativeStack.Screen component={ConsoleSheet} name={Routes.CONSOLE_SHEET} {...consoleSheetConfig} />
       <NativeStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} {...appIconUnlockSheetConfig} />
+      <NativeStack.Screen component={ControlPanel} name={Routes.DAPP_BROWSER_CONTROL_PANEL} {...dappBrowserControlPanelConfig} />
 
       {swapsV2Enabled && <NativeStack.Screen component={SwapsNavigator} name={Routes.SWAP_NAVIGATOR} {...swapConfig} />}
     </NativeStack.Navigator>

@@ -1,7 +1,8 @@
-import { RainbowError, logger } from '@/logger';
-import { ScreenshotType, TabState } from './types';
-import { MMKV } from 'react-native-mmkv';
 import RNFS from 'react-native-fs';
+import { MMKV } from 'react-native-mmkv';
+import { RainbowError, logger } from '@/logger';
+import { RAINBOW_HOME } from './constants';
+import { ScreenshotType, TabData, TabId } from './types';
 
 export const tabScreenshotStorage = new MMKV();
 
@@ -10,7 +11,9 @@ export const getStoredScreenshots = (): ScreenshotType[] => {
   return persistedScreenshots ? (JSON.parse(persistedScreenshots) as ScreenshotType[]) : [];
 };
 
-export const findTabScreenshot = (id: string, url: string): ScreenshotType | null => {
+export const findTabScreenshot = (id: string, url?: string): ScreenshotType | null => {
+  if (!url || url === RAINBOW_HOME) return null;
+
   const persistedData = tabScreenshotStorage.getString('tabScreenshots');
   if (persistedData) {
     const screenshots = JSON.parse(persistedData);
@@ -43,44 +46,37 @@ export const findTabScreenshot = (id: string, url: string): ScreenshotType | nul
   return null;
 };
 
-export const pruneScreenshots = async (tabStates: TabState[]): Promise<void> => {
-  const tabStateMap = tabStates.reduce((acc: Record<string, string>, tab: TabState) => {
-    acc[tab.uniqueId] = tab.url;
-    return acc;
-  }, {});
-
+export const pruneScreenshots = async (tabsData: Map<TabId, TabData>): Promise<void> => {
   const persistedData = tabScreenshotStorage.getString('tabScreenshots');
   if (!persistedData) return;
 
-  const screenshots: ScreenshotType[] = JSON.parse(persistedData) || [];
-  const screenshotsGroupedByTabId: Record<string, ScreenshotType[]> = screenshots.reduce(
-    (acc: Record<string, ScreenshotType[]>, screenshot: ScreenshotType) => {
-      if (tabStateMap[screenshot.id]) {
-        if (!acc[screenshot.id]) acc[screenshot.id] = [];
-        acc[screenshot.id].push(screenshot);
+  const screenshots: ScreenshotType[] = JSON.parse(persistedData);
+  const activeTabIds = new Set(tabsData.keys());
+
+  const screenshotsToKeep: Map<string, ScreenshotType> = new Map();
+  const screenshotsToDelete: ScreenshotType[] = [];
+
+  screenshots.forEach(screenshot => {
+    const tabData = tabsData.get(screenshot.id);
+    if (tabData && tabData.url === screenshot.url) {
+      const existing = screenshotsToKeep.get(screenshot.id);
+      if (!existing || existing.timestamp < screenshot.timestamp) {
+        // Keep the latest screenshot for each still-open tab
+        screenshotsToKeep.set(screenshot.id, screenshot);
       }
-      return acc;
-    },
-    {}
-  );
+    } else if (!activeTabIds.has(screenshot.id)) {
+      // Delete screenshots for closed tabs
+      screenshotsToDelete.push(screenshot);
+    }
+  });
 
-  const screenshotsToKeep: ScreenshotType[] = Object.values(screenshotsGroupedByTabId)
-    .map((group: ScreenshotType[]) => {
-      return group.reduce((mostRecent: ScreenshotType, current: ScreenshotType) => {
-        return new Date(mostRecent.timestamp) > new Date(current.timestamp) ? mostRecent : current;
-      });
-    })
-    .filter((screenshot: ScreenshotType) => tabStateMap[screenshot.id] === screenshot.url);
-
-  await deletePrunedScreenshotFiles(screenshots, screenshotsToKeep);
-
-  tabScreenshotStorage.set('tabScreenshots', JSON.stringify(screenshotsToKeep));
+  await deletePrunedScreenshotFiles(screenshotsToDelete);
+  tabScreenshotStorage.set('tabScreenshots', JSON.stringify(Array.from(screenshotsToKeep.values())));
 };
 
-const deletePrunedScreenshotFiles = async (allScreenshots: ScreenshotType[], screenshotsToKeep: ScreenshotType[]): Promise<void> => {
+const deletePrunedScreenshotFiles = async (screenshotsToDelete: ScreenshotType[]): Promise<void> => {
   try {
-    const filesToDelete = allScreenshots.filter(screenshot => !screenshotsToKeep.includes(screenshot));
-    const deletePromises = filesToDelete.map(screenshot => {
+    const deletePromises = screenshotsToDelete.map(screenshot => {
       const filePath = `${RNFS.DocumentDirectoryPath}/${screenshot.uri}`;
       return RNFS.unlink(filePath).catch(e => {
         logger.error(new RainbowError('Error deleting screenshot file'), {

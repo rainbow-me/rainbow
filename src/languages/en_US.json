@@ -1951,6 +1951,7 @@
         "withdraw": "Withdraw",
         "withdraw_symbol": "Withdraw %{symbol}"
       },
+      "unknown": "Unknown",
       "warning": {
         "cost": {
           "are_you_sure_title": "Are you sure?",
@@ -2800,6 +2801,26 @@
     "dapp_browser": {
       "address_bar": {
         "input_placeholder": "Search or enter website"
+      },
+      "control_panel": {
+        "connected": "Connected",
+        "not_connected": "Not Connected",
+        "switch_wallet": "Switch Wallet",
+        "switch_network": "Switch Network",
+        "disconnect": "Disconnect",
+        "connect": "Connect",
+        "swap": "Swap",
+        "bridge": "Bridge",
+        "more": "More"
+      },
+      "error": {
+        "title": "Something went wrong",
+        "default_msg": "There was an error loading the page. Please try again."
+      },
+      "no_wc_needed": {
+        "title": "Ooops!",
+        "description": "Seems like you're trying to connect to this dapp via WalletConnect. This is no longer necessary with Rainbow's in-app browser. Go back and choose \"MetaMask\" and everything should work just fine.",
+        "cta": "Got it"
       }
     }
   }

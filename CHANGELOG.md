@@ -15,6 +15,28 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.22] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.22)
+
+### Added
+
+- Swaps v2 updates (#5601, #5635, #5632, #5630, #5643, #5648, #5650, #5649)
+- We now show total USD value of wallet instead of just mainnet ETH balance inside the wallet switcher (#5631)
+
+### Changed
+
+- Updated booleans in remote config (#5627)
+- Removed codepush and unused updates to token list (#5622)
+- Copy update when sending on different networks (#5495)
+- Updates to e2e (#5637)
+- bumped sentry to latest sdk (#5640)
+- Updated firebase to better support notifications deeplinks and Apple privacy warnings (#5636)
+
+### Fixed
+
+- Fixed an edge case in swaps v2 when choosing to swap assets (#5644)
+- Fixed a bug where send sheet USD value was marked as ETH (#5665)
+- Fixed crash when swapping Degen token to ProxySwap token (#5667)
+
 ## [1.9.21] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.21)
 
 ### Added

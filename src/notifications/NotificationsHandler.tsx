@@ -83,7 +83,7 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
     const topic = remoteMessage?.data?.topic;
 
     setTimeout(() => {
-      const requests = dispatch(requestsForTopic(topic));
+      const requests = dispatch(requestsForTopic(topic as string));
       if (requests) {
         // WC requests will open automatically
         return false;
