@@ -23,7 +23,7 @@ interface StateToSharedParams<T> extends BaseSyncParams<T> {
 
 type SyncParams<T> = SharedToStateParams<T> | StateToSharedParams<T>;
 
-export function useSyncSharedValue<T>({ compareDepth = 'shallow', pauseSync, setState, sharedValue, state, syncDirection }: SyncParams<T>) {
+export function useSyncSharedValue<T>({ compareDepth = 'deep', pauseSync, setState, sharedValue, state, syncDirection }: SyncParams<T>) {
   useAnimatedReaction(
     () => {
       if (pauseSync?.value) {
