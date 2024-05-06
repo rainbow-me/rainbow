@@ -3,9 +3,9 @@ import { StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useAccountAccentColor } from '@/hooks';
-import { deviceUtils, safeAreaInsetValues } from '@/utils';
+import { deviceUtils } from '@/utils';
 import { useBrowserContext } from './BrowserContext';
-import { WEBVIEW_HEIGHT } from './Dimensions';
+import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 
 export const ProgressBar = () => {
   const { accentColor } = useAccountAccentColor();
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   },
   progressBarContainer: {
     height: 2,
-    top: WEBVIEW_HEIGHT + safeAreaInsetValues.top + 88 - 2,
+    bottom: TAB_BAR_HEIGHT + 2,
     left: 0,
     width: deviceUtils.dimensions.width,
     pointerEvents: 'none',

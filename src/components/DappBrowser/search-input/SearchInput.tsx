@@ -41,53 +41,22 @@ import { useSearchContext } from '../search/SearchContext';
 export const SEARCH_BAR_HEIGHT = 48;
 const SEARCH_PLACEHOLDER_TEXT = i18n.t(i18n.l.dapp_browser.address_bar.input_placeholder);
 
-export const SearchInput = React.memo(function SearchInput({
+const TheeDotMenu = function TheeDotMenu({
+  formattedUrlValue,
   canGoBack,
   canGoForward,
-  inputRef,
-  isFocusedValue,
-  onBlur,
-  onPressWorklet,
-  onSubmitEditing,
 }: {
+  formattedUrlValue: SharedValue<string>;
   canGoBack: boolean;
   canGoForward: boolean;
-  inputRef: AnimatedRef<TextInput>;
-  isFocusedValue: SharedValue<boolean>;
-  onBlur: () => void;
-  onPressWorklet: () => void;
-  onSubmitEditing: (newUrl: string) => void;
 }) {
-  const { activeTabInfo, goBack, goForward, refreshPage, tabViewProgress } = useBrowserContext();
+  const tabUrl = useBrowserStore(state => state.getActiveTabUrl());
+  const isFavorite = useFavoriteDappsStore(state => state.isFavorite(tabUrl || ''));
+
+  const { activeTabInfo, goBack, goForward } = useBrowserContext();
 
   const addFavorite = useFavoriteDappsStore(state => state.addFavorite);
   const removeFavorite = useFavoriteDappsStore(state => state.removeFavorite);
-
-  const formattedUrlValue = useDerivedValue(() => {
-    const url = activeTabInfo.value.url;
-    if (!url || url === RAINBOW_HOME) return SEARCH_PLACEHOLDER_TEXT;
-
-    return formatUrlForSearchInput(url, true);
-  });
-
-  const pointerEventsStyle = useAnimatedStyle(() => ({
-    pointerEvents: tabViewProgress.value / 100 < 1 ? 'auto' : 'none',
-  }));
-
-  const toolbarIconStyle = useAnimatedStyle(() => {
-    const url = activeTabInfo.value.url;
-    const isHome = !url || url === RAINBOW_HOME;
-
-    return {
-      opacity:
-        isHome || isFocusedValue.value || formattedUrlValue.value === SEARCH_PLACEHOLDER_TEXT
-          ? withTiming(0, TIMING_CONFIGS.fadeConfig)
-          : withSpring(1, SPRING_CONFIGS.keyboardConfig),
-      pointerEvents: isHome || isFocusedValue.value || !formattedUrlValue.value ? 'none' : 'auto',
-    };
-  });
-
-  const isFavorite = useFavoriteDappsStore(state => state.isFavorite(formattedUrlValue.value));
 
   const handleFavoritePress = useCallback(() => {
     const url = formattedUrlValue.value;
@@ -172,6 +141,64 @@ export const SearchInput = React.memo(function SearchInput({
   };
 
   return (
+    <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem}>
+      <ToolbarIcon
+        color="label"
+        icon="􀍡"
+        onPress={() => {
+          return;
+        }}
+        side="left"
+        size="icon 17px"
+        weight="heavy"
+      />
+    </ContextMenuButton>
+  );
+};
+export const SearchInput = React.memo(function SearchInput({
+  canGoBack,
+  canGoForward,
+  inputRef,
+  isFocusedValue,
+  onBlur,
+  onPressWorklet,
+  onSubmitEditing,
+}: {
+  canGoBack: boolean;
+  canGoForward: boolean;
+  inputRef: AnimatedRef<TextInput>;
+  isFocusedValue: SharedValue<boolean>;
+  onBlur: () => void;
+  onPressWorklet: () => void;
+  onSubmitEditing: (newUrl: string) => void;
+}) {
+  const { activeTabInfo, refreshPage, tabViewProgress } = useBrowserContext();
+
+  const formattedUrlValue = useDerivedValue(() => {
+    const url = activeTabInfo.value.url;
+    if (!url || url === RAINBOW_HOME) return SEARCH_PLACEHOLDER_TEXT;
+
+    return formatUrlForSearchInput(url, true);
+  });
+
+  const pointerEventsStyle = useAnimatedStyle(() => ({
+    pointerEvents: tabViewProgress.value / 100 < 1 ? 'auto' : 'none',
+  }));
+
+  const toolbarIconStyle = useAnimatedStyle(() => {
+    const url = activeTabInfo.value.url;
+    const isHome = !url || url === RAINBOW_HOME;
+
+    return {
+      opacity:
+        isHome || isFocusedValue.value || formattedUrlValue.value === SEARCH_PLACEHOLDER_TEXT
+          ? withTiming(0, TIMING_CONFIGS.fadeConfig)
+          : withSpring(1, SPRING_CONFIGS.keyboardConfig),
+      pointerEvents: isHome || isFocusedValue.value || !formattedUrlValue.value ? 'none' : 'auto',
+    };
+  });
+
+  return (
     <BrowserButtonShadows>
       <Box as={Animated.View} justifyContent="center" style={pointerEventsStyle}>
         <AddressBar
@@ -184,18 +211,7 @@ export const SearchInput = React.memo(function SearchInput({
           pointerEventsStyle={pointerEventsStyle}
         />
         <Box as={Animated.View} left="0px" position="absolute" style={toolbarIconStyle}>
-          <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem}>
-            <ToolbarIcon
-              color="label"
-              icon="􀍡"
-              onPress={() => {
-                return;
-              }}
-              side="left"
-              size="icon 17px"
-              weight="heavy"
-            />
-          </ContextMenuButton>
+          <TheeDotMenu formattedUrlValue={formattedUrlValue} canGoBack={canGoBack} canGoForward={canGoForward} />
         </Box>
         <Box as={Animated.View} position="absolute" right="0px" style={toolbarIconStyle}>
           <ToolbarIcon color="label" icon="􀅈" onPress={refreshPage} side="right" size="icon 17px" weight="heavy" />
