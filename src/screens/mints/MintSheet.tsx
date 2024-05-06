@@ -1,6 +1,7 @@
+/* eslint-disable no-nested-ternary */
 import { BlurView } from '@react-native-community/blur';
 import React, { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import { Linking, StatusBar, View } from 'react-native';
+import { Linking, StatusBar, StyleSheet, View } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import useWallets from '../../hooks/useWallets';
 import { GasSpeedButton } from '@/components/gas';
@@ -158,6 +159,7 @@ const MintSheet = () => {
   // if there is no max mint info, we fallback to 1 to be safe
   const maxMintsPerWallet = Number(mintCollection.publicMintInfo?.maxMintsPerWallet);
 
+  const isUnknownPrice = mintCollection.publicMintInfo?.price === null;
   const price = convertRawAmountToBalance(mintCollection.publicMintInfo?.price?.amount?.raw || '0', {
     decimals: mintCollection.publicMintInfo?.price?.currency?.decimals || 18,
     symbol: mintCollection.publicMintInfo?.price?.currency?.symbol || 'ETH',
@@ -582,12 +584,14 @@ const MintSheet = () => {
                         </Text>
                         <ButtonPressAnimation disabled={isZero(mintPriceAmount)} onPress={() => setShowNativePrice(!showNativePrice)}>
                           <Inline alignVertical="center">
-                            <Text color="label" align="left" size="22pt" weight="bold">
-                              {isZero(mintPriceAmount)
-                                ? i18n.t(i18n.l.minting.free)
-                                : showNativePrice
-                                  ? nativeMintPriceDisplay
-                                  : mintPriceDisplay}
+                            <Text color="label" align="left" size="22pt" weight="bold" style={sx.mintPrice}>
+                              {isUnknownPrice
+                                ? i18n.t(i18n.l.minting.unknown)
+                                : isZero(mintPriceAmount)
+                                  ? i18n.t(i18n.l.minting.free)
+                                  : showNativePrice
+                                    ? nativeMintPriceDisplay
+                                    : mintPriceDisplay}
                             </Text>
                           </Inline>
                         </ButtonPressAnimation>
@@ -715,5 +719,9 @@ const MintSheet = () => {
     </>
   );
 };
+
+const sx = StyleSheet.create({
+  mintPrice: { textTransform: 'capitalize' },
+});
 
 export default MintSheet;

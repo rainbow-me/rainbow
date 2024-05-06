@@ -23,9 +23,21 @@ export type CarouselItem<T> = {
   verticalOverflow?: number;
 };
 
+function EmptyComponent({ emptyMessage }: { emptyMessage?: string }) {
+  return (
+    <Box height="full" width="full" justifyContent="center" alignItems="center">
+      <Text color="labelQuaternary" size="15pt" weight="semibold" numberOfLines={1}>
+        {emptyMessage}
+      </Text>
+    </Box>
+  );
+}
+
 export function CarouselCard<T>({
   title,
   data,
+  emptyMessage = 'No items found',
+  loading = false,
   carouselItem,
   button,
   menu,
@@ -35,6 +47,8 @@ export function CarouselCard<T>({
 }: {
   title?: string | React.ReactNode;
   data: T[] | null | undefined;
+  loading?: boolean;
+  emptyMessage?: string;
   carouselItem: CarouselItem<T>;
   button?: React.ReactNode;
   menu?: React.ReactNode;
@@ -83,6 +97,7 @@ export function CarouselCard<T>({
                 height: actualItemHeight,
                 width: deviceWidth * 2,
               }}
+              ListEmptyComponent={() => <EmptyComponent emptyMessage={emptyMessage} />}
               style={{ flex: 1 }}
               renderItem={info => (
                 <View
@@ -97,7 +112,7 @@ export function CarouselCard<T>({
               ItemSeparatorComponent={() => <View style={{ width: carouselItem.padding }} />}
               keyExtractor={carouselItem.keyExtractor}
             />
-          ) : (
+          ) : loading ? (
             // need this due to FlashList bug https://github.com/Shopify/flash-list/issues/757
             <ScrollView
               horizontal
@@ -105,16 +120,16 @@ export function CarouselCard<T>({
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{
                 paddingHorizontal: HORIZONTAL_PADDING,
+                gap: carouselItem.padding,
               }}
             >
-              <Box gap={carouselItem.padding}>
-                {carouselItem.placeholder}
-                {carouselItem.placeholder}
-                {carouselItem.placeholder}
-                {carouselItem.placeholder}
-                {carouselItem.placeholder}
-              </Box>
+              <Box>{carouselItem.placeholder}</Box>
+              <Box>{carouselItem.placeholder}</Box>
+              <Box>{carouselItem.placeholder}</Box>
+              <Box>{carouselItem.placeholder}</Box>
             </ScrollView>
+          ) : (
+            <EmptyComponent emptyMessage={emptyMessage} />
           )}
         </Box>
       </Bleed>

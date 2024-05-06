@@ -4,7 +4,7 @@ import { CollectionCell, NFT_IMAGE_SIZE, Placeholder } from './CollectionCell';
 import { Menu } from './Menu';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { mintsQueryKey, useMints } from '@/resources/mints';
+import { mintsQueryKey, useMints, useMintsFilter } from '@/resources/mints';
 import { useAccountSettings, useDimensions } from '@/hooks';
 import { MintableCollection } from '@/graphql/__generated__/arc';
 import { queryClient } from '@/react-query';
@@ -17,11 +17,13 @@ export function MintsCard() {
   const { navigate } = useNavigation();
   const { accountAddress } = useAccountSettings();
   const {
-    data: { mints, featuredMint },
+    data: { mints = [], featuredMint = {} as MintableCollection },
+    isFetching,
   } = useMints({
     walletAddress: accountAddress,
   });
   const { width: deviceWidth } = useDimensions();
+  const { filter } = useMintsFilter();
   const fillSecondary = useForegroundColor('fillSecondary');
 
   const [canRefresh, setCanRefresh] = useState(true);
@@ -40,7 +42,9 @@ export function MintsCard() {
   return (
     <CarouselCard
       title={i18n.t(i18n.l.mints.mints_card.mints)}
-      data={mints?.filter(c => c.contractAddress !== featuredMint?.contractAddress)}
+      data={mints.filter(c => c.contractAddress !== featuredMint?.contractAddress)}
+      loading={isFetching}
+      emptyMessage={filter === 'all' ? 'No mints' : `No ${filter} mints`}
       carouselItem={{
         renderItem: ({ item }) => <CollectionCell collection={item} />,
         keyExtractor: (item: MintableCollection) => item.contractAddress + item.chainId,

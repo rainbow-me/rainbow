@@ -37,8 +37,7 @@ export default function DiscoverHome() {
 
   const { wallets } = useWallets();
   const {
-    data: { mints, featuredMint },
-    isFetching,
+    data: { featuredMint },
   } = useMints({ walletAddress: accountAddress });
 
   const hasHardwareWallets = Object.keys(wallets || {}).filter(key => wallets[key].type === walletTypes.bluetooth).length > 0;
@@ -54,7 +53,7 @@ export default function DiscoverHome() {
             {isProfilesEnabled && <ENSSearchCard />}
           </Inline>
           {!!cards.length && <RemoteCardCarousel />}
-          {mintsEnabled && (mints?.length || isFetching) && (
+          {mintsEnabled && (
             <Stack space="20px">
               {!!featuredMint && <FeaturedMintCard />}
               <Inset top="12px">
