@@ -77,38 +77,41 @@ export const BrowserTab = React.memo(function BrowserTab({ addRecent, setLogo, s
       {/* Need to fix some shadow performance issues - disabling shadows for now */}
       {/* <WebViewShadows gestureScale={gestureScale} isOnHomepage={isOnHomepage} tabIndex={tabIndex}> */}
 
-      <Animated.View style={zIndexAnimatedStyle}>
-        <Animated.View entering={FadeIn.duration(160)} style={[styles.webViewContainer, animatedWebViewStyle]}>
-          <Animated.View
-            style={[styles.webViewExpensiveStylesContainer, expensiveAnimatedWebViewStyles, animatedWebViewBackgroundColorStyle]}
-          >
-            <ViewShot options={TAB_SCREENSHOT_FILE_FORMAT} ref={viewShotRef}>
-              <View collapsable={false} style={styles.viewShotContainer}>
-                {isOnHomepage ? (
-                  <Homepage />
-                ) : (
-                  <FreezableWebView
-                    addRecent={addRecent}
-                    backgroundColor={backgroundColor}
-                    setLogo={setLogo}
-                    setTitle={setTitle}
-                    tabId={tabId}
-                    viewShotRef={viewShotRef}
-                  />
-                )}
-              </View>
-            </ViewShot>
-            <TabScreenshotContainer tabId={tabId} />
-            <WebViewBorder animatedTabIndex={animatedTabIndex} enabled={IS_IOS && isDarkMode && !isOnHomepage} />
-          </Animated.View>
-          <TabGestureHandlers
-            animatedTabIndex={animatedTabIndex}
-            gestureScale={gestureScale}
-            gestureX={gestureX}
-            isOnHomepage={isOnHomepage}
-            tabId={tabId}
-          />
+      <Animated.View entering={FadeIn.duration(160)} style={[styles.webViewContainer, animatedWebViewStyle]}>
+        <Animated.View
+          style={[
+            zIndexAnimatedStyle,
+            styles.webViewExpensiveStylesContainer,
+            expensiveAnimatedWebViewStyles,
+            animatedWebViewBackgroundColorStyle,
+          ]}
+        >
+          <ViewShot options={TAB_SCREENSHOT_FILE_FORMAT} ref={viewShotRef}>
+            <View collapsable={false} style={styles.viewShotContainer}>
+              {isOnHomepage ? (
+                <Homepage />
+              ) : (
+                <FreezableWebView
+                  addRecent={addRecent}
+                  backgroundColor={backgroundColor}
+                  setLogo={setLogo}
+                  setTitle={setTitle}
+                  tabId={tabId}
+                  viewShotRef={viewShotRef}
+                />
+              )}
+            </View>
+          </ViewShot>
+          <TabScreenshotContainer tabId={tabId} />
+          <WebViewBorder animatedTabIndex={animatedTabIndex} enabled={IS_IOS && isDarkMode && !isOnHomepage} />
         </Animated.View>
+        <TabGestureHandlers
+          animatedTabIndex={animatedTabIndex}
+          gestureScale={gestureScale}
+          gestureX={gestureX}
+          isOnHomepage={isOnHomepage}
+          tabId={tabId}
+        />
       </Animated.View>
 
       {/* Need to fix some shadow performance issues - disabling shadows for now */}
