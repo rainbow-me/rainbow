@@ -44,11 +44,7 @@ export const SearchResult = ({ index, goToUrl }: { index: number; goToUrl: (url:
   const onPress = useCallback(() => url.value && goToUrl(url.value), [goToUrl, url.value]);
 
   const fallbackIconStyle = useAnimatedStyle(() => {
-    if (dapp.value?.iconUrl) {
-      return { display: 'none' };
-    } else {
-      return { display: 'flex' };
-    }
+    return { display: dapp.value?.iconUrl ? 'none' : 'flex' };
   });
   return (
     <Animated.View style={animatedStyle}>
