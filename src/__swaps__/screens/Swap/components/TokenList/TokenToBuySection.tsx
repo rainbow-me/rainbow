@@ -11,10 +11,10 @@ import { AssetToBuySection, AssetToBuySectionId } from '@/__swaps__/screens/Swap
 import { ChainId } from '@/__swaps__/types/chains';
 import { TextColor } from '@/design-system/color/palettes';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { parseSearchAsset, isSameAsset } from '@/__swaps__/utils/assets';
+import { parseSearchAsset } from '@/__swaps__/utils/assets';
 
-import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
+import { useUserAssetsStore } from '../../resources/assets/userAssets';
 
 interface SectionProp {
   color: TextStyle['color'];
@@ -66,11 +66,11 @@ const AnimatedFlashListComponent = Animated.createAnimatedComponent(FlashList<Se
 
 export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) => {
   const { SwapInputController } = useSwapContext();
-  const userAssets = useAssetsToSell();
+  const getUserAsset = useUserAssetsStore(state => state.getUserAsset);
 
   const handleSelectToken = useCallback(
     (token: SearchAsset) => {
-      const userAsset = userAssets.find(asset => isSameAsset(asset, token));
+      const userAsset = getUserAsset(token.uniqueId);
       const parsedAsset = parseSearchAsset({
         assetWithPrice: undefined,
         searchAsset: token,
@@ -79,7 +79,7 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
 
       SwapInputController.onSetAssetToBuy(parsedAsset);
     },
-    [SwapInputController, userAssets]
+    [SwapInputController, getUserAsset]
   );
 
   const { symbol, title } = sectionProps[section.id];

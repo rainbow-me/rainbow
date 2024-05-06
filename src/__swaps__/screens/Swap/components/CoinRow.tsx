@@ -12,31 +12,33 @@ import { toggleFavorite, useFavorites } from '@/resources/favorites';
 import { ETH_ADDRESS } from '@/references';
 
 export const CoinRow = ({
-  address,
-  mainnetAddress,
-  chainId,
-  balance,
-  isTrending,
-  name,
-  nativeBalance,
-  color,
-  iconUrl,
-  onPress,
+  // address,
+  // mainnetAddress,
+  // chainId,
+  // balance,
+  // isTrending,
+  // name,
+  // nativeBalance,
+  // color,
+  // iconUrl,
+  // onPress,
+  uniqueId,
   output,
-  symbol,
+  // symbol,
 }: {
-  address: string;
-  mainnetAddress: string;
-  chainId: ChainId;
-  balance: string;
-  isTrending?: boolean;
-  name: string;
-  nativeBalance: string;
-  color: string | undefined;
-  iconUrl: string | undefined;
-  onPress?: () => void;
+  // address: string;
+  // mainnetAddress: string;
+  // chainId: ChainId;
+  // balance: string;
+  // isTrending?: boolean;
+  // name: string;
+  // nativeBalance: string;
+  // color: string | undefined;
+  // iconUrl: string | undefined;
+  // onPress?: () => void;
+  uniqueId: string;
   output?: boolean;
-  symbol: string;
+  // symbol: string;
 }) => {
   const theme = useTheme();
   const { favoritesMetadata } = useFavorites();

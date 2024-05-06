@@ -8,6 +8,7 @@ import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
 import { ParsedAssetsDictByChain, ParsedSearchAsset, ParsedUserAsset, UserAssetFilter } from '@/__swaps__/types/assets';
 import { useAccountSettings } from '@/hooks';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { useUserAssetsStore } from '../resources/assets/userAssets';
 
 const sortBy = (userAssetFilter: UserAssetFilter, assets: ParsedAssetsDictByChain) => {
   if (userAssetFilter === 'all') {
@@ -24,7 +25,7 @@ export const useAssetsToSell = () => {
   const [currentAssets, setCurrentAssets] = useState<ParsedSearchAsset[]>([]);
   const sortMethod = useRef(userAssetFilter.value);
 
-  const { data: userAssets = [] } = useUserAssets(
+  useUserAssets(
     {
       address: currentAddress as Hex,
       currency: currentCurrency,
@@ -43,6 +44,8 @@ export const useAssetsToSell = () => {
       staleTime: Infinity,
     }
   );
+
+  const userAssets = useUserAssetsStore(state => state.userAssets);
 
   const updateSortMethodAndCurrentAssets = useCallback(({ filter, assets }: { filter: UserAssetFilter; assets: ParsedUserAsset[] }) => {
     sortMethod.current = filter;

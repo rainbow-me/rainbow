@@ -10,16 +10,18 @@ import { parseSearchAsset, isSameAsset } from '@/__swaps__/utils/assets';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { FlashList } from '@shopify/flash-list';
 import { ChainSelection } from './ChainSelection';
+import { useUserAssetsStore } from '../../resources/assets/userAssets';
 
-const AnimatedFlashListComponent = Animated.createAnimatedComponent(FlashList<ParsedSearchAsset>);
+const AnimatedFlashListComponent = Animated.createAnimatedComponent(FlashList<string>);
 
 export const TokenToSellList = () => {
   const { SwapInputController } = useSwapContext();
-  const userAssets = useAssetsToSell();
+  const userAssetsIds = useUserAssetsStore(state => state.userAssetsIds);
+  // const getUserAsset = useUserAssetsStore(state => state.getUserAsset);
 
   const handleSelectToken = useCallback(
     (token: ParsedSearchAsset) => {
-      const userAsset = userAssets.find(asset => isSameAsset(asset, token));
+      const userAsset = useUserAssetsStore.getState().getUserAsset(token.uniqueId);
       const parsedAsset = parseSearchAsset({
         assetWithPrice: undefined,
         searchAsset: token,
@@ -28,7 +30,7 @@ export const TokenToSellList = () => {
 
       runOnUI(SwapInputController.onSetAssetToSell)(parsedAsset);
     },
-    [SwapInputController.onSetAssetToSell, userAssets]
+    [SwapInputController.onSetAssetToSell]
   );
 
   return (
@@ -36,23 +38,23 @@ export const TokenToSellList = () => {
       <ChainSelection allText="All Networks" output={false} />
 
       <AnimatedFlashListComponent
-        data={userAssets.slice(0, 20)}
+        data={userAssetsIds.slice(0, 20)}
         ListEmptyComponent={<ListEmpty />}
-        keyExtractor={item => item.uniqueId}
+        keyExtractor={item => item}
         renderItem={({ item }) => (
           <CoinRow
-            key={item.uniqueId}
-            chainId={item.chainId}
-            color={item.colors?.primary ?? item.colors?.fallback}
-            iconUrl={item.icon_url}
-            address={item.address}
-            mainnetAddress={item.mainnetAddress}
-            balance={item.balance.display}
-            name={item.name}
-            onPress={() => handleSelectToken(item)}
-            nativeBalance={item.native.balance.display}
+            uniqueId={item}
+            // chainId={item.chainId}
+            // color={item.colors?.primary ?? item.colors?.fallback}
+            // iconUrl={item.icon_url}
+            // address={item.address}
+            // mainnetAddress={item.mainnetAddress}
+            // balance={item.balance.display}
+            // name={item.name}
+            // onPress={() => handleSelectToken(item)}
+            // nativeBalance={item.native.balance.display}
             output={false}
-            symbol={item.symbol}
+            // symbol={item.symbol}
           />
         )}
       />

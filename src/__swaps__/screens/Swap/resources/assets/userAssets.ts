@@ -4,7 +4,7 @@ import { ADDYS_API_KEY } from 'react-native-dotenv';
 
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
 import { SupportedCurrencyKey, SUPPORTED_CHAIN_IDS } from '@/references';
-import { ParsedAssetsDictByChain, ZerionAsset } from '@/__swaps__/types/assets';
+import { ParsedAsset, ParsedAssetsDict, ParsedAssetsDictByChain, ParsedUserAsset, ZerionAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { AddressAssetsReceivedMessage } from '@/__swaps__/types/refraction';
 import { filterAsset, parseUserAsset } from '@/__swaps__/utils/assets';
@@ -15,6 +15,9 @@ import { fetchUserAssetsByChain } from './userAssetsByChain';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { useAccountSettings } from '@/hooks';
 import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
+import { create } from 'zustand';
+import { persist, subscribeWithSelector } from 'zustand/middleware';
+import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 const addysHttp = new RainbowFetchClient({
   baseURL: 'https://addys.p.rainbow.me/v3',
@@ -115,9 +118,11 @@ async function userAssetsQueryFunction({ queryKey: [{ address, currency, testnet
             parsedAssetsDict[missingChainId] = cachedUserAssets[missingChainId];
           }
         }
+        useUserAssetsStore.getState().setUserAssets(parsedAssetsDict);
         return parsedAssetsDict;
       }
     }
+    useUserAssetsStore.getState().setUserAssets(cachedUserAssets);
     return cachedUserAssets;
   } catch (e) {
     logger.error(new RainbowError('userAssetsQueryFunction: '), {
@@ -219,3 +224,36 @@ export function useUserAssets<TSelectResult = UserAssetsResult>(
     staleTime: process.env.IS_TESTING === 'true' ? 0 : 1000,
   });
 }
+
+interface UserAssetsStore {
+  userAssets: ParsedUserAsset[];
+  userAssetsMap: ParsedAssetsDict;
+  userAssetsByChain: ParsedAssetsDictByChain;
+  userAssetsIds: string[];
+  getUserAsset: (id: string) => any;
+  setUserAssets: (assets: ParsedAssetsDictByChain) => void;
+}
+
+export const useUserAssetsStore = createRainbowStore<UserAssetsStore>(
+  (set, get) => ({
+    userAssetsMap: {},
+    userAssetsByChain: {},
+    userAssetsIds: [],
+    userAssets: [],
+    getUserAsset: (id: string) => get().userAssetsMap[id],
+    setUserAssets: (assets: ParsedAssetsDictByChain) => {
+      console.log('hi');
+      const userAssetsMap = Object.values(assets).reduce((acc, curr) => ({ ...acc, ...curr }), {});
+
+      const userAssetsIds = Object.keys(userAssetsMap);
+      const userAssets = Object.values(userAssetsMap);
+
+      // return sortBy(sortMethod.current, filteredAssetsDictByChain)();
+      set({ userAssetsIds, userAssetsMap, userAssetsByChain: assets, userAssets });
+    },
+  }),
+  {
+    storageKey: 'userAssets',
+    version: 0,
+  }
+);
