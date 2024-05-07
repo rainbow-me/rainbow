@@ -27,6 +27,5 @@ beforeAll(async () => {
     '.*rainbowme-res.cloudinary.com*',
     '.*rainbow-proxy-rpc.rainbowdotme.workers.*',
     '.*localhost:8081/assets/src/assets*.',
-    // '.*sentry.io*.',
   ]);
 });
