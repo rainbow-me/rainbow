@@ -237,6 +237,8 @@ export type TransactionApiResponse = {
     action?: string;
     asset?: AddysAsset;
     quantity?: 'UNLIMITED' | string;
+    explorer_label?: string;
+    explorer_url?: string;
   };
   block_number?: number;
   mined_at?: number;

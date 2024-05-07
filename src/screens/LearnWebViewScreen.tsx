@@ -88,7 +88,7 @@ export default function LearnWebViewScreen() {
     style.type = 'text/css';
     style.innerHTML = \`
       .super-navbar.simple, .notion-header__icon-wrapper, .intercom-lightweight-app { display: none; }
-      body { background-color: ${surfacePrimaryElevated}; margin-top: -170px; }
+      body { background-color: ${surfacePrimaryElevated}; }
     \`;
     
     if (${isDarkMode}) {

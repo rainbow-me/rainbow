@@ -2,7 +2,6 @@ import { rankings } from 'match-sorter';
 import { useCallback, useMemo, useState } from 'react';
 import { SharedValue, runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 
-import { ETH_ADDRESS } from '@/references';
 import { useTokenSearch } from '@/__swaps__/screens/Swap/resources/search';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
@@ -14,7 +13,6 @@ import { filterList } from '@/utils';
 import { useFavorites } from '@/resources/favorites';
 import { isAddress } from '@ethersproject/address';
 import { RainbowToken } from '@/entities';
-import { AddressZero } from '@ethersproject/constants';
 
 const VERIFIED_ASSETS_PAYLOAD: {
   keys: TokenSearchAssetKey[];
@@ -187,10 +185,8 @@ export function useSearchCurrencyLists({
   const favoritesList = useMemo(() => {
     const getAddressForChainId = (chainId: ChainId, token: RainbowToken) => {
       if (chainId === ChainId.mainnet) {
-        if (token.address === ETH_ADDRESS) {
-          return AddressZero;
-        }
-        return token.address;
+        const mainnetAddress = token.networks[chainId].address;
+        return mainnetAddress ?? token.address;
       }
 
       return token.networks[chainId].address;
@@ -198,12 +194,14 @@ export function useSearchCurrencyLists({
 
     const unfilteredFavorites = Object.values(favorites)
       .filter(token => token.networks[toChainId])
-      .map(favToken => ({
-        ...favToken,
-        chainId: toChainId,
-        address: getAddressForChainId(toChainId, favToken),
-        mainnetAddress: favToken.mainnet_address,
-      })) as SearchAsset[];
+      .map(favToken => {
+        return {
+          ...favToken,
+          chainId: toChainId,
+          address: getAddressForChainId(toChainId, favToken),
+          mainnetAddress: favToken.mainnet_address ?? getAddressForChainId(ChainId.mainnet, favToken),
+        };
+      }) as SearchAsset[];
 
     if (query === '') {
       return unfilteredFavorites;
