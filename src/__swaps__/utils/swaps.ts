@@ -405,6 +405,7 @@ export const parseAssetAndExtend = ({ asset, type }: { asset: ParsedSearchAsset 
   // TODO: Process and add colors to the asset and anything else we'll need for reanimated stuff
   const color = extractColorValueForColors({
     colors: asset.colors as TokenColors,
+    isDarkMode: true, // TODO: Make this not rely on isDarkMode
   });
 
   return {
@@ -432,7 +433,7 @@ export const buildQuoteParams = ({ inputAmount, outputAmount, focusedInput }: Bu
   // NOTE: Yuck... redux is still heavily integrated into the account logic.
   const { accountAddress } = store.getState().settings;
 
-  const { inputAsset, outputAsset, source, slippage } = swapsStore.getState();
+  const { inputAsset, outputAsset, source, slippage } = swapsStore();
   if (!inputAsset || !outputAsset) {
     return null;
   }
