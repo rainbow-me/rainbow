@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import { RouteProp, useRoute } from '@react-navigation/native';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { ContextCircleButton } from '@/components/context-menu';
@@ -272,7 +273,7 @@ const ViewWalletBackup = () => {
                   // If we found it and it's not damaged use it to create the new account
                   if (wallet && !wallet.damaged) {
                     const newWallets = await dispatch(createAccountForWallet(wallet.id, color, name));
-                    // @ts-ignore
+                    // @ts-expect-error - no params
                     await initializeWallet();
                     // If this wallet was previously backed up to the cloud
                     // We need to update userData backup so it can be restored too
@@ -296,7 +297,7 @@ const ViewWalletBackup = () => {
                       clearCallbackOnStartCreation: true,
                     });
                     await dispatch(walletsLoadState(profilesEnabled));
-                    // @ts-ignore
+                    // @ts-expect-error - no params
                     await initializeWallet();
                   }
                 } catch (e) {
@@ -538,12 +539,14 @@ const ViewWalletBackup = () => {
                   disabled
                   leftComponent={<WalletAvatar account={account} />}
                   labelComponent={
-                    account.label.endsWith('.eth') ? <MenuItem.Label text={abbreviations.address(account.address, 3, 5) || ''} /> : null
+                    account.label.endsWith('.eth') || account.label !== '' ? (
+                      <MenuItem.Label text={abbreviations.address(account.address, 3, 5) || ''} />
+                    ) : null
                   }
                   titleComponent={
                     <MenuItem.Title
                       text={
-                        account.label.endsWith('.eth')
+                        account.label.endsWith('.eth') || account.label !== ''
                           ? abbreviations.abbreviateEnsForDisplay(removeFirstEmojiFromString(account.label), 20) ?? ''
                           : abbreviations.address(account.address, 3, 5) ?? ''
                       }

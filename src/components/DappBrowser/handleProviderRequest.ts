@@ -1,5 +1,6 @@
 import { Messenger } from '@/browserMessaging/AppMessenger';
 import { AddEthereumChainProposedChain, RequestArguments, RequestResponse, handleProviderRequest } from '@rainbow-me/provider';
+import * as lang from '@/languages';
 
 import { Provider } from '@ethersproject/providers';
 
@@ -10,11 +11,12 @@ import { UserRejectedRequestError } from 'viem';
 import { convertHexToString } from '@/helpers/utilities';
 import { logger } from '@/logger';
 import { ActiveSession } from '@rainbow-me/provider/dist/references/appSession';
-import { appSessionsStore } from '@/state/appSessions';
 import { Network } from '@/helpers';
 import { handleDappBrowserConnectionPrompt, handleDappBrowserRequest } from '@/utils/requestNavigationHandlers';
 import { Tab } from '@rainbow-me/provider/dist/references/messengers';
 import { getDappMetadata } from '@/resources/metadata/dapp';
+import { useAppSessionsStore } from '@/state/appSessions';
+import { BigNumber } from '@ethersproject/bignumber';
 
 export type ProviderRequestPayload = RequestArguments & {
   id: number;
@@ -115,7 +117,14 @@ export function createTransport<TPayload, TResponse>({ messenger, topic }: { mes
  * @returns {boolean}
  */
 const messengerProviderRequestFn = async (messenger: Messenger, request: ProviderRequestPayload) => {
-  const appSession = appSessionsStore.getState().getActiveSession({ host: getDappHost(request.meta?.sender.url) || '' });
+  const hostSessions = useAppSessionsStore.getState().getActiveSession({ host: getDappHost(request.meta?.sender.url) || '' });
+  const appSession =
+    hostSessions && hostSessions.sessions[hostSessions.activeSessionAddress]
+      ? {
+          address: hostSessions.activeSessionAddress,
+          network: hostSessions.sessions[hostSessions.activeSessionAddress],
+        }
+      : null;
 
   // Wait for response from the popup.
   let response: unknown | null;
@@ -128,7 +137,7 @@ const messengerProviderRequestFn = async (messenger: Messenger, request: Provide
       dappUrl: request.meta?.sender.url || '',
     });
 
-    appSessionsStore.getState().addSession({
+    useAppSessionsStore.getState().addSession({
       host: getDappHost(request.meta?.sender.url) || '',
       // @ts-ignore
       address: response.address,
@@ -156,9 +165,20 @@ const messengerProviderRequestFn = async (messenger: Messenger, request: Provide
   return response;
 };
 
-const isSupportedChainId = (chainId: number) => !!RainbowNetworks.find(network => Number(network.id) === chainId);
+const isSupportedChainId = (chainId: number | string) => {
+  const numericChainId = BigNumber.from(chainId).toNumber();
+  return !!RainbowNetworks.find(network => Number(network.id) === numericChainId);
+};
 const getActiveSession = ({ host }: { host: string }): ActiveSession => {
-  const appSession = appSessionsStore.getState().getActiveSession({ host });
+  const hostSessions = useAppSessionsStore.getState().getActiveSession({ host });
+  const appSession =
+    hostSessions && hostSessions.sessions[hostSessions.activeSessionAddress]
+      ? {
+          address: hostSessions.activeSessionAddress,
+          network: hostSessions.sessions[hostSessions.activeSessionAddress],
+        }
+      : null;
+
   if (!appSession) return null;
   return {
     address: appSession?.address || '',
@@ -289,11 +309,13 @@ export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger:
     callbackOptions?: CallbackOptions;
   }) => {
     const { chainId } = proposedChain;
-    const supportedChains = RainbowNetworks.filter(network => network.features.walletconnect).map(network => network.id.toString());
-    const numericChainId = convertHexToString(chainId);
-    const supportedChainId = supportedChains.includes(numericChainId);
-    alert('Chain Id not supported');
-    console.warn('PROVIDER TODO: TODO SEND NOTIFICATION');
+    const supportedChain = isSupportedChainId(chainId);
+    if (!supportedChain) {
+      alert(lang.t(lang.l.dapp_browser.provider_error.unsupported_chain));
+    } else {
+      alert(lang.t(lang.l.dapp_browser.provider_error.no_active_session));
+    }
+    // console.warn('PROVIDER TODO: TODO SEND NOTIFICATION');
     // TODO SEND NOTIFICATION
     // inpageMessenger?.send('rainbow_ethereumChainEvent', {
     //     chainId: proposedChainId,
@@ -321,7 +343,7 @@ export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger:
       const host = getDappHost(callbackOptions?.sender.url) || '';
       const activeSession = getActiveSession({ host });
       if (activeSession) {
-        appSessionsStore.getState().updateActiveSessionNetwork({ host: host, network: getNetworkFromChainId(Number(numericChainId)) });
+        useAppSessionsStore.getState().updateActiveSessionNetwork({ host: host, network: getNetworkFromChainId(Number(numericChainId)) });
         messenger.send(`chainChanged:${host}`, Number(numericChainId));
       }
       console.warn('PROVIDER TODO: TODO SEND NOTIFICATION');
