@@ -23,6 +23,8 @@ export const useAssetsToSell = () => {
 
   const { accountAddress: currentAddress, nativeCurrency: currentCurrency } = useAccountSettings();
 
+  const { filter } = userAssetStore.getState();
+
   const [currentAssets, setCurrentAssets] = useState<ParsedSearchAsset[]>([]);
 
   const { data: userAssets = [] } = useUserAssets(
@@ -38,8 +40,6 @@ export const useAssetsToSell = () => {
           acc[chainKey] = data[chainKey];
           return acc;
         }, {} as ParsedAssetsDictByChain);
-
-        const { filter } = userAssetStore.getState();
 
         return sortBy(filter, filteredAssetsDictByChain)();
       },
