@@ -790,11 +790,9 @@ PODS:
   - RNScreens (3.23.0):
     - React-Core
     - React-RCTImage
-  - RNSentry (5.22.0):
-    - hermes-engine
+  - RNSentry (3.4.1):
     - React-Core
-    - React-hermes
-    - Sentry/HybridSDK (= 8.24.0)
+    - Sentry (= 7.11.0)
   - RNShare (8.2.1):
     - React-Core
   - RNSound (0.11.2):
@@ -816,7 +814,9 @@ PODS:
   - SDWebImageWebPCoder (0.14.6):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
-  - Sentry/HybridSDK (8.24.0)
+  - Sentry (7.11.0):
+    - Sentry/Core (= 7.11.0)
+  - Sentry/Core (7.11.0)
   - Shimmer (1.0.2)
   - SocketRocket (0.6.1)
   - SRSRadialGradient (1.0.10):
@@ -1386,7 +1386,7 @@ SPEC CHECKSUMS:
   RNReanimated: 5afba582037b0dae040a5f927dec7fdd18e430c3
   RNRudderSdk: 805d4b7064714f3295bf5f152d3812cc67f67a93
   RNScreens: 6a8a3c6b808aa48dca1780df7b73ea524f602c63
-  RNSentry: 468d45dc823258945fb1ee04dcd3f252cb57415f
+  RNSentry: fbbdcd7213058e3de5fbaa452b25a06a16b4b382
   RNShare: eaee3dd5a06dad397c7d3b14762007035c5de405
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
   RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315
@@ -1394,8 +1394,8 @@ SPEC CHECKSUMS:
   RSCrashReporter: 6b8376ac729b0289ebe0908553e5f56d8171f313
   Rudder: 2cb1d3feabeb46cf0b34921e99d464cd8a5dbc5f
   RudderKit: f272f9872183946452ac94cd7bb2244a71e6ca8f
-  SDWebImage: 2d6d229046fea284d62e36bfb8ebe8287dfc5b10
-  SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
+  SDWebImage: a3ba0b8faac7228c3c8eadd1a55c9c9fe5e16457
+  SDWebImageWebPCoder: c94f09adbca681822edad9e532ac752db713eabf
   Sentry: 2f6baed15a3f8056b875fc903dc3dcb2903117f4
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17

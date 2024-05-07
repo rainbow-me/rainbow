@@ -162,11 +162,11 @@ describe('general functionality', () => {
       message,
       data: {},
       type: 'default',
-      level: 'warning',
+      level: Sentry.Severity.Warning,
       timestamp: Date.now(),
     });
     expect(Sentry.captureMessage).toHaveBeenCalledWith(message, {
-      level: 'warning',
+      level: Sentry.Severity.Warning,
       tags: undefined,
       extra: {},
     });
