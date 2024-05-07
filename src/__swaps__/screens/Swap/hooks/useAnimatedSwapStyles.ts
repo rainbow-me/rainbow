@@ -16,7 +16,6 @@ import { spinnerExitConfig } from '@/__swaps__/components/animations/AnimatedSpi
 import { NavigationSteps } from './useSwapNavigation';
 import { IS_ANDROID } from '@/env';
 import { safeAreaInsetValues } from '@/utils';
-import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 
 export function useAnimatedSwapStyles({
   SwapInputController,

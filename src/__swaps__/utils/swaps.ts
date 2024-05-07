@@ -3,13 +3,18 @@ import { SharedValue, convertToRGBA, isColor } from 'react-native-reanimated';
 
 import * as i18n from '@/languages';
 import { globalColors } from '@/design-system';
-import { ETH_COLOR, ETH_COLOR_DARK_ACCENT, SCRUBBER_WIDTH, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { ETH_COLOR, ETH_COLOR_DARK, SCRUBBER_WIDTH, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { ChainId, ChainName } from '@/__swaps__/types/chains';
 import { RainbowConfig } from '@/model/remoteConfig';
-import { CrosschainQuote, ETH_ADDRESS, Quote, WRAPPED_ASSET } from '@rainbow-me/swaps';
+import { CrosschainQuote, ETH_ADDRESS, Quote, QuoteParams, SwapType, WRAPPED_ASSET } from '@rainbow-me/swaps';
 import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
-import { ParsedSearchAsset } from '../types/assets';
+import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '../types/assets';
+import { SwapAssetType, inputKeys } from '../types/swap';
+import { swapsStore } from '../../state/swaps/swapsStore';
+import store from '@/redux/store';
+import { BigNumberish } from '@ethersproject/bignumber';
+import { TokenColors } from '@/graphql/__generated__/metadata';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -296,7 +301,12 @@ export type Colors = {
   shadow?: string;
 };
 
-export const extractColorValueForColors = ({ colors, isDarkMode }: { colors?: Colors; isDarkMode: boolean }): string => {
+type ExtractColorValueForColorsProps = {
+  colors: TokenColors;
+  isDarkMode: boolean;
+};
+
+export const extractColorValueForColors = ({ colors, isDarkMode }: ExtractColorValueForColorsProps): string => {
   'worklet';
 
   if (colors?.primary) {
@@ -307,7 +317,7 @@ export const extractColorValueForColors = ({ colors, isDarkMode }: { colors?: Co
     return colors.fallback;
   }
 
-  return isDarkMode ? ETH_COLOR_DARK_ACCENT : ETH_COLOR;
+  return isDarkMode ? ETH_COLOR_DARK : ETH_COLOR;
 };
 
 export const getQuoteServiceTime = ({ quote }: { quote: Quote | CrosschainQuote }) =>
@@ -393,4 +403,63 @@ export const priceForAsset = ({
     return asset.native.price.amount;
   }
   return 0;
+};
+
+export const parseAssetAndExtend = ({ asset, type }: { asset: ParsedSearchAsset | null; type: SwapAssetType }) => {
+  if (!asset) {
+    return null;
+  }
+
+  // TODO: Process and add colors to the asset and anything else we'll need for reanimated stuff
+  const color = extractColorValueForColors({
+    colors: asset.colors as TokenColors,
+    isDarkMode: true,
+  });
+
+  return {
+    ...asset,
+    color,
+  };
+
+  return asset as ExtendedAnimatedAssetWithColors;
+};
+
+type BuildQuoteParamsProps = {
+  inputAmount: BigNumberish;
+  outputAmount: BigNumberish;
+  focusedInput: inputKeys;
+};
+
+/**
+ * Builds the quote params for the swap based on the current state of the store.
+ *
+ * NOTE: Will return null if either asset isn't set.
+ * @returns data needed to execute a swap or cross-chain swap
+ */
+export const buildQuoteParams = ({ inputAmount, outputAmount, focusedInput }: BuildQuoteParamsProps): QuoteParams | null => {
+  // NOTE: Yuck... redux is still heavily integrated into the account logic.
+  const { accountAddress } = store.getState().settings;
+
+  const { inputAsset, outputAsset, source, slippage } = swapsStore.getState();
+  if (!inputAsset || !outputAsset) {
+    return null;
+  }
+
+  const isCrosschainSwap = inputAsset.chainId !== outputAsset.chainId;
+
+  return {
+    source: source === 'auto' ? undefined : source,
+    swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
+    fromAddress: accountAddress,
+    chainId: inputAsset.chainId,
+    toChainId: isCrosschainSwap ? outputAsset.chainId : inputAsset.chainId,
+    sellTokenAddress: inputAsset.isNativeAsset ? ETH_ADDRESS : inputAsset.address,
+    buyTokenAddress: outputAsset.isNativeAsset ? ETH_ADDRESS : outputAsset.address,
+
+    // TODO: Dunno how we can access these from the
+    sellAmount: focusedInput === 'inputAmount' || focusedInput === 'inputNativeValue' ? inputAmount : undefined,
+    buyAmount: focusedInput === 'outputAmount' || focusedInput === 'outputNativeValue' ? outputAmount : undefined,
+    slippage: Number(slippage),
+    refuel: false,
+  };
 };

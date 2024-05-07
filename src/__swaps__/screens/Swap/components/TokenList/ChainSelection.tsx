@@ -3,7 +3,7 @@
 import c from 'chroma-js';
 import * as i18n from '@/languages';
 import { Text as RNText, StyleSheet } from 'react-native';
-import Animated, { SharedValue, runOnUI, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
+import Animated, { runOnUI, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
 import React, { useCallback, useMemo } from 'react';
 
 import { SUPPORTED_CHAINS } from '@/references';
@@ -20,8 +20,8 @@ import { ChainId, ChainName } from '@/__swaps__/types/chains';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ContextMenuButton } from '@/components/context-menu';
 import { useAccountAccentColor } from '@/hooks';
-import { UserAssetFilter } from '@/__swaps__/types/assets';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
+import { swapsStore } from '@/state/swaps/swapsStore';
 
 type ChainSelectionProps = {
   allText?: string;
@@ -31,7 +31,7 @@ type ChainSelectionProps = {
 export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
   const { isDarkMode } = useColorMode();
   const { accentColor: accountColor } = useAccountAccentColor();
-  const { SwapInputController, userAssetFilter } = useSwapContext();
+  const { outputChainId } = useSwapContext();
   const red = useForegroundColor('red');
 
   const accentColor = useMemo(() => {
@@ -43,38 +43,42 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
     }
   }, [accountColor, isDarkMode]);
 
-  const propToSet = output ? SwapInputController.outputChainId : userAssetFilter;
-
   const chainName = useSharedValue(
-    propToSet.value === 'all' ? allText : propToSet.value === ChainId.mainnet ? 'ethereum' : chainNameFromChainIdWorklet(propToSet.value)
+    output
+      ? chainNameFromChainIdWorklet(outputChainId.value)
+      : swapsStore.getState().filter === 'all'
+        ? allText
+        : chainNameFromChainIdWorklet(swapsStore.getState().filter as ChainId)
   );
 
   useAnimatedReaction(
     () => ({
-      outputChainId: SwapInputController.outputChainId.value,
-      userAssetFilter: userAssetFilter.value,
+      outputChainId: outputChainId.value,
     }),
     current => {
       if (output) {
         chainName.value = chainNameForChainIdWithMainnetSubstitutionWorklet(current.outputChainId);
-      } else {
-        chainName.value =
-          current.userAssetFilter === 'all' ? allText : chainNameForChainIdWithMainnetSubstitutionWorklet(current.userAssetFilter);
       }
     }
   );
 
   const handleSelectChain = useCallback(
     ({ nativeEvent: { actionKey } }: Omit<OnPressMenuItemEventObject, 'isUsingActionSheetFallback'>) => {
-      runOnUI((set: SharedValue<ChainId | UserAssetFilter>) => {
-        if (actionKey === 'all') {
-          set.value = 'all';
-        } else {
-          set.value = Number(actionKey) as ChainId;
-        }
-      })(propToSet);
+      if (output) {
+        runOnUI(() => {
+          outputChainId.value = Number(actionKey) as ChainId;
+          chainName.value = chainNameForChainIdWithMainnetSubstitutionWorklet(Number(actionKey) as ChainId);
+        });
+      } else {
+        swapsStore.setState({
+          filter: actionKey === 'all' ? 'all' : (Number(actionKey) as ChainId),
+        });
+        runOnUI(() => {
+          chainName.value = actionKey === 'all' ? allText : chainNameForChainIdWithMainnetSubstitutionWorklet(Number(actionKey) as ChainId);
+        });
+      }
     },
-    [propToSet]
+    [allText, chainName, output, outputChainId]
   );
 
   const menuConfig = useMemo(() => {
@@ -197,12 +201,8 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
         >
           <HitSlop space="10px">
             <Inline alignVertical="center" space="6px" wrap={false}>
-              {output && (
-                <ChainImage
-                  chain={ethereumUtils.getNetworkFromChainId(SwapInputController.outputChainId.value ?? ChainId.mainnet)}
-                  size={16}
-                />
-              )}
+              {/* TODO: We need to add some ethereum utils to handle worklet functions */}
+              {output && <ChainImage chain={ethereumUtils.getNetworkFromChainId(outputChainId.value ?? ChainId.mainnet)} size={16} />}
               <AnimatedText
                 align="right"
                 color={isDarkMode ? 'labelSecondary' : 'label'}
