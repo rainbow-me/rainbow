@@ -20,6 +20,7 @@ import { deviceUtils } from '@/utils';
 import { TokenStandard } from '@/handlers/web3';
 import { handleNFTImages } from '@/utils/handleNFTImages';
 import { SimpleHashNft } from '@/graphql/__generated__/arc';
+import { Network } from '@/helpers';
 
 const ENS_COLLECTION_NAME = 'ENS';
 const SVG_MIME_TYPE = 'image/svg+xml';
@@ -108,7 +109,7 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNft, address: string):
     marketplaceId: marketplace?.marketplace_id ?? null,
     marketplaceName: marketplace?.marketplace_name ?? null,
     name: nft.name,
-    network: nft.chain as Network,
+    network: nft.chain as Network, // gets converted from simplehash chain to Network in arc
     permalink: marketplace?.nft_url ?? '',
     predominantColor: nft.previews?.predominant_color ?? undefined,
     // @ts-ignore TODO
