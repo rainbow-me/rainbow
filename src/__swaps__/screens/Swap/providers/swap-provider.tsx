@@ -1,7 +1,16 @@
 // @refresh
 import React, { createContext, useContext, ReactNode } from 'react';
-import { StyleProp, TextStyle } from 'react-native';
-import { SharedValue, runOnJS, runOnUI, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import { StyleProp, TextStyle, TextInput } from 'react-native';
+import {
+  AnimatedRef,
+  SharedValue,
+  runOnJS,
+  runOnUI,
+  useAnimatedRef,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+} from 'react-native-reanimated';
 import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
 import { INITIAL_SLIDER_POSITION, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useAnimatedSwapStyles } from '@/__swaps__/screens/Swap/hooks/useAnimatedSwapStyles';
@@ -18,6 +27,7 @@ import { ChainId } from '@/__swaps__/types/chains';
 
 interface SwapContextType {
   isFetching: SharedValue<boolean>;
+  searchInputRef: AnimatedRef<TextInput>;
 
   // TODO: Combine navigation progress steps into a single shared value
   inputProgress: SharedValue<number>;
@@ -56,6 +66,8 @@ interface SwapProviderProps {
 
 export const SwapProvider = ({ children }: SwapProviderProps) => {
   const isFetching = useSharedValue(false);
+
+  const searchInputRef = useAnimatedRef<TextInput>();
 
   const inputProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
   const outputProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
@@ -239,6 +251,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     <SwapContext.Provider
       value={{
         isFetching,
+        searchInputRef,
 
         inputProgress,
         outputProgress,

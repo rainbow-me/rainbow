@@ -14,7 +14,7 @@ import { SwapAssetType, inputKeys } from '../types/swap';
 import { swapsStore } from '../../state/swaps/swapsStore';
 import store from '@/redux/store';
 import { BigNumberish } from '@ethersproject/bignumber';
-import { TokenColors } from '@/graphql/__generated__/metadata';
+import { Maybe, TokenColors } from '@/graphql/__generated__/metadata';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -306,10 +306,10 @@ type ExtractColorValueForColorsProps = {
   isDarkMode: boolean;
 };
 
-export const extractColorValueForColors = ({ colors }: ExtractColorValueForColorsProps): string | undefined => {
+export const extractColorValueForColors = ({ colors, isDarkMode }: ExtractColorValueForColorsProps): string => {
   'worklet';
   // NOTE: We should default back to ETH_COLOR_DARK if we're in dark mode or ETH_COLOR if we're in light mode
-  return colors.primary ?? colors.fallback;
+  return colors?.primary ?? colors?.fallback ?? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
 };
 
 export const getQuoteServiceTime = ({ quote }: { quote: Quote | CrosschainQuote }) =>

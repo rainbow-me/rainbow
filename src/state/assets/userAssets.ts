@@ -18,7 +18,7 @@ export interface UserAssetsState {
 }
 
 export const userAssetStore = createRainbowStore<UserAssetsState>(
-  (set, get) => ({
+  (_, get) => ({
     userAssetIds: [],
     userAssets: [],
     filter: 'all',

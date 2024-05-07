@@ -8,7 +8,7 @@ import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
 import { ParsedAssetsDictByChain, ParsedSearchAsset, UserAssetFilter } from '@/__swaps__/types/assets';
 import { useAccountSettings } from '@/hooks';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { swapsStore } from '@/state/swaps/swapsStore';
+import { userAssetStore } from '@/state/assets/userAssets';
 
 const sortBy = (userAssetFilter: UserAssetFilter, assets: ParsedAssetsDictByChain) => {
   if (userAssetFilter === 'all') {
@@ -39,7 +39,7 @@ export const useAssetsToSell = () => {
           return acc;
         }, {} as ParsedAssetsDictByChain);
 
-        const filter = swapsStore.getState().filter;
+        const { filter } = userAssetStore.getState();
 
         return sortBy(filter, filteredAssetsDictByChain)();
       },
@@ -48,7 +48,7 @@ export const useAssetsToSell = () => {
     }
   );
 
-  swapsStore.subscribe(({ filter }) => {
+  userAssetStore.subscribe(({ filter }) => {
     if (filter === 'all') {
       setCurrentAssets(userAssets as ParsedSearchAsset[]);
     } else {
