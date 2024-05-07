@@ -1,28 +1,22 @@
-# This is a basic workflow to help you get started with Actions
-
 name: iOS e2e tests
 
-# Controls when the workflow will run
 on: [pull_request, workflow_dispatch]
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "ios-e2e"
   ios-e2e:
-    # The type of runner that the job will run on
     runs-on: ["self-hosted"]
     # Cancel current builds if there's a newer commit on the same branch
     concurrency: 
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up github keys
-        run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
+        run:  git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
+     
+      - name: clean ios app step
+        run: yarn clean:ios  > /dev/null 2>&1 || true
 
       - name: Set up ENV vars & scripts
         run: |
@@ -48,17 +42,26 @@ jobs:
       - name: Lint
         run: yarn lint:ci
 
-      - name: Unit tests
-        run: yarn test
-
       - name: Install Pods
-        run: cd ios && bundle install && pod install --repo-update && cd ..
+        run: yarn install-pods
 
       - name: Rebuild detox cache
         run: ./node_modules/.bin/detox clean-framework-cache && ./node_modules/.bin/detox build-framework-cache
 
-      - name: Build the app in Release mode
-        run: ./node_modules/.bin/detox build --configuration ios.sim.release
+      - name: Remove old Detox artifacts
+        run: rm -rf ./artifacts/
 
-      - name: Run iOS e2e tests
-        run: ./node_modules/.bin/detox test -R 5 --configuration ios.sim.release --forceExit --bail
+      - name: Build the app in release mode
+        run: ./node_modules/.bin/detox build --configuration ios.sim.release
+     
+      - name: Run iOS e2e tests with retry
+      # change the '5' here to how many times you want the tests to rerun on failure
+        run: ./scripts/run-retry-tests.sh 5
+     
+      - name: Upload Test Artifacts
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: detox-artifacts
+          path: artifacts/**
+

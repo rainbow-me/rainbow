@@ -14,7 +14,6 @@ import { Bleed, Box, Stack } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import { analyticsV2 } from '@/analytics';
 import { usePoints } from '@/resources/points';
-import { abbreviateNumber } from '@/helpers/utilities';
 
 export const ViewWeeklyEarnings = () => {
   const [showCloseButton, setShowCloseButton] = useState(false);
@@ -32,15 +31,20 @@ export const ViewWeeklyEarnings = () => {
 
   const accountName = (abbreviateEnsForDisplay(accountENS, 10) || formatAddress(accountAddress, 4, 5)) as string;
 
-  const newTotalEarnings = points?.points?.user.earnings.total;
+  const newTotalEarnings = points?.points?.user.earnings.total || 0;
   const retroactive =
     points?.points?.user.stats.last_airdrop.differences
       ?.filter(difference => difference && difference.type === 'retroactive')
       .reduce((sum, difference) => sum + (difference?.earnings?.total ?? 0), 0) || 0;
 
-  const referral =
+  const existingReferrals =
     points?.points?.user.stats.last_airdrop.differences
-      ?.filter(difference => difference && difference.type === 'referral')
+      ?.filter(difference => difference && difference.type === 'referral' && difference.group_id === 'referral_activity')
+      .reduce((sum, difference) => sum + (difference?.earnings?.total ?? 0), 0) || 0;
+
+  const newReferrals =
+    points?.points?.user.stats.last_airdrop.differences
+      ?.filter(difference => difference && difference.type === 'referral' && difference.group_id === 'new_referrals')
       .reduce((sum, difference) => sum + (difference?.earnings?.total ?? 0), 0) || 0;
 
   const transaction =
@@ -48,12 +52,12 @@ export const ViewWeeklyEarnings = () => {
       ?.filter(difference => difference && difference.type === 'transaction')
       .reduce((sum, difference) => sum + (difference?.earnings?.total ?? 0), 0) || 0;
 
-  const redemption =
+  const bonus =
     points?.points?.user.stats.last_airdrop.differences
       ?.filter(difference => difference && difference.type === 'redemption')
       .reduce((sum, difference) => sum + (difference?.earnings?.total ?? 0), 0) || 0;
 
-  const totalWeeklyEarnings = retroactive + transaction + referral + redemption;
+  const totalWeeklyEarnings = retroactive + transaction + existingReferrals + newReferrals + bonus;
 
   return (
     <Box height="full" justifyContent="space-between">
@@ -107,7 +111,24 @@ export const ViewWeeklyEarnings = () => {
                 delayStart={1000}
                 enableHapticTyping
                 textAlign="right"
-                textContent={`+ ${abbreviateNumber(retroactive)}`}
+                textContent={`+ ${retroactive.toLocaleString('en-US')}`}
+                typingSpeed={100}
+              />
+            </Line>
+          )}
+          {bonus !== 0 && (
+            <Line alignHorizontal="justify">
+              <AnimatedText
+                color={rainbowColors.red}
+                enableHapticTyping
+                textContent={`${i18n.t(i18n.l.points.console.view_weekly_earnings_bonus_points)}:`}
+              />
+              <AnimatedText
+                color={rainbowColors.red}
+                delayStart={1000}
+                enableHapticTyping
+                textAlign="right"
+                textContent={`+ ${bonus.toLocaleString('en-US')}`}
                 typingSpeed={100}
               />
             </Line>
@@ -123,7 +144,7 @@ export const ViewWeeklyEarnings = () => {
               delayStart={1000}
               enableHapticTyping
               textAlign="right"
-              textContent={`+ ${abbreviateNumber(transaction)}`}
+              textContent={`+ ${transaction.toLocaleString('en-US')}`}
               typingSpeed={100}
             />
           </Line>
@@ -139,7 +160,23 @@ export const ViewWeeklyEarnings = () => {
               delayStart={1000}
               enableHapticTyping
               textAlign="right"
-              textContent={`+ ${abbreviateNumber(referral)}`}
+              textContent={`+ ${existingReferrals.toLocaleString('en-US')}`}
+              typingSpeed={100}
+            />
+          </Line>
+          <Line alignHorizontal="justify">
+            <AnimatedText
+              color={rainbowColors.yellow}
+              delayStart={1000}
+              enableHapticTyping
+              textContent={`${i18n.t(i18n.l.points.console.view_weekly_earnings_new_referrals)}:`}
+            />
+            <AnimatedText
+              color={rainbowColors.yellow}
+              delayStart={1000}
+              enableHapticTyping
+              textAlign="right"
+              textContent={`+ ${newReferrals.toLocaleString('en-US')}`}
               typingSpeed={100}
             />
           </Line>
@@ -178,7 +215,7 @@ export const ViewWeeklyEarnings = () => {
                 }, 500);
                 return () => clearTimeout(complete);
               }}
-              textContent={`+ ${abbreviateNumber(totalWeeklyEarnings ?? 0)} ${i18n.t(i18n.l.points.console.points)}`}
+              textContent={`+ ${totalWeeklyEarnings.toLocaleString('en-US')} ${i18n.t(i18n.l.points.console.points)}`}
               typingSpeed={100}
             />
           </Line>
@@ -203,7 +240,7 @@ export const ViewWeeklyEarnings = () => {
               enableHapticTyping
               hapticType="impactHeavy"
               textAlign="right"
-              textContent={`${(newTotalEarnings ?? 0).toLocaleString('en-US')} ${i18n.t(i18n.l.points.console.points)}`}
+              textContent={`${newTotalEarnings.toLocaleString('en-US')} ${i18n.t(i18n.l.points.console.points)}`}
               onComplete={() => {
                 const complete = setTimeout(() => {
                   setShowCloseButton(true);

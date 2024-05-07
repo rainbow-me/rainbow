@@ -53,7 +53,6 @@ export const PositionSheet: React.FC = () => {
   return (
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
-        // @ts-expect-error JS component
         <SlackSheet
           backgroundColor={backgroundColor}
           {...(IS_IOS

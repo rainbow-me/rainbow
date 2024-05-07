@@ -1,14 +1,13 @@
-import Clipboard from '@react-native-community/clipboard';
+import Clipboard from '@react-native-clipboard/clipboard';
 import lang from 'i18n-js';
 import * as React from 'react';
 import { PressableProps } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import { CopyFloatingEmojis } from '@/components/floating-emojis';
-import { enableActionsOnReadOnlyWallet } from '@/config';
+import { enableActionsOnReadOnlyWallet, useExperimentalFlag, SWAPS_V2 } from '@/config';
 import { AccentColorProvider, Box, Column, Columns, Inset, Stack, Text, useColorMode } from '@/design-system';
-import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
-import { useAccountProfile, useAccountSettings, useSwapCurrencyHandlers, useWallets } from '@/hooks';
+import { useAccountProfile, useAccountSettings, useWallets } from '@/hooks';
 import { delayNext } from '@/hooks/useMagicAutofocus';
 import { useNavigation } from '@/navigation';
 import { ethereumUtils, watchingAlert } from '@/utils';
@@ -169,7 +168,8 @@ function BuyButton() {
 function SwapButton() {
   const { isReadOnlyWallet } = useWallets();
   const { accountAddress } = useAccountSettings();
-
+  const remoteConfig = useRemoteConfig();
+  const swapsV2Enabled = useExperimentalFlag(SWAPS_V2) || remoteConfig.swaps_v2;
   const { navigate } = useNavigation();
 
   const handlePress = React.useCallback(async () => {
@@ -179,6 +179,11 @@ function SwapButton() {
       });
 
       android && delayNext();
+      if (swapsV2Enabled) {
+        navigate(Routes.SWAP_NAVIGATOR);
+        return;
+      }
+
       const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(Network.mainnet, accountAddress);
       navigate(Routes.EXCHANGE_MODAL, {
         fromDiscover: true,
@@ -190,7 +195,7 @@ function SwapButton() {
     } else {
       watchingAlert();
     }
-  }, [accountAddress, isReadOnlyWallet, navigate]);
+  }, [accountAddress, isReadOnlyWallet, navigate, swapsV2Enabled]);
 
   return (
     <ActionButton icon="􀖅" onPress={handlePress} testID="swap-button">

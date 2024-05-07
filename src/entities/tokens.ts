@@ -2,6 +2,7 @@ import { ChainId } from '@rainbow-me/swaps';
 import { EthereumAddress } from '.';
 import { Chain } from '@wagmi/chains';
 import { Network } from '@/networks/types';
+import { TokenColors } from '@/graphql/__generated__/metadata';
 
 export interface ZerionAssetPrice {
   value: number;
@@ -55,10 +56,7 @@ export interface ParsedAddressAsset extends Asset, Partial<RainbowTokenOwnFields
   };
   chainId?: number;
   color?: string;
-  colors?: {
-    primary?: string;
-    fallback?: string;
-  };
+  colors?: TokenColors;
   icon_url?: string;
   price?: {
     changed_at?: number;

@@ -1,5 +1,4 @@
-import { getDescription, getTitle } from './transactions';
-import { NativeCurrencyKey, NewTransactionOrAddCashTransaction, RainbowTransaction, TransactionStatus, TransactionType } from '@/entities';
+import { NativeCurrencyKey, NewTransactionOrAddCashTransaction, RainbowTransaction } from '@/entities';
 import { isL2Network } from '@/handlers/web3';
 import { ETH_ADDRESS } from '@/references';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToBalanceDisplay } from '@/helpers/utilities';
@@ -19,7 +18,6 @@ export const parseNewTransaction = async (
   const {
     amount,
     asset,
-    dappName,
     data,
     from,
     flashbots,
@@ -32,17 +30,16 @@ export const parseNewTransaction = async (
     network,
     nft,
     nonce,
-    hash: txHash,
+    hash,
     protocol,
     sourceAmount,
-    status: txStatus,
+    status,
     to,
     transferId,
-    type: txType,
+    type,
     txTo,
     value,
     swap,
-    fiatProvider,
   } = txDetails;
 
   if (amount && asset) {
@@ -58,31 +55,11 @@ export const parseNewTransaction = async (
     network && isL2Network(network)
       ? { amount: '', display: '' }
       : convertAmountAndPriceToNativeDisplay(amount ?? 0, assetPrice, nativeCurrency);
-  const hash = txHash ? `${txHash}-0` : null;
-
-  const status = txStatus ?? TransactionStatus.sending;
-  const type = txType ?? TransactionType.send;
-
-  const title = getTitle({
-    protocol: protocol ?? null,
-    status,
-    type,
-  });
-
-  const nftName = type === TransactionType.authorize ? nft?.collection.name : nft?.name;
-
-  const description = getDescription({
-    name: nftName ?? asset?.name ?? null,
-    status,
-    type,
-  });
 
   return {
     address: asset?.address ?? ETH_ADDRESS,
     balance,
-    dappName,
     data,
-    description,
     ensCommitRegistrationName,
     ensRegistration,
     flashbots,
@@ -98,18 +75,16 @@ export const parseNewTransaction = async (
     network,
     nft,
     nonce,
-    pending: true,
     protocol,
     sourceAmount,
     status,
     symbol: asset?.symbol ?? null,
-    title,
+    title: `${type}.${status}`,
     to,
     transferId,
     txTo: txTo || to,
     type,
     value,
     swap,
-    fiatProvider,
   };
 };

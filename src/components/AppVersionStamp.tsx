@@ -17,7 +17,7 @@ const StyledButton = styled(Pressable)({
 });
 
 export function AppVersionStamp() {
-  const [appVersion, codePushVersion] = useAppVersion();
+  const appVersion = useAppVersion();
   const [numberOfTaps, setNumberOfTaps] = useState(0);
   const [startTimeout, stopTimeout] = useTimeout();
   const { navigate } = useNavigation();
@@ -34,17 +34,11 @@ export function AppVersionStamp() {
     }
     startTimeout(() => setNumberOfTaps(0), 3000);
   }, [navigate, numberOfTaps, startTimeout, stopTimeout]);
-  const [showCodePushVersion, setShowCodePushVersion] = useState(false);
 
   return (
-    <StyledButton
-      hitSlop={10}
-      onLongPress={() => setShowCodePushVersion(true)}
-      onPress={handleVersionPress}
-      onPressOut={() => setTimeout(() => setShowCodePushVersion(false), 500)}
-    >
+    <StyledButton hitSlop={10} onPress={handleVersionPress}>
       <Text color="secondary30 (Deprecated)" size="14px / 19px (Deprecated)" weight="bold">
-        {showCodePushVersion ? `Update: ${codePushVersion}` : appVersion}
+        {appVersion}
       </Text>
     </StyledButton>
   );

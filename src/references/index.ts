@@ -1,5 +1,33 @@
+import { AddressOrEth } from '@/__swaps__/types/assets';
+import { ChainId, ChainNameDisplay } from '@/__swaps__/types/chains';
 import { Asset } from '@/entities';
 import { Network } from '@/helpers/networkTypes';
+import { AddressZero } from '@ethersproject/constants';
+
+import type { Address } from 'viem';
+import {
+  Chain,
+  arbitrum,
+  arbitrumGoerli,
+  arbitrumSepolia,
+  avalanche,
+  avalancheFuji,
+  base,
+  baseSepolia,
+  bsc,
+  bscTestnet,
+  goerli,
+  holesky,
+  mainnet,
+  optimism,
+  optimismSepolia,
+  polygon,
+  polygonMumbai,
+  zora,
+  zoraSepolia,
+  sepolia,
+  blast,
+} from 'viem/chains';
 
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
 export { default as chainAssets } from './chain-assets.json';
@@ -11,11 +39,11 @@ export { default as tokenGateCheckerAbi } from './token-gate-checker-abi.json';
 export { default as optimismGasOracleAbi } from './optimism-gas-oracle-abi.json';
 export { default as ethUnits } from './ethereum-units.json';
 export { default as timeUnits } from './time-units.json';
-
-export { default as supportedNativeCurrencies } from './native-currencies.json';
+export { supportedCurrencies as supportedNativeCurrencies, type SupportedCurrencyKey, type SupportedCurrency } from './supportedCurrencies';
 export { default as shitcoins } from './shitcoins';
 export { default as smartContractMethods } from './smartcontract-methods.json';
 export { rainbowTokenList } from './rainbow-token-list';
+export { gasUnits } from './gasUnits';
 
 export {
   ENSRegistryWithFallbackABI,
@@ -52,14 +80,21 @@ export const POAP_BASE_URL = 'https://poap.website/';
 
 export const ETH_ADDRESS = 'eth';
 export const ETH_SYMBOL = 'ETH';
-export const ARBITRUM_ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
-export const OPTIMISM_ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
-export const ZORA_ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
-export const BASE_ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
-export const BNB_BSC_ADDRESS = '0x0000000000000000000000000000000000000000';
+export const ARBITRUM_ETH_ADDRESS = AddressZero;
+export const OPTIMISM_ETH_ADDRESS = AddressZero;
+export const ZORA_ETH_ADDRESS = AddressZero;
+export const BASE_ETH_ADDRESS = AddressZero;
+export const BNB_BSC_ADDRESS = AddressZero;
 export const BNB_MAINNET_ADDRESS = '0xb8c77482e45f1f44de1745f52c74426c631bdd52';
 export const MATIC_MAINNET_ADDRESS = '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0';
 export const MATIC_POLYGON_ADDRESS = '0x0000000000000000000000000000000000001010';
+export const DEGEN_CHAIN_DEGEN_ADDRESS = AddressZero;
+export const AVAX_AVALANCHE_ADDRESS = AddressZero;
+export const WAVAX_AVALANCHE_ADDRESS = '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7';
+export const BLAST_ETH_ADDRESS = AddressZero;
+export const DAI_AVALANCHE_ADDRESS = '0x6b175474e89094c44da98b954eedeac495271d0f';
+export const USDC_AVALANCHE_ADDRESS = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
+export const WBTC_AVALANCHE_ADDRESS = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599';
 
 export const WETH_ADDRESS = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 export const WETH_POLYGON_ADDRESS = '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619';
@@ -67,6 +102,7 @@ export const WETH_ARBITRUM_ADDRESS = '0x82af49447d8a07e3bd95bd0d56f35241523fbab1
 export const WETH_ZORA_ADDRESS = '0x4200000000000000000000000000000000000006';
 export const DAI_POLYGON_ADDRESS = '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063';
 export const WMATIC_POLYGON_ADDRESS = '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270';
+export const WDEGEN_DEGEN_CHAIN_ADDRESS = '0xeb54dacb4c2ccb64f8074eceea33b5ebb38e5387';
 export const WBNB_BSC_ADDRESS = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c';
 export const DAI_ADDRESS = '0x6b175474e89094c44da98b954eedeac495271d0f';
 export const USDC_ADDRESS = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
@@ -122,4 +158,97 @@ export const AddCashCurrencyInfo: {
   },
 };
 
+export const NATIVE_ASSETS_PER_CHAIN: Record<ChainId, AddressOrEth> = {
+  [ChainId.mainnet]: ETH_ADDRESS as Address,
+  [ChainId.hardhat]: AddressZero as Address,
+  [ChainId.sepolia]: AddressZero as Address,
+  [ChainId.holesky]: AddressZero as Address,
+  [ChainId.arbitrum]: AddressZero as Address,
+  [ChainId.arbitrumSepolia]: AddressZero as Address,
+  [ChainId.bsc]: AddressZero as Address,
+  [ChainId.bscTestnet]: AddressZero as Address,
+  [ChainId.optimism]: AddressZero as Address,
+  [ChainId.hardhatOptimism]: AddressZero as Address,
+  [ChainId.optimismSepolia]: AddressZero as Address,
+  [ChainId.rari]: AddressZero as Address,
+  [ChainId.base]: AddressZero as Address,
+  [ChainId.baseSepolia]: AddressZero as Address,
+  [ChainId.zora]: AddressZero as Address,
+  [ChainId.zoraSepolia]: AddressZero as Address,
+  [ChainId.polygon]: MATIC_POLYGON_ADDRESS as Address,
+  [ChainId.polygonMumbai]: AddressZero as Address,
+  [ChainId.avalanche]: AVAX_AVALANCHE_ADDRESS as Address,
+  [ChainId.avalancheFuji]: AddressZero as Address,
+  [ChainId.blast]: AddressZero as Address,
+  [ChainId.blastSepolia]: AddressZero as Address,
+  [ChainId.polygonAmoy]: AddressZero as Address,
+};
+
+export const NATIVE_ASSETS_MAP_PER_CHAIN: Record<ChainId, AddressOrEth> = {
+  [ChainId.arbitrum]: ETH_ADDRESS,
+  [ChainId.arbitrumNova]: ETH_ADDRESS,
+  [ChainId.arbitrumSepolia]: ETH_ADDRESS,
+  [ChainId.avalanche]: AVAX_AVALANCHE_ADDRESS,
+  [ChainId.avalancheFuji]: AVAX_AVALANCHE_ADDRESS,
+  [ChainId.base]: ETH_ADDRESS,
+  [ChainId.baseSepolia]: ETH_ADDRESS,
+  [ChainId.blast]: ETH_ADDRESS,
+  [ChainId.blastSepolia]: ETH_ADDRESS,
+  [ChainId.bsc]: BNB_MAINNET_ADDRESS,
+  [ChainId.bscTestnet]: BNB_MAINNET_ADDRESS,
+  [ChainId.celo]: ETH_ADDRESS,
+  [ChainId.gnosis]: ETH_ADDRESS,
+  [ChainId.hardhat]: ETH_ADDRESS,
+  [ChainId.hardhatOptimism]: ETH_ADDRESS,
+  [ChainId.holesky]: ETH_ADDRESS,
+  [ChainId.linea]: ETH_ADDRESS,
+  [ChainId.mainnet]: ETH_ADDRESS,
+  [ChainId.manta]: ETH_ADDRESS,
+  [ChainId.optimism]: ETH_ADDRESS,
+  [ChainId.optimismSepolia]: ETH_ADDRESS,
+  [ChainId.polygon]: MATIC_MAINNET_ADDRESS,
+  [ChainId.polygonAmoy]: MATIC_MAINNET_ADDRESS,
+  [ChainId.polygonMumbai]: MATIC_MAINNET_ADDRESS,
+  [ChainId.polygonZkEvm]: MATIC_MAINNET_ADDRESS,
+  [ChainId.rari]: ETH_ADDRESS,
+  [ChainId.scroll]: ETH_ADDRESS,
+  [ChainId.sepolia]: ETH_ADDRESS,
+  [ChainId.zora]: ETH_ADDRESS,
+  [ChainId.zoraSepolia]: ETH_ADDRESS,
+};
+
 export const REFERRER = 'native-app';
+
+export const SUPPORTED_MAINNET_CHAINS: Chain[] = [mainnet, polygon, optimism, arbitrum, base, zora, bsc, avalanche, blast].map(chain => ({
+  ...chain,
+  name: ChainNameDisplay[chain.id],
+}));
+
+export const SUPPORTED_CHAINS = ({ testnetMode = false }: { testnetMode?: boolean }): Chain[] =>
+  [
+    mainnet,
+    polygon,
+    optimism,
+    arbitrum,
+    holesky,
+    base,
+    zora,
+    bsc,
+    goerli,
+    sepolia,
+    optimismSepolia,
+    bscTestnet,
+    polygonMumbai,
+    arbitrumGoerli,
+    arbitrumSepolia,
+    baseSepolia,
+    zoraSepolia,
+    avalanche,
+    avalancheFuji,
+    blast,
+  ]
+    .filter(chain => (testnetMode ? !!chain.testnet : !chain.testnet))
+    .map(chain => ({ ...chain, name: ChainNameDisplay[chain.id] }));
+
+export const SUPPORTED_CHAIN_IDS = ({ testnetMode = false }: { testnetMode?: boolean }) =>
+  SUPPORTED_CHAINS({ testnetMode }).map(chain => chain.id);

@@ -23,7 +23,6 @@ import me.rainbow.NativeModules.RNReview.RNReviewPackage;
 import me.rainbow.NativeModules.RNStartTime.RNStartTimePackage;
 import me.rainbow.NativeModules.RNTextAnimatorPackage.RNTextAnimatorPackage;
 import me.rainbow.NativeModules.RNZoomableButton.RNZoomableButtonPackage;
-import com.microsoft.codepush.react.CodePush;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactNativeHost;
 import me.rainbow.BuildConfig;
@@ -40,11 +39,6 @@ public class MainApplication extends Application implements ReactApplication {
         @Override
         public boolean getUseDeveloperSupport() {
           return BuildConfig.DEBUG;
-        }
-
-        @Override
-        protected String getJSBundleFile() {
-          return CodePush.getJSBundleFile();
         }
 
         @Override
@@ -101,40 +95,9 @@ public class MainApplication extends Application implements ReactApplication {
     RNBranchModule.enableLogging();
     
     RNBranchModule.getAutoInstance(this);
-    initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
   }
 
    public static Context getAppContext() {
         return MainApplication.context;
     }
-
- /**
-  * Loads Flipper in React Native templates. Call this in the onCreate method with something like
-  * initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
-  *
-  * @param context
-  * @param reactInstanceManager
-  */
-  private static void initializeFlipper(Context context,
-                                       ReactInstanceManager reactInstanceManager) {
-    if (BuildConfig.DEBUG) {
-      try {
-        /*
-         We use reflection here to pick up the class that initializes Flipper,
-        since Flipper library is not available in release mode
-        */
-        Class<?> aClass = Class.forName("me.rainbow.ReactNativeFlipper");
-        aClass.getMethod("initializeFlipper", Context.class, ReactInstanceManager.class)
-              .invoke(null, context, reactInstanceManager);
-      } catch (ClassNotFoundException e) {
-        e.printStackTrace();
-      } catch (NoSuchMethodException e) {
-        e.printStackTrace();
-      } catch (IllegalAccessException e) {
-        e.printStackTrace();
-      } catch (InvocationTargetException e) {
-        e.printStackTrace();
-      }
-    }
-  }
 }

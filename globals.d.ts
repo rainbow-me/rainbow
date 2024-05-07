@@ -42,6 +42,11 @@ declare module 'react-native-dotenv' {
   export const OPTIMISM_MAINNET_RPC: string;
   export const BASE_MAINNET_RPC: string;
   export const BASE_MAINNET_RPC_DEV: string;
+  export const AVALANCHE_MAINNET_RPC: string;
+  export const AVALANCHE_MAINNET_RPC_DEV: string;
+  export const AVALANCHE_FUJI_RPC: string;
+  export const BLAST_MAINNET_RPC: string;
+  export const DEGEN_MAINNET_RPC: string;
   export const POLYGON_MAINNET_RPC: string;
   export const ARBITRUM_MAINNET_RPC: string;
   export const BSC_MAINNET_RPC: string;
@@ -95,4 +100,6 @@ declare module 'react-native-dotenv' {
   export const RPC_PROXY_BASE_URL_DEV: string;
   export const RPC_PROXY_API_KEY_PROD: string;
   export const RPC_PROXY_API_KEY_DEV: string;
+  export const REACT_NATIVE_RUDDERSTACK_WRITE_KEY: string;
+  export const RUDDERSTACK_DATA_PLANE_URL: string;
 }

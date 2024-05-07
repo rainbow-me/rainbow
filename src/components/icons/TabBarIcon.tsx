@@ -1,5 +1,5 @@
 import MaskedView from '@react-native-masked-view/masked-view';
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import Animated, { interpolate, interpolateColor, useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { Box, Cover } from '@/design-system';
 import { globalColors } from '@/design-system/color/palettes';
@@ -20,7 +20,7 @@ type TabBarIconProps = {
 export function TabBarIcon({ accentColor, hideShadow, icon, index, reanimatedPosition, size, tintBackdrop, tintOpacity }: TabBarIconProps) {
   const { colors, isDarkMode } = useTheme();
 
-  const hasTransparentInnerFill = icon === 'tabDiscover' || icon === 'tabPoints';
+  const hasTransparentInnerFill = icon === 'tabDiscover' || icon === 'tabPoints' || icon === 'tabDappBrowser';
 
   const outlineColor = isDarkMode ? globalColors.blueGrey60 : globalColors.blueGrey70;
 

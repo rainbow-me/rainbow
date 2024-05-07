@@ -39,7 +39,6 @@ apply plugin: "com.facebook.react"
 
 
 apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
-apply from: "../../node_modules/react-native-code-push/android/codepush.gradle"
 
 react {
 	    /* Folders */
@@ -146,14 +145,11 @@ android {
 
     namespace 'me.rainbow'
     defaultConfig {
-        // https://github.com/microsoft/react-native-code-push/issues/1961#issuecomment-710698621
-        resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
-        resValue 'string', "CodePushDeploymentKey", env.get('CODE_PUSH_DEPLOYMENT_KEY_ANDROID')
         applicationId "me.rainbow"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 205
-        versionName "1.9.17"
+        versionCode 211
+        versionName "1.9.23"
         missingDimensionStrategy 'react-native-camera', 'general'
         renderscriptTargetApi 23
         renderscriptSupportModeEnabled true
@@ -226,12 +222,6 @@ dependencies {
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
     implementation "androidx.core:core-splashscreen:1.0.0"
     implementation project(':react-native-plaid-link-sdk')
-
-    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
-    debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
-        exclude group:'com.squareup.okhttp3', module:'okhttp'
-    }
-    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_FRESCO_VERSION}")
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")

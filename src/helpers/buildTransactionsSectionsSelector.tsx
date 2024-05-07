@@ -1,25 +1,24 @@
 import { format } from 'date-fns';
 import { capitalize, groupBy, isEmpty } from 'lodash';
 import React from 'react';
-import { createSelector } from 'reselect';
 import { FastTransactionCoinRow, RequestCoinRow } from '../components/coin-row';
 import { thisMonthTimestamp, thisYearTimestamp, todayTimestamp, yesterdayTimestamp } from './transactions';
-import { TransactionStatusTypes } from '@/entities';
+import { NativeCurrencyKey, RainbowTransaction, TransactionStatusTypes } from '@/entities';
 import * as i18n from '@/languages';
+import { WalletconnectRequestData } from '@/redux/requests';
+import { ThemeContextProps } from '@/theme';
+import { Contact } from '@/redux/contacts';
+import { TransactionStatus } from '@/resources/transactions/types';
 
-const mainnetAddressesSelector = (state: any) => state.mainnetAddresses;
-const accountAddressSelector = (state: any) => state.accountAddress;
-const contactsSelector = (state: any) => state.contacts;
-const requestsSelector = (state: any) => state.requests;
-const themeSelector = (state: any) => state.theme;
-const transactionsSelector = (state: any) => state.transactions;
-const focusedSelector = (state: any) => state.isFocused;
-const initializedSelector = (state: any) => state.initialized;
-const navigateSelector = (state: any) => state.navigate;
+type RainbowTransactionWithContact = RainbowTransaction & {
+  contact: Contact | null;
+};
 
 // bad news
-const groupTransactionByDate = ({ pending, minedAt }: any) => {
-  if (pending) return i18n.t(i18n.l.transactions.pending_title);
+const groupTransactionByDate = ({ status, minedAt }: { status: TransactionStatus; minedAt: string }) => {
+  if (status === 'pending') {
+    return i18n.t(i18n.l.transactions.pending_title);
+  }
 
   const ts = parseInt(minedAt, 10) * 1000;
 
@@ -33,59 +32,87 @@ const groupTransactionByDate = ({ pending, minedAt }: any) => {
       })
     );
   } catch (e) {
-    console.log(e);
     return i18n.t(i18n.l.transactions.dropped_title);
   }
 };
 
-const addContactInfo = (contacts: any) => (txn: any) => {
-  const { from, to, status } = txn;
-  const isSent = status === TransactionStatusTypes.sent;
-  const contactAddress = isSent ? to : from;
-  const contact = contacts?.[contactAddress?.toLowerCase()] ?? null;
-  return {
-    ...txn,
-    contact,
+const addContactInfo =
+  (contacts: { [address: string]: Contact }) =>
+  (
+    txn: RainbowTransaction
+  ): RainbowTransaction & {
+    contact: Contact | null;
+  } => {
+    const { from, to, status } = txn;
+    const isSent = status === TransactionStatusTypes.sent;
+    const contactAddress = (isSent ? to : from) || '';
+    const contact = contacts?.[contactAddress?.toLowerCase()] ?? null;
+    return {
+      ...txn,
+      contact,
+    };
   };
-};
 
-const buildTransactionsSections = (
-  accountAddress: any,
-  mainnetAddresses: any,
-  contacts: any,
-  requests: any,
-  theme: any,
-  transactions: any,
-  isFocused: any,
-  initialized: any
-) => {
-  if (!isFocused && !initialized) {
+export const buildTransactionsSections = ({
+  accountAddress,
+  contacts,
+  requests,
+  theme,
+  transactions,
+  nativeCurrency,
+}: {
+  accountAddress: string;
+  contacts: { [address: string]: Contact };
+  requests: WalletconnectRequestData[];
+  theme: ThemeContextProps;
+  transactions: RainbowTransaction[];
+  nativeCurrency: NativeCurrencyKey;
+}) => {
+  if (!transactions) {
     return { sections: [] };
   }
 
-  let sectionedTransactions: any = [];
+  let sectionedTransactions: {
+    title: string;
+    data: RainbowTransactionWithContact[];
+    renderItem: ({ item }: { item: RainbowTransactionWithContact }) => JSX.Element;
+  }[] = [];
 
   const transactionsWithContacts = transactions?.map(addContactInfo(contacts));
 
   if (!isEmpty(transactionsWithContacts)) {
     const transactionsByDate = groupBy(transactionsWithContacts, groupTransactionByDate);
 
-    sectionedTransactions = Object.keys(transactionsByDate)
-      .filter(section => section !== 'Dropped')
-      .map(section => ({
-        data: transactionsByDate[section].map(txn => ({
-          ...txn,
+    const test = Object.keys(transactionsByDate);
+    const filter = test.filter(key => key !== 'Dropped');
+    const sectioned: {
+      title: string;
+      data: RainbowTransactionWithContact[];
+      renderItem: ({ item }: { item: RainbowTransactionWithContact }) => JSX.Element;
+    }[] = filter.map((section: string) => {
+      const sectionData: RainbowTransactionWithContact[] = transactionsByDate[section].map(txn => {
+        const typeTxn = txn as RainbowTransactionWithContact;
+        const res = {
+          ...typeTxn,
+          to: typeTxn.to || '',
+          from: typeTxn.from || '',
           accountAddress,
-          mainnetAddress: mainnetAddresses[`${txn.address}_${txn.network}`],
-        })),
-        renderItem: ({ item }: any) => <FastTransactionCoinRow item={item} theme={theme} />,
-        title: section,
-      }));
+        };
 
-    const pendingSectionIndex = sectionedTransactions.findIndex(
-      // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'title' implicitly has an 'any' ty... Remove this comment to see the full error message
-      ({ title }) => title === 'Pending'
-    );
+        return res;
+      });
+
+      return {
+        data: sectionData,
+        renderItem: ({ item }: { item: RainbowTransactionWithContact }) => (
+          <FastTransactionCoinRow item={item} theme={theme} nativeCurrency={nativeCurrency} />
+        ),
+        title: section,
+      };
+    });
+    sectionedTransactions = sectioned;
+
+    const pendingSectionIndex = sectionedTransactions.findIndex(({ title }) => title === 'Pending');
     if (pendingSectionIndex > 0) {
       const pendingSection = sectionedTransactions.splice(pendingSectionIndex, 1);
       sectionedTransactions.unshift(pendingSection[0]);
@@ -99,7 +126,7 @@ const buildTransactionsSections = (
       {
         data: requests,
         renderItem: ({ item }: any) => <RequestCoinRow item={item} theme={theme} />,
-        title: 'Requests',
+        title: i18n.t(i18n.l.walletconnect.requests),
       },
     ];
   }
@@ -107,18 +134,3 @@ const buildTransactionsSections = (
     sections: requestsToApprove.concat(sectionedTransactions),
   };
 };
-
-export const buildTransactionsSectionsSelector = createSelector(
-  [
-    accountAddressSelector,
-    mainnetAddressesSelector,
-    contactsSelector,
-    requestsSelector,
-    themeSelector,
-    transactionsSelector,
-    focusedSelector,
-    initializedSelector,
-    navigateSelector,
-  ],
-  buildTransactionsSections
-);

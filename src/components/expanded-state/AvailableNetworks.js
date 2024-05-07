@@ -5,16 +5,16 @@ import RadialGradient from 'react-native-radial-gradient';
 import { Box } from '@/design-system';
 import networkInfo from '@/helpers/networkInfo';
 import { useNavigation } from '@/navigation';
-import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { padding, position } from '@/styles';
 import { ethereumUtils } from '@/utils';
 import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../animations';
 import { Column, Row } from '../layout';
-import { ChainBadge, CoinIcon } from '../coin-icon';
+import { ChainBadge } from '../coin-icon';
 import Divider from '../Divider';
 import { Text } from '../text';
+import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 
 const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginBottom = 24, marginHorizontal = 19, prominent }) => {
   const { colors } = useTheme();
@@ -69,11 +69,7 @@ const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginBottom = 24, 
                   width={{ custom: 22 }}
                   zIndex={availableNetworks?.length - index}
                 >
-                  {network !== 'mainnet' ? (
-                    <ChainBadge network={network} position="relative" size="small" />
-                  ) : (
-                    <CoinIcon address={ETH_ADDRESS} size={20} symbol={ETH_SYMBOL} />
-                  )}
+                  {network !== 'mainnet' ? <ChainBadge network={network} position="relative" size="small" /> : <EthCoinIcon size={20} />}
                 </Box>
               );
             })}

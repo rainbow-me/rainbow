@@ -1,4 +1,4 @@
-import lang from 'i18n-js';
+import * as lang from '@/languages';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { SectionList, StyleSheet, View } from 'react-native';
 import sectionListGetItemLayout from 'react-native-section-list-get-item-layout';
@@ -95,7 +95,7 @@ const ActivityList = ({
     let currentPendingTransactionsCount = 0;
     const pendingTxSection = sections[requests?.length ? 1 : 0];
 
-    if (pendingTxSection && pendingTxSection.title === 'Pending') {
+    if (pendingTxSection && pendingTxSection.title === lang.t(lang.l.transactions.pending_title)) {
       currentPendingTransactionsCount = pendingTxSection.data.length;
     }
     return currentPendingTransactionsCount;
@@ -139,7 +139,7 @@ const ActivityList = ({
     }
   } else {
     return (
-      <ActivityListEmptyState emoji="👻" label={lang.t('activity_list.empty_state.testnet_label')}>
+      <ActivityListEmptyState emoji="👻" label={lang.t(lang.l.empty_state.testnet_label)}>
         {header}
       </ActivityListEmptyState>
     );

@@ -3,6 +3,8 @@ platform :ios, '13.0'
 
 pod 'Firebase', :modular_headers => true
 pod 'FirebaseCore', :modular_headers => true
+pod 'FirebaseRemoteConfig', :modular_headers => true
+pod 'FirebaseABTesting', :modular_headers => true
 pod 'FirebaseCoreExtension', :modular_headers => true
 pod 'FirebaseInstallations', :modular_headers => true
 pod 'GoogleDataTransport', :modular_headers => true
@@ -25,7 +27,7 @@ target 'SelectTokenIntent' do
 end
 
 target 'ImageNotification' do
-  pod 'Firebase/Messaging', '~> 10.12.0', :modular_headers => true
+  pod 'Firebase/Messaging', :modular_headers => true
 end
 
 target 'Rainbow' do
@@ -41,8 +43,6 @@ target 'Rainbow' do
     # to enable hermes on iOS, change `false` to `true` and then install pods
     :hermes_enabled => ENV['USE_HERMES'] != 'NO',
     :fabric_enabled => flags[:fabric_enabled],
-    # Enables Flipper
-    :flipper_configuration => FlipperConfiguration.enabled,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
@@ -65,7 +65,7 @@ target 'Rainbow' do
   pod 'SRSRadialGradient', :path => '../node_modules/react-native-radial-gradient/ios'
   pod 'react-native-palette-full', :path => '../node_modules/react-native-palette-full'
   pod 'react-native-ble-plx', :path => '../node_modules/react-native-ble-plx'
-  pod 'Plaid', '~> 4.4.0'
+  pod 'TOCropViewController', '2.7.3'
 
   use_native_modules!
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { Animated, StatusBar, View } from 'react-native';
 import { StackNavigationOptions, TransitionPreset } from '@react-navigation/stack';
 
-import { IS_IOS } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { lightModeThemeColors } from '@/styles';
 import { currentColors as colors } from '@/theme';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
@@ -12,6 +12,7 @@ import AvatarCircle from '@/components/profile/AvatarCircle';
 import Routes from '@/navigation/routesNames';
 import { EmojiAvatar, ProfileAvatarSize } from '@/components/asset-list/RecyclerAssetList2/profile-header/ProfileAvatarRow';
 import { BottomSheetNavigationOptions } from './bottom-sheet/types';
+import { initialWindowMetrics } from 'react-native-safe-area-context';
 
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
 export const sheetVerticalOffset = statusBarHeight;
@@ -434,6 +435,14 @@ export const consoleSheetPreset: BottomSheetNavigationOptions = {
   backdropOpacity: 1,
 };
 
+export const swapSheetPreset: BottomSheetNavigationOptions = {
+  backdropColor: 'black',
+  backdropOpacity: 0.9,
+  enableContentPanningGesture: IS_ANDROID,
+  backdropPressBehavior: 'none',
+  height: '100%',
+};
+
 export const expandedPresetWithSmallGestureResponseDistance: StackNavigationOptions & BottomSheetNavigationOptions = {
   ...expandedPreset,
   gestureResponseDistance: smallGestureResponseDistance,
@@ -445,7 +454,12 @@ export const addWalletNavigatorPreset = ({ route }: any) => ({
 
 export const nftSingleOfferSheetPreset = ({ route }: any) => ({
   ...bottomSheetPreset,
-  height: route?.params.longFormHeight,
+  height: (route?.params.longFormHeight || 0) + (initialWindowMetrics?.insets?.bottom || 0),
+});
+
+export const appIconUnlockSheetPreset = ({ route }: any) => ({
+  ...bottomSheetPreset,
+  height: (route?.params.longFormHeight || 0) + (initialWindowMetrics?.insets?.bottom || 0),
 });
 
 export const hardwareWalletTxNavigatorPreset = {

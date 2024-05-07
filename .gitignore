@@ -79,6 +79,7 @@ src/screens/ExamplePage.js
 
 #e2e output
 e2e/logs/*/*.xml
+artifacts/*
 
 # android playstore credentials
 pc-api-8090318172169087080-31-b8ee34328314.json
@@ -91,7 +92,7 @@ ios/Extras.json
 rainbow-scripts
 
 # Patches
-patches/react-native-webview+13.2.3.patch
+patches/react-native-webview*
 
 .eslintcache
 
@@ -112,3 +113,9 @@ coverage
 
 # VSCode
 .vscode/
+
+# Zed
+.zed/
+
+# Webpack
+InjectedJSBundle.js.LICENSE.txt

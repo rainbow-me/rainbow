@@ -4,7 +4,7 @@ import { useTheme } from '@/theme';
 
 import { GenericCard } from '../cards/GenericCard';
 import startCase from 'lodash/startCase';
-import { CoinIcon, RequestVendorLogoIcon } from '../coin-icon';
+import { RequestVendorLogoIcon } from '../coin-icon';
 import { EthereumAddress } from '@/entities';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -13,8 +13,10 @@ import { event } from '@/analytics/event';
 import { IS_ANDROID } from '@/env';
 import { capitalize, uniqBy } from 'lodash';
 import { RainbowDeposit, RainbowPosition } from '@/resources/defi/types';
-import { ethereumUtils } from '@/utils';
 import { Network } from '@/networks/types';
+import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
+import { useAccountSettings } from '@/hooks';
+import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 
 type PositionCardProps = {
   position: RainbowPosition;
@@ -26,6 +28,23 @@ type CoinStackToken = {
   symbol: string;
 };
 
+function CoinIconForStack({ token }: { token: CoinStackToken }) {
+  const theme = useTheme();
+  const { nativeCurrency } = useAccountSettings();
+  const { data: externalAsset } = useExternalToken({ address: token.address, network: token.network, currency: nativeCurrency });
+
+  return (
+    <RainbowCoinIcon
+      size={16}
+      icon={externalAsset?.icon_url}
+      network={token?.network as Network}
+      symbol={token.symbol}
+      theme={theme}
+      colors={externalAsset?.colors}
+      ignoreBadge
+    />
+  );
+}
 function CoinIconStack({ tokens }: { tokens: CoinStackToken[] }) {
   const { colors } = useTheme();
 
@@ -45,7 +64,7 @@ function CoinIconStack({ tokens }: { tokens: CoinStackToken[] }) {
               borderWidth: 2,
             }}
           >
-            <CoinIcon address={token.address} size={16} symbol={token.symbol} network={token.network} ignoreBadge />
+            <CoinIconForStack token={token} />
           </Box>
         );
       })}

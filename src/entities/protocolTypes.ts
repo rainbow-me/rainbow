@@ -1,49 +1,29 @@
-export enum ProtocolType {
-  aave = 'aave',
-  bancor = 'bancor',
-  compound = 'compound',
-  curve = 'curve',
-  disperse_app = 'disperse_app',
-  dsr = 'dsr',
-  dydx = 'dydx',
-  fulcrum = 'fulcrum',
-  iearn = 'iearn',
-  kyber = 'kyber',
-  maker = 'maker',
-  maker_dss = 'maker_dss',
-  one_inch = 'one_inch',
-  pool_together = 'pool_together',
-  ray = 'ray',
-  rainbow = 'rainbow',
-  set = 'set',
-  socket = 'socket',
-  synthetix = 'synthetix',
-  uniswap = 'uniswap',
-  zrx_stacking = 'zrx_stacking',
-  zrx_staking = 'zrx_staking',
-}
-
-export default {
-  [ProtocolType.aave]: 'Aave',
-  [ProtocolType.bancor]: 'Bancor',
-  [ProtocolType.compound]: 'Compound',
-  [ProtocolType.curve]: 'Curve',
-  [ProtocolType.disperse_app]: 'Disperse',
-  [ProtocolType.dsr]: 'DSR',
-  [ProtocolType.dydx]: 'dYdX',
-  [ProtocolType.fulcrum]: 'Fulcrum',
-  [ProtocolType.iearn]: 'iEarn Finance',
-  [ProtocolType.kyber]: 'Kyber',
-  [ProtocolType.maker]: 'Maker', // old maker
-  [ProtocolType.maker_dss]: 'Maker',
-  [ProtocolType.one_inch]: '1inch',
-  [ProtocolType.pool_together]: 'Pool Together',
-  [ProtocolType.ray]: 'Ray',
-  [ProtocolType.rainbow]: 'Rainbow',
-  [ProtocolType.set]: 'Set Protocol',
-  [ProtocolType.socket]: 'Socket',
-  [ProtocolType.synthetix]: 'Synthetix',
-  [ProtocolType.uniswap]: 'Uniswap',
-  [ProtocolType.zrx_stacking]: '0x Staking', // this is here for now due to a typo from Zerion field
-  [ProtocolType.zrx_staking]: '0x Staking',
-};
+// protocols https://github.com/rainbow-me/go-utils-lib/blob/master/pkg/enums/token_type.go#L44
+export type ProtocolType =
+  | 'aave-v2'
+  | 'balancer'
+  | 'curve'
+  | 'compound'
+  | 'compound-v3'
+  | 'maker'
+  | 'one-inch'
+  | 'piedao-pool'
+  | 'yearn'
+  | 'yearn-v2'
+  | 'uniswap-v2'
+  | 'aave-v3'
+  | 'harvest'
+  | 'lido'
+  | 'uniswap-v3'
+  | 'convex'
+  | 'convex-frax'
+  | 'pancake-swap'
+  | 'balancer-v2'
+  | 'frax'
+  | 'gmx'
+  | 'aura'
+  | 'pickle'
+  | 'yearn-v3'
+  | 'venus'
+  | 'sushiswap'
+  | 'socket';

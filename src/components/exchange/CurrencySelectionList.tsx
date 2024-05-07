@@ -47,6 +47,8 @@ const CurrencySelectionList: ForwardRefRenderFunction<SectionList, CurrencySelec
             custom: CurrencySelectModalHeaderHeight + ExchangeSearchHeight / 2,
           }}
         >
+          {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+          {/* @ts-ignore */}
           <NoResults onL2={onL2} type={fromDiscover ? NoResultsType.Discover : NoResultsType.Swap} />
         </Box>
       ) : (

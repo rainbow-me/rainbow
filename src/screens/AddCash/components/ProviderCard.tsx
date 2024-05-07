@@ -5,10 +5,8 @@ import chroma from 'chroma-js';
 
 import { IS_IOS } from '@/env';
 import { Box, Text, Inline, Bleed, useBackgroundColor } from '@/design-system';
-import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { Network } from '@/helpers/networkTypes';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
-import { CoinIcon } from '@/components/coin-icon';
 
 import { Ramp as RampLogo } from '@/components/icons/svg/Ramp';
 import { Ratio as RatioLogo } from '@/components/icons/svg/Ratio';
@@ -19,6 +17,7 @@ import { FiatProviderName } from '@/entities/f2c';
 import { convertAPINetworkToInternalNetwork } from '@/screens/AddCash/utils';
 import { ProviderConfig, CalloutType, PaymentMethod } from '@/screens/AddCash/types';
 import * as i18n from '@/languages';
+import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 
 type PaymentMethodConfig = {
   name: string;
@@ -27,7 +26,6 @@ type PaymentMethodConfig = {
 
 const providerLogos = {
   [FiatProviderName.Ramp]: RampLogo,
-  [FiatProviderName.Ratio]: RatioLogo,
   [FiatProviderName.Coinbase]: CoinbaseLogo,
   [FiatProviderName.Moonpay]: MoonpayLogo,
 };
@@ -97,11 +95,7 @@ function NetworkIcons({ networks }: { networks: Network[] }) {
               borderRadius: 30,
             }}
           >
-            {network !== Network.mainnet ? (
-              <ChainBadge network={network} position="relative" size="small" />
-            ) : (
-              <CoinIcon address={ETH_ADDRESS} size={20} symbol={ETH_SYMBOL} network={network} />
-            )}
+            {network !== Network.mainnet ? <ChainBadge network={network} position="relative" size="small" /> : <EthCoinIcon size={20} />}
           </Box>
         );
       })}

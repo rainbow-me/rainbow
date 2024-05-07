@@ -146,7 +146,7 @@ export default function useSwapCurrencyHandlers({
       setLastFocusedInputHandle?.(inputFieldRef);
       handleNavigate?.(newOutputCurrency);
     },
-    [crosschainSwapsEnabled, dispatch, inputFieldRef, nativeCurrency, setLastFocusedInputHandle]
+    [crosschainSwapsEnabled, dispatch, inputFieldRef, setLastFocusedInputHandle]
   );
 
   const navigateToSelectInputCurrency = useCallback(

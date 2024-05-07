@@ -15,7 +15,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { useNavigation } from '@react-navigation/native';
 import * as i18n from '@/languages';
-import { dataRemovePendingTransaction } from '@/redux/data';
 
 const SIZE = 40;
 
@@ -25,13 +24,13 @@ type Props = {
 };
 
 export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props> = ({ transaction, hideIcon }) => {
-  const { minedAt, status, pending, from } = transaction;
+  const { minedAt, status, type, from } = transaction;
   const dispatch = useDispatch();
   const { navigate, goBack } = useNavigation();
   const accountAddress = useSelector((state: AppState) => state.settings.accountAddress);
   const date = formatTransactionDetailsDate(minedAt ?? undefined);
   const { colors } = useTheme();
-  const { icon, color, gradient } = getIconColorAndGradientForTransactionStatus(colors, status, pending);
+  const { icon, color, gradient } = getIconColorAndGradientForTransactionStatus(colors, status);
 
   const isOutgoing = from?.toLowerCase() === accountAddress?.toLowerCase();
   const canBeResubmitted = isOutgoing && !minedAt;
@@ -66,15 +65,6 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
               },
             ]
           : []),
-        {
-          actionKey: 'remove',
-          actionTitle: i18n.t(i18n.l.transaction_details.actions_menu.remove),
-          menuAttributes: ['destructive'],
-          icon: {
-            iconType: 'SYSTEM',
-            iconValue: 'trash',
-          },
-        },
       ],
     }),
     [canBeCancelled, canBeResubmitted]
@@ -98,17 +88,9 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
             type: 'cancel',
           });
           return;
-        case 'remove':
-          if (transaction.hash && transaction.network) {
-            // remove tx
-            dispatch(dataRemovePendingTransaction(transaction.hash, transaction.network));
-            // close tx details sheet
-            goBack();
-          }
-          return;
       }
     },
-    [dispatch, goBack, navigate, transaction]
+    [navigate, transaction]
   );
 
   return (
@@ -130,7 +112,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
       </Box>
       <Box paddingBottom="24px">
         <Stack alignHorizontal="center" space="16px">
-          {status && !hideIcon && (
+          {type && !hideIcon && (
             <Box borderRadius={30} style={{ overflow: 'hidden' }}>
               <RadialGradient
                 style={{
@@ -149,10 +131,12 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
               </RadialGradient>
             </Box>
           )}
+
           <Stack alignHorizontal="center" space="24px">
-            {status && (
+            {type && (
               <Text size="22pt" weight="heavy" color={color}>
-                {capitalize(status)}
+                {/* @ts-ignore */}
+                {i18n.t(i18n.l.transactions.type[transaction?.title])}
               </Text>
             )}
             {date && (

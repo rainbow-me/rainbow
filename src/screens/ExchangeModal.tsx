@@ -5,8 +5,8 @@ import React, { MutableRefObject, useCallback, useEffect, useLayoutEffect, useMe
 import equal from 'react-fast-compare';
 import { EmitterSubscription, InteractionManager, Keyboard, NativeModules, TextInput, View } from 'react-native';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
-import { useDispatch, useSelector } from 'react-redux';
-import { useDebounce } from 'use-debounce/lib';
+import { useDispatch } from 'react-redux';
+import { useDebounce } from 'use-debounce';
 import { useMemoOne } from 'use-memo-one';
 import { dismissingScreenListener } from '../../shim';
 import {
@@ -82,6 +82,9 @@ export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.goerli]: 100,
   [Network.gnosis]: 200,
   [Network.zora]: 200,
+  [Network.avalanche]: 200,
+  [Network.blast]: 200,
+  [Network.degen]: 200,
 };
 
 export const getDefaultSlippageFromConfig = (network: Network) => {
@@ -535,7 +538,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
   );
 
   const handleSubmit = useCallback(async () => {
-    let amountInUSD = '0';
+    const amountInUSD = '0';
     const NotificationManager = ios ? NativeModules.NotificationManager : null;
     try {
       // Tell iOS we're running a rap (for tracking purposes)
@@ -679,9 +682,9 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
       android && Keyboard.dismiss();
       const lastFocusedInputHandleTemporary = lastFocusedInputHandle.current;
       android && (lastFocusedInputHandle.current = null);
-      inputFieldRef?.current?.blur();
-      outputFieldRef?.current?.blur();
-      nativeFieldRef?.current?.blur();
+      inputFieldRef?.current?.blur?.();
+      outputFieldRef?.current?.blur?.();
+      nativeFieldRef?.current?.blur?.();
       const internalNavigate = () => {
         IS_ANDROID && keyboardListenerSubscription.current?.remove();
         setParams({ focused: false });
@@ -798,6 +801,8 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
                   inputCurrencyMainnetAddress={inputCurrency?.mainnet_address}
                   inputCurrencySymbol={inputCurrency?.symbol}
                   inputFieldRef={inputFieldRef}
+                  inputCurrencyIcon={inputCurrency?.icon_url}
+                  inputCurrencyColors={inputCurrency?.colors}
                   loading={loading}
                   nativeAmount={nativeAmountDisplay}
                   nativeCurrency={nativeCurrency}
@@ -828,6 +833,8 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
                   loading={loading}
                   outputAmount={outputAmountDisplay}
                   outputCurrencyAddress={outputCurrency?.address}
+                  outputCurrencyIcon={outputCurrency?.icon_url}
+                  outputCurrencyColors={outputCurrency?.colors}
                   outputCurrencyMainnetAddress={outputCurrency?.mainnet_address}
                   outputCurrencySymbol={outputCurrency?.symbol}
                   outputFieldRef={outputFieldRef}
@@ -841,6 +848,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
                   isHighPriceImpact={
                     !confirmButtonProps.disabled && !confirmButtonProps.loading && debouncedIsHighPriceImpact && isSufficientBalance
                   }
+                  outputCurrencySymbol={outputCurrency?.symbol}
                   onFlipCurrencies={loading ? NOOP : flipCurrencies}
                   onPressImpactWarning={navigateToSwapDetailsModal}
                   onPressSettings={navigateToSwapSettingsSheet}

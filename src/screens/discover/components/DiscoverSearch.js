@@ -4,7 +4,7 @@ import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } 
 import { InteractionManager, View } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
-import { useDebounce } from 'use-debounce/lib';
+import { useDebounce } from 'use-debounce';
 import CurrencySelectionTypes from '@/helpers/currencySelectionTypes';
 
 import deviceUtils from '@/utils/deviceUtils';
@@ -23,7 +23,7 @@ import { ethereumUtils } from '@/utils';
 import { Network } from '@/helpers';
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
-import { getHeaderHeight } from '@/navigation/SwipeNavigator';
+import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
@@ -47,7 +47,7 @@ export default function DiscoverSearch() {
 
   const { colors } = useTheme();
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const marginBottom = useMemo(() => getHeaderHeight(), []);
+  const marginBottom = TAB_BAR_HEIGHT;
 
   const currencySelectionListRef = useRef();
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);

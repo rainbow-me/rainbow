@@ -64,6 +64,7 @@ import { NoResultsType } from '@/components/list/NoResults';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { Wallet } from '@ethersproject/wallet';
 import { getNetworkObj } from '@/networks';
+import { addNewTransaction } from '@/state/pendingTransactions';
 import { getNextNonce } from '@/state/nonces';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 
@@ -87,7 +88,10 @@ const SheetContainer = styled(Column).attrs({
   width: '100%',
 });
 
-const validateRecipient = toAddress => {
+const validateRecipient = (toAddress, tokenAddress) => {
+  if (toAddress?.toLowerCase() === tokenAddress?.toLowerCase()) {
+    return false;
+  }
   // Don't allow send to known ERC20 contracts on mainnet
   if (rainbowTokenList.RAINBOW_TOKEN_LIST[toAddress.toLowerCase()]) {
     return false;
@@ -96,9 +100,7 @@ const validateRecipient = toAddress => {
 };
 
 export default function SendSheet(props) {
-  const dispatch = useDispatch();
   const { goBack, navigate } = useNavigation();
-  const { dataAddNewTransaction } = useTransactionConfirmation();
   const { data: sortedAssets } = useSortedUserAssets();
   const {
     gasFeeParamsBySpeed,
@@ -489,7 +491,14 @@ export default function SendSheet(props) {
             txDetails.data = data;
             txDetails.value = value;
             txDetails.txTo = signableTransaction.to;
-            await dispatch(dataAddNewTransaction(txDetails, null, false, currentProvider));
+            txDetails.pending = true;
+            txDetails.type = 'send';
+            txDetails.status = 'pending';
+            addNewTransaction({
+              address: accountAddress,
+              network: currentNetwork,
+              transaction: txDetails,
+            });
           }
         }
       } catch (error) {
@@ -513,8 +522,6 @@ export default function SendSheet(props) {
       amountDetails.isSufficientBalance,
       currentNetwork,
       currentProvider,
-      dataAddNewTransaction,
-      dispatch,
       ensName,
       ensProfile?.data?.coinAddresses,
       ensProfile?.data?.contenthash,
@@ -615,7 +622,8 @@ export default function SendSheet(props) {
     if (isValid) {
       toAddress = await resolveNameOrAddress(recipient);
     }
-    const validRecipient = validateRecipient(toAddress);
+    const tokenAddress = selected?.address;
+    const validRecipient = validateRecipient(toAddress, tokenAddress);
     assetInputRef?.current?.blur();
     nativeCurrencyInputRef?.current?.blur();
     if (!validRecipient) {
@@ -717,8 +725,6 @@ export default function SendSheet(props) {
     if (network === Network.mainnet && !recipientOverride && recipient?.length) {
       setLoadingEnsSuggestions(true);
       debouncedFetchSuggestions(recipient, setEnsSuggestions, setLoadingEnsSuggestions, profilesEnabled);
-    } else {
-      setEnsSuggestions([]);
     }
   }, [network, recipient, recipientOverride, setEnsSuggestions, watchedAccounts, profilesEnabled]);
 

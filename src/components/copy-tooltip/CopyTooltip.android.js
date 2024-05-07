@@ -1,4 +1,4 @@
-import Clipboard from '@react-native-community/clipboard';
+import Clipboard from '@react-native-clipboard/clipboard';
 import PropTypes from 'prop-types';
 import React, { Fragment, useRef, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';

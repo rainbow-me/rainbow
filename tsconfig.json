@@ -13,8 +13,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@rainbow-me/apollo": ["./src/apollo"],
-      "@rainbow-me/apollo/*": ["./src/apollo/*"],
+      "@/swaps": ["./src/__swaps__"],
       "@rainbow-me/assets": ["./src/assets"],
       "@rainbow-me/config": ["./src/config"],
       "@rainbow-me/config/*": ["./src/config/*"],
@@ -56,5 +55,5 @@
     "resolveJsonModule": true
   },
   "globals": ["useTheme", "ios", "android", "web", "__DEV__", "IS_DEV"],
-  "exclude": ["ios", "android", "patches/reanimated", "node_modules", "babel.config.js", "metro.config.js", "jest.config.js"]
+  "exclude": ["ios", "src/browser", "android", "patches/reanimated", "node_modules", "babel.config.js", "metro.config.js", "jest.config.js"]
 }

@@ -2,12 +2,12 @@ import React, { useCallback, useMemo } from 'react';
 import { SessionTypes } from '@walletconnect/types';
 import RadialGradient from 'react-native-radial-gradient';
 
-import { RequestVendorLogoIcon, CoinIcon } from '../coin-icon';
+import { RequestVendorLogoIcon } from '../coin-icon';
 import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { ContextMenuButton } from '../context-menu';
 import { Centered, ColumnWithMargins, Row } from '../layout';
-import { Text, TruncatedText } from '../text';
+import { TruncatedText } from '../text';
 import { analytics } from '@/analytics';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
@@ -24,9 +24,8 @@ import { logger, RainbowError } from '@/logger';
 import { changeAccount, disconnectSession, isSupportedChain } from '@/walletConnect';
 import { Box, Inline } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
-import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
-
 import { Network } from '@/helpers';
+import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 
 const CONTAINER_PADDING = 15;
 const VENDOR_LOGO_ICON_SIZE = 50;
@@ -61,7 +60,8 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
   const { dappName, dappUrl, dappLogo, address, chainIds } = React.useMemo(() => {
     const { namespaces, requiredNamespaces, peer } = session;
     const { metadata } = peer;
-    const { chains } = requiredNamespaces.eip155;
+    const chains = requiredNamespaces?.eip155?.chains || [];
+
     const eip155Account = namespaces.eip155?.accounts?.[0] || undefined;
 
     if (!eip155Account) {
@@ -232,7 +232,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
                           {network !== Network.mainnet ? (
                             <ChainBadge network={network} position="relative" size="small" />
                           ) : (
-                            <CoinIcon address={ETH_ADDRESS} size={20} symbol={ETH_SYMBOL} network={network} />
+                            <EthCoinIcon size={20} />
                           )}
                         </Box>
                       );

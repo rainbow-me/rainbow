@@ -5,11 +5,12 @@ import { Icon } from '../../../../components/icons';
 import { ButtonPressAnimation } from '../../../animations';
 
 import { ExtendedState } from '../core/RawRecyclerList';
-import FastCoinIcon from './FastCoinIcon';
+
 import { Text } from '@/design-system';
 import { useAccountAsset, useCoinListFinishEditingOptions } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { borders, colors, padding, shadow } from '@/styles';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 
 interface CoinCheckButtonProps {
   isHidden: boolean;
@@ -63,7 +64,7 @@ interface MemoizedBalanceCoinRowProps {
 
 const MemoizedBalanceCoinRow = React.memo(
   ({ uniqueId, nativeCurrency, theme, navigate, nativeCurrencySymbol, isHidden, maybeCallback }: MemoizedBalanceCoinRowProps) => {
-    const item = useAccountAsset(uniqueId, nativeCurrency);
+    const item = useAccountAsset(uniqueId, nativeCurrency) as any;
 
     const handlePress = useCallback(() => {
       if (maybeCallback.current) {
@@ -94,12 +95,13 @@ const MemoizedBalanceCoinRow = React.memo(
         <ButtonPressAnimation onPress={handlePress} scaleTo={0.96} testID={`balance-coin-row-${item?.name}`}>
           <View style={[sx.container]}>
             <View style={sx.iconContainer}>
-              <FastCoinIcon
-                address={item?.address}
+              <RainbowCoinIcon
+                size={40}
+                icon={item?.icon_url}
                 network={item?.network}
-                mainnetAddress={item?.mainnet_address}
                 symbol={item?.symbol}
                 theme={theme}
+                colors={item?.colors}
               />
             </View>
 

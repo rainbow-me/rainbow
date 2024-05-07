@@ -8,7 +8,7 @@ import React, { useCallback } from 'react';
 import * as i18n from '@/languages';
 import { ButtonPressAnimation } from '@/components/animations';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
-import Clipboard from '@react-native-community/clipboard';
+import Clipboard from '@react-native-clipboard/clipboard';
 import { LoadingOverlay } from '@/components/modal';
 
 const TRANSLATIONS = i18n.l.wallet.new.import_or_watch_wallet_sheet;
@@ -64,7 +64,6 @@ export const ImportOrWatchWalletSheet = () => {
         >
           <Input
             autoCorrect={false}
-            autoCompleteType={false}
             autoFocus={false}
             autoCapitalize="none"
             textContentType="none"
@@ -84,9 +83,8 @@ export const ImportOrWatchWalletSheet = () => {
             selectionColor={globalColors.purple60}
             scrollEnabled={false}
             spellCheck={false}
-            width={232}
             returnKeyType="done"
-            style={textStyle}
+            style={[textStyle, { width: 232 }]}
             testID="import-sheet-input"
             value={seedPhrase}
           />

@@ -31,4 +31,8 @@ export function ColorModeProvider({ value: colorMode, children }: { value: Color
   );
 }
 
-export const useColorMode = () => useContext(ColorModeContext);
+export const useColorMode = () => {
+  const context = useContext(ColorModeContext);
+  const isDarkMode = useMemo(() => ['dark', 'darkTinted'].includes(context.colorMode), [context.colorMode]);
+  return { ...context, isDarkMode };
+};

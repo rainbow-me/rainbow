@@ -12,6 +12,7 @@ import { useDimensions } from '@/hooks';
 import { fonts, fontWithWidth, position } from '@/styles';
 import { useTheme } from '@/theme';
 import { formatURLForDisplay } from '@/utils';
+import { IS_ANDROID } from '@/env';
 
 export const ExternalLinkWarningSheetHeight = 380 + (android ? 20 : 0);
 
@@ -41,8 +42,7 @@ const ExternalLinkWarningSheet = () => {
 
   return (
     <Container deviceHeight={deviceHeight} height={ExternalLinkWarningSheetHeight} insets={insets}>
-      {/* @ts-expect-error JavaScript component */}
-      <SlackSheet additionalTopPadding={android} contentHeight={ExternalLinkWarningSheetHeight} scrollEnabled={false}>
+      <SlackSheet additionalTopPadding={IS_ANDROID} contentHeight={ExternalLinkWarningSheetHeight} scrollEnabled={false}>
         <Centered direction="column" height={ExternalLinkWarningSheetHeight} width="100%">
           <ColumnWithMargins
             margin={15}

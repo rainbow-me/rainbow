@@ -1,7 +1,7 @@
 import React, { FocusEvent, ForwardRefRenderFunction, MutableRefObject, useCallback, useEffect, useState } from 'react';
 import { StyleProp, TextInput, TouchableWithoutFeedback, ViewStyle } from 'react-native';
 import { TokenSelectionButton } from '../buttons';
-import { ChainBadge, CoinIcon, CoinIconSize } from '../coin-icon';
+import { ChainBadge, CoinIconSize } from '../coin-icon';
 import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
 import { Network } from '@/helpers';
@@ -9,7 +9,8 @@ import styled from '@/styled-thing';
 import { borders } from '@/styles';
 import { useTheme } from '@/theme';
 import { AccentColorProvider, Box, Space } from '@/design-system';
-import FastCoinIcon from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
+import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
+import { TokenColors } from '@/graphql/__generated__/metadata';
 
 const ExchangeFieldHeight = android ? 64 : 38;
 const ExchangeFieldPadding: Space = android ? '15px (Deprecated)' : '19px (Deprecated)';
@@ -22,6 +23,8 @@ const Input = styled(ExchangeInput).attrs({
 });
 
 interface ExchangeFieldProps {
+  icon?: string;
+  colors?: TokenColors;
   address: string;
   color: string;
   mainnetAddress?: string;
@@ -45,8 +48,8 @@ interface ExchangeFieldProps {
 
 const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
   {
-    address,
-    mainnetAddress,
+    icon,
+    colors,
     amount,
     color,
     disableCurrencySelection,
@@ -107,7 +110,7 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
 
   const placeholderText = symbol ? '0' : EnDash.unicode;
 
-  const editing = inputRef?.current?.isFocused() ?? false;
+  const editing = inputRef?.current?.isFocused?.() ?? false;
 
   useEffect(() => {
     if (!editing || updateOnFocus) {
@@ -138,7 +141,7 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
         >
           <Box paddingRight="10px">
             {symbol ? (
-              <FastCoinIcon address={address} mainnetAddress={mainnetAddress} symbol={symbol} network={network} theme={theme} />
+              <RainbowCoinIcon size={40} icon={icon} network={network} symbol={symbol} theme={theme} colors={colors} />
             ) : (
               <Box>
                 <AccentColorProvider color={theme.colors.alpha(theme.colors.blueGreyDark, 0.1)}>

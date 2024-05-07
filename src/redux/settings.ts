@@ -24,7 +24,6 @@ import {
 } from '@/handlers/localstorage/globalSettings';
 import { web3SetHttpProvider } from '@/handlers/web3';
 import { Network } from '@/helpers/networkTypes';
-import { dataResetState } from '@/redux/data';
 import { explorerClearState, explorerInit } from '@/redux/explorer';
 import { AppState } from '@/redux/store';
 import { ethereumUtils } from '@/utils';
@@ -269,7 +268,6 @@ export const settingsChangeLanguage = (language: Language) => async (dispatch: D
 export const settingsChangeNativeCurrency =
   (nativeCurrency: NativeCurrencyKey) =>
   async (dispatch: ThunkDispatch<AppState, unknown, SettingsStateUpdateNativeCurrencySuccessAction>) => {
-    dispatch(dataResetState());
     dispatch(explorerClearState());
     try {
       dispatch({

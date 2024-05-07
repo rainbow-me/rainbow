@@ -1,14 +1,19 @@
 import React, { useCallback } from 'react';
-import { Platform } from 'react-native';
+import { Platform, View } from 'react-native';
 import { reloadTimelines } from 'react-native-widgetkit';
-import { CoinIcon } from '../../../components/coin-icon';
 import Menu from './Menu';
 import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
 import { analytics } from '@/analytics';
 import { useAccountSettings } from '@/hooks';
-import { emojis, supportedNativeCurrencies } from '@/references';
+import { ETH_ADDRESS, WBTC_ADDRESS, emojis, supportedNativeCurrencies } from '@/references';
+import { BackgroundProvider, Box, Inline, Inset, Text } from '@/design-system';
+import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import * as i18n from '@/languages';
 import { Network } from '@/networks/types';
+import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { useTheme } from '@/theme';
 
 const emojiData = Object.entries(emojis).map(([emoji, { name }]) => [name, emoji]);
 
@@ -21,6 +26,9 @@ const currencyListItems = Object.values(supportedNativeCurrencies).map(({ curren
 
 const CurrencySection = () => {
   const { nativeCurrency, settingsChangeNativeCurrency } = useAccountSettings();
+  const theme = useTheme();
+  const { data: WBTC } = useExternalToken({ address: WBTC_ADDRESS, network: Network.mainnet, currency: nativeCurrency });
+  const { data: ETH } = useExternalToken({ address: ETH_ADDRESS, network: Network.mainnet, currency: nativeCurrency });
 
   const onSelectCurrency = useCallback(
     (currency: any) => {
@@ -44,7 +52,15 @@ const CurrencySection = () => {
               emojiName ? (
                 <MenuItem.TextIcon icon={(emoji.get('flag_' + emojiName) as string) || ''} isEmoji />
               ) : (
-                <CoinIcon address={currency} size={23} style={{ marginLeft: 7 }} symbol={currency} network={Network.mainnet} />
+                <View style={{ marginLeft: 7 }}>
+                  <RainbowCoinIcon
+                    icon={currency === ETH?.symbol ? ETH?.icon_url : WBTC?.icon_url}
+                    size={23}
+                    symbol={currency}
+                    network={Network.mainnet}
+                    theme={theme}
+                  />
+                </View>
               )
             }
             onPress={() => onSelectCurrency(currency)}

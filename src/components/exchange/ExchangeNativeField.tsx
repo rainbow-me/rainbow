@@ -64,7 +64,7 @@ const ExchangeNativeField: ForwardRefRenderFunction<TextInput, ExchangeNativeFie
 
   const { colors } = useTheme();
 
-  const isFocused = nativeFieldRef?.current?.isFocused();
+  const isFocused = nativeFieldRef?.current?.isFocused?.();
 
   const nativeAmountColor = useMemo(() => {
     const nativeAmountExists = typeof nativeAmount === 'string' && nativeAmount.length > 0;

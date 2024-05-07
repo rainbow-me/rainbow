@@ -24,6 +24,18 @@ import BaseBadge from '../../assets/badges/baseBadge.png';
 import BaseBadgeDark from '../../assets/badges/baseBadgeDark.png';
 import BaseBadgeLarge from '../../assets/badges/baseBadgeLarge.png';
 import BaseBadgeLargeDark from '../../assets/badges/baseBadgeLargeDark.png';
+import AvalancheBadge from '../../assets/badges/avalancheBadge.png';
+import AvalancheBadgeDark from '../../assets/badges/avalancheBadgeDark.png';
+import AvalancheBadgeLarge from '../../assets/badges/avalancheBadgeLarge.png';
+import AvalancheBadgeLargeDark from '../../assets/badges/avalancheBadgeLargeDark.png';
+import BlastBadge from '../../assets/badges/blastBadge.png';
+import BlastBadgeDark from '../../assets/badges/blastBadgeDark.png';
+import BlastBadgeLarge from '../../assets/badges/blastBadgeLarge.png';
+import BlastBadgeLargeDark from '../../assets/badges/blastBadgeLargeDark.png';
+import DegenBadge from '../../assets/badges/degenBadge.png';
+import DegenBadgeDark from '../../assets/badges/degenBadgeDark.png';
+import DegenBadgeLarge from '../../assets/badges/degenBadgeLarge.png';
+import DegenBadgeLargeDark from '../../assets/badges/degenBadgeLargeDark.png';
 import { Centered } from '../layout';
 import styled from '@/styled-thing';
 import { position as positions } from '@/styles';
@@ -76,6 +88,12 @@ export default function ChainBadge({
         val = isDarkMode ? ZoraBadgeLargeDark : ZoraBadgeLarge;
       } else if (network === Network.base) {
         val = isDarkMode ? BaseBadgeLargeDark : BaseBadgeLarge;
+      } else if (network === Network.avalanche) {
+        val = isDarkMode ? AvalancheBadgeLargeDark : AvalancheBadgeLarge;
+      } else if (network === Network.blast) {
+        val = isDarkMode ? BlastBadgeLargeDark : BlastBadgeLarge;
+      } else if (network === Network.degen) {
+        val = isDarkMode ? DegenBadgeLargeDark : DegenBadgeLarge;
       }
     } else {
       if (network === Network.arbitrum) {
@@ -90,6 +108,12 @@ export default function ChainBadge({
         val = isDarkMode ? ZoraBadgeDark : ZoraBadge;
       } else if (network === Network.base) {
         val = isDarkMode ? BaseBadgeDark : BaseBadge;
+      } else if (network === Network.avalanche) {
+        val = isDarkMode ? AvalancheBadgeDark : AvalancheBadge;
+      } else if (network === Network.blast) {
+        val = isDarkMode ? BlastBadgeDark : BlastBadge;
+      } else if (network === Network.degen) {
+        val = isDarkMode ? DegenBadgeDark : DegenBadge;
       }
     }
     return val;

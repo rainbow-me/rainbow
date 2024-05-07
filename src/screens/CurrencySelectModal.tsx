@@ -38,9 +38,10 @@ import { useTheme } from '@/theme';
 import { IS_TEST } from '@/env';
 import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import DiscoverSearchInput from '@/components/discover/DiscoverSearchInput';
-import { prefetchExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { externalTokenQueryKey, fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { getNetworkObj } from '@/networks';
+import { queryClient } from '@/react-query/queryClient';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;
@@ -347,20 +348,33 @@ export default function CurrencySelectModal() {
 
       let newAsset = item;
 
-      const selectAsset = () => {
+      const selectAsset = async () => {
         if (!item?.balance) {
           const network = getNetworkFromChainId(currentChainId);
-          prefetchExternalToken({
-            address: item.address,
-            network,
-            currency: nativeCurrency,
-          });
+
+          const externalAsset = await queryClient.fetchQuery(
+            externalTokenQueryKey({
+              address: item.address,
+              network,
+              currency: nativeCurrency,
+            }),
+            async () =>
+              fetchExternalToken({
+                address: item.address,
+                network,
+                currency: nativeCurrency,
+              }),
+            {
+              staleTime: Infinity,
+            }
+          );
           // if the asset is external we need to add the network specific information
           newAsset = {
             ...newAsset,
             decimals: item?.networks?.[currentChainId]?.decimals || item.decimals,
             address: item?.address || item?.networks?.[currentChainId]?.address,
             network: getNetworkFromChainId(currentChainId),
+            ...externalAsset,
           };
         }
         setIsTransitioning(true); // continue to display list during transition

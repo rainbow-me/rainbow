@@ -11,6 +11,7 @@ import { position } from '@/styles';
 import { Navbar } from '@/components/navbar/Navbar';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
+import { usePendingTransactionWatcher } from '@/hooks/usePendingTransactionWatcher';
 
 const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;
 
@@ -28,8 +29,9 @@ export default function ProfileScreen() {
 
   const { isLoadingTransactions: isLoading, sections, transactionsCount } = accountTransactions;
   const { pendingRequestCount } = useRequests();
-  const { network } = useAccountSettings();
+  const { network, accountAddress } = useAccountSettings();
   const { accountSymbol, accountColor, accountImage } = useAccountProfile();
+  usePendingTransactionWatcher({ address: accountAddress });
 
   const isEmpty = !transactionsCount && !pendingRequestCount;
 
@@ -49,7 +51,7 @@ export default function ProfileScreen() {
         title="Activity"
         hasStatusBarInset
         leftComponent={
-          <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8}>
+          <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8} overflowMargin={50}>
             {accountImage ? (
               <ImageAvatar image={accountImage} marginRight={10} size="header" />
             ) : (

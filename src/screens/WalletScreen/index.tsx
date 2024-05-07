@@ -28,7 +28,7 @@ import { position } from '@/styles';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { useRecoilValue } from 'recoil';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { analytics } from '@/analytics';
+import { analyticsV2 } from '@/analytics';
 import { AppState } from '@/redux/store';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { usePositions } from '@/resources/defi/PositionsQuery';
@@ -61,7 +61,7 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
     await resetAccountState();
     await dispatch(settingsUpdateNetwork(Network.mainnet));
     InteractionManager.runAfterInteractions(async () => {
-      await loadAccountData(Network.mainnet);
+      await loadAccountData();
       initializeAccountData();
     });
   }, [dispatch, initializeAccountData, loadAccountData, resetAccountState]);
@@ -137,7 +137,7 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
 
   // track current app icon
   useEffect(() => {
-    analytics.identify(undefined, { appIcon });
+    analyticsV2.identify({ appIcon });
   }, [appIcon]);
 
   const isAddressCopiedToastActive = useRecoilValue(addressCopiedToastAtom);

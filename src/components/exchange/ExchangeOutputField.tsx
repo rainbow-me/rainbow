@@ -3,6 +3,7 @@ import { TextInput } from 'react-native';
 import ExchangeField from './ExchangeField';
 import { Box } from '@rainbow-me/design-system';
 import { Network } from '@rainbow-me/helpers';
+import { TokenColors } from '@/graphql/__generated__/metadata';
 
 interface ExchangeOutputFieldProps {
   color: string;
@@ -13,6 +14,8 @@ interface ExchangeOutputFieldProps {
   onPressSelectOutputCurrency: () => void;
   onTapWhileDisabled?: () => void;
   outputAmount: string | null;
+  outputCurrencyIcon?: string;
+  outputCurrencyColors?: TokenColors;
   outputCurrencyAddress: string;
   outputCurrencyMainnetAddress?: string;
   outputCurrencyNetwork?: string;
@@ -32,6 +35,8 @@ export default function ExchangeOutputField({
   onPressSelectOutputCurrency,
   onTapWhileDisabled,
   outputAmount,
+  outputCurrencyIcon,
+  outputCurrencyColors,
   outputCurrencyAddress,
   outputCurrencyMainnetAddress,
   outputCurrencySymbol,
@@ -49,6 +54,8 @@ export default function ExchangeOutputField({
       width="full"
     >
       <ExchangeField
+        icon={outputCurrencyIcon}
+        colors={outputCurrencyColors}
         address={outputCurrencyAddress}
         amount={outputAmount}
         color={color}

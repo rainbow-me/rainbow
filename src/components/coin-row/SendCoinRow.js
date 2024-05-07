@@ -3,7 +3,7 @@ import { TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import { useTheme } from '../../theme/ThemeContext';
-import { deviceUtils, magicMemo } from '../../utils';
+import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
 import CoinName from './CoinName';
@@ -12,7 +12,7 @@ import { isL2Network } from '@/handlers/web3';
 import { useColorForAsset } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import FastCoinIcon from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
+import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 
 const isSmallPhone = android || deviceUtils.dimensions.height <= 667;
 const isTinyPhone = deviceUtils.dimensions.height <= 568;
@@ -124,10 +124,12 @@ const SendCoinRow = ({
         {...item}
         {...props}
         mainnetAddress={item?.mainnet_address}
+        icon={item?.icon_url}
+        colors={item?.colors}
         badgeYPosition={0}
         bottomRowRender={BottomRow}
         containerStyles={selected ? containerSelectedStyles : containerStyles}
-        coinIconRender={FastCoinIcon}
+        coinIconRender={RainbowCoinIcon}
         isHidden={false}
         item={item}
         selected={selected}

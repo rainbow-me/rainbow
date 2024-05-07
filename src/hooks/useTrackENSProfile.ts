@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
 import { fetchENSRecords } from './useENSRecords';
 import useWallets from './useWallets';
-import { analytics } from '@/analytics';
+import { analyticsV2 } from '@/analytics';
 import { EthereumAddress } from '@/entities';
 import { fetchAccountDomains } from '@/handlers/ens';
 import { ENS_RECORDS } from '@/helpers/ens';
@@ -56,7 +56,7 @@ export default function useTrackENSProfile() {
   });
 
   const trackENSProfile = useCallback(() => {
-    isSuccess && analytics.identify(undefined, data);
+    isSuccess && data && analyticsV2.identify(data);
   }, [isSuccess, data]);
 
   return { trackENSProfile };

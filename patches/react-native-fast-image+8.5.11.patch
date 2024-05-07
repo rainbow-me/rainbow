@@ -1,0 +1,258 @@
+diff --git a/node_modules/react-native-fast-image/RNFastImage.podspec b/node_modules/react-native-fast-image/RNFastImage.podspec
+index db0fada..bb3e4b0 100644
+--- a/node_modules/react-native-fast-image/RNFastImage.podspec
++++ b/node_modules/react-native-fast-image/RNFastImage.podspec
+@@ -16,6 +16,6 @@ Pod::Spec.new do |s|
+   s.source_files  = "ios/**/*.{h,m}"
+ 
+   s.dependency 'React-Core'
+-  s.dependency 'SDWebImage', '~> 5.11.1'
+-  s.dependency 'SDWebImageWebPCoder', '~> 0.8.4'
++  s.dependency 'SDWebImage', '~> 5.18.11'
++  s.dependency 'SDWebImageWebPCoder', '~> 0.14.5'
+ end
+diff --git a/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageRequestListener.java b/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageRequestListener.java
+index 361417b..f167e91 100644
+--- a/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageRequestListener.java
++++ b/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageRequestListener.java
+@@ -40,7 +40,20 @@ public class FastImageRequestListener implements RequestListener<Drawable> {
+         ThemedReactContext context = (ThemedReactContext) view.getContext();
+         RCTEventEmitter eventEmitter = context.getJSModule(RCTEventEmitter.class);
+         int viewId = view.getId();
+-        eventEmitter.receiveEvent(viewId, REACT_ON_ERROR_EVENT, new WritableNativeMap());
++        WritableMap error = new WritableNativeMap();
++
++        String message = "Error";
++
++        if (e != null) {
++            Throwable throwable = e.getRootCauses().get(0);
++            if (throwable != null) {
++                message = throwable.getMessage();
++            }
++
++        }
++
++        error.putString("message", message);
++        eventEmitter.receiveEvent(viewId, REACT_ON_ERROR_EVENT, error);
+         eventEmitter.receiveEvent(viewId, REACT_ON_LOAD_END_EVENT, new WritableNativeMap());
+         return false;
+     }
+diff --git a/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageSource.java b/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageSource.java
+index 888b38e..e73737d 100644
+--- a/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageSource.java
++++ b/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageSource.java
+@@ -107,6 +107,12 @@ public class FastImageSource extends ImageSource {
+     }
+ 
+     public GlideUrl getGlideUrl() {
++        Uri uriVal = getUri();
++
++        if (Uri.EMPTY.equals(uriVal)) {
++            return null;
++        }
++        
+         return new GlideUrl(getUri().toString(), getHeaders());
+     }
+ }
+diff --git a/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageViewModule.java b/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageViewModule.java
+index 019032b..31646a4 100644
+--- a/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageViewModule.java
++++ b/node_modules/react-native-fast-image/android/src/main/java/com/dylanvann/fastimage/FastImageViewModule.java
+@@ -2,8 +2,15 @@ package com.dylanvann.fastimage;
+ 
+ import android.app.Activity;
+ 
++import androidx.annotation.Nullable;
++
+ import com.bumptech.glide.Glide;
++import com.bumptech.glide.load.DataSource;
++import com.bumptech.glide.load.engine.GlideException;
+ import com.bumptech.glide.load.model.GlideUrl;
++import com.bumptech.glide.request.RequestListener;
++import com.bumptech.glide.request.target.Target;
++import com.facebook.react.bridge.Promise;
+ import com.facebook.react.bridge.Promise;
+ import com.facebook.react.bridge.ReactApplicationContext;
+ import com.facebook.react.bridge.ReactContextBaseJavaModule;
+@@ -12,9 +19,12 @@ import com.facebook.react.bridge.ReadableArray;
+ import com.facebook.react.bridge.ReadableMap;
+ import com.facebook.react.views.imagehelper.ImageSource;
+ 
++import java.io.File;
++
+ class FastImageViewModule extends ReactContextBaseJavaModule {
+ 
+     private static final String REACT_CLASS = "FastImageView";
++    private static final String ERROR_LOAD_FAILED = "ERROR_LOAD_FAILED";
+ 
+     FastImageViewModule(ReactApplicationContext reactContext) {
+         super(reactContext);
+@@ -83,4 +93,43 @@ class FastImageViewModule extends ReactContextBaseJavaModule {
+         Glide.get(activity.getApplicationContext()).clearDiskCache();
+         promise.resolve(null);
+     }
++
++    @ReactMethod
++    public void getCachePath(final ReadableMap source, final Promise promise) {
++        final Activity activity = getCurrentActivity();
++        if (activity == null) return;
++
++        activity.runOnUiThread(new Runnable() {
++            @Override
++            public void run() {
++                final FastImageSource imageSource = FastImageViewConverter.getImageSource(activity, source);
++                final GlideUrl glideUrl = imageSource.getGlideUrl();
++
++                if (glideUrl == null) {
++                    promise.resolve(null);
++                    return;
++                }
++
++                Glide
++                        .with(activity.getApplicationContext())
++                        .asFile()
++                        .load(glideUrl)
++                        .apply(FastImageViewConverter.getOptions(activity, imageSource,  source))
++                        .listener(new RequestListener<File>() {
++                            @Override
++                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<File> target, boolean isFirstResource) {
++                                promise.reject(ERROR_LOAD_FAILED, e);
++                                return false;
++                            }
++
++                            @Override
++                            public boolean onResourceReady(File resource, Object model, Target<File> target, DataSource dataSource, boolean isFirstResource) {
++                                promise.resolve(resource.getAbsolutePath());
++                                return false;
++                            }
++                        })
++                        .submit();
++            }
++        });
++    }
+ }
+diff --git a/node_modules/react-native-fast-image/dist/index.cjs.js b/node_modules/react-native-fast-image/dist/index.cjs.js
+index 2a49562..7b1161c 100644
+--- a/node_modules/react-native-fast-image/dist/index.cjs.js
++++ b/node_modules/react-native-fast-image/dist/index.cjs.js
+@@ -95,6 +95,8 @@ FastImage.priority = priority;
+ 
+ FastImage.preload = sources => FastImageViewNativeModule.preload(sources);
+ 
++FastImage.getCachePath = (source: Source) => FastImageViewNativeModule.getCachePath(source);
++
+ FastImage.clearMemoryCache = () => FastImageViewNativeModule.clearMemoryCache();
+ 
+ FastImage.clearDiskCache = () => FastImageViewNativeModule.clearDiskCache();
+diff --git a/node_modules/react-native-fast-image/dist/index.d.ts b/node_modules/react-native-fast-image/dist/index.d.ts
+index 8a91257..641d0fe 100644
+--- a/node_modules/react-native-fast-image/dist/index.d.ts
++++ b/node_modules/react-native-fast-image/dist/index.d.ts
+@@ -95,6 +95,7 @@ export interface FastImageStaticProperties {
+     priority: typeof priority;
+     cacheControl: typeof cacheControl;
+     preload: (sources: Source[]) => void;
++    getCachePath: (source: Source) => Promise<string>;
+     clearMemoryCache: () => Promise<void>;
+     clearDiskCache: () => Promise<void>;
+ }
+diff --git a/node_modules/react-native-fast-image/dist/index.js b/node_modules/react-native-fast-image/dist/index.js
+index 1fc0e9d..91b4033 100644
+--- a/node_modules/react-native-fast-image/dist/index.js
++++ b/node_modules/react-native-fast-image/dist/index.js
+@@ -88,6 +88,8 @@ FastImage.priority = priority;
+ 
+ FastImage.preload = sources => FastImageViewNativeModule.preload(sources);
+ 
++FastImage.getCachePath = (source: Source) => FastImageViewNativeModule.getCachePath(source)
++
+ FastImage.clearMemoryCache = () => FastImageViewNativeModule.clearMemoryCache();
+ 
+ FastImage.clearDiskCache = () => FastImageViewNativeModule.clearDiskCache();
+diff --git a/node_modules/react-native-fast-image/ios/FastImage/FFFastImageView.m b/node_modules/react-native-fast-image/ios/FastImage/FFFastImageView.m
+index 9c0f1d3..237b962 100644
+--- a/node_modules/react-native-fast-image/ios/FastImage/FFFastImageView.m
++++ b/node_modules/react-native-fast-image/ios/FastImage/FFFastImageView.m
+@@ -1,6 +1,7 @@
+ #import "FFFastImageView.h"
+ #import <SDWebImage/UIImage+MultiFormat.h>
+ #import <SDWebImage/UIView+WebCache.h>
++#import <SDWebImage/SDWebImageError.h>
+ 
+ @interface FFFastImageView()
+ 
+@@ -10,6 +11,7 @@ @interface FFFastImageView()
+ // Whether the latest change of props requires the image to be reloaded
+ @property (nonatomic, assign) BOOL needsReload;
+ 
++@property (nonatomic, strong) NSDictionary* onLoadError;
+ @property (nonatomic, strong) NSDictionary* onLoadEvent;
+ 
+ @end
+@@ -47,7 +49,7 @@ - (void)setOnFastImageLoad:(RCTDirectEventBlock)onFastImageLoad {
+ - (void)setOnFastImageError:(RCTDirectEventBlock)onFastImageError {
+     _onFastImageError = onFastImageError;
+     if (self.hasErrored) {
+-        _onFastImageError(@{});
++        _onFastImageError(self.onLoadError);
+     }
+ }
+ 
+@@ -70,12 +72,12 @@ - (void)setImageColor:(UIColor *)imageColor {
+ }
+ 
+ - (UIImage*)makeImage:(UIImage *)image withTint:(UIColor *)color {
+-    UIImage *newImage = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+-    UIGraphicsBeginImageContextWithOptions(image.size, NO, newImage.scale);
+-    [color set];
+-    [newImage drawInRect:CGRectMake(0, 0, image.size.width, newImage.size.height)];
+-    newImage = UIGraphicsGetImageFromCurrentImageContext();
+-    UIGraphicsEndImageContext();
++    UIImage* newImage = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
++    UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:image.size];
++    newImage = [renderer imageWithActions:^(UIGraphicsImageRendererContext * _Nonnull rendererContext) {
++        [color setFill];
++        [newImage drawInRect:CGRectMake(0, 0, image.size.width, newImage.size.height)];
++    }];
+     return newImage;
+ }
+ 
+@@ -213,8 +215,12 @@ - (void)downloadImage:(FFFastImageSource *) source options:(SDWebImageOptions) o
+                                   NSURL * _Nullable imageURL) {
+                         if (error) {
+                             weakSelf.hasErrored = YES;
++                            
++                            NSDictionary *onLoadError = [NSDictionary dictionaryWithObjectsAndKeys: error.userInfo[SDWebImageErrorDownloadStatusCodeKey], @"statusCode", error.userInfo[NSLocalizedDescriptionKey], @"message", nil];
++                            weakSelf.onLoadError = onLoadError;
++                            
+                                 if (weakSelf.onFastImageError) {
+-                                    weakSelf.onFastImageError(@{});
++                                    weakSelf.onFastImageError(onLoadError);
+                                 }
+                                 if (weakSelf.onFastImageLoadEnd) {
+                                     weakSelf.onFastImageLoadEnd(@{});
+diff --git a/node_modules/react-native-fast-image/ios/FastImage/FFFastImageViewManager.m b/node_modules/react-native-fast-image/ios/FastImage/FFFastImageViewManager.m
+index a8059af..641647f 100644
+--- a/node_modules/react-native-fast-image/ios/FastImage/FFFastImageViewManager.m
++++ b/node_modules/react-native-fast-image/ios/FastImage/FFFastImageViewManager.m
+@@ -48,4 +48,20 @@ - (FFFastImageView*)view {
+     }];
+ }
+ 
++RCT_EXPORT_METHOD(getCachePath:(nonnull FFFastImageSource *)source
++    withResolver:(RCTPromiseResolveBlock)resolve
++    andRejecter:(RCTPromiseRejectBlock)reject)
++{
++    SDWebImageManager *imageManager = [SDWebImageManager sharedManager];
++    NSString *key = [imageManager cacheKeyForURL:source.url];
++    BOOL isCached = [[SDImageCache sharedImageCache] diskImageDataExistsWithKey:key];
++
++    if (isCached) {
++        NSString *cachePath = [[SDImageCache sharedImageCache] cachePathForKey:key];
++        resolve(cachePath);
++    } else {
++        resolve([NSNull null]);
++    }
++}
++
+ @end

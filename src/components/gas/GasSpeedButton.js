@@ -2,7 +2,7 @@
 /* eslint-disable no-undef */
 import AnimateNumber from '@bankify/react-native-animate-number';
 import lang from 'i18n-js';
-import { isEmpty, isNaN, isNil, upperFirst } from 'lodash';
+import { isEmpty, isNaN, isNil } from 'lodash';
 import makeColorMoreChill from 'make-color-more-chill';
 import { AnimatePresence, MotiView } from 'moti';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -10,18 +10,17 @@ import { InteractionManager, Keyboard } from 'react-native';
 import { Easing } from 'react-native-reanimated';
 import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
-import { ChainBadge, CoinIcon } from '../coin-icon';
+import { ChainBadge } from '../coin-icon';
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import { GasSpeedLabelPager } from '.';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { isL2Network } from '@/handlers/web3';
-import networkTypes, { Network } from '@/helpers/networkTypes';
+import { Network } from '@/helpers/networkTypes';
 import { add, greaterThan, toFixedDecimals } from '@/helpers/utilities';
 import { getCrossChainTimeEstimate } from '@/utils/crossChainTimeEstimates';
 import { useAccountSettings, useColorForAsset, useGas, usePrevious, useSwapCurrencies } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import { BNB_BSC_ADDRESS, ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, margin, padding } from '@/styles';
@@ -29,6 +28,7 @@ import { ethereumUtils, gasUtils } from '@/utils';
 import { getNetworkObj } from '@/networks';
 import { IS_ANDROID } from '@/env';
 import { ContextMenu } from '../context-menu';
+import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 
 const { GAS_EMOJIS, GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST, getGasLabel } = gasUtils;
 
@@ -136,6 +136,7 @@ const GasSpeedButton = ({
   validateGasParams,
   flashbotTransaction = false,
   crossChainServiceTime,
+  loading = false,
 }) => {
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
@@ -177,7 +178,7 @@ const GasSpeedButton = ({
 
   const formatGasPrice = useCallback(
     animatedValue => {
-      if (animatedValue === null || isNaN(animatedValue)) {
+      if (animatedValue === null || loading || isNaN(animatedValue)) {
         return 0;
       }
       !gasPriceReady && setGasPriceReady(true);
@@ -198,7 +199,7 @@ const GasSpeedButton = ({
         }`;
       }
     },
-    [gasPriceReady, isLegacyGasNetwork, nativeCurrencySymbol, nativeCurrency]
+    [loading, gasPriceReady, isLegacyGasNetwork, nativeCurrencySymbol, nativeCurrency]
   );
 
   const openCustomOptionsRef = useRef();
@@ -231,7 +232,7 @@ const GasSpeedButton = ({
 
   const renderGasPriceText = useCallback(
     animatedNumber => {
-      const priceText = animatedNumber === 0 ? lang.t('swap.loading') : animatedNumber;
+      const priceText = animatedNumber === 0 || loading ? lang.t('swap.loading') : animatedNumber;
       return (
         <Text
           color={theme === 'dark' ? colors.whiteLabel : colors.alpha(colors.blueGreyDark, 0.8)}
@@ -243,7 +244,7 @@ const GasSpeedButton = ({
         </Text>
       );
     },
-    [theme, colors]
+    [loading, theme, colors]
   );
 
   // I'M SHITTY CODE BUT GOT THINGS DONE REFACTOR ME ASAP
@@ -303,9 +304,9 @@ const GasSpeedButton = ({
         type: 'crossChainGas',
       });
     } else {
-      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(networkName);
+      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(currentNetwork);
       navigate(Routes.EXPLAIN_SHEET, {
-        network: networkName,
+        network: currentNetwork,
         type: 'gas',
         nativeAsset,
       });
@@ -337,21 +338,6 @@ const GasSpeedButton = ({
     },
     [handlePressSpeedOption]
   );
-
-  const nativeFeeCurrency = useMemo(() => {
-    switch (currentNetwork) {
-      case networkTypes.polygon:
-        return { mainnet_address: MATIC_MAINNET_ADDRESS, symbol: 'MATIC' };
-      case networkTypes.bsc:
-        return { mainnet_address: BNB_BSC_ADDRESS, symbol: 'BNB' };
-      case networkTypes.optimism:
-      case networkTypes.arbitrum:
-      case networkTypes.zora:
-      case networkTypes.base:
-      default:
-        return { mainnet_address: ETH_ADDRESS, symbol: 'ETH' };
-    }
-  }, [currentNetwork]);
 
   const speedOptions = useMemo(() => {
     if (speeds) return speeds;
@@ -501,7 +487,7 @@ const GasSpeedButton = ({
                     }}
                   >
                     {currentNetwork === Network.mainnet ? (
-                      <CoinIcon address={nativeFeeCurrency.address} size={18} symbol={nativeFeeCurrency.symbol} network={currentNetwork} />
+                      <EthCoinIcon size={18} />
                     ) : (
                       <ChainBadge network={currentNetwork} size="gas" position="relative" />
                     )}

@@ -17,7 +17,7 @@ import { Toast, ToastPositionContainer } from '@/components/toasts';
 import * as i18n from '@/languages';
 import { createAndShareStateDumpFile } from './helpers/createAndShareStateDumpFile';
 import { haptics } from '@/utils';
-import Clipboard from '@react-native-community/clipboard';
+import Clipboard from '@react-native-clipboard/clipboard';
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 
 const encryptor = new AesEncryptor();
@@ -141,9 +141,11 @@ export const WalletDiagnosticsSheet = () => {
   }, [navigate]);
 
   const copyUUID = () => {
-    haptics.notificationSuccess();
-    Clipboard.setString(uuid);
-    presentToast();
+    if (uuid) {
+      haptics.notificationSuccess();
+      Clipboard.setString(uuid);
+      presentToast();
+    }
   };
 
   const presentToast = () => {

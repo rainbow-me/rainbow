@@ -18,7 +18,6 @@ import Navigation from '@/navigation/Navigation';
 import { WrappedAlert } from '@/helpers/alert';
 import { logger, RainbowError } from '@/logger';
 
-import { Ratio } from '@/screens/AddCash/providers/Ratio';
 import { Ramp } from '@/screens/AddCash/providers/Ramp';
 import { Coinbase } from '@/screens/AddCash/providers/Coinbase';
 import { Moonpay } from '@/screens/AddCash/providers/Moonpay';
@@ -29,7 +28,6 @@ const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = StatusBar.currentHeight || 0;
 
 const providerComponents = {
-  [FiatProviderName.Ratio]: Ratio,
   [FiatProviderName.Ramp]: Ramp,
   [FiatProviderName.Coinbase]: Coinbase,
   [FiatProviderName.Moonpay]: Moonpay,

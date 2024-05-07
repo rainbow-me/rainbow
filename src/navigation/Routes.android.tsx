@@ -1,10 +1,9 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext } from 'react';
-import { StatusBar } from 'react-native';
 import { AddCashSheet } from '../screens/AddCash';
 import AvatarBuilder from '../screens/AvatarBuilder';
-import BackupSheet from '../screens/BackupSheet';
+import BackupSheet from '../components/backup/BackupSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
 import ENSAdditionalRecordsSheet from '../screens/ENSAdditionalRecordsSheet';
@@ -24,7 +23,6 @@ import SendSheet from '../screens/SendSheet';
 import ShowcaseSheet from '../screens/ShowcaseSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
-import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
 import { WalletDiagnosticsSheet } from '../screens/Diagnostics';
@@ -35,9 +33,10 @@ import { createBottomSheetNavigator } from './bottom-sheet';
 import {
   closeKeyboardOnClose,
   defaultScreenStackOptions,
-  restoreSheetConfig,
   stackNavigationConfig,
   learnWebViewScreenConfig,
+  backupSheetSizes,
+  dappBrowserControlPanelConfig,
 } from './config';
 import {
   addWalletNavigatorPreset,
@@ -55,13 +54,15 @@ import {
   nftSingleOfferSheetPreset,
   walletconnectBottomSheetPreset,
   consoleSheetPreset,
+  appIconUnlockSheetPreset,
+  swapSheetPreset,
 } from './effects';
 import { InitialRouteContext } from './initialRoute';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
 import { ExchangeModalNavigator } from './index';
 import { deviceUtils } from '@/utils';
-import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
+import useExperimentalFlag, { PROFILES, SWAPS_V2 } from '@/config/experimentalHooks';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
 import LearnWebViewScreen from '@/screens/LearnWebViewScreen';
@@ -69,15 +70,12 @@ import { TransactionDetails } from '@/screens/transaction-details/TransactionDet
 import { AddWalletNavigator } from './AddWalletNavigator';
 import { HardwareWalletTxNavigator } from './HardwareWalletTxNavigator';
 import { RewardsSheet } from '@/screens/rewards/RewardsSheet';
-import { SettingsSheet } from '@/screens/SettingsSheet';
+import { SettingsSheet } from '@/screens/SettingsSheet/SettingsSheet';
 import { CUSTOM_MARGIN_TOP_ANDROID } from '@/screens/SettingsSheet/constants';
 import { Portal } from '@/screens/Portal';
 import { NFTOffersSheet } from '@/screens/NFTOffersSheet';
 import { NFTSingleOfferSheet } from '@/screens/NFTSingleOfferSheet';
-// eslint-disable-next-line eslint-comments/disable-enable-pair
-/* eslint-disable import/no-unresolved */
-// @ts-ignore .android and .ios exports cause errors
-import ShowSecretView from '@/screens/SettingsSheet/components/ShowSecretView';
+import ShowSecretView from '@/screens/SettingsSheet/components/Backups/ShowSecretView';
 import PoapSheet from '@/screens/mints/PoapSheet';
 import { PositionSheet } from '@/screens/positions/PositionSheet';
 import MintSheet from '@/screens/mints/MintSheet';
@@ -86,6 +84,12 @@ import { SignTransactionSheet } from '@/screens/SignTransactionSheet';
 import { RemotePromoSheet } from '@/components/remote-promo-sheet/RemotePromoSheet';
 import { ConsoleSheet } from '@/screens/points/ConsoleSheet';
 import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileContext';
+import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
+import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { SwapProvider } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPanel';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -98,7 +102,6 @@ function MainNavigator() {
     <Stack.Navigator initialRouteName={initialRoute} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
       <Stack.Screen component={SwipeNavigator} name={Routes.SWIPE_LAYOUT} options={expandedPreset} />
       <Stack.Screen component={AvatarBuilder} name={Routes.AVATAR_BUILDER} options={emojiPreset} />
-      <Stack.Screen component={ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} options={expandedPreset} />
       <Stack.Screen component={ConnectedDappsSheet} name={Routes.CONNECTED_DAPPS} options={expandedPreset} />
       <Stack.Screen component={Portal} name={Routes.PORTAL} options={expandedPreset} />
       <Stack.Screen component={PositionSheet} name={Routes.POSITION_SHEET} options={expandedPreset} />
@@ -115,15 +118,9 @@ function MainNavigator() {
 
       <Stack.Screen component={WalletConnectRedirectSheet} name={Routes.WALLET_CONNECT_REDIRECT_SHEET} options={wcPromptPreset} />
       <Stack.Screen component={AddCashSheet} name={Routes.ADD_CASH_SHEET} options={addCashSheet} />
-      <Stack.Screen component={BackupSheet} name={Routes.BACKUP_SHEET} options={expandedPreset} />
-      <Stack.Screen component={RestoreSheet} name={Routes.RESTORE_SHEET} {...restoreSheetConfig} options={bottomSheetPreset} />
+      <Stack.Screen component={RestoreSheet} name={Routes.RESTORE_SHEET} options={bottomSheetPreset} />
       <Stack.Screen component={WelcomeScreen} name={Routes.WELCOME_SCREEN} options={{ animationEnabled: false, gestureEnabled: false }} />
-      <Stack.Screen
-        component={ShowSecretView}
-        name="ShowSecretView"
-        // @ts-ignore
-        options={bottomSheetPreset}
-      />
+      <Stack.Screen component={ShowSecretView} name="ShowSecretView" options={bottomSheetPreset} />
       <Stack.Screen component={WalletConnectApprovalSheet} name={Routes.WALLET_CONNECT_APPROVAL_SHEET} options={bottomSheetPreset} />
     </Stack.Navigator>
   );
@@ -134,7 +131,6 @@ function MainOuterNavigator() {
   return (
     <OuterStack.Navigator initialRouteName={Routes.MAIN_NAVIGATOR} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
       <OuterStack.Screen component={MainNavigator} name={Routes.MAIN_NAVIGATOR} />
-      <OuterStack.Screen component={BackupSheet} name={Routes.BACKUP_SCREEN} options={expandedPreset} />
       <OuterStack.Screen
         component={SendSheet}
         name={Routes.SEND_SHEET_NAVIGATOR}
@@ -144,8 +140,20 @@ function MainOuterNavigator() {
   );
 }
 
+function SwapNavigator() {
+  return (
+    <SwapProvider>
+      <BSStack.Navigator>
+        <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />
+      </BSStack.Navigator>
+    </SwapProvider>
+  );
+}
+
 function BSNavigator() {
+  const remoteConfig = useRemoteConfig();
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const swapsV2Enabled = useExperimentalFlag(SWAPS_V2) || remoteConfig.swaps_v2;
 
   return (
     <BSStack.Navigator>
@@ -204,13 +212,33 @@ function BSNavigator() {
           backdropOpacity: 1,
         }}
       />
+      <BSStack.Screen
+        component={BackupSheet}
+        name={Routes.BACKUP_SHEET}
+        options={route => {
+          const { params: { step } = {} as any } = route.route;
+
+          let heightForStep = backupSheetSizes.short;
+          if (
+            step === walletBackupStepTypes.backup_cloud ||
+            step === walletBackupStepTypes.backup_manual ||
+            step === walletBackupStepTypes.restore_from_backup
+          ) {
+            heightForStep = backupSheetSizes.long;
+          } else if (step === walletBackupStepTypes.no_provider) {
+            heightForStep = backupSheetSizes.medium;
+          }
+
+          return { ...bottomSheetPreset, height: heightForStep };
+        }}
+      />
       <BSStack.Screen component={WalletDiagnosticsSheet} name={Routes.DIAGNOSTICS_SHEET} options={{ ...bottomSheetPreset }} />
       <BSStack.Screen
         component={SettingsSheet}
         name={Routes.SETTINGS_SHEET}
         options={{
           ...bottomSheetPreset,
-          height: deviceUtils.dimensions.height + CUSTOM_MARGIN_TOP_ANDROID - (StatusBar?.currentHeight || 0),
+          height: deviceUtils.dimensions.height - CUSTOM_MARGIN_TOP_ANDROID,
         }}
       />
       <BSStack.Screen
@@ -225,6 +253,10 @@ function BSNavigator() {
       <BSStack.Screen name={Routes.MINTS_SHEET} component={MintsSheet} />
       <BSStack.Screen component={SignTransactionSheet} name={Routes.CONFIRM_REQUEST} options={walletconnectBottomSheetPreset} />
       <BSStack.Screen component={ConsoleSheet} name={Routes.CONSOLE_SHEET} options={consoleSheetPreset} />
+      <BSStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} options={appIconUnlockSheetPreset} />
+      <BSStack.Screen component={ControlPanel} name={Routes.DAPP_BROWSER_CONTROL_PANEL} />
+      <BSStack.Screen component={ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} options={{ ...bottomSheetPreset }} />
+      {swapsV2Enabled && <BSStack.Screen component={SwapNavigator} name={Routes.SWAP_NAVIGATOR} options={swapSheetPreset} />}
     </BSStack.Navigator>
   );
 }

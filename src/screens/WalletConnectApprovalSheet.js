@@ -6,7 +6,7 @@ import ChainLogo from '../components/ChainLogo';
 import Divider from '../components/Divider';
 import Spinner from '../components/Spinner';
 import ButtonPressAnimation from '../components/animations/ButtonPressAnimation';
-import { RequestVendorLogoIcon, CoinIcon } from '../components/coin-icon';
+import { RequestVendorLogoIcon } from '../components/coin-icon';
 import { ContactAvatar } from '../components/contacts';
 import ImageAvatar from '../components/contacts/ImageAvatar';
 import { Centered, Column, Flex, Row } from '../components/layout';
@@ -25,12 +25,11 @@ import { Network } from '@/helpers';
 import { Box, Columns, Column as RDSColumn, Inline, Text } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import * as lang from '@/languages';
-import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
 import { RainbowNetworks, getNetworkObj } from '@/networks';
-import { IS_IOS } from '@/env';
 import { useDappMetadata } from '@/resources/metadata/dapp';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { InfoAlert } from '@/components/info-alert/info-alert';
+import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.3),
@@ -124,7 +123,7 @@ const NetworkPill = ({ chainIds }) => {
                     {network !== Network.mainnet ? (
                       <ChainBadge network={network} position="relative" size="small" />
                     ) : (
-                      <CoinIcon address={ETH_ADDRESS} size={20} symbol={ETH_SYMBOL} network={network} />
+                      <EthCoinIcon size={20} />
                     )}
                   </Box>
                 );
@@ -135,7 +134,7 @@ const NetworkPill = ({ chainIds }) => {
               {availableNetworks[0] !== Network.mainnet ? (
                 <ChainBadge network={availableNetworks[0]} position="relative" size="small" />
               ) : (
-                <CoinIcon address={ETH_ADDRESS} size={20} symbol={ETH_SYMBOL} type={availableNetworks[0]} />
+                <EthCoinIcon size={20} />
               )}
 
               <Box paddingLeft="6px">
@@ -165,6 +164,7 @@ export default function WalletConnectApprovalSheet() {
   });
 
   const type = params?.type || WalletConnectApprovalSheetType.connect;
+  const source = params?.source;
 
   /**
    * CAN BE UNDEFINED if we navigated here with no data. This is how we show a
@@ -191,8 +191,8 @@ export default function WalletConnectApprovalSheet() {
 
   const isScam = metadata?.status === DAppStatus.Scam;
 
-  // disabling Verified for now
-  const isVerified = false; //metadata?.status === DAppStatus.Verified;
+  // we can only safely mark a dapp as verified if the source is the browser
+  const isVerified = metadata?.status === DAppStatus.Verified && source === 'browser';
 
   const accentColor = isScam ? colors.red : colors.appleBlue;
 
@@ -293,7 +293,7 @@ export default function WalletConnectApprovalSheet() {
         },
         watchOnly: true,
       });
-  }, [approvalAccount.address, goBack, type, getState]);
+  }, [approvalAccount.address, goBack, type]);
 
   useEffect(() => {
     const waitingTime = (Date.now() - receivedTimestamp) / 1000;

@@ -12,7 +12,8 @@ let memPrevRouteName;
 
 let action = null;
 
-const isOnSwipeScreen = name => [Routes.WALLET_SCREEN, Routes.DISCOVER_SCREEN, Routes.PROFILE_SCREEN, Routes.POINTS_SCREEN].includes(name);
+const isOnSwipeScreen = name =>
+  [Routes.WALLET_SCREEN, Routes.DISCOVER_SCREEN, Routes.PROFILE_SCREEN, Routes.POINTS_SCREEN, Routes.DAPP_BROWSER_SCREEN].includes(name);
 
 export function triggerOnSwipeLayout(newAction) {
   if (isOnSwipeScreen(Navigation.getActiveRoute()?.name)) {
@@ -46,8 +47,10 @@ export function onHandleStatusBar(currentState, prevState) {
     case Routes.WALLET_SCREEN:
     case Routes.DISCOVER_SCREEN:
     case Routes.POINTS_SCREEN:
+    case Routes.DAPP_BROWSER_SCREEN:
     case Routes.WELCOME_SCREEN:
     case Routes.CHANGE_WALLET_SHEET:
+    case Routes.SWAP:
       StatusBarHelper.setDarkContent();
       break;
 

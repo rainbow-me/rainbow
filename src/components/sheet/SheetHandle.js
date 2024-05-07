@@ -20,7 +20,7 @@ const Handle = styled.View({
   zIndex: 9,
 });
 
-export default function SheetHandle({ showBlur, ...props }) {
+export default function SheetHandle({ showBlur = false, ...props }) {
   const { isDarkMode } = useTheme();
 
   return <Handle {...props} isDarkMode={isDarkMode} showBlur={showBlur} />;

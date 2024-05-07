@@ -1,5 +1,6 @@
 import chroma from 'chroma-js';
 import PropTypes from 'prop-types';
+import { globalColors } from '@/design-system';
 import currentColors from '../theme/currentColors';
 import { memoFn } from '../utils/memoFn';
 
@@ -33,8 +34,9 @@ const darkModeColors = {
   lightOrange: '#FFA64D',
   offWhite: '#1F222A',
   offWhite80: '#1C1F27',
+  orange: globalColors.orange50,
   placeholder: 'rgba(224, 232, 255, 0.4)',
-  red: '#FF6257',
+  red: globalColors.red50,
   rowDivider: 'rgba(60, 66, 82, 0.075)',
   rowDividerExtraLight: 'rgba(60, 66, 82, 0.0375)',
   rowDividerFaint: 'rgba(60, 66, 82, 0.025)',
@@ -84,8 +86,6 @@ const avatarBackgrounds = [
 
 const getColorsByTheme = (darkMode?: boolean) => {
   let base = {
-    adworldRed: '#FC0414', // '252, 4, 20'
-    adworldRed06: 'rgba(252, 4, 20, 0.06)',
     appleBlue: '#0E76FD', // '14, 118, 253'
     appleBlue06: 'rgba(14, 118, 253, 0.06)',
     black: '#000000', // '0, 0, 0'
@@ -105,14 +105,10 @@ const getColorsByTheme = (darkMode?: boolean) => {
     dark: '#25292E', // '37, 41, 46'
     darkGrey: '#71778A', // '113, 119, 138'
     darkModeDark: '#404656',
-    dogeGold: '#FCAC34', // '252, 172, 52'
-    dogeGold06: 'rgba(252, 172, 52, 0.06)',
     dpiDark: '#8150E6', // '129, 80, 230'
     dpiLight: '#9B74EC', // '155, 116, 236'
     dpiMid: '#8E62E9', // '142, 98, 233'
     exchangeFallback: '#F4F4F5', // '244, 244, 245'
-    finiliarPink: '#F89C9C', // '248, 156, 156'
-    finiliarPink06: 'rgba(248, 156, 156, 0.06)',
     flamingo: '#E540F1', // '229, 64, 241'
     green: '#1DB847', // '29, 184, 71'
     grey: '#A9ADB9', // '169, 173, 185'
@@ -128,22 +124,18 @@ const getColorsByTheme = (darkMode?: boolean) => {
     offWhite80: '#1C1F27',
     optimismRed: '#FF0420', // '255, 4, 32',
     optimismRed06: 'rgba(255, 4, 32, 0.06)', // '255, 4, 32, 0.06'
-    orange: '#F46E38', // '244, 110, 56'
+    orange: globalColors.orange60, // '244, 110, 56'
     orangeLight: '#FEBE44', // '254, 190, 68'
     paleBlue: '#579DFF', // 87, 157, 255
     pink: '#FF54BB', // 255, 84, 187
     pinkLight: '#FF75E8', // '255, 117, 232'
-    poolboyPink: '#E46CA4', // '228, 108, 164',
-    poolboyPink06: 'rgba(228, 108, 164, 0.06)',
-    poolyPurple: '#6434C4', // '100, 52, 196'
-    poolyPurple06: 'rgba(100, 52, 196, 0.06)',
     purple: '#735CFF', // '115, 92, 255'
     purpleDark: '#6F00A3', // '111, 0, 163'
     purpleLight: '#FFD9FE', // '255, 217, 254'
     purpleUniswap: '#FF007A', // '255,0,122',
     rainbowBlue: '#001E59', // '0, 30, 89',
     rainbowBlue06: 'rgba(0, 30, 89, 0.06)', // '0, 30, 89, 0.06'
-    red: '#FA423C', // '250, 66, 60'
+    red: globalColors.red60, // '255, 128, 31'
     rowDivider: 'rgba(60, 66, 82, 0.03)', // '60, 66, 82, 0.03'
     rowDividerExtraLight: 'rgba(60, 66, 82, 0.015)', // '60, 66, 82, 0.015'
     rowDividerFaint: 'rgba(60, 66, 82, 0.01)', // '60, 66, 82, 0.01'
@@ -153,8 +145,6 @@ const getColorsByTheme = (darkMode?: boolean) => {
     shadowGrey: '#6F6F6F', // '111, 111, 111'
     shimmer: '#EDEEF1', // '237, 238, 241'
     skeleton: '#F6F7F8', // '246, 247, 248'
-    smolPurple: '#7D50E6', // '125, 80, 230'
-    smolPurple06: 'rgba(125, 80, 230, 0.06)', // '125, 80, 230, 0.06'
     stackBackground: '#000000', // '0, 0, 0'
     surfacePrimary: '#FFFFFF', // '255, 255, 255'
     swapPurple: '#575CFF', // '87, 92, 255'
@@ -166,8 +156,6 @@ const getColorsByTheme = (darkMode?: boolean) => {
     yellow: '#FFD657', // '255, 214, 87'
     yellowFavorite: '#FFB200', // '255, 178, 0'
     yellowOrange: '#FFC400', // '255, 196, 0',
-    zorbPink: '#FC4C74', // '252, 76, 116'
-    zorbPink06: 'rgba(252, 76, 116, 0.06)',
   };
 
   const avatarColor = [
@@ -207,6 +195,9 @@ const getColorsByTheme = (darkMode?: boolean) => {
     polygon: '#8247E5',
     bsc: '#F0B90B',
     zora: '#2B5DF0',
+    avalanche: '#E84142',
+    degen: '#A36EFD',
+    blast: '#25292E',
   };
 
   let gradients = {
@@ -346,6 +337,9 @@ const getColorsByTheme = (darkMode?: boolean) => {
       polygon: '#A275EE',
       bsc: '#F0B90B',
       zora: '#6183F0',
+      avalanche: '#FF5D5E',
+      degen: '#A36EFD',
+      blast: '#FCFC03',
     };
   }
 

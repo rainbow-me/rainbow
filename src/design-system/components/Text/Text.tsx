@@ -1,5 +1,5 @@
-import React, { ElementRef, forwardRef, ReactNode, useMemo } from 'react';
-import { Text as NativeText } from 'react-native';
+import React, { ElementRef, forwardRef, ReactNode, useMemo, useEffect } from 'react';
+import { Text as NativeText, StyleProp, TextStyle } from 'react-native';
 import { TextColor } from '../../color/palettes';
 import { CustomColor } from '../../color/useForegroundColor';
 import { createLineHeightFixNode } from '../../typography/createLineHeightFixNode';
@@ -24,6 +24,7 @@ export type TextProps = {
   testID?: string;
   uppercase?: boolean;
   weight?: TextWeight;
+  onPress?: () => void;
 } & (
   | {
       containsEmoji: true;
@@ -31,7 +32,7 @@ export type TextProps = {
     }
   | { containsEmoji?: false; children: ReactNode }
 ) & {
-    style?: Record<string, unknown>;
+    style?: StyleProp<TextStyle>;
   };
 export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(function Text(
   {
@@ -46,24 +47,27 @@ export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(functio
     testID,
     uppercase,
     weight,
+    onPress,
     style,
   },
   ref
 ) {
-  if (__DEV__) {
-    if (!containsEmojiProp && nodeHasEmoji(children)) {
-      // eslint-disable-next-line no-console
-      console.log(
-        `Text: Emoji characters detected when "containsEmoji" prop isn't set to true: "${children}"\n\nYou should set the "containsEmoji" prop to true, otherwise vertical text alignment will be broken on iOS.`
-      );
-    }
+  useEffect(() => {
+    if (__DEV__) {
+      if (!containsEmojiProp && nodeHasEmoji(children)) {
+        // eslint-disable-next-line no-console
+        console.log(
+          `Text: Emoji characters detected when "containsEmoji" prop isn't set to true: "${children}"\n\nYou should set the "containsEmoji" prop to true, otherwise vertical text alignment will be broken on iOS.`
+        );
+      }
 
-    if (containsEmojiProp && !nodeIsString(children)) {
-      throw new Error(
-        'Text: When "containsEmoji" is set to true, children can only be strings. If you need low-level control of emoji rendering, you can also use the "renderStringWithEmoji" function directly which accepts a string.'
-      );
+      if (containsEmojiProp && !nodeIsString(children)) {
+        throw new Error(
+          'Text: When "containsEmoji" is set to true, children can only be strings. If you need low-level control of emoji rendering, you can also use the "renderStringWithEmoji" function directly which accepts a string.'
+        );
+      }
     }
-  }
+  }, []);
 
   const textStyle = useTextStyle({
     align,
@@ -84,6 +88,7 @@ export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(functio
       ref={ref}
       style={[textStyle, style || {}]}
       testID={testID}
+      onPress={onPress}
     >
       {ios && containsEmojiProp && nodeIsString(children) ? renderStringWithEmoji(children) : children}
       {lineHeightFixNode}

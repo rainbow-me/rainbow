@@ -13,6 +13,9 @@ export enum Network {
   bsc = 'bsc',
   zora = 'zora',
   gnosis = 'gnosis',
+  avalanche = 'avalanche',
+  blast = 'blast',
+  degen = 'degen',
 }
 
 export type NetworkTypes = 'layer1' | 'layer2' | 'testnet';
@@ -69,7 +72,7 @@ export interface NetworkProperties extends Chain {
   };
 
   nfts: {
-    simplehashNetwork?: string;
+    simplehashNetwork: string | null;
   };
 
   // design tings

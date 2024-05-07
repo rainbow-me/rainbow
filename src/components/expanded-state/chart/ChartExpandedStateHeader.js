@@ -1,7 +1,6 @@
 import lang from 'i18n-js';
 import React, { useMemo } from 'react';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
-import { CoinIcon, CoinIconGroup } from '../../coin-icon';
 import { Column, ColumnWithMargins, Row, RowWithMargins } from '../../layout';
 import ChartContextButton from './ChartContextButton';
 import { ChartDateLabel, ChartHeaderSubtitle, ChartPercentChangeLabel, ChartPriceLabel } from './chart-data-labels';
@@ -11,8 +10,7 @@ import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useAccountSettings, useBooleanState } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import FastCoinIcon from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastCoinIcon';
-import { Network } from '@/networks/types';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 
 const noPriceData = lang.t('expanded_state.chart.no_price_data');
 
@@ -112,19 +110,14 @@ export default function ChartExpandedStateHeader({
   return (
     <Container showChart={showChart}>
       <Row align="center" justify="space-between" testID={testID ? `${testID}-expanded-state-header` : 'expanded-state-header'}>
-        {tokens.length === 1 ? (
-          <FastCoinIcon
-            badgeXPosition={-7}
-            badgeYPosition={0}
-            address={asset?.address}
-            mainnetAddress={asset?.mainnet_address || asset?.mainnetAddress}
-            network={asset?.network || Network.mainnet}
-            symbol={asset?.symbol}
-            theme={theme}
-          />
-        ) : (
-          <CoinIconGroup tokens={tokens} />
-        )}
+        <RainbowCoinIcon
+          size={40}
+          icon={asset?.icon_url}
+          network={asset?.network}
+          symbol={asset?.symbol}
+          theme={theme}
+          colors={asset?.colors}
+        />
 
         <ChartContextButton asset={asset} color={color} />
       </Row>

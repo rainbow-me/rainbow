@@ -8,7 +8,6 @@ import { BackgroundProvider, Box } from '@/design-system';
 import { TransactionDetailsValueAndFeeSection } from '@/screens/transaction-details/components/TransactionDetailsValueAndFeeSection';
 import { TransactionDetailsHashAndActionsSection } from '@/screens/transaction-details/components/TransactionDetailsHashAndActionsSection';
 import { TransactionDetailsFromToSection } from '@/screens/transaction-details/components/TransactionDetailsFromToSection';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import * as i18n from '@/languages';
 import { TransactionDetailsStatusActionsAndTimestampSection } from '@/screens/transaction-details/components/TransactionDetailsStatusActionsAndTimestampSection';
@@ -27,7 +26,9 @@ export const TransactionDetails = () => {
   const navigation = useNavigation();
   const route = useRoute<RouteProp<RouteParams, 'TransactionDetails'>>();
   const { setParams } = navigation;
-  const { transaction } = route.params;
+  const { transaction: tx } = route.params;
+
+  const transaction = tx;
   const [sheetHeight, setSheetHeight] = useState(0);
   const [statusIconHidden, setStatusIconHidden] = useState(false);
   const { presentedToast, presentToastFor } = useTransactionDetailsToasts();
@@ -55,7 +56,6 @@ export const TransactionDetails = () => {
   return (
     <BackgroundProvider color="surfacePrimaryElevated">
       {({ backgroundColor }) => (
-        // @ts-ignore
         <SlackSheet
           contentHeight={sheetHeight}
           backgroundColor={backgroundColor}

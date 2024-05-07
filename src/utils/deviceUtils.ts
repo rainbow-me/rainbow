@@ -11,16 +11,20 @@ const deviceUtils = (function () {
     iPhoneXWidth = 375,
     veryNarrowPhoneThreshold = 340;
 
+  const isIOS14 = IS_IOS && parseFloat(Platform.Version as string) >= 14;
+  const isAndroid12 = Platform.OS === 'android' && parseFloat(Platform.constants.Release as string) >= 12;
+
   return {
     dimensions: {
       height,
       width,
     },
+    hasClipboardProtection: isIOS14 || isAndroid12,
     iPhone6Height,
     iphoneSEHeight,
     iPhoneXHeight,
     iPhoneXWidth,
-    isIOS14: IS_IOS && parseFloat(Platform.Version as string) >= 14,
+    isIOS14,
     isLargePhone: width >= iPhoneXWidth,
     isNarrowPhone: width < iPhoneXWidth,
     isSmallPhone: height <= iPhone6Height,
@@ -29,5 +33,8 @@ const deviceUtils = (function () {
     isVeryNarrowPhone: width < veryNarrowPhoneThreshold,
   };
 })();
+
+export const DEVICE_WIDTH = deviceUtils.dimensions.width;
+export const DEVICE_HEIGHT = deviceUtils.dimensions.height;
 
 export default deviceUtils;

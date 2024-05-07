@@ -56,7 +56,9 @@ export const getGnosisNetworkObject = (): NetworkProperties => {
       defaultSlippage: 200,
     },
 
-    nfts: {},
+    nfts: {
+      simplehashNetwork: 'gnosis',
+    },
 
     // design tings
     colors: {

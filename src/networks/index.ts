@@ -8,6 +8,9 @@ import { Network, NetworkProperties } from './types';
 import { getZoraNetworkObject } from './zora';
 import { getGnosisNetworkObject } from './gnosis';
 import { getBaseNetworkObject } from './base';
+import { getAvalancheNetworkObject } from './avalanche';
+import { getBlastNetworkObject } from './blast';
+import { getDegenNetworkObject } from './degen';
 import store from '@/redux/store';
 import * as ls from '@/storage';
 
@@ -25,6 +28,9 @@ export const RainbowNetworks = [
   getGnosisNetworkObject(),
   getGoerliNetworkObject(),
   getBSCNetworkObject(),
+  getAvalancheNetworkObject(),
+  getBlastNetworkObject(),
+  getDegenNetworkObject(),
 ];
 
 /**
@@ -47,7 +53,12 @@ export function getNetworkObj(network: Network): NetworkProperties {
       return getZoraNetworkObject();
     case Network.gnosis:
       return getGnosisNetworkObject();
-
+    case Network.avalanche:
+      return getAvalancheNetworkObject();
+    case Network.blast:
+      return getBlastNetworkObject();
+    case Network.degen:
+      return getDegenNetworkObject();
     // Testnets
     case Network.goerli:
       return getGoerliNetworkObject();

@@ -6,7 +6,7 @@ import { createNativeWrapper, NativeViewGestureHandlerGestureEvent, RawButtonPro
 import { PureNativeButton } from 'react-native-gesture-handler/src/components/GestureButtons';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
-  AnimateProps,
+  AnimatedProps,
   Easing,
   runOnJS,
   useAnimatedGestureHandler,
@@ -49,7 +49,7 @@ const ZoomableRawButton = requireNativeComponent<
 
 const ZoomableButton = createNativeWrapper(ZoomableRawButton);
 
-const AnimatedRawButton = createNativeWrapper<AnimateProps<PropsWithChildren<RawButtonProps>>>(
+const AnimatedRawButton = createNativeWrapper<AnimatedProps<PropsWithChildren<RawButtonProps>>>(
   Animated.createAnimatedComponent(PureNativeButton),
   {
     shouldActivateOnStart: true,
@@ -129,7 +129,7 @@ const ScaleButton = ({
   return (
     <View style={[sx.overflow, wrapperStyle]} testID={testID}>
       <View style={{ margin: -overflowMargin }}>
-        <AnimatedRawButton hitSlop={-overflowMargin} onGestureEvent={gestureHandler} rippleColor={transparentColor} style={sx.overflow}>
+        <AnimatedRawButton hitSlop={-overflowMargin} onGestureEvent={gestureHandler} rippleColor={transparentColor}>
           <View style={sx.transparentBackground}>
             <View style={{ padding: overflowMargin }}>
               <Animated.View style={[sz, contentContainerStyle]}>{children}</Animated.View>
@@ -180,7 +180,7 @@ const SimpleScaleButton = ({
 
   // we won't guess if there are any animated styles in there but we can
   // not render the Animated.View if we don't use that prop at all
-  const Wrapper = contentContainerStyle ? Animated.View : View;
+  const Wrapper: React.ComponentType<any> = contentContainerStyle ? Animated.View : View;
   // hack to lay out BottomTab buttons normally instead of being stacked on top of each other
   const [overflowMarginHelper, setOverflowMargin] = useState(overflowMargin);
   const layoutHelper = () => setOverflowMargin(overflowMargin - 1);

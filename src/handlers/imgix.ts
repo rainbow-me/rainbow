@@ -6,6 +6,7 @@ import { Source } from 'react-native-fast-image';
 import parse from 'url-parse';
 import { isCloudinaryStorageIconLink, signCloudinaryIconUrl } from '@/handlers/cloudinary';
 import { logger, RainbowError } from '@/logger';
+import { GOOGLE_USER_CONTENT_URL } from '@/utils/getFullResUrl';
 
 const shouldCreateImgixClient = (): ImgixClient | null => {
   if (typeof domain === 'string' && !!domain.length && typeof secureURLToken === 'string' && !!secureURLToken.length) {
@@ -135,6 +136,7 @@ export const maybeSignUri = (
 export const maybeSignSource = (source: Source, options?: Record<string, unknown>): Source => {
   if (!!source && typeof source === 'object') {
     const { uri: externalImageUri, ...extras } = source;
+
     return {
       ...extras,
       uri: maybeSignUri(externalImageUri, options),

@@ -3,7 +3,6 @@ import { parseUri } from '@walletconnect/utils';
 
 import store from '@/redux/store';
 import { walletConnectOnSessionRequest, walletConnectRemovePendingRedirect, walletConnectSetPendingRedirect } from '@/redux/walletconnect';
-import { scheduleActionOnAssetReceived } from '@/redux/data';
 
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
 import { defaultConfig } from '@/config/experimental';
@@ -86,8 +85,6 @@ export default async function handleDeeplink(url: string, initialRoute: any = nu
        */
       case 'token': {
         logger.info(`handleDeeplink: token`);
-
-        const { dispatch } = store;
         const { addr } = query;
         const address = (addr as string)?.toLowerCase() ?? '';
 
@@ -112,8 +109,6 @@ export default async function handleDeeplink(url: string, initialRoute: any = nu
 
             if (asset) {
               _action(asset);
-            } else {
-              scheduleActionOnAssetReceived(address, _action);
             }
           }, 50);
         }

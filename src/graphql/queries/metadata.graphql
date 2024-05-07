@@ -111,6 +111,26 @@ query getdApp($shortName: String!, $url: String!, $status: Boolean!) {
   }
 }
 
+query getdApps {
+  dApps {
+    name
+    shortName
+    description
+    url
+    iconURL
+    colors {
+      primary
+      fallback
+      shadow
+    }
+    status
+    report {
+      url
+    }
+    trending
+  }
+}
+
 fragment asset on TransactionSimulationAsset {
   assetCode
   decimals
@@ -157,14 +177,21 @@ fragment simulationError on TransactionError {
   type
 }
 
-query simulateTransactions($chainId: Int!, $transactions: [Transaction!], $domain: String!) {
-  simulateTransactions(chainID: $chainId, transactions: $transactions, domain: $domain) {
+query simulateTransactions($chainId: Int!, $transactions: [Transaction!], $domain: String, $currency: String) {
+  simulateTransactions(chainID: $chainId, transactions: $transactions, domain: $domain, currency: $currency) {
     error {
       ...simulationError
     }
     scanning {
       result
       description
+    }
+    gas {
+      used
+      estimate
+    }
+    report {
+      url
     }
     simulation {
       in {
@@ -259,6 +286,12 @@ query getPointsDataForWallet($address: String!) {
     }
     user {
       referralCode
+      earnings_by_type {
+        type
+        earnings {
+          total
+        }
+      }
       earnings {
         total
       }
@@ -266,6 +299,10 @@ query getPointsDataForWallet($address: String!) {
         position {
           unranked
           current
+        }
+        referral {
+          total_referees
+          qualified_referees
         }
         last_airdrop {
           position {
@@ -277,6 +314,7 @@ query getPointsDataForWallet($address: String!) {
           }
           differences {
             type
+            group_id
             earnings {
               total
             }
@@ -320,14 +358,14 @@ mutation onboardPoints($address: String!, $signature: String!, $referral: String
     }
     user {
       referralCode
+      earnings_by_type {
+        type
+        earnings {
+          total
+        }
+      }
       earnings {
         total
-      }
-      stats {
-        position {
-          unranked
-          current
-        }
       }
       onboarding {
         earnings {
@@ -343,6 +381,32 @@ mutation onboardPoints($address: String!, $signature: String!, $referral: String
           display_type
           earnings {
             total
+          }
+        }
+      }
+      stats {
+        position {
+          unranked
+          current
+        }
+        referral {
+          total_referees
+          qualified_referees
+        }
+        last_airdrop {
+          position {
+            unranked
+            current
+          }
+          earnings {
+            total
+          }
+          differences {
+            type
+            group_id
+            earnings {
+              total
+            }
           }
         }
       }

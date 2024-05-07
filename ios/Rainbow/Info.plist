@@ -106,6 +106,15 @@
 					<string>zorb</string>
 				</array>
 			</dict>
+			<key>farcaster</key>
+			<dict>
+				<key>UIPrerenderedIcon</key>
+				<false/>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>farcaster</string>
+				</array>
+			</dict>
 			<key>adworld</key>
 			<dict>
 				<key>UIPrerenderedIcon</key>
@@ -164,8 +173,6 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
-	<key>CodePushDeploymentKey</key>
-	<string>$(CODE_PUSH_DEPLOYMENT_KEY_IOS)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSApplicationQueriesSchemes</key>

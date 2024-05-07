@@ -1,4 +1,4 @@
-import { analytics } from '@/analytics';
+import { analytics, analyticsV2 } from '@/analytics';
 import { MinimalNotification } from '@/notifications/types';
 import { getPermissionStatus } from '@/notifications/permissions';
 import messaging from '@react-native-firebase/messaging';
@@ -36,8 +36,8 @@ export const trackChangedNotificationSettings = (
   });
 };
 
-export const trackPushNotificationPermissionStatus = (status: PushNotificationPermissionStatus) => {
-  analytics.identify(undefined, { notificationsPermissionStatus: status });
+export const trackPushNotificationPermissionStatus = async (status: PushNotificationPermissionStatus) => {
+  analyticsV2.identify({ notificationsPermissionStatus: status });
 };
 
 type PushNotificationPermissionStatus = 'enabled' | 'disabled' | 'never asked';
@@ -130,8 +130,8 @@ const countWalletsWithNotificationsTurnedOn = (wallets: WalletNotificationSettin
   };
 };
 
-const trackNumberOfWalletsWithNotificationsTurnedOn = (imported: number, watched: number) => {
-  analytics.identify(undefined, {
+const trackNumberOfWalletsWithNotificationsTurnedOn = async (imported: number, watched: number) => {
+  analyticsV2.identify({
     numberOfImportedWalletsWithNotificationsTurnedOn: imported,
     numberOfWatchedWalletsWithNotificationsTurnedOn: watched,
   });

@@ -28,7 +28,7 @@ export interface ThemeContextProps {
 
 export const ThemeContext = createContext<ThemeContextProps>({
   colors: lightModeThemeColors,
-  colorScheme: Themes.LIGHT,
+  colorScheme: Themes.SYSTEM,
   darkScheme: darkModeThemeColors,
   isDarkMode: false,
   lightScheme: lightModeThemeColors,
@@ -39,7 +39,6 @@ const { RNThemeModule } = NativeModules;
 
 export const MainThemeProvider = (props: PropsWithChildren<Record<string, never>>) => {
   const [colorScheme, setColorScheme] = useState<ThemesType | null>(null);
-
   // looks like one works on Android and another one on iOS. good.
   const isSystemDarkModeIOS = useDarkMode();
   const isSystemDarkModeAndroid = useColorScheme() === 'dark';
@@ -54,7 +53,7 @@ export const MainThemeProvider = (props: PropsWithChildren<Record<string, never>
   // Override default with user preferences
   useEffect(() => {
     const loadUserPref = async () => {
-      const userPref = (await getTheme()) ?? Themes.LIGHT;
+      const userPref = (await getTheme()) ?? Themes.SYSTEM;
       const userPrefSystemAdjusted = userPref === Themes.SYSTEM ? (isSystemDarkMode ? 'dark' : 'light') : userPref;
       currentColors.theme = userPrefSystemAdjusted;
       currentColors.themedColors = userPrefSystemAdjusted === Themes.DARK ? darkModeThemeColors : lightModeThemeColors;
@@ -80,6 +79,7 @@ export const MainThemeProvider = (props: PropsWithChildren<Record<string, never>
       lightScheme: lightModeThemeColors,
       // Overrides the isDarkMode value will cause re-render inside the context.
       setTheme: (scheme: ThemesType) => {
+        // eslint-disable-next-line no-nested-ternary
         const schemeSystemAdjusted = scheme === Themes.SYSTEM ? (isSystemDarkMode ? 'dark' : 'light') : scheme;
         currentColors.theme = schemeSystemAdjusted;
 

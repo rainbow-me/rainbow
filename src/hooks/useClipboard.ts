@@ -1,4 +1,4 @@
-import Clipboard from '@react-native-community/clipboard';
+import Clipboard from '@react-native-clipboard/clipboard';
 import { useCallback, useEffect, useState } from 'react';
 import useAppState from './useAppState';
 import { deviceUtils } from '@/utils';
@@ -30,7 +30,7 @@ export default function useClipboard() {
   useEffect(() => {
     if (deviceUtils.isIOS14) {
       checkClipboard();
-    } else {
+    } else if (!deviceUtils.hasClipboardProtection) {
       // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
       getClipboard();
     }
@@ -41,7 +41,7 @@ export default function useClipboard() {
     if (justBecameActive) {
       if (deviceUtils.isIOS14) {
         checkClipboard();
-      } else {
+      } else if (!deviceUtils.hasClipboardProtection) {
         // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
         getClipboard();
       }
@@ -58,7 +58,7 @@ export default function useClipboard() {
 
   return {
     clipboard: clipboardData,
-    enablePaste: deviceUtils.isIOS14 ? hasClipboardData : !!clipboardData,
+    enablePaste: deviceUtils.isIOS14 ? hasClipboardData : deviceUtils.hasClipboardProtection || !!clipboardData,
     getClipboard,
     hasClipboardData,
     setClipboard,

@@ -1,4 +1,4 @@
-import { Bleed, Box, Column, Columns, Inline, Stack, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { Bleed, Box, Column, Columns, Stack, Text, useColorMode, useForegroundColor } from '@/design-system';
 import React from 'react';
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -107,13 +107,13 @@ export function CarouselCard<T>({
                 paddingHorizontal: HORIZONTAL_PADDING,
               }}
             >
-              <Inline space={{ custom: carouselItem.padding }}>
+              <Box gap={carouselItem.padding}>
                 {carouselItem.placeholder}
                 {carouselItem.placeholder}
                 {carouselItem.placeholder}
                 {carouselItem.placeholder}
                 {carouselItem.placeholder}
-              </Inline>
+              </Box>
             </ScrollView>
           )}
         </Box>

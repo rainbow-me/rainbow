@@ -6,17 +6,19 @@ import {
 } from 'react-native-dotenv';
 import { Rap, RapActionTypes, RapENSActionParameters } from '../common';
 import { analytics } from '@/analytics';
-import { ENSRegistrationRecords, TransactionGasParamAmounts } from '@/entities';
+import { ENSRegistrationRecords, NewTransaction, TransactionGasParamAmounts } from '@/entities';
 import { estimateENSTransactionGasLimit, formatRecordsForTransaction } from '@/handlers/ens';
 import { toHex } from '@/handlers/web3';
 import { NetworkTypes } from '@/helpers';
 import { ENSRegistrationTransactionType, getENSExecutionDetails, REGISTRATION_MODES } from '@/helpers/ens';
-import { dataAddNewTransaction } from '@/redux/data';
+
 import { saveCommitRegistrationParameters, updateTransactionRegistrationParameters } from '@/redux/ensRegistration';
 import store from '@/redux/store';
 import { ethereumUtils } from '@/utils';
 import logger from '@/utils/logger';
 import { parseGasParamAmounts } from '@/parsers';
+import { addNewTransaction } from '@/state/pendingTransactions';
+import { Network } from '@/networks/types';
 
 const executeCommit = async (
   name?: string,
@@ -451,28 +453,32 @@ const ensAction = async (
 
   logger.log(`[${actionName}] response`, tx);
 
-  const nativeAsset = await ethereumUtils.getNetworkNativeAsset(NetworkTypes.mainnet);
-  const newTransaction = {
-    amount: 0,
-    asset: nativeAsset,
+  const newTransaction: NewTransaction = {
     data: tx.data,
     ensCommitRegistrationName: type === ENSRegistrationTransactionType.COMMIT ? name : undefined,
     ensRegistration: true,
     from: ownerAddress,
-    gasLimit,
     hash: tx?.hash,
     maxFeePerGas,
     maxPriorityFeePerGas,
     nonce: tx?.nonce,
+    type: 'contract_interaction',
+    contract: {
+      name: 'ENS',
+      iconUrl: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/dapps/ens.domains.png',
+    },
     to: tx?.to,
     value: toHex(tx.value),
     network: NetworkTypes.mainnet,
+    status: 'pending',
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
-  // @ts-expect-error Since src/redux/data.js is not typed yet, `accountAddress`
-  // being a string conflicts with the inferred type of "null" for the second
-  // parameter.
-  await dispatch(dataAddNewTransaction(newTransaction, ownerAddress));
+
+  addNewTransaction({
+    address: ownerAddress,
+    transaction: newTransaction,
+    network: Network.mainnet,
+  });
   return tx?.nonce;
 };
 

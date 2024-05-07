@@ -6,11 +6,10 @@ module.exports = {
       _: ['e2e'],
     },
   },
-
   devices: {
     'ios.simulator': {
       type: 'ios.simulator',
-      device: { type: 'iPhone 14 Pro' },
+      device: { type: 'iPhone 15 Pro' },
     },
     'android.attached': {
       type: 'android.attached',
@@ -23,7 +22,6 @@ module.exports = {
       device: { avdName: 'Pixel_7_Pro_API_34' },
     },
   },
-
   apps: {
     'ios.release': {
       type: 'ios.app',
@@ -48,17 +46,25 @@ module.exports = {
       build: 'cd ./android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && cd ..',
     },
   },
-
   configurations: {
     'ios.sim.release': {
       app: 'ios.release',
       device: 'ios.simulator',
+      artifacts: {
+        plugins: {
+          screenshot: 'failing',
+        },
+      },
     },
     'ios.sim.debug': {
       app: 'ios.debug',
       device: 'ios.simulator',
+      artifacts: {
+        plugins: {
+          screenshot: 'failing',
+        },
+      },
     },
-
     'android.emu.release': {
       app: 'android.release',
       device: 'android.emulator',

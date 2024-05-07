@@ -2,7 +2,7 @@ import { useTheme } from '@/theme';
 import React, { useCallback } from 'react';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import lang from 'i18n-js';
-import Clipboard from '@react-native-community/clipboard';
+import Clipboard from '@react-native-clipboard/clipboard';
 import { haptics } from '@/utils';
 import { Row } from '@/components/layout';
 import { TextInput } from 'react-native';

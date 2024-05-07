@@ -99,6 +99,7 @@ git update-index --assume-unchanged "ios/Extras.json"
 git update-index --assume-unchanged "android/app/src/main/res/raw/extras.json"
 git update-index --assume-unchanged "android/app/src/main/java/me/rainbow/NativeModules/Internals/InternalModule.java"
 git update-index --assume-unchanged "android/app/src/main/java/me/rainbow/MainActivity.java"
+git update-index --assume-unchanged "src/components/DappBrowser/DappBrowserWebview.tsx"
 
 
 # Specifying ONLY the node packages that we need to install via browserify

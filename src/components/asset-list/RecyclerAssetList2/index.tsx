@@ -193,23 +193,6 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
     [handlePressConnectedApps, handlePressQRCode, handlePressSettings]
   );
 
-  const handlePressMenuItemAndroid = React.useCallback(
-    (buttonIndex: number) => {
-      switch (buttonIndex) {
-        case 0:
-          handlePressSettings();
-          break;
-        case 1:
-          handlePressQRCode();
-          break;
-        case 2:
-          handlePressConnectedApps();
-          break;
-      }
-    },
-    [handlePressConnectedApps, handlePressQRCode, handlePressSettings]
-  );
-
   return (
     <Box
       as={RNAnimated.View}
@@ -262,11 +245,12 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
           rightComponent={
             IS_ANDROID ? (
               <AndroidContextMenu
-                // no idea where dynamicOptions is defined as a required prop
                 dynamicOptions={undefined}
                 options={menuConfig.menuItems.map(item => item?.actionTitle)}
                 cancelButtonIndex={menuConfig.menuItems.length - 1}
-                onPressActionSheet={handlePressMenuItemAndroid}
+                onPressActionSheet={(buttonIndex: number) => {
+                  handlePressMenuItem({ nativeEvent: { actionKey: menuConfig.menuItems[buttonIndex]?.actionKey } });
+                }}
               >
                 <View>
                   <Navbar.Item>
@@ -288,7 +272,7 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
               as={RNAnimated.View}
               height={{ custom: navbarHeight }}
               justifyContent="center"
-              style={[walletNameStyle, { alignSelf: 'center', bottom: 2 }]}
+              style={[walletNameStyle, { alignSelf: 'center', bottom: 2, zIndex: -1 }]}
             >
               <ProfileNameRow variant="header" />
             </Box>

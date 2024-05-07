@@ -313,7 +313,6 @@ export default function ENSConfirmRegisterSheet() {
   );
 
   return (
-    // @ts-expect-error JavaScript component
     <SlackSheet
       additionalTopPadding
       contentHeight={params.longFormHeight || ENSConfirmRegisterSheetHeight}

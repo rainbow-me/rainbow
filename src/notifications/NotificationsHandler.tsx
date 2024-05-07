@@ -22,14 +22,7 @@ import { Navigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import { AppState as ApplicationState, AppStateStatus, NativeEventSubscription } from 'react-native';
 import notifee, { Event as NotifeeEvent, EventType } from '@notifee/react-native';
-import { getProviderForNetwork } from '@/handlers/web3';
 import { ethereumUtils, isLowerCaseMatch } from '@/utils';
-import { NewTransactionOrAddCashTransaction } from '@/entities/transactions/transaction';
-import { TransactionDirection, TransactionStatus } from '@/entities';
-import { getTitle, getTransactionLabel, parseNewTransaction } from '@/parsers';
-import { isZero } from '@/helpers/utilities';
-import { getConfirmedState } from '@/helpers/transactions';
-import { mapNotificationTransactionType } from '@/notifications/mapTransactionsType';
 import walletTypes from '@/helpers/walletTypes';
 import {
   NotificationSubscriptionChangesListener,
@@ -44,7 +37,7 @@ import {
   initializeNotificationSettingsForAllAddressesAndCleanupSettingsForRemovedWallets,
 } from '@/notifications/settings/initialization';
 import { logger } from '@/logger';
-import { setHasPendingDeeplinkPendingRedirect } from '@/walletConnect';
+import { transactionFetchQuery } from '@/resources/transactions/transaction';
 
 type Callback = () => void;
 
@@ -90,7 +83,7 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
     const topic = remoteMessage?.data?.topic;
 
     setTimeout(() => {
-      const requests = dispatch(requestsForTopic(topic));
+      const requests = dispatch(requestsForTopic(topic as string));
       if (requests) {
         // WC requests will open automatically
         return false;
@@ -162,95 +155,22 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
         return;
       }
       Navigation.handleAction(Routes.PROFILE_SCREEN, {});
-      const zerionTransaction = store.getState().data.transactions.find(tx => isLowerCaseMatch(ethereumUtils.getHash(tx) ?? '', data.hash));
-      if (zerionTransaction) {
-        Navigation.handleAction(Routes.TRANSACTION_DETAILS, {
-          transaction: zerionTransaction,
-        });
-      } else {
-        const network = ethereumUtils.getNetworkFromChainId(parseInt(data.chain, 10));
-        const provider = await getProviderForNetwork(network);
-        const rpcTransaction = await provider.getTransaction(data.hash);
 
-        const transactionConfirmed = rpcTransaction?.blockNumber && rpcTransaction?.blockHash;
-        if (!transactionConfirmed) {
-          return;
-        }
+      const network = ethereumUtils.getNetworkFromChainId(parseInt(data.chain, 10));
+      const transaction = await transactionFetchQuery({
+        hash: data.hash,
+        network: network,
+        address: walletAddress,
+        currency: nativeCurrency,
+      });
 
-        const newTransactionDetails: NewTransactionOrAddCashTransaction = {
-          type: mapNotificationTransactionType(data.transaction_type),
-          network,
-          hash: rpcTransaction.hash,
-          status: TransactionStatus.unknown,
-          amount: rpcTransaction.value.toString(),
-          nonce: rpcTransaction.nonce,
-          from: rpcTransaction.from,
-          to: rpcTransaction.to ?? null,
-          asset: null,
-          gasLimit: rpcTransaction.gasLimit,
-          maxFeePerGas: rpcTransaction.maxFeePerGas,
-          maxPriorityFeePerGas: rpcTransaction.maxPriorityFeePerGas,
-          gasPrice: rpcTransaction.gasPrice,
-          data: rpcTransaction.data,
-        };
-
-        const parsedTransaction = await parseNewTransaction(newTransactionDetails, nativeCurrency);
-        const resultTransaction = { ...parsedTransaction };
-        const minedAt = Math.floor(Date.now() / 1000);
-        let receipt;
-
-        try {
-          if (rpcTransaction) {
-            receipt = await rpcTransaction.wait();
-          }
-        } catch (e: any) {
-          // https://docs.ethers.io/v5/api/providers/types/#providers-TransactionResponse
-          if (e.transaction) {
-            // if a transaction field exists, it was confirmed but failed
-            resultTransaction.status = TransactionStatus.failed;
-          } else {
-            // cancelled or replaced
-            resultTransaction.status = TransactionStatus.cancelled;
-          }
-        }
-        const status = receipt?.status || 0;
-        if (!isZero(status)) {
-          let direction = TransactionDirection.out;
-          if (parsedTransaction?.from && parsedTransaction?.to && isLowerCaseMatch(parsedTransaction.from, parsedTransaction.to)) {
-            direction = TransactionDirection.self;
-          }
-          if (parsedTransaction?.from && parsedTransaction?.to && isLowerCaseMatch(walletAddress, parsedTransaction.to)) {
-            direction = TransactionDirection.in;
-          }
-
-          const newStatus = getTransactionLabel({
-            direction,
-            pending: false,
-            protocol: parsedTransaction?.protocol,
-            status:
-              parsedTransaction.status === TransactionStatus.cancelling
-                ? TransactionStatus.cancelled
-                : getConfirmedState(parsedTransaction.type),
-            type: parsedTransaction?.type,
-          });
-          resultTransaction.status = newStatus;
-        } else {
-          resultTransaction.status = TransactionStatus.failed;
-        }
-        resultTransaction.title = getTitle({
-          protocol: parsedTransaction.protocol,
-          status: resultTransaction.status,
-          type: parsedTransaction.type,
-        });
-        resultTransaction.pending = false;
-        resultTransaction.minedAt = minedAt;
-
-        if (resultTransaction) {
-          Navigation.handleAction(Routes.TRANSACTION_DETAILS, {
-            transaction: resultTransaction,
-          });
-        }
+      if (!transaction) {
+        return;
       }
+
+      Navigation.handleAction(Routes.TRANSACTION_DETAILS, {
+        transaction,
+      });
     } else if (type === NotificationTypes.walletConnect) {
       logger.info(`NotificationsHandler: handling wallet connect notification`, { notification });
     } else if (type === NotificationTypes.marketing) {

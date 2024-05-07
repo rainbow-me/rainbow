@@ -6,6 +6,7 @@ import ExchangeMaxButton from './ExchangeMaxButton';
 import ExchangeNativeField from './ExchangeNativeField';
 import { Network } from '@/helpers';
 import styled from '@/styled-thing';
+import { TokenColors } from '@/graphql/__generated__/metadata';
 
 const Container = styled(ColumnWithMargins).attrs({ margin: 5 })({
   paddingTop: android ? 0 : 6,
@@ -34,6 +35,8 @@ interface ExchangeInputFieldProps {
   onPressMaxBalance: () => void;
   onPressSelectInputCurrency: (chainId: any) => void;
   inputAmount: string | null;
+  inputCurrencyIcon?: string;
+  inputCurrencyColors?: TokenColors;
   inputCurrencyAddress: string;
   inputCurrencyMainnetAddress?: string;
   inputCurrencyNetwork?: string;
@@ -53,6 +56,8 @@ export default function ExchangeInputField({
   inputCurrencyAddress,
   inputCurrencyMainnetAddress,
   inputCurrencySymbol,
+  inputCurrencyIcon,
+  inputCurrencyColors,
   inputFieldRef,
   loading,
   nativeAmount,
@@ -71,6 +76,8 @@ export default function ExchangeInputField({
   return (
     <Container>
       <ExchangeField
+        icon={inputCurrencyIcon}
+        colors={inputCurrencyColors}
         address={inputCurrencyAddress}
         color={color}
         amount={inputAmount}

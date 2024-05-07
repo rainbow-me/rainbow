@@ -1,6 +1,6 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import React, { useMemo, useRef } from 'react';
-import { TextInputProps } from 'react-native';
+import { TextInput, TextInputProps } from 'react-native';
 import Spinner from '../../Spinner';
 import { Input } from '../../inputs';
 import SearchInputGradientBackground from './SearchInputGradientBackground';
@@ -25,7 +25,7 @@ const SearchInput = ({ isLoading, onChangeText, value, variant = 'rainbow', sele
     weight: 'heavy',
   });
 
-  const inputRef = useRef();
+  const inputRef = useRef<TextInput | null>(null);
   const { handleFocus } = useMagicAutofocus(
     inputRef,
     undefined,
@@ -44,7 +44,7 @@ const SearchInput = ({ isLoading, onChangeText, value, variant = 'rainbow', sele
         <Box
           as={MaskedView}
           maskElement={<Box background="body (Deprecated)" borderRadius={46} height={`${height}px`} width="full" />}
-          //@ts-ignore overloaded props
+          // @ts-ignore overloaded props
           style={useMemo(() => ({ height: '100%', width: '100%' }), [])}
         >
           <SearchInputGradientBackground height={height} state={state} variant={variant} width={deviceWidth} />

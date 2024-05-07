@@ -1,19 +1,18 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { globalColors } from '@/design-system/color/palettes';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
-import { CoinIcon } from '@/components/coin-icon';
 import { AccentColorProvider, Bleed, Box, Cover, Inline, Inset, Text } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useTheme } from '@/theme';
-import { Linking, View } from 'react-native';
+import { View } from 'react-native';
 import { MintableCollection } from '@/graphql/__generated__/arc';
-import ethereumUtils, { getNetworkFromChainId } from '@/utils/ethereumUtils';
-import { getNetworkObj } from '@/networks';
+import ethereumUtils, { getNetworkFromChainId, useNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { analyticsV2 } from '@/analytics';
 import * as i18n from '@/languages';
 import { IS_IOS } from '@/env';
 import { ImgixImage } from '@/components/images';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 
 export const NFT_IMAGE_SIZE = 111;
 
@@ -38,11 +37,11 @@ export function Placeholder() {
 }
 
 export function CollectionCell({ collection }: { collection: MintableCollection }) {
-  const { isDarkMode } = useTheme();
+  const theme = useTheme();
 
   const [mediaRendered, setMediaRendered] = useState(false);
 
-  const currency = getNetworkObj(getNetworkFromChainId(collection.chainId)).nativeCurrency;
+  const currency = useNativeAssetForNetwork(getNetworkFromChainId(collection.chainId));
 
   const amount = convertRawAmountToRoundedDecimal(collection.mintStatus.price, 18, 6);
 
@@ -100,7 +99,7 @@ export function CollectionCell({ collection }: { collection: MintableCollection 
                     : {
                         shadowColor: globalColors.grey100,
                         elevation: 12,
-                        shadowOpacity: isDarkMode ? 1 : 0.6,
+                        shadowOpacity: theme.isDarkMode ? 1 : 0.6,
                       }
                 }
               >
@@ -128,15 +127,17 @@ export function CollectionCell({ collection }: { collection: MintableCollection 
         }}
       >
         {!isFree && (
-          <CoinIcon
-            address={currency.address}
-            size={12}
-            symbol={currency.symbol}
-            style={{ marginRight: 4, marginVertical: -4 }}
-            network={getNetworkFromChainId(collection.chainId)}
-            mainnet_address={currency?.mainnetAddress}
-            ignoreBadge
-          />
+          <View style={{ marginRight: 4, marginVertical: -4 }}>
+            <RainbowCoinIcon
+              icon={currency?.icon_url || ''}
+              size={12}
+              network={getNetworkFromChainId(collection.chainId)}
+              symbol={currency?.symbol || ''}
+              theme={theme}
+              colors={currency?.colors}
+              ignoreBadge
+            />
+          </View>
         )}
         <View style={{ width: NFT_IMAGE_SIZE - 16 }}>
           <Text color="label" size="11pt" weight="bold" numberOfLines={1}>

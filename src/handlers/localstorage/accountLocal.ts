@@ -4,16 +4,10 @@ import { ENSRegistrations } from '@/entities';
 import { STORAGE_IDS } from '@/model/mmkv';
 
 const assetsVersion = '0.3.0';
-const pendingTransactionsVersion = '0.1.0';
-const purchaseTransactionsVersion = '0.2.0';
-const transactionsVersion = '0.3.0';
-const uniqueTokensVersion = '0.2.1';
 
 const ACCOUNT_INFO = 'accountInfo';
 const ACCOUNT_EMPTY = 'accountEmpty';
 const ASSETS = 'assets';
-const PENDING_TRANSACTIONS = 'pendingTransactions';
-const PURCHASE_TRANSACTIONS = 'purchaseTransactions';
 const SHOWCASE_TOKENS = 'showcaseTokens';
 const HIDDEN_TOKENS = 'hiddenTokens';
 const TRANSACTIONS = 'transactions';
@@ -31,7 +25,6 @@ export const accountLocalKeys = [
   ACCOUNT_INFO,
   ASSETS,
   ENS_REGISTRATIONS,
-  PURCHASE_TRANSACTIONS,
   SHOWCASE_TOKENS,
   TRANSACTIONS,
   UNIQUE_TOKENS,
@@ -65,60 +58,6 @@ export const saveAccountEmptyState = (val: any, accountAddress: any, network: an
  * @return {Array}
  */
 export const getAssets = (accountAddress: any, network: any) => getAccountLocal(ASSETS, accountAddress, network, [], assetsVersion);
-
-/**
- * @desc get purchase transactions
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const getPurchaseTransactions = (accountAddress: any, network: any) =>
-  getAccountLocal(PURCHASE_TRANSACTIONS, accountAddress, network, [], purchaseTransactionsVersion);
-
-/**
- * @desc save purchase transactions
- * @param  {String}   [address]
- * @param  {Array}   [purchaseTransactions]
- * @param  {String}   [network]
- */
-export const savePurchaseTransactions = (purchaseTransactions: any, accountAddress: any, network: any) =>
-  saveAccountLocal(PURCHASE_TRANSACTIONS, purchaseTransactions, accountAddress, network, purchaseTransactionsVersion);
-
-/**
- * @desc get transactions
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const getLocalPendingTransactions = (accountAddress: any, network: any) =>
-  getAccountLocal(PENDING_TRANSACTIONS, accountAddress, network, [], pendingTransactionsVersion);
-
-/**
- * @desc save transactions
- * @param  {String}   [address]
- * @param  {Array}   [pendingTransactions]
- * @param  {String}   [network]
- */
-export const saveLocalPendingTransactions = (transactions: any, accountAddress: any, network: any) =>
-  saveAccountLocal(PENDING_TRANSACTIONS, transactions, accountAddress, network, pendingTransactionsVersion);
-
-/**
- * @desc get transactions
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const getLocalTransactions = (accountAddress: any, network: any) =>
-  getAccountLocal(TRANSACTIONS, accountAddress, network, [], transactionsVersion);
-
-/**
- * @desc save transactions
- * @param  {String}   [address]
- * @param  {Array}   [transactions]
- * @param  {String}   [network]
- */
-export const saveLocalTransactions = (transactions: any, accountAddress: any, network: any) =>
-  saveAccountLocal(TRANSACTIONS, transactions, accountAddress, network, transactionsVersion);
 
 /**
  * @desc get ENS registrations
