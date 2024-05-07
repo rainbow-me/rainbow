@@ -306,18 +306,10 @@ type ExtractColorValueForColorsProps = {
   isDarkMode: boolean;
 };
 
-export const extractColorValueForColors = ({ colors, isDarkMode }: ExtractColorValueForColorsProps): string => {
+export const extractColorValueForColors = ({ colors }: ExtractColorValueForColorsProps): string | undefined => {
   'worklet';
-
-  if (colors?.primary) {
-    return colors.primary;
-  }
-
-  if (colors?.fallback) {
-    return colors.fallback;
-  }
-
-  return isDarkMode ? ETH_COLOR_DARK : ETH_COLOR;
+  // NOTE: We should default back to ETH_COLOR_DARK if we're in dark mode or ETH_COLOR if we're in light mode
+  return colors.primary ?? colors.fallback;
 };
 
 export const getQuoteServiceTime = ({ quote }: { quote: Quote | CrosschainQuote }) =>
@@ -413,12 +405,12 @@ export const parseAssetAndExtend = ({ asset, type }: { asset: ParsedSearchAsset 
   // TODO: Process and add colors to the asset and anything else we'll need for reanimated stuff
   const color = extractColorValueForColors({
     colors: asset.colors as TokenColors,
-    isDarkMode: true,
   });
 
   return {
     ...asset,
     color,
+    shadow: asset.colors?.shadow,
   };
 
   return asset as ExtendedAnimatedAssetWithColors;

@@ -10,8 +10,8 @@ import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { FlashList } from '@shopify/flash-list';
 import { ChainSelection } from './ChainSelection';
-import { swapsStore } from '@/state/swaps/swapsStore';
 import { SwapAssetType } from '@/__swaps__/types/swap';
+import { userAssetStore } from '@/state/assets/userAssets';
 
 const AnimatedFlashListComponent = Animated.createAnimatedComponent(FlashList<ParsedSearchAsset>);
 
@@ -23,7 +23,7 @@ export const TokenToSellList = () => {
     (token: ParsedSearchAsset) => {
       'worklet';
 
-      const userAsset = swapsStore.getState().getUserAsset(token.uniqueId);
+      const userAsset = userAssetStore.getState().getUserAsset(token.uniqueId);
       const parsedAsset = parseSearchAsset({
         assetWithPrice: undefined,
         searchAsset: token,

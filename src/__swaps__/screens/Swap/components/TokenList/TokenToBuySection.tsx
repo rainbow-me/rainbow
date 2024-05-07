@@ -14,8 +14,8 @@ import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
-import { swapsStore } from '@/state/swaps/swapsStore';
 import { SwapAssetType } from '@/__swaps__/types/swap';
+import { userAssetStore } from '@/state/assets/userAssets';
 
 interface SectionProp {
   color: TextStyle['color'];
@@ -72,7 +72,7 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
     (token: SearchAsset) => {
       'worklet';
 
-      const userAsset = swapsStore.getState().getUserAsset(token.uniqueId);
+      const userAsset = userAssetStore.getState().getUserAsset(token.uniqueId);
       const parsedAsset = parseSearchAsset({
         assetWithPrice: undefined,
         searchAsset: token,

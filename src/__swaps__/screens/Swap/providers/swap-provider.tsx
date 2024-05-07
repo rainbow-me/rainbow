@@ -11,7 +11,7 @@ import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapI
 import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { CrosschainQuote, Quote, QuoteError, SwapType, getCrosschainQuote, getQuote } from '@rainbow-me/swaps';
-import { swapsStore } from '../../../../state/swaps/swapsStore';
+import { swapsStore } from '@/state/swaps/swapsStore';
 import { isSameAsset } from '@/__swaps__/utils/assets';
 import { buildQuoteParams, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { ChainId } from '@/__swaps__/types/chains';

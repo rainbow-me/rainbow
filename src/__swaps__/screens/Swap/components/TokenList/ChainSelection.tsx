@@ -21,7 +21,7 @@ import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider
 import { ContextMenuButton } from '@/components/context-menu';
 import { useAccountAccentColor } from '@/hooks';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
-import { swapsStore } from '@/state/swaps/swapsStore';
+import { userAssetStore } from '@/state/assets/userAssets';
 
 type ChainSelectionProps = {
   allText?: string;
@@ -46,9 +46,9 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
   const chainName = useSharedValue(
     output
       ? chainNameFromChainIdWorklet(outputChainId.value)
-      : swapsStore.getState().filter === 'all'
+      : userAssetStore.getState().filter === 'all'
         ? allText
-        : chainNameFromChainIdWorklet(swapsStore.getState().filter as ChainId)
+        : chainNameFromChainIdWorklet(userAssetStore.getState().filter as ChainId)
   );
 
   useAnimatedReaction(
@@ -70,7 +70,7 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
           chainName.value = chainNameForChainIdWithMainnetSubstitutionWorklet(Number(actionKey) as ChainId);
         });
       } else {
-        swapsStore.setState({
+        userAssetStore.setState({
           filter: actionKey === 'all' ? 'all' : (Number(actionKey) as ChainId),
         });
         runOnUI(() => {

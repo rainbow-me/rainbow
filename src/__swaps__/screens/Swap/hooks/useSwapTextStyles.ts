@@ -39,8 +39,8 @@ export function useSwapTextStyles({
   inputMethod: SharedValue<inputMethods>;
   inputProgress: SharedValue<number>;
   inputValues: SharedValue<{ [key in inputKeys]: number | string }>;
-  topColor: SharedValue<string>;
-  bottomColor: SharedValue<string>;
+  topColor: SharedValue<string | undefined>;
+  bottomColor: SharedValue<string | undefined>;
   isQuoteStale: SharedValue<number>;
   outputProgress: SharedValue<number>;
   sliderPressProgress: SharedValue<number>;

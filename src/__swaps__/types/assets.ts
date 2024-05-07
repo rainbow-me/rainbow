@@ -9,7 +9,8 @@ export type AddressOrEth = Address | typeof ETH_ADDRESS;
 export type UserAssetFilter = 'all' | ChainId;
 
 export interface ExtendedAnimatedAssetWithColors extends ParsedSearchAsset {
-  color: string;
+  color?: string;
+  shadow?: string;
 }
 
 export interface ParsedAsset {
