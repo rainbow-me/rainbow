@@ -14,7 +14,7 @@ import { SwapAssetType, inputKeys } from '../types/swap';
 import { swapsStore } from '../../state/swaps/swapsStore';
 import store from '@/redux/store';
 import { BigNumberish } from '@ethersproject/bignumber';
-import { Maybe, TokenColors } from '@/graphql/__generated__/metadata';
+import { TokenColors } from '@/graphql/__generated__/metadata';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -307,7 +307,12 @@ type ExtractColorValueForColorsProps = {
 };
 
 export const extractColorValueForColors = ({ colors, isDarkMode }: ExtractColorValueForColorsProps): string => {
-  'worklet';
+  const color = colors.primary ?? colors.fallback ?? isDarkMode;
+
+  // TODO: mod color utils and return light/dark mode colors
+
+  const highContrastColor = getHighContrastColor;
+
   // NOTE: We should default back to ETH_COLOR_DARK if we're in dark mode or ETH_COLOR if we're in light mode
   return colors?.primary ?? colors?.fallback ?? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
 };
@@ -398,6 +403,8 @@ export const priceForAsset = ({
 };
 
 export const parseAssetAndExtend = ({ asset, type }: { asset: ParsedSearchAsset | null; type: SwapAssetType }) => {
+  'worklet';
+
   if (!asset) {
     return null;
   }
@@ -411,10 +418,7 @@ export const parseAssetAndExtend = ({ asset, type }: { asset: ParsedSearchAsset 
   return {
     ...asset,
     color,
-    shadow: asset.colors?.shadow,
   };
-
-  return asset as ExtendedAnimatedAssetWithColors;
 };
 
 type BuildQuoteParamsProps = {

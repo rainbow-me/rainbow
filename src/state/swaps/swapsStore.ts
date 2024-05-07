@@ -17,20 +17,26 @@ export interface SwapsState {
 
   // settings
   flashbots: boolean;
+  setFlashbots: (flashbots: boolean) => void;
   slippage: string;
+  setSlippage: (slippage: string) => void;
   source: Source | 'auto';
+  setSource: (source: Source | 'auto') => void;
 }
 
 export const swapsStore = createRainbowStore<SwapsState>(
-  () => ({
+  (set, _) => ({
     inputAsset: null, // TODO: Default to their largest balance asset (or ETH mainnet if user has no assets)
     outputAsset: null,
 
     quote: null,
 
     flashbots: false,
+    setFlashbots: (flashbots: boolean) => set({ flashbots }),
     slippage: getDefaultSlippage(ChainId.mainnet, DEFAULT_CONFIG),
+    setSlippage: (slippage: string) => set({ slippage }),
     source: 'auto',
+    setSource: (source: Source | 'auto') => set({ source }),
   }),
   {
     storageKey: 'swapsStore',

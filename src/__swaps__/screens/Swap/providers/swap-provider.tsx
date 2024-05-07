@@ -38,6 +38,8 @@ interface SwapContextType {
   sliderPressProgress: SharedValue<number>;
 
   focusedInput: SharedValue<inputKeys>;
+
+  // TODO: Separate this into Zustand
   outputChainId: SharedValue<ChainId>;
 
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
@@ -102,7 +104,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
     setQuote({ data: response });
 
-    // TODO: Handle setting quote interval
+    // TODO: Handle setting quote interval AND asset price fetching
   };
 
   const setQuote = ({ data }: { data: Quote | CrosschainQuote | QuoteError | null }) => {

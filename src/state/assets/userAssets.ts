@@ -11,19 +11,26 @@ export interface UserAssetsState {
   filter: UserAssetFilter;
   searchQuery: string;
   favoriteAssetIds: Hex[]; // this is chain agnostic, so we don't want to store a UniqueId here
+  setFavorites: (favoriteAssetIds: Hex[]) => void;
 
   getFilteredUserAssetIds: () => UniqueId[];
   getUserAsset: (uniqueId: UniqueId) => ParsedSearchAsset | undefined;
   isFavorite: (uniqueId: UniqueId) => boolean;
 }
 
-export const userAssetStore = createRainbowStore<UserAssetsState>(
-  (_, get) => ({
+export const userAssetsStore = createRainbowStore<UserAssetsState>(
+  (set, get) => ({
     userAssetIds: [],
     userAssets: [],
     filter: 'all',
     searchQuery: '',
     favoriteAssetIds: [],
+
+    setUserAssets: (userAssets: ParsedSearchAsset[]) => {
+      // TODO: Verify that setting this doesn't impact performance...
+      // we might need to use a Set?
+      set({ userAssets });
+    },
 
     getFilteredUserAssetIds: () => {
       const { userAssets, searchQuery } = get();
@@ -41,6 +48,8 @@ export const userAssetStore = createRainbowStore<UserAssetsState>(
       // and return the uniqueIds of those assets
       return matchedAssets.map(asset => asset.uniqueId);
     },
+
+    setFavorites: (favoriteAssetIds: Hex[]) => set({ favoriteAssetIds }),
 
     getUserAsset: (uniqueId: UniqueId) => {
       const { userAssets } = get();
@@ -62,4 +71,4 @@ export const userAssetStore = createRainbowStore<UserAssetsState>(
   }
 );
 
-export const useUserAssetStore = create(userAssetStore);
+export const useUserAssetsStore = create(userAssetsStore);
