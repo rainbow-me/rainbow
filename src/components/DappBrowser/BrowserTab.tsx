@@ -77,14 +77,9 @@ export const BrowserTab = React.memo(function BrowserTab({ addRecent, setLogo, s
       {/* Need to fix some shadow performance issues - disabling shadows for now */}
       {/* <WebViewShadows gestureScale={gestureScale} isOnHomepage={isOnHomepage} tabIndex={tabIndex}> */}
 
-      <Animated.View entering={FadeIn.duration(160)} style={[styles.webViewContainer, animatedWebViewStyle]}>
+      <Animated.View entering={FadeIn.duration(160)} style={[zIndexAnimatedStyle, styles.webViewContainer, animatedWebViewStyle]}>
         <Animated.View
-          style={[
-            zIndexAnimatedStyle,
-            styles.webViewExpensiveStylesContainer,
-            expensiveAnimatedWebViewStyles,
-            animatedWebViewBackgroundColorStyle,
-          ]}
+          style={[styles.webViewExpensiveStylesContainer, expensiveAnimatedWebViewStyles, animatedWebViewBackgroundColorStyle]}
         >
           <ViewShot options={TAB_SCREENSHOT_FILE_FORMAT} ref={viewShotRef}>
             <View collapsable={false} style={styles.viewShotContainer}>
