@@ -25,7 +25,6 @@ import {
 } from '../utils/keychainConstants';
 import { hasKey, loadString, publicAccessControlOptions, saveString } from './keychain';
 import { DEFAULT_WALLET_NAME, loadAddress, RainbowAccount, RainbowWallet, saveAddress } from './wallet';
-import { isL2Asset } from '@/handlers/assets';
 import { getAssets, getHiddenCoins, getPinnedCoins, saveHiddenCoins, savePinnedCoins } from '@/handlers/localstorage/accountLocal';
 import { getContacts, saveContacts } from '@/handlers/localstorage/contacts';
 import { resolveNameOrAddress } from '@/handlers/web3';
@@ -38,7 +37,8 @@ import { queryClient } from '@/react-query';
 import { favoritesQueryKey } from '@/resources/favorites';
 import { EthereumAddress, RainbowToken } from '@/entities';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { queryStorage } from '@/storage/legacy';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { Hex } from 'viem';
 
 export default async function runMigrations() {
   // get current version
@@ -638,6 +638,27 @@ export default async function runMigrations() {
   };
 
   migrations.push(v18);
+
+  /**
+   * Move favorites (yet again) from react-query to zustand with persistence
+   * See state/assets/userAssets.ts for the state structure
+   */
+  const v19 = async () => {
+    const favorites = queryClient.getQueryData<Record<EthereumAddress, RainbowToken>>(favoritesQueryKey);
+
+    if (favorites) {
+      const favoriteAddresses: Hex[] = [];
+      Object.keys(favorites).forEach((address: string) => {
+        favoriteAddresses.push(address as Hex);
+      });
+
+      userAssetsStore.setState({
+        favoriteAssetsAddresses: favoriteAddresses,
+      });
+    }
+  };
+
+  migrations.push(v19);
 
   logger.sentry(`Migrations: ready to run migrations starting on number ${currentVersion}`);
   // await setMigrationVersion(17);

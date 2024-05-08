@@ -10,7 +10,7 @@ export interface UserAssetsState {
   userAssets: Map<UniqueId, ParsedSearchAsset>;
   filter: UserAssetFilter;
   searchQuery: string;
-  favoriteAssetIds: Hex[]; // this is chain agnostic, so we don't want to store a UniqueId here
+  favoriteAssetsAddresses: Hex[]; // this is chain agnostic, so we don't want to store a UniqueId here
   setFavorites: (favoriteAssetIds: Hex[]) => void;
 
   getFilteredUserAssetIds: () => UniqueId[];
@@ -23,7 +23,7 @@ function serializeUserAssetsState(state: Partial<UserAssetsState>, version?: num
     return JSON.stringify({
       state: {
         ...state,
-        tabsData: state.userAssets ? Array.from(state.userAssets.entries()) : [],
+        userAssets: state.userAssets ? Array.from(state.userAssets.entries()) : [],
       },
       version,
     });
@@ -33,8 +33,13 @@ function serializeUserAssetsState(state: Partial<UserAssetsState>, version?: num
   }
 }
 
+// NOTE: We are serializing Map as an Array<[UniqueId, ParsedSearchAsset]>
+type UserAssetsStateWithTransforms = UserAssetsState & {
+  userAssets: Array<[UniqueId, ParsedSearchAsset]>;
+};
+
 function deserializeUserAssetsState(serializedState: string) {
-  let parsedState: { state: UserAssetsState; version: number };
+  let parsedState: { state: UserAssetsStateWithTransforms; version: number };
   try {
     parsedState = JSON.parse(serializedState);
   } catch (error) {
@@ -44,9 +49,11 @@ function deserializeUserAssetsState(serializedState: string) {
 
   const { state, version } = parsedState;
 
-  let userAssetsData: Map<UniqueId, ParsedSearchAsset>;
+  let userAssetsData: Map<UniqueId, ParsedSearchAsset> = new Map();
   try {
-    userAssetsData = new Map(state.userAssets);
+    if (state.userAssets.length) {
+      userAssetsData = new Map(state.userAssets);
+    }
   } catch (error) {
     logger.error(new RainbowError('Failed to convert userAssets from user assets storage'), { error });
     throw error;
@@ -67,7 +74,7 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
     userAssets: new Map(),
     filter: 'all',
     searchQuery: '',
-    favoriteAssetIds: [],
+    favoriteAssetsAddresses: [],
 
     getFilteredUserAssetIds: () => {
       const { userAssetIds, userAssets, searchQuery } = get();
@@ -93,16 +100,16 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
       }, [] as UniqueId[]);
     },
 
-    setFavorites: (favoriteAssetIds: Hex[]) => set({ favoriteAssetIds }),
+    setFavorites: (addresses: Hex[]) => set({ favoriteAssetsAddresses: addresses }),
 
     getUserAsset: (uniqueId: UniqueId) => get().userAssets.get(uniqueId),
 
     isFavorite: (uniqueId: UniqueId) => {
-      const { favoriteAssetIds } = get();
+      const { favoriteAssetsAddresses } = get();
 
       const { address } = deriveAddressAndChainWithUniqueId(uniqueId);
 
-      return favoriteAssetIds.includes(address);
+      return favoriteAssetsAddresses.includes(address);
     },
   }),
   {
@@ -111,7 +118,7 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
     partialize: state => ({
       userAssetIds: state.userAssetIds,
       userAssets: state.userAssets,
-      favoriteAssetIds: state.favoriteAssetIds,
+      favoriteAssetsAddresses: state.favoriteAssetsAddresses,
     }),
     serializer: serializeUserAssetsState,
     deserializer: deserializeUserAssetsState,
