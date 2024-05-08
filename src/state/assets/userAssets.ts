@@ -18,7 +18,7 @@ export interface UserAssetsState {
   isFavorite: (uniqueId: UniqueId) => boolean;
 }
 
-function serializeUserAssetsState(state: UserAssetsState, version?: number) {
+function serializeUserAssetsState(state: Partial<UserAssetsState>, version?: number) {
   try {
     return JSON.stringify({
       state: {
