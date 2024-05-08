@@ -653,7 +653,7 @@ export default async function runMigrations() {
       });
 
       userAssetsStore.setState({
-        favoriteAssetsAddresses: new Set(favoriteAddresses),
+        favoriteAssetsById: new Set(favoriteAddresses),
       });
     }
   };
