@@ -3,10 +3,11 @@ import { Hex } from 'viem';
 import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
 import { deriveAddressAndChainWithUniqueId } from '@/__swaps__/utils/address';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { RainbowError, logger } from '@/logger';
 
 export interface UserAssetsState {
   userAssetIds: UniqueId[];
-  userAssets: ParsedSearchAsset[];
+  userAssets: Map<UniqueId, ParsedSearchAsset>;
   filter: UserAssetFilter;
   searchQuery: string;
   favoriteAssetIds: Hex[]; // this is chain agnostic, so we don't want to store a UniqueId here
@@ -17,44 +18,84 @@ export interface UserAssetsState {
   isFavorite: (uniqueId: UniqueId) => boolean;
 }
 
+function serializeUserAssetsState(state: UserAssetsState, version?: number) {
+  try {
+    return JSON.stringify({
+      state: {
+        ...state,
+        tabsData: state.userAssets ? Array.from(state.userAssets.entries()) : [],
+      },
+      version,
+    });
+  } catch (error) {
+    logger.error(new RainbowError('Failed to serialize state for user assets storage'), { error });
+    throw error;
+  }
+}
+
+function deserializeUserAssetsState(serializedState: string) {
+  let parsedState: { state: UserAssetsState; version: number };
+  try {
+    parsedState = JSON.parse(serializedState);
+  } catch (error) {
+    logger.error(new RainbowError('Failed to parse serialized state from user assets storage'), { error });
+    throw error;
+  }
+
+  const { state, version } = parsedState;
+
+  let userAssetsData: Map<UniqueId, ParsedSearchAsset>;
+  try {
+    userAssetsData = new Map(state.userAssets);
+  } catch (error) {
+    logger.error(new RainbowError('Failed to convert userAssets from user assets storage'), { error });
+    throw error;
+  }
+
+  return {
+    state: {
+      ...state,
+      userAssets: userAssetsData,
+    },
+    version,
+  };
+}
+
 export const userAssetsStore = createRainbowStore<UserAssetsState>(
   (set, get) => ({
     userAssetIds: [],
-    userAssets: [],
+    userAssets: new Map(),
     filter: 'all',
     searchQuery: '',
     favoriteAssetIds: [],
 
-    setUserAssets: (userAssets: ParsedSearchAsset[]) => {
-      // TODO: Verify that setting this doesn't impact performance...
-      // we might need to use a Set?
-      set({ userAssets });
-    },
-
     getFilteredUserAssetIds: () => {
-      const { userAssets, searchQuery } = get();
+      const { userAssetIds, userAssets, searchQuery } = get();
 
       // NOTE: No search query let's just return the userAssetIds
       if (!searchQuery.trim()) {
-        return userAssets.map(asset => asset.uniqueId);
+        return userAssetIds;
       }
 
-      // Otherwise, let's match against the name, symbol OR address
-      const matchedAssets = userAssets.filter(({ name, symbol, address }) =>
-        [name, symbol, address].reduce((res, param) => res || param.toLowerCase().startsWith(searchQuery.toLowerCase()), false)
-      );
+      const lowerCaseSearchQuery = searchQuery.toLowerCase();
+      const keysToMatch: Partial<keyof ParsedSearchAsset>[] = ['name', 'symbol', 'address'];
 
-      // and return the uniqueIds of those assets
-      return matchedAssets.map(asset => asset.uniqueId);
+      return Object.entries(userAssets).reduce((acc, [uniqueId, asset]) => {
+        const combinedString = keysToMatch
+          .map(key => asset?.[key as keyof ParsedSearchAsset] ?? '')
+          .filter(Boolean)
+          .join(' ')
+          .toLowerCase();
+        if (combinedString.includes(lowerCaseSearchQuery)) {
+          acc.push(uniqueId);
+        }
+        return acc;
+      }, [] as UniqueId[]);
     },
 
     setFavorites: (favoriteAssetIds: Hex[]) => set({ favoriteAssetIds }),
 
-    getUserAsset: (uniqueId: UniqueId) => {
-      const { userAssets } = get();
-
-      return userAssets.find(asset => asset.uniqueId === uniqueId);
-    },
+    getUserAsset: (uniqueId: UniqueId) => get().userAssets.get(uniqueId),
 
     isFavorite: (uniqueId: UniqueId) => {
       const { favoriteAssetIds } = get();
@@ -67,5 +108,12 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
   {
     storageKey: 'userAssets',
     version: 1,
+    partialize: state => ({
+      userAssetIds: state.userAssetIds,
+      userAssets: state.userAssets,
+      favoriteAssetIds: state.favoriteAssetIds,
+    }),
+    serializer: serializeUserAssetsState,
+    deserializer: deserializeUserAssetsState,
   }
 );

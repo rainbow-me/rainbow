@@ -3,14 +3,14 @@ import { SharedValue, convertToRGBA, isColor } from 'react-native-reanimated';
 
 import * as i18n from '@/languages';
 import { globalColors } from '@/design-system';
-import { ETH_COLOR, ETH_COLOR_DARK, SCRUBBER_WIDTH, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { SCRUBBER_WIDTH, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { ChainId, ChainName } from '@/__swaps__/types/chains';
 import { RainbowConfig } from '@/model/remoteConfig';
 import { CrosschainQuote, ETH_ADDRESS, Quote, QuoteParams, SwapType, WRAPPED_ASSET } from '@rainbow-me/swaps';
 import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
 import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '../types/assets';
-import { SwapAssetType, inputKeys } from '../types/swap';
+import { inputKeys } from '../types/swap';
 import { swapsStore } from '../../state/swaps/swapsStore';
 import store from '@/redux/store';
 import { BigNumberish } from '@ethersproject/bignumber';
@@ -22,7 +22,7 @@ export const opacity = (color: string, opacity: number): string => {
   return c(color).alpha(opacity).css();
 };
 
-type ResponseByTheme<T> = {
+export type ResponseByTheme<T> = {
   light: T;
   dark: T;
 };

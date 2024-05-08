@@ -3,15 +3,16 @@ import type { Address } from 'viem';
 import { ETH_ADDRESS } from '@/references';
 import { ChainId, ChainName } from '@/__swaps__/types/chains';
 import { SearchAsset } from '@/__swaps__/types/search';
+import { ResponseByTheme } from '../utils/swaps';
 
 export type AddressOrEth = Address | typeof ETH_ADDRESS;
 
 export type UserAssetFilter = 'all' | ChainId;
 
 export interface ExtendedAnimatedAssetWithColors extends ParsedSearchAsset {
-  textColor: string;
-  backgroundColor: string;
-  highContrastColor: string;
+  textColor: ResponseByTheme<string>;
+  tintedBackgroundColor: ResponseByTheme<string>;
+  highContrastColor: ResponseByTheme<string>;
 }
 
 export interface ParsedAsset {

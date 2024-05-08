@@ -23,7 +23,7 @@ export interface SwapsState {
 }
 
 export const swapsStore = createRainbowStore<SwapsState>(
-  (set, _) => ({
+  set => ({
     inputAsset: null, // TODO: Default to their largest balance asset (or ETH mainnet if user has no assets)
     outputAsset: null,
 
