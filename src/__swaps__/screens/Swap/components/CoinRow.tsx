@@ -10,44 +10,28 @@ import { ChainId } from '@/__swaps__/types/chains';
 import { ethereumUtils } from '@/utils';
 import { toggleFavorite, useFavorites } from '@/resources/favorites';
 import { ETH_ADDRESS } from '@/references';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { Hex } from 'viem';
+import { UniqueId } from '@/__swaps__/types/assets';
 
-export const CoinRow = ({
-  address,
-  mainnetAddress,
-  chainId,
-  balance,
-  isTrending,
-  name,
-  nativeBalance,
-  color,
-  iconUrl,
-  onPress,
-  output,
-  symbol,
-}: {
-  address: string;
-  mainnetAddress: string;
-  chainId: ChainId;
-  balance: string;
-  isTrending?: boolean;
-  name: string;
-  nativeBalance: string;
-  color: string | undefined;
-  iconUrl: string | undefined;
-  onPress?: () => void;
-  output?: boolean;
-  symbol: string;
-}) => {
+export const CoinRow = ({ assetId, output, onPress }: { assetId: string; output?: boolean; onPress: (assetId: UniqueId) => void }) => {
   const theme = useTheme();
-  const { favoritesMetadata } = useFavorites();
 
-  const favorites = Object.values(favoritesMetadata);
+  const asset = userAssetsStore(state => state.getUserAsset(assetId));
+  // const isFavorite = userAssetsStore(state => state.isFavorite(assetId));
+  // const setFavorite = userAssetsStore(state => state.setFavorite);
+  // chainId={item.chainId}
+  // color={item.colors?.primary ?? item.colors?.fallback}
+  // iconUrl={item.icon_url}
+  // address={item.address}
+  // mainnetAddress={item.mainnetAddress}
+  // balance={item.balance.display}
+  // name={item.name}
+  // onPress={() => handleSelectToken(item)}
+  // nativeBalance={item.native.balance.display}
+  // symbol={item.symbol}
 
-  const isFavorite = (address: string) => {
-    return favorites.find(fav =>
-      fav.address === ETH_ADDRESS ? '0x0000000000000000000000000000000000000000' === address : fav.address === address
-    );
-  };
+  const isTrending = false;
 
   const percentChange = useMemo(() => {
     if (isTrending) {
@@ -62,7 +46,7 @@ export const CoinRow = ({
   }, [isTrending]);
 
   return (
-    <ButtonPressAnimation disallowInterruption onPress={onPress} scaleTo={0.95}>
+    <ButtonPressAnimation disallowInterruption onPress={() => onPress(assetId)} scaleTo={0.95}>
       <HitSlop vertical="10px">
         <Box
           alignItems="center"
@@ -74,22 +58,22 @@ export const CoinRow = ({
         >
           <Inline alignVertical="center" space="10px">
             <SwapCoinIcon
-              iconUrl={iconUrl}
-              address={address}
-              mainnetAddress={mainnetAddress}
+              iconUrl={asset.icon_url}
+              address={asset.address}
+              mainnetAddress={asset.mainnetAddress}
               large
-              network={ethereumUtils.getNetworkFromChainId(chainId)}
-              symbol={symbol}
+              network={ethereumUtils.getNetworkFromChainId(asset.chainId)}
+              symbol={asset.symbol}
               theme={theme}
-              color={color}
+              color={asset.colors?.primary ?? asset.colors?.fallback}
             />
             <Stack space="10px">
               <Text color="label" size="17pt" weight="semibold">
-                {name}
+                {asset.name}
               </Text>
               <Inline alignVertical="center" space={{ custom: 5 }}>
                 <Text color="labelTertiary" size="13pt" weight="semibold">
-                  {output ? symbol : `${balance}`}
+                  {output ? asset.symbol : `${asset.balance.display}`}
                 </Text>
                 {isTrending && percentChange && (
                   <Inline alignVertical="center" space={{ custom: 1 }}>
@@ -107,15 +91,10 @@ export const CoinRow = ({
           {output ? (
             <Inline space="8px">
               <CoinRowButton icon="􀅳" outline size="icon 14px" />
-              <CoinRowButton
-                color={isFavorite(address) ? '#FFCB0F' : undefined}
-                onPress={() => toggleFavorite(address)}
-                icon="􀋃"
-                weight="black"
-              />
+              <CoinRowButton color={false ? '#FFCB0F' : undefined} onPress={() => {}} icon="􀋃" weight="black" />
             </Inline>
           ) : (
-            <BalancePill balance={nativeBalance} />
+            <BalancePill balance={asset.native.balance.display} />
           )}
         </Box>
       </HitSlop>

@@ -27,7 +27,7 @@ export const TokenToBuyList = () => {
         .filter(section => section.data.length)
         .map(section => (
           <Stack key={section.id} space="20px">
-            <TokenToBuySection section={section} />
+            {/* <TokenToBuySection section={section} /> */}
           </Stack>
         ))}
 
