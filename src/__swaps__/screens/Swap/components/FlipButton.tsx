@@ -2,9 +2,9 @@
 import c from 'chroma-js';
 import React, { useCallback } from 'react';
 import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
-import SwapSpinner from '@/__swaps__/assets/swapSpinner.png';
+import SwapSpinner from '@/assets/swapSpinner.png';
 import { ButtonPressAnimation } from '@/components/animations';
-import { AnimatedSpinner } from '@/__swaps__/components/animations/AnimatedSpinner';
+import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { Bleed, Box, IconContainer, Text, globalColors, useColorMode } from '@/design-system';
 import { colors } from '@/styles';
 import { SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
