@@ -11,7 +11,7 @@ import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmp
 import { FlashList } from '@shopify/flash-list';
 import { ChainSelection } from './ChainSelection';
 import { SwapAssetType } from '@/__swaps__/types/swap';
-import { userAssetStore } from '@/state/assets/userAssets';
+import { userAssetsStore } from '@/state/assets/userAssets';
 
 const AnimatedFlashListComponent = Animated.createAnimatedComponent(FlashList<ParsedSearchAsset>);
 
@@ -21,9 +21,7 @@ export const TokenToSellList = () => {
 
   const handleSelectToken = useCallback(
     (token: ParsedSearchAsset) => {
-      'worklet';
-
-      const userAsset = userAssetStore.getState().getUserAsset(token.uniqueId);
+      const userAsset = userAssetsStore.getState().getUserAsset(token.uniqueId);
       const parsedAsset = parseSearchAsset({
         assetWithPrice: undefined,
         searchAsset: token,

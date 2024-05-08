@@ -8,8 +8,9 @@ import { Network } from '@/networks/types';
 import { borders, fonts } from '@/styles';
 import { ThemeContextProps } from '@/theme';
 import { FallbackIcon as CoinIconTextFallback, isETH } from '@/utils';
-import { FastFallbackCoinIconImage } from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastFallbackCoinIconImage';
-import Animated from 'react-native-reanimated';
+import Animated, { useAnimatedProps, useAnimatedStyle } from 'react-native-reanimated';
+import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
+import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 
 // TODO: Delete this and replace with RainbowCoinIcon
 // ⚠️ When replacing this component with RainbowCoinIcon, make sure
@@ -85,7 +86,7 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
 }) {
   const { colors } = theme;
 
-  const { resolvedNetwork, resolvedAddress } = resolveNetworkAndAddress({
+  const { resolvedAddress } = resolveNetworkAndAddress({
     address,
     mainnetAddress,
     network,
@@ -94,6 +95,23 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
   const fallbackIconColor = color ?? colors.purpleUniswap;
   const shadowColor = theme.isDarkMode || forceDarkMode ? colors.shadow : color || fallbackIconColor;
   const eth = isETH(resolvedAddress);
+
+  const animatedIconSource = useAnimatedProps(() => {
+    return {
+      source: {
+        ...DEFAULT_FASTER_IMAGE_CONFIG,
+        url: iconUrl ?? '',
+      },
+    };
+  });
+
+  const animatedIconStyle = useAnimatedStyle(() => {
+    return { display: iconUrl ? 'flex' : 'none' };
+  });
+
+  const fallbackTextStyle = useAnimatedStyle(() => {
+    return { display: iconUrl ? 'none' : 'flex' };
+  });
 
   return (
     <View style={small ? sx.containerSmall : large ? sx.containerLarge : sx.container}>
@@ -109,15 +127,15 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
           <Image source={EthIcon} style={small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback} />
         </Animated.View>
       ) : (
-        <FastFallbackCoinIconImage
-          size={small ? 16 : large ? 36 : 32}
-          icon={iconUrl}
-          network={resolvedNetwork}
-          shadowColor={shadowColor}
-          symbol={symbol}
-          theme={theme}
+        <Animated.View
+          style={[
+            sx.reactCoinIconContainer,
+            small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback,
+            small || disableShadow ? {} : sx.withShadow,
+            { shadowColor },
+          ]}
         >
-          {() => (
+          <Animated.View style={[sx.coinIconFallback, fallbackTextStyle]}>
             <CoinIconTextFallback
               color={color}
               height={small ? 16 : large ? 36 : 32}
@@ -126,8 +144,12 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
               textStyles={fallbackTextStyles}
               width={small ? 16 : large ? 36 : 32}
             />
-          )}
-        </FastFallbackCoinIconImage>
+          </Animated.View>
+
+          {/* ⚠️ TODO: This works but we should figure out how to type this correctly to avoid this error */}
+          {/* @ts-expect-error: Doesn't pick up that its getting a source prop via animatedProps */}
+          <AnimatedFasterImage animatedProps={animatedIconSource} style={[animatedIconStyle, sx.iconImage]} />
+        </Animated.View>
       )}
 
       {network && network !== Network.mainnet && !small && (
@@ -157,6 +179,13 @@ const sx = StyleSheet.create({
     height: 32,
     overflow: 'visible',
     width: 32,
+  },
+  iconImage: {
+    height: '100%',
+    width: '100%',
+    borderCurve: 'continuous',
+    borderRadius: 16,
+    overflow: 'hidden',
   },
   coinIconFallbackLarge: {
     borderRadius: 18,

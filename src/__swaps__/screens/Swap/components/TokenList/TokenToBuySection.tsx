@@ -15,7 +15,7 @@ import { parseSearchAsset } from '@/__swaps__/utils/assets';
 
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { SwapAssetType } from '@/__swaps__/types/swap';
-import { userAssetStore } from '@/state/assets/userAssets';
+import { userAssetsStore } from '@/state/assets/userAssets';
 
 interface SectionProp {
   color: TextStyle['color'];
@@ -70,9 +70,7 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
 
   const handleSelectToken = useCallback(
     (token: SearchAsset) => {
-      'worklet';
-
-      const userAsset = userAssetStore.getState().getUserAsset(token.uniqueId);
+      const userAsset = userAssetsStore.getState().getUserAsset(token.uniqueId);
       const parsedAsset = parseSearchAsset({
         assetWithPrice: undefined,
         searchAsset: token,
