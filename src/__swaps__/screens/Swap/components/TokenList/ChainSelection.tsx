@@ -21,7 +21,7 @@ import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider
 import { ContextMenuButton } from '@/components/context-menu';
 import { useAccountAccentColor } from '@/hooks';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
-import { userAssetStore } from '@/state/assets/userAssets';
+import { userAssetsStore } from '@/state/assets/userAssets';
 
 type ChainSelectionProps = {
   allText?: string;
@@ -33,6 +33,10 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
   const { accentColor: accountColor } = useAccountAccentColor();
   const { outputChainId } = useSwapContext();
   const red = useForegroundColor('red');
+
+  const initialFilter = useMemo(() => {
+    return userAssetsStore.getState().filter;
+  }, []);
 
   const accentColor = useMemo(() => {
     if (c.contrast(accountColor, isDarkMode ? '#191A1C' : globalColors.white100) < (isDarkMode ? 2.125 : 1.5)) {
@@ -46,9 +50,9 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
   const chainName = useSharedValue(
     output
       ? chainNameFromChainIdWorklet(outputChainId.value)
-      : userAssetStore.getState().filter === 'all'
+      : initialFilter === 'all'
         ? allText
-        : chainNameFromChainIdWorklet(userAssetStore.getState().filter as ChainId)
+        : chainNameFromChainIdWorklet(initialFilter as ChainId)
   );
 
   useAnimatedReaction(
@@ -70,7 +74,7 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
           chainName.value = chainNameForChainIdWithMainnetSubstitutionWorklet(Number(actionKey) as ChainId);
         });
       } else {
-        userAssetStore.setState({
+        userAssetsStore.setState({
           filter: actionKey === 'all' ? 'all' : (Number(actionKey) as ChainId),
         });
         runOnUI(() => {

@@ -22,34 +22,59 @@ export const opacity = (color: string, opacity: number): string => {
   return c(color).alpha(opacity).css();
 };
 
-export const getHighContrastColor = (color: string, isDarkMode: boolean) => {
-  const contrast = c.contrast(color, isDarkMode ? globalColors.grey100 : globalColors.white100);
+type ResponseByTheme<T> = {
+  light: T;
+  dark: T;
+};
 
-  if (contrast < (isDarkMode ? 3 : 2.5)) {
-    if (isDarkMode) {
-      return c(color)
-        .set('hsl.l', contrast < 1.5 ? 0.88 : 0.8)
-        .set('hsl.s', `*${contrast < 1.5 ? 0.75 : 0.85}`)
-        .hex();
-    } else {
-      return c(color)
-        .set('hsl.s', `*${contrast < 1.5 ? 2 : 1.2}`)
-        .darken(2.5 - (contrast - (contrast < 1.5 ? 0.5 : 0)))
-        .hex();
-    }
+export const getHighContrastColor = (color: string): ResponseByTheme<string> => {
+  const lightModeContrast = c.contrast(color, globalColors.white100);
+  const darkModeContrast = c.contrast(color, globalColors.grey100);
+
+  let lightColor = color;
+  let darkColor = color;
+
+  if (lightModeContrast < 2.5) {
+    lightColor = c(color)
+      .set('hsl.s', `*${lightModeContrast < 1.5 ? 2 : 1.2}`)
+      .darken(2.5 - (lightModeContrast - (lightModeContrast < 1.5 ? 0.5 : 0)))
+      .hex();
   }
-  return color;
+
+  if (darkModeContrast < 3) {
+    darkColor = c(color)
+      .set('hsl.l', darkModeContrast < 1.5 ? 0.88 : 0.8)
+      .set('hsl.s', `*${darkModeContrast < 1.5 ? 0.75 : 0.85}`)
+      .hex();
+  }
+
+  return {
+    light: lightColor,
+    dark: darkColor,
+  };
 };
 
 export const getMixedColor = (color1: string, color2: string, ratio: number) => {
   return c.mix(color1, color2, ratio).hex();
 };
 
-export const getTintedBackgroundColor = (color: string, isDarkMode: boolean): string => {
-  return c
-    .mix(color, isDarkMode ? globalColors.grey100 : globalColors.white100, isDarkMode ? 0.9875 : 0.94)
-    .saturate(isDarkMode ? 0 : -0.06)
-    .hex();
+export const getTextColor = (color: string): ResponseByTheme<string> => {
+  const contrastWithWhite = c.contrast(color, globalColors.white100);
+
+  return {
+    light: contrastWithWhite < 2 ? globalColors.grey100 : globalColors.white100,
+    dark: contrastWithWhite < 2.6 ? globalColors.grey100 : globalColors.white100,
+  };
+};
+
+export const getTintedBackgroundColor = (color: string): ResponseByTheme<string> => {
+  const lightModeColorToMix = globalColors.white100;
+  const darkModeColorToMix = globalColors.grey100;
+
+  return {
+    light: c.mix(color, lightModeColorToMix, 0.94).saturate(-0.06).hex(),
+    dark: c.mix(color, darkModeColorToMix, 0.9875).saturate(0).hex(),
+  };
 };
 //
 // /---- END color functions ----/ //
@@ -306,15 +331,24 @@ type ExtractColorValueForColorsProps = {
   isDarkMode: boolean;
 };
 
-export const extractColorValueForColors = ({ colors, isDarkMode }: ExtractColorValueForColorsProps): string => {
-  const color = colors.primary ?? colors.fallback ?? isDarkMode;
+type ExtractColorValueForColorsResponse = {
+  textColor: ResponseByTheme<string>;
+  highContrastColor: ResponseByTheme<string>;
+  tintedBackgroundColor: ResponseByTheme<string>;
+};
+
+export const extractColorValueForColors = ({ colors }: ExtractColorValueForColorsProps): ExtractColorValueForColorsResponse => {
+  const color = colors.primary ?? colors.fallback;
 
   // TODO: mod color utils and return light/dark mode colors
 
-  const highContrastColor = getHighContrastColor;
+  const highContrastColor = getHighContrastColor(color);
 
-  // NOTE: We should default back to ETH_COLOR_DARK if we're in dark mode or ETH_COLOR if we're in light mode
-  return colors?.primary ?? colors?.fallback ?? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
+  return {
+    highContrastColor,
+    tintedBackgroundColor: getTintedBackgroundColor(color),
+    textColor: getTextColor(color),
+  };
 };
 
 export const getQuoteServiceTime = ({ quote }: { quote: Quote | CrosschainQuote }) =>
@@ -402,7 +436,11 @@ export const priceForAsset = ({
   return 0;
 };
 
-export const parseAssetAndExtend = ({ asset, type }: { asset: ParsedSearchAsset | null; type: SwapAssetType }) => {
+type ParseAssetAndExtendProps = {
+  asset: ParsedSearchAsset | null;
+};
+
+export const parseAssetAndExtend = ({ asset }: ParseAssetAndExtendProps): ExtendedAnimatedAssetWithColors | null => {
   'worklet';
 
   if (!asset) {
@@ -410,14 +448,14 @@ export const parseAssetAndExtend = ({ asset, type }: { asset: ParsedSearchAsset 
   }
 
   // TODO: Process and add colors to the asset and anything else we'll need for reanimated stuff
-  const color = extractColorValueForColors({
+  const colors = extractColorValueForColors({
     colors: asset.colors as TokenColors,
     isDarkMode: true, // TODO: Make this not rely on isDarkMode
   });
 
   return {
     ...asset,
-    color,
+    ...colors,
   };
 };
 

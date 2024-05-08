@@ -1,5 +1,3 @@
-import { create } from 'zustand';
-
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { CrosschainQuote, Quote, QuoteError, Source } from '@rainbow-me/swaps';
 import { getDefaultSlippage } from '@/__swaps__/utils/swaps';
@@ -51,5 +49,3 @@ export const swapsStore = createRainbowStore<SwapsState>(
     },
   }
 );
-
-export const useSwapsStore = create(swapsStore);

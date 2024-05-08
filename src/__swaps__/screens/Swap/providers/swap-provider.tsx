@@ -123,14 +123,14 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           /**
            * Colors, price, etc.
            */
-          internalSelectedInputAsset.value = parseAssetAndExtend({ type, asset });
+          internalSelectedInputAsset.value = parseAssetAndExtend({ asset });
           break;
         case SwapAssetType.outputAsset:
           // TODO: Pre-process a bunch of stuff here...
           /**
            * Colors, price, etc.
            */
-          internalSelectedOutputAsset.value = parseAssetAndExtend({ type, asset });
+          internalSelectedOutputAsset.value = parseAssetAndExtend({ asset });
           break;
       }
     };

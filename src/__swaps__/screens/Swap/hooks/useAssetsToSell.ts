@@ -1,80 +1,60 @@
-import { useState } from 'react';
+import { useMemo } from 'react';
 import { Hex } from 'viem';
-import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
-import { useDebouncedCallback } from 'use-debounce';
 
-import { selectUserAssetsList, selectUserAssetsListByChainId } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
+import {
+  selectUserAssetsList,
+  selectUserAssetsListByChainId,
+  selectorFilterByUserChains,
+} from '@/__swaps__/screens/Swap/resources/_selectors/assets';
 import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
-import { ParsedAssetsDictByChain, ParsedSearchAsset, UserAssetFilter } from '@/__swaps__/types/assets';
+import { ParsedSearchAsset, UserAssetFilter } from '@/__swaps__/types/assets';
 import { useAccountSettings } from '@/hooks';
-import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { userAssetStore } from '@/state/assets/userAssets';
+import { useDebounce } from '@/__swaps__/screens/Swap/hooks/useDebounce';
+import { ChainId } from '@/__swaps__/types/chains';
+import { userAssetsStore } from '@/state/assets/userAssets';
 
-const sortBy = (userAssetFilter: UserAssetFilter, assets: ParsedAssetsDictByChain) => {
-  if (userAssetFilter === 'all') {
-    return () => selectUserAssetsList(assets);
+const sortBy = (by: UserAssetFilter) => {
+  switch (by) {
+    case 'all':
+      return selectUserAssetsList;
+    default:
+      return selectUserAssetsListByChainId;
   }
-
-  return () => selectUserAssetsListByChainId(userAssetFilter, assets);
 };
 
 export const useAssetsToSell = () => {
-  const { SwapInputController } = useSwapContext();
-
   const { accountAddress: currentAddress, nativeCurrency: currentCurrency } = useAccountSettings();
 
-  const { filter } = userAssetStore.getState();
+  const filter = userAssetsStore(state => state.filter);
+  const searchQuery = userAssetsStore(state => state.searchQuery);
 
-  const [currentAssets, setCurrentAssets] = useState<ParsedSearchAsset[]>([]);
+  const debouncedAssetToSellFilter = useDebounce(searchQuery, 200);
 
   const { data: userAssets = [] } = useUserAssets(
     {
       address: currentAddress as Hex,
       currency: currentCurrency,
-      testnetMode: false,
     },
     {
-      select: data => {
-        const filteredAssetsDictByChain = Object.keys(data).reduce((acc, key) => {
-          const chainKey = Number(key);
-          acc[chainKey] = data[chainKey];
-          return acc;
-        }, {} as ParsedAssetsDictByChain);
-
-        return sortBy(filter, filteredAssetsDictByChain)();
-      },
-      cacheTime: Infinity,
-      staleTime: Infinity,
+      select: data =>
+        selectorFilterByUserChains({
+          data,
+          chainId: filter as ChainId,
+          selector: sortBy(filter),
+        }),
     }
   );
 
-  userAssetStore.subscribe(({ filter }) => {
-    if (filter === 'all') {
-      setCurrentAssets(userAssets as ParsedSearchAsset[]);
-    } else {
-      const assetsByChainId = userAssets.filter(asset => asset.chainId === Number(filter));
-      setCurrentAssets(assetsByChainId as ParsedSearchAsset[]);
-    }
-  });
-
-  const filteredAssetsToSell = useDebouncedCallback((query: string) => {
-    return query
-      ? setCurrentAssets(
-          userAssets.filter(({ name, symbol, address }) =>
-            [name, symbol, address].reduce((res, param) => res || param.toLowerCase().startsWith(query.toLowerCase()), false)
-          ) as ParsedSearchAsset[]
+  const filteredAssetsToSell = useMemo(() => {
+    return debouncedAssetToSellFilter
+      ? userAssets.filter(({ name, symbol, address }) =>
+          [name, symbol, address].reduce(
+            (res, param) => res || param.toLowerCase().startsWith(debouncedAssetToSellFilter.toLowerCase()),
+            false
+          )
         )
-      : setCurrentAssets(userAssets as ParsedSearchAsset[]);
-  }, 50);
+      : userAssets;
+  }, [debouncedAssetToSellFilter, userAssets]) as ParsedSearchAsset[];
 
-  useAnimatedReaction(
-    () => SwapInputController.searchQuery.value,
-    (current, previous) => {
-      if (previous !== current) {
-        runOnJS(filteredAssetsToSell)(current);
-      }
-    }
-  );
-
-  return currentAssets;
+  return filteredAssetsToSell;
 };

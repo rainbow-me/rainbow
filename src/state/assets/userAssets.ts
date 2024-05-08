@@ -1,4 +1,3 @@
-import { create } from 'zustand';
 import { Hex } from 'viem';
 
 import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
@@ -70,5 +69,3 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
     version: 1,
   }
 );
-
-export const useUserAssetsStore = create(userAssetsStore);

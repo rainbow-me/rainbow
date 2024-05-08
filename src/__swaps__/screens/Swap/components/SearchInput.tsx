@@ -7,7 +7,7 @@ import { AnimatedText, Bleed, Box, Column, Columns, Text, useColorMode, useForeg
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { userAssetStore } from '@/state/assets/userAssets';
+import { userAssetsStore } from '@/state/assets/userAssets';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 
@@ -38,11 +38,11 @@ export const SearchInput = ({
   });
 
   const defaultValue = useMemo(() => {
-    return userAssetStore.getState().searchQuery;
+    return userAssetsStore.getState().searchQuery;
   }, []);
 
   const onSearchQueryChange = useCallback((event: NativeSyntheticEvent<TextInputChangeEventData>) => {
-    userAssetStore.setState({ searchQuery: event.nativeEvent.text });
+    userAssetsStore.setState({ searchQuery: event.nativeEvent.text });
   }, []);
 
   const searchInputValue = useAnimatedProps(() => {
