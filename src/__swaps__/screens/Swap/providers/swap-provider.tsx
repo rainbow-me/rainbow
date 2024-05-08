@@ -114,6 +114,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   };
 
   const setAsset = ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset }) => {
+    console.log({ type, asset });
+
     const updateAssetValue = ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset | null }) => {
       'worklet';
 
@@ -158,6 +160,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     swapsStore.setState({
       [type]: asset,
     });
+    runOnJS(updateAssetValue)({ type, asset });
   };
 
   const SwapNavigation = useSwapNavigation({
