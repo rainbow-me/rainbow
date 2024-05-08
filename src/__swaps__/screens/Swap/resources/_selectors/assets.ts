@@ -4,6 +4,23 @@ import { deriveAddressAndChainWithUniqueId } from '@/__swaps__/utils/address';
 import { add } from '@/__swaps__/utils/numbers';
 
 // selectors
+export function selectorFilterByUserChains<T>({
+  data,
+  chainId,
+  selector,
+}: {
+  data: ParsedAssetsDictByChain;
+  chainId: ChainId;
+  selector: (data: ParsedAssetsDictByChain, chainId: ChainId) => T;
+}): T {
+  const filteredAssetsDictByChain = Object.keys(data).reduce((acc, key) => {
+    const chainKey = Number(key);
+    acc[chainKey] = data[chainKey];
+    return acc;
+  }, {} as ParsedAssetsDictByChain);
+  return selector(filteredAssetsDictByChain, chainId);
+}
+
 export function selectUserAssetsList(assets: ParsedAssetsDictByChain) {
   return Object.values(assets)
     .map(chainAssets => Object.values(chainAssets))
@@ -19,10 +36,10 @@ export function selectUserAssetsDictByChain(assets: ParsedAssetsDictByChain) {
   return assets;
 }
 
-export function selectUserAssetsListByChainId(chainId: ChainId, assets: ParsedAssetsDictByChain) {
-  const assetsForChain = assets?.[chainId];
-  if (!assetsForChain) return [];
-  return Object.values(assetsForChain).sort(
+export function selectUserAssetsListByChainId(assets: ParsedAssetsDictByChain, chainId: ChainId) {
+  const assetsForNetwork = assets?.[chainId];
+
+  return Object.values(assetsForNetwork).sort(
     (a: ParsedUserAsset, b: ParsedUserAsset) => parseFloat(b?.native?.balance?.amount) - parseFloat(a?.native?.balance?.amount)
   );
 }
@@ -49,10 +66,12 @@ export function selectUserAssetWithUniqueId(uniqueId: UniqueId) {
   };
 }
 
-export function selectUserAssetsBalance(assets: ParsedAssetsDictByChain) {
+export function selectUserAssetsBalance(assets: ParsedAssetsDictByChain, hidden: (asset: ParsedUserAsset) => boolean) {
   const networksTotalBalance = Object.values(assets).map(assetsOnject => {
     const assetsNetwork = Object.values(assetsOnject);
+
     const networkBalance = assetsNetwork
+      .filter(asset => !hidden(asset))
       .map(asset => asset.native.balance.amount)
       .reduce((prevBalance, currBalance) => add(prevBalance, currBalance), '0');
     return networkBalance;

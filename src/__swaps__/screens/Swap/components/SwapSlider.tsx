@@ -38,7 +38,6 @@ import { clamp, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { SwapCoinIcon } from '@/__swaps__/screens/Swap/components/SwapCoinIcon';
 import { useTheme } from '@/theme';
-import { useSwapAssetStore } from '@/__swaps__/screens/Swap/state/assets';
 import { ethereumUtils } from '@/utils';
 import { ChainId } from '@/__swaps__/types/chains';
 
@@ -60,8 +59,6 @@ export const SwapSlider = ({
   const theme = useTheme();
   const { isDarkMode } = useColorMode();
   const { SwapInputController, sliderXPosition, sliderPressProgress } = useSwapContext();
-
-  const { assetToSell } = useSwapAssetStore();
 
   const panRef = useRef();
   const tapRef = useRef();
@@ -377,14 +374,15 @@ export const SwapSlider = ({
               <Columns alignHorizontal="justify" alignVertical="center">
                 <Inline alignVertical="center" space="6px" wrap={false}>
                   <Bleed vertical="4px">
+                    {/* TODO: Migrate this to fast icon image with shared value once we have that */}
                     <SwapCoinIcon
                       color={SwapInputController.topColorShadow.value}
-                      iconUrl={assetToSell?.icon_url}
-                      address={assetToSell?.address ?? ''}
-                      mainnetAddress={assetToSell?.mainnetAddress ?? ''}
-                      network={ethereumUtils.getNetworkFromChainId(Number(assetToSell?.chainId ?? ChainId.mainnet))}
+                      iconUrl={''}
+                      address={''}
+                      mainnetAddress={''}
+                      network={ethereumUtils.getNetworkFromChainId(ChainId.mainnet)}
                       small
-                      symbol={assetToSell?.symbol ?? ''}
+                      symbol={''}
                       theme={theme}
                     />
                   </Bleed>

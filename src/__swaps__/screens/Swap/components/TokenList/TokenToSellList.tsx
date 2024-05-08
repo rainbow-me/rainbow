@@ -4,31 +4,36 @@ import { CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
 import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { Stack } from '@/design-system';
-import Animated, { runOnUI } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { parseSearchAsset, isSameAsset } from '@/__swaps__/utils/assets';
+import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { FlashList } from '@shopify/flash-list';
 import { ChainSelection } from './ChainSelection';
+import { SwapAssetType } from '@/__swaps__/types/swap';
+import { userAssetsStore } from '@/state/assets/userAssets';
 
 const AnimatedFlashListComponent = Animated.createAnimatedComponent(FlashList<ParsedSearchAsset>);
 
 export const TokenToSellList = () => {
-  const { SwapInputController } = useSwapContext();
+  const { setAsset } = useSwapContext();
   const userAssets = useAssetsToSell();
 
   const handleSelectToken = useCallback(
     (token: ParsedSearchAsset) => {
-      const userAsset = userAssets.find(asset => isSameAsset(asset, token));
+      const userAsset = userAssetsStore.getState().getUserAsset(token.uniqueId);
       const parsedAsset = parseSearchAsset({
         assetWithPrice: undefined,
         searchAsset: token,
         userAsset,
       });
 
-      runOnUI(SwapInputController.onSetAssetToSell)(parsedAsset);
+      setAsset({
+        type: SwapAssetType.inputAsset,
+        asset: parsedAsset,
+      });
     },
-    [SwapInputController.onSetAssetToSell, userAssets]
+    [setAsset]
   );
 
   return (
