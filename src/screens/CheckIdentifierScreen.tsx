@@ -16,6 +16,7 @@ import { ImgixImage } from '@/components/images';
 import RestoreYourWallet from '@/assets/RestoreYourWallet.png';
 import { Source } from 'react-native-fast-image';
 import { useNavigation } from '@/navigation';
+import { Linking } from 'react-native';
 
 const imageSize = 40;
 
@@ -24,7 +25,7 @@ const ErrorAlert = () =>
     buttons: [
       {
         // TODO: Link to support URL
-        onPress: () => {},
+        onPress: () => Linking.openURL('https://rainbow.me/support'),
         text: lang.t(lang.l.check_identifier.error_alert.contact_support),
       },
       {
