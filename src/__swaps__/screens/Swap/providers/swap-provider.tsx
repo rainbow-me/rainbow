@@ -114,6 +114,37 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     runOnJS(swapsStore.setState)({ quote: data });
   };
 
+  const handleProgressNavigation = ({
+    type,
+    inputAsset,
+    outputAsset,
+  }: {
+    type: SwapAssetType;
+    inputAsset: ParsedSearchAsset | null;
+    outputAsset: ParsedSearchAsset | null;
+  }) => {
+    switch (type) {
+      case SwapAssetType.inputAsset:
+        if (outputAsset) {
+          inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+          outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+        } else {
+          inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+          outputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
+        }
+        break;
+      case SwapAssetType.outputAsset:
+        if (inputAsset) {
+          inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+          outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+        } else {
+          inputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
+          outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+        }
+        break;
+    }
+  };
+
   const setAsset = ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset }) => {
     const updateAssetValue = ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset | null }) => {
       'worklet';
@@ -136,14 +167,20 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }
     };
 
-    const prevAsset = swapsStore.getState()[type];
+    // const prevAsset = swapsStore.getState()[type];
     const prevOtherAsset = swapsStore.getState()[type === SwapAssetType.inputAsset ? SwapAssetType.outputAsset : SwapAssetType.inputAsset];
 
+    // TODO: Fix me. This is causing assets to not be set sometimes?
     // if we're setting the same asset, exit early as it's a no-op
-    if (prevAsset && isSameAsset(prevAsset, asset)) {
-      logger.debug(`[setAsset]: Not setting ${type} asset as it's the same as what is already set`);
-      return;
-    }
+    // if (prevAsset && isSameAsset(prevAsset, asset)) {
+    //   logger.debug(`[setAsset]: Not setting ${type} asset as it's the same as what is already set`);
+    //   handleProgressNavigation({
+    //     type,
+    //     inputAsset: type === SwapAssetType.inputAsset ? asset : prevOtherAsset,
+    //     outputAsset: type === SwapAssetType.outputAsset ? asset : prevOtherAsset,
+    //   });
+    //   return;
+    // }
 
     // if we're setting the same asset as the other asset, we need to clear the other asset
     if (prevOtherAsset && isSameAsset(prevOtherAsset, asset)) {
@@ -165,6 +202,11 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       [type]: asset,
     });
     runOnJS(updateAssetValue)({ type, asset });
+    handleProgressNavigation({
+      type,
+      inputAsset: type === SwapAssetType.inputAsset ? asset : prevOtherAsset,
+      outputAsset: type === SwapAssetType.outputAsset ? asset : prevOtherAsset,
+    });
   };
 
   const SwapNavigation = useSwapNavigation({

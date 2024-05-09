@@ -15,6 +15,7 @@ import { swapsStore } from '../../state/swaps/swapsStore';
 import store from '@/redux/store';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { TokenColors } from '@/graphql/__generated__/metadata';
+import { colors } from '@/styles';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -27,10 +28,17 @@ export type ResponseByTheme<T> = {
   dark: T;
 };
 
-export const getColorValueForThemeWorklet = <T>(values: ResponseByTheme<T> | undefined, isDarkMode: boolean) => {
+export const getColorValueForTheme = <T>(values: ResponseByTheme<T> | undefined, isDarkMode: boolean, useDefaults = false) => {
+  // eslint-disable-next-line no-nested-ternary
+  if (!values) return useDefaults ? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR) : undefined;
+  return isDarkMode ? values.dark : values.light;
+};
+
+export const getColorValueForThemeWorklet = <T>(values: ResponseByTheme<T> | undefined, isDarkMode: boolean, useDefaults = false) => {
   'worklet';
 
-  if (!values) return undefined;
+  // eslint-disable-next-line no-nested-ternary
+  if (!values) return useDefaults ? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR) : undefined;
   return isDarkMode ? values.dark : values.light;
 };
 
@@ -71,6 +79,13 @@ export const getTextColor = (color: string): ResponseByTheme<string> => {
   return {
     light: contrastWithWhite < 2 ? globalColors.grey100 : globalColors.white100,
     dark: contrastWithWhite < 2.6 ? globalColors.grey100 : globalColors.white100,
+  };
+};
+
+export const getMixedShadowColor = (color?: string | null): ResponseByTheme<string> => {
+  return {
+    light: getMixedColor(color || ETH_COLOR, colors.dark, 0.84),
+    dark: getMixedColor(color || ETH_COLOR_DARK, colors.dark, 0.84),
   };
 };
 
@@ -338,23 +353,21 @@ type ExtractColorValueForColorsProps = {
   isDarkMode: boolean;
 };
 
-type ExtractColorValueForColorsResponse = {
-  color: ResponseByTheme<string>;
-  textColor: ResponseByTheme<string>;
-  highContrastColor: ResponseByTheme<string>;
-  tintedBackgroundColor: ResponseByTheme<string>;
-};
-
-export const extractColorValueForColors = ({ colors }: ExtractColorValueForColorsProps): ExtractColorValueForColorsResponse => {
+export const extractColorValueForColors = ({
+  colors,
+}: ExtractColorValueForColorsProps): Omit<ExtendedAnimatedAssetWithColors, keyof ParsedSearchAsset> => {
   const color = colors.primary ?? colors.fallback;
-
-  // TODO: mod color utils and return light/dark mode colors
 
   return {
     color: {
       light: colors.primary ?? colors.fallback ?? ETH_COLOR,
       dark: colors.primary ?? colors.fallback ?? ETH_COLOR_DARK,
     },
+    shadowColor: {
+      light: colors.shadow ?? ETH_COLOR,
+      dark: colors.shadow ?? ETH_COLOR_DARK,
+    },
+    mixedShadowColor: getMixedShadowColor(colors.shadow),
     highContrastColor: getHighContrastColor(color),
     tintedBackgroundColor: getTintedBackgroundColor(color),
     textColor: getTextColor(color),

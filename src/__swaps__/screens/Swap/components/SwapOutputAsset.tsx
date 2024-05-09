@@ -122,10 +122,18 @@ function OutputAssetBalanceBadge() {
 }
 
 export function SwapOutputAsset() {
-  const { outputProgress, inputProgress, AnimatedSwapStyles, SwapTextStyles, SwapInputController, SwapNavigation } = useSwapContext();
+  const {
+    outputProgress,
+    inputProgress,
+    AnimatedSwapStyles,
+    SwapTextStyles,
+    SwapInputController,
+    internalSelectedOutputAsset,
+    SwapNavigation,
+  } = useSwapContext();
 
   return (
-    <SwapInput bottomInput color={SwapInputController.bottomColor} otherInputProgress={inputProgress} progress={outputProgress}>
+    <SwapInput asset={internalSelectedOutputAsset} bottomInput otherInputProgress={inputProgress} progress={outputProgress}>
       <Box as={Animated.View} style={AnimatedSwapStyles.outputStyle}>
         <Stack space="16px">
           <Columns alignHorizontal="justify" alignVertical="center">
@@ -161,7 +169,7 @@ export function SwapOutputAsset() {
         width={{ custom: INPUT_INNER_WIDTH }}
       >
         <TokenList
-          color={SwapInputController.bottomColor.value}
+          asset={internalSelectedOutputAsset}
           handleExitSearch={runOnUI(SwapNavigation.handleExitSearch)}
           handleFocusSearch={runOnUI(SwapNavigation.handleFocusOutputSearch)}
           output

@@ -1,14 +1,12 @@
 /* eslint-disable no-nested-ternary */
-import c from 'chroma-js';
 import React, { useCallback } from 'react';
-import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import SwapSpinner from '@/assets/swapSpinner.png';
 import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { Bleed, Box, IconContainer, Text, globalColors, useColorMode } from '@/design-system';
-import { colors } from '@/styles';
 import { SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
-import { getMixedColor, opacity } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet, opacity } from '@/__swaps__/utils/swaps';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { AnimatedBlurView } from '@/__swaps__/screens/Swap/components/AnimatedBlurView';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
@@ -17,34 +15,15 @@ import { StyleSheet } from 'react-native';
 export const FlipButton = () => {
   const { isDarkMode } = useColorMode();
 
-  const { isFetching, AnimatedSwapStyles, SwapInputController } = useSwapContext();
-
-  const shadowColor = useSharedValue(
-    isDarkMode ? globalColors.grey100 : c.mix(SwapInputController.bottomColor.value, colors.dark, 0.84).hex()
-  );
+  const { isFetching, AnimatedSwapStyles, SwapInputController, internalSelectedOutputAsset } = useSwapContext();
 
   const handleSwapAssets = useCallback(() => {
     SwapInputController.onSwapAssets();
   }, [SwapInputController]);
 
-  const getBottomColor = ({ bottomColor }: { bottomColor: string }) => {
-    shadowColor.value = getMixedColor(bottomColor, colors.dark, 0.84);
-  };
-
-  useAnimatedReaction(
-    () => ({
-      bottomColor: SwapInputController.bottomColor.value,
-    }),
-    (current, previous) => {
-      if (previous && current !== previous && current !== undefined) {
-        runOnJS(getBottomColor)(current);
-      }
-    }
-  );
-
   const flipButtonInnerStyles = useAnimatedStyle(() => {
     return {
-      shadowColor: shadowColor.value,
+      shadowColor: getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.mixedShadowColor, isDarkMode, true),
       shadowOffset: {
         width: 0,
         height: isDarkMode ? 4 : 4,

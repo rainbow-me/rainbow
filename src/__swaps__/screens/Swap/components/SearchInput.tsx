@@ -1,23 +1,24 @@
 import React, { useCallback, useMemo } from 'react';
 import { NativeSyntheticEvent, TextInputChangeEventData } from 'react-native';
-import Animated, { useAnimatedProps, useDerivedValue } from 'react-native-reanimated';
+import Animated, { SharedValue, useAnimatedProps, useDerivedValue } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Input } from '@/components/inputs';
 import { AnimatedText, Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet, opacity } from '@/__swaps__/utils/swaps';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 
 export const SearchInput = ({
-  color,
+  asset,
   handleExitSearch,
   handleFocusSearch,
   output,
 }: {
-  color: string;
+  asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   handleExitSearch: () => void;
   handleFocusSearch: () => void;
   output?: boolean;
@@ -51,7 +52,7 @@ export const SearchInput = ({
     // Removing the value when the input is focused allows the input to be reset to the correct value on blur
     const query = isFocused ? undefined : defaultValue;
 
-    return { defaultValue, text: query };
+    return { defaultValue, text: query, selectionColor: getColorValueForThemeWorklet(asset.value?.color, isDarkMode, true) };
   });
 
   return (
@@ -94,7 +95,6 @@ export const SearchInput = ({
                   placeholder={output ? 'Find a token to buy' : 'Search your tokens'}
                   placeholderTextColor={isDarkMode ? opacity(labelQuaternary, 0.3) : labelQuaternary}
                   ref={searchInputRef}
-                  selectionColor={color}
                   spellCheck={false}
                   style={{
                     color: label,

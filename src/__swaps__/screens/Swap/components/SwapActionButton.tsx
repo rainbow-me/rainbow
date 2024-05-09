@@ -48,7 +48,7 @@ export const SwapActionButton = ({
   });
 
   const secondaryTextStyles = useAnimatedStyle(() => {
-    const secondaryColor = getColorValueForThemeWorklet(asset.value?.textColor, isDarkMode);
+    const secondaryColor = getColorValueForThemeWorklet(asset.value?.textColor, isDarkMode, true);
 
     let opacity = isDarkMode ? 0.76 : 0.8;
     if (secondaryColor === globalColors.grey100) {
@@ -62,7 +62,7 @@ export const SwapActionButton = ({
 
   const buttonWrapperStyles = useAnimatedStyle(() => {
     return {
-      backgroundColor: outline ? 'transparent' : getColorValueForThemeWorklet(asset.value?.color, isDarkMode) || fallbackColor,
+      backgroundColor: outline ? 'transparent' : getColorValueForThemeWorklet(asset.value?.color, isDarkMode, true) || fallbackColor,
       borderColor: outline ? separatorSecondary : undefined,
       borderRadius: borderRadius ?? 24,
       height: small ? 36 : 48,
