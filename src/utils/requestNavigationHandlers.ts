@@ -31,6 +31,7 @@ export interface DappConnectionData {
   dappName?: string;
   dappUrl: string;
   imageUrl?: string;
+  chainId?: number;
 }
 
 export const handleDappBrowserConnectionPrompt = (dappData: DappConnectionData): Promise<{ chainId: number; address: string } | Error> => {
@@ -47,6 +48,7 @@ export const handleDappBrowserConnectionPrompt = (dappData: DappConnectionData):
         isWalletConnectV2: false,
         peerId: '',
         dappScheme: null,
+        proposedChainId: dappData.chainId,
       },
       source: 'browser',
       timedOut: false,

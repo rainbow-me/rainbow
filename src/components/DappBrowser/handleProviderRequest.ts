@@ -131,10 +131,13 @@ const messengerProviderRequestFn = async (messenger: Messenger, request: Provide
 
   if (request.method === 'eth_requestAccounts') {
     const dappData = await getDappMetadata({ url: getDappHost(request.meta?.sender.url) });
-
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore - chainId is not defined in the type
+    const chainId = request.params?.[0]?.chainId ? BigNumber.from(request.params?.[0]?.chainId).toNumber() : undefined;
     response = await handleDappBrowserConnectionPrompt({
       dappName: dappData?.appName || request.meta?.sender.title || '',
       dappUrl: request.meta?.sender.url || '',
+      chainId,
     });
 
     useAppSessionsStore.getState().addSession({
