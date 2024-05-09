@@ -73,7 +73,6 @@ export function SwapScreen() {
             <ExchangeRateBubble />
             <SwapWarning />
           </Box>
-          <SwapAmountInputs />
         </Box>
         <SwapNavbar />
       </Box>

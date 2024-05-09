@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, { useCallback, useMemo } from 'react';
 import { cloudPlatform } from '@/utils/platform';
 import Menu from '../Menu';
@@ -75,7 +76,7 @@ const WalletPill = ({ account }: WalletPillProps) => {
       <Text color={'secondary (Deprecated)'} size="11pt" weight="semibold">
         {label.endsWith('.eth')
           ? abbreviations.abbreviateEnsForDisplay(label, 8, 4) ?? ''
-          : abbreviations.address(account.address, 3, 5) ?? ''}
+          : abbreviations.address(label !== '' ? label : account.address, 3, 5) ?? ''}
       </Text>
     </Box>
   );
@@ -670,12 +671,13 @@ export const WalletsAndBackup = () => {
     backupAllNonBackedUpWalletsTocloud,
     sortedWallets,
     onCreateNewSecretPhrase,
+    onViewCloudBackups,
+    manageCloudBackups,
     navigate,
     onNavigateToWalletView,
     allBackedUp,
+    mostRecentBackup,
     lastBackupDate,
-    onViewCloudBackups,
-    manageCloudBackups,
     onPressLearnMoreAboutCloudBackups,
   ]);
 

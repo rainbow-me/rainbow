@@ -2,7 +2,6 @@ import { rankings } from 'match-sorter';
 import { useCallback, useMemo, useState } from 'react';
 import { SharedValue, runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 
-import { ETH_ADDRESS } from '@/references';
 import { useTokenSearch } from '@/__swaps__/screens/Swap/resources/search';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
@@ -14,7 +13,6 @@ import { filterList } from '@/utils';
 import { useFavorites } from '@/resources/favorites';
 import { isAddress } from '@ethersproject/address';
 import { RainbowToken } from '@/entities';
-import { AddressZero } from '@ethersproject/constants';
 
 const VERIFIED_ASSETS_PAYLOAD: {
   keys: TokenSearchAssetKey[];
@@ -46,8 +44,6 @@ export function useSearchCurrencyLists({
   searchQuery,
 }: {
   assetToSell: SharedValue<SearchAsset | ParsedSearchAsset | null>;
-  // should be provided when swap input currency is selected
-  // target chain id of current search
   outputChainId: SharedValue<ChainId>;
   searchQuery: SharedValue<string>;
 }) {
@@ -87,7 +83,6 @@ export function useSearchCurrencyLists({
       }
     }
   );
-
   const isCrosschainSearch = useMemo(() => {
     return inputChainId && inputChainId !== toChainId;
   }, [inputChainId, toChainId]);
@@ -98,9 +93,7 @@ export function useSearchCurrencyLists({
   }, [inputChainId, isCrosschainSearch]);
 
   const queryIsAddress = useMemo(() => isAddress(query), [query]);
-
   const keys: TokenSearchAssetKey[] = useMemo(() => (queryIsAddress ? ['address'] : ['name', 'symbol']), [queryIsAddress]);
-
   const threshold: TokenSearchThreshold = useMemo(() => (queryIsAddress ? 'CASE_SENSITIVE_EQUAL' : 'CONTAINS'), [queryIsAddress]);
 
   // static search data
@@ -158,6 +151,12 @@ export function useSearchCurrencyLists({
     fromChainId,
   });
 
+  const { data: degenVerifiedAssets, isLoading: degenVerifiedAssetsLoading } = useTokenSearch({
+    chainId: ChainId.degen,
+    ...VERIFIED_ASSETS_PAYLOAD,
+    fromChainId,
+  });
+
   // current search
   const { data: targetVerifiedAssets, isLoading: targetVerifiedAssetsLoading } = useTokenSearch({
     chainId: toChainId,
@@ -177,7 +176,7 @@ export function useSearchCurrencyLists({
       fromChainId,
     },
     {
-      enabled: !!enableUnverifiedSearch,
+      enabled: enableUnverifiedSearch,
     }
   );
 
@@ -186,10 +185,8 @@ export function useSearchCurrencyLists({
   const favoritesList = useMemo(() => {
     const getAddressForChainId = (chainId: ChainId, token: RainbowToken) => {
       if (chainId === ChainId.mainnet) {
-        if (token.address === ETH_ADDRESS) {
-          return AddressZero;
-        }
-        return token.address;
+        const mainnetAddress = token.networks[chainId].address;
+        return mainnetAddress ?? token.address;
       }
 
       return token.networks[chainId].address;
@@ -197,12 +194,14 @@ export function useSearchCurrencyLists({
 
     const unfilteredFavorites = Object.values(favorites)
       .filter(token => token.networks[toChainId])
-      .map(favToken => ({
-        ...favToken,
-        chainId: toChainId,
-        address: getAddressForChainId(toChainId, favToken),
-        mainnetAddress: favToken.mainnet_address,
-      })) as SearchAsset[];
+      .map(favToken => {
+        return {
+          ...favToken,
+          chainId: toChainId,
+          address: getAddressForChainId(toChainId, favToken),
+          mainnetAddress: favToken.mainnet_address ?? getAddressForChainId(ChainId.mainnet, favToken),
+        };
+      }) as SearchAsset[];
 
     if (query === '') {
       return unfilteredFavorites;
@@ -254,6 +253,10 @@ export function useSearchCurrencyLists({
         assets: blastVerifiedAssets,
         loading: blastVerifiedAssetsLoading,
       },
+      [ChainId.degen]: {
+        assets: degenVerifiedAssets,
+        loading: degenVerifiedAssetsLoading,
+      },
     }),
     [
       mainnetVerifiedAssets,
@@ -274,25 +277,24 @@ export function useSearchCurrencyLists({
       avalancheVerifiedAssetsLoading,
       blastVerifiedAssets,
       blastVerifiedAssetsLoading,
+      degenVerifiedAssets,
+      degenVerifiedAssetsLoading,
     ]
   );
 
-  const getVerifiedAssets = useCallback(
-    (chainId: ChainId) => verifiedAssets[chainId]?.assets?.filter(({ isVerified }) => isVerified),
-    [verifiedAssets]
-  );
+  // temporarily limiting the number of assets to display
+  // for performance after deprecating `isRainbowCurated`
+  const getVerifiedAssets = useCallback((chainId: ChainId) => verifiedAssets[chainId]?.assets?.slice(0, 50), [verifiedAssets]);
 
   const bridgeAsset = useMemo(() => {
-    const verifiedAssets = getVerifiedAssets(toChainId);
-    const bridgeAsset = verifiedAssets?.find(asset => isLowerCaseMatch(asset.mainnetAddress, assetToSellAddress));
-
+    const curatedAssets = getVerifiedAssets(toChainId);
+    const bridgeAsset = curatedAssets?.find(asset => isLowerCaseMatch(asset.mainnetAddress, assetToSellAddress));
     const filteredBridgeAsset = filterBridgeAsset({
       asset: bridgeAsset,
       filter: query,
     })
       ? bridgeAsset
       : null;
-
     return toChainId === inputChainId ? null : filteredBridgeAsset;
   }, [getVerifiedAssets, toChainId, query, inputChainId, assetToSellAddress]);
 
@@ -301,7 +303,7 @@ export function useSearchCurrencyLists({
   }, [toChainId, targetUnverifiedAssetsLoading, targetVerifiedAssetsLoading, query, verifiedAssets]);
 
   // displayed when no search query is present
-  const verifiedAssetsByChain = useMemo(
+  const curatedAssets = useMemo(
     () => ({
       [ChainId.mainnet]: getVerifiedAssets(ChainId.mainnet),
       [ChainId.optimism]: getVerifiedAssets(ChainId.optimism),
@@ -312,6 +314,7 @@ export function useSearchCurrencyLists({
       [ChainId.zora]: getVerifiedAssets(ChainId.zora),
       [ChainId.avalanche]: getVerifiedAssets(ChainId.avalanche),
       [ChainId.blast]: getVerifiedAssets(ChainId.blast),
+      [ChainId.degen]: getVerifiedAssets(ChainId.degen),
     }),
     [getVerifiedAssets]
   );
@@ -331,20 +334,15 @@ export function useSearchCurrencyLists({
     (assets?: SearchAsset[]) =>
       assets?.filter(
         curatedAsset =>
-          !isLowerCaseMatch(curatedAsset?.address, bridgeAsset?.address) &&
-          !isLowerCaseMatch(curatedAsset?.address, assetToSell.value?.address)
+          !isLowerCaseMatch(curatedAsset?.address, bridgeAsset?.address) && !isLowerCaseMatch(curatedAsset?.address, assetToSellAddress)
       ) || [],
-    [assetToSell.value?.address, bridgeAsset?.address]
+    [assetToSellAddress, bridgeAsset?.address]
   );
 
   const filterAssetsFromFavoritesBridgeAndAssetToSell = useCallback(
     (assets?: SearchAsset[]) =>
       filterAssetsFromBridgeAndAssetToSell(assets)?.filter(
-        curatedAsset =>
-          !(
-            favoritesList?.map(fav => fav.networks[curatedAsset.chainId]?.address).includes(curatedAsset.address) ||
-            favoritesList?.map(fav => fav.networks[ChainId.mainnet]?.address).includes(curatedAsset.address)
-          )
+        curatedAsset => !favoritesList?.map(fav => fav.address).includes(curatedAsset.address)
       ) || [],
     [favoritesList, filterAssetsFromBridgeAndAssetToSell]
   );
@@ -358,10 +356,8 @@ export function useSearchCurrencyLists({
         id: 'bridge',
       });
     }
-
     if (favoritesList?.length) {
       sections.push({
-        // TODO: Refactor favorites to SearchAsset type
         data: filterAssetsFromBridgeAndAssetToSell(favoritesList),
         id: 'favorites',
       });
@@ -369,7 +365,7 @@ export function useSearchCurrencyLists({
 
     if (query === '') {
       sections.push({
-        data: filterAssetsFromFavoritesBridgeAndAssetToSell(verifiedAssetsByChain[toChainId]),
+        data: filterAssetsFromFavoritesBridgeAndAssetToSell(curatedAssets[toChainId]),
         id: 'verified',
       });
     } else {
@@ -402,7 +398,7 @@ export function useSearchCurrencyLists({
     query,
     filterAssetsFromBridgeAndAssetToSell,
     filterAssetsFromFavoritesBridgeAndAssetToSell,
-    verifiedAssetsByChain,
+    curatedAssets,
     toChainId,
     targetVerifiedAssets,
     targetUnverifiedAssets,

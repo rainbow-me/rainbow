@@ -27,13 +27,14 @@ import {
 } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
+import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { useAccountAccentColor, useAccountSettings, useWalletsWithBalancesAndNames } from '@/hooks';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { Network } from '@/networks/types';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { colors } from '@/styles';
-import { deviceUtils, ethereumUtils } from '@/utils';
+import { deviceUtils } from '@/utils';
+import ethereumUtils from '@/utils/ethereumUtils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { TOP_INSET } from '../Dimensions';
@@ -47,8 +48,10 @@ import { useSelector } from 'react-redux';
 import store, { AppState } from '@/redux/store';
 import { getDappHost } from '@/utils/connectedApps';
 import WebView from 'react-native-webview';
-import { useNavigation } from '@/navigation';
-import { set } from 'lodash';
+import { Navigation, useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { address } from '@/utils/abbreviations';
+import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
 import { useAppSessionsStore } from '@/state/appSessions';
 
 const PAGES = {
@@ -69,10 +72,6 @@ export const ControlPanel = () => {
   const {
     params: { activeTabRef },
   } = useRoute<RouteProp<ControlPanelParams, 'ControlPanel'>>();
-  const [isConnected, setIsConnected] = useState(false);
-  const [currentAddress, setCurrentAddress] = useState<string>(accountAddress);
-  const [currentNetwork, setCurrentNetwork] = useState<Network>(RainbowNetworks[0].value);
-
   const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const activeTabUrl = useBrowserStore(state => state.getActiveTabUrl());
@@ -94,6 +93,9 @@ export const ControlPanel = () => {
     [hostSessions]
   );
 
+  const [isConnected, setIsConnected] = useState(!!(activeTabHost && currentSession?.address));
+  const [currentAddress, setCurrentAddress] = useState<string>(currentSession?.address || accountAddress);
+  const [currentNetwork, setCurrentNetwork] = useState<Network>(currentSession?.network || Network.mainnet);
   // listens to the current active tab and sets the account
   useEffect(() => {
     if (activeTabHost) {
@@ -130,7 +132,7 @@ export const ControlPanel = () => {
           ) : (
             <ListEmojiAvatar address={account.address} color={account.color} label={account.label} />
           ),
-          label: account.label,
+          label: removeFirstEmojiFromString(account.label) || address(account.address, 6, 4),
           secondaryLabel: !walletBalance ? i18n.t(i18n.l.wallet.change_wallet.no_balance) : nativeCurrencyBalance,
           uniqueId: account.address,
           color: colors.avatarBackgrounds[account.color],
@@ -342,9 +344,10 @@ const HomePanel = ({
   onDisconnect: () => void;
 }) => {
   const actionButtonList = useMemo(() => {
-    const walletIcon = allWalletItems.find(item => item.uniqueId === selectedWallet)?.IconComponent || <></>;
-    const walletLabel = allWalletItems.find(item => item.uniqueId === selectedWallet)?.label || '';
-    const walletSecondaryLabel = allWalletItems.find(item => item.uniqueId === selectedWallet)?.secondaryLabel || '';
+    const selectedWalletProps: ControlPanelMenuItemProps | undefined = allWalletItems.find(item => item.uniqueId === selectedWallet);
+    const walletIcon = selectedWalletProps?.IconComponent || <></>;
+    const walletLabel = selectedWalletProps?.label || '';
+    const walletSecondaryLabel = selectedWalletProps?.secondaryLabel || '';
 
     const network = allNetworkItems.find(item => item.uniqueId === selectedNetwork);
     const networkIcon = <ChainImage chain={(network?.uniqueId as Network) || 'mainnet'} size={36} />;
@@ -395,16 +398,30 @@ const HomePanel = ({
                 animatedAccentColor={animatedAccentColor}
                 icon="􀖅"
                 label={i18n.t(i18n.l.dapp_browser.control_panel.swap)}
-                onPress={() => {
-                  return;
+                onPress={async () => {
+                  const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(Network.mainnet, selectedWallet);
+                  Navigation.handleAction(Routes.EXCHANGE_MODAL, {
+                    fromDiscover: true,
+                    params: {
+                      inputAsset: mainnetEth,
+                    },
+                    screen: Routes.MAIN_EXCHANGE_SCREEN,
+                  });
                 }}
               />
               <ControlPanelButton
                 animatedAccentColor={animatedAccentColor}
                 icon="􀄹"
                 label={i18n.t(i18n.l.dapp_browser.control_panel.bridge)}
-                onPress={() => {
-                  return;
+                onPress={async () => {
+                  const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(Network.mainnet, selectedWallet);
+                  Navigation.handleAction(Routes.EXCHANGE_MODAL, {
+                    fromDiscover: true,
+                    params: {
+                      inputAsset: mainnetEth,
+                    },
+                    screen: Routes.MAIN_EXCHANGE_SCREEN,
+                  });
                 }}
               />
               <ConnectButton
@@ -442,7 +459,7 @@ const HomePanelLogo = React.memo(function HomePanelLogo() {
       width={{ custom: 44 }}
       height={{ custom: 44 }}
       background="fillTertiary"
-      style={{ borderRadius: 12 }}
+      style={{ borderRadius: IS_ANDROID ? 30 : 12 }}
     />
   );
 });
@@ -586,13 +603,18 @@ const ListHeader = React.memo(function ListHeader({
   const backIconStyle = useAnimatedStyle(() => {
     return {
       color: animatedAccentColor?.value,
+      ...fontWithWidthWorklet('700'),
     };
   });
 
   return (
     <Box style={controlPanelStyles.listHeader}>
       <Box style={controlPanelStyles.listHeaderContent}>
-        <ButtonPressAnimation onPress={goBack} scaleTo={0.8} style={controlPanelStyles.listHeaderButtonWrapper}>
+        <ButtonPressAnimation
+          onPress={goBack}
+          scaleTo={0.8}
+          style={[controlPanelStyles.listHeaderButtonWrapper, { backgroundColor: 'red' }]}
+        >
           <Box alignItems="center" height={{ custom: 20 }} justifyContent="center" width={{ custom: 20 }}>
             <AnimatedText align="center" size="icon 20px" staticText="􀆉" style={backIconStyle} weight="bold" />
           </Box>
@@ -672,7 +694,7 @@ const ControlPanelMenuItem = React.memo(function ControlPanelMenuItem({
     const selected = selectedItemId?.value === uniqueId || variant === 'homePanel';
     return {
       color: selected ? animatedAccentColor?.value : labelTextColor,
-      fontWeight: selected || variant === 'homePanel' ? '700' : '600',
+      ...fontWithWidthWorklet(selected || variant === 'homePanel' ? '700' : '600'),
     };
   });
 

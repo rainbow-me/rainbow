@@ -3,13 +3,18 @@ import { SharedValue, convertToRGBA, isColor } from 'react-native-reanimated';
 
 import * as i18n from '@/languages';
 import { globalColors } from '@/design-system';
-import { ETH_COLOR, ETH_COLOR_DARK_ACCENT, SCRUBBER_WIDTH, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { SCRUBBER_WIDTH, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { ChainId, ChainName } from '@/__swaps__/types/chains';
 import { RainbowConfig } from '@/model/remoteConfig';
-import { CrosschainQuote, ETH_ADDRESS, Quote, WRAPPED_ASSET } from '@rainbow-me/swaps';
+import { CrosschainQuote, ETH_ADDRESS, Quote, QuoteParams, SwapType, WRAPPED_ASSET } from '@rainbow-me/swaps';
 import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
-import { ParsedSearchAsset } from '../types/assets';
+import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '../types/assets';
+import { inputKeys } from '../types/swap';
+import { swapsStore } from '../../state/swaps/swapsStore';
+import store from '@/redux/store';
+import { BigNumberish } from '@ethersproject/bignumber';
+import { TokenColors } from '@/graphql/__generated__/metadata';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -17,34 +22,59 @@ export const opacity = (color: string, opacity: number): string => {
   return c(color).alpha(opacity).css();
 };
 
-export const getHighContrastColor = (color: string, isDarkMode: boolean) => {
-  const contrast = c.contrast(color, isDarkMode ? globalColors.grey100 : globalColors.white100);
+export type ResponseByTheme<T> = {
+  light: T;
+  dark: T;
+};
 
-  if (contrast < (isDarkMode ? 3 : 2.5)) {
-    if (isDarkMode) {
-      return c(color)
-        .set('hsl.l', contrast < 1.5 ? 0.88 : 0.8)
-        .set('hsl.s', `*${contrast < 1.5 ? 0.75 : 0.85}`)
-        .hex();
-    } else {
-      return c(color)
-        .set('hsl.s', `*${contrast < 1.5 ? 2 : 1.2}`)
-        .darken(2.5 - (contrast - (contrast < 1.5 ? 0.5 : 0)))
-        .hex();
-    }
+export const getHighContrastColor = (color: string): ResponseByTheme<string> => {
+  const lightModeContrast = c.contrast(color, globalColors.white100);
+  const darkModeContrast = c.contrast(color, globalColors.grey100);
+
+  let lightColor = color;
+  let darkColor = color;
+
+  if (lightModeContrast < 2.5) {
+    lightColor = c(color)
+      .set('hsl.s', `*${lightModeContrast < 1.5 ? 2 : 1.2}`)
+      .darken(2.5 - (lightModeContrast - (lightModeContrast < 1.5 ? 0.5 : 0)))
+      .hex();
   }
-  return color;
+
+  if (darkModeContrast < 3) {
+    darkColor = c(color)
+      .set('hsl.l', darkModeContrast < 1.5 ? 0.88 : 0.8)
+      .set('hsl.s', `*${darkModeContrast < 1.5 ? 0.75 : 0.85}`)
+      .hex();
+  }
+
+  return {
+    light: lightColor,
+    dark: darkColor,
+  };
 };
 
 export const getMixedColor = (color1: string, color2: string, ratio: number) => {
   return c.mix(color1, color2, ratio).hex();
 };
 
-export const getTintedBackgroundColor = (color: string, isDarkMode: boolean): string => {
-  return c
-    .mix(color, isDarkMode ? globalColors.grey100 : globalColors.white100, isDarkMode ? 0.9875 : 0.94)
-    .saturate(isDarkMode ? 0 : -0.06)
-    .hex();
+export const getTextColor = (color: string): ResponseByTheme<string> => {
+  const contrastWithWhite = c.contrast(color, globalColors.white100);
+
+  return {
+    light: contrastWithWhite < 2 ? globalColors.grey100 : globalColors.white100,
+    dark: contrastWithWhite < 2.6 ? globalColors.grey100 : globalColors.white100,
+  };
+};
+
+export const getTintedBackgroundColor = (color: string): ResponseByTheme<string> => {
+  const lightModeColorToMix = globalColors.white100;
+  const darkModeColorToMix = globalColors.grey100;
+
+  return {
+    light: c.mix(color, lightModeColorToMix, 0.94).saturate(-0.06).hex(),
+    dark: c.mix(color, darkModeColorToMix, 0.9875).saturate(0).hex(),
+  };
 };
 //
 // /---- END color functions ----/ //
@@ -296,18 +326,29 @@ export type Colors = {
   shadow?: string;
 };
 
-export const extractColorValueForColors = ({ colors, isDarkMode }: { colors?: Colors; isDarkMode: boolean }): string => {
-  'worklet';
+type ExtractColorValueForColorsProps = {
+  colors: TokenColors;
+  isDarkMode: boolean;
+};
 
-  if (colors?.primary) {
-    return colors.primary;
-  }
+type ExtractColorValueForColorsResponse = {
+  textColor: ResponseByTheme<string>;
+  highContrastColor: ResponseByTheme<string>;
+  tintedBackgroundColor: ResponseByTheme<string>;
+};
 
-  if (colors?.fallback) {
-    return colors.fallback;
-  }
+export const extractColorValueForColors = ({ colors }: ExtractColorValueForColorsProps): ExtractColorValueForColorsResponse => {
+  const color = colors.primary ?? colors.fallback;
 
-  return isDarkMode ? ETH_COLOR_DARK_ACCENT : ETH_COLOR;
+  // TODO: mod color utils and return light/dark mode colors
+
+  const highContrastColor = getHighContrastColor(color);
+
+  return {
+    highContrastColor,
+    tintedBackgroundColor: getTintedBackgroundColor(color),
+    textColor: getTextColor(color),
+  };
 };
 
 export const getQuoteServiceTime = ({ quote }: { quote: Quote | CrosschainQuote }) =>
@@ -393,4 +434,67 @@ export const priceForAsset = ({
     return asset.native.price.amount;
   }
   return 0;
+};
+
+type ParseAssetAndExtendProps = {
+  asset: ParsedSearchAsset | null;
+};
+
+export const parseAssetAndExtend = ({ asset }: ParseAssetAndExtendProps): ExtendedAnimatedAssetWithColors | null => {
+  'worklet';
+
+  if (!asset) {
+    return null;
+  }
+
+  // TODO: Process and add colors to the asset and anything else we'll need for reanimated stuff
+  const colors = extractColorValueForColors({
+    colors: asset.colors as TokenColors,
+    isDarkMode: true, // TODO: Make this not rely on isDarkMode
+  });
+
+  return {
+    ...asset,
+    ...colors,
+  };
+};
+
+type BuildQuoteParamsProps = {
+  inputAmount: BigNumberish;
+  outputAmount: BigNumberish;
+  focusedInput: inputKeys;
+};
+
+/**
+ * Builds the quote params for the swap based on the current state of the store.
+ *
+ * NOTE: Will return null if either asset isn't set.
+ * @returns data needed to execute a swap or cross-chain swap
+ */
+export const buildQuoteParams = ({ inputAmount, outputAmount, focusedInput }: BuildQuoteParamsProps): QuoteParams | null => {
+  // NOTE: Yuck... redux is still heavily integrated into the account logic.
+  const { accountAddress } = store.getState().settings;
+
+  const { inputAsset, outputAsset, source, slippage } = swapsStore();
+  if (!inputAsset || !outputAsset) {
+    return null;
+  }
+
+  const isCrosschainSwap = inputAsset.chainId !== outputAsset.chainId;
+
+  return {
+    source: source === 'auto' ? undefined : source,
+    swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
+    fromAddress: accountAddress,
+    chainId: inputAsset.chainId,
+    toChainId: isCrosschainSwap ? outputAsset.chainId : inputAsset.chainId,
+    sellTokenAddress: inputAsset.isNativeAsset ? ETH_ADDRESS : inputAsset.address,
+    buyTokenAddress: outputAsset.isNativeAsset ? ETH_ADDRESS : outputAsset.address,
+
+    // TODO: Dunno how we can access these from the
+    sellAmount: focusedInput === 'inputAmount' || focusedInput === 'inputNativeValue' ? inputAmount : undefined,
+    buyAmount: focusedInput === 'outputAmount' || focusedInput === 'outputNativeValue' ? outputAmount : undefined,
+    slippage: Number(slippage),
+    refuel: false,
+  };
 };
