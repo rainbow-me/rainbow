@@ -218,7 +218,6 @@ export const WalletsAndBackup = () => {
     navigate(Routes.MODAL_SCREEN, {
       type: 'new_wallet_group',
       numWalletGroups: walletTypeCount.phrase + 1,
-      onCancel: noop,
       onCloseModal: async ({ name }: { name: string }) => {
         const nameValue = name.trim() !== '' ? name.trim() : '';
         try {
