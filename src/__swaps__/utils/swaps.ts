@@ -29,8 +29,9 @@ export type ResponseByTheme<T> = {
 };
 
 export const getColorValueForTheme = <T>(values: ResponseByTheme<T> | undefined, isDarkMode: boolean, useDefaults = false) => {
-  // eslint-disable-next-line no-nested-ternary
-  if (!values) return useDefaults ? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR) : undefined;
+  if (!values) {
+    return isDarkMode ? ETH_COLOR_DARK : ETH_COLOR;
+  }
   return isDarkMode ? values.dark : values.light;
 };
 

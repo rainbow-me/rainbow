@@ -1,4 +1,3 @@
-import c from 'chroma-js';
 import Animated, {
   SharedValue,
   interpolate,
@@ -62,12 +61,6 @@ export const useSwapInputStyles = ({
     return isDarkMode ? opacityWorklet(getColorValueForThemeWorklet(asset.value?.color, isDarkMode, true), 0.1) : globalColors.white100;
   });
 
-  const mixedShadowColor = useDerivedValue(() => {
-    return isDarkMode
-      ? 'transparent'
-      : c.mix(getColorValueForThemeWorklet(asset.value?.color, isDarkMode, true), globalColors.grey100, 0.84).hex();
-  });
-
   const containerStyle = useAnimatedStyle(() => {
     const getContainerStyleTranslateY = (progress: Animated.SharedValue<number>, bottomInput: boolean | undefined) => {
       if (progress.value === NavigationSteps.SEARCH_FOCUSED) {
@@ -82,6 +75,7 @@ export const useSwapInputStyles = ({
     };
 
     return {
+      shadowColor: getColorValueForThemeWorklet(asset.value?.mixedShadowColor, isDarkMode, true),
       opacity: otherInputProgress.value === NavigationSteps.SEARCH_FOCUSED ? withTiming(0, fadeConfig) : withTiming(1, fadeConfig),
       transform: [
         {
@@ -112,5 +106,5 @@ export const useSwapInputStyles = ({
     };
   }, [bottomInput, otherInputProgress, progress, bgColor, expandedBgColor, strokeColor, expandedStrokeColor]);
 
-  return { containerStyle, inputStyle, mixedShadowColor };
+  return { containerStyle, inputStyle };
 };
