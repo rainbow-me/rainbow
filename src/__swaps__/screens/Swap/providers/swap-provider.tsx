@@ -24,6 +24,7 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { isSameAsset } from '@/__swaps__/utils/assets';
 import { buildQuoteParams, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { ChainId } from '@/__swaps__/types/chains';
+import { logger } from '@/logger';
 
 interface SwapContextType {
   isFetching: SharedValue<boolean>;
@@ -114,8 +115,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   };
 
   const setAsset = ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset }) => {
-    console.log({ type, asset });
-
     const updateAssetValue = ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset | null }) => {
       'worklet';
 
@@ -142,11 +141,14 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
     // if we're setting the same asset, exit early as it's a no-op
     if (prevAsset && isSameAsset(prevAsset, asset)) {
+      logger.debug(`[setAsset]: Not setting ${type} asset as it's the same as what is already set`);
       return;
     }
 
     // if we're setting the same asset as the other asset, we need to clear the other asset
     if (prevOtherAsset && isSameAsset(prevOtherAsset, asset)) {
+      logger.debug(`[setAsset]: Swapping ${type} asset for ${type === SwapAssetType.inputAsset ? 'output' : 'input'} asset`);
+
       swapsStore.setState({
         [type === SwapAssetType.inputAsset ? SwapAssetType.outputAsset : SwapAssetType.inputAsset]: null,
       });
@@ -155,6 +157,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         asset: null,
       });
     }
+
+    logger.debug(`[setAsset]: Setting ${type} asset to ${asset.name} on ${asset.chainId}`);
 
     // TODO: Bunch of logic left to implement here... reset prices, retrigger quote fetching, etc.
     swapsStore.setState({

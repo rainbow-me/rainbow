@@ -4,31 +4,31 @@ import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { Box, Column, Columns, Separator, globalColors, useColorMode } from '@/design-system';
 import { safeAreaInsetValues } from '@/utils';
 
-import { SwapActionButton } from '../../components/SwapActionButton';
-import { GasButton } from '../../components/GasButton';
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH, springConfig } from '../../constants';
+import { SwapActionButton } from './SwapActionButton';
+import { GasButton } from './GasButton';
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH, springConfig } from '../constants';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext, NavigationSteps } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import Animated, { runOnJS, runOnUI, useAnimatedReaction, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { StyleSheet } from 'react-native';
 import { opacity } from '@/__swaps__/utils/swaps';
-import { ReviewPanel } from '../ReviewPanel';
+import { ReviewPanel } from './ReviewPanel';
 import { PanGestureHandler } from 'react-native-gesture-handler';
-import { useSwapActionsGestureHandler } from './useSwapActionsGestureHandler';
+import { useBottomPanelGestureHandler } from '../hooks/useBottomPanelGestureHandler';
 
-export function SwapActions() {
+export function SwapBottomPanel() {
   const { isDarkMode } = useColorMode();
   const {
     confirmButtonIcon,
     confirmButtonIconStyle,
     confirmButtonLabel,
-    SwapInputController,
+    internalSelectedOutputAsset,
     AnimatedSwapStyles,
     SwapNavigation,
     reviewProgress,
   } = useSwapContext();
 
-  const { swipeToDismissGestureHandler, gestureY } = useSwapActionsGestureHandler();
+  const { swipeToDismissGestureHandler, gestureY } = useBottomPanelGestureHandler();
   const [enabled, setEnabled] = useState(false);
 
   useAnimatedReaction(
@@ -84,7 +84,7 @@ export function SwapActions() {
           </Column>
           <SwapActionButton
             onPress={() => runOnUI(SwapNavigation.handleShowReview)()}
-            color={SwapInputController.bottomColor}
+            asset={internalSelectedOutputAsset}
             icon={confirmButtonIcon}
             iconStyle={confirmButtonIconStyle}
             label={confirmButtonLabel}

@@ -3,7 +3,7 @@ import { SharedValue, convertToRGBA, isColor } from 'react-native-reanimated';
 
 import * as i18n from '@/languages';
 import { globalColors } from '@/design-system';
-import { SCRUBBER_WIDTH, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { ETH_COLOR, ETH_COLOR_DARK, SCRUBBER_WIDTH, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { ChainId, ChainName } from '@/__swaps__/types/chains';
 import { RainbowConfig } from '@/model/remoteConfig';
@@ -25,6 +25,13 @@ export const opacity = (color: string, opacity: number): string => {
 export type ResponseByTheme<T> = {
   light: T;
   dark: T;
+};
+
+export const getColorValueForThemeWorklet = <T>(values: ResponseByTheme<T> | undefined, isDarkMode: boolean) => {
+  'worklet';
+
+  if (!values) return undefined;
+  return isDarkMode ? values.dark : values.light;
 };
 
 export const getHighContrastColor = (color: string): ResponseByTheme<string> => {
@@ -332,6 +339,7 @@ type ExtractColorValueForColorsProps = {
 };
 
 type ExtractColorValueForColorsResponse = {
+  color: ResponseByTheme<string>;
   textColor: ResponseByTheme<string>;
   highContrastColor: ResponseByTheme<string>;
   tintedBackgroundColor: ResponseByTheme<string>;
@@ -342,10 +350,12 @@ export const extractColorValueForColors = ({ colors }: ExtractColorValueForColor
 
   // TODO: mod color utils and return light/dark mode colors
 
-  const highContrastColor = getHighContrastColor(color);
-
   return {
-    highContrastColor,
+    color: {
+      light: colors.primary ?? colors.fallback ?? ETH_COLOR,
+      dark: colors.primary ?? colors.fallback ?? ETH_COLOR_DARK,
+    },
+    highContrastColor: getHighContrastColor(color),
     tintedBackgroundColor: getTintedBackgroundColor(color),
     textColor: getTextColor(color),
   };

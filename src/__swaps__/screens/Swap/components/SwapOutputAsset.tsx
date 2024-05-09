@@ -23,14 +23,19 @@ import { ethereumUtils } from '@/utils';
 
 function SwapOutputActionButton() {
   const { isDarkMode } = useColorMode();
-  const { SwapNavigation, SwapInputController } = useSwapContext();
+  const { SwapNavigation, internalSelectedOutputAsset } = useSwapContext();
+
+  const label = useDerivedValue(() => {
+    const asset = internalSelectedOutputAsset.value;
+    return asset?.symbol ?? '';
+  });
 
   return (
     <SwapActionButton
-      color={SwapInputController.bottomColor}
+      asset={internalSelectedOutputAsset}
       disableShadow={isDarkMode}
       hugContent
-      label={SwapInputController.assetToBuySymbol}
+      label={label}
       onPress={runOnUI(SwapNavigation.handleOutputPress)}
       rightIcon={'􀆏'}
       small
@@ -97,14 +102,19 @@ function SwapInputIcon() {
 }
 
 function OutputAssetBalanceBadge() {
-  const { SwapInputController } = useSwapContext();
+  const { internalSelectedOutputAsset } = useSwapContext();
 
   const userAssets = useAssetsToSell();
 
   const label = useDerivedValue(() => {
-    const assetToBuy = SwapInputController.assetToBuy.value;
-    if (!assetToBuy) return 'No balance';
-    const userAsset = userAssets.find(userAsset => isSameAssetWorklet(userAsset, assetToBuy));
+    if (!internalSelectedOutputAsset.value) return 'No balance';
+
+    const userAsset = userAssets.find(userAsset =>
+      isSameAssetWorklet(userAsset, {
+        address: internalSelectedOutputAsset.value.address,
+        chainId: internalSelectedOutputAsset.value.chainId,
+      })
+    );
     return userAsset?.balance.display ?? 'No balance';
   });
 
