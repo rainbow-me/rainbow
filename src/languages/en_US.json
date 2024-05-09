@@ -2813,6 +2813,23 @@
       "provider_error": {
         "unsupported_chain": "Unsupported Chain",
         "no_active_session": "You need to connect to the dapp before attempting to switch chains"
+      },
+      "homepage": {
+        "trending": "Trending",
+        "recents": "Recents",
+        "favorites": "Favorites"
+      },
+      "search": {
+        "find_apps_and_more": "Find apps and more",
+        "more_results": "More Results",
+        "search": "Search"
+      },
+      "menus": {
+        "favorite": "Favorite",
+        "undo_favorite": "Undo Favorite",
+        "remove": "Remove",
+        "forward": "Forward",
+        "back": "Back"
       }
     }
   }

@@ -91,7 +91,7 @@ const TheeDotMenu = function TheeDotMenu({
     if (!isGoogleSearch) {
       menuItems.push({
         actionKey: 'favorite',
-        actionTitle: isFavorite ? 'Undo Favorite' : 'Favorite',
+        actionTitle: isFavorite ? i18n.t(i18n.l.dapp_browser.menus.undo_favorite) : i18n.t(i18n.l.dapp_browser.menus.favorite),
         icon: {
           iconType: 'SYSTEM',
           iconValue: isFavorite ? 'star.slash' : 'star',
@@ -101,7 +101,7 @@ const TheeDotMenu = function TheeDotMenu({
     if (canGoForward) {
       menuItems.push({
         actionKey: 'forward',
-        actionTitle: 'Forward',
+        actionTitle: i18n.t(i18n.l.dapp_browser.menus.forward),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'arrowshape.forward',
@@ -111,7 +111,7 @@ const TheeDotMenu = function TheeDotMenu({
     if (canGoBack) {
       menuItems.push({
         actionKey: 'back',
-        actionTitle: 'Back',
+        actionTitle: i18n.t(i18n.l.dapp_browser.menus.back),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'arrowshape.backward',
