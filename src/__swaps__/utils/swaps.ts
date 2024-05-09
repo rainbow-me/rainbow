@@ -373,6 +373,7 @@ export const extractColorValueForColors = ({
     highContrastColor: getHighContrastColor(color),
     tintedBackgroundColor: getTintedBackgroundColor(color),
     textColor: getTextColor(color),
+    displayPrice: undefined,
   };
 };
 
@@ -478,9 +479,18 @@ export const parseAssetAndExtend = ({ asset }: ParseAssetAndExtendProps): Extend
     isDarkMode: true, // TODO: Make this not rely on isDarkMode
   });
 
+  const priceInfo: Pick<ExtendedAnimatedAssetWithColors, 'displayPrice'> = {
+    displayPrice: undefined,
+  };
+
+  if (asset.price) {
+    priceInfo.displayPrice = asset.price.value;
+  }
+
   return {
     ...asset,
     ...colors,
+    ...priceInfo,
   };
 };
 

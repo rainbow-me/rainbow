@@ -146,23 +146,21 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   };
 
   const setAsset = ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset }) => {
-    const updateAssetValue = ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset | null }) => {
+    const updateAssetValue = ({ type, asset }: { type: SwapAssetType; asset: ExtendedAnimatedAssetWithColors | null }) => {
       'worklet';
 
       switch (type) {
         case SwapAssetType.inputAsset:
-          // TODO: Pre-process a bunch of stuff here...
-          /**
-           * Colors, price, etc.
-           */
-          internalSelectedInputAsset.value = parseAssetAndExtend({ asset });
+          internalSelectedInputAsset.value = asset;
+
+          // NOTE: Update inputAmount based on sliderXPosition
+          SwapInputController.inputValues.modify(prev => ({
+            ...prev,
+            inputAmount: sliderXPosition.value * Number(asset?.balance.amount || 0),
+          }));
           break;
         case SwapAssetType.outputAsset:
-          // TODO: Pre-process a bunch of stuff here...
-          /**
-           * Colors, price, etc.
-           */
-          internalSelectedOutputAsset.value = parseAssetAndExtend({ asset });
+          internalSelectedOutputAsset.value = asset;
           break;
       }
     };
@@ -201,7 +199,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     swapsStore.setState({
       [type]: asset,
     });
-    runOnJS(updateAssetValue)({ type, asset });
+    runOnUI(updateAssetValue)({ type, asset: parseAssetAndExtend({ asset }) });
     handleProgressNavigation({
       type,
       inputAsset: type === SwapAssetType.inputAsset ? asset : prevOtherAsset,
@@ -218,10 +216,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const SwapInputController = useSwapInputsController({
     ...SwapNavigation,
     focusedInput,
+    internalSelectedInputAsset,
+    internalSelectedOutputAsset,
     isFetching,
     sliderXPosition,
-    inputProgress,
-    outputProgress,
   });
 
   const SwapWarning = useSwapWarning({
@@ -231,7 +229,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   });
 
   const AnimatedSwapStyles = useAnimatedSwapStyles({
-    SwapInputController,
     SwapWarning,
     internalSelectedInputAsset,
     internalSelectedOutputAsset,
@@ -241,7 +238,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     isFetching,
   });
   const SwapTextStyles = useSwapTextStyles({
-    ...SwapInputController,
+    SwapInputController,
+    internalSelectedInputAsset,
+    internalSelectedOutputAsset,
     focusedInput,
     inputProgress,
     outputProgress,

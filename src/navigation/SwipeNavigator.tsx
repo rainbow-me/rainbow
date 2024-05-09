@@ -28,7 +28,7 @@ import React, { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 import { InteractionManager, View } from 'react-native';
 import Animated, { Easing, interpolate, SharedValue, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
-import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
+import { AnimatedSpinner } from '@/components/animations/ButtonPressAnimation/AnimatedSpinner';
 import DiscoverScreen, { discoverScrollToTopFnRef } from '../screens/discover/DiscoverScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import Routes from './routesNames';

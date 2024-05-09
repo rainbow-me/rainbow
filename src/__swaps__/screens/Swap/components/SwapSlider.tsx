@@ -36,10 +36,6 @@ import {
 } from '@/__swaps__/screens/Swap/constants';
 import { clamp, getColorValueForThemeWorklet, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { SwapCoinIcon } from '@/__swaps__/screens/Swap/components/SwapCoinIcon';
-import { useTheme } from '@/theme';
-import { ethereumUtils } from '@/utils';
-import { ChainId } from '@/__swaps__/types/chains';
 
 type SwapSliderProps = {
   dualColor?: boolean;
@@ -56,10 +52,15 @@ export const SwapSlider = ({
   snapPoints = [0, 0.25, 0.5, 0.75, 1], // %
   width = SLIDER_WIDTH,
 }: SwapSliderProps) => {
-  const theme = useTheme();
   const { isDarkMode } = useColorMode();
-  const { SwapInputController, internalSelectedInputAsset, internalSelectedOutputAsset, sliderXPosition, sliderPressProgress } =
-    useSwapContext();
+  const {
+    AnimatedSwapStyles,
+    SwapInputController,
+    internalSelectedInputAsset,
+    internalSelectedOutputAsset,
+    sliderXPosition,
+    sliderPressProgress,
+  } = useSwapContext();
 
   const panRef = useRef();
   const tapRef = useRef();
@@ -374,16 +375,13 @@ export const SwapSlider = ({
               <Columns alignHorizontal="justify" alignVertical="center">
                 <Inline alignVertical="center" space="6px" wrap={false}>
                   <Bleed vertical="4px">
-                    {/* TODO: Migrate this to fast icon image with shared value once we have that */}
-                    <SwapCoinIcon
-                      color={SwapInputController.topColorShadow.value}
-                      iconUrl={''}
-                      address={''}
-                      mainnetAddress={''}
-                      network={ethereumUtils.getNetworkFromChainId(ChainId.mainnet)}
-                      small
-                      symbol={''}
-                      theme={theme}
+                    {/* TODO: Implement Coin Icons using reanimated values */}
+                    <Box
+                      as={Animated.View}
+                      borderRadius={18}
+                      height={{ custom: 16 }}
+                      style={[styles.solidColorCoinIcon, AnimatedSwapStyles.assetToBuyIconStyle]}
+                      width={{ custom: 16 }}
                     />
                   </Bleed>
                   <Inline alignVertical="bottom" wrap={false}>
@@ -478,5 +476,8 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     width: SCRUBBER_WIDTH,
+  },
+  solidColorCoinIcon: {
+    opacity: 0.4,
   },
 });

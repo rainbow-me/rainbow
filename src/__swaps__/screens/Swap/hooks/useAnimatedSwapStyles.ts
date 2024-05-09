@@ -12,14 +12,13 @@ import {
 import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
 import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
-import { spinnerExitConfig } from '@/components/animations/AnimatedSpinner';
+import { spinnerExitConfig } from '@/components/animations/ButtonPressAnimation/AnimatedSpinner';
 import { NavigationSteps } from './useSwapNavigation';
 import { IS_ANDROID } from '@/env';
 import { safeAreaInsetValues } from '@/utils';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 
 export function useAnimatedSwapStyles({
-  SwapInputController,
   SwapWarning,
   internalSelectedInputAsset,
   internalSelectedOutputAsset,
@@ -28,7 +27,6 @@ export function useAnimatedSwapStyles({
   reviewProgress,
   isFetching,
 }: {
-  SwapInputController: ReturnType<typeof useSwapInputsController>;
   SwapWarning: ReturnType<typeof useSwapWarning>;
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;

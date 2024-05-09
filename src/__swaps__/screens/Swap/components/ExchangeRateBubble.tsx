@@ -20,117 +20,117 @@ export const ExchangeRateBubble = () => {
 
   const fillTertiary = useForegroundColor('fillTertiary');
 
-  useAnimatedReaction(
-    () => ({
-      assetToSell: SwapInputController.assetToSell.value,
-      assetToBuy: SwapInputController.assetToBuy.value,
-      assetToSellPrice: SwapInputController.assetToSellPrice.value,
-      assetToBuyPrice: SwapInputController.assetToBuyPrice.value,
-      exchangeRateIndex,
-    }),
-    (current, previous) => {
-      if (current.assetToSell && (!previous?.assetToSell || current.assetToSell !== previous.assetToSell)) {
-        assetToSellSymbol.value = current.assetToSell.symbol;
+  // useAnimatedReaction(
+  //   () => ({
+  //     assetToSell: SwapInputController.assetToSell.value,
+  //     assetToBuy: SwapInputController.assetToBuy.value,
+  //     assetToSellPrice: SwapInputController.assetToSellPrice.value,
+  //     assetToBuyPrice: SwapInputController.assetToBuyPrice.value,
+  //     exchangeRateIndex,
+  //   }),
+  //   (current, previous) => {
+  //     if (current.assetToSell && (!previous?.assetToSell || current.assetToSell !== previous.assetToSell)) {
+  //       assetToSellSymbol.value = current.assetToSell.symbol;
 
-        // try to set price immediately
-        const price = priceForAsset({
-          asset: current.assetToSell,
-          assetType: 'assetToSell',
-          assetToSellPrice: SwapInputController.assetToSellPrice,
-          assetToBuyPrice: SwapInputController.assetToBuyPrice,
-        });
+  //       // try to set price immediately
+  //       const price = priceForAsset({
+  //         asset: current.assetToSell,
+  //         assetType: 'assetToSell',
+  //         assetToSellPrice: SwapInputController.assetToSellPrice,
+  //         assetToBuyPrice: SwapInputController.assetToBuyPrice,
+  //       });
 
-        if (price) {
-          assetToSellPrice.value = price;
-        }
-      }
+  //       if (price) {
+  //         assetToSellPrice.value = price;
+  //       }
+  //     }
 
-      if (current.assetToBuy && (!previous?.assetToBuy || current.assetToBuy !== previous.assetToBuy)) {
-        assetToBuySymbol.value = current.assetToBuy.symbol;
+  //     if (current.assetToBuy && (!previous?.assetToBuy || current.assetToBuy !== previous.assetToBuy)) {
+  //       assetToBuySymbol.value = current.assetToBuy.symbol;
 
-        // try to set price immediately
-        const price = priceForAsset({
-          asset: current.assetToBuy,
-          assetType: 'assetToBuy',
-          assetToSellPrice: SwapInputController.assetToSellPrice,
-          assetToBuyPrice: SwapInputController.assetToBuyPrice,
-        });
+  //       // try to set price immediately
+  //       const price = priceForAsset({
+  //         asset: current.assetToBuy,
+  //         assetType: 'assetToBuy',
+  //         assetToSellPrice: SwapInputController.assetToSellPrice,
+  //         assetToBuyPrice: SwapInputController.assetToBuyPrice,
+  //       });
 
-        if (price) {
-          assetToBuyPrice.value = price;
-        }
-      }
+  //       if (price) {
+  //         assetToBuyPrice.value = price;
+  //       }
+  //     }
 
-      if (current.assetToSell && current.assetToBuy) {
-        runOnJS(SwapInputController.fetchAssetPrices)({
-          assetToSell: current.assetToSell,
-          assetToBuy: current.assetToBuy,
-        });
-      }
+  //     if (current.assetToSell && current.assetToBuy) {
+  //       runOnJS(SwapInputController.fetchAssetPrices)({
+  //         assetToSell: current.assetToSell,
+  //         assetToBuy: current.assetToBuy,
+  //       });
+  //     }
 
-      if (current.assetToSellPrice && (!previous?.assetToSellPrice || current.assetToSellPrice !== previous.assetToSellPrice)) {
-        assetToSellPrice.value = current.assetToSellPrice;
-      }
+  //     if (current.assetToSellPrice && (!previous?.assetToSellPrice || current.assetToSellPrice !== previous.assetToSellPrice)) {
+  //       assetToSellPrice.value = current.assetToSellPrice;
+  //     }
 
-      if (current.assetToBuyPrice && (!previous?.assetToBuyPrice || current.assetToBuyPrice !== previous.assetToBuyPrice)) {
-        assetToBuyPrice.value = current.assetToBuyPrice;
-      }
+  //     if (current.assetToBuyPrice && (!previous?.assetToBuyPrice || current.assetToBuyPrice !== previous.assetToBuyPrice)) {
+  //       assetToBuyPrice.value = current.assetToBuyPrice;
+  //     }
 
-      if (assetToSellPrice.value && assetToBuyPrice.value) {
-        switch (exchangeRateIndex) {
-          // 1 assetToSell => x assetToBuy
-          case 0: {
-            const formattedRate = valueBasedDecimalFormatter(
-              assetToSellPrice.value / assetToBuyPrice.value,
-              assetToBuyPrice.value,
-              'up',
-              -1,
-              current.assetToBuy?.type === 'stablecoin' ?? false,
-              false
-            );
+  //     if (assetToSellPrice.value && assetToBuyPrice.value) {
+  //       switch (exchangeRateIndex) {
+  //         // 1 assetToSell => x assetToBuy
+  //         case 0: {
+  //           const formattedRate = valueBasedDecimalFormatter(
+  //             assetToSellPrice.value / assetToBuyPrice.value,
+  //             assetToBuyPrice.value,
+  //             'up',
+  //             -1,
+  //             current.assetToBuy?.type === 'stablecoin' ?? false,
+  //             false
+  //           );
 
-            fromAssetText.value = `1 ${assetToSellSymbol.value}`;
-            toAssetText.value = `${formattedRate} ${assetToBuySymbol.value}`;
-            break;
-          }
-          // 1 assetToBuy => x assetToSell
-          case 1: {
-            const formattedRate = valueBasedDecimalFormatter(
-              assetToBuyPrice.value / assetToSellPrice.value,
-              assetToSellPrice.value,
-              'up',
-              -1,
-              current.assetToSell?.type === 'stablecoin' ?? false,
-              false
-            );
-            fromAssetText.value = `1 ${assetToBuySymbol.value}`;
-            toAssetText.value = `${formattedRate} ${assetToSellSymbol.value}`;
-            break;
-          }
-          // assetToSell => native currency
-          case 2: {
-            fromAssetText.value = `1 ${assetToSellSymbol.value}`;
-            toAssetText.value = `$${assetToSellPrice.value.toLocaleString('en-US', {
-              useGrouping: true,
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}`;
-            break;
-          }
-          // assetToBuy => native currency
-          case 3: {
-            fromAssetText.value = `1 ${assetToBuySymbol.value}`;
-            toAssetText.value = `$${assetToBuyPrice.value.toLocaleString('en-US', {
-              useGrouping: true,
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}`;
-            break;
-          }
-        }
-      }
-    }
-  );
+  //           fromAssetText.value = `1 ${assetToSellSymbol.value}`;
+  //           toAssetText.value = `${formattedRate} ${assetToBuySymbol.value}`;
+  //           break;
+  //         }
+  //         // 1 assetToBuy => x assetToSell
+  //         case 1: {
+  //           const formattedRate = valueBasedDecimalFormatter(
+  //             assetToBuyPrice.value / assetToSellPrice.value,
+  //             assetToSellPrice.value,
+  //             'up',
+  //             -1,
+  //             current.assetToSell?.type === 'stablecoin' ?? false,
+  //             false
+  //           );
+  //           fromAssetText.value = `1 ${assetToBuySymbol.value}`;
+  //           toAssetText.value = `${formattedRate} ${assetToSellSymbol.value}`;
+  //           break;
+  //         }
+  //         // assetToSell => native currency
+  //         case 2: {
+  //           fromAssetText.value = `1 ${assetToSellSymbol.value}`;
+  //           toAssetText.value = `$${assetToSellPrice.value.toLocaleString('en-US', {
+  //             useGrouping: true,
+  //             minimumFractionDigits: 2,
+  //             maximumFractionDigits: 2,
+  //           })}`;
+  //           break;
+  //         }
+  //         // assetToBuy => native currency
+  //         case 3: {
+  //           fromAssetText.value = `1 ${assetToBuySymbol.value}`;
+  //           toAssetText.value = `$${assetToBuyPrice.value.toLocaleString('en-US', {
+  //             useGrouping: true,
+  //             minimumFractionDigits: 2,
+  //             maximumFractionDigits: 2,
+  //           })}`;
+  //           break;
+  //         }
+  //       }
+  //     }
+  //   }
+  // );
 
   const WrapperStyles = useAnimatedStyle(() => {
     return {
