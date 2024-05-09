@@ -43,7 +43,7 @@ export const SwapActionButton = ({
 
   const textStyles = useAnimatedStyle(() => {
     return {
-      color: getColorValueForThemeWorklet(asset.value?.textColor, isDarkMode) ?? globalColors.white100,
+      color: asset.value ? getColorValueForThemeWorklet(asset.value?.textColor, isDarkMode) : globalColors.white100,
     };
   });
 

@@ -34,11 +34,12 @@ export const getColorValueForTheme = <T>(values: ResponseByTheme<T> | undefined,
   return isDarkMode ? values.dark : values.light;
 };
 
-export const getColorValueForThemeWorklet = <T>(values: ResponseByTheme<T> | undefined, isDarkMode: boolean, useDefaults = false) => {
+export const getColorValueForThemeWorklet = <T>(values: ResponseByTheme<T> | undefined, isDarkMode: boolean, useDefaults = true) => {
   'worklet';
 
-  // eslint-disable-next-line no-nested-ternary
-  if (!values) return useDefaults ? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR) : undefined;
+  if (!values) {
+    return isDarkMode ? ETH_COLOR_DARK : ETH_COLOR;
+  }
   return isDarkMode ? values.dark : values.light;
 };
 

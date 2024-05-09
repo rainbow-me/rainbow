@@ -233,6 +233,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const AnimatedSwapStyles = useAnimatedSwapStyles({
     SwapInputController,
     SwapWarning,
+    internalSelectedInputAsset,
+    internalSelectedOutputAsset,
     inputProgress,
     outputProgress,
     reviewProgress,
