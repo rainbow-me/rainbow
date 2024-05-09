@@ -483,12 +483,20 @@ const TabGestureHandlers = React.memo(function TabGestureHandlers({
     },
   });
 
+  const tapGestureHandlerRef = React.createRef();
+
   return (
     <>
       <Animated.View style={animatedGestureHandlerStyle}>
         {/* @ts-expect-error Property 'children' does not exist on type */}
-        <TapGestureHandler maxDeltaX={10} maxDeltaY={10} onGestureEvent={pressTabGestureHandler} shouldCancelWhenOutside>
-          <Animated.View>
+        <TapGestureHandler
+          ref={tapGestureHandlerRef}
+          maxDeltaX={10}
+          maxDeltaY={10}
+          onGestureEvent={pressTabGestureHandler}
+          shouldCancelWhenOutside
+        >
+          <Animated.View style={{ width: '100%', height: '100%' }}>
             {/* @ts-expect-error Property 'children' does not exist on type */}
             <PanGestureHandler
               activeOffsetX={[-5, 5]}
@@ -496,6 +504,7 @@ const TabGestureHandlers = React.memo(function TabGestureHandlers({
               maxPointers={1}
               onGestureEvent={swipeToCloseTabGestureHandler}
               simultaneousHandlers={scrollViewRef}
+              waitFor={tapGestureHandlerRef}
             >
               <Animated.View style={styles.gestureHandlersContainer}></Animated.View>
             </PanGestureHandler>
@@ -529,7 +538,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     top: 0,
     width: DEVICE_WIDTH,
-    zIndex: 50000,
   },
   screenshotContainerStyle: {
     height: WEBVIEW_HEIGHT,
