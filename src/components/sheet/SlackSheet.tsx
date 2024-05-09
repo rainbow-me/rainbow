@@ -109,7 +109,6 @@ interface SlackSheetProps extends ViewStyle {
   showsHorizontalScrollIndicator?: boolean;
   showsVerticalScrollIndicator?: boolean;
   showBlur?: boolean;
-  allowDismiss: boolean;
   testID?: string;
   contentContainerStyle?: FlexStyle;
   removeClippedSubviews?: boolean;
@@ -136,7 +135,6 @@ export default forwardRef<unknown, SlackSheetProps>(function SlackSheet(
     showsHorizontalScrollIndicator = true,
     showsVerticalScrollIndicator = true,
     showBlur,
-    allowDismiss,
     testID,
     removeClippedSubviews = false,
     yPosition: givenYPosition,
@@ -182,7 +180,6 @@ export default forwardRef<unknown, SlackSheetProps>(function SlackSheet(
   );
 
   const scrollHandler = useAnimatedScrollHandler(event => {
-    if (!allowDismiss) return;
     yPosition.value = event.contentOffset.y;
   });
 
