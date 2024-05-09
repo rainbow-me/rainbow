@@ -20,6 +20,8 @@ import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider
 import { isSameAssetWorklet } from '@/__swaps__/utils/assets';
 import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
 import { ethereumUtils } from '@/utils';
+import { ChainId } from '@/__swaps__/types/chains';
+import { AddressOrEth } from '@/__swaps__/types/assets';
 
 function SwapOutputActionButton() {
   const { isDarkMode } = useColorMode();
@@ -107,12 +109,13 @@ function OutputAssetBalanceBadge() {
   const userAssets = useAssetsToSell();
 
   const label = useDerivedValue(() => {
-    if (!internalSelectedOutputAsset.value) return 'No balance';
+    const asset = internalSelectedOutputAsset.value;
+    if (!asset) return 'No balance';
 
     const userAsset = userAssets.find(userAsset =>
       isSameAssetWorklet(userAsset, {
-        address: internalSelectedOutputAsset.value.address,
-        chainId: internalSelectedOutputAsset.value.chainId,
+        address: asset.address,
+        chainId: asset.chainId,
       })
     );
     return userAsset?.balance.display ?? 'No balance';
