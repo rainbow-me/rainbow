@@ -6,7 +6,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { BlurView } from '@react-native-community/blur';
 import { ImgixImage } from '@/components/images';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { IS_IOS } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { useFavoriteDappsStore } from '@/state/favoriteDapps';
@@ -20,6 +20,7 @@ import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { WEBVIEW_HEIGHT } from './Dimensions';
 import { useDapps } from '@/resources/metadata/dapps';
 import haptics from '@/utils/haptics';
+import * as i18n from '@/languages';
 
 const HORIZONTAL_PAGE_INSET = 24;
 const MAX_RECENTS_TO_DISPLAY = 6;
@@ -28,7 +29,7 @@ const SCROLL_INDICATOR_INSETS = { bottom: 20, top: 36 };
 const LOGOS_PER_ROW = 4;
 const LOGO_SIZE = 64;
 const LOGO_PADDING = (DEVICE_WIDTH - LOGOS_PER_ROW * LOGO_SIZE - HORIZONTAL_PAGE_INSET * 2) / (LOGOS_PER_ROW - 1);
-const LOGO_BORDER_RADIUS = 16;
+const LOGO_BORDER_RADIUS = IS_ANDROID ? 32 : 16;
 const LOGO_LABEL_SPILLOVER = 12;
 
 const NUM_CARDS = 2;
@@ -73,7 +74,7 @@ const Trending = React.memo(function Trending({ goToUrl }: { goToUrl: (url: stri
           􀙭
         </Text>
         <Text color="label" size="20pt" weight="heavy">
-          Trending
+          {i18n.t(i18n.l.dapp_browser.homepage.trending)}
         </Text>
       </Inline>
       <Bleed space="24px">
@@ -108,7 +109,7 @@ const Favorites = React.memo(function Favorites({ goToUrl }: { goToUrl: (url: st
             􀋃
           </Text>
           <Text color="label" size="20pt" weight="heavy">
-            Favorites
+            {i18n.t(i18n.l.dapp_browser.homepage.favorites)}
           </Text>
         </Inline>
         <Box flexDirection="row" flexWrap="wrap" gap={LOGO_PADDING} width={{ custom: DEVICE_WIDTH - HORIZONTAL_PAGE_INSET * 2 }}>
@@ -132,7 +133,7 @@ const Recents = React.memo(function Recents({ goToUrl }: { goToUrl: (url: string
             􀐫
           </Text>
           <Text color="label" size="20pt" weight="heavy">
-            Recents
+            {i18n.t(i18n.l.dapp_browser.homepage.recents)}
           </Text>
         </Inline>
         <Inline space={{ custom: CARD_PADDING }}>
@@ -188,7 +189,7 @@ const Card = React.memo(function Card({
     const menuItems = [
       {
         actionKey: 'favorite',
-        actionTitle: isFavorite ? 'Undo Favorite' : 'Favorite',
+        actionTitle: isFavorite ? i18n.t(i18n.l.dapp_browser.menus.undo_favorite) : i18n.t(i18n.l.dapp_browser.menus.favorite),
         icon: {
           iconType: 'SYSTEM',
           iconValue: isFavorite ? 'star.slash' : 'star',
@@ -196,7 +197,7 @@ const Card = React.memo(function Card({
       },
       {
         actionKey: 'remove',
-        actionTitle: 'Remove',
+        actionTitle: i18n.t(i18n.l.dapp_browser.menus.remove),
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'trash',
@@ -427,7 +428,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   cardLogoWrapper: {
-    borderRadius: IS_IOS ? 12 : 36,
+    borderRadius: 12,
     overflow: 'hidden',
   },
   pageBackgroundDark: {
