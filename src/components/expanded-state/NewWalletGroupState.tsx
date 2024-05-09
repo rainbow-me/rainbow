@@ -14,7 +14,7 @@ export default function NewWalletGroupState({ onCloseModal, numWalletGroups }: N
 
   const [value, setValue] = useState('');
 
-  const handleSubmit = useCallback(async () => {
+  const handleSubmit = useCallback(() => {
     analytics.track(analytics.event.addNewWalletGroupName, {
       name: value.trim(),
     });
