@@ -5,3 +5,8 @@ export enum SortMethod {
   token = 'token',
   chain = 'chain',
 }
+
+export enum SwapAssetType {
+  inputAsset = 'inputAsset',
+  outputAsset = 'outputAsset',
+}

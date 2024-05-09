@@ -3301,10 +3301,10 @@
   resolved "https://registry.yarnpkg.com/@pkgr/core/-/core-0.1.1.tgz#1ec17e2edbec25c8306d424ecfbf13c7de1aaa31"
   integrity sha512-cq8o4cWH0ibXh9VGi5P20Tu9XF/0fFXl9EUinr9QfTM7a7p0oTA4iJRCQWppXR1Pg8dSM0UCItCkPwsk9qWWYA==
 
-"@rainbow-me/provider@0.0.11":
-  version "0.0.11"
-  resolved "https://registry.yarnpkg.com/@rainbow-me/provider/-/provider-0.0.11.tgz#f21618605e6b6e8e6fecc120792447acead00a5a"
-  integrity sha512-rV4s7hAq2LTRhSmh+bIdq6qLy37LAlOpzJYIrFICRvC9XorFn5u/DpfJhtzQsdZ2cdW3xSoSc1RzsJ65nxhWCA==
+"@rainbow-me/provider@0.0.12":
+  version "0.0.12"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/provider/-/provider-0.0.12.tgz#0e46851e409ffa9004f4d1f8a9e579924ffdfc1f"
+  integrity sha512-hRuTrFUYcYcWSkA9Z8W4XhlQMObkDd0QqQw07DqxDP5EbrT1VQTXSzl5avObts6mEn5i6G0k4g9AnQNzkBZFtA==
   dependencies:
     "@ethersproject/abstract-provider" "5.7.0"
     "@ethersproject/bignumber" "5.7.0"
@@ -3320,10 +3320,10 @@
   dependencies:
     react-merge-refs "^1.0.0"
 
-"@rainbow-me/swaps@0.17.0":
-  version "0.17.0"
-  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.17.0.tgz#4db1c3807b1dd040c863dbd34de5f73c0489891b"
-  integrity sha512-iXGSfbs7fopZyFI5nUe4e6LO6z1ZnSY3SPH8tJXYxRpHOUgl9b27r46rLvDTKBFgrng9MQMeXzJkm0EMgisvzA==
+"@rainbow-me/swaps@0.19.0":
+  version "0.19.0"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.19.0.tgz#c4b86a69d814f5d7c5b39b9eb190c949be9e4568"
+  integrity sha512-cBlks1Yx7emNfbdgvhK5d+cchL2e6kCMtzvjGbqrUGnhWv+IQmT0AAdKCZu6KlK+S+3lPbGcEjZ+mUUum42//w==
   dependencies:
     "@ethereumjs/util" "9.0.0"
     "@ethersproject/abi" "5.7.0"

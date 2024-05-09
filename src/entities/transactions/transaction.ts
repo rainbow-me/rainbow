@@ -80,6 +80,8 @@ export interface RainbowTransaction {
   type: TransactionType;
   value?: BigNumberish; // for pending tx
   fee?: RainbowTransactionFee;
+  explorerLabel?: string;
+  explorerUrl?: string;
 }
 
 export type MinedTransaction = RainbowTransaction & {

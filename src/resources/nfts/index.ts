@@ -1,22 +1,20 @@
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { createQueryKey, queryClient } from '@/react-query';
-import { NFT, PolygonAllowlist } from '@/resources/nfts/types';
-import { fetchSimpleHashNFTListing, fetchSimpleHashNFTs } from '@/resources/nfts/simplehash';
-import { useEffect, useMemo } from 'react';
-import { filterSimpleHashNFTs, simpleHashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
-import { rainbowFetch } from '@/rainbow-fetch';
+import { useQuery } from '@tanstack/react-query';
+import { createQueryKey } from '@/react-query';
+import { NFT } from '@/resources/nfts/types';
+import { fetchSimpleHashNFTListing } from '@/resources/nfts/simplehash';
+import { useMemo } from 'react';
+import { simpleHashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { Network } from '@/helpers';
 import { UniqueAsset } from '@/entities';
+import { arcClient } from '@/graphql';
 
-const NFTS_LIMIT = 2000;
 const NFTS_STALE_TIME = 300000; // 5 minutes
 const NFTS_CACHE_TIME_EXTERNAL = 3600000; // 1 hour
 const NFTS_CACHE_TIME_INTERNAL = 604800000; // 1 week
-const POLYGON_ALLOWLIST_STALE_TIME = 600000; // 10 minutes
 
-export const nftsQueryKey = ({ address }: { address: string }) => createQueryKey('nfts', { address }, { persisterVersion: 1 });
+export const nftsQueryKey = ({ address }: { address: string }) => createQueryKey('nfts', { address }, { persisterVersion: 2 });
 
 export const nftListingQueryKey = ({
   contractAddress,
@@ -27,25 +25,6 @@ export const nftListingQueryKey = ({
   tokenId: string;
   network: Omit<Network, Network.goerli>;
 }) => createQueryKey('nftListing', { contractAddress, tokenId, network });
-
-function fetchPolygonAllowlist() {
-  return queryClient.fetchQuery<PolygonAllowlist>(
-    ['polygon-allowlist'],
-    async () => {
-      const polygonAllowlistAddresses = (
-        await rainbowFetch('https://metadata.p.rainbow.me/token-list/137-allowlist.json', { method: 'get' })
-      ).data.data.addresses;
-
-      const polygonAllowlist: PolygonAllowlist = {};
-      polygonAllowlistAddresses.forEach((address: string) => {
-        polygonAllowlist[address] = true;
-      });
-
-      return polygonAllowlist;
-    },
-    { staleTime: POLYGON_ALLOWLIST_STALE_TIME }
-  );
-}
 
 export function useNFTs(): NFT[] {
   // normal react query where we get new NFT formatted data
@@ -61,25 +40,20 @@ export function useLegacyNFTs({ address }: { address: string }) {
   );
   const isImportedWallet = walletAddresses.includes(address);
 
-  const { data, error, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } = useInfiniteQuery({
+  const { data, error, isFetching } = useQuery({
     queryKey: nftsQueryKey({ address }),
-    queryFn: async ({ pageParam }) => {
-      const [simplehashResponse, polygonAllowlist] = await Promise.all([fetchSimpleHashNFTs(address, pageParam), fetchPolygonAllowlist()]);
-      const { data, nextCursor } = simplehashResponse;
-      const newNFTs = filterSimpleHashNFTs(data, polygonAllowlist).map(nft => simpleHashNFTToUniqueAsset(nft, address));
-      return {
-        data: newNFTs,
-        nextCursor,
-      };
+    queryFn: async () => {
+      const queryResponse = await arcClient.getNFTs({ walletAddress: address });
+      const nfts = queryResponse?.nfts?.map(nft => simpleHashNFTToUniqueAsset(nft, address));
+      return nfts;
     },
-    getNextPageParam: lastPage => lastPage.nextCursor,
-    keepPreviousData: true,
     staleTime: NFTS_STALE_TIME,
+    retry: 3,
     cacheTime: isImportedWallet ? NFTS_CACHE_TIME_INTERNAL : NFTS_CACHE_TIME_EXTERNAL,
     enabled: !!address,
   });
 
-  const nfts = useMemo(() => (data?.pages ? data.pages.flatMap(page => page.data) : []), [data?.pages]);
+  const nfts = useMemo(() => data ?? [], [data]);
 
   const nftsMap = useMemo(
     () =>
@@ -95,16 +69,10 @@ export function useLegacyNFTs({ address }: { address: string }) {
     [nfts]
   );
 
-  useEffect(() => {
-    if (hasNextPage && !isFetchingNextPage && nfts.length < NFTS_LIMIT) {
-      fetchNextPage();
-    }
-  }, [hasNextPage, fetchNextPage, isFetchingNextPage, nfts.length]);
-
   return {
     data: { nfts, nftsMap },
     error,
-    isInitialLoading: !nfts.length && isFetching,
+    isInitialLoading: !data?.length && isFetching,
   };
 }
 

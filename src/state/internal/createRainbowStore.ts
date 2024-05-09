@@ -13,6 +13,8 @@ const rainbowStorage = new MMKV({ id: 'rainbow-storage' });
  * Configuration options for creating a persistable Rainbow store.
  */
 interface RainbowPersistConfig<S> {
+  serializer?: (state: StorageValue<Partial<S>>['state'], version: StorageValue<Partial<S>>['version']) => string;
+  deserializer?: (serializedState: string) => StorageValue<Partial<S>>;
   /**
    * A function that determines which parts of the state should be persisted.
    * By default, the entire state is persisted.
@@ -35,17 +37,23 @@ interface RainbowPersistConfig<S> {
  * @param config - The configuration options for the persistable Rainbow store.
  * @returns An object containing the persist storage and version.
  */
-function createPersistStorage<S>(config: RainbowPersistConfig<S>) {
-  const { storageKey, version = 0 } = config;
+function createPersistStorage<S = unknown>(config: RainbowPersistConfig<S>) {
+  const { storageKey, version = 0, serializer = defaultSerializeState, deserializer = defaultDeserializeState } = config;
 
   const persistStorage: PersistOptions<S, Partial<S>>['storage'] = {
     getItem: (name: string) => {
       const key = `${storageKey}:${name}`;
       const serializedValue = rainbowStorage.getString(key);
       if (!serializedValue) return null;
-      return deserializeState<S>(serializedValue);
+      return deserializer(serializedValue);
     },
-    setItem: (name, value) => lazyPersist(storageKey, name, value),
+    setItem: (name, value) =>
+      lazyPersist({
+        serializer,
+        storageKey,
+        name,
+        value,
+      }),
     removeItem: (name: string) => {
       const key = `${storageKey}:${name}`;
       rainbowStorage.delete(key);
@@ -55,25 +63,33 @@ function createPersistStorage<S>(config: RainbowPersistConfig<S>) {
   return { persistStorage, version };
 }
 
+interface LazyPersistParams<S> {
+  serializer: (state: StorageValue<Partial<S>>['state'], version: StorageValue<Partial<S>>['version']) => string;
+  storageKey: string;
+  name: string;
+  value: StorageValue<Partial<S>>;
+}
+
 /**
  * Initiates a debounced persist operation for a given store state.
  * @param storageKey - The key prefix for the store in the central MMKV storage.
  * @param name - The name of the store.
  * @param value - The state value to be persisted.
  */
-const lazyPersist = debounce(
-  <S>(storageKey: string, name: string, value: StorageValue<S>) => {
-    try {
-      const key = `${storageKey}:${name}`;
-      const serializedValue = serializeState(value.state, value.version ?? 0);
-      rainbowStorage.set(key, serializedValue);
-    } catch (error) {
-      logger.error(new RainbowError('Failed to serialize persisted store data'), { error });
-    }
-  },
-  PERSIST_RATE_LIMIT_MS,
-  { leading: false, trailing: true, maxWait: PERSIST_RATE_LIMIT_MS }
-);
+const lazyPersist = <S>({ serializer, storageKey, name, value }: LazyPersistParams<S>) =>
+  debounce(
+    () => {
+      try {
+        const key = `${storageKey}:${name}`;
+        const serializedValue = serializer(value.state, value.version ?? 0);
+        rainbowStorage.set(key, serializedValue);
+      } catch (error) {
+        logger.error(new RainbowError('Failed to serialize persisted store data'), { error });
+      }
+    },
+    PERSIST_RATE_LIMIT_MS,
+    { leading: false, trailing: true, maxWait: PERSIST_RATE_LIMIT_MS }
+  )();
 
 /**
  * Serializes the state and version into a JSON string.
@@ -81,7 +97,7 @@ const lazyPersist = debounce(
  * @param version - The version of the state.
  * @returns The serialized state as a JSON string.
  */
-function serializeState<S>(state: S, version: number): string {
+function defaultSerializeState<S>(state: StorageValue<Partial<S>>['state'], version: StorageValue<Partial<S>>['version']): string {
   try {
     return JSON.stringify({ state, version });
   } catch (error) {
@@ -95,7 +111,7 @@ function serializeState<S>(state: S, version: number): string {
  * @param serializedState - The serialized state as a JSON string.
  * @returns An object containing the deserialized state and version.
  */
-function deserializeState<S>(serializedState: string): { state: S; version: number } {
+function defaultDeserializeState<S>(serializedState: string): StorageValue<Partial<S>> {
   try {
     return JSON.parse(serializedState);
   } catch (error) {
@@ -110,7 +126,7 @@ function deserializeState<S>(serializedState: string): { state: S; version: numb
  * @param persistConfig - The configuration options for the persistable Rainbow store.
  * @returns A Zustand store with the specified state and optional persistence.
  */
-export function createRainbowStore<S>(
+export function createRainbowStore<S = unknown>(
   createState: StateCreator<S, [], [['zustand/subscribeWithSelector', never]]>,
   persistConfig?: RainbowPersistConfig<S>
 ) {

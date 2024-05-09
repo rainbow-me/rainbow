@@ -18,6 +18,7 @@ import Routes from '@/navigation/routesNames';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import WalletTypes from '@/helpers/walletTypes';
+import { Linking } from 'react-native';
 
 type Props = {
   transaction: RainbowTransaction;
@@ -65,7 +66,11 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
   const formattedHash = shortenTxHashString(hash);
 
   const onViewOnBlockExplorerPress = () => {
-    ethereumUtils.openTransactionInBlockExplorer(hash, network);
+    if (transaction.explorerUrl) {
+      Linking.openURL(transaction.explorerUrl);
+    } else {
+      ethereumUtils.openTransactionInBlockExplorer(hash, network);
+    }
   };
 
   return (
@@ -95,7 +100,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
             weight="heavy"
             onPress={onViewOnBlockExplorerPress}
             label={i18n.t(i18n.l.wallet.action.view_on, {
-              blockExplorerName: startCase(ethereumUtils.getBlockExplorer(network)),
+              blockExplorerName: transaction.explorerLabel ?? startCase(ethereumUtils.getBlockExplorer(network)),
             })}
             lightShadows
           />

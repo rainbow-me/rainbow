@@ -26,7 +26,7 @@ import { WebViewEvent } from 'react-native-webview/lib/WebViewTypes';
 import { appMessenger } from '@/browserMessaging/AppMessenger';
 import { useColorMode } from '@/design-system';
 import { IS_DEV, IS_IOS } from '@/env';
-import { Navigation } from '@/navigation';
+import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { Site } from '@/state/browserHistory';
@@ -77,38 +77,36 @@ export const BrowserTab = React.memo(function BrowserTab({ addRecent, setLogo, s
       {/* Need to fix some shadow performance issues - disabling shadows for now */}
       {/* <WebViewShadows gestureScale={gestureScale} isOnHomepage={isOnHomepage} tabIndex={tabIndex}> */}
 
-      <Animated.View style={zIndexAnimatedStyle}>
-        <Animated.View entering={FadeIn.duration(160)} style={[styles.webViewContainer, animatedWebViewStyle]}>
-          <Animated.View
-            style={[styles.webViewExpensiveStylesContainer, expensiveAnimatedWebViewStyles, animatedWebViewBackgroundColorStyle]}
-          >
-            <ViewShot options={TAB_SCREENSHOT_FILE_FORMAT} ref={viewShotRef}>
-              <View collapsable={false} style={styles.viewShotContainer}>
-                {isOnHomepage ? (
-                  <Homepage />
-                ) : (
-                  <FreezableWebView
-                    addRecent={addRecent}
-                    backgroundColor={backgroundColor}
-                    setLogo={setLogo}
-                    setTitle={setTitle}
-                    tabId={tabId}
-                    viewShotRef={viewShotRef}
-                  />
-                )}
-              </View>
-            </ViewShot>
-            <TabScreenshotContainer tabId={tabId} />
-            <WebViewBorder animatedTabIndex={animatedTabIndex} enabled={IS_IOS && isDarkMode && !isOnHomepage} />
-          </Animated.View>
-          <TabGestureHandlers
-            animatedTabIndex={animatedTabIndex}
-            gestureScale={gestureScale}
-            gestureX={gestureX}
-            isOnHomepage={isOnHomepage}
-            tabId={tabId}
-          />
+      <Animated.View entering={FadeIn.duration(160)} style={[zIndexAnimatedStyle, styles.webViewContainer, animatedWebViewStyle]}>
+        <Animated.View
+          style={[styles.webViewExpensiveStylesContainer, expensiveAnimatedWebViewStyles, animatedWebViewBackgroundColorStyle]}
+        >
+          <ViewShot options={TAB_SCREENSHOT_FILE_FORMAT} ref={viewShotRef}>
+            <View collapsable={false} style={styles.viewShotContainer}>
+              {isOnHomepage ? (
+                <Homepage />
+              ) : (
+                <FreezableWebView
+                  addRecent={addRecent}
+                  backgroundColor={backgroundColor}
+                  setLogo={setLogo}
+                  setTitle={setTitle}
+                  tabId={tabId}
+                  viewShotRef={viewShotRef}
+                />
+              )}
+            </View>
+          </ViewShot>
+          <TabScreenshotContainer tabId={tabId} />
+          <WebViewBorder animatedTabIndex={animatedTabIndex} enabled={IS_IOS && isDarkMode && !isOnHomepage} />
         </Animated.View>
+        <TabGestureHandlers
+          animatedTabIndex={animatedTabIndex}
+          gestureScale={gestureScale}
+          gestureX={gestureX}
+          isOnHomepage={isOnHomepage}
+          tabId={tabId}
+        />
       </Animated.View>
 
       {/* Need to fix some shadow performance issues - disabling shadows for now */}
@@ -169,6 +167,7 @@ const FreezableWebViewComponent = ({
 }) => {
   const { activeTabRef, animatedActiveTabIndex, currentlyOpenTabIds, loadProgress, screenshotCaptureRef } = useBrowserContext();
   const { updateTabUrlWorklet } = useBrowserWorkletsContext();
+  const { setParams } = useNavigation();
 
   const currentMessengerRef = useRef<any>(null);
   const logoRef = useRef<string | null>(null);
@@ -299,6 +298,15 @@ const FreezableWebViewComponent = ({
     [tabId, updateTabUrlWorklet]
   );
 
+  const handleOnOpenWindow = useCallback(
+    (syntheticEvent: { nativeEvent: { targetUrl: string } }) => {
+      const { nativeEvent } = syntheticEvent;
+      const { targetUrl } = nativeEvent;
+      setParams({ url: targetUrl });
+    },
+    [setParams]
+  );
+
   // useLayoutEffect seems to more reliably assign the WebView ref correctly
   useLayoutEffect(() => {
     if (isActiveTab) {
@@ -340,6 +348,7 @@ const FreezableWebViewComponent = ({
         onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
         ref={webViewRef}
         source={{ uri: tabUrl }}
+        onOpenWindow={handleOnOpenWindow}
       />
     </Freeze>
   );
