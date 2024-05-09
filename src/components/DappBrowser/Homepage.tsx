@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Bleed, Box, ColorModeProvider, Cover, Inline, Inset, Stack, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
 import { ScrollView, StyleSheet, View } from 'react-native';
@@ -19,6 +19,7 @@ import { useBrowserContext } from './BrowserContext';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { WEBVIEW_HEIGHT } from './Dimensions';
 import { useDapps } from '@/resources/metadata/dapps';
+import haptics from '@/utils/haptics';
 
 const HORIZONTAL_PAGE_INSET = 24;
 const MAX_RECENTS_TO_DISPLAY = 6;
@@ -60,6 +61,10 @@ const Trending = React.memo(function Trending({ goToUrl }: { goToUrl: (url: stri
   const { dapps } = useDapps();
 
   const trendingDapps = dapps.filter(dapp => dapp.trending).slice(0, 8);
+
+  if (trendingDapps.length === 0) {
+    return null;
+  }
 
   return (
     <Stack space="20px">
@@ -151,28 +156,58 @@ const Card = React.memo(function Card({
 }) {
   const { isDarkMode } = useColorMode();
   const { dapps } = useDapps();
+  const isFavorite = useFavoriteDappsStore(state => state.isFavorite(site.url || ''));
+  const addFavorite = useFavoriteDappsStore(state => state.addFavorite);
+  const removeFavorite = useFavoriteDappsStore(state => state.removeFavorite);
+  const removeRecent = useBrowserHistoryStore(state => state.removeRecent);
 
-  const menuConfig = {
-    menuTitle: '',
-    menuItems: [
+  const handleFavoritePress = useCallback(() => {
+    const url = site.url;
+    if (url) {
+      if (isFavorite) {
+        removeFavorite(url);
+      } else {
+        addFavorite(site);
+      }
+    }
+  }, [addFavorite, isFavorite, removeFavorite, site]);
+
+  const onPressMenuItem = useCallback(
+    async ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: 'favorite' | 'remove' } }) => {
+      haptics.selection();
+      if (actionKey === 'favorite') {
+        handleFavoritePress();
+      } else if (actionKey === 'remove') {
+        removeRecent(site.url);
+      }
+    },
+    [handleFavoritePress, removeRecent, site.url]
+  );
+
+  const menuConfig = useMemo(() => {
+    const menuItems = [
       {
-        actionKey: 'test1',
-        actionTitle: 'Option 1',
+        actionKey: 'favorite',
+        actionTitle: isFavorite ? 'Undo Favorite' : 'Favorite',
         icon: {
           iconType: 'SYSTEM',
-          iconValue: 'chart.line.uptrend.xyaxis',
+          iconValue: isFavorite ? 'star.slash' : 'star',
         },
       },
       {
-        actionKey: 'test2',
-        actionTitle: 'Option 2',
+        actionKey: 'remove',
+        actionTitle: 'Remove',
         icon: {
           iconType: 'SYSTEM',
-          iconValue: 'plus.forwardslash.minus',
+          iconValue: 'trash',
         },
       },
-    ],
-  };
+    ];
+    return {
+      menuTitle: '',
+      menuItems,
+    };
+  }, [isFavorite]);
 
   const dappIconUrl = useMemo(() => {
     const dappUrl = site.url;
@@ -263,7 +298,7 @@ const Card = React.memo(function Card({
         </Box>
       </ButtonPressAnimation>
       {showMenuButton && (
-        <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={() => {}} style={styles.cardContextMenuButton}>
+        <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem} style={styles.cardContextMenuButton}>
           <ButtonPressAnimation scaleTo={0.8} style={{ padding: 12 }}>
             <Box height={{ custom: 24 }} width={{ custom: 24 }} borderRadius={32} style={{ overflow: 'hidden' }}>
               <Cover>
@@ -278,7 +313,7 @@ const Card = React.memo(function Card({
                     }}
                   />
                 ) : (
-                  <Box background="fill" height="full" width="full" />
+                  <Box background="fillQuaternary" height="full" width="full" />
                 )}
               </Cover>
               <View
