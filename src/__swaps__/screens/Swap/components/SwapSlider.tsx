@@ -34,7 +34,7 @@ import {
   snappySpringConfig,
   springConfig,
 } from '@/__swaps__/screens/Swap/constants';
-import { clamp, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { clamp, getColorValueForThemeWorklet, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { SwapCoinIcon } from '@/__swaps__/screens/Swap/components/SwapCoinIcon';
 import { useTheme } from '@/theme';
@@ -58,7 +58,8 @@ export const SwapSlider = ({
 }: SwapSliderProps) => {
   const theme = useTheme();
   const { isDarkMode } = useColorMode();
-  const { SwapInputController, sliderXPosition, sliderPressProgress } = useSwapContext();
+  const { SwapInputController, internalSelectedInputAsset, internalSelectedOutputAsset, sliderXPosition, sliderPressProgress } =
+    useSwapContext();
 
   const panRef = useRef();
   const tapRef = useRef();
@@ -79,21 +80,20 @@ export const SwapSlider = ({
   );
 
   const colors = useDerivedValue(() => ({
-    inactiveColorLeft: opacityWorklet(dualColor ? SwapInputController.bottomColor.value : SwapInputController.topColor.value, 0.9),
-    activeColorLeft: dualColor ? SwapInputController.bottomColor.value : SwapInputController.topColor.value,
-    inactiveColorRight: dualColor ? opacityWorklet(SwapInputController.topColor.value, 0.9) : separatorSecondary,
-    activeColorRight: dualColor ? SwapInputController.topColor.value : fillSecondary,
+    inactiveColorLeft: opacityWorklet(
+      dualColor
+        ? getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true)
+        : getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true),
+      0.9
+    ),
+    activeColorLeft: dualColor
+      ? getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true)
+      : getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true),
+    inactiveColorRight: dualColor
+      ? opacityWorklet(getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true), 0.9)
+      : separatorSecondary,
+    activeColorRight: dualColor ? getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true) : fillSecondary,
   }));
-
-  // const { inactiveColorLeft, activeColorLeft, inactiveColorRight, activeColorRight } = useMemo(
-  //   () => ({
-  //     inactiveColorLeft: opacityWorklet(dualColor ? SwapInputController.bottomColor.value : SwapInputController.topColor.value, 0.9),
-  //     activeColorLeft: dualColor ? SwapInputController.bottomColor.value : SwapInputController.topColor.value,
-  //     inactiveColorRight: dualColor ? opacityWorklet(SwapInputController.topColor.value, 0.9) : separatorSecondary,
-  //     activeColorRight: dualColor ? SwapInputController.topColor.value : fillSecondary,
-  //   }),
-  //   [SwapInputController.bottomColor.value, SwapInputController.topColor.value, dualColor, fillSecondary, separatorSecondary]
-  // );
 
   // This is the percentage of the slider from the left
   const xPercentage = useDerivedValue(() => {
@@ -359,7 +359,7 @@ export const SwapSlider = ({
 
   const maxTextColor = useAnimatedStyle(() => {
     return {
-      color: SwapInputController.bottomColor.value,
+      color: getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode),
     };
   });
 

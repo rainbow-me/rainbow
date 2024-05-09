@@ -9,17 +9,20 @@ import {
   fadeConfig,
   springConfig,
 } from '@/__swaps__/screens/Swap/constants';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
 import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { spinnerExitConfig } from '@/components/animations/AnimatedSpinner';
 import { NavigationSteps } from './useSwapNavigation';
 import { IS_ANDROID } from '@/env';
 import { safeAreaInsetValues } from '@/utils';
+import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 
 export function useAnimatedSwapStyles({
   SwapInputController,
   SwapWarning,
+  internalSelectedInputAsset,
+  internalSelectedOutputAsset,
   inputProgress,
   outputProgress,
   reviewProgress,
@@ -27,6 +30,8 @@ export function useAnimatedSwapStyles({
 }: {
   SwapInputController: ReturnType<typeof useSwapInputsController>;
   SwapWarning: ReturnType<typeof useSwapWarning>;
+  internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+  internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
   reviewProgress: SharedValue<number>;
@@ -139,36 +144,36 @@ export function useAnimatedSwapStyles({
           ? isDarkMode
             ? '#191A1C'
             : globalColors.white100
-          : opacityWorklet(SwapInputController.bottomColor.value, 0.03),
+          : opacityWorklet(getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true), 0.03),
       borderTopColor:
         reviewProgress.value === NavigationSteps.SHOW_REVIEW
           ? opacityWorklet(globalColors.darkGrey, 0.2)
-          : opacityWorklet(SwapInputController.bottomColor.value, 0.04),
+          : opacityWorklet(getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true), 0.04),
       paddingTop: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 28 : 16 - THICK_BORDER_WIDTH,
     };
   });
 
   const assetToSellIconStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: SwapInputController.topColor.value,
+      backgroundColor: getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true),
     };
   });
 
   const assetToSellCaretStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: SwapInputController.topColor.value,
+      backgroundColor: getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true),
     };
   });
 
   const assetToBuyIconStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: SwapInputController.bottomColor.value,
+      backgroundColor: getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true),
     };
   });
 
   const assetToBuyCaretStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: SwapInputController.bottomColor.value,
+      backgroundColor: getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true),
     };
   });
 
@@ -180,13 +185,13 @@ export function useAnimatedSwapStyles({
 
   const searchInputAssetButtonStyle = useAnimatedStyle(() => {
     return {
-      color: SwapInputController.topColor.value,
+      color: getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true),
     };
   });
 
   const searchOutputAssetButtonStyle = useAnimatedStyle(() => {
     return {
-      color: SwapInputController.bottomColor.value,
+      color: getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true),
     };
   });
 
@@ -199,16 +204,28 @@ export function useAnimatedSwapStyles({
 
   const searchInputAssetButtonWrapperStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: opacityWorklet(SwapInputController.topColor.value, isDarkMode ? 0.1 : 0.08),
-      borderColor: opacityWorklet(SwapInputController.topColor.value, isDarkMode ? 0.06 : 0.01),
+      backgroundColor: opacityWorklet(
+        getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true),
+        isDarkMode ? 0.1 : 0.08
+      ),
+      borderColor: opacityWorklet(
+        getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true),
+        isDarkMode ? 0.06 : 0.01
+      ),
       borderWidth: THICK_BORDER_WIDTH,
     };
   });
 
   const searchOutputAssetButtonWrapperStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: opacityWorklet(SwapInputController.bottomColor.value, isDarkMode ? 0.1 : 0.08),
-      borderColor: opacityWorklet(SwapInputController.bottomColor.value, isDarkMode ? 0.06 : 0.01),
+      backgroundColor: opacityWorklet(
+        getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true),
+        isDarkMode ? 0.1 : 0.08
+      ),
+      borderColor: opacityWorklet(
+        getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true),
+        isDarkMode ? 0.06 : 0.01
+      ),
       borderWidth: THICK_BORDER_WIDTH,
     };
   });

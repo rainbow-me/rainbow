@@ -1,21 +1,15 @@
 /* eslint-disable no-nested-ternary */
-import c from 'chroma-js';
 import React from 'react';
 import { StyleProp, StyleSheet, TextStyle } from 'react-native';
-import Animated, {
-  DerivedValue,
-  runOnJS,
-  useAnimatedReaction,
-  useAnimatedStyle,
-  useDerivedValue,
-  useSharedValue,
-} from 'react-native-reanimated';
+import Animated, { DerivedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 
 import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedText, Box, Column, Columns, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 
 export const SwapActionButton = ({
-  color,
+  asset,
   borderRadius,
   disableShadow,
   hugContent,
@@ -29,7 +23,7 @@ export const SwapActionButton = ({
   scaleTo,
   small,
 }: {
-  color?: DerivedValue<string | undefined>;
+  asset: DerivedValue<ExtendedAnimatedAssetWithColors | null>;
   borderRadius?: number;
   disableShadow?: boolean;
   hugContent?: boolean;
@@ -44,38 +38,20 @@ export const SwapActionButton = ({
   small?: boolean;
 }) => {
   const { isDarkMode } = useColorMode();
-  const fallbackColor = useForegroundColor('blue');
+  const fallbackColor = useForegroundColor('label');
   const separatorSecondary = useForegroundColor('separatorSecondary');
-
-  const textColorValue = useSharedValue(globalColors.white100);
-
-  const textColor = (color: string) => {
-    const contrastWithWhite = c.contrast(color || fallbackColor, globalColors.white100);
-    if (contrastWithWhite < (isDarkMode ? 2.6 : 2)) {
-      textColorValue.value = globalColors.grey100;
-    } else {
-      textColorValue.value = globalColors.white100;
-    }
-  };
-
-  useAnimatedReaction(
-    () => color?.value,
-    (current, previous) => {
-      if (previous && current !== previous && current !== undefined) {
-        runOnJS(textColor)(current);
-      }
-    }
-  );
 
   const textStyles = useAnimatedStyle(() => {
     return {
-      color: textColorValue.value,
+      color: asset.value ? getColorValueForThemeWorklet(asset.value?.textColor, isDarkMode) : globalColors.white100,
     };
   });
 
   const secondaryTextStyles = useAnimatedStyle(() => {
+    const secondaryColor = getColorValueForThemeWorklet(asset.value?.textColor, isDarkMode, true);
+
     let opacity = isDarkMode ? 0.76 : 0.8;
-    if (textColorValue.value === globalColors.grey100) {
+    if (secondaryColor === globalColors.grey100) {
       opacity = 0.76;
     }
 
@@ -86,11 +62,11 @@ export const SwapActionButton = ({
 
   const buttonWrapperStyles = useAnimatedStyle(() => {
     return {
-      backgroundColor: outline ? 'transparent' : color?.value || fallbackColor,
+      backgroundColor: outline ? 'transparent' : getColorValueForThemeWorklet(asset.value?.color, isDarkMode, true) || fallbackColor,
       borderColor: outline ? separatorSecondary : undefined,
       borderRadius: borderRadius ?? 24,
       height: small ? 36 : 48,
-      shadowColor: disableShadow || outline ? 'transparent' : color?.value || fallbackColor,
+      shadowColor: disableShadow || outline ? 'transparent' : getColorValueForThemeWorklet(asset.value?.color, isDarkMode) || fallbackColor,
       shadowOffset: {
         width: 0,
         height: isDarkMode ? 13 : small ? 6 : 10,

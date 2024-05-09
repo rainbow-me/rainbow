@@ -3,7 +3,7 @@ import { SharedValue, convertToRGBA, isColor } from 'react-native-reanimated';
 
 import * as i18n from '@/languages';
 import { globalColors } from '@/design-system';
-import { SCRUBBER_WIDTH, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { ETH_COLOR, ETH_COLOR_DARK, SCRUBBER_WIDTH, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { ChainId, ChainName } from '@/__swaps__/types/chains';
 import { RainbowConfig } from '@/model/remoteConfig';
@@ -15,6 +15,7 @@ import { swapsStore } from '../../state/swaps/swapsStore';
 import store from '@/redux/store';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { TokenColors } from '@/graphql/__generated__/metadata';
+import { colors } from '@/styles';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -25,6 +26,22 @@ export const opacity = (color: string, opacity: number): string => {
 export type ResponseByTheme<T> = {
   light: T;
   dark: T;
+};
+
+export const getColorValueForTheme = <T>(values: ResponseByTheme<T> | undefined, isDarkMode: boolean, useDefaults = false) => {
+  if (!values) {
+    return isDarkMode ? ETH_COLOR_DARK : ETH_COLOR;
+  }
+  return isDarkMode ? values.dark : values.light;
+};
+
+export const getColorValueForThemeWorklet = <T>(values: ResponseByTheme<T> | undefined, isDarkMode: boolean, useDefaults = true) => {
+  'worklet';
+
+  if (!values) {
+    return isDarkMode ? ETH_COLOR_DARK : ETH_COLOR;
+  }
+  return isDarkMode ? values.dark : values.light;
 };
 
 export const getHighContrastColor = (color: string): ResponseByTheme<string> => {
@@ -64,6 +81,13 @@ export const getTextColor = (color: string): ResponseByTheme<string> => {
   return {
     light: contrastWithWhite < 2 ? globalColors.grey100 : globalColors.white100,
     dark: contrastWithWhite < 2.6 ? globalColors.grey100 : globalColors.white100,
+  };
+};
+
+export const getMixedShadowColor = (color?: string | null): ResponseByTheme<string> => {
+  return {
+    light: getMixedColor(color || ETH_COLOR, colors.dark, 0.84),
+    dark: getMixedColor(color || ETH_COLOR_DARK, colors.dark, 0.84),
   };
 };
 
@@ -331,21 +355,22 @@ type ExtractColorValueForColorsProps = {
   isDarkMode: boolean;
 };
 
-type ExtractColorValueForColorsResponse = {
-  textColor: ResponseByTheme<string>;
-  highContrastColor: ResponseByTheme<string>;
-  tintedBackgroundColor: ResponseByTheme<string>;
-};
-
-export const extractColorValueForColors = ({ colors }: ExtractColorValueForColorsProps): ExtractColorValueForColorsResponse => {
+export const extractColorValueForColors = ({
+  colors,
+}: ExtractColorValueForColorsProps): Omit<ExtendedAnimatedAssetWithColors, keyof ParsedSearchAsset> => {
   const color = colors.primary ?? colors.fallback;
 
-  // TODO: mod color utils and return light/dark mode colors
-
-  const highContrastColor = getHighContrastColor(color);
-
   return {
-    highContrastColor,
+    color: {
+      light: colors.primary ?? colors.fallback ?? ETH_COLOR,
+      dark: colors.primary ?? colors.fallback ?? ETH_COLOR_DARK,
+    },
+    shadowColor: {
+      light: colors.shadow ?? ETH_COLOR,
+      dark: colors.shadow ?? ETH_COLOR_DARK,
+    },
+    mixedShadowColor: getMixedShadowColor(colors.shadow),
+    highContrastColor: getHighContrastColor(color),
     tintedBackgroundColor: getTintedBackgroundColor(color),
     textColor: getTextColor(color),
   };
