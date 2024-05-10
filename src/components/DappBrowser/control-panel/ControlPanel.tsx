@@ -832,7 +832,7 @@ const FavoriteButton = React.memo(function FavButton({ animatedAccentColor }: { 
     <ControlPanelButton
       animatedAccentColor={animatedAccentColor}
       icon={isFavorite ? '􀋇' : '􀋂'}
-      label={i18n.t(i18n.l.dapp_browser.control_panel.more)}
+      label={isFavorite ? i18n.t(i18n.l.dapp_browser.menus.undo_favorite) : i18n.t(i18n.l.dapp_browser.menus.favorite)}
       onPress={handlePress}
     />
   );
