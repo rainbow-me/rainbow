@@ -7,6 +7,7 @@ import { SWAP_FEE } from '@/__swaps__/screens/Swap/dummyValues';
 import { inputKeys, inputMethods } from '@/__swaps__/types/swap';
 import {
   addCommasToNumber,
+  buildQuoteParams,
   clamp,
   countDecimalPlaces,
   findNiceIncrement,
@@ -15,29 +16,30 @@ import {
   valueBasedDecimalFormatter,
 } from '@/__swaps__/utils/swaps';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
+import { CrosschainQuote, Quote, QuoteError, SwapType, getCrosschainQuote, getQuote } from '@rainbow-me/swaps';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
+import store from '@/redux/store';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import { convertRawAmountToBalance, convertRawAmountToDecimalFormatWorklet } from '@/__swaps__/utils/numbers';
 
 export function useSwapInputsController({
   focusedInput,
+  lastTypedInput,
   internalSelectedInputAsset,
   internalSelectedOutputAsset,
   isFetching,
   isQuoteStale,
   sliderXPosition,
-  quoteFetchingInterval,
-  fetchAndStartInterval,
-  setQuote,
+  quote,
 }: {
   focusedInput: SharedValue<inputKeys>;
+  lastTypedInput: SharedValue<inputKeys>;
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   isFetching: SharedValue<boolean>;
   isQuoteStale: SharedValue<number>;
   sliderXPosition: SharedValue<number>;
-  quoteFetchingInterval: ReturnType<typeof useAnimatedInterval>;
-  fetchAndStartInterval: (resetQuote?: boolean) => void;
-  setQuote: ({ data }: { data: Quote | CrosschainQuote | QuoteError | null }) => void;
+  quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
 }) {
   const inputValues = useSharedValue<{ [key in inputKeys]: number | string }>({
     inputAmount: 0,
@@ -146,15 +148,134 @@ export function useSwapInputsController({
     if (animationFrameId.current !== null) cancelAnimationFrame(animationFrameId.current);
   }, []);
 
+  const updateQuoteStore = useCallback((data: Quote | CrosschainQuote | QuoteError | null) => {
+    swapsStore.setState({ quote: data });
+  }, []);
+
+  const setQuote = useCallback(
+    ({
+      data,
+      outputAmount,
+      inputAmount,
+      outputAmountNative,
+      inputAmountNative,
+    }: {
+      data: Quote | CrosschainQuote | QuoteError | null;
+      outputAmount: string;
+      inputAmount: number;
+      outputAmountNative: number;
+      inputAmountNative: number;
+    }) => {
+      'worklet';
+
+      isFetching.value = false;
+      quote.value = data;
+      runOnJS(updateQuoteStore)(data);
+
+      if (!data || (data as QuoteError)?.error) {
+        return;
+      }
+
+      // TODO: Depends on which input the user is typing into on which to update here
+      inputValues.modify(prev => {
+        return {
+          ...prev,
+          outputAmount,
+        };
+      });
+      // TODO: Update the inputAmount and outputAmount based on the quote
+    },
+    [inputValues, isFetching, quote, updateQuoteStore]
+  );
+
+  const fetchAndUpdateQuote = async ({
+    inputAmount,
+    outputAmount,
+    focusedInput,
+  }: {
+    inputAmount: string | number;
+    outputAmount: string | number;
+    focusedInput: inputKeys;
+  }) => {
+    const resetFetchingStatus = () => {
+      'worklet';
+      isQuoteStale.value = 0;
+      isFetching.value = false;
+    };
+
+    const params = buildQuoteParams({
+      currentAddress: store.getState().settings.accountAddress,
+      inputAmount,
+      outputAmount,
+      inputAsset: internalSelectedInputAsset.value,
+      outputAsset: internalSelectedOutputAsset.value,
+      focusedInput,
+    });
+
+    if (!params) {
+      runOnUI(resetFetchingStatus)();
+      return;
+    }
+
+    const response = (params.swapType === SwapType.crossChain ? await getCrosschainQuote(params) : await getQuote(params)) as
+      | Quote
+      | CrosschainQuote
+      | QuoteError;
+
+    console.log(JSON.stringify(response, null, 2));
+
+    runOnUI(setQuote)({
+      data: response,
+      outputAmount: convertRawAmountToBalance((response as Quote)?.buyAmountMinusFees?.toString(), {
+        decimals: internalSelectedOutputAsset.value?.decimals || 18,
+      }).amount,
+    });
+    runOnUI(resetFetchingStatus)();
+  };
+
+  const fetchQuote = () => {
+    'worklet';
+
+    const isSomeInputGreaterThanZero = Number(inputValues.value.inputAmount) > 0 || Number(inputValues.value.outputAmount) > 0;
+
+    if (!internalSelectedInputAsset.value || !internalSelectedOutputAsset.value || !isSomeInputGreaterThanZero) return;
+    isFetching.value = true;
+    isQuoteStale.value = 1;
+
+    console.log('fetching quote', Number(inputValues.value.inputAmount), Number(inputValues.value.outputAmount), lastTypedInput.value);
+
+    runOnJS(fetchAndUpdateQuote)({
+      inputAmount: inputValues.value.inputAmount,
+      outputAmount: inputValues.value.outputAmount,
+      focusedInput: lastTypedInput.value,
+    });
+  };
+
+  const quoteFetchingInterval = useAnimatedInterval({
+    intervalMs: 10_000,
+    onIntervalWorklet: fetchQuote,
+    autoStart: false,
+  });
+
+  const fetchAndStartInterval = (resetQuote = false) => {
+    'worklet';
+
+    if (resetQuote) {
+      setQuote({ data: null });
+    }
+
+    fetchQuote();
+    quoteFetchingInterval.start();
+  };
+
   const onChangedPercentage = useDebouncedCallback((percentage: number, setStale = true) => {
     resetTimers();
 
-    const amount = percentage * Number(internalSelectedInputAsset.value?.balance.amount || 0);
-    if (amount > 0) {
+    if (percentage > 0) {
       if (setStale) isQuoteStale.value = 1;
-      // TODO: do we need to set the inputAmount here?
-      fetchAndStartInterval();
+      runOnUI(fetchAndStartInterval)();
     } else {
+      isFetching.value = false;
       isQuoteStale.value = 0;
     }
 
@@ -163,7 +284,6 @@ export function useSwapInputsController({
     };
   }, 200);
 
-  // Refactored onTypedNumber function
   const onTypedNumber = useDebouncedCallback(async (amount: number, inputKey: inputKeys, preserveAmount = true, setStale = true) => {
     resetTimers();
 
@@ -172,14 +292,13 @@ export function useSwapInputsController({
       const updateWorklet = () => {
         'worklet';
 
-        // Update slider position
-        sliderXPosition.value = withSpring(
-          SLIDER_WIDTH * clamp(Number(amount) / Number(internalSelectedInputAsset.value?.balance.amount), 0, 1),
-          snappySpringConfig
-        );
+        // TODO: This doesn't work when typing in the outputAmount field since we don't have asset prices to calculate the slider position
+        const inputAssetBalance = Number(internalSelectedInputAsset.value?.balance.amount || '0');
+        const updatedSliderPosition = clamp((amount / inputAssetBalance) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
 
-        // fetch quote and start the quote interval
-        // TODO: This isn't working for some reason
+        // Update slider position
+        sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
+
         fetchAndStartInterval();
       };
 
@@ -256,6 +375,14 @@ export function useSwapInputsController({
       assetToBuy: internalSelectedOutputAsset.value,
     }),
     (current, previous) => {
+      const didInputAssetChange = current.assetToSell !== previous?.assetToSell || current.assetToBuy !== previous?.assetToBuy;
+      // setting default values for inputAmount and outputAmount
+      // if (didInputAssetChange) {
+      //   console.log('called current !== previous', inputMethod.value);
+      //   sliderXPosition.value = 0.5;
+      //   return;
+      // }
+
       if (!previous) {
         // Handle setting of initial values using niceIncrementFormatter,
         // because we will likely set a percentage-based default input value
@@ -268,7 +395,6 @@ export function useSwapInputsController({
           return;
 
         const balance = Number(current.assetToSell.balance.amount);
-
         const inputAmount = niceIncrementFormatter(
           incrementDecimalPlaces.value,
           balance,
@@ -278,6 +404,7 @@ export function useSwapInputsController({
           sliderXPosition.value,
           true
         );
+
         const inputNativeValue = Number(inputAmount) * internalSelectedInputAsset.value.displayPrice;
         const outputAmount = (inputNativeValue / internalSelectedOutputAsset.value.displayPrice) * (1 - SWAP_FEE); // TODO: Implement swap fee
         const outputNativeValue = outputAmount * internalSelectedOutputAsset.value.displayPrice;
@@ -293,7 +420,7 @@ export function useSwapInputsController({
         });
       } else if (current !== previous) {
         // Handle updating input values based on the input method
-        if (inputMethod.value === 'slider' && current.sliderXPosition !== previous.sliderXPosition) {
+        if (inputMethod.value === 'slider' && (current.sliderXPosition !== previous.sliderXPosition || didInputAssetChange)) {
           // If the slider position changes
           if (percentageToSwap.value === 0) {
             // If the change set the slider position to 0
@@ -347,6 +474,7 @@ export function useSwapInputsController({
             });
           }
         }
+
         if (inputMethod.value === 'inputAmount' && Number(current.values.inputAmount) !== Number(previous.values.inputAmount)) {
           // If the number in the input field changes
           if (Number(current.values.inputAmount) === 0) {
@@ -373,9 +501,9 @@ export function useSwapInputsController({
               runOnJS(onTypedNumber)(0, 'inputAmount');
             }
           } else {
-            if (!current.assetToSell || !internalSelectedInputAsset.value?.displayPrice) return;
+            if (!current.assetToSell || !current.assetToSell?.displayPrice) return;
             // If the input amount was set to a non-zero value
-            const inputNativeValue = Number(current.values.inputAmount) * internalSelectedInputAsset.value.displayPrice;
+            const inputNativeValue = Number(current.values.inputAmount) * current.assetToSell.displayPrice;
 
             isQuoteStale.value = 1;
             fetchAndStartInterval(true);
@@ -418,10 +546,10 @@ export function useSwapInputsController({
             }
           } else if (Number(current.values.outputAmount) > 0) {
             // If the output amount was set to a non-zero value
-            if (!internalSelectedOutputAsset.value?.displayPrice) return;
+            if (!current.assetToBuy?.displayPrice) return;
 
             const outputAmount = Number(current.values.outputAmount);
-            const outputNativeValue = outputAmount * internalSelectedOutputAsset.value.displayPrice;
+            const outputNativeValue = outputAmount * current.assetToBuy.displayPrice;
 
             isQuoteStale.value = 1;
             fetchAndStartInterval(true);
@@ -449,5 +577,9 @@ export function useSwapInputsController({
     inputValues,
     onChangedPercentage,
     percentageToSwap,
+    quoteFetchingInterval,
+    fetchAndStartInterval,
+    fetchQuote,
+    setQuote,
   };
 }

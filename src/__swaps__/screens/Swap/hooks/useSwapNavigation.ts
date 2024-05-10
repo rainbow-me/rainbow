@@ -1,6 +1,6 @@
-import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import { useCallback } from 'react';
 import { SharedValue } from 'react-native-reanimated';
+import { useSwapInputsController } from './useSwapInputsController';
 
 export const enum NavigationSteps {
   INPUT_ELEMENT_FOCUSED = 0,
@@ -11,17 +11,15 @@ export const enum NavigationSteps {
 }
 
 export function useSwapNavigation({
+  SwapInputController,
   inputProgress,
   outputProgress,
   reviewProgress,
-  quoteFetchingInterval,
-  fetchQuote,
 }: {
+  SwapInputController: ReturnType<typeof useSwapInputsController>;
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
   reviewProgress: SharedValue<number>;
-  quoteFetchingInterval: ReturnType<typeof useAnimatedInterval>;
-  fetchQuote: () => Promise<void>;
 }) {
   const handleShowReview = useCallback(() => {
     'worklet';
@@ -82,13 +80,13 @@ export function useSwapNavigation({
     if (inputProgress.value === NavigationSteps.INPUT_ELEMENT_FOCUSED) {
       inputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
       outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
-      quoteFetchingInterval.stop();
+      SwapInputController.quoteFetchingInterval.stop();
     } else {
       inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
-      fetchQuote();
-      quoteFetchingInterval.start();
+      SwapInputController.fetchQuote();
+      SwapInputController.quoteFetchingInterval.start();
     }
-  }, [fetchQuote, handleDismissReview, inputProgress, outputProgress, quoteFetchingInterval]);
+  }, [handleDismissReview, inputProgress, outputProgress, SwapInputController]);
 
   const handleOutputPress = useCallback(() => {
     'worklet';
@@ -97,13 +95,13 @@ export function useSwapNavigation({
     if (outputProgress.value === NavigationSteps.INPUT_ELEMENT_FOCUSED) {
       outputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
       inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
-      quoteFetchingInterval.stop();
+      SwapInputController.quoteFetchingInterval.stop();
     } else {
       outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
-      fetchQuote();
-      quoteFetchingInterval.start();
+      SwapInputController.fetchQuote();
+      SwapInputController.quoteFetchingInterval.start();
     }
-  }, [fetchQuote, handleDismissReview, inputProgress, outputProgress, quoteFetchingInterval]);
+  }, [handleDismissReview, inputProgress, outputProgress, SwapInputController]);
 
   return {
     handleExitSearch,

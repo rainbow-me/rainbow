@@ -1,10 +1,9 @@
 // @refresh
-import React, { createContext, useContext, ReactNode, useCallback } from 'react';
+import React, { createContext, useContext, ReactNode } from 'react';
 import { StyleProp, TextStyle, TextInput } from 'react-native';
 import {
   AnimatedRef,
   SharedValue,
-  runOnJS,
   runOnUI,
   useAnimatedRef,
   useAnimatedStyle,
@@ -19,14 +18,12 @@ import { useSwapNavigation, NavigationSteps } from '@/__swaps__/screens/Swap/hoo
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
 import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
-import { CrosschainQuote, Quote, QuoteError, SwapType, getCrosschainQuote, getQuote } from '@rainbow-me/swaps';
+import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { isSameAsset } from '@/__swaps__/utils/assets';
-import { buildQuoteParams, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
+import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { ChainId } from '@/__swaps__/types/chains';
 import { logger } from '@/logger';
-import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
-import store from '@/redux/store';
 
 interface SwapContextType {
   isFetching: SharedValue<boolean>;
@@ -41,6 +38,7 @@ interface SwapContextType {
   sliderXPosition: SharedValue<number>;
   sliderPressProgress: SharedValue<number>;
 
+  lastTypedInput: SharedValue<inputKeys>;
   focusedInput: SharedValue<inputKeys>;
 
   // TODO: Separate this into Zustand
@@ -51,9 +49,6 @@ interface SwapContextType {
   setAsset: ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset }) => void;
 
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
-  quoteFetchingInterval: ReturnType<typeof useAnimatedInterval>;
-  setQuote: ({ data }: { data: Quote | CrosschainQuote | QuoteError | null }) => void;
-  fetchQuote: () => Promise<void>;
 
   SwapInputController: ReturnType<typeof useSwapInputsController>;
   AnimatedSwapStyles: ReturnType<typeof useAnimatedSwapStyles>;
@@ -85,6 +80,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const sliderXPosition = useSharedValue(SLIDER_WIDTH * INITIAL_SLIDER_POSITION);
   const sliderPressProgress = useSharedValue(SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
 
+  const lastTypedInput = useSharedValue<inputKeys>('inputAmount');
   const focusedInput = useSharedValue<inputKeys>('inputAmount');
   const outputChainId = useSharedValue<ChainId>(ChainId.mainnet);
 
@@ -93,126 +89,22 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
   const quote = useSharedValue<Quote | CrosschainQuote | QuoteError | null>(null);
 
-  const updateQuoteStore = useCallback((data: Quote | CrosschainQuote | QuoteError | null) => {
-    swapsStore.setState({ quote: data });
-  }, []);
-
-  const setQuote = useCallback(
-    ({ data }: { data: Quote | CrosschainQuote | QuoteError | null }) => {
-      'worklet';
-
-      isFetching.value = false;
-      quote.value = data;
-      runOnJS(updateQuoteStore)(data);
-
-      if ((data as QuoteError)?.error) {
-        return;
-      }
-
-      // TODO: Update the inputAmount and outputAmount based on the quote
-    },
-    [isFetching, quote, updateQuoteStore]
-  );
-
-  const fetchAndUpdateQuote = async ({
-    inputAmount,
-    outputAmount,
-    focusedInput,
-  }: {
-    inputAmount: string | number;
-    outputAmount: string | number;
-    focusedInput: inputKeys;
-  }) => {
-    const resetFetchingStatus = () => {
-      'worklet';
-      isQuoteStale.value = 0;
-      isFetching.value = false;
-    };
-
-    const params = buildQuoteParams({
-      currentAddress: store.getState().settings.accountAddress,
-      inputAmount,
-      outputAmount,
-      inputAsset: internalSelectedInputAsset.value,
-      outputAsset: internalSelectedOutputAsset.value,
-      focusedInput,
-    });
-
-    if (!params) {
-      runOnUI(resetFetchingStatus)();
-      return;
-    }
-
-    const response = (params.swapType === SwapType.crossChain ? await getCrosschainQuote(params) : await getQuote(params)) as
-      | Quote
-      | CrosschainQuote
-      | QuoteError;
-
-    console.log(JSON.stringify(response, null, 2));
-
-    runOnUI(setQuote)({ data: response });
-    runOnUI(resetFetchingStatus)();
-  };
-
-  const fetchQuote = async () => {
-    'worklet';
-
-    const isSomeInputGreaterThanZero =
-      Number(SwapInputController.inputValues.value.inputAmount) > 0 || Number(SwapInputController.inputValues.value.outputAmount) > 0;
-
-    if (!internalSelectedInputAsset.value || !internalSelectedOutputAsset.value || !isSomeInputGreaterThanZero) return;
-    isFetching.value = true;
-    isQuoteStale.value = 1;
-
-    console.log(
-      'fetching quote',
-      Number(SwapInputController.inputValues.value.inputAmount),
-      Number(SwapInputController.inputValues.value.outputAmount),
-      focusedInput.value
-    );
-
-    runOnJS(fetchAndUpdateQuote)({
-      inputAmount: SwapInputController.inputValues.value.inputAmount,
-      outputAmount: SwapInputController.inputValues.value.outputAmount,
-      focusedInput: focusedInput.value,
-    });
-  };
-
-  const quoteFetchingInterval = useAnimatedInterval({
-    intervalMs: 10_000,
-    onIntervalWorklet: fetchQuote,
-    autoStart: false,
-  });
-
-  const fetchAndStartInterval = (resetQuote = false) => {
-    'worklet';
-
-    if (resetQuote) {
-      setQuote({ data: null });
-    }
-
-    fetchQuote();
-    quoteFetchingInterval.start();
-  };
-
   const SwapInputController = useSwapInputsController({
     focusedInput,
+    lastTypedInput,
     internalSelectedInputAsset,
     internalSelectedOutputAsset,
     isFetching,
     isQuoteStale,
     sliderXPosition,
-    fetchAndStartInterval,
-    quoteFetchingInterval,
-    setQuote,
+    quote,
   });
 
   const SwapNavigation = useSwapNavigation({
+    SwapInputController,
     inputProgress,
-    fetchQuote,
     outputProgress,
     reviewProgress,
-    quoteFetchingInterval,
   });
 
   const SwapWarning = useSwapWarning({
@@ -277,15 +169,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const updateAssetValue = ({ type, asset }: { type: SwapAssetType; asset: ExtendedAnimatedAssetWithColors | null }) => {
       'worklet';
 
+      // TODO: Orchestrastion for setting sliderXPosition value on setAsset is not working
       switch (type) {
         case SwapAssetType.inputAsset:
           internalSelectedInputAsset.value = asset;
-
-          // NOTE: Update inputAmount based on sliderXPosition
-          SwapInputController.inputValues.modify(prev => ({
-            ...prev,
-            inputAmount: sliderXPosition.value * Number(asset?.balance.amount || 0),
-          }));
           break;
         case SwapAssetType.outputAsset:
           internalSelectedOutputAsset.value = asset;
@@ -293,7 +180,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }
 
       if (internalSelectedInputAsset.value && internalSelectedOutputAsset.value) {
-        fetchAndStartInterval(true);
+        SwapInputController.fetchAndStartInterval(true);
       }
     };
 
@@ -405,6 +292,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         sliderXPosition,
         sliderPressProgress,
 
+        lastTypedInput,
         focusedInput,
         outputChainId,
 
@@ -413,9 +301,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         setAsset,
 
         quote,
-        quoteFetchingInterval,
-        setQuote,
-        fetchQuote,
 
         SwapInputController,
         AnimatedSwapStyles,
