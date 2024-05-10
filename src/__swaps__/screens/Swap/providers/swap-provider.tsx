@@ -1,5 +1,5 @@
 // @refresh
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode, useCallback } from 'react';
 import { StyleProp, TextStyle, TextInput } from 'react-native';
 import {
   AnimatedRef,
@@ -26,6 +26,7 @@ import { buildQuoteParams, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { ChainId } from '@/__swaps__/types/chains';
 import { logger } from '@/logger';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
+import store from '@/redux/store';
 
 interface SwapContextType {
   isFetching: SharedValue<boolean>;
@@ -90,12 +91,64 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
   const quote = useSharedValue<Quote | CrosschainQuote | QuoteError | null>(null);
 
-  const setQuote = ({ data }: { data: Quote | CrosschainQuote | QuoteError | null }) => {
-    'worklet';
+  const updateQuoteStore = useCallback((data: Quote | CrosschainQuote | QuoteError | null) => {
+    swapsStore.setState({ quote: data });
+  }, []);
 
-    isFetching.value = false;
-    quote.value = data;
-    // runOnJS(swapsStore.setState)({ quote: data });
+  const setQuote = useCallback(
+    ({ data }: { data: Quote | CrosschainQuote | QuoteError | null }) => {
+      'worklet';
+
+      isFetching.value = false;
+      quote.value = data;
+      runOnJS(updateQuoteStore)(data);
+
+      if ((data as QuoteError)?.error) {
+        return;
+      }
+
+      // TODO: Update the inputAmount and outputAmount based on the quote
+    },
+    [isFetching, quote, updateQuoteStore]
+  );
+
+  const fetchAndUpdateQuote = async ({
+    inputAmount,
+    outputAmount,
+    focusedInput,
+  }: {
+    inputAmount: string | number;
+    outputAmount: string | number;
+    focusedInput: inputKeys;
+  }) => {
+    const resetFetchingStatus = () => {
+      'worklet';
+      isFetching.value = false;
+    };
+
+    const params = buildQuoteParams({
+      currentAddress: store.getState().settings.accountAddress,
+      inputAmount,
+      outputAmount,
+      inputAsset: internalSelectedInputAsset.value,
+      outputAsset: internalSelectedOutputAsset.value,
+      focusedInput,
+    });
+
+    if (!params) {
+      runOnUI(resetFetchingStatus)();
+      return;
+    }
+
+    const response = (params.swapType === SwapType.crossChain ? await getCrosschainQuote(params) : await getQuote(params)) as
+      | Quote
+      | CrosschainQuote
+      | QuoteError;
+
+    console.log(JSON.stringify(response, null, 2));
+
+    runOnUI(setQuote)({ data: response });
+    runOnUI(resetFetchingStatus)();
   };
 
   const fetchQuote = async () => {
@@ -103,26 +156,22 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
     const isSomeInputGreaterThanZero =
       Number(SwapInputController.inputValues.value.inputAmount) > 0 || Number(SwapInputController.inputValues.value.outputAmount) > 0;
-    if (!internalSelectedInputAsset.value || !internalSelectedOutputAsset.value || !isSomeInputGreaterThanZero) return;
 
+    if (!internalSelectedInputAsset.value || !internalSelectedOutputAsset.value || !isSomeInputGreaterThanZero) return;
     isFetching.value = true;
-    // TODO: focusedInput could change between asset fetching intervals.. need to think through a solution here
-    const params = buildQuoteParams({
+
+    console.log(
+      'fetching quote',
+      Number(SwapInputController.inputValues.value.inputAmount),
+      Number(SwapInputController.inputValues.value.outputAmount),
+      focusedInput.value
+    );
+
+    runOnJS(fetchAndUpdateQuote)({
       inputAmount: SwapInputController.inputValues.value.inputAmount,
       outputAmount: SwapInputController.inputValues.value.outputAmount,
       focusedInput: focusedInput.value,
     });
-
-    if (!params) return;
-
-    const response = (params.swapType === SwapType.crossChain ? await getCrosschainQuote(params) : await getQuote(params)) as
-      | Quote
-      | CrosschainQuote
-      | QuoteError;
-
-    setQuote({ data: response });
-
-    // TODO: Handle setting quote interval AND asset price fetching
   };
 
   const quoteFetchingInterval = useAnimatedInterval({
@@ -131,24 +180,34 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     autoStart: false,
   });
 
+  const fetchAndStartInterval = (resetQuote = false) => {
+    'worklet';
+
+    if (resetQuote) {
+      setQuote({ data: null });
+    }
+
+    fetchQuote();
+    quoteFetchingInterval.start();
+  };
+
+  const SwapInputController = useSwapInputsController({
+    focusedInput,
+    internalSelectedInputAsset,
+    internalSelectedOutputAsset,
+    isFetching,
+    sliderXPosition,
+    fetchAndStartInterval,
+    quoteFetchingInterval,
+    setQuote,
+  });
+
   const SwapNavigation = useSwapNavigation({
     inputProgress,
     fetchQuote,
     outputProgress,
     reviewProgress,
     quoteFetchingInterval,
-  });
-
-  const SwapInputController = useSwapInputsController({
-    ...SwapNavigation,
-    focusedInput,
-    internalSelectedInputAsset,
-    internalSelectedOutputAsset,
-    isFetching,
-    sliderXPosition,
-    fetchQuote,
-    quoteFetchingInterval,
-    setQuote,
   });
 
   const SwapWarning = useSwapWarning({

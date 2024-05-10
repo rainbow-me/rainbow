@@ -12,10 +12,10 @@ import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
 import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '../types/assets';
 import { inputKeys } from '../types/swap';
 import { swapsStore } from '../../state/swaps/swapsStore';
-import store from '@/redux/store';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { colors } from '@/styles';
+import { convertAmountToRawAmount } from './numbers';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -495,8 +495,11 @@ export const parseAssetAndExtend = ({ asset }: ParseAssetAndExtendProps): Extend
 };
 
 type BuildQuoteParamsProps = {
+  currentAddress: string;
   inputAmount: BigNumberish;
   outputAmount: BigNumberish;
+  inputAsset: ExtendedAnimatedAssetWithColors | null;
+  outputAsset: ExtendedAnimatedAssetWithColors | null;
   focusedInput: inputKeys;
 };
 
@@ -506,11 +509,15 @@ type BuildQuoteParamsProps = {
  * NOTE: Will return null if either asset isn't set.
  * @returns data needed to execute a swap or cross-chain swap
  */
-export const buildQuoteParams = ({ inputAmount, outputAmount, focusedInput }: BuildQuoteParamsProps): QuoteParams | null => {
-  // NOTE: Yuck... redux is still heavily integrated into the account logic.
-  const { accountAddress } = store.getState().settings;
-
-  const { inputAsset, outputAsset, source, slippage } = swapsStore();
+export const buildQuoteParams = ({
+  currentAddress,
+  inputAmount,
+  outputAmount,
+  inputAsset,
+  outputAsset,
+  focusedInput,
+}: BuildQuoteParamsProps): QuoteParams | null => {
+  const { source, slippage } = swapsStore.getState();
   if (!inputAsset || !outputAsset) {
     return null;
   }
@@ -520,15 +527,21 @@ export const buildQuoteParams = ({ inputAmount, outputAmount, focusedInput }: Bu
   return {
     source: source === 'auto' ? undefined : source,
     swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
-    fromAddress: accountAddress,
+    fromAddress: currentAddress,
     chainId: inputAsset.chainId,
     toChainId: isCrosschainSwap ? outputAsset.chainId : inputAsset.chainId,
     sellTokenAddress: inputAsset.isNativeAsset ? ETH_ADDRESS : inputAsset.address,
     buyTokenAddress: outputAsset.isNativeAsset ? ETH_ADDRESS : outputAsset.address,
 
     // TODO: Dunno how we can access these from the
-    sellAmount: focusedInput === 'inputAmount' || focusedInput === 'inputNativeValue' ? inputAmount : undefined,
-    buyAmount: focusedInput === 'outputAmount' || focusedInput === 'outputNativeValue' ? outputAmount : undefined,
+    sellAmount:
+      focusedInput === 'inputAmount' || focusedInput === 'inputNativeValue'
+        ? convertAmountToRawAmount(inputAmount.toString(), inputAsset.decimals)
+        : undefined,
+    buyAmount:
+      focusedInput === 'outputAmount' || focusedInput === 'outputNativeValue'
+        ? convertAmountToRawAmount(outputAmount.toString(), outputAsset.decimals)
+        : undefined,
     slippage: Number(slippage),
     refuel: false,
   };

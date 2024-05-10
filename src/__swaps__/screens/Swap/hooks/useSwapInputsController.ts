@@ -25,7 +25,7 @@ export function useSwapInputsController({
   isFetching,
   sliderXPosition,
   quoteFetchingInterval,
-  fetchQuote,
+  fetchAndStartInterval,
   setQuote,
 }: {
   focusedInput: SharedValue<inputKeys>;
@@ -34,7 +34,7 @@ export function useSwapInputsController({
   isFetching: SharedValue<boolean>;
   sliderXPosition: SharedValue<number>;
   quoteFetchingInterval: ReturnType<typeof useAnimatedInterval>;
-  fetchQuote: () => Promise<void>;
+  fetchAndStartInterval: (resetQuote?: boolean) => void;
   setQuote: ({ data }: { data: Quote | CrosschainQuote | QuoteError | null }) => void;
 }) {
   const inputValues = useSharedValue<{ [key in inputKeys]: number | string }>({
@@ -152,8 +152,7 @@ export function useSwapInputsController({
     if (amount > 0) {
       if (setStale) isQuoteStale.value = 1;
       // TODO: do we need to set the inputAmount here?
-      fetchQuote();
-      quoteFetchingInterval.start();
+      fetchAndStartInterval();
     } else {
       isQuoteStale.value = 0;
     }
@@ -171,12 +170,19 @@ export function useSwapInputsController({
       if (setStale) isQuoteStale.value = 1;
       const updateWorklet = () => {
         'worklet';
-        fetchQuote();
-        quoteFetchingInterval.start();
+
+        // Update slider position
+        sliderXPosition.value = withSpring(
+          SLIDER_WIDTH * clamp(Number(amount) / Number(internalSelectedInputAsset.value?.balance.amount), 0, 1),
+          snappySpringConfig
+        );
+
+        // fetch quote and start the quote interval
+        // TODO: This isn't working for some reason
+        fetchAndStartInterval();
       };
 
       runOnUI(updateWorklet)();
-      // TODO: do we need to set the inputAmount/outputAmount here?
     } else {
       const resetValuesToZero = () => {
         isFetching.value = false;
@@ -371,9 +377,7 @@ export function useSwapInputsController({
             const inputNativeValue = Number(current.values.inputAmount) * internalSelectedInputAsset.value.displayPrice;
 
             isQuoteStale.value = 1;
-            setQuote({ data: null });
-            fetchQuote();
-            quoteFetchingInterval.start();
+            fetchAndStartInterval(true);
 
             inputValues.modify(values => {
               return {
@@ -419,9 +423,7 @@ export function useSwapInputsController({
             const outputNativeValue = outputAmount * internalSelectedOutputAsset.value.displayPrice;
 
             isQuoteStale.value = 1;
-            setQuote({ data: null });
-            fetchQuote();
-            quoteFetchingInterval.start();
+            fetchAndStartInterval(true);
 
             inputValues.modify(values => {
               return {

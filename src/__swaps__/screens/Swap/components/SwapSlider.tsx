@@ -134,8 +134,6 @@ export const SwapSlider = ({
     },
     onActive: () => {
       sliderPressProgress.value = withSpring(SLIDER_COLLAPSED_HEIGHT / height, sliderConfig);
-      fetchQuote();
-      quoteFetchingInterval.start();
     },
   });
 
