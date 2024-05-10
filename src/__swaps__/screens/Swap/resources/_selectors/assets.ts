@@ -6,19 +6,17 @@ import { add } from '@/__swaps__/utils/numbers';
 // selectors
 export function selectorFilterByUserChains<T>({
   data,
-  chainId,
   selector,
 }: {
   data: ParsedAssetsDictByChain;
-  chainId: ChainId;
-  selector: (data: ParsedAssetsDictByChain, chainId: ChainId) => T;
+  selector: (data: ParsedAssetsDictByChain) => T;
 }): T {
   const filteredAssetsDictByChain = Object.keys(data).reduce((acc, key) => {
     const chainKey = Number(key);
     acc[chainKey] = data[chainKey];
     return acc;
   }, {} as ParsedAssetsDictByChain);
-  return selector(filteredAssetsDictByChain, chainId);
+  return selector(filteredAssetsDictByChain);
 }
 
 export function selectUserAssetsList(assets: ParsedAssetsDictByChain) {

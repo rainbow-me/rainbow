@@ -352,3 +352,19 @@ export const createAssetQuery = (addresses: AddressOrEth[], chainId: ChainId, cu
         ${addresses.map((a, i) => assetQueryFragment(a, chainId, currency, i, withPrice)).join(',')}
     }`;
 };
+
+export function mergeSets<T>(...iterables: Array<Set<T>>): Set<T> {
+  const set = new Set<T>();
+  iterables.forEach(iterable => {
+    iterable.forEach(item => set.add(item));
+  });
+  return set;
+}
+
+export function mergeMaps<K, V>(...iterables: Array<Map<K, V>>): Map<K, V> {
+  const map = new Map<K, V>();
+  iterables.forEach(iterable => {
+    iterable.forEach((value, key) => map.set(key, value));
+  });
+  return map;
+}

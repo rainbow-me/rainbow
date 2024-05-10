@@ -18,6 +18,7 @@ import { SwapNavbar } from '@/__swaps__/screens/Swap/components/SwapNavbar';
 import { SliderAndKeyboard } from '@/__swaps__/screens/Swap/components/SliderAndKeyboard';
 import { SwapBottomPanel } from '@/__swaps__/screens/Swap/components/SwapBottomPanel';
 import { SwapWarning } from './components/SwapWarning';
+import { UserAssetsSync } from './components/UserAssetsSync';
 
 /** README
  * This prototype is largely driven by Reanimated and Gesture Handler, which
@@ -76,6 +77,9 @@ export function SwapScreen() {
         </Box>
         <SwapNavbar />
       </Box>
+
+      {/* NOTE: The components below render null and are solely for keeping react-query and Zustand in sync */}
+      <UserAssetsSync />
     </SwapSheetGestureBlocker>
   );
 }
