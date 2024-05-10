@@ -4,10 +4,10 @@ import { StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import SwapSpinner from '@/assets/swapSpinner.png';
 import { ButtonPressAnimation } from '@/components/animations';
-import { AnimatedSpinner } from '@/__swaps__/screens/Swap/components/AnimatedSpinner';
+import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { Bleed, Box, IconContainer, Text, globalColors, useColorMode } from '@/design-system';
 import { SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
-import { getColorValueForThemeWorklet, opacity } from '@/__swaps__/utils/swaps';
+import { getColorValueForTheme, getColorValueForThemeWorklet, opacity } from '@/__swaps__/utils/swaps';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { AnimatedBlurView } from '@/__swaps__/screens/Swap/components/AnimatedBlurView';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
@@ -76,7 +76,13 @@ export const FlipButton = () => {
         </ButtonPressAnimation>
       </Box>
       <Box pointerEvents="none" position="absolute">
-        <AnimatedSpinner asset={internalSelectedOutputAsset} isLoading={isFetching} scaleInFrom={1} size={32} src={SwapSpinner} />
+        <AnimatedSpinner
+          color={getColorValueForTheme(internalSelectedOutputAsset.value?.color, isDarkMode, true)}
+          isLoading={isFetching}
+          scaleInFrom={1}
+          size={32}
+          src={SwapSpinner}
+        />
       </Box>
     </Box>
   );
