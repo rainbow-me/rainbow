@@ -11,6 +11,7 @@ import { GoogleSearchResult, SearchResult } from './SearchResult';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { isValidURLWorklet } from '../../utils';
+import * as i18n from '@/languages';
 
 const search = (query: string, dapps: Dapp[], numberOfResults = 4): Dapp[] => {
   'worklet';
@@ -172,7 +173,7 @@ export const SearchResults = React.memo(function SearchResults({
             􀊫
           </Text>
           <Text align="center" color="labelQuaternary" size="17pt" weight="heavy">
-            Find apps and more
+            {i18n.t(i18n.l.dapp_browser.search.find_apps_and_more)}
           </Text>
         </Stack>
       </Animated.View>
@@ -208,7 +209,7 @@ export const SearchResults = React.memo(function SearchResults({
                         􀊫
                       </TextIcon>
                       <Text color="label" size="20pt" weight="heavy">
-                        More Results
+                        {i18n.t(i18n.l.dapp_browser.search.more_results)}
                       </Text>
                     </Inline>
                   </Inset>
