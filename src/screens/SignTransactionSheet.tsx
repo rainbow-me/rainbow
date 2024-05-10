@@ -96,6 +96,7 @@ import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { RequestData } from '@/redux/requests';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { event } from '@/analytics/event';
+import { getOnchainAssetBalance } from '@/handlers/assets';
 
 const COLLAPSED_CARD_HEIGHT = 56;
 const MAX_CARD_HEIGHT = 176;
@@ -354,8 +355,14 @@ export const SignTransactionSheet = () => {
   useEffect(() => {
     (async () => {
       const asset = await ethereumUtils.getNativeAssetForNetwork(currentNetwork, accountInfo.address);
-      if (asset) {
-        provider && setNativeAsset(asset);
+      if (asset && provider) {
+        const balance = await getOnchainAssetBalance(asset, accountInfo.address, currentNetwork, provider);
+        if (balance) {
+          const assetWithOnchainBalance: ParsedAddressAsset = { ...asset, balance };
+          provider && setNativeAsset(assetWithOnchainBalance);
+        } else {
+          provider && setNativeAsset(asset);
+        }
       }
     })();
   }, [accountInfo.address, currentNetwork, provider]);
