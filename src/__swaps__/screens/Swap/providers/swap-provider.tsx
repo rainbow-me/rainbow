@@ -30,6 +30,7 @@ import store from '@/redux/store';
 
 interface SwapContextType {
   isFetching: SharedValue<boolean>;
+  isQuoteStale: SharedValue<number>;
   searchInputRef: AnimatedRef<TextInput>;
 
   // TODO: Combine navigation progress steps into a single shared value
@@ -73,6 +74,7 @@ interface SwapProviderProps {
 
 export const SwapProvider = ({ children }: SwapProviderProps) => {
   const isFetching = useSharedValue(false);
+  const isQuoteStale = useSharedValue(0);
 
   const searchInputRef = useAnimatedRef<TextInput>();
 
@@ -123,6 +125,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   }) => {
     const resetFetchingStatus = () => {
       'worklet';
+      isQuoteStale.value = 0;
       isFetching.value = false;
     };
 
@@ -159,6 +162,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
     if (!internalSelectedInputAsset.value || !internalSelectedOutputAsset.value || !isSomeInputGreaterThanZero) return;
     isFetching.value = true;
+    isQuoteStale.value = 1;
 
     console.log(
       'fetching quote',
@@ -196,6 +200,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     internalSelectedInputAsset,
     internalSelectedOutputAsset,
     isFetching,
+    isQuoteStale,
     sliderXPosition,
     fetchAndStartInterval,
     quoteFetchingInterval,
@@ -230,6 +235,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     SwapInputController,
     internalSelectedInputAsset,
     internalSelectedOutputAsset,
+    isQuoteStale,
     focusedInput,
     inputProgress,
     outputProgress,
@@ -287,8 +293,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }
 
       if (internalSelectedInputAsset.value && internalSelectedOutputAsset.value) {
-        fetchQuote();
-        quoteFetchingInterval.start();
+        fetchAndStartInterval(true);
       }
     };
 
@@ -390,6 +395,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     <SwapContext.Provider
       value={{
         isFetching,
+        isQuoteStale,
         searchInputRef,
 
         inputProgress,

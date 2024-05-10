@@ -60,7 +60,7 @@ export const SwapSlider = ({
     internalSelectedOutputAsset,
     sliderXPosition,
     sliderPressProgress,
-    fetchQuote,
+    isQuoteStale,
     quoteFetchingInterval,
   } = useSwapContext();
 
@@ -147,10 +147,10 @@ export const SwapSlider = ({
       // causes the outputAmount text color to break. It's preferable to set it in
       // onActive, so we're setting it in onStart for Android only. It's possible that
       // migrating this handler to the RNGH v2 API will remove the need for this.
-      if (!IS_IOS) SwapInputController.isQuoteStale.value = 1;
+      if (!IS_IOS) isQuoteStale.value = 1;
     },
     onActive: (event, ctx: { startX: number }) => {
-      if (IS_IOS) SwapInputController.isQuoteStale.value = 1;
+      if (IS_IOS) isQuoteStale.value = 1;
 
       const rawX = ctx.startX + event.translationX || 0;
 
@@ -165,7 +165,7 @@ export const SwapSlider = ({
       };
 
       if (ctx.startX === width && clamp(rawX, 0, width) >= width * 0.995) {
-        SwapInputController.isQuoteStale.value = 0;
+        isQuoteStale.value = 0;
       }
 
       sliderXPosition.value = clamp(rawX, 0, width);
@@ -186,7 +186,7 @@ export const SwapSlider = ({
       const onFinished = () => {
         overshoot.value = withSpring(0, sliderConfig);
         if (xPercentage.value >= 0.995) {
-          if (SwapInputController.isQuoteStale.value === 1) {
+          if (isQuoteStale.value === 1) {
             runOnJS(onChangeWrapper)(1);
           }
           sliderXPosition.value = withSpring(width, snappySpringConfig);
@@ -324,7 +324,7 @@ export const SwapSlider = ({
   });
 
   const pulsingOpacity = useDerivedValue(() => {
-    return SwapInputController.isQuoteStale.value === 1
+    return isQuoteStale.value === 1
       ? withRepeat(withSequence(withTiming(0.5, pulsingConfig), withTiming(1, pulsingConfig)), -1, true)
       : withSpring(1, sliderConfig);
   }, []);
@@ -335,7 +335,7 @@ export const SwapSlider = ({
     const isAdjustingOutputValue =
       SwapInputController.inputMethod.value === 'outputAmount' || SwapInputController.inputMethod.value === 'outputNativeValue';
 
-    const isStale = SwapInputController.isQuoteStale.value === 1 && (isAdjustingInputValue || isAdjustingOutputValue) ? 1 : 0;
+    const isStale = isQuoteStale.value === 1 && (isAdjustingInputValue || isAdjustingOutputValue) ? 1 : 0;
 
     const opacity = isStale ? pulsingOpacity.value : withSpring(1, sliderConfig);
 
@@ -400,7 +400,7 @@ export const SwapSlider = ({
                     hitSlop={8}
                     onPress={() => {
                       SwapInputController.inputMethod.value = 'slider';
-                      SwapInputController.isQuoteStale.value = 1;
+                      isQuoteStale.value = 1;
                       setTimeout(() => {
                         sliderXPosition.value = withSpring(width, snappySpringConfig);
                         onChangeWrapper(1);

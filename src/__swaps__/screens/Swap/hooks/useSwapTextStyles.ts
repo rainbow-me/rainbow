@@ -30,6 +30,7 @@ export function useSwapTextStyles({
   SwapInputController,
   internalSelectedInputAsset,
   internalSelectedOutputAsset,
+  isQuoteStale,
   focusedInput,
   inputProgress,
   outputProgress,
@@ -38,6 +39,7 @@ export function useSwapTextStyles({
   SwapInputController: ReturnType<typeof useSwapInputsController>;
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+  isQuoteStale: SharedValue<number>;
   focusedInput: SharedValue<inputKeys>;
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
@@ -52,7 +54,7 @@ export function useSwapTextStyles({
   const isInputStale = useDerivedValue(() => {
     const isAdjustingOutputValue =
       SwapInputController.inputMethod.value === 'outputAmount' || SwapInputController.inputMethod.value === 'outputNativeValue';
-    return SwapInputController.isQuoteStale.value === 1 && isAdjustingOutputValue ? 1 : 0;
+    return isQuoteStale.value === 1 && isAdjustingOutputValue ? 1 : 0;
   });
 
   const isOutputStale = useDerivedValue(() => {
@@ -60,11 +62,11 @@ export function useSwapTextStyles({
       SwapInputController.inputMethod.value === 'inputAmount' ||
       SwapInputController.inputMethod.value === 'inputNativeValue' ||
       SwapInputController.inputMethod.value === 'slider';
-    return SwapInputController.isQuoteStale.value === 1 && isAdjustingInputValue ? 1 : 0;
+    return isQuoteStale.value === 1 && isAdjustingInputValue ? 1 : 0;
   });
 
   const pulsingOpacity = useDerivedValue(() => {
-    return SwapInputController.isQuoteStale.value === 1
+    return isQuoteStale.value === 1
       ? withRepeat(withSequence(withTiming(0.5, pulsingConfig), withTiming(1, pulsingConfig)), -1, true)
       : withSpring(1, sliderConfig);
   }, []);
@@ -153,7 +155,7 @@ export function useSwapTextStyles({
       outputProgress.value === 0 &&
       (SwapInputController.inputMethod.value !== 'slider' ||
         (SwapInputController.inputMethod.value === 'slider' && Number(SwapInputController.inputValues.value.inputAmount) === 0) ||
-        (sliderPressProgress.value === SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT && SwapInputController.isQuoteStale.value === 0));
+        (sliderPressProgress.value === SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT && isQuoteStale.value === 0));
 
     const opacity = shouldShow
       ? withRepeat(
@@ -186,7 +188,7 @@ export function useSwapTextStyles({
       outputProgress.value === 0 &&
       (SwapInputController.inputMethod.value !== 'slider' ||
         (SwapInputController.inputMethod.value === 'slider' && Number(SwapInputController.inputValues.value.inputAmount) === 0) ||
-        (sliderPressProgress.value === SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT && SwapInputController.isQuoteStale.value === 0));
+        (sliderPressProgress.value === SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT && isQuoteStale.value === 0));
 
     const opacity = shouldShow
       ? withRepeat(

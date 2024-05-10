@@ -10,7 +10,6 @@ import {
   springConfig,
 } from '@/__swaps__/screens/Swap/constants';
 import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
-import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
 import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { spinnerExitConfig } from '@/components/animations/AnimatedSpinner';
 import { NavigationSteps } from './useSwapNavigation';

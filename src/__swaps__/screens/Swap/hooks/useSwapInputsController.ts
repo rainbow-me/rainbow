@@ -23,6 +23,7 @@ export function useSwapInputsController({
   internalSelectedInputAsset,
   internalSelectedOutputAsset,
   isFetching,
+  isQuoteStale,
   sliderXPosition,
   quoteFetchingInterval,
   fetchAndStartInterval,
@@ -32,6 +33,7 @@ export function useSwapInputsController({
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   isFetching: SharedValue<boolean>;
+  isQuoteStale: SharedValue<number>;
   sliderXPosition: SharedValue<number>;
   quoteFetchingInterval: ReturnType<typeof useAnimatedInterval>;
   fetchAndStartInterval: (resetQuote?: boolean) => void;
@@ -44,7 +46,6 @@ export function useSwapInputsController({
     outputNativeValue: 0,
   });
   const inputMethod = useSharedValue<inputMethods>('slider');
-  const isQuoteStale = useSharedValue(0);
 
   const percentageToSwap = useDerivedValue(() => {
     return Math.round(clamp((sliderXPosition.value - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1) * 100) / 100;
@@ -446,7 +447,6 @@ export function useSwapInputsController({
     formattedOutputNativeValue,
     inputMethod,
     inputValues,
-    isQuoteStale,
     onChangedPercentage,
     percentageToSwap,
   };
