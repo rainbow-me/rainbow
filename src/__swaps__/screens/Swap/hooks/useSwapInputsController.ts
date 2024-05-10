@@ -15,6 +15,8 @@ import {
   valueBasedDecimalFormatter,
 } from '@/__swaps__/utils/swaps';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
+import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 
 export function useSwapInputsController({
   focusedInput,
@@ -22,12 +24,18 @@ export function useSwapInputsController({
   internalSelectedOutputAsset,
   isFetching,
   sliderXPosition,
+  quoteFetchingInterval,
+  fetchQuote,
+  setQuote,
 }: {
   focusedInput: SharedValue<inputKeys>;
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   isFetching: SharedValue<boolean>;
   sliderXPosition: SharedValue<number>;
+  quoteFetchingInterval: ReturnType<typeof useAnimatedInterval>;
+  fetchQuote: () => Promise<void>;
+  setQuote: ({ data }: { data: Quote | CrosschainQuote | QuoteError | null }) => void;
 }) {
   const inputValues = useSharedValue<{ [key in inputKeys]: number | string }>({
     inputAmount: 0,
@@ -142,12 +150,11 @@ export function useSwapInputsController({
 
     const amount = percentage * Number(internalSelectedInputAsset.value?.balance.amount || 0);
     if (amount > 0) {
-      isFetching.value = true;
       if (setStale) isQuoteStale.value = 1;
-
-      // TODO: Implement quote fetching
+      // TODO: do we need to set the inputAmount here?
+      fetchQuote();
+      quoteFetchingInterval.start();
     } else {
-      isFetching.value = false;
       isQuoteStale.value = 0;
     }
 
@@ -161,10 +168,15 @@ export function useSwapInputsController({
     resetTimers();
 
     if (amount > 0) {
-      isFetching.value = true;
       if (setStale) isQuoteStale.value = 1;
+      const updateWorklet = () => {
+        'worklet';
+        fetchQuote();
+        quoteFetchingInterval.start();
+      };
 
-      // TODO: Implement quote fetching
+      runOnUI(updateWorklet)();
+      // TODO: do we need to set the inputAmount/outputAmount here?
     } else {
       const resetValuesToZero = () => {
         isFetching.value = false;
@@ -188,6 +200,8 @@ export function useSwapInputsController({
           });
           sliderXPosition.value = withSpring(0, snappySpringConfig);
           isQuoteStale.value = 0;
+          setQuote({ data: null });
+          quoteFetchingInterval.stop();
         };
 
         runOnUI(updateWorklet)();
@@ -286,6 +300,8 @@ export function useSwapInputsController({
               };
             });
             isQuoteStale.value = 0;
+            setQuote({ data: null });
+            quoteFetchingInterval.stop();
           } else {
             if (!current.assetToSell) return;
 
@@ -341,6 +357,8 @@ export function useSwapInputsController({
               };
             });
             isQuoteStale.value = 0;
+            setQuote({ data: null });
+            quoteFetchingInterval.stop();
 
             if (hasDecimal) {
               runOnJS(onTypedNumber)(0, 'inputAmount', true);
@@ -353,6 +371,10 @@ export function useSwapInputsController({
             const inputNativeValue = Number(current.values.inputAmount) * internalSelectedInputAsset.value.displayPrice;
 
             isQuoteStale.value = 1;
+            setQuote({ data: null });
+            fetchQuote();
+            quoteFetchingInterval.start();
+
             inputValues.modify(values => {
               return {
                 ...values,
@@ -381,6 +403,8 @@ export function useSwapInputsController({
             });
 
             isQuoteStale.value = 0;
+            setQuote({ data: null });
+            quoteFetchingInterval.stop();
 
             if (hasDecimal) {
               runOnJS(onTypedNumber)(0, 'outputAmount', true);
@@ -395,6 +419,10 @@ export function useSwapInputsController({
             const outputNativeValue = outputAmount * internalSelectedOutputAsset.value.displayPrice;
 
             isQuoteStale.value = 1;
+            setQuote({ data: null });
+            fetchQuote();
+            quoteFetchingInterval.start();
+
             inputValues.modify(values => {
               return {
                 ...values,

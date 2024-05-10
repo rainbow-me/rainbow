@@ -1,3 +1,4 @@
+import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import { useCallback } from 'react';
 import { SharedValue } from 'react-native-reanimated';
 
@@ -13,10 +14,14 @@ export function useSwapNavigation({
   inputProgress,
   outputProgress,
   reviewProgress,
+  quoteFetchingInterval,
+  fetchQuote,
 }: {
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
   reviewProgress: SharedValue<number>;
+  quoteFetchingInterval: ReturnType<typeof useAnimatedInterval>;
+  fetchQuote: () => Promise<void>;
 }) {
   const handleShowReview = useCallback(() => {
     'worklet';
@@ -77,10 +82,13 @@ export function useSwapNavigation({
     if (inputProgress.value === NavigationSteps.INPUT_ELEMENT_FOCUSED) {
       inputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
       outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+      quoteFetchingInterval.stop();
     } else {
       inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+      fetchQuote();
+      quoteFetchingInterval.start();
     }
-  }, [handleDismissReview, inputProgress, outputProgress]);
+  }, [fetchQuote, handleDismissReview, inputProgress, outputProgress, quoteFetchingInterval]);
 
   const handleOutputPress = useCallback(() => {
     'worklet';
@@ -89,10 +97,13 @@ export function useSwapNavigation({
     if (outputProgress.value === NavigationSteps.INPUT_ELEMENT_FOCUSED) {
       outputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
       inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+      quoteFetchingInterval.stop();
     } else {
       outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+      fetchQuote();
+      quoteFetchingInterval.start();
     }
-  }, [handleDismissReview, inputProgress, outputProgress]);
+  }, [fetchQuote, handleDismissReview, inputProgress, outputProgress, quoteFetchingInterval]);
 
   return {
     handleExitSearch,

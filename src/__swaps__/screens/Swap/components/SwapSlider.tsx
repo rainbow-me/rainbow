@@ -60,6 +60,8 @@ export const SwapSlider = ({
     internalSelectedOutputAsset,
     sliderXPosition,
     sliderPressProgress,
+    fetchQuote,
+    quoteFetchingInterval,
   } = useSwapContext();
 
   const panRef = useRef();
@@ -128,9 +130,12 @@ export const SwapSlider = ({
   const onPressDown = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>({
     onStart: () => {
       sliderPressProgress.value = withSpring(1, sliderConfig);
+      quoteFetchingInterval.stop();
     },
     onActive: () => {
       sliderPressProgress.value = withSpring(SLIDER_COLLAPSED_HEIGHT / height, sliderConfig);
+      fetchQuote();
+      quoteFetchingInterval.start();
     },
   });
 

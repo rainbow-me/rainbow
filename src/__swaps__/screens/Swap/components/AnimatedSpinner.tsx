@@ -2,13 +2,14 @@ import React from 'react';
 import Animated, {
   Easing,
   SharedValue,
+  useAnimatedProps,
   useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-import { useColorMode } from '@/design-system';
+import { useColorMode, useForegroundColor } from '@/design-system';
 import styled from '@/styled-thing';
 import { ImgixImage } from '@/components/images';
 import Spinner from '@/assets/chartSpinner.png';
@@ -37,6 +38,8 @@ const StyledSpinner = styled(ImgixImage).attrs(({ color, size, src }: { color: s
   width: ({ size }: { size?: number }) => size,
 });
 
+const AnimatedStyledSpinner = Animated.createAnimatedComponent(StyledSpinner);
+
 // TODO: We should also accept a regular boolean as a state variable
 export const AnimatedSpinner = ({
   isLoading,
@@ -52,6 +55,7 @@ export const AnimatedSpinner = ({
   src?: typeof Spinner;
 }) => {
   const { isDarkMode } = useColorMode();
+  const labelSecondary = useForegroundColor('labelSecondary');
 
   const spinnerRotation = useSharedValue(0);
   const spinnerScale = useSharedValue(0);
@@ -79,15 +83,21 @@ export const AnimatedSpinner = ({
 
   const spinnerStyle = useAnimatedStyle(() => {
     return {
-      color: getColorValueForThemeWorklet(asset.value?.color, isDarkMode, true),
       opacity: spinnerScale.value,
       transform: [{ rotate: `${spinnerRotation.value}deg` }, { scale: scaleInFrom + spinnerScale.value * (1 - scaleInFrom) }],
     };
   });
 
+  const animatedProps = useAnimatedProps(() => {
+    return {
+      color: getColorValueForThemeWorklet(asset.value?.color, isDarkMode, true),
+      tintColor: getColorValueForThemeWorklet(asset.value?.color, isDarkMode, true),
+    };
+  });
+
   return (
     <Animated.View pointerEvents="none" style={spinnerStyle}>
-      <StyledSpinner size={size} src={src} />
+      <AnimatedStyledSpinner color={asset.value?.color || labelSecondary} animatedProps={animatedProps} size={size} src={src} />
     </Animated.View>
   );
 };

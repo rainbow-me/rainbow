@@ -12,7 +12,7 @@ import {
 import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
 import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
-import { spinnerExitConfig } from '@/components/animations/ButtonPressAnimation/AnimatedSpinner';
+import { spinnerExitConfig } from '@/components/animations/AnimatedSpinner';
 import { NavigationSteps } from './useSwapNavigation';
 import { IS_ANDROID } from '@/env';
 import { safeAreaInsetValues } from '@/utils';
