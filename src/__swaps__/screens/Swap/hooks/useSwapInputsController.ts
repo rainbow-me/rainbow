@@ -20,7 +20,7 @@ import { CrosschainQuote, Quote, QuoteError, SwapType, getCrosschainQuote, getQu
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import store from '@/redux/store';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { convertRawAmountToBalance, convertRawAmountToDecimalFormatWorklet } from '@/__swaps__/utils/numbers';
+import { convertRawAmountToDecimalFormat } from '@/__swaps__/utils/numbers';
 
 export function useSwapInputsController({
   focusedInput,
@@ -161,10 +161,10 @@ export function useSwapInputsController({
       inputAmountNative,
     }: {
       data: Quote | CrosschainQuote | QuoteError | null;
-      outputAmount: string;
-      inputAmount: number;
-      outputAmountNative: number;
-      inputAmountNative: number;
+      outputAmount?: number;
+      inputAmount?: number;
+      outputAmountNative?: number;
+      inputAmountNative?: number;
     }) => {
       'worklet';
 
@@ -176,11 +176,13 @@ export function useSwapInputsController({
         return;
       }
 
-      // TODO: Depends on which input the user is typing into on which to update here
       inputValues.modify(prev => {
         return {
           ...prev,
-          outputAmount,
+          outputAmount: outputAmount || prev.outputAmount,
+          outputNativeValue: outputAmountNative || prev.outputNativeValue,
+          inputAmount: inputAmount || prev.inputAmount,
+          inputNativeValue: inputAmountNative || prev.inputNativeValue,
         };
       });
       // TODO: Update the inputAmount and outputAmount based on the quote
@@ -191,11 +193,11 @@ export function useSwapInputsController({
   const fetchAndUpdateQuote = async ({
     inputAmount,
     outputAmount,
-    focusedInput,
+    lastTypedInput,
   }: {
     inputAmount: string | number;
     outputAmount: string | number;
-    focusedInput: inputKeys;
+    lastTypedInput: inputKeys;
   }) => {
     const resetFetchingStatus = () => {
       'worklet';
@@ -209,8 +211,10 @@ export function useSwapInputsController({
       outputAmount,
       inputAsset: internalSelectedInputAsset.value,
       outputAsset: internalSelectedOutputAsset.value,
-      focusedInput,
+      lastTypedInput,
     });
+
+    console.log(JSON.stringify(params, null, 2));
 
     if (!params) {
       runOnUI(resetFetchingStatus)();
@@ -224,11 +228,24 @@ export function useSwapInputsController({
 
     console.log(JSON.stringify(response, null, 2));
 
+    // TODO: Handle native asset inputs
     runOnUI(setQuote)({
       data: response,
-      outputAmount: convertRawAmountToBalance((response as Quote)?.buyAmountMinusFees?.toString(), {
-        decimals: internalSelectedOutputAsset.value?.decimals || 18,
-      }).amount,
+      outputAmount:
+        lastTypedInput === 'inputAmount'
+          ? Number(
+              convertRawAmountToDecimalFormat(
+                (response as Quote)?.buyAmountMinusFees?.toString(),
+                internalSelectedOutputAsset.value?.decimals || 18
+              )
+            )
+          : undefined,
+      inputAmount:
+        lastTypedInput === 'outputAmount'
+          ? Number(
+              convertRawAmountToDecimalFormat((response as Quote)?.sellAmount?.toString(), internalSelectedInputAsset.value?.decimals || 18)
+            )
+          : undefined,
     });
     runOnUI(resetFetchingStatus)();
   };
@@ -247,7 +264,7 @@ export function useSwapInputsController({
     runOnJS(fetchAndUpdateQuote)({
       inputAmount: inputValues.value.inputAmount,
       outputAmount: inputValues.value.outputAmount,
-      focusedInput: lastTypedInput.value,
+      lastTypedInput: lastTypedInput.value,
     });
   };
 
@@ -270,6 +287,7 @@ export function useSwapInputsController({
 
   const onChangedPercentage = useDebouncedCallback((percentage: number, setStale = true) => {
     resetTimers();
+    lastTypedInput.value = 'inputAmount';
 
     if (percentage > 0) {
       if (setStale) isQuoteStale.value = 1;
@@ -286,6 +304,7 @@ export function useSwapInputsController({
 
   const onTypedNumber = useDebouncedCallback(async (amount: number, inputKey: inputKeys, preserveAmount = true, setStale = true) => {
     resetTimers();
+    lastTypedInput.value = inputKey;
 
     if (amount > 0) {
       if (setStale) isQuoteStale.value = 1;

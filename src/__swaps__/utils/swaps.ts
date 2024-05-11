@@ -500,7 +500,7 @@ type BuildQuoteParamsProps = {
   outputAmount: BigNumberish;
   inputAsset: ExtendedAnimatedAssetWithColors | null;
   outputAsset: ExtendedAnimatedAssetWithColors | null;
-  focusedInput: inputKeys;
+  lastTypedInput: inputKeys;
 };
 
 /**
@@ -515,7 +515,7 @@ export const buildQuoteParams = ({
   outputAmount,
   inputAsset,
   outputAsset,
-  focusedInput,
+  lastTypedInput,
 }: BuildQuoteParamsProps): QuoteParams | null => {
   const { source, slippage } = swapsStore.getState();
   if (!inputAsset || !outputAsset) {
@@ -533,13 +533,13 @@ export const buildQuoteParams = ({
     sellTokenAddress: inputAsset.isNativeAsset ? ETH_ADDRESS : inputAsset.address,
     buyTokenAddress: outputAsset.isNativeAsset ? ETH_ADDRESS : outputAsset.address,
 
-    // TODO: Dunno how we can access these from the
+    // TODO: Handle native input cases below
     sellAmount:
-      focusedInput === 'inputAmount' || focusedInput === 'inputNativeValue'
+      lastTypedInput === 'inputAmount' || lastTypedInput === 'inputNativeValue'
         ? convertAmountToRawAmount(inputAmount.toString(), inputAsset.decimals)
         : undefined,
     buyAmount:
-      focusedInput === 'outputAmount' || focusedInput === 'outputNativeValue'
+      lastTypedInput === 'outputAmount' || lastTypedInput === 'outputNativeValue'
         ? convertAmountToRawAmount(outputAmount.toString(), outputAsset.decimals)
         : undefined,
     slippage: Number(slippage),
