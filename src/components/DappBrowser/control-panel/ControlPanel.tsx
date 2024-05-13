@@ -53,6 +53,9 @@ import Routes from '@/navigation/routesNames';
 import { address } from '@/utils/abbreviations';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
 import { useAppSessionsStore } from '@/state/appSessions';
+import { DEFAULT_TAB_URL, RAINBOW_HOME } from '../constants';
+import { useFavoriteDappsStore } from '@/state/favoriteDapps';
+import { Site } from '@/state/browserHistory';
 
 const PAGES = {
   HOME: 'home',
@@ -65,6 +68,10 @@ type ControlPanelParams = {
     activeTabRef: React.MutableRefObject<WebView | null>;
   };
 };
+
+const HOME_PANEL_FULL_HEIGHT = 333;
+// 44px for the component and 24px for the stack padding
+const HOME_PANEL_DAPP_SECTION = 44 + 24;
 
 export const ControlPanel = () => {
   const { goBack, goToPage, ref } = usePagerNavigation();
@@ -378,20 +385,24 @@ const HomePanel = ({
     );
   }, [allNetworkItems, allWalletItems, animatedAccentColor, goToPage, selectedNetwork, selectedWallet]);
 
+  const isHomeScreen = useBrowserStore(state => (state.getActiveTabUrl() || DEFAULT_TAB_URL) === RAINBOW_HOME);
+
   return (
-    <Panel height={334}>
+    <Panel height={isHomeScreen ? HOME_PANEL_FULL_HEIGHT - HOME_PANEL_DAPP_SECTION : HOME_PANEL_FULL_HEIGHT}>
       <Box style={controlPanelStyles.homePanel}>
         <Stack space="24px">
-          <Box paddingHorizontal="8px">
-            <Columns alignVertical="center" space={{ custom: 14 }}>
-              <Column width="content">
-                <HomePanelLogo />
-              </Column>
-              <Column>
-                <HomePanelTitleSection />
-              </Column>
-            </Columns>
-          </Box>
+          {!isHomeScreen && (
+            <Box paddingHorizontal="8px">
+              <Columns alignVertical="center" space={{ custom: 14 }}>
+                <Column width="content">
+                  <HomePanelLogo />
+                </Column>
+                <Column>
+                  <HomePanelTitleSection />
+                </Column>
+              </Columns>
+            </Box>
+          )}
           <Box paddingHorizontal="8px" width="full">
             <Inline alignHorizontal="justify" alignVertical="center">
               <ControlPanelButton
@@ -429,15 +440,9 @@ const HomePanel = ({
                 isConnected={isConnected}
                 onConnect={onConnect}
                 onDisconnect={onDisconnect}
+                isHomeScreen={isHomeScreen}
               />
-              <ControlPanelButton
-                animatedAccentColor={animatedAccentColor}
-                icon="􀍡"
-                label={i18n.t(i18n.l.dapp_browser.control_panel.more)}
-                onPress={() => {
-                  return;
-                }}
-              />
+              <FavoriteButton animatedAccentColor={animatedAccentColor} />
             </Inline>
           </Box>
           {actionButtonList}
@@ -610,11 +615,7 @@ const ListHeader = React.memo(function ListHeader({
   return (
     <Box style={controlPanelStyles.listHeader}>
       <Box style={controlPanelStyles.listHeaderContent}>
-        <ButtonPressAnimation
-          onPress={goBack}
-          scaleTo={0.8}
-          style={[controlPanelStyles.listHeaderButtonWrapper, { backgroundColor: 'red' }]}
-        >
+        <ButtonPressAnimation onPress={goBack} scaleTo={0.8} style={[controlPanelStyles.listHeaderButtonWrapper]}>
           <Box alignItems="center" height={{ custom: 20 }} justifyContent="center" width={{ custom: 20 }}>
             <AnimatedText align="center" size="icon 20px" staticText="􀆉" style={backIconStyle} weight="bold" />
           </Box>
@@ -807,21 +808,56 @@ const ControlPanelButton = React.memo(function ControlPanelButton({
   );
 });
 
+const FavoriteButton = React.memo(function FavButton({ animatedAccentColor }: { animatedAccentColor: SharedValue<string | undefined> }) {
+  const tabId = useBrowserStore(state => state.getActiveTabId());
+  const tabData = useBrowserStore(state => state.getTabData(tabId));
+  const isFavorite = useFavoriteDappsStore(state => state.isFavorite(tabData?.url || ''));
+  const removeFavorite = useFavoriteDappsStore(state => state.removeFavorite);
+  const addFavorite = useFavoriteDappsStore(state => state.addFavorite);
+
+  const handlePress = useCallback(() => {
+    if (isFavorite) {
+      removeFavorite(tabData?.url || '');
+    } else {
+      const site: Omit<Site, 'timestamp'> = {
+        name: tabData?.title || '',
+        url: tabData?.url || '',
+        image: tabData?.logoUrl || '',
+      };
+      tabData && addFavorite(site);
+    }
+  }, [addFavorite, isFavorite, removeFavorite, tabData]);
+
+  return (
+    <ControlPanelButton
+      animatedAccentColor={animatedAccentColor}
+      icon={isFavorite ? '􀋇' : '􀋂'}
+      label={isFavorite ? i18n.t(i18n.l.dapp_browser.menus.undo_favorite) : i18n.t(i18n.l.dapp_browser.menus.favorite)}
+      onPress={handlePress}
+    />
+  );
+});
+
 const ConnectButton = React.memo(function ControlPanelButton({
   // animatedAccentColor,
+  isHomeScreen,
   isConnected,
   onConnect,
   onDisconnect,
 }: {
   animatedAccentColor: SharedValue<string | undefined>;
+  isHomeScreen: boolean;
   isConnected: boolean;
   onConnect?: () => void;
   onDisconnect?: () => void;
 }) {
   const green = useForegroundColor('green');
   const red = useForegroundColor('red');
+  const grey = useForegroundColor('fillSecondary');
 
   const buttonColor = useDerivedValue(() => {
+    if (isHomeScreen) return grey;
+
     return withTiming(isConnected ? red : green, TIMING_CONFIGS.slowerFadeConfig);
     // if (!isConnected.value || !animatedAccentColor.value)
     //   return withTiming(isConnected.value ? red : green, TIMING_CONFIGS.slowerFadeConfig);
@@ -867,6 +903,7 @@ const ConnectButton = React.memo(function ControlPanelButton({
       onPressWorklet={handlePress}
       pointerEvents="auto"
       scaleTo={0.82}
+      disabled={isHomeScreen}
       style={[controlPanelStyles.buttonContainer]}
     >
       <Box paddingHorizontal={IS_IOS ? '16px' : undefined} paddingVertical={IS_IOS ? '10px' : undefined}>
