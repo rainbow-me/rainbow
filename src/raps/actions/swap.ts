@@ -17,7 +17,6 @@ import {
 import { getProviderForNetwork, estimateGasWithPadding } from '@/handlers/web3';
 import { Address } from 'viem';
 
-import store from '@/redux/store';
 import { metadataPOSTClient } from '@/graphql';
 import { ChainId } from '@/__swaps__/types/chains';
 import { NewTransaction } from '@/entities/transactions';
@@ -46,7 +45,6 @@ import { populateApprove } from './unlock';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { swapMetadataStorage } from '../common';
 import { ParsedAsset } from '@/resources/assets/types';
-import { GasState } from '@/redux/gas';
 import { parseGasParamAmounts } from '@/parsers';
 
 const WRAP_GAS_PADDING = 1.002;
@@ -235,8 +233,15 @@ export const executeSwap = async ({
   }
 };
 
-export const swap = async ({ currentRap, wallet, index, parameters, baseNonce }: ActionProps<'swap'>): Promise<RapActionResult> => {
-  const { gasFeeParamsBySpeed, selectedGasFee } = store.getState().gas as GasState;
+export const swap = async ({
+  currentRap,
+  wallet,
+  index,
+  parameters,
+  baseNonce,
+  selectedGasFee,
+  gasFeeParamsBySpeed,
+}: ActionProps<'swap'>): Promise<RapActionResult> => {
   let gasParams = parseGasParamAmounts(selectedGasFee);
 
   const { quote, permit, chainId, requiresApprove } = parameters;

@@ -13,7 +13,6 @@ import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, logger } from '@/logger';
 
 import { ETH_ADDRESS, gasUnits } from '@/references';
-// import { gasStore } from '@/state/gas/gasStore';
 import { ParsedAsset as SwapsParsedAsset } from '@/__swaps__/types/assets';
 import { convertAmountToRawAmount, greaterThan } from '@/helpers/utilities';
 import { ActionProps, RapActionResult } from '../references';
@@ -23,8 +22,6 @@ import { ethereumUtils } from '@/utils';
 import { toHex } from '@/__swaps__/utils/hex';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { ParsedAsset } from '@/resources/assets/types';
-import { GasState } from '@/redux/gas';
-import store from '@/redux/store';
 import { parseGasParamAmounts } from '@/parsers';
 
 export const getAssetRawAllowance = async ({
@@ -213,8 +210,14 @@ export const executeApprove = async ({
   });
 };
 
-export const unlock = async ({ baseNonce, index, parameters, wallet }: ActionProps<'unlock'>): Promise<RapActionResult> => {
-  const { gasFeeParamsBySpeed, selectedGasFee } = store.getState().gas as GasState;
+export const unlock = async ({
+  baseNonce,
+  index,
+  parameters,
+  wallet,
+  selectedGasFee,
+  gasFeeParamsBySpeed,
+}: ActionProps<'unlock'>): Promise<RapActionResult> => {
   const { assetToUnlock, contractAddress, chainId } = parameters;
 
   const { address: assetAddress } = assetToUnlock;

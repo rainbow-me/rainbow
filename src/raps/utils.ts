@@ -6,13 +6,7 @@ import { ALLOWS_PERMIT, CrosschainQuote, Quote, getQuoteExecutionDetails, getRai
 import { mainnet } from 'viem/chains';
 import { Chain, erc20Abi } from 'viem';
 import { Network } from '@/helpers';
-import {
-  GasFeeParamsBySpeed,
-  LegacyGasFeeParamsBySpeed,
-  LegacyTransactionGasParamAmounts,
-  TransactionGasParamAmounts,
-  LegacyGasFeeParams,
-} from '@/entities';
+import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { add, greaterThan, multiply } from '@/helpers/utilities';
 import { ChainId } from '@/__swaps__/types/chains';

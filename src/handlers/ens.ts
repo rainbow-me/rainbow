@@ -27,6 +27,7 @@ import { ENS_MARQUEE_QUERY_KEY } from '@/resources/metadata/ensMarqueeQuery';
 import { queryClient } from '@/react-query';
 import { EnsMarqueeAccount } from '@/graphql/__generated__/metadata';
 import { MimeType, handleNFTImages } from '@/utils/handleNFTImages';
+import store from '@/redux/store';
 
 const DUMMY_RECORDS = {
   description: 'description',
@@ -654,12 +655,15 @@ export const estimateENSRegistrationGasLimit = async (
   records: Records = DUMMY_RECORDS
 ) => {
   const salt = generateSalt();
+  const { selectedGasFee, gasFeeParamsBySpeed } = store.getState().gas;
   const commitGasLimitPromise = estimateENSCommitGasLimit({
     duration,
     name,
     ownerAddress,
     rentPrice,
     salt,
+    selectedGasFee,
+    gasFeeParamsBySpeed,
   });
 
   const setRecordsGasLimitPromise = estimateENSSetRecordsGasLimit({

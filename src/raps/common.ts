@@ -2,7 +2,7 @@ import { MMKV } from 'react-native-mmkv';
 import { RapAction, RapActionParameterMap, RapActionTypes } from './references';
 import { STORAGE_IDS } from '@/model/mmkv';
 import { logger } from '@/logger';
-import { EthereumAddress, Records } from '@/entities';
+import { EthereumAddress, LegacyGasFeeParamsBySpeed, LegacySelectedGasFee, Records, SelectedGasFee, GasFeeParamsBySpeed } from '@/entities';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 
 export enum ENSRapActionType {
@@ -38,6 +38,8 @@ export interface ENSActionParameters {
   clearRecords?: boolean;
   setAddress?: boolean;
   transferControl?: boolean;
+  selectedGasFee: SelectedGasFee | LegacySelectedGasFee;
+  gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
   mode?: keyof typeof REGISTRATION_MODES;
 }
 
@@ -49,6 +51,8 @@ export interface RapENSActionParameters {
   records?: Records;
   salt: string;
   toAddress?: string;
+  selectedGasFee: SelectedGasFee | LegacySelectedGasFee;
+  gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
   mode?: keyof typeof REGISTRATION_MODES;
 }
 

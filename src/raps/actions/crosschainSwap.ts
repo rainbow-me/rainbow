@@ -10,7 +10,6 @@ import { TxHash } from '@/resources/transactions/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, logger } from '@/logger';
 
-import store from '@/redux/store';
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
 import { toHex } from '@/__swaps__/utils/hex';
 import { ActionProps, RapActionResult } from '../references';
@@ -25,7 +24,6 @@ import { ethereumUtils } from '@/utils';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { ParsedAsset } from '@/resources/assets/types';
 import { parseGasParamAmounts } from '@/parsers';
-import { GasState } from '@/redux/gas';
 
 const getCrosschainSwapDefaultGasLimit = (quote: CrosschainQuote) => quote?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
 
@@ -106,9 +104,10 @@ export const crosschainSwap = async ({
   index,
   parameters,
   baseNonce,
+  selectedGasFee,
+  gasFeeParamsBySpeed,
 }: ActionProps<'crosschainSwap'>): Promise<RapActionResult> => {
   const { quote, chainId, requiresApprove } = parameters;
-  const { gasFeeParamsBySpeed, selectedGasFee } = store.getState().gas as GasState;
   let gasParams = parseGasParamAmounts(selectedGasFee);
   if (currentRap.actions.length - 1 > index) {
     gasParams = overrideWithFastSpeedIfNeeded({

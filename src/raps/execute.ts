@@ -19,6 +19,7 @@ import {
 } from './references';
 import { createUnlockAndCrosschainSwapRap } from './unlockAndCrosschainSwap';
 import { createUnlockAndSwapRap } from './unlockAndSwap';
+import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacySelectedGasFee, SelectedGasFee } from '@/entities';
 
 export function createSwapRapByType<T extends RapTypes>(type: T, swapParameters: RapSwapActionParameters<T>) {
   switch (type) {
@@ -53,6 +54,8 @@ export async function executeAction<T extends RapActionTypes>({
   baseNonce,
   rapName,
   flashbots,
+  selectedGasFee,
+  gasFeeParamsBySpeed,
 }: {
   action: RapAction<T>;
   wallet: Signer;
@@ -61,6 +64,8 @@ export async function executeAction<T extends RapActionTypes>({
   baseNonce?: number;
   rapName: string;
   flashbots?: boolean;
+  selectedGasFee: SelectedGasFee | LegacySelectedGasFee;
+  gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
 }): Promise<RapActionResponse> {
   const { type, parameters } = action;
   try {
@@ -70,6 +75,8 @@ export async function executeAction<T extends RapActionTypes>({
       index,
       parameters: { ...parameters, flashbots },
       baseNonce,
+      selectedGasFee,
+      gasFeeParamsBySpeed,
     };
     const { nonce, hash } = (await typeAction<T>(type, actionProps)()) as RapActionResult;
     return { baseNonce: nonce, errorMessage: null, hash };
@@ -126,6 +133,8 @@ export const walletExecuteRap = async (
       baseNonce: nonce,
       rapName,
       flashbots: parameters?.flashbots,
+      selectedGasFee: parameters?.selectedGasFee,
+      gasFeeParamsBySpeed: parameters?.gasFeeParamsBySpeed,
     };
 
     const { baseNonce, errorMessage: error, hash } = await executeAction(actionParams);
@@ -142,6 +151,8 @@ export const walletExecuteRap = async (
           baseNonce,
           rapName,
           flashbots: parameters?.flashbots,
+          selectedGasFee: parameters?.selectedGasFee,
+          gasFeeParamsBySpeed: parameters?.gasFeeParamsBySpeed,
         };
         const { hash } = await executeAction(actionParams);
         hash && (await waitForNodeAck(hash, wallet.provider));

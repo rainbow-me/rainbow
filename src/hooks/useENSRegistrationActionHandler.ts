@@ -22,10 +22,13 @@ import { getNextNonce } from '@/state/nonces';
 import { Network } from '@/networks/types';
 import { Hex } from 'viem';
 import { executeENSRap } from '@/raps/actions/ens';
+import store from '@/redux/store';
 
 const NOOP = () => null;
 
 const formatENSActionParams = (registrationParameters: RegistrationParameters): ENSActionParameters => {
+  const { selectedGasFee, gasFeeParamsBySpeed } = store.getState().gas;
+
   return {
     duration: registrationParameters?.duration,
     mode: registrationParameters?.mode,
@@ -35,6 +38,8 @@ const formatENSActionParams = (registrationParameters: RegistrationParameters): 
     rentPrice: registrationParameters?.rentPrice,
     salt: registrationParameters?.salt,
     setReverseRecord: registrationParameters?.setReverseRecord,
+    gasFeeParamsBySpeed,
+    selectedGasFee,
   };
 };
 

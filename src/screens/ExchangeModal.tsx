@@ -466,6 +466,8 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
             slippage: slippageInBips,
             route: source,
           },
+          selectedGasFee,
+          gasFeeParamsBySpeed,
         });
 
         setIsAuthorizing(false);

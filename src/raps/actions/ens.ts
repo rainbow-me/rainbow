@@ -24,7 +24,6 @@ import {
   createTransferENSRap,
 } from '../registerENS';
 import { Logger } from '@ethersproject/logger';
-import { GasState } from '@/redux/gas';
 
 export interface ENSRapActionResponse {
   baseNonce?: number | null;
@@ -310,7 +309,6 @@ const ensAction = async (
   logger.log(`[${actionName}] base nonce`, baseNonce, 'index:', index);
   const { dispatch } = store;
   const { accountAddress: ownerAddress } = store.getState().settings;
-  const { selectedGasFee } = store.getState().gas as GasState;
 
   const { name, duration, rentPrice, records, salt, toAddress, mode } = parameters;
 
@@ -354,7 +352,7 @@ const ensAction = async (
   let maxFeePerGas;
   let maxPriorityFeePerGas;
   try {
-    const gasParams = parseGasParamAmounts(selectedGasFee) as TransactionGasParamAmounts;
+    const gasParams = parseGasParamAmounts(parameters.selectedGasFee) as TransactionGasParamAmounts;
     maxFeePerGas = gasParams.maxFeePerGas;
     maxPriorityFeePerGas = gasParams.maxPriorityFeePerGas;
 
