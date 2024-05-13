@@ -5,11 +5,9 @@ import Animated, { runOnUI, useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
-import { useTheme } from '@/theme';
 
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
-import { SwapCoinIcon } from '@/__swaps__/screens/Swap/components/SwapCoinIcon';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import { SwapInput } from '@/__swaps__/screens/Swap/components/SwapInput';
 import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
@@ -19,9 +17,6 @@ import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
 import { isSameAssetWorklet } from '@/__swaps__/utils/assets';
-import { ethereumUtils } from '@/utils';
-import { ChainId } from '@/__swaps__/types/chains';
-import { AddressOrEth } from '@/__swaps__/types/assets';
 
 function SwapInputActionButton() {
   const { isDarkMode } = useColorMode();
@@ -74,31 +69,18 @@ function SwapInputAmount() {
 }
 
 function SwapInputIcon() {
-  const { SwapInputController, AnimatedSwapStyles } = useSwapContext();
-  const theme = useTheme();
+  const { AnimatedSwapStyles } = useSwapContext();
 
   return (
     <Box paddingRight="10px">
-      {!SwapInputController.assetToSell.value ? (
-        <Box
-          as={Animated.View}
-          borderRadius={18}
-          height={{ custom: 36 }}
-          style={[styles.solidColorCoinIcon, AnimatedSwapStyles.assetToSellIconStyle]}
-          width={{ custom: 36 }}
-        />
-      ) : (
-        <SwapCoinIcon
-          color={SwapInputController.topColor.value}
-          iconUrl={SwapInputController.assetToSell.value.icon_url}
-          address={SwapInputController.assetToSell.value.address}
-          large
-          mainnetAddress={SwapInputController.assetToSell.value.mainnetAddress}
-          network={ethereumUtils.getNetworkFromChainId(SwapInputController.assetToSell.value.chainId)}
-          symbol={SwapInputController.assetToSell.value.symbol}
-          theme={theme}
-        />
-      )}
+      {/* TODO: Implement Coin Icons using reanimated values */}
+      <Box
+        as={Animated.View}
+        borderRadius={18}
+        height={{ custom: 36 }}
+        style={[styles.solidColorCoinIcon, AnimatedSwapStyles.assetToSellIconStyle]}
+        width={{ custom: 36 }}
+      />
     </Box>
   );
 }

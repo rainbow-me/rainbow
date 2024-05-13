@@ -26,6 +26,7 @@ export function SwapBottomPanel() {
     AnimatedSwapStyles,
     SwapNavigation,
     reviewProgress,
+    isFetching,
   } = useSwapContext();
 
   const { swipeToDismissGestureHandler, gestureY } = useBottomPanelGestureHandler();

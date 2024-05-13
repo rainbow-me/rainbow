@@ -7,10 +7,9 @@ import {
   selectorFilterByUserChains,
 } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
 import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
-import { ParsedSearchAsset, UserAssetFilter } from '@/__swaps__/types/assets';
+import { ParsedAssetsDictByChain, ParsedSearchAsset, UserAssetFilter } from '@/__swaps__/types/assets';
 import { useAccountSettings } from '@/hooks';
 import { useDebounce } from '@/__swaps__/screens/Swap/hooks/useDebounce';
-import { ChainId } from '@/__swaps__/types/chains';
 import { userAssetsStore } from '@/state/assets/userAssets';
 
 const sortBy = (by: UserAssetFilter) => {
@@ -18,7 +17,7 @@ const sortBy = (by: UserAssetFilter) => {
     case 'all':
       return selectUserAssetsList;
     default:
-      return selectUserAssetsListByChainId;
+      return (data: ParsedAssetsDictByChain) => selectUserAssetsListByChainId(data, by);
   }
 };
 
@@ -39,7 +38,6 @@ export const useAssetsToSell = () => {
       select: data =>
         selectorFilterByUserChains({
           data,
-          chainId: filter as ChainId,
           selector: sortBy(filter),
         }),
     }

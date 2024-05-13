@@ -166,47 +166,47 @@ export const useSwapWarning = ({ SwapInputController, isFetching, sliderXPositio
     [currentCurrency, swapWarning, timeEstimate]
   );
 
-  useAnimatedReaction(
-    () => ({
-      inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
-      outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
-      quote: SwapInputController.quote.value,
-      isFetching: isFetching.value,
-      sliderXPosition: sliderXPosition.value,
-    }),
-    (current, previous) => {
-      // NOTE: While fetching, we don't want to display a warning
-      if (current?.isFetching) {
-        swapWarning.value = { display: '', type: SwapWarningType.none };
-        return;
-      }
+  // useAnimatedReaction(
+  //   () => ({
+  //     inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
+  //     outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
+  //     quote: SwapInputController.quote.value,
+  //     isFetching: isFetching.value,
+  //     sliderXPosition: sliderXPosition.value,
+  //   }),
+  //   (current, previous) => {
+  //     // NOTE: While fetching, we don't want to display a warning
+  //     if (current?.isFetching) {
+  //       swapWarning.value = { display: '', type: SwapWarningType.none };
+  //       return;
+  //     }
 
-      // NOTE: While the user is scrubbing the slider, we don't want to show the price impact warning.
-      if (previous?.sliderXPosition && previous?.sliderXPosition !== current.sliderXPosition) {
-        swapWarning.value = { display: '', type: SwapWarningType.none };
-        return;
-      }
+  //     // NOTE: While the user is scrubbing the slider, we don't want to show the price impact warning.
+  //     if (previous?.sliderXPosition && previous?.sliderXPosition !== current.sliderXPosition) {
+  //       swapWarning.value = { display: '', type: SwapWarningType.none };
+  //       return;
+  //     }
 
-      // NOTE: If we previous had a quote and the current quote is null we want to reset the state here
-      if (!current.quote && previous?.quote) {
-        swapWarning.value = { display: '', type: SwapWarningType.none };
-        return;
-      }
+  //     // NOTE: If we previous had a quote and the current quote is null we want to reset the state here
+  //     if (!current.quote && previous?.quote) {
+  //       swapWarning.value = { display: '', type: SwapWarningType.none };
+  //       return;
+  //     }
 
-      if (
-        (current.quote && previous?.quote !== current.quote) ||
-        previous?.inputNativeValue !== current.inputNativeValue ||
-        previous?.outputNativeValue !== current.outputNativeValue
-      ) {
-        runOnJS(getWarning)({
-          inputNativeValue: current.inputNativeValue,
-          outputNativeValue: current.outputNativeValue,
-          quote: current.quote,
-          isFetching: current.isFetching,
-        });
-      }
-    }
-  );
+  //     if (
+  //       (current.quote && previous?.quote !== current.quote) ||
+  //       previous?.inputNativeValue !== current.inputNativeValue ||
+  //       previous?.outputNativeValue !== current.outputNativeValue
+  //     ) {
+  //       runOnJS(getWarning)({
+  //         inputNativeValue: current.inputNativeValue,
+  //         outputNativeValue: current.outputNativeValue,
+  //         quote: current.quote,
+  //         isFetching: current.isFetching,
+  //       });
+  //     }
+  //   }
+  // );
 
   return { swapWarning, timeEstimate };
 };

@@ -10,7 +10,6 @@ import {
   springConfig,
 } from '@/__swaps__/screens/Swap/constants';
 import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
-import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
 import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { spinnerExitConfig } from '@/components/animations/AnimatedSpinner';
 import { NavigationSteps } from './useSwapNavigation';
@@ -19,7 +18,6 @@ import { safeAreaInsetValues } from '@/utils';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 
 export function useAnimatedSwapStyles({
-  SwapInputController,
   SwapWarning,
   internalSelectedInputAsset,
   internalSelectedOutputAsset,
@@ -28,7 +26,6 @@ export function useAnimatedSwapStyles({
   reviewProgress,
   isFetching,
 }: {
-  SwapInputController: ReturnType<typeof useSwapInputsController>;
   SwapWarning: ReturnType<typeof useSwapWarning>;
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;

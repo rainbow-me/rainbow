@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { NativeSyntheticEvent, TextInputChangeEventData } from 'react-native';
-import Animated, { SharedValue, useAnimatedProps, useDerivedValue } from 'react-native-reanimated';
+import Animated, { SharedValue, useAnimatedProps, useDerivedValue, dispatchCommand } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Input } from '@/components/inputs';
 import { AnimatedText, Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
@@ -47,12 +47,16 @@ export const SearchInput = ({
   }, []);
 
   const searchInputValue = useAnimatedProps(() => {
-    const isFocused = inputProgress.value === 1 || outputProgress.value === 1;
+    const isFocused = inputProgress.value >= 1 || outputProgress.value >= 1;
 
     // Removing the value when the input is focused allows the input to be reset to the correct value on blur
     const query = isFocused ? undefined : defaultValue;
 
-    return { defaultValue, text: query, selectionColor: getColorValueForThemeWorklet(asset.value?.color, isDarkMode, true) };
+    return {
+      defaultValue,
+      text: query,
+      selectionColor: getColorValueForThemeWorklet(asset.value?.color, isDarkMode, true),
+    };
   });
 
   return (
@@ -84,6 +88,7 @@ export const SearchInput = ({
                   animatedProps={searchInputValue}
                   onChange={onSearchQueryChange}
                   onBlur={() => {
+                    console.log('here');
                     onSearchQueryChange({
                       nativeEvent: {
                         text: '',
@@ -94,6 +99,7 @@ export const SearchInput = ({
                   onFocus={handleFocusSearch}
                   placeholder={output ? 'Find a token to buy' : 'Search your tokens'}
                   placeholderTextColor={isDarkMode ? opacity(labelQuaternary, 0.3) : labelQuaternary}
+                  selectTextOnFocus
                   ref={searchInputRef}
                   spellCheck={false}
                   style={{
@@ -111,13 +117,14 @@ export const SearchInput = ({
         <Column width="content">
           <ButtonPressAnimation
             onPress={() => {
+              // TODO: This doesn't cause the blur to happen...
+              dispatchCommand(searchInputRef, 'blur');
               onSearchQueryChange({
                 nativeEvent: {
                   text: '',
                 },
               } as NativeSyntheticEvent<TextInputChangeEventData>);
               handleExitSearch();
-              searchInputRef.current?.blur();
             }}
             scaleTo={0.8}
           >
