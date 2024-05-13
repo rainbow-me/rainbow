@@ -3,14 +3,12 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedText, Box, Inline, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { useGasStore } from '@/state/gas/gasStore';
 import { Centered } from '@/components/layout';
-import { useTheme } from '@/theme';
 import { IS_ANDROID } from '@/env';
 import { getNetworkObj } from '@/networks';
 import { useRoute } from '@react-navigation/native';
-import { useAccountSettings, useColorForAsset } from '@/hooks';
+import { useAccountSettings } from '@/hooks';
 import { ContextMenu } from '@/components/context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { isEmpty } from 'lodash';
 import { ethereumUtils, gasUtils } from '@/utils';
 import styled from '@/styled-thing';
 import { useMeteorology } from '@/__swaps__/utils/meteorology';
@@ -172,26 +170,14 @@ const GasMenu = ({
   children: ReactNode;
   gasFeeBySpeed: GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed;
 }) => {
-  const { SwapNavigation } = useSwapContext();
-  const theme = useTheme();
-  const { colors } = theme;
-  const { selectedGas, gasFeeParamsBySpeed, setSelectedGas } = useGasStore();
-  const { params } = useRoute();
+  const { SwapNavigation, SwapGas } = useSwapContext();
+  const { gasFeeParamsBySpeed, setSelectedGas } = useGasStore();
   // this needs to be moved up or out shouldnt need asset just the color
-  const { currentNetwork, asset, fallbackColor } = (params as any) || {};
-  const speedOptions = useMemo(() => {
-    return getNetworkObj(currentNetwork).gas.speeds as GasSpeed[];
-  }, [currentNetwork]);
-  const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [speedOptions.length]);
-  const rawColorForAsset = useColorForAsset(asset || {}, fallbackColor, false, true);
-
-  const gasIsNotReady: boolean = useMemo(
-    () => isEmpty(gasFeeParamsBySpeed) || isEmpty(selectedGas?.gasFee),
-    [gasFeeParamsBySpeed, selectedGas]
-  );
 
   const handlePressSpeedOption = useCallback(
     (selectedGasSpeed: GasSpeed) => {
+      // TODO: Handle updating SwapGas references
+      // SwapGas.selectGasOption(selectedGasSpeed);
       if (selectedGasSpeed === CUSTOM) {
         runOnUI(SwapNavigation.handleShowGas)({});
         return;
@@ -228,25 +214,27 @@ const GasMenu = ({
   );
 
   const menuConfig = useMemo(() => {
-    const menuOptions = speedOptions.map((gasOption: GasSpeed) => {
-      if (IS_ANDROID) return gasOption;
-      const { display } = gasFeeBySpeed[gasOption] ?? {};
+    const menuOptions = Object.keys(gasFeeBySpeed)
+      .reverse()
+      .map(gasOption => {
+        if (IS_ANDROID) return gasOption as GasSpeed;
+        const { display } = gasFeeBySpeed[gasOption as GasSpeed] ?? {};
 
-      return {
-        actionKey: gasOption,
-        actionTitle: android ? `${GAS_EMOJIS[gasOption]}  ` : getGasLabel(gasOption || ''),
-        discoverabilityTitle: display,
-        icon: {
-          iconType: 'ASSET',
-          iconValue: GAS_ICONS[gasOption],
-        },
-      };
-    });
+        return {
+          actionKey: gasOption,
+          actionTitle: android ? `${GAS_EMOJIS[gasOption as GasSpeed]}  ` : getGasLabel(gasOption || ''),
+          discoverabilityTitle: display,
+          icon: {
+            iconType: 'ASSET',
+            iconValue: GAS_ICONS[gasOption as GasSpeed],
+          },
+        };
+      });
     return {
       menuItems: menuOptions,
       menuTitle: '',
     };
-  }, [gasFeeBySpeed, speedOptions]);
+  }, [gasFeeBySpeed]);
   const renderGasSpeedPager = useMemo(() => {
     if (IS_ANDROID) {
       return (
