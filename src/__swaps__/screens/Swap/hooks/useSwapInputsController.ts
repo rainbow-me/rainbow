@@ -206,7 +206,7 @@ export function useSwapInputsController({
       });
       // TODO: Update the inputAmount and outputAmount based on the quote
     },
-    [inputValues, isFetching, quote, updateQuoteStore]
+    [inputValues, internalSelectedInputAsset.value?.balance.amount, isFetching, quote, sliderXPosition, updateQuoteStore]
   );
 
   const fetchAndUpdateQuote = async ({

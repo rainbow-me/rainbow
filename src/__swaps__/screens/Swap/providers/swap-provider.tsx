@@ -1,5 +1,5 @@
 // @refresh
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode, useEffect } from 'react';
 import { StyleProp, TextStyle, TextInput } from 'react-native';
 import {
   AnimatedRef,
@@ -94,7 +94,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     lastTypedInput,
     inputProgress,
     outputProgress,
-    reviewProgress,
     internalSelectedInputAsset,
     internalSelectedOutputAsset,
     isFetching,
@@ -231,6 +230,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return '􀎽';
     }
 
+    if (isFetching.value) {
+      return '';
+    }
+
     const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
     const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
 
@@ -247,6 +250,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const isReviewing = reviewProgress.value === NavigationSteps.SHOW_REVIEW;
     if (isReviewing) {
       return 'Hold to Swap';
+    }
+
+    if (isFetching.value) {
+      return 'Fetching prices';
     }
 
     const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
@@ -274,6 +281,16 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       display: shouldHide ? 'none' : 'flex',
     };
   });
+
+  useEffect(() => {
+    return () => {
+      swapsStore.setState({
+        inputAsset: null,
+        outputAsset: null,
+        quote: null,
+      });
+    };
+  }, []);
 
   console.log('re-rendered swap provider: ', Date.now());
 

@@ -42,6 +42,9 @@ export function useSwapNavigation({
     handleDismissReview();
     SwapInputController.fetchQuote();
 
+    console.log('inputProgress.value', inputProgress.value);
+    console.log('outputProgress.value', outputProgress.value);
+
     if (inputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED) {
       inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
     }
@@ -80,6 +83,7 @@ export function useSwapNavigation({
     SwapInputController.quoteFetchingInterval.stop();
 
     if (inputProgress.value === NavigationSteps.INPUT_ELEMENT_FOCUSED) {
+      console.log('showing token list');
       inputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
       outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
     } else {
