@@ -21,10 +21,14 @@ import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import store from '@/redux/store';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { convertRawAmountToDecimalFormat } from '@/__swaps__/utils/numbers';
+import { NavigationSteps } from './useSwapNavigation';
 
 export function useSwapInputsController({
   focusedInput,
   lastTypedInput,
+  inputProgress,
+  outputProgress,
+  reviewProgress,
   internalSelectedInputAsset,
   internalSelectedOutputAsset,
   isFetching,
@@ -34,6 +38,9 @@ export function useSwapInputsController({
 }: {
   focusedInput: SharedValue<inputKeys>;
   lastTypedInput: SharedValue<inputKeys>;
+  inputProgress: SharedValue<number>;
+  outputProgress: SharedValue<number>;
+  reviewProgress: SharedValue<number>;
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   isFetching: SharedValue<boolean>;
@@ -203,6 +210,20 @@ export function useSwapInputsController({
       'worklet';
       isQuoteStale.value = 0;
       isFetching.value = false;
+
+      console.log({
+        inputProgress: inputProgress.value,
+        outputProgress: outputProgress.value,
+        reviewProgress: reviewProgress.value,
+      });
+
+      // NOTE: start the quote fetching interval if the token lists aren't open
+      // we need this check here because the user can open and close the token list before the quote is fetched and updated
+      if (inputProgress.value <= NavigationSteps.INPUT_ELEMENT_FOCUSED && outputProgress.value <= NavigationSteps.INPUT_ELEMENT_FOCUSED) {
+        quoteFetchingInterval.start();
+      }
+
+      // TODO: We probably need to clear the other input that was filled by quote data here
     };
 
     const params = buildQuoteParams({
@@ -214,7 +235,7 @@ export function useSwapInputsController({
       lastTypedInput,
     });
 
-    console.log(JSON.stringify(params, null, 2));
+    console.log(JSON.stringify(params, null, 2), Date.now());
 
     if (!params) {
       runOnUI(resetFetchingStatus)();
@@ -252,10 +273,15 @@ export function useSwapInputsController({
 
   const fetchQuote = () => {
     'worklet';
+    // reset the quote data, so we don't use stale data
+    setQuote({ data: null });
 
     const isSomeInputGreaterThanZero = Number(inputValues.value.inputAmount) > 0 || Number(inputValues.value.outputAmount) > 0;
 
-    if (!internalSelectedInputAsset.value || !internalSelectedOutputAsset.value || !isSomeInputGreaterThanZero) return;
+    // If either input is 0 or the assets aren't set, return early
+    if (!internalSelectedInputAsset.value || !internalSelectedOutputAsset.value || !isSomeInputGreaterThanZero) {
+      return;
+    }
     isFetching.value = true;
     isQuoteStale.value = 1;
 
@@ -274,24 +300,13 @@ export function useSwapInputsController({
     autoStart: false,
   });
 
-  const fetchAndStartInterval = (resetQuote = false) => {
-    'worklet';
-
-    if (resetQuote) {
-      setQuote({ data: null });
-    }
-
-    fetchQuote();
-    quoteFetchingInterval.start();
-  };
-
   const onChangedPercentage = useDebouncedCallback((percentage: number, setStale = true) => {
     resetTimers();
     lastTypedInput.value = 'inputAmount';
 
     if (percentage > 0) {
       if (setStale) isQuoteStale.value = 1;
-      runOnUI(fetchAndStartInterval)();
+      runOnUI(fetchQuote)();
     } else {
       isFetching.value = false;
       isQuoteStale.value = 0;
@@ -317,8 +332,7 @@ export function useSwapInputsController({
 
         // Update slider position
         sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
-
-        fetchAndStartInterval();
+        fetchQuote();
       };
 
       runOnUI(updateWorklet)();
@@ -525,7 +539,7 @@ export function useSwapInputsController({
             const inputNativeValue = Number(current.values.inputAmount) * current.assetToSell.displayPrice;
 
             isQuoteStale.value = 1;
-            fetchAndStartInterval(true);
+            fetchQuote();
 
             inputValues.modify(values => {
               return {
@@ -556,7 +570,6 @@ export function useSwapInputsController({
 
             isQuoteStale.value = 0;
             setQuote({ data: null });
-            quoteFetchingInterval.stop();
 
             if (hasDecimal) {
               runOnJS(onTypedNumber)(0, 'outputAmount', true);
@@ -571,7 +584,7 @@ export function useSwapInputsController({
             const outputNativeValue = outputAmount * current.assetToBuy.displayPrice;
 
             isQuoteStale.value = 1;
-            fetchAndStartInterval(true);
+            fetchQuote();
 
             inputValues.modify(values => {
               return {
@@ -597,7 +610,6 @@ export function useSwapInputsController({
     onChangedPercentage,
     percentageToSwap,
     quoteFetchingInterval,
-    fetchAndStartInterval,
     fetchQuote,
     setQuote,
   };

@@ -73,9 +73,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
   const searchInputRef = useAnimatedRef<TextInput>();
 
-  const inputProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
-  const outputProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
-  const reviewProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
+  const inputProgress = useSharedValue<NavigationSteps>(NavigationSteps.INPUT_ELEMENT_FOCUSED);
+  const outputProgress = useSharedValue<NavigationSteps>(NavigationSteps.INPUT_ELEMENT_FOCUSED);
+  const reviewProgress = useSharedValue<NavigationSteps>(NavigationSteps.INPUT_ELEMENT_FOCUSED);
 
   const sliderXPosition = useSharedValue(SLIDER_WIDTH * INITIAL_SLIDER_POSITION);
   const sliderPressProgress = useSharedValue(SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
@@ -92,6 +92,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const SwapInputController = useSwapInputsController({
     focusedInput,
     lastTypedInput,
+    inputProgress,
+    outputProgress,
+    reviewProgress,
     internalSelectedInputAsset,
     internalSelectedOutputAsset,
     isFetching,
@@ -180,7 +183,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }
 
       if (internalSelectedInputAsset.value && internalSelectedOutputAsset.value) {
-        SwapInputController.fetchAndStartInterval(true);
+        SwapInputController.fetchQuote();
       }
     };
 

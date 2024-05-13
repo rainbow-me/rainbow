@@ -41,6 +41,10 @@ export function useSwapNavigation({
     'worklet';
     handleDismissReview();
 
+    console.log('called handleExitSearch');
+
+    SwapInputController.fetchQuote();
+
     if (inputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED) {
       inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
     }
@@ -53,7 +57,7 @@ export function useSwapNavigation({
     if (outputProgress.value === NavigationSteps.SEARCH_FOCUSED) {
       outputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
     }
-  }, [handleDismissReview, inputProgress, outputProgress]);
+  }, [SwapInputController, handleDismissReview, inputProgress, outputProgress]);
 
   const handleFocusInputSearch = useCallback(() => {
     'worklet';
@@ -76,30 +80,26 @@ export function useSwapNavigation({
   const handleInputPress = useCallback(() => {
     'worklet';
     handleDismissReview();
+    SwapInputController.quoteFetchingInterval.stop();
 
     if (inputProgress.value === NavigationSteps.INPUT_ELEMENT_FOCUSED) {
       inputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
       outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
-      SwapInputController.quoteFetchingInterval.stop();
     } else {
       inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
-      SwapInputController.fetchQuote();
-      SwapInputController.quoteFetchingInterval.start();
     }
   }, [handleDismissReview, inputProgress, outputProgress, SwapInputController]);
 
   const handleOutputPress = useCallback(() => {
     'worklet';
     handleDismissReview();
+    SwapInputController.quoteFetchingInterval.stop();
 
     if (outputProgress.value === NavigationSteps.INPUT_ELEMENT_FOCUSED) {
       outputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
       inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
-      SwapInputController.quoteFetchingInterval.stop();
     } else {
       outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
-      SwapInputController.fetchQuote();
-      SwapInputController.quoteFetchingInterval.start();
     }
   }, [handleDismissReview, inputProgress, outputProgress, SwapInputController]);
 
