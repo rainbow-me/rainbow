@@ -361,7 +361,7 @@ export const SignTransactionSheet = () => {
           const assetWithOnchainBalance: ParsedAddressAsset = { ...asset, balance };
           setNativeAsset(assetWithOnchainBalance);
         } else {
-          provider && setNativeAsset(asset);
+          setNativeAsset(asset);
         }
       }
     })();
