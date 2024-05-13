@@ -359,7 +359,7 @@ export const SignTransactionSheet = () => {
         const balance = await getOnchainAssetBalance(asset, accountInfo.address, currentNetwork, provider);
         if (balance) {
           const assetWithOnchainBalance: ParsedAddressAsset = { ...asset, balance };
-          provider && setNativeAsset(assetWithOnchainBalance);
+          setNativeAsset(assetWithOnchainBalance);
         } else {
           provider && setNativeAsset(asset);
         }
