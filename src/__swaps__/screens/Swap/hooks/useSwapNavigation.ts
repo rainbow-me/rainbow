@@ -40,9 +40,6 @@ export function useSwapNavigation({
   const handleExitSearch = useCallback(() => {
     'worklet';
     handleDismissReview();
-
-    console.log('called handleExitSearch');
-
     SwapInputController.fetchQuote();
 
     if (inputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED) {

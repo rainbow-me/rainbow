@@ -137,17 +137,15 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     sliderPressProgress,
   });
 
-  const handleProgressNavigation = ({
-    type,
-    inputAsset,
-    outputAsset,
-  }: {
-    type: SwapAssetType;
-    inputAsset: ParsedSearchAsset | null;
-    outputAsset: ParsedSearchAsset | null;
-  }) => {
+  const handleProgressNavigation = ({ type }: { type: SwapAssetType }) => {
+    'worklet';
+
+    const inputAsset = internalSelectedInputAsset.value;
+    const outputAsset = internalSelectedOutputAsset.value;
+
     switch (type) {
       case SwapAssetType.inputAsset:
+        // if there is already an output asset selected, just close both lists
         if (outputAsset) {
           inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
           outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
@@ -157,6 +155,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         }
         break;
       case SwapAssetType.outputAsset:
+        // if there is already an input asset selected, just close both lists
         if (inputAsset) {
           inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
           outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
@@ -172,7 +171,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const updateAssetValue = ({ type, asset }: { type: SwapAssetType; asset: ExtendedAnimatedAssetWithColors | null }) => {
       'worklet';
 
-      // TODO: Orchestrastion for setting sliderXPosition value on setAsset is not working
       switch (type) {
         case SwapAssetType.inputAsset:
           internalSelectedInputAsset.value = asset;
@@ -182,9 +180,12 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           break;
       }
 
-      if (internalSelectedInputAsset.value && internalSelectedOutputAsset.value) {
-        SwapInputController.fetchQuote();
-      }
+      console.log('internalSelectedInputAsset', internalSelectedInputAsset.value);
+      console.log('internalSelectedOutputAsset', internalSelectedOutputAsset.value);
+
+      handleProgressNavigation({
+        type,
+      });
     };
 
     // const prevAsset = swapsStore.getState()[type];
@@ -222,11 +223,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       [type]: asset,
     });
     runOnUI(updateAssetValue)({ type, asset: parseAssetAndExtend({ asset }) });
-    handleProgressNavigation({
-      type,
-      inputAsset: type === SwapAssetType.inputAsset ? asset : prevOtherAsset,
-      outputAsset: type === SwapAssetType.outputAsset ? asset : prevOtherAsset,
-    });
   };
 
   const confirmButtonIcon = useDerivedValue(() => {

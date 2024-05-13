@@ -22,13 +22,13 @@ import store from '@/redux/store';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { convertRawAmountToDecimalFormat } from '@/__swaps__/utils/numbers';
 import { NavigationSteps } from './useSwapNavigation';
+import { logger } from '@/logger';
 
 export function useSwapInputsController({
   focusedInput,
   lastTypedInput,
   inputProgress,
   outputProgress,
-  reviewProgress,
   internalSelectedInputAsset,
   internalSelectedOutputAsset,
   isFetching,
@@ -40,7 +40,6 @@ export function useSwapInputsController({
   lastTypedInput: SharedValue<inputKeys>;
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
-  reviewProgress: SharedValue<number>;
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   isFetching: SharedValue<boolean>;
@@ -175,6 +174,19 @@ export function useSwapInputsController({
     }) => {
       'worklet';
 
+      // NOTE: Handle updating sliderXPosition based on inputAmount
+      if (typeof inputAmount !== 'undefined') {
+        if (inputAmount === 0) {
+          sliderXPosition.value = withSpring(0, snappySpringConfig);
+        } else {
+          const inputBalance = Number(internalSelectedInputAsset.value?.balance.amount || '0');
+          const updatedSliderPosition = clamp((inputAmount / inputBalance) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
+
+          // Update slider position
+          sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
+        }
+      }
+
       isFetching.value = false;
       quote.value = data;
       runOnJS(updateQuoteStore)(data);
@@ -211,12 +223,6 @@ export function useSwapInputsController({
       isQuoteStale.value = 0;
       isFetching.value = false;
 
-      console.log({
-        inputProgress: inputProgress.value,
-        outputProgress: outputProgress.value,
-        reviewProgress: reviewProgress.value,
-      });
-
       // NOTE: start the quote fetching interval if the token lists aren't open
       // we need this check here because the user can open and close the token list before the quote is fetched and updated
       if (inputProgress.value <= NavigationSteps.INPUT_ELEMENT_FOCUSED && outputProgress.value <= NavigationSteps.INPUT_ELEMENT_FOCUSED) {
@@ -235,7 +241,9 @@ export function useSwapInputsController({
       lastTypedInput,
     });
 
-    console.log(JSON.stringify(params, null, 2), Date.now());
+    logger.debug(`[useSwapInputsController]: quote params`, {
+      data: params,
+    });
 
     if (!params) {
       runOnUI(resetFetchingStatus)();
@@ -247,7 +255,9 @@ export function useSwapInputsController({
       | CrosschainQuote
       | QuoteError;
 
-    console.log(JSON.stringify(response, null, 2));
+    logger.debug(`[useSwapInputsController]: quote response`, {
+      data: response,
+    });
 
     // TODO: Handle native asset inputs
     runOnUI(setQuote)({
@@ -284,8 +294,6 @@ export function useSwapInputsController({
     }
     isFetching.value = true;
     isQuoteStale.value = 1;
-
-    console.log('fetching quote', Number(inputValues.value.inputAmount), Number(inputValues.value.outputAmount), lastTypedInput.value);
 
     runOnJS(fetchAndUpdateQuote)({
       inputAmount: inputValues.value.inputAmount,
@@ -325,13 +333,14 @@ export function useSwapInputsController({
       if (setStale) isQuoteStale.value = 1;
       const updateWorklet = () => {
         'worklet';
+        if (inputKey === 'inputAmount') {
+          const inputAssetBalance = Number(internalSelectedInputAsset.value?.balance.amount || '0');
+          const updatedSliderPosition = clamp((amount / inputAssetBalance) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
 
-        // TODO: This doesn't work when typing in the outputAmount field since we don't have asset prices to calculate the slider position
-        const inputAssetBalance = Number(internalSelectedInputAsset.value?.balance.amount || '0');
-        const updatedSliderPosition = clamp((amount / inputAssetBalance) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
+          // Update slider position
+          sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
+        }
 
-        // Update slider position
-        sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
         fetchQuote();
       };
 
@@ -409,12 +418,6 @@ export function useSwapInputsController({
     }),
     (current, previous) => {
       const didInputAssetChange = current.assetToSell !== previous?.assetToSell || current.assetToBuy !== previous?.assetToBuy;
-      // setting default values for inputAmount and outputAmount
-      // if (didInputAssetChange) {
-      //   console.log('called current !== previous', inputMethod.value);
-      //   sliderXPosition.value = 0.5;
-      //   return;
-      // }
 
       if (!previous) {
         // Handle setting of initial values using niceIncrementFormatter,
@@ -497,7 +500,6 @@ export function useSwapInputsController({
               true
             );
             const inputNativeValue = Number(inputAmount) * internalSelectedInputAsset.value?.displayPrice;
-
             inputValues.modify(values => {
               return {
                 ...values,
@@ -505,6 +507,9 @@ export function useSwapInputsController({
                 inputNativeValue,
               };
             });
+
+            isQuoteStale.value = 1;
+            fetchQuote();
           }
         }
 
@@ -524,10 +529,6 @@ export function useSwapInputsController({
                 outputNativeValue: 0,
               };
             });
-            isQuoteStale.value = 0;
-            setQuote({ data: null });
-            quoteFetchingInterval.stop();
-
             if (hasDecimal) {
               runOnJS(onTypedNumber)(0, 'inputAmount', true);
             } else {
@@ -537,10 +538,6 @@ export function useSwapInputsController({
             if (!current.assetToSell || !current.assetToSell?.displayPrice) return;
             // If the input amount was set to a non-zero value
             const inputNativeValue = Number(current.values.inputAmount) * current.assetToSell.displayPrice;
-
-            isQuoteStale.value = 1;
-            fetchQuote();
-
             inputValues.modify(values => {
               return {
                 ...values,
@@ -582,9 +579,6 @@ export function useSwapInputsController({
 
             const outputAmount = Number(current.values.outputAmount);
             const outputNativeValue = outputAmount * current.assetToBuy.displayPrice;
-
-            isQuoteStale.value = 1;
-            fetchQuote();
 
             inputValues.modify(values => {
               return {
