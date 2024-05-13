@@ -29,7 +29,7 @@ export const useSwapGas = ({
 
       selectedGas.value = option;
       runOnJS(gasStore.setState)({
-        selectedGas: option,
+        selectedGas: option as GasFeeLegacyParams,
       });
     },
     [selectedGas]
