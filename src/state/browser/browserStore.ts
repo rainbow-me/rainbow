@@ -3,7 +3,7 @@ import { MMKV } from 'react-native-mmkv';
 import { create } from 'zustand';
 import { PersistStorage, StorageValue, persist, subscribeWithSelector } from 'zustand/middleware';
 import { DEFAULT_TAB_URL } from '@/components/DappBrowser/constants';
-import { TabId } from '@/components/DappBrowser/types';
+import { TabData, TabId } from '@/components/DappBrowser/types';
 import { generateUniqueId, normalizeUrl } from '@/components/DappBrowser/utils';
 import { RainbowError, logger } from '@/logger';
 
@@ -60,12 +60,18 @@ function deserializeBrowserState(serializedState: string): { state: BrowserState
     throw error;
   }
 
-  const persistedTabUrls = state.persistedTabUrls || {};
+  // Remove entries from tabsData that don't have a corresponding tabId in tabIds
+  const tabIdsSet = new Set(state.tabIds);
+  for (const tabId of tabsData.keys()) {
+    if (!tabIdsSet.has(tabId)) {
+      tabsData.delete(tabId);
+    }
+  }
 
   // Restore persisted tab URLs if any exist
-  state.tabIds.forEach((tabId: TabId) => {
-    const persistedUrl = persistedTabUrls[tabId];
-    if (persistedUrl) {
+  const persistedTabUrlsSet = new Set(Object.entries(state.persistedTabUrls || {}));
+  for (const [tabId, persistedUrl] of persistedTabUrlsSet) {
+    if (tabIdsSet.has(tabId)) {
       const tabData = tabsData.get(tabId);
       if (tabData) {
         tabData.url = persistedUrl;
@@ -73,13 +79,13 @@ function deserializeBrowserState(serializedState: string): { state: BrowserState
         logger.warn(`No tabData found for tabId ${tabId} during URL restoration`);
       }
     }
-  });
+  }
 
   return {
     state: {
       ...state,
-      // The stored tab index may be negative here in the event a tab was closed and then the app was quit.
-      // See BrowserWorkletsContext -> closeTabWorklet for details.
+      // The stored tab index may be negative here in the event that a tab was closed and then the app
+      // was quit. For more details on this, see BrowserWorkletsContext.tsx -> closeTabWorklet.
       activeTabIndex: Math.abs(state.activeTabIndex),
       tabsData,
     },
@@ -102,31 +108,22 @@ const INITIAL_TAB_IDS = [generateUniqueId()];
 const INITIAL_TABS_DATA = new Map([[INITIAL_TAB_IDS[0], { url: DEFAULT_TAB_URL }]]);
 const INITIAL_PERSISTED_TAB_URLS: Record<TabId, string> = { [INITIAL_TAB_IDS[0]]: DEFAULT_TAB_URL };
 
-const INITIAL_STATE = {
-  activeTabIndex: INITIAL_ACTIVE_TAB_INDEX,
-  persistedTabUrls: INITIAL_PERSISTED_TAB_URLS,
-  tabIds: INITIAL_TAB_IDS,
-  tabsData: INITIAL_TABS_DATA,
-};
-
-type TabData = { logoUrl?: string; url: string };
-
 interface BrowserStore {
   activeTabIndex: number;
   persistedTabUrls: Record<TabId, string>;
   tabIds: TabId[];
   tabsData: Map<TabId, TabData>;
   getActiveTabId: () => TabId;
-  getActiveTabIndex: () => number;
   getActiveTabLogo: () => string | undefined;
-  getTabData: (tabId: TabId) => TabData;
-  getTabIds: () => TabId[];
-  getTabsData: () => Map<TabId, TabData>;
+  getActiveTabTitle: () => string | undefined;
+  getActiveTabUrl: () => string | undefined;
+  getTabData: (tabId: TabId) => TabData | undefined;
   goToPage: (url: string, tabId?: TabId) => void;
   isTabActive: (tabId: TabId) => boolean;
   setActiveTabIndex: (index: number) => void;
   setLogo: (logoUrl: string, tabId: TabId) => void;
   setTabIds: (tabIds: TabId[]) => void;
+  setTitle: (title: string, tabId: TabId) => void;
   silentlySetPersistedTabUrls: (persistedTabUrls: Record<TabId, string>) => void;
 }
 
@@ -136,19 +133,20 @@ export const useBrowserStore = create<BrowserStore>()(
   subscribeWithSelector(
     persist(
       (set, get) => ({
-        ...INITIAL_STATE,
+        activeTabIndex: INITIAL_ACTIVE_TAB_INDEX,
+        persistedTabUrls: INITIAL_PERSISTED_TAB_URLS,
+        tabIds: INITIAL_TAB_IDS,
+        tabsData: INITIAL_TABS_DATA,
 
         getActiveTabId: () => get().tabIds[get().activeTabIndex],
 
-        getActiveTabIndex: () => get().activeTabIndex,
+        getActiveTabLogo: () => get().tabsData.get(get().getActiveTabId())?.logoUrl,
 
-        getActiveTabLogo: () => get().tabsData.get(get().tabIds[get().activeTabIndex])?.logoUrl,
+        getActiveTabTitle: () => get().tabsData.get(get().getActiveTabId())?.title,
+
+        getActiveTabUrl: () => get().persistedTabUrls[get().getActiveTabId()],
 
         getTabData: (tabId: string) => get().tabsData.get(tabId) || { url: DEFAULT_TAB_URL },
-
-        getTabIds: () => get().tabIds,
-
-        getTabsData: () => get().tabsData,
 
         goToPage: (url: string, tabId?: string) =>
           set(state => {
@@ -172,10 +170,10 @@ export const useBrowserStore = create<BrowserStore>()(
             return state;
           }),
 
-        setLogo: (tabId: string, logoUrl: string) =>
+        setLogo: (logoUrl: string, tabId: string) =>
           set(state => {
             const existingTabData = state.tabsData.get(tabId);
-            if (existingTabData && existingTabData.logoUrl !== logoUrl) {
+            if (existingTabData?.logoUrl !== logoUrl) {
               const updatedTabData = { ...existingTabData, logoUrl };
               const newTabsData = new Map(state.tabsData);
               newTabsData.set(tabId, updatedTabData);
@@ -191,6 +189,18 @@ export const useBrowserStore = create<BrowserStore>()(
             const newTabsData = new Map(state.tabsData);
             addedTabIds.forEach(id => newTabsData.set(id, { url: DEFAULT_TAB_URL }));
             return { tabIds: [...existingTabIds, ...addedTabIds], tabsData: newTabsData };
+          }),
+
+        setTitle: (title: string, tabId: string) =>
+          set(state => {
+            const existingTabData = state.tabsData.get(tabId);
+            if (existingTabData?.title !== title) {
+              const updatedTabData = { ...existingTabData, title };
+              const newTabsData = new Map(state.tabsData);
+              newTabsData.set(tabId, updatedTabData);
+              return { tabsData: newTabsData };
+            }
+            return state;
           }),
 
         silentlySetPersistedTabUrls: (persistedTabUrls: Record<TabId, string>) =>

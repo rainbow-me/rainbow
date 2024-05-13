@@ -1,15 +1,8 @@
 import { PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
-import Animated, {
-  runOnJS,
-  runOnUI,
-  useAnimatedGestureHandler,
-  useAnimatedReaction,
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
-import { useSwapContext } from '../../providers/swap-provider';
+import { useAnimatedGestureHandler, useSharedValue } from 'react-native-reanimated';
+import { useSwapContext } from '../providers/swap-provider';
 
-export const useSwapActionsGestureHandler = () => {
+export const useBottomPanelGestureHandler = () => {
   const gestureY = useSharedValue(0);
   const { SwapNavigation } = useSwapContext();
 

@@ -21,12 +21,12 @@ export const SwapBackground = () => {
 
   const fallbackColor = isDarkMode ? ETH_COLOR_DARK : ETH_COLOR;
 
-  const bottomColorDarkened = useSharedValue(getTintedBackgroundColor(fallbackColor, isDarkMode));
-  const topColorDarkened = useSharedValue(getTintedBackgroundColor(fallbackColor, isDarkMode));
+  const bottomColorDarkened = useSharedValue(getTintedBackgroundColor(fallbackColor)[isDarkMode ? 'dark' : 'light']);
+  const topColorDarkened = useSharedValue(getTintedBackgroundColor(fallbackColor)[isDarkMode ? 'dark' : 'light']);
 
   const getDarkenedColors = ({ topColor, bottomColor }: { topColor: string; bottomColor: string }) => {
-    bottomColorDarkened.value = getTintedBackgroundColor(bottomColor, isDarkMode);
-    topColorDarkened.value = getTintedBackgroundColor(topColor, isDarkMode);
+    bottomColorDarkened.value = getTintedBackgroundColor(bottomColor)[isDarkMode ? 'dark' : 'light'];
+    topColorDarkened.value = getTintedBackgroundColor(topColor)[isDarkMode ? 'dark' : 'light'];
   };
 
   useAnimatedReaction(

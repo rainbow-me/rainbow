@@ -1,8 +1,7 @@
 import { Address } from 'viem';
-import create from 'zustand';
 
-import { createStore } from '../internal/createStore';
 import { Network } from '@/networks/types';
+import { createRainbowStore } from '../internal/createRainbowStore';
 
 export interface AppSession {
   activeSessionAddress: Address;
@@ -11,23 +10,11 @@ export interface AppSession {
   url: string;
 }
 
-export type ActiveSession = { address: Address; network: Network } | null;
-
 export interface AppSessionsStore<T extends AppSession> {
   appSessions: Record<string, T>;
-  getActiveSession: ({ host }: { host: string }) => ActiveSession;
+  getActiveSession: ({ host }: { host: string }) => AppSession;
   removeAddressSessions: ({ address }: { address: Address }) => void;
-  addSession: ({
-    host,
-    address,
-    network,
-    url,
-  }: {
-    host: string;
-    address: Address;
-    network: Network;
-    url: string;
-  }) => Record<Address, Network>;
+  addSession: ({ host, address, network, url }: { host: string; address: Address; network: Network; url: string }) => void;
   removeSession: ({ host, address }: { host: string; address: Address }) => { address: Address; network: Network } | null;
   removeAppSession: ({ host }: { host: string }) => void;
   updateActiveSession: ({ host, address }: { host: string; address: Address }) => void;
@@ -36,19 +23,14 @@ export interface AppSessionsStore<T extends AppSession> {
   clearSessions: () => void;
 }
 
-export const appSessionsStore = createStore<AppSessionsStore<AppSession>>(
+export const useAppSessionsStore = createRainbowStore<AppSessionsStore<AppSession>>(
   (set, get) => ({
     appSessions: {},
-    getActiveSession: ({ host }) => {
+    cachedSelectors: {},
+    getActiveSession: ({ host }: { host: string }) => {
       const appSessions = get().appSessions;
-      const activeSessionAddress = appSessions[host]?.activeSessionAddress;
-      const sessions = appSessions[host]?.sessions;
-      return activeSessionAddress && sessions
-        ? {
-            address: activeSessionAddress,
-            network: sessions[activeSessionAddress],
-          }
-        : null;
+      const sessionInfo = appSessions[host];
+      return sessionInfo;
     },
     removeAddressSessions: ({ address }) => {
       const appSessions = get().appSessions;
@@ -84,7 +66,6 @@ export const appSessionsStore = createStore<AppSessionsStore<AppSession>>(
           ...appSessions,
         },
       });
-      return appSessions[host].sessions;
     },
     removeAppSession: ({ host }) => {
       const appSessions = get().appSessions;
@@ -129,6 +110,7 @@ export const appSessionsStore = createStore<AppSessionsStore<AppSession>>(
     updateActiveSession: ({ host, address }) => {
       const appSessions = get().appSessions;
       const appSession = appSessions[host];
+      if (!appSession) return;
       set({
         appSessions: {
           ...appSessions,
@@ -142,6 +124,7 @@ export const appSessionsStore = createStore<AppSessionsStore<AppSession>>(
     updateActiveSessionNetwork: ({ host, network }) => {
       const appSessions = get().appSessions;
       const appSession = appSessions[host];
+      if (!appSession) return;
       set({
         appSessions: {
           ...appSessions,
@@ -158,6 +141,7 @@ export const appSessionsStore = createStore<AppSessionsStore<AppSession>>(
     updateSessionNetwork: ({ host, address, network }) => {
       const appSessions = get().appSessions;
       const appSession = appSessions[host];
+      if (!appSession) return;
       set({
         appSessions: {
           ...appSessions,
@@ -174,11 +158,7 @@ export const appSessionsStore = createStore<AppSessionsStore<AppSession>>(
     clearSessions: () => set({ appSessions: {} }),
   }),
   {
-    persist: {
-      name: 'appSessions',
-      version: 0,
-    },
+    storageKey: 'appSessions',
+    version: 0,
   }
 );
-
-export const useAppSessionsStore = create(appSessionsStore);

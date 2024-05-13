@@ -19,11 +19,13 @@ export const estimateUnlockAndCrosschainSwap = async (swapParameters: RapSwapAct
     sellTokenAddress,
     buyTokenAddress,
     allowanceTarget,
+    no_approval,
   } = quote as {
     from: Address;
     sellTokenAddress: Address;
     buyTokenAddress: Address;
     allowanceTarget: Address;
+    no_approval: boolean;
   };
 
   const isNativeAssetUnwrapping =
@@ -38,7 +40,9 @@ export const estimateUnlockAndCrosschainSwap = async (swapParameters: RapSwapAct
   // Aggregators represent native asset as 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
   const nativeAsset = isLowerCaseMatch(ETH_ADDRESS_AGGREGATOR, sellTokenAddress) || isNativeAsset(assetToSell.address, network);
 
-  if (!isNativeAssetUnwrapping && !nativeAsset) {
+  const shouldNotHaveApproval = no_approval !== undefined && no_approval;
+
+  if (!isNativeAssetUnwrapping && !nativeAsset && allowanceTarget && !shouldNotHaveApproval) {
     swapAssetNeedsUnlocking = await assetNeedsUnlocking({
       owner: accountAddress,
       amount: sellAmount,
@@ -80,11 +84,13 @@ export const createUnlockAndCrosschainSwapRap = async (swapParameters: RapSwapAc
     sellTokenAddress,
     buyTokenAddress,
     allowanceTarget,
+    no_approval,
   } = quote as {
     from: Address;
     sellTokenAddress: Address;
     buyTokenAddress: Address;
     allowanceTarget: Address;
+    no_approval: boolean;
   };
 
   const isNativeAssetUnwrapping =
@@ -95,9 +101,11 @@ export const createUnlockAndCrosschainSwapRap = async (swapParameters: RapSwapAc
   // Aggregators represent native asset as 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
   const nativeAsset = isLowerCaseMatch(ETH_ADDRESS_AGGREGATOR, sellTokenAddress) || assetToSell?.isNativeAsset;
 
+  const shouldNotHaveApproval = no_approval !== undefined && no_approval;
+
   let swapAssetNeedsUnlocking = false;
 
-  if (!isNativeAssetUnwrapping && !nativeAsset) {
+  if (!isNativeAssetUnwrapping && !nativeAsset && allowanceTarget && !shouldNotHaveApproval) {
     swapAssetNeedsUnlocking = await assetNeedsUnlocking({
       owner: accountAddress,
       amount: sellAmount,

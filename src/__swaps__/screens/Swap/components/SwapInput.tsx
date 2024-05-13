@@ -1,36 +1,33 @@
 import React, { ReactNode } from 'react';
-import Animated, { DerivedValue, SharedValue } from 'react-native-reanimated';
+import Animated, { SharedValue } from 'react-native-reanimated';
 import { Box } from '@/design-system';
 import { BASE_INPUT_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useSwapInputStyles } from '@/__swaps__/screens/Swap/hooks/useSwapInputStyles';
 import { StyleSheet } from 'react-native';
+import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 
 export const SwapInput = ({
   children,
-  color,
+  asset,
   bottomInput,
   otherInputProgress,
   progress,
 }: {
   children?: ReactNode;
-  color: DerivedValue<string | number>;
+  asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   bottomInput?: boolean;
   otherInputProgress: SharedValue<number>;
   progress: SharedValue<number>;
 }) => {
-  const { inputStyle, containerStyle, mixedShadowColor } = useSwapInputStyles({
+  const { inputStyle, containerStyle } = useSwapInputStyles({
+    asset,
     bottomInput,
-    color,
     otherInputProgress,
     progress,
   });
 
   return (
-    <Box
-      as={Animated.View}
-      style={[containerStyle, styles.staticInputContainerStyles, { shadowColor: mixedShadowColor }]}
-      width={{ custom: BASE_INPUT_WIDTH }}
-    >
+    <Box as={Animated.View} style={[containerStyle, styles.staticInputContainerStyles]} width={{ custom: BASE_INPUT_WIDTH }}>
       <Box as={Animated.View} style={[inputStyle, styles.staticInputStyles]}>
         {children}
       </Box>
