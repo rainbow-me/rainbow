@@ -17,6 +17,8 @@
 ### General
 
 - Install NVM or Node.js 16: https://github.com/creationix/nvm
+- Clone https://github.com/rainbow-me/rainbow-scripts into the root of this project
+- You'll need a [github ssh key setup](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) if you don't have already
 - Install all project dependencies with `yarn setup`
 
 ### MacOS
