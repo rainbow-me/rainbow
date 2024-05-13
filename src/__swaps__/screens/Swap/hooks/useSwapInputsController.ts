@@ -509,7 +509,6 @@ export function useSwapInputsController({
             });
 
             isQuoteStale.value = 1;
-            fetchQuote();
           }
         }
 
@@ -590,6 +589,10 @@ export function useSwapInputsController({
             runOnJS(onTypedNumber)(Number(current.values.outputAmount), 'outputAmount');
           }
         }
+      }
+
+      if (didInputAssetChange) {
+        fetchQuote();
       }
     }
   );
