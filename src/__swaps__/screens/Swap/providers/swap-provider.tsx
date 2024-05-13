@@ -179,9 +179,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           break;
       }
 
-      console.log('internalSelectedInputAsset', internalSelectedInputAsset.value);
-      console.log('internalSelectedOutputAsset', internalSelectedOutputAsset.value);
-
       handleProgressNavigation({
         type,
       });
@@ -217,7 +214,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
     logger.debug(`[setAsset]: Setting ${type} asset to ${asset.name} on ${asset.chainId}`);
 
-    // TODO: Bunch of logic left to implement here... reset prices, retrigger quote fetching, etc.
     swapsStore.setState({
       [type]: asset,
     });

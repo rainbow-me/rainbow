@@ -176,6 +176,7 @@ export function useSwapInputsController({
 
       // NOTE: Handle updating sliderXPosition based on inputAmount
       if (typeof inputAmount !== 'undefined') {
+        console.log(inputAmount);
         if (inputAmount === 0) {
           sliderXPosition.value = withSpring(0, snappySpringConfig);
         } else {
@@ -218,7 +219,7 @@ export function useSwapInputsController({
     outputAmount: string | number;
     lastTypedInput: inputKeys;
   }) => {
-    const resetFetchingStatus = () => {
+    const resetFetchingStatus = (fromError = false) => {
       'worklet';
       isQuoteStale.value = 0;
       isFetching.value = false;
@@ -229,7 +230,28 @@ export function useSwapInputsController({
         quoteFetchingInterval.start();
       }
 
-      // TODO: We probably need to clear the other input that was filled by quote data here
+      if (!fromError) {
+        return;
+      }
+
+      // NOTE: if we encounter a quote error, let's make sure to update the outputAmount and inputAmount to 0 accordingly
+      if (lastTypedInput === 'inputAmount') {
+        inputValues.modify(prev => {
+          return {
+            ...prev,
+            outputAmount: 0,
+            outputNativeValue: 0,
+          };
+        });
+      } else if (lastTypedInput === 'outputAmount') {
+        inputValues.modify(prev => {
+          return {
+            ...prev,
+            inputAmount: 0,
+            inputNativeValue: 0,
+          };
+        });
+      }
     };
 
     const params = buildQuoteParams({
@@ -246,7 +268,7 @@ export function useSwapInputsController({
     });
 
     if (!params) {
-      runOnUI(resetFetchingStatus)();
+      runOnUI(resetFetchingStatus)(true);
       return;
     }
 
@@ -278,7 +300,7 @@ export function useSwapInputsController({
             )
           : undefined,
     });
-    runOnUI(resetFetchingStatus)();
+    runOnUI(resetFetchingStatus)((response as QuoteError)?.error);
   };
 
   const fetchQuote = () => {
@@ -288,7 +310,7 @@ export function useSwapInputsController({
 
     const isSomeInputGreaterThanZero = Number(inputValues.value.inputAmount) > 0 || Number(inputValues.value.outputAmount) > 0;
 
-    // If either input is 0 or the assets aren't set, return early
+    // If both inputs are 0 or the assets aren't set, return early
     if (!internalSelectedInputAsset.value || !internalSelectedOutputAsset.value || !isSomeInputGreaterThanZero) {
       return;
     }
