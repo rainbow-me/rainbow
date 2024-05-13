@@ -1,12 +1,11 @@
 import React, { useCallback, useMemo } from 'react';
-import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import * as i18n from '@/languages';
 
 import { AnimatedText, Box, Inline, Separator, Stack, Text, globalColors, useColorMode } from '@/design-system';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { fadeConfig } from '@/__swaps__/screens/Swap/constants';
 import { ButtonPressAnimation } from '@/components/animations';
-import { CUSTOM_GAS_FIELDS } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { useGas } from '@/hooks';
 import { getTrendKey } from '@/helpers/gas';
 import { gasUtils } from '@/utils';
@@ -34,8 +33,13 @@ type AlertInfo = {
 export function GasPanel() {
   const { selectedGasFee, currentBlockParams } = useGas();
 
+  const currentBaseFee = useSharedValue('');
+  const maxBaseFee = useSharedValue('');
+  const priorityFee = useSharedValue('');
+  const maxTransactionFee = useSharedValue('');
+
   const { isDarkMode } = useColorMode();
-  const { configProgress, SwapCustomGas } = useSwapContext();
+  const { configProgress } = useSwapContext();
   const { navigate } = useNavigation();
   const { colors } = useTheme();
 
@@ -122,7 +126,7 @@ export function GasPanel() {
               size="15pt"
               weight="heavy"
               style={{ textTransform: 'capitalize' }}
-              text={SwapCustomGas.currentBaseFee}
+              text={currentBaseFee}
             />
           </Inline>
 
@@ -132,7 +136,8 @@ export function GasPanel() {
 
             <Inline wrap={false} alignVertical="center" horizontalSpace="6px">
               <Inline wrap={false} horizontalSpace="8px" alignVertical="center">
-                <ButtonPressAnimation onPress={() => SwapCustomGas.onUpdateField(CUSTOM_GAS_FIELDS.MAX_BASE_FEE, 'decrement', 3)}>
+                {/* TODO: Handle decrement by 3 */}
+                <ButtonPressAnimation onPress={() => {}}>
                   <Box
                     style={{
                       justifyContent: 'center',
@@ -154,9 +159,10 @@ export function GasPanel() {
                   </Box>
                 </ButtonPressAnimation>
 
-                <AnimatedText size="15pt" weight="bold" color="labelSecondary" text={SwapCustomGas.maxBaseFee} />
+                <AnimatedText size="15pt" weight="bold" color="labelSecondary" text={maxBaseFee} />
 
-                <ButtonPressAnimation onPress={() => SwapCustomGas.onUpdateField(CUSTOM_GAS_FIELDS.MAX_BASE_FEE, 'increment', 3)}>
+                {/* TODO: Handle increment by 3 */}
+                <ButtonPressAnimation onPress={() => {}}>
                   <Box
                     style={{
                       justifyContent: 'center',
@@ -190,7 +196,8 @@ export function GasPanel() {
 
             <Inline wrap={false} alignVertical="center" horizontalSpace="6px">
               <Inline wrap={false} horizontalSpace="8px" alignVertical="center">
-                <ButtonPressAnimation onPress={() => SwapCustomGas.onUpdateField(CUSTOM_GAS_FIELDS.PRIORITY_FEE, 'decrement')}>
+                {/* TODO: Handle decrement by 1 */}
+                <ButtonPressAnimation onPress={() => {}}>
                   <Box
                     style={{
                       justifyContent: 'center',
@@ -212,9 +219,10 @@ export function GasPanel() {
                   </Box>
                 </ButtonPressAnimation>
 
-                <AnimatedText size="15pt" weight="bold" color="labelSecondary" text={SwapCustomGas.priorityFee} />
+                <AnimatedText size="15pt" weight="bold" color="labelSecondary" text={priorityFee} />
 
-                <ButtonPressAnimation onPress={() => SwapCustomGas.onUpdateField(CUSTOM_GAS_FIELDS.PRIORITY_FEE, 'increment')}>
+                {/* TODO: Handle increment by 1 */}
+                <ButtonPressAnimation onPress={() => {}}>
                   <Box
                     style={{
                       justifyContent: 'center',
@@ -262,7 +270,7 @@ export function GasPanel() {
                 color={isDarkMode ? 'labelSecondary' : 'label'}
                 size="15pt"
                 weight="heavy"
-                text={SwapCustomGas.maxTransactionFee}
+                text={maxTransactionFee}
               />
             </Inline>
           </Inline>

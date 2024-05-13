@@ -1,6 +1,5 @@
 import { useCallback } from 'react';
 import { SharedValue, useSharedValue } from 'react-native-reanimated';
-import { useCustomGas } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 
 export const enum NavigationSteps {
   INPUT_ELEMENT_FOCUSED = 0,
@@ -11,12 +10,10 @@ export const enum NavigationSteps {
 }
 
 export function useSwapNavigation({
-  SwapCustomGas,
   inputProgress,
   outputProgress,
   configProgress,
 }: {
-  SwapCustomGas: ReturnType<typeof useCustomGas>;
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
   configProgress: SharedValue<number>;
@@ -40,30 +37,8 @@ export function useSwapNavigation({
   }, [configProgress]);
 
   const handleShowGas = useCallback(
-    ({
-      currentBaseFee,
-      maxBaseFee,
-      priorityFee,
-      backToReview = false,
-    }: {
-      currentBaseFee: string;
-      maxBaseFee: string;
-      priorityFee: string;
-      backToReview?: boolean;
-    }) => {
+    ({ backToReview = false }: { backToReview?: boolean }) => {
       'worklet';
-      if (currentBaseFee) {
-        SwapCustomGas.currentBaseFee.value = currentBaseFee;
-      }
-
-      if (maxBaseFee) {
-        SwapCustomGas.maxBaseFee.value = maxBaseFee;
-      }
-
-      if (priorityFee) {
-        SwapCustomGas.priorityFee.value = priorityFee;
-      }
-
       if (backToReview) {
         navigateBackToReview.value = true;
       }
@@ -74,15 +49,7 @@ export function useSwapNavigation({
         configProgress.value = NavigationSteps.SHOW_GAS;
       }
     },
-    [
-      configProgress,
-      SwapCustomGas.currentBaseFee,
-      SwapCustomGas.maxBaseFee,
-      SwapCustomGas.priorityFee,
-      navigateBackToReview,
-      inputProgress,
-      outputProgress,
-    ]
+    [configProgress, navigateBackToReview, inputProgress, outputProgress]
   );
 
   const handleDismissGas = useCallback(() => {
@@ -161,8 +128,6 @@ export function useSwapNavigation({
     'worklet';
 
     if (configProgress.value === NavigationSteps.SHOW_GAS) {
-      SwapCustomGas.onSaveCustomGas();
-
       if (navigateBackToReview.value) {
         navigateBackToReview.value = false;
         handleShowReview();
@@ -177,7 +142,7 @@ export function useSwapNavigation({
     } else {
       handleShowReview();
     }
-  }, [SwapCustomGas, configProgress.value, handleDismissGas, handleDismissReview, handleShowReview, navigateBackToReview]);
+  }, [configProgress.value, handleDismissGas, handleDismissReview, handleShowReview, navigateBackToReview]);
 
   return {
     handleExitSearch,

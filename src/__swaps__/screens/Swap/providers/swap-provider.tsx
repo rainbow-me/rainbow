@@ -1,32 +1,59 @@
 // @refresh
 import React, { createContext, useContext, ReactNode } from 'react';
-import { StyleProp, TextStyle } from 'react-native';
-import { SharedValue, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import { inputKeys } from '@/__swaps__/types/swap';
+import { StyleProp, TextStyle, TextInput } from 'react-native';
+import {
+  AnimatedRef,
+  SharedValue,
+  runOnJS,
+  runOnUI,
+  useAnimatedRef,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+} from 'react-native-reanimated';
+import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
 import { INITIAL_SLIDER_POSITION, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useAnimatedSwapStyles } from '@/__swaps__/screens/Swap/hooks/useAnimatedSwapStyles';
 import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextStyles';
 import { useSwapNavigation, NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
-import { UserAssetFilter } from '@/__swaps__/types/assets';
+import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
-import { useCustomGas } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
+import { CrosschainQuote, Quote, QuoteError, SwapType, getCrosschainQuote, getQuote } from '@rainbow-me/swaps';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import { isSameAsset } from '@/__swaps__/utils/assets';
+import { buildQuoteParams, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
+import { ChainId } from '@/__swaps__/types/chains';
+import { logger } from '@/logger';
 
 interface SwapContextType {
-  userAssetFilter: SharedValue<UserAssetFilter>;
+  isFetching: SharedValue<boolean>;
+  searchInputRef: AnimatedRef<TextInput>;
+
+  // TODO: Combine navigation progress steps into a single shared value
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
   configProgress: SharedValue<number>;
   sliderXPosition: SharedValue<number>;
   sliderPressProgress: SharedValue<number>;
+
   focusedInput: SharedValue<inputKeys>;
-  isFetching: SharedValue<boolean>;
+
+  // TODO: Separate this into Zustand
+  outputChainId: SharedValue<ChainId>;
+
+  internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+  internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+  setAsset: ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset }) => void;
+
+  quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
+  fetchQuote: () => Promise<void>;
+
   SwapInputController: ReturnType<typeof useSwapInputsController>;
   AnimatedSwapStyles: ReturnType<typeof useAnimatedSwapStyles>;
   SwapTextStyles: ReturnType<typeof useSwapTextStyles>;
   SwapNavigation: ReturnType<typeof useSwapNavigation>;
   SwapWarning: ReturnType<typeof useSwapWarning>;
-  SwapCustomGas: ReturnType<typeof useCustomGas>;
 
   confirmButtonIcon: Readonly<SharedValue<string>>;
   confirmButtonLabel: Readonly<SharedValue<string>>;
@@ -41,19 +68,146 @@ interface SwapProviderProps {
 
 export const SwapProvider = ({ children }: SwapProviderProps) => {
   const isFetching = useSharedValue(false);
+
+  const searchInputRef = useAnimatedRef<TextInput>();
+
   const inputProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
   const outputProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
   const configProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
   const sliderXPosition = useSharedValue(SLIDER_WIDTH * INITIAL_SLIDER_POSITION);
   const sliderPressProgress = useSharedValue(SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
+
   const focusedInput = useSharedValue<inputKeys>('inputAmount');
+  const outputChainId = useSharedValue<ChainId>(ChainId.mainnet);
 
-  const userAssetFilter = useSharedValue<UserAssetFilter>('all');
+  const internalSelectedInputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(null);
+  const internalSelectedOutputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(null);
 
-  const SwapCustomGas = useCustomGas();
+  const quote = useSharedValue<Quote | CrosschainQuote | QuoteError | null>(null);
+
+  const fetchQuote = async () => {
+    'worklet';
+
+    const params = buildQuoteParams({
+      inputAmount: SwapInputController.inputValues.value.inputAmount,
+      outputAmount: SwapInputController.inputValues.value.outputAmount,
+      focusedInput: focusedInput.value,
+    });
+
+    if (!params) return;
+
+    const response = (params.swapType === SwapType.crossChain ? await getCrosschainQuote(params) : await getQuote(params)) as
+      | Quote
+      | CrosschainQuote
+      | QuoteError;
+
+    setQuote({ data: response });
+
+    // TODO: Handle setting quote interval AND asset price fetching
+  };
+
+  const setQuote = ({ data }: { data: Quote | CrosschainQuote | QuoteError | null }) => {
+    'worklet';
+    quote.value = data;
+    runOnJS(swapsStore.setState)({ quote: data });
+  };
+
+  const handleProgressNavigation = ({
+    type,
+    inputAsset,
+    outputAsset,
+  }: {
+    type: SwapAssetType;
+    inputAsset: ParsedSearchAsset | null;
+    outputAsset: ParsedSearchAsset | null;
+  }) => {
+    switch (type) {
+      case SwapAssetType.inputAsset:
+        if (outputAsset) {
+          inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+          outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+        } else {
+          inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+          outputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
+        }
+        break;
+      case SwapAssetType.outputAsset:
+        if (inputAsset) {
+          inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+          outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+        } else {
+          inputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
+          outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+        }
+        break;
+    }
+  };
+
+  const setAsset = ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset }) => {
+    const updateAssetValue = ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset | null }) => {
+      'worklet';
+
+      switch (type) {
+        case SwapAssetType.inputAsset:
+          // TODO: Pre-process a bunch of stuff here...
+          /**
+           * Colors, price, etc.
+           */
+          internalSelectedInputAsset.value = parseAssetAndExtend({ asset });
+          break;
+        case SwapAssetType.outputAsset:
+          // TODO: Pre-process a bunch of stuff here...
+          /**
+           * Colors, price, etc.
+           */
+          internalSelectedOutputAsset.value = parseAssetAndExtend({ asset });
+          break;
+      }
+    };
+
+    // const prevAsset = swapsStore.getState()[type];
+    const prevOtherAsset = swapsStore.getState()[type === SwapAssetType.inputAsset ? SwapAssetType.outputAsset : SwapAssetType.inputAsset];
+
+    // TODO: Fix me. This is causing assets to not be set sometimes?
+    // if we're setting the same asset, exit early as it's a no-op
+    // if (prevAsset && isSameAsset(prevAsset, asset)) {
+    //   logger.debug(`[setAsset]: Not setting ${type} asset as it's the same as what is already set`);
+    //   handleProgressNavigation({
+    //     type,
+    //     inputAsset: type === SwapAssetType.inputAsset ? asset : prevOtherAsset,
+    //     outputAsset: type === SwapAssetType.outputAsset ? asset : prevOtherAsset,
+    //   });
+    //   return;
+    // }
+
+    // if we're setting the same asset as the other asset, we need to clear the other asset
+    if (prevOtherAsset && isSameAsset(prevOtherAsset, asset)) {
+      logger.debug(`[setAsset]: Swapping ${type} asset for ${type === SwapAssetType.inputAsset ? 'output' : 'input'} asset`);
+
+      swapsStore.setState({
+        [type === SwapAssetType.inputAsset ? SwapAssetType.outputAsset : SwapAssetType.inputAsset]: null,
+      });
+      runOnUI(updateAssetValue)({
+        type: type === SwapAssetType.inputAsset ? SwapAssetType.outputAsset : SwapAssetType.inputAsset,
+        asset: null,
+      });
+    }
+
+    logger.debug(`[setAsset]: Setting ${type} asset to ${asset.name} on ${asset.chainId}`);
+
+    // TODO: Bunch of logic left to implement here... reset prices, retrigger quote fetching, etc.
+    swapsStore.setState({
+      [type]: asset,
+    });
+    runOnJS(updateAssetValue)({ type, asset });
+    handleProgressNavigation({
+      type,
+      inputAsset: type === SwapAssetType.inputAsset ? asset : prevOtherAsset,
+      outputAsset: type === SwapAssetType.outputAsset ? asset : prevOtherAsset,
+    });
+  };
 
   const SwapNavigation = useSwapNavigation({
-    SwapCustomGas,
     inputProgress,
     outputProgress,
     configProgress,
@@ -75,8 +229,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   });
 
   const AnimatedSwapStyles = useAnimatedSwapStyles({
-    SwapInputController,
     SwapWarning,
+    internalSelectedInputAsset,
+    internalSelectedOutputAsset,
     inputProgress,
     outputProgress,
     configProgress,
@@ -152,20 +307,32 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   return (
     <SwapContext.Provider
       value={{
-        userAssetFilter,
+        isFetching,
+        searchInputRef,
+
         inputProgress,
         outputProgress,
         configProgress,
+
         sliderXPosition,
         sliderPressProgress,
+
         focusedInput,
-        isFetching,
+        outputChainId,
+
+        internalSelectedInputAsset,
+        internalSelectedOutputAsset,
+        setAsset,
+
+        quote,
+        fetchQuote,
+
         SwapInputController,
         AnimatedSwapStyles,
         SwapTextStyles,
         SwapNavigation,
-        SwapCustomGas,
         SwapWarning,
+
         confirmButtonIcon,
         confirmButtonLabel,
         confirmButtonIconStyle,

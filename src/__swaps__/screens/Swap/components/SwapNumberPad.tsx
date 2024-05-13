@@ -12,7 +12,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { Bleed, Box, Columns, HitSlop, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { opacity, stripCommas } from '@/__swaps__/utils/swaps';
+import { stripCommas } from '@/__swaps__/utils/swaps';
 import {
   CUSTOM_KEYBOARD_HEIGHT,
   LIGHT_SEPARATOR_COLOR,

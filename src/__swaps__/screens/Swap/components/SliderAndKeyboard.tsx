@@ -13,7 +13,7 @@ import { safeAreaInsetValues } from '@/utils';
 const BOTTOM_OFFSET = IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16;
 const HEIGHT_OF_BOTTOM_TAB = 64;
 
-export function SwapAmountInputs() {
+export function SliderAndKeyboard() {
   const { AnimatedSwapStyles } = useSwapContext();
 
   return (

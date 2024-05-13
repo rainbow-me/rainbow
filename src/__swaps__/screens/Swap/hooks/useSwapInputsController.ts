@@ -11,7 +11,6 @@ import {
   clamp,
   clampJS,
   countDecimalPlaces,
-  extractColorValueForColors,
   findNiceIncrement,
   getDefaultSlippage,
   getDefaultSlippageWorklet,
@@ -98,17 +97,11 @@ export function useSwapInputsController({
   const isQuoteStale = useSharedValue(0);
 
   const topColor = useDerivedValue(() => {
-    return extractColorValueForColors({
-      colors: assetToSell.value?.colors,
-      isDarkMode,
-    });
+    return assetToSell.value?.colors?.primary ?? assetToSell.value?.colors?.fallback ?? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
   });
 
   const bottomColor = useDerivedValue(() => {
-    return extractColorValueForColors({
-      colors: assetToBuy.value?.colors,
-      isDarkMode,
-    });
+    return assetToBuy.value?.colors?.primary ?? assetToBuy.value?.colors?.fallback ?? (isDarkMode ? ETH_COLOR_DARK : ETH_COLOR);
   });
 
   const assetToSellSymbol = useDerivedValue(() => {

@@ -1,7 +1,5 @@
-import c from 'chroma-js';
-import { useMemo } from 'react';
 import Animated, {
-  DerivedValue,
+  SharedValue,
   interpolate,
   interpolateColor,
   useAnimatedStyle,
@@ -22,42 +20,46 @@ import {
   fadeConfig,
   springConfig,
 } from '@/__swaps__/screens/Swap/constants';
-import { opacityWorklet } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 
 export const useSwapInputStyles = ({
+  asset,
   bottomInput,
-  color,
   otherInputProgress,
   progress,
 }: {
+  asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   bottomInput: boolean | undefined;
-  color: DerivedValue<string | number>;
   otherInputProgress: Animated.SharedValue<number>;
   progress: Animated.SharedValue<number>;
 }) => {
   const { isDarkMode } = useColorMode();
 
   const bgColor = useDerivedValue(() => {
-    return isDarkMode ? opacityWorklet(color.value.toString(), 0.08) : opacityWorklet(globalColors.white100, 0.8);
-  }, [color, isDarkMode]);
+    return isDarkMode
+      ? opacityWorklet(getColorValueForThemeWorklet(asset.value?.color, isDarkMode, true), 0.08)
+      : opacityWorklet(globalColors.white100, 0.8);
+  });
 
   const expandedBgColor = useDerivedValue(() => {
     return isDarkMode ? bgColor.value : opacityWorklet(globalColors.white100, 0.8);
-  }, [bgColor, isDarkMode]);
+  });
 
   const strokeColor = useDerivedValue(() => {
     return isDarkMode
-      ? opacityWorklet(color.value === ETH_COLOR_DARK ? ETH_COLOR_DARK_ACCENT : color.value.toString(), 0.06)
+      ? opacityWorklet(
+          getColorValueForThemeWorklet(asset.value?.color, isDarkMode, true) === ETH_COLOR_DARK
+            ? ETH_COLOR_DARK_ACCENT
+            : getColorValueForThemeWorklet(asset.value?.color, isDarkMode, true),
+          0.06
+        )
       : globalColors.white100;
-  }, [color, isDarkMode]);
+  });
 
   const expandedStrokeColor = useDerivedValue(() => {
-    return isDarkMode ? opacityWorklet(color.value.toString(), 0.1) : globalColors.white100;
-  }, [color, isDarkMode]);
-
-  const mixedShadowColor = useMemo(() => {
-    return isDarkMode ? 'transparent' : c.mix(color.value.toString(), globalColors.grey100, 0.84).hex();
-  }, [color, isDarkMode]);
+    return isDarkMode ? opacityWorklet(getColorValueForThemeWorklet(asset.value?.color, isDarkMode, true), 0.1) : globalColors.white100;
+  });
 
   const containerStyle = useAnimatedStyle(() => {
     const getContainerStyleTranslateY = (progress: Animated.SharedValue<number>, bottomInput: boolean | undefined) => {
@@ -73,6 +75,7 @@ export const useSwapInputStyles = ({
     };
 
     return {
+      shadowColor: getColorValueForThemeWorklet(asset.value?.mixedShadowColor, isDarkMode, true),
       opacity: otherInputProgress.value === NavigationSteps.SEARCH_FOCUSED ? withTiming(0, fadeConfig) : withTiming(1, fadeConfig),
       transform: [
         {
@@ -103,5 +106,5 @@ export const useSwapInputStyles = ({
     };
   }, [bottomInput, otherInputProgress, progress, bgColor, expandedBgColor, strokeColor, expandedStrokeColor]);
 
-  return { containerStyle, inputStyle, mixedShadowColor };
+  return { containerStyle, inputStyle };
 };

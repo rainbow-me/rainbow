@@ -11,10 +11,11 @@ import { AssetToBuySection, AssetToBuySectionId } from '@/__swaps__/screens/Swap
 import { ChainId } from '@/__swaps__/types/chains';
 import { TextColor } from '@/design-system/color/palettes';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { parseSearchAsset, isSameAsset } from '@/__swaps__/utils/assets';
+import { parseSearchAsset } from '@/__swaps__/utils/assets';
 
-import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
+import { SwapAssetType } from '@/__swaps__/types/swap';
+import { userAssetsStore } from '@/state/assets/userAssets';
 
 interface SectionProp {
   color: TextStyle['color'];
@@ -65,21 +66,23 @@ const bridgeSectionsColorsByChain = {
 const AnimatedFlashListComponent = Animated.createAnimatedComponent(FlashList<SearchAsset>);
 
 export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) => {
-  const { SwapInputController } = useSwapContext();
-  const userAssets = useAssetsToSell();
+  const { setAsset, outputChainId } = useSwapContext();
 
   const handleSelectToken = useCallback(
     (token: SearchAsset) => {
-      const userAsset = userAssets.find(asset => isSameAsset(asset, token));
+      const userAsset = userAssetsStore.getState().getUserAsset(token.uniqueId);
       const parsedAsset = parseSearchAsset({
         assetWithPrice: undefined,
         searchAsset: token,
         userAsset,
       });
 
-      SwapInputController.onSetAssetToBuy(parsedAsset);
+      setAsset({
+        type: SwapAssetType.outputAsset,
+        asset: parsedAsset,
+      });
     },
-    [SwapInputController, userAssets]
+    [setAsset]
   );
 
   const { symbol, title } = sectionProps[section.id];
@@ -91,7 +94,7 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
       return sectionProps[section.id].color as TextColor;
     }
 
-    return bridgeSectionsColorsByChain[SwapInputController.outputChainId.value || ChainId.mainnet] as TextColor;
+    return bridgeSectionsColorsByChain[outputChainId.value || ChainId.mainnet] as TextColor;
   });
 
   if (!section.data.length) return null;
@@ -132,7 +135,7 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
           keyExtractor={item => `${item.uniqueId}-${section.id}`}
           renderItem={({ item }) => (
             <CoinRow
-              key={item.uniqueId}
+              // key={item.uniqueId}
               chainId={item.chainId}
               color={item.colors?.primary ?? item.colors?.fallback}
               iconUrl={item.icon_url}

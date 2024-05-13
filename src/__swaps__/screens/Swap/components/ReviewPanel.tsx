@@ -11,13 +11,13 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { NavigationSteps, useSwapContext } from '../../providers/swap-provider';
-import { fadeConfig } from '../../constants';
+import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
+import { fadeConfig } from '../constants';
 import { ethereumUtils } from '@/utils';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ChainId } from '@/__swaps__/types/chains';
 import { chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
-import { AnimatedSwitch } from '../AnimatedSwitch';
+import { AnimatedSwitch } from './AnimatedSwitch';
 import { GasButton } from '@/__swaps__/screens/Swap/components/GasButton';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useNativeAssetForNetwork } from '@/utils/ethereumUtils';

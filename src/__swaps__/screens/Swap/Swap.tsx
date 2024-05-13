@@ -12,11 +12,11 @@ import { SwapSheetGestureBlocker } from '@/__swaps__/screens/Swap/components/Swa
 import { SwapBackground } from '@/__swaps__/screens/Swap/components/SwapBackground';
 import { FlipButton } from '@/__swaps__/screens/Swap/components/FlipButton';
 import { ExchangeRateBubble } from '@/__swaps__/screens/Swap/components/ExchangeRateBubble';
-import { SwapInputAsset } from '@/__swaps__/screens/Swap/components/controls/SwapInputAsset';
-import { SwapOutputAsset } from '@/__swaps__/screens/Swap/components/controls/SwapOutputAsset';
+import { SwapInputAsset } from '@/__swaps__/screens/Swap/components/SwapInputAsset';
+import { SwapOutputAsset } from '@/__swaps__/screens/Swap/components/SwapOutputAsset';
 import { SwapNavbar } from '@/__swaps__/screens/Swap/components/SwapNavbar';
-import { SwapAmountInputs } from '@/__swaps__/screens/Swap/components/controls/SwapAmountInputs';
-import { SwapActions } from '@/__swaps__/screens/Swap/components/controls/SwapActions';
+import { SliderAndKeyboard } from '@/__swaps__/screens/Swap/components/SliderAndKeyboard';
+import { SwapBottomPanel } from '@/__swaps__/screens/Swap/components/SwapBottomPanel';
 import { SwapWarning } from './components/SwapWarning';
 import Animated from 'react-native-reanimated';
 import { useSwapContext } from './providers/swap-provider';
@@ -69,8 +69,8 @@ export function SwapScreen() {
           <FlipButton />
           <SwapOutputAsset />
           <Box width="full" position="absolute" bottom="0px">
-            <SwapAmountInputs />
-            <SwapActions />
+            <SliderAndKeyboard />
+            <SwapBottomPanel />
           </Box>
           <Box
             as={Animated.View}
@@ -81,7 +81,6 @@ export function SwapScreen() {
             <ExchangeRateBubble />
             <SwapWarning />
           </Box>
-          <SwapAmountInputs />
         </Box>
         <SwapNavbar />
       </Box>
