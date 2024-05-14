@@ -254,8 +254,6 @@ export function useSwapInputsController({
       const currency = store.getState().settings.nativeCurrency;
 
       try {
-        // TODO: Handle getting from cache here
-
         const tokenData = await fetchExternalToken({
           address,
           network,
@@ -272,6 +270,15 @@ export function useSwapInputsController({
         }
       } catch (error) {
         logger.error(new RainbowError('[useSwapInputsController]: get asset prices failed'));
+        const cachedData = await queryClient.getQueryData<ReturnType<typeof fetchExternalToken>>(
+          externalTokenQueryKey({ address, network, currency })
+        );
+        if (cachedData?.price.value) {
+          runOnUI(updateNativePriceForAsset)({
+            price: cachedData.price.value,
+            type,
+          });
+        }
       }
     };
 
