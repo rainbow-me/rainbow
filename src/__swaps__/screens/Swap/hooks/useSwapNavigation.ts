@@ -66,7 +66,7 @@ export function useSwapNavigation({
     'worklet';
     handleDismissReview();
     handleDismissGas();
-    SwapInputController.fetchQuote();
+    SwapInputController.fetchQuoteAndAssetPrices();
 
     if (inputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED) {
       inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
