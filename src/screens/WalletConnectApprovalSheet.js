@@ -177,7 +177,7 @@ export default function WalletConnectApprovalSheet() {
   const timedOut = params?.timedOut;
   const failureExplainSheetVariant = params?.failureExplainSheetVariant;
   const chainIds = meta?.chainIds; // WC v2 supports multi-chain
-  const chainId = chainIds?.[0] || 1; // WC v1 only supports 1
+  const chainId = meta?.proposedChainId || chainIds?.[0] || 1; // WC v1 only supports 1
   const currentNetwork = params?.currentNetwork;
   const [approvalNetwork, setApprovalNetwork] = useState(currentNetwork || network);
   const isWalletConnectV2 = meta.isWalletConnectV2;
@@ -186,7 +186,7 @@ export default function WalletConnectApprovalSheet() {
 
   const verifiedData = params?.verifiedData;
   const { data: metadata } = useDappMetadata({
-    url: verifiedData?.verifyUrl || dappUrl,
+    url: verifiedData?.origin || dappUrl,
   });
 
   const isScam = metadata?.status === DAppStatus.Scam;

@@ -34,13 +34,8 @@ import {
   snappySpringConfig,
   springConfig,
 } from '@/__swaps__/screens/Swap/constants';
-import { clamp, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { clamp, getColorValueForThemeWorklet, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { SwapCoinIcon } from '@/__swaps__/screens/Swap/components/SwapCoinIcon';
-import { useTheme } from '@/theme';
-import { useSwapAssetStore } from '@/__swaps__/screens/Swap/state/assets';
-import { ethereumUtils } from '@/utils';
-import { ChainId } from '@/__swaps__/types/chains';
 
 type SwapSliderProps = {
   dualColor?: boolean;
@@ -57,11 +52,16 @@ export const SwapSlider = ({
   snapPoints = [0, 0.25, 0.5, 0.75, 1], // %
   width = SLIDER_WIDTH,
 }: SwapSliderProps) => {
-  const theme = useTheme();
   const { isDarkMode } = useColorMode();
-  const { SwapInputController, sliderXPosition, sliderPressProgress } = useSwapContext();
-
-  const { assetToSell } = useSwapAssetStore();
+  const {
+    AnimatedSwapStyles,
+    SwapInputController,
+    internalSelectedInputAsset,
+    internalSelectedOutputAsset,
+    sliderXPosition,
+    sliderPressProgress,
+    isQuoteStale,
+  } = useSwapContext();
 
   const panRef = useRef();
   const tapRef = useRef();
@@ -82,21 +82,20 @@ export const SwapSlider = ({
   );
 
   const colors = useDerivedValue(() => ({
-    inactiveColorLeft: opacityWorklet(dualColor ? SwapInputController.bottomColor.value : SwapInputController.topColor.value, 0.9),
-    activeColorLeft: dualColor ? SwapInputController.bottomColor.value : SwapInputController.topColor.value,
-    inactiveColorRight: dualColor ? opacityWorklet(SwapInputController.topColor.value, 0.9) : separatorSecondary,
-    activeColorRight: dualColor ? SwapInputController.topColor.value : fillSecondary,
+    inactiveColorLeft: opacityWorklet(
+      dualColor
+        ? getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true)
+        : getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true),
+      0.9
+    ),
+    activeColorLeft: dualColor
+      ? getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true)
+      : getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true),
+    inactiveColorRight: dualColor
+      ? opacityWorklet(getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true), 0.9)
+      : separatorSecondary,
+    activeColorRight: dualColor ? getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true) : fillSecondary,
   }));
-
-  // const { inactiveColorLeft, activeColorLeft, inactiveColorRight, activeColorRight } = useMemo(
-  //   () => ({
-  //     inactiveColorLeft: opacityWorklet(dualColor ? SwapInputController.bottomColor.value : SwapInputController.topColor.value, 0.9),
-  //     activeColorLeft: dualColor ? SwapInputController.bottomColor.value : SwapInputController.topColor.value,
-  //     inactiveColorRight: dualColor ? opacityWorklet(SwapInputController.topColor.value, 0.9) : separatorSecondary,
-  //     activeColorRight: dualColor ? SwapInputController.topColor.value : fillSecondary,
-  //   }),
-  //   [SwapInputController.bottomColor.value, SwapInputController.topColor.value, dualColor, fillSecondary, separatorSecondary]
-  // );
 
   // This is the percentage of the slider from the left
   const xPercentage = useDerivedValue(() => {
@@ -130,6 +129,7 @@ export const SwapSlider = ({
   const onPressDown = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>({
     onStart: () => {
       sliderPressProgress.value = withSpring(1, sliderConfig);
+      SwapInputController.quoteFetchingInterval.stop();
     },
     onActive: () => {
       sliderPressProgress.value = withSpring(SLIDER_COLLAPSED_HEIGHT / height, sliderConfig);
@@ -146,10 +146,10 @@ export const SwapSlider = ({
       // causes the outputAmount text color to break. It's preferable to set it in
       // onActive, so we're setting it in onStart for Android only. It's possible that
       // migrating this handler to the RNGH v2 API will remove the need for this.
-      if (!IS_IOS) SwapInputController.isQuoteStale.value = 1;
+      if (!IS_IOS) isQuoteStale.value = 1;
     },
     onActive: (event, ctx: { startX: number }) => {
-      if (IS_IOS) SwapInputController.isQuoteStale.value = 1;
+      if (IS_IOS) isQuoteStale.value = 1;
 
       const rawX = ctx.startX + event.translationX || 0;
 
@@ -164,7 +164,7 @@ export const SwapSlider = ({
       };
 
       if (ctx.startX === width && clamp(rawX, 0, width) >= width * 0.995) {
-        SwapInputController.isQuoteStale.value = 0;
+        isQuoteStale.value = 0;
       }
 
       sliderXPosition.value = clamp(rawX, 0, width);
@@ -185,7 +185,7 @@ export const SwapSlider = ({
       const onFinished = () => {
         overshoot.value = withSpring(0, sliderConfig);
         if (xPercentage.value >= 0.995) {
-          if (SwapInputController.isQuoteStale.value === 1) {
+          if (isQuoteStale.value === 1) {
             runOnJS(onChangeWrapper)(1);
           }
           sliderXPosition.value = withSpring(width, snappySpringConfig);
@@ -323,7 +323,7 @@ export const SwapSlider = ({
   });
 
   const pulsingOpacity = useDerivedValue(() => {
-    return SwapInputController.isQuoteStale.value === 1
+    return isQuoteStale.value === 1
       ? withRepeat(withSequence(withTiming(0.5, pulsingConfig), withTiming(1, pulsingConfig)), -1, true)
       : withSpring(1, sliderConfig);
   }, []);
@@ -334,7 +334,7 @@ export const SwapSlider = ({
     const isAdjustingOutputValue =
       SwapInputController.inputMethod.value === 'outputAmount' || SwapInputController.inputMethod.value === 'outputNativeValue';
 
-    const isStale = SwapInputController.isQuoteStale.value === 1 && (isAdjustingInputValue || isAdjustingOutputValue) ? 1 : 0;
+    const isStale = isQuoteStale.value === 1 && (isAdjustingInputValue || isAdjustingOutputValue) ? 1 : 0;
 
     const opacity = isStale ? pulsingOpacity.value : withSpring(1, sliderConfig);
 
@@ -362,14 +362,14 @@ export const SwapSlider = ({
 
   const maxTextColor = useAnimatedStyle(() => {
     return {
-      color: SwapInputController.bottomColor.value,
+      color: getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode),
     };
   });
 
   return (
     // @ts-expect-error
     <PanGestureHandler activeOffsetX={[0, 0]} activeOffsetY={[0, 0]} onGestureEvent={onSlide} simultaneousHandlers={[tapRef]}>
-      <Animated.View>
+      <Animated.View style={AnimatedSwapStyles.hideWhileReviewingOrConfiguringGas}>
         {/* @ts-expect-error */}
         <TapGestureHandler onGestureEvent={onPressDown} simultaneousHandlers={[panRef]}>
           <Animated.View style={{ gap: 14, paddingBottom: 20, paddingHorizontal: 20, paddingTop: 16 }}>
@@ -377,15 +377,13 @@ export const SwapSlider = ({
               <Columns alignHorizontal="justify" alignVertical="center">
                 <Inline alignVertical="center" space="6px" wrap={false}>
                   <Bleed vertical="4px">
-                    <SwapCoinIcon
-                      color={SwapInputController.topColorShadow.value}
-                      iconUrl={assetToSell?.icon_url}
-                      address={assetToSell?.address ?? ''}
-                      mainnetAddress={assetToSell?.mainnetAddress ?? ''}
-                      network={ethereumUtils.getNetworkFromChainId(Number(assetToSell?.chainId ?? ChainId.mainnet))}
-                      small
-                      symbol={assetToSell?.symbol ?? ''}
-                      theme={theme}
+                    {/* TODO: Implement Coin Icons using reanimated values */}
+                    <Box
+                      as={Animated.View}
+                      borderRadius={18}
+                      height={{ custom: 16 }}
+                      style={[styles.solidColorCoinIcon, AnimatedSwapStyles.assetToBuyIconStyle]}
+                      width={{ custom: 16 }}
                     />
                   </Bleed>
                   <Inline alignVertical="bottom" wrap={false}>
@@ -401,7 +399,7 @@ export const SwapSlider = ({
                     hitSlop={8}
                     onPress={() => {
                       SwapInputController.inputMethod.value = 'slider';
-                      SwapInputController.isQuoteStale.value = 1;
+                      isQuoteStale.value = 1;
                       setTimeout(() => {
                         sliderXPosition.value = withSpring(width, snappySpringConfig);
                         onChangeWrapper(1);
@@ -480,5 +478,8 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     width: SCRUBBER_WIDTH,
+  },
+  solidColorCoinIcon: {
+    opacity: 0.4,
   },
 });

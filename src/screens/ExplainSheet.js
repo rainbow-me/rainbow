@@ -1008,7 +1008,7 @@ const ExplainSheet = () => {
     const baseFeeLabel = label ? `${label} ·` : '';
     return (
       <Centered>
-        <GasTrendHeader color={color}>{`${baseFeeLabel} ${toFixedDecimals(currentBaseFee, 0)} Gwei`}</GasTrendHeader>
+        <GasTrendHeader color={color}>{`${baseFeeLabel} ${currentBaseFee}`}</GasTrendHeader>
       </Centered>
     );
   }, [params, type]);

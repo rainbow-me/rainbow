@@ -110,7 +110,10 @@ const getInputAmount = async (
     logger.debug('[getInputAmount]: Getting quote', { rand, quoteParams });
     // Do not deleeeet the comment below 😤
     // @ts-ignore About to get quote
+
+    console.log(JSON.stringify(quoteParams, null, 2));
     const quote = await getQuote(quoteParams);
+    console.log(JSON.stringify(quote, null, 2));
 
     // if no quote, if quote is error or there's no sell amount
     if (!quote || (quote as QuoteError).error || !(quote as Quote).sellAmount) {
@@ -201,12 +204,16 @@ const getOutputAmount = async (
       refuel,
     };
 
+    console.log(JSON.stringify(quoteParams, null, 2));
+
     const rand = Math.floor(Math.random() * 100);
     logger.debug('[getOutputAmount]: Getting quote', { rand, quoteParams });
     // Do not deleeeet the comment below 😤
     // @ts-ignore About to get quote
     const quote: Quote | CrosschainQuote | QuoteError | null = await (isCrosschainSwap ? getCrosschainQuote : getQuote)(quoteParams);
     logger.debug('[getOutputAmount]: Got quote', { rand, quote });
+
+    console.log(JSON.stringify(quote, null, 2));
 
     if (!quote || (quote as QuoteError)?.error || !(quote as Quote)?.buyAmount) {
       const quoteError = quote as QuoteError;

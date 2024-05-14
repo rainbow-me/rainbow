@@ -27,14 +27,14 @@ import {
 } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
+import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { useAccountAccentColor, useAccountSettings, useWalletsWithBalancesAndNames } from '@/hooks';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { Network } from '@/networks/types';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { colors } from '@/styles';
 import { deviceUtils } from '@/utils';
-import { getNetworkFromChainId } from '@/utils/ethereumUtils';
+import ethereumUtils from '@/utils/ethereumUtils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { TOP_INSET } from '../Dimensions';
@@ -47,11 +47,15 @@ import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { useSelector } from 'react-redux';
 import store, { AppState } from '@/redux/store';
 import { getDappHost } from '@/utils/connectedApps';
-import { handleDappBrowserConnectionPrompt } from '@/utils/requestNavigationHandlers';
-import { useAppSessionsStore } from '@/state/appSessions';
-import { RainbowError, logger } from '@/logger';
 import WebView from 'react-native-webview';
-import { useNavigation } from '@/navigation';
+import { Navigation, useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { address } from '@/utils/abbreviations';
+import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
+import { useAppSessionsStore } from '@/state/appSessions';
+import { DEFAULT_TAB_URL, RAINBOW_HOME } from '../constants';
+import { useFavoriteDappsStore } from '@/state/favoriteDapps';
+import { Site } from '@/state/browserHistory';
 
 const PAGES = {
   HOME: 'home',
@@ -65,16 +69,16 @@ type ControlPanelParams = {
   };
 };
 
+const HOME_PANEL_FULL_HEIGHT = 333;
+// 44px for the component and 24px for the stack padding
+const HOME_PANEL_DAPP_SECTION = 44 + 24;
+
 export const ControlPanel = () => {
   const { goBack, goToPage, ref } = usePagerNavigation();
   const { accountAddress } = useAccountSettings();
   const {
     params: { activeTabRef },
   } = useRoute<RouteProp<ControlPanelParams, 'ControlPanel'>>();
-  const [isConnected, setIsConnected] = useState(false);
-  const [currentAddress, setCurrentAddress] = useState<string>(accountAddress);
-  const [currentNetwork, setCurrentNetwork] = useState<Network>(RainbowNetworks[0].value);
-
   const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const activeTabUrl = useBrowserStore(state => state.getActiveTabUrl());
@@ -83,8 +87,22 @@ export const ControlPanel = () => {
   const updateActiveSessionNetwork = useAppSessionsStore(state => state.updateActiveSessionNetwork);
   const addSession = useAppSessionsStore(state => state.addSession);
   const removeSession = useAppSessionsStore(state => state.removeSession);
-  const currentSession = useAppSessionsStore(state => state.getActiveSession({ host: activeTabHost }));
+  const hostSessions = useAppSessionsStore(state => state.getActiveSession({ host: activeTabHost }));
 
+  const currentSession = useMemo(
+    () =>
+      hostSessions && hostSessions.sessions[hostSessions.activeSessionAddress]
+        ? {
+            address: hostSessions.activeSessionAddress,
+            network: hostSessions.sessions[hostSessions.activeSessionAddress],
+          }
+        : null,
+    [hostSessions]
+  );
+
+  const [isConnected, setIsConnected] = useState(!!(activeTabHost && currentSession?.address));
+  const [currentAddress, setCurrentAddress] = useState<string>(currentSession?.address || accountAddress);
+  const [currentNetwork, setCurrentNetwork] = useState<Network>(currentSession?.network || Network.mainnet);
   // listens to the current active tab and sets the account
   useEffect(() => {
     if (activeTabHost) {
@@ -121,7 +139,7 @@ export const ControlPanel = () => {
           ) : (
             <ListEmojiAvatar address={account.address} color={account.color} label={account.label} />
           ),
-          label: account.label,
+          label: removeFirstEmojiFromString(account.label) || address(account.address, 6, 4),
           secondaryLabel: !walletBalance ? i18n.t(i18n.l.wallet.change_wallet.no_balance) : nativeCurrencyBalance,
           uniqueId: account.address,
           color: colors.avatarBackgrounds[account.color],
@@ -184,40 +202,25 @@ export const ControlPanel = () => {
 
   const handleConnect = useCallback(async () => {
     const activeTabHost = getDappHost(activeTabUrl || '');
-    // @ts-expect-error Property 'title' does not exist on type 'WebView<{}>'
-    const name: string = activeTabRef.current?.title || activeTabHost;
-
-    const response = await handleDappBrowserConnectionPrompt({
-      dappName: name || '',
-      dappUrl: activeTabUrl || '' || '',
+    const address = selectedWalletId.value;
+    const network = selectedNetworkId.value as Network;
+    addSession({
+      host: activeTabHost || '',
+      // @ts-expect-error Type 'string' is not assignable to type '`0x${string}`'
+      address,
+      network,
+      url: activeTabUrl || '',
     });
 
-    if (!(response instanceof Error)) {
-      const connectedToNetwork = getNetworkFromChainId(response.chainId);
-      addSession({
-        host: activeTabHost || '',
-        // @ts-expect-error Type 'string' is not assignable to type '`0x${string}`'
-        address: response.address,
-        network: connectedToNetwork,
-        url: activeTabUrl || '',
-      });
+    const chainId = ethereumUtils.getChainIdFromNetwork(network);
 
-      const selectedAddress = selectedWalletId.value;
-
-      activeTabRef.current?.injectJavaScript(
-        `window.ethereum.emit('accountsChanged', ['${selectedAddress}']); window.ethereum.emit('connect', { address: '${selectedAddress}', chainId: '${toHex(response.chainId)}' }); true;`
-      );
-      setIsConnected(true);
-      setCurrentAddress(selectedAddress);
-      setCurrentNetwork(connectedToNetwork);
-    } else {
-      logger.error(new RainbowError('Dapp browser connection prompt error'), {
-        response,
-        dappName: name,
-        dappUrl: activeTabUrl,
-      });
-    }
-  }, [activeTabRef, activeTabUrl, addSession, selectedWalletId.value]);
+    activeTabRef.current?.injectJavaScript(
+      `window.ethereum.emit('accountsChanged', ['${address}']); window.ethereum.emit('connect', { address: '${address}', chainId: '${toHex(chainId)}' }); true;`
+    );
+    setIsConnected(true);
+    setCurrentAddress(address);
+    setCurrentNetwork(network);
+  }, [activeTabUrl, selectedWalletId.value, selectedNetworkId.value, addSession, activeTabRef]);
 
   const handleDisconnect = useCallback(() => {
     const selectedAddress = selectedWalletId.value;
@@ -348,9 +351,10 @@ const HomePanel = ({
   onDisconnect: () => void;
 }) => {
   const actionButtonList = useMemo(() => {
-    const walletIcon = allWalletItems.find(item => item.uniqueId === selectedWallet)?.IconComponent || <></>;
-    const walletLabel = allWalletItems.find(item => item.uniqueId === selectedWallet)?.label || '';
-    const walletSecondaryLabel = allWalletItems.find(item => item.uniqueId === selectedWallet)?.secondaryLabel || '';
+    const selectedWalletProps: ControlPanelMenuItemProps | undefined = allWalletItems.find(item => item.uniqueId === selectedWallet);
+    const walletIcon = selectedWalletProps?.IconComponent || <></>;
+    const walletLabel = selectedWalletProps?.label || '';
+    const walletSecondaryLabel = selectedWalletProps?.secondaryLabel || '';
 
     const network = allNetworkItems.find(item => item.uniqueId === selectedNetwork);
     const networkIcon = <ChainImage chain={(network?.uniqueId as Network) || 'mainnet'} size={36} />;
@@ -381,36 +385,54 @@ const HomePanel = ({
     );
   }, [allNetworkItems, allWalletItems, animatedAccentColor, goToPage, selectedNetwork, selectedWallet]);
 
+  const isHomeScreen = useBrowserStore(state => (state.getActiveTabUrl() || DEFAULT_TAB_URL) === RAINBOW_HOME);
+
   return (
-    <Panel height={334}>
+    <Panel height={isHomeScreen ? HOME_PANEL_FULL_HEIGHT - HOME_PANEL_DAPP_SECTION : HOME_PANEL_FULL_HEIGHT}>
       <Box style={controlPanelStyles.homePanel}>
         <Stack space="24px">
-          <Box paddingHorizontal="8px">
-            <Columns alignVertical="center" space={{ custom: 14 }}>
-              <Column width="content">
-                <HomePanelLogo />
-              </Column>
-              <Column>
-                <HomePanelTitleSection />
-              </Column>
-            </Columns>
-          </Box>
+          {!isHomeScreen && (
+            <Box paddingHorizontal="8px">
+              <Columns alignVertical="center" space={{ custom: 14 }}>
+                <Column width="content">
+                  <HomePanelLogo />
+                </Column>
+                <Column>
+                  <HomePanelTitleSection />
+                </Column>
+              </Columns>
+            </Box>
+          )}
           <Box paddingHorizontal="8px" width="full">
             <Inline alignHorizontal="justify" alignVertical="center">
               <ControlPanelButton
                 animatedAccentColor={animatedAccentColor}
                 icon="􀖅"
                 label={i18n.t(i18n.l.dapp_browser.control_panel.swap)}
-                onPress={() => {
-                  return;
+                onPress={async () => {
+                  const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(Network.mainnet, selectedWallet);
+                  Navigation.handleAction(Routes.EXCHANGE_MODAL, {
+                    fromDiscover: true,
+                    params: {
+                      inputAsset: mainnetEth,
+                    },
+                    screen: Routes.MAIN_EXCHANGE_SCREEN,
+                  });
                 }}
               />
               <ControlPanelButton
                 animatedAccentColor={animatedAccentColor}
                 icon="􀄹"
                 label={i18n.t(i18n.l.dapp_browser.control_panel.bridge)}
-                onPress={() => {
-                  return;
+                onPress={async () => {
+                  const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(Network.mainnet, selectedWallet);
+                  Navigation.handleAction(Routes.EXCHANGE_MODAL, {
+                    fromDiscover: true,
+                    params: {
+                      inputAsset: mainnetEth,
+                    },
+                    screen: Routes.MAIN_EXCHANGE_SCREEN,
+                  });
                 }}
               />
               <ConnectButton
@@ -418,15 +440,9 @@ const HomePanel = ({
                 isConnected={isConnected}
                 onConnect={onConnect}
                 onDisconnect={onDisconnect}
+                isHomeScreen={isHomeScreen}
               />
-              <ControlPanelButton
-                animatedAccentColor={animatedAccentColor}
-                icon="􀍡"
-                label={i18n.t(i18n.l.dapp_browser.control_panel.more)}
-                onPress={() => {
-                  return;
-                }}
-              />
+              <FavoriteButton animatedAccentColor={animatedAccentColor} />
             </Inline>
           </Box>
           {actionButtonList}
@@ -448,7 +464,7 @@ const HomePanelLogo = React.memo(function HomePanelLogo() {
       width={{ custom: 44 }}
       height={{ custom: 44 }}
       background="fillTertiary"
-      style={{ borderRadius: 12 }}
+      style={{ borderRadius: IS_ANDROID ? 30 : 12 }}
     />
   );
 });
@@ -592,13 +608,14 @@ const ListHeader = React.memo(function ListHeader({
   const backIconStyle = useAnimatedStyle(() => {
     return {
       color: animatedAccentColor?.value,
+      ...fontWithWidthWorklet('700'),
     };
   });
 
   return (
     <Box style={controlPanelStyles.listHeader}>
       <Box style={controlPanelStyles.listHeaderContent}>
-        <ButtonPressAnimation onPress={goBack} scaleTo={0.8} style={controlPanelStyles.listHeaderButtonWrapper}>
+        <ButtonPressAnimation onPress={goBack} scaleTo={0.8} style={[controlPanelStyles.listHeaderButtonWrapper]}>
           <Box alignItems="center" height={{ custom: 20 }} justifyContent="center" width={{ custom: 20 }}>
             <AnimatedText align="center" size="icon 20px" staticText="􀆉" style={backIconStyle} weight="bold" />
           </Box>
@@ -678,7 +695,7 @@ const ControlPanelMenuItem = React.memo(function ControlPanelMenuItem({
     const selected = selectedItemId?.value === uniqueId || variant === 'homePanel';
     return {
       color: selected ? animatedAccentColor?.value : labelTextColor,
-      fontWeight: selected || variant === 'homePanel' ? '700' : '600',
+      ...fontWithWidthWorklet(selected || variant === 'homePanel' ? '700' : '600'),
     };
   });
 
@@ -791,21 +808,56 @@ const ControlPanelButton = React.memo(function ControlPanelButton({
   );
 });
 
+const FavoriteButton = React.memo(function FavButton({ animatedAccentColor }: { animatedAccentColor: SharedValue<string | undefined> }) {
+  const tabId = useBrowserStore(state => state.getActiveTabId());
+  const tabData = useBrowserStore(state => state.getTabData(tabId));
+  const isFavorite = useFavoriteDappsStore(state => state.isFavorite(tabData?.url || ''));
+  const removeFavorite = useFavoriteDappsStore(state => state.removeFavorite);
+  const addFavorite = useFavoriteDappsStore(state => state.addFavorite);
+
+  const handlePress = useCallback(() => {
+    if (isFavorite) {
+      removeFavorite(tabData?.url || '');
+    } else {
+      const site: Omit<Site, 'timestamp'> = {
+        name: tabData?.title || '',
+        url: tabData?.url || '',
+        image: tabData?.logoUrl || '',
+      };
+      tabData && addFavorite(site);
+    }
+  }, [addFavorite, isFavorite, removeFavorite, tabData]);
+
+  return (
+    <ControlPanelButton
+      animatedAccentColor={animatedAccentColor}
+      icon={isFavorite ? '􀋇' : '􀋂'}
+      label={isFavorite ? i18n.t(i18n.l.dapp_browser.menus.undo_favorite) : i18n.t(i18n.l.dapp_browser.menus.favorite)}
+      onPress={handlePress}
+    />
+  );
+});
+
 const ConnectButton = React.memo(function ControlPanelButton({
   // animatedAccentColor,
+  isHomeScreen,
   isConnected,
   onConnect,
   onDisconnect,
 }: {
   animatedAccentColor: SharedValue<string | undefined>;
+  isHomeScreen: boolean;
   isConnected: boolean;
   onConnect?: () => void;
   onDisconnect?: () => void;
 }) {
   const green = useForegroundColor('green');
   const red = useForegroundColor('red');
+  const grey = useForegroundColor('fillSecondary');
 
   const buttonColor = useDerivedValue(() => {
+    if (isHomeScreen) return grey;
+
     return withTiming(isConnected ? red : green, TIMING_CONFIGS.slowerFadeConfig);
     // if (!isConnected.value || !animatedAccentColor.value)
     //   return withTiming(isConnected.value ? red : green, TIMING_CONFIGS.slowerFadeConfig);
@@ -851,6 +903,7 @@ const ConnectButton = React.memo(function ControlPanelButton({
       onPressWorklet={handlePress}
       pointerEvents="auto"
       scaleTo={0.82}
+      disabled={isHomeScreen}
       style={[controlPanelStyles.buttonContainer]}
     >
       <Box paddingHorizontal={IS_IOS ? '16px' : undefined} paddingVertical={IS_IOS ? '10px' : undefined}>

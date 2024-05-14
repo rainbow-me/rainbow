@@ -13,7 +13,7 @@ import { safeAreaInsetValues } from '@/utils';
 const BOTTOM_OFFSET = IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16;
 const HEIGHT_OF_BOTTOM_TAB = 64;
 
-export function SwapAmountInputs() {
+export function SliderAndKeyboard() {
   const { AnimatedSwapStyles } = useSwapContext();
 
   return (
@@ -23,7 +23,11 @@ export function SwapAmountInputs() {
       bottom={{ custom: BOTTOM_OFFSET + HEIGHT_OF_BOTTOM_TAB + 16 }}
       justifyContent="center"
       position="absolute"
-      style={[{ flex: 1, flexDirection: 'column', gap: 16 }, AnimatedSwapStyles.keyboardStyle, AnimatedSwapStyles.hideWhileReviewing]}
+      style={[
+        { flex: 1, flexDirection: 'column', gap: 16 },
+        AnimatedSwapStyles.keyboardStyle,
+        AnimatedSwapStyles.hideWhileReviewingOrConfiguringGas,
+      ]}
       width="full"
     >
       {/* @ts-expect-error */}

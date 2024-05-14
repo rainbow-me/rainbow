@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Bleed, Box, ColorModeProvider, Cover, Inline, Inset, Stack, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
 import { ScrollView, StyleSheet, View } from 'react-native';
@@ -6,11 +6,10 @@ import LinearGradient from 'react-native-linear-gradient';
 import { BlurView } from '@react-native-community/blur';
 import { ImgixImage } from '@/components/images';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { IS_IOS } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { useFavoriteDappsStore } from '@/state/favoriteDapps';
-import { TrendingSite, trendingDapps } from '@/resources/trendingDapps/trendingDapps';
 // import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 // import MaskedView from '@react-native-masked-view/masked-view';
 import { Site, useBrowserHistoryStore } from '@/state/browserHistory';
@@ -19,6 +18,9 @@ import { uniqBy } from 'lodash';
 import { useBrowserContext } from './BrowserContext';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { WEBVIEW_HEIGHT } from './Dimensions';
+import { useDapps } from '@/resources/metadata/dapps';
+import haptics from '@/utils/haptics';
+import * as i18n from '@/languages';
 
 const HORIZONTAL_PAGE_INSET = 24;
 const MAX_RECENTS_TO_DISPLAY = 6;
@@ -27,7 +29,7 @@ const SCROLL_INDICATOR_INSETS = { bottom: 20, top: 36 };
 const LOGOS_PER_ROW = 4;
 const LOGO_SIZE = 64;
 const LOGO_PADDING = (DEVICE_WIDTH - LOGOS_PER_ROW * LOGO_SIZE - HORIZONTAL_PAGE_INSET * 2) / (LOGOS_PER_ROW - 1);
-const LOGO_BORDER_RADIUS = 16;
+const LOGO_BORDER_RADIUS = IS_ANDROID ? 32 : 16;
 const LOGO_LABEL_SPILLOVER = 12;
 
 const NUM_CARDS = 2;
@@ -57,6 +59,12 @@ export const Homepage = React.memo(function Homepage() {
 });
 
 const Trending = React.memo(function Trending({ goToUrl }: { goToUrl: (url: string) => void }) {
+  const { dapps } = useDapps({ select: dapps => dapps.filter(dapp => dapp.trending).slice(0, 8) });
+
+  if (dapps.length === 0) {
+    return null;
+  }
+
   return (
     <Stack space="20px">
       <Inline alignVertical="center" space="6px">
@@ -64,7 +72,7 @@ const Trending = React.memo(function Trending({ goToUrl }: { goToUrl: (url: stri
           􀙭
         </Text>
         <Text color="label" size="20pt" weight="heavy">
-          Trending
+          {i18n.t(i18n.l.dapp_browser.homepage.trending)}
         </Text>
       </Inline>
       <Bleed space="24px">
@@ -73,12 +81,12 @@ const Trending = React.memo(function Trending({ goToUrl }: { goToUrl: (url: stri
           decelerationRate="fast"
           disableIntervalMomentum
           showsHorizontalScrollIndicator={false}
-          snapToOffsets={trendingDapps.map((_, index) => index * (CARD_WIDTH + CARD_PADDING))}
+          snapToOffsets={dapps.map((_, index) => index * (CARD_WIDTH + CARD_PADDING))}
         >
           <Inset space="24px">
             <Box flexDirection="row" gap={CARD_PADDING}>
-              {trendingDapps.map(site => (
-                <Card goToUrl={goToUrl} key={site.url} site={site} />
+              {dapps.map(site => (
+                <Card goToUrl={goToUrl} key={site.url} site={{ ...site, image: site.iconUrl }} />
               ))}
             </Box>
           </Inset>
@@ -99,7 +107,7 @@ const Favorites = React.memo(function Favorites({ goToUrl }: { goToUrl: (url: st
             􀋃
           </Text>
           <Text color="label" size="20pt" weight="heavy">
-            Favorites
+            {i18n.t(i18n.l.dapp_browser.homepage.favorites)}
           </Text>
         </Inline>
         <Box flexDirection="row" flexWrap="wrap" gap={LOGO_PADDING} width={{ custom: DEVICE_WIDTH - HORIZONTAL_PAGE_INSET * 2 }}>
@@ -113,22 +121,21 @@ const Favorites = React.memo(function Favorites({ goToUrl }: { goToUrl: (url: st
 });
 
 const Recents = React.memo(function Recents({ goToUrl }: { goToUrl: (url: string) => void }) {
-  const getRecent = useBrowserHistoryStore(state => state.getRecent);
-  const recent = uniqBy(getRecent(), 'url').slice(0, MAX_RECENTS_TO_DISPLAY);
+  const recents = useBrowserHistoryStore(state => uniqBy(state.recents, 'url').slice(0, MAX_RECENTS_TO_DISPLAY));
 
   return (
-    recent.length > 0 && (
+    recents.length > 0 && (
       <Stack space="20px">
         <Inline alignVertical="center" space="6px">
           <Text color="blue" size="15pt" align="center" weight="heavy">
             􀐫
           </Text>
           <Text color="label" size="20pt" weight="heavy">
-            Recents
+            {i18n.t(i18n.l.dapp_browser.homepage.recents)}
           </Text>
         </Inline>
         <Inline space={{ custom: CARD_PADDING }}>
-          {recent.map(site => (
+          {recents.map(site => (
             <Card key={site.url} site={site} showMenuButton goToUrl={goToUrl} />
           ))}
         </Inline>
@@ -144,39 +151,70 @@ const Card = React.memo(function Card({
 }: {
   goToUrl: (url: string) => void;
   showMenuButton?: boolean;
-  site: TrendingSite;
+  site: Omit<Site, 'timestamp'>;
 }) {
   const { isDarkMode } = useColorMode();
+  const { dapps } = useDapps();
+  const isFavorite = useFavoriteDappsStore(state => state.isFavorite(site.url || ''));
+  const addFavorite = useFavoriteDappsStore(state => state.addFavorite);
+  const removeFavorite = useFavoriteDappsStore(state => state.removeFavorite);
+  const removeRecent = useBrowserHistoryStore(state => state.removeRecent);
 
-  const menuConfig = {
-    menuTitle: '',
-    menuItems: [
+  const handleFavoritePress = useCallback(() => {
+    const url = site.url;
+    if (url) {
+      if (isFavorite) {
+        removeFavorite(url);
+      } else {
+        addFavorite(site);
+      }
+    }
+  }, [addFavorite, isFavorite, removeFavorite, site]);
+
+  const onPressMenuItem = useCallback(
+    async ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: 'favorite' | 'remove' } }) => {
+      haptics.selection();
+      if (actionKey === 'favorite') {
+        handleFavoritePress();
+      } else if (actionKey === 'remove') {
+        removeRecent(site.url);
+      }
+    },
+    [handleFavoritePress, removeRecent, site.url]
+  );
+
+  const menuConfig = useMemo(() => {
+    const menuItems = [
       {
-        actionKey: 'test1',
-        actionTitle: 'Option 1',
+        actionKey: 'favorite',
+        actionTitle: isFavorite ? i18n.t(i18n.l.dapp_browser.menus.undo_favorite) : i18n.t(i18n.l.dapp_browser.menus.favorite),
         icon: {
           iconType: 'SYSTEM',
-          iconValue: 'chart.line.uptrend.xyaxis',
+          iconValue: isFavorite ? 'star.slash' : 'star',
         },
       },
       {
-        actionKey: 'test2',
-        actionTitle: 'Option 2',
+        actionKey: 'remove',
+        actionTitle: i18n.t(i18n.l.dapp_browser.menus.remove),
         icon: {
           iconType: 'SYSTEM',
-          iconValue: 'plus.forwardslash.minus',
+          iconValue: 'trash',
         },
       },
-    ],
-  };
+    ];
+    return {
+      menuTitle: '',
+      menuItems,
+    };
+  }, [isFavorite]);
 
   const dappIconUrl = useMemo(() => {
     const dappUrl = site.url;
     const iconUrl = site.image;
     const host = getDappHost(dappUrl);
-    const overrideFound = trendingDapps.find(dapp => dapp.url === host);
-    if (overrideFound?.image) {
-      return overrideFound.image;
+    const overrideFound = dapps.find(dapp => dapp.url === host);
+    if (overrideFound?.iconUrl) {
+      return overrideFound.iconUrl;
     }
     return iconUrl;
   }, [site.image, site.url]);
@@ -259,7 +297,7 @@ const Card = React.memo(function Card({
         </Box>
       </ButtonPressAnimation>
       {showMenuButton && (
-        <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={() => {}} style={styles.cardContextMenuButton}>
+        <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem} style={styles.cardContextMenuButton}>
           <ButtonPressAnimation scaleTo={0.8} style={{ padding: 12 }}>
             <Box height={{ custom: 24 }} width={{ custom: 24 }} borderRadius={32} style={{ overflow: 'hidden' }}>
               <Cover>
@@ -274,7 +312,7 @@ const Card = React.memo(function Card({
                     }}
                   />
                 ) : (
-                  <Box background="fill" height="full" width="full" />
+                  <Box background="fillQuaternary" height="full" width="full" />
                 )}
               </Cover>
               <View
@@ -388,7 +426,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   cardLogoWrapper: {
-    borderRadius: IS_IOS ? 12 : 36,
+    borderRadius: 12,
     overflow: 'hidden',
   },
   pageBackgroundDark: {

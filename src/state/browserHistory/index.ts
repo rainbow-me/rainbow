@@ -1,6 +1,4 @@
-import create from 'zustand';
-
-import { createStore } from '../internal/createStore';
+import { createRainbowStore } from '../internal/createRainbowStore';
 
 export interface Site {
   name: string;
@@ -11,26 +9,35 @@ export interface Site {
 }
 
 interface BrowserHistoryStore {
-  recent: Site[];
+  recents: Site[];
   addRecent: (site: Site) => void;
-  getRecent: () => Site[];
+  removeRecent: (url: string) => void;
 }
 
 const MAX_RECENT_SIZE = 1000;
 
-export const browserHistoryStore = createStore<BrowserHistoryStore>((set, get) => ({
-  recent: [],
-  addRecent: (site: Site) => {
-    let newRecents = [site, ...get().recent];
-    if (newRecents.length > MAX_RECENT_SIZE) {
-      newRecents = newRecents.slice(0, MAX_RECENT_SIZE);
-    }
+export const useBrowserHistoryStore = createRainbowStore<BrowserHistoryStore>(
+  set => ({
+    recents: [],
 
-    set({
-      recent: newRecents,
-    });
-  },
-  getRecent: () => get().recent,
-}));
-
-export const useBrowserHistoryStore = create(browserHistoryStore);
+    addRecent: (site: Site) => {
+      set(state => {
+        let newRecents = [site, ...state.recents];
+        if (newRecents.length > MAX_RECENT_SIZE) {
+          newRecents = newRecents.slice(0, MAX_RECENT_SIZE);
+        }
+        return { recents: newRecents };
+      });
+    },
+    removeRecent: (url: string) => {
+      set(state => {
+        const filteredRecents = state.recents.filter(site => site.url !== url);
+        return { recents: filteredRecents };
+      });
+    },
+  }),
+  {
+    storageKey: 'browserHistory',
+    version: 0,
+  }
+);

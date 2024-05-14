@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, { useCallback, useMemo } from 'react';
 import { cloudPlatform } from '@/utils/platform';
 import Menu from '../Menu';
@@ -38,6 +39,7 @@ import { useCloudBackups } from '@/components/backup/CloudBackupProvider';
 import { GoogleDriveUserData, getGoogleAccountUserData, isCloudBackupAvailable, login } from '@/handlers/cloudBackup';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { Linking } from 'react-native';
+import { noop } from 'lodash';
 
 type WalletPillProps = {
   account: RainbowAccount;
@@ -74,7 +76,7 @@ const WalletPill = ({ account }: WalletPillProps) => {
       <Text color={'secondary (Deprecated)'} size="11pt" weight="semibold">
         {label.endsWith('.eth')
           ? abbreviations.abbreviateEnsForDisplay(label, 8, 4) ?? ''
-          : abbreviations.address(account.address, 3, 5) ?? ''}
+          : abbreviations.address(label !== '' ? label : account.address, 3, 5) ?? ''}
       </Text>
     </Box>
   );
@@ -213,25 +215,32 @@ export const WalletsAndBackup = () => {
   }, [backups, navigate]);
 
   const onCreateNewSecretPhrase = useCallback(async () => {
-    try {
-      await createWallet({
-        color: null,
-        name: '',
-        clearCallbackOnStartCreation: true,
-      });
+    navigate(Routes.MODAL_SCREEN, {
+      type: 'new_wallet_group',
+      numWalletGroups: walletTypeCount.phrase + 1,
+      onCloseModal: async ({ name }: { name: string }) => {
+        const nameValue = name.trim() !== '' ? name.trim() : '';
+        try {
+          await createWallet({
+            color: null,
+            name: nameValue,
+            clearCallbackOnStartCreation: true,
+          });
 
-      await dispatch(walletsLoadState(profilesEnabled));
+          await dispatch(walletsLoadState(profilesEnabled));
 
-      // @ts-ignore
-      await initializeWallet();
-    } catch (err) {
-      logger.error(new RainbowError('Failed to create new secret phrase'), {
-        extra: {
-          error: err,
-        },
-      });
-    }
-  }, [dispatch, initializeWallet, profilesEnabled]);
+          // @ts-expect-error - no params
+          await initializeWallet();
+        } catch (err) {
+          logger.error(new RainbowError('Failed to create new secret phrase'), {
+            extra: {
+              error: err,
+            },
+          });
+        }
+      },
+    });
+  }, [dispatch, initializeWallet, navigate, profilesEnabled, walletTypeCount.phrase]);
 
   const onPressLearnMoreAboutCloudBackups = useCallback(() => {
     navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
@@ -661,12 +670,13 @@ export const WalletsAndBackup = () => {
     backupAllNonBackedUpWalletsTocloud,
     sortedWallets,
     onCreateNewSecretPhrase,
+    onViewCloudBackups,
+    manageCloudBackups,
     navigate,
     onNavigateToWalletView,
     allBackedUp,
+    mostRecentBackup,
     lastBackupDate,
-    onViewCloudBackups,
-    manageCloudBackups,
     onPressLearnMoreAboutCloudBackups,
   ]);
 

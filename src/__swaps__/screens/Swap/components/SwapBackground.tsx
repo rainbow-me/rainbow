@@ -6,7 +6,7 @@ import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 import { useColorMode } from '@/design-system';
 import { useDimensions } from '@/hooks';
 import { ETH_COLOR, ETH_COLOR_DARK } from '@/__swaps__/screens/Swap/constants';
-import { getTintedBackgroundColor } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet, getTintedBackgroundColor } from '@/__swaps__/utils/swaps';
 import { IS_ANDROID } from '@/env';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { safeAreaInsetValues } from '@/utils';
@@ -15,35 +15,18 @@ import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 export const SwapBackground = () => {
-  const { SwapInputController } = useSwapContext();
+  const { internalSelectedInputAsset } = useSwapContext();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { isDarkMode } = useColorMode();
 
   const fallbackColor = isDarkMode ? ETH_COLOR_DARK : ETH_COLOR;
 
-  const bottomColorDarkened = useSharedValue(getTintedBackgroundColor(fallbackColor, isDarkMode));
-  const topColorDarkened = useSharedValue(getTintedBackgroundColor(fallbackColor, isDarkMode));
-
-  const getDarkenedColors = ({ topColor, bottomColor }: { topColor: string; bottomColor: string }) => {
-    bottomColorDarkened.value = getTintedBackgroundColor(bottomColor, isDarkMode);
-    topColorDarkened.value = getTintedBackgroundColor(topColor, isDarkMode);
-  };
-
-  useAnimatedReaction(
-    () => ({
-      topColor: SwapInputController.topColor.value,
-      bottomColor: SwapInputController.bottomColor.value,
-    }),
-    (current, previous) => {
-      if (previous && current !== previous && current !== undefined) {
-        runOnJS(getDarkenedColors)(current);
-      }
-    }
-  );
+  const bottomColorDarkened = useSharedValue(getTintedBackgroundColor(fallbackColor)[isDarkMode ? 'dark' : 'light']);
+  const topColorDarkened = useSharedValue(getTintedBackgroundColor(fallbackColor)[isDarkMode ? 'dark' : 'light']);
 
   const backgroundStyles = useAnimatedStyle(() => {
     return {
-      backgroundColor: SwapInputController.topColor.value,
+      backgroundColor: getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true),
       position: 'absolute',
       zIndex: -10,
       borderRadius: IS_ANDROID ? 20 : ScreenCornerRadius,

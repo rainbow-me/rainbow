@@ -149,6 +149,7 @@ export interface WalletconnectApprovalSheetRouteParams {
      */
     chainIds: number[];
     isWalletConnectV2?: boolean;
+    proposedChainId?: number;
   } & Pick<WalletconnectRequestData, 'dappName' | 'dappScheme' | 'dappUrl' | 'imageUrl' | 'peerId'>;
   timeout?: ReturnType<typeof setTimeout> | null;
   timedOut?: boolean;
