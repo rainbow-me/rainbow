@@ -27,7 +27,7 @@ export type Dapp = {
   };
 };
 
-const QUERY_KEY = createQueryKey('dApps', {}, { persisterVersion: 1 });
+const QUERY_KEY = createQueryKey('dApps', {}, { persisterVersion: 2 });
 
 export function useDapps(config?: UseQueryOptions<Dapp[]>): { dapps: Dapp[] } {
   const query = useQuery<Dapp[]>(
@@ -68,8 +68,8 @@ export function useDapps(config?: UseQueryOptions<Dapp[]>): { dapps: Dapp[] } {
       }
     },
     {
-      staleTime: 1000 * 60 * 60 * 24, // 24 hours
-      cacheTime: 1000 * 60 * 60 * 24 * 7, // 7 days
+      staleTime: 1000 * 60 * 20, // 20 minutes
+      cacheTime: 1000 * 60 * 60 * 24 * 2, // 2 days
       retry: 3,
       keepPreviousData: true,
       ...config,
@@ -83,13 +83,15 @@ interface DappsContextType {
   dapps: Dapp[];
 }
 
-const DEFAULT_DAPPS_CONTEXT: DappsContextType = {
-  dapps: [],
+const DappsContext = createContext<DappsContextType | undefined>(undefined);
+
+export const useDappsContext = () => {
+  const context = useContext(DappsContext);
+  if (!context) {
+    throw new Error('useDappsContext must be used within a DappsContextProvider');
+  }
+  return context;
 };
-
-const DappsContext = createContext<DappsContextType>(DEFAULT_DAPPS_CONTEXT);
-
-export const useDappsContext = () => useContext(DappsContext);
 
 export const DappsContextProvider = ({ children }: { children: React.ReactNode }) => {
   const { dapps } = useDapps();
