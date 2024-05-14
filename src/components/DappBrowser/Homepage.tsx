@@ -311,7 +311,7 @@ const Card = React.memo(function Card({
               <Cover>
                 {IS_IOS ? (
                   <BlurView
-                    blurType="chromeMaterialDark"
+                    blurType={isDarkMode ? 'chromeMaterialDark' : 'chromeMaterialLight'}
                     blurAmount={10}
                     style={{
                       width: '100%',
