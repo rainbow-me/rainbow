@@ -5,7 +5,7 @@ import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider
 export const useAssetsToBuySections = () => {
   const { SwapInputController } = useSwapContext();
 
-  const { results: searchAssetsToBuySections } = useSearchCurrencyLists({
+  const { sections: searchAssetsToBuySections } = useSearchCurrencyLists({
     outputChainId: SwapInputController.outputChainId,
     assetToSell: SwapInputController.assetToSell,
     searchQuery: SwapInputController.searchQuery,

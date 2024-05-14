@@ -159,11 +159,11 @@ export interface UserAssetsState {
   userAssets: Map<UniqueId, ParsedSearchAsset>;
   filter: UserAssetFilter;
   searchQuery: string;
-  favoriteAssetsAddresses: Hex[]; // this is chain agnostic, so we don't want to store a UniqueId here
-  setFavorites: (favoriteAssetIds: Hex[]) => void;
+  favoriteAssetsAddresses: Set<Hex>; // this is chain agnostic, so we don't want to store a UniqueId here
+  toggleFavorite: (address: Hex) => void;
   getFilteredUserAssetIds: () => UniqueId[];
   getUserAsset: (uniqueId: UniqueId) => ParsedSearchAsset;
-  isFavorite: (uniqueId: UniqueId) => boolean;
+  isFavorite: (address: Hex) => boolean;
 }
 
 function serializeUserAssetsState(state: Partial<UserAssetsState>, version?: number) {
@@ -223,9 +223,10 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
       map.set(obj.uniqueId, obj);
       return map;
     }, new Map()),
+    filteredUserAssetIds: [],
     filter: 'all',
     searchQuery: '',
-    favoriteAssetsAddresses: [],
+    favoriteAssetsAddresses: new Set<Hex>(),
 
     getFilteredUserAssetIds: () => {
       const { userAssetIds, userAssets, searchQuery } = get();
@@ -251,16 +252,16 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
       }, [] as UniqueId[]);
     },
 
-    setFavorites: (addresses: Hex[]) => set({ favoriteAssetsAddresses: addresses }),
+    toggleFavorite: (address: Hex) => {
+      const { isFavorite, favoriteAssetsAddresses } = get();
+      isFavorite(address) ? favoriteAssetsAddresses.delete(address) : favoriteAssetsAddresses.add(address);
+    },
 
     getUserAsset: (uniqueId: UniqueId) => get().userAssets.get(uniqueId) as ParsedSearchAsset,
 
-    isFavorite: (uniqueId: UniqueId) => {
+    isFavorite: (address: Hex) => {
       const { favoriteAssetsAddresses } = get();
-
-      const { address } = deriveAddressAndChainWithUniqueId(uniqueId);
-
-      return favoriteAssetsAddresses.includes(address);
+      return favoriteAssetsAddresses.has(address);
     },
   })
   // {

@@ -17,9 +17,11 @@ import { UniqueId } from '@/__swaps__/types/assets';
 export const CoinRow = ({ assetId, output, onPress }: { assetId: string; output?: boolean; onPress: (assetId: UniqueId) => void }) => {
   const theme = useTheme();
 
+  console.log(output, assetId);
+
   const asset = userAssetsStore(state => state.getUserAsset(assetId));
-  // const isFavorite = userAssetsStore(state => state.isFavorite(assetId));
-  // const setFavorite = userAssetsStore(state => state.setFavorite);
+  const isFavorited = userAssetsStore(state => state.isFavorite(asset.address));
+  const toggleFavorite = userAssetsStore(state => state.toggleFavorite);
   // chainId={item.chainId}
   // color={item.colors?.primary ?? item.colors?.fallback}
   // iconUrl={item.icon_url}
@@ -91,10 +93,15 @@ export const CoinRow = ({ assetId, output, onPress }: { assetId: string; output?
           {output ? (
             <Inline space="8px">
               <CoinRowButton icon="􀅳" outline size="icon 14px" />
-              <CoinRowButton color={false ? '#FFCB0F' : undefined} onPress={() => {}} icon="􀋃" weight="black" />
+              <CoinRowButton
+                color={isFavorited ? '#FFCB0F' : undefined}
+                onPress={() => toggleFavorite(asset.address)}
+                icon="􀋃"
+                weight="black"
+              />
             </Inline>
           ) : (
-            <BalancePill balance={asset.native.balance.display} />
+            <BalancePill balance={asset.native.balance.display} /> // needs fixing
           )}
         </Box>
       </HitSlop>
