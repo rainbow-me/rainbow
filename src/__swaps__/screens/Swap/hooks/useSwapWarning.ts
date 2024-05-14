@@ -7,6 +7,7 @@ import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapI
 import { BigNumberish } from '@/__swaps__/utils/hex';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { getCrossChainTimeEstimate, getQuoteServiceTime } from '@/__swaps__/utils/swaps';
+import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 
 const highPriceImpactThreshold = 0.05;
 const severePriceImpactThreshold = 0.1;
@@ -38,11 +39,21 @@ export interface SwapTimeEstimate {
 
 type UsePriceImpactWarningProps = {
   SwapInputController: ReturnType<typeof useSwapInputsController>;
+  inputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+  outputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+  quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
   sliderXPosition: SharedValue<number>;
   isFetching: SharedValue<boolean>;
 };
 
-export const useSwapWarning = ({ SwapInputController, isFetching, sliderXPosition }: UsePriceImpactWarningProps) => {
+export const useSwapWarning = ({
+  SwapInputController,
+  inputAsset,
+  outputAsset,
+  quote,
+  isFetching,
+  sliderXPosition,
+}: UsePriceImpactWarningProps) => {
   const { nativeCurrency: currentCurrency } = useAccountSettings();
 
   const timeEstimate = useSharedValue<SwapTimeEstimate | null>(null);
@@ -75,6 +86,8 @@ export const useSwapWarning = ({ SwapInputController, isFetching, sliderXPositio
       const nativeAmountImpact = subtract(inputNativeValue, outputNativeValue);
       const impact = divide(nativeAmountImpact, inputNativeValue);
       const display = convertAmountToNativeDisplay(nativeAmountImpact, currentCurrency);
+
+      console.log({ nativeAmountImpact, impact, display });
 
       /**
        * ORDER IS IMPORTANT HERE
@@ -121,7 +134,7 @@ export const useSwapWarning = ({ SwapInputController, isFetching, sliderXPositio
       } else if (!isFetching && !!quote && !(quote as QuoteError)?.error && (!inputNativeValue || !outputNativeValue)) {
         runOnUI(updateWarning)({
           type: SwapWarningType.unknown,
-          display: i18n.t(i18n.l.exchange.price_impact.unknown_price.title),
+          display,
         });
       } else if (!isFetching && !!quote && greaterThanOrEqualTo(impact, severePriceImpactThreshold)) {
         runOnUI(updateWarning)({
@@ -166,47 +179,45 @@ export const useSwapWarning = ({ SwapInputController, isFetching, sliderXPositio
     [currentCurrency, swapWarning, timeEstimate]
   );
 
-  // useAnimatedReaction(
-  //   () => ({
-  //     inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
-  //     outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
-  //     quote: SwapInputController.quote.value,
-  //     isFetching: isFetching.value,
-  //     sliderXPosition: sliderXPosition.value,
-  //   }),
-  //   (current, previous) => {
-  //     // NOTE: While fetching, we don't want to display a warning
-  //     if (current?.isFetching) {
-  //       swapWarning.value = { display: '', type: SwapWarningType.none };
-  //       return;
-  //     }
+  useAnimatedReaction(
+    () => ({
+      inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
+      outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
+      quote: quote.value,
+      isFetching: isFetching.value,
+      sliderXPosition: sliderXPosition.value,
+    }),
+    (current, previous) => {
+      // NOTE: check for conditions where no warning should be displayed
+      if (
+        current?.isFetching ||
+        (previous?.sliderXPosition && previous?.sliderXPosition !== current.sliderXPosition) ||
+        (!current.quote && previous?.quote)
+      ) {
+        swapWarning.modify(prev => {
+          return {
+            ...prev,
+            display: '',
+            type: SwapWarningType.none,
+          };
+        });
+        return;
+      }
 
-  //     // NOTE: While the user is scrubbing the slider, we don't want to show the price impact warning.
-  //     if (previous?.sliderXPosition && previous?.sliderXPosition !== current.sliderXPosition) {
-  //       swapWarning.value = { display: '', type: SwapWarningType.none };
-  //       return;
-  //     }
-
-  //     // NOTE: If we previous had a quote and the current quote is null we want to reset the state here
-  //     if (!current.quote && previous?.quote) {
-  //       swapWarning.value = { display: '', type: SwapWarningType.none };
-  //       return;
-  //     }
-
-  //     if (
-  //       (current.quote && previous?.quote !== current.quote) ||
-  //       previous?.inputNativeValue !== current.inputNativeValue ||
-  //       previous?.outputNativeValue !== current.outputNativeValue
-  //     ) {
-  //       runOnJS(getWarning)({
-  //         inputNativeValue: current.inputNativeValue,
-  //         outputNativeValue: current.outputNativeValue,
-  //         quote: current.quote,
-  //         isFetching: current.isFetching,
-  //       });
-  //     }
-  //   }
-  // );
+      if (
+        (current.quote && previous?.quote !== current.quote) ||
+        previous?.inputNativeValue !== current.inputNativeValue ||
+        previous?.outputNativeValue !== current.outputNativeValue
+      ) {
+        runOnJS(getWarning)({
+          inputNativeValue: current.inputNativeValue,
+          outputNativeValue: current.outputNativeValue,
+          quote: current.quote,
+          isFetching: current.isFetching,
+        });
+      }
+    }
+  );
 
   return { swapWarning, timeEstimate };
 };

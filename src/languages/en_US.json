@@ -576,7 +576,7 @@
           "description": "Approx."
         },
         "unknown_price": {
-          "title": "%{symbol} Market Value Unknown",
+          "title": "Market Value Unknown",
           "description": "If you decide to continue, be sure that you are satisfied receiving the quoted amount."
         },
         "losing_prefix": "Losing",

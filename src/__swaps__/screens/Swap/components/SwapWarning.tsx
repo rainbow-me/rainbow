@@ -36,7 +36,7 @@ export const SwapWarning = () => {
       addDisplayToTitle: true,
     },
     [SwapWarningType.unknown]: {
-      title: `􀇿 ${SwapWarning.swapWarning.value.display}`,
+      title: `􀇿 ${i18n.t(i18n.l.exchange.price_impact.unknown_price.title)}`,
       subtext: i18n.t(i18n.l.exchange.price_impact.unknown_price.description),
     },
     [SwapWarningType.severe]: {
