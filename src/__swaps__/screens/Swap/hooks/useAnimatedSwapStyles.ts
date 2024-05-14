@@ -3,8 +3,11 @@ import { SharedValue, interpolate, useAnimatedStyle, withSpring, withTiming } fr
 import { globalColors, useColorMode } from '@/design-system';
 import {
   BASE_INPUT_HEIGHT,
+  BOTTOM_ACTION_BAR_HEIGHT,
   EXPANDED_INPUT_HEIGHT,
   FOCUSED_INPUT_HEIGHT,
+  GAS_SHEET_HEIGHT,
+  REVIEW_SHEET_HEIGHT,
   THICK_BORDER_WIDTH,
   fadeConfig,
   springConfig,
@@ -16,6 +19,7 @@ import { NavigationSteps } from './useSwapNavigation';
 import { IS_ANDROID } from '@/env';
 import { safeAreaInsetValues } from '@/utils';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 
 export function useAnimatedSwapStyles({
   SwapWarning,
@@ -23,7 +27,7 @@ export function useAnimatedSwapStyles({
   internalSelectedOutputAsset,
   inputProgress,
   outputProgress,
-  reviewProgress,
+  configProgress,
   isFetching,
 }: {
   SwapWarning: ReturnType<typeof useSwapWarning>;
@@ -31,10 +35,12 @@ export function useAnimatedSwapStyles({
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
-  reviewProgress: SharedValue<number>;
+  configProgress: SharedValue<NavigationSteps>;
   isFetching: SharedValue<boolean>;
 }) {
   const { isDarkMode } = useColorMode();
+
+  const insetBottom = IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16;
 
   const flipButtonStyle = useAnimatedStyle(() => {
     return {
@@ -125,28 +131,30 @@ export function useAnimatedSwapStyles({
   });
 
   const swapActionWrapperStyle = useAnimatedStyle(() => {
+    const isReviewingOrConfiguringGas =
+      configProgress.value === NavigationSteps.SHOW_REVIEW || configProgress.value === NavigationSteps.SHOW_GAS;
+
+    const heightForPanel: { [key in NavigationSteps]: number } = {
+      [NavigationSteps.INPUT_ELEMENT_FOCUSED]: BOTTOM_ACTION_BAR_HEIGHT,
+      [NavigationSteps.SEARCH_FOCUSED]: BOTTOM_ACTION_BAR_HEIGHT,
+      [NavigationSteps.TOKEN_LIST_FOCUSED]: BOTTOM_ACTION_BAR_HEIGHT,
+      [NavigationSteps.SHOW_REVIEW]: REVIEW_SHEET_HEIGHT + insetBottom,
+      [NavigationSteps.SHOW_GAS]: GAS_SHEET_HEIGHT + insetBottom,
+    };
+
     return {
-      position: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 'absolute' : 'relative',
-      bottom: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 0 : undefined,
-      height: withSpring(
-        reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 407.68 + safeAreaInsetValues.bottom + 16 : 114,
-        springConfig
-      ),
-      borderTopLeftRadius: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? (IS_ANDROID ? 20 : 40) : 0,
-      borderTopRightRadius: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? (IS_ANDROID ? 20 : 40) : 0,
-      borderWidth: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? THICK_BORDER_WIDTH : 0,
-      borderColor: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? opacityWorklet(globalColors.darkGrey, 0.2) : undefined,
-      backgroundColor:
-        reviewProgress.value === NavigationSteps.SHOW_REVIEW
-          ? isDarkMode
-            ? '#191A1C'
-            : globalColors.white100
-          : opacityWorklet(getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true), 0.03),
-      borderTopColor:
-        reviewProgress.value === NavigationSteps.SHOW_REVIEW
-          ? opacityWorklet(globalColors.darkGrey, 0.2)
-          : opacityWorklet(getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true), 0.04),
-      paddingTop: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 28 : 16 - THICK_BORDER_WIDTH,
+      position: isReviewingOrConfiguringGas ? 'absolute' : 'relative',
+      bottom: isReviewingOrConfiguringGas ? 0 : undefined,
+      height: withSpring(heightForPanel[configProgress.value], springConfig),
+      borderTopLeftRadius: isReviewingOrConfiguringGas ? (IS_ANDROID ? 20 : 40) : 0,
+      borderTopRightRadius: isReviewingOrConfiguringGas ? (IS_ANDROID ? 20 : 40) : 0,
+      borderWidth: isReviewingOrConfiguringGas ? THICK_BORDER_WIDTH : 0,
+      borderColor: isReviewingOrConfiguringGas ? opacityWorklet(globalColors.darkGrey, 0.2) : undefined,
+      backgroundColor: opacityWorklet(getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true), 0.03),
+      borderTopColor: isReviewingOrConfiguringGas
+        ? opacityWorklet(globalColors.darkGrey, 0.2)
+        : opacityWorklet(getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true), 0.04),
+      paddingTop: isReviewingOrConfiguringGas ? 28 : 16 - THICK_BORDER_WIDTH,
     };
   });
 
@@ -192,10 +200,14 @@ export function useAnimatedSwapStyles({
     };
   });
 
-  const hideWhileReviewing = useAnimatedStyle(() => {
+  const hideWhileReviewingOrConfiguringGas = useAnimatedStyle(() => {
     return {
-      opacity: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? withTiming(0, fadeConfig) : withTiming(1, fadeConfig),
-      pointerEvents: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 'none' : 'auto',
+      opacity:
+        configProgress.value === NavigationSteps.SHOW_REVIEW || configProgress.value === NavigationSteps.SHOW_GAS
+          ? withTiming(0, fadeConfig)
+          : withTiming(1, fadeConfig),
+      pointerEvents:
+        configProgress.value === NavigationSteps.SHOW_REVIEW || configProgress.value === NavigationSteps.SHOW_GAS ? 'none' : 'auto',
     };
   });
 
@@ -242,7 +254,7 @@ export function useAnimatedSwapStyles({
     assetToSellCaretStyle,
     assetToBuyIconStyle,
     assetToBuyCaretStyle,
-    hideWhileReviewing,
+    hideWhileReviewingOrConfiguringGas,
     flipButtonFetchingStyle,
     searchInputAssetButtonStyle,
     searchOutputAssetButtonStyle,

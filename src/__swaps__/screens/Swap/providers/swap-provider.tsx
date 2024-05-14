@@ -24,6 +24,7 @@ import { isSameAsset } from '@/__swaps__/utils/assets';
 import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { ChainId } from '@/__swaps__/types/chains';
 import { logger } from '@/logger';
+import { useSwapGas } from '../hooks/useSwapGas';
 
 interface SwapContextType {
   isFetching: SharedValue<boolean>;
@@ -33,7 +34,7 @@ interface SwapContextType {
   // TODO: Combine navigation progress steps into a single shared value
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
-  reviewProgress: SharedValue<number>;
+  configProgress: SharedValue<number>;
 
   sliderXPosition: SharedValue<number>;
   sliderPressProgress: SharedValue<number>;
@@ -55,6 +56,7 @@ interface SwapContextType {
   SwapTextStyles: ReturnType<typeof useSwapTextStyles>;
   SwapNavigation: ReturnType<typeof useSwapNavigation>;
   SwapWarning: ReturnType<typeof useSwapWarning>;
+  SwapGas: ReturnType<typeof useSwapGas>;
 
   confirmButtonIcon: Readonly<SharedValue<string>>;
   confirmButtonLabel: Readonly<SharedValue<string>>;
@@ -73,9 +75,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
   const searchInputRef = useAnimatedRef<TextInput>();
 
-  const inputProgress = useSharedValue<NavigationSteps>(NavigationSteps.INPUT_ELEMENT_FOCUSED);
-  const outputProgress = useSharedValue<NavigationSteps>(NavigationSteps.INPUT_ELEMENT_FOCUSED);
-  const reviewProgress = useSharedValue<NavigationSteps>(NavigationSteps.INPUT_ELEMENT_FOCUSED);
+  const inputProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
+  const outputProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
+  const configProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
 
   const sliderXPosition = useSharedValue(SLIDER_WIDTH * INITIAL_SLIDER_POSITION);
   const sliderPressProgress = useSharedValue(SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
@@ -88,6 +90,11 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const internalSelectedOutputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(null);
 
   const quote = useSharedValue<Quote | CrosschainQuote | QuoteError | null>(null);
+
+  const SwapGas = useSwapGas({
+    inputAsset: internalSelectedInputAsset,
+    outputAsset: internalSelectedOutputAsset,
+  });
 
   const SwapInputController = useSwapInputsController({
     focusedInput,
@@ -106,7 +113,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     SwapInputController,
     inputProgress,
     outputProgress,
-    reviewProgress,
+    configProgress,
   });
 
   const SwapWarning = useSwapWarning({
@@ -121,7 +128,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     internalSelectedOutputAsset,
     inputProgress,
     outputProgress,
-    reviewProgress,
+    configProgress,
     isFetching,
   });
 
@@ -221,9 +228,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   };
 
   const confirmButtonIcon = useDerivedValue(() => {
-    const isReviewing = reviewProgress.value === NavigationSteps.SHOW_REVIEW;
-    if (isReviewing) {
+    if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
       return '􀎽';
+    } else if (configProgress.value === NavigationSteps.SHOW_GAS) {
+      return '􀆅';
     }
 
     if (isFetching.value) {
@@ -243,9 +251,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   });
 
   const confirmButtonLabel = useDerivedValue(() => {
-    const isReviewing = reviewProgress.value === NavigationSteps.SHOW_REVIEW;
-    if (isReviewing) {
+    if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
       return 'Hold to Swap';
+    } else if (configProgress.value === NavigationSteps.SHOW_GAS) {
+      return 'Save';
     }
 
     if (isFetching.value) {
@@ -257,7 +266,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
     if (SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching.value) {
       return 'Enter Amount';
-    } else if (SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0) {
+    } else if (
+      SwapInputController.inputMethod.value === 'slider' &&
+      (SwapInputController.percentageToSwap.value === 0 || isInputZero || isOutputZero)
+    ) {
       return 'Enter Amount';
     } else {
       return 'Review';
@@ -268,7 +280,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
     const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
 
-    const sliderCondition = SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0;
+    const sliderCondition =
+      SwapInputController.inputMethod.value === 'slider' &&
+      (SwapInputController.percentageToSwap.value === 0 || isInputZero || isOutputZero);
     const inputCondition = SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching.value;
 
     const shouldHide = sliderCondition || inputCondition;
@@ -299,7 +313,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
         inputProgress,
         outputProgress,
-        reviewProgress,
+        configProgress,
 
         sliderXPosition,
         sliderPressProgress,
@@ -319,6 +333,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         SwapTextStyles,
         SwapNavigation,
         SwapWarning,
+        SwapGas,
 
         confirmButtonIcon,
         confirmButtonLabel,

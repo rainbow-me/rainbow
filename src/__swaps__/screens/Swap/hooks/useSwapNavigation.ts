@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { SharedValue } from 'react-native-reanimated';
+import { SharedValue, useSharedValue } from 'react-native-reanimated';
 import { useSwapInputsController } from './useSwapInputsController';
 
 export const enum NavigationSteps {
@@ -14,36 +14,59 @@ export function useSwapNavigation({
   SwapInputController,
   inputProgress,
   outputProgress,
-  reviewProgress,
+  configProgress,
 }: {
   SwapInputController: ReturnType<typeof useSwapInputsController>;
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
-  reviewProgress: SharedValue<number>;
+  configProgress: SharedValue<number>;
 }) {
+  const navigateBackToReview = useSharedValue(false);
+
   const handleShowReview = useCallback(() => {
     'worklet';
-    if (reviewProgress.value !== NavigationSteps.SHOW_REVIEW) {
+    if (configProgress.value !== NavigationSteps.SHOW_REVIEW) {
       inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
       outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
-      reviewProgress.value = NavigationSteps.SHOW_REVIEW;
+      configProgress.value = NavigationSteps.SHOW_REVIEW;
     }
-  }, [inputProgress, outputProgress, reviewProgress]);
+  }, [inputProgress, outputProgress, configProgress]);
 
   const handleDismissReview = useCallback(() => {
     'worklet';
-    if (reviewProgress.value === NavigationSteps.SHOW_REVIEW) {
-      reviewProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+    if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
+      configProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
     }
-  }, [reviewProgress]);
+  }, [configProgress]);
+
+  const handleShowGas = useCallback(
+    ({ backToReview = false }: { backToReview?: boolean }) => {
+      'worklet';
+      if (backToReview) {
+        navigateBackToReview.value = true;
+      }
+
+      if (configProgress.value !== NavigationSteps.SHOW_GAS) {
+        inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+        outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+        configProgress.value = NavigationSteps.SHOW_GAS;
+      }
+    },
+    [configProgress, navigateBackToReview, inputProgress, outputProgress]
+  );
+
+  const handleDismissGas = useCallback(() => {
+    'worklet';
+    if (configProgress.value === NavigationSteps.SHOW_GAS) {
+      configProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+    }
+  }, [configProgress]);
 
   const handleExitSearch = useCallback(() => {
     'worklet';
     handleDismissReview();
+    handleDismissGas();
     SwapInputController.fetchQuote();
-
-    console.log('inputProgress.value', inputProgress.value);
-    console.log('outputProgress.value', outputProgress.value);
 
     if (inputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED) {
       inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
@@ -57,29 +80,32 @@ export function useSwapNavigation({
     if (outputProgress.value === NavigationSteps.SEARCH_FOCUSED) {
       outputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
     }
-  }, [SwapInputController, handleDismissReview, inputProgress, outputProgress]);
+  }, [SwapInputController, handleDismissGas, handleDismissReview, inputProgress, outputProgress]);
 
   const handleFocusInputSearch = useCallback(() => {
     'worklet';
     handleDismissReview();
+    handleDismissGas();
 
     if (inputProgress.value !== NavigationSteps.SEARCH_FOCUSED) {
       inputProgress.value = NavigationSteps.SEARCH_FOCUSED;
     }
-  }, [handleDismissReview, inputProgress]);
+  }, [handleDismissReview, handleDismissGas, inputProgress]);
 
   const handleFocusOutputSearch = useCallback(() => {
     'worklet';
     handleDismissReview();
+    handleDismissGas();
 
     if (outputProgress.value !== NavigationSteps.SEARCH_FOCUSED) {
       outputProgress.value = NavigationSteps.SEARCH_FOCUSED;
     }
-  }, [handleDismissReview, outputProgress]);
+  }, [handleDismissReview, handleDismissGas, outputProgress]);
 
   const handleInputPress = useCallback(() => {
     'worklet';
     handleDismissReview();
+    handleDismissGas();
     SwapInputController.quoteFetchingInterval.stop();
 
     if (inputProgress.value === NavigationSteps.INPUT_ELEMENT_FOCUSED) {
@@ -89,11 +115,12 @@ export function useSwapNavigation({
     } else {
       inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
     }
-  }, [handleDismissReview, inputProgress, outputProgress, SwapInputController]);
+  }, [handleDismissReview, handleDismissGas, inputProgress, outputProgress, SwapInputController]);
 
   const handleOutputPress = useCallback(() => {
     'worklet';
     handleDismissReview();
+    handleDismissGas();
     SwapInputController.quoteFetchingInterval.stop();
 
     if (outputProgress.value === NavigationSteps.INPUT_ELEMENT_FOCUSED) {
@@ -102,7 +129,25 @@ export function useSwapNavigation({
     } else {
       outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
     }
-  }, [handleDismissReview, inputProgress, outputProgress, SwapInputController]);
+  }, [SwapInputController, handleDismissReview, handleDismissGas, inputProgress, outputProgress]);
+
+  const handleSwapAction = useCallback(() => {
+    'worklet';
+
+    if (configProgress.value === NavigationSteps.SHOW_GAS) {
+      if (navigateBackToReview.value) {
+        navigateBackToReview.value = false;
+        handleShowReview();
+      } else {
+        handleDismissGas();
+      }
+    } else if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
+      // TODO: Handle executing swap
+      handleDismissReview();
+    } else {
+      handleShowReview();
+    }
+  }, [SwapInputController, configProgress, handleDismissGas, handleDismissReview, handleShowReview, navigateBackToReview]);
 
   return {
     handleExitSearch,
@@ -112,5 +157,9 @@ export function useSwapNavigation({
     handleOutputPress,
     handleShowReview,
     handleDismissReview,
+    handleShowGas,
+    handleDismissGas,
+    handleSwapAction,
+    navigateBackToReview,
   };
 }
