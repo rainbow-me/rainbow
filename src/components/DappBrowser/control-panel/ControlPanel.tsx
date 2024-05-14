@@ -204,12 +204,18 @@ export const ControlPanel = () => {
   const handleSwitchWallet = useCallback(
     (selectedItemId: string) => {
       const address = selectedItemId;
-      updateActiveSession({ host: activeTabHost, address: address as `0x${string}` });
+      removeSession({ host: activeTabHost, address: address as `0x${string}` });
+      addSession({
+        host: activeTabHost,
+        address: address as `0x${string}`,
+        network: currentNetwork,
+        url: activeTabUrl || '',
+      });
       // need to emit these events to the dapp
       activeTabRef.current?.injectJavaScript(`window.ethereum.emit('accountsChanged', ['${address}']); true;`);
       setCurrentAddress(address);
     },
-    [activeTabHost, activeTabRef, updateActiveSession]
+    [activeTabHost, activeTabRef, activeTabUrl, addSession, currentNetwork, removeSession]
   );
 
   const handleNetworkSwitch = useCallback(
@@ -228,8 +234,7 @@ export const ControlPanel = () => {
     const network = selectedNetworkId.value as Network;
     addSession({
       host: activeTabHost || '',
-      // @ts-expect-error Type 'string' is not assignable to type '`0x${string}`'
-      address,
+      address: address as `0x${string}`,
       network,
       url: activeTabUrl || '',
     });
