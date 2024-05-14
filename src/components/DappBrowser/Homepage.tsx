@@ -217,7 +217,7 @@ const Card = React.memo(function Card({
     const iconUrl = site.image;
     const host = formatUrl(dappUrl, false, true, true);
     // 👇 TODO: Remove this once the Uniswap logo in the dapps metadata is fixed
-    const isUniswap = host.includes('uniswap.org');
+    const isUniswap = host === 'uniswap.org' || host.endsWith('.uniswap.org');
     const overrideFound = dapps.find(dapp => dapp.url.includes(host));
     if (overrideFound?.iconUrl && !isUniswap) {
       return overrideFound.iconUrl;
