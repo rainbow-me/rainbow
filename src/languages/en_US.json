@@ -2796,6 +2796,8 @@
         "switch_wallet": "Switch Wallet",
         "switch_network": "Switch Network",
         "disconnect": "Disconnect",
+        "favorite": "Favorite",
+        "undo_favorite": "Undo",
         "connect": "Connect",
         "swap": "Swap",
         "bridge": "Bridge",

@@ -8,7 +8,7 @@ import { useBrowserContext } from '../../BrowserContext';
 import { SEARCH_BAR_HEIGHT } from '../../search-input/SearchInput';
 import { useSearchContext } from '../SearchContext';
 import { GoogleSearchResult, SearchResult } from './SearchResult';
-import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { isValidURLWorklet } from '../../utils';
 import * as i18n from '@/languages';
@@ -87,7 +87,7 @@ export const SearchResults = React.memo(function SearchResults({
   const { inputRef, keyboardHeight, searchQuery, searchResults } = useSearchContext();
   const { dapps } = useDappsContext();
 
-  const backgroundStyle = useAnimatedStyle(() => ({
+  const animatedSearchContainerStyle = useAnimatedStyle(() => ({
     opacity: searchViewProgress.value,
     pointerEvents: isFocused.value ? 'auto' : 'none',
   }));
@@ -137,20 +137,14 @@ export const SearchResults = React.memo(function SearchResults({
   }));
 
   return (
-    <Box
-      as={Animated.View}
-      height="full"
-      width="full"
-      position="absolute"
+    <Animated.View
       style={[
-        backgroundStyle,
-        {
-          backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD',
-          paddingTop: 60,
-        },
+        styles.searchContainer,
+        isDarkMode ? styles.searchBackgroundDark : styles.searchBackgroundLight,
+        animatedSearchContainerStyle,
       ]}
     >
-      <Animated.View style={[closeButtonAnimatedStyle, styles.closeButton]}>
+      <Animated.View style={[styles.closeButton, closeButtonAnimatedStyle]}>
         <Box
           as={ButtonPressAnimation}
           background="fill"
@@ -167,7 +161,7 @@ export const SearchResults = React.memo(function SearchResults({
           </Text>
         </Box>
       </Animated.View>
-      <Animated.View style={[emptyStateAnimatedStyle, styles.emptyStateContainer]}>
+      <Animated.View style={[styles.emptyStateContainer, emptyStateAnimatedStyle]}>
         <Stack alignHorizontal="center" space="24px">
           <Text align="center" color="labelQuaternary" size="34pt" weight="heavy">
             􀊫
@@ -181,26 +175,12 @@ export const SearchResults = React.memo(function SearchResults({
         <ScrollView style={{ paddingHorizontal: 16 }} contentContainerStyle={{ paddingBottom: SEARCH_BAR_HEIGHT }}>
           <Inset>
             <Stack space="32px">
-              {/* <Box gap={12}> */}
-              {/* <Inset horizontal="8px" vertical={{ custom: 9 }}>
-                  <Inline alignHorizontal="justify" alignVertical="center">
-                    <Inline space="6px" alignVertical="center">
-                      <TextIcon color="blue" size="icon 15px" weight="heavy" width={20}>
-                        􀐫
-                      </TextIcon>
-                      <Text weight="heavy" color="label" size="20pt">
-                        Suggested
-                      </Text>
-                    </Inline>
-                  </Inline>
-                </Inset> */}
               <Box paddingTop={{ custom: 42 }}>
                 <SearchResult index={0} goToUrl={goToUrl} />
                 <Animated.View style={suggestedGoogleSearchAnimatedStyle}>
                   <GoogleSearchResult goToUrl={goToUrl} />
                 </Animated.View>
               </Box>
-              {/* </Box> */}
               <Animated.View style={moreResultsAnimatedStyle}>
                 <Stack space="12px">
                   <Inset horizontal="8px">
@@ -227,7 +207,7 @@ export const SearchResults = React.memo(function SearchResults({
           </Inset>
         </ScrollView>
       </Animated.View>
-    </Box>
+    </Animated.View>
   );
 });
 
@@ -250,5 +230,17 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     top: 0,
+  },
+  searchContainer: {
+    height: DEVICE_HEIGHT,
+    paddingTop: 60,
+    position: 'absolute',
+    width: DEVICE_WIDTH,
+  },
+  searchBackgroundDark: {
+    backgroundColor: globalColors.grey100,
+  },
+  searchBackgroundLight: {
+    backgroundColor: '#FBFCFD',
   },
 });

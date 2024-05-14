@@ -97,24 +97,27 @@ export function useScreenshotAndScrollTriggers() {
         // 📸 END screenshot capture logic
 
         // 🪄 Invisibly scroll the tab view to vertically center the active tab once the tab view is fully exited
-        const isScrollViewScrollable = currentlyOpenTabIds.value.length > 4;
-        const exitTabViewAnimationIsComplete =
-          isScrollViewScrollable && tabViewVisible.value === false && current === 0 && previous && previous !== 0;
+        if (IS_IOS) {
+          const isScrollViewScrollable = currentlyOpenTabIds.value.length > 4;
+          const exitTabViewAnimationIsComplete =
+            isScrollViewScrollable && tabViewVisible.value === false && current === 0 && previous && previous !== 0;
 
-        if (isScrollViewScrollable && exitTabViewAnimationIsComplete) {
-          const scrollTo = calculateScrollPositionToCenterTab(animatedActiveTabIndex.value, currentlyOpenTabIds.value.length);
-          dispatchCommand(scrollViewRef, 'scrollTo', [0, scrollTo, false]);
+          if (isScrollViewScrollable && exitTabViewAnimationIsComplete) {
+            const scrollTo = calculateScrollPositionToCenterTab(animatedActiveTabIndex.value, currentlyOpenTabIds.value.length);
+            dispatchCommand(scrollViewRef, 'scrollTo', [0, scrollTo, false]);
+          }
         }
         // 🪄 END scroll logic
       }
-    }
+    },
+    [tabViewProgress]
   );
 }
 
 const SCREEN_HEIGHT = DEVICE_HEIGHT;
 const HALF_SCREEN_HEIGHT = DEVICE_HEIGHT / 2;
 
-function calculateScrollPositionToCenterTab(activeTabIndex: number, numberOfOpenTabs: number): number {
+export function calculateScrollPositionToCenterTab(activeTabIndex: number, numberOfOpenTabs: number): number {
   'worklet';
 
   const scrollViewHeight =

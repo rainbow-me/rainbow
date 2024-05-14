@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   },
   progressBarContainer: {
     height: 2,
-    bottom: TAB_BAR_HEIGHT + 2,
+    bottom: TAB_BAR_HEIGHT,
     left: 0,
     width: deviceUtils.dimensions.width,
     pointerEvents: 'none',

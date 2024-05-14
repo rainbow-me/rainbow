@@ -21,6 +21,7 @@ import { WEBVIEW_HEIGHT } from './Dimensions';
 import { useDapps } from '@/resources/metadata/dapps';
 import haptics from '@/utils/haptics';
 import * as i18n from '@/languages';
+import { formatUrl } from './utils';
 
 const HORIZONTAL_PAGE_INSET = 24;
 const MAX_RECENTS_TO_DISPLAY = 6;
@@ -35,9 +36,10 @@ const LOGO_LABEL_SPILLOVER = 12;
 const NUM_CARDS = 2;
 const CARD_PADDING = 12;
 const CARD_HEIGHT = 137;
-const CARD_WIDTH = (DEVICE_WIDTH - HORIZONTAL_PAGE_INSET * 2 - (NUM_CARDS - 1) * CARD_PADDING) / NUM_CARDS;
+const RAW_CARD_WIDTH = (DEVICE_WIDTH - HORIZONTAL_PAGE_INSET * 2 - (NUM_CARDS - 1) * CARD_PADDING) / NUM_CARDS;
+const CARD_WIDTH = IS_IOS ? RAW_CARD_WIDTH : Math.floor(RAW_CARD_WIDTH);
 
-export const Homepage = React.memo(function Homepage() {
+export const Homepage = () => {
   const { goToUrl } = useBrowserContext();
   const { isDarkMode } = useColorMode();
 
@@ -45,7 +47,7 @@ export const Homepage = React.memo(function Homepage() {
     <View style={[isDarkMode ? styles.pageBackgroundDark : styles.pageBackgroundLight, styles.pageContainer]}>
       <ScrollView
         scrollIndicatorInsets={SCROLL_INDICATOR_INSETS}
-        contentContainerStyle={styles.scrollViewContainer}
+        contentContainerStyle={[styles.scrollViewContainer, isDarkMode ? styles.pageBackgroundDark : styles.pageBackgroundLight]}
         showsVerticalScrollIndicator={false}
       >
         <Stack space="44px">
@@ -56,9 +58,9 @@ export const Homepage = React.memo(function Homepage() {
       </ScrollView>
     </View>
   );
-});
+};
 
-const Trending = React.memo(function Trending({ goToUrl }: { goToUrl: (url: string) => void }) {
+const Trending = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
   const { dapps } = useDapps({ select: dapps => dapps.filter(dapp => dapp.trending).slice(0, 8) });
 
   if (dapps.length === 0) {
@@ -94,13 +96,13 @@ const Trending = React.memo(function Trending({ goToUrl }: { goToUrl: (url: stri
       </Bleed>
     </Stack>
   );
-});
+};
 
-const Favorites = React.memo(function Favorites({ goToUrl }: { goToUrl: (url: string) => void }) {
+const Favorites = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
   const favoriteDapps = useFavoriteDappsStore(state => state.favoriteDapps);
 
   return (
-    favoriteDapps?.length > 0 && (
+    favoriteDapps.length > 0 && (
       <Stack space="20px">
         <Inline alignVertical="center" space="6px">
           <Text color="yellow" size="15pt" align="center" weight="heavy">
@@ -118,9 +120,9 @@ const Favorites = React.memo(function Favorites({ goToUrl }: { goToUrl: (url: st
       </Stack>
     )
   );
-});
+};
 
-const Recents = React.memo(function Recents({ goToUrl }: { goToUrl: (url: string) => void }) {
+const Recents = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
   const recents = useBrowserHistoryStore(state => uniqBy(state.recents, 'url').slice(0, MAX_RECENTS_TO_DISPLAY));
 
   return (
@@ -134,15 +136,17 @@ const Recents = React.memo(function Recents({ goToUrl }: { goToUrl: (url: string
             {i18n.t(i18n.l.dapp_browser.homepage.recents)}
           </Text>
         </Inline>
-        <Inline space={{ custom: CARD_PADDING }}>
-          {recents.map(site => (
-            <Card key={site.url} site={site} showMenuButton goToUrl={goToUrl} />
-          ))}
-        </Inline>
+        <Box width={{ custom: DEVICE_WIDTH }}>
+          <Inline space={{ custom: CARD_PADDING }}>
+            {recents.map(site => (
+              <Card key={site.url} site={site} showMenuButton goToUrl={goToUrl} />
+            ))}
+          </Inline>
+        </Box>
       </Stack>
     )
   );
-});
+};
 
 const Card = React.memo(function Card({
   goToUrl,
@@ -211,13 +215,15 @@ const Card = React.memo(function Card({
   const dappIconUrl = useMemo(() => {
     const dappUrl = site.url;
     const iconUrl = site.image;
-    const host = getDappHost(dappUrl);
-    const overrideFound = dapps.find(dapp => dapp.url === host);
-    if (overrideFound?.iconUrl) {
+    const host = formatUrl(dappUrl, false, true, true);
+    // 👇 TODO: Remove this once the Uniswap logo in the dapps metadata is fixed
+    const isUniswap = host.includes('uniswap.org');
+    const overrideFound = dapps.find(dapp => dapp.url.includes(host));
+    if (overrideFound?.iconUrl && !isUniswap) {
       return overrideFound.iconUrl;
     }
     return iconUrl;
-  }, [site.image, site.url]);
+  }, [dapps, site.image, site.url]);
 
   return (
     <Box>
@@ -225,7 +231,6 @@ const Card = React.memo(function Card({
         <Box
           background="surfacePrimary"
           borderRadius={24}
-          shadow="18px"
           style={{
             width: CARD_WIDTH,
           }}
@@ -243,8 +248,8 @@ const Card = React.memo(function Card({
                 <Cover>
                   <ImgixImage
                     enableFasterImage
-                    source={{ uri: site.screenshot || dappIconUrl }}
                     size={CARD_WIDTH}
+                    source={{ uri: dappIconUrl || site.screenshot }}
                     style={{ width: CARD_WIDTH, height: CARD_HEIGHT }}
                   />
                   <Cover>

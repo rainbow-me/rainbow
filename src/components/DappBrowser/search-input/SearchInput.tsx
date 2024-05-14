@@ -7,7 +7,6 @@ import Animated, {
   AnimatedStyle,
   DerivedValue,
   SharedValue,
-  dispatchCommand,
   runOnUI,
   useAnimatedProps,
   useAnimatedStyle,
@@ -316,7 +315,7 @@ const AddressBar = React.memo(function AddressBar({
   // ⚠️ TODO: Refactor
   const handlePressGo = useCallback(
     (event: NativeSyntheticEvent<TextInputSubmitEditingEventData>) => {
-      dispatchCommand(inputRef, 'blur');
+      inputRef.current?.blur();
 
       const newUrl = event.nativeEvent.text;
       runOnUI(updateUrl)(newUrl);
@@ -529,7 +528,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   inputContentWrapper: {
-    height: SEARCH_BAR_HEIGHT,
+    height: IS_IOS ? SEARCH_BAR_HEIGHT : 60,
     position: 'absolute',
     width: '100%',
   },
