@@ -2,14 +2,14 @@ import React, { useMemo } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Box, HitSlop, Inline, Stack, Text } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
-import { useTheme } from '@/theme';
-import { SwapCoinIcon } from '@/__swaps__/screens/Swap/components/SwapCoinIcon';
 import { CoinRowButton } from '@/__swaps__/screens/Swap/components/CoinRowButton';
 import { BalancePill } from '@/__swaps__/screens/Swap/components/BalancePill';
 import { ChainId } from '@/__swaps__/types/chains';
-import { ethereumUtils } from '@/utils';
 import { toggleFavorite, useFavorites } from '@/resources/favorites';
 import { ETH_ADDRESS } from '@/references';
+import Animated from 'react-native-reanimated';
+import { StyleSheet } from 'react-native';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
 export const CoinRow = ({
   address,
@@ -38,7 +38,7 @@ export const CoinRow = ({
   output?: boolean;
   symbol: string;
 }) => {
-  const theme = useTheme();
+  const { AnimatedSwapStyles } = useSwapContext();
   const { favoritesMetadata } = useFavorites();
 
   const favorites = Object.values(favoritesMetadata);
@@ -73,7 +73,15 @@ export const CoinRow = ({
           width="full"
         >
           <Inline alignVertical="center" space="10px">
-            <SwapCoinIcon
+            {/* TODO: Implement Coin Icons using reanimated values */}
+            <Box
+              as={Animated.View}
+              borderRadius={18}
+              height={{ custom: 36 }}
+              style={[styles.solidColorCoinIcon, AnimatedSwapStyles.assetToSellIconStyle]}
+              width={{ custom: 36 }}
+            />
+            {/* <SwapCoinIcon
               iconUrl={iconUrl}
               address={address}
               mainnetAddress={mainnetAddress}
@@ -82,7 +90,7 @@ export const CoinRow = ({
               symbol={symbol}
               theme={theme}
               color={color}
-            />
+            /> */}
             <Stack space="10px">
               <Text color="label" size="17pt" weight="semibold">
                 {name}
@@ -122,3 +130,9 @@ export const CoinRow = ({
     </ButtonPressAnimation>
   );
 };
+
+export const styles = StyleSheet.create({
+  solidColorCoinIcon: {
+    opacity: 0.4,
+  },
+});

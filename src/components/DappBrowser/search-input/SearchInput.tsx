@@ -134,7 +134,7 @@ const TheeDotMenu = function TheeDotMenu({
         goBack();
       } else if (actionKey === 'forward') {
         goForward();
-      } else {
+      } else if (actionKey === 'share') {
         const url = activeTabInfo.value.url;
         if (url) handleShareUrl(url);
       }

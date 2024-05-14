@@ -9,7 +9,8 @@ import { borders, fonts } from '@/styles';
 import { ThemeContextProps } from '@/theme';
 import { FallbackIcon as CoinIconTextFallback, isETH } from '@/utils';
 import { FastFallbackCoinIconImage } from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastFallbackCoinIconImage';
-import Animated from 'react-native-reanimated';
+import Animated, { SharedValue } from 'react-native-reanimated';
+import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 
 // TODO: Delete this and replace with RainbowCoinIcon
 // ⚠️ When replacing this component with RainbowCoinIcon, make sure
@@ -59,6 +60,7 @@ function resolveNetworkAndAddress({ address, mainnetAddress, network }: { mainne
 }
 
 export const SwapCoinIcon = React.memo(function FeedCoinIcon({
+  asset,
   address,
   color,
   iconUrl,
@@ -71,6 +73,7 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
   symbol,
   theme,
 }: {
+  asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   address: string;
   color?: string;
   iconUrl?: string;

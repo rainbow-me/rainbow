@@ -38,6 +38,9 @@ export const SwapNumberPad = () => {
 
   const addNumber = (number?: number) => {
     'worklet';
+    // immediately stop the quote fetching interval
+    SwapInputController.quoteFetchingInterval.stop();
+
     const inputKey = focusedInput.value;
     if (SwapInputController.inputMethod.value !== inputKey) {
       SwapInputController.inputMethod.value = inputKey;
