@@ -21,7 +21,6 @@ import { WEBVIEW_HEIGHT } from './Dimensions';
 import { useDapps } from '@/resources/metadata/dapps';
 import haptics from '@/utils/haptics';
 import * as i18n from '@/languages';
-import { formatUrl } from './utils';
 
 const HORIZONTAL_PAGE_INSET = 24;
 const MAX_RECENTS_TO_DISPLAY = 6;
@@ -215,7 +214,7 @@ const Card = React.memo(function Card({
   const dappIconUrl = useMemo(() => {
     const dappUrl = site.url;
     const iconUrl = site.image;
-    const host = formatUrl(dappUrl, false, true, true);
+    const host = new URL(dappUrl).hostname;
     // 👇 TODO: Remove this once the Uniswap logo in the dapps metadata is fixed
     const isUniswap = host === 'uniswap.org' || host.endsWith('.uniswap.org');
     const overrideFound = dapps.find(dapp => dapp.url.includes(host));
