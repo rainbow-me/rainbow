@@ -522,11 +522,9 @@ const TabGestureHandlers = ({ animatedTabIndex, gestureScale, gestureX, tabId }:
         {/* @ts-expect-error Property 'children' does not exist on type */}
         <PanGestureHandler
           activeOffsetX={[-2, 2]}
-          enabled={IS_IOS}
           failOffsetY={[-12, 12]}
           maxPointers={1}
           onGestureEvent={swipeToCloseTabGestureHandler}
-          // simultaneousHandlers={scrollViewRef}
           waitFor={tapHandlerRef}
         >
           <Animated.View style={styles.gestureHandlersContainer}>
