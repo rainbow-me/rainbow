@@ -66,7 +66,7 @@ export function useSwapInputsController({
   const incrementDecimalPlaces = useDerivedValue(() => countDecimalPlaces(niceIncrement.value));
 
   const formattedInputAmount = useDerivedValue(() => {
-    if (!internalSelectedInputAsset.value || !internalSelectedInputAsset.value.displayPrice) return '0';
+    if (!internalSelectedInputAsset.value || !internalSelectedInputAsset.value.nativePrice) return '0';
 
     if ((inputMethod.value === 'slider' && percentageToSwap.value === 0) || !inputValues.value.inputAmount) {
       return '0';
@@ -79,7 +79,7 @@ export function useSwapInputsController({
     if (inputMethod.value === 'outputAmount') {
       return valueBasedDecimalFormatter(
         inputValues.value.inputAmount,
-        internalSelectedInputAsset.value.displayPrice,
+        internalSelectedInputAsset.value.nativePrice,
         'up',
         -1,
         internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
@@ -92,7 +92,7 @@ export function useSwapInputsController({
     return niceIncrementFormatter(
       incrementDecimalPlaces.value,
       balance,
-      internalSelectedInputAsset.value.displayPrice,
+      internalSelectedInputAsset.value.nativePrice,
       niceIncrement.value,
       percentageToSwap.value,
       sliderXPosition.value
@@ -114,7 +114,7 @@ export function useSwapInputsController({
   });
 
   const formattedOutputAmount = useDerivedValue(() => {
-    if (!internalSelectedOutputAsset.value || !internalSelectedOutputAsset.value.displayPrice) return '0';
+    if (!internalSelectedOutputAsset.value || !internalSelectedOutputAsset.value.nativePrice) return '0';
 
     if ((inputMethod.value === 'slider' && percentageToSwap.value === 0) || !inputValues.value.outputAmount) {
       return '0';
@@ -126,7 +126,7 @@ export function useSwapInputsController({
 
     return valueBasedDecimalFormatter(
       inputValues.value.outputAmount,
-      internalSelectedOutputAsset.value.displayPrice,
+      internalSelectedOutputAsset.value.nativePrice,
       'down',
       -1,
       internalSelectedOutputAsset.value?.type === 'stablecoin' ?? false,
@@ -447,8 +447,8 @@ export function useSwapInputsController({
         if (
           !current.assetToSell ||
           !current.assetToBuy ||
-          !internalSelectedInputAsset.value?.displayPrice ||
-          !internalSelectedOutputAsset.value?.displayPrice
+          !internalSelectedInputAsset.value?.nativePrice ||
+          !internalSelectedOutputAsset.value?.nativePrice
         )
           return;
 
@@ -456,16 +456,16 @@ export function useSwapInputsController({
         const inputAmount = niceIncrementFormatter(
           incrementDecimalPlaces.value,
           balance,
-          internalSelectedInputAsset.value.displayPrice,
+          internalSelectedInputAsset.value.nativePrice,
           niceIncrement.value,
           percentageToSwap.value,
           sliderXPosition.value,
           true
         );
 
-        const inputNativeValue = Number(inputAmount) * internalSelectedInputAsset.value.displayPrice;
-        const outputAmount = (inputNativeValue / internalSelectedOutputAsset.value.displayPrice) * (1 - SWAP_FEE); // TODO: Implement swap fee
-        const outputNativeValue = outputAmount * internalSelectedOutputAsset.value.displayPrice;
+        const inputNativeValue = Number(inputAmount) * internalSelectedInputAsset.value.nativePrice;
+        const outputAmount = (inputNativeValue / internalSelectedOutputAsset.value.nativePrice) * (1 - SWAP_FEE); // TODO: Implement swap fee
+        const outputNativeValue = outputAmount * internalSelectedOutputAsset.value.nativePrice;
 
         inputValues.modify(values => {
           return {
@@ -498,7 +498,7 @@ export function useSwapInputsController({
             if (!current.assetToSell) return;
 
             const balance = Number(current.assetToSell.balance.amount);
-            if (!balance || !internalSelectedInputAsset.value?.displayPrice) {
+            if (!balance || !internalSelectedInputAsset.value?.nativePrice) {
               inputValues.modify(values => {
                 return {
                   ...values,
@@ -515,13 +515,13 @@ export function useSwapInputsController({
             const inputAmount = niceIncrementFormatter(
               incrementDecimalPlaces.value,
               balance,
-              internalSelectedInputAsset.value?.displayPrice,
+              internalSelectedInputAsset.value?.nativePrice,
               niceIncrement.value,
               percentageToSwap.value,
               sliderXPosition.value,
               true
             );
-            const inputNativeValue = Number(inputAmount) * internalSelectedInputAsset.value?.displayPrice;
+            const inputNativeValue = Number(inputAmount) * internalSelectedInputAsset.value?.nativePrice;
             inputValues.modify(values => {
               return {
                 ...values,
@@ -556,9 +556,9 @@ export function useSwapInputsController({
               runOnJS(onTypedNumber)(0, 'inputAmount');
             }
           } else {
-            if (!current.assetToSell || !current.assetToSell?.displayPrice) return;
+            if (!current.assetToSell || !current.assetToSell?.nativePrice) return;
             // If the input amount was set to a non-zero value
-            const inputNativeValue = Number(current.values.inputAmount) * current.assetToSell.displayPrice;
+            const inputNativeValue = Number(current.values.inputAmount) * current.assetToSell.nativePrice;
             inputValues.modify(values => {
               return {
                 ...values,
@@ -596,10 +596,10 @@ export function useSwapInputsController({
             }
           } else if (Number(current.values.outputAmount) > 0) {
             // If the output amount was set to a non-zero value
-            if (!current.assetToBuy?.displayPrice) return;
+            if (!current.assetToBuy?.nativePrice) return;
 
             const outputAmount = Number(current.values.outputAmount);
-            const outputNativeValue = outputAmount * current.assetToBuy.displayPrice;
+            const outputNativeValue = outputAmount * current.assetToBuy.nativePrice;
 
             inputValues.modify(values => {
               return {

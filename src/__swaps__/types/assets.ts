@@ -19,7 +19,7 @@ export interface ExtendedAnimatedAssetWithColors extends ParsedSearchAsset {
   highContrastColor: ResponseByTheme<string>;
 
   // price information
-  displayPrice: number | undefined;
+  nativePrice: number | undefined;
 }
 
 export interface ParsedAsset {
