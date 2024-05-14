@@ -35,7 +35,7 @@ interface SwapContextType {
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
   configProgress: SharedValue<number>;
-  
+
   sliderXPosition: SharedValue<number>;
   sliderPressProgress: SharedValue<number>;
 
@@ -90,7 +90,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const internalSelectedOutputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(null);
 
   const quote = useSharedValue<Quote | CrosschainQuote | QuoteError | null>(null);
-  
+
   const SwapGas = useSwapGas({
     inputAsset: internalSelectedInputAsset,
     outputAsset: internalSelectedOutputAsset,
@@ -101,7 +101,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     lastTypedInput,
     inputProgress,
     outputProgress,
-    configProgress,
     internalSelectedInputAsset,
     internalSelectedOutputAsset,
     isFetching,
