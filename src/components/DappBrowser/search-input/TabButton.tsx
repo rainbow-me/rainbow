@@ -4,12 +4,12 @@ import { Bleed, Box, Text, globalColors, useColorMode, useForegroundColor } from
 import { IS_IOS } from '@/env';
 import position from '@/styles/position';
 import { BlurView } from '@react-native-community/blur';
-import React, { useState } from 'react';
+import React from 'react';
 import { TextInput } from 'react-native';
 import { BrowserButtonShadows } from '../DappBrowserShadows';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
-import { AnimatedRef, SharedValue, dispatchCommand, runOnJS } from 'react-native-reanimated';
-import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
+import { AnimatedRef, SharedValue, runOnJS } from 'react-native-reanimated';
+import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 
 export const TabButton = React.memo(function TabButton({
   inputRef,
@@ -24,26 +24,22 @@ export const TabButton = React.memo(function TabButton({
   const fillSecondary = useForegroundColor('fillSecondary');
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
-  const [isFocused, setIsFocused] = useState(false);
-
-  useSyncSharedValue({
-    setState: setIsFocused,
-    sharedValue: isFocusedValue,
-    state: isFocused,
-    syncDirection: 'sharedValueToState',
-  });
+  const isFocused = useSharedValueState(isFocusedValue);
 
   const buttonColorIOS = isDarkMode ? fillSecondary : opacity(globalColors.white100, 0.9);
   const buttonColorAndroid = isDarkMode ? globalColors.blueGrey100 : globalColors.white100;
   const buttonColor = IS_IOS ? buttonColorIOS : buttonColorAndroid;
+
+  const blurInput = () => {
+    inputRef?.current?.blur();
+  };
 
   const onPress = () => {
     'worklet';
     if (!isFocusedValue.value) {
       toggleTabViewWorklet();
     } else {
-      runOnJS(setIsFocused)(false);
-      dispatchCommand(inputRef, 'blur');
+      runOnJS(blurInput)();
     }
   };
 

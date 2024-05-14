@@ -7,7 +7,6 @@ import Animated, {
   runOnUI,
   useAnimatedRef,
   useDerivedValue,
-  useScrollViewOffset,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
@@ -20,6 +19,7 @@ import { BrowserWorkletsContext } from './BrowserWorkletsContext';
 import { RAINBOW_HOME } from './constants';
 import { AnimatedScreenshotData, AnimatedTabUrls } from './types';
 import { normalizeUrlWorklet } from './utils';
+import { calculateTabViewBorderRadius } from './utils/layoutUtils';
 
 interface BrowserTabViewProgressContextType {
   tabViewProgress: SharedValue<number>;
@@ -52,17 +52,18 @@ interface BrowserContextType {
   animatedMultipleTabsOpen: DerivedValue<number>;
   animatedScreenshotData: SharedValue<AnimatedScreenshotData>;
   animatedTabUrls: SharedValue<AnimatedTabUrls>;
+  animatedTabViewBorderRadius: SharedValue<number>;
   animatedWebViewHeight: DerivedValue<number>;
   currentlyBeingClosedTabIds: SharedValue<string[]>;
   currentlyOpenTabIds: SharedValue<string[]>;
   loadProgress: SharedValue<number>;
   multipleTabsOpen: DerivedValue<boolean>;
+  screenshotCaptureRef: React.MutableRefObject<ViewShot | null>;
   scrollViewOffset: SharedValue<number>;
   scrollViewRef: AnimatedRef<Animated.ScrollView>;
   searchViewProgress: SharedValue<number>;
   tabViewProgress: SharedValue<number>;
   tabViewVisible: SharedValue<boolean>;
-  screenshotCaptureRef: React.MutableRefObject<ViewShot | null>;
   goBack: () => void;
   goForward: () => void;
   goToUrl: (url: string, tabId?: string) => void;
@@ -94,18 +95,18 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
   const currentlyBeingClosedTabIds = useSharedValue<string[]>([]);
 
   const loadProgress = useSharedValue(0);
+  const scrollViewOffset = useSharedValue(0);
   const searchViewProgress = useSharedValue(0);
   const tabViewVisible = useSharedValue(false);
 
   const activeTabRef = useRef<ActiveTabRef | null>(null);
   const screenshotCaptureRef = useRef<ViewShot | null>(null);
   const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
-  const scrollViewOffset = useScrollViewOffset(scrollViewRef);
 
   const goToPage = useBrowserStore(state => state.goToPage);
 
   const activeTabInfo = useDerivedValue(() => {
-    const activeTabId = currentlyOpenTabIds.value[animatedActiveTabIndex.value];
+    const activeTabId = currentlyOpenTabIds.value[Math.abs(animatedActiveTabIndex.value)];
     const url = animatedTabUrls.value[activeTabId] || RAINBOW_HOME;
     const isGoogleSearch = url.includes('google.com/search');
     const isOnHomepage = url === RAINBOW_HOME;
@@ -117,17 +118,15 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
     };
   });
 
-  const multipleTabsOpen = useDerivedValue(() => {
-    return currentlyOpenTabIds.value.length > 1;
-  });
+  const multipleTabsOpen = useDerivedValue(() => currentlyOpenTabIds.value.length > 1);
 
-  const animatedMultipleTabsOpen = useDerivedValue(() => {
-    return withTiming(multipleTabsOpen.value ? 1 : 0, TIMING_CONFIGS.tabPressConfig);
-  });
+  const animatedMultipleTabsOpen = useDerivedValue(() => withTiming(multipleTabsOpen.value ? 1 : 0, TIMING_CONFIGS.tabPressConfig));
 
-  const animatedWebViewHeight = useDerivedValue(() => {
-    return interpolate(tabViewProgress.value, [0, 100], [WEBVIEW_HEIGHT, COLLAPSED_WEBVIEW_HEIGHT_UNSCALED], 'clamp');
-  });
+  const animatedTabViewBorderRadius = useDerivedValue(() => calculateTabViewBorderRadius(animatedMultipleTabsOpen.value));
+
+  const animatedWebViewHeight = useDerivedValue(() =>
+    interpolate(tabViewProgress.value, [0, 100], [WEBVIEW_HEIGHT, COLLAPSED_WEBVIEW_HEIGHT_UNSCALED], 'clamp')
+  );
 
   const goBack = useCallback(() => {
     if (activeTabRef.current) {
@@ -170,6 +169,7 @@ export const BrowserContextProvider = ({ children }: { children: React.ReactNode
         animatedMultipleTabsOpen,
         animatedScreenshotData,
         animatedTabUrls,
+        animatedTabViewBorderRadius,
         animatedWebViewHeight,
         currentlyBeingClosedTabIds,
         currentlyOpenTabIds,

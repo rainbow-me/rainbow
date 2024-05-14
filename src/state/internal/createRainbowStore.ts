@@ -13,13 +13,21 @@ const rainbowStorage = new MMKV({ id: 'rainbow-storage' });
  * Configuration options for creating a persistable Rainbow store.
  */
 interface RainbowPersistConfig<S> {
-  serializer?: (state: StorageValue<Partial<S>>['state'], version: StorageValue<Partial<S>>['version']) => string;
+  /**
+   * A function to convert the serialized string back into the state object.
+   * If not provided, the default deserializer is used.
+   */
   deserializer?: (serializedState: string) => StorageValue<Partial<S>>;
   /**
    * A function that determines which parts of the state should be persisted.
    * By default, the entire state is persisted.
    */
   partialize?: (state: S) => Partial<S>;
+  /**
+   * A function to serialize the state and version into a string for storage.
+   * If not provided, the default serializer is used.
+   */
+  serializer?: (state: StorageValue<Partial<S>>['state'], version: StorageValue<Partial<S>>['version']) => string;
   /**
    * The unique key for the persisted store.
    */
@@ -38,7 +46,7 @@ interface RainbowPersistConfig<S> {
  * @returns An object containing the persist storage and version.
  */
 function createPersistStorage<S = unknown>(config: RainbowPersistConfig<S>) {
-  const { storageKey, version = 0, serializer = defaultSerializeState, deserializer = defaultDeserializeState } = config;
+  const { deserializer = defaultDeserializeState, serializer = defaultSerializeState, storageKey, version = 0 } = config;
 
   const persistStorage: PersistOptions<S, Partial<S>>['storage'] = {
     getItem: (name: string) => {
@@ -64,9 +72,9 @@ function createPersistStorage<S = unknown>(config: RainbowPersistConfig<S>) {
 }
 
 interface LazyPersistParams<S> {
+  name: string;
   serializer: (state: StorageValue<Partial<S>>['state'], version: StorageValue<Partial<S>>['version']) => string;
   storageKey: string;
-  name: string;
   value: StorageValue<Partial<S>>;
 }
 
@@ -76,7 +84,7 @@ interface LazyPersistParams<S> {
  * @param name - The name of the store.
  * @param value - The state value to be persisted.
  */
-const lazyPersist = <S>({ serializer, storageKey, name, value }: LazyPersistParams<S>) =>
+const lazyPersist = <S>({ name, serializer, storageKey, value }: LazyPersistParams<S>) =>
   debounce(
     () => {
       try {

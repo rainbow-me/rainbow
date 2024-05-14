@@ -56,6 +56,7 @@ import { useAppSessionsStore } from '@/state/appSessions';
 import { DEFAULT_TAB_URL, RAINBOW_HOME } from '../constants';
 import { useFavoriteDappsStore } from '@/state/favoriteDapps';
 import { Site } from '@/state/browserHistory';
+import WalletTypes from '@/helpers/walletTypes';
 
 const PAGES = {
   HOME: 'home',
@@ -69,7 +70,7 @@ type ControlPanelParams = {
   };
 };
 
-const HOME_PANEL_FULL_HEIGHT = 333;
+const HOME_PANEL_FULL_HEIGHT = 334;
 // 44px for the component and 24px for the stack padding
 const HOME_PANEL_DAPP_SECTION = 44 + 24;
 
@@ -125,32 +126,53 @@ export const ControlPanel = () => {
   }, [accountAddress, activeTabHost, currentSession]);
 
   const allWalletItems = useMemo(() => {
-    const items: ControlPanelMenuItemProps[] = [];
-    Object.keys(walletsWithBalancesAndNames).forEach(key => {
-      const wallet = walletsWithBalancesAndNames[key];
-      const filteredAccounts = wallet.addresses.filter(account => account.visible);
-      filteredAccounts.forEach(account => {
-        const walletBalance = Number(account.balance) ? account.balance : 0;
-        const nativeCurrencyBalance = convertAmountToNativeDisplay(walletBalance || '0', nativeCurrency);
+    const sortedWallets: ControlPanelMenuItemProps[] = [];
+    const bluetoothWallets: ControlPanelMenuItemProps[] = [];
+    const readOnlyWallets: ControlPanelMenuItemProps[] = [];
 
-        const item = {
-          IconComponent: account.image ? (
-            <ListAvatar url={account.image || ''} />
-          ) : (
-            <ListEmojiAvatar address={account.address} color={account.color} label={account.label} />
-          ),
-          label: removeFirstEmojiFromString(account.label) || address(account.address, 6, 4),
-          secondaryLabel: !walletBalance ? i18n.t(i18n.l.wallet.change_wallet.no_balance) : nativeCurrencyBalance,
-          uniqueId: account.address,
-          color: colors.avatarBackgrounds[account.color],
-          selected: account.address === currentAddress,
-        };
+    const accountBalances: Record<string, number> = {};
 
-        items.push(item);
-      });
+    Object.values(walletsWithBalancesAndNames).forEach(wallet => {
+      wallet.addresses
+        .filter(account => account.visible)
+        .forEach(account => {
+          const item: ControlPanelMenuItemProps = {
+            IconComponent: account.image ? (
+              <ListAvatar url={account.image} />
+            ) : (
+              <ListEmojiAvatar address={account.address} color={account.color} label={account.label} />
+            ),
+            label: removeFirstEmojiFromString(account.label) || address(account.address, 6, 4),
+            secondaryLabel:
+              // eslint-disable-next-line no-nested-ternary
+              wallet.type === WalletTypes.readOnly
+                ? i18n.t(i18n.l.wallet.change_wallet.watching)
+                : account.balance
+                  ? convertAmountToNativeDisplay(account.balance, nativeCurrency)
+                  : i18n.t(i18n.l.wallet.change_wallet.no_balance),
+            uniqueId: account.address,
+            color: colors.avatarBackgrounds[account.color],
+            selected: account.address === currentAddress,
+          };
+
+          accountBalances[account.address] = Number(account.balance);
+
+          if ([WalletTypes.mnemonic, WalletTypes.seed, WalletTypes.privateKey].includes(wallet.type)) {
+            sortedWallets.push(item);
+          } else if (wallet.type === WalletTypes.bluetooth) {
+            bluetoothWallets.push(item);
+          } else if (wallet.type === WalletTypes.readOnly) {
+            readOnlyWallets.push(item);
+          }
+        });
     });
 
-    return items;
+    sortedWallets.sort((a, b) => accountBalances[b.uniqueId] - accountBalances[a.uniqueId]);
+    bluetoothWallets.sort((a, b) => accountBalances[b.uniqueId] - accountBalances[a.uniqueId]);
+
+    const sortedItems = [...sortedWallets, ...bluetoothWallets, ...readOnlyWallets];
+
+    return sortedItems;
   }, [walletsWithBalancesAndNames, currentAddress, nativeCurrency]);
 
   const { testnetsEnabled } = store.getState().settings;
@@ -385,13 +407,13 @@ const HomePanel = ({
     );
   }, [allNetworkItems, allWalletItems, animatedAccentColor, goToPage, selectedNetwork, selectedWallet]);
 
-  const isHomeScreen = useBrowserStore(state => (state.getActiveTabUrl() || DEFAULT_TAB_URL) === RAINBOW_HOME);
+  const isOnHomepage = useBrowserStore(state => (state.getActiveTabUrl() || DEFAULT_TAB_URL) === RAINBOW_HOME);
 
   return (
-    <Panel height={isHomeScreen ? HOME_PANEL_FULL_HEIGHT - HOME_PANEL_DAPP_SECTION : HOME_PANEL_FULL_HEIGHT}>
+    <Panel height={isOnHomepage ? HOME_PANEL_FULL_HEIGHT - HOME_PANEL_DAPP_SECTION : HOME_PANEL_FULL_HEIGHT}>
       <Box style={controlPanelStyles.homePanel}>
         <Stack space="24px">
-          {!isHomeScreen && (
+          {!isOnHomepage && (
             <Box paddingHorizontal="8px">
               <Columns alignVertical="center" space={{ custom: 14 }}>
                 <Column width="content">
@@ -435,14 +457,16 @@ const HomePanel = ({
                   });
                 }}
               />
-              <ConnectButton
-                animatedAccentColor={animatedAccentColor}
-                isConnected={isConnected}
-                onConnect={onConnect}
-                onDisconnect={onDisconnect}
-                isHomeScreen={isHomeScreen}
-              />
-              <FavoriteButton animatedAccentColor={animatedAccentColor} />
+              {isOnHomepage ? (
+                <DisabledControlPanelButton icon="􀋦" label={i18n.t(i18n.l.dapp_browser.control_panel.connect)} />
+              ) : (
+                <ConnectButton isConnected={isConnected} onConnect={onConnect} onDisconnect={onDisconnect} />
+              )}
+              {isOnHomepage ? (
+                <DisabledControlPanelButton icon="􀋂" label={i18n.t(i18n.l.dapp_browser.control_panel.favorite)} />
+              ) : (
+                <FavoriteButton animatedAccentColor={animatedAccentColor} />
+              )}
             </Inline>
           </Box>
           {actionButtonList}
@@ -615,7 +639,7 @@ const ListHeader = React.memo(function ListHeader({
   return (
     <Box style={controlPanelStyles.listHeader}>
       <Box style={controlPanelStyles.listHeaderContent}>
-        <ButtonPressAnimation onPress={goBack} scaleTo={0.8} style={[controlPanelStyles.listHeaderButtonWrapper]}>
+        <ButtonPressAnimation onPress={goBack} scaleTo={0.8} style={controlPanelStyles.listHeaderButtonWrapper}>
           <Box alignItems="center" height={{ custom: 20 }} justifyContent="center" width={{ custom: 20 }}>
             <AnimatedText align="center" size="icon 20px" staticText="􀆉" style={backIconStyle} weight="bold" />
           </Box>
@@ -832,43 +856,68 @@ const FavoriteButton = React.memo(function FavButton({ animatedAccentColor }: { 
     <ControlPanelButton
       animatedAccentColor={animatedAccentColor}
       icon={isFavorite ? '􀋇' : '􀋂'}
-      label={isFavorite ? i18n.t(i18n.l.dapp_browser.menus.undo_favorite) : i18n.t(i18n.l.dapp_browser.menus.favorite)}
+      label={isFavorite ? i18n.t(i18n.l.dapp_browser.control_panel.undo_favorite) : i18n.t(i18n.l.dapp_browser.control_panel.favorite)}
       onPress={handlePress}
     />
   );
 });
 
+const DisabledControlPanelButton = React.memo(function ControlPanelButton({ icon, label }: { icon: string; label: string }) {
+  const { isDarkMode } = useColorMode();
+
+  const disabledColor = opacity(isDarkMode ? globalColors.white80 : globalColors.grey80, 1);
+
+  return (
+    <Box style={{ opacity: 0.5 }}>
+      <Stack alignHorizontal="center" space="10px">
+        <Box
+          style={[
+            controlPanelStyles.button,
+            controlPanelStyles.connectButton,
+            {
+              backgroundColor: opacity(disabledColor, isDarkMode ? 0.16 : 0.08),
+              borderColor: opacity(disabledColor, isDarkMode ? 0.08 : 0.03),
+            },
+          ]}
+        >
+          <Text align="center" color="labelQuaternary" size="icon 20px" weight="heavy">
+            {icon}
+          </Text>
+        </Box>
+        <Bleed horizontal="20px">
+          <Text align="center" color="labelQuaternary" numberOfLines={1} size="12pt" weight="bold">
+            {label}
+          </Text>
+        </Bleed>
+      </Stack>
+    </Box>
+  );
+});
+
 const ConnectButton = React.memo(function ControlPanelButton({
-  // animatedAccentColor,
-  isHomeScreen,
   isConnected,
   onConnect,
   onDisconnect,
 }: {
-  animatedAccentColor: SharedValue<string | undefined>;
-  isHomeScreen: boolean;
   isConnected: boolean;
   onConnect?: () => void;
   onDisconnect?: () => void;
 }) {
   const green = useForegroundColor('green');
   const red = useForegroundColor('red');
-  const grey = useForegroundColor('fillSecondary');
 
   const buttonColor = useDerivedValue(() => {
-    if (isHomeScreen) return grey;
-
     return withTiming(isConnected ? red : green, TIMING_CONFIGS.slowerFadeConfig);
-    // if (!isConnected.value || !animatedAccentColor.value)
-    //   return withTiming(isConnected.value ? red : green, TIMING_CONFIGS.slowerFadeConfig);
-    // return animatedAccentColor.value;
   });
 
   const buttonIcon = useDerivedValue(() => {
     return isConnected ? '􀋪' : '􀋦';
   });
+
+  const disconnectLabel = i18n.t(i18n.l.dapp_browser.control_panel.disconnect);
+  const connectLabel = i18n.t(i18n.l.dapp_browser.control_panel.connect);
   const buttonLabel = useDerivedValue(() => {
-    return isConnected ? 'Disconnect' : 'Connect';
+    return isConnected ? disconnectLabel : connectLabel;
   });
 
   const buttonBackground = useAnimatedStyle(() => {
@@ -903,7 +952,6 @@ const ConnectButton = React.memo(function ControlPanelButton({
       onPressWorklet={handlePress}
       pointerEvents="auto"
       scaleTo={0.82}
-      disabled={isHomeScreen}
       style={[controlPanelStyles.buttonContainer]}
     >
       <Box paddingHorizontal={IS_IOS ? '16px' : undefined} paddingVertical={IS_IOS ? '10px' : undefined}>

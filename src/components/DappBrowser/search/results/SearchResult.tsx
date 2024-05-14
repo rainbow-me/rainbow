@@ -74,7 +74,7 @@ export const SearchResult = ({ index, goToUrl }: { index: number; goToUrl: (url:
                 <AnimatedText color="labelQuaternary" size="icon 28px" weight="black" staticText="􀎭" align="center" />
               </Animated.View>
               {/* ⚠️ TODO: This works but we should figure out how to type this correctly to avoid this error */}
-              {/* @ts-expect-error: Doesn't pick up that its getting a source prop via animatedProps */}
+              {/* @ts-expect-error: Doesn't pick up that it's getting a source prop via animatedProps */}
               <AnimatedFasterImage animatedProps={animatedIconSource} style={styles.iconImage} />
             </Box>
           </Box>
