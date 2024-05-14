@@ -58,12 +58,12 @@ interface BrowserContextType {
   currentlyOpenTabIds: SharedValue<string[]>;
   loadProgress: SharedValue<number>;
   multipleTabsOpen: DerivedValue<boolean>;
+  screenshotCaptureRef: React.MutableRefObject<ViewShot | null>;
   scrollViewOffset: SharedValue<number>;
   scrollViewRef: AnimatedRef<Animated.ScrollView>;
   searchViewProgress: SharedValue<number>;
   tabViewProgress: SharedValue<number>;
   tabViewVisible: SharedValue<boolean>;
-  screenshotCaptureRef: React.MutableRefObject<ViewShot | null>;
   goBack: () => void;
   goForward: () => void;
   goToUrl: (url: string, tabId?: string) => void;
