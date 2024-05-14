@@ -57,12 +57,12 @@ const Container = styled(ProfileModalContainer).attrs({
 });
 
 type ProfileModalProps = {
-  address: string;
-  imageAvatar: string;
-  emojiAvatar: string;
-  accentColor: string;
-  toggleSubmitButtonIcon: boolean;
-  toggleAvatar: boolean;
+  address?: string;
+  imageAvatar?: string;
+  emojiAvatar?: string;
+  accentColor?: string;
+  toggleSubmitButtonIcon?: boolean;
+  toggleAvatar?: boolean;
   handleSubmit: () => void;
   onChange: (value: string) => void;
   inputValue: string;

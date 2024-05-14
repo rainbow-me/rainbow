@@ -1012,6 +1012,7 @@
       }
     },
     "gas": {
+      "gas_settings": "Gas Settings",
       "card": {
         "falling": "Falling",
         "rising": "Rising",
@@ -2267,6 +2268,8 @@
         "delete_confirm": "Are you sure you want to delete this wallet?",
         "edit": "Edit Wallet",
         "hide": "Hide",
+        "create_wallet_group": "Create Group",
+        "create_wallet_group_placeholder": "Wallet Group %{numWalletGroups}",
         "import_wallet": "Add Wallet",
         "input": "Transaction Input",
         "notifications": {

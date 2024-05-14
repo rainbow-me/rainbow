@@ -59,11 +59,9 @@ export const Homepage = React.memo(function Homepage() {
 });
 
 const Trending = React.memo(function Trending({ goToUrl }: { goToUrl: (url: string) => void }) {
-  const { dapps } = useDapps();
+  const { dapps } = useDapps({ select: dapps => dapps.filter(dapp => dapp.trending).slice(0, 8) });
 
-  const trendingDapps = dapps.filter(dapp => dapp.trending).slice(0, 8);
-
-  if (trendingDapps.length === 0) {
+  if (dapps.length === 0) {
     return null;
   }
 
@@ -83,11 +81,11 @@ const Trending = React.memo(function Trending({ goToUrl }: { goToUrl: (url: stri
           decelerationRate="fast"
           disableIntervalMomentum
           showsHorizontalScrollIndicator={false}
-          snapToOffsets={trendingDapps.map((_, index) => index * (CARD_WIDTH + CARD_PADDING))}
+          snapToOffsets={dapps.map((_, index) => index * (CARD_WIDTH + CARD_PADDING))}
         >
           <Inset space="24px">
             <Box flexDirection="row" gap={CARD_PADDING}>
-              {trendingDapps.map(site => (
+              {dapps.map(site => (
                 <Card goToUrl={goToUrl} key={site.url} site={{ ...site, image: site.iconUrl }} />
               ))}
             </Box>

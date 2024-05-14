@@ -21,27 +21,27 @@ import {
   sliderConfig,
   slowFadeConfig,
 } from '@/__swaps__/screens/Swap/constants';
-import { inputKeys, inputMethods } from '@/__swaps__/types/swap';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { inputKeys } from '@/__swaps__/types/swap';
+import { getColorValueForThemeWorklet, opacity } from '@/__swaps__/utils/swaps';
+import { useSwapInputsController } from './useSwapInputsController';
+import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 
 export function useSwapTextStyles({
-  focusedInput,
-  inputMethod,
-  inputProgress,
-  inputValues,
-  topColor,
-  bottomColor,
+  SwapInputController,
+  internalSelectedInputAsset,
+  internalSelectedOutputAsset,
   isQuoteStale,
+  focusedInput,
+  inputProgress,
   outputProgress,
   sliderPressProgress,
 }: {
-  focusedInput: SharedValue<inputKeys>;
-  inputMethod: SharedValue<inputMethods>;
-  inputProgress: SharedValue<number>;
-  inputValues: SharedValue<{ [key in inputKeys]: number | string }>;
-  topColor: SharedValue<string>;
-  bottomColor: SharedValue<string>;
+  SwapInputController: ReturnType<typeof useSwapInputsController>;
+  internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+  internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   isQuoteStale: SharedValue<number>;
+  focusedInput: SharedValue<inputKeys>;
+  inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
   sliderPressProgress: SharedValue<number>;
 }) {
@@ -52,13 +52,16 @@ export function useSwapTextStyles({
   const zeroAmountColor = opacity(labelSecondary, 0.2);
 
   const isInputStale = useDerivedValue(() => {
-    const isAdjustingOutputValue = inputMethod.value === 'outputAmount' || inputMethod.value === 'outputNativeValue';
+    const isAdjustingOutputValue =
+      SwapInputController.inputMethod.value === 'outputAmount' || SwapInputController.inputMethod.value === 'outputNativeValue';
     return isQuoteStale.value === 1 && isAdjustingOutputValue ? 1 : 0;
   });
 
   const isOutputStale = useDerivedValue(() => {
     const isAdjustingInputValue =
-      inputMethod.value === 'inputAmount' || inputMethod.value === 'inputNativeValue' || inputMethod.value === 'slider';
+      SwapInputController.inputMethod.value === 'inputAmount' ||
+      SwapInputController.inputMethod.value === 'inputNativeValue' ||
+      SwapInputController.inputMethod.value === 'slider';
     return isQuoteStale.value === 1 && isAdjustingInputValue ? 1 : 0;
   });
 
@@ -70,12 +73,16 @@ export function useSwapTextStyles({
 
   const inputAmountTextStyle = useAnimatedStyle(() => {
     const isInputZero =
-      (inputValues.value.inputAmount === 0 && inputMethod.value !== 'slider') ||
-      (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0);
-    const isOutputZero = Number(inputValues.value.outputAmount) === 0;
+      (SwapInputController.inputValues.value.inputAmount === 0 && SwapInputController.inputMethod.value !== 'slider') ||
+      (SwapInputController.inputMethod.value === 'slider' && Number(SwapInputController.inputValues.value.inputAmount) === 0);
+    const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
 
     // eslint-disable-next-line no-nested-ternary
-    const zeroOrAssetColor = isInputZero ? zeroAmountColor : topColor.value === ETH_COLOR_DARK ? ETH_COLOR_DARK_ACCENT : topColor.value;
+    const zeroOrAssetColor = isInputZero
+      ? zeroAmountColor
+      : getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true) === ETH_COLOR_DARK
+        ? ETH_COLOR_DARK_ACCENT
+        : getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true);
     const opacity = isInputStale.value !== 1 || (isInputZero && isOutputZero) ? withSpring(1, sliderConfig) : pulsingOpacity.value;
 
     return {
@@ -84,12 +91,13 @@ export function useSwapTextStyles({
       flexShrink: 1,
       opacity,
     };
-  }, [isDarkMode, topColor]);
+  });
 
   const inputNativeValueStyle = useAnimatedStyle(() => {
     const isInputZero =
-      Number(inputValues.value.inputAmount) === 0 || (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0);
-    const isOutputZero = Number(inputValues.value.outputAmount) === 0;
+      Number(SwapInputController.inputValues.value.inputAmount) === 0 ||
+      (SwapInputController.inputMethod.value === 'slider' && Number(SwapInputController.inputValues.value.inputAmount) === 0);
+    const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
 
     const zeroOrColor = isInputZero ? zeroAmountColor : labelTertiary;
     const opacity = isInputStale.value !== 1 || (isInputZero && isOutputZero) ? withSpring(1, sliderConfig) : pulsingOpacity.value;
@@ -102,17 +110,18 @@ export function useSwapTextStyles({
 
   const outputAmountTextStyle = useAnimatedStyle(() => {
     const isInputZero =
-      Number(inputValues.value.inputAmount) === 0 || (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0);
+      Number(SwapInputController.inputValues.value.inputAmount) === 0 ||
+      (SwapInputController.inputMethod.value === 'slider' && Number(SwapInputController.inputValues.value.inputAmount) === 0);
     const isOutputZero =
-      (inputValues.value.outputAmount === 0 && inputMethod.value !== 'slider') ||
-      (inputMethod.value === 'slider' && Number(inputValues.value.outputAmount) === 0);
+      (SwapInputController.inputValues.value.outputAmount === 0 && SwapInputController.inputMethod.value !== 'slider') ||
+      (SwapInputController.inputMethod.value === 'slider' && Number(SwapInputController.inputValues.value.outputAmount) === 0);
 
     // eslint-disable-next-line no-nested-ternary
     const zeroOrAssetColor = isOutputZero
       ? zeroAmountColor
-      : bottomColor.value === ETH_COLOR_DARK
+      : getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true) === ETH_COLOR_DARK
         ? ETH_COLOR_DARK_ACCENT
-        : bottomColor.value;
+        : getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true);
     const opacity = isOutputStale.value !== 1 || (isInputZero && isOutputZero) ? withSpring(1, sliderConfig) : pulsingOpacity.value;
 
     return {
@@ -121,12 +130,13 @@ export function useSwapTextStyles({
       flexShrink: 1,
       opacity,
     };
-  }, [bottomColor, isDarkMode]);
+  });
 
   const outputNativeValueStyle = useAnimatedStyle(() => {
     const isInputZero =
-      Number(inputValues.value.inputAmount) === 0 || (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0);
-    const isOutputZero = Number(inputValues.value.outputAmount) === 0;
+      Number(SwapInputController.inputValues.value.inputAmount) === 0 ||
+      (SwapInputController.inputMethod.value === 'slider' && Number(SwapInputController.inputValues.value.inputAmount) === 0);
+    const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
 
     const zeroOrColor = isOutputZero ? zeroAmountColor : labelTertiary;
     const opacity = isOutputStale.value !== 1 || (isInputZero && isOutputZero) ? withSpring(1, sliderConfig) : pulsingOpacity.value;
@@ -143,8 +153,8 @@ export function useSwapTextStyles({
       focusedInput.value === 'inputAmount' &&
       inputProgress.value === 0 &&
       outputProgress.value === 0 &&
-      (inputMethod.value !== 'slider' ||
-        (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0) ||
+      (SwapInputController.inputMethod.value !== 'slider' ||
+        (SwapInputController.inputMethod.value === 'slider' && Number(SwapInputController.inputValues.value.inputAmount) === 0) ||
         (sliderPressProgress.value === SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT && isQuoteStale.value === 0));
 
     const opacity = shouldShow
@@ -161,8 +171,8 @@ export function useSwapTextStyles({
       : withTiming(0, caretConfig);
 
     const isZero =
-      (inputMethod.value !== 'slider' && inputValues.value.inputAmount === 0) ||
-      (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0);
+      (SwapInputController.inputMethod.value !== 'slider' && SwapInputController.inputValues.value.inputAmount === 0) ||
+      (SwapInputController.inputMethod.value === 'slider' && Number(SwapInputController.inputValues.value.inputAmount) === 0);
 
     return {
       display: shouldShow ? 'flex' : 'none',
@@ -176,8 +186,8 @@ export function useSwapTextStyles({
       focusedInput.value === 'outputAmount' &&
       inputProgress.value === 0 &&
       outputProgress.value === 0 &&
-      (inputMethod.value !== 'slider' ||
-        (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0) ||
+      (SwapInputController.inputMethod.value !== 'slider' ||
+        (SwapInputController.inputMethod.value === 'slider' && Number(SwapInputController.inputValues.value.inputAmount) === 0) ||
         (sliderPressProgress.value === SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT && isQuoteStale.value === 0));
 
     const opacity = shouldShow
@@ -194,8 +204,8 @@ export function useSwapTextStyles({
       : withTiming(0, caretConfig);
 
     const isZero =
-      (inputMethod.value !== 'slider' && inputValues.value.outputAmount === 0) ||
-      (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0);
+      (SwapInputController.inputMethod.value !== 'slider' && SwapInputController.inputValues.value.outputAmount === 0) ||
+      (SwapInputController.inputMethod.value === 'slider' && Number(SwapInputController.inputValues.value.inputAmount) === 0);
 
     return {
       display: shouldShow ? 'flex' : 'none',

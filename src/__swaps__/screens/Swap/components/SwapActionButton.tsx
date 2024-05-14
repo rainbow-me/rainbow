@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import React from 'react';
-import { StyleProp, StyleSheet, TextStyle } from 'react-native';
+import { StyleProp, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import Animated, { DerivedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 
 import { ButtonPressAnimation } from '@/components/animations';
@@ -22,6 +22,7 @@ export const SwapActionButton = ({
   rightIcon,
   scaleTo,
   small,
+  style,
 }: {
   asset: DerivedValue<ExtendedAnimatedAssetWithColors | null>;
   borderRadius?: number;
@@ -36,6 +37,7 @@ export const SwapActionButton = ({
   rightIcon?: string;
   scaleTo?: number;
   small?: boolean;
+  style?: ViewStyle;
 }) => {
   const { isDarkMode } = useColorMode();
   const fallbackColor = useForegroundColor('label');
@@ -95,7 +97,10 @@ export const SwapActionButton = ({
       onLongPress={onLongPress}
       onPress={onPress}
       scaleTo={scaleTo || (hugContent ? undefined : 0.925)}
-      style={hugContent && feedActionButtonStyles.buttonWrapper}
+      style={{
+        ...(hugContent && feedActionButtonStyles.buttonWrapper),
+        ...(style || {}),
+      }}
     >
       <Box
         as={Animated.View}

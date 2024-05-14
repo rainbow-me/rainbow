@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, StatusBar } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { IS_ANDROID } from '@/env';
@@ -18,6 +19,8 @@ import { SwapNavbar } from '@/__swaps__/screens/Swap/components/SwapNavbar';
 import { SliderAndKeyboard } from '@/__swaps__/screens/Swap/components/SliderAndKeyboard';
 import { SwapBottomPanel } from '@/__swaps__/screens/Swap/components/SwapBottomPanel';
 import { SwapWarning } from './components/SwapWarning';
+import { useSwapContext } from './providers/swap-provider';
+import { UserAssetsSync } from './components/UserAssetsSync';
 
 /** README
  * This prototype is largely driven by Reanimated and Gesture Handler, which
@@ -57,6 +60,7 @@ import { SwapWarning } from './components/SwapWarning';
  */
 
 export function SwapScreen() {
+  const { AnimatedSwapStyles } = useSwapContext();
   return (
     <SwapSheetGestureBlocker>
       <Box as={Page} style={styles.rootViewBackground} testID="swap-screen" width="full">
@@ -69,12 +73,20 @@ export function SwapScreen() {
             <SliderAndKeyboard />
             <SwapBottomPanel />
           </Box>
-          <Box alignItems="center" justifyContent="center" style={{ position: 'relative' }}>
+          <Box
+            as={Animated.View}
+            alignItems="center"
+            justifyContent="center"
+            style={[styles.swapWarningAndExchangeWrapper, AnimatedSwapStyles.hideWhileReviewingOrConfiguringGas]}
+          >
             <ExchangeRateBubble />
             <SwapWarning />
           </Box>
         </Box>
         <SwapNavbar />
+
+        {/* NOTE: The components below render null and are solely for keeping react-query and Zustand in sync */}
+        <UserAssetsSync />
       </Box>
     </SwapSheetGestureBlocker>
   );
@@ -86,5 +98,8 @@ export const styles = StyleSheet.create({
     flex: 1,
     overflow: 'hidden',
     marginTop: StatusBar.currentHeight ?? 0,
+  },
+  swapWarningAndExchangeWrapper: {
+    position: 'relative',
   },
 });

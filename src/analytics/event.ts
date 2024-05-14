@@ -124,6 +124,8 @@ export const event = {
   txRequestShownSheet: 'request.sheet.show',
   txRequestReject: 'request.rejected',
   txRequestApprove: 'request.approved',
+
+  addNewWalletGroupName: 'add_new_wallet_group.name',
 } as const;
 
 /**
@@ -467,5 +469,9 @@ export type EventProperties = {
     source: RequestSource;
     requestType: 'transaction' | 'signature';
     isHardwareWallet: boolean;
+  };
+
+  [event.addNewWalletGroupName]: {
+    name: string;
   };
 };
