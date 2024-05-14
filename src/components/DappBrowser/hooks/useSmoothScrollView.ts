@@ -34,7 +34,7 @@ export function useSmoothScrollView() {
   const smoothScrollHandler = useAnimatedScrollHandler({
     onScroll: event => {
       scrollViewOffset.value = event.contentOffset.y;
-      if (IS_IOS && contentContainerHeight.value > 0) {
+      if (IS_IOS) {
         contentContainerHeight.value = event.contentSize.height;
       }
     },
