@@ -20,6 +20,7 @@ export type Dapp = {
     shadow?: string | null;
   };
   report: { url: string };
+  isDirect?: boolean;
   search: {
     normalizedName: string;
     normalizedNameTokens: string[];
