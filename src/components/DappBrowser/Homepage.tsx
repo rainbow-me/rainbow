@@ -240,7 +240,11 @@ const Card = React.memo(function Card({
             height={{ custom: CARD_HEIGHT }}
             justifyContent="space-between"
             padding="20px"
-            style={[styles.cardContainer, isDarkMode && styles.cardContainerDark]}
+            style={[
+              styles.cardContainer,
+              !dappIconUrl && !site.screenshot && styles.cardContainerNoImage,
+              isDarkMode && styles.cardContainerDark,
+            ]}
             width={{ custom: CARD_WIDTH }}
           >
             <ColorModeProvider value="dark">
@@ -415,11 +419,14 @@ export const Logo = React.memo(function Logo({ goToUrl, site }: { goToUrl: (url:
 
 const styles = StyleSheet.create({
   cardContainer: {
-    backgroundColor: 'white',
+    backgroundColor: globalColors.white100,
     overflow: 'hidden',
   },
   cardContainerDark: {
     backgroundColor: globalColors.grey100,
+  },
+  cardContainerNoImage: {
+    backgroundColor: '#191A1C',
   },
   cardContextMenuButton: {
     alignItems: 'center',
