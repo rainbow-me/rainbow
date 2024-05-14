@@ -415,7 +415,7 @@ export const Logo = React.memo(function Logo({ goToUrl, site }: { goToUrl: (url:
 
 const styles = StyleSheet.create({
   cardContainer: {
-    backgroundColor: '#FBFCFD',
+    backgroundColor: 'white',
     overflow: 'hidden',
   },
   cardContainerDark: {
