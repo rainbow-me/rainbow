@@ -40,12 +40,12 @@ const filterBridgeAsset = ({ asset, filter = '' }: { asset?: SearchAsset; filter
   asset?.symbol?.toLowerCase()?.startsWith(filter?.toLowerCase());
 
 export function useSearchCurrencyLists() {
-  const { internalSelectedInputAsset: assetToSell, outputChainId } = useSwapContext();
+  const { internalSelectedInputAsset: assetToSell, selectedOutputChainId } = useSwapContext();
 
   const searchQuery = userAssetsStore(state => state.searchQuery);
 
   const [inputChainId, setInputChainId] = useState(assetToSell.value?.chainId ?? ChainId.mainnet);
-  const [toChainId, setToChainId] = useState(outputChainId.value);
+  const [toChainId, setToChainId] = useState(selectedOutputChainId.value);
   const [assetToSellAddress, setAssetToSellAddress] = useState(
     assetToSell.value?.[assetToSell.value?.chainId === ChainId.mainnet ? 'address' : 'mainnetAddress']
   );
@@ -64,7 +64,7 @@ export function useSearchCurrencyLists() {
   );
 
   useAnimatedReaction(
-    () => outputChainId.value,
+    () => selectedOutputChainId.value,
     (current, previous) => {
       if (previous !== current) {
         runOnJS(setToChainId)(current);

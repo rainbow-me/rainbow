@@ -13,6 +13,8 @@ export interface SwapsState {
   // quote
   quote: Quote | CrosschainQuote | QuoteError | null;
 
+  selectedOutputChainId: ChainId;
+
   // settings
   flashbots: boolean;
   setFlashbots: (flashbots: boolean) => void;
@@ -28,6 +30,7 @@ export const swapsStore = createRainbowStore<SwapsState>(
     outputAsset: null,
 
     quote: null,
+    selectedOutputChainId: ChainId.mainnet,
 
     flashbots: false,
     setFlashbots: (flashbots: boolean) => set({ flashbots }),
