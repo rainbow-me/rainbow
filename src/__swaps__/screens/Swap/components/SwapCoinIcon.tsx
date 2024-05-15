@@ -1,159 +1,117 @@
 /* eslint-disable no-nested-ternary */
 import React from 'react';
-import { Image, StyleSheet, View } from 'react-native';
-import EthIcon from '@/assets/eth-icon.png';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { globalColors } from '@/design-system';
-import { Network } from '@/networks/types';
-import { borders, fonts } from '@/styles';
-import { ThemeContextProps } from '@/theme';
-import { FallbackIcon as CoinIconTextFallback, isETH } from '@/utils';
-import { FastFallbackCoinIconImage } from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastFallbackCoinIconImage';
-import Animated, { SharedValue } from 'react-native-reanimated';
+import { StyleSheet, View, ViewStyle } from 'react-native';
+import { borders } from '@/styles';
+import { useTheme } from '@/theme';
+import Animated, { SharedValue, useAnimatedProps, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-
-// TODO: Delete this and replace with RainbowCoinIcon
-// ⚠️ When replacing this component with RainbowCoinIcon, make sure
-// ⚠️ to exactly replicate the sizing and shadows defined below
-
-const fallbackTextStyles = {
-  fontFamily: fonts.family.SFProRounded,
-  fontWeight: fonts.weight.bold,
-  letterSpacing: fonts.letterSpacing.roundedTight,
-  marginBottom: 0.5,
-  textAlign: 'center',
-};
+import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
+import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
+import { AnimatedChainImage } from './AnimatedChainImage';
+import { fadeConfig } from '../constants';
+import { SwapCoinIconTextFallback } from './SwapCoinIconTextFallback';
 
 const fallbackIconStyle = {
   ...borders.buildCircleAsObject(32),
-  position: 'absolute',
+  position: 'absolute' as ViewStyle['position'],
 };
 
 const largeFallbackIconStyle = {
   ...borders.buildCircleAsObject(36),
-  position: 'absolute',
+  position: 'absolute' as ViewStyle['position'],
 };
 
 const smallFallbackIconStyle = {
   ...borders.buildCircleAsObject(16),
-  position: 'absolute',
+  position: 'absolute' as ViewStyle['position'],
 };
-
-/**
- * If mainnet asset is available, get the token under /ethereum/ (token) url.
- * Otherwise let it use whatever type it has
- * @param param0 - optional mainnetAddress, address and network
- * @returns a proper type and address to use for the url
- */
-function resolveNetworkAndAddress({ address, mainnetAddress, network }: { mainnetAddress?: string; address: string; network: Network }) {
-  if (mainnetAddress) {
-    return {
-      resolvedAddress: mainnetAddress,
-      resolvedNetwork: Network.mainnet,
-    };
-  }
-
-  return {
-    resolvedAddress: address,
-    resolvedNetwork: network,
-  };
-}
 
 export const SwapCoinIcon = React.memo(function FeedCoinIcon({
   asset,
-  address,
-  color,
-  iconUrl,
-  disableShadow,
-  forceDarkMode,
   large,
-  mainnetAddress,
-  network,
   small,
-  symbol,
-  theme,
 }: {
   asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
-  address: string;
-  color?: string;
-  iconUrl?: string;
-  disableShadow?: boolean;
-  forceDarkMode?: boolean;
   large?: boolean;
-  mainnetAddress?: string;
-  network: Network;
   small?: boolean;
-  symbol: string;
-  theme: ThemeContextProps;
 }) {
-  const { colors } = theme;
+  const { isDarkMode, colors } = useTheme();
 
-  const { resolvedNetwork, resolvedAddress } = resolveNetworkAndAddress({
-    address,
-    mainnetAddress,
-    network,
+  const animatedIconSource = useAnimatedProps(() => {
+    console.log({ iconUrl: asset.value?.icon_url });
+    return {
+      source: {
+        ...DEFAULT_FASTER_IMAGE_CONFIG,
+        url: asset.value?.icon_url ?? '',
+      },
+    };
   });
 
-  const fallbackIconColor = color ?? colors.purpleUniswap;
-  const shadowColor = theme.isDarkMode || forceDarkMode ? colors.shadow : color || fallbackIconColor;
-  const eth = isETH(resolvedAddress);
+  const animatedCoinIconWrapperStyles = useAnimatedStyle(() => {
+    return {
+      shadowColor: isDarkMode ? colors.shadow : asset.value?.shadowColor['light'],
+    };
+  });
+
+  const animatedCoinIconStyles = useAnimatedStyle(() => {
+    return {
+      display: asset.value?.icon_url ? 'flex' : 'none',
+      pointerEvents: asset.value?.icon_url ? 'auto' : 'none',
+      opacity: withTiming(asset.value?.icon_url ? 1 : 0, fadeConfig),
+    };
+  });
+
+  const animatedFallbackStyles = useAnimatedStyle(() => {
+    return {
+      display: asset.value?.icon_url ? 'none' : 'flex',
+      pointerEvents: asset.value?.icon_url ? 'none' : 'auto',
+      opacity: withTiming(asset.value?.icon_url ? 0 : 1, fadeConfig),
+    };
+  });
 
   return (
     <View style={small ? sx.containerSmall : large ? sx.containerLarge : sx.container}>
-      {eth ? (
-        <Animated.View
-          style={[
-            sx.reactCoinIconContainer,
-            small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback,
-            small || disableShadow ? {} : sx.withShadow,
-            { shadowColor },
-          ]}
-        >
-          <Image source={EthIcon} style={small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback} />
+      <Animated.View
+        style={[
+          sx.reactCoinIconContainer,
+          animatedCoinIconWrapperStyles,
+          small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback,
+          sx.withShadow,
+        ]}
+      >
+        <Animated.View style={animatedCoinIconStyles}>
+          {/* @ts-expect-error missing props "source" */}
+          <AnimatedFasterImage
+            animatedProps={animatedIconSource}
+            style={[
+              sx.coinIcon,
+              {
+                height: small ? 16 : large ? 36 : 32,
+                width: small ? 16 : large ? 36 : 32,
+                borderRadius: (small ? 16 : large ? 36 : 32) / 2,
+              },
+            ]}
+          />
         </Animated.View>
-      ) : (
-        <FastFallbackCoinIconImage
-          size={small ? 16 : large ? 36 : 32}
-          icon={iconUrl}
-          network={resolvedNetwork}
-          shadowColor={shadowColor}
-          symbol={symbol}
-          theme={theme}
-        >
-          {() => (
-            <CoinIconTextFallback
-              color={color}
-              height={small ? 16 : large ? 36 : 32}
-              style={small ? smallFallbackIconStyle : large ? largeFallbackIconStyle : fallbackIconStyle}
-              symbol={symbol}
-              textStyles={fallbackTextStyles}
-              width={small ? 16 : large ? 36 : 32}
-            />
-          )}
-        </FastFallbackCoinIconImage>
-      )}
 
-      {network && network !== Network.mainnet && !small && (
-        <View style={sx.badge}>
-          <ChainImage chain={network} size={16} />
-        </View>
-      )}
+        <Animated.View style={[animatedFallbackStyles, sx.coinIconFallback]}>
+          <SwapCoinIconTextFallback
+            asset={asset}
+            height={small ? 16 : large ? 36 : 32}
+            width={small ? 16 : large ? 36 : 32}
+            style={small ? smallFallbackIconStyle : large ? largeFallbackIconStyle : fallbackIconStyle}
+          />
+        </Animated.View>
+      </Animated.View>
+
+      <AnimatedChainImage asset={asset} size={16} />
     </View>
   );
 });
 
 const sx = StyleSheet.create({
-  badge: {
-    bottom: -0,
-    left: -8,
-    position: 'absolute',
-    shadowColor: globalColors.grey100,
-    shadowOffset: {
-      height: 4,
-      width: 0,
-    },
-    shadowRadius: 6,
-    shadowOpacity: 0.2,
+  coinIcon: {
+    overflow: 'hidden',
   },
   coinIconFallback: {
     borderRadius: 16,
@@ -189,6 +147,7 @@ const sx = StyleSheet.create({
     overflow: 'visible',
   },
   reactCoinIconContainer: {
+    position: 'relative',
     alignItems: 'center',
     justifyContent: 'center',
   },
