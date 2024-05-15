@@ -40,10 +40,6 @@ export const AccountIcon = React.memo(function AccountIcon() {
   // listens to the current active tab and sets the account
   useEffect(() => {
     if (activeTabHost || isOnHomepage) {
-      // if (!currentSession) {
-      //   return;
-      // }
-
       if (currentSession?.address) {
         setCurrentAddress(currentSession?.address);
       } else if (hostSessions?.activeSessionAddress) {
