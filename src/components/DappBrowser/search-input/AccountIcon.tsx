@@ -26,10 +26,9 @@ export const AccountIcon = React.memo(function AccountIcon() {
   const activeTabHost = useBrowserStore(state => getDappHost(state.getActiveTabUrl() || DEFAULT_TAB_URL));
   const isOnHomepage = useBrowserStore(state => (state.getActiveTabUrl() || DEFAULT_TAB_URL) === RAINBOW_HOME);
   const hostSessions = useAppSessionsStore(state => state.getActiveSession({ host: activeTabHost }));
-
   const currentSession = useMemo(
     () =>
-      hostSessions && hostSessions.sessions[hostSessions.activeSessionAddress]
+      hostSessions && hostSessions.sessions?.[hostSessions.activeSessionAddress]
         ? {
             address: hostSessions.activeSessionAddress,
             network: hostSessions.sessions[hostSessions.activeSessionAddress],
@@ -41,17 +40,15 @@ export const AccountIcon = React.memo(function AccountIcon() {
   // listens to the current active tab and sets the account
   useEffect(() => {
     if (activeTabHost || isOnHomepage) {
-      if (!currentSession) {
-        return;
-      }
-
       if (currentSession?.address) {
         setCurrentAddress(currentSession?.address);
+      } else if (hostSessions?.activeSessionAddress) {
+        setCurrentAddress(hostSessions.activeSessionAddress);
       } else {
         setCurrentAddress(accountAddress);
       }
     }
-  }, [accountAddress, activeTabHost, currentSession, isOnHomepage]);
+  }, [accountAddress, activeTabHost, currentSession, hostSessions?.activeSessionAddress, isOnHomepage]);
 
   const accountInfo = useMemo(() => {
     const selectedWallet = findWalletWithAccount(wallets || {}, currentAddress);
@@ -64,9 +61,8 @@ export const AccountIcon = React.memo(function AccountIcon() {
   const handleOnPress = useCallback(() => {
     navigate(Routes.DAPP_BROWSER_CONTROL_PANEL, {
       activeTabRef,
-      selectedAddress: currentAddress,
     });
-  }, [activeTabRef, currentAddress, navigate]);
+  }, [activeTabRef, navigate]);
 
   return (
     <Bleed space="8px">
