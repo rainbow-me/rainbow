@@ -80,14 +80,14 @@ export const useAppSessionsStore = createRainbowStore<AppSessionsStore<AppSessio
       const appSessions = get().appSessions;
       const appSession = appSessions[host];
       let newActiveSession = null;
-      if (appSession.sessions && Object.keys(appSession.sessions).length === 1) {
+      if (appSession?.sessions && Object.keys(appSession.sessions).length === 1) {
         delete appSessions[host];
         set({
           appSessions: {
             ...appSessions,
           },
         });
-      } else if (appSession.sessions) {
+      } else if (appSession?.sessions) {
         delete appSession.sessions[address];
         const newActiveSessionAddress = Object.keys(appSession.sessions)[0] as Address;
         appSession.activeSessionAddress = newActiveSessionAddress;
