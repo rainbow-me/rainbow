@@ -28,7 +28,7 @@ export const getDappHostname = (url: string) => {
     const subdomains = urlObject.hostname.split('.');
     if (subdomains.length === 2) {
       hostname = urlObject.hostname;
-    } else {
+    } else if (subdomains.length > 2) {
       hostname = `${subdomains[subdomains.length - 2]}.${subdomains[subdomains.length - 1]}`;
     }
     return hostname;
