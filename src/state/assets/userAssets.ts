@@ -6,7 +6,7 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { RainbowError, logger } from '@/logger';
 
 export interface UserAssetsState {
-  userAssetsById: UniqueId[];
+  filteredUserAssetsById: UniqueId[];
   userAssets: Map<UniqueId, ParsedSearchAsset>;
   filter: UserAssetFilter;
   searchQuery: string;
@@ -16,7 +16,7 @@ export interface UserAssetsState {
   toggleFavorite: (uniqueId: UniqueId) => void;
   isFavorite: (uniqueId: UniqueId) => boolean;
 
-  getFilteredUserAssetIds: () => UniqueId[];
+  // getFilteredUserAssetIds: () => UniqueId[];
   getUserAsset: (uniqueId: UniqueId) => ParsedSearchAsset;
 }
 
@@ -87,35 +87,35 @@ function deserializeUserAssetsState(serializedState: string) {
 
 export const userAssetsStore = createRainbowStore<UserAssetsState>(
   (_, get) => ({
-    userAssetsById: [],
+    filteredUserAssetsById: [],
     userAssets: new Map(),
     filter: 'all',
     searchQuery: '',
     favoriteAssetsById: new Set(),
 
-    getFilteredUserAssetIds: () => {
-      const { userAssetsById, userAssets, searchQuery } = get();
+    // getFilteredUserAssetIds: () => {
+    //   const { userAssetsById, userAssets, searchQuery } = get();
 
-      // NOTE: No search query let's just return the userAssetIds
-      if (!searchQuery.trim()) {
-        return userAssetsById;
-      }
+    //   // NOTE: No search query let's just return the userAssetIds
+    //   if (!searchQuery.trim()) {
+    //     return userAssetsById;
+    //   }
 
-      const lowerCaseSearchQuery = searchQuery.toLowerCase();
-      const keysToMatch: Partial<keyof ParsedSearchAsset>[] = ['name', 'symbol', 'address'];
+    //   const lowerCaseSearchQuery = searchQuery.toLowerCase();
+    //   const keysToMatch: Partial<keyof ParsedSearchAsset>[] = ['name', 'symbol', 'address'];
 
-      return Object.entries(userAssets).reduce((acc, [uniqueId, asset]) => {
-        const combinedString = keysToMatch
-          .map(key => asset?.[key as keyof ParsedSearchAsset] ?? '')
-          .filter(Boolean)
-          .join(' ')
-          .toLowerCase();
-        if (combinedString.includes(lowerCaseSearchQuery)) {
-          acc.push(uniqueId);
-        }
-        return acc;
-      }, [] as UniqueId[]);
-    },
+    //   return Object.entries(userAssets).reduce((acc, [uniqueId, asset]) => {
+    //     const combinedString = keysToMatch
+    //       .map(key => asset?.[key as keyof ParsedSearchAsset] ?? '')
+    //       .filter(Boolean)
+    //       .join(' ')
+    //       .toLowerCase();
+    //     if (combinedString.includes(lowerCaseSearchQuery)) {
+    //       acc.push(uniqueId);
+    //     }
+    //     return acc;
+    //   }, [] as UniqueId[]);
+    // },
 
     setFavorites: (addresses: Hex[]) => {
       const { favoriteAssetsById } = get();
@@ -146,11 +146,34 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
     storageKey: 'userAssets',
     version: 1,
     partialize: state => ({
-      userAssetsById: state.userAssetsById,
+      filteredUserAssetsById: state.filteredUserAssetsById,
       userAssets: state.userAssets,
       favoriteAssetsById: state.favoriteAssetsById,
     }),
     serializer: serializeUserAssetsState,
     deserializer: deserializeUserAssetsState,
+  }
+);
+
+userAssetsStore.subscribe(
+  state => state.searchQuery,
+  searchQuery => {
+    const userAssets = userAssetsStore.getState().userAssets;
+    const filteredUserAssetsById: UniqueId[] = [];
+
+    userAssets.forEach(asset => {
+      if (searchQuery) {
+        const stringToSearch = `${asset.name} ${asset.symbol} ${asset.address}`.toLowerCase();
+        if (stringToSearch.includes(searchQuery)) {
+          filteredUserAssetsById.push(asset.uniqueId);
+        }
+      } else {
+        filteredUserAssetsById.push(asset.uniqueId);
+      }
+    });
+
+    userAssetsStore.setState({
+      filteredUserAssetsById,
+    });
   }
 );

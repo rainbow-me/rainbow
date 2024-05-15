@@ -13,7 +13,7 @@ import { userAssetsStore } from '@/state/assets/userAssets';
 
 export const TokenToSellList = () => {
   const { setAsset } = useSwapContext();
-  const assetIds = userAssetsStore(state => state.userAssetsById);
+  const assetIds = userAssetsStore(state => state.filteredUserAssetsById);
 
   const handleSelectToken = useCallback(
     (assetId: UniqueId) => {

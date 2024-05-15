@@ -67,7 +67,7 @@ export const CoinRow2 = ({ assetId, output, onPress }: { assetId: string; output
               </Text>
               <Inline alignVertical="center" space={{ custom: 5 }}>
                 <Text color="labelTertiary" size="13pt" weight="semibold">
-                  {output ? asset.symbol : `${asset.balance}`}
+                  {output ? asset.symbol : `${asset.balance.display}`}
                 </Text>
                 {isTrending && percentChange && (
                   <Inline alignVertical="center" space={{ custom: 1 }}>

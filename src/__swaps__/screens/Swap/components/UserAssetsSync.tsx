@@ -4,7 +4,7 @@ import { useUserAssets } from '../resources/assets';
 import { selectUserAssetsList, selectorFilterByUserChains } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
 import { Hex } from 'viem';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
 
 export const UserAssetsSync = () => {
   const { accountAddress: currentAddress, nativeCurrency: currentCurrency } = useAccountSettings();
@@ -21,9 +21,25 @@ export const UserAssetsSync = () => {
           selector: selectUserAssetsList,
         }),
       onSuccess: data => {
+        const searchQuery = userAssetsStore.getState().searchQuery.toLowerCase();
+
+        const filteredUserAssetsById: UniqueId[] = [];
+        const userAssets = new Map<UniqueId, ParsedSearchAsset>();
+        data.forEach(asset => {
+          if (searchQuery) {
+            const stringToSearch = `${asset.name} ${asset.symbol} ${asset.address}`.toLowerCase();
+            if (stringToSearch.includes(searchQuery)) {
+              filteredUserAssetsById.push(asset.uniqueId);
+            }
+          } else {
+            filteredUserAssetsById.push(asset.uniqueId);
+          }
+          userAssets.set(asset.uniqueId, asset as ParsedSearchAsset);
+        });
+
         userAssetsStore.setState({
-          userAssetsById: data.map(d => d.uniqueId),
-          userAssets: new Map(data.map(d => [d.uniqueId, d as ParsedSearchAsset])),
+          filteredUserAssetsById,
+          userAssets,
         });
       },
     }
