@@ -28,7 +28,7 @@ import {
 import { TextColor } from '@/design-system/color/palettes';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
-import { useAccountAccentColor, useAccountSettings, useWalletsWithBalancesAndNames } from '@/hooks';
+import { useAccountSettings, useWalletsWithBalancesAndNames } from '@/hooks';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { Network } from '@/networks/types';
 import { useBrowserStore } from '@/state/browser/browserStore';
@@ -57,6 +57,7 @@ import { DEFAULT_TAB_URL, RAINBOW_HOME } from '../constants';
 import { useFavoriteDappsStore } from '@/state/favoriteDapps';
 import { Site } from '@/state/browserHistory';
 import WalletTypes from '@/helpers/walletTypes';
+import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 
 const PAGES = {
   HOME: 'home',
@@ -67,6 +68,7 @@ const PAGES = {
 type ControlPanelParams = {
   ControlPanel: {
     activeTabRef: React.MutableRefObject<WebView | null>;
+    selectedAddress: string;
   };
 };
 
@@ -78,13 +80,12 @@ export const ControlPanel = () => {
   const { goBack, goToPage, ref } = usePagerNavigation();
   const { accountAddress } = useAccountSettings();
   const {
-    params: { activeTabRef },
+    params: { activeTabRef, selectedAddress },
   } = useRoute<RouteProp<ControlPanelParams, 'ControlPanel'>>();
   const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const activeTabUrl = useBrowserStore(state => state.getActiveTabUrl());
   const activeTabHost = getDappHost(activeTabUrl || '');
-  const updateActiveSession = useAppSessionsStore(state => state.updateActiveSession);
   const updateActiveSessionNetwork = useAppSessionsStore(state => state.updateActiveSessionNetwork);
   const addSession = useAppSessionsStore(state => state.addSession);
   const removeSession = useAppSessionsStore(state => state.removeSession);
@@ -102,8 +103,9 @@ export const ControlPanel = () => {
   );
 
   const [isConnected, setIsConnected] = useState(!!(activeTabHost && currentSession?.address));
-  const [currentAddress, setCurrentAddress] = useState<string>(currentSession?.address || accountAddress);
+  const [currentAddress, setCurrentAddress] = useState<string>(currentSession?.address || selectedAddress || accountAddress);
   const [currentNetwork, setCurrentNetwork] = useState<Network>(currentSession?.network || Network.mainnet);
+
   // listens to the current active tab and sets the account
   useEffect(() => {
     if (activeTabHost) {
@@ -114,7 +116,7 @@ export const ControlPanel = () => {
 
       if (currentSession?.address) {
         setCurrentAddress(currentSession?.address);
-        setIsConnected(true);
+        // setIsConnected(true);
       } else {
         setCurrentAddress(accountAddress);
       }
@@ -152,6 +154,7 @@ export const ControlPanel = () => {
                   : i18n.t(i18n.l.wallet.change_wallet.no_balance),
             uniqueId: account.address,
             color: colors.avatarBackgrounds[account.color],
+            imageUrl: account.image || undefined,
             selected: account.address === currentAddress,
           };
 
@@ -211,11 +214,14 @@ export const ControlPanel = () => {
         network: currentNetwork,
         url: activeTabUrl || '',
       });
-      // need to emit these events to the dapp
-      activeTabRef.current?.injectJavaScript(`window.ethereum.emit('accountsChanged', ['${address}']); true;`);
+
+      if (isConnected) {
+        // need to emit these events to the dapp
+        activeTabRef.current?.injectJavaScript(`window.ethereum.emit('accountsChanged', ['${address}']); true;`);
+      }
       setCurrentAddress(address);
     },
-    [activeTabHost, activeTabRef, activeTabUrl, addSession, currentNetwork, removeSession]
+    [activeTabHost, activeTabRef, activeTabUrl, addSession, currentNetwork, isConnected, removeSession]
   );
 
   const handleNetworkSwitch = useCallback(
@@ -262,7 +268,7 @@ export const ControlPanel = () => {
 
   return (
     <>
-      <AccentColorSetter animatedAccentColor={animatedAccentColor} />
+      <AccentColorSetter animatedAccentColor={animatedAccentColor} selectedWallet={selectedWallet} />
       <Box style={controlPanelStyles.panelContainer}>
         <SmoothPager initialPage={PAGES.HOME} ref={ref}>
           <SmoothPager.Page
@@ -271,8 +277,7 @@ export const ControlPanel = () => {
                 animatedAccentColor={animatedAccentColor}
                 goToPage={goToPage}
                 selectedNetwork={currentNetwork}
-                selectedWallet={currentAddress}
-                allWalletItems={allWalletItems}
+                selectedWallet={selectedWallet}
                 allNetworkItems={allNetworkItems}
                 isConnected={isConnected}
                 onConnect={handleConnect}
@@ -338,14 +343,17 @@ const getHighContrastAccentColor = (accentColor: string, isDarkMode: boolean) =>
   }
 };
 
-const AccentColorSetter = ({ animatedAccentColor }: { animatedAccentColor: SharedValue<string | undefined> }) => {
-  // This component isolates the re-renders caused by the accentColor from the rest of the control panel to prevent
-  // the control panel from re-rendering due to changes in the accentColor. It achieves this by transferring the
-  // color to the provided shared value, which is then used to distribute the color throughout the control panel.
-  const { accentColor } = useAccountAccentColor();
+const AccentColorSetter = ({
+  animatedAccentColor,
+  selectedWallet,
+}: {
+  animatedAccentColor: SharedValue<string | undefined>;
+  selectedWallet: ControlPanelMenuItemProps | undefined;
+}) => {
   const { isDarkMode } = useColorMode();
 
-  const highContrastAccentColor = useMemo(() => getHighContrastAccentColor(accentColor, isDarkMode), [accentColor, isDarkMode]);
+  const accountColor = usePersistentDominantColorFromImage(selectedWallet?.imageUrl) || selectedWallet?.color || globalColors.blue60;
+  const highContrastAccentColor = useMemo(() => getHighContrastAccentColor(accountColor, isDarkMode), [accountColor, isDarkMode]);
 
   useSyncSharedValue({
     sharedValue: animatedAccentColor,
@@ -361,7 +369,6 @@ const HomePanel = ({
   goToPage,
   selectedNetwork,
   selectedWallet,
-  allWalletItems,
   allNetworkItems,
   isConnected,
   onConnect,
@@ -370,18 +377,16 @@ const HomePanel = ({
   animatedAccentColor: SharedValue<string | undefined>;
   goToPage: (pageId: string) => void;
   selectedNetwork: string;
-  selectedWallet: string;
-  allWalletItems: ControlPanelMenuItemProps[];
+  selectedWallet: ControlPanelMenuItemProps | undefined;
   allNetworkItems: ControlPanelMenuItemProps[];
   isConnected: boolean;
   onConnect: () => void;
   onDisconnect: () => void;
 }) => {
   const actionButtonList = useMemo(() => {
-    const selectedWalletProps: ControlPanelMenuItemProps | undefined = allWalletItems.find(item => item.uniqueId === selectedWallet);
-    const walletIcon = selectedWalletProps?.IconComponent || <></>;
-    const walletLabel = selectedWalletProps?.label || '';
-    const walletSecondaryLabel = selectedWalletProps?.secondaryLabel || '';
+    const walletIcon = selectedWallet?.IconComponent || <></>;
+    const walletLabel = selectedWallet?.label || '';
+    const walletSecondaryLabel = selectedWallet?.secondaryLabel || '';
 
     const network = allNetworkItems.find(item => item.uniqueId === selectedNetwork);
     const networkIcon = <ChainImage chain={(network?.uniqueId as Network) || 'mainnet'} size={36} />;
@@ -410,7 +415,7 @@ const HomePanel = ({
         />
       </Stack>
     );
-  }, [allNetworkItems, allWalletItems, animatedAccentColor, goToPage, selectedNetwork, selectedWallet]);
+  }, [allNetworkItems, animatedAccentColor, goToPage, selectedNetwork, selectedWallet]);
 
   const isOnHomepage = useBrowserStore(state => (state.getActiveTabUrl() || DEFAULT_TAB_URL) === RAINBOW_HOME);
 
@@ -437,7 +442,7 @@ const HomePanel = ({
                 icon="􀖅"
                 label={i18n.t(i18n.l.dapp_browser.control_panel.swap)}
                 onPress={async () => {
-                  const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(Network.mainnet, selectedWallet);
+                  const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(Network.mainnet, selectedWallet?.uniqueId);
                   Navigation.handleAction(Routes.EXCHANGE_MODAL, {
                     fromDiscover: true,
                     params: {
@@ -452,7 +457,7 @@ const HomePanel = ({
                 icon="􀄹"
                 label={i18n.t(i18n.l.dapp_browser.control_panel.bridge)}
                 onPress={async () => {
-                  const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(Network.mainnet, selectedWallet);
+                  const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(Network.mainnet, selectedWallet?.uniqueId);
                   Navigation.handleAction(Routes.EXCHANGE_MODAL, {
                     fromDiscover: true,
                     params: {
@@ -668,6 +673,7 @@ interface ControlPanelMenuItemProps {
   animatedAccentColor?: SharedValue<string | undefined>;
   label: string;
   labelColor?: TextColor;
+  imageUrl?: string;
   color?: string;
   onPress?: () => void;
   secondaryLabel?: string;
@@ -908,6 +914,8 @@ const ConnectButton = React.memo(function ControlPanelButton({
   onConnect?: () => void;
   onDisconnect?: () => void;
 }) {
+  const { isDarkMode } = useColorMode();
+
   const green = useForegroundColor('green');
   const red = useForegroundColor('red');
 
@@ -927,14 +935,14 @@ const ConnectButton = React.memo(function ControlPanelButton({
 
   const buttonBackground = useAnimatedStyle(() => {
     return {
-      backgroundColor: opacityWorklet(buttonColor.value, 0.16),
-      borderColor: IS_IOS ? opacityWorklet(buttonColor.value, 0.08) : undefined,
+      backgroundColor: opacityWorklet(buttonColor.value, isDarkMode ? 0.16 : 0.9),
+      borderColor: IS_IOS ? opacityWorklet(buttonColor.value, isDarkMode ? 0.08 : 0.3) : undefined,
     };
   });
   const buttonIconStyle = useAnimatedStyle(() => {
     return {
-      color: buttonColor.value,
-      textShadowColor: opacityWorklet(buttonColor.value, 0.8),
+      color: isDarkMode ? buttonColor.value : globalColors.white100,
+      textShadowColor: isDarkMode ? opacityWorklet(buttonColor.value, 0.8) : buttonColor.value,
     };
   });
 

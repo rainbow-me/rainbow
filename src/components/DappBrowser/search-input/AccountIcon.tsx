@@ -13,6 +13,7 @@ import { getDappHost } from '../handleProviderRequest';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useBrowserContext } from '../BrowserContext';
+import { DEFAULT_TAB_URL, RAINBOW_HOME } from '../constants';
 
 export const AccountIcon = React.memo(function AccountIcon() {
   const { navigate } = useNavigation();
@@ -22,7 +23,8 @@ export const AccountIcon = React.memo(function AccountIcon() {
   const [currentAddress, setCurrentAddress] = useState<string>(accountAddress);
 
   const { activeTabRef } = useBrowserContext();
-  const activeTabHost = useBrowserStore(state => getDappHost(state.getActiveTabUrl()));
+  const activeTabHost = useBrowserStore(state => getDappHost(state.getActiveTabUrl() || DEFAULT_TAB_URL));
+  const isOnHomepage = useBrowserStore(state => (state.getActiveTabUrl() || DEFAULT_TAB_URL) === RAINBOW_HOME);
   const hostSessions = useAppSessionsStore(state => state.getActiveSession({ host: activeTabHost }));
 
   const currentSession = useMemo(
@@ -38,7 +40,7 @@ export const AccountIcon = React.memo(function AccountIcon() {
 
   // listens to the current active tab and sets the account
   useEffect(() => {
-    if (activeTabHost) {
+    if (activeTabHost || isOnHomepage) {
       if (!currentSession) {
         return;
       }
@@ -49,7 +51,7 @@ export const AccountIcon = React.memo(function AccountIcon() {
         setCurrentAddress(accountAddress);
       }
     }
-  }, [accountAddress, activeTabHost, currentSession]);
+  }, [accountAddress, activeTabHost, currentSession, isOnHomepage]);
 
   const accountInfo = useMemo(() => {
     const selectedWallet = findWalletWithAccount(wallets || {}, currentAddress);
@@ -62,8 +64,9 @@ export const AccountIcon = React.memo(function AccountIcon() {
   const handleOnPress = useCallback(() => {
     navigate(Routes.DAPP_BROWSER_CONTROL_PANEL, {
       activeTabRef,
+      selectedAddress: currentAddress,
     });
-  }, [activeTabRef, navigate]);
+  }, [activeTabRef, currentAddress, navigate]);
 
   return (
     <Bleed space="8px">
