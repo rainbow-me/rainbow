@@ -1,10 +1,8 @@
 import React, { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
-import { CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
-import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
-import { ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { CoinRow2 } from '@/__swaps__/screens/Swap/components/CoinRow2';
+import { UniqueId } from '@/__swaps__/types/assets';
 import { Stack } from '@/design-system';
-import Animated from 'react-native-reanimated';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
@@ -13,18 +11,16 @@ import { ChainSelection } from './ChainSelection';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { userAssetsStore } from '@/state/assets/userAssets';
 
-const AnimatedFlashListComponent = Animated.createAnimatedComponent(FlashList<ParsedSearchAsset>);
-
 export const TokenToSellList = () => {
   const { setAsset } = useSwapContext();
-  const userAssets = useAssetsToSell();
+  const assetIds = userAssetsStore(state => state.userAssetsById);
 
   const handleSelectToken = useCallback(
-    (token: ParsedSearchAsset) => {
-      const userAsset = userAssetsStore.getState().getUserAsset(token.uniqueId);
+    (assetId: UniqueId) => {
+      const userAsset = userAssetsStore.getState().getUserAsset(assetId);
       const parsedAsset = parseSearchAsset({
         assetWithPrice: undefined,
-        searchAsset: token,
+        searchAsset: userAsset,
         userAsset,
       });
 
@@ -39,27 +35,11 @@ export const TokenToSellList = () => {
   return (
     <Stack space="20px">
       <ChainSelection allText="All Networks" output={false} />
-
-      <AnimatedFlashListComponent
-        data={userAssets}
+      <FlashList
+        data={assetIds}
         ListEmptyComponent={<ListEmpty />}
-        keyExtractor={item => item.uniqueId}
-        renderItem={({ item }) => (
-          <CoinRow
-            // key={item.uniqueId}
-            chainId={item.chainId}
-            color={item.colors?.primary ?? item.colors?.fallback}
-            iconUrl={item.icon_url}
-            address={item.address}
-            mainnetAddress={item.mainnetAddress}
-            balance={item.balance.display}
-            name={item.name}
-            onPress={() => handleSelectToken(item)}
-            nativeBalance={item.native.balance.display}
-            output={false}
-            symbol={item.symbol}
-          />
-        )}
+        keyExtractor={item => item}
+        renderItem={({ item }) => <CoinRow2 assetId={item} output={false} onPress={handleSelectToken} />}
       />
     </Stack>
   );

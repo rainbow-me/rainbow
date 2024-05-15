@@ -22,7 +22,7 @@ export const UserAssetsSync = () => {
         }),
       onSuccess: data => {
         userAssetsStore.setState({
-          userAssetsById: new Set(data.map(d => d.uniqueId)),
+          userAssetsById: data.map(d => d.uniqueId),
           userAssets: new Map(data.map(d => [d.uniqueId, d as ParsedSearchAsset])),
         });
       },
