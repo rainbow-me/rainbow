@@ -23,7 +23,7 @@ export const AccountIcon = React.memo(function AccountIcon() {
   const [currentAddress, setCurrentAddress] = useState<string>(accountAddress);
 
   const { activeTabRef } = useBrowserContext();
-  const activeTabHost = useBrowserStore(state => getDappHost(state.getActiveTabUrl() || DEFAULT_TAB_URL));
+  const activeTabHost = useBrowserStore(state => getDappHost(state.getActiveTabUrl())) || DEFAULT_TAB_URL;
   const isOnHomepage = useBrowserStore(state => (state.getActiveTabUrl() || DEFAULT_TAB_URL) === RAINBOW_HOME);
   const hostSessions = useAppSessionsStore(state => state.getActiveSession({ host: activeTabHost }));
   const currentSession = useMemo(
