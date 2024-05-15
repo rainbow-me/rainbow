@@ -32,6 +32,7 @@ export interface DappConnectionData {
   dappUrl: string;
   imageUrl?: string;
   chainId?: number;
+  address?: string;
 }
 
 export const handleDappBrowserConnectionPrompt = (dappData: DappConnectionData): Promise<{ chainId: number; address: string } | Error> => {
@@ -49,6 +50,7 @@ export const handleDappBrowserConnectionPrompt = (dappData: DappConnectionData):
         peerId: '',
         dappScheme: null,
         proposedChainId: dappData.chainId,
+        proposedAddress: dappData.address,
       },
       source: 'browser',
       timedOut: false,

@@ -40,7 +40,7 @@ import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { TOP_INSET } from '../Dimensions';
 import { formatUrl } from '../utils';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { Address, toHex } from 'viem';
+import { toHex } from 'viem';
 import { RainbowNetworks } from '@/networks';
 import * as i18n from '@/languages';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
@@ -80,20 +80,21 @@ export const ControlPanel = () => {
   const { goBack, goToPage, ref } = usePagerNavigation();
   const { accountAddress } = useAccountSettings();
   const {
-    params: { activeTabRef, selectedAddress },
+    params: { activeTabRef },
   } = useRoute<RouteProp<ControlPanelParams, 'ControlPanel'>>();
   const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const activeTabUrl = useBrowserStore(state => state.getActiveTabUrl());
   const activeTabHost = getDappHost(activeTabUrl || '');
   const updateActiveSessionNetwork = useAppSessionsStore(state => state.updateActiveSessionNetwork);
+  const updateActiveSession = useAppSessionsStore(state => state.updateActiveSession);
   const addSession = useAppSessionsStore(state => state.addSession);
-  const removeSession = useAppSessionsStore(state => state.removeSession);
+  const removeAppSession = useAppSessionsStore(state => state.removeAppSession);
   const hostSessions = useAppSessionsStore(state => state.getActiveSession({ host: activeTabHost }));
 
   const currentSession = useMemo(
     () =>
-      hostSessions && hostSessions.sessions[hostSessions.activeSessionAddress]
+      hostSessions && hostSessions.sessions?.[hostSessions.activeSessionAddress]
         ? {
             address: hostSessions.activeSessionAddress,
             network: hostSessions.sessions[hostSessions.activeSessionAddress],
@@ -103,7 +104,9 @@ export const ControlPanel = () => {
   );
 
   const [isConnected, setIsConnected] = useState(!!(activeTabHost && currentSession?.address));
-  const [currentAddress, setCurrentAddress] = useState<string>(currentSession?.address || selectedAddress || accountAddress);
+  const [currentAddress, setCurrentAddress] = useState<string>(
+    currentSession?.address || hostSessions?.activeSessionAddress || accountAddress
+  );
   const [currentNetwork, setCurrentNetwork] = useState<Network>(currentSession?.network || Network.mainnet);
 
   // listens to the current active tab and sets the account
@@ -207,21 +210,15 @@ export const ControlPanel = () => {
   const handleSwitchWallet = useCallback(
     (selectedItemId: string) => {
       const address = selectedItemId;
-      removeSession({ host: activeTabHost, address: address as `0x${string}` });
-      addSession({
-        host: activeTabHost,
-        address: address as `0x${string}`,
-        network: currentNetwork,
-        url: activeTabUrl || '',
-      });
-
+      updateActiveSession({ host: activeTabHost, address: address as `0x${string}` });
       if (isConnected) {
+        updateActiveSessionNetwork({ host: activeTabHost, network: currentNetwork });
         // need to emit these events to the dapp
         activeTabRef.current?.injectJavaScript(`window.ethereum.emit('accountsChanged', ['${address}']); true;`);
       }
       setCurrentAddress(address);
     },
-    [activeTabHost, activeTabRef, activeTabUrl, addSession, currentNetwork, isConnected, removeSession]
+    [activeTabHost, activeTabRef, currentNetwork, isConnected, updateActiveSession, updateActiveSessionNetwork]
   );
 
   const handleNetworkSwitch = useCallback(
@@ -238,6 +235,7 @@ export const ControlPanel = () => {
     const activeTabHost = getDappHost(activeTabUrl || '');
     const address = selectedWalletId.value;
     const network = selectedNetworkId.value as Network;
+
     addSession({
       host: activeTabHost || '',
       address: address as `0x${string}`,
@@ -256,15 +254,13 @@ export const ControlPanel = () => {
   }, [activeTabUrl, selectedWalletId.value, selectedNetworkId.value, addSession, activeTabRef]);
 
   const handleDisconnect = useCallback(() => {
-    const selectedAddress = selectedWalletId.value;
-
     const activeTabHost = getDappHost(activeTabUrl as string);
     if (activeTabHost) {
-      removeSession({ host: activeTabHost, address: selectedAddress as Address });
+      removeAppSession({ host: activeTabHost });
       activeTabRef.current?.injectJavaScript(`window.ethereum.emit('accountsChanged', []); window.ethereum.emit('disconnect', []); true;`);
       setIsConnected(false);
     }
-  }, [activeTabRef, activeTabUrl, removeSession, selectedWalletId.value]);
+  }, [activeTabRef, activeTabUrl, removeAppSession]);
 
   return (
     <>
