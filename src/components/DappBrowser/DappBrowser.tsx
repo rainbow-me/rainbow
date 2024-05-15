@@ -125,7 +125,8 @@ const TabViewBackground = () => {
       backgroundColor: interpolateColor(
         tabViewProgress.value,
         [0, 100],
-        [isDarkMode ? globalColors.grey100 : '#FBFCFD', isDarkMode ? '#0A0A0A' : '#F2F2F5']
+        // eslint-disable-next-line no-nested-ternary
+        [isDarkMode ? globalColors.grey100 : IS_ANDROID ? '#F2F2F5' : '#FBFCFD', isDarkMode ? '#0A0A0A' : '#F2F2F5']
       ),
     };
   });

@@ -112,7 +112,7 @@ export function useAnimatedTab({ tabId }: { tabId: string }) {
 
   const expensiveAnimatedWebViewStyles = useAnimatedStyle(() => {
     const isTabBeingClosed = currentlyOpenTabIds.value.indexOf(tabId) === -1;
-    const animatedIsActiveTab = !isTabBeingClosed && animatedActiveTabIndex.value === animatedTabIndex.value;
+    const animatedIsActiveTab = animatedActiveTabIndex.value === animatedTabIndex.value;
 
     const borderRadius = interpolate(
       tabViewProgress.value,
