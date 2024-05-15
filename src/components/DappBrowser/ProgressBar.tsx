@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedReaction, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useAccountAccentColor } from '@/hooks';
 import { deviceUtils } from '@/utils';
@@ -9,7 +9,7 @@ import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 
 export const ProgressBar = () => {
   const { accentColor } = useAccountAccentColor();
-  const { loadProgress, tabViewVisible } = useBrowserContext();
+  const { animatedActiveTabIndex, loadProgress, tabViewVisible } = useBrowserContext();
 
   const progressBarStyle = useAnimatedStyle(() => ({
     // eslint-disable-next-line no-nested-ternary
@@ -20,6 +20,15 @@ export const ProgressBar = () => {
         : withSpring(1, SPRING_CONFIGS.snappierSpringConfig),
     width: loadProgress.value * deviceUtils.dimensions.width,
   }));
+
+  useAnimatedReaction(
+    () => animatedActiveTabIndex.value,
+    (current, previous) => {
+      if (current !== previous) {
+        loadProgress.value = 1;
+      }
+    }
+  );
 
   return (
     <View style={[styles.progressBarContainer, styles.centerAlign]}>
