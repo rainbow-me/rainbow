@@ -1,71 +1,71 @@
 # Rainbow CODEOWNERS file
-CODEOWNERS  @benisgold @skylarbarrera @jinchung
+CODEOWNERS  @benisgold @jinchung
 LICENSE @jinchung @brunobar79 @nickbytes @estebanmino
-README.md @nickbytes  @benisgold @skylarbarrera @jinchung
-app.json  @benisgold @skylarbarrera @jinchung
+README.md @nickbytes  @benisgold @jinchung
+app.json  @benisgold @jinchung
 
 # ANDROID
-android/ @skylarbarrera
+android/
 
 # IOS
-ios/ @benisgold  @skylarbarrera
+ios/ @benisgold 
 
 # SECURITY / APP INFRA
-patches/ @benisgold @skylarbarrera
-scripts/ @skylarbarrera
+patches/ @benisgold
+scripts/
 
 # DESIGN SYSTEM
-src/design-system @skylarbarrera @benisgold
+src/design-system @benisgold
 
 # Handlers
 src/handlers/aesEncryption.ts @jinchung
 src/handlers/authentication.ts @jinchung
-src/handlers/cloudBackup.ts @skylarbarrera @jinchung
+src/handlers/cloudBackup.ts @jinchung
 
 # Model
-src/model/backup.ts  @jinchung @skylarbarrera
-src/model/keychain.ts  @skylarbarrera @jinchung
-src/model/migrations.ts  @benisgold @skylarbarrera @jinchung
-src/model/wallet.ts  @skylarbarrera @jinchung
+src/model/backup.ts  @jinchung
+src/model/keychain.ts  @jinchung
+src/model/migrations.ts  @benisgold @jinchung
+src/model/wallet.ts  @jinchung
 
 # redux
-src/redux/gas.ts @skylarbarrera @benisgold @jinchung
+src/redux/gas.ts @benisgold @jinchung
 
 # navigation
-src/navigation @skylarbarrera @benisgold
+src/navigation @benisgold
 
 # analytics & logging
-src/analytics @benisgold @skylarbarrera
+src/analytics @benisgold
 
 # APP INFRA
-package.json  @skylarbarrera @benisgold @jinchung
-.eslintignore  @benisgold @skylarbarrera @jinchung
-.eslintrc.js  @benisgold @skylarbarrera @jinchung
-.gitattributes  @benisgold @skylarbarrera @jinchung
-.gitignore  @benisgold @skylarbarrera @jinchung
-.nvmrc  @benisgold @skylarbarrera @jinchung
-.prettierrc.js  @benisgold @skylarbarrera @jinchung
-.yarnrc @benisgold @skylarbarrera @jinchung
-audit-ci.json  @skylarbarrera @benisgold @jinchung
-babel.config.js  @skylarbarrera
-globals.d.ts @benisgold @skylarbarrera
-yarn.lock  @benisgold @skylarbarrera @jinchung
-tsconfig.json  @benisgold @skylarbarrera @jinchung
-hardhat.config.js  @skylarbarrera @jinchung
+package.json  @benisgold @jinchung
+.eslintignore  @benisgold @jinchung
+.eslintrc.js  @benisgold @jinchung
+.gitattributes  @benisgold @jinchung
+.gitignore  @benisgold @jinchung
+.nvmrc  @benisgold @jinchung
+.prettierrc.js  @benisgold @jinchung
+.yarnrc @benisgold @jinchung
+audit-ci.json  @benisgold @jinchung
+babel.config.js 
+globals.d.ts @benisgold
+yarn.lock  @benisgold @jinchung
+tsconfig.json  @benisgold @jinchung
+hardhat.config.js  @jinchung
 
 # APP INFRA
-globalVariables.js @benisgold @skylarbarrera
-shim.js  @skylarbarrera 
-index.js  @benisgold @skylarbarrera
-src/App.js  @benisgold @skylarbarrera @jinchung
+globalVariables.js @benisgold
+shim.js  
+index.js  @benisgold
+src/App.js  @benisgold @jinchung
 
 # SECURITY / APP INFRA
-metro.config.js @skylarbarrera @benisgold 
-metro.transform.js @skylarbarrera @benisgold 
-react-native.config.js  @skylarbarrera @benisgold
+metro.config.js @benisgold 
+metro.transform.js @benisgold 
+react-native.config.js  @benisgold
 
 # DAPP BROWSER
-src/browser @brunobar79 @skylarbarrera @benisgold
-src/screens/dapp-browser @brunobar79 @skylarbarrera @benisgold
-src/components/DappBrowser @brunobar79 @skylarbarrera @benisgold
+src/browser @brunobar79 @benisgold
+src/screens/dapp-browser @brunobar79 @benisgold
+src/components/DappBrowser @brunobar79 @benisgold
 
