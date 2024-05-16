@@ -22,25 +22,25 @@ import { AddressZero } from '@ethersproject/constants';
 import { ETH_ADDRESS } from '@/references';
 
 const networkBadges = {
-  [ChainId.polygon]: PolygonBadge,
-  [ChainId.optimism]: OptimismBadge,
-  [ChainId.arbitrum]: ArbitrumBadge,
-  [ChainId.base]: BaseBadge,
-  [ChainId.zora]: ZoraBadge,
-  [ChainId.bsc]: BscBadge,
-  [ChainId.avalanche]: AvalancheBadge,
-  [ChainId.sepolia]: EthereumBadge,
-  [ChainId.holesky]: EthereumBadge,
-  [ChainId.optimismSepolia]: OptimismBadge,
-  [ChainId.bscTestnet]: BscBadge,
-  [ChainId.polygonAmoy]: PolygonBadge,
-  [ChainId.arbitrumSepolia]: ArbitrumBadge,
-  [ChainId.baseSepolia]: BaseBadge,
-  [ChainId.zoraSepolia]: ZoraBadge,
-  [ChainId.avalancheFuji]: AvalancheBadge,
-  [ChainId.blast]: BlastBadge,
-  [ChainId.blastSepolia]: BlastBadge,
-  [ChainId.degen]: DegenBadge,
+  [ChainId.polygon]: Image.resolveAssetSource(PolygonBadge).uri,
+  [ChainId.optimism]: Image.resolveAssetSource(OptimismBadge).uri,
+  [ChainId.arbitrum]: Image.resolveAssetSource(ArbitrumBadge).uri,
+  [ChainId.base]: Image.resolveAssetSource(BaseBadge).uri,
+  [ChainId.zora]: Image.resolveAssetSource(ZoraBadge).uri,
+  [ChainId.bsc]: Image.resolveAssetSource(BscBadge).uri,
+  [ChainId.avalanche]: Image.resolveAssetSource(AvalancheBadge).uri,
+  [ChainId.sepolia]: Image.resolveAssetSource(EthereumBadge).uri,
+  [ChainId.holesky]: Image.resolveAssetSource(EthereumBadge).uri,
+  [ChainId.optimismSepolia]: Image.resolveAssetSource(OptimismBadge).uri,
+  [ChainId.bscTestnet]: Image.resolveAssetSource(BscBadge).uri,
+  [ChainId.polygonAmoy]: Image.resolveAssetSource(PolygonBadge).uri,
+  [ChainId.arbitrumSepolia]: Image.resolveAssetSource(ArbitrumBadge).uri,
+  [ChainId.baseSepolia]: Image.resolveAssetSource(BaseBadge).uri,
+  [ChainId.zoraSepolia]: Image.resolveAssetSource(ZoraBadge).uri,
+  [ChainId.avalancheFuji]: Image.resolveAssetSource(AvalancheBadge).uri,
+  [ChainId.blast]: Image.resolveAssetSource(BlastBadge).uri,
+  [ChainId.blastSepolia]: Image.resolveAssetSource(BlastBadge).uri,
+  [ChainId.degen]: Image.resolveAssetSource(DegenBadge).uri,
 };
 
 export const getCustomChainIconUrlWorklet = (chainId: ChainId, address: AddressOrEth) => {
@@ -61,6 +61,7 @@ export function AnimatedChainImage({ asset, size = 20 }: { asset: SharedValue<Ex
     const base = {
       source: {
         ...DEFAULT_FASTER_IMAGE_CONFIG,
+        borderRadius: size / 2,
         url: '',
       },
     };
@@ -74,15 +75,16 @@ export function AnimatedChainImage({ asset, size = 20 }: { asset: SharedValue<Ex
       return base;
     }
 
-    // TODO: How can we reference local static pngs here?
-    console.log(networkBadges[asset.value.chainId]);
+    if (networkBadges[asset.value.chainId]) {
+      base.source.url = networkBadges[asset.value.chainId];
+    }
     return base;
   });
 
   return (
-    <View style={sx.badge}>
+    <View style={[sx.badge, { borderRadius: size / 2, width: size, height: size }]}>
       {/* @ts-expect-error source prop is missing */}
-      <AnimatedFasterImage style={{ width: size, height: size }} animatedProps={animatedIconSource} />
+      <AnimatedFasterImage style={{ borderRadius: size / 2, width: size, height: size }} animatedProps={animatedIconSource} />
     </View>
   );
 }

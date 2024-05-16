@@ -45,6 +45,7 @@ export const AmimatedSwapCoinIcon = React.memo(function FeedCoinIcon({
     return {
       source: {
         ...DEFAULT_FASTER_IMAGE_CONFIG,
+        borderRadius: (small ? 16 : large ? 36 : 32) / 2,
         url: asset.value?.icon_url ?? '',
       },
     };
