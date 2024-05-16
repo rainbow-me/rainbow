@@ -24,9 +24,18 @@ import { BlurView } from '@react-native-community/blur';
 import { createMaterialTopTabNavigator, MaterialTopTabNavigationEventMap } from '@react-navigation/material-top-tabs';
 import { MaterialTopTabDescriptorMap } from '@react-navigation/material-top-tabs/lib/typescript/src/types';
 import { NavigationHelpers, ParamListBase, RouteProp } from '@react-navigation/native';
-import React, { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { InteractionManager, View } from 'react-native';
-import Animated, { Easing, interpolate, SharedValue, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, {
+  Easing,
+  interpolate,
+  SharedValue,
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import DiscoverScreen, { discoverScrollToTopFnRef } from '../screens/discover/DiscoverScreen';
@@ -116,14 +125,14 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
 
   const reanimatedPosition = useSharedValue(0);
 
-  const tabPositions = useMemo(() => {
+  const tabPositions = useDerivedValue(() => {
     const inputRange = Array.from({ length: numberOfTabs }, (_, index) => index);
     const outputRange = Array.from({ length: numberOfTabs }, (_, index) => tabPillStartPosition + tabWidth * index);
     return { inputRange, outputRange };
   }, [numberOfTabs, tabPillStartPosition, tabWidth]);
 
   const tabStyle = useAnimatedStyle(() => {
-    const translateX = interpolate(reanimatedPosition.value, tabPositions.inputRange, tabPositions.outputRange, 'clamp');
+    const translateX = interpolate(reanimatedPosition.value, tabPositions.value.inputRange, tabPositions.value.outputRange, 'clamp');
     return {
       transform: [{ translateX }],
       width: 72,
@@ -180,10 +189,14 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
   const canSwitchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastPressRef = useRef<number | undefined>(undefined);
 
-  useLayoutEffect(() => {
-    reanimatedPosition.value = state.index;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.index]);
+  useAnimatedReaction(
+    () => state.index,
+    (current, previous) => {
+      if (current !== previous) {
+        reanimatedPosition.value = current;
+      }
+    }
+  );
 
   const onPress = useCallback(
     (route: { key: string }, index: number, isFocused: boolean, tabBarIcon: string) => {
