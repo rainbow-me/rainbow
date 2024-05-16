@@ -9,7 +9,7 @@ import { ContextMenuButton } from '../../context-menu';
 import { Box, Column, Columns, Inline, Text } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation';
-import { Source } from '@/redux/swap';
+import { Source } from '@/raps/references';
 import Routes from '@/navigation/routesNames';
 
 import { showActionSheetWithOptions } from '@/utils';

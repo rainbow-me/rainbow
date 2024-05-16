@@ -11,12 +11,11 @@ import { SlackSheet } from '../../sheet';
 import { MaxToleranceInput } from './MaxToleranceInput';
 import SourcePicker from './SourcePicker';
 
-import { Network } from '@/helpers';
 import { Box, ColorModeProvider, Column, Columns, Inset, Stack, Text } from '@/design-system';
 
 import { useAccountSettings, useColorForAsset, useKeyboardHeight, useSwapSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import { Source } from '@/redux/swap';
+import { Source } from '@/raps/references';
 import Routes from '@/navigation/routesNames';
 import { deviceUtils } from '@/utils';
 import { IS_ANDROID } from '@/env';
