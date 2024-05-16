@@ -23,7 +23,12 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { convertRawAmountToDecimalFormat } from '@/__swaps__/utils/numbers';
 import { NavigationSteps } from './useSwapNavigation';
 import { RainbowError, logger } from '@/logger';
-import { externalTokenQueryKey, fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
+import {
+  EXTERNAL_TOKEN_STALE_TIME,
+  ExternalTokenQueryFunctionResult,
+  externalTokenQueryKey,
+  fetchExternalToken,
+} from '@/resources/assets/externalAssetsQuery';
 import { ethereumUtils } from '@/utils';
 import { queryClient } from '@/react-query';
 
@@ -230,23 +235,21 @@ export function useSwapInputsController({
     ]
   );
 
-  const fetchAndUpdatePrices = async ({
-    inputAsset,
-    outputAsset,
-  }: {
-    inputAsset: ExtendedAnimatedAssetWithColors | null;
-    outputAsset: ExtendedAnimatedAssetWithColors | null;
-  }) => {
-    const updateNativePriceForAsset = ({ price, type }: { price: number; type: string }) => {
+  const updateNativePriceForAsset = useCallback(
+    ({ price, type }: { price: number; type: string }) => {
       'worklet';
+
       if (type === 'inputAsset') {
         internalSelectedInputAsset.modify(prev => ({ ...prev, nativePrice: price }));
       } else if (type === 'outputAsset') {
         internalSelectedOutputAsset.modify(prev => ({ ...prev, nativePrice: price }));
       }
-    };
+    },
+    [internalSelectedInputAsset, internalSelectedOutputAsset]
+  );
 
-    const getAssetNativePrice = async ({ asset, type }: { asset: ExtendedAnimatedAssetWithColors | null; type: string }) => {
+  const getAssetNativePrice = useCallback(
+    async ({ asset, type }: { asset: ExtendedAnimatedAssetWithColors | null; type: string }) => {
       if (!asset) return;
 
       const address = asset.address;
@@ -270,31 +273,51 @@ export function useSwapInputsController({
         }
       } catch (error) {
         logger.error(new RainbowError('[useSwapInputsController]: get asset prices failed'));
-        const cachedData = await queryClient.getQueryData<ReturnType<typeof fetchExternalToken>>(
-          externalTokenQueryKey({ address, network, currency })
-        );
-        if (cachedData?.price.value) {
+
+        const now = Date.now();
+        const state = queryClient.getQueryState<ExternalTokenQueryFunctionResult>(externalTokenQueryKey({ address, network, currency }));
+        const price = state?.data?.price.value;
+        if (price) {
+          const updatedAt = state.dataUpdatedAt;
+          // NOTE: if the data is older than 60 seconds, we need to invalidate it and not use it
+          if (now - updatedAt > EXTERNAL_TOKEN_STALE_TIME) {
+            queryClient.invalidateQueries(externalTokenQueryKey({ address, network, currency }));
+            return;
+          }
+
           runOnUI(updateNativePriceForAsset)({
-            price: cachedData.price.value,
+            price,
             type,
           });
         }
       }
-    };
+    },
+    [updateNativePriceForAsset]
+  );
 
-    return Promise.all(
-      [
-        {
-          asset: inputAsset,
-          type: 'inputAsset',
-        },
-        {
-          asset: outputAsset,
-          type: 'outputAsset',
-        },
-      ].map(getAssetNativePrice)
-    );
-  };
+  const fetchAndUpdatePrices = useCallback(
+    async ({
+      inputAsset,
+      outputAsset,
+    }: {
+      inputAsset: ExtendedAnimatedAssetWithColors | null;
+      outputAsset: ExtendedAnimatedAssetWithColors | null;
+    }) => {
+      return Promise.all(
+        [
+          {
+            asset: inputAsset,
+            type: 'inputAsset',
+          },
+          {
+            asset: outputAsset,
+            type: 'outputAsset',
+          },
+        ].map(getAssetNativePrice)
+      );
+    },
+    [getAssetNativePrice]
+  );
 
   const fetchAndUpdateQuote = async ({
     inputAmount,

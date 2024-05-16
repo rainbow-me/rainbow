@@ -147,9 +147,10 @@ export function useSwapNavigation({
     } else {
       handleShowReview();
     }
-  }, [SwapInputController, configProgress, handleDismissGas, handleDismissReview, handleShowReview, navigateBackToReview]);
+  }, [configProgress, handleDismissGas, handleDismissReview, handleShowReview, navigateBackToReview]);
 
   return {
+    navigateBackToReview,
     handleExitSearch,
     handleFocusInputSearch,
     handleFocusOutputSearch,
@@ -160,6 +161,5 @@ export function useSwapNavigation({
     handleShowGas,
     handleDismissGas,
     handleSwapAction,
-    navigateBackToReview,
   };
 }
