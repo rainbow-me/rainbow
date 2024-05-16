@@ -109,7 +109,9 @@ export const AmimatedSwapCoinIcon = React.memo(function FeedCoinIcon({
           />
         </Animated.View>
 
-        <Animated.View style={[animatedFallbackStyles, sx.coinIconFallback]}>
+        <Animated.View
+          style={[animatedFallbackStyles, small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback]}
+        >
           <SwapCoinIconTextFallback
             asset={asset}
             height={small ? 16 : large ? 36 : 32}
