@@ -13,6 +13,7 @@ const springAnimations = createSpringConfigs({
   browserTabTransition: { dampingRatio: 0.82, duration: 800 },
   keyboardConfig: { damping: 500, mass: 3, stiffness: 1000 },
   sliderConfig: { damping: 40, mass: 1.25, stiffness: 450 },
+  slowSpring: { damping: 500, mass: 3, stiffness: 800 },
   snappierSpringConfig: { damping: 42, mass: 0.8, stiffness: 800 },
   snappySpringConfig: { damping: 100, mass: 0.8, stiffness: 275 },
   springConfig: { damping: 100, mass: 1.2, stiffness: 750 },

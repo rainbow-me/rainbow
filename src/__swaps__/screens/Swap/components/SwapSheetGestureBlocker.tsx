@@ -13,18 +13,19 @@ export const SwapSheetGestureBlocker = ({
   children: React.ReactNode;
   preventScrollViewDismissal?: boolean;
 }) => {
-  const { reviewProgress, inputProgress, outputProgress } = useSwapContext();
+  const { configProgress, inputProgress, outputProgress } = useSwapContext();
   const [enabled, setEnabled] = useState<boolean>(false);
 
   useAnimatedReaction(
     () => ({
-      reviewProgress: reviewProgress.value,
+      configProgress: configProgress.value,
       inputProgress: inputProgress.value,
       outputProgress: outputProgress.value,
     }),
     current => {
       runOnJS(setEnabled)(
-        current.reviewProgress === NavigationSteps.SHOW_REVIEW ||
+        current.configProgress === NavigationSteps.SHOW_REVIEW ||
+          current.configProgress === NavigationSteps.SHOW_GAS ||
           current.inputProgress !== NavigationSteps.INPUT_ELEMENT_FOCUSED ||
           current.outputProgress !== NavigationSteps.INPUT_ELEMENT_FOCUSED
       );

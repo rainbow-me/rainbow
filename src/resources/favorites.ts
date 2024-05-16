@@ -138,8 +138,6 @@ export async function toggleFavorite(address: string) {
   }
   const metadata = await fetchMetadata(updatedFavorites);
 
-  console.log(metadata);
-
   queryClient.setQueryData(favoritesQueryKey, metadata);
 }
 

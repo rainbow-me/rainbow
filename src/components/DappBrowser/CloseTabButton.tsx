@@ -10,6 +10,7 @@ import { TIMING_CONFIGS } from '../animations/animationConfigs';
 import { useBrowserContext } from './BrowserContext';
 import { useBrowserWorkletsContext } from './BrowserWorkletsContext';
 import { TAB_VIEW_COLUMN_WIDTH } from './Dimensions';
+import { RAINBOW_HOME } from './constants';
 
 export const X_BUTTON_SIZE = 22;
 export const X_BUTTON_PADDING = 6;
@@ -27,14 +28,14 @@ interface CloseTabButtonProps {
   animatedTabIndex: SharedValue<number>;
   gestureScale: SharedValue<number>;
   gestureX: SharedValue<number>;
-  isOnHomepage: boolean;
   tabId: string;
 }
 
-export const CloseTabButton = ({ animatedTabIndex, gestureScale, gestureX, isOnHomepage, tabId }: CloseTabButtonProps) => {
+export const CloseTabButton = ({ animatedTabIndex, gestureScale, gestureX, tabId }: CloseTabButtonProps) => {
   const {
     animatedActiveTabIndex,
     animatedMultipleTabsOpen,
+    animatedTabUrls,
     currentlyBeingClosedTabIds,
     currentlyOpenTabIds,
     multipleTabsOpen,
@@ -46,7 +47,7 @@ export const CloseTabButton = ({ animatedTabIndex, gestureScale, gestureX, isOnH
 
   const closeButtonStyle = useAnimatedStyle(() => {
     const progress = tabViewProgress?.value || 0;
-    const animatedIsActiveTab = animatedActiveTabIndex?.value === animatedTabIndex.value;
+    const animatedIsActiveTab = animatedActiveTabIndex.value === animatedTabIndex.value;
 
     // Switch to using progress-based interpolation when the tab view is
     // entered. This is mainly to avoid showing the close button in the
@@ -61,7 +62,8 @@ export const CloseTabButton = ({ animatedTabIndex, gestureScale, gestureX, isOnH
     const buttonPadding = multipleTabsOpen.value ? SCALE_ADJUSTED_X_BUTTON_PADDING : SCALE_ADJUSTED_X_BUTTON_PADDING_SINGLE_TAB;
     const buttonSize = multipleTabsOpen.value ? SCALE_ADJUSTED_X_BUTTON_SIZE : SCALE_ADJUSTED_X_BUTTON_SIZE_SINGLE_TAB;
 
-    const isEmptyState = isOnHomepage && !multipleTabsOpen.value;
+    const url = animatedTabUrls.value[tabId] || RAINBOW_HOME;
+    const isEmptyState = !multipleTabsOpen.value && url === RAINBOW_HOME;
     const opacity = isEmptyState ? withTiming(0, TIMING_CONFIGS.tabPressConfig) : withTiming(1, TIMING_CONFIGS.tabPressConfig);
     const pointerEvents = tabViewVisible.value && !isEmptyState ? 'auto' : 'none';
 

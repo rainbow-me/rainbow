@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { Source } from 'react-native-fast-image';
-import Animated, { SharedValue, useAnimatedProps, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import Animated, { DerivedValue, SharedValue, useAnimatedProps, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import GoogleSearchIcon from '@/assets/googleSearchIcon.png';
 import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -12,6 +12,7 @@ import { useDimensions } from '@/hooks';
 import { Dapp } from '@/resources/metadata/dapps';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useSearchContext } from '../SearchContext';
+import * as i18n from '@/languages';
 
 export const SearchResult = ({ index, goToUrl }: { index: number; goToUrl: (url: string) => void }) => {
   const { searchResults } = useSearchContext();
@@ -43,6 +44,9 @@ export const SearchResult = ({ index, goToUrl }: { index: number; goToUrl: (url:
 
   const onPress = useCallback(() => url.value && goToUrl(url.value), [goToUrl, url.value]);
 
+  const fallbackIconStyle = useAnimatedStyle(() => {
+    return { display: dapp.value?.iconUrl ? 'none' : 'flex' };
+  });
   return (
     <Animated.View style={animatedStyle}>
       <Box
@@ -66,8 +70,11 @@ export const SearchResult = ({ index, goToUrl }: { index: number; goToUrl: (url:
         <Inline space="12px" alignVertical="center" wrap={false}>
           <Box width={{ custom: 40 }} height={{ custom: 40 }}>
             <Box style={styles.iconContainer}>
+              <Animated.View style={[{ width: 40, height: 40, justifyContent: 'center' }, fallbackIconStyle]}>
+                <AnimatedText color="labelQuaternary" size="icon 28px" weight="black" staticText="􀎭" align="center" />
+              </Animated.View>
               {/* ⚠️ TODO: This works but we should figure out how to type this correctly to avoid this error */}
-              {/* @ts-expect-error: Doesn't pick up that its getting a source prop via animatedProps */}
+              {/* @ts-expect-error: Doesn't pick up that it's getting a source prop via animatedProps */}
               <AnimatedFasterImage animatedProps={animatedIconSource} style={styles.iconImage} />
             </Box>
           </Box>
@@ -87,42 +94,58 @@ export const SearchResult = ({ index, goToUrl }: { index: number; goToUrl: (url:
   );
 };
 
-export const GoogleSearchResult = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
+const searchText = i18n.t(i18n.l.dapp_browser.search.search);
+
+export const GoogleSearchResult = ({
+  goToUrl,
+  shouldShowGoogleSearch,
+}: {
+  goToUrl: (url: string) => void;
+  shouldShowGoogleSearch: DerivedValue<boolean>;
+}) => {
   const { searchQuery } = useSearchContext();
   const { width: deviceWidth } = useDimensions();
 
-  const animatedText = useDerivedValue(() => `Search "${searchQuery?.value}"`);
+  const animatedText = useDerivedValue(() => `${searchText} "${searchQuery?.value}"`);
 
   const onPress = useCallback(
     () => searchQuery && goToUrl(`https://www.google.com/search?q=${encodeURIComponent(searchQuery.value)}`),
     [goToUrl, searchQuery]
   );
 
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      display: shouldShowGoogleSearch?.value ? 'flex' : 'none',
+    };
+  });
+
   return (
-    <Box as={ButtonPressAnimation} padding="8px" borderRadius={18} scaleTo={0.95} onPress={onPress}>
-      <Inline space="12px" alignVertical="center" wrap={false}>
-        <Box
-          alignItems="center"
-          justifyContent="center"
-          style={{ backgroundColor: globalColors.white100 }}
-          width={{ custom: 40 }}
-          height={{ custom: 40 }}
-          borderRadius={10}
-        >
-          <ImgixImage source={GoogleSearchIcon as Source} style={{ width: 30, height: 30 }} size={30} />
-        </Box>
-        <Box width={{ custom: deviceWidth - 100 }}>
-          <Stack space="10px">
-            <AnimatedText size="17pt" weight="bold" color="label" numberOfLines={1}>
-              {animatedText}
-            </AnimatedText>
-            <Text size="13pt" weight="bold" color="labelTertiary">
-              Google
-            </Text>
-          </Stack>
-        </Box>
-      </Inline>
-    </Box>
+    <Animated.View style={animatedStyle}>
+      <Box as={ButtonPressAnimation} padding="8px" borderRadius={18} scaleTo={0.95} onPress={onPress}>
+        <Inline space="12px" alignVertical="center" wrap={false}>
+          <Box
+            alignItems="center"
+            justifyContent="center"
+            style={{ backgroundColor: globalColors.white100 }}
+            width={{ custom: 40 }}
+            height={{ custom: 40 }}
+            borderRadius={10}
+          >
+            <ImgixImage source={GoogleSearchIcon as Source} style={{ width: 30, height: 30 }} size={30} />
+          </Box>
+          <Box width={{ custom: deviceWidth - 100 }}>
+            <Stack space="10px">
+              <AnimatedText size="17pt" weight="bold" color="label" numberOfLines={1}>
+                {animatedText}
+              </AnimatedText>
+              <Text size="13pt" weight="bold" color="labelTertiary">
+                Google
+              </Text>
+            </Stack>
+          </Box>
+        </Inline>
+      </Box>
+    </Animated.View>
   );
 };
 

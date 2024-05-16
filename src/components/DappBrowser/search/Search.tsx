@@ -3,17 +3,9 @@ import { globalColors, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { useKeyboardHeight } from '@/hooks';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, {
-  SharedValue,
-  dispatchCommand,
-  interpolate,
-  runOnJS,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import Animated, { SharedValue, runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useBrowserContext } from '../BrowserContext';
 import { GOOGLE_SEARCH_URL, HTTP, HTTPS } from '../constants';
 import { AccountIcon } from '../search-input/AccountIcon';
@@ -26,8 +18,9 @@ import { SearchResults } from './results/SearchResults';
 import { useSearchContext } from './SearchContext';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { DappsContextProvider } from '@/resources/metadata/dapps';
+import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 
-export const Search = React.memo(function Search() {
+export const Search = () => {
   const { goToUrl, searchViewProgress, tabViewProgress, tabViewVisible } = useBrowserContext();
   const { toggleTabViewWorklet } = useBrowserWorkletsContext();
   const { inputRef, keyboardHeight, searchQuery, searchResults } = useSearchContext();
@@ -39,20 +32,18 @@ export const Search = React.memo(function Search() {
   const barStyle = useAnimatedStyle(() => {
     const opacity = 1 - tabViewProgress.value / 75;
     return {
-      display: opacity <= 0 ? 'none' : 'flex',
       opacity,
       pointerEvents: tabViewVisible.value ? 'none' : 'auto',
-      transform: [{ scale: interpolate(tabViewProgress.value, [0, 100], [1, 0.95]) }],
     };
   });
 
   const expensiveBarStyles = useAnimatedStyle(() => ({
-    paddingLeft: withSpring(isFocusedValue.value ? 16 : 72, SPRING_CONFIGS.keyboardConfig),
+    paddingLeft: withSpring(isFocusedValue.value ? 16 : 72, SPRING_CONFIGS.slowSpring),
     pointerEvents: tabViewVisible?.value ? 'none' : 'auto',
   }));
 
   const accountIconStyle = useAnimatedStyle(() => ({
-    opacity: withSpring(isFocusedValue.value ? 0 : 1, SPRING_CONFIGS.keyboardConfig),
+    opacity: withSpring(isFocusedValue.value ? 0 : 1, SPRING_CONFIGS.slowSpring),
     pointerEvents: isFocusedValue.value ? 'none' : 'auto',
   }));
 
@@ -62,7 +53,7 @@ export const Search = React.memo(function Search() {
     return {
       transform: [
         {
-          translateY: withSpring(translateY, SPRING_CONFIGS.keyboardConfig),
+          translateY: withSpring(translateY, SPRING_CONFIGS.slowSpring),
         },
       ],
     };
@@ -112,12 +103,16 @@ export const Search = React.memo(function Search() {
     [goToUrl, searchResults]
   );
 
+  const focusInput = useCallback(() => {
+    inputRef.current?.focus();
+  }, [inputRef]);
+
   const onAddressInputPressWorklet = useCallback(() => {
     'worklet';
     isFocusedValue.value = true;
     searchViewProgress.value = withSpring(1, SPRING_CONFIGS.snappierSpringConfig);
-    dispatchCommand(inputRef, 'focus');
-  }, [inputRef, isFocusedValue, searchViewProgress]);
+    runOnJS(focusInput)();
+  }, [focusInput, isFocusedValue, searchViewProgress]);
 
   const onBlur = useCallback(() => {
     'worklet';
@@ -156,19 +151,12 @@ export const Search = React.memo(function Search() {
       </Animated.View>
     </>
   );
-});
+};
 
 const KeyboardHeightSetter = ({ isFocused }: { isFocused: SharedValue<boolean> }) => {
   const { keyboardHeight } = useSearchContext();
-  const [isFocusedState, setIsFocusedState] = useState(false);
 
-  useSyncSharedValue({
-    setState: setIsFocusedState,
-    sharedValue: isFocused,
-    state: isFocusedState,
-    syncDirection: 'sharedValueToState',
-  });
-
+  const isFocusedState = useSharedValueState(isFocused);
   const trueKeyboardHeight = useKeyboardHeight({ shouldListen: isFocusedState });
 
   useSyncSharedValue({

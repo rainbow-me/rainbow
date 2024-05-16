@@ -1,17 +1,10 @@
 import { PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
-import Animated, {
-  runOnJS,
-  runOnUI,
-  useAnimatedGestureHandler,
-  useAnimatedReaction,
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
-import { useSwapContext } from '../../providers/swap-provider';
+import { useAnimatedGestureHandler, useSharedValue } from 'react-native-reanimated';
+import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
-export const useSwapActionsGestureHandler = () => {
+export const useBottomPanelGestureHandler = () => {
   const gestureY = useSharedValue(0);
-  const { SwapNavigation } = useSwapContext();
+  const { SwapNavigation, configProgress } = useSwapContext();
 
   const swipeToDismissGestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
     onStart: (_, ctx: { startY?: number }) => {
@@ -32,7 +25,11 @@ export const useSwapActionsGestureHandler = () => {
 
       const isBeyondDismissThreshold = yDelta > 80;
       if (isBeyondDismissThreshold) {
-        SwapNavigation.handleDismissReview();
+        if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
+          SwapNavigation.handleDismissReview();
+        } else if (configProgress.value === NavigationSteps.SHOW_GAS) {
+          SwapNavigation.handleDismissGas();
+        }
       }
       gestureY.value = 0;
     },

@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
-import Animated, { SharedValue, useAnimatedReaction, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import Animated, { SharedValue, useAnimatedReaction, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Box, Inline, Inset, Stack, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
 import { Dapp, useDappsContext } from '@/resources/metadata/dapps';
@@ -8,8 +8,10 @@ import { useBrowserContext } from '../../BrowserContext';
 import { SEARCH_BAR_HEIGHT } from '../../search-input/SearchInput';
 import { useSearchContext } from '../SearchContext';
 import { GoogleSearchResult, SearchResult } from './SearchResult';
-import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { isValidURLWorklet } from '../../utils';
+import * as i18n from '@/languages';
 
 const search = (query: string, dapps: Dapp[], numberOfResults = 4): Dapp[] => {
   'worklet';
@@ -47,6 +49,10 @@ const search = (query: string, dapps: Dapp[], numberOfResults = 4): Dapp[] => {
     })
     .filter(dapp => dapp !== null)
     .sort((a, b) => {
+      // Prioritize trending
+      if (b?.trending === true && a?.trending !== true) return 1;
+      if (a?.trending === true && b?.trending !== true) return -1;
+
       // @ts-expect-error: Need to fix these types
       const relevanceDiff = b.relevance - a.relevance;
       if (relevanceDiff === 0) {
@@ -59,6 +65,11 @@ const search = (query: string, dapps: Dapp[], numberOfResults = 4): Dapp[] => {
       return relevanceDiff;
     })
     .slice(0, numberOfResults);
+
+  // if the query is a valid URL and is not already in the results, add it to the results
+  if (isValidURLWorklet(query) && !filteredDapps.some(dapp => dapp?.url === query)) {
+    return [{ url: query, urlDisplay: query, name: query, isDirect: true } as unknown as Dapp, ...(filteredDapps as Dapp[])];
+  }
 
   // @ts-expect-error: Same here
   return filteredDapps;
@@ -73,10 +84,10 @@ export const SearchResults = React.memo(function SearchResults({
 }) {
   const { isDarkMode } = useColorMode();
   const { searchViewProgress } = useBrowserContext();
-  const { inputRef, keyboardHeight, searchQuery, searchResults } = useSearchContext();
+  const { inputRef, keyboardHeight, searchQuery, searchResults, shouldShowGoogleSearch } = useSearchContext();
   const { dapps } = useDappsContext();
 
-  const backgroundStyle = useAnimatedStyle(() => ({
+  const animatedSearchContainerStyle = useAnimatedStyle(() => ({
     opacity: searchViewProgress.value,
     pointerEvents: isFocused.value ? 'auto' : 'none',
   }));
@@ -90,7 +101,13 @@ export const SearchResults = React.memo(function SearchResults({
     (result, previous) => {
       if (result !== previous && isFocused.value) {
         searchResults.modify(value => {
-          const results = search(result, dapps);
+          const results = search(result, dapps, 4);
+          // If the first result is a direct match, don't show the google search
+          if (results[0]?.isDirect) {
+            shouldShowGoogleSearch.value = false;
+          } else {
+            shouldShowGoogleSearch.value = true;
+          }
           value.splice(0, value.length);
           value.push(...results);
           return value;
@@ -108,7 +125,7 @@ export const SearchResults = React.memo(function SearchResults({
   }));
 
   const suggestedGoogleSearchAnimatedStyle = useAnimatedStyle(() => ({
-    display: searchResults.value.length ? 'none' : 'flex',
+    display: searchResults.value.length || !shouldShowGoogleSearch.value ? 'none' : 'flex',
   }));
 
   const closeButtonAnimatedStyle = useAnimatedStyle(() => ({
@@ -126,20 +143,14 @@ export const SearchResults = React.memo(function SearchResults({
   }));
 
   return (
-    <Box
-      as={Animated.View}
-      height="full"
-      width="full"
-      position="absolute"
+    <Animated.View
       style={[
-        backgroundStyle,
-        {
-          backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD',
-          paddingTop: 60,
-        },
+        styles.searchContainer,
+        isDarkMode ? styles.searchBackgroundDark : styles.searchBackgroundLight,
+        animatedSearchContainerStyle,
       ]}
     >
-      <Animated.View style={[closeButtonAnimatedStyle, styles.closeButton]}>
+      <Animated.View style={[styles.closeButton, closeButtonAnimatedStyle]}>
         <Box
           as={ButtonPressAnimation}
           background="fill"
@@ -156,13 +167,13 @@ export const SearchResults = React.memo(function SearchResults({
           </Text>
         </Box>
       </Animated.View>
-      <Animated.View style={[emptyStateAnimatedStyle, styles.emptyStateContainer]}>
+      <Animated.View style={[styles.emptyStateContainer, emptyStateAnimatedStyle]}>
         <Stack alignHorizontal="center" space="24px">
           <Text align="center" color="labelQuaternary" size="34pt" weight="heavy">
             􀊫
           </Text>
           <Text align="center" color="labelQuaternary" size="17pt" weight="heavy">
-            Find apps and more
+            {i18n.t(i18n.l.dapp_browser.search.find_apps_and_more)}
           </Text>
         </Stack>
       </Animated.View>
@@ -170,26 +181,12 @@ export const SearchResults = React.memo(function SearchResults({
         <ScrollView style={{ paddingHorizontal: 16 }} contentContainerStyle={{ paddingBottom: SEARCH_BAR_HEIGHT }}>
           <Inset>
             <Stack space="32px">
-              {/* <Box gap={12}> */}
-              {/* <Inset horizontal="8px" vertical={{ custom: 9 }}>
-                  <Inline alignHorizontal="justify" alignVertical="center">
-                    <Inline space="6px" alignVertical="center">
-                      <TextIcon color="blue" size="icon 15px" weight="heavy" width={20}>
-                        􀐫
-                      </TextIcon>
-                      <Text weight="heavy" color="label" size="20pt">
-                        Suggested
-                      </Text>
-                    </Inline>
-                  </Inline>
-                </Inset> */}
               <Box paddingTop={{ custom: 42 }}>
                 <SearchResult index={0} goToUrl={goToUrl} />
                 <Animated.View style={suggestedGoogleSearchAnimatedStyle}>
-                  <GoogleSearchResult goToUrl={goToUrl} />
+                  <GoogleSearchResult goToUrl={goToUrl} shouldShowGoogleSearch={shouldShowGoogleSearch} />
                 </Animated.View>
               </Box>
-              {/* </Box> */}
               <Animated.View style={moreResultsAnimatedStyle}>
                 <Stack space="12px">
                   <Inset horizontal="8px">
@@ -198,12 +195,12 @@ export const SearchResults = React.memo(function SearchResults({
                         􀊫
                       </TextIcon>
                       <Text color="label" size="20pt" weight="heavy">
-                        More Results
+                        {i18n.t(i18n.l.dapp_browser.search.more_results)}
                       </Text>
                     </Inline>
                   </Inset>
                   <Box gap={6}>
-                    <GoogleSearchResult goToUrl={goToUrl} />
+                    <GoogleSearchResult goToUrl={goToUrl} shouldShowGoogleSearch={shouldShowGoogleSearch} />
                     <SearchResult index={1} goToUrl={goToUrl} />
                     <SearchResult index={2} goToUrl={goToUrl} />
                     <SearchResult index={3} goToUrl={goToUrl} />
@@ -216,7 +213,7 @@ export const SearchResults = React.memo(function SearchResults({
           </Inset>
         </ScrollView>
       </Animated.View>
-    </Box>
+    </Animated.View>
   );
 });
 
@@ -239,5 +236,17 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     top: 0,
+  },
+  searchContainer: {
+    height: DEVICE_HEIGHT,
+    paddingTop: 60,
+    position: 'absolute',
+    width: DEVICE_WIDTH,
+  },
+  searchBackgroundDark: {
+    backgroundColor: globalColors.grey100,
+  },
+  searchBackgroundLight: {
+    backgroundColor: '#FBFCFD',
   },
 });

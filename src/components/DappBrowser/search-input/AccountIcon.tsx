@@ -13,6 +13,7 @@ import { getDappHost } from '../handleProviderRequest';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useBrowserContext } from '../BrowserContext';
+import { DEFAULT_TAB_URL, RAINBOW_HOME } from '../constants';
 
 export const AccountIcon = React.memo(function AccountIcon() {
   const { navigate } = useNavigation();
@@ -22,23 +23,32 @@ export const AccountIcon = React.memo(function AccountIcon() {
   const [currentAddress, setCurrentAddress] = useState<string>(accountAddress);
 
   const { activeTabRef } = useBrowserContext();
-  const activeTabHost = useBrowserStore(state => getDappHost(state.getActiveTabUrl()));
-  const currentSession = useAppSessionsStore(state => state.getActiveSession({ host: activeTabHost })) || '';
+  const activeTabHost = useBrowserStore(state => getDappHost(state.getActiveTabUrl())) || DEFAULT_TAB_URL;
+  const isOnHomepage = useBrowserStore(state => (state.getActiveTabUrl() || DEFAULT_TAB_URL) === RAINBOW_HOME);
+  const hostSessions = useAppSessionsStore(state => state.getActiveSession({ host: activeTabHost }));
+  const currentSession = useMemo(
+    () =>
+      hostSessions && hostSessions.sessions?.[hostSessions.activeSessionAddress]
+        ? {
+            address: hostSessions.activeSessionAddress,
+            network: hostSessions.sessions[hostSessions.activeSessionAddress],
+          }
+        : null,
+    [hostSessions]
+  );
 
   // listens to the current active tab and sets the account
   useEffect(() => {
-    if (activeTabHost) {
-      if (!currentSession) {
-        return;
-      }
-
+    if (activeTabHost || isOnHomepage) {
       if (currentSession?.address) {
         setCurrentAddress(currentSession?.address);
+      } else if (hostSessions?.activeSessionAddress) {
+        setCurrentAddress(hostSessions.activeSessionAddress);
       } else {
         setCurrentAddress(accountAddress);
       }
     }
-  }, [accountAddress, activeTabHost, currentSession]);
+  }, [accountAddress, activeTabHost, currentSession, hostSessions?.activeSessionAddress, isOnHomepage]);
 
   const accountInfo = useMemo(() => {
     const selectedWallet = findWalletWithAccount(wallets || {}, currentAddress);
@@ -56,7 +66,7 @@ export const AccountIcon = React.memo(function AccountIcon() {
 
   return (
     <Bleed space="8px">
-      <ButtonPressAnimation onPress={handleOnPress} scaleTo={0.8}>
+      <ButtonPressAnimation onPress={handleOnPress} scaleTo={0.8} overflowMargin={30}>
         {accountInfo?.accountImage ? (
           <ImageAvatar image={accountInfo.accountImage} size="signing" />
         ) : (

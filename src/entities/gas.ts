@@ -1,3 +1,5 @@
+import { GasFeeLegacyParams } from '@/__swaps__/types/gas';
+
 type Numberish = number | string;
 
 export interface Fee {
