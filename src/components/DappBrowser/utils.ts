@@ -101,8 +101,9 @@ export function generateUniqueIdWorklet(): string {
   return `${timestamp}${randomString}`;
 }
 
-export const getNameFromFormattedUrl = (formattedUrl: string): string => {
-  const parts = formattedUrl.split('.');
+export const getNameFromFormattedUrl = (formattedUrl: string, needsFormatting?: boolean): string => {
+  const url = needsFormatting ? formatUrl(formattedUrl, false, true, true) : formattedUrl;
+  const parts = url.split('.');
   let name;
   if (parts.length > 2 && parts[parts.length - 2].length <= 2) {
     name = parts[parts.length - 3];
