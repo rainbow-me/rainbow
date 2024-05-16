@@ -26,14 +26,16 @@ const smallFallbackIconStyle = {
   position: 'absolute' as ViewStyle['position'],
 };
 
-export const SwapCoinIcon = React.memo(function FeedCoinIcon({
+export const AmimatedSwapCoinIcon = React.memo(function FeedCoinIcon({
   asset,
   large,
   small,
+  showBadge = true,
 }: {
   asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   large?: boolean;
   small?: boolean;
+  showBadge?: boolean;
 }) {
   const { isDarkMode, colors } = useTheme();
 
@@ -117,7 +119,7 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
         </Animated.View>
       </Animated.View>
 
-      <AnimatedChainImage asset={asset} size={16} />
+      {showBadge && <AnimatedChainImage asset={asset} size={16} />}
     </View>
   );
 });

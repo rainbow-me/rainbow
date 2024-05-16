@@ -75,8 +75,7 @@ export function AnimatedChainImage({ asset, size = 20 }: { asset: SharedValue<Ex
       return base;
     }
 
-    // fallback to static network badge data
-    // TODO: How can we reference local static pngs here?
+    // TODO: How can we reference local static pngs here?+
     base.source.url = `file://${networkBadges[asset.value.chainId]}`;
     return base;
   });
