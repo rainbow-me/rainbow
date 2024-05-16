@@ -3,7 +3,7 @@ import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { borders } from '@/styles';
 import { useTheme } from '@/theme';
-import Animated, { SharedValue, useAnimatedProps, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { SharedValue, useAnimatedProps, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
@@ -37,8 +37,9 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
 }) {
   const { isDarkMode, colors } = useTheme();
 
+  const imageLoadingError = useSharedValue(false);
+
   const animatedIconSource = useAnimatedProps(() => {
-    console.log({ iconUrl: asset.value?.icon_url });
     return {
       source: {
         ...DEFAULT_FASTER_IMAGE_CONFIG,
@@ -54,18 +55,22 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
   });
 
   const animatedCoinIconStyles = useAnimatedStyle(() => {
+    const showFallback = imageLoadingError.value || !asset.value?.icon_url;
+
     return {
-      display: asset.value?.icon_url ? 'flex' : 'none',
-      pointerEvents: asset.value?.icon_url ? 'auto' : 'none',
-      opacity: withTiming(asset.value?.icon_url ? 1 : 0, fadeConfig),
+      display: showFallback ? 'none' : 'flex',
+      pointerEvents: showFallback ? 'none' : 'auto',
+      opacity: withTiming(showFallback ? 0 : 1, fadeConfig),
     };
   });
 
   const animatedFallbackStyles = useAnimatedStyle(() => {
+    const showFallback = imageLoadingError.value || !asset.value?.icon_url;
+
     return {
-      display: asset.value?.icon_url ? 'none' : 'flex',
-      pointerEvents: asset.value?.icon_url ? 'none' : 'auto',
-      opacity: withTiming(asset.value?.icon_url ? 0 : 1, fadeConfig),
+      display: showFallback ? 'flex' : 'none',
+      pointerEvents: showFallback ? 'auto' : 'none',
+      opacity: withTiming(showFallback ? 1 : 0, fadeConfig),
     };
   });
 
@@ -83,6 +88,14 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
           {/* @ts-expect-error missing props "source" */}
           <AnimatedFasterImage
             animatedProps={animatedIconSource}
+            onError={() => {
+              'worklet';
+              imageLoadingError.value = true;
+            }}
+            onSuccess={() => {
+              'worklet';
+              imageLoadingError.value = false;
+            }}
             style={[
               sx.coinIcon,
               {

@@ -1,8 +1,5 @@
-import React, { useMemo } from 'react';
-import { Image, ImageSourcePropType, StyleSheet, View } from 'react-native';
-
-import { IS_IOS } from '@/env';
-import { Network } from '@/helpers';
+import React from 'react';
+import { Image, StyleSheet, View } from 'react-native';
 
 import ArbitrumBadge from '@/assets/badges/arbitrum.png';
 import BaseBadge from '@/assets/badges/base.png';
@@ -73,16 +70,15 @@ export function AnimatedChainImage({ asset, size = 20 }: { asset: SharedValue<Ex
     }
 
     const url = getCustomChainIconUrlWorklet(asset.value.chainId, asset.value.address);
-    console.log(url);
     if (url) {
       base.source.url = url;
       return base;
     }
 
     // fallback to static network badge data
-    base.source.url = `file://${networkBadges[asset.value.chainId]}`;
-
-    console.log(base);
+    const path = Image.resolveAssetSource(networkBadges[asset.value.chainId]).uri;
+    console.log({ path });
+    base.source.url = `file://${path}`;
     return base;
   });
 

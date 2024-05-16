@@ -17,7 +17,7 @@ import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { isSameAssetWorklet } from '@/__swaps__/utils/assets';
 import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
-import { SwapCoinIcon } from './SwapCoinIcon';
+import { SwapCoinIcon } from './AnimatedSwapCoinIcon';
 
 function SwapOutputActionButton() {
   const { isDarkMode } = useColorMode();
