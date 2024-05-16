@@ -22,7 +22,6 @@ import { AddressZero } from '@ethersproject/constants';
 import { ETH_ADDRESS } from '@/references';
 
 const networkBadges = {
-  [ChainId.mainnet]: EthereumBadge,
   [ChainId.polygon]: PolygonBadge,
   [ChainId.optimism]: OptimismBadge,
   [ChainId.arbitrum]: ArbitrumBadge,
@@ -75,8 +74,8 @@ export function AnimatedChainImage({ asset, size = 20 }: { asset: SharedValue<Ex
       return base;
     }
 
-    // TODO: How can we reference local static pngs here?+
-    base.source.url = `file://${networkBadges[asset.value.chainId]}`;
+    // TODO: How can we reference local static pngs here?
+    console.log(networkBadges[asset.value.chainId]);
     return base;
   });
 
