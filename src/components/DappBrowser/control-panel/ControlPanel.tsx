@@ -28,12 +28,12 @@ import {
 import { TextColor } from '@/design-system/color/palettes';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
-import { useAccountSettings, useWalletsWithBalancesAndNames } from '@/hooks';
+import { useAccountSettings, useInitializeWallet, useWallets, useWalletsWithBalancesAndNames } from '@/hooks';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { Network } from '@/networks/types';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { colors } from '@/styles';
-import { deviceUtils } from '@/utils';
+import { deviceUtils, watchingAlert } from '@/utils';
 import ethereumUtils from '@/utils/ethereumUtils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { getHighContrastTextColorWorklet } from '@/worklets/colors';
@@ -44,7 +44,7 @@ import { toHex } from 'viem';
 import { RainbowNetworks } from '@/networks';
 import * as i18n from '@/languages';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import store, { AppState } from '@/redux/store';
 import { getDappHost } from '@/utils/connectedApps';
 import WebView from 'react-native-webview';
@@ -58,6 +58,8 @@ import { useFavoriteDappsStore } from '@/state/favoriteDapps';
 import { Site } from '@/state/browserHistory';
 import WalletTypes from '@/helpers/walletTypes';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
+import { addressSetSelected, walletsSetSelected } from '@/redux/wallets';
 
 const PAGES = {
   HOME: 'home',
@@ -119,7 +121,6 @@ export const ControlPanel = () => {
 
       if (currentSession?.address) {
         setCurrentAddress(currentSession?.address);
-        // setIsConnected(true);
       } else {
         setCurrentAddress(accountAddress);
       }
@@ -379,6 +380,11 @@ const HomePanel = ({
   onConnect: () => void;
   onDisconnect: () => void;
 }) => {
+  const { accountAddress } = useAccountSettings();
+  const { wallets } = useWallets();
+  const initializeWallet = useInitializeWallet();
+  const dispatch = useDispatch();
+
   const actionButtonList = useMemo(() => {
     const walletIcon = selectedWallet?.IconComponent || <></>;
     const walletLabel = selectedWallet?.label || '';
@@ -413,6 +419,54 @@ const HomePanel = ({
     );
   }, [allNetworkItems, animatedAccentColor, goToPage, selectedNetwork, selectedWallet]);
 
+  const runWalletChecksBeforeSwapOrBridge = useCallback(async () => {
+    if (!selectedWallet || !wallets) return false;
+    // check if read only
+    const walletInPanel = findWalletWithAccount(wallets, selectedWallet.uniqueId);
+    if (!walletInPanel) return false;
+    if (walletInPanel?.type === WalletTypes.readOnly) {
+      // show alert
+      watchingAlert();
+      return false;
+    }
+
+    // Check if it's different to the globally selected wallet
+    if (selectedWallet.uniqueId !== accountAddress) {
+      // switch to selected wallet
+      const p1 = dispatch(walletsSetSelected(walletInPanel));
+      const p2 = dispatch(addressSetSelected(selectedWallet.uniqueId));
+      await Promise.all([p1, p2]);
+      initializeWallet(null, null, null, false, false, null, true, null);
+    }
+    return true;
+  }, [accountAddress, dispatch, initializeWallet, selectedWallet, wallets]);
+
+  const handleOnPressSwap = useCallback(async () => {
+    const valid = await runWalletChecksBeforeSwapOrBridge();
+    if (!valid) return;
+    const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(Network.mainnet, selectedWallet?.uniqueId);
+    Navigation.handleAction(Routes.EXCHANGE_MODAL, {
+      fromDiscover: true,
+      params: {
+        inputAsset: mainnetEth,
+      },
+      screen: Routes.MAIN_EXCHANGE_SCREEN,
+    });
+  }, [runWalletChecksBeforeSwapOrBridge, selectedWallet?.uniqueId]);
+
+  const handleOnPressBridge = useCallback(async () => {
+    const valid = await runWalletChecksBeforeSwapOrBridge();
+    if (!valid) return;
+    const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(Network.mainnet, selectedWallet?.uniqueId);
+    Navigation.handleAction(Routes.EXCHANGE_MODAL, {
+      fromDiscover: true,
+      params: {
+        inputAsset: mainnetEth,
+      },
+      screen: Routes.MAIN_EXCHANGE_SCREEN,
+    });
+  }, [runWalletChecksBeforeSwapOrBridge, selectedWallet?.uniqueId]);
+
   const isOnHomepage = useBrowserStore(state => (state.getActiveTabUrl() || DEFAULT_TAB_URL) === RAINBOW_HOME);
 
   return (
@@ -437,31 +491,13 @@ const HomePanel = ({
                 animatedAccentColor={animatedAccentColor}
                 icon="􀖅"
                 label={i18n.t(i18n.l.dapp_browser.control_panel.swap)}
-                onPress={async () => {
-                  const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(Network.mainnet, selectedWallet?.uniqueId);
-                  Navigation.handleAction(Routes.EXCHANGE_MODAL, {
-                    fromDiscover: true,
-                    params: {
-                      inputAsset: mainnetEth,
-                    },
-                    screen: Routes.MAIN_EXCHANGE_SCREEN,
-                  });
-                }}
+                onPress={handleOnPressSwap}
               />
               <ControlPanelButton
                 animatedAccentColor={animatedAccentColor}
                 icon="􀄹"
                 label={i18n.t(i18n.l.dapp_browser.control_panel.bridge)}
-                onPress={async () => {
-                  const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(Network.mainnet, selectedWallet?.uniqueId);
-                  Navigation.handleAction(Routes.EXCHANGE_MODAL, {
-                    fromDiscover: true,
-                    params: {
-                      inputAsset: mainnetEth,
-                    },
-                    screen: Routes.MAIN_EXCHANGE_SCREEN,
-                  });
-                }}
+                onPress={handleOnPressBridge}
               />
               {isOnHomepage ? (
                 <DisabledControlPanelButton icon="􀋦" label={i18n.t(i18n.l.dapp_browser.control_panel.connect)} />
