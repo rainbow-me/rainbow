@@ -13,9 +13,12 @@ import { userAssetsStore } from '@/state/assets/userAssets';
 export const CoinRow2 = ({ assetId, output, onPress }: { assetId: string; output?: boolean; onPress: (assetId: UniqueId) => void }) => {
   const { AnimatedSwapStyles } = useSwapContext();
 
-  const asset = userAssetsStore(state => state.getUserAsset(assetId));
-  const isFavorited = userAssetsStore(state => state.isFavorite(asset.address));
-  const toggleFavorite = userAssetsStore(state => state.toggleFavorite);
+  const name = userAssetsStore(state => state.getUserAsset(assetId).name);
+  const symbol = userAssetsStore(state => state.getUserAsset(assetId).symbol);
+  const balance = userAssetsStore(state => state.getUserAsset(assetId).balance.display);
+  const nativeBalance = userAssetsStore(state => state.getUserAsset(assetId).native.balance.display);
+  const address = userAssetsStore(state => state.getUserAsset(assetId).address);
+  const isFavorited = userAssetsStore(state => state.isFavorite(assetId));
 
   const isTrending = false; // fix this when implementing token to sell list
 
@@ -63,11 +66,11 @@ export const CoinRow2 = ({ assetId, output, onPress }: { assetId: string; output
             /> */}
             <Stack space="10px">
               <Text color="label" size="17pt" weight="semibold">
-                {asset.name}
+                {name}
               </Text>
               <Inline alignVertical="center" space={{ custom: 5 }}>
                 <Text color="labelTertiary" size="13pt" weight="semibold">
-                  {output ? asset.symbol : `${asset.balance.display}`}
+                  {output ? symbol : `${balance}`}
                 </Text>
                 {isTrending && percentChange && (
                   <Inline alignVertical="center" space={{ custom: 1 }}>
@@ -87,13 +90,13 @@ export const CoinRow2 = ({ assetId, output, onPress }: { assetId: string; output
               <CoinRowButton icon="􀅳" outline size="icon 14px" />
               <CoinRowButton
                 color={isFavorited ? '#FFCB0F' : undefined}
-                onPress={() => toggleFavorite(asset.address)}
+                onPress={() => userAssetsStore.getState().toggleFavorite(address)}
                 icon="􀋃"
                 weight="black"
               />
             </Inline>
           ) : (
-            <BalancePill balance={asset.native.balance.display} />
+            <BalancePill balance={nativeBalance} />
           )}
         </Box>
       </HitSlop>
