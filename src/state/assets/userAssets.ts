@@ -131,24 +131,46 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
 );
 
 userAssetsStore.subscribe(
-  state => state.searchQuery,
-  (searchQuery, prevSearchQuery) => {
-    if (searchQuery === prevSearchQuery) {
+  state => ({ searchQuery: state.searchQuery, filter: state.filter }),
+  async ({ searchQuery, filter }, { searchQuery: prevSearchQuery, filter: prevFilter }) => {
+    if (searchQuery === prevSearchQuery && filter === prevFilter) {
       return;
     }
+
     const userAssets = userAssetsStore.getState().userAssets;
     const filteredUserAssetsById: UniqueId[] = [];
 
-    userAssets.forEach(asset => {
-      if (searchQuery) {
-        const stringToSearch = `${asset.name} ${asset.symbol} ${asset.address}`.toLowerCase();
-        if (stringToSearch.includes(searchQuery)) {
+    if (searchQuery !== prevSearchQuery && filter !== prevFilter) {
+      userAssets.forEach(asset => {
+        if (filter === 'all' || asset.chainId === filter) {
+          if (searchQuery) {
+            const stringToSearch = `${asset.name} ${asset.symbol} ${asset.address}`.toLowerCase();
+            if (stringToSearch.includes(searchQuery)) {
+              filteredUserAssetsById.push(asset.uniqueId);
+            }
+          } else {
+            filteredUserAssetsById.push(asset.uniqueId);
+          }
+        }
+      });
+    } else if (searchQuery !== prevSearchQuery) {
+      userAssets.forEach(asset => {
+        if (searchQuery) {
+          const stringToSearch = `${asset.name} ${asset.symbol} ${asset.address}`.toLowerCase();
+          if (stringToSearch.includes(searchQuery)) {
+            filteredUserAssetsById.push(asset.uniqueId);
+          }
+        } else {
           filteredUserAssetsById.push(asset.uniqueId);
         }
-      } else {
-        filteredUserAssetsById.push(asset.uniqueId);
-      }
-    });
+      });
+    } else if (filter !== prevFilter) {
+      userAssets.forEach(asset => {
+        if (filter === 'all' || asset.chainId === filter) {
+          filteredUserAssetsById.push(asset.uniqueId);
+        }
+      });
+    }
 
     userAssetsStore.setState({
       filteredUserAssetsById,

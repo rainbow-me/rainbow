@@ -22,17 +22,20 @@ export const UserAssetsSync = () => {
         }),
       onSuccess: data => {
         const searchQuery = userAssetsStore.getState().searchQuery.toLowerCase();
+        const filter = userAssetsStore.getState().filter;
 
         const filteredUserAssetsById: UniqueId[] = [];
         const userAssets = new Map<UniqueId, ParsedSearchAsset>();
         data.forEach(asset => {
-          if (searchQuery) {
-            const stringToSearch = `${asset.name} ${asset.symbol} ${asset.address}`.toLowerCase();
-            if (stringToSearch.includes(searchQuery)) {
+          if (filter === 'all' || asset.chainId === filter) {
+            if (searchQuery) {
+              const stringToSearch = `${asset.name} ${asset.symbol} ${asset.address}`.toLowerCase();
+              if (stringToSearch.includes(searchQuery)) {
+                filteredUserAssetsById.push(asset.uniqueId);
+              }
+            } else {
               filteredUserAssetsById.push(asset.uniqueId);
             }
-          } else {
-            filteredUserAssetsById.push(asset.uniqueId);
           }
           userAssets.set(asset.uniqueId, asset as ParsedSearchAsset);
         });
