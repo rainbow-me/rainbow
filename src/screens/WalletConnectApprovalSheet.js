@@ -30,6 +30,7 @@ import { useDappMetadata } from '@/resources/metadata/dapp';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { InfoAlert } from '@/components/info-alert/info-alert';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
+import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.3),
@@ -152,16 +153,23 @@ const NetworkPill = ({ chainIds }) => {
 
 export default function WalletConnectApprovalSheet() {
   const { colors, isDarkMode } = useTheme();
-  const { goBack, getState } = useNavigation();
+  const { goBack } = useNavigation();
   const { params } = useRoute();
   const { network, accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
-  const { selectedWallet, walletNames } = useWallets();
+  const { selectedWallet, walletNames, wallets } = useWallets();
   const handled = useRef(false);
-  const [approvalAccount, setApprovalAccount] = useState({
-    address: accountAddress,
-    wallet: selectedWallet,
-  });
+  const initialApprovalAccount = useMemo(
+    () =>
+      params?.meta?.proposedAddress
+        ? { address: params.meta.proposedAddress, wallet: findWalletWithAccount(wallets, params.meta.proposedAddress) }
+        : {
+            address: accountAddress,
+            wallet: selectedWallet,
+          },
+    [accountAddress, params?.meta?.proposedAddress, selectedWallet, wallets]
+  );
+  const [approvalAccount, setApprovalAccount] = useState(initialApprovalAccount);
 
   const type = params?.type || WalletConnectApprovalSheetType.connect;
   const source = params?.source;

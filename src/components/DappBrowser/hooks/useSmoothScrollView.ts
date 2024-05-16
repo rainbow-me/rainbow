@@ -7,7 +7,7 @@ import { useBrowserContext } from '../BrowserContext';
 import { TAB_VIEW_ROW_HEIGHT } from '../Dimensions';
 
 /**
- * ### useSmoothScrollView
+ * ### `useSmoothScrollView`
  *
  * This hook corrects for the jitter that occurs on iOS within the animated browser ScrollView, most noticeably when
  * a tab is closed when the ScrollView is scrolled to the end.

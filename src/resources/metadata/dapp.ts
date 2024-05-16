@@ -9,7 +9,7 @@ import { capitalize } from 'lodash';
 export interface DappMetadata {
   url: string;
   appHost: string;
-  appHostName: string;
+  appHostName?: string;
   appName: string;
   appShortName: string;
   appLogo?: string;
@@ -36,7 +36,7 @@ type DappMetadataQueryKey = ReturnType<typeof DappMetadataQueryKey>;
 
 export async function fetchDappMetadata({ url, status }: { url: string; status: boolean }) {
   const appHostName = url && isValidUrl(url) ? getDappHostname(url) : '';
-  const hardcodedAppName = url && isValidUrl(url) ? getHardcodedDappInformation(appHostName)?.name || '' : '';
+  const hardcodedAppName = url && isValidUrl(url) ? getHardcodedDappInformation(appHostName || getDappHostname(url) || '')?.name || '' : '';
 
   const response = await metadataClient.getdApp({
     shortName: hardcodedAppName,

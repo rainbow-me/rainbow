@@ -217,9 +217,9 @@ const Card = React.memo(function Card({
     const host = new URL(dappUrl).hostname;
     // 👇 TODO: Remove this once the Uniswap logo in the dapps metadata is fixed
     const isUniswap = host === 'uniswap.org' || host.endsWith('.uniswap.org');
-    const overrideFound = dapps.find(dapp => dapp.url.includes(host));
-    if (overrideFound?.iconUrl && !isUniswap) {
-      return overrideFound.iconUrl;
+    const dappOverride = dapps.find(dapp => dapp.urlDisplay === host);
+    if (dappOverride?.iconUrl && !isUniswap) {
+      return dappOverride.iconUrl;
     }
     return iconUrl;
   }, [dapps, site.image, site.url]);
@@ -396,15 +396,7 @@ export const Logo = React.memo(function Logo({ goToUrl, site }: { goToUrl: (url:
               style={{ width: LOGO_SIZE + LOGO_LABEL_SPILLOVER * 2 }}
             > */}
             <Box width={{ custom: LOGO_SIZE + LOGO_LABEL_SPILLOVER * 2 }}>
-              <Text
-                size="13pt"
-                numberOfLines={1}
-                ellipsizeMode="clip"
-                weight="bold"
-                color="labelSecondary"
-                align="center"
-                style={{ paddingVertical: 10 }}
-              >
+              <Text size="13pt" numberOfLines={1} weight="bold" color="labelSecondary" align="center" style={{ paddingVertical: 10 }}>
                 {site.name}
               </Text>
             </Box>
