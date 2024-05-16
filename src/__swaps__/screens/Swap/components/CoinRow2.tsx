@@ -10,51 +10,53 @@ import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider
 import { UniqueId } from '@/__swaps__/types/assets';
 import { userAssetsStore } from '@/state/assets/userAssets';
 
-export const CoinRow2 = ({ assetId, output, onPress }: { assetId: string; output?: boolean; onPress: (assetId: UniqueId) => void }) => {
-  const { AnimatedSwapStyles } = useSwapContext();
+// eslint-disable-next-line react/display-name
+export const CoinRow2 = React.memo(
+  ({ assetId, output, onPress }: { assetId: string; output?: boolean; onPress: (assetId: UniqueId) => void }) => {
+    const { AnimatedSwapStyles } = useSwapContext();
 
-  const name = userAssetsStore(state => state.getUserAsset(assetId).name);
-  const symbol = userAssetsStore(state => state.getUserAsset(assetId).symbol);
-  const balance = userAssetsStore(state => state.getUserAsset(assetId).balance.display);
-  const nativeBalance = userAssetsStore(state => state.getUserAsset(assetId).native.balance.display);
-  const address = userAssetsStore(state => state.getUserAsset(assetId).address);
-  const isFavorited = userAssetsStore(state => state.isFavorite(assetId));
+    const name = userAssetsStore(state => state.getUserAsset(assetId).name);
+    const symbol = userAssetsStore(state => state.getUserAsset(assetId).symbol);
+    const balance = userAssetsStore(state => state.getUserAsset(assetId).balance.display);
+    const nativeBalance = userAssetsStore(state => state.getUserAsset(assetId).native.balance.display);
+    const address = userAssetsStore(state => state.getUserAsset(assetId).address);
+    const isFavorited = userAssetsStore(state => state.isFavorite(assetId));
 
-  const isTrending = false; // fix this when implementing token to sell list
+    const isTrending = false; // fix this when implementing token to sell list
 
-  const percentChange = useMemo(() => {
-    if (isTrending) {
-      const rawChange = Math.random() * 30;
-      const isNegative = Math.random() < 0.2;
-      const prefix = isNegative ? '-' : '+';
-      const color: TextColor = isNegative ? 'red' : 'green';
-      const change = `${rawChange.toFixed(1)}%`;
+    const percentChange = useMemo(() => {
+      if (isTrending) {
+        const rawChange = Math.random() * 30;
+        const isNegative = Math.random() < 0.2;
+        const prefix = isNegative ? '-' : '+';
+        const color: TextColor = isNegative ? 'red' : 'green';
+        const change = `${rawChange.toFixed(1)}%`;
 
-      return { change, color, prefix };
-    }
-  }, [isTrending]);
+        return { change, color, prefix };
+      }
+    }, [isTrending]);
 
-  return (
-    <ButtonPressAnimation disallowInterruption onPress={() => onPress(assetId)} scaleTo={0.95}>
-      <HitSlop vertical="10px">
-        <Box
-          alignItems="center"
-          paddingVertical={'10px'}
-          paddingHorizontal={'20px'}
-          flexDirection="row"
-          justifyContent="space-between"
-          width="full"
-        >
-          <Inline alignVertical="center" space="10px">
-            {/* TODO: Implement Coin Icons using reanimated values */}
-            <Box
-              as={Animated.View}
-              borderRadius={18}
-              height={{ custom: 36 }}
-              style={[styles.solidColorCoinIcon, AnimatedSwapStyles.assetToSellIconStyle]}
-              width={{ custom: 36 }}
-            />
-            {/* <SwapCoinIcon
+    return (
+      <ButtonPressAnimation disallowInterruption onPress={() => onPress(assetId)} scaleTo={0.95}>
+        <HitSlop vertical="10px">
+          <Box
+            alignItems="center"
+            paddingVertical={'10px'}
+            paddingHorizontal={'20px'}
+            flexDirection="row"
+            justifyContent="space-between"
+            width="full"
+          >
+            <Inline alignVertical="center" space="10px">
+              {/* TODO: Implement Coin Icons using reanimated values */}
+              <Box
+                as={Animated.View}
+                borderRadius={18}
+                height={{ custom: 36 }}
+                style={[styles.solidColorCoinIcon, AnimatedSwapStyles.assetToSellIconStyle]}
+                width={{ custom: 36 }}
+              />
+              {/* <SwapCoinIcon
               iconUrl={iconUrl}
               address={address}
               mainnetAddress={mainnetAddress}
@@ -64,45 +66,46 @@ export const CoinRow2 = ({ assetId, output, onPress }: { assetId: string; output
               theme={theme}
               color={color}
             /> */}
-            <Stack space="10px">
-              <Text color="label" size="17pt" weight="semibold">
-                {name}
-              </Text>
-              <Inline alignVertical="center" space={{ custom: 5 }}>
-                <Text color="labelTertiary" size="13pt" weight="semibold">
-                  {output ? symbol : `${balance}`}
+              <Stack space="10px">
+                <Text color="label" size="17pt" weight="semibold">
+                  {name}
                 </Text>
-                {isTrending && percentChange && (
-                  <Inline alignVertical="center" space={{ custom: 1 }}>
-                    <Text align="center" color={percentChange.color} size="12pt" weight="bold">
-                      {percentChange.prefix}
-                    </Text>
-                    <Text color={percentChange.color} size="13pt" weight="semibold">
-                      {percentChange.change}
-                    </Text>
-                  </Inline>
-                )}
-              </Inline>
-            </Stack>
-          </Inline>
-          {output ? (
-            <Inline space="8px">
-              <CoinRowButton icon="􀅳" outline size="icon 14px" />
-              <CoinRowButton
-                color={isFavorited ? '#FFCB0F' : undefined}
-                onPress={() => userAssetsStore.getState().toggleFavorite(address)}
-                icon="􀋃"
-                weight="black"
-              />
+                <Inline alignVertical="center" space={{ custom: 5 }}>
+                  <Text color="labelTertiary" size="13pt" weight="semibold">
+                    {output ? symbol : `${balance}`}
+                  </Text>
+                  {isTrending && percentChange && (
+                    <Inline alignVertical="center" space={{ custom: 1 }}>
+                      <Text align="center" color={percentChange.color} size="12pt" weight="bold">
+                        {percentChange.prefix}
+                      </Text>
+                      <Text color={percentChange.color} size="13pt" weight="semibold">
+                        {percentChange.change}
+                      </Text>
+                    </Inline>
+                  )}
+                </Inline>
+              </Stack>
             </Inline>
-          ) : (
-            <BalancePill balance={nativeBalance} />
-          )}
-        </Box>
-      </HitSlop>
-    </ButtonPressAnimation>
-  );
-};
+            {output ? (
+              <Inline space="8px">
+                <CoinRowButton icon="􀅳" outline size="icon 14px" />
+                <CoinRowButton
+                  color={isFavorited ? '#FFCB0F' : undefined}
+                  onPress={() => userAssetsStore.getState().toggleFavorite(address)}
+                  icon="􀋃"
+                  weight="black"
+                />
+              </Inline>
+            ) : (
+              <BalancePill balance={nativeBalance} />
+            )}
+          </Box>
+        </HitSlop>
+      </ButtonPressAnimation>
+    );
+  }
+);
 
 export const styles = StyleSheet.create({
   solidColorCoinIcon: {
