@@ -66,7 +66,7 @@ const bridgeSectionsColorsByChain = {
 const AnimatedFlashListComponent = Animated.createAnimatedComponent(FlashList<SearchAsset>);
 
 export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) => {
-  const { setAsset, outputChainId } = useSwapContext();
+  const { setAsset, selectedOutputChainId } = useSwapContext();
 
   const handleSelectToken = useCallback(
     (token: SearchAsset) => {
@@ -94,7 +94,7 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
       return sectionProps[section.id].color as TextColor;
     }
 
-    return bridgeSectionsColorsByChain[outputChainId.value || ChainId.mainnet] as TextColor;
+    return bridgeSectionsColorsByChain[selectedOutputChainId.value || ChainId.mainnet] as TextColor;
   });
 
   if (!section.data.length) return null;

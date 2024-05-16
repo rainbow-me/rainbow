@@ -6,30 +6,27 @@ import Animated, {
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
-  withTiming,
 } from 'react-native-reanimated';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Page } from '@/components/layout';
 import { Box, globalColors, useColorMode } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
+import { useNavigation } from '@/navigation';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useBrowserHistoryStore } from '@/state/browserHistory';
-import { deviceUtils, safeAreaInsetValues } from '@/utils';
-import { AnimatedScrollView } from '../AnimatedComponents/AnimatedScrollView';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { BrowserContextProvider, useBrowserContext } from './BrowserContext';
 import { BrowserTab } from './BrowserTab';
 import { BrowserWorkletsContextProvider, useBrowserWorkletsContext } from './BrowserWorkletsContext';
-import { TAB_VIEW_ROW_HEIGHT } from './Dimensions';
 import { ProgressBar } from './ProgressBar';
 import { TabViewToolbar } from './TabViewToolbar';
 import { BrowserGestureBlocker } from './components/BrowserGestureBlocker';
-import { useScreenshotAndScrollTriggers } from './hooks/useScreenshotAndScrollTriggers';
+import { calculateScrollPositionToCenterTab, useScreenshotAndScrollTriggers } from './hooks/useScreenshotAndScrollTriggers';
+import { useSmoothScrollView } from './hooks/useSmoothScrollView';
 import { pruneScreenshots } from './screenshots';
 import { Search } from './search/Search';
 import { SearchContextProvider } from './search/SearchContext';
-import { useNavigation } from '@/navigation';
 
 export type DappBrowserParams = {
   url: string;
@@ -43,7 +40,12 @@ export const DappBrowser = () => {
   const { isDarkMode } = useColorMode();
   return (
     <BrowserGestureBlocker>
-      <Box as={Page} height="full" style={isDarkMode ? styles.rootViewBackground : styles.rootViewBackgroundLight} width="full">
+      <Box
+        as={Page}
+        height="full"
+        style={[isDarkMode ? styles.rootViewBackground : styles.rootViewBackgroundLight, styles.overflowHidden]}
+        width="full"
+      >
         <BrowserContextProvider>
           <BrowserWorkletsContextProvider>
             <DappBrowserComponent />
@@ -123,7 +125,8 @@ const TabViewBackground = () => {
       backgroundColor: interpolateColor(
         tabViewProgress.value,
         [0, 100],
-        [isDarkMode ? globalColors.grey100 : '#FBFCFD', isDarkMode ? '#0A0A0A' : '#FBFCFD']
+        // eslint-disable-next-line no-nested-ternary
+        [isDarkMode ? globalColors.grey100 : IS_ANDROID ? '#F2F2F5' : '#FBFCFD', isDarkMode ? '#0A0A0A' : '#F2F2F5']
       ),
     };
   });
@@ -132,30 +135,37 @@ const TabViewBackground = () => {
 };
 
 const TabViewScrollView = ({ children }: { children: React.ReactNode }) => {
-  const { currentlyOpenTabIds, scrollViewRef, tabViewVisible } = useBrowserContext();
+  const { animatedActiveTabIndex, currentlyOpenTabIds, scrollViewRef, tabViewVisible } = useBrowserContext();
+  const { jitterCorrection, scrollViewHeight, smoothScrollHandler } = useSmoothScrollView();
 
   const scrollEnabledProp = useAnimatedProps(() => ({
     scrollEnabled: tabViewVisible.value,
   }));
 
-  const scrollViewHeightStyle = useAnimatedStyle(() => {
-    const height = Math.max(
-      Math.ceil(currentlyOpenTabIds.value.length / 2) * TAB_VIEW_ROW_HEIGHT + safeAreaInsetValues.bottom + 165 + 28 + (IS_ANDROID ? 35 : 0),
-      deviceUtils.dimensions.height
-    );
-    // Using paddingBottom on a nested container instead of height because the height of the ScrollView
-    // seemingly cannot be directly animated. This works because the tabs are all positioned absolutely.
-    return { paddingBottom: withTiming(height, TIMING_CONFIGS.tabPressConfig) };
-  });
+  useEffect(() => {
+    scrollViewRef.current?.scrollTo({
+      x: 0,
+      y: calculateScrollPositionToCenterTab(animatedActiveTabIndex.value, currentlyOpenTabIds.value.length),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <AnimatedScrollView animatedProps={scrollEnabledProp} ref={scrollViewRef} scrollEventThrottle={16} showsVerticalScrollIndicator={false}>
-      <Animated.View style={scrollViewHeightStyle}>{children}</Animated.View>
-    </AnimatedScrollView>
+    <Animated.ScrollView
+      animatedProps={scrollEnabledProp}
+      onScroll={smoothScrollHandler}
+      pinchGestureEnabled={false}
+      ref={scrollViewRef}
+      showsVerticalScrollIndicator={false}
+    >
+      <Animated.View style={[styles.scrollViewHeight, { height: scrollViewHeight, transform: [{ translateY: jitterCorrection }] }]}>
+        {children}
+      </Animated.View>
+    </Animated.ScrollView>
   );
 };
 
-const TabViewContent = React.memo(function TabViewContent() {
+const TabViewContent = () => {
   const { currentlyBeingClosedTabIds, currentlyOpenTabIds } = useBrowserContext();
 
   const tabIds = useBrowserStore(state => state.tabIds);
@@ -181,9 +191,12 @@ const TabViewContent = React.memo(function TabViewContent() {
       ))}
     </>
   );
-});
+};
 
 const styles = StyleSheet.create({
+  overflowHidden: {
+    overflow: 'hidden',
+  },
   rootViewBackground: {
     backgroundColor: globalColors.grey100,
     flex: 1,
@@ -191,6 +204,10 @@ const styles = StyleSheet.create({
   rootViewBackgroundLight: {
     backgroundColor: '#FBFCFD',
     flex: 1,
+  },
+  scrollViewHeight: {
+    pointerEvents: 'box-none',
+    width: DEVICE_WIDTH,
   },
   tabViewBackground: {
     height: '100%',

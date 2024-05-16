@@ -31,7 +31,7 @@ type ChainSelectionProps = {
 export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
   const { isDarkMode } = useColorMode();
   const { accentColor: accountColor } = useAccountAccentColor();
-  const { outputChainId } = useSwapContext();
+  const { selectedOutputChainId, setSelectedOutputChainId } = useSwapContext();
   const red = useForegroundColor('red');
 
   const initialFilter = useMemo(() => {
@@ -49,7 +49,7 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
 
   const chainName = useSharedValue(
     output
-      ? chainNameFromChainIdWorklet(outputChainId.value)
+      ? chainNameFromChainIdWorklet(selectedOutputChainId.value)
       : initialFilter === 'all'
         ? allText
         : chainNameFromChainIdWorklet(initialFilter as ChainId)
@@ -57,7 +57,7 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
 
   useAnimatedReaction(
     () => ({
-      outputChainId: outputChainId.value,
+      outputChainId: selectedOutputChainId.value,
     }),
     current => {
       if (output) {
@@ -69,10 +69,7 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
   const handleSelectChain = useCallback(
     ({ nativeEvent: { actionKey } }: Omit<OnPressMenuItemEventObject, 'isUsingActionSheetFallback'>) => {
       if (output) {
-        runOnUI(() => {
-          outputChainId.value = Number(actionKey) as ChainId;
-          chainName.value = chainNameForChainIdWithMainnetSubstitutionWorklet(Number(actionKey) as ChainId);
-        });
+        setSelectedOutputChainId(Number(actionKey) as ChainId);
       } else {
         userAssetsStore.setState({
           filter: actionKey === 'all' ? 'all' : (Number(actionKey) as ChainId),
@@ -82,7 +79,7 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
         });
       }
     },
-    [allText, chainName, output, outputChainId]
+    [allText, chainName, output, selectedOutputChainId]
   );
 
   const menuConfig = useMemo(() => {
@@ -206,7 +203,9 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
           <HitSlop space="10px">
             <Inline alignVertical="center" space="6px" wrap={false}>
               {/* TODO: We need to add some ethereum utils to handle worklet functions */}
-              {output && <ChainImage chain={ethereumUtils.getNetworkFromChainId(outputChainId.value ?? ChainId.mainnet)} size={16} />}
+              {output && (
+                <ChainImage chain={ethereumUtils.getNetworkFromChainId(selectedOutputChainId.value ?? ChainId.mainnet)} size={16} />
+              )}
               <AnimatedText
                 align="right"
                 color={isDarkMode ? 'labelSecondary' : 'label'}

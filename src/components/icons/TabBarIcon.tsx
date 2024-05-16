@@ -1,7 +1,8 @@
+/* eslint-disable no-nested-ternary */
 import MaskedView from '@react-native-masked-view/masked-view';
 import React from 'react';
-import Animated, { interpolate, interpolateColor, useAnimatedStyle, SharedValue } from 'react-native-reanimated';
-import { Box, Cover } from '@/design-system';
+import Animated, { interpolate, interpolateColor, useAnimatedStyle, SharedValue, AnimatedStyle } from 'react-native-reanimated';
+import { Box, Cover, useColorMode } from '@/design-system';
 import { globalColors } from '@/design-system/color/palettes';
 import { Icon } from '@/components/icons';
 import { useTheme } from '@/theme';
@@ -18,7 +19,8 @@ type TabBarIconProps = {
 };
 
 export function TabBarIcon({ accentColor, hideShadow, icon, index, reanimatedPosition, size, tintBackdrop, tintOpacity }: TabBarIconProps) {
-  const { colors, isDarkMode } = useTheme();
+  const { isDarkMode } = useColorMode();
+  const { colors } = useTheme();
 
   const hasTransparentInnerFill = icon === 'tabDiscover' || icon === 'tabPoints' || icon === 'tabDappBrowser';
 
@@ -143,30 +145,60 @@ export function TabBarIcon({ accentColor, hideShadow, icon, index, reanimatedPos
   return (
     <Animated.View style={hideShadow ? undefined : iconShadowBlack}>
       <Animated.View style={hideShadow ? undefined : iconShadow}>
-        <Box height={{ custom: size || 28 }} width={{ custom: size || 28 }}>
-          <Cover alignHorizontal="center" alignVertical="center">
-            <MaskedView maskElement={<Icon name={icon + 'InnerFill'} size={size} />}>
-              <Box as={Animated.View} height={{ custom: size || 28 }} style={innerFillColor} width={{ custom: size || 28 }}>
-                {hasTransparentInnerFill && <Box as={Animated.View} height="full" style={discoverTabInnerFillColor} width="full" />}
-              </Box>
-            </MaskedView>
-          </Cover>
-          <Cover alignHorizontal="center" alignVertical="center">
-            <MaskedView maskElement={<Icon name={icon} size={size} />}>
-              <Box as={Animated.View} height={{ custom: size || 28 }} style={iconColor} width={{ custom: size || 28 }} />
-            </MaskedView>
-          </Cover>
-          {!hasTransparentInnerFill && (
-            <Cover alignHorizontal="center" alignVertical="center">
-              <MaskedView maskElement={<Icon name={icon + 'Inner'} size={size} />}>
-                <Box as={Animated.View} height={{ custom: size || 28 }} style={innerIconColor} width={{ custom: size || 28 }}>
-                  <Box as={Animated.View} height="full" style={[iconColor, { opacity: 0.25 }]} width="full" />
-                </Box>
-              </MaskedView>
-            </Cover>
-          )}
-        </Box>
+        <TabBarIconContent
+          discoverTabInnerFillColor={discoverTabInnerFillColor}
+          hasTransparentInnerFill={hasTransparentInnerFill}
+          icon={icon}
+          iconColor={iconColor}
+          innerFillColor={innerFillColor}
+          innerIconColor={innerIconColor}
+          size={size}
+        />
       </Animated.View>
     </Animated.View>
   );
 }
+
+const TabBarIconContent = React.memo(function TabBarIconContent({
+  discoverTabInnerFillColor,
+  hasTransparentInnerFill,
+  icon,
+  iconColor,
+  innerFillColor,
+  innerIconColor,
+  size,
+}: {
+  discoverTabInnerFillColor: AnimatedStyle;
+  hasTransparentInnerFill: boolean;
+  icon: string;
+  iconColor: AnimatedStyle;
+  innerFillColor: AnimatedStyle;
+  innerIconColor: AnimatedStyle;
+  size: number | undefined;
+}) {
+  return (
+    <Box height={{ custom: size || 28 }} width={{ custom: size || 28 }}>
+      <Cover alignHorizontal="center" alignVertical="center">
+        <MaskedView maskElement={<Icon name={icon + 'InnerFill'} size={size} />}>
+          <Box as={Animated.View} height={{ custom: size || 28 }} style={innerFillColor} width={{ custom: size || 28 }}>
+            {hasTransparentInnerFill && <Box as={Animated.View} height="full" style={discoverTabInnerFillColor} width="full" />}
+          </Box>
+        </MaskedView>
+      </Cover>
+      <Cover alignHorizontal="center" alignVertical="center">
+        <MaskedView maskElement={<Icon name={icon} size={size} />}>
+          <Box as={Animated.View} height={{ custom: size || 28 }} style={iconColor} width={{ custom: size || 28 }} />
+        </MaskedView>
+      </Cover>
+      {!hasTransparentInnerFill && (
+        <Cover alignHorizontal="center" alignVertical="center">
+          <MaskedView maskElement={<Icon name={icon + 'Inner'} size={size} />}>
+            <Box as={Animated.View} height={{ custom: size || 28 }} style={innerIconColor} width={{ custom: size || 28 }}>
+              <Box as={Animated.View} height="full" style={[iconColor, { opacity: 0.25 }]} width="full" />
+            </Box>
+          </MaskedView>
+        </Cover>
+      )}
+    </Box>
+  );
+});

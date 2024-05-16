@@ -29,14 +29,8 @@ export function useTabScreenshotProvider({ tabId }: { tabId: string }) {
     const shouldDisplay =
       screenshotExists && screenshotMatchesTabIdAndUrl && (isTabFrozen || (tabViewVisible.value && !shouldWaitForNewScreenshot));
 
-    if (shouldDisplay && isScreenshotStale) {
-      return {
-        opacity: 1,
-      };
-    }
-
     return {
-      opacity: withSpring(shouldDisplay ? 1 : 0, SPRING_CONFIGS.snappierSpringConfig),
+      opacity: shouldDisplay && isScreenshotStale ? 1 : withSpring(shouldDisplay ? 1 : 0, SPRING_CONFIGS.snappierSpringConfig),
     };
   });
 

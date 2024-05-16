@@ -50,7 +50,7 @@ export const useAppSessionsStore = createRainbowStore<AppSessionsStore<AppSessio
     addSession: ({ host, address, network, url }) => {
       const appSessions = get().appSessions;
       const existingSession = appSessions[host];
-      if (!existingSession) {
+      if (!existingSession || !existingSession.sessions) {
         appSessions[host] = {
           host,
           sessions: { [address]: network },
@@ -80,14 +80,14 @@ export const useAppSessionsStore = createRainbowStore<AppSessionsStore<AppSessio
       const appSessions = get().appSessions;
       const appSession = appSessions[host];
       let newActiveSession = null;
-      if (appSession.sessions && Object.keys(appSession.sessions).length === 1) {
+      if (appSession?.sessions && Object.keys(appSession.sessions).length === 1) {
         delete appSessions[host];
         set({
           appSessions: {
             ...appSessions,
           },
         });
-      } else if (appSession.sessions) {
+      } else if (appSession?.sessions) {
         delete appSession.sessions[address];
         const newActiveSessionAddress = Object.keys(appSession.sessions)[0] as Address;
         appSession.activeSessionAddress = newActiveSessionAddress;
@@ -109,8 +109,7 @@ export const useAppSessionsStore = createRainbowStore<AppSessionsStore<AppSessio
     },
     updateActiveSession: ({ host, address }) => {
       const appSessions = get().appSessions;
-      const appSession = appSessions[host];
-      if (!appSession) return;
+      const appSession = appSessions[host] || {};
       set({
         appSessions: {
           ...appSessions,
@@ -123,8 +122,7 @@ export const useAppSessionsStore = createRainbowStore<AppSessionsStore<AppSessio
     },
     updateActiveSessionNetwork: ({ host, network }) => {
       const appSessions = get().appSessions;
-      const appSession = appSessions[host];
-      if (!appSession) return;
+      const appSession = appSessions[host] || {};
       set({
         appSessions: {
           ...appSessions,

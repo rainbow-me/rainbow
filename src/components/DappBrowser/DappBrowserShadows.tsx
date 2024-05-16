@@ -4,7 +4,7 @@ import { Box, globalColors, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { StyleSheet } from 'react-native';
 
-export const BrowserButtonShadows = ({ children }: { children: React.ReactNode }) => {
+export const BrowserButtonShadows = ({ children, lightShadows }: { children: React.ReactNode; lightShadows?: boolean }) => {
   const { isDarkMode } = useColorMode();
 
   if (!IS_IOS) return <>{children}</>;
@@ -14,7 +14,8 @@ export const BrowserButtonShadows = ({ children }: { children: React.ReactNode }
       style={{
         shadowColor: globalColors.grey100,
         shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: isDarkMode ? 0.3 : 0.1,
+        // eslint-disable-next-line no-nested-ternary
+        shadowOpacity: isDarkMode ? 0.3 : lightShadows ? 0.06 : 0.08,
         shadowRadius: 12,
       }}
     >
@@ -22,7 +23,8 @@ export const BrowserButtonShadows = ({ children }: { children: React.ReactNode }
         style={{
           shadowColor: globalColors.grey100,
           shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: isDarkMode ? 0.2 : 0.04,
+          // eslint-disable-next-line no-nested-ternary
+          shadowOpacity: isDarkMode ? 0.2 : lightShadows ? 0.02 : 0.04,
           shadowRadius: 3,
         }}
       >

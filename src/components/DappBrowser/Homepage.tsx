@@ -1,6 +1,19 @@
 import React, { useCallback, useMemo } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
-import { Bleed, Box, ColorModeProvider, Cover, Inline, Inset, Stack, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
+import {
+  Bleed,
+  Box,
+  ColorModeProvider,
+  Cover,
+  Inline,
+  Inset,
+  Stack,
+  Text,
+  TextIcon,
+  globalColors,
+  useBackgroundColor,
+  useColorMode,
+} from '@/design-system';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { BlurView } from '@react-native-community/blur';
@@ -10,8 +23,6 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { useFavoriteDappsStore } from '@/state/favoriteDapps';
-// import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
-// import MaskedView from '@react-native-masked-view/masked-view';
 import { Site, useBrowserHistoryStore } from '@/state/browserHistory';
 import { getDappHost } from './handleProviderRequest';
 import { uniqBy } from 'lodash';
@@ -21,6 +32,7 @@ import { WEBVIEW_HEIGHT } from './Dimensions';
 import { useDapps } from '@/resources/metadata/dapps';
 import haptics from '@/utils/haptics';
 import * as i18n from '@/languages';
+import { getNameFromFormattedUrl } from './utils';
 
 const HORIZONTAL_PAGE_INSET = 24;
 const MAX_RECENTS_TO_DISPLAY = 6;
@@ -35,9 +47,10 @@ const LOGO_LABEL_SPILLOVER = 12;
 const NUM_CARDS = 2;
 const CARD_PADDING = 12;
 const CARD_HEIGHT = 137;
-const CARD_WIDTH = (DEVICE_WIDTH - HORIZONTAL_PAGE_INSET * 2 - (NUM_CARDS - 1) * CARD_PADDING) / NUM_CARDS;
+const RAW_CARD_WIDTH = (DEVICE_WIDTH - HORIZONTAL_PAGE_INSET * 2 - (NUM_CARDS - 1) * CARD_PADDING) / NUM_CARDS;
+const CARD_WIDTH = IS_IOS ? RAW_CARD_WIDTH : Math.floor(RAW_CARD_WIDTH);
 
-export const Homepage = React.memo(function Homepage() {
+export const Homepage = () => {
   const { goToUrl } = useBrowserContext();
   const { isDarkMode } = useColorMode();
 
@@ -45,7 +58,7 @@ export const Homepage = React.memo(function Homepage() {
     <View style={[isDarkMode ? styles.pageBackgroundDark : styles.pageBackgroundLight, styles.pageContainer]}>
       <ScrollView
         scrollIndicatorInsets={SCROLL_INDICATOR_INSETS}
-        contentContainerStyle={styles.scrollViewContainer}
+        contentContainerStyle={[styles.scrollViewContainer, isDarkMode ? styles.pageBackgroundDark : styles.pageBackgroundLight]}
         showsVerticalScrollIndicator={false}
       >
         <Stack space="44px">
@@ -56,9 +69,9 @@ export const Homepage = React.memo(function Homepage() {
       </ScrollView>
     </View>
   );
-});
+};
 
-const Trending = React.memo(function Trending({ goToUrl }: { goToUrl: (url: string) => void }) {
+const Trending = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
   const { dapps } = useDapps({ select: dapps => dapps.filter(dapp => dapp.trending).slice(0, 8) });
 
   if (dapps.length === 0) {
@@ -94,55 +107,57 @@ const Trending = React.memo(function Trending({ goToUrl }: { goToUrl: (url: stri
       </Bleed>
     </Stack>
   );
-});
+};
 
-const Favorites = React.memo(function Favorites({ goToUrl }: { goToUrl: (url: string) => void }) {
+const Favorites = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
   const favoriteDapps = useFavoriteDappsStore(state => state.favoriteDapps);
 
   return (
-    favoriteDapps?.length > 0 && (
-      <Stack space="20px">
-        <Inline alignVertical="center" space="6px">
-          <Text color="yellow" size="15pt" align="center" weight="heavy">
-            􀋃
-          </Text>
-          <Text color="label" size="20pt" weight="heavy">
-            {i18n.t(i18n.l.dapp_browser.homepage.favorites)}
-          </Text>
-        </Inline>
-        <Box flexDirection="row" flexWrap="wrap" gap={LOGO_PADDING} width={{ custom: DEVICE_WIDTH - HORIZONTAL_PAGE_INSET * 2 }}>
-          {favoriteDapps.map(dapp => (
-            <Logo goToUrl={goToUrl} key={`${dapp.url}-${dapp.name}`} site={dapp} />
-          ))}
-        </Box>
-      </Stack>
-    )
+    <Stack space="20px">
+      <Inline alignVertical="center" space="6px">
+        <Text color="yellow" size="15pt" align="center" weight="heavy">
+          􀋃
+        </Text>
+        <Text color="label" size="20pt" weight="heavy">
+          {i18n.t(i18n.l.dapp_browser.homepage.favorites)}
+        </Text>
+      </Inline>
+      <Box flexDirection="row" flexWrap="wrap" gap={LOGO_PADDING} width={{ custom: DEVICE_WIDTH - HORIZONTAL_PAGE_INSET * 2 }}>
+        {favoriteDapps.length > 0
+          ? favoriteDapps.map(dapp => <Logo goToUrl={goToUrl} key={`${dapp.url}-${dapp.name}`} site={dapp} />)
+          : Array(4)
+              .fill(null)
+              .map((_, index) => <PlaceholderLogo key={index} />)}
+      </Box>
+    </Stack>
   );
-});
+};
 
-const Recents = React.memo(function Recents({ goToUrl }: { goToUrl: (url: string) => void }) {
+const Recents = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
   const recents = useBrowserHistoryStore(state => uniqBy(state.recents, 'url').slice(0, MAX_RECENTS_TO_DISPLAY));
 
   return (
-    recents.length > 0 && (
-      <Stack space="20px">
-        <Inline alignVertical="center" space="6px">
-          <Text color="blue" size="15pt" align="center" weight="heavy">
-            􀐫
-          </Text>
-          <Text color="label" size="20pt" weight="heavy">
-            {i18n.t(i18n.l.dapp_browser.homepage.recents)}
-          </Text>
-        </Inline>
+    <Stack space="20px">
+      <Inline alignVertical="center" space="6px">
+        <Text color="blue" size="15pt" align="center" weight="heavy">
+          􀐫
+        </Text>
+        <Text color="label" size="20pt" weight="heavy">
+          {i18n.t(i18n.l.dapp_browser.homepage.recents)}
+        </Text>
+      </Inline>
+      <Box width={{ custom: DEVICE_WIDTH }}>
         <Inline space={{ custom: CARD_PADDING }}>
-          {recents.map(site => (
-            <Card key={site.url} site={site} showMenuButton goToUrl={goToUrl} />
-          ))}
+          {recents.length > 0
+            ? recents.map(site => <Card key={site.url} site={site} showMenuButton goToUrl={goToUrl} />)
+            : Array(2)
+                .fill(null)
+                .map((_, index) => <PlaceholderCard key={index} />)}
         </Inline>
-      </Stack>
-    )
+      </Box>
+    </Stack>
   );
-});
+};
 
 const Card = React.memo(function Card({
   goToUrl,
@@ -166,7 +181,7 @@ const Card = React.memo(function Card({
       if (isFavorite) {
         removeFavorite(url);
       } else {
-        addFavorite(site);
+        addFavorite({ ...site, name: getNameFromFormattedUrl(site.url, true) });
       }
     }
   }, [addFavorite, isFavorite, removeFavorite, site]);
@@ -211,13 +226,15 @@ const Card = React.memo(function Card({
   const dappIconUrl = useMemo(() => {
     const dappUrl = site.url;
     const iconUrl = site.image;
-    const host = getDappHost(dappUrl);
-    const overrideFound = dapps.find(dapp => dapp.url === host);
-    if (overrideFound?.iconUrl) {
-      return overrideFound.iconUrl;
+    const host = new URL(dappUrl).hostname;
+    // 👇 TODO: Remove this once the Uniswap logo in the dapps metadata is fixed
+    const isUniswap = host === 'uniswap.org' || host.endsWith('.uniswap.org');
+    const dappOverride = dapps.find(dapp => dapp.urlDisplay === host);
+    if (dappOverride?.iconUrl && !isUniswap) {
+      return dappOverride.iconUrl;
     }
     return iconUrl;
-  }, [site.image, site.url]);
+  }, [dapps, site.image, site.url]);
 
   return (
     <Box>
@@ -225,7 +242,6 @@ const Card = React.memo(function Card({
         <Box
           background="surfacePrimary"
           borderRadius={24}
-          shadow="18px"
           style={{
             width: CARD_WIDTH,
           }}
@@ -235,7 +251,11 @@ const Card = React.memo(function Card({
             height={{ custom: CARD_HEIGHT }}
             justifyContent="space-between"
             padding="20px"
-            style={[styles.cardContainer, isDarkMode && styles.cardContainerDark]}
+            style={[
+              styles.cardContainer,
+              !dappIconUrl && !site.screenshot && styles.cardContainerNoImage,
+              isDarkMode && styles.cardContainerDark,
+            ]}
             width={{ custom: CARD_WIDTH }}
           >
             <ColorModeProvider value="dark">
@@ -243,8 +263,8 @@ const Card = React.memo(function Card({
                 <Cover>
                   <ImgixImage
                     enableFasterImage
-                    source={{ uri: site.screenshot || dappIconUrl }}
                     size={CARD_WIDTH}
+                    source={{ uri: dappIconUrl || site.screenshot }}
                     style={{ width: CARD_WIDTH, height: CARD_HEIGHT }}
                   />
                   <Cover>
@@ -303,7 +323,7 @@ const Card = React.memo(function Card({
               <Cover>
                 {IS_IOS ? (
                   <BlurView
-                    blurType="chromeMaterialDark"
+                    blurType={isDarkMode ? 'chromeMaterialDark' : 'chromeMaterialLight'}
                     blurAmount={10}
                     style={{
                       width: '100%',
@@ -332,6 +352,44 @@ const Card = React.memo(function Card({
         </ContextMenuButton>
       )}
     </Box>
+  );
+});
+
+export const PlaceholderCard = React.memo(function PlaceholderCard() {
+  const { isDarkMode } = useColorMode();
+
+  const fillTertiary = useBackgroundColor('fillTertiary');
+  const cardOpacity = isDarkMode ? 0.6 : 0.5;
+
+  return (
+    <View style={{ width: CARD_WIDTH }}>
+      <Box
+        as={LinearGradient}
+        colors={[opacity(fillTertiary, (isDarkMode ? 0.08 : 0.05) * cardOpacity), opacity(fillTertiary, 0)]}
+        end={{ x: 0.5, y: 1 }}
+        locations={[0, 1]}
+        start={{ x: 0.5, y: 0 }}
+        width={{ custom: CARD_WIDTH }}
+        height={{ custom: CARD_HEIGHT }}
+        style={{ borderRadius: 24 }}
+      />
+      {IS_IOS && (
+        <Box
+          borderRadius={24}
+          height="full"
+          position="absolute"
+          style={{
+            borderColor: isDarkMode ? opacity(globalColors.white100, 0.04) : opacity(globalColors.grey100, 0.02),
+            borderWidth: THICK_BORDER_WIDTH,
+            opacity: cardOpacity,
+            overflow: 'hidden',
+            pointerEvents: 'none',
+          }}
+          width="full"
+        />
+      )}
+      <Box />
+    </View>
   );
 });
 
@@ -383,24 +441,11 @@ export const Logo = React.memo(function Logo({ goToUrl, site }: { goToUrl: (url:
             )}
           </Box>
           <Bleed bottom="10px" horizontal="8px">
-            {/* <MaskedView
-              maskElement={<FadeMask fadeEdgeInset={0} fadeWidth={12} side="right" />}
-              style={{ width: LOGO_SIZE + LOGO_LABEL_SPILLOVER * 2 }}
-            > */}
             <Box width={{ custom: LOGO_SIZE + LOGO_LABEL_SPILLOVER * 2 }}>
-              <Text
-                size="13pt"
-                numberOfLines={1}
-                ellipsizeMode="clip"
-                weight="bold"
-                color="labelSecondary"
-                align="center"
-                style={{ paddingVertical: 10 }}
-              >
+              <Text size="13pt" numberOfLines={1} weight="bold" color="labelSecondary" align="center" style={{ paddingVertical: 10 }}>
                 {site.name}
               </Text>
             </Box>
-            {/* </MaskedView> */}
           </Bleed>
         </Stack>
       </ButtonPressAnimation>
@@ -408,13 +453,41 @@ export const Logo = React.memo(function Logo({ goToUrl, site }: { goToUrl: (url:
   );
 });
 
+export const PlaceholderLogo = React.memo(function PlaceholderLogo() {
+  const { isDarkMode } = useColorMode();
+  const borderRadius = IS_ANDROID ? LOGO_BORDER_RADIUS / 2 : LOGO_BORDER_RADIUS;
+
+  return (
+    <View style={{ opacity: isDarkMode ? 0.6 : 0.5, width: LOGO_SIZE }}>
+      <Box width={{ custom: LOGO_SIZE }} height={{ custom: LOGO_SIZE }} background="fillTertiary" style={{ borderRadius }} />
+      {IS_IOS && (
+        <Box
+          borderRadius={borderRadius}
+          height="full"
+          position="absolute"
+          style={{
+            borderColor: isDarkMode ? opacity(globalColors.white100, 0.04) : opacity(globalColors.grey100, 0.02),
+            borderWidth: THICK_BORDER_WIDTH,
+            overflow: 'hidden',
+            pointerEvents: 'none',
+          }}
+          width="full"
+        />
+      )}
+    </View>
+  );
+});
+
 const styles = StyleSheet.create({
   cardContainer: {
-    backgroundColor: '#FBFCFD',
+    backgroundColor: globalColors.white100,
     overflow: 'hidden',
   },
   cardContainerDark: {
     backgroundColor: globalColors.grey100,
+  },
+  cardContainerNoImage: {
+    backgroundColor: '#191A1C',
   },
   cardContextMenuButton: {
     alignItems: 'center',
