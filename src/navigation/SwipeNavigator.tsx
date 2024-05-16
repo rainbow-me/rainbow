@@ -5,7 +5,7 @@ import { TabBarIcon } from '@/components/icons/TabBarIcon';
 import { FlexItem } from '@/components/layout';
 import { TestnetToast } from '@/components/toasts';
 import { DAPP_BROWSER, POINTS, useExperimentalFlag } from '@/config';
-import { Box, Columns, globalColors, Stack, useForegroundColor, Text, Cover } from '@/design-system';
+import { Box, Columns, globalColors, Stack, useForegroundColor, Text, Cover, useColorMode } from '@/design-system';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import { web3Provider } from '@/handlers/web3';
 import { isUsingButtonNavigation } from '@/helpers/statusBarHelper';
@@ -97,8 +97,9 @@ interface TabBarProps {
 const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
   const { accentColor } = useAccountAccentColor();
   const { tabViewProgress } = useBrowserTabViewProgressContext();
+  const { isDarkMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();
-  const { colors, isDarkMode } = useTheme();
+  const { colors } = useTheme();
   const recyclerList = useRecyclerListViewScrollToTopContext();
   const sectionList = useSectionListScrollToTopContext();
 
@@ -119,8 +120,7 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
     const inputRange = Array.from({ length: numberOfTabs }, (_, index) => index);
     const outputRange = Array.from({ length: numberOfTabs }, (_, index) => tabPillStartPosition + tabWidth * index);
     return { inputRange, outputRange };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [numberOfTabs]);
+  }, [numberOfTabs, tabPillStartPosition, tabWidth]);
 
   const tabStyle = useAnimatedStyle(() => {
     const translateX = interpolate(reanimatedPosition.value, tabPositions.inputRange, tabPositions.outputRange, 'clamp');
@@ -222,8 +222,7 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
 
       lastPressRef.current = time;
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [canSwitchRef, jumpTo, navigation, recyclerList, sectionList]
+    [canSwitchRef, jumpTo, reanimatedPosition, recyclerList, sectionList]
   );
 
   const onLongPress = useCallback(
