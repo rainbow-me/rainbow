@@ -119,6 +119,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
   const SwapWarning = useSwapWarning({
     SwapInputController,
+    inputAsset: internalSelectedInputAsset,
+    outputAsset: internalSelectedOutputAsset,
+    quote,
     sliderXPosition,
     isFetching,
   });
