@@ -356,13 +356,15 @@ const Card = React.memo(function Card({
 
 export const PlaceholderCard = React.memo(function PlaceholderCard() {
   const { isDarkMode } = useColorMode();
+
   const fillTertiary = useBackgroundColor('fillTertiary');
+  const cardOpacity = isDarkMode ? 0.6 : 0.5;
 
   return (
     <View style={{ width: CARD_WIDTH }}>
       <Box
         as={LinearGradient}
-        colors={[opacity(fillTertiary, isDarkMode ? 0.04 : 0.025), opacity(fillTertiary, 0)]}
+        colors={[opacity(fillTertiary, (isDarkMode ? 0.08 : 0.05) * cardOpacity), opacity(fillTertiary, 0)]}
         end={{ x: 0.5, y: 1 }}
         locations={[0, 1]}
         start={{ x: 0.5, y: 0 }}
@@ -376,8 +378,9 @@ export const PlaceholderCard = React.memo(function PlaceholderCard() {
           height="full"
           position="absolute"
           style={{
-            borderColor: isDarkMode ? opacity(globalColors.white100, 0.02) : opacity(globalColors.grey100, 0.01),
+            borderColor: isDarkMode ? opacity(globalColors.white100, 0.04) : opacity(globalColors.grey100, 0.02),
             borderWidth: THICK_BORDER_WIDTH,
+            opacity: cardOpacity,
             overflow: 'hidden',
             pointerEvents: 'none',
           }}
@@ -454,7 +457,7 @@ export const PlaceholderLogo = React.memo(function PlaceholderLogo() {
   const borderRadius = IS_ANDROID ? LOGO_BORDER_RADIUS / 2 : LOGO_BORDER_RADIUS;
 
   return (
-    <View style={{ opacity: 0.5, width: LOGO_SIZE }}>
+    <View style={{ opacity: isDarkMode ? 0.6 : 0.5, width: LOGO_SIZE }}>
       <Box width={{ custom: LOGO_SIZE }} height={{ custom: LOGO_SIZE }} background="fillTertiary" style={{ borderRadius }} />
       {IS_IOS && (
         <Box
