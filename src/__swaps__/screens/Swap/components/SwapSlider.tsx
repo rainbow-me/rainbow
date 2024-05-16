@@ -76,8 +76,8 @@ export const SwapSlider = ({
 
   // Callback function to handle percentage change once slider is at rest
   const onChangeWrapper = useCallback(
-    (percentage: number) => {
-      SwapInputController.onChangedPercentage(percentage);
+    (percentage: number, setStale = true) => {
+      SwapInputController.onChangedPercentage(percentage, setStale);
     },
     [SwapInputController]
   );
@@ -373,7 +373,7 @@ export const SwapSlider = ({
       <Animated.View style={AnimatedSwapStyles.hideWhileReviewingOrConfiguringGas}>
         {/* @ts-expect-error */}
         <TapGestureHandler onGestureEvent={onPressDown} simultaneousHandlers={[panRef]}>
-          <Animated.View style={{ gap: 14, paddingBottom: 20, paddingHorizontal: 20, paddingTop: 16 }}>
+          <Animated.View style={{ gap: 14, paddingBottom: 20, paddingHorizontal: 20 }}>
             <View style={{ zIndex: 10 }}>
               <Columns alignHorizontal="justify" alignVertical="center">
                 <Inline alignVertical="center" space="6px" wrap={false}>
@@ -392,8 +392,10 @@ export const SwapSlider = ({
                     activeOpacity={0.4}
                     hitSlop={8}
                     onPress={() => {
+                      'worklet';
+
+                      SwapInputController.quoteFetchingInterval.stop();
                       SwapInputController.inputMethod.value = 'slider';
-                      isQuoteStale.value = 1;
                       setTimeout(() => {
                         sliderXPosition.value = withSpring(width, snappySpringConfig);
                         onChangeWrapper(1);
