@@ -10,6 +10,8 @@ import { ETH_ADDRESS } from '@/references';
 import Animated from 'react-native-reanimated';
 import { StyleSheet } from 'react-native';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { SwapCoinIcon } from './SwapCoinIcon';
+import { ethereumUtils } from '@/utils';
 
 export const CoinRow = ({
   address,
@@ -73,24 +75,15 @@ export const CoinRow = ({
           width="full"
         >
           <Inline alignVertical="center" space="10px">
-            {/* TODO: Implement Coin Icons using reanimated values */}
-            <Box
-              as={Animated.View}
-              borderRadius={18}
-              height={{ custom: 36 }}
-              style={[styles.solidColorCoinIcon, AnimatedSwapStyles.assetToSellIconStyle]}
-              width={{ custom: 36 }}
-            />
-            {/* <SwapCoinIcon
+            <SwapCoinIcon
               iconUrl={iconUrl}
               address={address}
               mainnetAddress={mainnetAddress}
               large
               network={ethereumUtils.getNetworkFromChainId(chainId)}
               symbol={symbol}
-              theme={theme}
               color={color}
-            /> */}
+            />
             <Stack space="10px">
               <Text color="label" size="17pt" weight="semibold">
                 {name}

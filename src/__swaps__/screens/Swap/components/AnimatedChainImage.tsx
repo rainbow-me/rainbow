@@ -76,9 +76,8 @@ export function AnimatedChainImage({ asset, size = 20 }: { asset: SharedValue<Ex
     }
 
     // fallback to static network badge data
-    const path = Image.resolveAssetSource(networkBadges[asset.value.chainId]).uri;
-    console.log({ path });
-    base.source.url = `file://${path}`;
+    // TODO: How can we reference local static pngs here?
+    base.source.url = `file://${networkBadges[asset.value.chainId]}`;
     return base;
   });
 
