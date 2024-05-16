@@ -32,6 +32,7 @@ import { WEBVIEW_HEIGHT } from './Dimensions';
 import { useDapps } from '@/resources/metadata/dapps';
 import haptics from '@/utils/haptics';
 import * as i18n from '@/languages';
+import { getNameFromFormattedUrl } from './utils';
 
 const HORIZONTAL_PAGE_INSET = 24;
 const MAX_RECENTS_TO_DISPLAY = 6;
@@ -180,7 +181,7 @@ const Card = React.memo(function Card({
       if (isFavorite) {
         removeFavorite(url);
       } else {
-        addFavorite(site);
+        addFavorite({ ...site, name: getNameFromFormattedUrl(site.url, true) });
       }
     }
   }, [addFavorite, isFavorite, removeFavorite, site]);
