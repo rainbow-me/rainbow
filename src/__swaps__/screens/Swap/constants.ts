@@ -30,6 +30,10 @@ export const THICK_BORDER_WIDTH = 4 / 3;
 export const INPUT_PADDING = 20 - THICK_BORDER_WIDTH;
 export const INPUT_INNER_WIDTH = BASE_INPUT_WIDTH - THICK_BORDER_WIDTH * 2;
 
+export const COIN_ROW_HEIGHT = 76;
+export const COIN_ROW_LIST_HEIGHT = EXPANDED_INPUT_HEIGHT - 77;
+export const COIN_ROW_LIST_WIDTH = deviceUtils.dimensions.width - 24;
+
 export const SLIDER_HEIGHT = 16;
 export const SLIDER_COLLAPSED_HEIGHT = 10;
 export const SLIDER_WIDTH = deviceUtils.dimensions.width - 40;

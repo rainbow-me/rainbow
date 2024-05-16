@@ -1,14 +1,14 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Animated, { SharedValue, useAnimatedProps } from 'react-native-reanimated';
-import { StyleSheet } from 'react-native';
+import { InteractionManager, StyleSheet } from 'react-native';
 import { Separator, Stack } from '@/design-system';
 import { useDimensions } from '@/hooks';
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '@/__swaps__/screens/Swap/constants';
 import { SearchInput } from '@/__swaps__/screens/Swap/components/SearchInput';
 import { TokenToSellList } from '@/__swaps__/screens/Swap/components/TokenList/TokenToSellList';
-import { TokenToBuyList } from '@/__swaps__/screens/Swap/components/TokenList/TokenToBuyList';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { TokenToBuyList } from './TokenToBuyList';
 
 export const TokenList = ({
   asset,
@@ -21,6 +21,7 @@ export const TokenList = ({
   handleFocusSearch: () => void;
   output?: boolean;
 }) => {
+  const [isSwapMounted, setIsSwapMounted] = useState(false);
   const { inputProgress, outputProgress } = useSwapContext();
   const { width: deviceWidth } = useDimensions();
 
@@ -34,6 +35,20 @@ export const TokenList = ({
       },
     };
   });
+
+  useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      setIsSwapMounted(true);
+    });
+
+    return () => {
+      setIsSwapMounted(false);
+    };
+  }, []);
+
+  if (!isSwapMounted) {
+    return null;
+  }
 
   return (
     <Stack>

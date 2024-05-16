@@ -1,45 +1,29 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { StyleSheet } from 'react-native';
 import { CoinRow2 } from '@/__swaps__/screens/Swap/components/CoinRow2';
-import { UniqueId } from '@/__swaps__/types/assets';
 import { Stack } from '@/design-system';
-import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { FlashList } from '@shopify/flash-list';
 import { ChainSelection } from './ChainSelection';
-import { SwapAssetType } from '@/__swaps__/types/swap';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { COIN_ROW_LIST_WIDTH, COIN_ROW_LIST_HEIGHT, COIN_ROW_HEIGHT } from '../../constants';
 
 export const TokenToSellList = () => {
-  const { setAsset } = useSwapContext();
   const assetIds = userAssetsStore(state => state.filteredUserAssetsById);
-
-  const handleSelectToken = useCallback(
-    (assetId: UniqueId) => {
-      const userAsset = userAssetsStore.getState().getUserAsset(assetId);
-      const parsedAsset = parseSearchAsset({
-        assetWithPrice: undefined,
-        searchAsset: userAsset,
-        userAsset,
-      });
-
-      setAsset({
-        type: SwapAssetType.inputAsset,
-        asset: parsedAsset,
-      });
-    },
-    [setAsset]
-  );
 
   return (
     <Stack space="20px">
       <ChainSelection allText="All Networks" output={false} />
       <FlashList
         data={assetIds}
+        estimatedItemSize={COIN_ROW_HEIGHT}
+        estimatedListSize={{
+          height: COIN_ROW_LIST_HEIGHT,
+          width: COIN_ROW_LIST_WIDTH,
+        }}
         ListEmptyComponent={<ListEmpty />}
         keyExtractor={item => item}
-        renderItem={({ item }) => <CoinRow2 assetId={item} output={false} onPress={handleSelectToken} />}
+        renderItem={({ item }) => <CoinRow2 assetId={item} />}
       />
     </Stack>
   );
