@@ -194,7 +194,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       switch (type) {
         case SwapAssetType.inputAsset:
           internalSelectedInputAsset.value = asset;
-          outputChainId.value = asset?.chainId ?? ChainId.mainnet;
+          selectedOutputChainId.value = asset?.chainId ?? ChainId.mainnet;
           break;
         case SwapAssetType.outputAsset:
           internalSelectedOutputAsset.value = asset;
