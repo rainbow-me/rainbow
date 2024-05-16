@@ -5,7 +5,8 @@ import { IS_IOS } from '@/env';
 const { height, width } = Dimensions.get('window');
 
 const deviceUtils = (function () {
-  const iPhone6Height = 667,
+  const iPhone15ProHeight = 852,
+    iPhone6Height = 667,
     iphoneSEHeight = 568,
     iPhoneXHeight = 812,
     iPhoneXWidth = 375,
@@ -20,6 +21,7 @@ const deviceUtils = (function () {
       width,
     },
     hasClipboardProtection: isIOS14 || isAndroid12,
+    iPhone15ProHeight,
     iPhone6Height,
     iphoneSEHeight,
     iPhoneXHeight,

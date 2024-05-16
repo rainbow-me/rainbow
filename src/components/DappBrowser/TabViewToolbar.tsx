@@ -99,6 +99,7 @@ type BaseButtonProps = {
   iconColor?: TextColor;
   iconSize?: TextSize;
   iconWeight?: TextWeight;
+  lightShadows?: boolean;
   onPress?: () => void;
   onPressWorklet?: () => void;
   paddingHorizontal?: BoxProps['paddingHorizontal'];
@@ -112,6 +113,7 @@ const BaseButton = ({
   iconColor = 'labelSecondary',
   iconSize = 'icon 17px',
   iconWeight = 'heavy',
+  lightShadows = true,
   onPress,
   onPressWorklet,
   paddingHorizontal = '16px',
@@ -127,7 +129,7 @@ const BaseButton = ({
   const buttonColor = IS_IOS ? buttonColorIOS : buttonColorAndroid;
 
   return (
-    <BrowserButtonShadows>
+    <BrowserButtonShadows lightShadows={lightShadows}>
       <Bleed space="8px">
         <HybridWorkletButton onPress={onPress} onPressWorklet={onPressWorklet} scaleTo={scaleTo} style={{ padding: 8 }}>
           <Box
