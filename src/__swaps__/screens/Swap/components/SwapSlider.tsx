@@ -36,6 +36,7 @@ import {
 } from '@/__swaps__/screens/Swap/constants';
 import { clamp, getColorValueForThemeWorklet, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { AmimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
 
 type SwapSliderProps = {
   dualColor?: boolean;
@@ -75,8 +76,8 @@ export const SwapSlider = ({
 
   // Callback function to handle percentage change once slider is at rest
   const onChangeWrapper = useCallback(
-    (percentage: number) => {
-      SwapInputController.onChangedPercentage(percentage);
+    (percentage: number, setStale = true) => {
+      SwapInputController.onChangedPercentage(percentage, setStale);
     },
     [SwapInputController]
   );
@@ -372,19 +373,12 @@ export const SwapSlider = ({
       <Animated.View style={AnimatedSwapStyles.hideWhileReviewingOrConfiguringGas}>
         {/* @ts-expect-error */}
         <TapGestureHandler onGestureEvent={onPressDown} simultaneousHandlers={[panRef]}>
-          <Animated.View style={{ gap: 14, paddingBottom: 20, paddingHorizontal: 20, paddingTop: 16 }}>
+          <Animated.View style={{ gap: 14, paddingBottom: 20, paddingHorizontal: 20 }}>
             <View style={{ zIndex: 10 }}>
               <Columns alignHorizontal="justify" alignVertical="center">
                 <Inline alignVertical="center" space="6px" wrap={false}>
                   <Bleed vertical="4px">
-                    {/* TODO: Implement Coin Icons using reanimated values */}
-                    <Box
-                      as={Animated.View}
-                      borderRadius={18}
-                      height={{ custom: 16 }}
-                      style={[styles.solidColorCoinIcon, AnimatedSwapStyles.assetToBuyIconStyle]}
-                      width={{ custom: 16 }}
-                    />
+                    <AmimatedSwapCoinIcon showBadge={false} asset={internalSelectedInputAsset} small />
                   </Bleed>
                   <Inline alignVertical="bottom" wrap={false}>
                     <Text color={isDarkMode ? 'labelQuaternary' : 'labelTertiary'} size="15pt" style={{ marginRight: 3 }} weight="bold">
@@ -398,8 +392,10 @@ export const SwapSlider = ({
                     activeOpacity={0.4}
                     hitSlop={8}
                     onPress={() => {
+                      'worklet';
+
+                      SwapInputController.quoteFetchingInterval.stop();
                       SwapInputController.inputMethod.value = 'slider';
-                      isQuoteStale.value = 1;
                       setTimeout(() => {
                         sliderXPosition.value = withSpring(width, snappySpringConfig);
                         onChangeWrapper(1);
