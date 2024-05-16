@@ -42,8 +42,8 @@ interface SwapContextType {
   lastTypedInput: SharedValue<inputKeys>;
   focusedInput: SharedValue<inputKeys>;
 
-  // TODO: Separate this into Zustand
-  outputChainId: SharedValue<ChainId>;
+  selectedOutputChainId: SharedValue<ChainId>;
+  setSelectedOutputChainId: (chainId: ChainId) => void;
 
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
@@ -84,7 +84,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
   const lastTypedInput = useSharedValue<inputKeys>('inputAmount');
   const focusedInput = useSharedValue<inputKeys>('inputAmount');
-  const outputChainId = useSharedValue<ChainId>(ChainId.mainnet);
+
+  const selectedOutputChainId = useSharedValue<ChainId>(ChainId.mainnet);
 
   const internalSelectedInputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(null);
   const internalSelectedOutputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(null);
@@ -171,6 +172,16 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         }
         break;
     }
+  };
+
+  const setSelectedOutputChainId = (chainId: ChainId) => {
+    const updateChainId = (chainId: ChainId) => {
+      'worklet';
+      selectedOutputChainId.value = chainId;
+    };
+
+    swapsStore.setState({ selectedOutputChainId: chainId });
+    runOnUI(updateChainId)(chainId);
   };
 
   const setAsset = ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset }) => {
@@ -320,7 +331,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
         lastTypedInput,
         focusedInput,
-        outputChainId,
+
+        selectedOutputChainId,
+        setSelectedOutputChainId,
 
         internalSelectedInputAsset,
         internalSelectedOutputAsset,
