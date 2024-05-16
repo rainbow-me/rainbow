@@ -60,8 +60,6 @@ import WalletTypes from '@/helpers/walletTypes';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { addressSetSelected, walletsSetSelected } from '@/redux/wallets';
-import { set } from 'lodash';
-import { LoadingOverlay } from '@/components/modal';
 
 const PAGES = {
   HOME: 'home',
@@ -123,7 +121,6 @@ export const ControlPanel = () => {
 
       if (currentSession?.address) {
         setCurrentAddress(currentSession?.address);
-        // setIsConnected(true);
       } else {
         setCurrentAddress(accountAddress);
       }
@@ -387,7 +384,6 @@ const HomePanel = ({
   const { wallets } = useWallets();
   const initializeWallet = useInitializeWallet();
   const dispatch = useDispatch();
-  const [busy, setBusy] = useState(false);
 
   const actionButtonList = useMemo(() => {
     const walletIcon = selectedWallet?.IconComponent || <></>;
@@ -437,14 +433,10 @@ const HomePanel = ({
     // Check if it's different to the globally selected wallet
     if (selectedWallet.uniqueId !== accountAddress) {
       // switch to selected wallet
-      setBusy(true);
       const p1 = dispatch(walletsSetSelected(walletInPanel));
       const p2 = dispatch(addressSetSelected(selectedWallet.uniqueId));
       await Promise.all([p1, p2]);
-      await initializeWallet(null, null, null, false, false, null, true, null);
-      setTimeout(() => {
-        setBusy(false);
-      }, 300);
+      initializeWallet(null, null, null, false, false, null, true, null);
     }
     return true;
   }, [accountAddress, dispatch, initializeWallet, selectedWallet, wallets]);
@@ -522,7 +514,6 @@ const HomePanel = ({
           {actionButtonList}
         </Stack>
       </Box>
-      {busy && <LoadingOverlay />}
     </Panel>
   );
 };
