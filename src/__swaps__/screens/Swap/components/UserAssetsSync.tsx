@@ -29,8 +29,10 @@ export const UserAssetsSync = () => {
         data.forEach(asset => {
           if (filter === 'all' || asset.chainId === filter) {
             if (searchQuery) {
-              const stringToSearch = `${asset.name} ${asset.symbol} ${asset.address}`.toLowerCase();
-              if (stringToSearch.includes(searchQuery)) {
+              const nameMatch = asset.name.toLowerCase().includes(searchQuery);
+              const symbolMatch = asset.symbol.toLowerCase().startsWith(searchQuery);
+              const addressMatch = asset.address.toLowerCase().startsWith(searchQuery);
+              if (nameMatch || symbolMatch || addressMatch) {
                 filteredUserAssetsById.push(asset.uniqueId);
               }
             } else {

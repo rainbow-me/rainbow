@@ -136,16 +136,18 @@ userAssetsStore.subscribe(
     if (searchQuery === prevSearchQuery && filter === prevFilter) {
       return;
     }
-
     const userAssets = userAssetsStore.getState().userAssets;
     const filteredUserAssetsById: UniqueId[] = [];
+    const lowercasedQuery = searchQuery.toLowerCase();
 
     if (searchQuery !== prevSearchQuery && filter !== prevFilter) {
       userAssets.forEach(asset => {
         if (filter === 'all' || asset.chainId === filter) {
           if (searchQuery) {
-            const stringToSearch = `${asset.name} ${asset.symbol} ${asset.address}`.toLowerCase();
-            if (stringToSearch.includes(searchQuery)) {
+            const nameMatch = asset.name.toLowerCase().includes(lowercasedQuery);
+            const symbolMatch = asset.symbol.toLowerCase().startsWith(lowercasedQuery);
+            const addressMatch = asset.address.toLowerCase().startsWith(lowercasedQuery);
+            if (nameMatch || symbolMatch || addressMatch) {
               filteredUserAssetsById.push(asset.uniqueId);
             }
           } else {
@@ -156,8 +158,10 @@ userAssetsStore.subscribe(
     } else if (searchQuery !== prevSearchQuery) {
       userAssets.forEach(asset => {
         if (searchQuery) {
-          const stringToSearch = `${asset.name} ${asset.symbol} ${asset.address}`.toLowerCase();
-          if (stringToSearch.includes(searchQuery)) {
+          const nameMatch = asset.name.toLowerCase().includes(lowercasedQuery);
+          const symbolMatch = asset.symbol.toLowerCase().startsWith(lowercasedQuery);
+          const addressMatch = asset.address.toLowerCase().startsWith(lowercasedQuery);
+          if (nameMatch || symbolMatch || addressMatch) {
             filteredUserAssetsById.push(asset.uniqueId);
           }
         } else {
