@@ -129,7 +129,7 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
     const inputRange = Array.from({ length: numberOfTabs }, (_, index) => index);
     const outputRange = Array.from({ length: numberOfTabs }, (_, index) => tabPillStartPosition + tabWidth * index);
     return { inputRange, outputRange };
-  }, [numberOfTabs, tabPillStartPosition, tabWidth]);
+  });
 
   const tabStyle = useAnimatedStyle(() => {
     const translateX = interpolate(reanimatedPosition.value, tabPositions.value.inputRange, tabPositions.value.outputRange, 'clamp');
@@ -143,18 +143,21 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
     const shouldUseBrowserStyle = showDappBrowserTab && reanimatedPosition.value === 2;
     return {
       borderTopColor: isDarkMode ? separatorSecondary : LIGHT_SEPARATOR_COLOR,
-      borderTopWidth: shouldUseBrowserStyle ? withTiming(1, fadeConfig) : withTiming(0, fadeConfig),
-      opacity: shouldUseBrowserStyle ? withTiming(1, fadeConfig) : withTiming(0, fadeConfig),
+      borderTopWidth: withTiming(shouldUseBrowserStyle ? 1 : 0, fadeConfig),
+      opacity: withTiming(shouldUseBrowserStyle ? 1 : 0, fadeConfig),
     };
   });
 
-  const dappBrowserTabBarShadowStyle = useAnimatedStyle(() => ({
-    shadowOpacity:
-      showDappBrowserTab && reanimatedPosition.value === 2 ? withTiming(0, fadeConfig) : withTiming(isDarkMode ? 0.2 : 0.04, fadeConfig),
-  }));
+  const dappBrowserTabBarShadowStyle = useAnimatedStyle(() => {
+    const defaultShadowOpacity = isDarkMode ? 0.2 : 0.04;
+    const shadowOpacity = showDappBrowserTab && reanimatedPosition.value === 2 ? 0 : defaultShadowOpacity;
+    return {
+      shadowOpacity: withTiming(shadowOpacity, fadeConfig),
+    };
+  });
 
   const hideForBrowserTabViewStyle = useAnimatedStyle(() => {
-    const progress = tabViewProgress?.value || 0;
+    const progress = tabViewProgress.value || 0;
     const opacity = 1 - progress / 75;
     const pointerEvents = opacity < 1 ? 'none' : 'auto';
 
