@@ -263,9 +263,8 @@ export function useSwapInputsController({
           currency,
         });
 
-        queryClient.setQueryData(externalTokenQueryKey({ address, network, currency }), tokenData);
-
         if (tokenData?.price.value) {
+          queryClient.setQueryData(externalTokenQueryKey({ address, network, currency }), tokenData);
           runOnUI(updateNativePriceForAsset)({
             price: tokenData.price.value,
             type,
