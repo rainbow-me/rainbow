@@ -3,8 +3,7 @@ import { useCallback } from 'react';
 
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { gasStore } from '@/state/gas/gasStore';
-import { GasFeeParams } from '@/entities';
-import { GasFeeLegacyParams } from '@/__swaps__/types/gas';
+import { GasFeeLegacyParams, GasFeeParams } from '@/__swaps__/types/gas';
 import { CUSTOM_GAS_FIELDS } from './useCustomGas';
 import { greaterThan } from '@/helpers/utilities';
 
