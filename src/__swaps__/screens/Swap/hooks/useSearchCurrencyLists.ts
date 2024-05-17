@@ -14,6 +14,7 @@ import { isAddress } from '@ethersproject/address';
 import { RainbowToken } from '@/entities';
 import { useSwapContext } from '../providers/swap-provider';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { VerifiedAssetsSync } from '../components/VerifiedAssetsSync';
 
 const VERIFIED_ASSETS_PAYLOAD: {
   keys: TokenSearchAssetKey[];
@@ -43,7 +44,7 @@ export function useSearchCurrencyLists() {
   const { internalSelectedInputAsset: assetToSell, outputChainId } = useSwapContext();
 
   const searchQuery = userAssetsStore(state => state.searchQuery);
-
+  VerifiedAssetsSync();
   const [inputChainId, setInputChainId] = useState(assetToSell.value?.chainId ?? ChainId.mainnet);
   const [toChainId, setToChainId] = useState(outputChainId.value);
   const [assetToSellAddress, setAssetToSellAddress] = useState(
