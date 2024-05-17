@@ -185,9 +185,11 @@ export function useSwapInputsController({
         } else {
           const inputBalance = Number(internalSelectedInputAsset.value?.balance.amount || '0');
           const updatedSliderPosition = clamp((inputAmount / inputBalance) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
-
-          // Update slider position
-          sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
+          if (Number.isNaN(updatedSliderPosition)) {
+            sliderXPosition.value = withSpring(0, snappySpringConfig);
+          } else {
+            sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
+          }
         }
       }
 
@@ -413,7 +415,7 @@ export function useSwapInputsController({
 
   const fetchQuoteAndAssetPrices = () => {
     'worklet';
-    // reset the quote data, so we don't use stale data
+    // reset the quote data immediately, so we don't use stale data
     setQuote({ data: null });
 
     const isSomeInputGreaterThanZero = Number(inputValues.value.inputAmount) > 0 || Number(inputValues.value.outputAmount) > 0;
@@ -423,7 +425,6 @@ export function useSwapInputsController({
       return;
     }
     isFetching.value = true;
-    isQuoteStale.value = 1;
 
     runOnJS(fetchAndUpdatePrices)({
       inputAsset: internalSelectedInputAsset.value,
@@ -467,6 +468,7 @@ export function useSwapInputsController({
       if (setStale) isQuoteStale.value = 1;
       const updateWorklet = () => {
         'worklet';
+        // if the user types in the inputAmount let's optimistically update the slider position
         if (inputKey === 'inputAmount') {
           const inputAssetBalance = Number(internalSelectedInputAsset.value?.balance.amount || '0');
           const updatedSliderPosition = clamp((amount / inputAssetBalance) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
@@ -515,7 +517,7 @@ export function useSwapInputsController({
     return () => {
       resetTimers();
     };
-  }, 400);
+  }, 200);
 
   // This handles cleaning up typed amounts when the input focus changes
   useAnimatedReaction(
@@ -598,28 +600,22 @@ export function useSwapInputsController({
       if (!previous) {
         // Handle setting of initial values using niceIncrementFormatter,
         // because we will likely set a percentage-based default input value
-        if (
-          !current.assetToSell ||
-          !current.assetToBuy ||
-          !internalSelectedInputAsset.value?.nativePrice ||
-          !internalSelectedOutputAsset.value?.nativePrice
-        )
-          return;
+        if (!current.assetToSell?.nativePrice || !current.assetToBuy?.nativePrice) return;
 
         const balance = Number(current.assetToSell.balance.amount);
         const inputAmount = niceIncrementFormatter(
           incrementDecimalPlaces.value,
           balance,
-          internalSelectedInputAsset.value.nativePrice,
+          current.assetToSell.nativePrice,
           niceIncrement.value,
           percentageToSwap.value,
           sliderXPosition.value,
           true
         );
 
-        const inputNativeValue = Number(inputAmount) * internalSelectedInputAsset.value.nativePrice;
-        const outputAmount = (inputNativeValue / internalSelectedOutputAsset.value.nativePrice) * (1 - SWAP_FEE); // TODO: Implement swap fee
-        const outputNativeValue = outputAmount * internalSelectedOutputAsset.value.nativePrice;
+        const inputNativeValue = Number(inputAmount) * current.assetToSell.nativePrice;
+        const outputAmount = (inputNativeValue / current.assetToBuy.nativePrice) * (1 - SWAP_FEE); // TODO: Implement swap fee
+        const outputNativeValue = outputAmount * current.assetToBuy.nativePrice;
 
         inputValues.modify(values => {
           return {
@@ -652,7 +648,7 @@ export function useSwapInputsController({
             if (!current.assetToSell) return;
 
             const balance = Number(current.assetToSell.balance.amount);
-            if (!balance || !internalSelectedInputAsset.value?.nativePrice) {
+            if (!balance || !current.assetToSell.nativePrice) {
               inputValues.modify(values => {
                 return {
                   ...values,
@@ -669,13 +665,13 @@ export function useSwapInputsController({
             const inputAmount = niceIncrementFormatter(
               incrementDecimalPlaces.value,
               balance,
-              internalSelectedInputAsset.value?.nativePrice,
+              current.assetToSell.nativePrice,
               niceIncrement.value,
               percentageToSwap.value,
               sliderXPosition.value,
               true
             );
-            const inputNativeValue = Number(inputAmount) * internalSelectedInputAsset.value?.nativePrice;
+            const inputNativeValue = Number(inputAmount) * current.assetToSell.nativePrice;
             inputValues.modify(values => {
               return {
                 ...values,

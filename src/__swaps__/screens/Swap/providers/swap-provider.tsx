@@ -124,6 +124,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     quote,
     sliderXPosition,
     isFetching,
+    isQuoteStale,
   });
 
   const AnimatedSwapStyles = useAnimatedSwapStyles({
