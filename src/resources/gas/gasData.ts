@@ -4,7 +4,7 @@ import { meteorologySupportsChain } from '@/__swaps__/utils/gasUtils';
 import { useMeteorology } from './meteorology';
 import { useProviderGas } from './providerGas';
 
-const getRefetchTime = (chainId: ChainId) => {
+export const getRefetchTime = (chainId: ChainId) => {
   switch (chainId) {
     case ChainId.arbitrum:
     case ChainId.mainnet:

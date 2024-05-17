@@ -6,10 +6,12 @@ import { createStore } from '@/state/internal/createStore';
 import { withSelectors } from '@/state/internal/withSelectors';
 
 export interface GasStore {
+  selectedGasSpeed: GasSpeed;
   selectedGas: GasFeeParams | GasFeeLegacyParams;
   gasFeeParamsBySpeed: GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed;
   customGasModified: boolean;
   setCustomSpeed: (speed: GasFeeParams) => void;
+  setSelectedGasSpeed: (speed: GasSpeed) => void;
   setSelectedGas: ({ selectedGas }: { selectedGas: GasFeeParams | GasFeeLegacyParams }) => void;
   setGasFeeParamsBySpeed: ({ gasFeeParamsBySpeed }: { gasFeeParamsBySpeed: GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed }) => void;
   clearCustomGasModified: () => void;
@@ -17,9 +19,15 @@ export interface GasStore {
 
 export const gasStore = createStore<GasStore>(
   (set, get) => ({
+    selectedGasSpeed: GasSpeed.NORMAL,
     selectedGas: {} as GasFeeParams | GasFeeLegacyParams,
     gasFeeParamsBySpeed: {} as GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed,
     customGasModified: false,
+    setSelectedGasSpeed: (speed: GasSpeed) => {
+      set({
+        selectedGasSpeed: speed,
+      });
+    },
     setSelectedGas: ({ selectedGas }) => {
       set({
         selectedGas,

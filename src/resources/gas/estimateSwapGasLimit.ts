@@ -17,9 +17,9 @@ export type EstimateSwapGasLimitResponse = {
 
 export type EstimateSwapGasLimitArgs = {
   chainId: ChainId;
-  quote?: Quote | CrosschainQuote | QuoteError;
-  assetToSell?: ParsedSearchAsset;
-  assetToBuy?: ParsedSearchAsset;
+  quote?: Quote | CrosschainQuote | QuoteError | null;
+  assetToSell?: ParsedSearchAsset | null;
+  assetToBuy?: ParsedSearchAsset | null;
 };
 
 // ///////////////////////////////////////////////
