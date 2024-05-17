@@ -517,7 +517,7 @@ export function useSwapInputsController({
     return () => {
       resetTimers();
     };
-  }, 200);
+  }, 400);
 
   // This handles cleaning up typed amounts when the input focus changes
   useAnimatedReaction(
