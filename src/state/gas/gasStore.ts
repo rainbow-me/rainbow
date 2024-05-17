@@ -1,11 +1,9 @@
 import create from 'zustand';
 
-// todo - absolute imports
-import { GasFeeLegacyParams, GasFeeLegacyParamsBySpeed, GasFeeParams, GasFeeParamsBySpeed, GasSpeed } from '../../__swaps__/types/gas';
+import { GasFeeLegacyParams, GasFeeLegacyParamsBySpeed, GasFeeParams, GasFeeParamsBySpeed, GasSpeed } from '@/__swaps__/types/gas';
 
-import { createStore } from '../internal/createStore';
-import { buildLocalizedTimeUnitString } from '@/__swaps__/utils/time';
-import { gasUtils } from '@/utils';
+import { createStore } from '@/state/internal/createStore';
+import { withSelectors } from '@/state/internal/withSelectors';
 
 export interface GasStore {
   selectedGas: GasFeeParams | GasFeeLegacyParams;
@@ -19,29 +17,7 @@ export interface GasStore {
 
 export const gasStore = createStore<GasStore>(
   (set, get) => ({
-    selectedGas: {
-      maxBaseFee: {
-        amount: '0',
-        display: '0.01',
-        gwei: '0',
-      },
-      maxPriorityFeePerGas: {
-        amount: '0',
-        display: '0',
-        gwei: '0',
-      },
-      option: GasSpeed.FAST,
-      estimatedTime: {
-        amount: 12,
-        display: buildLocalizedTimeUnitString({ plural: true, short: true, unit: '12' }),
-      },
-      display: gasUtils.getGasLabel(gasUtils.FAST),
-      transactionGasParams: {
-        maxPriorityFeePerGas: '0',
-        maxFeePerGas: '0',
-      },
-      gasFee: {},
-    } as GasFeeParams | GasFeeLegacyParams,
+    selectedGas: {} as GasFeeParams | GasFeeLegacyParams,
     gasFeeParamsBySpeed: {} as GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed,
     customGasModified: false,
     setSelectedGas: ({ selectedGas }) => {
@@ -76,4 +52,4 @@ export const gasStore = createStore<GasStore>(
   }
 );
 
-export const useGasStore = create(gasStore);
+export const useGasStore = withSelectors(create(gasStore));

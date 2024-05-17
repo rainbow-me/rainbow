@@ -23,17 +23,16 @@ export const useSwapGas = ({
   const priorityFee = useSharedValue<string>('');
   const maxTransactionFee = useSharedValue('');
 
-  const selectGasOption = useCallback(
-    (option: GasFeeParams | GasFeeLegacyParams) => {
-      'worklet';
+  const setJSGasOption = useCallback((selectedGas: GasFeeParams | GasFeeLegacyParams) => {
+    gasStore.getState().setSelectedGas({ selectedGas });
+  }, []);
 
-      selectedGas.value = option;
-      runOnJS(gasStore.setState)({
-        selectedGas: option as GasFeeLegacyParams,
-      });
-    },
-    [selectedGas]
-  );
+  const selectGasOption = (option: GasFeeParams | GasFeeLegacyParams) => {
+    'worklet';
+
+    selectedGas.value = option;
+    runOnJS(setJSGasOption)(option);
+  };
 
   const updateCustomFieldValue = useCallback((field: CUSTOM_GAS_FIELDS, value: string) => {
     switch (field) {
