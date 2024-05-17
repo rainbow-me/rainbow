@@ -69,13 +69,7 @@ export function SwapScreen() {
           <SwapInputAsset />
           <FlipButton />
           <SwapOutputAsset />
-          <Box
-            as={Animated.View}
-            width="full"
-            position="absolute"
-            bottom="0px"
-            style={AnimatedSwapStyles.hideWhenInputsExpandedOrPriceImpact}
-          >
+          <Box as={Animated.View} width="full" position="absolute" bottom="0px" style={AnimatedSwapStyles.hideWhenInputsExpanded}>
             <SliderAndKeyboard />
             <SwapBottomPanel />
           </Box>

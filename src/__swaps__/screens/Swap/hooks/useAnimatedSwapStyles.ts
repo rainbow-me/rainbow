@@ -75,6 +75,13 @@ export function useAnimatedSwapStyles({
     };
   });
 
+  const hideWhenInputsExpanded = useAnimatedStyle(() => {
+    return {
+      opacity: inputProgress.value > 0 || outputProgress.value > 0 ? withTiming(0, fadeConfig) : withTiming(1, fadeConfig),
+      pointerEvents: inputProgress.value > 0 || outputProgress.value > 0 ? 'none' : 'auto',
+    };
+  });
+
   const hideWhenInputsExpandedOrPriceImpact = useAnimatedStyle(() => {
     return {
       opacity:
@@ -242,6 +249,7 @@ export function useAnimatedSwapStyles({
   return {
     flipButtonStyle,
     focusedSearchStyle,
+    hideWhenInputsExpanded,
     hideWhenInputsExpandedOrPriceImpact,
     hideWhenInputsExpandedOrNoPriceImpact,
     inputStyle,
