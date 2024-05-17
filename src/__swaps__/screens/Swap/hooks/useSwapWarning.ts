@@ -46,6 +46,7 @@ type UsePriceImpactWarningProps = {
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
   sliderXPosition: SharedValue<number>;
   isFetching: SharedValue<boolean>;
+  isQuoteStale: SharedValue<number>;
 };
 
 type CurrentProps = {
@@ -62,6 +63,7 @@ export const useSwapWarning = ({
   outputAsset,
   quote,
   isFetching,
+  isQuoteStale,
   sliderXPosition,
 }: UsePriceImpactWarningProps) => {
   const { nativeCurrency: currentCurrency } = useAccountSettings();
@@ -165,19 +167,22 @@ export const useSwapWarning = ({
   // TODO: How can we make this more efficient?
   useAnimatedReaction(
     () => ({
+      inputAsset: inputAsset.value,
+      outputAsset: outputAsset.value,
       inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
       outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
       quote: quote.value,
       isFetching: isFetching.value,
+      isQuoteStale: isQuoteStale.value,
       sliderXPosition: sliderXPosition.value,
     }),
     (current, previous) => {
-      if (!inputAsset || !outputAsset) {
+      if (!current.inputAsset || !current.outputAsset) {
         return;
       }
 
-      if (previous?.sliderXPosition && previous?.sliderXPosition !== current.sliderXPosition) {
-        swapWarning.modify(prev => ({ ...prev, display: '', type: SwapWarningType.none }));
+      if ((previous?.sliderXPosition && previous?.sliderXPosition !== current.sliderXPosition) || current.isQuoteStale) {
+        updateWarning({ type: SwapWarningType.none, title: '', color: colorMap[SwapWarningType.none], icon: '', subtitle: '' });
       } else if (
         (current.quote && previous?.quote !== current.quote) ||
         previous?.inputNativeValue !== current.inputNativeValue ||
