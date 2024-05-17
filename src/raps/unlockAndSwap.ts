@@ -19,7 +19,9 @@ import { createNewAction, createNewRap } from './common';
 import { RapAction, RapSwapActionParameters, RapUnlockActionParameters } from './references';
 import { isWrapNative } from '@/handlers/swap';
 
-export const estimateUnlockAndSwap = async (swapParameters: RapSwapActionParameters<'swap'>) => {
+export const estimateUnlockAndSwap = async (
+  swapParameters: Omit<RapSwapActionParameters<'swap'>, 'selectedGasFee' | 'gasFeeParamsBySpeed'>
+) => {
   const { sellAmount, quote, chainId, assetToSell } = swapParameters;
 
   const {
