@@ -29,6 +29,7 @@ import {
   multiply,
 } from '@/__swaps__/utils/numbers';
 import { getMinimalTimeUnitStringForMs } from '@/__swaps__/utils/time';
+import { isL2Chain } from './chains';
 
 export const FLASHBOTS_MIN_TIP = 6;
 
@@ -159,7 +160,44 @@ export const parseCustomGasFeeParams = ({
   };
 };
 
+export const countDecimalsForValue = (value: number): number => {
+  // We'll use one of these factors to adjust the base increment
+  // These factors are chosen to:
+  // a) Produce user-friendly amounts to swap (e.g., 0.1, 0.2, 0.3, 0.4…)
+  // b) Limit shifts in the number of decimal places between increments
+  const niceFactors = [1, 2, 10];
+
+  // Calculate the exact increment for 100 steps
+  const exactIncrement = value / 100;
+
+  // Calculate the order of magnitude of the exact increment
+  const orderOfMagnitude = Math.floor(Math.log10(exactIncrement));
+  const baseIncrement = Math.pow(10, orderOfMagnitude);
+
+  let adjustedIncrement = baseIncrement;
+
+  // Find the first nice increment that ensures at least 100 steps
+  for (let i = niceFactors.length - 1; i >= 0; i--) {
+    const potentialIncrement = baseIncrement * niceFactors[i];
+    if (potentialIncrement <= exactIncrement) {
+      adjustedIncrement = potentialIncrement;
+      break;
+    }
+  }
+
+  const numAsString = adjustedIncrement.toString();
+
+  if (numAsString.includes('.')) {
+    // Return the number of digits after the decimal point, excluding trailing zeros
+    return numAsString.split('.')[1].replace(/0+$/, '').length;
+  }
+
+  // If no decimal point
+  return 0;
+};
+
 export const parseGasFeeParams = ({
+  chainId,
   wei,
   currentBaseFee,
   speed,
@@ -172,6 +210,7 @@ export const parseGasFeeParams = ({
   secondsPerNewBlock,
   optimismL1SecurityFee,
 }: {
+  chainId: ChainId;
   wei: string;
   speed: GasSpeed;
   maxPriorityFeeSuggestions: {
@@ -197,9 +236,11 @@ export const parseGasFeeParams = ({
 
   const baseFee = lessThan(currentBaseFee, maxBaseFee.amount) ? currentBaseFee : maxBaseFee.amount;
 
-  const display = `${new BigNumber(weiToGwei(add(baseFee, maxPriorityFeePerGas.amount))).toFixed(0)} - ${new BigNumber(
+  const isL2 = isL2Chain(chainId);
+
+  const display = `${new BigNumber(weiToGwei(add(baseFee, maxPriorityFeePerGas.amount))).toFixed(isL2 ? 4 : 0)} - ${new BigNumber(
     weiToGwei(add(maxBaseFee.amount, maxPriorityFeePerGas.amount))
-  ).toFixed(0)} Gwei`;
+  ).toFixed(isL2 ? 4 : 0)} Gwei`;
 
   const estimatedTime = parseGasDataConfirmationTime({
     maxBaseFee: maxBaseFee.amount,
@@ -519,6 +560,7 @@ export const parseGasFeeParamsBySpeed = ({
 
     const parseGasFeeParamsSpeed = ({ speed }: { speed: GasSpeed }) =>
       parseGasFeeParams({
+        chainId,
         currentBaseFee,
         maxPriorityFeeSuggestions,
         speed,

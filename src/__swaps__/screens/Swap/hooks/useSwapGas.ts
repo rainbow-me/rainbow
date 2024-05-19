@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
@@ -35,7 +36,7 @@ export const useSwapGas = ({
   const { optimismFee: optimismL1SecurityFee, optimismFeeInterval } = useOptimismSecurityFee({ inputAsset, quote });
   const { estimatedGasLimit, estimatedGasLimitInterval } = useEstimateSwapGasLimit({ inputAsset, outputAsset, quote });
 
-  // main driver that updates all the gasData and gasFeeParamsBySpeed
+  // NOTE: main driver that updates all the gasData and gasFeeParamsBySpeed
   const { gasData, gasDataInterval } = useGasData({
     inputAsset,
     quote,

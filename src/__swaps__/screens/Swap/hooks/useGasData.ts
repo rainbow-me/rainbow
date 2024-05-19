@@ -41,7 +41,7 @@ export const useGasData = ({
   const isFetching = useSharedValue(false);
 
   const chainId = useDerivedValue(() => inputAsset.value?.chainId ?? ChainId.mainnet);
-  const supportedMeteorologyChain = useDerivedValue(() => meteorologySupportsChainWorklet(chainId.value));
+  const supportedMeteorologyChain = useSharedValue(meteorologySupportsChainWorklet(chainId.value));
 
   const getGasDataFromProvider = useCallback(
     async ({
@@ -59,6 +59,8 @@ export const useGasData = ({
       optimismL1SecurityFee: string | null | undefined;
       flashbotsEnabled: boolean;
     }) => {
+      logger.debug(`[useGasData] fetching provider gas data for chain ${chainId}`);
+
       const updateValues = ({
         data,
         gasParamsBySpeed,
@@ -80,7 +82,6 @@ export const useGasData = ({
 
       try {
         const providerGasData = await getProviderGas({ chainId });
-
         if (nativeAsset && (providerGasData as MeteorologyLegacyResponse)?.data?.legacy) {
           const parsedParams = parseGasFeeParamsBySpeed({
             chainId,
@@ -105,7 +106,7 @@ export const useGasData = ({
           data: providerGasData,
         });
       } catch (error) {
-        logger.error(new RainbowError('[useGasData]: Failed to fetch meteorology data'), {
+        logger.error(new RainbowError('[useGasData]: Failed to fetch provider gas data'), {
           data: {
             chainId,
             error,
@@ -132,6 +133,7 @@ export const useGasData = ({
       optimismL1SecurityFee: string | null | undefined;
       flashbotsEnabled: boolean;
     }) => {
+      logger.debug(`[useGasData] fetching meteorology data for chain ${chainId}`);
       const updateValues = ({
         data,
         gasParamsBySpeed,
@@ -153,9 +155,6 @@ export const useGasData = ({
 
       try {
         const meteorologyData = await fetchMeteorology({ chainId });
-
-        console.log(JSON.stringify(meteorologyData, null, 2));
-
         if (
           (nativeAsset && (meteorologyData as MeteorologyResponse)?.data?.currentBaseFee) ||
           (meteorologyData as MeteorologyLegacyResponse)?.data?.legacy
@@ -199,7 +198,6 @@ export const useGasData = ({
     isFetching.value = true;
 
     const fn = supportedMeteorologyChain.value ? getMeteorologyData : getGasDataFromProvider;
-
     runOnJS(fn)({
       chainId: chainId.value,
       quote: quote.value,
@@ -229,10 +227,21 @@ export const useGasData = ({
   });
 
   useAnimatedReaction(
+    () => chainId.value,
+    (current, previous) => {
+      if (current !== previous) {
+        supportedMeteorologyChain.value = meteorologySupportsChainWorklet(current);
+      }
+    }
+  );
+
+  useAnimatedReaction(
     () => nativeAsset.value,
     (current, previous) => {
       if (current !== previous) {
+        gasDataInterval.stop();
         fetchGasData();
+        gasDataInterval.start();
       }
     }
   );
