@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import * as i18n from '@/languages';
 
 import { AnimatedText, Box, Inline, Separator, Stack, Text, globalColors, useColorMode } from '@/design-system';
@@ -13,10 +13,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { fadeConfig } from '../constants';
-import { ethereumUtils } from '@/utils';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ChainId } from '@/__swaps__/types/chains';
-import { chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
+import { chainNameForChainIdWithMainnetSubstitutionWorklet } from '@/__swaps__/utils/chains';
 import { AnimatedSwitch } from './AnimatedSwitch';
 import { GasButton } from '@/__swaps__/screens/Swap/components/GasButton';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -25,8 +23,7 @@ import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { useAccountSettings } from '@/hooks';
 import { useNativeAssetForChain } from '../hooks/useNativeAsset';
 import { convertRawAmountToBalance, convertRawAmountToNativeDisplay, handleSignificantDecimals, multiply } from '@/__swaps__/utils/numbers';
-
-const SLIPPAGE_STEP = 0.5;
+import { AnimatedChainImage } from './AnimatedChainImage';
 
 const unknown = i18n.t(i18n.l.swap.unknown);
 
@@ -94,17 +91,14 @@ const RainbowFee = () => {
 
 export function ReviewPanel() {
   const { isDarkMode } = useColorMode();
-  const { SwapGas, configProgress, SwapInputController, internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
+  const { SwapSettings, SwapGas, configProgress, SwapInputController, internalSelectedInputAsset, internalSelectedOutputAsset } =
+    useSwapContext();
 
   const chainName = useDerivedValue(() =>
-    internalSelectedOutputAsset.value?.chainId === ChainId.mainnet
-      ? 'ethereum'
-      : chainNameFromChainIdWorklet(internalSelectedOutputAsset.value?.chainId ?? ChainId.mainnet)
+    chainNameForChainIdWithMainnetSubstitutionWorklet(internalSelectedOutputAsset.value?.chainId ?? ChainId.mainnet)
   );
 
-  const slippageText = useDerivedValue(() => `1.5%`);
-
-  const [chain, setChain] = useState(ethereumUtils.getNetworkFromChainId(internalSelectedOutputAsset.value?.chainId ?? ChainId.mainnet));
+  const slippageText = useDerivedValue(() => `${SwapSettings.slippage.value}%`);
 
   const minimumReceived = useDerivedValue(() => {
     if (!SwapInputController.inputValues.value.outputAmount || !internalSelectedOutputAsset.value) {
@@ -112,31 +106,6 @@ export function ReviewPanel() {
     }
     return `${SwapInputController.formattedOutputAmount.value} ${internalSelectedOutputAsset.value.symbol}`;
   });
-
-  const flashbots = useDerivedValue(() => false);
-
-  const updateChainFromNetwork = useCallback((chainId: ChainId) => {
-    setChain(ethereumUtils.getNetworkFromChainId(chainId));
-  }, []);
-
-  useAnimatedReaction(
-    () => internalSelectedInputAsset.value?.chainId ?? ChainId.mainnet,
-    (current, previous) => {
-      if (!previous || previous !== current) {
-        runOnJS(updateChainFromNetwork)(current);
-      }
-    }
-  );
-
-  const onSetSlippage = useCallback((operation: 'increment' | 'decrement') => {
-    'worklet';
-    // SwapInputController.slippage.value = `${Math.max(0.5, Number(SwapInputController.slippage.value) + value)}`;
-  }, []);
-
-  const onSetFlashbots = useCallback(() => {
-    'worklet';
-    // SwapInputController.flashbots.value = !SwapInputController.flashbots.value;
-  }, []);
 
   const selectedGasSpeedNativeValue = useDerivedValue(() => {
     if (!SwapGas.gasFeeParamsBySpeed.value) return 'Loading...';
@@ -179,7 +148,7 @@ export function ReviewPanel() {
             </Inline>
 
             <Inline alignVertical="center" horizontalSpace="6px">
-              <ChainImage chain={chain} size={16} />
+              <AnimatedChainImage asset={internalSelectedInputAsset} size={16} />
               <AnimatedText
                 align="right"
                 color={isDarkMode ? 'labelSecondary' : 'label'}
@@ -244,7 +213,7 @@ export function ReviewPanel() {
               </Inline>
             </Inline>
 
-            <AnimatedSwitch onToggle={onSetFlashbots} value={flashbots} activeLabel="On" inactiveLabel="Off" />
+            <AnimatedSwitch onToggle={SwapSettings.onToggleFlashbots} value={SwapSettings.flashbots} activeLabel="On" inactiveLabel="Off" />
           </Inline>
 
           <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
@@ -263,7 +232,7 @@ export function ReviewPanel() {
             </Inline>
 
             <Inline wrap={false} horizontalSpace="8px" alignVertical="center">
-              <ButtonPressAnimation onPress={() => onSetSlippage('decrement')}>
+              <ButtonPressAnimation onPress={() => runOnUI(SwapSettings.onUpdateSlippage)('minus')}>
                 <Box
                   style={{
                     justifyContent: 'center',
@@ -287,7 +256,7 @@ export function ReviewPanel() {
 
               <AnimatedText size="15pt" weight="bold" color="labelSecondary" text={slippageText} />
 
-              <ButtonPressAnimation onPress={() => onSetSlippage('increment')}>
+              <ButtonPressAnimation onPress={() => runOnUI(SwapSettings.onUpdateSlippage)('plus')}>
                 <Box
                   style={{
                     justifyContent: 'center',
@@ -316,7 +285,7 @@ export function ReviewPanel() {
           <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
             <Stack space="6px">
               <Inline alignVertical="center" horizontalSpace="6px">
-                <ChainImage chain={chain} size={16} />
+                <AnimatedChainImage asset={internalSelectedInputAsset} size={16} />
                 <Inline horizontalSpace="4px">
                   <AnimatedText align="left" color={'label'} size="15pt" weight="heavy" text={selectedGasSpeedNativeValue} />
                   <AnimatedText align="right" color={'labelTertiary'} size="15pt" weight="bold" text={estimatedArrivalTime} />

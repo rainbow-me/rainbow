@@ -25,6 +25,7 @@ import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { ChainId } from '@/__swaps__/types/chains';
 import { logger } from '@/logger';
 import { useSwapGas } from '@/__swaps__/screens/Swap/hooks/useSwapGas';
+import { useSwapSettings } from '../hooks/useSwapSettings';
 
 interface SwapContextType {
   isFetching: SharedValue<boolean>;
@@ -51,6 +52,7 @@ interface SwapContextType {
 
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
 
+  SwapSettings: ReturnType<typeof useSwapSettings>;
   SwapGas: ReturnType<typeof useSwapGas>;
   SwapInputController: ReturnType<typeof useSwapInputsController>;
   AnimatedSwapStyles: ReturnType<typeof useAnimatedSwapStyles>;
@@ -91,6 +93,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const internalSelectedOutputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(null);
 
   const quote = useSharedValue<Quote | CrosschainQuote | QuoteError | null>(null);
+
+  const SwapSettings = useSwapSettings({
+    inputAsset: internalSelectedInputAsset,
+  });
 
   const SwapGas = useSwapGas({
     inputAsset: internalSelectedInputAsset,
@@ -318,6 +324,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       SwapInputController.quoteFetchingInterval.stop();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   console.log('re-rendered swap provider: ', Date.now());
@@ -348,6 +355,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
         quote,
 
+        SwapSettings,
         SwapGas,
         SwapInputController,
         AnimatedSwapStyles,
