@@ -187,6 +187,7 @@ const GasContextMenu = ({ children }: PropsWithChildren) => {
       .map(gasOption => {
         if (IS_ANDROID) return gasOption as GasSpeed;
         const { display } = (gasFeeParamsBySpeed || {})[gasOption as GasSpeed] ?? {};
+        console.log(gasOption, display);
 
         return {
           actionKey: gasOption,
