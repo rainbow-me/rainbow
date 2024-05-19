@@ -1,9 +1,11 @@
 import { useCallback, useEffect } from 'react';
-import { Easing, SharedValue, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+import { Easing, SharedValue, runOnUI, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 
 interface TimerConfig {
   /** Whether the timer should start automatically. @default false */
   autoStart?: boolean;
+  /** Whether the worklet function should be executed on mount. @default false */
+  fetchOnMount?: boolean;
   /** The duration of the timer in milliseconds. @default 1000 */
   durationMs?: number;
   /** A worklet function to be called when the timer ends. */
@@ -53,7 +55,7 @@ interface TimerResult {
  * });
  */
 export function useAnimatedTime(config: TimerConfig = {}): TimerResult {
-  const { autoStart = false, durationMs = 1000, onEndWorklet, shouldRepeat = false } = config;
+  const { autoStart = false, fetchOnMount = false, durationMs = 1000, onEndWorklet, shouldRepeat = false } = config;
 
   const timeInSeconds = useSharedValue(0);
 
@@ -86,6 +88,10 @@ export function useAnimatedTime(config: TimerConfig = {}): TimerResult {
   useEffect(() => {
     if (autoStart) {
       start();
+    }
+
+    if (fetchOnMount) {
+      onEndWorklet?.();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

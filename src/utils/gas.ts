@@ -68,6 +68,14 @@ const getGasLabel = (speed: string) => {
   }
 };
 
+const gasSpeedLabels = {
+  [CUSTOM]: i18n.t(i18n.l.gas.speeds.custom),
+  [FAST]: i18n.t(i18n.l.gas.speeds.fast),
+  [NORMAL]: i18n.t(i18n.l.gas.speeds.normal),
+  [URGENT]: i18n.t(i18n.l.gas.speeds.urgent),
+  [SLOW]: i18n.t(i18n.l.gas.speeds.slow),
+};
+
 const getGasFallback = (nativeCurrency: NativeCurrencyKey) => {
   const fallbackPrice = '0.01';
   return convertAmountToNativeDisplay(fallbackPrice, nativeCurrency);
@@ -80,6 +88,7 @@ export default {
   FAST,
   FLASHBOTS_MIN_TIP,
   getGasLabel,
+  gasSpeedLabels,
   getGasFallback,
   GAS_EMOJIS,
   GAS_ICONS,

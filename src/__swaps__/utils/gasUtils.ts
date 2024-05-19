@@ -437,6 +437,22 @@ export const calculateL1FeeOptimism = async ({
   }
 };
 
+export const meteorologySupportsChainWorklet = (chainId: ChainId) => {
+  'worklet';
+
+  return [
+    ChainId.bsc,
+    ChainId.sepolia,
+    ChainId.holesky,
+    ChainId.mainnet,
+    ChainId.polygon,
+    ChainId.base,
+    ChainId.arbitrum,
+    ChainId.optimism,
+    ChainId.zora,
+  ].includes(chainId);
+};
+
 export const meteorologySupportsChain = (chainId: ChainId) =>
   [
     ChainId.bsc,
@@ -452,6 +468,12 @@ export const meteorologySupportsChain = (chainId: ChainId) =>
 
 export const meteorologySupportsType2ForChain = (chainId: ChainId) =>
   [ChainId.mainnet, ChainId.sepolia, ChainId.holesky, ChainId.base, ChainId.arbitrum, ChainId.optimism, ChainId.zora].includes(chainId);
+
+export const chainNeedsL1SecurityFeeWorklet = (chainId: ChainId) => {
+  'worklet';
+
+  return [ChainId.base, ChainId.optimism, ChainId.zora].includes(chainId);
+};
 
 export const chainNeedsL1SecurityFee = (chainId: ChainId) => [ChainId.base, ChainId.optimism, ChainId.zora].includes(chainId);
 
