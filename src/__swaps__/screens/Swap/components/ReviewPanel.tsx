@@ -19,6 +19,7 @@ import { chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { AnimatedSwitch } from './AnimatedSwitch';
 import { GasButton } from '@/__swaps__/screens/Swap/components/GasButton';
 import { ButtonPressAnimation } from '@/components/animations';
+import { GasSpeed } from '@/__swaps__/types/gas';
 
 const SLIPPAGE_STEP = 0.5;
 
@@ -32,7 +33,7 @@ const RainbowFee = () => {
 
 export function ReviewPanel() {
   const { isDarkMode } = useColorMode();
-  const { configProgress, SwapInputController, internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
+  const { SwapGas, configProgress, SwapInputController, internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
 
   const unknown = i18n.t(i18n.l.swap.unknown);
 
@@ -79,9 +80,18 @@ export function ReviewPanel() {
     // SwapInputController.flashbots.value = !SwapInputController.flashbots.value;
   }, []);
 
-  // TODO: Comes from gas store
-  const estimatedGasFee = useSharedValue('$2.25');
-  const estimatedArrivalTime = useSharedValue('~4 sec');
+  const selectedGasSpeedNativeValue = useDerivedValue(() => {
+    if (!SwapGas.gasFeeParamsBySpeed.value) return 'Loading...';
+    const option = SwapGas.selectedGasSpeed.value ?? GasSpeed.NORMAL;
+    return SwapGas.gasFeeParamsBySpeed.value[option].gasFee.display;
+  });
+
+  const estimatedArrivalTime = useDerivedValue(() => {
+    if (!SwapGas.gasFeeParamsBySpeed.value) return '';
+
+    const option = SwapGas.selectedGasSpeed.value ?? GasSpeed.NORMAL;
+    return SwapGas.gasFeeParamsBySpeed.value[option].estimatedTime.display;
+  });
 
   const styles = useAnimatedStyle(() => {
     return {
@@ -250,7 +260,7 @@ export function ReviewPanel() {
               <Inline alignVertical="center" horizontalSpace="6px">
                 <ChainImage chain={chain} size={16} />
                 <Inline horizontalSpace="4px">
-                  <AnimatedText align="left" color={'label'} size="15pt" weight="heavy" text={estimatedGasFee} />
+                  <AnimatedText align="left" color={'label'} size="15pt" weight="heavy" text={selectedGasSpeedNativeValue} />
                   <AnimatedText align="right" color={'labelTertiary'} size="15pt" weight="bold" text={estimatedArrivalTime} />
                 </Inline>
               </Inline>
