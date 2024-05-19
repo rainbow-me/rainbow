@@ -12,11 +12,6 @@ import { GasFeeLegacyParamsBySpeed, GasFeeParamsBySpeed, GasSpeed } from '@/__sw
 import { ETH_COLOR, ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '../constants';
 import { useSwapContext } from '../providers/swap-provider';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
-import { add, greaterThan, toFixedDecimals } from '@/helpers/utilities';
-import { getNetworkObj } from '@/networks';
-import { isL2Chain } from '@/__swaps__/utils/chains';
-import { swapsStore } from '@/state/swaps/swapsStore';
-import { ChainId } from '@rainbow-me/swaps';
 
 const { CUSTOM, GAS_ICONS, GAS_EMOJIS, getGasLabel, gasSpeedLabels } = gasUtils;
 
@@ -187,8 +182,6 @@ const GasContextMenu = ({ children }: PropsWithChildren) => {
       .map(gasOption => {
         if (IS_ANDROID) return gasOption as GasSpeed;
         const { display } = (gasFeeParamsBySpeed || {})[gasOption as GasSpeed] ?? {};
-        console.log(gasOption, display);
-
         return {
           actionKey: gasOption,
           actionTitle: android ? `${GAS_EMOJIS[gasOption as GasSpeed]}  ` : getGasLabel(gasOption || ''),
