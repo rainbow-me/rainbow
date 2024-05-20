@@ -24,6 +24,7 @@ import { useAccountSettings } from '@/hooks';
 import { useNativeAssetForChain } from '../hooks/useNativeAsset';
 import { convertRawAmountToBalance, convertRawAmountToNativeDisplay, handleSignificantDecimals, multiply } from '@/__swaps__/utils/numbers';
 import { AnimatedChainImage } from './AnimatedChainImage';
+import { StyleSheet, View } from 'react-native';
 
 const unknown = i18n.t(i18n.l.swap.unknown);
 
@@ -95,10 +96,8 @@ export function ReviewPanel() {
     useSwapContext();
 
   const chainName = useDerivedValue(() =>
-    chainNameForChainIdWithMainnetSubstitutionWorklet(internalSelectedOutputAsset.value?.chainId ?? ChainId.mainnet)
+    chainNameForChainIdWithMainnetSubstitutionWorklet(internalSelectedInputAsset.value?.chainId ?? ChainId.mainnet)
   );
-
-  const slippageText = useDerivedValue(() => `${SwapSettings.slippage.value}%`);
 
   const minimumReceived = useDerivedValue(() => {
     if (!SwapInputController.inputValues.value.outputAmount || !internalSelectedOutputAsset.value) {
@@ -147,8 +146,10 @@ export function ReviewPanel() {
               </Text>
             </Inline>
 
-            <Inline alignVertical="center" horizontalSpace="6px">
-              <AnimatedChainImage asset={internalSelectedInputAsset} size={16} />
+            <Inline alignVertical="center" wrap={false} horizontalSpace="6px">
+              <View style={sx.networkContainer}>
+                <AnimatedChainImage showMainnetBadge asset={internalSelectedInputAsset} size={16} />
+              </View>
               <AnimatedText
                 align="right"
                 color={isDarkMode ? 'labelSecondary' : 'label'}
@@ -254,7 +255,19 @@ export function ReviewPanel() {
                 </Box>
               </ButtonPressAnimation>
 
-              <AnimatedText size="15pt" weight="bold" color="labelSecondary" text={slippageText} />
+              <Inline space="2px">
+                <AnimatedText
+                  align="right"
+                  style={{ minWidth: 26 }}
+                  size="15pt"
+                  weight="bold"
+                  color="labelSecondary"
+                  text={SwapSettings.slippage}
+                />
+                <Text size="15pt" weight="bold" color="labelSecondary">
+                  %
+                </Text>
+              </Inline>
 
               <ButtonPressAnimation onPress={() => runOnUI(SwapSettings.onUpdateSlippage)('plus')}>
                 <Box
@@ -285,7 +298,9 @@ export function ReviewPanel() {
           <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
             <Stack space="6px">
               <Inline alignVertical="center" horizontalSpace="6px">
-                <AnimatedChainImage asset={internalSelectedInputAsset} size={16} />
+                <View style={sx.gasContainer}>
+                  <AnimatedChainImage showMainnetBadge asset={internalSelectedInputAsset} size={16} />
+                </View>
                 <Inline horizontalSpace="4px">
                   <AnimatedText align="left" color={'label'} size="15pt" weight="heavy" text={selectedGasSpeedNativeValue} />
                   <AnimatedText align="right" color={'labelTertiary'} size="15pt" weight="bold" text={estimatedArrivalTime} />
@@ -311,3 +326,18 @@ export function ReviewPanel() {
     </Box>
   );
 }
+
+const sx = StyleSheet.create({
+  gasContainer: {
+    top: 2,
+    height: 12,
+    width: 10,
+    left: 4,
+    overflow: 'visible',
+  },
+  networkContainer: {
+    top: 2,
+    height: 12,
+    width: 6,
+  },
+});

@@ -80,6 +80,30 @@ export const isL2Chain = (chain: ChainName | ChainId): boolean => {
   }
 };
 
+export const isL2ChainWorklet = (chain: ChainName | ChainId): boolean => {
+  'worklet';
+
+  switch (chain) {
+    case ChainName.arbitrum:
+    case ChainName.base:
+    case ChainName.bsc:
+    case ChainName.optimism:
+    case ChainName.polygon:
+    case ChainName.zora:
+    case ChainName.avalanche:
+    case ChainId.arbitrum:
+    case ChainId.base:
+    case ChainId.bsc:
+    case ChainId.optimism:
+    case ChainId.polygon:
+    case ChainId.zora:
+    case ChainId.avalanche:
+      return true;
+    default:
+      return false;
+  }
+};
+
 export function isNativeAsset(address: AddressOrEth, chainId: ChainId) {
   return isLowerCaseMatch(NATIVE_ASSETS_PER_CHAIN[chainId], address);
 }

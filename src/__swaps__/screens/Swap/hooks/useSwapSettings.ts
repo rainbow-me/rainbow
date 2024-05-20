@@ -1,5 +1,3 @@
-import { useCallback } from 'react';
-
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 
 import { SharedValue, runOnJS, useSharedValue } from 'react-native-reanimated';
@@ -13,35 +11,31 @@ export const useSwapSettings = ({ inputAsset }: { inputAsset: SharedValue<Extend
   const flashbots = useSharedValue(false);
   const slippage = useSharedValue(getDefaultSlippageWorklet(inputAsset.value?.chainId ?? ChainId.mainnet, DEFAULT_CONFIG));
 
+  const setSlippage = swapsStore(state => state.setSlippage);
+  const setFlashbots = swapsStore(state => state.setFlashbots);
+
   const onToggleFlashbots = () => {
     'worklet';
 
     const current = flashbots.value;
     flashbots.value = !current;
-    runOnJS(swapsStore.setState)({
-      flashbots: !current,
-    });
+    runOnJS(setFlashbots)(!current);
   };
 
-  const onUpdateSlippage = useCallback(
-    (operation: 'plus' | 'minus') => {
-      'worklet';
+  const onUpdateSlippage = (operation: 'plus' | 'minus') => {
+    'worklet';
 
-      const value = Number(slippage.value) + (operation === 'plus' ? SlippageStep : -SlippageStep);
+    const value = operation === 'plus' ? SlippageStep : -SlippageStep;
 
-      // if we're trying to decrement below the minimum, set to the minimum
-      if (Number(slippage.value) + value <= SlippageStep) {
-        slippage.value = SlippageStep.toString();
-      } else {
-        slippage.value = (Number(slippage.value) + value).toString();
-      }
+    // if we're trying to decrement below the minimum, set to the minimum
+    if (Number(slippage.value) + value <= SlippageStep) {
+      slippage.value = SlippageStep.toString();
+    } else {
+      slippage.value = (Number(slippage.value) + value).toString();
+    }
 
-      runOnJS(swapsStore.setState)({
-        slippage: slippage.value,
-      });
-    },
-    [slippage]
-  );
+    runOnJS(setSlippage)(slippage.value);
+  };
 
   return {
     flashbots,

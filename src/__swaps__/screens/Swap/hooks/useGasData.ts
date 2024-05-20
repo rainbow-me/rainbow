@@ -9,33 +9,37 @@ import { meteorologySupportsChainWorklet, parseGasFeeParamsBySpeed } from '@/__s
 import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import { RainbowError, logger } from '@/logger';
-import { GasFeeLegacyParamsBySpeed, GasFeeParamsBySpeed } from '@/__swaps__/types/gas';
+import { GasFeeLegacyParamsBySpeed, GasFeeParams, GasFeeParamsBySpeed } from '@/__swaps__/types/gas';
 import { ParsedAddressAsset } from '@/entities';
 import { useAccountSettings } from '@/hooks';
 import { gasUnits } from '@/references';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
-import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
-import { swapsStore } from '@/state/swaps/swapsStore';
 import { getQuoteServiceTime } from '@/__swaps__/utils/swaps';
+import { gasStore } from '@/state/gas/gasStore';
+import { useSwapSettings } from './useSwapSettings';
 
 export const useGasData = ({
+  SwapSettings,
   inputAsset,
   quote,
   gasFeeParamsBySpeed,
   estimatedGasLimit,
   nativeAsset,
   optimismL1SecurityFee,
+  maxBaseFee,
+  maxPriorityFee,
 }: {
+  SwapSettings: ReturnType<typeof useSwapSettings>;
   inputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
   gasFeeParamsBySpeed: SharedValue<GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed | null>;
   estimatedGasLimit: SharedValue<string | undefined>;
   nativeAsset: SharedValue<ParsedAddressAsset | undefined>;
   optimismL1SecurityFee: SharedValue<string | null | undefined>;
+  maxBaseFee: SharedValue<string>;
+  maxPriorityFee: SharedValue<string>;
 }) => {
   const { nativeCurrency: currentCurrency } = useAccountSettings();
-
-  const flashbotsEnabled = useSharedValue<boolean>(false);
 
   const gasData = useSharedValue<MeteorologyResponse | MeteorologyLegacyResponse | null>(null);
   const isFetching = useSharedValue(false);
@@ -64,9 +68,13 @@ export const useGasData = ({
       const updateValues = ({
         data,
         gasParamsBySpeed,
+        customBaseFee,
+        customPriorityFee,
       }: {
         data: MeteorologyResponse | MeteorologyLegacyResponse | null;
         gasParamsBySpeed?: GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed | null;
+        customBaseFee: string;
+        customPriorityFee: string;
       }) => {
         'worklet';
         if (data) {
@@ -75,6 +83,14 @@ export const useGasData = ({
 
         if (gasParamsBySpeed) {
           gasFeeParamsBySpeed.value = gasParamsBySpeed;
+        }
+
+        if (!maxBaseFee.value) {
+          maxBaseFee.value = customBaseFee;
+        }
+
+        if (!maxPriorityFee.value) {
+          maxPriorityFee.value = customPriorityFee;
         }
 
         isFetching.value = false;
@@ -94,16 +110,25 @@ export const useGasData = ({
             additionalTime: getQuoteServiceTime({ quote: quote as CrosschainQuote }),
           });
 
+          gasStore.getState().setGasData(providerGasData);
+          gasStore.getState().setGasFeeParamsBySpeed({ gasFeeParamsBySpeed: parsedParams });
+
+          const customGasSpeed = parsedParams?.custom as GasFeeParams;
+
           runOnUI(updateValues)({
             data: providerGasData,
             gasParamsBySpeed: parsedParams,
+            customBaseFee: customGasSpeed.maxBaseFee.gwei,
+            customPriorityFee: customGasSpeed.maxPriorityFeePerGas.gwei,
           });
-
           return;
         }
 
+        gasStore.getState().setGasData(providerGasData);
         runOnUI(updateValues)({
           data: providerGasData,
+          customBaseFee: providerGasData.data.legacy.proposeGasPrice,
+          customPriorityFee: '1',
         });
       } catch (error) {
         logger.error(new RainbowError('[useGasData]: Failed to fetch provider gas data'), {
@@ -114,7 +139,7 @@ export const useGasData = ({
         });
       }
     },
-    [currentCurrency, gasData, gasFeeParamsBySpeed, isFetching]
+    [currentCurrency, gasData, gasFeeParamsBySpeed, isFetching, maxBaseFee, maxPriorityFee]
   );
 
   const getMeteorologyData = useCallback(
@@ -137,9 +162,13 @@ export const useGasData = ({
       const updateValues = ({
         data,
         gasParamsBySpeed,
+        customBaseFee,
+        customPriorityFee,
       }: {
         data: MeteorologyResponse | MeteorologyLegacyResponse | null;
         gasParamsBySpeed?: GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed | null;
+        customBaseFee: string;
+        customPriorityFee: string;
       }) => {
         'worklet';
         if (data) {
@@ -148,6 +177,14 @@ export const useGasData = ({
 
         if (gasParamsBySpeed) {
           gasFeeParamsBySpeed.value = gasParamsBySpeed;
+        }
+
+        if (!maxBaseFee.value) {
+          maxBaseFee.value = customBaseFee;
+        }
+
+        if (!maxPriorityFee.value) {
+          maxPriorityFee.value = customPriorityFee;
         }
 
         isFetching.value = false;
@@ -170,16 +207,24 @@ export const useGasData = ({
             additionalTime: getQuoteServiceTime({ quote: quote as CrosschainQuote }),
           });
 
+          gasStore.getState().setGasData(meteorologyData);
+          gasStore.getState().setGasFeeParamsBySpeed({ gasFeeParamsBySpeed: parsedParams });
+
+          const customGasSpeed = parsedParams?.custom as GasFeeParams;
           runOnUI(updateValues)({
             data: meteorologyData,
             gasParamsBySpeed: parsedParams,
+            customBaseFee: customGasSpeed.maxBaseFee.gwei,
+            customPriorityFee: customGasSpeed.maxPriorityFeePerGas.gwei,
           });
-
           return;
         }
 
+        gasStore.getState().setGasData(meteorologyData);
         runOnUI(updateValues)({
           data: meteorologyData,
+          customBaseFee: (meteorologyData as MeteorologyResponse).data.baseFeeSuggestion,
+          customPriorityFee: '1',
         });
       } catch (error) {
         logger.error(new RainbowError('[useGasData]: Failed to fetch meteorology data'), {
@@ -190,7 +235,7 @@ export const useGasData = ({
         });
       }
     },
-    [currentCurrency, gasData, gasFeeParamsBySpeed, isFetching]
+    [currentCurrency, gasData, gasFeeParamsBySpeed, isFetching, maxBaseFee, maxPriorityFee]
   );
 
   const fetchGasData = async () => {
@@ -204,7 +249,7 @@ export const useGasData = ({
       estimatedGasLimit: estimatedGasLimit.value,
       nativeAsset: nativeAsset.value,
       optimismL1SecurityFee: optimismL1SecurityFee.value,
-      flashbotsEnabled: flashbotsEnabled.value,
+      flashbotsEnabled: SwapSettings.flashbots.value,
     });
   };
 
@@ -217,13 +262,6 @@ export const useGasData = ({
     onIntervalWorklet: fetchGasData,
     autoStart: true,
     fetchOnMount: true,
-  });
-
-  // NOTE: Keeps the local flashbots SharedValue in sync with the Zustand store
-  useSyncSharedValue({
-    state: swapsStore.getState().flashbots,
-    sharedValue: flashbotsEnabled,
-    syncDirection: 'stateToSharedValue',
   });
 
   useAnimatedReaction(

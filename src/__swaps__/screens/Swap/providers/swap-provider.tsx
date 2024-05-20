@@ -99,6 +99,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   });
 
   const SwapGas = useSwapGas({
+    SwapSettings,
     inputAsset: internalSelectedInputAsset,
     outputAsset: internalSelectedOutputAsset,
     quote,

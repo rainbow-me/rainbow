@@ -22,6 +22,7 @@ import { AddressZero } from '@ethersproject/constants';
 import { ETH_ADDRESS } from '@/references';
 
 const networkBadges = {
+  [ChainId.mainnet]: Image.resolveAssetSource(EthereumBadge).uri,
   [ChainId.polygon]: Image.resolveAssetSource(PolygonBadge).uri,
   [ChainId.optimism]: Image.resolveAssetSource(OptimismBadge).uri,
   [ChainId.arbitrum]: Image.resolveAssetSource(ArbitrumBadge).uri,
@@ -56,7 +57,15 @@ export const getCustomChainIconUrlWorklet = (chainId: ChainId, address: AddressO
   }
 };
 
-export function AnimatedChainImage({ asset, size = 20 }: { asset: SharedValue<ExtendedAnimatedAssetWithColors | null>; size?: number }) {
+export function AnimatedChainImage({
+  asset,
+  showMainnetBadge = false,
+  size = 20,
+}: {
+  asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+  showMainnetBadge?: boolean;
+  size?: number;
+}) {
   const animatedIconSource = useAnimatedProps(() => {
     const base = {
       source: {
@@ -76,13 +85,16 @@ export function AnimatedChainImage({ asset, size = 20 }: { asset: SharedValue<Ex
     }
 
     if (networkBadges[asset.value.chainId]) {
+      if (!showMainnetBadge && asset.value.chainId === ChainId.mainnet) {
+        return base;
+      }
       base.source.url = networkBadges[asset.value.chainId];
     }
     return base;
   });
 
   return (
-    <View style={[sx.badge, { borderRadius: size / 2, width: size, height: size }]}>
+    <View style={[sx.badge, { bottom: 0, borderRadius: size / 2, width: size, height: size }]}>
       {/* @ts-expect-error source prop is missing */}
       <AnimatedFasterImage style={{ borderRadius: size / 2, width: size, height: size }} animatedProps={animatedIconSource} />
     </View>
@@ -91,7 +103,7 @@ export function AnimatedChainImage({ asset, size = 20 }: { asset: SharedValue<Ex
 
 const sx = StyleSheet.create({
   badge: {
-    bottom: -0,
+    bottom: 0,
     left: -8,
     position: 'absolute',
     shadowColor: globalColors.grey100,

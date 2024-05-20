@@ -12,6 +12,21 @@ const PRIORITY_FEE_L2_INCREMENT = 0.01;
 const PRIORITY_FEE_THRESHOLD = 0.15;
 const PRIORITY_FEE_L2_THRESHOLD = 0.01;
 
+export const getTrendKeyWorklet = memoFn((trend: number) => {
+  'worklet';
+
+  if (trend === -1) {
+    return FALLING;
+  } else if (trend === 1) {
+    return RISING;
+  } else if (trend === 2) {
+    return SURGING;
+  } else if (trend === 0) {
+    return STABLE;
+  }
+  return NO_TREND;
+});
+
 export const getTrendKey = memoFn((trend: number) => {
   if (trend === -1) {
     return FALLING;
