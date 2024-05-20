@@ -1,9 +1,11 @@
 // @refresh
 import React, { createContext, useContext, ReactNode, useEffect } from 'react';
 import { StyleProp, TextStyle, TextInput } from 'react-native';
+import * as i18n from '@/languages';
 import {
   AnimatedRef,
   SharedValue,
+  runOnJS,
   runOnUI,
   useAnimatedRef,
   useAnimatedStyle,
@@ -23,9 +25,16 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { isSameAsset } from '@/__swaps__/utils/assets';
 import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { ChainId } from '@/__swaps__/types/chains';
-import { logger } from '@/logger';
+import { RainbowError, logger } from '@/logger';
 import { useSwapGas } from '@/__swaps__/screens/Swap/hooks/useSwapGas';
 import { useSwapSettings } from '../hooks/useSwapSettings';
+import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
+import { walletExecuteRap } from '@/raps/execute';
+import { GasSpeed } from '@/__swaps__/types/gas';
+import { ethereumUtils } from '@/utils';
+import { loadWallet } from '@/model/wallet';
+import { getProviderForNetwork } from '@/handlers/web3';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 
 interface SwapContextType {
   isFetching: SharedValue<boolean>;
@@ -51,6 +60,7 @@ interface SwapContextType {
   setAsset: ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset }) => void;
 
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
+  executeSwap: () => void;
 
   SwapSettings: ReturnType<typeof useSwapSettings>;
   SwapGas: ReturnType<typeof useSwapGas>;
@@ -250,6 +260,71 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     runOnUI(updateAssetValue)({ type, asset: parseAssetAndExtend({ asset }) });
   };
 
+  const getNonceAndPerformSwap = async ({
+    type,
+    parameters,
+  }: {
+    type: 'swap' | 'crosschainSwap';
+    parameters: RapSwapActionParameters<typeof type>;
+  }) => {
+    const network = ethereumUtils.getNetworkFromChainId(parameters.chainId);
+    const provider = await getProviderForNetwork(network);
+
+    const wallet = await loadWallet(parameters.quote.from, false, provider);
+    if (!wallet) return;
+
+    const { errorMessage, nonce } = await walletExecuteRap(wallet, type, parameters);
+    console.log(errorMessage);
+
+    if (errorMessage) {
+      if (errorMessage !== 'handled') {
+        logger.error(new RainbowError(`[getNonceAndPerformSwap]: Error executing swap: ${errorMessage}`));
+        const extractedError = errorMessage.split('[')[0];
+        Alert.alert(i18n.t(i18n.l.swap.error_executing_swap), extractedError);
+        return;
+      }
+    }
+
+    // TODO: Refresh input and output asset balances
+    // TODO: Navigate back to WALLET_SCREEN
+  };
+
+  const executeSwap = () => {
+    'worklet';
+    if (configProgress.value !== NavigationSteps.SHOW_REVIEW) return;
+
+    const inputAsset = internalSelectedInputAsset.value;
+    const outputAsset = internalSelectedOutputAsset.value;
+    const q = quote.value;
+
+    if (!inputAsset || !outputAsset || !q || (q as QuoteError)?.error) {
+      return;
+    }
+
+    const type = inputAsset.chainId !== outputAsset.chainId ? 'crosschainSwap' : 'swap';
+    const quoteData = q as QuoteTypeMap[typeof type];
+    const flashbots = (SwapSettings.flashbots.value && inputAsset.chainId === ChainId.mainnet) ?? false;
+
+    const parameters: RapSwapActionParameters<typeof type> = {
+      sellAmount: quoteData.sellAmount?.toString(),
+      buyAmount: quoteData.buyAmount?.toString(),
+      chainId: inputAsset.chainId,
+      assetToSell: inputAsset,
+      assetToBuy: outputAsset,
+      quote: quoteData,
+      flashbots,
+
+      // TODO: Need to expand the types to bring in new BX gas types
+      selectedGasFee: SwapGas.gasFeeParamsBySpeed.value?.[SwapGas.selectedGasSpeed.value ?? GasSpeed.NORMAL] ?? {},
+      gasFeeParamsBySpeed: SwapGas.gasFeeParamsBySpeed.value ?? {},
+    };
+
+    runOnJS(getNonceAndPerformSwap)({
+      type,
+      parameters,
+    });
+  };
+
   const confirmButtonIcon = useDerivedValue(() => {
     if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
       return '􀎽';
@@ -355,6 +430,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         setAsset,
 
         quote,
+        executeSwap,
 
         SwapSettings,
         SwapGas,

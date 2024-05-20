@@ -142,12 +142,11 @@ export function useSwapNavigation({
         handleDismissGas();
       }
     } else if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
-      // TODO: Handle executing swap
-      handleDismissReview();
+      // no-op
     } else {
       handleShowReview();
     }
-  }, [configProgress, handleDismissGas, handleDismissReview, handleShowReview, navigateBackToReview]);
+  }, [configProgress, handleDismissGas, handleShowReview, navigateBackToReview]);
 
   return {
     navigateBackToReview,

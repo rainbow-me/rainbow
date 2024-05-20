@@ -20,6 +20,7 @@ import { useBottomPanelGestureHandler } from '../hooks/useBottomPanelGestureHand
 export function SwapBottomPanel() {
   const { isDarkMode } = useColorMode();
   const {
+    executeSwap,
     confirmButtonIcon,
     confirmButtonIconStyle,
     confirmButtonLabel,
@@ -73,6 +74,7 @@ export function SwapBottomPanel() {
             </Box>
           </Column>
           <SwapActionButton
+            onLongPress={() => runOnUI(executeSwap)()}
             onPress={() => runOnUI(SwapNavigation.handleSwapAction)()}
             asset={internalSelectedOutputAsset}
             icon={confirmButtonIcon}

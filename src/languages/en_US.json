@@ -1910,6 +1910,7 @@
       "aggregators": {
         "rainbow": "Rainbow"
       },
+      "error_executing_swap": "Error executing swap",
       "tokens_input": {
         "tokens": "Tokens",
         "sort": "Sort",

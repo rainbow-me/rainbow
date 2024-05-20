@@ -55,7 +55,9 @@ export const useGasTrends = ({
 
   useAnimatedReaction(
     () => ({
-      baseFee: (gasData.value as MeteorologyResponse)?.data.currentBaseFee,
+      baseFee:
+        (gasData.value as MeteorologyResponse)?.data.currentBaseFee ||
+        (gasData.value as MeteorologyLegacyResponse)?.data.legacy.safeGasPrice,
       baseFeeTrend: (gasData.value as MeteorologyResponse)?.data.baseFeeTrend,
       isL2Chain: isL2Chain.value,
     }),
