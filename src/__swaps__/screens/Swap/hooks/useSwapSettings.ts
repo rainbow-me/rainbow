@@ -29,9 +29,9 @@ export const useSwapSettings = ({ inputAsset }: { inputAsset: SharedValue<Extend
 
     // if we're trying to decrement below the minimum, set to the minimum
     if (Number(slippage.value) + value <= SlippageStep) {
-      slippage.value = SlippageStep.toString();
+      slippage.value = SlippageStep.toFixed(1).toString();
     } else {
-      slippage.value = (Number(slippage.value) + value).toString();
+      slippage.value = (Number(slippage.value) + value).toFixed(1).toString();
     }
 
     runOnJS(setSlippage)(slippage.value);
