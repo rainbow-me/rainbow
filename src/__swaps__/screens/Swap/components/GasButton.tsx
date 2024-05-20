@@ -15,7 +15,7 @@ import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 
 const { CUSTOM, GAS_ICONS, GAS_EMOJIS, getGasLabel, gasSpeedLabels } = gasUtils;
 
-export const GasButton = ({ accentColor, isReviewing = false }: { accentColor?: string; isReviewing?: boolean }) => {
+export const GasButton = ({ isReviewing = false }: { isReviewing?: boolean }) => {
   const { SwapNavigation, SwapGas } = useSwapContext();
   const { isDarkMode } = useColorMode();
 
@@ -26,8 +26,11 @@ export const GasButton = ({ accentColor, isReviewing = false }: { accentColor?: 
   const selectedGasSpeedNativeValue = useDerivedValue(() => {
     if (!SwapGas.gasFeeParamsBySpeed.value) return 'Loading...';
     const option = SwapGas.selectedGasSpeed.value ?? GasSpeed.NORMAL;
+    console.log(SwapGas.gasFeeParamsBySpeed.value[option].gasFee.display);
     return SwapGas.gasFeeParamsBySpeed.value[option].gasFee.display;
   });
+
+  console.log('re-rendering gas button');
 
   const separatatorSecondary = useForegroundColor('separatorSecondary');
 
@@ -53,14 +56,7 @@ export const GasButton = ({ accentColor, isReviewing = false }: { accentColor?: 
         <GasContextMenu>
           <Box as={Animated.View} style={buttonWrapperStyles}>
             <Inline alignVertical="center" space="4px">
-              <TextIcon
-                color={accentColor ? { custom: accentColor } : 'red'}
-                height={10}
-                size="icon 12px"
-                textStyle={{ marginTop: -1.5 }}
-                width={16}
-                weight="bold"
-              >
+              <TextIcon color="red" height={10} size="icon 12px" textStyle={{ marginTop: -1.5 }} width={16} weight="bold">
                 􀙭
               </TextIcon>
               <AnimatedText text={gasSpeedLabel} color="label" size="15pt" weight="heavy"></AnimatedText>
@@ -96,14 +92,7 @@ export const GasButton = ({ accentColor, isReviewing = false }: { accentColor?: 
       <Stack space="12px">
         <Inline alignVertical="center" space={{ custom: 5 }}>
           <Inline alignVertical="center" space="4px">
-            <TextIcon
-              color={accentColor ? { custom: accentColor } : 'red'}
-              height={10}
-              size="icon 12px"
-              textStyle={{ marginTop: -1.5 }}
-              width={16}
-              weight="bold"
-            >
+            <TextIcon color="red" height={10} size="icon 12px" textStyle={{ marginTop: -1.5 }} width={16} weight="bold">
               􀙭
             </TextIcon>
             <AnimatedText text={gasSpeedLabel} color="label" size="15pt" weight="heavy"></AnimatedText>
@@ -116,7 +105,7 @@ export const GasButton = ({ accentColor, isReviewing = false }: { accentColor?: 
           <TextIcon color="labelQuaternary" height={10} size="icon 11px" weight="heavy" width={16}>
             􀵟
           </TextIcon>
-          <AnimatedText text={selectedGasSpeedNativeValue} color="labelTertiary" size="15pt" weight="bold"></AnimatedText>
+          <AnimatedText text={selectedGasSpeedNativeValue} color="labelTertiary" size="15pt" weight="bold" />
         </Inline>
       </Stack>
     </GasContextMenu>

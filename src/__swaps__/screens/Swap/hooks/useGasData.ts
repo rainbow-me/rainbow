@@ -9,7 +9,7 @@ import { meteorologySupportsChainWorklet, parseGasFeeParamsBySpeed } from '@/__s
 import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import { RainbowError, logger } from '@/logger';
-import { GasFeeLegacyParamsBySpeed, GasFeeParams, GasFeeParamsBySpeed } from '@/__swaps__/types/gas';
+import { GasFeeLegacyParams, GasFeeLegacyParamsBySpeed, GasFeeParams, GasFeeParamsBySpeed } from '@/__swaps__/types/gas';
 import { ParsedAddressAsset } from '@/entities';
 import { useAccountSettings } from '@/hooks';
 import { gasUnits } from '@/references';
@@ -113,13 +113,13 @@ export const useGasData = ({
           gasStore.getState().setGasData(providerGasData);
           gasStore.getState().setGasFeeParamsBySpeed({ gasFeeParamsBySpeed: parsedParams });
 
-          const customGasSpeed = parsedParams?.custom as GasFeeParams;
+          const customGasSpeed = parsedParams?.custom as GasFeeLegacyParams;
 
           runOnUI(updateValues)({
             data: providerGasData,
             gasParamsBySpeed: parsedParams,
-            customBaseFee: customGasSpeed.maxBaseFee.gwei,
-            customPriorityFee: customGasSpeed.maxPriorityFeePerGas.gwei,
+            customBaseFee: customGasSpeed.gasFee.amount,
+            customPriorityFee: '1',
           });
           return;
         }
@@ -131,6 +131,7 @@ export const useGasData = ({
           customPriorityFee: '1',
         });
       } catch (error) {
+        console.log(error);
         logger.error(new RainbowError('[useGasData]: Failed to fetch provider gas data'), {
           data: {
             chainId,
