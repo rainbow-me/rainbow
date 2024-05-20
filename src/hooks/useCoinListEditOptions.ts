@@ -92,10 +92,11 @@ export function useCoinListFinishEditingOptions() {
   currentActionNonReactive.current = currentAction;
 
   const setPinnedCoins = useCallback(() => {
-    setPinnedCoinsObject((pinnedCoins: BooleanMap) => {
+    setPinnedCoinsObject((pinnedCoins: BooleanMap | undefined) => {
+      const safePinnedCoins = pinnedCoins ?? {};
       return [
-        ...Object.keys(pinnedCoins ?? []).filter(i => !selectedItemsNonReactive.current!.includes(i)),
-        ...(currentActionNonReactive.current === EditAction.standard ? selectedItemsNonReactive.current! : []),
+        ...Object.keys(safePinnedCoins).filter(i => selectedItemsNonReactive.current?.includes(i)),
+        ...(currentActionNonReactive.current === EditAction.standard ? selectedItemsNonReactive.current || [] : []),
       ].reduce((acc, curr) => {
         acc[curr] = true;
         return acc;
@@ -107,10 +108,11 @@ export function useCoinListFinishEditingOptions() {
   const dispatch = useDispatch();
 
   const setHiddenCoins = useCallback(() => {
-    setHiddenCoinsObject((hiddenCoins: BooleanMap) => {
+    setHiddenCoinsObject((hiddenCoins: BooleanMap | undefined) => {
+      const safeHiddenCoins = hiddenCoins ?? {};
       const newList = [
-        ...Object.keys(hiddenCoins ?? []).filter(i => !selectedItemsNonReactive.current!.includes(i)),
-        ...(currentActionNonReactive.current === EditAction.standard ? selectedItemsNonReactive.current! : []),
+        ...Object.keys(safeHiddenCoins).filter(i => !selectedItemsNonReactive.current?.includes(i)),
+        ...(currentActionNonReactive.current === EditAction.standard ? selectedItemsNonReactive.current || [] : []),
       ].reduce((acc, curr) => {
         acc[curr] = true;
         return acc;
