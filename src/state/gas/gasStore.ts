@@ -82,8 +82,8 @@ export const gasStore = createStore<GasStore>(
   }),
   {
     persist: {
-      name: 'gas',
-      version: 0,
+      name: 'gasStore',
+      version: 1,
     },
   }
 );

@@ -18,15 +18,13 @@ export const useSwapGas = ({
   inputAsset,
   outputAsset,
   quote,
-  defaultSpeed = GasSpeed.NORMAL,
 }: {
   SwapSettings: ReturnType<typeof useSwapSettings>;
   inputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   outputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
-  defaultSpeed?: GasSpeed;
 }) => {
-  const selectedGasSpeed = useSharedValue<GasSpeed>(defaultSpeed);
+  const selectedGasSpeed = useSharedValue<GasSpeed>(gasStore.getState().selectedGasSpeed);
   const selectedGas = useSharedValue<GasFeeParams | GasFeeLegacyParams>({} as GasFeeParams | GasFeeLegacyParams);
   const gasFeeParamsBySpeed = useSharedValue<GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed | null>(null);
 

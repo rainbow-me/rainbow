@@ -75,6 +75,11 @@ export function AnimatedChainImage({
       },
     };
     if (!asset?.value) {
+      if (!showMainnetBadge) {
+        return base;
+      }
+
+      base.source.url = networkBadges[ChainId.mainnet];
       return base;
     }
 

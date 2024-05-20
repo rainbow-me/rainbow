@@ -131,7 +131,6 @@ export const useGasData = ({
           customPriorityFee: '1',
         });
       } catch (error) {
-        console.log(error);
         logger.error(new RainbowError('[useGasData]: Failed to fetch provider gas data'), {
           data: {
             chainId,

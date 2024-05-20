@@ -26,11 +26,8 @@ export const GasButton = ({ isReviewing = false }: { isReviewing?: boolean }) =>
   const selectedGasSpeedNativeValue = useDerivedValue(() => {
     if (!SwapGas.gasFeeParamsBySpeed.value) return 'Loading...';
     const option = SwapGas.selectedGasSpeed.value ?? GasSpeed.NORMAL;
-    console.log(SwapGas.gasFeeParamsBySpeed.value[option].gasFee.display);
     return SwapGas.gasFeeParamsBySpeed.value[option].gasFee.display;
   });
-
-  console.log('re-rendering gas button');
 
   const separatatorSecondary = useForegroundColor('separatorSecondary');
 
@@ -49,6 +46,8 @@ export const GasButton = ({ isReviewing = false }: { isReviewing?: boolean }) =>
       justifyContent: 'center',
     };
   });
+
+  console.log('re-rendering gas button');
 
   if (isReviewing) {
     return (

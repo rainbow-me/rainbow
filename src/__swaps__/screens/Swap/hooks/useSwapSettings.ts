@@ -8,7 +8,7 @@ import { ChainId } from '@/__swaps__/types/chains';
 import { DEFAULT_CONFIG } from '@/model/remoteConfig';
 
 export const useSwapSettings = ({ inputAsset }: { inputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null> }) => {
-  const flashbots = useSharedValue(false);
+  const flashbots = useSharedValue(swapsStore.getState().flashbots);
   const slippage = useSharedValue(getDefaultSlippageWorklet(inputAsset.value?.chainId ?? ChainId.mainnet, DEFAULT_CONFIG));
 
   const setSlippage = swapsStore(state => state.setSlippage);
