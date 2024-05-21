@@ -4,7 +4,6 @@ import * as i18n from '@/languages';
 import { AnimatedText, Box, Inline, Separator, Stack, Text, globalColors, useColorMode } from '@/design-system';
 import Animated, {
   runOnJS,
-  runOnUI,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -19,9 +18,7 @@ import { ChainId } from '@/__swaps__/types/chains';
 import { chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { AnimatedSwitch } from './AnimatedSwitch';
 import { GasButton } from '@/__swaps__/screens/Swap/components/GasButton';
-import { ButtonPressAnimation } from '@/components/animations';
-
-const SLIPPAGE_STEP = 0.5;
+import { GestureHandlerV1Button } from './GestureHandlerV1Button';
 
 const RainbowFee = () => {
   const { isDarkMode } = useColorMode();
@@ -42,8 +39,6 @@ export function ReviewPanel() {
       ? 'ethereum'
       : chainNameFromChainIdWorklet(internalSelectedOutputAsset.value?.chainId ?? ChainId.mainnet)
   );
-
-  const slippageText = useDerivedValue(() => `1.5%`);
 
   const [chain, setChain] = useState(ethereumUtils.getNetworkFromChainId(internalSelectedOutputAsset.value?.chainId ?? ChainId.mainnet));
 
@@ -183,7 +178,7 @@ export function ReviewPanel() {
             </Inline>
 
             <Inline wrap={false} horizontalSpace="8px" alignVertical="center">
-              <ButtonPressAnimation onPress={() => runOnUI(SwapSettings.onUpdateSlippage)('minus')}>
+              <GestureHandlerV1Button onPressWorklet={() => SwapSettings.onUpdateSlippage('minus')}>
                 <Box
                   style={{
                     justifyContent: 'center',
@@ -203,7 +198,7 @@ export function ReviewPanel() {
                     􀅽
                   </Text>
                 </Box>
-              </ButtonPressAnimation>
+              </GestureHandlerV1Button>
 
               <Inline space="2px">
                 <AnimatedText
@@ -219,7 +214,7 @@ export function ReviewPanel() {
                 </Text>
               </Inline>
 
-              <ButtonPressAnimation onPress={() => runOnUI(SwapSettings.onUpdateSlippage)('plus')}>
+              <GestureHandlerV1Button onPressWorklet={() => SwapSettings.onUpdateSlippage('plus')}>
                 <Box
                   style={{
                     justifyContent: 'center',
@@ -239,7 +234,7 @@ export function ReviewPanel() {
                     􀅼
                   </Text>
                 </Box>
-              </ButtonPressAnimation>
+              </GestureHandlerV1Button>
             </Inline>
           </Inline>
 
