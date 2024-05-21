@@ -10,7 +10,7 @@ import { GasButton } from './GasButton';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH, springConfig } from '@/__swaps__/screens/Swap/constants';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext, NavigationSteps } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import Animated, { runOnJS, runOnUI, useAnimatedReaction, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { StyleSheet } from 'react-native';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ReviewPanel } from './ReviewPanel';
@@ -87,7 +87,7 @@ export function SwapBottomPanel() {
             </Box>
           </Column>
           <SwapActionButton
-            onPress={() => runOnUI(SwapNavigation.handleSwapAction)()}
+            onPress={SwapNavigation.handleSwapAction}
             asset={internalSelectedOutputAsset}
             icon={confirmButtonIcon}
             iconStyle={confirmButtonIconStyle}

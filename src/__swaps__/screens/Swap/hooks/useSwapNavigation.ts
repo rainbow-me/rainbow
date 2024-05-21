@@ -15,11 +15,13 @@ export function useSwapNavigation({
   inputProgress,
   outputProgress,
   configProgress,
+  executeSwap,
 }: {
   SwapInputController: ReturnType<typeof useSwapInputsController>;
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
   configProgress: SharedValue<number>;
+  executeSwap: () => void;
 }) {
   const navigateBackToReview = useSharedValue(false);
 
@@ -142,12 +144,12 @@ export function useSwapNavigation({
         handleDismissGas();
       }
     } else if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
-      // TODO: Handle executing swap
-      handleDismissReview();
+      // TODO: Handle long press
+      executeSwap();
     } else {
       handleShowReview();
     }
-  }, [configProgress, handleDismissGas, handleDismissReview, handleShowReview, navigateBackToReview]);
+  }, [configProgress.value, executeSwap, handleDismissGas, handleShowReview, navigateBackToReview]);
 
   return {
     navigateBackToReview,

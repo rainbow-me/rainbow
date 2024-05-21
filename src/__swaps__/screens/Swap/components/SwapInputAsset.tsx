@@ -34,7 +34,7 @@ function SwapInputActionButton() {
       disableShadow={isDarkMode}
       hugContent
       label={label}
-      onPress={runOnUI(SwapNavigation.handleInputPress)}
+      onPress={SwapNavigation.handleInputPress}
       rightIcon={'􀆏'}
       small
     />

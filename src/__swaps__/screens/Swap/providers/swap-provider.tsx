@@ -44,6 +44,7 @@ import { gasStore } from '@/state/gas/gasStore';
 
 interface SwapContextType {
   isFetching: SharedValue<boolean>;
+  isSwapping: SharedValue<boolean>;
   isQuoteStale: SharedValue<number>;
   searchInputRef: AnimatedRef<TextInput>;
 
@@ -113,6 +114,102 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
   const quote = useSharedValue<Quote | CrosschainQuote | QuoteError | null>(null);
 
+  const getNonceAndPerformSwap = async ({
+    type,
+    parameters,
+  }: {
+    type: 'swap' | 'crosschainSwap';
+    parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'>;
+  }) => {
+    const NotificationManager = ios ? NativeModules.NotificationManager : null;
+    NotificationManager?.postNotification('rapInProgress');
+
+    const resetSwappingStatus = () => {
+      'worklet';
+      isSwapping.value = false;
+    };
+
+    const network = ethereumUtils.getNetworkFromChainId(parameters.chainId);
+    const provider = getCachedProviderForNetwork(network);
+    const providerUrl = provider?.connection?.url;
+    const connectedToHardhat = isHardHat(providerUrl);
+
+    const wallet = await loadWallet(parameters.quote.from, false, provider);
+    if (!wallet) {
+      runOnUI(resetSwappingStatus)();
+      Alert.alert(i18n.t(i18n.l.swap.unable_to_load_wallet));
+      return;
+    }
+
+    const gasParams = gasStore.getState().selectedGas;
+    const gasParamsForSpeed = gasStore.getState().gasFeeParamsBySpeed;
+
+    const { errorMessage } = await walletExecuteRap(wallet, type, {
+      ...parameters,
+      gasParams,
+      gasFeeParamsBySpeed: gasParamsForSpeed,
+    });
+    runOnUI(resetSwappingStatus)();
+
+    if (errorMessage) {
+      if (errorMessage !== 'handled') {
+        logger.error(new RainbowError(`[getNonceAndPerformSwap]: Error executing swap: ${errorMessage}`));
+        const extractedError = errorMessage.split('[')[0];
+        Alert.alert(i18n.t(i18n.l.swap.error_executing_swap), extractedError);
+        return;
+      }
+    }
+
+    queryClient.invalidateQueries({
+      queryKey: userAssetsQueryKey({
+        address: parameters.quote.from,
+        currency: nativeCurrency,
+        connectedToHardhat,
+      }),
+    });
+
+    // TODO: Analytics
+    NotificationManager?.postNotification('rapCompleted');
+    Navigation.handleAction(Routes.PROFILE_SCREEN, {});
+  };
+
+  const executeSwap = () => {
+    'worklet';
+
+    // TODO: Analytics
+    if (configProgress.value !== NavigationSteps.SHOW_REVIEW) return;
+
+    const inputAsset = internalSelectedInputAsset.value;
+    const outputAsset = internalSelectedOutputAsset.value;
+    const q = quote.value;
+
+    // TODO: What other checks do we need here?
+    if (!inputAsset || !outputAsset || !q || (q as QuoteError)?.error) {
+      return;
+    }
+
+    isSwapping.value = true;
+
+    const type = inputAsset.chainId !== outputAsset.chainId ? 'crosschainSwap' : 'swap';
+    const quoteData = q as QuoteTypeMap[typeof type];
+    const flashbots = (SwapSettings.flashbots.value && inputAsset.chainId === ChainId.mainnet) ?? false;
+
+    const parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'> = {
+      sellAmount: quoteData.sellAmount?.toString(),
+      buyAmount: quoteData.buyAmount?.toString(),
+      chainId: inputAsset.chainId,
+      assetToSell: inputAsset,
+      assetToBuy: outputAsset,
+      quote: quoteData,
+      flashbots,
+    };
+
+    runOnJS(getNonceAndPerformSwap)({
+      type,
+      parameters,
+    });
+  };
+
   const SwapSettings = useSwapSettings({
     inputAsset: internalSelectedInputAsset,
   });
@@ -140,6 +237,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     inputProgress,
     outputProgress,
     configProgress,
+    executeSwap,
   });
 
   const SwapWarning = useSwapWarning({
@@ -268,103 +366,11 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     runOnUI(updateAssetValue)({ type, asset: parseAssetAndExtend({ asset }) });
   };
 
-  const getNonceAndPerformSwap = async ({
-    type,
-    parameters,
-  }: {
-    type: 'swap' | 'crosschainSwap';
-    parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'>;
-  }) => {
-    const NotificationManager = ios ? NativeModules.NotificationManager : null;
-    NotificationManager?.postNotification('rapInProgress');
-
-    const resetSwappingStatus = () => {
-      'worklet';
-      isSwapping.value = false;
-    };
-
-    const network = ethereumUtils.getNetworkFromChainId(parameters.chainId);
-    const provider = getCachedProviderForNetwork(network);
-    const providerUrl = provider?.connection?.url;
-    const connectedToHardhat = isHardHat(providerUrl);
-
-    const wallet = await loadWallet(parameters.quote.from, false, provider);
-    if (!wallet) {
-      runOnUI(resetSwappingStatus)();
-      Alert.alert(i18n.t(i18n.l.swap.unable_to_load_wallet));
-      return;
-    }
-
-    const gasParams = gasStore.getState().selectedGas;
-    const gasParamsForSpeed = gasStore.getState().gasFeeParamsBySpeed;
-
-    const { errorMessage } = await walletExecuteRap(wallet, type, {
-      ...parameters,
-      gasParams,
-      gasFeeParamsBySpeed: gasParamsForSpeed,
-    });
-    runOnUI(resetSwappingStatus)();
-
-    if (errorMessage) {
-      if (errorMessage !== 'handled') {
-        logger.error(new RainbowError(`[getNonceAndPerformSwap]: Error executing swap: ${errorMessage}`));
-        const extractedError = errorMessage.split('[')[0];
-        Alert.alert(i18n.t(i18n.l.swap.error_executing_swap), extractedError);
-        return;
-      }
-    }
-
-    queryClient.invalidateQueries({
-      queryKey: userAssetsQueryKey({
-        address: parameters.quote.from,
-        currency: nativeCurrency,
-        connectedToHardhat,
-      }),
-    });
-
-    // TODO: Analytics
-    NotificationManager?.postNotification('rapCompleted');
-    Navigation.handleAction(Routes.PROFILE_SCREEN, {});
-  };
-
-  const executeSwap = () => {
-    'worklet';
-
-    // TODO: Analytics
-    if (configProgress.value !== NavigationSteps.SHOW_REVIEW) return;
-
-    const inputAsset = internalSelectedInputAsset.value;
-    const outputAsset = internalSelectedOutputAsset.value;
-    const q = quote.value;
-
-    // TODO: What other checks do we need here?
-    if (!inputAsset || !outputAsset || !q || (q as QuoteError)?.error) {
-      return;
-    }
-
-    isSwapping.value = true;
-
-    const type = inputAsset.chainId !== outputAsset.chainId ? 'crosschainSwap' : 'swap';
-    const quoteData = q as QuoteTypeMap[typeof type];
-    const flashbots = (SwapSettings.flashbots.value && inputAsset.chainId === ChainId.mainnet) ?? false;
-
-    const parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'> = {
-      sellAmount: quoteData.sellAmount?.toString(),
-      buyAmount: quoteData.buyAmount?.toString(),
-      chainId: inputAsset.chainId,
-      assetToSell: inputAsset,
-      assetToBuy: outputAsset,
-      quote: quoteData,
-      flashbots,
-    };
-
-    runOnJS(getNonceAndPerformSwap)({
-      type,
-      parameters,
-    });
-  };
-
   const confirmButtonIcon = useDerivedValue(() => {
+    if (isSwapping.value) {
+      return '';
+    }
+
     if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
       return '􀎽';
     } else if (configProgress.value === NavigationSteps.SHOW_GAS) {
@@ -387,7 +393,12 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
   });
 
+  // TODO: i18n these
   const confirmButtonLabel = useDerivedValue(() => {
+    if (isSwapping.value) {
+      return 'Swapping';
+    }
+
     if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
       return 'Hold to Swap';
     } else if (configProgress.value === NavigationSteps.SHOW_GAS) {
@@ -447,6 +458,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     <SwapContext.Provider
       value={{
         isFetching,
+        isSwapping,
         isQuoteStale,
         searchInputRef,
 
