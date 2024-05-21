@@ -63,3 +63,5 @@ export const springConfig = { damping: 100, mass: 1.2, stiffness: 750 };
 
 export const highPriceImpactThreshold = 0.05;
 export const severePriceImpactThreshold = 0.1;
+
+export const slippageStep = 0.5;

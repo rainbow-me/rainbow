@@ -4,6 +4,7 @@ import * as i18n from '@/languages';
 import { AnimatedText, Box, Inline, Separator, Stack, Text, globalColors, useColorMode } from '@/design-system';
 import Animated, {
   runOnJS,
+  runOnUI,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -32,7 +33,7 @@ const RainbowFee = () => {
 
 export function ReviewPanel() {
   const { isDarkMode } = useColorMode();
-  const { configProgress, SwapInputController, internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
+  const { configProgress, SwapSettings, SwapInputController, internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
 
   const unknown = i18n.t(i18n.l.swap.unknown);
 
@@ -53,8 +54,6 @@ export function ReviewPanel() {
     return `${SwapInputController.inputValues.value.outputAmount} ${internalSelectedOutputAsset.value.symbol}`;
   });
 
-  const flashbots = useDerivedValue(() => false);
-
   const updateChainFromNetwork = useCallback((chainId: ChainId) => {
     setChain(ethereumUtils.getNetworkFromChainId(chainId));
   }, []);
@@ -67,17 +66,6 @@ export function ReviewPanel() {
       }
     }
   );
-
-  const onSetSlippage = useCallback((operation: 'increment' | 'decrement') => {
-    'worklet';
-    const value = operation === 'increment' ? SLIPPAGE_STEP : -SLIPPAGE_STEP;
-    // SwapInputController.slippage.value = `${Math.max(0.5, Number(SwapInputController.slippage.value) + value)}`;
-  }, []);
-
-  const onSetFlashbots = useCallback(() => {
-    'worklet';
-    // SwapInputController.flashbots.value = !SwapInputController.flashbots.value;
-  }, []);
 
   // TODO: Comes from gas store
   const estimatedGasFee = useSharedValue('$2.25');
@@ -176,7 +164,7 @@ export function ReviewPanel() {
               </Inline>
             </Inline>
 
-            <AnimatedSwitch onToggle={onSetFlashbots} value={flashbots} activeLabel="On" inactiveLabel="Off" />
+            <AnimatedSwitch onToggle={SwapSettings.onToggleFlashbots} value={SwapSettings.flashbots} activeLabel="On" inactiveLabel="Off" />
           </Inline>
 
           <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
@@ -195,7 +183,7 @@ export function ReviewPanel() {
             </Inline>
 
             <Inline wrap={false} horizontalSpace="8px" alignVertical="center">
-              <ButtonPressAnimation onPress={() => onSetSlippage('decrement')}>
+              <ButtonPressAnimation onPress={() => runOnUI(SwapSettings.onUpdateSlippage)('minus')}>
                 <Box
                   style={{
                     justifyContent: 'center',
@@ -217,9 +205,21 @@ export function ReviewPanel() {
                 </Box>
               </ButtonPressAnimation>
 
-              <AnimatedText size="15pt" weight="bold" color="labelSecondary" text={slippageText} />
+              <Inline space="2px">
+                <AnimatedText
+                  align="right"
+                  style={{ minWidth: 26 }}
+                  size="15pt"
+                  weight="bold"
+                  color="labelSecondary"
+                  text={SwapSettings.slippage}
+                />
+                <Text size="15pt" weight="bold" color="labelSecondary">
+                  %
+                </Text>
+              </Inline>
 
-              <ButtonPressAnimation onPress={() => onSetSlippage('increment')}>
+              <ButtonPressAnimation onPress={() => runOnUI(SwapSettings.onUpdateSlippage)('plus')}>
                 <Box
                   style={{
                     justifyContent: 'center',
