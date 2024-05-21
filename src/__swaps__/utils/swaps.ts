@@ -239,15 +239,23 @@ export function valueBasedDecimalFormatter(
   return numberFormatter.format(roundedAmount);
 }
 
-export function niceIncrementFormatter(
-  incrementDecimalPlaces: number,
-  inputAssetBalance: number,
-  inputAssetUsdPrice: number,
-  niceIncrement: number,
-  percentageToSwap: number,
-  sliderXPosition: number,
-  stripSeparators?: boolean
-) {
+export function niceIncrementFormatter({
+  incrementDecimalPlaces,
+  inputAssetBalance,
+  inputAssetUsdPrice,
+  niceIncrement,
+  percentageToSwap,
+  sliderXPosition,
+  stripSeparators,
+}: {
+  incrementDecimalPlaces: number;
+  inputAssetBalance: number;
+  inputAssetUsdPrice: number;
+  niceIncrement: number;
+  percentageToSwap: number;
+  sliderXPosition: number;
+  stripSeparators?: boolean;
+}) {
   'worklet';
   if (percentageToSwap === 0) return '0';
   if (percentageToSwap === 0.25) return valueBasedDecimalFormatter(inputAssetBalance * 0.25, inputAssetUsdPrice, 'up', -3);
