@@ -114,6 +114,15 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
   const quote = useSharedValue<Quote | CrosschainQuote | QuoteError | null>(null);
 
+  const SwapSettings = useSwapSettings({
+    inputAsset: internalSelectedInputAsset,
+  });
+
+  const SwapGas = useSwapGas({
+    inputAsset: internalSelectedInputAsset,
+    outputAsset: internalSelectedOutputAsset,
+  });
+
   const getNonceAndPerformSwap = async ({
     type,
     parameters,
@@ -209,15 +218,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       parameters,
     });
   };
-
-  const SwapSettings = useSwapSettings({
-    inputAsset: internalSelectedInputAsset,
-  });
-
-  const SwapGas = useSwapGas({
-    inputAsset: internalSelectedInputAsset,
-    outputAsset: internalSelectedOutputAsset,
-  });
 
   const SwapInputController = useSwapInputsController({
     focusedInput,
