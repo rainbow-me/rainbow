@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import { Bleed, Box, Column, Columns, Stack, Text, useColorMode, useForegroundColor } from '@/design-system';
 import React from 'react';
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
@@ -11,6 +12,16 @@ import { ScrollView, View } from 'react-native';
 const HORIZONTAL_PADDING = 20;
 
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
+
+function EmptyComponent({ emptyMessage }: { emptyMessage?: string }) {
+  return (
+    <Box height="full" width="full" justifyContent="center" alignItems="center">
+      <Text color="labelQuaternary" size="15pt" weight="semibold" numberOfLines={1}>
+        {emptyMessage}
+      </Text>
+    </Box>
+  );
+}
 
 export type CarouselItem<T> = {
   carouselRef?: React.Ref<FlashList<T>>;
@@ -29,6 +40,8 @@ export function CarouselCard<T>({
   carouselItem,
   button,
   menu,
+  emptyMessage = 'No items found',
+  loading = false,
   refresh,
   canRefresh,
   isRefreshing,
@@ -38,6 +51,8 @@ export function CarouselCard<T>({
   carouselItem: CarouselItem<T>;
   button?: React.ReactNode;
   menu?: React.ReactNode;
+  loading?: boolean;
+  emptyMessage?: string;
   refresh?: () => void;
   canRefresh?: boolean;
   isRefreshing?: boolean;
@@ -97,7 +112,7 @@ export function CarouselCard<T>({
               ItemSeparatorComponent={() => <View style={{ width: carouselItem.padding }} />}
               keyExtractor={carouselItem.keyExtractor}
             />
-          ) : (
+          ) : loading ? (
             // need this due to FlashList bug https://github.com/Shopify/flash-list/issues/757
             <ScrollView
               horizontal
@@ -105,16 +120,16 @@ export function CarouselCard<T>({
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{
                 paddingHorizontal: HORIZONTAL_PADDING,
+                gap: carouselItem.padding,
               }}
             >
-              <Box gap={carouselItem.padding}>
-                {carouselItem.placeholder}
-                {carouselItem.placeholder}
-                {carouselItem.placeholder}
-                {carouselItem.placeholder}
-                {carouselItem.placeholder}
-              </Box>
+              <Box>{carouselItem.placeholder}</Box>
+              <Box>{carouselItem.placeholder}</Box>
+              <Box>{carouselItem.placeholder}</Box>
+              <Box>{carouselItem.placeholder}</Box>
             </ScrollView>
+          ) : (
+            <EmptyComponent emptyMessage={emptyMessage} />
           )}
         </Box>
       </Bleed>
