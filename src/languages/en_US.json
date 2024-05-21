@@ -1910,6 +1910,7 @@
       "aggregators": {
         "rainbow": "Rainbow"
       },
+      "error_executing_swap": "Error executing swap",
       "tokens_input": {
         "tokens": "Tokens",
         "sort": "Sort",
@@ -1945,6 +1946,7 @@
         "withdraw_symbol": "Withdraw %{symbol}"
       },
       "unknown": "Unknown",
+      "unable_to_load_wallet": "Unable to load wallet",
       "warning": {
         "cost": {
           "are_you_sure_title": "Are you sure?",
