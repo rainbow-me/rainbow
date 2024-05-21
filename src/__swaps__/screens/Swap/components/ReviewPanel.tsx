@@ -18,11 +18,9 @@ import { ChainId } from '@/__swaps__/types/chains';
 import { chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { AnimatedSwitch } from './AnimatedSwitch';
 import { GasButton } from '@/__swaps__/screens/Swap/components/GasButton';
-import { ButtonPressAnimation } from '@/components/animations';
+import { GestureHandlerV1Button } from './GestureHandlerV1Button';
 import { StyleSheet, View } from 'react-native';
 import { AnimatedChainImage } from './AnimatedChainImage';
-
-const SLIPPAGE_STEP = 0.5;
 
 const RainbowFee = () => {
   const { isDarkMode } = useColorMode();
@@ -34,7 +32,7 @@ const RainbowFee = () => {
 
 export function ReviewPanel() {
   const { isDarkMode } = useColorMode();
-  const { configProgress, SwapInputController, internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
+  const { configProgress, SwapSettings, SwapInputController, internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
 
   const unknown = i18n.t(i18n.l.swap.unknown);
 
@@ -44,8 +42,6 @@ export function ReviewPanel() {
       : chainNameFromChainIdWorklet(internalSelectedOutputAsset.value?.chainId ?? ChainId.mainnet)
   );
 
-  const slippageText = useDerivedValue(() => `1.5%`);
-
   const [chain, setChain] = useState(ethereumUtils.getNetworkFromChainId(internalSelectedOutputAsset.value?.chainId ?? ChainId.mainnet));
 
   const minimumReceived = useDerivedValue(() => {
@@ -54,8 +50,6 @@ export function ReviewPanel() {
     }
     return `${SwapInputController.inputValues.value.outputAmount} ${internalSelectedOutputAsset.value.symbol}`;
   });
-
-  const flashbots = useDerivedValue(() => false);
 
   const updateChainFromNetwork = useCallback((chainId: ChainId) => {
     setChain(ethereumUtils.getNetworkFromChainId(chainId));
@@ -69,17 +63,6 @@ export function ReviewPanel() {
       }
     }
   );
-
-  const onSetSlippage = useCallback((operation: 'increment' | 'decrement') => {
-    'worklet';
-    const value = operation === 'increment' ? SLIPPAGE_STEP : -SLIPPAGE_STEP;
-    // SwapInputController.slippage.value = `${Math.max(0.5, Number(SwapInputController.slippage.value) + value)}`;
-  }, []);
-
-  const onSetFlashbots = useCallback(() => {
-    'worklet';
-    // SwapInputController.flashbots.value = !SwapInputController.flashbots.value;
-  }, []);
 
   // TODO: Comes from gas store
   const estimatedGasFee = useSharedValue('$2.25');
@@ -180,7 +163,7 @@ export function ReviewPanel() {
               </Inline>
             </Inline>
 
-            <AnimatedSwitch onToggle={onSetFlashbots} value={flashbots} activeLabel="On" inactiveLabel="Off" />
+            <AnimatedSwitch onToggle={SwapSettings.onToggleFlashbots} value={SwapSettings.flashbots} activeLabel="On" inactiveLabel="Off" />
           </Inline>
 
           <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
@@ -199,7 +182,7 @@ export function ReviewPanel() {
             </Inline>
 
             <Inline wrap={false} horizontalSpace="8px" alignVertical="center">
-              <ButtonPressAnimation onPress={() => onSetSlippage('decrement')}>
+              <GestureHandlerV1Button onPressWorklet={() => SwapSettings.onUpdateSlippage('minus')}>
                 <Box
                   style={{
                     justifyContent: 'center',
@@ -219,11 +202,23 @@ export function ReviewPanel() {
                     􀅽
                   </Text>
                 </Box>
-              </ButtonPressAnimation>
+              </GestureHandlerV1Button>
 
-              <AnimatedText size="15pt" weight="bold" color="labelSecondary" text={slippageText} />
+              <Inline space="2px">
+                <AnimatedText
+                  align="right"
+                  style={{ minWidth: 26 }}
+                  size="15pt"
+                  weight="bold"
+                  color="labelSecondary"
+                  text={SwapSettings.slippage}
+                />
+                <Text size="15pt" weight="bold" color="labelSecondary">
+                  %
+                </Text>
+              </Inline>
 
-              <ButtonPressAnimation onPress={() => onSetSlippage('increment')}>
+              <GestureHandlerV1Button onPressWorklet={() => SwapSettings.onUpdateSlippage('plus')}>
                 <Box
                   style={{
                     justifyContent: 'center',
@@ -243,7 +238,7 @@ export function ReviewPanel() {
                     􀅼
                   </Text>
                 </Box>
-              </ButtonPressAnimation>
+              </GestureHandlerV1Button>
             </Inline>
           </Inline>
 

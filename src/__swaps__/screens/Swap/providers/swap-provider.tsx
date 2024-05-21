@@ -18,13 +18,14 @@ import { useSwapNavigation, NavigationSteps } from '@/__swaps__/screens/Swap/hoo
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
 import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
+import { useSwapGas } from '@/__swaps__/screens/Swap/hooks/useSwapGas';
+import { useSwapSettings } from '@/__swaps__/screens/Swap/hooks/useSwapSettings';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { isSameAsset } from '@/__swaps__/utils/assets';
 import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { ChainId } from '@/__swaps__/types/chains';
 import { logger } from '@/logger';
-import { useSwapGas } from '../hooks/useSwapGas';
 
 interface SwapContextType {
   isFetching: SharedValue<boolean>;
@@ -51,6 +52,7 @@ interface SwapContextType {
 
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
 
+  SwapSettings: ReturnType<typeof useSwapSettings>;
   SwapInputController: ReturnType<typeof useSwapInputsController>;
   AnimatedSwapStyles: ReturnType<typeof useAnimatedSwapStyles>;
   SwapTextStyles: ReturnType<typeof useSwapTextStyles>;
@@ -91,6 +93,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const internalSelectedOutputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(null);
 
   const quote = useSharedValue<Quote | CrosschainQuote | QuoteError | null>(null);
+
+  const SwapSettings = useSwapSettings({
+    inputAsset: internalSelectedInputAsset,
+  });
 
   const SwapGas = useSwapGas({
     inputAsset: internalSelectedInputAsset,
@@ -348,6 +354,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
         quote,
 
+        SwapSettings,
         SwapInputController,
         AnimatedSwapStyles,
         SwapTextStyles,
