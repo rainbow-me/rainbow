@@ -58,7 +58,7 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNft, address: string):
   const isPoap = nft.contract_address.toLowerCase() === POAP_NFT_ADDRESS;
 
   const ownerEntry = nft.owners?.find(o => o.owner_address === address);
-
+  console.log(nft.video_properties);
   return {
     animation_url: nft?.video_url ?? nft.audio_url ?? nft.model_url ?? nft.extra_metadata?.animation_original_url ?? undefined,
     asset_contract: {

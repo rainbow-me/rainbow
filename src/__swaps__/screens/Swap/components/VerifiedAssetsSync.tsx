@@ -1,7 +1,20 @@
+import { verifiedAssetsStore } from '@/state/assets/verifiedAssets';
 import { useTokenSearch } from '../resources/search';
+import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 
 export const VerifiedAssetsSync = () => {
-  useTokenSearch({ list: 'verifiedAssets' });
+  useTokenSearch(
+    { list: 'verifiedAssets' },
+    {
+      onSuccess: data => {
+        verifiedAssetsStore.setState({
+          // MIGHT NEED TO CHANGE THIS
+          verifiedAssets: data as ParsedSearchAsset[],
+        });
+      },
+      staleTime: 5 * 60 * 1000,
+    }
+  );
 
   // useUserAssets(
   //   {

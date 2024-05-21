@@ -18,6 +18,7 @@ export default function useUniqueToken(maybeUniqueToken: Record<string, any>): u
       const supports3d = !!maybeUniqueToken?.model_properties;
       const supportsAudio = !!maybeUniqueToken?.audio_properties;
       const supportsVideo = !!maybeUniqueToken?.video_properties;
+
       return { supports3d, supportsAudio, supportsVideo };
     }
     return fallbackResult;
