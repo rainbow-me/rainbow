@@ -29,6 +29,7 @@ import {
   multiply,
 } from '@/__swaps__/utils/numbers';
 import { getMinimalTimeUnitStringForMs } from '@/__swaps__/utils/time';
+import { isL2Chain } from './chains';
 
 export const FLASHBOTS_MIN_TIP = 6;
 
@@ -160,6 +161,7 @@ export const parseCustomGasFeeParams = ({
 };
 
 export const parseGasFeeParams = ({
+  chainId,
   wei,
   currentBaseFee,
   speed,
@@ -172,6 +174,7 @@ export const parseGasFeeParams = ({
   secondsPerNewBlock,
   optimismL1SecurityFee,
 }: {
+  chainId: ChainId;
   wei: string;
   speed: GasSpeed;
   maxPriorityFeeSuggestions: {
@@ -197,9 +200,11 @@ export const parseGasFeeParams = ({
 
   const baseFee = lessThan(currentBaseFee, maxBaseFee.amount) ? currentBaseFee : maxBaseFee.amount;
 
-  const display = `${new BigNumber(weiToGwei(add(baseFee, maxPriorityFeePerGas.amount))).toFixed(0)} - ${new BigNumber(
+  const isL2 = isL2Chain(chainId);
+
+  const display = `${new BigNumber(weiToGwei(add(baseFee, maxPriorityFeePerGas.amount))).toFixed(isL2 ? 4 : 0)} - ${new BigNumber(
     weiToGwei(add(maxBaseFee.amount, maxPriorityFeePerGas.amount))
-  ).toFixed(0)} Gwei`;
+  ).toFixed(isL2 ? 4 : 0)} Gwei`;
 
   const estimatedTime = parseGasDataConfirmationTime({
     maxBaseFee: maxBaseFee.amount,
@@ -518,6 +523,7 @@ export const parseGasFeeParamsBySpeed = ({
 
     const parseGasFeeParamsSpeed = ({ speed }: { speed: GasSpeed }) =>
       parseGasFeeParams({
+        chainId,
         currentBaseFee,
         maxPriorityFeeSuggestions,
         speed,

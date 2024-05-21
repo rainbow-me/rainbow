@@ -53,6 +53,14 @@ const GAS_TRENDS = {
   },
 };
 
+const gasSpeedLabels = {
+  [CUSTOM]: i18n.t(i18n.l.gas.speeds.custom),
+  [FAST]: i18n.t(i18n.l.gas.speeds.fast),
+  [NORMAL]: i18n.t(i18n.l.gas.speeds.normal),
+  [URGENT]: i18n.t(i18n.l.gas.speeds.urgent),
+  [SLOW]: i18n.t(i18n.l.gas.speeds.slow),
+};
+
 const getGasLabel = (speed: string) => {
   switch (speed) {
     case CUSTOM:
@@ -80,6 +88,7 @@ export default {
   FAST,
   FLASHBOTS_MIN_TIP,
   getGasLabel,
+  gasSpeedLabels,
   getGasFallback,
   GAS_EMOJIS,
   GAS_ICONS,
