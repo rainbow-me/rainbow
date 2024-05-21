@@ -19,6 +19,8 @@ import { chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { AnimatedSwitch } from './AnimatedSwitch';
 import { GasButton } from '@/__swaps__/screens/Swap/components/GasButton';
 import { ButtonPressAnimation } from '@/components/animations';
+import { StyleSheet, View } from 'react-native';
+import { AnimatedChainImage } from './AnimatedChainImage';
 
 const SLIPPAGE_STEP = 0.5;
 
@@ -111,7 +113,9 @@ export function ReviewPanel() {
             </Inline>
 
             <Inline alignVertical="center" horizontalSpace="6px">
-              <ChainImage chain={chain} size={16} />
+              <View style={sx.networkContainer}>
+                <AnimatedChainImage showMainnetBadge asset={internalSelectedInputAsset} size={16} />
+              </View>
               <AnimatedText
                 align="right"
                 color={isDarkMode ? 'labelSecondary' : 'label'}
@@ -248,7 +252,9 @@ export function ReviewPanel() {
           <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
             <Stack space="6px">
               <Inline alignVertical="center" horizontalSpace="6px">
-                <ChainImage chain={chain} size={16} />
+                <View style={sx.gasContainer}>
+                  <AnimatedChainImage showMainnetBadge asset={internalSelectedInputAsset} size={16} />
+                </View>
                 <Inline horizontalSpace="4px">
                   <AnimatedText align="left" color={'label'} size="15pt" weight="heavy" text={estimatedGasFee} />
                   <AnimatedText align="right" color={'labelTertiary'} size="15pt" weight="bold" text={estimatedArrivalTime} />
@@ -274,3 +280,18 @@ export function ReviewPanel() {
     </Box>
   );
 }
+
+const sx = StyleSheet.create({
+  gasContainer: {
+    top: 2,
+    height: 12,
+    width: 10,
+    left: 4,
+    overflow: 'visible',
+  },
+  networkContainer: {
+    top: 2,
+    height: 12,
+    width: 6,
+  },
+});
