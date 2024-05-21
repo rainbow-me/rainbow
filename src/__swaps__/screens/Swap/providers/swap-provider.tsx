@@ -146,7 +146,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
     const { errorMessage } = await walletExecuteRap(wallet, type, {
       ...parameters,
-      gasParams,
+      gasParams: gasParams.transactionGasParams,
       gasFeeParamsBySpeed: gasParamsForSpeed,
     });
     runOnUI(resetSwappingStatus)();
