@@ -215,6 +215,7 @@ export const unlock = async ({
   index,
   parameters,
   wallet,
+  selectedGas,
   selectedGasFee,
   gasFeeParamsBySpeed,
 }: ActionProps<'unlock'>): Promise<RapActionResult> => {
@@ -239,7 +240,9 @@ export const unlock = async ({
     throw e;
   }
 
-  let gasParams = parseGasParamAmounts(selectedGasFee);
+  let gasParams = selectedGas ? selectedGas.transactionGasParams : selectedGasFee ? parseGasParamAmounts(selectedGasFee) : undefined;
+  if (!gasParams) throw new RainbowError('unlock: error gasParams not defined');
+
   gasParams = overrideWithFastSpeedIfNeeded({
     gasParams,
     chainId,

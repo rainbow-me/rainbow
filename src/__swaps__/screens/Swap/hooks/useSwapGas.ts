@@ -42,6 +42,8 @@ export const useSwapGas = ({
     SwapSettings,
     inputAsset,
     quote,
+    selectedGasSpeed,
+    selectedGas,
     gasFeeParamsBySpeed,
     estimatedGasLimit,
     nativeAsset,

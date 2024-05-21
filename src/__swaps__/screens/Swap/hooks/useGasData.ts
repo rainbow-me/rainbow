@@ -9,7 +9,7 @@ import { meteorologySupportsChainWorklet, parseGasFeeParamsBySpeed } from '@/__s
 import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import { RainbowError, logger } from '@/logger';
-import { GasFeeLegacyParams, GasFeeLegacyParamsBySpeed, GasFeeParams, GasFeeParamsBySpeed } from '@/__swaps__/types/gas';
+import { GasFeeLegacyParams, GasFeeLegacyParamsBySpeed, GasFeeParams, GasFeeParamsBySpeed, GasSpeed } from '@/__swaps__/types/gas';
 import { ParsedAddressAsset } from '@/entities';
 import { useAccountSettings } from '@/hooks';
 import { gasUnits } from '@/references';
@@ -22,6 +22,8 @@ export const useGasData = ({
   SwapSettings,
   inputAsset,
   quote,
+  selectedGasSpeed,
+  selectedGas,
   gasFeeParamsBySpeed,
   estimatedGasLimit,
   nativeAsset,
@@ -32,6 +34,8 @@ export const useGasData = ({
   SwapSettings: ReturnType<typeof useSwapSettings>;
   inputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
+  selectedGasSpeed: SharedValue<GasSpeed>;
+  selectedGas: SharedValue<GasFeeParams | GasFeeLegacyParams>;
   gasFeeParamsBySpeed: SharedValue<GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed | null>;
   estimatedGasLimit: SharedValue<string | undefined>;
   nativeAsset: SharedValue<ParsedAddressAsset | undefined>;
@@ -71,7 +75,7 @@ export const useGasData = ({
         customBaseFee,
         customPriorityFee,
       }: {
-        data: MeteorologyResponse | MeteorologyLegacyResponse | null;
+        data: MeteorologyLegacyResponse | null;
         gasParamsBySpeed?: GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed | null;
         customBaseFee: string;
         customPriorityFee: string;
@@ -83,6 +87,8 @@ export const useGasData = ({
 
         if (gasParamsBySpeed) {
           gasFeeParamsBySpeed.value = gasParamsBySpeed;
+          const newSelectedGas = gasParamsBySpeed[selectedGasSpeed.value];
+          selectedGas.value = newSelectedGas;
         }
 
         if (!maxBaseFee.value) {
@@ -177,6 +183,8 @@ export const useGasData = ({
 
         if (gasParamsBySpeed) {
           gasFeeParamsBySpeed.value = gasParamsBySpeed;
+          const newSelectedGas = gasParamsBySpeed[selectedGasSpeed.value];
+          selectedGas.value = newSelectedGas;
         }
 
         if (!maxBaseFee.value) {

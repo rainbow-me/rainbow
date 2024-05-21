@@ -1,6 +1,6 @@
 // @refresh
 import React, { createContext, useContext, ReactNode, useEffect } from 'react';
-import { StyleProp, TextStyle, TextInput } from 'react-native';
+import { StyleProp, TextStyle, TextInput, NativeModules } from 'react-native';
 import * as i18n from '@/languages';
 import {
   AnimatedRef,
@@ -30,14 +30,16 @@ import { useSwapGas } from '@/__swaps__/screens/Swap/hooks/useSwapGas';
 import { useSwapSettings } from '../hooks/useSwapSettings';
 import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
 import { walletExecuteRap } from '@/raps/execute';
-import { GasSpeed } from '@/__swaps__/types/gas';
 import { ethereumUtils } from '@/utils';
 import { loadWallet } from '@/model/wallet';
 import { getProviderForNetwork } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 
 interface SwapContextType {
   isFetching: SharedValue<boolean>;
+  isSwapping: SharedValue<boolean>;
   isQuoteStale: SharedValue<number>;
   searchInputRef: AnimatedRef<TextInput>;
 
@@ -83,6 +85,7 @@ interface SwapProviderProps {
 
 export const SwapProvider = ({ children }: SwapProviderProps) => {
   const isFetching = useSharedValue(false);
+  const isSwapping = useSharedValue(false);
   const isQuoteStale = useSharedValue(0);
 
   const searchInputRef = useAnimatedRef<TextInput>();
@@ -267,15 +270,28 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     type: 'swap' | 'crosschainSwap';
     parameters: RapSwapActionParameters<typeof type>;
   }) => {
+    const NotificationManager = ios ? NativeModules.NotificationManager : null;
+    NotificationManager?.postNotification('rapInProgress');
+
+    const resetSwappingStatus = () => {
+      'worklet';
+      isSwapping.value = false;
+    };
+
     const network = ethereumUtils.getNetworkFromChainId(parameters.chainId);
     const provider = await getProviderForNetwork(network);
 
     const wallet = await loadWallet(parameters.quote.from, false, provider);
-    if (!wallet) return;
+    if (!wallet) {
+      // TODO: Show alert to user
+      runOnUI(resetSwappingStatus)();
+      return;
+    }
 
-    const { errorMessage, nonce } = await walletExecuteRap(wallet, type, parameters);
+    const { errorMessage } = await walletExecuteRap(wallet, type, parameters);
     console.log(errorMessage);
 
+    runOnUI(resetSwappingStatus)();
     if (errorMessage) {
       if (errorMessage !== 'handled') {
         logger.error(new RainbowError(`[getNonceAndPerformSwap]: Error executing swap: ${errorMessage}`));
@@ -286,7 +302,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
 
     // TODO: Refresh input and output asset balances
-    // TODO: Navigate back to WALLET_SCREEN
+    // TODO: Analytics
+    NotificationManager?.postNotification('rapCompleted');
+    Navigation.handleAction(Routes.PROFILE_SCREEN, {});
   };
 
   const executeSwap = () => {
@@ -301,9 +319,13 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return;
     }
 
+    isSwapping.value = true;
+
     const type = inputAsset.chainId !== outputAsset.chainId ? 'crosschainSwap' : 'swap';
     const quoteData = q as QuoteTypeMap[typeof type];
     const flashbots = (SwapSettings.flashbots.value && inputAsset.chainId === ChainId.mainnet) ?? false;
+
+    console.log(SwapGas.selectedGas.value);
 
     const parameters: RapSwapActionParameters<typeof type> = {
       sellAmount: quoteData.sellAmount?.toString(),
@@ -315,7 +337,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       flashbots,
 
       // TODO: Need to expand the types to bring in new BX gas types
-      selectedGasFee: SwapGas.gasFeeParamsBySpeed.value?.[SwapGas.selectedGasSpeed.value ?? GasSpeed.NORMAL] ?? {},
+      selectedGas: SwapGas.selectedGas.value,
       gasFeeParamsBySpeed: SwapGas.gasFeeParamsBySpeed.value ?? {},
     };
 
@@ -349,6 +371,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   });
 
   const confirmButtonLabel = useDerivedValue(() => {
+    if (isSwapping.value) {
+      return 'Swapping';
+    }
     if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
       return 'Hold to Swap';
     } else if (configProgress.value === NavigationSteps.SHOW_GAS) {
@@ -409,6 +434,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     <SwapContext.Provider
       value={{
         isFetching,
+        isSwapping,
         isQuoteStale,
         searchInputRef,
 

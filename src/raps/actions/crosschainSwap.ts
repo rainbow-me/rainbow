@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import { Signer } from '@ethersproject/abstract-signer';
 import { CrosschainQuote, fillCrosschainQuote } from '@rainbow-me/swaps';
 import { Address } from 'viem';
@@ -104,11 +105,15 @@ export const crosschainSwap = async ({
   index,
   parameters,
   baseNonce,
+  selectedGas,
   selectedGasFee,
   gasFeeParamsBySpeed,
 }: ActionProps<'crosschainSwap'>): Promise<RapActionResult> => {
   const { quote, chainId, requiresApprove } = parameters;
-  let gasParams = parseGasParamAmounts(selectedGasFee);
+
+  let gasParams = selectedGas ? selectedGas.transactionGasParams : selectedGasFee ? parseGasParamAmounts(selectedGasFee) : undefined;
+  if (!gasParams) throw new RainbowError('crosschainSwap: error gasParams not defined');
+
   if (currentRap.actions.length - 1 > index) {
     gasParams = overrideWithFastSpeedIfNeeded({
       gasParams,

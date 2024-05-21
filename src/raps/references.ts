@@ -1,9 +1,10 @@
 import { Signer } from '@ethersproject/abstract-signer';
 import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
-import { Address } from 'viem';
+import { Address, OneOf } from 'viem';
 
 import { ParsedAsset } from '@/__swaps__/types/assets';
 import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacySelectedGasFee, SelectedGasFee } from '@/entities';
+import { GasFeeLegacyParams, GasFeeParams } from '@/__swaps__/types/gas';
 
 export enum SwapModalField {
   input = 'inputAmount',
@@ -49,7 +50,8 @@ export interface RapSwapActionParameters<T extends 'swap' | 'crosschainSwap'> {
   meta?: SwapMetadata;
   assetToSell: ParsedAsset;
   assetToBuy: ParsedAsset;
-  selectedGasFee: SelectedGasFee | LegacySelectedGasFee;
+  selectedGas?: GasFeeParams | GasFeeLegacyParams; // NOTE: New BX gas types
+  selectedGasFee?: SelectedGasFee | LegacySelectedGasFee;
   gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
   nonce?: number;
   flashbots?: boolean;
@@ -117,7 +119,8 @@ export interface ActionProps<T extends RapActionTypes> {
   parameters: RapActionParameterMap[T];
   wallet: Signer;
   currentRap: Rap;
-  selectedGasFee: SelectedGasFee | LegacySelectedGasFee;
+  selectedGas?: GasFeeParams | GasFeeLegacyParams; // NOTE: New BX gas types
+  selectedGasFee?: SelectedGasFee | LegacySelectedGasFee;
   gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
 }
 

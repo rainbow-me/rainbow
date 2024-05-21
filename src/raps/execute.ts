@@ -20,6 +20,7 @@ import {
 import { createUnlockAndCrosschainSwapRap } from './unlockAndCrosschainSwap';
 import { createUnlockAndSwapRap } from './unlockAndSwap';
 import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacySelectedGasFee, SelectedGasFee } from '@/entities';
+import { GasFeeLegacyParams, GasFeeParams } from '@/__swaps__/types/gas';
 
 export function createSwapRapByType<T extends RapTypes>(type: T, swapParameters: RapSwapActionParameters<T>) {
   switch (type) {
@@ -54,6 +55,7 @@ export async function executeAction<T extends RapActionTypes>({
   baseNonce,
   rapName,
   flashbots,
+  selectedGas,
   selectedGasFee,
   gasFeeParamsBySpeed,
 }: {
@@ -64,7 +66,8 @@ export async function executeAction<T extends RapActionTypes>({
   baseNonce?: number;
   rapName: string;
   flashbots?: boolean;
-  selectedGasFee: SelectedGasFee | LegacySelectedGasFee;
+  selectedGas?: GasFeeParams | GasFeeLegacyParams;
+  selectedGasFee?: SelectedGasFee | LegacySelectedGasFee;
   gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
 }): Promise<RapActionResponse> {
   const { type, parameters } = action;
@@ -75,6 +78,7 @@ export async function executeAction<T extends RapActionTypes>({
       index,
       parameters: { ...parameters, flashbots },
       baseNonce,
+      selectedGas,
       selectedGasFee,
       gasFeeParamsBySpeed,
     };
@@ -133,6 +137,7 @@ export const walletExecuteRap = async (
       baseNonce: nonce,
       rapName,
       flashbots: parameters?.flashbots,
+      selectedGas: parameters?.selectedGas,
       selectedGasFee: parameters?.selectedGasFee,
       gasFeeParamsBySpeed: parameters?.gasFeeParamsBySpeed,
     };
@@ -151,6 +156,7 @@ export const walletExecuteRap = async (
           baseNonce,
           rapName,
           flashbots: parameters?.flashbots,
+          selectedGas: parameters?.selectedGas,
           selectedGasFee: parameters?.selectedGasFee,
           gasFeeParamsBySpeed: parameters?.gasFeeParamsBySpeed,
         };

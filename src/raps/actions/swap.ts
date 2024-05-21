@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import { Signer } from '@ethersproject/abstract-signer';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Transaction } from '@ethersproject/transactions';
@@ -239,14 +240,15 @@ export const swap = async ({
   index,
   parameters,
   baseNonce,
+  selectedGas,
   selectedGasFee,
   gasFeeParamsBySpeed,
 }: ActionProps<'swap'>): Promise<RapActionResult> => {
-  let gasParams = parseGasParamAmounts(selectedGasFee);
-
   const { quote, permit, chainId, requiresApprove } = parameters;
-  // if swap isn't the last action, use fast gas or custom (whatever is faster)
+  let gasParams = selectedGas ? selectedGas.transactionGasParams : selectedGasFee ? parseGasParamAmounts(selectedGasFee) : undefined;
+  if (!gasParams) throw new RainbowError('swap: error gasParams not defined');
 
+  // if swap isn't the last action, use fast gas or custom (whatever is faster)
   if (currentRap.actions.length - 1 > index) {
     gasParams = overrideWithFastSpeedIfNeeded({
       gasParams,

@@ -22,7 +22,6 @@ export const useNativeAssetForChain = ({ inputAsset }: { inputAsset: SharedValue
 
       const network = ethereumUtils.getNetworkFromChainId(chainId);
       const asset = ethereumUtils.getNetworkNativeAsset(network);
-      console.log('setting native asset', asset);
       runOnUI(updateNativeAsset)(asset);
     },
     [nativeAsset]
