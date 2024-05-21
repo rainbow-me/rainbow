@@ -77,6 +77,7 @@ import { TokenColors } from '@/graphql/__generated__/metadata';
 import { estimateSwapGasLimit } from '@/raps/actions';
 import { estimateCrosschainSwapGasLimit } from '@/raps/actions/crosschainSwap';
 import { isUnwrapEth, isWrapEth } from '@/__swaps__/utils/swaps';
+import { parseGasParamAmounts } from '@/parsers';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -487,7 +488,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
             slippage: slippageInBips,
             route: source,
           },
-          selectedGasFee,
+          gasParams: parseGasParamAmounts(selectedGasFee),
           gasFeeParamsBySpeed,
         });
 
