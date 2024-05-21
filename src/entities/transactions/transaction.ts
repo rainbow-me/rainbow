@@ -5,7 +5,7 @@ import { EthereumAddress } from '../wallet';
 import { Network } from '@/helpers/networkTypes';
 import { AddCashCurrencyAsset } from '@/references';
 import { ChainId, SwapType } from '@rainbow-me/swaps';
-import { SwapMetadata } from '@/raps/common';
+import { SwapMetadata } from '@/raps/references';
 import { UniqueAsset } from '../uniqueAssets';
 import { ParsedAsset } from '@/resources/assets/types';
 import { TransactionStatus, TransactionType } from '@/resources/transactions/types';
@@ -80,6 +80,8 @@ export interface RainbowTransaction {
   type: TransactionType;
   value?: BigNumberish; // for pending tx
   fee?: RainbowTransactionFee;
+  explorerLabel?: string;
+  explorerUrl?: string;
 }
 
 export type MinedTransaction = RainbowTransaction & {

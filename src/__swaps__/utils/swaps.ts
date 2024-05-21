@@ -3,13 +3,19 @@ import { SharedValue, convertToRGBA, isColor } from 'react-native-reanimated';
 
 import * as i18n from '@/languages';
 import { globalColors } from '@/design-system';
-import { ETH_COLOR, ETH_COLOR_DARK_ACCENT, SCRUBBER_WIDTH, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { ETH_COLOR, ETH_COLOR_DARK, SCRUBBER_WIDTH, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { ChainId, ChainName } from '@/__swaps__/types/chains';
 import { RainbowConfig } from '@/model/remoteConfig';
-import { CrosschainQuote, ETH_ADDRESS, Quote, WRAPPED_ASSET } from '@rainbow-me/swaps';
+import { CrosschainQuote, ETH_ADDRESS, Quote, QuoteParams, SwapType, WRAPPED_ASSET } from '@rainbow-me/swaps';
 import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
-import { ParsedSearchAsset } from '../types/assets';
+import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '../types/assets';
+import { inputKeys } from '../types/swap';
+import { swapsStore } from '../../state/swaps/swapsStore';
+import { BigNumberish } from '@ethersproject/bignumber';
+import { TokenColors } from '@/graphql/__generated__/metadata';
+import { colors } from '@/styles';
+import { convertAmountToRawAmount } from './numbers';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -17,34 +23,82 @@ export const opacity = (color: string, opacity: number): string => {
   return c(color).alpha(opacity).css();
 };
 
-export const getHighContrastColor = (color: string, isDarkMode: boolean) => {
-  const contrast = c.contrast(color, isDarkMode ? globalColors.grey100 : globalColors.white100);
+export type ResponseByTheme<T> = {
+  light: T;
+  dark: T;
+};
 
-  if (contrast < (isDarkMode ? 3 : 2.5)) {
-    if (isDarkMode) {
-      return c(color)
-        .set('hsl.l', contrast < 1.5 ? 0.88 : 0.8)
-        .set('hsl.s', `*${contrast < 1.5 ? 0.75 : 0.85}`)
-        .hex();
-    } else {
-      return c(color)
-        .set('hsl.s', `*${contrast < 1.5 ? 2 : 1.2}`)
-        .darken(2.5 - (contrast - (contrast < 1.5 ? 0.5 : 0)))
-        .hex();
-    }
+export const getColorValueForTheme = <T>(values: ResponseByTheme<T> | undefined, isDarkMode: boolean, useDefaults = false) => {
+  if (!values) {
+    return isDarkMode ? ETH_COLOR_DARK : ETH_COLOR;
   }
-  return color;
+  return isDarkMode ? values.dark : values.light;
+};
+
+export const getColorValueForThemeWorklet = <T>(values: ResponseByTheme<T> | undefined, isDarkMode: boolean, useDefaults = true) => {
+  'worklet';
+
+  if (!values) {
+    return isDarkMode ? ETH_COLOR_DARK : ETH_COLOR;
+  }
+  return isDarkMode ? values.dark : values.light;
+};
+
+export const getHighContrastColor = (color: string): ResponseByTheme<string> => {
+  const lightModeContrast = c.contrast(color, globalColors.white100);
+  const darkModeContrast = c.contrast(color, globalColors.grey100);
+
+  let lightColor = color;
+  let darkColor = color;
+
+  if (lightModeContrast < 2.5) {
+    lightColor = c(color)
+      .set('hsl.s', `*${lightModeContrast < 1.5 ? 2 : 1.2}`)
+      .darken(2.5 - (lightModeContrast - (lightModeContrast < 1.5 ? 0.5 : 0)))
+      .hex();
+  }
+
+  if (darkModeContrast < 3) {
+    darkColor = c(color)
+      .set('hsl.l', darkModeContrast < 1.5 ? 0.88 : 0.8)
+      .set('hsl.s', `*${darkModeContrast < 1.5 ? 0.75 : 0.85}`)
+      .hex();
+  }
+
+  return {
+    light: lightColor,
+    dark: darkColor,
+  };
 };
 
 export const getMixedColor = (color1: string, color2: string, ratio: number) => {
   return c.mix(color1, color2, ratio).hex();
 };
 
-export const getTintedBackgroundColor = (color: string, isDarkMode: boolean): string => {
-  return c
-    .mix(color, isDarkMode ? globalColors.grey100 : globalColors.white100, isDarkMode ? 0.9875 : 0.94)
-    .saturate(isDarkMode ? 0 : -0.06)
-    .hex();
+export const getTextColor = (color: string): ResponseByTheme<string> => {
+  const contrastWithWhite = c.contrast(color, globalColors.white100);
+
+  return {
+    light: contrastWithWhite < 2 ? globalColors.grey100 : globalColors.white100,
+    dark: contrastWithWhite < 2.6 ? globalColors.grey100 : globalColors.white100,
+  };
+};
+
+export const getMixedShadowColor = (color?: string | null): ResponseByTheme<string> => {
+  return {
+    light: getMixedColor(color || ETH_COLOR, colors.dark, 0.84),
+    dark: getMixedColor(color || ETH_COLOR_DARK, colors.dark, 0.84),
+  };
+};
+
+export const getTintedBackgroundColor = (color: string): ResponseByTheme<string> => {
+  const lightModeColorToMix = globalColors.white100;
+  const darkModeColorToMix = globalColors.grey100;
+
+  return {
+    light: c.mix(color, lightModeColorToMix, 0.94).saturate(-0.06).hex(),
+    dark: c.mix(color, darkModeColorToMix, 0.9875).saturate(0).hex(),
+  };
 };
 //
 // /---- END color functions ----/ //
@@ -296,18 +350,31 @@ export type Colors = {
   shadow?: string;
 };
 
-export const extractColorValueForColors = ({ colors, isDarkMode }: { colors?: Colors; isDarkMode: boolean }): string => {
-  'worklet';
+type ExtractColorValueForColorsProps = {
+  colors: TokenColors;
+  isDarkMode: boolean;
+};
 
-  if (colors?.primary) {
-    return colors.primary;
-  }
+export const extractColorValueForColors = ({
+  colors,
+}: ExtractColorValueForColorsProps): Omit<ExtendedAnimatedAssetWithColors, keyof ParsedSearchAsset> => {
+  const color = colors.primary ?? colors.fallback;
 
-  if (colors?.fallback) {
-    return colors.fallback;
-  }
-
-  return isDarkMode ? ETH_COLOR_DARK_ACCENT : ETH_COLOR;
+  return {
+    color: {
+      light: colors.primary ?? colors.fallback ?? ETH_COLOR,
+      dark: colors.primary ?? colors.fallback ?? ETH_COLOR_DARK,
+    },
+    shadowColor: {
+      light: colors.shadow ?? ETH_COLOR,
+      dark: colors.shadow ?? ETH_COLOR_DARK,
+    },
+    mixedShadowColor: getMixedShadowColor(colors.shadow),
+    highContrastColor: getHighContrastColor(color),
+    tintedBackgroundColor: getTintedBackgroundColor(color),
+    textColor: getTextColor(color),
+    nativePrice: undefined,
+  };
 };
 
 export const getQuoteServiceTime = ({ quote }: { quote: Quote | CrosschainQuote }) =>
@@ -393,4 +460,89 @@ export const priceForAsset = ({
     return asset.native.price.amount;
   }
   return 0;
+};
+
+type ParseAssetAndExtendProps = {
+  asset: ParsedSearchAsset | null;
+};
+
+export const parseAssetAndExtend = ({ asset }: ParseAssetAndExtendProps): ExtendedAnimatedAssetWithColors | null => {
+  'worklet';
+
+  if (!asset) {
+    return null;
+  }
+
+  // TODO: Process and add colors to the asset and anything else we'll need for reanimated stuff
+  const colors = extractColorValueForColors({
+    colors: asset.colors as TokenColors,
+    isDarkMode: true, // TODO: Make this not rely on isDarkMode
+  });
+
+  const priceInfo: Pick<ExtendedAnimatedAssetWithColors, 'nativePrice'> = {
+    nativePrice: undefined,
+  };
+
+  if (asset.price) {
+    priceInfo.nativePrice = asset.price.value;
+  }
+
+  return {
+    ...asset,
+    ...colors,
+    ...priceInfo,
+  };
+};
+
+type BuildQuoteParamsProps = {
+  currentAddress: string;
+  inputAmount: BigNumberish;
+  outputAmount: BigNumberish;
+  inputAsset: ExtendedAnimatedAssetWithColors | null;
+  outputAsset: ExtendedAnimatedAssetWithColors | null;
+  lastTypedInput: inputKeys;
+};
+
+/**
+ * Builds the quote params for the swap based on the current state of the store.
+ *
+ * NOTE: Will return null if either asset isn't set.
+ * @returns data needed to execute a swap or cross-chain swap
+ */
+export const buildQuoteParams = ({
+  currentAddress,
+  inputAmount,
+  outputAmount,
+  inputAsset,
+  outputAsset,
+  lastTypedInput,
+}: BuildQuoteParamsProps): QuoteParams | null => {
+  const { source, slippage } = swapsStore.getState();
+  if (!inputAsset || !outputAsset) {
+    return null;
+  }
+
+  const isCrosschainSwap = inputAsset.chainId !== outputAsset.chainId;
+
+  return {
+    source: source === 'auto' ? undefined : source,
+    swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
+    fromAddress: currentAddress,
+    chainId: inputAsset.chainId,
+    toChainId: isCrosschainSwap ? outputAsset.chainId : inputAsset.chainId,
+    sellTokenAddress: inputAsset.isNativeAsset ? ETH_ADDRESS : inputAsset.address,
+    buyTokenAddress: outputAsset.isNativeAsset ? ETH_ADDRESS : outputAsset.address,
+
+    // TODO: Handle native input cases below
+    sellAmount:
+      lastTypedInput === 'inputAmount' || lastTypedInput === 'inputNativeValue'
+        ? convertAmountToRawAmount(inputAmount.toString(), inputAsset.decimals)
+        : undefined,
+    buyAmount:
+      lastTypedInput === 'outputAmount' || lastTypedInput === 'outputNativeValue'
+        ? convertAmountToRawAmount(outputAmount.toString(), outputAsset.decimals)
+        : undefined,
+    slippage: Number(slippage),
+    refuel: false,
+  };
 };

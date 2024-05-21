@@ -1,52 +1,43 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, { SharedValue, interpolate, useAnimatedStyle } from 'react-native-reanimated';
-import { Box, Cover, globalColors } from '@/design-system';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
-import { WEBVIEW_HEIGHT } from './Dimensions';
+import { Cover, globalColors } from '@/design-system';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { useBrowserContext } from './BrowserContext';
+import { WEBVIEW_HEIGHT, ZOOMED_TAB_BORDER_RADIUS } from './Dimensions';
+import { RAINBOW_HOME } from './constants';
 
 export const WebViewBorder = ({
   animatedTabIndex,
   enabled,
-  animatedActiveTabIndex,
-  tabViewProgress,
-  tabViewVisible,
+  tabId,
 }: {
   animatedTabIndex: SharedValue<number>;
   enabled?: boolean;
-  animatedActiveTabIndex: SharedValue<number> | undefined;
-  tabViewProgress: SharedValue<number> | undefined;
-  tabViewVisible: SharedValue<boolean> | undefined;
+  tabId: string;
 }) => {
+  const { animatedActiveTabIndex, animatedTabUrls, tabViewProgress, tabViewVisible } = useBrowserContext();
+
   const webViewBorderStyle = useAnimatedStyle(() => {
-    if (!enabled) {
-      return {
-        pointerEvents: tabViewVisible?.value ? 'auto' : 'none',
-      };
-    }
+    const url = animatedTabUrls.value[tabId] || RAINBOW_HOME;
+    const isOnHomepage = url === RAINBOW_HOME;
+    const opacity = isOnHomepage ? 0 : 1 - tabViewProgress.value / 100;
 
-    const progress = tabViewProgress?.value || 0;
-    const animatedIsActiveTab = animatedActiveTabIndex?.value === animatedTabIndex.value;
-
-    const borderRadius = interpolate(progress, [0, 100], [animatedIsActiveTab ? 16 : 30, 30], 'clamp');
-    const opacity = 1 - progress / 100;
+    const animatedIsActiveTab = animatedActiveTabIndex.value === animatedTabIndex.value;
+    const borderRadius = interpolate(tabViewProgress.value, [0, 100], [animatedIsActiveTab ? ZOOMED_TAB_BORDER_RADIUS : 30, 30], 'clamp');
 
     return {
-      borderRadius,
-      opacity,
-      pointerEvents: tabViewVisible?.value ? 'auto' : 'none',
+      borderRadius: enabled ? borderRadius : 0,
+      opacity: enabled ? opacity : 0,
+      pointerEvents: tabViewVisible.value ? 'auto' : 'none',
     };
   });
 
   return (
     <Cover pointerEvents="box-none" style={styles.zIndexStyle}>
-      <Box
-        as={Animated.View}
-        height={{ custom: WEBVIEW_HEIGHT }}
-        style={[enabled ? styles.webViewBorderStyle : {}, webViewBorderStyle]}
-        width="full"
-      />
+      <Animated.View style={[enabled ? styles.webViewBorderStyle : {}, webViewBorderStyle]} />
     </Cover>
   );
 };
@@ -58,7 +49,9 @@ const styles = StyleSheet.create({
     borderCurve: 'continuous',
     borderRadius: 16,
     borderWidth: THICK_BORDER_WIDTH,
+    height: WEBVIEW_HEIGHT,
     overflow: 'hidden',
+    width: DEVICE_WIDTH,
   },
   zIndexStyle: {
     zIndex: 30000,

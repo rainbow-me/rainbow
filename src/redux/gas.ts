@@ -67,7 +67,7 @@ const getDefaultGasLimit = (network: Network, defaultGasLimit: number): number =
 
 let gasPricesHandle: NodeJS.Timeout | null = null;
 
-interface GasState {
+export interface GasState {
   defaultGasLimit: number;
   gasLimit: number | null;
   gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;

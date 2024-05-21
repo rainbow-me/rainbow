@@ -1,109 +1,272 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
-import { Page } from '@/components/layout';
-import { Bleed, Box, ColorModeProvider, Cover, Inline, Inset, Stack, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
-import { deviceUtils } from '@/utils';
+import {
+  Bleed,
+  Box,
+  ColorModeProvider,
+  Cover,
+  Inline,
+  Inset,
+  Stack,
+  Text,
+  TextIcon,
+  globalColors,
+  useBackgroundColor,
+  useColorMode,
+} from '@/design-system';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { BlurView } from '@react-native-community/blur';
 import { ImgixImage } from '@/components/images';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { IS_IOS } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { useFavoriteDappsStore } from '@/state/favoriteDapps';
-import { TrendingSite, trendingDapps } from '@/resources/trendingDapps/trendingDapps';
-import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
-import MaskedView from '@react-native-masked-view/masked-view';
-import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
-import { normalizeUrl } from './utils';
 import { Site, useBrowserHistoryStore } from '@/state/browserHistory';
 import { getDappHost } from './handleProviderRequest';
 import { uniqBy } from 'lodash';
+import { useBrowserContext } from './BrowserContext';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { WEBVIEW_HEIGHT } from './Dimensions';
+import { useDapps } from '@/resources/metadata/dapps';
+import haptics from '@/utils/haptics';
+import * as i18n from '@/languages';
+import { getNameFromFormattedUrl } from './utils';
 
 const HORIZONTAL_PAGE_INSET = 24;
-const MAX_RECENTS_TO_DISPLAY = 10;
+const MAX_RECENTS_TO_DISPLAY = 6;
+const SCROLL_INDICATOR_INSETS = { bottom: 20, top: 36 };
 
 const LOGOS_PER_ROW = 4;
 const LOGO_SIZE = 64;
-const LOGO_PADDING = (deviceUtils.dimensions.width - LOGOS_PER_ROW * LOGO_SIZE - HORIZONTAL_PAGE_INSET * 2) / (LOGOS_PER_ROW - 1);
-const LOGO_BORDER_RADIUS = 16;
+const LOGO_PADDING = (DEVICE_WIDTH - LOGOS_PER_ROW * LOGO_SIZE - HORIZONTAL_PAGE_INSET * 2) / (LOGOS_PER_ROW - 1);
+const LOGO_BORDER_RADIUS = IS_ANDROID ? 32 : 16;
 const LOGO_LABEL_SPILLOVER = 12;
 
 const NUM_CARDS = 2;
 const CARD_PADDING = 12;
-const CARD_SIZE = (deviceUtils.dimensions.width - HORIZONTAL_PAGE_INSET * 2 - (NUM_CARDS - 1) * CARD_PADDING) / NUM_CARDS;
+const CARD_HEIGHT = 137;
+const RAW_CARD_WIDTH = (DEVICE_WIDTH - HORIZONTAL_PAGE_INSET * 2 - (NUM_CARDS - 1) * CARD_PADDING) / NUM_CARDS;
+const CARD_WIDTH = IS_IOS ? RAW_CARD_WIDTH : Math.floor(RAW_CARD_WIDTH);
 
-const Card = ({ site, showMenuButton, goToUrl }: { showMenuButton?: boolean; site: TrendingSite; goToUrl: (url: string) => void }) => {
+export const Homepage = () => {
+  const { goToUrl } = useBrowserContext();
   const { isDarkMode } = useColorMode();
 
-  const menuConfig = {
-    menuTitle: '',
-    menuItems: [
+  return (
+    <View style={[isDarkMode ? styles.pageBackgroundDark : styles.pageBackgroundLight, styles.pageContainer]}>
+      <ScrollView
+        scrollIndicatorInsets={SCROLL_INDICATOR_INSETS}
+        contentContainerStyle={[styles.scrollViewContainer, isDarkMode ? styles.pageBackgroundDark : styles.pageBackgroundLight]}
+        showsVerticalScrollIndicator={false}
+      >
+        <Stack space="44px">
+          <Trending goToUrl={goToUrl} />
+          <Favorites goToUrl={goToUrl} />
+          <Recents goToUrl={goToUrl} />
+        </Stack>
+      </ScrollView>
+    </View>
+  );
+};
+
+const Trending = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
+  const { dapps } = useDapps({ select: dapps => dapps.filter(dapp => dapp.trending).slice(0, 8) });
+
+  if (dapps.length === 0) {
+    return null;
+  }
+
+  return (
+    <Stack space="20px">
+      <Inline alignVertical="center" space="6px">
+        <Text color="red" size="15pt" align="center" weight="heavy">
+          􀙭
+        </Text>
+        <Text color="label" size="20pt" weight="heavy">
+          {i18n.t(i18n.l.dapp_browser.homepage.trending)}
+        </Text>
+      </Inline>
+      <Bleed space="24px">
+        <ScrollView
+          horizontal
+          decelerationRate="fast"
+          disableIntervalMomentum
+          showsHorizontalScrollIndicator={false}
+          snapToOffsets={dapps.map((_, index) => index * (CARD_WIDTH + CARD_PADDING))}
+        >
+          <Inset space="24px">
+            <Box flexDirection="row" gap={CARD_PADDING}>
+              {dapps.map(site => (
+                <Card goToUrl={goToUrl} key={site.url} site={{ ...site, image: site.iconUrl }} />
+              ))}
+            </Box>
+          </Inset>
+        </ScrollView>
+      </Bleed>
+    </Stack>
+  );
+};
+
+const Favorites = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
+  const favoriteDapps = useFavoriteDappsStore(state => state.favoriteDapps);
+
+  return (
+    <Stack space="20px">
+      <Inline alignVertical="center" space="6px">
+        <Text color="yellow" size="15pt" align="center" weight="heavy">
+          􀋃
+        </Text>
+        <Text color="label" size="20pt" weight="heavy">
+          {i18n.t(i18n.l.dapp_browser.homepage.favorites)}
+        </Text>
+      </Inline>
+      <Box flexDirection="row" flexWrap="wrap" gap={LOGO_PADDING} width={{ custom: DEVICE_WIDTH - HORIZONTAL_PAGE_INSET * 2 }}>
+        {favoriteDapps.length > 0
+          ? favoriteDapps.map(dapp => <Logo goToUrl={goToUrl} key={`${dapp.url}-${dapp.name}`} site={dapp} />)
+          : Array(4)
+              .fill(null)
+              .map((_, index) => <PlaceholderLogo key={index} />)}
+      </Box>
+    </Stack>
+  );
+};
+
+const Recents = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
+  const recents = useBrowserHistoryStore(state => uniqBy(state.recents, 'url').slice(0, MAX_RECENTS_TO_DISPLAY));
+
+  return (
+    <Stack space="20px">
+      <Inline alignVertical="center" space="6px">
+        <Text color="blue" size="15pt" align="center" weight="heavy">
+          􀐫
+        </Text>
+        <Text color="label" size="20pt" weight="heavy">
+          {i18n.t(i18n.l.dapp_browser.homepage.recents)}
+        </Text>
+      </Inline>
+      <Box width={{ custom: DEVICE_WIDTH }}>
+        <Inline space={{ custom: CARD_PADDING }}>
+          {recents.length > 0
+            ? recents.map(site => <Card key={site.url} site={site} showMenuButton goToUrl={goToUrl} />)
+            : Array(2)
+                .fill(null)
+                .map((_, index) => <PlaceholderCard key={index} />)}
+        </Inline>
+      </Box>
+    </Stack>
+  );
+};
+
+const Card = React.memo(function Card({
+  goToUrl,
+  site,
+  showMenuButton,
+}: {
+  goToUrl: (url: string) => void;
+  showMenuButton?: boolean;
+  site: Omit<Site, 'timestamp'>;
+}) {
+  const { isDarkMode } = useColorMode();
+  const { dapps } = useDapps();
+  const isFavorite = useFavoriteDappsStore(state => state.isFavorite(site.url || ''));
+  const addFavorite = useFavoriteDappsStore(state => state.addFavorite);
+  const removeFavorite = useFavoriteDappsStore(state => state.removeFavorite);
+  const removeRecent = useBrowserHistoryStore(state => state.removeRecent);
+
+  const handleFavoritePress = useCallback(() => {
+    const url = site.url;
+    if (url) {
+      if (isFavorite) {
+        removeFavorite(url);
+      } else {
+        addFavorite({ ...site, name: getNameFromFormattedUrl(site.url, true) });
+      }
+    }
+  }, [addFavorite, isFavorite, removeFavorite, site]);
+
+  const onPressMenuItem = useCallback(
+    async ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: 'favorite' | 'remove' } }) => {
+      haptics.selection();
+      if (actionKey === 'favorite') {
+        handleFavoritePress();
+      } else if (actionKey === 'remove') {
+        removeRecent(site.url);
+      }
+    },
+    [handleFavoritePress, removeRecent, site.url]
+  );
+
+  const menuConfig = useMemo(() => {
+    const menuItems = [
       {
-        actionKey: 'test1',
-        actionTitle: 'Option 1',
+        actionKey: 'favorite',
+        actionTitle: isFavorite ? i18n.t(i18n.l.dapp_browser.menus.undo_favorite) : i18n.t(i18n.l.dapp_browser.menus.favorite),
         icon: {
           iconType: 'SYSTEM',
-          iconValue: 'chart.line.uptrend.xyaxis',
+          iconValue: isFavorite ? 'star.slash' : 'star',
         },
       },
       {
-        actionKey: 'test2',
-        actionTitle: 'Option 2',
+        actionKey: 'remove',
+        actionTitle: i18n.t(i18n.l.dapp_browser.menus.remove),
         icon: {
           iconType: 'SYSTEM',
-          iconValue: 'plus.forwardslash.minus',
+          iconValue: 'trash',
         },
       },
-    ],
-  };
+    ];
+    return {
+      menuTitle: '',
+      menuItems,
+    };
+  }, [isFavorite]);
 
   const dappIconUrl = useMemo(() => {
     const dappUrl = site.url;
     const iconUrl = site.image;
-    const host = getDappHost(dappUrl);
-    const overrideFound = trendingDapps.find(dapp => dapp.url === host);
-    if (overrideFound?.image) {
-      return overrideFound.image;
+    const host = new URL(dappUrl).hostname;
+    // 👇 TODO: Remove this once the Uniswap logo in the dapps metadata is fixed
+    const isUniswap = host === 'uniswap.org' || host.endsWith('.uniswap.org');
+    const dappOverride = dapps.find(dapp => dapp.urlDisplay === host);
+    if (dappOverride?.iconUrl && !isUniswap) {
+      return dappOverride.iconUrl;
     }
     return iconUrl;
-  }, [site.image, site.url]);
+  }, [dapps, site.image, site.url]);
 
   return (
     <Box>
-      <GestureHandlerV1Button onPressJS={() => goToUrl(normalizeUrl(site.url))} scaleTo={0.94}>
+      <ButtonPressAnimation onPress={() => goToUrl(site.url)} scaleTo={0.94}>
         <Box
           background="surfacePrimary"
           borderRadius={24}
-          shadow="18px"
           style={{
-            width: CARD_SIZE,
+            width: CARD_WIDTH,
           }}
         >
           <Box
-            as={LinearGradient}
             borderRadius={24}
-            colors={['#0078FF', '#3AB8FF']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            width={{ custom: CARD_SIZE }}
-            height={{ custom: 137 }}
+            height={{ custom: CARD_HEIGHT }}
             justifyContent="space-between"
             padding="20px"
+            style={[
+              styles.cardContainer,
+              !dappIconUrl && !site.screenshot && styles.cardContainerNoImage,
+              isDarkMode && styles.cardContainerDark,
+            ]}
+            width={{ custom: CARD_WIDTH }}
           >
             <ColorModeProvider value="dark">
               {(site.screenshot || dappIconUrl) && (
                 <Cover>
-                  <Cover style={{ overflow: 'hidden', borderRadius: 24 }}>
-                    <ImgixImage
-                      enableFasterImage
-                      source={{ uri: site.screenshot || dappIconUrl }}
-                      size={CARD_SIZE}
-                      style={{ width: '100%', height: '100%' }}
-                    />
-                  </Cover>
-
+                  <ImgixImage
+                    enableFasterImage
+                    size={CARD_WIDTH}
+                    source={{ uri: dappIconUrl || site.screenshot }}
+                    style={{ width: CARD_WIDTH, height: CARD_HEIGHT }}
+                  />
                   <Cover>
                     <LinearGradient
                       colors={['rgba(0, 0, 0, 0.6)', 'rgba(0, 0, 0, 0.6)', '#000']}
@@ -115,14 +278,13 @@ const Card = ({ site, showMenuButton, goToUrl }: { showMenuButton?: boolean; sit
                   </Cover>
                 </Cover>
               )}
-              <Box height={{ custom: 48 }} left={{ custom: -8 }} top={{ custom: -8 }} width={{ custom: 48 }}>
+              <Box height={{ custom: 48 }} left={{ custom: -8 }} style={styles.cardLogoWrapper} top={{ custom: -8 }} width={{ custom: 48 }}>
                 <ImgixImage
                   enableFasterImage
                   size={48}
                   source={{ uri: dappIconUrl }}
                   style={{
                     backgroundColor: isDarkMode ? globalColors.grey100 : globalColors.white100,
-                    borderRadius: IS_IOS ? 12 : 36,
                     height: 48,
                     width: 48,
                   }}
@@ -153,15 +315,15 @@ const Card = ({ site, showMenuButton, goToUrl }: { showMenuButton?: boolean; sit
             />
           )}
         </Box>
-      </GestureHandlerV1Button>
+      </ButtonPressAnimation>
       {showMenuButton && (
-        <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={() => {}} style={styles.cardContextMenuButton}>
+        <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem} style={styles.cardContextMenuButton}>
           <ButtonPressAnimation scaleTo={0.8} style={{ padding: 12 }}>
             <Box height={{ custom: 24 }} width={{ custom: 24 }} borderRadius={32} style={{ overflow: 'hidden' }}>
               <Cover>
                 {IS_IOS ? (
                   <BlurView
-                    blurType="chromeMaterialDark"
+                    blurType={isDarkMode ? 'chromeMaterialDark' : 'chromeMaterialLight'}
                     blurAmount={10}
                     style={{
                       width: '100%',
@@ -170,7 +332,7 @@ const Card = ({ site, showMenuButton, goToUrl }: { showMenuButton?: boolean; sit
                     }}
                   />
                 ) : (
-                  <Box background="fill" height="full" width="full" />
+                  <Box background="fillQuaternary" height="full" width="full" />
                 )}
               </Cover>
               <View
@@ -191,14 +353,52 @@ const Card = ({ site, showMenuButton, goToUrl }: { showMenuButton?: boolean; sit
       )}
     </Box>
   );
-};
+});
 
-const Logo = ({ site, goToUrl }: { site: Omit<Site, 'timestamp'>; goToUrl: (url: string) => void }) => {
+export const PlaceholderCard = React.memo(function PlaceholderCard() {
+  const { isDarkMode } = useColorMode();
+
+  const fillTertiary = useBackgroundColor('fillTertiary');
+  const cardOpacity = isDarkMode ? 0.6 : 0.5;
+
+  return (
+    <View style={{ width: CARD_WIDTH }}>
+      <Box
+        as={LinearGradient}
+        colors={[opacity(fillTertiary, (isDarkMode ? 0.08 : 0.05) * cardOpacity), opacity(fillTertiary, 0)]}
+        end={{ x: 0.5, y: 1 }}
+        locations={[0, 1]}
+        start={{ x: 0.5, y: 0 }}
+        width={{ custom: CARD_WIDTH }}
+        height={{ custom: CARD_HEIGHT }}
+        style={{ borderRadius: 24 }}
+      />
+      {IS_IOS && (
+        <Box
+          borderRadius={24}
+          height="full"
+          position="absolute"
+          style={{
+            borderColor: isDarkMode ? opacity(globalColors.white100, 0.04) : opacity(globalColors.grey100, 0.02),
+            borderWidth: THICK_BORDER_WIDTH,
+            opacity: cardOpacity,
+            overflow: 'hidden',
+            pointerEvents: 'none',
+          }}
+          width="full"
+        />
+      )}
+      <Box />
+    </View>
+  );
+});
+
+export const Logo = React.memo(function Logo({ goToUrl, site }: { goToUrl: (url: string) => void; site: Omit<Site, 'timestamp'> }) {
   const { isDarkMode } = useColorMode();
 
   return (
     <View style={{ width: LOGO_SIZE }}>
-      <GestureHandlerV1Button onPressJS={() => goToUrl(normalizeUrl(site.url))}>
+      <ButtonPressAnimation onPress={() => goToUrl(site.url)}>
         <Stack alignHorizontal="center">
           <Box>
             {IS_IOS && !site.image && (
@@ -241,131 +441,54 @@ const Logo = ({ site, goToUrl }: { site: Omit<Site, 'timestamp'>; goToUrl: (url:
             )}
           </Box>
           <Bleed bottom="10px" horizontal="8px">
-            <MaskedView
-              maskElement={<FadeMask fadeEdgeInset={0} fadeWidth={12} side="right" />}
-              style={{ width: LOGO_SIZE + LOGO_LABEL_SPILLOVER * 2 }}
-            >
-              <Text
-                size="13pt"
-                numberOfLines={1}
-                ellipsizeMode="clip"
-                weight="bold"
-                color="labelSecondary"
-                align="center"
-                style={{ paddingVertical: 10 }}
-              >
+            <Box width={{ custom: LOGO_SIZE + LOGO_LABEL_SPILLOVER * 2 }}>
+              <Text size="13pt" numberOfLines={1} weight="bold" color="labelSecondary" align="center" style={{ paddingVertical: 10 }}>
                 {site.name}
               </Text>
-            </MaskedView>
+            </Box>
           </Bleed>
         </Stack>
-      </GestureHandlerV1Button>
+      </ButtonPressAnimation>
     </View>
   );
-};
+});
 
-export default function Homepage({ goToUrl }: { goToUrl: (url: string) => void }) {
+export const PlaceholderLogo = React.memo(function PlaceholderLogo() {
   const { isDarkMode } = useColorMode();
-  const { favoriteDapps } = useFavoriteDappsStore();
-  const { getRecent } = useBrowserHistoryStore();
-
-  const recent = uniqBy(getRecent(), 'url').slice(0, MAX_RECENTS_TO_DISPLAY);
+  const borderRadius = IS_ANDROID ? LOGO_BORDER_RADIUS / 2 : LOGO_BORDER_RADIUS;
 
   return (
-    <Box
-      as={Page}
-      flex={1}
-      height="full"
-      width="full"
-      justifyContent="center"
-      style={{ backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD', zIndex: 20000 }}
-    >
-      <ScrollView
-        scrollIndicatorInsets={{
-          bottom: 20,
-          top: 36,
-        }}
-        contentContainerStyle={{
-          paddingBottom: 20,
-          paddingTop: 40,
-          paddingHorizontal: HORIZONTAL_PAGE_INSET,
-        }}
-        showsVerticalScrollIndicator={false}
-      >
-        <Stack space="44px">
-          <Stack space="20px">
-            <Inline alignVertical="center" space="6px">
-              <Text color="red" size="15pt" align="center" weight="heavy">
-                􀙭
-              </Text>
-              <Text color="label" size="20pt" weight="heavy">
-                Trending
-              </Text>
-            </Inline>
-            <Bleed space="24px">
-              <ScrollView
-                horizontal
-                decelerationRate="fast"
-                disableIntervalMomentum
-                showsHorizontalScrollIndicator={false}
-                snapToOffsets={trendingDapps.map((_, index) => index * (CARD_SIZE + CARD_PADDING))}
-              >
-                <Inset space="24px">
-                  <Box flexDirection="row" gap={CARD_PADDING}>
-                    {trendingDapps.map(site => (
-                      <Card key={site.url} site={site} goToUrl={goToUrl} />
-                    ))}
-                  </Box>
-                </Inset>
-              </ScrollView>
-            </Bleed>
-          </Stack>
-          {favoriteDapps?.length > 0 && (
-            <Stack space="20px">
-              <Inline alignVertical="center" space="6px">
-                <Text color="yellow" size="15pt" align="center" weight="heavy">
-                  􀋃
-                </Text>
-                <Text color="label" size="20pt" weight="heavy">
-                  Favorites
-                </Text>
-              </Inline>
-              <Box
-                flexDirection="row"
-                flexWrap="wrap"
-                gap={LOGO_PADDING}
-                width={{ custom: deviceUtils.dimensions.width - HORIZONTAL_PAGE_INSET * 2 }}
-              >
-                {favoriteDapps.map(dapp => (
-                  <Logo key={`${dapp.url}-${dapp.name}`} site={dapp} goToUrl={goToUrl} />
-                ))}
-              </Box>
-            </Stack>
-          )}
-          {recent.length > 0 && (
-            <Stack space="20px">
-              <Inline alignVertical="center" space="6px">
-                <Text color="blue" size="15pt" align="center" weight="heavy">
-                  􀐫
-                </Text>
-                <Text color="label" size="20pt" weight="heavy">
-                  Recents
-                </Text>
-              </Inline>
-              <Inline space={{ custom: CARD_PADDING }}>
-                {recent.map(site => (
-                  <Card key={site.url} site={site} showMenuButton goToUrl={goToUrl} />
-                ))}
-              </Inline>
-            </Stack>
-          )}
-        </Stack>
-      </ScrollView>
-    </Box>
+    <View style={{ opacity: isDarkMode ? 0.6 : 0.5, width: LOGO_SIZE }}>
+      <Box width={{ custom: LOGO_SIZE }} height={{ custom: LOGO_SIZE }} background="fillTertiary" style={{ borderRadius }} />
+      {IS_IOS && (
+        <Box
+          borderRadius={borderRadius}
+          height="full"
+          position="absolute"
+          style={{
+            borderColor: isDarkMode ? opacity(globalColors.white100, 0.04) : opacity(globalColors.grey100, 0.02),
+            borderWidth: THICK_BORDER_WIDTH,
+            overflow: 'hidden',
+            pointerEvents: 'none',
+          }}
+          width="full"
+        />
+      )}
+    </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
+  cardContainer: {
+    backgroundColor: globalColors.white100,
+    overflow: 'hidden',
+  },
+  cardContainerDark: {
+    backgroundColor: globalColors.grey100,
+  },
+  cardContainerNoImage: {
+    backgroundColor: '#191A1C',
+  },
   cardContextMenuButton: {
     alignItems: 'center',
     top: 0,
@@ -374,5 +497,28 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 48,
     position: 'absolute',
+  },
+  cardLogoWrapper: {
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  pageBackgroundDark: {
+    backgroundColor: globalColors.grey100,
+  },
+  pageBackgroundLight: {
+    backgroundColor: '#FBFCFD',
+  },
+  pageContainer: {
+    height: WEBVIEW_HEIGHT,
+    left: 0,
+    position: 'absolute',
+    top: 0,
+    width: DEVICE_WIDTH,
+    zIndex: 30000,
+  },
+  scrollViewContainer: {
+    paddingBottom: 20,
+    paddingTop: 40,
+    paddingHorizontal: HORIZONTAL_PAGE_INSET,
   },
 });

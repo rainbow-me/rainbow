@@ -2,7 +2,7 @@ import { NFT_API_KEY, NFT_API_URL } from 'react-native-dotenv';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { Network } from '@/helpers';
 import { SimpleHashListing, SimpleHashNFT, SimpleHashMarketplaceId } from '@/resources/nfts/simplehash/types';
-import { RainbowNetworks, getNetworkObj } from '@/networks';
+import { getNetworkObj } from '@/networks';
 import { UniqueAsset } from '@/entities';
 import { RainbowError, logger } from '@/logger';
 import { getGnosisNetworkObject } from '@/networks/gnosis';
@@ -35,28 +35,6 @@ export async function fetchSimpleHashNFT(
     },
   });
   return response?.data;
-}
-
-export async function fetchSimpleHashNFTs(
-  walletAddress: string,
-  cursor: string = START_CURSOR
-): Promise<{ data: SimpleHashNFT[]; nextCursor: string | null }> {
-  const chainsParam = RainbowNetworks.filter(network => network.features.nfts && network.nfts.simplehashNetwork)
-    .map(network => network.nfts.simplehashNetwork)
-    .join(',');
-
-  const cursorSuffix = createCursorSuffix(cursor);
-  const response = await nftApi.get(`/nfts/owners?chains=${chainsParam}&wallet_addresses=${walletAddress}${cursorSuffix}`, {
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'x-api-key': NFT_API_KEY,
-    },
-  });
-  return {
-    data: response?.data?.nfts ?? [],
-    nextCursor: response?.data?.next_cursor,
-  };
 }
 
 export async function fetchSimpleHashNFTListing(

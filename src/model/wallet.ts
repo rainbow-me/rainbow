@@ -796,10 +796,8 @@ export const createWallet = async ({
 
     // if imported and we have only one account, we name the wallet too.
     let walletName = DEFAULT_WALLET_NAME;
-    if (isImported && name) {
-      if (addresses.length > 1) {
-        walletName = name;
-      }
+    if (name) {
+      walletName = name;
     }
 
     let primary = false;

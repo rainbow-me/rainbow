@@ -4,7 +4,6 @@ import * as i18n from '@/languages';
 import { AnimatedText, Box, Inline, Separator, Stack, Text, globalColors, useColorMode } from '@/design-system';
 import Animated, {
   runOnJS,
-  runOnUI,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -18,117 +17,52 @@ import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ChainId } from '@/__swaps__/types/chains';
 import { chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { AnimatedSwitch } from './AnimatedSwitch';
-import { GasButton } from './GasButton';
+import { GasButton } from '@/__swaps__/screens/Swap/components/GasButton';
 import { ButtonPressAnimation } from '@/components/animations';
-import { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
-import { convertRawAmountToNativeDisplay } from '@/__swaps__/utils/numbers';
-import { useAccountSettings } from '@/hooks';
-import { FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
-import { supportedNativeCurrencies } from '@/references';
+import { StyleSheet, View } from 'react-native';
+import { AnimatedChainImage } from './AnimatedChainImage';
 
 const SLIPPAGE_STEP = 0.5;
 
 const RainbowFee = () => {
   const { isDarkMode } = useColorMode();
-  const { SwapInputController } = useSwapContext();
-  const { nativeCurrency: currentCurrency } = useAccountSettings();
 
   const rainbowFee = useSharedValue(i18n.t(i18n.l.swap.unknown));
-
-  const [nativeChainId, setNativeChainId] = useState(SwapInputController.assetToSell.value?.chainId ?? ChainId.mainnet);
-  const nativeAsset = useNativeAssetForNetwork(ethereumUtils.getNetworkFromChainId(nativeChainId));
-
-  const updateRainbowFee = ({
-    fee,
-    nativeAsset,
-    currentCurrency,
-  }: {
-    fee: string | number;
-    nativeAsset: FormattedExternalAsset | null | undefined;
-    currentCurrency: keyof typeof supportedNativeCurrencies;
-  }) => {
-    const updateFee = (value: string) => {
-      'worklet';
-      rainbowFee.value = value;
-    };
-
-    const { display } = convertRawAmountToNativeDisplay(
-      fee,
-      nativeAsset?.decimals || 18,
-      nativeAsset?.price?.value || '0',
-      currentCurrency
-    );
-
-    runOnUI(updateFee)(display);
-  };
-
-  useAnimatedReaction(
-    () => SwapInputController.assetToSell.value?.chainId ?? ChainId.mainnet,
-    (current, previous) => {
-      if (!previous || previous !== current) {
-        runOnJS(setNativeChainId)(current);
-      }
-    }
-  );
-
-  useAnimatedReaction(
-    () => ({
-      fee: SwapInputController.fee.value,
-      nativeAsset,
-      currentCurrency,
-    }),
-    (current, previous) => {
-      if (
-        !previous ||
-        previous.nativeAsset !== current.nativeAsset ||
-        previous.currentCurrency !== current.currentCurrency ||
-        previous.fee !== current.fee
-      ) {
-        runOnJS(updateRainbowFee)({
-          fee: current.fee,
-          nativeAsset: current.nativeAsset,
-          currentCurrency: current.currentCurrency,
-        });
-      }
-    }
-  );
 
   return <AnimatedText align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy" text={rainbowFee} />;
 };
 
 export function ReviewPanel() {
   const { isDarkMode } = useColorMode();
-  const { reviewProgress, SwapInputController } = useSwapContext();
+  const { configProgress, SwapInputController, internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
 
   const unknown = i18n.t(i18n.l.swap.unknown);
 
   const chainName = useDerivedValue(() =>
-    SwapInputController.outputChainId.value === ChainId.mainnet
+    internalSelectedOutputAsset.value?.chainId === ChainId.mainnet
       ? 'ethereum'
-      : chainNameFromChainIdWorklet(SwapInputController.outputChainId.value)
+      : chainNameFromChainIdWorklet(internalSelectedOutputAsset.value?.chainId ?? ChainId.mainnet)
   );
 
-  const slippageText = useDerivedValue(() => `${SwapInputController.slippage.value}%`);
+  const slippageText = useDerivedValue(() => `1.5%`);
 
-  const [chain, setChain] = useState(
-    ethereumUtils.getNetworkFromChainId(SwapInputController.assetToSell.value?.chainId ?? ChainId.mainnet)
-  );
+  const [chain, setChain] = useState(ethereumUtils.getNetworkFromChainId(internalSelectedOutputAsset.value?.chainId ?? ChainId.mainnet));
 
   const minimumReceived = useDerivedValue(() => {
-    if (!SwapInputController.inputValues.value.outputAmount || !SwapInputController.assetToBuy.value) {
+    if (!SwapInputController.inputValues.value.outputAmount || !internalSelectedOutputAsset.value) {
       return unknown;
     }
-    return `${SwapInputController.inputValues.value.outputAmount} ${SwapInputController.assetToBuy.value.symbol}`;
+    return `${SwapInputController.inputValues.value.outputAmount} ${internalSelectedOutputAsset.value.symbol}`;
   });
 
-  const flashbots = useDerivedValue(() => SwapInputController.flashbots.value);
+  const flashbots = useDerivedValue(() => false);
 
   const updateChainFromNetwork = useCallback((chainId: ChainId) => {
     setChain(ethereumUtils.getNetworkFromChainId(chainId));
   }, []);
 
   useAnimatedReaction(
-    () => SwapInputController.assetToSell.value?.chainId ?? ChainId.mainnet,
+    () => internalSelectedInputAsset.value?.chainId ?? ChainId.mainnet,
     (current, previous) => {
       if (!previous || previous !== current) {
         runOnJS(updateChainFromNetwork)(current);
@@ -136,19 +70,16 @@ export function ReviewPanel() {
     }
   );
 
-  const onSetSlippage = useCallback(
-    (operation: 'increment' | 'decrement') => {
-      'worklet';
-      const value = operation === 'increment' ? SLIPPAGE_STEP : -SLIPPAGE_STEP;
-      SwapInputController.slippage.value = `${Math.max(0.5, Number(SwapInputController.slippage.value) + value)}`;
-    },
-    [SwapInputController.slippage]
-  );
+  const onSetSlippage = useCallback((operation: 'increment' | 'decrement') => {
+    'worklet';
+    const value = operation === 'increment' ? SLIPPAGE_STEP : -SLIPPAGE_STEP;
+    // SwapInputController.slippage.value = `${Math.max(0.5, Number(SwapInputController.slippage.value) + value)}`;
+  }, []);
 
   const onSetFlashbots = useCallback(() => {
     'worklet';
-    SwapInputController.flashbots.value = !SwapInputController.flashbots.value;
-  }, [SwapInputController.flashbots]);
+    // SwapInputController.flashbots.value = !SwapInputController.flashbots.value;
+  }, []);
 
   // TODO: Comes from gas store
   const estimatedGasFee = useSharedValue('$2.25');
@@ -156,13 +87,15 @@ export function ReviewPanel() {
 
   const styles = useAnimatedStyle(() => {
     return {
-      opacity: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? withTiming(1, fadeConfig) : withTiming(0, fadeConfig),
+      display: configProgress.value !== NavigationSteps.SHOW_REVIEW ? 'none' : 'flex',
+      pointerEvents: configProgress.value !== NavigationSteps.SHOW_REVIEW ? 'none' : 'auto',
+      opacity: configProgress.value === NavigationSteps.SHOW_REVIEW ? withTiming(1, fadeConfig) : withTiming(0, fadeConfig),
       flex: 1,
     };
   });
 
   return (
-    <Box as={Animated.View} zIndex={11} style={styles} testID="review-panel" width="full">
+    <Box as={Animated.View} zIndex={12} style={styles} testID="review-panel" width="full">
       <Stack alignHorizontal="center" space="28px">
         <Text weight="heavy" color="label" size="20pt">
           Review
@@ -180,7 +113,9 @@ export function ReviewPanel() {
             </Inline>
 
             <Inline alignVertical="center" horizontalSpace="6px">
-              <ChainImage chain={chain} size={16} />
+              <View style={sx.networkContainer}>
+                <AnimatedChainImage showMainnetBadge asset={internalSelectedInputAsset} size={16} />
+              </View>
               <AnimatedText
                 align="right"
                 color={isDarkMode ? 'labelSecondary' : 'label'}
@@ -317,7 +252,9 @@ export function ReviewPanel() {
           <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
             <Stack space="6px">
               <Inline alignVertical="center" horizontalSpace="6px">
-                <ChainImage chain={chain} size={16} />
+                <View style={sx.gasContainer}>
+                  <AnimatedChainImage showMainnetBadge asset={internalSelectedInputAsset} size={16} />
+                </View>
                 <Inline horizontalSpace="4px">
                   <AnimatedText align="left" color={'label'} size="15pt" weight="heavy" text={estimatedGasFee} />
                   <AnimatedText align="right" color={'labelTertiary'} size="15pt" weight="bold" text={estimatedArrivalTime} />
@@ -343,3 +280,18 @@ export function ReviewPanel() {
     </Box>
   );
 }
+
+const sx = StyleSheet.create({
+  gasContainer: {
+    top: 2,
+    height: 12,
+    width: 10,
+    left: 4,
+    overflow: 'visible',
+  },
+  networkContainer: {
+    top: 2,
+    height: 12,
+    width: 6,
+  },
+});
