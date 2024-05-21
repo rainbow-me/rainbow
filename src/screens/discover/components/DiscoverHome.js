@@ -17,7 +17,7 @@ import { MintsCard } from '@/components/cards/MintsCard/MintsCard';
 import { FeaturedMintCard } from '@/components/cards/FeaturedMintCard';
 import { useMints } from '@/resources/mints';
 import { IS_TEST } from '@/env';
-import { RemoteCardCarousel, useRemoteCardContext } from '@/components/cards/remote-cards';
+import { RemoteCard, RemoteCardCarousel, useRemoteCardContext } from '@/components/cards/remote-cards';
 import { useRoute } from '@react-navigation/native';
 
 export default function DiscoverHome() {
@@ -53,7 +53,7 @@ export default function DiscoverHome() {
             <GasCard />
             {isProfilesEnabled && <ENSSearchCard />}
           </Inline>
-          {!!cards.length && <RemoteCardCarousel />}
+          <RemoteCardCarousel />
           {mintsEnabled && (mints?.length || isFetching) && (
             <Stack space="20px">
               {!!featuredMint && <FeaturedMintCard />}
