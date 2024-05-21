@@ -23,7 +23,6 @@ import {
 import { ethereumUtils } from '@/utils';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { ParsedAsset } from '@/resources/assets/types';
-import { parseGasParamAmounts } from '@/parsers';
 
 const getCrosschainSwapDefaultGasLimit = (quote: CrosschainQuote) => quote?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
 
@@ -104,13 +103,15 @@ export const crosschainSwap = async ({
   index,
   parameters,
   baseNonce,
-  selectedGasFee,
+  gasParams,
   gasFeeParamsBySpeed,
 }: ActionProps<'crosschainSwap'>): Promise<RapActionResult> => {
   const { quote, chainId, requiresApprove } = parameters;
-  let gasParams = parseGasParamAmounts(selectedGasFee);
+
+  let gasParamsToUse = gasParams;
+  // let gasParams = parseGasParamAmounts(selectedGasFee);
   if (currentRap.actions.length - 1 > index) {
-    gasParams = overrideWithFastSpeedIfNeeded({
+    gasParamsToUse = overrideWithFastSpeedIfNeeded({
       gasParams,
       chainId,
       gasFeeParamsBySpeed,
@@ -139,7 +140,7 @@ export const crosschainSwap = async ({
     nonce,
     quote,
     wallet,
-    gasParams,
+    gasParams: gasParamsToUse,
   };
 
   let swap;
