@@ -85,14 +85,14 @@ export function useSwapInputsController({
     }
 
     if (inputMethod.value === 'outputAmount') {
-      return valueBasedDecimalFormatter(
-        inputValues.value.inputAmount,
-        internalSelectedInputAsset.value.nativePrice,
-        'up',
-        -1,
-        internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
-        false
-      );
+      return valueBasedDecimalFormatter({
+        amount: inputValues.value.inputAmount,
+        usdTokenPrice: internalSelectedInputAsset.value.nativePrice,
+        roundingMode: 'up',
+        precisionAdjustment: -1,
+        isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
+        stripSeparators: false,
+      });
     }
 
     const balance = Number(internalSelectedInputAsset.value?.balance.amount || 0);
@@ -132,14 +132,14 @@ export function useSwapInputsController({
       return addCommasToNumber(inputValues.value.outputAmount);
     }
 
-    return valueBasedDecimalFormatter(
-      inputValues.value.outputAmount,
-      internalSelectedOutputAsset.value.nativePrice,
-      'down',
-      -1,
-      internalSelectedOutputAsset.value?.type === 'stablecoin' ?? false,
-      false
-    );
+    return valueBasedDecimalFormatter({
+      amount: inputValues.value.outputAmount,
+      usdTokenPrice: internalSelectedOutputAsset.value.nativePrice,
+      roundingMode: 'down',
+      precisionAdjustment: -1,
+      isStablecoin: internalSelectedOutputAsset.value?.type === 'stablecoin' ?? false,
+      stripSeparators: false,
+    });
   });
 
   const formattedOutputNativeValue = useDerivedValue(() => {

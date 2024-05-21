@@ -85,27 +85,27 @@ export const ExchangeRateBubble = () => {
 
       switch (rotatingIndex.value) {
         case 0: {
-          const formattedRate = valueBasedDecimalFormatter(
-            inputAssetPrice / outputAssetPrice,
-            outputAssetPrice,
-            'up',
-            -1,
-            isOutputAssetStablecoin,
-            false
-          );
+          const formattedRate = valueBasedDecimalFormatter({
+            amount: inputAssetPrice / outputAssetPrice,
+            usdTokenPrice: outputAssetPrice,
+            roundingMode: 'up',
+            precisionAdjustment: -1,
+            isStablecoin: isOutputAssetStablecoin,
+            stripSeparators: false,
+          });
           fromAssetText.value = `1 ${inputAssetSymbol}`;
           toAssetText.value = `${formattedRate} ${outputAssetSymbol}`;
           break;
         }
         case 1: {
-          const formattedRate = valueBasedDecimalFormatter(
-            outputAssetPrice / inputAssetPrice,
-            inputAssetPrice,
-            'up',
-            -1,
-            isInputAssetStablecoin,
-            false
-          );
+          const formattedRate = valueBasedDecimalFormatter({
+            amount: outputAssetPrice / inputAssetPrice,
+            usdTokenPrice: inputAssetPrice,
+            roundingMode: 'up',
+            precisionAdjustment: -1,
+            isStablecoin: isInputAssetStablecoin,
+            stripSeparators: false,
+          });
           fromAssetText.value = `1 ${outputAssetSymbol}`;
           toAssetText.value = `${formattedRate} ${inputAssetSymbol}`;
           break;
