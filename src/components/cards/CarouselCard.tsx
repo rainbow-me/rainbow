@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import { Bleed, Box, Column, Columns, Stack, Text, useColorMode, useForegroundColor } from '@/design-system';
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useDimensions } from '@/hooks';
@@ -43,8 +43,8 @@ export function CarouselCard<T>({
   emptyMessage = 'No items found',
   loading = false,
   refresh,
-  canRefresh = true,
-  isRefreshing,
+  dataUpdatedAt = Date.now(),
+  isRefreshing = false,
 }: {
   title?: string | React.ReactNode;
   data: T[] | null | undefined;
@@ -54,12 +54,10 @@ export function CarouselCard<T>({
   loading?: boolean;
   emptyMessage?: string;
   refresh?: () => void;
-  canRefresh?: boolean;
+  dataUpdatedAt?: number;
   isRefreshing?: boolean;
 }) {
-  const borderColor = useForegroundColor('separator');
   const { width: deviceWidth } = useDimensions();
-  const { colorMode } = useColorMode();
 
   const actualItemHeight = carouselItem.height + (carouselItem.verticalOverflow ?? 0) * 2;
 
@@ -138,28 +136,7 @@ export function CarouselCard<T>({
           <Column>{button}</Column>
           {!!refresh && (
             <Column width="content">
-              <Box
-                as={ButtonPressAnimation}
-                disabled={!canRefresh}
-                onPress={refresh}
-                justifyContent="center"
-                alignItems="center"
-                borderRadius={18}
-                style={{
-                  borderWidth: isRefreshing ? 0 : 1,
-                  borderColor,
-                  width: 36,
-                  height: 36,
-                }}
-              >
-                {isRefreshing ? (
-                  <LoadingSpinner color={colorMode === 'light' ? 'black' : 'white'} size={20} />
-                ) : (
-                  <Text align="center" color="label" size="17pt" weight="bold">
-                    􀅈
-                  </Text>
-                )}
-              </Box>
+              <RefreshButton refresh={refresh} isRefreshing={isRefreshing} dataUpdatedAt={dataUpdatedAt} />
             </Column>
           )}
         </Columns>
@@ -167,3 +144,58 @@ export function CarouselCard<T>({
     </Stack>
   );
 }
+
+type RefreshButtonProps = {
+  refresh: () => void;
+  isRefreshing: boolean;
+  dataUpdatedAt: number;
+};
+
+const RefreshButton = ({ refresh, isRefreshing, dataUpdatedAt }: RefreshButtonProps) => {
+  const borderColor = useForegroundColor('separator');
+  const { colorMode } = useColorMode();
+
+  const [canRefresh, setCanRefresh] = useState(dataUpdatedAt < Date.now() - 30_000);
+  const interval = useRef<NodeJS.Timer>();
+
+  useEffect(() => {
+    const checkRefresh = () => {
+      const refreshable = dataUpdatedAt < Date.now() - 30_000;
+      setCanRefresh(refreshable);
+      if (refreshable) {
+        interval.current && clearInterval(interval.current);
+      }
+    };
+
+    checkRefresh();
+    interval.current = setInterval(checkRefresh, 1000);
+
+    return () => interval.current && clearInterval(interval.current);
+  }, [dataUpdatedAt]);
+
+  return (
+    <Box
+      as={ButtonPressAnimation}
+      disabled={!canRefresh}
+      onPress={refresh}
+      justifyContent="center"
+      alignItems="center"
+      borderRadius={18}
+      style={{
+        borderWidth: isRefreshing ? 0 : 1,
+        borderColor,
+        width: 36,
+        height: 36,
+        opacity: canRefresh ? 1 : 0.4,
+      }}
+    >
+      {isRefreshing ? (
+        <LoadingSpinner color={colorMode === 'light' ? 'black' : 'white'} size={20} />
+      ) : (
+        <Text align="center" color="label" size="17pt" weight="bold">
+          􀅈
+        </Text>
+      )}
+    </Box>
+  );
+};

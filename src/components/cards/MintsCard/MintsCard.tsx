@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { CarouselCard } from '../CarouselCard';
 import { CollectionCell, NFT_IMAGE_SIZE, Placeholder } from './CollectionCell';
 import { Menu } from './Menu';
@@ -18,6 +18,7 @@ export function MintsCard() {
   const { accountAddress } = useAccountSettings();
   const {
     data: { mints, featuredMint },
+    dataUpdatedAt,
     isFetching,
     isRefetching,
     refetch,
@@ -77,6 +78,7 @@ export function MintsCard() {
         </Box>
       }
       menu={<Menu />}
+      dataUpdatedAt={dataUpdatedAt}
       refresh={() => {
         queryClient.invalidateQueries(
           mintsQueryKey({
