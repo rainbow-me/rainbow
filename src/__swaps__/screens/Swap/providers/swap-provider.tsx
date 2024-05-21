@@ -348,6 +348,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   };
 
   const confirmButtonIcon = useDerivedValue(() => {
+    if (isSwapping.value) {
+      return '';
+    }
     if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
       return '􀎽';
     } else if (configProgress.value === NavigationSteps.SHOW_GAS) {
