@@ -200,6 +200,7 @@ export const useGasData = ({
 
       try {
         const meteorologyData = await fetchMeteorology({ chainId });
+        console.log(JSON.stringify(meteorologyData, null, 2));
         if (
           (nativeAsset && (meteorologyData as MeteorologyResponse)?.data?.currentBaseFee) ||
           (meteorologyData as MeteorologyLegacyResponse)?.data?.legacy
@@ -235,6 +236,7 @@ export const useGasData = ({
           customPriorityFee: '1',
         });
       } catch (error) {
+        console.log(error);
         logger.error(new RainbowError('[useGasData]: Failed to fetch meteorology data'), {
           data: {
             chainId,
@@ -243,7 +245,7 @@ export const useGasData = ({
         });
       }
     },
-    [currentCurrency, gasData, gasFeeParamsBySpeed, isFetching, maxBaseFee, maxPriorityFee]
+    [currentCurrency, gasData, gasFeeParamsBySpeed, isFetching, maxBaseFee, maxPriorityFee, selectedGas, selectedGasSpeed.value]
   );
 
   const fetchGasData = async () => {
