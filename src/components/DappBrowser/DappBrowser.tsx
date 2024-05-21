@@ -99,7 +99,7 @@ const NewTabTrigger = () => {
       setTimeout(() => {
         goToUrl(route.params?.url);
         setParams({ url: undefined });
-      }, 50);
+      }, 300);
     }
   }, [goToUrl, route.params?.url, setParams]);
 
