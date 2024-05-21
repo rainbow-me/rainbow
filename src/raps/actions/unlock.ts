@@ -22,7 +22,6 @@ import { ethereumUtils } from '@/utils';
 import { toHex } from '@/__swaps__/utils/hex';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { ParsedAsset } from '@/resources/assets/types';
-import { parseGasParamAmounts } from '@/parsers';
 
 export const getAssetRawAllowance = async ({
   owner,
@@ -215,10 +214,12 @@ export const unlock = async ({
   index,
   parameters,
   wallet,
-  selectedGasFee,
+  gasParams,
   gasFeeParamsBySpeed,
 }: ActionProps<'unlock'>): Promise<RapActionResult> => {
   const { assetToUnlock, contractAddress, chainId } = parameters;
+
+  let gasParamsToUse = gasParams;
 
   const { address: assetAddress } = assetToUnlock;
 
@@ -239,8 +240,7 @@ export const unlock = async ({
     throw e;
   }
 
-  let gasParams = parseGasParamAmounts(selectedGasFee);
-  gasParams = overrideWithFastSpeedIfNeeded({
+  gasParamsToUse = overrideWithFastSpeedIfNeeded({
     gasParams,
     chainId,
     gasFeeParamsBySpeed,
@@ -254,7 +254,7 @@ export const unlock = async ({
       tokenAddress: assetAddress,
       spender: contractAddress,
       gasLimit,
-      gasParams,
+      gasParams: gasParamsToUse,
       wallet,
       nonce,
       chainId,

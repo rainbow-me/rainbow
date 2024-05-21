@@ -3,7 +3,7 @@ import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
 import { Address } from 'viem';
 
 import { ParsedAsset } from '@/__swaps__/types/assets';
-import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacySelectedGasFee, SelectedGasFee } from '@/entities';
+import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 
 export enum SwapModalField {
   input = 'inputAmount',
@@ -49,7 +49,7 @@ export interface RapSwapActionParameters<T extends 'swap' | 'crosschainSwap'> {
   meta?: SwapMetadata;
   assetToSell: ParsedAsset;
   assetToBuy: ParsedAsset;
-  selectedGasFee: SelectedGasFee | LegacySelectedGasFee;
+  gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
   gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
   nonce?: number;
   flashbots?: boolean;
@@ -117,7 +117,7 @@ export interface ActionProps<T extends RapActionTypes> {
   parameters: RapActionParameterMap[T];
   wallet: Signer;
   currentRap: Rap;
-  selectedGasFee: SelectedGasFee | LegacySelectedGasFee;
+  gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
   gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
 }
 
