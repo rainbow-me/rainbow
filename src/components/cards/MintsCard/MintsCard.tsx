@@ -19,6 +19,8 @@ export function MintsCard() {
   const {
     data: { mints, featuredMint },
     isFetching,
+    isRefetching,
+    refetch,
   } = useMints({
     walletAddress: accountAddress,
   });
@@ -26,20 +28,6 @@ export function MintsCard() {
 
   const { width: deviceWidth } = useDimensions();
   const fillSecondary = useForegroundColor('fillSecondary');
-
-  const [canRefresh, setCanRefresh] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-
-  useEffect(() => {
-    if (!canRefresh) {
-      setIsRefreshing(true);
-      setTimeout(() => {
-        setIsRefreshing(false);
-        setCanRefresh(true);
-      }, 30_000);
-    }
-  }, [canRefresh]);
-
   return (
     <CarouselCard
       title={i18n.t(i18n.l.mints.mints_card.mints)}
@@ -90,15 +78,14 @@ export function MintsCard() {
       }
       menu={<Menu />}
       refresh={() => {
-        setCanRefresh(false);
         queryClient.invalidateQueries(
           mintsQueryKey({
             address: accountAddress,
           })
         );
+        refetch();
       }}
-      canRefresh={canRefresh}
-      isRefreshing={isRefreshing}
+      isRefreshing={isRefetching}
     />
   );
 }

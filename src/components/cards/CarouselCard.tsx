@@ -43,7 +43,7 @@ export function CarouselCard<T>({
   emptyMessage = 'No items found',
   loading = false,
   refresh,
-  canRefresh,
+  canRefresh = true,
   isRefreshing,
 }: {
   title?: string | React.ReactNode;
