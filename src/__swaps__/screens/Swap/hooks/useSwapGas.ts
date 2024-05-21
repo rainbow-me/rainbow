@@ -1,92 +1,143 @@
-import { SharedValue, runOnJS, useSharedValue } from 'react-native-reanimated';
 import { useCallback } from 'react';
+import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
+import { SharedValue, runOnJS, runOnUI, useSharedValue } from 'react-native-reanimated';
 
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { GasFeeLegacyParams, GasFeeLegacyParamsBySpeed, GasFeeParams, GasFeeParamsBySpeed, GasSpeed } from '@/__swaps__/types/gas';
+
+import { useGasData } from './useGasData';
+import { useNativeAssetForChain } from './useNativeAsset';
+import { useOptimismSecurityFee } from './useOptimismSecurityFee';
+import { useEstimateSwapGasLimit } from './useEstimateSwapGasLimit';
 import { gasStore } from '@/state/gas/gasStore';
-import { GasFeeParams } from '@/entities';
-import { GasFeeLegacyParams } from '@/__swaps__/types/gas';
-import { CUSTOM_GAS_FIELDS } from './useCustomGas';
-import { greaterThan } from '@/helpers/utilities';
+import { useSwapSettings } from './useSwapSettings';
+import { useGasTrends } from './useGasTrends';
 
 export const useSwapGas = ({
+  SwapSettings,
   inputAsset,
   outputAsset,
+  quote,
 }: {
+  SwapSettings: ReturnType<typeof useSwapSettings>;
   inputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   outputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+  quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
 }) => {
-  const selectedGas = useSharedValue<GasFeeParams | GasFeeLegacyParams | null>(null);
+  const selectedGasSpeed = useSharedValue<GasSpeed>(gasStore.getState().selectedGasSpeed);
+  const selectedGas = useSharedValue<GasFeeParams | GasFeeLegacyParams>({} as GasFeeParams | GasFeeLegacyParams);
+  const gasFeeParamsBySpeed = useSharedValue<GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed | null>(null);
 
-  // TODO: Keep these in sync with zustand gas store
-  const currentBaseFee = useSharedValue<string>('');
   const maxBaseFee = useSharedValue<string>('');
-  const priorityFee = useSharedValue<string>('');
-  const maxTransactionFee = useSharedValue('');
+  const maxBaseFeeWarning = useSharedValue<'fail' | 'stuck' | undefined>(undefined);
+  const maxPriorityFee = useSharedValue<string>('');
+  const maxPriorityFeeWarning = useSharedValue<'fail' | 'stuck' | undefined>(undefined);
 
-  const selectGasOption = useCallback(
-    (option: GasFeeParams | GasFeeLegacyParams) => {
-      'worklet';
+  const { nativeAsset } = useNativeAssetForChain({ inputAsset });
+  const { optimismFee: optimismL1SecurityFee, optimismFeeInterval } = useOptimismSecurityFee({ inputAsset, quote });
+  const { estimatedGasLimit, estimatedGasLimitInterval } = useEstimateSwapGasLimit({ inputAsset, outputAsset, quote });
 
-      selectedGas.value = option;
-      runOnJS(gasStore.setState)({
-        selectedGas: option as GasFeeLegacyParams,
-      });
+  // NOTE: main driver that updates all the gasData and gasFeeParamsBySpeed
+  const { gasData, gasDataInterval } = useGasData({
+    SwapSettings,
+    inputAsset,
+    quote,
+    selectedGasSpeed,
+    selectedGas,
+    gasFeeParamsBySpeed,
+    estimatedGasLimit,
+    nativeAsset,
+    optimismL1SecurityFee,
+    maxBaseFee,
+    maxPriorityFee,
+  });
+
+  const { currentBaseFee, currentTrend } = useGasTrends({
+    inputAsset,
+    gasData,
+  });
+
+  const setSelectedGasSpeed = useCallback(
+    (option: GasSpeed) => {
+      const updateWorkletValue = (speed: GasSpeed) => {
+        'worklet';
+
+        selectedGasSpeed.value = speed;
+      };
+
+      gasStore.getState().setSelectedGasSpeed(option);
+      runOnUI(updateWorkletValue)(option);
     },
-    [selectedGas]
+    [selectedGasSpeed]
   );
 
-  const updateCustomFieldValue = useCallback((field: CUSTOM_GAS_FIELDS, value: string) => {
-    switch (field) {
-      case CUSTOM_GAS_FIELDS.MAX_BASE_FEE: {
-        // TODO: Update zustand store here?
-        break;
-      }
+  const updateCustomMaxBaseFee = (baseFee: string, warning: 'fail' | 'stuck' | undefined) => {
+    'worklet';
 
-      case CUSTOM_GAS_FIELDS.PRIORITY_FEE: {
-        // TODO: Update zustand store here?
-        break;
+    if (selectedGasSpeed.value !== GasSpeed.CUSTOM) {
+      const gasForSelectedSpeed = gasFeeParamsBySpeed.value?.[selectedGasSpeed.value] as GasFeeParams;
+      if (gasForSelectedSpeed) {
+        selectedGas.value = gasForSelectedSpeed;
+        maxPriorityFee.value = gasForSelectedSpeed.maxBaseFee.gwei;
       }
     }
-  }, []);
 
-  const onUpdateField = useCallback(
-    (field: CUSTOM_GAS_FIELDS, operation: 'increment' | 'decrement', step = 1) => {
-      'worklet';
+    selectedGasSpeed.value = GasSpeed.CUSTOM;
+    maxBaseFee.value = baseFee;
+    maxBaseFeeWarning.value = warning;
+  };
 
-      switch (field) {
-        case CUSTOM_GAS_FIELDS.MAX_BASE_FEE: {
-          const text = maxBaseFee.value;
+  const updateCustomMaxPriorityFee = (priorityFee: string, warning: 'fail' | 'stuck' | undefined) => {
+    'worklet';
 
-          if (operation === 'decrement' && greaterThan(1, Number(text) - step)) {
-            maxBaseFee.value = String(1);
-            runOnJS(updateCustomFieldValue)(CUSTOM_GAS_FIELDS.MAX_BASE_FEE, String(1));
-            return;
-          }
+    if (SwapSettings.flashbots.value && Number(priorityFee) < 6) {
+      return;
+    }
 
-          const maxBaseFeeNumber = Number(text);
-          maxBaseFee.value = operation === 'increment' ? String(maxBaseFeeNumber + step) : String(maxBaseFeeNumber - step);
-          runOnJS(updateCustomFieldValue)(CUSTOM_GAS_FIELDS.MAX_BASE_FEE, maxBaseFee.value);
-          break;
-        }
+    if (selectedGasSpeed.value !== GasSpeed.CUSTOM) {
+      const prevSelectedGas = gasFeeParamsBySpeed.value?.[selectedGasSpeed.value] as GasFeeParams;
+      if (prevSelectedGas) {
+        selectedGas.value = prevSelectedGas;
+        runOnJS(gasStore.setState)({
+          selectedGas: prevSelectedGas,
+        });
 
-        case CUSTOM_GAS_FIELDS.PRIORITY_FEE: {
-          const text = priorityFee.value;
-
-          if (operation === 'decrement' && greaterThan(1, Number(text) - step)) {
-            priorityFee.value = String(1);
-            runOnJS(updateCustomFieldValue)(CUSTOM_GAS_FIELDS.PRIORITY_FEE, String(1));
-            return;
-          }
-
-          const priorityFeeNumber = Number(text);
-          priorityFee.value = operation === 'increment' ? String(priorityFeeNumber + step) : String(priorityFeeNumber - step);
-          runOnJS(updateCustomFieldValue)(CUSTOM_GAS_FIELDS.PRIORITY_FEE, priorityFee.value);
-          break;
-        }
+        maxBaseFee.value = prevSelectedGas.maxBaseFee.gwei;
       }
-    },
-    [maxBaseFee, priorityFee, updateCustomFieldValue]
-  );
+    }
 
-  return { selectedGas, currentBaseFee, maxBaseFee, priorityFee, maxTransactionFee, onUpdateField, selectGasOption };
+    selectedGasSpeed.value = GasSpeed.CUSTOM;
+    maxPriorityFee.value = priorityFee;
+    maxPriorityFeeWarning.value = warning;
+  };
+
+  return {
+    // meteorology data
+    gasData,
+
+    // gas trends
+    currentBaseFee,
+    currentTrend,
+
+    // gas settings
+    selectedGasSpeed,
+    selectedGas,
+    gasFeeParamsBySpeed,
+
+    // custom gas settings
+    maxBaseFee,
+    maxBaseFeeWarning,
+    maxPriorityFee,
+    maxPriorityFeeWarning,
+
+    // setters
+    setSelectedGasSpeed,
+    updateCustomMaxBaseFee,
+    updateCustomMaxPriorityFee,
+
+    // intervals
+    gasDataInterval,
+    estimatedGasLimitInterval,
+    optimismFeeInterval,
+  };
 };

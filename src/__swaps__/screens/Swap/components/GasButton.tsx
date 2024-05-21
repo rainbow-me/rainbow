@@ -170,7 +170,7 @@ const GasMenu = ({
   children: ReactNode;
   gasFeeBySpeed: GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed;
 }) => {
-  const { SwapNavigation, SwapGas } = useSwapContext();
+  const { SwapNavigation } = useSwapContext();
   const { gasFeeParamsBySpeed, setSelectedGas } = useGasStore();
   // this needs to be moved up or out shouldnt need asset just the color
 

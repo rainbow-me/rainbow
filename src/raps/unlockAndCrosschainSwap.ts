@@ -11,7 +11,9 @@ import { estimateCrosschainSwapGasLimit } from './actions/crosschainSwap';
 import { createNewAction, createNewRap } from './common';
 import { RapAction, RapSwapActionParameters, RapUnlockActionParameters } from './references';
 
-export const estimateUnlockAndCrosschainSwap = async (swapParameters: RapSwapActionParameters<'crosschainSwap'>) => {
+export const estimateUnlockAndCrosschainSwap = async (
+  swapParameters: Omit<RapSwapActionParameters<'crosschainSwap'>, 'selectedGasFee' | 'gasFeeParamsBySpeed'>
+) => {
   const { sellAmount, quote, chainId, assetToSell } = swapParameters;
 
   const {

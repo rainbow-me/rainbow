@@ -4,6 +4,8 @@ interface IntervalConfig {
   autoStart?: boolean;
   /** The interval duration in milliseconds. */
   intervalMs: number;
+  /** Whether the worklet function should be executed on mount. @default false */
+  fetchOnMount?: boolean;
   /** The worklet function to be executed at each interval. */
   onIntervalWorklet: () => void;
 }
@@ -33,10 +35,11 @@ interface IntervalConfig {
  * });
  */
 export function useAnimatedInterval(config: IntervalConfig) {
-  const { autoStart = true, intervalMs, onIntervalWorklet } = config;
+  const { autoStart = true, fetchOnMount = false, intervalMs, onIntervalWorklet } = config;
 
   const { reset, start, stop } = useAnimatedTime({
     autoStart,
+    fetchOnMount,
     durationMs: intervalMs,
     onEndWorklet: onIntervalWorklet,
     shouldRepeat: true,

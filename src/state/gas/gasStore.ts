@@ -1,49 +1,51 @@
 import create from 'zustand';
 
-// todo - absolute imports
-import { GasFeeLegacyParams, GasFeeLegacyParamsBySpeed, GasFeeParams, GasFeeParamsBySpeed, GasSpeed } from '../../__swaps__/types/gas';
+import { GasFeeLegacyParams, GasFeeLegacyParamsBySpeed, GasFeeParams, GasFeeParamsBySpeed, GasSpeed } from '@/__swaps__/types/gas';
 
-import { createStore } from '../internal/createStore';
-import { buildLocalizedTimeUnitString } from '@/__swaps__/utils/time';
-import { gasUtils } from '@/utils';
+import { createStore } from '@/state/internal/createStore';
+import { withSelectors } from '@/state/internal/withSelectors';
+import { MeteorologyResponse, MeteorologyLegacyResponse } from '@/__swaps__/utils/meteorology';
 
 export interface GasStore {
+  gasData: MeteorologyResponse | MeteorologyLegacyResponse;
+  selectedGasSpeed: GasSpeed;
   selectedGas: GasFeeParams | GasFeeLegacyParams;
   gasFeeParamsBySpeed: GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed;
   customGasModified: boolean;
+
+  currentBaseFee: string;
+  currentBaseFeeTrend: number;
+
+  setGasData: (gasData: MeteorologyResponse | MeteorologyLegacyResponse) => void;
   setCustomSpeed: (speed: GasFeeParams) => void;
+  setSelectedGasSpeed: (speed: GasSpeed) => void;
   setSelectedGas: ({ selectedGas }: { selectedGas: GasFeeParams | GasFeeLegacyParams }) => void;
   setGasFeeParamsBySpeed: ({ gasFeeParamsBySpeed }: { gasFeeParamsBySpeed: GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed }) => void;
   clearCustomGasModified: () => void;
+  setCurrentBaseFee: (baseFee: string) => void;
+  setCurrentBaseFeeTrend: (trend: number) => void;
 }
 
 export const gasStore = createStore<GasStore>(
   (set, get) => ({
-    selectedGas: {
-      maxBaseFee: {
-        amount: '0',
-        display: '0.01',
-        gwei: '0',
-      },
-      maxPriorityFeePerGas: {
-        amount: '0',
-        display: '0',
-        gwei: '0',
-      },
-      option: GasSpeed.FAST,
-      estimatedTime: {
-        amount: 12,
-        display: buildLocalizedTimeUnitString({ plural: true, short: true, unit: '12' }),
-      },
-      display: gasUtils.getGasLabel(gasUtils.FAST),
-      transactionGasParams: {
-        maxPriorityFeePerGas: '0',
-        maxFeePerGas: '0',
-      },
-      gasFee: {},
-    } as GasFeeParams | GasFeeLegacyParams,
+    gasData: {} as MeteorologyResponse | MeteorologyLegacyResponse,
+    selectedGasSpeed: GasSpeed.NORMAL,
+    selectedGas: {} as GasFeeParams | GasFeeLegacyParams,
     gasFeeParamsBySpeed: {} as GasFeeParamsBySpeed | GasFeeLegacyParamsBySpeed,
     customGasModified: false,
+
+    currentBaseFee: '',
+    currentBaseFeeTrend: -1,
+    setGasData: (gasData: MeteorologyResponse | MeteorologyLegacyResponse) => {
+      set({
+        gasData,
+      });
+    },
+    setSelectedGasSpeed: (speed: GasSpeed) => {
+      set({
+        selectedGasSpeed: speed,
+      });
+    },
     setSelectedGas: ({ selectedGas }) => {
       set({
         selectedGas,
@@ -67,13 +69,23 @@ export const gasStore = createStore<GasStore>(
     clearCustomGasModified: () => {
       set({ customGasModified: false });
     },
+    setCurrentBaseFee: (baseFee: string) => {
+      set({
+        currentBaseFee: baseFee,
+      });
+    },
+    setCurrentBaseFeeTrend: (trend: number) => {
+      set({
+        currentBaseFeeTrend: trend,
+      });
+    },
   }),
   {
     persist: {
-      name: 'gas',
-      version: 0,
+      name: 'gasStore',
+      version: 1,
     },
   }
 );
 
-export const useGasStore = create(gasStore);
+export const useGasStore = withSelectors(create(gasStore));

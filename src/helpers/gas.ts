@@ -25,6 +25,21 @@ export const getTrendKey = memoFn((trend: number) => {
   return NO_TREND;
 });
 
+export const getTrendKeyWorklet = memoFn((trend: number) => {
+  'worklet';
+
+  if (trend === -1) {
+    return FALLING;
+  } else if (trend === 1) {
+    return RISING;
+  } else if (trend === 2) {
+    return SURGING;
+  } else if (trend === 0) {
+    return STABLE;
+  }
+  return NO_TREND;
+});
+
 export const calculateMinerTipAddDifference = memoFn((maxPriorityFee: string, txNetwork: Network) => {
   const networkObject = getNetworkObj(txNetwork);
   const isL2 = networkObject.networkType === 'layer2';
