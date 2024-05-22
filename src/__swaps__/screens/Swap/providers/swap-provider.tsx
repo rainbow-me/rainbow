@@ -24,6 +24,7 @@ import {
   useDerivedValue,
   useSharedValue,
 } from 'react-native-reanimated';
+import { useSwapSettings } from '../hooks/useSwapSettings';
 
 interface SwapContextType {
   isFetching: SharedValue<boolean>;
@@ -50,6 +51,7 @@ interface SwapContextType {
 
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
 
+  SwapSettings: ReturnType<typeof useSwapSettings>;
   SwapInputController: ReturnType<typeof useSwapInputsController>;
   AnimatedSwapStyles: ReturnType<typeof useAnimatedSwapStyles>;
   SwapTextStyles: ReturnType<typeof useSwapTextStyles>;
@@ -89,6 +91,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const internalSelectedOutputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(null);
 
   const quote = useSharedValue<Quote | CrosschainQuote | QuoteError | null>(null);
+
+  const SwapSettings = useSwapSettings({
+    inputAsset: internalSelectedInputAsset,
+  });
 
   const SwapInputController = useSwapInputsController({
     focusedInput,
@@ -341,6 +347,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
         quote,
 
+        SwapSettings,
         SwapInputController,
         AnimatedSwapStyles,
         SwapTextStyles,

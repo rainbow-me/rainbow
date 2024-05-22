@@ -157,7 +157,7 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
     meta: swapParameters.meta,
     assetToSell,
     assetToBuy,
-    selectedGasFee: swapParameters.selectedGasFee,
+    gasParams: swapParameters.gasParams,
     gasFeeParamsBySpeed: swapParameters.gasFeeParamsBySpeed,
   } satisfies RapSwapActionParameters<'swap'>);
   actions = actions.concat(swap);

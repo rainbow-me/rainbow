@@ -45,7 +45,6 @@ import { populateApprove } from './unlock';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { swapMetadataStorage } from '../common';
 import { ParsedAsset } from '@/resources/assets/types';
-import { parseGasParamAmounts } from '@/parsers';
 
 const WRAP_GAS_PADDING = 1.002;
 
@@ -239,16 +238,17 @@ export const swap = async ({
   index,
   parameters,
   baseNonce,
-  selectedGasFee,
+  gasParams,
   gasFeeParamsBySpeed,
 }: ActionProps<'swap'>): Promise<RapActionResult> => {
-  let gasParams = parseGasParamAmounts(selectedGasFee);
+  let gasParamsToUse = gasParams;
+  // let gasParams = parseGasParamAmounts(selectedGasFee);
 
   const { quote, permit, chainId, requiresApprove } = parameters;
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
 
   if (currentRap.actions.length - 1 > index) {
-    gasParams = overrideWithFastSpeedIfNeeded({
+    gasParamsToUse = overrideWithFastSpeedIfNeeded({
       gasParams,
       chainId,
       gasFeeParamsBySpeed,
@@ -274,7 +274,7 @@ export const swap = async ({
   try {
     const nonce = baseNonce ? baseNonce + index : undefined;
     const swapParams = {
-      gasParams,
+      gasParams: gasParamsToUse,
       chainId,
       gasLimit,
       nonce,

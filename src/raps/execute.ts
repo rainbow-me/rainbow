@@ -19,7 +19,7 @@ import {
 } from './references';
 import { createUnlockAndCrosschainSwapRap } from './unlockAndCrosschainSwap';
 import { createUnlockAndSwapRap } from './unlockAndSwap';
-import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacySelectedGasFee, SelectedGasFee } from '@/entities';
+import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 
 export function createSwapRapByType<T extends RapTypes>(type: T, swapParameters: RapSwapActionParameters<T>) {
   switch (type) {
@@ -54,7 +54,7 @@ export async function executeAction<T extends RapActionTypes>({
   baseNonce,
   rapName,
   flashbots,
-  selectedGasFee,
+  gasParams,
   gasFeeParamsBySpeed,
 }: {
   action: RapAction<T>;
@@ -64,7 +64,7 @@ export async function executeAction<T extends RapActionTypes>({
   baseNonce?: number;
   rapName: string;
   flashbots?: boolean;
-  selectedGasFee: SelectedGasFee | LegacySelectedGasFee;
+  gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
   gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
 }): Promise<RapActionResponse> {
   const { type, parameters } = action;
@@ -75,7 +75,7 @@ export async function executeAction<T extends RapActionTypes>({
       index,
       parameters: { ...parameters, flashbots },
       baseNonce,
-      selectedGasFee,
+      gasParams,
       gasFeeParamsBySpeed,
     };
     const { nonce, hash } = (await typeAction<T>(type, actionProps)()) as RapActionResult;
@@ -133,7 +133,7 @@ export const walletExecuteRap = async (
       baseNonce: nonce,
       rapName,
       flashbots: parameters?.flashbots,
-      selectedGasFee: parameters?.selectedGasFee,
+      gasParams: parameters?.gasParams,
       gasFeeParamsBySpeed: parameters?.gasFeeParamsBySpeed,
     };
 
@@ -151,7 +151,7 @@ export const walletExecuteRap = async (
           baseNonce,
           rapName,
           flashbots: parameters?.flashbots,
-          selectedGasFee: parameters?.selectedGasFee,
+          gasParams: parameters?.gasParams,
           gasFeeParamsBySpeed: parameters?.gasFeeParamsBySpeed,
         };
         const { hash } = await executeAction(actionParams);

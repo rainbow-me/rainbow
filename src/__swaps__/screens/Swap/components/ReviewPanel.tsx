@@ -1,13 +1,11 @@
 import * as i18n from '@/languages';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 
 import { ReviewGasButton } from '@/__swaps__/screens/Swap/components/GasButton';
 import { ChainId } from '@/__swaps__/types/chains';
-import { chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
-import { ButtonPressAnimation } from '@/components/animations';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { AnimatedText, Box, Inline, Separator, Stack, Text, globalColors, useColorMode } from '@/design-system';
-import { ethereumUtils } from '@/utils';
+import { StyleSheet, View } from 'react-native';
+
 import Animated, {
   runOnJS,
   useAnimatedReaction,
@@ -20,64 +18,97 @@ import { fadeConfig } from '../constants';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { AnimatedSwitch } from './AnimatedSwitch';
 
-const SLIPPAGE_STEP = 0.5;
+import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
+import { useAccountSettings } from '@/hooks';
+
+import { chainNameForChainIdWithMainnetSubstitutionWorklet } from '@/__swaps__/utils/chains';
+import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
+import { AnimatedChainImage } from '@/__swaps__/screens/Swap/components/AnimatedChainImage';
+import { convertRawAmountToBalance, convertRawAmountToNativeDisplay, handleSignificantDecimals, multiply } from '@/__swaps__/utils/numbers';
+import { useNativeAssetForChain } from '@/__swaps__/screens/Swap/hooks/useNativeAssetForChain';
+
+const unknown = i18n.t(i18n.l.swap.unknown);
 
 const RainbowFee = () => {
+  const { nativeCurrency } = useAccountSettings();
   const { isDarkMode } = useColorMode();
+  const { quote, internalSelectedInputAsset } = useSwapContext();
 
-  const rainbowFee = useSharedValue(i18n.t(i18n.l.swap.unknown));
+  const { nativeAsset } = useNativeAssetForChain({ inputAsset: internalSelectedInputAsset });
 
-  return <AnimatedText align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy" text={rainbowFee} />;
-};
+  const index = useSharedValue(0);
+  const rainbowFee = useSharedValue<string[]>([unknown, unknown]);
 
-export function ReviewPanel() {
-  const { isDarkMode } = useColorMode();
-  const { configProgress, SwapInputController, internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
-
-  const unknown = i18n.t(i18n.l.swap.unknown);
-
-  const chainName = useDerivedValue(() =>
-    internalSelectedOutputAsset.value?.chainId === ChainId.mainnet
-      ? 'ethereum'
-      : chainNameFromChainIdWorklet(internalSelectedOutputAsset.value?.chainId ?? ChainId.mainnet)
-  );
-
-  const slippageText = useDerivedValue(() => `1.5%`);
-
-  const [chain, setChain] = useState(ethereumUtils.getNetworkFromChainId(internalSelectedOutputAsset.value?.chainId ?? ChainId.mainnet));
-
-  const minimumReceived = useDerivedValue(() => {
-    if (!SwapInputController.inputValues.value.outputAmount || !internalSelectedOutputAsset.value) {
-      return unknown;
-    }
-    return `${SwapInputController.inputValues.value.outputAmount} ${internalSelectedOutputAsset.value.symbol}`;
+  const feeToDisplay = useDerivedValue(() => {
+    return rainbowFee.value[index.value];
   });
 
-  const flashbots = useDerivedValue(() => false);
+  const swapIndex = () => {
+    'worklet';
+    index.value = 1 - index.value;
+  };
 
-  const updateChainFromNetwork = useCallback((chainId: ChainId) => {
-    setChain(ethereumUtils.getNetworkFromChainId(chainId));
-  }, []);
+  const calculateRainbowFeeFromQuoteData = useCallback(
+    (quote: Quote | CrosschainQuote) => {
+      const feePercentage = convertRawAmountToBalance(quote.feePercentageBasisPoints, {
+        decimals: 18,
+      }).amount;
+
+      const feeInEth = convertRawAmountToNativeDisplay(
+        quote.feeInEth.toString(),
+        nativeAsset?.value?.decimals || 18,
+        nativeAsset?.value?.price?.value || '0',
+        nativeCurrency
+      ).display;
+
+      rainbowFee.value = [feeInEth, `${handleSignificantDecimals(multiply(feePercentage, 100), 2)}%`];
+    },
+    [nativeAsset?.value?.decimals, nativeAsset?.value?.price?.value, nativeCurrency, rainbowFee]
+  );
 
   useAnimatedReaction(
-    () => internalSelectedInputAsset.value?.chainId ?? ChainId.mainnet,
+    () => quote.value,
     (current, previous) => {
-      if (!previous || previous !== current) {
-        runOnJS(updateChainFromNetwork)(current);
+      if (current && previous !== current && !(current as QuoteError)?.error) {
+        runOnJS(calculateRainbowFeeFromQuoteData)(current as Quote | CrosschainQuote);
       }
     }
   );
 
-  const onSetSlippage = useCallback((operation: 'increment' | 'decrement') => {
-    'worklet';
-    const value = operation === 'increment' ? SLIPPAGE_STEP : -SLIPPAGE_STEP;
-    // SwapInputController.slippage.value = `${Math.max(0.5, Number(SwapInputController.slippage.value) + value)}`;
-  }, []);
+  return (
+    <GestureHandlerV1Button onPressWorklet={swapIndex}>
+      <AnimatedText align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy" text={feeToDisplay} />
+    </GestureHandlerV1Button>
+  );
+};
 
-  const onSetFlashbots = useCallback(() => {
+export function ReviewPanel() {
+  const { isDarkMode } = useColorMode();
+  const { configProgress, SwapSettings, SwapInputController, internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
+
+  const unknown = i18n.t(i18n.l.swap.unknown);
+
+  const chainName = useDerivedValue(() =>
+    chainNameForChainIdWithMainnetSubstitutionWorklet(internalSelectedOutputAsset.value?.chainId ?? ChainId.mainnet)
+  );
+
+  const minimumReceived = useDerivedValue(() => {
+    if (!SwapInputController.formattedOutputAmount.value || !internalSelectedOutputAsset.value?.symbol) {
+      return unknown;
+    }
+
+    return `${SwapInputController.formattedOutputAmount.value} ${internalSelectedOutputAsset.value.symbol}`;
+  });
+
+  const handleDecrementSlippage = () => {
     'worklet';
-    // SwapInputController.flashbots.value = !SwapInputController.flashbots.value;
-  }, []);
+    SwapSettings.onUpdateSlippage('minus');
+  };
+
+  const handleIncrementSlippage = () => {
+    'worklet';
+    SwapSettings.onUpdateSlippage('plus');
+  };
 
   // TODO: Comes from gas store
   const estimatedGasFee = useSharedValue('$2.25');
@@ -111,7 +142,9 @@ export function ReviewPanel() {
             </Inline>
 
             <Inline alignVertical="center" horizontalSpace="6px">
-              <ChainImage chain={chain} size={16} />
+              <View style={sx.networkContainer}>
+                <AnimatedChainImage showMainnetBadge asset={internalSelectedInputAsset} size={16} />
+              </View>
               <AnimatedText
                 align="right"
                 color={isDarkMode ? 'labelSecondary' : 'label'}
@@ -176,7 +209,7 @@ export function ReviewPanel() {
               </Inline>
             </Inline>
 
-            <AnimatedSwitch onToggle={onSetFlashbots} value={flashbots} activeLabel="On" inactiveLabel="Off" />
+            <AnimatedSwitch onToggle={SwapSettings.onToggleFlashbots} value={SwapSettings.flashbots} activeLabel="On" inactiveLabel="Off" />
           </Inline>
 
           <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
@@ -195,7 +228,7 @@ export function ReviewPanel() {
             </Inline>
 
             <Inline wrap={false} horizontalSpace="8px" alignVertical="center">
-              <ButtonPressAnimation onPress={() => onSetSlippage('decrement')}>
+              <GestureHandlerV1Button onPressWorklet={handleDecrementSlippage}>
                 <Box
                   style={{
                     justifyContent: 'center',
@@ -215,11 +248,23 @@ export function ReviewPanel() {
                     􀅽
                   </Text>
                 </Box>
-              </ButtonPressAnimation>
+              </GestureHandlerV1Button>
 
-              <AnimatedText size="15pt" weight="bold" color="labelSecondary" text={slippageText} />
+              <Inline space="2px">
+                <AnimatedText
+                  align="right"
+                  style={{ minWidth: 26 }}
+                  size="15pt"
+                  weight="bold"
+                  color="labelSecondary"
+                  text={SwapSettings.slippage}
+                />
+                <Text size="15pt" weight="bold" color="labelSecondary">
+                  %
+                </Text>
+              </Inline>
 
-              <ButtonPressAnimation onPress={() => onSetSlippage('increment')}>
+              <GestureHandlerV1Button onPressWorklet={handleIncrementSlippage}>
                 <Box
                   style={{
                     justifyContent: 'center',
@@ -239,7 +284,7 @@ export function ReviewPanel() {
                     􀅼
                   </Text>
                 </Box>
-              </ButtonPressAnimation>
+              </GestureHandlerV1Button>
             </Inline>
           </Inline>
 
@@ -248,7 +293,9 @@ export function ReviewPanel() {
           <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
             <Stack space="6px">
               <Inline alignVertical="center" horizontalSpace="6px">
-                <ChainImage chain={chain} size={16} />
+                <View style={sx.gasContainer}>
+                  <AnimatedChainImage showMainnetBadge asset={internalSelectedInputAsset} size={16} />
+                </View>
                 <Inline horizontalSpace="4px">
                   <AnimatedText align="left" color={'label'} size="15pt" weight="heavy" text={estimatedGasFee} />
                   <AnimatedText align="right" color={'labelTertiary'} size="15pt" weight="bold" text={estimatedArrivalTime} />
@@ -274,3 +321,18 @@ export function ReviewPanel() {
     </Box>
   );
 }
+
+const sx = StyleSheet.create({
+  gasContainer: {
+    top: 2,
+    height: 12,
+    width: 10,
+    left: 4,
+    overflow: 'visible',
+  },
+  networkContainer: {
+    top: 2,
+    height: 12,
+    width: 6,
+  },
+});

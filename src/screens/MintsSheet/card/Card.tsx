@@ -106,7 +106,7 @@ export function Card({ collection }: { collection: MintableCollection }) {
               chainId: collection.chainId,
               priceInEth: price,
             });
-            navigateToMintCollection(collection.contract, network);
+            navigateToMintCollection(collection.contract, collection.mintStatus.price, network);
           }}
           style={{
             borderRadius: 99,
