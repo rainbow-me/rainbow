@@ -4,7 +4,6 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { expect, device, element, by, waitFor } from 'detox';
 import { parseEther } from '@ethersproject/units';
-import { blacklist } from './init';
 
 const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 
@@ -31,12 +30,12 @@ export async function killHardhat() {
 
 export async function importWalletFlow() {
   await checkIfVisible('welcome-screen');
-  await disableSynchronization();
   await waitAndTap('already-have-wallet-button');
   await checkIfExists('add-wallet-sheet');
   await waitAndTap('restore-with-key-button');
   await checkIfExists('import-sheet');
   await clearField('import-sheet-input');
+  await device.disableSynchronization();
   await typeText('import-sheet-input', process.env.TEST_SEEDS, false);
   await checkIfElementHasString('import-sheet-button-label', 'Continue');
   await waitAndTap('import-sheet-button');
@@ -47,7 +46,7 @@ export async function importWalletFlow() {
     await authenticatePin('1234');
     await authenticatePin('1234');
   }
-  await enableSynchronization();
+  await device.enableSynchronization();
   await checkIfVisible('wallet-screen');
 }
 
@@ -452,36 +451,21 @@ export async function sendETHtoTestWallet() {
   return true;
 }
 
-export const testEthereumDeeplink = async (url: string, coldStart = true) => {
-  try {
-    coldStart ? await openDeeplinkColdStart(url) : await openDeeplinkFromBackground(url);
-    await checkIfVisible('send-sheet-confirm-action-button');
-    await checkIfElementByTextIsVisible('Insufficient ETH');
-    await swipe('send-sheet', 'down');
-  } catch (e) {
-    throw new Error(`Error while testing deeplink with url ${url}. coldStart was set to ${coldStart}`);
-  }
-};
-
-export async function launchWithBlacklist(url?: string, detoxSync = true, newInstance = true) {
-  await disableSynchronization();
-  await device.launchApp({
-    launchArgs: { detoxEnableSynchronization: detoxSync ? 1 : 0 },
-    newInstance: newInstance,
-    url,
-  });
-  await device.setURLBlacklist(blacklist);
-  await enableSynchronization();
-}
-
 export async function openDeeplinkColdStart(url: string) {
   await device.terminateApp();
-  await launchWithBlacklist(url, false, true);
-  await delayTime('long');
+  await device.launchApp({
+    launchArgs: { detoxEnableSynchronization: 0 },
+    newInstance: true,
+    url,
+  });
 }
 
 export async function openDeeplinkFromBackground(url: string) {
+  await device.disableSynchronization();
   await device.sendToHome();
-  await launchWithBlacklist(url);
-  await delayTime('long');
+  await device.enableSynchronization();
+  await device.launchApp({
+    newInstance: false,
+    url,
+  });
 }
