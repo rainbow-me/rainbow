@@ -125,7 +125,8 @@ export const event = {
   txRequestReject: 'request.rejected',
   txRequestApprove: 'request.approved',
   addNewWalletGroupName: 'add_new_wallet_group.name',
-   // app browser events
+
+  // app browser events
   browserTrendingDappClicked: 'browser.trending_dapp_pressed',
 } as const;
 

@@ -34,7 +34,7 @@ export const useBrowserHistoryStore = createRainbowStore<BrowserHistoryStore>(
     hasVisited: (url: string) => {
       const state = get();
       return state.recents.some((site: { url: string }) => site.url === url);
-     });
+    },
 
     removeRecent: (url: string) => {
       set(state => {

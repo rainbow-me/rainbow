@@ -99,7 +99,7 @@ const Trending = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
         >
           <Inset space="24px">
             <Box flexDirection="row" gap={CARD_PADDING}>
-              {dapps.map(site, index) => (
+              {dapps.map((site, index) => (
                 <Card goToUrl={goToUrl} index={index} key={site.url} site={{ ...site, image: site.iconUrl }} />
               ))}
             </Box>
