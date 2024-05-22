@@ -124,6 +124,9 @@ export const event = {
   txRequestShownSheet: 'request.sheet.show',
   txRequestReject: 'request.rejected',
   txRequestApprove: 'request.approved',
+
+  // trying to add this
+  browserTrendingDappClicked: 'Trending Dapp Pressed',
 } as const;
 
 /**
@@ -467,5 +470,9 @@ export type EventProperties = {
     source: RequestSource;
     requestType: 'transaction' | 'signature';
     isHardwareWallet: boolean;
+  };
+  [event.browserTrendingDappClicked]: {
+    hasClickedBefore: boolean;
+    index: number;
   };
 };

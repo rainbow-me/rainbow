@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Bleed, Box, ColorModeProvider, Cover, Inline, Inset, Stack, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
 import { ScrollView, StyleSheet, View } from 'react-native';
@@ -19,6 +19,7 @@ import { useBrowserContext } from './BrowserContext';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { WEBVIEW_HEIGHT } from './Dimensions';
 import { useDapps } from '@/resources/metadata/dapps';
+import { analyticsV2 } from '@/analytics';
 
 const HORIZONTAL_PAGE_INSET = 24;
 const MAX_RECENTS_TO_DISPLAY = 6;
@@ -81,8 +82,8 @@ const Trending = React.memo(function Trending({ goToUrl }: { goToUrl: (url: stri
         >
           <Inset space="24px">
             <Box flexDirection="row" gap={CARD_PADDING}>
-              {trendingDapps.map(site => (
-                <Card goToUrl={goToUrl} key={site.url} site={{ ...site, image: site.iconUrl }} />
+              {trendingDapps.map((site, index) => (
+                <Card goToUrl={goToUrl} index={index} key={site.url} site={{ ...site, image: site.iconUrl }} />
               ))}
             </Box>
           </Inset>
@@ -144,13 +145,29 @@ const Card = React.memo(function Card({
   goToUrl,
   site,
   showMenuButton,
+  index,
 }: {
   goToUrl: (url: string) => void;
   showMenuButton?: boolean;
   site: Omit<Site, 'timestamp'>;
+  index?: number;
 }) {
   const { isDarkMode } = useColorMode();
+  const browserHistoryStore = useBrowserHistoryStore();
   const { dapps } = useDapps();
+
+  const dappClickedBefore = useMemo(() => browserHistoryStore.hasVisited(site.url), [browserHistoryStore, site.url]);
+
+  const handlePress = useCallback(() => {
+    {
+      index &&
+        analyticsV2.track(analyticsV2.event.browserTrendingDappClicked, {
+          hasClickedBefore: dappClickedBefore,
+          index: index,
+        });
+    }
+    goToUrl(site.url);
+  }, [dappClickedBefore, goToUrl, index, site.url]);
 
   const menuConfig = {
     menuTitle: '',
@@ -178,16 +195,16 @@ const Card = React.memo(function Card({
     const dappUrl = site.url;
     const iconUrl = site.image;
     const host = getDappHost(dappUrl);
-    const overrideFound = dapps.find(dapp => dapp.url === host);
+    const overrideFound = dapps.find((dapp: { url: string }) => dapp.url === host);
     if (overrideFound?.iconUrl) {
       return overrideFound.iconUrl;
     }
     return iconUrl;
-  }, [site.image, site.url]);
+  }, [dapps, site.image, site.url]);
 
   return (
     <Box>
-      <ButtonPressAnimation onPress={() => goToUrl(site.url)} scaleTo={0.94}>
+      <ButtonPressAnimation onPress={() => handlePress()} scaleTo={0.94}>
         <Box
           background="surfacePrimary"
           borderRadius={24}
