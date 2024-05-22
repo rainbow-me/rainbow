@@ -3,7 +3,6 @@ import { StyleSheet, View } from 'react-native';
 
 import Animated, {
   runOnJS,
-  runOnUI,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
@@ -50,11 +49,6 @@ const RainbowFee = () => {
 
   const calculateRainbowFeeFromQuoteData = useCallback(
     (quote: Quote | CrosschainQuote) => {
-      const updateRainbowFee = ({ feeInEth, feePercentage }: { feeInEth: string; feePercentage: string }) => {
-        'worklet';
-        rainbowFee.value = [feeInEth, feePercentage];
-      };
-
       const feePercentage = convertRawAmountToBalance(quote.feePercentageBasisPoints, {
         decimals: 18,
       }).amount;
@@ -66,10 +60,7 @@ const RainbowFee = () => {
         nativeCurrency
       ).display;
 
-      runOnUI(updateRainbowFee)({
-        feeInEth,
-        feePercentage: `${handleSignificantDecimals(multiply(feePercentage, 100), 2)}%`,
-      });
+      rainbowFee.value = [feeInEth, `${handleSignificantDecimals(multiply(feePercentage, 100), 2)}%`];
     },
     [nativeAsset?.value?.decimals, nativeAsset?.value?.price?.value, nativeCurrency, rainbowFee]
   );
