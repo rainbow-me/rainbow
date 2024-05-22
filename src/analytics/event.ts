@@ -1,4 +1,4 @@
-import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';
+import { UnlockableAppIconKey } from '@/appIcons/appIcons';
 import { CardType } from '@/components/cards/GenericCard';
 import { LearnCategory } from '@/components/cards/utils/types';
 import { FiatProviderName } from '@/entities/f2c';
@@ -125,8 +125,8 @@ export const event = {
   txRequestReject: 'request.rejected',
   txRequestApprove: 'request.approved',
 
-  // trying to add this
-  browserTrendingDappClicked: 'Trending Dapp Pressed',
+  // app browser events
+  browserTrendingDappClicked: 'browser.trending_dapp_pressed',
 } as const;
 
 /**
@@ -472,6 +472,8 @@ export type EventProperties = {
     isHardwareWallet: boolean;
   };
   [event.browserTrendingDappClicked]: {
+    name: string;
+    url: string;
     hasClickedBefore: boolean;
     index: number;
   };

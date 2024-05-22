@@ -153,20 +153,24 @@ const Card = React.memo(function Card({
   index?: number;
 }) {
   const { isDarkMode } = useColorMode();
-  const hasVisited = useBrowserHistoryStore(state => state.hasVisited);
+
   const { dapps } = useDapps();
+
+  const hasVisited = useBrowserHistoryStore(state => state.hasVisited);
   const dappClickedBefore = useMemo(() => hasVisited(site.url), [hasVisited, site.url]);
 
   const handlePress = useCallback(() => {
     {
       index &&
         analyticsV2.track(analyticsV2.event.browserTrendingDappClicked, {
+          name: site.name,
+          url: site.url,
           hasClickedBefore: dappClickedBefore,
           index: index,
         });
     }
     goToUrl(site.url);
-  }, [dappClickedBefore, goToUrl, index, site.url]);
+  }, [dappClickedBefore, goToUrl, index, site.name, site.url]);
 
   const menuConfig = {
     menuTitle: '',

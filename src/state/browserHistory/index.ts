@@ -11,11 +11,12 @@ export interface Site {
 interface BrowserHistoryStore {
   recents: Site[];
   addRecent: (site: Site) => void;
+  hasVisited: (url: string) => boolean;
 }
 
 const MAX_RECENT_SIZE = 1000;
 
-export const useBrowserHistoryStore = createRainbowStore<BrowserHistoryStore & { hasVisited: (url: string) => boolean }>(
+export const useBrowserHistoryStore = createRainbowStore<BrowserHistoryStore>(
   (set, get) => ({
     recents: [],
 
@@ -28,6 +29,7 @@ export const useBrowserHistoryStore = createRainbowStore<BrowserHistoryStore & {
         return { recents: newRecents };
       });
     },
+
     hasVisited: (url: string) => {
       const state = get();
       return state.recents.some((site: { url: string }) => site.url === url);
