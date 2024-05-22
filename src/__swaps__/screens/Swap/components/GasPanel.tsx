@@ -27,7 +27,6 @@ import {
 } from '../hooks/useCustomGas';
 import { useDebounce } from '../hooks/useDebounce';
 import { useSwapEstimatedGasFee } from '../hooks/useEstimatedGasFee';
-import { useRouteChainId } from '../hooks/useRouteNetwork';
 
 const MINER_TIP_TYPE = 'minerTip';
 const MAX_BASE_FEE_TYPE = 'maxBaseFee';
@@ -134,11 +133,13 @@ function CurrentBaseFee() {
   const { isDarkMode } = useColorMode();
   const { navigate } = useNavigation();
 
-  const chainId = useRouteChainId();
+  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
   const { data: baseFee } = useBaseFee({ chainId, select: selectWeiToGwei });
   const { data: gasTrend } = useGasTrend({ chainId });
 
   const trendType = 'currentBaseFee' + upperFirst(gasTrend);
+
+  // loading state?
 
   return (
     <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
@@ -160,7 +161,7 @@ function CurrentBaseFee() {
         weight="heavy"
         style={{ textTransform: 'capitalize' }}
       >
-        {formatNumber(baseFee)}
+        {formatNumber(baseFee || '0')}
       </Text>
     </Inline>
   );
@@ -175,7 +176,7 @@ const selectCustomGasSetting =
   };
 
 function EditMaxBaseFee() {
-  const chainId = useRouteChainId();
+  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
   const maxBaseFee = useCustomGasStore(selectCustomGasSetting(chainId, 'maxBaseFee'));
   const { navigate } = useNavigation();
 
@@ -192,7 +193,7 @@ function EditMaxBaseFee() {
 
 const MIN_FLASHBOTS_PRIORITY_FEE = gweiToWei('6');
 function EditPriorityFee() {
-  const chainId = useRouteChainId();
+  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
   const maxPriorityFee = useCustomGasStore(selectCustomGasSetting(chainId, 'maxPriorityFee'));
   const { navigate } = useNavigation();
 
@@ -212,7 +213,7 @@ function EditPriorityFee() {
 }
 
 function EditGasPrice() {
-  const chainId = useRouteChainId();
+  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
   const gasPrice = useCustomGasStore(selectCustomGasSetting(chainId, 'gasPrice'));
   const { navigate } = useNavigation();
 
@@ -255,7 +256,7 @@ function MaxTransactionFee() {
 }
 
 function EditableGasSettings() {
-  const chainId = useRouteChainId();
+  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
 
   // use suggested gas from metereology as a placeholder
   if (!getCustomGasSettings(chainId)) {

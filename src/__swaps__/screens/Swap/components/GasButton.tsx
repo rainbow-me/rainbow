@@ -1,3 +1,4 @@
+import { ChainId } from '@/__swaps__/types/chains';
 import { weiToGwei } from '@/__swaps__/utils/ethereum';
 import { useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { add } from '@/__swaps__/utils/numbers';
@@ -7,8 +8,8 @@ import { Centered } from '@/components/layout';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Inline, Stack, Text, TextIcon, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
-import { useAccountSettings } from '@/hooks';
 import * as i18n from '@/languages';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
 import styled from '@/styled-thing';
 import { gasUtils } from '@/utils';
 import React, { ReactNode, useCallback, useMemo, useState } from 'react';
@@ -17,7 +18,6 @@ import { THICK_BORDER_WIDTH } from '../constants';
 import { formatNumber } from '../hooks/formatNumber';
 import { GasSettings, useCustomGasSettings } from '../hooks/useCustomGas';
 import { useSwapEstimatedGasFee } from '../hooks/useEstimatedGasFee';
-import { useRouteChainId } from '../hooks/useRouteNetwork';
 import { GasSpeed, setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { useSwapContext } from '../providers/swap-provider';
 
@@ -39,7 +39,7 @@ function EstimatedGasFee() {
 }
 
 function SelectedGas() {
-  const chainId = useRouteChainId();
+  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
   const selectedGasSpeed = useSelectedGasSpeed(chainId);
 
   return (
@@ -84,11 +84,10 @@ function keys<const T extends string>(obj: Record<T, any> | undefined) {
 const GasMenu = ({ children }: { children: ReactNode }) => {
   const { SwapNavigation } = useSwapContext();
 
-  useAccountSettings();
-
-  const chainId = useRouteChainId();
+  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
+  console.log(chainId);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const metereologySuggestions = useMeteorologySuggestions({ chainId, enabled: isMenuOpen });
+  const metereologySuggestions = useMeteorologySuggestions({ chainId });
   const customGasSettings = useCustomGasSettings(chainId);
 
   const menuOptions = useMemo(() => [...keys(metereologySuggestions.data), 'custom'] as const, [metereologySuggestions.data]);
