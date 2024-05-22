@@ -12,7 +12,7 @@ import * as i18n from '@/languages';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import styled from '@/styled-thing';
 import { gasUtils } from '@/utils';
-import React, { ReactNode, useCallback, useMemo, useState } from 'react';
+import React, { ReactNode, useCallback, useMemo } from 'react';
 import { runOnUI } from 'react-native-reanimated';
 import { THICK_BORDER_WIDTH } from '../constants';
 import { formatNumber } from '../hooks/formatNumber';
@@ -85,8 +85,7 @@ const GasMenu = ({ children }: { children: ReactNode }) => {
   const { SwapNavigation } = useSwapContext();
 
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-  console.log(chainId);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const metereologySuggestions = useMeteorologySuggestions({ chainId });
   const customGasSettings = useCustomGasSettings(chainId);
 
@@ -94,8 +93,6 @@ const GasMenu = ({ children }: { children: ReactNode }) => {
 
   const handlePressSpeedOption = useCallback(
     (selectedGasSpeed: GasSpeed) => {
-      // TODO: Handle updating SwapGas references
-      // SwapGas.selectGasOption(selectedGasSpeed);
       if (selectedGasSpeed === CUSTOM) {
         runOnUI(SwapNavigation.handleShowGas)({});
       }
@@ -157,8 +154,6 @@ const GasMenu = ({ children }: { children: ReactNode }) => {
         </ContextMenu>
       ) : (
         <ContextMenuButton
-          onMenuDidShow={() => setIsMenuOpen(true)}
-          onMenuWillHide={() => setIsMenuOpen(false)}
           activeOpacity={0}
           enableContextMenu
           isAnchoredToRight

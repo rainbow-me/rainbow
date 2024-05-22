@@ -26,6 +26,7 @@ import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/Gest
 import { AnimatedChainImage } from '@/__swaps__/screens/Swap/components/AnimatedChainImage';
 import { convertRawAmountToBalance, convertRawAmountToNativeDisplay, handleSignificantDecimals, multiply } from '@/__swaps__/utils/numbers';
 import { useNativeAssetForChain } from '@/__swaps__/screens/Swap/hooks/useNativeAssetForChain';
+import { useSwapEstimatedGasFee } from '../hooks/useEstimatedGasFee';
 
 const unknown = i18n.t(i18n.l.swap.unknown);
 
@@ -81,6 +82,25 @@ const RainbowFee = () => {
     </GestureHandlerV1Button>
   );
 };
+
+function EstimatedGasFee() {
+  const estimatedGasFee = useSwapEstimatedGasFee();
+
+  return (
+    <Text align="left" color={'label'} size="15pt" weight="heavy">
+      {estimatedGasFee}
+    </Text>
+  );
+}
+
+// TODO: This is still needed
+function EstiamtedArrivalTime() {
+  return (
+    <Text align="right" color={'labelTertiary'} size="15pt" weight="bold">
+      ~4 sec
+    </Text>
+  );
+}
 
 export function ReviewPanel() {
   const { isDarkMode } = useColorMode();
@@ -297,8 +317,8 @@ export function ReviewPanel() {
                   <AnimatedChainImage showMainnetBadge asset={internalSelectedInputAsset} size={16} />
                 </View>
                 <Inline horizontalSpace="4px">
-                  <AnimatedText align="left" color={'label'} size="15pt" weight="heavy" text={estimatedGasFee} />
-                  <AnimatedText align="right" color={'labelTertiary'} size="15pt" weight="bold" text={estimatedArrivalTime} />
+                  <EstimatedGasFee />
+                  <EstiamtedArrivalTime />
                 </Inline>
               </Inline>
 
