@@ -1,24 +1,33 @@
-import React, { useCallback, useMemo } from 'react';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import * as i18n from '@/languages';
+import React, { PropsWithChildren, useState } from 'react';
+import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
-import { AnimatedText, Box, Inline, Separator, Stack, Text, globalColors, useColorMode } from '@/design-system';
-import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { fadeConfig } from '@/__swaps__/screens/Swap/constants';
+import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { ChainId } from '@/__swaps__/types/chains';
+import { gweiToWei, weiToGwei } from '@/__swaps__/utils/ethereum';
+import { getCachedGasSuggestions, useBaseFee, useGasTrend } from '@/__swaps__/utils/meteorology';
+import { add, subtract } from '@/__swaps__/utils/numbers';
 import { ButtonPressAnimation } from '@/components/animations';
-import { useGas } from '@/hooks';
-import { getTrendKey } from '@/helpers/gas';
-import { gasUtils } from '@/utils';
-import { useNavigation } from '@/navigation';
-import { Keyboard } from 'react-native';
-import Routes from '@/navigation/routesNames';
-import { useTheme } from '@/theme';
-import { upperFirst } from 'lodash';
+import { Box, Inline, Separator, Stack, Text, globalColors, useColorMode } from '@/design-system';
 import { IS_ANDROID } from '@/env';
-import { TextColor } from '@/design-system/color/palettes';
-import { CustomColor } from '@/design-system/color/useForegroundColor';
-
-const { CUSTOM } = gasUtils;
+import { lessThan } from '@/helpers/utilities';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { upperFirst } from 'lodash';
+import { formatNumber } from '../hooks/formatNumber';
+import {
+  CustomGasStoreState,
+  getCustomGasSettings,
+  setCustomGasPrice,
+  setCustomMaxBaseFee,
+  setCustomMaxPriorityFee,
+  useCustomGasStore,
+} from '../hooks/useCustomGas';
+import { useDebounce } from '../hooks/useDebounce';
+import { useSwapEstimatedGasFee } from '../hooks/useEstimatedGasFee';
+import { useRouteChainId } from '../hooks/useRouteNetwork';
 
 const MINER_TIP_TYPE = 'minerTip';
 const MAX_BASE_FEE_TYPE = 'maxBaseFee';
@@ -30,18 +39,242 @@ type AlertInfo = {
   message: string;
 } | null;
 
-export function GasPanel() {
-  const { selectedGasFee, currentBlockParams } = useGas();
+function PressableLabel({ onPress, children }: PropsWithChildren<{ onPress: VoidFunction }>) {
+  return (
+    <Box
+      as={ButtonPressAnimation}
+      paddingVertical="8px"
+      marginVertical="-8px"
+      onPress={onPress}
+      backgroundColor="accent"
+      style={{ maxWidth: 175 }}
+    >
+      <Inline horizontalSpace="4px" alignVertical="center">
+        <Text color="labelTertiary" size="15pt" weight="semibold" numberOfLines={2}>
+          {`${children} `}
+          <Text size="13pt" color={'labelTertiary'} weight="bold" numberOfLines={1}>
+            􀅴
+          </Text>
+        </Text>
+        <Box marginBottom={IS_ANDROID ? '-4px' : undefined}></Box>
+      </Inline>
+    </Box>
+  );
+}
 
-  const currentBaseFee = useSharedValue('');
-  const maxBaseFee = useSharedValue('');
-  const priorityFee = useSharedValue('');
-  const maxTransactionFee = useSharedValue('');
-
+function NumericInputButton({ children, onPress }: PropsWithChildren<{ onPress: VoidFunction }>) {
   const { isDarkMode } = useColorMode();
-  const { configProgress } = useSwapContext();
+
+  return (
+    <ButtonPressAnimation onPress={onPress}>
+      <Box
+        style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          borderWidth: 1,
+          borderColor: isDarkMode ? globalColors.white10 : globalColors.grey100,
+        }}
+        height={{ custom: 16 }}
+        width={{ custom: 20 }}
+        borderRadius={100}
+        background="fillSecondary" // TODO: 12% opacity
+        paddingVertical="1px (Deprecated)"
+        gap={10}
+      >
+        {/* TODO: 56% opacity */}
+        <Text weight="black" size="icon 10px" color="labelTertiary">
+          {children}
+        </Text>
+      </Box>
+    </ButtonPressAnimation>
+  );
+}
+
+const INPUT_STEP = gweiToWei('0.1');
+function GasSettingInput({ onDebouncedChange, value, min = '0' }: { onDebouncedChange: (v: string) => void; value: string; min?: string }) {
+  const { isDarkMode } = useColorMode();
+
+  const [internalValue, setInternalValue] = useState(value);
+  const debouncedValue = useDebounce(internalValue, 1000);
+  if (debouncedValue !== value) {
+    onDebouncedChange(debouncedValue);
+  }
+
+  return (
+    <Inline wrap={false} alignVertical="center" horizontalSpace="6px">
+      <Inline wrap={false} horizontalSpace="8px" alignVertical="center">
+        <NumericInputButton
+          onPress={() =>
+            setInternalValue(v => {
+              const newValue = subtract(v, INPUT_STEP);
+              return lessThan(newValue, min) ? min : newValue;
+            })
+          }
+        >
+          􀅽
+        </NumericInputButton>
+
+        <Text size="15pt" weight="bold" color="labelSecondary">
+          {formatNumber(weiToGwei(internalValue))}
+        </Text>
+
+        <NumericInputButton onPress={() => setInternalValue(v => add(v, INPUT_STEP))}>􀅼</NumericInputButton>
+      </Inline>
+
+      <Text align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy">
+        Gwei
+      </Text>
+    </Inline>
+  );
+}
+
+const selectWeiToGwei = (s: string | undefined) => s && weiToGwei(s);
+
+function CurrentBaseFee() {
+  const { isDarkMode } = useColorMode();
   const { navigate } = useNavigation();
-  const { colors } = useTheme();
+
+  const chainId = useRouteChainId();
+  const { data: baseFee } = useBaseFee({ chainId, select: selectWeiToGwei });
+  const { data: gasTrend } = useGasTrend({ chainId });
+
+  const trendType = 'currentBaseFee' + upperFirst(gasTrend);
+
+  return (
+    <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
+      <PressableLabel
+        onPress={() =>
+          navigate(Routes.EXPLAIN_SHEET, {
+            currentBaseFee: baseFee,
+            currentGasTrend: gasTrend,
+            type: trendType,
+          })
+        }
+      >
+        {i18n.t(i18n.l.gas.current_base_fee)}
+      </PressableLabel>
+      <Text
+        align="right"
+        color={isDarkMode ? 'labelSecondary' : 'label'}
+        size="15pt"
+        weight="heavy"
+        style={{ textTransform: 'capitalize' }}
+      >
+        {formatNumber(baseFee)}
+      </Text>
+    </Inline>
+  );
+}
+
+const selectCustomGasSetting =
+  (chainId: ChainId, settingKey: 'gasPrice' | 'maxBaseFee' | 'maxPriorityFee') =>
+  (state: CustomGasStoreState): string => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return state[chainId]?.[settingKey] || '0';
+  };
+
+function EditMaxBaseFee() {
+  const chainId = useRouteChainId();
+  const maxBaseFee = useCustomGasStore(selectCustomGasSetting(chainId, 'maxBaseFee'));
+  const { navigate } = useNavigation();
+
+  return (
+    <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
+      {/* TODO: Add error and warning values here */}
+      <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MAX_BASE_FEE_TYPE })}>
+        {i18n.t(i18n.l.gas.max_base_fee)}
+      </PressableLabel>
+      <GasSettingInput value={maxBaseFee} onDebouncedChange={maxBaseFee => setCustomMaxBaseFee(chainId, maxBaseFee)} />
+    </Inline>
+  );
+}
+
+const MIN_FLASHBOTS_PRIORITY_FEE = gweiToWei('6');
+function EditPriorityFee() {
+  const chainId = useRouteChainId();
+  const maxPriorityFee = useCustomGasStore(selectCustomGasSetting(chainId, 'maxPriorityFee'));
+  const { navigate } = useNavigation();
+
+  const isFlashbotsEnabled = useSwapsStore(s => s.flashbots);
+  // TODO: THIS FLASHBOTS INPUT LOGIC IS FLAWED REVIEW LATER
+  const min = isFlashbotsEnabled ? MIN_FLASHBOTS_PRIORITY_FEE : '0';
+
+  return (
+    <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
+      {/* TODO: Add error and warning values here */}
+      <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MINER_TIP_TYPE })}>
+        {i18n.t(i18n.l.gas.miner_tip)}
+      </PressableLabel>
+      <GasSettingInput value={maxPriorityFee} onDebouncedChange={priorityFee => setCustomMaxPriorityFee(chainId, priorityFee)} min={min} />
+    </Inline>
+  );
+}
+
+function EditGasPrice() {
+  const chainId = useRouteChainId();
+  const gasPrice = useCustomGasStore(selectCustomGasSetting(chainId, 'gasPrice'));
+  const { navigate } = useNavigation();
+
+  return (
+    <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
+      {/* TODO: Add error and warning values here */}
+      <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MAX_BASE_FEE_TYPE })}>
+        {i18n.t(i18n.l.gas.max_base_fee)}
+      </PressableLabel>
+      <GasSettingInput value={gasPrice} onDebouncedChange={gasPrice => setCustomGasPrice(chainId, gasPrice)} />
+    </Inline>
+  );
+}
+
+function MaxTransactionFee() {
+  const { isDarkMode } = useColorMode();
+
+  const maxTransactionFee = useSwapEstimatedGasFee();
+
+  return (
+    <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
+      <Inline horizontalSpace="12px">
+        <Inline horizontalSpace="4px">
+          <Text color="labelTertiary" weight="semibold" size="15pt">
+            {i18n.t(i18n.l.gas.max_transaction_fee)}
+          </Text>
+          <Text color="labelTertiary" size="13pt" weight="bold">
+            􀅴
+          </Text>
+        </Inline>
+      </Inline>
+
+      <Inline horizontalSpace="6px">
+        <Text align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy">
+          {maxTransactionFee}
+        </Text>
+      </Inline>
+    </Inline>
+  );
+}
+
+function EditableGasSettings() {
+  const chainId = useRouteChainId();
+
+  // use suggested gas from metereology as a placeholder
+  if (!getCustomGasSettings(chainId)) {
+    const suggestions = getCachedGasSuggestions(chainId);
+    useCustomGasStore.setState({ [chainId]: suggestions?.fast || suggestions?.normal });
+  }
+
+  const settings = getCustomGasSettings(chainId);
+  if (settings && !settings.isEIP1559) return <EditGasPrice />;
+  return (
+    <>
+      <EditMaxBaseFee />
+      <EditPriorityFee />
+    </>
+  );
+}
+
+export function GasPanel() {
+  const { configProgress } = useSwapContext();
 
   const styles = useAnimatedStyle(() => {
     return {
@@ -52,229 +285,22 @@ export function GasPanel() {
     };
   });
 
-  const currentGasTrend = useMemo(() => getTrendKey(currentBlockParams?.trend), [currentBlockParams?.trend]);
-  const trendType = 'currentBaseFee' + upperFirst(currentGasTrend);
-  const selectedOptionIsCustom = useMemo(() => selectedGasFee?.option === CUSTOM, [selectedGasFee?.option]);
-
-  // TODO: L2 check for the currentBaseFee
-  const openGasHelper = useCallback(
-    (type: string) => {
-      Keyboard.dismiss();
-      navigate(Routes.EXPLAIN_SHEET, {
-        currentBaseFee: currentBlockParams?.baseFeePerGas?.display,
-        currentGasTrend,
-        type,
-      });
-    },
-    [navigate, currentBlockParams, currentGasTrend]
-  );
-
-  const renderRowLabel = (label: string, type: string, error?: AlertInfo, warning?: AlertInfo) => {
-    let color: TextColor | CustomColor = 'labelTertiary';
-    let text;
-    if ((!error && !warning) || !selectedOptionIsCustom) {
-      color = 'labelTertiary';
-      text = '􀅵';
-    } else if (error) {
-      color = {
-        custom: colors.red,
-      };
-      text = '􀇿';
-    } else {
-      color = {
-        custom: colors.yellowFavorite,
-      };
-      text = '􀇿';
-    }
-
-    return (
-      <Box
-        as={ButtonPressAnimation}
-        paddingVertical="8px"
-        marginVertical="-8px"
-        onPress={() => openGasHelper(type)}
-        backgroundColor="accent"
-        style={{ maxWidth: 175 }}
-      >
-        <Inline horizontalSpace="4px" alignVertical="center">
-          <Text color="labelTertiary" size="15pt" weight="semibold" numberOfLines={2}>
-            {`${label} `}
-            <Text size="13pt" color={color} weight="bold" numberOfLines={1}>
-              {text}
-            </Text>
-          </Text>
-          <Box marginBottom={IS_ANDROID ? '-4px' : undefined}></Box>
-        </Inline>
-      </Box>
-    );
-  };
-
   return (
-    <Box as={Animated.View} zIndex={12} style={styles} testID="review-panel" width="full">
+    <Box as={Animated.View} zIndex={12} style={styles} testID="gas-panel" width="full">
       <Stack alignHorizontal="center" space="28px">
         <Text weight="heavy" color="label" size="20pt">
           {i18n.t(i18n.l.gas.gas_settings)}
         </Text>
 
-        <Stack width="full" space="24px" alignHorizontal="stretch">
-          <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-            {renderRowLabel(i18n.t(i18n.l.gas.current_base_fee), trendType)}
+        <Box gap={24} width="full" alignItems="stretch">
+          <CurrentBaseFee />
 
-            <AnimatedText
-              align="right"
-              color={isDarkMode ? 'labelSecondary' : 'label'}
-              size="15pt"
-              weight="heavy"
-              style={{ textTransform: 'capitalize' }}
-              text={currentBaseFee}
-            />
-          </Inline>
-
-          <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-            {/* TODO: Add error and warning values here */}
-            {renderRowLabel(i18n.t(i18n.l.gas.max_base_fee), MAX_BASE_FEE_TYPE, null, null)}
-
-            <Inline wrap={false} alignVertical="center" horizontalSpace="6px">
-              <Inline wrap={false} horizontalSpace="8px" alignVertical="center">
-                {/* TODO: Handle decrement by 3 */}
-                <ButtonPressAnimation onPress={() => {}}>
-                  <Box
-                    style={{
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      borderWidth: 1,
-                      borderColor: isDarkMode ? globalColors.white10 : globalColors.grey100,
-                    }}
-                    height={{ custom: 16 }}
-                    width={{ custom: 20 }}
-                    borderRadius={100}
-                    background="fillSecondary" // TODO: 12% opacity
-                    paddingVertical="1px (Deprecated)"
-                    gap={10}
-                  >
-                    {/* TODO: 56% opacity */}
-                    <Text weight="black" size="icon 10px" color="labelTertiary">
-                      􀅽
-                    </Text>
-                  </Box>
-                </ButtonPressAnimation>
-
-                <AnimatedText size="15pt" weight="bold" color="labelSecondary" text={maxBaseFee} />
-
-                {/* TODO: Handle increment by 3 */}
-                <ButtonPressAnimation onPress={() => {}}>
-                  <Box
-                    style={{
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      borderWidth: 1,
-                      borderColor: isDarkMode ? globalColors.white10 : globalColors.grey100,
-                    }}
-                    height={{ custom: 16 }}
-                    width={{ custom: 20 }}
-                    borderRadius={100}
-                    background="fillSecondary" // TODO: 12% opacity
-                    paddingVertical="1px (Deprecated)"
-                    gap={10}
-                  >
-                    {/* TODO: 56% opacity */}
-                    <Text weight="black" size="icon 10px" color="labelTertiary">
-                      􀅼
-                    </Text>
-                  </Box>
-                </ButtonPressAnimation>
-              </Inline>
-              <Text align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy">
-                Gwei
-              </Text>
-            </Inline>
-          </Inline>
-
-          <Inline horizontalSpace="10px" alignHorizontal="justify">
-            {/* TODO: Add error and warning values here */}
-            {renderRowLabel(i18n.t(i18n.l.gas.miner_tip), MINER_TIP_TYPE, null, null)}
-
-            <Inline wrap={false} alignVertical="center" horizontalSpace="6px">
-              <Inline wrap={false} horizontalSpace="8px" alignVertical="center">
-                {/* TODO: Handle decrement by 1 */}
-                <ButtonPressAnimation onPress={() => {}}>
-                  <Box
-                    style={{
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      borderWidth: 1,
-                      borderColor: isDarkMode ? globalColors.white10 : globalColors.grey100,
-                    }}
-                    height={{ custom: 16 }}
-                    width={{ custom: 20 }}
-                    borderRadius={100}
-                    background="fillSecondary" // TODO: 12% opacity
-                    paddingVertical="1px (Deprecated)"
-                    gap={10}
-                  >
-                    {/* TODO: 56% opacity */}
-                    <Text weight="black" size="icon 10px" color="labelTertiary">
-                      􀅽
-                    </Text>
-                  </Box>
-                </ButtonPressAnimation>
-
-                <AnimatedText size="15pt" weight="bold" color="labelSecondary" text={priorityFee} />
-
-                {/* TODO: Handle increment by 1 */}
-                <ButtonPressAnimation onPress={() => {}}>
-                  <Box
-                    style={{
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      borderWidth: 1,
-                      borderColor: isDarkMode ? globalColors.white10 : globalColors.grey100,
-                    }}
-                    height={{ custom: 16 }}
-                    width={{ custom: 20 }}
-                    borderRadius={100}
-                    background="fillSecondary" // TODO: 12% opacity
-                    paddingVertical="1px (Deprecated)"
-                    gap={10}
-                  >
-                    {/* TODO: 56% opacity */}
-                    <Text weight="black" size="icon 10px" color="labelTertiary">
-                      􀅼
-                    </Text>
-                  </Box>
-                </ButtonPressAnimation>
-              </Inline>
-              <Text align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy">
-                Gwei
-              </Text>
-            </Inline>
-          </Inline>
+          <EditableGasSettings />
 
           <Separator color="separatorSecondary" />
 
-          <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-            <Inline horizontalSpace="12px">
-              <Inline horizontalSpace="4px">
-                <Text color="labelTertiary" weight="semibold" size="15pt">
-                  {i18n.t(i18n.l.gas.max_transaction_fee)}
-                </Text>
-                <Text color="labelTertiary" size="13pt" weight="bold">
-                  􀅴
-                </Text>
-              </Inline>
-            </Inline>
-
-            <Inline horizontalSpace="6px">
-              <AnimatedText
-                align="right"
-                color={isDarkMode ? 'labelSecondary' : 'label'}
-                size="15pt"
-                weight="heavy"
-                text={maxTransactionFee}
-              />
-            </Inline>
-          </Inline>
-        </Stack>
+          <MaxTransactionFee />
+        </Box>
       </Stack>
     </Box>
   );

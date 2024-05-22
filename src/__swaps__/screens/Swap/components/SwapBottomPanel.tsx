@@ -5,17 +5,17 @@ import { PanGestureHandler } from 'react-native-gesture-handler';
 import { Box, Column, Columns, Separator, globalColors, useColorMode } from '@/design-system';
 import { safeAreaInsetValues } from '@/utils';
 
-import { SwapActionButton } from './SwapActionButton';
-import { GasButton } from './GasButton';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH, springConfig } from '@/__swaps__/screens/Swap/constants';
-import { IS_ANDROID } from '@/env';
-import { useSwapContext, NavigationSteps } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import Animated, { runOnJS, runOnUI, useAnimatedReaction, useAnimatedStyle, withSpring } from 'react-native-reanimated';
-import { StyleSheet } from 'react-native';
+import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { opacity } from '@/__swaps__/utils/swaps';
-import { ReviewPanel } from './ReviewPanel';
-import { GasPanel } from './GasPanel';
+import { IS_ANDROID } from '@/env';
+import { StyleSheet } from 'react-native';
+import Animated, { runOnJS, runOnUI, useAnimatedReaction, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { useBottomPanelGestureHandler } from '../hooks/useBottomPanelGestureHandler';
+import { GasButton } from './GasButton';
+import { GasPanel } from './GasPanel';
+import { ReviewPanel } from './ReviewPanel';
+import { SwapActionButton } from './SwapActionButton';
 
 export function SwapBottomPanel() {
   const { isDarkMode } = useColorMode();

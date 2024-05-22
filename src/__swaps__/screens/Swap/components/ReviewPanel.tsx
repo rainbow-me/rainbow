@@ -1,7 +1,13 @@
-import React, { useCallback, useState } from 'react';
 import * as i18n from '@/languages';
+import React, { useCallback, useState } from 'react';
 
+import { ReviewGasButton } from '@/__swaps__/screens/Swap/components/GasButton';
+import { ChainId } from '@/__swaps__/types/chains';
+import { chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
+import { ButtonPressAnimation } from '@/components/animations';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { AnimatedText, Box, Inline, Separator, Stack, Text, globalColors, useColorMode } from '@/design-system';
+import { ethereumUtils } from '@/utils';
 import Animated, {
   runOnJS,
   useAnimatedReaction,
@@ -10,15 +16,9 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { fadeConfig } from '../constants';
-import { ethereumUtils } from '@/utils';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { ChainId } from '@/__swaps__/types/chains';
-import { chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
+import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { AnimatedSwitch } from './AnimatedSwitch';
-import { GasButton } from '@/__swaps__/screens/Swap/components/GasButton';
-import { ButtonPressAnimation } from '@/components/animations';
 
 const SLIPPAGE_STEP = 0.5;
 
@@ -266,7 +266,7 @@ export function ReviewPanel() {
             </Stack>
 
             <Inline alignVertical="center" horizontalSpace="8px">
-              <GasButton isReviewing />
+              <ReviewGasButton />
             </Inline>
           </Inline>
         </Stack>
