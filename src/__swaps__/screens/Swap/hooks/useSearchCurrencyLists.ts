@@ -1,9 +1,8 @@
 import { rankings } from 'match-sorter';
 import { useCallback, useMemo, useState } from 'react';
-import { SharedValue, runOnJS, useAnimatedReaction } from 'react-native-reanimated';
+import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 
 import { useTokenSearch } from '@/__swaps__/screens/Swap/resources/search';
-import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { SearchAsset, TokenSearchAssetKey, TokenSearchListId, TokenSearchThreshold } from '@/__swaps__/types/search';
 import { addHexPrefix } from '@/__swaps__/utils/hex';
@@ -13,6 +12,8 @@ import { filterList } from '@/utils';
 import { useFavorites } from '@/resources/favorites';
 import { isAddress } from '@ethersproject/address';
 import { RainbowToken } from '@/entities';
+import { useSwapContext } from '../providers/swap-provider';
+import { userAssetsStore } from '@/state/assets/userAssets';
 
 const VERIFIED_ASSETS_PAYLOAD: {
   keys: TokenSearchAssetKey[];
@@ -38,32 +39,19 @@ const filterBridgeAsset = ({ asset, filter = '' }: { asset?: SearchAsset; filter
   asset?.name?.toLowerCase()?.startsWith(filter?.toLowerCase()) ||
   asset?.symbol?.toLowerCase()?.startsWith(filter?.toLowerCase());
 
-export function useSearchCurrencyLists({
-  assetToSell,
-  outputChainId,
-  searchQuery,
-}: {
-  assetToSell: SharedValue<SearchAsset | ParsedSearchAsset | null>;
-  outputChainId: SharedValue<ChainId>;
-  searchQuery: SharedValue<string>;
-}) {
+export function useSearchCurrencyLists() {
+  const { internalSelectedInputAsset: assetToSell, selectedOutputChainId } = useSwapContext();
+
+  const searchQuery = userAssetsStore(state => state.searchQuery);
+
   const [inputChainId, setInputChainId] = useState(assetToSell.value?.chainId ?? ChainId.mainnet);
-  const [toChainId, setToChainId] = useState(outputChainId.value);
-  const [query, setQuery] = useState(searchQuery.value);
-  const [enableUnverifiedSearch, setEnableUnverifiedSearch] = useState(false);
+  const [toChainId, setToChainId] = useState(selectedOutputChainId.value);
   const [assetToSellAddress, setAssetToSellAddress] = useState(
     assetToSell.value?.[assetToSell.value?.chainId === ChainId.mainnet ? 'address' : 'mainnetAddress']
   );
 
-  useAnimatedReaction(
-    () => searchQuery.value,
-    (current, previous) => {
-      if (previous !== current) {
-        runOnJS(setQuery)(current);
-        runOnJS(setEnableUnverifiedSearch)(current.length > 2);
-      }
-    }
-  );
+  const query = useMemo(() => searchQuery.trim().toLowerCase(), [searchQuery]);
+  const enableUnverifiedSearch = useMemo(() => searchQuery.length > 2, [searchQuery]);
 
   useAnimatedReaction(
     () => assetToSell.value,
@@ -76,7 +64,7 @@ export function useSearchCurrencyLists({
   );
 
   useAnimatedReaction(
-    () => outputChainId.value,
+    () => selectedOutputChainId.value,
     (current, previous) => {
       if (previous !== current) {
         runOnJS(setToChainId)(current);

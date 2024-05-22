@@ -65,43 +65,46 @@ export function SwapNavbar() {
             )}
           </ButtonPressAnimation>
         }
-        rightComponent={
-          // TODO: This is temporarily hooked up to shuffle input/output colors
-          <ButtonPressAnimation
-            onPress={() => {
-              // TODO: implement navigation to settings sheet
-            }}
-            scaleTo={0.8}
-          >
-            <Box
-              alignItems="center"
-              justifyContent="center"
-              style={[
-                styles.headerButton,
-                {
-                  backgroundColor: isDarkMode ? separatorSecondary : opacity(separatorSecondary, 0.03),
-                  borderColor: isDarkMode ? separatorTertiary : opacity(separatorTertiary, 0.01),
-                },
-              ]}
-            >
-              <IconContainer opacity={0.8} size={34}>
-                <Bleed space={isDarkMode ? '12px' : undefined}>
-                  <RNText style={isDarkMode ? styles.headerTextShadow : undefined}>
-                    <Text
-                      align="center"
-                      color={isDarkMode ? 'label' : 'labelSecondary'}
-                      size="icon 17px"
-                      style={{ lineHeight: IS_IOS ? 33 : 17 }}
-                      weight="regular"
-                    >
-                      􀣌
-                    </Text>
-                  </RNText>
-                </Bleed>
-              </IconContainer>
-            </Box>
-          </ButtonPressAnimation>
-        }
+        /**
+         * TODO: Bring this back once we know what will go on the settings panel
+         */
+        // rightComponent={
+        //   <ButtonPressAnimation
+        //     onPress={() => {
+        //       // TODO: implement navigation to settings sheet
+        //     }}
+        //     scaleTo={0.8}
+        //   >
+        //     <Box
+        //       alignItems="center"
+        //       justifyContent="center"
+        //       style={[
+        //         styles.headerButton,
+        //         {
+        //           backgroundColor: isDarkMode ? separatorSecondary : opacity(separatorSecondary, 0.03),
+        //           borderColor: isDarkMode ? separatorTertiary : opacity(separatorTertiary, 0.01),
+        //         },
+        //       ]}
+        //     >
+        //       <IconContainer opacity={0.8} size={34}>
+        //         <Bleed space={isDarkMode ? '12px' : undefined}>
+        //           <RNText style={isDarkMode ? styles.headerTextShadow : undefined}>
+        //             <Text
+        //               align="center"
+        //               color={isDarkMode ? 'label' : 'labelSecondary'}
+        //               size="icon 17px"
+        //               style={{ lineHeight: IS_IOS ? 33 : 17 }}
+        //               weight="regular"
+        //             >
+        //               􀣌
+        //             </Text>
+        //           </RNText>
+        //         </Bleed>
+        //       </IconContainer>
+        //     </Box>
+        //   </ButtonPressAnimation>
+        // }
+        rightComponent={null}
         titleComponent={
           <Inset bottom={{ custom: IS_IOS ? 5.5 : 14 }}>
             <Text align="center" color="label" size="20pt" weight="heavy">

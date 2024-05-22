@@ -7,7 +7,6 @@ import Animated, {
   AnimatedStyle,
   DerivedValue,
   SharedValue,
-  dispatchCommand,
   runOnUI,
   useAnimatedProps,
   useAnimatedStyle,
@@ -37,6 +36,7 @@ import { ToolbarIcon } from '../ToolbarIcon';
 import { RAINBOW_HOME } from '../constants';
 import { getNameFromFormattedUrl, handleShareUrl } from '../utils';
 import { useSearchContext } from '../search/SearchContext';
+import showActionSheetWithOptions from '@/utils/actionsheet';
 
 export const SEARCH_BAR_HEIGHT = 48;
 const SEARCH_PLACEHOLDER_TEXT = i18n.t(i18n.l.dapp_browser.address_bar.input_placeholder);
@@ -74,85 +74,104 @@ const TheeDotMenu = function TheeDotMenu({
     }
   }, [addFavorite, formattedUrlValue, isFavorite, removeFavorite]);
 
-  const menuConfig = useMemo(
-    () => ({
-      menuTitle: '',
-      menuItems: [
-        {
-          actionKey: 'share',
-          actionTitle: 'Share',
-          icon: {
-            iconType: 'SYSTEM',
-            iconValue: 'square.and.arrow.up',
-          },
+  const menuConfig = useMemo(() => {
+    const menuItems = [
+      {
+        actionKey: 'share',
+        actionTitle: 'Share',
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'square.and.arrow.up',
         },
-        !activeTabInfo.value.isGoogleSearch
-          ? {
-              actionKey: 'favorite',
-              actionTitle: isFavorite ? 'Undo Favorite' : 'Favorite',
-              icon: {
-                iconType: 'SYSTEM',
-                iconValue: isFavorite ? 'star.slash' : 'star',
-              },
-            }
-          : {},
-        canGoForward
-          ? {
-              actionKey: 'forward',
-              actionTitle: 'Forward',
-              icon: {
-                iconType: 'SYSTEM',
-                iconValue: 'arrowshape.forward',
-              },
-            }
-          : {},
-        canGoBack
-          ? {
-              actionKey: 'back',
-              actionTitle: 'Back',
-              icon: {
-                iconType: 'SYSTEM',
-                iconValue: 'arrowshape.backward',
-              },
-            }
-          : {},
-      ],
-    }),
+      },
+    ];
 
-    [activeTabInfo, canGoBack, canGoForward, isFavorite]
+    const isGoogleSearch = tabUrl?.includes('google.com/search');
+    if (!isGoogleSearch) {
+      menuItems.push({
+        actionKey: 'favorite',
+        actionTitle: isFavorite ? i18n.t(i18n.l.dapp_browser.menus.undo_favorite) : i18n.t(i18n.l.dapp_browser.menus.favorite),
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: isFavorite ? 'star.slash' : 'star',
+        },
+      });
+    }
+    if (canGoForward) {
+      menuItems.push({
+        actionKey: 'forward',
+        actionTitle: i18n.t(i18n.l.dapp_browser.menus.forward),
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'arrowshape.forward',
+        },
+      });
+    }
+    if (canGoBack) {
+      menuItems.push({
+        actionKey: 'back',
+        actionTitle: i18n.t(i18n.l.dapp_browser.menus.back),
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'arrowshape.backward',
+        },
+      });
+    }
+
+    return {
+      menuTitle: '',
+      menuItems,
+    };
+  }, [canGoBack, canGoForward, isFavorite, tabUrl]);
+
+  const onPressMenuItem = useCallback(
+    async ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: 'share' | 'favorite' | 'back' | 'forward' } }) => {
+      haptics.selection();
+      if (actionKey === 'favorite') {
+        handleFavoritePress();
+      } else if (actionKey === 'back') {
+        goBack();
+      } else if (actionKey === 'forward') {
+        goForward();
+      } else if (actionKey === 'share') {
+        const url = activeTabInfo.value.url;
+        if (url) handleShareUrl(url);
+      }
+    },
+    [activeTabInfo, goBack, goForward, handleFavoritePress]
   );
 
-  const onPressMenuItem = async ({
-    nativeEvent: { actionKey },
-  }: {
-    nativeEvent: { actionKey: 'share' | 'favorite' | 'back' | 'forward' };
-  }) => {
-    haptics.selection();
-    if (actionKey === 'favorite') {
-      handleFavoritePress();
-    } else if (actionKey === 'back') {
-      goBack();
-    } else if (actionKey === 'forward') {
-      goForward();
-    } else {
-      const url = activeTabInfo.value.url;
-      if (url) handleShareUrl(url);
-    }
-  };
+  const onPressAndroid = useCallback(() => {
+    showActionSheetWithOptions(
+      {
+        ...{ cancelButtonIndex: menuConfig.menuItems.length - 1 },
+        options: menuConfig.menuItems.map(item => item?.actionTitle),
+      },
+      (buttonIndex: number) => {
+        onPressMenuItem({ nativeEvent: { actionKey: menuConfig.menuItems[buttonIndex]?.actionKey as any } });
+      }
+    );
+  }, [menuConfig, onPressMenuItem]);
 
   return (
-    <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem}>
-      <ToolbarIcon
-        color="label"
-        icon="􀍡"
-        onPress={() => {
-          return;
-        }}
-        side="left"
-        size="icon 17px"
-        weight="heavy"
-      />
-    </ContextMenuButton>
+    <>
+      {IS_IOS ? (
+        <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem}>
+          <ToolbarIcon
+            color="label"
+            icon="􀍡"
+            onPress={() => {
+              return;
+            }}
+            side="left"
+            size="icon 17px"
+            weight="heavy"
+          />
+        </ContextMenuButton>
+      ) : (
+        <ToolbarIcon color="label" icon="􀍡" onPress={onPressAndroid} side="left" size="icon 17px" weight="heavy" />
+      )}
+    </>
   );
 };
 export const SearchInput = React.memo(function SearchInput({
@@ -296,7 +315,7 @@ const AddressBar = React.memo(function AddressBar({
   // ⚠️ TODO: Refactor
   const handlePressGo = useCallback(
     (event: NativeSyntheticEvent<TextInputSubmitEditingEventData>) => {
-      dispatchCommand(inputRef, 'blur');
+      inputRef.current?.blur();
 
       const newUrl = event.nativeEvent.text;
       runOnUI(updateUrl)(newUrl);
@@ -509,7 +528,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   inputContentWrapper: {
-    height: SEARCH_BAR_HEIGHT,
+    height: IS_IOS ? SEARCH_BAR_HEIGHT : 60,
     position: 'absolute',
     width: '100%',
   },

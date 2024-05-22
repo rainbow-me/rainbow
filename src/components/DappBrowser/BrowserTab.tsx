@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 import { Freeze } from 'react-freeze';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import {
   PanGestureHandler,
   PanGestureHandlerGestureEvent,
@@ -14,7 +14,6 @@ import Animated, {
   FadeIn,
   SharedValue,
   runOnUI,
-  setNativeProps,
   useAnimatedGestureHandler,
   useAnimatedProps,
   useAnimatedStyle,
@@ -26,7 +25,7 @@ import { WebViewEvent } from 'react-native-webview/lib/WebViewTypes';
 import { appMessenger } from '@/browserMessaging/AppMessenger';
 import { useColorMode } from '@/design-system';
 import { IS_DEV, IS_IOS } from '@/env';
-import { Navigation } from '@/navigation';
+import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { Site } from '@/state/browserHistory';
@@ -58,7 +57,6 @@ import { normalizeUrlForRecents } from './utils';
 
 export const BrowserTab = React.memo(function BrowserTab({ addRecent, setLogo, setTitle, tabId }: BrowserTabProps) {
   const { isDarkMode } = useColorMode();
-  const isOnHomepage = useBrowserStore(state => state.getTabData?.(tabId)?.url === RAINBOW_HOME);
   const viewShotRef = useRef<ViewShot | null>(null);
 
   const {
@@ -77,38 +75,28 @@ export const BrowserTab = React.memo(function BrowserTab({ addRecent, setLogo, s
       {/* Need to fix some shadow performance issues - disabling shadows for now */}
       {/* <WebViewShadows gestureScale={gestureScale} isOnHomepage={isOnHomepage} tabIndex={tabIndex}> */}
 
-      <Animated.View style={zIndexAnimatedStyle}>
-        <Animated.View entering={FadeIn.duration(160)} style={[styles.webViewContainer, animatedWebViewStyle]}>
-          <Animated.View
-            style={[styles.webViewExpensiveStylesContainer, expensiveAnimatedWebViewStyles, animatedWebViewBackgroundColorStyle]}
-          >
-            <ViewShot options={TAB_SCREENSHOT_FILE_FORMAT} ref={viewShotRef}>
-              <View collapsable={false} style={styles.viewShotContainer}>
-                {isOnHomepage ? (
-                  <Homepage />
-                ) : (
-                  <FreezableWebView
-                    addRecent={addRecent}
-                    backgroundColor={backgroundColor}
-                    setLogo={setLogo}
-                    setTitle={setTitle}
-                    tabId={tabId}
-                    viewShotRef={viewShotRef}
-                  />
-                )}
-              </View>
-            </ViewShot>
-            <TabScreenshotContainer tabId={tabId} />
-            <WebViewBorder animatedTabIndex={animatedTabIndex} enabled={IS_IOS && isDarkMode && !isOnHomepage} />
-          </Animated.View>
-          <TabGestureHandlers
-            animatedTabIndex={animatedTabIndex}
-            gestureScale={gestureScale}
-            gestureX={gestureX}
-            isOnHomepage={isOnHomepage}
-            tabId={tabId}
-          />
+      <Animated.View style={[styles.webViewContainer, animatedWebViewStyle, zIndexAnimatedStyle]}>
+        <Animated.View style={[styles.webViewExpensiveStylesContainer, expensiveAnimatedWebViewStyles]}>
+          <ViewShot options={TAB_SCREENSHOT_FILE_FORMAT} ref={viewShotRef}>
+            <Animated.View
+              collapsable={false}
+              entering={FadeIn.duration(160)}
+              style={[styles.viewShotContainer, animatedWebViewBackgroundColorStyle]}
+            >
+              <HomepageOrWebView
+                addRecent={addRecent}
+                backgroundColor={backgroundColor}
+                setLogo={setLogo}
+                setTitle={setTitle}
+                tabId={tabId}
+                viewShotRef={viewShotRef}
+              />
+            </Animated.View>
+          </ViewShot>
+          <TabScreenshotContainer tabId={tabId} />
+          <WebViewBorder animatedTabIndex={animatedTabIndex} enabled={IS_IOS && isDarkMode} tabId={tabId} />
         </Animated.View>
+        <TabGestureHandlers animatedTabIndex={animatedTabIndex} gestureScale={gestureScale} gestureX={gestureX} tabId={tabId} />
       </Animated.View>
 
       {/* Need to fix some shadow performance issues - disabling shadows for now */}
@@ -116,6 +104,37 @@ export const BrowserTab = React.memo(function BrowserTab({ addRecent, setLogo, s
     </>
   );
 });
+
+const HomepageOrWebView = ({
+  addRecent,
+  backgroundColor,
+  setLogo,
+  setTitle,
+  tabId,
+  viewShotRef,
+}: {
+  addRecent: (recent: Site) => void;
+  backgroundColor: SharedValue<string>;
+  setLogo: (logoUrl: string, tabId: string) => void;
+  setTitle: (title: string, tabId: string) => void;
+  tabId: string;
+  viewShotRef: React.RefObject<ViewShot | null>;
+}) => {
+  const isOnHomepage = useBrowserStore(state => !state.getTabData?.(tabId)?.url || state.getTabData?.(tabId)?.url === RAINBOW_HOME);
+
+  return isOnHomepage ? (
+    <Homepage />
+  ) : (
+    <FreezableWebView
+      addRecent={addRecent}
+      backgroundColor={backgroundColor}
+      setLogo={setLogo}
+      setTitle={setTitle}
+      tabId={tabId}
+      viewShotRef={viewShotRef}
+    />
+  );
+};
 
 /**
  * ### `TabScreenshotContainer`
@@ -147,7 +166,7 @@ const TabScreenshot = React.memo(function TabScreenshot({
 
   return (
     // ⚠️ TODO: This works but we should figure out how to type this correctly to avoid this error
-    // @ts-expect-error: Doesn't pick up that its getting a source prop via animatedProps
+    // @ts-expect-error: Doesn't pick up that it's getting a source prop via animatedProps
     <AnimatedFasterImage animatedProps={animatedProps} style={[styles.screenshotContainerStyle, animatedStyle]} />
   );
 });
@@ -169,6 +188,7 @@ const FreezableWebViewComponent = ({
 }) => {
   const { activeTabRef, animatedActiveTabIndex, currentlyOpenTabIds, loadProgress, screenshotCaptureRef } = useBrowserContext();
   const { updateTabUrlWorklet } = useBrowserWorkletsContext();
+  const { setParams } = useNavigation();
 
   const currentMessengerRef = useRef<any>(null);
   const logoRef = useRef<string | null>(null);
@@ -299,6 +319,19 @@ const FreezableWebViewComponent = ({
     [tabId, updateTabUrlWorklet]
   );
 
+  const handleOnOpenWindow = useCallback(
+    (syntheticEvent: { nativeEvent: { targetUrl: string } }) => {
+      const { nativeEvent } = syntheticEvent;
+      const { targetUrl } = nativeEvent;
+      setParams({ url: targetUrl });
+    },
+    [setParams]
+  );
+
+  const handleOnContentProcessDidTerminate = useCallback(() => {
+    activeTabRef.current?.reload();
+  }, [activeTabRef]);
+
   // useLayoutEffect seems to more reliably assign the WebView ref correctly
   useLayoutEffect(() => {
     if (isActiveTab) {
@@ -330,6 +363,7 @@ const FreezableWebViewComponent = ({
   return (
     <Freeze freeze={!isActiveTab}>
       <TabWebView
+        onContentProcessDidTerminate={handleOnContentProcessDidTerminate}
         onError={handleOnError}
         onLoad={handleOnLoad}
         onLoadStart={handleOnLoadStart}
@@ -340,6 +374,7 @@ const FreezableWebViewComponent = ({
         onShouldStartLoadWithRequest={handleShouldStartLoadWithRequest}
         ref={webViewRef}
         source={{ uri: tabUrl }}
+        onOpenWindow={handleOnOpenWindow}
       />
     </Freeze>
   );
@@ -378,24 +413,21 @@ interface TabGestureHandlerProps {
   animatedTabIndex: SharedValue<number>;
   gestureScale: SharedValue<number>;
   gestureX: SharedValue<number>;
-  isOnHomepage: boolean;
   tabId: string;
 }
 
-const TabGestureHandlers = React.memo(function TabGestureHandlers({
-  animatedTabIndex,
-  gestureScale,
-  gestureX,
-  isOnHomepage,
-  tabId,
-}: TabGestureHandlerProps) {
-  const { currentlyBeingClosedTabIds, currentlyOpenTabIds, multipleTabsOpen, scrollViewRef, tabViewVisible } = useBrowserContext();
+const TabGestureHandlers = ({ animatedTabIndex, gestureScale, gestureX, tabId }: TabGestureHandlerProps) => {
+  const { animatedTabUrls, currentlyBeingClosedTabIds, currentlyOpenTabIds, multipleTabsOpen, tabViewVisible } = useBrowserContext();
   const { closeTabWorklet, toggleTabViewWorklet } = useBrowserWorkletsContext();
+
+  const tapHandlerRef = useRef();
 
   const animatedGestureHandlerStyle = useAnimatedStyle(() => {
     const shouldActivate = tabViewVisible.value;
-    return { display: shouldActivate ? 'flex' : 'none', pointerEvents: shouldActivate ? 'auto' : 'none' };
-  }, [tabViewVisible.value]);
+    return {
+      pointerEvents: shouldActivate ? 'auto' : 'none',
+    };
+  });
 
   const swipeToCloseTabGestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
     onStart: (_, ctx: { startX?: number | undefined }) => {
@@ -414,15 +446,19 @@ const TabGestureHandlers = React.memo(function TabGestureHandlers({
 
       const xDelta = e.absoluteX - ctx.startX;
       gestureX.value = xDelta;
-      setNativeProps(scrollViewRef, { scrollEnabled: false });
+    },
+    onFail: (_, ctx: { startX?: number | undefined }) => {
+      gestureScale.value = withTiming(1, TIMING_CONFIGS.tabPressConfig);
+      gestureX.value = withTiming(0, TIMING_CONFIGS.tabPressConfig);
+      ctx.startX = undefined;
     },
     onEnd: (e, ctx: { startX?: number | undefined }) => {
       const xDelta = e.absoluteX - (ctx.startX || 0);
-      setNativeProps(scrollViewRef, { scrollEnabled: tabViewVisible.value });
 
       const isBeyondDismissThreshold = xDelta < -(TAB_VIEW_COLUMN_WIDTH / 2 + 20) && e.velocityX <= 0;
       const isFastLeftwardSwipe = e.velocityX < -500;
-      const isEmptyState = !multipleTabsOpen.value && isOnHomepage;
+      const url = animatedTabUrls.value[tabId] || RAINBOW_HOME;
+      const isEmptyState = !multipleTabsOpen.value && url === RAINBOW_HOME;
 
       const shouldDismiss = tabViewVisible.value && !isEmptyState && (isBeyondDismissThreshold || isFastLeftwardSwipe);
 
@@ -472,55 +508,51 @@ const TabGestureHandlers = React.memo(function TabGestureHandlers({
         toggleTabViewWorklet(animatedTabIndex.value);
       }
     },
+    onCancel: () => {
+      return false;
+    },
+    onEnd: () => {
+      return false;
+    },
   });
 
   return (
     <>
-      <Animated.View style={animatedGestureHandlerStyle}>
+      <Animated.View style={[styles.gestureHandlersContainer, animatedGestureHandlerStyle]}>
         {/* @ts-expect-error Property 'children' does not exist on type */}
-        <TapGestureHandler maxDeltaX={10} maxDeltaY={10} onGestureEvent={pressTabGestureHandler} shouldCancelWhenOutside>
-          <Animated.View>
+        <PanGestureHandler
+          activeOffsetX={[-2, 2]}
+          failOffsetY={[-12, 12]}
+          maxPointers={1}
+          onGestureEvent={swipeToCloseTabGestureHandler}
+          waitFor={tapHandlerRef}
+        >
+          <Animated.View style={styles.gestureHandlersContainer}>
             {/* @ts-expect-error Property 'children' does not exist on type */}
-            <PanGestureHandler
-              activeOffsetX={[-5, 5]}
-              failOffsetY={[-10, 10]}
-              maxPointers={1}
-              onGestureEvent={swipeToCloseTabGestureHandler}
-              simultaneousHandlers={scrollViewRef}
+            <TapGestureHandler
+              maxDeltaX={10}
+              maxDeltaY={10}
+              onGestureEvent={pressTabGestureHandler}
+              ref={tapHandlerRef}
+              shouldCancelWhenOutside
             >
-              <Animated.View style={styles.gestureHandlersContainer}></Animated.View>
-            </PanGestureHandler>
+              <Animated.View style={styles.gestureHandlersContainer} />
+            </TapGestureHandler>
           </Animated.View>
-        </TapGestureHandler>
+        </PanGestureHandler>
       </Animated.View>
-      <CloseTabButton
-        animatedTabIndex={animatedTabIndex}
-        gestureScale={gestureScale}
-        gestureX={gestureX}
-        isOnHomepage={isOnHomepage}
-        tabId={tabId}
-      />
+      <CloseTabButton animatedTabIndex={animatedTabIndex} gestureScale={gestureScale} gestureX={gestureX} tabId={tabId} />
     </>
   );
-});
+};
 
 const styles = StyleSheet.create({
   backupScreenshotStyleOverrides: {
     zIndex: -1,
   },
-  centerAlign: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   gestureHandlersContainer: {
-    borderCurve: 'continuous',
     height: COLLAPSED_WEBVIEW_HEIGHT_UNSCALED,
-    left: 0,
-    position: 'absolute',
-    overflow: 'hidden',
-    top: 0,
     width: DEVICE_WIDTH,
-    zIndex: 50000,
   },
   screenshotContainerStyle: {
     height: WEBVIEW_HEIGHT,

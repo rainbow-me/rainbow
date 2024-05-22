@@ -12,6 +12,7 @@ interface BrowserHistoryStore {
   recents: Site[];
   addRecent: (site: Site) => void;
   hasVisited: (url: string) => boolean;
+  removeRecent: (url: string) => void;
 }
 
 const MAX_RECENT_SIZE = 1000;
@@ -33,6 +34,13 @@ export const useBrowserHistoryStore = createRainbowStore<BrowserHistoryStore>(
     hasVisited: (url: string) => {
       const state = get();
       return state.recents.some((site: { url: string }) => site.url === url);
+     });
+
+    removeRecent: (url: string) => {
+      set(state => {
+        const filteredRecents = state.recents.filter(site => site.url !== url);
+        return { recents: filteredRecents };
+      });
     },
   }),
   {

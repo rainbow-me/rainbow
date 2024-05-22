@@ -21,13 +21,7 @@ import { cloudBackupPasswordMinLength, isCloudBackupPasswordValid, normalizeAndr
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { useDimensions, useInitializeWallet } from '@/hooks';
 import { useNavigation } from '@/navigation';
-import {
-  addressSetSelected,
-  setAllWalletsWithIdsAsBackedUp,
-  setWalletBackedUp,
-  walletsLoadState,
-  walletsSetSelected,
-} from '@/redux/wallets';
+import { addressSetSelected, setAllWalletsWithIdsAsBackedUp, walletsLoadState, walletsSetSelected } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';

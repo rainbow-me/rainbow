@@ -124,8 +124,8 @@ export const event = {
   txRequestShownSheet: 'request.sheet.show',
   txRequestReject: 'request.rejected',
   txRequestApprove: 'request.approved',
-
-  // app browser events
+  addNewWalletGroupName: 'add_new_wallet_group.name',
+   // app browser events
   browserTrendingDappClicked: 'browser.trending_dapp_pressed',
 } as const;
 
@@ -470,6 +470,9 @@ export type EventProperties = {
     source: RequestSource;
     requestType: 'transaction' | 'signature';
     isHardwareWallet: boolean;
+  };
+  [event.addNewWalletGroupName]: {
+    name: string;
   };
   [event.browserTrendingDappClicked]: {
     name: string;

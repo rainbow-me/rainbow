@@ -60,6 +60,7 @@ export default function useENSRegistrationCosts({
   const duration = yearsDuration * timeUnits.secs.year;
   const name = inputName.replace(ENS_DOMAIN, '');
   const {
+    selectedGasFee,
     gasFeeParamsBySpeed: useGasGasFeeParamsBySpeed,
     currentBlockParams: useGasCurrentBlockParams,
     updateTxFee,
@@ -107,9 +108,11 @@ export default function useENSRegistrationCosts({
       ownerAddress: accountAddress,
       rentPrice: rentPriceInWei as string,
       salt,
+      selectedGasFee,
+      gasFeeParamsBySpeed: useGasGasFeeParamsBySpeed,
     });
     return newCommitGasLimit || '';
-  }, [accountAddress, duration, name, rentPriceInWei]);
+  }, [accountAddress, duration, name, rentPriceInWei, selectedGasFee, useGasGasFeeParamsBySpeed]);
 
   const getRegisterRapGasLimit = useCallback(async () => {
     const newRegisterRapGasLimit = await estimateENSRegisterSetRecordsAndNameGasLimit({
@@ -120,9 +123,21 @@ export default function useENSRegistrationCosts({
       rentPrice: registrationParameters?.rentPrice,
       salt: registrationParameters?.salt,
       setReverseRecord: sendReverseRecord,
+      selectedGasFee: selectedGasFee,
+      gasFeeParamsBySpeed: useGasGasFeeParamsBySpeed,
     });
     return newRegisterRapGasLimit || '';
-  }, [accountAddress, duration, name, registrationParameters?.rentPrice, registrationParameters?.salt, sendReverseRecord, changedRecords]);
+  }, [
+    duration,
+    name,
+    accountAddress,
+    changedRecords,
+    registrationParameters?.rentPrice,
+    registrationParameters?.salt,
+    sendReverseRecord,
+    selectedGasFee,
+    useGasGasFeeParamsBySpeed,
+  ]);
 
   const getSetRecordsGasLimit = useCallback(async () => {
     const newSetRecordsGasLimit = await estimateENSSetRecordsGasLimit({

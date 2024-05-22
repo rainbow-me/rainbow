@@ -119,7 +119,7 @@ export function createTransport<TPayload, TResponse>({ messenger, topic }: { mes
 const messengerProviderRequestFn = async (messenger: Messenger, request: ProviderRequestPayload) => {
   const hostSessions = useAppSessionsStore.getState().getActiveSession({ host: getDappHost(request.meta?.sender.url) || '' });
   const appSession =
-    hostSessions && hostSessions.sessions[hostSessions.activeSessionAddress]
+    hostSessions && hostSessions.sessions?.[hostSessions.activeSessionAddress]
       ? {
           address: hostSessions.activeSessionAddress,
           network: hostSessions.sessions[hostSessions.activeSessionAddress],
@@ -131,10 +131,14 @@ const messengerProviderRequestFn = async (messenger: Messenger, request: Provide
 
   if (request.method === 'eth_requestAccounts') {
     const dappData = await getDappMetadata({ url: getDappHost(request.meta?.sender.url) });
-
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore - chainId is not defined in the type
+    const chainId = request.params?.[0]?.chainId ? BigNumber.from(request.params?.[0]?.chainId).toNumber() : undefined;
     response = await handleDappBrowserConnectionPrompt({
       dappName: dappData?.appName || request.meta?.sender.title || '',
       dappUrl: request.meta?.sender.url || '',
+      chainId,
+      address: hostSessions?.activeSessionAddress || undefined,
     });
 
     useAppSessionsStore.getState().addSession({
@@ -172,7 +176,7 @@ const isSupportedChainId = (chainId: number | string) => {
 const getActiveSession = ({ host }: { host: string }): ActiveSession => {
   const hostSessions = useAppSessionsStore.getState().getActiveSession({ host });
   const appSession =
-    hostSessions && hostSessions.sessions[hostSessions.activeSessionAddress]
+    hostSessions && hostSessions.sessions?.[hostSessions.activeSessionAddress]
       ? {
           address: hostSessions.activeSessionAddress,
           network: hostSessions.sessions[hostSessions.activeSessionAddress],
