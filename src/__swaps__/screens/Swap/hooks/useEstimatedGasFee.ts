@@ -38,7 +38,7 @@ export function useSwapEstimatedGasFee() {
   const assetToSell = useSwapsStore(s => s.inputAsset);
   const quote = useSwapsStore(s => s.quote);
 
-  const { data: gasLimit } = useSwapEstimatedGasLimit({ chainId, quote, assetToSell });
+  const { data: gasLimit } = useSwapEstimatedGasLimit({ chainId, quote, assetToSell }, { enabled: !!quote });
 
   return useEstimatedGasFee({ network, gasLimit });
 }
