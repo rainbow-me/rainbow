@@ -18,7 +18,6 @@ import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { upperFirst } from 'lodash';
 import { formatNumber } from '../hooks/formatNumber';
 import {
-  CustomGasStoreState,
   getCustomGasSettings,
   setCustomGasPrice,
   setCustomMaxBaseFee,
@@ -167,17 +166,33 @@ function CurrentBaseFee() {
   );
 }
 
-const selectCustomGasSetting =
-  (chainId: ChainId, settingKey: 'gasPrice' | 'maxBaseFee' | 'maxPriorityFee') =>
-  (state: CustomGasStoreState): string => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    return state[chainId]?.[settingKey] || '0';
-  };
+function useCustomMaxBaseFee(chainId: ChainId) {
+  return useCustomGasStore(s => {
+    const chainSettings = s[chainId];
+    if (!chainSettings?.isEIP1559) return '0';
+    return chainSettings.maxBaseFee;
+  });
+}
+
+function useCustomMaxPriorityFee(chainId: ChainId) {
+  return useCustomGasStore(s => {
+    const chainSettings = s[chainId];
+    if (!chainSettings?.isEIP1559) return '0';
+    return chainSettings.maxPriorityFee;
+  });
+}
+
+function useCustomGasPrice(chainId: ChainId) {
+  return useCustomGasStore(s => {
+    const chainSettings = s[chainId];
+    if (chainSettings?.isEIP1559) return '0';
+    return chainSettings?.gasPrice || '0';
+  });
+}
 
 function EditMaxBaseFee() {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-  const maxBaseFee = useCustomGasStore(selectCustomGasSetting(chainId, 'maxBaseFee'));
+  const maxBaseFee = useCustomMaxBaseFee(chainId);
   const { navigate } = useNavigation();
 
   return (
@@ -194,7 +209,7 @@ function EditMaxBaseFee() {
 const MIN_FLASHBOTS_PRIORITY_FEE = gweiToWei('6');
 function EditPriorityFee() {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-  const maxPriorityFee = useCustomGasStore(selectCustomGasSetting(chainId, 'maxPriorityFee'));
+  const maxPriorityFee = useCustomMaxPriorityFee(chainId);
   const { navigate } = useNavigation();
 
   const isFlashbotsEnabled = useSwapsStore(s => s.flashbots);
@@ -214,7 +229,7 @@ function EditPriorityFee() {
 
 function EditGasPrice() {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-  const gasPrice = useCustomGasStore(selectCustomGasSetting(chainId, 'gasPrice'));
+  const gasPrice = useCustomGasPrice(chainId);
   const { navigate } = useNavigation();
 
   return (
