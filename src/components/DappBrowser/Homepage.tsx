@@ -153,10 +153,9 @@ const Card = React.memo(function Card({
   index?: number;
 }) {
   const { isDarkMode } = useColorMode();
-  const browserHistoryStore = useBrowserHistoryStore();
+  const hasVisited = useBrowserHistoryStore(state => state.hasVisited);
   const { dapps } = useDapps();
-
-  const dappClickedBefore = useMemo(() => browserHistoryStore.hasVisited(site.url), [browserHistoryStore, site.url]);
+  const dappClickedBefore = useMemo(() => hasVisited(site.url), [hasVisited, site.url]);
 
   const handlePress = useCallback(() => {
     {
@@ -204,7 +203,7 @@ const Card = React.memo(function Card({
 
   return (
     <Box>
-      <ButtonPressAnimation onPress={() => handlePress()} scaleTo={0.94}>
+      <ButtonPressAnimation onPress={handlePress} scaleTo={0.94}>
         <Box
           background="surfacePrimary"
           borderRadius={24}
