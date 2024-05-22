@@ -55,13 +55,14 @@ export function AnimatedSwitch({ value, onToggle, activeLabel, inactiveLabel, ..
 
   if (labelItem.value) {
     return (
-      <Inline alignVertical="center" horizontalSpace="6px">
-        <AnimatedText align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy" text={labelItem} />
-        {/* TODO: Small switch, so let's move this out to be the whole row */}
-        <GestureHandlerV1Button onPressWorklet={onToggle} style={[styles.containerStyles, containerStyles]} {...props}>
-          <Box style={[styles.circleStyles, circleStyles]} as={Animated.View} />
-        </GestureHandlerV1Button>
-      </Inline>
+      <GestureHandlerV1Button onPressWorklet={onToggle} {...props}>
+        <Inline alignVertical="center" horizontalSpace="6px">
+          <AnimatedText align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy" text={labelItem} />
+          <Box style={[styles.containerStyles, containerStyles]}>
+            <Box style={[styles.circleStyles, circleStyles]} as={Animated.View} />
+          </Box>
+        </Inline>
+      </GestureHandlerV1Button>
     );
   }
 

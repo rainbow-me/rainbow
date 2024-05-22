@@ -45,7 +45,6 @@ const RainbowFee = () => {
 
   const swapIndex = () => {
     'worklet';
-
     index.value = 1 - index.value;
   };
 

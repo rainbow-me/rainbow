@@ -15,14 +15,9 @@ export const useNativeAssetForChain = ({ inputAsset }: { inputAsset: SharedValue
 
   const getNativeAssetForNetwork = useCallback(
     (chainId: ChainId) => {
-      const updateNativeAsset = (asset: ParsedAddressAsset | undefined) => {
-        'worklet';
-        nativeAsset.value = asset;
-      };
-
       const network = ethereumUtils.getNetworkFromChainId(chainId);
       const asset = ethereumUtils.getNetworkNativeAsset(network);
-      runOnUI(updateNativeAsset)(asset);
+      nativeAsset.value = asset;
     },
     [nativeAsset]
   );
