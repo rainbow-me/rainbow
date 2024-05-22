@@ -3,8 +3,8 @@ import { supportedNativeCurrencies } from '@/references';
 
 const decimalSeparator = '.';
 export const formatNumber = (value: string, options?: { decimals?: number }) => {
-  if (!+value) return '0.00';
-  if (+value < 0.0001) return '<0.0001';
+  if (!+value) return `0${decimalSeparator}00`;
+  if (+value < 0.0001) return `<0${decimalSeparator}0001`;
 
   const [whole, fraction] = value.split(decimalSeparator);
   const decimals = options?.decimals;
@@ -12,11 +12,11 @@ export const formatNumber = (value: string, options?: { decimals?: number }) => 
 
   if (decimals) {
     if (decimals === 0) return whole;
-    return `${whole}.${paddedFraction.slice(0, decimals)}`;
+    return `${whole}${decimalSeparator}${paddedFraction.slice(0, decimals)}`;
   }
 
-  if (+whole > 0) return `${whole}.${paddedFraction.slice(0, 2)}`;
-  return `0.${paddedFraction.slice(0, 4)}`;
+  if (+whole > 0) return `${whole}${decimalSeparator}${paddedFraction.slice(0, 2)}`;
+  return `0${decimalSeparator}${paddedFraction.slice(0, 4)}`;
 };
 
 const getUserPreferredCurrency = () => {
