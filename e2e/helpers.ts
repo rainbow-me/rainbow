@@ -4,6 +4,7 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { expect, device, element, by, waitFor } from 'detox';
 import { parseEther } from '@ethersproject/units';
+import { WALLET_VARS } from './testVariables';
 
 const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 
@@ -36,7 +37,7 @@ export async function importWalletFlow() {
   await checkIfExists('import-sheet');
   await clearField('import-sheet-input');
   await device.disableSynchronization();
-  await typeText('import-sheet-input', process.env.TEST_SEEDS, false);
+  await typeText('import-sheet-input', WALLET_VARS.SEED_WALLET.PK, false);
   await checkIfElementHasString('import-sheet-button-label', 'Continue');
   await waitAndTap('import-sheet-button');
   await checkIfVisible('wallet-info-modal');
