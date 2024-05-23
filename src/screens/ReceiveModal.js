@@ -70,10 +70,9 @@ export default function ReceiveModal() {
     <SimpleSheet
       testID="receive-modal"
       backgroundColor={'rgba(0,0,0,0.85)'}
-      useAdditionalTopPadding={200}
+      useAdditionalTopPadding={IS_ANDROID ? 0 : 200}
       customHeight={IS_ANDROID ? deviceHeight - top : deviceHeight - sharedCoolModalTopOffset}
       scrollEnabled={false}
-      top={{ custom: safeAreaInsetValues.top + 6 }}
     >
       <Box alignItems="center" justifyContent="center" height="full" width="full">
         <QRWrapper>
