@@ -4,9 +4,21 @@ import { userAssetsStore } from '@/state/assets/userAssets';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { useSwapContext } from '../providers/swap-provider';
 import { SwapAssetType } from '@/__swaps__/types/swap';
+import { INITIAL_SLIDER_POSITION, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH } from '../constants';
 
 export const useCleanupOnExit = () => {
-  const { setAsset, internalSelectedOutputAsset, SwapInputsController } = useSwapContext();
+  const {
+    setAsset,
+    quote,
+    isFetching,
+    isQuoteStale,
+    sliderXPosition,
+    sliderPressProgress,
+    lastTypedInput,
+    focusedInput,
+    internalSelectedOutputAsset,
+    SwapInputsController,
+  } = useSwapContext();
 
   useEffect(() => {
     return () => {
@@ -27,8 +39,18 @@ export const useCleanupOnExit = () => {
       internalSelectedOutputAsset.value = null;
       swapsStore.setState({ outputAsset: null });
 
+      // reset input states
+      lastTypedInput.value = 'inputAmount';
+      focusedInput.value = 'inputAmount';
+
       // stop quote fetching interval if it was set
       SwapInputsController.quoteFetchingInterval.stop();
+      quote.value = null;
+      isFetching.value = false;
+      isQuoteStale.value = 0;
+
+      sliderXPosition.value = SLIDER_WIDTH * INITIAL_SLIDER_POSITION;
+      sliderPressProgress.value = SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
