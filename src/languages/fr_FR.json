@@ -91,7 +91,10 @@
         "no_backups_found": "Nous n'avons pas pu trouver votre sauvegarde précédente!",
         "cant_get_encrypted_data": "Nous n'avons pas pu accéder à votre sauvegarde pour le moment. Veuillez réessayer plus tard.",
         "missing_pin": "Une erreur s'est produite lors du traitement de votre code PIN. Veuillez réessayer plus tard.",
-        "generic": "Erreur lors de la tentative de sauvegarde. Code d'erreur: %{errorCodes}"
+        "generic": "Erreur lors de la tentative de sauvegarde. Code d'erreur: %{errorCodes}",
+        "no_keys_found": "Aucune clé trouvée. Veuillez réessayer.",
+        "backup_not_found": "Sauvegarde non trouvée. Veuillez réessayer.",
+        "no_account_found": "Impossible de récupérer les fichiers de sauvegarde. Assurez-vous d'être connecté."
       },
       "wrong_pin": "Le code PIN que vous avez entré était incorrect et nous ne pouvons pas faire de sauvegarde. Veuillez réessayer avec le bon code.",
       "already_backed_up": {
@@ -101,17 +104,56 @@
         "imported": "Importé",
         "imported_message": "Votre portefeuille a été importé"
       },
+      "wallet_group_title_plural": "Groupe de portefeuilles %{walletGroupNumber}",
+      "wallet_group_title_singular": "Groupe de portefeuille",
+      "private_key_plural": "Clé privée %{privateKeyNumber}",
+      "private_key_singluar": "Clé privée",
       "backup_deleted_successfully": "Sauvegardes supprimées avec succès",
       "cloud": {
+        "no_backups": "Aucune sauvegarde trouvée",
+        "failed_to_fetch_backups": "Échec de récupération des sauvegardes",
+        "retry": "Réessayer",
+        "fetching_backups": "Récupération des sauvegardes de %{cloudPlatformName}",
         "back_up_to_platform": "Sauvegarder sur %{cloudPlatformName}",
-        "manage_platform_backups": "Gérer %{cloudPlatformName} Sauvegardes",
+        "restore_from_platform": "Restaurer à partir de %{cloudPlatformName}",
+        "restoration_in_progress": "Restauration en cours",
+        "how_would_you_like_to_backup": "Comment souhaitez-vous sauvegarder votre portefeuille ?",
+        "manage_platform_backups": "Voir les sauvegardes de %{cloudPlatformName}",
+        "cloud_platform_backup_settings": "Paramètres de sauvegarde de %{cloudPlatformName}",
+        "cloud_backup": "Sauvegarde sur le cloud",
+        "backing_up": "Sauvegarde en cours...",
+        "backup_success": "Sauvegarde réussie",
+        "backup_failed": "Échec de la sauvegarde",
+        "manual_backup": "Sauvegarde manuelle",
+        "back_to_cloud_platform_now": "Sauvegardez maintenant sur %{cloudPlatform}",
+        "add_wallet_to_cloud_backups": "Ajouter ce portefeuille à votre sauvegarde sur le cloud ?",
+        "enable_cloud_backups": "Activer les sauvegardes sur le cloud",
+        "mayber_later": "Peut-être plus tard",
+        "recommended_for_beginners": "Recommandé pour les débutants.",
+        "choose_backup": "Choisissez la sauvegarde que vous souhaitez restaurer",
+        "backup_to_cloud_now": "Sauvegarder maintenant sur %{cloudPlatformName}",
+        "choose_backup_cloud_description": "Sauvegardez en toute sécurité votre portefeuille sur %{cloudPlatform} afin de pouvoir le restaurer si vous perdez votre appareil ou en obtenez un nouveau.",
+        "choose_backup_manual_description": "Sauvegardez votre portefeuille manuellement en enregistrant votre phrase secrète dans un endroit sécurisé.",
+        "enable_cloud_backups_description": "Si vous préférez sauvegarder vos portefeuilles manuellement, vous pouvez le faire ci-dessous.",
+        "latest_backup": "Dernière sauvegarde : %{date}",
+        "back_up_all_wallets_to_cloud": "Sauvegarder tous les portefeuilles sur %{cloudPlatformName}",
+        "most_recent_backup": "Sauvegarde la plus récente",
+        "out_of_date": "Non à jour",
+        "up_to_date": "À jour",
+        "older_backups": "Anciennes sauvegardes",
+        "no_older_backups": "Aucune ancienne sauvegarde",
+        "older_backups_title": "%{date} à %{time}",
         "password": {
-          "a_password_youll_remember": "Veuillez utiliser un mot de passe dont vous vous souviendrez.",
-          "backup_password": "Entrez le mot de passe de sauvegarde :)",
-          "choose_a_password": "Choisissez un mot de passe",
+          "a_password_youll_remember_part_one": "Ce mot de passe est",
+          "not": "non",
+          "a_password_youll_remember_part_two": "récupérable. Assurez-vous de choisir un mot de passe dont vous vous souviendrez.",
+          "backup_password": "Mot de passe",
+          "choose_a_password": "Créez un mot de passe pour sécuriser votre sauvegarde",
           "confirm_backup": "Confirmer la sauvegarde",
+          "enter_backup_password": "Entrez le mot de passe de sauvegarde",
+          "to_restore_from_backup": "Pour restaurer à partir de cette sauvegarde, entrez le mot de passe que vous avez créé lors de la sauvegarde",
           "confirm_password": "Confirmez le mot de passe",
-          "confirm_placeholder": "Confirmer le mot de passe",
+          "confirm_placeholder": "Réentrez le mot de passe",
           "it_cant_be_recovered": "Il ne peut pas être récupéré !",
           "minimum_characters": "Minimum %{minimumLength} caractères",
           "passwords_dont_match": "Les mots de passe ne correspondent pas",
@@ -133,22 +175,31 @@
       },
       "explainers": {
         "backup": "N'oubliez pas ce mot de passe! Il est distinct de votre mot de passe %{cloudPlatformName} , et vous devriez le sauvegarder dans un endroit sûr.\n\nVous en aurez besoin pour restaurer votre portefeuille à partir de la sauvegarde à l'avenir.",
+        "add_to_backups": "Vous avez plus d'un portefeuille à sauvegarder. Pour des raisons de sécurité, nous ne pouvons actuellement sauvegarder qu'un portefeuille à la fois.",
         "if_lose_cloud": "Si vous perdez cet appareil, vous pouvez récupérer votre sauvegarde de portefeuille crypté à partir de %{cloudPlatformName}.",
         "if_lose_imported": "Si vous perdez cet appareil, vous pouvez restaurer votre portefeuille avec la clé que vous avez initialement importée.",
         "if_lose_manual": "Si vous perdez cet appareil, vous pouvez restaurer votre portefeuille avec la phrase secrète que vous avez enregistrée."
       },
       "manual": {
-        "label": "Votre phrase secrète",
+        "backup_manually": "Sauvegarder manuellement",
+        "label": "Enregistrez votre %{typeName}",
+        "with_your_label": "Votre %{typeName}",
+        "backup_manually_now": "Souhaitez-vous sauvegarder ce portefeuille ?",
+        "back_up_now": "Sauvegarder maintenant",
+        "already_backed_up": "Déjà sauvegardé",
         "pkey": {
-          "confirm_save": "J'ai enregistré ma clé",
+          "confirm_save": "􀆅 J'ai enregistré ma clé",
           "save_them": "Copiez-le et sauvegardez-le dans votre gestionnaire de mots de passe, ou dans un autre endroit sûr.",
-          "these_keys": "C'est la clé de votre portefeuille!"
+          "these_keys": "C'est la clé de votre portefeuille!",
+          "description": "Quiconque possède cette clé peut accéder à l'ensemble de votre portefeuille ! Vous ne devez jamais la partager."
         },
         "seed": {
-          "confirm_save": "J'ai enregistré ces mots",
+          "confirm_save": "􀆅 J'ai enregistré ces mots",
           "save_them": "Notez-les ou enregistrez-les dans votre gestionnaire de mots de passe.",
-          "these_keys": "Ces mots sont les clés de votre portefeuille !"
-        }
+          "these_keys": "Ces mots sont les clés de votre portefeuille !",
+          "description": "Ces mots sont les clés de votre portefeuille. Assurez-vous de les sauvegarder dans un endroit sûr."
+        },
+        "create_new_secret_phrase": "Créer une nouvelle phrase secrète"
       },
       "needs_backup": {
         "back_up_your_wallet": "Sauvegardez votre portefeuille",
@@ -177,6 +228,15 @@
         "view_private_key": "Voir la clé privée",
         "view_secret_phrase": "Voir la phrase secrète",
         "you_need_to_authenticate": "Vous devez vous authentifier pour accéder à votre récupération %{typeName}"
+      },
+      "warning": {
+        "before_you_proceed": "Avant de continuer",
+        "title": "Voir votre %{typeName}",
+        "never_share": "Ne partagez jamais votre %{typeName} ou ne l'entrez dans des applications ou des sites web.",
+        "access": "Quiconque possède votre %{typeName} peut accéder à l'intégralité de votre portefeuille.",
+        "hide": "Assurez-vous que personne ne peut voir votre écran lorsque vous consultez votre %{typeName}.",
+        "support": "Le support Rainbow ne vous demandera jamais votre %{typeName}.",
+        "button": "􀎽 Montrer %{typeName}"
       }
     },
     "bluetooth": {
@@ -483,6 +543,9 @@
         "view_on": "Voir sur %{blockExplorerName}",
         "view_on_etherscan": "Voir sur Etherscan"
       },
+      "all_networks": "Tous les réseaux",
+      "filter_by_network": "Filtrer par réseau",
+      "my_tokens": "Mes jetons",
       "flip": "Inverser",
       "max": "Max",
       "movers": {
@@ -501,10 +564,32 @@
         "nothing_here": "Rien ici !",
         "nothing_to_send": "Rien à envoyer"
       },
+      "quote_errors": {
+        "501": "Aucun devis disponible",
+        "no_quote_available": "Aucun devis disponible",
+        "502": "Liquidité insuffisante",
+        "insufficient_liquidity": "Liquidité insuffisante",
+        "503": "Frais sur le jeton de transfert",
+        "fee_on_transfer": "Frais sur le jeton de transfert",
+        "504": "Aucun itinéraire trouvé",
+        "no_route_found": "Aucun itinéraire trouvé"
+      },
       "price_impact": {
+        "long_wait": {
+          "title": "Attente longue",
+          "description": "Env. %{time}"
+        },
+        "unknown_price": {
+          "title": "Valeur de marché inconnue",
+          "description": "Si vous décidez de continuer, assurez-vous d'être satisfait de la quantité indiquée."
+        },
         "losing_prefix": "Perdant",
         "small_market": "Petit marché",
-        "label": "Perte possible"
+        "small_market_try_smaller_amount": "Petit marché — essayez une plus petite quantité",
+        "you_are_losing": "Vous perdez %{priceImpact}",
+        "no_data": "Valeur de marché inconnue",
+        "label": "Perte possible",
+        "no_data_subtitle": "Si vous décidez de continuer, assurez-vous d'être satisfait de la quantité indiquée"
       },
       "source": {
         "rainbow": "Auto",
@@ -677,11 +762,14 @@
         "registrant": "Inscrit",
         "resolver": "Résolveur",
         "save_to_photos": "Enregistrer dans Photos",
+        "sell_for_x": "Vendre pour %{price}",
         "set_primary_name": "Définir comme mon nom ENS",
         "share_token_info": "Partagez les infos %{uniqueTokenName}",
         "showcase": "Vitrine",
         "toast_added_to_showcase": "Ajouté à la vitrine",
         "toast_removed_from_showcase": "Retiré de la vitrine",
+        "refreshing": "Actualisation des métadonnées...",
+        "reported": "Signalé comme spam",
         "twitter": "Twitter",
         "view_all_with_property": "Voir tout avec propriété",
         "view_collection": "Voir la Collection",
@@ -691,30 +779,37 @@
         "view_on_platform": "Voir sur %{platform}",
         "view_on_web": "Voir sur le Web",
         "refresh": "Rafraîchir les métadonnées",
+        "report": "Signaler comme spam",
         "hide": "Cacher",
         "unhide": "Afficher"
       }
     },
+    "app_icon_unlock_sheet": {
+      "smol_description": "Vous avez trouvé un Trésor ! Comme vous possédez un NFT Smolverse, vous avez débloqué une icône personnalisée !",
+      "smol_title": "Vous avez débloqué\nRainbow 􀆄 SMOL",
+      "optimism_description": "Pour célébrer les NFT sur Optimism, Rainbow et Optimism se sont associés pour offrir une icône d'application en édition limitée aux explorateurs optimistes comme vous !",
+      "optimism_title": "Vous avez débloqué\nRainbow 􀆄 Optimism",
+      "zora_description": "Une icône Rainbow Zorb en édition spéciale conçue pour des réflexions magiques.",
+      "zora_title": "Vous avez débloqué\nRainbow 􀆄 Zora",
+      "finiliar_description": "Une icône Rainbow Fini en édition spéciale qui vous permet de suivre le prix du gaz, beau temps ou mauvais temps.",
+      "finiliar_title": "Vous avez débloqué une\nRainbow Fini",
+      "golddoge_description": "Une icône Rainbow dorée en édition limitée pour célébrer le 17ème anniversaire de Kabosu.",
+      "golddoge_title": "Vous avez débloqué\nRainbow 􀆄 DOGE",
+      "raindoge_description": "Une icône Rainbow en édition limitée pour célébrer le 17ème anniversaire de Kabosu.",
+      "raindoge_title": "Vous avez débloqué\nRainbow 􀆄 The Doge NFT",
+      "pooly_description": "Une icône Rainbow Pooly en édition spéciale pour les supporters de la liberté.",
+      "pooly_title": "Vous avez débloqué une\nRainbow Pooly",
+      "zorb_description": "Une icône spéciale Rainbow Zorb :\n100% de ce que vous aimez, plus rapide et plus efficace.",
+      "zorb_title": "Vous avez débloqué\nRainbow Zorb Energy!",
+      "poolboy_description": "Une icône spéciale Rainbow x Poolsuite pour l'été onchain.",
+      "poolboy_title": "Vous avez débloqué le\nRainbow Poolboy!",
+      "adworld_description": "En tant que citoyen du monde Rainbow, vous pouvez maintenant débloquer une icône d'application AdWorld x Rainbow en édition spéciale.",
+      "adworld_title": "Bienvenue dans le monde Rainbow!",
+      "farcaster_description": "Notre icône d'application la plus ennuyeuse jamais créée, inspirée par le minimalisme fade de Warpcast.",
+      "farcaster_title": "Vous avez débloqué\nRainbowcast",
+      "button": "Snag the icon :)"
+    },
     "explain": {
-      "icon_unlock": {
-        "smol_text": "Vous avez trouvé un trésor! Parce que vous détenez un NFT Smolverse, vous avez débloqué une icône personnalisée!",
-        "optimism_text": "Pour célébrer les NFT sur Optimism, Rainbow et Optimism se sont associés pour lancer une icône d'application en édition limitée pour les explorateurs optimistes comme vous!",
-        "zora_text": "Une édition spéciale de l'icône Rainbow Zorb qui est faite pour une réflexion magique.",
-        "finiliar_text": "Une édition spéciale de l'icône Rainbow Fini qui vous tient à jour sur le prix du gaz, qu'il pleuve ou qu'il fasse beau.",
-        "finiliar_title": "Vous avez débloqué un\nRainbow Fini",
-        "golddoge_text": "Une édition limitée dorée de l'icône de l'application Rainbow pour célébrer le 17ème anniversaire de Kabosu.",
-        "raindoge_text": "Une édition limitée de l'icône de l'application Rainbow pour célébrer le 17ème anniversaire de Kabosu.",
-        "pooly_text": "Une édition spéciale de l'icône Rainbow Pooly pour les défenseurs de la liberté.",
-        "pooly_title": "Vous avez déverrouillé un\nRainbow Pooly",
-        "zorb_text": "Une édition spéciale Rainbow Zorb:\n100% de ce que vous aimez, plus rapide et plus efficient.",
-        "zorb_title": "Vous avez déverrouillé\nl'énergie Rainbow Zorb!",
-        "poolboy_text": "Une édition spéciale Rainbow x Icone Poolsuite pour l'été enchaîné. :)",
-        "poolboy_title": "Vous avez débloqué le\nRainbow Poolboy!",
-        "adworld_text": "En tant que citoyen du monde Rainbow, vous pouvez maintenant débloquer une édition spéciale\nIcône de l'application AdWorld x Rainbow.",
-        "adworld_title": "Bienvenue sur Rainbow World!",
-        "title": "Vous avez débloqué\nRainbow 􀆄 %{partner}",
-        "button": "Saisissez l'icône"
-      },
       "output_disabled": {
         "text": "Pour %{fromNetwork}, Rainbow ne peut pas préparer d'échanges en fonction du montant de %{outputToken} que vous souhaitez recevoir. \n\n Essayez d'entrer le montant de %{inputToken} que vous souhaitez échanger.",
         "title": "Entrez %{inputToken} À la place",
@@ -731,6 +826,9 @@
       "arbitrum": {
         "text": "Arbitrum est un réseau de couche 2 qui fonctionne sur Ethereum, permettant des transactions moins chères et plus rapides tout en bénéficiant toujours de la sécurité sous-jacente d'Ethereum.\n\nIl regroupe de nombreuses transactions dans un \"roll up\" avant de les envoyer pour résider de manière permanente sur Ethereum.",
         "title": "Qu'est-ce que Arbitrum?"
+      },
+      "add_to_backups": {
+        "title": "Sauvegarde de %{walletName}"
       },
       "backup": {
         "title": "Important"
@@ -781,7 +879,19 @@
       },
       "base": {
         "text": "Base est un réseau Layer 2 qui fonctionne sur Ethereum, permettant des transactions moins chères et plus rapides tout en bénéficiant toujours de la sécurité sous-jacente d'Ethereum.\n\nIl regroupe beaucoup de transactions ensemble dans un \"roll up\" avant de les envoyer pour demeurer de manière permanente sur Ethereum.",
-        "title": "Qu'est-ce que Base"
+        "title": "Qu'est-ce que Base?"
+      },
+      "avalanche": {
+        "text": "Avalanche est une sidechain, un réseau distinct qui fonctionne parallèlement à Ethereum et qui est compatible avec celui-ci.\n\nElle permet des transactions moins chères et plus rapides, mais contrairement aux réseaux de couche 2, Avalanche possède ses propres mécanismes de sécurité et de consensus qui diffèrent d'Ethereum.",
+        "title": "Qu'est-ce qu'Avalanche?"
+      },
+      "degen": {
+        "text": "Degen Chain est un réseau Layer 3 qui fonctionne au-dessus d'Arbitrum et d'Ethereum, offrant des transactions incroyablement rapides et bon marché libellées dans le token communautaire Farcaster $degen.",
+        "title": "Qu'est-ce que Degen Chain?"
+      },
+      "blast": {
+        "text": "Blast est un réseau de couche 2 qui fonctionne sur Ethereum, permettant des transactions moins chères et plus rapides tout en bénéficiant toujours de la sécurité sous-jacente d'Ethereum.\n\nIl regroupe de nombreuses transactions ensemble dans un \"roll up\" avant de les envoyer vivre de manière permanente sur Ethereum.",
+        "title": "Qu'est-ce que Blast?"
       },
       "zora": {
         "text": "Zora est un réseau Layer 2 qui fonctionne sur Ethereum, permettant des transactions moins chères et plus rapides tout en bénéficiant toujours de la sécurité sous-jacente d'Ethereum.\n\nIl regroupe beaucoup de transactions ensemble dans un \"roll up\" avant de les envoyer pour demeurer de manière permanente sur Ethereum.",
@@ -906,6 +1016,7 @@
       }
     },
     "gas": {
+      "gas_settings": "Paramètres de gaz",
       "card": {
         "falling": "En baisse",
         "rising": "En hausse",
@@ -1091,7 +1202,7 @@
             "manual": "Backed up manually :)"
           },
           "description": "Ne perdez pas votre portefeuille! Enregistrez une copie cryptée sur %{cloudPlatformName}",
-          "title": "Sauvegardez votre portefeuille"
+          "title": "Comment souhaitez-vous sauvegarder votre portefeuille ?"
         },
         "existing": {
           "button": {
@@ -1214,6 +1325,7 @@
         "offer_expired": "Offre expirée",
         "expired": "Expiré",
         "hold_to_sell": "Maintenir pour vendre",
+        "selling": "Vente",
         "error": {
           "title": "Erreur de vente de NFT",
           "message": "Veuillez contacter le support de Rainbow pour obtenir de l'aide."
@@ -1330,6 +1442,7 @@
         "view_weekly_earnings_counted": "Gains hebdomadaires comptés",
         "view_weekly_earnings_close_button": "Fermer",
         "view_weekly_earnings_retroactive_points": "Points rétroactifs",
+        "view_weekly_earnings_bonus_points": "Points bonus",
         "view_weekly_earnings_activity": "Votre activité",
         "view_weekly_earnings_referral_activity": "Activité de parrainage",
         "view_weekly_earnings_total_earnings": "Total",
@@ -1700,16 +1813,35 @@
       "no_thanks": "Non merci"
     },
     "settings": {
-      "backup": "Sauvegarder",
+      "backup": "Portefeuilles & Sauvegarde",
+      "delete_backups": "Supprimer toutes les sauvegardes %{cloudPlatform}",
+      "confirm_delete_backups": "Confirmer et supprimer les sauvegardes",
+      "manage_backups": "Gérer les sauvegardes %{cloudPlatformOrEmail}",
+      "confirm_delete_backups_description": "Êtes-vous sûr de vouloir supprimer vos sauvegardes de portefeuille %{cloudPlatform}?",
       "google_account_used": "Compte Google utilisé pour les sauvegardes",
       "backup_switch_google_account": "Changer de compte Google",
       "backup_sign_out": "Se déconnecter",
       "backup_sign_in": "Se connecter",
       "backup_loading": "Chargement...",
       "backup_google_account": "Compte Google",
-      "currency": "Devise",
+      "currency": {
+        "title": "Devise",
+        "ETH": "Ethereum",
+        "USD": "Dollar des États-Unis",
+        "EUR": "Euro",
+        "GBP": "Livre britannique",
+        "AUD": "Dollar australien",
+        "CNY": "Yuan chinois",
+        "KRW": "Won sud-coréen",
+        "JPY": "Yen japonais",
+        "RUB": "Rouble russe",
+        "INR": "Roupie indienne",
+        "TRY": "Livre turque",
+        "CAD": "Dollar canadien",
+        "NZD": "Dollar néo-zélandais",
+        "ZAR": "Rand sud-africain"
+      },
       "app_icon": "Icône de l'application",
-      "dev": "Dév",
       "developer": "Paramètres du développeur",
       "done": "Terminé",
       "feedback_and_reports": "Retour & Rapports de bugs :)",
@@ -1784,6 +1916,22 @@
       "too_many_signup_request": "Nous avons détecté trop de demandes d’inscription, veuillez réessayer plus tard"
     },
     "swap": {
+      "aggregators": {
+        "rainbow": "Rainbow"
+      },
+      "tokens_input": {
+        "tokens": "Jetons",
+        "sort": "Trier",
+        "available": "disponible",
+        "token_balance": "Solde du jeton",
+        "networks": "Réseaux",
+        "filter_by_network": "Filtrer par réseau",
+        "switch_networks": "Changer de réseau",
+        "nothing_found": "Rien trouvé",
+        "nothing_found_description": "Certains tokens n’ont pas assez de liquidités pour effectuer un %{action}réussi.",
+        "nothing_found_description_l2": "Certains tokens n'ont pas assez de liquidités en couche 2 pour effectuer un %{action}réussi.",
+        "output_quotes_disabled": "Cottages de sortie désactivées"
+      },
       "choose_token": "Choisissez un Token",
       "gas": {
         "custom": "Personnalisé",
@@ -1805,6 +1953,7 @@
         "withdraw": "Retirer",
         "withdraw_symbol": "Retirer %{symbol}"
       },
+      "unknown": "Inconnue",
       "warning": {
         "cost": {
           "are_you_sure_title": "Êtes-vous sûr?",
@@ -1825,6 +1974,15 @@
         }
       }
     },
+    "token_search": {
+      "section_header": {
+        "favorites": "Favoris",
+        "bridge": "Pont",
+        "verified": "Vérifié",
+        "unverified": "Non vérifié",
+        "on_other_networks": "Sur d'autres réseaux"
+      }
+    },
     "transactions": {
       "actions": {
         "addToContacts": "Ajouter aux contacts",
@@ -1837,35 +1995,139 @@
       "pending_title": "En attente",
       "dropped_title": "Abandonné",
       "type": {
-        "approved": "Approuvé",
-        "approving": "Approuvant",
-        "bridging": "Pontage",
-        "bridged": "Relié",
-        "cancelled": "Annulé",
-        "cancelling": "Annulation",
-        "contract interaction": "Interaction de contrat",
-        "deposited": "Déposé",
-        "depositing": "Dépôt",
-        "dropped": "Abandonné",
-        "failed": "Échoué",
-        "purchased": "Achété",
-        "purchasing": "Achète",
-        "minting": "Création",
-        "minted": "Créé",
-        "received": "Reçu",
-        "receiving": "Récevant",
-        "self": "Soi",
-        "sending": "Envoi",
-        "sent": "Envoyé",
-        "speeding up": "Accélérant",
-        "selling": "Vente",
-        "sold": "Vendu",
-        "swapped": "Échangé",
-        "swapping": "Échangeant",
-        "unknown": "Inconnue",
-        "withdrawing": "Retrait",
-        "withdrew": "Retiré"
+        "savings": "Économies",
+        "cancelled": "Transaction annulée",
+        "burn": {
+          "pending": "Brûlage en cours",
+          "confirmed": "Brûlé",
+          "failed": "Échec du brûlage"
+        },
+        "cancel": {
+          "pending": "Annulation en cours",
+          "confirmed": "Annulée",
+          "failed": "Échec de l'annulation"
+        },
+        "speed_up": {
+          "pending": "Accélération",
+          "confirmed": "Accéléré",
+          "failed": "Échec de l'accélération"
+        },
+        "send": {
+          "pending": "Envoi",
+          "confirmed": "Envoyé",
+          "failed": "Échec de l'envoi"
+        },
+        "receive": {
+          "pending": "",
+          "confirmed": "Reçu",
+          "failed": ""
+        },
+        "withdraw": {
+          "pending": "Retrait en cours",
+          "confirmed": "Retiré",
+          "failed": "Échec du retrait"
+        },
+        "deposit": {
+          "pending": "Dépôt en cours",
+          "confirmed": "Déposé",
+          "failed": "Échec du dépôt"
+        },
+        "mint": {
+          "pending": "Frappage en cours",
+          "confirmed": "Créé",
+          "failed": "Échec du frappage"
+        },
+        "approve": {
+          "pending": "Approbation en cours",
+          "confirmed": "Approuvé",
+          "failed": "Échec de l'approbation"
+        },
+        "contract_interaction": {
+          "pending": "Interaction en attente",
+          "confirmed": "Interagi",
+          "failed": "Échec de l'interaction"
+        },
+        "swap": {
+          "pending": "Échange en cours",
+          "confirmed": "Échangé",
+          "failed": "Échec de l'échange"
+        },
+        "borrow": {
+          "pending": "Emprunter",
+          "confirmed": "Emprunté",
+          "failed": "Échec d'emprunt"
+        },
+        "claim": {
+          "pending": "Réclamer",
+          "confirmed": "Réclamé",
+          "failed": "Échec de réclamation"
+        },
+        "deployment": {
+          "pending": "Déployer",
+          "confirmed": "Déployé",
+          "failed": "Échec du déploiement"
+        },
+        "repay": {
+          "pending": "Rembourser",
+          "confirmed": "Remboursé",
+          "failed": "Échec du remboursement"
+        },
+        "stake": {
+          "pending": "Mise",
+          "confirmed": "Misé",
+          "failed": "Échec de la mise"
+        },
+        "unstake": {
+          "pending": "Retrait de la mise",
+          "confirmed": "Retrait effectué",
+          "failed": "Échec du retrait de la mise"
+        },
+        "purchase": {
+          "pending": "En cours d'achat",
+          "confirmed": "Achété",
+          "failed": "Achat échoué"
+        },
+        "revoke": {
+          "pending": "Révocation en cours",
+          "confirmed": "Révoqué",
+          "failed": "Échec de révocation"
+        },
+        "sale": {
+          "pending": "Vente",
+          "confirmed": "Vendu",
+          "failed": "Échec de la vente"
+        },
+        "bridge": {
+          "pending": "Crée un pont en cours",
+          "confirmed": "Relié",
+          "failed": "Échec de pontage"
+        },
+        "airdrop": {
+          "pending": "",
+          "confirmed": "Airdropped",
+          "failed": ""
+        },
+        "wrap": {
+          "pending": "Emballage en cours",
+          "confirmed": "Emballé",
+          "failed": "Échec de l'emballage"
+        },
+        "unwrap": {
+          "pending": "Désenveloppement en cours",
+          "confirmed": "Désenveloppé",
+          "failed": "Déballage échoué"
+        },
+        "bid": {
+          "pending": "Enchérissant",
+          "confirmed": "Offre",
+          "failed": "Offre échouée"
+        }
       },
+      "approvals": {
+        "no_allowance": "Pas d'Allocation",
+        "unlimited": "Illimité"
+      },
+      "no_value": "Aucune valeur",
       "savings": "Économies",
       "signed": "Signé",
       "contract_interaction": "Interaction de contrat",
@@ -1877,6 +2139,7 @@
       "to": "À",
       "value": "Value :)",
       "hash": "Tx Hash",
+      "you": "Vous",
       "network_fee": "Frais de réseau",
       "hash_copied": "􀁣 Hash de transaction copié",
       "address_copied": "􀁣 Adresse copiée",
@@ -1960,6 +2223,9 @@
       "copied": "Copié \"%{copiedText}\"",
       "invalid_paste": "Vous ne pouvez pas coller cela ici"
     },
+    "tokens_tab": {
+      "unknown_token": "Jeton Inconnu"
+    },
     "hardware_wallets": {
       "pair_your_nano": "Pair your Nano X :)",
       "connect_your_ledger": "Connectez votre Ledger Nano X à Rainbow via Bluetooth. Si c'est votre première fois, Rainbow demandera l'accès au Bluetooth.",
@@ -2015,6 +2281,8 @@
         "delete_confirm": "Êtes-vous sûr de vouloir supprimer ce portefeuille?",
         "edit": "Modifier le portefeuille",
         "hide": "Cacher",
+        "create_wallet_group": "Créer un groupe de portefeuilles",
+        "create_wallet_group_placeholder": "Groupe de portefeuilles %{numWalletGroups}",
         "import_wallet": "Ajouter un portefeuille",
         "input": "Entrée de la transaction",
         "notifications": {
@@ -2112,15 +2380,31 @@
         "please_seed_phrase": "Veuillez vous authentifier pour voir la clé privée"
       },
       "back_ups": {
-        "and_1_more_wallet": "Et 1 autre portefeuille",
+        "wallet_count": "%{numAccounts} portefeuille",
+        "wallet_count_gt_one": "%{numAccounts} portefeuilles",
         "and_more_wallets": "Et %{moreWalletCount} autres portefeuilles",
+        "create_new_wallet": "Créer un nouveau portefeuille",
+        "create_new_wallet_description": "Créer un nouveau portefeuille en utilisant cette phrase secrète",
         "backed_up": "Sauvegardé",
         "backed_up_manually": "Sauvegardé manuellement",
-        "imported": "Importé"
+        "imported": "Importé",
+        "cloud_backup_title": "Sauvegarde sur le cloud",
+        "not_backed_up": "Non sauvegardé",
+        "not_backed_up_to_cloud_message": "Ce %{backupType} n'est pas dans votre dernière sauvegarde. Sauvegardez maintenant sur %{cloudPlatform} afin de pouvoir le restaurer si vous perdez votre appareil ou si vous en obtenez un nouveau.",
+        "not_backed_up_message": "Ce %{backupType} n'est pas sauvegardé. Sauvegardez maintenant afin de pouvoir le restaurer si vous perdez votre appareil ou si vous en obtenez un nouveau.",
+        "backed_up_message": "Vous avez choisi de sauvegarder ce %{backupType} vous-même. Assurez-vous de l'avoir stocké dans un endroit sécurisé.",
+        "backed_up_to_cloud_message": "Tous vos portefeuilles sont sauvegardés sur %{cloudPlatform}. Si vous perdez votre appareil ou en obtenez un nouveau, vous pourrez récupérer les portefeuilles listés ci-dessous.",
+        "cloud_backup_out_of_date_description": "Certains de vos portefeuilles ne sont pas dans votre dernière sauvegarde. Sauvegardez maintenant sur %{cloudPlatform} afin de pouvoir les restaurer si vous perdez votre appareil ou en obtenez un nouveau.",
+        "cloud_backup_description": "Sauvegardez vos portefeuilles de manière sécurisée sur %{cloudPlatform} afin de pouvoir les restaurer si vous perdez votre appareil ou en obtenez un nouveau.",
+        "cloud_backup_link": "En savoir plus…",
+        "view_secret_phrase": "Afficher la phrase secrète",
+        "view_private_key": "Afficher la clé privée",
+        "copy_wallet_address": "Copier l'adresse du portefeuille"
       },
       "balance_title": "Solde",
       "buy": "Acheter",
       "change_wallet": {
+        "no_balance": "Pas de solde",
         "balance_eth": "%{balanceEth} ETH",
         "watching": "Regarder",
         "ledger": "Ledger"
@@ -2197,9 +2481,8 @@
         "add_wallet_sheet": {
           "options": {
             "cloud": {
-              "description_android": "Si vous avez déjà sauvegardé votre portefeuille sur Google Drive, appuyez ici pour le restaurer.",
-              "description_ios_one_wallet": "Vous avez 1 portefeuille sauvegardé",
-              "description_ios_multiple_wallets": "Vous avez sauvegardé %{walletCount} portefeuilles",
+              "description_restore_sheet": "Si vous avez précédemment sauvegardé sur %{cloudPlatform}, appuyez ici pour le restaurer.",
+              "description_with_latest_backup_date": "Dernière sauvegarde %{fromNow} à %{time}",
               "title": "Restaurer depuis %{platform}",
               "no_backups": "Aucune sauvegarde trouvée",
               "no_google_backups": "Nous n'avons trouvé aucune sauvegarde sur Google Drive. Assurez-vous d'être connecté au bon compte."
@@ -2213,12 +2496,12 @@
               "title": "Connectez votre portefeuille matériel"
             },
             "seed": {
-              "description": "Utilisez votre phrase de récupération de Rainbow ou d'un autre portefeuille crypto",
-              "title": "Restaurez avec une phrase de récupération ou une clé privée"
+              "description": "Utilisez votre phrase secrète de Rainbow, MetaMask ou un autre portefeuille",
+              "title": "Importer une phrase secrète ou une clé privée"
             },
             "watch": {
-              "description": "Surveillez une adresse publique ou un nom ENS",
-              "title": "Surveillez une adresse Ethereum"
+              "description": "Surveiller un nom ENS ou une adresse publique",
+              "title": "Surveiller un portefeuille"
             }
           },
           "first_wallet": {
@@ -2331,7 +2614,7 @@
           "insufficient_funds": "Oh non! Le prix du gaz a changé et vous n'avez plus assez de fonds pour cette transaction. Veuillez réessayer avec un montant inférieur.",
           "generic": "Oh non! Il y a eu un problème lors de la soumission de la transaction. Veuillez réessayer."
         },
-        "complete_checks": "Vérifications complètes",
+        "complete_check": "Effectuer les vérifications",
         "ens_configuration_options": "Options de configuration ENS",
         "confirm": "Confirmer la transaction",
         "max": "Max",
@@ -2369,6 +2652,7 @@
       }
     },
     "walletconnect": {
+      "requests": "Demandes",
       "wants_to_connect": "veut se connecter à votre portefeuille",
       "wants_to_connect_to_network": "veut se connecter au %{network} réseau",
       "available_networks": "Réseaux disponibles",
@@ -2414,6 +2698,7 @@
       },
       "menu_options": {
         "disconnect": "Déconnecter",
+        "connect": "Connecter",
         "switch_wallet": "Changer de portefeuille",
         "switch_network": "Changer de réseau",
         "available_networks": "Réseaux disponibles"
@@ -2516,6 +2801,54 @@
     "warning": {
       "user_is_offline": "Connexion hors ligne, veuillez vérifier votre connexion internet",
       "user_is_online": "Connecté! Vous êtes de retour en ligne"
+    },
+    "dapp_browser": {
+      "address_bar": {
+        "input_placeholder": "Rechercher ou entrer un site web"
+      },
+      "control_panel": {
+        "connected": "Connecté",
+        "not_connected": "Non connecté",
+        "switch_wallet": "Changer de portefeuille",
+        "switch_network": "Changer de réseau",
+        "disconnect": "Déconnecter",
+        "favorite": "Favori",
+        "undo_favorite": "Annuler",
+        "connect": "Connecter",
+        "swap": "Échanger",
+        "bridge": "Pont",
+        "more": "Plus"
+      },
+      "error": {
+        "title": "Quelque chose a mal tourné",
+        "default_msg": "Une erreur s'est produite lors du chargement de la page. Veuillez réessayer."
+      },
+      "no_wc_needed": {
+        "title": "Oups!",
+        "description": "Il semble que vous essayez de vous connecter à cette dapp via WalletConnect. Cela n'est plus nécessaire avec le navigateur intégré de Rainbow. Revenez en arrière et choisissez \"MetaMask\" et tout devrait fonctionner correctement.",
+        "cta": "Compris"
+      },
+      "provider_error": {
+        "unsupported_chain": "Chaîne non prise en charge",
+        "no_active_session": "Vous devez vous connecter à la dapp avant d'essayer de changer de chaîne"
+      },
+      "homepage": {
+        "trending": "Tendances",
+        "recents": "Récents",
+        "favorites": "Favoris"
+      },
+      "search": {
+        "find_apps_and_more": "Trouver des applications et plus",
+        "more_results": "Plus de résultats",
+        "search": "Recherche"
+      },
+      "menus": {
+        "favorite": "Favori",
+        "undo_favorite": "Annuler le favori",
+        "remove": "Retirer",
+        "forward": "Avancer",
+        "back": "Retour"
+      }
     }
   }
 }
