@@ -769,6 +769,8 @@ export const SignTransactionSheet = () => {
 
   const expandedCardBottomInset = EXPANDED_CARD_BOTTOM_INSET + (isMessageRequest ? 0 : GAS_BUTTON_SPACE);
 
+  const canPressConfirm = isMessageRequest || (!!walletBalance?.isLoaded && !!currentNetwork && !!selectedGasFee?.gasFee?.estimatedFee);
+
   return (
     // @ts-expect-error Property 'children' does not exist on type
     <PanGestureHandler enabled={IS_IOS}>
@@ -950,7 +952,7 @@ export const SignTransactionSheet = () => {
                     }
                     newShadows
                     onPress={submitFn}
-                    disabled={!walletBalance?.isLoaded || !selectedGasFee?.gasFee?.estimatedFee}
+                    disabled={!canPressConfirm}
                     size="big"
                     weight="heavy"
                     {...((simulationError || (simulationScanResult && simulationScanResult !== TransactionScanResultType.Ok)) && {
