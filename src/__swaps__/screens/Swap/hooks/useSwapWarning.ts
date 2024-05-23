@@ -178,6 +178,7 @@ export const useSwapWarning = ({
     }),
     (current, previous) => {
       if (!current.inputAsset || !current.outputAsset) {
+        updateWarning({ type: SwapWarningType.none, title: '', color: colorMap[SwapWarningType.none], icon: '', subtitle: '' });
         return;
       }
 
