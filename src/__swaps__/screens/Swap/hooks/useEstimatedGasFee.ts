@@ -22,7 +22,7 @@ export function useEstimatedGasFee({
 
   if (!gasLimit || !gasSettings || !nativeNetworkAsset) return 'Loading...'; // TODO: loading state
 
-  const amount = gasSettings.isEIP1559 ? add(gasSettings.maxBaseFee, gasSettings.maxPriorityFee) : gasSettings.gasPrice;
+  const amount = gasSettings.isEIP1559 ? add(gasSettings.maxBaseFee, gasSettings.maxPriorityFee) : '0'; // gasSettings.gasPrice;
 
   const totalWei = multiply(gasLimit, amount);
   const nativePrice = nativeNetworkAsset.price.value?.toString();

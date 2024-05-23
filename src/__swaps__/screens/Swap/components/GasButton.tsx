@@ -68,7 +68,7 @@ const GasSpeedPagerCentered = styled(Centered).attrs(() => ({
 function getEstimatedFeeRangeInGwei(gasSettings: GasSettings | undefined, currentBaseFee?: string | undefined) {
   if (!gasSettings) return undefined;
 
-  if (!gasSettings.isEIP1559) return `${formatNumber(weiToGwei(gasSettings.gasPrice))} Gwei`;
+  // if (!gasSettings.isEIP1559) return `${formatNumber(weiToGwei(gasSettings.gasPrice))} Gwei`;
 
   const { maxBaseFee, maxPriorityFee } = gasSettings;
   return `${formatNumber(weiToGwei(add(maxBaseFee, maxPriorityFee)))} Gwei`;

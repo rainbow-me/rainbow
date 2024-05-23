@@ -286,6 +286,7 @@ export function onOpenGasPanel() {
 
 function saveCustomGasSettings() {
   const unsaved = useUnsavedCustomGasStore.getState();
+  console.log({ unsaved });
   if (!unsaved || unsaved.type === 'suggestion') return;
 
   const { inputAsset } = useSwapsStore.getState();
