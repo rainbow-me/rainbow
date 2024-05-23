@@ -91,7 +91,10 @@
         "no_backups_found": "Önceki yedeğinizi bulamadık!",
         "cant_get_encrypted_data": "Bu sefer yedeğinize erişemedik. Lütfen daha sonra tekrar deneyin.",
         "missing_pin": "PIN kodunuz işlenirken bir şeyler yanlış gitti. Lütfen daha sonra tekrar deneyin.",
-        "generic": "Yedekleme yapmaya çalışırken hata. Hata kodu: %{errorCodes}"
+        "generic": "Yedekleme yapmaya çalışırken hata. Hata kodu: %{errorCodes}",
+        "no_keys_found": "Anahtar bulunamadı. Lütfen tekrar deneyin.",
+        "backup_not_found": "Yedek bulunamadı. Lütfen tekrar deneyin.",
+        "no_account_found": "Yedek dosyaları alınamadı. Giriş yaptığınızdan emin olun."
       },
       "wrong_pin": "Girdiğiniz PIN kodu yanlış ve bir yedekleme yapamıyoruz. Lütfen doğru kodla tekrar deneyin.",
       "already_backed_up": {
@@ -101,17 +104,56 @@
         "imported": "İçe Aktarıldı",
         "imported_message": "Cüzdanınız içe aktarıldı"
       },
+      "wallet_group_title_plural": "Cüzdan Grubu %{walletGroupNumber}",
+      "wallet_group_title_singular": "Cüzdan Grubu",
+      "private_key_plural": "Private Key %{privateKeyNumber}",
+      "private_key_singluar": "Özel Anahtar",
       "backup_deleted_successfully": "Yedeklemeler Başarıyla Silindi",
       "cloud": {
+        "no_backups": "Hiçbir yedekleme bulunamadı",
+        "failed_to_fetch_backups": "Yedekler alınamadı",
+        "retry": "Tekrar dene",
+        "fetching_backups": "%{cloudPlatformName} yedekleri alınıyor",
         "back_up_to_platform": "%{cloudPlatformName}'ya yedekle",
-        "manage_platform_backups": "%{cloudPlatformName} Yedeklemelerini Yönet",
+        "restore_from_platform": "%{cloudPlatformName}'dan geri yükle",
+        "restoration_in_progress": "Geri yükleme devam ediyor",
+        "how_would_you_like_to_backup": "Cüzdanınızı nasıl yedeklemek istersiniz?",
+        "manage_platform_backups": "%{cloudPlatformName} Yedeklerini Görüntüle",
+        "cloud_platform_backup_settings": "%{cloudPlatformName} Yedekleme Ayarları",
+        "cloud_backup": "Bulut Yedekleme",
+        "backing_up": "Yedekleniyor...",
+        "backup_success": "Başarıyla yedeklendi",
+        "backup_failed": "Yedekleme Başarısız",
+        "manual_backup": "Manuel yedekleme",
+        "back_to_cloud_platform_now": "Şimdi %{cloudPlatform}a Yedekle",
+        "add_wallet_to_cloud_backups": "Bu cüzdanı bulut yedeğinize ekleyin mi?",
+        "enable_cloud_backups": "Bulut Yedeklemelerini Etkinleştir",
+        "mayber_later": "Belki Daha Sonra",
+        "recommended_for_beginners": "Yeni başlayanlar için tavsiye edilir.",
+        "choose_backup": "Geri yüklemek istediğiniz yedeği seçin",
+        "backup_to_cloud_now": "Şimdi %{cloudPlatformName}'a Yedekle",
+        "choose_backup_cloud_description": "Cüzdanınızı güvenli bir şekilde %{cloudPlatform}a yedekleyin, böylece cihazınızı kaybederseniz veya yeni bir cihaz alırsanız geri yükleyebilirsiniz.",
+        "choose_backup_manual_description": "Gizli cümlenizi güvenli bir yere kaydederek cüzdanınızı manuel olarak yedekleyin.",
+        "enable_cloud_backups_description": "Cüzdanlarınızı manuel olarak yedeklemeyi tercih ediyorsanız, bunu aşağıdan yapabilirsiniz.",
+        "latest_backup": "Son Yedekleme: %{date}",
+        "back_up_all_wallets_to_cloud": "Tüm Cüzdanları %{cloudPlatformName}a Yedekle",
+        "most_recent_backup": "En Son Yedekleme",
+        "out_of_date": "Güncel Değil",
+        "up_to_date": "Güncel",
+        "older_backups": "Daha Eski Yedekler",
+        "no_older_backups": "Daha Eski Yedek Bulunamadı",
+        "older_backups_title": "%{date} tarihinde, %{time} saatinde",
         "password": {
-          "a_password_youll_remember": "Lütfen hatırlayacağınız bir şifre kullanın.",
-          "backup_password": "Yedekleme Şifresi",
-          "choose_a_password": "Bir şifre seçin",
+          "a_password_youll_remember_part_one": "Bu şifre",
+          "not": "değildir",
+          "a_password_youll_remember_part_two": "geri alınamaz. Hatırlayacağınız bir şifre seçtiğinizden emin olun.",
+          "backup_password": "Şifre",
+          "choose_a_password": "Yedeğinizi güvende tutmak için bir şifre oluşturun",
           "confirm_backup": "Yedeği Onayla",
+          "enter_backup_password": "Yedekleme şifrenizi girin",
+          "to_restore_from_backup": "Bu yedeklemeyi geri yüklemek için, yedekleme yaparken oluşturduğunuz şifreyi girin",
           "confirm_password": "Şifreyi onaylayın",
-          "confirm_placeholder": "Şifreyi Onaylayın",
+          "confirm_placeholder": "Şifreyi Yeniden Girin",
           "it_cant_be_recovered": "Geride alınamaz!",
           "minimum_characters": "Minimum %{minimumLength} karakter",
           "passwords_dont_match": "Şifreler uyuşmuyor",
@@ -133,22 +175,31 @@
       },
       "explainers": {
         "backup": "Bu şifreyi unutmayın! Bu sizin %{cloudPlatformName} şifrenizden farklıdır ve güvenli bir yere kaydetmelisiniz.\n\nGelecekte cüzdanınızı yedeğinden geri yüklemek için buna ihtiyacınız olacak.",
+        "add_to_backups": "Birden fazla yedeklenmesi gereken cüzdanınız var. Güvenlik nedenleriyle şu anda sadece tek bir cüzdan yedekleyebiliyoruz.",
         "if_lose_cloud": "Bu cihazı kaybederseniz, şifreli cüzdan yedeğinizi %{cloudPlatformName}dan geri alabilirsiniz.",
         "if_lose_imported": "Bu cihazı kaybederseniz, cüzdanınızı ilk başta içe aktardığınız anahtar ile geri yükleyebilirsiniz.",
         "if_lose_manual": "Bu cihazı kaybederseniz, kaydettiğiniz gizli ifade ile cüzdanınızı geri yükleyebilirsiniz."
       },
       "manual": {
-        "label": "Gizli ifadeniz",
+        "backup_manually": "Manuel Yedekle",
+        "label": "%{typeName}inizi kaydedin",
+        "with_your_label": "%{typeName}iniz",
+        "backup_manually_now": "Bu cüzdanı yedeklemek ister misiniz?",
+        "back_up_now": "Şimdi Yedekle",
+        "already_backed_up": "Zaten yedeklendi",
         "pkey": {
-          "confirm_save": "Anahtarımı kaydettim",
+          "confirm_save": "􀆅 Anahtarımı kaydettim",
           "save_them": "Onu kopyalayın ve şifre yöneticinizde veya başka bir güvenli yerde saklayın.",
-          "these_keys": "Bu cüzdanınızın anahtarıdır!"
+          "these_keys": "Bu cüzdanınızın anahtarıdır!",
+          "description": "Bu anahtara sahip olan herkes cüzdanınıza erişebilir! Asla paylaşmamalısınız."
         },
         "seed": {
-          "confirm_save": "Bu kelimeleri kaydettim",
+          "confirm_save": "􀆅 Bu kelimeleri kaydettim",
           "save_them": "Onları yazın veya şifre yöneticinize kaydedin.",
-          "these_keys": "Bu kelimeler cüzdanınızın anahtarlarıdır!"
-        }
+          "these_keys": "Bu kelimeler cüzdanınızın anahtarlarıdır!",
+          "description": "Bu kelimeler cüzdanınızın anahtarlarıdır. Onları güvenli bir yerde sakladığınızdan emin olun."
+        },
+        "create_new_secret_phrase": "Yeni Bir Gizli İfade Oluştur"
       },
       "needs_backup": {
         "back_up_your_wallet": "Cüzdanınızı yedekleyin",
@@ -169,7 +220,7 @@
         "anyone_who_has_these": "Bu kelimelere sahip olan herkes tüm cüzdanınıza erişebilir!",
         "biometrically_secured": "Hesabınız, parmak izi veya yüz tanıma gibi biyometrik verilerle güvence altına alınmıştır. Kurtarma cümlenizi görmek için, telefonunuzun ayarlarında biyometriyi açın.",
         "no_seed_phrase": "Tohum ifadenizi alamadık. Lütfen biyometrik verilerinizi, parmak iziniz veya yüz tanımanız gibi, doğru bir şekilde kullanarak doğruladığınızdan veya PIN kodunuzu doğru girdiğinizden emin olun.",
-        "copy_to_clipboard": "Panoya kopyala",
+        "copy_to_clipboard": "Panoya Kopyala",
         "for_your_eyes_only": "Sadece gözleriniz için",
         "private_key_title": "Özel Anahtar",
         "secret_phrase_title": "Gizli İfade",
@@ -177,6 +228,15 @@
         "view_private_key": "Özel anahtarı görüntüle",
         "view_secret_phrase": "Gizli ifadeyi görüntüle",
         "you_need_to_authenticate": "Kurtarmanıza erişmek için doğrulama yapmanız gerekiyor %{typeName}"
+      },
+      "warning": {
+        "before_you_proceed": "Devam etmeden önce",
+        "title": "Sizin %{typeName}'inizi görüntüleyin",
+        "never_share": "%{typeName} 'inizi asla paylaşmayın ya da uygulamalara veya web sitelerine girmeyin.",
+        "access": "%{typeName} 'ye sahip olan herkes tüm cüzdanınıza erişebilir.",
+        "hide": "%{typeName} 'yi görüntülerken kimsenin ekranınızı göremediğinden emin olun.",
+        "support": "Rainbow Destek sizden asla %{typeName} 'nizi istemeyecektir.",
+        "button": "􀎽 %{typeName} 'yi göster"
       }
     },
     "bluetooth": {
@@ -483,6 +543,9 @@
         "view_on": "%{blockExplorerName}'da Görüntüle",
         "view_on_etherscan": "Etherscan'da Görüntüle"
       },
+      "all_networks": "Tüm Ağlar",
+      "filter_by_network": "Ağa Göre Filtrele",
+      "my_tokens": "Tokenlarım",
       "flip": "Çevir",
       "max": "Maks",
       "movers": {
@@ -501,10 +564,32 @@
         "nothing_here": "Burada bir şey yok!",
         "nothing_to_send": "Gönderilecek bir şey yok"
       },
+      "quote_errors": {
+        "501": "Alıntı bulunamadı",
+        "no_quote_available": "Alıntı bulunamadı",
+        "502": "Yetersiz likidite",
+        "insufficient_liquidity": "Yetersiz likidite",
+        "503": "Transfer Tokeni Üzerinden Ücret",
+        "fee_on_transfer": "Transfer Tokeni Üzerinden Ücret",
+        "504": "Rota bulunamadı",
+        "no_route_found": "Rota bulunamadı"
+      },
       "price_impact": {
+        "long_wait": {
+          "title": "Uzun bekleme",
+          "description": "Yaklaşık %{time}"
+        },
+        "unknown_price": {
+          "title": "Piyasa Değeri Bilinmiyor",
+          "description": "Devam etmeye karar verirseniz, belirtilen miktarı aldığınızdan emin olun."
+        },
         "losing_prefix": "Kaybetme",
         "small_market": "Küçük Pazar",
-        "label": "Olası kayıp"
+        "small_market_try_smaller_amount": "Küçük piyasa — daha küçük bir miktar deneyin",
+        "you_are_losing": "%{priceImpact} kaybediyorsun",
+        "no_data": "Piyasa Değeri Bilinmiyor",
+        "label": "Olası kayıp",
+        "no_data_subtitle": "Devam etmeye karar verirseniz, belirtilen miktardan memnun olduğunuzdan emin olun"
       },
       "source": {
         "rainbow": "Oto",
@@ -677,11 +762,14 @@
         "registrant": "Kayıt Sahibi",
         "resolver": "Çözümleyici",
         "save_to_photos": "Fotoğraflara Kaydet",
+        "sell_for_x": "%{price} 'ye sat",
         "set_primary_name": "ENS adım olarak ayarla",
         "share_token_info": "%{uniqueTokenName} Bilgiyi Paylaş",
         "showcase": "Vitrin",
         "toast_added_to_showcase": "Vitrine eklendi",
         "toast_removed_from_showcase": "Vitrinden çıkarıldı",
+        "refreshing": "Meta veriler yenileniyor...",
+        "reported": "Spam olarak bildirildi",
         "twitter": "Twitter",
         "view_all_with_property": "Tümünü Özelliği ile Görüntüle",
         "view_collection": "Koleksiyonu Görüntüle",
@@ -691,30 +779,37 @@
         "view_on_platform": "%{platform}üzerinde görüntüle",
         "view_on_web": "Web'de Görüntüle",
         "refresh": "Metaveriyi Yenile",
+        "report": "Spam olarak bildir",
         "hide": "Gizle",
         "unhide": "Gizlemeyi Kaldır"
       }
     },
+    "app_icon_unlock_sheet": {
+      "smol_description": "Hazinenin Anahtarını Buldunuz! Smolverse NFT'niz olduğu için özel bir simge kazandınız!",
+      "smol_title": "Kazandınız\nRainbow 􀆄 SMOL",
+      "optimism_description": "Optimism'deki NFT'leri kutlamak için Rainbow ve Optimism sizler gibi Optimistic Explorer'lar için sınırlı sayıda bir Uygulama Simgesi çıkardı!",
+      "optimism_title": "Kazandınız\nRainbow 􀆄 Optimism",
+      "zora_description": "Sihirli düşünceler için özel olarak hazırlanmış bir Rainbow Zorb simgesi.",
+      "zora_title": "Kazandınız\nRainbow 􀆄 Zora",
+      "finiliar_description": "Hava durumu nasıl olursa olsun, gaz fiyatı hakkında sizi güncel tutan özel bir Rainbow Fini simgesi.",
+      "finiliar_title": "Kazandınız\nRainbow Fini",
+      "golddoge_description": "Kabosu'nun 17. doğum gününü kutlamak için sınırlı sayıdaki altın Rainbow uygulama simgesi.",
+      "golddoge_title": "Kazandınız\nRainbow 􀆄 DOGE",
+      "raindoge_description": "Kabosu'nun 17. doğum gününü kutlamak için sınırlı sayıdaki Rainbow uygulama simgesi.",
+      "raindoge_title": "Kazandınız\nRainbow 􀆄 The Doge NFT",
+      "pooly_description": "Özgürlük destekçileri için özel bir Rainbow Pooly simgesi.",
+      "pooly_title": "Kazandınız\nRainbow Pooly",
+      "zorb_description": "Özel bir Rainbow Zorb: Sevdiğiniz her şeyin %100'ü, daha hızlı ve daha verimli.",
+      "zorb_title": "Kazandınız\nRainbow Zorb Enerjisi!",
+      "poolboy_description": "Blockchain yazı için özel olarak hazırlanmış bir Rainbow x Poolsuite simgesi.",
+      "poolboy_title": "Kazandınız\nRainbow Poolboy!",
+      "adworld_description": "Bir Rainbow Dünya Vatandaşı olarak artık özel bir\nAdWorld x Rainbow Uygulama Simgesi kilidini açabilirsiniz.",
+      "adworld_title": "Rainbow Dünyasına Hoş Geldiniz!",
+      "farcaster_description": "Farcaster'ın sade minimalizminden ilham alınarak hazırlanmış en sıkıcı uygulama simgemiz.",
+      "farcaster_title": "Kazandınız\nRainbowcast",
+      "button": "Simgeyi Yakala"
+    },
     "explain": {
-      "icon_unlock": {
-        "smol_text": "Hazine buldunuz! Smolverse NFT'niz olduğu için Özelleştirilmiş Bir İkon'un kilidini açtınız!",
-        "optimism_text": "Optimism'deki NFT'leri kutlamak için, Rainbow ve Optimism, sizin gibi Optimistik Kaşifler için sınırlı sayıda Uygulama Simgesi sunmak üzere bir araya geldi!",
-        "zora_text": "Sihirli düşünme için yapılmış özel bir Rainbow Zorb simgesi.",
-        "finiliar_text": "Gazın fiyatı konusunda sizi yağmur yağsın ya da güneş doğsun güncel tutan özel bir Rainbow Fini simgesi.",
-        "finiliar_title": "Bir\nRainbow Fini'nin kilidini açtınız",
-        "golddoge_text": "Kabosu'nun 17. doğum gününü kutlamak için sınırlı sayıda altın renkte Gökkuşağı uygulama simgesi.",
-        "raindoge_text": "Kabosu'nun 17. doğum gününü kutlamak için sınırlı sayıda Gökkuşağı uygulama simgesi.",
-        "pooly_text": "Özgürlük destekçileri için özel bir Rainbow Pooly ikonu.",
-        "pooly_title": "\nRainbow Pooly'nin kilidini açtınız",
-        "zorb_text": "Özel bir Rainbow Zorb sürümü:\nSevdiğinizin 100%'ü, daha hızlı ve daha etkili.",
-        "zorb_title": "\nRainbow Zorb Enerjisi'nin kilidini açtınız!",
-        "poolboy_text": "Onchain yazı için özel bir Rainbow x Poolsuite İkonu.",
-        "poolboy_title": "\nGökkuşağı Poolboy'un kilidini açtınız!",
-        "adworld_text": "Bir Rainbow Dünya Vatandaşı olarak, artık özel baskı bir\nAdWorld x Rainbow Uygulama Simgesini açabilirsiniz.",
-        "adworld_title": "Rainbow Dünyasına Hoş Geldiniz!",
-        "title": "\nGökkuşağı 􀆄 %{partner}kilidini açtınız.",
-        "button": "Simgeyi kap"
-      },
       "output_disabled": {
         "text": "%{fromNetwork}için, Gökkuşağı %{outputToken} almak istediğiniz miktar üzerinden swapları hazırlayamaz. \n\n Bunun yerine swap etmek istediğiniz %{inputToken} miktarını girmeyi deneyin.",
         "title": "%{inputToken} Yerine girin",
@@ -731,6 +826,9 @@
       "arbitrum": {
         "text": "Arbitrum, Ethereum'in üzerinde çalışan bir Katman 2 ağıdır, daha ucuz ve daha hızlı işlemleri mümkün kılar ve yine de Ethereum'un altındaki güvenlikten faydalanır.\n\nBirçok işlemi bir \"roll up\" şeklinde bir araya getirir ve bunları kalıcı olarak Ethereum'da yaşamak üzere gönderir.",
         "title": "Arbitrum nedir?"
+      },
+      "add_to_backups": {
+        "title": "%{walletName} Yedekleniyor"
       },
       "backup": {
         "title": "Önemli"
@@ -781,7 +879,19 @@
       },
       "base": {
         "text": "Base, Ethereum'in üzerinde çalışan Layer 2 bir ağdır, daha ucuz ve daha hızlı işlemleri mümkün kılar ve hala Ethereum'un temel güvenliğinden faydalanır.\n\nBu, bir \"roll up\" içerisinde birçok işlemi birleştirir ve bu işlemleri kalıcı olarak Ethereum'da yaşamak üzere gönderir.",
-        "title": "Base nedir"
+        "title": "Ne Base'dir?"
+      },
+      "avalanche": {
+        "text": "Avalanche, Ethereum ile uyumlu olan ve yanında çalışan ayrı bir ağ olan bir sidechain'dir.\n\nDaha ucuz ve daha hızlı işlemlere izin verir, ancak Layer 2 ağlarının aksine, Avalanche kendi güvenlik ve uzlaşma mekanizmalarına sahiptir ve bunlar Ethereum'dan farklıdır.",
+        "title": "Avalanche Nedir?"
+      },
+      "degen": {
+        "text": "Degen Chain, Arbitrum ve Ethereum'un üzerinde çalışan ve inanılmaz hızlı ve ucuz işlemler sunan, Farcaster topluluk tokeni $degen ile işlem yapılan bir Layer 3 ağıdır.",
+        "title": "Degen Chain Nedir?"
+      },
+      "blast": {
+        "text": "Blast, Ethereum üzerinde çalışan bir Layer 2 ağıdır ve daha ucuz ve hızlı işlemleri mümkün kılar ve aynı zamanda Ethereum'un temel güvenliğinden faydalanır.\n\nBirçok işlemi \"roll up\" içinde toplayarak kalıcı olarak Ethereum üzerinde yaşamalarına izin verir.",
+        "title": "Blast Nedir?"
       },
       "zora": {
         "text": "Zora, Ethereum'un üzerinde çalışan Layer 2 bir ağdır, daha ucuz ve daha hızlı işlemleri mümkün kılar ve hala Ethereum'un temel güvenliğinden faydalanır.\n\nBu, bir \"roll up\" içerisinde birçok işlemi birleştirir ve bu işlemleri kalıcı olarak Ethereum'da yaşamak üzere gönderir.",
@@ -906,6 +1016,7 @@
       }
     },
     "gas": {
+      "gas_settings": "Gaz Ayarları",
       "card": {
         "falling": "Düşen",
         "rising": "Yükseliyor",
@@ -1091,7 +1202,7 @@
             "manual": "Manuel olarak yedekle"
           },
           "description": "Cüzdanınızı kaybetmeyin! Şifrelenmiş bir kopyasını %{cloudPlatformName}'e kaydedin",
-          "title": "Cüzdanınızı yedekleyin"
+          "title": "Cüzdanınızı nasıl yedeklemek istersiniz?"
         },
         "existing": {
           "button": {
@@ -1214,6 +1325,7 @@
         "offer_expired": "Teklif Süresi Doldu",
         "expired": "Süresi Doldu",
         "hold_to_sell": "Satmak için Tut",
+        "selling": "Satış",
         "error": {
           "title": "NFT satarken hata",
           "message": "Lütfen yardım için Rainbow destek hattına başvurun."
@@ -1330,6 +1442,7 @@
         "view_weekly_earnings_counted": "Haftalık kazanç hesaplandı",
         "view_weekly_earnings_close_button": "Kapat",
         "view_weekly_earnings_retroactive_points": "Geriye Dönük Puanlar",
+        "view_weekly_earnings_bonus_points": "Bonus Puanlar",
         "view_weekly_earnings_activity": "Aktiviteniz",
         "view_weekly_earnings_referral_activity": "Yönlendirme Aktivitesi",
         "view_weekly_earnings_total_earnings": "Toplam",
@@ -1700,16 +1813,35 @@
       "no_thanks": "Hayır, teşekkür ederim"
     },
     "settings": {
-      "backup": "Yedekle",
+      "backup": "Cüzdanlar ve Yedekleme",
+      "delete_backups": "Tüm %{cloudPlatform} Yedeklerini Sil",
+      "confirm_delete_backups": "Onayla ve Yedekleri Sil",
+      "manage_backups": "%{cloudPlatformOrEmail} Yedeklerini Yönet",
+      "confirm_delete_backups_description": "%{cloudPlatform} cüzdan yedeklerinizi silmek istediğinizden emin misiniz?",
       "google_account_used": "Yedekler için kullanılan Google hesabı",
       "backup_switch_google_account": "Google Hesabı Değiştir",
       "backup_sign_out": "Oturumu Kapat",
       "backup_sign_in": "Oturumu Aç",
       "backup_loading": "Yükleniyor...",
       "backup_google_account": "Google Hesabı",
-      "currency": "Para Birimi",
+      "currency": {
+        "title": "Para Birimi",
+        "ETH": "Ethereum",
+        "USD": "Amerikan Doları",
+        "EUR": "Euro",
+        "GBP": "İngiliz Sterlini",
+        "AUD": "Avustralya Doları",
+        "CNY": "Çin Yuanı",
+        "KRW": "Güney Kore Wonu",
+        "JPY": "Japon Yeni",
+        "RUB": "Rus Rublesi",
+        "INR": "Hint Rupisi",
+        "TRY": "Türk Lirası",
+        "CAD": "Kanada Doları",
+        "NZD": "Yeni Zelanda Doları",
+        "ZAR": "Güney Afrika Randı"
+      },
       "app_icon": "Uygulama İkonu",
-      "dev": "Geliştirici",
       "developer": "Geliştirici Ayarları",
       "done": "Tamamlandı",
       "feedback_and_reports": "Geri Bildirim & Hata Raporları",
@@ -1784,6 +1916,22 @@
       "too_many_signup_request": "Çok fazla kayıt talebi oldu, lütfen daha sonra tekrar deneyin"
     },
     "swap": {
+      "aggregators": {
+        "rainbow": "Rainbow"
+      },
+      "tokens_input": {
+        "tokens": "Tokenler",
+        "sort": "Sırala",
+        "available": "mevcut",
+        "token_balance": "Token Bakiyesi",
+        "networks": "Ağlar",
+        "filter_by_network": "Ağa Göre Filtrele",
+        "switch_networks": "Ağları Değiştir",
+        "nothing_found": "Hiçbir şey bulunamadı",
+        "nothing_found_description": "Bazı tokenlar başarılı bir %{action}gerçekleştirmek için yeterli likiditeye sahip değil.",
+        "nothing_found_description_l2": "Bazı tokenlar başarılı bir %{action} gerçekleştirmek için yeterli katman 2 likiditesine sahip değil.",
+        "output_quotes_disabled": "Çıktı alıntıları devre dışı"
+      },
       "choose_token": "Token Seçin",
       "gas": {
         "custom": "Özel",
@@ -1805,6 +1953,7 @@
         "withdraw": "Çek",
         "withdraw_symbol": "%{symbol}çek"
       },
+      "unknown": "Bilinmeyen",
       "warning": {
         "cost": {
           "are_you_sure_title": "Emin misin?",
@@ -1825,6 +1974,15 @@
         }
       }
     },
+    "token_search": {
+      "section_header": {
+        "favorites": "Favoriler",
+        "bridge": "Köprü",
+        "verified": "Doğrulanmış",
+        "unverified": "Doğrulanmamış",
+        "on_other_networks": "Diğer ağlarda"
+      }
+    },
     "transactions": {
       "actions": {
         "addToContacts": "Kişilere Ekle",
@@ -1837,35 +1995,139 @@
       "pending_title": "Beklemede",
       "dropped_title": "Düşürüldü",
       "type": {
-        "approved": "Onaylandı",
-        "approving": "Onaylanıyor",
-        "bridging": "Köprüleme",
-        "bridged": "Köprü Kuruldu",
-        "cancelled": "İptal Edildi",
-        "cancelling": "İptal Ediliyor",
-        "contract interaction": "Sözleşme Etkileşimi",
-        "deposited": "Yatırıldı",
-        "depositing": "Yatırılıyor",
-        "dropped": "Düşürüldü",
-        "failed": "Başarısız",
-        "purchased": "Satın Alındı",
-        "purchasing": "Satın Alma",
-        "minting": "Madencilik",
-        "minted": "Basılmış",
-        "received": "Alınan",
-        "receiving": "Alma",
-        "self": "Kendi",
-        "sending": "Gönderiliyor",
-        "sent": "Gönderilen",
-        "speeding up": "Hızlandırma",
-        "selling": "Satış",
-        "sold": "Satıldı",
-        "swapped": "Takas Edildi",
-        "swapping": "Takas Etme",
-        "unknown": "Bilinmeyen",
-        "withdrawing": "Çekme",
-        "withdrew": "Çekildi"
+        "savings": "Tasarruflar",
+        "cancelled": "İşlem İptal Edildi",
+        "burn": {
+          "pending": "Yanıyor",
+          "confirmed": "Yandı",
+          "failed": "Yanma Başarısız"
+        },
+        "cancel": {
+          "pending": "İptal Ediliyor",
+          "confirmed": "İptal Edildi",
+          "failed": "İptal Başarısız"
+        },
+        "speed_up": {
+          "pending": "Hızlandırılıyor",
+          "confirmed": "Hızlandırıldı",
+          "failed": "Hızlandırma Başarısız"
+        },
+        "send": {
+          "pending": "Gönderiliyor",
+          "confirmed": "Gönderilen",
+          "failed": "Gönderme Başarısız"
+        },
+        "receive": {
+          "pending": "",
+          "confirmed": "Alınan",
+          "failed": ""
+        },
+        "withdraw": {
+          "pending": "Çekiliyor",
+          "confirmed": "Çekildi",
+          "failed": "Çekme Başarısız"
+        },
+        "deposit": {
+          "pending": "Yatırılıyor",
+          "confirmed": "Yatırıldı",
+          "failed": "Yatırma Başarısız"
+        },
+        "mint": {
+          "pending": "Basılıyor",
+          "confirmed": "Basılmış",
+          "failed": "Basma Başarısız"
+        },
+        "approve": {
+          "pending": "Onaylanıyor",
+          "confirmed": "Onaylandı",
+          "failed": "Onaylama Başarısız"
+        },
+        "contract_interaction": {
+          "pending": "Etkileşim Bekliyor",
+          "confirmed": "Etkileşimde Bulunuldu",
+          "failed": "Etkileşim Başarısız"
+        },
+        "swap": {
+          "pending": "Takas Yapılıyor",
+          "confirmed": "Takas Edildi",
+          "failed": "Takas Başarısız"
+        },
+        "borrow": {
+          "pending": "Borçlanma",
+          "confirmed": "Borçlandı",
+          "failed": "Borçlanma Başarısız"
+        },
+        "claim": {
+          "pending": "Talep Etme",
+          "confirmed": "Talep Edildi",
+          "failed": "Talep Başarısız"
+        },
+        "deployment": {
+          "pending": "Kurulum",
+          "confirmed": "Kuruldu",
+          "failed": "Kurulum Başarısız"
+        },
+        "repay": {
+          "pending": "Ödeme",
+          "confirmed": "Ödendi",
+          "failed": "Ödeme Başarısız"
+        },
+        "stake": {
+          "pending": "Bahis",
+          "confirmed": "Bahis Yapıldı",
+          "failed": "Bahis Başarısız"
+        },
+        "unstake": {
+          "pending": "Bahisi Çekme",
+          "confirmed": "Bahisi Çekildi",
+          "failed": "Bahisi Çekme Başarısız"
+        },
+        "purchase": {
+          "pending": "Satın Alma",
+          "confirmed": "Satın Alındı",
+          "failed": "Satın Alma Başarısız"
+        },
+        "revoke": {
+          "pending": "İptal Ediliyor",
+          "confirmed": "İptal Edildi",
+          "failed": "İptal Başarısız"
+        },
+        "sale": {
+          "pending": "Satış",
+          "confirmed": "Satıldı",
+          "failed": "Satış Başarısız"
+        },
+        "bridge": {
+          "pending": "Köprüleme",
+          "confirmed": "Köprü Kuruldu",
+          "failed": "Köprü Başarısız"
+        },
+        "airdrop": {
+          "pending": "",
+          "confirmed": "Hava Atıldı",
+          "failed": ""
+        },
+        "wrap": {
+          "pending": "Sarma",
+          "confirmed": "Sarılmış",
+          "failed": "Sarma Başarısız"
+        },
+        "unwrap": {
+          "pending": "Çözülme",
+          "confirmed": "Çözüldü",
+          "failed": "Açılama Hatası"
+        },
+        "bid": {
+          "pending": "Teklif Veriliyor",
+          "confirmed": "Teklif",
+          "failed": "Teklif Hatası"
+        }
       },
+      "approvals": {
+        "no_allowance": "İzin Yok",
+        "unlimited": "Sınırsız"
+      },
+      "no_value": "Değer Yok",
       "savings": "Tasarruflar",
       "signed": "İmzalandı",
       "contract_interaction": "Sözleşme Etkileşimi",
@@ -1877,6 +2139,7 @@
       "to": "Kime",
       "value": "Değer",
       "hash": "Tx Hash",
+      "you": "Siz",
       "network_fee": "Ağ Ücreti",
       "hash_copied": "􀁣 İşlem hashi kopyalandı",
       "address_copied": "􀁣 Adres kopyalandı",
@@ -1960,6 +2223,9 @@
       "copied": "\"%{copiedText}\" kopyalandı",
       "invalid_paste": "Bunu buraya yapıştıramazsınız"
     },
+    "tokens_tab": {
+      "unknown_token": "Bilinmeyen Token"
+    },
     "hardware_wallets": {
       "pair_your_nano": "Nano X'inizi eşleştirin",
       "connect_your_ledger": "Ledger Nano X'inizi Bluetooth üzerinden Rainbow'a bağlayın. Eğer ilk kez yapıyorsanız, Rainbow Bluetooth erişimi için izin isteyecektir.",
@@ -2015,6 +2281,8 @@
         "delete_confirm": "Bu cüzdanı silmek istediğinizden emin misiniz?",
         "edit": "Cüzdanı Düzenle",
         "hide": "Gizle",
+        "create_wallet_group": "Cüzdan Grubu Oluştur",
+        "create_wallet_group_placeholder": "Cüzdan Grubu %{numWalletGroups}",
         "import_wallet": "Cüzdan Ekle",
         "input": "İşlem Girişi",
         "notifications": {
@@ -2112,15 +2380,31 @@
         "please_seed_phrase": "Lütfen özel anahtarı görüntülemek için kimlik doğrulayın"
       },
       "back_ups": {
-        "and_1_more_wallet": "Ve 1 daha cüzdan",
+        "wallet_count": "%{numAccounts} cüzdan",
+        "wallet_count_gt_one": "%{numAccounts} cüzdanlar",
         "and_more_wallets": "Ve %{moreWalletCount} daha fazla cüzdan",
+        "create_new_wallet": "Yeni Bir Cüzdan Oluştur",
+        "create_new_wallet_description": "Bu Gizli İfade ile yeni bir cüzdan oluşturun",
         "backed_up": "Yedeklendi",
         "backed_up_manually": "Manuel olarak yedeklendi",
-        "imported": "İçeri Aktarıldı"
+        "imported": "İçeri Aktarıldı",
+        "cloud_backup_title": "Bulut Yedekleme",
+        "not_backed_up": "Yedeklenmemiş",
+        "not_backed_up_to_cloud_message": "Bu %{backupType} son yedeğinizde değil. Cihazınızı kaybederseniz veya yeni bir tane alırsanız geri yükleyebilmeniz için şimdi %{cloudPlatform}'a yedekleyin.",
+        "not_backed_up_message": "Bu %{backupType} yedeklenmemiş. Cihazınızı kaybederseniz veya yeni bir tane alırsanız geri yükleyebilmeniz için şimdi yedekleyin.",
+        "backed_up_message": "Bu %{backupType}'yi kendiniz saklamayı tercih ettiniz. Güvenli bir konumda sakladığınızdan emin olun.",
+        "backed_up_to_cloud_message": "Tüm cüzdanlarınız %{cloudPlatform}'a yedeklendi. Cihazınızı kaybederseniz veya yeni bir tane alırsanız, aşağıda listelenen cüzdanları geri yükleyebilirsiniz.",
+        "cloud_backup_out_of_date_description": "Bazı cüzdanlarınız son yedeğinizde değil. Cihazınızı kaybederseniz veya yeni bir tane alırsanız geri yükleyebilmeniz için şimdi %{cloudPlatform}'a yedekleyin.",
+        "cloud_backup_description": "Cüzdanlarınızı güvenli bir şekilde %{cloudPlatform}'a yedekleyin, böylece cihazınızı kaybederseniz veya yeni bir tane alırsanız geri yükleyebilirsiniz.",
+        "cloud_backup_link": "Daha fazla bilgi edinin…",
+        "view_secret_phrase": "Gizli İfadeyi Görüntüle",
+        "view_private_key": "Özel Anahtarı Görüntüle",
+        "copy_wallet_address": "Cüzdan adresini kopyala"
       },
       "balance_title": "Bakiye",
       "buy": "Satın Al",
       "change_wallet": {
+        "no_balance": "Bakiye Yok",
         "balance_eth": "%{balanceEth} ETH",
         "watching": "İzliyor",
         "ledger": "Ledger"
@@ -2197,9 +2481,8 @@
         "add_wallet_sheet": {
           "options": {
             "cloud": {
-              "description_android": "Eğer cüzdanınızı daha önce Google Drive'da yedeklediyseniz, onu geri yüklemek için buraya dokunun.",
-              "description_ios_one_wallet": "Yedeklenmiş 1 cüzdanınız var",
-              "description_ios_multiple_wallets": "Yedeklenmiş %{walletCount} cüzdanınız var",
+              "description_restore_sheet": "Daha önce %{cloudPlatform}'a yedeklediyseniz, geri yüklemek için buraya dokunun.",
+              "description_with_latest_backup_date": "Son yedekleme %{fromNow} tarihinde %{time} saatinde",
               "title": "%{platform}'dan geri yükle",
               "no_backups": "Hiçbir yedekleme bulunamadı",
               "no_google_backups": "Google Drive'da herhangi bir yedekleme bulamadık. Doğru hesabı ile oturum açtığınızdan emin olun."
@@ -2213,12 +2496,12 @@
               "title": "Donanım cüzdanınızı bağlayın"
             },
             "seed": {
-              "description": "Rainbow veya başka bir kripto cüzdanından kurtarma ifadenizi kullanın",
-              "title": "Bir kurtarma ifadesi veya özel anahtarla geri yükleyin"
+              "description": "Rainbow, MetaMask veya başka bir cüzdandan Gizli İfadenizi kullanın",
+              "title": "Bir Gizli İfade veya Özel Anahtar İçe Aktarın"
             },
             "watch": {
-              "description": "Bir kamuya açık adresi veya ENS adını izleyin",
-              "title": "Bir Ethereum adresini izleyin"
+              "description": "Bir ENS adını veya bir halka açık adresi izle",
+              "title": "Bir cüzdanı izle"
             }
           },
           "first_wallet": {
@@ -2331,7 +2614,7 @@
           "insufficient_funds": "Oh hayır! Gaz fiyatı değişti ve bu işlem için artık yeterli paranız yok. Lütfen daha düşük bir miktarla tekrar deneyin.",
           "generic": "Oh hayır! İşlemi gönderirken bir problem oldu. Lütfen tekrar deneyin."
         },
-        "complete_checks": "Kontrolleri tamamla",
+        "complete_check": "Kontrolleri tamamla",
         "ens_configuration_options": "ENS yapılandırma seçenekleri",
         "confirm": "İşlemi onayla",
         "max": "Maks",
@@ -2369,6 +2652,7 @@
       }
     },
     "walletconnect": {
+      "requests": "İstekler",
       "wants_to_connect": "Cüzdanınıza bağlanmak istiyor",
       "wants_to_connect_to_network": "%{network} ağına bağlanmak istiyor",
       "available_networks": "Kullanılabilir Ağlar",
@@ -2414,6 +2698,7 @@
       },
       "menu_options": {
         "disconnect": "Bağlantıyı Kes",
+        "connect": "Bağlan",
         "switch_wallet": "Cüzdanı Değiştir",
         "switch_network": "Ağı Değiştir",
         "available_networks": "Kullanılabilir Ağlar"
@@ -2516,6 +2801,54 @@
     "warning": {
       "user_is_offline": "Bağlantı çevrimdışı, lütfen internet bağlantınızı kontrol edin",
       "user_is_online": "Bağlandı! Tekrar çevrimiçisiniz"
+    },
+    "dapp_browser": {
+      "address_bar": {
+        "input_placeholder": "Ara veya web sitesini gir"
+      },
+      "control_panel": {
+        "connected": "Bağlı",
+        "not_connected": "Bağlı değil",
+        "switch_wallet": "Cüzdanı Değiştir",
+        "switch_network": "Ağı Değiştir",
+        "disconnect": "Bağlantıyı Kes",
+        "favorite": "Favori",
+        "undo_favorite": "Geri Al",
+        "connect": "Bağlan",
+        "swap": "Değiştir",
+        "bridge": "Köprü",
+        "more": "Daha fazla"
+      },
+      "error": {
+        "title": "Bir şeyler yanlış gitti",
+        "default_msg": "Sayfa yüklenirken bir hata oluştu. Lütfen tekrar deneyin."
+      },
+      "no_wc_needed": {
+        "title": "Hoppala!",
+        "description": "Görünüşe göre bu dapp'a WalletConnect aracılığıyla bağlanmaya çalışıyorsunuz. Rainbow'un uygulama içi tarayıcısıyla bu artık gerekli değil. Geri dönüp \"MetaMask\"'ı seçin ve her şey yolunda çalışmalıdır.",
+        "cta": "Anladım"
+      },
+      "provider_error": {
+        "unsupported_chain": "Desteklenmeyen Zincir",
+        "no_active_session": "Zincirleri değiştirmeye çalışmadan önce dapp'a bağlanmanız gerekiyor"
+      },
+      "homepage": {
+        "trending": "Gündemde",
+        "recents": "Son",
+        "favorites": "Favoriler"
+      },
+      "search": {
+        "find_apps_and_more": "Uygulamalar ve daha fazlasını bulun",
+        "more_results": "Daha Fazla Sonuç",
+        "search": "Ara"
+      },
+      "menus": {
+        "favorite": "Favori",
+        "undo_favorite": "Geri Al Favori",
+        "remove": "Kaldır",
+        "forward": "İleri",
+        "back": "Geri"
+      }
     }
   }
 }
