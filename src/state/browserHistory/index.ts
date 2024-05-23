@@ -1,3 +1,4 @@
+import { normalizeUrlForRecents } from '@/components/DappBrowser/utils';
 import { createRainbowStore } from '../internal/createRainbowStore';
 
 export interface Site {
@@ -32,8 +33,8 @@ export const useBrowserHistoryStore = createRainbowStore<BrowserHistoryStore>(
     },
 
     hasVisited: (url: string) => {
-      const state = get();
-      return state.recents.some((site: { url: string }) => site.url === url);
+      const normalizedUrl = normalizeUrlForRecents(url);
+      return get().recents.some(site => site.url === normalizedUrl);
     },
 
     removeRecent: (url: string) => {
