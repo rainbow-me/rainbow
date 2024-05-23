@@ -15,9 +15,9 @@ const fallbackResult: useUniqueTokenResult = {
 export default function useUniqueToken(maybeUniqueToken: Record<string, any>): useUniqueTokenResult {
   return React.useMemo((): useUniqueTokenResult => {
     if (typeof maybeUniqueToken === 'object' && !!maybeUniqueToken) {
-      const supports3d = !!maybeUniqueToken?.model_properties;
-      const supportsAudio = !!maybeUniqueToken?.audio_properties;
-      const supportsVideo = !!maybeUniqueToken?.video_properties;
+      const supports3d = !!maybeUniqueToken?.model_url;
+      const supportsAudio = !!maybeUniqueToken?.audio_url;
+      const supportsVideo = !!maybeUniqueToken?.video_url;
       return { supports3d, supportsAudio, supportsVideo };
     }
     return fallbackResult;
