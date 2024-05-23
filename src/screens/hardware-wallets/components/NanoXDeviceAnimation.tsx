@@ -1,7 +1,16 @@
 import React, { useEffect } from 'react';
 import { Source } from 'react-native-fast-image';
-import Animated, { Easing, interpolateColor, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
-import { BlurMask, Canvas, Circle, mix, SkiaMutableValue, useSharedValueEffect, useValue } from '@shopify/react-native-skia';
+import Animated, {
+  Easing,
+  SharedValue,
+  interpolateColor,
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
+import { BlurMask, Canvas, Circle, mix } from '@shopify/react-native-skia';
 import ledgerNano from '@/assets/ledger-nano.png';
 import gridDotsLight from '@/assets/dot-grid-light.png';
 import gridDotsDark from '@/assets/dot-grid-dark.png';
@@ -12,7 +21,8 @@ import { useDimensions } from '@/hooks';
 import { useTheme } from '@/theme';
 
 const SCALE_FACTOR = deviceUtils.isSmallPhone ? 0.9 : 1;
-const CIRCLES_SIZE = deviceUtils.dimensions.width * SCALE_FACTOR;
+const CIRCLES_HEIGHT = deviceUtils.dimensions.width * 1.5 * SCALE_FACTOR;
+const CIRCLES_WIDTH = deviceUtils.dimensions.width * SCALE_FACTOR;
 export const GRID_DOTS_SIZE = deviceUtils.dimensions.width * SCALE_FACTOR;
 export const LEDGER_NANO_HEIGHT = 292 * SCALE_FACTOR;
 export const LEDGER_NANO_WIDTH = 216 * SCALE_FACTOR;
@@ -24,7 +34,6 @@ type Props = {
 
 export function NanoXDeviceAnimation({ state, isConnected }: Props) {
   const { colorMode } = useColorMode();
-  const { colors } = useTheme();
   const { width, height: deviceHeight } = useDimensions();
 
   const height = deviceHeight - 100;
@@ -34,9 +43,6 @@ export function NanoXDeviceAnimation({ state, isConnected }: Props) {
 
   const animatedLedgerNanoWrapperStyle = useAnimatedStyle(() => ({
     opacity: withTiming(1),
-    position: 'absolute',
-    top: (height - LEDGER_NANO_HEIGHT) / 2,
-    left: (width - LEDGER_NANO_WIDTH) / 2,
   }));
 
   // //////////////////////////////////////////////////////////////////
@@ -44,9 +50,6 @@ export function NanoXDeviceAnimation({ state, isConnected }: Props) {
 
   const animatedGridDotsWrapperStyle = useAnimatedStyle(() => ({
     opacity: withTiming(state === 'loading' ? 1 : 0, { duration: 200 }),
-    position: 'absolute',
-    top: (height - GRID_DOTS_SIZE) / 2,
-    left: (width - GRID_DOTS_SIZE) / 2,
   }));
 
   // //////////////////////////////////////////////////////////////////
@@ -54,9 +57,6 @@ export function NanoXDeviceAnimation({ state, isConnected }: Props) {
 
   const animatedCirclesWrapperStyle = useAnimatedStyle(() => ({
     opacity: withTiming(state === 'loading' ? 1 : 0, { duration: 200 }),
-    position: 'absolute',
-    top: (height - CIRCLES_SIZE) / 2,
-    left: (width - CIRCLES_SIZE) / 2,
   }));
 
   // //////////////////////////////////////////////////////////////////
@@ -79,14 +79,23 @@ export function NanoXDeviceAnimation({ state, isConnected }: Props) {
     'rgb(160, 32, 240)',
   ];
 
-  const xOrigin = useValue(CIRCLES_SIZE / 2);
-  const yOrigin = useValue(CIRCLES_SIZE / 2);
+  const xOrigin = useSharedValue(CIRCLES_WIDTH / 2);
+  const yOrigin = useSharedValue(CIRCLES_HEIGHT / 2);
 
   // //////////////////////////////////////////////////////////////////
 
   return (
     <>
-      <Animated.View style={animatedGridDotsWrapperStyle}>
+      <Animated.View
+        style={[
+          animatedGridDotsWrapperStyle,
+          {
+            left: (width - GRID_DOTS_SIZE) / 2,
+            position: 'absolute',
+            top: (height - GRID_DOTS_SIZE) / 2,
+          },
+        ]}
+      >
         <ImgixImage
           source={(colorMode === 'light' ? gridDotsLight : gridDotsDark) as Source}
           style={{
@@ -97,14 +106,39 @@ export function NanoXDeviceAnimation({ state, isConnected }: Props) {
           size={GRID_DOTS_SIZE}
         />
       </Animated.View>
-      <Animated.View style={animatedCirclesWrapperStyle}>
-        <Canvas style={{ width: CIRCLES_SIZE, height: CIRCLES_SIZE }}>
+      <Animated.View
+        style={[
+          animatedCirclesWrapperStyle,
+          {
+            alignItems: 'center',
+            height: CIRCLES_HEIGHT,
+            justifyContent: 'center',
+            // left: 0,
+            left: (width - CIRCLES_WIDTH) / 2,
+            pointerEvents: 'none',
+            position: 'absolute',
+            // top: 0,
+            top: (height - CIRCLES_HEIGHT) / 2,
+            width: CIRCLES_WIDTH,
+          },
+        ]}
+      >
+        <Canvas style={{ width: CIRCLES_WIDTH, height: CIRCLES_HEIGHT }}>
           {circleColors.map((color, index) => (
             <AnimatedCircle key={index} color={color} xOrigin={xOrigin} yOrigin={yOrigin} isConnected={isConnected} />
           ))}
         </Canvas>
       </Animated.View>
-      <Animated.View style={animatedLedgerNanoWrapperStyle}>
+      <Animated.View
+        style={[
+          animatedLedgerNanoWrapperStyle,
+          {
+            left: (width - LEDGER_NANO_WIDTH) / 2,
+            position: 'absolute',
+            top: (height - LEDGER_NANO_HEIGHT) / 2,
+          },
+        ]}
+      >
         <ImgixImage
           source={ledgerNano as Source}
           style={{ width: LEDGER_NANO_WIDTH, height: LEDGER_NANO_HEIGHT }}
@@ -126,8 +160,8 @@ function AnimatedCircle({
   isConnected,
 }: {
   color: string;
-  xOrigin: SkiaMutableValue<number>;
-  yOrigin: SkiaMutableValue<number>;
+  xOrigin: SharedValue<number>;
+  yOrigin: SharedValue<number>;
   isConnected?: boolean;
 }) {
   const isConnectedValue = useSharedValue(isConnected ? 1 : 0);
@@ -137,13 +171,13 @@ function AnimatedCircle({
   const progress = useSharedValue(progressOffset);
 
   const { colors } = useTheme();
-  const colorValue = useValue(color);
+  const colorValue = useSharedValue(color);
 
-  const x = useValue(0);
-  const xOffset = useValue(circleRadius * getRandom(-1, 1));
+  const x = useSharedValue(0);
+  const xOffset = useSharedValue(circleRadius * getRandom(-1, 1));
 
-  const y = useValue(0);
-  const yOffset = useValue(circleRadius * getRandom(-1, 1));
+  const y = useSharedValue(0);
+  const yOffset = useSharedValue(circleRadius * getRandom(-1, 1));
 
   useEffect(() => {
     progress.value = withRepeat(
@@ -162,23 +196,25 @@ function AnimatedCircle({
     });
   }, [isConnected, isConnectedValue]);
 
-  useSharedValueEffect(
-    () => {
+  useAnimatedReaction(
+    () => ({
+      isConnectedValue: isConnectedValue.value,
+      progress: progress.value,
+    }),
+    ({ isConnectedValue, progress }) => {
       // position animation
-      const scalar = 0.5 - 0.4 * isConnectedValue.value;
-      x.current = xOrigin.current - mix(Math.cos(progress.value), scalar * -circleRadius, scalar * circleRadius) + xOffset.current;
-      y.current = yOrigin.current - mix(Math.sin(progress.value), scalar * -circleRadius, scalar * circleRadius) + yOffset.current;
+      const scalar = 0.5 - 0.4 * isConnectedValue;
+      x.value = xOrigin.value + mix(Math.cos(progress), scalar * -circleRadius, scalar * circleRadius) + xOffset.value;
+      y.value = yOrigin.value + mix(Math.sin(progress), scalar * -circleRadius, scalar * circleRadius) + yOffset.value;
 
       // color animation
-      colorValue.current = interpolateColor(isConnectedValue.value, [0, 1], [color, colors.green]);
-    },
-    progress,
-    isConnectedValue
+      colorValue.value = interpolateColor(isConnectedValue, [0, 1], [color, colors.green]);
+    }
   );
 
   return (
     <Circle r={circleRadius} cx={x} cy={y} color={colorValue} opacity={0.3}>
-      <BlurMask blur={32} style="normal" />
+      <BlurMask blur={36} style="normal" />
     </Circle>
   );
 }
