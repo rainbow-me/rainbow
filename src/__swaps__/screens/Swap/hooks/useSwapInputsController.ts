@@ -143,6 +143,7 @@ export function useSwapInputsController({
   });
 
   const formattedOutputNativeValue = useDerivedValue(() => {
+    console.log(inputMethod.value, inputValues.value.outputNativeValue);
     if ((inputMethod.value === 'slider' && percentageToSwap.value === 0) || !inputValues.value.outputNativeValue) {
       return '$0.00';
     }

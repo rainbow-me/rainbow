@@ -49,6 +49,12 @@ export const useCleanupOnExit = () => {
       isFetching.value = false;
       isQuoteStale.value = 0;
 
+      // reset inputValues and method
+      SwapInputsController.inputMethod.value = 'slider';
+      SwapInputsController.inputValues.value.outputAmount = 0;
+      SwapInputsController.inputValues.value.outputNativeValue = 0;
+
+      // reset slider position to initial position
       sliderXPosition.value = SLIDER_WIDTH * INITIAL_SLIDER_POSITION;
       sliderPressProgress.value = SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT;
     };
