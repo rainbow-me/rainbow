@@ -48,7 +48,7 @@ interface SwapContextType {
 
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
-  setAsset: ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset }) => void;
+  setAsset: ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset | null }) => void;
 
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
 
