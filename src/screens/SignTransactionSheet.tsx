@@ -950,6 +950,7 @@ export const SignTransactionSheet = () => {
                     }
                     newShadows
                     onPress={submitFn}
+                    disabled={!walletBalance?.isLoaded || !selectedGasFee.gasFee.estimatedFee}
                     size="big"
                     weight="heavy"
                     {...((simulationError || (simulationScanResult && simulationScanResult !== TransactionScanResultType.Ok)) && {
