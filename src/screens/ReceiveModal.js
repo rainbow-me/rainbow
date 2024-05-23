@@ -70,7 +70,7 @@ export default function ReceiveModal() {
     <SimpleSheet
       testID="receive-modal"
       backgroundColor={'rgba(0,0,0,0.85)'}
-      useAdditionalTopPadding={IS_ANDROID ? 0 : 200}
+      useAdditionalTopPadding
       customHeight={IS_ANDROID ? deviceHeight - top : deviceHeight - sharedCoolModalTopOffset}
       scrollEnabled={false}
     >
