@@ -93,6 +93,6 @@ export function useSwapEstimatedGasLimit(
       assetToSell,
     }),
     estimateSwapGasLimitQueryFunction,
-    { keepPreviousData: true, ...config }
+    { keepPreviousData: true, staleTime: 12000, cacheTime: Infinity, ...config }
   );
 }

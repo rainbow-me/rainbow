@@ -18,15 +18,18 @@ import { fadeConfig } from '../constants';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { AnimatedSwitch } from './AnimatedSwitch';
 
-import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { useAccountSettings } from '@/hooks';
+import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 
-import { chainNameForChainIdWithMainnetSubstitutionWorklet } from '@/__swaps__/utils/chains';
-import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { AnimatedChainImage } from '@/__swaps__/screens/Swap/components/AnimatedChainImage';
-import { convertRawAmountToBalance, convertRawAmountToNativeDisplay, handleSignificantDecimals, multiply } from '@/__swaps__/utils/numbers';
+import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { useNativeAssetForChain } from '@/__swaps__/screens/Swap/hooks/useNativeAssetForChain';
+import { chainNameForChainIdWithMainnetSubstitutionWorklet } from '@/__swaps__/utils/chains';
+import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
+import { convertRawAmountToBalance, convertRawAmountToNativeDisplay, handleSignificantDecimals, multiply } from '@/__swaps__/utils/numbers';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { useSwapEstimatedGasFee } from '../hooks/useEstimatedGasFee';
+import { useSelectedGas, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 
 const unknown = i18n.t(i18n.l.swap.unknown);
 
@@ -84,7 +87,9 @@ const RainbowFee = () => {
 };
 
 function EstimatedGasFee() {
-  const estimatedGasFee = useSwapEstimatedGasFee();
+  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
+  const gasSettings = useSelectedGas(chainId);
+  const estimatedGasFee = useSwapEstimatedGasFee({ gasSettings });
 
   return (
     <Text align="left" color={'label'} size="15pt" weight="heavy">
@@ -93,11 +98,14 @@ function EstimatedGasFee() {
   );
 }
 
-// TODO: This is still needed
-function EstiamtedArrivalTime() {
+function EstimatedArrivalTime() {
+  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
+  const speed = useSelectedGasSpeed(chainId);
+  const { data: estimatedTime } = useEstimatedTime({ chainId, speed });
+  if (!estimatedTime) return null;
   return (
     <Text align="right" color={'labelTertiary'} size="15pt" weight="bold">
-      ~4 sec
+      {estimatedTime}
     </Text>
   );
 }
@@ -129,10 +137,6 @@ export function ReviewPanel() {
     'worklet';
     SwapSettings.onUpdateSlippage('plus');
   };
-
-  // TODO: Comes from gas store
-  const estimatedGasFee = useSharedValue('$2.25');
-  const estimatedArrivalTime = useSharedValue('~4 sec');
 
   const styles = useAnimatedStyle(() => {
     return {
@@ -318,7 +322,7 @@ export function ReviewPanel() {
                 </View>
                 <Inline horizontalSpace="4px">
                   <EstimatedGasFee />
-                  <EstiamtedArrivalTime />
+                  <EstimatedArrivalTime />
                 </Inline>
               </Inline>
 

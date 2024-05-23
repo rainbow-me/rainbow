@@ -18,13 +18,15 @@ import { THICK_BORDER_WIDTH } from '../constants';
 import { formatNumber } from '../hooks/formatNumber';
 import { GasSettings, useCustomGasSettings } from '../hooks/useCustomGas';
 import { useSwapEstimatedGasFee } from '../hooks/useEstimatedGasFee';
-import { GasSpeed, setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
+import { GasSpeed, setSelectedGasSpeed, useSelectedGas, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { useSwapContext } from '../providers/swap-provider';
 
 const { CUSTOM, GAS_ICONS } = gasUtils;
 
 function EstimatedGasFee() {
-  const estimatedGasFee = useSwapEstimatedGasFee();
+  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
+  const gasSettings = useSelectedGas(chainId);
+  const estimatedGasFee = useSwapEstimatedGasFee({ gasSettings });
 
   return (
     <Inline alignVertical="center" space="4px">
@@ -93,8 +95,9 @@ const GasMenu = ({ children }: { children: ReactNode }) => {
 
   const handlePressSpeedOption = useCallback(
     (selectedGasSpeed: GasSpeed) => {
-      if (selectedGasSpeed === CUSTOM) {
+      if (selectedGasSpeed === 'custom') {
         runOnUI(SwapNavigation.handleShowGas)({});
+        return;
       }
       setSelectedGasSpeed(chainId, selectedGasSpeed);
     },
@@ -123,16 +126,10 @@ const GasMenu = ({ children }: { children: ReactNode }) => {
         actionKey: gasOption,
         actionTitle: i18n.t(i18n.l.gas.speeds[gasOption]),
         discoverabilityTitle: subtitle,
-        icon: {
-          iconType: 'ASSET',
-          iconValue: GAS_ICONS[gasOption],
-        },
+        icon: { iconType: 'ASSET', iconValue: GAS_ICONS[gasOption] },
       };
     });
-    return {
-      menuItems,
-      menuTitle: '',
-    };
+    return { menuItems, menuTitle: '' };
   }, [customGasSettings, menuOptions, metereologySuggestions.data]);
 
   if (metereologySuggestions.isLoading) return children;

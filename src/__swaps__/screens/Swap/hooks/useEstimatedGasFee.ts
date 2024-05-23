@@ -1,19 +1,24 @@
 import { ChainId } from '@/__swaps__/types/chains';
 import { weiToGwei } from '@/__swaps__/utils/ethereum';
 import { add, multiply } from '@/__swaps__/utils/numbers';
-import { Network } from '@/helpers';
-import { getNetworkObj } from '@/networks';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import ethereumUtils, { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { formatUnits } from 'viem';
 import { formatCurrency, formatNumber } from './formatNumber';
-import { useSelectedGas } from './useSelectedGas';
+import { GasSettings } from './useCustomGas';
 import { useSwapEstimatedGasLimit } from './useSwapEstimatedGasLimit';
 
-export function useEstimatedGasFee({ network, gasLimit }: { network: Network; gasLimit: string | undefined }) {
+export function useEstimatedGasFee({
+  chainId,
+  gasLimit,
+  gasSettings,
+}: {
+  chainId: ChainId;
+  gasLimit: string | undefined;
+  gasSettings: GasSettings | undefined;
+}) {
+  const network = ethereumUtils.getNetworkFromChainId(chainId);
   const nativeNetworkAsset = useNativeAssetForNetwork(network);
-  const chainId = getNetworkObj(network).id;
-  const gasSettings = useSelectedGas(chainId);
 
   if (!gasLimit || !gasSettings || !nativeNetworkAsset) return 'Loading...'; // TODO: loading state
 
@@ -30,13 +35,13 @@ export function useEstimatedGasFee({ network, gasLimit }: { network: Network; ga
   return formatCurrency(feeInUserCurrency);
 }
 
-export function useSwapEstimatedGasFee() {
+export function useSwapEstimatedGasFee({ gasSettings }: { gasSettings: GasSettings | undefined }) {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-  const network = ethereumUtils.getNetworkFromChainId(chainId);
+
   const assetToSell = useSwapsStore(s => s.inputAsset);
   const quote = useSwapsStore(s => s.quote);
 
   const { data: gasLimit } = useSwapEstimatedGasLimit({ chainId, quote, assetToSell }, { enabled: !!quote });
 
-  return useEstimatedGasFee({ network, gasLimit });
+  return useEstimatedGasFee({ chainId, gasLimit, gasSettings });
 }

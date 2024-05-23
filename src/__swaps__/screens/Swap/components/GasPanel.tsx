@@ -1,5 +1,5 @@
 import * as i18n from '@/languages';
-import React, { PropsWithChildren, useState } from 'react';
+import React, { PropsWithChildren } from 'react';
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
 import { fadeConfig } from '@/__swaps__/screens/Swap/constants';
@@ -14,18 +14,13 @@ import { IS_ANDROID } from '@/env';
 import { lessThan } from '@/helpers/utilities';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { upperFirst } from 'lodash';
 import { formatNumber } from '../hooks/formatNumber';
-import {
-  getCustomGasSettings,
-  setCustomGasPrice,
-  setCustomMaxBaseFee,
-  setCustomMaxPriorityFee,
-  useCustomGasStore,
-} from '../hooks/useCustomGas';
-import { useDebounce } from '../hooks/useDebounce';
+import { GasSettings, getCustomGasSettings, useCustomGasStore } from '../hooks/useCustomGas';
 import { useSwapEstimatedGasFee } from '../hooks/useEstimatedGasFee';
+import { getSelectedGasSpeed, setSelectedGasSpeed } from '../hooks/useSelectedGas';
 
 const MINER_TIP_TYPE = 'minerTip';
 const MAX_BASE_FEE_TYPE = 'maxBaseFee';
@@ -89,34 +84,34 @@ function NumericInputButton({ children, onPress }: PropsWithChildren<{ onPress: 
 }
 
 const INPUT_STEP = gweiToWei('0.1');
-function GasSettingInput({ onDebouncedChange, value, min = '0' }: { onDebouncedChange: (v: string) => void; value: string; min?: string }) {
+function GasSettingInput({
+  onChange,
+  min = '0',
+  value = min || '0',
+}: {
+  onChange: (v: string) => void;
+  value: string | undefined;
+  min?: string;
+}) {
   const { isDarkMode } = useColorMode();
-
-  const [internalValue, setInternalValue] = useState(value);
-  const debouncedValue = useDebounce(internalValue, 1000);
-  if (debouncedValue !== value) {
-    onDebouncedChange(debouncedValue);
-  }
 
   return (
     <Inline wrap={false} alignVertical="center" horizontalSpace="6px">
       <Inline wrap={false} horizontalSpace="8px" alignVertical="center">
         <NumericInputButton
-          onPress={() =>
-            setInternalValue(v => {
-              const newValue = subtract(v, INPUT_STEP);
-              return lessThan(newValue, min) ? min : newValue;
-            })
-          }
+          onPress={() => {
+            const newValue = subtract(value, INPUT_STEP);
+            onChange(lessThan(newValue, min) ? min : newValue);
+          }}
         >
           􀅽
         </NumericInputButton>
 
         <Text size="15pt" weight="bold" color="labelSecondary">
-          {formatNumber(weiToGwei(internalValue))}
+          {formatNumber(weiToGwei(value))}
         </Text>
 
-        <NumericInputButton onPress={() => setInternalValue(v => add(v, INPUT_STEP))}>􀅼</NumericInputButton>
+        <NumericInputButton onPress={() => onChange(add(value, INPUT_STEP))}>􀅼</NumericInputButton>
       </Inline>
 
       <Text align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy">
@@ -166,33 +161,8 @@ function CurrentBaseFee() {
   );
 }
 
-function useCustomMaxBaseFee(chainId: ChainId) {
-  return useCustomGasStore(s => {
-    const chainSettings = s[chainId];
-    if (!chainSettings?.isEIP1559) return '0';
-    return chainSettings.maxBaseFee;
-  });
-}
-
-function useCustomMaxPriorityFee(chainId: ChainId) {
-  return useCustomGasStore(s => {
-    const chainSettings = s[chainId];
-    if (!chainSettings?.isEIP1559) return '0';
-    return chainSettings.maxPriorityFee;
-  });
-}
-
-function useCustomGasPrice(chainId: ChainId) {
-  return useCustomGasStore(s => {
-    const chainSettings = s[chainId];
-    if (chainSettings?.isEIP1559) return '0';
-    return chainSettings?.gasPrice || '0';
-  });
-}
-
 function EditMaxBaseFee() {
-  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-  const maxBaseFee = useCustomMaxBaseFee(chainId);
+  const maxBaseFee = useUnsavedCustomGasStore(s => s?.maxBaseFee);
   const { navigate } = useNavigation();
 
   return (
@@ -201,15 +171,14 @@ function EditMaxBaseFee() {
       <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MAX_BASE_FEE_TYPE })}>
         {i18n.t(i18n.l.gas.max_base_fee)}
       </PressableLabel>
-      <GasSettingInput value={maxBaseFee} onDebouncedChange={maxBaseFee => setCustomMaxBaseFee(chainId, maxBaseFee)} />
+      <GasSettingInput value={maxBaseFee} onChange={maxBaseFee => setUnsavedCustomGasStore({ maxBaseFee })} />
     </Inline>
   );
 }
 
 const MIN_FLASHBOTS_PRIORITY_FEE = gweiToWei('6');
 function EditPriorityFee() {
-  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-  const maxPriorityFee = useCustomMaxPriorityFee(chainId);
+  const maxPriorityFee = useUnsavedCustomGasStore(s => s?.maxPriorityFee);
   const { navigate } = useNavigation();
 
   const isFlashbotsEnabled = useSwapsStore(s => s.flashbots);
@@ -222,31 +191,31 @@ function EditPriorityFee() {
       <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MINER_TIP_TYPE })}>
         {i18n.t(i18n.l.gas.miner_tip)}
       </PressableLabel>
-      <GasSettingInput value={maxPriorityFee} onDebouncedChange={priorityFee => setCustomMaxPriorityFee(chainId, priorityFee)} min={min} />
+      <GasSettingInput value={maxPriorityFee} onChange={maxPriorityFee => setUnsavedCustomGasStore({ maxPriorityFee })} min={min} />
     </Inline>
   );
 }
 
-function EditGasPrice() {
-  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-  const gasPrice = useCustomGasPrice(chainId);
-  const { navigate } = useNavigation();
+// function EditGasPrice() {
+//   const gasPrice = useUnsavedCustomGasStore(s => s?.gasPrice || '0');
+//   const { navigate } = useNavigation();
 
-  return (
-    <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-      {/* TODO: Add error and warning values here */}
-      <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MAX_BASE_FEE_TYPE })}>
-        {i18n.t(i18n.l.gas.max_base_fee)}
-      </PressableLabel>
-      <GasSettingInput value={gasPrice} onDebouncedChange={gasPrice => setCustomGasPrice(chainId, gasPrice)} />
-    </Inline>
-  );
-}
+//   return (
+//     <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
+//       {/* TODO: Add error and warning values here */}
+//       <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MAX_BASE_FEE_TYPE })}>
+//         {i18n.t(i18n.l.gas.max_base_fee)}
+//       </PressableLabel>
+//       <GasSettingInput value={gasPrice} onChange={gasPrice => setUnsavedCustomGasStore({ gasPrice })} />
+//     </Inline>
+//   );
+// }
 
 function MaxTransactionFee() {
   const { isDarkMode } = useColorMode();
 
-  const maxTransactionFee = useSwapEstimatedGasFee();
+  const gasSettings = useUnsavedCustomGasStore();
+  const maxTransactionFee = useSwapEstimatedGasFee({ gasSettings });
 
   return (
     <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
@@ -270,23 +239,63 @@ function MaxTransactionFee() {
   );
 }
 
+type UnsavedSetting = { type: 'suggestion' | 'user inputed' } & GasSettings;
+const useUnsavedCustomGasStore = createRainbowStore<UnsavedSetting | undefined>(() => undefined);
+const setUnsavedCustomGasStore = (settings: Partial<UnsavedSetting>) => {
+  useUnsavedCustomGasStore.setState(s => ({
+    isEIP1559: true,
+    type: 'user inputed',
+    maxBaseFee: settings.maxBaseFee || s?.maxBaseFee || '0',
+    maxPriorityFee: settings.maxPriorityFee || s?.maxPriorityFee || '0',
+  }));
+};
+
 function EditableGasSettings() {
-  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-
-  // use suggested gas from metereology as a placeholder
-  if (!getCustomGasSettings(chainId)) {
-    const suggestions = getCachedGasSuggestions(chainId);
-    useCustomGasStore.setState({ [chainId]: suggestions?.fast || suggestions?.normal });
-  }
-
-  const settings = getCustomGasSettings(chainId);
-  if (settings && !settings.isEIP1559) return <EditGasPrice />;
+  // if (settings && !settings.isEIP1559) return <EditGasPrice />;
   return (
     <>
       <EditMaxBaseFee />
       <EditPriorityFee />
     </>
   );
+}
+
+export function onOpenGasPanel() {
+  /*
+    when opening the gas panel, and the previously selected speed was NOT custom,
+    we prefill the custom gas settings with the selected suggestion
+    when closing this panel, if the user didn't modify the settings, we keep the selected gas speed the same as before
+
+    ex: was on fast, taps custom, don't change anything and closes, we keep the selected speed as fast
+  */
+  const chainId = useSwapsStore.getState().inputAsset?.chainId || ChainId.mainnet;
+  const selectedSpeed = getSelectedGasSpeed(chainId);
+  const suggestions = getCachedGasSuggestions(chainId);
+
+  const customGasSettings = getCustomGasSettings(chainId);
+  if (selectedSpeed === 'custom' && customGasSettings) {
+    useUnsavedCustomGasStore.setState({ ...customGasSettings, type: 'user inputed' });
+    return;
+  }
+
+  const suggestion = suggestions?.[selectedSpeed === 'custom' ? 'fast' : selectedSpeed];
+  if (!suggestion || !suggestion.isEIP1559) return;
+
+  useUnsavedCustomGasStore.setState({ ...suggestion, type: 'suggestion' });
+}
+
+function saveCustomGasSettings() {
+  const unsaved = useUnsavedCustomGasStore.getState();
+  if (!unsaved || unsaved.type === 'suggestion') return;
+
+  const { inputAsset } = useSwapsStore.getState();
+  const chainId = inputAsset?.chainId || ChainId.mainnet;
+  useCustomGasStore.setState({ [chainId]: unsaved });
+  setSelectedGasSpeed(chainId, 'custom');
+}
+
+export function onCloseGasPanel() {
+  saveCustomGasSettings();
 }
 
 export function GasPanel() {

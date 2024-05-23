@@ -6,7 +6,7 @@ export const formatNumber = (value: string, options?: { decimals?: number }) => 
   if (!+value) return `0${decimalSeparator}00`;
   if (+value < 0.0001) return `<0${decimalSeparator}0001`;
 
-  const [whole, fraction] = value.split(decimalSeparator);
+  const [whole, fraction = ''] = value.split(decimalSeparator);
   const decimals = options?.decimals;
   const paddedFraction = `${fraction.padEnd(decimals || 4, '0')}`;
 

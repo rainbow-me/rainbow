@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
-import { SharedValue, useSharedValue } from 'react-native-reanimated';
+import { SharedValue, runOnJS, useSharedValue } from 'react-native-reanimated';
+import { onCloseGasPanel, onOpenGasPanel } from '../components/GasPanel';
 import { useSwapInputsController } from './useSwapInputsController';
 
 export const enum NavigationSteps {
@@ -42,6 +43,9 @@ export function useSwapNavigation({
   const handleShowGas = useCallback(
     ({ backToReview = false }: { backToReview?: boolean }) => {
       'worklet';
+
+      runOnJS(onOpenGasPanel)();
+
       if (backToReview) {
         navigateBackToReview.value = true;
       }
@@ -57,6 +61,9 @@ export function useSwapNavigation({
 
   const handleDismissGas = useCallback(() => {
     'worklet';
+
+    runOnJS(onCloseGasPanel)();
+
     if (configProgress.value === NavigationSteps.SHOW_GAS) {
       configProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
     }

@@ -12,7 +12,7 @@ type LegacyGasSettings = {
   gasPrice: string;
 };
 
-export type GasSettings = EIP1159GasSettings | LegacyGasSettings;
+export type GasSettings = EIP1159GasSettings; // | LegacyGasSettings;
 
 export type CustomGasStoreState = { [c in ChainId]?: GasSettings };
 export const useCustomGasStore = createRainbowStore<CustomGasStoreState>(() => ({}));
@@ -27,13 +27,13 @@ const setCustomGasSettings = (chainId: ChainId, update: Partial<EIP1159GasSettin
     return { [chainId]: { ...state, ...update } };
   });
 
-const setCustomLegacyGasSettings = (chainId: ChainId, update: Partial<LegacyGasSettings>) =>
-  useCustomGasStore.setState(s => {
-    const state = s[chainId] || { isEIP1559: false, gasPrice: '0' };
-    if (state.isEIP1559) return s;
-    return { [chainId]: { ...state, ...update } };
-  });
+// const setCustomLegacyGasSettings = (chainId: ChainId, update: Partial<LegacyGasSettings>) =>
+//   useCustomGasStore.setState(s => {
+//     const state = s[chainId] || { isEIP1559: false, gasPrice: '0' };
+//     if (state.isEIP1559) return s;
+//     return { [chainId]: { ...state, ...update } };
+//   });
 
 export const setCustomMaxBaseFee = (chainId: ChainId, maxBaseFee = '0') => setCustomGasSettings(chainId, { maxBaseFee });
 export const setCustomMaxPriorityFee = (chainId: ChainId, maxPriorityFee = '0') => setCustomGasSettings(chainId, { maxPriorityFee });
-export const setCustomGasPrice = (chainId: ChainId, gasPrice = '0') => setCustomLegacyGasSettings(chainId, { gasPrice });
+// export const setCustomGasPrice = (chainId: ChainId, gasPrice = '0') => setCustomLegacyGasSettings(chainId, { gasPrice });
