@@ -6,6 +6,17 @@ const removeDecimal = (num: string): [bigint, number] => {
   return [bigIntNum, decimalPlaces];
 };
 
+const isNumberString = (value: string): boolean => {
+  return /^\d+(\.\d+)?$/.test(value);
+};
+
+const isZero = (value: string): boolean => {
+  if (parseFloat(value) === 0) {
+    return true;
+  }
+  return false;
+};
+
 // Utility function to scale the number up to 20 decimal places
 const scaleUp = (bigIntNum: bigint, decimalPlaces: number): bigint => {
   const scaleFactor = BigInt(10) ** (BigInt(20) - BigInt(decimalPlaces));
@@ -23,6 +34,16 @@ const formatResult = (result: bigint): string => {
 
 // Sum function
 export function sum(num1: string, num2: string): string {
+  if (!isNumberString(num1) || !isNumberString(num2)) {
+    throw new Error('Arguments must be a numeric string');
+  }
+  if (isZero(num1)) {
+    return num2;
+  }
+
+  if (isZero(num2)) {
+    return num1;
+  }
   const [bigInt1, decimalPlaces1] = removeDecimal(num1);
   const [bigInt2, decimalPlaces2] = removeDecimal(num2);
   const scaledBigInt1 = scaleUp(bigInt1, decimalPlaces1);
@@ -33,6 +54,14 @@ export function sum(num1: string, num2: string): string {
 
 // Subtract function
 export function sub(num1: string, num2: string): string {
+  if (!isNumberString(num1) || !isNumberString(num2)) {
+    throw new Error('Arguments must be a numeric string');
+  }
+
+  if (isZero(num2)) {
+    return num1;
+  }
+
   const [bigInt1, decimalPlaces1] = removeDecimal(num1);
   const [bigInt2, decimalPlaces2] = removeDecimal(num2);
   const scaledBigInt1 = scaleUp(bigInt1, decimalPlaces1);
@@ -43,6 +72,12 @@ export function sub(num1: string, num2: string): string {
 
 // Multiply function
 export function mul(num1: string, num2: string): string {
+  if (!isNumberString(num1) || !isNumberString(num2)) {
+    throw new Error('Arguments must be a numeric string');
+  }
+  if (isZero(num1) || isZero(num2)) {
+    return '0';
+  }
   const [bigInt1, decimalPlaces1] = removeDecimal(num1);
   const [bigInt2, decimalPlaces2] = removeDecimal(num2);
   const scaledBigInt1 = scaleUp(bigInt1, decimalPlaces1);
@@ -53,6 +88,15 @@ export function mul(num1: string, num2: string): string {
 
 // Divide function
 export function div(num1: string, num2: string): string {
+  if (!isNumberString(num1) || !isNumberString(num2)) {
+    throw new Error('Arguments must be a numeric string');
+  }
+  if (isZero(num2)) {
+    throw new Error('Division by zero');
+  }
+  if (isZero(num1)) {
+    return '0';
+  }
   const [bigInt1, decimalPlaces1] = removeDecimal(num1);
   const [bigInt2, decimalPlaces2] = removeDecimal(num2);
   const scaledBigInt1 = scaleUp(bigInt1, decimalPlaces1);
@@ -63,6 +107,19 @@ export function div(num1: string, num2: string): string {
 
 // Modulus function
 export function mod(num1: string, num2: string): string {
+  if (!isNumberString(num1) || !isNumberString(num2)) {
+    throw new Error('Arguments must be a numeric string');
+  }
+  if (isZero(num1) && isZero(num2)) {
+    throw new Error('Division by zero');
+  }
+
+  if (isZero(num1)) {
+    return '0';
+  }
+  if (isZero(num2)) {
+    throw new Error('Division by zero');
+  }
   const [bigInt1, decimalPlaces1] = removeDecimal(num1);
   const [bigInt2, decimalPlaces2] = removeDecimal(num2);
   const scaledBigInt1 = scaleUp(bigInt1, decimalPlaces1);
@@ -73,6 +130,15 @@ export function mod(num1: string, num2: string): string {
 
 // Power function
 export function pow(base: string, exponent: string): string {
+  if (!isNumberString(base) || !isNumberString(exponent)) {
+    throw new Error('Arguments must be a numeric string');
+  }
+  if (isZero(base)) {
+    return '0';
+  }
+  if (isZero(exponent)) {
+    return '1';
+  }
   const [bigIntBase, decimalPlaces] = removeDecimal(base);
   const scaledBigIntBase = scaleUp(bigIntBase, decimalPlaces);
   const result = scaledBigIntBase ** BigInt(exponent) / BigInt(10) ** BigInt(20);
