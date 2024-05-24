@@ -1,7 +1,7 @@
 import Clipboard from '@react-native-clipboard/clipboard';
 import lang from 'i18n-js';
 import * as React from 'react';
-import { PressableProps } from 'react-native';
+import { InteractionManager, PressableProps } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import { CopyFloatingEmojis } from '@/components/floating-emojis';
@@ -180,7 +180,9 @@ function SwapButton() {
 
       android && delayNext();
       if (swapsV2Enabled) {
-        navigate(Routes.SWAP);
+        InteractionManager.runAfterInteractions(() => {
+          navigate(Routes.SWAP);
+        });
         return;
       }
 

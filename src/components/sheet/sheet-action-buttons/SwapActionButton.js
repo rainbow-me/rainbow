@@ -24,12 +24,10 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
       const chainId = ethereumUtils.getChainIdFromNetwork(asset.network);
       const userAsset = userAssetsStore.getState().userAssets.get(`${asset.address}_${chainId}`);
       const parsedAsset = parseSearchAsset({
-        assetWithPrice: undefined,
-        searchAsset: asset,
+        assetWithPrice: asset,
+        searchAsset: { ...asset, chainId },
         userAsset,
       });
-
-      console.log(parsedAsset);
 
       if (inputType === assetInputTypes.in) {
         setAsset({ type: SwapAssetType.inputAsset, asset: parsedAsset });
