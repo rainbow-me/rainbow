@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
-import { Box, HitSlop, Inline, Stack, Text } from '@/design-system';
+import { Box, HitSlop, Inline, Text } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
 import { CoinRowButton } from '@/__swaps__/screens/Swap/components/CoinRowButton';
 import { BalancePill } from '@/__swaps__/screens/Swap/components/BalancePill';
@@ -10,6 +10,8 @@ import { ETH_ADDRESS } from '@/references';
 import Animated from 'react-native-reanimated';
 import { StyleSheet } from 'react-native';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { SwapCoinIcon } from './SwapCoinIcon';
+import { ethereumUtils } from '@/utils';
 
 export const CoinRow = ({
   address,
@@ -71,28 +73,20 @@ export const CoinRow = ({
           flexDirection="row"
           justifyContent="space-between"
           width="full"
+          gap={12}
         >
-          <Inline alignVertical="center" space="10px">
-            {/* TODO: Implement Coin Icons using reanimated values */}
-            <Box
-              as={Animated.View}
-              borderRadius={18}
-              height={{ custom: 36 }}
-              style={[styles.solidColorCoinIcon, AnimatedSwapStyles.assetToSellIconStyle]}
-              width={{ custom: 36 }}
-            />
-            {/* <SwapCoinIcon
+          <Box flexDirection="row" gap={10} flexShrink={1} justifyContent="center">
+            <SwapCoinIcon
               iconUrl={iconUrl}
               address={address}
               mainnetAddress={mainnetAddress}
               large
               network={ethereumUtils.getNetworkFromChainId(chainId)}
               symbol={symbol}
-              theme={theme}
               color={color}
-            /> */}
-            <Stack space="10px">
-              <Text color="label" size="17pt" weight="semibold">
+            />
+            <Box gap={10} flexShrink={1} justifyContent="center">
+              <Text color="label" size="17pt" weight="semibold" numberOfLines={1} ellipsizeMode="tail">
                 {name}
               </Text>
               <Inline alignVertical="center" space={{ custom: 5 }}>
@@ -110,8 +104,8 @@ export const CoinRow = ({
                   </Inline>
                 )}
               </Inline>
-            </Stack>
-          </Inline>
+            </Box>
+          </Box>
           {output ? (
             <Inline space="8px">
               <CoinRowButton icon="􀅳" outline size="icon 14px" />

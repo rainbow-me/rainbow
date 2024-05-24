@@ -1,6 +1,20 @@
 // @refresh
-import React, { createContext, useContext, ReactNode, useEffect } from 'react';
-import { StyleProp, TextStyle, TextInput } from 'react-native';
+import { INITIAL_SLIDER_POSITION, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { useAnimatedSwapStyles } from '@/__swaps__/screens/Swap/hooks/useAnimatedSwapStyles';
+import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
+import { NavigationSteps, useSwapNavigation } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
+import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextStyles';
+import { useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
+import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { ChainId } from '@/__swaps__/types/chains';
+import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
+import { isSameAsset } from '@/__swaps__/utils/assets';
+import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
+import { logger } from '@/logger';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
+import React, { ReactNode, createContext, useContext, useEffect } from 'react';
+import { StyleProp, TextInput, TextStyle } from 'react-native';
 import {
   AnimatedRef,
   SharedValue,
@@ -10,21 +24,7 @@ import {
   useDerivedValue,
   useSharedValue,
 } from 'react-native-reanimated';
-import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
-import { INITIAL_SLIDER_POSITION, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { useAnimatedSwapStyles } from '@/__swaps__/screens/Swap/hooks/useAnimatedSwapStyles';
-import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextStyles';
-import { useSwapNavigation, NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
-import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
-import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
-import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
-import { swapsStore } from '@/state/swaps/swapsStore';
-import { isSameAsset } from '@/__swaps__/utils/assets';
-import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
-import { ChainId } from '@/__swaps__/types/chains';
-import { logger } from '@/logger';
-import { useSwapGas } from '../hooks/useSwapGas';
+import { useSwapSettings } from '../hooks/useSwapSettings';
 
 interface SwapContextType {
   isFetching: SharedValue<boolean>;
@@ -42,8 +42,8 @@ interface SwapContextType {
   lastTypedInput: SharedValue<inputKeys>;
   focusedInput: SharedValue<inputKeys>;
 
-  // TODO: Separate this into Zustand
-  outputChainId: SharedValue<ChainId>;
+  selectedOutputChainId: SharedValue<ChainId>;
+  setSelectedOutputChainId: (chainId: ChainId) => void;
 
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
@@ -51,12 +51,12 @@ interface SwapContextType {
 
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
 
+  SwapSettings: ReturnType<typeof useSwapSettings>;
   SwapInputController: ReturnType<typeof useSwapInputsController>;
   AnimatedSwapStyles: ReturnType<typeof useAnimatedSwapStyles>;
   SwapTextStyles: ReturnType<typeof useSwapTextStyles>;
   SwapNavigation: ReturnType<typeof useSwapNavigation>;
   SwapWarning: ReturnType<typeof useSwapWarning>;
-  SwapGas: ReturnType<typeof useSwapGas>;
 
   confirmButtonIcon: Readonly<SharedValue<string>>;
   confirmButtonLabel: Readonly<SharedValue<string>>;
@@ -84,16 +84,16 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
   const lastTypedInput = useSharedValue<inputKeys>('inputAmount');
   const focusedInput = useSharedValue<inputKeys>('inputAmount');
-  const outputChainId = useSharedValue<ChainId>(ChainId.mainnet);
+
+  const selectedOutputChainId = useSharedValue<ChainId>(ChainId.mainnet);
 
   const internalSelectedInputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(null);
   const internalSelectedOutputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(null);
 
   const quote = useSharedValue<Quote | CrosschainQuote | QuoteError | null>(null);
 
-  const SwapGas = useSwapGas({
+  const SwapSettings = useSwapSettings({
     inputAsset: internalSelectedInputAsset,
-    outputAsset: internalSelectedOutputAsset,
   });
 
   const SwapInputController = useSwapInputsController({
@@ -118,8 +118,12 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
   const SwapWarning = useSwapWarning({
     SwapInputController,
+    inputAsset: internalSelectedInputAsset,
+    outputAsset: internalSelectedOutputAsset,
+    quote,
     sliderXPosition,
     isFetching,
+    isQuoteStale,
   });
 
   const AnimatedSwapStyles = useAnimatedSwapStyles({
@@ -173,6 +177,16 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
   };
 
+  const setSelectedOutputChainId = (chainId: ChainId) => {
+    const updateChainId = (chainId: ChainId) => {
+      'worklet';
+      selectedOutputChainId.value = chainId;
+    };
+
+    swapsStore.setState({ selectedOutputChainId: chainId });
+    runOnUI(updateChainId)(chainId);
+  };
+
   const setAsset = ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset }) => {
     const updateAssetValue = ({ type, asset }: { type: SwapAssetType; asset: ExtendedAnimatedAssetWithColors | null }) => {
       'worklet';
@@ -180,6 +194,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       switch (type) {
         case SwapAssetType.inputAsset:
           internalSelectedInputAsset.value = asset;
+          selectedOutputChainId.value = asset?.chainId ?? ChainId.mainnet;
           break;
         case SwapAssetType.outputAsset:
           internalSelectedOutputAsset.value = asset;
@@ -299,6 +314,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         outputAsset: null,
         quote: null,
       });
+
+      SwapInputController.quoteFetchingInterval.stop();
     };
   }, []);
 
@@ -320,7 +337,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
         lastTypedInput,
         focusedInput,
-        outputChainId,
+
+        selectedOutputChainId,
+        setSelectedOutputChainId,
 
         internalSelectedInputAsset,
         internalSelectedOutputAsset,
@@ -328,12 +347,12 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
         quote,
 
+        SwapSettings,
         SwapInputController,
         AnimatedSwapStyles,
         SwapTextStyles,
         SwapNavigation,
         SwapWarning,
-        SwapGas,
 
         confirmButtonIcon,
         confirmButtonLabel,

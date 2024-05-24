@@ -1,7 +1,6 @@
 import { getDefaultKeyboardHeight } from '@/redux/keyboardHeight';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { Easing } from 'react-native-reanimated';
-import { SearchAsset } from '@/__swaps__/types/search';
 
 // /---- 🔒 Constants 🔒 ----/ //
 //
@@ -66,52 +65,7 @@ export const springConfig = { damping: 100, mass: 1.2, stiffness: 750 };
 //
 // /---- END animation configs ----/ //
 
-export const mainnetEthSearchResult: SearchAsset = {
-  decimals: 18,
-  highLiquidity: true,
-  name: 'Ethereum',
-  symbol: 'ETH',
-  uniqueId: 'eth_1',
-  colors: {
-    primary: '#808088',
-    fallback: '#E8EAF5',
-  },
-  icon_url: 'https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png',
-  rainbowMetadataId: 76174,
-  isRainbowCurated: true,
-  isVerified: true,
-  networks: {
-    '1': {
-      address: 'eth',
-      decimals: 18,
-    },
-    '10': {
-      address: '0x0000000000000000000000000000000000000000',
-      decimals: 18,
-    },
-    '56': {
-      address: '0x2170ed0880ac9a755fd29b2688956bd959f933f8',
-      decimals: 18,
-    },
-    '8453': {
-      address: '0x0000000000000000000000000000000000000000',
-      decimals: 18,
-    },
-    '42161': {
-      address: '0x0000000000000000000000000000000000000000',
-      decimals: 18,
-    },
-    '81457': {
-      address: '0x0000000000000000000000000000000000000000',
-      decimals: 18,
-    },
-    '7777777': {
-      address: '0x0000000000000000000000000000000000000000',
-      decimals: 18,
-    },
-  },
-  address: 'eth',
-  chainId: 1,
-  isNativeAsset: true,
-  mainnetAddress: 'eth',
-};
+export const highPriceImpactThreshold = 0.05;
+export const severePriceImpactThreshold = 0.1;
+
+export const slippageStep = 0.5;

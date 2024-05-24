@@ -1,12 +1,12 @@
 import React, { useCallback } from 'react';
-import Animated, { runOnUI, useAnimatedReaction, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedReaction, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { AnimatedText, Box, Inline, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH, fadeConfig } from '@/__swaps__/screens/Swap/constants';
 import { opacity, valueBasedDecimalFormatter } from '@/__swaps__/utils/swaps';
-import { ButtonPressAnimation } from '@/components/animations';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { AddressZero } from '@ethersproject/constants';
 import { ETH_ADDRESS } from '@/references';
+import { GestureHandlerV1Button } from './GestureHandlerV1Button';
 
 export const ExchangeRateBubble = () => {
   const { isDarkMode } = useColorMode();
@@ -85,27 +85,27 @@ export const ExchangeRateBubble = () => {
 
       switch (rotatingIndex.value) {
         case 0: {
-          const formattedRate = valueBasedDecimalFormatter(
-            inputAssetPrice / outputAssetPrice,
-            outputAssetPrice,
-            'up',
-            -1,
-            isOutputAssetStablecoin,
-            false
-          );
+          const formattedRate = valueBasedDecimalFormatter({
+            amount: inputAssetPrice / outputAssetPrice,
+            usdTokenPrice: outputAssetPrice,
+            roundingMode: 'up',
+            precisionAdjustment: -1,
+            isStablecoin: isOutputAssetStablecoin,
+            stripSeparators: false,
+          });
           fromAssetText.value = `1 ${inputAssetSymbol}`;
           toAssetText.value = `${formattedRate} ${outputAssetSymbol}`;
           break;
         }
         case 1: {
-          const formattedRate = valueBasedDecimalFormatter(
-            outputAssetPrice / inputAssetPrice,
-            inputAssetPrice,
-            'up',
-            -1,
-            isInputAssetStablecoin,
-            false
-          );
+          const formattedRate = valueBasedDecimalFormatter({
+            amount: outputAssetPrice / inputAssetPrice,
+            usdTokenPrice: inputAssetPrice,
+            roundingMode: 'up',
+            precisionAdjustment: -1,
+            isStablecoin: isInputAssetStablecoin,
+            stripSeparators: false,
+          });
           fromAssetText.value = `1 ${outputAssetSymbol}`;
           toAssetText.value = `${formattedRate} ${inputAssetSymbol}`;
           break;
@@ -139,7 +139,7 @@ export const ExchangeRateBubble = () => {
   }));
 
   return (
-    <ButtonPressAnimation onPress={() => runOnUI(onChangeIndex)()} scaleTo={0.925}>
+    <GestureHandlerV1Button onPressWorklet={onChangeIndex} scaleTo={0.925}>
       <Box
         as={Animated.View}
         alignItems="center"
@@ -188,6 +188,6 @@ export const ExchangeRateBubble = () => {
           </Inline>
         </Box>
       </Box>
-    </ButtonPressAnimation>
+    </GestureHandlerV1Button>
   );
 };

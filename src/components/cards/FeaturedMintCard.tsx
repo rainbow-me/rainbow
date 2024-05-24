@@ -45,12 +45,11 @@ const BlurWrapper = styled(View).attrs({
 
 export function FeaturedMintCard() {
   const { accountAddress } = useAccountProfile();
+  const { width: deviceWidth } = useDimensions();
+
   const {
     data: { featuredMint },
-  } = useMints({
-    walletAddress: accountAddress,
-  });
-  const { width: deviceWidth } = useDimensions();
+  } = useMints({ walletAddress: accountAddress });
 
   const [mediaRendered, setMediaRendered] = useState(false);
   const { colorMode } = useColorMode();
@@ -76,11 +75,13 @@ export function FeaturedMintCard() {
         priceInEth: convertRawAmountToRoundedDecimal(featuredMint.mintStatus.price, 18, 6),
       });
       const network = ethereumUtils.getNetworkFromChainId(featuredMint.chainId);
-      navigateToMintCollection(featuredMint.contract, network);
+      navigateToMintCollection(featuredMint.contract, featuredMint.mintStatus.price, network);
     }
   }, [featuredMint]);
 
-  return featuredMint ? (
+  if (!featuredMint) return null;
+
+  return (
     <ColorModeProvider value="darkTinted">
       <AccentColorProvider color={accentColor ?? labelSecondary}>
         <View
@@ -282,7 +283,5 @@ export function FeaturedMintCard() {
         </View>
       </AccentColorProvider>
     </ColorModeProvider>
-  ) : (
-    <></>
   );
 }

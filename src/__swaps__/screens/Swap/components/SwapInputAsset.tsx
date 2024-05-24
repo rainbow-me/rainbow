@@ -17,6 +17,7 @@ import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
 import { isSameAssetWorklet } from '@/__swaps__/utils/assets';
+import { AmimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
 
 function SwapInputActionButton() {
   const { isDarkMode } = useColorMode();
@@ -69,18 +70,11 @@ function SwapInputAmount() {
 }
 
 function SwapInputIcon() {
-  const { AnimatedSwapStyles } = useSwapContext();
+  const { internalSelectedInputAsset } = useSwapContext();
 
   return (
     <Box paddingRight="10px">
-      {/* TODO: Implement Coin Icons using reanimated values */}
-      <Box
-        as={Animated.View}
-        borderRadius={18}
-        height={{ custom: 36 }}
-        style={[styles.solidColorCoinIcon, AnimatedSwapStyles.assetToSellIconStyle]}
-        width={{ custom: 36 }}
-      />
+      <AmimatedSwapCoinIcon asset={internalSelectedInputAsset} large />
     </Box>
   );
 }

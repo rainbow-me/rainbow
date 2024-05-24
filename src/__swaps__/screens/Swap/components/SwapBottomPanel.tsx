@@ -1,21 +1,22 @@
-import React, { useState } from 'react';
+import React from 'react';
+import Animated, { runOnUI, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import { StyleSheet } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 
 import { Box, Column, Columns, Separator, globalColors, useColorMode } from '@/design-system';
 import { safeAreaInsetValues } from '@/utils';
 
-import { SwapActionButton } from './SwapActionButton';
-import { GasButton } from './GasButton';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH, springConfig } from '@/__swaps__/screens/Swap/constants';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext, NavigationSteps } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import Animated, { runOnJS, runOnUI, useAnimatedReaction, useAnimatedStyle, withSpring } from 'react-native-reanimated';
-import { StyleSheet } from 'react-native';
+
 import { opacity } from '@/__swaps__/utils/swaps';
-import { ReviewPanel } from './ReviewPanel';
-import { GasPanel } from './GasPanel';
 import { useBottomPanelGestureHandler } from '../hooks/useBottomPanelGestureHandler';
+import { GasButton } from './GasButton';
+import { GasPanel } from './GasPanel';
+import { ReviewPanel } from './ReviewPanel';
+import { SwapActionButton } from './SwapActionButton';
 
 export function SwapBottomPanel() {
   const { isDarkMode } = useColorMode();
@@ -27,24 +28,9 @@ export function SwapBottomPanel() {
     AnimatedSwapStyles,
     SwapNavigation,
     configProgress,
-    isFetching,
   } = useSwapContext();
 
   const { swipeToDismissGestureHandler, gestureY } = useBottomPanelGestureHandler();
-  const [enabled, setEnabled] = useState(false);
-
-  useAnimatedReaction(
-    () => ({
-      configProgress: configProgress.value,
-    }),
-    ({ configProgress }) => {
-      if (configProgress === NavigationSteps.SHOW_REVIEW || configProgress === NavigationSteps.SHOW_GAS) {
-        runOnJS(setEnabled)(true);
-      } else {
-        runOnJS(setEnabled)(false);
-      }
-    }
-  );
 
   const gestureHandlerStyles = useAnimatedStyle(() => {
     return {
@@ -60,7 +46,7 @@ export function SwapBottomPanel() {
 
   return (
     // @ts-expect-error Property 'children' does not exist on type
-    <PanGestureHandler maxPointers={1} onGestureEvent={swipeToDismissGestureHandler} enabled={enabled}>
+    <PanGestureHandler maxPointers={1} onGestureEvent={swipeToDismissGestureHandler}>
       <Box
         as={Animated.View}
         paddingBottom={{

@@ -1,19 +1,22 @@
 import { ALLOWS_PERMIT, ChainId, ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR, PermitSupportedTokenList, WRAPPED_ASSET } from '@rainbow-me/swaps';
 import { Address } from 'viem';
 
-import { ETH_ADDRESS } from '../references';
 import { isNativeAsset } from '@/handlers/assets';
 import { add } from '@/helpers/utilities';
 import { ethereumUtils, isLowerCaseMatch } from '@/utils';
+import { ETH_ADDRESS } from '../references';
 
 import { assetNeedsUnlocking, estimateApprove } from './actions';
 import { estimateCrosschainSwapGasLimit } from './actions/crosschainSwap';
 import { createNewAction, createNewRap } from './common';
 import { RapAction, RapSwapActionParameters, RapUnlockActionParameters } from './references';
 
-export const estimateUnlockAndCrosschainSwap = async (swapParameters: RapSwapActionParameters<'crosschainSwap'>) => {
-  const { sellAmount, quote, chainId, assetToSell } = swapParameters;
-
+export const estimateUnlockAndCrosschainSwap = async ({
+  sellAmount,
+  quote,
+  chainId,
+  assetToSell,
+}: Pick<RapSwapActionParameters<'crosschainSwap'>, 'sellAmount' | 'quote' | 'chainId' | 'assetToSell'>) => {
   const {
     from: accountAddress,
     sellTokenAddress,
@@ -138,7 +141,7 @@ export const createUnlockAndCrosschainSwapRap = async (swapParameters: RapSwapAc
     assetToSell,
     sellAmount,
     assetToBuy,
-    selectedGasFee: swapParameters.selectedGasFee,
+    gasParams: swapParameters.gasParams,
     gasFeeParamsBySpeed: swapParameters.gasFeeParamsBySpeed,
   } satisfies RapSwapActionParameters<'crosschainSwap'>);
   actions = actions.concat(swap);

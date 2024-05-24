@@ -56,7 +56,7 @@ import { ethereumUtils, gasUtils } from '@/utils';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import logger from '@/utils/logger';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
-import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
+import { ChainId, CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import store from '@/redux/store';
 import { getCrosschainSwapServiceTime } from '@/handlers/swap';
 import useParamsForExchangeModal from '@/hooks/useParamsForExchangeModal';
@@ -76,6 +76,8 @@ import { AddressOrEth, ParsedAsset } from '@/__swaps__/types/assets';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { estimateSwapGasLimit } from '@/raps/actions';
 import { estimateCrosschainSwapGasLimit } from '@/raps/actions/crosschainSwap';
+import { isUnwrapEth, isWrapEth } from '@/__swaps__/utils/swaps';
+import { parseGasParamAmounts } from '@/parsers';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [Network.mainnet]: 100,
@@ -449,6 +451,21 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
           colors: outputCurrency.colors as TokenColors,
         } as ParsedAsset;
 
+        const isWrapOrUnwrapEth = () => {
+          return (
+            isWrapEth({
+              buyTokenAddress: tradeDetails?.buyTokenAddress,
+              sellTokenAddress: tradeDetails?.sellTokenAddress,
+              chainId: inputCurrency?.chainId || ChainId.mainnet,
+            }) ||
+            isUnwrapEth({
+              buyTokenAddress: tradeDetails?.buyTokenAddress,
+              sellTokenAddress: tradeDetails?.sellTokenAddress,
+              chainId: inputCurrency?.chainId || ChainId.mainnet,
+            })
+          );
+        };
+
         const { nonce, errorMessage } = await walletExecuteRap(wallet, isCrosschainSwap ? 'crosschainSwap' : 'swap', {
           chainId,
           flashbots,
@@ -456,7 +473,12 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
           assetToSell: transformedAssetToSell,
           assetToBuy: transformedAssetToBuy,
           sellAmount: inputAmount,
-          quote: tradeDetails,
+          quote: {
+            ...tradeDetails,
+            feeInEth: isWrapOrUnwrapEth() ? '0' : tradeDetails.feeInEth,
+            fromChainId: inputCurrency.chainId,
+            toChainId: outputCurrency.chainId,
+          },
           amount: inputAmount,
           meta: {
             inputAsset: transformedAssetToSell,
@@ -466,7 +488,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
             slippage: slippageInBips,
             route: source,
           },
-          selectedGasFee,
+          gasParams: parseGasParamAmounts(selectedGasFee),
           gasFeeParamsBySpeed,
         });
 

@@ -7,6 +7,7 @@ import Routes from '@/navigation/routesNames';
 import { logger } from '@/logger';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as lang from '@/languages';
+import { BigNumberish } from '@ethersproject/bignumber';
 
 const showAlert = () => {
   Alert.alert(
@@ -16,11 +17,12 @@ const showAlert = () => {
     { cancelable: false }
   );
 };
-export const navigateToMintCollection = async (contractAddress: EthereumAddress, network: Network) => {
+export const navigateToMintCollection = async (contractAddress: EthereumAddress, pricePerMint: BigNumberish, network: Network) => {
   logger.debug('Mints: Navigating to Mint Collection', {
     contractAddress,
     network,
   });
+
   try {
     const chainId = getNetworkObj(network).id;
     const res = await arcClient.getReservoirCollection({
@@ -30,6 +32,7 @@ export const navigateToMintCollection = async (contractAddress: EthereumAddress,
     if (res?.getReservoirCollection?.collection) {
       Navigation.handleAction(Routes.MINT_SHEET, {
         collection: res.getReservoirCollection?.collection,
+        pricePerMint,
       });
     } else {
       logger.warn('Mints: No collection found', { contractAddress, network });
