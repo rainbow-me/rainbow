@@ -26,6 +26,7 @@ import { isSameAsset } from '@/__swaps__/utils/assets';
 import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { ChainId } from '@/__swaps__/types/chains';
 import { logger } from '@/logger';
+import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 
 interface SwapContextType {
   isFetching: SharedValue<boolean>;
@@ -51,6 +52,8 @@ interface SwapContextType {
   setAsset: ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset }) => void;
 
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
+
+  outputQuotesAreDisabled: SharedValue<boolean>;
 
   SwapSettings: ReturnType<typeof useSwapSettings>;
   SwapInputController: ReturnType<typeof useSwapInputsController>;
@@ -152,6 +155,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     inputProgress,
     outputProgress,
     sliderPressProgress,
+  });
+
+  const outputQuotesAreDisabled = useSwapOutputQuotesDisabled({
+    inputAsset: internalSelectedInputAsset,
   });
 
   const handleProgressNavigation = ({ type }: { type: SwapAssetType }) => {
@@ -353,6 +360,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         setAsset,
 
         quote,
+        outputQuotesAreDisabled,
 
         SwapSettings,
         SwapInputController,

@@ -326,6 +326,11 @@ export const getDefaultSlippage = (chainId: ChainId, config: RainbowConfig) => {
   );
 };
 
+export const isChainDisabledForOutputQuotes = (inputAssetChainId: ChainId) => {
+  'worklet';
+  return [ChainId.blast].includes(inputAssetChainId);
+};
+
 export const getDefaultSlippageWorklet = (chainId: ChainId, config: RainbowConfig) => {
   'worklet';
 

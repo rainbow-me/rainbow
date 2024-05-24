@@ -32,12 +32,19 @@ type numberPadCharacter = number | 'backspace' | '.';
 
 export const SwapNumberPad = () => {
   const { isDarkMode } = useColorMode();
-  const { focusedInput, SwapInputController, configProgress } = useSwapContext();
+  const { focusedInput, SwapInputController, configProgress, outputQuotesAreDisabled } = useSwapContext();
 
   const longPressTimer = useSharedValue(0);
 
   const addNumber = (number?: number) => {
     'worklet';
+
+    console.log(focusedInput.value, outputQuotesAreDisabled.value);
+    // TODO: We should display something to the user that tells them that the output quotes are disabled
+    if (focusedInput.value === 'outputAmount' || (focusedInput.value === 'outputNativeValue' && outputQuotesAreDisabled.value)) {
+      return;
+    }
+
     // immediately stop the quote fetching interval
     SwapInputController.quoteFetchingInterval.stop();
 
@@ -100,6 +107,12 @@ export const SwapNumberPad = () => {
 
   const deleteLastCharacter = () => {
     'worklet';
+
+    // TODO: We should display something to the user that tells them that the output quotes are disabled
+    if (focusedInput.value === 'outputAmount' || (focusedInput.value === 'outputNativeValue' && outputQuotesAreDisabled.value)) {
+      return;
+    }
+
     const inputKey = focusedInput.value;
     if (SwapInputController.inputMethod.value !== inputKey) {
       SwapInputController.inputMethod.value = inputKey;
