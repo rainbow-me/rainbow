@@ -74,7 +74,7 @@ function SwapInputIcon() {
 
   return (
     <Box paddingRight="10px">
-      <AmimatedSwapCoinIcon asset={internalSelectedInputAsset} />
+      <AmimatedSwapCoinIcon asset={internalSelectedInputAsset} large />
     </Box>
   );
 }

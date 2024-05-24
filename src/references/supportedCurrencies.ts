@@ -196,7 +196,7 @@ export const supportedCurrencies = {
     symbol: 'R',
     glyph: 'R',
   },
-};
+} as const;
 
 export type SupportedCurrency = typeof supportedCurrencies;
 export type SupportedCurrencyKey = keyof SupportedCurrency;

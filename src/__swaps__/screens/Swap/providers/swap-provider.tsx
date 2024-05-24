@@ -21,7 +21,6 @@ import { useSwapNavigation, NavigationSteps } from '@/__swaps__/screens/Swap/hoo
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
 import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
-import { useSwapGas } from '@/__swaps__/screens/Swap/hooks/useSwapGas';
 import { useSwapSettings } from '@/__swaps__/screens/Swap/hooks/useSwapSettings';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { swapsStore } from '@/state/swaps/swapsStore';
@@ -75,7 +74,6 @@ interface SwapContextType {
   SwapTextStyles: ReturnType<typeof useSwapTextStyles>;
   SwapNavigation: ReturnType<typeof useSwapNavigation>;
   SwapWarning: ReturnType<typeof useSwapWarning>;
-  SwapGas: ReturnType<typeof useSwapGas>;
 
   confirmButtonIcon: Readonly<SharedValue<string>>;
   confirmButtonLabel: Readonly<SharedValue<string>>;
@@ -116,11 +114,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
   const SwapSettings = useSwapSettings({
     inputAsset: internalSelectedInputAsset,
-  });
-
-  const SwapGas = useSwapGas({
-    inputAsset: internalSelectedInputAsset,
-    outputAsset: internalSelectedOutputAsset,
   });
 
   const getNonceAndPerformSwap = async ({
@@ -488,7 +481,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         SwapTextStyles,
         SwapNavigation,
         SwapWarning,
-        SwapGas,
 
         confirmButtonIcon,
         confirmButtonLabel,
