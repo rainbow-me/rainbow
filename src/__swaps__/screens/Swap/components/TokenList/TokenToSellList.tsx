@@ -35,7 +35,7 @@ const filterUserAssets =
   };
 
 export const TokenToSellList = () => {
-  const { filter, searchQuery } = swapsStore(state => ({ filter: state.filter, searchQuery: state.searchQuery }));
+  const { filter, searchQuery } = swapsStore(state => ({ filter: state.filter, searchQuery: state.inputSearchQuery }));
   const assetIds = userAssetsStore(filterUserAssets(searchQuery, filter));
 
   return (

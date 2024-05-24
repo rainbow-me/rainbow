@@ -11,7 +11,8 @@ export interface SwapsState {
   outputAsset: ParsedSearchAsset | null;
 
   // token lists
-  searchQuery: string;
+  inputSearchQuery: string;
+  outputSearchQuery: string;
   filter: UserAssetFilter;
 
   // quote
@@ -33,7 +34,8 @@ export const swapsStore = createRainbowStore<SwapsState>(
     inputAsset: null, // TODO: Default to their largest balance asset (or ETH mainnet if user has no assets)
     outputAsset: null,
 
-    searchQuery: '',
+    inputSearchQuery: '',
+    outputSearchQuery: '',
     filter: 'all',
 
     quote: null,

@@ -39,12 +39,17 @@ export const SearchInput = ({
   });
 
   const defaultValue = useMemo(() => {
-    return swapsStore.getState().searchQuery;
-  }, []);
+    return output ? swapsStore.getState().outputSearchQuery : swapsStore.getState().inputSearchQuery;
+  }, [output]);
 
-  const onSearchQueryChange = useCallback((event: NativeSyntheticEvent<TextInputChangeEventData>) => {
-    swapsStore.setState({ searchQuery: event.nativeEvent.text });
-  }, []);
+  const onSearchQueryChange = useCallback(
+    (event: NativeSyntheticEvent<TextInputChangeEventData>) => {
+      output
+        ? swapsStore.setState({ outputSearchQuery: event.nativeEvent.text })
+        : swapsStore.setState({ inputSearchQuery: event.nativeEvent.text });
+    },
+    [output]
+  );
 
   const searchInputValue = useAnimatedProps(() => {
     const isFocused = inputProgress.value >= 1 || outputProgress.value >= 1;

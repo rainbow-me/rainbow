@@ -31,7 +31,7 @@ const filterBridgeAsset = ({ asset, filter = '' }: { asset?: SearchAsset; filter
 export function useSearchCurrencyLists() {
   const { internalSelectedInputAsset: assetToSell, selectedOutputChainId } = useSwapContext();
 
-  const searchQuery = swapsStore(state => state.searchQuery);
+  const searchQuery = swapsStore(state => state.outputSearchQuery);
 
   const [inputChainId, setInputChainId] = useState(assetToSell.value?.chainId ?? ChainId.mainnet);
   const [toChainId, setToChainId] = useState(selectedOutputChainId.value);
