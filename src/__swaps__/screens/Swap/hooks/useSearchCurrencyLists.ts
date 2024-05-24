@@ -14,6 +14,7 @@ import { isAddress } from '@ethersproject/address';
 import { RainbowToken } from '@/entities';
 import { useSwapContext } from '../providers/swap-provider';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { filterNonTokenIconAssets } from '../resources/_selectors/search';
 
 export type AssetToBuySectionId = 'bridge' | 'favorites' | 'verified' | 'unverified' | 'other_networks';
 
@@ -75,7 +76,7 @@ export function useSearchCurrencyLists() {
   // static search data
   const { data: verifiedAssets, isLoading: verifiedAssetsLoading } = useTokenSearch(
     { list: 'verifiedAssets' },
-    { staleTime: 60 * 60 * 1000, cacheTime: 24 * 60 * 60 * 1000 }
+    { select: filterNonTokenIconAssets, staleTime: 60 * 60 * 1000, cacheTime: 24 * 60 * 60 * 1000 }
   );
 
   // current search
