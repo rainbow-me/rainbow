@@ -393,6 +393,7 @@ const AddressBar = React.memo(function AddressBar({
       </Animated.View>
       <Animated.View style={[styles.inputContentWrapper, animatedInputContentWrapperStyle]}>
         <AnimatedInput
+          testID={'browser-search-input'}
           animatedProps={searchInputValue}
           clearButtonMode="while-editing"
           enablesReturnKeyAutomatically

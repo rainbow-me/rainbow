@@ -127,7 +127,13 @@ export async function startIosSimulator() {
   }
 }
 
-export async function typeText(elementId: string | RegExp, text: string | undefined, focus = true, syncOnAndroid = false) {
+export async function typeText(
+  elementId: string | RegExp,
+  text: string | undefined,
+  focus = true,
+  syncOnAndroid = false,
+  hitEnterAfterText = false
+) {
   if (text === undefined) {
     throw new Error(`Cannot type 'undefined' into element with id ${elementId}`);
   }
@@ -140,6 +146,7 @@ export async function typeText(elementId: string | RegExp, text: string | undefi
       await device.disableSynchronization();
     }
     await element(by.id(elementId)).typeText(text);
+    hitEnterAfterText && (await typeText(elementId, '\n'));
     if (device.getPlatform() === 'android' && !syncOnAndroid) {
       await device.enableSynchronization();
     }
@@ -147,6 +154,7 @@ export async function typeText(elementId: string | RegExp, text: string | undefi
     throw new Error(`Error typing "${text}" at element with id ${elementId}}: ${error}`);
   }
 }
+
 export async function typeNumbers(elementId: string | RegExp, text: string, submitLabel: string | RegExp) {
   try {
     await element(by.id(elementId)).replaceText(text.replace('\n', ''));
