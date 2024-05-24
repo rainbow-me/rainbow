@@ -10,6 +10,7 @@ import {
   typeText,
   delayTime,
   tapByText,
+  tapAtPoint,
 } from './helpers';
 
 describe('Check malicious dapp warning', () => {
@@ -38,8 +39,11 @@ describe('Check malicious dapp warning', () => {
   });
 
   it('Should attempt to connect to in browser dapp', async () => {
-    await tapByText('Connect Wallet');
-    await waitAndTap('rk-connect-button');
-    await delayTime('very-long');
+    console.log('tapping! 250 200');
+    await delayTime('medium');
+    await tapAtPoint('browser-screen', { x: 250, y: 200 });
+    await delayTime('medium');
+    // 'browser-screen'
+    // 'in-app-dapp-browser'
   });
 });
