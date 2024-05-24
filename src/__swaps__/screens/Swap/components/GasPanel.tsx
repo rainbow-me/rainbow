@@ -6,7 +6,13 @@ import { fadeConfig } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/__swaps__/types/chains';
 import { gweiToWei, weiToGwei } from '@/__swaps__/utils/ethereum';
-import { getSelectedSpeedSuggestion, useBaseFee, useGasTrend, useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
+import {
+  getSelectedSpeedSuggestion,
+  useBaseFee,
+  useGasTrend,
+  useIsChainEIP1559,
+  useMeteorologySuggestions,
+} from '@/__swaps__/utils/meteorology';
 import { add, subtract } from '@/__swaps__/utils/numbers';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Box, Inline, Separator, Stack, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
@@ -88,11 +94,11 @@ function NumericInputButton({ children, onPress }: PropsWithChildren<{ onPress: 
 
 const INPUT_STEP = gweiToWei('0.1');
 function GasSettingInput({
-  onDebouncedChange: onChange,
+  onChange,
   min = '0',
   value = min || '0',
 }: {
-  onDebouncedChange: (v: string) => void;
+  onChange: (v: string) => void;
   value: string | undefined;
   min?: string;
 }) {
@@ -178,13 +184,13 @@ function useGasPanelState<
 
   const currentGasSettings = useCustomGasStore(s => select(s?.[chainId]));
 
-  const { data: placeholder } = useMeteorologySuggestions({
+  const { data: suggestion } = useMeteorologySuggestions({
     chainId,
     select: d => select(selectedSpeed === 'custom' ? undefined : d[selectedSpeed]),
     enabled: !state && selectedSpeed !== 'custom',
   });
 
-  return state ?? currentGasSettings ?? placeholder;
+  return state ?? currentGasSettings ?? suggestion;
 }
 
 const setGasPanelState = (update: Partial<GasPanelState>) => {
@@ -207,7 +213,7 @@ function EditMaxBaseFee() {
       <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MAX_BASE_FEE_TYPE })}>
         {i18n.t(i18n.l.gas.max_base_fee)}
       </PressableLabel>
-      <GasSettingInput value={maxBaseFee} onDebouncedChange={maxBaseFee => setGasPanelState({ maxBaseFee })} />
+      <GasSettingInput value={maxBaseFee} onChange={maxBaseFee => setGasPanelState({ maxBaseFee })} />
     </Inline>
   );
 }
@@ -227,7 +233,7 @@ function EditPriorityFee() {
       <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MINER_TIP_TYPE })}>
         {i18n.t(i18n.l.gas.miner_tip)}
       </PressableLabel>
-      <GasSettingInput value={maxPriorityFee} onDebouncedChange={maxPriorityFee => setGasPanelState({ maxPriorityFee })} min={min} />
+      <GasSettingInput value={maxPriorityFee} onChange={maxPriorityFee => setGasPanelState({ maxPriorityFee })} min={min} />
     </Inline>
   );
 }
@@ -242,7 +248,7 @@ function EditGasPrice() {
       <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MAX_BASE_FEE_TYPE })}>
         {i18n.t(i18n.l.gas.max_base_fee)}
       </PressableLabel>
-      <GasSettingInput value={gasPrice} onDebouncedChange={gasPrice => setGasPanelState({ gasPrice })} />
+      <GasSettingInput value={gasPrice} onChange={gasPrice => setGasPanelState({ gasPrice })} />
     </Inline>
   );
 }
@@ -282,8 +288,9 @@ function MaxTransactionFee() {
 }
 
 function EditableGasSettings() {
-  // const isEIP1559 = use;
-  // if (!isEIP1559) return <EditGasPrice />;
+  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
+  const isEIP1559 = useIsChainEIP1559(chainId);
+  if (!isEIP1559) return <EditGasPrice />;
   return (
     <>
       <EditMaxBaseFee />

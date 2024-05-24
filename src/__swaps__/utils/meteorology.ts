@@ -221,6 +221,12 @@ export function useMeteorologySuggestions<Selected = ReturnType<typeof selectGas
   return useMeteorology({ chainId }, { select: d => select(selectGasSuggestions(d)), enabled });
 }
 
+export const useIsChainEIP1559 = (chainId: ChainId) => {
+  const { data } = useMeteorology({ chainId }, { select: ({ data }) => !('legacy' in data) });
+  if (data === undefined) return true;
+  return data;
+};
+
 export const getCachedGasSuggestions = (chainId: ChainId) => {
   const data = getMeteorologyCachedData(chainId);
   if (!data) return undefined;
