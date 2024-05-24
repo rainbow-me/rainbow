@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
-import { Box, HitSlop, Inline, Stack, Text } from '@/design-system';
+import { Box, HitSlop, Inline, Text } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
 import { CoinRowButton } from '@/__swaps__/screens/Swap/components/CoinRowButton';
 import { BalancePill } from '@/__swaps__/screens/Swap/components/BalancePill';
@@ -73,8 +73,9 @@ export const CoinRow = ({
           flexDirection="row"
           justifyContent="space-between"
           width="full"
+          gap={12}
         >
-          <Inline alignVertical="center" space="10px">
+          <Box flexDirection="row" gap={10} flexShrink={1} justifyContent="center">
             <SwapCoinIcon
               iconUrl={iconUrl}
               address={address}
@@ -84,8 +85,8 @@ export const CoinRow = ({
               symbol={symbol}
               color={color}
             />
-            <Stack space="10px">
-              <Text color="label" size="17pt" weight="semibold">
+            <Box gap={10} flexShrink={1} justifyContent="center">
+              <Text color="label" size="17pt" weight="semibold" numberOfLines={1} ellipsizeMode="tail">
                 {name}
               </Text>
               <Inline alignVertical="center" space={{ custom: 5 }}>
@@ -103,8 +104,8 @@ export const CoinRow = ({
                   </Inline>
                 )}
               </Inline>
-            </Stack>
-          </Inline>
+            </Box>
+          </Box>
           {output ? (
             <Inline space="8px">
               <CoinRowButton icon="􀅳" outline size="icon 14px" />
