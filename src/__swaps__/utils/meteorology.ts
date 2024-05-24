@@ -195,7 +195,7 @@ export function useEstimatedTime({ chainId, speed }: { chainId: ChainId; speed: 
         const gasSettings = getGasSettings(speed, chainId);
         if (!gasSettings?.isEIP1559) return undefined;
         const value = findClosestValue(gasSettings.maxPriorityFee, Object.values(data.confirmationTimeByPriorityFee));
-        const [time] = Object.entries(data.confirmationTimeByPriorityFee).find(([ms, v]) => v === value) || [];
+        const [time] = Object.entries(data.confirmationTimeByPriorityFee).find(([, v]) => v === value) || [];
         if (!time) return undefined;
         return `${+time >= 3600 ? '>' : '~'} ${getMinimalTimeUnitStringForMs(+time * 1000)}`;
       },

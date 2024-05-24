@@ -21,12 +21,12 @@ import { useSwapEstimatedGasFee } from '../hooks/useEstimatedGasFee';
 import { GasSpeed, setSelectedGasSpeed, useSelectedGas, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { useSwapContext } from '../providers/swap-provider';
 
-const { CUSTOM, GAS_ICONS } = gasUtils;
+const { GAS_ICONS } = gasUtils;
 
 function EstimatedGasFee() {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
   const gasSettings = useSelectedGas(chainId);
-  const estimatedGasFee = useSwapEstimatedGasFee({ gasSettings });
+  const estimatedGasFee = useSwapEstimatedGasFee(gasSettings);
 
   return (
     <Inline alignVertical="center" space="4px">
@@ -68,7 +68,7 @@ const GasSpeedPagerCentered = styled(Centered).attrs(() => ({
 function getEstimatedFeeRangeInGwei(gasSettings: GasSettings | undefined, currentBaseFee?: string | undefined) {
   if (!gasSettings) return undefined;
 
-  // if (!gasSettings.isEIP1559) return `${formatNumber(weiToGwei(gasSettings.gasPrice))} Gwei`;
+  if (!gasSettings.isEIP1559) return `${formatNumber(weiToGwei(gasSettings.gasPrice))} Gwei`;
 
   const { maxBaseFee, maxPriorityFee } = gasSettings;
   return `${formatNumber(weiToGwei(add(maxBaseFee, maxPriorityFee)))} Gwei`;

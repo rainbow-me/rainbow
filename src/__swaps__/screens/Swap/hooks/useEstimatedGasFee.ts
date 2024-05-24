@@ -22,7 +22,7 @@ export function useEstimatedGasFee({
 
   if (!gasLimit || !gasSettings || !nativeNetworkAsset) return 'Loading...'; // TODO: loading state
 
-  const amount = gasSettings.isEIP1559 ? add(gasSettings.maxBaseFee, gasSettings.maxPriorityFee) : '0'; // gasSettings.gasPrice;
+  const amount = gasSettings.isEIP1559 ? add(gasSettings.maxBaseFee, gasSettings.maxPriorityFee) : gasSettings.gasPrice;
 
   const totalWei = multiply(gasLimit, amount);
   const nativePrice = nativeNetworkAsset.price.value?.toString();
@@ -35,7 +35,7 @@ export function useEstimatedGasFee({
   return formatCurrency(feeInUserCurrency);
 }
 
-export function useSwapEstimatedGasFee({ gasSettings }: { gasSettings: GasSettings | undefined }) {
+export function useSwapEstimatedGasFee(gasSettings: GasSettings | undefined) {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
 
   const assetToSell = useSwapsStore(s => s.inputAsset);
