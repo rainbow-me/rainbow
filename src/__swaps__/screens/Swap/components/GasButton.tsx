@@ -6,7 +6,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { ContextMenu } from '@/components/context-menu';
 import { Centered } from '@/components/layout';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { Box, Inline, Stack, Text, TextIcon, useForegroundColor } from '@/design-system';
+import { Box, Inline, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import * as i18n from '@/languages';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
@@ -14,12 +14,13 @@ import styled from '@/styled-thing';
 import { gasUtils } from '@/utils';
 import React, { ReactNode, useCallback, useMemo } from 'react';
 import { runOnUI } from 'react-native-reanimated';
-import { THICK_BORDER_WIDTH } from '../constants';
+import { ETH_COLOR, ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '../constants';
 import { formatNumber } from '../hooks/formatNumber';
 import { GasSettings, useCustomGasSettings } from '../hooks/useCustomGas';
 import { useSwapEstimatedGasFee } from '../hooks/useEstimatedGasFee';
 import { GasSpeed, setSelectedGasSpeed, useSelectedGas, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { useSwapContext } from '../providers/swap-provider';
+import { StyleSheet } from 'react-native';
 
 const { GAS_ICONS } = gasUtils;
 
@@ -167,6 +168,7 @@ const GasMenu = ({ children }: { children: ReactNode }) => {
 };
 
 export function ReviewGasButton() {
+  const { isDarkMode } = useColorMode();
   const { SwapNavigation } = useSwapContext();
 
   const separatatorSecondary = useForegroundColor('separatorSecondary');
@@ -174,7 +176,16 @@ export function ReviewGasButton() {
   return (
     <Inline alignVertical="center" wrap={false}>
       <GasMenu>
-        <SelectedGas />
+        <Box
+          style={[
+            sx.reviewGasButtonPillStyles,
+            {
+              borderColor: isDarkMode ? ETH_COLOR_DARK : ETH_COLOR,
+            },
+          ]}
+        >
+          <SelectedGas />
+        </Box>
       </GasMenu>
 
       <ButtonPressAnimation onPress={() => runOnUI(SwapNavigation.handleShowGas)({ backToReview: true })}>
@@ -207,3 +218,18 @@ export const GasButton = () => {
     </GasMenu>
   );
 };
+
+const sx = StyleSheet.create({
+  reviewGasButtonPillStyles: {
+    display: 'flex',
+    flexDirection: 'row',
+    backgroundColor: 'transparent',
+    borderWidth: 2,
+    borderRadius: 15,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    gap: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
