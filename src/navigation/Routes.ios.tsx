@@ -141,16 +141,6 @@ function MainStack() {
   );
 }
 
-function SwapsNavigator() {
-  return (
-    <SwapProvider>
-      <NativeStack.Navigator {...nativeStackConfig} initialRouteName={Routes.SWAP}>
-        <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />
-      </NativeStack.Navigator>
-    </SwapProvider>
-  );
-}
-
 function NativeStackNavigator() {
   const remoteConfig = useRemoteConfig();
   const { colors, isDarkMode } = useTheme();
@@ -306,7 +296,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} {...appIconUnlockSheetConfig} />
       <NativeStack.Screen component={ControlPanel} name={Routes.DAPP_BROWSER_CONTROL_PANEL} {...dappBrowserControlPanelConfig} />
 
-      {swapsV2Enabled && <NativeStack.Screen component={SwapsNavigator} name={Routes.SWAP_NAVIGATOR} {...swapConfig} />}
+      {swapsV2Enabled && <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />}
     </NativeStack.Navigator>
   );
 }

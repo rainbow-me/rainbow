@@ -140,16 +140,6 @@ function MainOuterNavigator() {
   );
 }
 
-function SwapNavigator() {
-  return (
-    <SwapProvider>
-      <BSStack.Navigator>
-        <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />
-      </BSStack.Navigator>
-    </SwapProvider>
-  );
-}
-
 function BSNavigator() {
   const remoteConfig = useRemoteConfig();
   const profilesEnabled = useExperimentalFlag(PROFILES);
@@ -256,7 +246,7 @@ function BSNavigator() {
       <BSStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} options={appIconUnlockSheetPreset} />
       <BSStack.Screen component={ControlPanel} name={Routes.DAPP_BROWSER_CONTROL_PANEL} />
       <BSStack.Screen component={ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} options={{ ...bottomSheetPreset }} />
-      {swapsV2Enabled && <BSStack.Screen component={SwapNavigator} name={Routes.SWAP_NAVIGATOR} options={swapSheetPreset} />}
+      {swapsV2Enabled && <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />}
     </BSStack.Navigator>
   );
 }

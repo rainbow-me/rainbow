@@ -74,12 +74,10 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
         userAssetsStore.setState({
           filter: actionKey === 'all' ? 'all' : (Number(actionKey) as ChainId),
         });
-        runOnUI(() => {
-          chainName.value = actionKey === 'all' ? allText : chainNameForChainIdWithMainnetSubstitutionWorklet(Number(actionKey) as ChainId);
-        });
+        chainName.value = actionKey === 'all' ? allText : chainNameForChainIdWithMainnetSubstitutionWorklet(Number(actionKey) as ChainId);
       }
     },
-    [allText, chainName, output, selectedOutputChainId]
+    [allText, chainName, output, setSelectedOutputChainId]
   );
 
   const menuConfig = useMemo(() => {

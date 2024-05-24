@@ -63,6 +63,8 @@ interface SwapContextType {
   confirmButtonIcon: Readonly<SharedValue<string>>;
   confirmButtonLabel: Readonly<SharedValue<string>>;
   confirmButtonIconStyle: StyleProp<TextStyle>;
+
+  reset: () => void;
 }
 
 const SwapContext = createContext<SwapContextType | undefined>(undefined);
@@ -316,6 +318,44 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     };
   });
 
+  const reset = () => {
+    const firstUserAsset = userAssetsStore.getState().userAssets.values().next().value;
+    const parsedAsset = parseSearchAsset({
+      assetWithPrice: undefined,
+      searchAsset: firstUserAsset,
+      userAsset: firstUserAsset,
+    });
+
+    // reset back to the user's asset with largest balance
+    setAsset({
+      type: SwapAssetType.inputAsset,
+      asset: parsedAsset,
+    });
+
+    // reset output asset to null
+    internalSelectedOutputAsset.value = null;
+    swapsStore.setState({ outputAsset: null });
+
+    // reset input states
+    lastTypedInput.value = 'inputAmount';
+    focusedInput.value = 'inputAmount';
+
+    // stop quote fetching interval if it was set
+    SwapInputsController.quoteFetchingInterval.stop();
+    quote.value = null;
+    isFetching.value = false;
+    isQuoteStale.value = 0;
+
+    // reset inputValues and method
+    SwapInputsController.inputMethod.value = 'slider';
+    SwapInputsController.inputValues.value.outputAmount = 0;
+    SwapInputsController.inputValues.value.outputNativeValue = 0;
+
+    // reset slider position to initial position
+    sliderXPosition.value = SLIDER_WIDTH * INITIAL_SLIDER_POSITION;
+    sliderPressProgress.value = SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT;
+  };
+
   console.log('re-rendered swap provider: ', Date.now());
 
   return (
@@ -355,6 +395,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         confirmButtonIcon,
         confirmButtonLabel,
         confirmButtonIconStyle,
+
+        reset,
       }}
     >
       {children}
