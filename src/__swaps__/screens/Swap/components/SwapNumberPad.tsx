@@ -32,14 +32,15 @@ type numberPadCharacter = number | 'backspace' | '.';
 
 export const SwapNumberPad = () => {
   const { isDarkMode } = useColorMode();
-  const { focusedInput, SwapInputsController, configProgress } = useSwapContext();
+  const { focusedInput, isQuoteStale, SwapInputController, configProgress } = useSwapContext();
 
   const longPressTimer = useSharedValue(0);
 
   const addNumber = (number?: number) => {
     'worklet';
     // immediately stop the quote fetching interval
-    SwapInputsController.quoteFetchingInterval.stop();
+    SwapInputController.quoteFetchingInterval.stop();
+    isQuoteStale.value = 1;
 
     const inputKey = focusedInput.value;
     if (SwapInputsController.inputMethod.value !== inputKey) {
@@ -103,6 +104,7 @@ export const SwapNumberPad = () => {
     const inputKey = focusedInput.value;
     if (SwapInputsController.inputMethod.value !== inputKey) {
       SwapInputsController.inputMethod.value = inputKey;
+      isQuoteStale.value = 1;
 
       SwapInputsController.inputValues.modify(values => {
         return {
