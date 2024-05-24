@@ -21,10 +21,20 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
   const old_navigate = useExpandedStateNavigation(inputType, fromDiscover, asset);
   const goToSwap = useCallback(() => {
     if (swapsV2Enabled || swaps_v2) {
+      const chainId = ethereumUtils.getChainIdFromNetwork(asset.network);
+      const userAsset = userAssetsStore.getState().userAssets.get(`${asset.address}_${chainId}`);
+      const parsedAsset = parseSearchAsset({
+        assetWithPrice: undefined,
+        searchAsset: asset,
+        userAsset,
+      });
+
+      console.log(parsedAsset);
+
       if (inputType === assetInputTypes.in) {
-        setAsset({ type: SwapAssetType.inputAsset, asset });
+        setAsset({ type: SwapAssetType.inputAsset, asset: parsedAsset });
       } else {
-        setAsset({ type: SwapAssetType.outputAsset, asset });
+        setAsset({ type: SwapAssetType.outputAsset, asset: parsedAsset });
       }
 
       InteractionManager.runAfterInteractions(() => {
@@ -70,5 +80,8 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
 }
 import { useNavigation } from '@/navigation';
 import { InteractionManager } from 'react-native';
+import { parseSearchAsset } from '@/__swaps__/utils/assets';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { ethereumUtils } from '@/utils';
 
 export default React.memo(SwapActionButton);
