@@ -110,15 +110,11 @@ export function mod(num1: string, num2: string): string {
   if (!isNumberString(num1) || !isNumberString(num2)) {
     throw new Error('Arguments must be a numeric string');
   }
-  if (isZero(num1) && isZero(num2)) {
-    throw new Error('Division by zero');
-  }
-
-  if (isZero(num1)) {
-    return '0';
-  }
   if (isZero(num2)) {
     throw new Error('Division by zero');
+  }
+  if (isZero(num1)) {
+    return '0';
   }
   const [bigInt1, decimalPlaces1] = removeDecimal(num1);
   const [bigInt2, decimalPlaces2] = removeDecimal(num2);
