@@ -49,10 +49,10 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
 
   const chainName = useSharedValue(
     output
-      ? chainNameFromChainIdWorklet(selectedOutputChainId.value)
+      ? chainNameForChainIdWithMainnetSubstitutionWorklet(selectedOutputChainId.value)
       : initialFilter === 'all'
         ? allText
-        : chainNameFromChainIdWorklet(initialFilter as ChainId)
+        : chainNameForChainIdWithMainnetSubstitutionWorklet(initialFilter as ChainId)
   );
 
   useAnimatedReaction(
