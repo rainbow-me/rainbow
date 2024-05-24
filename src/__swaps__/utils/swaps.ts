@@ -190,14 +190,21 @@ export function trimTrailingZeros(value: string) {
   return withTrimmedZeros.endsWith('.') ? withTrimmedZeros.slice(0, -1) : withTrimmedZeros;
 }
 
-export function valueBasedDecimalFormatter(
-  amount: number,
-  usdTokenPrice: number,
-  roundingMode?: 'up' | 'down',
-  precisionAdjustment?: number,
-  isStablecoin?: boolean,
-  stripSeparators = true
-): string {
+export function valueBasedDecimalFormatter({
+  amount,
+  usdTokenPrice,
+  roundingMode,
+  precisionAdjustment,
+  isStablecoin,
+  stripSeparators = true,
+}: {
+  amount: number;
+  usdTokenPrice: number;
+  roundingMode?: 'up' | 'down';
+  precisionAdjustment?: number;
+  isStablecoin?: boolean;
+  stripSeparators?: boolean;
+}): string {
   'worklet';
 
   function calculateDecimalPlaces(usdTokenPrice: number, precisionAdjustment?: number): number {
@@ -239,21 +246,52 @@ export function valueBasedDecimalFormatter(
   return numberFormatter.format(roundedAmount);
 }
 
-export function niceIncrementFormatter(
-  incrementDecimalPlaces: number,
-  inputAssetBalance: number,
-  inputAssetUsdPrice: number,
-  niceIncrement: number,
-  percentageToSwap: number,
-  sliderXPosition: number,
-  stripSeparators?: boolean
-) {
+export function niceIncrementFormatter({
+  incrementDecimalPlaces,
+  inputAssetBalance,
+  inputAssetUsdPrice,
+  niceIncrement,
+  percentageToSwap,
+  sliderXPosition,
+  stripSeparators,
+}: {
+  incrementDecimalPlaces: number;
+  inputAssetBalance: number;
+  inputAssetUsdPrice: number;
+  niceIncrement: number;
+  percentageToSwap: number;
+  sliderXPosition: number;
+  stripSeparators?: boolean;
+}) {
   'worklet';
   if (percentageToSwap === 0) return '0';
-  if (percentageToSwap === 0.25) return valueBasedDecimalFormatter(inputAssetBalance * 0.25, inputAssetUsdPrice, 'up', -3);
-  if (percentageToSwap === 0.5) return valueBasedDecimalFormatter(inputAssetBalance * 0.5, inputAssetUsdPrice, 'up', -3);
-  if (percentageToSwap === 0.75) return valueBasedDecimalFormatter(inputAssetBalance * 0.75, inputAssetUsdPrice, 'up', -3);
-  if (percentageToSwap === 1) return valueBasedDecimalFormatter(inputAssetBalance, inputAssetUsdPrice, 'up');
+  if (percentageToSwap === 0.25)
+    return valueBasedDecimalFormatter({
+      amount: inputAssetBalance * 0.25,
+      usdTokenPrice: inputAssetUsdPrice,
+      roundingMode: 'up',
+      precisionAdjustment: -3,
+    });
+  if (percentageToSwap === 0.5)
+    return valueBasedDecimalFormatter({
+      amount: inputAssetBalance * 0.5,
+      usdTokenPrice: inputAssetUsdPrice,
+      roundingMode: 'up',
+      precisionAdjustment: -3,
+    });
+  if (percentageToSwap === 0.75)
+    return valueBasedDecimalFormatter({
+      amount: inputAssetBalance * 0.75,
+      usdTokenPrice: inputAssetUsdPrice,
+      roundingMode: 'up',
+      precisionAdjustment: -3,
+    });
+  if (percentageToSwap === 1)
+    return valueBasedDecimalFormatter({
+      amount: inputAssetBalance,
+      usdTokenPrice: inputAssetUsdPrice,
+      roundingMode: 'up',
+    });
 
   const exactIncrement = inputAssetBalance / 100;
   const isIncrementExact = niceIncrement === exactIncrement;
