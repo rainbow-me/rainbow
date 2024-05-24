@@ -11,12 +11,12 @@ export const enum NavigationSteps {
 }
 
 export function useSwapNavigation({
-  SwapInputController,
+  SwapInputsController,
   inputProgress,
   outputProgress,
   configProgress,
 }: {
-  SwapInputController: ReturnType<typeof useSwapInputsController>;
+  SwapInputsController: ReturnType<typeof useSwapInputsController>;
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
   configProgress: SharedValue<number>;
@@ -66,7 +66,7 @@ export function useSwapNavigation({
     'worklet';
     handleDismissReview();
     handleDismissGas();
-    SwapInputController.fetchQuoteAndAssetPrices();
+    SwapInputsController.fetchQuoteAndAssetPrices();
 
     if (inputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED) {
       inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
@@ -80,7 +80,7 @@ export function useSwapNavigation({
     if (outputProgress.value === NavigationSteps.SEARCH_FOCUSED) {
       outputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
     }
-  }, [SwapInputController, handleDismissGas, handleDismissReview, inputProgress, outputProgress]);
+  }, [SwapInputsController, handleDismissGas, handleDismissReview, inputProgress, outputProgress]);
 
   const handleFocusInputSearch = useCallback(() => {
     'worklet';
@@ -106,7 +106,7 @@ export function useSwapNavigation({
     'worklet';
     handleDismissReview();
     handleDismissGas();
-    SwapInputController.quoteFetchingInterval.stop();
+    SwapInputsController.quoteFetchingInterval.stop();
 
     if (inputProgress.value === NavigationSteps.INPUT_ELEMENT_FOCUSED) {
       console.log('showing token list');
@@ -115,13 +115,13 @@ export function useSwapNavigation({
     } else {
       inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
     }
-  }, [handleDismissReview, handleDismissGas, inputProgress, outputProgress, SwapInputController]);
+  }, [handleDismissReview, handleDismissGas, inputProgress, outputProgress, SwapInputsController]);
 
   const handleOutputPress = useCallback(() => {
     'worklet';
     handleDismissReview();
     handleDismissGas();
-    SwapInputController.quoteFetchingInterval.stop();
+    SwapInputsController.quoteFetchingInterval.stop();
 
     if (outputProgress.value === NavigationSteps.INPUT_ELEMENT_FOCUSED) {
       outputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
@@ -129,7 +129,7 @@ export function useSwapNavigation({
     } else {
       outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
     }
-  }, [SwapInputController, handleDismissReview, handleDismissGas, inputProgress, outputProgress]);
+  }, [SwapInputsController, handleDismissReview, handleDismissGas, inputProgress, outputProgress]);
 
   const handleSwapAction = useCallback(() => {
     'worklet';

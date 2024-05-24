@@ -42,7 +42,7 @@ function SwapInputActionButton() {
 }
 
 function SwapInputAmount() {
-  const { focusedInput, SwapTextStyles, SwapInputController, AnimatedSwapStyles } = useSwapContext();
+  const { focusedInput, SwapTextStyles, SwapInputsController, AnimatedSwapStyles } = useSwapContext();
 
   return (
     <GestureHandlerV1Button
@@ -58,7 +58,7 @@ function SwapInputAmount() {
           numberOfLines={1}
           size="30pt"
           style={SwapTextStyles.inputAmountTextStyle}
-          text={SwapInputController.formattedInputAmount}
+          text={SwapInputsController.formattedInputAmount}
           weight="bold"
         />
         <Animated.View style={[styles.caretContainer, SwapTextStyles.inputCaretStyle]}>
@@ -106,7 +106,7 @@ export function SwapInputAsset() {
     inputProgress,
     AnimatedSwapStyles,
     SwapTextStyles,
-    SwapInputController,
+    SwapInputsController,
     internalSelectedInputAsset,
     SwapNavigation,
   } = useSwapContext();
@@ -129,7 +129,7 @@ export function SwapInputAsset() {
               numberOfLines={1}
               size="17pt"
               style={SwapTextStyles.inputNativeValueStyle}
-              text={SwapInputController.formattedInputNativeValue}
+              text={SwapInputsController.formattedInputNativeValue}
               weight="heavy"
             />
             <Column width="content">

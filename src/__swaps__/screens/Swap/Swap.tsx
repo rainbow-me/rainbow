@@ -20,7 +20,7 @@ import { SliderAndKeyboard } from '@/__swaps__/screens/Swap/components/SliderAnd
 import { SwapBottomPanel } from '@/__swaps__/screens/Swap/components/SwapBottomPanel';
 import { SwapWarning } from './components/SwapWarning';
 import { useSwapContext } from './providers/swap-provider';
-import { UserAssetsSync } from './components/UserAssetsSync';
+import { CleanupAssetsOnUnmount } from './components/CleanupAssetsOnUnmount';
 
 /** README
  * This prototype is largely driven by Reanimated and Gesture Handler, which
@@ -60,7 +60,6 @@ import { UserAssetsSync } from './components/UserAssetsSync';
  */
 
 export function SwapScreen() {
-  const { AnimatedSwapStyles } = useSwapContext();
   return (
     <SwapSheetGestureBlocker>
       <Box as={Page} style={styles.rootViewBackground} testID="swap-screen" width="full">
@@ -69,28 +68,41 @@ export function SwapScreen() {
           <SwapInputAsset />
           <FlipButton />
           <SwapOutputAsset />
-          <Box as={Animated.View} width="full" position="absolute" bottom="0px" style={AnimatedSwapStyles.hideWhenInputsExpanded}>
-            <SliderAndKeyboard />
-            <SwapBottomPanel />
-          </Box>
-          <Box
-            as={Animated.View}
-            alignItems="center"
-            justifyContent="center"
-            style={[styles.swapWarningAndExchangeWrapper, AnimatedSwapStyles.hideWhileReviewingOrConfiguringGas]}
-          >
-            <ExchangeRateBubble />
-            <SwapWarning />
-          </Box>
+          <SliderAndKeyboardAndBottomControls />
+          <ExchangeRateBubbleAndWarning />
         </Box>
         <SwapNavbar />
-
-        {/* NOTE: The components below render null and are solely for keeping react-query and Zustand in sync */}
-        <UserAssetsSync />
       </Box>
+
+      <CleanupAssetsOnUnmount />
     </SwapSheetGestureBlocker>
   );
 }
+
+const SliderAndKeyboardAndBottomControls = () => {
+  const { AnimatedSwapStyles } = useSwapContext();
+  return (
+    <Box as={Animated.View} width="full" position="absolute" bottom="0px" style={AnimatedSwapStyles.hideWhenInputsExpanded}>
+      <SliderAndKeyboard />
+      <SwapBottomPanel />
+    </Box>
+  );
+};
+
+const ExchangeRateBubbleAndWarning = () => {
+  const { AnimatedSwapStyles } = useSwapContext();
+  return (
+    <Box
+      as={Animated.View}
+      alignItems="center"
+      justifyContent="center"
+      style={[styles.swapWarningAndExchangeWrapper, AnimatedSwapStyles.hideWhileReviewingOrConfiguringGas]}
+    >
+      <ExchangeRateBubble />
+      <SwapWarning />
+    </Box>
+  );
+};
 
 export const styles = StyleSheet.create({
   rootViewBackground: {

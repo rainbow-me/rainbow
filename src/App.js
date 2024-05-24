@@ -57,6 +57,7 @@ import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { RemotePromoSheetProvider } from '@/components/remote-promo-sheet/RemotePromoSheetProvider';
 import { RemoteCardProvider } from '@/components/cards/remote-cards';
 import { initializeRemoteConfig } from '@/model/remoteConfig';
+import { SwapProvider } from './__swaps__/screens/Swap/providers/swap-provider';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -223,14 +224,16 @@ class OldApp extends Component {
       <Portal>
         <View style={containerStyle}>
           {this.state.initialRoute && (
-            <RemotePromoSheetProvider isWalletReady={this.props.walletReady}>
-              <RemoteCardProvider>
-                <InitialRouteContext.Provider value={this.state.initialRoute}>
-                  <RoutesComponent onReady={this.handleSentryNavigationIntegration} ref={this.handleNavigatorRef} />
-                  <PortalConsumer />
-                </InitialRouteContext.Provider>
-              </RemoteCardProvider>
-            </RemotePromoSheetProvider>
+            <SwapProvider>
+              <RemotePromoSheetProvider isWalletReady={this.props.walletReady}>
+                <RemoteCardProvider>
+                  <InitialRouteContext.Provider value={this.state.initialRoute}>
+                    <RoutesComponent onReady={this.handleSentryNavigationIntegration} ref={this.handleNavigatorRef} />
+                    <PortalConsumer />
+                  </InitialRouteContext.Provider>
+                </RemoteCardProvider>
+              </RemotePromoSheetProvider>
+            </SwapProvider>
           )}
           <OfflineToast />
         </View>

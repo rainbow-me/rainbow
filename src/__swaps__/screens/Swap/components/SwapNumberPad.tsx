@@ -32,35 +32,35 @@ type numberPadCharacter = number | 'backspace' | '.';
 
 export const SwapNumberPad = () => {
   const { isDarkMode } = useColorMode();
-  const { focusedInput, SwapInputController, configProgress } = useSwapContext();
+  const { focusedInput, SwapInputsController, configProgress } = useSwapContext();
 
   const longPressTimer = useSharedValue(0);
 
   const addNumber = (number?: number) => {
     'worklet';
     // immediately stop the quote fetching interval
-    SwapInputController.quoteFetchingInterval.stop();
+    SwapInputsController.quoteFetchingInterval.stop();
 
     const inputKey = focusedInput.value;
-    if (SwapInputController.inputMethod.value !== inputKey) {
-      SwapInputController.inputMethod.value = inputKey;
+    if (SwapInputsController.inputMethod.value !== inputKey) {
+      SwapInputsController.inputMethod.value = inputKey;
 
-      if (typeof SwapInputController.inputValues.value[inputKey] === 'number') {
-        SwapInputController.inputValues.modify(value => {
+      if (typeof SwapInputsController.inputValues.value[inputKey] === 'number') {
+        SwapInputsController.inputValues.modify(value => {
           return {
             ...value,
             [inputKey]:
               inputKey === 'inputAmount'
-                ? stripCommas(SwapInputController.formattedInputAmount.value)
-                : stripCommas(SwapInputController.formattedOutputAmount.value),
+                ? stripCommas(SwapInputsController.formattedInputAmount.value)
+                : stripCommas(SwapInputsController.formattedOutputAmount.value),
           };
         });
       }
     }
-    const currentValue = SwapInputController.inputValues.value[inputKey];
+    const currentValue = SwapInputsController.inputValues.value[inputKey];
     const newValue = currentValue === 0 || currentValue === '0' ? `${number}` : `${currentValue}${number}`;
 
-    SwapInputController.inputValues.modify(value => {
+    SwapInputsController.inputValues.modify(value => {
       return {
         ...value,
         [inputKey]: newValue,
@@ -71,25 +71,25 @@ export const SwapNumberPad = () => {
   const addDecimalPoint = () => {
     'worklet';
     const inputKey = focusedInput.value;
-    const currentValue = SwapInputController.inputValues.value[inputKey].toString();
+    const currentValue = SwapInputsController.inputValues.value[inputKey].toString();
     if (!currentValue.includes('.')) {
-      if (SwapInputController.inputMethod.value !== inputKey) {
-        SwapInputController.inputMethod.value = inputKey;
+      if (SwapInputsController.inputMethod.value !== inputKey) {
+        SwapInputsController.inputMethod.value = inputKey;
 
-        SwapInputController.inputValues.modify(values => {
+        SwapInputsController.inputValues.modify(values => {
           return {
             ...values,
             [inputKey]:
               inputKey === 'inputAmount'
-                ? stripCommas(SwapInputController.formattedInputAmount.value)
-                : stripCommas(SwapInputController.formattedOutputAmount.value),
+                ? stripCommas(SwapInputsController.formattedInputAmount.value)
+                : stripCommas(SwapInputsController.formattedOutputAmount.value),
           };
         });
       }
 
       const newValue = `${currentValue}.`;
 
-      SwapInputController.inputValues.modify(values => {
+      SwapInputsController.inputValues.modify(values => {
         return {
           ...values,
           [inputKey]: newValue,
@@ -101,24 +101,24 @@ export const SwapNumberPad = () => {
   const deleteLastCharacter = () => {
     'worklet';
     const inputKey = focusedInput.value;
-    if (SwapInputController.inputMethod.value !== inputKey) {
-      SwapInputController.inputMethod.value = inputKey;
+    if (SwapInputsController.inputMethod.value !== inputKey) {
+      SwapInputsController.inputMethod.value = inputKey;
 
-      SwapInputController.inputValues.modify(values => {
+      SwapInputsController.inputValues.modify(values => {
         return {
           ...values,
           [inputKey]:
             inputKey === 'inputAmount'
-              ? stripCommas(SwapInputController.formattedInputAmount.value)
-              : stripCommas(SwapInputController.formattedOutputAmount.value),
+              ? stripCommas(SwapInputsController.formattedInputAmount.value)
+              : stripCommas(SwapInputsController.formattedOutputAmount.value),
         };
       });
     }
-    const currentValue = SwapInputController.inputValues.value[inputKey].toString();
+    const currentValue = SwapInputsController.inputValues.value[inputKey].toString();
     // Handle deletion, ensuring a placeholder zero remains if the entire number is deleted
     const newValue = currentValue.length > 1 ? currentValue.slice(0, -1) : 0;
     if (newValue === 0) {
-      SwapInputController.inputValues.modify(values => {
+      SwapInputsController.inputValues.modify(values => {
         return {
           ...values,
           inputAmount: 0,
@@ -128,7 +128,7 @@ export const SwapNumberPad = () => {
         };
       });
     } else {
-      SwapInputController.inputValues.modify(values => {
+      SwapInputsController.inputValues.modify(values => {
         return {
           ...values,
           [inputKey]: newValue,

@@ -40,7 +40,7 @@ export interface SwapTimeEstimate {
 }
 
 type UsePriceImpactWarningProps = {
-  SwapInputController: ReturnType<typeof useSwapInputsController>;
+  SwapInputsController: ReturnType<typeof useSwapInputsController>;
   inputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   outputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
@@ -58,7 +58,7 @@ type CurrentProps = {
 };
 
 export const useSwapWarning = ({
-  SwapInputController,
+  SwapInputsController,
   inputAsset,
   outputAsset,
   quote,
@@ -169,8 +169,8 @@ export const useSwapWarning = ({
     () => ({
       inputAsset: inputAsset.value,
       outputAsset: outputAsset.value,
-      inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
-      outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
+      inputNativeValue: SwapInputsController.inputValues.value.inputNativeValue,
+      outputNativeValue: SwapInputsController.inputValues.value.outputNativeValue,
       quote: quote.value,
       isFetching: isFetching.value,
       isQuoteStale: isQuoteStale.value,

@@ -56,7 +56,7 @@ export const SwapSlider = ({
   const { isDarkMode } = useColorMode();
   const {
     AnimatedSwapStyles,
-    SwapInputController,
+    SwapInputsController,
     internalSelectedInputAsset,
     internalSelectedOutputAsset,
     sliderXPosition,
@@ -77,9 +77,9 @@ export const SwapSlider = ({
   // Callback function to handle percentage change once slider is at rest
   const onChangeWrapper = useCallback(
     (percentage: number, setStale = true) => {
-      SwapInputController.onChangedPercentage(percentage, setStale);
+      SwapInputsController.onChangedPercentage(percentage, setStale);
     },
-    [SwapInputController]
+    [SwapInputsController]
   );
 
   const colors = useDerivedValue(() => ({
@@ -115,7 +115,7 @@ export const SwapSlider = ({
   useAnimatedReaction(
     () => ({ x: sliderXPosition.value }),
     (current, previous) => {
-      if (current !== previous && SwapInputController.inputMethod.value === 'slider') {
+      if (current !== previous && SwapInputsController.inputMethod.value === 'slider') {
         if (current.x >= width * 0.995 && previous?.x && previous?.x < width * 0.995) {
           runOnJS(triggerHapticFeedback)('impactMedium');
         }
@@ -130,7 +130,7 @@ export const SwapSlider = ({
   const onPressDown = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>({
     onStart: () => {
       sliderPressProgress.value = withSpring(1, sliderConfig);
-      SwapInputController.quoteFetchingInterval.stop();
+      SwapInputsController.quoteFetchingInterval.stop();
     },
     onActive: () => {
       sliderPressProgress.value = withSpring(SLIDER_COLLAPSED_HEIGHT / height, sliderConfig);
@@ -141,9 +141,9 @@ export const SwapSlider = ({
     onStart: (_, ctx: { startX: number }) => {
       ctx.startX = sliderXPosition.value;
       sliderPressProgress.value = withSpring(1, sliderConfig);
-      SwapInputController.inputMethod.value = 'slider';
+      SwapInputsController.inputMethod.value = 'slider';
 
-      // On Android, for some reason waiting until onActive to set SwapInputController.isQuoteStale.value = 1
+      // On Android, for some reason waiting until onActive to set SwapInputsController.isQuoteStale.value = 1
       // causes the outputAmount text color to break. It's preferable to set it in
       // onActive, so we're setting it in onStart for Android only. It's possible that
       // migrating this handler to the RNGH v2 API will remove the need for this.
@@ -193,7 +193,7 @@ export const SwapSlider = ({
         } else if (xPercentage.value < 0.005) {
           runOnJS(onChangeWrapper)(0);
           sliderXPosition.value = withSpring(0, snappySpringConfig);
-          // SwapInputController.isQuoteStale.value = 0;
+          // SwapInputsController.isQuoteStale.value = 0;
         } else {
           runOnJS(onChangeWrapper)(xPercentage.value);
         }
@@ -245,7 +245,7 @@ export const SwapSlider = ({
           sliderXPosition.value = withSpring(nextSnapPoint, snappierSpringConfig);
 
           // if (nextSnapPoint === 0) {
-          //   SwapInputController.isQuoteStale.value = 0;
+          //   SwapInputsController.isQuoteStale.value = 0;
           // }
         } else {
           // For low-velocity drags, skip snap points and let the slider rest at current position
@@ -331,9 +331,9 @@ export const SwapSlider = ({
 
   const percentageTextStyle = useAnimatedStyle(() => {
     const isAdjustingInputValue =
-      SwapInputController.inputMethod.value === 'inputAmount' || SwapInputController.inputMethod.value === 'inputNativeValue';
+      SwapInputsController.inputMethod.value === 'inputAmount' || SwapInputsController.inputMethod.value === 'inputNativeValue';
     const isAdjustingOutputValue =
-      SwapInputController.inputMethod.value === 'outputAmount' || SwapInputController.inputMethod.value === 'outputNativeValue';
+      SwapInputsController.inputMethod.value === 'outputAmount' || SwapInputsController.inputMethod.value === 'outputNativeValue';
 
     const isStale = isQuoteStale.value === 1 && (isAdjustingInputValue || isAdjustingOutputValue) ? 1 : 0;
 
@@ -345,7 +345,7 @@ export const SwapSlider = ({
           isStale,
           [0, 1],
           [
-            (SwapInputController.inputMethod.value === 'slider' ? xPercentage.value < 0.005 : sliderXPosition.value === 0)
+            (SwapInputsController.inputMethod.value === 'slider' ? xPercentage.value < 0.005 : sliderXPosition.value === 0)
               ? zeroAmountColor
               : labelSecondary,
             zeroAmountColor,
@@ -394,8 +394,8 @@ export const SwapSlider = ({
                     onPress={() => {
                       'worklet';
 
-                      SwapInputController.quoteFetchingInterval.stop();
-                      SwapInputController.inputMethod.value = 'slider';
+                      SwapInputsController.quoteFetchingInterval.stop();
+                      SwapInputsController.inputMethod.value = 'slider';
                       setTimeout(() => {
                         sliderXPosition.value = withSpring(width, snappySpringConfig);
                         onChangeWrapper(1);

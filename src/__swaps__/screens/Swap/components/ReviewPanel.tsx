@@ -83,7 +83,7 @@ const RainbowFee = () => {
 
 export function ReviewPanel() {
   const { isDarkMode } = useColorMode();
-  const { configProgress, SwapSettings, SwapInputController, internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
+  const { configProgress, SwapSettings, SwapInputsController, internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
 
   const unknown = i18n.t(i18n.l.swap.unknown);
 
@@ -92,11 +92,11 @@ export function ReviewPanel() {
   );
 
   const minimumReceived = useDerivedValue(() => {
-    if (!SwapInputController.formattedOutputAmount.value || !internalSelectedOutputAsset.value?.symbol) {
+    if (!SwapInputsController.formattedOutputAmount.value || !internalSelectedOutputAsset.value?.symbol) {
       return unknown;
     }
 
-    return `${SwapInputController.formattedOutputAmount.value} ${internalSelectedOutputAsset.value.symbol}`;
+    return `${SwapInputsController.formattedOutputAmount.value} ${internalSelectedOutputAsset.value.symbol}`;
   });
 
   const handleDecrementSlippage = () => {
