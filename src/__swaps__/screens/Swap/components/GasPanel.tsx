@@ -6,7 +6,7 @@ import { fadeConfig } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/__swaps__/types/chains';
 import { gweiToWei, weiToGwei } from '@/__swaps__/utils/ethereum';
-import { useBaseFee, useGasTrend, useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
+import { getSelectedSpeedSuggestion, useBaseFee, useGasTrend, useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { add, subtract } from '@/__swaps__/utils/numbers';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Box, Inline, Separator, Stack, Text, globalColors, useColorMode } from '@/design-system';
@@ -18,7 +18,7 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { upperFirst } from 'lodash';
 import { formatNumber } from '../hooks/formatNumber';
-import { GasSettings, setCustomGasSettings } from '../hooks/useCustomGas';
+import { GasSettings, getCustomGasSettings, setCustomGasSettings, useCustomGasStore } from '../hooks/useCustomGas';
 import { useSwapEstimatedGasFee } from '../hooks/useEstimatedGasFee';
 import { setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 
@@ -164,24 +164,38 @@ function CurrentBaseFee() {
 type GasPanelState = { gasPrice?: string; maxBaseFee?: string; maxPriorityFee?: string };
 const useGasPanelStore = createRainbowStore<GasPanelState | undefined>(() => undefined);
 
-function useGasPanelState<Selected>(selector: (s: GasPanelState | undefined) => Selected = s => s as Selected) {
-  const state = useGasPanelStore(selector);
+function useGasPanelState<
+  Key extends 'maxBaseFee' | 'maxPriorityFee' | 'gasPrice' | undefined = undefined,
+  Selected = Key extends string ? string : GasPanelState,
+>(key?: Key, select: (s: GasPanelState | undefined) => Selected = s => (key ? s?.[key] : s) as Selected) {
+  const state = useGasPanelStore(select);
 
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
   const selectedSpeed = useSelectedGasSpeed(chainId);
+
+  const currentGasSettings = useCustomGasStore(s => select(s?.[chainId]));
+
   const { data: placeholder } = useMeteorologySuggestions({
     chainId,
-    select: d => selector(selectedSpeed === 'custom' ? undefined : d[selectedSpeed]),
+    select: d => select(selectedSpeed === 'custom' ? undefined : d[selectedSpeed]),
     enabled: !state && selectedSpeed !== 'custom',
   });
 
-  return state ?? placeholder;
+  return state ?? currentGasSettings ?? placeholder;
 }
 
-const setGasPanelState = (update: Partial<GasPanelState>) => useGasPanelStore.setState(update);
+const setGasPanelState = (update: Partial<GasPanelState>) => {
+  const chainId = useSwapsStore.getState().inputAsset?.chainId || ChainId.mainnet;
+
+  const currentGasSettings = getCustomGasSettings(chainId);
+  if (currentGasSettings) useGasPanelStore.setState({ ...currentGasSettings, ...update });
+
+  const suggestion = getSelectedSpeedSuggestion(chainId);
+  useGasPanelStore.setState({ ...suggestion, ...update });
+};
 
 function EditMaxBaseFee() {
-  const maxBaseFee = useGasPanelState(s => s?.maxBaseFee);
+  const maxBaseFee = useGasPanelState('maxBaseFee');
   const { navigate } = useNavigation();
 
   return (
@@ -197,7 +211,7 @@ function EditMaxBaseFee() {
 
 const MIN_FLASHBOTS_PRIORITY_FEE = gweiToWei('6');
 function EditPriorityFee() {
-  const maxPriorityFee = useGasPanelState(s => s?.maxPriorityFee);
+  const maxPriorityFee = useGasPanelState('maxPriorityFee');
   const { navigate } = useNavigation();
 
   const isFlashbotsEnabled = useSwapsStore(s => s.flashbots);
@@ -216,7 +230,7 @@ function EditPriorityFee() {
 }
 
 function EditGasPrice() {
-  const gasPrice = useGasPanelState(s => s?.gasPrice);
+  const gasPrice = useGasPanelState('gasPrice');
   const { navigate } = useNavigation();
 
   return (
@@ -238,7 +252,8 @@ const stateToGasSettings = (s: GasPanelState | undefined): GasSettings | undefin
 function MaxTransactionFee() {
   const { isDarkMode } = useColorMode();
 
-  const gasSettings = useGasPanelStore(stateToGasSettings);
+  const gasPanelState = useGasPanelState();
+  const gasSettings = stateToGasSettings(gasPanelState);
   const maxTransactionFee = useSwapEstimatedGasFee(gasSettings);
 
   return (
@@ -275,12 +290,17 @@ function EditableGasSettings() {
 }
 
 function saveCustomGasSettings() {
-  const unsaved = useGasPanelStore.getState();
   // input is debounced if the time between editing and closing the panel is less than the debounce time (500ms) it's gonna be outdated
-  if (!unsaved) return;
+
+  const unsaved = useGasPanelStore.getState();
 
   const { inputAsset } = useSwapsStore.getState();
   const chainId = inputAsset?.chainId || ChainId.mainnet;
+  if (!unsaved) {
+    if (getCustomGasSettings(chainId)) setSelectedGasSpeed(chainId, 'custom');
+    return;
+  }
+
   setCustomGasSettings(chainId, unsaved);
   setSelectedGasSpeed(chainId, 'custom');
   useGasPanelStore.setState(undefined);

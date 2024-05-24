@@ -87,7 +87,6 @@ const GasMenu = ({ children }: { children: ReactNode }) => {
   const { SwapNavigation } = useSwapContext();
 
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-
   const metereologySuggestions = useMeteorologySuggestions({ chainId });
   const customGasSettings = useCustomGasSettings(chainId);
 

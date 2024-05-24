@@ -5,7 +5,7 @@ import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
 import { abs, lessThan, subtract } from '@/helpers/utilities';
 import { QueryConfig, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
-import { GasSpeed, getGasSettings } from '../screens/Swap/hooks/useSelectedGas';
+import { GasSpeed, getGasSettings, getSelectedGasSpeed } from '../screens/Swap/hooks/useSelectedGas';
 import { getMinimalTimeUnitStringForMs } from './time';
 
 // Query Types
@@ -225,4 +225,11 @@ export const getCachedGasSuggestions = (chainId: ChainId) => {
   const data = getMeteorologyCachedData(chainId);
   if (!data) return undefined;
   return selectGasSuggestions(data);
+};
+
+export const getSelectedSpeedSuggestion = (chainId: ChainId) => {
+  const suggestions = getCachedGasSuggestions(chainId);
+  const speed = getSelectedGasSpeed(chainId);
+  if (speed === 'custom') return;
+  return suggestions?.[speed];
 };
