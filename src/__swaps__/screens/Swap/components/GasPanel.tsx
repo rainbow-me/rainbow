@@ -9,7 +9,7 @@ import { gweiToWei, weiToGwei } from '@/__swaps__/utils/ethereum';
 import { getSelectedSpeedSuggestion, useBaseFee, useGasTrend, useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { add, subtract } from '@/__swaps__/utils/numbers';
 import { ButtonPressAnimation } from '@/components/animations';
-import { Box, Inline, Separator, Stack, Text, globalColors, useColorMode } from '@/design-system';
+import { Box, Inline, Separator, Stack, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { lessThan } from '@/helpers/utilities';
 import { useNavigation } from '@/navigation';
@@ -21,6 +21,7 @@ import { formatNumber } from '../hooks/formatNumber';
 import { GasSettings, getCustomGasSettings, setCustomGasSettings, useCustomGasStore } from '../hooks/useCustomGas';
 import { useSwapEstimatedGasFee } from '../hooks/useEstimatedGasFee';
 import { setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
+import { opacity } from '@/__swaps__/utils/swaps';
 
 const MINER_TIP_TYPE = 'minerTip';
 const MAX_BASE_FEE_TYPE = 'maxBaseFee';
@@ -58,6 +59,9 @@ function PressableLabel({ onPress, children }: PropsWithChildren<{ onPress: Void
 function NumericInputButton({ children, onPress }: PropsWithChildren<{ onPress: VoidFunction }>) {
   const { isDarkMode } = useColorMode();
 
+  const fillSecondary = useForegroundColor('fillSecondary');
+  const labelTertiary = useForegroundColor('labelTertiary');
+
   return (
     <ButtonPressAnimation onPress={onPress}>
       <Box
@@ -66,16 +70,15 @@ function NumericInputButton({ children, onPress }: PropsWithChildren<{ onPress: 
           alignItems: 'center',
           borderWidth: 1,
           borderColor: isDarkMode ? globalColors.white10 : globalColors.grey100,
+          backgroundColor: opacity(fillSecondary, 0.12),
         }}
         height={{ custom: 16 }}
         width={{ custom: 20 }}
         borderRadius={100}
-        background="fillSecondary" // TODO: 12% opacity
         paddingVertical="1px (Deprecated)"
         gap={10}
       >
-        {/* TODO: 56% opacity */}
-        <Text weight="black" size="icon 10px" color="labelTertiary">
+        <Text weight="black" size="icon 10px" color={{ custom: opacity(labelTertiary, 0.56) }}>
           {children}
         </Text>
       </Box>
