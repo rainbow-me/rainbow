@@ -11,6 +11,7 @@ import { UniqueId } from '@/__swaps__/types/assets';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { SwapAssetType } from '@/__swaps__/types/swap';
+import { toggleFavorite } from '@/resources/favorites';
 
 const CoinName = ({ assetId }: { assetId: UniqueId }) => {
   const name = userAssetsStore(state => state.getUserAsset(assetId).name);
@@ -85,24 +86,16 @@ const CoinInfoButton = ({ assetId }: { assetId: UniqueId }) => {
   return <CoinRowButton icon="􀅳" outline size="icon 14px" />;
 };
 
-const CoinFavoriteButton = ({ assetId }: { assetId: UniqueId }) => {
+const CoinFavoriteButton = ({ assetId, isFavorited }: { assetId: UniqueId; isFavorited: boolean }) => {
   const address = userAssetsStore(state => state.getUserAsset(assetId).address);
-  const isFavorited = userAssetsStore(state => state.isFavorite(assetId));
-  return (
-    <CoinRowButton
-      color={isFavorited ? '#FFCB0F' : undefined}
-      onPress={() => userAssetsStore.getState().toggleFavorite(address)}
-      icon="􀋃"
-      weight="black"
-    />
-  );
+  return <CoinRowButton color={isFavorited ? '#FFCB0F' : undefined} onPress={() => toggleFavorite(address)} icon="􀋃" weight="black" />;
 };
 
-const CoinActions = ({ assetId }: { assetId: UniqueId }) => {
+const CoinActions = ({ assetId, isFavorited }: { assetId: UniqueId; isFavorited: boolean }) => {
   return (
     <Inline space="8px">
       <CoinInfoButton assetId={assetId} />
-      <CoinFavoriteButton assetId={assetId} />
+      <CoinFavoriteButton assetId={assetId} isFavorited={isFavorited} />
     </Inline>
   );
 };
@@ -112,50 +105,52 @@ const CoinBalance = ({ assetId }: { assetId: UniqueId }) => {
   return <BalancePill balance={nativeBalance} />;
 };
 
-export const CoinRow2 = React.memo(({ assetId, output = false }: { assetId: string; output?: boolean }) => {
-  const { setAsset } = useSwapContext();
+export const CoinRow2 = React.memo(
+  ({ assetId, isFavorited = false, output = false }: { assetId: string; isFavorited?: boolean; output?: boolean }) => {
+    const { setAsset } = useSwapContext();
 
-  const handleSelectToken = useCallback(() => {
-    const userAsset = userAssetsStore.getState().getUserAsset(assetId);
-    const parsedAsset = parseSearchAsset({
-      assetWithPrice: undefined,
-      searchAsset: userAsset,
-      userAsset,
-    });
+    const handleSelectToken = useCallback(() => {
+      const userAsset = userAssetsStore.getState().getUserAsset(assetId);
+      const parsedAsset = parseSearchAsset({
+        assetWithPrice: undefined,
+        searchAsset: userAsset,
+        userAsset,
+      });
 
-    setAsset({
-      type: SwapAssetType.inputAsset,
-      asset: parsedAsset,
-    });
-  }, [assetId, setAsset]);
+      setAsset({
+        type: SwapAssetType.inputAsset,
+        asset: parsedAsset,
+      });
+    }, [assetId, setAsset]);
 
-  return (
-    <ButtonPressAnimation disallowInterruption onPress={handleSelectToken} scaleTo={0.95}>
-      <HitSlop vertical="10px">
-        <Box
-          alignItems="center"
-          paddingVertical="10px"
-          paddingHorizontal="20px"
-          flexDirection="row"
-          justifyContent="space-between"
-          width="full"
-        >
-          <Inline alignVertical="center" space="10px">
-            <CoinIcon assetId={assetId} />
-            <Stack space="10px">
-              <CoinName assetId={assetId} />
-              <Inline alignVertical="center" space={{ custom: 5 }}>
-                {!output ? <CoinUserBalance assetId={assetId} /> : <CoinSymbol assetId={assetId} />}
-                <CoinPercentChange assetId={assetId} />
-              </Inline>
-            </Stack>
-          </Inline>
-          {output ? <CoinActions assetId={assetId} /> : <CoinBalance assetId={assetId} />}
-        </Box>
-      </HitSlop>
-    </ButtonPressAnimation>
-  );
-});
+    return (
+      <ButtonPressAnimation disallowInterruption onPress={handleSelectToken} scaleTo={0.95}>
+        <HitSlop vertical="10px">
+          <Box
+            alignItems="center"
+            paddingVertical="10px"
+            paddingHorizontal="20px"
+            flexDirection="row"
+            justifyContent="space-between"
+            width="full"
+          >
+            <Inline alignVertical="center" space="10px">
+              <CoinIcon assetId={assetId} />
+              <Stack space="10px">
+                <CoinName assetId={assetId} />
+                <Inline alignVertical="center" space={{ custom: 5 }}>
+                  {!output ? <CoinUserBalance assetId={assetId} /> : <CoinSymbol assetId={assetId} />}
+                  <CoinPercentChange assetId={assetId} />
+                </Inline>
+              </Stack>
+            </Inline>
+            {output ? <CoinActions assetId={assetId} isFavorited={isFavorited} /> : <CoinBalance assetId={assetId} />}
+          </Box>
+        </HitSlop>
+      </ButtonPressAnimation>
+    );
+  }
+);
 
 CoinRow2.displayName = 'CoinRow';
 

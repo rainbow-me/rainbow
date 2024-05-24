@@ -13,7 +13,7 @@ import { useFavorites } from '@/resources/favorites';
 import { isAddress } from '@ethersproject/address';
 import { RainbowToken } from '@/entities';
 import { useSwapContext } from '../providers/swap-provider';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { swapsStore } from '@/state/swaps/swapsStore';
 
 const VERIFIED_ASSETS_PAYLOAD: {
   keys: TokenSearchAssetKey[];
@@ -42,7 +42,7 @@ const filterBridgeAsset = ({ asset, filter = '' }: { asset?: SearchAsset; filter
 export function useSearchCurrencyLists() {
   const { internalSelectedInputAsset: assetToSell, outputChainId } = useSwapContext();
 
-  const searchQuery = userAssetsStore(state => state.searchQuery);
+  const searchQuery = swapsStore(state => state.searchQuery);
 
   const [inputChainId, setInputChainId] = useState(assetToSell.value?.chainId ?? ChainId.mainnet);
   const [toChainId, setToChainId] = useState(outputChainId.value);

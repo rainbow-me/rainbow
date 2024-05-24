@@ -1,4 +1,4 @@
-import { ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { ParsedSearchAsset, UserAssetFilter } from '@/__swaps__/types/assets';
 import { CrosschainQuote, Quote, QuoteError, Source } from '@rainbow-me/swaps';
 import { getDefaultSlippage } from '@/__swaps__/utils/swaps';
 import { ChainId } from '@/__swaps__/types/chains';
@@ -9,6 +9,10 @@ export interface SwapsState {
   // assets
   inputAsset: ParsedSearchAsset | null;
   outputAsset: ParsedSearchAsset | null;
+
+  // token lists
+  searchQuery: string;
+  filter: UserAssetFilter;
 
   // quote
   quote: Quote | CrosschainQuote | QuoteError | null;
@@ -26,6 +30,9 @@ export const swapsStore = createRainbowStore<SwapsState>(
   set => ({
     inputAsset: null, // TODO: Default to their largest balance asset (or ETH mainnet if user has no assets)
     outputAsset: null,
+
+    searchQuery: '',
+    filter: 'all',
 
     quote: null,
 

@@ -10,7 +10,7 @@ import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
 import { ParsedAssetsDictByChain, ParsedSearchAsset, UserAssetFilter } from '@/__swaps__/types/assets';
 import { useAccountSettings } from '@/hooks';
 import { useDebounce } from '@/__swaps__/screens/Swap/hooks/useDebounce';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { swapsStore } from '@/state/swaps/swapsStore';
 
 const sortBy = (by: UserAssetFilter) => {
   switch (by) {
@@ -24,8 +24,8 @@ const sortBy = (by: UserAssetFilter) => {
 export const useAssetsToSell = () => {
   const { accountAddress: currentAddress, nativeCurrency: currentCurrency } = useAccountSettings();
 
-  const filter = userAssetsStore(state => state.filter);
-  const searchQuery = userAssetsStore(state => state.searchQuery);
+  const filter = swapsStore(state => state.filter);
+  const searchQuery = swapsStore(state => state.searchQuery);
 
   const debouncedAssetToSellFilter = useDebounce(searchQuery, 200);
 

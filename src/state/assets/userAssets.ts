@@ -1,28 +1,16 @@
-import { Hex } from 'viem';
-
-import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
-import { deriveAddressAndChainWithUniqueId } from '@/__swaps__/utils/address';
+import { ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { RainbowError, logger } from '@/logger';
 
 export interface UserAssetsState {
-  filteredUserAssetsById: UniqueId[];
   userAssets: Map<UniqueId, ParsedSearchAsset>;
-  filter: UserAssetFilter;
-  searchQuery: string;
-
-  favorites: Set<Hex>; // this is chain agnostic, so we don't want to store a UniqueId here
-  setFavorites: (favoriteAssetIds: Hex[]) => void;
-  toggleFavorite: (uniqueId: UniqueId) => void;
-  isFavorite: (uniqueId: UniqueId) => boolean;
 
   getUserAsset: (uniqueId: UniqueId) => ParsedSearchAsset;
 }
 
 // NOTE: We are serializing Map as an Array<[UniqueId, ParsedSearchAsset]>
-type UserAssetsStateWithTransforms = Omit<Partial<UserAssetsState>, 'userAssets' | 'favorites'> & {
+type UserAssetsStateWithTransforms = Omit<Partial<UserAssetsState>, 'userAssets'> & {
   userAssets: Array<[UniqueId, ParsedSearchAsset]>;
-  favorites: Array<Hex>;
 };
 
 function serializeUserAssetsState(state: Partial<UserAssetsState>, version?: number) {
@@ -30,7 +18,6 @@ function serializeUserAssetsState(state: Partial<UserAssetsState>, version?: num
     const transformedStateToPersist: UserAssetsStateWithTransforms = {
       ...state,
       userAssets: state.userAssets ? Array.from(state.userAssets.entries()) : [],
-      favorites: state.favorites ? Array.from(state.favorites) : [],
     };
 
     return JSON.stringify({
@@ -64,21 +51,10 @@ function deserializeUserAssetsState(serializedState: string) {
     throw error;
   }
 
-  let favoritesData = new Set<Hex>();
-  try {
-    if (state.favorites.length) {
-      favoritesData = new Set(state.favorites);
-    }
-  } catch (error) {
-    logger.error(new RainbowError('Failed to convert favoriteAssetsAddresses from user assets storage'), { error });
-    throw error;
-  }
-
   return {
     state: {
       ...state,
       userAssets: userAssetsData,
-      favorites: favoritesData,
     },
     version,
   };
@@ -86,98 +62,69 @@ function deserializeUserAssetsState(serializedState: string) {
 
 export const userAssetsStore = createRainbowStore<UserAssetsState>(
   (_, get) => ({
-    filteredUserAssetsById: [],
     userAssets: new Map(),
-    filter: 'all',
-    searchQuery: '',
-    favorites: new Set(),
-
-    setFavorites: (addresses: Hex[]) => {
-      const { favorites } = get();
-      addresses.forEach(address => {
-        favorites.add(address);
-      });
-    },
-
-    toggleFavorite: (uniqueId: UniqueId) => {
-      const { favorites } = get();
-      const { address } = deriveAddressAndChainWithUniqueId(uniqueId);
-      if (favorites.has(address)) {
-        favorites.delete(address);
-      } else {
-        favorites.add(address);
-      }
-    },
 
     getUserAsset: (uniqueId: UniqueId) => get().userAssets.get(uniqueId) as ParsedSearchAsset,
-
-    isFavorite: (uniqueId: UniqueId) => {
-      const { favorites } = get();
-      const { address } = deriveAddressAndChainWithUniqueId(uniqueId);
-      return favorites.has(address);
-    },
   }),
   {
     storageKey: 'userAssets',
     version: 1,
     partialize: state => ({
-      filteredUserAssetsById: state.filteredUserAssetsById,
       userAssets: state.userAssets,
-      favorites: state.favorites,
     }),
     serializer: serializeUserAssetsState,
     deserializer: deserializeUserAssetsState,
   }
 );
 
-userAssetsStore.subscribe(
-  state => ({ searchQuery: state.searchQuery, filter: state.filter }),
-  async ({ searchQuery, filter }, { searchQuery: prevSearchQuery, filter: prevFilter }) => {
-    if (searchQuery === prevSearchQuery && filter === prevFilter) {
-      return;
-    }
-    const userAssets = userAssetsStore.getState().userAssets;
-    const filteredUserAssetsById: UniqueId[] = [];
-    const lowercasedQuery = searchQuery.toLowerCase();
+// userAssetsStore.subscribe(
+//   state => ({ searchQuery: state.searchQuery, filter: state.filter }),
+//   async ({ searchQuery, filter }, { searchQuery: prevSearchQuery, filter: prevFilter }) => {
+//     if (searchQuery === prevSearchQuery && filter === prevFilter) {
+//       return;
+//     }
+//     const userAssets = userAssetsStore.getState().userAssets;
+//     const filteredUserAssetsById: UniqueId[] = [];
+//     const lowercasedQuery = searchQuery.toLowerCase();
 
-    if (searchQuery !== prevSearchQuery && filter !== prevFilter) {
-      userAssets.forEach(asset => {
-        if (filter === 'all' || asset.chainId === filter) {
-          if (searchQuery) {
-            const nameMatch = asset.name.toLowerCase().includes(lowercasedQuery);
-            const symbolMatch = asset.symbol.toLowerCase().startsWith(lowercasedQuery);
-            const addressMatch = asset.address.toLowerCase().startsWith(lowercasedQuery);
-            if (nameMatch || symbolMatch || addressMatch) {
-              filteredUserAssetsById.push(asset.uniqueId);
-            }
-          } else {
-            filteredUserAssetsById.push(asset.uniqueId);
-          }
-        }
-      });
-    } else if (searchQuery !== prevSearchQuery) {
-      userAssets.forEach(asset => {
-        if (searchQuery) {
-          const nameMatch = asset.name.toLowerCase().includes(lowercasedQuery);
-          const symbolMatch = asset.symbol.toLowerCase().startsWith(lowercasedQuery);
-          const addressMatch = asset.address.toLowerCase().startsWith(lowercasedQuery);
-          if (nameMatch || symbolMatch || addressMatch) {
-            filteredUserAssetsById.push(asset.uniqueId);
-          }
-        } else {
-          filteredUserAssetsById.push(asset.uniqueId);
-        }
-      });
-    } else if (filter !== prevFilter) {
-      userAssets.forEach(asset => {
-        if (filter === 'all' || asset.chainId === filter) {
-          filteredUserAssetsById.push(asset.uniqueId);
-        }
-      });
-    }
+//     if (searchQuery !== prevSearchQuery && filter !== prevFilter) {
+//       userAssets.forEach(asset => {
+//         if (filter === 'all' || asset.chainId === filter) {
+//           if (searchQuery) {
+//             const nameMatch = asset.name.toLowerCase().includes(lowercasedQuery);
+//             const symbolMatch = asset.symbol.toLowerCase().startsWith(lowercasedQuery);
+//             const addressMatch = asset.address.toLowerCase().startsWith(lowercasedQuery);
+//             if (nameMatch || symbolMatch || addressMatch) {
+//               filteredUserAssetsById.push(asset.uniqueId);
+//             }
+//           } else {
+//             filteredUserAssetsById.push(asset.uniqueId);
+//           }
+//         }
+//       });
+//     } else if (searchQuery !== prevSearchQuery) {
+//       userAssets.forEach(asset => {
+//         if (searchQuery) {
+//           const nameMatch = asset.name.toLowerCase().includes(lowercasedQuery);
+//           const symbolMatch = asset.symbol.toLowerCase().startsWith(lowercasedQuery);
+//           const addressMatch = asset.address.toLowerCase().startsWith(lowercasedQuery);
+//           if (nameMatch || symbolMatch || addressMatch) {
+//             filteredUserAssetsById.push(asset.uniqueId);
+//           }
+//         } else {
+//           filteredUserAssetsById.push(asset.uniqueId);
+//         }
+//       });
+//     } else if (filter !== prevFilter) {
+//       userAssets.forEach(asset => {
+//         if (filter === 'all' || asset.chainId === filter) {
+//           filteredUserAssetsById.push(asset.uniqueId);
+//         }
+//       });
+//     }
 
-    userAssetsStore.setState({
-      filteredUserAssetsById,
-    });
-  }
-);
+//     userAssetsStore.setState({
+//       filteredUserAssetsById,
+//     });
+//   }
+// );
