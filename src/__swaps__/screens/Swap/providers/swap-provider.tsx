@@ -40,6 +40,10 @@ import { queryClient } from '@/react-query';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { useAccountSettings } from '@/hooks';
 import { gasStore } from '@/state/gas/gasStore';
+import { getGasSettings, getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
+import { add, multiply } from '@/__swaps__/utils/numbers';
+import { TransactionGasParams } from '@/__swaps__/types/gas';
+import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 
 interface SwapContextType {
   isFetching: SharedValue<boolean>;
@@ -143,13 +147,38 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return;
     }
 
-    const gasParams = gasStore.getState().selectedGas;
-    const gasParamsForSpeed = gasStore.getState().gasFeeParamsBySpeed;
+    const selectedGas = getSelectedGas(parameters.chainId);
+    if (!selectedGas) {
+      runOnUI(resetSwappingStatus)();
+      // TODO: Show alert or something but this should never happen technically
+      Alert.alert(i18n.t(i18n.l.swap.unable_to_load_wallet));
+      return;
+    }
 
+    const gasFeeParamsBySpeed = getGasSettingsBySpeed(parameters.chainId);
+
+    let gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = {} as
+      | TransactionGasParamAmounts
+      | LegacyTransactionGasParamAmounts;
+
+    if (selectedGas.isEIP1559) {
+      gasParams = {
+        maxFeePerGas: selectedGas.maxBaseFee,
+        maxPriorityFeePerGas: selectedGas.maxPriorityFee,
+      };
+    } else {
+      gasParams = {
+        gasPrice: selectedGas.gasPrice,
+      };
+    }
+
+    console.log({ gasParams });
+
+    // const gasParams = gasStore.getState().selectedGas;
     const { errorMessage } = await walletExecuteRap(wallet, type, {
       ...parameters,
-      gasParams: gasParams.transactionGasParams,
-      gasFeeParamsBySpeed: gasParamsForSpeed,
+      gasParams,
+      gasFeeParamsBySpeed: gasFeeParamsBySpeed as any,
     });
     runOnUI(resetSwappingStatus)();
 

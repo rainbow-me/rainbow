@@ -33,6 +33,14 @@ export function useSelectedGas(chainId: ChainId) {
   }, [selectedGasSpeed, userCustomGasSettings, metereologySuggestions]);
 }
 
+export function getGasSettingsBySpeed(chainId: ChainId) {
+  const suggestions = getCachedGasSuggestions(chainId);
+  return {
+    ...suggestions,
+    custom: getCustomGasSettings(chainId),
+  };
+}
+
 export function getGasSettings(speed: GasSpeed, chainId: ChainId) {
   if (speed === 'custom') return getCustomGasSettings(chainId);
   return getCachedGasSuggestions(chainId)?.[speed];
