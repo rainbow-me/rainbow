@@ -83,18 +83,20 @@ export function AnimatedChainImage({
       return base;
     }
 
+    if (networkBadges[asset.value.chainId]) {
+      if (!showMainnetBadge && asset.value.chainId === ChainId.mainnet) {
+        return base;
+      }
+      base.source.url = networkBadges[asset.value.chainId];
+      return base;
+    }
+
     const url = getCustomChainIconUrlWorklet(asset.value.chainId, asset.value.address);
     if (url) {
       base.source.url = url;
       return base;
     }
 
-    if (networkBadges[asset.value.chainId]) {
-      if (!showMainnetBadge && asset.value.chainId === ChainId.mainnet) {
-        return base;
-      }
-      base.source.url = networkBadges[asset.value.chainId];
-    }
     return base;
   });
 
