@@ -130,7 +130,7 @@ function parseTokenSearch(assets: SearchAsset[], chainId?: ChainId) {
   }
 }
 
-type TokenSearchResult = QueryFunctionResult<typeof tokenSearchQueryFunction>;
+export type TokenSearchResult = QueryFunctionResult<typeof tokenSearchQueryFunction>;
 
 // ///////////////////////////////////////////////
 // Query Fetcher
