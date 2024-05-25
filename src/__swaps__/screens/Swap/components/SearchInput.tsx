@@ -93,7 +93,6 @@ export const SearchInput = ({
                   animatedProps={searchInputValue}
                   onChange={onSearchQueryChange}
                   onBlur={() => {
-                    console.log('here');
                     onSearchQueryChange({
                       nativeEvent: {
                         text: '',

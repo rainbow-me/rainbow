@@ -5,6 +5,7 @@ import { RainbowError, logger } from '@/logger';
 export interface UserAssetsState {
   userAssets: Map<UniqueId, ParsedSearchAsset>;
 
+  hasUserAsset: (uniqueId: UniqueId) => boolean;
   getUserAsset: (uniqueId: UniqueId) => ParsedSearchAsset;
 }
 
@@ -65,6 +66,7 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
     userAssets: new Map(),
 
     getUserAsset: (uniqueId: UniqueId) => get().userAssets.get(uniqueId) as ParsedSearchAsset,
+    hasUserAsset: (uniqueId: UniqueId) => get().userAssets.has(uniqueId),
   }),
   {
     storageKey: 'userAssets',

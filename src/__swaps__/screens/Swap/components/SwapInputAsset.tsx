@@ -15,9 +15,8 @@ import { TokenList } from '@/__swaps__/screens/Swap/components/TokenList/TokenLi
 import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
-import { isSameAssetWorklet } from '@/__swaps__/utils/assets';
 import { AmimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
+import { swapsStore } from '@/state/swaps/swapsStore';
 
 function SwapInputActionButton() {
   const { isDarkMode } = useColorMode();
@@ -80,21 +79,10 @@ function SwapInputIcon() {
 }
 
 function InputAssetBalanceBadge() {
-  const { internalSelectedInputAsset } = useSwapContext();
-
-  const userAssets = useAssetsToSell();
+  const selectedAssetBalance = swapsStore(state => state.inputAsset?.balance.display);
 
   const label = useDerivedValue(() => {
-    const asset = internalSelectedInputAsset.value;
-    if (!asset) return 'No balance';
-
-    const userAsset = userAssets.find(userAsset =>
-      isSameAssetWorklet(userAsset, {
-        address: asset.address,
-        chainId: asset.chainId,
-      })
-    );
-    return userAsset?.balance.display ?? 'No balance';
+    return selectedAssetBalance || 'No Balance';
   });
 
   return <BalanceBadge label={label} />;
