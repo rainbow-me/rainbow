@@ -207,7 +207,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     };
 
     // const prevAsset = swapsStore.getState()[type];
-    const prevOtherAsset = swapsStore.getState()[type === SwapAssetType.inputAsset ? SwapAssetType.outputAsset : SwapAssetType.inputAsset];
+    const swapStoreState = swapsStore.getState();
+    const otherAsset = swapStoreState[type === SwapAssetType.inputAsset ? SwapAssetType.outputAsset : SwapAssetType.inputAsset];
 
     // TODO: Fix me. This is causing assets to not be set sometimes?
     // if we're setting the same asset, exit early as it's a no-op
@@ -222,16 +223,17 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     // }
 
     // if we're setting the same asset as the other asset, we need to clear the other asset
-    if (prevOtherAsset && isSameAsset(prevOtherAsset, asset)) {
+    if (otherAsset && isSameAsset(otherAsset, asset)) {
       logger.debug(`[setAsset]: Swapping ${type} asset for ${type === SwapAssetType.inputAsset ? 'output' : 'input'} asset`);
 
       swapsStore.setState({
-        [type === SwapAssetType.inputAsset ? SwapAssetType.outputAsset : SwapAssetType.inputAsset]: null,
+        [type === SwapAssetType.inputAsset ? SwapAssetType.outputAsset : SwapAssetType.inputAsset]: swapStoreState[type],
       });
-      runOnUI(updateAssetValue)({
-        type: type === SwapAssetType.inputAsset ? SwapAssetType.outputAsset : SwapAssetType.inputAsset,
-        asset: null,
-      });
+      runOnUI(updateAssetValue)(
+        type === SwapAssetType.inputAsset
+          ? { type: SwapAssetType.outputAsset, asset: internalSelectedInputAsset.value }
+          : { type: SwapAssetType.inputAsset, asset: internalSelectedOutputAsset.value }
+      );
     }
 
     logger.debug(`[setAsset]: Setting ${type} asset to ${asset.name} on ${asset.chainId}`);

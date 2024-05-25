@@ -1,25 +1,29 @@
 /* eslint-disable no-nested-ternary */
-import React, { useCallback } from 'react';
-import { StyleSheet } from 'react-native';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import { AnimatedBlurView } from '@/__swaps__/screens/Swap/components/AnimatedBlurView';
+import { SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { SwapAssetType } from '@/__swaps__/types/swap';
+import { getColorValueForTheme, getColorValueForThemeWorklet, opacity } from '@/__swaps__/utils/swaps';
 import SwapSpinner from '@/assets/swapSpinner.png';
 import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { Bleed, Box, IconContainer, Text, globalColors, useColorMode } from '@/design-system';
-import { SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
-import { getColorValueForTheme, getColorValueForThemeWorklet, opacity } from '@/__swaps__/utils/swaps';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { AnimatedBlurView } from '@/__swaps__/screens/Swap/components/AnimatedBlurView';
-import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import React, { useCallback } from 'react';
+import { StyleSheet } from 'react-native';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
 export const FlipButton = () => {
   const { isDarkMode } = useColorMode();
 
-  const { isFetching, AnimatedSwapStyles, internalSelectedOutputAsset } = useSwapContext();
+  const { isFetching, AnimatedSwapStyles, internalSelectedOutputAsset, setAsset } = useSwapContext();
 
   const handleSwapAssets = useCallback(() => {
-    // TODO: Handle swap assets logic
-  }, []);
+    const { outputAsset, inputAsset } = swapsStore.getState();
+    if (inputAsset) return setAsset({ type: SwapAssetType.outputAsset, asset: inputAsset });
+    if (outputAsset) return setAsset({ type: SwapAssetType.inputAsset, asset: outputAsset });
+  }, [setAsset]);
 
   const flipButtonInnerStyles = useAnimatedStyle(() => {
     return {
