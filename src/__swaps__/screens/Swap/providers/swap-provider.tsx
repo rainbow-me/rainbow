@@ -58,7 +58,6 @@ interface SwapContextType {
   SwapTextStyles: ReturnType<typeof useSwapTextStyles>;
   SwapNavigation: ReturnType<typeof useSwapNavigation>;
   SwapWarning: ReturnType<typeof useSwapWarning>;
-  SwapGas: ReturnType<typeof useSwapGas>;
 
   confirmButtonIcon: Readonly<SharedValue<string>>;
   confirmButtonLabel: Readonly<SharedValue<string>>;
@@ -111,11 +110,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
   const SwapSettings = useSwapSettings({
     inputAsset: internalSelectedInputAsset,
-  });
-
-  const SwapGas = useSwapGas({
-    inputAsset: internalSelectedInputAsset,
-    outputAsset: internalSelectedOutputAsset,
   });
 
   const SwapInputsController = useSwapInputsController({
@@ -390,7 +384,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         SwapTextStyles,
         SwapNavigation,
         SwapWarning,
-        SwapGas,
 
         confirmButtonIcon,
         confirmButtonLabel,
