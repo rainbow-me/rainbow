@@ -69,7 +69,7 @@ export function useSwapInputsController({
 
   const niceIncrement = useDerivedValue(() => {
     if (!internalSelectedInputAsset.value?.balance.amount) return 0.1;
-    return findNiceIncrement(Number(internalSelectedInputAsset.value?.balance.amount));
+    return findNiceIncrement(internalSelectedInputAsset.value?.balance.amount);
   });
   const incrementDecimalPlaces = useDerivedValue(() => countDecimalPlaces(niceIncrement.value));
 

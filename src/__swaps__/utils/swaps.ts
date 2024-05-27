@@ -16,6 +16,8 @@ import { BigNumberish } from '@ethersproject/bignumber';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { colors } from '@/styles';
 import { convertAmountToRawAmount } from './numbers';
+import { ceil, div, equals, floor, log10, lte, mul, pow, round, toFixed } from '../safe-math/SafeMath';
+import { consoleLogWorklet } from '@/debugging/workletUtils';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -109,10 +111,10 @@ export const clampJS = (value: number, lowerBound: number, upperBound: number) =
   return Math.min(Math.max(lowerBound, value), upperBound);
 };
 
-export const countDecimalPlaces = (number: number): number => {
+export const countDecimalPlaces = (number: number | string): number => {
   'worklet';
 
-  const numAsString = number.toString();
+  const numAsString = typeof number === 'string' ? number : number.toString();
 
   if (numAsString.includes('.')) {
     // Return the number of digits after the decimal point, excluding trailing zeros
@@ -123,7 +125,7 @@ export const countDecimalPlaces = (number: number): number => {
   return 0;
 };
 
-export const findNiceIncrement = (availableBalance: number): number => {
+export const findNiceIncrement = (availableBalance: string) => {
   'worklet';
 
   // We'll use one of these factors to adjust the base increment
@@ -133,18 +135,18 @@ export const findNiceIncrement = (availableBalance: number): number => {
   const niceFactors = [1, 2, 10];
 
   // Calculate the exact increment for 100 steps
-  const exactIncrement = availableBalance / 100;
+  const exactIncrement = div(availableBalance, 100);
 
   // Calculate the order of magnitude of the exact increment
-  const orderOfMagnitude = Math.floor(Math.log10(exactIncrement));
-  const baseIncrement = Math.pow(10, orderOfMagnitude);
+  const orderOfMagnitude = Math.floor(Number(log10(exactIncrement)));
+  const baseIncrement = pow(10, orderOfMagnitude);
 
   let adjustedIncrement = baseIncrement;
 
   // Find the first nice increment that ensures at least 100 steps
   for (let i = niceFactors.length - 1; i >= 0; i--) {
-    const potentialIncrement = baseIncrement * niceFactors[i];
-    if (potentialIncrement <= exactIncrement) {
+    const potentialIncrement = mul(baseIncrement, niceFactors[i]);
+    if (lte(potentialIncrement, exactIncrement)) {
       adjustedIncrement = potentialIncrement;
       break;
     }
@@ -198,7 +200,7 @@ export function valueBasedDecimalFormatter({
   isStablecoin,
   stripSeparators = true,
 }: {
-  amount: number;
+  amount: number | string;
   usdTokenPrice: number;
   roundingMode?: 'up' | 'down';
   precisionAdjustment?: number;
@@ -221,17 +223,17 @@ export function valueBasedDecimalFormatter({
 
   const decimalPlaces = isStablecoin ? 2 : calculateDecimalPlaces(usdTokenPrice, precisionAdjustment);
 
-  let roundedAmount: number;
+  let roundedAmount;
   const factor = Math.pow(10, decimalPlaces);
 
   // Apply rounding based on the specified rounding mode
   if (roundingMode === 'up') {
-    roundedAmount = Math.ceil(amount * factor) / factor;
+    roundedAmount = div(ceil(mul(amount, factor)), factor);
   } else if (roundingMode === 'down') {
-    roundedAmount = Math.floor(amount * factor) / factor;
+    roundedAmount = div(floor(mul(amount, factor)), factor);
   } else {
     // Default to normal rounding if no rounding mode is specified
-    roundedAmount = Math.round(amount * factor) / factor;
+    roundedAmount = div(round(mul(amount, factor)), factor);
   }
 
   // Format the number to add separators and trim trailing zeros
@@ -241,9 +243,9 @@ export function valueBasedDecimalFormatter({
     useGrouping: true,
   });
 
-  if (stripSeparators) return stripCommas(numberFormatter.format(roundedAmount));
+  if (stripSeparators) return stripCommas(numberFormatter.format(Number(roundedAmount)));
 
-  return numberFormatter.format(roundedAmount);
+  return numberFormatter.format(Number(roundedAmount));
 }
 
 export function niceIncrementFormatter({
@@ -256,9 +258,9 @@ export function niceIncrementFormatter({
   stripSeparators,
 }: {
   incrementDecimalPlaces: number;
-  inputAssetBalance: number;
+  inputAssetBalance: number | string;
   inputAssetUsdPrice: number;
-  niceIncrement: number;
+  niceIncrement: number | string;
   percentageToSwap: number;
   sliderXPosition: number;
   stripSeparators?: boolean;
@@ -267,21 +269,21 @@ export function niceIncrementFormatter({
   if (percentageToSwap === 0) return '0';
   if (percentageToSwap === 0.25)
     return valueBasedDecimalFormatter({
-      amount: inputAssetBalance * 0.25,
+      amount: mul(inputAssetBalance, 0.25),
       usdTokenPrice: inputAssetUsdPrice,
       roundingMode: 'up',
       precisionAdjustment: -3,
     });
   if (percentageToSwap === 0.5)
     return valueBasedDecimalFormatter({
-      amount: inputAssetBalance * 0.5,
+      amount: mul(inputAssetBalance, 0.5),
       usdTokenPrice: inputAssetUsdPrice,
       roundingMode: 'up',
       precisionAdjustment: -3,
     });
   if (percentageToSwap === 0.75)
     return valueBasedDecimalFormatter({
-      amount: inputAssetBalance * 0.75,
+      amount: mul(inputAssetBalance, 0.75),
       usdTokenPrice: inputAssetUsdPrice,
       roundingMode: 'up',
       precisionAdjustment: -3,
@@ -293,16 +295,29 @@ export function niceIncrementFormatter({
       roundingMode: 'up',
     });
 
-  const exactIncrement = inputAssetBalance / 100;
-  const isIncrementExact = niceIncrement === exactIncrement;
-  const numberOfIncrements = inputAssetBalance / niceIncrement;
-  const incrementStep = 1 / numberOfIncrements;
+  consoleLogWorklet('niceIncrement:' + niceIncrement);
+  const exactIncrement = div(inputAssetBalance, 100);
+  consoleLogWorklet('exactIncrement:' + exactIncrement);
+  const isIncrementExact = equals(niceIncrement, exactIncrement);
+  consoleLogWorklet('isIncrementExact:' + isIncrementExact);
+  const numberOfIncrements = div(inputAssetBalance, niceIncrement);
+  consoleLogWorklet('numberOfIncrements:' + numberOfIncrements);
+  const incrementStep = div(1, numberOfIncrements);
+  consoleLogWorklet('numberOfIncrements:' + numberOfIncrements);
   const percentage = isIncrementExact
     ? percentageToSwap
-    : Math.round(clamp((sliderXPosition - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1) * (1 / incrementStep)) / (1 / incrementStep);
+    : Math.round(
+        (clamp((sliderXPosition - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1) * Number(div(1, incrementStep))) /
+          Number(div(1, incrementStep))
+      );
 
-  const rawAmount = Math.round((percentage * inputAssetBalance) / niceIncrement) * niceIncrement;
-  const amountToFixedDecimals = rawAmount.toFixed(incrementDecimalPlaces);
+  consoleLogWorklet('percentage:' + percentage);
+
+  const rawAmount = mul(Math.round(Number(div(mul(percentage, inputAssetBalance), niceIncrement))), niceIncrement);
+  consoleLogWorklet('rawAmount:' + rawAmount);
+
+  const amountToFixedDecimals = toFixed(rawAmount, incrementDecimalPlaces);
+  consoleLogWorklet('amountToFixedDecimals:' + amountToFixedDecimals);
 
   const formattedAmount = `${Number(amountToFixedDecimals).toLocaleString('en-US', {
     useGrouping: true,

@@ -1,4 +1,4 @@
-import { sum, sub, mul, div, mod, pow } from '../SafeMath';
+import { sum, sub, mul, div, mod, pow, log10, gt, lt, gte, lte, equals, toFixed, ceil, floor, round } from '../SafeMath';
 import BigNumber from 'bignumber.js';
 
 const RESULTS = {
@@ -8,6 +8,7 @@ const RESULTS = {
   div: '325.56878986395199044836',
   mod: '2172.345',
   pow: '1546106588588.369025',
+  log10: '0.30102999566398124032',
 };
 
 const VALUE_A = '1243425.345';
@@ -25,6 +26,7 @@ describe('SafeMath', () => {
     expect(sum(VALUE_A, ZERO)).toBe(VALUE_A);
     expect(sum(ZERO, VALUE_B)).toBe(VALUE_B);
     expect(sum(VALUE_A, VALUE_B)).toBe(RESULTS.sum);
+    expect(sum(Number(VALUE_A), Number(VALUE_B))).toBe(RESULTS.sum);
   });
 
   test('sub', () => {
@@ -34,6 +36,7 @@ describe('SafeMath', () => {
     expect(sub(VALUE_A, ZERO)).toBe(VALUE_A);
     expect(sub(ZERO, VALUE_B)).toBe(`-${VALUE_B}`);
     expect(sub(VALUE_A, VALUE_B)).toBe(RESULTS.sub);
+    expect(sub(Number(VALUE_A), Number(VALUE_B))).toBe(RESULTS.sub);
   });
 
   test('mul', () => {
@@ -43,6 +46,7 @@ describe('SafeMath', () => {
     expect(mul(VALUE_A, ZERO)).toBe(ZERO);
     expect(mul(ZERO, VALUE_B)).toBe(ZERO);
     expect(mul(VALUE_A, VALUE_B)).toBe(RESULTS.mul);
+    expect(mul(Number(VALUE_A), Number(VALUE_B))).toBe(RESULTS.mul);
   });
 
   test('div', () => {
@@ -52,6 +56,7 @@ describe('SafeMath', () => {
     expect(() => div(VALUE_A, ZERO)).toThrow('Division by zero');
     expect(div(ZERO, VALUE_B)).toBe(ZERO);
     expect(div(VALUE_A, VALUE_B)).toBe(RESULTS.div);
+    expect(div(Number(VALUE_A), Number(VALUE_B))).toBe(RESULTS.div);
   });
 
   test('mod', () => {
@@ -61,6 +66,7 @@ describe('SafeMath', () => {
     expect(() => mod(VALUE_A, ZERO)).toThrow('Division by zero');
     expect(mod(ZERO, VALUE_B)).toBe(ZERO);
     expect(mod(VALUE_A, VALUE_B)).toBe(RESULTS.mod);
+    expect(mod(Number(VALUE_A), Number(VALUE_B))).toBe(RESULTS.mod);
   });
   test('pow', () => {
     expect(() => pow(NON_NUMERIC_STRING, VALUE_B)).toThrow('Arguments must be a numeric string');
@@ -69,6 +75,50 @@ describe('SafeMath', () => {
     expect(pow(VALUE_A, ZERO)).toBe(ONE);
     expect(pow(ZERO, VALUE_B)).toBe(ZERO);
     expect(pow(VALUE_A, VALUE_C)).toBe(RESULTS.pow);
+    expect(pow(Number(VALUE_A), Number(VALUE_C))).toBe(RESULTS.pow);
+  });
+  test('log10', () => {
+    expect(() => log10(NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string');
+    expect(() => log10(ZERO)).toThrow('Argument must be greater than 0');
+    expect(log10(VALUE_C)).toBe(RESULTS.log10);
+    expect(log10(Number(VALUE_C))).toBe(RESULTS.log10);
+  });
+
+  test('gt', () => {
+    expect(gt(VALUE_A, VALUE_B)).toBe(true);
+  });
+
+  test('lt', () => {
+    expect(lt(VALUE_A, VALUE_B)).toBe(false);
+  });
+
+  test('gte', () => {
+    expect(gte(VALUE_A, VALUE_A)).toBe(true);
+  });
+
+  test('lte', () => {
+    expect(lte(VALUE_A, VALUE_A)).toBe(true);
+  });
+
+  test('equals', () => {
+    expect(equals(VALUE_A, VALUE_A)).toBe(true);
+  });
+
+  test('toFixed', () => {
+    expect(toFixed(VALUE_A, Number(VALUE_C))).toBe('1243425.35');
+  });
+
+  test('ceil', () => {
+    expect(ceil(VALUE_A)).toBe('1243426');
+  });
+
+  test('floor', () => {
+    expect(floor('1243425.345')).toBe('1243425');
+  });
+
+  test('round', () => {
+    expect(round('1243425.345')).toBe('1243425');
+    expect(round('1243425.745')).toBe('1243426');
   });
 });
 
