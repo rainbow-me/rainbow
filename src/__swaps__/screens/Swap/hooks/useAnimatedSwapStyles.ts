@@ -190,8 +190,9 @@ export function useAnimatedSwapStyles({
   });
 
   const flipButtonFetchingStyle = useAnimatedStyle(() => {
+    if (IS_ANDROID) return { borderWidth: 0 };
     return {
-      borderWidth: isFetching ? withTiming(2, { duration: 300 }) : withTiming(THICK_BORDER_WIDTH, spinnerExitConfig),
+      borderWidth: isFetching.value ? withTiming(2, { duration: 300 }) : withTiming(THICK_BORDER_WIDTH, spinnerExitConfig),
     };
   });
 
