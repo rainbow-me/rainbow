@@ -25,14 +25,14 @@ const rotationConfig = {
 };
 
 export const AnimatedSpinner = ({
-  isLoading,
   color,
+  isLoading,
   requireSrc = require('@/assets/chartSpinner.png'),
   scaleInFrom = 0,
   size = 28,
 }: {
-  isLoading: boolean | SharedValue<boolean>;
   color?: string | SharedValue<string>;
+  isLoading: boolean | SharedValue<boolean>;
   requireSrc?: string;
   scaleInFrom?: number;
   size?: number;
