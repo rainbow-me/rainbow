@@ -26,13 +26,6 @@ export const FlipButton = () => {
       shadowColor: isDarkMode
         ? globalColors.grey100
         : getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.mixedShadowColor, false, true),
-      shadowOffset: {
-        width: 0,
-        height: isDarkMode ? 4 : 4,
-      },
-      elevation: 8,
-      shadowOpacity: isDarkMode ? 0.3 : 0.1,
-      shadowRadius: isDarkMode ? 6 : 8,
     };
   });
 
@@ -43,7 +36,21 @@ export const FlipButton = () => {
       justifyContent="center"
       style={[AnimatedSwapStyles.flipButtonStyle, AnimatedSwapStyles.focusedSearchStyle, { height: 12, width: 28, zIndex: 10 }]}
     >
-      <Box as={Animated.View} style={flipButtonInnerStyles}>
+      <Box
+        as={Animated.View}
+        style={[
+          flipButtonInnerStyles,
+          {
+            shadowOffset: {
+              width: 0,
+              height: isDarkMode ? 4 : 4,
+            },
+            elevation: 8,
+            shadowOpacity: isDarkMode ? 0.3 : 0.1,
+            shadowRadius: isDarkMode ? 6 : 8,
+          },
+        ]}
+      >
         <ButtonPressAnimation onPress={handleSwapAssets} scaleTo={0.8} style={{ paddingHorizontal: 20, paddingVertical: 8 }}>
           {/* TODO: Temp fix - rewrite to actually avoid type errors */}
           {/* @ts-expect-error The conditional as={} is causing type errors */}
