@@ -1,5 +1,6 @@
 // Utility function to remove the decimal point and keep track of the number of decimal places
 const removeDecimal = (num: string): [bigint, number] => {
+  'worklet';
   const parts = num.split('.');
   const decimalPlaces = parts.length === 2 ? parts[1].length : 0;
   const bigIntNum = BigInt(parts.join(''));
@@ -7,10 +8,12 @@ const removeDecimal = (num: string): [bigint, number] => {
 };
 
 const isNumberString = (value: string): boolean => {
-  return /^\d+(\.\d+)?$/.test(value);
+  'worklet';
+  return /^-?\d+(\.\d+)?$/.test(value);
 };
 
 const isZero = (value: string): boolean => {
+  'worklet';
   if (parseFloat(value) === 0) {
     return true;
   }
@@ -19,21 +22,27 @@ const isZero = (value: string): boolean => {
 
 // Utility function to scale the number up to 20 decimal places
 const scaleUp = (bigIntNum: bigint, decimalPlaces: number): bigint => {
-  const scaleFactor = BigInt(10) ** (BigInt(20) - BigInt(decimalPlaces));
-  return bigIntNum * scaleFactor;
+  'worklet';
+  const scaleFactor = BigInt(10) ** BigInt(20);
+  return (bigIntNum * scaleFactor) / BigInt(10) ** BigInt(decimalPlaces);
 };
 
 // Utility function to format the result with 20 decimal places and remove trailing zeros
 const formatResult = (result: bigint): string => {
-  const resultStr = result.toString().padStart(21, '0'); // 20 decimal places + at least 1 integer place
+  'worklet';
+  const isNegative = result < 0;
+  const absResult = isNegative ? -result : result;
+  const resultStr = absResult.toString().padStart(21, '0'); // 20 decimal places + at least 1 integer place
   const integerPart = resultStr.slice(0, -20) || '0';
   let fractionalPart = resultStr.slice(-20);
   fractionalPart = fractionalPart.replace(/0+$/, ''); // Remove trailing zeros
-  return fractionalPart.length > 0 ? `${integerPart}.${fractionalPart}` : integerPart;
+  const formattedResult = fractionalPart.length > 0 ? `${integerPart}.${fractionalPart}` : integerPart;
+  return isNegative ? `-${formattedResult}` : formattedResult;
 };
 
 // Sum function
 export function sum(num1: string, num2: string): string {
+  'worklet';
   if (!isNumberString(num1) || !isNumberString(num2)) {
     throw new Error('Arguments must be a numeric string');
   }
@@ -54,6 +63,7 @@ export function sum(num1: string, num2: string): string {
 
 // Subtract function
 export function sub(num1: string, num2: string): string {
+  'worklet';
   if (!isNumberString(num1) || !isNumberString(num2)) {
     throw new Error('Arguments must be a numeric string');
   }
@@ -72,6 +82,7 @@ export function sub(num1: string, num2: string): string {
 
 // Multiply function
 export function mul(num1: string, num2: string): string {
+  'worklet';
   if (!isNumberString(num1) || !isNumberString(num2)) {
     throw new Error('Arguments must be a numeric string');
   }
@@ -88,6 +99,7 @@ export function mul(num1: string, num2: string): string {
 
 // Divide function
 export function div(num1: string, num2: string): string {
+  'worklet';
   if (!isNumberString(num1) || !isNumberString(num2)) {
     throw new Error('Arguments must be a numeric string');
   }
@@ -107,6 +119,7 @@ export function div(num1: string, num2: string): string {
 
 // Modulus function
 export function mod(num1: string, num2: string): string {
+  'worklet';
   if (!isNumberString(num1) || !isNumberString(num2)) {
     throw new Error('Arguments must be a numeric string');
   }
@@ -126,6 +139,7 @@ export function mod(num1: string, num2: string): string {
 
 // Power function
 export function pow(base: string, exponent: string): string {
+  'worklet';
   if (!isNumberString(base) || !isNumberString(exponent)) {
     throw new Error('Arguments must be a numeric string');
   }
@@ -139,4 +153,69 @@ export function pow(base: string, exponent: string): string {
   const scaledBigIntBase = scaleUp(bigIntBase, decimalPlaces);
   const result = scaledBigIntBase ** BigInt(exponent) / BigInt(10) ** BigInt(20);
   return formatResult(result);
+}
+
+// Equality function
+export function equal(num1: string, num2: string): boolean {
+  'worklet';
+  if (!isNumberString(num1) || !isNumberString(num2)) {
+    throw new Error('Arguments must be a numeric string');
+  }
+  const [bigInt1, decimalPlaces1] = removeDecimal(num1);
+  const [bigInt2, decimalPlaces2] = removeDecimal(num2);
+  const scaledBigInt1 = scaleUp(bigInt1, decimalPlaces1);
+  const scaledBigInt2 = scaleUp(bigInt2, decimalPlaces2);
+  return scaledBigInt1 === scaledBigInt2;
+}
+
+// Greater than function
+export function greaterThan(num1: string, num2: string): boolean {
+  'worklet';
+  if (!isNumberString(num1) || !isNumberString(num2)) {
+    throw new Error('Arguments must be a numeric string');
+  }
+  const [bigInt1, decimalPlaces1] = removeDecimal(num1);
+  const [bigInt2, decimalPlaces2] = removeDecimal(num2);
+  const scaledBigInt1 = scaleUp(bigInt1, decimalPlaces1);
+  const scaledBigInt2 = scaleUp(bigInt2, decimalPlaces2);
+  return scaledBigInt1 > scaledBigInt2;
+}
+
+// Greater than or equal to function
+export function greaterThanOrEqualTo(num1: string, num2: string): boolean {
+  'worklet';
+  if (!isNumberString(num1) || !isNumberString(num2)) {
+    throw new Error('Arguments must be a numeric string');
+  }
+  const [bigInt1, decimalPlaces1] = removeDecimal(num1);
+  const [bigInt2, decimalPlaces2] = removeDecimal(num2);
+  const scaledBigInt1 = scaleUp(bigInt1, decimalPlaces1);
+  const scaledBigInt2 = scaleUp(bigInt2, decimalPlaces2);
+  return scaledBigInt1 >= scaledBigInt2;
+}
+
+// Less than function
+export function lessThan(num1: string, num2: string): boolean {
+  'worklet';
+  if (!isNumberString(num1) || !isNumberString(num2)) {
+    throw new Error('Arguments must be a numeric string');
+  }
+  const [bigInt1, decimalPlaces1] = removeDecimal(num1);
+  const [bigInt2, decimalPlaces2] = removeDecimal(num2);
+  const scaledBigInt1 = scaleUp(bigInt1, decimalPlaces1);
+  const scaledBigInt2 = scaleUp(bigInt2, decimalPlaces2);
+  return scaledBigInt1 < scaledBigInt2;
+}
+
+// Less than or equal to function
+export function lessThanOrEqualTo(num1: string, num2: string): boolean {
+  'worklet';
+  if (!isNumberString(num1) || !isNumberString(num2)) {
+    throw new Error('Arguments must be a numeric string');
+  }
+  const [bigInt1, decimalPlaces1] = removeDecimal(num1);
+  const [bigInt2, decimalPlaces2] = removeDecimal(num2);
+  const scaledBigInt1 = scaleUp(bigInt1, decimalPlaces1);
+  const scaledBigInt2 = scaleUp(bigInt2, decimalPlaces2);
+  return scaledBigInt1 <= scaledBigInt2;
 }
