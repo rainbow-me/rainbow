@@ -6,7 +6,16 @@ import ethereumUtils, { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { formatUnits } from 'viem';
 import { formatCurrency, formatNumber } from './formatNumber';
 import { GasSettings } from './useCustomGas';
+import { useDebounce } from './useDebounce';
 import { useSwapEstimatedGasLimit } from './useSwapEstimatedGasLimit';
+
+function safeBigInt(value: string) {
+  try {
+    return BigInt(value);
+  } catch {
+    return 0n;
+  }
+}
 
 export function useEstimatedGasFee({
   chainId,
@@ -21,16 +30,15 @@ export function useEstimatedGasFee({
   const nativeNetworkAsset = useNativeAssetForNetwork(network);
 
   if (!gasLimit || !gasSettings || !nativeNetworkAsset) return 'Loading...'; // TODO: loading state
-
   const amount = gasSettings.isEIP1559 ? add(gasSettings.maxBaseFee, gasSettings.maxPriorityFee) : gasSettings.gasPrice;
 
   const totalWei = multiply(gasLimit, amount);
-  const nativePrice = nativeNetworkAsset.price.value?.toString();
+  const networkAssetPrice = nativeNetworkAsset.price.value?.toString();
 
-  if (!nativePrice) return `${formatNumber(weiToGwei(totalWei))} Gwei`;
+  if (!networkAssetPrice) return `${formatNumber(weiToGwei(totalWei))} Gwei`;
 
-  const gasAmount = formatUnits(BigInt(totalWei), nativeNetworkAsset.decimals).toString();
-  const feeInUserCurrency = multiply(nativePrice, gasAmount);
+  const gasAmount = formatUnits(safeBigInt(totalWei), nativeNetworkAsset.decimals).toString();
+  const feeInUserCurrency = multiply(networkAssetPrice, gasAmount);
 
   return formatCurrency(feeInUserCurrency);
 }
@@ -41,7 +49,11 @@ export function useSwapEstimatedGasFee(gasSettings: GasSettings | undefined) {
   const assetToSell = useSwapsStore(s => s.inputAsset);
   const quote = useSwapsStore(s => s.quote);
 
-  const { data: gasLimit } = useSwapEstimatedGasLimit({ chainId, quote, assetToSell }, { enabled: !!quote });
+  const debouncedQuote = useDebounce(quote, 200);
+
+  const { data: gasLimit } = useSwapEstimatedGasLimit({ chainId, quote: debouncedQuote, assetToSell }, { enabled: !!debouncedQuote });
+
+  // useWhyDidYouUpdate('useSwapEstimatedGasFee', { chainId, gasLimit, gasSettings, assetToSell, quote });
 
   return useEstimatedGasFee({ chainId, gasLimit, gasSettings });
 }

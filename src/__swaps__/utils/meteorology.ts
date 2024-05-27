@@ -5,7 +5,9 @@ import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
 import { abs, lessThan, subtract } from '@/helpers/utilities';
 import { QueryConfig, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
-import { GasSpeed, getGasSettings, getSelectedGasSpeed } from '../screens/Swap/hooks/useSelectedGas';
+import { useCallback } from 'react';
+import { GasSettings } from '../screens/Swap/hooks/useCustomGas';
+import { GasSpeed, getSelectedGasSpeed, useGasSettings } from '../screens/Swap/hooks/useSelectedGas';
 import { getMinimalTimeUnitStringForMs } from './time';
 
 // Query Types
@@ -89,7 +91,11 @@ export async function fetchMeteorology(
 
 export function useMeteorology<Selected = MeteorologyResult>(
   { chainId }: MeteorologyArgs,
-  { select, enabled }: { select?: (data: MeteorologyResult) => Selected; enabled?: boolean } = { select: data => data as Selected }
+  {
+    select,
+    enabled,
+    notifyOnChangeProps = ['data'],
+  }: { select?: (data: MeteorologyResult) => Selected; enabled?: boolean; notifyOnChangeProps?: 'data'[] }
 ) {
   return useQuery(meteorologyQueryKey({ chainId }), meteorologyQueryFunction, {
     select,
@@ -97,7 +103,7 @@ export function useMeteorology<Selected = MeteorologyResult>(
     refetchInterval: 12_000, // 12 seconds
     staleTime: 12_000, // 12 seconds
     cacheTime: Infinity,
-    notifyOnChangeProps: ['data'],
+    notifyOnChangeProps,
   });
 }
 
@@ -186,19 +192,21 @@ function findClosestValue(target: string, array: string[]) {
   })!;
 }
 
+function selectEstimatedTime({ data }: MeteorologyResult, selectedGas: GasSettings | undefined) {
+  if ('legacy' in data) return undefined;
+  if (!selectedGas?.isEIP1559) return undefined;
+  const value = findClosestValue(selectedGas.maxPriorityFee, Object.values(data.confirmationTimeByPriorityFee));
+  const [time] = Object.entries(data.confirmationTimeByPriorityFee).find(([, v]) => v === value) || [];
+  if (!time) return undefined;
+  return `${+time >= 3600 ? '>' : '~'} ${getMinimalTimeUnitStringForMs(+time * 1000)}`;
+}
+
 export function useEstimatedTime({ chainId, speed }: { chainId: ChainId; speed: GasSpeed }) {
+  const selectedGas = useGasSettings(chainId, speed);
   return useMeteorology(
     { chainId },
     {
-      select: ({ data }) => {
-        if ('legacy' in data) return undefined;
-        const gasSettings = getGasSettings(speed, chainId);
-        if (!gasSettings?.isEIP1559) return undefined;
-        const value = findClosestValue(gasSettings.maxPriorityFee, Object.values(data.confirmationTimeByPriorityFee));
-        const [time] = Object.entries(data.confirmationTimeByPriorityFee).find(([, v]) => v === value) || [];
-        if (!time) return undefined;
-        return `${+time >= 3600 ? '>' : '~'} ${getMinimalTimeUnitStringForMs(+time * 1000)}`;
-      },
+      select: useCallback((data: MeteorologyResult) => selectEstimatedTime(data, selectedGas), [selectedGas]),
     }
   );
 }
@@ -209,20 +217,38 @@ export const getCachedCurrentBaseFee = (chainId: ChainId) => {
   return selectBaseFee(data);
 };
 
-export function useMeteorologySuggestions<Selected = ReturnType<typeof selectGasSuggestions>>({
+type GasSuggestions = ReturnType<typeof selectGasSuggestions>;
+export function useMeteorologySuggestions({ chainId, enabled }: { chainId: ChainId; enabled?: boolean }) {
+  return useMeteorology({ chainId }, { select: selectGasSuggestions, enabled });
+}
+
+export function useMeteorologySuggestion<Selected = GasSuggestions[keyof GasSuggestions]>({
   chainId,
+  speed,
   enabled,
   select = s => s as Selected,
 }: {
   chainId: ChainId;
+  speed: GasSpeed;
   enabled?: boolean;
-  select?: (d: ReturnType<typeof selectGasSuggestions>) => Selected;
+  select?: (d: GasSuggestions[keyof GasSuggestions] | undefined) => Selected;
 }) {
-  return useMeteorology({ chainId }, { select: d => select(selectGasSuggestions(d)), enabled });
+  return useMeteorology(
+    { chainId },
+    {
+      select: useCallback(
+        (d: MeteorologyResult) => select(speed === 'custom' ? undefined : selectGasSuggestions(d)[speed]),
+        [select, speed]
+      ),
+      enabled: enabled && speed !== 'custom',
+      notifyOnChangeProps: enabled && speed !== 'custom' ? ['data'] : [],
+    }
+  );
 }
 
+const selectIsEIP1559 = ({ data }: MeteorologyResult) => !('legacy' in data);
 export const useIsChainEIP1559 = (chainId: ChainId) => {
-  const { data } = useMeteorology({ chainId }, { select: ({ data }) => !('legacy' in data) });
+  const { data } = useMeteorology({ chainId }, { select: selectIsEIP1559 });
   if (data === undefined) return true;
   return data;
 };
