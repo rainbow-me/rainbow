@@ -97,7 +97,7 @@ export function useSwapEstimatedGasLimit(
       staleTime: 30 * 1000, // 30s
       cacheTime: 60 * 1000, // 1min
       notifyOnChangeProps: ['data', 'isFetching'],
-      // keepPreviousData: true,
+      keepPreviousData: true,
       placeholderData: gasUnits.basic_swap[chainId],
       ...config,
     }
