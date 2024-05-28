@@ -1,9 +1,9 @@
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { CrosschainQuote, Quote, QuoteError, Source } from '@rainbow-me/swaps';
-import { getDefaultSlippage } from '@/__swaps__/utils/swaps';
 import { ChainId } from '@/__swaps__/types/chains';
+import { getDefaultSlippage } from '@/__swaps__/utils/swaps';
 import { DEFAULT_CONFIG } from '@/model/remoteConfig';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { CrosschainQuote, Quote, QuoteError, Source } from '@rainbow-me/swaps';
 
 export interface SwapsState {
   // assets
@@ -52,3 +52,5 @@ export const swapsStore = createRainbowStore<SwapsState>(
     },
   }
 );
+
+export const useSwapsStore = swapsStore;
