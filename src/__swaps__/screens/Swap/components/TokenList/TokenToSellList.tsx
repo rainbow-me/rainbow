@@ -38,11 +38,14 @@ export const TokenToSellList = () => {
   const { filter, searchQuery } = swapsStore(state => ({ filter: state.filter, searchQuery: state.inputSearchQuery }));
   const assetIds = userAssetsStore(filterUserAssets(searchQuery, filter));
 
+  // will only change if assetIds or their order changes
+  const memoizedAssetIds = React.useMemo(() => assetIds, [assetIds.join(',')]);
+
   return (
     <Stack space="20px">
       <ChainSelection allText="All Networks" output={false} />
       <FlashList
-        data={assetIds}
+        data={memoizedAssetIds}
         estimatedItemSize={COIN_ROW_HEIGHT}
         estimatedListSize={{
           height: COIN_ROW_LIST_HEIGHT,
