@@ -120,9 +120,6 @@ export const walletExecuteRap = async (
   const rap: Rap = await createSwapRapByType(type, parameters);
 
   const { actions } = rap;
-
-  console.log(actions.length);
-
   const rapName = getRapFullName(rap.actions);
   let nonce = parameters?.nonce;
   let errorMessage = null;
