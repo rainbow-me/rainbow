@@ -89,7 +89,7 @@ const RainbowFee = () => {
 function EstimatedGasFee() {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
   const gasSettings = useSelectedGas(chainId);
-  const estimatedGasFee = useSwapEstimatedGasFee(gasSettings);
+  const { data: estimatedGasFee } = useSwapEstimatedGasFee(gasSettings);
 
   return (
     <Text align="left" color={'label'} size="15pt" weight="heavy">

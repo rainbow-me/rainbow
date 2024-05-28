@@ -227,11 +227,13 @@ export function useMeteorologySuggestion<Selected = GasSuggestions[keyof GasSugg
   speed,
   enabled,
   select = s => s as Selected,
+  notifyOnChangeProps = ['data'],
 }: {
   chainId: ChainId;
   speed: GasSpeed;
   enabled?: boolean;
   select?: (d: GasSuggestions[keyof GasSuggestions] | undefined) => Selected;
+  notifyOnChangeProps?: ['data'] | [];
 }) {
   return useMeteorology(
     { chainId },
@@ -241,7 +243,7 @@ export function useMeteorologySuggestion<Selected = GasSuggestions[keyof GasSugg
         [select, speed]
       ),
       enabled: enabled && speed !== 'custom',
-      notifyOnChangeProps: enabled && speed !== 'custom' ? ['data'] : [],
+      notifyOnChangeProps,
     }
   );
 }

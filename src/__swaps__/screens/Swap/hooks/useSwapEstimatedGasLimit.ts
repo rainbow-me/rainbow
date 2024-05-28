@@ -25,7 +25,7 @@ export type EstimateSwapGasLimitArgs = {
 // Query Key
 
 const estimateSwapGasLimitQueryKey = ({ chainId, quote, assetToSell }: EstimateSwapGasLimitArgs) =>
-  createQueryKey('estimateSwapGasLimit', { chainId, quote, assetToSell }, { persisterVersion: 1 });
+  createQueryKey('estimateSwapGasLimit', { chainId, quote, assetToSell });
 
 type EstimateSwapGasLimitQueryKey = ReturnType<typeof estimateSwapGasLimitQueryKey>;
 
@@ -94,10 +94,11 @@ export function useSwapEstimatedGasLimit(
     }),
     estimateSwapGasLimitQueryFunction,
     {
+      staleTime: 30 * 1000, // 30s
+      cacheTime: 60 * 1000, // 1min
+      notifyOnChangeProps: ['data', 'isFetching'],
       keepPreviousData: true,
-      staleTime: 12000,
-      cacheTime: Infinity,
-      notifyOnChangeProps: ['data'],
+      placeholderData: gasUnits.basic_swap[chainId],
       ...config,
     }
   );

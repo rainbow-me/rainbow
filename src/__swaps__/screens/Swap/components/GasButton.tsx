@@ -1,18 +1,19 @@
 import { ChainId } from '@/__swaps__/types/chains';
 import { weiToGwei } from '@/__swaps__/utils/ethereum';
-import { useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
+import { getCachedCurrentBaseFee, useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { add } from '@/__swaps__/utils/numbers';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ContextMenu } from '@/components/context-menu';
 import { Centered } from '@/components/layout';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { Box, Inline, Stack, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
+import { Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import * as i18n from '@/languages';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import styled from '@/styled-thing';
 import { gasUtils } from '@/utils';
 import React, { ReactNode, useCallback, useMemo } from 'react';
+import { StyleSheet } from 'react-native';
 import { runOnUI } from 'react-native-reanimated';
 import { ETH_COLOR, ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '../constants';
 import { formatNumber } from '../hooks/formatNumber';
@@ -20,21 +21,20 @@ import { GasSettings, useCustomGasSettings } from '../hooks/useCustomGas';
 import { useSwapEstimatedGasFee } from '../hooks/useEstimatedGasFee';
 import { GasSpeed, setSelectedGasSpeed, useSelectedGas, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { useSwapContext } from '../providers/swap-provider';
-import { StyleSheet } from 'react-native';
 
 const { GAS_ICONS } = gasUtils;
 
 function EstimatedGasFee() {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
   const gasSettings = useSelectedGas(chainId);
-  const estimatedGasFee = useSwapEstimatedGasFee(gasSettings);
+  const { data: estimatedGasFee, isLoading } = useSwapEstimatedGasFee(gasSettings);
 
   return (
     <Inline alignVertical="center" space="4px">
       <TextIcon color="labelQuaternary" height={10} size="icon 11px" weight="heavy" width={16}>
         􀵟
       </TextIcon>
-      <Text color="labelTertiary" size="15pt" weight="bold">
+      <Text color={isLoading ? 'red' : 'labelTertiary'} size="15pt" weight="bold">
         {estimatedGasFee}
       </Text>
     </Inline>
@@ -66,17 +66,19 @@ const GasSpeedPagerCentered = styled(Centered).attrs(() => ({
   marginHorizontal: 8,
 }))({});
 
-function getEstimatedFeeRangeInGwei(gasSettings: GasSettings | undefined, currentBaseFee?: string | undefined) {
+function getEstimatedFeeRangeInGwei(gasSettings: GasSettings | undefined, currentBaseFee: string | undefined) {
   if (!gasSettings) return undefined;
 
   if (!gasSettings.isEIP1559) return `${formatNumber(weiToGwei(gasSettings.gasPrice))} Gwei`;
 
   const { maxBaseFee, maxPriorityFee } = gasSettings;
-  return `${formatNumber(weiToGwei(add(maxBaseFee, maxPriorityFee)))} Gwei`;
+  const maxFee = formatNumber(weiToGwei(add(maxBaseFee, maxPriorityFee)));
 
-  // return `${formatNumber(weiToGwei(add(baseFee, maxPriorityFee)))} - ${formatNumber(
-  //   weiToGwei(add(maxBaseFee, maxPriorityFee))
-  // )} Gwei`;
+  if (!currentBaseFee) return `${maxFee} Gwei`;
+
+  const minFee = formatNumber(weiToGwei(add(currentBaseFee, maxPriorityFee)));
+
+  return `${minFee} - ${maxFee} Gwei`;
 }
 
 function keys<const T extends string>(obj: Record<T, any> | undefined) {
@@ -118,9 +120,9 @@ const GasMenu = ({ children }: { children: ReactNode }) => {
     const menuItems = menuOptions.map(gasOption => {
       if (IS_ANDROID) return gasOption;
 
-      // const currentBaseFee = getCachedCurrentBaseFee(chainId);
+      const currentBaseFee = getCachedCurrentBaseFee(chainId);
       const gasSettings = gasOption === 'custom' ? customGasSettings : metereologySuggestions.data?.[gasOption];
-      const subtitle = getEstimatedFeeRangeInGwei(gasSettings);
+      const subtitle = getEstimatedFeeRangeInGwei(gasSettings, currentBaseFee);
 
       return {
         actionKey: gasOption,
@@ -130,7 +132,7 @@ const GasMenu = ({ children }: { children: ReactNode }) => {
       };
     });
     return { menuItems, menuTitle: '' };
-  }, [customGasSettings, menuOptions, metereologySuggestions.data]);
+  }, [customGasSettings, menuOptions, metereologySuggestions.data, chainId]);
 
   if (metereologySuggestions.isLoading) return children;
 
@@ -211,10 +213,10 @@ export function ReviewGasButton() {
 export const GasButton = () => {
   return (
     <GasMenu>
-      <Stack space="12px">
+      <Box gap={12}>
         <SelectedGas />
         <EstimatedGasFee />
-      </Stack>
+      </Box>
     </GasMenu>
   );
 };

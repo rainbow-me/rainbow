@@ -144,6 +144,9 @@ function CurrentBaseFee() {
 
   // loading state?
 
+  const isEIP1559 = useIsChainEIP1559(chainId);
+  if (!isEIP1559) return null;
+
   return (
     <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
       <PressableLabel
@@ -184,7 +187,13 @@ function useGasPanelState<
   const currentGasSettings = useCustomGasStore(s => select(s?.[chainId]));
 
   const speed = useSelectedGasSpeed(chainId);
-  const { data: suggestion } = useMeteorologySuggestion({ chainId, speed, select, enabled: !!state });
+  const { data: suggestion } = useMeteorologySuggestion({
+    chainId,
+    speed,
+    select,
+    enabled: !!state,
+    notifyOnChangeProps: !!state && speed !== 'custom' ? ['data'] : [],
+  });
 
   return useMemo(() => state ?? currentGasSettings ?? suggestion, [currentGasSettings, state, suggestion]);
 }
@@ -259,7 +268,7 @@ function MaxTransactionFee() {
 
   const gasPanelState = useGasPanelState();
   const gasSettings = useMemo(() => stateToGasSettings(gasPanelState), [gasPanelState]);
-  const maxTransactionFee = useSwapEstimatedGasFee(gasSettings);
+  const { data: maxTransactionFee } = useSwapEstimatedGasFee(gasSettings);
 
   return (
     <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
@@ -286,7 +295,9 @@ function MaxTransactionFee() {
 function EditableGasSettings() {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
   const isEIP1559 = useIsChainEIP1559(chainId);
+
   if (!isEIP1559) return <EditGasPrice />;
+
   return (
     <>
       <EditMaxBaseFee />
