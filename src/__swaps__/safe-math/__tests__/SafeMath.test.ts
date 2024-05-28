@@ -1,16 +1,21 @@
 import BigNumber from 'bignumber.js';
 import {
+  ceilWorklet,
   divWorklet,
   equalWorklet,
+  floorWorklet,
   greaterThanOrEqualToWorklet,
   greaterThanWorklet,
   lessThanOrEqualToWorklet,
   lessThanWorklet,
+  log10Worklet,
   modWorklet,
   mulWorklet,
   powWorklet,
+  roundWorklet,
   subWorklet,
   sumWorklet,
+  toFixedWorklet,
 } from '../SafeMath';
 
 const RESULTS = {
@@ -21,11 +26,15 @@ const RESULTS = {
   mod: '2172.345',
   pow: '1546106588588.369025',
   log10: '0.30102999566398124032',
+  toFixed: '1243425.35',
+  ceil: '1243426',
+  floor: '1243425',
 };
 
 const VALUE_A = '1243425.345';
 const VALUE_B = '3819.24';
 const VALUE_C = '2';
+const VALUE_D = '1243425.745';
 const NEGATIVE_VALUE = '-2412.12';
 const ZERO = '0';
 const ONE = '1';
@@ -87,6 +96,13 @@ describe('SafeMath', () => {
     expect(powWorklet(VALUE_A, VALUE_C)).toBe(RESULTS.pow);
   });
 
+  test('log10Worklet', () => {
+    expect(() => log10Worklet(NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string');
+    expect(() => log10Worklet(ZERO)).toThrow('Argument must be greater than 0');
+    expect(log10Worklet(VALUE_C)).toBe(RESULTS.log10);
+    expect(log10Worklet(Number(VALUE_C))).toBe(RESULTS.log10);
+  });
+
   test('equalWorklet', () => {
     expect(() => equalWorklet(NON_NUMERIC_STRING, VALUE_B)).toThrow('Arguments must be a numeric string');
     expect(() => equalWorklet(VALUE_A, NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string');
@@ -130,6 +146,23 @@ describe('SafeMath', () => {
     expect(lessThanOrEqualToWorklet(VALUE_B, VALUE_A)).toBe(true);
     expect(lessThanOrEqualToWorklet(VALUE_A, VALUE_A)).toBe(true);
     expect(lessThanOrEqualToWorklet(NEGATIVE_VALUE, VALUE_A)).toBe(true);
+  });
+
+  test('toFixedWorklet', () => {
+    expect(toFixedWorklet(VALUE_A, 2)).toBe(RESULTS.toFixed);
+  });
+
+  test('ceilWorklet', () => {
+    expect(ceilWorklet(VALUE_A)).toBe(RESULTS.ceil);
+  });
+
+  test('floorWorklet', () => {
+    expect(floorWorklet(VALUE_A)).toBe(RESULTS.floor);
+  });
+
+  test('roundWorklet', () => {
+    expect(roundWorklet(VALUE_A)).toBe(RESULTS.floor);
+    expect(roundWorklet(VALUE_D)).toBe(RESULTS.ceil);
   });
 });
 
