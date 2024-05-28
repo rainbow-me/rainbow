@@ -17,7 +17,6 @@ export enum MigrationName {
   migratePinnedAndHiddenTokenUniqueIds = 'migration_migratePinnedAndHiddenTokenUniqueIds',
   migrateUnlockableAppIconStorage = 'migration_migrateUnlockableAppIconStorage',
   migratePersistedQueriesToMMKV = 'migration_migratePersistedQueriesToMMKV',
-  migrateFavoritesToZustand = 'migration_migrateFavoritesToZustand',
 }
 
 export type Migration = {
