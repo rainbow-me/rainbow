@@ -26,8 +26,8 @@ import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { upperFirst } from 'lodash';
 import { formatNumber } from '../hooks/formatNumber';
 import { GasSettings, getCustomGasSettings, setCustomGasSettings, useCustomGasStore } from '../hooks/useCustomGas';
-import { useSwapEstimatedGasFee } from '../hooks/useEstimatedGasFee';
 import { setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
+import { EstimatedSwapGasFee } from './EstimatedSwapGasFee';
 
 const MINER_TIP_TYPE = 'minerTip';
 const MAX_BASE_FEE_TYPE = 'maxBaseFee';
@@ -263,12 +263,12 @@ const stateToGasSettings = (s: GasPanelState | undefined): GasSettings | undefin
   if (s.gasPrice) return { isEIP1559: false, gasPrice: s.gasPrice || '0' };
   return { isEIP1559: true, maxBaseFee: s.maxBaseFee || '0', maxPriorityFee: s.maxPriorityFee || '0' };
 };
+
 function MaxTransactionFee() {
   const { isDarkMode } = useColorMode();
 
   const gasPanelState = useGasPanelState();
   const gasSettings = useMemo(() => stateToGasSettings(gasPanelState), [gasPanelState]);
-  const { data: maxTransactionFee } = useSwapEstimatedGasFee(gasSettings);
 
   return (
     <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
@@ -284,9 +284,13 @@ function MaxTransactionFee() {
       </Inline>
 
       <Inline horizontalSpace="6px">
-        <Text align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy">
-          {maxTransactionFee}
-        </Text>
+        <EstimatedSwapGasFee
+          gasSettings={gasSettings}
+          align="right"
+          color={isDarkMode ? 'labelSecondary' : 'label'}
+          size="15pt"
+          weight="heavy"
+        />
       </Inline>
     </Inline>
   );

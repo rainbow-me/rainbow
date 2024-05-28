@@ -18,25 +18,22 @@ import { runOnUI } from 'react-native-reanimated';
 import { ETH_COLOR, ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '../constants';
 import { formatNumber } from '../hooks/formatNumber';
 import { GasSettings, useCustomGasSettings } from '../hooks/useCustomGas';
-import { useSwapEstimatedGasFee } from '../hooks/useEstimatedGasFee';
 import { GasSpeed, setSelectedGasSpeed, useSelectedGas, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { useSwapContext } from '../providers/swap-provider';
+import { EstimatedSwapGasFee } from './EstimatedSwapGasFee';
 
 const { GAS_ICONS } = gasUtils;
 
 function EstimatedGasFee() {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
   const gasSettings = useSelectedGas(chainId);
-  const { data: estimatedGasFee, isLoading } = useSwapEstimatedGasFee(gasSettings);
 
   return (
     <Inline alignVertical="center" space="4px">
       <TextIcon color="labelQuaternary" height={10} size="icon 11px" weight="heavy" width={16}>
         􀵟
       </TextIcon>
-      <Text color={isLoading ? 'red' : 'labelTertiary'} size="15pt" weight="bold">
-        {estimatedGasFee}
-      </Text>
+      <EstimatedSwapGasFee gasSettings={gasSettings} />
     </Inline>
   );
 }
