@@ -85,26 +85,26 @@ export function useSwapInputsController({
     }
 
     if (inputMethod.value === 'outputAmount') {
-      return valueBasedDecimalFormatter(
-        inputValues.value.inputAmount,
-        internalSelectedInputAsset.value.nativePrice,
-        'up',
-        -1,
-        internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
-        false
-      );
+      return valueBasedDecimalFormatter({
+        amount: inputValues.value.inputAmount,
+        usdTokenPrice: internalSelectedInputAsset.value.nativePrice,
+        roundingMode: 'up',
+        precisionAdjustment: -1,
+        isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
+        stripSeparators: false,
+      });
     }
 
     const balance = Number(internalSelectedInputAsset.value?.balance.amount || 0);
 
-    return niceIncrementFormatter(
-      incrementDecimalPlaces.value,
-      balance,
-      internalSelectedInputAsset.value.nativePrice,
-      niceIncrement.value,
-      percentageToSwap.value,
-      sliderXPosition.value
-    );
+    return niceIncrementFormatter({
+      incrementDecimalPlaces: incrementDecimalPlaces.value,
+      inputAssetBalance: balance,
+      inputAssetUsdPrice: internalSelectedInputAsset.value.nativePrice,
+      niceIncrement: niceIncrement.value,
+      percentageToSwap: percentageToSwap.value,
+      sliderXPosition: sliderXPosition.value,
+    });
   });
 
   const formattedInputNativeValue = useDerivedValue(() => {
@@ -132,14 +132,14 @@ export function useSwapInputsController({
       return addCommasToNumber(inputValues.value.outputAmount);
     }
 
-    return valueBasedDecimalFormatter(
-      inputValues.value.outputAmount,
-      internalSelectedOutputAsset.value.nativePrice,
-      'down',
-      -1,
-      internalSelectedOutputAsset.value?.type === 'stablecoin' ?? false,
-      false
-    );
+    return valueBasedDecimalFormatter({
+      amount: inputValues.value.outputAmount,
+      usdTokenPrice: internalSelectedOutputAsset.value.nativePrice,
+      roundingMode: 'down',
+      precisionAdjustment: -1,
+      isStablecoin: internalSelectedOutputAsset.value?.type === 'stablecoin' ?? false,
+      stripSeparators: false,
+    });
   });
 
   const formattedOutputNativeValue = useDerivedValue(() => {
@@ -572,15 +572,15 @@ export function useSwapInputsController({
         }
 
         // If the change set the slider position to > 0
-        const inputAmount = niceIncrementFormatter(
-          incrementDecimalPlaces.value,
-          balance,
-          internalSelectedInputAsset.value?.nativePrice,
-          niceIncrement.value,
-          percentageToSwap.value,
-          sliderXPosition.value,
-          true
-        );
+        const inputAmount = niceIncrementFormatter({
+          incrementDecimalPlaces: incrementDecimalPlaces.value,
+          inputAssetBalance: balance,
+          inputAssetUsdPrice: internalSelectedInputAsset.value?.nativePrice,
+          niceIncrement: niceIncrement.value,
+          percentageToSwap: percentageToSwap.value,
+          sliderXPosition: sliderXPosition.value,
+          stripSeparators: true,
+        });
         const inputNativeValue = Number(inputAmount) * internalSelectedInputAsset.value?.nativePrice;
         inputValues.modify(values => {
           return {
@@ -603,15 +603,15 @@ export function useSwapInputsController({
         if (!current.assetToSell?.nativePrice || !current.assetToBuy?.nativePrice) return;
 
         const balance = Number(current.assetToSell.balance.amount);
-        const inputAmount = niceIncrementFormatter(
-          incrementDecimalPlaces.value,
-          balance,
-          current.assetToSell.nativePrice,
-          niceIncrement.value,
-          percentageToSwap.value,
-          sliderXPosition.value,
-          true
-        );
+        const inputAmount = niceIncrementFormatter({
+          incrementDecimalPlaces: incrementDecimalPlaces.value,
+          inputAssetBalance: balance,
+          inputAssetUsdPrice: current.assetToSell.nativePrice,
+          niceIncrement: niceIncrement.value,
+          percentageToSwap: percentageToSwap.value,
+          sliderXPosition: sliderXPosition.value,
+          stripSeparators: true,
+        });
 
         const inputNativeValue = Number(inputAmount) * current.assetToSell.nativePrice;
         const outputAmount = (inputNativeValue / current.assetToBuy.nativePrice) * (1 - SWAP_FEE); // TODO: Implement swap fee
@@ -662,15 +662,15 @@ export function useSwapInputsController({
             }
 
             // If the change set the slider position to > 0
-            const inputAmount = niceIncrementFormatter(
-              incrementDecimalPlaces.value,
-              balance,
-              current.assetToSell.nativePrice,
-              niceIncrement.value,
-              percentageToSwap.value,
-              sliderXPosition.value,
-              true
-            );
+            const inputAmount = niceIncrementFormatter({
+              incrementDecimalPlaces: incrementDecimalPlaces.value,
+              inputAssetBalance: balance,
+              inputAssetUsdPrice: current.assetToSell.nativePrice,
+              niceIncrement: niceIncrement.value,
+              percentageToSwap: percentageToSwap.value,
+              sliderXPosition: sliderXPosition.value,
+              stripSeparators: true,
+            });
             const inputNativeValue = Number(inputAmount) * current.assetToSell.nativePrice;
             inputValues.modify(values => {
               return {

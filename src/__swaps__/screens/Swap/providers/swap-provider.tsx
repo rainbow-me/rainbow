@@ -1,6 +1,20 @@
 // @refresh
-import React, { createContext, useContext, ReactNode, useEffect } from 'react';
-import { StyleProp, TextStyle, TextInput } from 'react-native';
+import { INITIAL_SLIDER_POSITION, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { useAnimatedSwapStyles } from '@/__swaps__/screens/Swap/hooks/useAnimatedSwapStyles';
+import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
+import { NavigationSteps, useSwapNavigation } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
+import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextStyles';
+import { useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
+import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { ChainId } from '@/__swaps__/types/chains';
+import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
+import { isSameAsset } from '@/__swaps__/utils/assets';
+import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
+import { logger } from '@/logger';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
+import React, { ReactNode, createContext, useContext, useEffect } from 'react';
+import { StyleProp, TextInput, TextStyle } from 'react-native';
 import {
   AnimatedRef,
   SharedValue,
@@ -10,22 +24,7 @@ import {
   useDerivedValue,
   useSharedValue,
 } from 'react-native-reanimated';
-import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
-import { INITIAL_SLIDER_POSITION, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { useAnimatedSwapStyles } from '@/__swaps__/screens/Swap/hooks/useAnimatedSwapStyles';
-import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextStyles';
-import { useSwapNavigation, NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
-import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
-import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
-import { useSwapGas } from '@/__swaps__/screens/Swap/hooks/useSwapGas';
-import { useSwapSettings } from '@/__swaps__/screens/Swap/hooks/useSwapSettings';
-import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
-import { swapsStore } from '@/state/swaps/swapsStore';
-import { isSameAsset } from '@/__swaps__/utils/assets';
-import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
-import { ChainId } from '@/__swaps__/types/chains';
-import { logger } from '@/logger';
+import { useSwapSettings } from '../hooks/useSwapSettings';
 
 interface SwapContextType {
   isFetching: SharedValue<boolean>;
@@ -58,7 +57,6 @@ interface SwapContextType {
   SwapTextStyles: ReturnType<typeof useSwapTextStyles>;
   SwapNavigation: ReturnType<typeof useSwapNavigation>;
   SwapWarning: ReturnType<typeof useSwapWarning>;
-  SwapGas: ReturnType<typeof useSwapGas>;
 
   confirmButtonIcon: Readonly<SharedValue<string>>;
   confirmButtonLabel: Readonly<SharedValue<string>>;
@@ -98,11 +96,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     inputAsset: internalSelectedInputAsset,
   });
 
-  const SwapGas = useSwapGas({
-    inputAsset: internalSelectedInputAsset,
-    outputAsset: internalSelectedOutputAsset,
-  });
-
   const SwapInputController = useSwapInputsController({
     focusedInput,
     lastTypedInput,
@@ -114,6 +107,19 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     isQuoteStale,
     sliderXPosition,
     quote,
+  });
+
+  const SwapTextStyles = useSwapTextStyles({
+    inputMethod: SwapInputController.inputMethod,
+    inputValues: SwapInputController.inputValues,
+    internalSelectedInputAsset,
+    internalSelectedOutputAsset,
+    isFetching,
+    isQuoteStale,
+    focusedInput,
+    inputProgress,
+    outputProgress,
+    sliderPressProgress,
   });
 
   const SwapNavigation = useSwapNavigation({
@@ -141,17 +147,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     outputProgress,
     configProgress,
     isFetching,
-  });
-
-  const SwapTextStyles = useSwapTextStyles({
-    SwapInputController,
-    internalSelectedInputAsset,
-    internalSelectedOutputAsset,
-    isQuoteStale,
-    focusedInput,
-    inputProgress,
-    outputProgress,
-    sliderPressProgress,
   });
 
   const handleProgressNavigation = ({ type }: { type: SwapAssetType }) => {
@@ -360,7 +355,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         SwapTextStyles,
         SwapNavigation,
         SwapWarning,
-        SwapGas,
 
         confirmButtonIcon,
         confirmButtonLabel,
