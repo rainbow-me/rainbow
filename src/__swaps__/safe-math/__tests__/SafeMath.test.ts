@@ -42,8 +42,8 @@ const NON_NUMERIC_STRING = 'abc';
 
 describe('SafeMath', () => {
   test('sumWorklet', () => {
-    expect(() => sumWorklet(NON_NUMERIC_STRING, VALUE_B)).toThrow('Arguments must be a numeric string');
-    expect(() => sumWorklet(VALUE_A, NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string');
+    expect(() => sumWorklet(NON_NUMERIC_STRING, VALUE_B)).toThrow('Arguments must be a numeric string or number');
+    expect(() => sumWorklet(VALUE_A, NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string or number');
     expect(sumWorklet(ZERO, ZERO)).toBe(ZERO);
     expect(sumWorklet(VALUE_A, ZERO)).toBe(VALUE_A);
     expect(sumWorklet(ZERO, VALUE_B)).toBe(VALUE_B);
@@ -53,8 +53,8 @@ describe('SafeMath', () => {
   });
 
   test('subWorklet', () => {
-    expect(() => subWorklet(NON_NUMERIC_STRING, VALUE_B)).toThrow('Arguments must be a numeric string');
-    expect(() => subWorklet(VALUE_A, NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string');
+    expect(() => subWorklet(NON_NUMERIC_STRING, VALUE_B)).toThrow('Arguments must be a numeric string or number');
+    expect(() => subWorklet(VALUE_A, NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string or number');
     expect(subWorklet(ZERO, ZERO)).toBe(ZERO);
     expect(subWorklet(VALUE_A, ZERO)).toBe(VALUE_A);
     expect(subWorklet(ZERO, VALUE_B)).toBe(`-${VALUE_B}`);
@@ -65,8 +65,8 @@ describe('SafeMath', () => {
   });
 
   test('mulWorklet', () => {
-    expect(() => mulWorklet(NON_NUMERIC_STRING, VALUE_B)).toThrow('Arguments must be a numeric string');
-    expect(() => mulWorklet(VALUE_A, NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string');
+    expect(() => mulWorklet(NON_NUMERIC_STRING, VALUE_B)).toThrow('Arguments must be a numeric string or number');
+    expect(() => mulWorklet(VALUE_A, NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string or number');
     expect(mulWorklet(ZERO, ZERO)).toBe(ZERO);
     expect(mulWorklet(VALUE_A, ZERO)).toBe(ZERO);
     expect(mulWorklet(ZERO, VALUE_B)).toBe(ZERO);
@@ -76,8 +76,8 @@ describe('SafeMath', () => {
   });
 
   test('divWorklet', () => {
-    expect(() => divWorklet(NON_NUMERIC_STRING, VALUE_B)).toThrow('Arguments must be a numeric string');
-    expect(() => divWorklet(VALUE_A, NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string');
+    expect(() => divWorklet(NON_NUMERIC_STRING, VALUE_B)).toThrow('Arguments must be a numeric string or number');
+    expect(() => divWorklet(VALUE_A, NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string or number');
     expect(() => divWorklet(ZERO, ZERO)).toThrow('Division by zero');
     expect(() => divWorklet(VALUE_A, ZERO)).toThrow('Division by zero');
     expect(divWorklet(ZERO, VALUE_B)).toBe(ZERO);
@@ -87,8 +87,8 @@ describe('SafeMath', () => {
   });
 
   test('modWorklet', () => {
-    expect(() => modWorklet(NON_NUMERIC_STRING, VALUE_B)).toThrow('Arguments must be a numeric string');
-    expect(() => modWorklet(VALUE_A, NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string');
+    expect(() => modWorklet(NON_NUMERIC_STRING, VALUE_B)).toThrow('Arguments must be a numeric string or number');
+    expect(() => modWorklet(VALUE_A, NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string or number');
     expect(() => modWorklet(ZERO, ZERO)).toThrow('Division by zero');
     expect(() => modWorklet(VALUE_A, ZERO)).toThrow('Division by zero');
     expect(modWorklet(ZERO, VALUE_B)).toBe(ZERO);
@@ -98,8 +98,8 @@ describe('SafeMath', () => {
   });
 
   test('powWorklet', () => {
-    expect(() => powWorklet(NON_NUMERIC_STRING, VALUE_B)).toThrow('Arguments must be a numeric string');
-    expect(() => powWorklet(VALUE_A, NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string');
+    expect(() => powWorklet(NON_NUMERIC_STRING, VALUE_B)).toThrow('Arguments must be a numeric string or number');
+    expect(() => powWorklet(VALUE_A, NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string or number');
     expect(powWorklet(ZERO, VALUE_B)).toBe(ZERO);
     expect(powWorklet(VALUE_A, ZERO)).toBe(ONE);
     expect(powWorklet(VALUE_A, VALUE_C)).toBe(RESULTS.pow);
@@ -108,15 +108,15 @@ describe('SafeMath', () => {
   });
 
   test('log10Worklet', () => {
-    expect(() => log10Worklet(NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string');
+    expect(() => log10Worklet(NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string or number');
     expect(() => log10Worklet(ZERO)).toThrow('Argument must be greater than 0');
     expect(log10Worklet(VALUE_C)).toBe(RESULTS.log10);
     expect(log10Worklet(Number(VALUE_C))).toBe(RESULTS.log10);
   });
 
   test('equalWorklet', () => {
-    expect(() => equalWorklet(NON_NUMERIC_STRING, VALUE_B)).toThrow('Arguments must be a numeric string');
-    expect(() => equalWorklet(VALUE_A, NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string');
+    expect(() => equalWorklet(NON_NUMERIC_STRING, VALUE_B)).toThrow('Arguments must be a numeric string or number');
+    expect(() => equalWorklet(VALUE_A, NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string or number');
     expect(equalWorklet(ZERO, ZERO)).toBe(true);
     expect(equalWorklet(VALUE_A, VALUE_A)).toBe(true);
     expect(equalWorklet(VALUE_A, VALUE_B)).toBe(false);
@@ -126,8 +126,8 @@ describe('SafeMath', () => {
   });
 
   test('greaterThanWorklet', () => {
-    expect(() => greaterThanWorklet(NON_NUMERIC_STRING, VALUE_B)).toThrow('Arguments must be a numeric string');
-    expect(() => greaterThanWorklet(VALUE_A, NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string');
+    expect(() => greaterThanWorklet(NON_NUMERIC_STRING, VALUE_B)).toThrow('Arguments must be a numeric string or number');
+    expect(() => greaterThanWorklet(VALUE_A, NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string or number');
     expect(greaterThanWorklet(VALUE_A, VALUE_B)).toBe(true);
     expect(greaterThanWorklet(VALUE_B, VALUE_A)).toBe(false);
     expect(greaterThanWorklet(VALUE_A, VALUE_A)).toBe(false);
@@ -137,8 +137,8 @@ describe('SafeMath', () => {
   });
 
   test('greaterThanOrEqualToWorklet', () => {
-    expect(() => greaterThanOrEqualToWorklet(NON_NUMERIC_STRING, VALUE_B)).toThrow('Arguments must be a numeric string');
-    expect(() => greaterThanOrEqualToWorklet(VALUE_A, NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string');
+    expect(() => greaterThanOrEqualToWorklet(NON_NUMERIC_STRING, VALUE_B)).toThrow('Arguments must be a numeric string or number');
+    expect(() => greaterThanOrEqualToWorklet(VALUE_A, NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string or number');
     expect(greaterThanOrEqualToWorklet(VALUE_A, VALUE_B)).toBe(true);
     expect(greaterThanOrEqualToWorklet(VALUE_B, VALUE_A)).toBe(false);
     expect(greaterThanOrEqualToWorklet(VALUE_A, VALUE_A)).toBe(true);
@@ -148,8 +148,8 @@ describe('SafeMath', () => {
   });
 
   test('lessThanWorklet', () => {
-    expect(() => lessThanWorklet(NON_NUMERIC_STRING, VALUE_B)).toThrow('Arguments must be a numeric string');
-    expect(() => lessThanWorklet(VALUE_A, NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string');
+    expect(() => lessThanWorklet(NON_NUMERIC_STRING, VALUE_B)).toThrow('Arguments must be a numeric string or number');
+    expect(() => lessThanWorklet(VALUE_A, NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string or number');
     expect(lessThanWorklet(VALUE_A, VALUE_B)).toBe(false);
     expect(lessThanWorklet(VALUE_B, VALUE_A)).toBe(true);
     expect(lessThanWorklet(VALUE_A, VALUE_A)).toBe(false);
@@ -159,8 +159,8 @@ describe('SafeMath', () => {
   });
 
   test('lessThanOrEqualToWorklet', () => {
-    expect(() => lessThanOrEqualToWorklet(NON_NUMERIC_STRING, VALUE_B)).toThrow('Arguments must be a numeric string');
-    expect(() => lessThanOrEqualToWorklet(VALUE_A, NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string');
+    expect(() => lessThanOrEqualToWorklet(NON_NUMERIC_STRING, VALUE_B)).toThrow('Arguments must be a numeric string or number');
+    expect(() => lessThanOrEqualToWorklet(VALUE_A, NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string or number');
     expect(lessThanOrEqualToWorklet(VALUE_A, VALUE_B)).toBe(false);
     expect(lessThanOrEqualToWorklet(VALUE_B, VALUE_A)).toBe(true);
     expect(lessThanOrEqualToWorklet(VALUE_A, VALUE_A)).toBe(true);

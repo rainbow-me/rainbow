@@ -53,7 +53,7 @@ export function sumWorklet(num1: string | number, num2: string | number): string
   const num2Str = toStringWorklet(num2);
 
   if (!isNumberStringWorklet(num1Str) || !isNumberStringWorklet(num2Str)) {
-    throw new Error('Arguments must be a numeric string');
+    throw new Error('Arguments must be a numeric string or number');
   }
   if (isZeroWorklet(num1Str)) {
     return num2Str;
@@ -77,7 +77,7 @@ export function subWorklet(num1: string | number, num2: string | number): string
   const num2Str = toStringWorklet(num2);
 
   if (!isNumberStringWorklet(num1Str) || !isNumberStringWorklet(num2Str)) {
-    throw new Error('Arguments must be a numeric string');
+    throw new Error('Arguments must be a numeric string or number');
   }
 
   if (isZeroWorklet(num2Str)) {
@@ -99,7 +99,7 @@ export function mulWorklet(num1: string | number, num2: string | number): string
   const num2Str = toStringWorklet(num2);
 
   if (!isNumberStringWorklet(num1Str) || !isNumberStringWorklet(num2Str)) {
-    throw new Error('Arguments must be a numeric string');
+    throw new Error('Arguments must be a numeric string or number');
   }
   if (isZeroWorklet(num1Str) || isZeroWorklet(num2Str)) {
     return '0';
@@ -119,7 +119,7 @@ export function divWorklet(num1: string | number, num2: string | number): string
   const num2Str = toStringWorklet(num2);
 
   if (!isNumberStringWorklet(num1Str) || !isNumberStringWorklet(num2Str)) {
-    throw new Error('Arguments must be a numeric string');
+    throw new Error('Arguments must be a numeric string or number');
   }
   if (isZeroWorklet(num2Str)) {
     throw new Error('Division by zero');
@@ -142,7 +142,7 @@ export function modWorklet(num1: string | number, num2: string | number): string
   const num2Str = toStringWorklet(num2);
 
   if (!isNumberStringWorklet(num1Str) || !isNumberStringWorklet(num2Str)) {
-    throw new Error('Arguments must be a numeric string');
+    throw new Error('Arguments must be a numeric string or number');
   }
   if (isZeroWorklet(num2Str)) {
     throw new Error('Division by zero');
@@ -165,7 +165,7 @@ export function powWorklet(base: string | number, exponent: string | number): st
   const exponentStr = toStringWorklet(exponent);
 
   if (!isNumberStringWorklet(baseStr) || !isNumberStringWorklet(exponentStr)) {
-    throw new Error('Arguments must be a numeric string');
+    throw new Error('Arguments must be a numeric string or number');
   }
   if (isZeroWorklet(baseStr)) {
     return '0';
@@ -205,7 +205,7 @@ export function equalWorklet(num1: string | number, num2: string | number): bool
   const num2Str = toStringWorklet(num2);
 
   if (!isNumberStringWorklet(num1Str) || !isNumberStringWorklet(num2Str)) {
-    throw new Error('Arguments must be a numeric string');
+    throw new Error('Arguments must be a numeric string or number');
   }
   const [bigInt1, decimalPlaces1] = removeDecimalWorklet(num1Str);
   const [bigInt2, decimalPlaces2] = removeDecimalWorklet(num2Str);
@@ -221,7 +221,7 @@ export function greaterThanWorklet(num1: string | number, num2: string | number)
   const num2Str = toStringWorklet(num2);
 
   if (!isNumberStringWorklet(num1Str) || !isNumberStringWorklet(num2Str)) {
-    throw new Error('Arguments must be a numeric string');
+    throw new Error('Arguments must be a numeric string or number');
   }
   const [bigInt1, decimalPlaces1] = removeDecimalWorklet(num1Str);
   const [bigInt2, decimalPlaces2] = removeDecimalWorklet(num2Str);
@@ -237,7 +237,7 @@ export function greaterThanOrEqualToWorklet(num1: string | number, num2: string 
   const num2Str = toStringWorklet(num2);
 
   if (!isNumberStringWorklet(num1Str) || !isNumberStringWorklet(num2Str)) {
-    throw new Error('Arguments must be a numeric string');
+    throw new Error('Arguments must be a numeric string or number');
   }
   const [bigInt1, decimalPlaces1] = removeDecimalWorklet(num1Str);
   const [bigInt2, decimalPlaces2] = removeDecimalWorklet(num2Str);
@@ -253,7 +253,7 @@ export function lessThanWorklet(num1: string | number, num2: string | number): b
   const num2Str = toStringWorklet(num2);
 
   if (!isNumberStringWorklet(num1Str) || !isNumberStringWorklet(num2Str)) {
-    throw new Error('Arguments must be a numeric string');
+    throw new Error('Arguments must be a numeric string or number');
   }
   const [bigInt1, decimalPlaces1] = removeDecimalWorklet(num1Str);
   const [bigInt2, decimalPlaces2] = removeDecimalWorklet(num2Str);
@@ -269,7 +269,7 @@ export function lessThanOrEqualToWorklet(num1: string | number, num2: string | n
   const num2Str = toStringWorklet(num2);
 
   if (!isNumberStringWorklet(num1Str) || !isNumberStringWorklet(num2Str)) {
-    throw new Error('Arguments must be a numeric string');
+    throw new Error('Arguments must be a numeric string or number');
   }
   const [bigInt1, decimalPlaces1] = removeDecimalWorklet(num1Str);
   const [bigInt2, decimalPlaces2] = removeDecimalWorklet(num2Str);
