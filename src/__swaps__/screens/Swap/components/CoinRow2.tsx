@@ -4,7 +4,6 @@ import { Box, HitSlop, Inline, Stack, Text } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
 import { CoinRowButton } from '@/__swaps__/screens/Swap/components/CoinRowButton';
 import { BalancePill } from '@/__swaps__/screens/Swap/components/BalancePill';
-import Animated from 'react-native-reanimated';
 import { StyleSheet } from 'react-native';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { UniqueId } from '@/__swaps__/types/assets';
@@ -12,6 +11,8 @@ import { userAssetsStore } from '@/state/assets/userAssets';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { toggleFavorite } from '@/resources/favorites';
+import { SwapCoinIcon } from './SwapCoinIcon';
+import { ethereumUtils } from '@/utils';
 
 const CoinName = ({ assetId }: { assetId: UniqueId }) => {
   const name = userAssetsStore(state => state.getUserAsset(assetId).name);
@@ -70,14 +71,26 @@ const CoinPercentChange = ({ assetId }: { assetId: UniqueId }) => {
 };
 
 const CoinIcon = ({ assetId }: { assetId: UniqueId }) => {
-  const { AnimatedSwapStyles } = useSwapContext();
+  const { symbol, iconUrl, address, mainnetAddress, chainId, color } = userAssetsStore(state => {
+    const asset = state.getUserAsset(assetId);
+    return {
+      symbol: asset.symbol,
+      iconUrl: asset.icon_url,
+      address: asset.address,
+      mainnetAddress: asset.mainnetAddress,
+      chainId: asset.chainId,
+      color: asset.colors?.primary ?? asset.colors?.fallback,
+    };
+  });
   return (
-    <Box
-      as={Animated.View}
-      borderRadius={18}
-      height={{ custom: 36 }}
-      style={[styles.solidColorCoinIcon, AnimatedSwapStyles.assetToSellIconStyle]}
-      width={{ custom: 36 }}
+    <SwapCoinIcon
+      iconUrl={iconUrl}
+      address={address}
+      mainnetAddress={mainnetAddress}
+      large
+      network={ethereumUtils.getNetworkFromChainId(chainId)}
+      symbol={symbol}
+      color={color}
     />
   );
 };
