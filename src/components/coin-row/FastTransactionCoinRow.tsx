@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
 import FastTransactionStatusBadge from './FastTransactionStatusBadge';
 import { Bleed, Box, Inline, Text, globalColors, useForegroundColor } from '@/design-system';
-import { NativeCurrencyKey, NewTransaction, RainbowTransaction } from '@/entities';
+import { NativeCurrencyKey, RainbowTransaction } from '@/entities';
 import { ThemeContextProps } from '@/theme';
 import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
@@ -83,7 +83,7 @@ const activityValues = (transaction: RainbowTransaction, nativeCurrency: NativeC
     valueSymbol = '+';
   }
 
-  if (!change) return;
+  if (!change?.asset) return;
 
   const { balance } = change.asset;
 
