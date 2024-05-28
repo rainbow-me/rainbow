@@ -155,6 +155,25 @@ export function powWorklet(base: string, exponent: string): string {
   return formatResultWorklet(result);
 }
 
+// Logarithm base 10 function
+export function log10Worklet(num: string | number): string {
+  'worklet';
+  const numStr = typeof num === 'number' ? num.toString() : num;
+
+  if (!isNumberStringWorklet(numStr)) {
+    throw new Error('Arguments must be a numeric string or number');
+  }
+  if (isZeroWorklet(numStr)) {
+    throw new Error('Argument must be greater than 0');
+  }
+
+  const [bigIntNum, decimalPlaces] = removeDecimalWorklet(numStr);
+  const scaledBigIntNum = scaleUpWorklet(bigIntNum, decimalPlaces);
+  const result = Math.log10(Number(scaledBigIntNum)) - 20; // Adjust the scale factor for log10
+  const resultBigInt = BigInt(result * 10 ** 20);
+  return formatResultWorklet(resultBigInt);
+}
+
 // Equality function
 export function equalWorklet(num1: string, num2: string): boolean {
   'worklet';
@@ -218,4 +237,80 @@ export function lessThanOrEqualToWorklet(num1: string, num2: string): boolean {
   const scaledBigInt1 = scaleUpWorklet(bigInt1, decimalPlaces1);
   const scaledBigInt2 = scaleUpWorklet(bigInt2, decimalPlaces2);
   return scaledBigInt1 <= scaledBigInt2;
+}
+
+// toFixed function
+export function toFixedWorklet(num: string | number, decimalPlaces: number): string {
+  'worklet';
+  const numStr = typeof num === 'number' ? num.toString() : num;
+
+  if (!isNumberStringWorklet(numStr)) {
+    throw new Error('Argument must be a numeric string or number');
+  }
+
+  const [bigIntNum, numDecimalPlaces] = removeDecimalWorklet(numStr);
+  const scaledBigIntNum = scaleUpWorklet(bigIntNum, numDecimalPlaces);
+
+  const scaleFactor = BigInt(10) ** BigInt(20 - decimalPlaces);
+  const roundedBigInt = ((scaledBigIntNum + scaleFactor / BigInt(2)) / scaleFactor) * scaleFactor;
+
+  const resultStr = roundedBigInt.toString().padStart(20 + 1, '0'); // SCALE_FACTOR decimal places + at least 1 integer place
+  const integerPart = resultStr.slice(0, -20) || '0';
+  const fractionalPart = resultStr.slice(-20, -20 + decimalPlaces).padEnd(decimalPlaces, '0');
+
+  return `${integerPart}.${fractionalPart}`;
+}
+
+// Ceil function
+export function ceilWorklet(num: string | number): string {
+  'worklet';
+  const numStr = typeof num === 'number' ? num.toString() : num;
+
+  if (!isNumberStringWorklet(numStr)) {
+    throw new Error('Argument must be a numeric string or number');
+  }
+
+  const [bigIntNum, decimalPlaces] = removeDecimalWorklet(numStr);
+  const scaledBigIntNum = scaleUpWorklet(bigIntNum, decimalPlaces);
+
+  const scaleFactor = BigInt(10) ** BigInt(20);
+  const ceilBigInt = ((scaledBigIntNum + scaleFactor - BigInt(1)) / scaleFactor) * scaleFactor;
+
+  return formatResultWorklet(ceilBigInt);
+}
+
+// Floor function
+export function floorWorklet(num: string | number): string {
+  'worklet';
+  const numStr = typeof num === 'number' ? num.toString() : num;
+
+  if (!isNumberStringWorklet(numStr)) {
+    throw new Error('Argument must be a numeric string or number');
+  }
+
+  const [bigIntNum, decimalPlaces] = removeDecimalWorklet(numStr);
+  const scaledBigIntNum = scaleUpWorklet(bigIntNum, decimalPlaces);
+
+  const scaleFactor = BigInt(10) ** BigInt(20);
+  const floorBigInt = (scaledBigIntNum / scaleFactor) * scaleFactor;
+
+  return formatResultWorklet(floorBigInt);
+}
+
+// Round function
+export function roundWorklet(num: string | number): string {
+  'worklet';
+  const numStr = typeof num === 'number' ? num.toString() : num;
+
+  if (!isNumberStringWorklet(numStr)) {
+    throw new Error('Argument must be a numeric string or number');
+  }
+
+  const [bigIntNum, decimalPlaces] = removeDecimalWorklet(numStr);
+  const scaledBigIntNum = scaleUpWorklet(bigIntNum, decimalPlaces);
+
+  const scaleFactor = BigInt(10) ** BigInt(20);
+  const roundBigInt = ((scaledBigIntNum + scaleFactor / BigInt(2)) / scaleFactor) * scaleFactor;
+
+  return formatResultWorklet(roundBigInt);
 }
