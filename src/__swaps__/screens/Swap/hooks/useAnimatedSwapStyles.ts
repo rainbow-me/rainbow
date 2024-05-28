@@ -157,21 +157,18 @@ export function useAnimatedSwapStyles({
       borderTopRightRadius: isReviewingOrConfiguringGas ? (IS_ANDROID ? 20 : 40) : 0,
       borderWidth: isReviewingOrConfiguringGas ? THICK_BORDER_WIDTH : 0,
       borderColor: isReviewingOrConfiguringGas ? opacityWorklet(globalColors.darkGrey, 0.2) : undefined,
-      backgroundColor: opacityWorklet(getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true), 0.03),
+      backgroundColor: opacityWorklet(
+        getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true),
+        0.03
+      ),
       borderTopColor: isReviewingOrConfiguringGas
         ? opacityWorklet(globalColors.darkGrey, 0.2)
-        : opacityWorklet(getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true), 0.04),
+        : opacityWorklet(getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true), 0.04),
       paddingTop: isReviewingOrConfiguringGas ? 28 : 16 - THICK_BORDER_WIDTH,
     };
   });
 
   const assetToSellIconStyle = useAnimatedStyle(() => {
-    return {
-      backgroundColor: getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true),
-    };
-  });
-
-  const assetToSellCaretStyle = useAnimatedStyle(() => {
     return {
       backgroundColor: getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true),
     };
@@ -183,9 +180,15 @@ export function useAnimatedSwapStyles({
     };
   });
 
+  const assetToSellCaretStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode, true),
+    };
+  });
+
   const assetToBuyCaretStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true),
+      backgroundColor: getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true),
     };
   });
 
@@ -198,13 +201,13 @@ export function useAnimatedSwapStyles({
 
   const searchInputAssetButtonStyle = useAnimatedStyle(() => {
     return {
-      color: getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true),
+      color: getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode, true),
     };
   });
 
   const searchOutputAssetButtonStyle = useAnimatedStyle(() => {
     return {
-      color: getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true),
+      color: getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true),
     };
   });
 
@@ -222,11 +225,11 @@ export function useAnimatedSwapStyles({
   const searchInputAssetButtonWrapperStyle = useAnimatedStyle(() => {
     return {
       backgroundColor: opacityWorklet(
-        getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true),
+        getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode, true),
         isDarkMode ? 0.1 : 0.08
       ),
       borderColor: opacityWorklet(
-        getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true),
+        getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode, true),
         isDarkMode ? 0.06 : 0.01
       ),
       borderWidth: THICK_BORDER_WIDTH,
@@ -236,11 +239,11 @@ export function useAnimatedSwapStyles({
   const searchOutputAssetButtonWrapperStyle = useAnimatedStyle(() => {
     return {
       backgroundColor: opacityWorklet(
-        getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true),
+        getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true),
         isDarkMode ? 0.1 : 0.08
       ),
       borderColor: opacityWorklet(
-        getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true),
+        getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true),
         isDarkMode ? 0.06 : 0.01
       ),
       borderWidth: THICK_BORDER_WIDTH,

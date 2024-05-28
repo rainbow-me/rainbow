@@ -97,7 +97,7 @@ const SpinnerComponent = () => {
 
   const animatedColor = useDerivedValue(() => {
     return withTiming(
-      getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true),
+      getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true),
       TIMING_CONFIGS.slowFadeConfig
     );
   });

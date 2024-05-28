@@ -7,13 +7,11 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useColorMode } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { ResponseByTheme, getColorValueForThemeWorklet, getTintedBackgroundColor } from '@/__swaps__/utils/swaps';
+import { getColorValueForThemeWorklet, getTintedBackgroundColor } from '@/__swaps__/utils/swaps';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { ETH_COLOR, ETH_COLOR_DARK } from '../constants';
 
-const DEFAULT_BG_COLOR_DARK = getTintedBackgroundColor(ETH_COLOR_DARK).dark;
-const DEFAULT_BG_COLOR_LIGHT = getTintedBackgroundColor(ETH_COLOR).light;
-const DEFAULT_BACKGROUND_COLOR: ResponseByTheme<string> = { dark: DEFAULT_BG_COLOR_DARK, light: DEFAULT_BG_COLOR_LIGHT };
+const DEFAULT_BACKGROUND_COLOR = getTintedBackgroundColor({ dark: ETH_COLOR_DARK, light: ETH_COLOR });
 
 export const SwapBackground = () => {
   const { isDarkMode } = useColorMode();
