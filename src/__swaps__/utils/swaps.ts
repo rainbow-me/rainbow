@@ -317,7 +317,7 @@ export function niceIncrementFormatter({
           Number(divWorklet(1, incrementStep))
       );
 
-  const rawAmount = mulWorklet(Math.round(Number(divWorklet(mulWorklet(percentage, inputAssetBalance), niceIncrement))), niceIncrement);
+  const rawAmount = mulWorklet(roundWorklet(divWorklet(mulWorklet(percentage, inputAssetBalance), niceIncrement)), niceIncrement);
 
   const amountToFixedDecimals = toFixedWorklet(rawAmount, incrementDecimalPlaces);
 
