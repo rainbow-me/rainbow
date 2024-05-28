@@ -23,6 +23,7 @@ import {
 import { ethereumUtils } from '@/utils';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { ParsedAsset } from '@/resources/assets/types';
+import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 
 const getCrosschainSwapDefaultGasLimit = (quote: CrosschainQuote) => quote?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
 
@@ -156,6 +157,18 @@ export const crosschainSwap = async ({
   // TODO: MARK - Replace this once we migrate network => chainId
   const network = ethereumUtils.getNetworkFromChainId(parameters.chainId);
 
+  const nativePriceForAssetToBuy = (parameters.assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice
+    ? {
+        value: (parameters.assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice,
+      }
+    : parameters.assetToBuy.price;
+
+  const nativePriceForAssetToSell = (parameters.assetToSell as ExtendedAnimatedAssetWithColors)?.nativePrice
+    ? {
+        value: (parameters.assetToSell as ExtendedAnimatedAssetWithColors)?.nativePrice,
+      }
+    : parameters.assetToSell.price;
+
   const transaction = {
     data: parameters.quote.data,
     value: parameters.quote.value?.toString(),
@@ -163,6 +176,7 @@ export const crosschainSwap = async ({
       ...parameters.assetToBuy,
       network: ethereumUtils.getNetworkFromChainId(parameters.assetToBuy.chainId),
       colors: parameters.assetToBuy.colors as TokenColors,
+      price: nativePriceForAssetToBuy,
     } as ParsedAsset,
     changes: [
       {
@@ -173,6 +187,7 @@ export const crosschainSwap = async ({
           ...parameters.assetToSell,
           network: ethereumUtils.getNetworkFromChainId(parameters.assetToSell.chainId),
           colors: parameters.assetToSell.colors as TokenColors,
+          price: nativePriceForAssetToSell,
         },
         value: quote.sellAmount.toString(),
       },
@@ -184,8 +199,9 @@ export const crosschainSwap = async ({
           ...parameters.assetToBuy,
           network: ethereumUtils.getNetworkFromChainId(parameters.assetToBuy.chainId),
           colors: parameters.assetToBuy.colors as TokenColors,
+          price: nativePriceForAssetToBuy,
         },
-        value: quote.buyAmount.toString(),
+        value: quote.buyAmountMinusFees.toString(),
       },
     ],
     from: parameters.quote.from as Address,
