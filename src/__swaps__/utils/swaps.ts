@@ -28,7 +28,6 @@ import {
   roundWorklet,
   toFixedWorklet,
 } from '../safe-math/SafeMath';
-import { consoleLogWorklet } from '@/debugging/workletUtils';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -149,7 +148,8 @@ export const findNiceIncrement = (availableBalance: string) => {
   const exactIncrement = divWorklet(availableBalance, 100);
 
   // Calculate the order of magnitude of the exact increment
-  const orderOfMagnitude = Math.floor(Number(log10Worklet(exactIncrement)));
+  const orderOfMagnitude = floorWorklet(log10Worklet(exactIncrement));
+
   const baseIncrement = powWorklet(10, orderOfMagnitude);
 
   let adjustedIncrement = baseIncrement;
@@ -162,9 +162,9 @@ export const findNiceIncrement = (availableBalance: string) => {
       break;
     }
   }
-
   return adjustedIncrement;
 };
+
 //
 // /---- END JS utils ----/ //
 
@@ -306,15 +306,10 @@ export function niceIncrementFormatter({
       roundingMode: 'up',
     });
 
-  consoleLogWorklet('niceIncrement:' + niceIncrement);
   const exactIncrement = divWorklet(inputAssetBalance, 100);
-  consoleLogWorklet('exactIncrement:' + exactIncrement);
   const isIncrementExact = equalWorklet(niceIncrement, exactIncrement);
-  consoleLogWorklet('isIncrementExact:' + isIncrementExact);
   const numberOfIncrements = divWorklet(inputAssetBalance, niceIncrement);
-  consoleLogWorklet('numberOfIncrements:' + numberOfIncrements);
   const incrementStep = divWorklet(1, numberOfIncrements);
-  consoleLogWorklet('numberOfIncrements:' + numberOfIncrements);
   const percentage = isIncrementExact
     ? percentageToSwap
     : Math.round(
@@ -322,13 +317,9 @@ export function niceIncrementFormatter({
           Number(divWorklet(1, incrementStep))
       );
 
-  consoleLogWorklet('percentage:' + percentage);
-
   const rawAmount = mulWorklet(Math.round(Number(divWorklet(mulWorklet(percentage, inputAssetBalance), niceIncrement))), niceIncrement);
-  consoleLogWorklet('rawAmount:' + rawAmount);
 
   const amountToFixedDecimals = toFixedWorklet(rawAmount, incrementDecimalPlaces);
-  consoleLogWorklet('amountToFixedDecimals:' + amountToFixedDecimals);
 
   const formattedAmount = `${Number(amountToFixedDecimals).toLocaleString('en-US', {
     useGrouping: true,

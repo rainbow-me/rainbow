@@ -173,10 +173,20 @@ export function powWorklet(base: string | number, exponent: string | number): st
   if (isZeroWorklet(exponentStr)) {
     return '1';
   }
+  if (exponentStr === '1') {
+    return baseStr;
+  }
+
   const [bigIntBase, decimalPlaces] = removeDecimalWorklet(baseStr);
-  const scaledBigIntBase = scaleUpWorklet(bigIntBase, decimalPlaces);
-  const result = scaledBigIntBase ** BigInt(exponentStr) / BigInt(10) ** BigInt(20);
-  return formatResultWorklet(result);
+  let result;
+  if (decimalPlaces > 0) {
+    const scaledBigIntBase = scaleUpWorklet(bigIntBase, decimalPlaces);
+    result = scaledBigIntBase ** BigInt(exponentStr) / BigInt(10) ** BigInt(20);
+    return formatResultWorklet(result);
+  } else {
+    result = bigIntBase ** BigInt(exponentStr);
+    return result.toString();
+  }
 }
 
 // Logarithm base 10 function

@@ -94,6 +94,7 @@ describe('SafeMath', () => {
     expect(powWorklet(VALUE_A, ZERO)).toBe(ONE);
     expect(powWorklet(ZERO, VALUE_B)).toBe(ZERO);
     expect(powWorklet(VALUE_A, VALUE_C)).toBe(RESULTS.pow);
+    expect(powWorklet(10, 4)).toBe('10000');
   });
 
   test('log10Worklet', () => {
