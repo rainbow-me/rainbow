@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef } from 'react';
 
 /**
@@ -11,7 +12,7 @@ import { useEffect, useRef } from 'react';
  *
  * @link https://usehooks.com/useWhyDidYouUpdate/
  */
-export default function useWhyDidYouUpdate(name, props) {
+export default function useWhyDidYouUpdate(name: string, props: Record<string, any>) {
   // Get a mutable ref object where we can store props ...
   // ... for comparison next time this hook runs.
   const previousProps = useRef() as any;
@@ -21,7 +22,7 @@ export default function useWhyDidYouUpdate(name, props) {
       // Get all keys from previous and current props
       const allKeys = Object.keys({ ...previousProps.current, ...props });
       // Use this object to keep track of changed props
-      const changesObj = {};
+      const changesObj: Record<string, any> = {};
       // Iterate through keys
       allKeys.forEach(key => {
         // If previous is different from current
