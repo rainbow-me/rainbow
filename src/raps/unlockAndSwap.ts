@@ -133,8 +133,6 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
     });
   }
 
-  console.log({ swapAssetNeedsUnlocking });
-
   const allowsPermit =
     !nativeAsset && chainId === ChainId.mainnet && ALLOWS_PERMIT[assetToSell.address?.toLowerCase() as keyof PermitSupportedTokenList];
 
