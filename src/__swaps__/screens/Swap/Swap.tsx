@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, StatusBar } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
@@ -21,6 +21,8 @@ import { SwapBottomPanel } from '@/__swaps__/screens/Swap/components/SwapBottomP
 import { SwapWarning } from './components/SwapWarning';
 import { useSwapContext } from './providers/swap-provider';
 import { UserAssetsSync } from './components/UserAssetsSync';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import { ChainId } from '@/__swaps__/types/chains';
 
 /** README
  * This prototype is largely driven by Reanimated and Gesture Handler, which
@@ -61,6 +63,21 @@ import { UserAssetsSync } from './components/UserAssetsSync';
 
 export function SwapScreen() {
   const { AnimatedSwapStyles } = useSwapContext();
+
+  useEffect(() => {
+    return () => {
+      swapsStore.setState({
+        filter: 'all',
+        inputSearchQuery: '',
+        outputSearchQuery: '',
+        selectedOutputChainId: ChainId.mainnet,
+        quote: null,
+        inputAsset: null,
+        outputAsset: null,
+      });
+    };
+  }, []);
+
   return (
     <SwapSheetGestureBlocker>
       <Box as={Page} style={styles.rootViewBackground} testID="swap-screen" width="full">

@@ -21,15 +21,12 @@ export const UserAssetsSync = () => {
           selector: selectUserAssetsList,
         }),
       onSuccess: data => {
-        const userAssetsIds: UniqueId[] = [];
         const userAssets = new Map<UniqueId, ParsedSearchAsset>();
         data.forEach(asset => {
-          userAssetsIds.push(asset.uniqueId);
           userAssets.set(asset.uniqueId, asset as ParsedSearchAsset);
         });
 
         userAssetsStore.setState({
-          userAssetsIds,
           userAssets,
         });
       },
