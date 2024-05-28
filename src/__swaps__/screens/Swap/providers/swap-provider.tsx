@@ -39,10 +39,7 @@ import { walletExecuteRap } from '@/raps/execute';
 import { queryClient } from '@/react-query';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { useAccountSettings } from '@/hooks';
-import { gasStore } from '@/state/gas/gasStore';
-import { getGasSettings, getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
-import { add, multiply } from '@/__swaps__/utils/numbers';
-import { TransactionGasParams } from '@/__swaps__/types/gas';
+import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 
 interface SwapContextType {
@@ -120,6 +117,19 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     inputAsset: internalSelectedInputAsset,
   });
 
+  const SwapInputController = useSwapInputsController({
+    focusedInput,
+    lastTypedInput,
+    inputProgress,
+    outputProgress,
+    internalSelectedInputAsset,
+    internalSelectedOutputAsset,
+    isFetching,
+    isQuoteStale,
+    sliderXPosition,
+    quote,
+  });
+
   const getNonceAndPerformSwap = async ({
     type,
     parameters,
@@ -172,8 +182,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       };
     }
 
-    console.log({ gasParams });
-
     // const gasParams = gasStore.getState().selectedGas;
     const { errorMessage } = await walletExecuteRap(wallet, type, {
       ...parameters,
@@ -183,6 +191,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     runOnUI(resetSwappingStatus)();
 
     if (errorMessage) {
+      SwapInputController.quoteFetchingInterval.start();
+
       if (errorMessage !== 'handled') {
         logger.error(new RainbowError(`[getNonceAndPerformSwap]: Error executing swap: ${errorMessage}`));
         const extractedError = errorMessage.split('[')[0];
@@ -220,6 +230,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
 
     isSwapping.value = true;
+    SwapInputController.quoteFetchingInterval.stop();
 
     const type = inputAsset.chainId !== outputAsset.chainId ? 'crosschainSwap' : 'swap';
     const quoteData = q as QuoteTypeMap[typeof type];
@@ -240,19 +251,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       parameters,
     });
   };
-
-  const SwapInputController = useSwapInputsController({
-    focusedInput,
-    lastTypedInput,
-    inputProgress,
-    outputProgress,
-    internalSelectedInputAsset,
-    internalSelectedOutputAsset,
-    isFetching,
-    isQuoteStale,
-    sliderXPosition,
-    quote,
-  });
 
   const SwapNavigation = useSwapNavigation({
     SwapInputController,
