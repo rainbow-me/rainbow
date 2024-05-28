@@ -154,8 +154,8 @@ export const DEFAULT_CONFIG: RainbowConfig = {
 
   goerli_tx_enabled: true,
 
-  base_swaps_enabled: false,
-  blast_swaps_enabled: false,
+  base_swaps_enabled: true,
+  blast_swaps_enabled: true,
   mints_enabled: true,
   points_enabled: true,
   points_fully_enabled: true,
@@ -163,7 +163,7 @@ export const DEFAULT_CONFIG: RainbowConfig = {
   remote_cards_enabled: false,
   remote_promo_enabled: false,
   points_notifications_toggle: true,
-  dapp_browser: false,
+  dapp_browser: true,
   swaps_v2: false,
 };
 
