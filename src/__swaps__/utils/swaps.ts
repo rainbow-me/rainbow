@@ -27,6 +27,9 @@ import {
   powWorklet,
   roundWorklet,
   toFixedWorklet,
+  greaterThanOrEqualToWorklet,
+  minWorklet,
+  maxWorklet,
 } from '../safe-math/SafeMath';
 
 // /---- 🎨 Color functions 🎨 ----/ //
@@ -187,7 +190,7 @@ export function addCommasToNumber(number: string | number) {
     return numberString;
   }
 
-  if (Number(number) >= 1000) {
+  if (greaterThanOrEqualToWorklet(number, 1000)) {
     const parts = numberString.split('.');
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     return parts.join('.');
@@ -196,9 +199,9 @@ export function addCommasToNumber(number: string | number) {
   }
 }
 
-export function clamp(value: number, lowerBound: number, upperBound: number) {
+export function clamp(value: number | string, lowerBound: number | string, upperBound: number | string) {
   'worklet';
-  return Math.min(Math.max(lowerBound, value), upperBound);
+  return minWorklet(maxWorklet(lowerBound, value), upperBound);
 }
 
 export function stripCommas(value: string) {
@@ -322,7 +325,7 @@ export function niceIncrementFormatter({
   const percentage = isIncrementExact
     ? percentageToSwap
     : Math.round(
-        (clamp((sliderXPosition - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1) * Number(divWorklet(1, incrementStep))) /
+        (Number(clamp((sliderXPosition - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1)) * Number(divWorklet(1, incrementStep))) /
           Number(divWorklet(1, incrementStep))
       );
 

@@ -363,3 +363,11 @@ export function roundWorklet(num: string | number): string {
 
   return formatResultWorklet(roundBigInt);
 }
+
+export function minWorklet(numA: string | number, numB: string | number) {
+  return lessThanOrEqualToWorklet(numA, numB) ? numA : numB;
+}
+
+export function maxWorklet(numA: string | number, numB: string | number) {
+  return greaterThanOrEqualToWorklet(numA, numB) ? numA : numB;
+}

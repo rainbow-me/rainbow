@@ -31,6 +31,7 @@ import {
 } from '@/resources/assets/externalAssetsQuery';
 import { ethereumUtils } from '@/utils';
 import { queryClient } from '@/react-query';
+import { divWorklet, equalWorklet, greaterThanWorklet, mulWorklet } from '@/__swaps__/safe-math/SafeMath';
 
 export function useSwapInputsController({
   focusedInput,
@@ -64,7 +65,8 @@ export function useSwapInputsController({
   const inputMethod = useSharedValue<inputMethods>('slider');
 
   const percentageToSwap = useDerivedValue(() => {
-    return Math.round(clamp((sliderXPosition.value - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1) * 100) / 100;
+    const clampResult = Number(clamp((sliderXPosition.value - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1));
+    return Math.round(clampResult * 100) / 100;
   });
 
   const niceIncrement = useDerivedValue(() => {
@@ -95,7 +97,7 @@ export function useSwapInputsController({
       });
     }
 
-    const balance = Number(internalSelectedInputAsset.value?.balance.amount || 0);
+    const balance = internalSelectedInputAsset.value?.balance.amount || 0;
 
     return niceIncrementFormatter({
       incrementDecimalPlaces: incrementDecimalPlaces.value,
@@ -183,8 +185,8 @@ export function useSwapInputsController({
         if (inputAmount === 0) {
           sliderXPosition.value = withSpring(0, snappySpringConfig);
         } else {
-          const inputBalance = Number(internalSelectedInputAsset.value?.balance.amount || '0');
-          const updatedSliderPosition = clamp((inputAmount / inputBalance) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
+          const inputBalance = internalSelectedInputAsset.value?.balance.amount || '0';
+          const updatedSliderPosition = Number(clamp(mulWorklet(divWorklet(inputAmount, inputBalance), SLIDER_WIDTH), 0, SLIDER_WIDTH));
           if (Number.isNaN(updatedSliderPosition)) {
             sliderXPosition.value = withSpring(0, snappySpringConfig);
           } else {
@@ -418,7 +420,8 @@ export function useSwapInputsController({
     // reset the quote data immediately, so we don't use stale data
     setQuote({ data: null });
 
-    const isSomeInputGreaterThanZero = Number(inputValues.value.inputAmount) > 0 || Number(inputValues.value.outputAmount) > 0;
+    const isSomeInputGreaterThanZero =
+      greaterThanWorklet(inputValues.value.inputAmount, 0) || greaterThanWorklet(inputValues.value.outputAmount, 0);
 
     // If both inputs are 0 or the assets aren't set, return early
     if (!internalSelectedInputAsset.value || !internalSelectedOutputAsset.value || !isSomeInputGreaterThanZero) {
@@ -471,7 +474,7 @@ export function useSwapInputsController({
         // if the user types in the inputAmount let's optimistically update the slider position
         if (inputKey === 'inputAmount') {
           const inputAssetBalance = Number(internalSelectedInputAsset.value?.balance.amount || '0');
-          const updatedSliderPosition = clamp((amount / inputAssetBalance) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
+          const updatedSliderPosition = Number(clamp((amount / inputAssetBalance) * SLIDER_WIDTH, 0, SLIDER_WIDTH));
 
           // Update slider position
           sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
@@ -525,7 +528,7 @@ export function useSwapInputsController({
     (current, previous) => {
       if (previous && current !== previous && typeof inputValues.value[previous.focusedInput] === 'string') {
         const typedValue = inputValues.value[previous.focusedInput].toString();
-        if (Number(typedValue) === 0) {
+        if (equalWorklet(typedValue, 0)) {
           inputValues.modify(values => {
             return {
               ...values,
@@ -581,7 +584,7 @@ export function useSwapInputsController({
           sliderXPosition: sliderXPosition.value,
           stripSeparators: true,
         });
-        const inputNativeValue = Number(inputAmount) * internalSelectedInputAsset.value?.nativePrice;
+        const inputNativeValue = mulWorklet(inputAmount, internalSelectedInputAsset.value?.nativePrice);
         inputValues.modify(values => {
           return {
             ...values,
@@ -613,9 +616,9 @@ export function useSwapInputsController({
           stripSeparators: true,
         });
 
-        const inputNativeValue = Number(inputAmount) * current.assetToSell.nativePrice;
-        const outputAmount = (inputNativeValue / current.assetToBuy.nativePrice) * (1 - SWAP_FEE); // TODO: Implement swap fee
-        const outputNativeValue = outputAmount * current.assetToBuy.nativePrice;
+        const inputNativeValue = mulWorklet(inputAmount, current.assetToSell.nativePrice);
+        const outputAmount = mulWorklet(divWorklet(inputNativeValue, current.assetToBuy.nativePrice), 1 - SWAP_FEE); // TODO: Implement swap fee
+        const outputNativeValue = mulWorklet(outputAmount, current.assetToBuy.nativePrice);
 
         inputValues.modify(values => {
           return {
@@ -671,7 +674,7 @@ export function useSwapInputsController({
               sliderXPosition: sliderXPosition.value,
               stripSeparators: true,
             });
-            const inputNativeValue = Number(inputAmount) * current.assetToSell.nativePrice;
+            const inputNativeValue = mulWorklet(inputAmount, current.assetToSell.nativePrice);
             inputValues.modify(values => {
               return {
                 ...values,
@@ -683,9 +686,9 @@ export function useSwapInputsController({
             isQuoteStale.value = 1;
           }
         }
-        if (inputMethod.value === 'inputAmount' && Number(current.values.inputAmount) !== Number(previous.values.inputAmount)) {
+        if (inputMethod.value === 'inputAmount' && !equalWorklet(current.values.inputAmount, previous.values.inputAmount)) {
           // If the number in the input field changes
-          if (Number(current.values.inputAmount) === 0) {
+          if (equalWorklet(current.values.inputAmount, 0)) {
             // If the input amount was set to 0
             const hasDecimal = current.values.inputAmount.toString().includes('.');
 
@@ -707,7 +710,7 @@ export function useSwapInputsController({
           } else {
             if (!current.assetToSell || !current.assetToSell?.nativePrice) return;
             // If the input amount was set to a non-zero value
-            const inputNativeValue = Number(current.values.inputAmount) * current.assetToSell.nativePrice;
+            const inputNativeValue = mulWorklet(current.values.inputAmount, current.assetToSell.nativePrice);
             inputValues.modify(values => {
               return {
                 ...values,
@@ -718,9 +721,9 @@ export function useSwapInputsController({
             runOnJS(onTypedNumber)(Number(current.values.inputAmount), 'inputAmount', true);
           }
         }
-        if (inputMethod.value === 'outputAmount' && Number(current.values.outputAmount) !== Number(previous.values.outputAmount)) {
+        if (inputMethod.value === 'outputAmount' && !equalWorklet(current.values.outputAmount, previous.values.outputAmount)) {
           // If the number in the output field changes
-          if (Number(current.values.outputAmount) === 0) {
+          if (equalWorklet(current.values.outputAmount, 0)) {
             // If the output amount was set to 0
             const hasDecimal = current.values.outputAmount.toString().includes('.');
 
@@ -743,12 +746,11 @@ export function useSwapInputsController({
             } else {
               runOnJS(onTypedNumber)(0, 'outputAmount');
             }
-          } else if (Number(current.values.outputAmount) > 0) {
+          } else if (greaterThanWorklet(current.values.outputAmount, 0)) {
             // If the output amount was set to a non-zero value
             if (!current.assetToBuy?.nativePrice) return;
 
-            const outputAmount = Number(current.values.outputAmount);
-            const outputNativeValue = outputAmount * current.assetToBuy.nativePrice;
+            const outputNativeValue = mulWorklet(current.values.outputAmount, current.assetToBuy.nativePrice);
 
             inputValues.modify(values => {
               return {
