@@ -5,8 +5,10 @@ import Animated, { DerivedValue, useAnimatedProps, useAnimatedStyle, useDerivedV
 
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedText, Box, Column, Columns, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { GestureHandlerV1Button } from './GestureHandlerV1Button';
+
+const AnimatedGestureHandlerV1Button = Animated.createAnimatedComponent(GestureHandlerV1Button);
 
 export const SwapActionButton = ({
   asset,
@@ -16,8 +18,7 @@ export const SwapActionButton = ({
   icon,
   iconStyle,
   label,
-  onLongPress,
-  onPress,
+  onPressWorklet,
   outline,
   rightIcon,
   scaleTo,
@@ -32,8 +33,7 @@ export const SwapActionButton = ({
   icon?: string | DerivedValue<string | undefined>;
   iconStyle?: StyleProp<TextStyle>;
   label: string | DerivedValue<string | undefined>;
-  onLongPress?: () => void;
-  onPress?: () => void;
+  onPressWorklet?: () => void;
   outline?: boolean;
   rightIcon?: string;
   scaleTo?: number;
@@ -82,7 +82,7 @@ export const SwapActionButton = ({
       },
       shadowOpacity: isDarkMode ? 0.2 : small ? 0.2 : 0.36,
       shadowRadius: isDarkMode ? 26 : small ? 9 : 15,
-      opacity: disabled?.value ? 0.5 : 1,
+      opacity: disabled?.value ? 0.6 : 1,
     };
   });
 
@@ -100,20 +100,17 @@ export const SwapActionButton = ({
     return rightIcon;
   });
 
-  const a = useAnimatedProps(() => {
-    console.log(disabled?.value || false);
+  const buttonAnimatedProps = useAnimatedProps(() => {
     return {
-      isDisabled: disabled?.value || false,
+      disabled: disabled?.value,
+      scaleTo: disabled?.value ? 1 : scaleTo || (hugContent ? undefined : 0.925),
     };
   });
 
-  console.log('ASDSADASDA', a.isDisabled);
-
   return (
-    <ButtonPressAnimation
-      onLongPress={a.isDisabled ? undefined : onLongPress}
-      onPress={a.isDisabled ? undefined : onPress}
-      scaleTo={a.isDisabled ? 1 : scaleTo || (hugContent ? undefined : 0.925)}
+    <AnimatedGestureHandlerV1Button
+      animatedProps={buttonAnimatedProps}
+      onPressStartWorklet={onPressWorklet}
       style={[hugContent && feedActionButtonStyles.buttonWrapper, style]}
     >
       <Box
@@ -154,7 +151,7 @@ export const SwapActionButton = ({
           )}
         </Columns>
       </Box>
-    </ButtonPressAnimation>
+    </AnimatedGestureHandlerV1Button>
   );
 };
 

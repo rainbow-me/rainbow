@@ -76,10 +76,13 @@ export const GestureHandlerV1Button = React.forwardRef(function GestureHandlerV1
       if (onPressStartWorklet) onPressStartWorklet();
     },
     onActive: () => {
+      console.log('here');
       if (onPressWorklet) onPressWorklet();
       if (onPressJS) runOnJS(onPressJS)();
     },
   });
+
+  console.log({ disabled });
 
   return (
     <ConditionalWrap
