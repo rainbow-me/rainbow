@@ -29,7 +29,7 @@ export async function killHardhat() {
   exec('kill $(lsof -t -i:8545)');
 }
 
-export async function importWalletFlow() {
+export async function importWalletFlow(customSeed?: string) {
   await checkIfVisible('welcome-screen');
   await waitAndTap('already-have-wallet-button');
   await checkIfExists('add-wallet-sheet');
@@ -37,7 +37,7 @@ export async function importWalletFlow() {
   await checkIfExists('import-sheet');
   await clearField('import-sheet-input');
   await device.disableSynchronization();
-  await typeText('import-sheet-input', WALLET_VARS.SEED_WALLET.PK, false);
+  await typeText('import-sheet-input', customSeed ? customSeed : process.env.TEST_SEEDS, false);
   await checkIfElementHasString('import-sheet-button-label', 'Continue');
   await waitAndTap('import-sheet-button');
   await checkIfVisible('wallet-info-modal');
