@@ -1,4 +1,5 @@
 import { useAnimatedTime } from './useAnimatedTime';
+
 interface IntervalConfig {
   /** Whether the interval clock should start automatically. @default true */
   autoStart?: boolean;
@@ -19,6 +20,7 @@ interface IntervalConfig {
  *   - `onIntervalWorklet` - The worklet function to be executed at each interval.
  *
  * @returns An object containing:
+ *   - `pause` - A worklet function to pause the interval clock.
  *   - `reset` - A worklet function to restart the interval clock.
  *   - `start` - A worklet function to start the interval clock.
  *   - `stop` - A worklet function to stop the interval clock.
@@ -35,12 +37,12 @@ interface IntervalConfig {
 export function useAnimatedInterval(config: IntervalConfig) {
   const { autoStart = true, intervalMs, onIntervalWorklet } = config;
 
-  const { reset, start, stop } = useAnimatedTime({
+  const { pause, reset, start, stop } = useAnimatedTime({
     autoStart,
     durationMs: intervalMs,
     onEndWorklet: onIntervalWorklet,
     shouldRepeat: true,
   });
 
-  return { reset, start, stop };
+  return { pause, reset, start, stop };
 }
