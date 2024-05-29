@@ -525,7 +525,8 @@ PODS:
   - react-native-ble-plx (2.0.3):
     - MultiplatformBleAdapter (= 0.1.9)
     - React-Core
-  - react-native-blur (4.3.2):
+  - react-native-blur (4.4.0):
+    - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - react-native-branch (5.3.1):
     - Branch (= 1.40.2)
@@ -576,7 +577,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - react-native-screen-corner-radius (0.2.0):
     - React
-  - react-native-skia (0.1.200):
+  - react-native-skia (1.3.0):
+    - RCT-Folly (= 2021.07.22.00)
     - React
     - React-callinvoker
     - React-Core
@@ -722,7 +724,7 @@ PODS:
     - React-Core
   - RNCClipboard (1.13.2):
     - React-Core
-  - RNCMaskedView (0.2.9):
+  - RNCMaskedView (0.3.1):
     - React-Core
   - RNDeviceInfo (5.3.1):
     - React
@@ -780,7 +782,7 @@ PODS:
     - React-Core
   - RNReactNativeHapticFeedback (1.11.0):
     - React-Core
-  - RNReanimated (3.8.0):
+  - RNReanimated (3.11.0):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - ReactCommon/turbomodule/core
@@ -802,7 +804,7 @@ PODS:
     - RNSound/Core (= 0.11.2)
   - RNSound/Core (0.11.2):
     - React-Core
-  - RNSVG (13.9.0):
+  - RNSVG (15.3.0):
     - React-Core
   - RNTextSize (4.0.0-rc.1):
     - React
@@ -1312,7 +1314,7 @@ SPEC CHECKSUMS:
   react-native-aes-crypto: d7e87fd02cee7285983c00957a34063dfc4c94b3
   react-native-animateable-text: 5f5a6e96f6c075aa943ce52ea7fd3fbb3e56d725
   react-native-ble-plx: f10240444452dfb2d2a13a0e4f58d7783e92d76e
-  react-native-blur: cfdad7b3c01d725ab62a8a729f42ea463998afa2
+  react-native-blur: 69ecfe61d81b32ee7baae10f5d17aeb4e2594b10
   react-native-branch: 960c897d57b9f4912b08b9d06a25284b6e9879da
   react-native-cameraroll: aff50ec1df9d054626dceca9336e6644e153d32f
   react-native-change-icon: ea9bb7255b09e89f41cbf282df16eade91ab1833
@@ -1333,7 +1335,7 @@ SPEC CHECKSUMS:
   react-native-restart: 733a51ad137f15b0f8dc34c4082e55af7da00979
   react-native-safe-area-context: b8979f5eda6ed5903d4dbc885be3846ea3daa753
   react-native-screen-corner-radius: d526152dc1b5816bf298cc7093fcf4af853c17c7
-  react-native-skia: d0b0aab6bb1f146eb6f379fb671b719deabd20fb
+  react-native-skia: 44fed982cf3f26f27b11ba22194b1f967ab8f468
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
   react-native-udp: 96a517e5a121cfe69f4b05eeeafefe00c623debf
@@ -1364,7 +1366,7 @@ SPEC CHECKSUMS:
   RNBootSplash: 5f346163977573d6b2aeba1b25df9d2245c0d73c
   RNCAsyncStorage: ddc4ee162bfd41b0d2c68bf2d95acd81dd7f1f93
   RNCClipboard: 60fed4b71560d7bfe40e9d35dea9762b024da86d
-  RNCMaskedView: 949696f25ec596bfc697fc88e6f95cf0c79669b6
+  RNCMaskedView: 090213d32d8b3bb83a4dcb7d12c18f0152591906
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
   RNExitApp: c4e052df2568b43bec8a37c7cd61194d4cfee2c3
   RNFastImage: 4ce7636223e71615774b99004103e946a73e7c32
@@ -1383,13 +1385,13 @@ SPEC CHECKSUMS:
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
   RNPermissions: 4e3714e18afe7141d000beae3755e5b5fb2f5e05
   RNReactNativeHapticFeedback: 653a8c126a0f5e88ce15ffe280b3ff37e1fbb285
-  RNReanimated: 5afba582037b0dae040a5f927dec7fdd18e430c3
+  RNReanimated: 9d4971e437f38c11fd2c43344ac9d40c330058b1
   RNRudderSdk: 805d4b7064714f3295bf5f152d3812cc67f67a93
   RNScreens: 6a8a3c6b808aa48dca1780df7b73ea524f602c63
   RNSentry: 468d45dc823258945fb1ee04dcd3f252cb57415f
   RNShare: eaee3dd5a06dad397c7d3b14762007035c5de405
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
-  RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315
+  RNSVG: 7c3f3fac9de6d67eee5525a8bafffafaaf022991
   RNTextSize: 21c94a67819fbf2c358a219bf6d251e3be9e5f29
   RSCrashReporter: 6b8376ac729b0289ebe0908553e5f56d8171f313
   Rudder: 2cb1d3feabeb46cf0b34921e99d464cd8a5dbc5f

@@ -1,0 +1,47 @@
+diff --git a/node_modules/react-native-reanimated/.DS_Store b/node_modules/react-native-reanimated/.DS_Store
+new file mode 100644
+index 0000000..e69de29
+diff --git a/node_modules/react-native-reanimated/apple/REANodesManager.mm b/node_modules/react-native-reanimated/apple/REANodesManager.mm
+index 4fa8f44..70651d4 100644
+--- a/node_modules/react-native-reanimated/apple/REANodesManager.mm
++++ b/node_modules/react-native-reanimated/apple/REANodesManager.mm
+@@ -176,7 +176,11 @@ - (READisplayLink *)getDisplayLink
+   if (!_displayLink) {
+     _displayLink = [READisplayLink displayLinkWithTarget:self selector:@selector(onAnimationFrame:)];
+ #if !TARGET_OS_OSX
++  if (@available(iOS 15.0, *)) {
++    _displayLink.preferredFrameRateRange = CAFrameRateRangeMake(80, 120, 80);
++  } else {
+     _displayLink.preferredFramesPerSecond = 120; // will fallback to 60 fps for devices without Pro Motion display
++  }
+ #endif // TARGET_OS_OSX
+     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+   }
+diff --git a/node_modules/react-native-reanimated/apple/keyboardObserver/REAKeyboardEventObserver.mm b/node_modules/react-native-reanimated/apple/keyboardObserver/REAKeyboardEventObserver.mm
+index fddcb84..be06bac 100644
+--- a/node_modules/react-native-reanimated/apple/keyboardObserver/REAKeyboardEventObserver.mm
++++ b/node_modules/react-native-reanimated/apple/keyboardObserver/REAKeyboardEventObserver.mm
+@@ -51,7 +51,11 @@ - (READisplayLink *)getDisplayLink
+   if (!_displayLink) {
+     _displayLink = [READisplayLink displayLinkWithTarget:self selector:@selector(updateKeyboardFrame)];
+ #if !TARGET_OS_OSX
++  if (@available(iOS 15.0, *)) {
++    _displayLink.preferredFrameRateRange = CAFrameRateRangeMake(80, 120, 80);
++  } else {
+     _displayLink.preferredFramesPerSecond = 120; // will fallback to 60 fps for devices without Pro Motion display
++  }
+ #endif
+     [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+   }
+diff --git a/node_modules/react-native-reanimated/src/propsAllowlists.ts b/node_modules/react-native-reanimated/src/propsAllowlists.ts
+index 5e004b7..0f752e0 100644
+--- a/node_modules/react-native-reanimated/src/propsAllowlists.ts
++++ b/node_modules/react-native-reanimated/src/propsAllowlists.ts
+@@ -85,6 +85,7 @@ export const PropsAllowlists: AllowlistsHolder = {
+     elevation: true,
+     fontSize: true,
+     lineHeight: true,
++    textShadowColor: true,
+     textShadowRadius: true,
+     textShadowOffset: true,
+     letterSpacing: true,
