@@ -11,7 +11,6 @@ import { filterList } from '@/utils';
 
 import { useFavorites } from '@/resources/favorites';
 import { isAddress } from '@ethersproject/address';
-import { RainbowToken } from '@/entities';
 import { useSwapContext } from '../providers/swap-provider';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { filterNonTokenIconAssets } from '../resources/_selectors/search';
@@ -105,23 +104,14 @@ export function useSearchCurrencyLists() {
   const { favoritesMetadata: favorites } = useFavorites();
 
   const favoritesList = useMemo(() => {
-    const getAddressForChainId = (chainId: ChainId, token: RainbowToken) => {
-      if (chainId === ChainId.mainnet) {
-        const mainnetAddress = token.networks[chainId].address;
-        return mainnetAddress ?? token.address;
-      }
-
-      return token.networks[chainId].address;
-    };
-
     const unfilteredFavorites = Object.values(favorites)
       .filter(token => token.networks[toChainId])
       .map(favToken => {
         return {
           ...favToken,
           chainId: toChainId,
-          address: getAddressForChainId(toChainId, favToken),
-          mainnetAddress: favToken.mainnet_address ?? getAddressForChainId(ChainId.mainnet, favToken),
+          address: favToken.address,
+          mainnetAddress: favToken.mainnet_address,
         };
       }) as SearchAsset[];
 
@@ -178,7 +168,9 @@ export function useSearchCurrencyLists() {
   const filterAssetsFromFavoritesBridgeAndAssetToSell = useCallback(
     (assets?: SearchAsset[]) =>
       filterAssetsFromBridgeAndAssetToSell(assets)?.filter(
-        curatedAsset => !favoritesList?.map(fav => fav.address).includes(curatedAsset.address)
+        curatedAsset =>
+          !favoritesList?.map(fav => fav.address).includes(curatedAsset.address) &&
+          !favoritesList?.map(fav => fav.address).includes(curatedAsset.mainnetAddress)
       ) || [],
     [favoritesList, filterAssetsFromBridgeAndAssetToSell]
   );

@@ -81,7 +81,7 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = MAINNET_CHAI
   const { favorites: favoriteAddresses, favoritesMetadata: favoriteMap } = useFavorites();
 
   const curatedMap = rainbowTokenList.CURATED_TOKENS;
-  const unfilteredFavorites = Object.values(favoriteMap);
+  const unfilteredFavorites = Object.values(favoriteMap).filter(token => token.networks[searchChainId]);
 
   const [loading, setLoading] = useState(true);
   const [favoriteAssets, setFavoriteAssets] = useState<RT[]>([]);
