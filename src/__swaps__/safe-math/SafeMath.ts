@@ -365,9 +365,11 @@ export function roundWorklet(num: string | number): string {
 }
 
 export function minWorklet(numA: string | number, numB: string | number) {
+  'worklet';
   return lessThanOrEqualToWorklet(numA, numB) ? numA : numB;
 }
 
 export function maxWorklet(numA: string | number, numB: string | number) {
+  'worklet';
   return greaterThanOrEqualToWorklet(numA, numB) ? numA : numB;
 }
