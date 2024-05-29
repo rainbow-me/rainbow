@@ -9,8 +9,8 @@ import {
   checkIfExistsByText,
   typeText,
   delayTime,
-  tapByText,
   tapAtPoint,
+  checkIfExists,
 } from './helpers';
 
 describe('Check malicious dapp warning', () => {
@@ -39,11 +39,18 @@ describe('Check malicious dapp warning', () => {
   });
 
   it('Should attempt to connect to in browser dapp', async () => {
-    console.log('tapping! 250 200');
+    // Detox can't query elements within a WebView within our app
+    // Using tapAtPoint() to tap coordinates is a workaround for now
+
+    // Waiting for webpage to load
     await delayTime('medium');
-    await tapAtPoint('browser-screen', { x: 250, y: 200 });
+    // Tapping connect button
+    await tapAtPoint('browser-screen', { x: 275, y: 80 });
+    // Waiting for rainbowkit sheet to load / animate in
     await delayTime('medium');
-    // 'browser-screen'
-    // 'in-app-dapp-browser'
+    // Tapping Rainbow button
+    await tapAtPoint('browser-screen', { x: 50, y: 325 });
+
+    await checkIfExists('malicious-dapp-warning');
   });
 });
