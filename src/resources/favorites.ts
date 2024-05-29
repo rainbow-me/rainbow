@@ -85,7 +85,6 @@ async function fetchMetadata(addresses: string[], chainId = ChainId.mainnet) {
     );
 
     if (externalAsset) {
-
       newFavoritesMeta[address] = {
         ...externalAsset,
         network: ethereumUtils.getNetworkFromChainId(ChainId.mainnet),
@@ -126,9 +125,9 @@ async function fetchMetadata(addresses: string[], chainId = ChainId.mainnet) {
 /**
  * Refreshes the metadata associated with all favorites.
  */
-export async function refreshFavorites(chainId = ChainId.mainnet) {
+export async function refreshFavorites() {
   const favorites = Object.keys(queryClient.getQueryData(favoritesQueryKey) ?? DEFAULT);
-  const updatedMetadata = await fetchMetadata(favorites, chainId);
+  const updatedMetadata = await fetchMetadata(favorites, ChainId.mainnet);
   return updatedMetadata;
 }
 
@@ -158,12 +157,11 @@ export async function toggleFavorite(address: string, chainId = ChainId.mainnet)
  * addresses to their corresponding `RainbowToken`. These values are cached in AsyncStorage and is only
  * modified/updated when `toggleFavorite` or `refreshFavorites` is called.
  */
-export function useFavorites(chainId = ChainId.mainnet): {
+export function useFavorites(): {
   favorites: string[];
   favoritesMetadata: Record<EthereumAddress, RainbowToken>;
 } {
-  const queryFn = () => refreshFavorites(chainId);
-  const query = useQuery<Record<EthereumAddress, RainbowToken>>(favoritesQueryKey, queryFn, {
+  const query = useQuery<Record<EthereumAddress, RainbowToken>>(favoritesQueryKey, refreshFavorites, {
     staleTime: Infinity,
     cacheTime: Infinity,
   });
