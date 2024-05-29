@@ -259,6 +259,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     SwapInputController.inputValues.value.outputAmount = inputAmount;
     SwapInputController.inputValues.value.inputNativeValue = outputNativeValue;
     SwapInputController.inputValues.value.outputNativeValue = inputNativeValue;
+    selectedOutputChainId.value = outputAsset?.chainId ?? ChainId.mainnet;
+
     swapsStore.setState({
       inputAsset: outputAsset,
       outputAsset: inputAsset,
