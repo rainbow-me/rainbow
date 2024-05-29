@@ -85,7 +85,6 @@ async function fetchMetadata(addresses: string[], chainId = ChainId.mainnet) {
     );
 
     if (externalAsset) {
-      console.log(externalAsset.networks);
 
       newFavoritesMeta[address] = {
         ...externalAsset,
