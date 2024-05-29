@@ -3,8 +3,9 @@ import { weiToGwei } from '@/__swaps__/utils/ethereum';
 import { add, multiply } from '@/__swaps__/utils/numbers';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import ethereumUtils, { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import { ETH_ADDRESS } from '@rainbow-me/swaps';
 import { useMemo } from 'react';
-import { formatUnits } from 'viem';
+import { formatUnits, zeroAddress } from 'viem';
 import { formatCurrency, formatNumber } from './formatNumber';
 import { GasSettings } from './useCustomGas';
 import { useSwapEstimatedGasLimit } from './useSwapEstimatedGasLimit';
@@ -46,7 +47,12 @@ export function useEstimatedGasFee({
   }, [gasLimit, gasSettings, nativeNetworkAsset]);
 }
 
-const isSameAddress = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
+const eth = ETH_ADDRESS.toLowerCase();
+const isEth = (address: string) => [eth, zeroAddress, 'eth'].includes(address.toLowerCase());
+const isSameAddress = (a: string, b: string) => {
+  if (isEth(a) && isEth(b)) return true;
+  return a.toLowerCase() === b.toLowerCase();
+};
 export function useSwapEstimatedGasFee(gasSettings: GasSettings | undefined) {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
 
