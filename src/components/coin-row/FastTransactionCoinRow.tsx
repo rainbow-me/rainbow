@@ -25,6 +25,7 @@ import { TwoCoinsIcon } from '../coin-icon/TwoCoinsIcon';
 import Spinner from '../Spinner';
 import * as lang from '@/languages';
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
+import { checkForPendingSwap } from '@/screens/transaction-details/helpers/checkForPendingSwap';
 
 export const getApprovalLabel = ({ approvalAmount, asset, type }: Pick<RainbowTransaction, 'type' | 'asset' | 'approvalAmount'>) => {
   if (!approvalAmount || !asset) return;
@@ -70,7 +71,7 @@ const swapTypeValues = (changes: RainbowTransaction['changes'], status: RainbowT
 
 const activityValues = (transaction: RainbowTransaction, nativeCurrency: NativeCurrencyKey) => {
   const { changes, direction, type, status } = transaction;
-  if (['swap', 'wrap', 'unwrap'].includes(type)) return swapTypeValues(changes, status);
+  if (checkForPendingSwap(transaction)) return swapTypeValues(changes, status);
   if (['approve', 'revoke'].includes(type)) return approvalTypeValues(transaction as RainbowTransaction);
 
   const change = changes?.filter(c => c?.direction === direction && c?.asset.type !== 'nft')[0];

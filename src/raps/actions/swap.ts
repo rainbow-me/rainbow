@@ -6,7 +6,6 @@ import {
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
   Quote,
   ChainId as SwapChainId,
-  SwapType,
   WRAPPED_ASSET,
   fillQuote,
   getQuoteExecutionDetails,
@@ -356,16 +355,6 @@ export const swap = async ({
     nonce: swap.nonce,
     status: 'pending',
     type: 'swap',
-    swap: {
-      type: SwapType.normal,
-      fromChainId: parameters.assetToSell.chainId as unknown as SwapChainId,
-      toChainId: parameters.assetToBuy.chainId as unknown as SwapChainId,
-
-      // TODO: Is this right?
-      isBridge:
-        parameters.assetToBuy.chainId !== parameters.assetToSell.chainId &&
-        parameters.assetToSell.address === parameters.assetToBuy.address,
-    },
     flashbots: parameters.flashbots,
     ...gasParamsToUse,
   } satisfies NewTransaction;
