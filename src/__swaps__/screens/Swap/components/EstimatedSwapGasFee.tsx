@@ -1,6 +1,6 @@
-import { TextProps, useTextStyle } from '@/design-system';
+import { AnimatedText, TextProps } from '@/design-system';
 import React, { memo } from 'react';
-import Animated, { useAnimatedStyle, withRepeat, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import { useAnimatedStyle, withRepeat, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 
 import { pulsingConfig, sliderConfig } from '../constants';
 import { GasSettings } from '../hooks/useCustomGas';
@@ -9,14 +9,11 @@ import { useSwapEstimatedGasFee } from '../hooks/useEstimatedGasFee';
 export const EstimatedSwapGasFee = memo(function EstimatedGasFeeA({
   gasSettings,
   align,
-  uppercase,
   color = 'labelTertiary',
   size = '15pt',
   weight = 'bold',
   tabularNumbers = true,
-}: { gasSettings: GasSettings | undefined } & Partial<
-  Pick<TextProps, 'align' | 'color' | 'size' | 'weight' | 'tabularNumbers' | 'uppercase'>
->) {
+}: { gasSettings: GasSettings | undefined } & Partial<Pick<TextProps, 'align' | 'color' | 'size' | 'weight' | 'tabularNumbers'>>) {
   const { data: estimatedGasFee = '--', isLoading } = useSwapEstimatedGasFee(gasSettings);
 
   const animatedOpacity = useAnimatedStyle(() => ({
@@ -25,14 +22,15 @@ export const EstimatedSwapGasFee = memo(function EstimatedGasFeeA({
       : withSpring(1, sliderConfig),
   }));
 
-  const textStyle = useTextStyle({
-    color,
-    size,
-    weight,
-    tabularNumbers,
-    align,
-    uppercase,
-  });
-
-  return <Animated.Text style={[textStyle, animatedOpacity]}>{estimatedGasFee}</Animated.Text>;
+  return (
+    <AnimatedText
+      style={animatedOpacity}
+      staticText={estimatedGasFee}
+      align={align}
+      color={color}
+      size={size}
+      weight={weight}
+      tabularNumbers={tabularNumbers}
+    />
+  );
 });
