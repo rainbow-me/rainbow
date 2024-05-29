@@ -40,7 +40,6 @@ export const CoinRow = ({
   const { favoritesMetadata } = useFavorites();
 
   const isFavorite = (address: string) => {
-    // console.log(address, favorites);
     return Object.values(favoritesMetadata).find(fav => fav.address === address);
   };
 
