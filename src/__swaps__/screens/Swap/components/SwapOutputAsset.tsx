@@ -1,7 +1,7 @@
 import MaskedView from '@react-native-masked-view/masked-view';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { StyleSheet, StatusBar } from 'react-native';
-import Animated, { runOnUI, useDerivedValue } from 'react-native-reanimated';
+import Animated, { runOnJS, runOnUI, useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
@@ -18,6 +18,11 @@ import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider
 import { isSameAssetWorklet } from '@/__swaps__/utils/assets';
 import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
 import { AmimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import { ethereumUtils } from '@/utils';
+import { ChainId } from '@/__swaps__/types/chains';
 
 function SwapOutputActionButton() {
   const { isDarkMode } = useColorMode();
@@ -42,14 +47,38 @@ function SwapOutputActionButton() {
 }
 
 function SwapOutputAmount() {
-  const { focusedInput, SwapTextStyles, SwapInputController, AnimatedSwapStyles } = useSwapContext();
+  const { navigate } = useNavigation();
+  const { focusedInput, SwapTextStyles, SwapInputController, AnimatedSwapStyles, outputQuotesAreDisabled } = useSwapContext();
+
+  const handleTapWhileDisabled = useCallback(() => {
+    const inputTokenSymbol = swapsStore.getState().inputAsset?.symbol;
+    const outputTokenSymbol = swapsStore.getState().outputAsset?.symbol;
+    const inputNetwork = ethereumUtils.getNetworkFromChainId(swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet);
+    const outputNetwork = ethereumUtils.getNetworkFromChainId(swapsStore.getState().outputAsset?.chainId ?? ChainId.mainnet);
+    const isCrosschainSwap = swapsStore.getState().inputAsset?.chainId !== swapsStore.getState().outputAsset?.chainId;
+    const isBridgeSwap = inputTokenSymbol === outputTokenSymbol;
+
+    navigate(Routes.EXPLAIN_SHEET, {
+      inputToken: inputTokenSymbol,
+      fromNetwork: inputNetwork,
+      toNetwork: outputNetwork,
+      isCrosschainSwap,
+      isBridgeSwap,
+      outputToken: outputTokenSymbol,
+      type: 'output_disabled',
+    });
+  }, [navigate]);
 
   return (
     <GestureHandlerV1Button
       disableButtonPressWrapper
       onPressStartWorklet={() => {
         'worklet';
-        focusedInput.value = 'outputAmount';
+        if (outputQuotesAreDisabled.value) {
+          runOnJS(handleTapWhileDisabled)();
+        } else {
+          focusedInput.value = 'outputAmount';
+        }
       }}
     >
       <MaskedView maskElement={<FadeMask fadeEdgeInset={2} fadeWidth={8} height={36} side="right" />} style={styles.inputTextMask}>

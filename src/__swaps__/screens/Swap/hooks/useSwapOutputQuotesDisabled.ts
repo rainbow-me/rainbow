@@ -1,16 +1,24 @@
 import { SharedValue, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
 
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { isChainDisabledForOutputQuotes } from '@/__swaps__/utils/swaps';
 
-export const useSwapOutputQuotesDisabled = ({ inputAsset }: { inputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null> }) => {
+export const useSwapOutputQuotesDisabled = ({
+  inputAsset,
+  outputAsset,
+}: {
+  inputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+  outputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+}) => {
   const outputQuotesAreDisabled = useSharedValue(false);
 
   useAnimatedReaction(
-    () => inputAsset.value,
-    (current, previous) => {
-      if (current && current !== previous) {
-        outputQuotesAreDisabled.value = isChainDisabledForOutputQuotes(current.chainId);
+    () => ({
+      inputChainId: inputAsset?.value?.chainId,
+      outputChainId: outputAsset?.value?.chainId,
+    }),
+    current => {
+      if (current.inputChainId && current.outputChainId) {
+        outputQuotesAreDisabled.value = current.inputChainId !== current.outputChainId;
       }
     }
   );

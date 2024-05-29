@@ -154,6 +154,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
   const outputQuotesAreDisabled = useSwapOutputQuotesDisabled({
     inputAsset: internalSelectedInputAsset,
+    outputAsset: internalSelectedOutputAsset,
   });
 
   const handleProgressNavigation = ({ type }: { type: SwapAssetType }) => {
