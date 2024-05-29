@@ -24,6 +24,7 @@ import {
 import { inputKeys, inputMethods } from '@/__swaps__/types/swap';
 import { getColorValueForThemeWorklet, opacity } from '@/__swaps__/utils/swaps';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
 
 export function useSwapTextStyles({
   inputMethod,
@@ -79,12 +80,12 @@ export function useSwapTextStyles({
     const isZero =
       !internalSelectedInputAsset.value ||
       (inputValues.value.inputAmount === 0 && inputMethod.value !== 'slider') ||
-      (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0);
+      (inputMethod.value === 'slider' && equalWorklet(inputValues.value.inputAmount, 0));
     return isZero;
   });
 
   const isOutputZero = useDerivedValue(() => {
-    const isZero = !internalSelectedOutputAsset.value || inputValues.value.outputAmount === 0;
+    const isZero = !internalSelectedOutputAsset.value || equalWorklet(inputValues.value.outputAmount, 0);
     return isZero;
   });
 
@@ -163,7 +164,7 @@ export function useSwapTextStyles({
       inputProgress.value === 0 &&
       outputProgress.value === 0 &&
       (inputMethod.value !== 'slider' ||
-        (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0) ||
+        (inputMethod.value === 'slider' && equalWorklet(inputValues.value.inputAmount, 0)) ||
         (sliderPressProgress.value === SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT && isQuoteStale.value === 0));
 
     const opacity = shouldShow
@@ -181,7 +182,7 @@ export function useSwapTextStyles({
 
     const isZero =
       (inputMethod.value !== 'slider' && inputValues.value.inputAmount === 0) ||
-      (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0);
+      (inputMethod.value === 'slider' && equalWorklet(inputValues.value.inputAmount, 0));
 
     return {
       display: shouldShow ? 'flex' : 'none',
@@ -196,7 +197,7 @@ export function useSwapTextStyles({
       inputProgress.value === 0 &&
       outputProgress.value === 0 &&
       (inputMethod.value !== 'slider' ||
-        (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0) ||
+        (inputMethod.value === 'slider' && equalWorklet(inputValues.value.inputAmount, 0)) ||
         (sliderPressProgress.value === SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT && isQuoteStale.value === 0));
 
     const opacity = shouldShow
@@ -214,7 +215,7 @@ export function useSwapTextStyles({
 
     const isZero =
       (inputMethod.value !== 'slider' && inputValues.value.outputAmount === 0) ||
-      (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0);
+      (inputMethod.value === 'slider' && equalWorklet(inputValues.value.inputAmount, 0));
 
     return {
       display: shouldShow ? 'flex' : 'none',
