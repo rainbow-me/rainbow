@@ -85,17 +85,19 @@ export const SwapSlider = ({
   const colors = useDerivedValue(() => ({
     inactiveColorLeft: opacityWorklet(
       dualColor
-        ? getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true)
-        : getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true),
+        ? getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true)
+        : getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode, true),
       0.9
     ),
     activeColorLeft: dualColor
-      ? getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true)
-      : getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true),
+      ? getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true)
+      : getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode, true),
     inactiveColorRight: dualColor
-      ? opacityWorklet(getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true), 0.9)
+      ? opacityWorklet(getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode, true), 0.9)
       : separatorSecondary,
-    activeColorRight: dualColor ? getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true) : fillSecondary,
+    activeColorRight: dualColor
+      ? getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode, true)
+      : fillSecondary,
   }));
 
   // This is the percentage of the slider from the left
@@ -363,7 +365,7 @@ export const SwapSlider = ({
 
   const maxTextColor = useAnimatedStyle(() => {
     return {
-      color: getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode),
+      color: getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode),
     };
   });
 

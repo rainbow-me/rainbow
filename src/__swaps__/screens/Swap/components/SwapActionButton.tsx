@@ -64,11 +64,16 @@ export const SwapActionButton = ({
 
   const buttonWrapperStyles = useAnimatedStyle(() => {
     return {
-      backgroundColor: outline ? 'transparent' : getColorValueForThemeWorklet(asset.value?.color, isDarkMode, true) || fallbackColor,
+      backgroundColor: outline
+        ? 'transparent'
+        : getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode, true) || fallbackColor,
       borderColor: outline ? separatorSecondary : undefined,
       borderRadius: borderRadius ?? 24,
       height: small ? 36 : 48,
-      shadowColor: disableShadow || outline ? 'transparent' : getColorValueForThemeWorklet(asset.value?.color, isDarkMode) || fallbackColor,
+      shadowColor:
+        disableShadow || outline
+          ? 'transparent'
+          : getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode) || fallbackColor,
       shadowOffset: {
         width: 0,
         height: isDarkMode ? 13 : small ? 6 : 10,
