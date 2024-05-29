@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import { getAddress, isAddress } from '@ethersproject/address';
-import { ChainId, EthereumAddress } from '@rainbow-me/swaps';
+import { EthereumAddress } from '@rainbow-me/swaps';
 import { Contract } from '@ethersproject/contracts';
 import { rankings } from 'match-sorter';
 import { useCallback, useEffect, useMemo, useState } from 'react';
