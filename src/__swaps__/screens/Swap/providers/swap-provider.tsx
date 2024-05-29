@@ -272,6 +272,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return { label: 'Enter Amount', disabled: true };
     }
 
+    if (quote.value && 'error' in quote.value) return { label: 'Error', disabled: true };
+
+    // TODO: after the tx is built, we should check if the user has enough balance to cover the tx
+
     return { icon: '􀕹', label: 'Review', disabled: false };
   });
 
