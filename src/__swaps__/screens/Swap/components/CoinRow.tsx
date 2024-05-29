@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
-import { Box, HitSlop, Inline, Text } from '@/design-system';
+import { Box, Column, Columns, HitSlop, Inline, Text } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
 import { CoinRowButton } from '@/__swaps__/screens/Swap/components/CoinRowButton';
 import { BalancePill } from '@/__swaps__/screens/Swap/components/BalancePill';
@@ -56,64 +56,74 @@ export const CoinRow = ({
   }, [isTrending]);
 
   return (
-    <ButtonPressAnimation disallowInterruption onPress={onPress} scaleTo={0.95}>
-      <HitSlop vertical="10px">
-        <Box
-          alignItems="center"
-          paddingVertical={'10px'}
-          paddingHorizontal={'20px'}
-          flexDirection="row"
-          justifyContent="space-between"
-          width="full"
-          gap={12}
-        >
-          <Box flexDirection="row" gap={10} flexShrink={1} justifyContent="center">
-            <SwapCoinIcon
-              iconUrl={iconUrl}
-              address={address}
-              mainnetAddress={mainnetAddress}
-              large
-              network={ethereumUtils.getNetworkFromChainId(chainId)}
-              symbol={symbol}
-              color={color}
-            />
-            <Box gap={10} flexShrink={1} justifyContent="center">
-              <Text color="label" size="17pt" weight="semibold" numberOfLines={1} ellipsizeMode="tail">
-                {name}
-              </Text>
-              <Inline alignVertical="center" space={{ custom: 5 }}>
-                <Text color="labelTertiary" size="13pt" weight="semibold">
-                  {output ? symbol : `${balance}`}
-                </Text>
-                {isTrending && percentChange && (
-                  <Inline alignVertical="center" space={{ custom: 1 }}>
-                    <Text align="center" color={percentChange.color} size="12pt" weight="bold">
-                      {percentChange.prefix}
+    <Box>
+      <Columns alignVertical="center">
+        <Column>
+          <ButtonPressAnimation disallowInterruption onPress={onPress} scaleTo={0.95}>
+            <HitSlop vertical="10px">
+              <Box
+                alignItems="center"
+                paddingLeft="20px"
+                paddingRight={!output ? '20px' : undefined}
+                paddingVertical="10px"
+                flexDirection="row"
+                justifyContent="space-between"
+                width="full"
+                gap={12}
+              >
+                <Box flexDirection="row" gap={10} flexShrink={1} justifyContent="center">
+                  <SwapCoinIcon
+                    iconUrl={iconUrl}
+                    address={address}
+                    mainnetAddress={mainnetAddress}
+                    large
+                    network={ethereumUtils.getNetworkFromChainId(chainId)}
+                    symbol={symbol}
+                    color={color}
+                  />
+                  <Box gap={10} flexShrink={1} justifyContent="center">
+                    <Text color="label" size="17pt" weight="semibold" numberOfLines={1} ellipsizeMode="tail">
+                      {name}
                     </Text>
-                    <Text color={percentChange.color} size="13pt" weight="semibold">
-                      {percentChange.change}
-                    </Text>
-                  </Inline>
-                )}
+                    <Inline alignVertical="center" space={{ custom: 5 }}>
+                      <Text color="labelTertiary" size="13pt" weight="semibold">
+                        {output ? symbol : `${balance}`}
+                      </Text>
+                      {isTrending && percentChange && (
+                        <Inline alignVertical="center" space={{ custom: 1 }}>
+                          <Text align="center" color={percentChange.color} size="12pt" weight="bold">
+                            {percentChange.prefix}
+                          </Text>
+                          <Text color={percentChange.color} size="13pt" weight="semibold">
+                            {percentChange.change}
+                          </Text>
+                        </Inline>
+                      )}
+                    </Inline>
+                  </Box>
+                </Box>
+                {!output && <BalancePill balance={nativeBalance} />}
+              </Box>
+            </HitSlop>
+          </ButtonPressAnimation>
+        </Column>
+        {output && (
+          <Column width="content">
+            <Box paddingLeft="12px" paddingRight="20px">
+              <Inline space="8px">
+                <CoinRowButton icon="􀅳" outline size="icon 14px" />
+                <CoinRowButton
+                  color={isFavorite(address) ? '#FFCB0F' : undefined}
+                  onPress={() => toggleFavorite(mainnetAddress, chainId)}
+                  icon="􀋃"
+                  weight="black"
+                />
               </Inline>
             </Box>
-          </Box>
-          {output ? (
-            <Inline space="8px">
-              <CoinRowButton icon="􀅳" outline size="icon 14px" />
-              <CoinRowButton
-                color={isFavorite(address) ? '#FFCB0F' : undefined}
-                onPress={() => toggleFavorite(mainnetAddress, chainId)}
-                icon="􀋃"
-                weight="black"
-              />
-            </Inline>
-          ) : (
-            <BalancePill balance={nativeBalance} />
-          )}
-        </Box>
-      </HitSlop>
-    </ButtonPressAnimation>
+          </Column>
+        )}
+      </Columns>
+    </Box>
   );
 };
 
