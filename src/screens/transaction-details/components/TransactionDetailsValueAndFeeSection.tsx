@@ -31,6 +31,8 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
   const assetData = transaction?.asset;
   const change = transaction?.changes?.[0];
 
+  const isPendingSwap = ['swap', 'wrap', 'unwrap'].includes(transaction.type) && transaction.status === 'pending';
+
   const value = change?.value || transaction.balance?.display;
   const valueDisplay = value ? convertRawAmountToBalance(value || '', assetData!).display : '';
   const nativeCurrencyValue = change?.asset?.price?.value
@@ -39,7 +41,7 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
   const feeValue = fee?.value.display ?? '';
   const feeNativeCurrencyValue = fee?.native?.display ?? '';
 
-  if (!value && !fee) return null;
+  if ((!value && !fee) || isPendingSwap) return null;
 
   return (
     <>

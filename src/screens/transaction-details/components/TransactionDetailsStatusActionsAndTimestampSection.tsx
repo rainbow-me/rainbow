@@ -11,7 +11,7 @@ import { StyleSheet } from 'react-native';
 import { ButtonPressAnimation } from '@/components/animations';
 import { haptics } from '@/utils';
 import Routes from '@rainbow-me/routes';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { useNavigation } from '@react-navigation/native';
 import * as i18n from '@/languages';
@@ -25,8 +25,7 @@ type Props = {
 
 export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props> = ({ transaction, hideIcon }) => {
   const { minedAt, status, type, from } = transaction;
-  const dispatch = useDispatch();
-  const { navigate, goBack } = useNavigation();
+  const { navigate } = useNavigation();
   const accountAddress = useSelector((state: AppState) => state.settings.accountAddress);
   const date = formatTransactionDetailsDate(minedAt ?? undefined);
   const { colors } = useTheme();
