@@ -104,13 +104,7 @@ export const CoinRow = ({
               <CoinRowButton icon="􀅳" outline size="icon 14px" />
               <CoinRowButton
                 color={isFavorite(address) ? '#FFCB0F' : undefined}
-                onPress={e => {
-                  if (e && 'stopPropagation' in e) {
-                    e.stopPropagation();
-                  }
-
-                  toggleFavorite(mainnetAddress, chainId);
-                }}
+                onPress={() => toggleFavorite(mainnetAddress, chainId)}
                 icon="􀋃"
                 weight="black"
               />
