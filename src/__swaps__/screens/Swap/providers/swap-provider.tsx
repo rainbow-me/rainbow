@@ -25,6 +25,7 @@ import {
   useSharedValue,
 } from 'react-native-reanimated';
 import { useSwapSettings } from '../hooks/useSwapSettings';
+import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
 
 interface SwapContextType {
   isFetching: SharedValue<boolean>;
@@ -255,8 +256,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return '';
     }
 
-    const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
-    const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
+    const isInputZero = equalWorklet(SwapInputController.inputValues.value.inputAmount, 0);
+    const isOutputZero = equalWorklet(SwapInputController.inputValues.value.outputAmount, 0);
 
     if (SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching.value) {
       return '';
@@ -278,8 +279,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return 'Fetching prices';
     }
 
-    const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
-    const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
+    const isInputZero = equalWorklet(SwapInputController.inputValues.value.inputAmount, 0);
+    const isOutputZero = equalWorklet(SwapInputController.inputValues.value.outputAmount, 0);
 
     if (SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching.value) {
       return 'Enter Amount';
@@ -294,8 +295,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   });
 
   const confirmButtonIconStyle = useAnimatedStyle(() => {
-    const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
-    const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
+    const isInputZero = equalWorklet(SwapInputController.inputValues.value.inputAmount, 0);
+    const isOutputZero = equalWorklet(SwapInputController.inputValues.value.outputAmount, 0);
 
     const sliderCondition =
       SwapInputController.inputMethod.value === 'slider' &&
