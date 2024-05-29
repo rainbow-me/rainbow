@@ -56,7 +56,7 @@ jobs:
      
       - name: Run iOS e2e tests with retry
       # change the '5' here to how many times you want the tests to rerun on failure
-        run: ./scripts/run-retry-tests.sh 5
+        run: ./scripts/run-retry-tests.sh 3
      
       - name: Upload Test Artifacts
         if: failure()
