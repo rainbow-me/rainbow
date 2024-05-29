@@ -1,4 +1,9 @@
+import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
+
+import { ReviewGasButton } from '@/__swaps__/screens/Swap/components/GasButton';
+import { ChainId } from '@/__swaps__/types/chains';
+import { AnimatedText, Box, Inline, Separator, Stack, Text, globalColors, useColorMode } from '@/design-system';
 import { StyleSheet, View } from 'react-native';
 
 import Animated, {
@@ -9,22 +14,22 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { fadeConfig } from '../constants';
+import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
+import { AnimatedSwitch } from './AnimatedSwitch';
 
-import { AnimatedText, Box, Inline, Separator, Stack, Text, globalColors, useColorMode } from '@/design-system';
-import * as i18n from '@/languages';
-import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { useAccountSettings } from '@/hooks';
+import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 
-import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { fadeConfig } from '@/__swaps__/screens/Swap/constants';
-import { ChainId } from '@/__swaps__/types/chains';
-import { chainNameForChainIdWithMainnetSubstitutionWorklet } from '@/__swaps__/utils/chains';
-import { AnimatedSwitch } from '@/__swaps__/screens/Swap/components/AnimatedSwitch';
-import { GasButton } from '@/__swaps__/screens/Swap/components/GasButton';
-import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { AnimatedChainImage } from '@/__swaps__/screens/Swap/components/AnimatedChainImage';
-import { convertRawAmountToBalance, convertRawAmountToNativeDisplay, handleSignificantDecimals, multiply } from '@/__swaps__/utils/numbers';
+import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { useNativeAssetForChain } from '@/__swaps__/screens/Swap/hooks/useNativeAssetForChain';
+import { chainNameForChainIdWithMainnetSubstitutionWorklet } from '@/__swaps__/utils/chains';
+import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
+import { convertRawAmountToBalance, convertRawAmountToNativeDisplay, handleSignificantDecimals, multiply } from '@/__swaps__/utils/numbers';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { useSwapEstimatedGasFee } from '../hooks/useEstimatedGasFee';
+import { useSelectedGas, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 
 const unknown = i18n.t(i18n.l.swap.unknown);
 
@@ -81,6 +86,30 @@ const RainbowFee = () => {
   );
 };
 
+function EstimatedGasFee() {
+  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
+  const gasSettings = useSelectedGas(chainId);
+  const estimatedGasFee = useSwapEstimatedGasFee(gasSettings);
+
+  return (
+    <Text align="left" color={'label'} size="15pt" weight="heavy">
+      {estimatedGasFee}
+    </Text>
+  );
+}
+
+function EstimatedArrivalTime() {
+  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
+  const speed = useSelectedGasSpeed(chainId);
+  const { data: estimatedTime } = useEstimatedTime({ chainId, speed });
+  if (!estimatedTime) return null;
+  return (
+    <Text align="right" color={'labelTertiary'} size="15pt" weight="bold">
+      {estimatedTime}
+    </Text>
+  );
+}
+
 export function ReviewPanel() {
   const { isDarkMode } = useColorMode();
   const { configProgress, SwapSettings, SwapInputController, internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
@@ -108,10 +137,6 @@ export function ReviewPanel() {
     'worklet';
     SwapSettings.onUpdateSlippage('plus');
   };
-
-  // TODO: Comes from gas store
-  const estimatedGasFee = useSharedValue('$2.25');
-  const estimatedArrivalTime = useSharedValue('~4 sec');
 
   const styles = useAnimatedStyle(() => {
     return {
@@ -296,8 +321,8 @@ export function ReviewPanel() {
                   <AnimatedChainImage showMainnetBadge asset={internalSelectedInputAsset} size={16} />
                 </View>
                 <Inline horizontalSpace="4px">
-                  <AnimatedText align="left" color={'label'} size="15pt" weight="heavy" text={estimatedGasFee} />
-                  <AnimatedText align="right" color={'labelTertiary'} size="15pt" weight="bold" text={estimatedArrivalTime} />
+                  <EstimatedGasFee />
+                  <EstimatedArrivalTime />
                 </Inline>
               </Inline>
 
@@ -312,7 +337,7 @@ export function ReviewPanel() {
             </Stack>
 
             <Inline alignVertical="center" horizontalSpace="8px">
-              <GasButton isReviewing />
+              <ReviewGasButton />
             </Inline>
           </Inline>
         </Stack>

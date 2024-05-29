@@ -48,18 +48,11 @@ export type GasFeeParamsBySpeed = {
 };
 
 export interface BlocksToConfirmationByPriorityFee {
-  1: string;
-  2: string;
-  3: string;
-  4: string;
+  [priorityFee: string]: string;
 }
 
 export interface BlocksToConfirmationByBaseFee {
-  4: string;
-  8: string;
-  40: string;
-  120: string;
-  240: string;
+  [baseFee: string]: string;
 }
 
 export interface BlocksToConfirmation {

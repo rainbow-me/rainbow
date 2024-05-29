@@ -32,7 +32,7 @@ type numberPadCharacter = number | 'backspace' | '.';
 
 export const SwapNumberPad = () => {
   const { isDarkMode } = useColorMode();
-  const { focusedInput, SwapInputController, configProgress, outputQuotesAreDisabled } = useSwapContext();
+  const { focusedInput, isQuoteStale, SwapInputController, configProgress, outputQuotesAreDisabled } = useSwapContext();
 
   const longPressTimer = useSharedValue(0);
 
@@ -47,6 +47,7 @@ export const SwapNumberPad = () => {
 
     // immediately stop the quote fetching interval
     SwapInputController.quoteFetchingInterval.stop();
+    isQuoteStale.value = 1;
 
     const inputKey = focusedInput.value;
     if (SwapInputController.inputMethod.value !== inputKey) {
@@ -114,6 +115,8 @@ export const SwapNumberPad = () => {
     }
 
     const inputKey = focusedInput.value;
+    isQuoteStale.value = 1;
+
     if (SwapInputController.inputMethod.value !== inputKey) {
       SwapInputController.inputMethod.value = inputKey;
 

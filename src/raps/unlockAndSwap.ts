@@ -7,21 +7,24 @@ import {
 } from '@rainbow-me/swaps';
 import { Address } from 'viem';
 
-import { ETH_ADDRESS } from '../references';
 import { ChainId } from '@/__swaps__/types/chains';
 import { isNativeAsset } from '@/handlers/assets';
 import { add } from '@/helpers/utilities';
 import { ethereumUtils, isLowerCaseMatch } from '@/utils';
+import { ETH_ADDRESS } from '../references';
 
+import { isWrapNative } from '@/handlers/swap';
 import { assetNeedsUnlocking, estimateApprove, estimateSwapGasLimit } from './actions';
 import { estimateUnlockAndSwapFromMetadata } from './actions/swap';
 import { createNewAction, createNewRap } from './common';
 import { RapAction, RapSwapActionParameters, RapUnlockActionParameters } from './references';
-import { isWrapNative } from '@/handlers/swap';
 
-export const estimateUnlockAndSwap = async (swapParameters: RapSwapActionParameters<'swap'>) => {
-  const { sellAmount, quote, chainId, assetToSell } = swapParameters;
-
+export const estimateUnlockAndSwap = async ({
+  sellAmount,
+  quote,
+  chainId,
+  assetToSell,
+}: Pick<RapSwapActionParameters<'swap'>, 'sellAmount' | 'quote' | 'chainId' | 'assetToSell'>) => {
   const {
     from: accountAddress,
     sellTokenAddress,
