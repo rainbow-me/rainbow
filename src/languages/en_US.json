@@ -1907,6 +1907,14 @@
       "too_many_signup_request": "Too many signup requests, please try again later"
     },
     "swap": {
+      "actions": {
+        "tap_to_swap": "Tap to Swap",
+        "save": "Save",
+        "enter_amount": "Enter Amount",
+        "review": "Review",
+        "fetching_prices": "Fetching Prices",
+        "swapping": "Swapping"
+      },
       "aggregators": {
         "rainbow": "Rainbow"
       },

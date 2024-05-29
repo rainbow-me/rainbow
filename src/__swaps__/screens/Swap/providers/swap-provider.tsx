@@ -42,6 +42,13 @@ import { useAccountSettings } from '@/hooks';
 import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 
+const swapping = i18n.t(i18n.l.swap.actions.swapping);
+const tapToSwap = i18n.t(i18n.l.swap.actions.tap_to_swap);
+const save = i18n.t(i18n.l.swap.actions.save);
+const enterAmount = i18n.t(i18n.l.swap.actions.enter_amount);
+const review = i18n.t(i18n.l.swap.actions.review);
+const fetchingPrices = i18n.t(i18n.l.swap.actions.fetching_prices);
+
 interface SwapContextType {
   isFetching: SharedValue<boolean>;
   isSwapping: SharedValue<boolean>;
@@ -416,31 +423,31 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   // TODO: i18n these
   const confirmButtonLabel = useDerivedValue(() => {
     if (isSwapping.value) {
-      return 'Swapping';
+      return swapping;
     }
 
     if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
-      return 'Hold to Swap';
+      return tapToSwap;
     } else if (configProgress.value === NavigationSteps.SHOW_GAS) {
-      return 'Save';
+      return save;
     }
 
     if (isFetching.value) {
-      return 'Fetching prices';
+      return fetchingPrices;
     }
 
     const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
     const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
 
     if (SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching.value) {
-      return 'Enter Amount';
+      return enterAmount;
     } else if (
       SwapInputController.inputMethod.value === 'slider' &&
       (SwapInputController.percentageToSwap.value === 0 || isInputZero || isOutputZero)
     ) {
-      return 'Enter Amount';
+      return enterAmount;
     } else {
-      return 'Review';
+      return review;
     }
   });
 
