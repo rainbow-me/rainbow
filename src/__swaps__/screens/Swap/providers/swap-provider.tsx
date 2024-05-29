@@ -110,6 +110,19 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     quote,
   });
 
+  const SwapTextStyles = useSwapTextStyles({
+    inputMethod: SwapInputController.inputMethod,
+    inputValues: SwapInputController.inputValues,
+    internalSelectedInputAsset,
+    internalSelectedOutputAsset,
+    isFetching,
+    isQuoteStale,
+    focusedInput,
+    inputProgress,
+    outputProgress,
+    sliderPressProgress,
+  });
+
   const SwapNavigation = useSwapNavigation({
     SwapInputController,
     inputProgress,
@@ -135,17 +148,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     outputProgress,
     configProgress,
     isFetching,
-  });
-
-  const SwapTextStyles = useSwapTextStyles({
-    SwapInputController,
-    internalSelectedInputAsset,
-    internalSelectedOutputAsset,
-    isQuoteStale,
-    focusedInput,
-    inputProgress,
-    outputProgress,
-    sliderPressProgress,
   });
 
   const handleProgressNavigation = ({ type }: { type: SwapAssetType }) => {
