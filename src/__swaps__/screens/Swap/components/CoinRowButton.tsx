@@ -6,7 +6,6 @@ import { TextWeight } from '@/design-system/components/Text/Text';
 import { TextSize } from '@/design-system/typography/typeHierarchy';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
-import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
 
 export const CoinRowButton = ({
   color,
@@ -18,7 +17,7 @@ export const CoinRowButton = ({
 }: {
   color?: string;
   icon: string;
-  onPress?: (e: ButtonPressAnimationTouchEvent) => void;
+  onPress?: () => void;
   outline?: boolean;
   size?: TextSize;
   weight?: TextWeight;
