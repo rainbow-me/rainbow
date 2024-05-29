@@ -1,12 +1,12 @@
 /* eslint-disable no-nested-ternary */
 import React from 'react';
 import { StyleProp, StyleSheet, TextStyle, ViewStyle } from 'react-native';
-import Animated, { DerivedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import Animated, { DerivedValue, useAnimatedProps, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 
-import { ButtonPressAnimation } from '@/components/animations';
-import { AnimatedText, Box, Column, Columns, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { ButtonPressAnimation } from '@/components/animations';
+import { AnimatedText, Box, Column, Columns, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 
 export const SwapActionButton = ({
   asset,
@@ -23,6 +23,7 @@ export const SwapActionButton = ({
   scaleTo,
   small,
   style,
+  disabled,
 }: {
   asset: DerivedValue<ExtendedAnimatedAssetWithColors | null>;
   borderRadius?: number;
@@ -38,6 +39,7 @@ export const SwapActionButton = ({
   scaleTo?: number;
   small?: boolean;
   style?: ViewStyle;
+  disabled?: DerivedValue<boolean | undefined>;
 }) => {
   const { isDarkMode } = useColorMode();
   const fallbackColor = useForegroundColor('label');
@@ -80,6 +82,7 @@ export const SwapActionButton = ({
       },
       shadowOpacity: isDarkMode ? 0.2 : small ? 0.2 : 0.36,
       shadowRadius: isDarkMode ? 26 : small ? 9 : 15,
+      opacity: disabled?.value ? 0.5 : 1,
     };
   });
 
@@ -97,15 +100,21 @@ export const SwapActionButton = ({
     return rightIcon;
   });
 
+  const a = useAnimatedProps(() => {
+    console.log(disabled?.value || false);
+    return {
+      isDisabled: disabled?.value || false,
+    };
+  });
+
+  console.log('ASDSADASDA', a.isDisabled);
+
   return (
     <ButtonPressAnimation
-      onLongPress={onLongPress}
-      onPress={onPress}
-      scaleTo={scaleTo || (hugContent ? undefined : 0.925)}
-      style={{
-        ...(hugContent && feedActionButtonStyles.buttonWrapper),
-        ...(style || {}),
-      }}
+      onLongPress={a.isDisabled ? undefined : onLongPress}
+      onPress={a.isDisabled ? undefined : onPress}
+      scaleTo={a.isDisabled ? 1 : scaleTo || (hugContent ? undefined : 0.925)}
+      style={[hugContent && feedActionButtonStyles.buttonWrapper, style]}
     >
       <Box
         as={Animated.View}

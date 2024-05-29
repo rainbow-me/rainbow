@@ -58,8 +58,13 @@ interface SwapContextType {
   SwapNavigation: ReturnType<typeof useSwapNavigation>;
   SwapWarning: ReturnType<typeof useSwapWarning>;
 
-  confirmButtonIcon: Readonly<SharedValue<string>>;
-  confirmButtonLabel: Readonly<SharedValue<string>>;
+  confirmButtonProps: Readonly<
+    SharedValue<{
+      label: string;
+      icon?: string;
+      disabled?: boolean;
+    }>
+  >;
   confirmButtonIconStyle: StyleProp<TextStyle>;
 }
 
@@ -244,53 +249,30 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     runOnUI(updateAssetValue)({ type, asset: parseAssetAndExtend({ asset }) });
   };
 
-  const confirmButtonIcon = useDerivedValue(() => {
+  const confirmButtonProps = useDerivedValue(() => {
     if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
-      return '􀎽';
-    } else if (configProgress.value === NavigationSteps.SHOW_GAS) {
-      return '􀆅';
+      return { icon: '􀎽', label: 'Hold to Swap', disabled: false };
+    }
+
+    if (configProgress.value === NavigationSteps.SHOW_GAS) {
+      return { icon: '􀆅', label: 'Save', disabled: false };
     }
 
     if (isFetching.value) {
-      return '';
+      return { label: 'Fetching...', disabled: true };
     }
+
+    const hasSelectedAssets = internalSelectedInputAsset.value && internalSelectedOutputAsset.value;
+    if (!hasSelectedAssets) return { label: 'Select Token', disabled: true };
 
     const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
     const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
 
-    if (SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching.value) {
-      return '';
-    } else if (SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0) {
-      return '';
-    } else {
-      return '􀕹';
-    }
-  });
-
-  const confirmButtonLabel = useDerivedValue(() => {
-    if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
-      return 'Hold to Swap';
-    } else if (configProgress.value === NavigationSteps.SHOW_GAS) {
-      return 'Save';
+    if (SwapInputController.percentageToSwap.value === 0 || isInputZero || isOutputZero) {
+      return { label: 'Enter Amount', disabled: true };
     }
 
-    if (isFetching.value) {
-      return 'Fetching prices';
-    }
-
-    const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
-    const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
-
-    if (SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching.value) {
-      return 'Enter Amount';
-    } else if (
-      SwapInputController.inputMethod.value === 'slider' &&
-      (SwapInputController.percentageToSwap.value === 0 || isInputZero || isOutputZero)
-    ) {
-      return 'Enter Amount';
-    } else {
-      return 'Review';
-    }
+    return { icon: '􀕹', label: 'Review', disabled: false };
   });
 
   const confirmButtonIconStyle = useAnimatedStyle(() => {
@@ -356,8 +338,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         SwapNavigation,
         SwapWarning,
 
-        confirmButtonIcon,
-        confirmButtonLabel,
+        confirmButtonProps,
         confirmButtonIconStyle,
       }}
     >

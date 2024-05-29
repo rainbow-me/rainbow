@@ -1,15 +1,15 @@
 import React from 'react';
-import Animated, { runOnUI, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { StyleSheet } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { PanGestureHandler } from 'react-native-gesture-handler';
+import Animated, { runOnUI, useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
 
 import { Box, Column, Columns, Separator, globalColors, useColorMode } from '@/design-system';
 import { safeAreaInsetValues } from '@/utils';
 
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH, springConfig } from '@/__swaps__/screens/Swap/constants';
+import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { IS_ANDROID } from '@/env';
-import { useSwapContext, NavigationSteps } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
 import { opacity } from '@/__swaps__/utils/swaps';
 import { useBottomPanelGestureHandler } from '../hooks/useBottomPanelGestureHandler';
@@ -20,15 +20,8 @@ import { SwapActionButton } from './SwapActionButton';
 
 export function SwapBottomPanel() {
   const { isDarkMode } = useColorMode();
-  const {
-    confirmButtonIcon,
-    confirmButtonIconStyle,
-    confirmButtonLabel,
-    internalSelectedOutputAsset,
-    AnimatedSwapStyles,
-    SwapNavigation,
-    configProgress,
-  } = useSwapContext();
+  const { confirmButtonIconStyle, confirmButtonProps, internalSelectedOutputAsset, AnimatedSwapStyles, SwapNavigation, configProgress } =
+    useSwapContext();
 
   const { swipeToDismissGestureHandler, gestureY } = useBottomPanelGestureHandler();
 
@@ -43,6 +36,10 @@ export function SwapBottomPanel() {
       display: configProgress.value === NavigationSteps.SHOW_REVIEW || configProgress.value === NavigationSteps.SHOW_GAS ? 'none' : 'flex',
     };
   });
+
+  const icon = useDerivedValue(() => confirmButtonProps.value.icon);
+  const label = useDerivedValue(() => confirmButtonProps.value.label);
+  const disabled = useDerivedValue(() => confirmButtonProps.value.disabled);
 
   return (
     // @ts-expect-error Property 'children' does not exist on type
@@ -76,9 +73,10 @@ export function SwapBottomPanel() {
           <SwapActionButton
             onPress={() => runOnUI(SwapNavigation.handleSwapAction)()}
             asset={internalSelectedOutputAsset}
-            icon={confirmButtonIcon}
+            icon={icon}
             iconStyle={confirmButtonIconStyle}
-            label={confirmButtonLabel}
+            label={label}
+            disabled={disabled}
             scaleTo={0.9}
           />
         </Columns>
