@@ -168,7 +168,7 @@ export function useSearchCurrencyLists() {
   const filterAssetsFromFavoritesBridgeAndAssetToSell = useCallback(
     (assets?: SearchAsset[]) =>
       filterAssetsFromBridgeAndAssetToSell(assets)?.filter(
-        curatedAsset => !favoritesList?.some(({ address }) => curatedAsset.address === address && curatedAsset.mainnetAddress === address)
+        curatedAsset => !favoritesList?.some(({ address }) => curatedAsset.address === address || curatedAsset.mainnetAddress === address)
       ) || [],
     [favoritesList, filterAssetsFromBridgeAndAssetToSell]
   );
