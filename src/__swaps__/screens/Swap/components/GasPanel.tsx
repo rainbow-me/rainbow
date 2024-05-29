@@ -1,5 +1,5 @@
 import * as i18n from '@/languages';
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useMemo } from 'react';
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
 import { fadeConfig } from '@/__swaps__/screens/Swap/constants';
@@ -11,9 +11,10 @@ import {
   useBaseFee,
   useGasTrend,
   useIsChainEIP1559,
-  useMeteorologySuggestions,
+  useMeteorologySuggestion,
 } from '@/__swaps__/utils/meteorology';
 import { add, subtract } from '@/__swaps__/utils/numbers';
+import { opacity } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Box, Inline, Separator, Stack, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
@@ -25,9 +26,8 @@ import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { upperFirst } from 'lodash';
 import { formatNumber } from '../hooks/formatNumber';
 import { GasSettings, getCustomGasSettings, setCustomGasSettings, useCustomGasStore } from '../hooks/useCustomGas';
-import { useSwapEstimatedGasFee } from '../hooks/useEstimatedGasFee';
 import { setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { EstimatedSwapGasFee } from './EstimatedSwapGasFee';
 
 const MINER_TIP_TYPE = 'minerTip';
 const MAX_BASE_FEE_TYPE = 'maxBaseFee';
@@ -144,6 +144,9 @@ function CurrentBaseFee() {
 
   // loading state?
 
+  const isEIP1559 = useIsChainEIP1559(chainId);
+  if (!isEIP1559) return null;
+
   return (
     <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
       <PressableLabel
@@ -180,17 +183,19 @@ function useGasPanelState<
   const state = useGasPanelStore(select);
 
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-  const selectedSpeed = useSelectedGasSpeed(chainId);
 
   const currentGasSettings = useCustomGasStore(s => select(s?.[chainId]));
 
-  const { data: suggestion } = useMeteorologySuggestions({
+  const speed = useSelectedGasSpeed(chainId);
+  const { data: suggestion } = useMeteorologySuggestion({
     chainId,
-    select: d => select(selectedSpeed === 'custom' ? undefined : d[selectedSpeed]),
-    enabled: !state && selectedSpeed !== 'custom',
+    speed,
+    select,
+    enabled: !!state,
+    notifyOnChangeProps: !!state && speed !== 'custom' ? ['data'] : [],
   });
 
-  return state ?? currentGasSettings ?? suggestion;
+  return useMemo(() => state ?? currentGasSettings ?? suggestion, [currentGasSettings, state, suggestion]);
 }
 
 const setGasPanelState = (update: Partial<GasPanelState>) => {
@@ -258,12 +263,12 @@ const stateToGasSettings = (s: GasPanelState | undefined): GasSettings | undefin
   if (s.gasPrice) return { isEIP1559: false, gasPrice: s.gasPrice || '0' };
   return { isEIP1559: true, maxBaseFee: s.maxBaseFee || '0', maxPriorityFee: s.maxPriorityFee || '0' };
 };
+
 function MaxTransactionFee() {
   const { isDarkMode } = useColorMode();
 
   const gasPanelState = useGasPanelState();
-  const gasSettings = stateToGasSettings(gasPanelState);
-  const maxTransactionFee = useSwapEstimatedGasFee(gasSettings);
+  const gasSettings = useMemo(() => stateToGasSettings(gasPanelState), [gasPanelState]);
 
   return (
     <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
@@ -279,9 +284,13 @@ function MaxTransactionFee() {
       </Inline>
 
       <Inline horizontalSpace="6px">
-        <Text align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy">
-          {maxTransactionFee}
-        </Text>
+        <EstimatedSwapGasFee
+          gasSettings={gasSettings}
+          align="right"
+          color={isDarkMode ? 'labelSecondary' : 'label'}
+          size="15pt"
+          weight="heavy"
+        />
       </Inline>
     </Inline>
   );
@@ -290,7 +299,9 @@ function MaxTransactionFee() {
 function EditableGasSettings() {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
   const isEIP1559 = useIsChainEIP1559(chainId);
+
   if (!isEIP1559) return <EditGasPrice />;
+
   return (
     <>
       <EditMaxBaseFee />
@@ -300,8 +311,6 @@ function EditableGasSettings() {
 }
 
 function saveCustomGasSettings() {
-  // input is debounced if the time between editing and closing the panel is less than the debounce time (500ms) it's gonna be outdated
-
   const unsaved = useGasPanelStore.getState();
 
   const { inputAsset } = useSwapsStore.getState();
