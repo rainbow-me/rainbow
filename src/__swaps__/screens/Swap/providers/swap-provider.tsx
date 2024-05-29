@@ -48,6 +48,7 @@ interface SwapContextType {
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   setAsset: ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset }) => void;
+  flipAssets: () => void;
 
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
 
@@ -244,6 +245,27 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     runOnUI(updateAssetValue)({ type, asset: parseAssetAndExtend({ asset }) });
   };
 
+  const flipAssets = () => {
+    const inputAsset = internalSelectedInputAsset.value;
+    const outputAsset = internalSelectedOutputAsset.value;
+    const inputAmount = SwapInputController.inputValues.value.inputAmount;
+    const outputAmount = SwapInputController.inputValues.value.outputAmount;
+    const inputNativeValue = SwapInputController.inputValues.value.inputNativeValue;
+    const outputNativeValue = SwapInputController.inputValues.value.outputNativeValue;
+
+    internalSelectedInputAsset.value = outputAsset;
+    internalSelectedOutputAsset.value = inputAsset;
+    SwapInputController.inputValues.value.inputAmount = outputAmount;
+    SwapInputController.inputValues.value.outputAmount = inputAmount;
+    SwapInputController.inputValues.value.inputNativeValue = outputNativeValue;
+    SwapInputController.inputValues.value.outputNativeValue = inputNativeValue;
+    swapsStore.setState({
+      inputAsset: outputAsset,
+      outputAsset: inputAsset,
+      selectedOutputChainId: outputAsset?.chainId ?? ChainId.mainnet,
+    });
+  };
+
   const confirmButtonIcon = useDerivedValue(() => {
     if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
       return '􀎽';
@@ -346,6 +368,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         internalSelectedInputAsset,
         internalSelectedOutputAsset,
         setAsset,
+        flipAssets,
 
         quote,
 
