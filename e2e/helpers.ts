@@ -4,7 +4,6 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { expect, device, element, by, waitFor } from 'detox';
 import { parseEther } from '@ethersproject/units';
-import { WALLET_VARS } from './testVariables';
 
 const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 
@@ -52,9 +51,6 @@ export async function importWalletFlow(customSeed?: string) {
 }
 
 export async function beforeAllcleanApp({ hardhat }: { hardhat?: boolean }) {
-  // sometimes i see tests failed from the get-go
-  // giving an extra 15 to let things set up
-  await delayTime('very-long');
   jest.resetAllMocks();
   hardhat && (await startHardhat());
 }
