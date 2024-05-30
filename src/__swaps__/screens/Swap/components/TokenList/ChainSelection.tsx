@@ -101,13 +101,15 @@ export const ChainSelection = React.memo(function ChainSelection({ allText, outp
         options: chainTitles,
         showSeparators: true,
       },
-      (index: number) => {
+      (index: number | undefined) => {
+        // NOTE: When they click away from the menu, the index is undefined
+        if (typeof index === 'undefined') return;
         handleSelectChain({
           nativeEvent: { actionKey: menuConfig.menuItems[index].actionKey, actionTitle: '' },
         });
       }
     );
-  }, [handleSelectChain, menuConfig.menuItems, output]);
+  }, [handleSelectChain, menuConfig.menuItems]);
 
   return (
     <Box as={Animated.View} paddingHorizontal="20px">
