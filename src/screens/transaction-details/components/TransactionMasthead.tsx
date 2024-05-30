@@ -1,7 +1,7 @@
 // @refresh reset
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { NativeCurrencyKey, ParsedAddressAsset, RainbowTransaction } from '@/entities';
+import { ParsedAddressAsset, RainbowTransaction } from '@/entities';
 
 import { Bleed, Box, Columns, Cover, Row, Rows, Separator, Stack, Text, TextProps } from '@/design-system';
 
@@ -11,18 +11,23 @@ import { ThemeContextProps, useTheme } from '@/theme';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import RowWithMargins from '@/components/layout/RowWithMargins';
 import { IS_ANDROID } from '@/env';
-import { convertAmountAndPriceToNativeDisplay, convertAmountToBalanceDisplay } from '@/helpers/utilities';
+import {
+  convertAmountAndPriceToNativeDisplay,
+  convertAmountToBalanceDisplay,
+  convertRawAmountToDecimalFormat,
+  handleSignificantDecimals,
+} from '@/helpers/utilities';
 import { fetchENSAvatar } from '@/hooks/useENSAvatar';
 import { fetchReverseRecord } from '@/handlers/ens';
 
-import { address, formatAddressForDisplay } from '@/utils/abbreviations';
+import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { ContactAvatar } from '@/components/contacts';
 import { isLowerCaseMatch } from '@/utils';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { useContacts, useUserAccounts } from '@/hooks';
 import { useTiming } from 'react-native-redash';
-import Animated, { Easing, SharedValue, interpolate, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { Easing, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
@@ -172,7 +177,7 @@ function CurrencyTile({
             ) : (
               <>
                 <Animated.View style={ensAvatarAnimatedStyle}>
-                  {/*add coin icon*/}
+                  {/* add coin icon*/}
                   <ImageAvatar
                     image={image || imageUrl}
                     size="medium"
@@ -276,8 +281,28 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
   const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
 
   const inputAsset = useMemo(() => {
-    const inAsset = transaction?.changes?.find(a => a?.direction === 'in')?.asset;
-    if (!inAsset) return undefined;
+    const change = transaction?.changes?.find(a => a?.direction === 'in');
+
+    if (!change?.asset) return undefined;
+
+    // NOTE: For pending transactions let's use the change value
+    // since the balance hasn't been updated yet.
+    if (['swap', 'wrap', 'unwrap'].includes(transaction.type) && transaction.status === 'pending') {
+      const inAssetValueDisplay = `${handleSignificantDecimals(convertRawAmountToDecimalFormat(change?.value?.toString() || '0', change?.asset.decimals || 18), change?.asset.decimals || 18)} ${change?.asset.symbol}`;
+      return {
+        inAssetValueDisplay,
+        inAssetNativeDisplay: change?.asset.price?.value
+          ? convertAmountAndPriceToNativeDisplay(
+              convertRawAmountToDecimalFormat(change?.value?.toString() || '0', change?.asset.decimals || 18),
+              change?.asset.price?.value || '0',
+              nativeCurrency
+            )?.display
+          : '-',
+        ...change.asset,
+      };
+    }
+
+    const inAsset = change.asset;
 
     return {
       inAssetValueDisplay: convertAmountToBalanceDisplay(inAsset?.balance?.amount || '0', inAsset),
@@ -289,8 +314,28 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
   }, []);
 
   const outputAsset = useMemo(() => {
-    const outAsset = transaction?.changes?.find(a => a?.direction === 'out')?.asset;
-    if (!outAsset) return undefined;
+    const change = transaction?.changes?.find(a => a?.direction === 'out');
+
+    if (!change?.asset) return undefined;
+
+    // NOTE: For pending transactions let's use the change value
+    // since the balance hasn't been updated yet.
+    if (['swap', 'wrap', 'unwrap'].includes(transaction.type) && transaction.status === 'pending') {
+      const inAssetValueDisplay = `${handleSignificantDecimals(convertRawAmountToDecimalFormat(change?.value?.toString() || '0', change?.asset.decimals || 18), change?.asset.decimals || 18)} ${change?.asset.symbol}`;
+      return {
+        inAssetValueDisplay,
+        inAssetNativeDisplay: change?.asset.price?.value
+          ? convertAmountAndPriceToNativeDisplay(
+              convertRawAmountToDecimalFormat(change?.value?.toString() || '0', change?.asset.decimals || 18),
+              change?.asset.price?.value || '0',
+              nativeCurrency
+            )?.display
+          : '-',
+        ...change?.asset,
+      };
+    }
+
+    const outAsset = change.asset;
 
     return {
       image: outAsset?.icon_url || '',

@@ -1,10 +1,8 @@
 /* eslint-disable no-nested-ternary */
-import ConditionalWrap from 'conditional-wrap';
 import React from 'react';
 import { StyleProp, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import Animated, { DerivedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 
-import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedText, Box, Column, Columns, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
@@ -18,8 +16,7 @@ export const SwapActionButton = ({
   icon,
   iconStyle,
   label,
-  onLongPress,
-  onPress,
+  onPressJS,
   onPressWorklet,
   outline,
   rightIcon,
@@ -34,8 +31,7 @@ export const SwapActionButton = ({
   icon?: string | DerivedValue<string | undefined>;
   iconStyle?: StyleProp<TextStyle>;
   label: string | DerivedValue<string | undefined>;
-  onLongPress?: () => void;
-  onPress?: () => void;
+  onPressJS?: () => void;
   onPressWorklet?: () => void;
   outline?: boolean;
   rightIcon?: string;
@@ -102,34 +98,14 @@ export const SwapActionButton = ({
   });
 
   return (
-    <ConditionalWrap
-      condition={true}
-      wrap={children =>
-        onPressWorklet ? (
-          <GestureHandlerV1Button
-            onPressWorklet={onPressWorklet}
-            scaleTo={scaleTo || (hugContent ? undefined : 0.925)}
-            style={{
-              ...(hugContent && feedActionButtonStyles.buttonWrapper),
-              ...(style || {}),
-            }}
-          >
-            {children}
-          </GestureHandlerV1Button>
-        ) : (
-          <ButtonPressAnimation
-            onLongPress={onLongPress}
-            onPress={onPress}
-            scaleTo={scaleTo || (hugContent ? undefined : 0.925)}
-            style={{
-              ...(hugContent && feedActionButtonStyles.buttonWrapper),
-              ...(style || {}),
-            }}
-          >
-            {children}
-          </ButtonPressAnimation>
-        )
-      }
+    <GestureHandlerV1Button
+      onPressJS={onPressJS}
+      onPressWorklet={onPressWorklet}
+      scaleTo={scaleTo || (hugContent ? undefined : 0.925)}
+      style={{
+        ...(hugContent && feedActionButtonStyles.buttonWrapper),
+        ...(style || {}),
+      }}
     >
       <Box
         as={Animated.View}
@@ -162,7 +138,7 @@ export const SwapActionButton = ({
           )}
         </Columns>
       </Box>
-    </ConditionalWrap>
+    </GestureHandlerV1Button>
   );
 };
 

@@ -80,11 +80,11 @@ export function SwapBottomPanel() {
             </Box>
           </Column>
           <SwapActionButton
-            onPressWorklet={SwapNavigation.handleSwapAction}
             asset={internalSelectedOutputAsset}
             icon={confirmButtonIcon}
             iconStyle={confirmButtonIconStyle}
             label={confirmButtonLabel}
+            onPressWorklet={SwapNavigation.handleSwapAction}
             scaleTo={0.9}
           />
         </Columns>

@@ -27,8 +27,8 @@ import { useNativeAssetForChain } from '@/__swaps__/screens/Swap/hooks/useNative
 import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
 import { convertRawAmountToBalance, convertRawAmountToNativeDisplay, handleSignificantDecimals, multiply } from '@/__swaps__/utils/numbers';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { useSwapEstimatedGasFee } from '../hooks/useEstimatedGasFee';
 import { useSelectedGas, useSelectedGasSpeed } from '../hooks/useSelectedGas';
+import { EstimatedSwapGasFee } from './EstimatedSwapGasFee';
 
 const unknown = i18n.t(i18n.l.swap.unknown);
 
@@ -90,13 +90,8 @@ const RainbowFee = () => {
 function EstimatedGasFee() {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
   const gasSettings = useSelectedGas(chainId);
-  const estimatedGasFee = useSwapEstimatedGasFee(gasSettings);
 
-  return (
-    <Text align="left" color={'label'} size="15pt" weight="heavy">
-      {estimatedGasFee}
-    </Text>
-  );
+  return <EstimatedSwapGasFee gasSettings={gasSettings} align="left" color="label" size="15pt" weight="heavy" />;
 }
 
 function EstimatedArrivalTime() {

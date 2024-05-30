@@ -13,6 +13,7 @@ export const enum NavigationSteps {
 }
 
 export function useSwapNavigation({
+  executeSwap,
   inputProgress,
   outputProgress,
   configProgress,
@@ -20,6 +21,7 @@ export function useSwapNavigation({
   selectedInputAsset,
   selectedOutputAsset,
 }: {
+  executeSwap: () => void;
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
   configProgress: SharedValue<number>;
@@ -172,12 +174,12 @@ export function useSwapNavigation({
         handleDismissGas();
       }
     } else if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
-      // TODO: Handle executing swap
-      handleDismissReview();
+      // TODO: Handle long press
+      executeSwap();
     } else {
       handleShowReview();
     }
-  }, [configProgress, handleDismissGas, handleDismissReview, handleShowReview, navigateBackToReview]);
+  }, [configProgress.value, executeSwap, handleDismissGas, handleShowReview, navigateBackToReview]);
 
   return {
     navigateBackToReview,

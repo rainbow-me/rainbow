@@ -18,19 +18,30 @@ export const useSelectedGasSpeed = (chainId: ChainId) =>
 export const setSelectedGasSpeed = (chainId: ChainId, speed: GasSpeed) => useSelectedGasSpeedStore.setState({ [chainId]: speed });
 export const getSelectedGasSpeed = (chainId: ChainId) => useSelectedGasSpeedStore.getState()[chainId] || 'fast';
 
-export function useSelectedGas(chainId: ChainId) {
-  const selectedGasSpeed = useSelectedGasSpeed(chainId);
-
+export function useGasSettings(chainId: ChainId, speed: GasSpeed) {
   const userCustomGasSettings = useCustomGasSettings(chainId);
   const { data: metereologySuggestions } = useMeteorologySuggestions({
     chainId,
-    enabled: selectedGasSpeed !== 'custom',
+    enabled: speed !== 'custom',
   });
 
   return useMemo(() => {
-    if (selectedGasSpeed === 'custom') return userCustomGasSettings;
-    return metereologySuggestions?.[selectedGasSpeed];
-  }, [selectedGasSpeed, userCustomGasSettings, metereologySuggestions]);
+    if (speed === 'custom') return userCustomGasSettings;
+    return metereologySuggestions?.[speed];
+  }, [speed, userCustomGasSettings, metereologySuggestions]);
+}
+
+export function useSelectedGas(chainId: ChainId) {
+  const selectedGasSpeed = useSelectedGasSpeed(chainId);
+  return useGasSettings(chainId, selectedGasSpeed);
+}
+
+export function getGasSettingsBySpeed(chainId: ChainId) {
+  const suggestions = getCachedGasSuggestions(chainId);
+  return {
+    ...suggestions,
+    custom: getCustomGasSettings(chainId),
+  };
 }
 
 export function getGasSettings(speed: GasSpeed, chainId: ChainId) {
