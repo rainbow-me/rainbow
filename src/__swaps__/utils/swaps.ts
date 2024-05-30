@@ -31,6 +31,7 @@ import {
   minWorklet,
   maxWorklet,
 } from '../safe-math/SafeMath';
+import { consoleLogWorklet } from '@/debugging/workletUtils';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -340,6 +341,15 @@ export function niceIncrementFormatter({
   })}`;
 
   if (stripSeparators) return stripCommas(formattedAmount);
+
+  consoleLogWorklet('niceIncrementFormatter::exactIncrement: ' + exactIncrement);
+  consoleLogWorklet('niceIncrementFormatter::isIncrementExact: ' + isIncrementExact);
+  consoleLogWorklet('niceIncrementFormatter::numberOfIncrements: ' + numberOfIncrements);
+  consoleLogWorklet('niceIncrementFormatter::incrementStep: ' + incrementStep);
+  consoleLogWorklet('niceIncrementFormatter::percentage: ' + percentage);
+  consoleLogWorklet('niceIncrementFormatter::rawAmount: ' + rawAmount);
+  consoleLogWorklet('niceIncrementFormatter::amountToFixedDecimals: ' + amountToFixedDecimals);
+  consoleLogWorklet('niceIncrementFormatter::formattedAmount: ' + formattedAmount);
 
   return formattedAmount;
 }
