@@ -168,6 +168,9 @@ export const findNiceIncrement = (availableBalance: number): number => {
 //
 export function addCommasToNumber(number: string | number) {
   'worklet';
+  if (isNaN(Number(number))) {
+    return 0;
+  }
   const numberString = number.toString();
 
   if (numberString.includes(',')) {
