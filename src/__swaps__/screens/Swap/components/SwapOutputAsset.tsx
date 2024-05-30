@@ -39,7 +39,7 @@ function SwapOutputActionButton() {
       disableShadow={isDarkMode}
       hugContent
       label={label}
-      onPress={runOnUI(SwapNavigation.handleOutputPress)}
+      onPress={SwapNavigation.handleOutputPress}
       rightIcon={'􀆏'}
       small
     />

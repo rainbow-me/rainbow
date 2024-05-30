@@ -1,5 +1,5 @@
 import React from 'react';
-import Animated, { runOnUI, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { StyleSheet } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { PanGestureHandler } from 'react-native-gesture-handler';
@@ -74,7 +74,7 @@ export function SwapBottomPanel() {
             </Box>
           </Column>
           <SwapActionButton
-            onPress={() => runOnUI(SwapNavigation.handleSwapAction)()}
+            onPress={SwapNavigation.handleSwapAction}
             asset={internalSelectedOutputAsset}
             icon={confirmButtonIcon}
             iconStyle={confirmButtonIconStyle}
