@@ -179,7 +179,7 @@ export function useSwapNavigation({
     } else {
       handleShowReview();
     }
-  }, [configProgress.value, executeSwap, handleDismissGas, handleShowReview, navigateBackToReview]);
+  }, [configProgress, executeSwap, handleDismissGas, handleShowReview, navigateBackToReview]);
 
   return {
     navigateBackToReview,
