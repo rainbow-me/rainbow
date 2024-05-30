@@ -107,7 +107,6 @@ export const SwapNumberPad = () => {
   const deleteLastCharacter = () => {
     'worklet';
 
-    // TODO: We should display something to the user that tells them that the output quotes are disabled
     if (focusedInput.value === 'outputAmount' || (focusedInput.value === 'outputNativeValue' && outputQuotesAreDisabled.value)) {
       return;
     }
