@@ -36,7 +36,7 @@ import {
 } from '@/__swaps__/screens/Swap/constants';
 import { clamp, getColorValueForThemeWorklet, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { AmimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
+import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
 
 type SwapSliderProps = {
   dualColor?: boolean;
@@ -380,7 +380,7 @@ export const SwapSlider = ({
               <Columns alignHorizontal="justify" alignVertical="center">
                 <Inline alignVertical="center" space="6px" wrap={false}>
                   <Bleed vertical="4px">
-                    <AmimatedSwapCoinIcon showBadge={false} asset={internalSelectedInputAsset} small />
+                    <AnimatedSwapCoinIcon showBadge={false} asset={internalSelectedInputAsset} small />
                   </Bleed>
                   <Inline alignVertical="bottom" wrap={false}>
                     <Text color={isDarkMode ? 'labelQuaternary' : 'labelTertiary'} size="15pt" style={{ marginRight: 3 }} weight="bold">
