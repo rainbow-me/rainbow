@@ -111,8 +111,6 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
     return bridgeSectionsColorsByChain[selectedOutputChainId.value || ChainId.mainnet] as TextColor;
   }, [labelTextColor, section.id, selectedOutputChainId]);
 
-  if (!section.data.length) return null;
-
   return (
     <Box key={section.id} testID={`${section.id}-token-to-buy-section`}>
       <Stack space="8px">
