@@ -3,9 +3,9 @@ import { weiToGwei } from '@/__swaps__/utils/ethereum';
 import { add, multiply } from '@/__swaps__/utils/numbers';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import ethereumUtils, { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
-import { ETH_ADDRESS } from '@rainbow-me/swaps';
+import { isSameAddress } from '@/utils/isSameAddress';
 import { useMemo } from 'react';
-import { formatUnits, zeroAddress } from 'viem';
+import { formatUnits } from 'viem';
 import { formatCurrency, formatNumber } from './formatNumber';
 import { GasSettings } from './useCustomGas';
 import { useSwapEstimatedGasLimit } from './useSwapEstimatedGasLimit';
@@ -16,6 +16,11 @@ function safeBigInt(value: string) {
   } catch {
     return 0n;
   }
+}
+
+export function calculateGasFee(gasSettings: GasSettings, gasLimit: string) {
+  const amount = gasSettings.isEIP1559 ? add(gasSettings.maxBaseFee, gasSettings.maxPriorityFee) : gasSettings.gasPrice;
+  return multiply(gasLimit, amount);
 }
 
 export function useEstimatedGasFee({
@@ -33,26 +38,18 @@ export function useEstimatedGasFee({
   return useMemo(() => {
     if (!gasLimit || !gasSettings || !nativeNetworkAsset?.price) return;
 
-    const amount = gasSettings.isEIP1559 ? add(gasSettings.maxBaseFee, gasSettings.maxPriorityFee) : gasSettings.gasPrice;
-
-    const totalWei = multiply(gasLimit, amount);
+    const fee = calculateGasFee(gasSettings, gasLimit);
     const networkAssetPrice = nativeNetworkAsset.price.value?.toString();
 
-    if (!networkAssetPrice) return `${formatNumber(weiToGwei(totalWei))} Gwei`;
+    if (!networkAssetPrice) return `${formatNumber(weiToGwei(fee))} Gwei`;
 
-    const gasAmount = formatUnits(safeBigInt(totalWei), nativeNetworkAsset.decimals).toString();
-    const feeInUserCurrency = multiply(networkAssetPrice, gasAmount);
+    const feeFormatted = formatUnits(safeBigInt(fee), nativeNetworkAsset.decimals).toString();
+    const feeInUserCurrency = multiply(networkAssetPrice, feeFormatted);
 
     return formatCurrency(feeInUserCurrency);
   }, [gasLimit, gasSettings, nativeNetworkAsset]);
 }
 
-const eth = ETH_ADDRESS.toLowerCase();
-const isEth = (address: string) => [eth, zeroAddress, 'eth'].includes(address.toLowerCase());
-const isSameAddress = (a: string, b: string) => {
-  if (isEth(a) && isEth(b)) return true;
-  return a.toLowerCase() === b.toLowerCase();
-};
 export function useSwapEstimatedGasFee(gasSettings: GasSettings | undefined) {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
 

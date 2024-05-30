@@ -103,3 +103,7 @@ export function useSwapEstimatedGasLimit(
     }
   );
 }
+
+export const getSwapEstimatedGasLimitCachedData = (args: EstimateSwapGasLimitArgs) => {
+  return queryClient.getQueryData<EstimateSwapGasLimitResult>(estimateSwapGasLimitQueryKey(args));
+};

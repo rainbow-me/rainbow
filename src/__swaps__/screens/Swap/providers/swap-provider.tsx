@@ -23,6 +23,7 @@ import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/
 import { ChainId } from '@/__swaps__/types/chains';
 import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
 import { isSameAsset } from '@/__swaps__/utils/assets';
+import { add, lessThan } from '@/__swaps__/utils/numbers';
 import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
@@ -37,10 +38,14 @@ import { walletExecuteRap } from '@/raps/execute';
 import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
 import { queryClient } from '@/react-query';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
+import { getUserNativeNetworkAsset } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { ethereumUtils } from '@/utils';
+import { isEth } from '@/utils/isSameAddress';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
+import { calculateGasFee } from '../hooks/useEstimatedGasFee';
 import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
+import { getSwapEstimatedGasLimitCachedData } from '../hooks/useSwapEstimatedGasLimit';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const tapToSwap = i18n.t(i18n.l.swap.actions.tap_to_swap);
@@ -426,9 +431,34 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return { label: 'Enter Amount', disabled: true };
     }
 
-    if (quote.value && 'error' in quote.value) return { label: 'Error', disabled: true };
+    const _quote = quote.value;
+    if (_quote) {
+      if ('error' in _quote) return { label: 'Error', disabled: true };
 
-    // TODO: after the tx is built, we should check if the user has enough balance to cover the tx
+      // TODO: after the tx is built, we should check if the user has enough balance to cover the tx
+      const estimatedGasLimit = getSwapEstimatedGasLimitCachedData({
+        chainId: _quote.chainId,
+        quote: _quote,
+        assetToSell: internalSelectedInputAsset.value,
+      });
+      if (!estimatedGasLimit) return { label: 'Estimating...', disabled: true };
+
+      const gasSettings = getSelectedGas(_quote.chainId);
+      if (!gasSettings) {
+        // this could happen if metereology is down, or some other edge cases that are not properly handled yet
+        return { label: 'Error', disabled: true };
+      }
+
+      const gasFee = calculateGasFee(gasSettings, estimatedGasLimit);
+
+      const nativeAmountSelling = isEth(_quote.sellTokenAddress) ? _quote.sellAmount.toString() : '0';
+      const totalNativeSpentInTx = add(add(_quote.value?.toString() || '0', gasFee), nativeAmountSelling);
+
+      const userBalance = getUserNativeNetworkAsset(_quote.chainId)?.balance.amount || '0';
+      if (lessThan(userBalance, totalNativeSpentInTx)) {
+        return { label: 'Insufficient Funds', disabled: true };
+      }
+    }
 
     return { icon: '􀕹', label: 'Review', disabled: false };
   });

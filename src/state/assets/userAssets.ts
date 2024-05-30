@@ -1,9 +1,13 @@
 import { Hex } from 'viem';
 
 import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
+import { ChainId } from '@/__swaps__/types/chains';
 import { deriveAddressAndChainWithUniqueId } from '@/__swaps__/utils/address';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { Network } from '@/helpers';
 import { RainbowError, logger } from '@/logger';
+import { getNetworkObj } from '@/networks';
+import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { getNetworkFromChainId, getUniqueId } from '@/utils/ethereumUtils';
 
 export interface UserAssetsState {
   userAssetsById: Set<UniqueId>;
@@ -167,3 +171,11 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
     deserializer: deserializeUserAssetsState,
   }
 );
+
+export function getUserNativeNetworkAsset(chainId: ChainId) {
+  const network = getNetworkFromChainId(chainId);
+  const { nativeCurrency } = getNetworkObj(network);
+  const { mainnetAddress, address } = nativeCurrency;
+  const uniqueId = mainnetAddress ? getUniqueId(mainnetAddress, Network.mainnet) : getUniqueId(address, network);
+  return userAssetsStore.getState().getUserAsset(uniqueId);
+}
