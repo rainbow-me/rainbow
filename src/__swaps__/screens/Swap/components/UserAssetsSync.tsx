@@ -1,3 +1,4 @@
+import React from 'react';
 import { Address } from 'viem';
 import { useAccountSettings } from '@/hooks';
 import { userAssetsStore } from '@/state/assets/userAssets';
@@ -7,7 +8,7 @@ import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { useUserAssets } from '../resources/assets';
 
-export const UserAssetsSync = () => {
+export const UserAssetsSync = React.memo(function UserAssetsSync() {
   const { accountAddress: currentAddress, nativeCurrency: currentCurrency } = useAccountSettings();
 
   const userAssetsWalletAddress = userAssetsStore(state => state.associatedWalletAddress);
@@ -45,4 +46,4 @@ export const UserAssetsSync = () => {
   );
 
   return null;
-};
+});
