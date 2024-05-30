@@ -1,4 +1,5 @@
 /* eslint-disable no-nested-ternary */
+import ConditionalWrap from 'conditional-wrap';
 import React from 'react';
 import { StyleProp, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import Animated, { DerivedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
@@ -7,6 +8,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedText, Box, Column, Columns, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { GestureHandlerV1Button } from './GestureHandlerV1Button';
 
 export const SwapActionButton = ({
   asset,
@@ -18,6 +20,7 @@ export const SwapActionButton = ({
   label,
   onLongPress,
   onPress,
+  onPressWorklet,
   outline,
   rightIcon,
   scaleTo,
@@ -33,6 +36,7 @@ export const SwapActionButton = ({
   label: string | DerivedValue<string | undefined>;
   onLongPress?: () => void;
   onPress?: () => void;
+  onPressWorklet?: () => void;
   outline?: boolean;
   rightIcon?: string;
   scaleTo?: number;
@@ -98,14 +102,34 @@ export const SwapActionButton = ({
   });
 
   return (
-    <ButtonPressAnimation
-      onLongPress={onLongPress}
-      onPress={onPress}
-      scaleTo={scaleTo || (hugContent ? undefined : 0.925)}
-      style={{
-        ...(hugContent && feedActionButtonStyles.buttonWrapper),
-        ...(style || {}),
-      }}
+    <ConditionalWrap
+      condition={true}
+      wrap={children =>
+        onPressWorklet ? (
+          <GestureHandlerV1Button
+            onPressWorklet={onPressWorklet}
+            scaleTo={scaleTo || (hugContent ? undefined : 0.925)}
+            style={{
+              ...(hugContent && feedActionButtonStyles.buttonWrapper),
+              ...(style || {}),
+            }}
+          >
+            {children}
+          </GestureHandlerV1Button>
+        ) : (
+          <ButtonPressAnimation
+            onLongPress={onLongPress}
+            onPress={onPress}
+            scaleTo={scaleTo || (hugContent ? undefined : 0.925)}
+            style={{
+              ...(hugContent && feedActionButtonStyles.buttonWrapper),
+              ...(style || {}),
+            }}
+          >
+            {children}
+          </ButtonPressAnimation>
+        )
+      }
     >
       <Box
         as={Animated.View}
@@ -117,35 +141,28 @@ export const SwapActionButton = ({
         <Columns alignHorizontal="center" alignVertical="center" space="6px">
           {icon && (
             <Column width="content">
-              <AnimatedText align="center" size={small ? '15pt' : '17pt'} style={[iconStyle, textStyles]} text={iconValue} weight="heavy" />
+              <AnimatedText align="center" size={small ? '15pt' : '17pt'} style={[iconStyle, textStyles]} weight="heavy">
+                {iconValue}
+              </AnimatedText>
             </Column>
           )}
           {typeof label !== 'undefined' && (
             <Column width="content">
-              <AnimatedText
-                align="center"
-                style={textStyles}
-                numberOfLines={1}
-                size={small ? '17pt' : '20pt'}
-                text={labelValue}
-                weight="heavy"
-              />
+              <AnimatedText align="center" style={textStyles} numberOfLines={1} size={small ? '17pt' : '20pt'} weight="heavy">
+                {labelValue}
+              </AnimatedText>
             </Column>
           )}
           {rightIcon && (
             <Column width="content">
-              <AnimatedText
-                align="center"
-                style={[textStyles, secondaryTextStyles]}
-                size={small ? '15pt' : '17pt'}
-                text={rightIconValue}
-                weight="bold"
-              />
+              <AnimatedText align="center" style={[textStyles, secondaryTextStyles]} size={small ? '15pt' : '17pt'} weight="bold">
+                {rightIconValue}
+              </AnimatedText>
             </Column>
           )}
         </Columns>
       </Box>
-    </ButtonPressAnimation>
+    </ConditionalWrap>
   );
 };
 

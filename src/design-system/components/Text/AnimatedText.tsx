@@ -19,21 +19,23 @@ export type AnimatedTextProps = {
   /** Useful when using `AnimatedText` exclusively to animate text `style`, rather than the text itself. */
   staticText?: string;
   tabularNumbers?: boolean;
-  /** 
+  /**
    * @deprecated
    * You can now pass in a value like this:
-   * 
+   *
+   * ```
    * <AnimatedText>
    *   {derivedOrSharedValue}
    * </AnimatedText>
-   * 
-   * This should be a Reanimated shared or derived value.
-   * 
-   * To create a derived value, use the `useDerivedValue` hook from 'react-native-reanimated'. 
+   * ```
+   *
+   * `derivedOrSharedValue` should be a Reanimated shared or derived value.
+   *
+   * To create a derived value, use the `useDerivedValue` hook from 'react-native-reanimated'.
    * For example:
-   ```
-   const text = useDerivedValue(() => `Hello ${someOtherValue.value}`);
-   ```
+   * ```
+   * const text = useDerivedValue(() => `Hello ${someOtherValue.value}`);
+   * ```
    **/
   text?: DerivedValue<string | undefined>;
   testID?: string;

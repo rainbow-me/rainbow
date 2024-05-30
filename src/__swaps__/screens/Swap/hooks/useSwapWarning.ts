@@ -1,15 +1,15 @@
 import { useCallback, useMemo } from 'react';
-import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
+import { SharedValue, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
 import * as i18n from '@/languages';
 import { useAccountSettings } from '@/hooks';
 import { useForegroundColor } from '@/design-system';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
-
-import { convertAmountToNativeDisplay, divide, greaterThanOrEqualTo, subtract } from '@/__swaps__/utils/numbers';
-import { getCrossChainTimeEstimate, getQuoteServiceTime } from '@/__swaps__/utils/swaps';
+import { getCrossChainTimeEstimateWorklet, getQuoteServiceTimeWorklet } from '@/__swaps__/utils/swaps';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { highPriceImpactThreshold, severePriceImpactThreshold } from '@/__swaps__/screens/Swap/constants';
-import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
+import { divWorklet, greaterThanOrEqualToWorklet, subWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { supportedNativeCurrencies } from '@/references';
+import { inputKeys } from '@/__swaps__/types/swap';
 
 export enum SwapWarningType {
   unknown = 'unknown',
@@ -40,8 +40,8 @@ export interface SwapTimeEstimate {
 }
 
 type UsePriceImpactWarningProps = {
-  SwapInputController: ReturnType<typeof useSwapInputsController>;
   inputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+  inputValues: SharedValue<{ [key in inputKeys]: number | string }>;
   outputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
   sliderXPosition: SharedValue<number>;
@@ -57,10 +57,29 @@ type CurrentProps = {
   sliderXPosition: number;
 };
 
+const I18N_WARNINGS = {
+  subtitles: {
+    [SwapWarningType.unknown]: i18n.t(i18n.l.exchange.price_impact.unknown_price.description),
+    [SwapWarningType.high]: i18n.t(i18n.l.exchange.price_impact.small_market_try_smaller_amount),
+    [SwapWarningType.long_wait]: i18n.t(i18n.l.exchange.price_impact.long_wait.description_prefix),
+    [SwapWarningType.severe]: i18n.t(i18n.l.exchange.price_impact.small_market_try_smaller_amount),
+  },
+  titles: {
+    [SwapWarningType.unknown]: i18n.t(i18n.l.exchange.price_impact.unknown_price.title),
+    [SwapWarningType.high]: i18n.t(i18n.l.exchange.price_impact.you_are_losing_prefix),
+    [SwapWarningType.long_wait]: i18n.t(i18n.l.exchange.price_impact.long_wait.title),
+    [SwapWarningType.severe]: i18n.t(i18n.l.exchange.price_impact.you_are_losing_prefix),
+    [SwapWarningType.no_quote_available]: i18n.t(i18n.l.exchange.quote_errors.no_quote_available),
+    [SwapWarningType.insufficient_liquidity]: i18n.t(i18n.l.exchange.quote_errors.insufficient_liquidity),
+    [SwapWarningType.fee_on_transfer]: i18n.t(i18n.l.exchange.quote_errors.fee_on_transfer),
+    [SwapWarningType.no_route_found]: i18n.t(i18n.l.exchange.quote_errors.no_route_found),
+  },
+};
+
 export const useSwapWarning = ({
-  SwapInputController,
   inputAsset,
   outputAsset,
+  inputValues,
   quote,
   isFetching,
   isQuoteStale,
@@ -93,7 +112,7 @@ export const useSwapWarning = ({
     [label, orange, red]
   );
 
-  const updateWarning = useCallback(
+  const updateWarningWorklet = useCallback(
     (values: SwapWarning) => {
       'worklet';
       swapWarning.modify(prev => ({ ...prev, ...values }));
@@ -101,94 +120,107 @@ export const useSwapWarning = ({
     [swapWarning]
   );
 
-  const getWarning = useCallback(
+  const getWarningWorklet = useCallback(
     ({ inputNativeValue, outputNativeValue, quote, isFetching }: CurrentProps) => {
-      const nativeAmountImpact = subtract(inputNativeValue, outputNativeValue);
-      const impactInPercentage = divide(nativeAmountImpact, inputNativeValue);
-      const priceImpactDisplay = convertAmountToNativeDisplay(nativeAmountImpact, currentCurrency);
+      'worklet';
+
+      // ⚠️ TODO: Remove the Number(x).toString() conversions once the safe math functions support BigInt
+      const nativeAmountImpact = subWorklet(Number(inputNativeValue).toString(), Number(outputNativeValue).toString());
+      const impactInPercentage = Number(inputNativeValue) === 0 ? '0' : divWorklet(nativeAmountImpact, Number(inputNativeValue).toString());
+
+      const nativeCurrency = supportedNativeCurrencies?.[currentCurrency];
+      const { alignment: currencyAlignment, decimals: rawDecimals, symbol: currencySymbol } = nativeCurrency;
+      const decimals = Math.min(rawDecimals, 6);
+
+      const nativeValue = Number(nativeAmountImpact).toLocaleString('en-US', {
+        useGrouping: true,
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      });
+      const priceImpactDisplay = `${currencyAlignment === 'left' ? currencySymbol : ''}${nativeValue}${currencyAlignment === 'right' ? currencySymbol : ''}`;
+      const isSomeInputGreaterThanZero = Number(inputValues.value.inputAmount) > 0 || Number(inputValues.value.outputAmount) > 0;
 
       if (!isFetching && (quote as QuoteError)?.error) {
         const quoteError = quote as QuoteError;
-        const errorType = (quoteError.error_code || SwapWarningType.no_quote_available).toString();
-        const title = i18n.t((i18n.l.exchange.quote_errors as Record<string, string>)[errorType]);
-        runOnUI(updateWarning)({ type: errorType as SwapWarningType, title, color: colorMap[errorType], icon: '􀇿', subtitle: '' });
-      } else if (!isFetching && !!quote && !(quote as QuoteError)?.error && (!inputNativeValue || !outputNativeValue)) {
-        runOnUI(updateWarning)({
+        const errorType: SwapWarningType = quoteError.error_code || SwapWarningType.no_quote_available;
+        const title = I18N_WARNINGS.titles[errorType];
+        updateWarningWorklet({ type: errorType, title, color: colorMap[errorType], icon: '􀇿', subtitle: '' });
+      } else if (
+        isSomeInputGreaterThanZero &&
+        !isFetching &&
+        !!quote &&
+        !(quote as QuoteError)?.error &&
+        (!inputNativeValue || !outputNativeValue)
+      ) {
+        updateWarningWorklet({
           type: SwapWarningType.unknown,
           icon: '􀇿',
-          title: i18n.t(i18n.l.exchange.price_impact.unknown_price.title),
-          subtitle: i18n.t(i18n.l.exchange.price_impact.unknown_price.description),
+          title: I18N_WARNINGS.titles[SwapWarningType.unknown],
+          subtitle: I18N_WARNINGS.subtitles[SwapWarningType.unknown],
           color: colorMap[SwapWarningType.unknown],
         });
-      } else if (!isFetching && !!quote && greaterThanOrEqualTo(impactInPercentage, severePriceImpactThreshold)) {
-        runOnUI(updateWarning)({
+      } else if (!isFetching && !!quote && greaterThanOrEqualToWorklet(impactInPercentage, severePriceImpactThreshold.toString())) {
+        updateWarningWorklet({
           type: SwapWarningType.severe,
           icon: '􀇿',
-          title: i18n.t(i18n.l.exchange.price_impact.you_are_losing, {
-            priceImpact: priceImpactDisplay,
-          }),
-          subtitle: i18n.t(i18n.l.exchange.price_impact.small_market_try_smaller_amount),
+          title: `${I18N_WARNINGS.titles[SwapWarningType.severe]} ${priceImpactDisplay}`,
+          subtitle: I18N_WARNINGS.subtitles[SwapWarningType.severe],
           color: colorMap[SwapWarningType.severe],
         });
-      } else if (!isFetching && !!quote && greaterThanOrEqualTo(impactInPercentage, highPriceImpactThreshold)) {
-        runOnUI(updateWarning)({
+      } else if (!isFetching && !!quote && greaterThanOrEqualToWorklet(impactInPercentage, highPriceImpactThreshold.toString())) {
+        updateWarningWorklet({
           type: SwapWarningType.high,
           icon: '􀇿',
-          title: i18n.t(i18n.l.exchange.price_impact.you_are_losing, {
-            priceImpact: priceImpactDisplay,
-          }),
-          subtitle: i18n.t(i18n.l.exchange.price_impact.small_market_try_smaller_amount),
+          title: `${I18N_WARNINGS.titles[SwapWarningType.high]} ${priceImpactDisplay}`,
+          subtitle: I18N_WARNINGS.subtitles[SwapWarningType.high],
           color: colorMap[SwapWarningType.high],
         });
       } else if (!!quote && !(quote as QuoteError)?.error) {
-        const serviceTime = getQuoteServiceTime({ quote: quote as CrosschainQuote });
-        const estimatedTimeOfArrival = serviceTime ? getCrossChainTimeEstimate({ serviceTime }) : null;
-
+        const serviceTime = getQuoteServiceTimeWorklet({ quote: quote as CrosschainQuote });
+        const estimatedTimeOfArrival = serviceTime ? getCrossChainTimeEstimateWorklet({ serviceTime }) : null;
         if (estimatedTimeOfArrival?.isLongWait) {
-          runOnUI(updateWarning)({
+          updateWarningWorklet({
             type: SwapWarningType.long_wait,
             icon: '􀇿',
-            title: i18n.t(i18n.l.exchange.price_impact.long_wait.title),
-            subtitle: i18n.t(i18n.l.exchange.price_impact.long_wait.description, {
-              time: estimatedTimeOfArrival.timeEstimateDisplay,
-            }),
+            title: I18N_WARNINGS.titles[SwapWarningType.long_wait],
+            subtitle: `${I18N_WARNINGS.subtitles[SwapWarningType.long_wait]} ${estimatedTimeOfArrival.timeEstimateDisplay}`,
             color: colorMap[SwapWarningType.long_wait],
           });
         } else {
-          runOnUI(updateWarning)({ type: SwapWarningType.none, title: '', color: colorMap[SwapWarningType.none], icon: '', subtitle: '' });
+          updateWarningWorklet({ type: SwapWarningType.none, title: '', color: colorMap[SwapWarningType.none], icon: '', subtitle: '' });
         }
       } else {
-        runOnUI(updateWarning)({ type: SwapWarningType.none, title: '', color: colorMap[SwapWarningType.none], icon: '', subtitle: '' });
+        updateWarningWorklet({ type: SwapWarningType.none, title: '', color: colorMap[SwapWarningType.none], icon: '', subtitle: '' });
       }
     },
-    [colorMap, currentCurrency, updateWarning]
+    [colorMap, currentCurrency, inputValues, updateWarningWorklet]
   );
 
-  // TODO: How can we make this more efficient?
   useAnimatedReaction(
     () => ({
-      inputAsset: inputAsset.value,
-      outputAsset: outputAsset.value,
-      inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
-      outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
-      quote: quote.value,
       isFetching: isFetching.value,
       isQuoteStale: isQuoteStale.value,
+      quote: quote.value,
       sliderXPosition: sliderXPosition.value,
     }),
     (current, previous) => {
-      if (!current.inputAsset || !current.outputAsset) {
-        return;
-      }
+      const doInputAndOutputAssetsExist = inputAsset.value && outputAsset.value;
+      if (!doInputAndOutputAssetsExist) return;
 
-      if ((previous?.sliderXPosition && previous?.sliderXPosition !== current.sliderXPosition) || current.isQuoteStale) {
-        updateWarning({ type: SwapWarningType.none, title: '', color: colorMap[SwapWarningType.none], icon: '', subtitle: '' });
-      } else if (
-        (current.quote && previous?.quote !== current.quote) ||
-        previous?.inputNativeValue !== current.inputNativeValue ||
-        previous?.outputNativeValue !== current.outputNativeValue
+      if (
+        (swapWarning.value.type !== SwapWarningType.none && current.isQuoteStale) ||
+        current.isFetching ||
+        (previous?.sliderXPosition && previous?.sliderXPosition !== current.sliderXPosition)
       ) {
-        runOnJS(getWarning)(current);
+        updateWarningWorklet({ type: SwapWarningType.none, title: '', color: colorMap[SwapWarningType.none], icon: '', subtitle: '' });
+      } else if (!current.isQuoteStale && !current.isFetching && previous?.sliderXPosition === current.sliderXPosition) {
+        getWarningWorklet({
+          inputNativeValue: inputValues.value.inputNativeValue,
+          outputNativeValue: inputValues.value.outputNativeValue,
+          quote: current.quote,
+          isFetching: current.isFetching,
+          sliderXPosition: current.sliderXPosition,
+        });
       }
     }
   );

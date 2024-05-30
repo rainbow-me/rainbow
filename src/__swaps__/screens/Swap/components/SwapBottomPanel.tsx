@@ -1,5 +1,5 @@
 import React from 'react';
-import Animated, { runOnUI, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { StyleSheet } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { PanGestureHandler } from 'react-native-gesture-handler';
@@ -7,7 +7,7 @@ import { PanGestureHandler } from 'react-native-gesture-handler';
 import { Box, Column, Columns, Separator, globalColors, useColorMode } from '@/design-system';
 import { safeAreaInsetValues } from '@/utils';
 
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH, springConfig } from '@/__swaps__/screens/Swap/constants';
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext, NavigationSteps } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
@@ -17,6 +17,7 @@ import { GasButton } from './GasButton';
 import { GasPanel } from './GasPanel';
 import { ReviewPanel } from './ReviewPanel';
 import { SwapActionButton } from './SwapActionButton';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 
 export function SwapBottomPanel() {
   const { isDarkMode } = useColorMode();
@@ -34,7 +35,12 @@ export function SwapBottomPanel() {
 
   const gestureHandlerStyles = useAnimatedStyle(() => {
     return {
-      transform: [{ translateY: gestureY.value > 0 ? withSpring(gestureY.value, springConfig) : withSpring(0, springConfig) }],
+      transform: [
+        {
+          translateY:
+            gestureY.value > 0 ? withSpring(gestureY.value, SPRING_CONFIGS.springConfig) : withSpring(0, SPRING_CONFIGS.springConfig),
+        },
+      ],
     };
   });
 
@@ -74,7 +80,7 @@ export function SwapBottomPanel() {
             </Box>
           </Column>
           <SwapActionButton
-            onPress={() => runOnUI(SwapNavigation.handleSwapAction)()}
+            onPressWorklet={SwapNavigation.handleSwapAction}
             asset={internalSelectedOutputAsset}
             icon={confirmButtonIcon}
             iconStyle={confirmButtonIconStyle}

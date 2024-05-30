@@ -1,7 +1,8 @@
 import { useCallback } from 'react';
 import { SharedValue, runOnJS, useSharedValue } from 'react-native-reanimated';
 import { onCloseGasPanel } from '../components/GasPanel';
-import { useSwapInputsController } from './useSwapInputsController';
+import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 
 export const enum NavigationSteps {
   INPUT_ELEMENT_FOCUSED = 0,
@@ -12,15 +13,19 @@ export const enum NavigationSteps {
 }
 
 export function useSwapNavigation({
-  SwapInputController,
   inputProgress,
   outputProgress,
   configProgress,
+  quoteFetchingInterval,
+  selectedInputAsset,
+  selectedOutputAsset,
 }: {
-  SwapInputController: ReturnType<typeof useSwapInputsController>;
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
   configProgress: SharedValue<number>;
+  quoteFetchingInterval: ReturnType<typeof useAnimatedInterval>;
+  selectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+  selectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
 }) {
   const navigateBackToReview = useSharedValue(false);
 
@@ -60,9 +65,8 @@ export function useSwapNavigation({
   const handleDismissGas = useCallback(() => {
     'worklet';
 
-    runOnJS(onCloseGasPanel)();
-
     if (configProgress.value === NavigationSteps.SHOW_GAS) {
+      runOnJS(onCloseGasPanel)();
       configProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
     }
   }, [configProgress]);
@@ -71,21 +75,43 @@ export function useSwapNavigation({
     'worklet';
     handleDismissReview();
     handleDismissGas();
-    SwapInputController.fetchQuoteAndAssetPrices();
 
-    if (inputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED) {
+    const isInputAssetNull = selectedInputAsset.value === null;
+    const isOutputAssetNull = selectedOutputAsset.value === null;
+    const areBothAssetsSelected = !isInputAssetNull && !isOutputAssetNull;
+
+    if (inputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED && !isInputAssetNull) {
       inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
-    }
-    if (outputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED) {
-      outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
-    }
-    if (inputProgress.value === NavigationSteps.SEARCH_FOCUSED) {
+      if (areBothAssetsSelected) {
+        quoteFetchingInterval.start();
+      } else {
+        outputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
+        return;
+      }
+    } else if (inputProgress.value === NavigationSteps.SEARCH_FOCUSED) {
       inputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
     }
-    if (outputProgress.value === NavigationSteps.SEARCH_FOCUSED) {
+
+    if (outputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED && !isOutputAssetNull) {
+      outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+      if (areBothAssetsSelected) {
+        quoteFetchingInterval.start();
+      } else {
+        inputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
+        return;
+      }
+    } else if (outputProgress.value === NavigationSteps.SEARCH_FOCUSED) {
       outputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
     }
-  }, [SwapInputController, handleDismissGas, handleDismissReview, inputProgress, outputProgress]);
+  }, [
+    handleDismissGas,
+    handleDismissReview,
+    inputProgress,
+    outputProgress,
+    quoteFetchingInterval,
+    selectedInputAsset,
+    selectedOutputAsset,
+  ]);
 
   const handleFocusInputSearch = useCallback(() => {
     'worklet';
@@ -111,22 +137,21 @@ export function useSwapNavigation({
     'worklet';
     handleDismissReview();
     handleDismissGas();
-    SwapInputController.quoteFetchingInterval.stop();
+    quoteFetchingInterval.pause();
 
     if (inputProgress.value === NavigationSteps.INPUT_ELEMENT_FOCUSED) {
-      console.log('showing token list');
       inputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
       outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
     } else {
       inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
     }
-  }, [handleDismissReview, handleDismissGas, inputProgress, outputProgress, SwapInputController]);
+  }, [handleDismissReview, handleDismissGas, inputProgress, outputProgress, quoteFetchingInterval]);
 
   const handleOutputPress = useCallback(() => {
     'worklet';
     handleDismissReview();
     handleDismissGas();
-    SwapInputController.quoteFetchingInterval.stop();
+    quoteFetchingInterval.pause();
 
     if (outputProgress.value === NavigationSteps.INPUT_ELEMENT_FOCUSED) {
       outputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
@@ -134,7 +159,7 @@ export function useSwapNavigation({
     } else {
       outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
     }
-  }, [SwapInputController, handleDismissReview, handleDismissGas, inputProgress, outputProgress]);
+  }, [handleDismissReview, handleDismissGas, inputProgress, outputProgress, quoteFetchingInterval]);
 
   const handleSwapAction = useCallback(() => {
     'worklet';

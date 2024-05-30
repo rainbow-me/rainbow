@@ -1,42 +1,35 @@
 /* eslint-disable no-nested-ternary */
-/* eslint-disable react/jsx-props-no-spreading */
 import c from 'chroma-js';
 import * as i18n from '@/languages';
 import { Text as RNText, StyleSheet } from 'react-native';
-import Animated, { runOnUI, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
+import Animated, { SharedValue, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import React, { useCallback, useMemo } from 'react';
 
-import { SUPPORTED_CHAINS } from '@/references';
-import { AnimatedText, Bleed, Box, HitSlop, Inline, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import {
-  chainNameForChainIdWithMainnetSubstitution,
-  chainNameForChainIdWithMainnetSubstitutionWorklet,
-  chainNameFromChainIdWorklet,
-} from '@/__swaps__/utils/chains';
+import { AnimatedText, Bleed, Box, Inline, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { ChainId, ChainName } from '@/__swaps__/types/chains';
+import { ChainId, ChainName, ChainNameDisplay } from '@/__swaps__/types/chains';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ContextMenuButton } from '@/components/context-menu';
 import { useAccountAccentColor } from '@/hooks';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
+import { chainNameForChainIdWithMainnetSubstitution } from '@/__swaps__/utils/chains';
 
 type ChainSelectionProps = {
   allText?: string;
   output: boolean;
 };
 
-export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
+export const ChainSelection = React.memo(function ChainSelection({ allText, output }: ChainSelectionProps) {
   const { isDarkMode } = useColorMode();
   const { accentColor: accountColor } = useAccountAccentColor();
   const { selectedOutputChainId, setSelectedOutputChainId } = useSwapContext();
-  const red = useForegroundColor('red');
 
-  const initialFilter = useMemo(() => {
-    return userAssetsStore.getState().filter;
-  }, []);
+  const balanceSortedChainList = userAssetsStore.getState().getBalanceSortedChainList();
+  const inputListFilter = useSharedValue(userAssetsStore.getState().filter);
 
   const accentColor = useMemo(() => {
     if (c.contrast(accountColor, isDarkMode ? '#191A1C' : globalColors.white100) < (isDarkMode ? 2.125 : 1.5)) {
@@ -47,51 +40,39 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
     }
   }, [accountColor, isDarkMode]);
 
-  const chainName = useSharedValue(
-    output
-      ? chainNameFromChainIdWorklet(selectedOutputChainId.value)
-      : initialFilter === 'all'
+  const chainName = useDerivedValue(() => {
+    return output
+      ? ChainNameDisplay[selectedOutputChainId.value]
+      : inputListFilter.value === 'all'
         ? allText
-        : chainNameFromChainIdWorklet(initialFilter as ChainId)
-  );
-
-  useAnimatedReaction(
-    () => ({
-      outputChainId: selectedOutputChainId.value,
-    }),
-    current => {
-      if (output) {
-        chainName.value = chainNameForChainIdWithMainnetSubstitutionWorklet(current.outputChainId);
-      }
-    }
-  );
+        : ChainNameDisplay[inputListFilter.value as ChainId];
+  });
 
   const handleSelectChain = useCallback(
     ({ nativeEvent: { actionKey } }: Omit<OnPressMenuItemEventObject, 'isUsingActionSheetFallback'>) => {
       if (output) {
         setSelectedOutputChainId(Number(actionKey) as ChainId);
       } else {
+        inputListFilter.value = actionKey === 'all' ? 'all' : (Number(actionKey) as ChainId);
         userAssetsStore.setState({
           filter: actionKey === 'all' ? 'all' : (Number(actionKey) as ChainId),
         });
-        runOnUI(() => {
-          chainName.value = actionKey === 'all' ? allText : chainNameForChainIdWithMainnetSubstitutionWorklet(Number(actionKey) as ChainId);
-        });
       }
     },
-    [allText, chainName, output, selectedOutputChainId]
+    [inputListFilter, output, setSelectedOutputChainId]
   );
 
   const menuConfig = useMemo(() => {
-    const supportedChains = SUPPORTED_CHAINS({ testnetMode: false }).map(chain => {
-      const title = chainNameForChainIdWithMainnetSubstitution(chain.id);
+    const supportedChains = balanceSortedChainList.map(chainId => {
+      const networkName = chainNameForChainIdWithMainnetSubstitution(chainId);
+      const displayName = ChainNameDisplay[chainId];
 
       return {
-        actionKey: `${chain.id}`,
-        actionTitle: title.charAt(0).toUpperCase() + title.slice(1),
+        actionKey: `${chainId}`,
+        actionTitle: displayName,
         icon: {
           iconType: 'ASSET',
-          iconValue: `${title}Badge${isDarkMode ? 'Dark' : ''}`,
+          iconValue: `${networkName}Badge${chainId === ChainId.mainnet ? '' : 'NoShadow'}`,
         },
       };
     });
@@ -110,7 +91,7 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
     return {
       menuItems: supportedChains,
     };
-  }, [isDarkMode, output]);
+  }, [balanceSortedChainList, output]);
 
   const onShowActionSheet = useCallback(() => {
     const chainTitles = menuConfig.menuItems.map(chain => chain.actionTitle);
@@ -137,28 +118,9 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
       <Inline alignHorizontal="justify" alignVertical="center">
         {output ? (
           <Inline alignVertical="center" space="6px">
-            <Bleed vertical="4px">
-              <Box alignItems="center" justifyContent="center" marginBottom={{ custom: -0.5 }} width={{ custom: 16 }}>
-                <Bleed space={isDarkMode ? '16px' : undefined}>
-                  <RNText
-                    style={
-                      isDarkMode
-                        ? [
-                            styles.textIconGlow,
-                            {
-                              textShadowColor: opacity(red, 0.28),
-                            },
-                          ]
-                        : undefined
-                    }
-                  >
-                    <Text align="center" color="labelSecondary" size="icon 13px" weight="heavy">
-                      􀆪
-                    </Text>
-                  </RNText>
-                </Bleed>
-              </Box>
-            </Bleed>
+            <TextIcon color="labelSecondary" size="icon 13px" weight="heavy" width={16}>
+              􀆪
+            </TextIcon>
             <Text color="labelSecondary" size="15pt" weight="heavy">
               {i18n.t(i18n.l.exchange.filter_by_network)}
             </Text>
@@ -194,36 +156,64 @@ export const ChainSelection = ({ allText, output }: ChainSelectionProps) => {
         )}
 
         <ContextMenuButton
+          hitSlop={20}
           menuItems={menuConfig.menuItems}
           menuTitle=""
           onPressMenuItem={handleSelectChain}
           onPressAndroid={onShowActionSheet}
           testID={`chain-selection-${output ? 'output' : 'input'}`}
         >
-          <HitSlop space="10px">
-            <Inline alignVertical="center" space="6px" wrap={false}>
-              {/* TODO: We need to add some ethereum utils to handle worklet functions */}
-              {output && (
-                <ChainImage chain={ethereumUtils.getNetworkFromChainId(selectedOutputChainId.value ?? ChainId.mainnet)} size={16} />
-              )}
-              <AnimatedText
-                align="right"
-                color={isDarkMode ? 'labelSecondary' : 'label'}
-                size="15pt"
-                weight="heavy"
-                style={{ textTransform: 'capitalize' }}
-                text={chainName}
-              />
-              <Text align="center" color={isDarkMode ? 'labelTertiary' : 'labelSecondary'} size="icon 13px" weight="bold">
-                􀆏
-              </Text>
-            </Inline>
-          </HitSlop>
+          <Inline alignVertical="center" space="6px" wrap={false}>
+            {/* TODO: We need to add some ethereum utils to handle worklet functions */}
+            <ChainButtonIcon output={output} />
+            <ChainButtonText chainName={chainName} />
+            <Text align="center" color={isDarkMode ? 'labelTertiary' : 'labelSecondary'} size="icon 13px" weight="bold">
+              􀆏
+            </Text>
+          </Inline>
         </ContextMenuButton>
       </Inline>
     </Box>
   );
-};
+});
+
+const ChainButtonText = React.memo(function ChainButtonText({ chainName }: { chainName: SharedValue<string | undefined> }) {
+  const { isDarkMode } = useColorMode();
+
+  return (
+    <AnimatedText
+      align="right"
+      color={isDarkMode ? 'labelSecondary' : 'label'}
+      size="15pt"
+      weight="heavy"
+      style={{ textTransform: 'capitalize' }}
+    >
+      {chainName}
+    </AnimatedText>
+  );
+});
+
+const ChainButtonIcon = React.memo(function ChainButtonIcon({ output }: { output: boolean | undefined }) {
+  const { selectedOutputChainId: animatedSelectedOutputChainId } = useSwapContext();
+
+  const userAssetsFilter = userAssetsStore(state => (output ? undefined : state.filter));
+  const selectedOutputChainId = useSharedValueState(animatedSelectedOutputChainId, { pauseSync: !output });
+
+  return (
+    <Bleed vertical="6px">
+      {output ? (
+        <ChainImage
+          chain={ethereumUtils.getNetworkFromChainId(selectedOutputChainId ?? animatedSelectedOutputChainId.value ?? ChainId.mainnet)}
+          size={16}
+        />
+      ) : userAssetsFilter && userAssetsFilter !== 'all' ? (
+        <ChainImage chain={ethereumUtils.getNetworkFromChainId(userAssetsFilter)} size={16} />
+      ) : (
+        <></>
+      )}
+    </Bleed>
+  );
+});
 
 export const styles = StyleSheet.create({
   textIconGlow: {

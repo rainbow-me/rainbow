@@ -1,7 +1,8 @@
 import React, { useCallback } from 'react';
-import Animated, { useAnimatedReaction, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedReaction, useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Box, Inline, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH, fadeConfig } from '@/__swaps__/screens/Swap/constants';
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity, valueBasedDecimalFormatter } from '@/__swaps__/utils/swaps';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { AddressZero } from '@ethersproject/constants';
@@ -31,13 +32,7 @@ export const ExchangeRateBubble = () => {
       internalSelectedInputAsset.value?.chainId !== internalSelectedOutputAsset.value?.chainId;
 
     rotatingIndex.value = isSameAssetOnDifferentChains ? 2 : (rotatingIndex.value + 1) % 4;
-  }, [
-    internalSelectedInputAsset.value?.address,
-    internalSelectedInputAsset.value?.chainId,
-    internalSelectedOutputAsset.value?.address,
-    internalSelectedOutputAsset.value?.chainId,
-    rotatingIndex,
-  ]);
+  }, [internalSelectedInputAsset, internalSelectedOutputAsset, rotatingIndex]);
 
   const resetValues = useCallback(() => {
     'worklet';
@@ -47,19 +42,26 @@ export const ExchangeRateBubble = () => {
 
   useAnimatedReaction(
     () => ({
-      inputAsset: internalSelectedInputAsset.value,
-      outputAsset: internalSelectedOutputAsset.value,
-      isFetching,
-      rotatingIndex,
+      isFetching: isFetching.value,
+      rotatingIndex: rotatingIndex.value,
     }),
-    ({ inputAsset, outputAsset }) => {
-      if (!inputAsset || !outputAsset || !inputAsset.nativePrice || !outputAsset.nativePrice) {
+    (current, previous) => {
+      if (
+        !internalSelectedInputAsset.value ||
+        !internalSelectedOutputAsset.value ||
+        !internalSelectedInputAsset.value.nativePrice ||
+        !internalSelectedOutputAsset.value.nativePrice
+      ) {
         resetValues();
         return;
       }
 
-      const { symbol: inputAssetSymbol, nativePrice: inputAssetPrice, type: inputAssetType } = inputAsset;
-      const { symbol: outputAssetSymbol, nativePrice: outputAssetPrice, type: outputAssetType } = outputAsset;
+      if (current.isFetching && current.rotatingIndex === previous?.rotatingIndex) {
+        return;
+      }
+
+      const { symbol: inputAssetSymbol, nativePrice: inputAssetPrice, type: inputAssetType } = internalSelectedInputAsset.value;
+      const { symbol: outputAssetSymbol, nativePrice: outputAssetPrice, type: outputAssetType } = internalSelectedOutputAsset.value;
 
       const isInputAssetStablecoin = inputAssetType === 'stablecoin' ?? false;
       const isOutputAssetStablecoin = outputAssetType === 'stablecoin' ?? false;
@@ -132,11 +134,12 @@ export const ExchangeRateBubble = () => {
     }
   );
 
-  const WrapperStyles = useAnimatedStyle(() => ({
-    borderColor: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR,
-    borderWidth: THICK_BORDER_WIDTH,
-    opacity: withTiming(fromAssetText.value && toAssetText.value ? 1 : 0, fadeConfig),
-  }));
+  const bubbleVisibilityWrapper = useAnimatedStyle(() => {
+    const shouldDisplay = fromAssetText.value.length > 0 && toAssetText.value.length > 0;
+    return {
+      opacity: shouldDisplay ? withDelay(100, withTiming(1, TIMING_CONFIGS.fadeConfig)) : 0,
+    };
+  });
 
   return (
     <GestureHandlerV1Button onPressWorklet={onChangeIndex} scaleTo={0.925}>
@@ -149,23 +152,21 @@ export const ExchangeRateBubble = () => {
         style={[AnimatedSwapStyles.hideWhenInputsExpandedOrPriceImpact, { alignSelf: 'center', position: 'absolute', top: 4 }]}
       >
         <Box
-          as={Animated.View}
           alignItems="center"
+          as={Animated.View}
           borderRadius={15}
           height={{ custom: 30 }}
           justifyContent="center"
           paddingHorizontal="10px"
-          style={WrapperStyles}
+          style={[
+            bubbleVisibilityWrapper,
+            { borderColor: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR, borderWidth: THICK_BORDER_WIDTH },
+          ]}
         >
           <Inline alignHorizontal="center" alignVertical="center" space="6px" wrap={false}>
-            <AnimatedText
-              align="center"
-              color="labelQuaternary"
-              size="13pt"
-              style={{ opacity: isDarkMode ? 0.6 : 0.75 }}
-              weight="heavy"
-              text={fromAssetText}
-            />
+            <AnimatedText align="center" color="labelQuaternary" size="13pt" style={{ opacity: isDarkMode ? 0.6 : 0.75 }} weight="heavy">
+              {fromAssetText}
+            </AnimatedText>
             <Box
               borderRadius={10}
               height={{ custom: 20 }}
@@ -177,14 +178,9 @@ export const ExchangeRateBubble = () => {
                 􀄭
               </TextIcon>
             </Box>
-            <AnimatedText
-              align="center"
-              color="labelQuaternary"
-              size="13pt"
-              style={{ opacity: isDarkMode ? 0.6 : 0.75 }}
-              weight="heavy"
-              text={toAssetText}
-            />
+            <AnimatedText align="center" color="labelQuaternary" size="13pt" style={{ opacity: isDarkMode ? 0.6 : 0.75 }} weight="heavy">
+              {toAssetText}
+            </AnimatedText>
           </Inline>
         </Box>
       </Box>

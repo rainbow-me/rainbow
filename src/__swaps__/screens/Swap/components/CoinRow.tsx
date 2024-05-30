@@ -7,13 +7,11 @@ import { BalancePill } from '@/__swaps__/screens/Swap/components/BalancePill';
 import { ChainId } from '@/__swaps__/types/chains';
 import { toggleFavorite, useFavorites } from '@/resources/favorites';
 import { ETH_ADDRESS } from '@/references';
-import Animated from 'react-native-reanimated';
 import { StyleSheet } from 'react-native';
-import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { SwapCoinIcon } from './SwapCoinIcon';
 import { ethereumUtils } from '@/utils';
 
-export const CoinRow = ({
+export const CoinRow = React.memo(function CoinRow({
   address,
   mainnetAddress,
   chainId,
@@ -39,8 +37,7 @@ export const CoinRow = ({
   onPress?: () => void;
   output?: boolean;
   symbol: string;
-}) => {
-  const { AnimatedSwapStyles } = useSwapContext();
+}) {
   const { favoritesMetadata } = useFavorites();
 
   const favorites = Object.values(favoritesMetadata);
@@ -123,7 +120,7 @@ export const CoinRow = ({
       </HitSlop>
     </ButtonPressAnimation>
   );
-};
+});
 
 export const styles = StyleSheet.create({
   solidColorCoinIcon: {

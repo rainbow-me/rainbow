@@ -1,12 +1,12 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { TextStyle } from 'react-native';
-import Animated, { useDerivedValue } from 'react-native-reanimated';
+import { runOnUI } from 'react-native-reanimated';
 import { FlashList } from '@shopify/flash-list';
 
 import * as i18n from '@/languages';
 import { CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
 import { SearchAsset } from '@/__swaps__/types/search';
-import { AnimatedText, Box, Inline, Inset, Stack, Text } from '@/design-system';
+import { Box, Inline, Inset, Stack, Text, TextIcon } from '@/design-system';
 import { AssetToBuySection, AssetToBuySectionId } from '@/__swaps__/screens/Swap/hooks/useSearchCurrencyLists';
 import { ChainId } from '@/__swaps__/types/chains';
 import { TextColor } from '@/design-system/color/palettes';
@@ -16,6 +16,9 @@ import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { EXPANDED_INPUT_HEIGHT } from '../../constants';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
 
 interface SectionProp {
   color: TextStyle['color'];
@@ -63,13 +66,22 @@ const bridgeSectionsColorsByChain = {
   [ChainId.blast]: 'blast' as TextStyle['color'],
 };
 
-const AnimatedFlashListComponent = Animated.createAnimatedComponent(FlashList<SearchAsset>);
-
 export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) => {
-  const { setAsset, selectedOutputChainId } = useSwapContext();
+  const { internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, setAsset, selectedOutputChainId } =
+    useSwapContext();
 
   const handleSelectToken = useCallback(
     (token: SearchAsset) => {
+      runOnUI(() => {
+        if (
+          internalSelectedInputAsset.value &&
+          getStandardizedUniqueIdWorklet({ address: token.address, chainId: token.chainId }) !== internalSelectedOutputAsset.value?.uniqueId
+        ) {
+          isQuoteStale.value = 1;
+          isFetching.value = true;
+        }
+      })();
+
       const userAsset = userAssetsStore.getState().getUserAsset(token.uniqueId);
       const parsedAsset = parseSearchAsset({
         assetWithPrice: undefined,
@@ -82,20 +94,17 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
         asset: parsedAsset,
       });
     },
-    [setAsset]
+    [internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, setAsset]
   );
 
   const { symbol, title } = sectionProps[section.id];
 
-  const symbolValue = useDerivedValue(() => symbol);
-
-  const color = useDerivedValue(() => {
+  const color = useMemo(() => {
     if (section.id !== 'bridge') {
       return sectionProps[section.id].color as TextColor;
     }
-
     return bridgeSectionsColorsByChain[selectedOutputChainId.value || ChainId.mainnet] as TextColor;
-  });
+  }, [section.id, selectedOutputChainId]);
 
   if (!section.data.length) return null;
 
@@ -116,26 +125,23 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
         ) : null}
         <Box paddingHorizontal={'20px'}>
           <Inline space="6px" alignVertical="center">
-            <AnimatedText
-              size="14px / 19px (Deprecated)"
-              weight="heavy"
-              color={section.id === 'bridge' ? color.value : { custom: color.value }}
-              text={symbolValue}
-            />
-            <Text size="14px / 19px (Deprecated)" weight="heavy" color="label">
+            <TextIcon color={section.id === 'bridge' ? color : { custom: color }} size="13pt" weight="heavy" width={16}>
+              {symbol}
+            </TextIcon>
+            <Text size="15pt" weight="heavy" color="label">
               {title}
             </Text>
           </Inline>
         </Box>
 
-        {/* TODO: fix this from causing the UI to be completely slow... */}
-        <AnimatedFlashListComponent
-          data={section.data.slice(0, 10)}
-          ListEmptyComponent={<ListEmpty />}
+        <FlashList
+          data={section.data.slice(0, 12)}
+          estimatedListSize={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}
+          ListEmptyComponent={<ListEmpty output />}
+          estimatedItemSize={56}
           keyExtractor={item => `${item.uniqueId}-${section.id}`}
           renderItem={({ item }) => (
             <CoinRow
-              // key={item.uniqueId}
               chainId={item.chainId}
               color={item.colors?.primary ?? item.colors?.fallback}
               iconUrl={item.icon_url}

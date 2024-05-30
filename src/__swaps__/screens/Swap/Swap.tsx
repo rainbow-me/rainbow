@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { StyleSheet, StatusBar } from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { IS_ANDROID } from '@/env';
@@ -19,8 +19,13 @@ import { SwapNavbar } from '@/__swaps__/screens/Swap/components/SwapNavbar';
 import { SliderAndKeyboard } from '@/__swaps__/screens/Swap/components/SliderAndKeyboard';
 import { SwapBottomPanel } from '@/__swaps__/screens/Swap/components/SwapBottomPanel';
 import { SwapWarning } from './components/SwapWarning';
-import { useSwapContext } from './providers/swap-provider';
-import { UserAssetsSync } from './components/UserAssetsSync';
+import { SwapProvider, useSwapContext } from './providers/swap-provider';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { parseSearchAsset } from '@/__swaps__/utils/assets';
+import { SwapAssetType } from '@/__swaps__/types/swap';
+import { ChainId } from '@/__swaps__/types/chains';
+import { useDelayedMount } from '@/hooks/useDelayedMount';
 
 /** README
  * This prototype is largely driven by Reanimated and Gesture Handler, which
@@ -60,37 +65,125 @@ import { UserAssetsSync } from './components/UserAssetsSync';
  */
 
 export function SwapScreen() {
-  const { AnimatedSwapStyles } = useSwapContext();
   return (
-    <SwapSheetGestureBlocker>
-      <Box as={Page} style={styles.rootViewBackground} testID="swap-screen" width="full">
-        <SwapBackground />
-        <Box alignItems="center" height="full" paddingTop={{ custom: safeAreaInsetValues.top + (navbarHeight - 12) + 29 }} width="full">
-          <SwapInputAsset />
-          <FlipButton />
-          <SwapOutputAsset />
-          <Box as={Animated.View} width="full" position="absolute" bottom="0px" style={AnimatedSwapStyles.hideWhenInputsExpanded}>
-            <SliderAndKeyboard />
-            <SwapBottomPanel />
+    <SwapProvider>
+      <MountAndUnmountHandlers />
+      <SwapSheetGestureBlocker>
+        <Box as={Page} style={styles.rootViewBackground} testID="swap-screen" width="full">
+          <SwapBackground />
+          <Box alignItems="center" height="full" paddingTop={{ custom: safeAreaInsetValues.top + (navbarHeight - 12) + 29 }} width="full">
+            <SwapInputAsset />
+            <FlipButton />
+            <SwapOutputAsset />
+            <SliderAndKeyboardAndBottomControls />
+            <ExchangeRateBubbleAndWarning />
           </Box>
-          <Box
-            as={Animated.View}
-            alignItems="center"
-            justifyContent="center"
-            style={[styles.swapWarningAndExchangeWrapper, AnimatedSwapStyles.hideWhileReviewingOrConfiguringGas]}
-          >
-            <ExchangeRateBubble />
-            <SwapWarning />
-          </Box>
+          <SwapNavbar />
         </Box>
-        <SwapNavbar />
-
-        {/* NOTE: The components below render null and are solely for keeping react-query and Zustand in sync */}
-        <UserAssetsSync />
-      </Box>
-    </SwapSheetGestureBlocker>
+      </SwapSheetGestureBlocker>
+      <WalletAddressObserver />
+    </SwapProvider>
   );
 }
+
+const MountAndUnmountHandlers = () => {
+  useMountSignal();
+  useCleanupOnUnmount();
+
+  return null;
+};
+
+const useMountSignal = () => {
+  useEffect(() => {
+    useSwapsStore.setState({ isSwapsOpen: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+};
+
+const useCleanupOnUnmount = () => {
+  useEffect(() => {
+    return () => {
+      const firstUserAsset = userAssetsStore.getState().userAssets.values().next().value;
+      const parsedAsset = firstUserAsset
+        ? parseSearchAsset({
+            assetWithPrice: undefined,
+            searchAsset: firstUserAsset,
+            userAsset: firstUserAsset,
+          })
+        : null;
+
+      useSwapsStore.setState({
+        inputAsset: parsedAsset,
+        isSwapsOpen: false,
+        outputAsset: null,
+        outputSearchQuery: '',
+        quote: null,
+        selectedOutputChainId: parsedAsset?.chainId ?? ChainId.mainnet,
+      });
+
+      userAssetsStore.setState({ filter: 'all', inputSearchQuery: '' });
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+};
+
+const WalletAddressObserver = () => {
+  const currentWalletAddress = userAssetsStore(state => state.associatedWalletAddress);
+  const { setAsset } = useSwapContext();
+
+  const setNewInputAsset = useCallback(() => {
+    const firstUserAsset = userAssetsStore.getState().userAssets.values().next().value || null;
+
+    if (userAssetsStore.getState().filter !== 'all') {
+      userAssetsStore.setState({ filter: 'all' });
+    }
+
+    setAsset({
+      type: SwapAssetType.inputAsset,
+      asset: firstUserAsset,
+    });
+  }, [setAsset]);
+
+  useAnimatedReaction(
+    () => currentWalletAddress,
+    (current, previous) => {
+      const didWalletAddressChange = previous && current !== previous;
+
+      if (didWalletAddressChange) {
+        runOnJS(setNewInputAsset)();
+      }
+    }
+  );
+
+  return null;
+};
+
+const SliderAndKeyboardAndBottomControls = () => {
+  const shouldMount = useDelayedMount();
+  const { AnimatedSwapStyles } = useSwapContext();
+
+  return shouldMount ? (
+    <Box as={Animated.View} width="full" position="absolute" bottom="0px" style={AnimatedSwapStyles.hideWhenInputsExpanded}>
+      <SliderAndKeyboard />
+      <SwapBottomPanel />
+    </Box>
+  ) : null;
+};
+
+const ExchangeRateBubbleAndWarning = () => {
+  const { AnimatedSwapStyles } = useSwapContext();
+  return (
+    <Box
+      as={Animated.View}
+      alignItems="center"
+      justifyContent="center"
+      style={[styles.swapWarningAndExchangeWrapper, AnimatedSwapStyles.hideWhileReviewingOrConfiguringGas]}
+    >
+      <ExchangeRateBubble />
+      <SwapWarning />
+    </Box>
+  );
+};
 
 export const styles = StyleSheet.create({
   rootViewBackground: {

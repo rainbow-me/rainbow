@@ -40,9 +40,16 @@ export const SwapNumberPad = () => {
     'worklet';
     // immediately stop the quote fetching interval
     SwapInputController.quoteFetchingInterval.stop();
-    isQuoteStale.value = 1;
 
     const inputKey = focusedInput.value;
+    const currentValue = SwapInputController.inputValues.value[inputKey].toString();
+    const newValue = currentValue === '0' ? `${number}` : `${currentValue}${number}`;
+
+    // make the quote stale only when the number in the input actually changes
+    if (!(currentValue.includes('.') && number === 0)) {
+      isQuoteStale.value = 1;
+    }
+
     if (SwapInputController.inputMethod.value !== inputKey) {
       SwapInputController.inputMethod.value = inputKey;
 
@@ -58,8 +65,6 @@ export const SwapNumberPad = () => {
         });
       }
     }
-    const currentValue = SwapInputController.inputValues.value[inputKey];
-    const newValue = currentValue === 0 || currentValue === '0' ? `${number}` : `${currentValue}${number}`;
 
     SwapInputController.inputValues.modify(value => {
       return {
@@ -102,7 +107,6 @@ export const SwapNumberPad = () => {
   const deleteLastCharacter = () => {
     'worklet';
     const inputKey = focusedInput.value;
-    isQuoteStale.value = 1;
 
     if (SwapInputController.inputMethod.value !== inputKey) {
       SwapInputController.inputMethod.value = inputKey;
@@ -117,9 +121,16 @@ export const SwapNumberPad = () => {
         };
       });
     }
+
     const currentValue = SwapInputController.inputValues.value[inputKey].toString();
     // Handle deletion, ensuring a placeholder zero remains if the entire number is deleted
     const newValue = currentValue.length > 1 ? currentValue.slice(0, -1) : 0;
+
+    // Make the quote stale only when deleting the last character changes the actual value in the input
+    if (!(currentValue.endsWith('.') || (newValue === 0 && currentValue.includes('.')))) {
+      isQuoteStale.value = 1;
+    }
+
     if (newValue === 0) {
       SwapInputController.inputValues.modify(values => {
         return {
@@ -285,7 +296,7 @@ const NumberPadKey = ({
   }, [isDarkMode]);
 
   return (
-    // @ts-expect-error
+    // @ts-expect-error Property 'children' does not exist on type
     <LongPressGestureHandler
       // This 0.1ms activation delay gives ButtonPressAnimation time to trigger
       // haptic feedback natively before the LongPressGestureHandler takes over

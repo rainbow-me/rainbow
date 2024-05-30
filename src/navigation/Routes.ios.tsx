@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext } from 'react';
@@ -99,13 +100,7 @@ import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileCo
 import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
 import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { SwapProvider } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPanel';
-
-type StackNavigatorParams = {
-  [Routes.SEND_SHEET]: unknown;
-  [Routes.MODAL_SCREEN]: unknown;
-};
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -138,16 +133,6 @@ function MainStack() {
     <Stack.Navigator initialRouteName={Routes.MAIN_NAVIGATOR_WRAPPER} {...stackNavigationConfig} screenOptions={defaultScreenStackOptions}>
       <Stack.Screen component={MainNavigator} name={Routes.MAIN_NAVIGATOR_WRAPPER} />
     </Stack.Navigator>
-  );
-}
-
-function SwapsNavigator() {
-  return (
-    <SwapProvider>
-      <NativeStack.Navigator {...nativeStackConfig} initialRouteName={Routes.SWAP}>
-        <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />
-      </NativeStack.Navigator>
-    </SwapProvider>
   );
 }
 
@@ -306,7 +291,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} {...appIconUnlockSheetConfig} />
       <NativeStack.Screen component={ControlPanel} name={Routes.DAPP_BROWSER_CONTROL_PANEL} {...dappBrowserControlPanelConfig} />
 
-      {swapsV2Enabled && <NativeStack.Screen component={SwapsNavigator} name={Routes.SWAP_NAVIGATOR} {...swapConfig} />}
+      {swapsV2Enabled && <NativeStack.Screen component={SwapScreen} name={Routes.SWAP_NAVIGATOR} {...swapConfig} />}
     </NativeStack.Navigator>
   );
 }
