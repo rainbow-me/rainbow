@@ -52,7 +52,7 @@ jobs:
         run: rm -rf ./artifacts/
 
       - name: Build the app in release mode
-        run: ./node_modules/.bin/detox build --configuration ios.sim.release
+        run: ./node_modules/.bin/detox build --configuration ios.sim.release | xcpretty --color
      
       - name: Run iOS e2e tests with retry
       # change the '5' here to how many times you want the tests to rerun on failure
