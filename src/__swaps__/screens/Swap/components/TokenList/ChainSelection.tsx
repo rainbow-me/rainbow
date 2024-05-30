@@ -96,10 +96,6 @@ export const ChainSelection = React.memo(function ChainSelection({ allText, outp
   const onShowActionSheet = useCallback(() => {
     const chainTitles = menuConfig.menuItems.map(chain => chain.actionTitle);
 
-    if (!output) {
-      chainTitles.unshift(i18n.t(i18n.l.exchange.all_networks) as ChainName);
-    }
-
     showActionSheetWithOptions(
       {
         options: chainTitles,
