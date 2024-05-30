@@ -110,7 +110,6 @@ export const crosschainSwap = async ({
   const { quote, chainId, requiresApprove } = parameters;
 
   let gasParamsToUse = gasParams;
-  // let gasParams = parseGasParamAmounts(selectedGasFee);
   if (currentRap.actions.length - 1 > index) {
     gasParamsToUse = overrideWithFastSpeedIfNeeded({
       gasParams,

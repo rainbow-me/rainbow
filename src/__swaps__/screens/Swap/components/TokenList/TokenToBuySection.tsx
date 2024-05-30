@@ -1,12 +1,12 @@
 import React, { useCallback } from 'react';
-import { TextStyle } from 'react-native';
+import { StyleSheet, TextStyle } from 'react-native';
 import Animated, { useDerivedValue } from 'react-native-reanimated';
 import { FlashList } from '@shopify/flash-list';
 
 import * as i18n from '@/languages';
 import { CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
 import { SearchAsset } from '@/__swaps__/types/search';
-import { AnimatedText, Box, Inline, Inset, Stack, Text } from '@/design-system';
+import { AnimatedText, Box, Inline, Inset, Stack, Text, useForegroundColor } from '@/design-system';
 import { AssetToBuySection, AssetToBuySectionId } from '@/__swaps__/screens/Swap/hooks/useSearchCurrencyLists';
 import { ChainId } from '@/__swaps__/types/chains';
 import { TextColor } from '@/design-system/color/palettes';
@@ -42,12 +42,12 @@ const sectionProps: { [id in AssetToBuySectionId]: SectionProp } = {
   unverified: {
     title: i18n.t(i18n.l.token_search.section_header.unverified),
     symbol: '􀇿',
-    color: 'background: rgba(255, 218, 36, 1)',
+    color: 'rgba(255, 218, 36, 1)',
   },
   other_networks: {
     title: i18n.t(i18n.l.token_search.section_header.on_other_networks),
-    symbol: 'network',
-    color: 'labelTertiary',
+    symbol: '􀊝',
+    color: '',
   },
 };
 
@@ -67,6 +67,8 @@ const AnimatedFlashListComponent = Animated.createAnimatedComponent(FlashList<Se
 
 export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) => {
   const { setAsset, selectedOutputChainId } = useSwapContext();
+
+  const label = useForegroundColor('label');
 
   const handleSelectToken = useCallback(
     (token: SearchAsset) => {
@@ -91,13 +93,14 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
 
   const color = useDerivedValue(() => {
     if (section.id !== 'bridge') {
-      return sectionProps[section.id].color as TextColor;
+      if (sectionProps[section.id].color) {
+        return sectionProps[section.id].color as TextColor;
+      }
+      return label as TextColor;
     }
 
     return bridgeSectionsColorsByChain[selectedOutputChainId.value || ChainId.mainnet] as TextColor;
   });
-
-  if (!section.data.length) return null;
 
   return (
     <Box key={section.id} testID={`${section.id}-token-to-buy-section`}>
@@ -105,9 +108,8 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
         {section.id === 'other_networks' ? (
           <Box borderRadius={12} height={{ custom: 52 }}>
             <Inset horizontal="20px" vertical="8px">
-              <Inline space="8px" alignVertical="center">
-                {/* <SwapCoinIcon  /> */}
-                <Text size="icon 14px" weight="semibold" color={'labelQuaternary'}>
+              <Inline space="8px" alignHorizontal="center" alignVertical="center">
+                <Text color="labelTertiary" size="17pt" weight="semibold">
                   {i18n.t(i18n.l.swap.tokens_input.nothing_found)}
                 </Text>
               </Inline>
@@ -154,3 +156,9 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
     </Box>
   );
 };
+
+export const styles = StyleSheet.create({
+  solidColorCoinIcon: {
+    opacity: 0.4,
+  },
+});

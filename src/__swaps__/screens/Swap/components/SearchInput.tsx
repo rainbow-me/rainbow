@@ -55,7 +55,7 @@ export const SearchInput = ({
     return {
       defaultValue,
       text: query,
-      selectionColor: getColorValueForThemeWorklet(asset.value?.color, isDarkMode, true),
+      selectionColor: getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode, true),
     };
   });
 

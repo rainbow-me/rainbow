@@ -6,6 +6,7 @@ import {
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
   Quote,
   ChainId as SwapChainId,
+  SwapType,
   WRAPPED_ASSET,
   fillQuote,
   getQuoteExecutionDetails,
@@ -355,6 +356,16 @@ export const swap = async ({
     nonce: swap.nonce,
     status: 'pending',
     type: 'swap',
+    swap: {
+      type: SwapType.normal,
+      fromChainId: parameters.assetToSell.chainId as unknown as SwapChainId,
+      toChainId: parameters.assetToBuy.chainId as unknown as SwapChainId,
+
+      // TODO: Is this right?
+      isBridge:
+        parameters.assetToBuy.chainId !== parameters.assetToSell.chainId &&
+        parameters.assetToSell.address === parameters.assetToBuy.address,
+    },
     flashbots: parameters.flashbots,
     ...gasParamsToUse,
   } satisfies NewTransaction;
@@ -362,6 +373,8 @@ export const swap = async ({
   if (parameters.meta && swap.hash) {
     swapMetadataStorage.set(swap.hash.toLowerCase(), JSON.stringify({ type: 'swap', data: parameters.meta }));
   }
+
+  console.log(JSON.stringify(transaction, null, 2));
 
   addNewTransaction({
     address: parameters.quote.from as Address,

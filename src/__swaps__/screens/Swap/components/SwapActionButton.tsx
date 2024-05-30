@@ -3,10 +3,10 @@ import React from 'react';
 import { StyleProp, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import Animated, { DerivedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 
-import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedText, Box, Column, Columns, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { GestureHandlerV1Button } from './GestureHandlerV1Button';
 
 export const SwapActionButton = ({
   asset,
@@ -16,7 +16,6 @@ export const SwapActionButton = ({
   icon,
   iconStyle,
   label,
-  onLongPress,
   onPress,
   outline,
   rightIcon,
@@ -31,7 +30,6 @@ export const SwapActionButton = ({
   icon?: string | DerivedValue<string | undefined>;
   iconStyle?: StyleProp<TextStyle>;
   label: string | DerivedValue<string | undefined>;
-  onLongPress?: () => void;
   onPress?: () => void;
   outline?: boolean;
   rightIcon?: string;
@@ -64,11 +62,16 @@ export const SwapActionButton = ({
 
   const buttonWrapperStyles = useAnimatedStyle(() => {
     return {
-      backgroundColor: outline ? 'transparent' : getColorValueForThemeWorklet(asset.value?.color, isDarkMode, true) || fallbackColor,
+      backgroundColor: outline
+        ? 'transparent'
+        : getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode, true) || fallbackColor,
       borderColor: outline ? separatorSecondary : undefined,
       borderRadius: borderRadius ?? 24,
       height: small ? 36 : 48,
-      shadowColor: disableShadow || outline ? 'transparent' : getColorValueForThemeWorklet(asset.value?.color, isDarkMode) || fallbackColor,
+      shadowColor:
+        disableShadow || outline
+          ? 'transparent'
+          : getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode) || fallbackColor,
       shadowOffset: {
         width: 0,
         height: isDarkMode ? 13 : small ? 6 : 10,
@@ -93,9 +96,8 @@ export const SwapActionButton = ({
   });
 
   return (
-    <ButtonPressAnimation
-      onLongPress={onLongPress}
-      onPress={onPress}
+    <GestureHandlerV1Button
+      onPressWorklet={onPress}
       scaleTo={scaleTo || (hugContent ? undefined : 0.925)}
       style={{
         ...(hugContent && feedActionButtonStyles.buttonWrapper),
@@ -140,7 +142,7 @@ export const SwapActionButton = ({
           )}
         </Columns>
       </Box>
-    </ButtonPressAnimation>
+    </GestureHandlerV1Button>
   );
 };
 
