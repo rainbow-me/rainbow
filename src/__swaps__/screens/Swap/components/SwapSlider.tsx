@@ -166,11 +166,11 @@ export const SwapSlider = ({
         return adjustedMovement;
       };
 
-      if (ctx.startX === width && Number(clamp(rawX, 0, width)) >= width * 0.995) {
+      if (ctx.startX === width && clamp(rawX, 0, width) >= width * 0.995) {
         isQuoteStale.value = 0;
       }
 
-      sliderXPosition.value = Number(clamp(rawX, 0, width));
+      sliderXPosition.value = clamp(rawX, 0, width);
 
       // Handle slider overscroll
       if (rawX < 0 || rawX > width) {

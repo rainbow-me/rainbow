@@ -65,8 +65,7 @@ export function useSwapInputsController({
   const inputMethod = useSharedValue<inputMethods>('slider');
 
   const percentageToSwap = useDerivedValue(() => {
-    const clampResult = Number(clamp((sliderXPosition.value - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1));
-    return Math.round(clampResult * 100) / 100;
+    return Math.round(clamp((sliderXPosition.value - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1) * 100) / 100;
   });
 
   const niceIncrement = useDerivedValue(() => {
@@ -186,7 +185,7 @@ export function useSwapInputsController({
           sliderXPosition.value = withSpring(0, snappySpringConfig);
         } else {
           const inputBalance = internalSelectedInputAsset.value?.balance.amount || '0';
-          const updatedSliderPosition = Number(clamp(mulWorklet(divWorklet(inputAmount, inputBalance), SLIDER_WIDTH), 0, SLIDER_WIDTH));
+          const updatedSliderPosition = clamp(Number(mulWorklet(divWorklet(inputAmount, inputBalance), SLIDER_WIDTH)), 0, SLIDER_WIDTH);
           if (Number.isNaN(updatedSliderPosition)) {
             sliderXPosition.value = withSpring(0, snappySpringConfig);
           } else {
@@ -474,7 +473,7 @@ export function useSwapInputsController({
         // if the user types in the inputAmount let's optimistically update the slider position
         if (inputKey === 'inputAmount') {
           const inputAssetBalance = Number(internalSelectedInputAsset.value?.balance.amount || '0');
-          const updatedSliderPosition = Number(clamp((amount / inputAssetBalance) * SLIDER_WIDTH, 0, SLIDER_WIDTH));
+          const updatedSliderPosition = clamp(Number(divWorklet(amount, inputAssetBalance)) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
 
           // Update slider position
           sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);

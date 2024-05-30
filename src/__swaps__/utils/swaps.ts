@@ -199,9 +199,9 @@ export function addCommasToNumber(number: string | number) {
   }
 }
 
-export function clamp(value: number | string, lowerBound: number | string, upperBound: number | string) {
+export function clamp(value: number, lowerBound: number, upperBound: number) {
   'worklet';
-  return minWorklet(maxWorklet(lowerBound, value), upperBound);
+  return Math.min(Math.max(lowerBound, value), upperBound);
 }
 
 export function stripCommas(value: string) {
