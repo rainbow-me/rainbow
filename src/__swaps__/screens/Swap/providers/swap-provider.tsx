@@ -435,7 +435,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     if (_quote) {
       if ('error' in _quote) return { label: 'Error', disabled: true };
 
-      // TODO: after the tx is built, we should check if the user has enough balance to cover the tx
       const estimatedGasLimit = getSwapEstimatedGasLimitCachedData({
         chainId: _quote.chainId,
         quote: _quote,
