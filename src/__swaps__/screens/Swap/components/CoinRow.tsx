@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Box, Column, Columns, HitSlop, Inline, Text } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
@@ -11,7 +11,68 @@ import Animated from 'react-native-reanimated';
 import { StyleSheet } from 'react-native';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { SwapCoinIcon } from './SwapCoinIcon';
-import { ethereumUtils } from '@/utils';
+import { ethereumUtils, haptics } from '@/utils';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { IS_ANDROID } from '@/env';
+import { startCase } from 'lodash';
+import { setClipboard } from '@/hooks/useClipboard';
+import { RainbowNetworks } from '@/networks';
+
+const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId }) => {
+  const network = RainbowNetworks.find(network => network.id === chainId)?.value;
+
+  const menuConfig = {
+    menuItems: [
+      {
+        actionKey: 'copyAddress',
+        actionTitle: 'Copy Contract Address',
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'doc.on.doc',
+        },
+      },
+      ...(network
+        ? [
+            {
+              actionKey: 'blockExplorer',
+              actionTitle: `View on ${startCase(ethereumUtils.getBlockExplorer(network))}`,
+              icon: {
+                iconType: 'SYSTEM',
+                iconValue: 'link',
+              },
+            },
+          ]
+        : []),
+    ],
+    // menuTitle: '',
+  };
+
+  const handlePressMenuItem = useCallback(
+    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
+    async ({ nativeEvent: { actionKey } }) => {
+      if (actionKey === 'copyAddress') {
+        haptics.selection();
+        setClipboard(address);
+      } else if (actionKey === 'blockExplorer' && network) {
+        ethereumUtils.openAddressInBlockExplorer(address, network);
+      }
+    },
+    [address, network]
+  );
+
+  return (
+    <ContextMenuButton
+      enableContextMenu
+      menuConfig={menuConfig}
+      {...(IS_ANDROID ? { handlePressMenuItem } : {})}
+      isMenuPrimaryAction
+      onPressMenuItem={handlePressMenuItem}
+      useActionSheetFallback={false}
+    >
+      <CoinRowButton icon="􀅳" outline size="icon 14px" disabled={true} />
+    </ContextMenuButton>
+  );
+};
 
 export const CoinRow = ({
   address,
@@ -119,7 +180,7 @@ export const CoinRow = ({
           <Column width="content">
             <Box paddingLeft="12px" paddingRight="20px">
               <Inline space="8px">
-                <CoinRowButton icon="􀅳" outline size="icon 14px" />
+                <InfoButton address={address} chainId={chainId} />
                 <CoinRowButton
                   color={isFavorite(address) ? '#FFCB0F' : undefined}
                   onPress={() => toggleFavorite(address)}
