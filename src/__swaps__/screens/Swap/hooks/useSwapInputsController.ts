@@ -208,7 +208,7 @@ export function useSwapInputsController({
           return {
             ...prev,
             inputAmount,
-            inputNativeValue: inputAmount * price,
+            inputNativeValue: mulWorklet(inputAmount, price),
           };
         });
       }
@@ -219,7 +219,7 @@ export function useSwapInputsController({
           return {
             ...prev,
             outputAmount,
-            outputNativeValue: outputAmount * price,
+            outputNativeValue: mulWorklet(outputAmount, price),
           };
         });
       }
