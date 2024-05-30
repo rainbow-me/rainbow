@@ -80,7 +80,7 @@ export function AuthRequest({
 
   const { icons, name, url } = requesterMeta;
 
-  const dappUrl = verifiedData?.verifyUrl || url;
+  const dappUrl = verifiedData?.origin || url;
   const { data: metadata } = useDappMetadata({ url: dappUrl });
 
   const isScam = metadata?.status === DAppStatus.Scam;

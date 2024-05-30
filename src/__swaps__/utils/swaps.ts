@@ -12,10 +12,10 @@ import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
 import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '../types/assets';
 import { inputKeys } from '../types/swap';
 import { swapsStore } from '../../state/swaps/swapsStore';
-import store from '@/redux/store';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { colors } from '@/styles';
+import { convertAmountToRawAmount } from './numbers';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -45,21 +45,28 @@ export const getColorValueForThemeWorklet = <T>(values: ResponseByTheme<T> | und
 };
 
 export const getHighContrastColor = (color: string): ResponseByTheme<string> => {
-  const lightModeContrast = c.contrast(color, globalColors.white100);
-  const darkModeContrast = c.contrast(color, globalColors.grey100);
+  if (color === ETH_COLOR) {
+    return {
+      light: ETH_COLOR,
+      dark: ETH_COLOR_DARK,
+    };
+  }
 
   let lightColor = color;
   let darkColor = color;
 
+  const lightModeContrast = c.contrast(lightColor, globalColors.white100);
+  const darkModeContrast = c.contrast(darkColor, globalColors.grey100);
+
   if (lightModeContrast < 2.5) {
-    lightColor = c(color)
+    lightColor = c(lightColor)
       .set('hsl.s', `*${lightModeContrast < 1.5 ? 2 : 1.2}`)
       .darken(2.5 - (lightModeContrast - (lightModeContrast < 1.5 ? 0.5 : 0)))
       .hex();
   }
 
   if (darkModeContrast < 3) {
-    darkColor = c(color)
+    darkColor = c(darkColor)
       .set('hsl.l', darkModeContrast < 1.5 ? 0.88 : 0.8)
       .set('hsl.s', `*${darkModeContrast < 1.5 ? 0.75 : 0.85}`)
       .hex();
@@ -75,31 +82,33 @@ export const getMixedColor = (color1: string, color2: string, ratio: number) => 
   return c.mix(color1, color2, ratio).hex();
 };
 
-export const getTextColor = (color: string): ResponseByTheme<string> => {
-  const contrastWithWhite = c.contrast(color, globalColors.white100);
+export const getTextColor = (colors: ResponseByTheme<string>): ResponseByTheme<string> => {
+  const lightContrast = c.contrast(colors.light, globalColors.white100);
+  const darkContrast = c.contrast(colors.dark === ETH_COLOR ? ETH_COLOR_DARK : colors.dark, globalColors.white100);
 
   return {
-    light: contrastWithWhite < 2 ? globalColors.grey100 : globalColors.white100,
-    dark: contrastWithWhite < 2.6 ? globalColors.grey100 : globalColors.white100,
+    light: lightContrast < 2 ? globalColors.grey100 : globalColors.white100,
+    dark: darkContrast < 2.6 ? globalColors.grey100 : globalColors.white100,
   };
 };
 
-export const getMixedShadowColor = (color?: string | null): ResponseByTheme<string> => {
+export const getMixedShadowColor = (color: string): ResponseByTheme<string> => {
   return {
-    light: getMixedColor(color || ETH_COLOR, colors.dark, 0.84),
-    dark: getMixedColor(color || ETH_COLOR_DARK, colors.dark, 0.84),
+    light: getMixedColor(color, colors.dark, 0.84),
+    dark: globalColors.grey100,
   };
 };
 
-export const getTintedBackgroundColor = (color: string): ResponseByTheme<string> => {
+export const getTintedBackgroundColor = (colors: ResponseByTheme<string>): ResponseByTheme<string> => {
   const lightModeColorToMix = globalColors.white100;
   const darkModeColorToMix = globalColors.grey100;
 
   return {
-    light: c.mix(color, lightModeColorToMix, 0.94).saturate(-0.06).hex(),
-    dark: c.mix(color, darkModeColorToMix, 0.9875).saturate(0).hex(),
+    light: c.mix(colors.light, lightModeColorToMix, 0.94).saturate(-0.06).hex(),
+    dark: c.mix(colors.dark === ETH_COLOR ? ETH_COLOR_DARK : colors.dark, darkModeColorToMix, 0.9875).hex(),
   };
 };
+
 //
 // /---- END color functions ----/ //
 
@@ -190,14 +199,21 @@ export function trimTrailingZeros(value: string) {
   return withTrimmedZeros.endsWith('.') ? withTrimmedZeros.slice(0, -1) : withTrimmedZeros;
 }
 
-export function valueBasedDecimalFormatter(
-  amount: number,
-  usdTokenPrice: number,
-  roundingMode?: 'up' | 'down',
-  precisionAdjustment?: number,
-  isStablecoin?: boolean,
-  stripSeparators = true
-): string {
+export function valueBasedDecimalFormatter({
+  amount,
+  usdTokenPrice,
+  roundingMode,
+  precisionAdjustment,
+  isStablecoin,
+  stripSeparators = true,
+}: {
+  amount: number;
+  usdTokenPrice: number;
+  roundingMode?: 'up' | 'down';
+  precisionAdjustment?: number;
+  isStablecoin?: boolean;
+  stripSeparators?: boolean;
+}): string {
   'worklet';
 
   function calculateDecimalPlaces(usdTokenPrice: number, precisionAdjustment?: number): number {
@@ -239,21 +255,52 @@ export function valueBasedDecimalFormatter(
   return numberFormatter.format(roundedAmount);
 }
 
-export function niceIncrementFormatter(
-  incrementDecimalPlaces: number,
-  inputAssetBalance: number,
-  inputAssetUsdPrice: number,
-  niceIncrement: number,
-  percentageToSwap: number,
-  sliderXPosition: number,
-  stripSeparators?: boolean
-) {
+export function niceIncrementFormatter({
+  incrementDecimalPlaces,
+  inputAssetBalance,
+  inputAssetUsdPrice,
+  niceIncrement,
+  percentageToSwap,
+  sliderXPosition,
+  stripSeparators,
+}: {
+  incrementDecimalPlaces: number;
+  inputAssetBalance: number;
+  inputAssetUsdPrice: number;
+  niceIncrement: number;
+  percentageToSwap: number;
+  sliderXPosition: number;
+  stripSeparators?: boolean;
+}) {
   'worklet';
   if (percentageToSwap === 0) return '0';
-  if (percentageToSwap === 0.25) return valueBasedDecimalFormatter(inputAssetBalance * 0.25, inputAssetUsdPrice, 'up', -3);
-  if (percentageToSwap === 0.5) return valueBasedDecimalFormatter(inputAssetBalance * 0.5, inputAssetUsdPrice, 'up', -3);
-  if (percentageToSwap === 0.75) return valueBasedDecimalFormatter(inputAssetBalance * 0.75, inputAssetUsdPrice, 'up', -3);
-  if (percentageToSwap === 1) return valueBasedDecimalFormatter(inputAssetBalance, inputAssetUsdPrice, 'up');
+  if (percentageToSwap === 0.25)
+    return valueBasedDecimalFormatter({
+      amount: inputAssetBalance * 0.25,
+      usdTokenPrice: inputAssetUsdPrice,
+      roundingMode: 'up',
+      precisionAdjustment: -3,
+    });
+  if (percentageToSwap === 0.5)
+    return valueBasedDecimalFormatter({
+      amount: inputAssetBalance * 0.5,
+      usdTokenPrice: inputAssetUsdPrice,
+      roundingMode: 'up',
+      precisionAdjustment: -3,
+    });
+  if (percentageToSwap === 0.75)
+    return valueBasedDecimalFormatter({
+      amount: inputAssetBalance * 0.75,
+      usdTokenPrice: inputAssetUsdPrice,
+      roundingMode: 'up',
+      precisionAdjustment: -3,
+    });
+  if (percentageToSwap === 1)
+    return valueBasedDecimalFormatter({
+      amount: inputAssetBalance,
+      usdTokenPrice: inputAssetUsdPrice,
+      roundingMode: 'up',
+    });
 
   const exactIncrement = inputAssetBalance / 100;
   const isIncrementExact = niceIncrement === exactIncrement;
@@ -358,21 +405,26 @@ type ExtractColorValueForColorsProps = {
 export const extractColorValueForColors = ({
   colors,
 }: ExtractColorValueForColorsProps): Omit<ExtendedAnimatedAssetWithColors, keyof ParsedSearchAsset> => {
-  const color = colors.primary ?? colors.fallback;
+  const color = colors.primary || colors.fallback;
+  const darkColor = color || ETH_COLOR_DARK;
+  const lightColor = color || ETH_COLOR;
+
+  const highContrastColor = getHighContrastColor(lightColor);
 
   return {
     color: {
-      light: colors.primary ?? colors.fallback ?? ETH_COLOR,
-      dark: colors.primary ?? colors.fallback ?? ETH_COLOR_DARK,
+      light: lightColor,
+      dark: darkColor,
     },
     shadowColor: {
-      light: colors.shadow ?? ETH_COLOR,
-      dark: colors.shadow ?? ETH_COLOR_DARK,
+      light: lightColor,
+      dark: darkColor,
     },
-    mixedShadowColor: getMixedShadowColor(colors.shadow),
-    highContrastColor: getHighContrastColor(color),
-    tintedBackgroundColor: getTintedBackgroundColor(color),
-    textColor: getTextColor(color),
+    mixedShadowColor: getMixedShadowColor(lightColor),
+    highContrastColor: highContrastColor,
+    tintedBackgroundColor: getTintedBackgroundColor(highContrastColor),
+    textColor: getTextColor(highContrastColor),
+    nativePrice: undefined,
   };
 };
 
@@ -410,6 +462,7 @@ export const getCrossChainTimeEstimate = ({
     timeEstimateDisplay,
   };
 };
+
 export const isUnwrapEth = ({
   buyTokenAddress,
   chainId,
@@ -465,29 +518,46 @@ type ParseAssetAndExtendProps = {
   asset: ParsedSearchAsset | null;
 };
 
-export const parseAssetAndExtend = ({ asset }: ParseAssetAndExtendProps): ExtendedAnimatedAssetWithColors | null => {
-  'worklet';
+const ETH_COLORS: Colors = {
+  primary: undefined,
+  fallback: undefined,
+  shadow: undefined,
+};
 
+export const parseAssetAndExtend = ({ asset }: ParseAssetAndExtendProps): ExtendedAnimatedAssetWithColors | null => {
   if (!asset) {
     return null;
   }
 
+  const isAssetEth = asset.isNativeAsset && asset.symbol === 'ETH';
   // TODO: Process and add colors to the asset and anything else we'll need for reanimated stuff
   const colors = extractColorValueForColors({
-    colors: asset.colors as TokenColors,
+    colors: (isAssetEth ? ETH_COLORS : asset.colors) as TokenColors,
     isDarkMode: true, // TODO: Make this not rely on isDarkMode
   });
+
+  const priceInfo: Pick<ExtendedAnimatedAssetWithColors, 'nativePrice'> = {
+    nativePrice: undefined,
+  };
+
+  if (asset.price) {
+    priceInfo.nativePrice = asset.price.value;
+  }
 
   return {
     ...asset,
     ...colors,
+    ...priceInfo,
   };
 };
 
 type BuildQuoteParamsProps = {
+  currentAddress: string;
   inputAmount: BigNumberish;
   outputAmount: BigNumberish;
-  focusedInput: inputKeys;
+  inputAsset: ExtendedAnimatedAssetWithColors | null;
+  outputAsset: ExtendedAnimatedAssetWithColors | null;
+  lastTypedInput: inputKeys;
 };
 
 /**
@@ -496,11 +566,15 @@ type BuildQuoteParamsProps = {
  * NOTE: Will return null if either asset isn't set.
  * @returns data needed to execute a swap or cross-chain swap
  */
-export const buildQuoteParams = ({ inputAmount, outputAmount, focusedInput }: BuildQuoteParamsProps): QuoteParams | null => {
-  // NOTE: Yuck... redux is still heavily integrated into the account logic.
-  const { accountAddress } = store.getState().settings;
-
-  const { inputAsset, outputAsset, source, slippage } = swapsStore();
+export const buildQuoteParams = ({
+  currentAddress,
+  inputAmount,
+  outputAmount,
+  inputAsset,
+  outputAsset,
+  lastTypedInput,
+}: BuildQuoteParamsProps): QuoteParams | null => {
+  const { source, slippage } = swapsStore.getState();
   if (!inputAsset || !outputAsset) {
     return null;
   }
@@ -510,15 +584,21 @@ export const buildQuoteParams = ({ inputAmount, outputAmount, focusedInput }: Bu
   return {
     source: source === 'auto' ? undefined : source,
     swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
-    fromAddress: accountAddress,
+    fromAddress: currentAddress,
     chainId: inputAsset.chainId,
     toChainId: isCrosschainSwap ? outputAsset.chainId : inputAsset.chainId,
     sellTokenAddress: inputAsset.isNativeAsset ? ETH_ADDRESS : inputAsset.address,
     buyTokenAddress: outputAsset.isNativeAsset ? ETH_ADDRESS : outputAsset.address,
 
-    // TODO: Dunno how we can access these from the
-    sellAmount: focusedInput === 'inputAmount' || focusedInput === 'inputNativeValue' ? inputAmount : undefined,
-    buyAmount: focusedInput === 'outputAmount' || focusedInput === 'outputNativeValue' ? outputAmount : undefined,
+    // TODO: Handle native input cases below
+    sellAmount:
+      lastTypedInput === 'inputAmount' || lastTypedInput === 'inputNativeValue'
+        ? convertAmountToRawAmount(inputAmount.toString(), inputAsset.decimals)
+        : undefined,
+    buyAmount:
+      lastTypedInput === 'outputAmount' || lastTypedInput === 'outputNativeValue'
+        ? convertAmountToRawAmount(outputAmount.toString(), outputAsset.decimals)
+        : undefined,
     slippage: Number(slippage),
     refuel: false,
   };

@@ -12,6 +12,7 @@ import { useDimensions } from '@/hooks';
 import { Dapp } from '@/resources/metadata/dapps';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useSearchContext } from '../SearchContext';
+import * as i18n from '@/languages';
 
 export const SearchResult = ({ index, goToUrl }: { index: number; goToUrl: (url: string) => void }) => {
   const { searchResults } = useSearchContext();
@@ -73,7 +74,7 @@ export const SearchResult = ({ index, goToUrl }: { index: number; goToUrl: (url:
                 <AnimatedText color="labelQuaternary" size="icon 28px" weight="black" staticText="􀎭" align="center" />
               </Animated.View>
               {/* ⚠️ TODO: This works but we should figure out how to type this correctly to avoid this error */}
-              {/* @ts-expect-error: Doesn't pick up that its getting a source prop via animatedProps */}
+              {/* @ts-expect-error: Doesn't pick up that it's getting a source prop via animatedProps */}
               <AnimatedFasterImage animatedProps={animatedIconSource} style={styles.iconImage} />
             </Box>
           </Box>
@@ -93,11 +94,13 @@ export const SearchResult = ({ index, goToUrl }: { index: number; goToUrl: (url:
   );
 };
 
+const searchText = i18n.t(i18n.l.dapp_browser.search.search);
+
 export const GoogleSearchResult = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
   const { searchQuery } = useSearchContext();
   const { width: deviceWidth } = useDimensions();
 
-  const animatedText = useDerivedValue(() => `Search "${searchQuery?.value}"`);
+  const animatedText = useDerivedValue(() => `${searchText} "${searchQuery?.value}"`);
 
   const onPress = useCallback(
     () => searchQuery && goToUrl(`https://www.google.com/search?q=${encodeURIComponent(searchQuery.value)}`),

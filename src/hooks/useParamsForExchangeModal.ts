@@ -1,7 +1,7 @@
 import { SwapModalField, updateSwapSlippage, updateSwapSource } from '@/redux/swap';
 import { MutableRefObject, useEffect, useState } from 'react';
 import { useSwapInputHandlers } from '@/hooks/index';
-import { SwapMetadata } from '@/raps/common';
+import { SwapMetadata } from '@/raps/references';
 import { useDispatch } from 'react-redux';
 import { useRoute } from '@react-navigation/native';
 import { TextInput } from 'react-native';

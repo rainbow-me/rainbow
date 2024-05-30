@@ -71,6 +71,7 @@ import {
   appIconUnlockSheetConfig,
   swapConfig,
   checkIdentifierSheetConfig,
+  recieveModalSheetConfig,
 } from './config';
 import { addCashSheet, emojiPreset, emojiPresetWallet, overlayExpandedPreset, sheetPreset } from './effects';
 import { InitialRouteContext } from './initialRoute';
@@ -163,15 +164,7 @@ function NativeStackNavigator() {
     <NativeStack.Navigator {...nativeStackConfig}>
       <NativeStack.Screen component={MainStack} name={Routes.STACK} />
       <NativeStack.Screen component={LearnWebViewScreen} name={Routes.LEARN_WEB_VIEW_SCREEN} {...learnWebViewScreenConfig} />
-      <NativeStack.Screen
-        component={ReceiveModal}
-        name={Routes.RECEIVE_MODAL}
-        options={{
-          backgroundColor: isDarkMode ? colors.offWhite : '#3B3E43',
-          backgroundOpacity: 1,
-          customStack: true,
-        }}
-      />
+      <NativeStack.Screen component={ReceiveModal} name={Routes.RECEIVE_MODAL} {...recieveModalSheetConfig} />
       <NativeStack.Screen component={SettingsSheet} name={Routes.SETTINGS_SHEET} {...settingsSheetConfig} />
       <NativeStack.Screen
         component={ExchangeModalNavigator}

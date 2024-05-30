@@ -93,6 +93,7 @@ const BlurWrapper = styled(View).attrs({
 
 interface MintSheetProps {
   collection: ReservoirCollection;
+  pricePerMint: string;
   chainId: number;
 }
 
@@ -125,7 +126,7 @@ const getFormattedDate = (date: string) => {
 
 const MintSheet = () => {
   const params = useRoute();
-  const { collection: mintCollection } = params.params as MintSheetProps;
+  const { collection: mintCollection, pricePerMint } = params.params as MintSheetProps;
   const { accountAddress } = useAccountProfile();
   const { nativeCurrency } = useAccountSettings();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
@@ -158,7 +159,7 @@ const MintSheet = () => {
   // if there is no max mint info, we fallback to 1 to be safe
   const maxMintsPerWallet = Number(mintCollection.publicMintInfo?.maxMintsPerWallet);
 
-  const price = convertRawAmountToBalance(mintCollection.publicMintInfo?.price?.amount?.raw || '0', {
+  const price = convertRawAmountToBalance(mintCollection.publicMintInfo?.price?.amount?.raw || pricePerMint || '0', {
     decimals: mintCollection.publicMintInfo?.price?.currency?.decimals || 18,
     symbol: mintCollection.publicMintInfo?.price?.currency?.symbol || 'ETH',
   });

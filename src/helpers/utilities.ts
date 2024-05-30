@@ -26,6 +26,12 @@ export const isZero = (value: BigNumberish): boolean => new BigNumber(value).isZ
 
 export const toFixedDecimals = (value: BigNumberish, decimals: number): string => new BigNumber(value).toFixed(decimals);
 
+export const toFixedDecimalsWorklet = (value: BigNumberish, decimals: number): string => {
+  'worklet';
+
+  return new BigNumber(value).toFixed(decimals);
+};
+
 export const convertNumberToString = (value: BigNumberish): string => new BigNumber(value).toFixed();
 
 export const greaterThan = (numberOne: BigNumberish, numberTwo: BigNumberish): boolean => new BigNumber(numberOne).gt(numberTwo);

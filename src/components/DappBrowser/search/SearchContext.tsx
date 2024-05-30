@@ -10,6 +10,7 @@ interface SearchContextType {
   inputRef: AnimatedRef<TextInput>;
   isFocused: SharedValue<boolean>;
   keyboardHeight: SharedValue<number>;
+  shouldShowGoogleSearch: SharedValue<boolean>;
 }
 
 const SearchContext = createContext<SearchContextType | undefined>(undefined);
@@ -28,6 +29,7 @@ export const SearchContextProvider = ({ children }: { children: React.ReactNode 
   const inputRef = useAnimatedRef<TextInput>();
   const isFocused = useSharedValue<boolean>(false);
   const keyboardHeight = useSharedValue<number>(getDefaultKeyboardHeight());
+  const shouldShowGoogleSearch = useSharedValue(true);
 
   return (
     <SearchContext.Provider
@@ -37,6 +39,7 @@ export const SearchContextProvider = ({ children }: { children: React.ReactNode 
         inputRef,
         isFocused,
         keyboardHeight,
+        shouldShowGoogleSearch,
       }}
     >
       {children}

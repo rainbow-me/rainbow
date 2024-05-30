@@ -96,6 +96,7 @@ import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { RequestData } from '@/redux/requests';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { event } from '@/analytics/event';
+import { getOnchainAssetBalance } from '@/handlers/assets';
 
 const COLLAPSED_CARD_HEIGHT = 56;
 const MAX_CARD_HEIGHT = 176;
@@ -354,8 +355,14 @@ export const SignTransactionSheet = () => {
   useEffect(() => {
     (async () => {
       const asset = await ethereumUtils.getNativeAssetForNetwork(currentNetwork, accountInfo.address);
-      if (asset) {
-        provider && setNativeAsset(asset);
+      if (asset && provider) {
+        const balance = await getOnchainAssetBalance(asset, accountInfo.address, currentNetwork, provider);
+        if (balance) {
+          const assetWithOnchainBalance: ParsedAddressAsset = { ...asset, balance };
+          setNativeAsset(assetWithOnchainBalance);
+        } else {
+          setNativeAsset(asset);
+        }
       }
     })();
   }, [accountInfo.address, currentNetwork, provider]);
@@ -762,6 +769,8 @@ export const SignTransactionSheet = () => {
 
   const expandedCardBottomInset = EXPANDED_CARD_BOTTOM_INSET + (isMessageRequest ? 0 : GAS_BUTTON_SPACE);
 
+  const canPressConfirm = isMessageRequest || (!!walletBalance?.isLoaded && !!currentNetwork && !!selectedGasFee?.gasFee?.estimatedFee);
+
   return (
     // @ts-expect-error Property 'children' does not exist on type
     <PanGestureHandler enabled={IS_IOS}>
@@ -943,6 +952,7 @@ export const SignTransactionSheet = () => {
                     }
                     newShadows
                     onPress={submitFn}
+                    disabled={!canPressConfirm}
                     size="big"
                     weight="heavy"
                     {...((simulationError || (simulationScanResult && simulationScanResult !== TransactionScanResultType.Ok)) && {

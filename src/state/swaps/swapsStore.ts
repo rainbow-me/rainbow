@@ -1,9 +1,9 @@
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { CrosschainQuote, Quote, QuoteError, Source } from '@rainbow-me/swaps';
-import { getDefaultSlippage } from '@/__swaps__/utils/swaps';
 import { ChainId } from '@/__swaps__/types/chains';
+import { getDefaultSlippage } from '@/__swaps__/utils/swaps';
 import { DEFAULT_CONFIG } from '@/model/remoteConfig';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { CrosschainQuote, Quote, QuoteError, Source } from '@rainbow-me/swaps';
 
 export interface SwapsState {
   // assets
@@ -12,6 +12,8 @@ export interface SwapsState {
 
   // quote
   quote: Quote | CrosschainQuote | QuoteError | null;
+
+  selectedOutputChainId: ChainId;
 
   // settings
   flashbots: boolean;
@@ -28,6 +30,7 @@ export const swapsStore = createRainbowStore<SwapsState>(
     outputAsset: null,
 
     quote: null,
+    selectedOutputChainId: ChainId.mainnet,
 
     flashbots: false,
     setFlashbots: (flashbots: boolean) => set({ flashbots }),
@@ -49,3 +52,5 @@ export const swapsStore = createRainbowStore<SwapsState>(
     },
   }
 );
+
+export const useSwapsStore = swapsStore;

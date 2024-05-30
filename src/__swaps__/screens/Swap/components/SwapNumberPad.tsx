@@ -11,7 +11,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { Box, Columns, HitSlop, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { Bleed, Box, Columns, HitSlop, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { stripCommas } from '@/__swaps__/utils/swaps';
 import {
   CUSTOM_KEYBOARD_HEIGHT,
@@ -32,12 +32,16 @@ type numberPadCharacter = number | 'backspace' | '.';
 
 export const SwapNumberPad = () => {
   const { isDarkMode } = useColorMode();
-  const { focusedInput, SwapInputController, reviewProgress } = useSwapContext();
+  const { focusedInput, isQuoteStale, SwapInputController, configProgress } = useSwapContext();
 
   const longPressTimer = useSharedValue(0);
 
   const addNumber = (number?: number) => {
     'worklet';
+    // immediately stop the quote fetching interval
+    SwapInputController.quoteFetchingInterval.stop();
+    isQuoteStale.value = 1;
+
     const inputKey = focusedInput.value;
     if (SwapInputController.inputMethod.value !== inputKey) {
       SwapInputController.inputMethod.value = inputKey;
@@ -98,6 +102,8 @@ export const SwapNumberPad = () => {
   const deleteLastCharacter = () => {
     'worklet';
     const inputKey = focusedInput.value;
+    isQuoteStale.value = 1;
+
     if (SwapInputController.inputMethod.value !== inputKey) {
       SwapInputController.inputMethod.value = inputKey;
 
@@ -136,19 +142,24 @@ export const SwapNumberPad = () => {
 
   const numpadContainerStyles = useAnimatedStyle(() => {
     return {
-      opacity: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? withTiming(0, fadeConfig) : withTiming(1, fadeConfig),
+      opacity:
+        configProgress.value === NavigationSteps.SHOW_REVIEW || configProgress.value === NavigationSteps.SHOW_GAS
+          ? withTiming(0, fadeConfig)
+          : withTiming(1, fadeConfig),
     };
   });
 
   return (
     <Box as={Animated.View} style={numpadContainerStyles} height={{ custom: CUSTOM_KEYBOARD_HEIGHT }} paddingHorizontal="6px" width="full">
       <Box style={{ gap: 6 }} width="full">
-        <Separator
-          color={{
-            custom: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR,
-          }}
-          thickness={1}
-        />
+        <Bleed horizontal="6px">
+          <Separator
+            color={{
+              custom: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR,
+            }}
+            thickness={1}
+          />
+        </Bleed>
         <Columns space="6px">
           <NumberPadKey char={1} onPressWorklet={addNumber} />
           <NumberPadKey char={2} onPressWorklet={addNumber} />

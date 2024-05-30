@@ -3,9 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import { createQueryKey, queryClient, QueryConfig, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 
 import { NativeCurrencyKey } from '@/entities';
+import { RainbowNetworks } from '@/networks';
 import { rainbowFetch } from '@/rainbow-fetch';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
-import { RainbowNetworks } from '@/networks';
 import { AddysPositionsResponse, PositionsArgs } from './types';
 import { parsePositions } from './utils';
 
@@ -79,5 +79,5 @@ export async function fetchPositions(
 // Query Hook
 
 export function usePositions({ address, currency }: PositionsArgs, config: QueryConfig<PositionsResult, Error, PositionsQueryKey> = {}) {
-  return useQuery(positionsQueryKey({ address, currency }), positionsQueryFunction, config);
+  return useQuery(positionsQueryKey({ address, currency }), positionsQueryFunction, { ...config, enabled: !!address });
 }

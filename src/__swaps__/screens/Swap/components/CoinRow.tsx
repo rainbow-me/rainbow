@@ -1,14 +1,14 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
-import { Box, HitSlop, Inline, Stack, Text } from '@/design-system';
+import { Box, Column, Columns, HitSlop, Inline, Text } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
-import { useTheme } from '@/theme';
-import { SwapCoinIcon } from '@/__swaps__/screens/Swap/components/SwapCoinIcon';
 import { CoinRowButton } from '@/__swaps__/screens/Swap/components/CoinRowButton';
 import { BalancePill } from '@/__swaps__/screens/Swap/components/BalancePill';
 import { ChainId } from '@/__swaps__/types/chains';
-import { ethereumUtils } from '@/utils';
 import { toggleFavorite, useFavorites } from '@/resources/favorites';
+import { StyleSheet } from 'react-native';
+import { SwapCoinIcon } from './SwapCoinIcon';
+import { ethereumUtils } from '@/utils';
 import { ETH_ADDRESS } from '@/references';
 
 export const CoinRow = ({
@@ -38,16 +38,21 @@ export const CoinRow = ({
   output?: boolean;
   symbol: string;
 }) => {
-  const theme = useTheme();
   const { favoritesMetadata } = useFavorites();
 
-  const favorites = Object.values(favoritesMetadata);
+  const isFavorite = useMemo(() => {
+    return Object.values(favoritesMetadata).find(fav => {
+      if (mainnetAddress?.toLowerCase() === ETH_ADDRESS) {
+        return fav.address.toLowerCase() === ETH_ADDRESS;
+      }
 
-  const isFavorite = (address: string) => {
-    return favorites.find(fav =>
-      fav.address === ETH_ADDRESS ? '0x0000000000000000000000000000000000000000' === address : fav.address === address
-    );
-  };
+      return fav.address?.toLowerCase() === address?.toLowerCase();
+    });
+  }, [favoritesMetadata, address, mainnetAddress]);
+
+  const favoritesIconColor = useMemo(() => {
+    return isFavorite ? '#FFCB0F' : undefined;
+  }, [isFavorite]);
 
   const percentChange = useMemo(() => {
     if (isTrending) {
@@ -61,64 +66,80 @@ export const CoinRow = ({
     }
   }, [isTrending]);
 
+  const handleToggleFavorite = useCallback(() => {
+    // NOTE: It's important to always fetch ETH favorite on mainnet
+    return toggleFavorite(address, mainnetAddress === ETH_ADDRESS ? 1 : chainId);
+  }, [address, mainnetAddress, chainId]);
+
   return (
-    <ButtonPressAnimation disallowInterruption onPress={onPress} scaleTo={0.95}>
-      <HitSlop vertical="10px">
-        <Box
-          alignItems="center"
-          paddingVertical={'10px'}
-          paddingHorizontal={'20px'}
-          flexDirection="row"
-          justifyContent="space-between"
-          width="full"
-        >
-          <Inline alignVertical="center" space="10px">
-            <SwapCoinIcon
-              iconUrl={iconUrl}
-              address={address}
-              mainnetAddress={mainnetAddress}
-              large
-              network={ethereumUtils.getNetworkFromChainId(chainId)}
-              symbol={symbol}
-              theme={theme}
-              color={color}
-            />
-            <Stack space="10px">
-              <Text color="label" size="17pt" weight="semibold">
-                {name}
-              </Text>
-              <Inline alignVertical="center" space={{ custom: 5 }}>
-                <Text color="labelTertiary" size="13pt" weight="semibold">
-                  {output ? symbol : `${balance}`}
-                </Text>
-                {isTrending && percentChange && (
-                  <Inline alignVertical="center" space={{ custom: 1 }}>
-                    <Text align="center" color={percentChange.color} size="12pt" weight="bold">
-                      {percentChange.prefix}
+    <Box>
+      <Columns alignVertical="center">
+        <Column>
+          <ButtonPressAnimation disallowInterruption onPress={onPress} scaleTo={0.95}>
+            <HitSlop vertical="10px">
+              <Box
+                alignItems="center"
+                paddingLeft="20px"
+                paddingRight={!output ? '20px' : undefined}
+                paddingVertical="10px"
+                flexDirection="row"
+                justifyContent="space-between"
+                width="full"
+                gap={12}
+              >
+                <Box flexDirection="row" gap={10} flexShrink={1} justifyContent="center">
+                  <SwapCoinIcon
+                    iconUrl={iconUrl}
+                    address={address}
+                    mainnetAddress={mainnetAddress}
+                    large
+                    network={ethereumUtils.getNetworkFromChainId(chainId)}
+                    symbol={symbol}
+                    color={color}
+                  />
+                  <Box gap={10} flexShrink={1} justifyContent="center">
+                    <Text color="label" size="17pt" weight="semibold" numberOfLines={1} ellipsizeMode="tail">
+                      {name}
                     </Text>
-                    <Text color={percentChange.color} size="13pt" weight="semibold">
-                      {percentChange.change}
-                    </Text>
-                  </Inline>
-                )}
+                    <Inline alignVertical="center" space={{ custom: 5 }}>
+                      <Text color="labelTertiary" size="13pt" weight="semibold">
+                        {output ? symbol : `${balance}`}
+                      </Text>
+                      {isTrending && percentChange && (
+                        <Inline alignVertical="center" space={{ custom: 1 }}>
+                          <Text align="center" color={percentChange.color} size="12pt" weight="bold">
+                            {percentChange.prefix}
+                          </Text>
+                          <Text color={percentChange.color} size="13pt" weight="semibold">
+                            {percentChange.change}
+                          </Text>
+                        </Inline>
+                      )}
+                    </Inline>
+                  </Box>
+                </Box>
+                {!output && <BalancePill balance={nativeBalance} />}
+              </Box>
+            </HitSlop>
+          </ButtonPressAnimation>
+        </Column>
+        {output && (
+          <Column width="content">
+            <Box paddingLeft="12px" paddingRight="20px">
+              <Inline space="8px">
+                <CoinRowButton icon="􀅳" outline size="icon 14px" />
+                <CoinRowButton color={favoritesIconColor} onPress={handleToggleFavorite} icon="􀋃" weight="black" />
               </Inline>
-            </Stack>
-          </Inline>
-          {output ? (
-            <Inline space="8px">
-              <CoinRowButton icon="􀅳" outline size="icon 14px" />
-              <CoinRowButton
-                color={isFavorite(address) ? '#FFCB0F' : undefined}
-                onPress={() => toggleFavorite(address)}
-                icon="􀋃"
-                weight="black"
-              />
-            </Inline>
-          ) : (
-            <BalancePill balance={nativeBalance} />
-          )}
-        </Box>
-      </HitSlop>
-    </ButtonPressAnimation>
+            </Box>
+          </Column>
+        )}
+      </Columns>
+    </Box>
   );
 };
+
+export const styles = StyleSheet.create({
+  solidColorCoinIcon: {
+    opacity: 0.4,
+  },
+});

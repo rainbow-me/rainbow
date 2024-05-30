@@ -3,41 +3,44 @@ import { SharedValue, interpolate, useAnimatedStyle, withSpring, withTiming } fr
 import { globalColors, useColorMode } from '@/design-system';
 import {
   BASE_INPUT_HEIGHT,
+  BOTTOM_ACTION_BAR_HEIGHT,
   EXPANDED_INPUT_HEIGHT,
   FOCUSED_INPUT_HEIGHT,
+  GAS_SHEET_HEIGHT,
+  REVIEW_SHEET_HEIGHT,
   THICK_BORDER_WIDTH,
   fadeConfig,
   springConfig,
 } from '@/__swaps__/screens/Swap/constants';
 import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
-import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
 import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { spinnerExitConfig } from '@/components/animations/AnimatedSpinner';
 import { NavigationSteps } from './useSwapNavigation';
 import { IS_ANDROID } from '@/env';
 import { safeAreaInsetValues } from '@/utils';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 
 export function useAnimatedSwapStyles({
-  SwapInputController,
   SwapWarning,
   internalSelectedInputAsset,
   internalSelectedOutputAsset,
   inputProgress,
   outputProgress,
-  reviewProgress,
+  configProgress,
   isFetching,
 }: {
-  SwapInputController: ReturnType<typeof useSwapInputsController>;
   SwapWarning: ReturnType<typeof useSwapWarning>;
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
-  reviewProgress: SharedValue<number>;
+  configProgress: SharedValue<NavigationSteps>;
   isFetching: SharedValue<boolean>;
 }) {
   const { isDarkMode } = useColorMode();
+
+  const insetBottom = IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16;
 
   const flipButtonStyle = useAnimatedStyle(() => {
     return {
@@ -69,6 +72,13 @@ export function useAnimatedSwapStyles({
         SwapWarning.swapWarning.value.type === SwapWarningType.none || inputProgress.value > 0 || outputProgress.value > 0
           ? 'none'
           : 'auto',
+    };
+  });
+
+  const hideWhenInputsExpanded = useAnimatedStyle(() => {
+    return {
+      opacity: inputProgress.value > 0 || outputProgress.value > 0 ? withTiming(0, fadeConfig) : withTiming(1, fadeConfig),
+      pointerEvents: inputProgress.value > 0 || outputProgress.value > 0 ? 'none' : 'auto',
     };
   });
 
@@ -128,38 +138,37 @@ export function useAnimatedSwapStyles({
   });
 
   const swapActionWrapperStyle = useAnimatedStyle(() => {
+    const isReviewingOrConfiguringGas =
+      configProgress.value === NavigationSteps.SHOW_REVIEW || configProgress.value === NavigationSteps.SHOW_GAS;
+
+    const heightForPanel: { [key in NavigationSteps]: number } = {
+      [NavigationSteps.INPUT_ELEMENT_FOCUSED]: BOTTOM_ACTION_BAR_HEIGHT,
+      [NavigationSteps.SEARCH_FOCUSED]: BOTTOM_ACTION_BAR_HEIGHT,
+      [NavigationSteps.TOKEN_LIST_FOCUSED]: BOTTOM_ACTION_BAR_HEIGHT,
+      [NavigationSteps.SHOW_REVIEW]: REVIEW_SHEET_HEIGHT + insetBottom,
+      [NavigationSteps.SHOW_GAS]: GAS_SHEET_HEIGHT + insetBottom,
+    };
+
     return {
-      position: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 'absolute' : 'relative',
-      bottom: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 0 : undefined,
-      height: withSpring(
-        reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 407.68 + safeAreaInsetValues.bottom + 16 : 114,
-        springConfig
+      position: isReviewingOrConfiguringGas ? 'absolute' : 'relative',
+      bottom: isReviewingOrConfiguringGas ? 0 : undefined,
+      height: withSpring(heightForPanel[configProgress.value], springConfig),
+      borderTopLeftRadius: isReviewingOrConfiguringGas ? (IS_ANDROID ? 20 : 40) : 0,
+      borderTopRightRadius: isReviewingOrConfiguringGas ? (IS_ANDROID ? 20 : 40) : 0,
+      borderWidth: isReviewingOrConfiguringGas ? THICK_BORDER_WIDTH : 0,
+      borderColor: isReviewingOrConfiguringGas ? opacityWorklet(globalColors.darkGrey, 0.2) : undefined,
+      backgroundColor: opacityWorklet(
+        getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true),
+        0.03
       ),
-      borderTopLeftRadius: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? (IS_ANDROID ? 20 : 40) : 0,
-      borderTopRightRadius: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? (IS_ANDROID ? 20 : 40) : 0,
-      borderWidth: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? THICK_BORDER_WIDTH : 0,
-      borderColor: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? opacityWorklet(globalColors.darkGrey, 0.2) : undefined,
-      backgroundColor:
-        reviewProgress.value === NavigationSteps.SHOW_REVIEW
-          ? isDarkMode
-            ? '#191A1C'
-            : globalColors.white100
-          : opacityWorklet(getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true), 0.03),
-      borderTopColor:
-        reviewProgress.value === NavigationSteps.SHOW_REVIEW
-          ? opacityWorklet(globalColors.darkGrey, 0.2)
-          : opacityWorklet(getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true), 0.04),
-      paddingTop: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 28 : 16 - THICK_BORDER_WIDTH,
+      borderTopColor: isReviewingOrConfiguringGas
+        ? opacityWorklet(globalColors.darkGrey, 0.2)
+        : opacityWorklet(getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true), 0.04),
+      paddingTop: isReviewingOrConfiguringGas ? 28 : 16 - THICK_BORDER_WIDTH,
     };
   });
 
   const assetToSellIconStyle = useAnimatedStyle(() => {
-    return {
-      backgroundColor: getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true),
-    };
-  });
-
-  const assetToSellCaretStyle = useAnimatedStyle(() => {
     return {
       backgroundColor: getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true),
     };
@@ -171,45 +180,56 @@ export function useAnimatedSwapStyles({
     };
   });
 
+  const assetToSellCaretStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode, true),
+    };
+  });
+
   const assetToBuyCaretStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true),
+      backgroundColor: getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true),
     };
   });
 
   const flipButtonFetchingStyle = useAnimatedStyle(() => {
+    if (IS_ANDROID) return { borderWidth: 0 };
     return {
-      borderWidth: isFetching ? withTiming(2, { duration: 300 }) : withTiming(THICK_BORDER_WIDTH, spinnerExitConfig),
+      borderWidth: isFetching.value ? withTiming(2, { duration: 300 }) : withTiming(THICK_BORDER_WIDTH, spinnerExitConfig),
     };
   });
 
   const searchInputAssetButtonStyle = useAnimatedStyle(() => {
     return {
-      color: getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true),
+      color: getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode, true),
     };
   });
 
   const searchOutputAssetButtonStyle = useAnimatedStyle(() => {
     return {
-      color: getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true),
+      color: getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true),
     };
   });
 
-  const hideWhileReviewing = useAnimatedStyle(() => {
+  const hideWhileReviewingOrConfiguringGas = useAnimatedStyle(() => {
     return {
-      opacity: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? withTiming(0, fadeConfig) : withTiming(1, fadeConfig),
-      pointerEvents: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 'none' : 'auto',
+      opacity:
+        configProgress.value === NavigationSteps.SHOW_REVIEW || configProgress.value === NavigationSteps.SHOW_GAS
+          ? withTiming(0, fadeConfig)
+          : withTiming(1, fadeConfig),
+      pointerEvents:
+        configProgress.value === NavigationSteps.SHOW_REVIEW || configProgress.value === NavigationSteps.SHOW_GAS ? 'none' : 'auto',
     };
   });
 
   const searchInputAssetButtonWrapperStyle = useAnimatedStyle(() => {
     return {
       backgroundColor: opacityWorklet(
-        getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true),
+        getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode, true),
         isDarkMode ? 0.1 : 0.08
       ),
       borderColor: opacityWorklet(
-        getColorValueForThemeWorklet(internalSelectedInputAsset.value?.color, isDarkMode, true),
+        getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode, true),
         isDarkMode ? 0.06 : 0.01
       ),
       borderWidth: THICK_BORDER_WIDTH,
@@ -219,11 +239,11 @@ export function useAnimatedSwapStyles({
   const searchOutputAssetButtonWrapperStyle = useAnimatedStyle(() => {
     return {
       backgroundColor: opacityWorklet(
-        getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true),
+        getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true),
         isDarkMode ? 0.1 : 0.08
       ),
       borderColor: opacityWorklet(
-        getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.color, isDarkMode, true),
+        getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true),
         isDarkMode ? 0.06 : 0.01
       ),
       borderWidth: THICK_BORDER_WIDTH,
@@ -233,6 +253,7 @@ export function useAnimatedSwapStyles({
   return {
     flipButtonStyle,
     focusedSearchStyle,
+    hideWhenInputsExpanded,
     hideWhenInputsExpandedOrPriceImpact,
     hideWhenInputsExpandedOrNoPriceImpact,
     inputStyle,
@@ -245,7 +266,7 @@ export function useAnimatedSwapStyles({
     assetToSellCaretStyle,
     assetToBuyIconStyle,
     assetToBuyCaretStyle,
-    hideWhileReviewing,
+    hideWhileReviewingOrConfiguringGas,
     flipButtonFetchingStyle,
     searchInputAssetButtonStyle,
     searchOutputAssetButtonStyle,

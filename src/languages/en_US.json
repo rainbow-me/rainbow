@@ -582,24 +582,28 @@
         "nothing_to_send": "Nothing to send"
       },
       "quote_errors": {
+        "501": "No quote available",
         "no_quote_available": "No quote available",
+        "502": "Insufficient liquidity",
         "insufficient_liquidity": "Insufficient liquidity",
+        "503": "Fee on Transfer Token",
         "fee_on_transfer": "Fee on Transfer Token",
+        "504": "No route found",
         "no_route_found": "No route found"
       },
       "price_impact": {
         "long_wait": {
           "title": "Long wait",
-          "description": "Approx."
+          "description": "Approx. %{time}"
         },
         "unknown_price": {
-          "title": "%{symbol} Market Value Unknown",
+          "title": "Market Value Unknown",
           "description": "If you decide to continue, be sure that you are satisfied receiving the quoted amount."
         },
         "losing_prefix": "Losing",
         "small_market": "Small Market",
         "small_market_try_smaller_amount": "Small market — try a smaller amount",
-        "you_are_losing": "You're losing",
+        "you_are_losing": "You're losing %{priceImpact}",
         "no_data": "Market Value Unknown",
         "label": "Possible loss",
         "no_data_subtitle": "If you decide to continue, be sure that you are satisfied with the quoted amount"
@@ -1029,6 +1033,7 @@
       }
     },
     "gas": {
+      "gas_settings": "Gas Settings",
       "card": {
         "falling": "Falling",
         "rising": "Rising",
@@ -1919,9 +1924,18 @@
       "too_many_signup_request": "Too many signup requests, please try again later"
     },
     "swap": {
+      "actions": {
+        "tap_to_swap": "Tap to Swap",
+        "save": "Save",
+        "enter_amount": "Enter Amount",
+        "review": "Review",
+        "fetching_prices": "Fetching Prices",
+        "swapping": "Swapping"
+      },
       "aggregators": {
         "rainbow": "Rainbow"
       },
+      "error_executing_swap": "Error executing swap",
       "tokens_input": {
         "tokens": "Tokens",
         "sort": "Sort",
@@ -1957,6 +1971,7 @@
         "withdraw_symbol": "Withdraw %{symbol}"
       },
       "unknown": "Unknown",
+      "unable_to_load_wallet": "Unable to load wallet",
       "warning": {
         "cost": {
           "are_you_sure_title": "Are you sure?",
@@ -2284,6 +2299,8 @@
         "delete_confirm": "Are you sure you want to delete this wallet?",
         "edit": "Edit Wallet",
         "hide": "Hide",
+        "create_wallet_group": "Create Group",
+        "create_wallet_group_placeholder": "Wallet Group %{numWalletGroups}",
         "import_wallet": "Add Wallet",
         "input": "Transaction Input",
         "notifications": {
@@ -2813,6 +2830,8 @@
         "switch_wallet": "Switch Wallet",
         "switch_network": "Switch Network",
         "disconnect": "Disconnect",
+        "favorite": "Favorite",
+        "undo_favorite": "Undo",
         "connect": "Connect",
         "swap": "Swap",
         "bridge": "Bridge",
@@ -2830,6 +2849,23 @@
       "provider_error": {
         "unsupported_chain": "Unsupported Chain",
         "no_active_session": "You need to connect to the dapp before attempting to switch chains"
+      },
+      "homepage": {
+        "trending": "Trending",
+        "recents": "Recents",
+        "favorites": "Favorites"
+      },
+      "search": {
+        "find_apps_and_more": "Find apps and more",
+        "more_results": "More Results",
+        "search": "Search"
+      },
+      "menus": {
+        "favorite": "Favorite",
+        "undo_favorite": "Undo Favorite",
+        "remove": "Remove",
+        "forward": "Forward",
+        "back": "Back"
       }
     }
   }

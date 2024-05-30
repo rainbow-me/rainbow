@@ -91,7 +91,10 @@
         "no_backups_found": "لم نتمكن من العثور على نسختك الاحتياطية السابقة!",
         "cant_get_encrypted_data": "لم نتمكن من الوصول إلى النسخة الاحتياطية الخاصة بك في هذا الوقت. يرجى المحاولة مرة أخرى لاحقاً.",
         "missing_pin": "حدث خطأ أثناء معالجة رمز PIN الخاص بك. يرجى المحاولة مرة أخرى في وقت لاحق.",
-        "generic": "خطأ أثناء محاولة النسخ الاحتياطي. رمز الخطأ: %{errorCodes}"
+        "generic": "خطأ أثناء محاولة النسخ الاحتياطي. رمز الخطأ: %{errorCodes}",
+        "no_keys_found": "لم يتم العثور على مفاتيح. يرجى المحاولة مرة أخرى.",
+        "backup_not_found": "لم يتم العثور على النسخ الاحتياطي. يرجى المحاولة مرة أخرى.",
+        "no_account_found": "غير قادر على استرجاع ملفات النسخ الاحتياطي. تأكد من تسجيل الدخول."
       },
       "wrong_pin": "رمز PIN الذي أدخلته غير صحيح ولا يمكننا إجراء نسخ احتياطي. الرجاء المحاولة مرة أخرى بكود صحيح.",
       "already_backed_up": {
@@ -101,17 +104,56 @@
         "imported": "تم الاستيراد",
         "imported_message": "تم استيراد محفظتك"
       },
+      "wallet_group_title_plural": "مجموعة المحفظة %{walletGroupNumber}",
+      "wallet_group_title_singular": "مجموعة المحفظة",
+      "private_key_plural": "المفتاح الخاص %{privateKeyNumber}",
+      "private_key_singluar": "المفتاح الخاص",
       "backup_deleted_successfully": "تم حذف النسخ الاحتياطية بنجاح",
       "cloud": {
+        "no_backups": "لم يتم العثور على نسخ احتياطية",
+        "failed_to_fetch_backups": "فشل استرداد النسخ الاحتياطية",
+        "retry": "إعادة المحاولة",
+        "fetching_backups": "استرجاع النسخ الاحتياطية من %{cloudPlatformName}",
         "back_up_to_platform": "النسخ الاحتياطي إلى %{cloudPlatformName}",
-        "manage_platform_backups": "إدارة النسخ الاحتياطية لـ %{cloudPlatformName}",
+        "restore_from_platform": "استعد من %{cloudPlatformName}",
+        "restoration_in_progress": "عملية الاستعادة جارية",
+        "how_would_you_like_to_backup": "كيف تود أن تقوم بعمل نسخة احتياطية لمحفظتك؟",
+        "manage_platform_backups": "عرض نسخ %{cloudPlatformName} الاحتياطية",
+        "cloud_platform_backup_settings": "إعدادات النسخ الاحتياطي لـ %{cloudPlatformName}",
+        "cloud_backup": "النسخ الاحتياطي السحابي",
+        "backing_up": "جارٍ النسخ الاحتياطي...",
+        "backup_success": "تم النسخ الاحتياطي بنجاح",
+        "backup_failed": "فشل النسخ الاحتياطي",
+        "manual_backup": "النسخ الاحتياطي اليدوي",
+        "back_to_cloud_platform_now": "النسخ الاحتياطي إلى %{cloudPlatform} الآن",
+        "add_wallet_to_cloud_backups": "إضافة هذه المحفظة إلى النسخ الاحتياطية السحابية؟",
+        "enable_cloud_backups": "تمكين النسخ الاحتياطي السحابي",
+        "mayber_later": "ربما لاحقا",
+        "recommended_for_beginners": "موصى به للمبتدئين.",
+        "choose_backup": "اختر النسخة الاحتياطية التي ترغب في استعادتها",
+        "backup_to_cloud_now": "النسخ الاحتياطي إلى %{cloudPlatformName} الآن",
+        "choose_backup_cloud_description": "قم بنسخ محفظتك احتياطيًا إلى %{cloudPlatform} بأمان حتى تتمكن من استعادتها إذا فقدت جهازك أو حصلت على جهاز جديد.",
+        "choose_backup_manual_description": "انشئ نسخة احتياطية لمحفظتك يدويًا بحفظ العبارة السرية في مكان آمن.",
+        "enable_cloud_backups_description": "إذا كنت تفضل إنشاء نسخة احتياطية لمحفظتك يدويًا، يمكنك القيام بذلك أدناه.",
+        "latest_backup": "آخر نسخة احتياطية: %{date}",
+        "back_up_all_wallets_to_cloud": "قم بنسخ جميع المحافظ احتياطيا إلى %{cloudPlatformName}",
+        "most_recent_backup": "أحدث نسخة احتياطية",
+        "out_of_date": "غير محدث",
+        "up_to_date": "محدث",
+        "older_backups": "النسخ الاحتياطية الأقدم",
+        "no_older_backups": "لا يوجد نسخ احتياطية أقدم",
+        "older_backups_title": "%{date} في %{time}",
         "password": {
-          "a_password_youll_remember": "الرجاء استخدام كلمة مرور ستتذكرها.",
-          "backup_password": "كلمة مرور النسخ الاحتياطي",
-          "choose_a_password": "اختر كلمة مرور",
+          "a_password_youll_remember_part_one": "كلمة المرور هذه",
+          "not": "غير",
+          "a_password_youll_remember_part_two": "قابلة للاسترجاع. تأكد من اختيار كلمة مرور ستتذكرها.",
+          "backup_password": "كلمة السر",
+          "choose_a_password": "أنشئ كلمة مرور لتأمين نسختك الاحتياطية",
           "confirm_backup": "تأكيد النسخ الاحتياطي",
+          "enter_backup_password": "أدخل كلمة المرور الخاصة بنسختك الاحتياطية",
+          "to_restore_from_backup": "للاستعادة من هذه النسخة الاحتياطية، أدخل كلمة المرور التي أنشأتها عند النسخ الاحتياطي",
           "confirm_password": "تأكيد كلمة المرور",
-          "confirm_placeholder": "تأكيد كلمة المرور",
+          "confirm_placeholder": "إعادة إدخال كلمة المرور",
           "it_cant_be_recovered": "لا يمكن استعادتها!",
           "minimum_characters": "الحد الأدنى %{minimumLength} أحرف",
           "passwords_dont_match": "كلمات السر غير متطابقة",
@@ -133,22 +175,31 @@
       },
       "explainers": {
         "backup": "لا تنس هذه الكلمة السرية! إنها مختلفة عن كلمة السر %{cloudPlatformName} الخاصة بك، ويجب أن تحفظها في مكان آمن.\n\nستحتاج إليها من أجل استعادة محفظتك من النسخة الاحتياطية في المستقبل.",
+        "add_to_backups": "لديك أكثر من محفظة تحتاج إلى دعم النسخ الاحتياطي. لأسباب أمنية، يمكننا الآن فقط نسخ محفظة واحدة في كل مرة.",
         "if_lose_cloud": "إذا فقدت هذا الجهاز، يمكنك استعادة نسخة محفظتك المشفرة من %{cloudPlatformName}.",
         "if_lose_imported": "إذا فقدت هذا الجهاز، يمكنك استعادة محفظتك باستخدام المفتاح الذي قمت بإدخاله أصلا.",
         "if_lose_manual": "إذا فقدت هذا الجهاز، يمكنك استعادة محفظتك بالعبارة السرية التي حفظتها."
       },
       "manual": {
-        "label": "عبارتك السرية",
+        "backup_manually": "إنشاء النسخ الاحتياطي يدويًا",
+        "label": "حفظ %{typeName} الخاصة بك",
+        "with_your_label": "%{typeName} الخاصة بك",
+        "backup_manually_now": "هل تود إنشاء نسخة احتياطية لهذه المحفظة؟",
+        "back_up_now": "النسخ الاحتياطي الآن",
+        "already_backed_up": "تم النسخ الاحتياطي بالفعل",
         "pkey": {
-          "confirm_save": "لقد حفظت مفتاحي",
+          "confirm_save": "􀆅 لقد حفظت مفتاحي",
           "save_them": "انسخه واحفظه في مدير كلمات السر الخاص بك، أو في مكان آمن آخر.",
-          "these_keys": "هذا هو مفتاح محفظتك!"
+          "these_keys": "هذا هو مفتاح محفظتك!",
+          "description": "أي شخص يمتلك هذا المفتاح يمكنه الوصول إلى محفظتك بالكامل! يجب أن لا تشاركه أبدًا."
         },
         "seed": {
-          "confirm_save": "لقد حفظت هذه الكلمات",
+          "confirm_save": "􀆅 لقد حفظت هذه الكلمات",
           "save_them": "اكتبها أو احفظها في مدير كلمات المرور الخاص بك.",
-          "these_keys": "هذه الكلمات هي مفاتيح محفظتك!"
-        }
+          "these_keys": "هذه الكلمات هي مفاتيح محفظتك!",
+          "description": "هذه الكلمات هي مفاتيح محفظتك. تأكد من حفظها في مكان آمن."
+        },
+        "create_new_secret_phrase": "إنشاء عبارة استعادة جديدة"
       },
       "needs_backup": {
         "back_up_your_wallet": "احتفظ بنسخة احتياطية من محفظتك",
@@ -177,6 +228,15 @@
         "view_private_key": "عرض المفتاح الخاص",
         "view_secret_phrase": "عرض العبارة السرية",
         "you_need_to_authenticate": "تحتاج إلى التوثيق من أجل الوصول إلى استعادة %{typeName}"
+      },
+      "warning": {
+        "before_you_proceed": "قبل أن تتابع",
+        "title": "عرض %{typeName} الخاص بك",
+        "never_share": "لا تشارك أبدًا %{typeName} الخاص بك ولا تدخله في أي تطبيقات أو مواقع.",
+        "access": "أي شخص يملك %{typeName} الخاص بك يمكنه الوصول إلى محفظتك بأكملها.",
+        "hide": "تأكد من أنه لا يمكن لأحد مشاهدة شاشتك عند مشاهدة %{typeName} الخاص بك.",
+        "support": "دعم Rainbow لن يطلب منك أبدًا %{typeName} الخاص بك.",
+        "button": "􀎽 عرض %{typeName}"
       }
     },
     "bluetooth": {
@@ -483,6 +543,9 @@
         "view_on": "اعرض على %{blockExplorerName}",
         "view_on_etherscan": "عرض على Etherscan"
       },
+      "all_networks": "جميع الشبكات",
+      "filter_by_network": "الفلترة حسب الشبكة",
+      "my_tokens": "الرموز الخاصة بي",
       "flip": "اقلب",
       "max": "الحد الأقصى",
       "movers": {
@@ -501,10 +564,32 @@
         "nothing_here": "لا شيء هنا!",
         "nothing_to_send": "لا شيء للإرسال"
       },
+      "quote_errors": {
+        "501": "لا يوجد اقتباس متاح",
+        "no_quote_available": "لا يوجد اقتباس متاح",
+        "502": "سيولة غير كافية",
+        "insufficient_liquidity": "سيولة غير كافية",
+        "503": "رسوم على النقل",
+        "fee_on_transfer": "رسوم على النقل",
+        "504": "لم يتم العثور على مسار",
+        "no_route_found": "لم يتم العثور على مسار"
+      },
       "price_impact": {
+        "long_wait": {
+          "title": "انتظار طويل",
+          "description": "تقريبًا %{time}"
+        },
+        "unknown_price": {
+          "title": "القيمة السوقية غير معروفة",
+          "description": "إذا قررت المتابعة، تأكد من أنك راض عن المبلغ المعروض."
+        },
         "losing_prefix": "خاسر",
         "small_market": "سوق صغير",
-        "label": "خسارة محتملة"
+        "small_market_try_smaller_amount": "سوق صغير - حاول مبلغ أصغر",
+        "you_are_losing": "أنت تخسر %{priceImpact}",
+        "no_data": "القيمة السوقية غير معروفة",
+        "label": "خسارة محتملة",
+        "no_data_subtitle": "إذا قررت المتابعة، تأكد من أنك راض بالمبلغ المعروض"
       },
       "source": {
         "rainbow": "أوتو",
@@ -677,11 +762,14 @@
         "registrant": "المسجل",
         "resolver": "المحلل",
         "save_to_photos": "حفظ في الصور",
+        "sell_for_x": "بيع مقابل %{price}",
         "set_primary_name": "تعيين كاسم ENS الخاص بي",
         "share_token_info": "مشاركة %{uniqueTokenName} معلومات",
         "showcase": "عرض",
         "toast_added_to_showcase": "تمت الإضافة إلى العرض",
         "toast_removed_from_showcase": "تم الإزالة من العرض",
+        "refreshing": "تحديث البيانات الوصفية...",
+        "reported": "تم الإبلاغ عنه كرسالة غير مرغوب فيها",
         "twitter": "تويتر",
         "view_all_with_property": "عرض الكل بالخاصية",
         "view_collection": "عرض المجموعة",
@@ -691,30 +779,37 @@
         "view_on_platform": "عرض على %{platform}",
         "view_on_web": "عرض على الويب",
         "refresh": "تحديث البيانات الوصفية",
+        "report": "الإبلاغ كرسالة غير مرغوب فيها",
         "hide": "إخفاء",
         "unhide": "الغاء الاخفاء"
       }
     },
+    "app_icon_unlock_sheet": {
+      "smol_description": "لقد اكتشفت الكنز! لأنك تمتلك NFT Smolverse، قمت بفتح أيقونة مخصصة!",
+      "smol_title": "لقد قمت بفتح\nRainbow 􀆄 SMOL",
+      "optimism_description": "للاحتفال بـ NFTs على Optimism، تعاونت Rainbow و Optimism لإطلاق أيقونة تطبيق بإصدار محدود للمستكشفين المتفائلين مثلك!",
+      "optimism_title": "لقد قمت بفتح\nRainbow 􀆄 Optimism",
+      "zora_description": "أيقونة Rainbow Zorb إصدار خاص تم صنعها للتأمل السحري.",
+      "zora_title": "لقد قمت بفتح\nRainbow 􀆄 Zora",
+      "finiliar_description": "أيقونة Rainbow Fini إصدار خاص التي تبقيك على اطلاع على سعر الغاز، في المطر أو الشمس.",
+      "finiliar_title": "لقد قمت بفتح\nRainbow Fini",
+      "golddoge_description": "أيقونة تطبيق Rainbow الذهبية المحدودة الإصدار احتفالًا بعيد الميلاد السابع عشر لـ Kabosu.",
+      "golddoge_title": "لقد قمت بفتح\nRainbow 􀆄 DOGE",
+      "raindoge_description": "أيقونة تطبيق Rainbow المحدودة الإصدار احتفالًا بعيد الميلاد السابع عشر لـ Kabosu.",
+      "raindoge_title": "لقد قمت بفتح\nRainbow 􀆄 The Doge NFT",
+      "pooly_description": "أيقونة Rainbow Pooly إصدار خاص لداعمي الحرية.",
+      "pooly_title": "لقد قمت بفتح\nRainbow Pooly",
+      "zorb_description": "أيقونة Rainbow Zorb إصدار خاص: 100% مما تحب، أسرع وأكثر كفاءة.",
+      "zorb_title": "لقد قمت بفتح\nRainbow Zorb Energy!",
+      "poolboy_description": "أيقونة Rainbow x Poolsuite إصدار خاص لصيف العمالة.",
+      "poolboy_title": "لقد قمت بفتح\nRainbow Poolboy!",
+      "adworld_description": "باعتبارك أحد مواطني Rainbow World، يمكنك الآن فتح أيقونة تطبيق AdWorld x Rainbow إصدار خاص.",
+      "adworld_title": "مرحبًا بك في Rainbow World!",
+      "farcaster_description": "أيقونة تطبيقنا الأكثر مللاً على الإطلاق، مستوحاة من البساطة الباهتة لـ Warpcast.",
+      "farcaster_title": "لقد قمت بفتح\nRainbowcast",
+      "button": "Snag the icon"
+    },
     "explain": {
-      "icon_unlock": {
-        "smol_text": "لقد وجدت كنز! لأنك تمتلك NFT من Smolverse، لقد فتحت أيقونة مخصصة!",
-        "optimism_text": "للاحتفال بالـ NFTs على Optimism، اتحدت Rainbow و Optimism لإطلاق رمز تطبيق محدود الإصدار للمستكشفين المتفائلين مثلك!",
-        "zora_text": "أيقونة Rainbow Zorb الخاصة التي تم إعدادها للتأمل السحري.",
-        "finiliar_text": "أيقونة Rainbow Fini الخاصة التي تبقيك على تواصل بأسعار الغاز، مطراً أو شمساً.",
-        "finiliar_title": "لقد فتحت\nRainbow Fini",
-        "golddoge_text": "أيقونة تطبيق Rainbow الذهبية المحدودة الإصدار احتفالاً بعيد ميلاد Kabosu السابع عشر.",
-        "raindoge_text": "أيقونة تطبيق Rainbow المحدودة الإصدار احتفالاً بعيد ميلاد Kabosu السابع عشر.",
-        "pooly_text": "رمز لـ Pooly المطبوع بقوس قزح خاص لمؤيدي الحرية.",
-        "pooly_title": "لقد فتحت\nبركة قوس قزح Pooly",
-        "zorb_text": "طبعة خاصة من Zorb قوس قزح:\n100% مما تحب، أسرع وأكثر كفاءة.",
-        "zorb_title": "لقد فتحت\nطاقة Zorb قوس قزح!",
-        "poolboy_text": "رمز خاص من قوس قزح x Poolsuite لصيف المنظومة.",
-        "poolboy_title": "لقد فتحت\nRainbow Poolboy!",
-        "adworld_text": "كمواطن في عالم Rainbow، يمكنك الآن فتح نسخة خاصة من\nAdWorld x Rainbow App Icon.",
-        "adworld_title": "مرحبا بك في عالم Rainbow!",
-        "title": "لقد فتحت\nRainbow 􀆄 %{partner}",
-        "button": "الحصول على الرمز"
-      },
       "output_disabled": {
         "text": "لل %{fromNetwork}, لا يمكن لل Rainbow تحضير الصفقات استنادًا إلى مقدار %{outputToken} الذي ترغب في تلقيه. \n\n حاول بدلاً من ذلك إدخال مقدار %{inputToken} الذي تود تبديله.",
         "title": "أدخل %{inputToken} بدلاً من ذلك",
@@ -731,6 +826,9 @@
       "arbitrum": {
         "text": "Arbitrum هو شبكة الطبقة 2 التي تعمل فوق Ethereum ، حيث تتيح المعاملات أرخص وأسرع بينما ما زالت تستفيد من الأمان الأساسي لـ Ethereum.\n\nيقوم بتجميع الكثير من المعاملات معًا في \"roll up\" قبل إرسالها للعيش بشكل دائم على Ethereum.",
         "title": "ما هو Arbitrum؟"
+      },
+      "add_to_backups": {
+        "title": "النسخ الاحتياطي لـ %{walletName}"
       },
       "backup": {
         "title": "مهم"
@@ -781,7 +879,19 @@
       },
       "base": {
         "text": "القاعدة هي شبكة من الطبقة 2 تعمل فوق Ethereum ، مما يتيح المعاملات الأرخص والأسرع مع الاستفادة من الأمان الكامن في Ethereum.\n\nإنه يربط العديد من المعاملات معًا في \"التجميع\" قبل إرسالها للعيش بشكل دائم على Ethereum.",
-        "title": "ما هي القاعدة"
+        "title": "ما هو الأساس؟"
+      },
+      "avalanche": {
+        "text": "Avalanche هو سلسلة جانبية، شبكة متميزة تعمل بجانب إثيريوم ومتوافقة معها.\n\nيسمح بعمليات تحويل أرخص وأسرع، ولكن على عكس شبكات الطبقة الثانية، فإن Avalanche لديه آليات الأمان والاتفاقية الخاصة به والتي تختلف عن إثيريوم.",
+        "title": "ما هو Avalanche؟"
+      },
+      "degen": {
+        "text": "Degen Chain هو شبكة ذات الطبقة الثالثة تعمل على قمة Arbitrum وإثيريوم، مما يوفر معاملات سريعة جدًا ورخيصة محددة في رمز المجتمع Farcaster $degen.",
+        "title": "ما هو Degen Chain؟"
+      },
+      "blast": {
+        "text": " Blast هو شبكة من الطبقة الثانية يعمل على قمة Ethereum، مما يتيح معاملات أرخص وأسرع بينما لا يزال يستفيد من الأمان الأساسي لـ Ethereum.\n\nيجمع العديد من المعاملات معًا في \"طَيّ\" قبل إرسالها للعيش بشكل دائم على Ethereum.",
+        "title": "ما هو Blast؟"
       },
       "zora": {
         "text": "زورا هو شبكة من الطبقة 2 تعمل فوق Ethereum ، مما يتيح المعاملات الأرخص والأسرع مع الاستفادة من الأمان الكامن في Ethereum.\n\nإنه يربط العديد من المعاملات معًا في \"التجميع\" قبل إرسالها للعيش بشكل دائم على Ethereum.",
@@ -906,6 +1016,7 @@
       }
     },
     "gas": {
+      "gas_settings": "إعدادات الغاز",
       "card": {
         "falling": "تناقص",
         "rising": "صعود",
@@ -1091,7 +1202,7 @@
             "manual": "النسخ الاحتياطي يدويا"
           },
           "description": "لا تفقد محفظتك! احفظ نسخة مشفرة في %{cloudPlatformName}",
-          "title": "احتفظ بنسخة احتياطية من محفظتك"
+          "title": "كيف تود أن تقوم بعمل نسخة احتياطية لمحفظتك؟"
         },
         "existing": {
           "button": {
@@ -1214,6 +1325,7 @@
         "offer_expired": "انتهت صلاحية العرض",
         "expired": "منتهي",
         "hold_to_sell": "احتفظ للبيع",
+        "selling": "بيع",
         "error": {
           "title": "خطأ في بيع NFT",
           "message": "يرجى الاتصال بدعم Rainbow للحصول على المساعدة."
@@ -1329,7 +1441,8 @@
         "view_weekly_earnings_title": "احتساب النقاط المكتسبة",
         "view_weekly_earnings_counted": "تم احتساب الأرباح الأسبوعية",
         "view_weekly_earnings_close_button": "إغلاق",
-        "view_weekly_earnings_retroactive_points": "النقاط بأثر رجعي",
+        "view_weekly_earnings_retroactive_points": "النقاط النشطة بأثر رجعي",
+        "view_weekly_earnings_bonus_points": "نقاط إضافية",
         "view_weekly_earnings_activity": "نشاطك",
         "view_weekly_earnings_referral_activity": "نشاط الإحالة",
         "view_weekly_earnings_total_earnings": "المجموع",
@@ -1700,16 +1813,35 @@
       "no_thanks": "لا شكرا"
     },
     "settings": {
-      "backup": "النسخ الاحتياطي",
+      "backup": "المحافظ والنسخ الاحتياطي",
+      "delete_backups": "حذف جميع نسخ %{cloudPlatform} الاحتياطية",
+      "confirm_delete_backups": "تأكيد وحذف النسخ الاحتياطية",
+      "manage_backups": "إدارة نسخ %{cloudPlatformOrEmail} الاحتياطية ",
+      "confirm_delete_backups_description": "هل أنت متأكد أنك تريد حذف نسخ محفظة %{cloudPlatform} الاحتياطية؟",
       "google_account_used": "الحساب الجوجل المستخدم للنسخ الاحتياطي",
       "backup_switch_google_account": "تغيير حساب جوجل",
       "backup_sign_out": "تسجيل الخروج",
       "backup_sign_in": "تسجيل الدخول",
       "backup_loading": "جار التحميل...",
       "backup_google_account": "حساب جوجل",
-      "currency": "العملة",
+      "currency": {
+        "title": "العملة",
+        "ETH": "إيثيريوم",
+        "USD": "دولار الولايات المتحدة",
+        "EUR": "اليورو",
+        "GBP": "الجنيه البريطاني",
+        "AUD": "الدولار الأسترالي",
+        "CNY": "اليوان الصيني",
+        "KRW": "الوون الكوري الجنوبي",
+        "JPY": "الين الياباني",
+        "RUB": "الروبل الروسي",
+        "INR": "الروبية الهندية",
+        "TRY": "الليرة التركية",
+        "CAD": "الدولار الكندي",
+        "NZD": "الدولار النيوزيلندي",
+        "ZAR": "الراند الجنوب أفريقي"
+      },
       "app_icon": "أيقونة التطبيق",
-      "dev": "مطور",
       "developer": "إعدادات المطور",
       "done": "تم",
       "feedback_and_reports": "الملاحظات وتقارير الأخطاء",
@@ -1784,6 +1916,22 @@
       "too_many_signup_request": "طلبات التسجيل كثيرة جدا، يرجى المحاولة مرة أخرى لاحقا"
     },
     "swap": {
+      "aggregators": {
+        "rainbow": "رينبو"
+      },
+      "tokens_input": {
+        "tokens": "رموز",
+        "sort": "الترتيب",
+        "available": "متاح",
+        "token_balance": "رصيد الرمز",
+        "networks": "الشبكات",
+        "filter_by_network": "الفلترة حسب الشبكة",
+        "switch_networks": "تبديل الشبكات",
+        "nothing_found": "لم يتم العثور على شيء",
+        "nothing_found_description": "بعض الرموز لا تمتلك سيولة كافية لإجراء %{action}ناجح.",
+        "nothing_found_description_l2": "بعض الرموز لا تمتلك سيولة للطبقة 2 كافية لإجراء %{action}ناجح.",
+        "output_quotes_disabled": "تعطيل اقتباسات الإخراج"
+      },
       "choose_token": "اختر الرمز",
       "gas": {
         "custom": "مخصص",
@@ -1805,6 +1953,7 @@
         "withdraw": "سحب",
         "withdraw_symbol": "سحب %{symbol}"
       },
+      "unknown": "غير معروف",
       "warning": {
         "cost": {
           "are_you_sure_title": "هل أنت متأكد؟",
@@ -1825,6 +1974,15 @@
         }
       }
     },
+    "token_search": {
+      "section_header": {
+        "favorites": "المفضلة",
+        "bridge": "جسر",
+        "verified": "تم التحقق منه",
+        "unverified": "غير متحقق منه",
+        "on_other_networks": "على شبكات أخرى"
+      }
+    },
     "transactions": {
       "actions": {
         "addToContacts": "أضف إلى الجهات",
@@ -1837,35 +1995,139 @@
       "pending_title": "معلق",
       "dropped_title": "تم الإسقاط",
       "type": {
-        "approved": "تم الموافقة",
-        "approving": "موافقة",
-        "bridging": "الجسر",
-        "bridged": "تم الربط",
-        "cancelled": "ألغيت",
-        "cancelling": "الغاء",
-        "contract interaction": "تفاعل العقد",
-        "deposited": "أودعت",
-        "depositing": "إيداع",
-        "dropped": "تم الإسقاط",
-        "failed": "فشل",
-        "purchased": "تم الشراء",
-        "purchasing": "شراء",
-        "minting": "التحميص",
-        "minted": "تم الإصدار",
-        "received": "تم الاستلام",
-        "receiving": "تلقي",
-        "self": "نفسه",
-        "sending": "إرسال",
-        "sent": "تم الإرسال",
-        "speeding up": "تسريع",
-        "selling": "بيع",
-        "sold": "تم البيع",
-        "swapped": "تم التبديل",
-        "swapping": "تبديل",
-        "unknown": "غير معروف",
-        "withdrawing": "انسحاب",
-        "withdrew": "انسحب"
+        "savings": "التوفير",
+        "cancelled": "تم إلغاء المعاملة",
+        "burn": {
+          "pending": "حرق",
+          "confirmed": "أحرق",
+          "failed": "فشل الحرق"
+        },
+        "cancel": {
+          "pending": "إلغاء",
+          "confirmed": "تم الإلغاء",
+          "failed": "فشل الإلغاء"
+        },
+        "speed_up": {
+          "pending": "تسريع العملية",
+          "confirmed": "تم تسريع العملية",
+          "failed": "فشل تسريع العملية"
+        },
+        "send": {
+          "pending": "إرسال",
+          "confirmed": "تم الإرسال",
+          "failed": "فشل الإرسال"
+        },
+        "receive": {
+          "pending": "",
+          "confirmed": "تم الاستلام",
+          "failed": ""
+        },
+        "withdraw": {
+          "pending": "سحب",
+          "confirmed": "تم السحب",
+          "failed": "فشل السحب"
+        },
+        "deposit": {
+          "pending": "إيداع",
+          "confirmed": "تم الإيداع",
+          "failed": "فشل الإيداع"
+        },
+        "mint": {
+          "pending": "صك",
+          "confirmed": "تم الإصدار",
+          "failed": "فشل الصك"
+        },
+        "approve": {
+          "pending": "موافقة",
+          "confirmed": "تم الموافقة",
+          "failed": "فشلت الموافقة"
+        },
+        "contract_interaction": {
+          "pending": "التفاعل قيد الانتظار",
+          "confirmed": "تم التفاعل",
+          "failed": "فشل التفاعل"
+        },
+        "swap": {
+          "pending": "تبديل",
+          "confirmed": "تم التبديل",
+          "failed": "فشلت العملية"
+        },
+        "borrow": {
+          "pending": "الاقتراض",
+          "confirmed": "تم الاقتراض",
+          "failed": "فشل الاقتراض"
+        },
+        "claim": {
+          "pending": "يتم المطالبة",
+          "confirmed": "تم المطالبة",
+          "failed": "فشل المطالبة"
+        },
+        "deployment": {
+          "pending": "جاري النشر",
+          "confirmed": "تم النشر",
+          "failed": "فشل النشر"
+        },
+        "repay": {
+          "pending": "يتم السداد",
+          "confirmed": "تم السداد",
+          "failed": "فشل السداد"
+        },
+        "stake": {
+          "pending": "جاري الرهن",
+          "confirmed": "تم الرهن",
+          "failed": "فشل الرهن"
+        },
+        "unstake": {
+          "pending": "جاري الاسترداد",
+          "confirmed": "تم الاسترداد",
+          "failed": "فشل الاسترداد"
+        },
+        "purchase": {
+          "pending": "جاري الشراء",
+          "confirmed": "تم الشراء",
+          "failed": "فشل الشراء"
+        },
+        "revoke": {
+          "pending": "إلغاء",
+          "confirmed": "تم الإلغاء",
+          "failed": "فشل الإلغاء"
+        },
+        "sale": {
+          "pending": "بيع",
+          "confirmed": "تم البيع",
+          "failed": "فشل البيع"
+        },
+        "bridge": {
+          "pending": "جسر",
+          "confirmed": "تم الربط",
+          "failed": "فشل الجسر"
+        },
+        "airdrop": {
+          "pending": "",
+          "confirmed": "تم الإسقاط",
+          "failed": ""
+        },
+        "wrap": {
+          "pending": "تغليف",
+          "confirmed": "مغلف",
+          "failed": "فشل التغليف"
+        },
+        "unwrap": {
+          "pending": "فك التغليف",
+          "confirmed": "تم فك التغليف",
+          "failed": "فشل فك التغليف"
+        },
+        "bid": {
+          "pending": "المزايدة",
+          "confirmed": "المزايدة",
+          "failed": "فشلت المزايدة"
+        }
       },
+      "approvals": {
+        "no_allowance": "لا يوجد بدل",
+        "unlimited": "غير محدود"
+      },
+      "no_value": "لا يوجد قيمة",
       "savings": "التوفير",
       "signed": "موقع",
       "contract_interaction": "تفاعل العقد",
@@ -1877,6 +2139,7 @@
       "to": "إلى",
       "value": "القيمة",
       "hash": "تكس هاش",
+      "you": "أنت",
       "network_fee": "رسوم الشبكة",
       "hash_copied": "􀁣 تم نسخ هاش الحوالة",
       "address_copied": "􀁣 تم نسخ العنوان",
@@ -1960,6 +2223,9 @@
       "copied": "تم النسخ \"%{copiedText}\"",
       "invalid_paste": "لا يمكنك لصق ذلك هنا"
     },
+    "tokens_tab": {
+      "unknown_token": "رمز غير معروف"
+    },
     "hardware_wallets": {
       "pair_your_nano": "ربط جهاز Nano X الخاص بك",
       "connect_your_ledger": "قم بتوصيل Ledger Nano X الخاص بك بـ Rainbow عبر البلوتوث. إذا كانت هذه أول مرة، سوف يطلب Rainbow الوصول إلى البلوتوث.",
@@ -2015,6 +2281,8 @@
         "delete_confirm": "هل أنت متأكد أنك تريد حذف هذه المحفظة؟",
         "edit": "تعديل المحفظة",
         "hide": "إخفاء",
+        "create_wallet_group": "إنشاء مجموعة محفظة",
+        "create_wallet_group_placeholder": "مجموعة المحفظة %{numWalletGroups}",
         "import_wallet": "أضف محفظة",
         "input": "إدخال العملية",
         "notifications": {
@@ -2112,15 +2380,31 @@
         "please_seed_phrase": "يرجى المصادقة لعرض المفتاح الخاص"
       },
       "back_ups": {
-        "and_1_more_wallet": "ومحفظة أخرى",
+        "wallet_count": "%{numAccounts} محفظة",
+        "wallet_count_gt_one": "%{numAccounts} محافظ",
         "and_more_wallets": "و %{moreWalletCount} محافظ أخرى",
+        "create_new_wallet": "إنشاء محفظة جديدة",
+        "create_new_wallet_description": "أنشئ محفظة جديدة باستخدام هذه العبارة السرية",
         "backed_up": "تم النسخ الاحتياطي",
         "backed_up_manually": "تم النسخ الاحتياطي يدويا",
-        "imported": "تم الاستيراد"
+        "imported": "تم الاستيراد",
+        "cloud_backup_title": "النسخ الاحتياطي السحابي",
+        "not_backed_up": "لم يتم النسخ الاحتياطي",
+        "not_backed_up_to_cloud_message": "هذا %{backupType} ليس في آخر عملية نسخ احتياطي. قم بالنسخ الاحتياطي الآن إلى %{cloudPlatform} حتى تتمكن من استعادته إذا فقدت جهازك أو حصلت على جهاز جديد.",
+        "not_backed_up_message": "هذا %{backupType} لم يتم نسخه احتياطياً. قم بالنسخ الاحتياطي الآن حتى تتمكن من استعادته إذا فقدت جهازك أو حصلت على جهاز جديد.",
+        "backed_up_message": "لقد اخترت حفظ هذا %{backupType} بنفسك. تأكد من أنك قمت بتخزينه في مكان آمن.",
+        "backed_up_to_cloud_message": "جميع محافظك مدعومة إلى %{cloudPlatform}. إذا فقدت جهازك أو حصلت على جهاز جديد، ستكون قادراً على استعادة المحافظ المعروضة أدناه.",
+        "cloud_backup_out_of_date_description": "بعض محافظك ليست في آخر عملية نسخ احتياطي. قم بالنسخ الاحتياطي الآن إلى %{cloudPlatform} حتى تتمكن من استعادتها إذا فقدت جهازك أو حصلت على جهاز جديد.",
+        "cloud_backup_description": "قم بالنسخ الاحتياطي لمحافظك بأمان إلى %{cloudPlatform} حتى تتمكن من استعادتها إذا فقدت جهازك أو حصلت على جهاز جديد.",
+        "cloud_backup_link": "تعلم المزيد...",
+        "view_secret_phrase": "عرض العبارة السرية",
+        "view_private_key": "عرض المفتاح الخاص",
+        "copy_wallet_address": "نسخ عنوان المحفظة"
       },
       "balance_title": "رصيد",
       "buy": "شراء",
       "change_wallet": {
+        "no_balance": "لا يوجد رصيد",
         "balance_eth": "%{balanceEth} ETH",
         "watching": "مشاهدة",
         "ledger": "ليدجر"
@@ -2197,9 +2481,8 @@
         "add_wallet_sheet": {
           "options": {
             "cloud": {
-              "description_android": "إذا كنت قد قمت بالفعل بنسخة احتياطية لمحفظتك على Google Drive، انقر هنا لإستعادتها.",
-              "description_ios_one_wallet": "لديك 1 محفظة تم نسخها احتياطيًا",
-              "description_ios_multiple_wallets": "لديك %{walletCount} محافظ تم نسخها احتياطيًا",
+              "description_restore_sheet": "إذا قمت بعمل نسخة احتياطية سابقاً إلى %{cloudPlatform}، انقر هنا لاستعادتها.",
+              "description_with_latest_backup_date": "آخر نسخة احتياطية %{fromNow} عند %{time}",
               "title": "استعادة من %{platform}",
               "no_backups": "لم يتم العثور على نسخ احتياطية",
               "no_google_backups": "لم يتم العثور على أي نسخة احتياطية على Google Drive. تأكد من أنك مسجل الدخول بالحساب الصحيح."
@@ -2213,12 +2496,12 @@
               "title": "قم بتوصيل محفظتك الخارجية"
             },
             "seed": {
-              "description": "استخدم العبارة الاستردادية الخاصة بك من Rainbow أو محفظة العملات الرقمية الأخرى",
-              "title": "استعادة بواسطة العبارة الاستردادية أو المفتاح الخاص"
+              "description": "استخدم العبارة السرية من Rainbow، MetaMask، أو محفظة أخرى",
+              "title": "استيراد عبارة سرية أو مفتاح خاص"
             },
             "watch": {
-              "description": "راقب عنوانا عاما أو اسم ENS",
-              "title": "راقب عنوان Ethereum"
+              "description": "مشاهدة اسم ENS أو عنوان عام",
+              "title": "مشاهدة محفظة"
             }
           },
           "first_wallet": {
@@ -2331,7 +2614,7 @@
           "insufficient_funds": "يا للأسف! تغير سعر الغاز ولم يعد لديك أموال كافية لهذه المعاملة. الرجاء المحاولة مرة أخرى بكمية أقل.",
           "generic": "يا للأسف! حدثت مشكلة أثناء تقديم العملية. الرجاء المحاولة مرة أخرى."
         },
-        "complete_checks": "التحققات الكاملة",
+        "complete_check": "أكمل الفحص",
         "ens_configuration_options": "خيارات تكوين ENS",
         "confirm": "تأكيد العملية",
         "max": "أقصى",
@@ -2369,6 +2652,7 @@
       }
     },
     "walletconnect": {
+      "requests": "طلبات",
       "wants_to_connect": "يرغب في الاتصال بمحفظتك",
       "wants_to_connect_to_network": "يرغب في الاتصال بالشبكة %{network}",
       "available_networks": "الشبكات المتاحة",
@@ -2414,6 +2698,7 @@
       },
       "menu_options": {
         "disconnect": "قطع الاتصال",
+        "connect": "اتصل",
         "switch_wallet": "تبديل المحفظة",
         "switch_network": "تبديل الشبكة",
         "available_networks": "الشبكات المتاحة"
@@ -2516,6 +2801,54 @@
     "warning": {
       "user_is_offline": "الاتصال غير متوفر، يرجى التحقق من اتصالك بالإنترنت",
       "user_is_online": "متصل! أنت عادت إلى الاتصال بالشبكة"
+    },
+    "dapp_browser": {
+      "address_bar": {
+        "input_placeholder": "ابحث أو أدخل الموقع"
+      },
+      "control_panel": {
+        "connected": "متصل",
+        "not_connected": "غير متصل",
+        "switch_wallet": "تبديل المحفظة",
+        "switch_network": "تبديل الشبكة",
+        "disconnect": "قطع الاتصال",
+        "favorite": "المفضلة",
+        "undo_favorite": "تراجع",
+        "connect": "اتصل",
+        "swap": "تبديل",
+        "bridge": "جسر",
+        "more": "أكثر"
+      },
+      "error": {
+        "title": "حدث خطأ ما",
+        "default_msg": "حدث خطأ في تحميل الصفحة. يرجى المحاولة مرة أخرى."
+      },
+      "no_wc_needed": {
+        "title": "أووبس!",
+        "description": "يبدو أنك تحاول الاتصال بهذا الداب عبر WalletConnect. لم يعد هذا الأمر ضرورياً مع متصفح Rainbow المدمج. عد للخلف واختر \"MetaMask\" وسيعمل كل شيء بشكل جيد.",
+        "cta": "فهمت"
+      },
+      "provider_error": {
+        "unsupported_chain": "سلسلة غير مدعومة",
+        "no_active_session": "تحتاج إلى الاتصال بالداب قبل محاولة تبديل السلاسل"
+      },
+      "homepage": {
+        "trending": "الشائع",
+        "recents": "الأحدث",
+        "favorites": "المفضلة"
+      },
+      "search": {
+        "find_apps_and_more": "ابحث عن التطبيقات والمزيد",
+        "more_results": "نتائج أكثر",
+        "search": "بحث"
+      },
+      "menus": {
+        "favorite": "المفضلة",
+        "undo_favorite": "تراجع عن المفضلة",
+        "remove": "إزالة",
+        "forward": "إلى الأمام",
+        "back": "رجوع"
+      }
     }
   }
 }

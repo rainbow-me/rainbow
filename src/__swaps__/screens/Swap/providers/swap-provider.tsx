@@ -1,6 +1,6 @@
 // @refresh
-import React, { createContext, useContext, ReactNode } from 'react';
-import { StyleProp, TextStyle, TextInput } from 'react-native';
+import React, { createContext, useContext, ReactNode, useEffect } from 'react';
+import { StyleProp, TextStyle, TextInput, NativeModules } from 'react-native';
 import {
   AnimatedRef,
   SharedValue,
@@ -11,6 +11,8 @@ import {
   useDerivedValue,
   useSharedValue,
 } from 'react-native-reanimated';
+
+import * as i18n from '@/languages';
 import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
 import { INITIAL_SLIDER_POSITION, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useAnimatedSwapStyles } from '@/__swaps__/screens/Swap/hooks/useAnimatedSwapStyles';
@@ -19,37 +21,62 @@ import { useSwapNavigation, NavigationSteps } from '@/__swaps__/screens/Swap/hoo
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
 import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
-import { CrosschainQuote, Quote, QuoteError, SwapType, getCrosschainQuote, getQuote } from '@rainbow-me/swaps';
+import { useSwapSettings } from '@/__swaps__/screens/Swap/hooks/useSwapSettings';
+import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { isSameAsset } from '@/__swaps__/utils/assets';
-import { buildQuoteParams, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
+import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { ChainId } from '@/__swaps__/types/chains';
-import { logger } from '@/logger';
+import { RainbowError, logger } from '@/logger';
+import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
+import { Navigation } from '@/navigation';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import Routes from '@/navigation/routesNames';
+import { ethereumUtils } from '@/utils';
+import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
+import { loadWallet } from '@/model/wallet';
+import { walletExecuteRap } from '@/raps/execute';
+import { queryClient } from '@/react-query';
+import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
+import { useAccountSettings } from '@/hooks';
+import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
+import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
+
+const swapping = i18n.t(i18n.l.swap.actions.swapping);
+const tapToSwap = i18n.t(i18n.l.swap.actions.tap_to_swap);
+const save = i18n.t(i18n.l.swap.actions.save);
+const enterAmount = i18n.t(i18n.l.swap.actions.enter_amount);
+const review = i18n.t(i18n.l.swap.actions.review);
+const fetchingPrices = i18n.t(i18n.l.swap.actions.fetching_prices);
 
 interface SwapContextType {
   isFetching: SharedValue<boolean>;
+  isSwapping: SharedValue<boolean>;
+  isQuoteStale: SharedValue<number>;
   searchInputRef: AnimatedRef<TextInput>;
 
   // TODO: Combine navigation progress steps into a single shared value
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
-  reviewProgress: SharedValue<number>;
+  configProgress: SharedValue<number>;
 
   sliderXPosition: SharedValue<number>;
   sliderPressProgress: SharedValue<number>;
 
+  lastTypedInput: SharedValue<inputKeys>;
   focusedInput: SharedValue<inputKeys>;
 
-  // TODO: Separate this into Zustand
-  outputChainId: SharedValue<ChainId>;
+  selectedOutputChainId: SharedValue<ChainId>;
+  setSelectedOutputChainId: (chainId: ChainId) => void;
 
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   setAsset: ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset }) => void;
 
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
-  fetchQuote: () => Promise<void>;
+  executeSwap: () => void;
 
+  SwapSettings: ReturnType<typeof useSwapSettings>;
   SwapInputController: ReturnType<typeof useSwapInputsController>;
   AnimatedSwapStyles: ReturnType<typeof useAnimatedSwapStyles>;
   SwapTextStyles: ReturnType<typeof useSwapTextStyles>;
@@ -68,63 +95,219 @@ interface SwapProviderProps {
 }
 
 export const SwapProvider = ({ children }: SwapProviderProps) => {
+  const { nativeCurrency } = useAccountSettings();
+
   const isFetching = useSharedValue(false);
+  const isSwapping = useSharedValue(false);
+  const isQuoteStale = useSharedValue(0);
 
   const searchInputRef = useAnimatedRef<TextInput>();
 
   const inputProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
   const outputProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
-  const reviewProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
+  const configProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
 
   const sliderXPosition = useSharedValue(SLIDER_WIDTH * INITIAL_SLIDER_POSITION);
   const sliderPressProgress = useSharedValue(SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
 
+  const lastTypedInput = useSharedValue<inputKeys>('inputAmount');
   const focusedInput = useSharedValue<inputKeys>('inputAmount');
-  const outputChainId = useSharedValue<ChainId>(ChainId.mainnet);
+
+  const selectedOutputChainId = useSharedValue<ChainId>(ChainId.mainnet);
 
   const internalSelectedInputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(null);
   const internalSelectedOutputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(null);
 
   const quote = useSharedValue<Quote | CrosschainQuote | QuoteError | null>(null);
 
-  const fetchQuote = async () => {
-    'worklet';
+  const SwapSettings = useSwapSettings({
+    inputAsset: internalSelectedInputAsset,
+  });
 
-    const params = buildQuoteParams({
-      inputAmount: SwapInputController.inputValues.value.inputAmount,
-      outputAmount: SwapInputController.inputValues.value.outputAmount,
-      focusedInput: focusedInput.value,
+  const SwapInputController = useSwapInputsController({
+    focusedInput,
+    lastTypedInput,
+    inputProgress,
+    outputProgress,
+    internalSelectedInputAsset,
+    internalSelectedOutputAsset,
+    isFetching,
+    isQuoteStale,
+    sliderXPosition,
+    quote,
+  });
+
+  const getNonceAndPerformSwap = async ({
+    type,
+    parameters,
+  }: {
+    type: 'swap' | 'crosschainSwap';
+    parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'>;
+  }) => {
+    const NotificationManager = ios ? NativeModules.NotificationManager : null;
+    NotificationManager?.postNotification('rapInProgress');
+
+    const resetSwappingStatus = () => {
+      'worklet';
+      isSwapping.value = false;
+    };
+
+    const network = ethereumUtils.getNetworkFromChainId(parameters.chainId);
+    const provider = getCachedProviderForNetwork(network);
+    const providerUrl = provider?.connection?.url;
+    const connectedToHardhat = isHardHat(providerUrl);
+
+    const wallet = await loadWallet(parameters.quote.from, false, provider);
+    if (!wallet) {
+      runOnUI(resetSwappingStatus)();
+      Alert.alert(i18n.t(i18n.l.swap.unable_to_load_wallet));
+      return;
+    }
+
+    const selectedGas = getSelectedGas(parameters.chainId);
+    if (!selectedGas) {
+      runOnUI(resetSwappingStatus)();
+      // TODO: Show alert or something but this should never happen technically
+      Alert.alert(i18n.t(i18n.l.swap.unable_to_load_wallet));
+      return;
+    }
+
+    const gasFeeParamsBySpeed = getGasSettingsBySpeed(parameters.chainId);
+
+    let gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = {} as
+      | TransactionGasParamAmounts
+      | LegacyTransactionGasParamAmounts;
+
+    if (selectedGas.isEIP1559) {
+      gasParams = {
+        maxFeePerGas: selectedGas.maxBaseFee,
+        maxPriorityFeePerGas: selectedGas.maxPriorityFee,
+      };
+    } else {
+      gasParams = {
+        gasPrice: selectedGas.gasPrice,
+      };
+    }
+
+    const { errorMessage } = await walletExecuteRap(wallet, type, {
+      ...parameters,
+      gasParams,
+      gasFeeParamsBySpeed: gasFeeParamsBySpeed as any,
+    });
+    runOnUI(resetSwappingStatus)();
+
+    if (errorMessage) {
+      SwapInputController.quoteFetchingInterval.start();
+
+      if (errorMessage !== 'handled') {
+        logger.error(new RainbowError(`[getNonceAndPerformSwap]: Error executing swap: ${errorMessage}`));
+        const extractedError = errorMessage.split('[')[0];
+        Alert.alert(i18n.t(i18n.l.swap.error_executing_swap), extractedError);
+        return;
+      }
+    }
+
+    queryClient.invalidateQueries({
+      queryKey: userAssetsQueryKey({
+        address: parameters.quote.from,
+        currency: nativeCurrency,
+        connectedToHardhat,
+      }),
     });
 
-    if (!params) return;
-
-    const response = (params.swapType === SwapType.crossChain ? await getCrosschainQuote(params) : await getQuote(params)) as
-      | Quote
-      | CrosschainQuote
-      | QuoteError;
-
-    setQuote({ data: response });
-
-    // TODO: Handle setting quote interval AND asset price fetching
+    // TODO: Analytics
+    NotificationManager?.postNotification('rapCompleted');
+    Navigation.handleAction(Routes.PROFILE_SCREEN, {});
   };
 
-  const setQuote = ({ data }: { data: Quote | CrosschainQuote | QuoteError | null }) => {
+  const executeSwap = () => {
     'worklet';
-    quote.value = data;
-    runOnJS(swapsStore.setState)({ quote: data });
+
+    // TODO: Analytics
+    if (configProgress.value !== NavigationSteps.SHOW_REVIEW) return;
+
+    const inputAsset = internalSelectedInputAsset.value;
+    const outputAsset = internalSelectedOutputAsset.value;
+    const q = quote.value;
+
+    // TODO: What other checks do we need here?
+    if (!inputAsset || !outputAsset || !q || (q as QuoteError)?.error) {
+      return;
+    }
+
+    isSwapping.value = true;
+    SwapInputController.quoteFetchingInterval.stop();
+
+    const type = inputAsset.chainId !== outputAsset.chainId ? 'crosschainSwap' : 'swap';
+    const quoteData = q as QuoteTypeMap[typeof type];
+    const flashbots = (SwapSettings.flashbots.value && inputAsset.chainId === ChainId.mainnet) ?? false;
+
+    const parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'> = {
+      sellAmount: quoteData.sellAmount?.toString(),
+      buyAmount: quoteData.buyAmount?.toString(),
+      chainId: inputAsset.chainId,
+      assetToSell: inputAsset,
+      assetToBuy: outputAsset,
+      quote: quoteData,
+      flashbots,
+    };
+
+    runOnJS(getNonceAndPerformSwap)({
+      type,
+      parameters,
+    });
   };
 
-  const handleProgressNavigation = ({
-    type,
-    inputAsset,
-    outputAsset,
-  }: {
-    type: SwapAssetType;
-    inputAsset: ParsedSearchAsset | null;
-    outputAsset: ParsedSearchAsset | null;
-  }) => {
+  const SwapTextStyles = useSwapTextStyles({
+    inputMethod: SwapInputController.inputMethod,
+    inputValues: SwapInputController.inputValues,
+    internalSelectedInputAsset,
+    internalSelectedOutputAsset,
+    isFetching,
+    isQuoteStale,
+    focusedInput,
+    inputProgress,
+    outputProgress,
+    sliderPressProgress,
+  });
+
+  const SwapNavigation = useSwapNavigation({
+    SwapInputController,
+    inputProgress,
+    outputProgress,
+    configProgress,
+    executeSwap,
+  });
+
+  const SwapWarning = useSwapWarning({
+    SwapInputController,
+    inputAsset: internalSelectedInputAsset,
+    outputAsset: internalSelectedOutputAsset,
+    quote,
+    sliderXPosition,
+    isFetching,
+    isQuoteStale,
+  });
+
+  const AnimatedSwapStyles = useAnimatedSwapStyles({
+    SwapWarning,
+    internalSelectedInputAsset,
+    internalSelectedOutputAsset,
+    inputProgress,
+    outputProgress,
+    configProgress,
+    isFetching,
+  });
+
+  const handleProgressNavigation = ({ type }: { type: SwapAssetType }) => {
+    'worklet';
+
+    const inputAsset = internalSelectedInputAsset.value;
+    const outputAsset = internalSelectedOutputAsset.value;
+
     switch (type) {
       case SwapAssetType.inputAsset:
+        // if there is already an output asset selected, just close both lists
         if (outputAsset) {
           inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
           outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
@@ -134,6 +317,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         }
         break;
       case SwapAssetType.outputAsset:
+        // if there is already an input asset selected, just close both lists
         if (inputAsset) {
           inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
           outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
@@ -145,26 +329,33 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
   };
 
+  const setSelectedOutputChainId = (chainId: ChainId) => {
+    const updateChainId = (chainId: ChainId) => {
+      'worklet';
+      selectedOutputChainId.value = chainId;
+    };
+
+    swapsStore.setState({ selectedOutputChainId: chainId });
+    runOnUI(updateChainId)(chainId);
+  };
+
   const setAsset = ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset }) => {
-    const updateAssetValue = ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset | null }) => {
+    const updateAssetValue = ({ type, asset }: { type: SwapAssetType; asset: ExtendedAnimatedAssetWithColors | null }) => {
       'worklet';
 
       switch (type) {
         case SwapAssetType.inputAsset:
-          // TODO: Pre-process a bunch of stuff here...
-          /**
-           * Colors, price, etc.
-           */
-          internalSelectedInputAsset.value = parseAssetAndExtend({ asset });
+          internalSelectedInputAsset.value = asset;
+          selectedOutputChainId.value = asset?.chainId ?? ChainId.mainnet;
           break;
         case SwapAssetType.outputAsset:
-          // TODO: Pre-process a bunch of stuff here...
-          /**
-           * Colors, price, etc.
-           */
-          internalSelectedOutputAsset.value = parseAssetAndExtend({ asset });
+          internalSelectedOutputAsset.value = asset;
           break;
       }
+
+      handleProgressNavigation({
+        type,
+      });
     };
 
     // const prevAsset = swapsStore.getState()[type];
@@ -197,61 +388,25 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
     logger.debug(`[setAsset]: Setting ${type} asset to ${asset.name} on ${asset.chainId}`);
 
-    // TODO: Bunch of logic left to implement here... reset prices, retrigger quote fetching, etc.
     swapsStore.setState({
       [type]: asset,
     });
-    runOnJS(updateAssetValue)({ type, asset });
-    handleProgressNavigation({
-      type,
-      inputAsset: type === SwapAssetType.inputAsset ? asset : prevOtherAsset,
-      outputAsset: type === SwapAssetType.outputAsset ? asset : prevOtherAsset,
-    });
+    runOnUI(updateAssetValue)({ type, asset: parseAssetAndExtend({ asset }) });
   };
 
-  const SwapNavigation = useSwapNavigation({
-    inputProgress,
-    outputProgress,
-    reviewProgress,
-  });
-
-  const SwapInputController = useSwapInputsController({
-    ...SwapNavigation,
-    focusedInput,
-    isFetching,
-    sliderXPosition,
-    inputProgress,
-    outputProgress,
-  });
-
-  const SwapWarning = useSwapWarning({
-    SwapInputController,
-    sliderXPosition,
-    isFetching,
-  });
-
-  const AnimatedSwapStyles = useAnimatedSwapStyles({
-    SwapInputController,
-    SwapWarning,
-    internalSelectedInputAsset,
-    internalSelectedOutputAsset,
-    inputProgress,
-    outputProgress,
-    reviewProgress,
-    isFetching,
-  });
-  const SwapTextStyles = useSwapTextStyles({
-    ...SwapInputController,
-    focusedInput,
-    inputProgress,
-    outputProgress,
-    sliderPressProgress,
-  });
-
   const confirmButtonIcon = useDerivedValue(() => {
-    const isReviewing = reviewProgress.value === NavigationSteps.SHOW_REVIEW;
-    if (isReviewing) {
+    if (isSwapping.value) {
+      return '';
+    }
+
+    if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
       return '􀎽';
+    } else if (configProgress.value === NavigationSteps.SHOW_GAS) {
+      return '􀆅';
+    }
+
+    if (isFetching.value) {
+      return '';
     }
 
     const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
@@ -266,21 +421,34 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
   });
 
+  // TODO: i18n these
   const confirmButtonLabel = useDerivedValue(() => {
-    const isReviewing = reviewProgress.value === NavigationSteps.SHOW_REVIEW;
-    if (isReviewing) {
-      return 'Hold to Swap';
+    if (isSwapping.value) {
+      return swapping;
+    }
+
+    if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
+      return tapToSwap;
+    } else if (configProgress.value === NavigationSteps.SHOW_GAS) {
+      return save;
+    }
+
+    if (isFetching.value) {
+      return fetchingPrices;
     }
 
     const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
     const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
 
     if (SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching.value) {
-      return 'Enter Amount';
-    } else if (SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0) {
-      return 'Enter Amount';
+      return enterAmount;
+    } else if (
+      SwapInputController.inputMethod.value === 'slider' &&
+      (SwapInputController.percentageToSwap.value === 0 || isInputZero || isOutputZero)
+    ) {
+      return enterAmount;
     } else {
-      return 'Review';
+      return review;
     }
   });
 
@@ -288,7 +456,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
     const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
 
-    const sliderCondition = SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0;
+    const sliderCondition =
+      SwapInputController.inputMethod.value === 'slider' &&
+      (SwapInputController.percentageToSwap.value === 0 || isInputZero || isOutputZero);
     const inputCondition = SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching.value;
 
     const shouldHide = sliderCondition || inputCondition;
@@ -298,31 +468,49 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     };
   });
 
-  console.log('re-rendered swap provider');
+  useEffect(() => {
+    return () => {
+      swapsStore.setState({
+        inputAsset: null,
+        outputAsset: null,
+        quote: null,
+      });
+
+      SwapInputController.quoteFetchingInterval.stop();
+    };
+  }, []);
+
+  console.log('re-rendered swap provider: ', Date.now());
 
   return (
     <SwapContext.Provider
       value={{
         isFetching,
+        isSwapping,
+        isQuoteStale,
         searchInputRef,
 
         inputProgress,
         outputProgress,
-        reviewProgress,
+        configProgress,
 
         sliderXPosition,
         sliderPressProgress,
 
+        lastTypedInput,
         focusedInput,
-        outputChainId,
+
+        selectedOutputChainId,
+        setSelectedOutputChainId,
 
         internalSelectedInputAsset,
         internalSelectedOutputAsset,
         setAsset,
 
         quote,
-        fetchQuote,
+        executeSwap,
 
+        SwapSettings,
         SwapInputController,
         AnimatedSwapStyles,
         SwapTextStyles,

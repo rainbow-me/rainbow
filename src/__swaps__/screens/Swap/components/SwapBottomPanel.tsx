@@ -1,20 +1,22 @@
-import React, { useState } from 'react';
+import React from 'react';
+import Animated, { useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import { StyleSheet } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
+import { PanGestureHandler } from 'react-native-gesture-handler';
 
 import { Box, Column, Columns, Separator, globalColors, useColorMode } from '@/design-system';
 import { safeAreaInsetValues } from '@/utils';
 
-import { SwapActionButton } from './SwapActionButton';
-import { GasButton } from './GasButton';
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH, springConfig } from '../constants';
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH, springConfig } from '@/__swaps__/screens/Swap/constants';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext, NavigationSteps } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import Animated, { runOnJS, runOnUI, useAnimatedReaction, useAnimatedStyle, withSpring } from 'react-native-reanimated';
-import { StyleSheet } from 'react-native';
+
 import { opacity } from '@/__swaps__/utils/swaps';
-import { ReviewPanel } from './ReviewPanel';
-import { PanGestureHandler } from 'react-native-gesture-handler';
 import { useBottomPanelGestureHandler } from '../hooks/useBottomPanelGestureHandler';
+import { GasButton } from './GasButton';
+import { GasPanel } from './GasPanel';
+import { ReviewPanel } from './ReviewPanel';
+import { SwapActionButton } from './SwapActionButton';
 
 export function SwapBottomPanel() {
   const { isDarkMode } = useColorMode();
@@ -25,22 +27,10 @@ export function SwapBottomPanel() {
     internalSelectedOutputAsset,
     AnimatedSwapStyles,
     SwapNavigation,
-    reviewProgress,
+    configProgress,
   } = useSwapContext();
 
   const { swipeToDismissGestureHandler, gestureY } = useBottomPanelGestureHandler();
-  const [enabled, setEnabled] = useState(false);
-
-  useAnimatedReaction(
-    () => ({
-      reviewProgress: reviewProgress.value,
-    }),
-    ({ reviewProgress }) => {
-      if (reviewProgress === NavigationSteps.SHOW_REVIEW) {
-        runOnJS(setEnabled)(true);
-      }
-    }
-  );
 
   const gestureHandlerStyles = useAnimatedStyle(() => {
     return {
@@ -48,19 +38,19 @@ export function SwapBottomPanel() {
     };
   });
 
-  const columnStyles = useAnimatedStyle(() => {
+  const hiddenColumnStyles = useAnimatedStyle(() => {
     return {
-      display: reviewProgress.value === NavigationSteps.SHOW_REVIEW ? 'none' : 'flex',
+      display: configProgress.value === NavigationSteps.SHOW_REVIEW || configProgress.value === NavigationSteps.SHOW_GAS ? 'none' : 'flex',
     };
   });
 
   return (
     // @ts-expect-error Property 'children' does not exist on type
-    <PanGestureHandler maxPointers={1} onGestureEvent={swipeToDismissGestureHandler} enabled={enabled}>
+    <PanGestureHandler maxPointers={1} onGestureEvent={swipeToDismissGestureHandler}>
       <Box
         as={Animated.View}
         paddingBottom={{
-          custom: IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16,
+          custom: IS_ANDROID ? getSoftMenuBarHeight() - 32 : safeAreaInsetValues.bottom + 16,
         }}
         paddingHorizontal="20px"
         style={[
@@ -70,20 +60,21 @@ export function SwapBottomPanel() {
           styles.swapActionsWrapper,
         ]}
         width="full"
-        zIndex={11}
+        zIndex={15}
       >
         <ReviewPanel />
+        <GasPanel />
         <Columns alignVertical="center" space="12px">
-          <Column style={columnStyles} width="content">
+          <Column style={hiddenColumnStyles} width="content">
             <GasButton />
           </Column>
-          <Column style={columnStyles} width="content">
+          <Column style={hiddenColumnStyles} width="content">
             <Box height={{ custom: 32 }}>
               <Separator color={{ custom: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }} direction="vertical" thickness={1} />
             </Box>
           </Column>
           <SwapActionButton
-            onPress={() => runOnUI(SwapNavigation.handleShowReview)()}
+            onPress={SwapNavigation.handleSwapAction}
             asset={internalSelectedOutputAsset}
             icon={confirmButtonIcon}
             iconStyle={confirmButtonIconStyle}
