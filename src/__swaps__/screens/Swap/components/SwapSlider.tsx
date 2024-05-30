@@ -107,11 +107,11 @@ export const SwapSlider = ({
 
   // This is a hacky way to prevent the slider from shifting when it reaches the right limit
   const uiXPercentage = useDerivedValue(() => {
-    return xPercentage.value * (1 - SCRUBBER_WIDTH / width);
+    return Number(xPercentage.value) * (1 - SCRUBBER_WIDTH / width);
   }, [xPercentage.value]);
 
   const percentageText = useDerivedValue(() => {
-    return `${Math.round((xPercentage.value ?? initialPercentage) * 100)}%`;
+    return `${Math.round(Number(xPercentage.value ?? initialPercentage) * 100)}%`;
   }, [xPercentage.value]);
 
   useAnimatedReaction(
@@ -166,11 +166,11 @@ export const SwapSlider = ({
         return adjustedMovement;
       };
 
-      if (ctx.startX === width && clamp(rawX, 0, width) >= width * 0.995) {
+      if (ctx.startX === width && Number(clamp(rawX, 0, width)) >= width * 0.995) {
         isQuoteStale.value = 0;
       }
 
-      sliderXPosition.value = clamp(rawX, 0, width);
+      sliderXPosition.value = Number(clamp(rawX, 0, width));
 
       // Handle slider overscroll
       if (rawX < 0 || rawX > width) {
@@ -187,17 +187,17 @@ export const SwapSlider = ({
     onFinish: (event, ctx: { startX: number }) => {
       const onFinished = () => {
         overshoot.value = withSpring(0, sliderConfig);
-        if (xPercentage.value >= 0.995) {
+        if (Number(xPercentage.value) >= 0.995) {
           if (isQuoteStale.value === 1) {
             runOnJS(onChangeWrapper)(1);
           }
           sliderXPosition.value = withSpring(width, snappySpringConfig);
-        } else if (xPercentage.value < 0.005) {
+        } else if (Number(xPercentage.value) < 0.005) {
           runOnJS(onChangeWrapper)(0);
           sliderXPosition.value = withSpring(0, snappySpringConfig);
           // SwapInputController.isQuoteStale.value = 0;
         } else {
-          runOnJS(onChangeWrapper)(xPercentage.value);
+          runOnJS(onChangeWrapper)(Number(xPercentage.value));
         }
       };
 
@@ -303,7 +303,7 @@ export const SwapSlider = ({
         springConfig
       ),
       borderWidth: interpolate(
-        xPercentage.value,
+        Number(xPercentage.value),
         [0, (THICK_BORDER_WIDTH * 2) / width, (THICK_BORDER_WIDTH * 4) / width, 1],
         [0, 0, THICK_BORDER_WIDTH, THICK_BORDER_WIDTH],
         'clamp'
@@ -315,7 +315,7 @@ export const SwapSlider = ({
   const rightBarContainerStyle = useAnimatedStyle(() => {
     return {
       borderWidth: interpolate(
-        xPercentage.value,
+        Number(xPercentage.value),
         [0, 1 - (THICK_BORDER_WIDTH * 4) / width, 1 - (THICK_BORDER_WIDTH * 2) / width, 1],
         [THICK_BORDER_WIDTH, THICK_BORDER_WIDTH, 0, 0],
         'clamp'
@@ -347,7 +347,7 @@ export const SwapSlider = ({
           isStale,
           [0, 1],
           [
-            (SwapInputController.inputMethod.value === 'slider' ? xPercentage.value < 0.005 : sliderXPosition.value === 0)
+            (SwapInputController.inputMethod.value === 'slider' ? Number(xPercentage.value) < 0.005 : sliderXPosition.value === 0)
               ? zeroAmountColor
               : labelSecondary,
             zeroAmountColor,
