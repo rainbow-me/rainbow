@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Box, Column, Columns, HitSlop, Inline, Text } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
@@ -6,12 +6,10 @@ import { CoinRowButton } from '@/__swaps__/screens/Swap/components/CoinRowButton
 import { BalancePill } from '@/__swaps__/screens/Swap/components/BalancePill';
 import { ChainId } from '@/__swaps__/types/chains';
 import { toggleFavorite, useFavorites } from '@/resources/favorites';
-import { ETH_ADDRESS } from '@/references';
-import Animated from 'react-native-reanimated';
 import { StyleSheet } from 'react-native';
-import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { SwapCoinIcon } from './SwapCoinIcon';
 import { ethereumUtils } from '@/utils';
+import { ETH_ADDRESS } from '@/references';
 
 export const CoinRow = ({
   address,
@@ -40,16 +38,21 @@ export const CoinRow = ({
   output?: boolean;
   symbol: string;
 }) => {
-  const { AnimatedSwapStyles } = useSwapContext();
   const { favoritesMetadata } = useFavorites();
 
-  const favorites = Object.values(favoritesMetadata);
+  const isFavorite = useMemo(() => {
+    return Object.values(favoritesMetadata).find(fav => {
+      if (mainnetAddress?.toLowerCase() === ETH_ADDRESS) {
+        return fav.address.toLowerCase() === ETH_ADDRESS;
+      }
 
-  const isFavorite = (address: string) => {
-    return favorites.find(fav =>
-      fav.address === ETH_ADDRESS ? '0x0000000000000000000000000000000000000000' === address : fav.address === address
-    );
-  };
+      return fav.address?.toLowerCase() === address?.toLowerCase();
+    });
+  }, [favoritesMetadata, address, mainnetAddress]);
+
+  const favoritesIconColor = useMemo(() => {
+    return isFavorite ? '#FFCB0F' : undefined;
+  }, [isFavorite]);
 
   const percentChange = useMemo(() => {
     if (isTrending) {
@@ -62,6 +65,11 @@ export const CoinRow = ({
       return { change, color, prefix };
     }
   }, [isTrending]);
+
+  const handleToggleFavorite = useCallback(() => {
+    // NOTE: It's important to always fetch ETH favorite on mainnet
+    return toggleFavorite(address, mainnetAddress === ETH_ADDRESS ? 1 : chainId);
+  }, [address, mainnetAddress, chainId]);
 
   return (
     <Box>
@@ -120,12 +128,7 @@ export const CoinRow = ({
             <Box paddingLeft="12px" paddingRight="20px">
               <Inline space="8px">
                 <CoinRowButton icon="􀅳" outline size="icon 14px" />
-                <CoinRowButton
-                  color={isFavorite(address) ? '#FFCB0F' : undefined}
-                  onPress={() => toggleFavorite(address)}
-                  icon="􀋃"
-                  weight="black"
-                />
+                <CoinRowButton color={favoritesIconColor} onPress={handleToggleFavorite} icon="􀋃" weight="black" />
               </Inline>
             </Box>
           </Column>

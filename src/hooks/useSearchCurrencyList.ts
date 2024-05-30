@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import { getAddress, isAddress } from '@ethersproject/address';
-import { ChainId, EthereumAddress } from '@rainbow-me/swaps';
+import { EthereumAddress } from '@rainbow-me/swaps';
 import { Contract } from '@ethersproject/contracts';
 import { rankings } from 'match-sorter';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -81,7 +81,7 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = MAINNET_CHAI
   const { favorites: favoriteAddresses, favoritesMetadata: favoriteMap } = useFavorites();
 
   const curatedMap = rainbowTokenList.CURATED_TOKENS;
-  const unfilteredFavorites = Object.values(favoriteMap);
+  const unfilteredFavorites = Object.values(favoriteMap).filter(token => token.networks[searchChainId]);
 
   const [loading, setLoading] = useState(true);
   const [favoriteAssets, setFavoriteAssets] = useState<RT[]>([]);
