@@ -31,7 +31,6 @@ import {
   minWorklet,
   maxWorklet,
 } from '../safe-math/SafeMath';
-import { consoleLogWorklet } from '@/debugging/workletUtils';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -290,7 +289,6 @@ export function niceIncrementFormatter({
   stripSeparators?: boolean;
 }) {
   'worklet';
-  console.log('niceIncrementFormatter::percentageToSwap: ' + percentageToSwap);
   if (percentageToSwap === 0) return '0';
   if (percentageToSwap === 0.25)
     return valueBasedDecimalFormatter({
@@ -320,17 +318,17 @@ export function niceIncrementFormatter({
       roundingMode: 'up',
     });
 
-  console.log('niceIncrementFormatter:: time for calculations');
-
   const exactIncrement = divWorklet(inputAssetBalance, 100);
   const isIncrementExact = equalWorklet(niceIncrement, exactIncrement);
   const numberOfIncrements = divWorklet(inputAssetBalance, niceIncrement);
   const incrementStep = divWorklet(1, numberOfIncrements);
   const percentage = isIncrementExact
     ? percentageToSwap
-    : Math.round(
-        (Number(clamp((sliderXPosition - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1)) * Number(divWorklet(1, incrementStep))) /
-          Number(divWorklet(1, incrementStep))
+    : divWorklet(
+        roundWorklet(
+          mulWorklet(clamp((sliderXPosition - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1), divWorklet(1, incrementStep))
+        ),
+        divWorklet(1, incrementStep)
       );
 
   const rawAmount = mulWorklet(roundWorklet(divWorklet(mulWorklet(percentage, inputAssetBalance), niceIncrement)), niceIncrement);
@@ -342,15 +340,6 @@ export function niceIncrementFormatter({
     minimumFractionDigits: 0,
     maximumFractionDigits: 8,
   })}`;
-
-  console.log('niceIncrementFormatter::exactIncrement: ' + exactIncrement);
-  console.log('niceIncrementFormatter::isIncrementExact: ' + isIncrementExact);
-  console.log('niceIncrementFormatter::numberOfIncrements: ' + numberOfIncrements);
-  console.log('niceIncrementFormatter::incrementStep: ' + incrementStep);
-  console.log('niceIncrementFormatter::percentage: ' + percentage);
-  console.log('niceIncrementFormatter::rawAmount: ' + rawAmount);
-  console.log('niceIncrementFormatter::amountToFixedDecimals: ' + amountToFixedDecimals);
-  console.log('niceIncrementFormatter::formattedAmount: ' + formattedAmount);
 
   if (stripSeparators) return stripCommas(formattedAmount);
 
