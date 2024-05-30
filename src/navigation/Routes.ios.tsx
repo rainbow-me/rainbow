@@ -284,7 +284,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} {...appIconUnlockSheetConfig} />
       <NativeStack.Screen component={ControlPanel} name={Routes.DAPP_BROWSER_CONTROL_PANEL} {...dappBrowserControlPanelConfig} />
 
-      {swapsV2Enabled && <NativeStack.Screen component={SwapScreen} name={Routes.SWAP_NAVIGATOR} {...swapConfig} />}
+      {swapsV2Enabled && <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />}
     </NativeStack.Navigator>
   );
 }
