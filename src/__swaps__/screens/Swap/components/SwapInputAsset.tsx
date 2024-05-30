@@ -147,7 +147,6 @@ export function SwapInputAsset() {
         width={{ custom: INPUT_INNER_WIDTH }}
       >
         <TokenList
-          asset={internalSelectedInputAsset}
           handleExitSearch={runOnUI(SwapNavigation.handleExitSearch)}
           handleFocusSearch={runOnUI(SwapNavigation.handleFocusInputSearch)}
         />

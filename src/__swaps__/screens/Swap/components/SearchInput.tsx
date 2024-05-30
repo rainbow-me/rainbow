@@ -1,24 +1,21 @@
 import React, { useCallback, useMemo } from 'react';
 import { NativeSyntheticEvent, TextInputChangeEventData } from 'react-native';
-import Animated, { SharedValue, useAnimatedProps, useDerivedValue, dispatchCommand } from 'react-native-reanimated';
+import Animated, { useAnimatedProps, useDerivedValue, dispatchCommand } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Input } from '@/components/inputs';
 import { AnimatedText, Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { getColorValueForThemeWorklet, opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/__swaps__/utils/swaps';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 
 export const SearchInput = ({
-  asset,
   handleExitSearch,
   handleFocusSearch,
   output,
 }: {
-  asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   handleExitSearch: () => void;
   handleFocusSearch: () => void;
   output?: boolean;
@@ -55,7 +52,6 @@ export const SearchInput = ({
     return {
       defaultValue,
       text: query,
-      selectionColor: getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode, true),
     };
   });
 
