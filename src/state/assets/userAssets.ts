@@ -1,6 +1,6 @@
-import { Address } from 'viem';
+import { Address, Hex } from 'viem';
 import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
-// import { deriveAddressAndChainWithUniqueId } from '@/__swaps__/utils/address';
+import { deriveAddressAndChainWithUniqueId } from '@/__swaps__/utils/address';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { RainbowError, logger } from '@/logger';
 import { ChainId } from '@/__swaps__/types/chains';
@@ -14,10 +14,10 @@ export interface UserAssetsState {
   filter: UserAssetFilter;
   inputSearchQuery: string;
 
-  // favoriteAssetsById: Set<Hex>; // this is chain agnostic, so we don't want to store a UniqueId here
-  // setFavorites: (favoriteAssetIds: Hex[]) => void;
-  // toggleFavorite: (uniqueId: UniqueId) => void;
-  // isFavorite: (uniqueId: UniqueId) => boolean;
+  favoriteAssetsById: Set<Hex>; // this is chain agnostic, so we don't want to store a UniqueId here
+  setFavorites: (favoriteAssetIds: Hex[]) => void;
+  toggleFavorite: (uniqueId: UniqueId) => void;
+  isFavorite: (uniqueId: UniqueId) => boolean;
 
   getBalanceSortedChainList: () => ChainId[];
   // getFilteredUserAssetIds: () => UniqueId[];
@@ -28,7 +28,7 @@ export interface UserAssetsState {
 type UserAssetsStateWithTransforms = Omit<Partial<UserAssetsState>, 'userAssetIds' | 'userAssets' | 'favoriteAssetsAddresses'> & {
   userAssetIds: Array<UniqueId>;
   userAssets: Array<[UniqueId, ParsedSearchAsset]>;
-  // favoriteAssetsAddresses: Array<Hex>;
+  favoriteAssetsAddresses: Array<Hex>;
 };
 
 function serializeUserAssetsState(state: Partial<UserAssetsState>, version?: number) {
@@ -37,7 +37,7 @@ function serializeUserAssetsState(state: Partial<UserAssetsState>, version?: num
       ...state,
       userAssetIds: state.userAssetsById ? Array.from(state.userAssetsById) : [],
       userAssets: state.userAssets ? Array.from(state.userAssets.entries()) : [],
-      // favoriteAssetsAddresses: state.favoriteAssetsById ? Array.from(state.favoriteAssetsById) : [],
+      favoriteAssetsAddresses: state.favoriteAssetsById ? Array.from(state.favoriteAssetsById) : [],
     };
 
     return JSON.stringify({
@@ -81,22 +81,22 @@ function deserializeUserAssetsState(serializedState: string) {
     throw error;
   }
 
-  // let favoritesData = new Set<Hex>();
-  // try {
-  //   if (state.favoriteAssetsAddresses.length) {
-  //     favoritesData = new Set(state.favoriteAssetsAddresses);
-  //   }
-  // } catch (error) {
-  //   logger.error(new RainbowError('Failed to convert favoriteAssetsAddresses from user assets storage'), { error });
-  //   throw error;
-  // }
+  let favoritesData = new Set<Hex>();
+  try {
+    if (state.favoriteAssetsAddresses.length) {
+      favoritesData = new Set(state.favoriteAssetsAddresses);
+    }
+  } catch (error) {
+    logger.error(new RainbowError('Failed to convert favoriteAssetsAddresses from user assets storage'), { error });
+    throw error;
+  }
 
   return {
     state: {
       ...state,
       userAssetIds: userAssetIdsData,
       userAssets: userAssetsData,
-      // favoriteAssetsAddresses: favoritesData,
+      favoriteAssetsAddresses: favoritesData,
     },
     version,
   };
@@ -109,7 +109,7 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
     userAssets: new Map(),
     filter: 'all',
     inputSearchQuery: '',
-    // favoriteAssetsById: new Set(),
+    favoriteAssetsById: new Set(),
 
     getBalanceSortedChainList: () => {
       const { userAssets } = get();
@@ -156,28 +156,28 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
     //   }, [] as UniqueId[]);
     // },
 
-    // setFavorites: (addresses: Hex[]) => {
-    //   const { favoriteAssetsById } = get();
-    //   addresses.forEach(address => {
-    //     favoriteAssetsById.add(address);
-    //   });
-    // },
+    setFavorites: (addresses: Hex[]) => {
+      const { favoriteAssetsById } = get();
+      addresses.forEach(address => {
+        favoriteAssetsById.add(address);
+      });
+    },
 
-    // toggleFavorite: (uniqueId: UniqueId) => {
-    //   const { favoriteAssetsById } = get();
-    //   const { address } = deriveAddressAndChainWithUniqueId(uniqueId);
-    //   if (favoriteAssetsById.has(address)) {
-    //     favoriteAssetsById.delete(address);
-    //   } else {
-    //     favoriteAssetsById.add(address);
-    //   }
-    // },
+    toggleFavorite: (uniqueId: UniqueId) => {
+      const { favoriteAssetsById } = get();
+      const { address } = deriveAddressAndChainWithUniqueId(uniqueId);
+      if (favoriteAssetsById.has(address)) {
+        favoriteAssetsById.delete(address);
+      } else {
+        favoriteAssetsById.add(address);
+      }
+    },
 
-    // isFavorite: (uniqueId: UniqueId) => {
-    //   const { favoriteAssetsById } = get();
-    //   const { address } = deriveAddressAndChainWithUniqueId(uniqueId);
-    //   return favoriteAssetsById?.has?.(address) || false;
-    // },
+    isFavorite: (uniqueId: UniqueId) => {
+      const { favoriteAssetsById } = get();
+      const { address } = deriveAddressAndChainWithUniqueId(uniqueId);
+      return favoriteAssetsById?.has?.(address) || false;
+    },
   }),
   {
     storageKey: 'userAssets',
@@ -185,7 +185,7 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
     partialize: state => ({
       userAssetsById: state.userAssetsById,
       userAssets: state.userAssets,
-      // favoriteAssetsById: state.favoriteAssetsById,
+      favoriteAssetsById: state.favoriteAssetsById,
     }),
     serializer: serializeUserAssetsState,
     deserializer: deserializeUserAssetsState,
