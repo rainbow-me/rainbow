@@ -162,13 +162,6 @@ export const SearchInput = ({
               onPressJS={() => (output ? outputSearchRef : inputSearchRef).current?.blur()}
               onPressWorklet={() => {
                 'worklet';
-
-                // onSearchQueryChange({
-                //   nativeEvent: {
-                //     text: '',
-                //   },
-                // } as NativeSyntheticEvent<TextInputChangeEventData>);
-
                 const isSearchFocused =
                   (output && outputProgress.value === NavigationSteps.SEARCH_FOCUSED) ||
                   (!output && inputProgress.value === NavigationSteps.SEARCH_FOCUSED);
