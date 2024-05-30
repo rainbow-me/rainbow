@@ -290,6 +290,7 @@ export function niceIncrementFormatter({
   stripSeparators?: boolean;
 }) {
   'worklet';
+  console.log('niceIncrementFormatter::percentageToSwap: ' + percentageToSwap);
   if (percentageToSwap === 0) return '0';
   if (percentageToSwap === 0.25)
     return valueBasedDecimalFormatter({
@@ -319,6 +320,8 @@ export function niceIncrementFormatter({
       roundingMode: 'up',
     });
 
+  console.log('niceIncrementFormatter:: time for calculations');
+
   const exactIncrement = divWorklet(inputAssetBalance, 100);
   const isIncrementExact = equalWorklet(niceIncrement, exactIncrement);
   const numberOfIncrements = divWorklet(inputAssetBalance, niceIncrement);
@@ -340,16 +343,16 @@ export function niceIncrementFormatter({
     maximumFractionDigits: 8,
   })}`;
 
-  if (stripSeparators) return stripCommas(formattedAmount);
+  console.log('niceIncrementFormatter::exactIncrement: ' + exactIncrement);
+  console.log('niceIncrementFormatter::isIncrementExact: ' + isIncrementExact);
+  console.log('niceIncrementFormatter::numberOfIncrements: ' + numberOfIncrements);
+  console.log('niceIncrementFormatter::incrementStep: ' + incrementStep);
+  console.log('niceIncrementFormatter::percentage: ' + percentage);
+  console.log('niceIncrementFormatter::rawAmount: ' + rawAmount);
+  console.log('niceIncrementFormatter::amountToFixedDecimals: ' + amountToFixedDecimals);
+  console.log('niceIncrementFormatter::formattedAmount: ' + formattedAmount);
 
-  consoleLogWorklet('niceIncrementFormatter::exactIncrement: ' + exactIncrement);
-  consoleLogWorklet('niceIncrementFormatter::isIncrementExact: ' + isIncrementExact);
-  consoleLogWorklet('niceIncrementFormatter::numberOfIncrements: ' + numberOfIncrements);
-  consoleLogWorklet('niceIncrementFormatter::incrementStep: ' + incrementStep);
-  consoleLogWorklet('niceIncrementFormatter::percentage: ' + percentage);
-  consoleLogWorklet('niceIncrementFormatter::rawAmount: ' + rawAmount);
-  consoleLogWorklet('niceIncrementFormatter::amountToFixedDecimals: ' + amountToFixedDecimals);
-  consoleLogWorklet('niceIncrementFormatter::formattedAmount: ' + formattedAmount);
+  if (stripSeparators) return stripCommas(formattedAmount);
 
   return formattedAmount;
 }

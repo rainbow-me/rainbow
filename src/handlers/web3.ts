@@ -383,16 +383,16 @@ export async function estimateGasWithPadding(
     const code = to ? await p.getCode(to) : undefined;
     // 2 - if it's not a contract AND it doesn't have any data use the default gas limit
     if ((!contractCallEstimateGas && !to) || (to && !data && (!code || code === '0x'))) {
-      logger.info('⛽ Skipping estimates, using default', {
-        ethUnits: ethUnits.basic_tx.toString(),
-      });
+      //logger.info('⛽ Skipping estimates, using default', {
+      //   ethUnits: ethUnits.basic_tx.toString(),
+      // });
       return ethUnits.basic_tx.toString();
     }
 
-    logger.info('⛽ Calculating safer gas limit for last block');
+    // logger.info('⛽ Calculating safer gas limit for last block');
     // 3 - If it is a contract, call the RPC method `estimateGas` with a safe value
     const saferGasLimit = fraction(gasLimit.toString(), 19, 20);
-    logger.info('⛽ safer gas limit for last block is', { saferGasLimit });
+    // logger.info('⛽ safer gas limit for last block is', { saferGasLimit });
 
     txPayloadToEstimate[contractCallEstimateGas ? 'gasLimit' : 'gas'] = toHex(saferGasLimit);
 
@@ -404,27 +404,27 @@ export async function estimateGasWithPadding(
 
     const lastBlockGasLimit = addBuffer(gasLimit.toString(), 0.9);
     const paddedGas = addBuffer(estimatedGas.toString(), paddingFactor.toString());
-    logger.info('⛽ GAS CALCULATIONS!', {
-      estimatedGas: estimatedGas.toString(),
-      gasLimit: gasLimit.toString(),
-      lastBlockGasLimit: lastBlockGasLimit,
-      paddedGas: paddedGas,
-    });
+    // logger.info('⛽ GAS CALCULATIONS!', {
+    //   estimatedGas: estimatedGas.toString(),
+    //   gasLimit: gasLimit.toString(),
+    //   lastBlockGasLimit: lastBlockGasLimit,
+    //   paddedGas: paddedGas,
+    // });
 
     // If the safe estimation is above the last block gas limit, use it
     if (greaterThan(estimatedGas.toString(), lastBlockGasLimit)) {
-      logger.info('⛽ returning orginal gas estimation', {
-        esimatedGas: estimatedGas.toString(),
-      });
+      // logger.info('⛽ returning orginal gas estimation', {
+      //   esimatedGas: estimatedGas.toString(),
+      // });
       return estimatedGas.toString();
     }
     // If the estimation is below the last block gas limit, use the padded estimate
     if (greaterThan(lastBlockGasLimit, paddedGas)) {
-      logger.info('⛽ returning padded gas estimation', { paddedGas });
+      // logger.info('⛽ returning padded gas estimation', { paddedGas });
       return paddedGas;
     }
     // otherwise default to the last block gas limit
-    logger.info('⛽ returning last block gas limit', { lastBlockGasLimit });
+    // logger.info('⛽ returning last block gas limit', { lastBlockGasLimit });
     return lastBlockGasLimit;
   } catch (e: any) {
     /*
