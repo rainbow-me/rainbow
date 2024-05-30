@@ -57,7 +57,7 @@ function getInitialInputValues() {
       sliderXPosition: SLIDER_WIDTH / 2,
     })
   );
-  const initialInputNativeValue = (initialInputAmount * (initialSelectedInputAsset?.price?.value ?? 0)).toFixed(2);
+  const initialInputNativeValue = addCommasToNumber((initialInputAmount * (initialSelectedInputAsset?.price?.value ?? 0)).toFixed(2));
 
   return {
     initialInputAmount,
