@@ -431,6 +431,23 @@
         "description": "You can also long press your\naddress above to copy it."
       }
     },
+    "check_identifier": {
+      "title": "Authentication Needed",
+      "description": "It looks like you may have switched devices or reinstalled Rainbow. Please authenticate so that we can validate your keychain data is still in a healthy state.",
+      "action": "Authenticate",
+      "dismiss": "Dismiss",
+      "error_alert": {
+        "title": "Error Validating Keychain",
+        "message": "We encountered an error while validating your keychain data. Please try again. If the issue persists, please contact support.",
+        "contact_support": "Contact Support",
+        "cancel": "Cancel"
+      },
+      "failure_alert": {
+        "title": "Invalid Keychain Data",
+        "message": "We were unable to verify the integrity of your keychain data. Please restore your wallet and try again. If the issue persists, please contact support.",
+        "action": "Continue"
+      }
+    },
     "cloud": {
       "backup_success": "Your wallet has been backed up successfully!"
     },
