@@ -142,6 +142,13 @@ const WalletAddressObserver = () => {
       type: SwapAssetType.inputAsset,
       asset: newHighestValueAsset,
     });
+
+    if (userAssetsStore.getState().userAssets.size === 0) {
+      setAsset({
+        type: SwapAssetType.outputAsset,
+        asset: null,
+      });
+    }
   }, [setAsset]);
 
   useAnimatedReaction(
