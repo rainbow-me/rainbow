@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
@@ -24,10 +24,6 @@ const TokenToSellListComponent = () => {
   const { internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, setAsset } = useSwapContext();
 
   const userAssets = userAssetsStore(state => state.getFilteredUserAssetIds());
-
-  useEffect(() => {
-    console.log('user assets changed');
-  }, [userAssets]);
 
   const handleSelectToken = useCallback(
     (token: ParsedSearchAsset | null) => {
