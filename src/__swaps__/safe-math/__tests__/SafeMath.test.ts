@@ -16,6 +16,7 @@ import {
   subWorklet,
   sumWorklet,
   toFixedWorklet,
+  toScaledIntegerWorklet,
 } from '../SafeMath';
 
 const RESULTS = {
@@ -29,12 +30,14 @@ const RESULTS = {
   toFixed: '1243425.35',
   ceil: '1243426',
   floor: '1243425',
+  toScaledInteger: '57464009350560633',
 };
 
 const VALUE_A = '1243425.345';
 const VALUE_B = '3819.24';
 const VALUE_C = '2';
 const VALUE_D = '1243425.745';
+const VALUE_E = '0.057464009350560633';
 const NEGATIVE_VALUE = '-2412.12';
 const ZERO = '0';
 const ONE = '1';
@@ -190,6 +193,10 @@ describe('SafeMath', () => {
     expect(roundWorklet(Number(VALUE_A))).toBe(RESULTS.floor);
     expect(roundWorklet(Number(VALUE_D))).toBe(RESULTS.ceil);
   });
+
+  test('toScaledIntegerWorklet', () => {
+    expect(toScaledIntegerWorklet(VALUE_E, 18)).toBe(RESULTS.toScaledInteger);
+  });
 });
 
 describe('BigNumber', () => {
@@ -242,5 +249,9 @@ describe('BigNumber', () => {
     expect(new BigNumber(VALUE_A).lte(VALUE_B)).toBe(false);
     expect(new BigNumber(VALUE_B).lte(VALUE_A)).toBe(true);
     expect(new BigNumber(VALUE_A).lte(VALUE_A)).toBe(true);
+  });
+
+  test('toScaledInteger', () => {
+    expect(new BigNumber(VALUE_E).shiftedBy(18).toFixed(0)).toBe(RESULTS.toScaledInteger);
   });
 });

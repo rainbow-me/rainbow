@@ -46,20 +46,15 @@ const toStringWorklet = (value: string | number): string => {
   return typeof value === 'number' ? value.toString() : value;
 };
 
-// Utility function to convert a number to a scaled integer as a string
-export function toScaledIntegerWorklet(num: string | number, decimalPlaces = 18): string {
+// Converts a numeric string to a scaled integer string, preserving the specified decimal places
+export function toScaledIntegerWorklet(num: string, decimalPlaces = 18): string {
   'worklet';
-  const numStr = toStringWorklet(num);
-
-  if (!isNumberStringWorklet(numStr)) {
-    throw new Error('Argument must be a numeric string or number');
+  if (!isNumberStringWorklet(num)) {
+    throw new Error('Argument must be a numeric string');
   }
-
-  const [bigIntNum, numDecimalPlaces] = removeDecimalWorklet(numStr);
-  const scaledBigIntNum = scaleUpWorklet(bigIntNum, numDecimalPlaces);
-
-  const scaleFactor = BigInt(10) ** BigInt(decimalPlaces);
-  const scaledIntegerBigInt = (scaledBigIntNum * scaleFactor) / BigInt(10) ** BigInt(20);
+  const [bigIntNum, numDecimalPlaces] = removeDecimalWorklet(num);
+  const scaleFactor = BigInt(10) ** BigInt(decimalPlaces - numDecimalPlaces);
+  const scaledIntegerBigInt = bigIntNum * scaleFactor;
 
   return scaledIntegerBigInt.toString();
 }
