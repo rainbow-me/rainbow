@@ -137,11 +137,11 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
         </Box>
 
         <FlashList
-          data={section.data.slice(0, 12)}
+          data={section.data}
           estimatedListSize={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}
           ListEmptyComponent={<ListEmpty output />}
           estimatedItemSize={56}
-          keyExtractor={item => item.uniqueId}
+          keyExtractor={item => `${item.uniqueId}-${section.id}`}
           renderItem={({ item }) => (
             <CoinRow
               chainId={item.chainId}
