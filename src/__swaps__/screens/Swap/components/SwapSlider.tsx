@@ -111,7 +111,7 @@ export const SwapSlider = ({
   }, [xPercentage.value]);
 
   const percentageText = useDerivedValue(() => {
-    return `${Math.round(xPercentage.value ?? initialPercentage * 100)}%`;
+    return `${Math.round((xPercentage.value ?? initialPercentage) * 100)}%`;
   }, [xPercentage.value]);
 
   useAnimatedReaction(
