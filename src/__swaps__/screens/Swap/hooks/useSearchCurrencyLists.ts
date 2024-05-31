@@ -100,8 +100,7 @@ export function useSearchCurrencyLists() {
     };
   }, [state.assetToSellAddress, state.fromChainId, state.isCrosschainSearch, query, verifiedAssets]);
 
-  const { favoritesMetadata: rawFavorites } = useFavorites();
-  const favorites = useMemo(() => Object.values(rawFavorites), [rawFavorites]);
+  const { favoritesMetadata: favorites } = useFavorites();
 
   const unfilteredFavorites = useMemo(() => {
     return Object.values(favorites)
