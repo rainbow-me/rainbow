@@ -132,7 +132,7 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
 
         {/* TODO: fix this from causing the UI to be completely slow... */}
         <AnimatedFlashListComponent
-          data={section.data.slice(0, 10)}
+          data={section.data}
           ListEmptyComponent={<ListEmpty />}
           keyExtractor={item => `${item.uniqueId}-${section.id}`}
           renderItem={({ item }) => (
