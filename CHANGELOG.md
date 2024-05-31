@@ -15,6 +15,24 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.24] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.24)
+
+### Added
+
+- Added new translations for various parts in the app (#5762)
+
+### Changed
+
+- Updated codeowners file (#5732, #5743)
+- Swaps v2 updates (#5725, #5727, #5733, #5722, #5724, #5741, #5747, #5748, #5751, #5752, #5758, #5759, #5760)
+- Increased timeout to open a new tab in dapp browser for promo cards (#5745)
+
+### Fixed
+
+- Fixed a bug where some mints with unknown price was showing as free (#5750)
+- Fixed issues with NFTs causing crashes on some wallets (#5761)
+- Fixed an issue where transaction sheet would show the Buy ETH button when the selected wallet already has ETH (#5763)
+
 ## [1.9.23] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.23)
 
 ### Added
