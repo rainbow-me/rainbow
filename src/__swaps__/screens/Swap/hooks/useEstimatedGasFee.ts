@@ -10,7 +10,7 @@ import { useSwapEstimatedGasLimit } from './useSwapEstimatedGasLimit';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 import { useSwapContext } from '../providers/swap-provider';
-import { convertToBigInt, greaterThanWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { greaterThanWorklet, toScaledIntegerWorklet } from '@/__swaps__/safe-math/SafeMath';
 
 function safeBigInt(value: string) {
   try {
@@ -67,8 +67,13 @@ export function useSwapEstimatedGasFee(gasSettings: GasSettings | undefined) {
     (current, previous) => {
       if (!assetToSell.value || !assetToBuy.value || !current || !previous || 'error' in current) return;
 
-      const bigIntBalance = convertToBigInt(assetToSell.value.balance.amount);
-      const isSwappingMoreThanAvailableBalance = greaterThanWorklet(current.sellAmount.toString(), bigIntBalance[0]);
+      const isSwappingMoreThanAvailableBalance = greaterThanWorklet(
+        current.sellAmount.toString(),
+        toScaledIntegerWorklet(assetToSell.value.balance.amount)
+      );
+
+      // Skip gas fee calculation if the user is trying to swap more than their available balance, as it isn't
+      // needed and was previously resulting in errors in useEstimatedGasFee.
       if (isSwappingMoreThanAvailableBalance) return;
 
       if (current !== previous) {
