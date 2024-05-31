@@ -5,7 +5,6 @@ import ConditionalWrap from 'conditional-wrap';
 
 import { Box, Cover, Stack, Text, useForegroundColor } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
-import { useRemoteCardContext } from './RemoteCardProvider';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { useNavigation } from '@/navigation';
 import { Language } from '@/languages';
@@ -20,6 +19,7 @@ import { FlashList } from '@shopify/flash-list';
 import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
 import { TrimmedCard } from '@/resources/cards/cardCollectionQuery';
 import RemoteSvg from '@/components/svg/RemoteSvg';
+import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 
 const ICON_SIZE = 40;
 
@@ -69,7 +69,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ card = {} as TrimmedCard
   const { navigate } = useNavigation();
   const { language } = useAccountSettings();
   const { width } = useDimensions();
-  const { dismissCard } = useRemoteCardContext();
+  const dismissCard = remoteCardsStore(state => state.dismissCard);
 
   const { cardKey, accentColor, backgroundColor, primaryButton, imageIcon } = card;
 
@@ -98,9 +98,11 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ card = {} as TrimmedCard
         cardKey: cardKey ?? 'unknown-backend-driven-card',
       });
 
+      if (!cardKey) return;
+
       const isLastCard = cards.length === 1;
 
-      dismissCard(card.sys.id);
+      dismissCard(cardKey);
       if (carouselRef?.current) {
         const currentCardIdx = cards.findIndex(c => c.cardKey === cardKey);
         if (currentCardIdx === -1) return;

@@ -26,10 +26,7 @@ export default function DiscoverScreenContent() {
     <Box flex={1} testID="discover-home">
       <Inset top="8px" bottom={{ custom: insets.bottom }}>
         <DiscoverSearchContainer ref={ref} setShowSearch={setShowSearch} showSearch={showSearch}>
-          <Switcher showSearch={showSearch}>
-            <DiscoverSearch />
-            <DiscoverHome />
-          </Switcher>
+          <DiscoverHome />
         </DiscoverSearchContainer>
       </Inset>
     </Box>

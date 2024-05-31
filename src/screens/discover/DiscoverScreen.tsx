@@ -83,6 +83,7 @@ export default function DiscoverScreen() {
             setScrollY(e.nativeEvent.contentOffset.y);
           }}
           as={ScrollView}
+          scrollEventThrottle={32}
           automaticallyAdjustsScrollIndicatorInsets={false}
           contentContainerStyle={isSearchModeEnabled ? { height: '100%' } : {}}
           scrollEnabled={!isSearchModeEnabled}

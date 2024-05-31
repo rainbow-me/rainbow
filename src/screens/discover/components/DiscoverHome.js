@@ -15,15 +15,15 @@ import walletTypes from '@/helpers/walletTypes';
 import { NFTOffersCard } from '@/components/cards/NFTOffersCard';
 import { MintsCard } from '@/components/cards/MintsCard/MintsCard';
 import { FeaturedMintCard } from '@/components/cards/FeaturedMintCard';
-import { useMints } from '@/resources/mints';
 import { IS_TEST } from '@/env';
-import { RemoteCardCarousel, useRemoteCardContext } from '@/components/cards/remote-cards';
+import { RemoteCardCarousel } from '@/components/cards/remote-cards';
 import { useRoute } from '@react-navigation/native';
+import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 
 export default function DiscoverHome() {
   const { profiles_enabled, mints_enabled, op_rewards_enabled } = useRemoteConfig();
-  const { accountAddress, network } = useAccountSettings();
-  const { getCardsForPlacement } = useRemoteCardContext();
+  const { network } = useAccountSettings();
+  const getCardsForScreen = remoteCardsStore(state => state.getCardsForScreen);
   const { name } = useRoute();
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
   const profilesEnabledRemoteFlag = profiles_enabled;
@@ -39,7 +39,9 @@ export default function DiscoverHome() {
 
   const hasHardwareWallets = Object.keys(wallets || {}).filter(key => wallets[key].type === walletTypes.bluetooth).length > 0;
 
-  const cards = useMemo(() => getCardsForPlacement(name), [name, getCardsForPlacement]);
+  const cards = useMemo(() => getCardsForScreen(name), [name, getCardsForScreen]);
+
+  console.log(cards);
 
   return (
     <Inset top="20px" bottom={{ custom: 200 }} horizontal="20px">

@@ -20,7 +20,7 @@ import { SliderAndKeyboard } from '@/__swaps__/screens/Swap/components/SliderAnd
 import { SwapBottomPanel } from '@/__swaps__/screens/Swap/components/SwapBottomPanel';
 import { SwapWarning } from './components/SwapWarning';
 import { useSwapContext } from './providers/swap-provider';
-import { UserAssetsSync } from './components/UserAssetsSync';
+import { UserAssetsSync } from '../../../state/sync/UserAssetsSync';
 
 /** README
  * This prototype is largely driven by Reanimated and Gesture Handler, which

@@ -1,5 +1,5 @@
 import { useAccountSettings } from '@/hooks';
-import { useUserAssets } from '../resources/assets';
+import { useUserAssets } from '../../__swaps__/screens/Swap/resources/assets';
 
 import { selectUserAssetsList, selectorFilterByUserChains } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
 import { Hex } from 'viem';

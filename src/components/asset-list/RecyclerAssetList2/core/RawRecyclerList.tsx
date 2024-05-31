@@ -15,11 +15,12 @@ import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
 import { UniqueAsset } from '@/entities';
 import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerListViewScrollToTopContext';
-import { useAccountProfile, useAccountSettings, useCoinListEdited, useCoinListEditOptions, useWallets } from '@/hooks';
+import { useAccountSettings, useCoinListEdited, useCoinListEditOptions, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { useTheme } from '@/theme';
-import { useRemoteCardContext } from '@/components/cards/remote-cards';
+import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { useRoute } from '@react-navigation/native';
+import Routes from '@/navigation/routesNames';
 
 const dataProvider = new DataProvider((r1, r2) => {
   return r1.uid !== r2.uid;
@@ -58,10 +59,10 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   const y = useRecyclerAssetListPosition()!;
 
   const { name } = useRoute();
-  const { getCardsForPlacement } = useRemoteCardContext();
+  const getCardsForScreen = remoteCardsStore(state => state.getCardsForScreen);
   const { isReadOnlyWallet } = useWallets();
 
-  const cards = useMemo(() => getCardsForPlacement(name as string), [getCardsForPlacement, name]);
+  const cards = useMemo(() => getCardsForScreen(name as keyof typeof Routes), [getCardsForScreen, name]);
 
   const layoutProvider = useMemo(
     () => getLayoutProvider(briefSectionsData, isCoinListEdited, cards, isReadOnlyWallet),
