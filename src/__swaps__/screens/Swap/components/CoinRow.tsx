@@ -107,7 +107,7 @@ export const CoinRow = React.memo(function CoinRow({ onPress, output, uniqueId, 
                     </Text>
                     <Inline alignVertical="center" space={{ custom: 5 }} wrap={false}>
                       <Text color="labelTertiary" numberOfLines={1} size="13pt" weight="semibold">
-                        {output ? symbol : `${inputAsset?.native?.balance.display}`}
+                        {output ? symbol : `${inputAsset?.balance.display}`}
                       </Text>
                       {isTrending && percentChange && (
                         <Inline alignVertical="center" space={{ custom: 1 }} wrap={false}>
