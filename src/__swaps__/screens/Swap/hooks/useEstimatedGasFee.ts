@@ -72,7 +72,7 @@ export function useSwapEstimatedGasFee(gasSettings: GasSettings | undefined) {
         toScaledIntegerWorklet(assetToSell.value.balance.amount)
       );
 
-      // Skip gas fee calculation if the user is trying to swap more than their available balance, as it isn't
+      // Skip gas fee recalculation if the user is trying to swap more than their available balance, as it isn't
       // needed and was previously resulting in errors in useEstimatedGasFee.
       if (isSwappingMoreThanAvailableBalance) return;
 

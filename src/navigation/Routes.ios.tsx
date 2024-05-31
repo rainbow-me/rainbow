@@ -30,7 +30,6 @@ import NoNeedWCSheet from '../screens/NoNeedWCSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
 import { WalletDiagnosticsSheet } from '../screens/Diagnostics';
 import WelcomeScreen from '../screens/WelcomeScreen';
-import { useTheme } from '../theme/ThemeContext';
 import RegisterENSNavigator from './RegisterENSNavigator';
 import { SwipeNavigator } from './SwipeNavigator';
 import {
@@ -71,6 +70,7 @@ import {
   positionSheetConfig,
   appIconUnlockSheetConfig,
   swapConfig,
+  checkIdentifierSheetConfig,
   recieveModalSheetConfig,
 } from './config';
 import { addCashSheet, emojiPreset, emojiPresetWallet, overlayExpandedPreset, sheetPreset } from './effects';
@@ -101,6 +101,7 @@ import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileCo
 import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
 import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import { useRemoteConfig } from '@/model/remoteConfig';
+import CheckIdentifierScreen from '@/screens/CheckIdentifierScreen';
 import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPanel';
 
 const Stack = createStackNavigator();
@@ -139,7 +140,6 @@ function MainStack() {
 
 function NativeStackNavigator() {
   const remoteConfig = useRemoteConfig();
-  const { colors, isDarkMode } = useTheme();
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const swapsV2Enabled = useExperimentalFlag(SWAPS_V2) || remoteConfig.swaps_v2;
 
@@ -214,6 +214,7 @@ function NativeStackNavigator() {
           transitionDuration: 0.25,
         }}
       />
+      <NativeStack.Screen component={CheckIdentifierScreen} name={Routes.CHECK_IDENTIFIER_SCREEN} {...checkIdentifierSheetConfig} />
       <NativeStack.Screen component={BackupSheet} name={Routes.BACKUP_SHEET} {...backupSheetConfig} />
       <NativeStack.Screen
         component={ModalScreen}
