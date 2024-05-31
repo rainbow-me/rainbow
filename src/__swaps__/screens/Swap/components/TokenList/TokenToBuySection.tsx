@@ -71,6 +71,7 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
     useSwapContext();
 
   const labelTextColor = useForegroundColor('label');
+  console.log('hi');
 
   const handleSelectToken = useCallback(
     (token: SearchAsset) => {
