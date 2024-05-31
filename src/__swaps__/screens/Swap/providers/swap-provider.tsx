@@ -169,7 +169,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
 
     const wallet = await loadWallet(parameters.quote.from, false, provider);
-    console.log(!wallet);
     if (!wallet) {
       runOnUI(resetSwappingStatus)();
       Alert.alert(i18n.t(i18n.l.swap.unable_to_load_wallet));
@@ -425,7 +424,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
   });
 
-  // TODO: i18n these
   const confirmButtonLabel = useDerivedValue(() => {
     if (isSwapping.value) {
       return swapping;
