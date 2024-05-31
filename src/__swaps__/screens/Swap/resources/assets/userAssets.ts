@@ -82,6 +82,9 @@ export const userAssetsSetQueryData = ({ address, currency, userAssets, testnetM
 };
 
 async function userAssetsQueryFunction({ queryKey: [{ address, currency, testnetMode }] }: QueryFunctionArgs<typeof userAssetsQueryKey>) {
+  if (!address) {
+    return {};
+  }
   const cache = queryClient.getQueryCache();
   const cachedUserAssets = (cache.find(userAssetsQueryKey({ address, currency, testnetMode }))?.state?.data ||
     {}) as ParsedAssetsDictByChain;
