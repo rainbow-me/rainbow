@@ -1048,6 +1048,7 @@
         "urgent": "Urgent",
         "custom": "Custom"
       },
+      "unable_to_determine_selected_gas": "Unable to determine selected gas",
       "network_fee": "Est. network fee",
       "current_base_fee": "Current base fee",
       "max_base_fee": "Max base fee",

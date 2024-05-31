@@ -33,7 +33,7 @@ import { Navigation } from '@/navigation';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
-import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
+import { getCachedProviderForNetwork, getFlashbotsProvider, isHardHat } from '@/handlers/web3';
 import { loadWallet } from '@/model/wallet';
 import { walletExecuteRap } from '@/raps/execute';
 import { queryClient } from '@/react-query';
@@ -41,6 +41,7 @@ import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { useAccountSettings } from '@/hooks';
 import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
+import { getNetworkObj } from '@/networks';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const tapToSwap = i18n.t(i18n.l.swap.actions.tap_to_swap);
@@ -153,21 +154,24 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     };
 
     const network = ethereumUtils.getNetworkFromChainId(parameters.chainId);
-    const provider = getCachedProviderForNetwork(network);
+    const provider =
+      parameters.flashbots && getNetworkObj(network).features.flashbots
+        ? await getFlashbotsProvider()
+        : getCachedProviderForNetwork(network);
     const providerUrl = provider?.connection?.url;
     const connectedToHardhat = isHardHat(providerUrl);
-
-    const wallet = await loadWallet(parameters.quote.from, false, provider);
-    if (!wallet) {
-      runOnUI(resetSwappingStatus)();
-      Alert.alert(i18n.t(i18n.l.swap.unable_to_load_wallet));
-      return;
-    }
 
     const selectedGas = getSelectedGas(parameters.chainId);
     if (!selectedGas) {
       runOnUI(resetSwappingStatus)();
-      // TODO: Show alert or something but this should never happen technically
+      Alert.alert(i18n.t(i18n.l.gas.unable_to_determine_selected_gas));
+      return;
+    }
+
+    const wallet = await loadWallet(parameters.quote.from, false, provider);
+    console.log(!wallet);
+    if (!wallet) {
+      runOnUI(resetSwappingStatus)();
       Alert.alert(i18n.t(i18n.l.swap.unable_to_load_wallet));
       return;
     }
