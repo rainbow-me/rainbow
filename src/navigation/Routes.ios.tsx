@@ -158,6 +158,8 @@ function NativeStackNavigator() {
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const swapsV2Enabled = useExperimentalFlag(SWAPS_V2) || remoteConfig.swaps_v2;
 
+  console.log('rendering native stack nav');
+
   return (
     <NativeStack.Navigator {...nativeStackConfig}>
       <NativeStack.Screen component={MainStack} name={Routes.STACK} />

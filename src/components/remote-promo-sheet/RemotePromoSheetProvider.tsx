@@ -23,9 +23,9 @@ export const RemotePromoSheetContext = createContext<WalletReadyContext>({
 
 type WalletReadyProvider = PropsWithChildren & WalletReadyContext;
 
-export const RemotePromoSheetProvider = ({ isWalletReady = false, children }: WalletReadyProvider) => {
-  const { remote_promo_enabled } = useRemoteConfig();
-  const remotePromoSheets = useExperimentalFlag(REMOTE_PROMO_SHEETS) || remote_promo_enabled;
+export const RemotePromoSheetProvider = ({ isWalletReady = false, children }: Omit<WalletReadyProvider, 'runChecks'>) => {
+  // const { remote_promo_enabled } = useRemoteConfig();
+  const remotePromoSheets = useExperimentalFlag(REMOTE_PROMO_SHEETS);
 
   const runChecks = useCallback(async () => {
     if (!isWalletReady) return;

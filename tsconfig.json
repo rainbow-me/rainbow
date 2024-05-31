@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "moduleSuffixes": [".ios", ".android", ""],
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,

@@ -1,5 +1,5 @@
 export const transactionTypes = {
-  withoutChanges: ['cancel', 'contract_interaction', 'deployment', 'approve', 'revoke', 'speed_up'],
+  withoutChanges: ['cancel', 'contract_interaction', 'deployment', 'approve', 'revoke', 'speed_up', 'authorize'],
   withChanges: [
     'sale',
     'bridge',
