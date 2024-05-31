@@ -11,21 +11,42 @@ import Animated from 'react-native-reanimated';
 import { StyleSheet } from 'react-native';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { SwapCoinIcon } from './SwapCoinIcon';
-import { ethereumUtils, haptics } from '@/utils';
-import ContextMenuButton from '@/components/native-context-menu/contextMenu';
+import { ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
+import { ContextMenuButton } from 'react-native-ios-context-menu';
 import { IS_ANDROID } from '@/env';
 import { startCase } from 'lodash';
 import { setClipboard } from '@/hooks/useClipboard';
 import { RainbowNetworks } from '@/networks';
+import * as i18n from '@/languages';
 
 const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId }) => {
   const network = RainbowNetworks.find(network => network.id === chainId)?.value;
+
+  const handleCopy = useCallback(() => {
+    haptics.selection();
+    setClipboard(address);
+  }, [address]);
+
+  const options = {
+    copy: {
+      title: i18n.t(i18n.l.exchange.coin_row.copy_contract_address),
+      action: handleCopy,
+    },
+    ...(network
+      ? {
+          blockExplorer: {
+            title: i18n.t(i18n.l.exchange.coin_row.view_on, { blockExplorerName: startCase(ethereumUtils.getBlockExplorer(network)) }),
+            action: () => ethereumUtils.openAddressInBlockExplorer(address, network),
+          },
+        }
+      : {}),
+  };
 
   const menuConfig = {
     menuItems: [
       {
         actionKey: 'copyAddress',
-        actionTitle: 'Copy Contract Address',
+        actionTitle: options.copy.title,
         icon: {
           iconType: 'SYSTEM',
           iconValue: 'doc.on.doc',
@@ -35,7 +56,7 @@ const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId })
         ? [
             {
               actionKey: 'blockExplorer',
-              actionTitle: `View on ${startCase(ethereumUtils.getBlockExplorer(network))}`,
+              actionTitle: options.blockExplorer?.title,
               icon: {
                 iconType: 'SYSTEM',
                 iconValue: 'link',
@@ -44,32 +65,47 @@ const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId })
           ]
         : []),
     ],
-    // menuTitle: '',
+    menuTitle: '',
   };
 
-  const handlePressMenuItem = useCallback(
+  const handlePressMenuItem =
     // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
     async ({ nativeEvent: { actionKey } }) => {
       if (actionKey === 'copyAddress') {
-        haptics.selection();
-        setClipboard(address);
+        options.copy.action();
       } else if (actionKey === 'blockExplorer' && network) {
-        ethereumUtils.openAddressInBlockExplorer(address, network);
+        options.blockExplorer?.action();
       }
-    },
-    [address, network]
-  );
+    };
+
+  const onPressAndroid = () =>
+    showActionSheetWithOptions(
+      {
+        options: [options.copy.title, ...(network ? [options.blockExplorer?.title] : [])],
+        showSeparators: true,
+      },
+      (idx: number) => {
+        if (idx === 0) {
+          options.copy.action();
+        }
+        if (idx === 1 && network) {
+          options.blockExplorer?.action();
+        }
+      }
+    );
 
   return (
     <ContextMenuButton
-      enableContextMenu
+      activeOpacity={0}
+      // @ts-ignore
       menuConfig={menuConfig}
-      {...(IS_ANDROID ? { handlePressMenuItem } : {})}
+      onPress={IS_ANDROID ? onPressAndroid : undefined}
       isMenuPrimaryAction
       onPressMenuItem={handlePressMenuItem}
       useActionSheetFallback={false}
+      wrapNativeComponent={false}
     >
-      <CoinRowButton icon="􀅳" outline size="icon 14px" disabled={true} />
+      <CoinRowButton icon="􀅳" outline size="icon 14px" />
     </ContextMenuButton>
   );
 };

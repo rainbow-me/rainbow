@@ -541,7 +541,8 @@
         "from_divider": "from",
         "to_divider": "to",
         "view_on": "View on %{blockExplorerName}",
-        "view_on_etherscan": "View on Etherscan"
+        "view_on_etherscan": "View on Etherscan",
+        "copy_contract_address": "Copy Contract Address"
       },
       "all_networks": "All Networks",
       "filter_by_network": "Filter by Network",
