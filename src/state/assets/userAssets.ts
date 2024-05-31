@@ -26,7 +26,8 @@ export interface UserAssetsState {
 }
 
 // NOTE: We are serializing Map as an Array<[UniqueId, ParsedSearchAsset]>
-type UserAssetsStateWithTransforms = Omit<Partial<UserAssetsState>, 'userAssets'> & {
+type UserAssetsStateWithTransforms = Omit<Partial<UserAssetsState>, 'chainBalances' | 'userAssets'> & {
+  chainBalances: Array<[ChainId, number]>;
   userAssets: Array<[UniqueId, ParsedSearchAsset]>;
 };
 
@@ -34,6 +35,7 @@ function serializeUserAssetsState(state: Partial<UserAssetsState>, version?: num
   try {
     const transformedStateToPersist: UserAssetsStateWithTransforms = {
       ...state,
+      chainBalances: state.chainBalances ? Array.from(state.chainBalances.entries()) : [],
       userAssets: state.userAssets ? Array.from(state.userAssets.entries()) : [],
     };
 
@@ -68,9 +70,20 @@ function deserializeUserAssetsState(serializedState: string) {
     throw error;
   }
 
+  let chainBalances = new Map<ChainId, number>();
+  try {
+    if (state.chainBalances) {
+      chainBalances = new Map(state.chainBalances);
+    }
+  } catch (error) {
+    logger.error(new RainbowError('Failed to convert chainBalances from user assets storage'), { error });
+    throw error;
+  }
+
   return {
     state: {
       ...state,
+      chainBalances,
       userAssets: userAssetsData,
     },
     version,
@@ -201,10 +214,12 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
   {
     deserializer: deserializeUserAssetsState,
     partialize: state => ({
+      associatedWalletAddress: state.associatedWalletAddress,
+      chainBalances: state.chainBalances,
       userAssets: state.userAssets,
     }),
     serializer: serializeUserAssetsState,
     storageKey: 'userAssets',
-    version: 1,
+    version: 2,
   }
 );
