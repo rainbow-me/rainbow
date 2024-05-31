@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 
 import { ReviewGasButton } from '@/__swaps__/screens/Swap/components/GasButton';
 import { ChainId } from '@/__swaps__/types/chains';
-import { AnimatedText, Box, Inline, Separator, Stack, Text, globalColors, useColorMode } from '@/design-system';
+import { AnimatedText, Bleed, Box, Inline, Separator, Stack, Text, globalColors, useColorMode } from '@/design-system';
 import { StyleSheet, View } from 'react-native';
 
 import Animated, {
@@ -152,7 +152,7 @@ export function ReviewPanel() {
         <Stack width="full" space="24px" alignHorizontal="stretch">
           <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
             <Inline horizontalSpace="12px">
-              <Text color="labelTertiary" weight="bold" size="13pt">
+              <Text color="labelTertiary" weight="bold" size="icon 13px">
                 􀤆
               </Text>
               <Text color="labelTertiary" weight="semibold" size="15pt">
@@ -175,9 +175,9 @@ export function ReviewPanel() {
             </Inline>
           </Inline>
 
-          <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-            <Inline horizontalSpace="12px">
-              <Text color="labelTertiary" weight="bold" size="13pt">
+          <Inline wrap={false} horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
+            <Inline wrap={false} horizontalSpace="12px">
+              <Text color="labelTertiary" weight="bold" size="icon 13px">
                 􀄩
               </Text>
               <Text color="labelTertiary" weight="semibold" size="15pt">
@@ -185,7 +185,7 @@ export function ReviewPanel() {
               </Text>
             </Inline>
 
-            <Inline horizontalSpace="6px">
+            <Inline wrap={false} horizontalSpace="6px">
               <AnimatedText
                 align="right"
                 color={isDarkMode ? 'labelSecondary' : 'label'}
@@ -196,29 +196,31 @@ export function ReviewPanel() {
             </Inline>
           </Inline>
 
-          <Inline horizontalSpace="10px" alignHorizontal="justify">
-            <Inline horizontalSpace="12px">
-              <Text color="labelTertiary" weight="bold" size="13pt">
+          <Inline wrap={false} horizontalSpace="10px" alignHorizontal="justify">
+            <Inline wrap={false} horizontalSpace="12px">
+              <Text color="labelTertiary" weight="bold" size="icon 13px">
                 􀘾
               </Text>
-              <Text color="labelTertiary" weight="semibold" size="15pt">
-                Rainbow Fee
-              </Text>
+              <Bleed horizontal="3px">
+                <Text color="labelTertiary" weight="semibold" size="15pt">
+                  Rainbow Fee
+                </Text>
+              </Bleed>
             </Inline>
 
-            <Inline horizontalSpace="6px">
+            <Inline wrap={false} horizontalSpace="6px">
               <RainbowFee />
             </Inline>
           </Inline>
 
           <Separator color="separatorSecondary" />
 
-          <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-            <Inline horizontalSpace="12px">
-              <Text color="labelTertiary" weight="bold" size="13pt">
+          <Inline wrap={false} horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
+            <Inline wrap={false} horizontalSpace="12px">
+              <Text color="labelTertiary" weight="bold" size="icon 13px">
                 􀋦
               </Text>
-              <Inline horizontalSpace="4px">
+              <Inline wrap={false} horizontalSpace="4px">
                 <Text color="labelTertiary" weight="semibold" size="15pt">
                   Flashbots Protection
                 </Text>
@@ -231,9 +233,9 @@ export function ReviewPanel() {
             <AnimatedSwitch onToggle={SwapSettings.onToggleFlashbots} value={SwapSettings.flashbots} activeLabel="On" inactiveLabel="Off" />
           </Inline>
 
-          <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-            <Inline alignHorizontal="left" horizontalSpace="12px">
-              <Text color="labelTertiary" weight="bold" size="13pt">
+          <Inline wrap={false} horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
+            <Inline wrap={false} alignHorizontal="left" horizontalSpace="12px">
+              <Text color="labelTertiary" weight="bold" size="icon 13px">
                 􀘩
               </Text>
               <Inline horizontalSpace="4px">
@@ -310,7 +312,7 @@ export function ReviewPanel() {
           <Separator color="separatorSecondary" />
 
           <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-            <Stack space="6px">
+            <Stack space="8px">
               <Inline alignVertical="center" horizontalSpace="6px">
                 <View style={sx.gasContainer}>
                   <AnimatedChainImage showMainnetBadge asset={internalSelectedInputAsset} size={16} />
@@ -321,11 +323,11 @@ export function ReviewPanel() {
                 </Inline>
               </Inline>
 
-              <Inline alignVertical="center" horizontalSpace="4px">
+              <Inline wrap={false} alignHorizontal="left" alignVertical="bottom" horizontalSpace="4px">
                 <Text color="labelTertiary" size="13pt" weight="bold">
                   Est. Network Fee
                 </Text>
-                <Text color="labelTertiary" size="13pt" weight="bold">
+                <Text color="labelTertiary" size="icon 13px" weight="bold">
                   􀅴
                 </Text>
               </Inline>
@@ -343,10 +345,10 @@ export function ReviewPanel() {
 
 const sx = StyleSheet.create({
   gasContainer: {
-    top: 2,
-    height: 12,
-    width: 10,
-    left: 4,
+    top: 0,
+    height: 16,
+    width: 16,
+    left: 8,
     overflow: 'visible',
   },
   networkContainer: {
