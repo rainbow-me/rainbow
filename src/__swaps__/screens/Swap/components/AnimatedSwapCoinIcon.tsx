@@ -11,6 +11,7 @@ import { AnimatedChainImage } from './AnimatedChainImage';
 import { fadeConfig } from '../constants';
 import { SwapCoinIconTextFallback } from './SwapCoinIconTextFallback';
 import { Box } from '@/design-system';
+import { IS_ANDROID } from '@/env';
 
 const fallbackIconStyle = {
   ...borders.buildCircleAsObject(32),
@@ -42,10 +43,13 @@ export const AnimatedSwapCoinIcon = React.memo(function FeedCoinIcon({
 
   const didErrorForUniqueId = useSharedValue<string | undefined>(undefined);
 
+  const size = small ? 16 : large ? 36 : 32;
+
   const animatedIconSource = useAnimatedProps(() => {
     return {
       source: {
         ...DEFAULT_FASTER_IMAGE_CONFIG,
+        borderRadius: IS_ANDROID ? size / 2 : undefined,
         transitionDuration: 0,
         url: asset.value?.icon_url ?? '',
       },
@@ -114,9 +118,9 @@ export const AnimatedSwapCoinIcon = React.memo(function FeedCoinIcon({
             style={[
               sx.coinIcon,
               {
-                borderRadius: (small ? 16 : large ? 36 : 32) / 2,
-                height: small ? 16 : large ? 36 : 32,
-                width: small ? 16 : large ? 36 : 32,
+                borderRadius: size / 2,
+                height: size,
+                width: size,
               },
             ]}
           />
@@ -127,8 +131,8 @@ export const AnimatedSwapCoinIcon = React.memo(function FeedCoinIcon({
         >
           <SwapCoinIconTextFallback
             asset={asset}
-            height={small ? 16 : large ? 36 : 32}
-            width={small ? 16 : large ? 36 : 32}
+            height={size}
+            width={size}
             style={small ? smallFallbackIconStyle : large ? largeFallbackIconStyle : fallbackIconStyle}
           />
         </Animated.View>
@@ -140,9 +144,9 @@ export const AnimatedSwapCoinIcon = React.memo(function FeedCoinIcon({
             animatedEmptyStateStyles,
             small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback,
             {
-              borderRadius: (small ? 16 : large ? 36 : 32) / 2,
-              height: small ? 16 : large ? 36 : 32,
-              width: small ? 16 : large ? 36 : 32,
+              borderRadius: size / 2,
+              height: size,
+              width: size,
             },
           ]}
         />
