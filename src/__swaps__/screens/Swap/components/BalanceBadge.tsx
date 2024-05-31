@@ -10,7 +10,7 @@ export const BalanceBadge = ({ color, label, weight }: { color?: TextColor; labe
   const { isDarkMode } = useColorMode();
 
   const labelTextStyle = useAnimatedStyle(() => {
-    const isPlaceholderLabel = label.value === 'No Balance' || label.value === 'Token to Swap' || label.value === 'Token to Buy';
+    const isPlaceholderLabel = label.value === 'No Balance' || label.value === 'Token to Swap' || label.value === 'Token to Get';
     return {
       opacity: isPlaceholderLabel ? (isDarkMode ? 0.6 : 0.75) : 1,
     };

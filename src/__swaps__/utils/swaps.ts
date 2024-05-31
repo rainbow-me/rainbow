@@ -563,15 +563,17 @@ export const parseAssetAndExtend = ({
     colors: (isAssetEth ? ETH_COLORS : asset.colors) as TokenColors,
   });
 
+  const uniqueId = getStandardizedUniqueIdWorklet({ address: asset.address, chainId: asset.chainId });
+
   return {
     ...asset,
     ...colors,
     nativePrice: asset.price?.value,
-    balance: insertUserAssetBalance ? userAssetsStore.getState().getUserAsset(asset.uniqueId)?.balance || asset.balance : asset.balance,
+    balance: insertUserAssetBalance ? userAssetsStore.getState().getUserAsset(uniqueId)?.balance || asset.balance : asset.balance,
 
     // For some reason certain assets have a unique ID in the format of `${address}_mainnet` rather than
     // `${address}_${chainId}`, so at least for now we ensure consistency by reconstructing the unique ID here.
-    uniqueId: getStandardizedUniqueIdWorklet({ address: asset.address, chainId: asset.chainId }),
+    uniqueId,
   };
 };
 

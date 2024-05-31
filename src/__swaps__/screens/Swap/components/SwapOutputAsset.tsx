@@ -74,17 +74,14 @@ function SwapInputIcon() {
 }
 
 function OutputAssetBalanceBadge() {
-  const selectedAssetId = useSwapsStore(state => state.outputAsset?.uniqueId);
-  const selectedAssetBalance = userAssetsStore(
-    useShallow(state => {
-      const asset = state.getUserAsset(selectedAssetId || '');
-      const greaterThanZeroBalance = Number(asset?.balance.amount) > 0;
-      return greaterThanZeroBalance ? asset?.balance.display : undefined;
-    })
-  );
+  const { internalSelectedOutputAsset } = useSwapContext();
 
   const label = useDerivedValue(() => {
-    return selectedAssetId ? selectedAssetBalance || 'No Balance' : 'Token to Buy';
+    const asset = internalSelectedOutputAsset.value;
+    const hasBalance = Number(asset?.balance.amount) > 0 && asset?.balance.display;
+    const balance = (hasBalance && asset?.balance.display) || 'No Balance';
+
+    return asset ? balance : 'Token to Get';
   });
 
   return <BalanceBadge label={label} />;
