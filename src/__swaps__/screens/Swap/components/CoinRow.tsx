@@ -12,7 +12,7 @@ import { StyleSheet } from 'react-native';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { SwapCoinIcon } from './SwapCoinIcon';
 import { ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
-import { ContextMenuButton } from 'react-native-ios-context-menu';
+import { ContextMenuButton, OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import { IS_ANDROID } from '@/env';
 import { startCase } from 'lodash';
 import { setClipboard } from '@/hooks/useClipboard';
@@ -68,15 +68,13 @@ const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId })
     menuTitle: '',
   };
 
-  const handlePressMenuItem =
-    // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
-    async ({ nativeEvent: { actionKey } }) => {
-      if (actionKey === 'copyAddress') {
-        options.copy.action();
-      } else if (actionKey === 'blockExplorer' && network) {
-        options.blockExplorer?.action();
-      }
-    };
+  const handlePressMenuItem = async ({ nativeEvent: { actionKey } }: OnPressMenuItemEventObject) => {
+    if (actionKey === 'copyAddress') {
+      options.copy.action();
+    } else if (actionKey === 'blockExplorer' && network) {
+      options.blockExplorer?.action();
+    }
+  };
 
   const onPressAndroid = () =>
     showActionSheetWithOptions(
