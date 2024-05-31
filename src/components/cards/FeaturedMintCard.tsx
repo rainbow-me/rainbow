@@ -35,7 +35,7 @@ const BlurWrapper = styled(View).attrs({
   shouldRasterizeIOS: true,
 })({
   // @ts-expect-error missing theme types
-  backgroundColor: ({ theme: { colors } }) => colors.trueBlack,
+  backgroundColor: ({ theme: { colorss } }) => colors.trueBlack,
   height: '100%',
   left: 0,
   overflow: 'hidden',
