@@ -540,7 +540,12 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx,graphql}": [
       "prettier --write",
-      "eslint --cache"
+      "eslint --fix"
     ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   }
 }
