@@ -11,7 +11,7 @@ import { SwapCoinIcon } from './SwapCoinIcon';
 import { ethereumUtils } from '@/utils';
 import { ETH_ADDRESS } from '@/references';
 
-export const CoinRow = ({
+export const CoinRow = React.memo(function CoinRow({
   address,
   mainnetAddress,
   chainId,
@@ -37,7 +37,7 @@ export const CoinRow = ({
   onPress?: () => void;
   output?: boolean;
   symbol: string;
-}) => {
+}) {
   const { favoritesMetadata } = useFavorites();
 
   const isFavorite = useMemo(() => {
@@ -136,7 +136,7 @@ export const CoinRow = ({
       </Columns>
     </Box>
   );
-};
+});
 
 export const styles = StyleSheet.create({
   solidColorCoinIcon: {

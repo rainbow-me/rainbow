@@ -12,13 +12,13 @@ import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 
 export const TokenList = ({
   asset,
-  handleExitSearch,
-  handleFocusSearch,
+  handleExitSearchWorklet,
+  handleFocusSearchWorklet,
   output,
 }: {
   asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
-  handleExitSearch: () => void;
-  handleFocusSearch: () => void;
+  handleExitSearchWorklet: () => void;
+  handleFocusSearchWorklet: () => void;
   output?: boolean;
 }) => {
   const { inputProgress, outputProgress } = useSwapContext();
@@ -38,7 +38,12 @@ export const TokenList = ({
   return (
     <Stack>
       <Stack space="20px">
-        <SearchInput asset={asset} handleExitSearch={handleExitSearch} handleFocusSearch={handleFocusSearch} output={output} />
+        <SearchInput
+          asset={asset}
+          handleExitSearchWorklet={handleExitSearchWorklet}
+          handleFocusSearchWorklet={handleFocusSearchWorklet}
+          output={output}
+        />
         <Separator color="separatorTertiary" thickness={1} />
       </Stack>
       <Animated.ScrollView

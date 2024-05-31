@@ -1,14 +1,16 @@
 import { ChainId } from '@/__swaps__/types/chains';
 import { weiToGwei } from '@/__swaps__/utils/ethereum';
 import { add, multiply } from '@/__swaps__/utils/numbers';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
 import ethereumUtils, { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
-import { ETH_ADDRESS } from '@rainbow-me/swaps';
-import { useMemo } from 'react';
-import { formatUnits, zeroAddress } from 'viem';
+import { useMemo, useState } from 'react';
+import { formatUnits } from 'viem';
 import { formatCurrency, formatNumber } from './formatNumber';
 import { GasSettings } from './useCustomGas';
 import { useSwapEstimatedGasLimit } from './useSwapEstimatedGasLimit';
+import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
+import { useDebouncedCallback } from 'use-debounce';
+import { useSwapContext } from '../providers/swap-provider';
+import { convertToBigInt, greaterThanWorklet } from '@/__swaps__/safe-math/SafeMath';
 
 function safeBigInt(value: string) {
   try {
@@ -47,35 +49,47 @@ export function useEstimatedGasFee({
   }, [gasLimit, gasSettings, nativeNetworkAsset]);
 }
 
-const eth = ETH_ADDRESS.toLowerCase();
-const isEth = (address: string) => [eth, zeroAddress, 'eth'].includes(address.toLowerCase());
-const isSameAddress = (a: string, b: string) => {
-  if (isEth(a) && isEth(b)) return true;
-  return a.toLowerCase() === b.toLowerCase();
-};
 export function useSwapEstimatedGasFee(gasSettings: GasSettings | undefined) {
-  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
+  const { internalSelectedInputAsset: assetToSell, internalSelectedOutputAsset: assetToBuy, quote } = useSwapContext();
 
-  const assetToSell = useSwapsStore(s => s.inputAsset);
-  const assetToBuy = useSwapsStore(s => s.outputAsset);
-  const quote = useSwapsStore(s => s.quote);
+  const [state, setState] = useState({
+    assetToBuy: assetToBuy.value,
+    assetToSell: assetToSell.value,
+    chainId: assetToSell.value?.chainId ?? ChainId.mainnet,
+    quote: quote.value,
+  });
 
-  const { data: gasLimit, isFetching } = useSwapEstimatedGasLimit(
-    { chainId, quote, assetToSell },
-    {
-      enabled:
-        !!quote &&
-        !!assetToSell &&
-        !!assetToBuy &&
-        !('error' in quote) &&
-        // the quote and the input/output assets are not updated together,
-        // we shouldn't try to estimate if the assets are not the same as the quote (probably still fetching a quote)
-        isSameAddress(quote.sellTokenAddress, assetToSell.address) &&
-        isSameAddress(quote.buyTokenAddress, assetToBuy.address),
+  const debouncedStateSet = useDebouncedCallback(setState, 100, { leading: false, trailing: true });
+
+  // Updates the state as a single block in response to quote changes to ensure the gas fee is cleanly updated once
+  useAnimatedReaction(
+    () => quote.value,
+    (current, previous) => {
+      if (!assetToSell.value || !assetToBuy.value || !current || !previous || 'error' in current) return;
+
+      const bigIntBalance = convertToBigInt(assetToSell.value.balance.amount);
+      const isSwappingMoreThanAvailableBalance = greaterThanWorklet(current.sellAmount.toString(), bigIntBalance[0]);
+      if (isSwappingMoreThanAvailableBalance) return;
+
+      if (current !== previous) {
+        runOnJS(debouncedStateSet)({
+          assetToBuy: assetToBuy.value,
+          assetToSell: assetToSell.value,
+          chainId: assetToSell.value?.chainId ?? ChainId.mainnet,
+          quote: current,
+        });
+      }
     }
   );
 
-  const estimatedFee = useEstimatedGasFee({ chainId, gasLimit, gasSettings });
+  const { data: gasLimit, isFetching } = useSwapEstimatedGasLimit(
+    { chainId: state.chainId, quote: state.quote, assetToSell: state.assetToSell },
+    {
+      enabled: !!state.quote && !!state.assetToSell && !!state.assetToBuy && !('error' in quote),
+    }
+  );
+
+  const estimatedFee = useEstimatedGasFee({ chainId: state.chainId, gasLimit, gasSettings });
 
   return useMemo(() => ({ isLoading: isFetching, data: estimatedFee }), [estimatedFee, isFetching]);
 }

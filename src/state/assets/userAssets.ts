@@ -1,39 +1,34 @@
-import { Hex } from 'viem';
-
+import { Address } from 'viem';
 import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
-import { deriveAddressAndChainWithUniqueId } from '@/__swaps__/utils/address';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { RainbowError, logger } from '@/logger';
+import { ChainId } from '@/__swaps__/types/chains';
+import { SUPPORTED_CHAIN_IDS } from '@/references';
+import { shallow } from 'zustand/shallow';
 
 export interface UserAssetsState {
-  userAssetsById: Set<UniqueId>;
-  userAssets: Map<UniqueId, ParsedSearchAsset>;
+  associatedWalletAddress: Address | undefined;
   filter: UserAssetFilter;
-  searchQuery: string;
-
-  favoriteAssetsById: Set<Hex>; // this is chain agnostic, so we don't want to store a UniqueId here
-  setFavorites: (favoriteAssetIds: Hex[]) => void;
-  toggleFavorite: (uniqueId: UniqueId) => void;
-  isFavorite: (uniqueId: UniqueId) => boolean;
-
-  getFilteredUserAssetIds: () => UniqueId[];
-  getUserAsset: (uniqueId: UniqueId) => ParsedSearchAsset | undefined;
+  inputSearchQuery: string;
+  searchCache: Map<string, ParsedSearchAsset[]>;
+  userAssets: Map<UniqueId, ParsedSearchAsset>;
+  getBalanceSortedChainList: () => ChainId[];
+  getFilteredUserAssetIds: (returnFullAssetData?: boolean) => UniqueId[];
+  getHighestValueAsset: () => ParsedSearchAsset | null;
+  getUserAsset: (uniqueId: UniqueId) => ParsedSearchAsset | null;
+  getUserAssets: () => ParsedSearchAsset[];
 }
 
 // NOTE: We are serializing Map as an Array<[UniqueId, ParsedSearchAsset]>
-type UserAssetsStateWithTransforms = Omit<Partial<UserAssetsState>, 'userAssetIds' | 'userAssets' | 'favoriteAssetsAddresses'> & {
-  userAssetIds: Array<UniqueId>;
+type UserAssetsStateWithTransforms = Omit<Partial<UserAssetsState>, 'userAssets'> & {
   userAssets: Array<[UniqueId, ParsedSearchAsset]>;
-  favoriteAssetsAddresses: Array<Hex>;
 };
 
 function serializeUserAssetsState(state: Partial<UserAssetsState>, version?: number) {
   try {
     const transformedStateToPersist: UserAssetsStateWithTransforms = {
       ...state,
-      userAssetIds: state.userAssetsById ? Array.from(state.userAssetsById) : [],
       userAssets: state.userAssets ? Array.from(state.userAssets.entries()) : [],
-      favoriteAssetsAddresses: state.favoriteAssetsById ? Array.from(state.favoriteAssetsById) : [],
     };
 
     return JSON.stringify({
@@ -57,16 +52,6 @@ function deserializeUserAssetsState(serializedState: string) {
 
   const { state, version } = parsedState;
 
-  let userAssetIdsData = new Set<UniqueId>();
-  try {
-    if (state.userAssetIds.length) {
-      userAssetIdsData = new Set(state.userAssetIds);
-    }
-  } catch (error) {
-    logger.error(new RainbowError('Failed to convert userAssetIds from user assets storage'), { error });
-    throw error;
-  }
-
   let userAssetsData: Map<UniqueId, ParsedSearchAsset> = new Map();
   try {
     if (state.userAssets.length) {
@@ -77,93 +62,95 @@ function deserializeUserAssetsState(serializedState: string) {
     throw error;
   }
 
-  let favoritesData = new Set<Hex>();
-  try {
-    if (state.favoriteAssetsAddresses.length) {
-      favoritesData = new Set(state.favoriteAssetsAddresses);
-    }
-  } catch (error) {
-    logger.error(new RainbowError('Failed to convert favoriteAssetsAddresses from user assets storage'), { error });
-    throw error;
-  }
-
   return {
     state: {
       ...state,
-      userAssetIds: userAssetIdsData,
       userAssets: userAssetsData,
-      favoriteAssetsAddresses: favoritesData,
     },
     version,
   };
 }
 
 export const userAssetsStore = createRainbowStore<UserAssetsState>(
-  (_, get) => ({
-    userAssetsById: new Set(),
-    userAssets: new Map(),
+  (set, get) => ({
+    associatedWalletAddress: undefined,
     filter: 'all',
-    searchQuery: '',
-    favoriteAssetsById: new Set(),
+    inputSearchQuery: '',
+    searchCache: new Map(),
+    userAssets: new Map(),
+
+    getBalanceSortedChainList: () => {
+      const chainBalances = new Map<number, number>();
+
+      get().userAssets.forEach(asset => {
+        const balance = Number(asset.native.balance.amount) ?? 0;
+        chainBalances.set(asset.chainId, (chainBalances.get(asset.chainId) || 0) + balance);
+      });
+
+      const sortedChains = Array.from(chainBalances.entries())
+        .sort(([, balanceA], [, balanceB]) => balanceB - balanceA)
+        .map(([chainId]) => chainId);
+
+      const remainingChains = SUPPORTED_CHAIN_IDS({ testnetMode: false }).filter(chainId => !chainBalances.has(chainId));
+
+      return [...sortedChains, ...remainingChains];
+    },
+    shallow,
 
     getFilteredUserAssetIds: () => {
-      const { userAssetsById, userAssets, searchQuery } = get();
+      const userAssets = get().userAssets;
+      const filter = get().filter;
+      const searchQuery = get().inputSearchQuery.toLowerCase().trim();
+      const chainIdFilter = filter === 'all' ? null : filter;
 
-      // NOTE: No search query let's just return the userAssetIds
-      if (!searchQuery.trim()) {
-        return Array.from(userAssetsById.keys());
+      // Return all assets if no filter or search query is applied
+      if (!searchQuery && !chainIdFilter) {
+        return Array.from(userAssets.keys());
       }
 
-      const lowerCaseSearchQuery = searchQuery.toLowerCase();
-      const keysToMatch: Partial<keyof ParsedSearchAsset>[] = ['name', 'symbol', 'address'];
+      const searchRegex = searchQuery ? new RegExp(searchQuery, 'i') : null;
+      const filteredIds: Set<UniqueId> = new Set();
 
-      return Object.entries(userAssets).reduce((acc, [uniqueId, asset]) => {
-        const combinedString = keysToMatch
-          .map(key => asset?.[key as keyof ParsedSearchAsset] ?? '')
-          .filter(Boolean)
-          .join(' ')
-          .toLowerCase();
-        if (combinedString.includes(lowerCaseSearchQuery)) {
-          acc.push(uniqueId);
+      // Filter by chain ID
+      if (chainIdFilter) {
+        for (const [uniqueId, asset] of userAssets) {
+          if (asset.chainId === chainIdFilter) {
+            filteredIds.add(uniqueId);
+          }
         }
-        return acc;
-      }, [] as UniqueId[]);
-    },
-
-    setFavorites: (addresses: Hex[]) => {
-      const { favoriteAssetsById } = get();
-      addresses.forEach(address => {
-        favoriteAssetsById.add(address);
-      });
-    },
-
-    toggleFavorite: (uniqueId: UniqueId) => {
-      const { favoriteAssetsById } = get();
-      const { address } = deriveAddressAndChainWithUniqueId(uniqueId);
-      if (favoriteAssetsById.has(address)) {
-        favoriteAssetsById.delete(address);
       } else {
-        favoriteAssetsById.add(address);
+        for (const uniqueId of userAssets.keys()) {
+          filteredIds.add(uniqueId);
+        }
       }
+
+      // Further filter by search query
+      if (searchRegex) {
+        for (const uniqueId of filteredIds) {
+          const asset = userAssets.get(uniqueId);
+          if (asset && !(searchRegex.test(asset.name) || searchRegex.test(asset.symbol) || searchRegex.test(asset.address))) {
+            filteredIds.delete(uniqueId);
+          }
+        }
+      }
+
+      const filteredAssets = Array.from(filteredIds);
+      return filteredAssets;
     },
 
-    getUserAsset: (uniqueId: UniqueId) => get().userAssets.get(uniqueId),
+    getHighestValueAsset: () => get().userAssets.values().next().value || null,
 
-    isFavorite: (uniqueId: UniqueId) => {
-      const { favoriteAssetsById } = get();
-      const { address } = deriveAddressAndChainWithUniqueId(uniqueId);
-      return favoriteAssetsById.has(address);
-    },
+    getUserAsset: (uniqueId: UniqueId) => get().userAssets.get(uniqueId) || null,
+
+    getUserAssets: () => Array.from(get().userAssets.values()) || [],
   }),
   {
-    storageKey: 'userAssets',
-    version: 1,
+    deserializer: deserializeUserAssetsState,
     partialize: state => ({
-      userAssetsById: state.userAssetsById,
       userAssets: state.userAssets,
-      favoriteAssetsById: state.favoriteAssetsById,
     }),
     serializer: serializeUserAssetsState,
-    deserializer: deserializeUserAssetsState,
+    storageKey: 'userAssets',
+    version: 1,
   }
 );
