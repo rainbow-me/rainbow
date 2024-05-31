@@ -113,7 +113,7 @@ export function useSwapInputsController({
       return '$0.00';
     }
 
-    const nativeValue = `$${inputValues.value.inputNativeValue.toLocaleString('en-US', {
+    const nativeValue = `$${parseFloat(inputValues.value.inputNativeValue.toString()).toLocaleString('en-US', {
       useGrouping: true,
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
@@ -148,12 +148,11 @@ export function useSwapInputsController({
       return '$0.00';
     }
 
-    const nativeValue = `$${inputValues.value.outputNativeValue.toLocaleString('en-US', {
+    const nativeValue = `$${parseFloat(inputValues.value.outputNativeValue.toString()).toLocaleString('en-US', {
       useGrouping: true,
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })}`;
-
     return nativeValue || '$0.00';
   });
 

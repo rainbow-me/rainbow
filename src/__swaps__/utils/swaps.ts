@@ -28,8 +28,6 @@ import {
   roundWorklet,
   toFixedWorklet,
   greaterThanOrEqualToWorklet,
-  minWorklet,
-  maxWorklet,
 } from '../safe-math/SafeMath';
 
 // /---- 🎨 Color functions 🎨 ----/ //
