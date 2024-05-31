@@ -8,8 +8,103 @@ import { ChainId } from '@/__swaps__/types/chains';
 import { toggleFavorite, useFavorites } from '@/resources/favorites';
 import { StyleSheet } from 'react-native';
 import { SwapCoinIcon } from './SwapCoinIcon';
-import { ethereumUtils } from '@/utils';
+import { ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
+import { ContextMenuButton, OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
+import { IS_ANDROID } from '@/env';
+import { startCase } from 'lodash';
+import { setClipboard } from '@/hooks/useClipboard';
+import { RainbowNetworks } from '@/networks';
+import * as i18n from '@/languages';
 import { ETH_ADDRESS } from '@/references';
+
+const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId }) => {
+  const network = RainbowNetworks.find(network => network.id === chainId)?.value;
+
+  const handleCopy = useCallback(() => {
+    haptics.selection();
+    setClipboard(address);
+  }, [address]);
+
+  const options = {
+    copy: {
+      title: i18n.t(i18n.l.exchange.coin_row.copy_contract_address),
+      action: handleCopy,
+    },
+    ...(network
+      ? {
+          blockExplorer: {
+            title: i18n.t(i18n.l.exchange.coin_row.view_on, { blockExplorerName: startCase(ethereumUtils.getBlockExplorer(network)) }),
+            action: () => ethereumUtils.openAddressInBlockExplorer(address, network),
+          },
+        }
+      : {}),
+  };
+
+  const menuConfig = {
+    menuItems: [
+      {
+        actionKey: 'copyAddress',
+        actionTitle: options.copy.title,
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'doc.on.doc',
+        },
+      },
+      ...(network
+        ? [
+            {
+              actionKey: 'blockExplorer',
+              actionTitle: options.blockExplorer?.title,
+              icon: {
+                iconType: 'SYSTEM',
+                iconValue: 'link',
+              },
+            },
+          ]
+        : []),
+    ],
+    menuTitle: '',
+  };
+
+  const handlePressMenuItem = async ({ nativeEvent: { actionKey } }: OnPressMenuItemEventObject) => {
+    if (actionKey === 'copyAddress') {
+      options.copy.action();
+    } else if (actionKey === 'blockExplorer' && network) {
+      options.blockExplorer?.action();
+    }
+  };
+
+  const onPressAndroid = () =>
+    showActionSheetWithOptions(
+      {
+        options: [options.copy.title, ...(network ? [options.blockExplorer?.title] : [])],
+        showSeparators: true,
+      },
+      (idx: number) => {
+        if (idx === 0) {
+          options.copy.action();
+        }
+        if (idx === 1 && network) {
+          options.blockExplorer?.action();
+        }
+      }
+    );
+
+  return (
+    <ContextMenuButton
+      activeOpacity={0}
+      // @ts-ignore
+      menuConfig={menuConfig}
+      onPress={IS_ANDROID ? onPressAndroid : undefined}
+      isMenuPrimaryAction
+      onPressMenuItem={handlePressMenuItem}
+      useActionSheetFallback={false}
+      wrapNativeComponent={false}
+    >
+      <CoinRowButton icon="􀅳" outline size="icon 14px" />
+    </ContextMenuButton>
+  );
+};
 
 export const CoinRow = ({
   address,
@@ -127,7 +222,7 @@ export const CoinRow = ({
           <Column width="content">
             <Box paddingLeft="12px" paddingRight="20px">
               <Inline space="8px">
-                <CoinRowButton icon="􀅳" outline size="icon 14px" />
+                <InfoButton address={address} chainId={chainId} />
                 <CoinRowButton color={favoritesIconColor} onPress={handleToggleFavorite} icon="􀋃" weight="black" />
               </Inline>
             </Box>

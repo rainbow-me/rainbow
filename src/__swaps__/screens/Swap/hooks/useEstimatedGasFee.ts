@@ -4,7 +4,7 @@ import { add, multiply } from '@/__swaps__/utils/numbers';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import ethereumUtils, { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { ETH_ADDRESS } from '@rainbow-me/swaps';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { formatUnits, zeroAddress } from 'viem';
 import { formatCurrency, formatNumber } from './formatNumber';
 import { GasSettings } from './useCustomGas';
