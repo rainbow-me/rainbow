@@ -6,6 +6,7 @@ import Animated, {
   interpolate,
   interpolateColor,
   runOnJS,
+  runOnUI,
   useAnimatedGestureHandler,
   useAnimatedReaction,
   useAnimatedStyle,
@@ -72,8 +73,8 @@ export const SwapSlider = ({
 
   // Callback function to handle percentage change once slider is at rest
   const onChangeWrapper = useCallback(
-    (percentage: number, setStale = true) => {
-      SwapInputController.onChangedPercentage(percentage, setStale);
+    (percentage: number) => {
+      SwapInputController.onChangedPercentage(percentage);
     },
     [SwapInputController]
   );
@@ -96,19 +97,19 @@ export const SwapSlider = ({
       : fillSecondary,
   }));
 
-  // This is the percentage of the slider from the left
+  // This is the percentage of the slider from the left, from 0 to 1
   const xPercentage = useDerivedValue(() => {
     return clamp((sliderXPosition.value - SCRUBBER_WIDTH / width) / width, 0, 1);
-  }, [sliderXPosition.value]);
+  });
 
   // This is a hacky way to prevent the slider from shifting when it reaches the right limit
   const uiXPercentage = useDerivedValue(() => {
     return xPercentage.value * (1 - SCRUBBER_WIDTH / width);
-  }, [xPercentage.value]);
+  });
 
   const percentageText = useDerivedValue(() => {
     return `${Math.round((xPercentage.value ?? initialPercentage) * 100)}%`;
-  }, [xPercentage.value]);
+  });
 
   useAnimatedReaction(
     () => ({ x: sliderXPosition.value }),
@@ -141,14 +142,15 @@ export const SwapSlider = ({
       sliderPressProgress.value = withSpring(1, SPRING_CONFIGS.sliderConfig);
       SwapInputController.inputMethod.value = 'slider';
 
-      // On Android, for some reason waiting until onActive to set SwapInputController.isQuoteStale.value = 1
-      // causes the outputAmount text color to break. It's preferable to set it in
-      // onActive, so we're setting it in onStart for Android only. It's possible that
-      // migrating this handler to the RNGH v2 API will remove the need for this.
+      // On Android, for some reason waiting until onActive to set SwapInputController.isQuoteStale.value = 1 causes
+      // the outputAmount text color to break. It's preferable to set it in onActive, so we're setting it in onStart
+      // for Android only. It's possible that migrating this handler to the RNGH v2 API will remove the need for this.
       if (!IS_IOS) isQuoteStale.value = 1;
     },
     onActive: (event, ctx: { startX: number }) => {
-      if (IS_IOS) isQuoteStale.value = 1;
+      if (IS_IOS && sliderXPosition.value > 0 && isQuoteStale.value !== 1) {
+        isQuoteStale.value = 1;
+      }
 
       const rawX = ctx.startX + event.translationX || 0;
 
@@ -329,13 +331,10 @@ export const SwapSlider = ({
   });
 
   const percentageTextStyle = useAnimatedStyle(() => {
-    const isAdjustingInputValue =
-      SwapInputController.inputMethod.value === 'inputAmount' || SwapInputController.inputMethod.value === 'inputNativeValue';
     const isAdjustingOutputValue =
       SwapInputController.inputMethod.value === 'outputAmount' || SwapInputController.inputMethod.value === 'outputNativeValue';
 
-    const isStale = isQuoteStale.value === 1 && (isAdjustingInputValue || isAdjustingOutputValue) ? 1 : 0;
-
+    const isStale = isQuoteStale.value === 1 && isAdjustingOutputValue ? 1 : 0;
     const opacity = isStale ? pulsingOpacity.value : withSpring(1, SPRING_CONFIGS.sliderConfig);
 
     return {
@@ -362,10 +361,6 @@ export const SwapSlider = ({
       areBothAssetsSelected && internalSelectedInputAsset.value?.mainnetAddress === internalSelectedOutputAsset.value?.mainnetAddress;
 
     return isBridging ? 'Bridging' : 'Selling';
-  });
-
-  const maxText = useDerivedValue(() => {
-    return 'Max';
   });
 
   const maxTextColor = useAnimatedStyle(() => {
@@ -406,16 +401,16 @@ export const SwapSlider = ({
                     activeOpacity={0.4}
                     hitSlop={8}
                     onPress={() => {
-                      SwapInputController.quoteFetchingInterval.stop();
-                      SwapInputController.inputMethod.value = 'slider';
-                      setTimeout(() => {
+                      runOnUI(() => {
+                        SwapInputController.quoteFetchingInterval.stop();
+                        SwapInputController.inputMethod.value = 'slider';
                         sliderXPosition.value = withSpring(width, SPRING_CONFIGS.snappySpringConfig);
-                        onChangeWrapper(1);
-                      }, 10);
+                        runOnJS(onChangeWrapper)(1);
+                      })();
                     }}
                   >
-                    <AnimatedText align="center" style={maxTextColor} size="15pt" weight="heavy">
-                      {maxText}
+                    <AnimatedText align="center" size="15pt" style={maxTextColor} weight="heavy">
+                      Max
                     </AnimatedText>
                   </TouchableOpacity>
                 </Column>

@@ -1,4 +1,4 @@
-import { ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { getDefaultSlippage } from '@/__swaps__/utils/swaps';
 import { DEFAULT_CONFIG } from '@/model/remoteConfig';
@@ -10,8 +10,8 @@ export interface SwapsState {
   setIsSwapsOpen: (isSwapsOpen: boolean) => void;
 
   // assets
-  inputAsset: ParsedSearchAsset | null;
-  outputAsset: ParsedSearchAsset | null;
+  inputAsset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
+  outputAsset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
 
   // quote
   quote: Quote | CrosschainQuote | QuoteError | null;

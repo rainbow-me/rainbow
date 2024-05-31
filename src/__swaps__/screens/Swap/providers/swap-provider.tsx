@@ -116,7 +116,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const lastTypedInput = useSharedValue<inputKeys>('inputAmount');
   const focusedInput = useSharedValue<inputKeys>('inputAmount');
 
-  const initialSelectedInputAsset = parseAssetAndExtend({ asset: userAssetsStore.getState().userAssets.values().next().value });
+  const initialSelectedInputAsset = parseAssetAndExtend({ asset: userAssetsStore.getState().getHighestValueAsset() });
 
   const internalSelectedInputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(initialSelectedInputAsset);
   const internalSelectedOutputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(null);
@@ -372,7 +372,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
   const setAsset = useCallback(
     ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset | null }) => {
-      const extendedAsset = parseAssetAndExtend({ asset });
+      const insertUserAssetBalance = type === SwapAssetType.outputAsset;
+      const extendedAsset = parseAssetAndExtend({ asset, insertUserAssetBalance });
 
       const otherSelectedAsset = type === SwapAssetType.inputAsset ? internalSelectedOutputAsset.value : internalSelectedInputAsset.value;
       const isSameAsOtherAsset = !!(otherSelectedAsset && otherSelectedAsset.uniqueId === extendedAsset?.uniqueId);
@@ -406,7 +407,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
               asset: flippedAssetOrNull,
             });
           }
-          updateAssetValue({ type, asset: extendedAsset });
+          updateAssetValue({ type, asset: isSameAsOtherAsset ? otherSelectedAsset : extendedAsset });
         } else {
           SwapInputController.quoteFetchingInterval.start();
         }
@@ -415,13 +416,17 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       })();
 
       if (didSelectedAssetChange) {
+        const assetToSet = insertUserAssetBalance
+          ? { ...asset, balance: (asset && userAssetsStore.getState().getUserAsset(asset.uniqueId)?.balance) || asset?.balance }
+          : asset;
+
         if (isSameAsOtherAsset) {
           useSwapsStore.setState({
             [type === SwapAssetType.inputAsset ? SwapAssetType.outputAsset : SwapAssetType.inputAsset]: flippedAssetOrNull,
-            [type]: asset,
+            [type]: otherSelectedAsset,
           });
         } else {
-          useSwapsStore.setState({ [type]: asset });
+          useSwapsStore.setState({ [type]: assetToSet });
         }
       } else {
         SwapInputController.quoteFetchingInterval.start();

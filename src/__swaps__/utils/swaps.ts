@@ -14,6 +14,7 @@ import { inputKeys } from '../types/swap';
 import { swapsStore } from '../../state/swaps/swapsStore';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { TokenColors } from '@/graphql/__generated__/metadata';
+import { userAssetsStore } from '@/state/assets/userAssets';
 import { colors } from '@/styles';
 import { convertAmountToRawAmount } from './numbers';
 
@@ -166,10 +167,10 @@ export const findNiceIncrement = (availableBalance: number): number => {
 
 // /---- 🔵 Worklet utils 🔵 ----/ //
 //
-export function addCommasToNumber(number: string | number) {
+export function addCommasToNumber<T extends 0 | '0' | '0.00'>(number: string | number, fallbackValue: T = 0 as T): T | string {
   'worklet';
   if (isNaN(Number(number))) {
-    return 0;
+    return fallbackValue;
   }
   const numberString = number.toString();
 
@@ -535,6 +536,7 @@ export const priceForAsset = ({
 
 type ParseAssetAndExtendProps = {
   asset: ParsedSearchAsset | null;
+  insertUserAssetBalance?: boolean;
 };
 
 const ETH_COLORS: Colors = {
@@ -548,7 +550,10 @@ export const getStandardizedUniqueIdWorklet = ({ address, chainId }: { address: 
   return `${address.toLowerCase()}_${chainId}`;
 };
 
-export const parseAssetAndExtend = ({ asset }: ParseAssetAndExtendProps): ExtendedAnimatedAssetWithColors | null => {
+export const parseAssetAndExtend = ({
+  asset,
+  insertUserAssetBalance,
+}: ParseAssetAndExtendProps): ExtendedAnimatedAssetWithColors | null => {
   if (!asset) {
     return null;
   }
@@ -562,6 +567,7 @@ export const parseAssetAndExtend = ({ asset }: ParseAssetAndExtendProps): Extend
     ...asset,
     ...colors,
     nativePrice: asset.price?.value,
+    balance: insertUserAssetBalance ? userAssetsStore.getState().getUserAsset(asset.uniqueId)?.balance || asset.balance : asset.balance,
 
     // For some reason certain assets have a unique ID in the format of `${address}_mainnet` rather than
     // `${address}_${chainId}`, so at least for now we ensure consistency by reconstructing the unique ID here.

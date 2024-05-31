@@ -38,15 +38,15 @@ export const SwapNumberPad = () => {
 
   const addNumber = (number?: number) => {
     'worklet';
-    // immediately stop the quote fetching interval
+    // Immediately stop the quote fetching interval
     SwapInputController.quoteFetchingInterval.stop();
 
     const inputKey = focusedInput.value;
     const currentValue = SwapInputController.inputValues.value[inputKey].toString();
     const newValue = currentValue === '0' ? `${number}` : `${currentValue}${number}`;
 
-    // make the quote stale only when the number in the input actually changes
-    if (!(currentValue.includes('.') && number === 0)) {
+    // Make the quote stale only when the number in the input actually changes
+    if (Number(newValue) !== 0 && !(currentValue.includes('.') && number === 0)) {
       isQuoteStale.value = 1;
     }
 
@@ -126,8 +126,8 @@ export const SwapNumberPad = () => {
     // Handle deletion, ensuring a placeholder zero remains if the entire number is deleted
     const newValue = currentValue.length > 1 ? currentValue.slice(0, -1) : 0;
 
-    // Make the quote stale only when deleting the last character changes the actual value in the input
-    if (!(currentValue.endsWith('.') || (newValue === 0 && currentValue.includes('.')))) {
+    // Make the quote stale only when the number in the input actually changes
+    if (!currentValue.endsWith('.') && Number(newValue) !== 0) {
       isQuoteStale.value = 1;
     }
 

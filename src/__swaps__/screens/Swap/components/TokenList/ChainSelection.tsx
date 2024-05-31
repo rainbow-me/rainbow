@@ -2,8 +2,8 @@
 import c from 'chroma-js';
 import * as i18n from '@/languages';
 import { Text as RNText, StyleSheet } from 'react-native';
-import Animated, { SharedValue, useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import React, { useCallback, useMemo } from 'react';
+import Animated, { useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import React, { memo, useCallback, useMemo } from 'react';
 
 import { AnimatedText, Bleed, Box, Inline, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
 import { opacity } from '@/__swaps__/utils/swaps';
@@ -23,7 +23,7 @@ type ChainSelectionProps = {
   output: boolean;
 };
 
-export const ChainSelection = React.memo(function ChainSelection({ allText, output }: ChainSelectionProps) {
+export const ChainSelection = memo(function ChainSelection({ allText, output }: ChainSelectionProps) {
   const { isDarkMode } = useColorMode();
   const { accentColor: accountColor } = useAccountAccentColor();
   const { selectedOutputChainId, setSelectedOutputChainId } = useSwapContext();
@@ -164,7 +164,9 @@ export const ChainSelection = React.memo(function ChainSelection({ allText, outp
           <Inline alignVertical="center" space="6px" wrap={false}>
             {/* TODO: We need to add some ethereum utils to handle worklet functions */}
             <ChainButtonIcon output={output} />
-            <ChainButtonText chainName={chainName} />
+            <AnimatedText color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy">
+              {chainName}
+            </AnimatedText>
             <Text align="center" color={isDarkMode ? 'labelTertiary' : 'labelSecondary'} size="icon 13px" weight="bold">
               􀆏
             </Text>
@@ -175,23 +177,7 @@ export const ChainSelection = React.memo(function ChainSelection({ allText, outp
   );
 });
 
-const ChainButtonText = React.memo(function ChainButtonText({ chainName }: { chainName: SharedValue<string | undefined> }) {
-  const { isDarkMode } = useColorMode();
-
-  return (
-    <AnimatedText
-      align="right"
-      color={isDarkMode ? 'labelSecondary' : 'label'}
-      size="15pt"
-      weight="heavy"
-      style={{ textTransform: 'capitalize' }}
-    >
-      {chainName}
-    </AnimatedText>
-  );
-});
-
-const ChainButtonIcon = React.memo(function ChainButtonIcon({ output }: { output: boolean | undefined }) {
+const ChainButtonIcon = ({ output }: { output: boolean | undefined }) => {
   const { selectedOutputChainId: animatedSelectedOutputChainId } = useSwapContext();
 
   const userAssetsFilter = userAssetsStore(state => (output ? undefined : state.filter));
@@ -211,7 +197,7 @@ const ChainButtonIcon = React.memo(function ChainButtonIcon({ output }: { output
       )}
     </Bleed>
   );
-});
+};
 
 export const styles = StyleSheet.create({
   textIconGlow: {

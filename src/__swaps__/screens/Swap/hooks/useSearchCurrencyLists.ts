@@ -38,7 +38,9 @@ export function useSearchCurrencyLists() {
     toChainId: selectedOutputChainId.value ?? ChainId.mainnet,
   });
 
-  const debouncedStateSet = useDebouncedCallback(setState, 500, { leading: true, trailing: true });
+  // Delays the state set by a frame or two to give animated UI that responds to selectedOutputChainId.value
+  // a moment to update before the heavy re-renders kicked off by these state changes occur.
+  const debouncedStateSet = useDebouncedCallback(setState, 20, { leading: false, trailing: true });
 
   useAnimatedReaction(
     () => ({
@@ -98,14 +100,6 @@ export function useSearchCurrencyLists() {
     };
   }, [state.assetToSellAddress, state.fromChainId, state.isCrosschainSearch, query, verifiedAssets]);
 
-  const getAddressForChainId = useCallback((chainId: ChainId, token: RainbowToken) => {
-    if (chainId === ChainId.mainnet) {
-      const mainnetAddress = token.networks[chainId].address;
-      return mainnetAddress ?? token.address;
-    }
-    return token.networks[chainId].address;
-  }, []);
-
   const { favoritesMetadata: rawFavorites } = useFavorites();
   const favorites = useMemo(() => Object.values(rawFavorites), [rawFavorites]);
 
@@ -115,10 +109,10 @@ export function useSearchCurrencyLists() {
       .map(favToken => ({
         ...favToken,
         chainId: state.toChainId,
-        mainnetAddress: favToken.mainnet_address
+        mainnetAddress: favToken.mainnet_address,
       })) as SearchAsset[];
-  }, [favorites, getAddressForChainId, state.toChainId]);
-  
+  }, [favorites, state.toChainId]);
+
   const favoritesList = useMemo(() => {
     if (query === '') {
       return unfilteredFavorites;
@@ -258,7 +252,7 @@ export function useSearchCurrencyLists() {
 
     return {
       loading: isLoading,
-      results: isLoading ? [] : results,
+      results,
     };
   }, [memoizedData.enableUnverifiedSearch, results, targetUnverifiedAssetsLoading, targetVerifiedAssetsLoading, verifiedAssetsLoading]);
 }

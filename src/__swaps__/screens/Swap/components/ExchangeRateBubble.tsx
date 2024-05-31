@@ -42,7 +42,9 @@ export const ExchangeRateBubble = () => {
 
   useAnimatedReaction(
     () => ({
+      inputAssetUniqueId: internalSelectedInputAsset.value?.uniqueId,
       isFetching: isFetching.value,
+      outputAssetUniqueId: internalSelectedOutputAsset.value?.uniqueId,
       rotatingIndex: rotatingIndex.value,
     }),
     (current, previous) => {
@@ -50,7 +52,9 @@ export const ExchangeRateBubble = () => {
         !internalSelectedInputAsset.value ||
         !internalSelectedOutputAsset.value ||
         !internalSelectedInputAsset.value.nativePrice ||
-        !internalSelectedOutputAsset.value.nativePrice
+        !internalSelectedOutputAsset.value.nativePrice ||
+        current.inputAssetUniqueId !== previous?.inputAssetUniqueId ||
+        current.outputAssetUniqueId !== previous?.outputAssetUniqueId
       ) {
         resetValues();
         return;
@@ -137,7 +141,7 @@ export const ExchangeRateBubble = () => {
   const bubbleVisibilityWrapper = useAnimatedStyle(() => {
     const shouldDisplay = fromAssetText.value.length > 0 && toAssetText.value.length > 0;
     return {
-      opacity: shouldDisplay ? withDelay(100, withTiming(1, TIMING_CONFIGS.fadeConfig)) : 0,
+      opacity: shouldDisplay ? withDelay(50, withTiming(1, TIMING_CONFIGS.fadeConfig)) : 0,
     };
   });
 

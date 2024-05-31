@@ -9,7 +9,7 @@ import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { highPriceImpactThreshold, severePriceImpactThreshold } from '@/__swaps__/screens/Swap/constants';
 import { divWorklet, greaterThanOrEqualToWorklet, subWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { supportedNativeCurrencies } from '@/references';
-import { inputKeys } from '@/__swaps__/types/swap';
+import { inputKeys, inputValuesType } from '@/__swaps__/types/swap';
 
 export enum SwapWarningType {
   unknown = 'unknown',
@@ -41,7 +41,7 @@ export interface SwapTimeEstimate {
 
 type UsePriceImpactWarningProps = {
   inputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
-  inputValues: SharedValue<{ [key in inputKeys]: number | string }>;
+  inputValues: SharedValue<inputValuesType>;
   outputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
   sliderXPosition: SharedValue<number>;

@@ -19,7 +19,7 @@ import {
   caretConfig,
   pulsingConfig,
 } from '@/__swaps__/screens/Swap/constants';
-import { inputKeys, inputMethods } from '@/__swaps__/types/swap';
+import { inputKeys, inputMethods, inputValuesType } from '@/__swaps__/types/swap';
 import { getColorValueForThemeWorklet, opacity } from '@/__swaps__/utils/swaps';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -37,7 +37,7 @@ export function useSwapTextStyles({
   sliderPressProgress,
 }: {
   inputMethod: SharedValue<inputMethods>;
-  inputValues: SharedValue<{ [key in inputKeys]: number | string }>;
+  inputValues: SharedValue<inputValuesType>;
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   isFetching: SharedValue<boolean>;

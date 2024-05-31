@@ -21,12 +21,12 @@ interface IntervalConfig {
  *
  * @returns An object containing:
  *   - `pause` - A worklet function to pause the interval clock.
- *   - `reset` - A worklet function to restart the interval clock.
+ *   - `restart` - A worklet function to restart the interval clock.
  *   - `start` - A worklet function to start the interval clock.
  *   - `stop` - A worklet function to stop the interval clock.
  *
  * @example
- * const { reset } = useAnimatedInterval({
+ * const { restart } = useAnimatedInterval({
  *   intervalMs: 10000,
  *   onIntervalWorklet: () => {
  *     'worklet';
@@ -37,12 +37,12 @@ interface IntervalConfig {
 export function useAnimatedInterval(config: IntervalConfig) {
   const { autoStart = true, intervalMs, onIntervalWorklet } = config;
 
-  const { pause, reset, start, stop } = useAnimatedTime({
+  const { pause, restart, start, stop } = useAnimatedTime({
     autoStart,
     durationMs: intervalMs,
     onEndWorklet: onIntervalWorklet,
     shouldRepeat: true,
   });
 
-  return { pause, reset, start, stop };
+  return { pause, restart, start, stop };
 }

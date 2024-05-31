@@ -1,4 +1,4 @@
-import React from 'react';
+import { memo } from 'react';
 import { Address } from 'viem';
 import { useAccountSettings } from '@/hooks';
 import { userAssetsStore } from '@/state/assets/userAssets';
@@ -8,7 +8,7 @@ import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { useUserAssets } from '../resources/assets';
 
-export const UserAssetsSync = React.memo(function UserAssetsSync() {
+export const UserAssetsSync = memo(function UserAssetsSync() {
   const { accountAddress: currentAddress, nativeCurrency: currentCurrency } = useAccountSettings();
 
   const userAssetsWalletAddress = userAssetsStore(state => state.associatedWalletAddress);
@@ -31,14 +31,13 @@ export const UserAssetsSync = React.memo(function UserAssetsSync() {
           const userAssets = new Map(data.map(d => [d.uniqueId, d as ParsedSearchAsset]));
           userAssetsStore.setState({
             associatedWalletAddress: currentAddress as Address,
-            userAssetsById: new Set(data.map(d => d.uniqueId)),
             userAssets,
           });
 
-          const inputAsset = userAssets.values().next().value;
+          const inputAsset = userAssetsStore.getState().getHighestValueAsset();
           useSwapsStore.setState({
             inputAsset,
-            selectedOutputChainId: inputAsset.chainId ?? ChainId.mainnet,
+            selectedOutputChainId: inputAsset?.chainId ?? ChainId.mainnet,
           });
         }
       },
