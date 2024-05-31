@@ -355,17 +355,13 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       switch (type) {
         case SwapAssetType.inputAsset:
           internalSelectedInputAsset.value = asset;
-
-          if (selectedOutputChainId.value !== asset?.chainId) {
-            selectedOutputChainId.value = asset?.chainId ?? ChainId.mainnet;
-          }
           break;
         case SwapAssetType.outputAsset:
           internalSelectedOutputAsset.value = asset;
           break;
       }
     },
-    [internalSelectedInputAsset, internalSelectedOutputAsset, selectedOutputChainId]
+    [internalSelectedInputAsset, internalSelectedOutputAsset]
   );
 
   const chainSetTimeoutId = useRef<NodeJS.Timeout | null>(null);
@@ -434,8 +430,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       const shouldUpdateSelectedOutputChainId =
         type === SwapAssetType.inputAsset && useSwapsStore.getState().selectedOutputChainId !== extendedAsset?.chainId;
+      const shouldUpdateAnimatedSelectedOutputChainId =
+        type === SwapAssetType.inputAsset && selectedOutputChainId.value !== extendedAsset?.chainId;
 
-      if (shouldUpdateSelectedOutputChainId) {
+      if (shouldUpdateSelectedOutputChainId || shouldUpdateAnimatedSelectedOutputChainId) {
         if (chainSetTimeoutId.current) {
           clearTimeout(chainSetTimeoutId.current);
         }
@@ -443,10 +441,15 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         // This causes a heavy re-render in the output token list, so we delay updating the selected output chain until
         // the animation is most likely complete.
         chainSetTimeoutId.current = setTimeout(() => {
-          useSwapsStore.setState({
-            selectedOutputChainId: extendedAsset?.chainId ?? ChainId.mainnet,
-          });
-        }, 800);
+          if (shouldUpdateSelectedOutputChainId) {
+            useSwapsStore.setState({
+              selectedOutputChainId: extendedAsset?.chainId ?? ChainId.mainnet,
+            });
+          }
+          if (shouldUpdateAnimatedSelectedOutputChainId) {
+            selectedOutputChainId.value = extendedAsset?.chainId ?? ChainId.mainnet;
+          }
+        }, 750);
       }
 
       logger.debug(`[setAsset]: Setting ${type} asset to ${extendedAsset?.name} on ${extendedAsset?.chainId}`);
@@ -456,6 +459,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       handleProgressNavigation,
       internalSelectedInputAsset,
       internalSelectedOutputAsset,
+      selectedOutputChainId,
       updateAssetValue,
     ]
   );
@@ -480,16 +484,18 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return '􀆅';
     }
 
-    if (isFetching.value || (isQuoteStale.value === 1 && SwapInputController.inputMethod.value !== 'slider')) {
+    if (isQuoteStale.value === 1 && sliderPressProgress.value === 0) {
       return '';
     }
 
     const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
     const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
 
-    if (SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching.value) {
-      return '';
-    } else if (SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0) {
+    if (
+      (isInputZero && isOutputZero) ||
+      isFetching.value ||
+      (SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0)
+    ) {
       return '';
     } else {
       return '􀕹';

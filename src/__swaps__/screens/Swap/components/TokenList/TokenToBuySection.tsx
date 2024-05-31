@@ -88,7 +88,7 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
       const parsedAsset = parseSearchAsset({
         assetWithPrice: undefined,
         searchAsset: token,
-        userAsset,
+        userAsset: userAsset ?? undefined,
       });
 
       setAsset({
@@ -141,20 +141,19 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
           estimatedListSize={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}
           ListEmptyComponent={<ListEmpty output />}
           estimatedItemSize={56}
-          keyExtractor={item => `${item.uniqueId}-${section.id}`}
+          keyExtractor={item => item.uniqueId}
           renderItem={({ item }) => (
             <CoinRow
               chainId={item.chainId}
-              color={item.colors?.primary ?? item.colors?.fallback}
-              iconUrl={item.icon_url}
+              colors={item.colors}
+              icon_url={item.icon_url}
               address={item.address}
               mainnetAddress={item.mainnetAddress}
-              balance={''}
               name={item.name}
               onPress={() => handleSelectToken(item)}
-              nativeBalance={''}
               output
               symbol={item.symbol}
+              uniqueId={item.uniqueId}
             />
           )}
         />

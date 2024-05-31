@@ -19,7 +19,7 @@ export const TokenList = ({
   asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   handleExitSearchWorklet: () => void;
   handleFocusSearchWorklet: () => void;
-  output?: boolean;
+  output: boolean;
 }) => {
   const { inputProgress, outputProgress } = useSwapContext();
   const { width: deviceWidth } = useDimensions();

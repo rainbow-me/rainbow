@@ -30,7 +30,7 @@ export const SearchInput = ({
   asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   handleExitSearchWorklet: () => void;
   handleFocusSearchWorklet: () => void;
-  output?: boolean;
+  output: boolean;
 }) => {
   const { isDarkMode } = useColorMode();
   const {
@@ -70,13 +70,21 @@ export const SearchInput = ({
     };
   });
 
-  const onSearchQueryChange = useDebouncedCallback((text: string) => {
-    if (output) {
+  const onInputSearchQueryChange = useDebouncedCallback(
+    (text: string) => {
+      userAssetsStore.getState().setSearchQuery(text);
+    },
+    50,
+    { leading: true, trailing: true }
+  );
+
+  const onOutputSearchQueryChange = useDebouncedCallback(
+    (text: string) => {
       useSwapsStore.setState({ outputSearchQuery: text });
-    } else {
-      userAssetsStore.setState({ inputSearchQuery: text });
-    }
-  }, 200);
+    },
+    100,
+    { leading: false, trailing: true }
+  );
 
   const isSearchFocused = useDerivedValue(
     () =>
@@ -98,7 +106,8 @@ export const SearchInput = ({
     () => isSearchFocused.value,
     (focused, prevFocused) => {
       if (focused === false && prevFocused === true) {
-        runOnJS(onSearchQueryChange)('');
+        if (output) runOnJS(onOutputSearchQueryChange)('');
+        else runOnJS(onInputSearchQueryChange)('');
       }
     }
   );
@@ -130,13 +139,25 @@ export const SearchInput = ({
                 </Column>
                 <AnimatedInput
                   animatedProps={searchInputValue}
-                  onChangeText={onSearchQueryChange}
+                  onChangeText={output ? onOutputSearchQueryChange : onInputSearchQueryChange}
                   onBlur={() => {
                     runOnUI(() => {
                       if (isSearchFocused.value) {
                         handleExitSearchWorklet();
                       }
                     })();
+
+                    if (isSearchFocused.value) {
+                      if (output) {
+                        if (useSwapsStore.getState().outputSearchQuery !== '') {
+                          useSwapsStore.setState({ outputSearchQuery: '' });
+                        }
+                      } else {
+                        if (userAssetsStore.getState().inputSearchQuery !== '') {
+                          userAssetsStore.getState().setSearchQuery('');
+                        }
+                      }
+                    }
                   }}
                   onFocus={() => runOnUI(handleFocusSearchWorklet)()}
                   placeholder={output ? 'Find a token to buy' : 'Search your tokens'}

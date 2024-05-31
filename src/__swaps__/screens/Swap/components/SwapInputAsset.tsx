@@ -132,6 +132,7 @@ export function SwapInputAsset() {
           asset={internalSelectedInputAsset}
           handleExitSearchWorklet={SwapNavigation.handleExitSearch}
           handleFocusSearchWorklet={SwapNavigation.handleFocusInputSearch}
+          output={false}
         />
       </Box>
     </SwapInput>

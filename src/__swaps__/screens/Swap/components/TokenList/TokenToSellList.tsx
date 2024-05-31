@@ -1,12 +1,10 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
-import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { Stack } from '@/design-system';
 import { runOnUI } from 'react-native-reanimated';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { FlashList } from '@shopify/flash-list';
 import { ChainSelection } from './ChainSelection';
@@ -24,10 +22,17 @@ export const TokenToSellList = () => {
 
 const TokenToSellListComponent = () => {
   const { internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, setAsset } = useSwapContext();
-  const userAssets = useAssetsToSell();
+
+  const userAssets = userAssetsStore(state => state.getFilteredUserAssetIds());
+
+  useEffect(() => {
+    console.log('user assets changed');
+  }, [userAssets]);
 
   const handleSelectToken = useCallback(
-    (token: ParsedSearchAsset) => {
+    (token: ParsedSearchAsset | null) => {
+      if (!token) return;
+
       runOnUI(() => {
         if (
           internalSelectedOutputAsset.value &&
@@ -38,16 +43,9 @@ const TokenToSellListComponent = () => {
         }
       })();
 
-      const userAsset = userAssetsStore.getState().getUserAsset(token.uniqueId);
-      const parsedAsset = parseSearchAsset({
-        assetWithPrice: undefined,
-        searchAsset: token,
-        userAsset,
-      });
-
       setAsset({
         type: SwapAssetType.inputAsset,
-        asset: parsedAsset,
+        asset: token,
       });
     },
     [internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, setAsset]
@@ -61,22 +59,10 @@ const TokenToSellListComponent = () => {
         data={userAssets}
         estimatedListSize={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}
         ListEmptyComponent={<ListEmpty />}
-        keyExtractor={item => item.uniqueId}
-        renderItem={({ item }) => (
-          <CoinRow
-            chainId={item.chainId}
-            color={item.colors?.primary ?? item.colors?.fallback}
-            iconUrl={item.icon_url}
-            address={item.address}
-            mainnetAddress={item.mainnetAddress}
-            balance={item.balance.display}
-            name={item.name}
-            onPress={() => handleSelectToken(item)}
-            nativeBalance={item.native.balance.display}
-            output={false}
-            symbol={item.symbol}
-          />
-        )}
+        keyExtractor={uniqueId => uniqueId}
+        renderItem={({ item: uniqueId }) => {
+          return <CoinRow onPress={(asset: ParsedSearchAsset | null) => handleSelectToken(asset)} output={false} uniqueId={uniqueId} />;
+        }}
       />
     </Stack>
   );

@@ -28,11 +28,7 @@ export const UserAssetsSync = memo(function UserAssetsSync() {
         }),
       onSuccess: data => {
         if (!isSwapsOpen || userAssetsWalletAddress !== currentAddress) {
-          const userAssets = new Map(data.map(d => [d.uniqueId, d as ParsedSearchAsset]));
-          userAssetsStore.setState({
-            associatedWalletAddress: currentAddress as Address,
-            userAssets,
-          });
+          userAssetsStore.getState().setUserAssets(currentAddress as Address, data as ParsedSearchAsset[]);
 
           const inputAsset = userAssetsStore.getState().getHighestValueAsset();
           useSwapsStore.setState({
