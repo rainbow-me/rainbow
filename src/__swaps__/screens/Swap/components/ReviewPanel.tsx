@@ -27,9 +27,14 @@ import { useNativeAssetForChain } from '@/__swaps__/screens/Swap/hooks/useNative
 import { chainNameForChainIdWithMainnetSubstitutionWorklet } from '@/__swaps__/utils/chains';
 import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
 import { convertRawAmountToBalance, convertRawAmountToNativeDisplay, handleSignificantDecimals, multiply } from '@/__swaps__/utils/numbers';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import { useSelectedGas, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { EstimatedSwapGasFee } from './EstimatedSwapGasFee';
+import { ButtonPressAnimation } from '@/components/animations';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { ethereumUtils } from '@/utils';
+import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
 
 const unknown = i18n.t(i18n.l.swap.unknown);
 
@@ -106,6 +111,7 @@ function EstimatedArrivalTime() {
 }
 
 export function ReviewPanel() {
+  const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
   const { configProgress, SwapSettings, SwapInputController, internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
 
@@ -132,6 +138,28 @@ export function ReviewPanel() {
     'worklet';
     SwapSettings.onUpdateSlippage('plus');
   };
+
+  const openFlashbotsExplainer = useCallback(() => {
+    navigate(Routes.EXPLAIN_SHEET, {
+      type: 'flashbots',
+    });
+  }, [navigate]);
+
+  const openSlippageExplainer = useCallback(() => {
+    navigate(Routes.EXPLAIN_SHEET, {
+      type: 'slippage',
+    });
+  }, [navigate]);
+
+  const openGasExplainer = useCallback(() => {
+    navigate(Routes.EXPLAIN_SHEET, {
+      network: ethereumUtils.getNetworkNameFromChainId(swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet),
+      type: 'gas',
+      nativeAsset: getNativeAssetForNetwork(
+        ethereumUtils.getNetworkFromChainId(swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet)
+      ),
+    });
+  }, [navigate]);
 
   const styles = useAnimatedStyle(() => {
     return {
@@ -218,14 +246,16 @@ export function ReviewPanel() {
               <Text color="labelTertiary" weight="bold" size="13pt">
                 􀋦
               </Text>
-              <Inline horizontalSpace="4px">
-                <Text color="labelTertiary" weight="semibold" size="15pt">
-                  Flashbots Protection
-                </Text>
-                <Text color="labelTertiary" size="13pt" weight="bold">
-                  􀅴
-                </Text>
-              </Inline>
+              <ButtonPressAnimation onPress={openFlashbotsExplainer}>
+                <Inline horizontalSpace="4px">
+                  <Text color="labelTertiary" weight="semibold" size="15pt">
+                    Flashbots Protection
+                  </Text>
+                  <Text color="labelTertiary" size="13pt" weight="bold">
+                    􀅴
+                  </Text>
+                </Inline>
+              </ButtonPressAnimation>
             </Inline>
 
             <AnimatedSwitch onToggle={SwapSettings.onToggleFlashbots} value={SwapSettings.flashbots} activeLabel="On" inactiveLabel="Off" />
@@ -236,14 +266,16 @@ export function ReviewPanel() {
               <Text color="labelTertiary" weight="bold" size="13pt">
                 􀘩
               </Text>
-              <Inline horizontalSpace="4px">
-                <Text color="labelTertiary" weight="semibold" size="15pt">
-                  Max Slippage
-                </Text>
-                <Text color="labelTertiary" size="13pt" weight="bold">
-                  􀅴
-                </Text>
-              </Inline>
+              <ButtonPressAnimation onPress={openSlippageExplainer}>
+                <Inline horizontalSpace="4px">
+                  <Text color="labelTertiary" weight="semibold" size="15pt">
+                    Max Slippage
+                  </Text>
+                  <Text color="labelTertiary" size="13pt" weight="bold">
+                    􀅴
+                  </Text>
+                </Inline>
+              </ButtonPressAnimation>
             </Inline>
 
             <Inline wrap={false} horizontalSpace="8px" alignVertical="center">
@@ -310,26 +342,28 @@ export function ReviewPanel() {
           <Separator color="separatorSecondary" />
 
           <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-            <Stack space="6px">
-              <Inline alignVertical="center" horizontalSpace="6px">
-                <View style={sx.gasContainer}>
-                  <AnimatedChainImage showMainnetBadge asset={internalSelectedInputAsset} size={16} />
-                </View>
-                <Inline horizontalSpace="4px">
-                  <EstimatedGasFee />
-                  <EstimatedArrivalTime />
+            <ButtonPressAnimation onPress={openGasExplainer}>
+              <Stack space="6px">
+                <Inline alignVertical="center" horizontalSpace="6px">
+                  <View style={sx.gasContainer}>
+                    <AnimatedChainImage showMainnetBadge asset={internalSelectedInputAsset} size={16} />
+                  </View>
+                  <Inline horizontalSpace="4px">
+                    <EstimatedGasFee />
+                    <EstimatedArrivalTime />
+                  </Inline>
                 </Inline>
-              </Inline>
 
-              <Inline alignVertical="center" horizontalSpace="4px">
-                <Text color="labelTertiary" size="13pt" weight="bold">
-                  Est. Network Fee
-                </Text>
-                <Text color="labelTertiary" size="13pt" weight="bold">
-                  􀅴
-                </Text>
-              </Inline>
-            </Stack>
+                <Inline alignVertical="center" horizontalSpace="4px">
+                  <Text color="labelTertiary" size="13pt" weight="bold">
+                    Est. Network Fee
+                  </Text>
+                  <Text color="labelTertiary" size="13pt" weight="bold">
+                    􀅴
+                  </Text>
+                </Inline>
+              </Stack>
+            </ButtonPressAnimation>
 
             <Inline alignVertical="center" horizontalSpace="8px">
               <ReviewGasButton />
