@@ -39,7 +39,8 @@
     "ios": "react-native run-ios --simulator='iPhone 15 Pro'",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "yarn format:check && yarn lint:ts && yarn lint:js",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx --cache",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix --cache",
     "lint:ci": "yarn format:check && yarn lint:ts && yarn lint:js --quiet",
     "lint:js": "eslint --cache .",
     "lint:ts": "yarn tsc --skipLibCheck --noEmit",
@@ -58,7 +59,10 @@
     "update-token-list": "./scripts/update-token-list.sh",
     "check-translations": "./scripts/check-translations.sh ./src './src/languages/*.json' lang.t",
     "codegen-translations": "node ./scripts/codegen-translations.js",
+    "prettier:write": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
+    "prettier:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
     "prepare": "husky install",
+    "pre-commit": "lint-staged",
     "bundle-inpage": "yarn webpack --config src/browser/webpack.config.js && cp InjectedJSBundle.js android/app/src/main/res/raw/injected_js_bundle.js"
   },
   "dependencies": {
@@ -181,7 +185,7 @@
     "immer": "9.0.6",
     "inherits": "2.0.4",
     "is-valid-domain": "0.1.2",
-    "lint-staged": "10.4.0",
+    "lint-staged": "15.2.5",
     "lodash": "4.17.21",
     "make-color-more-chill": "0.2.2",
     "match-sorter": "6.3.0",
@@ -353,7 +357,7 @@
     "eslint-config-rainbow": "4.3.0",
     "graphql": "15.3.0",
     "hardhat": "2.18.1",
-    "husky": "8.0.1",
+    "husky": "9.0.11",
     "image-size": "1.0.0",
     "jest": "29.7.0",
     "metro-plugin-anisotropic-transform": "https://github.com/rainbow-me/metro-plugin-anisotropic-transform#eaf2a2db95eeedd2f63ce8032c102a12c5a88802",
@@ -538,7 +542,7 @@
     }
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,graphql}": [
+    "*.{js,jsx,ts,tsx}": [
       "prettier --write",
       "eslint --fix"
     ]
