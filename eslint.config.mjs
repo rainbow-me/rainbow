@@ -32,7 +32,6 @@ let globalVars = {
   window: 'readonly',
 };
 
-try {
   const data = fs.readFileSync(path.resolve(__dirname, './globalVariables.js'), 'utf8');
   const parsedData = babelParse(data, { sourceType: 'module' });
   const exportDefaultDeclaration = parsedData.program.body.find(e => e.type === 'ExportDefaultDeclaration');
@@ -47,9 +46,6 @@ try {
   } else {
     console.error('ExportDefaultDeclaration or its properties are undefined.');
   }
-} catch (error) {
-  console.error('Error reading or parsing globalVariables.js:', error);
-}
 
 export default [
   js.configs.recommended,
@@ -66,7 +62,6 @@ export default [
       '**/node_modules/*',
       'coverage-ts/**',
       'out/',
-      '.eslintrc.js',
       'babel.config.js',
       'metro.config.js',
       'jest.config.js',
@@ -76,6 +71,8 @@ export default [
       'src/browser',
       'src/__swaps__/README.md',
       'InjectedJSBundle.js',
+      'eslint.config.mjs',
+      'src/graphql/config.js',
     ],
   },
   {

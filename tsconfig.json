@@ -65,5 +65,5 @@
     "metro.config.js",
     "jest.config.js"
   ],
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.js", "src/**/*.jsx"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.js", "src/**/*.jsx", "globals.d.ts"]
 }
