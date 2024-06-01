@@ -1,6 +1,6 @@
 import { Box, Inline, Stack, Text, AccentColorProvider, Bleed } from '@/design-system';
 import { useTheme } from '@/theme';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { GenericCard } from './GenericCard';
 import { ButtonPressAnimation } from '../animations';
 import { useAccountSettings, useChartThrottledPoints, useColorForAsset, useWallets } from '@/hooks';
@@ -39,12 +39,15 @@ export const EthCard = () => {
     currency: nativeCurrency,
   });
 
-  const ethAsset = {
-    ...externalEthAsset,
-    address: ETH_ADDRESS,
-    network: Network.mainnet,
-    uniqueId: getUniqueId(ETH_ADDRESS, Network.mainnet),
-  };
+  const ethAsset = useMemo(
+    () => ({
+      ...externalEthAsset,
+      address: ETH_ADDRESS,
+      network: Network.mainnet,
+      uniqueId: getUniqueId(ETH_ADDRESS, Network.mainnet),
+    }),
+    [externalEthAsset]
+  );
 
   const { loaded: accentColorLoaded } = useAccountAccentColor();
   const { name: routeName } = useRoute();

@@ -1,5 +1,5 @@
 // @refresh
-import React, { createContext, useContext, ReactNode, useEffect } from 'react';
+import React, { ReactNode, createContext, useCallback, useContext, useEffect, useRef } from 'react';
 import { StyleProp, TextStyle, TextInput, NativeModules } from 'react-native';
 import {
   AnimatedRef,
@@ -23,8 +23,7 @@ import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/
 import { useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { useSwapSettings } from '@/__swaps__/screens/Swap/hooks/useSwapSettings';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
-import { swapsStore } from '@/state/swaps/swapsStore';
-import { isSameAsset } from '@/__swaps__/utils/assets';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { ChainId } from '@/__swaps__/types/chains';
 import { RainbowError, logger } from '@/logger';
@@ -42,6 +41,7 @@ import { useAccountSettings } from '@/hooks';
 import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { getNetworkObj } from '@/networks';
+import { userAssetsStore } from '@/state/assets/userAssets';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const tapToSwap = i18n.t(i18n.l.swap.actions.tap_to_swap);
@@ -54,7 +54,9 @@ interface SwapContextType {
   isFetching: SharedValue<boolean>;
   isSwapping: SharedValue<boolean>;
   isQuoteStale: SharedValue<number>;
-  searchInputRef: AnimatedRef<TextInput>;
+
+  inputSearchRef: AnimatedRef<TextInput>;
+  outputSearchRef: AnimatedRef<TextInput>;
 
   // TODO: Combine navigation progress steps into a single shared value
   inputProgress: SharedValue<number>;
@@ -72,7 +74,7 @@ interface SwapContextType {
 
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
-  setAsset: ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset }) => void;
+  setAsset: ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset | null }) => void;
 
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
   executeSwap: () => void;
@@ -99,13 +101,14 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const { nativeCurrency } = useAccountSettings();
 
   const isFetching = useSharedValue(false);
+  const isQuoteStale = useSharedValue(0); // TODO: Convert this to a boolean
   const isSwapping = useSharedValue(false);
-  const isQuoteStale = useSharedValue(0);
 
-  const searchInputRef = useAnimatedRef<TextInput>();
+  const inputSearchRef = useAnimatedRef<TextInput>();
+  const outputSearchRef = useAnimatedRef<TextInput>();
 
   const inputProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
-  const outputProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
+  const outputProgress = useSharedValue(NavigationSteps.TOKEN_LIST_FOCUSED);
   const configProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
 
   const sliderXPosition = useSharedValue(SLIDER_WIDTH * INITIAL_SLIDER_POSITION);
@@ -114,11 +117,12 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const lastTypedInput = useSharedValue<inputKeys>('inputAmount');
   const focusedInput = useSharedValue<inputKeys>('inputAmount');
 
-  const selectedOutputChainId = useSharedValue<ChainId>(ChainId.mainnet);
+  const initialSelectedInputAsset = parseAssetAndExtend({ asset: userAssetsStore.getState().getHighestValueAsset() });
 
-  const internalSelectedInputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(null);
+  const internalSelectedInputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(initialSelectedInputAsset);
   const internalSelectedOutputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(null);
 
+  const selectedOutputChainId = useSharedValue<ChainId>(initialSelectedInputAsset?.chainId || ChainId.mainnet);
   const quote = useSharedValue<Quote | CrosschainQuote | QuoteError | null>(null);
 
   const SwapSettings = useSwapSettings({
@@ -195,6 +199,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const { errorMessage } = await walletExecuteRap(wallet, type, {
       ...parameters,
       gasParams,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       gasFeeParamsBySpeed: gasFeeParamsBySpeed as any,
     });
     runOnUI(resetSwappingStatus)();
@@ -275,16 +280,18 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   });
 
   const SwapNavigation = useSwapNavigation({
-    SwapInputController,
-    inputProgress,
-    outputProgress,
     configProgress,
     executeSwap,
+    inputProgress,
+    outputProgress,
+    quoteFetchingInterval: SwapInputController.quoteFetchingInterval,
+    selectedInputAsset: internalSelectedInputAsset,
+    selectedOutputAsset: internalSelectedOutputAsset,
   });
 
   const SwapWarning = useSwapWarning({
-    SwapInputController,
     inputAsset: internalSelectedInputAsset,
+    inputValues: SwapInputController.inputValues,
     outputAsset: internalSelectedOutputAsset,
     quote,
     sliderXPosition,
@@ -302,35 +309,37 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     isFetching,
   });
 
-  const handleProgressNavigation = ({ type }: { type: SwapAssetType }) => {
-    'worklet';
+  const handleProgressNavigation = useCallback(
+    ({ type }: { type: SwapAssetType }) => {
+      'worklet';
+      const inputAsset = internalSelectedInputAsset.value;
+      const outputAsset = internalSelectedOutputAsset.value;
 
-    const inputAsset = internalSelectedInputAsset.value;
-    const outputAsset = internalSelectedOutputAsset.value;
-
-    switch (type) {
-      case SwapAssetType.inputAsset:
-        // if there is already an output asset selected, just close both lists
-        if (outputAsset) {
-          inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
-          outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
-        } else {
-          inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
-          outputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
-        }
-        break;
-      case SwapAssetType.outputAsset:
-        // if there is already an input asset selected, just close both lists
-        if (inputAsset) {
-          inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
-          outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
-        } else {
-          inputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
-          outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
-        }
-        break;
-    }
-  };
+      switch (type) {
+        case SwapAssetType.inputAsset:
+          // if there is already an output asset selected, just close both lists
+          if (outputAsset) {
+            inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+            outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+          } else {
+            inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+            outputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
+          }
+          break;
+        case SwapAssetType.outputAsset:
+          // if there is already an input asset selected, just close both lists
+          if (inputAsset) {
+            inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+            outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+          } else {
+            inputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
+            outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+          }
+          break;
+      }
+    },
+    [internalSelectedInputAsset, internalSelectedOutputAsset, inputProgress, outputProgress]
+  );
 
   const setSelectedOutputChainId = (chainId: ChainId) => {
     const updateChainId = (chainId: ChainId) => {
@@ -338,64 +347,134 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       selectedOutputChainId.value = chainId;
     };
 
-    swapsStore.setState({ selectedOutputChainId: chainId });
     runOnUI(updateChainId)(chainId);
+    useSwapsStore.setState({ selectedOutputChainId: chainId });
   };
 
-  const setAsset = ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset }) => {
-    const updateAssetValue = ({ type, asset }: { type: SwapAssetType; asset: ExtendedAnimatedAssetWithColors | null }) => {
+  const updateAssetValue = useCallback(
+    ({ type, asset }: { type: SwapAssetType; asset: ExtendedAnimatedAssetWithColors | null }) => {
       'worklet';
 
       switch (type) {
         case SwapAssetType.inputAsset:
           internalSelectedInputAsset.value = asset;
-          selectedOutputChainId.value = asset?.chainId ?? ChainId.mainnet;
           break;
         case SwapAssetType.outputAsset:
           internalSelectedOutputAsset.value = asset;
           break;
       }
+    },
+    [internalSelectedInputAsset, internalSelectedOutputAsset]
+  );
 
-      handleProgressNavigation({
-        type,
-      });
+  const chainSetTimeoutId = useRef<NodeJS.Timeout | null>(null);
+
+  const setAsset = useCallback(
+    ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset | null }) => {
+      const insertUserAssetBalance = type === SwapAssetType.outputAsset;
+      const extendedAsset = parseAssetAndExtend({ asset, insertUserAssetBalance });
+
+      const otherSelectedAsset = type === SwapAssetType.inputAsset ? internalSelectedOutputAsset.value : internalSelectedInputAsset.value;
+      const isSameAsOtherAsset = !!(otherSelectedAsset && otherSelectedAsset.uniqueId === extendedAsset?.uniqueId);
+      const flippedAssetOrNull =
+        (isSameAsOtherAsset &&
+          (type === SwapAssetType.inputAsset ? internalSelectedInputAsset.value : internalSelectedOutputAsset.value)) ||
+        null;
+
+      const didSelectedAssetChange =
+        type === SwapAssetType.inputAsset
+          ? internalSelectedInputAsset.value?.uniqueId !== extendedAsset?.uniqueId
+          : internalSelectedOutputAsset.value?.uniqueId !== extendedAsset?.uniqueId;
+
+      runOnUI(() => {
+        const didSelectedAssetChange =
+          type === SwapAssetType.inputAsset
+            ? internalSelectedInputAsset.value?.uniqueId !== extendedAsset?.uniqueId
+            : internalSelectedOutputAsset.value?.uniqueId !== extendedAsset?.uniqueId;
+
+        if (didSelectedAssetChange) {
+          const otherSelectedAsset =
+            type === SwapAssetType.inputAsset ? internalSelectedOutputAsset.value : internalSelectedInputAsset.value;
+          const isSameAsOtherAsset = !!(otherSelectedAsset && otherSelectedAsset.uniqueId === extendedAsset?.uniqueId);
+
+          if (isSameAsOtherAsset) {
+            const flippedAssetOrNull =
+              type === SwapAssetType.inputAsset ? internalSelectedInputAsset.value : internalSelectedOutputAsset.value;
+
+            updateAssetValue({
+              type: type === SwapAssetType.inputAsset ? SwapAssetType.outputAsset : SwapAssetType.inputAsset,
+              asset: flippedAssetOrNull,
+            });
+          }
+          updateAssetValue({ type, asset: isSameAsOtherAsset ? otherSelectedAsset : extendedAsset });
+        } else {
+          SwapInputController.quoteFetchingInterval.start();
+        }
+
+        handleProgressNavigation({ type });
+      })();
+
+      if (didSelectedAssetChange) {
+        const assetToSet = insertUserAssetBalance
+          ? { ...asset, balance: (asset && userAssetsStore.getState().getUserAsset(asset.uniqueId)?.balance) || asset?.balance }
+          : asset;
+
+        if (isSameAsOtherAsset) {
+          useSwapsStore.setState({
+            [type === SwapAssetType.inputAsset ? SwapAssetType.outputAsset : SwapAssetType.inputAsset]: flippedAssetOrNull,
+            [type]: otherSelectedAsset,
+          });
+        } else {
+          useSwapsStore.setState({ [type]: assetToSet });
+        }
+      } else {
+        SwapInputController.quoteFetchingInterval.start();
+      }
+
+      const shouldUpdateSelectedOutputChainId =
+        type === SwapAssetType.inputAsset && useSwapsStore.getState().selectedOutputChainId !== extendedAsset?.chainId;
+      const shouldUpdateAnimatedSelectedOutputChainId =
+        type === SwapAssetType.inputAsset && selectedOutputChainId.value !== extendedAsset?.chainId;
+
+      if (shouldUpdateSelectedOutputChainId || shouldUpdateAnimatedSelectedOutputChainId) {
+        if (chainSetTimeoutId.current) {
+          clearTimeout(chainSetTimeoutId.current);
+        }
+
+        // This causes a heavy re-render in the output token list, so we delay updating the selected output chain until
+        // the animation is most likely complete.
+        chainSetTimeoutId.current = setTimeout(() => {
+          if (shouldUpdateSelectedOutputChainId) {
+            useSwapsStore.setState({
+              selectedOutputChainId: extendedAsset?.chainId ?? ChainId.mainnet,
+            });
+          }
+          if (shouldUpdateAnimatedSelectedOutputChainId) {
+            selectedOutputChainId.value = extendedAsset?.chainId ?? ChainId.mainnet;
+          }
+        }, 750);
+      }
+
+      logger.debug(`[setAsset]: Setting ${type} asset to ${extendedAsset?.name} on ${extendedAsset?.chainId}`);
+    },
+    [
+      SwapInputController.quoteFetchingInterval,
+      handleProgressNavigation,
+      internalSelectedInputAsset,
+      internalSelectedOutputAsset,
+      selectedOutputChainId,
+      updateAssetValue,
+    ]
+  );
+
+  useEffect(() => {
+    return () => {
+      if (chainSetTimeoutId.current) {
+        // Clear the timeout on unmount
+        clearTimeout(chainSetTimeoutId.current);
+      }
     };
-
-    // const prevAsset = swapsStore.getState()[type];
-    const prevOtherAsset = swapsStore.getState()[type === SwapAssetType.inputAsset ? SwapAssetType.outputAsset : SwapAssetType.inputAsset];
-
-    // TODO: Fix me. This is causing assets to not be set sometimes?
-    // if we're setting the same asset, exit early as it's a no-op
-    // if (prevAsset && isSameAsset(prevAsset, asset)) {
-    //   logger.debug(`[setAsset]: Not setting ${type} asset as it's the same as what is already set`);
-    //   handleProgressNavigation({
-    //     type,
-    //     inputAsset: type === SwapAssetType.inputAsset ? asset : prevOtherAsset,
-    //     outputAsset: type === SwapAssetType.outputAsset ? asset : prevOtherAsset,
-    //   });
-    //   return;
-    // }
-
-    // if we're setting the same asset as the other asset, we need to clear the other asset
-    if (prevOtherAsset && isSameAsset(prevOtherAsset, asset)) {
-      logger.debug(`[setAsset]: Swapping ${type} asset for ${type === SwapAssetType.inputAsset ? 'output' : 'input'} asset`);
-
-      swapsStore.setState({
-        [type === SwapAssetType.inputAsset ? SwapAssetType.outputAsset : SwapAssetType.inputAsset]: null,
-      });
-      runOnUI(updateAssetValue)({
-        type: type === SwapAssetType.inputAsset ? SwapAssetType.outputAsset : SwapAssetType.inputAsset,
-        asset: null,
-      });
-    }
-
-    logger.debug(`[setAsset]: Setting ${type} asset to ${asset.name} on ${asset.chainId}`);
-
-    swapsStore.setState({
-      [type]: asset,
-    });
-    runOnUI(updateAssetValue)({ type, asset: parseAssetAndExtend({ asset }) });
-  };
+  }, []);
 
   const confirmButtonIcon = useDerivedValue(() => {
     if (isSwapping.value) {
@@ -408,16 +487,18 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return '􀆅';
     }
 
-    if (isFetching.value) {
+    if (isQuoteStale.value === 1 && sliderPressProgress.value === 0) {
       return '';
     }
 
     const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
     const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
 
-    if (SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching.value) {
-      return '';
-    } else if (SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0) {
+    if (
+      (isInputZero && isOutputZero) ||
+      isFetching.value ||
+      (SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0)
+    ) {
       return '';
     } else {
       return '􀕹';
@@ -435,7 +516,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return save;
     }
 
-    if (isFetching.value) {
+    if (isFetching.value || (isQuoteStale.value === 1 && SwapInputController.inputMethod.value !== 'slider')) {
       return fetchingPrices;
     }
 
@@ -470,27 +551,15 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     };
   });
 
-  useEffect(() => {
-    return () => {
-      swapsStore.setState({
-        inputAsset: null,
-        outputAsset: null,
-        quote: null,
-      });
-
-      SwapInputController.quoteFetchingInterval.stop();
-    };
-  }, []);
-
-  console.log('re-rendered swap provider: ', Date.now());
-
   return (
     <SwapContext.Provider
       value={{
         isFetching,
         isSwapping,
         isQuoteStale,
-        searchInputRef,
+
+        inputSearchRef,
+        outputSearchRef,
 
         inputProgress,
         outputProgress,
@@ -532,7 +601,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 export const useSwapContext = () => {
   const context = useContext(SwapContext);
   if (context === undefined) {
-    throw new Error('useSwap must be used within a SwapProvider');
+    throw new Error('useSwapContext must be used within a SwapProvider');
   }
   return context;
 };

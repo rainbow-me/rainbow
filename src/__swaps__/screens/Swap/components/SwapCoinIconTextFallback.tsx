@@ -11,6 +11,12 @@ const sx = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  defaultTextStyles: {
+    fontFamily: fonts.family.SFProRounded,
+    fontWeight: fonts.weight.heavy as TextStyle['fontWeight'],
+    letterSpacing: fonts.letterSpacing.roundedTight,
+    textAlign: 'center' as TextStyle['textAlign'],
+  },
 });
 
 function buildFallbackFontSize(symbol: string, width: number) {
@@ -37,14 +43,6 @@ type SwapCoinIconTextFallbackProps = {
   width: number;
   style?: ViewStyle;
   symbol?: string;
-};
-
-const defaultTextStyles = {
-  fontFamily: fonts.family.SFProRounded,
-  fontWeight: fonts.weight.bold as TextStyle['fontWeight'],
-  letterSpacing: fonts.letterSpacing.roundedTight,
-  marginBottom: 0.5,
-  textAlign: 'center' as TextStyle['textAlign'],
 };
 
 export const SwapCoinIconTextFallback = ({ asset, height, width, style }: SwapCoinIconTextFallbackProps) => {
@@ -79,7 +77,9 @@ export const SwapCoinIconTextFallback = ({ asset, height, width, style }: SwapCo
         backgroundColor,
       ]}
     >
-      <AnimatedText size="11pt" style={[defaultTextStyles, animatedFontSize]} text={formattedSymbol} />
+      <AnimatedText size="11pt" style={[sx.defaultTextStyles, animatedFontSize]}>
+        {formattedSymbol}
+      </AnimatedText>
     </Animated.View>
   );
 };

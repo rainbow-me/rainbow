@@ -10,6 +10,8 @@ import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFas
 import { AnimatedChainImage } from './AnimatedChainImage';
 import { fadeConfig } from '../constants';
 import { SwapCoinIconTextFallback } from './SwapCoinIconTextFallback';
+import { Box } from '@/design-system';
+import { IS_ANDROID } from '@/env';
 
 const fallbackIconStyle = {
   ...borders.buildCircleAsObject(32),
@@ -26,9 +28,9 @@ const smallFallbackIconStyle = {
   position: 'absolute' as ViewStyle['position'],
 };
 
-export const AmimatedSwapCoinIcon = React.memo(function FeedCoinIcon({
+export const AnimatedSwapCoinIcon = React.memo(function FeedCoinIcon({
   asset,
-  large,
+  large = true,
   small,
   showBadge = true,
 }: {
@@ -39,13 +41,16 @@ export const AmimatedSwapCoinIcon = React.memo(function FeedCoinIcon({
 }) {
   const { isDarkMode, colors } = useTheme();
 
-  const imageLoadingError = useSharedValue(false);
+  const didErrorForUniqueId = useSharedValue<string | undefined>(undefined);
+
+  const size = small ? 16 : large ? 36 : 32;
 
   const animatedIconSource = useAnimatedProps(() => {
     return {
       source: {
         ...DEFAULT_FASTER_IMAGE_CONFIG,
-        borderRadius: (small ? 16 : large ? 36 : 32) / 2,
+        borderRadius: IS_ANDROID ? size / 2 : undefined,
+        transitionDuration: 0,
         url: asset.value?.icon_url ?? '',
       },
     };
@@ -58,17 +63,29 @@ export const AmimatedSwapCoinIcon = React.memo(function FeedCoinIcon({
   });
 
   const animatedCoinIconStyles = useAnimatedStyle(() => {
-    const showFallback = imageLoadingError.value || !asset.value?.icon_url;
+    const showEmptyState = !asset.value?.uniqueId;
+    const showFallback = didErrorForUniqueId.value === asset.value?.uniqueId;
+    const shouldDisplay = !showFallback && !showEmptyState;
 
     return {
-      display: showFallback ? 'none' : 'flex',
-      pointerEvents: showFallback ? 'none' : 'auto',
-      opacity: withTiming(showFallback ? 0 : 1, fadeConfig),
+      display: shouldDisplay ? 'flex' : 'none',
+      pointerEvents: shouldDisplay ? 'auto' : 'none',
+      opacity: withTiming(shouldDisplay ? 1 : 0, fadeConfig),
+    };
+  });
+
+  const animatedEmptyStateStyles = useAnimatedStyle(() => {
+    const showEmptyState = !asset.value?.uniqueId;
+
+    return {
+      display: showEmptyState ? 'flex' : 'none',
+      opacity: withTiming(showEmptyState ? 1 : 0, fadeConfig),
     };
   });
 
   const animatedFallbackStyles = useAnimatedStyle(() => {
-    const showFallback = imageLoadingError.value || !asset.value?.icon_url;
+    const showEmptyState = !asset.value?.uniqueId;
+    const showFallback = !showEmptyState && didErrorForUniqueId.value === asset.value?.uniqueId;
 
     return {
       display: showFallback ? 'flex' : 'none',
@@ -88,23 +105,22 @@ export const AmimatedSwapCoinIcon = React.memo(function FeedCoinIcon({
         ]}
       >
         <Animated.View style={animatedCoinIconStyles}>
-          {/* @ts-expect-error missing props "source" */}
+          {/* ⚠️ TODO: This works but we should figure out how to type this correctly to avoid this error */}
+          {/* @ts-expect-error: Doesn't pick up that it's getting a source prop via animatedProps */}
           <AnimatedFasterImage
             animatedProps={animatedIconSource}
             onError={() => {
-              'worklet';
-              imageLoadingError.value = true;
+              didErrorForUniqueId.value = asset.value?.uniqueId;
             }}
             onSuccess={() => {
-              'worklet';
-              imageLoadingError.value = false;
+              didErrorForUniqueId.value = undefined;
             }}
             style={[
               sx.coinIcon,
               {
-                height: small ? 16 : large ? 36 : 32,
-                width: small ? 16 : large ? 36 : 32,
-                borderRadius: (small ? 16 : large ? 36 : 32) / 2,
+                borderRadius: size / 2,
+                height: size,
+                width: size,
               },
             ]}
           />
@@ -115,11 +131,25 @@ export const AmimatedSwapCoinIcon = React.memo(function FeedCoinIcon({
         >
           <SwapCoinIconTextFallback
             asset={asset}
-            height={small ? 16 : large ? 36 : 32}
-            width={small ? 16 : large ? 36 : 32}
+            height={size}
+            width={size}
             style={small ? smallFallbackIconStyle : large ? largeFallbackIconStyle : fallbackIconStyle}
           />
         </Animated.View>
+
+        <Box
+          as={Animated.View}
+          background="fillQuaternary"
+          style={[
+            animatedEmptyStateStyles,
+            small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback,
+            {
+              borderRadius: size / 2,
+              height: size,
+              width: size,
+            },
+          ]}
+        />
       </Animated.View>
 
       {showBadge && <AnimatedChainImage asset={asset} size={16} />}
@@ -163,6 +193,9 @@ const sx = StyleSheet.create({
     elevation: 6,
     height: 16,
     overflow: 'visible',
+  },
+  emptyState: {
+    pointerEvents: 'none',
   },
   reactCoinIconContainer: {
     position: 'relative',
