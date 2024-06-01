@@ -9,7 +9,6 @@ import { Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@
 import { IS_ANDROID } from '@/env';
 import * as i18n from '@/languages';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import styled from '@/styled-thing';
 import { gasUtils } from '@/utils';
 import React, { ReactNode, useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
@@ -23,6 +22,7 @@ import { EstimatedSwapGasFee } from './EstimatedSwapGasFee';
 import { GestureHandlerV1Button } from './GestureHandlerV1Button';
 
 const { GAS_ICONS } = gasUtils;
+const GAS_BUTTON_HIT_SLOP = 16;
 
 function EstimatedGasFee() {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
@@ -58,10 +58,6 @@ function SelectedGas() {
     </Inline>
   );
 }
-
-const GasSpeedPagerCentered = styled(Centered).attrs(() => ({
-  marginHorizontal: 8,
-}))({});
 
 function getEstimatedFeeRangeInGwei(gasSettings: GasSettings | undefined, currentBaseFee: string | undefined) {
   if (!gasSettings) return undefined;
@@ -134,7 +130,7 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
   if (metereologySuggestions.isLoading) return children;
 
   return (
-    <GasSpeedPagerCentered testID="gas-speed-pager">
+    <Box alignItems="center" justifyContent="center" style={{ margin: IS_ANDROID ? 0 : -GAS_BUTTON_HIT_SLOP }} testID="gas-speed-pager">
       {IS_ANDROID ? (
         <ContextMenu
           activeOpacity={0}
@@ -146,7 +142,9 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
           useActionSheetFallback={false}
           wrapNativeComponent={false}
         >
-          <Centered>{children}</Centered>
+          <Centered>
+            <ButtonPressAnimation scaleTo={0.825}>{children}</ButtonPressAnimation>
+          </Centered>
         </ContextMenu>
       ) : (
         <ContextMenuButton
@@ -159,10 +157,12 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
           useActionSheetFallback={false}
           wrapNativeComponent={false}
         >
-          {children}
+          <ButtonPressAnimation scaleTo={0.825} style={{ padding: GAS_BUTTON_HIT_SLOP }}>
+            {children}
+          </ButtonPressAnimation>
         </ContextMenuButton>
       )}
-    </GasSpeedPagerCentered>
+    </Box>
   );
 };
 

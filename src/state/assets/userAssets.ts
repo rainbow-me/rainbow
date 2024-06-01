@@ -1,39 +1,42 @@
-import { Hex } from 'viem';
-
+import { Address } from 'viem';
 import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
-import { deriveAddressAndChainWithUniqueId } from '@/__swaps__/utils/address';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { RainbowError, logger } from '@/logger';
+import { ChainId } from '@/__swaps__/types/chains';
+import { SUPPORTED_CHAIN_IDS } from '@/references';
+
+const SEARCH_CACHE_MAX_ENTRIES = 50;
 
 export interface UserAssetsState {
-  userAssetsById: Set<UniqueId>;
-  userAssets: Map<UniqueId, ParsedSearchAsset>;
+  associatedWalletAddress: Address | undefined;
+  chainBalances: Map<ChainId, number>;
   filter: UserAssetFilter;
-  searchQuery: string;
-
-  favoriteAssetsById: Set<Hex>; // this is chain agnostic, so we don't want to store a UniqueId here
-  setFavorites: (favoriteAssetIds: Hex[]) => void;
-  toggleFavorite: (uniqueId: UniqueId) => void;
-  isFavorite: (uniqueId: UniqueId) => boolean;
-
+  inputSearchQuery: string;
+  searchCache: Map<string, UniqueId[]>;
+  userAssets: Map<UniqueId, ParsedSearchAsset>;
+  getBalanceSortedChainList: () => ChainId[];
   getFilteredUserAssetIds: () => UniqueId[];
-  getUserAsset: (uniqueId: UniqueId) => ParsedSearchAsset | undefined;
+  getHighestValueAsset: () => ParsedSearchAsset | null;
+  getUserAsset: (uniqueId: UniqueId) => ParsedSearchAsset | null;
+  getUserAssets: () => ParsedSearchAsset[];
+  getUserAssetsWithZeroPricesFilteredOut: () => Generator<[UniqueId, ParsedSearchAsset], void, unknown>;
+  selectUserAssets: (selector: (asset: ParsedSearchAsset) => boolean) => Generator<[UniqueId, ParsedSearchAsset], void, unknown>;
+  setSearchQuery: (query: string) => void;
+  setUserAssets: (associatedWalletAddress: Address, userAssets: Map<UniqueId, ParsedSearchAsset> | ParsedSearchAsset[]) => void;
 }
 
 // NOTE: We are serializing Map as an Array<[UniqueId, ParsedSearchAsset]>
-type UserAssetsStateWithTransforms = Omit<Partial<UserAssetsState>, 'userAssetIds' | 'userAssets' | 'favoriteAssetsAddresses'> & {
-  userAssetIds: Array<UniqueId>;
+type UserAssetsStateWithTransforms = Omit<Partial<UserAssetsState>, 'chainBalances' | 'userAssets'> & {
+  chainBalances: Array<[ChainId, number]>;
   userAssets: Array<[UniqueId, ParsedSearchAsset]>;
-  favoriteAssetsAddresses: Array<Hex>;
 };
 
 function serializeUserAssetsState(state: Partial<UserAssetsState>, version?: number) {
   try {
     const transformedStateToPersist: UserAssetsStateWithTransforms = {
       ...state,
-      userAssetIds: state.userAssetsById ? Array.from(state.userAssetsById) : [],
+      chainBalances: state.chainBalances ? Array.from(state.chainBalances.entries()) : [],
       userAssets: state.userAssets ? Array.from(state.userAssets.entries()) : [],
-      favoriteAssetsAddresses: state.favoriteAssetsById ? Array.from(state.favoriteAssetsById) : [],
     };
 
     return JSON.stringify({
@@ -57,16 +60,6 @@ function deserializeUserAssetsState(serializedState: string) {
 
   const { state, version } = parsedState;
 
-  let userAssetIdsData = new Set<UniqueId>();
-  try {
-    if (state.userAssetIds.length) {
-      userAssetIdsData = new Set(state.userAssetIds);
-    }
-  } catch (error) {
-    logger.error(new RainbowError('Failed to convert userAssetIds from user assets storage'), { error });
-    throw error;
-  }
-
   let userAssetsData: Map<UniqueId, ParsedSearchAsset> = new Map();
   try {
     if (state.userAssets.length) {
@@ -77,93 +70,156 @@ function deserializeUserAssetsState(serializedState: string) {
     throw error;
   }
 
-  let favoritesData = new Set<Hex>();
+  let chainBalances = new Map<ChainId, number>();
   try {
-    if (state.favoriteAssetsAddresses.length) {
-      favoritesData = new Set(state.favoriteAssetsAddresses);
+    if (state.chainBalances) {
+      chainBalances = new Map(state.chainBalances);
     }
   } catch (error) {
-    logger.error(new RainbowError('Failed to convert favoriteAssetsAddresses from user assets storage'), { error });
+    logger.error(new RainbowError('Failed to convert chainBalances from user assets storage'), { error });
     throw error;
   }
 
   return {
     state: {
       ...state,
-      userAssetIds: userAssetIdsData,
+      chainBalances,
       userAssets: userAssetsData,
-      favoriteAssetsAddresses: favoritesData,
     },
     version,
   };
 }
 
 export const userAssetsStore = createRainbowStore<UserAssetsState>(
-  (_, get) => ({
-    userAssetsById: new Set(),
-    userAssets: new Map(),
+  (set, get) => ({
+    associatedWalletAddress: undefined,
+    chainBalances: new Map(),
     filter: 'all',
-    searchQuery: '',
-    favoriteAssetsById: new Set(),
+    inputSearchQuery: '',
+    searchCache: new Map(),
+    userAssets: new Map(),
+
+    getBalanceSortedChainList: () => Array.from(get().chainBalances.keys()),
 
     getFilteredUserAssetIds: () => {
-      const { userAssetsById, userAssets, searchQuery } = get();
-
-      // NOTE: No search query let's just return the userAssetIds
-      if (!searchQuery.trim()) {
-        return Array.from(userAssetsById.keys());
+      const { filter, inputSearchQuery } = get();
+      const cachedResults = get().searchCache.get(`${inputSearchQuery}-${filter}`);
+      if (cachedResults) {
+        return cachedResults;
       }
+      return Array.from(
+        get().selectUserAssets(asset => (asset.price?.value ?? 0) > 0 && (filter === 'all' || asset.chainId === filter)),
+        ([uniqueId]) => uniqueId
+      );
+    },
 
-      const lowerCaseSearchQuery = searchQuery.toLowerCase();
-      const keysToMatch: Partial<keyof ParsedSearchAsset>[] = ['name', 'symbol', 'address'];
+    getHighestValueAsset: () => get().userAssets.values().next().value || null,
 
-      return Object.entries(userAssets).reduce((acc, [uniqueId, asset]) => {
-        const combinedString = keysToMatch
-          .map(key => asset?.[key as keyof ParsedSearchAsset] ?? '')
-          .filter(Boolean)
-          .join(' ')
-          .toLowerCase();
-        if (combinedString.includes(lowerCaseSearchQuery)) {
-          acc.push(uniqueId);
+    getUserAsset: (uniqueId: UniqueId) => get().userAssets.get(uniqueId) || null,
+
+    getUserAssets: () => Array.from(get().userAssets.values()) || [],
+
+    getUserAssetsWithZeroPricesFilteredOut: function* () {
+      yield* get().selectUserAssets(asset => (asset.price?.value ?? 0) > 0);
+    },
+
+    selectUserAssets: function* (predicate: (asset: ParsedSearchAsset) => boolean) {
+      for (const [id, asset] of get().userAssets) {
+        if (predicate(asset)) {
+          yield [id, asset];
         }
-        return acc;
-      }, [] as UniqueId[]);
-    },
-
-    setFavorites: (addresses: Hex[]) => {
-      const { favoriteAssetsById } = get();
-      addresses.forEach(address => {
-        favoriteAssetsById.add(address);
-      });
-    },
-
-    toggleFavorite: (uniqueId: UniqueId) => {
-      const { favoriteAssetsById } = get();
-      const { address } = deriveAddressAndChainWithUniqueId(uniqueId);
-      if (favoriteAssetsById.has(address)) {
-        favoriteAssetsById.delete(address);
-      } else {
-        favoriteAssetsById.add(address);
       }
     },
 
-    getUserAsset: (uniqueId: UniqueId) => get().userAssets.get(uniqueId),
+    setSearchQuery: (query: string) => {
+      const { filter, searchCache } = get();
+      const chainIdFilter = filter === 'all' ? null : filter;
 
-    isFavorite: (uniqueId: UniqueId) => {
-      const { favoriteAssetsById } = get();
-      const { address } = deriveAddressAndChainWithUniqueId(uniqueId);
-      return favoriteAssetsById.has(address);
+      // Check if the result is already cached
+      if (searchCache.has(`${query}-${filter}`)) {
+        set({ inputSearchQuery: query });
+        return;
+      }
+
+      let filteredIds: UniqueId[];
+
+      // Return all asset IDs if no filter or search query is applied
+      if (!query && !chainIdFilter) {
+        filteredIds = Array.from(get().getUserAssetsWithZeroPricesFilteredOut(), ([uniqueId]) => uniqueId);
+      } else {
+        const searchRegex = query ? new RegExp(query, 'i') : null;
+        const filteredIdsSet: Set<UniqueId> = new Set();
+
+        // Filter by chain ID and search query
+        for (const [uniqueId, asset] of get().selectUserAssets(
+          asset => (asset.price?.value ?? 0) > 0 && (filter === 'all' || asset.chainId === filter)
+        )) {
+          if (!searchRegex || searchRegex.test(asset.name) || searchRegex.test(asset.symbol) || searchRegex.test(asset.address)) {
+            filteredIdsSet.add(uniqueId);
+          }
+        }
+
+        filteredIds = Array.from(filteredIdsSet);
+      }
+
+      set(state => ({
+        inputSearchQuery: query,
+        searchCache: new Map(state.searchCache).set(`${query}-${filter}`, filteredIds),
+      }));
+
+      // Prune the cache if needed
+      if (get().searchCache.size > SEARCH_CACHE_MAX_ENTRIES) {
+        const oldestKey = get().searchCache.keys().next().value;
+        set(state => {
+          const newCache = new Map(state.searchCache);
+          newCache.delete(oldestKey);
+          return { searchCache: newCache };
+        });
+      }
+    },
+
+    setUserAssets: (associatedWalletAddress: Address, userAssets: Map<UniqueId, ParsedSearchAsset> | ParsedSearchAsset[]) => {
+      const unsortedChainBalances = new Map<ChainId, number>();
+
+      userAssets.forEach(asset => {
+        const balance = Number(asset.native.balance.amount) ?? 0;
+        unsortedChainBalances.set(asset.chainId, (unsortedChainBalances.get(asset.chainId) || 0) + balance);
+      });
+
+      // Ensure all supported chains are in the map with a fallback value of 0
+      SUPPORTED_CHAIN_IDS({ testnetMode: false }).forEach(chainId => {
+        if (!unsortedChainBalances.has(chainId)) {
+          unsortedChainBalances.set(chainId, 0);
+        }
+      });
+
+      // Sort the existing map by balance in descending order
+      const sortedEntries = Array.from(unsortedChainBalances.entries()).sort(([, balanceA], [, balanceB]) => balanceB - balanceA);
+      const chainBalances = new Map<number, number>();
+
+      sortedEntries.forEach(([chainId, balance]) => chainBalances.set(chainId, balance));
+
+      if (userAssets instanceof Map) {
+        set({ associatedWalletAddress, chainBalances, searchCache: new Map(), userAssets });
+      } else {
+        set({
+          associatedWalletAddress,
+          chainBalances,
+          searchCache: new Map(),
+          userAssets: new Map(userAssets.map(asset => [asset.uniqueId, asset])),
+        });
+      }
     },
   }),
   {
-    storageKey: 'userAssets',
-    version: 1,
+    deserializer: deserializeUserAssetsState,
     partialize: state => ({
-      userAssetsById: state.userAssetsById,
+      associatedWalletAddress: state.associatedWalletAddress,
+      chainBalances: state.chainBalances,
       userAssets: state.userAssets,
-      favoriteAssetsById: state.favoriteAssetsById,
     }),
     serializer: serializeUserAssetsState,
-    deserializer: deserializeUserAssetsState,
+    storageKey: 'userAssets',
+    version: 2,
   }
 );

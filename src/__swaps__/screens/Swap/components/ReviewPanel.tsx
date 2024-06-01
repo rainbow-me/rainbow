@@ -2,7 +2,7 @@ import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
 
 import { ReviewGasButton } from '@/__swaps__/screens/Swap/components/GasButton';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId, ChainNameDisplay } from '@/__swaps__/types/chains';
 import { AnimatedText, Bleed, Box, Inline, Separator, Stack, Text, globalColors, useColorMode } from '@/design-system';
 import { StyleSheet, View } from 'react-native';
 
@@ -24,7 +24,6 @@ import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { AnimatedChainImage } from '@/__swaps__/screens/Swap/components/AnimatedChainImage';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { useNativeAssetForChain } from '@/__swaps__/screens/Swap/hooks/useNativeAssetForChain';
-import { chainNameForChainIdWithMainnetSubstitutionWorklet } from '@/__swaps__/utils/chains';
 import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
 import { convertRawAmountToBalance, convertRawAmountToNativeDisplay, handleSignificantDecimals, multiply } from '@/__swaps__/utils/numbers';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
@@ -36,7 +35,7 @@ const unknown = i18n.t(i18n.l.swap.unknown);
 const RainbowFee = () => {
   const { nativeCurrency } = useAccountSettings();
   const { isDarkMode } = useColorMode();
-  const { quote, internalSelectedInputAsset } = useSwapContext();
+  const { isFetching, isQuoteStale, quote, internalSelectedInputAsset } = useSwapContext();
 
   const { nativeAsset } = useNativeAssetForChain({ inputAsset: internalSelectedInputAsset });
 
@@ -71,17 +70,19 @@ const RainbowFee = () => {
   );
 
   useAnimatedReaction(
-    () => quote.value,
-    (current, previous) => {
-      if (current && previous !== current && !(current as QuoteError)?.error) {
-        runOnJS(calculateRainbowFeeFromQuoteData)(current as Quote | CrosschainQuote);
+    () => ({ isFetching: isFetching.value, isQuoteStale: isQuoteStale.value, quote: quote.value }),
+    current => {
+      if (!current.isQuoteStale && !current.isFetching && current.quote && !(current.quote as QuoteError)?.error) {
+        runOnJS(calculateRainbowFeeFromQuoteData)(current.quote as Quote | CrosschainQuote);
       }
     }
   );
 
   return (
     <GestureHandlerV1Button onPressWorklet={swapIndex}>
-      <AnimatedText align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy" text={feeToDisplay} />
+      <AnimatedText align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy">
+        {feeToDisplay}
+      </AnimatedText>
     </GestureHandlerV1Button>
   );
 };
@@ -111,9 +112,7 @@ export function ReviewPanel() {
 
   const unknown = i18n.t(i18n.l.swap.unknown);
 
-  const chainName = useDerivedValue(() =>
-    chainNameForChainIdWithMainnetSubstitutionWorklet(internalSelectedOutputAsset.value?.chainId ?? ChainId.mainnet)
-  );
+  const chainName = useDerivedValue(() => ChainNameDisplay[internalSelectedOutputAsset.value?.chainId ?? ChainId.mainnet]);
 
   const minimumReceived = useDerivedValue(() => {
     if (!SwapInputController.formattedOutputAmount.value || !internalSelectedOutputAsset.value?.symbol) {
@@ -170,8 +169,9 @@ export function ReviewPanel() {
                 size="15pt"
                 weight="heavy"
                 style={{ textTransform: 'capitalize' }}
-                text={chainName}
-              />
+              >
+                {chainName}
+              </AnimatedText>
             </Inline>
           </Inline>
 
@@ -185,14 +185,10 @@ export function ReviewPanel() {
               </Text>
             </Inline>
 
-            <Inline wrap={false} horizontalSpace="6px">
-              <AnimatedText
-                align="right"
-                color={isDarkMode ? 'labelSecondary' : 'label'}
-                size="15pt"
-                weight="heavy"
-                text={minimumReceived}
-              />
+            <Inline horizontalSpace="6px">
+              <AnimatedText align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy">
+                {minimumReceived}
+              </AnimatedText>
             </Inline>
           </Inline>
 
@@ -272,14 +268,9 @@ export function ReviewPanel() {
               </GestureHandlerV1Button>
 
               <Inline space="2px">
-                <AnimatedText
-                  align="right"
-                  style={{ minWidth: 26 }}
-                  size="15pt"
-                  weight="bold"
-                  color="labelSecondary"
-                  text={SwapSettings.slippage}
-                />
+                <AnimatedText align="right" style={{ minWidth: 26 }} size="15pt" weight="bold" color="labelSecondary">
+                  {SwapSettings.slippage}
+                </AnimatedText>
                 <Text size="15pt" weight="bold" color="labelSecondary">
                   %
                 </Text>

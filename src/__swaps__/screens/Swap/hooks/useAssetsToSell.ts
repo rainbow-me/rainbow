@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Hex } from 'viem';
+import { Address } from 'viem';
 
 import {
   selectUserAssetsList,
@@ -25,13 +25,13 @@ export const useAssetsToSell = () => {
   const { accountAddress: currentAddress, nativeCurrency: currentCurrency } = useAccountSettings();
 
   const filter = userAssetsStore(state => state.filter);
-  const searchQuery = userAssetsStore(state => state.searchQuery);
+  const searchQuery = userAssetsStore(state => state.inputSearchQuery);
 
   const debouncedAssetToSellFilter = useDebounce(searchQuery, 200);
 
   const { data: userAssets = [] } = useUserAssets(
     {
-      address: currentAddress as Hex,
+      address: currentAddress as Address,
       currency: currentCurrency,
     },
     {
