@@ -55,5 +55,15 @@
     "resolveJsonModule": true
   },
   "globals": ["useTheme", "ios", "android", "web", "__DEV__", "IS_DEV"],
-  "exclude": ["ios", "src/browser", "android", "patches/reanimated", "node_modules", "babel.config.js", "metro.config.js", "jest.config.js"]
+  "exclude": [
+    "ios",
+    "src/browser",
+    "android",
+    "patches/reanimated",
+    "node_modules",
+    "babel.config.js",
+    "metro.config.js",
+    "jest.config.js"
+  ],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.js", "src/**/*.jsx"]
 }
