@@ -42,8 +42,6 @@ function SelectedGas() {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
   const selectedGasSpeed = useSelectedGasSpeed(chainId);
 
-  console.log({ selectedGasSpeed });
-
   return (
     <Inline alignVertical="center" space={{ custom: 5 }}>
       <Inline alignVertical="center" space="4px">
