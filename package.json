@@ -42,7 +42,7 @@
     "format:check": "prettier --check .",
     "lint": "yarn format:check && yarn lint:ts && yarn lint:js",
     "lint:ci": "yarn format:check && yarn lint:ts && yarn lint:js --quiet",
-    "lint:js": "eslint --cache .",
+    "lint:js": "eslint --cache . --config eslint.config.mjs",
     "lint:ts": "yarn tsc --skipLibCheck --noEmit",
     "postinstall": "./scripts/postinstall.sh",
     "start": "react-native start",
@@ -547,8 +547,8 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx,graphql}": [
       "prettier --write .",
-      "eslint --fix --config eslint.config.mjs",
-      "tsc --skipLibCheck --noEmit --allowJs"
+      "tsc --skipLibCheck --noEmit --allowJs",
+      "eslint --cache --quiet --config eslint.config.mjs"
     ]
   },
   "husky": {
