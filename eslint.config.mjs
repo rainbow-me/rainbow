@@ -32,20 +32,20 @@ let globalVars = {
   window: 'readonly',
 };
 
-  const data = fs.readFileSync(path.resolve(__dirname, './globalVariables.js'), 'utf8');
-  const parsedData = babelParse(data, { sourceType: 'module' });
-  const exportDefaultDeclaration = parsedData.program.body.find(e => e.type === 'ExportDefaultDeclaration');
+const data = fs.readFileSync(path.resolve(__dirname, './globalVariables.js'), 'utf8');
+const parsedData = babelParse(data, { sourceType: 'module' });
+const exportDefaultDeclaration = parsedData.program.body.find(e => e.type === 'ExportDefaultDeclaration');
 
-  if (exportDefaultDeclaration && exportDefaultDeclaration.declaration && exportDefaultDeclaration.declaration.properties) {
-    globalVars = exportDefaultDeclaration.declaration.properties
-      .map(e => e.key.name)
-      .reduce((acc, variable) => {
-        acc[variable] = true;
-        return acc;
-      }, globalVars);
-  } else {
-    console.error('ExportDefaultDeclaration or its properties are undefined.');
-  }
+if (exportDefaultDeclaration && exportDefaultDeclaration.declaration && exportDefaultDeclaration.declaration.properties) {
+  globalVars = exportDefaultDeclaration.declaration.properties
+    .map(e => e.key.name)
+    .reduce((acc, variable) => {
+      acc[variable] = true;
+      return acc;
+    }, globalVars);
+} else {
+  console.error('ExportDefaultDeclaration or its properties are undefined.');
+}
 
 export default [
   js.configs.recommended,
