@@ -547,7 +547,7 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx,graphql}": [
       "prettier --write .",
-      "tsc --skipLibCheck --noEmit --allowJs",
+      "tsc --skipLibCheck --noEmit --allowJs --traceResolution",
       "eslint --cache --quiet --config eslint.config.mjs"
     ]
   },
