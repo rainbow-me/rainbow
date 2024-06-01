@@ -547,7 +547,7 @@
     "*.{js,jsx,ts,tsx,graphql}": [
       "prettier --write .",
       "eslint --fix --config eslint.config.mjs",
-      "tsc --skipLibCheck --noEmit"
+      "tsc --skipLibCheck --noEmit --allowJs"
     ]
   },
   "husky": {
