@@ -35,7 +35,7 @@ import { userAssetsStore } from '@/state/assets/userAssets';
 function getInitialInputValues() {
   const initialSelectedInputAsset = userAssetsStore.getState().getHighestValueAsset();
   const initialBalance = initialSelectedInputAsset?.balance.amount ?? 0;
-  const initialNiceIncrement = findNiceIncrement(initialBalance.toString());
+  const initialNiceIncrement = findNiceIncrement(initialBalance);
   const initialDecimalPlaces = countDecimalPlaces(initialNiceIncrement);
 
   const initialInputAmount = niceIncrementFormatter({
