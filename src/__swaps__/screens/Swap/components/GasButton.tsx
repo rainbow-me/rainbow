@@ -20,6 +20,7 @@ import { GasSpeed, setSelectedGasSpeed, useSelectedGas, useSelectedGasSpeed } fr
 import { useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee } from './EstimatedSwapGasFee';
 import { GestureHandlerV1Button } from './GestureHandlerV1Button';
+import { ButtonPressAnimation } from '@/components/animations';
 
 const { GAS_ICONS } = gasUtils;
 const GAS_BUTTON_HIT_SLOP = 16;
