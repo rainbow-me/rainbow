@@ -1,4 +1,4 @@
-import { ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { getDefaultSlippage } from '@/__swaps__/utils/swaps';
 import { DEFAULT_CONFIG } from '@/model/remoteConfig';
@@ -6,14 +6,18 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { CrosschainQuote, Quote, QuoteError, Source } from '@rainbow-me/swaps';
 
 export interface SwapsState {
+  isSwapsOpen: boolean;
+  setIsSwapsOpen: (isSwapsOpen: boolean) => void;
+
   // assets
-  inputAsset: ParsedSearchAsset | null;
-  outputAsset: ParsedSearchAsset | null;
+  inputAsset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
+  outputAsset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
 
   // quote
   quote: Quote | CrosschainQuote | QuoteError | null;
 
   selectedOutputChainId: ChainId;
+  outputSearchQuery: string;
 
   // settings
   flashbots: boolean;
@@ -26,11 +30,16 @@ export interface SwapsState {
 
 export const swapsStore = createRainbowStore<SwapsState>(
   set => ({
+    isSwapsOpen: false,
+    setIsSwapsOpen: (isSwapsOpen: boolean) => set({ isSwapsOpen }),
+
     inputAsset: null, // TODO: Default to their largest balance asset (or ETH mainnet if user has no assets)
     outputAsset: null,
 
     quote: null,
+
     selectedOutputChainId: ChainId.mainnet,
+    outputSearchQuery: '',
 
     flashbots: false,
     setFlashbots: (flashbots: boolean) => set({ flashbots }),
