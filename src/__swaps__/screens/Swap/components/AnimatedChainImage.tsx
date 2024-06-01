@@ -101,9 +101,10 @@ export function AnimatedChainImage({
   });
 
   return (
-    <View style={[sx.badge, { bottom: 0, borderRadius: size / 2, width: size, height: size }]}>
-      {/* @ts-expect-error source prop is missing */}
-      <AnimatedFasterImage style={{ borderRadius: size / 2, width: size, height: size }} animatedProps={animatedIconSource} />
+    <View style={[sx.badge, { borderRadius: size / 2, height: size, width: size }]}>
+      {/* ⚠️ TODO: This works but we should figure out how to type this correctly to avoid this error */}
+      {/* @ts-expect-error: Doesn't pick up that it's getting a source prop via animatedProps */}
+      <AnimatedFasterImage style={{ height: size, width: size }} animatedProps={animatedIconSource} />
     </View>
   );
 }
@@ -118,7 +119,7 @@ const sx = StyleSheet.create({
       height: 4,
       width: 0,
     },
-    shadowRadius: 6,
     shadowOpacity: 0.2,
+    shadowRadius: 6,
   },
 });

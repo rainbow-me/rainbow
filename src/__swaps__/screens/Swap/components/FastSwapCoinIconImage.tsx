@@ -6,7 +6,7 @@ import { getUrlForTrustIconFallback } from '@/utils';
 
 export const FastSwapCoinIconImage = React.memo(function FastSwapCoinIconImage({
   address,
-  disableShadow,
+  disableShadow = true,
   network,
   shadowColor,
   size,

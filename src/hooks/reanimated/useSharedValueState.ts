@@ -11,17 +11,26 @@ import { useSyncSharedValue } from './useSyncSharedValue';
  * first, and then pass in that derived value.
  *
  * @param sharedValue The shared value to sync to the state.
- * @param compareDepth The depth of comparison for object values. Defaults to 'deep'.
+ * @param options The options for the hook.
+ * - `compareDepth` The depth of comparison for object values. Defaults to 'deep'.
+ * - `pauseSync` A boolean or shared value boolean that controls whether synchronization is paused.
  * @returns A piece of JS state that stays in sync with the shared value.
  *
  * @example
  * const state = useSharedValueState(sharedValue);
  */
-export function useSharedValueState<T>(sharedValue: DerivedValue<T> | SharedValue<T>, compareDepth: 'shallow' | 'deep' = 'deep'): T {
+export function useSharedValueState<T>(
+  sharedValue: DerivedValue<T> | SharedValue<T>,
+  options: {
+    compareDepth?: 'shallow' | 'deep';
+    pauseSync?: boolean;
+  } = { compareDepth: 'deep' }
+): T {
   const [state, setState] = useState<T>(sharedValue.value);
 
   useSyncSharedValue({
-    compareDepth,
+    compareDepth: options?.compareDepth,
+    pauseSync: options?.pauseSync,
     setState,
     sharedValue,
     state,

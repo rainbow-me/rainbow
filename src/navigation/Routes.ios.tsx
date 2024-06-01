@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext } from 'react';
@@ -29,7 +30,6 @@ import NoNeedWCSheet from '../screens/NoNeedWCSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
 import { WalletDiagnosticsSheet } from '../screens/Diagnostics';
 import WelcomeScreen from '../screens/WelcomeScreen';
-import { useTheme } from '../theme/ThemeContext';
 import RegisterENSNavigator from './RegisterENSNavigator';
 import { SwipeNavigator } from './SwipeNavigator';
 import {
@@ -101,14 +101,8 @@ import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileCo
 import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
 import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { SwapProvider } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import CheckIdentifierScreen from '@/screens/CheckIdentifierScreen';
 import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPanel';
-
-type StackNavigatorParams = {
-  [Routes.SEND_SHEET]: unknown;
-  [Routes.MODAL_SCREEN]: unknown;
-};
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -144,19 +138,8 @@ function MainStack() {
   );
 }
 
-function SwapsNavigator() {
-  return (
-    <SwapProvider>
-      <NativeStack.Navigator {...nativeStackConfig} initialRouteName={Routes.SWAP}>
-        <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />
-      </NativeStack.Navigator>
-    </SwapProvider>
-  );
-}
-
 function NativeStackNavigator() {
   const remoteConfig = useRemoteConfig();
-  const { colors, isDarkMode } = useTheme();
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const swapsV2Enabled = useExperimentalFlag(SWAPS_V2) || remoteConfig.swaps_v2;
 
@@ -302,7 +285,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} {...appIconUnlockSheetConfig} />
       <NativeStack.Screen component={ControlPanel} name={Routes.DAPP_BROWSER_CONTROL_PANEL} {...dappBrowserControlPanelConfig} />
 
-      {swapsV2Enabled && <NativeStack.Screen component={SwapsNavigator} name={Routes.SWAP_NAVIGATOR} {...swapConfig} />}
+      {swapsV2Enabled && <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />}
     </NativeStack.Navigator>
   );
 }
