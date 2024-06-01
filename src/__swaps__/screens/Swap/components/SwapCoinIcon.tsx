@@ -62,7 +62,7 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
   address,
   color,
   iconUrl,
-  disableShadow,
+  disableShadow = true,
   forceDarkMode,
   large,
   mainnetAddress,

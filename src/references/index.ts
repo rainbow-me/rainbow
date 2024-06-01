@@ -227,30 +227,36 @@ export const SUPPORTED_MAINNET_CHAINS: Chain[] = [mainnet, polygon, optimism, ar
 
 export const SUPPORTED_CHAINS = ({ testnetMode = false }: { testnetMode?: boolean }): Chain[] =>
   [
-    arbitrum,
-    arbitrumGoerli,
-    arbitrumSepolia,
-    avalanche,
-    avalancheFuji,
+    // In default order of appearance
+    mainnet,
     base,
-    baseSepolia,
+    optimism,
+    arbitrum,
+    polygon,
+    zora,
     blast,
-    bsc,
-    bscTestnet,
     degen,
+    avalanche,
+    bsc,
+
+    // Testnets
     goerli,
     holesky,
-    mainnet,
-    optimism,
-    optimismSepolia,
-    polygon,
-    polygonMumbai,
     sepolia,
-    zora,
+    baseSepolia,
+    optimismSepolia,
+    arbitrumGoerli,
+    arbitrumSepolia,
+    polygonMumbai,
     zoraSepolia,
-  ]
-    .filter(chain => (testnetMode ? !!chain.testnet : !chain.testnet))
-    .map(chain => ({ ...chain, name: ChainNameDisplay[chain.id] }));
+    avalancheFuji,
+    bscTestnet,
+  ].reduce((chainList, chain) => {
+    if (testnetMode || !chain.testnet) {
+      chainList.push({ ...chain, name: ChainNameDisplay[chain.id] });
+    }
+    return chainList;
+  }, [] as Chain[]);
 
 export const SUPPORTED_CHAIN_IDS = ({ testnetMode = false }: { testnetMode?: boolean }) =>
   SUPPORTED_CHAINS({ testnetMode }).map(chain => chain.id);
