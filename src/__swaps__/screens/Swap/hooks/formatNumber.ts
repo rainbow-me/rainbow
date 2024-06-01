@@ -2,9 +2,11 @@ import store from '@/redux/store';
 import { supportedNativeCurrencies } from '@/references';
 
 const decimalSeparator = '.';
+const lessThanPrefix = '<';
+
 export const formatNumber = (value: string, options?: { decimals?: number }) => {
-  if (!+value) return `0${decimalSeparator}00`;
-  if (+value < 0.0001) return `<0${decimalSeparator}0001`;
+  if (!+value) return `0${decimalSeparator}0`;
+  if (+value < 0.0001) return `${lessThanPrefix}0${decimalSeparator}0001`;
 
   const [whole, fraction = ''] = value.split(decimalSeparator);
   const decimals = options?.decimals;
@@ -26,6 +28,13 @@ const getUserPreferredCurrency = () => {
 
 export const formatCurrency = (value: string, currency = getUserPreferredCurrency()) => {
   const formatted = formatNumber(value);
-  if (currency.alignment === 'left') return `${currency.symbol}${formatted}`;
+
+  if (currency.alignment === 'left') {
+    if (formatted.startsWith(lessThanPrefix)) {
+      return formatted.replace(lessThanPrefix, `${lessThanPrefix}${currency.symbol}`);
+    }
+    return `${currency.symbol}${formatted}`;
+  }
+
   return `${formatted} ${currency.symbol}`;
 };

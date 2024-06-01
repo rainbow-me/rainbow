@@ -1,15 +1,11 @@
 import { celo, fantom, harmonyOne, moonbeam } from 'viem/chains';
 import { NATIVE_ASSETS_PER_CHAIN } from '@/references';
-
-import { ChainId, ChainName, ChainNameDisplay, chainIdToNameMapping, chainNameToIdMapping } from '@/__swaps__/types/chains';
-
 import { AddressOrEth } from '@/__swaps__/types/assets';
-
+import { ChainId, ChainName, ChainNameDisplay, chainIdToNameMapping, chainNameToIdMapping } from '@/__swaps__/types/chains';
 import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
+// @ts-expect-error Property '[ChainId.hardhat]' is missing
 export const customChainIdsToAssetNames: Record<ChainId, string> = {
   42170: 'arbitrumnova',
   1313161554: 'aurora',
@@ -89,15 +85,6 @@ export function chainIdFromChainName(chainName: ChainName) {
 }
 
 export function chainNameForChainIdWithMainnetSubstitution(chainId: ChainId) {
-  if (chainId === ChainId.mainnet) {
-    return 'ethereum';
-  }
-  return chainIdToNameMapping[chainId];
-}
-
-export function chainNameForChainIdWithMainnetSubstitutionWorklet(chainId: ChainId) {
-  'worklet';
-
   if (chainId === ChainId.mainnet) {
     return 'ethereum';
   }

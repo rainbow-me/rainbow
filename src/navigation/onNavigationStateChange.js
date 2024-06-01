@@ -50,6 +50,7 @@ export function onHandleStatusBar(currentState, prevState) {
     case Routes.DAPP_BROWSER_SCREEN:
     case Routes.WELCOME_SCREEN:
     case Routes.CHANGE_WALLET_SHEET:
+    case Routes.SWAP_NAVIGATOR:
     case Routes.SWAP:
       StatusBarHelper.setDarkContent();
       break;
