@@ -1,3 +1,12 @@
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { getColorValueForThemeWorklet, opacity } from '@/__swaps__/utils/swaps';
+import { Input } from '@/components/inputs';
+import { AnimatedText, Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
+import Clipboard from '@react-native-clipboard/clipboard';
 import React from 'react';
 import Animated, {
   SharedValue,
@@ -8,16 +17,9 @@ import Animated, {
   useAnimatedStyle,
   useDerivedValue,
 } from 'react-native-reanimated';
-import { Input } from '@/components/inputs';
-import { AnimatedText, Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { getColorValueForThemeWorklet, opacity } from '@/__swaps__/utils/swaps';
-import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { userAssetsStore } from '@/state/assets/userAssets';
-import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { GestureHandlerV1Button } from './GestureHandlerV1Button';
 import { useDebouncedCallback } from 'use-debounce';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { isAddress } from 'viem';
+import { GestureHandlerV1Button } from './GestureHandlerV1Button';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 
@@ -48,7 +50,10 @@ export const SearchInput = ({
   const labelQuaternary = useForegroundColor('labelQuaternary');
 
   const btnText = useDerivedValue(() => {
-    if ((inputProgress.value === 2 && !output) || (outputProgress.value === 2 && output)) {
+    if (
+      (inputProgress.value === NavigationSteps.SEARCH_FOCUSED && !output) ||
+      (outputProgress.value === NavigationSteps.SEARCH_FOCUSED && output)
+    ) {
       return 'Cancel';
     }
 
@@ -56,17 +61,15 @@ export const SearchInput = ({
       return 'Close';
     }
 
-    // ⚠️ TODO: Add paste functionality to the asset to buy list when no asset is selected
-    // return 'Paste';
+    return 'Paste';
   });
 
   const buttonVisibilityStyle = useAnimatedStyle(() => {
-    const isSearchFocused = (output ? outputProgress : inputProgress).value === NavigationSteps.SEARCH_FOCUSED;
-    const isAssetSelected = output ? internalSelectedOutputAsset.value : internalSelectedInputAsset.value;
+    const isVisible = output || inputProgress.value === NavigationSteps.SEARCH_FOCUSED || internalSelectedOutputAsset.value;
 
     return {
-      opacity: isSearchFocused || isAssetSelected ? 1 : 0,
-      pointerEvents: isSearchFocused || isAssetSelected ? 'auto' : 'none',
+      opacity: isVisible ? 1 : 0,
+      pointerEvents: isVisible ? 'auto' : 'none',
     };
   });
 
@@ -180,7 +183,19 @@ export const SearchInput = ({
         <Column width="content">
           <Animated.View style={buttonVisibilityStyle}>
             <GestureHandlerV1Button
-              onPressJS={() => (output ? outputSearchRef : inputSearchRef).current?.blur()}
+              onPressJS={() => {
+                (output ? outputSearchRef : inputSearchRef).current?.blur();
+
+                console.log(outputProgress.value);
+                if (output && outputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED && !internalSelectedOutputAsset.value) {
+                  // its the output field, not focused and no selected asset, means button is in "paste" state
+                  Clipboard.getString().then(text => {
+                    if (text.length < 10 || isAddress(text)) {
+                      useSwapsStore.setState({ outputSearchQuery: text });
+                    }
+                  });
+                }
+              }}
               onPressWorklet={() => {
                 'worklet';
                 const isSearchFocused =
