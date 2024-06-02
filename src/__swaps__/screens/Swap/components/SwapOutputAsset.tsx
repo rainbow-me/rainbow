@@ -1,23 +1,19 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import React, { useCallback } from 'react';
 import { StyleSheet, StatusBar } from 'react-native';
-import Animated, { runOnJS, runOnUI, useDerivedValue } from 'react-native-reanimated';
+import Animated, { runOnJS, useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
-import { useShallow } from 'zustand/react/shallow';
 import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import { SwapInput } from '@/__swaps__/screens/Swap/components/SwapInput';
 import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
+import { AnimatedSwapCoinIcon } from '@/__swaps__/screens/Swap/components/AnimatedSwapCoinIcon';
 import { TokenList } from '@/__swaps__/screens/Swap/components/TokenList/TokenList';
 import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { isSameAssetWorklet } from '@/__swaps__/utils/assets';
-import { userAssetsStore } from '@/state/assets/userAssets';
-import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
-import { AmimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
@@ -51,11 +47,11 @@ function SwapOutputAmount() {
   const { focusedInput, SwapTextStyles, SwapInputController, AnimatedSwapStyles, outputQuotesAreDisabled } = useSwapContext();
 
   const handleTapWhileDisabled = useCallback(() => {
-    const inputTokenSymbol = swapsStore.getState().inputAsset?.symbol;
-    const outputTokenSymbol = swapsStore.getState().outputAsset?.symbol;
-    const inputNetwork = ethereumUtils.getNetworkFromChainId(swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet);
-    const outputNetwork = ethereumUtils.getNetworkFromChainId(swapsStore.getState().outputAsset?.chainId ?? ChainId.mainnet);
-    const isCrosschainSwap = swapsStore.getState().inputAsset?.chainId !== swapsStore.getState().outputAsset?.chainId;
+    const inputTokenSymbol = useSwapsStore.getState().inputAsset?.symbol;
+    const outputTokenSymbol = useSwapsStore.getState().outputAsset?.symbol;
+    const inputNetwork = ethereumUtils.getNetworkFromChainId(useSwapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet);
+    const outputNetwork = ethereumUtils.getNetworkFromChainId(useSwapsStore.getState().outputAsset?.chainId ?? ChainId.mainnet);
+    const isCrosschainSwap = useSwapsStore.getState().inputAsset?.chainId !== useSwapsStore.getState().outputAsset?.chainId;
     const isBridgeSwap = inputTokenSymbol === outputTokenSymbol;
 
     navigate(Routes.EXPLAIN_SHEET, {
