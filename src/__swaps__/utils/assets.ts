@@ -87,7 +87,7 @@ const getUniqueIdForAsset = ({ asset }: { asset: ZerionAsset | AssetApiResponse 
     ? asset.mainnet_address || asset.implementations?.[ChainName.mainnet]?.address || undefined
     : networks[ChainId.mainnet]?.address;
 
-  return `${mainnetAddress || address}_${chainId}`;
+  return `${address || mainnetAddress}_${chainId}`;
 };
 
 export function parseAsset({ asset, currency }: { asset: ZerionAsset | AssetApiResponse; currency: SupportedCurrencyKey }): ParsedAsset {
