@@ -186,7 +186,6 @@ export const SearchInput = ({
               onPressJS={() => {
                 (output ? outputSearchRef : inputSearchRef).current?.blur();
 
-                console.log(outputProgress.value);
                 if (output && outputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED && !internalSelectedOutputAsset.value) {
                   // its the output field, not focused and no selected asset, means button is in "paste" state
                   Clipboard.getString().then(text => {
