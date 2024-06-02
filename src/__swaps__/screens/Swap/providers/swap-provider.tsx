@@ -38,7 +38,7 @@ import { walletExecuteRap } from '@/raps/execute';
 import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
 import { queryClient } from '@/react-query';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
-import { getUserNativeNetworkAsset } from '@/state/assets/userAssets';
+
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { ethereumUtils } from '@/utils';
 import { isEth } from '@/utils/isSameAddress';
@@ -46,6 +46,7 @@ import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { calculateGasFee } from '../hooks/useEstimatedGasFee';
 import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
 import { getSwapEstimatedGasLimitCachedData } from '../hooks/useSwapEstimatedGasLimit';
+import { getUserNativeNetworkAsset } from '../resources/assets/userAssets';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const tapToSwap = i18n.t(i18n.l.swap.actions.tap_to_swap);

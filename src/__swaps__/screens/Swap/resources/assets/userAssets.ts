@@ -1,20 +1,24 @@
 import { useQuery } from '@tanstack/react-query';
-import { Address } from 'viem';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
+import { Address } from 'viem';
 
-import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
-import { SupportedCurrencyKey, SUPPORTED_CHAIN_IDS } from '@/references';
 import { ParsedAssetsDictByChain, ZerionAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { AddressAssetsReceivedMessage } from '@/__swaps__/types/refraction';
 import { filterAsset, parseUserAsset } from '@/__swaps__/utils/assets';
 import { greaterThan } from '@/__swaps__/utils/numbers';
 import { RainbowError, logger } from '@/logger';
+import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
+import { SUPPORTED_CHAIN_IDS, SupportedCurrencyKey } from '@/references';
 
-import { fetchUserAssetsByChain } from './userAssetsByChain';
-import { RainbowFetchClient } from '@/rainbow-fetch';
-import { useAccountSettings } from '@/hooks';
 import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
+import { Network } from '@/helpers';
+import { useAccountSettings } from '@/hooks';
+import { getNetworkObj } from '@/networks';
+import { RainbowFetchClient } from '@/rainbow-fetch';
+import store from '@/redux/store';
+import { getNetworkFromChainId, getUniqueId } from '@/utils/ethereumUtils';
+import { fetchUserAssetsByChain } from './userAssetsByChain';
 
 const addysHttp = new RainbowFetchClient({
   baseURL: 'https://addys.p.rainbow.me/v3',
@@ -218,4 +222,43 @@ export function useUserAssets<TSelectResult = UserAssetsResult>(
     refetchInterval: USER_ASSETS_REFETCH_INTERVAL,
     staleTime: process.env.IS_TESTING === 'true' ? 0 : 1000,
   });
+}
+
+function getCachedUserAssets({
+  address,
+  currency,
+  testnetMode = false,
+}: {
+  address: Address;
+  currency: SupportedCurrencyKey;
+  testnetMode?: boolean;
+}) {
+  return queryClient.getQueryData<UserAssetsResult>(userAssetsQueryKey({ address, currency, testnetMode }));
+}
+
+const getNetworkNativeAssetUniqueId = (chainId: ChainId) => {
+  const network = getNetworkFromChainId(chainId);
+  const { nativeCurrency } = getNetworkObj(network);
+  const { mainnetAddress, address } = nativeCurrency;
+  const uniqueId = mainnetAddress ? getUniqueId(mainnetAddress, Network.mainnet) : getUniqueId(address, network);
+  return uniqueId;
+};
+
+export function getUserNativeNetworkAsset(chainId: ChainId) {
+  const { accountAddress: currentAddress, nativeCurrency: currentCurrency, network: currentNetwork } = store.getState().settings;
+
+  const provider = getCachedProviderForNetwork(currentNetwork);
+  const providerUrl = provider?.connection?.url;
+  const connectedToHardhat = isHardHat(providerUrl);
+
+  const userAssets = getCachedUserAssets({
+    address: currentAddress as Address,
+    currency: currentCurrency,
+    testnetMode: connectedToHardhat,
+  });
+
+  if (!userAssets) return;
+
+  const uniqueId = getNetworkNativeAssetUniqueId(chainId);
+  return userAssets[chainId][uniqueId];
 }
