@@ -152,6 +152,8 @@ type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
   createdAt: number;
   type: T;
   bridge: boolean;
+  inputNativeValue: string | number;
+  outputNativeValue: string | number;
   parameters: Omit<RapSwapActionParameters<T>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'>;
   selectedGas: GasSettings;
   slippage: string;

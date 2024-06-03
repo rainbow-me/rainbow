@@ -219,6 +219,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         slippage,
         bridge: isBridge,
         errorMessage,
+        // TODO: Does this work from the JS thread?
+        inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
+        outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
       });
 
       if (errorMessage !== 'handled') {
@@ -244,6 +247,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       selectedGas,
       slippage,
       bridge: isBridge,
+      // TODO: Does this work from the JS thread?
+      inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
+      outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
     });
 
     NotificationManager?.postNotification('rapCompleted');
