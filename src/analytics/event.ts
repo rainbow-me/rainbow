@@ -143,14 +143,15 @@ export const event = {
   swapsChangedMaximumSlippage: 'swaps.changed_maximum_slippage',
   swapsChangedSelectedGasSpeed: 'swaps.changed_selected_gas_speed',
   swapsReceivedQuote: 'swaps.received_quote',
-  swapsSubmittedSwap: 'swaps.submitted_swap',
-  swapsSwapFailed: 'swaps.swap_failed',
-  swapsSwapSucceeded: 'swaps.swap_succeeded',
+  swapsSubmitted: 'swaps.submitted',
+  swapsFailed: 'swaps.failed',
+  swapsSucceeded: 'swaps.succeeded',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
   createdAt: number;
   type: T;
+  bridge: boolean;
   parameters: Omit<RapSwapActionParameters<T>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'>;
   selectedGas: GasSettings;
   slippage: string;
@@ -559,7 +560,7 @@ export type EventProperties = {
     quote: Quote | CrosschainQuote | QuoteError | null;
   };
 
-  [event.swapsSubmittedSwap]: SwapEventParameters<'swap' | 'crosschainSwap'>;
-  [event.swapsSwapFailed]: SwapsEventFailedParameters<'swap' | 'crosschainSwap'>;
-  [event.swapsSwapSucceeded]: SwapsEventSucceededParameters<'swap' | 'crosschainSwap'>;
+  [event.swapsSubmitted]: SwapEventParameters<'swap' | 'crosschainSwap'>;
+  [event.swapsFailed]: SwapsEventFailedParameters<'swap' | 'crosschainSwap'>;
+  [event.swapsSucceeded]: SwapsEventSucceededParameters<'swap' | 'crosschainSwap'>;
 };

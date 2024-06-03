@@ -166,6 +166,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const providerUrl = provider?.connection?.url;
     const connectedToHardhat = isHardHat(providerUrl);
 
+    const isBridge = swapsStore.getState().inputAsset?.mainnetAddress === swapsStore.getState().outputAsset?.mainnetAddress;
+    const slippage = swapsStore.getState().slippage;
+
     const selectedGas = getSelectedGas(parameters.chainId);
     if (!selectedGas) {
       runOnUI(resetSwappingStatus)();
@@ -197,31 +200,24 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       };
     }
 
-    analyticsV2.track(analyticsV2.event.swapsSubmittedSwap, {
-      createdAt: Date.now(),
-      type,
-      parameters,
-      selectedGas,
-      slippage: swapsStore.getState().slippage,
-    });
-
-    const { errorMessage, nonce } = await walletExecuteRap(wallet, type, {
+    const { errorMessage } = await walletExecuteRap(wallet, type, {
       ...parameters,
       gasParams,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      gasFeeParamsBySpeed: gasFeeParamsBySpeed as any,
+      // @ts-expect-error - collision between old gas types and new
+      gasFeeParamsBySpeed: gasFeeParamsBySpeed,
     });
     runOnUI(resetSwappingStatus)();
 
     if (errorMessage) {
       SwapInputController.quoteFetchingInterval.start();
 
-      analyticsV2.track(analyticsV2.event.swapsSwapFailed, {
+      analyticsV2.track(analyticsV2.event.swapsFailed, {
         createdAt: Date.now(),
         type,
         parameters,
         selectedGas,
-        slippage: swapsStore.getState().slippage,
+        slippage,
+        bridge: isBridge,
         errorMessage,
       });
 
@@ -241,13 +237,13 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }),
     });
 
-    analyticsV2.track(analyticsV2.event.swapsSwapSucceeded, {
+    analyticsV2.track(analyticsV2.event.swapsSubmitted, {
       createdAt: Date.now(),
-      nonce,
       type,
       parameters,
       selectedGas,
-      slippage: swapsStore.getState().slippage,
+      slippage,
+      bridge: isBridge,
     });
 
     NotificationManager?.postNotification('rapCompleted');
