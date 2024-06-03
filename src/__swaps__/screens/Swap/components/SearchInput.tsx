@@ -95,6 +95,10 @@ export const SearchInput = ({
       (output && outputProgress.value === NavigationSteps.SEARCH_FOCUSED)
   );
 
+  const isPaste = useDerivedValue(
+    () => output && outputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED && !internalSelectedOutputAsset.value
+  );
+
   const searchInputValue = useAnimatedProps(() => {
     // Removing the value when the input is focused allows the input to be reset to the correct value on blur
     const query = isSearchFocused.value ? undefined : '';
@@ -114,6 +118,14 @@ export const SearchInput = ({
       }
     }
   );
+
+  const onPaste = () => {
+    Clipboard.getString().then(text => {
+      if (text.length < 10 || isAddress(text)) {
+        useSwapsStore.setState({ outputSearchQuery: text });
+      }
+    });
+  };
 
   return (
     <Box width="full">
@@ -185,23 +197,18 @@ export const SearchInput = ({
             <GestureHandlerV1Button
               onPressJS={() => {
                 (output ? outputSearchRef : inputSearchRef).current?.blur();
-
-                if (output && outputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED && !internalSelectedOutputAsset.value) {
-                  // its the output field, not focused and no selected asset, means button is in "paste" state
-                  Clipboard.getString().then(text => {
-                    if (text.length < 10 || isAddress(text)) {
-                      useSwapsStore.setState({ outputSearchQuery: text });
-                    }
-                  });
-                }
               }}
               onPressWorklet={() => {
                 'worklet';
-                const isSearchFocused =
-                  (output && outputProgress.value === NavigationSteps.SEARCH_FOCUSED) ||
-                  (!output && inputProgress.value === NavigationSteps.SEARCH_FOCUSED);
+                if (isPaste.value) {
+                  runOnJS(onPaste)();
+                }
 
-                if (isSearchFocused || (output && internalSelectedOutputAsset.value) || (!output && internalSelectedInputAsset.value)) {
+                if (
+                  isSearchFocused.value ||
+                  (output && internalSelectedOutputAsset.value) ||
+                  (!output && internalSelectedInputAsset.value)
+                ) {
                   handleExitSearchWorklet();
                 }
               }}
