@@ -444,7 +444,7 @@
     "**/@babel/traverse": "7.23.2",
     "**/browserify-sign": "4.2.2",
     "**/axios": "1.6.1",
-    "**/ip": "1.1.9",
+    "**/ip": "2.0.1",
     "**/phin": "3.7.1"
   },
   "react-native": {
