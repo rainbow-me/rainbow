@@ -35,7 +35,14 @@ import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
 import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
 
-const unknown = i18n.t(i18n.l.swap.unknown);
+const UNKNOWN_LABEL = i18n.t(i18n.l.swap.unknown);
+const REVIEW_LABEL = i18n.t(i18n.l.expanded_state.swap_details.review);
+const NETWORK_LABEL = i18n.t(i18n.l.settings.network);
+const MINIMUM_RECEIVED_LABEL = i18n.t(i18n.l.expanded_state.swap_details.minimum_received);
+const RAINBOW_FEE_LABEL = i18n.t(i18n.l.expanded_state.swap_details.rainbow_fee);
+const FLASHBOTS_PROTECTION_LABEL = i18n.t(i18n.l.swap.flashbots_protection);
+const MAX_SLIPPAGE_LABEL = i18n.t(i18n.l.exchange.slippage_tolerance);
+const ESTIMATED_NETWORK_FEE_LABEL = i18n.t(i18n.l.gas.network_fee);
 
 const RainbowFee = () => {
   const { nativeCurrency } = useAccountSettings();
@@ -45,7 +52,7 @@ const RainbowFee = () => {
   const { nativeAsset } = useNativeAssetForChain({ inputAsset: internalSelectedInputAsset });
 
   const index = useSharedValue(0);
-  const rainbowFee = useSharedValue<string[]>([unknown, unknown]);
+  const rainbowFee = useSharedValue<string[]>([UNKNOWN_LABEL, UNKNOWN_LABEL]);
 
   const feeToDisplay = useDerivedValue(() => {
     return rainbowFee.value[index.value];
@@ -173,7 +180,7 @@ export function ReviewPanel() {
     <Box as={Animated.View} zIndex={12} style={styles} testID="review-panel" width="full">
       <Stack alignHorizontal="center" space="28px">
         <Text weight="heavy" color="label" size="20pt">
-          Review
+          {REVIEW_LABEL}
         </Text>
 
         <Stack width="full" space="24px" alignHorizontal="stretch">
@@ -183,7 +190,7 @@ export function ReviewPanel() {
                 􀤆
               </Text>
               <Text color="labelTertiary" weight="semibold" size="15pt">
-                Network
+                {NETWORK_LABEL}
               </Text>
             </Inline>
 
@@ -209,7 +216,7 @@ export function ReviewPanel() {
                 􀄩
               </Text>
               <Text color="labelTertiary" weight="semibold" size="15pt">
-                Minimum Received
+                {MINIMUM_RECEIVED_LABEL}
               </Text>
             </Inline>
 
@@ -227,7 +234,7 @@ export function ReviewPanel() {
               </Text>
               <Bleed horizontal="3px">
                 <Text color="labelTertiary" weight="semibold" size="15pt">
-                  Rainbow Fee
+                  {RAINBOW_FEE_LABEL}
                 </Text>
               </Bleed>
             </Inline>
@@ -247,7 +254,7 @@ export function ReviewPanel() {
               <ButtonPressAnimation onPress={openFlashbotsExplainer}>
                 <Inline wrap={false} horizontalSpace="4px">
                   <Text color="labelTertiary" weight="semibold" size="15pt">
-                    Flashbots Protection
+                    {FLASHBOTS_PROTECTION_LABEL}
                   </Text>
                   <Text color="labelTertiary" size="13pt" weight="bold">
                     􀅴
@@ -256,7 +263,12 @@ export function ReviewPanel() {
               </ButtonPressAnimation>
             </Inline>
 
-            <AnimatedSwitch onToggle={SwapSettings.onToggleFlashbots} value={SwapSettings.flashbots} activeLabel="On" inactiveLabel="Off" />
+            <AnimatedSwitch
+              onToggle={SwapSettings.onToggleFlashbots}
+              value={SwapSettings.flashbots}
+              activeLabel={i18n.t(i18n.l.expanded_state.swap.on)}
+              inactiveLabel={i18n.t(i18n.l.expanded_state.swap.off)}
+            />
           </Inline>
 
           <Inline wrap={false} horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
@@ -267,7 +279,7 @@ export function ReviewPanel() {
               <ButtonPressAnimation onPress={openSlippageExplainer}>
                 <Inline horizontalSpace="4px">
                   <Text color="labelTertiary" weight="semibold" size="15pt">
-                    Max Slippage
+                    {MAX_SLIPPAGE_LABEL}
                   </Text>
                   <Text color="labelTertiary" size="13pt" weight="bold">
                     􀅴
@@ -349,7 +361,7 @@ export function ReviewPanel() {
 
                 <Inline wrap={false} alignHorizontal="left" alignVertical="bottom" horizontalSpace="4px">
                   <Text color="labelTertiary" size="13pt" weight="bold">
-                    Est. Network Fee
+                    {ESTIMATED_NETWORK_FEE_LABEL}
                   </Text>
                   <Text color="labelTertiary" size="icon 13px" weight="bold">
                     􀅴
