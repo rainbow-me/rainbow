@@ -55,11 +55,11 @@ export async function fetchPromoSheetCollection({ order }: PromoSheetCollectionA
 
 export function usePromoSheetCollectionQuery(
   { order }: PromoSheetCollectionArgs = {},
-  { enabled, refetchInterval = 30_000 }: { enabled?: boolean; refetchInterval?: number } = {}
+  config: QueryConfig<PromoSheetCollectionResult, Error, PromoSheetCollectionQueryKey> = {}
 ) {
   return useQuery(promoSheetCollectionQueryKey({ order }), promoSheetCollectionQueryFunction, {
-    enabled,
     staleTime: defaultStaleTime,
-    refetchInterval,
+    refetchInterval: 60_000,
+    ...config,
   });
 }

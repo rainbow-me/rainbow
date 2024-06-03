@@ -59,14 +59,14 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   const y = useRecyclerAssetListPosition()!;
 
   const { name } = useRoute();
-  const getCardsForScreen = remoteCardsStore(state => state.getCardsForScreen);
+  const getCardIdsForScreen = remoteCardsStore(state => state.getCardIdsForScreen);
   const { isReadOnlyWallet } = useWallets();
 
-  const cards = useMemo(() => getCardsForScreen(name as keyof typeof Routes), [getCardsForScreen, name]);
+  const cardIds = useMemo(() => getCardIdsForScreen(name as keyof typeof Routes), [getCardIdsForScreen, name]);
 
   const layoutProvider = useMemo(
-    () => getLayoutProvider(briefSectionsData, isCoinListEdited, cards, isReadOnlyWallet),
-    [briefSectionsData, isCoinListEdited, cards, isReadOnlyWallet]
+    () => getLayoutProvider(briefSectionsData, isCoinListEdited, cardIds, isReadOnlyWallet),
+    [briefSectionsData, isCoinListEdited, cardIds, isReadOnlyWallet]
   );
 
   const { accountAddress } = useAccountSettings();

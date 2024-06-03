@@ -23,7 +23,7 @@ import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 export default function DiscoverHome() {
   const { profiles_enabled, mints_enabled, op_rewards_enabled } = useRemoteConfig();
   const { network } = useAccountSettings();
-  const getCardsForScreen = remoteCardsStore(state => state.getCardsForScreen);
+  const getCardIdsForScreen = remoteCardsStore(state => state.getCardIdsForScreen);
   const { name } = useRoute();
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
   const profilesEnabledRemoteFlag = profiles_enabled;
@@ -39,7 +39,7 @@ export default function DiscoverHome() {
 
   const hasHardwareWallets = Object.keys(wallets || {}).filter(key => wallets[key].type === walletTypes.bluetooth).length > 0;
 
-  const cards = useMemo(() => getCardsForScreen(name), [name, getCardsForScreen]);
+  const cardIds = useMemo(() => getCardIdsForScreen(name), [name, getCardIdsForScreen]);
 
   return (
     <Inset top="20px" bottom={{ custom: 200 }} horizontal="20px">
@@ -49,7 +49,7 @@ export default function DiscoverHome() {
             <GasCard />
             {isProfilesEnabled && <ENSSearchCard />}
           </Inline>
-          {!!cards.length && <RemoteCardCarousel />}
+          {!!cardIds.length && <RemoteCardCarousel />}
           {mintsEnabled && (
             <Stack space="20px">
               <FeaturedMintCard />

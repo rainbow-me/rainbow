@@ -16,7 +16,7 @@ export interface RemoteCardsState {
   getCardPlacement: (id: string) => TrimmedCard['placement'];
   dismissCard: (id: string) => void;
 
-  getCardsForScreen: (screen: keyof typeof Routes) => TrimmedCard[];
+  getCardIdsForScreen: (screen: keyof typeof Routes) => string[];
 }
 
 type RoutesWithIndex = typeof Routes & { [key: string]: string };
@@ -61,7 +61,7 @@ function deserializeState(serializedState: string) {
       cardsByIdData = new Set(state.cardsById);
     }
   } catch (error) {
-    logger.error(new RainbowError('Failed to convert userAssetIds from user assets storage'), { error });
+    logger.error(new RainbowError('Failed to convert cardsById from remote cards storage'), { error });
     throw error;
   }
 
@@ -71,7 +71,7 @@ function deserializeState(serializedState: string) {
       cardsData = new Map(state.cards);
     }
   } catch (error) {
-    logger.error(new RainbowError('Failed to convert userAssets from user assets storage'), { error });
+    logger.error(new RainbowError('Failed to convert cards from remote cards storage'), { error });
     throw error;
   }
 
@@ -97,13 +97,11 @@ export const remoteCardsStore = createRainbowStore<RemoteCardsState>(
       validCards.forEach(card => {
         const existingCard = get().getCard(card.sys.id as string);
         if (existingCard) {
-          cardsData.set(card.cardKey as string, { ...existingCard, ...card });
+          cardsData.set(card.sys.id, { ...existingCard, ...card });
         } else {
-          cardsData.set(card.cardKey as string, card);
+          cardsData.set(card.sys.id, card);
         }
       });
-
-      console.log({ cardsData });
 
       set({
         cards: cardsData,
@@ -114,22 +112,15 @@ export const remoteCardsStore = createRainbowStore<RemoteCardsState>(
     getCard: (id: string) => get().cards.get(id),
     getCardPlacement: (id: string) => {
       const card = get().getCard(id);
-
       if (!card || !card.placement) {
         return undefined;
       }
 
-      const { placement } = card;
-
-      return (Routes as RoutesWithIndex)[placement.toString()];
+      return (Routes as RoutesWithIndex)[card.placement];
     },
 
     dismissCard: (id: string) =>
       set(state => {
-        if (!state.cardsById.has(id)) {
-          return state;
-        }
-
         const card = get().getCard(id);
         if (!card) {
           return state;
@@ -145,37 +136,26 @@ export const remoteCardsStore = createRainbowStore<RemoteCardsState>(
           };
         });
 
+        // NOTE: This is kinda a hack to immediately dismiss the card from the carousel and not have an empty space
+        // it will be added back during the next fetch
+        state.cardsById.delete(id);
+
         return {
           ...state,
           cards: new Map(state.cards.set(id, newCard)),
         };
       }),
-    getCardsForScreen: (screen: keyof typeof Routes) => {
-      console.log(
-        screen,
-        Array.from(get().cards.values())
-          .filter(card => card.cardKey && get().getCardPlacement(card.sys.id) === screen)
-          .sort((a, b) => {
-            if (a.index === b.index) return 0;
-            if (a.index === undefined || a.index === null) return 1;
-            if (b.index === undefined || b.index === null) return -1;
-            return a.index - b.index;
-          })
-      );
+    getCardIdsForScreen: (screen: keyof typeof Routes) => {
       return Array.from(get().cards.values())
-        .filter(card => {
-          const placement = get().getCardPlacement(card.sys.id);
-
-          console.log(placement, screen);
-
-          return placement === screen;
-        })
+        .filter(card => get().getCardPlacement(card.sys.id) === screen)
+        .filter(card => !card.dismissed)
         .sort((a, b) => {
           if (a.index === b.index) return 0;
           if (a.index === undefined || a.index === null) return 1;
           if (b.index === undefined || b.index === null) return -1;
           return a.index - b.index;
-        });
+        })
+        .map(card => card.sys.id);
     },
   }),
   {

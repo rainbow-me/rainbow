@@ -1,28 +1,35 @@
+import { GetPromoSheetCollectionQuery, PromoSheet } from '@/graphql/__generated__/arc';
 import { RainbowError, logger } from '@/logger';
-import Routes from '@/navigation/routesNames';
-import { queryClient } from '@/react-query';
-import { TrimmedCard, TrimmedCards, cardCollectionQueryKey } from '@/resources/cards/cardCollectionQuery';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
+
+export type OmittedPromoSheet = Omit<PromoSheet, 'contentfulMetadata' | 'sys'> & {
+  sys: {
+    id: string;
+  };
+};
 
 export interface RemotePromoSheetsState {
   sheetsById: Set<string>;
-  sheets: Map<string, TrimmedCard>;
+  sheets: Map<string, OmittedPromoSheet>;
 
-  setSheets: (sheets: TrimmedCards) => void;
-  getSheet: (id: string) => TrimmedCard | undefined;
+  lastShownTimestamp: number;
+  isShown: boolean;
+
+  setSheets: (data: GetPromoSheetCollectionQuery) => void;
+  getSheet: (id: string) => OmittedPromoSheet | undefined;
 }
 
-type RemoteCardsStateWithTransforms = Omit<Partial<RemotePromoSheetsState>, 'cards' | 'cardsById'> & {
-  cardsById: Array<string>;
-  cards: Array<[string, TrimmedCard]>;
+type RemotePromoSheetsStateWithTransforms = Omit<Partial<RemotePromoSheetsState>, 'sheets' | 'sheetsById'> & {
+  sheetsById: Array<string>;
+  sheets: Array<[string, OmittedPromoSheet]>;
 };
 
-function serializeState(state: Partial<RemoteCardsState>, version?: number) {
+function serializeState(state: Partial<RemotePromoSheetsState>, version?: number) {
   try {
-    const transformedStateToPersist: RemoteCardsStateWithTransforms = {
+    const transformedStateToPersist: RemotePromoSheetsStateWithTransforms = {
       ...state,
-      cardsById: state.cardsById ? Array.from(state.cardsById) : [],
-      cards: state.cards ? Array.from(state.cards.entries()) : [],
+      sheetsById: state.sheetsById ? Array.from(state.sheetsById) : [],
+      sheets: state.sheets ? Array.from(state.sheets.entries()) : [],
     };
 
     return JSON.stringify({
@@ -30,119 +37,80 @@ function serializeState(state: Partial<RemoteCardsState>, version?: number) {
       version,
     });
   } catch (error) {
-    logger.error(new RainbowError('Failed to serialize state for remote cards storage'), { error });
+    logger.error(new RainbowError('Failed to serialize state for remote promo sheets storage'), { error });
     throw error;
   }
 }
 
 function deserializeState(serializedState: string) {
-  let parsedState: { state: RemoteCardsStateWithTransforms; version: number };
+  let parsedState: { state: RemotePromoSheetsStateWithTransforms; version: number };
   try {
     parsedState = JSON.parse(serializedState);
   } catch (error) {
-    logger.error(new RainbowError('Failed to parse serialized state from remote cards storage'), { error });
+    logger.error(new RainbowError('Failed to parse serialized state from remote promo sheets storage'), { error });
     throw error;
   }
 
   const { state, version } = parsedState;
 
-  let cardsByIdData = new Set<string>();
+  let sheetsByIdData = new Set<string>();
   try {
-    if (state.cardsById.length) {
-      cardsByIdData = new Set(state.cardsById);
+    if (state.sheetsById.length) {
+      sheetsByIdData = new Set(state.sheetsById);
     }
   } catch (error) {
-    logger.error(new RainbowError('Failed to convert userAssetIds from user assets storage'), { error });
+    logger.error(new RainbowError('Failed to convert sheetsById from remote promo sheets storage'), { error });
     throw error;
   }
 
-  let cardsData: Map<string, TrimmedCard> = new Map();
+  let sheetsData: Map<string, OmittedPromoSheet> = new Map();
   try {
-    if (state.cards.length) {
-      cardsData = new Map(state.cards);
+    if (state.sheets.length) {
+      sheetsData = new Map(state.sheets);
     }
   } catch (error) {
-    logger.error(new RainbowError('Failed to convert userAssets from user assets storage'), { error });
+    logger.error(new RainbowError('Failed to convert sheets from remote promo sheets storage'), { error });
     throw error;
   }
 
   return {
     state: {
       ...state,
-      cardsById: cardsByIdData,
-      cards: cardsData,
+      sheetsById: sheetsByIdData,
+      sheets: sheetsData,
     },
     version,
   };
 }
 
-export const remoteCardsStore = createRainbowStore<RemoteCardsState>(
+export const remotePromoSheetsStore = createRainbowStore<RemotePromoSheetsState>(
   (set, get) => ({
-    cards: new Map<CardKey, TrimmedCard>(),
-    cardsById: new Set<CardKey>(),
+    sheets: new Map<string, OmittedPromoSheet>(),
+    sheetsById: new Set<string>(),
 
-    setCards: (cards: TrimmedCards) => {
-      const cardsData = new Map<CardKey, TrimmedCard>();
-      const validCards = Object.values(cards).filter(card => card.cardKey != null);
+    lastShownTimestamp: 0,
+    isShown: false,
 
-      validCards.forEach(card => {
-        const existingCard = get().getCard(card.cardKey as string);
-        if (existingCard) {
-          cardsData.set(card.cardKey as string, { ...existingCard, ...card });
-        } else {
-          cardsData.set(card.cardKey as string, card);
+    setSheets: (data: GetPromoSheetCollectionQuery) => {
+      const sheets = (data.promoSheetCollection?.items ?? []) as OmittedPromoSheet[];
+
+      const sheetsData = new Map<string, OmittedPromoSheet>();
+      sheets.forEach(sheet => {
+        if (sheet) {
+          sheetsData.set(sheet.sys.id, sheet);
         }
       });
 
       set({
-        cards: cardsData,
-        cardsById: new Set(validCards.map(card => card.cardKey as string)),
+        sheets: sheetsData,
+        sheetsById: new Set(sheets.map(sheet => sheet.sys.id)),
       });
     },
 
-    getCard: (cardKey: CardKey) => get().cards.get(cardKey),
-    getCardPlacement: (cardKey: CardKey) => get().getCard(cardKey)?.placement,
-
-    dismissCard: (cardKey: CardKey) =>
-      set(state => {
-        if (!state.cardsById.has(cardKey)) {
-          return state;
-        }
-
-        const card = get().getCard(cardKey);
-        if (!card) {
-          return state;
-        }
-
-        const newCard = { ...card, dismissed: true };
-
-        // NOTE: Also need to update the query data with
-        queryClient.setQueryData(cardCollectionQueryKey, (oldData: TrimmedCards | undefined = {}) => {
-          return {
-            ...oldData,
-            [cardKey]: newCard,
-          };
-        });
-
-        return {
-          ...state,
-          cards: new Map(state.cards.set(cardKey, newCard)),
-        };
-      }),
-    getCardsForScreen: (screen: keyof typeof Routes) => {
-      const cards = get().cards.values();
-      return Array.from(cards)
-        .filter(card => card.placement === screen)
-        .sort((a, b) => {
-          if (a.index === b.index) return 0;
-          if (a.index === undefined || a.index === null) return 1;
-          if (b.index === undefined || b.index === null) return -1;
-          return a.index - b.index;
-        });
-    },
+    getSheet: (id: string) => get().sheets.get(id),
   }),
   {
-    storageKey: 'remoteCardsStore',
+    storageKey: 'remotePromoSheetsStore',
     version: 1,
     serializer: serializeState,
     deserializer: deserializeState,

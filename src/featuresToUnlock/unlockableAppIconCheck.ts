@@ -1,7 +1,7 @@
 import { TokenGateCheckerNetwork, checkIfWalletsOwnNft } from './tokenGatedUtils';
 import { EthereumAddress } from '@/entities';
 import { Navigation } from '@/navigation';
-import { logger } from '@/utils';
+import { logger } from '@/logger';
 import Routes from '@/navigation/routesNames';
 import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';
 import { Network } from '@/helpers';
@@ -23,7 +23,7 @@ export const unlockableAppIconCheck = async (appIconKey: UnlockableAppIconKey, w
 
   const handled = unlockableAppIconStorage.getBoolean(appIconKey);
 
-  logger.log(`${appIconKey} was handled?`, handled);
+  logger.debug(`${appIconKey} was handled? ${handled}`);
 
   if (handled) return false;
 
@@ -33,13 +33,13 @@ export const unlockableAppIconCheck = async (appIconKey: UnlockableAppIconKey, w
         (Object.keys(appIcon.unlockingNFTs) as TokenGateCheckerNetwork[]).map(async network => {
           const nfts = appIcon.unlockingNFTs[network];
           if (!nfts) return;
-          logger.log(`Checking ${appIconKey} on network ${network}`);
+          logger.debug(`Checking ${appIconKey} on network ${network}`);
           return await checkIfWalletsOwnNft(nfts, network, walletsToCheck);
         })
       )
     ).some(result => !!result);
 
-    logger.log(`${appIconKey} check result: ${found}`);
+    logger.debug(`${appIconKey} check result: ${found}`);
 
     // We open the sheet with a setTimeout 1 sec later to make sure we can return first
     // so we can abort early if we're showing a sheet to prevent 2+ sheets showing at the same time
@@ -47,7 +47,7 @@ export const unlockableAppIconCheck = async (appIconKey: UnlockableAppIconKey, w
     setTimeout(() => {
       if (found) {
         unlockableAppIconStorage.set(appIconKey, true);
-        logger.log('Feature check', appIconKey, 'set to true. Wont show up anymore!');
+        logger.debug(`Feature check ${appIconKey} set to true. Wont show up anymore!`);
         Navigation.handleAction(Routes.APP_ICON_UNLOCK_SHEET, { appIconKey });
         return true;
       }

@@ -1,4 +1,3 @@
-import { IS_TESTING } from 'react-native-dotenv';
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -12,12 +11,11 @@ import { Centered, Column, Row } from '../components/layout';
 import { Sheet, SheetTitle } from '../components/sheet';
 import { Text } from '../components/text';
 import { removeWalletData } from '../handlers/localstorage/removeWallet';
-import { cleanUpWalletKeys, RainbowWallet } from '../model/wallet';
+import { cleanUpWalletKeys } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import { addressSetSelected, walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import { analytics, analyticsV2 } from '@/analytics';
 import { getExperimetalFlag, HARDWARE_WALLETS } from '@/config';
-import { useRemotePromoSheetContext } from '@/components/remote-promo-sheet/RemotePromoSheetProvider';
 import { useAccountSettings, useInitializeWallet, useWallets, useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
@@ -26,6 +24,7 @@ import logger from '@/utils/logger';
 import { useTheme } from '@/theme';
 import { EthereumAddress } from '@/entities';
 import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
+import { useRunChecks } from '@/components/remote-promo-sheet/runChecks';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const footerHeight = getExperimetalFlag(HARDWARE_WALLETS) ? 100 : 60;
@@ -96,7 +95,7 @@ export default function ChangeWalletSheet() {
   const { params = {} as any } = useRoute();
   const { onChangeWallet, watchOnly = false, currentAccountAddress } = params;
   const { selectedWallet, wallets } = useWallets();
-  const { runChecks } = useRemotePromoSheetContext();
+  const { runChecks } = useRunChecks(false);
 
   const { colors } = useTheme();
   const { updateWebProfile } = useWebData();
@@ -145,16 +144,13 @@ export default function ChangeWalletSheet() {
         initializeWallet(null, null, null, false, false, null, true);
         if (!fromDeletion) {
           goBack();
-
-          if (IS_TESTING !== 'true') {
-            runChecks();
-          }
+          runChecks();
         }
       } catch (e) {
         logger.log('error while switching account', e);
       }
     },
-    [currentAddress, dispatch, editMode, goBack, initializeWallet, onChangeWallet, wallets, watchOnly]
+    [currentAddress, dispatch, editMode, goBack, initializeWallet, onChangeWallet, runChecks, wallets, watchOnly]
   );
 
   const deleteWallet = useCallback(

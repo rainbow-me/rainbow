@@ -58,17 +58,18 @@ const getColorFromString = (color: string | undefined | null) => {
 };
 
 type RemoteCardProps = {
-  card: TrimmedCard;
-  cards: TrimmedCard[];
+  id: string;
   gutterSize: number;
-  carouselRef: React.RefObject<FlashList<TrimmedCard>> | null;
+  carouselRef: React.RefObject<FlashList<string>> | null;
 };
 
-export const RemoteCard: React.FC<RemoteCardProps> = ({ card = {} as TrimmedCard, cards, gutterSize, carouselRef }) => {
+export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carouselRef }) => {
   const { isDarkMode } = useTheme();
   const { navigate } = useNavigation();
   const { language } = useAccountSettings();
   const { width } = useDimensions();
+  const cards = remoteCardsStore(state => state.cards);
+  const card = remoteCardsStore(state => state.getCard(id)) ?? ({} as TrimmedCard);
   const dismissCard = remoteCardsStore(state => state.dismissCard);
 
   const { cardKey, accentColor, backgroundColor, primaryButton, imageIcon } = card;
@@ -98,18 +99,15 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ card = {} as TrimmedCard
         cardKey: cardKey ?? card.sys.id ?? 'unknown-backend-driven-card',
       });
 
-      const isLastCard = cards.length === 1;
+      const isLastCard = cards.size === 1;
 
       dismissCard(card.sys.id);
       if (carouselRef?.current) {
-        const currentCardIdx = cards.findIndex(c => c.cardKey === cardKey);
-        if (currentCardIdx === -1) return;
-
         // check if this is the last card and don't scroll if so
         if (isLastCard) return;
 
         carouselRef.current.scrollToIndex({
-          index: currentCardIdx,
+          index: Array.from(cards.values()).findIndex(c => c.sys.id === card.sys.id),
           animated: true,
         });
       }
@@ -143,7 +141,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ card = {} as TrimmedCard
     }
   };
 
-  if (!card) {
+  if (!card || card.dismissed) {
     return null;
   }
 

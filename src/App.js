@@ -56,6 +56,7 @@ import { ReviewPromptAction } from '@/storage/schema';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { initializeRemoteConfig } from '@/model/remoteConfig';
 import { RemoteCardsSync } from './state/sync/RemoteCardsSync';
+import { RemotePromoSheetSync } from './state/sync/RemotePromoSheetSync';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -144,11 +145,11 @@ class OldApp extends Component {
     const address = await loadAddress();
 
     if (address) {
-      InteractionManager.runAfterInteractions(() => {
-        setTimeout(() => {
+      setTimeout(() => {
+        InteractionManager.runAfterInteractions(() => {
           handleReviewPromptAction(ReviewPromptAction.TimesLaunchedSinceInstall);
-        }, 10_000);
-      });
+        });
+      }, 10_000);
     }
 
     const initialRoute = address ? Routes.SWIPE_LAYOUT : Routes.WELCOME_SCREEN;
@@ -229,7 +230,10 @@ class OldApp extends Component {
             </InitialRouteContext.Provider>
           )}
           <OfflineToast />
+
+          {/* NOTE: Components below render null and only keep state in sync */}
           <RemoteCardsSync />
+          <RemotePromoSheetSync />
         </View>
         <NotificationsHandler walletReady={this.props.walletReady} />
       </Portal>

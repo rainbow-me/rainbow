@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useRef } from 'react';
 import { CarouselCard } from '../CarouselCard';
 import { useRoute } from '@react-navigation/native';
 import { IS_TEST } from '@/env';
@@ -8,12 +8,11 @@ import { REMOTE_CARDS, getExperimetalFlag } from '@/config';
 import { useDimensions, useWallets } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { FlashList } from '@shopify/flash-list';
-import { TrimmedCard } from '@/resources/cards/cardCollectionQuery';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import Routes from '@/navigation/routesNames';
 
 type RenderItemProps = {
-  item: TrimmedCard;
+  item: string;
   index: number;
 };
 
@@ -26,42 +25,34 @@ export const getGutterSizeForCardAmount = (amount: number) => {
 };
 
 export const RemoteCardCarousel = () => {
-  const carouselRef = useRef<FlashList<TrimmedCard>>(null);
+  const carouselRef = useRef<FlashList<string>>(null);
   const { name } = useRoute();
   const config = useRemoteConfig();
   const { isReadOnlyWallet } = useWallets();
   const { width } = useDimensions();
 
   const remoteCardsEnabled = getExperimetalFlag(REMOTE_CARDS) || config.remote_cards_enabled;
-  const getCardsForScreen = remoteCardsStore(state => state.getCardsForScreen);
-  // const cards = remoteCardsStore(state => state.cards);
+  const getCardIdsForScreen = remoteCardsStore(state => state.getCardIdsForScreen);
+  const cardIds = getCardIdsForScreen(name as keyof typeof Routes);
 
-  // console.log({
-  //   name,
-  //   remoteCardsEnabled,
-  //   cards: Array.from(cards.values()),
-  // });
-
-  const data = useMemo(() => getCardsForScreen(name as keyof typeof Routes), [getCardsForScreen, name]);
-
-  const gutterSize = getGutterSizeForCardAmount(data.length);
+  const gutterSize = getGutterSizeForCardAmount(cardIds.length);
 
   const _renderItem = ({ item }: RenderItemProps) => {
-    return <RemoteCard card={item} cards={data} gutterSize={gutterSize} carouselRef={carouselRef} />;
+    return <RemoteCard id={item} gutterSize={gutterSize} carouselRef={carouselRef} />;
   };
 
-  if (isReadOnlyWallet || IS_TEST || !remoteCardsEnabled || !data.length) {
+  if (isReadOnlyWallet || IS_TEST || !remoteCardsEnabled || !cardIds.length) {
     return null;
   }
 
   return (
     <CarouselCard
       key={name as string}
-      data={data}
+      data={cardIds}
       carouselItem={{
         carouselRef,
         renderItem: _renderItem,
-        keyExtractor: item => item.cardKey!,
+        keyExtractor: item => item,
         placeholder: null,
         width: width - gutterSize,
         height: 88,

@@ -15,6 +15,7 @@ import Routes from '@/navigation/routesNames';
 import { logger } from '@/logger';
 import { checkWalletsForBackupStatus } from '@/screens/SettingsSheet/utils';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
+import { InteractionManager } from 'react-native';
 
 const BACKUP_SHEET_DELAY_MS = 3000;
 
@@ -106,10 +107,12 @@ export const runFeatureUnlockChecks = async (): Promise<boolean> => {
 
   // short circuits once the first feature is unlocked
   for (const featureUnlockCheck of featureUnlockChecks) {
-    const unlockNow = await featureUnlockCheck(walletsToCheck);
-    if (unlockNow) {
-      return true;
-    }
+    InteractionManager.runAfterInteractions(async () => {
+      const unlockNow = await featureUnlockCheck(walletsToCheck);
+      if (unlockNow) {
+        return true;
+      }
+    });
   }
   return false;
 };

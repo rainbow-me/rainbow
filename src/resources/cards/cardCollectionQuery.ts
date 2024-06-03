@@ -106,7 +106,8 @@ export function useCardCollectionQuery(config: QueryConfig<CardCollectionResult,
   return useQuery(cardCollectionQueryKey, cardCollectionQueryFunction, {
     enabled: remoteFlag || localFlag,
     staleTime: defaultStaleTime,
-    refetchInterval: 60_000,
+    cacheTime: 1000 * 60 * 60 * 24, // 24 hours
+    refetchInterval: 5_000,
     ...config,
   });
 }

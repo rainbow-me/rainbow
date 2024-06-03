@@ -155,7 +155,7 @@ export default function PointsContent() {
   const { colors } = useTheme();
   const { name } = useRoute();
   const { width: deviceWidth } = useDimensions();
-  const getCardsForScreen = remoteCardsStore(state => state.getCardsForScreen);
+  const getCardIdsForScreen = remoteCardsStore(state => state.getCardIdsForScreen);
   const { accountAddress, accountENS } = useAccountProfile();
   const { setClipboard } = useClipboard();
   const { isReadOnlyWallet } = useWallets();
@@ -169,7 +169,7 @@ export default function PointsContent() {
     walletAddress: accountAddress,
   });
 
-  const cards = useMemo(() => getCardsForScreen(name as keyof typeof Routes), [getCardsForScreen, name]);
+  const cardIds = useMemo(() => getCardIdsForScreen(name as keyof typeof Routes), [getCardIdsForScreen, name]);
 
   useFocusEffect(
     useCallback(() => {
@@ -288,7 +288,7 @@ export default function PointsContent() {
                   </Cover>
                 </Box>
               </Bleed>
-              {!!cards.length && !isReadOnlyWallet && (
+              {!!cardIds.length && !isReadOnlyWallet && (
                 <>
                   <RemoteCardCarousel key="remote-cards" />
                   <Separator color="separatorTertiary" thickness={1} />
