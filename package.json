@@ -353,7 +353,7 @@
     "depcheck": "1.4.7",
     "detox": "20.19.3",
     "dotenv": "8.2.0",
-    "eslint": "9.3.0",
+    "eslint": "8.22.0",
     "eslint-config-rainbow": "4.3.0",
     "eslint-plugin-import": "2.29.1",
     "eslint-plugin-jest": "28.5.0",
@@ -444,7 +444,7 @@
     "**/@babel/traverse": "7.23.2",
     "**/browserify-sign": "4.2.2",
     "**/axios": "1.6.1",
-    "**/ip": "1.1.9",
+    "**/ip": "2.0.1",
     "**/phin": "3.7.1"
   },
   "react-native": {
