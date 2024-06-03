@@ -33,6 +33,7 @@ import { AppState } from '@/redux/store';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { usePositions } from '@/resources/defi/PositionsQuery';
 import styled from '@/styled-thing';
+import { UserAssetsSync } from '@/__swaps__/screens/Swap/components/UserAssetsSync';
 
 const WalletPage = styled(Page)({
   ...position.sizeAsObject('100%'),
@@ -169,6 +170,9 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
         <ToastPositionContainer>
           <Toast isVisible={isAddressCopiedToastActive} text="􀁣 Address Copied" testID="address-copied-toast" />
         </ToastPositionContainer>
+
+        {/* NOTE: The components below render null and are solely for keeping react-query and Zustand in sync */}
+        <UserAssetsSync />
       </WalletPage>
     </View>
   );

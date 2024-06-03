@@ -5,18 +5,23 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { isL2Chain } from '@/__swaps__/utils/chains';
 
 type ListEmptyProps = {
-  output?: boolean;
   action?: 'swap' | 'bridge';
+  isSearchEmptyState?: boolean;
+  output?: boolean;
 };
 
-export const ListEmpty = ({ output = false, action = 'swap' }: ListEmptyProps) => {
+export const ListEmpty = ({ action = 'swap', isSearchEmptyState, output = false }: ListEmptyProps) => {
   // TODO: Might need to make this reactive instead of reading inline getState
   const isL2 = useMemo(() => {
     return output ? isL2Chain(swapsStore.getState().selectedOutputChainId) : false;
   }, [output]);
 
   return (
-    <Box alignItems="center" style={{ paddingTop: 91 }}>
+    <Box
+      alignItems="center"
+      height="full"
+      style={{ alignSelf: 'center', flexDirection: 'row', paddingVertical: isSearchEmptyState ? 40 : 120 }}
+    >
       <Box paddingHorizontal="44px">
         <Stack space="16px">
           <Text containsEmoji color="label" size="26pt" weight="bold" align="center">

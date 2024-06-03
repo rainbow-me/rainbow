@@ -1,33 +1,41 @@
 import React from 'react';
-import { StyleSheet, Text as RNText, Pressable } from 'react-native';
-import Animated from 'react-native-reanimated';
+import { StyleSheet, /* Text as RNText, */ Pressable } from 'react-native';
+import Animated, { useDerivedValue } from 'react-native-reanimated';
 
 import { ButtonPressAnimation } from '@/components/animations';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Navbar } from '@/components/navbar/Navbar';
-import { Bleed, Box, IconContainer, Inset, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { AnimatedText, Box, Inset, globalColors, useColorMode } from '@/design-system';
 import { useAccountProfile } from '@/hooks';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { safeAreaInsetValues } from '@/utils';
-
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-
-import { opacity } from '@/__swaps__/utils/swaps';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+
+const SWAP_TITLE_LABEL = i18n.t(i18n.l.swap.modal_types.swap);
+const BRIDGE_TITLE_LABEL = i18n.t(i18n.l.swap.modal_types.bridge);
 
 export function SwapNavbar() {
   const { accountSymbol, accountColor, accountImage } = useAccountProfile();
   const { isDarkMode } = useColorMode();
   const { navigate, goBack } = useNavigation();
 
-  const { AnimatedSwapStyles } = useSwapContext();
+  const { AnimatedSwapStyles, internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
 
-  const separatorSecondary = useForegroundColor('separatorSecondary');
-  const separatorTertiary = useForegroundColor('separatorTertiary');
+  // const separatorSecondary = useForegroundColor('separatorSecondary');
+  // const separatorTertiary = useForegroundColor('separatorTertiary');
+
+  const swapOrBridgeLabel = useDerivedValue(() => {
+    const areBothAssetsSelected = internalSelectedInputAsset.value && internalSelectedOutputAsset.value;
+    const isBridging =
+      areBothAssetsSelected && internalSelectedInputAsset.value?.mainnetAddress === internalSelectedOutputAsset.value?.mainnetAddress;
+
+    return isBridging ? BRIDGE_TITLE_LABEL : SWAP_TITLE_LABEL;
+  });
 
   const onChangeWallet = React.useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);
@@ -107,9 +115,9 @@ export function SwapNavbar() {
         rightComponent={null}
         titleComponent={
           <Inset bottom={{ custom: IS_IOS ? 5.5 : 14 }}>
-            <Text align="center" color="label" size="20pt" weight="heavy">
-              {i18n.t(i18n.l.swap.modal_types.swap)}
-            </Text>
+            <AnimatedText align="center" color="label" size="20pt" weight="heavy">
+              {swapOrBridgeLabel}
+            </AnimatedText>
           </Inset>
         }
       />

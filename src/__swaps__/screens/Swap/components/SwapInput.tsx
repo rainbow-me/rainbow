@@ -19,7 +19,7 @@ export const SwapInput = ({
   otherInputProgress: SharedValue<number>;
   progress: SharedValue<number>;
 }) => {
-  const { inputStyle, containerStyle } = useSwapInputStyles({
+  const { containerStyle, inputStyle } = useSwapInputStyles({
     asset,
     bottomInput,
     otherInputProgress,

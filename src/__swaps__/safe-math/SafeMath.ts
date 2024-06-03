@@ -46,6 +46,19 @@ const toStringWorklet = (value: string | number): string => {
   return typeof value === 'number' ? value.toString() : value;
 };
 
+// Converts a numeric string to a scaled integer string, preserving the specified decimal places
+export function toScaledIntegerWorklet(num: string, decimalPlaces = 18): string {
+  'worklet';
+  if (!isNumberStringWorklet(num)) {
+    throw new Error('Argument must be a numeric string');
+  }
+  const [bigIntNum, numDecimalPlaces] = removeDecimalWorklet(num);
+  const scaleFactor = BigInt(10) ** BigInt(decimalPlaces - numDecimalPlaces);
+  const scaledIntegerBigInt = bigIntNum * scaleFactor;
+
+  return scaledIntegerBigInt.toString();
+}
+
 // Sum function
 export function sumWorklet(num1: string | number, num2: string | number): string {
   'worklet';
