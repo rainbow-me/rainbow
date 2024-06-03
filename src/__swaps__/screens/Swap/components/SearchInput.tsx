@@ -98,6 +98,7 @@ export const SearchInput = ({
 
     return {
       text: query,
+      defaultValue: '',
     };
   });
 
