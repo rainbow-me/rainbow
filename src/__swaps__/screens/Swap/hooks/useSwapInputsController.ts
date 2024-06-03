@@ -30,6 +30,7 @@ import {
 import { ethereumUtils } from '@/utils';
 import { queryClient } from '@/react-query';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { analyticsV2 } from '@/analytics';
 
 function getInitialInputValues() {
   const initialSelectedInputAsset = userAssetsStore.getState().getHighestValueAsset();
@@ -481,6 +482,12 @@ export function useSwapInputsController({
               )
             )
           : undefined;
+
+      analyticsV2.track(analyticsV2.event.swapsReceivedQuote, {
+        inputAsset: internalSelectedInputAsset.value,
+        outputAsset: internalSelectedOutputAsset.value,
+        quote: quoteResponse,
+      });
 
       runOnUI(() => {
         setQuote({

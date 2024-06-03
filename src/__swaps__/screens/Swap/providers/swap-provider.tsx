@@ -23,7 +23,7 @@ import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/
 import { useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { useSwapSettings } from '@/__swaps__/screens/Swap/hooks/useSwapSettings';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { ChainId } from '@/__swaps__/types/chains';
 import { RainbowError, logger } from '@/logger';
@@ -42,6 +42,7 @@ import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { getNetworkObj } from '@/networks';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { analyticsV2 } from '@/analytics';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const tapToSwap = i18n.t(i18n.l.swap.actions.tap_to_swap);
@@ -196,7 +197,15 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       };
     }
 
-    const { errorMessage } = await walletExecuteRap(wallet, type, {
+    analyticsV2.track(analyticsV2.event.swapsSubmittedSwap, {
+      createdAt: Date.now(),
+      type,
+      parameters,
+      selectedGas,
+      slippage: swapsStore.getState().slippage,
+    });
+
+    const { errorMessage, nonce } = await walletExecuteRap(wallet, type, {
       ...parameters,
       gasParams,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -206,6 +215,15 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
     if (errorMessage) {
       SwapInputController.quoteFetchingInterval.start();
+
+      analyticsV2.track(analyticsV2.event.swapsSwapFailed, {
+        createdAt: Date.now(),
+        type,
+        parameters,
+        selectedGas,
+        slippage: swapsStore.getState().slippage,
+        errorMessage,
+      });
 
       if (errorMessage !== 'handled') {
         logger.error(new RainbowError(`[getNonceAndPerformSwap]: Error executing swap: ${errorMessage}`));
@@ -223,7 +241,15 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }),
     });
 
-    // TODO: Analytics
+    analyticsV2.track(analyticsV2.event.swapsSwapSucceeded, {
+      createdAt: Date.now(),
+      nonce,
+      type,
+      parameters,
+      selectedGas,
+      slippage: swapsStore.getState().slippage,
+    });
+
     NotificationManager?.postNotification('rapCompleted');
     Navigation.handleAction(Routes.PROFILE_SCREEN, {});
   };
@@ -231,7 +257,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const executeSwap = () => {
     'worklet';
 
-    // TODO: Analytics
     if (configProgress.value !== NavigationSteps.SHOW_REVIEW) return;
 
     const inputAsset = internalSelectedInputAsset.value;
@@ -385,6 +410,12 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         type === SwapAssetType.inputAsset
           ? internalSelectedInputAsset.value?.uniqueId !== extendedAsset?.uniqueId
           : internalSelectedOutputAsset.value?.uniqueId !== extendedAsset?.uniqueId;
+
+      analyticsV2.track(analyticsV2.event.swapsSelectedAsset, {
+        asset,
+        otherAsset: otherSelectedAsset,
+        type,
+      });
 
       runOnUI(() => {
         const didSelectedAssetChange =

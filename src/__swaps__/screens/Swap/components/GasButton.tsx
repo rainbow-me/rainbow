@@ -1,5 +1,6 @@
 import { ChainId } from '@/__swaps__/types/chains';
 import { weiToGwei } from '@/__swaps__/utils/ethereum';
+import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import { getCachedCurrentBaseFee, useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { add } from '@/__swaps__/utils/numbers';
 import { ContextMenu } from '@/components/context-menu';
@@ -8,7 +9,7 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import * as i18n from '@/languages';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import { gasUtils } from '@/utils';
 import React, { ReactNode, useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
@@ -16,11 +17,13 @@ import { runOnJS, runOnUI } from 'react-native-reanimated';
 import { ETH_COLOR, ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '../constants';
 import { formatNumber } from '../hooks/formatNumber';
 import { GasSettings, useCustomGasSettings } from '../hooks/useCustomGas';
-import { GasSpeed, setSelectedGasSpeed, useSelectedGas, useSelectedGasSpeed } from '../hooks/useSelectedGas';
+import { GasSpeed } from '@/__swaps__/types/gas';
+import { setSelectedGasSpeed, useSelectedGas, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee } from './EstimatedSwapGasFee';
 import { GestureHandlerV1Button } from './GestureHandlerV1Button';
 import { ButtonPressAnimation } from '@/components/animations';
+import { analyticsV2 } from '@/analytics';
 
 const { GAS_ICONS } = gasUtils;
 const GAS_BUTTON_HIT_SLOP = 16;
@@ -87,13 +90,20 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
   const metereologySuggestions = useMeteorologySuggestions({ chainId });
   const customGasSettings = useCustomGasSettings(chainId);
 
-  const menuOptions = useMemo(() => [...keys(metereologySuggestions.data), 'custom'] as const, [metereologySuggestions.data]);
+  const menuOptions = useMemo(() => [...keys(metereologySuggestions.data), GasSpeed.CUSTOM] as const, [metereologySuggestions.data]);
 
   const handlePressSpeedOption = useCallback(
     (selectedGasSpeed: GasSpeed) => {
-      setSelectedGasSpeed(chainId, selectedGasSpeed);
+      const { inputAsset, outputAsset, quote } = swapsStore.getState();
+      analyticsV2.track(analyticsV2.event.swapsChangedSelectedGasSpeed, {
+        inputAsset,
+        outputAsset,
+        selectedGasSpeed,
+        quote,
+      });
 
-      if (selectedGasSpeed === 'custom') {
+      setSelectedGasSpeed(chainId, selectedGasSpeed);
+      if (selectedGasSpeed === GasSpeed.CUSTOM) {
         runOnUI(SwapNavigation.handleShowGas)({ backToReview });
       }
     },
@@ -101,12 +111,12 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
   );
 
   const handlePressMenuItem = useCallback(
-    ({ nativeEvent: { actionKey } }: any) => handlePressSpeedOption(actionKey),
+    ({ nativeEvent: { actionKey } }: OnPressMenuItemEventObject) => handlePressSpeedOption(actionKey as GasSpeed),
     [handlePressSpeedOption]
   );
 
   const handlePressActionSheet = useCallback(
-    (buttonIndex: number) => handlePressSpeedOption(menuOptions[buttonIndex]),
+    (buttonIndex: number) => handlePressSpeedOption(menuOptions[buttonIndex] as GasSpeed),
     [handlePressSpeedOption, menuOptions]
   );
 
@@ -115,7 +125,7 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
       if (IS_ANDROID) return gasOption;
 
       const currentBaseFee = getCachedCurrentBaseFee(chainId);
-      const gasSettings = gasOption === 'custom' ? customGasSettings : metereologySuggestions.data?.[gasOption];
+      const gasSettings = gasOption === GasSpeed.CUSTOM ? customGasSettings : metereologySuggestions.data?.[gasOption];
       const subtitle = getEstimatedFeeRangeInGwei(gasSettings, currentBaseFee);
 
       return {
@@ -176,7 +186,7 @@ export function ReviewGasButton() {
   const handleShowCustomGas = () => {
     'worklet';
 
-    runOnJS(setSelectedGasSpeed)(internalSelectedInputAsset.value?.chainId || ChainId.mainnet, 'custom');
+    runOnJS(setSelectedGasSpeed)(internalSelectedInputAsset.value?.chainId || ChainId.mainnet, GasSpeed.CUSTOM);
     SwapNavigation.handleShowGas({ backToReview: true });
   };
 

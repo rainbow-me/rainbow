@@ -18,6 +18,7 @@ import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { GestureHandlerV1Button } from './GestureHandlerV1Button';
 import { useDebouncedCallback } from 'use-debounce';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { analyticsV2 } from '@/analytics';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 
@@ -73,6 +74,10 @@ export const SearchInput = ({
   const onInputSearchQueryChange = useDebouncedCallback(
     (text: string) => {
       userAssetsStore.getState().setSearchQuery(text);
+      analyticsV2.track(analyticsV2.event.swapsSearchedForToken, {
+        query: text,
+        type: 'input',
+      });
     },
     50,
     { leading: true, trailing: true }
@@ -80,6 +85,10 @@ export const SearchInput = ({
 
   const onOutputSearchQueryChange = useDebouncedCallback(
     (text: string) => {
+      analyticsV2.track(analyticsV2.event.swapsSearchedForToken, {
+        query: text,
+        type: 'output',
+      });
       useSwapsStore.setState({ outputSearchQuery: text });
     },
     100,
