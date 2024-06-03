@@ -3,6 +3,7 @@ import React, { ReactNode, createContext, useCallback, useContext, useEffect, us
 import { StyleProp, TextStyle, TextInput, NativeModules } from 'react-native';
 import {
   AnimatedRef,
+  DerivedValue,
   SharedValue,
   runOnJS,
   runOnUI,
@@ -80,7 +81,7 @@ interface SwapContextType {
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
   executeSwap: () => void;
 
-  outputQuotesAreDisabled: SharedValue<boolean>;
+  outputQuotesAreDisabled: DerivedValue<boolean>;
 
   SwapSettings: ReturnType<typeof useSwapSettings>;
   SwapInputController: ReturnType<typeof useSwapInputsController>;

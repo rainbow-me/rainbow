@@ -47,11 +47,12 @@ function SwapOutputAmount() {
   const { focusedInput, SwapTextStyles, SwapInputController, AnimatedSwapStyles, outputQuotesAreDisabled } = useSwapContext();
 
   const handleTapWhileDisabled = useCallback(() => {
-    const inputTokenSymbol = useSwapsStore.getState().inputAsset?.symbol;
-    const outputTokenSymbol = useSwapsStore.getState().outputAsset?.symbol;
-    const inputNetwork = ethereumUtils.getNetworkFromChainId(useSwapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet);
-    const outputNetwork = ethereumUtils.getNetworkFromChainId(useSwapsStore.getState().outputAsset?.chainId ?? ChainId.mainnet);
-    const isCrosschainSwap = useSwapsStore.getState().inputAsset?.chainId !== useSwapsStore.getState().outputAsset?.chainId;
+    const { inputAsset, outputAsset } = useSwapsStore.getState();
+    const inputTokenSymbol = inputAsset?.symbol;
+    const outputTokenSymbol = outputAsset?.symbol;
+    const inputNetwork = ethereumUtils.getNetworkFromChainId(inputAsset?.chainId ?? ChainId.mainnet);
+    const outputNetwork = ethereumUtils.getNetworkFromChainId(outputAsset?.chainId ?? ChainId.mainnet);
+    const isCrosschainSwap = inputAsset?.chainId !== outputAsset?.chainId;
     const isBridgeSwap = inputTokenSymbol === outputTokenSymbol;
 
     navigate(Routes.EXPLAIN_SHEET, {

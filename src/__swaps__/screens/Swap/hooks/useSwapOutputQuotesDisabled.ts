@@ -11,8 +11,8 @@ export const useSwapOutputQuotesDisabled = ({
   const outputQuotesAreDisabled = useDerivedValue(() => {
     const bothAssetsSelected = !!inputAsset.value && !!outputAsset.value;
     if (!bothAssetsSelected) return false;
-    
-    return inputAsset.value.chainId !== outputAsset.value.chainId;
+
+    return inputAsset.value?.chainId !== outputAsset.value?.chainId;
   });
 
   return outputQuotesAreDisabled;
