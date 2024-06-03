@@ -707,6 +707,7 @@
         "flashbots_protect": "Flashbots Protect",
         "losing": "Losing",
         "on": "On",
+        "off": "Off",
         "price_impact": "Price impact",
         "price_row_per_token": "per",
         "slippage_message": "This is a small market, so you’re getting a bad price. Try a smaller trade!",
@@ -1939,7 +1940,17 @@
       "aggregators": {
         "rainbow": "Rainbow"
       },
+      "bridging": "Bridging",
+      "swapping": "Swapping",
+      "max": "Max",
+      "select": "Select",
+      "token_to_get": "Token to Get",
+      "token_to_swap": "Token to Swap",
+      "no_balance": "No balance",
+      "find_a_token_to_buy": "Find a token to buy",
+      "search_your_tokens": "Search your tokens",
       "error_executing_swap": "Error executing swap",
+      "flashbots_protection": "Flashbots Protection",
       "tokens_input": {
         "tokens": "Tokens",
         "sort": "Sort",
