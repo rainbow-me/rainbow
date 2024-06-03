@@ -7,7 +7,7 @@ on:
     # The branches below must be a subset of the branches above
     branches: [ "develop" ]
   schedule:
-    - cron: '42 14 * * 6'
+    - cron: '42 14 * * 6' # Runs every Saturday at 14:42 UTC
 
 jobs:
   analyze:
@@ -27,7 +27,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
@@ -59,3 +59,4 @@ jobs:
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
+        
