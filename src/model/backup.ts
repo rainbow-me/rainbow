@@ -24,6 +24,7 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { clearAllStorages } from './mmkv';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import { getRemoteConfig } from './remoteConfig';
 
 const { DeviceUUID } = NativeModules;
 const encryptor = new AesEncryptor();
@@ -722,6 +723,11 @@ const FailureAlert = () =>
 export async function checkIdentifierOnLaunch() {
   // Unable to really persist things on Android, so let's just exit early...
   if (IS_ANDROID) return;
+
+  const { idfa_check_enabled } = getRemoteConfig();
+  if (!idfa_check_enabled) {
+    return;
+  }
 
   try {
     const uuid = await getDeviceUUID();
