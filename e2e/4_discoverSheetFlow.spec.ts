@@ -12,6 +12,7 @@ import {
   importWalletFlow,
   afterAllcleanApp,
 } from './helpers';
+import { WALLET_VARS } from './testVariables';
 
 const ios = device.getPlatform() === 'ios';
 
@@ -23,7 +24,7 @@ describe('Discover Screen Flow', () => {
     await afterAllcleanApp({ hardhat: false });
   });
   it('Should import wallet and go to wallet screen', async () => {
-    await importWalletFlow();
+    await importWalletFlow(WALLET_VARS.EMPTY_WALLET.PK);
   });
 
   it('Should navigate to Discover screen after swiping left', async () => {

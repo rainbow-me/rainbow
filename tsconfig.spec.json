@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "baseUrl": ".",
+  "paths": {
+    "@/*": ["src/*"],
+    "@/__swaps__/*": ["src/__swaps__/*"]
+  },
+  "compilerOptions": {
+    "jsx": "react",
+    "module": "commonjs",
+    "types": ["jest", "node"],
+    "noEmit": true
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "e2e/**/*.ts"]
+}

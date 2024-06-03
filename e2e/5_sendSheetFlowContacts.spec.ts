@@ -13,6 +13,7 @@ import {
   delayTime,
   afterAllcleanApp,
 } from './helpers';
+import { WALLET_VARS } from './testVariables';
 
 const android = device.getPlatform() === 'android';
 
@@ -25,7 +26,7 @@ describe('Send Sheet Interaction Flow Contacts', () => {
   });
 
   it('Import a wallet and go to welcome', async () => {
-    await importWalletFlow();
+    await importWalletFlow(WALLET_VARS.EMPTY_WALLET.PK);
   });
 
   it('Should send ETH to test wallet"', async () => {

@@ -5,7 +5,7 @@ import { Wallet } from '@ethersproject/wallet';
 import { expect, device, element, by, waitFor } from 'detox';
 import { parseEther } from '@ethersproject/units';
 
-const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
+const TESTING_WALLET = '0x3637f053D542E6D00Eee42D656dD7C59Fa33a62F';
 
 const DEFAULT_TIMEOUT = 20_000;
 const android = device.getPlatform() === 'android';
@@ -59,6 +59,7 @@ export async function beforeAllcleanApp({ hardhat }: { hardhat?: boolean }) {
 export async function afterAllcleanApp({ hardhat }: { hardhat?: boolean }) {
   await device.clearKeychain();
   hardhat && (await killHardhat());
+  jest.resetAllMocks();
 }
 
 export async function tap(elementId: string | RegExp) {

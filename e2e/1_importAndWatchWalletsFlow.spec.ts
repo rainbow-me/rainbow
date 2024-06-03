@@ -12,6 +12,9 @@ import {
 } from './helpers';
 import { WALLET_VARS } from './testVariables';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require('dotenv').config();
+
 const android = device.getPlatform() === 'android';
 
 describe('Import from private key flow', () => {
@@ -36,7 +39,7 @@ describe('Import from private key flow', () => {
   });
 
   it('with 0x - Should show the "Add wallet modal" after tapping import with a valid private key"', async () => {
-    await typeText('import-sheet-input', process.env.DEV_PKEY);
+    await typeText('import-sheet-input', WALLET_VARS.PRIVATE_KEY_WALLET.SECRET);
     await checkIfElementHasString('import-sheet-button-label', 'Continue');
     await waitAndTap('import-sheet-button');
     await checkIfVisible('wallet-info-modal');
@@ -66,7 +69,7 @@ describe('Import from private key flow', () => {
   });
 
   it('without 0x - Should show the "Add wallet modal" after tapping import with a valid private key"', async () => {
-    await typeText('import-sheet-input', WALLET_VARS.SEED_WALLET.PK.substring(2));
+    await typeText('import-sheet-input', WALLET_VARS.EMPTY_WALLET.PK.substring(2));
     await checkIfElementHasString('import-sheet-button-label', 'Continue');
     await waitAndTap('import-sheet-button');
     await checkIfVisible('wallet-info-modal');

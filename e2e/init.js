@@ -4,6 +4,8 @@ import { device } from 'detox';
 
 require('dotenv').config({ path: '.env' });
 
+// jest.mock('src/__swaps__/utils/swap.ts', () => require('./mocks/worklets.mock.js'));
+
 beforeAll(async () => {
   if (device.getPlatform() === 'android') {
     // connecting to metro

@@ -23,7 +23,7 @@ describe('Check malicious dapp warning', () => {
   });
 
   it('Should be able to watch a wallet and load the wallet screen', async () => {
-    await importWalletFlow(WALLET_VARS.SEED_WALLET.PK);
+    await importWalletFlow(WALLET_VARS.EMPTY_WALLET.PK);
   });
 
   it('Should be able to navigate to the dapp browser', async () => {

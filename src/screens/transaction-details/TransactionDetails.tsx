@@ -62,7 +62,7 @@ export const TransactionDetails = () => {
           deferredHeight={IS_ANDROID}
           showsVerticalScrollIndicator={false}
         >
-          <Box paddingHorizontal="20px" paddingBottom="20px" onLayout={onSheetContentLayout}>
+          <Box testID={'transaction-details-sheet'} paddingHorizontal="20px" paddingBottom="20px" onLayout={onSheetContentLayout}>
             <TransactionDetailsStatusActionsAndTimestampSection hideIcon={statusIconHidden} transaction={transaction} />
             <TransactionDetailsFromToSection transaction={transaction} presentToast={presentAddressToast} />
             <TransactionDetailsValueAndFeeSection transaction={transaction} />
