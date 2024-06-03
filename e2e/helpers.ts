@@ -47,6 +47,7 @@ export async function importWalletFlow() {
     await authenticatePin('1234');
   }
   await device.enableSynchronization();
+  await delayTime('very-long');
   await checkIfVisible('wallet-screen');
 }
 

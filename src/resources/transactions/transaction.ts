@@ -9,6 +9,7 @@ import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { parseTransaction } from '@/parsers/transactions';
 import { Network } from '@/networks/types';
 import { RainbowError, logger } from '@/logger';
+import { TransactionApiResponse } from './types';
 
 export type ConsolidatedTransactionsResult = QueryFunctionResult<typeof consolidatedTransactionsQueryFunction>;
 export type PaginatedTransactions = { pages: ConsolidatedTransactionsResult[] };
@@ -37,7 +38,7 @@ export const fetchTransaction = async ({
   try {
     const chainId = getNetworkObj(network).id;
     const url = `https://addys.p.rainbow.me/v3/${chainId}/${address}/transactions/${hash}`;
-    const response = await rainbowFetch(url, {
+    const response = await rainbowFetch<{ payload: { transaction: TransactionApiResponse } }>(url, {
       method: 'get',
       params: {
         currency: currency.toLowerCase(),
@@ -47,6 +48,7 @@ export const fetchTransaction = async ({
         Authorization: `Bearer ${ADDYS_API_KEY}`,
       },
     });
+
     const tx = response?.data?.payload?.transaction || {};
     if (!tx) {
       return null;

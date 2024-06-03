@@ -34,6 +34,7 @@ import ImageAvatar from '@/components/contacts/ImageAvatar';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { Network } from '@/networks/types';
 import * as lang from '@/languages';
+import { checkForPendingSwap } from '../helpers/checkForPendingSwap';
 
 const TransactionMastheadHeight = android ? 153 : 135;
 
@@ -81,7 +82,6 @@ function CurrencyTile({
   const accountAddress = useSelector((state: AppState) => state.settings.accountAddress);
   const theme = useTheme();
 
-  // @ts-ignore
   const { contacts } = useContacts();
 
   const { userAccounts, watchedAccounts } = useUserAccounts();
@@ -95,7 +95,7 @@ function CurrencyTile({
         watchedAccounts.find(account => isLowerCaseMatch(account.address, address))
       );
     }
-  }, [address]);
+  }, [address, userAccounts, watchedAccounts]);
 
   const formattedAddress = formatAddressForDisplay(address, 4, 6);
   const [fetchedEnsName, setFetchedEnsName] = useState<string | undefined>();
@@ -103,7 +103,7 @@ function CurrencyTile({
   const [imageLoaded, setImageLoaded] = useState(!!addressAccount?.image);
 
   const accountEmoji = useMemo(() => returnStringFirstEmoji(addressAccount?.label), [addressAccount]);
-  const accountName = useMemo(() => removeFirstEmojiFromString(addressAccount?.label), []);
+  const accountName = useMemo(() => removeFirstEmojiFromString(addressAccount?.label), [addressAccount?.label]);
   const avatarColor =
     addressAccount?.color ?? addressContact?.color ?? theme.colors.avatarBackgrounds[addressHashedColorIndex(address) || 1];
   const emoji = accountEmoji || addressHashedEmoji(address);
@@ -141,7 +141,7 @@ function CurrencyTile({
         });
       }
     }
-  }, [fetchedEnsName]);
+  }, [addressAccount?.image, addressContact?.ens, fetchedEnsName]);
 
   const colorForAsset = usePersistentDominantColorFromImage(showAsset ? asset?.icon_url : imageUrl) || avatarColor;
 
@@ -280,6 +280,8 @@ const DoubleChevron = () => (
 export default function TransactionMasthead({ transaction }: { transaction: RainbowTransaction }) {
   const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
 
+  const isPendingSwap = checkForPendingSwap(transaction);
+
   const inputAsset = useMemo(() => {
     const change = transaction?.changes?.find(a => a?.direction === 'in');
 
@@ -287,7 +289,7 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
 
     // NOTE: For pending transactions let's use the change value
     // since the balance hasn't been updated yet.
-    if (['swap', 'wrap', 'unwrap'].includes(transaction.type) && transaction.status === 'pending') {
+    if (isPendingSwap) {
       const inAssetValueDisplay = `${handleSignificantDecimals(convertRawAmountToDecimalFormat(change?.value?.toString() || '0', change?.asset.decimals || 18), change?.asset.decimals || 18)} ${change?.asset.symbol}`;
       return {
         inAssetValueDisplay,
@@ -311,7 +313,7 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
         : '-',
       ...inAsset,
     };
-  }, []);
+  }, [isPendingSwap, nativeCurrency, transaction?.changes]);
 
   const outputAsset = useMemo(() => {
     const change = transaction?.changes?.find(a => a?.direction === 'out');
@@ -320,7 +322,7 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
 
     // NOTE: For pending transactions let's use the change value
     // since the balance hasn't been updated yet.
-    if (['swap', 'wrap', 'unwrap'].includes(transaction.type) && transaction.status === 'pending') {
+    if (isPendingSwap) {
       const inAssetValueDisplay = `${handleSignificantDecimals(convertRawAmountToDecimalFormat(change?.value?.toString() || '0', change?.asset.decimals || 18), change?.asset.decimals || 18)} ${change?.asset.symbol}`;
       return {
         inAssetValueDisplay,
@@ -345,7 +347,7 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
         : '-',
       ...outAsset,
     };
-  }, []);
+  }, [isPendingSwap, nativeCurrency, transaction?.changes]);
 
   const contractImage = transaction?.contract?.iconUrl;
   const contractName = transaction?.contract?.name;
