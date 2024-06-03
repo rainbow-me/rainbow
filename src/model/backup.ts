@@ -757,11 +757,8 @@ export async function checkIdentifierOnLaunch() {
       return;
     }
 
-    if (!IS_DEV) {
-      // if our identifiers match up, we can assume no reinstall/migration
-      if (currentIdentifier.value === uuid) {
-        return;
-      }
+    if (currentIdentifier.value === uuid) {
+      return;
     }
 
     return new Promise(resolve => {
