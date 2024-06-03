@@ -244,19 +244,16 @@ export function ReviewPanel() {
               <Text color="labelTertiary" weight="bold" size="icon 13px">
                 􀋦
               </Text>
-                      <ButtonPressAnimation onPress={openFlashbotsExplainer}>
-
-              <Inline wrap={false} horizontalSpace="4px">
-                <Text color="labelTertiary" weight="semibold" size="15pt">
-                  Flashbots Protection
-                </Text>
-                <Text color="labelTertiary" size="13pt" weight="bold">
-                  􀅴
-                </Text>
-              </Inline>
-                              </ButtonPressAnimation>
-
-
+              <ButtonPressAnimation onPress={openFlashbotsExplainer}>
+                <Inline wrap={false} horizontalSpace="4px">
+                  <Text color="labelTertiary" weight="semibold" size="15pt">
+                    Flashbots Protection
+                  </Text>
+                  <Text color="labelTertiary" size="13pt" weight="bold">
+                    􀅴
+                  </Text>
+                </Inline>
+              </ButtonPressAnimation>
             </Inline>
 
             <AnimatedSwitch onToggle={SwapSettings.onToggleFlashbots} value={SwapSettings.flashbots} activeLabel="On" inactiveLabel="Off" />
@@ -338,27 +335,28 @@ export function ReviewPanel() {
           <Separator color="separatorSecondary" />
 
           <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-          <ButtonPressAnimation onPress={openGasExplainer}>
-            <Stack space="8px">
-              <Inline alignVertical="center" horizontalSpace="6px">
-                <View style={sx.gasContainer}>
-                  <AnimatedChainImage showMainnetBadge asset={internalSelectedInputAsset} size={16} />
-                </View>
-                <Inline horizontalSpace="4px">
-                  <EstimatedGasFee />
-                  <EstimatedArrivalTime />
+            <ButtonPressAnimation onPress={openGasExplainer}>
+              <Stack space="8px">
+                <Inline alignVertical="center" horizontalSpace="6px">
+                  <View style={sx.gasContainer}>
+                    <AnimatedChainImage showMainnetBadge asset={internalSelectedInputAsset} size={16} />
+                  </View>
+                  <Inline horizontalSpace="4px">
+                    <EstimatedGasFee />
+                    <EstimatedArrivalTime />
+                  </Inline>
                 </Inline>
-                
-              <Inline wrap={false} alignHorizontal="left" alignVertical="bottom" horizontalSpace="4px">
-                <Text color="labelTertiary" size="13pt" weight="bold">
-                  Est. Network Fee
-                </Text>
-                <Text color="labelTertiary" size="icon 13px" weight="bold">
-                  􀅴
-                </Text>
-              </Inline>
-            </Stack>
-           </ButtonPressAnimation>
+
+                <Inline wrap={false} alignHorizontal="left" alignVertical="bottom" horizontalSpace="4px">
+                  <Text color="labelTertiary" size="13pt" weight="bold">
+                    Est. Network Fee
+                  </Text>
+                  <Text color="labelTertiary" size="icon 13px" weight="bold">
+                    􀅴
+                  </Text>
+                </Inline>
+              </Stack>
+            </ButtonPressAnimation>
 
             <Inline alignVertical="center" horizontalSpace="8px">
               <ReviewGasButton />
