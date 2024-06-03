@@ -358,7 +358,7 @@ export const slippageInBipsToString = (slippageInBips: number) => (slippageInBip
 
 export const slippageInBipsToStringWorklet = (slippageInBips: number) => {
   'worklet';
-  return (slippageInBips / 100).toString();
+  return (slippageInBips / 100).toFixed(1).toString();
 };
 
 export const getDefaultSlippage = (chainId: ChainId, config: RainbowConfig) => {

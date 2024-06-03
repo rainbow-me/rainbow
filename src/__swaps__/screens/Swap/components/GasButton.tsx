@@ -2,7 +2,6 @@ import { ChainId } from '@/__swaps__/types/chains';
 import { weiToGwei } from '@/__swaps__/utils/ethereum';
 import { getCachedCurrentBaseFee, useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { add } from '@/__swaps__/utils/numbers';
-import { ButtonPressAnimation } from '@/components/animations';
 import { ContextMenu } from '@/components/context-menu';
 import { Centered } from '@/components/layout';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
@@ -13,13 +12,15 @@ import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { gasUtils } from '@/utils';
 import React, { ReactNode, useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { runOnUI } from 'react-native-reanimated';
+import { runOnJS, runOnUI } from 'react-native-reanimated';
 import { ETH_COLOR, ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '../constants';
 import { formatNumber } from '../hooks/formatNumber';
 import { GasSettings, useCustomGasSettings } from '../hooks/useCustomGas';
 import { GasSpeed, setSelectedGasSpeed, useSelectedGas, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee } from './EstimatedSwapGasFee';
+import { GestureHandlerV1Button } from './GestureHandlerV1Button';
+import { ButtonPressAnimation } from '@/components/animations';
 
 const { GAS_ICONS } = gasUtils;
 const GAS_BUTTON_HIT_SLOP = 16;
@@ -79,7 +80,7 @@ function keys<const T extends string>(obj: Record<T, any> | undefined) {
   return Object.keys(obj) as T[];
 }
 
-const GasMenu = ({ children }: { children: ReactNode }) => {
+const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; children: ReactNode }) => {
   const { SwapNavigation } = useSwapContext();
 
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
@@ -90,13 +91,13 @@ const GasMenu = ({ children }: { children: ReactNode }) => {
 
   const handlePressSpeedOption = useCallback(
     (selectedGasSpeed: GasSpeed) => {
-      if (selectedGasSpeed === 'custom') {
-        runOnUI(SwapNavigation.handleShowGas)({});
-        return;
-      }
       setSelectedGasSpeed(chainId, selectedGasSpeed);
+
+      if (selectedGasSpeed === 'custom') {
+        runOnUI(SwapNavigation.handleShowGas)({ backToReview });
+      }
     },
-    [SwapNavigation.handleShowGas, chainId]
+    [SwapNavigation.handleShowGas, backToReview, chainId]
   );
 
   const handlePressMenuItem = useCallback(
@@ -168,13 +169,20 @@ const GasMenu = ({ children }: { children: ReactNode }) => {
 
 export function ReviewGasButton() {
   const { isDarkMode } = useColorMode();
-  const { SwapNavigation } = useSwapContext();
+  const { SwapNavigation, internalSelectedInputAsset } = useSwapContext();
 
   const separatatorSecondary = useForegroundColor('separatorSecondary');
 
+  const handleShowCustomGas = () => {
+    'worklet';
+
+    runOnJS(setSelectedGasSpeed)(internalSelectedInputAsset.value?.chainId || ChainId.mainnet, 'custom');
+    SwapNavigation.handleShowGas({ backToReview: true });
+  };
+
   return (
     <Inline alignVertical="center" wrap={false}>
-      <GasMenu>
+      <GasMenu backToReview>
         <Box
           style={[
             sx.reviewGasButtonPillStyles,
@@ -187,7 +195,7 @@ export function ReviewGasButton() {
         </Box>
       </GasMenu>
 
-      <ButtonPressAnimation onPress={() => runOnUI(SwapNavigation.handleShowGas)({ backToReview: true })}>
+      <GestureHandlerV1Button onPressStartWorklet={handleShowCustomGas}>
         <Box
           style={{
             paddingHorizontal: 7,
@@ -202,7 +210,7 @@ export function ReviewGasButton() {
             􀌆
           </Text>
         </Box>
-      </ButtonPressAnimation>
+      </GestureHandlerV1Button>
     </Inline>
   );
 }
