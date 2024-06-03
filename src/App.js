@@ -57,6 +57,7 @@ import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { initializeRemoteConfig } from '@/model/remoteConfig';
 import { RemoteCardsSync } from './state/sync/RemoteCardsSync';
 import { RemotePromoSheetSync } from './state/sync/RemotePromoSheetSync';
+import { checkIdentifierOnLaunch } from './model/backup';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -109,6 +110,7 @@ class OldApp extends Component {
     if (!__DEV__ && isTestFlight) {
       logger.info(`Test flight usage - ${isTestFlight}`);
     }
+
     this.identifyFlow();
     const eventSub = AppState?.addEventListener('change', this?.handleAppStateChange);
     this.setState({ eventSubscription: eventSub });
@@ -150,6 +152,8 @@ class OldApp extends Component {
           handleReviewPromptAction(ReviewPromptAction.TimesLaunchedSinceInstall);
         });
       }, 10_000);
+
+      checkIdentifierOnLaunch();
     }
 
     const initialRoute = address ? Routes.SWIPE_LAYOUT : Routes.WELCOME_SCREEN;

@@ -1,33 +1,44 @@
+import { memo } from 'react';
+import { Address } from 'viem';
 import { useAccountSettings } from '@/hooks';
-import { useUserAssets } from '../../__swaps__/screens/Swap/resources/assets';
-
-import { selectUserAssetsList, selectorFilterByUserChains } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
-import { Hex } from 'viem';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { selectUserAssetsList, selectorFilterByUserChains } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { ChainId } from '@/__swaps__/types/chains';
+import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
 
-export const UserAssetsSync = () => {
+export const UserAssetsSync = memo(function UserAssetsSync() {
   const { accountAddress: currentAddress, nativeCurrency: currentCurrency } = useAccountSettings();
+
+  const userAssetsWalletAddress = userAssetsStore(state => state.associatedWalletAddress);
+  const isSwapsOpen = useSwapsStore(state => state.isSwapsOpen);
 
   useUserAssets(
     {
-      address: currentAddress as Hex,
+      address: currentAddress as Address,
       currency: currentCurrency,
     },
     {
+      enabled: !isSwapsOpen || userAssetsWalletAddress !== currentAddress,
       select: data =>
         selectorFilterByUserChains({
           data,
           selector: selectUserAssetsList,
         }),
       onSuccess: data => {
-        userAssetsStore.setState({
-          userAssetsById: new Set(data.map(d => d.uniqueId)),
-          userAssets: new Map(data.map(d => [d.uniqueId, d as ParsedSearchAsset])),
-        });
+        if (!isSwapsOpen || userAssetsWalletAddress !== currentAddress) {
+          userAssetsStore.getState().setUserAssets(currentAddress as Address, data as ParsedSearchAsset[]);
+
+          const inputAsset = userAssetsStore.getState().getHighestValueAsset();
+          useSwapsStore.setState({
+            inputAsset,
+            selectedOutputChainId: inputAsset?.chainId ?? ChainId.mainnet,
+          });
+        }
       },
     }
   );
 
   return null;
-};
+});

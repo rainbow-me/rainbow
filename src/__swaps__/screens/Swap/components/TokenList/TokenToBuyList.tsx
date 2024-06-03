@@ -1,16 +1,13 @@
 import { StyleSheet } from 'react-native';
-import React, { useMemo } from 'react';
-
-import { useAssetsToBuySections } from '@/__swaps__/screens/Swap/hooks/useAssetsToBuy';
+import React from 'react';
 import { TokenToBuySection } from '@/__swaps__/screens/Swap/components/TokenList/TokenToBuySection';
 import { Stack } from '@/design-system';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { ChainSelection } from './ChainSelection';
+import { useSearchCurrencyLists } from '../../hooks/useSearchCurrencyLists';
 
 export const TokenToBuyList = () => {
-  const sections = useAssetsToBuySections();
-
-  const assetsCount = useMemo(() => sections?.reduce((count, section) => count + section.data.length, 0), [sections]);
+  const { loading, results: sections } = useSearchCurrencyLists();
 
   return (
     <Stack space="32px">
@@ -23,7 +20,7 @@ export const TokenToBuyList = () => {
           </Stack>
         ))}
 
-      {!assetsCount && <ListEmpty output />}
+      {!sections.length && !loading && <ListEmpty isSearchEmptyState output />}
     </Stack>
   );
 };

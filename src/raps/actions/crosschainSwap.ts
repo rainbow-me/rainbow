@@ -170,6 +170,8 @@ export const crosschainSwap = async ({
 
   const transaction = {
     data: parameters.quote.data,
+    from: parameters.quote.from as Address,
+    to: parameters.quote.to as Address,
     value: parameters.quote.value?.toString(),
     asset: {
       ...parameters.assetToBuy,
@@ -203,8 +205,7 @@ export const crosschainSwap = async ({
         value: quote.buyAmountMinusFees.toString(),
       },
     ],
-    from: parameters.quote.from as Address,
-    to: parameters.quote.to as Address,
+    gasLimit,
     hash: swap.hash as TxHash,
     // TODO: MARK - Replace this once we migrate network => chainId
     network,
@@ -213,7 +214,7 @@ export const crosschainSwap = async ({
     status: 'pending',
     type: 'swap',
     flashbots: parameters.flashbots,
-    ...gasParams,
+    ...gasParamsToUse,
   } satisfies NewTransaction;
 
   addNewTransaction({
