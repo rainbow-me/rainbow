@@ -725,7 +725,7 @@ export async function checkIdentifierOnLaunch() {
   if (IS_ANDROID) return;
 
   const { idfa_check_enabled } = getRemoteConfig();
-  if (!idfa_check_enabled) {
+  if (!idfa_check_enabled || IS_DEV) {
     return;
   }
 
