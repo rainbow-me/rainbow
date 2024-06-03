@@ -27,6 +27,7 @@ import {
   zoraSepolia,
   sepolia,
   blast,
+  degen,
 } from 'viem/chains';
 
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
@@ -226,29 +227,36 @@ export const SUPPORTED_MAINNET_CHAINS: Chain[] = [mainnet, polygon, optimism, ar
 
 export const SUPPORTED_CHAINS = ({ testnetMode = false }: { testnetMode?: boolean }): Chain[] =>
   [
+    // In default order of appearance
     mainnet,
-    polygon,
+    base,
     optimism,
     arbitrum,
-    holesky,
-    base,
+    polygon,
     zora,
+    blast,
+    degen,
+    avalanche,
     bsc,
+
+    // Testnets
     goerli,
+    holesky,
     sepolia,
+    baseSepolia,
     optimismSepolia,
-    bscTestnet,
-    polygonMumbai,
     arbitrumGoerli,
     arbitrumSepolia,
-    baseSepolia,
+    polygonMumbai,
     zoraSepolia,
-    avalanche,
     avalancheFuji,
-    blast,
-  ]
-    .filter(chain => (testnetMode ? !!chain.testnet : !chain.testnet))
-    .map(chain => ({ ...chain, name: ChainNameDisplay[chain.id] }));
+    bscTestnet,
+  ].reduce((chainList, chain) => {
+    if (testnetMode || !chain.testnet) {
+      chainList.push({ ...chain, name: ChainNameDisplay[chain.id] });
+    }
+    return chainList;
+  }, [] as Chain[]);
 
 export const SUPPORTED_CHAIN_IDS = ({ testnetMode = false }: { testnetMode?: boolean }) =>
   SUPPORTED_CHAINS({ testnetMode }).map(chain => chain.id);

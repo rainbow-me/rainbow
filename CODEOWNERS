@@ -1,21 +1,21 @@
 # Rainbow CODEOWNERS file
-CODEOWNERS  @benisgold @jinchung
+CODEOWNERS  @walmat @benisgold @jinchung
 LICENSE @jinchung @brunobar79 @nickbytes @estebanmino
-README.md @nickbytes  @benisgold @jinchung
-app.json  @benisgold @jinchung
+README.md @nickbytes  @walmat @benisgold @jinchung
+app.json  @walmat @benisgold @jinchung
 
 # ANDROID
 android/
 
 # IOS
-ios/ @benisgold 
+ios/ @walmat @benisgold 
 
 # SECURITY / APP INFRA
-patches/ @benisgold
+patches/ @walmat @benisgold
 scripts/
 
 # DESIGN SYSTEM
-src/design-system @benisgold
+src/design-system @walmat @benisgold
 
 # Handlers
 src/handlers/aesEncryption.ts @jinchung
@@ -25,44 +25,44 @@ src/handlers/cloudBackup.ts @jinchung
 # Model
 src/model/backup.ts  @jinchung
 src/model/keychain.ts  @jinchung
-src/model/migrations.ts  @benisgold @jinchung
+src/model/migrations.ts  @walmat @benisgold @jinchung
 src/model/wallet.ts  @jinchung
 
 # redux
-src/redux/gas.ts @benisgold @jinchung
+src/redux/gas.ts @walmat @benisgold @jinchung
 
 # navigation
-src/navigation @benisgold
+src/navigation @walmat @benisgold
 
 # analytics & logging
-src/analytics @benisgold
+src/analytics @walmat @benisgold
 
 # APP INFRA
-package.json  @benisgold @jinchung
-.eslintignore  @benisgold @jinchung
-.eslintrc.js  @benisgold @jinchung
-.gitattributes  @benisgold @jinchung
-.gitignore  @benisgold @jinchung
-.nvmrc  @benisgold @jinchung
-.prettierrc.js  @benisgold @jinchung
-.yarnrc @benisgold @jinchung
-audit-ci.json  @benisgold @jinchung
+package.json  @walmat @benisgold @jinchung
+.eslintignore  @walmat @benisgold @jinchung
+.eslintrc.js  @walmat @benisgold @jinchung
+.gitattributes  @walmat @benisgold @jinchung
+.gitignore  @walmat @benisgold @jinchung
+.nvmrc  @walmat @benisgold @jinchung
+.prettierrc.js  @walmat @benisgold @jinchung
+.yarnrc @walmat @benisgold @jinchung
+audit-ci.json  @walmat @benisgold @jinchung
 babel.config.js 
-globals.d.ts @benisgold
-yarn.lock  @benisgold @jinchung
-tsconfig.json  @benisgold @jinchung
+globals.d.ts @walmat @benisgold
+yarn.lock  @walmat @benisgold @jinchung
+tsconfig.json  @walmat @benisgold @jinchung
 hardhat.config.js  @jinchung
 
 # APP INFRA
-globalVariables.js @benisgold
+globalVariables.js @walmat @benisgold
 shim.js  
-index.js  @benisgold
-src/App.js  @benisgold @jinchung
+index.js  @walmat @benisgold
+src/App.js  @walmat @benisgold @jinchung
 
 # SECURITY / APP INFRA
-metro.config.js @benisgold 
-metro.transform.js @benisgold 
-react-native.config.js  @benisgold
+metro.config.js @walmat @benisgold 
+metro.transform.js @walmat @benisgold 
+react-native.config.js  @walmat @benisgold
 
 # DAPP BROWSER
 src/browser @brunobar79 @benisgold

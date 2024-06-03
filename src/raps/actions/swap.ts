@@ -6,6 +6,7 @@ import {
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
   Quote,
   ChainId as SwapChainId,
+  SwapType,
   WRAPPED_ASSET,
   fillQuote,
   getQuoteExecutionDetails,
@@ -45,7 +46,7 @@ import { populateApprove } from './unlock';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { swapMetadataStorage } from '../common';
 import { ParsedAsset } from '@/resources/assets/types';
-import { parseGasParamAmounts } from '@/parsers';
+import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 
 const WRAP_GAS_PADDING = 1.002;
 
@@ -239,16 +240,17 @@ export const swap = async ({
   index,
   parameters,
   baseNonce,
-  selectedGasFee,
+  gasParams,
   gasFeeParamsBySpeed,
 }: ActionProps<'swap'>): Promise<RapActionResult> => {
-  let gasParams = parseGasParamAmounts(selectedGasFee);
+  let gasParamsToUse = gasParams;
+  // let gasParams = parseGasParamAmounts(selectedGasFee);
 
   const { quote, permit, chainId, requiresApprove } = parameters;
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
 
   if (currentRap.actions.length - 1 > index) {
-    gasParams = overrideWithFastSpeedIfNeeded({
+    gasParamsToUse = overrideWithFastSpeedIfNeeded({
       gasParams,
       chainId,
       gasFeeParamsBySpeed,
@@ -274,7 +276,7 @@ export const swap = async ({
   try {
     const nonce = baseNonce ? baseNonce + index : undefined;
     const swapParams = {
-      gasParams,
+      gasParams: gasParamsToUse,
       chainId,
       gasLimit,
       nonce,
@@ -290,7 +292,22 @@ export const swap = async ({
     throw e;
   }
 
-  if (!swap) throw new RainbowError('swap: error executeSwap');
+  if (!swap || !swap?.hash) throw new RainbowError('swap: error executeSwap');
+
+  // TODO: MARK - Replace this once we migrate network => chainId
+  const network = ethereumUtils.getNetworkFromChainId(parameters.chainId);
+
+  const nativePriceForAssetToBuy = (parameters.assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice
+    ? {
+        value: (parameters.assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice,
+      }
+    : parameters.assetToBuy.price;
+
+  const nativePriceForAssetToSell = (parameters.assetToSell as ExtendedAnimatedAssetWithColors)?.nativePrice
+    ? {
+        value: (parameters.assetToSell as ExtendedAnimatedAssetWithColors)?.nativePrice,
+      }
+    : parameters.assetToSell.price;
 
   const transaction = {
     data: swap.data,
@@ -303,6 +320,7 @@ export const swap = async ({
       ...parameters.assetToBuy,
       network: ethereumUtils.getNetworkFromChainId(parameters.assetToBuy.chainId),
       colors: parameters.assetToBuy.colors as TokenColors,
+      price: nativePriceForAssetToBuy,
     } as ParsedAsset,
     changes: [
       {
@@ -313,6 +331,7 @@ export const swap = async ({
           ...parameters.assetToSell,
           network: ethereumUtils.getNetworkFromChainId(parameters.assetToSell.chainId),
           colors: parameters.assetToSell.colors as TokenColors,
+          price: nativePriceForAssetToSell,
         },
         value: quote.sellAmount.toString(),
       },
@@ -323,11 +342,13 @@ export const swap = async ({
         asset: {
           ...parameters.assetToBuy,
           network: ethereumUtils.getNetworkFromChainId(parameters.assetToBuy.chainId),
-          colors: parameters.assetToSell.colors as TokenColors,
+          colors: parameters.assetToBuy.colors as TokenColors,
+          price: nativePriceForAssetToBuy,
         },
-        value: quote.buyAmount.toString(),
+        value: quote.buyAmountMinusFees.toString(),
       },
     ],
+    gasLimit,
     hash: swap.hash as TxHash,
     // TODO: MARK - Replace this once we migrate network => chainId
     network: ethereumUtils.getNetworkFromChainId(parameters.chainId),
@@ -335,16 +356,25 @@ export const swap = async ({
     nonce: swap.nonce,
     status: 'pending',
     type: 'swap',
-    flashbots: parameters.flashbots,
-    ...gasParams,
-  } satisfies NewTransaction;
+    swap: {
+      type: SwapType.normal,
+      fromChainId: parameters.assetToSell.chainId as unknown as SwapChainId,
+      toChainId: parameters.assetToBuy.chainId as unknown as SwapChainId,
 
-  // TODO: MARK - Replace this once we migrate network => chainId
-  const network = ethereumUtils.getNetworkFromChainId(parameters.chainId);
+      // TODO: Is this right?
+      isBridge:
+        parameters.assetToBuy.chainId !== parameters.assetToSell.chainId &&
+        parameters.assetToSell.address === parameters.assetToBuy.address,
+    },
+    flashbots: parameters.flashbots,
+    ...gasParamsToUse,
+  } satisfies NewTransaction;
 
   if (parameters.meta && swap.hash) {
     swapMetadataStorage.set(swap.hash.toLowerCase(), JSON.stringify({ type: 'swap', data: parameters.meta }));
   }
+
+  console.log(JSON.stringify(transaction, null, 2));
 
   addNewTransaction({
     address: parameters.quote.from as Address,

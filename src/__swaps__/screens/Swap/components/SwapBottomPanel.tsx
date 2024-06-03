@@ -1,21 +1,23 @@
-import React, { useState } from 'react';
+import React from 'react';
+import Animated, { useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import { StyleSheet } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 
 import { Box, Column, Columns, Separator, globalColors, useColorMode } from '@/design-system';
 import { safeAreaInsetValues } from '@/utils';
 
-import { SwapActionButton } from './SwapActionButton';
-import { GasButton } from './GasButton';
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH, springConfig } from '@/__swaps__/screens/Swap/constants';
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext, NavigationSteps } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import Animated, { runOnJS, runOnUI, useAnimatedReaction, useAnimatedStyle, withSpring } from 'react-native-reanimated';
-import { StyleSheet } from 'react-native';
+
 import { opacity } from '@/__swaps__/utils/swaps';
-import { ReviewPanel } from './ReviewPanel';
-import { GasPanel } from './GasPanel';
 import { useBottomPanelGestureHandler } from '../hooks/useBottomPanelGestureHandler';
+import { GasButton } from './GasButton';
+import { GasPanel } from './GasPanel';
+import { ReviewPanel } from './ReviewPanel';
+import { SwapActionButton } from './SwapActionButton';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 
 export function SwapBottomPanel() {
   const { isDarkMode } = useColorMode();
@@ -27,28 +29,18 @@ export function SwapBottomPanel() {
     AnimatedSwapStyles,
     SwapNavigation,
     configProgress,
-    isFetching,
   } = useSwapContext();
 
   const { swipeToDismissGestureHandler, gestureY } = useBottomPanelGestureHandler();
-  const [enabled, setEnabled] = useState(false);
-
-  useAnimatedReaction(
-    () => ({
-      configProgress: configProgress.value,
-    }),
-    ({ configProgress }) => {
-      if (configProgress === NavigationSteps.SHOW_REVIEW || configProgress === NavigationSteps.SHOW_GAS) {
-        runOnJS(setEnabled)(true);
-      } else {
-        runOnJS(setEnabled)(false);
-      }
-    }
-  );
 
   const gestureHandlerStyles = useAnimatedStyle(() => {
     return {
-      transform: [{ translateY: gestureY.value > 0 ? withSpring(gestureY.value, springConfig) : withSpring(0, springConfig) }],
+      transform: [
+        {
+          translateY:
+            gestureY.value > 0 ? withSpring(gestureY.value, SPRING_CONFIGS.springConfig) : withSpring(0, SPRING_CONFIGS.springConfig),
+        },
+      ],
     };
   });
 
@@ -60,7 +52,7 @@ export function SwapBottomPanel() {
 
   return (
     // @ts-expect-error Property 'children' does not exist on type
-    <PanGestureHandler maxPointers={1} onGestureEvent={swipeToDismissGestureHandler} enabled={enabled}>
+    <PanGestureHandler maxPointers={1} onGestureEvent={swipeToDismissGestureHandler}>
       <Box
         as={Animated.View}
         paddingBottom={{
@@ -88,11 +80,11 @@ export function SwapBottomPanel() {
             </Box>
           </Column>
           <SwapActionButton
-            onPress={() => runOnUI(SwapNavigation.handleSwapAction)()}
             asset={internalSelectedOutputAsset}
             icon={confirmButtonIcon}
             iconStyle={confirmButtonIconStyle}
             label={confirmButtonLabel}
+            onPressWorklet={SwapNavigation.handleSwapAction}
             scaleTo={0.9}
           />
         </Columns>

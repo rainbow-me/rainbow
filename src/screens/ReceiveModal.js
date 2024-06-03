@@ -3,21 +3,23 @@ import { toLower } from 'lodash';
 import React, { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import TouchableBackdrop from '../components/TouchableBackdrop';
 import { CopyFloatingEmojis } from '../components/floating-emojis';
-import { Centered, Column, ColumnWithMargins } from '../components/layout';
+import { Column, ColumnWithMargins } from '../components/layout';
 import QRCode from '../components/qr-code/QRCode';
 import ShareButton from '../components/qr-code/ShareButton';
-import { SheetHandle } from '../components/sheet';
 import { Text, TruncatedAddress } from '../components/text';
 import { CopyToast, ToastPositionContainer } from '../components/toasts';
-import { useNavigation } from '../navigation/Navigation';
-import { abbreviations, deviceUtils } from '../utils';
-import { useAccountProfile } from '@/hooks';
+import { abbreviations, deviceUtils, safeAreaInsetValues } from '../utils';
+import { useAccountProfile, useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding, shadow } from '@/styles';
+import { SimpleSheet } from '@/components/sheet/SimpleSheet';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { sharedCoolModalTopOffset } from '@/navigation/config';
+import { IS_ANDROID, IS_IOS } from '@/env';
+import { Box } from '@/design-system';
 
-const QRCodeSize = ios ? 250 : Math.min(230, deviceUtils.dimensions.width - 20);
+const QRCodeSize = IS_IOS ? 250 : Math.min(230, deviceUtils.dimensions.width - 20);
 
 const AddressText = styled(TruncatedAddress).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -30,24 +32,12 @@ const AddressText = styled(TruncatedAddress).attrs(({ theme: { colors } }) => ({
   width: '100%',
 });
 
-const Container = styled(Centered).attrs({
-  direction: 'column',
-})({
-  bottom: 0,
-  flex: 1,
-});
-
-const Handle = styled(SheetHandle).attrs(({ theme: { colors } }) => ({
-  color: colors.whiteLabel,
-}))({
-  marginBottom: 19,
-});
-
 const QRWrapper = styled(Column).attrs({ align: 'center' })(({ theme: { colors } }) => ({
   ...shadow.buildAsObject(0, 10, 50, colors.shadowBlack, 0.6),
   ...padding.object(24),
   backgroundColor: colors.whiteLabel,
   borderRadius: 39,
+  margin: 24,
 }));
 
 const NameText = styled(Text).attrs(({ theme: { colors } }) => ({
@@ -62,7 +52,6 @@ const accountAddressSelector = state => state.settings.accountAddress;
 const lowercaseAccountAddressSelector = createSelector(accountAddressSelector, toLower);
 
 export default function ReceiveModal() {
-  const { goBack } = useNavigation();
   const accountAddress = useSelector(lowercaseAccountAddressSelector);
   const { accountName } = useAccountProfile();
 
@@ -74,12 +63,18 @@ export default function ReceiveModal() {
   }, []);
 
   const checksummedAddress = useMemo(() => toChecksumAddress(accountAddress), [accountAddress]);
+  const { height: deviceHeight } = useDimensions();
+  const { top } = useSafeAreaInsets();
 
   return (
-    <Container backgroundColor="rgba(0,0,0,0.85)" testID="receive-modal">
-      <TouchableBackdrop onPress={goBack} />
-      <Handle />
-      <ColumnWithMargins align="center" margin={24}>
+    <SimpleSheet
+      testID="receive-modal"
+      backgroundColor={'rgba(0,0,0,0.85)'}
+      useAdditionalTopPadding
+      customHeight={IS_ANDROID ? deviceHeight - top : deviceHeight - sharedCoolModalTopOffset}
+      scrollEnabled={false}
+    >
+      <Box alignItems="center" justifyContent="center" height="full" width="full">
         <QRWrapper>
           <QRCode size={QRCodeSize} value={checksummedAddress} />
         </QRWrapper>
@@ -90,10 +85,10 @@ export default function ReceiveModal() {
           </ColumnWithMargins>
         </CopyFloatingEmojis>
         <ShareButton accountAddress={checksummedAddress} />
-      </ColumnWithMargins>
-      <ToastPositionContainer>
-        <CopyToast copiedText={copiedText} copyCount={copyCount} />
-      </ToastPositionContainer>
-    </Container>
+        <ToastPositionContainer>
+          <CopyToast copiedText={copiedText} copyCount={copyCount} />
+        </ToastPositionContainer>
+      </Box>
+    </SimpleSheet>
   );
 }

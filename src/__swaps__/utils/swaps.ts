@@ -9,11 +9,12 @@ import { ChainId, ChainName } from '@/__swaps__/types/chains';
 import { RainbowConfig } from '@/model/remoteConfig';
 import { CrosschainQuote, ETH_ADDRESS, Quote, QuoteParams, SwapType, WRAPPED_ASSET } from '@rainbow-me/swaps';
 import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
-import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '../types/assets';
+import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '../types/assets';
 import { inputKeys } from '../types/swap';
 import { swapsStore } from '../../state/swaps/swapsStore';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { TokenColors } from '@/graphql/__generated__/metadata';
+import { userAssetsStore } from '@/state/assets/userAssets';
 import { colors } from '@/styles';
 import { convertAmountToRawAmount } from './numbers';
 
@@ -45,21 +46,28 @@ export const getColorValueForThemeWorklet = <T>(values: ResponseByTheme<T> | und
 };
 
 export const getHighContrastColor = (color: string): ResponseByTheme<string> => {
-  const lightModeContrast = c.contrast(color, globalColors.white100);
-  const darkModeContrast = c.contrast(color, globalColors.grey100);
+  if (color === ETH_COLOR) {
+    return {
+      light: ETH_COLOR,
+      dark: ETH_COLOR_DARK,
+    };
+  }
 
   let lightColor = color;
   let darkColor = color;
 
+  const lightModeContrast = c.contrast(lightColor, globalColors.white100);
+  const darkModeContrast = c.contrast(darkColor, globalColors.grey100);
+
   if (lightModeContrast < 2.5) {
-    lightColor = c(color)
+    lightColor = c(lightColor)
       .set('hsl.s', `*${lightModeContrast < 1.5 ? 2 : 1.2}`)
       .darken(2.5 - (lightModeContrast - (lightModeContrast < 1.5 ? 0.5 : 0)))
       .hex();
   }
 
   if (darkModeContrast < 3) {
-    darkColor = c(color)
+    darkColor = c(darkColor)
       .set('hsl.l', darkModeContrast < 1.5 ? 0.88 : 0.8)
       .set('hsl.s', `*${darkModeContrast < 1.5 ? 0.75 : 0.85}`)
       .hex();
@@ -75,31 +83,33 @@ export const getMixedColor = (color1: string, color2: string, ratio: number) => 
   return c.mix(color1, color2, ratio).hex();
 };
 
-export const getTextColor = (color: string): ResponseByTheme<string> => {
-  const contrastWithWhite = c.contrast(color, globalColors.white100);
+export const getTextColor = (colors: ResponseByTheme<string>): ResponseByTheme<string> => {
+  const lightContrast = c.contrast(colors.light, globalColors.white100);
+  const darkContrast = c.contrast(colors.dark === ETH_COLOR ? ETH_COLOR_DARK : colors.dark, globalColors.white100);
 
   return {
-    light: contrastWithWhite < 2 ? globalColors.grey100 : globalColors.white100,
-    dark: contrastWithWhite < 2.6 ? globalColors.grey100 : globalColors.white100,
+    light: lightContrast < 2 ? globalColors.grey100 : globalColors.white100,
+    dark: darkContrast < 2.6 ? globalColors.grey100 : globalColors.white100,
   };
 };
 
-export const getMixedShadowColor = (color?: string | null): ResponseByTheme<string> => {
+export const getMixedShadowColor = (color: string): ResponseByTheme<string> => {
   return {
-    light: getMixedColor(color || ETH_COLOR, colors.dark, 0.84),
-    dark: getMixedColor(color || ETH_COLOR_DARK, colors.dark, 0.84),
+    light: getMixedColor(color, colors.dark, 0.84),
+    dark: globalColors.grey100,
   };
 };
 
-export const getTintedBackgroundColor = (color: string): ResponseByTheme<string> => {
+export const getTintedBackgroundColor = (colors: ResponseByTheme<string>): ResponseByTheme<string> => {
   const lightModeColorToMix = globalColors.white100;
   const darkModeColorToMix = globalColors.grey100;
 
   return {
-    light: c.mix(color, lightModeColorToMix, 0.94).saturate(-0.06).hex(),
-    dark: c.mix(color, darkModeColorToMix, 0.9875).saturate(0).hex(),
+    light: c.mix(colors.light, lightModeColorToMix, 0.94).saturate(-0.06).hex(),
+    dark: c.mix(colors.dark === ETH_COLOR ? ETH_COLOR_DARK : colors.dark, darkModeColorToMix, 0.9875).hex(),
   };
 };
+
 //
 // /---- END color functions ----/ //
 
@@ -157,8 +167,11 @@ export const findNiceIncrement = (availableBalance: number): number => {
 
 // /---- 🔵 Worklet utils 🔵 ----/ //
 //
-export function addCommasToNumber(number: string | number) {
+export function addCommasToNumber<T extends 0 | '0' | '0.00'>(number: string | number, fallbackValue: T = 0 as T): T | string {
   'worklet';
+  if (isNaN(Number(number))) {
+    return fallbackValue;
+  }
   const numberString = number.toString();
 
   if (numberString.includes(',')) {
@@ -190,14 +203,21 @@ export function trimTrailingZeros(value: string) {
   return withTrimmedZeros.endsWith('.') ? withTrimmedZeros.slice(0, -1) : withTrimmedZeros;
 }
 
-export function valueBasedDecimalFormatter(
-  amount: number,
-  usdTokenPrice: number,
-  roundingMode?: 'up' | 'down',
-  precisionAdjustment?: number,
-  isStablecoin?: boolean,
-  stripSeparators = true
-): string {
+export function valueBasedDecimalFormatter({
+  amount,
+  usdTokenPrice,
+  roundingMode,
+  precisionAdjustment,
+  isStablecoin,
+  stripSeparators = true,
+}: {
+  amount: number;
+  usdTokenPrice: number;
+  roundingMode?: 'up' | 'down';
+  precisionAdjustment?: number;
+  isStablecoin?: boolean;
+  stripSeparators?: boolean;
+}): string {
   'worklet';
 
   function calculateDecimalPlaces(usdTokenPrice: number, precisionAdjustment?: number): number {
@@ -239,21 +259,52 @@ export function valueBasedDecimalFormatter(
   return numberFormatter.format(roundedAmount);
 }
 
-export function niceIncrementFormatter(
-  incrementDecimalPlaces: number,
-  inputAssetBalance: number,
-  inputAssetUsdPrice: number,
-  niceIncrement: number,
-  percentageToSwap: number,
-  sliderXPosition: number,
-  stripSeparators?: boolean
-) {
+export function niceIncrementFormatter({
+  incrementDecimalPlaces,
+  inputAssetBalance,
+  inputAssetUsdPrice,
+  niceIncrement,
+  percentageToSwap,
+  sliderXPosition,
+  stripSeparators,
+}: {
+  incrementDecimalPlaces: number;
+  inputAssetBalance: number;
+  inputAssetUsdPrice: number;
+  niceIncrement: number;
+  percentageToSwap: number;
+  sliderXPosition: number;
+  stripSeparators?: boolean;
+}) {
   'worklet';
   if (percentageToSwap === 0) return '0';
-  if (percentageToSwap === 0.25) return valueBasedDecimalFormatter(inputAssetBalance * 0.25, inputAssetUsdPrice, 'up', -3);
-  if (percentageToSwap === 0.5) return valueBasedDecimalFormatter(inputAssetBalance * 0.5, inputAssetUsdPrice, 'up', -3);
-  if (percentageToSwap === 0.75) return valueBasedDecimalFormatter(inputAssetBalance * 0.75, inputAssetUsdPrice, 'up', -3);
-  if (percentageToSwap === 1) return valueBasedDecimalFormatter(inputAssetBalance, inputAssetUsdPrice, 'up');
+  if (percentageToSwap === 0.25)
+    return valueBasedDecimalFormatter({
+      amount: inputAssetBalance * 0.25,
+      usdTokenPrice: inputAssetUsdPrice,
+      roundingMode: 'up',
+      precisionAdjustment: -3,
+    });
+  if (percentageToSwap === 0.5)
+    return valueBasedDecimalFormatter({
+      amount: inputAssetBalance * 0.5,
+      usdTokenPrice: inputAssetUsdPrice,
+      roundingMode: 'up',
+      precisionAdjustment: -3,
+    });
+  if (percentageToSwap === 0.75)
+    return valueBasedDecimalFormatter({
+      amount: inputAssetBalance * 0.75,
+      usdTokenPrice: inputAssetUsdPrice,
+      roundingMode: 'up',
+      precisionAdjustment: -3,
+    });
+  if (percentageToSwap === 1)
+    return valueBasedDecimalFormatter({
+      amount: inputAssetBalance,
+      usdTokenPrice: inputAssetUsdPrice,
+      roundingMode: 'up',
+    });
 
   const exactIncrement = inputAssetBalance / 100;
   const isIncrementExact = niceIncrement === exactIncrement;
@@ -352,35 +403,53 @@ export type Colors = {
 
 type ExtractColorValueForColorsProps = {
   colors: TokenColors;
-  isDarkMode: boolean;
 };
 
 export const extractColorValueForColors = ({
   colors,
 }: ExtractColorValueForColorsProps): Omit<ExtendedAnimatedAssetWithColors, keyof ParsedSearchAsset> => {
-  const color = colors.primary ?? colors.fallback;
+  const color = colors.primary || colors.fallback;
+  const darkColor = color || ETH_COLOR_DARK;
+  const lightColor = color || ETH_COLOR;
+
+  const highContrastColor = getHighContrastColor(lightColor);
 
   return {
     color: {
-      light: colors.primary ?? colors.fallback ?? ETH_COLOR,
-      dark: colors.primary ?? colors.fallback ?? ETH_COLOR_DARK,
+      light: lightColor,
+      dark: darkColor,
     },
     shadowColor: {
-      light: colors.shadow ?? ETH_COLOR,
-      dark: colors.shadow ?? ETH_COLOR_DARK,
+      light: lightColor,
+      dark: darkColor,
     },
-    mixedShadowColor: getMixedShadowColor(colors.shadow),
-    highContrastColor: getHighContrastColor(color),
-    tintedBackgroundColor: getTintedBackgroundColor(color),
-    textColor: getTextColor(color),
+    mixedShadowColor: getMixedShadowColor(lightColor),
+    highContrastColor: highContrastColor,
+    tintedBackgroundColor: getTintedBackgroundColor(highContrastColor),
+    textColor: getTextColor(highContrastColor),
     nativePrice: undefined,
   };
 };
 
-export const getQuoteServiceTime = ({ quote }: { quote: Quote | CrosschainQuote }) =>
-  (quote as CrosschainQuote)?.routes?.[0]?.serviceTime || 0;
+export const getQuoteServiceTimeWorklet = ({ quote }: { quote: Quote | CrosschainQuote }) => {
+  'worklet';
+  return (quote as CrosschainQuote)?.routes?.[0]?.serviceTime || 0;
+};
 
-export const getCrossChainTimeEstimate = ({
+const I18N_TIME = {
+  singular: {
+    hours_long: i18n.t(i18n.l.time.hours.long.singular),
+    minutes_short: i18n.t(i18n.l.time.minutes.short.singular),
+    seconds_short: i18n.t(i18n.l.time.seconds.short.singular),
+  },
+  plural: {
+    hours_long: i18n.t(i18n.l.time.hours.long.plural),
+    minutes_short: i18n.t(i18n.l.time.minutes.short.plural),
+    seconds_short: i18n.t(i18n.l.time.seconds.short.plural),
+  },
+};
+
+export const getCrossChainTimeEstimateWorklet = ({
   serviceTime,
 }: {
   serviceTime?: number;
@@ -389,6 +458,8 @@ export const getCrossChainTimeEstimate = ({
   timeEstimate?: number;
   timeEstimateDisplay: string;
 } => {
+  'worklet';
+
   let isLongWait = false;
   let timeEstimateDisplay;
   const timeEstimate = serviceTime;
@@ -398,11 +469,11 @@ export const getCrossChainTimeEstimate = ({
 
   if (hours >= 1) {
     isLongWait = true;
-    timeEstimateDisplay = `>${hours} ${i18n.t(i18n.l.time.hours.long[hours === 1 ? 'singular' : 'plural'])}`;
+    timeEstimateDisplay = `>${hours} ${hours === 1 ? I18N_TIME.singular.hours_long : I18N_TIME.plural.hours_long}`;
   } else if (minutes >= 1) {
-    timeEstimateDisplay = `~${minutes} ${i18n.t(i18n.l.time.minutes.short[minutes === 1 ? 'singular' : 'plural'])}`;
+    timeEstimateDisplay = `~${minutes} ${minutes === 1 ? I18N_TIME.singular.minutes_short : I18N_TIME.plural.minutes_short}`;
   } else {
-    timeEstimateDisplay = `~${timeEstimate} ${i18n.t(i18n.l.time.seconds.short[timeEstimate === 1 ? 'singular' : 'plural'])}`;
+    timeEstimateDisplay = `~${timeEstimate} ${timeEstimate === 1 ? I18N_TIME.singular.seconds_short : I18N_TIME.plural.seconds_short}`;
   }
 
   return {
@@ -411,6 +482,7 @@ export const getCrossChainTimeEstimate = ({
     timeEstimateDisplay,
   };
 };
+
 export const isUnwrapEth = ({
   buyTokenAddress,
   chainId,
@@ -464,33 +536,44 @@ export const priceForAsset = ({
 
 type ParseAssetAndExtendProps = {
   asset: ParsedSearchAsset | null;
+  insertUserAssetBalance?: boolean;
 };
 
-export const parseAssetAndExtend = ({ asset }: ParseAssetAndExtendProps): ExtendedAnimatedAssetWithColors | null => {
-  'worklet';
+const ETH_COLORS: Colors = {
+  primary: undefined,
+  fallback: undefined,
+  shadow: undefined,
+};
 
+export const getStandardizedUniqueIdWorklet = ({ address, chainId }: { address: AddressOrEth; chainId: ChainId }) => {
+  'worklet';
+  return `${address.toLowerCase()}_${chainId}`;
+};
+
+export const parseAssetAndExtend = ({
+  asset,
+  insertUserAssetBalance,
+}: ParseAssetAndExtendProps): ExtendedAnimatedAssetWithColors | null => {
   if (!asset) {
     return null;
   }
 
-  // TODO: Process and add colors to the asset and anything else we'll need for reanimated stuff
+  const isAssetEth = asset.isNativeAsset && asset.symbol === 'ETH';
   const colors = extractColorValueForColors({
-    colors: asset.colors as TokenColors,
-    isDarkMode: true, // TODO: Make this not rely on isDarkMode
+    colors: (isAssetEth ? ETH_COLORS : asset.colors) as TokenColors,
   });
 
-  const priceInfo: Pick<ExtendedAnimatedAssetWithColors, 'nativePrice'> = {
-    nativePrice: undefined,
-  };
-
-  if (asset.price) {
-    priceInfo.nativePrice = asset.price.value;
-  }
+  const uniqueId = getStandardizedUniqueIdWorklet({ address: asset.address, chainId: asset.chainId });
 
   return {
     ...asset,
     ...colors,
-    ...priceInfo,
+    nativePrice: asset.price?.value,
+    balance: insertUserAssetBalance ? userAssetsStore.getState().getUserAsset(uniqueId)?.balance || asset.balance : asset.balance,
+
+    // For some reason certain assets have a unique ID in the format of `${address}_mainnet` rather than
+    // `${address}_${chainId}`, so at least for now we ensure consistency by reconstructing the unique ID here.
+    uniqueId,
   };
 };
 

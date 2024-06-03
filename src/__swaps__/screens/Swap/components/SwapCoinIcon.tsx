@@ -6,11 +6,10 @@ import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { globalColors } from '@/design-system';
 import { Network } from '@/networks/types';
 import { borders, fonts } from '@/styles';
-import { ThemeContextProps } from '@/theme';
+import { useTheme } from '@/theme';
 import { FallbackIcon as CoinIconTextFallback, isETH } from '@/utils';
 import { FastFallbackCoinIconImage } from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastFallbackCoinIconImage';
-import Animated, { SharedValue } from 'react-native-reanimated';
-import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import Animated from 'react-native-reanimated';
 
 // TODO: Delete this and replace with RainbowCoinIcon
 // ⚠️ When replacing this component with RainbowCoinIcon, make sure
@@ -60,20 +59,17 @@ function resolveNetworkAndAddress({ address, mainnetAddress, network }: { mainne
 }
 
 export const SwapCoinIcon = React.memo(function FeedCoinIcon({
-  asset,
   address,
   color,
   iconUrl,
-  disableShadow,
+  disableShadow = true,
   forceDarkMode,
   large,
   mainnetAddress,
   network,
   small,
   symbol,
-  theme,
 }: {
-  asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   address: string;
   color?: string;
   iconUrl?: string;
@@ -84,9 +80,8 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
   network: Network;
   small?: boolean;
   symbol: string;
-  theme: ThemeContextProps;
 }) {
-  const { colors } = theme;
+  const theme = useTheme();
 
   const { resolvedNetwork, resolvedAddress } = resolveNetworkAndAddress({
     address,
@@ -94,8 +89,8 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
     network,
   });
 
-  const fallbackIconColor = color ?? colors.purpleUniswap;
-  const shadowColor = theme.isDarkMode || forceDarkMode ? colors.shadow : color || fallbackIconColor;
+  const fallbackIconColor = color ?? theme.colors.purpleUniswap;
+  const shadowColor = theme.isDarkMode || forceDarkMode ? theme.colors.shadow : color || fallbackIconColor;
   const eth = isETH(resolvedAddress);
 
   return (

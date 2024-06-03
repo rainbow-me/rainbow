@@ -23,7 +23,7 @@ import {
 import { ethereumUtils } from '@/utils';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { ParsedAsset } from '@/resources/assets/types';
-import { parseGasParamAmounts } from '@/parsers';
+import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 
 const getCrosschainSwapDefaultGasLimit = (quote: CrosschainQuote) => quote?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
 
@@ -104,13 +104,14 @@ export const crosschainSwap = async ({
   index,
   parameters,
   baseNonce,
-  selectedGasFee,
+  gasParams,
   gasFeeParamsBySpeed,
 }: ActionProps<'crosschainSwap'>): Promise<RapActionResult> => {
   const { quote, chainId, requiresApprove } = parameters;
-  let gasParams = parseGasParamAmounts(selectedGasFee);
+
+  let gasParamsToUse = gasParams;
   if (currentRap.actions.length - 1 > index) {
-    gasParams = overrideWithFastSpeedIfNeeded({
+    gasParamsToUse = overrideWithFastSpeedIfNeeded({
       gasParams,
       chainId,
       gasFeeParamsBySpeed,
@@ -139,7 +140,7 @@ export const crosschainSwap = async ({
     nonce,
     quote,
     wallet,
-    gasParams,
+    gasParams: gasParamsToUse,
   };
 
   let swap;
@@ -155,13 +156,28 @@ export const crosschainSwap = async ({
   // TODO: MARK - Replace this once we migrate network => chainId
   const network = ethereumUtils.getNetworkFromChainId(parameters.chainId);
 
+  const nativePriceForAssetToBuy = (parameters.assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice
+    ? {
+        value: (parameters.assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice,
+      }
+    : parameters.assetToBuy.price;
+
+  const nativePriceForAssetToSell = (parameters.assetToSell as ExtendedAnimatedAssetWithColors)?.nativePrice
+    ? {
+        value: (parameters.assetToSell as ExtendedAnimatedAssetWithColors)?.nativePrice,
+      }
+    : parameters.assetToSell.price;
+
   const transaction = {
     data: parameters.quote.data,
+    from: parameters.quote.from as Address,
+    to: parameters.quote.to as Address,
     value: parameters.quote.value?.toString(),
     asset: {
       ...parameters.assetToBuy,
       network: ethereumUtils.getNetworkFromChainId(parameters.assetToBuy.chainId),
       colors: parameters.assetToBuy.colors as TokenColors,
+      price: nativePriceForAssetToBuy,
     } as ParsedAsset,
     changes: [
       {
@@ -172,6 +188,7 @@ export const crosschainSwap = async ({
           ...parameters.assetToSell,
           network: ethereumUtils.getNetworkFromChainId(parameters.assetToSell.chainId),
           colors: parameters.assetToSell.colors as TokenColors,
+          price: nativePriceForAssetToSell,
         },
         value: quote.sellAmount.toString(),
       },
@@ -183,12 +200,12 @@ export const crosschainSwap = async ({
           ...parameters.assetToBuy,
           network: ethereumUtils.getNetworkFromChainId(parameters.assetToBuy.chainId),
           colors: parameters.assetToBuy.colors as TokenColors,
+          price: nativePriceForAssetToBuy,
         },
-        value: quote.buyAmount.toString(),
+        value: quote.buyAmountMinusFees.toString(),
       },
     ],
-    from: parameters.quote.from as Address,
-    to: parameters.quote.to as Address,
+    gasLimit,
     hash: swap.hash as TxHash,
     // TODO: MARK - Replace this once we migrate network => chainId
     network,
@@ -197,7 +214,7 @@ export const crosschainSwap = async ({
     status: 'pending',
     type: 'swap',
     flashbots: parameters.flashbots,
-    ...gasParams,
+    ...gasParamsToUse,
   } satisfies NewTransaction;
 
   addNewTransaction({

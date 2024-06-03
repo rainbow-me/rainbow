@@ -1,6 +1,8 @@
 import { useCallback } from 'react';
-import { SharedValue, useSharedValue } from 'react-native-reanimated';
-import { useSwapInputsController } from './useSwapInputsController';
+import { SharedValue, runOnJS, useSharedValue } from 'react-native-reanimated';
+import { onCloseGasPanel } from '../components/GasPanel';
+import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 
 export const enum NavigationSteps {
   INPUT_ELEMENT_FOCUSED = 0,
@@ -11,15 +13,21 @@ export const enum NavigationSteps {
 }
 
 export function useSwapNavigation({
-  SwapInputController,
+  executeSwap,
   inputProgress,
   outputProgress,
   configProgress,
+  quoteFetchingInterval,
+  selectedInputAsset,
+  selectedOutputAsset,
 }: {
-  SwapInputController: ReturnType<typeof useSwapInputsController>;
+  executeSwap: () => void;
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
   configProgress: SharedValue<number>;
+  quoteFetchingInterval: ReturnType<typeof useAnimatedInterval>;
+  selectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+  selectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
 }) {
   const navigateBackToReview = useSharedValue(false);
 
@@ -42,6 +50,7 @@ export function useSwapNavigation({
   const handleShowGas = useCallback(
     ({ backToReview = false }: { backToReview?: boolean }) => {
       'worklet';
+
       if (backToReview) {
         navigateBackToReview.value = true;
       }
@@ -57,7 +66,9 @@ export function useSwapNavigation({
 
   const handleDismissGas = useCallback(() => {
     'worklet';
+
     if (configProgress.value === NavigationSteps.SHOW_GAS) {
+      runOnJS(onCloseGasPanel)();
       configProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
     }
   }, [configProgress]);
@@ -66,21 +77,43 @@ export function useSwapNavigation({
     'worklet';
     handleDismissReview();
     handleDismissGas();
-    SwapInputController.fetchQuote();
 
-    if (inputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED) {
+    const isInputAssetNull = selectedInputAsset.value === null;
+    const isOutputAssetNull = selectedOutputAsset.value === null;
+    const areBothAssetsSelected = !isInputAssetNull && !isOutputAssetNull;
+
+    if (inputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED && !isInputAssetNull) {
       inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
-    }
-    if (outputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED) {
-      outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
-    }
-    if (inputProgress.value === NavigationSteps.SEARCH_FOCUSED) {
+      if (areBothAssetsSelected) {
+        quoteFetchingInterval.start();
+      } else {
+        outputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
+        return;
+      }
+    } else if (inputProgress.value === NavigationSteps.SEARCH_FOCUSED) {
       inputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
     }
-    if (outputProgress.value === NavigationSteps.SEARCH_FOCUSED) {
+
+    if (outputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED && !isOutputAssetNull) {
+      outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+      if (areBothAssetsSelected) {
+        quoteFetchingInterval.start();
+      } else {
+        inputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
+        return;
+      }
+    } else if (outputProgress.value === NavigationSteps.SEARCH_FOCUSED) {
       outputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
     }
-  }, [SwapInputController, handleDismissGas, handleDismissReview, inputProgress, outputProgress]);
+  }, [
+    handleDismissGas,
+    handleDismissReview,
+    inputProgress,
+    outputProgress,
+    quoteFetchingInterval,
+    selectedInputAsset,
+    selectedOutputAsset,
+  ]);
 
   const handleFocusInputSearch = useCallback(() => {
     'worklet';
@@ -106,22 +139,21 @@ export function useSwapNavigation({
     'worklet';
     handleDismissReview();
     handleDismissGas();
-    SwapInputController.quoteFetchingInterval.stop();
+    quoteFetchingInterval.pause();
 
     if (inputProgress.value === NavigationSteps.INPUT_ELEMENT_FOCUSED) {
-      console.log('showing token list');
       inputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
       outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
     } else {
       inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
     }
-  }, [handleDismissReview, handleDismissGas, inputProgress, outputProgress, SwapInputController]);
+  }, [handleDismissReview, handleDismissGas, inputProgress, outputProgress, quoteFetchingInterval]);
 
   const handleOutputPress = useCallback(() => {
     'worklet';
     handleDismissReview();
     handleDismissGas();
-    SwapInputController.quoteFetchingInterval.stop();
+    quoteFetchingInterval.pause();
 
     if (outputProgress.value === NavigationSteps.INPUT_ELEMENT_FOCUSED) {
       outputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
@@ -129,7 +161,7 @@ export function useSwapNavigation({
     } else {
       outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
     }
-  }, [SwapInputController, handleDismissReview, handleDismissGas, inputProgress, outputProgress]);
+  }, [handleDismissReview, handleDismissGas, inputProgress, outputProgress, quoteFetchingInterval]);
 
   const handleSwapAction = useCallback(() => {
     'worklet';
@@ -142,14 +174,15 @@ export function useSwapNavigation({
         handleDismissGas();
       }
     } else if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
-      // TODO: Handle executing swap
-      handleDismissReview();
+      // TODO: Handle long press
+      executeSwap();
     } else {
       handleShowReview();
     }
-  }, [SwapInputController, configProgress, handleDismissGas, handleDismissReview, handleShowReview, navigateBackToReview]);
+  }, [configProgress, executeSwap, handleDismissGas, handleShowReview, navigateBackToReview]);
 
   return {
+    navigateBackToReview,
     handleExitSearch,
     handleFocusInputSearch,
     handleFocusOutputSearch,
@@ -160,6 +193,5 @@ export function useSwapNavigation({
     handleShowGas,
     handleDismissGas,
     handleSwapAction,
-    navigateBackToReview,
   };
 }

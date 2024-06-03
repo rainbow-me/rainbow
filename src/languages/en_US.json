@@ -431,6 +431,23 @@
         "description": "You can also long press your\naddress above to copy it."
       }
     },
+    "check_identifier": {
+      "title": "Authentication Needed",
+      "description": "It looks like you may have switched devices or reinstalled Rainbow. Please authenticate so that we can validate your keychain data is still in a healthy state.",
+      "action": "Authenticate",
+      "dismiss": "Dismiss",
+      "error_alert": {
+        "title": "Error Validating Keychain",
+        "message": "We encountered an error while validating your keychain data. Please try again. If the issue persists, please contact support.",
+        "contact_support": "Contact Support",
+        "cancel": "Cancel"
+      },
+      "failure_alert": {
+        "title": "Invalid Keychain Data",
+        "message": "We were unable to verify the integrity of your keychain data. Please restore your wallet and try again. If the issue persists, please contact support.",
+        "action": "Continue"
+      }
+    },
     "cloud": {
       "backup_success": "Your wallet has been backed up successfully!"
     },
@@ -541,7 +558,8 @@
         "from_divider": "from",
         "to_divider": "to",
         "view_on": "View on %{blockExplorerName}",
-        "view_on_etherscan": "View on Etherscan"
+        "view_on_etherscan": "View on Etherscan",
+        "copy_contract_address": "Copy Contract Address"
       },
       "all_networks": "All Networks",
       "filter_by_network": "Filter by Network",
@@ -565,24 +583,30 @@
         "nothing_to_send": "Nothing to send"
       },
       "quote_errors": {
+        "501": "No quote available",
         "no_quote_available": "No quote available",
+        "502": "Insufficient liquidity",
         "insufficient_liquidity": "Insufficient liquidity",
+        "503": "Fee on Transfer Token",
         "fee_on_transfer": "Fee on Transfer Token",
+        "504": "No route found",
         "no_route_found": "No route found"
       },
       "price_impact": {
         "long_wait": {
           "title": "Long wait",
-          "description": "Approx."
+          "description": "Approx. %{time}",
+          "description_prefix": "Approx."
         },
         "unknown_price": {
-          "title": "%{symbol} Market Value Unknown",
+          "title": "Market Value Unknown",
           "description": "If you decide to continue, be sure that you are satisfied receiving the quoted amount."
         },
         "losing_prefix": "Losing",
         "small_market": "Small Market",
         "small_market_try_smaller_amount": "Small market — try a smaller amount",
-        "you_are_losing": "You're losing",
+        "you_are_losing": "You're losing %{priceImpact}",
+        "you_are_losing_prefix": "You're losing",
         "no_data": "Market Value Unknown",
         "label": "Possible loss",
         "no_data_subtitle": "If you decide to continue, be sure that you are satisfied with the quoted amount"
@@ -1026,6 +1050,7 @@
         "urgent": "Urgent",
         "custom": "Custom"
       },
+      "unable_to_determine_selected_gas": "Unable to determine selected gas",
       "network_fee": "Est. network fee",
       "current_base_fee": "Current base fee",
       "max_base_fee": "Max base fee",
@@ -1903,9 +1928,18 @@
       "too_many_signup_request": "Too many signup requests, please try again later"
     },
     "swap": {
+      "actions": {
+        "tap_to_swap": "Tap to Swap",
+        "save": "Save",
+        "enter_amount": "Enter Amount",
+        "review": "Review",
+        "fetching_prices": "Fetching",
+        "swapping": "Swapping"
+      },
       "aggregators": {
         "rainbow": "Rainbow"
       },
+      "error_executing_swap": "Error executing swap",
       "tokens_input": {
         "tokens": "Tokens",
         "sort": "Sort",
@@ -1932,6 +1966,7 @@
       },
       "loading": "Loading...",
       "modal_types": {
+        "bridge": "Bridge",
         "confirm": "Confirm",
         "deposit": "Deposit",
         "receive": "Receive",
@@ -1941,6 +1976,7 @@
         "withdraw_symbol": "Withdraw %{symbol}"
       },
       "unknown": "Unknown",
+      "unable_to_load_wallet": "Unable to load wallet",
       "warning": {
         "cost": {
           "are_you_sure_title": "Are you sure?",

@@ -59,8 +59,8 @@ export function CollectionCell({ collection }: { collection: MintableCollection 
     });
 
     const network = ethereumUtils.getNetworkFromChainId(collection.chainId);
-    navigateToMintCollection(collection.contract, network);
-  }, [amount, collection.chainId, collection.contract, collection.contractAddress]);
+    navigateToMintCollection(collection.contract, collection.mintStatus.price, network);
+  }, [amount, collection.chainId, collection.contract, collection.contractAddress, collection.mintStatus.price]);
 
   return (
     <ButtonPressAnimation onPress={handlePress} style={{ width: NFT_IMAGE_SIZE }}>
