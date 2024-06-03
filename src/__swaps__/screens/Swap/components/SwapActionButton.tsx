@@ -18,6 +18,7 @@ export const SwapActionButton = ({
   icon,
   iconStyle,
   label,
+  onPressJS,
   onPressWorklet,
   outline,
   rightIcon,
@@ -33,6 +34,7 @@ export const SwapActionButton = ({
   icon?: string | DerivedValue<string | undefined>;
   iconStyle?: StyleProp<TextStyle>;
   label: string | DerivedValue<string | undefined>;
+  onPressJS?: () => void;
   onPressWorklet?: () => void;
   outline?: boolean;
   rightIcon?: string;
@@ -111,7 +113,9 @@ export const SwapActionButton = ({
     <AnimatedGestureHandlerV1Button
       animatedProps={buttonAnimatedProps}
       onPressStartWorklet={onPressWorklet}
+      onPressJS={onPressJS}
       style={[hugContent && feedActionButtonStyles.buttonWrapper, style]}
+      scaleTo={scaleTo || (hugContent ? undefined : 0.925)}
     >
       <Box
         as={Animated.View}
@@ -123,30 +127,23 @@ export const SwapActionButton = ({
         <Columns alignHorizontal="center" alignVertical="center" space="6px">
           {icon && (
             <Column width="content">
-              <AnimatedText align="center" size={small ? '15pt' : '17pt'} style={[iconStyle, textStyles]} text={iconValue} weight="heavy" />
+              <AnimatedText align="center" size={small ? '15pt' : '17pt'} style={[iconStyle, textStyles]} weight="heavy">
+                {iconValue}
+              </AnimatedText>
             </Column>
           )}
           {typeof label !== 'undefined' && (
             <Column width="content">
-              <AnimatedText
-                align="center"
-                style={textStyles}
-                numberOfLines={1}
-                size={small ? '17pt' : '20pt'}
-                text={labelValue}
-                weight="heavy"
-              />
+              <AnimatedText align="center" style={textStyles} numberOfLines={1} size={small ? '17pt' : '20pt'} weight="heavy">
+                {labelValue}
+              </AnimatedText>
             </Column>
           )}
           {rightIcon && (
             <Column width="content">
-              <AnimatedText
-                align="center"
-                style={[textStyles, secondaryTextStyles]}
-                size={small ? '15pt' : '17pt'}
-                text={rightIconValue}
-                weight="bold"
-              />
+              <AnimatedText align="center" style={[textStyles, secondaryTextStyles]} size={small ? '15pt' : '17pt'} weight="bold">
+                {rightIconValue}
+              </AnimatedText>
             </Column>
           )}
         </Columns>

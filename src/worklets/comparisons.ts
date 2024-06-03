@@ -1,9 +1,10 @@
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-export function deepEqualWorklet(obj1: Record<string, any>, obj2: Record<string, any>): boolean {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+export function deepEqualWorklet(obj1: Record<string, any> | null | undefined, obj2: Record<string, any> | null | undefined): boolean {
   'worklet';
   // Validate object types upfront to avoid property access errors
-  if (typeof obj1 !== 'object' || obj1 === null || typeof obj2 !== 'object' || obj2 === null) {
-    // Handle basic comparison for primitives and nulls
+  if (typeof obj1 !== 'object' || obj1 === null || obj1 === undefined || typeof obj2 !== 'object' || obj2 === null || obj2 === undefined) {
+    // Simple and fast comparison for non-objects
     return obj1 === obj2;
   }
   // Early return if the references are the same
@@ -24,11 +25,10 @@ export function deepEqualWorklet(obj1: Record<string, any>, obj2: Record<string,
   return true;
 }
 
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-export function shallowEqualWorklet(obj1: Record<string, any>, obj2: Record<string, any>): boolean {
+export function shallowEqualWorklet(obj1: Record<string, any> | null | undefined, obj2: Record<string, any> | null | undefined): boolean {
   'worklet';
   // Validate object types upfront to avoid property access errors
-  if (typeof obj1 !== 'object' || obj1 === null || typeof obj2 !== 'object' || obj2 === null) {
+  if (typeof obj1 !== 'object' || obj1 === null || obj1 === undefined || typeof obj2 !== 'object' || obj2 === null || obj2 === undefined) {
     // Simple and fast comparison for non-objects
     return obj1 === obj2;
   }

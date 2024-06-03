@@ -55,9 +55,11 @@ export const SwapWarning = () => {
       paddingVertical="16px"
       style={[AnimatedSwapStyles.hideWhenInputsExpandedOrNoPriceImpact, { alignSelf: 'center', position: 'absolute', top: 8 }]}
     >
-      <Box as={Animated.View} alignItems="center" height={{ custom: 33 }} gap={8} justifyContent="center" paddingHorizontal="10px">
+      <Box as={Animated.View} alignItems="center" height={{ custom: 33 }} gap={12} justifyContent="center" paddingHorizontal="10px">
         <Inline alignHorizontal="center" alignVertical="center" horizontalSpace="4px" wrap={false}>
-          <AnimatedText style={warningTitleStyles} align="center" size="15pt" weight="heavy" text={warningTitle} />
+          <AnimatedText style={warningTitleStyles} align="center" size="15pt" weight="heavy">
+            {warningTitle}
+          </AnimatedText>
         </Inline>
         <AnimatedText
           style={warningSubtitleStyles}

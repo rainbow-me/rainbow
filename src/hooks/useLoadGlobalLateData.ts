@@ -31,7 +31,7 @@ export default function useLoadGlobalLateData() {
     // favorites
     const p3 = queryClient.prefetchQuery({
       queryKey: favoritesQueryKey,
-      queryFn: refreshFavorites,
+      queryFn: () => refreshFavorites(),
     });
 
     // contacts

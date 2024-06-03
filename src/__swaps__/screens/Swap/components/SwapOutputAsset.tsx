@@ -1,10 +1,9 @@
+import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
 import MaskedView from '@react-native-masked-view/masked-view';
 import React from 'react';
 import { StatusBar, StyleSheet } from 'react-native';
-import Animated, { runOnUI, useDerivedValue } from 'react-native-reanimated';
+import Animated, { useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
-
-import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
 
 import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
@@ -13,11 +12,9 @@ import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapAction
 import { SwapInput } from '@/__swaps__/screens/Swap/components/SwapInput';
 import { TokenList } from '@/__swaps__/screens/Swap/components/TokenList/TokenList';
 import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { useAssetsToSell } from '@/__swaps__/screens/Swap/hooks/useAssetsToSell';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { isSameAssetWorklet } from '@/__swaps__/utils/assets';
 import { IS_ANDROID } from '@/env';
-import { AmimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
+import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
 
 function SwapOutputActionButton() {
   const { isDarkMode } = useColorMode();
@@ -25,7 +22,7 @@ function SwapOutputActionButton() {
 
   const label = useDerivedValue(() => {
     const asset = internalSelectedOutputAsset.value;
-    return asset?.symbol ?? '';
+    return asset?.symbol ?? (!asset ? 'Select' : '');
   });
 
   return (
@@ -53,14 +50,9 @@ function SwapOutputAmount() {
       }}
     >
       <MaskedView maskElement={<FadeMask fadeEdgeInset={2} fadeWidth={8} height={36} side="right" />} style={styles.inputTextMask}>
-        <AnimatedText
-          ellipsizeMode="clip"
-          numberOfLines={1}
-          size="30pt"
-          style={SwapTextStyles.outputAmountTextStyle}
-          text={SwapInputController.formattedOutputAmount}
-          weight="bold"
-        />
+        <AnimatedText ellipsizeMode="clip" numberOfLines={1} size="30pt" style={SwapTextStyles.outputAmountTextStyle} weight="bold">
+          {SwapInputController.formattedOutputAmount}
+        </AnimatedText>
         <Animated.View style={[styles.caretContainer, SwapTextStyles.outputCaretStyle]}>
           <Box as={Animated.View} borderRadius={1} style={[styles.caret, AnimatedSwapStyles.assetToBuyCaretStyle]} />
         </Animated.View>
@@ -74,7 +66,7 @@ function SwapInputIcon() {
 
   return (
     <Box paddingRight="10px">
-      <AmimatedSwapCoinIcon asset={internalSelectedOutputAsset} large />
+      <AnimatedSwapCoinIcon asset={internalSelectedOutputAsset} large />
     </Box>
   );
 }
@@ -82,19 +74,12 @@ function SwapInputIcon() {
 function OutputAssetBalanceBadge() {
   const { internalSelectedOutputAsset } = useSwapContext();
 
-  const userAssets = useAssetsToSell();
-
   const label = useDerivedValue(() => {
     const asset = internalSelectedOutputAsset.value;
-    if (!asset) return 'No balance';
+    const hasBalance = Number(asset?.balance.amount) > 0 && asset?.balance.display;
+    const balance = (hasBalance && asset?.balance.display) || 'No Balance';
 
-    const userAsset = userAssets.find(userAsset =>
-      isSameAssetWorklet(userAsset, {
-        address: asset.address,
-        chainId: asset.chainId,
-      })
-    );
-    return userAsset?.balance.display ?? 'No balance';
+    return asset ? balance : 'Token to Get';
   });
 
   return <BalanceBadge label={label} />;
@@ -125,13 +110,9 @@ export function SwapOutputAsset() {
             </Column>
           </Columns>
           <Columns alignHorizontal="justify" alignVertical="center" space="10px">
-            <AnimatedText
-              numberOfLines={1}
-              size="17pt"
-              style={SwapTextStyles.outputNativeValueStyle}
-              text={SwapInputController.formattedOutputNativeValue}
-              weight="heavy"
-            />
+            <AnimatedText numberOfLines={1} size="17pt" style={SwapTextStyles.outputNativeValueStyle} weight="heavy">
+              {SwapInputController.formattedOutputNativeValue}
+            </AnimatedText>
             <Column width="content">
               <OutputAssetBalanceBadge />
             </Column>
@@ -149,8 +130,8 @@ export function SwapOutputAsset() {
       >
         <TokenList
           asset={internalSelectedOutputAsset}
-          handleExitSearch={runOnUI(SwapNavigation.handleExitSearch)}
-          handleFocusSearch={runOnUI(SwapNavigation.handleFocusOutputSearch)}
+          handleExitSearchWorklet={SwapNavigation.handleExitSearch}
+          handleFocusSearchWorklet={SwapNavigation.handleFocusOutputSearch}
           output
         />
       </Box>

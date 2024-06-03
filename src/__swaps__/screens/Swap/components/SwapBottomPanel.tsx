@@ -7,11 +7,12 @@ import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-n
 import { Box, Column, Columns, Separator, globalColors, useColorMode } from '@/design-system';
 import { safeAreaInsetValues } from '@/utils';
 
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH, springConfig } from '@/__swaps__/screens/Swap/constants';
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { IS_ANDROID } from '@/env';
 
 import { opacity } from '@/__swaps__/utils/swaps';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useBottomPanelGestureHandler } from '../hooks/useBottomPanelGestureHandler';
 import { GasButton } from './GasButton';
 import { GasPanel } from './GasPanel';
@@ -27,7 +28,12 @@ export function SwapBottomPanel() {
 
   const gestureHandlerStyles = useAnimatedStyle(() => {
     return {
-      transform: [{ translateY: gestureY.value > 0 ? withSpring(gestureY.value, springConfig) : withSpring(0, springConfig) }],
+      transform: [
+        {
+          translateY:
+            gestureY.value > 0 ? withSpring(gestureY.value, SPRING_CONFIGS.springConfig) : withSpring(0, SPRING_CONFIGS.springConfig),
+        },
+      ],
     };
   });
 
