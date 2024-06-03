@@ -1,21 +1,21 @@
 import c from 'chroma-js';
 import { SharedValue, convertToRGBA, isColor } from 'react-native-reanimated';
 
-import * as i18n from '@/languages';
-import { globalColors } from '@/design-system';
 import { ETH_COLOR, ETH_COLOR_DARK, SCRUBBER_WIDTH, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { ChainId, ChainName } from '@/__swaps__/types/chains';
-import { RainbowConfig } from '@/model/remoteConfig';
-import { CrosschainQuote, ETH_ADDRESS, Quote, QuoteParams, SwapType, WRAPPED_ASSET } from '@rainbow-me/swaps';
+import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
-import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '../types/assets';
-import { inputKeys } from '../types/swap';
-import { swapsStore } from '../../state/swaps/swapsStore';
-import { BigNumberish } from '@ethersproject/bignumber';
+import { globalColors } from '@/design-system';
 import { TokenColors } from '@/graphql/__generated__/metadata';
+import * as i18n from '@/languages';
+import { RainbowConfig } from '@/model/remoteConfig';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { colors } from '@/styles';
+import { BigNumberish } from '@ethersproject/bignumber';
+import { CrosschainQuote, ETH_ADDRESS, Quote, QuoteParams, SwapType, WRAPPED_ASSET } from '@rainbow-me/swaps';
+import { swapsStore } from '../../state/swaps/swapsStore';
+import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '../types/assets';
+import { inputKeys } from '../types/swap';
 import { convertAmountToRawAmount } from './numbers';
 
 // /---- 🎨 Color functions 🎨 ----/ //

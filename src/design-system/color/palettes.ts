@@ -200,7 +200,7 @@ export type BackgroundColorValue = {
   mode: ColorMode;
 };
 
-export const backgroundColors: Record<BackgroundColor, BackgroundColorValue | ContextualColorValue<BackgroundColorValue>> = {
+export const backgroundColors: Record<BackgroundColor, ContextualColorValue<BackgroundColorValue>> = {
   'surfacePrimary': {
     light: {
       color: globalColors.white100,
@@ -400,8 +400,14 @@ export const backgroundColors: Record<BackgroundColor, BackgroundColorValue | Co
     },
   },
   'swap (Deprecated)': {
-    color: deprecatedColors.swapPurple,
-    mode: 'darkTinted',
+    dark: {
+      color: deprecatedColors.swapPurple,
+      mode: 'darkTinted',
+    },
+    light: {
+      color: deprecatedColors.swapPurple,
+      mode: 'darkTinted',
+    },
   },
 };
 
@@ -461,12 +467,8 @@ export type ForegroundColor =
   | 'avalanche'
   | 'blast';
 
-function selectBackgroundAsForeground(backgroundName: BackgroundColor): string | ContextualColorValue<string> {
+function selectBackgroundAsForeground(backgroundName: BackgroundColor): ContextualColorValue<string> {
   const bg = backgroundColors[backgroundName];
-
-  if ('color' in bg) {
-    return bg.color;
-  }
 
   return {
     dark: bg.dark.color,
@@ -476,7 +478,7 @@ function selectBackgroundAsForeground(backgroundName: BackgroundColor): string |
   };
 }
 
-export const foregroundColors: Record<ForegroundColor, string | ContextualColorValue<string>> = {
+export const foregroundColors: Record<ForegroundColor, ContextualColorValue<string>> = {
   'label': {
     light: globalColors.grey100,
     dark: globalColors.white100,
@@ -631,12 +633,18 @@ export const foregroundColors: Record<ForegroundColor, string | ContextualColorV
     darkTinted: deprecatedColors.white80,
     light: deprecatedColors.grey80,
   },
-  'shadowNear': globalColors.grey100,
+  'shadowNear': {
+    light: globalColors.grey100,
+    dark: globalColors.grey100,
+  },
   'shadowFar': {
     dark: globalColors.grey100,
     light: '#25292E',
   },
-  'swap (Deprecated)': deprecatedColors.swapPurple,
+  'swap (Deprecated)': {
+    light: deprecatedColors.swapPurple,
+    dark: deprecatedColors.swapPurple,
+  },
   'mainnet': {
     light: '#6D6D6D',
     dark: '#999BA1',
@@ -710,10 +718,6 @@ export type Palette = {
 function createPalette(colorMode: ColorMode): Palette {
   return {
     backgroundColors: mapValues(backgroundColors, value => {
-      if ('color' in value) {
-        return value;
-      }
-
       if (colorMode === 'darkTinted') {
         return value.darkTinted ?? value.dark;
       }

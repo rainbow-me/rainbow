@@ -209,7 +209,7 @@ export function useAnimatedSwapStyles({
   const searchOutputAssetButtonStyle = useAnimatedStyle(() => {
     const isPasteMode = outputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED && !internalSelectedOutputAsset.value;
 
-    const color = isPasteMode ? foregroundColors['action (Deprecated)'] : internalSelectedOutputAsset.value?.highContrastColor;
+    const color = isPasteMode ? foregroundColors.blue : internalSelectedOutputAsset.value?.highContrastColor;
 
     return {
       color: getColorValueForThemeWorklet(color, isDarkMode, true),
@@ -244,7 +244,7 @@ export function useAnimatedSwapStyles({
   const searchOutputAssetButtonWrapperStyle = useAnimatedStyle(() => {
     const isPasteMode = outputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED && !internalSelectedOutputAsset.value;
 
-    const color = isPasteMode ? foregroundColors['action (Deprecated)'] : internalSelectedOutputAsset.value?.highContrastColor;
+    const color = isPasteMode ? foregroundColors.blue : internalSelectedOutputAsset.value?.highContrastColor;
 
     return {
       backgroundColor: opacityWorklet(getColorValueForThemeWorklet(color, isDarkMode, true), isDarkMode ? 0.1 : 0.08),
