@@ -8,8 +8,7 @@ import {
 } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
 import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
 import { ParsedAssetsDictByChain, ParsedSearchAsset, UserAssetFilter } from '@/__swaps__/types/assets';
-import { useAccountSettings } from '@/hooks';
-import { useDebounce } from '@/__swaps__/screens/Swap/hooks/useDebounce';
+import { useAccountSettings, useDebounce } from '@/hooks';
 import { userAssetsStore } from '@/state/assets/userAssets';
 
 const sortBy = (by: UserAssetFilter) => {
