@@ -70,7 +70,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
         const largestBalanceSameChainUserAsset = userAssetsStore
           .getState()
           .getUserAssets()
-          .find(userAsset => userAsset.chainId === chainId);
+          .find(userAsset => userAsset.chainId === chainId && userAsset.address !== asset.address);
         if (largestBalanceSameChainUserAsset) {
           swapsStore.setState({ inputAsset: largestBalanceSameChainUserAsset });
         }
