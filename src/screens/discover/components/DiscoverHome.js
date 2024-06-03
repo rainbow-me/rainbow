@@ -41,8 +41,6 @@ export default function DiscoverHome() {
 
   const cards = useMemo(() => getCardsForScreen(name), [name, getCardsForScreen]);
 
-  console.log(cards);
-
   return (
     <Inset top="20px" bottom={{ custom: 200 }} horizontal="20px">
       {!testNetwork ? (

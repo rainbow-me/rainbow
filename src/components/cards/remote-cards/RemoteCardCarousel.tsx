@@ -34,6 +34,13 @@ export const RemoteCardCarousel = () => {
 
   const remoteCardsEnabled = getExperimetalFlag(REMOTE_CARDS) || config.remote_cards_enabled;
   const getCardsForScreen = remoteCardsStore(state => state.getCardsForScreen);
+  // const cards = remoteCardsStore(state => state.cards);
+
+  // console.log({
+  //   name,
+  //   remoteCardsEnabled,
+  //   cards: Array.from(cards.values()),
+  // });
 
   const data = useMemo(() => getCardsForScreen(name as keyof typeof Routes), [getCardsForScreen, name]);
 

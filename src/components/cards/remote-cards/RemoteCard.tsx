@@ -95,14 +95,12 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ card = {} as TrimmedCard
         e.stopPropagation();
       }
       analyticsV2.track(analyticsV2.event.remoteCardDismissed, {
-        cardKey: cardKey ?? 'unknown-backend-driven-card',
+        cardKey: cardKey ?? card.sys.id ?? 'unknown-backend-driven-card',
       });
-
-      if (!cardKey) return;
 
       const isLastCard = cards.length === 1;
 
-      dismissCard(cardKey);
+      dismissCard(card.sys.id);
       if (carouselRef?.current) {
         const currentCardIdx = cards.findIndex(c => c.cardKey === cardKey);
         if (currentCardIdx === -1) return;

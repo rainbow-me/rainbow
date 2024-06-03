@@ -7,16 +7,19 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 export type CardKey = string;
 
 export interface RemoteCardsState {
-  cardsById: Set<CardKey>;
-  cards: Map<CardKey, TrimmedCard>;
+  cardsById: Set<string>;
+  cards: Map<string, TrimmedCard>;
 
   setCards: (cards: TrimmedCards) => void;
 
-  getCard: (cardKey: CardKey) => TrimmedCard | undefined;
-  dismissCard: (cardKey: CardKey) => void;
+  getCard: (id: string) => TrimmedCard | undefined;
+  getCardPlacement: (id: string) => TrimmedCard['placement'];
+  dismissCard: (id: string) => void;
 
   getCardsForScreen: (screen: keyof typeof Routes) => TrimmedCard[];
 }
+
+type RoutesWithIndex = typeof Routes & { [key: string]: string };
 
 type RemoteCardsStateWithTransforms = Omit<Partial<RemoteCardsState>, 'cards' | 'cardsById'> & {
   cardsById: Array<string>;
@@ -89,10 +92,10 @@ export const remoteCardsStore = createRainbowStore<RemoteCardsState>(
 
     setCards: (cards: TrimmedCards) => {
       const cardsData = new Map<CardKey, TrimmedCard>();
-      const validCards = Object.values(cards).filter(card => card.cardKey != null);
+      const validCards = Object.values(cards).filter(card => card.sys.id);
 
       validCards.forEach(card => {
-        const existingCard = get().getCard(card.cardKey as string);
+        const existingCard = get().getCard(card.sys.id as string);
         if (existingCard) {
           cardsData.set(card.cardKey as string, { ...existingCard, ...card });
         } else {
@@ -104,20 +107,30 @@ export const remoteCardsStore = createRainbowStore<RemoteCardsState>(
 
       set({
         cards: cardsData,
-        cardsById: new Set(validCards.map(card => card.cardKey as string)),
+        cardsById: new Set(validCards.map(card => card.sys.id as string)),
       });
     },
 
-    getCard: (cardKey: CardKey) => get().cards.get(cardKey),
-    getCardPlacement: (cardKey: CardKey) => get().getCard(cardKey)?.placement,
+    getCard: (id: string) => get().cards.get(id),
+    getCardPlacement: (id: string) => {
+      const card = get().getCard(id);
 
-    dismissCard: (cardKey: CardKey) =>
+      if (!card || !card.placement) {
+        return undefined;
+      }
+
+      const { placement } = card;
+
+      return (Routes as RoutesWithIndex)[placement.toString()];
+    },
+
+    dismissCard: (id: string) =>
       set(state => {
-        if (!state.cardsById.has(cardKey)) {
+        if (!state.cardsById.has(id)) {
           return state;
         }
 
-        const card = get().getCard(cardKey);
+        const card = get().getCard(id);
         if (!card) {
           return state;
         }
@@ -128,20 +141,35 @@ export const remoteCardsStore = createRainbowStore<RemoteCardsState>(
         queryClient.setQueryData(cardCollectionQueryKey, (oldData: TrimmedCards | undefined = {}) => {
           return {
             ...oldData,
-            [cardKey]: newCard,
+            [id]: newCard,
           };
         });
 
         return {
           ...state,
-          cards: new Map(state.cards.set(cardKey, newCard)),
+          cards: new Map(state.cards.set(id, newCard)),
         };
       }),
     getCardsForScreen: (screen: keyof typeof Routes) => {
-      const cards = get().cards.values();
+      console.log(
+        screen,
+        Array.from(get().cards.values())
+          .filter(card => card.cardKey && get().getCardPlacement(card.sys.id) === screen)
+          .sort((a, b) => {
+            if (a.index === b.index) return 0;
+            if (a.index === undefined || a.index === null) return 1;
+            if (b.index === undefined || b.index === null) return -1;
+            return a.index - b.index;
+          })
+      );
+      return Array.from(get().cards.values())
+        .filter(card => {
+          const placement = get().getCardPlacement(card.sys.id);
 
-      return Array.from(cards)
-        .filter(card => card.placement === screen)
+          console.log(placement, screen);
+
+          return placement === screen;
+        })
         .sort((a, b) => {
           if (a.index === b.index) return 0;
           if (a.index === undefined || a.index === null) return 1;
