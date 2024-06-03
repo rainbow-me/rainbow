@@ -1,10 +1,9 @@
 import { TokenGateCheckerNetwork, checkIfWalletsOwnNft } from './tokenGatedUtils';
 import { EthereumAddress } from '@/entities';
 import { Navigation } from '@/navigation';
-import { logger } from '@/logger';
+import { RainbowError, logger } from '@/logger';
 import Routes from '@/navigation/routesNames';
 import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';
-import { Network } from '@/helpers';
 import { MMKV } from 'react-native-mmkv';
 import { STORAGE_IDS } from '@/model/mmkv';
 
@@ -54,7 +53,7 @@ export const unlockableAppIconCheck = async (appIconKey: UnlockableAppIconKey, w
     }, 1000);
     return found;
   } catch (e) {
-    logger.log('areOwners blew up', e);
+    logger.error(new RainbowError('UnlockableAppIconCheck blew up'), { e });
   }
   return false;
 };
