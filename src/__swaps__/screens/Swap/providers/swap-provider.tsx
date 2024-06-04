@@ -3,6 +3,7 @@ import React, { ReactNode, createContext, useCallback, useContext, useEffect, us
 import { StyleProp, TextStyle, TextInput, NativeModules } from 'react-native';
 import {
   AnimatedRef,
+  DerivedValue,
   SharedValue,
   runOnJS,
   runOnUI,
@@ -21,9 +22,8 @@ import { useSwapNavigation, NavigationSteps } from '@/__swaps__/screens/Swap/hoo
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
 import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
-import { useSwapSettings } from '@/__swaps__/screens/Swap/hooks/useSwapSettings';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { ChainId } from '@/__swaps__/types/chains';
 import { RainbowError, logger } from '@/logger';
@@ -40,6 +40,8 @@ import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { useAccountSettings } from '@/hooks';
 import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
+import { useSwapSettings } from '../hooks/useSwapSettings';
+import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { getNetworkObj } from '@/networks';
 import { userAssetsStore } from '@/state/assets/userAssets';
 
@@ -79,6 +81,8 @@ interface SwapContextType {
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
   executeSwap: () => void;
 
+  outputQuotesAreDisabled: DerivedValue<boolean>;
+
   SwapSettings: ReturnType<typeof useSwapSettings>;
   SwapInputController: ReturnType<typeof useSwapInputsController>;
   AnimatedSwapStyles: ReturnType<typeof useAnimatedSwapStyles>;
@@ -107,23 +111,26 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const inputSearchRef = useAnimatedRef<TextInput>();
   const outputSearchRef = useAnimatedRef<TextInput>();
 
-  const inputProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
-  const outputProgress = useSharedValue(NavigationSteps.TOKEN_LIST_FOCUSED);
-  const configProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
-
   const sliderXPosition = useSharedValue(SLIDER_WIDTH * INITIAL_SLIDER_POSITION);
   const sliderPressProgress = useSharedValue(SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
 
   const lastTypedInput = useSharedValue<inputKeys>('inputAmount');
   const focusedInput = useSharedValue<inputKeys>('inputAmount');
 
-  const initialSelectedInputAsset = parseAssetAndExtend({ asset: userAssetsStore.getState().getHighestValueAsset() });
+  const initialSelectedInputAsset = parseAssetAndExtend({ asset: swapsStore.getState().inputAsset });
+  const initialSelectedOutputAsset = parseAssetAndExtend({ asset: swapsStore.getState().outputAsset });
 
   const internalSelectedInputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(initialSelectedInputAsset);
-  const internalSelectedOutputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(null);
+  const internalSelectedOutputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(initialSelectedOutputAsset);
 
   const selectedOutputChainId = useSharedValue<ChainId>(initialSelectedInputAsset?.chainId || ChainId.mainnet);
   const quote = useSharedValue<Quote | CrosschainQuote | QuoteError | null>(null);
+
+  const inputProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
+  const outputProgress = useSharedValue(
+    initialSelectedOutputAsset ? NavigationSteps.INPUT_ELEMENT_FOCUSED : NavigationSteps.TOKEN_LIST_FOCUSED
+  );
+  const configProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
 
   const SwapSettings = useSwapSettings({
     inputAsset: internalSelectedInputAsset,
@@ -134,6 +141,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     lastTypedInput,
     inputProgress,
     outputProgress,
+    initialSelectedInputAsset,
     internalSelectedInputAsset,
     internalSelectedOutputAsset,
     isFetching,
@@ -307,6 +315,11 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     outputProgress,
     configProgress,
     isFetching,
+  });
+
+  const outputQuotesAreDisabled = useSwapOutputQuotesDisabled({
+    inputAsset: internalSelectedInputAsset,
+    outputAsset: internalSelectedOutputAsset,
   });
 
   const handleProgressNavigation = useCallback(
@@ -579,6 +592,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         setAsset,
 
         quote,
+        outputQuotesAreDisabled,
         executeSwap,
 
         SwapSettings,

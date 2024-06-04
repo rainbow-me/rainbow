@@ -24,6 +24,7 @@ import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { clearAllStorages } from './mmkv';
 import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import { getRemoteConfig } from './remoteConfig';
 
 const { DeviceUUID } = NativeModules;
 const encryptor = new AesEncryptor();
@@ -723,6 +724,11 @@ export async function checkIdentifierOnLaunch() {
   // Unable to really persist things on Android, so let's just exit early...
   if (IS_ANDROID) return;
 
+  const { idfa_check_enabled } = getRemoteConfig();
+  if (!idfa_check_enabled || IS_DEV) {
+    return;
+  }
+
   try {
     const uuid = await getDeviceUUID();
     if (!uuid) {
@@ -757,11 +763,8 @@ export async function checkIdentifierOnLaunch() {
       return;
     }
 
-    if (!IS_DEV) {
-      // if our identifiers match up, we can assume no reinstall/migration
-      if (currentIdentifier.value === uuid) {
-        return;
-      }
+    if (currentIdentifier.value === uuid) {
+      return;
     }
 
     return new Promise(resolve => {
