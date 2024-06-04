@@ -29,8 +29,6 @@ import {
   roundWorklet,
   toFixedWorklet,
   greaterThanOrEqualToWorklet,
-  greaterThanWorklet,
-  scaleUpWorklet,
 } from '../safe-math/SafeMath';
 
 // /---- 🎨 Color functions 🎨 ----/ //
