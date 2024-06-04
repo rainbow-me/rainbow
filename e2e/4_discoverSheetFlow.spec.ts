@@ -23,7 +23,7 @@ describe('Discover Screen Flow', () => {
     await afterAllcleanApp({ hardhat: false });
   });
   it('Should import wallet and go to wallet screen', async () => {
-    await importWalletFlow();
+    await importWalletFlow({ seedPhrase: false });
   });
 
   it('Should navigate to Discover screen after swiping left', async () => {

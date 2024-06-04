@@ -4,6 +4,8 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { expect, device, element, by, waitFor } from 'detox';
 import { parseEther } from '@ethersproject/units';
+import { AndroidElementAttributes, ElementAttributes, IosElementAttributes } from 'detox/detox';
+import { WALLET_VARS } from './testVariables';
 
 const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 
@@ -28,33 +30,35 @@ export async function killHardhat() {
   exec('kill $(lsof -t -i:8545)');
 }
 
-export async function importWalletFlow() {
+export async function importWalletFlow({ seedPhrase = true }: { seedPhrase: boolean }) {
   await checkIfVisible('welcome-screen');
-  await waitAndTap('already-have-wallet-button');
+  await tap('already-have-wallet-button');
   await checkIfExists('add-wallet-sheet');
-  await waitAndTap('restore-with-key-button');
+  await tap('restore-with-key-button');
   await checkIfExists('import-sheet');
   await clearField('import-sheet-input');
   await device.disableSynchronization();
-  await typeText('import-sheet-input', process.env.TEST_SEEDS, false);
+  await typeText('import-sheet-input', seedPhrase ? process.env.TEST_SEEDS : WALLET_VARS.SEED_WALLET.PK, false);
   await checkIfElementHasString('import-sheet-button-label', 'Continue');
-  await waitAndTap('import-sheet-button');
+  await tap('import-sheet-button');
   await checkIfVisible('wallet-info-modal');
-  await waitAndTap('wallet-info-submit-button');
+  await tap('wallet-info-submit-button');
   if (android) {
     await checkIfVisible('pin-authentication-screen');
     await authenticatePin('1234');
     await authenticatePin('1234');
   }
   await device.enableSynchronization();
-  await delayTime('very-long');
+
+  // when using a secret wallet import times can take a while
+  await delayTime(seedPhrase ? 'very-long' : 'short');
   await checkIfVisible('wallet-screen');
 }
 
 export async function beforeAllcleanApp({ hardhat }: { hardhat?: boolean }) {
   // sometimes i see tests failed from the get-go
-  // giving an extra 15 to let things set up
-  await delayTime('very-long');
+  // giving an extra 5 to let things set up
+  await delayTime('long');
   jest.resetAllMocks();
   hardhat && (await startHardhat());
 }
@@ -66,7 +70,6 @@ export async function afterAllcleanApp({ hardhat }: { hardhat?: boolean }) {
 
 export async function tap(elementId: string | RegExp) {
   try {
-    await delayTime('medium');
     return await element(by.id(elementId)).tap();
   } catch (error) {
     throw new Error(`Error tapping element by id "${elementId}": ${error}`);
@@ -270,6 +273,14 @@ export async function swipeUntilVisible(elementId: string | RegExp, scrollViewId
       await swipe(scrollViewId, direction, 'slow', 0.2);
     }
   }
+}
+
+// combining attributes from detox
+type ExtendedElementAttributes = ElementAttributes | IosElementAttributes | AndroidElementAttributes;
+
+export async function fetchElementAttributes(elementId: string | RegExp): Promise<ExtendedElementAttributes> {
+  const attributes = await element(by.id(elementId)).getAttributes();
+  return attributes as ExtendedElementAttributes;
 }
 
 export async function scrollUpTo(elementId: string | RegExp, distance: number, direction: 'left' | 'right' | 'up' | 'down') {

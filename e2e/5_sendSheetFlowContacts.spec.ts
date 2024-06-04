@@ -25,7 +25,7 @@ describe('Send Sheet Interaction Flow Contacts', () => {
   });
 
   it('Import a wallet and go to welcome', async () => {
-    await importWalletFlow();
+    await importWalletFlow({ seedPhrase: true });
   });
 
   it('Should send ETH to test wallet"', async () => {

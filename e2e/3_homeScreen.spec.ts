@@ -20,7 +20,7 @@ describe('Home Screen', () => {
   });
 
   it('imports wallet', async () => {
-    await importWalletFlow();
+    await importWalletFlow({ seedPhrase: false });
   });
 
   it('show profile header', async () => {

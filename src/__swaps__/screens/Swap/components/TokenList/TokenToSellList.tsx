@@ -20,6 +20,10 @@ export const TokenToSellList = () => {
   return shouldMount ? <TokenToSellListComponent /> : null;
 };
 
+const getFormattedTestId = (uniqueId: string) => {
+  return `token-to-sell-${uniqueId}`.toLowerCase().replace(/\s+/g, '-');
+};
+
 const TokenToSellListComponent = () => {
   const { internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, setAsset } = useSwapContext();
 
@@ -57,7 +61,14 @@ const TokenToSellListComponent = () => {
         ListEmptyComponent={<ListEmpty />}
         keyExtractor={uniqueId => uniqueId}
         renderItem={({ item: uniqueId }) => {
-          return <CoinRow onPress={(asset: ParsedSearchAsset | null) => handleSelectToken(asset)} output={false} uniqueId={uniqueId} />;
+          return (
+            <CoinRow
+              testID={getFormattedTestId(uniqueId)}
+              onPress={(asset: ParsedSearchAsset | null) => handleSelectToken(asset)}
+              output={false}
+              uniqueId={uniqueId}
+            />
+          );
         }}
       />
     </Stack>

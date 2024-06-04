@@ -138,6 +138,7 @@ export const SearchInput = ({
                   </Box>
                 </Column>
                 <AnimatedInput
+                  testID={'token-to-buy-input'}
                   animatedProps={searchInputValue}
                   onChangeText={output ? onOutputSearchQueryChange : onInputSearchQueryChange}
                   onBlur={() => {

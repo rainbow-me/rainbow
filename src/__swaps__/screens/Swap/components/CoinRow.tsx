@@ -26,6 +26,7 @@ interface InputCoinRowProps {
   onPress: (asset: ParsedSearchAsset | null) => void;
   output?: false | undefined;
   uniqueId: string;
+  testID: string;
 }
 
 type PartialAsset = Pick<SearchAsset, 'address' | 'mainnetAddress' | 'chainId' | 'icon_url' | 'name' | 'colors' | 'symbol' | 'uniqueId'>;
@@ -34,11 +35,12 @@ interface OutputCoinRowProps extends PartialAsset {
   onPress: () => void;
   output: true;
   isTrending?: boolean;
+  testID: string | (() => string);
 }
 
 type CoinRowProps = InputCoinRowProps | OutputCoinRowProps;
 
-export const CoinRow = React.memo(function CoinRow({ onPress, output, uniqueId, isTrending, ...assetProps }: CoinRowProps) {
+export const CoinRow = React.memo(function CoinRow({ testID, onPress, output, uniqueId, isTrending, ...assetProps }: CoinRowProps) {
   const { favoritesMetadata } = useFavorites();
 
   const inputAsset = userAssetsStore(state => (output ? undefined : state.getUserAsset(uniqueId)));
@@ -82,11 +84,20 @@ export const CoinRow = React.memo(function CoinRow({ onPress, output, uniqueId, 
 
   if (!address || !chainId) return null;
 
+  const resolvedTestID = typeof testID === 'function' ? testID() : testID;
+
+  console.log(`_______________________________________ testID: `, resolvedTestID);
+
   return (
     <Box>
       <Columns alignVertical="center">
         <Column>
-          <ButtonPressAnimation disallowInterruption onPress={output ? onPress : () => onPress(inputAsset || null)} scaleTo={0.95}>
+          <ButtonPressAnimation
+            testID={testID as string}
+            disallowInterruption
+            onPress={output ? onPress : () => onPress(inputAsset || null)}
+            scaleTo={0.95}
+          >
             <HitSlop vertical="10px">
               <Box
                 alignItems="center"

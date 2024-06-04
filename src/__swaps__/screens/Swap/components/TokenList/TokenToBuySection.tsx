@@ -111,6 +111,10 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
     return bridgeSectionsColorsByChain[selectedOutputChainId.value || ChainId.mainnet] as TextColor;
   }, [labelTextColor, section.id, selectedOutputChainId]);
 
+  const getFormattedTestId = (name: string, chainId: ChainId) => {
+    return `token-to-buy-${name}-${chainId}`.toLowerCase().replace(/\s+/g, '-');
+  };
+
   return (
     <Box key={section.id} testID={`${section.id}-token-to-buy-section`}>
       <Stack space="8px">
@@ -144,6 +148,7 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
           keyExtractor={item => `${item.uniqueId}-${section.id}`}
           renderItem={({ item }) => (
             <CoinRow
+              testID={() => getFormattedTestId(item.name, item.chainId)}
               chainId={item.chainId}
               colors={item.colors}
               icon_url={item.icon_url}
