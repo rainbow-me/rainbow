@@ -64,7 +64,6 @@ import { getRemoteConfig } from '@/model/remoteConfig';
 import { SWAPS_V2, useExperimentalFlag } from '@/config';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { navigate } from '@/navigation/Navigation';
 
 const PAGES = {
   HOME: 'home',
@@ -389,6 +388,7 @@ const HomePanel = ({
   const { wallets } = useWallets();
   const initializeWallet = useInitializeWallet();
   const dispatch = useDispatch();
+  const { navigate } = useNavigation();
 
   const swapsV2Enabled = useExperimentalFlag(SWAPS_V2);
 
