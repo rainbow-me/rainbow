@@ -19,6 +19,12 @@ import Routes from '@/navigation/routesNames';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { ethereumUtils } from '@/utils';
 import { ChainId } from '@/__swaps__/types/chains';
+import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
+import * as i18n from '@/languages';
+
+const SELECT_LABEL = i18n.t(i18n.l.swap.select);
+const NO_BALANCE_LABEL = i18n.t(i18n.l.swap.no_balance);
+const TOKEN_TO_GET_LABEL = i18n.t(i18n.l.swap.token_to_get);
 
 function SwapOutputActionButton() {
   const { isDarkMode } = useColorMode();
@@ -26,7 +32,7 @@ function SwapOutputActionButton() {
 
   const label = useDerivedValue(() => {
     const asset = internalSelectedOutputAsset.value;
-    return asset?.symbol ?? (!asset ? 'Select' : '');
+    return asset?.symbol ?? (!asset ? SELECT_LABEL : '');
   });
 
   return (
@@ -106,9 +112,9 @@ function OutputAssetBalanceBadge() {
   const label = useDerivedValue(() => {
     const asset = internalSelectedOutputAsset.value;
     const hasBalance = Number(asset?.balance.amount) > 0 && asset?.balance.display;
-    const balance = (hasBalance && asset?.balance.display) || 'No Balance';
+    const balance = (hasBalance && asset?.balance.display) || NO_BALANCE_LABEL;
 
-    return asset ? balance : 'Token to Get';
+    return asset ? balance : TOKEN_TO_GET_LABEL;
   });
 
   return <BalanceBadge label={label} />;
