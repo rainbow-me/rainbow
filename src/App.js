@@ -180,7 +180,6 @@ class OldApp extends Component {
   };
 
   handleTransactionConfirmed = tx => {
-    console.log('called handleTransactionConfirmed');
     const network = tx.chainId ? ethereumUtils.getNetworkFromChainId(tx.chainId) : tx.network || networkTypes.mainnet;
     const isL2 = isL2Network(network);
 

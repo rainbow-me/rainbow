@@ -6,6 +6,8 @@ export type OmittedPromoSheet = Omit<PromoSheet, 'contentfulMetadata' | 'sys'> &
   sys: {
     id: string;
   };
+
+  hasBeenShown: boolean;
 };
 
 export interface RemotePromoSheetsState {
@@ -14,6 +16,8 @@ export interface RemotePromoSheetsState {
 
   lastShownTimestamp: number;
   isShown: boolean;
+
+  showSheet: (id: string) => void;
 
   setSheets: (data: GetPromoSheetCollectionQuery) => void;
   getSheet: (id: string) => OmittedPromoSheet | undefined;
@@ -104,6 +108,20 @@ export const remotePromoSheetsStore = createRainbowStore<RemotePromoSheetsState>
       set({
         sheets: sheetsData,
         sheetsById: new Set(sheets.map(sheet => sheet.sys.id)),
+      });
+    },
+
+    showSheet: (id: string) => {
+      const sheet = get().sheets.get(id);
+      if (!sheet) return;
+
+      const newSheets = new Map<string, OmittedPromoSheet>(get().sheets);
+      newSheets.set(id, { ...sheet, hasBeenShown: true });
+
+      set({
+        isShown: true,
+        lastShownTimestamp: Date.now(),
+        sheets: newSheets,
       });
     },
 

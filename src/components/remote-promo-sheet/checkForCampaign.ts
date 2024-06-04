@@ -4,7 +4,7 @@ import Routes from '@/navigation/routesNames';
 import { fetchPromoSheetCollection } from '@/resources/promoSheet/promoSheetCollectionQuery';
 import { logger } from '@/logger';
 import { PromoSheet, PromoSheetOrder } from '@/graphql/__generated__/arc';
-import { campaigns, device } from '@/storage';
+import { device } from '@/storage';
 
 import * as fns from './check-fns';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
@@ -25,11 +25,9 @@ export type CampaignCheckResult = {
 const TIMEOUT_BETWEEN_PROMOS = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 const timeBetweenPromoSheets = () => {
-  const lastShownTimestamp = campaigns.get(['lastShownTimestamp']);
-
-  if (!lastShownTimestamp) return TIMEOUT_BETWEEN_PROMOS;
-
-  return Date.now() - lastShownTimestamp;
+  const lastShownAt = remotePromoSheetsStore.getState().lastShownTimestamp;
+  if (!lastShownAt) return TIMEOUT_BETWEEN_PROMOS;
+  return Date.now() - lastShownAt;
 };
 
 export const checkForCampaign = async () => {
@@ -46,7 +44,6 @@ export const checkForCampaign = async () => {
   }
 
   const isReturningUser = device.get(['isReturningUser']);
-
   if (!isReturningUser) {
     logger.debug('Campaigns: First launch, not showing promo sheet');
     return;
@@ -75,7 +72,7 @@ export const triggerCampaign = async ({ campaignKey, sys: { id: campaignId } }: 
   logger.debug(`Campaigns: Showing ${campaignKey} Promo`);
 
   setTimeout(() => {
-    campaigns.set([campaignKey as string], true);
+    remotePromoSheetsStore.getState().showSheet(campaignId);
     InteractionManager.runAfterInteractions(() => {
       Navigation.handleAction(Routes.REMOTE_PROMO_SHEET, {
         campaignId,
@@ -92,15 +89,14 @@ export const shouldPromptCampaign = async (campaign: PromoSheet): Promise<boolea
     actions,
   } = campaign;
 
-  // if we aren't given proper campaign data or actions to check against, exit early here
+  // if we aren't given proper campaign data, exit early here
   if (!campaignKey || !id) return false;
 
-  // sanity check to prevent showing a campaign twice to a user or potentially showing a campaign to a fresh user
-  const hasShown = campaigns.get([campaignKey]);
-
+  const actionsArray = actions || ([] as ActionObj[]);
   logger.debug(`Campaigns: Checking if we should prompt campaign ${campaignKey}`);
 
-  const isPreviewing = actions.some((action: ActionObj) => action.fn === 'isPreviewing');
+  const isPreviewing = actionsArray.some((action: ActionObj) => action.fn === 'isPreviewing');
+  const hasShown = remotePromoSheetsStore.getState().getSheet(id)?.hasBeenShown;
 
   // If the campaign has been viewed already or it's the first app launch, exit early
   if (hasShown && !isPreviewing) {
@@ -108,7 +104,6 @@ export const shouldPromptCampaign = async (campaign: PromoSheet): Promise<boolea
     return false;
   }
 
-  const actionsArray = actions || ([] as ActionObj[]);
   let shouldPrompt = true;
 
   for (const actionObj of actionsArray) {
