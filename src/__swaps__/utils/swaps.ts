@@ -29,6 +29,7 @@ import {
   roundWorklet,
   toFixedWorklet,
   greaterThanOrEqualToWorklet,
+  sumWorklet,
 } from '../safe-math/SafeMath';
 
 // /---- 🎨 Color functions 🎨 ----/ //
@@ -234,8 +235,8 @@ export function valueBasedDecimalFormatter({
 }): string {
   'worklet';
 
-  function precisionBasedOffMagnitude(amount: number): number {
-    const magnitude = -Math.floor(Math.log10(amount) + 1);
+  function precisionBasedOffMagnitude(amount: number | string): number {
+    const magnitude = -Number(floorWorklet(sumWorklet(log10Worklet(amount), 1)));
     return (precisionAdjustment ?? 0) + magnitude;
   }
 
