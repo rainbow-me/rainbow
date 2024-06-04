@@ -2,11 +2,24 @@ import { GetPromoSheetCollectionQuery, PromoSheet } from '@/graphql/__generated_
 import { RainbowError, logger } from '@/logger';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
-export type OmittedPromoSheet = Omit<PromoSheet, 'contentfulMetadata' | 'sys'> & {
+export type OmittedPromoSheet = Omit<
+  PromoSheet,
+  | 'accentColor'
+  | 'backgroundColor'
+  | 'backgroundImage'
+  | 'contentfulMetadata'
+  | 'header'
+  | 'headerImage'
+  | 'linkedFrom'
+  | 'primaryButtonProps'
+  | 'secondaryButtonProps'
+  | 'sheetHandleColor'
+  | 'subHeader'
+  | 'sys'
+> & {
   sys: {
     id: string;
   };
-
   hasBeenShown: boolean;
 };
 
@@ -19,6 +32,7 @@ export interface RemotePromoSheetsState {
 
   showSheet: (id: string) => void;
 
+  setSheet: (id: string, sheet: OmittedPromoSheet) => void;
   setSheets: (data: GetPromoSheetCollectionQuery) => void;
   getSheet: (id: string) => OmittedPromoSheet | undefined;
 }
@@ -95,12 +109,28 @@ export const remotePromoSheetsStore = createRainbowStore<RemotePromoSheetsState>
     lastShownTimestamp: 0,
     isShown: false,
 
+    setSheet: (id: string, sheet: OmittedPromoSheet) => {
+      const newSheets = new Map<string, OmittedPromoSheet>(get().sheets);
+
+      const existingSheet = get().sheets.get(id);
+      if (existingSheet) {
+        newSheets.set(id, { ...existingSheet, ...sheet });
+      } else {
+        newSheets.set(id, sheet);
+      }
+
+      set({ sheets: newSheets });
+    },
+
     setSheets: (data: GetPromoSheetCollectionQuery) => {
       const sheets = (data.promoSheetCollection?.items ?? []) as OmittedPromoSheet[];
 
       const sheetsData = new Map<string, OmittedPromoSheet>();
       sheets.forEach(sheet => {
-        if (sheet) {
+        const existingSheet = get().sheets.get(sheet.sys.id);
+        if (existingSheet) {
+          sheetsData.set(sheet.sys.id, { ...existingSheet, ...sheet });
+        } else {
           sheetsData.set(sheet.sys.id, sheet);
         }
       });
