@@ -14,6 +14,16 @@ export const useSwapSettings = ({ inputAsset }: { inputAsset: SharedValue<Extend
   const setSlippage = swapsStore(state => state.setSlippage);
   const setFlashbots = swapsStore(state => state.setFlashbots);
 
+  const checkIfFlashbotsIsEnabledOnSelectedInputAssetChain = (asset: ExtendedAnimatedAssetWithColors | null) => {
+    'worklet';
+
+    if (asset?.chainId === ChainId.mainnet) {
+      flashbots.value = true;
+    } else {
+      flashbots.value = false;
+    }
+  };
+
   const onToggleFlashbots = () => {
     'worklet';
 
@@ -41,6 +51,7 @@ export const useSwapSettings = ({ inputAsset }: { inputAsset: SharedValue<Extend
     flashbots,
     slippage,
 
+    checkIfFlashbotsIsEnabledOnSelectedInputAssetChain,
     onToggleFlashbots,
     onUpdateSlippage,
   };

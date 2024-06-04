@@ -27,6 +27,7 @@ export function AnimatedSwitch({ value, onToggle, activeLabel, inactiveLabel, ..
         ? withTiming(opacityWorklet(inactiveBg, 0.12), TIMING_CONFIGS.fadeConfig)
         : withTiming(opacityWorklet(activeBg, 0.64), TIMING_CONFIGS.fadeConfig),
       borderColor: opacityWorklet(border, 0.06),
+      opacity: props.disabled ? 0.4 : 1,
     };
   });
 
@@ -41,6 +42,8 @@ export function AnimatedSwitch({ value, onToggle, activeLabel, inactiveLabel, ..
   });
 
   const labelItem = useDerivedValue(() => {
+    if (props.disabled) return;
+
     if (!activeLabel && !inactiveLabel) {
       return;
     }

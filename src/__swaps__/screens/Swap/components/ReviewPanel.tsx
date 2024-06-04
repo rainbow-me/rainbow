@@ -118,6 +118,22 @@ function EstimatedArrivalTime() {
   );
 }
 
+function FlashbotsToggle() {
+  const { SwapSettings } = useSwapContext();
+
+  const inputAssetChainId = swapsStore(state => state.inputAsset?.chainId) ?? ChainId.mainnet;
+
+  return (
+    <AnimatedSwitch
+      onToggle={SwapSettings.onToggleFlashbots}
+      disabled={inputAssetChainId !== ChainId.mainnet}
+      value={SwapSettings.flashbots}
+      activeLabel={i18n.t(i18n.l.expanded_state.swap.on)}
+      inactiveLabel={i18n.t(i18n.l.expanded_state.swap.off)}
+    />
+  );
+}
+
 export function ReviewPanel() {
   const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
@@ -263,12 +279,7 @@ export function ReviewPanel() {
               </ButtonPressAnimation>
             </Inline>
 
-            <AnimatedSwitch
-              onToggle={SwapSettings.onToggleFlashbots}
-              value={SwapSettings.flashbots}
-              activeLabel={i18n.t(i18n.l.expanded_state.swap.on)}
-              inactiveLabel={i18n.t(i18n.l.expanded_state.swap.off)}
-            />
+            <FlashbotsToggle />
           </Inline>
 
           <Inline wrap={false} horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
