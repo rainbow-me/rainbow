@@ -1,3 +1,5 @@
+import { lessThan } from '@/helpers/utilities';
+
 // Utility function to remove the decimal point and keep track of the number of decimal places
 const removeDecimalWorklet = (num: string): [bigint, number] => {
   'worklet';
@@ -21,7 +23,7 @@ const isZeroWorklet = (value: string): boolean => {
 };
 
 // Utility function to scale the number up to 20 decimal places
-const scaleUpWorklet = (bigIntNum: bigint, decimalPlaces: number): bigint => {
+export const scaleUpWorklet = (bigIntNum: bigint, decimalPlaces: number): bigint => {
   'worklet';
   const scaleFactor = BigInt(10) ** BigInt(20);
   return (bigIntNum * scaleFactor) / BigInt(10) ** BigInt(decimalPlaces);
@@ -188,6 +190,10 @@ export function powWorklet(base: string | number, exponent: string | number): st
   }
   if (exponentStr === '1') {
     return baseStr;
+  }
+
+  if (lessThan(exponentStr, 0)) {
+    return divWorklet(1, powWorklet(base, Math.abs(Number(exponent))));
   }
 
   const [bigIntBase, decimalPlaces] = removeDecimalWorklet(baseStr);
