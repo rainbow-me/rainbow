@@ -1,6 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import React, { useCallback, useRef } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import * as i18n from '@/languages';
 import { PanGestureHandler, TapGestureHandler, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
@@ -41,6 +42,10 @@ type SwapSliderProps = {
   snapPoints?: number[];
   width?: number;
 };
+
+const SWAP_TITLE_LABEL = i18n.t(i18n.l.swap.modal_types.swap);
+const BRIDGE_TITLE_LABEL = i18n.t(i18n.l.swap.modal_types.bridge);
+const MAX_LABEL = i18n.t(i18n.l.swap.max);
 
 export const SwapSlider = ({
   dualColor,
@@ -360,7 +365,7 @@ export const SwapSlider = ({
     const isBridging =
       areBothAssetsSelected && internalSelectedInputAsset.value?.mainnetAddress === internalSelectedOutputAsset.value?.mainnetAddress;
 
-    return isBridging ? 'Bridging' : 'Selling';
+    return isBridging ? BRIDGE_TITLE_LABEL : SWAP_TITLE_LABEL;
   });
 
   const maxTextColor = useAnimatedStyle(() => {
@@ -410,7 +415,7 @@ export const SwapSlider = ({
                     }}
                   >
                     <AnimatedText align="center" size="15pt" style={maxTextColor} weight="heavy">
-                      Max
+                      {MAX_LABEL}
                     </AnimatedText>
                   </TouchableOpacity>
                 </Column>
