@@ -3,6 +3,7 @@ import { default as React, ReactNode, createContext, useCallback, useContext, us
 import { NativeModules, StyleProp, TextInput, TextStyle } from 'react-native';
 import {
   AnimatedRef,
+  DerivedValue,
   SharedValue,
   runOnJS,
   runOnUI,
@@ -37,16 +38,18 @@ import { walletExecuteRap } from '@/raps/execute';
 import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
 import { queryClient } from '@/react-query';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import { ethereumUtils } from '@/utils';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 
+import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { getNetworkObj } from '@/networks';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { isEth } from '@/utils/isSameAddress';
 import { calculateGasFee } from '../hooks/useEstimatedGasFee';
 import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
 import { getSwapEstimatedGasLimitCachedData } from '../hooks/useSwapEstimatedGasLimit';
+import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { getUserNativeNetworkAsset } from '../resources/assets/userAssets';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
@@ -85,6 +88,8 @@ interface SwapContextType {
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
   executeSwap: () => void;
 
+  outputQuotesAreDisabled: DerivedValue<boolean>;
+
   SwapSettings: ReturnType<typeof useSwapSettings>;
   SwapInputController: ReturnType<typeof useSwapInputsController>;
   AnimatedSwapStyles: ReturnType<typeof useAnimatedSwapStyles>;
@@ -118,23 +123,26 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const inputSearchRef = useAnimatedRef<TextInput>();
   const outputSearchRef = useAnimatedRef<TextInput>();
 
-  const inputProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
-  const outputProgress = useSharedValue(NavigationSteps.TOKEN_LIST_FOCUSED);
-  const configProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
-
   const sliderXPosition = useSharedValue(SLIDER_WIDTH * INITIAL_SLIDER_POSITION);
   const sliderPressProgress = useSharedValue(SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
 
   const lastTypedInput = useSharedValue<inputKeys>('inputAmount');
   const focusedInput = useSharedValue<inputKeys>('inputAmount');
 
-  const initialSelectedInputAsset = parseAssetAndExtend({ asset: userAssetsStore.getState().getHighestValueAsset() });
+  const initialSelectedInputAsset = parseAssetAndExtend({ asset: swapsStore.getState().inputAsset });
+  const initialSelectedOutputAsset = parseAssetAndExtend({ asset: swapsStore.getState().outputAsset });
 
   const internalSelectedInputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(initialSelectedInputAsset);
-  const internalSelectedOutputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(null);
+  const internalSelectedOutputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(initialSelectedOutputAsset);
 
   const selectedOutputChainId = useSharedValue<ChainId>(initialSelectedInputAsset?.chainId || ChainId.mainnet);
   const quote = useSharedValue<Quote | CrosschainQuote | QuoteError | null>(null);
+
+  const inputProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
+  const outputProgress = useSharedValue(
+    initialSelectedOutputAsset ? NavigationSteps.INPUT_ELEMENT_FOCUSED : NavigationSteps.TOKEN_LIST_FOCUSED
+  );
+  const configProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
 
   const SwapSettings = useSwapSettings({
     inputAsset: internalSelectedInputAsset,
@@ -145,6 +153,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     lastTypedInput,
     inputProgress,
     outputProgress,
+    initialSelectedInputAsset,
     internalSelectedInputAsset,
     internalSelectedOutputAsset,
     isFetching,
@@ -318,6 +327,11 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     outputProgress,
     configProgress,
     isFetching,
+  });
+
+  const outputQuotesAreDisabled = useSwapOutputQuotesDisabled({
+    inputAsset: internalSelectedInputAsset,
+    outputAsset: internalSelectedOutputAsset,
   });
 
   const handleProgressNavigation = useCallback(
@@ -507,8 +521,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const hasSelectedAssets = internalSelectedInputAsset.value && internalSelectedOutputAsset.value;
     if (!hasSelectedAssets) return { label: 'Select Token', disabled: true };
 
-    const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
-    const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
+    const isInputZero = equalWorklet(SwapInputController.inputValues.value.inputAmount, 0);
+    const isOutputZero = equalWorklet(SwapInputController.inputValues.value.outputAmount, 0);
 
     if (SwapInputController.percentageToSwap.value === 0 || isInputZero || isOutputZero) {
       return { label: 'Enter Amount', disabled: true };
@@ -546,8 +560,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   });
 
   const confirmButtonIconStyle = useAnimatedStyle(() => {
-    const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
-    const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
+    const isInputZero = equalWorklet(SwapInputController.inputValues.value.inputAmount, 0);
+    const isOutputZero = equalWorklet(SwapInputController.inputValues.value.outputAmount, 0);
 
     const sliderCondition =
       SwapInputController.inputMethod.value === 'slider' &&
@@ -589,6 +603,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         setAsset,
 
         quote,
+        outputQuotesAreDisabled,
         executeSwap,
 
         SwapSettings,
