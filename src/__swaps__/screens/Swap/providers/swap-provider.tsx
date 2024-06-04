@@ -40,6 +40,7 @@ import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { useAccountSettings } from '@/hooks';
 import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
+import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { useSwapSettings } from '../hooks/useSwapSettings';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { getNetworkObj } from '@/networks';
@@ -504,8 +505,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return '';
     }
 
-    const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
-    const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
+    const isInputZero = equalWorklet(SwapInputController.inputValues.value.inputAmount, 0);
+    const isOutputZero = equalWorklet(SwapInputController.inputValues.value.outputAmount, 0);
 
     if (
       (isInputZero && isOutputZero) ||
@@ -533,8 +534,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return fetchingPrices;
     }
 
-    const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
-    const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
+    const isInputZero = equalWorklet(SwapInputController.inputValues.value.inputAmount, 0);
+    const isOutputZero = equalWorklet(SwapInputController.inputValues.value.outputAmount, 0);
 
     if (SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching.value) {
       return enterAmount;
@@ -549,8 +550,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   });
 
   const confirmButtonIconStyle = useAnimatedStyle(() => {
-    const isInputZero = Number(SwapInputController.inputValues.value.inputAmount) === 0;
-    const isOutputZero = Number(SwapInputController.inputValues.value.outputAmount) === 0;
+    const isInputZero = equalWorklet(SwapInputController.inputValues.value.inputAmount, 0);
+    const isOutputZero = equalWorklet(SwapInputController.inputValues.value.outputAmount, 0);
 
     const sliderCondition =
       SwapInputController.inputMethod.value === 'slider' &&
