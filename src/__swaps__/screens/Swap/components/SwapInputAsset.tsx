@@ -16,6 +16,11 @@ import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH 
 import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
+import * as i18n from '@/languages';
+
+const SELECT_LABEL = i18n.t(i18n.l.swap.select);
+const NO_BALANCE_LABEL = i18n.t(i18n.l.swap.no_balance);
+const TOKEN_TO_SWAP_LABEL = i18n.t(i18n.l.swap.token_to_swap);
 
 function SwapInputActionButton() {
   const { isDarkMode } = useColorMode();
@@ -23,7 +28,7 @@ function SwapInputActionButton() {
 
   const label = useDerivedValue(() => {
     const asset = internalSelectedInputAsset.value;
-    return asset?.symbol ?? (!asset ? 'Select' : '');
+    return asset?.symbol ?? (!asset ? SELECT_LABEL : '');
   });
 
   return (
@@ -78,9 +83,9 @@ function InputAssetBalanceBadge() {
   const label = useDerivedValue(() => {
     const asset = internalSelectedInputAsset.value;
     const hasBalance = Number(asset?.balance.amount) > 0 && asset?.balance.display;
-    const balance = (hasBalance && asset?.balance.display) || 'No Balance';
+    const balance = (hasBalance && asset?.balance.display) || NO_BALANCE_LABEL;
 
-    return asset ? balance : 'Token to Swap';
+    return asset ? balance : TOKEN_TO_SWAP_LABEL;
   });
 
   return <BalanceBadge label={label} />;

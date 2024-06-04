@@ -234,7 +234,12 @@ export function valueBasedDecimalFormatter({
 }): string {
   'worklet';
 
-  function calculateDecimalPlaces(usdTokenPrice: number, precisionAdjustment?: number): number {
+  function precisionBasedOffMagnitude(amount: number): number {
+    const magnitude = -Math.floor(Math.log10(amount) + 1);
+    return (precisionAdjustment ?? 0) + magnitude;
+  }
+
+  function calculateDecimalPlaces(usdTokenPrice: number): number {
     const fallbackDecimalPlaces = 2;
     if (usdTokenPrice <= 0) {
       return fallbackDecimalPlaces;
@@ -243,10 +248,10 @@ export function valueBasedDecimalFormatter({
     if (unitsForOneCent >= 1) {
       return 0;
     }
-    return Math.max(Math.ceil(Math.log10(1 / unitsForOneCent)) + (precisionAdjustment ?? 0), 0);
+    return Math.max(Math.ceil(Math.log10(1 / unitsForOneCent)) + precisionBasedOffMagnitude(amount), 0);
   }
 
-  const decimalPlaces = isStablecoin ? 2 : calculateDecimalPlaces(usdTokenPrice, precisionAdjustment);
+  const decimalPlaces = isStablecoin ? 2 : calculateDecimalPlaces(usdTokenPrice);
 
   let roundedAmount;
   const factor = Math.pow(10, decimalPlaces);
@@ -378,7 +383,7 @@ export const slippageInBipsToString = (slippageInBips: number) => (slippageInBip
 
 export const slippageInBipsToStringWorklet = (slippageInBips: number) => {
   'worklet';
-  return (slippageInBips / 100).toString();
+  return (slippageInBips / 100).toFixed(1).toString();
 };
 
 export const getDefaultSlippage = (chainId: ChainId, config: RainbowConfig) => {

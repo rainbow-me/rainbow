@@ -32,9 +32,8 @@ import { queryClient } from '@/react-query';
 import { divWorklet, equalWorklet, greaterThanWorklet, mulWorklet, toFixedWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { userAssetsStore } from '@/state/assets/userAssets';
 
-function getInitialInputValues() {
-  const initialSelectedInputAsset = userAssetsStore.getState().getHighestValueAsset();
-  const initialBalance = initialSelectedInputAsset?.balance.amount ?? 0;
+function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetWithColors | null) {
+  const initialBalance = Number(initialSelectedInputAsset?.balance.amount) ?? 0;
   const initialNiceIncrement = findNiceIncrement(initialBalance);
   const initialDecimalPlaces = countDecimalPlaces(initialNiceIncrement);
 
@@ -61,6 +60,7 @@ function getInitialInputValues() {
 export function useSwapInputsController({
   focusedInput,
   inputProgress,
+  initialSelectedInputAsset,
   internalSelectedInputAsset,
   internalSelectedOutputAsset,
   isFetching,
@@ -72,6 +72,7 @@ export function useSwapInputsController({
 }: {
   focusedInput: SharedValue<inputKeys>;
   inputProgress: SharedValue<number>;
+  initialSelectedInputAsset: ExtendedAnimatedAssetWithColors | null;
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   isFetching: SharedValue<boolean>;
@@ -81,7 +82,7 @@ export function useSwapInputsController({
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
   sliderXPosition: SharedValue<number>;
 }) {
-  const { initialInputAmount, initialInputNativeValue } = getInitialInputValues();
+  const { initialInputAmount, initialInputNativeValue } = getInitialInputValues(initialSelectedInputAsset);
 
   const inputValues = useSharedValue<inputValuesType>({
     inputAmount: initialInputAmount,
