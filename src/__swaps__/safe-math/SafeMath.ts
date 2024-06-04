@@ -1,5 +1,3 @@
-import { lessThan } from '@/helpers/utilities';
-
 // Utility function to remove the decimal point and keep track of the number of decimal places
 const removeDecimalWorklet = (num: string): [bigint, number] => {
   'worklet';
@@ -192,7 +190,7 @@ export function powWorklet(base: string | number, exponent: string | number): st
     return baseStr;
   }
 
-  if (lessThan(exponentStr, 0)) {
+  if (lessThanWorklet(exponentStr, 0)) {
     return divWorklet(1, powWorklet(base, Math.abs(Number(exponent))));
   }
 
