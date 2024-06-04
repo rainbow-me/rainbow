@@ -19,7 +19,6 @@ import Routes from '@/navigation/routesNames';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { ethereumUtils } from '@/utils';
 import { ChainId } from '@/__swaps__/types/chains';
-import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
 import * as i18n from '@/languages';
 
 const SELECT_LABEL = i18n.t(i18n.l.swap.select);
