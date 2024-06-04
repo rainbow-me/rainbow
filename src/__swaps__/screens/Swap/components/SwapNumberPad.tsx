@@ -38,7 +38,7 @@ export const SwapNumberPad = () => {
 
   const addNumber = (number?: number) => {
     'worklet';
-    if (focusedInput.value === 'outputAmount' || (focusedInput.value === 'outputNativeValue' && outputQuotesAreDisabled.value)) {
+    if ((focusedInput.value === 'outputAmount' || focusedInput.value === 'outputNativeValue') && outputQuotesAreDisabled.value) {
       return;
     }
 
@@ -111,7 +111,7 @@ export const SwapNumberPad = () => {
   const deleteLastCharacter = () => {
     'worklet';
 
-    if (focusedInput.value === 'outputAmount' || (focusedInput.value === 'outputNativeValue' && outputQuotesAreDisabled.value)) {
+    if ((focusedInput.value === 'outputAmount' || focusedInput.value === 'outputNativeValue') && outputQuotesAreDisabled.value) {
       return;
     }
 
