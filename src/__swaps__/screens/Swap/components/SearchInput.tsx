@@ -4,6 +4,7 @@ import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getColorValueForThemeWorklet, opacity } from '@/__swaps__/utils/swaps';
 import { Input } from '@/components/inputs';
 import { AnimatedText, Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
+import * as i18n from '@/languages';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -16,12 +17,11 @@ import Animated, {
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
+  useSharedValue,
 } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 import { isAddress } from 'viem';
 import { GestureHandlerV1Button } from './GestureHandlerV1Button';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
-import * as i18n from '@/languages';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 
@@ -107,12 +107,13 @@ export const SearchInput = ({
     () => output && outputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED && !internalSelectedOutputAsset.value
   );
 
+  const pastedSearchInputValue = useSharedValue('');
   const searchInputValue = useAnimatedProps(() => {
     // Removing the value when the input is focused allows the input to be reset to the correct value on blur
     const query = isSearchFocused.value ? undefined : '';
 
     return {
-      text: query,
+      text: pastedSearchInputValue.value || query,
       selectionColor: getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode, true),
     };
   });
@@ -121,6 +122,7 @@ export const SearchInput = ({
     () => isSearchFocused.value,
     (focused, prevFocused) => {
       if (focused === false && prevFocused === true) {
+        pastedSearchInputValue.value = '';
         if (output) runOnJS(onOutputSearchQueryChange)('');
         else runOnJS(onInputSearchQueryChange)('');
       }
@@ -130,6 +132,7 @@ export const SearchInput = ({
   const onPaste = () => {
     Clipboard.getString().then(text => {
       if (text.length < 10 || isAddress(text)) {
+        pastedSearchInputValue.value = text;
         useSwapsStore.setState({ outputSearchQuery: text });
       }
     });
