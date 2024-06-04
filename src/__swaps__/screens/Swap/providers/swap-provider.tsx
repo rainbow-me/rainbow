@@ -3,6 +3,7 @@ import React, { ReactNode, createContext, useCallback, useContext, useEffect, us
 import { StyleProp, TextStyle, TextInput, NativeModules } from 'react-native';
 import {
   AnimatedRef,
+  DerivedValue,
   SharedValue,
   runOnJS,
   runOnUI,
@@ -21,7 +22,6 @@ import { useSwapNavigation, NavigationSteps } from '@/__swaps__/screens/Swap/hoo
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
 import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
-import { useSwapSettings } from '@/__swaps__/screens/Swap/hooks/useSwapSettings';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
@@ -41,6 +41,8 @@ import { useAccountSettings } from '@/hooks';
 import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { useSwapSettings } from '../hooks/useSwapSettings';
+import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { getNetworkObj } from '@/networks';
 import { userAssetsStore } from '@/state/assets/userAssets';
 
@@ -79,6 +81,8 @@ interface SwapContextType {
 
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
   executeSwap: () => void;
+
+  outputQuotesAreDisabled: DerivedValue<boolean>;
 
   SwapSettings: ReturnType<typeof useSwapSettings>;
   SwapInputController: ReturnType<typeof useSwapInputsController>;
@@ -312,6 +316,11 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     outputProgress,
     configProgress,
     isFetching,
+  });
+
+  const outputQuotesAreDisabled = useSwapOutputQuotesDisabled({
+    inputAsset: internalSelectedInputAsset,
+    outputAsset: internalSelectedOutputAsset,
   });
 
   const handleProgressNavigation = useCallback(
@@ -584,6 +593,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         setAsset,
 
         quote,
+        outputQuotesAreDisabled,
         executeSwap,
 
         SwapSettings,
