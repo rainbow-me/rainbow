@@ -1,6 +1,6 @@
 import chroma from 'chroma-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { InteractionManager, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
@@ -60,6 +60,11 @@ import WalletTypes from '@/helpers/walletTypes';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { addressSetSelected, walletsSetSelected } from '@/redux/wallets';
+import { getRemoteConfig } from '@/model/remoteConfig';
+import { SWAPS_V2, useExperimentalFlag } from '@/config';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { navigate } from '@/navigation/Navigation';
 
 const PAGES = {
   HOME: 'home',
@@ -385,6 +390,8 @@ const HomePanel = ({
   const initializeWallet = useInitializeWallet();
   const dispatch = useDispatch();
 
+  const swapsV2Enabled = useExperimentalFlag(SWAPS_V2);
+
   const actionButtonList = useMemo(() => {
     const walletIcon = selectedWallet?.IconComponent || <></>;
     const walletLabel = selectedWallet?.label || '';
@@ -444,6 +451,19 @@ const HomePanel = ({
   const handleOnPressSwap = useCallback(async () => {
     const valid = await runWalletChecksBeforeSwapOrBridge();
     if (!valid) return;
+
+    const { swaps_v2 } = getRemoteConfig();
+
+    if (swaps_v2 || swapsV2Enabled) {
+      swapsStore.setState({
+        inputAsset: userAssetsStore.getState().getHighestValueAsset(),
+      });
+      InteractionManager.runAfterInteractions(() => {
+        navigate(Routes.SWAP);
+      });
+      return;
+    }
+
     const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(Network.mainnet, selectedWallet?.uniqueId);
     Navigation.handleAction(Routes.EXCHANGE_MODAL, {
       fromDiscover: true,
