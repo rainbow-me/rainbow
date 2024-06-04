@@ -26,7 +26,7 @@ describe('Check malicious dapp warning', () => {
     await importWalletFlow(WALLET_VARS.SEED_WALLET.PK);
   });
 
-  it('Should be able to navigate to the app browser', async () => {
+  it('Should be able to navigate to the dapp browser', async () => {
     await swipe('wallet-screen', 'left', 'fast');
     await swipe('discover-sheet', 'left', 'fast');
     await checkIfVisible('browser-screen');
