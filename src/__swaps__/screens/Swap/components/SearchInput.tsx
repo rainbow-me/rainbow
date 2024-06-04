@@ -20,8 +20,16 @@ import Animated, {
 import { useDebouncedCallback } from 'use-debounce';
 import { isAddress } from 'viem';
 import { GestureHandlerV1Button } from './GestureHandlerV1Button';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
+import * as i18n from '@/languages';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
+
+const FIND_A_TOKEN_TO_BUY_LABEL = i18n.t(i18n.l.swap.find_a_token_to_buy);
+const SEARCH_YOUR_TOKENS_LABEL = i18n.t(i18n.l.swap.search_your_tokens);
+const CANCEL_LABEL = i18n.t(i18n.l.button.cancel);
+const CLOSE_LABEL = i18n.t(i18n.l.button.close);
+const PASTE_LABEL = i18n.t(i18n.l.button.paste);
 
 export const SearchInput = ({
   asset,
@@ -54,14 +62,14 @@ export const SearchInput = ({
       (inputProgress.value === NavigationSteps.SEARCH_FOCUSED && !output) ||
       (outputProgress.value === NavigationSteps.SEARCH_FOCUSED && output)
     ) {
-      return 'Cancel';
+      return CANCEL_LABEL;
     }
 
     if ((output && internalSelectedOutputAsset.value) || !output) {
-      return 'Close';
+      return CLOSE_LABEL;
     }
 
-    return 'Paste';
+    return PASTE_LABEL;
   });
 
   const buttonVisibilityStyle = useAnimatedStyle(() => {
@@ -175,7 +183,7 @@ export const SearchInput = ({
                     }
                   }}
                   onFocus={() => runOnUI(handleFocusSearchWorklet)()}
-                  placeholder={output ? 'Find a token to buy' : 'Search your tokens'}
+                  placeholder={output ? FIND_A_TOKEN_TO_BUY_LABEL : SEARCH_YOUR_TOKENS_LABEL}
                   placeholderTextColor={isDarkMode ? opacity(labelQuaternary, 0.3) : labelQuaternary}
                   selectTextOnFocus
                   ref={output ? outputSearchRef : inputSearchRef}
