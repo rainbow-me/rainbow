@@ -536,6 +536,7 @@ export function useSwapInputsController({
 
   const onChangedPercentage = useDebouncedCallback(
     (percentage: number) => {
+      if (percentageToSwap.value === percentage) return;
       lastTypedInput.value = 'inputAmount';
 
       if (percentage > 0) {
