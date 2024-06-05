@@ -25,14 +25,21 @@ const ios = device.getPlatform() === 'ios';
 const android = device.getPlatform() === 'android';
 
 import { quoteResponse } from './mocks/quoteResponse.mock';
+import { fetchedPricesResponse } from './mocks/fetchedPrices.mock';
 
 jest.mock('@/__swaps__/screens/Swap/hooks/useSwapInputsController', () => {
   const originalModule = jest.requireActual('@/__swaps__/screens/Swap/hooks/useSwapInputsController');
   return {
     ...originalModule,
-    fetchAndUpdateQuote: jest.fn().mockImplementation(params => {
+    getQuote: jest.fn().mockImplementation(params => {
       return quoteResponse(params);
     }),
+    getCrosschainQuote: jest.fn().mockImplementation(params => {
+      return quoteResponse(params);
+    }),
+
+    // TODO: This needs proper data structure
+    fetchAssetPrices: jest.fn().mockImplementation(() => fetchedPricesResponse),
   };
 });
 
