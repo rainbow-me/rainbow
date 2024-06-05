@@ -3,7 +3,7 @@ import { ChainId } from '@/__swaps__/types/chains';
 import { weiToGwei } from '@/__swaps__/utils/ethereum';
 import { add, lessThan, multiply } from '@/__swaps__/utils/numbers';
 import ethereumUtils, { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
-import { isEth } from '@/utils/isSameAddress';
+import { isSameAddress } from '@/utils/isSameAddress';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { useEffect, useMemo, useState } from 'react';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
@@ -55,6 +55,20 @@ export function useEstimatedGasFee({
   }, [gasLimit, gasSettings, nativeNetworkAsset]);
 }
 
+const getUserHasEnoughFundsForTx = (quote: Quote, gasFee: string) => {
+  const nativeAsset = getUserNativeNetworkAsset(quote.chainId);
+  if (!nativeAsset) return false;
+  const userBalance = nativeAsset.balance.amount || '0';
+
+  const nativeAmountSelling = isSameAddress(nativeAsset.address, quote.sellTokenAddress) ? quote.sellAmount.toString() : '0';
+  const totalNativeSpentInTx = formatUnits(
+    safeBigInt(add(add(quote.value?.toString() || '0', gasFee), nativeAmountSelling)),
+    nativeAsset.decimals
+  );
+
+  return lessThan(totalNativeSpentInTx, userBalance);
+};
+
 function useSyncSwapTransactionSharedValues({
   quote,
   gasSettings,
@@ -82,11 +96,7 @@ function useSyncSwapTransactionSharedValues({
 
     const gasFee = calculateGasFee(gasSettings, estimatedGasLimit);
 
-    const nativeAmountSelling = isEth(quote.sellTokenAddress) ? quote.sellAmount.toString() : '0';
-    const totalNativeSpentInTx = add(add(quote.value?.toString() || '0', gasFee), nativeAmountSelling);
-
-    const userBalance = getUserNativeNetworkAsset(quote.chainId)?.balance.amount || '0';
-    userHasEnoughFundsForTx.value = lessThan(userBalance, totalNativeSpentInTx);
+    userHasEnoughFundsForTx.value = getUserHasEnoughFundsForTx(quote, gasFee);
 
     return () => {
       estimatedGasLimitSharedValue.value = undefined;

@@ -12,12 +12,11 @@ import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQu
 import { SUPPORTED_CHAIN_IDS, SupportedCurrencyKey } from '@/references';
 
 import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
-import { Network } from '@/helpers';
 import { useAccountSettings } from '@/hooks';
 import { getNetworkObj } from '@/networks';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import store from '@/redux/store';
-import { getNetworkFromChainId, getUniqueId } from '@/utils/ethereumUtils';
+import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { fetchUserAssetsByChain } from './userAssetsByChain';
 
 const addysHttp = new RainbowFetchClient({
@@ -243,7 +242,7 @@ const getNetworkNativeAssetUniqueId = (chainId: ChainId) => {
   const network = getNetworkFromChainId(chainId);
   const { nativeCurrency } = getNetworkObj(network);
   const { mainnetAddress, address } = nativeCurrency;
-  const uniqueId = mainnetAddress ? getUniqueId(mainnetAddress, Network.mainnet) : getUniqueId(address, network);
+  const uniqueId = mainnetAddress ? `${mainnetAddress}_${ChainId.mainnet}` : `${address}_${chainId}`;
   return uniqueId;
 };
 
