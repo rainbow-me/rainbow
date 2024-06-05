@@ -114,7 +114,7 @@ export const SearchInput = ({
 
     return {
       text: pastedSearchInputValue.value || query,
-      selectionColor: getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode, true),
+      defaultValue: '',
     };
   });
 
