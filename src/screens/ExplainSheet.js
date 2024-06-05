@@ -11,7 +11,6 @@ import { useNavigation } from '../navigation/Navigation';
 import { DoubleChevron } from '@/components/icons';
 import { Box } from '@/design-system';
 import networkTypes from '@/helpers/networkTypes';
-import { toFixedDecimals } from '@/helpers/utilities';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding, position } from '@/styles';
