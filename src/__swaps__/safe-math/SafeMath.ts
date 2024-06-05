@@ -64,7 +64,9 @@ const formatResultWorklet = (result: bigint): string => {
 const toStringWorklet = (value: string | number): string => {
   'worklet';
   const ret = typeof value === 'number' ? value.toString() : value;
-  if (ret === '0.') return '0';
+  if (/^\d+\.$/.test(ret)) {
+    return ret.slice(0, -1);
+  }
   return ret;
 };
 
