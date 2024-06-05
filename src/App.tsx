@@ -21,7 +21,6 @@ import isTestFlight from './helpers/isTestFlight';
 import * as keychain from '@/model/keychain';
 import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
-// eslint-disable-next-line import/no-unresolved
 import RoutesComponent from './navigation/Routes';
 import { PerformanceContextMap } from './performance/PerformanceContextMap';
 import { PerformanceTracking } from './performance/tracking';
