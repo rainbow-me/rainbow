@@ -35,7 +35,6 @@ jest.mock('@/__swaps__/screens/Swap/hooks/useSwapInputsController', () => {
     }),
   };
 });
-global.fetch = jest.fn(() => Promise.resolve(new Response(JSON.stringify(quoteResponse))));
 
 describe('Swap Sheet Interaction Flow', () => {
   beforeAll(async () => {
