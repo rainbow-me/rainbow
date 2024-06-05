@@ -39,7 +39,7 @@ function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetW
   const initialInputAmount = niceIncrementFormatter({
     incrementDecimalPlaces: initialDecimalPlaces,
     inputAssetBalance: initialBalance,
-    inputAssetUsdPrice: initialSelectedInputAsset?.price?.value ?? 0,
+    inputAssetNativePrice: initialSelectedInputAsset?.price?.value ?? 0,
     niceIncrement: initialNiceIncrement,
     percentageToSwap: 0.5,
     sliderXPosition: SLIDER_WIDTH / 2,
@@ -122,7 +122,7 @@ export function useSwapInputsController({
     if (inputMethod.value === 'outputAmount') {
       return valueBasedDecimalFormatter({
         amount: inputValues.value.inputAmount,
-        usdTokenPrice: inputNativePrice.value,
+        nativePrice: inputNativePrice.value,
         roundingMode: 'up',
         precisionAdjustment: -1,
         isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
@@ -135,7 +135,7 @@ export function useSwapInputsController({
     return niceIncrementFormatter({
       incrementDecimalPlaces: incrementDecimalPlaces.value,
       inputAssetBalance: balance,
-      inputAssetUsdPrice: inputNativePrice.value,
+      inputAssetNativePrice: inputNativePrice.value,
       niceIncrement: niceIncrement.value,
       percentageToSwap: percentageToSwap.value,
       sliderXPosition: sliderXPosition.value,
@@ -168,7 +168,7 @@ export function useSwapInputsController({
     }
     return valueBasedDecimalFormatter({
       amount: inputValues.value.outputAmount,
-      usdTokenPrice: outputNativePrice.value,
+      nativePrice: outputNativePrice.value,
       roundingMode: 'down',
       precisionAdjustment: -1,
       isStablecoin: internalSelectedOutputAsset.value?.type === 'stablecoin' ?? false,
@@ -690,7 +690,7 @@ export function useSwapInputsController({
             const inputAmount = niceIncrementFormatter({
               incrementDecimalPlaces: incrementDecimalPlaces.value,
               inputAssetBalance: balance,
-              inputAssetUsdPrice: inputNativePrice.value,
+              inputAssetNativePrice: inputNativePrice.value,
               niceIncrement: niceIncrement.value,
               percentageToSwap: percentageToSwap.value,
               sliderXPosition: sliderXPosition.value,
@@ -847,7 +847,7 @@ export function useSwapInputsController({
           const inputAmount = niceIncrementFormatter({
             incrementDecimalPlaces: incrementDecimalPlaces.value,
             inputAssetBalance: balance,
-            inputAssetUsdPrice: inputNativePrice.value,
+            inputAssetNativePrice: inputNativePrice.value,
             niceIncrement: niceIncrement.value,
             percentageToSwap: percentageToSwap.value,
             sliderXPosition: sliderXPosition.value,
@@ -873,7 +873,7 @@ export function useSwapInputsController({
             valueBasedDecimalFormatter({
               amount:
                 inputNativePrice > 0 ? divWorklet(inputValues.value.inputNativeValue, inputNativePrice) : inputValues.value.outputAmount,
-              usdTokenPrice: inputNativePrice,
+              nativePrice: inputNativePrice,
               roundingMode: 'up',
               precisionAdjustment: -1,
               isStablecoin: current.assetToSell?.type === 'stablecoin' ?? false,

@@ -220,14 +220,14 @@ export function trimTrailingZeros(value: string) {
 
 export function valueBasedDecimalFormatter({
   amount,
-  usdTokenPrice,
+  nativePrice,
   roundingMode,
   precisionAdjustment,
   isStablecoin,
   stripSeparators = true,
 }: {
   amount: number | string;
-  usdTokenPrice: number;
+  nativePrice: number;
   roundingMode?: 'up' | 'down';
   precisionAdjustment?: number;
   isStablecoin?: boolean;
@@ -240,19 +240,19 @@ export function valueBasedDecimalFormatter({
     return (precisionAdjustment ?? 0) + magnitude;
   }
 
-  function calculateDecimalPlaces(usdTokenPrice: number): number {
+  function calculateDecimalPlaces(nativePrice: number): number {
     const fallbackDecimalPlaces = 2;
-    if (usdTokenPrice <= 0) {
+    if (nativePrice <= 0) {
       return fallbackDecimalPlaces;
     }
-    const unitsForOneCent = 0.01 / usdTokenPrice;
+    const unitsForOneCent = 0.01 / nativePrice;
     if (unitsForOneCent >= 1) {
       return 0;
     }
     return Math.max(Math.ceil(Math.log10(1 / unitsForOneCent)) + precisionBasedOffMagnitude(amount), 0);
   }
 
-  const decimalPlaces = isStablecoin ? 2 : calculateDecimalPlaces(usdTokenPrice);
+  const decimalPlaces = isStablecoin ? 2 : calculateDecimalPlaces(nativePrice);
 
   let roundedAmount;
   const factor = Math.pow(10, decimalPlaces);
@@ -282,7 +282,7 @@ export function valueBasedDecimalFormatter({
 export function niceIncrementFormatter({
   incrementDecimalPlaces,
   inputAssetBalance,
-  inputAssetUsdPrice,
+  inputAssetNativePrice,
   niceIncrement,
   percentageToSwap,
   sliderXPosition,
@@ -290,7 +290,7 @@ export function niceIncrementFormatter({
 }: {
   incrementDecimalPlaces: number;
   inputAssetBalance: number | string;
-  inputAssetUsdPrice: number;
+  inputAssetNativePrice: number;
   niceIncrement: number | string;
   percentageToSwap: number;
   sliderXPosition: number;
@@ -301,28 +301,28 @@ export function niceIncrementFormatter({
   if (percentageToSwap === 0.25)
     return valueBasedDecimalFormatter({
       amount: mulWorklet(inputAssetBalance, 0.25),
-      usdTokenPrice: inputAssetUsdPrice,
+      nativePrice: inputAssetNativePrice,
       roundingMode: 'up',
       precisionAdjustment: -3,
     });
   if (percentageToSwap === 0.5)
     return valueBasedDecimalFormatter({
       amount: mulWorklet(inputAssetBalance, 0.5),
-      usdTokenPrice: inputAssetUsdPrice,
+      nativePrice: inputAssetNativePrice,
       roundingMode: 'up',
       precisionAdjustment: -3,
     });
   if (percentageToSwap === 0.75)
     return valueBasedDecimalFormatter({
       amount: mulWorklet(inputAssetBalance, 0.75),
-      usdTokenPrice: inputAssetUsdPrice,
+      nativePrice: inputAssetNativePrice,
       roundingMode: 'up',
       precisionAdjustment: -3,
     });
   if (percentageToSwap === 1)
     return valueBasedDecimalFormatter({
       amount: inputAssetBalance,
-      usdTokenPrice: inputAssetUsdPrice,
+      nativePrice: inputAssetNativePrice,
       roundingMode: 'up',
     });
 

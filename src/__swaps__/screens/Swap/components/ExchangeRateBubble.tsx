@@ -93,7 +93,7 @@ export const ExchangeRateBubble = () => {
         case 0: {
           const formattedRate = valueBasedDecimalFormatter({
             amount: inputAssetPrice / outputAssetPrice,
-            usdTokenPrice: outputAssetPrice,
+            nativePrice: outputAssetPrice,
             roundingMode: 'up',
             precisionAdjustment: -1,
             isStablecoin: isOutputAssetStablecoin,
@@ -106,7 +106,7 @@ export const ExchangeRateBubble = () => {
         case 1: {
           const formattedRate = valueBasedDecimalFormatter({
             amount: outputAssetPrice / inputAssetPrice,
-            usdTokenPrice: inputAssetPrice,
+            nativePrice: inputAssetPrice,
             roundingMode: 'up',
             precisionAdjustment: -1,
             isStablecoin: isInputAssetStablecoin,
