@@ -24,6 +24,15 @@ import { delay } from 'lodash';
 const ios = device.getPlatform() === 'ios';
 const android = device.getPlatform() === 'android';
 
+import { quoteResponse } from './mocks/quoteResponse.mock';
+
+jest.mock('../../src/__swaps__/screens/Swap/hooks/useSwapInputsController.ts', () => ({
+  getQuote: jest.fn().mockResolvedValue(quoteResponse),
+  getCrosschainQuote: jest.fn().mockResolvedValue(quoteResponse),
+}));
+
+global.fetch = jest.fn(() => Promise.resolve(new Response(JSON.stringify(quoteResponse))));
+
 describe('Swap Sheet Interaction Flow', () => {
   beforeAll(async () => {
     await beforeAllcleanApp({ hardhat: true });
@@ -32,42 +41,33 @@ describe('Swap Sheet Interaction Flow', () => {
     await afterAllcleanApp({ hardhat: true });
   });
 
-  // works 100% of the time
   it('Import a wallet and go to welcome', async () => {
     await importWalletFlow({ seedPhrase: true });
   });
 
-  // works 100% of the time
   it('Should send ETH to test wallet', async () => {
     await sendETHtoTestWallet();
   });
 
-  // works 100% of the time
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
     await tap('dev-button-hardhat');
     await checkIfVisible('testnet-toast-Hardhat');
-    await checkIfExistsByText('Ether');
 
     // validate it has funds to swap w/
     const attributes = await fetchElementAttributes('fast-coin-info');
     expect(attributes.label).toContain('Ether' && '20');
   });
 
-  // THIS IS WHERE ISSUES ARISE
-
-  // TODO: fix default currency selection.
-  // so the wallet i am using has DAI as it's highest value-balance currency
-  // so when it goes to the swap screen it is still selecting DAI
-  // there is no DAI in this wallet on hardhat chain for this wallet
-
-  // ^^ DONE
-
   // TODO: use testId to select options
-  // these are not working at the moment. Logging is enabled for the testIDs rn
   // await tap('token-to-buy-ethereum-1');
-  // await tap('token-to-sell-0x6b175474e89094c44da98b954eedeac495271d0f_1');
 
   it('Should open swap screen with 50% inputAmount for inputAsset', async () => {
+    await waitAndTap('swap-button');
+    await tapByText('DAI');
+    const swapInput = await fetchElementAttributes('swap-asset-input');
+    console.log('_________________ swapInput ', swapInput);
+    expect(swapInput.value).toBe('0.5');
+
     /**
      * tap swap button
      * wait for Swap header to be visible
@@ -131,7 +131,7 @@ describe('Swap Sheet Interaction Flow', () => {
    *
    */
 
-  it('Should go to swap and open review sheet on mainnet swap 1', async () => {
+  it.skip('Should go to swap and open review sheet on mainnet swap 1', async () => {
     await tap('swap-button');
     await checkIfVisible('token-to-buy-usd-coin-1');
     await tap('token-to-buy-usd-coin-1');

@@ -29,6 +29,7 @@ import {
 } from '@/resources/assets/externalAssetsQuery';
 import { ethereumUtils } from '@/utils';
 import { queryClient } from '@/react-query';
+import { IS_TEST } from '@/env';
 
 function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetWithColors | null) {
   const initialBalance = Number(initialSelectedInputAsset?.balance.amount) ?? 0;
@@ -463,6 +464,7 @@ export function useSwapInputsController({
       ]);
 
       console.log(quoteResponse);
+      console.log(fetchedPrices);
 
       const quotedInputAmount =
         lastTypedInputParam === 'outputAmount'
@@ -531,7 +533,7 @@ export function useSwapInputsController({
   };
 
   const quoteFetchingInterval = useAnimatedInterval({
-    intervalMs: 12_000,
+    intervalMs: IS_TEST ? 120_000 : 12_000,
     onIntervalWorklet: fetchQuoteAndAssetPrices,
     autoStart: false,
   });

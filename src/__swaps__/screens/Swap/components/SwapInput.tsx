@@ -28,7 +28,7 @@ export const SwapInput = ({
 
   return (
     <Box as={Animated.View} style={[containerStyle, styles.staticInputContainerStyles]} width={{ custom: BASE_INPUT_WIDTH }}>
-      <Box as={Animated.View} style={[inputStyle, styles.staticInputStyles]}>
+      <Box as={Animated.View} style={[inputStyle, styles.staticInputStyles]} testID={'swap-asset-input'}>
         {children}
       </Box>
     </Box>

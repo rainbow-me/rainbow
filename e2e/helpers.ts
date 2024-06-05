@@ -66,6 +66,7 @@ export async function beforeAllcleanApp({ hardhat }: { hardhat?: boolean }) {
 export async function afterAllcleanApp({ hardhat }: { hardhat?: boolean }) {
   await device.clearKeychain();
   hardhat && (await killHardhat());
+  jest.resetAllMocks();
 }
 
 export async function tap(elementId: string | RegExp) {
