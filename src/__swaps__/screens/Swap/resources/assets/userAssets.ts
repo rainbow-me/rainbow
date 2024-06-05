@@ -3,9 +3,16 @@ import { Address } from 'viem';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
 
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
-import { SupportedCurrencyKey, SUPPORTED_CHAIN_IDS } from '@/references';
-import { ParsedAssetsDictByChain, ZerionAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/__swaps__/types/chains';
+import {
+  SupportedCurrencyKey,
+  SUPPORTED_CHAIN_IDS,
+  chainAssets,
+  ETH_ADDRESS,
+  balanceCheckerContractAbi,
+  SUPPORTED_CHAINS,
+} from '@/references';
+import { AddressOrEth, ParsedAssetsDictByChain, ZerionAsset } from '@/__swaps__/types/assets';
+import { ChainId, ChainName } from '@/__swaps__/types/chains';
 import { AddressAssetsReceivedMessage } from '@/__swaps__/types/refraction';
 import { filterAsset, parseUserAsset } from '@/__swaps__/utils/assets';
 import { greaterThan } from '@/__swaps__/utils/numbers';
@@ -13,8 +20,11 @@ import { RainbowError, logger } from '@/logger';
 
 import { fetchUserAssetsByChain } from './userAssetsByChain';
 import { RainbowFetchClient } from '@/rainbow-fetch';
-import { useAccountSettings } from '@/hooks';
-import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
+import { web3Provider } from '@/handlers/web3';
+import { AddressZero } from '@ethersproject/constants';
+import { Contract } from '@ethersproject/contracts';
+import { getNetworkObj } from '@/networks';
+import ethereumUtils, { getNetworkFromChainId } from '@/utils/ethereumUtils';
 
 const addysHttp = new RainbowFetchClient({
   baseURL: 'https://addys.p.rainbow.me/v3',
@@ -81,13 +91,111 @@ export const userAssetsSetQueryData = ({ address, currency, userAssets, testnetM
   queryClient.setQueryData(userAssetsQueryKey({ address, currency, testnetMode }), userAssets);
 };
 
-async function userAssetsQueryFunction({ queryKey: [{ address, currency, testnetMode }] }: QueryFunctionArgs<typeof userAssetsQueryKey>) {
+const fetchHardhatBalancesWithBalanceChecker = async ({
+  tokenAddress,
+  userAddress,
+  chainId,
+}: {
+  tokenAddress: string;
+  userAddress: Address;
+  chainId: ChainId;
+}): Promise<string | null> => {
+  const balanceCheckerContract = new Contract(
+    getNetworkObj(getNetworkFromChainId(chainId)).balanceCheckerAddress,
+    balanceCheckerContractAbi,
+    web3Provider
+  );
+  try {
+    const values = await balanceCheckerContract.balances([userAddress], [tokenAddress]);
+    const [balance] = values;
+    return balance.toString();
+  } catch (e) {
+    logger.error(new RainbowError(`Fetching balances from balanceCheckerContract failed for chainId: ${chainId}`), {
+      message: (e as Error)?.message,
+    });
+    return null;
+  }
+};
+
+export const fetchHardhatBalances = async ({
+  address,
+  currency,
+}: {
+  address: Address;
+  currency: SupportedCurrencyKey;
+}): Promise<ParsedAssetsDictByChain> => {
+  if (!address) {
+    return {};
+  }
+
+  const parsedAssetsDict: ParsedAssetsDictByChain = {};
+
+  for (const [networkName, assets] of Object.entries(chainAssets)) {
+    for (const { asset } of assets) {
+      const chain = SUPPORTED_CHAINS({ testnetMode: true }).find(chain => {
+        return chain.name.toLowerCase() === asset.name.toLowerCase();
+      });
+
+      if (!chain?.id) continue;
+
+      if (!parsedAssetsDict[chain.id]) {
+        parsedAssetsDict[chain.id] = {};
+      }
+
+      const assetCode = asset.asset_code.toLowerCase();
+
+      const balance = await fetchHardhatBalancesWithBalanceChecker({
+        tokenAddress: assetCode === ETH_ADDRESS ? AddressZero : assetCode,
+        userAddress: address,
+        chainId: chain.id,
+      });
+
+      if (!balance) continue;
+
+      const chainAsset = {
+        asset: {
+          ...asset,
+          network: ethereumUtils.getNetworkFromChainId(chain.id),
+          chainId: chain.id,
+        },
+        quantity: balance,
+      };
+
+      const parsedAsset = parseUserAsset({
+        asset: {
+          ...chainAsset.asset,
+          bridging: {} as never,
+          asset_code: chainAsset.asset.asset_code as AddressOrEth,
+          network: networkName as ChainName,
+        },
+        currency,
+        balance,
+        smallBalance: false,
+      });
+
+      parsedAssetsDict[chain.id][parsedAsset.uniqueId] = parsedAsset;
+    }
+  }
+
+  return parsedAssetsDict;
+};
+
+async function userAssetsQueryFunction({
+  queryKey: [{ address, currency, testnetMode }],
+  ...rest
+}: QueryFunctionArgs<typeof userAssetsQueryKey>) {
   if (!address) {
     return {};
   }
   const cache = queryClient.getQueryCache();
   const cachedUserAssets = (cache.find(userAssetsQueryKey({ address, currency, testnetMode }))?.state?.data ||
     {}) as ParsedAssetsDictByChain;
+
+  if (testnetMode) {
+    const parsedTestnetResults = await fetchHardhatBalances({ address, currency });
+    return parsedTestnetResults;
+  }
+
   try {
     const url = `/${SUPPORTED_CHAIN_IDS({ testnetMode }).join(',')}/${address}/assets`;
     const res = await addysHttp.get<AddressAssetsReceivedMessage>(url, {
@@ -208,15 +316,10 @@ export async function parseUserAssets({
 // Query Hook
 
 export function useUserAssets<TSelectResult = UserAssetsResult>(
-  { address, currency }: UserAssetsArgs,
+  { address, currency, testnetMode }: UserAssetsArgs,
   config: QueryConfigWithSelect<UserAssetsResult, Error, TSelectResult, UserAssetsQueryKey> = {}
 ) {
-  const { network: currentNetwork } = useAccountSettings();
-  const provider = getCachedProviderForNetwork(currentNetwork);
-  const providerUrl = provider?.connection?.url;
-  const connectedToHardhat = isHardHat(providerUrl);
-
-  return useQuery(userAssetsQueryKey({ address, currency, testnetMode: connectedToHardhat }), userAssetsQueryFunction, {
+  return useQuery(userAssetsQueryKey({ address, currency, testnetMode }), userAssetsQueryFunction, {
     ...config,
     refetchInterval: USER_ASSETS_REFETCH_INTERVAL,
     staleTime: process.env.IS_TESTING === 'true' ? 0 : 1000,

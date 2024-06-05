@@ -66,11 +66,7 @@ describe('Swap Sheet Interaction Flow', () => {
   // await tap('token-to-sell-0x6b175474e89094c44da98b954eedeac495271d0f_1');
 
   it('Should go to swap and open review sheet on mainnet swap 1', async () => {
-    await disableSynchronization();
     await tap('swap-button');
-
-    // times out without desync
-    await disableSynchronization();
 
     // this works fine, but isn't great. the asset list order changes sometimes
     await tapAtPoint('swap-screen', { x: 200, y: 450 });

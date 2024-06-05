@@ -4,6 +4,7 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { RainbowError, logger } from '@/logger';
 import { ChainId } from '@/__swaps__/types/chains';
 import { SUPPORTED_CHAIN_IDS } from '@/references';
+import { IS_TEST } from '@/env';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 
@@ -187,7 +188,7 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
       });
 
       // Ensure all supported chains are in the map with a fallback value of 0
-      SUPPORTED_CHAIN_IDS({ testnetMode: false }).forEach(chainId => {
+      SUPPORTED_CHAIN_IDS({ testnetMode: IS_TEST }).forEach(chainId => {
         if (!unsortedChainBalances.has(chainId)) {
           unsortedChainBalances.set(chainId, 0);
         }
