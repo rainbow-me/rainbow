@@ -358,15 +358,13 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       switch (type) {
         case SwapAssetType.inputAsset:
           internalSelectedInputAsset.value = asset;
-
-          SwapSettings.checkIfFlashbotsIsEnabledOnSelectedInputAssetChain(asset);
           break;
         case SwapAssetType.outputAsset:
           internalSelectedOutputAsset.value = asset;
           break;
       }
     },
-    [SwapSettings, internalSelectedInputAsset, internalSelectedOutputAsset]
+    [internalSelectedInputAsset, internalSelectedOutputAsset]
   );
 
   const chainSetTimeoutId = useRef<NodeJS.Timeout | null>(null);

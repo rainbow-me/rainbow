@@ -123,11 +123,14 @@ function FlashbotsToggle() {
 
   const inputAssetChainId = swapsStore(state => state.inputAsset?.chainId) ?? ChainId.mainnet;
 
+  // TODO: Add getNetworkObj().features.flashbots check here...
+  const flashbotsToggleValue = useDerivedValue(() => SwapSettings.flashbots.value);
+
   return (
     <AnimatedSwitch
       onToggle={SwapSettings.onToggleFlashbots}
       disabled={inputAssetChainId !== ChainId.mainnet}
-      value={SwapSettings.flashbots}
+      value={flashbotsToggleValue}
       activeLabel={i18n.t(i18n.l.expanded_state.swap.on)}
       inactiveLabel={i18n.t(i18n.l.expanded_state.swap.off)}
     />
