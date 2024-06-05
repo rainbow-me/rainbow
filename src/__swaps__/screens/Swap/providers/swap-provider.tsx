@@ -23,7 +23,6 @@ import { useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
-import { add, lessThan } from '@/__swaps__/utils/numbers';
 import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { getCachedProviderForNetwork, getFlashbotsProvider, isHardHat } from '@/handlers/web3';
@@ -45,12 +44,9 @@ import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { getNetworkObj } from '@/networks';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { isEth } from '@/utils/isSameAddress';
-import { calculateGasFee } from '../hooks/useEstimatedGasFee';
+import { GasSettings } from '../hooks/useCustomGas';
 import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
-import { getSwapEstimatedGasLimitCachedData } from '../hooks/useSwapEstimatedGasLimit';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
-import { getUserNativeNetworkAsset } from '../resources/assets/userAssets';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const tapToSwap = i18n.t(i18n.l.swap.actions.tap_to_swap);
@@ -105,6 +101,10 @@ interface SwapContextType {
     }>
   >;
   confirmButtonIconStyle: StyleProp<TextStyle>;
+
+  estimatedGasLimit: SharedValue<string | undefined>;
+  gasSettings: SharedValue<GasSettings | undefined>;
+  userHasEnoughFundsForTx: SharedValue<boolean>;
 }
 
 const SwapContext = createContext<SwapContextType | undefined>(undefined);
@@ -501,6 +501,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     };
   }, []);
 
+  const gasSettings = useSharedValue<GasSettings | undefined>(undefined);
+  const estimatedGasLimit = useSharedValue<string | undefined>(undefined);
+  const userHasEnoughFundsForTx = useSharedValue<boolean>(true);
+
   const confirmButtonProps = useDerivedValue(() => {
     if (isSwapping.value) {
       return { label: 'Swapping...', disabled: true };
@@ -521,6 +525,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const hasSelectedAssets = internalSelectedInputAsset.value && internalSelectedOutputAsset.value;
     if (!hasSelectedAssets) return { label: 'Select Token', disabled: true };
 
+    if (!quote.value || 'error' in quote.value) return { label: 'Error', disabled: true };
+
     const isInputZero = equalWorklet(SwapInputController.inputValues.value.inputAmount, 0);
     const isOutputZero = equalWorklet(SwapInputController.inputValues.value.outputAmount, 0);
 
@@ -528,32 +534,15 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return { label: 'Enter Amount', disabled: true };
     }
 
-    const _quote = quote.value;
-    if (_quote) {
-      if ('error' in _quote) return { label: 'Error', disabled: true };
+    if (!estimatedGasLimit.value) return { label: 'Estimating...', disabled: true };
 
-      const estimatedGasLimit = getSwapEstimatedGasLimitCachedData({
-        chainId: _quote.chainId,
-        quote: _quote,
-        assetToSell: internalSelectedInputAsset.value,
-      });
-      if (!estimatedGasLimit) return { label: 'Estimating...', disabled: true };
+    if (!gasSettings.value) {
+      // this could happen if metereology is down, or some other edge cases that are not properly handled yet
+      return { label: 'Error', disabled: true };
+    }
 
-      const gasSettings = getSelectedGas(_quote.chainId);
-      if (!gasSettings) {
-        // this could happen if metereology is down, or some other edge cases that are not properly handled yet
-        return { label: 'Error', disabled: true };
-      }
-
-      const gasFee = calculateGasFee(gasSettings, estimatedGasLimit);
-
-      const nativeAmountSelling = isEth(_quote.sellTokenAddress) ? _quote.sellAmount.toString() : '0';
-      const totalNativeSpentInTx = add(add(_quote.value?.toString() || '0', gasFee), nativeAmountSelling);
-
-      const userBalance = getUserNativeNetworkAsset(_quote.chainId)?.balance.amount || '0';
-      if (lessThan(userBalance, totalNativeSpentInTx)) {
-        return { label: 'Insufficient Funds', disabled: true };
-      }
+    if (!userHasEnoughFundsForTx.value) {
+      return { label: 'Insufficient Funds', disabled: true };
     }
 
     return { icon: '􀕹', label: 'Review', disabled: false };
@@ -615,6 +604,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
         confirmButtonProps,
         confirmButtonIconStyle,
+
+        estimatedGasLimit,
+        gasSettings,
+        userHasEnoughFundsForTx,
       }}
     >
       {children}
