@@ -26,9 +26,15 @@ import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/Gest
 import { useNativeAssetForChain } from '@/__swaps__/screens/Swap/hooks/useNativeAssetForChain';
 import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
 import { convertRawAmountToBalance, convertRawAmountToNativeDisplay, handleSignificantDecimals, multiply } from '@/__swaps__/utils/numbers';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import { useSelectedGas, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { EstimatedSwapGasFee } from './EstimatedSwapGasFee';
+import { ButtonPressAnimation } from '@/components/animations';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { ethereumUtils } from '@/utils';
+import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 
 const UNKNOWN_LABEL = i18n.t(i18n.l.swap.unknown);
 const REVIEW_LABEL = i18n.t(i18n.l.expanded_state.swap_details.review);
@@ -114,6 +120,7 @@ function EstimatedArrivalTime() {
 }
 
 export function ReviewPanel() {
+  const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
   const { configProgress, SwapSettings, SwapInputController, internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
 
@@ -138,6 +145,30 @@ export function ReviewPanel() {
     'worklet';
     SwapSettings.onUpdateSlippage('plus');
   };
+
+  const openFlashbotsExplainer = useCallback(() => {
+    navigate(Routes.EXPLAIN_SHEET, {
+      type: 'flashbots',
+    });
+  }, [navigate]);
+
+  const openSlippageExplainer = useCallback(() => {
+    navigate(Routes.EXPLAIN_SHEET, {
+      type: 'slippage',
+    });
+  }, [navigate]);
+
+  const openGasExplainer = useCallback(async () => {
+    const nativeAsset = await getNativeAssetForNetwork(
+      ethereumUtils.getNetworkFromChainId(swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet)
+    );
+
+    navigate(Routes.EXPLAIN_SHEET, {
+      network: chainNameFromChainId(swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet),
+      type: 'gas',
+      nativeAsset,
+    });
+  }, [navigate]);
 
   const styles = useAnimatedStyle(() => {
     return {
@@ -223,14 +254,16 @@ export function ReviewPanel() {
               <Text color="labelTertiary" weight="bold" size="icon 13px">
                 􀋦
               </Text>
-              <Inline wrap={false} horizontalSpace="4px">
-                <Text color="labelTertiary" weight="semibold" size="15pt">
-                  {FLASHBOTS_PROTECTION_LABEL}
-                </Text>
-                <Text color="labelTertiary" size="13pt" weight="bold">
-                  􀅴
-                </Text>
-              </Inline>
+              <ButtonPressAnimation onPress={openFlashbotsExplainer}>
+                <Inline wrap={false} horizontalSpace="4px">
+                  <Text color="labelTertiary" weight="semibold" size="15pt">
+                    {FLASHBOTS_PROTECTION_LABEL}
+                  </Text>
+                  <Text color="labelTertiary" size="13pt" weight="bold">
+                    􀅴
+                  </Text>
+                </Inline>
+              </ButtonPressAnimation>
             </Inline>
 
             <AnimatedSwitch
@@ -246,14 +279,16 @@ export function ReviewPanel() {
               <Text color="labelTertiary" weight="bold" size="icon 13px">
                 􀘩
               </Text>
-              <Inline horizontalSpace="4px">
-                <Text color="labelTertiary" weight="semibold" size="15pt">
-                  {MAX_SLIPPAGE_LABEL}
-                </Text>
-                <Text color="labelTertiary" size="13pt" weight="bold">
-                  􀅴
-                </Text>
-              </Inline>
+              <ButtonPressAnimation onPress={openSlippageExplainer}>
+                <Inline horizontalSpace="4px">
+                  <Text color="labelTertiary" weight="semibold" size="15pt">
+                    {MAX_SLIPPAGE_LABEL}
+                  </Text>
+                  <Text color="labelTertiary" size="13pt" weight="bold">
+                    􀅴
+                  </Text>
+                </Inline>
+              </ButtonPressAnimation>
             </Inline>
 
             <Inline wrap={false} horizontalSpace="8px" alignVertical="center">
@@ -315,26 +350,28 @@ export function ReviewPanel() {
           <Separator color="separatorSecondary" />
 
           <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-            <Stack space="8px">
-              <Inline alignVertical="center" horizontalSpace="6px">
-                <View style={sx.gasContainer}>
-                  <AnimatedChainImage showMainnetBadge asset={internalSelectedInputAsset} size={16} />
-                </View>
-                <Inline horizontalSpace="4px">
-                  <EstimatedGasFee />
-                  <EstimatedArrivalTime />
+            <ButtonPressAnimation onPress={openGasExplainer}>
+              <Stack space="8px">
+                <Inline alignVertical="center" horizontalSpace="6px">
+                  <View style={sx.gasContainer}>
+                    <AnimatedChainImage showMainnetBadge asset={internalSelectedInputAsset} size={16} />
+                  </View>
+                  <Inline horizontalSpace="4px">
+                    <EstimatedGasFee />
+                    <EstimatedArrivalTime />
+                  </Inline>
                 </Inline>
-              </Inline>
 
-              <Inline wrap={false} alignHorizontal="left" alignVertical="bottom" horizontalSpace="4px">
-                <Text color="labelTertiary" size="13pt" weight="bold">
-                  {ESTIMATED_NETWORK_FEE_LABEL}
-                </Text>
-                <Text color="labelTertiary" size="icon 13px" weight="bold">
-                  􀅴
-                </Text>
-              </Inline>
-            </Stack>
+                <Inline wrap={false} alignHorizontal="left" alignVertical="bottom" horizontalSpace="4px">
+                  <Text color="labelTertiary" size="13pt" weight="bold">
+                    {ESTIMATED_NETWORK_FEE_LABEL}
+                  </Text>
+                  <Text color="labelTertiary" size="icon 13px" weight="bold">
+                    􀅴
+                  </Text>
+                </Inline>
+              </Stack>
+            </ButtonPressAnimation>
 
             <Inline alignVertical="center" horizontalSpace="8px">
               <ReviewGasButton />

@@ -131,7 +131,6 @@ export const event = {
   txRequestShownSheet: 'request.sheet.show',
   txRequestReject: 'request.rejected',
   txRequestApprove: 'request.approved',
-
   addNewWalletGroupName: 'add_new_wallet_group.name',
 
   // swaps related analytics
@@ -146,6 +145,9 @@ export const event = {
   swapsSubmitted: 'swaps.submitted',
   swapsFailed: 'swaps.failed',
   swapsSucceeded: 'swaps.succeeded',
+
+  // app browser events
+  browserTrendingDappClicked: 'browser.trending_dapp_pressed',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -509,7 +511,6 @@ export type EventProperties = {
     requestType: 'transaction' | 'signature';
     isHardwareWallet: boolean;
   };
-
   [event.addNewWalletGroupName]: {
     name: string;
   };
@@ -565,4 +566,11 @@ export type EventProperties = {
   [event.swapsSubmitted]: SwapEventParameters<'swap' | 'crosschainSwap'>;
   [event.swapsFailed]: SwapsEventFailedParameters<'swap' | 'crosschainSwap'>;
   [event.swapsSucceeded]: SwapsEventSucceededParameters<'swap' | 'crosschainSwap'>;
+
+  [event.browserTrendingDappClicked]: {
+    name: string;
+    url: string;
+    hasClickedBefore: boolean;
+    index: number;
+  };
 };

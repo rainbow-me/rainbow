@@ -87,6 +87,8 @@ export interface RainbowConfig extends Record<string, string | boolean | number>
   points_notifications_toggle: boolean;
   dapp_browser: boolean;
   swaps_v2: boolean;
+
+  idfa_check_enabled: boolean;
 }
 
 export const DEFAULT_CONFIG: RainbowConfig = {
@@ -165,6 +167,7 @@ export const DEFAULT_CONFIG: RainbowConfig = {
   points_notifications_toggle: true,
   dapp_browser: true,
   swaps_v2: false,
+  idfa_check_enabled: true,
 };
 
 export async function fetchRemoteConfig(): Promise<RainbowConfig> {
@@ -216,7 +219,8 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
         key === 'remote_cards_enabled' ||
         key === 'points_notifications_toggle' ||
         key === 'dapp_browser' ||
-        key === 'swaps_v2'
+        key === 'swaps_v2' ||
+        key === 'idfa_check_enabled'
       ) {
         config[key] = entry.asBoolean();
       } else {

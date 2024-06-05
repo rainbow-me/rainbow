@@ -11,7 +11,7 @@ import Animated, {
 import { Input } from '@/components/inputs';
 import { AnimatedText, Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { getColorValueForThemeWorklet, opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/__swaps__/utils/swaps';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
@@ -114,7 +114,7 @@ export const SearchInput = ({
 
     return {
       text: query,
-      selectionColor: getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode, true),
+      defaultValue: '',
     };
   });
 
