@@ -90,7 +90,7 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
   const metereologySuggestions = useMeteorologySuggestions({ chainId });
   const customGasSettings = useCustomGasSettings(chainId);
 
-  const menuOptions = useMemo(() => [...keys(metereologySuggestions.data), GasSpeed.CUSTOM] as const, [metereologySuggestions.data]);
+  const menuOptions = useMemo(() => [...keys(metereologySuggestions.data), GasSpeed.CUSTOM] as GasSpeed[], [metereologySuggestions.data]);
 
   const handlePressSpeedOption = useCallback(
     (selectedGasSpeed: GasSpeed) => {
@@ -116,7 +116,10 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
   );
 
   const handlePressActionSheet = useCallback(
-    (buttonIndex: number) => handlePressSpeedOption(menuOptions[buttonIndex] as GasSpeed),
+    (buttonIndex: number) => {
+      if (buttonIndex < 0) return;
+      handlePressSpeedOption(menuOptions[buttonIndex]);
+    },
     [handlePressSpeedOption, menuOptions]
   );
 
