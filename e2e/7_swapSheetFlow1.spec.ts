@@ -26,11 +26,15 @@ const android = device.getPlatform() === 'android';
 
 import { quoteResponse } from './mocks/quoteResponse.mock';
 
-jest.mock('../../src/__swaps__/screens/Swap/hooks/useSwapInputsController.ts', () => ({
-  getQuote: jest.fn().mockResolvedValue(quoteResponse),
-  getCrosschainQuote: jest.fn().mockResolvedValue(quoteResponse),
-}));
-
+jest.mock('@/__swaps__/screens/Swap/hooks/useSwapInputsController', () => {
+  const originalModule = jest.requireActual('@/__swaps__/screens/Swap/hooks/useSwapInputsController');
+  return {
+    ...originalModule,
+    fetchAndUpdateQuote: jest.fn().mockImplementation(params => {
+      return quoteResponse(params);
+    }),
+  };
+});
 global.fetch = jest.fn(() => Promise.resolve(new Response(JSON.stringify(quoteResponse))));
 
 describe('Swap Sheet Interaction Flow', () => {
@@ -131,7 +135,7 @@ describe('Swap Sheet Interaction Flow', () => {
    *
    */
 
-  it.skip('Should go to swap and open review sheet on mainnet swap 1', async () => {
+  it('Should go to swap and open review sheet on mainnet swap 1', async () => {
     await tap('swap-button');
     await checkIfVisible('token-to-buy-usd-coin-1');
     await tap('token-to-buy-usd-coin-1');

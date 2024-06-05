@@ -89,15 +89,10 @@ export const CoinRow = React.memo(function CoinRow({ testID, onPress, output, un
   console.log(`_______________________________________ testID: `, resolvedTestID);
 
   return (
-    <Box>
+    <Box testID={resolvedTestID}>
       <Columns alignVertical="center">
         <Column>
-          <ButtonPressAnimation
-            testID={testID as string}
-            disallowInterruption
-            onPress={output ? onPress : () => onPress(inputAsset || null)}
-            scaleTo={0.95}
-          >
+          <ButtonPressAnimation disallowInterruption onPress={output ? onPress : () => onPress(inputAsset || null)} scaleTo={0.95}>
             <HitSlop vertical="10px">
               <Box
                 alignItems="center"
