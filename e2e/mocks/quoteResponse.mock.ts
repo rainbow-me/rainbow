@@ -1,15 +1,7 @@
-import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
-import { Address } from 'viem';
+import { BigNumber } from '@ethersproject/bignumber';
+import { QuoteParams } from '@rainbow-me/swaps';
 
-type QuoteResponseParams = {
-  userAddress: Address;
-  buyTokenAddress: Address;
-  sellTokenAddress: Address;
-  buyAmount: BigNumberish;
-  sellAmount: BigNumberish;
-};
-
-export const quoteResponse = ({ userAddress, buyTokenAddress, sellTokenAddress, buyAmount, sellAmount }: QuoteResponseParams) => ({
+export const quoteResponse = ({ fromAddress, buyTokenAddress, sellTokenAddress, buyAmount, sellAmount }: QuoteParams) => ({
   allowanceTarget: '0x111111125421ca6dc452d289314280a0f8842a65',
   buyAmount: buyAmount,
   buyAmountDisplay: buyAmount,
@@ -22,7 +14,7 @@ export const quoteResponse = ({ userAddress, buyTokenAddress, sellTokenAddress, 
   fee: BigNumber.from(sellAmount).div(100),
   feeInEth: BigNumber.from(sellAmount).div(100),
   feePercentageBasisPoints: '8500000000000000',
-  from: userAddress,
+  from: fromAddress,
   gasPrice: '24991566341',
   protocols: [
     {
