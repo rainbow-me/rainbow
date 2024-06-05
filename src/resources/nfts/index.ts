@@ -96,7 +96,6 @@ export function useLegacyNFTs<TSelected = NFTData>({
   const { data, error, isFetching } = useQuery(queryKey, fetchNFTData, {
     cacheTime: isImportedWallet ? NFTS_CACHE_TIME_INTERNAL : NFTS_CACHE_TIME_EXTERNAL,
     enabled: !!address,
-    initialData: FALLBACK_DATA,
     retry: 3,
     staleTime: NFTS_STALE_TIME,
     ...config,
