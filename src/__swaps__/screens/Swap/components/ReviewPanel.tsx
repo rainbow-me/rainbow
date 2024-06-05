@@ -34,6 +34,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
 import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import { getNetworkObj } from '@/networks';
 
 const UNKNOWN_LABEL = i18n.t(i18n.l.swap.unknown);
 const REVIEW_LABEL = i18n.t(i18n.l.expanded_state.swap_details.review);
@@ -122,14 +123,13 @@ function FlashbotsToggle() {
   const { SwapSettings } = useSwapContext();
 
   const inputAssetChainId = swapsStore(state => state.inputAsset?.chainId) ?? ChainId.mainnet;
-
-  // TODO: Add getNetworkObj().features.flashbots check here...
-  const flashbotsToggleValue = useDerivedValue(() => SwapSettings.flashbots.value);
+  const isFlashbotsEnabledForNetwork = getNetworkObj(ethereumUtils.getNetworkFromChainId(inputAssetChainId));
+  const flashbotsToggleValue = useDerivedValue(() => isFlashbotsEnabledForNetwork && SwapSettings.flashbots.value);
 
   return (
     <AnimatedSwitch
       onToggle={SwapSettings.onToggleFlashbots}
-      disabled={inputAssetChainId !== ChainId.mainnet}
+      disabled={!isFlashbotsEnabledForNetwork}
       value={flashbotsToggleValue}
       activeLabel={i18n.t(i18n.l.expanded_state.swap.on)}
       inactiveLabel={i18n.t(i18n.l.expanded_state.swap.off)}
