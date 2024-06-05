@@ -15,6 +15,25 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.25] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.25)
+
+### Added
+
+- Added IDFA check on app launch (#5653)
+- Added parallel tests for e2e (#5786)
+
+### Changed
+
+- Changed the size of the coin icon (#5771)
+- Updates to Swaps v2 (#5768, #5765, #5772, #5766, #5757, #5776, #5775, #5780, #5778, #5779, #5784, #5782, #5754, #5783, #5791, #5795)
+- Bumped reanimated (#5683)
+
+### Fixed
+
+- Fixed a bug where incorrect data would show in pending transactions (#5777)
+- Fixed a bug where the swap warning flashes when typing a larger number (#5769)
+- Fixed UX on receive sheet QR Code (#5672)
+
 ## [1.9.24] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.24)
 
 ### Added
