@@ -1,11 +1,13 @@
 /* eslint-disable no-nested-ternary */
 import React, { useCallback, useRef } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import * as i18n from '@/languages';
 import { PanGestureHandler, TapGestureHandler, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
   interpolateColor,
   runOnJS,
+  runOnUI,
   useAnimatedGestureHandler,
   useAnimatedReaction,
   useAnimatedStyle,
@@ -17,10 +19,10 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { AnimatedText, Bleed, Box, Column, Columns, Inline, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { AnimatedText, Bleed, Box, Column, Columns, Inline, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { triggerHapticFeedback } from '@/screens/points/constants';
-
 import {
   SCRUBBER_WIDTH,
   SLIDER_COLLAPSED_HEIGHT,
@@ -28,15 +30,10 @@ import {
   SLIDER_WIDTH,
   THICK_BORDER_WIDTH,
   pulsingConfig,
-  sliderConfig,
-  slowFadeConfig,
-  snappierSpringConfig,
-  snappySpringConfig,
-  springConfig,
 } from '@/__swaps__/screens/Swap/constants';
-import { clamp, getColorValueForThemeWorklet, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { AmimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
+import { clamp, getColorValueForThemeWorklet, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
+import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
 
 type SwapSliderProps = {
   dualColor?: boolean;
@@ -46,11 +43,15 @@ type SwapSliderProps = {
   width?: number;
 };
 
+const SWAP_TITLE_LABEL = i18n.t(i18n.l.swap.modal_types.swap);
+const BRIDGE_TITLE_LABEL = i18n.t(i18n.l.swap.modal_types.bridge);
+const MAX_LABEL = i18n.t(i18n.l.swap.max);
+
 export const SwapSlider = ({
   dualColor,
   height = SLIDER_HEIGHT,
   initialPercentage = 0,
-  snapPoints = [0, 0.25, 0.5, 0.75, 1], // %
+  snapPoints = [0, 0.25, 0.5, 0.75, 1], // 0%, 25%, 50%, 75%, 100%
   width = SLIDER_WIDTH,
 }: SwapSliderProps) => {
   const { isDarkMode } = useColorMode();
@@ -59,9 +60,10 @@ export const SwapSlider = ({
     SwapInputController,
     internalSelectedInputAsset,
     internalSelectedOutputAsset,
-    sliderXPosition,
-    sliderPressProgress,
+    isFetching,
     isQuoteStale,
+    sliderPressProgress,
+    sliderXPosition,
   } = useSwapContext();
 
   const panRef = useRef();
@@ -76,8 +78,8 @@ export const SwapSlider = ({
 
   // Callback function to handle percentage change once slider is at rest
   const onChangeWrapper = useCallback(
-    (percentage: number, setStale = true) => {
-      SwapInputController.onChangedPercentage(percentage, setStale);
+    (percentage: number) => {
+      SwapInputController.onChangedPercentage(percentage);
     },
     [SwapInputController]
   );
@@ -100,19 +102,19 @@ export const SwapSlider = ({
       : fillSecondary,
   }));
 
-  // This is the percentage of the slider from the left
+  // This is the percentage of the slider from the left, from 0 to 1
   const xPercentage = useDerivedValue(() => {
     return clamp((sliderXPosition.value - SCRUBBER_WIDTH / width) / width, 0, 1);
-  }, [sliderXPosition.value]);
+  });
 
   // This is a hacky way to prevent the slider from shifting when it reaches the right limit
   const uiXPercentage = useDerivedValue(() => {
     return xPercentage.value * (1 - SCRUBBER_WIDTH / width);
-  }, [xPercentage.value]);
+  });
 
   const percentageText = useDerivedValue(() => {
     return `${Math.round((xPercentage.value ?? initialPercentage) * 100)}%`;
-  }, [xPercentage.value]);
+  });
 
   useAnimatedReaction(
     () => ({ x: sliderXPosition.value }),
@@ -131,28 +133,29 @@ export const SwapSlider = ({
 
   const onPressDown = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>({
     onStart: () => {
-      sliderPressProgress.value = withSpring(1, sliderConfig);
+      sliderPressProgress.value = withSpring(1, SPRING_CONFIGS.sliderConfig);
       SwapInputController.quoteFetchingInterval.stop();
     },
     onActive: () => {
-      sliderPressProgress.value = withSpring(SLIDER_COLLAPSED_HEIGHT / height, sliderConfig);
+      sliderPressProgress.value = withSpring(SLIDER_COLLAPSED_HEIGHT / height, SPRING_CONFIGS.sliderConfig);
     },
   });
 
   const onSlide = useAnimatedGestureHandler({
     onStart: (_, ctx: { startX: number }) => {
       ctx.startX = sliderXPosition.value;
-      sliderPressProgress.value = withSpring(1, sliderConfig);
+      sliderPressProgress.value = withSpring(1, SPRING_CONFIGS.sliderConfig);
       SwapInputController.inputMethod.value = 'slider';
 
-      // On Android, for some reason waiting until onActive to set SwapInputController.isQuoteStale.value = 1
-      // causes the outputAmount text color to break. It's preferable to set it in
-      // onActive, so we're setting it in onStart for Android only. It's possible that
-      // migrating this handler to the RNGH v2 API will remove the need for this.
+      // On Android, for some reason waiting until onActive to set SwapInputController.isQuoteStale.value = 1 causes
+      // the outputAmount text color to break. It's preferable to set it in onActive, so we're setting it in onStart
+      // for Android only. It's possible that migrating this handler to the RNGH v2 API will remove the need for this.
       if (!IS_IOS) isQuoteStale.value = 1;
     },
     onActive: (event, ctx: { startX: number }) => {
-      if (IS_IOS) isQuoteStale.value = 1;
+      if (IS_IOS && sliderXPosition.value > 0 && isQuoteStale.value !== 1) {
+        isQuoteStale.value = 1;
+      }
 
       const rawX = ctx.startX + event.translationX || 0;
 
@@ -186,22 +189,23 @@ export const SwapSlider = ({
     },
     onFinish: (event, ctx: { startX: number }) => {
       const onFinished = () => {
-        overshoot.value = withSpring(0, sliderConfig);
+        overshoot.value = withSpring(0, SPRING_CONFIGS.sliderConfig);
         if (xPercentage.value >= 0.995) {
           if (isQuoteStale.value === 1) {
             runOnJS(onChangeWrapper)(1);
           }
-          sliderXPosition.value = withSpring(width, snappySpringConfig);
+          sliderXPosition.value = withSpring(width, SPRING_CONFIGS.snappySpringConfig);
         } else if (xPercentage.value < 0.005) {
           runOnJS(onChangeWrapper)(0);
-          sliderXPosition.value = withSpring(0, snappySpringConfig);
-          // SwapInputController.isQuoteStale.value = 0;
+          sliderXPosition.value = withSpring(0, SPRING_CONFIGS.snappySpringConfig);
+          isQuoteStale.value = 0;
+          isFetching.value = false;
         } else {
           runOnJS(onChangeWrapper)(xPercentage.value);
         }
       };
 
-      sliderPressProgress.value = withSpring(SLIDER_COLLAPSED_HEIGHT / height, sliderConfig);
+      sliderPressProgress.value = withSpring(SLIDER_COLLAPSED_HEIGHT / height, SPRING_CONFIGS.sliderConfig);
 
       if (snapPoints) {
         // If snap points are provided and velocity is high enough, snap to the nearest point
@@ -240,11 +244,11 @@ export const SwapSlider = ({
             nextSnapPoint = nextSnapPoint || 0;
           }
 
-          overshoot.value = withSpring(0, sliderConfig);
+          overshoot.value = withSpring(0, SPRING_CONFIGS.sliderConfig);
           runOnJS(onChangeWrapper)(nextSnapPoint / width);
 
           // Animate to the next snap point
-          sliderXPosition.value = withSpring(nextSnapPoint, snappierSpringConfig);
+          sliderXPosition.value = withSpring(nextSnapPoint, SPRING_CONFIGS.snappierSpringConfig);
 
           // if (nextSnapPoint === 0) {
           //   SwapInputController.isQuoteStale.value = 0;
@@ -300,7 +304,7 @@ export const SwapSlider = ({
           [collapsedPercentage, 1],
           [colors.value.inactiveColorLeft, colors.value.activeColorLeft]
         ),
-        springConfig
+        SPRING_CONFIGS.springConfig
       ),
       borderWidth: interpolate(
         xPercentage.value,
@@ -328,18 +332,15 @@ export const SwapSlider = ({
   const pulsingOpacity = useDerivedValue(() => {
     return isQuoteStale.value === 1
       ? withRepeat(withSequence(withTiming(0.5, pulsingConfig), withTiming(1, pulsingConfig)), -1, true)
-      : withSpring(1, sliderConfig);
-  }, []);
+      : withSpring(1, SPRING_CONFIGS.sliderConfig);
+  });
 
   const percentageTextStyle = useAnimatedStyle(() => {
-    const isAdjustingInputValue =
-      SwapInputController.inputMethod.value === 'inputAmount' || SwapInputController.inputMethod.value === 'inputNativeValue';
     const isAdjustingOutputValue =
       SwapInputController.inputMethod.value === 'outputAmount' || SwapInputController.inputMethod.value === 'outputNativeValue';
 
-    const isStale = isQuoteStale.value === 1 && (isAdjustingInputValue || isAdjustingOutputValue) ? 1 : 0;
-
-    const opacity = isStale ? pulsingOpacity.value : withSpring(1, sliderConfig);
+    const isStale = isQuoteStale.value === 1 && isAdjustingOutputValue ? 1 : 0;
+    const opacity = isStale ? pulsingOpacity.value : withSpring(1, SPRING_CONFIGS.sliderConfig);
 
     return {
       color: withTiming(
@@ -353,14 +354,18 @@ export const SwapSlider = ({
             zeroAmountColor,
           ]
         ),
-        slowFadeConfig
+        TIMING_CONFIGS.slowFadeConfig
       ),
       opacity,
     };
   });
 
-  const maxText = useDerivedValue(() => {
-    return 'Max';
+  const sellingOrBridgingLabel = useDerivedValue(() => {
+    const areBothAssetsSelected = internalSelectedInputAsset.value && internalSelectedOutputAsset.value;
+    const isBridging =
+      areBothAssetsSelected && internalSelectedInputAsset.value?.mainnetAddress === internalSelectedOutputAsset.value?.mainnetAddress;
+
+    return isBridging ? BRIDGE_TITLE_LABEL : SWAP_TITLE_LABEL;
   });
 
   const maxTextColor = useAnimatedStyle(() => {
@@ -370,23 +375,30 @@ export const SwapSlider = ({
   });
 
   return (
-    // @ts-expect-error
+    // @ts-expect-error Property 'children' does not exist on type
     <PanGestureHandler activeOffsetX={[0, 0]} activeOffsetY={[0, 0]} onGestureEvent={onSlide} simultaneousHandlers={[tapRef]}>
       <Animated.View style={AnimatedSwapStyles.hideWhileReviewingOrConfiguringGas}>
-        {/* @ts-expect-error */}
+        {/* @ts-expect-error Property 'children' does not exist on type */}
         <TapGestureHandler onGestureEvent={onPressDown} simultaneousHandlers={[panRef]}>
           <Animated.View style={{ gap: 14, paddingBottom: 20, paddingHorizontal: 20 }}>
             <View style={{ zIndex: 10 }}>
               <Columns alignHorizontal="justify" alignVertical="center">
                 <Inline alignVertical="center" space="6px" wrap={false}>
                   <Bleed vertical="4px">
-                    <AmimatedSwapCoinIcon showBadge={false} asset={internalSelectedInputAsset} small />
+                    <AnimatedSwapCoinIcon showBadge={false} asset={internalSelectedInputAsset} small />
                   </Bleed>
                   <Inline alignVertical="bottom" wrap={false}>
-                    <Text color={isDarkMode ? 'labelQuaternary' : 'labelTertiary'} size="15pt" style={{ marginRight: 3 }} weight="bold">
-                      Selling
-                    </Text>
-                    <AnimatedText color="labelSecondary" size="15pt" style={percentageTextStyle} text={percentageText} weight="heavy" />
+                    <AnimatedText
+                      color={isDarkMode ? 'labelQuaternary' : 'labelTertiary'}
+                      size="15pt"
+                      style={{ marginRight: 3 }}
+                      weight="bold"
+                    >
+                      {sellingOrBridgingLabel}
+                    </AnimatedText>
+                    <AnimatedText color="labelSecondary" size="15pt" style={percentageTextStyle} weight="heavy">
+                      {percentageText}
+                    </AnimatedText>
                   </Inline>
                 </Inline>
                 <Column width="content">
@@ -394,17 +406,17 @@ export const SwapSlider = ({
                     activeOpacity={0.4}
                     hitSlop={8}
                     onPress={() => {
-                      'worklet';
-
-                      SwapInputController.quoteFetchingInterval.stop();
-                      SwapInputController.inputMethod.value = 'slider';
-                      setTimeout(() => {
-                        sliderXPosition.value = withSpring(width, snappySpringConfig);
-                        onChangeWrapper(1);
-                      }, 10);
+                      runOnUI(() => {
+                        SwapInputController.quoteFetchingInterval.stop();
+                        SwapInputController.inputMethod.value = 'slider';
+                        sliderXPosition.value = withSpring(width, SPRING_CONFIGS.snappySpringConfig);
+                        runOnJS(onChangeWrapper)(1);
+                      })();
                     }}
                   >
-                    <AnimatedText align="center" style={maxTextColor} size="15pt" weight="heavy" text={maxText} />
+                    <AnimatedText align="center" size="15pt" style={maxTextColor} weight="heavy">
+                      {MAX_LABEL}
+                    </AnimatedText>
                   </TouchableOpacity>
                 </Column>
               </Columns>

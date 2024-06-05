@@ -53,6 +53,7 @@ import { initializeRemoteConfig } from '@/model/remoteConfig';
 import { NavigationContainerRef } from '@react-navigation/native';
 import { RootStackParamList } from './navigation/types';
 import { Address } from 'viem';
+import { checkIdentifierOnLaunch } from './model/backup';
 
 if (__DEV__) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -132,13 +133,14 @@ function App({ walletReady }: AppProps) {
 
   const identifyFlow = async () => {
     const address = await loadAddress();
-    console.log(address);
     if (address) {
       setTimeout(() => {
         InteractionManager.runAfterInteractions(() => {
           handleReviewPromptAction(ReviewPromptAction.TimesLaunchedSinceInstall);
         });
       }, 10_000);
+
+      InteractionManager.runAfterInteractions(checkIdentifierOnLaunch);
     }
 
     setInitialRoute(address ? Routes.SWIPE_LAYOUT : Routes.WELCOME_SCREEN);

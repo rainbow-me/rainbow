@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Hex } from 'viem';
+import { Address } from 'viem';
 
 import {
   selectUserAssetsList,
@@ -8,8 +8,7 @@ import {
 } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
 import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
 import { ParsedAssetsDictByChain, ParsedSearchAsset, UserAssetFilter } from '@/__swaps__/types/assets';
-import { useAccountSettings } from '@/hooks';
-import { useDebounce } from '@/__swaps__/screens/Swap/hooks/useDebounce';
+import { useAccountSettings, useDebounce } from '@/hooks';
 import { userAssetsStore } from '@/state/assets/userAssets';
 
 const sortBy = (by: UserAssetFilter) => {
@@ -25,13 +24,13 @@ export const useAssetsToSell = () => {
   const { accountAddress: currentAddress, nativeCurrency: currentCurrency } = useAccountSettings();
 
   const filter = userAssetsStore(state => state.filter);
-  const searchQuery = userAssetsStore(state => state.searchQuery);
+  const searchQuery = userAssetsStore(state => state.inputSearchQuery);
 
   const debouncedAssetToSellFilter = useDebounce(searchQuery, 200);
 
   const { data: userAssets = [] } = useUserAssets(
     {
-      address: currentAddress as Hex,
+      address: currentAddress as Address,
       currency: currentCurrency,
     },
     {

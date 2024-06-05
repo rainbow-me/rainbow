@@ -55,6 +55,11 @@ module.exports = {
           screenshot: 'failing',
         },
       },
+      behavior: {
+        cleanup: {
+          shutdownDevice: false,
+        },
+      },
     },
     'ios.sim.debug': {
       app: 'ios.debug',
@@ -62,6 +67,11 @@ module.exports = {
       artifacts: {
         plugins: {
           screenshot: 'failing',
+        },
+      },
+      behavior: {
+        cleanup: {
+          shutdownDevice: false,
         },
       },
     },

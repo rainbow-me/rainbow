@@ -4,64 +4,64 @@ on: [pull_request, workflow_dispatch]
 jobs:
   ios-e2e:
     runs-on: ["self-hosted"]
-    # Cancel current builds if there's a newer commit on the same branch
     concurrency: 
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
 
+    permissions:
+      contents: read
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
       - name: Set up github keys
-        run:  git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
-     
-      - name: clean ios app step
-        run: yarn clean:ios  > /dev/null 2>&1 || true
+        run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
+
+      - name: Clean iOS app
+        run: yarn clean:ios > /dev/null 2>&1 || true
 
       - name: Set up ENV vars & scripts
+        env:
+          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
         run: |
-          # read local env vars
           source ~/.bashrc
-          # fetch env vars
           git clone git@github.com:rainbow-me/rainbow-env.git
-          # unpack dotenv
-          mv rainbow-env/dotenv .env && rm -rf rainbow-env 
-          # run CI scripts
+          mv rainbow-env/dotenv .env && rm -rf rainbow-env
           eval $CI_SCRIPTS
-          # tweak dotenv for e2e 
-          sed -i''-e "s/\IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
-      - name: Install deps via Yarn
+          sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
+
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/yarn
+            node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
         run: yarn setup-ci
 
       - name: Check for frozen lockfile
         run: yarn check-lockfile
 
       - name: Audit CI
-        run:  yarn audit-ci --config audit-ci.jsonc
+        run: yarn audit-ci --config audit-ci.jsonc
 
       - name: Lint
         run: yarn lint:ci
 
-      - name: Install Pods
-        run: yarn install-pods
-
       - name: Rebuild detox cache
         run: ./node_modules/.bin/detox clean-framework-cache && ./node_modules/.bin/detox build-framework-cache
 
-      - name: Remove old Detox artifacts
-        run: rm -rf ./artifacts/
+      - name: Install pods
+        run: yarn install-pods
 
       - name: Build the app in release mode
-        run: ./node_modules/.bin/detox build --configuration ios.sim.release
-     
-      - name: Run iOS e2e tests with retry
-      # change the '5' here to how many times you want the tests to rerun on failure
-        run: ./scripts/run-retry-tests.sh 5
-     
-      - name: Upload Test Artifacts
-        if: failure()
-        uses: actions/upload-artifact@v3
-        with:
-          name: detox-artifacts
-          path: artifacts/**
+        run: ./node_modules/.bin/detox build --configuration ios.sim.release | xcpretty --color
 
+      # change the '3' here to how many times you want the tests to rerun on failure
+      - name: Run iOS e2e tests with retry
+        run: ./scripts/run-retry-tests.sh 3

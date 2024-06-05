@@ -1,7 +1,7 @@
 import Clipboard from '@react-native-clipboard/clipboard';
 import lang from 'i18n-js';
 import * as React from 'react';
-import { PressableProps } from 'react-native';
+import { InteractionManager, PressableProps } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import { CopyFloatingEmojis } from '@/components/floating-emojis';
@@ -19,6 +19,8 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { Network } from '@/networks/types';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import { userAssetsStore } from '@/state/assets/userAssets';
 
 export const ProfileActionButtonsRowHeight = 80;
 
@@ -180,7 +182,12 @@ function SwapButton() {
 
       android && delayNext();
       if (swapsV2Enabled) {
-        navigate(Routes.SWAP_NAVIGATOR);
+        swapsStore.setState({
+          inputAsset: userAssetsStore.getState().getHighestValueAsset(),
+        });
+        InteractionManager.runAfterInteractions(() => {
+          navigate(Routes.SWAP);
+        });
         return;
       }
 

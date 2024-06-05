@@ -14,14 +14,12 @@ import {
 } from '@rainbow-me/swaps';
 import { Contract } from '@ethersproject/contracts';
 import { MaxUint256 } from '@ethersproject/constants';
-import { get, mapKeys, mapValues } from 'lodash';
 import { IS_TESTING } from 'react-native-dotenv';
 import { Token } from '../entities/tokens';
 import { estimateGasWithPadding, getProviderForNetwork, toHexNoLeadingZeros } from './web3';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { Asset } from '@/entities';
 import { add, convertRawAmountToDecimalFormat, divide, lessThan, multiply, subtract } from '@/helpers/utilities';
-import { Network } from '@/helpers/networkTypes';
 import { erc20ABI, ethUnits } from '@/references';
 import { ethereumUtils, logger } from '@/utils';
 

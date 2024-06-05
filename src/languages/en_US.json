@@ -431,6 +431,23 @@
         "description": "You can also long press your\naddress above to copy it."
       }
     },
+    "check_identifier": {
+      "title": "Authentication Needed",
+      "description": "It looks like you may have switched devices or reinstalled Rainbow. Please authenticate so that we can validate your keychain data is still in a healthy state.",
+      "action": "Authenticate",
+      "dismiss": "Dismiss",
+      "error_alert": {
+        "title": "Error Validating Keychain",
+        "message": "We encountered an error while validating your keychain data. Please try again. If the issue persists, please contact support.",
+        "contact_support": "Contact Support",
+        "cancel": "Cancel"
+      },
+      "failure_alert": {
+        "title": "Invalid Keychain Data",
+        "message": "We were unable to verify the integrity of your keychain data. Please restore your wallet and try again. If the issue persists, please contact support.",
+        "action": "Continue"
+      }
+    },
     "cloud": {
       "backup_success": "Your wallet has been backed up successfully!"
     },
@@ -541,7 +558,8 @@
         "from_divider": "from",
         "to_divider": "to",
         "view_on": "View on %{blockExplorerName}",
-        "view_on_etherscan": "View on Etherscan"
+        "view_on_etherscan": "View on Etherscan",
+        "copy_contract_address": "Copy Contract Address"
       },
       "all_networks": "All Networks",
       "filter_by_network": "Filter by Network",
@@ -577,7 +595,8 @@
       "price_impact": {
         "long_wait": {
           "title": "Long wait",
-          "description": "Approx. %{time}"
+          "description": "Approx. %{time}",
+          "description_prefix": "Approx."
         },
         "unknown_price": {
           "title": "Market Value Unknown",
@@ -587,6 +606,7 @@
         "small_market": "Small Market",
         "small_market_try_smaller_amount": "Small market — try a smaller amount",
         "you_are_losing": "You're losing %{priceImpact}",
+        "you_are_losing_prefix": "You're losing",
         "no_data": "Market Value Unknown",
         "label": "Possible loss",
         "no_data_subtitle": "If you decide to continue, be sure that you are satisfied with the quoted amount"
@@ -687,6 +707,7 @@
         "flashbots_protect": "Flashbots Protect",
         "losing": "Losing",
         "on": "On",
+        "off": "Off",
         "price_impact": "Price impact",
         "price_row_per_token": "per",
         "slippage_message": "This is a small market, so you’re getting a bad price. Try a smaller trade!",
@@ -1030,6 +1051,7 @@
         "urgent": "Urgent",
         "custom": "Custom"
       },
+      "unable_to_determine_selected_gas": "Unable to determine selected gas",
       "network_fee": "Est. network fee",
       "current_base_fee": "Current base fee",
       "max_base_fee": "Max base fee",
@@ -1912,13 +1934,23 @@
         "save": "Save",
         "enter_amount": "Enter Amount",
         "review": "Review",
-        "fetching_prices": "Fetching Prices",
+        "fetching_prices": "Fetching",
         "swapping": "Swapping"
       },
       "aggregators": {
         "rainbow": "Rainbow"
       },
+      "bridging": "Bridging",
+      "swapping": "Swapping",
+      "max": "Max",
+      "select": "Select",
+      "token_to_get": "Token to Get",
+      "token_to_swap": "Token to Swap",
+      "no_balance": "No balance",
+      "find_a_token_to_buy": "Find a token to buy",
+      "search_your_tokens": "Search your tokens",
       "error_executing_swap": "Error executing swap",
+      "flashbots_protection": "Flashbots Protection",
       "tokens_input": {
         "tokens": "Tokens",
         "sort": "Sort",
@@ -1945,6 +1977,7 @@
       },
       "loading": "Loading...",
       "modal_types": {
+        "bridge": "Bridge",
         "confirm": "Confirm",
         "deposit": "Deposit",
         "receive": "Receive",

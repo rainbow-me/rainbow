@@ -18,12 +18,12 @@ import {
   SLIDER_HEIGHT,
   caretConfig,
   pulsingConfig,
-  sliderConfig,
-  slowFadeConfig,
 } from '@/__swaps__/screens/Swap/constants';
-import { inputKeys, inputMethods } from '@/__swaps__/types/swap';
+import { inputKeys, inputMethods, inputValuesType } from '@/__swaps__/types/swap';
 import { getColorValueForThemeWorklet, opacity } from '@/__swaps__/utils/swaps';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 
 export function useSwapTextStyles({
   inputMethod,
@@ -38,7 +38,7 @@ export function useSwapTextStyles({
   sliderPressProgress,
 }: {
   inputMethod: SharedValue<inputMethods>;
-  inputValues: SharedValue<{ [key in inputKeys]: number | string }>;
+  inputValues: SharedValue<inputValuesType>;
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   isFetching: SharedValue<boolean>;
@@ -72,19 +72,19 @@ export function useSwapTextStyles({
   const pulsingOpacity = useDerivedValue(() => {
     return isQuoteStale.value === 1
       ? withRepeat(withSequence(withTiming(0.5, pulsingConfig), withTiming(1, pulsingConfig)), -1, true)
-      : withSpring(1, sliderConfig);
+      : withSpring(1, SPRING_CONFIGS.sliderConfig);
   });
 
   const isInputZero = useDerivedValue(() => {
     const isZero =
       !internalSelectedInputAsset.value ||
       (inputValues.value.inputAmount === 0 && inputMethod.value !== 'slider') ||
-      (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0);
+      (inputMethod.value === 'slider' && equalWorklet(inputValues.value.inputAmount, 0));
     return isZero;
   });
 
   const isOutputZero = useDerivedValue(() => {
-    const isZero = !internalSelectedOutputAsset.value || inputValues.value.outputAmount === 0;
+    const isZero = !internalSelectedOutputAsset.value || equalWorklet(inputValues.value.outputAmount, 0);
     return isZero;
   });
 
@@ -106,7 +106,9 @@ export function useSwapTextStyles({
         ? ETH_COLOR_DARK_ACCENT
         : inputAssetColor.value;
     const opacity =
-      isInputStale.value !== 1 || (isInputZero.value && isOutputZero.value) ? withSpring(1, sliderConfig) : pulsingOpacity.value;
+      isInputStale.value !== 1 || (isInputZero.value && isOutputZero.value)
+        ? withSpring(1, SPRING_CONFIGS.sliderConfig)
+        : pulsingOpacity.value;
 
     return {
       color: interpolateColor(isInputStale.value, [0, 1], [zeroOrAssetColor, zeroAmountColor]),
@@ -119,10 +121,12 @@ export function useSwapTextStyles({
   const inputNativeValueStyle = useAnimatedStyle(() => {
     const zeroOrColor = isInputZero.value ? zeroAmountColor : labelTertiary;
     const opacity =
-      isInputStale.value !== 1 || (isInputZero.value && isOutputZero.value) ? withSpring(1, sliderConfig) : pulsingOpacity.value;
+      isInputStale.value !== 1 || (isInputZero.value && isOutputZero.value)
+        ? withSpring(1, SPRING_CONFIGS.sliderConfig)
+        : pulsingOpacity.value;
 
     return {
-      color: withTiming(interpolateColor(isInputStale.value, [0, 1], [zeroOrColor, zeroAmountColor]), slowFadeConfig),
+      color: withTiming(interpolateColor(isInputStale.value, [0, 1], [zeroOrColor, zeroAmountColor]), TIMING_CONFIGS.slowFadeConfig),
       opacity,
     };
   });
@@ -135,7 +139,9 @@ export function useSwapTextStyles({
         ? ETH_COLOR_DARK_ACCENT
         : outputAssetColor.value;
     const opacity =
-      isOutputStale.value !== 1 || (isInputZero.value && isOutputZero.value) ? withSpring(1, sliderConfig) : pulsingOpacity.value;
+      isOutputStale.value !== 1 || (isInputZero.value && isOutputZero.value)
+        ? withSpring(1, SPRING_CONFIGS.sliderConfig)
+        : pulsingOpacity.value;
 
     return {
       color: interpolateColor(isOutputStale.value, [0, 1], [zeroOrAssetColor, zeroAmountColor]),
@@ -148,10 +154,12 @@ export function useSwapTextStyles({
   const outputNativeValueStyle = useAnimatedStyle(() => {
     const zeroOrColor = isOutputZero.value ? zeroAmountColor : labelTertiary;
     const opacity =
-      isOutputStale.value !== 1 || (isInputZero.value && isOutputZero.value) ? withSpring(1, sliderConfig) : pulsingOpacity.value;
+      isOutputStale.value !== 1 || (isInputZero.value && isOutputZero.value)
+        ? withSpring(1, SPRING_CONFIGS.sliderConfig)
+        : pulsingOpacity.value;
 
     return {
-      color: withTiming(interpolateColor(isOutputStale.value, [0, 1], [zeroOrColor, zeroAmountColor]), slowFadeConfig),
+      color: withTiming(interpolateColor(isOutputStale.value, [0, 1], [zeroOrColor, zeroAmountColor]), TIMING_CONFIGS.slowFadeConfig),
       opacity,
     };
   });
@@ -163,7 +171,7 @@ export function useSwapTextStyles({
       inputProgress.value === 0 &&
       outputProgress.value === 0 &&
       (inputMethod.value !== 'slider' ||
-        (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0) ||
+        (inputMethod.value === 'slider' && equalWorklet(inputValues.value.inputAmount, 0)) ||
         (sliderPressProgress.value === SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT && isQuoteStale.value === 0));
 
     const opacity = shouldShow
@@ -181,7 +189,7 @@ export function useSwapTextStyles({
 
     const isZero =
       (inputMethod.value !== 'slider' && inputValues.value.inputAmount === 0) ||
-      (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0);
+      (inputMethod.value === 'slider' && equalWorklet(inputValues.value.inputAmount, 0));
 
     return {
       display: shouldShow ? 'flex' : 'none',
@@ -196,7 +204,7 @@ export function useSwapTextStyles({
       inputProgress.value === 0 &&
       outputProgress.value === 0 &&
       (inputMethod.value !== 'slider' ||
-        (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0) ||
+        (inputMethod.value === 'slider' && equalWorklet(inputValues.value.inputAmount, 0)) ||
         (sliderPressProgress.value === SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT && isQuoteStale.value === 0));
 
     const opacity = shouldShow
@@ -214,7 +222,7 @@ export function useSwapTextStyles({
 
     const isZero =
       (inputMethod.value !== 'slider' && inputValues.value.outputAmount === 0) ||
-      (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0);
+      (inputMethod.value === 'slider' && equalWorklet(inputValues.value.inputAmount, 0));
 
     return {
       display: shouldShow ? 'flex' : 'none',

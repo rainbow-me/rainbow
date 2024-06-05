@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.9.25-1",
+  "version": "1.9.26-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn postinstall && yarn graphql-codegen",
@@ -20,10 +20,11 @@
     "clean:packager": "watchman watch-del-all && rm -rf $TMPDIR/react-* && rm -rf $TMPDIR/metro-* && rm -rf $TMPDIR/haste-map-*",
     "clean:node": "rm -rf node_modules",
     "nuke": "./scripts/nuke.sh",
-    "detox:android": "detox build -c android.emu.debug && detox test -R 1 -c android.emu.debug --loglevel verbose",
-    "detox:android:release": "detox build -c android.emu.release && detox test -R 1 -c android.emu.release",
-    "detox:ios": "detox build -c ios.sim.debug | xcpretty --color && detox test -R 1 -c ios.sim.debug --bail",
-    "detox:ios:release": "detox build -c ios.sim.release && detox test -R 1 -c ios.sim.release --bail",
+    "detox:android": "detox build -c android.emu.debug && detox test -c android.emu.debug --loglevel verbose",
+    "detox:android:release": "detox build -c android.emu.release && detox test -c android.emu.release",
+    "detox:ios:tests": "detox test -c ios.sim.debug --maxWorkers 2 -- --bail 1",
+    "detox:ios": "detox build -c ios.sim.debug | xcpretty --color && yarn detox:ios:tests",
+    "detox:ios:release": "detox build -c ios.sim.release && detox test -c ios.sim.release --maxWorkers 2 -- --bail 1",
     "ds:install": "yarn install --cwd src/design-system/docs",
     "ds": "cd src/design-system/docs && yarn dev",
     "fast": "yarn setup && yarn install-pods-fast",
@@ -374,6 +375,7 @@
   },
   "resolutions": {
     "**/async": "2.6.4",
+    "**/zod": "3.22.3",
     "**/file-type": "16.5.4",
     "**/got": "11.8.5",
     "**/jpeg-js": "0.4.4",

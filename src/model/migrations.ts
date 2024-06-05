@@ -639,27 +639,6 @@ export default async function runMigrations() {
 
   migrations.push(v18);
 
-  /**
-   * Move favorites (yet again) from react-query to zustand with persistence
-   * See state/assets/userAssets.ts for the state structure
-   */
-  const v19 = async () => {
-    const favorites = queryClient.getQueryData<Record<EthereumAddress, RainbowToken>>(favoritesQueryKey);
-
-    if (favorites) {
-      const favoriteAddresses: Hex[] = [];
-      Object.keys(favorites).forEach((address: string) => {
-        favoriteAddresses.push(address as Hex);
-      });
-
-      userAssetsStore.setState({
-        favoriteAssetsById: new Set(favoriteAddresses),
-      });
-    }
-  };
-
-  migrations.push(v19);
-
   logger.sentry(`Migrations: ready to run migrations starting on number ${currentVersion}`);
   // await setMigrationVersion(17);
   if (migrations.length === currentVersion) {
