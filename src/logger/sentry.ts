@@ -13,20 +13,21 @@ import isTestFlight from '@/helpers/isTestFlight';
  */
 export const sentryRoutingInstrumentation = IS_PROD ? new Sentry.ReactNavigationInstrumentation() : undefined;
 
-export const defaultOptions = {
+export const defaultOptions: Sentry.ReactNativeOptions = {
+  attachStacktrace: true,
+  defaultIntegrations: false,
   dsn: SENTRY_ENDPOINT,
-  enableAutoSessionTracking: true,
+  enableAppHangTracking: false,
+  enableAutoPerformanceTracing: false,
+  enableAutoSessionTracking: false,
+  enableTracing: false,
   environment: isTestFlight ? 'Testflight' : SENTRY_ENVIRONMENT,
-  integrations: [
-    new Sentry.ReactNativeTracing({
-      routingInstrumentation: sentryRoutingInstrumentation,
-      tracingOrigins: ['localhost', /^\//],
-    }),
-  ],
-  tracesSampleRate: 0.2,
+  integrations: [],
+  maxBreadcrumbs: 5,
+  tracesSampleRate: 0,
 };
 
-export async function initSentry() {
+export function initSentry() {
   if (IS_TEST) {
     logger.debug(`Sentry is disabled for test environment`);
     return;

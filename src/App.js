@@ -42,7 +42,7 @@ import { InitialRouteContext } from '@/navigation/initialRoute';
 import Routes from '@/navigation/routesNames';
 import { Portal } from '@/react-native-cool-modals/Portal';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
-import { initSentry, sentryRoutingInstrumentation } from '@/logger/sentry';
+import { initSentry } from '@/logger/sentry';
 import { analyticsV2 } from '@/analytics';
 import { getOrCreateDeviceId, securelyHashWalletAddress } from '@/analytics/utils';
 import { logger, RainbowError } from '@/logger';
@@ -57,13 +57,15 @@ import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { RemotePromoSheetProvider } from '@/components/remote-promo-sheet/RemotePromoSheetProvider';
 import { RemoteCardProvider } from '@/components/cards/remote-cards';
 import { initializeRemoteConfig } from '@/model/remoteConfig';
+import { IS_DEV } from './env';
 import { checkIdentifierOnLaunch } from './model/backup';
 
-if (__DEV__) {
+if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
   (showNetworkRequests || showNetworkResponses) && monitorNetwork(showNetworkRequests, showNetworkResponses);
 }
 
+initSentry(); // Must be set up immediately
 enableScreens();
 
 const containerStyle = { flex: 1 };
@@ -218,10 +220,6 @@ class OldApp extends Component {
     updateBalancesAfter(isL2 ? 10000 : 5000, isL2, network);
   };
 
-  handleSentryNavigationIntegration = () => {
-    sentryRoutingInstrumentation?.registerNavigationContainer(this.navigatorRef);
-  };
-
   render() {
     return (
       <Portal>
@@ -230,7 +228,7 @@ class OldApp extends Component {
             <RemotePromoSheetProvider isWalletReady={this.props.walletReady}>
               <RemoteCardProvider>
                 <InitialRouteContext.Provider value={this.state.initialRoute}>
-                  <RoutesComponent onReady={this.handleSentryNavigationIntegration} ref={this.handleNavigatorRef} />
+                  <RoutesComponent ref={this.handleNavigatorRef} />
                   <PortalConsumer />
                 </InitialRouteContext.Provider>
               </RemoteCardProvider>
@@ -257,9 +255,7 @@ function Root() {
 
   React.useEffect(() => {
     async function initializeApplication() {
-      await initSentry(); // must be set up immediately
       await initializeRemoteConfig();
-      // must happen immediately, but after Sentry
       await migrate();
 
       const isReturningUser = ls.device.get(['isReturningUser']);
@@ -339,7 +335,7 @@ function Root() {
         // init complete, load the rest of the app
         setInitializing(false);
       })
-      .catch(e => {
+      .catch(() => {
         logger.error(new RainbowError(`initializeApplication failed`));
 
         // for failure, continue to rest of the app for now
@@ -369,6 +365,7 @@ function Root() {
   );
 }
 
+/** Wrapping Root allows Sentry to accurately track startup times */
 const RootWithSentry = Sentry.wrap(Root);
 
 const PlaygroundWithReduxStore = () => (
