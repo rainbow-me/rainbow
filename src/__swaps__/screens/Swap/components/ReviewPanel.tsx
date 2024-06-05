@@ -123,7 +123,7 @@ function FlashbotsToggle() {
   const { SwapSettings } = useSwapContext();
 
   const inputAssetChainId = swapsStore(state => state.inputAsset?.chainId) ?? ChainId.mainnet;
-  const isFlashbotsEnabledForNetwork = getNetworkObj(ethereumUtils.getNetworkFromChainId(inputAssetChainId));
+  const isFlashbotsEnabledForNetwork = getNetworkObj(ethereumUtils.getNetworkFromChainId(inputAssetChainId)).features.flashbots;
   const flashbotsToggleValue = useDerivedValue(() => isFlashbotsEnabledForNetwork && SwapSettings.flashbots.value);
 
   return (
