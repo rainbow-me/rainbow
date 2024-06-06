@@ -6,6 +6,7 @@ import { expect, device, element, by, waitFor } from 'detox';
 import { parseEther } from '@ethersproject/units';
 import { AndroidElementAttributes, ElementAttributes, IosElementAttributes } from 'detox/detox';
 import { WALLET_VARS } from './testVariables';
+import { ethers } from 'ethers';
 
 const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 
@@ -276,12 +277,33 @@ export async function swipeUntilVisible(elementId: string | RegExp, scrollViewId
   }
 }
 
-// combining attributes from detox
-type ExtendedElementAttributes = ElementAttributes | IosElementAttributes | AndroidElementAttributes;
+interface Element {
+  visible: boolean;
+  label: string;
+  elementBounds: object;
+  normalizedActivationPoint: object;
+  safeAreaInsets: object;
+  frame: object;
+  activationPoint: object;
+  layer: string;
+  identifier: string;
+  elementSafeBounds: object;
+  enabled: boolean;
+  elementFrame: object;
+  hittable: boolean;
+  className: string;
+}
 
-export async function fetchElementAttributes(elementId: string | RegExp): Promise<ExtendedElementAttributes> {
+interface ExtendedAttributes {
+  elements: Element[];
+}
+
+// Combining attributes from Detox
+type CombinedElementAttributes = ExtendedAttributes & (ElementAttributes | IosElementAttributes | AndroidElementAttributes);
+
+export async function fetchElementAttributes(elementId: string | RegExp): Promise<CombinedElementAttributes> {
   const attributes = await element(by.id(elementId)).getAttributes();
-  return attributes as ExtendedElementAttributes;
+  return attributes as CombinedElementAttributes;
 }
 
 export async function scrollUpTo(elementId: string | RegExp, distance: number, direction: 'left' | 'right' | 'up' | 'down') {
@@ -462,6 +484,12 @@ export async function sendETHtoTestWallet() {
     value: parseEther('20'),
   });
   return true;
+}
+
+export async function checkWalletBalance() {
+  const provider = getProvider();
+  const balance = await provider.getBalance(TESTING_WALLET);
+  return parseFloat(ethers.utils.formatEther(balance));
 }
 
 export async function openDeeplinkColdStart(url: string) {

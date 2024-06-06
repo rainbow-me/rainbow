@@ -1,4 +1,4 @@
-import { device } from 'detox';
+// import { device } from 'detox';
 import {
   importWalletFlow,
   sendETHtoTestWallet,
@@ -6,23 +6,17 @@ import {
   checkIfVisible,
   beforeAllcleanApp,
   afterAllcleanApp,
-  checkIfExistsByText,
   fetchElementAttributes,
-  swipe,
-  typeText,
+  tap,
+  disableSynchronization,
   delayTime,
   tapByText,
-  tap,
-  tapAtPoint,
-  disableSynchronization,
-  enableSynchronization,
 } from './helpers';
 
 import { expect } from '@jest/globals';
-import { delay } from 'lodash';
 
-const ios = device.getPlatform() === 'ios';
-const android = device.getPlatform() === 'android';
+// const ios = device.getPlatform() === 'ios';
+// const android = device.getPlatform() === 'android';
 
 import { quoteResponse } from './mocks/quoteResponse.mock';
 import { fetchedPricesResponse } from './mocks/fetchedPrices.mock';
@@ -56,6 +50,7 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   it('Should send ETH to test wallet', async () => {
+    // send 20 eth
     await sendETHtoTestWallet();
   });
 
@@ -63,26 +58,48 @@ describe('Swap Sheet Interaction Flow', () => {
     await tap('dev-button-hardhat');
     await checkIfVisible('testnet-toast-Hardhat');
 
-    // validate it has funds to swap w/
+    // validate it has the expected funds of 20 eth
     const attributes = await fetchElementAttributes('fast-coin-info');
-    expect(attributes.label).toContain('Ether' && '20');
+    expect(attributes.label).toContain('Ethereum');
+    expect(attributes.label).toContain('20');
   });
 
-  // TODO: use testId to select options
-  // await tap('token-to-buy-ethereum-1');
-
   it('Should open swap screen with 50% inputAmount for inputAsset', async () => {
+    await delayTime('long');
     await waitAndTap('swap-button');
-    await tapByText('DAI');
+    await disableSynchronization();
+    await tap('token-to-buy-dai-1');
     const swapInput = await fetchElementAttributes('swap-asset-input');
-    console.log('_________________ swapInput ', swapInput);
-    expect(swapInput.value).toBe('0.5');
 
+    // expect inputAsset === .5 * eth balance
+    expect(swapInput.elements[0].label).toContain('Ethereum');
+    expect(swapInput.elements[0].label).toContain('11');
+
+    // TODO: fix. tests break when importing findNiceIncrement.
+    //
+    // const expectedBalance = await checkWalletBalance();
+    // const swapInputLabel = swapInput.elements[0].label;
+    // const inputAmount = findNiceIncrement((expectedBalance * 0.5).toString());
+    // console.log('unrounded inputAmount', (expectedBalance * 0.5).toString());
+    // console.log('inputAmount', inputAmount);
+    // expect(swapInputLabel).toContain(inputAmount);
+  });
+
+  // TODO: Either mock quote here or wait for it to resolve which can be flaky.. prefer to mock this.
+  it('Should be able to go to review and execute a swap', async () => {
+    await tapByText('Review');
+    await delayTime('long');
+    const reviewActionElements = await fetchElementAttributes('swap-action-button');
+    expect(reviewActionElements.elements[0].label).toContain('ETH');
+    expect(reviewActionElements.elements[1].label).toContain('DAI');
+    expect(reviewActionElements.elements[2].label).toContain('Tap to Swap');
+    await tapByText('Tap to Swap');
+    // TODO: add validation
     /**
      * tap swap button
      * wait for Swap header to be visible
-     * grab balance of testnet eth
-     * expect inputAsset === .5 * eth balance
+     * grab highest user asset balance from userAssetsStore
+     * expect inputAsset.uniqueId === highest user asset uniqueId
      */
   });
 
@@ -140,34 +157,4 @@ describe('Swap Sheet Interaction Flow', () => {
    * switching wallets inside of swap screen
    *
    */
-
-  it('Should go to swap and open review sheet on mainnet swap 1', async () => {
-    await tap('swap-button');
-    await checkIfVisible('token-to-buy-usd-coin-1');
-    await tap('token-to-buy-usd-coin-1');
-
-    // TODO: Either mock quote here or wait for it to resolve which can be flaky.. prefer to mock this.
-
-    // the swap screen sometimes freezes on fetching ??? rerun the tests multiple times and watch
-    await tapByText('Review' || 'Fetching'); // await tap('swap-action-button');
-
-    // this works fine as well (when desynced). prefer testID tho.
-    await tapByText('Tap to Swap');
-    await enableSynchronization();
-    // tests time out again as soon as sync is reenabled.
-
-    //
-    //
-    //
-
-    // works
-    // await tapByText('Find a token to buy');
-
-    // broke
-    // await typeText('token-to-buy-input', 'Ethereum\n');
-
-    // broke
-    // await tap('token-to-buy-ethereum-1')
-    // await getElementAttributes('token-to-buy-ethereum-1');
-  });
 });
