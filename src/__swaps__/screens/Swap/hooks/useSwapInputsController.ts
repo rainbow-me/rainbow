@@ -702,17 +702,6 @@ export function useSwapInputsController({
               return;
             }
 
-            console.log({
-              incrementDecimalPlaces: incrementDecimalPlaces.value,
-              inputAssetBalance: balance,
-              inputAssetUsdPrice: inputNativePrice.value,
-              niceIncrement: niceIncrement.value,
-              percentageToSwap: percentageToSwap.value,
-              sliderXPosition: sliderXPosition.value,
-              stripSeparators: true,
-              isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
-            });
-
             const assetBalanceDisplay = internalSelectedInputAsset.value.balance.display;
 
             const inputAmount = niceIncrementFormatter({
