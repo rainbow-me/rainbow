@@ -1,4 +1,4 @@
-// import { device } from 'detox';
+import { getNonceAndPerformSwap } from '@/__swaps__/screens/Swap/providers/getNonceAndPerformSwap';
 import {
   importWalletFlow,
   sendETHtoTestWallet,
@@ -14,34 +14,23 @@ import {
 } from './helpers';
 
 import { expect } from '@jest/globals';
-
-// const ios = device.getPlatform() === 'ios';
-// const android = device.getPlatform() === 'android';
-
 import { quoteResponse } from './mocks/quoteResponse.mock';
 import { fetchedPricesResponse } from './mocks/fetchedPrices.mock';
-import { SwapProvider } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
-let executeSwapMock: jest.SpyInstance;
+jest.mock('@/__swaps__/screens/Swap/providers/getNonceAndPerformSwap', () => ({
+  ...jest.requireActual('@/__swaps__/screens/Swap/providers/getNonceAndPerformSwap'),
+  getNonceAndPerformSwap: jest.fn(),
+}));
 
 jest.mock('@/__swaps__/screens/Swap/hooks/useSwapInputsController', () => {
   const originalModule = jest.requireActual('@/__swaps__/screens/Swap/hooks/useSwapInputsController');
   return {
     ...originalModule,
-    getQuote: jest.fn().mockImplementation(params => {
-      return quoteResponse(params);
-    }),
-    getCrosschainQuote: jest.fn().mockImplementation(params => {
-      return quoteResponse(params);
-    }),
-
-    // TODO: This needs proper data structure
+    getQuote: jest.fn().mockImplementation(params => quoteResponse(params)),
+    getCrosschainQuote: jest.fn().mockImplementation(params => quoteResponse(params)),
     fetchAssetPrices: jest.fn().mockImplementation(() => fetchedPricesResponse),
   };
 });
-
-// trying to mock the swap-provider here and then call executeSwap
-jest.mock('@/__swaps__/screens/Swap/providers/swap-provider');
 
 describe('Swap Sheet Interaction Flow', () => {
   beforeAll(async () => {
@@ -52,12 +41,10 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   beforeEach(async () => {
-    executeSwapMock = jest.spyOn(SwapProvider.prototype, 'executeSwap').mockImplementation(() => {
-      // Mock implementation
-    });
+    jest.clearAllMocks();
   });
   afterEach(async () => {
-    executeSwapMock.mockRestore();
+    console.log('test done');
   });
 
   it('Import a wallet and go to welcome', async () => {
@@ -102,6 +89,7 @@ describe('Swap Sheet Interaction Flow', () => {
 
   // TODO: Either mock quote here or wait for it to resolve which can be flaky.. prefer to mock this.
   it('Should be able to go to review and execute a swap', async () => {
+    (getNonceAndPerformSwap as jest.Mock).mockImplementation(() => Promise.resolve());
     await tapByText('Review');
     await delayTime('long');
     const reviewActionElements = await fetchElementAttributes('swap-action-button');
@@ -110,7 +98,7 @@ describe('Swap Sheet Interaction Flow', () => {
     expect(reviewActionElements.elements[2].label).toContain('Tap to Swap');
     await tapByText('Tap to Swap');
     await delayTime('long');
-    expect(executeSwapMock).toHaveBeenCalled();
+    expect(getNonceAndPerformSwap).toHaveBeenCalled();
     // TODO: add validation
     /**
      * tap swap button

@@ -4,8 +4,9 @@ const { pathsToModuleNameMapper } = require('ts-jest');
 const { compilerOptions } = require('../tsconfig');
 
 module.exports = {
-  setupFilesAfterEnv: ['./init.js'],
-  testEnvironment: './environment',
+  rootDir: '../', // Explicitly set rootDir to the project root
+  setupFilesAfterEnv: ['./e2e/init.js'],
+  testEnvironment: './e2e/environment',
 
   globalSetup: 'detox/runners/jest/globalSetup',
   globalTeardown: 'detox/runners/jest/globalTeardown',
@@ -17,11 +18,14 @@ module.exports = {
   transform: {
     '\\.[jt]sx?$': 'ts-jest',
   },
-  transformIgnorePatterns: ['/node_modules/(?!(react-native|@react-native|react-native-reanimated)/)'],
+  transformIgnorePatterns: [
+    'node_modules/(?!((jest-)?react-native|react-native-keyboard-area|imgix-core-js|react-native-payments|@react-native-firebase|@react-native(-community)?)/)',
+  ],
   moduleNameMapper: {
-    ...pathsToModuleNameMapper(compilerOptions.paths, { prefix: '../' }),
-    '^src/__swaps__/utils/swap.ts$': '<rootDir>/mocks/worklets.mock.js',
-    '^@/__swaps__/screens/Swap/providers/swap-provider$': '<rootDir>/src/__swaps__/screens/Swap/providers/__mocks__/swap-provider.js',
+    '^@/(.*)$': '<rootDir>/src/$1',
+    '^@/__swaps__/screens/Swap/providers/getNonceAndPerformSwap$':
+      '<rootDir>/src/__swaps__/screens/Swap/providers/getNonceAndPerformSwap.ts',
+    ...pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/' }),
   },
   setupFiles: ['dotenv/config'],
 };

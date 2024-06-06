@@ -1,6 +1,6 @@
 // @refresh
 import React, { ReactNode, createContext, useCallback, useContext, useEffect, useRef } from 'react';
-import { StyleProp, TextStyle, TextInput, NativeModules } from 'react-native';
+import { StyleProp, TextStyle, TextInput } from 'react-native';
 import {
   AnimatedRef,
   DerivedValue,
@@ -26,25 +26,14 @@ import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { ChainId } from '@/__swaps__/types/chains';
-import { RainbowError, logger } from '@/logger';
+import { logger } from '@/logger';
 import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
-import { Navigation } from '@/navigation';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-import Routes from '@/navigation/routesNames';
-import { ethereumUtils } from '@/utils';
-import { getCachedProviderForNetwork, getFlashbotsProvider, isHardHat } from '@/handlers/web3';
-import { loadWallet } from '@/model/wallet';
-import { walletExecuteRap } from '@/raps/execute';
-import { queryClient } from '@/react-query';
-import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { useAccountSettings } from '@/hooks';
-import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
-import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { useSwapSettings } from '../hooks/useSwapSettings';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
-import { getNetworkObj } from '@/networks';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { getNonceAndPerformSwap } from './getNonceAndPerformSwap';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const tapToSwap = i18n.t(i18n.l.swap.actions.tap_to_swap);
@@ -151,92 +140,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     quote,
   });
 
-  const getNonceAndPerformSwap = async ({
-    type,
-    parameters,
-  }: {
-    type: 'swap' | 'crosschainSwap';
-    parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'>;
-  }) => {
-    const NotificationManager = ios ? NativeModules.NotificationManager : null;
-    NotificationManager?.postNotification('rapInProgress');
-
-    const resetSwappingStatus = () => {
-      'worklet';
-      isSwapping.value = false;
-    };
-
-    const network = ethereumUtils.getNetworkFromChainId(parameters.chainId);
-    const provider =
-      parameters.flashbots && getNetworkObj(network).features.flashbots
-        ? await getFlashbotsProvider()
-        : getCachedProviderForNetwork(network);
-    const providerUrl = provider?.connection?.url;
-    const connectedToHardhat = isHardHat(providerUrl);
-
-    const selectedGas = getSelectedGas(parameters.chainId);
-    if (!selectedGas) {
-      runOnUI(resetSwappingStatus)();
-      Alert.alert(i18n.t(i18n.l.gas.unable_to_determine_selected_gas));
-      return;
-    }
-
-    const wallet = await loadWallet(parameters.quote.from, false, provider);
-    if (!wallet) {
-      runOnUI(resetSwappingStatus)();
-      Alert.alert(i18n.t(i18n.l.swap.unable_to_load_wallet));
-      return;
-    }
-
-    const gasFeeParamsBySpeed = getGasSettingsBySpeed(parameters.chainId);
-
-    let gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = {} as
-      | TransactionGasParamAmounts
-      | LegacyTransactionGasParamAmounts;
-
-    if (selectedGas.isEIP1559) {
-      gasParams = {
-        maxFeePerGas: selectedGas.maxBaseFee,
-        maxPriorityFeePerGas: selectedGas.maxPriorityFee,
-      };
-    } else {
-      gasParams = {
-        gasPrice: selectedGas.gasPrice,
-      };
-    }
-
-    const { errorMessage } = await walletExecuteRap(wallet, type, {
-      ...parameters,
-      gasParams,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      gasFeeParamsBySpeed: gasFeeParamsBySpeed as any,
-    });
-    runOnUI(resetSwappingStatus)();
-
-    if (errorMessage) {
-      SwapInputController.quoteFetchingInterval.start();
-
-      if (errorMessage !== 'handled') {
-        logger.error(new RainbowError(`[getNonceAndPerformSwap]: Error executing swap: ${errorMessage}`));
-        const extractedError = errorMessage.split('[')[0];
-        Alert.alert(i18n.t(i18n.l.swap.error_executing_swap), extractedError);
-        return;
-      }
-    }
-
-    queryClient.invalidateQueries({
-      queryKey: userAssetsQueryKey({
-        address: parameters.quote.from,
-        currency: nativeCurrency,
-        connectedToHardhat,
-      }),
-    });
-
-    // TODO: Analytics
-    NotificationManager?.postNotification('rapCompleted');
-    Navigation.handleAction(Routes.PROFILE_SCREEN, {});
-  };
-
   const executeSwap = () => {
     'worklet';
 
@@ -272,6 +175,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     runOnJS(getNonceAndPerformSwap)({
       type,
       parameters,
+      isSwapping: isSwapping,
+      SwapInputController: SwapInputController,
+      nativeCurrency,
     });
   };
 
