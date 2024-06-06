@@ -34,6 +34,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
 import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import { getNetworkObj } from '@/networks';
 import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 
 const UNKNOWN_LABEL = i18n.t(i18n.l.swap.unknown);
@@ -116,6 +117,24 @@ function EstimatedArrivalTime() {
     <Text align="right" color={'labelTertiary'} size="15pt" weight="bold">
       {estimatedTime}
     </Text>
+  );
+}
+
+function FlashbotsToggle() {
+  const { SwapSettings } = useSwapContext();
+
+  const inputAssetChainId = swapsStore(state => state.inputAsset?.chainId) ?? ChainId.mainnet;
+  const isFlashbotsEnabledForNetwork = getNetworkObj(ethereumUtils.getNetworkFromChainId(inputAssetChainId)).features.flashbots;
+  const flashbotsToggleValue = useDerivedValue(() => isFlashbotsEnabledForNetwork && SwapSettings.flashbots.value);
+
+  return (
+    <AnimatedSwitch
+      onToggle={SwapSettings.onToggleFlashbots}
+      disabled={!isFlashbotsEnabledForNetwork}
+      value={flashbotsToggleValue}
+      activeLabel={i18n.t(i18n.l.expanded_state.swap.on)}
+      inactiveLabel={i18n.t(i18n.l.expanded_state.swap.off)}
+    />
   );
 }
 
@@ -266,12 +285,7 @@ export function ReviewPanel() {
               </ButtonPressAnimation>
             </Inline>
 
-            <AnimatedSwitch
-              onToggle={SwapSettings.onToggleFlashbots}
-              value={SwapSettings.flashbots}
-              activeLabel={i18n.t(i18n.l.expanded_state.swap.on)}
-              inactiveLabel={i18n.t(i18n.l.expanded_state.swap.off)}
-            />
+            <FlashbotsToggle />
           </Inline>
 
           <Inline wrap={false} horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">

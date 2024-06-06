@@ -12,9 +12,10 @@ type AnimatedSwitchProps = {
   value: SharedValue<boolean>;
   activeLabel?: string;
   inactiveLabel?: string;
+  disabled?: boolean;
 } & Omit<GestureHandlerButtonProps, 'children'>;
 
-export function AnimatedSwitch({ value, onToggle, activeLabel, inactiveLabel, ...props }: AnimatedSwitchProps) {
+export function AnimatedSwitch({ value, onToggle, activeLabel, inactiveLabel, disabled = false, ...props }: AnimatedSwitchProps) {
   const { isDarkMode } = useColorMode();
 
   const inactiveBg = useForegroundColor('fillSecondary');
@@ -27,6 +28,7 @@ export function AnimatedSwitch({ value, onToggle, activeLabel, inactiveLabel, ..
         ? withTiming(opacityWorklet(inactiveBg, 0.12), TIMING_CONFIGS.fadeConfig)
         : withTiming(opacityWorklet(activeBg, 0.64), TIMING_CONFIGS.fadeConfig),
       borderColor: opacityWorklet(border, 0.06),
+      opacity: disabled ? 0.4 : 1,
     };
   });
 
@@ -41,6 +43,8 @@ export function AnimatedSwitch({ value, onToggle, activeLabel, inactiveLabel, ..
   });
 
   const labelItem = useDerivedValue(() => {
+    if (disabled) return;
+
     if (!activeLabel && !inactiveLabel) {
       return;
     }
