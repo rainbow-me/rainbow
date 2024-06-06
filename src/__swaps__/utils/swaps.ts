@@ -218,22 +218,38 @@ export function trimTrailingZeros(value: string) {
   return withTrimmedZeros.endsWith('.') ? withTrimmedZeros.slice(0, -1) : withTrimmedZeros;
 }
 
+export function precisionBasedOffMagnitude(amount: number | string, isStablecoin = false): number {
+  'worklet';
+
+  const magnitude = -Number(floorWorklet(sumWorklet(log10Worklet(amount), 0)));
+  // don't let stablecoins go beneath 2nd order
+  if (magnitude < -2 && isStablecoin) {
+    return -2;
+  }
+  return magnitude;
+}
+
 export function valueBasedDecimalFormatter({
   amount,
   usdTokenPrice,
+  assetBalanceDisplay,
   roundingMode,
   precisionAdjustment,
   isStablecoin,
   stripSeparators = true,
+  isMaxAmount = false,
 }: {
   amount: number | string;
   usdTokenPrice: number;
+  assetBalanceDisplay: string;
   roundingMode?: 'up' | 'down';
   precisionAdjustment?: number;
   isStablecoin?: boolean;
   stripSeparators?: boolean;
+  isMaxAmount?: boolean;
 }): string {
   'worklet';
+
   function calculateDecimalPlaces(usdTokenPrice: number): number {
     const fallbackDecimalPlaces = 2;
     if (usdTokenPrice <= 0) {
@@ -261,11 +277,32 @@ export function valueBasedDecimalFormatter({
     roundedAmount = divWorklet(roundWorklet(mulWorklet(amount, factor)), factor);
   }
 
+  const maximumFractionDigits = () => {
+    // if we're selling max amount, we want to match what's displayed on the balance badge
+    // let's base the decimal places based on that (capped at 6)
+    if (isMaxAmount) {
+      const [, decimalPlacesFromDisplay] = assetBalanceDisplay.split('.');
+      if (decimalPlacesFromDisplay.length < 2 && isStablecoin) {
+        return 2;
+      }
+
+      return decimalPlacesFromDisplay.length > 6 ? 6 : decimalPlacesFromDisplay.length;
+    }
+
+    if (!isNaN(decimalPlaces)) {
+      return isStablecoin && decimalPlaces < 2 ? 2 : decimalPlaces;
+    }
+
+    // default to 2 precision?
+    return 2;
+  };
+
   // Format the number to add separators and trim trailing zeros
   const numberFormatter = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: isStablecoin ? 2 : 0,
     // eslint-disable-next-line no-nested-ternary
-    maximumFractionDigits: !isNaN(decimalPlaces) ? (isStablecoin && decimalPlaces < 2 ? 2 : decimalPlaces) : 2, // Allow up to the required precision
+    maximumFractionDigits: maximumFractionDigits(),
+    // maximumFractionDigits: !isNaN(decimalPlaces) ? (isStablecoin && decimalPlaces < 2 ? 2 : decimalPlaces) : 2, // Allow up to the required precision
     useGrouping: true,
   });
 
@@ -277,6 +314,7 @@ export function valueBasedDecimalFormatter({
 export function niceIncrementFormatter({
   incrementDecimalPlaces,
   inputAssetBalance,
+  assetBalanceDisplay,
   inputAssetUsdPrice,
   niceIncrement,
   percentageToSwap,
@@ -286,6 +324,7 @@ export function niceIncrementFormatter({
 }: {
   incrementDecimalPlaces: number;
   inputAssetBalance: number | string;
+  assetBalanceDisplay: string;
   inputAssetUsdPrice: number;
   niceIncrement: number | string;
   percentageToSwap: number;
@@ -295,23 +334,15 @@ export function niceIncrementFormatter({
 }) {
   'worklet';
 
-  function precisionBasedOffMagnitude(amount: number | string): number {
-    const magnitude = -Number(floorWorklet(sumWorklet(log10Worklet(amount), 0)));
-    // don't let stablecoins go beneath 2nd order
-    if (magnitude < -2 && isStablecoin) {
-      return -2;
-    }
-    return magnitude;
-  }
-
   if (percentageToSwap === 0) return '0';
   if (percentageToSwap === 0.25) {
     const amount = mulWorklet(inputAssetBalance, 0.25);
     return valueBasedDecimalFormatter({
       amount,
       usdTokenPrice: inputAssetUsdPrice,
+      assetBalanceDisplay,
       roundingMode: 'up',
-      precisionAdjustment: precisionBasedOffMagnitude(amount),
+      precisionAdjustment: precisionBasedOffMagnitude(amount, isStablecoin),
       isStablecoin,
     });
   }
@@ -320,8 +351,9 @@ export function niceIncrementFormatter({
     return valueBasedDecimalFormatter({
       amount,
       usdTokenPrice: inputAssetUsdPrice,
+      assetBalanceDisplay,
       roundingMode: 'up',
-      precisionAdjustment: precisionBasedOffMagnitude(amount),
+      precisionAdjustment: precisionBasedOffMagnitude(amount, isStablecoin),
       isStablecoin,
     });
   }
@@ -330,8 +362,9 @@ export function niceIncrementFormatter({
     return valueBasedDecimalFormatter({
       amount,
       usdTokenPrice: inputAssetUsdPrice,
+      assetBalanceDisplay,
       roundingMode: 'up',
-      precisionAdjustment: precisionBasedOffMagnitude(amount),
+      precisionAdjustment: precisionBasedOffMagnitude(amount, isStablecoin),
       isStablecoin,
     });
   }
@@ -339,6 +372,9 @@ export function niceIncrementFormatter({
     return valueBasedDecimalFormatter({
       amount: inputAssetBalance,
       usdTokenPrice: inputAssetUsdPrice,
+      assetBalanceDisplay,
+      isStablecoin,
+      isMaxAmount: true,
     });
   }
 
