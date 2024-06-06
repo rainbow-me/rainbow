@@ -18,7 +18,7 @@ import { CrosschainQuote, Quote, QuoteError, SwapType, getCrosschainQuote, getQu
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import store from '@/redux/store';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { convertRawAmountToDecimalFormat } from '@/__swaps__/utils/numbers';
+import { convertAmountToNativeDisplayWorklet, convertRawAmountToDecimalFormat } from '@/__swaps__/utils/numbers';
 import { NavigationSteps } from './useSwapNavigation';
 import { RainbowError, logger } from '@/logger';
 import {
@@ -30,6 +30,8 @@ import {
 import { ethereumUtils } from '@/utils';
 import { queryClient } from '@/react-query';
 import { divWorklet, equalWorklet, greaterThanWorklet, mulWorklet, toFixedWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { useAccountSettings } from '@/hooks';
+import { supportedNativeCurrencies } from '@/references';
 
 function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetWithColors | null) {
   const initialBalance = Number(initialSelectedInputAsset?.balance.amount) ?? 0;
@@ -82,6 +84,7 @@ export function useSwapInputsController({
   sliderXPosition: SharedValue<number>;
 }) {
   const { initialInputAmount, initialInputNativeValue } = getInitialInputValues(initialSelectedInputAsset);
+  const { nativeCurrency: currentCurrency } = useAccountSettings();
 
   const inputValues = useSharedValue<inputValuesType>({
     inputAmount: initialInputAmount,
@@ -144,16 +147,14 @@ export function useSwapInputsController({
 
   const formattedInputNativeValue = useDerivedValue(() => {
     if ((inputMethod.value === 'slider' && percentageToSwap.value === 0) || !inputValues.value.inputNativeValue) {
-      return '$0.00';
+      return convertAmountToNativeDisplayWorklet(0, currentCurrency);
     }
-
-    const nativeValue = `$${Number(inputValues.value.inputNativeValue).toLocaleString('en-US', {
-      useGrouping: true,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })}`;
-
-    return nativeValue || '$0.00';
+    console.log(inputValues.value.inputAmount);
+    const inputValue =
+      typeof inputValues.value.inputAmount === 'string'
+        ? Number(inputValues.value.inputAmount.replaceAll(',', ''))
+        : inputValues.value.inputAmount;
+    return convertAmountToNativeDisplayWorklet(inputValue, currentCurrency);
   });
 
   const formattedOutputAmount = useDerivedValue(() => {
