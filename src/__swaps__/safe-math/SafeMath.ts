@@ -398,7 +398,7 @@ export function roundWorklet(num: string | number): string {
   const [bigIntNum, decimalPlaces] = removeDecimalWorklet(numStr);
   const scaledBigIntNum = scaleUpWorklet(bigIntNum, decimalPlaces);
 
-  const scaleFactor = BigInt(10) ** BigInt(20 - decimalPlaces);
+  const scaleFactor = BigInt(10) ** BigInt(20);
   const roundBigInt = ((scaledBigIntNum + scaleFactor / BigInt(2)) / scaleFactor) * scaleFactor;
 
   return formatResultWorklet(roundBigInt);
