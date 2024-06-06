@@ -247,7 +247,6 @@ export function valueBasedDecimalFormatter({
   }
 
   const decimalPlaces = calculateDecimalPlaces(usdTokenPrice);
-  console.log(decimalPlaces, usdTokenPrice);
 
   let roundedAmount;
   const factor = Math.pow(10, decimalPlaces);
@@ -298,8 +297,6 @@ export function niceIncrementFormatter({
 
   function precisionBasedOffMagnitude(amount: number | string): number {
     const magnitude = -Number(floorWorklet(sumWorklet(log10Worklet(amount), 1)));
-    console.log({ magnitude });
-
     // don't let stablecoins go beneath 2nd order
     if (magnitude < -2 && isStablecoin) {
       return -2;
@@ -363,7 +360,6 @@ export function niceIncrementFormatter({
   const rawAmount = mulWorklet(roundWorklet(divWorklet(mulWorklet(percentage, inputAssetBalance), niceIncrement)), niceIncrement);
 
   const amountToFixedDecimals = toFixedWorklet(rawAmount, decimals);
-  console.log({ amountToFixedDecimals });
 
   const formattedAmount = `${Number(amountToFixedDecimals).toLocaleString('en-US', {
     useGrouping: true,

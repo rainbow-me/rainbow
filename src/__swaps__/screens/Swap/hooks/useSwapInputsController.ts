@@ -37,12 +37,6 @@ function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetW
   const initialDecimalPlaces = countDecimalPlaces(initialNiceIncrement);
   const isStablecoin = initialSelectedInputAsset?.type === 'stablecoin';
 
-  console.log({
-    initialBalance,
-    initialNiceIncrement,
-    initialDecimalPlaces,
-  });
-
   const initialInputAmount = niceIncrementFormatter({
     incrementDecimalPlaces: initialDecimalPlaces,
     inputAssetBalance: initialBalance,
