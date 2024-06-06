@@ -9,7 +9,6 @@ import {
   clamp,
   countDecimalPlaces,
   findNiceIncrement,
-  maxDecimalPrecisionBasedOffBalanceDisplay,
   niceIncrementFormatter,
   trimTrailingZeros,
   valueBasedDecimalFormatter,
