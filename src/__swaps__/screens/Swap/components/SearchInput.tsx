@@ -20,7 +20,6 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
-import { isAddress } from 'viem';
 import { GestureHandlerV1Button } from './GestureHandlerV1Button';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
@@ -73,7 +72,9 @@ export const SearchInput = ({
   });
 
   const buttonVisibilityStyle = useAnimatedStyle(() => {
-    const isVisible = output || inputProgress.value === NavigationSteps.SEARCH_FOCUSED || internalSelectedOutputAsset.value;
+    const isInputSearchFocused = inputProgress.value === NavigationSteps.SEARCH_FOCUSED;
+    const isInputAssetSelected = !!internalSelectedOutputAsset.value;
+    const isVisible = output || isInputSearchFocused || isInputAssetSelected;
 
     return {
       opacity: isVisible ? 1 : 0,
@@ -103,15 +104,10 @@ export const SearchInput = ({
       (output && outputProgress.value === NavigationSteps.SEARCH_FOCUSED)
   );
 
-  const isPaste = useDerivedValue(
-    () => output && outputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED && !internalSelectedOutputAsset.value
-  );
-
   const pastedSearchInputValue = useSharedValue('');
   const searchInputValue = useAnimatedProps(() => {
     // Removing the value when the input is focused allows the input to be reset to the correct value on blur
     const query = isSearchFocused.value ? undefined : '';
-
     return {
       text: pastedSearchInputValue.value || query,
       defaultValue: '',
@@ -131,10 +127,9 @@ export const SearchInput = ({
 
   const onPaste = () => {
     Clipboard.getString().then(text => {
-      if (text.length < 10 || isAddress(text)) {
-        pastedSearchInputValue.value = text;
-        useSwapsStore.setState({ outputSearchQuery: text });
-      }
+      const v = text.trim().slice(0, 42);
+      pastedSearchInputValue.value = v;
+      useSwapsStore.setState({ outputSearchQuery: v });
     });
   };
 
@@ -211,7 +206,7 @@ export const SearchInput = ({
               }}
               onPressWorklet={() => {
                 'worklet';
-                if (isPaste.value) {
+                if (output && outputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED && !internalSelectedOutputAsset.value) {
                   runOnJS(onPaste)();
                 }
 

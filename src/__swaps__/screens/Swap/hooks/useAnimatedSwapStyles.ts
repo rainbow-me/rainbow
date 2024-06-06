@@ -19,7 +19,7 @@ import { foregroundColors } from '@/design-system/color/palettes';
 import { IS_ANDROID } from '@/env';
 import { safeAreaInsetValues } from '@/utils';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
-import { SharedValue, interpolate, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import { SharedValue, interpolate, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { NavigationSteps } from './useSwapNavigation';
 
 export function useAnimatedSwapStyles({
@@ -206,10 +206,12 @@ export function useAnimatedSwapStyles({
     };
   });
 
-  const searchOutputAssetButtonStyle = useAnimatedStyle(() => {
-    const isPasteMode = outputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED && !internalSelectedOutputAsset.value;
+  const isPasteMode = useDerivedValue(
+    () => outputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED && !internalSelectedOutputAsset.value
+  );
 
-    const color = isPasteMode ? foregroundColors.blue : internalSelectedOutputAsset.value?.highContrastColor;
+  const searchOutputAssetButtonStyle = useAnimatedStyle(() => {
+    const color = isPasteMode.value ? foregroundColors.blue : internalSelectedOutputAsset.value?.highContrastColor;
 
     return {
       color: getColorValueForThemeWorklet(color, isDarkMode, true),
@@ -242,14 +244,12 @@ export function useAnimatedSwapStyles({
   });
 
   const searchOutputAssetButtonWrapperStyle = useAnimatedStyle(() => {
-    const isPasteMode = outputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED && !internalSelectedOutputAsset.value;
-
-    const color = isPasteMode ? foregroundColors.blue : internalSelectedOutputAsset.value?.highContrastColor;
+    const color = isPasteMode.value ? foregroundColors.blue : internalSelectedOutputAsset.value?.highContrastColor;
 
     return {
       backgroundColor: opacityWorklet(getColorValueForThemeWorklet(color, isDarkMode, true), isDarkMode ? 0.1 : 0.08),
       borderColor: opacityWorklet(getColorValueForThemeWorklet(color, isDarkMode, true), isDarkMode ? 0.06 : 0.01),
-      borderWidth: isPasteMode ? 0 : THICK_BORDER_WIDTH,
+      borderWidth: isPasteMode.value ? 0 : THICK_BORDER_WIDTH,
     };
   });
 
