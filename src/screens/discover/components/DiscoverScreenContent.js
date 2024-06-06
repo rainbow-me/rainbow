@@ -27,8 +27,8 @@ export default function DiscoverScreenContent() {
       <Inset top="8px" bottom={{ custom: insets.bottom }}>
         <DiscoverSearchContainer ref={ref} setShowSearch={setShowSearch} showSearch={showSearch}>
           <Switcher showSearch={showSearch}>
-            <DiscoverHome />
             <DiscoverSearch />
+            <DiscoverHome />
           </Switcher>
         </DiscoverSearchContainer>
       </Inset>
