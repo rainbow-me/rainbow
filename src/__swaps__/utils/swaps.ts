@@ -300,9 +300,7 @@ export function valueBasedDecimalFormatter({
   // Format the number to add separators and trim trailing zeros
   const numberFormatter = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: isStablecoin ? 2 : 0,
-    // eslint-disable-next-line no-nested-ternary
     maximumFractionDigits: maximumFractionDigits(),
-    // maximumFractionDigits: !isNaN(decimalPlaces) ? (isStablecoin && decimalPlaces < 2 ? 2 : decimalPlaces) : 2, // Allow up to the required precision
     useGrouping: true,
   });
 
