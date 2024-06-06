@@ -79,7 +79,6 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
           swapsStore.setState({ inputAsset: largestBalanceSameChainUserAsset });
         } else {
           swapsStore.setState({ inputAsset: null });
-          userAssetsStore.setState({ filter: chainId });
         }
         swapsStore.setState({ outputAsset: parsedAsset });
       }

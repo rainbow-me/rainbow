@@ -118,7 +118,6 @@ const AvailableNetworksv2 = ({
           swapsStore.setState({ inputAsset: largestBalanceSameChainUserAsset });
         } else {
           swapsStore.setState({ inputAsset: null });
-          userAssetsStore.setState({ filter: chainId });
         }
         swapsStore.setState({ outputAsset: parsedAsset });
 
