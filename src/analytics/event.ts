@@ -1,4 +1,4 @@
-import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';
+import { UnlockableAppIconKey } from '@/appIcons/appIcons';
 import { CardType } from '@/components/cards/GenericCard';
 import { LearnCategory } from '@/components/cards/utils/types';
 import { FiatProviderName } from '@/entities/f2c';
@@ -124,8 +124,10 @@ export const event = {
   txRequestShownSheet: 'request.sheet.show',
   txRequestReject: 'request.rejected',
   txRequestApprove: 'request.approved',
-
   addNewWalletGroupName: 'add_new_wallet_group.name',
+
+  // app browser events
+  browserTrendingDappClicked: 'browser.trending_dapp_pressed',
 } as const;
 
 /**
@@ -470,8 +472,13 @@ export type EventProperties = {
     requestType: 'transaction' | 'signature';
     isHardwareWallet: boolean;
   };
-
   [event.addNewWalletGroupName]: {
     name: string;
+  };
+  [event.browserTrendingDappClicked]: {
+    name: string;
+    url: string;
+    hasClickedBefore: boolean;
+    index: number;
   };
 };

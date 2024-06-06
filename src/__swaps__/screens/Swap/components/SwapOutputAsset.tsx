@@ -1,22 +1,29 @@
 import MaskedView from '@react-native-masked-view/masked-view';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { StyleSheet, StatusBar } from 'react-native';
-import Animated, { useDerivedValue } from 'react-native-reanimated';
+import Animated, { runOnJS, useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
-import { useShallow } from 'zustand/react/shallow';
 import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import { SwapInput } from '@/__swaps__/screens/Swap/components/SwapInput';
 import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
+import { AnimatedSwapCoinIcon } from '@/__swaps__/screens/Swap/components/AnimatedSwapCoinIcon';
 import { TokenList } from '@/__swaps__/screens/Swap/components/TokenList/TokenList';
 import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { ethereumUtils } from '@/utils';
+import { ChainId } from '@/__swaps__/types/chains';
+import * as i18n from '@/languages';
+
+const SELECT_LABEL = i18n.t(i18n.l.swap.select);
+const NO_BALANCE_LABEL = i18n.t(i18n.l.swap.no_balance);
+const TOKEN_TO_GET_LABEL = i18n.t(i18n.l.swap.token_to_get);
 
 function SwapOutputActionButton() {
   const { isDarkMode } = useColorMode();
@@ -24,7 +31,7 @@ function SwapOutputActionButton() {
 
   const label = useDerivedValue(() => {
     const asset = internalSelectedOutputAsset.value;
-    return asset?.symbol ?? (!asset ? 'Select' : '');
+    return asset?.symbol ?? (!asset ? SELECT_LABEL : '');
   });
 
   return (
@@ -41,14 +48,39 @@ function SwapOutputActionButton() {
 }
 
 function SwapOutputAmount() {
-  const { focusedInput, SwapTextStyles, SwapInputController, AnimatedSwapStyles } = useSwapContext();
+  const { navigate } = useNavigation();
+  const { focusedInput, SwapTextStyles, SwapInputController, AnimatedSwapStyles, outputQuotesAreDisabled } = useSwapContext();
+
+  const handleTapWhileDisabled = useCallback(() => {
+    const { inputAsset, outputAsset } = useSwapsStore.getState();
+    const inputTokenSymbol = inputAsset?.symbol;
+    const outputTokenSymbol = outputAsset?.symbol;
+    const inputNetwork = ethereumUtils.getNetworkFromChainId(inputAsset?.chainId ?? ChainId.mainnet);
+    const outputNetwork = ethereumUtils.getNetworkFromChainId(outputAsset?.chainId ?? ChainId.mainnet);
+    const isCrosschainSwap = inputAsset?.chainId !== outputAsset?.chainId;
+    const isBridgeSwap = inputTokenSymbol === outputTokenSymbol;
+
+    navigate(Routes.EXPLAIN_SHEET, {
+      inputToken: inputTokenSymbol,
+      fromNetwork: inputNetwork,
+      toNetwork: outputNetwork,
+      isCrosschainSwap,
+      isBridgeSwap,
+      outputToken: outputTokenSymbol,
+      type: 'output_disabled',
+    });
+  }, [navigate]);
 
   return (
     <GestureHandlerV1Button
       disableButtonPressWrapper
       onPressStartWorklet={() => {
         'worklet';
-        focusedInput.value = 'outputAmount';
+        if (outputQuotesAreDisabled.value) {
+          runOnJS(handleTapWhileDisabled)();
+        } else {
+          focusedInput.value = 'outputAmount';
+        }
       }}
     >
       <MaskedView maskElement={<FadeMask fadeEdgeInset={2} fadeWidth={8} height={36} side="right" />} style={styles.inputTextMask}>
@@ -79,9 +111,9 @@ function OutputAssetBalanceBadge() {
   const label = useDerivedValue(() => {
     const asset = internalSelectedOutputAsset.value;
     const hasBalance = Number(asset?.balance.amount) > 0 && asset?.balance.display;
-    const balance = (hasBalance && asset?.balance.display) || 'No Balance';
+    const balance = (hasBalance && asset?.balance.display) || NO_BALANCE_LABEL;
 
-    return asset ? balance : 'Token to Get';
+    return asset ? balance : TOKEN_TO_GET_LABEL;
   });
 
   return <BalanceBadge label={label} />;

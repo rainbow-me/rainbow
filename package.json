@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.9.25-1",
+  "version": "1.9.26-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn postinstall && yarn graphql-codegen",
@@ -375,6 +375,7 @@
   },
   "resolutions": {
     "**/async": "2.6.4",
+    "**/zod": "3.22.3",
     "**/file-type": "16.5.4",
     "**/got": "11.8.5",
     "**/jpeg-js": "0.4.4",
