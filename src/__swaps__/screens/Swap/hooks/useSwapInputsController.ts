@@ -35,6 +35,13 @@ function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetW
   const initialBalance = Number(initialSelectedInputAsset?.balance.amount) ?? 0;
   const initialNiceIncrement = findNiceIncrement(initialBalance);
   const initialDecimalPlaces = countDecimalPlaces(initialNiceIncrement);
+  const isStablecoin = initialSelectedInputAsset?.type === 'stablecoin';
+
+  console.log({
+    initialBalance,
+    initialNiceIncrement,
+    initialDecimalPlaces,
+  });
 
   const initialInputAmount = niceIncrementFormatter({
     incrementDecimalPlaces: initialDecimalPlaces,
@@ -44,6 +51,7 @@ function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetW
     percentageToSwap: 0.5,
     sliderXPosition: SLIDER_WIDTH / 2,
     stripSeparators: true,
+    isStablecoin,
   });
 
   const initialInputNativeValue = addCommasToNumber(
@@ -131,6 +139,7 @@ export function useSwapInputsController({
     }
 
     const balance = internalSelectedInputAsset.value?.balance.amount || 0;
+    const isStablecoin = internalSelectedInputAsset.value?.type === 'stablecoin' ?? false;
 
     return niceIncrementFormatter({
       incrementDecimalPlaces: incrementDecimalPlaces.value,
@@ -139,6 +148,7 @@ export function useSwapInputsController({
       niceIncrement: niceIncrement.value,
       percentageToSwap: percentageToSwap.value,
       sliderXPosition: sliderXPosition.value,
+      isStablecoin,
     });
   });
 
@@ -695,6 +705,7 @@ export function useSwapInputsController({
               percentageToSwap: percentageToSwap.value,
               sliderXPosition: sliderXPosition.value,
               stripSeparators: true,
+              isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
             });
             const inputNativeValue = mulWorklet(inputAmount, inputNativePrice.value);
             inputValues.modify(values => {
@@ -852,6 +863,7 @@ export function useSwapInputsController({
             percentageToSwap: percentageToSwap.value,
             sliderXPosition: sliderXPosition.value,
             stripSeparators: true,
+            isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
           });
 
           const inputNativeValue = mulWorklet(inputAmount, inputNativePrice.value);

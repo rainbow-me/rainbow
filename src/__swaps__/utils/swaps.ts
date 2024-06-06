@@ -234,12 +234,6 @@ export function valueBasedDecimalFormatter({
   stripSeparators?: boolean;
 }): string {
   'worklet';
-
-  function precisionBasedOffMagnitude(amount: number | string): number {
-    const magnitude = -Number(floorWorklet(sumWorklet(log10Worklet(amount), 1)));
-    return (precisionAdjustment ?? 0) + magnitude;
-  }
-
   function calculateDecimalPlaces(usdTokenPrice: number): number {
     const fallbackDecimalPlaces = 2;
     if (usdTokenPrice <= 0) {
@@ -247,12 +241,13 @@ export function valueBasedDecimalFormatter({
     }
     const unitsForOneCent = 0.01 / usdTokenPrice;
     if (unitsForOneCent >= 1) {
-      return 0;
+      return isStablecoin ? 2 : 0;
     }
-    return Math.max(Math.ceil(Math.log10(1 / unitsForOneCent)) + precisionBasedOffMagnitude(amount), 0);
+    return Math.max(Math.ceil(Math.log10(1 / unitsForOneCent)) + (precisionAdjustment ?? 0), isStablecoin ? 2 : 0);
   }
 
-  const decimalPlaces = isStablecoin ? 2 : calculateDecimalPlaces(usdTokenPrice);
+  const decimalPlaces = calculateDecimalPlaces(usdTokenPrice);
+  console.log(decimalPlaces, usdTokenPrice);
 
   let roundedAmount;
   const factor = Math.pow(10, decimalPlaces);
@@ -269,8 +264,9 @@ export function valueBasedDecimalFormatter({
 
   // Format the number to add separators and trim trailing zeros
   const numberFormatter = new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: !isNaN(decimalPlaces) ? decimalPlaces : 2, // Allow up to the required precision
+    minimumFractionDigits: isStablecoin ? 2 : 0,
+    // eslint-disable-next-line no-nested-ternary
+    maximumFractionDigits: !isNaN(decimalPlaces) ? (isStablecoin && decimalPlaces < 2 ? 2 : decimalPlaces) : 2, // Allow up to the required precision
     useGrouping: true,
   });
 
@@ -287,6 +283,7 @@ export function niceIncrementFormatter({
   percentageToSwap,
   sliderXPosition,
   stripSeparators,
+  isStablecoin = false,
 }: {
   incrementDecimalPlaces: number;
   inputAssetBalance: number | string;
@@ -295,37 +292,61 @@ export function niceIncrementFormatter({
   percentageToSwap: number;
   sliderXPosition: number;
   stripSeparators?: boolean;
+  isStablecoin?: boolean;
 }) {
   'worklet';
+
+  function precisionBasedOffMagnitude(amount: number | string): number {
+    const magnitude = -Number(floorWorklet(sumWorklet(log10Worklet(amount), 1)));
+    console.log({ magnitude });
+
+    // don't let stablecoins go beneath 2nd order
+    if (magnitude < -2 && isStablecoin) {
+      return -2;
+    }
+
+    return magnitude;
+  }
+
   if (percentageToSwap === 0) return '0';
-  if (percentageToSwap === 0.25)
+  if (percentageToSwap === 0.25) {
+    const amount = mulWorklet(inputAssetBalance, 0.25);
     return valueBasedDecimalFormatter({
-      amount: mulWorklet(inputAssetBalance, 0.25),
+      amount,
       usdTokenPrice: inputAssetUsdPrice,
       roundingMode: 'up',
-      precisionAdjustment: -3,
+      precisionAdjustment: precisionBasedOffMagnitude(amount),
+      isStablecoin,
     });
-  if (percentageToSwap === 0.5)
+  }
+  if (percentageToSwap === 0.5) {
+    const amount = mulWorklet(inputAssetBalance, 0.5);
     return valueBasedDecimalFormatter({
-      amount: mulWorklet(inputAssetBalance, 0.5),
+      amount,
       usdTokenPrice: inputAssetUsdPrice,
       roundingMode: 'up',
-      precisionAdjustment: -3,
+      precisionAdjustment: precisionBasedOffMagnitude(amount),
+      isStablecoin,
     });
-  if (percentageToSwap === 0.75)
+  }
+  if (percentageToSwap === 0.75) {
+    const amount = mulWorklet(inputAssetBalance, 0.75);
     return valueBasedDecimalFormatter({
-      amount: mulWorklet(inputAssetBalance, 0.75),
+      amount,
       usdTokenPrice: inputAssetUsdPrice,
       roundingMode: 'up',
-      precisionAdjustment: -3,
+      precisionAdjustment: precisionBasedOffMagnitude(amount),
+      isStablecoin,
     });
-  if (percentageToSwap === 1)
+  }
+  if (percentageToSwap === 1) {
     return valueBasedDecimalFormatter({
       amount: inputAssetBalance,
       usdTokenPrice: inputAssetUsdPrice,
-      roundingMode: 'up',
     });
+  }
 
+  const decimals = isStablecoin ? 2 : incrementDecimalPlaces;
   const exactIncrement = divWorklet(inputAssetBalance, 100);
   const isIncrementExact = equalWorklet(niceIncrement, exactIncrement);
   const numberOfIncrements = divWorklet(inputAssetBalance, niceIncrement);
@@ -341,11 +362,12 @@ export function niceIncrementFormatter({
 
   const rawAmount = mulWorklet(roundWorklet(divWorklet(mulWorklet(percentage, inputAssetBalance), niceIncrement)), niceIncrement);
 
-  const amountToFixedDecimals = toFixedWorklet(rawAmount, incrementDecimalPlaces);
+  const amountToFixedDecimals = toFixedWorklet(rawAmount, decimals);
+  console.log({ amountToFixedDecimals });
 
   const formattedAmount = `${Number(amountToFixedDecimals).toLocaleString('en-US', {
     useGrouping: true,
-    minimumFractionDigits: 0,
+    minimumFractionDigits: isStablecoin ? 2 : 0,
     maximumFractionDigits: 8,
   })}`;
 
