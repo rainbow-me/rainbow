@@ -241,7 +241,7 @@ export function valueBasedDecimalFormatter({
 }: {
   amount: number | string;
   usdTokenPrice: number;
-  assetBalanceDisplay: string;
+  assetBalanceDisplay?: string;
   roundingMode?: 'up' | 'down';
   precisionAdjustment?: number;
   isStablecoin?: boolean;
@@ -280,13 +280,16 @@ export function valueBasedDecimalFormatter({
   const maximumFractionDigits = () => {
     // if we're selling max amount, we want to match what's displayed on the balance badge
     // let's base the decimal places based on that (capped at 6)
-    if (isMaxAmount) {
-      const [, decimalPlacesFromDisplay] = assetBalanceDisplay.split('.');
-      if (decimalPlacesFromDisplay.length < 2 && isStablecoin) {
-        return 2;
-      }
+    if (isMaxAmount && assetBalanceDisplay) {
+      const decimals = assetBalanceDisplay.split('.');
+      if (decimals.length > 1) {
+        const [, decimalPlacesFromDisplay] = decimals;
+        if (decimalPlacesFromDisplay.length < 2 && isStablecoin) {
+          return 2;
+        }
 
-      return decimalPlacesFromDisplay.length > 6 ? 6 : decimalPlacesFromDisplay.length;
+        return decimalPlacesFromDisplay.length > 6 ? 6 : decimalPlacesFromDisplay.length;
+      }
     }
 
     if (!isNaN(decimalPlaces)) {
