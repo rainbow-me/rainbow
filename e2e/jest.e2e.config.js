@@ -21,6 +21,8 @@ module.exports = {
   transformIgnorePatterns: [
     'node_modules/(?!((jest-)?react-native|react-native-keyboard-area|imgix-core-js|react-native-payments|@react-native-firebase|@react-native(-community)?)/)',
   ],
+
+  // trying to figure out how to resolve the modules correctly. i think this setup does it.
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@/__swaps__/screens/Swap/providers/getNonceAndPerformSwap$':

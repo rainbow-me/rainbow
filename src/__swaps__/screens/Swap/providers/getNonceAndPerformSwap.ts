@@ -1,3 +1,6 @@
+// separating this out bc i kept having issues with detox trying to
+// compile the and parse the whole file and the worklets mess it up
+
 import { TransactionGasParamAmounts, LegacyTransactionGasParamAmounts } from '@/entities';
 import { getFlashbotsProvider, getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
 import { RainbowError } from '@/logger';

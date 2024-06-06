@@ -1,3 +1,40 @@
+/*
+ *  // If you remove all mocking from this file the test passes as is.
+ *      - Test flow all the way through clicking 'Tap to Swap' is complete.
+ *      - There are no validations after tapping 'Tap to Swap' at the moment.
+ *      - In order to validate the flow consistenly I would like to mock out
+ *        the getNonceAndPerformSwap function. I am having issues getting detox
+ *        to id and parse all the files correctly though.
+ *
+ *   // Relevant files:
+ *      - jest.config.js / jest.e2e.config.js - module resolution and test setup
+ *      - swap-provider.tsx / getNonceAndPerformSwap.ts - the swap function to mock & the original file.
+ *
+ *   // To setup & see errors:
+ *      `yarn clean:ios && yarn fast && yarn start:clean`
+ *      `yarn detox:ios:build`
+ *      `yarn detox test -c ios.sim.debug 7_swapSheetFlow1.spec.ts`
+ *
+ *   // TODO:
+ *       - fix getNonceAndPerformSwap mocking
+ *       - fix swap input auto fill validation (cannot import worklet `findNiceIncrement`)
+ *       - finish out other swap cases
+ *       - figure out whats wrong with the jest mocking and / or my brain
+ *
+ *   // Other tests to consider:
+ *       - Flip assets
+ *       - exchange button onPress
+ *       - disable button states once https://github.com/rainbow-me/rainbow/pull/5785 gets merged
+ *       - swap execution
+ *       - token search (both from userAssets and output token list)
+ *       - custom gas panel
+ *       - flashbots
+ *       - slippage
+ *       - explainer sheets
+ *       - switching wallets inside of swap screen
+ */
+
+// import new separated function
 import { getNonceAndPerformSwap } from '@/__swaps__/screens/Swap/providers/getNonceAndPerformSwap';
 import {
   importWalletFlow,
@@ -17,6 +54,7 @@ import { expect } from '@jest/globals';
 import { quoteResponse } from './mocks/quoteResponse.mock';
 import { fetchedPricesResponse } from './mocks/fetchedPrices.mock';
 
+// mock it
 jest.mock('@/__swaps__/screens/Swap/providers/getNonceAndPerformSwap', () => ({
   ...jest.requireActual('@/__swaps__/screens/Swap/providers/getNonceAndPerformSwap'),
   getNonceAndPerformSwap: jest.fn(),
@@ -41,9 +79,11 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   beforeEach(async () => {
+    // clean mocks
     jest.clearAllMocks();
   });
   afterEach(async () => {
+    // maybe clean mocks here instead
     console.log('test done');
   });
 
@@ -78,6 +118,8 @@ describe('Swap Sheet Interaction Flow', () => {
     expect(swapInput.elements[0].label).toContain('11');
 
     // TODO: fix. tests break when importing findNiceIncrement.
+    // should just be able to just remove the two above validations
+    // and then uncomment this if we can fix.
     //
     // const expectedBalance = await checkWalletBalance();
     // const swapInputLabel = swapInput.elements[0].label;
@@ -89,6 +131,7 @@ describe('Swap Sheet Interaction Flow', () => {
 
   // TODO: Either mock quote here or wait for it to resolve which can be flaky.. prefer to mock this.
   it('Should be able to go to review and execute a swap', async () => {
+    // call the mock implementation... idk if this is right.
     (getNonceAndPerformSwap as jest.Mock).mockImplementation(() => Promise.resolve());
     await tapByText('Review');
     await delayTime('long');
@@ -98,8 +141,11 @@ describe('Swap Sheet Interaction Flow', () => {
     expect(reviewActionElements.elements[2].label).toContain('Tap to Swap');
     await tapByText('Tap to Swap');
     await delayTime('long');
+    // check if was called.
     expect(getNonceAndPerformSwap).toHaveBeenCalled();
+    //
     // TODO: add validation
+    //
     /**
      * tap swap button
      * wait for Swap header to be visible
@@ -147,19 +193,4 @@ describe('Swap Sheet Interaction Flow', () => {
      * ^^ expect both of those to not change the outputAmount
      */
   });
-
-  // other tests to consider
-  /**
-   * Flip assets
-   * exchange button onPress
-   * disable button states once https://github.com/rainbow-me/rainbow/pull/5785 gets merged
-   * swap execution
-   * token search (both from userAssets and output token list)
-   * custom gas panel
-   * flashbots
-   * slippage
-   * explainer sheets
-   * switching wallets inside of swap screen
-   *
-   */
 });
