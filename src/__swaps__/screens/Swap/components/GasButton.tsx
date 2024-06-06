@@ -2,6 +2,7 @@ import { ChainId } from '@/__swaps__/types/chains';
 import { weiToGwei } from '@/__swaps__/utils/ethereum';
 import { getCachedCurrentBaseFee, useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { add } from '@/__swaps__/utils/numbers';
+import { ButtonPressAnimation } from '@/components/animations';
 import { ContextMenu } from '@/components/context-menu';
 import { Centered } from '@/components/layout';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
@@ -10,20 +11,35 @@ import { IS_ANDROID } from '@/env';
 import * as i18n from '@/languages';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { gasUtils } from '@/utils';
-import React, { ReactNode, useCallback, useMemo } from 'react';
+import React, { PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import { runOnJS, runOnUI } from 'react-native-reanimated';
 import { ETH_COLOR, ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '../constants';
 import { formatNumber } from '../hooks/formatNumber';
 import { GasSettings, useCustomGasSettings } from '../hooks/useCustomGas';
 import { GasSpeed, setSelectedGasSpeed, useSelectedGas, useSelectedGasSpeed } from '../hooks/useSelectedGas';
-import { useSwapContext } from '../providers/swap-provider';
-import { EstimatedSwapGasFee } from './EstimatedSwapGasFee';
+import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
+import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { GestureHandlerV1Button } from './GestureHandlerV1Button';
-import { ButtonPressAnimation } from '@/components/animations';
+import { Stall } from './Stall';
 
 const { GAS_ICONS } = gasUtils;
 const GAS_BUTTON_HIT_SLOP = 16;
+
+function StallWhenGasButtonIsNotInScreen({ placeholder, children }: PropsWithChildren<{ placeholder: ReactNode }>) {
+  const { configProgress } = useSwapContext();
+  return (
+    <Stall
+      isStalledWorklet={() => {
+        'worklet';
+        return configProgress.value === NavigationSteps.SHOW_GAS || configProgress.value === NavigationSteps.SHOW_REVIEW;
+      }}
+      placeholder={placeholder}
+    >
+      {children}
+    </Stall>
+  );
+}
 
 function EstimatedGasFee() {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
@@ -34,7 +50,9 @@ function EstimatedGasFee() {
       <TextIcon color="labelQuaternary" height={10} size="icon 11px" weight="heavy" width={16}>
         􀵟
       </TextIcon>
-      <EstimatedSwapGasFee gasSettings={gasSettings} />
+      <StallWhenGasButtonIsNotInScreen placeholder={<EstimatedSwapGasFeeSlot text="--" />}>
+        <EstimatedSwapGasFee gasSettings={gasSettings} />
+      </StallWhenGasButtonIsNotInScreen>
     </Inline>
   );
 }

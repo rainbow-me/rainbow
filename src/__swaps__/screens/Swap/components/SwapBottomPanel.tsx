@@ -16,7 +16,6 @@ import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useBottomPanelGestureHandler } from '../hooks/useBottomPanelGestureHandler';
 import { GasButton } from './GasButton';
 import { GasPanel } from './GasPanel';
-import { ReanimatedPanelWrapper } from './ReanimatedPanelWrapper';
 import { ReviewPanel } from './ReviewPanel';
 import { SwapActionButton } from './SwapActionButton';
 
@@ -69,22 +68,8 @@ export function SwapBottomPanel() {
         width="full"
         zIndex={15}
       >
-        <ReanimatedPanelWrapper
-          isOpenReaction={() => {
-            'worklet';
-            return configProgress.value === NavigationSteps.SHOW_REVIEW;
-          }}
-        >
-          <ReviewPanel />
-        </ReanimatedPanelWrapper>
-        <ReanimatedPanelWrapper
-          isOpenReaction={() => {
-            'worklet';
-            return configProgress.value === NavigationSteps.SHOW_GAS;
-          }}
-        >
-          <GasPanel />
-        </ReanimatedPanelWrapper>
+        <ReviewPanel />
+        <GasPanel />
         <Columns alignVertical="center" space="12px">
           <Column style={hiddenColumnStyles} width="content">
             <GasButton />

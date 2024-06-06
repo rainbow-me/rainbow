@@ -1,5 +1,5 @@
 import * as i18n from '@/languages';
-import React, { PropsWithChildren, useMemo } from 'react';
+import React, { PropsWithChildren, ReactNode, useMemo } from 'react';
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
 import { fadeConfig } from '@/__swaps__/screens/Swap/constants';
@@ -27,7 +27,8 @@ import { upperFirst } from 'lodash';
 import { formatNumber } from '../hooks/formatNumber';
 import { GasSettings, getCustomGasSettings, setCustomGasSettings, useCustomGasStore } from '../hooks/useCustomGas';
 import { setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
-import { EstimatedSwapGasFee } from './EstimatedSwapGasFee';
+import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
+import { Stall } from './Stall';
 
 const MINER_TIP_TYPE = 'minerTip';
 const MAX_BASE_FEE_TYPE = 'maxBaseFee';
@@ -38,6 +39,21 @@ type AlertInfo = {
   type: typeof LOW_ALERT | typeof HIGH_ALERT;
   message: string;
 } | null;
+
+function StallWhenGasPanelIsClosed({ placeholder, children }: PropsWithChildren<{ placeholder: ReactNode }>) {
+  const { configProgress } = useSwapContext();
+  return (
+    <Stall
+      isStalledWorklet={() => {
+        'worklet';
+        return configProgress.value !== NavigationSteps.SHOW_GAS;
+      }}
+      placeholder={placeholder}
+    >
+      {children}
+    </Stall>
+  );
+}
 
 function PressableLabel({ onPress, children }: PropsWithChildren<{ onPress: VoidFunction }>) {
   return (
@@ -132,34 +148,28 @@ function GasSettingInput({
 
 const selectWeiToGwei = (s: string | undefined) => s && weiToGwei(s);
 
-function CurrentBaseFee() {
+function CurrentBaseFeeSlot({ baseFee, gasTrend }: { baseFee?: string; gasTrend?: string }) {
   const { isDarkMode } = useColorMode();
   const { navigate } = useNavigation();
 
-  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-  const { data: baseFee } = useBaseFee({ chainId, select: selectWeiToGwei });
-  const { data: gasTrend } = useGasTrend({ chainId });
-
   const trendType = 'currentBaseFee' + upperFirst(gasTrend);
 
-  // loading state?
-
+  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
   const isEIP1559 = useIsChainEIP1559(chainId);
   if (!isEIP1559) return null;
 
+  const onPressLabel = () => {
+    if (!baseFee || !gasTrend) return;
+    navigate(Routes.EXPLAIN_SHEET, {
+      currentBaseFee: baseFee,
+      currentGasTrend: gasTrend,
+      type: trendType,
+    });
+  };
+
   return (
     <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-      <PressableLabel
-        onPress={() =>
-          navigate(Routes.EXPLAIN_SHEET, {
-            currentBaseFee: baseFee,
-            currentGasTrend: gasTrend,
-            type: trendType,
-          })
-        }
-      >
-        {i18n.t(i18n.l.gas.current_base_fee)}
-      </PressableLabel>
+      <PressableLabel onPress={onPressLabel}>{i18n.t(i18n.l.gas.current_base_fee)}</PressableLabel>
       <Text
         align="right"
         color={isDarkMode ? 'labelSecondary' : 'label'}
@@ -171,6 +181,13 @@ function CurrentBaseFee() {
       </Text>
     </Inline>
   );
+}
+
+function CurrentBaseFee() {
+  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
+  const { data: baseFee } = useBaseFee({ chainId, select: selectWeiToGwei });
+  const { data: gasTrend } = useGasTrend({ chainId });
+  return <CurrentBaseFeeSlot baseFee={baseFee} gasTrend={gasTrend} />;
 }
 
 type GasPanelState = { gasPrice?: string; maxBaseFee?: string; maxPriorityFee?: string };
@@ -284,13 +301,19 @@ function MaxTransactionFee() {
       </Inline>
 
       <Inline horizontalSpace="6px">
-        <EstimatedSwapGasFee
-          gasSettings={gasSettings}
-          align="right"
-          color={isDarkMode ? 'labelSecondary' : 'label'}
-          size="15pt"
-          weight="heavy"
-        />
+        <StallWhenGasPanelIsClosed
+          placeholder={
+            <EstimatedSwapGasFeeSlot align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy" text="--" />
+          }
+        >
+          <EstimatedSwapGasFee
+            gasSettings={gasSettings}
+            align="right"
+            color={isDarkMode ? 'labelSecondary' : 'label'}
+            size="15pt"
+            weight="heavy"
+          />
+        </StallWhenGasPanelIsClosed>
       </Inline>
     </Inline>
   );
@@ -349,7 +372,9 @@ export function GasPanel() {
         </Text>
 
         <Box gap={24} width="full" alignItems="stretch">
-          <CurrentBaseFee />
+          <StallWhenGasPanelIsClosed placeholder={<CurrentBaseFeeSlot />}>
+            <CurrentBaseFee />
+          </StallWhenGasPanelIsClosed>
 
           <EditableGasSettings />
 
