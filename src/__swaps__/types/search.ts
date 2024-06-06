@@ -1,6 +1,6 @@
 import { Address } from 'viem';
 
-import { AddressOrEth, ParsedAsset, UniqueId } from '@/__swaps__/types/assets';
+import { AddressOrEth, AssetType, ParsedAsset, UniqueId } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 
 export type TokenSearchAssetKey = keyof ParsedAsset;
@@ -29,5 +29,6 @@ export type SearchAsset = {
   };
   rainbowMetadataId?: number;
   symbol: string;
+  type?: AssetType;
   uniqueId: UniqueId;
 };
