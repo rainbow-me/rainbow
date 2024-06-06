@@ -87,7 +87,7 @@ const getUniqueIdForAsset = ({ asset }: { asset: ZerionAsset | AssetApiResponse 
     ? asset.mainnet_address || asset.implementations?.[ChainName.mainnet]?.address || undefined
     : networks[ChainId.mainnet]?.address;
 
-  return `${mainnetAddress || address}_${chainId}`;
+  return `${address || mainnetAddress}_${chainId}`;
 };
 
 export function parseAsset({ asset, currency }: { asset: ZerionAsset | AssetApiResponse; currency: SupportedCurrencyKey }): ParsedAsset {
@@ -302,7 +302,7 @@ export const parseSearchAsset = ({
   balance: userAsset?.balance || { amount: '0', display: '0.00' },
   icon_url: userAsset?.icon_url || assetWithPrice?.icon_url || searchAsset?.icon_url,
   colors: userAsset?.colors || assetWithPrice?.colors || searchAsset?.colors,
-  type: userAsset?.type || assetWithPrice?.type,
+  type: userAsset?.type || assetWithPrice?.type || searchAsset?.type,
 });
 
 export function filterAsset(asset: ZerionAsset) {
