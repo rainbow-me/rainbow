@@ -1,5 +1,5 @@
-import { QueryFunction, UseQueryOptions, useQuery } from '@tanstack/react-query';
-import { createQueryKey } from '@/react-query';
+import { QueryFunction, useQuery } from '@tanstack/react-query';
+import { QueryConfigWithSelect, createQueryKey } from '@/react-query';
 import { NFT } from '@/resources/nfts/types';
 import { fetchSimpleHashNFTListing } from '@/resources/nfts/simplehash';
 import { simpleHashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
@@ -49,8 +49,15 @@ const isImportedWalletSelector = createSelector(
   }
 );
 
-const fetchNFTData: QueryFunction<NFTData, [string, { address: string }]> = async ({ queryKey }) => {
-  const [, { address }] = queryKey;
+interface NFTData {
+  nfts: UniqueAsset[];
+  nftsMap: Record<string, UniqueAsset>;
+}
+
+type NFTQueryKey = ReturnType<typeof nftsQueryKey>;
+
+const fetchNFTData: QueryFunction<NFTData, NFTQueryKey> = async ({ queryKey }) => {
+  const [{ address }] = queryKey;
   const queryResponse = await arcClient.getNFTs({ walletAddress: address });
 
   const nfts = queryResponse?.nfts?.map(nft => simpleHashNFTToUniqueAsset(nft, address));
@@ -68,32 +75,16 @@ const fetchNFTData: QueryFunction<NFTData, [string, { address: string }]> = asyn
 
 const FALLBACK_DATA: NFTData = { nfts: [], nftsMap: {} };
 
-interface NFTData {
-  nfts: UniqueAsset[];
-  nftsMap: Record<string, UniqueAsset>;
-}
-
-interface UseLegacyNFTsConfig<TData, TSelected>
-  extends Omit<UseQueryOptions<TData, unknown, TSelected, [string, { address: string }]>, 'queryKey' | 'queryFn'> {
-  select?: (data: TData) => TSelected;
-}
-
 export function useLegacyNFTs<TSelected = NFTData>({
   address,
   config,
 }: {
   address: string;
-  config?: UseLegacyNFTsConfig<NFTData, TSelected>;
-}): {
-  data: TSelected;
-  error: unknown;
-  isInitialLoading: boolean;
-} {
+  config?: QueryConfigWithSelect<NFTData, unknown, TSelected, NFTQueryKey>;
+}) {
   const isImportedWallet = useSelector((state: AppState) => isImportedWalletSelector(state, address));
 
-  const queryKey: [string, { address: string }] = ['nfts', { address }];
-
-  const { data, error, isFetching } = useQuery(queryKey, fetchNFTData, {
+  const { data, error, isFetching } = useQuery(nftsQueryKey({ address }), fetchNFTData, {
     cacheTime: isImportedWallet ? NFTS_CACHE_TIME_INTERNAL : NFTS_CACHE_TIME_EXTERNAL,
     enabled: !!address,
     retry: 3,
