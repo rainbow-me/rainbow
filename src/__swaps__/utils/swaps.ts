@@ -380,11 +380,11 @@ export const DEFAULT_SLIPPAGE_BIPS = {
   [ChainId.blast]: 200,
 };
 
-export const slippageInBipsToString = (slippageInBips: number) => (slippageInBips / 100).toString();
+export const slippageInBipsToString = (slippageInBips: number) => (slippageInBips / 100).toFixed(1);
 
 export const slippageInBipsToStringWorklet = (slippageInBips: number) => {
   'worklet';
-  return (slippageInBips / 100).toFixed(1).toString();
+  return (slippageInBips / 100).toFixed(1);
 };
 
 export const getDefaultSlippage = (chainId: ChainId, config: RainbowConfig) => {

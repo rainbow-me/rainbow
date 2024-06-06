@@ -1,7 +1,7 @@
 import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { getDefaultSlippage } from '@/__swaps__/utils/swaps';
-import { DEFAULT_CONFIG } from '@/model/remoteConfig';
+import { DEFAULT_CONFIG, getRemoteConfig } from '@/model/remoteConfig';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { CrosschainQuote, Quote, QuoteError, Source } from '@rainbow-me/swaps';
 
@@ -33,7 +33,7 @@ export const swapsStore = createRainbowStore<SwapsState>(
     isSwapsOpen: false,
     setIsSwapsOpen: (isSwapsOpen: boolean) => set({ isSwapsOpen }),
 
-    inputAsset: null, // TODO: Default to their largest balance asset (or ETH mainnet if user has no assets)
+    inputAsset: null,
     outputAsset: null,
 
     quote: null,
@@ -43,14 +43,14 @@ export const swapsStore = createRainbowStore<SwapsState>(
 
     flashbots: false,
     setFlashbots: (flashbots: boolean) => set({ flashbots }),
-    slippage: getDefaultSlippage(ChainId.mainnet, DEFAULT_CONFIG),
+    slippage: getDefaultSlippage(ChainId.mainnet, getRemoteConfig()),
     setSlippage: (slippage: string) => set({ slippage }),
     source: 'auto',
     setSource: (source: Source | 'auto') => set({ source }),
   }),
   {
     storageKey: 'swapsStore',
-    version: 1,
+    version: 2,
     // NOTE: Only persist the settings
     partialize(state) {
       return {

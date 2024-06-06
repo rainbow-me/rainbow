@@ -5,11 +5,13 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { slippageStep } from '@/__swaps__/screens/Swap/constants';
 import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
 import { ChainId } from '@/__swaps__/types/chains';
-import { DEFAULT_CONFIG } from '@/model/remoteConfig';
+import { getRemoteConfig } from '@/model/remoteConfig';
 
 export const useSwapSettings = ({ inputAsset }: { inputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null> }) => {
+  const remoteConfig = getRemoteConfig();
+
   const flashbots = useSharedValue(swapsStore.getState().flashbots);
-  const slippage = useSharedValue(getDefaultSlippageWorklet(inputAsset.value?.chainId ?? ChainId.mainnet, DEFAULT_CONFIG));
+  const slippage = useSharedValue(swapsStore.getState().slippage);
 
   const setSlippage = swapsStore(state => state.setSlippage);
   const setFlashbots = swapsStore(state => state.setFlashbots);
