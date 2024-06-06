@@ -43,7 +43,7 @@ export function AnimatedSwitch({ value, onToggle, activeLabel, inactiveLabel, di
   });
 
   const labelItem = useDerivedValue(() => {
-    if (props.disabled) return;
+    if (disabled) return;
 
     if (!activeLabel && !inactiveLabel) {
       return;
