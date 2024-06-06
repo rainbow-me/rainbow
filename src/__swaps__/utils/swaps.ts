@@ -296,12 +296,11 @@ export function niceIncrementFormatter({
   'worklet';
 
   function precisionBasedOffMagnitude(amount: number | string): number {
-    const magnitude = -Number(floorWorklet(sumWorklet(log10Worklet(amount), 1)));
+    const magnitude = -Number(floorWorklet(sumWorklet(log10Worklet(amount), 0)));
     // don't let stablecoins go beneath 2nd order
     if (magnitude < -2 && isStablecoin) {
       return -2;
     }
-
     return magnitude;
   }
 
