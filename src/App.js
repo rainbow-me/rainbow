@@ -42,7 +42,6 @@ import { InitialRouteContext } from '@/navigation/initialRoute';
 import Routes from '@/navigation/routesNames';
 import { Portal } from '@/react-native-cool-modals/Portal';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
-import { initSentry } from '@/logger/sentry';
 import { analyticsV2 } from '@/analytics';
 import { getOrCreateDeviceId, securelyHashWalletAddress } from '@/analytics/utils';
 import { logger, RainbowError } from '@/logger';
@@ -65,7 +64,6 @@ if (IS_DEV) {
   (showNetworkRequests || showNetworkResponses) && monitorNetwork(showNetworkRequests, showNetworkResponses);
 }
 
-initSentry(); // Must be set up immediately
 enableScreens();
 
 const containerStyle = { flex: 1 };
