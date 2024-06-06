@@ -17,8 +17,11 @@ module.exports = {
   transform: {
     '\\.[jt]sx?$': 'ts-jest',
   },
-  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
-    prefix: '../',
-  }),
+  transformIgnorePatterns: ['/node_modules/(?!(react-native|@react-native|react-native-reanimated)/)'],
+  moduleNameMapper: {
+    ...pathsToModuleNameMapper(compilerOptions.paths, { prefix: '../' }),
+    '^src/__swaps__/utils/swap.ts$': '<rootDir>/mocks/worklets.mock.js',
+    '^@/__swaps__/screens/Swap/providers/swap-provider$': '<rootDir>/src/__swaps__/screens/Swap/providers/__mocks__/swap-provider.js',
+  },
   setupFiles: ['dotenv/config'],
 };

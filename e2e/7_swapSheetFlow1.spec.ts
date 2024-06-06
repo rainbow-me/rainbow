@@ -20,6 +20,9 @@ import { expect } from '@jest/globals';
 
 import { quoteResponse } from './mocks/quoteResponse.mock';
 import { fetchedPricesResponse } from './mocks/fetchedPrices.mock';
+import { SwapProvider } from '@/__swaps__/screens/Swap/providers/swap-provider';
+
+let executeSwapMock: jest.SpyInstance;
 
 jest.mock('@/__swaps__/screens/Swap/hooks/useSwapInputsController', () => {
   const originalModule = jest.requireActual('@/__swaps__/screens/Swap/hooks/useSwapInputsController');
@@ -37,12 +40,24 @@ jest.mock('@/__swaps__/screens/Swap/hooks/useSwapInputsController', () => {
   };
 });
 
+// trying to mock the swap-provider here and then call executeSwap
+jest.mock('@/__swaps__/screens/Swap/providers/swap-provider');
+
 describe('Swap Sheet Interaction Flow', () => {
   beforeAll(async () => {
     await beforeAllcleanApp({ hardhat: true });
   });
   afterAll(async () => {
     await afterAllcleanApp({ hardhat: true });
+  });
+
+  beforeEach(async () => {
+    executeSwapMock = jest.spyOn(SwapProvider.prototype, 'executeSwap').mockImplementation(() => {
+      // Mock implementation
+    });
+  });
+  afterEach(async () => {
+    executeSwapMock.mockRestore();
   });
 
   it('Import a wallet and go to welcome', async () => {
@@ -94,6 +109,8 @@ describe('Swap Sheet Interaction Flow', () => {
     expect(reviewActionElements.elements[1].label).toContain('DAI');
     expect(reviewActionElements.elements[2].label).toContain('Tap to Swap');
     await tapByText('Tap to Swap');
+    await delayTime('long');
+    expect(executeSwapMock).toHaveBeenCalled();
     // TODO: add validation
     /**
      * tap swap button
