@@ -8,10 +8,13 @@ import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider
 import { AddressZero } from '@ethersproject/constants';
 import { ETH_ADDRESS } from '@/references';
 import { GestureHandlerV1Button } from './GestureHandlerV1Button';
+import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
+import { useAccountSettings } from '@/hooks';
 
 export const ExchangeRateBubble = () => {
   const { isDarkMode } = useColorMode();
   const { AnimatedSwapStyles, internalSelectedInputAsset, internalSelectedOutputAsset, isFetching } = useSwapContext();
+  const { nativeCurrency: currentCurrency } = useAccountSettings();
 
   const rotatingIndex = useSharedValue(0);
   const fromAssetText = useSharedValue('');
@@ -81,11 +84,7 @@ export const ExchangeRateBubble = () => {
 
       if (isSameAssetOnDifferentChains) {
         fromAssetText.value = `1 ${inputAssetSymbol}`;
-        toAssetText.value = `$${inputAssetPrice.toLocaleString('en-US', {
-          useGrouping: true,
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })}`;
+        toAssetText.value = convertAmountToNativeDisplayWorklet(inputAssetPrice, currentCurrency);
         return;
       }
 
@@ -118,20 +117,12 @@ export const ExchangeRateBubble = () => {
         }
         case 2: {
           fromAssetText.value = `1 ${inputAssetSymbol}`;
-          toAssetText.value = `$${inputAssetPrice.toLocaleString('en-US', {
-            useGrouping: true,
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}`;
+          toAssetText.value = convertAmountToNativeDisplayWorklet(inputAssetPrice, currentCurrency);
           break;
         }
         case 3: {
           fromAssetText.value = `1 ${outputAssetSymbol}`;
-          toAssetText.value = `$${outputAssetPrice.toLocaleString('en-US', {
-            useGrouping: true,
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}`;
+          toAssetText.value = convertAmountToNativeDisplayWorklet(outputAssetPrice, currentCurrency);
           break;
         }
       }

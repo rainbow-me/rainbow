@@ -288,15 +288,14 @@ export const convertAmountToNativeDisplay = (
 /**
  * @desc convert from amount value to display formatted string
  */
-export const convertAmountToNativeDisplayWorklet = (value: number | string, nativeCurrency: keyof nativeCurrencyType) => {
+export const convertAmountToNativeDisplayWorklet = (value: number, nativeCurrency: keyof nativeCurrencyType) => {
   'worklet';
-  console.log('VALUE', value);
-  const numberValue = typeof value === 'string' ? BigInt(value) : value;
+
   const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
   const { alignment, decimals: rawDecimals, symbol } = nativeSelected;
-  const decimals = Math.min(rawDecimals, 6) as 0 | 1 | 2 | 5 | 8 | 15 | 3 | 10 | 6 | 4 | 7 | 9 | 11 | 12 | 13 | 14 | 16 | 17 | 18 | 19 | 20;
+  const decimals = Math.min(rawDecimals, 6);
 
-  const nativeValue = numberValue.toLocaleString('en-US', {
+  const nativeValue = value.toLocaleString('en-US', {
     useGrouping: true,
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,

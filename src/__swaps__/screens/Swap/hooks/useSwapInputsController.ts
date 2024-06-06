@@ -149,11 +149,12 @@ export function useSwapInputsController({
     if ((inputMethod.value === 'slider' && percentageToSwap.value === 0) || !inputValues.value.inputNativeValue) {
       return convertAmountToNativeDisplayWorklet(0, currentCurrency);
     }
-    console.log(inputValues.value.inputAmount);
+
     const inputValue =
-      typeof inputValues.value.inputAmount === 'string'
-        ? Number(inputValues.value.inputAmount.replaceAll(',', ''))
-        : inputValues.value.inputAmount;
+      typeof inputValues.value.inputNativeValue === 'string'
+        ? Number(inputValues.value.inputNativeValue.replaceAll(',', '')) // need to check if formatting is necessary if string (can string be a big number?)
+        : inputValues.value.inputNativeValue;
+
     return convertAmountToNativeDisplayWorklet(inputValue, currentCurrency);
   });
 
@@ -179,15 +180,15 @@ export function useSwapInputsController({
 
   const formattedOutputNativeValue = useDerivedValue(() => {
     if ((inputMethod.value === 'slider' && percentageToSwap.value === 0) || !inputValues.value.outputNativeValue) {
-      return '$0.00';
+      return convertAmountToNativeDisplayWorklet(0, currentCurrency);
     }
 
-    const nativeValue = `$${Number(inputValues.value.outputNativeValue).toLocaleString('en-US', {
-      useGrouping: true,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })}`;
-    return nativeValue || '$0.00';
+    const outputValue =
+      typeof inputValues.value.outputNativeValue === 'string'
+        ? Number(inputValues.value.outputNativeValue.replaceAll(',', '')) // need to check if formatting is necessary if string (can string be a big number?)
+        : inputValues.value.outputNativeValue;
+
+    return convertAmountToNativeDisplayWorklet(outputValue, currentCurrency);
   });
 
   const updateNativePriceForAsset = useCallback(
