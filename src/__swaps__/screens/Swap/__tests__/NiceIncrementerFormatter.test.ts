@@ -4,6 +4,7 @@ import { SLIDER_WIDTH } from '../constants';
 type TestCase = {
   incrementDecimalPlaces: number;
   inputAssetBalance: number | string;
+  assetBalanceDisplay: string;
   inputAssetUsdPrice: number;
   niceIncrement: number | string;
   percentageToSwap: number;
@@ -19,6 +20,7 @@ const TEST_CASES: TestCase[] = [
   {
     incrementDecimalPlaces: 0,
     inputAssetBalance: 45.47364224817269,
+    assetBalanceDisplay: '45.47364225',
     inputAssetUsdPrice: 0.9995363790000001,
     niceIncrement: '1',
     percentageToSwap: 0.5,
