@@ -31,6 +31,8 @@ const RESULTS = {
   ceil: '1243426',
   floor: '1243425',
   toScaledInteger: '57464009350560633',
+  negativePow: '0.001',
+  negativeExp: '6.0895415516156',
 };
 
 const VALUE_A = '1243425.345';
@@ -38,9 +40,13 @@ const VALUE_B = '3819.24';
 const VALUE_C = '2';
 const VALUE_D = '1243425.745';
 const VALUE_E = '0.057464009350560633';
+const VALUE_F = '147887324';
+const VALUE_G = '4.11769e-8';
 const NEGATIVE_VALUE = '-2412.12';
 const ZERO = '0';
 const ONE = '1';
+const TEN = '10';
+const MINUS_3 = '-3';
 const NON_NUMERIC_STRING = 'abc';
 
 describe('SafeMath', () => {
@@ -76,6 +82,7 @@ describe('SafeMath', () => {
     expect(mulWorklet(VALUE_A, VALUE_B)).toBe(RESULTS.mul);
     expect(mulWorklet(Number(VALUE_A), VALUE_B)).toBe(RESULTS.mul);
     expect(mulWorklet(VALUE_A, Number(VALUE_B))).toBe(RESULTS.mul);
+    expect(mulWorklet(VALUE_F, VALUE_G)).toBe(RESULTS.negativeExp);
   });
 
   test('divWorklet', () => {
@@ -108,6 +115,7 @@ describe('SafeMath', () => {
     expect(powWorklet(VALUE_A, VALUE_C)).toBe(RESULTS.pow);
     expect(powWorklet(Number(VALUE_A), VALUE_C)).toBe(RESULTS.pow);
     expect(powWorklet(VALUE_A, Number(VALUE_C))).toBe(RESULTS.pow);
+    expect(powWorklet(TEN, Number(MINUS_3))).toBe(RESULTS.negativePow);
   });
 
   test('log10Worklet', () => {

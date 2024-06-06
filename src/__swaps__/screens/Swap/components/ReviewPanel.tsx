@@ -35,6 +35,7 @@ import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
 import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { getNetworkObj } from '@/networks';
+import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 
 const UNKNOWN_LABEL = i18n.t(i18n.l.swap.unknown);
 const REVIEW_LABEL = i18n.t(i18n.l.expanded_state.swap_details.review);
@@ -176,13 +177,15 @@ export function ReviewPanel() {
     });
   }, [navigate]);
 
-  const openGasExplainer = useCallback(() => {
+  const openGasExplainer = useCallback(async () => {
+    const nativeAsset = await getNativeAssetForNetwork(
+      ethereumUtils.getNetworkFromChainId(swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet)
+    );
+
     navigate(Routes.EXPLAIN_SHEET, {
-      network: ethereumUtils.getNetworkNameFromChainId(swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet),
+      network: chainNameFromChainId(swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet),
       type: 'gas',
-      nativeAsset: getNativeAssetForNetwork(
-        ethereumUtils.getNetworkFromChainId(swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet)
-      ),
+      nativeAsset,
     });
   }, [navigate]);
 

@@ -30,6 +30,7 @@ import { useBrowserContext } from './BrowserContext';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { WEBVIEW_HEIGHT } from './Dimensions';
 import { useDapps } from '@/resources/metadata/dapps';
+import { analyticsV2 } from '@/analytics';
 import haptics from '@/utils/haptics';
 import * as i18n from '@/languages';
 import { getNameFromFormattedUrl } from './utils';
@@ -98,8 +99,8 @@ const Trending = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
         >
           <Inset space="24px">
             <Box flexDirection="row" gap={CARD_PADDING}>
-              {dapps.map(site => (
-                <Card goToUrl={goToUrl} key={site.url} site={{ ...site, image: site.iconUrl }} />
+              {dapps.map((site, index) => (
+                <Card goToUrl={goToUrl} index={index} key={site.url} site={{ ...site, image: site.iconUrl }} />
               ))}
             </Box>
           </Inset>
@@ -163,12 +164,15 @@ const Card = React.memo(function Card({
   goToUrl,
   site,
   showMenuButton,
+  index,
 }: {
   goToUrl: (url: string) => void;
   showMenuButton?: boolean;
   site: Omit<Site, 'timestamp'>;
+  index?: number;
 }) {
   const { isDarkMode } = useColorMode();
+
   const { dapps } = useDapps();
   const isFavorite = useFavoriteDappsStore(state => state.isFavorite(site.url || ''));
   const addFavorite = useFavoriteDappsStore(state => state.addFavorite);
@@ -185,6 +189,22 @@ const Card = React.memo(function Card({
       }
     }
   }, [addFavorite, isFavorite, removeFavorite, site]);
+
+  const hasVisited = useBrowserHistoryStore(state => state.hasVisited);
+  const dappClickedBefore = useMemo(() => hasVisited(site.url), [hasVisited, site.url]);
+
+  const handlePress = useCallback(() => {
+    {
+      index &&
+        analyticsV2.track(analyticsV2.event.browserTrendingDappClicked, {
+          name: site.name,
+          url: site.url,
+          hasClickedBefore: dappClickedBefore,
+          index: index,
+        });
+    }
+    goToUrl(site.url);
+  }, [dappClickedBefore, goToUrl, index, site.name, site.url]);
 
   const onPressMenuItem = useCallback(
     async ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: 'favorite' | 'remove' } }) => {
@@ -238,7 +258,7 @@ const Card = React.memo(function Card({
 
   return (
     <Box>
-      <ButtonPressAnimation onPress={() => goToUrl(site.url)} scaleTo={0.94}>
+      <ButtonPressAnimation onPress={handlePress} scaleTo={0.94}>
         <Box
           background="surfacePrimary"
           borderRadius={24}
