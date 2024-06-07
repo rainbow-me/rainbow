@@ -1,5 +1,8 @@
 /* eslint-disable no-nested-ternary */
+import { setUpTests } from 'react-native-reanimated';
 import '../../src/languages';
+
+setUpTests();
 
 global.ios = false;
 global.android = false;
@@ -26,6 +29,8 @@ jest.mock('@rudderstack/rudder-sdk-react-native', () => ({
 jest.mock('@sentry/react-native', () => ({
   captureException: () => null,
 }));
+
+jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
 
 jest.mock('react-native-keychain', () => ({
   ACCESSIBLE: {
