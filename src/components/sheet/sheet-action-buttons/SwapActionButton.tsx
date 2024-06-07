@@ -38,7 +38,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
   const goToSwap = useCallback(() => {
     if (swapsV2Enabled || swaps_v2) {
       const chainId = ethereumUtils.getChainIdFromNetwork(asset.network);
-      const userAsset = userAssetsStore.getState().userAssets.get(`${asset.address}_${chainId}`);
+      const userAsset = userAssetsStore.getState().userAssets.get(`${asset.mainnet_address || asset.address}_${chainId}`);
 
       const parsedAsset = parseSearchAsset({
         assetWithPrice: {

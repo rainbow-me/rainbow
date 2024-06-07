@@ -589,7 +589,7 @@ export const parseAssetAndExtend = ({
     colors: (isAssetEth ? ETH_COLORS : asset.colors) as TokenColors,
   });
 
-  const uniqueId = getStandardizedUniqueIdWorklet({ address: asset.address, chainId: asset.chainId });
+  const uniqueId = getStandardizedUniqueIdWorklet({ address: asset.mainnetAddress || asset.address, chainId: asset.chainId });
 
   return {
     ...asset,
