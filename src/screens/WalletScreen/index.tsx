@@ -6,13 +6,10 @@ import { Page } from '../../components/layout';
 import { Network } from '@/helpers';
 import { useRemoveFirst } from '@/navigation/useRemoveFirst';
 import { settingsUpdateNetwork } from '@/redux/settings';
-import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
-import { prefetchENSIntroData } from '@/handlers/ens';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Box } from '@/design-system';
 import {
   useAccountAccentColor,
-  useAccountEmptyState,
   useAccountSettings,
   useInitializeAccountData,
   useInitializeWallet,
@@ -20,7 +17,6 @@ import {
   useLoadAccountLateData,
   useLoadGlobalLateData,
   useResetAccountState,
-  useTrackENSProfile,
   useWalletSectionsData,
 } from '@/hooks';
 import Routes from '@rainbow-me/routes';
@@ -34,19 +30,20 @@ import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { usePositions } from '@/resources/defi/PositionsQuery';
 import styled from '@/styled-thing';
 import { UserAssetsSync } from '@/__swaps__/screens/Swap/components/UserAssetsSync';
+import { IS_ANDROID } from '@/env';
 
 const WalletPage = styled(Page)({
   ...position.sizeAsObject('100%'),
   flex: 1,
 });
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const WalletScreen: React.FC<any> = ({ navigation, route }) => {
   const { params } = route;
   const { setParams, getState: dangerouslyGetState, getParent: dangerouslyGetParent } = navigation;
   const removeFirst = useRemoveFirst();
   const [initialized, setInitialized] = useState(!!params?.initialized);
   const initializeWallet = useInitializeWallet();
-  const { trackENSProfile } = useTrackENSProfile();
   const { network: currentNetwork, accountAddress, appIcon, nativeCurrency } = useAccountSettings();
   usePositions({ address: accountAddress, currency: nativeCurrency });
 
@@ -75,17 +72,12 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
   }, [currentNetwork, revertToMainnet]);
 
   const walletReady = useSelector(({ appState: { walletReady } }: AppState) => walletReady);
-  const {
-    isWalletEthZero,
-    isEmpty: isSectionsEmpty,
-    isLoadingUserAssets,
-    briefSectionsData: walletBriefSectionsData,
-  } = useWalletSectionsData();
+  const { isWalletEthZero, isLoadingUserAssets, briefSectionsData: walletBriefSectionsData } = useWalletSectionsData();
 
   useEffect(() => {
     // This is the fix for Android wallet creation problem.
     // We need to remove the welcome screen from the stack.
-    if (ios) {
+    if (!IS_ANDROID) {
       return;
     }
     const isWelcomeScreen = dangerouslyGetParent()?.getState().routes[0].name === Routes.WELCOME_SCREEN;
@@ -93,14 +85,6 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
       removeFirst();
     }
   }, [dangerouslyGetState, removeFirst]);
-
-  const { isEmpty: isAccountEmpty } = useAccountEmptyState(isSectionsEmpty, isLoadingUserAssets);
-
-  const { addressSocket } = useSelector(({ explorer: { addressSocket } }: AppState) => ({
-    addressSocket,
-  }));
-
-  const profilesEnabled = useExperimentalFlag(PROFILES);
 
   useEffect(() => {
     const initializeAndSetParams = async () => {
@@ -122,19 +106,6 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
       loadGlobalLateData();
     }
   }, [loadAccountLateData, loadGlobalLateData, walletReady]);
-
-  useEffect(() => {
-    if (walletReady && profilesEnabled) {
-      InteractionManager.runAfterInteractions(() => {
-        // We are not prefetching intro profiles data on Android
-        // as the RPC call queue is considerably slower.
-        if (ios) {
-          prefetchENSIntroData();
-        }
-        trackENSProfile();
-      });
-    }
-  }, [profilesEnabled, trackENSProfile, walletReady]);
 
   // track current app icon
   useEffect(() => {
@@ -160,8 +131,7 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
           <AssetList
             accentColor={accentColor}
             disableRefreshControl={isLoadingUserAssetsAndAddress}
-            isEmpty={isAccountEmpty || !!params?.emptyWallet}
-            isLoading={android && isLoadingUserAssetsAndAddress}
+            isLoading={IS_ANDROID && isLoadingUserAssetsAndAddress}
             isWalletEthZero={isWalletEthZero}
             network={currentNetwork}
             walletBriefSectionsData={walletBriefSectionsData}
@@ -171,7 +141,7 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
           <Toast isVisible={isAddressCopiedToastActive} text="􀁣 Address Copied" testID="address-copied-toast" />
         </ToastPositionContainer>
 
-        {/* NOTE: The components below render null and are solely for keeping react-query and Zustand in sync */}
+        {/* NOTE: The component below renders null and is solely for keeping react-query and Zustand in sync */}
         <UserAssetsSync />
       </WalletPage>
     </View>

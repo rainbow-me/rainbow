@@ -72,8 +72,7 @@ const Logger = {
       console.log(...args); // eslint-disable-line no-console
     }
     if (args.length === 1 && typeof args[0] === 'string') {
-      // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
-      sentryUtils.addInfoBreadcrumb.apply(null, args);
+      sentryUtils.addInfoBreadcrumb.apply(null, [args[0]]);
     } else {
       const safeData = safelyStringifyWithFormat(args[1]);
       sentryUtils.addDataBreadcrumb(args[0], safeData);
