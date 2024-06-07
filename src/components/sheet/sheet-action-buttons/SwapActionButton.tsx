@@ -60,6 +60,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
           isVerified: asset.isVerified ?? false,
           mainnetAddress: (asset.mainnet_address ?? '') as AddressOrEth,
           networks: asset.networks ?? [],
+          type: asset.type as AssetType,
         },
         userAsset,
       });
