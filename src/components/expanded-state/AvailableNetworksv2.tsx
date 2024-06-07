@@ -81,7 +81,6 @@ const AvailableNetworksv2 = ({
         const uniqueId = `${newAsset.address}_${chainId}`;
         const userAsset = userAssetsStore.getState().userAssets.get(uniqueId);
 
-        console.log(chainId, uniqueId);
 
         const parsedAsset = parseSearchAsset({
           assetWithPrice: {
