@@ -176,12 +176,10 @@ export const convertAmountToNativeAmount = (amount: BigNumberish, priceUnit: Big
 export const convertAmountAndPriceToNativeDisplay = (
   amount: BigNumberish,
   priceUnit: BigNumberish,
-  nativeCurrency: keyof nativeCurrencyType,
-  buffer?: number,
-  skipDecimals = false
+  nativeCurrency: keyof nativeCurrencyType
 ): { amount: string; display: string } => {
   const nativeBalanceRaw = convertAmountToNativeAmount(amount, priceUnit);
-  const nativeDisplay = convertAmountToNativeDisplay(nativeBalanceRaw, nativeCurrency, buffer, skipDecimals);
+  const nativeDisplay = convertAmountToNativeDisplay(nativeBalanceRaw, nativeCurrency);
   return {
     amount: nativeBalanceRaw,
     display: nativeDisplay,
@@ -194,7 +192,7 @@ export const convertAmountAndPriceToNativeDisplayWithThreshold = (
   nativeCurrency: keyof nativeCurrencyType
 ): { amount: string; display: string } => {
   const nativeBalanceRaw = convertAmountToNativeAmount(amount, priceUnit);
-  const nativeDisplay = convertAmountToNativeDisplayWithThreshold(nativeBalanceRaw, nativeCurrency);
+  const nativeDisplay = convertAmountToNativeDisplay(nativeBalanceRaw, nativeCurrency, true);
   return {
     amount: nativeBalanceRaw,
     display: nativeDisplay,
@@ -208,11 +206,10 @@ export const convertRawAmountToNativeDisplay = (
   rawAmount: BigNumberish,
   assetDecimals: number,
   priceUnit: BigNumberish,
-  nativeCurrency: keyof nativeCurrencyType,
-  buffer?: number
+  nativeCurrency: keyof nativeCurrencyType
 ) => {
   const assetBalance = convertRawAmountToDecimalFormat(rawAmount, assetDecimals);
-  const ret = convertAmountAndPriceToNativeDisplay(assetBalance, priceUnit, nativeCurrency, buffer);
+  const ret = convertAmountAndPriceToNativeDisplay(assetBalance, priceUnit, nativeCurrency);
   return ret;
 };
 
@@ -270,49 +267,61 @@ export const convertBipsToPercentage = (value: BigNumberish, decimals = 2): stri
 /**
  * @desc convert from amount value to display formatted string
  */
-export const convertAmountToNativeDisplay = (
-  value: BigNumberish,
-  nativeCurrency: keyof nativeCurrencyType,
-  buffer?: number,
-  skipDecimals?: boolean
-) => {
-  const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
-  const { decimals } = nativeSelected;
-  const display = handleSignificantDecimals(value, decimals, buffer, skipDecimals);
-  if (nativeSelected.alignment === 'left') {
-    return `${nativeSelected.symbol}${display}`;
-  }
-  return `${display} ${nativeSelected.symbol}`;
-};
-
-/**
- * @desc convert from amount value to display formatted string
- */
-export const convertAmountToNativeDisplayWorklet = (value: number | string, nativeCurrency: keyof nativeCurrencyType) => {
-  'worklet';
-
+export const convertAmountToNativeDisplay = (value: number | string, nativeCurrency: keyof nativeCurrencyType, threshold = false) => {
   const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
   const { alignment, decimals: rawDecimals, symbol } = nativeSelected;
   const decimals = Math.min(rawDecimals, 6);
 
-  const nativeValue = Number(value).toLocaleString('en-US', {
-    useGrouping: true,
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  });
+  const valueNumber = Number(value);
+  const thresholdNumber = decimals < 4 ? 0.01 : 0.0001;
+  let nativeValue: string;
+
+  if (threshold && valueNumber < thresholdNumber) {
+    nativeValue = `< ${thresholdNumber}`;
+  } else {
+    nativeValue = Number(value).toLocaleString('en-US', {
+      useGrouping: true,
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    });
+  }
 
   const nativeDisplay = `${alignment === 'left' ? symbol : ''}${nativeValue}${alignment === 'right' ? symbol : ''}`;
 
   return nativeDisplay;
 };
 
-export const convertAmountToNativeDisplayWithThreshold = (value: BigNumberish, nativeCurrency: keyof nativeCurrencyType) => {
+/**
+ * @desc convert from amount value to display formatted string
+ */
+export const convertAmountToNativeDisplayWorklet = (
+  value: number | string,
+  nativeCurrency: keyof nativeCurrencyType,
+  threshold = false
+) => {
+  'worklet';
+
   const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
-  const display = handleSignificantDecimalsWithThreshold(value, nativeSelected.decimals, nativeSelected.decimals < 4 ? '0.01' : '0.0001');
-  if (nativeSelected.alignment === 'left') {
-    return `${nativeSelected.symbol}${display}`;
+  const { alignment, decimals: rawDecimals, symbol } = nativeSelected;
+  const decimals = Math.min(rawDecimals, 6);
+
+  const valueNumber = Number(value);
+  const thresholdNumber = decimals < 4 ? 0.01 : 0.0001;
+  let nativeValue: string;
+
+  if (threshold && valueNumber < thresholdNumber) {
+    nativeValue = `< ${thresholdNumber}`;
+  } else {
+    nativeValue = Number(value).toLocaleString('en-US', {
+      useGrouping: true,
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    });
   }
-  return `${display} ${nativeSelected.symbol}`;
+
+  const nativeDisplay = `${alignment === 'left' ? symbol : ''}${nativeValue}${alignment === 'right' ? symbol : ''}`;
+
+  return nativeDisplay;
 };
 
 /**
