@@ -6,27 +6,21 @@ import { IS_PROD, IS_TEST } from '@/env';
 import { logger, RainbowError } from '@/logger';
 import isTestFlight from '@/helpers/isTestFlight';
 
-/**
- * We need to disable React Navigation instrumentation for E2E tests because
- * detox doesn't like setTimeout calls that are used inside When enabled detox
- * hangs and timeouts on all test cases
- */
-export const sentryRoutingInstrumentation = IS_PROD ? new Sentry.ReactNavigationInstrumentation() : undefined;
-
-export const defaultOptions = {
+export const defaultOptions: Sentry.ReactNativeOptions = {
+  attachStacktrace: true,
+  defaultIntegrations: false,
   dsn: SENTRY_ENDPOINT,
-  enableAutoSessionTracking: true,
+  enableAppHangTracking: false,
+  enableAutoPerformanceTracing: false,
+  enableAutoSessionTracking: false,
+  enableTracing: false,
   environment: isTestFlight ? 'Testflight' : SENTRY_ENVIRONMENT,
-  integrations: [
-    new Sentry.ReactNativeTracing({
-      routingInstrumentation: sentryRoutingInstrumentation,
-      tracingOrigins: ['localhost', /^\//],
-    }),
-  ],
-  tracesSampleRate: 0.2,
+  integrations: [],
+  maxBreadcrumbs: 5,
+  tracesSampleRate: 0,
 };
 
-export async function initSentry() {
+export function initSentry() {
   if (IS_TEST) {
     logger.debug(`Sentry is disabled for test environment`);
     return;
