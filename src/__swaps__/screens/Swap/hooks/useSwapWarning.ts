@@ -127,7 +127,7 @@ export const useSwapWarning = ({
       const nativeAmountImpact = subWorklet(inputNativeValue, outputNativeValue);
       const impactInPercentage = Number(inputNativeValue) === 0 ? '0' : divWorklet(nativeAmountImpact, inputNativeValue);
 
-      const priceImpactDisplay = convertAmountToNativeDisplayWorklet(Number(nativeAmountImpact), currentCurrency);
+      const priceImpactDisplay = convertAmountToNativeDisplayWorklet(nativeAmountImpact, currentCurrency);
       const isSomeInputGreaterThanZero = Number(inputValues.value.inputAmount) > 0 || Number(inputValues.value.outputAmount) > 0;
 
       if (!isFetching && (quote as QuoteError)?.error) {
