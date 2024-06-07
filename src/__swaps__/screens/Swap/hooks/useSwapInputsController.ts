@@ -47,9 +47,7 @@ function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetW
     stripSeparators: true,
   });
 
-  const initialInputNativeValue = addCommasToNumber(
-    toFixedWorklet(mulWorklet(initialInputAmount, initialSelectedInputAsset?.price?.value ?? 0), 2)
-  );
+  const initialInputNativeValue = toFixedWorklet(mulWorklet(initialInputAmount, initialSelectedInputAsset?.price?.value ?? 0), 2);
 
   return {
     initialInputAmount,
@@ -149,12 +147,7 @@ export function useSwapInputsController({
       return convertAmountToNativeDisplayWorklet(0, currentCurrency);
     }
 
-    const inputValue =
-      typeof inputValues.value.inputNativeValue === 'string'
-        ? Number(inputValues.value.inputNativeValue.replaceAll(',', '')) // need to check if formatting is necessary if string (can string be a big number?)
-        : inputValues.value.inputNativeValue;
-
-    return convertAmountToNativeDisplayWorklet(inputValue, currentCurrency);
+    return convertAmountToNativeDisplayWorklet(inputValues.value.inputNativeValue, currentCurrency);
   });
 
   const formattedOutputAmount = useDerivedValue(() => {
@@ -182,12 +175,7 @@ export function useSwapInputsController({
       return convertAmountToNativeDisplayWorklet(0, currentCurrency);
     }
 
-    const outputValue =
-      typeof inputValues.value.outputNativeValue === 'string'
-        ? Number(inputValues.value.outputNativeValue.replaceAll(',', '')) // need to check if formatting is necessary if string (can string be a big number?)
-        : inputValues.value.outputNativeValue;
-
-    return convertAmountToNativeDisplayWorklet(outputValue, currentCurrency);
+    return convertAmountToNativeDisplayWorklet(inputValues.value.outputNativeValue, currentCurrency);
   });
 
   const updateNativePriceForAsset = useCallback(
