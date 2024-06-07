@@ -265,16 +265,12 @@ export const convertBipsToPercentage = (value: BigNumberish, decimals = 2): stri
   return new BigNumber(value || 0).shiftedBy(-2).toFixed(decimals);
 };
 
-const getUserPreferredCurrency = () => {
-  const currency = store.getState().settings.nativeCurrency;
-  return supportedNativeCurrencies[currency];
-};
-
 /**
  * @desc convert from amount value to display formatted string
  */
-export const convertAmountToNativeDisplay = (value: number | string, nativeCurrency = getUserPreferredCurrency(), useThreshold = false) => {
-  const { alignment, decimals: rawDecimals, symbol } = nativeCurrency;
+export const convertAmountToNativeDisplay = (value: number | string, nativeCurrency: keyof nativeCurrencyType, useThreshold = false) => {
+  const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
+  const { alignment, decimals: rawDecimals, symbol } = nativeSelected;
   const decimals = Math.min(rawDecimals, 6);
 
   const valueNumber = Number(value);
