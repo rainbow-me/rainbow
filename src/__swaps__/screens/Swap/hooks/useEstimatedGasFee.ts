@@ -1,10 +1,9 @@
 import { ChainId } from '@/__swaps__/types/chains';
 import { weiToGwei } from '@/__swaps__/utils/ethereum';
-import { add, convertAmountToNativeDisplay, multiply } from '@/__swaps__/utils/numbers';
+import { add, convertAmountToNativeDisplay, formatNumber, multiply } from '@/__swaps__/utils/numbers';
 import ethereumUtils, { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { useMemo, useState } from 'react';
 import { formatUnits } from 'viem';
-import { formatNumber } from './formatNumber';
 import { GasSettings } from './useCustomGas';
 import { useSwapEstimatedGasLimit } from './useSwapEstimatedGasLimit';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';

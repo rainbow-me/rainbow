@@ -1,7 +1,7 @@
 import { ChainId } from '@/__swaps__/types/chains';
 import { weiToGwei } from '@/__swaps__/utils/ethereum';
 import { getCachedCurrentBaseFee, useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
-import { add } from '@/__swaps__/utils/numbers';
+import { add, formatNumber } from '@/__swaps__/utils/numbers';
 import { ContextMenu } from '@/components/context-menu';
 import { Centered } from '@/components/layout';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
@@ -14,7 +14,6 @@ import React, { ReactNode, useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import { runOnJS, runOnUI } from 'react-native-reanimated';
 import { ETH_COLOR, ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '../constants';
-import { formatNumber } from '../hooks/formatNumber';
 import { GasSettings, useCustomGasSettings } from '../hooks/useCustomGas';
 import { GasSpeed, setSelectedGasSpeed, useSelectedGas, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { useSwapContext } from '../providers/swap-provider';

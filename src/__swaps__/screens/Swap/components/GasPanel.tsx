@@ -13,7 +13,7 @@ import {
   useIsChainEIP1559,
   useMeteorologySuggestion,
 } from '@/__swaps__/utils/meteorology';
-import { add, subtract } from '@/__swaps__/utils/numbers';
+import { add, formatNumber, subtract } from '@/__swaps__/utils/numbers';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Box, Inline, Separator, Stack, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
@@ -24,7 +24,6 @@ import Routes from '@/navigation/routesNames';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { upperFirst } from 'lodash';
-import { formatNumber } from '../hooks/formatNumber';
 import { GasSettings, getCustomGasSettings, setCustomGasSettings, useCustomGasStore } from '../hooks/useCustomGas';
 import { setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { EstimatedSwapGasFee } from './EstimatedSwapGasFee';
