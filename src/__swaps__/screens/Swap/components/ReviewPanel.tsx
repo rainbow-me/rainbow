@@ -34,6 +34,8 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
 import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import { getNetworkObj } from '@/networks';
+import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 
 const UNKNOWN_LABEL = i18n.t(i18n.l.swap.unknown);
 const REVIEW_LABEL = i18n.t(i18n.l.expanded_state.swap_details.review);
@@ -118,6 +120,24 @@ function EstimatedArrivalTime() {
   );
 }
 
+function FlashbotsToggle() {
+  const { SwapSettings } = useSwapContext();
+
+  const inputAssetChainId = swapsStore(state => state.inputAsset?.chainId) ?? ChainId.mainnet;
+  const isFlashbotsEnabledForNetwork = getNetworkObj(ethereumUtils.getNetworkFromChainId(inputAssetChainId)).features.flashbots;
+  const flashbotsToggleValue = useDerivedValue(() => isFlashbotsEnabledForNetwork && SwapSettings.flashbots.value);
+
+  return (
+    <AnimatedSwitch
+      onToggle={SwapSettings.onToggleFlashbots}
+      disabled={!isFlashbotsEnabledForNetwork}
+      value={flashbotsToggleValue}
+      activeLabel={i18n.t(i18n.l.expanded_state.swap.on)}
+      inactiveLabel={i18n.t(i18n.l.expanded_state.swap.off)}
+    />
+  );
+}
+
 export function ReviewPanel() {
   const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
@@ -125,7 +145,7 @@ export function ReviewPanel() {
 
   const unknown = i18n.t(i18n.l.swap.unknown);
 
-  const chainName = useDerivedValue(() => ChainNameDisplay[internalSelectedOutputAsset.value?.chainId ?? ChainId.mainnet]);
+  const chainName = useDerivedValue(() => ChainNameDisplay[internalSelectedInputAsset.value?.chainId ?? ChainId.mainnet]);
 
   const minimumReceived = useDerivedValue(() => {
     if (!SwapInputController.formattedOutputAmount.value || !internalSelectedOutputAsset.value?.symbol) {
@@ -157,13 +177,15 @@ export function ReviewPanel() {
     });
   }, [navigate]);
 
-  const openGasExplainer = useCallback(() => {
+  const openGasExplainer = useCallback(async () => {
+    const nativeAsset = await getNativeAssetForNetwork(
+      ethereumUtils.getNetworkFromChainId(swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet)
+    );
+
     navigate(Routes.EXPLAIN_SHEET, {
-      network: ethereumUtils.getNetworkNameFromChainId(swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet),
+      network: chainNameFromChainId(swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet),
       type: 'gas',
-      nativeAsset: getNativeAssetForNetwork(
-        ethereumUtils.getNetworkFromChainId(swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet)
-      ),
+      nativeAsset,
     });
   }, [navigate]);
 
@@ -263,12 +285,7 @@ export function ReviewPanel() {
               </ButtonPressAnimation>
             </Inline>
 
-            <AnimatedSwitch
-              onToggle={SwapSettings.onToggleFlashbots}
-              value={SwapSettings.flashbots}
-              activeLabel={i18n.t(i18n.l.expanded_state.swap.on)}
-              inactiveLabel={i18n.t(i18n.l.expanded_state.swap.off)}
-            />
+            <FlashbotsToggle />
           </Inline>
 
           <Inline wrap={false} horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">

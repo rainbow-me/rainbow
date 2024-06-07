@@ -1,15 +1,35 @@
 // Utility function to remove the decimal point and keep track of the number of decimal places
 const removeDecimalWorklet = (num: string): [bigint, number] => {
   'worklet';
-  const parts = num.split('.');
-  const decimalPlaces = parts.length === 2 ? parts[1].length : 0;
-  const bigIntNum = BigInt(parts.join(''));
+  let decimalPlaces = 0;
+  let bigIntNum: bigint;
+
+  if (/[eE]/.test(num)) {
+    const [base, exponent] = num.split(/[eE]/);
+    const exp = Number(exponent);
+    const parts = base.split('.');
+    const baseDecimalPlaces = parts.length === 2 ? parts[1].length : 0;
+    const bigIntBase = BigInt(parts.join(''));
+
+    if (exp >= 0) {
+      decimalPlaces = baseDecimalPlaces - exp;
+      bigIntNum = bigIntBase * BigInt(10) ** BigInt(exp);
+    } else {
+      decimalPlaces = baseDecimalPlaces - exp;
+      bigIntNum = bigIntBase;
+    }
+  } else {
+    const parts = num.split('.');
+    decimalPlaces = parts.length === 2 ? parts[1].length : 0;
+    bigIntNum = BigInt(parts.join(''));
+  }
+
   return [bigIntNum, decimalPlaces];
 };
 
 const isNumberStringWorklet = (value: string): boolean => {
   'worklet';
-  return /^-?\d+(\.\d+)?$/.test(value);
+  return /^-?\d+(\.\d+)?([eE][-+]?\d+)?$/.test(value);
 };
 
 const isZeroWorklet = (value: string): boolean => {
@@ -21,7 +41,7 @@ const isZeroWorklet = (value: string): boolean => {
 };
 
 // Utility function to scale the number up to 20 decimal places
-const scaleUpWorklet = (bigIntNum: bigint, decimalPlaces: number): bigint => {
+export const scaleUpWorklet = (bigIntNum: bigint, decimalPlaces: number): bigint => {
   'worklet';
   const scaleFactor = BigInt(10) ** BigInt(20);
   return (bigIntNum * scaleFactor) / BigInt(10) ** BigInt(decimalPlaces);
@@ -43,7 +63,11 @@ const formatResultWorklet = (result: bigint): string => {
 // Helper function to handle string and number input types
 const toStringWorklet = (value: string | number): string => {
   'worklet';
-  return typeof value === 'number' ? value.toString() : value;
+  const ret = typeof value === 'number' ? value.toString() : value;
+  if (/^\d+\.$/.test(ret)) {
+    return ret.slice(0, -1);
+  }
+  return ret;
 };
 
 // Converts a numeric string to a scaled integer string, preserving the specified decimal places
@@ -171,27 +195,6 @@ export function modWorklet(num1: string | number, num2: string | number): string
   return formatResultWorklet(result);
 }
 
-// Power function
-export function powWorklet(base: string | number, exponent: string | number): string {
-  'worklet';
-  const baseStr = toStringWorklet(base);
-  const exponentStr = toStringWorklet(exponent);
-
-  if (!isNumberStringWorklet(baseStr) || !isNumberStringWorklet(exponentStr)) {
-    throw new Error('Arguments must be a numeric string or number');
-  }
-  if (isZeroWorklet(baseStr)) {
-    return '0';
-  }
-  if (isZeroWorklet(exponentStr)) {
-    return '1';
-  }
-  const [bigIntBase, decimalPlaces] = removeDecimalWorklet(baseStr);
-  const scaledBigIntBase = scaleUpWorklet(bigIntBase, decimalPlaces);
-  const result = scaledBigIntBase ** BigInt(exponentStr) / BigInt(10) ** BigInt(20);
-  return formatResultWorklet(result);
-}
-
 // Logarithm base 10 function
 export function log10Worklet(num: string | number): string {
   'worklet';
@@ -291,6 +294,41 @@ export function lessThanOrEqualToWorklet(num1: string | number, num2: string | n
   return scaledBigInt1 <= scaledBigInt2;
 }
 
+// Power function
+export function powWorklet(base: string | number, exponent: string | number): string {
+  'worklet';
+  const baseStr = toStringWorklet(base);
+  const exponentStr = toStringWorklet(exponent);
+
+  if (!isNumberStringWorklet(baseStr) || !isNumberStringWorklet(exponentStr)) {
+    throw new Error('Arguments must be a numeric string or number');
+  }
+  if (isZeroWorklet(baseStr)) {
+    return '0';
+  }
+  if (isZeroWorklet(exponentStr)) {
+    return '1';
+  }
+  if (exponentStr === '1') {
+    return baseStr;
+  }
+
+  if (lessThanWorklet(exponentStr, 0)) {
+    return divWorklet(1, powWorklet(base, Math.abs(Number(exponent))));
+  }
+
+  const [bigIntBase, decimalPlaces] = removeDecimalWorklet(baseStr);
+  let result;
+  if (decimalPlaces > 0) {
+    const scaledBigIntBase = scaleUpWorklet(bigIntBase, decimalPlaces);
+    result = scaledBigIntBase ** BigInt(exponentStr) / BigInt(10) ** BigInt(20);
+    return formatResultWorklet(result);
+  } else {
+    result = bigIntBase ** BigInt(exponentStr);
+    return result.toString();
+  }
+}
+
 // toFixed function
 export function toFixedWorklet(num: string | number, decimalPlaces: number): string {
   'worklet';
@@ -365,4 +403,14 @@ export function roundWorklet(num: string | number): string {
   const roundBigInt = ((scaledBigIntNum + scaleFactor / BigInt(2)) / scaleFactor) * scaleFactor;
 
   return formatResultWorklet(roundBigInt);
+}
+
+export function minWorklet(numA: string | number, numB: string | number) {
+  'worklet';
+  return lessThanOrEqualToWorklet(numA, numB) ? numA : numB;
+}
+
+export function maxWorklet(numA: string | number, numB: string | number) {
+  'worklet';
+  return greaterThanOrEqualToWorklet(numA, numB) ? numA : numB;
 }

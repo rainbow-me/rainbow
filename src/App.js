@@ -42,7 +42,6 @@ import { InitialRouteContext } from '@/navigation/initialRoute';
 import Routes from '@/navigation/routesNames';
 import { Portal } from '@/react-native-cool-modals/Portal';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
-import { initSentry, sentryRoutingInstrumentation } from '@/logger/sentry';
 import { analyticsV2 } from '@/analytics';
 import { getOrCreateDeviceId, securelyHashWalletAddress } from '@/analytics/utils';
 import { logger, RainbowError } from '@/logger';
@@ -57,9 +56,10 @@ import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { initializeRemoteConfig } from '@/model/remoteConfig';
 import { RemoteCardsSync } from './state/sync/RemoteCardsSync';
 import { RemotePromoSheetSync } from './state/sync/RemotePromoSheetSync';
+import { IS_DEV } from './env';
 import { checkIdentifierOnLaunch } from './model/backup';
 
-if (__DEV__) {
+if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
   (showNetworkRequests || showNetworkResponses) && monitorNetwork(showNetworkRequests, showNetworkResponses);
 }
@@ -218,17 +218,13 @@ class OldApp extends Component {
     updateBalancesAfter(isL2 ? 10000 : 5000, isL2, network);
   };
 
-  handleSentryNavigationIntegration = () => {
-    sentryRoutingInstrumentation?.registerNavigationContainer(this.navigatorRef);
-  };
-
   render() {
     return (
       <Portal>
         <View style={containerStyle}>
           {this.state.initialRoute && (
             <InitialRouteContext.Provider value={this.state.initialRoute}>
-              <RoutesComponent onReady={this.handleSentryNavigationIntegration} ref={this.handleNavigatorRef} />
+              <RoutesComponent ref={this.handleNavigatorRef} />
               <PortalConsumer />
             </InitialRouteContext.Provider>
           )}
@@ -257,9 +253,7 @@ function Root() {
 
   React.useEffect(() => {
     async function initializeApplication() {
-      await initSentry(); // must be set up immediately
       await initializeRemoteConfig();
-      // must happen immediately, but after Sentry
       await migrate();
 
       const isReturningUser = ls.device.get(['isReturningUser']);
@@ -339,7 +333,7 @@ function Root() {
         // init complete, load the rest of the app
         setInitializing(false);
       })
-      .catch(e => {
+      .catch(() => {
         logger.error(new RainbowError(`initializeApplication failed`));
 
         // for failure, continue to rest of the app for now
@@ -369,6 +363,7 @@ function Root() {
   );
 }
 
+/** Wrapping Root allows Sentry to accurately track startup times */
 const RootWithSentry = Sentry.wrap(Root);
 
 const PlaygroundWithReduxStore = () => (
