@@ -124,9 +124,8 @@ export const useSwapWarning = ({
     ({ inputNativeValue, outputNativeValue, quote, isFetching }: CurrentProps) => {
       'worklet';
 
-      // ⚠️ TODO: Remove the Number(x).toString() conversions once the safe math functions support BigInt
-      const nativeAmountImpact = subWorklet(Number(inputNativeValue).toString(), Number(outputNativeValue).toString());
-      const impactInPercentage = Number(inputNativeValue) === 0 ? '0' : divWorklet(nativeAmountImpact, Number(inputNativeValue).toString());
+      const nativeAmountImpact = subWorklet(inputNativeValue, outputNativeValue);
+      const impactInPercentage = Number(inputNativeValue) === 0 ? '0' : divWorklet(nativeAmountImpact, inputNativeValue);
 
       const priceImpactDisplay = convertAmountToNativeDisplayWorklet(Number(nativeAmountImpact), currentCurrency);
       const isSomeInputGreaterThanZero = Number(inputValues.value.inputAmount) > 0 || Number(inputValues.value.outputAmount) > 0;
