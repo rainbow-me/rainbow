@@ -188,7 +188,7 @@ export function ReviewPanel() {
 
         <Stack width="full" space="24px" alignHorizontal="stretch">
           <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-            <Inline horizontalSpace="12px">
+            <Inline horizontalSpace="12px" alignVertical="center">
               <Text color="labelTertiary" weight="bold" size="icon 13px">
                 􀤆
               </Text>
@@ -214,7 +214,7 @@ export function ReviewPanel() {
           </Inline>
 
           <Inline wrap={false} horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-            <Inline wrap={false} horizontalSpace="12px">
+            <Inline wrap={false} horizontalSpace="12px" alignVertical="center">
               <Text color="labelTertiary" weight="bold" size="icon 13px">
                 􀄩
               </Text>
@@ -231,7 +231,7 @@ export function ReviewPanel() {
           </Inline>
 
           <Inline wrap={false} horizontalSpace="10px" alignHorizontal="justify">
-            <Inline wrap={false} horizontalSpace="12px">
+            <Inline wrap={false} horizontalSpace="12px" alignVertical="center">
               <Text color="labelTertiary" weight="bold" size="icon 13px">
                 􀘾
               </Text>
@@ -250,12 +250,12 @@ export function ReviewPanel() {
           <Separator color="separatorSecondary" />
 
           <Inline wrap={false} horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-            <Inline wrap={false} horizontalSpace="12px">
+            <Inline wrap={false} horizontalSpace="12px" alignVertical="center">
               <Text color="labelTertiary" weight="bold" size="icon 13px">
                 􀋦
               </Text>
               <ButtonPressAnimation onPress={openFlashbotsExplainer}>
-                <Inline wrap={false} horizontalSpace="4px">
+                <Inline wrap={false} horizontalSpace="4px" alignVertical="center">
                   <Text color="labelTertiary" weight="semibold" size="15pt">
                     {FLASHBOTS_PROTECTION_LABEL}
                   </Text>
@@ -275,12 +275,12 @@ export function ReviewPanel() {
           </Inline>
 
           <Inline wrap={false} horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-            <Inline wrap={false} alignHorizontal="left" horizontalSpace="12px">
+            <Inline wrap={false} alignHorizontal="left" horizontalSpace="12px" alignVertical="center">
               <Text color="labelTertiary" weight="bold" size="icon 13px">
                 􀘩
               </Text>
               <ButtonPressAnimation onPress={openSlippageExplainer}>
-                <Inline horizontalSpace="4px">
+                <Inline horizontalSpace="4px" alignVertical="center">
                   <Text color="labelTertiary" weight="semibold" size="15pt">
                     {MAX_SLIPPAGE_LABEL}
                   </Text>
@@ -308,7 +308,7 @@ export function ReviewPanel() {
                   gap={10}
                 >
                   {/* TODO: 56% opacity */}
-                  <Text weight="black" size="icon 10px" color="labelTertiary">
+                  <Text weight="black" size="icon 10px" color="labelTertiary" align="center">
                     􀅽
                   </Text>
                 </Box>
@@ -339,7 +339,7 @@ export function ReviewPanel() {
                   gap={10}
                 >
                   {/* TODO: 56% opacity */}
-                  <Text weight="black" size="icon 10px" color="labelTertiary">
+                  <Text weight="black" size="icon 10px" color="labelTertiary" align="center">
                     􀅼
                   </Text>
                 </Box>
