@@ -17,7 +17,6 @@ import { useBrowserWorkletsContext } from '../BrowserWorkletsContext';
 import { SearchResults } from './results/SearchResults';
 import { useSearchContext } from './SearchContext';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
-import { DappsContextProvider } from '@/resources/metadata/dapps';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 
 export const Search = () => {
@@ -125,9 +124,7 @@ export const Search = () => {
     <>
       <KeyboardHeightSetter isFocused={isFocusedValue} />
       <Animated.View style={[backgroundStyle, styles.searchBackground, { backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD' }]}>
-        <DappsContextProvider>
-          <SearchResults goToUrl={handleUrlSubmit} isFocused={isFocusedValue} />
-        </DappsContextProvider>
+        <SearchResults goToUrl={handleUrlSubmit} isFocused={isFocusedValue} />
       </Animated.View>
       <Animated.View style={[bottomBarStyle, styles.bottomBarStyle]}>
         <Animated.View style={[styles.barStyle, barStyle, expensiveBarStyles]}>
