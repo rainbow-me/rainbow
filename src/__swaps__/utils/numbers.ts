@@ -5,6 +5,7 @@ import { isNil } from 'lodash';
 
 import { supportedNativeCurrencies } from '@/references';
 import { BigNumberish } from '@/__swaps__/utils/hex';
+import store from '@/redux/store';
 
 type nativeCurrencyType = typeof supportedNativeCurrencies;
 
@@ -264,29 +265,35 @@ export const convertBipsToPercentage = (value: BigNumberish, decimals = 2): stri
   return new BigNumber(value || 0).shiftedBy(-2).toFixed(decimals);
 };
 
+const getUserPreferredCurrency = () => {
+  const currency = store.getState().settings.nativeCurrency;
+  return supportedNativeCurrencies[currency];
+};
+
 /**
  * @desc convert from amount value to display formatted string
  */
-export const convertAmountToNativeDisplay = (value: number | string, nativeCurrency: keyof nativeCurrencyType, threshold = false) => {
-  const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
-  const { alignment, decimals: rawDecimals, symbol } = nativeSelected;
+export const convertAmountToNativeDisplay = (value: number | string, nativeCurrency = getUserPreferredCurrency(), useThreshold = false) => {
+  const { alignment, decimals: rawDecimals, symbol } = nativeCurrency;
   const decimals = Math.min(rawDecimals, 6);
 
   const valueNumber = Number(value);
-  const thresholdNumber = decimals < 4 ? 0.01 : 0.0001;
-  let nativeValue: string;
+  const threshold = decimals < 4 ? 0.01 : 0.0001;
+  let thresholdReached = false;
 
-  if (threshold && valueNumber < thresholdNumber) {
-    nativeValue = `< ${thresholdNumber}`;
-  } else {
-    nativeValue = Number(value).toLocaleString('en-US', {
-      useGrouping: true,
-      minimumFractionDigits: decimals,
-      maximumFractionDigits: decimals,
-    });
+  if (useThreshold && valueNumber < threshold) {
+    thresholdReached = true;
   }
 
-  const nativeDisplay = `${alignment === 'left' ? symbol : ''}${nativeValue}${alignment === 'right' ? symbol : ''}`;
+  const nativeValue = thresholdReached
+    ? threshold
+    : valueNumber.toLocaleString('en-US', {
+        useGrouping: true,
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      });
+
+  const nativeDisplay = `${thresholdReached ? '<' : ''}${alignment === 'left' ? symbol : ''}${nativeValue}${alignment === 'right' ? symbol : ''}`;
 
   return nativeDisplay;
 };
@@ -297,7 +304,7 @@ export const convertAmountToNativeDisplay = (value: number | string, nativeCurre
 export const convertAmountToNativeDisplayWorklet = (
   value: number | string,
   nativeCurrency: keyof nativeCurrencyType,
-  threshold = false
+  useThreshold = false
 ) => {
   'worklet';
 
@@ -306,20 +313,22 @@ export const convertAmountToNativeDisplayWorklet = (
   const decimals = Math.min(rawDecimals, 6);
 
   const valueNumber = Number(value);
-  const thresholdNumber = decimals < 4 ? 0.01 : 0.0001;
-  let nativeValue: string;
+  const threshold = decimals < 4 ? 0.01 : 0.0001;
+  let thresholdReached = false;
 
-  if (threshold && valueNumber < thresholdNumber) {
-    nativeValue = `< ${thresholdNumber}`;
-  } else {
-    nativeValue = Number(value).toLocaleString('en-US', {
-      useGrouping: true,
-      minimumFractionDigits: decimals,
-      maximumFractionDigits: decimals,
-    });
+  if (useThreshold && valueNumber < threshold) {
+    thresholdReached = true;
   }
 
-  const nativeDisplay = `${alignment === 'left' ? symbol : ''}${nativeValue}${alignment === 'right' ? symbol : ''}`;
+  const nativeValue = thresholdReached
+    ? threshold
+    : valueNumber.toLocaleString('en-US', {
+        useGrouping: true,
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      });
+
+  const nativeDisplay = `${thresholdReached ? '<' : ''}${alignment === 'left' ? symbol : ''}${nativeValue}${alignment === 'right' ? symbol : ''}`;
 
   return nativeDisplay;
 };

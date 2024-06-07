@@ -1,6 +1,6 @@
 import { ChainId } from '@/__swaps__/types/chains';
 import { weiToGwei } from '@/__swaps__/utils/ethereum';
-import { add, multiply } from '@/__swaps__/utils/numbers';
+import { add, convertAmountToNativeDisplay, multiply } from '@/__swaps__/utils/numbers';
 import ethereumUtils, { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { useMemo, useState } from 'react';
 import { formatUnits } from 'viem';
@@ -45,7 +45,7 @@ export function useEstimatedGasFee({
     const gasAmount = formatUnits(safeBigInt(totalWei), nativeNetworkAsset.decimals).toString();
     const feeInUserCurrency = multiply(networkAssetPrice, gasAmount);
 
-    return formatCurrency(feeInUserCurrency);
+    return convertAmountToNativeDisplay(feeInUserCurrency);
   }, [gasLimit, gasSettings, nativeNetworkAsset]);
 }
 
