@@ -31,7 +31,6 @@ import { ethereumUtils } from '@/utils';
 import { queryClient } from '@/react-query';
 import { divWorklet, equalWorklet, greaterThanWorklet, mulWorklet, toFixedWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { useAccountSettings } from '@/hooks';
-import { supportedNativeCurrencies } from '@/references';
 
 function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetWithColors | null) {
   const initialBalance = Number(initialSelectedInputAsset?.balance.amount) ?? 0;
