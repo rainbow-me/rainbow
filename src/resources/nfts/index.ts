@@ -26,11 +26,6 @@ export const nftListingQueryKey = ({
   network: Omit<Network, Network.goerli>;
 }) => createQueryKey('nftListing', { contractAddress, tokenId, network });
 
-export function useNFTs(): NFT[] {
-  // normal react query where we get new NFT formatted data
-  return [];
-}
-
 const walletsSelector = (state: AppState) => state.wallets?.wallets;
 
 const isImportedWalletSelector = createSelector(
@@ -61,8 +56,11 @@ const fetchNFTData: QueryFunction<NFTData, NFTQueryKey> = async ({ queryKey }) =
   const queryResponse = await arcClient.getNFTs({ walletAddress: address });
 
   const nfts = queryResponse?.nfts?.map(nft => simpleHashNFTToUniqueAsset(nft, address));
+
+  // ⚠️ TODO: Delete this and rework the code that uses it
   const nftsMap = nfts?.reduce(
     (acc, nft) => {
+      // Track down why these both exist - we should not be doing this
       acc[nft.uniqueId] = nft;
       acc[nft.fullUniqueId] = nft;
       return acc;
