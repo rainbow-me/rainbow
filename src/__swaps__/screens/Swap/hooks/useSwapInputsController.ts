@@ -166,7 +166,6 @@ export function useSwapInputsController({
     if (inputMethod.value === 'outputAmount' || typeof inputValues.value.outputAmount === 'string') {
       return addCommasToNumber(inputValues.value.outputAmount, '0');
     }
-
     return valueBasedDecimalFormatter({
       amount: inputValues.value.outputAmount,
       usdTokenPrice: outputNativePrice.value,

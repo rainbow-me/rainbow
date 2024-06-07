@@ -36,7 +36,6 @@ import { InitialRouteContext } from '@/navigation/initialRoute';
 import Routes from '@/navigation/routesNames';
 import { Portal } from '@/react-native-cool-modals/Portal';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
-import { initSentry, sentryRoutingInstrumentation } from '@/logger/sentry';
 import { analyticsV2 } from '@/analytics';
 import { getOrCreateDeviceId, securelyHashWalletAddress } from '@/analytics/utils';
 import { logger, RainbowError } from '@/logger';
@@ -53,9 +52,10 @@ import { initializeRemoteConfig } from '@/model/remoteConfig';
 import { NavigationContainerRef } from '@react-navigation/native';
 import { RootStackParamList } from './navigation/types';
 import { Address } from 'viem';
+import { IS_DEV } from './env';
 import { checkIdentifierOnLaunch } from './model/backup';
 
-if (__DEV__) {
+if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
   (showNetworkRequests || showNetworkResponses) && monitorNetwork(showNetworkRequests, showNetworkResponses);
 }
@@ -163,10 +163,6 @@ function App({ walletReady }: AppProps) {
     Navigation.setTopLevelNavigator(ref);
   };
 
-  const handleSentryNavigationIntegration = () => {
-    sentryRoutingInstrumentation?.registerNavigationContainer(navigatorRef.current);
-  };
-
   return (
     <Portal>
       <View style={containerStyle}>
@@ -174,7 +170,7 @@ function App({ walletReady }: AppProps) {
           <RemotePromoSheetProvider isWalletReady={walletReady}>
             <RemoteCardProvider>
               <InitialRouteContext.Provider value={initialRoute}>
-                <RoutesComponent onReady={handleSentryNavigationIntegration} ref={handleNavigatorRef} />
+                <RoutesComponent ref={handleNavigatorRef} />
                 <PortalConsumer />
               </InitialRouteContext.Provider>
             </RemoteCardProvider>
@@ -200,9 +196,7 @@ function Root() {
 
   React.useEffect(() => {
     async function initializeApplication() {
-      await initSentry(); // must be set up immediately
       await initializeRemoteConfig();
-      // must happen immediately, but after Sentry
       await migrate();
 
       const isReturningUser = ls.device.get(['isReturningUser']);
@@ -313,6 +307,7 @@ function Root() {
   );
 }
 
+/** Wrapping Root allows Sentry to accurately track startup times */
 const RootWithSentry = Sentry.wrap(Root);
 
 const PlaygroundWithReduxStore = () => (
