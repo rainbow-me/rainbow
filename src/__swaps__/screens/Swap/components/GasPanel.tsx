@@ -272,26 +272,17 @@ function MaxTransactionFee() {
 
   return (
     <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-      <Inline horizontalSpace="12px">
-        <Inline horizontalSpace="4px">
-          <Text color="labelTertiary" weight="semibold" size="15pt">
-            {i18n.t(i18n.l.gas.max_transaction_fee)}
-          </Text>
-          <Text color="labelTertiary" size="13pt" weight="bold">
-            􀅴
-          </Text>
-        </Inline>
-      </Inline>
+      <Text color="labelTertiary" weight="semibold" size="15pt">
+        {i18n.t(i18n.l.gas.max_transaction_fee)}
+      </Text>
 
-      <Inline horizontalSpace="6px">
-        <EstimatedSwapGasFee
-          gasSettings={gasSettings}
-          align="right"
-          color={isDarkMode ? 'labelSecondary' : 'label'}
-          size="15pt"
-          weight="heavy"
-        />
-      </Inline>
+      <EstimatedSwapGasFee
+        gasSettings={gasSettings}
+        align="right"
+        color={isDarkMode ? 'labelSecondary' : 'label'}
+        size="15pt"
+        weight="heavy"
+      />
     </Inline>
   );
 }
