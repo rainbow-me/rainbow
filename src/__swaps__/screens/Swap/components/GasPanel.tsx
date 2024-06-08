@@ -236,12 +236,12 @@ function EditMaxBaseFee() {
 
   return (
     <Box flexDirection="row" alignItems="center" justifyContent="space-between">
-      <Box gap={8}>
+      <Box gap={8} style={{ marginTop: warning ? -10 : 0, marginBottom: warning ? -10 : 0 }}>
         <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MAX_BASE_FEE_TYPE })}>
           {i18n.t(i18n.l.gas.max_base_fee)}
         </PressableLabel>
         {warning && (
-          <Text color="labelQuaternary" size="13pt" weight="medium">
+          <Text color="labelQuaternary" size="12pt" weight="medium">
             {warning}
           </Text>
         )}
