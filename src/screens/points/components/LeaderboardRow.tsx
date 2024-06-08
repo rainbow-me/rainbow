@@ -1,5 +1,5 @@
 import * as i18n from '@/languages';
-import React, { useCallback, useMemo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { Keyboard, Share } from 'react-native';
 import { MenuActionConfig } from 'react-native-ios-context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
@@ -30,7 +30,7 @@ const ACTIONS = {
   SHARE: 'share',
 };
 
-export const LeaderboardRow = ({
+export const LeaderboardRow = memo(function LeaderboardRow({
   address,
   ens,
   avatarURL,
@@ -42,7 +42,7 @@ export const LeaderboardRow = ({
   avatarURL?: string;
   points: number;
   rank: number;
-}) => {
+}) {
   const { switchToWalletWithAddress, selectedWallet } = useWallets();
   const { isWatching } = useWatchWallet({ address });
   const { colors } = useTheme();
@@ -253,4 +253,4 @@ export const LeaderboardRow = ({
       </Box>
     </ContextMenuButton>
   );
-};
+});
