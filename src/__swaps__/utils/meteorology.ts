@@ -218,11 +218,12 @@ export const getCachedCurrentBaseFee = (chainId: ChainId) => {
 };
 
 type GasSuggestions = ReturnType<typeof selectGasSuggestions>;
+export type GasSuggestion = GasSuggestions[keyof GasSuggestions];
 export function useMeteorologySuggestions({ chainId, enabled }: { chainId: ChainId; enabled?: boolean }) {
-  return useMeteorology({ chainId }, { select: selectGasSuggestions, enabled });
+  return useMeteorology({ chainId }, { select: selectGasSuggestions, enabled, notifyOnChangeProps: enabled ? ['data'] : [] });
 }
 
-export function useMeteorologySuggestion<Selected = GasSuggestions[keyof GasSuggestions]>({
+export function useMeteorologySuggestion<Selected = GasSuggestion>({
   chainId,
   speed,
   enabled,
@@ -232,7 +233,7 @@ export function useMeteorologySuggestion<Selected = GasSuggestions[keyof GasSugg
   chainId: ChainId;
   speed: GasSpeed;
   enabled?: boolean;
-  select?: (d: GasSuggestions[keyof GasSuggestions] | undefined) => Selected;
+  select?: (d: GasSuggestion | undefined) => Selected;
   notifyOnChangeProps?: ['data'] | [];
 }) {
   return useMeteorology(

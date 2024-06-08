@@ -1,5 +1,5 @@
 import * as i18n from '@/languages';
-import React, { PropsWithChildren, useMemo } from 'react';
+import React, { PropsWithChildren, useCallback, useMemo } from 'react';
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
 import { fadeConfig } from '@/__swaps__/screens/Swap/constants';
@@ -7,13 +7,15 @@ import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/provid
 import { ChainId } from '@/__swaps__/types/chains';
 import { gweiToWei, weiToGwei } from '@/__swaps__/utils/ethereum';
 import {
+  GasSuggestion,
   getSelectedSpeedSuggestion,
   useBaseFee,
   useGasTrend,
   useIsChainEIP1559,
   useMeteorologySuggestion,
+  useMeteorologySuggestions,
 } from '@/__swaps__/utils/meteorology';
-import { add, subtract } from '@/__swaps__/utils/numbers';
+import { add, greaterThan, subtract } from '@/__swaps__/utils/numbers';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Box, Inline, Separator, Stack, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
@@ -74,15 +76,16 @@ function NumericInputButton({ children, onPress }: PropsWithChildren<{ onPress: 
         style={{
           justifyContent: 'center',
           alignItems: 'center',
+          paddingTop: 1,
+          paddingLeft: 1,
           borderWidth: 1,
-          borderColor: isDarkMode ? globalColors.white10 : globalColors.grey100,
+          borderColor: isDarkMode ? globalColors.white10 : globalColors.grey20,
           backgroundColor: opacity(fillSecondary, 0.12),
         }}
         height={{ custom: 16 }}
         width={{ custom: 20 }}
         borderRadius={100}
         paddingVertical="1px (Deprecated)"
-        gap={10}
       >
         <Text weight="black" size="icon 10px" color={{ custom: opacity(labelTertiary, 0.56) }}>
           {children}
@@ -130,19 +133,15 @@ function GasSettingInput({
   );
 }
 
-const selectWeiToGwei = (s: string | undefined) => s && weiToGwei(s);
+const selectBaseFee = (s: string | undefined = '0') => formatNumber(weiToGwei(s));
 
 function CurrentBaseFee() {
   const { isDarkMode } = useColorMode();
   const { navigate } = useNavigation();
 
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-  const { data: baseFee } = useBaseFee({ chainId, select: selectWeiToGwei });
+  const { data: baseFee } = useBaseFee({ chainId, select: selectBaseFee });
   const { data: gasTrend } = useGasTrend({ chainId });
-
-  const trendType = 'currentBaseFee' + upperFirst(gasTrend);
-
-  // loading state?
 
   const isEIP1559 = useIsChainEIP1559(chainId);
   if (!isEIP1559) return null;
@@ -154,7 +153,7 @@ function CurrentBaseFee() {
           navigate(Routes.EXPLAIN_SHEET, {
             currentBaseFee: baseFee,
             currentGasTrend: gasTrend,
-            type: trendType,
+            type: 'currentBaseFee' + upperFirst(gasTrend),
           })
         }
       >
@@ -167,7 +166,7 @@ function CurrentBaseFee() {
         weight="heavy"
         style={{ textTransform: 'capitalize' }}
       >
-        {formatNumber(baseFee || '0')}
+        {baseFee}
       </Text>
     </Inline>
   );
@@ -177,25 +176,15 @@ type GasPanelState = { gasPrice?: string; maxBaseFee?: string; maxPriorityFee?: 
 const useGasPanelStore = createRainbowStore<GasPanelState | undefined>(() => undefined);
 
 function useGasPanelState<
-  Key extends 'maxBaseFee' | 'maxPriorityFee' | 'gasPrice' | undefined = undefined,
-  Selected = Key extends string ? string : GasPanelState,
->(key?: Key, select: (s: GasPanelState | undefined) => Selected = s => (key ? s?.[key] : s) as Selected) {
+  Option extends 'maxBaseFee' | 'maxPriorityFee' | 'gasPrice' | undefined = undefined,
+  Selected = Option extends string ? string : GasPanelState,
+>(opt?: Option, select: (s: GasPanelState | undefined) => Selected = s => (opt ? s?.[opt] : s) as Selected) {
   const state = useGasPanelStore(select);
 
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-
   const currentGasSettings = useCustomGasStore(s => select(s?.[chainId]));
 
-  const speed = useSelectedGasSpeed(chainId);
-  const { data: suggestion } = useMeteorologySuggestion({
-    chainId,
-    speed,
-    select,
-    enabled: !!state,
-    notifyOnChangeProps: !!state && speed !== 'custom' ? ['data'] : [],
-  });
-
-  return useMemo(() => state ?? currentGasSettings ?? suggestion, [currentGasSettings, state, suggestion]);
+  return useMemo(() => state ?? currentGasSettings, [currentGasSettings, state]);
 }
 
 const setGasPanelState = (update: Partial<GasPanelState>) => {
@@ -208,44 +197,85 @@ const setGasPanelState = (update: Partial<GasPanelState>) => {
   useGasPanelStore.setState({ ...suggestion, ...update });
 };
 
+function useMetereologySuggested<Option extends 'maxBaseFee' | 'maxPriorityFee' | 'gasPrice'>(
+  option: Option,
+  { enabled = true }: { enabled?: boolean } = {}
+) {
+  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
+  const speed = useSelectedGasSpeed(chainId);
+  const { data: suggestion } = useMeteorologySuggestion({
+    chainId,
+    speed,
+    select: useCallback((d?: GasSuggestion) => d?.[option], [option]),
+    enabled,
+    notifyOnChangeProps: !!enabled && speed !== 'custom' ? ['data'] : [],
+  });
+  return suggestion;
+}
+
+const useMaxBaseFeeWarning = (maxBaseFee: string | undefined) => {
+  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
+  const { data: suggestions } = useMeteorologySuggestions({ chainId, enabled: !!maxBaseFee });
+
+  const urgentMaxBaseFee = suggestions?.urgent.maxBaseFee;
+  const normalMaxBaseFee = suggestions?.normal.maxBaseFee;
+
+  if (!maxBaseFee) return null;
+  if (urgentMaxBaseFee && greaterThan(maxBaseFee, urgentMaxBaseFee)) return 'too_high';
+  if (normalMaxBaseFee && lessThan(maxBaseFee, normalMaxBaseFee)) return 'too_low';
+  return null;
+};
+
 function EditMaxBaseFee() {
-  const maxBaseFee = useGasPanelState('maxBaseFee');
   const { navigate } = useNavigation();
 
+  const maxBaseFee = useGasPanelState('maxBaseFee');
+  const placeholder = useMetereologySuggested('maxBaseFee', { enabled: !maxBaseFee });
+
+  const warning = useMaxBaseFeeWarning(maxBaseFee);
+
   return (
-    <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-      {/* TODO: Add error and warning values here */}
-      <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MAX_BASE_FEE_TYPE })}>
-        {i18n.t(i18n.l.gas.max_base_fee)}
-      </PressableLabel>
-      <GasSettingInput value={maxBaseFee} onChange={maxBaseFee => setGasPanelState({ maxBaseFee })} />
-    </Inline>
+    <Box flexDirection="row" alignItems="center" justifyContent="space-between">
+      <Box gap={8}>
+        <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MAX_BASE_FEE_TYPE })}>
+          {i18n.t(i18n.l.gas.max_base_fee)}
+        </PressableLabel>
+        {warning && (
+          <Text color="labelQuaternary" size="13pt" weight="medium">
+            {warning}
+          </Text>
+        )}
+      </Box>
+      <GasSettingInput value={maxBaseFee || placeholder} onChange={maxBaseFee => setGasPanelState({ maxBaseFee })} />
+    </Box>
   );
 }
 
 const MIN_FLASHBOTS_PRIORITY_FEE = gweiToWei('6');
 function EditPriorityFee() {
-  const maxPriorityFee = useGasPanelState('maxPriorityFee');
   const { navigate } = useNavigation();
 
   const isFlashbotsEnabled = useSwapsStore(s => s.flashbots);
-  // TODO: THIS FLASHBOTS INPUT LOGIC IS FLAWED REVIEW LATER
   const min = isFlashbotsEnabled ? MIN_FLASHBOTS_PRIORITY_FEE : '0';
+
+  const maxPriorityFee = useGasPanelState('maxPriorityFee');
+  const placeholder = useMetereologySuggested('maxPriorityFee', { enabled: !maxPriorityFee });
 
   return (
     <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-      {/* TODO: Add error and warning values here */}
       <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MINER_TIP_TYPE })}>
         {i18n.t(i18n.l.gas.miner_tip)}
       </PressableLabel>
-      <GasSettingInput value={maxPriorityFee} onChange={maxPriorityFee => setGasPanelState({ maxPriorityFee })} min={min} />
+      <GasSettingInput value={maxPriorityFee || placeholder} onChange={maxPriorityFee => setGasPanelState({ maxPriorityFee })} min={min} />
     </Inline>
   );
 }
 
 function EditGasPrice() {
-  const gasPrice = useGasPanelState('gasPrice');
   const { navigate } = useNavigation();
+
+  const gasPrice = useGasPanelState('gasPrice');
+  const placeholder = useMetereologySuggested('gasPrice', { enabled: !gasPrice });
 
   return (
     <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
@@ -253,7 +283,7 @@ function EditGasPrice() {
       <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MAX_BASE_FEE_TYPE })}>
         {i18n.t(i18n.l.gas.max_base_fee)}
       </PressableLabel>
-      <GasSettingInput value={gasPrice} onChange={gasPrice => setGasPanelState({ gasPrice })} />
+      <GasSettingInput value={gasPrice || placeholder} onChange={gasPrice => setGasPanelState({ gasPrice })} />
     </Inline>
   );
 }
@@ -287,11 +317,14 @@ function MaxTransactionFee() {
   );
 }
 
+const chainsThatIgnoreThePriorityFee = [ChainId.arbitrum, ChainId.arbitrumNova, ChainId.arbitrumSepolia];
 function EditableGasSettings() {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
   const isEIP1559 = useIsChainEIP1559(chainId);
 
   if (!isEIP1559) return <EditGasPrice />;
+
+  if (chainsThatIgnoreThePriorityFee.includes(chainId)) return <EditMaxBaseFee />;
 
   return (
     <>
