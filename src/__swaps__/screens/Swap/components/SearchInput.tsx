@@ -1,7 +1,7 @@
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { getColorValueForThemeWorklet, opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/__swaps__/utils/swaps';
 import { Input } from '@/components/inputs';
 import { AnimatedText, Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
 import * as i18n from '@/languages';
@@ -127,6 +127,9 @@ export const SearchInput = ({
 
   const onPaste = () => {
     Clipboard.getString().then(text => {
+      // to prevent users from mistakingly pasting long ass texts when copying the wrong thing
+      // we slice the string to 42 which is the size of a eth address,
+      // no token name query search should be that big anyway
       const v = text.trim().slice(0, 42);
       pastedSearchInputValue.value = v;
       useSwapsStore.setState({ outputSearchQuery: v });
