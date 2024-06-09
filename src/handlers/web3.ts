@@ -212,11 +212,7 @@ export const getFlashbotsProvider = async () => {
 };
 
 export const getCachedProviderForNetwork = (network: Network = Network.mainnet): StaticJsonRpcProvider | undefined => {
-  const cachedProvider = networkProviders.get(network);
-  if (cachedProvider) {
-    return cachedProvider;
-  }
-  return undefined;
+  return networkProviders.get(network);
 };
 
 /**
