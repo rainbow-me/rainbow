@@ -16,6 +16,8 @@ import assetInputTypes from '@/helpers/assetInputTypes';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
 import { AddressOrEth, AssetType } from '@/__swaps__/types/assets';
+import { isNativeAsset } from '@/handlers/assets';
+import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 
 type SwapActionButtonProps = {
   asset: RainbowToken;
@@ -38,29 +40,32 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
   const goToSwap = useCallback(() => {
     if (swapsV2Enabled || swaps_v2) {
       const chainId = ethereumUtils.getChainIdFromNetwork(asset.network);
-      const userAsset = userAssetsStore.getState().userAssets.get(`${asset.mainnet_address || asset.address}_${chainId}`);
+      const userAsset = userAssetsStore.getState().userAssets.get(asset.uniqueId);
+      const chainName = chainNameFromChainId(chainId);
 
       const parsedAsset = parseSearchAsset({
         assetWithPrice: {
           ...asset,
+          uniqueId: `${asset.address}_${chainId}`,
           address: asset.address as AddressOrEth,
           type: asset.type as AssetType,
           chainId,
-          chainName: chainNameFromChainId(chainId),
-          isNativeAsset: false,
+          chainName,
+          isNativeAsset: isNativeAsset(asset.address, asset.network),
           native: {},
         },
         searchAsset: {
           ...asset,
           chainId,
-          chainName: chainNameFromChainId(chainId),
+          chainName,
           address: asset.address as AddressOrEth,
           highLiquidity: asset.highLiquidity ?? false,
           isRainbowCurated: asset.isRainbowCurated ?? false,
           isVerified: asset.isVerified ?? false,
-          mainnetAddress: (asset.mainnet_address ?? '') as AddressOrEth,
+          mainnetAddress: (asset.mainnet_address ?? undefined) as AddressOrEth,
           networks: asset.networks ?? [],
           type: asset.type as AssetType,
+          uniqueId: `${asset.address}_${chainId}`,
         },
         userAsset,
       });

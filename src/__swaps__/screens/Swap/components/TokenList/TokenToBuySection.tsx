@@ -18,7 +18,6 @@ import { SwapAssetType } from '@/__swaps__/types/swap';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { EXPANDED_INPUT_HEIGHT } from '../../constants';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
 
 interface SectionProp {
   color: TextStyle['color'];
@@ -75,10 +74,7 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
   const handleSelectToken = useCallback(
     (token: SearchAsset) => {
       runOnUI(() => {
-        if (
-          internalSelectedInputAsset.value &&
-          getStandardizedUniqueIdWorklet({ address: token.address, chainId: token.chainId }) !== internalSelectedOutputAsset.value?.uniqueId
-        ) {
+        if (internalSelectedInputAsset.value && token.uniqueId !== internalSelectedOutputAsset.value?.uniqueId) {
           isQuoteStale.value = 1;
           isFetching.value = true;
         }

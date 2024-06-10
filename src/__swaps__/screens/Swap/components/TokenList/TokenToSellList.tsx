@@ -12,7 +12,6 @@ import { SwapAssetType } from '@/__swaps__/types/swap';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { EXPANDED_INPUT_HEIGHT } from '../../constants';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 
 export const TokenToSellList = () => {
@@ -30,10 +29,7 @@ const TokenToSellListComponent = () => {
       if (!token) return;
 
       runOnUI(() => {
-        if (
-          internalSelectedOutputAsset.value &&
-          getStandardizedUniqueIdWorklet({ address: token.address, chainId: token.chainId }) !== internalSelectedInputAsset.value?.uniqueId
-        ) {
+        if (internalSelectedOutputAsset.value && token.uniqueId !== internalSelectedInputAsset.value?.uniqueId) {
           isQuoteStale.value = 1;
           isFetching.value = true;
         }

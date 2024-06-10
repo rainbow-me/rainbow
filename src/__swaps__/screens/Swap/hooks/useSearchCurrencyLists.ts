@@ -32,7 +32,7 @@ export function useSearchCurrencyLists() {
   const query = useSwapsStore(state => state.outputSearchQuery.trim().toLowerCase());
 
   const [state, setState] = useState({
-    assetToSellAddress: assetToSell.value?.[assetToSell.value?.chainId === ChainId.mainnet ? 'address' : 'mainnetAddress'],
+    assetToSellAddress: assetToSell.value?.address,
     fromChainId: assetToSell.value?.chainId ?? undefined,
     isCrosschainSearch: assetToSell.value ? assetToSell.value.chainId !== selectedOutputChainId.value : false,
     toChainId: selectedOutputChainId.value ?? ChainId.mainnet,
@@ -50,7 +50,7 @@ export function useSearchCurrencyLists() {
     (current, previous) => {
       if (previous && (current.isCrosschainSearch !== previous.isCrosschainSearch || current.toChainId !== previous.toChainId)) {
         runOnJS(debouncedStateSet)({
-          assetToSellAddress: assetToSell.value?.[assetToSell.value?.chainId === ChainId.mainnet ? 'address' : 'mainnetAddress'],
+          assetToSellAddress: assetToSell.value?.address,
           fromChainId: assetToSell.value?.chainId ?? undefined,
           isCrosschainSearch: current.isCrosschainSearch,
           toChainId: current.toChainId,
@@ -84,7 +84,7 @@ export function useSearchCurrencyLists() {
     const enableUnverifiedSearch = query.length > 2;
 
     const bridgeAsset = state.isCrosschainSearch
-      ? verifiedAssets?.find(asset => isLowerCaseMatch(asset.mainnetAddress, state.assetToSellAddress))
+      ? verifiedAssets?.find(asset => isLowerCaseMatch(asset.address, state.assetToSellAddress))
       : null;
     const filteredBridgeAsset = bridgeAsset && filterBridgeAsset({ asset: bridgeAsset, filter: query }) ? bridgeAsset : null;
 

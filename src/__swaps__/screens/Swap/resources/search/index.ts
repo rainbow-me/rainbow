@@ -93,7 +93,9 @@ function parseTokenSearch(assets: SearchAsset[], chainId?: ChainId) {
             `${ETH_ADDRESS}_${ChainId.zora}`,
             `${ETH_ADDRESS}_${ChainId.avalanche}`,
             `${ETH_ADDRESS}_${ChainId.blast}`,
-          ].includes(a.uniqueId),
+          ].includes(`${a.uniqueId}_${chainId}`),
+          mainnetAddress: a.uniqueId as Address, // the uniqueId returned by the backend is the mainnet address or the current address
+          uniqueId: `${a.uniqueId}_${chainId}`,
         };
       })
       .filter(Boolean);
@@ -118,7 +120,9 @@ function parseTokenSearch(assets: SearchAsset[], chainId?: ChainId) {
               `${ETH_ADDRESS}_${ChainId.zora}`,
               `${ETH_ADDRESS}_${ChainId.avalanche}`,
               `${ETH_ADDRESS}_${ChainId.blast}`,
-            ].includes(a.uniqueId),
+            ].includes(`${a.uniqueId}_${chainId}`),
+            mainnetAddress: a.uniqueId as Address, // the uniqueId returned by the backend is the mainnet address or the current address
+            uniqueId: `${a.uniqueId}_${chainId}`,
           };
         })
       )

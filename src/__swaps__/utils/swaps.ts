@@ -149,7 +149,6 @@ export const countDecimalPlaces = (number: number | string): number => {
 
 export const findNiceIncrement = (availableBalance: string | number) => {
   'worklet';
-
   // We'll use one of these factors to adjust the base increment
   // These factors are chosen to:
   // a) Produce user-friendly amounts to swap (e.g., 0.1, 0.2, 0.3, 0.4…)
@@ -571,11 +570,6 @@ const ETH_COLORS: Colors = {
   shadow: undefined,
 };
 
-export const getStandardizedUniqueIdWorklet = ({ address, chainId }: { address: AddressOrEth; chainId: ChainId }) => {
-  'worklet';
-  return `${address.toLowerCase()}_${chainId}`;
-};
-
 export const parseAssetAndExtend = ({
   asset,
   insertUserAssetBalance,
@@ -589,7 +583,7 @@ export const parseAssetAndExtend = ({
     colors: (isAssetEth ? ETH_COLORS : asset.colors) as TokenColors,
   });
 
-  const uniqueId = getStandardizedUniqueIdWorklet({ address: asset.mainnetAddress || asset.address, chainId: asset.chainId });
+  const { uniqueId } = asset;
 
   return {
     ...asset,
