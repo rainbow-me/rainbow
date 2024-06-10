@@ -1,4 +1,4 @@
-import React, { Fragment, PropsWithChildren, useLayoutEffect } from 'react';
+import React, { Fragment, PropsWithChildren, memo, useLayoutEffect } from 'react';
 import { Insets, ViewProps } from 'react-native';
 import Animated, { interpolate, useAnimatedStyle, useSharedValue, withSpring, WithSpringConfig } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -53,7 +53,7 @@ type Props = PropsWithChildren<{
 }> &
   Pick<ViewProps, 'testID'>;
 
-export default function Toast({ children, color, distance = 90, targetTranslate = 0, icon, isVisible, testID, text, textColor }: Props) {
+function Toast({ children, color, distance = 90, targetTranslate = 0, icon, isVisible, testID, text, textColor }: Props) {
   const { colors, isDarkMode } = useTheme();
   const { width: deviceWidth } = useDimensions();
   const insets = useSafeAreaInsets();
@@ -89,3 +89,5 @@ export default function Toast({ children, color, distance = 90, targetTranslate 
     </Animated.View>
   );
 }
+
+export default memo(Toast);
