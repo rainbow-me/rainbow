@@ -28,7 +28,7 @@ export async function killHardhat() {
   exec('kill $(lsof -t -i:8545)');
 }
 
-export async function importWalletFlow() {
+export async function importWalletFlow(customSeed?: string) {
   await checkIfVisible('welcome-screen');
   await waitAndTap('already-have-wallet-button');
   await checkIfExists('add-wallet-sheet');
@@ -36,7 +36,7 @@ export async function importWalletFlow() {
   await checkIfExists('import-sheet');
   await clearField('import-sheet-input');
   await device.disableSynchronization();
-  await typeText('import-sheet-input', process.env.TEST_SEEDS, false);
+  await typeText('import-sheet-input', customSeed ? customSeed : process.env.TEST_SEEDS, false);
   await checkIfElementHasString('import-sheet-button-label', 'Continue');
   await waitAndTap('import-sheet-button');
   await checkIfVisible('wallet-info-modal');
@@ -52,9 +52,6 @@ export async function importWalletFlow() {
 }
 
 export async function beforeAllcleanApp({ hardhat }: { hardhat?: boolean }) {
-  // sometimes i see tests failed from the get-go
-  // giving an extra 15 to let things set up
-  await delayTime('very-long');
   jest.resetAllMocks();
   hardhat && (await startHardhat());
 }
@@ -127,7 +124,13 @@ export async function startIosSimulator() {
   }
 }
 
-export async function typeText(elementId: string | RegExp, text: string | undefined, focus = true, syncOnAndroid = false) {
+export async function typeText(
+  elementId: string | RegExp,
+  text: string | undefined,
+  focus = true,
+  syncOnAndroid = false,
+  hitEnterAfterText = false
+) {
   if (text === undefined) {
     throw new Error(`Cannot type 'undefined' into element with id ${elementId}`);
   }
@@ -140,6 +143,7 @@ export async function typeText(elementId: string | RegExp, text: string | undefi
       await device.disableSynchronization();
     }
     await element(by.id(elementId)).typeText(text);
+    hitEnterAfterText && (await typeText(elementId, '\n'));
     if (device.getPlatform() === 'android' && !syncOnAndroid) {
       await device.enableSynchronization();
     }
@@ -147,6 +151,7 @@ export async function typeText(elementId: string | RegExp, text: string | undefi
     throw new Error(`Error typing "${text}" at element with id ${elementId}}: ${error}`);
   }
 }
+
 export async function typeNumbers(elementId: string | RegExp, text: string, submitLabel: string | RegExp) {
   try {
     await element(by.id(elementId)).replaceText(text.replace('\n', ''));
