@@ -164,13 +164,8 @@ const isNetworkEnum = (network: Network | string): network is Network => {
  * @return A promise that resolves with an Ethers Network when the provider is ready.
  */
 export const web3SetHttpProvider = async (network: Network | string): Promise<EthersNetwork> => {
-  const provider = await getProviderForNetwork(network);
-  if (!provider) {
-    throw new RainbowError('Provider not found');
-  }
-  await provider.ready;
-  web3Provider = provider;
-  return provider.ready;
+  web3Provider = await getProviderForNetwork(network);
+  return web3Provider.ready;
 };
 
 /**
