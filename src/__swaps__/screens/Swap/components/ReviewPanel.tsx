@@ -145,7 +145,7 @@ export function ReviewPanel() {
 
   const unknown = i18n.t(i18n.l.swap.unknown);
 
-  const chainName = useDerivedValue(() => ChainNameDisplay[internalSelectedOutputAsset.value?.chainId ?? ChainId.mainnet]);
+  const chainName = useDerivedValue(() => ChainNameDisplay[internalSelectedInputAsset.value?.chainId ?? ChainId.mainnet]);
 
   const minimumReceived = useDerivedValue(() => {
     if (!SwapInputController.formattedOutputAmount.value || !internalSelectedOutputAsset.value?.symbol) {

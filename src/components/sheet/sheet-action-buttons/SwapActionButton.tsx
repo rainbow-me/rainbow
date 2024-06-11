@@ -38,11 +38,13 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
   const goToSwap = useCallback(() => {
     if (swapsV2Enabled || swaps_v2) {
       const chainId = ethereumUtils.getChainIdFromNetwork(asset.network);
-      const userAsset = userAssetsStore.getState().userAssets.get(`${asset.address}_${chainId}`);
+      const uniqueId = `${asset.address}_${chainId}`;
+      const userAsset = userAssetsStore.getState().userAssets.get(uniqueId);
 
       const parsedAsset = parseSearchAsset({
         assetWithPrice: {
           ...asset,
+          uniqueId,
           address: asset.address as AddressOrEth,
           type: asset.type as AssetType,
           chainId,
@@ -52,6 +54,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
         },
         searchAsset: {
           ...asset,
+          uniqueId,
           chainId,
           chainName: chainNameFromChainId(chainId),
           address: asset.address as AddressOrEth,
@@ -74,6 +77,8 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
           .find(userAsset => userAsset.chainId === chainId && userAsset.address !== asset.address);
         if (largestBalanceSameChainUserAsset) {
           swapsStore.setState({ inputAsset: largestBalanceSameChainUserAsset });
+        } else {
+          swapsStore.setState({ inputAsset: null });
         }
         swapsStore.setState({ outputAsset: parsedAsset });
       }

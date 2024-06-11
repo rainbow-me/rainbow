@@ -26,9 +26,9 @@ export const getPolygonNetworkObject = (): NetworkProperties => {
       mainnetAddress: MATIC_MAINNET_ADDRESS,
     },
 
-    rpc: proxyRpcEndpoint(polygon.id),
-    getProvider: getProviderForNetwork(Network.polygon),
-    balanceCheckerAddress: '0x54A4E5800345c01455a7798E0D96438364e22723',
+    rpc: () => proxyRpcEndpoint(polygon.id),
+    getProvider: () => getProviderForNetwork(Network.polygon),
+    balanceCheckerAddress: '0x54A4E5800345c01455a77798E0D96438364e22723',
 
     // features
     features: {

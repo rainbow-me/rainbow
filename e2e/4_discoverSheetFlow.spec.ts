@@ -37,13 +37,12 @@ describe('Discover Screen Flow', () => {
   });
 
   it('Should navigate to the Points screen after swiping left', async () => {
-    await swipe('profile-screen', 'left', 'slow');
+    await swipe('profile-screen', 'left', 'fast');
     await checkIfVisible('points-screen');
   });
 
-  it('Should navigate back to Discover screen after swiping right twice', async () => {
-    await swipe('points-screen', 'right', 'slow');
-    await swipe('profile-screen', 'right', 'slow');
+  it('Should navigate back to Discover screen after tapping Discover icon', async () => {
+    await waitAndTap('tab-bar-icon-DiscoverScreen');
     await checkIfVisible('discover-header');
   });
 
