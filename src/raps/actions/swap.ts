@@ -374,8 +374,6 @@ export const swap = async ({
     swapMetadataStorage.set(swap.hash.toLowerCase(), JSON.stringify({ type: 'swap', data: parameters.meta }));
   }
 
-  console.log(JSON.stringify(transaction, null, 2));
-
   addNewTransaction({
     address: parameters.quote.from as Address,
     // chainId: parameters.chainId as ChainId,
