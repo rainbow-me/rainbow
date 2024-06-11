@@ -9,7 +9,7 @@ import { SharedValue, runOnJS, useSharedValue } from 'react-native-reanimated';
 
 export const useSwapSettings = ({ inputAsset }: { inputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null> }) => {
   const flashbots = useSharedValue(swapsStore.getState().flashbots);
-  const slippage = useSharedValue(getDefaultSlippageWorklet(inputAsset.value.chainId || ChainId.mainnet, getRemoteConfig()));
+  const slippage = useSharedValue(getDefaultSlippageWorklet(inputAsset.value?.chainId || ChainId.mainnet, getRemoteConfig()));
 
   const setSlippage = swapsStore(state => state.setSlippage);
   const setFlashbots = swapsStore(state => state.setFlashbots);
