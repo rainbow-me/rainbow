@@ -13,6 +13,8 @@ import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import { analyticsV2 } from '@/analytics';
 
 const SELL_LIST_HEADER_HEIGHT = 20 + 10 + 14; // paddingTop + height + paddingBottom
 
@@ -44,6 +46,16 @@ const TokenToSellListComponent = () => {
         type: SwapAssetType.inputAsset,
         asset: token,
       });
+
+      const { inputSearchQuery } = userAssetsStore.getState();
+
+      // track what search query the user had prior to selecting an asset
+      if (inputSearchQuery.trim().length) {
+        analyticsV2.track(analyticsV2.event.swapsSearchedForToken, {
+          query: inputSearchQuery,
+          type: 'input',
+        });
+      }
     },
     [internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, setAsset]
   );

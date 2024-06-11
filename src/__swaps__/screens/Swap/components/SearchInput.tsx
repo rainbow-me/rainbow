@@ -79,13 +79,10 @@ export const SearchInput = ({
 
   const onInputSearchQueryChange = userAssetsStore(state => state.setSearchQuery);
 
-  const onOutputSearchQueryChange = useDebouncedCallback(
-    (text: string) => {
-      useSwapsStore.setState({ outputSearchQuery: text });
-    },
-    100,
-    { leading: false, trailing: true }
-  );
+  const onOutputSearchQueryChange = useDebouncedCallback((text: string) => useSwapsStore.setState({ outputSearchQuery: text }), 100, {
+    leading: false,
+    trailing: true,
+  });
 
   const isSearchFocused = useDerivedValue(
     () =>

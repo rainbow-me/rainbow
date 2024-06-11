@@ -1,12 +1,14 @@
 import { FlashList } from '@shopify/flash-list';
 import React, { memo, useCallback, useMemo } from 'react';
 import Animated, { runOnUI, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import * as i18n from '@/languages';
+import { analyticsV2 } from '@/analytics';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, Inline, Stack, Text, TextIcon, useColorMode } from '@/design-system';
 import { palettes } from '@/design-system/color/palettes';
+import * as i18n from '@/languages';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { swapsStore } from '@/state/swaps/swapsStore';
 import { COIN_ROW_WITH_PADDING_HEIGHT, CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { AssetToBuySectionId, useSearchCurrencyLists } from '@/__swaps__/screens/Swap/hooks/useSearchCurrencyLists';
@@ -87,6 +89,16 @@ export const TokenToBuyList = () => {
         type: SwapAssetType.outputAsset,
         asset: parsedAsset,
       });
+
+      const { outputSearchQuery } = swapsStore.getState();
+
+      // track what search query the user had prior to selecting an asset
+      if (outputSearchQuery.trim().length) {
+        analyticsV2.track(analyticsV2.event.swapsSearchedForToken, {
+          query: outputSearchQuery,
+          type: 'output',
+        });
+      }
     },
     [internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, setAsset]
   );
