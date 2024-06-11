@@ -202,6 +202,15 @@ describe('SafeMath', () => {
 
   test('orderOfMagnitude', () => {
     expect(orderOfMagnitudeWorklet(VALUE_H)).toBe(Number(RESULTS.orderOfMagnitude));
+    expect(orderOfMagnitudeWorklet('12500')).toBe(4);
+    expect(orderOfMagnitudeWorklet('50')).toBe(1);
+    expect(orderOfMagnitudeWorklet('0.00198900200881183616')).toBe(-3);
+    expect(orderOfMagnitudeWorklet('0.00133253382018097672')).toBe(-3);
+    expect(orderOfMagnitudeWorklet('0.00064470276596066749')).toBe(-4);
+    expect(orderOfMagnitudeWorklet('97.29560620602980607032')).toBe(1);
+    expect(orderOfMagnitudeWorklet('0.00033753736859589678')).toBe(-4);
+    expect(orderOfMagnitudeWorklet('0.04219495')).toBe(-2);
+    expect(orderOfMagnitudeWorklet('0.6')).toBe(-1);
   });
 });
 

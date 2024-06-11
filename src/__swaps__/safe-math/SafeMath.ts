@@ -195,24 +195,35 @@ export function modWorklet(num1: string | number, num2: string | number): string
   return formatResultWorklet(result);
 }
 
-export function orderOfMagnitudeWorklet(n: string | number): number {
+export function orderOfMagnitudeWorklet(num: string | number): number {
   'worklet';
-  let nStr = toStringWorklet(n);
-  nStr = nStr.replace(/^-/, ''); // Remove negative sign (if any
-
-  if (!isNumberStringWorklet(nStr)) {
-    throw new Error('Arguments must be a numeric string or number');
-  }
-
-  if (isZeroWorklet(nStr)) {
+  if (num === 0) {
     return -Infinity; // log10(0) is -Infinity
   }
 
-  // Convert BigInt to string to count the digits
-  const digitCount = nStr.length;
+  // Convert the number to a string to handle large numbers and fractional parts
+  const numStr = num.toString();
 
-  // The order of magnitude is the number of digits minus 1
-  return digitCount - 1;
+  // Split the number into integer and fractional parts
+  const [integerPart, fractionalPart] = numStr.split('.');
+
+  // Handle integer parts
+  if (BigInt(integerPart) !== 0n) {
+    return integerPart.length - 1;
+  }
+
+  // Handle fractional parts
+  if (fractionalPart) {
+    // Find the first non-zero digit in the fractional part
+    for (let i = 0; i < fractionalPart.length; i++) {
+      if (fractionalPart[i] !== '0') {
+        return -(i + 1);
+      }
+    }
+  }
+
+  // If the fractional part is all zeros, return a very negative number
+  return -Infinity;
 }
 
 // Equality function
