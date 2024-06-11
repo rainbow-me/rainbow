@@ -3,7 +3,14 @@ import { SharedValue, convertToRGBA, isColor } from 'react-native-reanimated';
 
 import * as i18n from '@/languages';
 import { globalColors } from '@/design-system';
-import { ETH_COLOR, ETH_COLOR_DARK, SCRUBBER_WIDTH, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import {
+  ETH_COLOR,
+  ETH_COLOR_DARK,
+  MAXIMUM_SIGNIFICANT_DECIMALS,
+  SCRUBBER_WIDTH,
+  SLIDER_WIDTH,
+  STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS,
+} from '@/__swaps__/screens/Swap/constants';
 import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { ChainId, ChainName } from '@/__swaps__/types/chains';
 import { RainbowConfig } from '@/model/remoteConfig';
@@ -221,41 +228,54 @@ export function trimTrailingZeros(value: string) {
   return withTrimmedZeros.endsWith('.') ? withTrimmedZeros.slice(0, -1) : withTrimmedZeros;
 }
 
+export function precisionBasedOffMagnitude(amount: number | string, isStablecoin = false): number {
+  'worklet';
+
+  const magnitude = -Number(floorWorklet(sumWorklet(log10Worklet(amount), 0)));
+  // don't let stablecoins go beneath 2nd order
+  if (magnitude < -2 && isStablecoin) {
+    return -STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS;
+  }
+  return magnitude;
+}
+
 export function valueBasedDecimalFormatter({
   amount,
   usdTokenPrice,
+  assetBalanceDisplay,
   roundingMode,
   precisionAdjustment,
   isStablecoin,
   stripSeparators = true,
+  isMaxAmount = false,
 }: {
   amount: number | string;
   usdTokenPrice: number;
+  assetBalanceDisplay?: string;
   roundingMode?: 'up' | 'down';
   precisionAdjustment?: number;
   isStablecoin?: boolean;
   stripSeparators?: boolean;
+  isMaxAmount?: boolean;
 }): string {
   'worklet';
 
-  function precisionBasedOffMagnitude(amount: number | string): number {
-    const magnitude = -Number(floorWorklet(sumWorklet(log10Worklet(amount), 1)));
-    return (precisionAdjustment ?? 0) + magnitude;
-  }
-
   function calculateDecimalPlaces(usdTokenPrice: number): number {
-    const fallbackDecimalPlaces = 2;
+    const fallbackDecimalPlaces = STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS;
     if (usdTokenPrice <= 0) {
       return fallbackDecimalPlaces;
     }
     const unitsForOneCent = 0.01 / usdTokenPrice;
     if (unitsForOneCent >= 1) {
-      return 0;
+      return isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0;
     }
-    return Math.max(Math.ceil(Math.log10(1 / unitsForOneCent)) + precisionBasedOffMagnitude(amount), 0);
+    return Math.max(
+      Math.ceil(Math.log10(1 / unitsForOneCent)) + (precisionAdjustment ?? 0),
+      isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0
+    );
   }
 
-  const decimalPlaces = isStablecoin ? 2 : calculateDecimalPlaces(usdTokenPrice);
+  const decimalPlaces = calculateDecimalPlaces(usdTokenPrice);
 
   let roundedAmount;
   const factor = Math.pow(10, decimalPlaces);
@@ -270,10 +290,35 @@ export function valueBasedDecimalFormatter({
     roundedAmount = divWorklet(roundWorklet(mulWorklet(amount, factor)), factor);
   }
 
+  const maximumFractionDigits = () => {
+    // if we're selling max amount, we want to match what's displayed on the balance badge
+    // let's base the decimal places based on that (capped at 6)
+    if (isMaxAmount && assetBalanceDisplay) {
+      const decimals = assetBalanceDisplay.split('.');
+      if (decimals.length > 1) {
+        const [, decimalPlacesFromDisplay] = decimals;
+        if (decimalPlacesFromDisplay.length < STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS && isStablecoin) {
+          return STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS;
+        }
+
+        return Math.min(decimalPlacesFromDisplay.length, MAXIMUM_SIGNIFICANT_DECIMALS);
+      }
+    }
+
+    if (!isNaN(decimalPlaces)) {
+      return isStablecoin && decimalPlaces < STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS
+        ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS
+        : decimalPlaces;
+    }
+
+    // default to 6 precision if we have no calculation
+    return MAXIMUM_SIGNIFICANT_DECIMALS;
+  };
+
   // Format the number to add separators and trim trailing zeros
   const numberFormatter = new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: !isNaN(decimalPlaces) ? decimalPlaces : 2, // Allow up to the required precision
+    minimumFractionDigits: isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0,
+    maximumFractionDigits: maximumFractionDigits(),
     useGrouping: true,
   });
 
@@ -285,50 +330,71 @@ export function valueBasedDecimalFormatter({
 export function niceIncrementFormatter({
   incrementDecimalPlaces,
   inputAssetBalance,
+  assetBalanceDisplay,
   inputAssetUsdPrice,
   niceIncrement,
   percentageToSwap,
   sliderXPosition,
   stripSeparators,
+  isStablecoin = false,
 }: {
   incrementDecimalPlaces: number;
   inputAssetBalance: number | string;
+  assetBalanceDisplay: string;
   inputAssetUsdPrice: number;
   niceIncrement: number | string;
   percentageToSwap: number;
   sliderXPosition: number;
   stripSeparators?: boolean;
+  isStablecoin?: boolean;
 }) {
   'worklet';
+
   if (percentageToSwap === 0) return '0';
-  if (percentageToSwap === 0.25)
+  if (percentageToSwap === 0.25) {
+    const amount = mulWorklet(inputAssetBalance, 0.25);
     return valueBasedDecimalFormatter({
-      amount: mulWorklet(inputAssetBalance, 0.25),
+      amount,
       usdTokenPrice: inputAssetUsdPrice,
+      assetBalanceDisplay,
       roundingMode: 'up',
-      precisionAdjustment: -3,
+      precisionAdjustment: precisionBasedOffMagnitude(amount, isStablecoin),
+      isStablecoin,
     });
-  if (percentageToSwap === 0.5)
+  }
+  if (percentageToSwap === 0.5) {
+    const amount = mulWorklet(inputAssetBalance, 0.5);
     return valueBasedDecimalFormatter({
-      amount: mulWorklet(inputAssetBalance, 0.5),
+      amount,
       usdTokenPrice: inputAssetUsdPrice,
+      assetBalanceDisplay,
       roundingMode: 'up',
-      precisionAdjustment: -3,
+      precisionAdjustment: precisionBasedOffMagnitude(amount, isStablecoin),
+      isStablecoin,
     });
-  if (percentageToSwap === 0.75)
+  }
+  if (percentageToSwap === 0.75) {
+    const amount = mulWorklet(inputAssetBalance, 0.75);
     return valueBasedDecimalFormatter({
-      amount: mulWorklet(inputAssetBalance, 0.75),
+      amount,
       usdTokenPrice: inputAssetUsdPrice,
+      assetBalanceDisplay,
       roundingMode: 'up',
-      precisionAdjustment: -3,
+      precisionAdjustment: precisionBasedOffMagnitude(amount, isStablecoin),
+      isStablecoin,
     });
-  if (percentageToSwap === 1)
+  }
+  if (percentageToSwap === 1) {
     return valueBasedDecimalFormatter({
       amount: inputAssetBalance,
       usdTokenPrice: inputAssetUsdPrice,
-      roundingMode: 'up',
+      assetBalanceDisplay,
+      isStablecoin,
+      isMaxAmount: true,
     });
+  }
 
+  const decimals = isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : incrementDecimalPlaces;
   const exactIncrement = divWorklet(inputAssetBalance, 100);
   const isIncrementExact = equalWorklet(niceIncrement, exactIncrement);
   const numberOfIncrements = divWorklet(inputAssetBalance, niceIncrement);
@@ -344,12 +410,12 @@ export function niceIncrementFormatter({
 
   const rawAmount = mulWorklet(roundWorklet(divWorklet(mulWorklet(percentage, inputAssetBalance), niceIncrement)), niceIncrement);
 
-  const amountToFixedDecimals = toFixedWorklet(rawAmount, incrementDecimalPlaces);
+  const amountToFixedDecimals = toFixedWorklet(rawAmount, decimals);
 
   const formattedAmount = `${Number(amountToFixedDecimals).toLocaleString('en-US', {
     useGrouping: true,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 8,
+    minimumFractionDigits: isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0,
+    maximumFractionDigits: MAXIMUM_SIGNIFICANT_DECIMALS,
   })}`;
 
   if (stripSeparators) return stripCommas(formattedAmount);
