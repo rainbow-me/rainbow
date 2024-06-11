@@ -289,7 +289,7 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
     }),
     serializer: serializeUserAssetsState,
     storageKey: 'userAssets',
-    version: 194,
+    version: 3,
   }
 );
 
