@@ -33,7 +33,7 @@ export interface UserAssetsState {
   searchCache: Map<string, UniqueId[]>;
   userAssets: Map<UniqueId, ParsedSearchAsset>;
   getBalanceSortedChainList: () => ChainId[];
-  getFilteredUserAssetIds: (query?: string) => UniqueId[];
+  getFilteredUserAssetIds: () => UniqueId[];
   getHighestValueAsset: () => ParsedSearchAsset | null;
   getUserAsset: (uniqueId: UniqueId) => ParsedSearchAsset | null;
   getUserAssets: () => ParsedSearchAsset[];
