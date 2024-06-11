@@ -78,7 +78,7 @@ export const CoinRow = memo(function CoinRow({ isFavorite, onPress, output, uniq
   if (!address || !chainId) return null;
 
   return (
-    <Box style={{ height: 56, width: '100%' }}>
+    <Box style={{ height: COIN_ROW_WITH_PADDING_HEIGHT, width: '100%' }}>
       <Columns alignVertical="center">
         <Column>
           <ButtonPressAnimation disallowInterruption onPress={output ? onPress : () => onPress(inputAsset || null)} scaleTo={0.95}>
