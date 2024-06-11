@@ -34,7 +34,7 @@ import { analyticsV2 } from '@/analytics';
 import { divWorklet, equalWorklet, greaterThanWorklet, mulWorklet, toFixedWorklet } from '@/__swaps__/safe-math/SafeMath';
 
 function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetWithColors | null) {
-  const initialBalance = Number(initialSelectedInputAsset?.balance.amount) ?? 0;
+  const initialBalance = Number(initialSelectedInputAsset?.balance.amount) || 0;
   const initialNiceIncrement = findNiceIncrement(initialBalance);
   const initialDecimalPlaces = countDecimalPlaces(initialNiceIncrement);
 
@@ -168,7 +168,6 @@ export function useSwapInputsController({
     if (inputMethod.value === 'outputAmount' || typeof inputValues.value.outputAmount === 'string') {
       return addCommasToNumber(inputValues.value.outputAmount, '0');
     }
-
     return valueBasedDecimalFormatter({
       amount: inputValues.value.outputAmount,
       usdTokenPrice: outputNativePrice.value,

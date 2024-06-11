@@ -12,7 +12,6 @@ const FabSizeWithPadding = FloatingActionButtonSize + FabWrapperBottomPosition *
 const AssetList = ({
   accentColor,
   hideHeader,
-  isEmpty,
   isLoading,
   isWalletEthZero,
   network,

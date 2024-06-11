@@ -1,8 +1,9 @@
 import { FasterImageView, ImageOptions } from '@candlefinance/faster-image';
 import * as React from 'react';
-import { StyleSheet } from 'react-native';
+import { PixelRatio, StyleSheet } from 'react-native';
 import FastImage, { FastImageProps, Source } from 'react-native-fast-image';
 import { maybeSignSource } from '../../handlers/imgix';
+import { IS_IOS } from '@/env';
 
 export type ImgixImageProps = FastImageProps & {
   readonly Component?: React.ElementType;
@@ -29,6 +30,8 @@ type HiddenImgixImageProps = {
 };
 type MergedImgixImageProps = ImgixImageProps & HiddenImgixImageProps;
 
+const PIXEL_RATIO = PixelRatio.get();
+
 // ImgixImage must be a class Component to support Animated.createAnimatedComponent.
 class ImgixImage extends React.PureComponent<MergedImgixImageProps, ImgixImageProps & { retryCount: number }> {
   static getDerivedStateFromProps(props: MergedImgixImageProps) {
@@ -49,7 +52,8 @@ class ImgixImage extends React.PureComponent<MergedImgixImageProps, ImgixImagePr
         ? {
             source: {
               ...DEFAULT_FASTER_IMAGE_CONFIG,
-              borderRadius: fasterImageStyle?.borderRadius,
+              borderRadius:
+                !fasterImageStyle?.borderRadius || IS_IOS ? fasterImageStyle?.borderRadius : fasterImageStyle.borderRadius * PIXEL_RATIO,
               resizeMode: resizeMode && resizeMode !== 'stretch' ? resizeMode : DEFAULT_FASTER_IMAGE_CONFIG.resizeMode,
               ...fasterImageConfig,
               url: !!source && typeof source === 'object' ? maybeSignSource(source, options)?.uri : source,

@@ -16,7 +16,7 @@ import {
 import { add, subtract } from '@/__swaps__/utils/numbers';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
-import { Box, Inline, Separator, Stack, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { Bleed, Box, Inline, Separator, Stack, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { lessThan } from '@/helpers/utilities';
 import { useNavigation } from '@/navigation';
@@ -24,11 +24,14 @@ import Routes from '@/navigation/routesNames';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { upperFirst } from 'lodash';
+import { gasUtils } from '@/utils';
 import { formatNumber } from '../hooks/formatNumber';
 import { GasSettings, getCustomGasSettings, setCustomGasSettings, useCustomGasStore } from '../hooks/useCustomGas';
 import { setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { EstimatedSwapGasFee } from './EstimatedSwapGasFee';
 import { GasSpeed } from '@/__swaps__/types/gas';
+
+const { GAS_TRENDS } = gasUtils;
 
 const MINER_TIP_TYPE = 'minerTip';
 const MAX_BASE_FEE_TYPE = 'maxBaseFee';
@@ -137,9 +140,12 @@ function CurrentBaseFee() {
   const { isDarkMode } = useColorMode();
   const { navigate } = useNavigation();
 
+  const label = useForegroundColor('label');
+  const labelSecondary = useForegroundColor('labelSecondary');
+
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
   const { data: baseFee } = useBaseFee({ chainId, select: selectWeiToGwei });
-  const { data: gasTrend } = useGasTrend({ chainId });
+  const { data: gasTrend = 'notrend' } = useGasTrend({ chainId });
 
   const trendType = 'currentBaseFee' + upperFirst(gasTrend);
 
@@ -161,15 +167,30 @@ function CurrentBaseFee() {
       >
         {i18n.t(i18n.l.gas.current_base_fee)}
       </PressableLabel>
-      <Text
-        align="right"
-        color={isDarkMode ? 'labelSecondary' : 'label'}
-        size="15pt"
-        weight="heavy"
-        style={{ textTransform: 'capitalize' }}
-      >
-        {formatNumber(baseFee || '0')}
-      </Text>
+      <Bleed top="16px">
+        <Stack space="8px">
+          <Text
+            align="right"
+            color={{
+              custom: GAS_TRENDS[gasTrend].color,
+            }}
+            size="13pt"
+            weight="bold"
+            style={{ textTransform: 'capitalize' }}
+          >
+            {GAS_TRENDS[gasTrend].label}
+          </Text>
+          <Text
+            align="right"
+            color={{ custom: isDarkMode ? labelSecondary : label }}
+            size="15pt"
+            weight="heavy"
+            style={{ textTransform: 'capitalize' }}
+          >
+            {formatNumber(baseFee || '0')}
+          </Text>
+        </Stack>
+      </Bleed>
     </Inline>
   );
 }
@@ -277,9 +298,6 @@ function MaxTransactionFee() {
         <Inline horizontalSpace="4px">
           <Text color="labelTertiary" weight="semibold" size="15pt">
             {i18n.t(i18n.l.gas.max_transaction_fee)}
-          </Text>
-          <Text color="labelTertiary" size="13pt" weight="bold">
-            􀅴
           </Text>
         </Inline>
       </Inline>

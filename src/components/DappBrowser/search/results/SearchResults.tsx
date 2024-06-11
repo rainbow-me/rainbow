@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet } from 'react-native';
 import Animated, { SharedValue, useAnimatedReaction, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Bleed, Box, Inline, Inset, Stack, Text, TextIcon, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import { Dapp, useDappsContext } from '@/resources/metadata/dapps';
+import { Dapp, DappsContextProvider, useDappsContext } from '@/resources/metadata/dapps';
 import { useBrowserContext } from '../../BrowserContext';
 import { SEARCH_BAR_HEIGHT } from '../../search-input/SearchInput';
 import { useSearchContext } from '../SearchContext';
@@ -88,7 +88,6 @@ export const SearchResults = React.memo(function SearchResults({
   const { isDarkMode } = useColorMode();
   const { searchViewProgress } = useBrowserContext();
   const { inputRef, keyboardHeight, searchQuery, searchResults } = useSearchContext();
-  const { dapps } = useDappsContext();
 
   const separatorSecondary = useForegroundColor('separatorSecondary');
   const separatorTertiary = useForegroundColor('separatorTertiary');
@@ -101,20 +100,6 @@ export const SearchResults = React.memo(function SearchResults({
   const onPressX = useCallback(() => {
     inputRef?.current?.blur();
   }, [inputRef]);
-
-  useAnimatedReaction(
-    () => searchQuery.value,
-    (result, previous) => {
-      if (result !== previous && isFocused.value) {
-        searchResults.modify(value => {
-          const results = search(result, dapps, 4);
-          value.splice(0, value.length);
-          value.push(...results);
-          return value;
-        });
-      }
-    }
-  );
 
   const allResultsAnimatedStyle = useAnimatedStyle(() => ({
     display: searchQuery.value ? 'flex' : 'none',
@@ -143,94 +128,127 @@ export const SearchResults = React.memo(function SearchResults({
   }));
 
   return (
-    <Animated.View
-      style={[
-        styles.searchContainer,
-        isDarkMode ? styles.searchBackgroundDark : styles.searchBackgroundLight,
-        animatedSearchContainerStyle,
-      ]}
-    >
-      <Animated.View style={[styles.closeButton, closeButtonAnimatedStyle]}>
-        <Box
-          as={ButtonPressAnimation}
-          background="fill"
-          height={{ custom: 32 }}
-          width={{ custom: 32 }}
-          borderRadius={32}
-          alignItems="center"
-          justifyContent="center"
-          onPress={onPressX}
-          scaleTo={0.8}
-        >
-          <Text weight="heavy" color="labelSecondary" size="icon 15px" align="center">
-            􀆄
-          </Text>
-        </Box>
-      </Animated.View>
-      <Animated.View style={[styles.emptyStateContainer, emptyStateAnimatedStyle]}>
-        <Stack alignHorizontal="center" space="24px">
-          <Text align="center" color="labelQuaternary" size="34pt" weight="heavy">
-            􀊫
-          </Text>
-          <Text align="center" color="labelQuaternary" size="17pt" weight="heavy">
-            {i18n.t(i18n.l.dapp_browser.search.find_apps_and_more)}
-          </Text>
-        </Stack>
-      </Animated.View>
-      <Animated.View style={allResultsAnimatedStyle}>
-        <ScrollView style={{ paddingHorizontal: 16 }} contentContainerStyle={{ paddingBottom: SEARCH_BAR_HEIGHT }}>
-          <Inset>
-            <Stack space="32px">
-              <Box paddingTop={{ custom: 42 }}>
-                <SearchResult index={0} goToUrl={goToUrl} />
-                <Box
-                  as={Animated.View}
-                  borderRadius={18}
-                  background="fill"
-                  style={[
-                    suggestedGoogleSearchAnimatedStyle,
-                    {
-                      borderWidth: THICK_BORDER_WIDTH,
-                      borderColor: isDarkMode ? separatorSecondary : separatorTertiary,
-                      borderCurve: 'continuous',
-                      overflow: 'hidden',
-                    },
-                  ]}
-                >
-                  <Bleed space={{ custom: THICK_BORDER_WIDTH }}>
-                    <GoogleSearchResult goToUrl={goToUrl} />
-                  </Bleed>
-                </Box>
-              </Box>
-              <Animated.View style={moreResultsAnimatedStyle}>
-                <Stack space="12px">
-                  <Inset horizontal="8px">
-                    <Inline space="6px" alignVertical="center">
-                      <TextIcon color="labelSecondary" size="icon 15px" weight="heavy" width={20}>
-                        􀊫
-                      </TextIcon>
-                      <Text color="label" size="20pt" weight="heavy">
-                        {i18n.t(i18n.l.dapp_browser.search.more_results)}
-                      </Text>
-                    </Inline>
-                  </Inset>
-                  <Box gap={6}>
-                    <GoogleSearchResult goToUrl={goToUrl} />
-                    <SearchResult index={1} goToUrl={goToUrl} />
-                    <SearchResult index={2} goToUrl={goToUrl} />
-                    <SearchResult index={3} goToUrl={goToUrl} />
-                    <SearchResult index={4} goToUrl={goToUrl} />
-                    <SearchResult index={5} goToUrl={goToUrl} />
+    <>
+      <DappsContextProvider>
+        <DappsDataSync isFocused={isFocused} searchQuery={searchQuery} searchResults={searchResults} />
+      </DappsContextProvider>
+      <Animated.View
+        style={[
+          styles.searchContainer,
+          isDarkMode ? styles.searchBackgroundDark : styles.searchBackgroundLight,
+          animatedSearchContainerStyle,
+        ]}
+      >
+        <Animated.View style={[styles.closeButton, closeButtonAnimatedStyle]}>
+          <Box
+            as={ButtonPressAnimation}
+            background="fill"
+            height={{ custom: 32 }}
+            width={{ custom: 32 }}
+            borderRadius={32}
+            alignItems="center"
+            justifyContent="center"
+            onPress={onPressX}
+            scaleTo={0.8}
+          >
+            <Text weight="heavy" color="labelSecondary" size="icon 15px" align="center">
+              􀆄
+            </Text>
+          </Box>
+        </Animated.View>
+        <Animated.View style={[styles.emptyStateContainer, emptyStateAnimatedStyle]}>
+          <Stack alignHorizontal="center" space="24px">
+            <Text align="center" color="labelQuaternary" size="34pt" weight="heavy">
+              􀊫
+            </Text>
+            <Text align="center" color="labelQuaternary" size="17pt" weight="heavy">
+              {i18n.t(i18n.l.dapp_browser.search.find_apps_and_more)}
+            </Text>
+          </Stack>
+        </Animated.View>
+        <Animated.View style={allResultsAnimatedStyle}>
+          <ScrollView style={{ paddingHorizontal: 16 }} contentContainerStyle={{ paddingBottom: SEARCH_BAR_HEIGHT }}>
+            <Inset>
+              <Stack space="32px">
+                <Box paddingTop={{ custom: 42 }}>
+                  <SearchResult index={0} goToUrl={goToUrl} />
+                  <Box
+                    as={Animated.View}
+                    borderRadius={18}
+                    background="fill"
+                    style={[
+                      suggestedGoogleSearchAnimatedStyle,
+                      {
+                        borderWidth: THICK_BORDER_WIDTH,
+                        borderColor: isDarkMode ? separatorSecondary : separatorTertiary,
+                        borderCurve: 'continuous',
+                        overflow: 'hidden',
+                      },
+                    ]}
+                  >
+                    <Bleed space={{ custom: THICK_BORDER_WIDTH }}>
+                      <GoogleSearchResult goToUrl={goToUrl} />
+                    </Bleed>
                   </Box>
-                </Stack>
-              </Animated.View>
-            </Stack>
-          </Inset>
-        </ScrollView>
+                </Box>
+                <Animated.View style={moreResultsAnimatedStyle}>
+                  <Stack space="12px">
+                    <Inset horizontal="8px">
+                      <Inline space="6px" alignVertical="center">
+                        <TextIcon color="labelSecondary" size="icon 15px" weight="heavy" width={20}>
+                          􀊫
+                        </TextIcon>
+                        <Text color="label" size="20pt" weight="heavy">
+                          {i18n.t(i18n.l.dapp_browser.search.more_results)}
+                        </Text>
+                      </Inline>
+                    </Inset>
+                    <Box gap={6}>
+                      <GoogleSearchResult goToUrl={goToUrl} />
+                      <SearchResult index={1} goToUrl={goToUrl} />
+                      <SearchResult index={2} goToUrl={goToUrl} />
+                      <SearchResult index={3} goToUrl={goToUrl} />
+                      <SearchResult index={4} goToUrl={goToUrl} />
+                      <SearchResult index={5} goToUrl={goToUrl} />
+                    </Box>
+                  </Stack>
+                </Animated.View>
+              </Stack>
+            </Inset>
+          </ScrollView>
+        </Animated.View>
       </Animated.View>
-    </Animated.View>
+    </>
   );
 });
+
+const DappsDataSync = ({
+  isFocused,
+  searchQuery,
+  searchResults,
+}: {
+  isFocused: SharedValue<boolean>;
+  searchQuery: SharedValue<string>;
+  searchResults: SharedValue<Dapp[]>;
+}) => {
+  const { dapps } = useDappsContext();
+
+  useAnimatedReaction(
+    () => searchQuery.value,
+    (result, previous) => {
+      if (result !== previous && isFocused.value) {
+        searchResults.modify(value => {
+          const results = search(result, dapps, 4);
+          value.splice(0, value.length);
+          value.push(...results);
+          return value;
+        });
+      }
+    }
+  );
+
+  return null;
+};
 
 const styles = StyleSheet.create({
   closeButton: {
