@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import React from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { PixelRatio, StyleSheet, View, ViewStyle } from 'react-native';
 import { borders } from '@/styles';
 import { useTheme } from '@/theme';
 import Animated, { SharedValue, useAnimatedProps, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -11,7 +11,9 @@ import { AnimatedChainImage } from './AnimatedChainImage';
 import { fadeConfig } from '../constants';
 import { SwapCoinIconTextFallback } from './SwapCoinIconTextFallback';
 import { Box } from '@/design-system';
-import { IS_ANDROID } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
+
+const PIXEL_RATIO = PixelRatio.get();
 
 const fallbackIconStyle = {
   ...borders.buildCircleAsObject(32),
@@ -49,7 +51,7 @@ export const AnimatedSwapCoinIcon = React.memo(function FeedCoinIcon({
     return {
       source: {
         ...DEFAULT_FASTER_IMAGE_CONFIG,
-        borderRadius: IS_ANDROID ? size / 2 : undefined,
+        borderRadius: IS_ANDROID ? (size / 2) * PIXEL_RATIO : undefined,
         transitionDuration: 0,
         url: asset.value?.icon_url ?? '',
       },
@@ -118,7 +120,7 @@ export const AnimatedSwapCoinIcon = React.memo(function FeedCoinIcon({
             style={[
               sx.coinIcon,
               {
-                borderRadius: size / 2,
+                borderRadius: IS_IOS ? size / 2 : undefined,
                 height: size,
                 width: size,
               },

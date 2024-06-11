@@ -1,15 +1,35 @@
 // Utility function to remove the decimal point and keep track of the number of decimal places
 const removeDecimalWorklet = (num: string): [bigint, number] => {
   'worklet';
-  const parts = num.split('.');
-  const decimalPlaces = parts.length === 2 ? parts[1].length : 0;
-  const bigIntNum = BigInt(parts.join(''));
+  let decimalPlaces = 0;
+  let bigIntNum: bigint;
+
+  if (/[eE]/.test(num)) {
+    const [base, exponent] = num.split(/[eE]/);
+    const exp = Number(exponent);
+    const parts = base.split('.');
+    const baseDecimalPlaces = parts.length === 2 ? parts[1].length : 0;
+    const bigIntBase = BigInt(parts.join(''));
+
+    if (exp >= 0) {
+      decimalPlaces = baseDecimalPlaces - exp;
+      bigIntNum = bigIntBase * BigInt(10) ** BigInt(exp);
+    } else {
+      decimalPlaces = baseDecimalPlaces - exp;
+      bigIntNum = bigIntBase;
+    }
+  } else {
+    const parts = num.split('.');
+    decimalPlaces = parts.length === 2 ? parts[1].length : 0;
+    bigIntNum = BigInt(parts.join(''));
+  }
+
   return [bigIntNum, decimalPlaces];
 };
 
 const isNumberStringWorklet = (value: string): boolean => {
   'worklet';
-  return /^-?\d+(\.\d+)?$/.test(value);
+  return /^-?\d+(\.\d+)?([eE][-+]?\d+)?$/.test(value);
 };
 
 const isZeroWorklet = (value: string): boolean => {
@@ -43,7 +63,11 @@ const formatResultWorklet = (result: bigint): string => {
 // Helper function to handle string and number input types
 const toStringWorklet = (value: string | number): string => {
   'worklet';
-  return typeof value === 'number' ? value.toString() : value;
+  const ret = typeof value === 'number' ? value.toString() : value;
+  if (/^\d+\.$/.test(ret)) {
+    return ret.slice(0, -1);
+  }
+  return ret;
 };
 
 // Converts a numeric string to a scaled integer string, preserving the specified decimal places

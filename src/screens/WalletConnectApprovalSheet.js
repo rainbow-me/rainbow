@@ -430,7 +430,7 @@ export default function WalletConnectApprovalSheet() {
             <Divider color={colors.rowDividerLight} inset={[0, 84]} />
           </Centered>
           {isScam && (
-            <Box paddingHorizontal={'16px'}>
+            <Box paddingHorizontal={'16px'} testID={'malicious-dapp-warning'}>
               <InfoAlert
                 rightIcon={
                   <Text size="15pt" color={{ custom: accentColor }}>

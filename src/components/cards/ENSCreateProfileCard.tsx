@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import ENSAvatarGrid from '../../assets/ensAvatarGrid.png';
 import ENSIcon from '../../assets/ensIcon.png';
 import { useNavigation } from '../../navigation/Navigation';
@@ -33,8 +33,15 @@ export const ENSCreateProfileCard = () => {
   // 40 represents the horizontal padding outside the card
   const imageWidth = deviceWidth - 40;
 
-  const handlePress = () => {
+  const { uniqueDomain } = useAccountENSDomains();
+
+  const handlePress = useCallback(() => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
+      if (uniqueDomain?.name) {
+        prefetchENSAvatar(uniqueDomain.name);
+        prefetchENSRecords(uniqueDomain.name);
+      }
+
       analyticsV2.track(analyticsV2.event.cardPressed, {
         cardName: 'ENSCreateProfileCard',
         routeName,
@@ -46,16 +53,7 @@ export const ENSCreateProfileCard = () => {
     } else {
       watchingAlert();
     }
-  };
-
-  const { uniqueDomain } = useAccountENSDomains();
-
-  useEffect(() => {
-    if (uniqueDomain?.name) {
-      prefetchENSAvatar(uniqueDomain.name);
-      prefetchENSRecords(uniqueDomain.name);
-    }
-  }, [uniqueDomain]);
+  }, [isReadOnlyWallet, navigate, routeName, uniqueDomain?.name]);
 
   return (
     <ColorModeProvider value="lightTinted">

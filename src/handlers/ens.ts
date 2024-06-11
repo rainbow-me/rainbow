@@ -463,24 +463,6 @@ export const fetchAccountPrimary = async (accountAddress: string) => {
   };
 };
 
-export function prefetchENSIntroData() {
-  const ensMarqueeQueryData = queryClient.getQueryData<{
-    ensMarquee: EnsMarqueeAccount[];
-  }>([ENS_MARQUEE_QUERY_KEY]);
-
-  if (ensMarqueeQueryData?.ensMarquee) {
-    const ensMarqueeAccounts = ensMarqueeQueryData.ensMarquee.map((account: EnsMarqueeAccount) => account.name);
-
-    for (const name of ensMarqueeAccounts) {
-      prefetchENSAddress({ name }, { staleTime: Infinity });
-      prefetchENSAvatar(name, { cacheFirst: true });
-      prefetchENSCover(name, { cacheFirst: true });
-      prefetchENSRecords(name, { cacheFirst: true });
-      prefetchFirstTransactionTimestamp({ addressOrName: name });
-    }
-  }
-}
-
 export const estimateENSCommitGasLimit = async ({ name, ownerAddress, duration, rentPrice, salt }: ENSActionParameters) =>
   estimateENSTransactionGasLimit({
     duration,
