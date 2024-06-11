@@ -157,6 +157,7 @@ const TabViewScrollView = ({ children }: { children: React.ReactNode }) => {
       pinchGestureEnabled={false}
       ref={scrollViewRef}
       showsVerticalScrollIndicator={false}
+      testID={'browser-screen'}
     >
       <Animated.View style={[styles.scrollViewHeight, { height: scrollViewHeight, transform: [{ translateY: jitterCorrection }] }]}>
         {children}

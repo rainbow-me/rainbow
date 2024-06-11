@@ -54,14 +54,6 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   const { startRegistration } = useENSRegistration();
   const { setNextEmoji } = useUpdateEmoji();
 
-  useEffect(() => {
-    if (accountENS) {
-      prefetchENSAvatar(accountENS);
-      prefetchENSCover(accountENS);
-      prefetchENSRecords(accountENS);
-    }
-  }, [accountENS]);
-
   const onAvatarRemovePhoto = useCallback(async () => {
     const newWallets: typeof wallets = {
       ...wallets,
@@ -256,6 +248,12 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   }, [accountENS, navigate]);
 
   const onAvatarPress = useCallback(() => {
+    if (accountENS) {
+      prefetchENSAvatar(accountENS);
+      prefetchENSCover(accountENS);
+      prefetchENSRecords(accountENS);
+    }
+
     if (hasENSAvatar && accountENS) {
       onAvatarPressProfile();
     } else {

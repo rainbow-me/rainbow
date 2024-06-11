@@ -25,8 +25,8 @@ export const getGoerliNetworkObject = (): NetworkProperties => {
     },
 
     // this should be refactored to have less deps
-    getProvider: getProviderForNetwork(Network.goerli),
-    rpc: proxyRpcEndpoint(goerli.id),
+    getProvider: () => getProviderForNetwork(Network.goerli),
+    rpc: () => proxyRpcEndpoint(goerli.id),
     balanceCheckerAddress: '0xf3352813b612a2d198e437691557069316b84ebe',
 
     // features

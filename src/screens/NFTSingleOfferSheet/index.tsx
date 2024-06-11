@@ -185,7 +185,7 @@ export function NFTSingleOfferSheet() {
         // @ts-ignore
         account: accountAddress,
         chain: networkObj,
-        transport: http(networkObj.rpc),
+        transport: http(networkObj.rpc()),
       });
       getClient()?.actions.acceptOffer({
         items: [
@@ -285,7 +285,7 @@ export function NFTSingleOfferSheet() {
     const signer = createWalletClient({
       account,
       chain: networkObj,
-      transport: http(networkObj.rpc),
+      transport: http(networkObj.rpc()),
     });
     const nonce = await getNextNonce({ address: accountAddress, network });
     try {

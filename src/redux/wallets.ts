@@ -207,8 +207,6 @@ export const walletsLoadState =
         type: WALLETS_LOAD,
       });
 
-      dispatch(fetchWalletNames());
-      profilesEnabled && dispatch(fetchWalletENSAvatars());
       return wallets;
     } catch (error) {
       logger.error(new RainbowError('Exception during walletsLoadState'), {
