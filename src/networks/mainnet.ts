@@ -25,8 +25,8 @@ export const getMainnetNetworkObject = (): NetworkProperties => {
     },
 
     // this should be refactored to have less deps
-    getProvider: getProviderForNetwork(Network.mainnet),
-    rpc: proxyRpcEndpoint(mainnet.id),
+    getProvider: () => getProviderForNetwork(Network.mainnet),
+    rpc: () => proxyRpcEndpoint(mainnet.id),
     balanceCheckerAddress: '0x4dcf4562268dd384fe814c00fad239f06c2a0c2b',
 
     // features

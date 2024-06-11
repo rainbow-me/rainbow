@@ -374,6 +374,7 @@
     "webpack-cli": "5.1.4"
   },
   "resolutions": {
+    "**/braces": "3.0.3",
     "**/async": "2.6.4",
     "**/zod": "3.22.3",
     "**/file-type": "16.5.4",

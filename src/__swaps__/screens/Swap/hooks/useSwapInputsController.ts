@@ -32,7 +32,7 @@ import { queryClient } from '@/react-query';
 import { divWorklet, equalWorklet, greaterThanWorklet, mulWorklet, toFixedWorklet } from '@/__swaps__/safe-math/SafeMath';
 
 function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetWithColors | null) {
-  const initialBalance = Number(initialSelectedInputAsset?.balance.amount) ?? 0;
+  const initialBalance = Number(initialSelectedInputAsset?.balance.amount) || 0;
   const initialNiceIncrement = findNiceIncrement(initialBalance);
   const initialDecimalPlaces = countDecimalPlaces(initialNiceIncrement);
 
