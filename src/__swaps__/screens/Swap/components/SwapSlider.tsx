@@ -401,7 +401,6 @@ export const SwapSlider = ({
                 </Inline>
                 <Column width="content">
                   <GestureHandlerV1Button
-                    // activeOpacity={0.4}
                     style={{ margin: -12, padding: 12 }}
                     onPressWorklet={() => {
                       'worklet';
