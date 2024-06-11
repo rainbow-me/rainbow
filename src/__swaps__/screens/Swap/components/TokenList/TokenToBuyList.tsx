@@ -15,7 +15,7 @@ import { ChainId } from '@/__swaps__/types/chains';
 import { SearchAsset } from '@/__swaps__/types/search';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
-import { getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
+import { getChainColorWorklet, getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
 import { ChainSelection } from './ChainSelection';
@@ -54,27 +54,6 @@ const SECTION_HEADER_INFO: { [id in AssetToBuySectionId]: SectionHeaderProp } = 
     symbol: '􀊫',
     color: palettes.dark.foregroundColors.blue,
   },
-};
-
-const getColorWorklet = (isDarkMode: boolean) => {
-  'worklet';
-  return palettes[isDarkMode ? 'dark' : 'light'].foregroundColors;
-};
-
-const getChainColorWorklet = (isDarkMode: boolean) => {
-  'worklet';
-  return {
-    [ChainId.mainnet]: getColorWorklet(isDarkMode).mainnet,
-    [ChainId.arbitrum]: getColorWorklet(isDarkMode).arbitrum,
-    [ChainId.optimism]: getColorWorklet(isDarkMode).optimism,
-    [ChainId.polygon]: getColorWorklet(isDarkMode).polygon,
-    [ChainId.base]: getColorWorklet(isDarkMode).base,
-    [ChainId.zora]: getColorWorklet(isDarkMode).zora,
-    [ChainId.bsc]: getColorWorklet(isDarkMode).bsc,
-    [ChainId.avalanche]: getColorWorklet(isDarkMode).avalanche,
-    [ChainId.blast]: getColorWorklet(isDarkMode).blast,
-    [ChainId.degen]: getColorWorklet(isDarkMode).degen,
-  };
 };
 
 export type HeaderItem = { listItemType: 'header'; id: AssetToBuySectionId; data: SearchAsset[] };
@@ -209,7 +188,7 @@ const BridgeHeaderIcon = memo(function BridgeHeaderIcon() {
 
   const iconColor = useAnimatedStyle(() => {
     return {
-      color: withTiming(getChainColorWorklet(isDarkMode)[selectedOutputChainId.value || ChainId.mainnet], TIMING_CONFIGS.fastFadeConfig),
+      color: withTiming(getChainColorWorklet(selectedOutputChainId.value || ChainId.mainnet, isDarkMode), TIMING_CONFIGS.fastFadeConfig),
     };
   });
 

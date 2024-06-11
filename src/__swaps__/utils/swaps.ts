@@ -3,6 +3,7 @@ import { SharedValue, convertToRGBA, isColor } from 'react-native-reanimated';
 
 import * as i18n from '@/languages';
 import { globalColors } from '@/design-system';
+import { ForegroundColor, palettes } from '@/design-system/color/palettes';
 import {
   ETH_COLOR,
   ETH_COLOR_DARK,
@@ -524,6 +525,39 @@ export const extractColorValueForColors = ({
     textColor: getTextColor(highContrastColor),
     nativePrice: undefined,
   };
+};
+
+export const getColorWorklet = (color: ForegroundColor, isDarkMode: boolean) => {
+  'worklet';
+  return palettes[isDarkMode ? 'dark' : 'light'].foregroundColors[color];
+};
+
+export const getChainColorWorklet = (chainId: ChainId, isDarkMode: boolean): string => {
+  'worklet';
+  switch (chainId) {
+    case ChainId.mainnet:
+      return getColorWorklet('mainnet', isDarkMode);
+    case ChainId.arbitrum:
+      return getColorWorklet('arbitrum', isDarkMode);
+    case ChainId.optimism:
+      return getColorWorklet('optimism', isDarkMode);
+    case ChainId.polygon:
+      return getColorWorklet('polygon', isDarkMode);
+    case ChainId.base:
+      return getColorWorklet('base', isDarkMode);
+    case ChainId.zora:
+      return getColorWorklet('zora', isDarkMode);
+    case ChainId.bsc:
+      return getColorWorklet('bsc', isDarkMode);
+    case ChainId.avalanche:
+      return getColorWorklet('avalanche', isDarkMode);
+    case ChainId.blast:
+      return getColorWorklet('blast', isDarkMode);
+    case ChainId.degen:
+      return getColorWorklet('degen', isDarkMode);
+    default:
+      return getColorWorklet('mainnet', isDarkMode);
+  }
 };
 
 export const getQuoteServiceTimeWorklet = ({ quote }: { quote: Quote | CrosschainQuote }) => {
