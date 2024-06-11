@@ -1,87 +1,83 @@
+/** @type {Detox.DetoxConfig} */
 module.exports = {
   testRunner: {
-    $0: 'jest',
     args: {
-      config: 'e2e/jest.e2e.config.js',
-      _: ['e2e'],
+      $0: 'jest',
+      config: 'e2e/jest.config.js',
     },
-  },
-  devices: {
-    'ios.simulator': {
-      type: 'ios.simulator',
-      device: { type: 'iPhone 15 Pro' },
-    },
-    'android.attached': {
-      type: 'android.attached',
-      device: {
-        adbName: '.*', // any attached device
-      },
-    },
-    'android.emulator': {
-      type: 'android.emulator',
-      device: { avdName: 'Pixel_7_Pro_API_34' },
+    jest: {
+      setupTimeout: 120000,
     },
   },
   apps: {
-    'ios.release': {
-      type: 'ios.app',
-      binaryPath: 'ios/build/Build/Products/Release-iphonesimulator/Rainbow.app',
-      build:
-        'xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ios/build',
-    },
     'ios.debug': {
       type: 'ios.app',
       binaryPath: 'ios/build/Build/Products/Debug-iphonesimulator/Rainbow.app',
       build:
         'xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build',
     },
-    'android.release': {
-      type: 'android.apk',
-      binaryPath: './android/app/build/outputs/apk/release/app-release.apk',
-      build: 'cd android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && cd ..',
+    'ios.release': {
+      type: 'ios.app',
+      binaryPath: 'ios/build/Build/Products/Release-iphonesimulator/Rainbow.app',
+      build:
+        'xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ios/build',
     },
     'android.debug': {
       type: 'android.apk',
-      binaryPath: './android/app/build/outputs/apk/debug/app-debug.apk',
-      build: 'cd ./android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && cd ..',
+      binaryPath: 'android/app/build/outputs/apk/debug/app-debug.apk',
+      build: 'cd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug',
+      reversePorts: [8081],
+    },
+    'android.release': {
+      type: 'android.apk',
+      binaryPath: 'android/app/build/outputs/apk/release/app-release.apk',
+      build: 'cd android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release',
+    },
+  },
+  devices: {
+    simulator: {
+      type: 'ios.simulator',
+      device: {
+        type: 'iPhone 15 Pro',
+      },
+    },
+    attached: {
+      type: 'android.attached',
+      device: {
+        adbName: '.*',
+      },
+    },
+    emulator: {
+      type: 'android.emulator',
+      device: {
+        avdName: 'Pixel_3a_API_30_x86',
+      },
     },
   },
   configurations: {
-    'ios.sim.release': {
-      app: 'ios.release',
-      device: 'ios.simulator',
-      artifacts: {
-        plugins: {
-          screenshot: 'failing',
-        },
-      },
-      behavior: {
-        cleanup: {
-          shutdownDevice: false,
-        },
-      },
-    },
     'ios.sim.debug': {
+      device: 'simulator',
       app: 'ios.debug',
-      device: 'ios.simulator',
-      artifacts: {
-        plugins: {
-          screenshot: 'failing',
-        },
-      },
-      behavior: {
-        cleanup: {
-          shutdownDevice: false,
-        },
-      },
     },
-    'android.emu.release': {
+    'ios.sim.release': {
+      device: 'simulator',
+      app: 'ios.release',
+    },
+    'android.att.debug': {
+      device: 'attached',
+      app: 'android.debug',
+    },
+    'android.att.release': {
+      device: 'attached',
       app: 'android.release',
-      device: 'android.emulator',
     },
     'android.emu.debug': {
+      device: 'emulator',
       app: 'android.debug',
-      device: 'android.emulator',
+    },
+    'android.emu.release': {
+      device: 'emulator',
+      app: 'android.release',
     },
   },
 };

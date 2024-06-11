@@ -9,8 +9,12 @@ import {
   authenticatePin,
   delayTime,
   afterAllcleanApp,
+  tap,
 } from './helpers';
 import { WALLET_VARS } from './testVariables';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require('dotenv').config();
 
 const android = device.getPlatform() === 'android';
 

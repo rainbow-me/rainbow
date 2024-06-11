@@ -111,6 +111,9 @@ __generated__/
 # Test Coverage
 coverage
 
+# Jest
+.jest/
+
 # VSCode
 .vscode/
 

@@ -16,6 +16,19 @@ const android = device.getPlatform() === 'android';
 type Direction = 'up' | 'down' | 'left' | 'right' | 'top' | 'bottom';
 type Speed = 'fast' | 'slow';
 
+const blacklist = [
+  '.*api.thegraph.com.*',
+  '.*raw.githubusercontent.com.*',
+  '.*api.coingecko.com.*',
+  '.*rainbow.imgix.net.*',
+  '.*infura.io.*',
+  '.*rainbow.me.*',
+  '.*rainbowjiumask.dataplane.rudderstack.com*',
+  '.*rainbowme-res.cloudinary.com*',
+  '.*rainbow-proxy-rpc.rainbowdotme.workers.*',
+  '.*localhost:8081/assets/src/assets*.',
+];
+
 interface ProviderFunction {
   (): JsonRpcProvider;
   _instance?: JsonRpcProvider;
@@ -57,6 +70,9 @@ export async function importWalletFlow({ seedPhrase = true }: { seedPhrase: bool
 }
 
 export async function beforeAllcleanApp({ hardhat }: { hardhat?: boolean }) {
+  await device.clearKeychain();
+  await device.launchApp({ newInstance: true, delete: true });
+  await device.setURLBlacklist(blacklist);
   // sometimes i see tests failed from the get-go
   // giving an extra 5 to let things set up
   await delayTime('long');

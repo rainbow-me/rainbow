@@ -1,24 +1,25 @@
-/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
-const { pathsToModuleNameMapper } = require('ts-jest');
-const { compilerOptions } = require('./tsconfig');
-
+/** @type {import('@jest/types').Config.InitialOptions} */
 module.exports = {
-  preset: 'react-native',
-  setupFiles: ['./config/test/jest-setup.js'],
-  testPathIgnorePatterns: ['node_modules', 'e2e'],
-  globals: {
-    'ts-jest': {
-      tsconfig: 'tsconfig.jest.json',
-    },
-  },
+  preset: 'ts-jest',
   transform: {
-    '\\.tsx?$': 'ts-jest',
+    '^.+\\.tsx?$': 'ts-jest',
+    '^.+\\.jsx?$': 'ts-jest',
+    '^.+\\.js$': 'ts-jest',
   },
+  testEnvironment: 'node',
+  testTimeout: 120_000,
+  maxWorkers: 1,
+  globalSetup: 'detox/runners/jest/globalSetup',
+  globalTeardown: 'detox/runners/jest/globalTeardown',
+  reporters: ['detox/runners/jest/reporter'],
+  testEnvironment: 'detox/runners/jest/testEnvironment',
+  verbose: true,
+  moduleNameMapper: {
+    '^@/__swaps__/(.*)$': '<rootDir>/../src/__swaps__/$1',
+    '^@/(.*)$': '<rootDir>/../src/$1',
+  },
+  setupFiles: ['dotenv/config'],
   transformIgnorePatterns: [
-    'node_modules/(?!((jest-)?react-native|react-native-keyboard-area|imgix-core-js|react-native-payments|@react-native-firebase|@react-native(-community)?)/)',
+    'node_modules/(?!((jest-)?react-native(-.*)?|@react-native(-community)?|@react-navigation/(.*)|react-query|react-navigation))',
   ],
-  // more module resolution things
-  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
-    prefix: '<rootDir>/',
-  }),
 };

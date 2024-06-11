@@ -35,6 +35,7 @@ module.exports = function (api) {
     'date-fns',
     'graphql-tag',
     ['lodash', { id: ['lodash', 'recompact'] }],
+    'react-native-reanimated/plugin',
     [
       'module:react-native-dotenv',
       {
@@ -42,10 +43,9 @@ module.exports = function (api) {
         moduleName: 'react-native-dotenv',
       },
     ],
-    'react-native-reanimated/plugin',
   ];
 
-  const presets = ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'];
+  const presets = ['module:metro-react-native-babel-preset'];
 
   return {
     env: {
@@ -60,10 +60,6 @@ module.exports = function (api) {
           '@babel/plugin-transform-react-inline-elements',
           ['transform-remove-console', { exclude: ['error'] }],
         ],
-        presets: presets,
-      },
-      test: {
-        plugins: [...plugins],
         presets: presets,
       },
     },

@@ -51,24 +51,24 @@ import {
 } from './helpers';
 
 import { expect } from '@jest/globals';
-import { quoteResponse } from './mocks/quoteResponse.mock';
-import { fetchedPricesResponse } from './mocks/fetchedPrices.mock';
+// import { quoteResponse } from './mocks/quoteResponse.mock';
+// import { fetchedPricesResponse } from './mocks/fetchedPrices.mock';
 
-// mock it
+// Mocking the module
 jest.mock('@/__swaps__/screens/Swap/providers/getNonceAndPerformSwap', () => ({
   ...jest.requireActual('@/__swaps__/screens/Swap/providers/getNonceAndPerformSwap'),
   getNonceAndPerformSwap: jest.fn(),
 }));
 
-jest.mock('@/__swaps__/screens/Swap/hooks/useSwapInputsController', () => {
-  const originalModule = jest.requireActual('@/__swaps__/screens/Swap/hooks/useSwapInputsController');
-  return {
-    ...originalModule,
-    getQuote: jest.fn().mockImplementation(params => quoteResponse(params)),
-    getCrosschainQuote: jest.fn().mockImplementation(params => quoteResponse(params)),
-    fetchAssetPrices: jest.fn().mockImplementation(() => fetchedPricesResponse),
-  };
-});
+// jest.mock('@/__swaps__/screens/Swap/hooks/useSwapInputsController', () => {
+//   const originalModule = jest.requireActual('@/__swaps__/screens/Swap/hooks/useSwapInputsController');
+//   return {
+//     ...originalModule,
+//     getQuote: jest.fn().mockImplementation(params => quoteResponse(params)),
+//     getCrosschainQuote: jest.fn().mockImplementation(params => quoteResponse(params)),
+//     fetchAssetPrices: jest.fn().mockImplementation(() => fetchedPricesResponse),
+//   };
+// });
 
 describe('Swap Sheet Interaction Flow', () => {
   beforeAll(async () => {
