@@ -391,7 +391,6 @@ export function floorWorklet(num: string | number): string {
 export function roundWorklet(num: string | number): string {
   'worklet';
   const numStr = toStringWorklet(num);
-
   if (!isNumberStringWorklet(numStr)) {
     throw new Error('Argument must be a numeric string or number');
   }
