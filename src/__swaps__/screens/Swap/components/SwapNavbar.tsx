@@ -24,17 +24,13 @@ export function SwapNavbar() {
   const { isDarkMode } = useColorMode();
   const { navigate, goBack } = useNavigation();
 
-  const { AnimatedSwapStyles, internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
+  const { AnimatedSwapStyles, swapInfo } = useSwapContext();
 
   // const separatorSecondary = useForegroundColor('separatorSecondary');
   // const separatorTertiary = useForegroundColor('separatorTertiary');
 
   const swapOrBridgeLabel = useDerivedValue(() => {
-    const areBothAssetsSelected = internalSelectedInputAsset.value && internalSelectedOutputAsset.value;
-    const isBridging =
-      areBothAssetsSelected && internalSelectedInputAsset.value?.mainnetAddress === internalSelectedOutputAsset.value?.mainnetAddress;
-
-    return isBridging ? BRIDGE_TITLE_LABEL : SWAP_TITLE_LABEL;
+    return swapInfo.value.isBridging ? BRIDGE_TITLE_LABEL : SWAP_TITLE_LABEL;
   });
 
   const onChangeWallet = React.useCallback(() => {
@@ -125,17 +121,17 @@ export function SwapNavbar() {
   );
 }
 
-export const styles = StyleSheet.create({
-  headerButton: {
-    borderRadius: 18,
-    borderWidth: THICK_BORDER_WIDTH,
-    height: 36,
-    width: 36,
-  },
-  headerTextShadow: {
-    padding: 12,
-    textShadowColor: 'rgba(0, 0, 0, 0.2)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 6,
-  },
-});
+// export const styles = StyleSheet.create({
+//   headerButton: {
+//     borderRadius: 18,
+//     borderWidth: THICK_BORDER_WIDTH,
+//     height: 36,
+//     width: 36,
+//   },
+//   headerTextShadow: {
+//     padding: 12,
+//     textShadowColor: 'rgba(0, 0, 0, 0.2)',
+//     textShadowOffset: { width: 0, height: 2 },
+//     textShadowRadius: 6,
+//   },
+// });

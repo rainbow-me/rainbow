@@ -1,13 +1,12 @@
 /* eslint-disable no-nested-ternary */
 import React, { useCallback, useRef } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import * as i18n from '@/languages';
 import { PanGestureHandler, TapGestureHandler, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
   interpolateColor,
   runOnJS,
-  runOnUI,
   useAnimatedGestureHandler,
   useAnimatedReaction,
   useAnimatedStyle,
@@ -34,6 +33,7 @@ import {
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { clamp, getColorValueForThemeWorklet, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
+import { GestureHandlerV1Button } from './GestureHandlerV1Button';
 
 type SwapSliderProps = {
   dualColor?: boolean;
@@ -64,10 +64,12 @@ export const SwapSlider = ({
     isQuoteStale,
     sliderPressProgress,
     sliderXPosition,
+    swapInfo,
   } = useSwapContext();
 
   const panRef = useRef();
   const tapRef = useRef();
+  const maxButtonRef = useRef();
 
   const fillSecondary = useForegroundColor('fillSecondary');
   const labelSecondary = useForegroundColor('labelSecondary');
@@ -361,11 +363,7 @@ export const SwapSlider = ({
   });
 
   const sellingOrBridgingLabel = useDerivedValue(() => {
-    const areBothAssetsSelected = internalSelectedInputAsset.value && internalSelectedOutputAsset.value;
-    const isBridging =
-      areBothAssetsSelected && internalSelectedInputAsset.value?.mainnetAddress === internalSelectedOutputAsset.value?.mainnetAddress;
-
-    return isBridging ? BRIDGE_TITLE_LABEL : SWAP_TITLE_LABEL;
+    return swapInfo.value.isBridging ? BRIDGE_TITLE_LABEL : SWAP_TITLE_LABEL;
   });
 
   const maxTextColor = useAnimatedStyle(() => {
@@ -379,7 +377,7 @@ export const SwapSlider = ({
     <PanGestureHandler activeOffsetX={[0, 0]} activeOffsetY={[0, 0]} onGestureEvent={onSlide} simultaneousHandlers={[tapRef]}>
       <Animated.View style={AnimatedSwapStyles.hideWhileReviewingOrConfiguringGas}>
         {/* @ts-expect-error Property 'children' does not exist on type */}
-        <TapGestureHandler onGestureEvent={onPressDown} simultaneousHandlers={[panRef]}>
+        <TapGestureHandler onGestureEvent={onPressDown} simultaneousHandlers={[maxButtonRef, panRef]}>
           <Animated.View style={{ gap: 14, paddingBottom: 20, paddingHorizontal: 20 }}>
             <View style={{ zIndex: 10 }}>
               <Columns alignHorizontal="justify" alignVertical="center">
@@ -402,22 +400,25 @@ export const SwapSlider = ({
                   </Inline>
                 </Inline>
                 <Column width="content">
-                  <TouchableOpacity
-                    activeOpacity={0.4}
-                    hitSlop={8}
-                    onPress={() => {
-                      runOnUI(() => {
-                        SwapInputController.quoteFetchingInterval.stop();
-                        SwapInputController.inputMethod.value = 'slider';
-                        sliderXPosition.value = withSpring(width, SPRING_CONFIGS.snappySpringConfig);
-                        runOnJS(onChangeWrapper)(1);
-                      })();
+                  <GestureHandlerV1Button
+                    // activeOpacity={0.4}
+                    style={{ margin: -12, padding: 12 }}
+                    onPressWorklet={() => {
+                      'worklet';
+                      SwapInputController.inputMethod.value = 'slider';
+                      SwapInputController.quoteFetchingInterval.stop();
+                      sliderXPosition.value = withSpring(width, SPRING_CONFIGS.snappySpringConfig, isFinished => {
+                        if (isFinished) {
+                          runOnJS(onChangeWrapper)(1);
+                        }
+                      });
                     }}
+                    ref={maxButtonRef}
                   >
                     <AnimatedText align="center" size="15pt" style={maxTextColor} weight="heavy">
                       {MAX_LABEL}
                     </AnimatedText>
-                  </TouchableOpacity>
+                  </GestureHandlerV1Button>
                 </Column>
               </Columns>
             </View>
@@ -488,8 +489,5 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     width: SCRUBBER_WIDTH,
-  },
-  solidColorCoinIcon: {
-    opacity: 0.4,
   },
 });

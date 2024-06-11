@@ -112,7 +112,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
   }, [handleSelectChain, menuConfig.menuItems]);
 
   return (
-    <Box as={Animated.View} paddingHorizontal="20px">
+    <Box as={Animated.View} paddingBottom={output ? '8px' : { custom: 14 }} paddingHorizontal="20px" paddingTop="20px">
       <Inline alignHorizontal="justify" alignVertical="center">
         {output ? (
           <Inline alignVertical="center" space="6px">

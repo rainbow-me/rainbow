@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { StyleSheet, StatusBar } from 'react-native';
 import Animated, { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
@@ -165,8 +165,15 @@ const WalletAddressObserver = () => {
   return null;
 };
 
+const areBothAssetsPrefilled = () => {
+  const { inputAsset, outputAsset } = useSwapsStore.getState();
+  return !!inputAsset && !!outputAsset;
+};
+
 const SliderAndKeyboardAndBottomControls = () => {
-  const shouldMount = useDelayedMount();
+  const skipDelayedMount = useMemo(() => areBothAssetsPrefilled(), []);
+  const shouldMount = useDelayedMount({ skipDelayedMount });
+
   const { AnimatedSwapStyles } = useSwapContext();
 
   return shouldMount ? (

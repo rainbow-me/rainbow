@@ -1,19 +1,20 @@
 import React, { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
-import { CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
+import { COIN_ROW_WITH_PADDING_HEIGHT, CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { Stack } from '@/design-system';
-import { runOnUI } from 'react-native-reanimated';
+import Animated, { runOnUI, useAnimatedStyle } from 'react-native-reanimated';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { FlashList } from '@shopify/flash-list';
 import { ChainSelection } from './ChainSelection';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { EXPANDED_INPUT_HEIGHT } from '../../constants';
+import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
+
+const SELL_LIST_HEADER_HEIGHT = 20 + 10 + 14; // paddingTop + height + paddingBottom
 
 export const TokenToSellList = () => {
   const shouldMount = useDelayedMount();
@@ -21,9 +22,9 @@ export const TokenToSellList = () => {
 };
 
 const TokenToSellListComponent = () => {
-  const { internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, setAsset } = useSwapContext();
+  const { inputProgress, internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, setAsset } = useSwapContext();
 
-  const userAssets = userAssetsStore(state => state.getFilteredUserAssetIds());
+  const userAssetIds = userAssetsStore(state => state.getFilteredUserAssetIds());
 
   const handleSelectToken = useCallback(
     (token: ParsedSearchAsset | null) => {
@@ -47,20 +48,30 @@ const TokenToSellListComponent = () => {
     [internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, setAsset]
   );
 
-  return (
-    <Stack space="20px">
-      <ChainSelection allText="All Networks" output={false} />
+  const animatedListPadding = useAnimatedStyle(() => {
+    const isFocused = inputProgress.value === 2;
+    const bottomPadding = isFocused ? EXPANDED_INPUT_HEIGHT - FOCUSED_INPUT_HEIGHT : 0;
+    return { height: bottomPadding };
+  });
 
-      <FlashList
-        data={userAssets}
-        estimatedListSize={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}
-        ListEmptyComponent={<ListEmpty />}
-        keyExtractor={uniqueId => uniqueId}
-        renderItem={({ item: uniqueId }) => {
-          return <CoinRow onPress={asset => handleSelectToken(asset)} output={false} uniqueId={uniqueId} />;
-        }}
-      />
-    </Stack>
+  return (
+    <FlashList
+      ListEmptyComponent={<ListEmpty />}
+      ListFooterComponent={<Animated.View style={[animatedListPadding, { width: '100%' }]} />}
+      ListHeaderComponent={<ChainSelection allText="All Networks" output={false} />}
+      contentContainerStyle={{ paddingBottom: 16 }}
+      // For some reason shallow copying the list data allows FlashList to more quickly pick up changes
+      data={userAssetIds.slice(0)}
+      estimatedFirstItemOffset={SELL_LIST_HEADER_HEIGHT}
+      estimatedItemSize={COIN_ROW_WITH_PADDING_HEIGHT}
+      estimatedListSize={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}
+      keyExtractor={uniqueId => uniqueId}
+      renderItem={({ item: uniqueId }) => {
+        return <CoinRow onPress={(asset: ParsedSearchAsset | null) => handleSelectToken(asset)} output={false} uniqueId={uniqueId} />;
+      }}
+      scrollIndicatorInsets={{ bottom: 28 + (EXPANDED_INPUT_HEIGHT - FOCUSED_INPUT_HEIGHT) }}
+      style={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}
+    />
   );
 };
 

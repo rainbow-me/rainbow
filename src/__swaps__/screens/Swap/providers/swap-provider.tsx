@@ -20,7 +20,7 @@ import { useAnimatedSwapStyles } from '@/__swaps__/screens/Swap/hooks/useAnimate
 import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextStyles';
 import { useSwapNavigation, NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
-import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
@@ -83,6 +83,10 @@ interface SwapContextType {
   executeSwap: () => void;
 
   outputQuotesAreDisabled: DerivedValue<boolean>;
+  swapInfo: DerivedValue<{
+    areBothAssetsSet: boolean;
+    isBridging: boolean;
+  }>;
 
   SwapSettings: ReturnType<typeof useSwapSettings>;
   SwapInputController: ReturnType<typeof useSwapInputsController>;
@@ -323,6 +327,20 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const outputQuotesAreDisabled = useSwapOutputQuotesDisabled({
     inputAsset: internalSelectedInputAsset,
     outputAsset: internalSelectedOutputAsset,
+  });
+
+  const swapInfo = useDerivedValue(() => {
+    const areBothAssetsSet = !!internalSelectedInputAsset.value && !!internalSelectedOutputAsset.value;
+    const isBridging =
+      !!internalSelectedInputAsset.value?.networks &&
+      !!internalSelectedOutputAsset.value?.chainId &&
+      (internalSelectedInputAsset.value.networks[internalSelectedOutputAsset.value.chainId]?.address as unknown as AddressOrEth) ===
+        internalSelectedOutputAsset.value.address;
+
+    return {
+      areBothAssetsSet,
+      isBridging,
+    };
   });
 
   const handleProgressNavigation = useCallback(
@@ -596,6 +614,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
         quote,
         outputQuotesAreDisabled,
+        swapInfo,
         executeSwap,
 
         SwapSettings,
