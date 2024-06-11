@@ -174,7 +174,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         ? await getFlashbotsProvider()
         : getCachedProviderForNetwork(network);
     const providerUrl = provider?.connection?.url;
-    const connectedToHardhat = isHardHat(providerUrl);
+    const connectedToHardhat = !!providerUrl && isHardHat(providerUrl);
 
     const selectedGas = getSelectedGas(parameters.chainId);
     if (!selectedGas) {
