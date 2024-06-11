@@ -19,3 +19,4 @@ coverage
 src/browser
 src/__swaps__/README.md
 InjectedJSBundle.js
+lint-staged.config.js
