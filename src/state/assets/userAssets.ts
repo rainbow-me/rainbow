@@ -45,8 +45,9 @@ export interface UserAssetsState {
 }
 
 // NOTE: We are serializing Map as an Array<[UniqueId, ParsedSearchAsset]>
-type UserAssetsStateWithTransforms = Omit<Partial<UserAssetsState>, 'chainBalances' | 'userAssets'> & {
+type UserAssetsStateWithTransforms = Omit<Partial<UserAssetsState>, 'chainBalances' | 'idsByChain' | 'userAssets'> & {
   chainBalances: Array<[ChainId, number]>;
+  idsByChain: Array<[UserAssetFilter, UniqueId[]]>;
   userAssets: Array<[UniqueId, ParsedSearchAsset]>;
 };
 
@@ -55,6 +56,7 @@ function serializeUserAssetsState(state: Partial<UserAssetsState>, version?: num
     const transformedStateToPersist: UserAssetsStateWithTransforms = {
       ...state,
       chainBalances: state.chainBalances ? Array.from(state.chainBalances.entries()) : [],
+      idsByChain: state.idsByChain ? Array.from(state.idsByChain.entries()) : [],
       userAssets: state.userAssets ? Array.from(state.userAssets.entries()) : [],
     };
 
@@ -79,16 +81,6 @@ function deserializeUserAssetsState(serializedState: string) {
 
   const { state, version } = parsedState;
 
-  let userAssetsData: Map<UniqueId, ParsedSearchAsset> = new Map();
-  try {
-    if (state.userAssets.length) {
-      userAssetsData = new Map(state.userAssets);
-    }
-  } catch (error) {
-    logger.error(new RainbowError('Failed to convert userAssets from user assets storage'), { error });
-    throw error;
-  }
-
   let chainBalances = new Map<ChainId, number>();
   try {
     if (state.chainBalances) {
@@ -96,13 +88,31 @@ function deserializeUserAssetsState(serializedState: string) {
     }
   } catch (error) {
     logger.error(new RainbowError('Failed to convert chainBalances from user assets storage'), { error });
-    throw error;
+  }
+
+  let idsByChain = new Map<UserAssetFilter, UniqueId[]>();
+  try {
+    if (state.idsByChain) {
+      idsByChain = new Map(state.idsByChain);
+    }
+  } catch (error) {
+    logger.error(new RainbowError('Failed to convert idsByChain from user assets storage'), { error });
+  }
+
+  let userAssetsData: Map<UniqueId, ParsedSearchAsset> = new Map();
+  try {
+    if (state.userAssets.length) {
+      userAssetsData = new Map(state.userAssets);
+    }
+  } catch (error) {
+    logger.error(new RainbowError('Failed to convert userAssets from user assets storage'), { error });
   }
 
   return {
     state: {
       ...state,
       chainBalances,
+      idsByChain,
       userAssets: userAssetsData,
     },
     version,
@@ -285,6 +295,7 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
     partialize: state => ({
       associatedWalletAddress: state.associatedWalletAddress,
       chainBalances: state.chainBalances,
+      idsByChain: state.idsByChain,
       userAssets: state.userAssets,
     }),
     serializer: serializeUserAssetsState,
