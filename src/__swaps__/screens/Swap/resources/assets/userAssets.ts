@@ -1,20 +1,19 @@
 import { useQuery } from '@tanstack/react-query';
 import { Address } from 'viem';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
-
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
+
+import { getIsHardhatConnected } from '@/handlers/web3';
+import { RainbowError, logger } from '@/logger';
+import { RainbowFetchClient } from '@/rainbow-fetch';
 import { SupportedCurrencyKey, SUPPORTED_CHAIN_IDS } from '@/references';
 import { ParsedAssetsDictByChain, ZerionAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { AddressAssetsReceivedMessage } from '@/__swaps__/types/refraction';
 import { filterAsset, parseUserAsset } from '@/__swaps__/utils/assets';
 import { greaterThan } from '@/__swaps__/utils/numbers';
-import { RainbowError, logger } from '@/logger';
 
 import { fetchUserAssetsByChain } from './userAssetsByChain';
-import { RainbowFetchClient } from '@/rainbow-fetch';
-import { useAccountSettings } from '@/hooks';
-import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
 
 const addysHttp = new RainbowFetchClient({
   baseURL: 'https://addys.p.rainbow.me/v3',
@@ -31,27 +30,27 @@ export const USER_ASSETS_STALE_INTERVAL = 30000;
 // Query Types
 
 export type UserAssetsArgs = {
-  address?: Address;
+  address: Address;
   currency: SupportedCurrencyKey;
   testnetMode?: boolean;
 };
 
 type SetUserAssetsArgs = {
-  address?: Address;
+  address: Address;
   currency: SupportedCurrencyKey;
   userAssets?: UserAssetsResult;
   testnetMode?: boolean;
 };
 
 type SetUserDefaultsArgs = {
-  address?: Address;
+  address: Address;
   currency: SupportedCurrencyKey;
   staleTime: number;
   testnetMode?: boolean;
 };
 
 type FetchUserAssetsArgs = {
-  address?: Address;
+  address: Address;
   currency: SupportedCurrencyKey;
   testnetMode?: boolean;
 };
@@ -211,12 +210,9 @@ export function useUserAssets<TSelectResult = UserAssetsResult>(
   { address, currency }: UserAssetsArgs,
   config: QueryConfigWithSelect<UserAssetsResult, Error, TSelectResult, UserAssetsQueryKey> = {}
 ) {
-  const { network: currentNetwork } = useAccountSettings();
-  const provider = getCachedProviderForNetwork(currentNetwork);
-  const providerUrl = provider?.connection?.url;
-  const connectedToHardhat = isHardHat(providerUrl);
+  const isHardhatConnected = getIsHardhatConnected();
 
-  return useQuery(userAssetsQueryKey({ address, currency, testnetMode: connectedToHardhat }), userAssetsQueryFunction, {
+  return useQuery(userAssetsQueryKey({ address, currency, testnetMode: isHardhatConnected }), userAssetsQueryFunction, {
     ...config,
     refetchInterval: USER_ASSETS_REFETCH_INTERVAL,
     staleTime: process.env.IS_TESTING === 'true' ? 0 : 1000,
