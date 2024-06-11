@@ -151,7 +151,7 @@ function GasSettingInput({
 
 const selectWeiToGwei = (s: string | undefined) => s && weiToGwei(s);
 
-function CurrentBaseFeeSlot({ baseFee, gasTrend }: { baseFee?: string; gasTrend?: string }) {
+function CurrentBaseFeeSlot({ baseFee, gasTrend = 'notrend' }: { baseFee?: string; gasTrend?: keyof typeof GAS_TRENDS }) {
   const { isDarkMode } = useColorMode();
   const { navigate } = useNavigation();
 
@@ -159,9 +159,6 @@ function CurrentBaseFeeSlot({ baseFee, gasTrend }: { baseFee?: string; gasTrend?
   const labelSecondary = useForegroundColor('labelSecondary');
 
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-  const { data: baseFee } = useBaseFee({ chainId, select: selectWeiToGwei });
-  const { data: gasTrend = 'notrend' } = useGasTrend({ chainId });
-
   const trendType = 'currentBaseFee' + upperFirst(gasTrend);
 
   const isEIP1559 = useIsChainEIP1559(chainId);
