@@ -328,6 +328,7 @@ export function useSearchCurrencyLists() {
 
   return useMemo(
     () => ({
+      // ⚠️ TODO: Re-enable when search spinner is added in
       // loading: verifiedAssetsLoading || unverifiedAssetsLoading,
       loading: false,
       results,
