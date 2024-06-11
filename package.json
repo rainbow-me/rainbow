@@ -539,11 +539,5 @@
       "viem>ws>bufferutil": false,
       "viem>ws>utf-8-validate": false
     }
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx,graphql}": [
-      "prettier --write",
-      "eslint --cache"
-    ]
   }
 }

@@ -87,6 +87,7 @@ export function SwapScreen() {
 }
 
 const MountAndUnmountHandlers = () => {
+  console.log('hi');
   useMountSignal();
   useCleanupOnUnmount();
 
