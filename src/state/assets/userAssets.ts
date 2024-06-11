@@ -113,12 +113,12 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
   (set, get) => ({
     associatedWalletAddress: undefined,
     chainBalances: new Map(),
+    currentAbortController: new AbortController(),
     filter: 'all',
     idsByChain: new Map<UserAssetFilter, UniqueId[]>(),
     inputSearchQuery: '',
     searchCache: new Map(),
     userAssets: new Map(),
-    currentAbortController: new AbortController(),
 
     getBalanceSortedChainList: () => Array.from(get().chainBalances.keys()),
 
