@@ -195,23 +195,24 @@ export function modWorklet(num1: string | number, num2: string | number): string
   return formatResultWorklet(result);
 }
 
-// Logarithm base 10 function
-export function log10Worklet(num: string | number): string {
+export function orderOfMagnitudeWorklet(n: string | number): number {
   'worklet';
-  const numStr = toStringWorklet(num);
+  let nStr = toStringWorklet(n);
+  nStr = nStr.replace(/^-/, ''); // Remove negative sign (if any
 
-  if (!isNumberStringWorklet(numStr)) {
+  if (!isNumberStringWorklet(nStr)) {
     throw new Error('Arguments must be a numeric string or number');
   }
-  if (isZeroWorklet(numStr)) {
-    throw new Error('Argument must be greater than 0');
+
+  if (isZeroWorklet(nStr)) {
+    return -Infinity; // log10(0) is -Infinity
   }
 
-  const [bigIntNum, decimalPlaces] = removeDecimalWorklet(numStr);
-  const scaledBigIntNum = scaleUpWorklet(bigIntNum, decimalPlaces);
-  const result = Math.log10(Number(scaledBigIntNum)) - 20; // Adjust the scale factor for log10
-  const resultBigInt = BigInt(result * 10 ** 20);
-  return formatResultWorklet(resultBigInt);
+  // Convert BigInt to string to count the digits
+  const digitCount = nStr.length;
+
+  // The order of magnitude is the number of digits minus 1
+  return digitCount - 1;
 }
 
 // Equality function

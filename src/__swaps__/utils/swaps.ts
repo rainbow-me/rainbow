@@ -22,7 +22,6 @@ import {
   divWorklet,
   equalWorklet,
   floorWorklet,
-  log10Worklet,
   lessThanOrEqualToWorklet,
   mulWorklet,
   powWorklet,
@@ -30,6 +29,7 @@ import {
   toFixedWorklet,
   greaterThanOrEqualToWorklet,
   sumWorklet,
+  orderOfMagnitudeWorklet,
 } from '../safe-math/SafeMath';
 
 // /---- 🎨 Color functions 🎨 ----/ //
@@ -163,7 +163,7 @@ export const findNiceIncrement = (availableBalance: string | number) => {
   const exactIncrement = divWorklet(availableBalance, 100);
 
   // Calculate the order of magnitude of the exact increment
-  const orderOfMagnitude = floorWorklet(log10Worklet(exactIncrement));
+  const orderOfMagnitude = orderOfMagnitudeWorklet(exactIncrement);
 
   const baseIncrement = powWorklet(10, orderOfMagnitude);
 
@@ -239,7 +239,7 @@ export function valueBasedDecimalFormatter({
   'worklet';
 
   function precisionBasedOffMagnitude(amount: number | string): number {
-    const magnitude = -Number(floorWorklet(sumWorklet(log10Worklet(amount), 1)));
+    const magnitude = -orderOfMagnitudeWorklet(amount);
     return (precisionAdjustment ?? 0) + magnitude;
   }
 

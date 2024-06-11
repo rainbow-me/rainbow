@@ -8,9 +8,9 @@ import {
   greaterThanWorklet,
   lessThanOrEqualToWorklet,
   lessThanWorklet,
-  log10Worklet,
   modWorklet,
   mulWorklet,
+  orderOfMagnitudeWorklet,
   powWorklet,
   roundWorklet,
   subWorklet,
@@ -26,13 +26,13 @@ const RESULTS = {
   div: '325.56878986395199044836',
   mod: '2172.345',
   pow: '1546106588588.369025',
-  log10: '0.30102999566398124032',
   toFixed: '1243425.35',
   ceil: '1243426',
   floor: '1243425',
   toScaledInteger: '57464009350560633',
   negativePow: '0.001',
   negativeExp: '6.0895415516156',
+  orderOfMagnitude: '29',
 };
 
 const VALUE_A = '1243425.345';
@@ -42,6 +42,7 @@ const VALUE_D = '1243425.745';
 const VALUE_E = '0.057464009350560633';
 const VALUE_F = '147887324';
 const VALUE_G = '4.11769e-8';
+const VALUE_H = '123456789012345678901234567890';
 const NEGATIVE_VALUE = '-2412.12';
 const ZERO = '0';
 const ONE = '1';
@@ -116,13 +117,6 @@ describe('SafeMath', () => {
     expect(powWorklet(Number(VALUE_A), VALUE_C)).toBe(RESULTS.pow);
     expect(powWorklet(VALUE_A, Number(VALUE_C))).toBe(RESULTS.pow);
     expect(powWorklet(TEN, Number(MINUS_3))).toBe(RESULTS.negativePow);
-  });
-
-  test('log10Worklet', () => {
-    expect(() => log10Worklet(NON_NUMERIC_STRING)).toThrow('Arguments must be a numeric string or number');
-    expect(() => log10Worklet(ZERO)).toThrow('Argument must be greater than 0');
-    expect(log10Worklet(VALUE_C)).toBe(RESULTS.log10);
-    expect(log10Worklet(Number(VALUE_C))).toBe(RESULTS.log10);
   });
 
   test('equalWorklet', () => {
@@ -204,6 +198,10 @@ describe('SafeMath', () => {
 
   test('toScaledIntegerWorklet', () => {
     expect(toScaledIntegerWorklet(VALUE_E, 18)).toBe(RESULTS.toScaledInteger);
+  });
+
+  test('orderOfMagnitude', () => {
+    expect(orderOfMagnitudeWorklet(VALUE_H)).toBe(Number(RESULTS.orderOfMagnitude));
   });
 });
 
