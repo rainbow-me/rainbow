@@ -518,6 +518,21 @@
       "src/react-native-shadow-stack/**/*.*"
     ]
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx}": [
+      "prettier --write .",
+       "eslint --cache . --quiet"
+    ],
+    "*.{ts,tsx}": [
+      "prettier --write .",
+      "tsc --skipLibCheck --noEmit"
+    ]
+  },
   "lavamoat": {
     "allowScripts": {
       "$root$": false,
