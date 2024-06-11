@@ -69,7 +69,7 @@ const TokenToSellListComponent = () => {
         ListEmptyComponent={<ListEmpty />}
         keyExtractor={uniqueId => uniqueId}
         renderItem={({ item: uniqueId }) => {
-          return <CoinRow onPress={(asset: ParsedSearchAsset | null) => handleSelectToken(asset)} output={false} uniqueId={uniqueId} />;
+          return <CoinRow onPress={asset => handleSelectToken(asset)} output={false} uniqueId={uniqueId} />;
         }}
       />
     </Stack>
