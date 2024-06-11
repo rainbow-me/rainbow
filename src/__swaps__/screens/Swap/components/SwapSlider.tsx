@@ -406,12 +406,18 @@ export const SwapSlider = ({
                     onPressWorklet={() => {
                       'worklet';
                       SwapInputController.inputMethod.value = 'slider';
-                      SwapInputController.quoteFetchingInterval.stop();
-                      sliderXPosition.value = withSpring(width, SPRING_CONFIGS.snappySpringConfig, isFinished => {
-                        if (isFinished) {
-                          runOnJS(onChangeWrapper)(1);
-                        }
-                      });
+                      const isAlreadyMax = sliderXPosition.value === width;
+
+                      if (isAlreadyMax) {
+                        runOnJS(triggerHapticFeedback)('impactMedium');
+                      } else {
+                        SwapInputController.quoteFetchingInterval.stop();
+                        sliderXPosition.value = withSpring(width, SPRING_CONFIGS.snappySpringConfig, isFinished => {
+                          if (isFinished) {
+                            runOnJS(onChangeWrapper)(1);
+                          }
+                        });
+                      }
                     }}
                     ref={maxButtonRef}
                   >
