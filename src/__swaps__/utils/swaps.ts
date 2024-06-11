@@ -149,6 +149,9 @@ export const countDecimalPlaces = (number: number | string): number => {
 
 export const findNiceIncrement = (availableBalance: string | number) => {
   'worklet';
+  if (Number(availableBalance) === 0) {
+    return 0;
+  }
 
   // We'll use one of these factors to adjust the base increment
   // These factors are chosen to:

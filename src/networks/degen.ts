@@ -27,8 +27,8 @@ export const getDegenNetworkObject = (): NetworkProperties => {
       address: DEGEN_CHAIN_DEGEN_ADDRESS,
     },
 
-    rpc: proxyRpcEndpoint(degen.id),
-    getProvider: getProviderForNetwork(Network.degen),
+    rpc: () => proxyRpcEndpoint(degen.id),
+    getProvider: () => getProviderForNetwork(Network.degen),
     // need to find balance checker address
     balanceCheckerAddress: '',
 
