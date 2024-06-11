@@ -1,7 +1,7 @@
 import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { getDefaultSlippage } from '@/__swaps__/utils/swaps';
-import { DEFAULT_CONFIG, getRemoteConfig } from '@/model/remoteConfig';
+import { getRemoteConfig } from '@/model/remoteConfig';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { CrosschainQuote, Quote, QuoteError, Source } from '@rainbow-me/swaps';
 
@@ -50,13 +50,12 @@ export const swapsStore = createRainbowStore<SwapsState>(
   }),
   {
     storageKey: 'swapsStore',
-    version: 2,
+    version: 1,
     // NOTE: Only persist the settings
     partialize(state) {
       return {
         flashbots: state.flashbots,
         source: state.source,
-        slippage: state.slippage,
       };
     },
   }

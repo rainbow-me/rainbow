@@ -1,17 +1,15 @@
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 
-import { SharedValue, runOnJS, useSharedValue } from 'react-native-reanimated';
-import { swapsStore } from '@/state/swaps/swapsStore';
 import { slippageStep } from '@/__swaps__/screens/Swap/constants';
-import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
 import { ChainId } from '@/__swaps__/types/chains';
+import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
 import { getRemoteConfig } from '@/model/remoteConfig';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import { SharedValue, runOnJS, useSharedValue } from 'react-native-reanimated';
 
 export const useSwapSettings = ({ inputAsset }: { inputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null> }) => {
-  const remoteConfig = getRemoteConfig();
-
   const flashbots = useSharedValue(swapsStore.getState().flashbots);
-  const slippage = useSharedValue(swapsStore.getState().slippage);
+  const slippage = useSharedValue(getDefaultSlippageWorklet(inputAsset.value.chainId || ChainId.mainnet, getRemoteConfig()));
 
   const setSlippage = swapsStore(state => state.setSlippage);
   const setFlashbots = swapsStore(state => state.setFlashbots);
