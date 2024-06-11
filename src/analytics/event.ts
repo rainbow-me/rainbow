@@ -139,8 +139,6 @@ export const event = {
   swapsChangedChainId: 'swaps.changed_chain_id',
   swapsFlippedAssets: 'swaps.flipped_assets',
   swapsToggledFlashbots: 'swaps.toggled_flashbots',
-  swapsChangedMaximumSlippage: 'swaps.changed_maximum_slippage',
-  swapsChangedSelectedGasSpeed: 'swaps.changed_selected_gas_speed',
   swapsReceivedQuote: 'swaps.received_quote',
   swapsSubmitted: 'swaps.submitted',
   swapsFailed: 'swaps.failed',
@@ -158,6 +156,7 @@ type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
   outputNativeValue: string | number;
   parameters: Omit<RapSwapActionParameters<T>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'>;
   selectedGas: GasSettings;
+  selectedGasSpeed: GasSpeed;
   slippage: string;
 };
 
@@ -541,20 +540,6 @@ export type EventProperties = {
 
   [event.swapsToggledFlashbots]: {
     enabled: boolean;
-  };
-
-  [event.swapsChangedMaximumSlippage]: {
-    inputAsset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
-    outputAsset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
-    quote: Quote | CrosschainQuote | QuoteError | null;
-    slippage: string;
-  };
-
-  [event.swapsChangedSelectedGasSpeed]: {
-    inputAsset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
-    outputAsset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
-    selectedGasSpeed: GasSpeed;
-    quote: Quote | CrosschainQuote | QuoteError | null;
   };
 
   [event.swapsReceivedQuote]: {

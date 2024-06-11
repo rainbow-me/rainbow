@@ -6,8 +6,6 @@ import { slippageStep } from '@/__swaps__/screens/Swap/constants';
 import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
 import { ChainId } from '@/__swaps__/types/chains';
 import { DEFAULT_CONFIG } from '@/model/remoteConfig';
-import { useCallback } from 'react';
-import { analyticsV2 } from '@/analytics';
 
 export const useSwapSettings = ({ inputAsset }: { inputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null> }) => {
   const flashbots = useSharedValue(swapsStore.getState().flashbots);
@@ -24,22 +22,6 @@ export const useSwapSettings = ({ inputAsset }: { inputAsset: SharedValue<Extend
     runOnJS(setFlashbots)(!current);
   };
 
-  const handleTrackAndUpdateSlippage = useCallback(
-    (value: string) => {
-      const { inputAsset, outputAsset, quote } = swapsStore.getState();
-
-      setSlippage(value);
-
-      analyticsV2.track(analyticsV2.event.swapsChangedMaximumSlippage, {
-        slippage: value,
-        inputAsset,
-        outputAsset,
-        quote,
-      });
-    },
-    [setSlippage]
-  );
-
   const onUpdateSlippage = (operation: 'plus' | 'minus') => {
     'worklet';
 
@@ -52,7 +34,7 @@ export const useSwapSettings = ({ inputAsset }: { inputAsset: SharedValue<Extend
       slippage.value = (Number(slippage.value) + value).toFixed(1).toString();
     }
 
-    runOnJS(handleTrackAndUpdateSlippage)(slippage.value);
+    runOnJS(setSlippage)(slippage.value);
   };
 
   return {

@@ -32,7 +32,7 @@ export const FlipButton = () => {
 
       setAsset({ type: assetTypeToSet, asset: assetToSet });
     }
-  }, [SwapInputController.inputValues.value, internalSelectedInputAsset.value, internalSelectedOutputAsset.value, setAsset]);
+  }, [SwapInputController.inputValues, internalSelectedInputAsset, internalSelectedOutputAsset, setAsset]);
 
   const flipButtonInnerStyles = useAnimatedStyle(() => {
     return {

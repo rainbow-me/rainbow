@@ -38,7 +38,7 @@ import { walletExecuteRap } from '@/raps/execute';
 import { queryClient } from '@/react-query';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { useAccountSettings } from '@/hooks';
-import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
+import { getGasSettingsBySpeed, getSelectedGas, getSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { useSwapSettings } from '../hooks/useSwapSettings';
@@ -193,6 +193,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
 
     const gasFeeParamsBySpeed = getGasSettingsBySpeed(parameters.chainId);
+    const selectedGasSpeed = getSelectedGasSpeed(parameters.chainId);
 
     let gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = {} as
       | TransactionGasParamAmounts
@@ -225,10 +226,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         type,
         parameters,
         selectedGas,
+        selectedGasSpeed,
         slippage,
         bridge: isBridge,
         errorMessage,
-        // TODO: Does this work from the JS thread?
         inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
         outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
       });
@@ -249,20 +250,20 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }),
     });
 
+    NotificationManager?.postNotification('rapCompleted');
+    Navigation.handleAction(Routes.PROFILE_SCREEN, {});
+
     analyticsV2.track(analyticsV2.event.swapsSubmitted, {
       createdAt: Date.now(),
       type,
       parameters,
       selectedGas,
+      selectedGasSpeed,
       slippage,
       bridge: isBridge,
-      // TODO: Does this work from the JS thread?
       inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
       outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
     });
-
-    NotificationManager?.postNotification('rapCompleted');
-    Navigation.handleAction(Routes.PROFILE_SCREEN, {});
   };
 
   const executeSwap = () => {
@@ -427,12 +428,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           ? internalSelectedInputAsset.value?.uniqueId !== extendedAsset?.uniqueId
           : internalSelectedOutputAsset.value?.uniqueId !== extendedAsset?.uniqueId;
 
-      analyticsV2.track(analyticsV2.event.swapsSelectedAsset, {
-        asset,
-        otherAsset: otherSelectedAsset,
-        type,
-      });
-
       runOnUI(() => {
         const didSelectedAssetChange =
           type === SwapAssetType.inputAsset
@@ -503,6 +498,12 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }
 
       logger.debug(`[setAsset]: Setting ${type} asset to ${extendedAsset?.name} on ${extendedAsset?.chainId}`);
+
+      analyticsV2.track(analyticsV2.event.swapsSelectedAsset, {
+        asset,
+        otherAsset: otherSelectedAsset,
+        type,
+      });
     },
     [
       SwapInputController.quoteFetchingInterval,

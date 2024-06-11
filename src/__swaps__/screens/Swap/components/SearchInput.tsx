@@ -18,7 +18,6 @@ import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { GestureHandlerV1Button } from './GestureHandlerV1Button';
 import { useDebouncedCallback } from 'use-debounce';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { analyticsV2 } from '@/analytics';
 import * as i18n from '@/languages';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
@@ -78,29 +77,15 @@ export const SearchInput = ({
     };
   });
 
-  const onInputSearchQueryChange = useDebouncedCallback(
-    (text: string) => {
-      userAssetsStore.getState().setSearchQuery(text);
-      analyticsV2.track(analyticsV2.event.swapsSearchedForToken, {
-        query: text,
-        type: 'input',
-      });
-    },
-    50,
-    { leading: true, trailing: true }
-  );
+  const onInputSearchQueryChange = useDebouncedCallback((text: string) => userAssetsStore.getState().setSearchQuery(text), 50, {
+    leading: true,
+    trailing: true,
+  });
 
-  const onOutputSearchQueryChange = useDebouncedCallback(
-    (text: string) => {
-      analyticsV2.track(analyticsV2.event.swapsSearchedForToken, {
-        query: text,
-        type: 'output',
-      });
-      useSwapsStore.setState({ outputSearchQuery: text });
-    },
-    100,
-    { leading: false, trailing: true }
-  );
+  const onOutputSearchQueryChange = useDebouncedCallback((text: string) => useSwapsStore.setState({ outputSearchQuery: text }), 100, {
+    leading: false,
+    trailing: true,
+  });
 
   const isSearchFocused = useDerivedValue(
     () =>
