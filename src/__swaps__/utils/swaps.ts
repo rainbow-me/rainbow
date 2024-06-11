@@ -3,7 +3,14 @@ import { SharedValue, convertToRGBA, isColor } from 'react-native-reanimated';
 
 import * as i18n from '@/languages';
 import { globalColors } from '@/design-system';
-import { ETH_COLOR, ETH_COLOR_DARK, SCRUBBER_WIDTH, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import {
+  ETH_COLOR,
+  ETH_COLOR_DARK,
+  MAXIMUM_SIGNIFICANT_DECIMALS,
+  SCRUBBER_WIDTH,
+  SLIDER_WIDTH,
+  STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS,
+} from '@/__swaps__/screens/Swap/constants';
 import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { ChainId, ChainName } from '@/__swaps__/types/chains';
 import { RainbowConfig } from '@/model/remoteConfig';
@@ -227,7 +234,7 @@ export function precisionBasedOffMagnitude(amount: number | string, isStablecoin
   const magnitude = -Number(floorWorklet(sumWorklet(log10Worklet(amount), 0)));
   // don't let stablecoins go beneath 2nd order
   if (magnitude < -2 && isStablecoin) {
-    return -2;
+    return -STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS;
   }
   return magnitude;
 }
@@ -254,15 +261,18 @@ export function valueBasedDecimalFormatter({
   'worklet';
 
   function calculateDecimalPlaces(usdTokenPrice: number): number {
-    const fallbackDecimalPlaces = 2;
+    const fallbackDecimalPlaces = STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS;
     if (usdTokenPrice <= 0) {
       return fallbackDecimalPlaces;
     }
     const unitsForOneCent = 0.01 / usdTokenPrice;
     if (unitsForOneCent >= 1) {
-      return isStablecoin ? 2 : 0;
+      return isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0;
     }
-    return Math.max(Math.ceil(Math.log10(1 / unitsForOneCent)) + (precisionAdjustment ?? 0), isStablecoin ? 2 : 0);
+    return Math.max(
+      Math.ceil(Math.log10(1 / unitsForOneCent)) + (precisionAdjustment ?? 0),
+      isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0
+    );
   }
 
   const decimalPlaces = calculateDecimalPlaces(usdTokenPrice);
@@ -287,25 +297,27 @@ export function valueBasedDecimalFormatter({
       const decimals = assetBalanceDisplay.split('.');
       if (decimals.length > 1) {
         const [, decimalPlacesFromDisplay] = decimals;
-        if (decimalPlacesFromDisplay.length < 2 && isStablecoin) {
-          return 2;
+        if (decimalPlacesFromDisplay.length < STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS && isStablecoin) {
+          return STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS;
         }
 
-        return decimalPlacesFromDisplay.length > 6 ? 6 : decimalPlacesFromDisplay.length;
+        return Math.min(decimalPlacesFromDisplay.length, MAXIMUM_SIGNIFICANT_DECIMALS);
       }
     }
 
     if (!isNaN(decimalPlaces)) {
-      return isStablecoin && decimalPlaces < 2 ? 2 : decimalPlaces;
+      return isStablecoin && decimalPlaces < STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS
+        ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS
+        : decimalPlaces;
     }
 
-    // default to 2 precision?
-    return 2;
+    // default to 6 precision if we have no calculation
+    return MAXIMUM_SIGNIFICANT_DECIMALS;
   };
 
   // Format the number to add separators and trim trailing zeros
   const numberFormatter = new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: isStablecoin ? 2 : 0,
+    minimumFractionDigits: isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0,
     maximumFractionDigits: maximumFractionDigits(),
     useGrouping: true,
   });
@@ -382,7 +394,7 @@ export function niceIncrementFormatter({
     });
   }
 
-  const decimals = isStablecoin ? 2 : incrementDecimalPlaces;
+  const decimals = isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : incrementDecimalPlaces;
   const exactIncrement = divWorklet(inputAssetBalance, 100);
   const isIncrementExact = equalWorklet(niceIncrement, exactIncrement);
   const numberOfIncrements = divWorklet(inputAssetBalance, niceIncrement);
@@ -402,8 +414,8 @@ export function niceIncrementFormatter({
 
   const formattedAmount = `${Number(amountToFixedDecimals).toLocaleString('en-US', {
     useGrouping: true,
-    minimumFractionDigits: isStablecoin ? 2 : 0,
-    maximumFractionDigits: 8,
+    minimumFractionDigits: isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0,
+    maximumFractionDigits: MAXIMUM_SIGNIFICANT_DECIMALS,
   })}`;
 
   if (stripSeparators) return stripCommas(formattedAmount);
