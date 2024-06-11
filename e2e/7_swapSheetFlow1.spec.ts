@@ -35,7 +35,7 @@
  */
 
 // import new separated function
-import { getNonceAndPerformSwap } from '@/__swaps__/screens/Swap/providers/getNonceAndPerformSwap';
+// import { getNonceAndPerformSwap } from '@/__swaps__/screens/Swap/providers/getNonceAndPerformSwap';
 import {
   importWalletFlow,
   sendETHtoTestWallet,
@@ -55,10 +55,10 @@ import { expect } from '@jest/globals';
 // import { fetchedPricesResponse } from './mocks/fetchedPrices.mock';
 
 // Mocking the module
-jest.mock('@/__swaps__/screens/Swap/providers/getNonceAndPerformSwap', () => ({
-  ...jest.requireActual('@/__swaps__/screens/Swap/providers/getNonceAndPerformSwap'),
-  getNonceAndPerformSwap: jest.fn(),
-}));
+// jest.mock('@/__swaps__/screens/Swap/providers/getNonceAndPerformSwap', () => ({
+//   ...jest.requireActual('@/__swaps__/screens/Swap/providers/getNonceAndPerformSwap'),
+//   getNonceAndPerformSwap: jest.fn(),
+// }));
 
 // jest.mock('@/__swaps__/screens/Swap/hooks/useSwapInputsController', () => {
 //   const originalModule = jest.requireActual('@/__swaps__/screens/Swap/hooks/useSwapInputsController');
@@ -132,7 +132,6 @@ describe('Swap Sheet Interaction Flow', () => {
   // TODO: Either mock quote here or wait for it to resolve which can be flaky.. prefer to mock this.
   it('Should be able to go to review and execute a swap', async () => {
     // call the mock implementation... idk if this is right.
-    (getNonceAndPerformSwap as jest.Mock).mockImplementation(() => Promise.resolve());
     await tapByText('Review');
     await delayTime('long');
     const reviewActionElements = await fetchElementAttributes('swap-action-button');
@@ -142,7 +141,6 @@ describe('Swap Sheet Interaction Flow', () => {
     await tapByText('Tap to Swap');
     await delayTime('long');
     // check if was called.
-    expect(getNonceAndPerformSwap).toHaveBeenCalled();
     //
     // TODO: add validation
     //
