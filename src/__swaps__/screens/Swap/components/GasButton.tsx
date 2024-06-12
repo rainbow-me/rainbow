@@ -21,23 +21,24 @@ import { GasSpeed, setSelectedGasSpeed, useSelectedGas, useSelectedGasSpeed } fr
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { GestureHandlerV1Button } from './GestureHandlerV1Button';
-import { Stall } from './Stall';
+import { UnmountBasedOnAnimatedReaction } from './UnmountBasedOnAnimatedReaction';
 
 const { GAS_ICONS } = gasUtils;
 const GAS_BUTTON_HIT_SLOP = 16;
 
-function StallWhenGasButtonIsNotInScreen({ placeholder, children }: PropsWithChildren<{ placeholder: ReactNode }>) {
+function UnmountWhenGasButtonIsNotInScreen({ placeholder, children }: PropsWithChildren<{ placeholder: ReactNode }>) {
   const { configProgress } = useSwapContext();
   return (
-    <Stall
-      isStalledWorklet={() => {
+    <UnmountBasedOnAnimatedReaction
+      isMountedWorklet={() => {
         'worklet';
-        return configProgress.value === NavigationSteps.SHOW_GAS || configProgress.value === NavigationSteps.SHOW_REVIEW;
+        // unmount when custom gas or review panels are above it
+        return !(configProgress.value === NavigationSteps.SHOW_GAS || configProgress.value === NavigationSteps.SHOW_REVIEW);
       }}
       placeholder={placeholder}
     >
       {children}
-    </Stall>
+    </UnmountBasedOnAnimatedReaction>
   );
 }
 
@@ -50,9 +51,9 @@ function EstimatedGasFee() {
       <TextIcon color="labelQuaternary" height={10} size="icon 11px" weight="heavy" width={16}>
         􀵟
       </TextIcon>
-      <StallWhenGasButtonIsNotInScreen placeholder={<EstimatedSwapGasFeeSlot text="--" />}>
+      <UnmountWhenGasButtonIsNotInScreen placeholder={<EstimatedSwapGasFeeSlot text="--" />}>
         <EstimatedSwapGasFee gasSettings={gasSettings} />
-      </StallWhenGasButtonIsNotInScreen>
+      </UnmountWhenGasButtonIsNotInScreen>
     </Inline>
   );
 }

@@ -23,13 +23,13 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { upperFirst } from 'lodash';
 import { gasUtils } from '@/utils';
+import { upperFirst } from 'lodash';
 import { formatNumber } from '../hooks/formatNumber';
 import { GasSettings, getCustomGasSettings, setCustomGasSettings, useCustomGasStore } from '../hooks/useCustomGas';
 import { setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
-import { Stall } from './Stall';
+import { UnmountBasedOnAnimatedReaction } from './UnmountBasedOnAnimatedReaction';
 
 const { GAS_TRENDS } = gasUtils;
 
@@ -43,18 +43,19 @@ type AlertInfo = {
   message: string;
 } | null;
 
-function StallWhenGasPanelIsClosed({ placeholder, children }: PropsWithChildren<{ placeholder: ReactNode }>) {
+function UnmountWhenGasPanelIsClosed({ placeholder, children }: PropsWithChildren<{ placeholder: ReactNode }>) {
   const { configProgress } = useSwapContext();
   return (
-    <Stall
-      isStalledWorklet={() => {
+    <UnmountBasedOnAnimatedReaction
+      isMountedWorklet={() => {
         'worklet';
-        return configProgress.value !== NavigationSteps.SHOW_GAS;
+        // only mounted when custom gas panel is open
+        return configProgress.value === NavigationSteps.SHOW_GAS;
       }}
       placeholder={placeholder}
     >
       {children}
-    </Stall>
+    </UnmountBasedOnAnimatedReaction>
   );
 }
 
@@ -319,7 +320,7 @@ function MaxTransactionFee() {
       </Inline>
 
       <Inline horizontalSpace="6px">
-        <StallWhenGasPanelIsClosed
+        <UnmountWhenGasPanelIsClosed
           placeholder={
             <EstimatedSwapGasFeeSlot align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy" text="--" />
           }
@@ -331,7 +332,7 @@ function MaxTransactionFee() {
             size="15pt"
             weight="heavy"
           />
-        </StallWhenGasPanelIsClosed>
+        </UnmountWhenGasPanelIsClosed>
       </Inline>
     </Inline>
   );
@@ -390,9 +391,9 @@ export function GasPanel() {
         </Text>
 
         <Box gap={24} width="full" alignItems="stretch">
-          <StallWhenGasPanelIsClosed placeholder={<CurrentBaseFeeSlot />}>
+          <UnmountWhenGasPanelIsClosed placeholder={<CurrentBaseFeeSlot />}>
             <CurrentBaseFee />
-          </StallWhenGasPanelIsClosed>
+          </UnmountWhenGasPanelIsClosed>
 
           <EditableGasSettings />
 

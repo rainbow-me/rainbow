@@ -36,7 +36,7 @@ import { ethereumUtils } from '@/utils';
 import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { useSelectedGas, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
-import { Stall } from './Stall';
+import { UnmountBasedOnAnimatedReaction } from './UnmountBasedOnAnimatedReaction';
 
 const UNKNOWN_LABEL = i18n.t(i18n.l.swap.unknown);
 const REVIEW_LABEL = i18n.t(i18n.l.expanded_state.swap_details.review);
@@ -371,10 +371,11 @@ export function ReviewPanel() {
                   <View style={sx.gasContainer}>
                     <AnimatedChainImage showMainnetBadge asset={internalSelectedInputAsset} size={16} />
                   </View>
-                  <Stall
-                    isStalledWorklet={() => {
+                  <UnmountBasedOnAnimatedReaction
+                    isMountedWorklet={() => {
                       'worklet';
-                      return configProgress.value !== NavigationSteps.SHOW_REVIEW;
+                      // only mounted when review panel is visible
+                      return configProgress.value === NavigationSteps.SHOW_REVIEW;
                     }}
                     placeholder={
                       <Inline horizontalSpace="4px">
@@ -387,7 +388,7 @@ export function ReviewPanel() {
                       <EstimatedGasFee />
                       <EstimatedArrivalTime />
                     </Inline>
-                  </Stall>
+                  </UnmountBasedOnAnimatedReaction>
                 </Inline>
 
                 <Inline wrap={false} alignHorizontal="left" alignVertical="bottom" horizontalSpace="4px">
