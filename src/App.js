@@ -54,8 +54,6 @@ import { initializeReservoirClient } from '@/resources/reservoir/client';
 import { ReviewPromptAction } from '@/storage/schema';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { initializeRemoteConfig } from '@/model/remoteConfig';
-import { RemoteCardsSync } from './state/sync/RemoteCardsSync';
-import { RemotePromoSheetSync } from './state/sync/RemotePromoSheetSync';
 import { IS_DEV } from './env';
 import { checkIdentifierOnLaunch } from './model/backup';
 
@@ -229,10 +227,6 @@ class OldApp extends Component {
             </InitialRouteContext.Provider>
           )}
           <OfflineToast />
-
-          {/* NOTE: Components below render null and only keep state in sync */}
-          <RemoteCardsSync />
-          <RemotePromoSheetSync />
         </View>
         <NotificationsHandler walletReady={this.props.walletReady} />
       </Portal>

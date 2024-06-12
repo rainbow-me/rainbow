@@ -1,16 +1,20 @@
+import React, { useCallback } from 'react';
+
 import { remotePromoSheetsStore } from '../remotePromoSheets/remotePromoSheets';
 import { usePromoSheetCollectionQuery } from '@/resources/promoSheet/promoSheetCollectionQuery';
-import { PromoSheetOrder } from '@/graphql/__generated__/arc';
+import { GetPromoSheetCollectionQuery, PromoSheetOrder } from '@/graphql/__generated__/arc';
 import { useRunChecks } from '@/components/remote-promo-sheet/runChecks';
 import { IS_TEST } from '@/env';
 
-export const RemotePromoSheetSync = () => {
+const RemotePromoSheetSyncComponent = () => {
+  const onSuccess = useCallback((data: GetPromoSheetCollectionQuery) => {
+    remotePromoSheetsStore.getState().setSheets(data);
+  }, []);
+
   usePromoSheetCollectionQuery(
     { order: [PromoSheetOrder.PriorityDesc] },
     {
-      onSuccess: data => {
-        remotePromoSheetsStore.getState().setSheets(data);
-      },
+      onSuccess,
       enabled: !IS_TEST,
     }
   );
@@ -19,3 +23,5 @@ export const RemotePromoSheetSync = () => {
 
   return null;
 };
+
+export const RemotePromoSheetSync = React.memo(RemotePromoSheetSyncComponent, () => true);

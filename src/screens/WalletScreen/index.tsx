@@ -29,8 +29,10 @@ import { AppState } from '@/redux/store';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { usePositions } from '@/resources/defi/PositionsQuery';
 import styled from '@/styled-thing';
-import { UserAssetsSync } from '@/state/sync/UserAssetsSync';
 import { IS_ANDROID } from '@/env';
+import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
+import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
+import { UserAssetsSync } from '@/state/sync/UserAssetsSync';
 
 const WalletPage = styled(Page)({
   ...position.sizeAsObject('100%'),
@@ -143,6 +145,8 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
 
         {/* NOTE: The component below renders null and is solely for keeping react-query and Zustand in sync */}
         <UserAssetsSync />
+        <RemoteCardsSync />
+        <RemotePromoSheetSync />
       </WalletPage>
     </View>
   );
