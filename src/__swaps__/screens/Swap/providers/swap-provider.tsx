@@ -165,69 +165,97 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     type: 'swap' | 'crosschainSwap';
     parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'>;
   }) => {
-    const NotificationManager = ios ? NativeModules.NotificationManager : null;
-    NotificationManager?.postNotification('rapInProgress');
+    try {
+      const NotificationManager = ios ? NativeModules.NotificationManager : null;
+      NotificationManager?.postNotification('rapInProgress');
 
-    const resetSwappingStatus = () => {
-      'worklet';
+      const network = ethereumUtils.getNetworkFromChainId(parameters.chainId);
+      const provider =
+        parameters.flashbots && getNetworkObj(network).features.flashbots
+          ? await getFlashbotsProvider()
+          : getCachedProviderForNetwork(network);
+      const providerUrl = provider?.connection?.url;
+      const connectedToHardhat = !!providerUrl && isHardHat(providerUrl);
+
+      const isBridge = swapsStore.getState().inputAsset?.mainnetAddress === swapsStore.getState().outputAsset?.mainnetAddress;
+      const slippage = swapsStore.getState().slippage;
+
+      const selectedGas = getSelectedGas(parameters.chainId);
+      if (!selectedGas) {
+        isSwapping.value = false;
+        Alert.alert(i18n.t(i18n.l.gas.unable_to_determine_selected_gas));
+        return;
+      }
+
+      const wallet = await loadWallet(parameters.quote.from, false, provider);
+      if (!wallet) {
+        isSwapping.value = false;
+        Alert.alert(i18n.t(i18n.l.swap.unable_to_load_wallet));
+        return;
+      }
+
+      const gasFeeParamsBySpeed = getGasSettingsBySpeed(parameters.chainId);
+      const selectedGasSpeed = getSelectedGasSpeed(parameters.chainId);
+
+      let gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = {} as
+        | TransactionGasParamAmounts
+        | LegacyTransactionGasParamAmounts;
+
+      if (selectedGas.isEIP1559) {
+        gasParams = {
+          maxFeePerGas: selectedGas.maxBaseFee,
+          maxPriorityFeePerGas: selectedGas.maxPriorityFee,
+        };
+      } else {
+        gasParams = {
+          gasPrice: selectedGas.gasPrice,
+        };
+      }
+
+      const { errorMessage } = await walletExecuteRap(wallet, type, {
+        ...parameters,
+        gasParams,
+        // @ts-expect-error - collision between old gas types and new
+        gasFeeParamsBySpeed: gasFeeParamsBySpeed,
+      });
       isSwapping.value = false;
-    };
 
-    const network = ethereumUtils.getNetworkFromChainId(parameters.chainId);
-    const provider =
-      parameters.flashbots && getNetworkObj(network).features.flashbots
-        ? await getFlashbotsProvider()
-        : getCachedProviderForNetwork(network);
-    const providerUrl = provider?.connection?.url;
-    const connectedToHardhat = !!providerUrl && isHardHat(providerUrl);
+      if (errorMessage) {
+        SwapInputController.quoteFetchingInterval.start();
 
-    const isBridge = swapsStore.getState().inputAsset?.mainnetAddress === swapsStore.getState().outputAsset?.mainnetAddress;
-    const slippage = swapsStore.getState().slippage;
+        analyticsV2.track(analyticsV2.event.swapsFailed, {
+          createdAt: Date.now(),
+          type,
+          parameters,
+          selectedGas,
+          selectedGasSpeed,
+          slippage,
+          bridge: isBridge,
+          errorMessage,
+          inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
+          outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
+        });
 
-    const selectedGas = getSelectedGas(parameters.chainId);
-    if (!selectedGas) {
-      runOnUI(resetSwappingStatus)();
-      Alert.alert(i18n.t(i18n.l.gas.unable_to_determine_selected_gas));
-      return;
-    }
+        if (errorMessage !== 'handled') {
+          logger.error(new RainbowError(`[getNonceAndPerformSwap]: Error executing swap: ${errorMessage}`));
+          const extractedError = errorMessage.split('[')[0];
+          Alert.alert(i18n.t(i18n.l.swap.error_executing_swap), extractedError);
+          return;
+        }
+      }
 
-    const wallet = await loadWallet(parameters.quote.from, false, provider);
-    if (!wallet) {
-      runOnUI(resetSwappingStatus)();
-      Alert.alert(i18n.t(i18n.l.swap.unable_to_load_wallet));
-      return;
-    }
+      queryClient.invalidateQueries({
+        queryKey: userAssetsQueryKey({
+          address: parameters.quote.from,
+          currency: nativeCurrency,
+          connectedToHardhat,
+        }),
+      });
 
-    const gasFeeParamsBySpeed = getGasSettingsBySpeed(parameters.chainId);
-    const selectedGasSpeed = getSelectedGasSpeed(parameters.chainId);
+      NotificationManager?.postNotification('rapCompleted');
+      Navigation.handleAction(Routes.PROFILE_SCREEN, {});
 
-    let gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = {} as
-      | TransactionGasParamAmounts
-      | LegacyTransactionGasParamAmounts;
-
-    if (selectedGas.isEIP1559) {
-      gasParams = {
-        maxFeePerGas: selectedGas.maxBaseFee,
-        maxPriorityFeePerGas: selectedGas.maxPriorityFee,
-      };
-    } else {
-      gasParams = {
-        gasPrice: selectedGas.gasPrice,
-      };
-    }
-
-    const { errorMessage } = await walletExecuteRap(wallet, type, {
-      ...parameters,
-      gasParams,
-      // @ts-expect-error - collision between old gas types and new
-      gasFeeParamsBySpeed: gasFeeParamsBySpeed,
-    });
-    runOnUI(resetSwappingStatus)();
-
-    if (errorMessage) {
-      SwapInputController.quoteFetchingInterval.start();
-
-      analyticsV2.track(analyticsV2.event.swapsFailed, {
+      analyticsV2.track(analyticsV2.event.swapsSubmitted, {
         createdAt: Date.now(),
         type,
         parameters,
@@ -235,41 +263,21 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         selectedGasSpeed,
         slippage,
         bridge: isBridge,
-        errorMessage,
         inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
         outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
       });
+    } catch (error) {
+      isSwapping.value = false;
 
-      if (errorMessage !== 'handled') {
-        logger.error(new RainbowError(`[getNonceAndPerformSwap]: Error executing swap: ${errorMessage}`));
-        const extractedError = errorMessage.split('[')[0];
-        Alert.alert(i18n.t(i18n.l.swap.error_executing_swap), extractedError);
-        return;
-      }
+      const message = error instanceof Error ? error.message : 'Generic error while trying to swap';
+      logger.error(new RainbowError(`[getNonceAndPerformSwap]: ${message}`), {
+        data: {
+          error,
+          type,
+          parameters,
+        },
+      });
     }
-
-    queryClient.invalidateQueries({
-      queryKey: userAssetsQueryKey({
-        address: parameters.quote.from,
-        currency: nativeCurrency,
-        connectedToHardhat,
-      }),
-    });
-
-    NotificationManager?.postNotification('rapCompleted');
-    Navigation.handleAction(Routes.PROFILE_SCREEN, {});
-
-    analyticsV2.track(analyticsV2.event.swapsSubmitted, {
-      createdAt: Date.now(),
-      type,
-      parameters,
-      selectedGas,
-      selectedGasSpeed,
-      slippage,
-      bridge: isBridge,
-      inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
-      outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
-    });
   };
 
   const executeSwap = () => {
