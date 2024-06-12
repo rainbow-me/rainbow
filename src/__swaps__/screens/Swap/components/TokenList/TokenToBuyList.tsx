@@ -1,6 +1,6 @@
 import { FlashList } from '@shopify/flash-list';
 import React, { memo, useCallback, useMemo } from 'react';
-import Animated, { runOnUI, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { runOnUI, useAnimatedProps, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { analyticsV2 } from '@/analytics';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -109,6 +109,13 @@ export const TokenToBuyList = () => {
     return { height: bottomPadding };
   });
 
+  const animatedListProps = useAnimatedProps(() => {
+    const isFocused = outputProgress.value === 2;
+    return {
+      scrollIndicatorInsets: { bottom: 28 + (isFocused ? EXPANDED_INPUT_HEIGHT - FOCUSED_INPUT_HEIGHT : 0) },
+    };
+  });
+
   const averageItemSize = useMemo(() => {
     const numberOfHeaders = sections.filter(section => section.listItemType === 'header').length;
     const numberOfCoinRows = sections.filter(section => section.listItemType === 'coinRow').length;
@@ -121,6 +128,7 @@ export const TokenToBuyList = () => {
       <FlashList
         ListEmptyComponent={<ListEmpty isSearchEmptyState output />}
         ListFooterComponent={<Animated.View style={[animatedListPadding, { width: '100%' }]} />}
+        ListHeaderComponent={<ChainSelection output />}
         contentContainerStyle={{ paddingBottom: 16 }}
         // For some reason shallow copying the list data allows FlashList to more quickly pick up changes
         data={sections.slice(0)}
@@ -128,7 +136,6 @@ export const TokenToBuyList = () => {
         estimatedItemSize={averageItemSize}
         estimatedListSize={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}
         getItemType={item => item.listItemType}
-        ListHeaderComponent={<ChainSelection output />}
         keyExtractor={item => `${item.listItemType}-${item.listItemType === 'coinRow' ? item.uniqueId : item.id}`}
         renderItem={({ item }) => {
           if (item.listItemType === 'header') {
@@ -151,7 +158,15 @@ export const TokenToBuyList = () => {
             />
           );
         }}
-        scrollIndicatorInsets={{ bottom: 28 + (EXPANDED_INPUT_HEIGHT - FOCUSED_INPUT_HEIGHT) }}
+        renderScrollComponent={props => {
+          return (
+            <Animated.ScrollView
+              // eslint-disable-next-line react/jsx-props-no-spreading
+              {...props}
+              animatedProps={animatedListProps}
+            />
+          );
+        }}
         style={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}
       />
     </Box>

@@ -1,6 +1,5 @@
 import React from 'react';
 import { SharedValue } from 'react-native-reanimated';
-import { StyleSheet } from 'react-native';
 import { Box, Separator, Stack } from '@/design-system';
 import { EXPANDED_INPUT_HEIGHT } from '@/__swaps__/screens/Swap/constants';
 import { SearchInput } from '@/__swaps__/screens/Swap/components/SearchInput';

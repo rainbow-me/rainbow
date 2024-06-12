@@ -1,8 +1,7 @@
-import React, { useCallback } from 'react';
-import { StyleSheet } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
 import { COIN_ROW_WITH_PADDING_HEIGHT, CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
-import Animated, { runOnUI, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { runOnUI, useAnimatedProps, useAnimatedStyle } from 'react-native-reanimated';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { FlashList } from '@shopify/flash-list';
@@ -18,8 +17,14 @@ import { analyticsV2 } from '@/analytics';
 
 const SELL_LIST_HEADER_HEIGHT = 20 + 10 + 14; // paddingTop + height + paddingBottom
 
+const isInitialInputAssetNull = () => {
+  return !swapsStore.getState().inputAsset;
+};
+
 export const TokenToSellList = () => {
-  const shouldMount = useDelayedMount();
+  const skipDelayedMount = useMemo(() => isInitialInputAssetNull(), []);
+  const shouldMount = useDelayedMount({ skipDelayedMount });
+
   return shouldMount ? <TokenToSellListComponent /> : null;
 };
 
@@ -66,6 +71,13 @@ const TokenToSellListComponent = () => {
     return { height: bottomPadding };
   });
 
+  const animatedListProps = useAnimatedProps(() => {
+    const isFocused = inputProgress.value === 2;
+    return {
+      scrollIndicatorInsets: { bottom: 28 + (isFocused ? EXPANDED_INPUT_HEIGHT - FOCUSED_INPUT_HEIGHT : 0) },
+    };
+  });
+
   return (
     <FlashList
       ListEmptyComponent={<ListEmpty />}
@@ -81,16 +93,16 @@ const TokenToSellListComponent = () => {
       renderItem={({ item: uniqueId }) => {
         return <CoinRow onPress={(asset: ParsedSearchAsset | null) => handleSelectToken(asset)} output={false} uniqueId={uniqueId} />;
       }}
-      scrollIndicatorInsets={{ bottom: 28 + (EXPANDED_INPUT_HEIGHT - FOCUSED_INPUT_HEIGHT) }}
+      renderScrollComponent={props => {
+        return (
+          <Animated.ScrollView
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...props}
+            animatedProps={animatedListProps}
+          />
+        );
+      }}
       style={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}
     />
   );
 };
-
-export const styles = StyleSheet.create({
-  textIconGlow: {
-    padding: 16,
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 10,
-  },
-});
