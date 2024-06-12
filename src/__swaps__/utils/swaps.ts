@@ -30,14 +30,13 @@ import {
   divWorklet,
   equalWorklet,
   floorWorklet,
-  log10Worklet,
   lessThanOrEqualToWorklet,
   mulWorklet,
   powWorklet,
   roundWorklet,
   toFixedWorklet,
   greaterThanOrEqualToWorklet,
-  sumWorklet,
+  orderOfMagnitudeWorklet,
 } from '../safe-math/SafeMath';
 
 // /---- 🎨 Color functions 🎨 ----/ //
@@ -171,7 +170,7 @@ export const findNiceIncrement = (availableBalance: string | number) => {
   const exactIncrement = divWorklet(availableBalance, 100);
 
   // Calculate the order of magnitude of the exact increment
-  const orderOfMagnitude = floorWorklet(log10Worklet(exactIncrement));
+  const orderOfMagnitude = orderOfMagnitudeWorklet(exactIncrement);
 
   const baseIncrement = powWorklet(10, orderOfMagnitude);
 
@@ -232,7 +231,7 @@ export function trimTrailingZeros(value: string) {
 export function precisionBasedOffMagnitude(amount: number | string, isStablecoin = false): number {
   'worklet';
 
-  const magnitude = -Number(floorWorklet(sumWorklet(log10Worklet(amount), 0)));
+  const magnitude = orderOfMagnitudeWorklet(amount);
   // don't let stablecoins go beneath 2nd order
   if (magnitude < -2 && isStablecoin) {
     return -STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS;
