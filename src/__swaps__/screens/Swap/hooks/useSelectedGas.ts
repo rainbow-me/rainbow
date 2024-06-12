@@ -1,9 +1,9 @@
 import { ChainId } from '@/__swaps__/types/chains';
+import { GasSpeed } from '@/__swaps__/types/gas';
 import { getCachedGasSuggestions, useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { useMemo } from 'react';
 import { getCustomGasSettings, useCustomGasSettings } from './useCustomGas';
-import { GasSpeed } from '@/__swaps__/types/gas';
 
 const useSelectedGasSpeedStore = createRainbowStore<{ [c in ChainId]?: GasSpeed }>(() => ({}), {
   version: 0,
@@ -45,7 +45,11 @@ export function getGasSettingsBySpeed(chainId: ChainId) {
 }
 
 export function getGasSettings(speed: GasSpeed, chainId: ChainId) {
-  if (speed === GasSpeed.CUSTOM) return getCustomGasSettings(chainId);
+  if (speed === GasSpeed.CUSTOM) {
+    const customGasSettings = getCustomGasSettings(chainId);
+    if (!customGasSettings) return getCachedGasSuggestions(chainId)?.[GasSpeed.FAST];
+    return customGasSettings;
+  }
   return getCachedGasSuggestions(chainId)?.[speed];
 }
 
