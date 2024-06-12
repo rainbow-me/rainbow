@@ -179,8 +179,6 @@ function SwapButton() {
       analytics.track('Tapped "Swap"', {
         category: 'home screen',
       });
-
-      android && delayNext();
       if (swapsV2Enabled) {
         swapsStore.setState({
           inputAsset: userAssetsStore.getState().getHighestValueAsset(),
@@ -190,6 +188,8 @@ function SwapButton() {
         });
         return;
       }
+
+      android && delayNext();
 
       const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(Network.mainnet, accountAddress);
       navigate(Routes.EXCHANGE_MODAL, {
