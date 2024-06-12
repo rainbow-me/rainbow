@@ -64,6 +64,13 @@ const formatResultWorklet = (result: bigint): string => {
 const toStringWorklet = (value: string | number): string => {
   'worklet';
   const ret = typeof value === 'number' ? value.toString() : value;
+
+  if (ret.includes('e') && !ret.includes('e-')) {
+    const [base, exponent] = ret.split('e');
+    const exp = Number(exponent);
+    return base.replace('.', '') + '0'.repeat(exp);
+  }
+
   if (/^\d+\.$/.test(ret)) {
     return ret.slice(0, -1);
   }

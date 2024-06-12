@@ -33,6 +33,7 @@ const RESULTS = {
   negativePow: '0.001',
   negativeExp: '6.0895415516156',
   orderOfMagnitude: '29',
+  divWithExp: '100000000000000000000000',
 };
 
 const VALUE_A = '1243425.345';
@@ -43,6 +44,8 @@ const VALUE_E = '0.057464009350560633';
 const VALUE_F = '147887324';
 const VALUE_G = '4.11769e-8';
 const VALUE_H = '123456789012345678901234567890';
+const VALUE_I = '6.25e+21';
+const VALUE_K = '6.25';
 const NEGATIVE_VALUE = '-2412.12';
 const ZERO = '0';
 const ONE = '1';
@@ -95,6 +98,7 @@ describe('SafeMath', () => {
     expect(divWorklet(VALUE_A, VALUE_B)).toBe(RESULTS.div);
     expect(divWorklet(Number(VALUE_A), VALUE_B)).toBe(RESULTS.div);
     expect(divWorklet(VALUE_A, Number(VALUE_B))).toBe(RESULTS.div);
+    expect(divWorklet(VALUE_I, VALUE_K)).toBe(RESULTS.divWithExp);
   });
 
   test('modWorklet', () => {

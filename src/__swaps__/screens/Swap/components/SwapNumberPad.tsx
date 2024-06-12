@@ -48,8 +48,11 @@ export const SwapNumberPad = () => {
     const inputKey = focusedInput.value;
     const currentValue = SwapInputController.inputValues.value[inputKey].toString();
     const newValue = currentValue === '0' ? `${number}` : `${currentValue}${number}`;
-    // It will overflow with 18 digits
-    if (newValue.length > 17) {
+
+    // For a uint256, the maximum value is:
+    // 2e256 − 1 =115792089237316195423570985008687907853269984665640564039457584007913129639935
+    // This value has 78 digits.
+    if (newValue.length > 78) {
       return;
     }
 
