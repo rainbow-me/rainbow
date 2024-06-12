@@ -29,7 +29,7 @@ import { formatNumber } from '../hooks/formatNumber';
 import { GasSettings, getCustomGasSettings, setCustomGasSettings, useCustomGasStore } from '../hooks/useCustomGas';
 import { setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
-import { UnmountBasedOnAnimatedReaction } from './UnmountBasedOnAnimatedReaction';
+import { UnmountBasedOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 
 const { GAS_TRENDS } = gasUtils;
 

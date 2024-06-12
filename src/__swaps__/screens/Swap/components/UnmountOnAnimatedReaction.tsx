@@ -1,7 +1,7 @@
 import { PropsWithChildren, ReactNode, useState } from 'react';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 
-export function UnmountBasedOnAnimatedReaction({
+export function UnmountOnAnimatedReaction({
   isMountedWorklet,
   placeholder,
   children,

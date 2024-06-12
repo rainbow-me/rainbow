@@ -21,7 +21,7 @@ import { GasSpeed, setSelectedGasSpeed, useSelectedGas, useSelectedGasSpeed } fr
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { GestureHandlerV1Button } from './GestureHandlerV1Button';
-import { UnmountBasedOnAnimatedReaction } from './UnmountBasedOnAnimatedReaction';
+import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 
 const { GAS_ICONS } = gasUtils;
 const GAS_BUTTON_HIT_SLOP = 16;
@@ -29,7 +29,7 @@ const GAS_BUTTON_HIT_SLOP = 16;
 function UnmountWhenGasButtonIsNotInScreen({ placeholder, children }: PropsWithChildren<{ placeholder: ReactNode }>) {
   const { configProgress } = useSwapContext();
   return (
-    <UnmountBasedOnAnimatedReaction
+    <UnmountOnAnimatedReaction
       isMountedWorklet={() => {
         'worklet';
         // unmount when custom gas or review panels are above it
@@ -38,7 +38,7 @@ function UnmountWhenGasButtonIsNotInScreen({ placeholder, children }: PropsWithC
       placeholder={placeholder}
     >
       {children}
-    </UnmountBasedOnAnimatedReaction>
+    </UnmountOnAnimatedReaction>
   );
 }
 
