@@ -459,7 +459,8 @@ export type ForegroundColor =
   | 'zora'
   | 'bsc'
   | 'avalanche'
-  | 'blast';
+  | 'blast'
+  | 'degen';
 
 function selectBackgroundAsForeground(backgroundName: BackgroundColor): string | ContextualColorValue<string> {
   const bg = backgroundColors[backgroundName];
@@ -673,6 +674,10 @@ export const foregroundColors: Record<ForegroundColor, string | ContextualColorV
     light: '#FCFC06',
     dark: '#FCFC06',
   },
+  'degen': {
+    light: '#A36EFD',
+    dark: '#A36EFD',
+  },
 };
 
 /**
@@ -772,7 +777,8 @@ export const textColors = selectForegroundColors(
   'zora',
   'bsc',
   'avalanche',
-  'blast'
+  'blast',
+  'degen'
 );
 export type TextColor = (typeof textColors)[number];
 
