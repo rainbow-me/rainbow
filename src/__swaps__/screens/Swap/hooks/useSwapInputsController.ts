@@ -29,21 +29,27 @@ import {
 } from '@/resources/assets/externalAssetsQuery';
 import { ethereumUtils } from '@/utils';
 import { queryClient } from '@/react-query';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { analyticsV2 } from '@/analytics';
 import { divWorklet, equalWorklet, greaterThanWorklet, mulWorklet, toFixedWorklet } from '@/__swaps__/safe-math/SafeMath';
 
 function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetWithColors | null) {
   const initialBalance = Number(initialSelectedInputAsset?.balance.amount) || 0;
+  const assetBalanceDisplay = initialSelectedInputAsset?.balance.display ?? '';
   const initialNiceIncrement = findNiceIncrement(initialBalance);
   const initialDecimalPlaces = countDecimalPlaces(initialNiceIncrement);
+  const isStablecoin = initialSelectedInputAsset?.type === 'stablecoin';
 
   const initialInputAmount = niceIncrementFormatter({
     incrementDecimalPlaces: initialDecimalPlaces,
     inputAssetBalance: initialBalance,
+    assetBalanceDisplay,
     inputAssetUsdPrice: initialSelectedInputAsset?.price?.value ?? 0,
     niceIncrement: initialNiceIncrement,
     percentageToSwap: 0.5,
     sliderXPosition: SLIDER_WIDTH / 2,
     stripSeparators: true,
+    isStablecoin,
   });
 
   const initialInputNativeValue = addCommasToNumber(
@@ -119,10 +125,13 @@ export function useSwapInputsController({
       return addCommasToNumber(inputValues.value.inputAmount, '0');
     }
 
+    const assetBalanceDisplay = internalSelectedInputAsset.value.balance.display ?? '';
+
     if (inputMethod.value === 'outputAmount') {
       return valueBasedDecimalFormatter({
         amount: inputValues.value.inputAmount,
         usdTokenPrice: inputNativePrice.value,
+        assetBalanceDisplay,
         roundingMode: 'up',
         precisionAdjustment: -1,
         isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
@@ -131,14 +140,17 @@ export function useSwapInputsController({
     }
 
     const balance = internalSelectedInputAsset.value?.balance.amount || 0;
+    const isStablecoin = internalSelectedInputAsset.value?.type === 'stablecoin' ?? false;
 
     return niceIncrementFormatter({
       incrementDecimalPlaces: incrementDecimalPlaces.value,
       inputAssetBalance: balance,
+      assetBalanceDisplay,
       inputAssetUsdPrice: inputNativePrice.value,
       niceIncrement: niceIncrement.value,
       percentageToSwap: percentageToSwap.value,
       sliderXPosition: sliderXPosition.value,
+      isStablecoin,
     });
   });
 
@@ -166,9 +178,13 @@ export function useSwapInputsController({
     if (inputMethod.value === 'outputAmount' || typeof inputValues.value.outputAmount === 'string') {
       return addCommasToNumber(inputValues.value.outputAmount, '0');
     }
+
+    const assetBalanceDisplay = internalSelectedOutputAsset.value.balance.display ?? '';
+
     return valueBasedDecimalFormatter({
       amount: inputValues.value.outputAmount,
       usdTokenPrice: outputNativePrice.value,
+      assetBalanceDisplay,
       roundingMode: 'down',
       precisionAdjustment: -1,
       isStablecoin: internalSelectedOutputAsset.value?.type === 'stablecoin' ?? false,
@@ -484,6 +500,12 @@ export function useSwapInputsController({
             )
           : undefined;
 
+      analyticsV2.track(analyticsV2.event.swapsReceivedQuote, {
+        inputAsset: internalSelectedInputAsset.value,
+        outputAsset: internalSelectedOutputAsset.value,
+        quote: quoteResponse,
+      });
+
       runOnUI(() => {
         setQuote({
           data: quoteResponse,
@@ -674,6 +696,7 @@ export function useSwapInputsController({
             if (!internalSelectedInputAsset.value) return;
 
             const balance = Number(internalSelectedInputAsset.value.balance.amount);
+
             if (!balance) {
               inputValues.modify(values => {
                 return {
@@ -687,14 +710,18 @@ export function useSwapInputsController({
               return;
             }
 
+            const assetBalanceDisplay = internalSelectedInputAsset.value.balance.display;
+
             const inputAmount = niceIncrementFormatter({
               incrementDecimalPlaces: incrementDecimalPlaces.value,
               inputAssetBalance: balance,
+              assetBalanceDisplay,
               inputAssetUsdPrice: inputNativePrice.value,
               niceIncrement: niceIncrement.value,
               percentageToSwap: percentageToSwap.value,
               sliderXPosition: sliderXPosition.value,
               stripSeparators: true,
+              isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
             });
             const inputNativeValue = mulWorklet(inputAmount, inputNativePrice.value);
             inputValues.modify(values => {
@@ -844,14 +871,18 @@ export function useSwapInputsController({
             return;
           }
 
+          const assetBalanceDisplay = internalSelectedInputAsset.value?.balance.display ?? '';
+
           const inputAmount = niceIncrementFormatter({
             incrementDecimalPlaces: incrementDecimalPlaces.value,
             inputAssetBalance: balance,
+            assetBalanceDisplay,
             inputAssetUsdPrice: inputNativePrice.value,
             niceIncrement: niceIncrement.value,
             percentageToSwap: percentageToSwap.value,
             sliderXPosition: sliderXPosition.value,
             stripSeparators: true,
+            isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
           });
 
           const inputNativeValue = mulWorklet(inputAmount, inputNativePrice.value);
@@ -869,11 +900,14 @@ export function useSwapInputsController({
           const inputNativePrice = internalSelectedInputAsset.value?.nativePrice || internalSelectedInputAsset.value?.price?.value || 0;
           const outputNativePrice = internalSelectedOutputAsset.value?.nativePrice || internalSelectedOutputAsset.value?.price?.value || 0;
 
+          const assetBalanceDisplay = current.assetToSell?.balance.display ?? '';
+
           const inputAmount = Number(
             valueBasedDecimalFormatter({
               amount:
                 inputNativePrice > 0 ? divWorklet(inputValues.value.inputNativeValue, inputNativePrice) : inputValues.value.outputAmount,
               usdTokenPrice: inputNativePrice,
+              assetBalanceDisplay,
               roundingMode: 'up',
               precisionAdjustment: -1,
               isStablecoin: current.assetToSell?.type === 'stablecoin' ?? false,
