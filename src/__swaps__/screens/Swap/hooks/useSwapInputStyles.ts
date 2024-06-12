@@ -62,15 +62,15 @@ export const useSwapInputStyles = ({
 
   const containerStyle = useAnimatedStyle(() => {
     const getContainerStyleTranslateY = (progress: SharedValue<number>, bottomInput: boolean | undefined) => {
+      let yTranslation = 0;
       if (progress.value === NavigationSteps.SEARCH_FOCUSED) {
         if (bottomInput) {
-          return withSpring(-191, SPRING_CONFIGS.springConfig);
+          yTranslation = -191;
         } else {
-          return withSpring(-77, SPRING_CONFIGS.springConfig);
+          yTranslation = -77;
         }
       }
-
-      return withSpring(0, SPRING_CONFIGS.springConfig);
+      return yTranslation;
     };
 
     return {
@@ -81,11 +81,18 @@ export const useSwapInputStyles = ({
       shadowColor: isDarkMode ? 'transparent' : getColorValueForThemeWorklet(asset.value?.mixedShadowColor, isDarkMode, true),
       transform: [
         {
-          translateY: getContainerStyleTranslateY(progress, bottomInput),
+          translateY: withSpring(getContainerStyleTranslateY(progress, bottomInput), SPRING_CONFIGS.keyboardConfig),
         },
       ],
     };
   });
+
+  const inputHeight = useDerivedValue(() =>
+    withSpring(
+      interpolate(progress.value, [0, 1, 2], [BASE_INPUT_HEIGHT, EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT], 'clamp'),
+      SPRING_CONFIGS.springConfig
+    )
+  );
 
   const inputStyle = useAnimatedStyle(() => {
     return {
@@ -96,10 +103,6 @@ export const useSwapInputStyles = ({
       borderColor: withTiming(
         interpolateColor(progress.value, [0, 1], [strokeColor.value, expandedStrokeColor.value]),
         TIMING_CONFIGS.fadeConfig
-      ),
-      height: withSpring(
-        interpolate(progress.value, [0, 1, 2], [BASE_INPUT_HEIGHT, EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT], 'clamp'),
-        SPRING_CONFIGS.springConfig
       ),
       transform: [
         {
@@ -114,5 +117,5 @@ export const useSwapInputStyles = ({
     };
   });
 
-  return { containerStyle, inputStyle };
+  return { containerStyle, inputHeight, inputStyle };
 };

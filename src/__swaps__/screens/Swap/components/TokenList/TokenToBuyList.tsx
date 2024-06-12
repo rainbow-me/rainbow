@@ -22,7 +22,7 @@ import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
 import { ChainSelection } from './ChainSelection';
 
-const BUY_LIST_HEADER_HEIGHT = 20 + 10 + 8; // paddingTop + height + paddingBottom
+export const BUY_LIST_HEADER_HEIGHT = 20 + 10 + 8; // paddingTop + height + paddingBottom
 
 interface SectionHeaderProp {
   color: string | undefined;
@@ -126,7 +126,7 @@ export const TokenToBuyList = () => {
   return (
     <Box style={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}>
       <FlashList
-        ListEmptyComponent={<ListEmpty isSearchEmptyState output />}
+        ListEmptyComponent={<ListEmpty output />}
         ListFooterComponent={<Animated.View style={[animatedListPadding, { width: '100%' }]} />}
         ListHeaderComponent={<ChainSelection output />}
         contentContainerStyle={{ paddingBottom: 16 }}
