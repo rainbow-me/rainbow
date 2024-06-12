@@ -73,7 +73,7 @@ export function AnimatedChainImage({
     const base = {
       source: {
         ...DEFAULT_FASTER_IMAGE_CONFIG,
-        borderRadius: IS_ANDROID ? (size / 2) * PIXEL_RATIO : undefined,
+        borderRadius: IS_ANDROID ? (size / 2) * PIXEL_RATIO : size / 2,
         url: '',
       },
     };

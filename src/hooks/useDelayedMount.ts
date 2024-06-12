@@ -12,7 +12,8 @@ export const useDelayedMount = ({ delay = 0, skipDelayedMount = false } = {}) =>
         return () => clearTimeout(timeout);
       }
     }
-  }, [delay, skipDelayedMount]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return shouldMount;
 };

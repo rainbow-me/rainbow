@@ -1946,7 +1946,7 @@
       "select": "Select",
       "token_to_get": "Token to Get",
       "token_to_swap": "Token to Swap",
-      "no_balance": "No balance",
+      "no_balance": "No Balance",
       "find_a_token_to_buy": "Find a token to buy",
       "search_your_tokens": "Search your tokens",
       "error_executing_swap": "Error executing swap",
@@ -2014,7 +2014,7 @@
         "bridge": "Bridge",
         "verified": "Verified",
         "unverified": "Unverified",
-        "on_other_networks": "On other networks"
+        "on_other_networks": "On Other Networks"
       }
     },
     "transactions": {
