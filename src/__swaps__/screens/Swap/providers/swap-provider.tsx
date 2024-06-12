@@ -57,7 +57,7 @@ const enterAmount = i18n.t(i18n.l.swap.actions.enter_amount);
 const review = i18n.t(i18n.l.swap.actions.review);
 const fetchingPrices = i18n.t(i18n.l.swap.actions.fetching_prices);
 const selectToken = i18n.t(i18n.l.swap.actions.select_token);
-const estimating = i18n.t(i18n.l.swap.actions.estimating);
+const errorLabel = i18n.t(i18n.l.swap.actions.error);
 const insufficientFunds = i18n.t(i18n.l.swap.actions.insufficient_funds);
 
 interface SwapContextType {
@@ -557,11 +557,11 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
     if (!gasSettings.value) {
       // this could happen if metereology is down, or some other edge cases that are not properly handled yet
-      return { label: 'Error', disabled: true };
+      return { label: errorLabel, disabled: true };
     }
 
     if (isQuoteError) {
-      return { label: 'Error', disabled: true };
+      return { label: errorLabel, disabled: true };
     }
 
     return { icon: '􀕹', label: review, disabled: false };
