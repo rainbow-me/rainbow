@@ -7,9 +7,9 @@ import { Box, Inline, Text } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { position } from '@/styles';
-import { ethereumUtils } from '@/utils';
+import { ethereumUtils, watchingAlert } from '@/utils';
 import { CurrencySelectionTypes, ExchangeModalTypes, Network } from '@/helpers';
-import { useSwapCurrencyHandlers } from '@/hooks';
+import { useSwapCurrencyHandlers, useWallets } from '@/hooks';
 import { RainbowToken } from '@/entities';
 import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../animations';
@@ -17,7 +17,7 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { implementation } from '@/entities/dispersion';
 import { RainbowNetworks, getNetworkObj } from '@/networks';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
-import { SWAPS_V2, useExperimentalFlag } from '@/config';
+import { SWAPS_V2, enableActionsOnReadOnlyWallet, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
@@ -43,6 +43,7 @@ const AvailableNetworksv2 = ({
   const { goBack, navigate } = useNavigation();
   const { swaps_v2 } = useRemoteConfig();
   const swapsV2Enabled = useExperimentalFlag(SWAPS_V2);
+  const { isReadOnlyWallet } = useWallets();
 
   const radialGradientProps = {
     center: [0, 1],
@@ -67,6 +68,11 @@ const AvailableNetworksv2 = ({
   });
   const convertAssetAndNavigate = useCallback(
     (chosenNetwork: Network) => {
+      if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
+        watchingAlert();
+        return;
+      }
+
       const newAsset = asset;
 
       // we need to convert the mainnet asset to the selected network's
@@ -179,7 +185,6 @@ const AvailableNetworksv2 = ({
     <>
       <MenuWrapper
         // @ts-ignore overloaded props
-
         menuConfig={{ menuItems: networkMenuItems, menuTitle: '' }}
         isMenuPrimaryAction
         onPressMenuItem={handlePressContextMenu}
@@ -187,8 +192,6 @@ const AvailableNetworksv2 = ({
       >
         <Box
           as={ButtonPressAnimation}
-          // @ts-ignore overloaded props
-
           scaleTo={0.96}
           onPress={availableNetworks.length === 1 ? handlePressButton : NOOP}
           marginHorizontal={{ custom: marginHorizontal }}
@@ -198,7 +201,6 @@ const AvailableNetworksv2 = ({
             <RadialGradient
               {...radialGradientProps}
               // @ts-ignore overloaded props
-
               borderRadius={99}
               radius={600}
             />
