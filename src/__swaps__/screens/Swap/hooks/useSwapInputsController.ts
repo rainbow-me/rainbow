@@ -773,11 +773,9 @@ export function useSwapInputsController({
             });
 
             const inputAssetBalance = internalSelectedInputAsset.value?.balance.amount || '0';
-            const updatedSliderPosition = clamp(
-              Number(divWorklet(current.values.inputAmount, inputAssetBalance)) * SLIDER_WIDTH,
-              0,
-              SLIDER_WIDTH
-            );
+            const updatedSliderPosition = greaterThanWorklet(inputAssetBalance, 0)
+              ? clamp(Number(divWorklet(current.values.inputAmount, inputAssetBalance)) * SLIDER_WIDTH, 0, SLIDER_WIDTH)
+              : 0;
 
             sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
 
