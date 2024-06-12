@@ -19,4 +19,11 @@ coverage
 src/browser
 src/__swaps__/README.md
 InjectedJSBundle.js
-lint-staged.config.js
+__mocks__
+config
+hardhat.config.js
+index.js
+metro.transform.js
+rainbow-scripts
+react-native.config.js
+scripts

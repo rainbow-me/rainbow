@@ -95,7 +95,6 @@ const MountAndUnmountHandlers = () => {
 
 const useMountSignal = () => {
   useEffect(() => {
-    console.loog()'';
     useSwapsStore.setState({ isSwapsOpen: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
