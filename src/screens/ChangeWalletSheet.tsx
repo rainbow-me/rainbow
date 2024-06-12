@@ -144,7 +144,7 @@ export default function ChangeWalletSheet() {
         initializeWallet(null, null, null, false, false, null, true);
         if (!fromDeletion) {
           goBack();
-          runChecks();
+          setTimeout(runChecks, 10_000);
         }
       } catch (e) {
         logger.log('error while switching account', e);

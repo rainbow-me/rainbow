@@ -12,24 +12,26 @@ export const useRunChecks = (runChecksOnMount = true) => {
   const { remote_promo_enabled } = useRemoteConfig();
   const remotePromoSheets = useExperimentalFlag(REMOTE_PROMO_SHEETS) || remote_promo_enabled;
 
-  const runChecks = useCallback(async () => {
-    if (IS_TEST || !remotePromoSheets) {
-      logger.debug('Campaigns: remote promo sheets is disabled');
-      return;
-    }
+  const runChecks = useCallback(() => {
+    InteractionManager.runAfterInteractions(async () => {
+      if (IS_TEST || !remotePromoSheets) {
+        logger.debug('Campaigns: remote promo sheets is disabled');
+        return;
+      }
 
-    const showedFeatureUnlock = await runFeatureUnlockChecks();
-    if (showedFeatureUnlock) return;
+      const showedFeatureUnlock = await runFeatureUnlockChecks();
+      if (showedFeatureUnlock) return;
 
-    const showedLocalPromo = await runLocalCampaignChecks();
-    if (showedLocalPromo) return;
+      const showedLocalPromo = await runLocalCampaignChecks();
+      if (showedLocalPromo) return;
 
-    checkForCampaign();
+      checkForCampaign();
+    });
   }, [remotePromoSheets]);
 
   useEffect(() => {
     if (runChecksOnMount) {
-      setTimeout(() => InteractionManager.runAfterInteractions(runChecks), 10_000);
+      setTimeout(runChecks, 10_000);
     }
   }, [runChecks, runChecksOnMount]);
 
