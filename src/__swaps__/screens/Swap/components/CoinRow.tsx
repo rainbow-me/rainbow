@@ -1,11 +1,9 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Box, Column, Columns, HitSlop, Inline, Text } from '@/design-system';
-import { TextColor } from '@/design-system/color/palettes';
 import { CoinRowButton } from '@/__swaps__/screens/Swap/components/CoinRowButton';
 import { BalancePill } from '@/__swaps__/screens/Swap/components/BalancePill';
-import { toggleFavorite, useFavorites } from '@/resources/favorites';
-import { StyleSheet } from 'react-native';
+import { toggleFavorite } from '@/resources/favorites';
 import { SwapCoinIcon } from './SwapCoinIcon';
 import { ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
 import { ContextMenuButton, OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
@@ -15,59 +13,56 @@ import { setClipboard } from '@/hooks/useClipboard';
 import { RainbowNetworks } from '@/networks';
 import * as i18n from '@/languages';
 import { ETH_ADDRESS } from '@/references';
-import { trimTrailingZeros } from '@/__swaps__/utils/swaps';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { SearchAsset } from '@/__swaps__/types/search';
 import { ChainId } from '@/__swaps__/types/chains';
 
+export const COIN_ROW_WITH_PADDING_HEIGHT = 56;
+
 interface InputCoinRowProps {
+  isFavorite?: boolean;
   isTrending?: boolean;
+  nativePriceChange?: string;
   onPress: (asset: ParsedSearchAsset | null) => void;
   output?: false | undefined;
   uniqueId: string;
 }
 
-type PartialAsset = Pick<SearchAsset, 'address' | 'mainnetAddress' | 'chainId' | 'icon_url' | 'name' | 'colors' | 'symbol' | 'uniqueId'>;
+type PartialAsset = Pick<SearchAsset, 'address' | 'chainId' | 'colors' | 'icon_url' | 'mainnetAddress' | 'name' | 'symbol' | 'uniqueId'>;
 
 interface OutputCoinRowProps extends PartialAsset {
+  isFavorite: boolean;
   onPress: () => void;
   output: true;
+  nativePriceChange?: string;
   isTrending?: boolean;
 }
 
 type CoinRowProps = InputCoinRowProps | OutputCoinRowProps;
 
-export const CoinRow = React.memo(function CoinRow({ onPress, output, uniqueId, isTrending, ...assetProps }: CoinRowProps) {
-  const { favoritesMetadata } = useFavorites();
-
+export const CoinRow = memo(function CoinRow({ isFavorite, onPress, output, uniqueId, ...assetProps }: CoinRowProps) {
   const inputAsset = userAssetsStore(state => (output ? undefined : state.getUserAsset(uniqueId)));
   const outputAsset = output ? (assetProps as PartialAsset) : undefined;
 
   const asset = output ? outputAsset : inputAsset;
   const { address, chainId, colors, icon_url, mainnetAddress, name, symbol } = asset || {};
 
-  const percentChange = useMemo(() => {
-    if (isTrending) {
-      const rawChange = Math.random() * 30;
-      const isNegative = Math.random() < 0.2;
-      const prefix = isNegative ? '-' : '+';
-      const color: TextColor = isNegative ? 'red' : 'green';
-      const change = `${trimTrailingZeros(Math.abs(rawChange).toFixed(1))}%`;
+  /**
+* ⚠️ TODO: Re-enable when trending tokens are added
+*
+* const percentChange = useMemo(() => {
+*   if (isTrending && nativePriceChange) {
+*     const rawChange = parseFloat(nativePriceChange);
+*     const isNegative = rawChange < 0;
+*     const prefix = isNegative ? '-' : '+';
+*     const color: TextColor = isNegative ? 'red' : 'green';
+*     const change = `${trimTrailingZeros(Math.abs(rawChange).toFixed(1))}%`;
 
-      return { change, color, prefix };
-    }
-  }, [isTrending]);
-
-  const isFavorite = useMemo(() => {
-    return Object.values(favoritesMetadata).find(fav => {
-      if (mainnetAddress?.toLowerCase() === ETH_ADDRESS) {
-        return fav.address.toLowerCase() === ETH_ADDRESS;
-      }
-
-      return fav.address?.toLowerCase() === address?.toLowerCase();
-    });
-  }, [favoritesMetadata, address, mainnetAddress]);
+*     return { change, color, prefix };
+*   }
+* }, [isTrending, nativePriceChange]);
+*/
 
   const favoritesIconColor = useMemo(() => {
     return isFavorite ? '#FFCB0F' : undefined;
@@ -76,14 +71,14 @@ export const CoinRow = React.memo(function CoinRow({ onPress, output, uniqueId, 
   const handleToggleFavorite = useCallback(() => {
     // NOTE: It's important to always fetch ETH favorite on mainnet
     if (address) {
-      return toggleFavorite(address, mainnetAddress === ETH_ADDRESS ? 1 : chainId);
+      return toggleFavorite(address, mainnetAddress === ETH_ADDRESS ? ChainId.mainnet : chainId);
     }
   }, [address, mainnetAddress, chainId]);
 
   if (!address || !chainId) return null;
 
   return (
-    <Box>
+    <Box style={{ height: COIN_ROW_WITH_PADDING_HEIGHT, width: '100%' }}>
       <Columns alignVertical="center">
         <Column>
           <ButtonPressAnimation disallowInterruption onPress={output ? onPress : () => onPress(inputAsset || null)} scaleTo={0.95}>
@@ -116,7 +111,7 @@ export const CoinRow = React.memo(function CoinRow({ onPress, output, uniqueId, 
                       <Text color="labelTertiary" numberOfLines={1} size="13pt" weight="semibold">
                         {output ? symbol : `${inputAsset?.balance.display}`}
                       </Text>
-                      {isTrending && percentChange && (
+                      {/* {nativePriceChange && percenChange && (
                         <Inline alignVertical="center" space={{ custom: 1 }} wrap={false}>
                           <Text align="center" color={percentChange.color} size="12pt" weight="bold">
                             {percentChange.prefix}
@@ -125,7 +120,7 @@ export const CoinRow = React.memo(function CoinRow({ onPress, output, uniqueId, 
                             {percentChange.change}
                           </Text>
                         </Inline>
-                      )}
+                      )} */}
                     </Inline>
                   </Box>
                 </Box>
@@ -137,7 +132,7 @@ export const CoinRow = React.memo(function CoinRow({ onPress, output, uniqueId, 
         {output && (
           <Column width="content">
             <Box paddingLeft="12px" paddingRight="20px">
-              <Inline space="8px">
+              <Inline space="10px">
                 <InfoButton address={address} chainId={chainId} />
                 <CoinRowButton color={favoritesIconColor} onPress={handleToggleFavorite} icon="􀋃" weight="black" />
               </Inline>
@@ -225,10 +220,10 @@ const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId })
   return (
     <ContextMenuButton
       activeOpacity={0}
+      isMenuPrimaryAction
       // @ts-expect-error Types of property 'menuItems' are incompatible
       menuConfig={menuConfig}
       onPress={IS_ANDROID ? onPressAndroid : undefined}
-      isMenuPrimaryAction
       onPressMenuItem={handlePressMenuItem}
       useActionSheetFallback={false}
       wrapNativeComponent={false}
@@ -237,9 +232,3 @@ const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId })
     </ContextMenuButton>
   );
 };
-
-export const styles = StyleSheet.create({
-  solidColorCoinIcon: {
-    opacity: 0.4,
-  },
-});

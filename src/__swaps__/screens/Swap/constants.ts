@@ -44,6 +44,9 @@ export const ETH_COLOR_DARK_ACCENT = '#9CA4AD';
 
 export const LONG_PRESS_DELAY_DURATION = 200;
 export const LONG_PRESS_REPEAT_DURATION = 69;
+
+export const STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS = 2;
+export const MAXIMUM_SIGNIFICANT_DECIMALS = 6;
 //
 // /---- END constants ----/ //
 

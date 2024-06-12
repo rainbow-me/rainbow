@@ -17,6 +17,8 @@ import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 import { chainNameForChainIdWithMainnetSubstitution } from '@/__swaps__/utils/chains';
+import { analyticsV2 } from '@/analytics';
+import { swapsStore } from '@/state/swaps/swapsStore';
 
 type ChainSelectionProps = {
   allText?: string;
@@ -50,6 +52,12 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
 
   const handleSelectChain = useCallback(
     ({ nativeEvent: { actionKey } }: Omit<OnPressMenuItemEventObject, 'isUsingActionSheetFallback'>) => {
+      analyticsV2.track(analyticsV2.event.swapsChangedChainId, {
+        inputAsset: swapsStore.getState().inputAsset,
+        type: output ? 'output' : 'input',
+        chainId: Number(actionKey) as ChainId,
+      });
+
       if (output) {
         setSelectedOutputChainId(Number(actionKey) as ChainId);
       } else {
@@ -112,7 +120,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
   }, [handleSelectChain, menuConfig.menuItems]);
 
   return (
-    <Box as={Animated.View} paddingHorizontal="20px">
+    <Box as={Animated.View} paddingBottom={output ? '8px' : { custom: 14 }} paddingHorizontal="20px" paddingTop="20px">
       <Inline alignHorizontal="justify" alignVertical="center">
         {output ? (
           <Inline alignVertical="center" space="6px">
