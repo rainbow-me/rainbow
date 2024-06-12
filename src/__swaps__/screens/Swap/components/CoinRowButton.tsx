@@ -40,7 +40,7 @@ export const CoinRowButton = ({
           backgroundColor: outline
             ? 'transparent'
             : color
-              ? opacity(color, 0.25)
+              ? opacity(color, isDarkMode ? 0.16 : 0.25)
               : isDarkMode
                 ? fillQuaternary
                 : opacity(fillTertiary, 0.04),
