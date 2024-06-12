@@ -16,16 +16,6 @@ import { useSelectedGas } from '../hooks/useSelectedGas';
 import { useSwapEstimatedGasLimit } from '../hooks/useSwapEstimatedGasLimit';
 import { useSwapContext } from './swap-provider';
 
-const getHasEnoughFundsForGas = (quote: Quote, gasFee: string, nativeNetworkAsset: ParsedAddressAsset | undefined) => {
-  if (!nativeNetworkAsset) return false;
-  const userBalance = nativeNetworkAsset.balance?.amount || '0';
-
-  const quoteValue = quote.value?.toString() || '0';
-  const totalNativeSpentInTx = formatUnits(BigInt(add(quoteValue, gasFee)), nativeNetworkAsset.decimals);
-
-  return lessThan(totalNativeSpentInTx, userBalance);
-};
-
 type InternalSyncedSwapState = {
   assetToBuy: ExtendedAnimatedAssetWithColors | undefined;
   assetToSell: ExtendedAnimatedAssetWithColors | undefined;
@@ -73,6 +63,16 @@ export const SyncQuoteSharedValuesToState = () => {
   );
 
   return null;
+};
+
+const getHasEnoughFundsForGas = (quote: Quote, gasFee: string, nativeNetworkAsset: ParsedAddressAsset | undefined) => {
+  if (!nativeNetworkAsset) return false;
+  const userBalance = nativeNetworkAsset.balance?.amount || '0';
+
+  const quoteValue = quote.value?.toString() || '0';
+  const totalNativeSpentInTx = formatUnits(BigInt(add(quoteValue, gasFee)), nativeNetworkAsset.decimals);
+
+  return lessThan(totalNativeSpentInTx, userBalance);
 };
 
 export function SyncGasStateToSharedValues() {
