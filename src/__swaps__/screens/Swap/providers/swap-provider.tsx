@@ -36,6 +36,7 @@ import { getCachedProviderForNetwork, getFlashbotsProvider, isHardHat } from '@/
 import { loadWallet } from '@/model/wallet';
 import { walletExecuteRap } from '@/raps/execute';
 import { queryClient } from '@/react-query';
+import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { useAccountSettings } from '@/hooks';
 import { getGasSettingsBySpeed, getSelectedGas, getSelectedGasSpeed } from '../hooks/useSelectedGas';
@@ -46,6 +47,7 @@ import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisable
 import { getNetworkObj } from '@/networks';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { analyticsV2 } from '@/analytics';
+import { Address } from 'viem';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const tapToSwap = i18n.t(i18n.l.swap.actions.tap_to_swap);
@@ -244,13 +246,24 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         }
       }
 
-      queryClient.invalidateQueries({
-        queryKey: userAssetsQueryKey({
-          address: parameters.quote.from,
-          currency: nativeCurrency,
-          connectedToHardhat,
-        }),
-      });
+      queryClient.invalidateQueries([
+        // old user assets invalidation (will cause a re-fetch)
+        {
+          queryKey: userAssetsQueryKey({
+            address: parameters.quote.from,
+            currency: nativeCurrency,
+            connectedToHardhat,
+          }),
+        },
+        // new swaps user assets invalidations
+        {
+          queryKey: swapsUserAssetsQueryKey({
+            address: parameters.quote.from as Address,
+            currency: nativeCurrency,
+            testnetMode: !!connectedToHardhat,
+          }),
+        },
+      ]);
 
       NotificationManager?.postNotification('rapCompleted');
       Navigation.handleAction(Routes.PROFILE_SCREEN, {});
