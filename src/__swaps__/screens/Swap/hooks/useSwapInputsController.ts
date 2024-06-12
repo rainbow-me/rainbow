@@ -29,6 +29,8 @@ import {
 } from '@/resources/assets/externalAssetsQuery';
 import { ethereumUtils } from '@/utils';
 import { queryClient } from '@/react-query';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { analyticsV2 } from '@/analytics';
 import { divWorklet, equalWorklet, greaterThanWorklet, mulWorklet, toFixedWorklet } from '@/__swaps__/safe-math/SafeMath';
 
 function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetWithColors | null) {
@@ -497,6 +499,12 @@ export function useSwapInputsController({
               )
             )
           : undefined;
+
+      analyticsV2.track(analyticsV2.event.swapsReceivedQuote, {
+        inputAsset: internalSelectedInputAsset.value,
+        outputAsset: internalSelectedOutputAsset.value,
+        quote: quoteResponse,
+      });
 
       runOnUI(() => {
         setQuote({
