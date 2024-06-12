@@ -147,7 +147,6 @@ export const ExchangeRateBubble = () => {
 
   return (
     <GestureHandlerV1Button
-      // buttonPressWrapperStyleIOS={IS_IOS ? styles.buttonPressWrapper : undefined}
       buttonPressWrapperStyleIOS={IS_IOS ? styles.buttonPosition : undefined}
       onPressWorklet={onChangeIndex}
       scaleTo={0.9}
