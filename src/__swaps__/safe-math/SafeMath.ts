@@ -195,23 +195,35 @@ export function modWorklet(num1: string | number, num2: string | number): string
   return formatResultWorklet(result);
 }
 
-// Logarithm base 10 function
-export function log10Worklet(num: string | number): string {
+export function orderOfMagnitudeWorklet(num: string | number): number {
   'worklet';
-  const numStr = toStringWorklet(num);
-
-  if (!isNumberStringWorklet(numStr)) {
-    throw new Error('Arguments must be a numeric string or number');
-  }
-  if (isZeroWorklet(numStr)) {
-    throw new Error('Argument must be greater than 0');
+  if (num === 0) {
+    return -Infinity; // log10(0) is -Infinity
   }
 
-  const [bigIntNum, decimalPlaces] = removeDecimalWorklet(numStr);
-  const scaledBigIntNum = scaleUpWorklet(bigIntNum, decimalPlaces);
-  const result = Math.log10(Number(scaledBigIntNum)) - 20; // Adjust the scale factor for log10
-  const resultBigInt = BigInt(result * 10 ** 20);
-  return formatResultWorklet(resultBigInt);
+  // Convert the number to a string to handle large numbers and fractional parts
+  const numStr = num.toString();
+
+  // Split the number into integer and fractional parts
+  const [integerPart, fractionalPart] = numStr.split('.');
+
+  // Handle integer parts
+  if (BigInt(integerPart) !== 0n) {
+    return integerPart.length - 1;
+  }
+
+  // Handle fractional parts
+  if (fractionalPart) {
+    // Find the first non-zero digit in the fractional part
+    for (let i = 0; i < fractionalPart.length; i++) {
+      if (fractionalPart[i] !== '0') {
+        return -(i + 1);
+      }
+    }
+  }
+
+  // If the fractional part is all zeros, return a very negative number
+  return -Infinity;
 }
 
 // Equality function
