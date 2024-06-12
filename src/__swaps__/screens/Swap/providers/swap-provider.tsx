@@ -38,13 +38,14 @@ import { walletExecuteRap } from '@/raps/execute';
 import { queryClient } from '@/react-query';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { useAccountSettings } from '@/hooks';
-import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
+import { getGasSettingsBySpeed, getSelectedGas, getSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { useSwapSettings } from '../hooks/useSwapSettings';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { getNetworkObj } from '@/networks';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { analyticsV2 } from '@/analytics';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const tapToSwap = i18n.t(i18n.l.swap.actions.tap_to_swap);
@@ -176,6 +177,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const providerUrl = provider?.connection?.url;
     const connectedToHardhat = !!providerUrl && isHardHat(providerUrl);
 
+    const isBridge = swapsStore.getState().inputAsset?.mainnetAddress === swapsStore.getState().outputAsset?.mainnetAddress;
+    const slippage = swapsStore.getState().slippage;
+
     const selectedGas = getSelectedGas(parameters.chainId);
     if (!selectedGas) {
       runOnUI(resetSwappingStatus)();
@@ -191,6 +195,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
 
     const gasFeeParamsBySpeed = getGasSettingsBySpeed(parameters.chainId);
+    const selectedGasSpeed = getSelectedGasSpeed(parameters.chainId);
 
     let gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = {} as
       | TransactionGasParamAmounts
@@ -210,13 +215,26 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const { errorMessage } = await walletExecuteRap(wallet, type, {
       ...parameters,
       gasParams,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      gasFeeParamsBySpeed: gasFeeParamsBySpeed as any,
+      // @ts-expect-error - collision between old gas types and new
+      gasFeeParamsBySpeed: gasFeeParamsBySpeed,
     });
     runOnUI(resetSwappingStatus)();
 
     if (errorMessage) {
       SwapInputController.quoteFetchingInterval.start();
+
+      analyticsV2.track(analyticsV2.event.swapsFailed, {
+        createdAt: Date.now(),
+        type,
+        parameters,
+        selectedGas,
+        selectedGasSpeed,
+        slippage,
+        bridge: isBridge,
+        errorMessage,
+        inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
+        outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
+      });
 
       if (errorMessage !== 'handled') {
         logger.error(new RainbowError(`[getNonceAndPerformSwap]: Error executing swap: ${errorMessage}`));
@@ -234,15 +252,25 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }),
     });
 
-    // TODO: Analytics
     NotificationManager?.postNotification('rapCompleted');
     Navigation.handleAction(Routes.PROFILE_SCREEN, {});
+
+    analyticsV2.track(analyticsV2.event.swapsSubmitted, {
+      createdAt: Date.now(),
+      type,
+      parameters,
+      selectedGas,
+      selectedGasSpeed,
+      slippage,
+      bridge: isBridge,
+      inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
+      outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
+    });
   };
 
   const executeSwap = () => {
     'worklet';
 
-    // TODO: Analytics
     if (configProgress.value !== NavigationSteps.SHOW_REVIEW) return;
 
     const inputAsset = internalSelectedInputAsset.value;
@@ -472,6 +500,12 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }
 
       logger.debug(`[setAsset]: Setting ${type} asset to ${extendedAsset?.name} on ${extendedAsset?.chainId}`);
+
+      analyticsV2.track(analyticsV2.event.swapsSelectedAsset, {
+        asset,
+        otherAsset: otherSelectedAsset,
+        type,
+      });
     },
     [
       SwapInputController.quoteFetchingInterval,

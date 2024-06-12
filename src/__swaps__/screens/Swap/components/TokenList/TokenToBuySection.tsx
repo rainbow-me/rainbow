@@ -19,6 +19,8 @@ import { userAssetsStore } from '@/state/assets/userAssets';
 import { EXPANDED_INPUT_HEIGHT } from '../../constants';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import { analyticsV2 } from '@/analytics';
 
 interface SectionProp {
   color: TextStyle['color'];
@@ -95,6 +97,16 @@ export const TokenToBuySection = ({ section }: { section: AssetToBuySection }) =
         type: SwapAssetType.outputAsset,
         asset: parsedAsset,
       });
+
+      const { outputSearchQuery } = swapsStore.getState();
+
+      // track what search query the user had prior to selecting an asset
+      if (outputSearchQuery.trim().length) {
+        analyticsV2.track(analyticsV2.event.swapsSearchedForToken, {
+          query: outputSearchQuery,
+          type: 'output',
+        });
+      }
     },
     [internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, setAsset]
   );
