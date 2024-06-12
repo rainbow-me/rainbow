@@ -231,7 +231,7 @@ export function trimTrailingZeros(value: string) {
 export function precisionBasedOffMagnitude(amount: number | string, isStablecoin = false): number {
   'worklet';
 
-  const magnitude = orderOfMagnitudeWorklet(amount);
+  const magnitude = -orderOfMagnitudeWorklet(amount);
   // don't let stablecoins go beneath 2nd order
   if (magnitude < -2 && isStablecoin) {
     return -STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS;
@@ -315,10 +315,11 @@ export function valueBasedDecimalFormatter({
     return MAXIMUM_SIGNIFICANT_DECIMALS;
   };
 
+  const _maximumFractionDigits = maximumFractionDigits();
   // Format the number to add separators and trim trailing zeros
   const numberFormatter = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0,
-    maximumFractionDigits: maximumFractionDigits(),
+    maximumFractionDigits: _maximumFractionDigits,
     useGrouping: true,
   });
 
@@ -364,12 +365,13 @@ export function niceIncrementFormatter({
   }
   if (percentageToSwap === 0.5) {
     const amount = mulWorklet(inputAssetBalance, 0.5);
+    const precisionAdjustment = precisionBasedOffMagnitude(amount, isStablecoin);
     return valueBasedDecimalFormatter({
       amount,
       usdTokenPrice: inputAssetUsdPrice,
       assetBalanceDisplay,
       roundingMode: 'up',
-      precisionAdjustment: precisionBasedOffMagnitude(amount, isStablecoin),
+      precisionAdjustment,
       isStablecoin,
     });
   }
