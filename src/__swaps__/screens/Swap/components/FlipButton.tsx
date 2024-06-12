@@ -12,20 +12,27 @@ import { AnimatedBlurView } from '@/__swaps__/screens/Swap/components/AnimatedBl
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { SwapAssetType } from '@/__swaps__/types/swap';
+import { analyticsV2 } from '@/analytics';
 
 export const FlipButton = () => {
   const { isDarkMode } = useColorMode();
 
-  const { AnimatedSwapStyles, internalSelectedInputAsset, internalSelectedOutputAsset, setAsset } = useSwapContext();
+  const { AnimatedSwapStyles, internalSelectedInputAsset, internalSelectedOutputAsset, setAsset, SwapInputController } = useSwapContext();
 
   const handleSwapAssets = useCallback(() => {
     if (internalSelectedInputAsset.value && internalSelectedOutputAsset.value) {
       const assetTypeToSet = SwapAssetType.outputAsset;
       const assetToSet = internalSelectedInputAsset.value;
 
+      analyticsV2.track(analyticsV2.event.swapsFlippedAssets, {
+        inputAmount: SwapInputController.inputValues.value.inputAmount,
+        previousInputAsset: internalSelectedInputAsset.value,
+        previousOutputAsset: internalSelectedOutputAsset.value,
+      });
+
       setAsset({ type: assetTypeToSet, asset: assetToSet });
     }
-  }, [internalSelectedInputAsset, internalSelectedOutputAsset, /* lastTypedInput, */ setAsset]);
+  }, [SwapInputController.inputValues, internalSelectedInputAsset, internalSelectedOutputAsset, setAsset]);
 
   const flipButtonInnerStyles = useAnimatedStyle(() => {
     return {
