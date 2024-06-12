@@ -1,4 +1,4 @@
-import { lessThanWorklet, toScaledIntegerWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { lessThanOrEqualToWorklet, toScaledIntegerWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { SharedValue, useDerivedValue, useSharedValue } from 'react-native-reanimated';
@@ -17,7 +17,7 @@ export function useCanPerformSwap({
 
   const enoughFundsForSwap = useDerivedValue(() => {
     if (!quote.value || 'error' in quote.value || !inputAsset.value) return true;
-    return lessThanWorklet(
+    return lessThanOrEqualToWorklet(
       quote.value.sellAmount.toString(),
       toScaledIntegerWorklet(inputAsset.value.balance.amount, inputAsset.value.decimals)
     );
