@@ -48,6 +48,10 @@ export const SwapNumberPad = () => {
     const inputKey = focusedInput.value;
     const currentValue = SwapInputController.inputValues.value[inputKey].toString();
     const newValue = currentValue === '0' ? `${number}` : `${currentValue}${number}`;
+    // It will overflow with 18 digits
+    if (newValue.length > 17) {
+      return;
+    }
 
     // Make the quote stale only when the number in the input actually changes
     if (Number(newValue) !== 0 && !(currentValue.includes('.') && number === 0)) {
