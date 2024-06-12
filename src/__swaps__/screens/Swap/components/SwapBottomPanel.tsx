@@ -46,6 +46,7 @@ export function SwapBottomPanel() {
   const icon = useDerivedValue(() => confirmButtonProps.value.icon);
   const label = useDerivedValue(() => confirmButtonProps.value.label);
   const disabled = useDerivedValue(() => confirmButtonProps.value.disabled);
+  const isLoading = useDerivedValue(() => confirmButtonProps.value.isLoading);
 
   return (
     // @ts-expect-error Property 'children' does not exist on type
@@ -83,6 +84,7 @@ export function SwapBottomPanel() {
             iconStyle={confirmButtonIconStyle}
             label={label}
             disabled={disabled}
+            isLoading={isLoading}
             scaleTo={0.9}
           />
         </Columns>

@@ -13,10 +13,7 @@ import { SUPPORTED_CHAIN_IDS, SupportedCurrencyKey } from '@/references';
 
 import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
 import { useAccountSettings } from '@/hooks';
-import { getNetworkObj } from '@/networks';
 import { RainbowFetchClient } from '@/rainbow-fetch';
-import store from '@/redux/store';
-import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { fetchUserAssetsByChain } from './userAssetsByChain';
 
 const addysHttp = new RainbowFetchClient({
@@ -224,43 +221,4 @@ export function useUserAssets<TSelectResult = UserAssetsResult>(
     refetchInterval: USER_ASSETS_REFETCH_INTERVAL,
     staleTime: process.env.IS_TESTING === 'true' ? 0 : 1000,
   });
-}
-
-function getCachedUserAssets({
-  address,
-  currency,
-  testnetMode = false,
-}: {
-  address: Address;
-  currency: SupportedCurrencyKey;
-  testnetMode?: boolean;
-}) {
-  return queryClient.getQueryData<UserAssetsResult>(userAssetsQueryKey({ address, currency, testnetMode }));
-}
-
-const getNetworkNativeAssetUniqueId = (chainId: ChainId) => {
-  const network = getNetworkFromChainId(chainId);
-  const { nativeCurrency } = getNetworkObj(network);
-  const { mainnetAddress, address } = nativeCurrency;
-  const uniqueId = mainnetAddress ? `${mainnetAddress}_${ChainId.mainnet}` : `${address}_${chainId}`;
-  return uniqueId;
-};
-
-export function getUserNativeNetworkAsset(chainId: ChainId) {
-  const { accountAddress: currentAddress, nativeCurrency: currentCurrency, network: currentNetwork } = store.getState().settings;
-
-  const provider = getCachedProviderForNetwork(currentNetwork);
-  const providerUrl = provider?.connection?.url;
-  const connectedToHardhat = isHardHat(providerUrl);
-
-  const userAssets = getCachedUserAssets({
-    address: currentAddress as Address,
-    currency: currentCurrency,
-    testnetMode: connectedToHardhat,
-  });
-
-  if (!userAssets) return;
-
-  const uniqueId = getNetworkNativeAssetUniqueId(chainId);
-  return userAssets[chainId][uniqueId];
 }

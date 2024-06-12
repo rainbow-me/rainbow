@@ -1,16 +1,11 @@
-import { greaterThanWorklet, toScaledIntegerWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { ChainId } from '@/__swaps__/types/chains';
 import { weiToGwei } from '@/__swaps__/utils/ethereum';
-import { add, lessThan, multiply } from '@/__swaps__/utils/numbers';
+import { add, multiply } from '@/__swaps__/utils/numbers';
 import ethereumUtils, { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
-import { isSameAddress } from '@/utils/isSameAddress';
-import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
-import { useEffect, useMemo, useState } from 'react';
-import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
-import { useDebouncedCallback } from 'use-debounce';
+import { useMemo } from 'react';
 import { formatUnits } from 'viem';
-import { useSwapContext } from '../providers/swap-provider';
-import { getUserNativeNetworkAsset } from '../resources/assets/userAssets';
+
+import { useSyncedSwapQuoteStore } from '../providers/SyncSwapStateAndSharedValues';
 import { formatCurrency, formatNumber } from './formatNumber';
 import { GasSettings } from './useCustomGas';
 import { useSwapEstimatedGasLimit } from './useSwapEstimatedGasLimit';
@@ -55,104 +50,11 @@ export function useEstimatedGasFee({
   }, [gasLimit, gasSettings, nativeNetworkAsset]);
 }
 
-const getUserHasEnoughFundsForTx = (quote: Quote, gasFee: string) => {
-  const nativeAsset = getUserNativeNetworkAsset(quote.chainId);
-  if (!nativeAsset) return false;
-  const userBalance = nativeAsset.balance.amount || '0';
-
-  const nativeAmountSelling = isSameAddress(nativeAsset.address, quote.sellTokenAddress) ? quote.sellAmount.toString() : '0';
-  const totalNativeSpentInTx = formatUnits(
-    safeBigInt(add(add(quote.value?.toString() || '0', gasFee), nativeAmountSelling)),
-    nativeAsset.decimals
-  );
-
-  return lessThan(totalNativeSpentInTx, userBalance);
-};
-
-function useSyncSwapTransactionSharedValues({
-  quote,
-  gasSettings,
-  estimatedGasLimit,
-}: {
-  quote: Quote | CrosschainQuote | QuoteError | null;
-  gasSettings: GasSettings | undefined;
-  estimatedGasLimit: string | undefined;
-}) {
-  const {
-    estimatedGasLimit: estimatedGasLimitSharedValue,
-    gasSettings: gasSettingsSharedValue,
-    userHasEnoughFundsForTx,
-  } = useSwapContext();
-
-  useEffect(() => {
-    if (!gasSettings || !estimatedGasLimit || !quote || 'error' in quote) {
-      estimatedGasLimitSharedValue.value = undefined;
-      gasSettingsSharedValue.value = undefined;
-      return;
-    }
-
-    estimatedGasLimitSharedValue.value = estimatedGasLimit;
-    gasSettingsSharedValue.value = gasSettings;
-
-    const gasFee = calculateGasFee(gasSettings, estimatedGasLimit);
-
-    userHasEnoughFundsForTx.value = getUserHasEnoughFundsForTx(quote, gasFee);
-
-    return () => {
-      estimatedGasLimitSharedValue.value = undefined;
-      gasSettingsSharedValue.value = undefined;
-    };
-  }, [estimatedGasLimitSharedValue, estimatedGasLimit, gasSettings, gasSettingsSharedValue, userHasEnoughFundsForTx, quote]);
-}
-
 export function useSwapEstimatedGasFee(gasSettings: GasSettings | undefined) {
-  const { internalSelectedInputAsset: assetToSell, internalSelectedOutputAsset: assetToBuy, quote } = useSwapContext();
+  const { assetToSell, chainId = ChainId.mainnet, quote } = useSyncedSwapQuoteStore();
+  const { data: estimatedGasLimit, isFetching } = useSwapEstimatedGasLimit({ chainId, assetToSell, quote });
 
-  const [state, setState] = useState({
-    assetToBuy: assetToBuy.value,
-    assetToSell: assetToSell.value,
-    chainId: assetToSell.value?.chainId ?? ChainId.mainnet,
-    quote: quote.value,
-  });
-
-  const debouncedStateSet = useDebouncedCallback(setState, 100, { leading: false, trailing: true });
-
-  // Updates the state as a single block in response to quote changes to ensure the gas fee is cleanly updated once
-  useAnimatedReaction(
-    () => quote.value,
-    (current, previous) => {
-      if (!assetToSell.value || !assetToBuy.value || !current || 'error' in current) return;
-
-      const isSwappingMoreThanAvailableBalance = greaterThanWorklet(
-        current.sellAmount.toString(),
-        toScaledIntegerWorklet(assetToSell.value.balance.amount, assetToSell.value.decimals)
-      );
-
-      // Skip gas fee recalculation if the user is trying to swap more than their available balance, as it isn't
-      // needed and was previously resulting in errors in useEstimatedGasFee.
-      if (isSwappingMoreThanAvailableBalance) return;
-
-      if (!previous || current !== previous) {
-        runOnJS(debouncedStateSet)({
-          assetToBuy: assetToBuy.value,
-          assetToSell: assetToSell.value,
-          chainId: assetToSell.value?.chainId ?? ChainId.mainnet,
-          quote: current,
-        });
-      }
-    }
-  );
-
-  const { data: estimatedGasLimit, isFetching } = useSwapEstimatedGasLimit(
-    { chainId: state.chainId, quote: state.quote, assetToSell: state.assetToSell },
-    {
-      enabled: !!state.quote && !!state.assetToSell && !!state.assetToBuy && !('error' in quote),
-    }
-  );
-
-  useSyncSwapTransactionSharedValues({ quote: state.quote, gasSettings, estimatedGasLimit });
-
-  const estimatedFee = useEstimatedGasFee({ chainId: state.chainId, gasLimit: estimatedGasLimit, gasSettings });
+  const estimatedFee = useEstimatedGasFee({ chainId, gasLimit: estimatedGasLimit, gasSettings });
 
   return useMemo(() => ({ isLoading: isFetching, data: estimatedFee }), [estimatedFee, isFetching]);
 }
