@@ -178,6 +178,7 @@ function selectGasTrend({ data }: MeteorologyResult) {
   if (trend === 0) return 'stable';
   return 'notrend';
 }
+export type GasTrend = ReturnType<typeof selectGasTrend>;
 
 export function useGasTrend({ chainId }: { chainId: ChainId }) {
   return useMeteorology({ chainId }, { select: selectGasTrend });
