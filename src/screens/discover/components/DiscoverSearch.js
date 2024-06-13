@@ -3,7 +3,6 @@ import { uniqBy } from 'lodash';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { InteractionManager, View } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
-import { useDispatch } from 'react-redux';
 import { useDebounce } from 'use-debounce';
 import CurrencySelectionTypes from '@/helpers/currencySelectionTypes';
 
@@ -31,7 +30,6 @@ export const SearchContainer = styled(Row)({
 
 export default function DiscoverSearch() {
   const { navigate } = useNavigation();
-  const dispatch = useDispatch();
   const { accountAddress } = useAccountSettings();
   const {
     isSearching,
@@ -176,7 +174,7 @@ export default function DiscoverSearch() {
         });
       }
     },
-    [dispatch, navigate, profilesEnabled, searchInputRef, setIsSearchModeEnabled]
+    [navigate, profilesEnabled, searchInputRef, setIsSearchModeEnabled]
   );
 
   const itemProps = useMemo(

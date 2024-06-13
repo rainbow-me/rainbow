@@ -1,9 +1,16 @@
+import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
+import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { ChainId } from '@/__swaps__/types/chains';
+import { GasSpeed } from '@/__swaps__/types/gas';
+import { SwapAssetType } from '@/__swaps__/types/swap';
 import { UnlockableAppIconKey } from '@/appIcons/appIcons';
 import { CardType } from '@/components/cards/GenericCard';
 import { LearnCategory } from '@/components/cards/utils/types';
 import { FiatProviderName } from '@/entities/f2c';
 import { Network } from '@/networks/types';
+import { RapSwapActionParameters } from '@/raps/references';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
+import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 
 /**
  * All events, used by `analytics.track()`
@@ -20,7 +27,7 @@ export const event = {
   swapSubmitted: 'Submitted Swap',
   // notification promo sheet was shown
   notificationsPromoShown: 'notifications_promo.shown',
-  // only for iOS — initial prompt is not allowed — Android is enabled by default
+  // only for iOS — initial prompt is not allowed — Android is enabled by default
   notificationsPromoPermissionsBlocked: 'notifications_promo.permissions_blocked',
   // only for iOS, Android is enabled by default
   notificationsPromoPermissionsGranted: 'notifications_promo.permissions_granted',
@@ -126,9 +133,40 @@ export const event = {
   txRequestApprove: 'request.approved',
   addNewWalletGroupName: 'add_new_wallet_group.name',
 
+  // swaps related analytics
+  swapsSelectedAsset: 'swaps.selected_asset',
+  swapsSearchedForToken: 'swaps.searched_for_token',
+  swapsChangedChainId: 'swaps.changed_chain_id',
+  swapsFlippedAssets: 'swaps.flipped_assets',
+  swapsToggledFlashbots: 'swaps.toggled_flashbots',
+  swapsReceivedQuote: 'swaps.received_quote',
+  swapsSubmitted: 'swaps.submitted',
+  swapsFailed: 'swaps.failed',
+  swapsSucceeded: 'swaps.succeeded',
+
   // app browser events
   browserTrendingDappClicked: 'browser.trending_dapp_pressed',
 } as const;
+
+type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
+  createdAt: number;
+  type: T;
+  bridge: boolean;
+  inputNativeValue: string | number;
+  outputNativeValue: string | number;
+  parameters: Omit<RapSwapActionParameters<T>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'>;
+  selectedGas: GasSettings;
+  selectedGasSpeed: GasSpeed;
+  slippage: string;
+};
+
+type SwapsEventFailedParameters<T extends 'swap' | 'crosschainSwap'> = {
+  errorMessage: string | null;
+} & SwapEventParameters<T>;
+
+type SwapsEventSucceededParameters<T extends 'swap' | 'crosschainSwap'> = {
+  nonce: number | undefined;
+} & SwapEventParameters<T>;
 
 /**
  * Properties corresponding to each event
@@ -475,6 +513,45 @@ export type EventProperties = {
   [event.addNewWalletGroupName]: {
     name: string;
   };
+
+  // swaps related events
+  [event.swapsSelectedAsset]: {
+    asset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
+    otherAsset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
+    type: SwapAssetType;
+  };
+
+  [event.swapsSearchedForToken]: {
+    query: string;
+    type: 'input' | 'output';
+  };
+
+  [event.swapsChangedChainId]: {
+    inputAsset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
+    type: 'input' | 'output';
+    chainId: ChainId;
+  };
+
+  [event.swapsFlippedAssets]: {
+    inputAmount: string | number;
+    previousInputAsset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
+    previousOutputAsset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
+  };
+
+  [event.swapsToggledFlashbots]: {
+    enabled: boolean;
+  };
+
+  [event.swapsReceivedQuote]: {
+    inputAsset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
+    outputAsset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
+    quote: Quote | CrosschainQuote | QuoteError | null;
+  };
+
+  [event.swapsSubmitted]: SwapEventParameters<'swap' | 'crosschainSwap'>;
+  [event.swapsFailed]: SwapsEventFailedParameters<'swap' | 'crosschainSwap'>;
+  [event.swapsSucceeded]: SwapsEventSucceededParameters<'swap' | 'crosschainSwap'>;
+
   [event.browserTrendingDappClicked]: {
     name: string;
     url: string;

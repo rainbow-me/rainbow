@@ -1,8 +1,8 @@
 /* eslint-disable no-nested-ternary */
-import React, { useCallback } from 'react';
-import { StyleSheet } from 'react-native';
-import Animated, { useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
-import { ButtonPressAnimation } from '@/components/animations';
+import React, { useCallback, useRef } from 'react';
+import { InteractionManager, StyleSheet } from 'react-native';
+import Animated, { runOnJS, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
+import { analyticsV2 } from '@/analytics';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { Bleed, Box, IconContainer, Text, globalColors, useColorMode } from '@/design-system';
 import { SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
@@ -12,20 +12,79 @@ import { AnimatedBlurView } from '@/__swaps__/screens/Swap/components/AnimatedBl
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { SwapAssetType } from '@/__swaps__/types/swap';
+import { GestureHandlerV1Button } from './GestureHandlerV1Button';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export const FlipButton = () => {
   const { isDarkMode } = useColorMode();
 
-  const { AnimatedSwapStyles, internalSelectedInputAsset, internalSelectedOutputAsset, setAsset } = useSwapContext();
+  const {
+    AnimatedSwapStyles,
+    SwapInputController,
+    handleProgressNavigation,
+    internalSelectedInputAsset,
+    internalSelectedOutputAsset,
+    selectedOutputChainId,
+  } = useSwapContext();
 
-  const handleSwapAssets = useCallback(() => {
-    if (internalSelectedInputAsset.value && internalSelectedOutputAsset.value) {
-      const assetTypeToSet = SwapAssetType.outputAsset;
-      const assetToSet = internalSelectedInputAsset.value;
+  const chainSetTimeoutId = useRef<NodeJS.Timeout | null>(null);
 
-      setAsset({ type: assetTypeToSet, asset: assetToSet });
+  const flipStoreAssets = useCallback(() => {
+    const { inputAsset: newOutputAsset, outputAsset: newInputAsset } = useSwapsStore.getState();
+
+    useSwapsStore.setState({
+      inputAsset: newInputAsset,
+      outputAsset: newOutputAsset,
+    });
+
+    const shouldUpdateSelectedOutputChainId = useSwapsStore.getState().selectedOutputChainId !== newInputAsset?.chainId;
+    const shouldUpdateAnimatedSelectedOutputChainId = selectedOutputChainId.value !== internalSelectedInputAsset.value?.chainId;
+
+    if (newInputAsset && (shouldUpdateSelectedOutputChainId || shouldUpdateAnimatedSelectedOutputChainId)) {
+      if (chainSetTimeoutId.current) {
+        clearTimeout(chainSetTimeoutId.current);
+      }
+
+      // This causes a heavy re-render in the output token list, so we delay updating the selected output chain until
+      // the animation is most likely complete.
+      chainSetTimeoutId.current = setTimeout(() => {
+        InteractionManager.runAfterInteractions(() => {
+          if (shouldUpdateSelectedOutputChainId) {
+            useSwapsStore.setState({
+              selectedOutputChainId: newInputAsset?.chainId ?? ChainId.mainnet,
+            });
+          }
+          if (shouldUpdateAnimatedSelectedOutputChainId) {
+            selectedOutputChainId.value = newInputAsset?.chainId ?? ChainId.mainnet;
+          }
+        });
+      }, 750);
     }
-  }, [internalSelectedInputAsset, internalSelectedOutputAsset, /* lastTypedInput, */ setAsset]);
+
+    analyticsV2.track(analyticsV2.event.swapsFlippedAssets, {
+      inputAmount: SwapInputController.inputValues.value.inputAmount,
+      previousInputAsset: internalSelectedInputAsset.value,
+      previousOutputAsset: internalSelectedOutputAsset.value,
+    });
+  }, [SwapInputController.inputValues, internalSelectedInputAsset, internalSelectedOutputAsset, selectedOutputChainId]);
+
+  const handleFlipAssets = useCallback(() => {
+    'worklet';
+    if (internalSelectedInputAsset.value || internalSelectedOutputAsset.value) {
+      const assetTypeToSet = internalSelectedInputAsset.value ? SwapAssetType.outputAsset : SwapAssetType.inputAsset;
+
+      // Flip shared value assets and navigate ahead of time because it's faster than waiting for setAsset
+      const newOutputAsset = internalSelectedInputAsset.value;
+      const newInputAsset = internalSelectedOutputAsset.value;
+
+      internalSelectedInputAsset.value = newInputAsset;
+      internalSelectedOutputAsset.value = newOutputAsset;
+      handleProgressNavigation({ type: assetTypeToSet });
+
+      runOnJS(flipStoreAssets)();
+    }
+  }, [flipStoreAssets, handleProgressNavigation, internalSelectedInputAsset, internalSelectedOutputAsset]);
 
   const flipButtonInnerStyles = useAnimatedStyle(() => {
     return {
@@ -57,7 +116,7 @@ export const FlipButton = () => {
           },
         ]}
       >
-        <ButtonPressAnimation onPress={handleSwapAssets} scaleTo={0.8} style={{ paddingHorizontal: 20, paddingVertical: 8 }}>
+        <GestureHandlerV1Button onPressWorklet={handleFlipAssets} scaleTo={0.8} style={{ paddingHorizontal: 20, paddingVertical: 8 }}>
           {/* TODO: Temp fix - rewrite to actually avoid type errors */}
           {/* @ts-expect-error The conditional as={} is causing type errors */}
           <Box
@@ -88,7 +147,7 @@ export const FlipButton = () => {
               </Box>
             </IconContainer>
           </Box>
-        </ButtonPressAnimation>
+        </GestureHandlerV1Button>
       </Box>
       <Box pointerEvents="none" position="absolute">
         <SpinnerComponent />

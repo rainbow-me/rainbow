@@ -1,14 +1,14 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import SheetActionButton from './SheetActionButton';
-import { useExpandedStateNavigation } from '@/hooks';
+import { useExpandedStateNavigation, useWallets } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { RainbowToken } from '@/entities';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
-import { SWAPS_V2, useExperimentalFlag } from '@/config';
-import { ethereumUtils } from '@/utils';
+import { SWAPS_V2, useExperimentalFlag, enableActionsOnReadOnlyWallet } from '@/config';
+import { ethereumUtils, watchingAlert } from '@/utils';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { chainNameFromChainId } from '@/__swaps__/utils/chains';
@@ -31,12 +31,18 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
   const { swaps_v2 } = useRemoteConfig();
   const { navigate } = useNavigation();
   const swapsV2Enabled = useExperimentalFlag(SWAPS_V2);
+  const { isReadOnlyWallet } = useWallets();
 
   const color = givenColor || colors.swapPurple;
 
   const old_navigate = useExpandedStateNavigation(inputType, fromDiscover, asset);
   const goToSwap = useCallback(() => {
     if (swapsV2Enabled || swaps_v2) {
+      if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
+        watchingAlert();
+        return;
+      }
+
       const chainId = ethereumUtils.getChainIdFromNetwork(asset.network);
       const uniqueId = `${asset.address}_${chainId}`;
       const userAsset = userAssetsStore.getState().userAssets.get(uniqueId);
@@ -110,7 +116,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
         };
       }
     });
-  }, [asset, inputType, navigate, old_navigate, swapsV2Enabled, swaps_v2]);
+  }, [asset, inputType, isReadOnlyWallet, navigate, old_navigate, swapsV2Enabled, swaps_v2]);
 
   return (
     <SheetActionButton

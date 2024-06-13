@@ -3,6 +3,7 @@ import { SharedValue, convertToRGBA, isColor } from 'react-native-reanimated';
 
 import * as i18n from '@/languages';
 import { globalColors } from '@/design-system';
+import { ForegroundColor, palettes } from '@/design-system/color/palettes';
 import {
   ETH_COLOR,
   ETH_COLOR_DARK,
@@ -29,14 +30,14 @@ import {
   divWorklet,
   equalWorklet,
   floorWorklet,
-  log10Worklet,
   lessThanOrEqualToWorklet,
   mulWorklet,
   powWorklet,
   roundWorklet,
   toFixedWorklet,
   greaterThanOrEqualToWorklet,
-  sumWorklet,
+  orderOfMagnitudeWorklet,
+  isNumberStringWorklet,
 } from '../safe-math/SafeMath';
 
 // /---- 🎨 Color functions 🎨 ----/ //
@@ -154,9 +155,13 @@ export const countDecimalPlaces = (number: number | string): number => {
   return 0;
 };
 
-export const findNiceIncrement = (availableBalance: string | number) => {
+export const findNiceIncrement = (availableBalance: string | number | undefined) => {
   'worklet';
   if (Number(availableBalance) === 0) {
+    return 0;
+  }
+
+  if (!availableBalance || !isNumberStringWorklet(availableBalance.toString()) || equalWorklet(availableBalance, 0)) {
     return 0;
   }
 
@@ -170,7 +175,7 @@ export const findNiceIncrement = (availableBalance: string | number) => {
   const exactIncrement = divWorklet(availableBalance, 100);
 
   // Calculate the order of magnitude of the exact increment
-  const orderOfMagnitude = floorWorklet(log10Worklet(exactIncrement));
+  const orderOfMagnitude = orderOfMagnitudeWorklet(exactIncrement);
 
   const baseIncrement = powWorklet(10, orderOfMagnitude);
 
@@ -186,7 +191,6 @@ export const findNiceIncrement = (availableBalance: string | number) => {
   }
   return adjustedIncrement;
 };
-
 //
 // /---- END JS utils ----/ //
 
@@ -231,7 +235,7 @@ export function trimTrailingZeros(value: string) {
 export function precisionBasedOffMagnitude(amount: number | string, isStablecoin = false): number {
   'worklet';
 
-  const magnitude = -Number(floorWorklet(sumWorklet(log10Worklet(amount), 0)));
+  const magnitude = -orderOfMagnitudeWorklet(amount);
   // don't let stablecoins go beneath 2nd order
   if (magnitude < -2 && isStablecoin) {
     return -STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS;
@@ -278,7 +282,7 @@ export function valueBasedDecimalFormatter({
   const decimalPlaces = calculateDecimalPlaces(usdTokenPrice);
 
   let roundedAmount;
-  const factor = Math.pow(10, decimalPlaces);
+  const factor = Math.pow(10, decimalPlaces) || 1; // Prevent division by 0
 
   // Apply rounding based on the specified rounding mode
   if (roundingMode === 'up') {
@@ -317,7 +321,7 @@ export function valueBasedDecimalFormatter({
 
   // Format the number to add separators and trim trailing zeros
   const numberFormatter = new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0,
+    minimumFractionDigits: 0,
     maximumFractionDigits: maximumFractionDigits(),
     useGrouping: true,
   });
@@ -350,7 +354,7 @@ export function niceIncrementFormatter({
 }) {
   'worklet';
 
-  if (percentageToSwap === 0) return '0';
+  if (percentageToSwap === 0 || equalWorklet(niceIncrement, 0)) return '0';
   if (percentageToSwap === 0.25) {
     const amount = mulWorklet(inputAssetBalance, 0.25);
     return valueBasedDecimalFormatter({
@@ -364,12 +368,13 @@ export function niceIncrementFormatter({
   }
   if (percentageToSwap === 0.5) {
     const amount = mulWorklet(inputAssetBalance, 0.5);
+    const precisionAdjustment = precisionBasedOffMagnitude(amount, isStablecoin);
     return valueBasedDecimalFormatter({
       amount,
       usdTokenPrice: inputAssetUsdPrice,
       assetBalanceDisplay,
       roundingMode: 'up',
-      precisionAdjustment: precisionBasedOffMagnitude(amount, isStablecoin),
+      precisionAdjustment,
       isStablecoin,
     });
   }
@@ -413,12 +418,10 @@ export function niceIncrementFormatter({
   const amountToFixedDecimals = toFixedWorklet(rawAmount, decimals);
 
   const formattedAmount = `${Number(amountToFixedDecimals).toLocaleString('en-US', {
-    useGrouping: true,
-    minimumFractionDigits: isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0,
+    useGrouping: !stripSeparators,
+    minimumFractionDigits: 0,
     maximumFractionDigits: MAXIMUM_SIGNIFICANT_DECIMALS,
   })}`;
-
-  if (stripSeparators) return stripCommas(formattedAmount);
 
   return formattedAmount;
 }
@@ -433,7 +436,6 @@ export const opacityWorklet = (color: string, opacity: number) => {
     return color;
   }
 };
-
 //
 // /---- END worklet utils ----/ //
 
@@ -524,6 +526,39 @@ export const extractColorValueForColors = ({
     textColor: getTextColor(highContrastColor),
     nativePrice: undefined,
   };
+};
+
+export const getColorWorklet = (color: ForegroundColor, isDarkMode: boolean) => {
+  'worklet';
+  return palettes[isDarkMode ? 'dark' : 'light'].foregroundColors[color];
+};
+
+export const getChainColorWorklet = (chainId: ChainId, isDarkMode: boolean): string => {
+  'worklet';
+  switch (chainId) {
+    case ChainId.mainnet:
+      return getColorWorklet('mainnet', isDarkMode);
+    case ChainId.arbitrum:
+      return getColorWorklet('arbitrum', isDarkMode);
+    case ChainId.optimism:
+      return getColorWorklet('optimism', isDarkMode);
+    case ChainId.polygon:
+      return getColorWorklet('polygon', isDarkMode);
+    case ChainId.base:
+      return getColorWorklet('base', isDarkMode);
+    case ChainId.zora:
+      return getColorWorklet('zora', isDarkMode);
+    case ChainId.bsc:
+      return getColorWorklet('bsc', isDarkMode);
+    case ChainId.avalanche:
+      return getColorWorklet('avalanche', isDarkMode);
+    case ChainId.blast:
+      return getColorWorklet('blast', isDarkMode);
+    case ChainId.degen:
+      return getColorWorklet('degen', isDarkMode);
+    default:
+      return getColorWorklet('mainnet', isDarkMode);
+  }
 };
 
 export const getQuoteServiceTimeWorklet = ({ quote }: { quote: Quote | CrosschainQuote }) => {
@@ -642,7 +677,7 @@ const ETH_COLORS: Colors = {
 
 export const getStandardizedUniqueIdWorklet = ({ address, chainId }: { address: AddressOrEth; chainId: ChainId }) => {
   'worklet';
-  return `${address.toLowerCase()}_${chainId}`;
+  return `${address}_${chainId}`;
 };
 
 export const parseAssetAndExtend = ({
