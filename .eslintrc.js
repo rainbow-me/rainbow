@@ -37,6 +37,7 @@ module.exports = {
         ],
       },
     ],
+    'no-unused-vars': 'error',
     'jest/expect-expect': 'off',
     'jest/no-disabled-tests': 'off',
   },

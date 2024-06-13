@@ -42,7 +42,6 @@
     "format:check": "prettier --check .",
     "lint": "yarn format:check && yarn lint:ts && yarn lint:js",
     "lint:ci": "yarn format:check && yarn lint:ts && yarn lint:js --quiet",
-    "lint:pre-commit": "prettier --check && yarn tsc --skipLibCheck --noEmit && eslint --cache",
     "lint:js": "eslint --cache .",
     "lint:ts": "yarn tsc --skipLibCheck --noEmit",
     "postinstall": "./scripts/postinstall.sh",
@@ -525,8 +524,10 @@
     }
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,graphql}": [
-      "yarn lint:pre-commit"
+    "*.{js,jsx,ts,tsx}": [
+      "prettier --check",
+      "yarn tsc --skipLibCheck --noEmit --allowJs",
+      "eslint --fix"
     ]
   },
   "lavamoat": {
