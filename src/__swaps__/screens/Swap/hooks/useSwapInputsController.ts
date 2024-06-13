@@ -32,7 +32,7 @@ import { queryClient } from '@/react-query';
 import { divWorklet, equalWorklet, greaterThanWorklet, mulWorklet, toFixedWorklet } from '@/__swaps__/safe-math/SafeMath';
 
 function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetWithColors | null) {
-  const initialBalance = Number(initialSelectedInputAsset?.balance.amount) || 0;
+  const initialBalance = Number(initialSelectedInputAsset?.maxSwappableAmount) || 0;
   const assetBalanceDisplay = initialSelectedInputAsset?.balance.display ?? '';
   const initialNiceIncrement = findNiceIncrement(initialBalance);
   const initialDecimalPlaces = countDecimalPlaces(initialNiceIncrement);
@@ -100,8 +100,8 @@ export function useSwapInputsController({
   });
 
   const niceIncrement = useDerivedValue(() => {
-    if (!internalSelectedInputAsset.value?.balance.amount) return 0.1;
-    return findNiceIncrement(internalSelectedInputAsset.value?.balance.amount);
+    if (!internalSelectedInputAsset.value?.maxSwappableAmount) return 0.1;
+    return findNiceIncrement(internalSelectedInputAsset.value?.maxSwappableAmount);
   });
   const incrementDecimalPlaces = useDerivedValue(() => countDecimalPlaces(niceIncrement.value));
 
@@ -137,7 +137,7 @@ export function useSwapInputsController({
       });
     }
 
-    const balance = internalSelectedInputAsset.value?.balance.amount || 0;
+    const balance = internalSelectedInputAsset.value?.maxSwappableAmount || 0;
     const isStablecoin = internalSelectedInputAsset.value?.type === 'stablecoin' ?? false;
 
     return niceIncrementFormatter({
@@ -353,7 +353,7 @@ export function useSwapInputsController({
         if (!inputAmount || inputAmount === 0) {
           sliderXPosition.value = withSpring(0, snappySpringConfig);
         } else {
-          const inputBalance = internalSelectedInputAsset.value?.balance.amount || '0';
+          const inputBalance = internalSelectedInputAsset.value?.maxSwappableAmount || '0';
           const updatedSliderPosition = greaterThanWorklet(inputBalance, 0)
             ? clamp(Number(divWorklet(inputAmount, inputBalance)) * SLIDER_WIDTH, 0, SLIDER_WIDTH)
             : 0;
@@ -449,7 +449,7 @@ export function useSwapInputsController({
 
     const isSwappingMaxBalance = internalSelectedInputAsset.value && inputMethod.value === 'slider' && percentageToSwap.value >= 1;
     const maxAdjustedInputAmount =
-      (isSwappingMaxBalance && internalSelectedInputAsset.value?.balance.amount) || inputValues.value.inputAmount;
+      (isSwappingMaxBalance && internalSelectedInputAsset.value?.maxSwappableAmount) || inputValues.value.inputAmount;
 
     const params = buildQuoteParams({
       currentAddress: store.getState().settings.accountAddress,
@@ -576,7 +576,7 @@ export function useSwapInputsController({
           // If the user enters a new inputAmount, update the slider position ahead of the quote fetch, because
           // we can derive the slider position directly from the entered amount.
           if (inputKey === 'inputAmount') {
-            const inputAssetBalance = internalSelectedInputAsset.value?.balance.amount || '0';
+            const inputAssetBalance = internalSelectedInputAsset.value?.maxSwappableAmount || '0';
             const updatedSliderPosition = clamp(Number(divWorklet(amount, inputAssetBalance)) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
             sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
           }
@@ -687,7 +687,7 @@ export function useSwapInputsController({
             // If the change set the slider position to > 0
             if (!internalSelectedInputAsset.value) return;
 
-            const balance = Number(internalSelectedInputAsset.value.balance.amount);
+            const balance = Number(internalSelectedInputAsset.value.maxSwappableAmount);
 
             if (!balance) {
               inputValues.modify(values => {
@@ -764,7 +764,7 @@ export function useSwapInputsController({
               };
             });
 
-            const inputAssetBalance = internalSelectedInputAsset.value?.balance.amount || '0';
+            const inputAssetBalance = internalSelectedInputAsset.value?.maxSwappableAmount || '0';
             const updatedSliderPosition = clamp(
               Number(divWorklet(current.values.inputAmount, inputAssetBalance)) * SLIDER_WIDTH,
               0,
@@ -836,7 +836,7 @@ export function useSwapInputsController({
       const didOutputAssetChange = current.assetToBuy?.uniqueId !== previous?.assetToBuy?.uniqueId;
 
       if (didInputAssetChange || didOutputAssetChange) {
-        const balance = Number(current.assetToSell?.balance?.amount);
+        const balance = Number(current.assetToSell?.maxSwappableAmount);
 
         const areBothAssetsSet = current.assetToSell && current.assetToBuy;
         const didFlipAssets =

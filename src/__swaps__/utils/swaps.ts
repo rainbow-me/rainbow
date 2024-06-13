@@ -663,6 +663,7 @@ export const parseAssetAndExtend = ({
   return {
     ...asset,
     ...colors,
+    maxSwappableAmount: asset.balance.amount,
     nativePrice: asset.price?.value,
     balance: insertUserAssetBalance ? userAssetsStore.getState().getUserAsset(uniqueId)?.balance || asset.balance : asset.balance,
 

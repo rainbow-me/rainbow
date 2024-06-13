@@ -1,6 +1,6 @@
 import { ChainId } from '@/__swaps__/types/chains';
 import { weiToGwei } from '@/__swaps__/utils/ethereum';
-import { add, multiply } from '@/__swaps__/utils/numbers';
+import { add, multiply, divide, subtract } from '@/__swaps__/utils/numbers';
 import ethereumUtils, { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { useMemo, useState } from 'react';
 import { formatUnits } from 'viem';
@@ -31,6 +31,7 @@ export function useEstimatedGasFee({
 }) {
   const network = ethereumUtils.getNetworkFromChainId(chainId);
   const nativeNetworkAsset = useNativeAssetForNetwork(network);
+  const { internalSelectedInputAsset } = useSwapContext();
 
   return useMemo(() => {
     if (!gasLimit || !gasSettings || !nativeNetworkAsset?.price) return;
@@ -38,6 +39,22 @@ export function useEstimatedGasFee({
     const amount = gasSettings.isEIP1559 ? add(gasSettings.maxBaseFee, gasSettings.maxPriorityFee) : gasSettings.gasPrice;
 
     const totalWei = multiply(gasLimit, amount);
+
+    if (internalSelectedInputAsset.value?.isNativeAsset) {
+      console.log('TEST1');
+      const gasFeeNativeCurrency = divide(totalWei, 10 ** internalSelectedInputAsset.value!.decimals);
+      console.log('TEST2');
+      const gasFeeWithBuffer = multiply(gasFeeNativeCurrency, 1.3);
+      const maxSwappableAmount = subtract(internalSelectedInputAsset.value!.balance.amount, gasFeeWithBuffer);
+      internalSelectedInputAsset.modify(prev => {
+        'worklet';
+        return {
+          ...prev,
+          maxSwappableAmount: Number(maxSwappableAmount) < 0 ? '0' : maxSwappableAmount,
+        };
+      });
+    }
+
     const networkAssetPrice = nativeNetworkAsset.price.value?.toString();
 
     if (!networkAssetPrice) return `${formatNumber(weiToGwei(totalWei))} Gwei`;
@@ -46,7 +63,7 @@ export function useEstimatedGasFee({
     const feeInUserCurrency = multiply(networkAssetPrice, gasAmount);
 
     return formatCurrency(feeInUserCurrency);
-  }, [gasLimit, gasSettings, nativeNetworkAsset]);
+  }, [gasLimit, gasSettings, internalSelectedInputAsset, nativeNetworkAsset?.decimals, nativeNetworkAsset?.price]);
 }
 
 export function useSwapEstimatedGasFee(gasSettings: GasSettings | undefined) {
@@ -69,7 +86,7 @@ export function useSwapEstimatedGasFee(gasSettings: GasSettings | undefined) {
 
       const isSwappingMoreThanAvailableBalance = greaterThanWorklet(
         current.sellAmount.toString(),
-        toScaledIntegerWorklet(assetToSell.value.balance.amount, assetToSell.value.decimals)
+        toScaledIntegerWorklet(assetToSell.value.maxSwappableAmount, assetToSell.value.decimals)
       );
 
       // Skip gas fee recalculation if the user is trying to swap more than their available balance, as it isn't
