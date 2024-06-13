@@ -19,7 +19,7 @@ export async function getNextNonce({ address, network }: { address: string; netw
   const { getNonce } = nonceStore.getState();
   const localNonceData = getNonce({ address, network });
   const localNonce = localNonceData?.currentNonce || 0;
-  const provider = await getProviderForNetwork(network);
+  const provider = getProviderForNetwork(network);
   const txCountIncludingPending = await provider.getTransactionCount(address, 'pending');
   if (!localNonce && !txCountIncludingPending) return 0;
   const ret = Math.max(localNonce + 1, txCountIncludingPending);

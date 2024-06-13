@@ -41,9 +41,7 @@ export function useEstimatedGasFee({
     const totalWei = multiply(gasLimit, amount);
 
     if (internalSelectedInputAsset.value?.isNativeAsset) {
-      console.log('TEST1');
       const gasFeeNativeCurrency = divide(totalWei, 10 ** internalSelectedInputAsset.value!.decimals);
-      console.log('TEST2');
       const gasFeeWithBuffer = multiply(gasFeeNativeCurrency, 1.3);
       const maxSwappableAmount = subtract(internalSelectedInputAsset.value!.balance.amount, gasFeeWithBuffer);
       internalSelectedInputAsset.modify(prev => {

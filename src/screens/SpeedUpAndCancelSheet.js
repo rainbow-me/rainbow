@@ -292,7 +292,7 @@ export default function SpeedUpAndCancelSheet() {
           provider = await getFlashbotsProvider();
         } else {
           logger.debug('using normal provider');
-          provider = await getProviderForNetwork(currentNetwork);
+          provider = getProviderForNetwork(currentNetwork);
         }
         setCurrentProvider(provider);
       };
