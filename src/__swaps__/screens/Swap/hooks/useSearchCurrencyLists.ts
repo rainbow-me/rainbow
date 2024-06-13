@@ -222,32 +222,6 @@ export function useSearchCurrencyLists() {
     }
   );
 
-  const memoizedData = useMemo(() => {
-    const queryIsAddress = isAddress(query);
-    const keys: TokenSearchAssetKey[] = queryIsAddress ? ['address'] : ['name', 'symbol'];
-    const threshold: TokenSearchThreshold = queryIsAddress ? 'CASE_SENSITIVE_EQUAL' : 'CONTAINS';
-    const enableUnverifiedSearch = query.length > 2;
-
-    const inputAssetBridgedToSelectedChainAddress = assetToSell.value?.networks?.[selectedOutputChainId.value]?.address;
-
-    const bridgeAsset =
-      state.isCrosschainSearch && inputAssetBridgedToSelectedChainAddress
-        ? verifiedAssets?.find(
-            asset => asset.address === inputAssetBridgedToSelectedChainAddress && asset.chainId === selectedOutputChainId.value
-          )
-        : null;
-
-    const filteredBridgeAsset = bridgeAsset && filterBridgeAsset({ asset: bridgeAsset, filter: query }) ? bridgeAsset : null;
-
-    return {
-      queryIsAddress,
-      keys,
-      threshold,
-      enableUnverifiedSearch,
-      filteredBridgeAsset,
-    };
-  }, [assetToSell, query, selectedOutputChainId, state, verifiedAssets]);
-
   const { favoritesMetadata: favorites } = useFavorites();
 
   const unfilteredFavorites = useMemo(() => {
@@ -265,6 +239,40 @@ export function useSearchCurrencyLists() {
         }),
       })) as SearchAsset[];
   }, [favorites, state.toChainId]);
+
+  const memoizedData = useMemo(() => {
+    const queryIsAddress = isAddress(query);
+    const keys: TokenSearchAssetKey[] = queryIsAddress ? ['address'] : ['name', 'symbol'];
+    const threshold: TokenSearchThreshold = queryIsAddress ? 'CASE_SENSITIVE_EQUAL' : 'CONTAINS';
+    const enableUnverifiedSearch = query.length > 2;
+
+    const inputAssetBridgedToSelectedChainAddress = assetToSell.value?.networks?.[selectedOutputChainId.value]?.address;
+
+    const bridgeAsset =
+      state.isCrosschainSearch && inputAssetBridgedToSelectedChainAddress
+        ? verifiedAssets?.find(
+            asset => asset.address === inputAssetBridgedToSelectedChainAddress && asset.chainId === selectedOutputChainId.value
+          )
+        : null;
+
+    const filteredBridgeAsset = bridgeAsset && filterBridgeAsset({ asset: bridgeAsset, filter: query }) ? bridgeAsset : null;
+    const isBridgeAssetUserFavorite =
+      bridgeAsset &&
+      unfilteredFavorites.some(asset => asset.mainnetAddress === bridgeAsset.mainnetAddress || asset.address === bridgeAsset.address);
+
+    return {
+      queryIsAddress,
+      keys,
+      threshold,
+      enableUnverifiedSearch,
+      filteredBridgeAsset: filteredBridgeAsset
+        ? {
+            ...filteredBridgeAsset,
+            favorite: isBridgeAssetUserFavorite,
+          }
+        : null,
+    };
+  }, [assetToSell, query, selectedOutputChainId, state, verifiedAssets, unfilteredFavorites]);
 
   const favoritesList = useMemo(() => {
     if (query === '') {
