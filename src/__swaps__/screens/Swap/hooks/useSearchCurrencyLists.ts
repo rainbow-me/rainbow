@@ -24,7 +24,7 @@ export interface AssetToBuySection {
 }
 
 const MAX_UNVERIFIED_RESULTS = 8;
-const MAX_VERIFIED_RESULTS = 50;
+const MAX_VERIFIED_RESULTS = 48;
 
 const filterAssetsFromBridgeAndAssetToSell = ({
   assets,
@@ -196,8 +196,8 @@ export function useSearchCurrencyLists() {
       const topResults = results
         .filter(asset => asset.chainId === state.toChainId)
         .sort((a, b) => {
-          if (b.highLiquidity && !a.highLiquidity) return 1;
-          if (a.highLiquidity && !b.highLiquidity) return -1;
+          if (a.isNativeAsset !== b.isNativeAsset) return a.isNativeAsset ? -1 : 1;
+          if (a.highLiquidity !== b.highLiquidity) return a.highLiquidity ? -1 : 1;
           return Object.keys(b.networks).length - Object.keys(a.networks).length;
         })
         .slice(0, MAX_VERIFIED_RESULTS);
@@ -207,7 +207,7 @@ export function useSearchCurrencyLists() {
     [query, state.toChainId]
   );
 
-  const { data: verifiedAssets /* , isLoading: verifiedAssetsLoading */ } = useTokenSearch(
+  const { data: verifiedAssets } = useTokenSearch(
     {
       list: 'verifiedAssets',
 
@@ -281,7 +281,7 @@ export function useSearchCurrencyLists() {
     }
   }, [memoizedData.keys, memoizedData.queryIsAddress, query, unfilteredFavorites]);
 
-  const { data: unverifiedAssets /* , isLoading: unverifiedAssetsLoading */ } = useTokenSearch(
+  const { data: unverifiedAssets } = useTokenSearch(
     {
       chainId: state.toChainId,
       keys: isAddress(query) ? ['address'] : ['name', 'symbol'],
@@ -297,24 +297,26 @@ export function useSearchCurrencyLists() {
     }
   );
 
-  const results = useMemo(() => {
+  return useMemo(() => {
     const toChainId = selectedOutputChainId.value ?? ChainId.mainnet;
     const bridgeResult = memoizedData.filteredBridgeAsset ?? undefined;
     const crosschainMatches = query === '' ? undefined : verifiedAssets?.filter(asset => asset.chainId !== toChainId);
     const verifiedResults = query === '' ? verifiedAssets : verifiedAssets?.filter(asset => asset.chainId === toChainId);
     const unverifiedResults = memoizedData.enableUnverifiedSearch ? unverifiedAssets : undefined;
 
-    return buildListSectionsData({
-      assetToSellAddress: state.assetToSellAddress,
-      combinedData: {
-        bridgeAsset: bridgeResult,
-        crosschainExactMatches: crosschainMatches,
-        unverifiedAssets: unverifiedResults,
-        verifiedAssets: verifiedResults,
-      },
-      favoritesList,
-      filteredBridgeAssetAddress: memoizedData.filteredBridgeAsset?.address,
-    });
+    return {
+      results: buildListSectionsData({
+        assetToSellAddress: state.assetToSellAddress,
+        combinedData: {
+          bridgeAsset: bridgeResult,
+          crosschainExactMatches: crosschainMatches,
+          unverifiedAssets: unverifiedResults,
+          verifiedAssets: verifiedResults,
+        },
+        favoritesList,
+        filteredBridgeAssetAddress: memoizedData.filteredBridgeAsset?.address,
+      }),
+    };
   }, [
     favoritesList,
     memoizedData.enableUnverifiedSearch,
@@ -325,14 +327,4 @@ export function useSearchCurrencyLists() {
     unverifiedAssets,
     verifiedAssets,
   ]);
-
-  return useMemo(
-    () => ({
-      // ⚠️ TODO: Re-enable when search spinner is added in
-      // loading: verifiedAssetsLoading || unverifiedAssetsLoading,
-      loading: false,
-      results,
-    }),
-    [results]
-  );
 }

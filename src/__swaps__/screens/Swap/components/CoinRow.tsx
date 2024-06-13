@@ -219,7 +219,6 @@ const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId })
 
   return (
     <ContextMenuButton
-      activeOpacity={0}
       isMenuPrimaryAction
       // @ts-expect-error Types of property 'menuItems' are incompatible
       menuConfig={menuConfig}
