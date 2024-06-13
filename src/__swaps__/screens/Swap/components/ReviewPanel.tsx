@@ -195,7 +195,7 @@ export function ReviewPanel() {
   });
 
   const flashbotsVisibilityStyle = useAnimatedStyle(() => {
-    const shouldDisplay = internalSelectedInputAsset.value?.chainId === ChainId.mainnet;
+    const shouldDisplay = (internalSelectedInputAsset.value?.chainId ?? ChainId.mainnet) === ChainId.mainnet;
     return {
       display: shouldDisplay ? 'flex' : 'none',
     };
