@@ -32,7 +32,7 @@ import { Navigation } from '@/navigation';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
-import { getCachedProviderForNetwork, getFlashbotsProvider, isHardHat } from '@/handlers/web3';
+import { getFlashbotsProvider, getProviderForNetwork, isHardHat } from '@/handlers/web3';
 import { loadWallet } from '@/model/wallet';
 import { walletExecuteRap } from '@/raps/execute';
 import { queryClient } from '@/react-query';
@@ -174,9 +174,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       const network = ethereumUtils.getNetworkFromChainId(parameters.chainId);
       const provider =
-        parameters.flashbots && getNetworkObj(network).features.flashbots
-          ? await getFlashbotsProvider()
-          : getCachedProviderForNetwork(network);
+        parameters.flashbots && getNetworkObj(network).features.flashbots ? await getFlashbotsProvider() : getProviderForNetwork(network);
       const providerUrl = provider?.connection?.url;
       const connectedToHardhat = !!providerUrl && isHardHat(providerUrl);
 

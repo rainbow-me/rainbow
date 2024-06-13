@@ -60,7 +60,7 @@ export const estimateSwapGasLimit = async ({
   quote: Quote;
 }): Promise<string> => {
   // TODO: MARK - Replace this once we migrate network => chainId
-  const provider = await getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
+  const provider = getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
   if (!provider || !quote) {
     return gasUnits.basic_swap[chainId];
   }
@@ -144,7 +144,7 @@ export const estimateUnlockAndSwapFromMetadata = async ({
     });
 
     // TODO: MARK - Replace this once we migrate network => chainId
-    const provider = await getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
+    const provider = getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
     const swapTransaction = await populateSwap({
       provider,
       quote,

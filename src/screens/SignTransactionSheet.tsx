@@ -225,7 +225,7 @@ export const SignTransactionSheet = () => {
     // use the default
     let gas = txPayload.gasLimit || txPayload.gas;
 
-    const provider = await getProviderForNetwork(currentNetwork);
+    const provider = getProviderForNetwork(currentNetwork);
     try {
       // attempt to re-run estimation
       logger.debug('WC: Estimating gas limit', { gas }, logger.DebugContext.walletconnect);
@@ -344,7 +344,7 @@ export const SignTransactionSheet = () => {
       if (currentNetwork === Network.mainnet) {
         p = await getFlashbotsProvider();
       } else {
-        p = await getProviderForNetwork(currentNetwork);
+        p = getProviderForNetwork(currentNetwork);
       }
 
       setProvider(p);
@@ -496,7 +496,7 @@ export const SignTransactionSheet = () => {
     const message = transactionDetails?.payload?.params.find((p: string) => !isAddress(p));
     let response = null;
 
-    const provider = await getProviderForNetwork(currentNetwork);
+    const provider = getProviderForNetwork(currentNetwork);
     if (!provider) {
       return;
     }
@@ -604,7 +604,7 @@ export const SignTransactionSheet = () => {
       if (!currentNetwork) {
         return;
       }
-      const provider = await getProviderForNetwork(currentNetwork);
+      const provider = getProviderForNetwork(currentNetwork);
       if (!provider) {
         return;
       }

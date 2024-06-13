@@ -296,7 +296,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
 
   const updateGasLimit = useCallback(async () => {
     try {
-      const provider = await getProviderForNetwork(currentNetwork);
+      const provider = getProviderForNetwork(currentNetwork);
 
       const quote = isCrosschainSwap ? (tradeDetails as CrosschainQuote) : (tradeDetails as Quote);
       const gasLimit = await (isCrosschainSwap ? estimateCrosschainSwapGasLimit : estimateSwapGasLimit)({
@@ -402,7 +402,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
       const NotificationManager = ios ? NativeModules.NotificationManager : null;
       try {
         // load the correct network provider for the wallet
-        const provider = await getProviderForNetwork(currentNetwork);
+        const provider = getProviderForNetwork(currentNetwork);
         let wallet = await loadWallet(accountAddress, false, provider);
         if (!wallet) {
           setIsAuthorizing(false);

@@ -17,7 +17,7 @@ import { TransactionType } from './entities';
 import appEvents from './handlers/appEvents';
 import handleDeeplink from './handlers/deeplinks';
 import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
-import { getCachedProviderForNetwork, isHardHat, isL2Network } from './handlers/web3';
+import { getProviderForNetwork, isHardHat, isL2Network } from './handlers/web3';
 import RainbowContextWrapper from './helpers/RainbowContext';
 import isTestFlight from './helpers/isTestFlight';
 import networkTypes from './helpers/networkTypes';
@@ -183,7 +183,7 @@ class OldApp extends Component {
     const network = tx.chainId ? ethereumUtils.getNetworkFromChainId(tx.chainId) : tx.network || networkTypes.mainnet;
     const isL2 = isL2Network(network);
 
-    const provider = getCachedProviderForNetwork(network);
+    const provider = getProviderForNetwork(network);
     const providerUrl = provider?.connection?.url;
     const connectedToHardhat = isHardHat(providerUrl);
 
