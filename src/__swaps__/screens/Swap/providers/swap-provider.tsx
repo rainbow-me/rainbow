@@ -1,6 +1,6 @@
 // @refresh
 import React, { ReactNode, createContext, useCallback, useContext, useEffect, useRef } from 'react';
-import { StyleProp, TextStyle, TextInput, NativeModules, InteractionManager } from 'react-native';
+import { InteractionManager, NativeModules, StyleProp, TextInput, TextStyle } from 'react-native';
 import {
   AnimatedRef,
   DerivedValue,
@@ -20,38 +20,38 @@ import { NavigationSteps, useSwapNavigation } from '@/__swaps__/screens/Swap/hoo
 import { useSwapSettings } from '@/__swaps__/screens/Swap/hooks/useSwapSettings';
 import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextStyles';
 import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
+import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
 import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
-import { getProviderForNetwork, getFlashbotsProvider, isHardHat } from '@/handlers/web3';
+import { getFlashbotsProvider, getProviderForNetwork, isHardHat } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useAccountSettings } from '@/hooks';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
-import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
-import { swapsStore } from '@/state/swaps/swapsStore';
-import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
+import { loadWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils } from '@/utils';
-import { loadWallet } from '@/model/wallet';
 import { walletExecuteRap } from '@/raps/execute';
+import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
 import { queryClient } from '@/react-query';
-import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import { ethereumUtils } from '@/utils';
+import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 
-import { getGasSettingsBySpeed, getSelectedGas, getSelectedGasSpeed } from '../hooks/useSelectedGas';
+import { equalWorklet, lessThanOrEqualToWorklet, toScaledIntegerWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { analyticsV2 } from '@/analytics';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
-import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { getNetworkObj } from '@/networks';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { useCanPerformSwap } from '../hooks/useCanPerformSwap';
+import { Address } from 'viem';
 import { GasSettings } from '../hooks/useCustomGas';
+import { useGasSharedValues } from '../hooks/useGasSharedValues';
+import { getGasSettingsBySpeed, getSelectedGas, getSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
-import { analyticsV2 } from '@/analytics';
-import { Address } from 'viem';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const tapToSwap = i18n.t(i18n.l.swap.actions.tap_to_swap);
@@ -583,9 +583,15 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     };
   }, []);
 
-  const { gasSettings, estimatedGasLimit, enoughFundsForGas, enoughFundsForSwap } = useCanPerformSwap({
-    inputAsset: internalSelectedInputAsset,
-    quote,
+  const { gasSettings, estimatedGasLimit, enoughFundsForGas } = useGasSharedValues();
+
+  const enoughFundsForSwap = useDerivedValue(() => {
+    const inputAsset = internalSelectedInputAsset.value;
+    if (!quote.value || 'error' in quote.value || !inputAsset) return true;
+    return lessThanOrEqualToWorklet(
+      quote.value.sellAmount.toString(),
+      toScaledIntegerWorklet(inputAsset.balance.amount, inputAsset.decimals)
+    );
   });
 
   const confirmButtonProps = useDerivedValue(() => {
