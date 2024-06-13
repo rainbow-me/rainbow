@@ -497,7 +497,9 @@ export function useSwapInputsController({
           ? Number(
               convertRawAmountToDecimalFormat(
                 (quoteResponse as Quote)?.sellAmount?.toString(),
-                internalSelectedInputAsset.value?.decimals || 18
+                internalSelectedInputAsset.value?.networks[internalSelectedInputAsset.value.chainId]?.decimals ||
+                  internalSelectedInputAsset.value?.decimals ||
+                  18
               )
             )
           : undefined;
@@ -507,7 +509,9 @@ export function useSwapInputsController({
           ? Number(
               convertRawAmountToDecimalFormat(
                 (quoteResponse as Quote)?.buyAmountMinusFees?.toString(),
-                internalSelectedOutputAsset.value?.decimals || 18
+                internalSelectedOutputAsset.value?.networks[internalSelectedOutputAsset.value.chainId]?.decimals ||
+                  internalSelectedOutputAsset.value?.decimals ||
+                  18
               )
             )
           : undefined;
