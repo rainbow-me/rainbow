@@ -87,7 +87,7 @@ export const getNativeAssetForNetwork = async (network: Network, address?: Ether
       };
     }
 
-    const provider = await getProviderForNetwork(network);
+    const provider = getProviderForNetwork(network);
     if (nativeAsset) {
       nativeAsset.mainnet_address = mainnetAddress;
       nativeAsset.address = getNetworkObj(network).nativeCurrency.address;

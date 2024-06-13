@@ -109,31 +109,30 @@ export const explorerClearState = () => (dispatch: ThunkDispatch<AppState, unkno
 /**
  * Initializes the explorer, creating sockets and configuring listeners.
  */
-export const explorerInit =
-  () => async (dispatch: ThunkDispatch<AppState, unknown, ExplorerUpdateSocketsAction>, getState: AppGetState) => {
-    const { network, accountAddress } = getState().settings;
-    const { addressSocket } = getState().explorer;
+export const explorerInit = () => (dispatch: ThunkDispatch<AppState, unknown, ExplorerUpdateSocketsAction>, getState: AppGetState) => {
+  const { network, accountAddress } = getState().settings;
+  const { addressSocket } = getState().explorer;
 
-    // if there is another socket unsubscribe first
-    if (addressSocket) {
-      dispatch(explorerUnsubscribe());
-    }
+  // if there is another socket unsubscribe first
+  if (addressSocket) {
+    dispatch(explorerUnsubscribe());
+  }
 
-    const provider = await getProviderForNetwork(network);
-    const providerUrl = provider?.connection?.url;
-    if (isHardHat(providerUrl) || network !== Network.mainnet) {
-      return;
-    }
+  const provider = getProviderForNetwork(network);
+  const providerUrl = provider?.connection?.url;
+  if (isHardHat(providerUrl) || network !== Network.mainnet) {
+    return;
+  }
 
-    const newAddressSocket = createSocket('address');
-    dispatch({
-      payload: {
-        addressSocket: newAddressSocket,
-        addressSubscribed: accountAddress,
-      },
-      type: EXPLORER_UPDATE_SOCKETS,
-    });
-  };
+  const newAddressSocket = createSocket('address');
+  dispatch({
+    payload: {
+      addressSocket: newAddressSocket,
+      addressSubscribed: accountAddress,
+    },
+    type: EXPLORER_UPDATE_SOCKETS,
+  });
+};
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE: ExplorerState = {
