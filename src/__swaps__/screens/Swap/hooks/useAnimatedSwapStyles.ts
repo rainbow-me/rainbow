@@ -8,6 +8,8 @@ import {
   FOCUSED_INPUT_HEIGHT,
   GAS_SHEET_HEIGHT,
   REVIEW_SHEET_HEIGHT,
+  REVIEW_SHEET_ROW_GAP,
+  REVIEW_SHEET_ROW_HEIGHT,
   THICK_BORDER_WIDTH,
   fadeConfig,
   springConfig,
@@ -20,6 +22,16 @@ import { IS_ANDROID } from '@/env';
 import { safeAreaInsetValues } from '@/utils';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
+import { ChainId } from '@/__swaps__/types/chains';
+
+const INSET_BOTTOM = IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16;
+const HEIGHT_FOR_PANEL: { [key in NavigationSteps]: number } = {
+  [NavigationSteps.INPUT_ELEMENT_FOCUSED]: BOTTOM_ACTION_BAR_HEIGHT,
+  [NavigationSteps.SEARCH_FOCUSED]: BOTTOM_ACTION_BAR_HEIGHT,
+  [NavigationSteps.TOKEN_LIST_FOCUSED]: BOTTOM_ACTION_BAR_HEIGHT,
+  [NavigationSteps.SHOW_REVIEW]: REVIEW_SHEET_HEIGHT + INSET_BOTTOM,
+  [NavigationSteps.SHOW_GAS]: GAS_SHEET_HEIGHT + INSET_BOTTOM,
+};
 
 export function useAnimatedSwapStyles({
   SwapWarning,
@@ -39,8 +51,6 @@ export function useAnimatedSwapStyles({
   isFetching: SharedValue<boolean>;
 }) {
   const { isDarkMode } = useColorMode();
-
-  const insetBottom = IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16;
 
   const flipButtonStyle = useAnimatedStyle(() => {
     return {
@@ -138,21 +148,19 @@ export function useAnimatedSwapStyles({
   });
 
   const swapActionWrapperStyle = useAnimatedStyle(() => {
-    const isReviewingOrConfiguringGas =
-      configProgress.value === NavigationSteps.SHOW_REVIEW || configProgress.value === NavigationSteps.SHOW_GAS;
+    const isReviewing = configProgress.value === NavigationSteps.SHOW_REVIEW;
+    const isReviewingOrConfiguringGas = isReviewing || configProgress.value === NavigationSteps.SHOW_GAS;
 
-    const heightForPanel: { [key in NavigationSteps]: number } = {
-      [NavigationSteps.INPUT_ELEMENT_FOCUSED]: BOTTOM_ACTION_BAR_HEIGHT,
-      [NavigationSteps.SEARCH_FOCUSED]: BOTTOM_ACTION_BAR_HEIGHT,
-      [NavigationSteps.TOKEN_LIST_FOCUSED]: BOTTOM_ACTION_BAR_HEIGHT,
-      [NavigationSteps.SHOW_REVIEW]: REVIEW_SHEET_HEIGHT + insetBottom,
-      [NavigationSteps.SHOW_GAS]: GAS_SHEET_HEIGHT + insetBottom,
-    };
+    let heightForCurrentSheet = HEIGHT_FOR_PANEL[configProgress.value];
+    if (isReviewing && (internalSelectedInputAsset.value?.chainId ?? ChainId.mainnet) !== ChainId.mainnet) {
+      // Remove height when the Flashbots row in the review sheet is hidden
+      heightForCurrentSheet -= REVIEW_SHEET_ROW_HEIGHT + REVIEW_SHEET_ROW_GAP;
+    }
 
     return {
       position: isReviewingOrConfiguringGas ? 'absolute' : 'relative',
       bottom: isReviewingOrConfiguringGas ? 0 : undefined,
-      height: withSpring(heightForPanel[configProgress.value], springConfig),
+      height: withSpring(heightForCurrentSheet, springConfig),
       borderTopLeftRadius: isReviewingOrConfiguringGas ? (IS_ANDROID ? 20 : 40) : 0,
       borderTopRightRadius: isReviewingOrConfiguringGas ? (IS_ANDROID ? 20 : 40) : 0,
       borderWidth: isReviewingOrConfiguringGas ? THICK_BORDER_WIDTH : 0,

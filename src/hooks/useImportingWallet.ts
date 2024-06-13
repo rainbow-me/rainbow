@@ -123,7 +123,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       // Validate ENS
       if (isENSAddressFormat(input)) {
         try {
-          const web3Provider = await getProviderForNetwork();
+          const web3Provider = getProviderForNetwork();
           const [address, avatar] = await Promise.all([
             web3Provider.resolveName(input),
             !avatarUrl && profilesEnabled && fetchENSAvatar(input, { swallowError: true }),
