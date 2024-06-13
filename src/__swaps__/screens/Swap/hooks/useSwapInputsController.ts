@@ -112,7 +112,6 @@ export function useSwapInputsController({
   const incrementDecimalPlaces = useDerivedValue(() => countDecimalPlaces(niceIncrement.value));
 
   const inputNativePrice = useDerivedValue(() => {
-    console.log(internalSelectedInputAsset.value);
     return internalSelectedInputAsset.value?.nativePrice || internalSelectedInputAsset.value?.price?.value || 0;
   });
   const outputNativePrice = useDerivedValue(() => {

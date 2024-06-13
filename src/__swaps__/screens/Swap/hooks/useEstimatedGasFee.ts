@@ -1,6 +1,6 @@
 import { ChainId } from '@/__swaps__/types/chains';
 import { weiToGwei } from '@/__swaps__/utils/ethereum';
-import { add, multiply, divide, subtract } from '@/__swaps__/utils/numbers';
+import { add, multiply } from '@/__swaps__/utils/numbers';
 import ethereumUtils, { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { useMemo, useState } from 'react';
 import { formatUnits } from 'viem';
@@ -10,7 +10,7 @@ import { useSwapEstimatedGasLimit } from './useSwapEstimatedGasLimit';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 import { useSwapContext } from '../providers/swap-provider';
-import { greaterThanWorklet, toScaledIntegerWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { divWorklet, greaterThanWorklet, mulWorklet, subWorklet, toScaledIntegerWorklet } from '@/__swaps__/safe-math/SafeMath';
 
 function safeBigInt(value: string) {
   try {
@@ -40,18 +40,22 @@ export function useEstimatedGasFee({
 
     const totalWei = multiply(gasLimit, amount);
 
-    if (internalSelectedInputAsset.value?.isNativeAsset) {
-      const gasFeeNativeCurrency = divide(totalWei, 10 ** internalSelectedInputAsset.value!.decimals);
-      const gasFeeWithBuffer = multiply(gasFeeNativeCurrency, 1.3);
-      const maxSwappableAmount = subtract(internalSelectedInputAsset.value!.balance.amount, gasFeeWithBuffer);
-      internalSelectedInputAsset.modify(prev => {
-        'worklet';
+    internalSelectedInputAsset.modify(prev => {
+      'worklet';
+
+      if (prev?.isNativeAsset) {
+        const gasFeeNativeCurrency = divWorklet(totalWei, 10 ** prev!.decimals);
+        const gasFeeWithBuffer = mulWorklet(gasFeeNativeCurrency, 1.3);
+        const maxSwappableAmount = subWorklet(prev!.balance.amount, gasFeeWithBuffer);
+
         return {
           ...prev,
           maxSwappableAmount: Number(maxSwappableAmount) < 0 ? '0' : maxSwappableAmount,
         };
-      });
-    }
+      } else {
+        return prev;
+      }
+    });
 
     const networkAssetPrice = nativeNetworkAsset.price.value?.toString();
 
