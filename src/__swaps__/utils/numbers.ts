@@ -176,23 +176,11 @@ export const convertAmountToNativeAmount = (amount: BigNumberish, priceUnit: Big
 export const convertAmountAndPriceToNativeDisplay = (
   amount: BigNumberish,
   priceUnit: BigNumberish,
-  nativeCurrency: keyof nativeCurrencyType
+  nativeCurrency: keyof nativeCurrencyType,
+  useThreshold = false
 ): { amount: string; display: string } => {
   const nativeBalanceRaw = convertAmountToNativeAmount(amount, priceUnit);
-  const nativeDisplay = convertAmountToNativeDisplayWorklet(nativeBalanceRaw, nativeCurrency);
-  return {
-    amount: nativeBalanceRaw,
-    display: nativeDisplay,
-  };
-};
-
-export const convertAmountAndPriceToNativeDisplayWithThreshold = (
-  amount: BigNumberish,
-  priceUnit: BigNumberish,
-  nativeCurrency: keyof nativeCurrencyType
-): { amount: string; display: string } => {
-  const nativeBalanceRaw = convertAmountToNativeAmount(amount, priceUnit);
-  const nativeDisplay = convertAmountToNativeDisplayWorklet(nativeBalanceRaw, nativeCurrency, true);
+  const nativeDisplay = convertAmountToNativeDisplayWorklet(nativeBalanceRaw, nativeCurrency, useThreshold);
   return {
     amount: nativeBalanceRaw,
     display: nativeDisplay,
