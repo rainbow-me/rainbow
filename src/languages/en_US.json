@@ -745,6 +745,10 @@
         "input_exchange_rate": "1 %{inputSymbol} for %{executionRate} %{outputSymbol}",
         "output_exchange_rate": "1 %{outputSymbol} for %{executionRate} %{inputSymbol}"
       },
+      "swap_details_v2": {
+        "rainbow_fee": "Included Rainbow Fee",
+        "minimum_received": "Minimum Received"
+      },
       "token_index": {
         "get_token": "Get %{assetSymbol}",
         "makeup_of_token": "Makeup of 1 %{assetSymbol}",
@@ -1052,7 +1056,7 @@
         "custom": "Custom"
       },
       "unable_to_determine_selected_gas": "Unable to determine selected gas",
-      "network_fee": "Est. network fee",
+      "network_fee": "Est. Network Fee",
       "current_base_fee": "Current base fee",
       "max_base_fee": "Max base fee",
       "miner_tip": "Miner tip",
@@ -1950,7 +1954,7 @@
       "select": "Select",
       "token_to_get": "Token to Get",
       "token_to_swap": "Token to Swap",
-      "no_balance": "No balance",
+      "no_balance": "No Balance",
       "find_a_token_to_buy": "Find a token to buy",
       "search_your_tokens": "Search your tokens",
       "error_executing_swap": "Error executing swap",
@@ -2018,7 +2022,7 @@
         "bridge": "Bridge",
         "verified": "Verified",
         "unverified": "Unverified",
-        "on_other_networks": "On other networks"
+        "on_other_networks": "On Other Networks"
       }
     },
     "transactions": {

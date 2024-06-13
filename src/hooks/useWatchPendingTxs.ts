@@ -140,7 +140,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       }, new Map());
 
       networks.map(async network => {
-        const provider = await getProviderForNetwork(network);
+        const provider = getProviderForNetwork(network);
         const providerTransactionCount = await provider.getTransactionCount(address, 'latest');
         const currentProviderNonce = providerTransactionCount - 1;
         const currentNonceForChainId = highestNoncePerChainId.get(network) - 1;

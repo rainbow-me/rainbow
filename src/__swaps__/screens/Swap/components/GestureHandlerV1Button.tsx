@@ -69,7 +69,7 @@ export const GestureHandlerV1Button = React.forwardRef(function GestureHandlerV1
     scaleTo = 0.86,
     style,
   }: GestureHandlerButtonProps,
-  forwardedRef: React.LegacyRef<unknown> | undefined
+  ref: React.LegacyRef<unknown> | undefined
 ) {
   const pressHandler = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>({
     onStart: () => {
@@ -91,7 +91,7 @@ export const GestureHandlerV1Button = React.forwardRef(function GestureHandlerV1
       )}
     >
       {/* @ts-expect-error Property 'children' does not exist on type */}
-      <TapGestureHandler enabled={!disabled} onGestureEvent={pressHandler} ref={forwardedRef}>
+      <TapGestureHandler enabled={!disabled} onGestureEvent={pressHandler} ref={ref}>
         <Animated.View accessible accessibilityRole="button" pointerEvents={pointerEvents} style={style}>
           {children}
         </Animated.View>

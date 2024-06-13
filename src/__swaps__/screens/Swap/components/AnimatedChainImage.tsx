@@ -20,6 +20,8 @@ import { globalColors } from '@/design-system';
 import { customChainIdsToAssetNames } from '@/__swaps__/utils/chains';
 import { AddressZero } from '@ethersproject/constants';
 import { ETH_ADDRESS } from '@/references';
+import { IS_ANDROID } from '@/env';
+import { PIXEL_RATIO } from '@/utils/deviceUtils';
 
 const networkBadges = {
   [ChainId.mainnet]: Image.resolveAssetSource(EthereumBadge).uri,
@@ -70,7 +72,7 @@ export function AnimatedChainImage({
     const base = {
       source: {
         ...DEFAULT_FASTER_IMAGE_CONFIG,
-        borderRadius: size / 2,
+        borderRadius: IS_ANDROID ? (size / 2) * PIXEL_RATIO : size / 2,
         url: '',
       },
     };

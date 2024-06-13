@@ -157,7 +157,7 @@ export function SwapOutputAsset() {
       <Box
         as={Animated.View}
         height="full"
-        padding={{ custom: INPUT_PADDING }}
+        paddingTop={{ custom: INPUT_PADDING }}
         paddingBottom={{ custom: 14.5 }}
         position="absolute"
         style={AnimatedSwapStyles.outputTokenListStyle}
@@ -210,9 +210,6 @@ export const styles = StyleSheet.create({
     flex: 1,
     overflow: 'hidden',
     marginTop: StatusBar.currentHeight ?? 0,
-  },
-  solidColorCoinIcon: {
-    opacity: 0.4,
   },
   staticInputContainerStyles: {
     shadowOffset: { width: 0, height: 6 },

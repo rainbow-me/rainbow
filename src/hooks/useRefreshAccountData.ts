@@ -2,8 +2,7 @@ import { captureException } from '@sentry/react-native';
 import delay from 'delay';
 import { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
-import NetworkTypes from '../helpers/networkTypes';
+import { getIsHardhatConnected } from '@/handlers/web3';
 import { walletConnectLoadState } from '../redux/walletconnect';
 import { fetchWalletENSAvatars, fetchWalletNames } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
@@ -16,14 +15,12 @@ import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 
 export default function useRefreshAccountData() {
   const dispatch = useDispatch();
-  const { accountAddress, network, nativeCurrency } = useAccountSettings();
+  const { accountAddress, nativeCurrency } = useAccountSettings();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const fetchAccountData = useCallback(async () => {
-    const provider = getCachedProviderForNetwork(network);
-    const providerUrl = provider?.connection?.url;
-    const connectedToHardhat = isHardHat(providerUrl);
+    const connectedToHardhat = getIsHardhatConnected();
 
     queryClient.invalidateQueries({
       queryKey: nftsQueryKey({ address: accountAddress }),
@@ -57,7 +54,7 @@ export default function useRefreshAccountData() {
       captureException(error);
       throw error;
     }
-  }, [accountAddress, dispatch, nativeCurrency, network, profilesEnabled]);
+  }, [accountAddress, dispatch, nativeCurrency, profilesEnabled]);
 
   const refresh = useCallback(async () => {
     if (isRefreshing) return;
