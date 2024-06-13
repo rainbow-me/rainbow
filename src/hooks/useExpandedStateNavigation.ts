@@ -1,4 +1,3 @@
-import { useRoute } from '@react-navigation/native';
 import { useCallback, useMemo } from 'react';
 import { InteractionManager } from 'react-native';
 

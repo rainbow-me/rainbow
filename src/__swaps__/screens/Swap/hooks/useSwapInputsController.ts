@@ -29,9 +29,15 @@ import {
 } from '@/resources/assets/externalAssetsQuery';
 import { ethereumUtils } from '@/utils';
 import { queryClient } from '@/react-query';
-import { userAssetsStore } from '@/state/assets/userAssets';
 import { analyticsV2 } from '@/analytics';
-import { divWorklet, equalWorklet, greaterThanWorklet, mulWorklet, toFixedWorklet } from '@/__swaps__/safe-math/SafeMath';
+import {
+  divWorklet,
+  equalWorklet,
+  greaterThanWorklet,
+  isNumberStringWorklet,
+  mulWorklet,
+  toFixedWorklet,
+} from '@/__swaps__/safe-math/SafeMath';
 
 function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetWithColors | null) {
   const initialBalance = Number(initialSelectedInputAsset?.balance.amount) || 0;
@@ -52,9 +58,7 @@ function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetW
     isStablecoin,
   });
 
-  const initialInputNativeValue = addCommasToNumber(
-    toFixedWorklet(mulWorklet(initialInputAmount, initialSelectedInputAsset?.price?.value ?? 0), 2)
-  );
+  const initialInputNativeValue = toFixedWorklet(mulWorklet(initialInputAmount, initialSelectedInputAsset?.price?.value ?? 0), 2);
 
   return {
     initialInputAmount,
@@ -155,14 +159,18 @@ export function useSwapInputsController({
   });
 
   const formattedInputNativeValue = useDerivedValue(() => {
-    if ((inputMethod.value === 'slider' && percentageToSwap.value === 0) || !inputValues.value.inputNativeValue) {
+    if (
+      (inputMethod.value === 'slider' && percentageToSwap.value === 0) ||
+      !inputValues.value.inputNativeValue ||
+      !isNumberStringWorklet(inputValues.value.inputNativeValue.toString()) ||
+      equalWorklet(inputValues.value.inputNativeValue, 0)
+    ) {
       return '$0.00';
     }
 
-    const nativeValue = `$${Number(inputValues.value.inputNativeValue).toLocaleString('en-US', {
-      useGrouping: true,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+    const nativeValue = `${Number(inputValues.value.inputNativeValue).toLocaleString('en-US', {
+      currency: 'USD',
+      style: 'currency',
     })}`;
 
     return nativeValue || '$0.00';
@@ -193,14 +201,18 @@ export function useSwapInputsController({
   });
 
   const formattedOutputNativeValue = useDerivedValue(() => {
-    if ((inputMethod.value === 'slider' && percentageToSwap.value === 0) || !inputValues.value.outputNativeValue) {
+    if (
+      (inputMethod.value === 'slider' && percentageToSwap.value === 0) ||
+      !inputValues.value.outputNativeValue ||
+      !isNumberStringWorklet(inputValues.value.outputNativeValue.toString()) ||
+      equalWorklet(inputValues.value.outputNativeValue, 0)
+    ) {
       return '$0.00';
     }
 
-    const nativeValue = `$${Number(inputValues.value.outputNativeValue).toLocaleString('en-US', {
-      useGrouping: true,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+    const nativeValue = `${Number(inputValues.value.outputNativeValue).toLocaleString('en-US', {
+      currency: 'USD',
+      style: 'currency',
     })}`;
     return nativeValue || '$0.00';
   });
@@ -585,8 +597,12 @@ export function useSwapInputsController({
           // we can derive the slider position directly from the entered amount.
           if (inputKey === 'inputAmount') {
             const inputAssetBalance = internalSelectedInputAsset.value?.balance.amount || '0';
-            const updatedSliderPosition = clamp(Number(divWorklet(amount, inputAssetBalance)) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
-            sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
+            if (equalWorklet(inputAssetBalance, 0)) {
+              sliderXPosition.value = withSpring(0, snappySpringConfig);
+            } else {
+              const updatedSliderPosition = clamp(Number(divWorklet(amount, inputAssetBalance)) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
+              sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
+            }
           }
           fetchQuoteAndAssetPrices();
         };
@@ -644,13 +660,16 @@ export function useSwapInputsController({
               [previous.focusedInput]: 0,
             };
           });
-        } else {
-          inputValues.modify(values => {
-            return {
-              ...values,
-              [previous.focusedInput]: trimTrailingZeros(typedValue),
-            };
-          });
+        } else if (typedValue.includes('.')) {
+          const trimmedValue = trimTrailingZeros(typedValue);
+          if (trimmedValue !== typedValue) {
+            inputValues.modify(values => {
+              return {
+                ...values,
+                [previous.focusedInput]: trimmedValue,
+              };
+            });
+          }
         }
       }
     }
@@ -773,11 +792,17 @@ export function useSwapInputsController({
             });
 
             const inputAssetBalance = internalSelectedInputAsset.value?.balance.amount || '0';
-            const updatedSliderPosition = greaterThanWorklet(inputAssetBalance, 0)
-              ? clamp(Number(divWorklet(current.values.inputAmount, inputAssetBalance)) * SLIDER_WIDTH, 0, SLIDER_WIDTH)
-              : 0;
 
-            sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
+            if (equalWorklet(inputAssetBalance, 0)) {
+              sliderXPosition.value = withSpring(0, snappySpringConfig);
+            } else {
+              const updatedSliderPosition = clamp(
+                Number(divWorklet(current.values.inputAmount, inputAssetBalance)) * SLIDER_WIDTH,
+                0,
+                SLIDER_WIDTH
+              );
+              sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
+            }
 
             runOnJS(onTypedNumber)(Number(current.values.inputAmount), 'inputAmount', true);
           }
@@ -834,23 +859,19 @@ export function useSwapInputsController({
    */
   useAnimatedReaction(
     () => ({
-      assetToBuy: internalSelectedOutputAsset.value,
-      assetToSell: internalSelectedInputAsset.value,
+      assetToBuyId: internalSelectedOutputAsset.value?.uniqueId,
+      assetToSellId: internalSelectedInputAsset.value?.uniqueId,
     }),
     (current, previous) => {
-      const didInputAssetChange = current.assetToSell?.uniqueId !== previous?.assetToSell?.uniqueId;
-      const didOutputAssetChange = current.assetToBuy?.uniqueId !== previous?.assetToBuy?.uniqueId;
+      const didInputAssetChange = current.assetToSellId !== previous?.assetToSellId;
+      const didOutputAssetChange = current.assetToBuyId !== previous?.assetToBuyId;
 
       if (didInputAssetChange || didOutputAssetChange) {
-        const balance = Number(current.assetToSell?.balance?.amount);
+        const balance = Number(internalSelectedInputAsset.value?.balance?.amount);
 
-        const areBothAssetsSet = current.assetToSell && current.assetToBuy;
+        const areBothAssetsSet = internalSelectedInputAsset.value && internalSelectedOutputAsset.value;
         const didFlipAssets =
-          didInputAssetChange &&
-          didOutputAssetChange &&
-          areBothAssetsSet &&
-          previous &&
-          current.assetToSell?.uniqueId === previous.assetToBuy?.uniqueId;
+          didInputAssetChange && didOutputAssetChange && areBothAssetsSet && previous && current.assetToSellId === previous.assetToBuyId;
 
         if (!didFlipAssets) {
           // If either asset was changed but the assets were not flipped
@@ -898,7 +919,7 @@ export function useSwapInputsController({
           const inputNativePrice = internalSelectedInputAsset.value?.nativePrice || internalSelectedInputAsset.value?.price?.value || 0;
           const outputNativePrice = internalSelectedOutputAsset.value?.nativePrice || internalSelectedOutputAsset.value?.price?.value || 0;
 
-          const assetBalanceDisplay = current.assetToSell?.balance.display ?? '';
+          const assetBalanceDisplay = internalSelectedInputAsset.value?.balance.display ?? '';
 
           const inputAmount = Number(
             valueBasedDecimalFormatter({
@@ -908,7 +929,7 @@ export function useSwapInputsController({
               assetBalanceDisplay,
               roundingMode: 'up',
               precisionAdjustment: -1,
-              isStablecoin: current.assetToSell?.type === 'stablecoin' ?? false,
+              isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
               stripSeparators: true,
             })
           );
@@ -925,7 +946,7 @@ export function useSwapInputsController({
           });
         }
 
-        if (current.assetToSell && current.assetToBuy) {
+        if (internalSelectedInputAsset.value && internalSelectedOutputAsset.value) {
           fetchQuoteAndAssetPrices();
         }
       }
