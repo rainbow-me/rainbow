@@ -15,14 +15,13 @@ import walletTypes from '@/helpers/walletTypes';
 import { NFTOffersCard } from '@/components/cards/NFTOffersCard';
 import { MintsCard } from '@/components/cards/MintsCard/MintsCard';
 import { FeaturedMintCard } from '@/components/cards/FeaturedMintCard';
-import { useMints } from '@/resources/mints';
 import { IS_TEST } from '@/env';
 import { RemoteCardCarousel, useRemoteCardContext } from '@/components/cards/remote-cards';
 import { useRoute } from '@react-navigation/native';
 
 export default function DiscoverHome() {
   const { profiles_enabled, mints_enabled, op_rewards_enabled } = useRemoteConfig();
-  const { accountAddress, network } = useAccountSettings();
+  const { network } = useAccountSettings();
   const { getCardsForPlacement } = useRemoteCardContext();
   const { name } = useRoute();
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);

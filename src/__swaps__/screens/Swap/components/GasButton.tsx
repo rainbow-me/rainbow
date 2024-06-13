@@ -1,5 +1,6 @@
 import { ChainId } from '@/__swaps__/types/chains';
 import { weiToGwei } from '@/__swaps__/utils/ethereum';
+import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import { getCachedCurrentBaseFee, useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { add } from '@/__swaps__/utils/numbers';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -9,7 +10,7 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import * as i18n from '@/languages';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { swapsStore } from '@/state/swaps/swapsStore';
 import { gasUtils } from '@/utils';
 import React, { PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
@@ -43,7 +44,7 @@ function UnmountWhenGasButtonIsNotInScreen({ placeholder, children }: PropsWithC
 }
 
 function EstimatedGasFee() {
-  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
+  const chainId = swapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
   const gasSettings = useSelectedGas(chainId);
 
   return (
@@ -59,7 +60,7 @@ function EstimatedGasFee() {
 }
 
 function SelectedGas() {
-  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
+  const chainId = swapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
   const selectedGasSpeed = useSelectedGasSpeed(chainId);
 
   return (
@@ -102,17 +103,16 @@ function keys<const T extends string>(obj: Record<T, any> | undefined) {
 const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; children: ReactNode }) => {
   const { SwapNavigation } = useSwapContext();
 
-  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
+  const chainId = swapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
   const metereologySuggestions = useMeteorologySuggestions({ chainId });
   const customGasSettings = useCustomGasSettings(chainId);
 
-  const menuOptions = useMemo(() => [...keys(metereologySuggestions.data), 'custom'] as const, [metereologySuggestions.data]);
+  const menuOptions = useMemo(() => [...keys(metereologySuggestions.data), GasSpeed.CUSTOM] as GasSpeed[], [metereologySuggestions.data]);
 
   const handlePressSpeedOption = useCallback(
     (selectedGasSpeed: GasSpeed) => {
       setSelectedGasSpeed(chainId, selectedGasSpeed);
-
-      if (selectedGasSpeed === 'custom') {
+      if (selectedGasSpeed === GasSpeed.CUSTOM) {
         runOnUI(SwapNavigation.handleShowGas)({ backToReview });
       }
     },
@@ -120,12 +120,15 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
   );
 
   const handlePressMenuItem = useCallback(
-    ({ nativeEvent: { actionKey } }: any) => handlePressSpeedOption(actionKey),
+    ({ nativeEvent: { actionKey } }: OnPressMenuItemEventObject) => handlePressSpeedOption(actionKey as GasSpeed),
     [handlePressSpeedOption]
   );
 
   const handlePressActionSheet = useCallback(
-    (buttonIndex: number) => handlePressSpeedOption(menuOptions[buttonIndex]),
+    (buttonIndex: number) => {
+      if (buttonIndex < 0) return;
+      handlePressSpeedOption(menuOptions[buttonIndex]);
+    },
     [handlePressSpeedOption, menuOptions]
   );
 
@@ -134,7 +137,7 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
       if (IS_ANDROID) return gasOption;
 
       const currentBaseFee = getCachedCurrentBaseFee(chainId);
-      const gasSettings = gasOption === 'custom' ? customGasSettings : metereologySuggestions.data?.[gasOption];
+      const gasSettings = gasOption === GasSpeed.CUSTOM ? customGasSettings : metereologySuggestions.data?.[gasOption];
       const subtitle = getEstimatedFeeRangeInGwei(gasSettings, currentBaseFee);
 
       return {
@@ -195,7 +198,7 @@ export function ReviewGasButton() {
   const handleShowCustomGas = () => {
     'worklet';
 
-    runOnJS(setSelectedGasSpeed)(internalSelectedInputAsset.value?.chainId || ChainId.mainnet, 'custom');
+    runOnJS(setSelectedGasSpeed)(internalSelectedInputAsset.value?.chainId || ChainId.mainnet, GasSpeed.CUSTOM);
     SwapNavigation.handleShowGas({ backToReview: true });
   };
 

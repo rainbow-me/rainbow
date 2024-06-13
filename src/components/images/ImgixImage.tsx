@@ -98,7 +98,12 @@ class ImgixImage extends React.PureComponent<MergedImgixImageProps, ImgixImagePr
     const Component = maybeComponent || (shouldUseFasterImage ? FasterImageView : FastImage);
 
     const conditionalProps = shouldUseFasterImage
-      ? { onError: this.props.onError, onLoad: undefined, onSuccess: this.props.onLoad }
+      ? {
+          key: `${typeof source === 'object' && source.uri ? source.uri : ''}` || undefined,
+          onError: this.props.onError,
+          onLoad: undefined,
+          onSuccess: this.props.onLoad,
+        }
       : {
           key: `${typeof source === 'object' && source.uri ? source.uri : JSON.stringify(source)}-${retryCount}`,
           onError: this.handleError,

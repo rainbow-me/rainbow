@@ -1,7 +1,40 @@
+/* eslint-disable no-nested-ternary */
 import { isAddress } from '@ethersproject/address';
 import { useQuery } from '@tanstack/react-query';
 import qs from 'qs';
+import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
+import {
+  ARBITRUM_ETH_ADDRESS,
+  AVAX_AVALANCHE_ADDRESS,
+  BASE_ETH_ADDRESS,
+  BLAST_ETH_ADDRESS,
+  BNB_MAINNET_ADDRESS,
+  DEGEN_CHAIN_DEGEN_ADDRESS,
+  ETH_ADDRESS,
+  MATIC_MAINNET_ADDRESS,
+  OPTIMISM_ETH_ADDRESS,
+  ZORA_ETH_ADDRESS,
+} from '@/references';
+import { ChainId } from '@/__swaps__/types/chains';
+import { SearchAsset, TokenSearchAssetKey, TokenSearchListId, TokenSearchThreshold } from '@/__swaps__/types/search';
+import { RainbowFetchClient } from '@/rainbow-fetch';
+import { RainbowError, logger } from '@/logger';
 import { Address } from 'viem';
+
+const NATIVE_ASSET_UNIQUE_IDS = new Set([
+  `${ETH_ADDRESS}_${ChainId.mainnet}`,
+  `${OPTIMISM_ETH_ADDRESS}_${ChainId.optimism}`,
+  `${ARBITRUM_ETH_ADDRESS}_${ChainId.arbitrum}`,
+  `${BNB_MAINNET_ADDRESS}_${ChainId.bsc}`,
+  `${MATIC_MAINNET_ADDRESS}_${ChainId.polygon}`,
+  `${BASE_ETH_ADDRESS}_${ChainId.base}`,
+  `${ZORA_ETH_ADDRESS}_${ChainId.zora}`,
+  `${AVAX_AVALANCHE_ADDRESS}_${ChainId.avalanche}`,
+  `${BLAST_ETH_ADDRESS}_${ChainId.blast}`,
+  `${DEGEN_CHAIN_DEGEN_ADDRESS}_${ChainId.degen}`,
+]);
+
+const ALL_VERIFIED_TOKENS_PARAM = '/?list=verifiedAssets';
 
 const tokenSearchHttp = new RainbowFetchClient({
   baseURL: 'https://token-search.rainbow.me/v2',
@@ -11,13 +44,6 @@ const tokenSearchHttp = new RainbowFetchClient({
   },
   timeout: 30000,
 });
-
-import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
-import { BNB_MAINNET_ADDRESS, ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@/references';
-import { ChainId } from '@/__swaps__/types/chains';
-import { SearchAsset, TokenSearchAssetKey, TokenSearchListId, TokenSearchThreshold } from '@/__swaps__/types/search';
-import { RainbowFetchClient } from '@/rainbow-fetch';
-import { RainbowError, logger } from '@/logger';
 
 // ///////////////////////////////////////////////
 // Query Types
@@ -59,75 +85,86 @@ async function tokenSearchQueryFunction({
     fromChainId: fromChainId,
   };
 
-  if (query && isAddress(query)) {
+  const isAddressSearch = query && isAddress(query);
+
+  if (isAddressSearch) {
     queryParams.keys = `networks.${chainId}.address`;
   }
 
   const url = `${chainId ? `/${chainId}` : ''}/?${qs.stringify(queryParams)}`;
+  const isSearchingVerifiedAssets = queryParams.list === 'verifiedAssets';
+
   try {
-    const tokenSearch = await tokenSearchHttp.get<{ data: SearchAsset[] }>(url);
-    return parseTokenSearch(tokenSearch.data.data, chainId);
+    if (isAddressSearch && isSearchingVerifiedAssets) {
+      const tokenSearch = await tokenSearchHttp.get<{ data: SearchAsset[] }>(url);
+
+      if (tokenSearch && tokenSearch.data.data.length > 0) {
+        return parseTokenSearch(tokenSearch.data.data, chainId);
+      }
+
+      const allVerifiedTokens = await tokenSearchHttp.get<{ data: SearchAsset[] }>(ALL_VERIFIED_TOKENS_PARAM);
+
+      const addressQuery = query.trim().toLowerCase();
+      const addressMatchesOnOtherChains = allVerifiedTokens.data.data.filter(a =>
+        Object.values(a.networks).some(n => n?.address === addressQuery)
+      );
+
+      return parseTokenSearch(addressMatchesOnOtherChains);
+    } else {
+      const tokenSearch = await tokenSearchHttp.get<{ data: SearchAsset[] }>(url);
+      return parseTokenSearch(tokenSearch.data.data, chainId);
+    }
   } catch (e) {
     logger.error(new RainbowError('Token search failed'), { url });
     return [];
   }
 }
 
-function parseTokenSearch(assets: SearchAsset[], chainId?: ChainId) {
-  if (chainId) {
-    return assets
-      .map(a => {
-        const networkInfo = a.networks[chainId];
-        return {
-          ...a,
-          address: networkInfo ? networkInfo.address : a.address,
-          chainId,
-          decimals: networkInfo ? networkInfo.decimals : a.decimals,
-          isNativeAsset: [
-            `${ETH_ADDRESS}_${ChainId.mainnet}`,
-            `${ETH_ADDRESS}_${ChainId.optimism}`,
-            `${ETH_ADDRESS}_${ChainId.arbitrum}`,
-            `${BNB_MAINNET_ADDRESS}_${ChainId.bsc}`,
-            `${MATIC_MAINNET_ADDRESS}_${ChainId.polygon}`,
-            `${ETH_ADDRESS}_${ChainId.base}`,
-            `${ETH_ADDRESS}_${ChainId.zora}`,
-            `${ETH_ADDRESS}_${ChainId.avalanche}`,
-            `${ETH_ADDRESS}_${ChainId.blast}`,
-          ].includes(`${a.uniqueId}_${chainId}`),
-          mainnetAddress: a.uniqueId as Address,
-          uniqueId: `${a.uniqueId}_${chainId}`,
-        };
-      })
-      .filter(Boolean);
+function parseTokenSearch(assets: SearchAsset[], chainId?: ChainId): SearchAsset[] {
+  const results: SearchAsset[] = [];
+
+  if (chainId !== undefined) {
+    for (const asset of assets) {
+      const assetNetworks = asset.networks;
+      const mainnetInfo = assetNetworks[ChainId.mainnet];
+      const networkInfo = assetNetworks[chainId];
+      const address = networkInfo ? networkInfo.address : asset.address;
+      const uniqueId = `${address}_${chainId}`;
+
+      results.push({
+        ...asset,
+        address,
+        chainId,
+        decimals: networkInfo ? networkInfo.decimals : asset.decimals,
+        isNativeAsset: NATIVE_ASSET_UNIQUE_IDS.has(uniqueId),
+        mainnetAddress: mainnetInfo ? mainnetInfo.address : chainId === ChainId.mainnet ? address : ('' as Address),
+        uniqueId,
+      });
+    }
   } else {
-    return assets
-      .flatMap(a =>
-        Object.keys(a.networks).map(c => {
-          const chainId = parseInt(c);
-          const networkInfo = a.networks[chainId];
-          return {
-            ...a,
-            address: networkInfo ? networkInfo.address : a.address,
-            chainId,
-            decimals: networkInfo ? networkInfo.decimals : a.decimals,
-            isNativeAsset: [
-              `${ETH_ADDRESS}_${ChainId.mainnet}`,
-              `${ETH_ADDRESS}_${ChainId.optimism}`,
-              `${ETH_ADDRESS}_${ChainId.arbitrum}`,
-              `${BNB_MAINNET_ADDRESS}_${ChainId.bsc}`,
-              `${MATIC_MAINNET_ADDRESS}_${ChainId.polygon}`,
-              `${ETH_ADDRESS}_${ChainId.base}`,
-              `${ETH_ADDRESS}_${ChainId.zora}`,
-              `${ETH_ADDRESS}_${ChainId.avalanche}`,
-              `${ETH_ADDRESS}_${ChainId.blast}`,
-            ].includes(`${a.uniqueId}_${chainId}`),
-            mainnetAddress: a.uniqueId as Address,
-            uniqueId: `${a.uniqueId}_${chainId}`,
-          };
-        })
-      )
-      .filter(Boolean);
+    for (const asset of assets) {
+      const assetNetworks = asset.networks;
+      const mainnetInfo = assetNetworks[ChainId.mainnet];
+      for (const chainIdString in assetNetworks) {
+        const networkChainId = parseInt(chainIdString);
+        const networkInfo = assetNetworks[networkChainId];
+        const address = networkInfo ? networkInfo.address : asset.address;
+        const uniqueId = `${address}_${networkChainId}`;
+
+        results.push({
+          ...asset,
+          address,
+          chainId: networkChainId,
+          decimals: networkInfo ? networkInfo.decimals : asset.decimals,
+          isNativeAsset: NATIVE_ASSET_UNIQUE_IDS.has(uniqueId),
+          mainnetAddress: mainnetInfo ? mainnetInfo.address : networkChainId === ChainId.mainnet ? address : ('' as Address),
+          uniqueId,
+        });
+      }
+    }
   }
+
+  return results;
 }
 
 export type TokenSearchResult = QueryFunctionResult<typeof tokenSearchQueryFunction>;
@@ -153,5 +190,9 @@ export function useTokenSearch(
   { chainId, fromChainId, keys, list, threshold, query }: TokenSearchArgs,
   config: QueryConfigWithSelect<TokenSearchResult, Error, TokenSearchResult, TokenSearchQueryKey> = {}
 ) {
-  return useQuery(tokenSearchQueryKey({ chainId, fromChainId, keys, list, threshold, query }), tokenSearchQueryFunction, config);
+  return useQuery(
+    tokenSearchQueryKey({ chainId, fromChainId, keys, list, threshold, query }),
+    tokenSearchQueryFunction,
+    config ? { ...config, keepPreviousData: true } : { keepPreviousData: true }
+  );
 }

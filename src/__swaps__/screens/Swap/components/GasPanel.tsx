@@ -28,8 +28,9 @@ import { upperFirst } from 'lodash';
 import { formatNumber } from '../hooks/formatNumber';
 import { GasSettings, getCustomGasSettings, setCustomGasSettings, useCustomGasStore } from '../hooks/useCustomGas';
 import { setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
-import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountBasedOnAnimatedReaction } from './UnmountOnAnimatedReaction';
+import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
+import { GasSpeed } from '@/__swaps__/types/gas';
 
 const { GAS_TRENDS } = gasUtils;
 
@@ -358,12 +359,12 @@ function saveCustomGasSettings() {
   const { inputAsset } = useSwapsStore.getState();
   const chainId = inputAsset?.chainId || ChainId.mainnet;
   if (!unsaved) {
-    if (getCustomGasSettings(chainId)) setSelectedGasSpeed(chainId, 'custom');
+    if (getCustomGasSettings(chainId)) setSelectedGasSpeed(chainId, GasSpeed.CUSTOM);
     return;
   }
 
   setCustomGasSettings(chainId, unsaved);
-  setSelectedGasSpeed(chainId, 'custom');
+  setSelectedGasSpeed(chainId, GasSpeed.CUSTOM);
   useGasPanelStore.setState(undefined);
 }
 
