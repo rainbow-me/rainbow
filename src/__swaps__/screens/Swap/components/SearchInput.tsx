@@ -77,21 +77,12 @@ export const SearchInput = ({
     };
   });
 
-  const onInputSearchQueryChange = useDebouncedCallback(
-    (text: string) => {
-      userAssetsStore.getState().setSearchQuery(text);
-    },
-    50,
-    { leading: true, trailing: true }
-  );
+  const onInputSearchQueryChange = userAssetsStore(state => state.setSearchQuery);
 
-  const onOutputSearchQueryChange = useDebouncedCallback(
-    (text: string) => {
-      useSwapsStore.setState({ outputSearchQuery: text });
-    },
-    100,
-    { leading: false, trailing: true }
-  );
+  const onOutputSearchQueryChange = useDebouncedCallback((text: string) => useSwapsStore.setState({ outputSearchQuery: text }), 100, {
+    leading: false,
+    trailing: true,
+  });
 
   const isSearchFocused = useDerivedValue(
     () =>
@@ -120,7 +111,7 @@ export const SearchInput = ({
   );
 
   return (
-    <Box width="full">
+    <Box paddingHorizontal="20px" width="full">
       <Columns alignHorizontal="justify" alignVertical="center" space="20px">
         <Box>
           <Bleed horizontal="8px" vertical="24px">

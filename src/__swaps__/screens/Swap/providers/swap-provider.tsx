@@ -1,6 +1,6 @@
 // @refresh
 import React, { ReactNode, createContext, useCallback, useContext, useEffect, useRef } from 'react';
-import { StyleProp, TextStyle, TextInput, NativeModules } from 'react-native';
+import { StyleProp, TextStyle, TextInput, NativeModules, InteractionManager } from 'react-native';
 import {
   AnimatedRef,
   DerivedValue,
@@ -20,7 +20,7 @@ import { useAnimatedSwapStyles } from '@/__swaps__/screens/Swap/hooks/useAnimate
 import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextStyles';
 import { useSwapNavigation, NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
-import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
@@ -38,13 +38,14 @@ import { walletExecuteRap } from '@/raps/execute';
 import { queryClient } from '@/react-query';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { useAccountSettings } from '@/hooks';
-import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
+import { getGasSettingsBySpeed, getSelectedGas, getSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { useSwapSettings } from '../hooks/useSwapSettings';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { getNetworkObj } from '@/networks';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { analyticsV2 } from '@/analytics';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const tapToSwap = i18n.t(i18n.l.swap.actions.tap_to_swap);
@@ -75,6 +76,7 @@ interface SwapContextType {
   selectedOutputChainId: SharedValue<ChainId>;
   setSelectedOutputChainId: (chainId: ChainId) => void;
 
+  handleProgressNavigation: ({ type }: { type: SwapAssetType }) => void;
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   setAsset: ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset | null }) => void;
@@ -83,6 +85,10 @@ interface SwapContextType {
   executeSwap: () => void;
 
   outputQuotesAreDisabled: DerivedValue<boolean>;
+  swapInfo: DerivedValue<{
+    areBothAssetsSet: boolean;
+    isBridging: boolean;
+  }>;
 
   SwapSettings: ReturnType<typeof useSwapSettings>;
   SwapInputController: ReturnType<typeof useSwapInputsController>;
@@ -127,7 +133,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const selectedOutputChainId = useSharedValue<ChainId>(initialSelectedInputAsset?.chainId || ChainId.mainnet);
   const quote = useSharedValue<Quote | CrosschainQuote | QuoteError | null>(null);
 
-  const inputProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
+  const inputProgress = useSharedValue(
+    initialSelectedOutputAsset && !initialSelectedInputAsset ? NavigationSteps.TOKEN_LIST_FOCUSED : NavigationSteps.INPUT_ELEMENT_FOCUSED
+  );
   const outputProgress = useSharedValue(
     initialSelectedOutputAsset ? NavigationSteps.INPUT_ELEMENT_FOCUSED : NavigationSteps.TOKEN_LIST_FOCUSED
   );
@@ -171,8 +179,12 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       parameters.flashbots && getNetworkObj(network).features.flashbots
         ? await getFlashbotsProvider()
         : getCachedProviderForNetwork(network);
+
     const providerUrl = provider?.connection?.url;
-    const connectedToHardhat = isHardHat(providerUrl);
+    const connectedToHardhat = !!providerUrl && isHardHat(providerUrl);
+
+    const isBridge = swapsStore.getState().inputAsset?.mainnetAddress === swapsStore.getState().outputAsset?.mainnetAddress;
+    const slippage = swapsStore.getState().slippage;
 
     const selectedGas = getSelectedGas(parameters.chainId);
     if (!selectedGas) {
@@ -189,6 +201,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
 
     const gasFeeParamsBySpeed = getGasSettingsBySpeed(parameters.chainId);
+    const selectedGasSpeed = getSelectedGasSpeed(parameters.chainId);
 
     let gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = {} as
       | TransactionGasParamAmounts
@@ -208,13 +221,26 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const { errorMessage } = await walletExecuteRap(wallet, type, {
       ...parameters,
       gasParams,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      gasFeeParamsBySpeed: gasFeeParamsBySpeed as any,
+      // @ts-expect-error - collision between old gas types and new
+      gasFeeParamsBySpeed: gasFeeParamsBySpeed,
     });
     runOnUI(resetSwappingStatus)();
 
     if (errorMessage) {
       SwapInputController.quoteFetchingInterval.start();
+
+      analyticsV2.track(analyticsV2.event.swapsFailed, {
+        createdAt: Date.now(),
+        type,
+        parameters,
+        selectedGas,
+        selectedGasSpeed,
+        slippage,
+        bridge: isBridge,
+        errorMessage,
+        inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
+        outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
+      });
 
       if (errorMessage !== 'handled') {
         logger.error(new RainbowError(`[getNonceAndPerformSwap]: Error executing swap: ${errorMessage}`));
@@ -232,15 +258,25 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }),
     });
 
-    // TODO: Analytics
     NotificationManager?.postNotification('rapCompleted');
     Navigation.handleAction(Routes.PROFILE_SCREEN, {});
+
+    analyticsV2.track(analyticsV2.event.swapsSubmitted, {
+      createdAt: Date.now(),
+      type,
+      parameters,
+      selectedGas,
+      selectedGasSpeed,
+      slippage,
+      bridge: isBridge,
+      inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
+      outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
+    });
   };
 
   const executeSwap = () => {
     'worklet';
 
-    // TODO: Analytics
     if (configProgress.value !== NavigationSteps.SHOW_REVIEW) return;
 
     const inputAsset = internalSelectedInputAsset.value;
@@ -323,6 +359,20 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     outputAsset: internalSelectedOutputAsset,
   });
 
+  const swapInfo = useDerivedValue(() => {
+    const areBothAssetsSet = !!internalSelectedInputAsset.value && !!internalSelectedOutputAsset.value;
+    const isBridging =
+      !!internalSelectedInputAsset.value?.networks &&
+      !!internalSelectedOutputAsset.value?.chainId &&
+      (internalSelectedInputAsset.value.networks[internalSelectedOutputAsset.value.chainId]?.address as unknown as AddressOrEth) ===
+        internalSelectedOutputAsset.value.address;
+
+    return {
+      areBothAssetsSet,
+      isBridging,
+    };
+  });
+
   const handleProgressNavigation = useCallback(
     ({ type }: { type: SwapAssetType }) => {
       'worklet';
@@ -385,7 +435,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
   const setAsset = useCallback(
     ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset | null }) => {
-      const insertUserAssetBalance = type === SwapAssetType.outputAsset;
+      const insertUserAssetBalance = type !== SwapAssetType.inputAsset;
       const extendedAsset = parseAssetAndExtend({ asset, insertUserAssetBalance });
 
       const otherSelectedAsset = type === SwapAssetType.inputAsset ? internalSelectedOutputAsset.value : internalSelectedInputAsset.value;
@@ -458,18 +508,26 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         // This causes a heavy re-render in the output token list, so we delay updating the selected output chain until
         // the animation is most likely complete.
         chainSetTimeoutId.current = setTimeout(() => {
-          if (shouldUpdateSelectedOutputChainId) {
-            useSwapsStore.setState({
-              selectedOutputChainId: extendedAsset?.chainId ?? ChainId.mainnet,
-            });
-          }
-          if (shouldUpdateAnimatedSelectedOutputChainId) {
-            selectedOutputChainId.value = extendedAsset?.chainId ?? ChainId.mainnet;
-          }
+          InteractionManager.runAfterInteractions(() => {
+            if (shouldUpdateSelectedOutputChainId) {
+              useSwapsStore.setState({
+                selectedOutputChainId: extendedAsset?.chainId ?? ChainId.mainnet,
+              });
+            }
+            if (shouldUpdateAnimatedSelectedOutputChainId) {
+              selectedOutputChainId.value = extendedAsset?.chainId ?? ChainId.mainnet;
+            }
+          });
         }, 750);
       }
 
       logger.debug(`[setAsset]: Setting ${type} asset to ${extendedAsset?.name} on ${extendedAsset?.chainId}`);
+
+      analyticsV2.track(analyticsV2.event.swapsSelectedAsset, {
+        asset,
+        otherAsset: otherSelectedAsset,
+        type,
+      });
     },
     [
       SwapInputController.quoteFetchingInterval,
@@ -588,12 +646,14 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         selectedOutputChainId,
         setSelectedOutputChainId,
 
+        handleProgressNavigation,
         internalSelectedInputAsset,
         internalSelectedOutputAsset,
         setAsset,
 
         quote,
         outputQuotesAreDisabled,
+        swapInfo,
         executeSwap,
 
         SwapSettings,
