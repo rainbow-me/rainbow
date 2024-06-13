@@ -210,7 +210,6 @@ export function useSearchCurrencyLists() {
   const { data: verifiedAssets } = useTokenSearch(
     {
       list: 'verifiedAssets',
-
       chainId: isAddress(query) ? state.toChainId : undefined,
       keys: isAddress(query) ? ['address'] : ['name', 'symbol'],
       threshold: isAddress(query) ? 'CASE_SENSITIVE_EQUAL' : 'CONTAINS',
@@ -237,6 +236,7 @@ export function useSearchCurrencyLists() {
             asset => asset.address === inputAssetBridgedToSelectedChainAddress && asset.chainId === selectedOutputChainId.value
           )
         : null;
+
     const filteredBridgeAsset = bridgeAsset && filterBridgeAsset({ asset: bridgeAsset, filter: query }) ? bridgeAsset : null;
 
     return {
