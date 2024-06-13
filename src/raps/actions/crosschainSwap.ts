@@ -37,7 +37,7 @@ export const estimateCrosschainSwapGasLimit = async ({
   quote: CrosschainQuote;
 }): Promise<string> => {
   // TODO: MARK - Replace this once we migrate network => chainId
-  const provider = await getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
+  const provider = getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
   if (!provider || !quote) {
     return gasUnits.basic_swap[chainId];
   }

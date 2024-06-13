@@ -855,7 +855,7 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
        * encapsulate reused code.
        */
       const loadWalletAndSignMessage = async () => {
-        const provider = await getProviderForNetwork();
+        const provider = getProviderForNetwork();
         const wallet = await loadWallet(address, false, provider);
 
         if (!wallet) {
