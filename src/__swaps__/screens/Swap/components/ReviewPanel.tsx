@@ -1,11 +1,9 @@
 import * as i18n from '@/languages';
 import React, { useCallback } from 'react';
-
 import { ReviewGasButton } from '@/__swaps__/screens/Swap/components/GasButton';
 import { ChainId, ChainNameDisplay } from '@/__swaps__/types/chains';
 import { AnimatedText, Bleed, Box, Inline, Separator, Stack, Text, globalColors, useColorMode } from '@/design-system';
 import { StyleSheet, View } from 'react-native';
-
 import Animated, {
   runOnJS,
   useAnimatedReaction,
@@ -17,10 +15,8 @@ import Animated, {
 import { fadeConfig } from '../constants';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { AnimatedSwitch } from './AnimatedSwitch';
-
 import { useAccountSettings } from '@/hooks';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
-
 import { AnimatedChainImage } from '@/__swaps__/screens/Swap/components/AnimatedChainImage';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { useNativeAssetForChain } from '@/__swaps__/screens/Swap/hooks/useNativeAssetForChain';
@@ -40,8 +36,8 @@ import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 const UNKNOWN_LABEL = i18n.t(i18n.l.swap.unknown);
 const REVIEW_LABEL = i18n.t(i18n.l.expanded_state.swap_details.review);
 const NETWORK_LABEL = i18n.t(i18n.l.settings.network);
-const MINIMUM_RECEIVED_LABEL = i18n.t(i18n.l.expanded_state.swap_details.minimum_received);
-const RAINBOW_FEE_LABEL = i18n.t(i18n.l.expanded_state.swap_details.rainbow_fee);
+const MINIMUM_RECEIVED_LABEL = i18n.t(i18n.l.expanded_state.swap_details_v2.minimum_received);
+const RAINBOW_FEE_LABEL = i18n.t(i18n.l.expanded_state.swap_details_v2.rainbow_fee);
 const FLASHBOTS_PROTECTION_LABEL = i18n.t(i18n.l.swap.flashbots_protection);
 const MAX_SLIPPAGE_LABEL = i18n.t(i18n.l.exchange.slippage_tolerance);
 const ESTIMATED_NETWORK_FEE_LABEL = i18n.t(i18n.l.gas.network_fee);
@@ -198,6 +194,13 @@ export function ReviewPanel() {
     };
   });
 
+  const flashbotsVisibilityStyle = useAnimatedStyle(() => {
+    const shouldDisplay = internalSelectedInputAsset.value?.chainId === ChainId.mainnet;
+    return {
+      display: shouldDisplay ? 'flex' : 'none',
+    };
+  });
+
   return (
     <Box as={Animated.View} zIndex={12} style={styles} testID="review-panel" width="full">
       <Stack alignHorizontal="center" space="28px">
@@ -205,7 +208,7 @@ export function ReviewPanel() {
           {REVIEW_LABEL}
         </Text>
 
-        <Stack width="full" space="24px" alignHorizontal="stretch">
+        <Box gap={24} justifyContent="space-between" width="full">
           <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
             <Inline horizontalSpace="12px">
               <Text color="labelTertiary" weight="bold" size="icon 13px">
@@ -268,25 +271,27 @@ export function ReviewPanel() {
 
           <Separator color="separatorSecondary" />
 
-          <Inline wrap={false} horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-            <Inline wrap={false} horizontalSpace="12px">
-              <Text color="labelTertiary" weight="bold" size="icon 13px">
-                􀋦
-              </Text>
-              <ButtonPressAnimation onPress={openFlashbotsExplainer}>
-                <Inline wrap={false} horizontalSpace="4px">
-                  <Text color="labelTertiary" weight="semibold" size="15pt">
-                    {FLASHBOTS_PROTECTION_LABEL}
-                  </Text>
-                  <Text color="labelTertiary" size="13pt" weight="bold">
-                    􀅴
-                  </Text>
-                </Inline>
-              </ButtonPressAnimation>
-            </Inline>
+          <Animated.View style={flashbotsVisibilityStyle}>
+            <Inline wrap={false} horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
+              <Inline wrap={false} horizontalSpace="12px">
+                <Text color="labelTertiary" weight="bold" size="icon 13px">
+                  􀋦
+                </Text>
+                <ButtonPressAnimation onPress={openFlashbotsExplainer}>
+                  <Inline wrap={false} horizontalSpace="4px">
+                    <Text color="labelTertiary" weight="semibold" size="15pt">
+                      {FLASHBOTS_PROTECTION_LABEL}
+                    </Text>
+                    <Text color="labelTertiary" size="13pt" weight="bold">
+                      􀅴
+                    </Text>
+                  </Inline>
+                </ButtonPressAnimation>
+              </Inline>
 
-            <FlashbotsToggle />
-          </Inline>
+              <FlashbotsToggle />
+            </Inline>
+          </Animated.View>
 
           <Inline wrap={false} horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
             <Inline wrap={false} alignHorizontal="left" horizontalSpace="12px">
@@ -391,7 +396,7 @@ export function ReviewPanel() {
               <ReviewGasButton />
             </Inline>
           </Inline>
-        </Stack>
+        </Box>
       </Stack>
     </Box>
   );

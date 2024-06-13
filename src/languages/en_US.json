@@ -745,6 +745,12 @@
         "input_exchange_rate": "1 %{inputSymbol} for %{executionRate} %{outputSymbol}",
         "output_exchange_rate": "1 %{outputSymbol} for %{executionRate} %{inputSymbol}"
       },
+      "swap_details_v2": {
+        "rainbow_fee": "Included Rainbow Fee",
+        "review": "Review",
+        "minimum_received": "Minimum Received",
+        "maximum_sold": "Maximum Sold"
+      },
       "token_index": {
         "get_token": "Get %{assetSymbol}",
         "makeup_of_token": "Makeup of 1 %{assetSymbol}",
