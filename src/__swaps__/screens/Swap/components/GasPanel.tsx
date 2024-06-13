@@ -5,6 +5,7 @@ import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated'
 import { fadeConfig } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/__swaps__/types/chains';
+import { GasSpeed } from '@/__swaps__/types/gas';
 import { gweiToWei, weiToGwei } from '@/__swaps__/utils/ethereum';
 import {
   getSelectedSpeedSuggestion,
@@ -28,9 +29,8 @@ import { upperFirst } from 'lodash';
 import { formatNumber } from '../hooks/formatNumber';
 import { GasSettings, getCustomGasSettings, setCustomGasSettings, useCustomGasStore } from '../hooks/useCustomGas';
 import { setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
-import { UnmountBasedOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
-import { GasSpeed } from '@/__swaps__/types/gas';
+import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 
 const { GAS_TRENDS } = gasUtils;
 
@@ -47,7 +47,7 @@ type AlertInfo = {
 function UnmountWhenGasPanelIsClosed({ placeholder, children }: PropsWithChildren<{ placeholder: ReactNode }>) {
   const { configProgress } = useSwapContext();
   return (
-    <UnmountBasedOnAnimatedReaction
+    <UnmountOnAnimatedReaction
       isMountedWorklet={() => {
         'worklet';
         // only mounted when custom gas panel is open
@@ -56,7 +56,7 @@ function UnmountWhenGasPanelIsClosed({ placeholder, children }: PropsWithChildre
       placeholder={placeholder}
     >
       {children}
-    </UnmountBasedOnAnimatedReaction>
+    </UnmountOnAnimatedReaction>
   );
 }
 
