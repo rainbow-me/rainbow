@@ -5,7 +5,6 @@ import { isNil } from 'lodash';
 
 import { supportedNativeCurrencies } from '@/references';
 import { BigNumberish } from '@/__swaps__/utils/hex';
-import store from '@/redux/store';
 
 type nativeCurrencyType = typeof supportedNativeCurrencies;
 
@@ -180,7 +179,7 @@ export const convertAmountAndPriceToNativeDisplay = (
   nativeCurrency: keyof nativeCurrencyType
 ): { amount: string; display: string } => {
   const nativeBalanceRaw = convertAmountToNativeAmount(amount, priceUnit);
-  const nativeDisplay = convertAmountToNativeDisplay(nativeBalanceRaw, nativeCurrency);
+  const nativeDisplay = convertAmountToNativeDisplayWorklet(nativeBalanceRaw, nativeCurrency);
   return {
     amount: nativeBalanceRaw,
     display: nativeDisplay,
@@ -193,7 +192,7 @@ export const convertAmountAndPriceToNativeDisplayWithThreshold = (
   nativeCurrency: keyof nativeCurrencyType
 ): { amount: string; display: string } => {
   const nativeBalanceRaw = convertAmountToNativeAmount(amount, priceUnit);
-  const nativeDisplay = convertAmountToNativeDisplay(nativeBalanceRaw, nativeCurrency, true);
+  const nativeDisplay = convertAmountToNativeDisplayWorklet(nativeBalanceRaw, nativeCurrency, true);
   return {
     amount: nativeBalanceRaw,
     display: nativeDisplay,
@@ -268,35 +267,6 @@ export const convertBipsToPercentage = (value: BigNumberish, decimals = 2): stri
 /**
  * @desc convert from amount value to display formatted string
  */
-export const convertAmountToNativeDisplay = (value: number | string, nativeCurrency: keyof nativeCurrencyType, useThreshold = false) => {
-  const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
-  const { alignment, decimals: rawDecimals, symbol } = nativeSelected;
-  const decimals = Math.min(rawDecimals, 6);
-
-  const valueNumber = Number(value);
-  const threshold = decimals < 4 ? 0.01 : 0.0001;
-  let thresholdReached = false;
-
-  if (useThreshold && valueNumber < threshold) {
-    thresholdReached = true;
-  }
-
-  const nativeValue = thresholdReached
-    ? threshold
-    : valueNumber.toLocaleString('en-US', {
-        useGrouping: true,
-        minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals,
-      });
-
-  const nativeDisplay = `${thresholdReached ? '<' : ''}${alignment === 'left' ? symbol : ''}${nativeValue}${alignment === 'right' ? symbol : ''}`;
-
-  return nativeDisplay;
-};
-
-/**
- * @desc convert from amount value to display formatted string
- */
 export const convertAmountToNativeDisplayWorklet = (
   value: number | string,
   nativeCurrency: keyof nativeCurrencyType,
@@ -320,7 +290,7 @@ export const convertAmountToNativeDisplayWorklet = (
     ? threshold
     : valueNumber.toLocaleString('en-US', {
         useGrouping: true,
-        minimumFractionDigits: decimals,
+        minimumFractionDigits: nativeCurrency === 'ETH' ? undefined : decimals,
         maximumFractionDigits: decimals,
       });
 

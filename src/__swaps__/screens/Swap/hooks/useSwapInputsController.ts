@@ -31,14 +31,8 @@ import { ethereumUtils } from '@/utils';
 import { queryClient } from '@/react-query';
 import { useAccountSettings } from '@/hooks';
 import { analyticsV2 } from '@/analytics';
-import {
-  divWorklet,
-  equalWorklet,
-  greaterThanWorklet,
-  isNumberStringWorklet,
-  mulWorklet,
-  toFixedWorklet,
-} from '@/__swaps__/safe-math/SafeMath';
+import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { supportedNativeCurrencies } from '@/references';
 
 function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetWithColors | null) {
   const initialBalance = Number(initialSelectedInputAsset?.balance.amount) || 0;
@@ -59,7 +53,17 @@ function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetW
     isStablecoin,
   });
 
-  const initialInputNativeValue = toFixedWorklet(mulWorklet(initialInputAmount, initialSelectedInputAsset?.price?.value ?? 0), 2);
+  const nativeCurrency = store.getState().settings.nativeCurrency;
+  const decimals = Math.min(6, supportedNativeCurrencies[nativeCurrency].decimals);
+
+  const initialInputNativeValue = Number(mulWorklet(initialInputAmount, initialSelectedInputAsset?.price?.value ?? 0)).toLocaleString(
+    'en-US',
+    {
+      useGrouping: true,
+      minimumFractionDigits: nativeCurrency === 'ETH' ? undefined : decimals,
+      maximumFractionDigits: decimals,
+    }
+  );
 
   return {
     initialInputAmount,

@@ -22,7 +22,7 @@ import { chainIdFromChainName, chainNameFromChainId, customChainIdsToAssetNames,
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToBalanceDisplay,
-  convertAmountToNativeDisplay,
+  convertAmountToNativeDisplayWorklet,
   convertAmountToPercentageDisplay,
   convertRawAmountToDecimalFormat,
 } from '@/__swaps__/utils/numbers';
@@ -57,7 +57,7 @@ export const getNativeAssetPrice = ({ priceData, currency }: { priceData?: Zerio
   return {
     change: get24HrChange(priceData),
     amount: priceUnit || 0,
-    display: convertAmountToNativeDisplay(priceUnit || 0, currency),
+    display: convertAmountToNativeDisplayWorklet(priceUnit || 0, currency),
   };
 };
 
