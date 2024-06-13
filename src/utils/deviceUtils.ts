@@ -1,4 +1,4 @@
-import { Dimensions, Platform } from 'react-native';
+import { Dimensions, PixelRatio, Platform } from 'react-native';
 
 import { IS_IOS } from '@/env';
 
@@ -38,5 +38,6 @@ const deviceUtils = (function () {
 
 export const DEVICE_WIDTH = deviceUtils.dimensions.width;
 export const DEVICE_HEIGHT = deviceUtils.dimensions.height;
+export const PIXEL_RATIO = PixelRatio.get();
 
 export default deviceUtils;

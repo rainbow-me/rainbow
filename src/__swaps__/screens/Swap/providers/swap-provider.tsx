@@ -1,6 +1,6 @@
 // @refresh
 import React, { ReactNode, createContext, useCallback, useContext, useEffect, useRef } from 'react';
-import { StyleProp, TextStyle, TextInput, NativeModules } from 'react-native';
+import { StyleProp, TextStyle, TextInput, NativeModules, InteractionManager } from 'react-native';
 import {
   AnimatedRef,
   DerivedValue,
@@ -78,6 +78,7 @@ interface SwapContextType {
   selectedOutputChainId: SharedValue<ChainId>;
   setSelectedOutputChainId: (chainId: ChainId) => void;
 
+  handleProgressNavigation: ({ type }: { type: SwapAssetType }) => void;
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   setAsset: ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset | null }) => void;
@@ -454,7 +455,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
   const setAsset = useCallback(
     ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset | null }) => {
-      const insertUserAssetBalance = type === SwapAssetType.outputAsset;
+      const insertUserAssetBalance = type !== SwapAssetType.inputAsset;
       const extendedAsset = parseAssetAndExtend({ asset, insertUserAssetBalance });
 
       const otherSelectedAsset = type === SwapAssetType.inputAsset ? internalSelectedOutputAsset.value : internalSelectedInputAsset.value;
@@ -527,14 +528,16 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         // This causes a heavy re-render in the output token list, so we delay updating the selected output chain until
         // the animation is most likely complete.
         chainSetTimeoutId.current = setTimeout(() => {
-          if (shouldUpdateSelectedOutputChainId) {
-            useSwapsStore.setState({
-              selectedOutputChainId: extendedAsset?.chainId ?? ChainId.mainnet,
-            });
-          }
-          if (shouldUpdateAnimatedSelectedOutputChainId) {
-            selectedOutputChainId.value = extendedAsset?.chainId ?? ChainId.mainnet;
-          }
+          InteractionManager.runAfterInteractions(() => {
+            if (shouldUpdateSelectedOutputChainId) {
+              useSwapsStore.setState({
+                selectedOutputChainId: extendedAsset?.chainId ?? ChainId.mainnet,
+              });
+            }
+            if (shouldUpdateAnimatedSelectedOutputChainId) {
+              selectedOutputChainId.value = extendedAsset?.chainId ?? ChainId.mainnet;
+            }
+          });
         }, 750);
       }
 
@@ -663,6 +666,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         selectedOutputChainId,
         setSelectedOutputChainId,
 
+        handleProgressNavigation,
         internalSelectedInputAsset,
         internalSelectedOutputAsset,
         setAsset,

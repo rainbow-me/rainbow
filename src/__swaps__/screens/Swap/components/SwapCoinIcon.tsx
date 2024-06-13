@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import React from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import EthIcon from '@/assets/eth-icon.png';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { globalColors } from '@/design-system';
@@ -10,6 +10,7 @@ import { useTheme } from '@/theme';
 import { FallbackIcon as CoinIconTextFallback, isETH } from '@/utils';
 import { FastFallbackCoinIconImage } from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastFallbackCoinIconImage';
 import Animated from 'react-native-reanimated';
+import FastImage, { Source } from 'react-native-fast-image';
 
 // TODO: Delete this and replace with RainbowCoinIcon
 // ⚠️ When replacing this component with RainbowCoinIcon, make sure
@@ -97,6 +98,7 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
     <View style={small ? sx.containerSmall : large ? sx.containerLarge : sx.container}>
       {eth ? (
         <Animated.View
+          key={`${resolvedAddress}-${eth}`}
           style={[
             sx.reactCoinIconContainer,
             small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback,
@@ -104,7 +106,10 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
             { shadowColor },
           ]}
         >
-          <Image source={EthIcon} style={small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback} />
+          <FastImage
+            source={EthIcon as Source}
+            style={small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback}
+          />
         </Animated.View>
       ) : (
         <FastFallbackCoinIconImage
