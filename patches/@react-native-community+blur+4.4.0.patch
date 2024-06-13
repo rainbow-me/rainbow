@@ -1,0 +1,28 @@
+--- a/node_modules/@react-native-community/blur/android/src/main/java/com/reactnativecommunity/blurview/BlurViewManagerImpl.java
++++ b/node_modules/@react-native-community/blur/android/src/main/java/com/reactnativecommunity/blurview/BlurViewManagerImpl.java
+@@ -18,14 +18,17 @@ class BlurViewManagerImpl {
+ 
+   public static @Nonnull BlurView createViewInstance(@Nonnull ThemedReactContext ctx) {
+     BlurView blurView = new BlurView(ctx);
+-    View decorView = Objects
+-      .requireNonNull(ctx.getCurrentActivity())
+-      .getWindow()
+-      .getDecorView();
+-    blurView
+-      .setupWith(decorView.findViewById(android.R.id.content))
+-      .setFrameClearDrawable(decorView.getBackground())
+-      .setBlurRadius(defaultRadius);
++    if (blurView.isHardwareAccelerated()) {
++      View decorView = Objects
++        .requireNonNull(ctx.getCurrentActivity())
++        .getWindow()
++        .getDecorView();
++      blurView
++        .setupWith(decorView.findViewById(android.R.id.content))
++        .setFrameClearDrawable(decorView.getBackground())
++        .setBlurRadius(defaultRadius);
++    }
++    
+     return blurView;
+   }
+ 
