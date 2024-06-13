@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, PixelRatio, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
 import ArbitrumBadge from '@/assets/badges/arbitrum.png';
 import BaseBadge from '@/assets/badges/base.png';
@@ -21,6 +21,7 @@ import { customChainIdsToAssetNames } from '@/__swaps__/utils/chains';
 import { AddressZero } from '@ethersproject/constants';
 import { ETH_ADDRESS } from '@/references';
 import { IS_ANDROID } from '@/env';
+import { PIXEL_RATIO } from '@/utils/deviceUtils';
 
 const networkBadges = {
   [ChainId.mainnet]: Image.resolveAssetSource(EthereumBadge).uri,
@@ -44,8 +45,6 @@ const networkBadges = {
   [ChainId.blastSepolia]: Image.resolveAssetSource(BlastBadge).uri,
   [ChainId.degen]: Image.resolveAssetSource(DegenBadge).uri,
 };
-
-const PIXEL_RATIO = PixelRatio.get();
 
 export const getCustomChainIconUrlWorklet = (chainId: ChainId, address: AddressOrEth) => {
   'worklet';
@@ -73,7 +72,7 @@ export function AnimatedChainImage({
     const base = {
       source: {
         ...DEFAULT_FASTER_IMAGE_CONFIG,
-        borderRadius: IS_ANDROID ? (size / 2) * PIXEL_RATIO : undefined,
+        borderRadius: IS_ANDROID ? (size / 2) * PIXEL_RATIO : size / 2,
         url: '',
       },
     };

@@ -68,7 +68,7 @@ export const checkIsValidAddressOrDomainFormat = (address: any) => {
  * @return {Boolean}
  */
 export const checkIsValidAddressOrDomain = async (address: any) => {
-  const provider = await getProviderForNetwork(Network.mainnet);
+  const provider = getProviderForNetwork(Network.mainnet);
   if (isENSAddressFormat(address)) {
     try {
       const resolvedAddress = await provider.resolveName(address);
