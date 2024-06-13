@@ -282,23 +282,20 @@ export default function SendSheet(props) {
   }, [stopPollingGasFees]);
 
   useEffect(() => {
-    const updateNetworkAndProvider = async () => {
-      const assetNetwork = selected?.network;
-      if (assetNetwork && (assetNetwork !== currentNetwork || !currentNetwork || prevNetwork !== currentNetwork)) {
-        let provider = web3Provider;
-        const selectedNetwork = selected?.network;
-        if (network === Network.goerli) {
-          setCurrentNetwork(Network.goerli);
-          provider = await getProviderForNetwork(Network.goerli);
-          setCurrentProvider(provider);
-        } else {
-          setCurrentNetwork(selectedNetwork);
-          provider = await getProviderForNetwork(selectedNetwork);
-          setCurrentProvider(provider);
-        }
+    const assetNetwork = selected?.network;
+    if (assetNetwork && (assetNetwork !== currentNetwork || !currentNetwork || prevNetwork !== currentNetwork)) {
+      let provider = web3Provider;
+      const selectedNetwork = selected?.network;
+      if (network === Network.goerli) {
+        setCurrentNetwork(Network.goerli);
+        provider = getProviderForNetwork(Network.goerli);
+        setCurrentProvider(provider);
+      } else {
+        setCurrentNetwork(selectedNetwork);
+        provider = getProviderForNetwork(selectedNetwork);
+        setCurrentProvider(provider);
       }
-    };
-    updateNetworkAndProvider();
+    }
   }, [currentNetwork, isNft, network, prevNetwork, selected?.network, sendUpdateSelected]);
 
   const onChangeNativeAmount = useCallback(

@@ -38,6 +38,10 @@ export const RainbowNetworks = [
  */
 export function getNetworkObj(network: Network): NetworkProperties {
   switch (network) {
+    // Mainnet
+    case Network.mainnet:
+      return getMainnetNetworkObject();
+
     // L2s
     case Network.arbitrum:
       return getArbitrumNetworkObject();
@@ -63,7 +67,7 @@ export function getNetworkObj(network: Network): NetworkProperties {
     case Network.goerli:
       return getGoerliNetworkObject();
 
-    // Mainnet
+    // Fallback
     default:
       return getMainnetNetworkObject();
   }

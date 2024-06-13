@@ -37,8 +37,8 @@ export interface NetworkProperties extends Chain {
     mainnetAddress?: string;
   };
 
-  rpc: string;
-  getProvider: Promise<StaticJsonRpcProvider>;
+  rpc: () => string;
+  getProvider: () => StaticJsonRpcProvider;
   balanceCheckerAddress: EthereumAddress;
 
   // feature flags

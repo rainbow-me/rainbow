@@ -25,8 +25,8 @@ export const getZoraNetworkObject = (): NetworkProperties => {
       address: ZORA_ETH_ADDRESS,
     },
 
-    rpc: proxyRpcEndpoint(zora.id),
-    getProvider: getProviderForNetwork(Network.zora),
+    rpc: () => proxyRpcEndpoint(zora.id),
+    getProvider: () => getProviderForNetwork(Network.zora),
     balanceCheckerAddress: '0x1C8cFdE3Ba6eFc4FF8Dd5C93044B9A690b6CFf36',
 
     // features

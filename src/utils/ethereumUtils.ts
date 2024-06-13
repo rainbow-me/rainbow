@@ -24,7 +24,7 @@ import {
   SelectedGasFee,
 } from '@/entities';
 import { getOnchainAssetBalance } from '@/handlers/assets';
-import { getCachedProviderForNetwork, getProviderForNetwork, isHardHat, isTestnetNetwork, toHex } from '@/handlers/web3';
+import { getIsHardhatConnected, getProviderForNetwork, isTestnetNetwork, toHex } from '@/handlers/web3';
 import { Network } from '@/helpers/networkTypes';
 import { convertRawAmountToDecimalFormat, fromWei, greaterThan, isZero, subtract, add } from '@/helpers/utilities';
 import { Navigation } from '@/navigation';
@@ -87,7 +87,7 @@ export const getNativeAssetForNetwork = async (network: Network, address?: Ether
       };
     }
 
-    const provider = await getProviderForNetwork(network);
+    const provider = getProviderForNetwork(network);
     if (nativeAsset) {
       nativeAsset.mainnet_address = mainnetAddress;
       nativeAsset.address = getNetworkObj(network).nativeCurrency.address;
@@ -112,12 +112,11 @@ const getAsset = (accountAssets: Record<string, ParsedAddressAsset>, uniqueId: E
 };
 
 const getUserAssetFromCache = (uniqueId: string) => {
-  const { accountAddress, nativeCurrency, network } = store.getState().settings;
+  const { accountAddress, nativeCurrency } = store.getState().settings;
+  const connectedToHardhat = getIsHardhatConnected();
 
   const cache = queryClient.getQueryCache();
-  const provider = getCachedProviderForNetwork(network);
-  const providerUrl = provider?.connection?.url;
-  const connectedToHardhat = isHardHat(providerUrl);
+
   const cachedAddressAssets = (cache.find(
     userAssetsQueryKey({
       address: accountAddress,

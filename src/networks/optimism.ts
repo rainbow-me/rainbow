@@ -25,8 +25,8 @@ export const getOptimismNetworkObject = (): NetworkProperties => {
       address: OPTIMISM_ETH_ADDRESS,
     },
 
-    rpc: proxyRpcEndpoint(optimism.id),
-    getProvider: getProviderForNetwork(Network.optimism),
+    rpc: () => proxyRpcEndpoint(optimism.id),
+    getProvider: () => getProviderForNetwork(Network.optimism),
     balanceCheckerAddress: '0x1C8cFdE3Ba6eFc4FF8Dd5C93044B9A690b6CFf36',
 
     // features

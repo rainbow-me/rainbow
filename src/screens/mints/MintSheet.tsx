@@ -251,7 +251,7 @@ const MintSheet = () => {
       const signer = createWalletClient({
         account: accountAddress,
         chain: networkObj,
-        transport: http(networkObj.rpc),
+        transport: http(networkObj.rpc()),
       });
       try {
         await getClient()?.actions.mintToken({
@@ -360,7 +360,7 @@ const MintSheet = () => {
     const signer = createWalletClient({
       account,
       chain: networkObj,
-      transport: http(networkObj.rpc),
+      transport: http(networkObj.rpc()),
     });
 
     const feeAddress = getRainbowFeeAddress(currentNetwork);

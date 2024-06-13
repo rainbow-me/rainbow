@@ -30,8 +30,8 @@ export const getBlastNetworkObject = (): NetworkProperties => {
     },
 
     balanceCheckerAddress: '',
-    rpc: proxyRpcEndpoint(BLAST_CHAIN_ID),
-    getProvider: getProviderForNetwork(Network.blast),
+    rpc: () => proxyRpcEndpoint(BLAST_CHAIN_ID),
+    getProvider: () => getProviderForNetwork(Network.blast),
 
     // features
     features: {
