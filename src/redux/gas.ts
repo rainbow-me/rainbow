@@ -312,7 +312,7 @@ export const getBscGasPrices = async () => {
   }
 };
 export const getArbitrumGasPrices = async () => {
-  const provider = await getProviderForNetwork(Network.arbitrum);
+  const provider = getProviderForNetwork(Network.arbitrum);
   const baseGasPrice = await provider.getGasPrice();
   const normalGasPrice = weiToGwei(baseGasPrice.toString());
 
@@ -330,7 +330,7 @@ export const getArbitrumGasPrices = async () => {
 };
 
 export const getOptimismGasPrices = async () => {
-  const provider = await getProviderForNetwork(Network.optimism);
+  const provider = getProviderForNetwork(Network.optimism);
   const baseGasPrice = await provider.getGasPrice();
   const normalGasPrice = weiToGwei(baseGasPrice.toString());
 
@@ -347,7 +347,7 @@ export const getOptimismGasPrices = async () => {
 };
 
 export const getBaseGasPrices = async () => {
-  const provider = await getProviderForNetwork(Network.base);
+  const provider = getProviderForNetwork(Network.base);
   const baseGasPrice = await provider.getGasPrice();
 
   const BasePriceBumpFactor = 1.05;
@@ -366,7 +366,7 @@ export const getBaseGasPrices = async () => {
 };
 
 export const getAvalancheGasPrices = async () => {
-  const provider = await getProviderForNetwork(Network.avalanche);
+  const provider = getProviderForNetwork(Network.avalanche);
   const baseGasPrice = await provider.getGasPrice();
 
   const AvalanchePriceBumpFactor = 1.05;
@@ -385,7 +385,7 @@ export const getAvalancheGasPrices = async () => {
 };
 
 export const getDegenGasPrices = async () => {
-  const provider = await getProviderForNetwork(Network.degen);
+  const provider = getProviderForNetwork(Network.degen);
   const baseGasPrice = await provider.getGasPrice();
 
   const DegenPriceBumpFactor = 1.05;
@@ -404,7 +404,7 @@ export const getDegenGasPrices = async () => {
 };
 
 export const getBlastGasPrices = async () => {
-  const provider = await getProviderForNetwork(Network.blast);
+  const provider = getProviderForNetwork(Network.blast);
   const baseGasPrice = await provider.getGasPrice();
 
   const BlastPriceBumpFactor = 1.05;
@@ -423,7 +423,7 @@ export const getBlastGasPrices = async () => {
 };
 
 export const getZoraGasPrices = async () => {
-  const provider = await getProviderForNetwork(Network.zora);
+  const provider = getProviderForNetwork(Network.zora);
   const baseGasPrice = await provider.getGasPrice();
 
   const ZoraPriceBumpFactor = 1.05;
