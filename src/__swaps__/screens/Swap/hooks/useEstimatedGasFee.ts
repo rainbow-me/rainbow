@@ -1,16 +1,16 @@
+import { greaterThanWorklet, toScaledIntegerWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { ChainId } from '@/__swaps__/types/chains';
 import { weiToGwei } from '@/__swaps__/utils/ethereum';
 import { add, multiply } from '@/__swaps__/utils/numbers';
 import ethereumUtils, { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { useMemo, useState } from 'react';
+import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
+import { useDebouncedCallback } from 'use-debounce';
 import { formatUnits } from 'viem';
+import { useSwapContext } from '../providers/swap-provider';
 import { formatCurrency, formatNumber } from './formatNumber';
 import { GasSettings } from './useCustomGas';
 import { useSwapEstimatedGasLimit } from './useSwapEstimatedGasLimit';
-import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
-import { useDebouncedCallback } from 'use-debounce';
-import { useSwapContext } from '../providers/swap-provider';
-import { greaterThanWorklet, toScaledIntegerWorklet } from '@/__swaps__/safe-math/SafeMath';
 
 function safeBigInt(value: string) {
   try {

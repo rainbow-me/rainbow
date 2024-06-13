@@ -1,8 +1,9 @@
 import { ChainId } from '@/__swaps__/types/chains';
+import { GasSpeed } from '@/__swaps__/types/gas';
 import { weiToGwei } from '@/__swaps__/utils/ethereum';
-import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import { getCachedCurrentBaseFee, useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { add } from '@/__swaps__/utils/numbers';
+import { ButtonPressAnimation } from '@/components/animations';
 import { ContextMenu } from '@/components/context-menu';
 import { Centered } from '@/components/layout';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
@@ -11,21 +12,37 @@ import { IS_ANDROID } from '@/env';
 import * as i18n from '@/languages';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { gasUtils } from '@/utils';
-import React, { ReactNode, useCallback, useMemo } from 'react';
+import React, { PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
+import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import { runOnJS, runOnUI } from 'react-native-reanimated';
 import { ETH_COLOR, ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '../constants';
 import { formatNumber } from '../hooks/formatNumber';
 import { GasSettings, useCustomGasSettings } from '../hooks/useCustomGas';
-import { GasSpeed } from '@/__swaps__/types/gas';
 import { setSelectedGasSpeed, useSelectedGas, useSelectedGasSpeed } from '../hooks/useSelectedGas';
-import { useSwapContext } from '../providers/swap-provider';
-import { EstimatedSwapGasFee } from './EstimatedSwapGasFee';
+import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
+import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { GestureHandlerV1Button } from './GestureHandlerV1Button';
-import { ButtonPressAnimation } from '@/components/animations';
+import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 
 const { GAS_ICONS } = gasUtils;
 const GAS_BUTTON_HIT_SLOP = 16;
+
+function UnmountWhenGasButtonIsNotInScreen({ placeholder, children }: PropsWithChildren<{ placeholder: ReactNode }>) {
+  const { configProgress } = useSwapContext();
+  return (
+    <UnmountOnAnimatedReaction
+      isMountedWorklet={() => {
+        'worklet';
+        // unmount when custom gas or review panels are above it
+        return !(configProgress.value === NavigationSteps.SHOW_GAS || configProgress.value === NavigationSteps.SHOW_REVIEW);
+      }}
+      placeholder={placeholder}
+    >
+      {children}
+    </UnmountOnAnimatedReaction>
+  );
+}
 
 function EstimatedGasFee() {
   const chainId = swapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
@@ -36,7 +53,9 @@ function EstimatedGasFee() {
       <TextIcon color="labelQuaternary" height={10} size="icon 11px" weight="heavy" width={16}>
         􀵟
       </TextIcon>
-      <EstimatedSwapGasFee gasSettings={gasSettings} />
+      <UnmountWhenGasButtonIsNotInScreen placeholder={<EstimatedSwapGasFeeSlot text="--" />}>
+        <EstimatedSwapGasFee gasSettings={gasSettings} />
+      </UnmountWhenGasButtonIsNotInScreen>
     </Inline>
   );
 }
