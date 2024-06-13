@@ -37,7 +37,7 @@ import {
   roundWorklet,
   toFixedWorklet,
   greaterThanOrEqualToWorklet,
-  sumWorklet,
+  isNumberStringWorklet,
 } from '../safe-math/SafeMath';
 
 // /---- 🎨 Color functions 🎨 ----/ //
@@ -155,9 +155,13 @@ export const countDecimalPlaces = (number: number | string): number => {
   return 0;
 };
 
-export const findNiceIncrement = (availableBalance: string | number) => {
+export const findNiceIncrement = (availableBalance: string | number | undefined) => {
   'worklet';
   if (Number(availableBalance) === 0) {
+    return 0;
+  }
+
+  if (!availableBalance || !isNumberStringWorklet(availableBalance.toString()) || equalWorklet(availableBalance, 0)) {
     return 0;
   }
 
@@ -187,7 +191,6 @@ export const findNiceIncrement = (availableBalance: string | number) => {
   }
   return adjustedIncrement;
 };
-
 //
 // /---- END JS utils ----/ //
 
@@ -232,7 +235,7 @@ export function trimTrailingZeros(value: string) {
 export function precisionBasedOffMagnitude(amount: number | string, isStablecoin = false): number {
   'worklet';
 
-  const magnitude = -Number(floorWorklet(sumWorklet(log10Worklet(amount), 0)));
+  const magnitude = -Number(floorWorklet(log10Worklet(amount)));
   // don't let stablecoins go beneath 2nd order
   if (magnitude < -2 && isStablecoin) {
     return -STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS;
@@ -279,7 +282,7 @@ export function valueBasedDecimalFormatter({
   const decimalPlaces = calculateDecimalPlaces(usdTokenPrice);
 
   let roundedAmount;
-  const factor = Math.pow(10, decimalPlaces);
+  const factor = Math.pow(10, decimalPlaces) || 1; // Prevent division by 0
 
   // Apply rounding based on the specified rounding mode
   if (roundingMode === 'up') {
@@ -318,7 +321,7 @@ export function valueBasedDecimalFormatter({
 
   // Format the number to add separators and trim trailing zeros
   const numberFormatter = new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0,
+    minimumFractionDigits: 0,
     maximumFractionDigits: maximumFractionDigits(),
     useGrouping: true,
   });
@@ -351,7 +354,7 @@ export function niceIncrementFormatter({
 }) {
   'worklet';
 
-  if (percentageToSwap === 0) return '0';
+  if (percentageToSwap === 0 || equalWorklet(niceIncrement, 0)) return '0';
   if (percentageToSwap === 0.25) {
     const amount = mulWorklet(inputAssetBalance, 0.25);
     return valueBasedDecimalFormatter({
@@ -414,12 +417,10 @@ export function niceIncrementFormatter({
   const amountToFixedDecimals = toFixedWorklet(rawAmount, decimals);
 
   const formattedAmount = `${Number(amountToFixedDecimals).toLocaleString('en-US', {
-    useGrouping: true,
-    minimumFractionDigits: isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0,
+    useGrouping: !stripSeparators,
+    minimumFractionDigits: 0,
     maximumFractionDigits: MAXIMUM_SIGNIFICANT_DECIMALS,
   })}`;
-
-  if (stripSeparators) return stripCommas(formattedAmount);
 
   return formattedAmount;
 }
@@ -434,7 +435,6 @@ export const opacityWorklet = (color: string, opacity: number) => {
     return color;
   }
 };
-
 //
 // /---- END worklet utils ----/ //
 
@@ -676,7 +676,7 @@ const ETH_COLORS: Colors = {
 
 export const getStandardizedUniqueIdWorklet = ({ address, chainId }: { address: AddressOrEth; chainId: ChainId }) => {
   'worklet';
-  return `${address.toLowerCase()}_${chainId}`;
+  return `${address}_${chainId}`;
 };
 
 export const parseAssetAndExtend = ({

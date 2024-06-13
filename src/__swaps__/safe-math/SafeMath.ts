@@ -27,7 +27,7 @@ const removeDecimalWorklet = (num: string): [bigint, number] => {
   return [bigIntNum, decimalPlaces];
 };
 
-const isNumberStringWorklet = (value: string): boolean => {
+export const isNumberStringWorklet = (value: string): boolean => {
   'worklet';
   return /^-?\d+(\.\d+)?([eE][-+]?\d+)?$/.test(value);
 };

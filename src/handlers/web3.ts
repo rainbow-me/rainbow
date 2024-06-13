@@ -215,7 +215,7 @@ export const getCachedProviderForNetwork = (network: Network = Network.mainnet):
  * @param network The network as a `Network` or string.
  * @return The provider for the network.
  */
-export const getProviderForNetwork = async (network: Network | string = Network.mainnet): Promise<StaticJsonRpcProvider> => {
+export const getProviderForNetwork = (network: Network | string = Network.mainnet): StaticJsonRpcProvider => {
   const isSupportedNetwork = isNetworkEnum(network);
   const cachedProvider = isSupportedNetwork ? networkProviders.get(network) : undefined;
 

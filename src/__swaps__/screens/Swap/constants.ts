@@ -11,12 +11,14 @@ export const SPACE_BETWEEN_SWAP_BUBBLES = 12;
 // TODO: Need a more reliable way to get the keyboard height
 export const NATIVE_KEYBOARD_HEIGHT = getDefaultKeyboardHeight();
 
-export const REVIEW_SHEET_HEIGHT = 419.68;
+export const REVIEW_SHEET_ROW_HEIGHT = 10;
+export const REVIEW_SHEET_ROW_GAP = 24;
+export const REVIEW_SHEET_HEIGHT = 420;
 export const GAS_SHEET_HEIGHT = 308;
 export const BOTTOM_ACTION_BAR_HEIGHT = 114;
 export const BASE_INPUT_HEIGHT = 104;
 export const BASE_INPUT_WIDTH = deviceUtils.dimensions.width - 24;
-export const EXPANDED_REVIEW_SECTION = 408.67;
+export const EXPANDED_REVIEW_SECTION = 408;
 export const EXPANDED_INPUT_HEIGHT =
   deviceUtils.dimensions.height -
   safeAreaInsetValues.top -

@@ -15,7 +15,7 @@ import { useDelayedMount } from '@/hooks/useDelayedMount';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { analyticsV2 } from '@/analytics';
 
-const SELL_LIST_HEADER_HEIGHT = 20 + 10 + 14; // paddingTop + height + paddingBottom
+export const SELL_LIST_HEADER_HEIGHT = 20 + 10 + 14; // paddingTop + height + paddingBottom
 
 const isInitialInputAssetNull = () => {
   return !swapsStore.getState().inputAsset;
