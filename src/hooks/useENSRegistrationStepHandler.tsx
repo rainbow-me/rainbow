@@ -25,7 +25,7 @@ const checkRegisterBlockTimestamp = async ({
   isTestingHardhat: boolean;
 }) => {
   try {
-    const provider = await getProviderForNetwork();
+    const provider = getProviderForNetwork();
     const block = await provider.getBlock('latest');
     const msBlockTimestamp = getBlockMsTimestamp(block);
     const secs = differenceInSeconds(msBlockTimestamp, registrationParameters?.commitTransactionConfirmedAt || msBlockTimestamp);
@@ -90,7 +90,7 @@ export default function useENSRegistrationStepHandler(observer = true) {
 
   const watchCommitTransaction = useCallback(async () => {
     if (observer) return;
-    const provider = await getProviderForNetwork();
+    const provider = getProviderForNetwork();
     let confirmed = false;
     const tx = await provider.getTransaction(commitTransactionHash || '');
     if (!tx?.blockHash) return confirmed;

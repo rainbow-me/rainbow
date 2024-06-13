@@ -5,7 +5,7 @@ import * as lang from '@/languages';
 import { Provider } from '@ethersproject/providers';
 
 import { RainbowNetworks, getNetworkObj } from '@/networks';
-import { getCachedProviderForNetwork } from '@/handlers/web3';
+import { getProviderForNetwork } from '@/handlers/web3';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { UserRejectedRequestError } from 'viem';
 import { convertHexToString } from '@/helpers/utilities';
@@ -197,7 +197,7 @@ const getChain = (chainId: number) => RainbowNetworks.find(network => Number(net
 
 const getProvider = ({ chainId }: { chainId?: number | undefined }) => {
   const network = getNetworkFromChainId(chainId || 1);
-  return getCachedProviderForNetwork(network) as unknown as Provider;
+  return getProviderForNetwork(network) as unknown as Provider;
 };
 
 const checkRateLimitFn = async (host: string) => {
