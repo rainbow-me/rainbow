@@ -1,5 +1,6 @@
 import React, { ReactElement, useMemo } from 'react';
 import { StyleProp, TextStyle, View, ViewStyle } from 'react-native';
+import { IS_ANDROID } from '@/env';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { useColorMode } from '../../color/ColorMode';
 import { useForegroundColor } from '../../color/useForegroundColor';
@@ -23,7 +24,8 @@ export const TextShadow = ({
   children,
   color,
   containerStyle,
-  disabled,
+  // ⚠️ TODO: Need to test on Android - defaulting to disabled on Android for now
+  disabled = IS_ANDROID,
   enableInLightMode,
   shadowOpacity = 0.6,
   textStyle,
