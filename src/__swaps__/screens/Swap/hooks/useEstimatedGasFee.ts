@@ -1,16 +1,16 @@
 import { greaterThanWorklet, toScaledIntegerWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { ChainId } from '@/__swaps__/types/chains';
 import { weiToGwei } from '@/__swaps__/utils/ethereum';
-import { add, multiply } from '@/__swaps__/utils/numbers';
+import { add, convertAmountToNativeDisplayWorklet, formatNumber, multiply } from '@/__swaps__/utils/numbers';
 import ethereumUtils, { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { useMemo, useState } from 'react';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 import { formatUnits } from 'viem';
 import { useSwapContext } from '../providers/swap-provider';
-import { formatCurrency, formatNumber } from './formatNumber';
 import { GasSettings } from './useCustomGas';
 import { useSwapEstimatedGasLimit } from './useSwapEstimatedGasLimit';
+import { useAccountSettings } from '@/hooks';
 
 function safeBigInt(value: string) {
   try {
@@ -31,6 +31,7 @@ export function useEstimatedGasFee({
 }) {
   const network = ethereumUtils.getNetworkFromChainId(chainId);
   const nativeNetworkAsset = useNativeAssetForNetwork(network);
+  const { nativeCurrency } = useAccountSettings();
 
   return useMemo(() => {
     if (!gasLimit || !gasSettings || !nativeNetworkAsset?.price) return;
@@ -45,8 +46,8 @@ export function useEstimatedGasFee({
     const gasAmount = formatUnits(safeBigInt(totalWei), nativeNetworkAsset.decimals).toString();
     const feeInUserCurrency = multiply(networkAssetPrice, gasAmount);
 
-    return formatCurrency(feeInUserCurrency);
-  }, [gasLimit, gasSettings, nativeNetworkAsset]);
+    return convertAmountToNativeDisplayWorklet(feeInUserCurrency, nativeCurrency);
+  }, [gasLimit, gasSettings, nativeCurrency, nativeNetworkAsset]);
 }
 
 export function useSwapEstimatedGasFee(gasSettings: GasSettings | undefined) {

@@ -16,7 +16,7 @@ import {
   useMeteorologySuggestion,
   useMeteorologySuggestions,
 } from '@/__swaps__/utils/meteorology';
-import { add, greaterThan, subtract } from '@/__swaps__/utils/numbers';
+import { add, formatNumber, greaterThan, subtract } from '@/__swaps__/utils/numbers';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Bleed, Box, Inline, Separator, Stack, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
@@ -28,7 +28,6 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { gasUtils } from '@/utils';
 import { upperFirst } from 'lodash';
-import { formatNumber } from '../hooks/formatNumber';
 import { GasSettings, getCustomGasSettings, setCustomGasSettings, useCustomGasStore } from '../hooks/useCustomGas';
 import { setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
