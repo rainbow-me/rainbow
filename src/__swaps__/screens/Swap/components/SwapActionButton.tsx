@@ -1,12 +1,14 @@
 /* eslint-disable no-nested-ternary */
 import React from 'react';
-import { StyleProp, StyleSheet, TextStyle, ViewStyle } from 'react-native';
-import Animated, { DerivedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import { StyleProp, StyleSheet, TextStyle, ViewProps, ViewStyle } from 'react-native';
+import Animated, { DerivedValue, useAnimatedProps, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 
-import { AnimatedText, Box, Column, Columns, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { AnimatedText, Box, Column, Columns, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { GestureHandlerV1Button } from './GestureHandlerV1Button';
+
+const AnimatedGestureHandlerV1Button = Animated.createAnimatedComponent(GestureHandlerV1Button);
 
 export const SwapActionButton = ({
   asset,
@@ -23,6 +25,8 @@ export const SwapActionButton = ({
   scaleTo,
   small,
   style,
+  disabled,
+  isLoading,
 }: {
   asset: DerivedValue<ExtendedAnimatedAssetWithColors | null>;
   borderRadius?: number;
@@ -38,6 +42,8 @@ export const SwapActionButton = ({
   scaleTo?: number;
   small?: boolean;
   style?: ViewStyle;
+  disabled?: DerivedValue<boolean | undefined>;
+  isLoading?: DerivedValue<boolean | undefined>;
 }) => {
   const { isDarkMode } = useColorMode();
   const fallbackColor = useForegroundColor('label');
@@ -80,6 +86,8 @@ export const SwapActionButton = ({
       },
       shadowOpacity: isDarkMode ? 0.2 : small ? 0.2 : 0.36,
       shadowRadius: isDarkMode ? 26 : small ? 9 : 15,
+      // we don't want to change the opacity when it's loading
+      opacity: !isLoading?.value && disabled?.value ? 0.6 : 1,
     };
   });
 
@@ -97,15 +105,20 @@ export const SwapActionButton = ({
     return rightIcon;
   });
 
+  const buttonAnimatedProps = useAnimatedProps(() => {
+    return {
+      pointerEvents: (disabled?.value ? 'none' : 'box-only') as ViewProps['pointerEvents'],
+      disableButtonPressWrapper: disabled?.value,
+      scaleTo: scaleTo || (hugContent ? undefined : 0.925),
+    };
+  });
+
   return (
-    <GestureHandlerV1Button
+    <AnimatedGestureHandlerV1Button
+      animatedProps={buttonAnimatedProps}
+      onPressStartWorklet={onPressWorklet}
       onPressJS={onPressJS}
-      onPressWorklet={onPressWorklet}
-      scaleTo={scaleTo || (hugContent ? undefined : 0.925)}
-      style={{
-        ...(hugContent && feedActionButtonStyles.buttonWrapper),
-        ...(style || {}),
-      }}
+      style={[hugContent && feedActionButtonStyles.buttonWrapper, style]}
     >
       <Box
         as={Animated.View}
@@ -138,7 +151,7 @@ export const SwapActionButton = ({
           )}
         </Columns>
       </Box>
-    </GestureHandlerV1Button>
+    </AnimatedGestureHandlerV1Button>
   );
 };
 
