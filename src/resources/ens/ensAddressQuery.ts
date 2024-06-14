@@ -23,7 +23,7 @@ const ensAddressQueryKey = ({ name }: ENSAddressArgs) => createQueryKey('ensAddr
 // Query Function
 
 async function ensAddressQueryFunction({ queryKey: [{ name }] }: QueryFunctionArgs<typeof ensAddressQueryKey>) {
-  const provider = await getProviderForNetwork();
+  const provider = getProviderForNetwork();
   const address = await provider.resolveName(name);
   return address;
 }

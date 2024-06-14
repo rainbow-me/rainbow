@@ -1,17 +1,23 @@
 import React, { useCallback } from 'react';
+import { StyleSheet } from 'react-native';
 import Animated, { useAnimatedReaction, useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Box, Inline, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity, valueBasedDecimalFormatter } from '@/__swaps__/utils/swaps';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { IS_IOS } from '@/env';
 import { AddressZero } from '@ethersproject/constants';
 import { ETH_ADDRESS } from '@/references';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { GestureHandlerV1Button } from './GestureHandlerV1Button';
+import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
+import { useAccountSettings } from '@/hooks';
 
 export const ExchangeRateBubble = () => {
   const { isDarkMode } = useColorMode();
   const { AnimatedSwapStyles, internalSelectedInputAsset, internalSelectedOutputAsset, isFetching } = useSwapContext();
+  const { nativeCurrency: currentCurrency } = useAccountSettings();
 
   const rotatingIndex = useSharedValue(0);
   const fromAssetText = useSharedValue('');
@@ -81,11 +87,7 @@ export const ExchangeRateBubble = () => {
 
       if (isSameAssetOnDifferentChains) {
         fromAssetText.value = `1 ${inputAssetSymbol}`;
-        toAssetText.value = `$${inputAssetPrice.toLocaleString('en-US', {
-          useGrouping: true,
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })}`;
+        toAssetText.value = convertAmountToNativeDisplayWorklet(inputAssetPrice, currentCurrency);
         return;
       }
 
@@ -93,7 +95,7 @@ export const ExchangeRateBubble = () => {
         case 0: {
           const formattedRate = valueBasedDecimalFormatter({
             amount: inputAssetPrice / outputAssetPrice,
-            usdTokenPrice: outputAssetPrice,
+            nativePrice: outputAssetPrice,
             roundingMode: 'up',
             precisionAdjustment: -1,
             isStablecoin: isOutputAssetStablecoin,
@@ -106,7 +108,7 @@ export const ExchangeRateBubble = () => {
         case 1: {
           const formattedRate = valueBasedDecimalFormatter({
             amount: outputAssetPrice / inputAssetPrice,
-            usdTokenPrice: inputAssetPrice,
+            nativePrice: inputAssetPrice,
             roundingMode: 'up',
             precisionAdjustment: -1,
             isStablecoin: isInputAssetStablecoin,
@@ -118,20 +120,12 @@ export const ExchangeRateBubble = () => {
         }
         case 2: {
           fromAssetText.value = `1 ${inputAssetSymbol}`;
-          toAssetText.value = `$${inputAssetPrice.toLocaleString('en-US', {
-            useGrouping: true,
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}`;
+          toAssetText.value = convertAmountToNativeDisplayWorklet(inputAssetPrice, currentCurrency);
           break;
         }
         case 3: {
           fromAssetText.value = `1 ${outputAssetSymbol}`;
-          toAssetText.value = `$${outputAssetPrice.toLocaleString('en-US', {
-            useGrouping: true,
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}`;
+          toAssetText.value = convertAmountToNativeDisplayWorklet(outputAssetPrice, currentCurrency);
           break;
         }
       }
@@ -146,14 +140,17 @@ export const ExchangeRateBubble = () => {
   });
 
   return (
-    <GestureHandlerV1Button onPressWorklet={onChangeIndex} scaleTo={0.925}>
+    <GestureHandlerV1Button
+      buttonPressWrapperStyleIOS={IS_IOS ? styles.buttonPosition : undefined}
+      onPressWorklet={onChangeIndex}
+      scaleTo={0.9}
+      style={IS_IOS ? undefined : styles.buttonPosition}
+    >
       <Box
         as={Animated.View}
         alignItems="center"
         justifyContent="center"
-        paddingHorizontal="24px"
-        paddingVertical="12px"
-        style={[AnimatedSwapStyles.hideWhenInputsExpandedOrPriceImpact, { alignSelf: 'center', position: 'absolute', top: 4 }]}
+        style={[AnimatedSwapStyles.hideWhenInputsExpandedOrPriceImpact, styles.buttonPadding]}
       >
         <Box
           alignItems="center"
@@ -191,3 +188,16 @@ export const ExchangeRateBubble = () => {
     </GestureHandlerV1Button>
   );
 };
+
+const styles = StyleSheet.create({
+  buttonPadding: {
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+  },
+  buttonPosition: {
+    alignSelf: 'center',
+    minWidth: DEVICE_WIDTH * 0.6,
+    position: 'absolute',
+    top: 4,
+  },
+});

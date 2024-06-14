@@ -7,8 +7,9 @@ import { QueryConfig, QueryFunctionArgs, QueryFunctionResult, createQueryKey, qu
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { useCallback } from 'react';
 import { GasSettings } from '../screens/Swap/hooks/useCustomGas';
-import { GasSpeed, getSelectedGasSpeed, useGasSettings } from '../screens/Swap/hooks/useSelectedGas';
+import { getSelectedGasSpeed, useGasSettings } from '../screens/Swap/hooks/useSelectedGas';
 import { getMinimalTimeUnitStringForMs } from './time';
+import { GasSpeed } from '../types/gas';
 
 // Query Types
 
@@ -177,6 +178,7 @@ function selectGasTrend({ data }: MeteorologyResult) {
   if (trend === 0) return 'stable';
   return 'notrend';
 }
+export type GasTrend = ReturnType<typeof selectGasTrend>;
 
 export function useGasTrend({ chainId }: { chainId: ChainId }) {
   return useMeteorology({ chainId }, { select: selectGasTrend });
@@ -239,7 +241,7 @@ export function useMeteorologySuggestion<Selected = GasSuggestions[keyof GasSugg
     { chainId },
     {
       select: useCallback(
-        (d: MeteorologyResult) => select(speed === 'custom' ? undefined : selectGasSuggestions(d)[speed]),
+        (d: MeteorologyResult) => select(speed === GasSpeed.CUSTOM ? undefined : selectGasSuggestions(d)[speed]),
         [select, speed]
       ),
       enabled: enabled && speed !== 'custom',

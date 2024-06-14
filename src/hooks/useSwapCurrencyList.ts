@@ -181,7 +181,7 @@ const useSwapCurrencyList = (searchQuery: string, searchChainId = MAINNET_CHAINI
             return [tokenListEntry];
           }
           const network = ethereumUtils.getNetworkFromChainId(chainId);
-          const provider = await getProviderForNetwork(network);
+          const provider = getProviderForNetwork(network);
           const tokenContract = new Contract(searchQuery, erc20ABI, provider);
           try {
             const [name, symbol, decimals, address] = await Promise.all([
