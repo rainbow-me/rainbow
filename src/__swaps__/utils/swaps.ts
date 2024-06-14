@@ -14,11 +14,8 @@ import {
 } from '@/__swaps__/screens/Swap/constants';
 import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { ChainId, ChainName } from '@/__swaps__/types/chains';
-import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
-import { globalColors } from '@/design-system';
 import { TokenColors } from '@/graphql/__generated__/metadata';
-import * as i18n from '@/languages';
 import { RainbowConfig } from '@/model/remoteConfig';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { colors } from '@/styles';
