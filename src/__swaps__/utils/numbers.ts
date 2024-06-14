@@ -177,24 +177,10 @@ export const convertAmountAndPriceToNativeDisplay = (
   amount: BigNumberish,
   priceUnit: BigNumberish,
   nativeCurrency: keyof nativeCurrencyType,
-  buffer?: number,
-  skipDecimals = false
+  useThreshold = false
 ): { amount: string; display: string } => {
   const nativeBalanceRaw = convertAmountToNativeAmount(amount, priceUnit);
-  const nativeDisplay = convertAmountToNativeDisplay(nativeBalanceRaw, nativeCurrency, buffer, skipDecimals);
-  return {
-    amount: nativeBalanceRaw,
-    display: nativeDisplay,
-  };
-};
-
-export const convertAmountAndPriceToNativeDisplayWithThreshold = (
-  amount: BigNumberish,
-  priceUnit: BigNumberish,
-  nativeCurrency: keyof nativeCurrencyType
-): { amount: string; display: string } => {
-  const nativeBalanceRaw = convertAmountToNativeAmount(amount, priceUnit);
-  const nativeDisplay = convertAmountToNativeDisplayWithThreshold(nativeBalanceRaw, nativeCurrency);
+  const nativeDisplay = convertAmountToNativeDisplayWorklet(nativeBalanceRaw, nativeCurrency, useThreshold);
   return {
     amount: nativeBalanceRaw,
     display: nativeDisplay,
@@ -208,11 +194,10 @@ export const convertRawAmountToNativeDisplay = (
   rawAmount: BigNumberish,
   assetDecimals: number,
   priceUnit: BigNumberish,
-  nativeCurrency: keyof nativeCurrencyType,
-  buffer?: number
+  nativeCurrency: keyof nativeCurrencyType
 ) => {
   const assetBalance = convertRawAmountToDecimalFormat(rawAmount, assetDecimals);
-  const ret = convertAmountAndPriceToNativeDisplay(assetBalance, priceUnit, nativeCurrency, buffer);
+  const ret = convertAmountAndPriceToNativeDisplay(assetBalance, priceUnit, nativeCurrency);
   return ret;
 };
 
@@ -270,28 +255,36 @@ export const convertBipsToPercentage = (value: BigNumberish, decimals = 2): stri
 /**
  * @desc convert from amount value to display formatted string
  */
-export const convertAmountToNativeDisplay = (
-  value: BigNumberish,
+export const convertAmountToNativeDisplayWorklet = (
+  value: number | string,
   nativeCurrency: keyof nativeCurrencyType,
-  buffer?: number,
-  skipDecimals?: boolean
+  useThreshold = false
 ) => {
-  const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
-  const { decimals } = nativeSelected;
-  const display = handleSignificantDecimals(value, decimals, buffer, skipDecimals);
-  if (nativeSelected.alignment === 'left') {
-    return `${nativeSelected.symbol}${display}`;
-  }
-  return `${display} ${nativeSelected.symbol}`;
-};
+  'worklet';
 
-export const convertAmountToNativeDisplayWithThreshold = (value: BigNumberish, nativeCurrency: keyof nativeCurrencyType) => {
   const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
-  const display = handleSignificantDecimalsWithThreshold(value, nativeSelected.decimals, nativeSelected.decimals < 4 ? '0.01' : '0.0001');
-  if (nativeSelected.alignment === 'left') {
-    return `${nativeSelected.symbol}${display}`;
+  const { alignment, decimals: rawDecimals, symbol } = nativeSelected;
+  const decimals = Math.min(rawDecimals, 6);
+
+  const valueNumber = Number(value);
+  const threshold = decimals < 4 ? 0.01 : 0.0001;
+  let thresholdReached = false;
+
+  if (useThreshold && valueNumber < threshold) {
+    thresholdReached = true;
   }
-  return `${display} ${nativeSelected.symbol}`;
+
+  const nativeValue = thresholdReached
+    ? threshold
+    : valueNumber.toLocaleString('en-US', {
+        useGrouping: true,
+        minimumFractionDigits: nativeCurrency === 'ETH' ? undefined : decimals,
+        maximumFractionDigits: decimals,
+      });
+
+  const nativeDisplay = `${thresholdReached ? '<' : ''}${alignment === 'left' ? symbol : ''}${nativeValue}${alignment === 'right' ? symbol : ''}`;
+
+  return nativeDisplay;
 };
 
 /**
@@ -307,3 +300,23 @@ export const convertDecimalFormatToRawAmount = (value: string, decimals = 18): s
   new BigNumber(value).multipliedBy(new BigNumber(10).pow(decimals)).toFixed(0);
 
 export const fromWei = (number: BigNumberish): string => convertRawAmountToDecimalFormat(number, 18);
+
+const decimalSeparator = '.';
+const lessThanPrefix = '<';
+
+export const formatNumber = (value: string, options?: { decimals?: number }) => {
+  if (!+value) return `0${decimalSeparator}0`;
+  if (+value < 0.0001) return `${lessThanPrefix}0${decimalSeparator}0001`;
+
+  const [whole, fraction = ''] = value.split(decimalSeparator);
+  const decimals = options?.decimals;
+  const paddedFraction = `${fraction.padEnd(decimals || 4, '0')}`;
+
+  if (decimals) {
+    if (decimals === 0) return whole;
+    return `${whole}${decimalSeparator}${paddedFraction.slice(0, decimals)}`;
+  }
+
+  if (+whole > 0) return `${whole}${decimalSeparator}${paddedFraction.slice(0, 2)}`;
+  return `0${decimalSeparator}${paddedFraction.slice(0, 4)}`;
+};

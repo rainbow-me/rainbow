@@ -6,7 +6,6 @@ import ReactNative from 'react-native';
 import Storage from 'react-native-storage';
 // import { debugLayoutAnimations } from './src/config/debug';
 import { mmkvStorageBackend } from '@/handlers/localstorage/mmkvStorageBackend';
-import toLocaleStringPolyfill from '@/helpers/toLocaleStringPolyfill';
 import logger from '@/utils/logger';
 import 'fast-text-encoding';
 import globalVariables from './globalVariables';
@@ -24,8 +23,6 @@ if (typeof atob === 'undefined') {
     return new Buffer(b64Encoded, 'base64').toString('binary');
   };
 }
-
-toLocaleStringPolyfill();
 
 // https://github.com/facebook/react-native/commit/1049835b504cece42ee43ac5b554687891da1349
 // https://github.com/facebook/react-native/commit/035718ba97bb44c68f2a4ccdd95e537e3d28690

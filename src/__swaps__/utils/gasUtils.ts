@@ -20,7 +20,7 @@ import { addHexPrefix, convertStringToHex, toHex } from '@/__swaps__/utils/hex';
 import {
   add,
   addBuffer,
-  convertAmountAndPriceToNativeDisplayWithThreshold,
+  convertAmountAndPriceToNativeDisplay,
   convertRawAmountToBalance,
   divide,
   fraction,
@@ -145,7 +145,7 @@ export const parseCustomGasFeeParams = ({
   const feeAmount = add(maxBaseFee.amount, maxPriorityFeePerGas.amount);
   const totalWei = multiply(gasLimit, feeAmount);
   const nativeTotalWei = convertRawAmountToBalance(totalWei, supportedNativeCurrencies[nativeAsset?.symbol as SupportedCurrencyKey]).amount;
-  const nativeDisplay = convertAmountAndPriceToNativeDisplayWithThreshold(nativeTotalWei || 0, nativeAsset?.price?.value || 0, currency);
+  const nativeDisplay = convertAmountAndPriceToNativeDisplay(nativeTotalWei || 0, nativeAsset?.price?.value || 0, currency, true);
   const gasFee = { amount: totalWei, display: nativeDisplay.display };
 
   return {
@@ -218,7 +218,7 @@ export const parseGasFeeParams = ({
   const totalWei = add(multiply(gasLimit, feeAmount), optimismL1SecurityFee || 0);
   const nativeTotalWei = convertRawAmountToBalance(totalWei, supportedNativeCurrencies[nativeAsset?.symbol as SupportedCurrencyKey]).amount;
   const nativeDisplay = nativeAsset?.price?.value
-    ? convertAmountAndPriceToNativeDisplayWithThreshold(nativeTotalWei, nativeAsset?.price?.value, currency)
+    ? convertAmountAndPriceToNativeDisplay(nativeTotalWei, nativeAsset?.price?.value, currency, true)
     : convertRawAmountToBalance(totalWei, {
         decimals: nativeAsset?.decimals || 18,
         symbol: nativeAsset?.symbol,
@@ -273,7 +273,7 @@ export const parseGasFeeLegacyParams = ({
   const nativeTotalWei = convertRawAmountToBalance(totalWei, supportedNativeCurrencies[nativeAsset?.symbol as SupportedCurrencyKey]).amount;
 
   const nativeDisplay = nativeAsset?.price?.value
-    ? convertAmountAndPriceToNativeDisplayWithThreshold(nativeTotalWei, nativeAsset?.price?.value, currency)
+    ? convertAmountAndPriceToNativeDisplay(nativeTotalWei, nativeAsset?.price?.value, currency, true)
     : convertRawAmountToBalance(totalWei, {
         decimals: nativeAsset?.decimals || 18,
         symbol: nativeAsset?.symbol,
