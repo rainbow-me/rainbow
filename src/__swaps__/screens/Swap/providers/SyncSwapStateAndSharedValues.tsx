@@ -76,45 +76,33 @@ const getHasEnoughFundsForGas = (quote: Quote, gasFee: string, nativeNetworkAsse
 };
 
 export function SyncGasStateToSharedValues() {
-  const {
-    estimatedGasLimit: estimatedGasLimitSharedValue,
-    gasSettings: gasSettingsSharedValue,
-    enoughFundsForGas,
-    internalSelectedInputAsset,
-    SwapInputController,
-  } = useSwapContext();
+  const { hasEnoughFundsForGas, internalSelectedInputAsset, SwapInputController } = useSwapContext();
 
   const { assetToSell, chainId = ChainId.mainnet, quote } = useSyncedSwapQuoteStore();
 
   const gasSettings = useSelectedGas(chainId);
   const { data: userNativeNetworkAsset } = useUserNativeNetworkAsset(chainId);
-  const { data: estimatedGasLimit } = useSwapEstimatedGasLimit({ chainId, assetToSell, quote });
+  const { data: estimatedGasLimit, isFetching } = useSwapEstimatedGasLimit({ chainId, assetToSell, quote });
 
   useEffect(() => {
-    estimatedGasLimitSharedValue.value = estimatedGasLimit;
-    gasSettingsSharedValue.value = gasSettings;
-
-    if (!gasSettings || !estimatedGasLimit || !quote || 'error' in quote) {
-      enoughFundsForGas.value = true;
-      return;
-    }
+    hasEnoughFundsForGas.value = undefined;
+    if (!gasSettings || !estimatedGasLimit || !quote || 'error' in quote) return;
 
     const gasFee = calculateGasFee(gasSettings, estimatedGasLimit);
-    enoughFundsForGas.value = getHasEnoughFundsForGas(quote, gasFee, userNativeNetworkAsset);
+    hasEnoughFundsForGas.value = getHasEnoughFundsForGas(quote, gasFee, userNativeNetworkAsset);
 
     return () => {
-      enoughFundsForGas.value = true;
+      hasEnoughFundsForGas.value = undefined;
     };
   }, [
-    estimatedGasLimitSharedValue,
     estimatedGasLimit,
     gasSettings,
-    gasSettingsSharedValue,
-    enoughFundsForGas,
+    hasEnoughFundsForGas,
     quote,
     internalSelectedInputAsset.value?.balance.amount,
     SwapInputController.inputValues.value.inputAmount,
     userNativeNetworkAsset,
+    isFetching,
   ]);
 
   return null;

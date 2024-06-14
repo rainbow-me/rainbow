@@ -7,6 +7,7 @@ import {
   SharedValue,
   runOnJS,
   runOnUI,
+  useAnimatedReaction,
   useAnimatedRef,
   useAnimatedStyle,
   useDerivedValue,
@@ -47,8 +48,6 @@ import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/
 import { getNetworkObj } from '@/networks';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { Address } from 'viem';
-import { GasSettings } from '../hooks/useCustomGas';
-import { useGasSharedValues } from '../hooks/useGasSharedValues';
 import { getGasSettingsBySpeed, getSelectedGas, getSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
@@ -116,9 +115,7 @@ interface SwapContextType {
   >;
   confirmButtonIconStyle: StyleProp<TextStyle>;
 
-  estimatedGasLimit: SharedValue<string | undefined>;
-  gasSettings: SharedValue<GasSettings | undefined>;
-  enoughFundsForGas: SharedValue<boolean>;
+  hasEnoughFundsForGas: SharedValue<boolean | undefined>;
 }
 
 const SwapContext = createContext<SwapContextType | undefined>(undefined);
@@ -583,16 +580,15 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     };
   }, []);
 
-  const { gasSettings, estimatedGasLimit, enoughFundsForGas } = useGasSharedValues();
-
-  const enoughFundsForSwap = useDerivedValue(() => {
-    const inputAsset = internalSelectedInputAsset.value;
-    if (!quote.value || 'error' in quote.value || !inputAsset) return true;
-    return lessThanOrEqualToWorklet(
-      quote.value.sellAmount.toString(),
-      toScaledIntegerWorklet(inputAsset.balance.amount, inputAsset.decimals)
-    );
-  });
+  const hasEnoughFundsForGas = useSharedValue<boolean | undefined>(undefined);
+  useAnimatedReaction(
+    () => isFetching.value,
+    fetching => {
+      // if it's refetching the gas is gonna be recalculated after
+      // so we already set it to undefined to prevent flickering
+      if (fetching) hasEnoughFundsForGas.value = undefined;
+    }
+  );
 
   const confirmButtonProps = useDerivedValue(() => {
     if (isSwapping.value) {
@@ -607,13 +603,13 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return { icon: '􀆅', label: save, disabled: false };
     }
 
-    if (isFetching.value) {
-      return { label: fetchingPrices, isLoading: true, disabled: true };
-    }
-
     const hasSelectedAssets = internalSelectedInputAsset.value && internalSelectedOutputAsset.value;
     if (!hasSelectedAssets) {
       return { label: selectToken, disabled: true };
+    }
+
+    if (isFetching.value || hasEnoughFundsForGas.value === undefined) {
+      return { label: fetchingPrices, isLoading: true, disabled: true };
     }
 
     const isInputZero = equalWorklet(SwapInputController.inputValues.value.inputAmount, 0);
@@ -621,11 +617,21 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
     const isQuoteError = quote.value && 'error' in quote.value;
 
-    if (!isQuoteError && (SwapInputController.percentageToSwap.value === 0 || isInputZero || isOutputZero)) {
+    if ((!isQuoteError && SwapInputController.percentageToSwap.value === 0) || isInputZero || isOutputZero) {
       return { label: enterAmount, disabled: true };
     }
 
-    if (!enoughFundsForGas.value || !enoughFundsForSwap.value) {
+    const inputAsset = internalSelectedInputAsset.value;
+    const sellAmount = (() => {
+      const inputAmount = SwapInputController.inputValues.value.inputAmount;
+      if (!quote.value || 'error' in quote.value) return inputAmount;
+      return quote.value.sellAmount.toString();
+    })();
+
+    const enoughFundsForSwap =
+      inputAsset && lessThanOrEqualToWorklet(sellAmount, toScaledIntegerWorklet(inputAsset.balance.amount, inputAsset.decimals));
+
+    if (!hasEnoughFundsForGas.value || !enoughFundsForSwap) {
       return { label: insufficientFunds, disabled: true };
     }
 
@@ -637,16 +643,11 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return { icon: '􀕹', label: review, disabled: true };
     }
 
-    if (!gasSettings.value) {
-      // this could happen if metereology is down, or some other edge cases that are not properly handled yet
-      return { label: errorLabel, disabled: true };
-    }
-
     if (isQuoteError) {
       return { label: errorLabel, disabled: true };
     }
 
-    return { icon: '􀕹', label: review, disabled: false };
+    return { icon: '􀕹', label: review + 'aa', disabled: false };
   });
 
   const confirmButtonIconStyle = useAnimatedStyle(() => {
@@ -708,9 +709,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         confirmButtonProps,
         confirmButtonIconStyle,
 
-        estimatedGasLimit,
-        gasSettings,
-        enoughFundsForGas,
+        hasEnoughFundsForGas,
       }}
     >
       {children}
