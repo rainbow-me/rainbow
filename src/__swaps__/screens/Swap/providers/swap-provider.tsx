@@ -7,7 +7,6 @@ import {
   SharedValue,
   runOnJS,
   runOnUI,
-  useAnimatedReaction,
   useAnimatedRef,
   useAnimatedStyle,
   useDerivedValue,
@@ -110,7 +109,6 @@ interface SwapContextType {
       label: string;
       icon?: string;
       disabled?: boolean;
-      isLoading?: boolean;
     }>
   >;
   confirmButtonIconStyle: StyleProp<TextStyle>;
@@ -580,15 +578,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     };
   }, []);
 
-  const hasEnoughFundsForGas = useSharedValue<boolean | undefined>(undefined);
-  useAnimatedReaction(
-    () => isFetching.value,
-    fetching => {
-      // if it's refetching the gas is gonna be recalculated after
-      // so we already set it to undefined to prevent flickering
-      if (fetching) hasEnoughFundsForGas.value = undefined;
-    }
-  );
+  const hasEnoughFundsForGas = useSharedValue<boolean>(false);
 
   const confirmButtonProps = useDerivedValue(() => {
     if (isSwapping.value) {
@@ -608,16 +598,19 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return { label: selectToken, disabled: true };
     }
 
-    if (isFetching.value || hasEnoughFundsForGas.value === undefined) {
-      return { label: fetchingPrices, isLoading: true, disabled: true };
+    if (isFetching.value) {
+      return { label: fetchingPrices, disabled: true };
     }
 
     const isInputZero = equalWorklet(SwapInputController.inputValues.value.inputAmount, 0);
     const isOutputZero = equalWorklet(SwapInputController.inputValues.value.outputAmount, 0);
 
     const isQuoteError = quote.value && 'error' in quote.value;
+    if (isQuoteError) {
+      return { label: errorLabel, disabled: true };
+    }
 
-    if ((!isQuoteError && SwapInputController.percentageToSwap.value === 0) || isInputZero || isOutputZero) {
+    if (SwapInputController.percentageToSwap.value === 0 || isInputZero || isOutputZero) {
       return { label: enterAmount, disabled: true };
     }
 
@@ -631,7 +624,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const enoughFundsForSwap =
       inputAsset && lessThanOrEqualToWorklet(sellAmount, toScaledIntegerWorklet(inputAsset.balance.amount, inputAsset.decimals));
 
-    if (!hasEnoughFundsForGas.value || !enoughFundsForSwap) {
+    if (!isFetching && (!hasEnoughFundsForGas.value || !enoughFundsForSwap)) {
       return { label: insufficientFunds, disabled: true };
     }
 

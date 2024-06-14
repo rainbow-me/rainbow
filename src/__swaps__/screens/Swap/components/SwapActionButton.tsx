@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import React from 'react';
-import { StyleProp, StyleSheet, TextStyle, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, TextStyle, ViewProps, ViewStyle } from 'react-native';
 import Animated, { DerivedValue, useAnimatedProps, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
@@ -107,8 +107,9 @@ export const SwapActionButton = ({
 
   const buttonAnimatedProps = useAnimatedProps(() => {
     return {
-      disabled: disabled?.value ?? false,
-      scaleTo: disabled?.value ? 1 : scaleTo || (hugContent ? undefined : 0.925),
+      pointerEvents: (disabled?.value ? 'none' : 'box-only') as ViewProps['pointerEvents'],
+      disableButtonPressWrapper: disabled?.value,
+      scaleTo: scaleTo || (hugContent ? undefined : 0.925),
     };
   });
 
@@ -117,7 +118,6 @@ export const SwapActionButton = ({
       animatedProps={buttonAnimatedProps}
       onPressStartWorklet={onPressWorklet}
       onPressJS={onPressJS}
-      pointerEvents="auto"
       style={[hugContent && feedActionButtonStyles.buttonWrapper, style]}
     >
       <Box
