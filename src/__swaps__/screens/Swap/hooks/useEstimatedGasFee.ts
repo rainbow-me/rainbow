@@ -1,4 +1,11 @@
-import { divWorklet, greaterThanWorklet, mulWorklet, subWorklet, toScaledIntegerWorklet } from '@/__swaps__/safe-math/SafeMath';
+import {
+  divWorklet,
+  greaterThanWorklet,
+  mulWorklet,
+  subWorklet,
+  toFixedWorklet,
+  toScaledIntegerWorklet,
+} from '@/__swaps__/safe-math/SafeMath';
 import { ChainId } from '@/__swaps__/types/chains';
 import { weiToGwei } from '@/__swaps__/utils/ethereum';
 import { add, multiply } from '@/__swaps__/utils/numbers';
@@ -40,20 +47,20 @@ export function useEstimatedGasFee({
 
     const totalWei = multiply(gasLimit, amount);
 
-    internalSelectedInputAsset.modify(prev => {
+    internalSelectedInputAsset.modify(asset => {
       'worklet';
 
-      if (prev?.isNativeAsset) {
-        const gasFeeNativeCurrency = divWorklet(totalWei, 10 ** prev!.decimals);
-        const gasFeeWithBuffer = mulWorklet(gasFeeNativeCurrency, 1.3);
-        const maxSwappableAmount = subWorklet(prev!.balance.amount, gasFeeWithBuffer);
+      if (asset?.isNativeAsset) {
+        const gasFeeNativeCurrency = divWorklet(totalWei, 10 ** asset.decimals);
+        const gasFeeWithBuffer = toFixedWorklet(mulWorklet(gasFeeNativeCurrency, 1.3), asset.decimals);
+        const maxSwappableAmount = subWorklet(asset.balance.amount, gasFeeWithBuffer);
 
         return {
-          ...prev,
+          ...asset,
           maxSwappableAmount: Number(maxSwappableAmount) < 0 ? '0' : maxSwappableAmount,
         };
       } else {
-        return prev;
+        return asset;
       }
     });
 
