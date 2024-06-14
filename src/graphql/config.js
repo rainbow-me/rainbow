@@ -1,12 +1,10 @@
-import { GRAPH_ENS_API_KEY } from 'react-native-dotenv';
-
 exports.config = {
   ens: {
     __name: 'ens',
     document: './queries/ens.graphql',
     schema: {
       method: 'POST',
-      url: `https://gateway-arbitrum.network.thegraph.com/api/${GRAPH_ENS_API_KEY}/subgraphs/id/5XqPmWe6gjyrJtFn9cLy237i4cWw2j9HcUJEXsP5qGtH`,
+      url: 'https://api.thegraph.com/subgraphs/name/ensdomains/ens',
     },
   },
   metadata: {
