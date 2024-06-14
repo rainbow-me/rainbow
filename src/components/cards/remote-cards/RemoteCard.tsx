@@ -68,10 +68,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
   const { navigate } = useNavigation();
   const { language } = useAccountSettings();
   const { width } = useDimensions();
-  const cards = remoteCardsStore(state => state.cards);
   const card = remoteCardsStore(state => state.getCard(id)) ?? ({} as TrimmedCard);
-  const dismissCard = remoteCardsStore(state => state.dismissCard);
-
   const { cardKey, accentColor, backgroundColor, primaryButton, imageIcon } = card;
 
   const accent = useForegroundColor(getColorFromString(accentColor));
@@ -99,9 +96,11 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
         cardKey: cardKey ?? card.sys.id ?? 'unknown-backend-driven-card',
       });
 
+      const { cards } = remoteCardsStore.getState();
+
       const isLastCard = cards.size === 1;
 
-      dismissCard(card.sys.id);
+      remoteCardsStore.getState().dismissCard(card.sys.id);
       if (carouselRef?.current) {
         // check if this is the last card and don't scroll if so
         if (isLastCard) return;
@@ -112,7 +111,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
         });
       }
     },
-    [carouselRef, dismissCard, cards, cardKey, card.sys.id]
+    [carouselRef, cardKey, card.sys.id]
   );
 
   const imageForPlatform = () => {
