@@ -18,7 +18,7 @@ import { CrosschainQuote, Quote, QuoteError, SwapType, getCrosschainQuote, getQu
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import store from '@/redux/store';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { convertRawAmountToDecimalFormat } from '@/__swaps__/utils/numbers';
+import { convertAmountToNativeDisplayWorklet, convertRawAmountToDecimalFormat } from '@/__swaps__/utils/numbers';
 import { NavigationSteps } from './useSwapNavigation';
 import { RainbowError, logger } from '@/logger';
 import {
@@ -29,15 +29,10 @@ import {
 } from '@/resources/assets/externalAssetsQuery';
 import { ethereumUtils } from '@/utils';
 import { queryClient } from '@/react-query';
+import { useAccountSettings } from '@/hooks';
 import { analyticsV2 } from '@/analytics';
-import {
-  divWorklet,
-  equalWorklet,
-  greaterThanWorklet,
-  isNumberStringWorklet,
-  mulWorklet,
-  toFixedWorklet,
-} from '@/__swaps__/safe-math/SafeMath';
+import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { supportedNativeCurrencies } from '@/references';
 
 function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetWithColors | null) {
   const initialBalance = Number(initialSelectedInputAsset?.balance.amount) || 0;
@@ -49,8 +44,8 @@ function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetW
   const initialInputAmount = niceIncrementFormatter({
     incrementDecimalPlaces: initialDecimalPlaces,
     inputAssetBalance: initialBalance,
+    inputAssetNativePrice: initialSelectedInputAsset?.price?.value ?? 0,
     assetBalanceDisplay,
-    inputAssetUsdPrice: initialSelectedInputAsset?.price?.value ?? 0,
     niceIncrement: initialNiceIncrement,
     percentageToSwap: 0.5,
     sliderXPosition: SLIDER_WIDTH / 2,
@@ -58,7 +53,17 @@ function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetW
     isStablecoin,
   });
 
-  const initialInputNativeValue = toFixedWorklet(mulWorklet(initialInputAmount, initialSelectedInputAsset?.price?.value ?? 0), 2);
+  const nativeCurrency = store.getState().settings.nativeCurrency;
+  const decimals = Math.min(6, supportedNativeCurrencies[nativeCurrency].decimals);
+
+  const initialInputNativeValue = Number(mulWorklet(initialInputAmount, initialSelectedInputAsset?.price?.value ?? 0)).toLocaleString(
+    'en-US',
+    {
+      useGrouping: true,
+      minimumFractionDigits: nativeCurrency === 'ETH' ? undefined : decimals,
+      maximumFractionDigits: decimals,
+    }
+  );
 
   return {
     initialInputAmount,
@@ -92,6 +97,7 @@ export function useSwapInputsController({
   sliderXPosition: SharedValue<number>;
 }) {
   const { initialInputAmount, initialInputNativeValue } = getInitialInputValues(initialSelectedInputAsset);
+  const { nativeCurrency: currentCurrency } = useAccountSettings();
 
   const inputValues = useSharedValue<inputValuesType>({
     inputAmount: initialInputAmount,
@@ -134,7 +140,7 @@ export function useSwapInputsController({
     if (inputMethod.value === 'outputAmount') {
       return valueBasedDecimalFormatter({
         amount: inputValues.value.inputAmount,
-        usdTokenPrice: inputNativePrice.value,
+        nativePrice: inputNativePrice.value,
         assetBalanceDisplay,
         roundingMode: 'up',
         precisionAdjustment: -1,
@@ -149,8 +155,8 @@ export function useSwapInputsController({
     return niceIncrementFormatter({
       incrementDecimalPlaces: incrementDecimalPlaces.value,
       inputAssetBalance: balance,
+      inputAssetNativePrice: inputNativePrice.value,
       assetBalanceDisplay,
-      inputAssetUsdPrice: inputNativePrice.value,
       niceIncrement: niceIncrement.value,
       percentageToSwap: percentageToSwap.value,
       sliderXPosition: sliderXPosition.value,
@@ -165,15 +171,10 @@ export function useSwapInputsController({
       !isNumberStringWorklet(inputValues.value.inputNativeValue.toString()) ||
       equalWorklet(inputValues.value.inputNativeValue, 0)
     ) {
-      return '$0.00';
+      return convertAmountToNativeDisplayWorklet(0, currentCurrency);
     }
 
-    const nativeValue = `${Number(inputValues.value.inputNativeValue).toLocaleString('en-US', {
-      currency: 'USD',
-      style: 'currency',
-    })}`;
-
-    return nativeValue || '$0.00';
+    return convertAmountToNativeDisplayWorklet(inputValues.value.inputNativeValue, currentCurrency);
   });
 
   const formattedOutputAmount = useDerivedValue(() => {
@@ -191,7 +192,7 @@ export function useSwapInputsController({
 
     return valueBasedDecimalFormatter({
       amount: inputValues.value.outputAmount,
-      usdTokenPrice: outputNativePrice.value,
+      nativePrice: outputNativePrice.value,
       assetBalanceDisplay,
       roundingMode: 'down',
       precisionAdjustment: -1,
@@ -207,14 +208,10 @@ export function useSwapInputsController({
       !isNumberStringWorklet(inputValues.value.outputNativeValue.toString()) ||
       equalWorklet(inputValues.value.outputNativeValue, 0)
     ) {
-      return '$0.00';
+      return convertAmountToNativeDisplayWorklet(0, currentCurrency);
     }
 
-    const nativeValue = `${Number(inputValues.value.outputNativeValue).toLocaleString('en-US', {
-      currency: 'USD',
-      style: 'currency',
-    })}`;
-    return nativeValue || '$0.00';
+    return convertAmountToNativeDisplayWorklet(inputValues.value.outputNativeValue, currentCurrency);
   });
 
   const updateNativePriceForAsset = useCallback(
@@ -497,7 +494,9 @@ export function useSwapInputsController({
           ? Number(
               convertRawAmountToDecimalFormat(
                 (quoteResponse as Quote)?.sellAmount?.toString(),
-                internalSelectedInputAsset.value?.decimals || 18
+                internalSelectedInputAsset.value?.networks[internalSelectedInputAsset.value.chainId]?.decimals ||
+                  internalSelectedInputAsset.value?.decimals ||
+                  18
               )
             )
           : undefined;
@@ -507,7 +506,9 @@ export function useSwapInputsController({
           ? Number(
               convertRawAmountToDecimalFormat(
                 (quoteResponse as Quote)?.buyAmountMinusFees?.toString(),
-                internalSelectedOutputAsset.value?.decimals || 18
+                internalSelectedOutputAsset.value?.networks[internalSelectedOutputAsset.value.chainId]?.decimals ||
+                  internalSelectedOutputAsset.value?.decimals ||
+                  18
               )
             )
           : undefined;
@@ -734,8 +735,8 @@ export function useSwapInputsController({
             const inputAmount = niceIncrementFormatter({
               incrementDecimalPlaces: incrementDecimalPlaces.value,
               inputAssetBalance: balance,
+              inputAssetNativePrice: inputNativePrice.value,
               assetBalanceDisplay,
-              inputAssetUsdPrice: inputNativePrice.value,
               niceIncrement: niceIncrement.value,
               percentageToSwap: percentageToSwap.value,
               sliderXPosition: sliderXPosition.value,
@@ -895,8 +896,8 @@ export function useSwapInputsController({
           const inputAmount = niceIncrementFormatter({
             incrementDecimalPlaces: incrementDecimalPlaces.value,
             inputAssetBalance: balance,
+            inputAssetNativePrice: inputNativePrice.value,
             assetBalanceDisplay,
-            inputAssetUsdPrice: inputNativePrice.value,
             niceIncrement: niceIncrement.value,
             percentageToSwap: percentageToSwap.value,
             sliderXPosition: sliderXPosition.value,
@@ -925,7 +926,7 @@ export function useSwapInputsController({
             valueBasedDecimalFormatter({
               amount:
                 inputNativePrice > 0 ? divWorklet(inputValues.value.inputNativeValue, inputNativePrice) : inputValues.value.outputAmount,
-              usdTokenPrice: inputNativePrice,
+              nativePrice: inputNativePrice,
               assetBalanceDisplay,
               roundingMode: 'up',
               precisionAdjustment: -1,

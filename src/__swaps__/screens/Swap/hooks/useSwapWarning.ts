@@ -8,8 +8,8 @@ import { getCrossChainTimeEstimateWorklet, getQuoteServiceTimeWorklet } from '@/
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { highPriceImpactThreshold, severePriceImpactThreshold } from '@/__swaps__/screens/Swap/constants';
 import { divWorklet, greaterThanOrEqualToWorklet, subWorklet } from '@/__swaps__/safe-math/SafeMath';
-import { supportedNativeCurrencies } from '@/references';
-import { inputKeys, inputValuesType } from '@/__swaps__/types/swap';
+import { inputValuesType } from '@/__swaps__/types/swap';
+import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
 
 export enum SwapWarningType {
   unknown = 'unknown',
@@ -124,20 +124,10 @@ export const useSwapWarning = ({
     ({ inputNativeValue, outputNativeValue, quote, isFetching }: CurrentProps) => {
       'worklet';
 
-      // ⚠️ TODO: Remove the Number(x).toString() conversions once the safe math functions support BigInt
-      const nativeAmountImpact = subWorklet(Number(inputNativeValue).toString(), Number(outputNativeValue).toString());
-      const impactInPercentage = Number(inputNativeValue) === 0 ? '0' : divWorklet(nativeAmountImpact, Number(inputNativeValue).toString());
+      const nativeAmountImpact = subWorklet(inputNativeValue, outputNativeValue);
+      const impactInPercentage = Number(inputNativeValue) === 0 ? '0' : divWorklet(nativeAmountImpact, inputNativeValue);
 
-      const nativeCurrency = supportedNativeCurrencies?.[currentCurrency];
-      const { alignment: currencyAlignment, decimals: rawDecimals, symbol: currencySymbol } = nativeCurrency;
-      const decimals = Math.min(rawDecimals, 6);
-
-      const nativeValue = Number(nativeAmountImpact).toLocaleString('en-US', {
-        useGrouping: true,
-        minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals,
-      });
-      const priceImpactDisplay = `${currencyAlignment === 'left' ? currencySymbol : ''}${nativeValue}${currencyAlignment === 'right' ? currencySymbol : ''}`;
+      const priceImpactDisplay = convertAmountToNativeDisplayWorklet(nativeAmountImpact, currentCurrency);
       const isSomeInputGreaterThanZero = Number(inputValues.value.inputAmount) > 0 || Number(inputValues.value.outputAmount) > 0;
 
       if (!isFetching && (quote as QuoteError)?.error) {

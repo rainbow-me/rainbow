@@ -30,13 +30,13 @@ import {
   divWorklet,
   equalWorklet,
   floorWorklet,
-  log10Worklet,
   lessThanOrEqualToWorklet,
   mulWorklet,
   powWorklet,
   roundWorklet,
   toFixedWorklet,
   greaterThanOrEqualToWorklet,
+  orderOfMagnitudeWorklet,
   isNumberStringWorklet,
 } from '../safe-math/SafeMath';
 
@@ -175,7 +175,7 @@ export const findNiceIncrement = (availableBalance: string | number | undefined)
   const exactIncrement = divWorklet(availableBalance, 100);
 
   // Calculate the order of magnitude of the exact increment
-  const orderOfMagnitude = floorWorklet(log10Worklet(exactIncrement));
+  const orderOfMagnitude = orderOfMagnitudeWorklet(exactIncrement);
 
   const baseIncrement = powWorklet(10, orderOfMagnitude);
 
@@ -235,7 +235,7 @@ export function trimTrailingZeros(value: string) {
 export function precisionBasedOffMagnitude(amount: number | string, isStablecoin = false): number {
   'worklet';
 
-  const magnitude = -Number(floorWorklet(log10Worklet(amount)));
+  const magnitude = -orderOfMagnitudeWorklet(amount);
   // don't let stablecoins go beneath 2nd order
   if (magnitude < -2 && isStablecoin) {
     return -STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS;
@@ -245,7 +245,7 @@ export function precisionBasedOffMagnitude(amount: number | string, isStablecoin
 
 export function valueBasedDecimalFormatter({
   amount,
-  usdTokenPrice,
+  nativePrice,
   assetBalanceDisplay,
   roundingMode,
   precisionAdjustment,
@@ -254,7 +254,7 @@ export function valueBasedDecimalFormatter({
   isMaxAmount = false,
 }: {
   amount: number | string;
-  usdTokenPrice: number;
+  nativePrice: number;
   assetBalanceDisplay?: string;
   roundingMode?: 'up' | 'down';
   precisionAdjustment?: number;
@@ -269,7 +269,7 @@ export function valueBasedDecimalFormatter({
     if (usdTokenPrice <= 0) {
       return fallbackDecimalPlaces;
     }
-    const unitsForOneCent = 0.01 / usdTokenPrice;
+    const unitsForOneCent = 0.01 / nativePrice;
     if (unitsForOneCent >= 1) {
       return isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0;
     }
@@ -279,7 +279,7 @@ export function valueBasedDecimalFormatter({
     );
   }
 
-  const decimalPlaces = calculateDecimalPlaces(usdTokenPrice);
+  const decimalPlaces = calculateDecimalPlaces(nativePrice);
 
   let roundedAmount;
   const factor = Math.pow(10, decimalPlaces) || 1; // Prevent division by 0
@@ -334,8 +334,8 @@ export function valueBasedDecimalFormatter({
 export function niceIncrementFormatter({
   incrementDecimalPlaces,
   inputAssetBalance,
+  inputAssetNativePrice,
   assetBalanceDisplay,
-  inputAssetUsdPrice,
   niceIncrement,
   percentageToSwap,
   sliderXPosition,
@@ -344,8 +344,8 @@ export function niceIncrementFormatter({
 }: {
   incrementDecimalPlaces: number;
   inputAssetBalance: number | string;
+  inputAssetNativePrice: number;
   assetBalanceDisplay: string;
-  inputAssetUsdPrice: number;
   niceIncrement: number | string;
   percentageToSwap: number;
   sliderXPosition: number;
@@ -358,8 +358,8 @@ export function niceIncrementFormatter({
   if (percentageToSwap === 0.25) {
     const amount = mulWorklet(inputAssetBalance, 0.25);
     return valueBasedDecimalFormatter({
+      nativePrice: inputAssetNativePrice,
       amount,
-      usdTokenPrice: inputAssetUsdPrice,
       assetBalanceDisplay,
       roundingMode: 'up',
       precisionAdjustment: precisionBasedOffMagnitude(amount, isStablecoin),
@@ -368,20 +368,21 @@ export function niceIncrementFormatter({
   }
   if (percentageToSwap === 0.5) {
     const amount = mulWorklet(inputAssetBalance, 0.5);
+    const precisionAdjustment = precisionBasedOffMagnitude(amount, isStablecoin);
     return valueBasedDecimalFormatter({
+      nativePrice: inputAssetNativePrice,
       amount,
-      usdTokenPrice: inputAssetUsdPrice,
       assetBalanceDisplay,
       roundingMode: 'up',
-      precisionAdjustment: precisionBasedOffMagnitude(amount, isStablecoin),
+      precisionAdjustment,
       isStablecoin,
     });
   }
   if (percentageToSwap === 0.75) {
     const amount = mulWorklet(inputAssetBalance, 0.75);
     return valueBasedDecimalFormatter({
+      nativePrice: inputAssetNativePrice,
       amount,
-      usdTokenPrice: inputAssetUsdPrice,
       assetBalanceDisplay,
       roundingMode: 'up',
       precisionAdjustment: precisionBasedOffMagnitude(amount, isStablecoin),
@@ -391,7 +392,8 @@ export function niceIncrementFormatter({
   if (percentageToSwap === 1) {
     return valueBasedDecimalFormatter({
       amount: inputAssetBalance,
-      usdTokenPrice: inputAssetUsdPrice,
+      nativePrice: inputAssetNativePrice,
+      roundingMode: 'up',
       assetBalanceDisplay,
       isStablecoin,
       isMaxAmount: true,

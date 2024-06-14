@@ -1,10 +1,11 @@
 import * as i18n from '@/languages';
-import React, { PropsWithChildren, useMemo } from 'react';
+import React, { PropsWithChildren, ReactNode, useMemo } from 'react';
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
 import { fadeConfig } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/__swaps__/types/chains';
+import { GasSpeed } from '@/__swaps__/types/gas';
 import { gweiToWei, weiToGwei } from '@/__swaps__/utils/ethereum';
 import {
   getSelectedSpeedSuggestion,
@@ -13,7 +14,7 @@ import {
   useIsChainEIP1559,
   useMeteorologySuggestion,
 } from '@/__swaps__/utils/meteorology';
-import { add, subtract } from '@/__swaps__/utils/numbers';
+import { add, formatNumber, subtract } from '@/__swaps__/utils/numbers';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Bleed, Box, Inline, Separator, Stack, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
@@ -23,13 +24,12 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { upperFirst } from 'lodash';
 import { gasUtils } from '@/utils';
-import { formatNumber } from '../hooks/formatNumber';
+import { upperFirst } from 'lodash';
 import { GasSettings, getCustomGasSettings, setCustomGasSettings, useCustomGasStore } from '../hooks/useCustomGas';
 import { setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
-import { EstimatedSwapGasFee } from './EstimatedSwapGasFee';
-import { GasSpeed } from '@/__swaps__/types/gas';
+import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
+import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 
 const { GAS_TRENDS } = gasUtils;
 
@@ -42,6 +42,22 @@ type AlertInfo = {
   type: typeof LOW_ALERT | typeof HIGH_ALERT;
   message: string;
 } | null;
+
+function UnmountWhenGasPanelIsClosed({ placeholder, children }: PropsWithChildren<{ placeholder: ReactNode }>) {
+  const { configProgress } = useSwapContext();
+  return (
+    <UnmountOnAnimatedReaction
+      isMountedWorklet={() => {
+        'worklet';
+        // only mounted when custom gas panel is open
+        return configProgress.value === NavigationSteps.SHOW_GAS;
+      }}
+      placeholder={placeholder}
+    >
+      {children}
+    </UnmountOnAnimatedReaction>
+  );
+}
 
 function PressableLabel({ onPress, children }: PropsWithChildren<{ onPress: VoidFunction }>) {
   return (
@@ -136,7 +152,7 @@ function GasSettingInput({
 
 const selectWeiToGwei = (s: string | undefined) => s && weiToGwei(s);
 
-function CurrentBaseFee() {
+function CurrentBaseFeeSlot({ baseFee, gasTrend = 'notrend' }: { baseFee?: string; gasTrend?: keyof typeof GAS_TRENDS }) {
   const { isDarkMode } = useColorMode();
   const { navigate } = useNavigation();
 
@@ -144,29 +160,23 @@ function CurrentBaseFee() {
   const labelSecondary = useForegroundColor('labelSecondary');
 
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-  const { data: baseFee } = useBaseFee({ chainId, select: selectWeiToGwei });
-  const { data: gasTrend = 'notrend' } = useGasTrend({ chainId });
-
   const trendType = 'currentBaseFee' + upperFirst(gasTrend);
-
-  // loading state?
 
   const isEIP1559 = useIsChainEIP1559(chainId);
   if (!isEIP1559) return null;
 
+  const onPressLabel = () => {
+    if (!baseFee || !gasTrend) return;
+    navigate(Routes.EXPLAIN_SHEET, {
+      currentBaseFee: baseFee,
+      currentGasTrend: gasTrend,
+      type: trendType,
+    });
+  };
+
   return (
     <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-      <PressableLabel
-        onPress={() =>
-          navigate(Routes.EXPLAIN_SHEET, {
-            currentBaseFee: baseFee,
-            currentGasTrend: gasTrend,
-            type: trendType,
-          })
-        }
-      >
-        {i18n.t(i18n.l.gas.current_base_fee)}
-      </PressableLabel>
+      <PressableLabel onPress={onPressLabel}>{i18n.t(i18n.l.gas.current_base_fee)}</PressableLabel>
       <Bleed top="16px">
         <Stack space="8px">
           <Text
@@ -193,6 +203,13 @@ function CurrentBaseFee() {
       </Bleed>
     </Inline>
   );
+}
+
+function CurrentBaseFee() {
+  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
+  const { data: baseFee } = useBaseFee({ chainId, select: selectWeiToGwei });
+  const { data: gasTrend } = useGasTrend({ chainId });
+  return <CurrentBaseFeeSlot baseFee={baseFee} gasTrend={gasTrend} />;
 }
 
 type GasPanelState = { gasPrice?: string; maxBaseFee?: string; maxPriorityFee?: string };
@@ -303,13 +320,19 @@ function MaxTransactionFee() {
       </Inline>
 
       <Inline horizontalSpace="6px">
-        <EstimatedSwapGasFee
-          gasSettings={gasSettings}
-          align="right"
-          color={isDarkMode ? 'labelSecondary' : 'label'}
-          size="15pt"
-          weight="heavy"
-        />
+        <UnmountWhenGasPanelIsClosed
+          placeholder={
+            <EstimatedSwapGasFeeSlot align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy" text="--" />
+          }
+        >
+          <EstimatedSwapGasFee
+            gasSettings={gasSettings}
+            align="right"
+            color={isDarkMode ? 'labelSecondary' : 'label'}
+            size="15pt"
+            weight="heavy"
+          />
+        </UnmountWhenGasPanelIsClosed>
       </Inline>
     </Inline>
   );
@@ -368,7 +391,9 @@ export function GasPanel() {
         </Text>
 
         <Box gap={24} width="full" alignItems="stretch">
-          <CurrentBaseFee />
+          <UnmountWhenGasPanelIsClosed placeholder={<CurrentBaseFeeSlot />}>
+            <CurrentBaseFee />
+          </UnmountWhenGasPanelIsClosed>
 
           <EditableGasSettings />
 
