@@ -647,7 +647,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return { label: errorLabel, disabled: true };
     }
 
-    return { icon: '􀕹', label: review + 'aa', disabled: false };
+    return { icon: '􀕹', label: review, disabled: false };
   });
 
   const confirmButtonIconStyle = useAnimatedStyle(() => {

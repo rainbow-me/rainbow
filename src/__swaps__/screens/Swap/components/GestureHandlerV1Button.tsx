@@ -91,7 +91,7 @@ export const GestureHandlerV1Button = React.forwardRef(function GestureHandlerV1
       )}
     >
       {/* @ts-expect-error Property 'children' does not exist on type */}
-      <TapGestureHandler enabled={!disabled} onGestureEvent={pressHandler} ref={ref}>
+      <TapGestureHandler onGestureEvent={pressHandler} ref={ref}>
         <Animated.View accessible accessibilityRole="button" pointerEvents={pointerEvents} style={style}>
           {children}
         </Animated.View>

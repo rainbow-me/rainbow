@@ -107,7 +107,7 @@ export const SwapActionButton = ({
 
   const buttonAnimatedProps = useAnimatedProps(() => {
     return {
-      disabled: disabled?.value,
+      disabled: disabled?.value ?? false,
       scaleTo: disabled?.value ? 1 : scaleTo || (hugContent ? undefined : 0.925),
     };
   });
@@ -117,6 +117,7 @@ export const SwapActionButton = ({
       animatedProps={buttonAnimatedProps}
       onPressStartWorklet={onPressWorklet}
       onPressJS={onPressJS}
+      pointerEvents="auto"
       style={[hugContent && feedActionButtonStyles.buttonWrapper, style]}
     >
       <Box
