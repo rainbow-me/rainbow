@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { PanGestureHandler } from 'react-native-gesture-handler';
-import Animated, { useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
 
 import { Box, Column, Columns, Separator, globalColors, useColorMode } from '@/design-system';
 import { safeAreaInsetValues } from '@/utils';
@@ -21,15 +21,8 @@ import { SwapActionButton } from './SwapActionButton';
 
 export function SwapBottomPanel() {
   const { isDarkMode } = useColorMode();
-  const {
-    confirmButtonIcon,
-    confirmButtonIconStyle,
-    confirmButtonLabel,
-    internalSelectedOutputAsset,
-    AnimatedSwapStyles,
-    SwapNavigation,
-    configProgress,
-  } = useSwapContext();
+  const { confirmButtonIconStyle, confirmButtonProps, internalSelectedOutputAsset, AnimatedSwapStyles, SwapNavigation, configProgress } =
+    useSwapContext();
 
   const { swipeToDismissGestureHandler, gestureY } = useBottomPanelGestureHandler();
 
@@ -49,6 +42,10 @@ export function SwapBottomPanel() {
       display: configProgress.value === NavigationSteps.SHOW_REVIEW || configProgress.value === NavigationSteps.SHOW_GAS ? 'none' : 'flex',
     };
   });
+
+  const icon = useDerivedValue(() => confirmButtonProps.value.icon);
+  const label = useDerivedValue(() => confirmButtonProps.value.label);
+  const disabled = useDerivedValue(() => confirmButtonProps.value.disabled);
 
   return (
     // @ts-expect-error Property 'children' does not exist on type
@@ -80,11 +77,12 @@ export function SwapBottomPanel() {
             </Box>
           </Column>
           <SwapActionButton
-            asset={internalSelectedOutputAsset}
-            icon={confirmButtonIcon}
-            iconStyle={confirmButtonIconStyle}
-            label={confirmButtonLabel}
             onPressWorklet={SwapNavigation.handleSwapAction}
+            asset={internalSelectedOutputAsset}
+            icon={icon}
+            iconStyle={confirmButtonIconStyle}
+            label={label}
+            disabled={disabled}
             scaleTo={0.9}
           />
         </Columns>

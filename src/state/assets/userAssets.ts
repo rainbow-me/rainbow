@@ -1,10 +1,10 @@
-import { Address } from 'viem';
-import { RainbowError, logger } from '@/logger';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import store from '@/redux/store';
-import { SUPPORTED_CHAIN_IDS } from '@/references';
 import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
+import { RainbowError, logger } from '@/logger';
+import { SUPPORTED_CHAIN_IDS } from '@/references';
+import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { Address } from 'viem';
+import store from '@/redux/store';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 const SMALL_BALANCE_THRESHOLD = store.getState().settings.nativeCurrency === 'ETH' ? 0.000005 : 0.02;

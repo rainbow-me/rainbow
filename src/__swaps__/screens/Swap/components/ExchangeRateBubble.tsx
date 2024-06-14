@@ -11,10 +11,13 @@ import { AddressZero } from '@ethersproject/constants';
 import { ETH_ADDRESS } from '@/references';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { GestureHandlerV1Button } from './GestureHandlerV1Button';
+import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
+import { useAccountSettings } from '@/hooks';
 
 export const ExchangeRateBubble = () => {
   const { isDarkMode } = useColorMode();
   const { AnimatedSwapStyles, internalSelectedInputAsset, internalSelectedOutputAsset, isFetching } = useSwapContext();
+  const { nativeCurrency: currentCurrency } = useAccountSettings();
 
   const rotatingIndex = useSharedValue(0);
   const fromAssetText = useSharedValue('');
@@ -84,10 +87,7 @@ export const ExchangeRateBubble = () => {
 
       if (isSameAssetOnDifferentChains) {
         fromAssetText.value = `1 ${inputAssetSymbol}`;
-        toAssetText.value = `${inputAssetPrice.toLocaleString('en-US', {
-          currency: 'USD',
-          style: 'currency',
-        })}`;
+        toAssetText.value = convertAmountToNativeDisplayWorklet(inputAssetPrice, currentCurrency);
         return;
       }
 
@@ -95,7 +95,7 @@ export const ExchangeRateBubble = () => {
         case 0: {
           const formattedRate = valueBasedDecimalFormatter({
             amount: inputAssetPrice / outputAssetPrice,
-            usdTokenPrice: outputAssetPrice,
+            nativePrice: outputAssetPrice,
             roundingMode: 'up',
             precisionAdjustment: -1,
             isStablecoin: isOutputAssetStablecoin,
@@ -108,7 +108,7 @@ export const ExchangeRateBubble = () => {
         case 1: {
           const formattedRate = valueBasedDecimalFormatter({
             amount: outputAssetPrice / inputAssetPrice,
-            usdTokenPrice: inputAssetPrice,
+            nativePrice: inputAssetPrice,
             roundingMode: 'up',
             precisionAdjustment: -1,
             isStablecoin: isInputAssetStablecoin,
@@ -120,18 +120,12 @@ export const ExchangeRateBubble = () => {
         }
         case 2: {
           fromAssetText.value = `1 ${inputAssetSymbol}`;
-          toAssetText.value = `${inputAssetPrice.toLocaleString('en-US', {
-            currency: 'USD',
-            style: 'currency',
-          })}`;
+          toAssetText.value = convertAmountToNativeDisplayWorklet(inputAssetPrice, currentCurrency);
           break;
         }
         case 3: {
           fromAssetText.value = `1 ${outputAssetSymbol}`;
-          toAssetText.value = `${outputAssetPrice.toLocaleString('en-US', {
-            currency: 'USD',
-            style: 'currency',
-          })}`;
+          toAssetText.value = convertAmountToNativeDisplayWorklet(outputAssetPrice, currentCurrency);
           break;
         }
       }
