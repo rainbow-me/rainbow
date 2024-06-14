@@ -1,23 +1,23 @@
 import React from 'react';
-import Animated, { useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { StyleSheet } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { PanGestureHandler } from 'react-native-gesture-handler';
+import Animated, { useAnimatedStyle, withSpring } from 'react-native-reanimated';
 
 import { Box, Column, Columns, Separator, globalColors, useColorMode } from '@/design-system';
 import { safeAreaInsetValues } from '@/utils';
 
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { IS_ANDROID } from '@/env';
-import { useSwapContext, NavigationSteps } from '@/__swaps__/screens/Swap/providers/swap-provider';
 
 import { opacity } from '@/__swaps__/utils/swaps';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useBottomPanelGestureHandler } from '../hooks/useBottomPanelGestureHandler';
 import { GasButton } from './GasButton';
 import { GasPanel } from './GasPanel';
 import { ReviewPanel } from './ReviewPanel';
 import { SwapActionButton } from './SwapActionButton';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 
 export function SwapBottomPanel() {
   const { isDarkMode } = useColorMode();
