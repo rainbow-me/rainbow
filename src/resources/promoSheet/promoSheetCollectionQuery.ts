@@ -59,7 +59,7 @@ export function usePromoSheetCollectionQuery(
 ) {
   return useQuery(promoSheetCollectionQueryKey({ order }), promoSheetCollectionQueryFunction, {
     staleTime: defaultStaleTime,
-    refetchInterval: 60_000,
+    refetchInterval: 60_000 * 5,
     ...config,
   });
 }
