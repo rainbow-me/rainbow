@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import useExperimentalFlag, { OP_REWARDS, PROFILES, HARDWARE_WALLETS, MINTS, NFT_OFFERS } from '@rainbow-me/config/experimentalHooks';
 import { isTestnetNetwork } from '@/handlers/web3';
-import { Inline, Inset, Stack } from '@/design-system';
+import { Inline, Inset, Stack, Box } from '@/design-system';
 import { useAccountSettings, useWallets } from '@/hooks';
 import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
 import { ENSSearchCard } from '@/components/cards/ENSSearchCard';
@@ -17,14 +17,10 @@ import { MintsCard } from '@/components/cards/MintsCard/MintsCard';
 import { FeaturedMintCard } from '@/components/cards/FeaturedMintCard';
 import { IS_TEST } from '@/env';
 import { RemoteCardCarousel } from '@/components/cards/remote-cards';
-import { useRoute } from '@react-navigation/native';
-import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 
 export default function DiscoverHome() {
   const { profiles_enabled, mints_enabled, op_rewards_enabled } = useRemoteConfig();
   const { network } = useAccountSettings();
-  const getCardIdsForScreen = remoteCardsStore(state => state.getCardIdsForScreen);
-  const { name } = useRoute();
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
   const profilesEnabledRemoteFlag = profiles_enabled;
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
@@ -39,17 +35,15 @@ export default function DiscoverHome() {
 
   const hasHardwareWallets = Object.keys(wallets || {}).filter(key => wallets[key].type === walletTypes.bluetooth).length > 0;
 
-  const cardIds = useMemo(() => getCardIdsForScreen(name), [name, getCardIdsForScreen]);
-
   return (
     <Inset top="20px" bottom={{ custom: 200 }} horizontal="20px">
       {!testNetwork ? (
-        <Stack space="20px">
+        <Box gap={20}>
           <Inline wrap={false} space="20px">
             <GasCard />
             {isProfilesEnabled && <ENSSearchCard />}
           </Inline>
-          {!!cardIds.length && <RemoteCardCarousel />}
+          <RemoteCardCarousel />
           {mintsEnabled && (
             <Stack space="20px">
               <FeaturedMintCard />
@@ -68,7 +62,7 @@ export default function DiscoverHome() {
             <LearnCard cardDetails={backupsCard} type="square" />
             <LearnCard cardDetails={avoidScamsCard} type="square" />
           </Inline>
-        </Stack>
+        </Box>
       ) : (
         <Stack space="20px">
           <Inline space="20px">

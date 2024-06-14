@@ -32,8 +32,7 @@ export const RemoteCardCarousel = () => {
   const { width } = useDimensions();
 
   const remoteCardsEnabled = getExperimetalFlag(REMOTE_CARDS) || config.remote_cards_enabled;
-  const getCardIdsForScreen = remoteCardsStore(state => state.getCardIdsForScreen);
-  const cardIds = getCardIdsForScreen(name as keyof typeof Routes);
+  const cardIds = remoteCardsStore(state => state.getCardIdsForScreen(name as keyof typeof Routes));
 
   const gutterSize = getGutterSizeForCardAmount(cardIds.length);
 
