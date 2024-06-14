@@ -12,13 +12,37 @@ import { startCase } from 'lodash';
 import { setClipboard } from '@/hooks/useClipboard';
 import { RainbowNetworks } from '@/networks';
 import * as i18n from '@/languages';
-import { ETH_ADDRESS } from '@/references';
-import { ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { ETH_ADDRESS, BASE_DEGEN_ADDRESS, DEGEN_CHAIN_DEGEN_ADDRESS } from '@/references';
+import { AddressOrEth, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { SearchAsset } from '@/__swaps__/types/search';
 import { ChainId } from '@/__swaps__/types/chains';
 
 export const COIN_ROW_WITH_PADDING_HEIGHT = 56;
+
+function determineFavoriteAddressAndChain(address: AddressOrEth, mainnetAddress: AddressOrEth | undefined, chainId: ChainId | undefined) {
+  if (address === BASE_DEGEN_ADDRESS && chainId === ChainId.base) {
+    return {
+      addressToFetch: DEGEN_CHAIN_DEGEN_ADDRESS,
+      chainToFetchOn: ChainId.degen,
+    };
+  }
+
+  // if no mainnet address, default to fetch the favorite for the address we have and chain we have
+  if (!mainnetAddress) {
+    return {
+      addressToFetch: address,
+      chainToFetchOn: chainId ?? ChainId.mainnet,
+    };
+  }
+
+  const isL2Ethereum = mainnetAddress.toLowerCase() === ETH_ADDRESS;
+
+  return {
+    addressToFetch: isL2Ethereum ? ETH_ADDRESS : mainnetAddress,
+    chainToFetchOn: ChainId.mainnet,
+  };
+}
 
 interface InputCoinRowProps {
   isFavorite?: boolean;
@@ -69,10 +93,10 @@ export const CoinRow = memo(function CoinRow({ isFavorite, onPress, output, uniq
   }, [isFavorite]);
 
   const handleToggleFavorite = useCallback(() => {
-    // NOTE: It's important to always fetch ETH favorite on mainnet
-    if (address) {
-      return toggleFavorite(address, mainnetAddress === ETH_ADDRESS ? ChainId.mainnet : chainId);
-    }
+    if (!address) return;
+
+    const { addressToFetch, chainToFetchOn } = determineFavoriteAddressAndChain(address, mainnetAddress, chainId);
+    toggleFavorite(addressToFetch, chainToFetchOn);
   }, [address, mainnetAddress, chainId]);
 
   if (!address || !chainId) return null;
