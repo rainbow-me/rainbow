@@ -20,18 +20,19 @@ import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { AnimatedChainImage } from '@/__swaps__/screens/Swap/components/AnimatedChainImage';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { useNativeAssetForChain } from '@/__swaps__/screens/Swap/hooks/useNativeAssetForChain';
+import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
 import { convertRawAmountToBalance, convertRawAmountToNativeDisplay, handleSignificantDecimals, multiply } from '@/__swaps__/utils/numbers';
-import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
-import { useSelectedGas, useSelectedGasSpeed } from '../hooks/useSelectedGas';
-import { EstimatedSwapGasFee } from './EstimatedSwapGasFee';
 import { ButtonPressAnimation } from '@/components/animations';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { getNetworkObj } from '@/networks';
+import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import { ethereumUtils } from '@/utils';
 import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
-import { getNetworkObj } from '@/networks';
-import { chainNameFromChainId } from '@/__swaps__/utils/chains';
+import { useSelectedGas, useSelectedGasSpeed } from '../hooks/useSelectedGas';
+import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
+import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 
 const UNKNOWN_LABEL = i18n.t(i18n.l.swap.unknown);
 const REVIEW_LABEL = i18n.t(i18n.l.expanded_state.swap_details.review);
@@ -375,10 +376,24 @@ export function ReviewPanel() {
                   <View style={sx.gasContainer}>
                     <AnimatedChainImage showMainnetBadge asset={internalSelectedInputAsset} size={16} />
                   </View>
-                  <Inline horizontalSpace="4px">
-                    <EstimatedGasFee />
-                    <EstimatedArrivalTime />
-                  </Inline>
+                  <UnmountOnAnimatedReaction
+                    isMountedWorklet={() => {
+                      'worklet';
+                      // only mounted when review panel is visible
+                      return configProgress.value === NavigationSteps.SHOW_REVIEW;
+                    }}
+                    placeholder={
+                      <Inline horizontalSpace="4px">
+                        <EstimatedSwapGasFeeSlot text="--" align="left" color="label" size="15pt" weight="heavy" />
+                        {null}
+                      </Inline>
+                    }
+                  >
+                    <Inline horizontalSpace="4px">
+                      <EstimatedGasFee />
+                      <EstimatedArrivalTime />
+                    </Inline>
+                  </UnmountOnAnimatedReaction>
                 </Inline>
 
                 <Inline wrap={false} alignHorizontal="left" alignVertical="bottom" horizontalSpace="4px">

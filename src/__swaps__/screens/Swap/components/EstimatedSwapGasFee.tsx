@@ -2,28 +2,30 @@ import { AnimatedText, TextProps, useForegroundColor } from '@/design-system';
 import React, { memo } from 'react';
 import { SharedValue, useAnimatedStyle, useDerivedValue, withRepeat, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 
+import { opacity } from '@/__swaps__/utils/swaps';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { useDelayedValue } from '@/hooks/reanimated/useDelayedValue';
 import { pulsingConfig, sliderConfig } from '../constants';
 import { GasSettings } from '../hooks/useCustomGas';
 import { useSwapEstimatedGasFee } from '../hooks/useEstimatedGasFee';
 import { useSwapContext } from '../providers/swap-provider';
-import { opacity } from '@/__swaps__/utils/swaps';
-import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { useDelayedValue } from '@/hooks/reanimated/useDelayedValue';
 
-export const EstimatedSwapGasFee = memo(function EstimatedSwapGasFee({
-  gasSettings,
-  align,
+type EstimatedSwapGasFeeProps = { gasSettings: GasSettings | undefined } & Partial<
+  Pick<TextProps, 'align' | 'color' | 'size' | 'weight' | 'tabularNumbers'>
+>;
+export function EstimatedSwapGasFeeSlot({
   color = 'labelTertiary',
   size = '15pt',
   weight = 'bold',
-  tabularNumbers = true,
-}: { gasSettings: GasSettings | undefined } & Partial<Pick<TextProps, 'align' | 'color' | 'size' | 'weight' | 'tabularNumbers'>>) {
+  ...props
+}: { text: string } & Omit<EstimatedSwapGasFeeProps, 'gasSettings'>) {
+  const label = useDerivedValue(() => props.text);
+  return <GasFeeText color={color} size={size} weight={weight} {...props} label={label} />;
+}
+export function EstimatedSwapGasFee({ gasSettings, ...props }: EstimatedSwapGasFeeProps) {
   const { data: estimatedGasFee = '--' } = useSwapEstimatedGasFee(gasSettings);
-
-  const label = useDerivedValue(() => estimatedGasFee);
-
-  return <GasFeeText align={align} color={color} size={size} weight={weight} tabularNumbers={tabularNumbers} label={label} />;
-});
+  return <EstimatedSwapGasFeeSlot {...props} text={estimatedGasFee} />;
+}
 
 const GasFeeText = memo(function GasFeeText({
   align,
