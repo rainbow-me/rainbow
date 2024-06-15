@@ -1,10 +1,10 @@
-import { ButtonPressAnimation } from '@/components/animations';
-import { IS_IOS } from '@/env';
 import ConditionalWrap from 'conditional-wrap';
 import React from 'react';
 import { StyleProp, ViewProps, ViewStyle } from 'react-native';
 import { TapGestureHandler, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import Animated, { AnimatedStyle, runOnJS, useAnimatedGestureHandler } from 'react-native-reanimated';
+import { ButtonPressAnimation } from '@/components/animations';
+import { IS_IOS } from '@/env';
 
 export type GestureHandlerButtonProps = {
   buttonPressWrapperStyleIOS?: StyleProp<ViewStyle>;
