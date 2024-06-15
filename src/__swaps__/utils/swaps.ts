@@ -319,16 +319,13 @@ export function valueBasedDecimalFormatter({
     return MAXIMUM_SIGNIFICANT_DECIMALS;
   };
 
-  // Format the number to add separators and trim trailing zeros
-  const numberFormatter = new Intl.NumberFormat('en-US', {
+  const formattedAmount = `${Number(roundedAmount).toLocaleString('en-US', {
+    useGrouping: !stripSeparators,
     minimumFractionDigits: 0,
     maximumFractionDigits: maximumFractionDigits(),
-    useGrouping: true,
-  });
+  })}`;
 
-  if (stripSeparators) return stripCommas(numberFormatter.format(Number(roundedAmount)));
-
-  return numberFormatter.format(Number(roundedAmount));
+  return formattedAmount;
 }
 
 export function niceIncrementFormatter({
