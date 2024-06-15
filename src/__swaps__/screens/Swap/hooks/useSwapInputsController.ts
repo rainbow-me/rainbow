@@ -131,7 +131,7 @@ export function useSwapInputsController({
       return '0';
     }
 
-    if (inputMethod.value === 'inputAmount' || typeof inputValues.value.inputAmount === 'string') {
+    if (inputMethod.value === 'inputAmount') {
       return addCommasToNumber(inputValues.value.inputAmount, '0');
     }
 
@@ -184,7 +184,7 @@ export function useSwapInputsController({
       return '0';
     }
 
-    if (inputMethod.value === 'outputAmount' || typeof inputValues.value.outputAmount === 'string') {
+    if (inputMethod.value === 'outputAmount') {
       return addCommasToNumber(inputValues.value.outputAmount, '0');
     }
 
@@ -652,7 +652,7 @@ export function useSwapInputsController({
   useAnimatedReaction(
     () => ({ focusedInput: focusedInput.value }),
     (current, previous) => {
-      if (previous && current !== previous && typeof inputValues.value[previous.focusedInput] === 'string') {
+      if (previous && current !== previous) {
         const typedValue = inputValues.value[previous.focusedInput].toString();
         if (equalWorklet(typedValue, 0)) {
           inputValues.modify(values => {
