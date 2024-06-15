@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
-import { SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
+import { MAXIMUM_SIGNIFICANT_DECIMALS, SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
 import { RequestNewQuoteParams, inputKeys, inputMethods, inputValuesType } from '@/__swaps__/types/swap';
 import {
   addCommasToNumber,
@@ -33,30 +33,39 @@ import { useAccountSettings } from '@/hooks';
 import { analyticsV2 } from '@/analytics';
 import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet } from '@/__swaps__/safe-math/SafeMath';
 
-function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetWithColors | null) {
-  const initialBalance = Number(initialSelectedInputAsset?.maxSwappableAmount) || 0;
-  const assetBalanceDisplay = initialSelectedInputAsset?.balance.display ?? '';
-  const initialNiceIncrement = findNiceIncrement(initialBalance);
-  const initialDecimalPlaces = countDecimalPlaces(initialNiceIncrement);
-  const isStablecoin = initialSelectedInputAsset?.type === 'stablecoin';
+function getInputValuesForSliderPositionWorklet({
+  selectedInputAsset,
+  percentageToSwap,
+  sliderXPosition,
+}: {
+  selectedInputAsset: ExtendedAnimatedAssetWithColors | null;
+  percentageToSwap: number;
+  sliderXPosition: number;
+}) {
+  'worklet';
+  const inputAssetMaxSwappableBalance = selectedInputAsset?.maxSwappableAmount || 0;
+  const assetBalanceDisplay = selectedInputAsset?.balance.display ?? '';
+  const niceIncrement = findNiceIncrement(inputAssetMaxSwappableBalance);
+  const incrementDecimalPlaces = countDecimalPlaces(niceIncrement);
+  const isStablecoin = selectedInputAsset?.type === 'stablecoin';
 
-  const initialInputAmount = niceIncrementFormatter({
-    incrementDecimalPlaces: initialDecimalPlaces,
-    inputAssetBalance: initialBalance,
-    inputAssetNativePrice: initialSelectedInputAsset?.price?.value ?? 0,
+  const inputAmount = niceIncrementFormatter({
+    incrementDecimalPlaces,
+    inputAssetBalance: inputAssetMaxSwappableBalance,
+    inputAssetNativePrice: selectedInputAsset?.price?.value ?? 0,
     assetBalanceDisplay,
-    niceIncrement: initialNiceIncrement,
-    percentageToSwap: 0.5,
-    sliderXPosition: SLIDER_WIDTH / 2,
+    niceIncrement,
+    percentageToSwap,
+    sliderXPosition,
     stripSeparators: true,
     isStablecoin,
   });
 
-  const initialInputNativeValue = mulWorklet(initialInputAmount, initialSelectedInputAsset?.price?.value ?? 0);
+  const inputNativeValue = mulWorklet(inputAmount, selectedInputAsset?.price?.value ?? 0);
 
   return {
-    initialInputAmount,
-    initialInputNativeValue,
+    inputAmount,
+    inputNativeValue,
   };
 }
 
@@ -85,7 +94,16 @@ export function useSwapInputsController({
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
   sliderXPosition: SharedValue<number>;
 }) {
-  const { initialInputAmount, initialInputNativeValue } = getInitialInputValues(initialSelectedInputAsset);
+  const percentageToSwap = useDerivedValue(() => {
+    return Math.round(clamp((sliderXPosition.value - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1) * 100) / 100;
+  });
+
+  const { inputAmount: initialInputAmount, inputNativeValue: initialInputNativeValue } = getInputValuesForSliderPositionWorklet({
+    selectedInputAsset: initialSelectedInputAsset,
+    percentageToSwap: percentageToSwap.value,
+    sliderXPosition: sliderXPosition.value,
+  });
+
   const { nativeCurrency: currentCurrency } = useAccountSettings();
 
   const inputValues = useSharedValue<inputValuesType>({
@@ -95,16 +113,6 @@ export function useSwapInputsController({
     outputNativeValue: 0,
   });
   const inputMethod = useSharedValue<inputMethods>('slider');
-
-  const percentageToSwap = useDerivedValue(() => {
-    return Math.round(clamp((sliderXPosition.value - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1) * 100) / 100;
-  });
-
-  const niceIncrement = useDerivedValue(() => {
-    if (!internalSelectedInputAsset.value?.maxSwappableAmount) return 0.1;
-    return findNiceIncrement(internalSelectedInputAsset.value?.maxSwappableAmount);
-  });
-  const incrementDecimalPlaces = useDerivedValue(() => countDecimalPlaces(niceIncrement.value));
 
   const inputNativePrice = useDerivedValue(() => {
     return internalSelectedInputAsset.value?.nativePrice || internalSelectedInputAsset.value?.price?.value || 0;
@@ -138,19 +146,11 @@ export function useSwapInputsController({
       });
     }
 
-    const balance = internalSelectedInputAsset.value?.maxSwappableAmount || 0;
-    const isStablecoin = internalSelectedInputAsset.value?.type === 'stablecoin' ?? false;
-
-    return niceIncrementFormatter({
-      incrementDecimalPlaces: incrementDecimalPlaces.value,
-      inputAssetBalance: balance,
-      inputAssetNativePrice: inputNativePrice.value,
-      assetBalanceDisplay,
-      niceIncrement: niceIncrement.value,
-      percentageToSwap: percentageToSwap.value,
-      sliderXPosition: sliderXPosition.value,
-      isStablecoin,
-    });
+    return `${Number(inputValues.value.inputAmount).toLocaleString('en-US', {
+      useGrouping: true,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: MAXIMUM_SIGNIFICANT_DECIMALS,
+    })}`;
   });
 
   const formattedInputNativeValue = useDerivedValue(() => {
@@ -719,20 +719,12 @@ export function useSwapInputsController({
               return;
             }
 
-            const assetBalanceDisplay = internalSelectedInputAsset.value.balance.display;
-
-            const inputAmount = niceIncrementFormatter({
-              incrementDecimalPlaces: incrementDecimalPlaces.value,
-              inputAssetBalance: balance,
-              inputAssetNativePrice: inputNativePrice.value,
-              assetBalanceDisplay,
-              niceIncrement: niceIncrement.value,
+            const { inputAmount, inputNativeValue } = getInputValuesForSliderPositionWorklet({
+              selectedInputAsset: internalSelectedInputAsset.value,
               percentageToSwap: percentageToSwap.value,
               sliderXPosition: sliderXPosition.value,
-              stripSeparators: true,
-              isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
             });
-            const inputNativeValue = mulWorklet(inputAmount, inputNativePrice.value);
+
             inputValues.modify(values => {
               return {
                 ...values,
@@ -885,21 +877,12 @@ export function useSwapInputsController({
             sliderXPosition.value = withSpring(SLIDER_WIDTH / 2, snappySpringConfig);
           }
 
-          const assetBalanceDisplay = internalSelectedInputAsset.value?.balance.display ?? '';
-
-          const inputAmount = niceIncrementFormatter({
-            incrementDecimalPlaces: incrementDecimalPlaces.value,
-            inputAssetBalance: balance,
-            inputAssetNativePrice: inputNativePrice.value,
-            assetBalanceDisplay,
-            niceIncrement: niceIncrement.value,
+          const { inputAmount, inputNativeValue } = getInputValuesForSliderPositionWorklet({
+            selectedInputAsset: internalSelectedInputAsset.value,
             percentageToSwap: didInputAssetChange ? 0.5 : percentageToSwap.value,
             sliderXPosition: didInputAssetChange ? SLIDER_WIDTH / 2 : sliderXPosition.value,
-            stripSeparators: true,
-            isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
           });
 
-          const inputNativeValue = mulWorklet(inputAmount, inputNativePrice.value);
           inputValues.modify(values => {
             return {
               ...values,
@@ -953,10 +936,8 @@ export function useSwapInputsController({
     formattedInputNativeValue,
     formattedOutputAmount,
     formattedOutputNativeValue,
-    incrementDecimalPlaces,
     inputMethod,
     inputValues,
-    niceIncrement,
     onChangedPercentage,
     percentageToSwap,
     quoteFetchingInterval,
