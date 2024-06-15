@@ -1,8 +1,8 @@
-import { ParsedAddressAsset } from '@/entities';
-import { parseAssetsNative } from '@/parsers';
+import { RainbowAddressAssets } from './types';
 import isEmpty from 'lodash/isEmpty';
 import isNil from 'lodash/isNil';
-import { RainbowAddressAssets } from './types';
+import { ParsedAddressAsset } from '@/entities';
+import { parseAssetsNative } from '@/parsers';
 
 const EMPTY_ARRAY: any = [];
 
