@@ -38,13 +38,6 @@ const { GAS_TRENDS } = gasUtils;
 
 const MINER_TIP_TYPE = 'minerTip';
 const MAX_BASE_FEE_TYPE = 'maxBaseFee';
-const HIGH_ALERT = 'HIGH_ALERT';
-const LOW_ALERT = 'LOW_ALERT';
-
-type AlertInfo = {
-  type: typeof LOW_ALERT | typeof HIGH_ALERT;
-  message: string;
-} | null;
 
 function UnmountWhenGasPanelIsClosed({ placeholder, children }: PropsWithChildren<{ placeholder: ReactNode }>) {
   const { configProgress } = useSwapContext();
