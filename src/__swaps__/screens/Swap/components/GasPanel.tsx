@@ -9,6 +9,7 @@ import { GasSpeed } from '@/__swaps__/types/gas';
 import { gweiToWei, weiToGwei } from '@/__swaps__/utils/ethereum';
 import {
   GasSuggestion,
+  getCachedCurrentBaseFee,
   getSelectedSpeedSuggestion,
   useBaseFee,
   useGasTrend,
@@ -16,7 +17,7 @@ import {
   useMeteorologySuggestion,
   useMeteorologySuggestions,
 } from '@/__swaps__/utils/meteorology';
-import { add, formatNumber, greaterThan, subtract } from '@/__swaps__/utils/numbers';
+import { add, formatNumber, greaterThan, multiply, subtract } from '@/__swaps__/utils/numbers';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Bleed, Box, Inline, Separator, Stack, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
@@ -115,7 +116,17 @@ function NumericInputButton({ children, onPress }: PropsWithChildren<{ onPress: 
   );
 }
 
-const INPUT_STEP = gweiToWei('0.1');
+const minStep = gweiToWei('0.0001');
+const getStep = () => {
+  const chainId = useSwapsStore.getState().inputAsset?.chainId;
+  if (!chainId) return minStep;
+
+  const baseFee = getCachedCurrentBaseFee(chainId);
+  if (!baseFee) return minStep;
+
+  const step = 10 ** (baseFee.length - 2);
+  return step;
+};
 function GasSettingInput({
   onChange,
   min = '0',
@@ -132,18 +143,26 @@ function GasSettingInput({
       <Inline wrap={false} horizontalSpace="8px" alignVertical="center">
         <NumericInputButton
           onPress={() => {
-            const newValue = subtract(value, INPUT_STEP);
-            onChange(lessThan(newValue, min) ? min : newValue);
+            const step = getStep();
+            const newValue = subtract(value, step);
+            onChange(lessThan(newValue, min) || lessThan(newValue, minStep) ? min : newValue);
           }}
         >
           􀅽
         </NumericInputButton>
 
-        <Text size="15pt" weight="bold" color="labelSecondary">
+        <Text size="15pt" weight="bold" color="labelSecondary" tabularNumbers>
           {formatNumber(weiToGwei(value))}
         </Text>
 
-        <NumericInputButton onPress={() => onChange(add(value, INPUT_STEP))}>􀅼</NumericInputButton>
+        <NumericInputButton
+          onPress={() => {
+            const step = getStep();
+            onChange(add(value, step));
+          }}
+        >
+          􀅼
+        </NumericInputButton>
       </Inline>
 
       <Text align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="heavy">
@@ -161,13 +180,6 @@ function CurrentBaseFeeSlot({ baseFee, gasTrend = 'notrend' }: { baseFee?: strin
 
   const label = useForegroundColor('label');
   const labelSecondary = useForegroundColor('labelSecondary');
-
-  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-  const { data: baseFee } = useBaseFee({ chainId, select: selectBaseFee });
-  const { data: gasTrend = 'notrend' } = useGasTrend({ chainId });
-
-  const isEIP1559 = useIsChainEIP1559(chainId);
-  if (!isEIP1559) return null;
 
   const onPressLabel = () => {
     if (!baseFee || !gasTrend) return;
@@ -211,7 +223,7 @@ function CurrentBaseFeeSlot({ baseFee, gasTrend = 'notrend' }: { baseFee?: strin
 
 function CurrentBaseFee() {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-  const { data: baseFee } = useBaseFee({ chainId, select: selectWeiToGwei });
+  const { data: baseFee } = useBaseFee({ chainId, select: selectBaseFee });
   const { data: gasTrend } = useGasTrend({ chainId });
   return <CurrentBaseFeeSlot baseFee={baseFee} gasTrend={gasTrend} />;
 }
@@ -257,18 +269,40 @@ function useMetereologySuggested<Option extends 'maxBaseFee' | 'maxPriorityFee' 
   return suggestion;
 }
 
+const likely_to_fail = i18n.t(i18n.l.gas.likely_to_fail);
+const higher_than_suggested = i18n.t(i18n.l.gas.higher_than_suggested);
+const lower_than_suggested = i18n.t(i18n.l.gas.lower_than_suggested);
+
 const useMaxBaseFeeWarning = (maxBaseFee: string | undefined) => {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
   const { data: suggestions } = useMeteorologySuggestions({ chainId, enabled: !!maxBaseFee });
+  const { data: currentBaseFee = '0' } = useBaseFee({ chainId });
 
   const urgentMaxBaseFee = suggestions?.urgent.maxBaseFee;
   const normalMaxBaseFee = suggestions?.normal.maxBaseFee;
 
   if (!maxBaseFee) return null;
-  if (urgentMaxBaseFee && greaterThan(maxBaseFee, urgentMaxBaseFee)) return 'too_high';
-  if (normalMaxBaseFee && lessThan(maxBaseFee, normalMaxBaseFee)) return 'too_low';
+  // likely to get stuck if less than 10% of current base fee
+  if (lessThan(maxBaseFee, multiply(currentBaseFee, 0.1))) return likely_to_fail;
+  // suggestions
+  if (urgentMaxBaseFee && greaterThan(maxBaseFee, urgentMaxBaseFee)) return higher_than_suggested;
+  if (normalMaxBaseFee && lessThan(maxBaseFee, normalMaxBaseFee)) return lower_than_suggested;
   return null;
 };
+
+function Warning({ children }: { children: string }) {
+  const [prefix, description] = children.split('·');
+
+  return (
+    <Text color="orange" size="13pt" weight="medium">
+      {prefix.trim()}
+      {' · '}
+      <Text color="labelQuaternary" size="13pt" weight="medium">
+        {description.trim()}
+      </Text>
+    </Text>
+  );
+}
 
 function EditMaxBaseFee() {
   const { navigate } = useNavigation();
@@ -284,11 +318,7 @@ function EditMaxBaseFee() {
         <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MAX_BASE_FEE_TYPE })}>
           {i18n.t(i18n.l.gas.max_base_fee)}
         </PressableLabel>
-        {warning && (
-          <Text color="labelQuaternary" size="12pt" weight="medium">
-            {warning}
-          </Text>
-        )}
+        {warning && <Warning>{warning}</Warning>}
       </Box>
       <GasSettingInput value={maxBaseFee || placeholder} onChange={maxBaseFee => setGasPanelState({ maxBaseFee })} />
     </Box>
@@ -429,7 +459,9 @@ export function GasPanel() {
             <CurrentBaseFee />
           </UnmountWhenGasPanelIsClosed>
 
-          <EditableGasSettings />
+          <Box gap={24} height="64px">
+            <EditableGasSettings />
+          </Box>
 
           <Separator color="separatorSecondary" />
 
