@@ -7,8 +7,6 @@ import {
   addCommasToNumber,
   buildQuoteParams,
   clamp,
-  countDecimalPlaces,
-  findNiceIncrement,
   niceIncrementFormatter,
   trimTrailingZeros,
   valueBasedDecimalFormatter,
@@ -45,16 +43,12 @@ function getInputValuesForSliderPositionWorklet({
   'worklet';
   const inputAssetMaxSwappableBalance = selectedInputAsset?.maxSwappableAmount || 0;
   const assetBalanceDisplay = selectedInputAsset?.balance.display ?? '';
-  const niceIncrement = findNiceIncrement(inputAssetMaxSwappableBalance);
-  const incrementDecimalPlaces = countDecimalPlaces(niceIncrement);
   const isStablecoin = selectedInputAsset?.type === 'stablecoin';
 
   const inputAmount = niceIncrementFormatter({
-    incrementDecimalPlaces,
     inputAssetBalance: inputAssetMaxSwappableBalance,
     inputAssetNativePrice: selectedInputAsset?.price?.value ?? 0,
     assetBalanceDisplay,
-    niceIncrement,
     percentageToSwap,
     sliderXPosition,
     stripSeparators: true,

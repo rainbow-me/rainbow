@@ -332,21 +332,17 @@ export function valueBasedDecimalFormatter({
 }
 
 export function niceIncrementFormatter({
-  incrementDecimalPlaces,
   inputAssetBalance,
   inputAssetNativePrice,
   assetBalanceDisplay,
-  niceIncrement,
   percentageToSwap,
   sliderXPosition,
   stripSeparators,
   isStablecoin = false,
 }: {
-  incrementDecimalPlaces: number;
   inputAssetBalance: number | string;
   inputAssetNativePrice: number;
   assetBalanceDisplay: string;
-  niceIncrement: number | string;
   percentageToSwap: number;
   sliderXPosition: number;
   stripSeparators?: boolean;
@@ -354,6 +350,7 @@ export function niceIncrementFormatter({
 }) {
   'worklet';
 
+  const niceIncrement = findNiceIncrement(inputAssetBalance);
   if (percentageToSwap === 0 || equalWorklet(niceIncrement, 0)) return '0';
   if (percentageToSwap === 0.25) {
     const amount = mulWorklet(inputAssetBalance, 0.25);
@@ -400,6 +397,7 @@ export function niceIncrementFormatter({
     });
   }
 
+  const incrementDecimalPlaces = countDecimalPlaces(niceIncrement);
   const decimals = isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : incrementDecimalPlaces;
   const exactIncrement = divWorklet(inputAssetBalance, 100);
   const isIncrementExact = equalWorklet(niceIncrement, exactIncrement);
