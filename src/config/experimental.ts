@@ -58,8 +58,8 @@ export const defaultConfig: Record<string, ExperimentalValue> = {
   [REMOTE_PROMO_SHEETS]: { settings: true, value: false },
   [REMOTE_CARDS]: { settings: true, value: false },
   [POINTS_NOTIFICATIONS_TOGGLE]: { settings: true, value: false },
-  [DAPP_BROWSER]: { settings: true, value: IS_TEST ? true : false },
-  [SWAPS_V2]: { settings: true, value: false },
+  [DAPP_BROWSER]: { settings: true, value: !!IS_TEST },
+  [SWAPS_V2]: { settings: true, value: !!IS_TEST },
 };
 
 const storageKey = 'config';

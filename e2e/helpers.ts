@@ -4,8 +4,24 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { expect, device, element, by, waitFor } from 'detox';
 import { parseEther } from '@ethersproject/units';
+import { AndroidElementAttributes, IosElementAttributes } from 'detox/detox';
 
 const TESTING_WALLET = '0x3637f053D542E6D00Eee42D656dD7C59Fa33a62F';
+
+const blacklistUrls = [
+  '.*api.thegraph.com.*',
+  '.*raw.githubusercontent.com.*',
+  '.*api.coingecko.com.*',
+  '.*rainbow.imgix.net.*',
+  '.*infura.io.*',
+  '.*rainbow.me.*',
+  '.*rainbowjiumask.dataplane.rudderstack.com*',
+  '.*rainbowme-res.cloudinary.com*',
+  '.*rainbow-proxy-rpc.rainbowdotme.workers.*',
+  '.*localhost:8081/assets/src/assets*.',
+  '.*arc-graphql.rainbowdotme.workers.dev*.',
+  '.*googleapis.com*.',
+];
 
 const DEFAULT_TIMEOUT = 20_000;
 const android = device.getPlatform() === 'android';
@@ -52,6 +68,9 @@ export async function importWalletFlow(customSeed?: string) {
 }
 
 export async function beforeAllcleanApp({ hardhat }: { hardhat?: boolean }) {
+  await device.clearKeychain();
+  await device.launchApp({ newInstance: true, delete: true });
+  await device.setURLBlacklist(blacklistUrls);
   jest.resetAllMocks();
   hardhat && (await startHardhat());
 }
@@ -476,3 +495,12 @@ export async function openDeeplinkFromBackground(url: string) {
     url,
   });
 }
+interface CustomElementAttributes {
+  elements: Array<IosElementAttributes | AndroidElementAttributes>;
+}
+
+type ElementAttributes = IosElementAttributes & AndroidElementAttributes & CustomElementAttributes;
+
+export const fetchElementAttributes = async (testId: string): Promise<ElementAttributes> => {
+  return (await element(by.id(testId)).getAttributes()) as ElementAttributes;
+};
