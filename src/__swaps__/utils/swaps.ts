@@ -246,21 +246,17 @@ export function precisionBasedOffMagnitude(amount: number | string, isStablecoin
 export function valueBasedDecimalFormatter({
   amount,
   nativePrice,
-  assetBalanceDisplay,
   roundingMode,
   precisionAdjustment,
   isStablecoin,
   stripSeparators = true,
-  isMaxAmount = false,
 }: {
   amount: number | string;
   nativePrice: number;
-  assetBalanceDisplay?: string;
   roundingMode?: 'up' | 'down';
   precisionAdjustment?: number;
   isStablecoin?: boolean;
   stripSeparators?: boolean;
-  isMaxAmount?: boolean;
 }): string {
   'worklet';
 
@@ -294,35 +290,10 @@ export function valueBasedDecimalFormatter({
     roundedAmount = divWorklet(roundWorklet(mulWorklet(amount, factor)), factor);
   }
 
-  const maximumFractionDigits = () => {
-    // if we're selling max amount, we want to match what's displayed on the balance badge
-    // let's base the decimal places based on that (capped at 6)
-    if (isMaxAmount && assetBalanceDisplay) {
-      const decimals = assetBalanceDisplay.split('.');
-      if (decimals.length > 1) {
-        const [, decimalPlacesFromDisplay] = decimals;
-        if (decimalPlacesFromDisplay.length < STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS && isStablecoin) {
-          return STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS;
-        }
-
-        return Math.min(decimalPlacesFromDisplay.length, MAXIMUM_SIGNIFICANT_DECIMALS);
-      }
-    }
-
-    if (!isNaN(decimalPlaces)) {
-      return isStablecoin && decimalPlaces < STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS
-        ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS
-        : decimalPlaces;
-    }
-
-    // default to 6 precision if we have no calculation
-    return MAXIMUM_SIGNIFICANT_DECIMALS;
-  };
-
   const formattedAmount = `${Number(roundedAmount).toLocaleString('en-US', {
     useGrouping: !stripSeparators,
     minimumFractionDigits: 0,
-    maximumFractionDigits: maximumFractionDigits(),
+    maximumFractionDigits: decimalPlaces,
   })}`;
 
   return formattedAmount;
@@ -331,7 +302,6 @@ export function valueBasedDecimalFormatter({
 export function niceIncrementFormatter({
   inputAssetBalance,
   inputAssetNativePrice,
-  assetBalanceDisplay,
   percentageToSwap,
   sliderXPosition,
   stripSeparators,
@@ -339,7 +309,6 @@ export function niceIncrementFormatter({
 }: {
   inputAssetBalance: number | string;
   inputAssetNativePrice: number;
-  assetBalanceDisplay: string;
   percentageToSwap: number;
   sliderXPosition: number;
   stripSeparators?: boolean;
@@ -354,7 +323,6 @@ export function niceIncrementFormatter({
     return valueBasedDecimalFormatter({
       nativePrice: inputAssetNativePrice,
       amount,
-      assetBalanceDisplay,
       roundingMode: 'up',
       precisionAdjustment: precisionBasedOffMagnitude(amount, isStablecoin),
       isStablecoin,
@@ -366,7 +334,6 @@ export function niceIncrementFormatter({
     return valueBasedDecimalFormatter({
       nativePrice: inputAssetNativePrice,
       amount,
-      assetBalanceDisplay,
       roundingMode: 'up',
       precisionAdjustment,
       isStablecoin,
@@ -377,7 +344,6 @@ export function niceIncrementFormatter({
     return valueBasedDecimalFormatter({
       nativePrice: inputAssetNativePrice,
       amount,
-      assetBalanceDisplay,
       roundingMode: 'up',
       precisionAdjustment: precisionBasedOffMagnitude(amount, isStablecoin),
       isStablecoin,
@@ -388,9 +354,7 @@ export function niceIncrementFormatter({
       amount: inputAssetBalance,
       nativePrice: inputAssetNativePrice,
       roundingMode: 'up',
-      assetBalanceDisplay,
       isStablecoin,
-      isMaxAmount: true,
     });
   }
 

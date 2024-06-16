@@ -3,7 +3,6 @@ import { SLIDER_WIDTH } from '../constants';
 
 type TestCase = {
   inputAssetBalance: number | string;
-  assetBalanceDisplay: string;
   inputAssetNativePrice: number;
   percentageToSwap: number;
   sliderXPosition: number;
@@ -17,7 +16,6 @@ type TestCase = {
 const TEST_CASES: TestCase[] = [
   {
     inputAssetBalance: 45.47364224817269,
-    assetBalanceDisplay: '45.47364225',
     inputAssetNativePrice: 0.9995363790000001,
     percentageToSwap: 0.5,
     sliderXPosition: SLIDER_WIDTH / 2,
@@ -28,7 +26,6 @@ const TEST_CASES: TestCase[] = [
   },
   {
     inputAssetBalance: 100,
-    assetBalanceDisplay: '100.00',
     inputAssetNativePrice: 10,
     percentageToSwap: 0,
     sliderXPosition: 0,
@@ -39,7 +36,6 @@ const TEST_CASES: TestCase[] = [
   },
   {
     inputAssetBalance: 100,
-    assetBalanceDisplay: '100.00',
     inputAssetNativePrice: 10,
     percentageToSwap: 1,
     sliderXPosition: SLIDER_WIDTH,
@@ -50,7 +46,6 @@ const TEST_CASES: TestCase[] = [
   },
   {
     inputAssetBalance: 123.456,
-    assetBalanceDisplay: '123.46',
     inputAssetNativePrice: 1,
     percentageToSwap: 0.25,
     sliderXPosition: SLIDER_WIDTH / 4,
@@ -61,7 +56,6 @@ const TEST_CASES: TestCase[] = [
   },
   {
     inputAssetBalance: '1000',
-    assetBalanceDisplay: '1,000',
     inputAssetNativePrice: 0.5,
     percentageToSwap: 0.75,
     sliderXPosition: (3 * SLIDER_WIDTH) / 4,
