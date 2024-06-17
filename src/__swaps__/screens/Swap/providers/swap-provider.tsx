@@ -110,6 +110,7 @@ interface SwapContextType {
       label: string;
       icon?: string;
       disabled?: boolean;
+      opacity?: number;
     }>
   >;
   confirmButtonIconStyle: StyleProp<TextStyle>;
@@ -653,7 +654,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const isLoadingGas = !isQuoteError && hasEnoughFundsForGas.value === undefined;
 
     if (isFetching.value || isLoadingGas) {
-      return { label: fetchingPrices, disabled: true };
+      return { label: fetchingPrices, disabled: true, opacity: 1 };
     }
 
     if (!hasEnoughFundsForGas.value) {
@@ -664,7 +665,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const isOutputZero = equalWorklet(SwapInputController.inputValues.value.outputAmount, 0);
 
     if (!isQuoteError && (SwapInputController.percentageToSwap.value === 0 || isInputZero || isOutputZero)) {
-      return { label: enterAmount, disabled: true };
+      return { label: enterAmount, disabled: true, opacity: 1 };
     }
 
     if (isQuoteError) {

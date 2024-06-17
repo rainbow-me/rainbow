@@ -26,7 +26,7 @@ export const SwapActionButton = ({
   small,
   style,
   disabled,
-  isLoading,
+  opacity,
 }: {
   asset: DerivedValue<ExtendedAnimatedAssetWithColors | null>;
   borderRadius?: number;
@@ -43,7 +43,7 @@ export const SwapActionButton = ({
   small?: boolean;
   style?: ViewStyle;
   disabled?: DerivedValue<boolean | undefined>;
-  isLoading?: DerivedValue<boolean | undefined>;
+  opacity?: DerivedValue<number | undefined>;
 }) => {
   const { isDarkMode } = useColorMode();
   const fallbackColor = useForegroundColor('label');
@@ -86,8 +86,7 @@ export const SwapActionButton = ({
       },
       shadowOpacity: isDarkMode ? 0.2 : small ? 0.2 : 0.36,
       shadowRadius: isDarkMode ? 26 : small ? 9 : 15,
-      // we don't want to change the opacity when it's loading
-      opacity: !isLoading?.value && disabled?.value ? 0.6 : 1,
+      opacity: opacity?.value ?? (disabled?.value ? 0.6 : 1),
     };
   });
 
@@ -116,7 +115,7 @@ export const SwapActionButton = ({
   return (
     <AnimatedGestureHandlerV1Button
       animatedProps={buttonAnimatedProps}
-      onPressStartWorklet={onPressWorklet}
+      onPressWorklet={onPressWorklet}
       onPressJS={onPressJS}
       style={[hugContent && feedActionButtonStyles.buttonWrapper, style]}
     >
