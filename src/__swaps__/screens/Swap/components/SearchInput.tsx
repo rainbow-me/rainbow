@@ -73,8 +73,8 @@ export const SearchInput = ({
 
   const buttonVisibilityStyle = useAnimatedStyle(() => {
     const isInputSearchFocused = inputProgress.value === NavigationSteps.SEARCH_FOCUSED;
-    const isInputAssetSelected = !!internalSelectedOutputAsset.value;
-    const isVisible = output || isInputSearchFocused || isInputAssetSelected;
+    const noInputAssetSelected = !internalSelectedOutputAsset.value;
+    const isVisible = output || isInputSearchFocused || noInputAssetSelected;
 
     return {
       opacity: isVisible ? 1 : 0,
