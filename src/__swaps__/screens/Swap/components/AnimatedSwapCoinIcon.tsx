@@ -58,8 +58,12 @@ export const AnimatedSwapCoinIcon = React.memo(function FeedCoinIcon({
   });
 
   const animatedCoinIconWrapperStyles = useAnimatedStyle(() => {
+    const showEmptyState = !asset.value?.uniqueId;
+    const showFallback = didErrorForUniqueId.value === asset.value?.uniqueId;
+    const shouldDisplay = !showFallback && !showEmptyState;
+
     return {
-      shadowColor: isDarkMode ? colors.shadow : asset.value?.shadowColor['light'],
+      shadowColor: shouldDisplay ? (isDarkMode ? colors.shadow : asset.value?.shadowColor['light']) : 'transparent',
     };
   });
 
@@ -100,9 +104,9 @@ export const AnimatedSwapCoinIcon = React.memo(function FeedCoinIcon({
       <Animated.View
         style={[
           sx.reactCoinIconContainer,
-          animatedCoinIconWrapperStyles,
           small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback,
           sx.withShadow,
+          animatedCoinIconWrapperStyles,
         ]}
       >
         <Animated.View style={animatedCoinIconStyles}>
@@ -140,7 +144,7 @@ export const AnimatedSwapCoinIcon = React.memo(function FeedCoinIcon({
 
         <Box
           as={Animated.View}
-          background="fillQuaternary"
+          background={isDarkMode ? 'fillQuaternary' : 'fillTertiary'}
           style={[
             animatedEmptyStateStyles,
             small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback,
