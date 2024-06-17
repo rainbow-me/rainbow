@@ -85,14 +85,14 @@ export function SyncGasStateToSharedValues() {
   const { data: estimatedGasLimit, isFetching } = useSwapEstimatedGasLimit({ chainId, assetToSell, quote });
 
   useEffect(() => {
-    hasEnoughFundsForGas.value = false;
+    hasEnoughFundsForGas.value = undefined;
     if (!gasSettings || !estimatedGasLimit || !quote || 'error' in quote) return;
 
     const gasFee = calculateGasFee(gasSettings, estimatedGasLimit);
     hasEnoughFundsForGas.value = getHasEnoughFundsForGas(quote, gasFee, userNativeNetworkAsset);
 
     return () => {
-      hasEnoughFundsForGas.value = false;
+      hasEnoughFundsForGas.value = undefined;
     };
   }, [
     estimatedGasLimit,

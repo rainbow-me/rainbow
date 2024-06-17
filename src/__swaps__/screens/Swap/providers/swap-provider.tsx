@@ -7,6 +7,7 @@ import {
   SharedValue,
   runOnJS,
   runOnUI,
+  useAnimatedReaction,
   useAnimatedRef,
   useAnimatedStyle,
   useDerivedValue,
@@ -578,7 +579,13 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     };
   }, []);
 
-  const hasEnoughFundsForGas = useSharedValue<boolean>(false);
+  const hasEnoughFundsForGas = useSharedValue<boolean | undefined>(undefined);
+  useAnimatedReaction(
+    () => isFetching.value,
+    fetching => {
+      if (fetching) hasEnoughFundsForGas.value = undefined;
+    }
+  );
 
   const confirmButtonProps = useDerivedValue(() => {
     if (isSwapping.value) {
@@ -598,20 +605,12 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return { label: selectToken, disabled: true };
     }
 
-    if (isFetching.value) {
-      return { label: fetchingPrices, disabled: true };
-    }
-
-    const isInputZero = equalWorklet(SwapInputController.inputValues.value.inputAmount, 0);
-    const isOutputZero = equalWorklet(SwapInputController.inputValues.value.outputAmount, 0);
-
-    const isQuoteError = quote.value && 'error' in quote.value;
-    if (isQuoteError) {
-      return { label: errorLabel, disabled: true };
-    }
-
-    if (SwapInputController.percentageToSwap.value === 0 || isInputZero || isOutputZero) {
-      return { label: enterAmount, disabled: true };
+    if (
+      [SwapWarningType.no_quote_available, SwapWarningType.no_route_found, SwapWarningType.insufficient_liquidity].includes(
+        SwapWarning.swapWarning.value.type
+      )
+    ) {
+      return { icon: '􀕹', label: review, disabled: true };
     }
 
     const inputAsset = internalSelectedInputAsset.value;
@@ -624,16 +623,26 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const enoughFundsForSwap =
       inputAsset && lessThanOrEqualToWorklet(sellAmount, toScaledIntegerWorklet(inputAsset.balance.amount, inputAsset.decimals));
 
-    if (!isFetching && (!hasEnoughFundsForGas.value || !enoughFundsForSwap)) {
+    if (!enoughFundsForSwap) {
       return { label: insufficientFunds, disabled: true };
     }
 
-    if (
-      [SwapWarningType.no_quote_available, SwapWarningType.no_route_found, SwapWarningType.insufficient_liquidity].includes(
-        SwapWarning.swapWarning.value.type
-      )
-    ) {
-      return { icon: '􀕹', label: review, disabled: true };
+    const isQuoteError = quote.value && 'error' in quote.value;
+    const isLoadingGas = !isQuoteError && hasEnoughFundsForGas.value === undefined;
+
+    if (isFetching.value || isLoadingGas) {
+      return { label: fetchingPrices, disabled: true };
+    }
+
+    if (!hasEnoughFundsForGas.value) {
+      return { label: insufficientFunds, disabled: true };
+    }
+
+    const isInputZero = equalWorklet(SwapInputController.inputValues.value.inputAmount, 0);
+    const isOutputZero = equalWorklet(SwapInputController.inputValues.value.outputAmount, 0);
+
+    if (!isQuoteError && (SwapInputController.percentageToSwap.value === 0 || isInputZero || isOutputZero)) {
+      return { label: enterAmount, disabled: true };
     }
 
     if (isQuoteError) {
