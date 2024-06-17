@@ -30,9 +30,11 @@ import { InfoCard } from '../components/InfoCard';
 import { displayNextDistribution } from '../constants';
 import { analyticsV2 } from '@/analytics';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
-import { RemoteCardCarousel, useRemoteCardContext } from '@/components/cards/remote-cards';
+import { RemoteCardCarousel } from '@/components/cards/remote-cards';
 import { usePoints } from '@/resources/points';
 import { GetPointsDataForWalletQuery } from '@/graphql/__generated__/metadataPOST';
+import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
+import Routes from '@/navigation/routesNames';
 
 const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined }) => {
   const labelSecondary = useForegroundColor('labelSecondary');
@@ -153,7 +155,7 @@ export default function PointsContent() {
   const { colors } = useTheme();
   const { name } = useRoute();
   const { width: deviceWidth } = useDimensions();
-  const { getCardsForPlacement } = useRemoteCardContext();
+  const getCardIdsForScreen = remoteCardsStore(state => state.getCardIdsForScreen);
   const { accountAddress, accountENS } = useAccountProfile();
   const { setClipboard } = useClipboard();
   const { isReadOnlyWallet } = useWallets();
@@ -167,7 +169,7 @@ export default function PointsContent() {
     walletAddress: accountAddress,
   });
 
-  const cards = useMemo(() => getCardsForPlacement(name as string), [getCardsForPlacement, name]);
+  const cardIds = useMemo(() => getCardIdsForScreen(name as keyof typeof Routes), [getCardIdsForScreen, name]);
 
   useFocusEffect(
     useCallback(() => {
@@ -286,7 +288,7 @@ export default function PointsContent() {
                   </Cover>
                 </Box>
               </Bleed>
-              {!!cards.length && !isReadOnlyWallet && (
+              {!!cardIds.length && !isReadOnlyWallet && (
                 <>
                   <RemoteCardCarousel key="remote-cards" />
                   <Separator color="separatorTertiary" thickness={1} />
