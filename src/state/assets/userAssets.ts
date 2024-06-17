@@ -5,6 +5,9 @@ import store from '@/redux/store';
 import { SUPPORTED_CHAIN_IDS } from '@/references';
 import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
+import { getIsHardhatConnected } from '@/handlers/web3';
+import { ethereumUtils } from '@/utils';
+import { NetworkTypes } from '@/helpers';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 const SMALL_BALANCE_THRESHOLD = store.getState().settings.nativeCurrency === 'ETH' ? 0.000005 : 0.02;
@@ -164,7 +167,14 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
       }
     },
 
-    getHighestValueAsset: () => get().userAssets.values().next().value || null,
+    getHighestValueAsset: () => {
+      const highestValueAsset = get().userAssets.values().next().value || null;
+      if (!highestValueAsset && getIsHardhatConnected()) {
+        return ethereumUtils.getNetworkNativeAsset(NetworkTypes.mainnet);
+      }
+
+      return highestValueAsset;
+    },
 
     getUserAsset: (uniqueId: UniqueId) => get().userAssets.get(uniqueId) || null,
 
