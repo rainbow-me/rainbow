@@ -7,13 +7,11 @@ import MenuItem from './MenuItem';
 import { analytics } from '@/analytics';
 import { useAccountSettings } from '@/hooks';
 import { ETH_ADDRESS, WBTC_ADDRESS, emojis, supportedNativeCurrencies } from '@/references';
-import { BackgroundProvider, Box, Inline, Inset, Text } from '@/design-system';
-import { SimpleSheet } from '@/components/sheet/SimpleSheet';
-import * as i18n from '@/languages';
 import { Network } from '@/networks/types';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useTheme } from '@/theme';
+import { userAssetsStore } from '@/state/assets/userAssets';
 
 const emojiData = Object.entries(emojis).map(([emoji, { name }]) => [name, emoji]);
 
@@ -37,6 +35,8 @@ const CurrencySection = () => {
       if (ios && parseInt(Platform.Version as string) >= 14) {
         reloadTimelines('PriceWidget');
       }
+      console.log(currency);
+      userAssetsStore.getState().setSmallBalanceThreshold(currency);
       analytics.track('Changed native currency', { currency });
     },
     [settingsChangeNativeCurrency]
