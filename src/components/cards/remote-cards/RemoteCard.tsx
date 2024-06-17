@@ -5,7 +5,6 @@ import ConditionalWrap from 'conditional-wrap';
 
 import { Box, Cover, Stack, Text, useForegroundColor } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
-import { useRemoteCardContext } from './RemoteCardProvider';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { useNavigation } from '@/navigation';
 import { Language } from '@/languages';
@@ -20,6 +19,7 @@ import { FlashList } from '@shopify/flash-list';
 import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
 import { TrimmedCard } from '@/resources/cards/cardCollectionQuery';
 import RemoteSvg from '@/components/svg/RemoteSvg';
+import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 
 const ICON_SIZE = 40;
 
@@ -58,19 +58,17 @@ const getColorFromString = (color: string | undefined | null) => {
 };
 
 type RemoteCardProps = {
-  card: TrimmedCard;
-  cards: TrimmedCard[];
+  id: string;
   gutterSize: number;
-  carouselRef: React.RefObject<FlashList<TrimmedCard>> | null;
+  carouselRef: React.RefObject<FlashList<string>> | null;
 };
 
-export const RemoteCard: React.FC<RemoteCardProps> = ({ card = {} as TrimmedCard, cards, gutterSize, carouselRef }) => {
+export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carouselRef }) => {
   const { isDarkMode } = useTheme();
   const { navigate } = useNavigation();
   const { language } = useAccountSettings();
   const { width } = useDimensions();
-  const { dismissCard } = useRemoteCardContext();
-
+  const card = remoteCardsStore(state => state.getCard(id)) ?? ({} as TrimmedCard);
   const { cardKey, accentColor, backgroundColor, primaryButton, imageIcon } = card;
 
   const accent = useForegroundColor(getColorFromString(accentColor));
@@ -95,26 +93,25 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ card = {} as TrimmedCard
         e.stopPropagation();
       }
       analyticsV2.track(analyticsV2.event.remoteCardDismissed, {
-        cardKey: cardKey ?? 'unknown-backend-driven-card',
+        cardKey: cardKey ?? card.sys.id ?? 'unknown-backend-driven-card',
       });
 
-      const isLastCard = cards.length === 1;
+      const { cards } = remoteCardsStore.getState();
 
-      dismissCard(card.sys.id);
+      const isLastCard = cards.size === 1;
+
+      remoteCardsStore.getState().dismissCard(card.sys.id);
       if (carouselRef?.current) {
-        const currentCardIdx = cards.findIndex(c => c.cardKey === cardKey);
-        if (currentCardIdx === -1) return;
-
         // check if this is the last card and don't scroll if so
         if (isLastCard) return;
 
         carouselRef.current.scrollToIndex({
-          index: currentCardIdx,
+          index: Array.from(cards.values()).findIndex(c => c.sys.id === card.sys.id),
           animated: true,
         });
       }
     },
-    [carouselRef, dismissCard, cards, cardKey, card.sys.id]
+    [carouselRef, cardKey, card.sys.id]
   );
 
   const imageForPlatform = () => {
@@ -143,7 +140,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ card = {} as TrimmedCard
     }
   };
 
-  if (!card) {
+  if (!card || card.dismissed) {
     return null;
   }
 

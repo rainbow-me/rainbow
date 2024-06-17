@@ -5,10 +5,9 @@ import { createQueryKey, queryClient, QueryConfig, QueryFunctionResult } from '@
 import { arcClient } from '@/graphql';
 import { Card, GetCardCollectionQuery } from '@/graphql/__generated__/arc';
 import { pick } from 'lodash';
-import { IS_PROD } from '@/env';
-import * as ls from '@/storage';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { REMOTE_CARDS, useExperimentalFlag } from '@/config';
+import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 
 export const TRIMMED_CARD_KEYS = [
   'cardKey',
@@ -34,6 +33,7 @@ export type TrimmedCard = Pick<Card, (typeof TRIMMED_CARD_KEYS)[number]> & {
       url: string;
     }[];
   };
+  dismissed?: boolean;
 };
 
 export type TrimmedCards = Record<string, TrimmedCard>;
@@ -52,12 +52,10 @@ export const cardCollectionQueryKey = createQueryKey('cardCollection', {}, { per
 
 function parseCardCollectionResponse(data: GetCardCollectionQuery) {
   const newCards = data.cardCollection?.items.reduce((acc, card) => {
-    if (!card) return acc;
+    if (!card || !card.cardKey) return acc;
 
-    if (IS_PROD) {
-      const hasDismissed = ls.cards.get([card.sys.id]);
-      if (hasDismissed) return acc;
-    }
+    const storedCard = remoteCardsStore.getState().getCard(card.cardKey);
+    if (storedCard?.dismissed) return acc;
 
     const newCard: TrimmedCard = {
       ...pick(card, ...TRIMMED_CARD_KEYS),
@@ -70,7 +68,7 @@ function parseCardCollectionResponse(data: GetCardCollectionQuery) {
     };
     return {
       ...acc,
-      [card.sys.id]: newCard,
+      [card.cardKey]: newCard,
     };
   }, {} as TrimmedCards);
 
@@ -101,13 +99,15 @@ export async function fetchCardCollection() {
 // ///////////////////////////////////////////////
 // Query Hook
 
-export function useCardCollectionQuery() {
+export function useCardCollectionQuery(config: QueryConfig<CardCollectionResult, Error, typeof cardCollectionQueryKey> = {}) {
   const { remote_cards_enabled: remoteFlag } = useRemoteConfig();
   const localFlag = useExperimentalFlag(REMOTE_CARDS);
 
   return useQuery(cardCollectionQueryKey, cardCollectionQueryFunction, {
     enabled: remoteFlag || localFlag,
     staleTime: defaultStaleTime,
+    cacheTime: 1000 * 60 * 60 * 24, // 24 hours
     refetchInterval: 60_000,
+    ...config,
   });
 }
