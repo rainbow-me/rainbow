@@ -14,16 +14,16 @@ import {
 } from '@/__swaps__/screens/Swap/constants';
 import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { ChainId, ChainName } from '@/__swaps__/types/chains';
-import { RainbowConfig } from '@/model/remoteConfig';
-import { CrosschainQuote, ETH_ADDRESS, Quote, QuoteParams, SwapType, WRAPPED_ASSET } from '@rainbow-me/swaps';
 import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
-import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '../types/assets';
-import { inputKeys } from '../types/swap';
-import { swapsStore } from '../../state/swaps/swapsStore';
-import { BigNumberish } from '@ethersproject/bignumber';
 import { TokenColors } from '@/graphql/__generated__/metadata';
+import { RainbowConfig } from '@/model/remoteConfig';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { colors } from '@/styles';
+import { BigNumberish } from '@ethersproject/bignumber';
+import { CrosschainQuote, ETH_ADDRESS, Quote, QuoteParams, SwapType, WRAPPED_ASSET } from '@rainbow-me/swaps';
+import { swapsStore } from '../../state/swaps/swapsStore';
+import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '../types/assets';
+import { inputKeys } from '../types/swap';
 import { convertAmountToRawAmount } from './numbers';
 import {
   ceilWorklet,
@@ -740,13 +740,10 @@ export const buildQuoteParams = ({
 
   return {
     source: source === 'auto' ? undefined : source,
-    swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
-    fromAddress: currentAddress,
     chainId: inputAsset.chainId,
-    toChainId: isCrosschainSwap ? outputAsset.chainId : inputAsset.chainId,
+    fromAddress: currentAddress,
     sellTokenAddress: inputAsset.isNativeAsset ? ETH_ADDRESS : inputAsset.address,
     buyTokenAddress: outputAsset.isNativeAsset ? ETH_ADDRESS : outputAsset.address,
-
     // TODO: Handle native input cases below
     sellAmount:
       lastTypedInput === 'inputAmount' || lastTypedInput === 'inputNativeValue'
@@ -758,5 +755,7 @@ export const buildQuoteParams = ({
         : undefined,
     slippage: Number(slippage),
     refuel: false,
+    swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
+    toChainId: isCrosschainSwap ? outputAsset.chainId : inputAsset.chainId,
   };
 };

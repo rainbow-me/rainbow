@@ -25,8 +25,8 @@ import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/scree
 import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
-import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
-import { getFlashbotsProvider, getProviderForNetwork, isHardHat } from '@/handlers/web3';
+import { isUnwrapEth, isWrapEth, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
+import { getFlashbotsProvider, getIsHardhatConnected, getProviderForNetwork, isHardHat } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useAccountSettings } from '@/hooks';
 import * as i18n from '@/languages';
@@ -228,6 +228,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       const { errorMessage } = await walletExecuteRap(wallet, type, {
         ...parameters,
+        chainId: getIsHardhatConnected() ? ChainId.hardhat : parameters.chainId,
         gasParams,
         // @ts-expect-error - collision between old gas types and new
         gasFeeParamsBySpeed: gasFeeParamsBySpeed,
@@ -315,7 +316,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const q = quote.value;
 
     // TODO: What other checks do we need here?
-    if (!inputAsset || !outputAsset || !q || (q as QuoteError)?.error) {
+    if (isSwapping.value || !inputAsset || !outputAsset || !q || (q as QuoteError)?.error) {
       return;
     }
 
@@ -326,13 +327,34 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const quoteData = q as QuoteTypeMap[typeof type];
     const flashbots = (SwapSettings.flashbots.value && inputAsset.chainId === ChainId.mainnet) ?? false;
 
+    const isNativeWrapOrUnwrap =
+      isWrapEth({
+        buyTokenAddress: quoteData.buyTokenAddress,
+        sellTokenAddress: quoteData.sellTokenAddress,
+        chainId: inputAsset.chainId,
+      }) ||
+      isUnwrapEth({
+        buyTokenAddress: quoteData.buyTokenAddress,
+        sellTokenAddress: quoteData.sellTokenAddress,
+        chainId: inputAsset.chainId,
+      });
+
+    // Do not deleeeet the comment below 😤
+    // About to get quote
     const parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'> = {
       sellAmount: quoteData.sellAmount?.toString(),
       buyAmount: quoteData.buyAmount?.toString(),
       chainId: inputAsset.chainId,
       assetToSell: inputAsset,
       assetToBuy: outputAsset,
-      quote: quoteData,
+      quote: {
+        ...quoteData,
+        buyAmountDisplay: isNativeWrapOrUnwrap ? quoteData.buyAmount : quoteData.buyAmountDisplay,
+        sellAmountDisplay: isNativeWrapOrUnwrap ? quoteData.sellAmount : quoteData.sellAmountDisplay,
+        feeInEth: isNativeWrapOrUnwrap ? '0' : quoteData.feeInEth,
+        fromChainId: inputAsset.chainId,
+        toChainId: outputAsset.chainId,
+      },
       flashbots,
     };
 
