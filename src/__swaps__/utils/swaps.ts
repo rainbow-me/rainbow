@@ -740,13 +740,10 @@ export const buildQuoteParams = ({
 
   return {
     source: source === 'auto' ? undefined : source,
-    swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
-    fromAddress: currentAddress,
     chainId: inputAsset.chainId,
-    toChainId: isCrosschainSwap ? outputAsset.chainId : inputAsset.chainId,
+    fromAddress: currentAddress,
     sellTokenAddress: inputAsset.isNativeAsset ? ETH_ADDRESS : inputAsset.address,
     buyTokenAddress: outputAsset.isNativeAsset ? ETH_ADDRESS : outputAsset.address,
-
     // TODO: Handle native input cases below
     sellAmount:
       lastTypedInput === 'inputAmount' || lastTypedInput === 'inputNativeValue'
@@ -758,5 +755,7 @@ export const buildQuoteParams = ({
         : undefined,
     slippage: Number(slippage),
     refuel: false,
+    swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
+    toChainId: isCrosschainSwap ? outputAsset.chainId : inputAsset.chainId,
   };
 };
