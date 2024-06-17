@@ -26,11 +26,11 @@ import { lessThan } from '@/helpers/utilities';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import { gasUtils } from '@/utils';
 import { upperFirst } from 'lodash';
 import { GasSettings, getCustomGasSettings, setCustomGasSettings, useCustomGasStore } from '../hooks/useCustomGas';
-import { setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
+import { getSelectedGas, setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 
@@ -271,15 +271,18 @@ const useMaxBaseFeeWarning = (maxBaseFee: string | undefined) => {
   const { data: suggestions } = useMeteorologySuggestions({ chainId, enabled: !!maxBaseFee });
   const { data: currentBaseFee = '0' } = useBaseFee({ chainId });
 
-  const urgentMaxBaseFee = suggestions?.urgent.maxBaseFee;
-  const normalMaxBaseFee = suggestions?.normal.maxBaseFee;
-
   if (!maxBaseFee) return null;
-  // likely to get stuck if less than 10% of current base fee
-  if (lessThan(maxBaseFee, multiply(currentBaseFee, 0.1))) return likely_to_fail;
+
+  // likely to get stuck if less than 20% of current base fee
+  if (lessThan(maxBaseFee, multiply(currentBaseFee, 0.2))) return likely_to_fail;
+
   // suggestions
-  if (urgentMaxBaseFee && greaterThan(maxBaseFee, urgentMaxBaseFee)) return higher_than_suggested;
-  if (normalMaxBaseFee && lessThan(maxBaseFee, normalMaxBaseFee)) return lower_than_suggested;
+  const { urgent, normal } = suggestions || {};
+  const highThreshold = urgent?.maxBaseFee && multiply(urgent.maxBaseFee, 1.1);
+  const lowThreshold = normal?.maxBaseFee && multiply(normal.maxBaseFee, 0.9);
+  if (highThreshold && greaterThan(maxBaseFee, highThreshold)) return higher_than_suggested;
+  if (lowThreshold && lessThan(maxBaseFee, lowThreshold)) return lower_than_suggested;
+
   return null;
 };
 
@@ -356,7 +359,7 @@ function EditGasPrice() {
 }
 
 const stateToGasSettings = (s: GasPanelState | undefined): GasSettings | undefined => {
-  if (!s) return;
+  if (!s) return getSelectedGas(swapsStore.getState().inputAsset?.chainId || ChainId.mainnet);
   if (s.gasPrice) return { isEIP1559: false, gasPrice: s.gasPrice || '0' };
   return { isEIP1559: true, maxBaseFee: s.maxBaseFee || '0', maxPriorityFee: s.maxPriorityFee || '0' };
 };
