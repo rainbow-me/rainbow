@@ -10,7 +10,7 @@ import { useNavigation } from '@/navigation';
 import { SWAPS_V2, useExperimentalFlag, enableActionsOnReadOnlyWallet } from '@/config';
 import { ethereumUtils, watchingAlert } from '@/utils';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { parseSearchAsset } from '@/__swaps__/utils/assets';
+import { isSameAsset, parseSearchAsset } from '@/__swaps__/utils/assets';
 import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 import assetInputTypes from '@/helpers/assetInputTypes';
 import { swapsStore } from '@/state/swaps/swapsStore';
@@ -78,7 +78,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
         swapsStore.setState({ inputAsset: parsedAsset });
 
         const nativeAssetForChain = await ethereumUtils.getNativeAssetForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
-        if (nativeAssetForChain) {
+        if (nativeAssetForChain && !isSameAsset({ address: nativeAssetForChain.address as AddressOrEth, chainId }, parsedAsset)) {
           const outputAsset = {
             ...nativeAssetForChain,
             uniqueId: `${nativeAssetForChain.address}_${chainId}`,
