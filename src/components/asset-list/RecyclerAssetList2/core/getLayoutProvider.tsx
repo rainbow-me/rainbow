@@ -31,12 +31,7 @@ class BetterLayoutProvider extends LayoutProvider {
   }
 }
 
-const getLayoutProvider = (
-  briefSectionsData: BaseCellType[],
-  isCoinListEdited: boolean,
-  cards: TrimmedCard[],
-  isReadOnlyWallet: boolean
-) => {
+const getLayoutProvider = (briefSectionsData: BaseCellType[], isCoinListEdited: boolean, cardIds: string[], isReadOnlyWallet: boolean) => {
   const indicesToOverride = [];
   for (let i = 0; i < briefSectionsData.length; i++) {
     const val = briefSectionsData[i];
@@ -61,7 +56,7 @@ const getLayoutProvider = (
         dim.height = ViewDimensions[type].height;
         dim.width = ViewDimensions[type].width || dim.width;
 
-        if ((type === CellType.REMOTE_CARD_CAROUSEL && !cards.length) || (type === CellType.REMOTE_CARD_CAROUSEL && isReadOnlyWallet)) {
+        if ((type === CellType.REMOTE_CARD_CAROUSEL && !cardIds.length) || (type === CellType.REMOTE_CARD_CAROUSEL && isReadOnlyWallet)) {
           dim.height = 0;
         }
       }
