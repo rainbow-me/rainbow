@@ -11,6 +11,7 @@ const TESTING_WALLET = '0x3637f053D542E6D00Eee42D656dD7C59Fa33a62F';
 const blacklistUrls = [
   '.*api.thegraph.com.*',
   '.*raw.githubusercontent.com.*',
+  '.*gateway-arbitrum.network.thegraph.com.*',
   '.*api.coingecko.com.*',
   '.*rainbow.imgix.net.*',
   '.*infura.io.*',
