@@ -15,7 +15,7 @@ import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 import assetInputTypes from '@/helpers/assetInputTypes';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
-import { AddressOrEth, AssetType } from '@/__swaps__/types/assets';
+import { AddressOrEth, AssetType, ParsedSearchAsset } from '@/__swaps__/types/assets';
 
 type SwapActionButtonProps = {
   asset: RainbowToken;
@@ -36,7 +36,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
   const color = givenColor || colors.swapPurple;
 
   const old_navigate = useExpandedStateNavigation(inputType, fromDiscover, asset);
-  const goToSwap = useCallback(() => {
+  const goToSwap = useCallback(async () => {
     if (swapsV2Enabled || swaps_v2) {
       if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
         watchingAlert();
@@ -76,6 +76,39 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
 
       if (inputType === assetInputTypes.in) {
         swapsStore.setState({ inputAsset: parsedAsset });
+
+        const nativeAssetForChain = await ethereumUtils.getNativeAssetForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
+        if (nativeAssetForChain) {
+          const outputAsset = {
+            ...nativeAssetForChain,
+            uniqueId: `${nativeAssetForChain.address}_${chainId}`,
+            chainId,
+            chainName: chainNameFromChainId(chainId),
+            address: nativeAssetForChain.address as AddressOrEth,
+            type: nativeAssetForChain.type as AssetType,
+            mainnetAddress: nativeAssetForChain.mainnet_address as AddressOrEth,
+            networks: nativeAssetForChain.networks,
+            colors: {
+              primary: nativeAssetForChain.colors?.primary,
+              fallback: nativeAssetForChain.colors?.fallback || undefined, // Ensure fallback is either string or undefined
+            },
+            highLiquidity: nativeAssetForChain.highLiquidity ?? false,
+            isRainbowCurated: nativeAssetForChain.isRainbowCurated ?? false,
+            isVerified: nativeAssetForChain.isVerified ?? false,
+            native: {} as ParsedSearchAsset['native'],
+            balance: {
+              amount: nativeAssetForChain.balance?.amount ?? '0',
+              display: nativeAssetForChain.balance?.display ?? '0',
+            },
+            isNativeAsset: true,
+            price: {
+              value: nativeAssetForChain.price?.value ?? 0,
+              relative_change_24h: nativeAssetForChain.price?.relative_change_24h ?? 0,
+            },
+          } satisfies ParsedSearchAsset;
+
+          swapsStore.setState({ outputAsset });
+        }
       } else {
         const largestBalanceSameChainUserAsset = userAssetsStore
           .getState()
