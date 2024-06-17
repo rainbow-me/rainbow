@@ -35,7 +35,6 @@ const CurrencySection = () => {
       if (ios && parseInt(Platform.Version as string) >= 14) {
         reloadTimelines('PriceWidget');
       }
-      console.log(currency);
       userAssetsStore.getState().setSmallBalanceThreshold(currency);
       analytics.track('Changed native currency', { currency });
     },

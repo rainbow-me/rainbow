@@ -138,7 +138,6 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
 
     getFilteredUserAssetIds: () => {
       const { smallBalanceThreshold, filter, inputSearchQuery: rawSearchQuery, selectUserAssetIds, setSearchCache } = get();
-      // const SMALL_BALANCE_THRESHOLD = store.getState().settings.nativeCurrency.toLowerCase() === supportedNativeCurrencies.ETH.currency.toLowerCase() ? 0.000005 : 0.02;
 
       const inputSearchQuery = rawSearchQuery.trim().toLowerCase();
       const queryKey = getSearchQueryKey({ filter, searchQuery: inputSearchQuery });
@@ -238,7 +237,6 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
 
     setUserAssets: (associatedWalletAddress: Address, userAssets: Map<UniqueId, ParsedSearchAsset> | ParsedSearchAsset[]) =>
       set(() => {
-        // const SMALL_BALANCE_THRESHOLD = store.getState().settings.nativeCurrency.toLowerCase() === supportedNativeCurrencies.ETH.currency.toLowerCase() ? 0.000005 : 0.02;
 
         const idsByChain = new Map<UserAssetFilter, UniqueId[]>();
         const unsortedChainBalances = new Map<ChainId, number>();
