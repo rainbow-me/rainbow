@@ -18,6 +18,7 @@ beforeAll(async () => {
   await device.launchApp({ newInstance: true, delete: true });
   await device.setURLBlacklist([
     '.*api.thegraph.com.*',
+    '.*gateway-arbitrum.network.thegraph.com.*',
     '.*raw.githubusercontent.com.*',
     '.*api.coingecko.com.*',
     '.*rainbow.imgix.net.*',
