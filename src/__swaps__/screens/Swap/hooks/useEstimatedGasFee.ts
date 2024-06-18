@@ -3,6 +3,7 @@ import {
   greaterThanWorklet,
   lessThanWorklet,
   mulWorklet,
+  powWorklet,
   subWorklet,
   toFixedWorklet,
   toScaledIntegerWorklet,
@@ -55,7 +56,7 @@ export function useEstimatedGasFee({
       'worklet';
 
       if (asset?.isNativeAsset) {
-        const gasFeeNativeCurrency = divWorklet(totalWei, 10 ** asset.decimals);
+        const gasFeeNativeCurrency = divWorklet(totalWei, powWorklet(10, asset.decimals));
         const gasFeeWithBuffer = toFixedWorklet(mulWorklet(gasFeeNativeCurrency, BUFFER_FACTOR), asset.decimals);
         const maxSwappableAmount = subWorklet(asset.balance.amount, gasFeeWithBuffer);
 
