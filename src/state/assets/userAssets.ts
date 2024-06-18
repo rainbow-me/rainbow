@@ -134,7 +134,7 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
     getFilteredUserAssetIds: () => {
       const { filter, inputSearchQuery: rawSearchQuery, selectUserAssetIds, setSearchCache } = get();
 
-      const smallBalanceThreshold = supportedNativeCurrencies[store.getState().settings.nativeCurrency].smallThreshold;
+      const smallBalanceThreshold = supportedNativeCurrencies[store.getState().settings.nativeCurrency].userAssetsSmallThreshold;
 
       const inputSearchQuery = rawSearchQuery.trim().toLowerCase();
       const queryKey = getSearchQueryKey({ filter, searchQuery: inputSearchQuery });
@@ -266,7 +266,7 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
 
         idsByChain.set('all', allIdsArray);
 
-        const smallBalanceThreshold = supportedNativeCurrencies[store.getState().settings.nativeCurrency].smallThreshold;
+        const smallBalanceThreshold = supportedNativeCurrencies[store.getState().settings.nativeCurrency].userAssetsSmallThreshold;
 
         const filteredAllIdsArray = allIdsArray.filter(id => {
           const asset = userAssetsMap.get(id);
