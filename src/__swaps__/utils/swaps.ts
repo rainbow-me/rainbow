@@ -14,7 +14,7 @@ import {
 } from '@/__swaps__/screens/Swap/constants';
 import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { ChainId, ChainName } from '@/__swaps__/types/chains';
-import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
+import { isLowerCaseMatch, isLowerCaseMatchWorklet } from '@/__swaps__/utils/strings';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { RainbowConfig } from '@/model/remoteConfig';
 import { userAssetsStore } from '@/state/assets/userAssets';
@@ -614,7 +614,7 @@ export const getCrossChainTimeEstimateWorklet = ({
   };
 };
 
-export const isUnwrapEth = ({
+export const isUnwrapEthWorklet = ({
   buyTokenAddress,
   chainId,
   sellTokenAddress,
@@ -623,10 +623,11 @@ export const isUnwrapEth = ({
   sellTokenAddress: string;
   buyTokenAddress: string;
 }) => {
-  return isLowerCaseMatch(sellTokenAddress, WRAPPED_ASSET[chainId]) && isLowerCaseMatch(buyTokenAddress, ETH_ADDRESS);
+  'worklet';
+  return isLowerCaseMatchWorklet(sellTokenAddress, WRAPPED_ASSET[chainId]) && isLowerCaseMatchWorklet(buyTokenAddress, ETH_ADDRESS);
 };
 
-export const isWrapEth = ({
+export const isWrapEthWorklet = ({
   buyTokenAddress,
   chainId,
   sellTokenAddress,
@@ -635,7 +636,8 @@ export const isWrapEth = ({
   sellTokenAddress: string;
   buyTokenAddress: string;
 }) => {
-  return isLowerCaseMatch(sellTokenAddress, ETH_ADDRESS) && isLowerCaseMatch(buyTokenAddress, WRAPPED_ASSET[chainId]);
+  'worklet';
+  return isLowerCaseMatchWorklet(sellTokenAddress, ETH_ADDRESS) && isLowerCaseMatchWorklet(buyTokenAddress, WRAPPED_ASSET[chainId]);
 };
 
 export const priceForAsset = ({
