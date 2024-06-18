@@ -295,15 +295,29 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
   const executeSwap = () => {
     'worklet';
-
+    console.log('__________________');
+    console.log('__________________');
+    console.log('executeSwap called');
+    console.log('__________________');
+    console.log('__________________');
+    console.log('configProgress.value:', configProgress.value);
     if (configProgress.value !== NavigationSteps.SHOW_REVIEW) return;
 
     const inputAsset = internalSelectedInputAsset.value;
     const outputAsset = internalSelectedOutputAsset.value;
     const q = quote.value;
-
+    console.log('inputAsset:', inputAsset);
+    console.log('outputAsset:', outputAsset);
+    console.log('quote:', q);
     // TODO: What other checks do we need here?
     if (isSwapping.value || !inputAsset || !outputAsset || !q || (q as QuoteError)?.error) {
+      console.log('Swap conditions not met:', {
+        isSwapping: isSwapping.value,
+        inputAsset,
+        outputAsset,
+        q,
+        quoteError: (q as QuoteError)?.error,
+      });
       return;
     }
 
@@ -311,8 +325,11 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     SwapInputController.quoteFetchingInterval.stop();
 
     const type = inputAsset.chainId !== outputAsset.chainId ? 'crosschainSwap' : 'swap';
+    console.log('swap type:', type);
     const quoteData = q as QuoteTypeMap[typeof type];
+    console.log('quoteData:', quoteData);
     const flashbots = (SwapSettings.flashbots.value && inputAsset.chainId === ChainId.mainnet) ?? false;
+    console.log('flashbots:', flashbots);
 
     const isNativeWrapOrUnwrap =
       isWrapEthWorklet({
@@ -328,6 +345,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
     // Do not deleeeet the comment below 😤
     // About to get quote
+    console.log('isNativeWrapOrUnwrap:', isNativeWrapOrUnwrap);
     const parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'> = {
       sellAmount: quoteData.sellAmount?.toString(),
       buyAmount: quoteData.buyAmount?.toString(),
@@ -344,6 +362,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       },
       flashbots,
     };
+    console.log('parameters:', parameters);
 
     runOnJS(getNonceAndPerformSwap)({
       type,
