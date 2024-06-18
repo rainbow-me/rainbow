@@ -2,11 +2,12 @@ import { Address } from 'viem';
 import { RainbowError, logger } from '@/logger';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import store from '@/redux/store';
-import { SUPPORTED_CHAIN_IDS, supportedNativeCurrencies } from '@/references';
+import { SUPPORTED_CHAIN_IDS } from '@/references';
 import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
+const SMALL_BALANCE_THRESHOLD = store.getState().settings.nativeCurrency === 'ETH' ? 0.000005 : 0.02;
 
 const getSearchQueryKey = ({ filter, searchQuery }: { filter: UserAssetFilter; searchQuery: string }) => `${filter}${searchQuery}`;
 
@@ -134,8 +135,6 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
     getFilteredUserAssetIds: () => {
       const { filter, inputSearchQuery: rawSearchQuery, selectUserAssetIds, setSearchCache } = get();
 
-      const smallBalanceThreshold = supportedNativeCurrencies[store.getState().settings.nativeCurrency].smallThreshold;
-
       const inputSearchQuery = rawSearchQuery.trim().toLowerCase();
       const queryKey = getSearchQueryKey({ filter, searchQuery: inputSearchQuery });
 
@@ -152,7 +151,7 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
         const filteredIds = Array.from(
           selectUserAssetIds(
             asset =>
-              (+asset.native?.balance?.amount ?? 0) > smallBalanceThreshold &&
+              (+asset.native?.balance?.amount ?? 0) > SMALL_BALANCE_THRESHOLD &&
               (!chainIdFilter || asset.chainId === chainIdFilter) &&
               (!searchRegex || searchRegex.test(asset.name) || searchRegex.test(asset.symbol) || searchRegex.test(asset.address)),
             filter
@@ -175,7 +174,6 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
       const { currentAbortController, idsByChain, userAssets } = get();
 
       const assetIds = filter ? idsByChain.get(filter) || [] : idsByChain.get('all') || [];
-
       for (const id of assetIds) {
         if (currentAbortController?.signal.aborted) {
           return;
@@ -266,11 +264,9 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
 
         idsByChain.set('all', allIdsArray);
 
-        const smallBalanceThreshold = supportedNativeCurrencies[store.getState().settings.nativeCurrency].smallThreshold;
-
         const filteredAllIdsArray = allIdsArray.filter(id => {
           const asset = userAssetsMap.get(id);
-          return asset && (+asset.native?.balance?.amount ?? 0) > smallBalanceThreshold;
+          return asset && (+asset.native?.balance?.amount ?? 0) > SMALL_BALANCE_THRESHOLD;
         });
 
         const searchCache = new Map<string, UniqueId[]>();
