@@ -8,8 +8,8 @@ import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { useCallback } from 'react';
 import { GasSettings } from '../screens/Swap/hooks/useCustomGas';
 import { getSelectedGasSpeed, useGasSettings } from '../screens/Swap/hooks/useSelectedGas';
-import { getMinimalTimeUnitStringForMs } from './time';
 import { GasSpeed } from '../types/gas';
+import { getMinimalTimeUnitStringForMs } from './time';
 
 // Query Types
 
@@ -168,6 +168,12 @@ export function useBaseFee<Selected = string>({
   return useMeteorology({ chainId }, { select: d => select(selectBaseFee(d)), enabled });
 }
 
+export const getCachedCurrentBaseFee = (chainId: ChainId) => {
+  const data = getMeteorologyCachedData(chainId);
+  if (!data) return undefined;
+  return selectBaseFee(data);
+};
+
 function selectGasTrend({ data }: MeteorologyResult) {
   if ('legacy' in data) return 'notrend';
 
@@ -213,18 +219,13 @@ export function useEstimatedTime({ chainId, speed }: { chainId: ChainId; speed: 
   );
 }
 
-export const getCachedCurrentBaseFee = (chainId: ChainId) => {
-  const data = getMeteorologyCachedData(chainId);
-  if (!data) return undefined;
-  return selectBaseFee(data);
-};
-
 type GasSuggestions = ReturnType<typeof selectGasSuggestions>;
+export type GasSuggestion = GasSuggestions[keyof GasSuggestions];
 export function useMeteorologySuggestions({ chainId, enabled }: { chainId: ChainId; enabled?: boolean }) {
-  return useMeteorology({ chainId }, { select: selectGasSuggestions, enabled });
+  return useMeteorology({ chainId }, { select: selectGasSuggestions, enabled, notifyOnChangeProps: enabled ? ['data'] : [] });
 }
 
-export function useMeteorologySuggestion<Selected = GasSuggestions[keyof GasSuggestions]>({
+export function useMeteorologySuggestion<Selected = GasSuggestion>({
   chainId,
   speed,
   enabled,
@@ -234,7 +235,7 @@ export function useMeteorologySuggestion<Selected = GasSuggestions[keyof GasSugg
   chainId: ChainId;
   speed: GasSpeed;
   enabled?: boolean;
-  select?: (d: GasSuggestions[keyof GasSuggestions] | undefined) => Selected;
+  select?: (d: GasSuggestion | undefined) => Selected;
   notifyOnChangeProps?: ['data'] | [];
 }) {
   return useMeteorology(
