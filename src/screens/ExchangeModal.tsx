@@ -56,9 +56,9 @@ import { ethereumUtils, gasUtils } from '@/utils';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import logger from '@/utils/logger';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
-import { ChainId, CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
+import { ChainId, CrosschainQuote, Quote } from '@rainbow-me/swaps';
 import store from '@/redux/store';
-import { getCrosschainSwapServiceTime } from '@/handlers/swap';
+import { getCrosschainSwapServiceTime, isUnwrapNative, isWrapNative } from '@/handlers/swap';
 import useParamsForExchangeModal from '@/hooks/useParamsForExchangeModal';
 import { Wallet } from '@ethersproject/wallet';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
@@ -76,7 +76,6 @@ import { AddressOrEth, ParsedAsset } from '@/__swaps__/types/assets';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { estimateSwapGasLimit } from '@/raps/actions';
 import { estimateCrosschainSwapGasLimit } from '@/raps/actions/crosschainSwap';
-import { isUnwrapEthWorklet, isWrapEthWorklet } from '@/__swaps__/utils/swaps';
 import { parseGasParamAmounts } from '@/parsers';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
@@ -453,12 +452,12 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
 
         const isWrapOrUnwrapEth = () => {
           return (
-            isWrapEthWorklet({
+            isWrapNative({
               buyTokenAddress: tradeDetails?.buyTokenAddress,
               sellTokenAddress: tradeDetails?.sellTokenAddress,
               chainId: inputCurrency?.chainId || ChainId.mainnet,
             }) ||
-            isUnwrapEthWorklet({
+            isUnwrapNative({
               buyTokenAddress: tradeDetails?.buyTokenAddress,
               sellTokenAddress: tradeDetails?.sellTokenAddress,
               chainId: inputCurrency?.chainId || ChainId.mainnet,

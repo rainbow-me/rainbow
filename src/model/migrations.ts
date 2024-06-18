@@ -37,8 +37,6 @@ import { queryClient } from '@/react-query';
 import { favoritesQueryKey } from '@/resources/favorites';
 import { EthereumAddress, RainbowToken } from '@/entities';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { userAssetsStore } from '@/state/assets/userAssets';
-import { Hex } from 'viem';
 
 export default async function runMigrations() {
   // get current version

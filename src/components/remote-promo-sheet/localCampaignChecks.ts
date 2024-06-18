@@ -1,6 +1,7 @@
 import { NotificationsPromoCampaign } from './notificationsPromoCampaign';
 import { analytics } from '@/analytics';
-import { logger } from '@/utils';
+import { logger } from '@/logger';
+import { InteractionManager } from 'react-native';
 
 export enum CampaignKey {
   notificationsLaunch = 'notifications_launch',
@@ -30,22 +31,24 @@ export interface Campaign {
 export const activeCampaigns: Campaign[] = [NotificationsPromoCampaign];
 
 export const runLocalCampaignChecks = async (): Promise<boolean> => {
-  logger.log('Campaigns: Running Checks');
+  logger.debug('Campaigns: Running Checks');
   for (const campaign of activeCampaigns) {
-    const response = await campaign.check();
-    if (response === GenericCampaignCheckResponse.activated) {
-      analytics.track('Viewed Feature Promo', {
-        campaign: campaign.campaignKey,
-      });
-      return true;
-    }
-    if (response !== GenericCampaignCheckResponse.nonstarter) {
-      analytics.track('Excluded from Feature Promo', {
-        campaign: campaign.campaignKey,
-        exclusion: response,
-        type: campaign.checkType,
-      });
-    }
+    InteractionManager.runAfterInteractions(async () => {
+      const response = await campaign.check();
+      if (response === GenericCampaignCheckResponse.activated) {
+        analytics.track('Viewed Feature Promo', {
+          campaign: campaign.campaignKey,
+        });
+        return true;
+      }
+      if (response !== GenericCampaignCheckResponse.nonstarter) {
+        analytics.track('Excluded from Feature Promo', {
+          campaign: campaign.campaignKey,
+          exclusion: response,
+          type: campaign.checkType,
+        });
+      }
+    });
   }
   return false;
 };

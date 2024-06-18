@@ -59,7 +59,7 @@ function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetW
   const initialInputNativeValue = Number(mulWorklet(initialInputAmount, initialSelectedInputAsset?.price?.value ?? 0)).toLocaleString(
     'en-US',
     {
-      useGrouping: true,
+      useGrouping: false,
       minimumFractionDigits: nativeCurrency === 'ETH' ? undefined : decimals,
       maximumFractionDigits: decimals,
     }
@@ -891,6 +891,11 @@ export function useSwapInputsController({
             return;
           }
 
+          if (didInputAssetChange) {
+            inputMethod.value = 'inputAmount';
+            sliderXPosition.value = withSpring(SLIDER_WIDTH / 2, snappySpringConfig);
+          }
+
           const assetBalanceDisplay = internalSelectedInputAsset.value?.balance.display ?? '';
 
           const inputAmount = niceIncrementFormatter({
@@ -899,8 +904,8 @@ export function useSwapInputsController({
             inputAssetNativePrice: inputNativePrice.value,
             assetBalanceDisplay,
             niceIncrement: niceIncrement.value,
-            percentageToSwap: percentageToSwap.value,
-            sliderXPosition: sliderXPosition.value,
+            percentageToSwap: didInputAssetChange ? 0.5 : percentageToSwap.value,
+            sliderXPosition: didInputAssetChange ? SLIDER_WIDTH / 2 : sliderXPosition.value,
             stripSeparators: true,
             isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
           });

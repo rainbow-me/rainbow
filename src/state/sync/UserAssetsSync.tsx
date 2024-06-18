@@ -6,7 +6,7 @@ import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { selectUserAssetsList, selectorFilterByUserChains } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
-import { useUserAssets } from '../resources/assets';
+import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
 
 export const UserAssetsSync = memo(function UserAssetsSync() {
   const { accountAddress: currentAddress, nativeCurrency: currentCurrency } = useAccountSettings();
