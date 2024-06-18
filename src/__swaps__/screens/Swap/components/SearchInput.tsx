@@ -31,7 +31,6 @@ const CLOSE_LABEL = i18n.t(i18n.l.button.close);
 const PASTE_LABEL = i18n.t(i18n.l.button.paste);
 
 export const SearchInput = ({
-  asset,
   handleExitSearchWorklet,
   handleFocusSearchWorklet,
   output,
@@ -154,7 +153,6 @@ export const SearchInput = ({
                   </Box>
                 </Column>
                 <AnimatedInput
-                  testID={'token-to-buy-input'}
                   animatedProps={searchInputValue}
                   onChangeText={output ? onOutputSearchQueryChange : onInputSearchQueryChange}
                   onBlur={() => {

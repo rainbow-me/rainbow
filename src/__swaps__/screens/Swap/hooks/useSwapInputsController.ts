@@ -489,8 +489,6 @@ export function useSwapInputsController({
         }),
       ]);
 
-      console.log(quoteResponse);
-
       const quotedInputAmount =
         lastTypedInputParam === 'outputAmount'
           ? Number(

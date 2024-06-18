@@ -24,8 +24,8 @@ import {
   afterAllcleanApp,
   fetchElementAttributes,
   tap,
-  delayTime,
   tapByText,
+  delayTime,
 } from './helpers';
 
 import { expect } from '@jest/globals';
@@ -59,31 +59,30 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   it('Should open swap screen with 50% inputAmount for inputAsset', async () => {
-    await tap('swap-button');
-
-    // currently needed due to detox hanging on swap quotes
     await device.disableSynchronization();
+    await tap('swap-button');
+    await delayTime('long');
     await tap('token-to-buy-dai-1');
     const swapInput = await fetchElementAttributes('swap-asset-input');
 
     // expect inputAsset === .5 * eth balance
-    expect(swapInput.elements[0].label).toContain('Ethereum');
-    expect(swapInput.elements[0].label).toContain('10');
+    expect(swapInput.label).toContain('ETH');
+    expect(swapInput.label).toContain('10');
   });
 
   it('Should be able to go to review and execute a swap', async () => {
     await tapByText('Review');
-    await delayTime('long');
     const reviewActionElements = await fetchElementAttributes('swap-action-button');
     expect(reviewActionElements.elements[0].label).toContain('ETH');
     expect(reviewActionElements.elements[1].label).toContain('DAI');
     expect(reviewActionElements.elements[2].label).toContain('Tap to Swap');
+    await delayTime('long');
     await tapByText('Tap to Swap');
   });
 
-  it('Should be able to see pending swap in activity', async () => {
+  it('Should be able to verify swap is happening', async () => {
     // allow swap to execute
-    await delayTime('long');
+    await delayTime('very-long');
     const activityListElements = await fetchElementAttributes('wallet-activity-list');
     expect(activityListElements.label).toContain('ETH');
     expect(activityListElements.label).toContain('DAI');
