@@ -615,10 +615,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return { label: swapping, disabled: true };
     }
 
-    if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
-      return { icon: '􀎽', label: tapToSwap, disabled: false };
-    }
-
     if (configProgress.value === NavigationSteps.SHOW_GAS) {
       return { icon: '􀆅', label: save, disabled: false };
     }
@@ -670,6 +666,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
     if (isQuoteError) {
       return { label: errorLabel, disabled: true };
+    }
+
+    if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
+      return { icon: '􀎽', label: tapToSwap, disabled: false };
     }
 
     return { icon: '􀕹', label: review, disabled: false };
