@@ -1941,8 +1941,7 @@
         "fetching_prices": "Fetching",
         "swapping": "Swapping",
         "select_token": "Select Token",
-        "insufficient_funds": "Insufficient Funds",
-        "error": "Error"
+        "insufficient_funds": "Insufficient Funds"
       },
       "aggregators": {
         "rainbow": "Rainbow"

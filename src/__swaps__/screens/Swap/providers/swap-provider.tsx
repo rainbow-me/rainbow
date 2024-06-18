@@ -21,26 +21,26 @@ import { NavigationSteps, useSwapNavigation } from '@/__swaps__/screens/Swap/hoo
 import { useSwapSettings } from '@/__swaps__/screens/Swap/hooks/useSwapSettings';
 import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextStyles';
 import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
-import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
-import { swapsStore } from '@/state/swaps/swapsStore';
-import { isUnwrapEthWorklet, isWrapEthWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
-import { ChainId } from '@/__swaps__/types/chains';
-import { RainbowError, logger } from '@/logger';
-import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
-import { Navigation } from '@/navigation';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-import Routes from '@/navigation/routesNames';
-import { ethereumUtils } from '@/utils';
-import { getFlashbotsProvider, getIsHardhatConnected, getProviderForNetwork, isHardHat } from '@/handlers/web3';
-import { loadWallet } from '@/model/wallet';
-import { walletExecuteRap } from '@/raps/execute';
-import { queryClient } from '@/react-query';
 import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
+import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { ChainId } from '@/__swaps__/types/chains';
 import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
+import { isUnwrapEthWorklet, isWrapEthWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
+import { getFlashbotsProvider, getIsHardhatConnected, getProviderForNetwork, isHardHat } from '@/handlers/web3';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useAccountSettings } from '@/hooks';
 import * as i18n from '@/languages';
+import { RainbowError, logger } from '@/logger';
+import { loadWallet } from '@/model/wallet';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { walletExecuteRap } from '@/raps/execute';
+import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
+import { queryClient } from '@/react-query';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import { ethereumUtils } from '@/utils';
+import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 
 import { equalWorklet, lessThanOrEqualToWorklet, toScaledIntegerWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { analyticsV2 } from '@/analytics';
@@ -59,7 +59,6 @@ const enterAmount = i18n.t(i18n.l.swap.actions.enter_amount);
 const review = i18n.t(i18n.l.swap.actions.review);
 const fetchingPrices = i18n.t(i18n.l.swap.actions.fetching_prices);
 const selectToken = i18n.t(i18n.l.swap.actions.select_token);
-const errorLabel = i18n.t(i18n.l.swap.actions.error);
 const insufficientFunds = i18n.t(i18n.l.swap.actions.insufficient_funds);
 
 interface SwapContextType {
@@ -665,7 +664,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
 
     if (isQuoteError) {
-      return { label: errorLabel, disabled: true };
+      return { icon: '􀕹', label: review, disabled: true };
     }
 
     if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
