@@ -1,4 +1,13 @@
-import { greaterThanWorklet, toScaledIntegerWorklet } from '@/__swaps__/safe-math/SafeMath';
+import {
+  divWorklet,
+  greaterThanWorklet,
+  lessThanWorklet,
+  mulWorklet,
+  powWorklet,
+  subWorklet,
+  toFixedWorklet,
+  toScaledIntegerWorklet,
+} from '@/__swaps__/safe-math/SafeMath';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { add } from '@/__swaps__/utils/numbers';
@@ -8,7 +17,7 @@ import { useUserNativeNetworkAsset } from '@/resources/assets/useUserAsset';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { debounce } from 'lodash';
 import { useEffect } from 'react';
-import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
+import { SharedValue, runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { formatUnits } from 'viem';
 import { create } from 'zustand';
 import { calculateGasFee } from '../hooks/useEstimatedGasFee';
@@ -75,6 +84,24 @@ const getHasEnoughFundsForGas = (quote: Quote, gasFee: string, nativeNetworkAsse
   return lessThan(totalNativeSpentInTx, userBalance);
 };
 
+const BUFFER_FACTOR = 1.3;
+function updateMaxSwappableAmount(internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>, gasFee: string) {
+  internalSelectedInputAsset.modify(asset => {
+    'worklet';
+
+    if (!asset?.isNativeAsset) return asset;
+
+    const gasFeeNativeCurrency = divWorklet(gasFee, powWorklet(10, asset.decimals));
+    const gasFeeWithBuffer = toFixedWorklet(mulWorklet(gasFeeNativeCurrency, BUFFER_FACTOR), asset.decimals);
+    const maxSwappableAmount = subWorklet(asset.balance.amount, gasFeeWithBuffer);
+
+    return {
+      ...asset,
+      maxSwappableAmount: lessThanWorklet(maxSwappableAmount, 0) ? '0' : maxSwappableAmount,
+    };
+  });
+}
+
 export function SyncGasStateToSharedValues() {
   const { hasEnoughFundsForGas, internalSelectedInputAsset, SwapInputController } = useSwapContext();
 
@@ -89,6 +116,8 @@ export function SyncGasStateToSharedValues() {
     if (!gasSettings || !estimatedGasLimit || !quote || 'error' in quote) return;
 
     const gasFee = calculateGasFee(gasSettings, estimatedGasLimit);
+
+    updateMaxSwappableAmount(internalSelectedInputAsset, gasFee);
     hasEnoughFundsForGas.value = getHasEnoughFundsForGas(quote, gasFee, userNativeNetworkAsset);
 
     return () => {
@@ -99,7 +128,7 @@ export function SyncGasStateToSharedValues() {
     gasSettings,
     hasEnoughFundsForGas,
     quote,
-    internalSelectedInputAsset.value?.balance.amount,
+    internalSelectedInputAsset,
     SwapInputController.inputValues.value.inputAmount,
     userNativeNetworkAsset,
     isFetching,

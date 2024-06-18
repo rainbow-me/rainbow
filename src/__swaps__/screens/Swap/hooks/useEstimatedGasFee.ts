@@ -5,10 +5,10 @@ import ethereumUtils, { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { useMemo } from 'react';
 import { formatUnits } from 'viem';
 
+import { useAccountSettings } from '@/hooks';
 import { useSyncedSwapQuoteStore } from '../providers/SyncSwapStateAndSharedValues';
 import { GasSettings } from './useCustomGas';
 import { useSwapEstimatedGasLimit } from './useSwapEstimatedGasLimit';
-import { useAccountSettings } from '@/hooks';
 
 function safeBigInt(value: string) {
   try {
@@ -40,15 +40,15 @@ export function useEstimatedGasFee({
     if (!gasLimit || !gasSettings || !nativeNetworkAsset?.price) return;
 
     const fee = calculateGasFee(gasSettings, gasLimit);
-    const networkAssetPrice = nativeNetworkAsset.price.value?.toString();
 
+    const networkAssetPrice = nativeNetworkAsset.price.value?.toString();
     if (!networkAssetPrice) return `${formatNumber(weiToGwei(fee))} Gwei`;
 
     const feeFormatted = formatUnits(safeBigInt(fee), nativeNetworkAsset.decimals).toString();
     const feeInUserCurrency = multiply(networkAssetPrice, feeFormatted);
 
     return convertAmountToNativeDisplayWorklet(feeInUserCurrency, nativeCurrency);
-  }, [gasLimit, gasSettings, nativeCurrency, nativeNetworkAsset]);
+  }, [gasLimit, gasSettings, nativeCurrency, nativeNetworkAsset?.decimals, nativeNetworkAsset?.price]);
 }
 
 export function useSwapEstimatedGasFee(gasSettings: GasSettings | undefined) {
