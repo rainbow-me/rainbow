@@ -20,6 +20,7 @@ import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { ethereumUtils } from '@/utils';
 import { ChainId } from '@/__swaps__/types/chains';
 import * as i18n from '@/languages';
+import { triggerHapticFeedback } from '@/screens/points/constants';
 
 const SELECT_LABEL = i18n.t(i18n.l.swap.select);
 const NO_BALANCE_LABEL = i18n.t(i18n.l.swap.no_balance);
@@ -106,7 +107,7 @@ function SwapInputIcon() {
 }
 
 function OutputAssetBalanceBadge() {
-  const { internalSelectedOutputAsset } = useSwapContext();
+  const { internalSelectedOutputAsset, sliderXPosition, SwapInputController } = useSwapContext();
 
   const label = useDerivedValue(() => {
     const asset = internalSelectedOutputAsset.value;
@@ -116,7 +117,28 @@ function OutputAssetBalanceBadge() {
     return asset ? balance : TOKEN_TO_GET_LABEL;
   });
 
-  return <BalanceBadge label={label} />;
+  const onChangeOutputAmount = useCallback(() => {
+    'worklet';
+    const asset = internalSelectedOutputAsset.value;
+    const hasBalance = Number(asset?.balance.amount) > 0 && asset?.balance.display;
+    if (!hasBalance) return;
+
+    const isAlreadyMax = SwapInputController.percentageToSwap.value === 1;
+    if (isAlreadyMax) {
+      runOnJS(triggerHapticFeedback)('impactMedium');
+      return;
+    }
+
+    // TODO: This doesn't work... think about this more
+    const outputAmount = asset?.balance.amount;
+    runOnJS(SwapInputController.onTypedNumber)(Number(outputAmount), 'outputAmount');
+  }, [internalSelectedOutputAsset, SwapInputController]);
+
+  return (
+    <GestureHandlerV1Button onPressWorklet={onChangeOutputAmount}>
+      <BalanceBadge label={label} />
+    </GestureHandlerV1Button>
+  );
 }
 
 export function SwapOutputAsset() {

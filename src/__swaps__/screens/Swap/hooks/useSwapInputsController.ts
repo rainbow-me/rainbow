@@ -810,6 +810,8 @@ export function useSwapInputsController({
         }
         if (inputMethod.value === 'outputAmount' && !equalWorklet(current.values.outputAmount, previous.values.outputAmount)) {
           // If the number in the output field changes
+
+          console.log('here');
           if (equalWorklet(current.values.outputAmount, 0)) {
             // If the output amount was set to 0
             quoteFetchingInterval.stop();
@@ -968,6 +970,7 @@ export function useSwapInputsController({
     inputMethod,
     inputValues,
     niceIncrement,
+    onTypedNumber,
     onChangedPercentage,
     percentageToSwap,
     quoteFetchingInterval,
