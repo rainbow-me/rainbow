@@ -577,7 +577,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - react-native-screen-corner-radius (0.2.0):
     - React
-  - react-native-skia (1.3.0):
+  - react-native-skia (1.3.6):
     - RCT-Folly (= 2021.07.22.00)
     - React
     - React-callinvoker
@@ -782,7 +782,7 @@ PODS:
     - React-Core
   - RNReactNativeHapticFeedback (1.11.0):
     - React-Core
-  - RNReanimated (3.11.0):
+  - RNReanimated (3.12.0):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - ReactCommon/turbomodule/core
@@ -1335,7 +1335,7 @@ SPEC CHECKSUMS:
   react-native-restart: 733a51ad137f15b0f8dc34c4082e55af7da00979
   react-native-safe-area-context: b8979f5eda6ed5903d4dbc885be3846ea3daa753
   react-native-screen-corner-radius: d526152dc1b5816bf298cc7093fcf4af853c17c7
-  react-native-skia: 44fed982cf3f26f27b11ba22194b1f967ab8f468
+  react-native-skia: 608b79ca816d62c72992ddb064ea328ca5523db8
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
   react-native-udp: 96a517e5a121cfe69f4b05eeeafefe00c623debf
@@ -1385,7 +1385,7 @@ SPEC CHECKSUMS:
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
   RNPermissions: 4e3714e18afe7141d000beae3755e5b5fb2f5e05
   RNReactNativeHapticFeedback: 653a8c126a0f5e88ce15ffe280b3ff37e1fbb285
-  RNReanimated: 9d4971e437f38c11fd2c43344ac9d40c330058b1
+  RNReanimated: 62a6c9f90f639612b830824b25ab2cea5d65d162
   RNRudderSdk: 805d4b7064714f3295bf5f152d3812cc67f67a93
   RNScreens: 6a8a3c6b808aa48dca1780df7b73ea524f602c63
   RNSentry: 468d45dc823258945fb1ee04dcd3f252cb57415f
@@ -1409,6 +1409,6 @@ SPEC CHECKSUMS:
   VisionCamera: 1910a51e4c6f6b049650086d343090f267b4c260
   Yoga: 8796b55dba14d7004f980b54bcc9833ee45b28ce
 
-PODFILE CHECKSUM: e5362d24eefcd29c7be1cb477c3dbf0e712787ec
+PODFILE CHECKSUM: 1ac1ff87560da089d48923d6e23aece3726e8947
 
 COCOAPODS: 1.12.1
