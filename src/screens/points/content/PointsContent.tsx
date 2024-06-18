@@ -1,15 +1,31 @@
-import React, { useCallback, useMemo } from 'react';
-import { RefreshControl, Share } from 'react-native';
+import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
+import { RefreshControl, Share, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import { FloatingEmojis } from '@/components/floating-emojis';
-import { Bleed, Box, Column, Columns, Cover, Inline, Inset, Separator, Stack, Text, useForegroundColor } from '@/design-system';
-import { useAccountProfile, useClipboard, useDimensions, useWallets } from '@/hooks';
+import {
+  AccentColorProvider,
+  Bleed,
+  Border,
+  Box,
+  Column,
+  Columns,
+  IconContainer,
+  Inline,
+  Inset,
+  Separator,
+  Space,
+  Stack,
+  Text,
+  TextShadow,
+  globalColors,
+  useColorMode,
+  useForegroundColor,
+} from '@/design-system';
+import { useAccountAccentColor, useAccountProfile, useClipboard, useDimensions, useWallets } from '@/hooks';
 import { useTheme } from '@/theme';
 import { ScrollView } from 'react-native-gesture-handler';
 import MaskedView from '@react-native-masked-view/masked-view';
-import BlurredRainbow from '@/assets/blurredRainbow.png';
-import Planet from '@/assets/planet.png';
 import LinearGradient from 'react-native-linear-gradient';
-import { safeAreaInsetValues } from '@/utils';
+import { measureText, safeAreaInsetValues } from '@/utils';
 import { ButtonPressAnimation } from '@/components/animations';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
@@ -21,9 +37,7 @@ import { address as formatAddress } from '@/utils/abbreviations';
 import { delay } from '@/utils/delay';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { Page } from '@/components/layout';
-import { IS_ANDROID } from '@/env';
-import { ImgixImage } from '@/components/images';
-import { Source } from 'react-native-fast-image';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { LeaderboardRow } from '../components/LeaderboardRow';
 import { Skeleton } from '../components/Skeleton';
 import { InfoCard } from '../components/InfoCard';
@@ -34,6 +48,15 @@ import { RemoteCardCarousel } from '@/components/cards/remote-cards';
 import { usePoints } from '@/resources/points';
 import { GetPointsDataForWalletQuery } from '@/graphql/__generated__/metadataPOST';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
+import { NeonRainbowButtonMask } from '../components/NeonRainbowButtonMask';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { fonts } from '@/styles';
+import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
+import { opacity } from '@/__swaps__/utils/swaps';
+import { LIGHT_SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import FastImage, { Source } from 'react-native-fast-image';
+import EthIcon from '@/assets/eth-icon.png';
+import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 
 const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined }) => {
@@ -151,7 +174,353 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
   );
 };
 
+const Card = ({ borderRadius = 32, children, padding = '12px' }: { borderRadius?: number; children: React.ReactNode; padding?: Space }) => {
+  const { isDarkMode } = useColorMode();
+
+  return (
+    <Box
+      background="surfacePrimary"
+      borderRadius={borderRadius}
+      shadow={isDarkMode ? undefined : '12px'}
+      style={{ backgroundColor: isDarkMode ? '#191A1C' : globalColors.white100 }}
+      width="full"
+    >
+      <Inset space={padding}>{children}</Inset>
+      <Border borderRadius={borderRadius} borderWidth={THICK_BORDER_WIDTH} />
+    </Box>
+  );
+};
+
+const ClaimCard = () => {
+  const { navigate } = useNavigation();
+
+  const unclaimedRewardsEth = '0.12502 ETH';
+  const unclaimedRewardsNativeCurrency = '$375.36';
+
+  return (
+    <Card>
+      <Box alignItems="center" gap={20} paddingBottom="28px" paddingTop="16px">
+        <TextShadow shadowOpacity={0.3}>
+          <Text align="center" color="label" size="20pt" weight="heavy">
+            Available to Claim
+          </Text>
+        </TextShadow>
+        <Box alignItems="center" flexDirection="row" gap={8}>
+          <Bleed vertical="8px">
+            <EthCoinIcon />
+          </Bleed>
+          <TextShadow blur={28} shadowOpacity={0.2}>
+            <Text align="center" color="label" size="44pt" weight="black">
+              {unclaimedRewardsNativeCurrency}
+            </Text>
+          </TextShadow>
+        </Box>
+      </Box>
+      <ButtonPressAnimation
+        onPress={() => navigate(Routes.CLAIM_REWARDS_PANEL)}
+        scaleTo={0.925}
+        style={{
+          alignItems: 'center',
+          alignSelf: 'center',
+          height: 80,
+          justifyContent: 'center',
+          marginVertical: -12,
+          paddingVertical: 12,
+          pointerEvents: 'box-only',
+          width: DEVICE_WIDTH - 40,
+        }}
+      >
+        <MaskedView
+          maskElement={<NeonRainbowButtonMask label={`Claim ${unclaimedRewardsEth}`} />}
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'visible',
+            width: DEVICE_WIDTH,
+          }}
+        >
+          <Bleed vertical={{ custom: 116 }}>
+            <LinearGradient
+              // colors={['#B756A7', '#B756A7', '#DF5337', '#F0D83F', '#57EA5F', '#31BCC4', '#31BCC4', '#31BCC4']}
+              colors={['#B2348C', '#B2348C', '#FF6040', '#FFFF00', '#34FF3B', '#24D2FB', '#24D2FB']}
+              end={{ x: 1, y: 0.5 }}
+              locations={[0, 0.08, 0.29, 0.5, 0.71, 0.92, 1]}
+              start={{ x: 0, y: 0.5 }}
+              style={{ height: 116 + 56 + 116, width: DEVICE_WIDTH }}
+            />
+          </Bleed>
+        </MaskedView>
+      </ButtonPressAnimation>
+    </Card>
+  );
+};
+
+const EarnRewardsCard = () => {
+  return (
+    <Card padding="20px">
+      <Box paddingVertical="8px">
+        <Stack space="20px">
+          <Inline alignHorizontal="center" alignVertical="center" space="10px">
+            <IconContainer height={12} width={24}>
+              <TextShadow>
+                <Text align="center" color="accent" size="icon 17px" weight="heavy">
+                  􀐾
+                </Text>
+              </TextShadow>
+            </IconContainer>
+            <TextShadow shadowOpacity={0.2}>
+              <Text align="center" color="label" size="20pt" weight="heavy">
+                Earn ETH Rewards
+              </Text>
+            </TextShadow>
+          </Inline>
+          <Text align="center" color="labelQuaternary" size="13pt / 135%" weight="semibold">
+            Every week, top points holders and the biggest weekly points earners will receive a portion of Rainbow’s onchain revenue.
+            Collect points by swapping or transacting in Rainbow.
+          </Text>
+        </Stack>
+      </Box>
+    </Card>
+  );
+};
+
+const EarningsCard = () => {
+  const labelQuaternary = useForegroundColor('labelQuaternary');
+
+  const totalClaimedEth = '0.28125 ETH';
+  const totalClaimedNativeCurrency = '$1,024.32';
+
+  return (
+    <Card padding="20px">
+      <Box gap={24} paddingVertical="4px" width="full">
+        <Inline alignHorizontal="justify" alignVertical="center">
+          <Inline alignVertical="center" space="10px">
+            <IconContainer height={12} width={24}>
+              <TextShadow>
+                <Text align="center" color="accent" size="icon 15px" weight="heavy">
+                  􀐾
+                </Text>
+              </TextShadow>
+            </IconContainer>
+            <TextShadow shadowOpacity={0.2}>
+              <Text align="center" color="label" size="17pt" weight="heavy">
+                My Earnings
+              </Text>
+            </TextShadow>
+          </Inline>
+          <ButtonPressAnimation>
+            <IconContainer height={12} width={24}>
+              <Text align="center" color={{ custom: opacity(labelQuaternary, 0.24) }} size="icon 15px" weight="heavy">
+                􀁝
+              </Text>
+            </IconContainer>
+          </ButtonPressAnimation>
+        </Inline>
+        <Columns alignHorizontal="justify" alignVertical="center">
+          <Box alignItems="center" flexDirection="row" gap={10}>
+            <Bleed vertical="8px">
+              <EthCoinIcon size={32} />
+            </Bleed>
+            <Stack space="10px">
+              <Text color="labelTertiary" size="13pt" weight="bold">
+                Claimed Earnings
+              </Text>
+              <TextShadow shadowOpacity={0.2}>
+                <Text color="label" size="17pt" weight="heavy">
+                  {totalClaimedEth}
+                </Text>
+              </TextShadow>
+            </Stack>
+          </Box>
+          <Stack alignHorizontal="right" space="10px">
+            <Text align="right" color="labelTertiary" size="13pt" weight="bold">
+              Current Value
+            </Text>
+            <TextShadow shadowOpacity={0.2}>
+              <Text align="right" color="label" size="17pt" weight="heavy">
+                {totalClaimedNativeCurrency}
+              </Text>
+            </TextShadow>
+          </Stack>
+        </Columns>
+      </Box>
+    </Card>
+  );
+};
+
+const TotalEarnedByRainbowUsers = () => {
+  const totalEthEarnedByUsers = '42.825 ETH';
+
+  return (
+    <Box alignItems="center" justifyContent="center" width="full">
+      <Columns alignHorizontal="center" alignVertical="center" space="6px">
+        <Column width="content">
+          <Text align="center" color="labelTertiary" size="13pt" weight="bold">
+            Rainbow users have earned
+          </Text>
+        </Column>
+        <Column width="content">
+          <Box alignItems="center" flexDirection="row">
+            <Bleed vertical="4px">
+              <EthCoinIcon borderWidth={1} size={14} style={{ marginRight: 4 }} />
+            </Bleed>
+            <TextShadow blur={12} shadowOpacity={0.3}>
+              <Text align="center" color="labelSecondary" size="13pt" weight="heavy">
+                {totalEthEarnedByUsers}
+              </Text>
+            </TextShadow>
+          </Box>
+        </Column>
+      </Columns>
+    </Box>
+  );
+};
+
+const EthCoinIcon = ({
+  borderWidth = THICK_BORDER_WIDTH,
+  size = 44,
+  style,
+}: {
+  borderWidth?: number;
+  size?: number;
+  style?: StyleProp<ViewStyle>;
+}) => {
+  return (
+    <Box style={[{ height: size, overflow: 'hidden', width: size }, style]}>
+      <FastImage source={EthIcon as Source} style={{ height: size, width: size }} />
+      <MaskedView
+        maskElement={<Border borderColor="label" borderRadius={size / 2} borderWidth={borderWidth} />}
+        style={{ height: size, position: 'absolute', width: size }}
+      >
+        <LinearGradient
+          colors={[
+            'rgba(255, 255, 255, 0)',
+            'rgba(255, 255, 255, 0)',
+            'rgba(255, 255, 255, 0.12)',
+            'rgba(255, 255, 255, 0)',
+            'rgba(255, 255, 255, 0)',
+          ]}
+          end={{ x: 1, y: 1 }}
+          locations={[0, 0.09, 0.41, 0.78, 1]}
+          start={{ x: 0, y: 0.5 }}
+          style={{ height: size, position: 'absolute', width: size }}
+        />
+      </MaskedView>
+    </Box>
+  );
+};
+
+const NextDropCard = () => {
+  const { isDarkMode } = useColorMode();
+  const separatorSecondary = useForegroundColor('separatorSecondary');
+
+  const formattedTimeUntilNextDrop = '2d 19h 24m';
+
+  return (
+    <Card>
+      <Box alignItems="center" flexDirection="row" justifyContent="space-between" paddingLeft="8px" width="full">
+        <Box alignItems="center" flexDirection="row">
+          <IconContainer size={24}>
+            <TextShadow>
+              <Text color="accent" size="icon 17px" weight="heavy">
+                􀐫
+              </Text>
+            </TextShadow>
+          </IconContainer>
+          <Box gap={10} paddingLeft="10px">
+            <Stack space="10px">
+              <TextShadow shadowOpacity={0.2}>
+                <Text color="label" size="17pt" weight="heavy">
+                  Next Drop
+                </Text>
+              </TextShadow>
+              <Text color="labelTertiary" size="13pt" weight="bold">
+                Tuesday 4:20pm
+              </Text>
+            </Stack>
+          </Box>
+        </Box>
+        <Box
+          alignItems="center"
+          background="fillQuaternary"
+          borderRadius={18}
+          height={{ custom: 36 }}
+          justifyContent="center"
+          margin={{ custom: 2 }}
+          paddingHorizontal="12px"
+          style={{
+            backgroundColor: isDarkMode ? opacity(LIGHT_SEPARATOR_COLOR, 0.05) : globalColors.white100,
+            borderColor: separatorSecondary,
+            borderCurve: 'continuous',
+            borderWidth: THICK_BORDER_WIDTH,
+            overflow: 'hidden',
+          }}
+        >
+          <TextShadow shadowOpacity={0.24}>
+            <Text align="center" color="labelSecondary" size="17pt" weight="heavy">
+              {formattedTimeUntilNextDrop}
+            </Text>
+          </TextShadow>
+        </Box>
+      </Box>
+    </Card>
+  );
+};
+
+const getTextWidth = async (text: string | undefined) => {
+  const { width } = await measureText(text, {
+    fontSize: 44,
+    fontWeight: fonts.weight.black,
+    letterSpacing: typeHierarchy.text['44pt'].letterSpacing,
+  });
+  return width;
+};
+
+const RainbowText = ({ totalPointsString }: { totalPointsString: string | undefined }) => {
+  const [textWidth, setTextWidth] = useState<number | undefined>((totalPointsString?.length ?? 0) * 32);
+
+  const totalPointsMaskSize = Math.min((textWidth ?? 32 * (totalPointsString?.length ?? 0)) + 20 * 2, DEVICE_WIDTH);
+
+  useLayoutEffect(() => {
+    if (totalPointsString && totalPointsString.length > 0) {
+      getTextWidth(totalPointsString).then(setTextWidth);
+    }
+  }, [totalPointsString]);
+
+  return (
+    <MaskedView
+      style={{
+        alignItems: 'center',
+        height: 31,
+        pointerEvents: 'none',
+      }}
+      androidRenderingMode="software"
+      maskElement={
+        <TextShadow blur={20} shadowOpacity={0.4}>
+          <Text color="label" size="44pt" weight="black">
+            {totalPointsString}
+          </Text>
+        </TextShadow>
+      }
+    >
+      <LinearGradient
+        colors={['#B756A7', '#B756A7', '#DF5337', '#F0D83F', '#57EA5F', '#31BCC4', '#31BCC4', '#31BCC4']}
+        end={{ x: 0, y: 0.5 }}
+        locations={[0, 0.08, 0.248, 0.416, 0.584, 0.752, 0.92, 1]}
+        start={{ x: 1, y: 0.5 }}
+        style={{
+          height: 71,
+          left: -24,
+          top: -20,
+          width: totalPointsMaskSize,
+        }}
+      />
+    </MaskedView>
+  );
+};
+
 export default function PointsContent() {
+  const { isDarkMode } = useColorMode();
   const { colors } = useTheme();
   const { name } = useRoute();
   const { width: deviceWidth } = useDimensions();
@@ -159,6 +528,7 @@ export default function PointsContent() {
   const { accountAddress, accountENS } = useAccountProfile();
   const { setClipboard } = useClipboard();
   const { isReadOnlyWallet } = useWallets();
+  const { highContrastAccentColor: accountColor } = useAccountAccentColor();
 
   const {
     data: points,
@@ -210,7 +580,6 @@ export default function PointsContent() {
   }, [dataUpdatedAt, refetch]);
 
   const totalPointsString = points?.points?.user?.earnings?.total.toLocaleString('en-US');
-  const totalPointsMaskSize = 60 * Math.max(totalPointsString?.length ?? 0, 4);
 
   const rank = points?.points?.user.stats.position.current;
   const isUnranked = !!points?.points?.user?.stats?.position?.unranked;
@@ -227,262 +596,242 @@ export default function PointsContent() {
     : undefined;
 
   return (
-    <Box height="full" background="surfacePrimary" as={Page} flex={1}>
+    <Box height="full" as={Page} flex={1} style={{ backgroundColor: isDarkMode ? globalColors.grey100 : globalColors.white100 }}>
       <ScrollView
+        refreshControl={<RefreshControl onRefresh={refresh} refreshing={isRefreshing} tintColor={colors.alpha(colors.blueGreyDark, 0.4)} />}
         scrollIndicatorInsets={{
           bottom: TAB_BAR_HEIGHT - safeAreaInsetValues.bottom,
+          top: 12,
         }}
         contentContainerStyle={{
-          paddingBottom: TAB_BAR_HEIGHT + 32,
           height: !shouldDisplayError ? undefined : '100%',
+          paddingBottom: TAB_BAR_HEIGHT + 32,
         }}
         showsVerticalScrollIndicator={!shouldDisplayError}
-        refreshControl={<RefreshControl onRefresh={refresh} refreshing={isRefreshing} tintColor={colors.alpha(colors.blueGreyDark, 0.4)} />}
       >
-        {!shouldDisplayError ? (
-          <Inset horizontal="20px" top="10px">
-            <Stack space="32px">
-              <Bleed bottom={{ custom: 14 }}>
-                <Box flexDirection="row" alignItems="center" height={{ custom: 51 }} paddingLeft="4px">
-                  {canDisplayTotalPoints ? (
-                    <MaskedView
-                      style={{
-                        alignItems: 'center',
-                        height: 51,
-                        maxWidth: deviceWidth - 60 - 20 - 20,
-                      }}
-                      androidRenderingMode="software"
-                      maskElement={
-                        <Box paddingVertical="10px">
-                          <Text color="label" size="44pt" weight="black">
-                            {totalPointsString}
-                          </Text>
-                        </Box>
-                      }
-                    >
-                      <ImgixImage
-                        source={BlurredRainbow as Source}
-                        size={totalPointsMaskSize}
-                        style={{
-                          width: totalPointsMaskSize,
-                          height: totalPointsMaskSize,
-                          left: ios ? -100 : -144,
-                          top: -totalPointsMaskSize + (totalPointsString?.length ?? 0) * 5 + 80,
-                        }}
-                      />
-                    </MaskedView>
-                  ) : (
-                    <Skeleton height={31} width={200} />
-                  )}
-                  <Cover>
-                    <Box alignItems="flex-end" width="full" justifyContent="center" height="full" paddingRight="4px">
-                      <ImgixImage
-                        source={Planet as Source}
-                        size={60.19}
-                        style={{
-                          width: 60.19,
-                          height: 36,
-                        }}
-                      />
-                    </Box>
-                  </Cover>
-                </Box>
-              </Bleed>
-              {!!cardIds.length && !isReadOnlyWallet && (
-                <>
-                  <RemoteCardCarousel key="remote-cards" />
-                  <Separator color="separatorTertiary" thickness={1} />
-                </>
-              )}
-              <InfoCards points={points} />
-              {!isReadOnlyWallet && (
-                <>
-                  <Stack space="16px">
-                    <Inset left="4px">
-                      <Text weight="bold" color="labelTertiary" size="15pt">
-                        {i18n.t(i18n.l.points.points.referral_code)}
-                      </Text>
-                    </Inset>
-                    {referralCode ? (
-                      <Columns space="12px">
-                        <Column width="1/2">
-                          {/* @ts-ignore */}
-                          <FloatingEmojis distance={250} duration={500} fadeOut={false} scaleTo={0} size={50} wiggleFactor={0}>
-                            {({ onNewEmoji }: { onNewEmoji: () => void }) => (
-                              <ButtonPressAnimation onPress={() => onPressCopy(onNewEmoji)} overflowMargin={50}>
-                                <Box
-                                  background="surfaceSecondaryElevated"
-                                  shadow="12px"
-                                  borderRadius={18}
-                                  height={{ custom: 48 }}
-                                  width="full"
-                                  justifyContent="center"
-                                  alignItems="center"
-                                >
-                                  <Text size="20pt" align="center" color="label" weight="heavy">
-                                    {referralCode}
-                                  </Text>
-                                </Box>
-                              </ButtonPressAnimation>
-                            )}
-                          </FloatingEmojis>
-                        </Column>
-                        <Column width="1/2">
-                          <ButtonPressAnimation
-                            onPress={() => {
-                              if (referralUrl) {
-                                analyticsV2.track(analyticsV2.event.pointsPointsScreenPressedShareReferralLinkButton);
-                                Share.share(
-                                  IS_ANDROID
-                                    ? {
-                                        message: referralUrl,
-                                      }
-                                    : {
-                                        url: referralUrl,
-                                      }
-                                );
-                              }
-                            }}
-                            overflowMargin={50}
-                          >
-                            <Box
-                              background="surfaceSecondaryElevated"
-                              shadow="12px"
-                              borderRadius={18}
-                              height={{ custom: 48 }}
-                              width="full"
-                              justifyContent="center"
-                              alignItems="center"
+        <AccentColorProvider color={accountColor}>
+          <Inset horizontal="20px" top="12px">
+            <Stack space="24px">
+              {/* <EarnRewardsCard /> */}
+              <Stack space="20px">
+                <ClaimCard />
+                <EarningsCard />
+              </Stack>
+              <TotalEarnedByRainbowUsers />
+              <NextDropCard />
+              <Separator color="separatorSecondary" thickness={1} />
+            </Stack>
+          </Inset>
+          {!shouldDisplayError ? (
+            <Inset horizontal="20px" top="24px">
+              <Stack space="28px">
+                <Stack space="20px">
+                  <Text color="label" size="20pt" style={{ marginLeft: 4 }} weight="heavy">
+                    My Points
+                  </Text>
+                  <Box flexDirection="row" alignItems="center" height={{ custom: 31 }} paddingLeft="4px">
+                    {canDisplayTotalPoints ? <RainbowText totalPointsString={totalPointsString} /> : <Skeleton height={31} width={200} />}
+                  </Box>
+                </Stack>
+                {!!cardIds.length && !isReadOnlyWallet && <RemoteCardCarousel key="remote-cards" />}
+                <InfoCards points={points} />
+                <Separator color="separatorSecondary" thickness={1} />
+                {!isReadOnlyWallet && (
+                  <>
+                    <Stack space="16px">
+                      <Inset left="4px">
+                        <Text weight="bold" color="labelTertiary" size="15pt">
+                          {i18n.t(i18n.l.points.points.referral_code)}
+                        </Text>
+                      </Inset>
+                      {referralCode ? (
+                        <Columns space="12px">
+                          <Column width="1/2">
+                            {/* @ts-expect-error FloatingEmojis is an old JS component */}
+                            <FloatingEmojis distance={250} duration={500} fadeOut={false} scaleTo={0} size={50} wiggleFactor={0}>
+                              {({ onNewEmoji }: { onNewEmoji: () => void }) => (
+                                <ButtonPressAnimation onPress={() => onPressCopy(onNewEmoji)} overflowMargin={50}>
+                                  <Box
+                                    background="surfaceSecondaryElevated"
+                                    shadow="12px"
+                                    borderRadius={18}
+                                    height={{ custom: 48 }}
+                                    width="full"
+                                    justifyContent="center"
+                                    alignItems="center"
+                                    style={{ backgroundColor: isDarkMode ? '#191A1C' : globalColors.white100 }}
+                                  >
+                                    <Text size="20pt" align="center" color="label" weight="heavy">
+                                      {referralCode}
+                                    </Text>
+                                    <Border borderRadius={18} />
+                                  </Box>
+                                </ButtonPressAnimation>
+                              )}
+                            </FloatingEmojis>
+                          </Column>
+                          <Column width="1/2">
+                            <ButtonPressAnimation
+                              onPress={() => {
+                                if (referralUrl) {
+                                  analyticsV2.track(analyticsV2.event.pointsPointsScreenPressedShareReferralLinkButton);
+                                  Share.share(
+                                    IS_ANDROID
+                                      ? {
+                                          message: referralUrl,
+                                        }
+                                      : {
+                                          url: referralUrl,
+                                        }
+                                  );
+                                }
+                              }}
+                              overflowMargin={50}
                             >
-                              <Bleed vertical="10px">
+                              <Box
+                                background="surfaceSecondaryElevated"
+                                shadow="12px"
+                                borderRadius={18}
+                                height={{ custom: 48 }}
+                                width="full"
+                                justifyContent="center"
+                                alignItems="center"
+                                style={{ backgroundColor: isDarkMode ? '#191A1C' : globalColors.white100 }}
+                              >
                                 <MaskedView
                                   style={{
                                     justifyContent: 'center',
                                     alignItems: 'center',
-                                    height: 30,
-                                    width: 131,
+                                    height: 48,
+                                    width: '100%',
                                   }}
                                   maskElement={
-                                    <Box
-                                      alignItems="center"
-                                      flexDirection="row"
-                                      style={{ gap: 4 }}
-                                      paddingVertical="10px"
-                                      justifyContent="center"
-                                    >
-                                      <Text align="center" weight="heavy" color="label" size="15pt">
-                                        􀈂
-                                      </Text>
-                                      <Text align="center" weight="heavy" color="label" size="16px / 22px (Deprecated)">
-                                        {i18n.t(i18n.l.points.points.share_link)}
-                                      </Text>
+                                    <Box alignItems="center" flexDirection="row" height="full" style={{ gap: 4 }} justifyContent="center">
+                                      <TextShadow blur={12}>
+                                        <Text align="center" weight="heavy" color="label" size="15pt">
+                                          􀈂
+                                        </Text>
+                                      </TextShadow>
+                                      <TextShadow blur={12}>
+                                        <Text align="center" weight="heavy" color="label" size="16px / 22px (Deprecated)">
+                                          {i18n.t(i18n.l.points.points.share_link)}
+                                        </Text>
+                                      </TextShadow>
                                     </Box>
                                   }
                                 >
                                   <LinearGradient
                                     style={{
                                       width: 131,
-                                      height: '100%',
+                                      height: 48,
                                     }}
                                     colors={['#00E7F3', '#57EA5F']}
                                     start={{ x: 0, y: 0.5 }}
                                     end={{ x: 1, y: 0.5 }}
                                   />
                                 </MaskedView>
-                              </Bleed>
-                            </Box>
-                          </ButtonPressAnimation>
-                        </Column>
-                      </Columns>
-                    ) : (
-                      <Columns space="12px">
-                        <Column width="1/2">
-                          <Skeleton width={(deviceWidth - 40 - 12) / 2} height={48} />
-                        </Column>
-                        <Column width="1/2">
-                          <Skeleton width={(deviceWidth - 40 - 12) / 2} height={48} />
-                        </Column>
-                      </Columns>
-                    )}
-                    <Inset horizontal="4px">
-                      <Text color="labelQuaternary" size="13pt" weight="semibold" align="left">
-                        {i18n.t(i18n.l.points.points.earn_points_for_referring)}
-                      </Text>
-                    </Inset>
-                  </Stack>
-                  <Separator color="separatorTertiary" thickness={1} />
-                </>
-              )}
-              <Stack space="16px">
-                <Inset left="4px">
-                  <Text color="label" size="20pt" weight="heavy">
-                    {i18n.t(i18n.l.points.points.leaderboard)}
-                  </Text>
-                </Inset>
-                {canDisplayCurrentRank ? (
-                  <Box
-                    background="surfaceSecondaryElevated"
-                    shadow="12px"
-                    as={LinearGradient}
-                    style={{ padding: 1.5, borderRadius: 18 }}
-                    colors={['#31BCC4', '#57EA5F', '#F0D83F', '#DF5337', '#B756A7']}
-                    useAngle={true}
-                    angle={-15}
-                    angleCenter={{ x: 0.5, y: 0.5 }}
-                  >
+                                <Border borderRadius={18} />
+                              </Box>
+                            </ButtonPressAnimation>
+                          </Column>
+                        </Columns>
+                      ) : (
+                        <Columns space="12px">
+                          <Column width="1/2">
+                            <Skeleton width={(deviceWidth - 40 - 12) / 2} height={48} />
+                          </Column>
+                          <Column width="1/2">
+                            <Skeleton width={(deviceWidth - 40 - 12) / 2} height={48} />
+                          </Column>
+                        </Columns>
+                      )}
+                      <Inset horizontal="4px">
+                        <Text color="labelQuaternary" size="13pt" weight="semibold" align="left">
+                          {i18n.t(i18n.l.points.points.earn_points_for_referring)}
+                        </Text>
+                      </Inset>
+                    </Stack>
+                    <Separator color="separatorSecondary" thickness={1} />
+                  </>
+                )}
+                <Stack space="16px">
+                  <Inset left="4px">
+                    <Text color="label" size="20pt" weight="heavy">
+                      {i18n.t(i18n.l.points.points.leaderboard)}
+                    </Text>
+                  </Inset>
+                  {canDisplayCurrentRank ? (
                     <Box
                       background="surfaceSecondaryElevated"
-                      width="full"
-                      height={{ custom: 48 }}
-                      borderRadius={18}
-                      flexDirection="row"
-                      paddingHorizontal="20px"
-                      justifyContent="space-between"
-                      alignItems="center"
+                      shadow="12px"
+                      as={LinearGradient}
+                      style={{ padding: 5 / 3, borderRadius: 18 + 5 / 3 }}
+                      colors={['#31BCC4', '#57EA5F', '#F0D83F', '#DF5337', '#B756A7']}
+                      useAngle={true}
+                      angle={-15}
+                      angleCenter={{ x: 0.5, y: 0.5 }}
                     >
-                      <Box style={{ maxWidth: 220 }}>
-                        <Text color="label" size="17pt" weight="heavy" numberOfLines={1} ellipsizeMode="middle">
-                          {accountENS ? accountENS : formatAddress(accountAddress, 4, 5)}
+                      <Box
+                        background="surfaceSecondaryElevated"
+                        width="full"
+                        height={{ custom: 48 }}
+                        borderRadius={18}
+                        flexDirection="row"
+                        paddingHorizontal="20px"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        style={{ backgroundColor: isDarkMode ? '#191A1C' : globalColors.white100 }}
+                      >
+                        <Box style={{ maxWidth: 220 }}>
+                          <Text color="label" size="17pt" weight="heavy" numberOfLines={1} ellipsizeMode="middle">
+                            {accountENS ? accountENS : formatAddress(accountAddress, 4, 5)}
+                          </Text>
+                        </Box>
+                        <Text color={isUnranked ? 'labelQuaternary' : 'label'} size="17pt" weight="heavy">
+                          {isUnranked ? i18n.t(i18n.l.points.points.unranked) : `#${rank.toLocaleString('en-US')}`}
                         </Text>
                       </Box>
-                      <Text color={isUnranked ? 'labelQuaternary' : 'label'} size="17pt" weight="heavy">
-                        {isUnranked ? i18n.t(i18n.l.points.points.unranked) : `#${rank.toLocaleString('en-US')}`}
-                      </Text>
                     </Box>
-                  </Box>
-                ) : (
-                  <Skeleton width={deviceWidth - 40} height={51} />
-                )}
-                {canDisplayLeaderboard ? (
-                  <Box background="surfaceSecondaryElevated" borderRadius={18} shadow="12px">
-                    <Stack separator={<Separator color="separatorTertiary" thickness={1} />}>
-                      {points?.points?.leaderboard?.accounts
-                        ?.slice(0, 100)
-                        ?.map((account, index) => (
-                          <LeaderboardRow
-                            address={account.address}
-                            ens={account.ens}
-                            avatarURL={account.avatarURL}
-                            points={account.earnings.total}
-                            rank={index + 1}
-                            key={account.address}
-                          />
-                        ))}
-                    </Stack>
-                  </Box>
-                ) : (
-                  <Skeleton height={400} width={deviceWidth - 40} />
-                )}
+                  ) : (
+                    <Skeleton width={deviceWidth - 40} height={51} />
+                  )}
+                  {canDisplayLeaderboard ? (
+                    <Box
+                      background="surfaceSecondaryElevated"
+                      borderRadius={20}
+                      shadow="12px"
+                      style={{ backgroundColor: isDarkMode ? '#191A1C' : globalColors.white100 }}
+                    >
+                      <Stack separator={<Separator color="separatorTertiary" thickness={1} />}>
+                        {points?.points?.leaderboard?.accounts
+                          ?.slice(0, 100)
+                          ?.map((account, index) => (
+                            <LeaderboardRow
+                              address={account.address}
+                              ens={account.ens}
+                              avatarURL={account.avatarURL}
+                              points={account.earnings.total}
+                              rank={index + 1}
+                              key={account.address}
+                            />
+                          ))}
+                      </Stack>
+                      <Border borderRadius={20} />
+                    </Box>
+                  ) : (
+                    <Skeleton height={400} width={deviceWidth - 40} />
+                  )}
+                </Stack>
               </Stack>
-            </Stack>
-          </Inset>
-        ) : (
-          <Box alignItems="center" justifyContent="center" height="full" width="full">
-            <Text size="17pt" weight="bold" align="center" color="labelTertiary">
-              {i18n.t(i18n.l.points.points.error)}
-            </Text>
-          </Box>
-        )}
+            </Inset>
+          ) : (
+            <Box alignItems="center" justifyContent="center" height="full" width="full">
+              <Text size="17pt" weight="bold" align="center" color="labelTertiary">
+                {i18n.t(i18n.l.points.points.error)}
+              </Text>
+            </Box>
+          )}
+        </AccentColorProvider>
       </ScrollView>
       <ToastPositionContainer>
         <Toast isVisible={isToastActive} text={`􀁣 ${i18n.t(i18n.l.points.points.referral_code_copied)}`} />

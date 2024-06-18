@@ -1,6 +1,6 @@
 import { BlurMask, Canvas, Circle, mix } from '@shopify/react-native-skia';
 import React, { useEffect } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import { Source } from 'react-native-fast-image';
 import Animated, {
   Easing,
@@ -49,11 +49,22 @@ const CIRCLE_COLORS = [
 ];
 
 type Props = {
-  state: 'idle' | 'loading';
+  CenterComponent?: React.ReactNode;
+  centerComponentStyle?: StyleProp<ViewStyle>;
   isConnected?: boolean;
+  showGridDots?: boolean;
+  state: 'idle' | 'loading';
+  wrapperStyle?: StyleProp<ViewStyle>;
 };
 
-export function NanoXDeviceAnimation({ state, isConnected }: Props) {
+export function NanoXDeviceAnimation({
+  CenterComponent,
+  centerComponentStyle,
+  isConnected,
+  showGridDots = true,
+  state,
+  wrapperStyle,
+}: Props) {
   const { colorMode } = useColorMode();
 
   // //////////////////////////////////////////////////////////////////
@@ -87,22 +98,24 @@ export function NanoXDeviceAnimation({ state, isConnected }: Props) {
 
   return (
     <>
-      <Animated.View style={[animatedGridDotsWrapperStyle, styles.gridDotsWrapper]}>
-        <ImgixImage
-          size={GRID_DOTS_SIZE}
-          source={(colorMode === 'light' ? gridDotsLight : gridDotsDark) as Source}
-          style={[styles.gridDotsImage, { opacity: colorMode === 'dark' ? 0.5 : 1 }]}
-        />
-      </Animated.View>
-      <Animated.View style={[animatedCirclesWrapperStyle, styles.circlesWrapper]}>
+      {showGridDots && (
+        <Animated.View style={[animatedGridDotsWrapperStyle, styles.gridDotsWrapper]}>
+          <ImgixImage
+            size={GRID_DOTS_SIZE}
+            source={(colorMode === 'light' ? gridDotsLight : gridDotsDark) as Source}
+            style={[styles.gridDotsImage, { opacity: colorMode === 'dark' ? 0.5 : 1 }]}
+          />
+        </Animated.View>
+      )}
+      <Animated.View style={[animatedCirclesWrapperStyle, styles.circlesWrapper, wrapperStyle]}>
         <Canvas style={styles.circlesCanvas}>
           {CIRCLE_COLORS.map((color, index) => (
             <AnimatedCircle color={color} isConnected={isConnected} key={index} xOrigin={xOrigin} yOrigin={yOrigin} />
           ))}
         </Canvas>
       </Animated.View>
-      <Animated.View style={[animatedLedgerNanoWrapperStyle, styles.ledgerNanoWrapper]}>
-        <ImgixImage size={LEDGER_NANO_HEIGHT} source={ledgerNano as Source} style={styles.ledgerNanoImage} />
+      <Animated.View style={[animatedLedgerNanoWrapperStyle, styles.ledgerNanoWrapper, centerComponentStyle]}>
+        {CenterComponent || <ImgixImage size={LEDGER_NANO_HEIGHT} source={ledgerNano as Source} style={styles.ledgerNanoImage} />}
       </Animated.View>
     </>
   );
@@ -172,7 +185,7 @@ function AnimatedCircle({
   );
 
   return (
-    <Circle r={circleRadius} cx={x} cy={y} color={colorValue} opacity={0.3}>
+    <Circle antiAlias dither r={circleRadius} cx={x} cy={y} color={colorValue} opacity={0.3}>
       <BlurMask blur={36} style="normal" />
     </Circle>
   );

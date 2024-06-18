@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Box, Row, Rows, Stack, Text } from '@/design-system';
+import { Box, Row, Rows, Stack, Text, globalColors, useColorMode } from '@/design-system';
 import { useAccountAccentColor, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import * as i18n from '@/languages';
@@ -13,6 +13,7 @@ import { useFocusEffect } from '@react-navigation/native';
 
 export default function ClaimContent() {
   const { accentColor } = useAccountAccentColor();
+  const { isDarkMode } = useColorMode();
   const { navigate } = useNavigation();
   const { isReadOnlyWallet } = useWallets();
 
@@ -23,7 +24,12 @@ export default function ClaimContent() {
   );
 
   return (
-    <Box alignItems="center" background="surfacePrimary" paddingBottom="52px" paddingHorizontal="60px" style={{ flex: 1 }}>
+    <Box
+      alignItems="center"
+      paddingBottom="52px"
+      paddingHorizontal="60px"
+      style={{ backgroundColor: isDarkMode ? globalColors.grey100 : globalColors.white100, flex: 1 }}
+    >
       <Rows>
         <Box alignItems="center" justifyContent="center" style={{ flex: 1 }}>
           <Stack space="32px" alignHorizontal="center">

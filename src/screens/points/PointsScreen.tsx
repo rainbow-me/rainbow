@@ -3,7 +3,7 @@ import { Page } from '@/components/layout';
 import { Navbar } from '@/components/navbar/Navbar';
 import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
-import { Box } from '@/design-system';
+import { Box, globalColors, useColorMode } from '@/design-system';
 import { useAccountProfile } from '@/hooks';
 import { POINTS, POINTS_NOTIFICATIONS_TOGGLE, useExperimentalFlag } from '@/config';
 import { ContactAvatar } from '@/components/contacts';
@@ -34,6 +34,7 @@ const Swipe = createMaterialTopTabNavigator();
 const EmptyTabBar = () => <></>;
 
 export default function PointsScreen() {
+  const { isDarkMode } = useColorMode();
   const { accountAddress, accountImage, accountColor, accountSymbol } = useAccountProfile();
   const { points_enabled, points_notifications_toggle } = useRemoteConfig();
   const pointsEnabled = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
@@ -62,7 +63,14 @@ export default function PointsScreen() {
   }, [data, isOnboarded, navigate, pointsEnabled, referralCode, resetReferralCode]);
 
   return (
-    <Box as={Page} flex={1} height="full" testID="points-screen" width="full">
+    <Box
+      as={Page}
+      flex={1}
+      height="full"
+      style={{ backgroundColor: isDarkMode ? globalColors.grey100 : globalColors.white100 }}
+      testID="points-screen"
+      width="full"
+    >
       <Navbar
         hasStatusBarInset
         leftComponent={
