@@ -14,16 +14,16 @@ import {
 } from '@/__swaps__/screens/Swap/constants';
 import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { ChainId, ChainName } from '@/__swaps__/types/chains';
-import { RainbowConfig } from '@/model/remoteConfig';
-import { CrosschainQuote, ETH_ADDRESS, Quote, QuoteParams, SwapType, WRAPPED_ASSET } from '@rainbow-me/swaps';
-import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
-import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '../types/assets';
-import { inputKeys } from '../types/swap';
-import { swapsStore } from '../../state/swaps/swapsStore';
-import { BigNumberish } from '@ethersproject/bignumber';
+import { isLowerCaseMatch, isLowerCaseMatchWorklet } from '@/__swaps__/utils/strings';
 import { TokenColors } from '@/graphql/__generated__/metadata';
+import { RainbowConfig } from '@/model/remoteConfig';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { colors } from '@/styles';
+import { BigNumberish } from '@ethersproject/bignumber';
+import { CrosschainQuote, ETH_ADDRESS, Quote, QuoteParams, SwapType, WRAPPED_ASSET } from '@rainbow-me/swaps';
+import { swapsStore } from '../../state/swaps/swapsStore';
+import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '../types/assets';
+import { inputKeys } from '../types/swap';
 import { convertAmountToRawAmount } from './numbers';
 import {
   ceilWorklet,
@@ -614,7 +614,7 @@ export const getCrossChainTimeEstimateWorklet = ({
   };
 };
 
-export const isUnwrapEth = ({
+export const isUnwrapEthWorklet = ({
   buyTokenAddress,
   chainId,
   sellTokenAddress,
@@ -623,10 +623,11 @@ export const isUnwrapEth = ({
   sellTokenAddress: string;
   buyTokenAddress: string;
 }) => {
-  return isLowerCaseMatch(sellTokenAddress, WRAPPED_ASSET[chainId]) && isLowerCaseMatch(buyTokenAddress, ETH_ADDRESS);
+  'worklet';
+  return isLowerCaseMatchWorklet(sellTokenAddress, WRAPPED_ASSET[chainId]) && isLowerCaseMatchWorklet(buyTokenAddress, ETH_ADDRESS);
 };
 
-export const isWrapEth = ({
+export const isWrapEthWorklet = ({
   buyTokenAddress,
   chainId,
   sellTokenAddress,
@@ -635,7 +636,8 @@ export const isWrapEth = ({
   sellTokenAddress: string;
   buyTokenAddress: string;
 }) => {
-  return isLowerCaseMatch(sellTokenAddress, ETH_ADDRESS) && isLowerCaseMatch(buyTokenAddress, WRAPPED_ASSET[chainId]);
+  'worklet';
+  return isLowerCaseMatchWorklet(sellTokenAddress, ETH_ADDRESS) && isLowerCaseMatchWorklet(buyTokenAddress, WRAPPED_ASSET[chainId]);
 };
 
 export const priceForAsset = ({
@@ -740,13 +742,10 @@ export const buildQuoteParams = ({
 
   return {
     source: source === 'auto' ? undefined : source,
-    swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
-    fromAddress: currentAddress,
     chainId: inputAsset.chainId,
-    toChainId: isCrosschainSwap ? outputAsset.chainId : inputAsset.chainId,
+    fromAddress: currentAddress,
     sellTokenAddress: inputAsset.isNativeAsset ? ETH_ADDRESS : inputAsset.address,
     buyTokenAddress: outputAsset.isNativeAsset ? ETH_ADDRESS : outputAsset.address,
-
     // TODO: Handle native input cases below
     sellAmount:
       lastTypedInput === 'inputAmount' || lastTypedInput === 'inputNativeValue'
@@ -758,5 +757,7 @@ export const buildQuoteParams = ({
         : undefined,
     slippage: Number(slippage),
     refuel: false,
+    swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
+    toChainId: isCrosschainSwap ? outputAsset.chainId : inputAsset.chainId,
   };
 };

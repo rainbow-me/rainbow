@@ -12,8 +12,8 @@ import * as i18n from '@/languages';
 import { delay } from '@/utils/delay';
 import Routes from '@/navigation/routesNames';
 import { SheetActionButton } from '@/components/sheet';
-import { campaigns } from '@/storage';
 import { analyticsV2 } from '@/analytics';
+import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
 import { IS_ANDROID } from '@/env';
 
 const APP_ICON_SIZE = 64;
@@ -44,7 +44,7 @@ export default function AppIconUnlockSheet() {
   useEffect(() => {
     analyticsV2.track(analyticsV2.event.appIconUnlockSheetViewed, { appIcon: appIconKey });
     return () => {
-      campaigns.set(['isCurrentlyShown'], false);
+      remotePromoSheetsStore.setState({ isShown: false });
     };
   }, [appIconKey]);
 

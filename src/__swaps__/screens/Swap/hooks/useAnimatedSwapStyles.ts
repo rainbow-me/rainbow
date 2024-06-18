@@ -1,6 +1,4 @@
 /* eslint-disable no-nested-ternary */
-import { SharedValue, interpolate, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
-import { globalColors, useColorMode } from '@/design-system';
 import {
   BASE_INPUT_HEIGHT,
   BOTTOM_ACTION_BAR_HEIGHT,
@@ -14,14 +12,17 @@ import {
   fadeConfig,
   springConfig,
 } from '@/__swaps__/screens/Swap/constants';
-import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
+import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { getColorValueForThemeWorklet, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { spinnerExitConfig } from '@/components/animations/AnimatedSpinner';
-import { NavigationSteps } from './useSwapNavigation';
+import { globalColors, useColorMode } from '@/design-system';
+import { foregroundColors } from '@/design-system/color/palettes';
 import { IS_ANDROID } from '@/env';
 import { safeAreaInsetValues } from '@/utils';
-import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
+import { SharedValue, interpolate, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
+import { NavigationSteps } from './useSwapNavigation';
 import { ChainId } from '@/__swaps__/types/chains';
 
 const INSET_BOTTOM = IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16;
@@ -213,9 +214,15 @@ export function useAnimatedSwapStyles({
     };
   });
 
+  const isPasteMode = useDerivedValue(
+    () => outputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED && !internalSelectedOutputAsset.value
+  );
+
   const searchOutputAssetButtonStyle = useAnimatedStyle(() => {
+    const color = isPasteMode.value ? foregroundColors.blue : internalSelectedOutputAsset.value?.highContrastColor;
+
     return {
-      color: getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true),
+      color: getColorValueForThemeWorklet(color, isDarkMode, true),
     };
   });
 
@@ -245,16 +252,12 @@ export function useAnimatedSwapStyles({
   });
 
   const searchOutputAssetButtonWrapperStyle = useAnimatedStyle(() => {
+    const color = isPasteMode.value ? foregroundColors.blue : internalSelectedOutputAsset.value?.highContrastColor;
+
     return {
-      backgroundColor: opacityWorklet(
-        getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true),
-        isDarkMode ? 0.1 : 0.08
-      ),
-      borderColor: opacityWorklet(
-        getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true),
-        isDarkMode ? 0.06 : 0.01
-      ),
-      borderWidth: THICK_BORDER_WIDTH,
+      backgroundColor: opacityWorklet(getColorValueForThemeWorklet(color, isDarkMode, true), isDarkMode ? 0.1 : 0.08),
+      borderColor: opacityWorklet(getColorValueForThemeWorklet(color, isDarkMode, true), isDarkMode ? 0.06 : 0.01),
+      borderWidth: isPasteMode.value ? 0 : THICK_BORDER_WIDTH,
     };
   });
 

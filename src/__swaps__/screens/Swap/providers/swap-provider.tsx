@@ -24,7 +24,7 @@ import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from
 import { useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
-import { parseAssetAndExtend } from '@/__swaps__/utils/swaps';
+import { isUnwrapEthWorklet, isWrapEthWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { ChainId } from '@/__swaps__/types/chains';
 import { RainbowError, logger } from '@/logger';
 import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
@@ -32,7 +32,7 @@ import { Navigation } from '@/navigation';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
-import { getFlashbotsProvider, getProviderForNetwork, isHardHat } from '@/handlers/web3';
+import { getFlashbotsProvider, getIsHardhatConnected, getProviderForNetwork, isHardHat } from '@/handlers/web3';
 import { loadWallet } from '@/model/wallet';
 import { walletExecuteRap } from '@/raps/execute';
 import { queryClient } from '@/react-query';
@@ -215,6 +215,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       const { errorMessage } = await walletExecuteRap(wallet, type, {
         ...parameters,
+        chainId: getIsHardhatConnected() ? ChainId.hardhat : parameters.chainId,
         gasParams,
         // @ts-expect-error - collision between old gas types and new
         gasFeeParamsBySpeed: gasFeeParamsBySpeed,
@@ -302,7 +303,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const q = quote.value;
 
     // TODO: What other checks do we need here?
-    if (!inputAsset || !outputAsset || !q || (q as QuoteError)?.error) {
+    if (isSwapping.value || !inputAsset || !outputAsset || !q || (q as QuoteError)?.error) {
       return;
     }
 
@@ -313,13 +314,34 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const quoteData = q as QuoteTypeMap[typeof type];
     const flashbots = (SwapSettings.flashbots.value && inputAsset.chainId === ChainId.mainnet) ?? false;
 
+    const isNativeWrapOrUnwrap =
+      isWrapEthWorklet({
+        buyTokenAddress: quoteData.buyTokenAddress,
+        sellTokenAddress: quoteData.sellTokenAddress,
+        chainId: inputAsset.chainId,
+      }) ||
+      isUnwrapEthWorklet({
+        buyTokenAddress: quoteData.buyTokenAddress,
+        sellTokenAddress: quoteData.sellTokenAddress,
+        chainId: inputAsset.chainId,
+      });
+
+    // Do not deleeeet the comment below 😤
+    // About to get quote
     const parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'> = {
       sellAmount: quoteData.sellAmount?.toString(),
       buyAmount: quoteData.buyAmount?.toString(),
       chainId: inputAsset.chainId,
       assetToSell: inputAsset,
       assetToBuy: outputAsset,
-      quote: quoteData,
+      quote: {
+        ...quoteData,
+        buyAmountDisplay: isNativeWrapOrUnwrap ? quoteData.buyAmount : quoteData.buyAmountDisplay,
+        sellAmountDisplay: isNativeWrapOrUnwrap ? quoteData.sellAmount : quoteData.sellAmountDisplay,
+        feeInEth: isNativeWrapOrUnwrap ? '0' : quoteData.feeInEth,
+        fromChainId: inputAsset.chainId,
+        toChainId: outputAsset.chainId,
+      },
       flashbots,
     };
 

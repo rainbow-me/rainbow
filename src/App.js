@@ -53,8 +53,6 @@ import branch from 'react-native-branch';
 import { initializeReservoirClient } from '@/resources/reservoir/client';
 import { ReviewPromptAction } from '@/storage/schema';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
-import { RemotePromoSheetProvider } from '@/components/remote-promo-sheet/RemotePromoSheetProvider';
-import { RemoteCardProvider } from '@/components/cards/remote-cards';
 import { initializeRemoteConfig } from '@/model/remoteConfig';
 import { IS_DEV } from './env';
 import { checkIdentifierOnLaunch } from './model/backup';
@@ -147,11 +145,11 @@ class OldApp extends Component {
     const address = await loadAddress();
 
     if (address) {
-      InteractionManager.runAfterInteractions(() => {
-        setTimeout(() => {
+      setTimeout(() => {
+        InteractionManager.runAfterInteractions(() => {
           handleReviewPromptAction(ReviewPromptAction.TimesLaunchedSinceInstall);
-        }, 10_000);
-      });
+        });
+      }, 10_000);
 
       checkIdentifierOnLaunch();
     }
@@ -221,14 +219,10 @@ class OldApp extends Component {
       <Portal>
         <View style={containerStyle}>
           {this.state.initialRoute && (
-            <RemotePromoSheetProvider isWalletReady={this.props.walletReady}>
-              <RemoteCardProvider>
-                <InitialRouteContext.Provider value={this.state.initialRoute}>
-                  <RoutesComponent ref={this.handleNavigatorRef} />
-                  <PortalConsumer />
-                </InitialRouteContext.Provider>
-              </RemoteCardProvider>
-            </RemotePromoSheetProvider>
+            <InitialRouteContext.Provider value={this.state.initialRoute}>
+              <RoutesComponent ref={this.handleNavigatorRef} />
+              <PortalConsumer />
+            </InitialRouteContext.Provider>
           )}
           <OfflineToast />
         </View>

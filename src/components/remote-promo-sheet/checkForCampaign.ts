@@ -4,9 +4,10 @@ import Routes from '@/navigation/routesNames';
 import { fetchPromoSheetCollection } from '@/resources/promoSheet/promoSheetCollectionQuery';
 import { logger } from '@/logger';
 import { PromoSheet, PromoSheetOrder } from '@/graphql/__generated__/arc';
-import { campaigns, device } from '@/storage';
+import { device } from '@/storage';
 
 import * as fns from './check-fns';
+import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
 
 type ActionObj = {
   fn: string;
@@ -24,30 +25,27 @@ export type CampaignCheckResult = {
 const TIMEOUT_BETWEEN_PROMOS = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 const timeBetweenPromoSheets = () => {
-  const lastShownTimestamp = campaigns.get(['lastShownTimestamp']);
-
-  if (!lastShownTimestamp) return TIMEOUT_BETWEEN_PROMOS;
-
-  return Date.now() - lastShownTimestamp;
+  const lastShownAt = remotePromoSheetsStore.getState().lastShownTimestamp;
+  if (!lastShownAt) return TIMEOUT_BETWEEN_PROMOS;
+  return Date.now() - lastShownAt;
 };
 
 export const checkForCampaign = async () => {
-  logger.info('Campaigns: Running Checks');
+  logger.debug('Campaigns: Running Checks');
   if (timeBetweenPromoSheets() < TIMEOUT_BETWEEN_PROMOS) {
-    logger.info('Campaigns: Time between promos has not exceeded timeout');
+    logger.debug('Campaigns: Time between promos has not exceeded timeout');
     return;
   }
 
-  let isCurrentlyShown = campaigns.get(['isCurrentlyShown']);
-  if (isCurrentlyShown) {
-    logger.info('Campaigns: Promo sheet is already shown');
+  const isShown = remotePromoSheetsStore.getState().isShown;
+  if (isShown) {
+    logger.debug('Campaigns: Another remote sheet is currently shown');
     return;
   }
 
   const isReturningUser = device.get(['isReturningUser']);
-
   if (!isReturningUser) {
-    logger.info('Campaigns: First launch, not showing promo sheet');
+    logger.debug('Campaigns: First launch, not showing promo sheet');
     return;
   }
 
@@ -57,13 +55,13 @@ export const checkForCampaign = async () => {
 
   for (const promo of promoSheetCollection?.items || []) {
     if (!promo) continue;
-    logger.info(`Campaigns: Checking ${promo.sys.id}`);
+    logger.debug(`Campaigns: Checking ${promo.sys.id}`);
     const result = await shouldPromptCampaign(promo as PromoSheet);
 
-    logger.info(`Campaigns: ${promo.sys.id} will show: ${result}`);
+    logger.debug(`Campaigns: ${promo.sys.id} will show: ${result}`);
     if (result) {
-      isCurrentlyShown = campaigns.get(['isCurrentlyShown']);
-      if (!isCurrentlyShown) {
+      const isShown = remotePromoSheetsStore.getState().isShown;
+      if (!isShown) {
         return triggerCampaign(promo as PromoSheet);
       }
     }
@@ -71,12 +69,10 @@ export const checkForCampaign = async () => {
 };
 
 export const triggerCampaign = async ({ campaignKey, sys: { id: campaignId } }: PromoSheet) => {
-  logger.info(`Campaigns: Showing ${campaignKey} Promo`);
+  logger.debug(`Campaigns: Showing ${campaignKey} Promo`);
 
   setTimeout(() => {
-    campaigns.set([campaignKey as string], true);
-    campaigns.set(['isCurrentlyShown'], true);
-    campaigns.set(['lastShownTimestamp'], Date.now());
+    remotePromoSheetsStore.getState().showSheet(campaignId);
     InteractionManager.runAfterInteractions(() => {
       Navigation.handleAction(Routes.REMOTE_PROMO_SHEET, {
         campaignId,
@@ -93,23 +89,21 @@ export const shouldPromptCampaign = async (campaign: PromoSheet): Promise<boolea
     actions,
   } = campaign;
 
-  // if we aren't given proper campaign data or actions to check against, exit early here
+  // if we aren't given proper campaign data, exit early here
   if (!campaignKey || !id) return false;
 
-  // sanity check to prevent showing a campaign twice to a user or potentially showing a campaign to a fresh user
-  const hasShown = campaigns.get([campaignKey]);
+  const actionsArray = actions || ([] as ActionObj[]);
+  logger.debug(`Campaigns: Checking if we should prompt campaign ${campaignKey}`);
 
-  logger.info(`Campaigns: Checking if we should prompt campaign ${campaignKey}`);
-
-  const isPreviewing = actions.some((action: ActionObj) => action.fn === 'isPreviewing');
+  const isPreviewing = actionsArray.some((action: ActionObj) => action.fn === 'isPreviewing');
+  const hasShown = remotePromoSheetsStore.getState().getSheet(id)?.hasBeenShown;
 
   // If the campaign has been viewed already or it's the first app launch, exit early
   if (hasShown && !isPreviewing) {
-    logger.info(`Campaigns: User has already been shown ${campaignKey}`);
+    logger.debug(`Campaigns: User has already been shown ${campaignKey}`);
     return false;
   }
 
-  const actionsArray = actions || ([] as ActionObj[]);
   let shouldPrompt = true;
 
   for (const actionObj of actionsArray) {
@@ -119,9 +113,9 @@ export const shouldPromptCampaign = async (campaign: PromoSheet): Promise<boolea
       continue;
     }
 
-    logger.info(`Campaigns: Checking action ${fn}`);
+    logger.debug(`Campaigns: Checking action ${fn}`);
     const result = await action({ ...props, ...campaign });
-    logger.info(`Campaigns: [${fn}] matches desired outcome: => ${result === outcome}`);
+    logger.debug(`Campaigns: [${fn}] matches desired outcome: => ${result === outcome}`);
 
     if (result !== outcome) {
       shouldPrompt = false;

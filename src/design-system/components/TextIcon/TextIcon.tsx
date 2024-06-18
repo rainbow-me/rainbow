@@ -8,7 +8,7 @@ import { Text, TextSize, TextWeight } from '../Text/Text';
 
 export type TextIconProps = {
   align?: 'center' | 'left' | 'right';
-  children: string | (string | null)[];
+  children: string | (string | null)[] | React.ReactNode;
   color: TextColor | CustomColor;
   containerSize?: number;
   height?: number;
