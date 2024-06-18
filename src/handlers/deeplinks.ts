@@ -5,20 +5,30 @@ import store from '@/redux/store';
 import { walletConnectOnSessionRequest, walletConnectRemovePendingRedirect, walletConnectSetPendingRedirect } from '@/redux/walletconnect';
 
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
-import { defaultConfig } from '@/config/experimental';
+import { SWAPS_V2, defaultConfig } from '@/config/experimental';
 import { PROFILES } from '@/config/experimentalHooks';
 import { delay } from '@/utils/delay';
 import { checkIsValidAddressOrDomain, isENSAddressFormat } from '@/helpers/validators';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import ethereumUtils from '@/utils/ethereumUtils';
-import { logger } from '@/logger';
+import { RainbowError, logger } from '@/logger';
 import { pair as pairWalletConnect, setHasPendingDeeplinkPendingRedirect } from '@/walletConnect';
 import { analyticsV2 } from '@/analytics';
 import { FiatProviderName } from '@/entities/f2c';
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 import { queryClient } from '@/react-query';
 import { pointsReferralCodeQueryKey } from '@/resources/points';
+import { UniqueId } from '@/__swaps__/types/assets';
+import { ChainId } from '@/__swaps__/types/chains';
+import { GasSpeed } from '@/__swaps__/types/gas';
+import { getRemoteConfig } from '@/model/remoteConfig';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { deriveAddressAndChainWithUniqueId } from '@/__swaps__/utils/address';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import { fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { parseSearchAsset } from '@/__swaps__/utils/assets';
+import { setSelectedGasSpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 
 /*
  * You can test these deeplinks with the following command:
@@ -189,6 +199,14 @@ export default async function handleDeeplink(url: string, initialRoute: any = nu
         break;
       }
 
+      case 'swaps:': {
+        if (SWAPS_V2 || getRemoteConfig().swaps_v2) {
+          logger.info(`handleDeeplink: swaps:// protocol`);
+          handleSwapsDeeplink(url);
+        }
+        break;
+      }
+
       default: {
         const addressOrENS = pathname?.split('/profile/')?.[1] ?? pathname?.split('/')?.[1];
         /**
@@ -234,6 +252,11 @@ export default async function handleDeeplink(url: string, initialRoute: any = nu
   } else if (protocol === 'wc:') {
     logger.info(`handleDeeplink: wc:// protocol`);
     handleWalletConnect(url, query.connector);
+  } else if (protocol === 'swaps:') {
+    if (SWAPS_V2 || getRemoteConfig().swaps_v2) {
+      logger.info(`handleDeeplink: swaps:// protocol`);
+      handleSwapsDeeplink(url);
+    }
   }
 }
 
@@ -306,5 +329,144 @@ function handleWalletConnect(uri?: string, connector?: string) {
     // Don't add this URI to cache
     setHasPendingDeeplinkPendingRedirect(true);
     store.dispatch(walletConnectSetPendingRedirect());
+  }
+}
+
+type SwapQueryParams = {
+  inputAssetUniqueId?: UniqueId;
+  outputAssetUniqueId?: UniqueId;
+  selectedOutputChainId?: ChainId;
+  selectedGasSpeed?: GasSpeed;
+  flashbots?: boolean;
+  slippage?: string;
+
+  // amounts
+  percentageToSell?: number;
+  inputAmount?: string;
+  outputAmount?: string;
+};
+
+function handleSwapsDeeplink(url: string) {
+  const { query } = new URL(url);
+  const params: SwapQueryParams = query;
+
+  // Prioritize setting inputAssetUniqueId and outputAssetUniqueId
+  if (params.inputAssetUniqueId) {
+    handleSwapDeeplinkParam('inputAssetUniqueId', params.inputAssetUniqueId);
+  }
+
+  if (params.outputAssetUniqueId) {
+    handleSwapDeeplinkParam('outputAssetUniqueId', params.outputAssetUniqueId);
+  }
+
+  // Handle other parameters
+  for (const [key, value] of Object.entries(params)) {
+    if (key !== 'inputAssetUniqueId' && key !== 'outputAssetUniqueId') {
+      handleSwapDeeplinkParam(key as keyof SwapQueryParams, value);
+    }
+  }
+
+  Navigation.handleAction(Routes.SWAP, {});
+}
+
+async function handleSwapDeeplinkParam<T extends keyof SwapQueryParams>(key: T, value: SwapQueryParams[T]) {
+  if (typeof value === 'undefined') return;
+  logger.info(`handleSwapDeeplinkParam`, { key, value });
+
+  switch (key) {
+    case 'inputAssetUniqueId':
+    case 'outputAssetUniqueId': {
+      const uniqueId = value as UniqueId;
+      const data = deriveAddressAndChainWithUniqueId(uniqueId);
+      if (!data.address || !data.chain) return;
+      const userAsset = userAssetsStore.getState().getUserAsset(uniqueId);
+
+      if (key === 'inputAssetUniqueId') {
+        if (!userAsset) return;
+        swapsStore.setState({ inputAsset: userAsset });
+      } else {
+        const tokenData = await fetchExternalToken({
+          address: data.address,
+          network: ethereumUtils.getNetworkFromChainId(data.chain),
+          currency: store.getState().settings.nativeCurrency,
+        });
+        if (!tokenData) return;
+
+        const parsedAsset = parseSearchAsset({
+          assetWithPrice: tokenData,
+          searchAsset: tokenData,
+          userAsset: userAsset || undefined,
+        });
+
+        swapsStore.setState({ outputAsset: parsedAsset });
+      }
+      break;
+    }
+
+    case 'percentageToSell': {
+      const percentageToSell = value as number;
+      if (percentageToSell > 1) {
+        swapsStore.setState({ percentageToSell: 1 });
+      } else if (percentageToSell < 0) {
+        swapsStore.setState({ percentageToSell: 0 });
+      } else {
+        swapsStore.setState({ percentageToSell });
+      }
+      break;
+    }
+
+    case 'flashbots': {
+      if (typeof value === 'boolean') {
+        swapsStore.setState({ flashbots: value });
+      } else if (typeof value === 'string' && (value === 'true' || value === 'false')) {
+        swapsStore.setState({ flashbots: value === 'true' });
+      } else {
+        logger.error(
+          new RainbowError(
+            '[handleSwapDeeplinkParam]: Invalid type for flashbots value. Expected a boolean or a string representing a boolean.'
+          )
+        );
+      }
+      break;
+    }
+
+    case 'slippage': {
+      const slippage = value as string;
+      const slippageNumber = parseFloat(slippage);
+      if (!isNaN(slippageNumber)) {
+        swapsStore.setState({ slippage: slippageNumber.toFixed(1) });
+      } else {
+        logger.error(new RainbowError('[handleSwapDeeplinkParam]: Invalid type for slippage value. Expected a number.'));
+      }
+      break;
+    }
+
+    case 'selectedGasSpeed': {
+      const gasSpeed = value as GasSpeed;
+      if (gasSpeed in GasSpeed) {
+        // inputAsset should already be set since we prioritize setting inputAssetUniqueId first
+        setSelectedGasSpeed(swapsStore.getState().inputAsset?.chainId || ChainId.mainnet, gasSpeed);
+        return;
+      }
+
+      logger.error(new RainbowError('[handleSwapDeeplinkParam]: Invalid type for gasSpeed value. Expected a valid gas speed.'));
+      break;
+    }
+
+    case 'selectedOutputChainId': {
+      const chainId = value as ChainId;
+      if (chainId in ChainId) {
+        swapsStore.setState({ selectedOutputChainId: chainId });
+        return;
+      }
+      logger.error(new RainbowError('[handleSwapDeeplinkParam]: Invalid type for selectedOutputChainId value. Expected a valid chain id.'));
+      break;
+    }
+
+    case 'inputAmount':
+    case 'outputAmount': {
+      // TODO: Refactor how we're setting initial amounts in `useSwapInputsController.ts`: https://github.com/rainbow-me/rainbow/blob/4f93e49b1ce3dd59076312b1c36a15bee9f3a9db/src/__swaps__/screens/Swap/hooks/useSwapInputsController.ts#L37
+      break;
+    }
   }
 }

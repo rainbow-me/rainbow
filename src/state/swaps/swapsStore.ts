@@ -1,3 +1,4 @@
+import { INITIAL_SLIDER_POSITION } from '@/__swaps__/screens/Swap/constants';
 import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { getDefaultSlippage } from '@/__swaps__/utils/swaps';
@@ -18,6 +19,9 @@ export interface SwapsState {
 
   selectedOutputChainId: ChainId;
   outputSearchQuery: string;
+
+  percentageToSell: number; // Value between 0 and 1, e.g., 0.5, 0.1, 0.25
+  setPercentageToSell: (percentageToSell: number) => void; // Accepts values from 0 to 1
 
   // settings
   flashbots: boolean;
@@ -40,6 +44,9 @@ export const swapsStore = createRainbowStore<SwapsState>(
 
     selectedOutputChainId: ChainId.mainnet,
     outputSearchQuery: '',
+
+    percentageToSell: INITIAL_SLIDER_POSITION,
+    setPercentageToSell: (percentageToSell: number) => set({ percentageToSell }),
 
     flashbots: false,
     setFlashbots: (flashbots: boolean) => set({ flashbots }),
