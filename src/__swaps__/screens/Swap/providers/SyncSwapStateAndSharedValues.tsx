@@ -1,6 +1,7 @@
 import {
   divWorklet,
   greaterThanWorklet,
+  lessThanOrEqualToWorklet,
   lessThanWorklet,
   mulWorklet,
   powWorklet,
@@ -12,7 +13,6 @@ import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { add } from '@/__swaps__/utils/numbers';
 import { ParsedAddressAsset } from '@/entities';
-import { lessThan } from '@/helpers/utilities';
 import { useUserNativeNetworkAsset } from '@/resources/assets/useUserAsset';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { debounce } from 'lodash';
@@ -81,7 +81,7 @@ const getHasEnoughFundsForGas = (quote: Quote, gasFee: string, nativeNetworkAsse
   const quoteValue = quote.value?.toString() || '0';
   const totalNativeSpentInTx = formatUnits(BigInt(add(quoteValue, gasFee)), nativeNetworkAsset.decimals);
 
-  return lessThan(totalNativeSpentInTx, userBalance);
+  return lessThanOrEqualToWorklet(totalNativeSpentInTx, userBalance);
 };
 
 const BUFFER_FACTOR = 1.3;
