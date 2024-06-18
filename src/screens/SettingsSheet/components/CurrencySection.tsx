@@ -11,7 +11,6 @@ import { Network } from '@/networks/types';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useTheme } from '@/theme';
-import { userAssetsStore } from '@/state/assets/userAssets';
 
 const emojiData = Object.entries(emojis).map(([emoji, { name }]) => [name, emoji]);
 
@@ -35,7 +34,6 @@ const CurrencySection = () => {
       if (ios && parseInt(Platform.Version as string) >= 14) {
         reloadTimelines('PriceWidget');
       }
-      userAssetsStore.getState().setSmallBalanceThreshold(currency);
       analytics.track('Changed native currency', { currency });
     },
     [settingsChangeNativeCurrency]

@@ -31,7 +31,6 @@ export interface UserAssetsState {
   inputSearchQuery: string;
   searchCache: Map<string, UniqueId[]>;
   userAssets: Map<UniqueId, ParsedSearchAsset>;
-  smallBalanceThreshold: number;
   getBalanceSortedChainList: () => ChainId[];
   getFilteredUserAssetIds: () => UniqueId[];
   getHighestValueAsset: () => ParsedSearchAsset | null;
@@ -42,7 +41,6 @@ export interface UserAssetsState {
   setSearchCache: (queryKey: string, filteredIds: UniqueId[]) => void;
   setSearchQuery: (query: string) => void;
   setUserAssets: (associatedWalletAddress: Address, userAssets: Map<UniqueId, ParsedSearchAsset> | ParsedSearchAsset[]) => void;
-  setSmallBalanceThreshold: (nativeCurrency: keyof typeof supportedNativeCurrencies) => void;
 }
 
 // NOTE: We are serializing Map as an Array<[UniqueId, ParsedSearchAsset]>
@@ -131,13 +129,12 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
     searchCache: new Map(),
     userAssets: new Map(),
 
-    smallBalanceThreshold:
-      store.getState().settings.nativeCurrency.toLowerCase() === supportedNativeCurrencies.ETH.currency.toLowerCase() ? 0.000005 : 0.02,
-
     getBalanceSortedChainList: () => Array.from(get().chainBalances.keys()),
 
     getFilteredUserAssetIds: () => {
-      const { smallBalanceThreshold, filter, inputSearchQuery: rawSearchQuery, selectUserAssetIds, setSearchCache } = get();
+      const { filter, inputSearchQuery: rawSearchQuery, selectUserAssetIds, setSearchCache } = get();
+
+      const smallBalanceThreshold = supportedNativeCurrencies[store.getState().settings.nativeCurrency].smallThreshold;
 
       const inputSearchQuery = rawSearchQuery.trim().toLowerCase();
       const queryKey = getSearchQueryKey({ filter, searchQuery: inputSearchQuery });
@@ -269,7 +266,7 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
 
         idsByChain.set('all', allIdsArray);
 
-        const { smallBalanceThreshold } = get();
+        const smallBalanceThreshold = supportedNativeCurrencies[store.getState().settings.nativeCurrency].smallThreshold;
 
         const filteredAllIdsArray = allIdsArray.filter(id => {
           const asset = userAssetsMap.get(id);
@@ -296,11 +293,6 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
             userAssets: userAssetsMap,
           };
       }),
-
-    setSmallBalanceThreshold: (nativeCurrency: keyof typeof supportedNativeCurrencies) =>
-      set(() => ({
-        smallBalanceThreshold: nativeCurrency.toLowerCase() === supportedNativeCurrencies.ETH.currency.toLowerCase() ? 0.000005 : 0.02,
-      })),
   }),
   {
     deserializer: deserializeUserAssetsState,
