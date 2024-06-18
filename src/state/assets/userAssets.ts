@@ -237,7 +237,6 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
 
     setUserAssets: (associatedWalletAddress: Address, userAssets: Map<UniqueId, ParsedSearchAsset> | ParsedSearchAsset[]) =>
       set(() => {
-
         const idsByChain = new Map<UserAssetFilter, UniqueId[]>();
         const unsortedChainBalances = new Map<ChainId, number>();
 
