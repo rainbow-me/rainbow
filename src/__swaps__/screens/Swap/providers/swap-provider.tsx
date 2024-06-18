@@ -24,7 +24,7 @@ import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from
 import { useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
-import { isUnwrapEth, isWrapEth, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
+import { isUnwrapEthWorklet, isWrapEthWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { ChainId } from '@/__swaps__/types/chains';
 import { RainbowError, logger } from '@/logger';
 import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
@@ -315,12 +315,12 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const flashbots = (SwapSettings.flashbots.value && inputAsset.chainId === ChainId.mainnet) ?? false;
 
     const isNativeWrapOrUnwrap =
-      isWrapEth({
+      isWrapEthWorklet({
         buyTokenAddress: quoteData.buyTokenAddress,
         sellTokenAddress: quoteData.sellTokenAddress,
         chainId: inputAsset.chainId,
       }) ||
-      isUnwrapEth({
+      isUnwrapEthWorklet({
         buyTokenAddress: quoteData.buyTokenAddress,
         sellTokenAddress: quoteData.sellTokenAddress,
         chainId: inputAsset.chainId,
