@@ -1,6 +1,7 @@
 import {
   divWorklet,
   greaterThanWorklet,
+  lessThanWorklet,
   mulWorklet,
   subWorklet,
   toFixedWorklet,
@@ -18,6 +19,8 @@ import { useSwapContext } from '../providers/swap-provider';
 import { GasSettings } from './useCustomGas';
 import { useSwapEstimatedGasLimit } from './useSwapEstimatedGasLimit';
 import { useAccountSettings } from '@/hooks';
+
+const BUFFER_FACTOR = 1.3;
 
 function safeBigInt(value: string) {
   try {
@@ -53,12 +56,12 @@ export function useEstimatedGasFee({
 
       if (asset?.isNativeAsset) {
         const gasFeeNativeCurrency = divWorklet(totalWei, 10 ** asset.decimals);
-        const gasFeeWithBuffer = toFixedWorklet(mulWorklet(gasFeeNativeCurrency, 1.3), asset.decimals);
+        const gasFeeWithBuffer = toFixedWorklet(mulWorklet(gasFeeNativeCurrency, BUFFER_FACTOR), asset.decimals);
         const maxSwappableAmount = subWorklet(asset.balance.amount, gasFeeWithBuffer);
 
         return {
           ...asset,
-          maxSwappableAmount: Number(maxSwappableAmount) < 0 ? '0' : maxSwappableAmount,
+          maxSwappableAmount: lessThanWorklet(maxSwappableAmount, 0) ? '0' : maxSwappableAmount,
         };
       } else {
         return asset;
