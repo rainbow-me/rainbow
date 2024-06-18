@@ -505,7 +505,7 @@ type ExtractColorValueForColorsProps = {
 
 export const extractColorValueForColors = ({
   colors,
-}: ExtractColorValueForColorsProps): Omit<ExtendedAnimatedAssetWithColors, keyof ParsedSearchAsset> => {
+}: ExtractColorValueForColorsProps): Omit<ExtendedAnimatedAssetWithColors, keyof ParsedSearchAsset | 'maxSwappableAmount'> => {
   const color = colors.primary || colors.fallback;
   const darkColor = color || ETH_COLOR_DARK;
   const lightColor = color || ETH_COLOR;
@@ -701,6 +701,7 @@ export const parseAssetAndExtend = ({
   return {
     ...asset,
     ...colors,
+    maxSwappableAmount: asset.balance.amount,
     nativePrice: asset.price?.value,
     balance: insertUserAssetBalance ? userAssetsStore.getState().getUserAsset(uniqueId)?.balance || asset.balance : asset.balance,
 
