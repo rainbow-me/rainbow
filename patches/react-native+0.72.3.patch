@@ -10,11 +10,33 @@ index 26961d7..ee5943d 100644
  } else if (!global.nativeExtensions) {
    const bridgeConfig = global.__fbBatchedBridgeConfig;
    invariant(
+diff --git a/node_modules/react-native/React/Base/RCTConvert.m b/node_modules/react-native/React/Base/RCTConvert.m
+index 8960df9..f387d16 100644
+--- a/node_modules/react-native/React/Base/RCTConvert.m
++++ b/node_modules/react-native/React/Base/RCTConvert.m
+@@ -888,7 +888,7 @@ + (UIColor *)UIColor:(id)json
+   if ([json isKindOfClass:[NSArray class]]) {
+     NSArray *components = [self NSNumberArray:json];
+     CGFloat alpha = components.count > 3 ? [self CGFloat:components[3]] : 1.0;
+-    return [UIColor colorWithRed:[self CGFloat:components[0]]
++    return [UIColor colorWithDisplayP3Red:[self CGFloat:components[0]]
+                            green:[self CGFloat:components[1]]
+                             blue:[self CGFloat:components[2]]
+                            alpha:alpha];
+@@ -898,7 +898,7 @@ + (UIColor *)UIColor:(id)json
+     CGFloat r = ((argb >> 16) & 0xFF) / 255.0;
+     CGFloat g = ((argb >> 8) & 0xFF) / 255.0;
+     CGFloat b = (argb & 0xFF) / 255.0;
+-    return [UIColor colorWithRed:r green:g blue:b alpha:a];
++    return [UIColor colorWithDisplayP3Red:r green:g blue:b alpha:a];
+   } else if ([json isKindOfClass:[NSDictionary class]]) {
+     NSDictionary *dictionary = json;
+     id value = nil;
 diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/react-native/React/Views/RCTView.m
 index 619509f..a9477e5 100644
 --- a/node_modules/react-native/React/Views/RCTView.m
 +++ b/node_modules/react-native/React/Views/RCTView.m
-@@ -831,6 +831,11 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x)
+@@ -831,6 +831,11 @@ - (void)displayLayer:(CALayer *)layer
      layer.backgroundColor = backgroundColor;
      layer.contents = nil;
      layer.needsDisplayOnBoundsChange = NO;
