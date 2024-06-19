@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
+import { IS_IOS } from '@/env';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 export const NeonRainbowButtonMask = ({ color, label, width }: { color?: string; label: string; width?: number }) => {
@@ -21,7 +22,7 @@ export const NeonRainbowButtonMask = ({ color, label, width }: { color?: string;
           styles.neonButton,
           {
             alignItems: 'center',
-            backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.025)' : 'transparent',
+            backgroundColor: isDarkMode ? `rgba(255, 255, 255, ${IS_IOS ? 0.025 : 0.15})` : 'transparent',
             borderColor: color || defaultColor,
             justifyContent: 'center',
             width: width ?? DEVICE_WIDTH - 64,

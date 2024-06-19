@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { useSharedValue } from 'react-native-reanimated';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
-import { Bleed, Box, Text, TextShadow, globalColors } from '@/design-system';
+import { Bleed, Box, Text, TextShadow, globalColors, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import { ListHeader, ListPanel, Panel, TapToDismiss, controlPanelStyles } from '@/components/SmoothPager/ListPanel';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
@@ -10,8 +10,10 @@ import { ChainNameDisplay } from '@/__swaps__/types/chains';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { useAccountAccentColor } from '@/hooks';
 import { safeAreaInsetValues } from '@/utils';
-import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
+import { EthRewardsCoinIcon } from '../content/PointsContent';
+import { View } from 'react-native';
+import { IS_IOS } from '@/env';
 
 const PAGES = {
   CHOOSE_CLAIM_NETWORK: 'choose-claim-network',
@@ -25,62 +27,9 @@ export const ClaimRewardsPanel = () => {
     <>
       <Box style={[controlPanelStyles.panelContainer, { bottom: Math.max(safeAreaInsetValues.bottom + 5, 8) }]}>
         <SmoothPager enableSwipeToGoBack={false} enableSwipeToGoForward={false} initialPage={PAGES.CHOOSE_CLAIM_NETWORK} ref={ref}>
-          <SmoothPager.Page
-            component={
-              <ChooseClaimNetwork
-                goBack={goBack}
-                goToPage={goToPage}
-                onSelectNetwork={() => {
-                  return;
-                }}
-              />
-            }
-            id={PAGES.CHOOSE_CLAIM_NETWORK}
-          />
-          <SmoothPager.Page
-            component={
-              <ChooseClaimNetwork
-                goBack={goBack}
-                goToPage={goToPage}
-                onSelectNetwork={() => {
-                  return;
-                }}
-              />
-            }
-            id={PAGES.CHOOSE_CLAIM_NETWORK}
-          />
-          <SmoothPager.Page
-            component={
-              <ClaimingRewards
-                goBack={goBack}
-                goToPage={goToPage}
-                onSelectNetwork={() => {
-                  return;
-                }}
-              />
-            }
-            id={PAGES.CLAIMING_REWARDS}
-          />
-          {/* <SmoothPager.Group>
-            <SmoothPager.Page
-              component={
-                <ListPanel />
-              }
-              id={PAGES.SWITCH_WALLET}
-            />
-            <SmoothPager.Page
-              component={
-                <SwitchNetworkPanel
-                  allNetworkItems={allNetworkItems}
-                  animatedAccentColor={animatedAccentColor}
-                  goBack={goBack}
-                  selectedNetworkId={selectedNetworkId}
-                  onNetworkSwitch={handleNetworkSwitch}
-                />
-              }
-              id={PAGES.SWITCH_NETWORK}
-            />
-          </SmoothPager.Group> */}
+          <SmoothPager.Page component={<ChooseClaimNetwork goBack={goBack} goToPage={goToPage} />} id={PAGES.CHOOSE_CLAIM_NETWORK} />
+          <SmoothPager.Page component={<ChooseClaimNetwork goBack={goBack} goToPage={goToPage} />} id={PAGES.CHOOSE_CLAIM_NETWORK} />
+          <SmoothPager.Page component={<ClaimingRewards />} id={PAGES.CLAIMING_REWARDS} />
         </SmoothPager>
       </Box>
       <TapToDismiss />
@@ -90,34 +39,23 @@ export const ClaimRewardsPanel = () => {
 
 const CLAIM_NETWORKS = [ChainId.optimism, ChainId.base, ChainId.zora];
 
-const ChooseClaimNetwork = ({
-  // animatedAccentColor,
-  goBack,
-  goToPage,
-  // selectedNetworkId,
-  onSelectNetwork,
-}: {
-  // animatedAccentColor: SharedValue<string | undefined>;
-  goBack: () => void;
-  goToPage: (id: string) => void;
-  // selectedNetworkId: SharedValue<string>;
-  onSelectNetwork: (selectedItemId: string) => void;
-}) => {
+const ChooseClaimNetwork = ({ goBack, goToPage }: { goBack: () => void; goToPage: (id: string) => void }) => {
   const { highContrastAccentColor } = useAccountAccentColor();
 
   const networkListItems = useMemo(() => {
+    const claimFees = {
+      [ChainId.optimism]: 'Free to Claim',
+      [ChainId.base]: '$0.08 to Bridge',
+      [ChainId.zora]: '$0.10 to Bridge',
+    };
+
     return CLAIM_NETWORKS.map(chainId => {
       return {
         IconComponent: <ChainImage chain={getNetworkFromChainId(chainId)} size={36} />,
         label: ChainNameDisplay[chainId],
-        // secondaryLabel: i18n.t(
-        //   isConnected && network.value === currentNetwork
-        //     ? i18n.l.dapp_browser.control_panel.connected
-        //     : i18n.l.dapp_browser.control_panel.not_connected
-        // ),
+        secondaryLabel: claimFees[chainId],
         uniqueId: chainId.toString(),
         selected: false,
-        // selected: network.value === currentNetwork,
       };
     });
   }, []);
@@ -162,47 +100,13 @@ const ChooseClaimNetwork = ({
 
 const CLAIMING_STEP_HEIGHT = 272;
 
-const ClaimingRewards = ({
-  // animatedAccentColor,
-  goBack,
-  goToPage,
-  // selectedNetworkId,
-  onSelectNetwork,
-}: {
-  // animatedAccentColor: SharedValue<string | undefined>;
-  goBack: () => void;
-  goToPage: (id: string) => void;
-  // selectedNetworkId: SharedValue<string>;
-  onSelectNetwork: (selectedItemId: string) => void;
-}) => {
+const ClaimingRewards = () => {
   const { highContrastAccentColor } = useAccountAccentColor();
+  const { isDarkMode } = useColorMode();
 
   const unclaimedRewardsNativeCurrency = '$375.36';
 
   return (
-    // <ListPanel
-    //   TitleComponent={
-    //     <TextShadow shadowOpacity={0.3}>
-    //       <Text align="center" color={{ custom: highContrastAccentColor }} size="20pt" weight="heavy">
-    //         Choose Claim Network
-    //       </Text>
-    //     </TextShadow>
-    //   }
-    //   animatedAccentColor={animatedAccentColor}
-    //   goBack={goBack}
-    //   items={allNetworkItems}
-    //   onSelect={handleOnSelect}
-    //   pageTitle="Choose Claim Network"
-    //   renderLabelComponent={label => (
-    //     <TextShadow shadowOpacity={0.3}>
-    //       <Text color="label" size="17pt" weight="bold">
-    //         {label}
-    //       </Text>
-    //     </TextShadow>
-    //   )}
-    //   scrollViewProps={{ scrollEnabled: false }}
-    //   selectedItemId={selectedItemId}
-    // />
     <Panel>
       <ListHeader
         TitleComponent={
@@ -217,9 +121,17 @@ const ClaimingRewards = ({
         <NanoXDeviceAnimation
           CenterComponent={
             <Box alignItems="center" flexDirection="row" gap={8} height={{ custom: CLAIMING_STEP_HEIGHT - 24 }} justifyContent="center">
-              {/* <Bleed vertical="8px">
-                <EthCoinIcon />
-              </Bleed> */}
+              <Bleed vertical="8px">
+                <View
+                  style={
+                    IS_IOS && isDarkMode
+                      ? { shadowColor: globalColors.grey100, shadowOpacity: 0.2, shadowOffset: { height: 4, width: 0 }, shadowRadius: 6 }
+                      : {}
+                  }
+                >
+                  <EthRewardsCoinIcon animatedBorder />
+                </View>
+              </Bleed>
               <TextShadow blur={20} color={globalColors.grey100} shadowOpacity={0.1}>
                 <Text align="center" color="label" size="44pt" weight="black">
                   {unclaimedRewardsNativeCurrency}

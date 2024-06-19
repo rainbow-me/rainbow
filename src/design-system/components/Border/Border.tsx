@@ -17,7 +17,7 @@ export const Border = ({
   borderRadius,
   borderWidth = 1,
   enableInLightMode,
-  enableOnAndroid,
+  enableOnAndroid = true,
 }: BorderProps) => {
   const { isDarkMode } = useColorMode();
 

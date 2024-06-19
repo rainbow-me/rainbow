@@ -1,5 +1,5 @@
-import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
-import { RefreshControl, Share, StyleProp, StyleSheet, ViewStyle } from 'react-native';
+import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { RefreshControl, Share, StyleProp, ViewStyle } from 'react-native';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import {
   AccentColorProvider,
@@ -37,7 +37,7 @@ import { address as formatAddress } from '@/utils/abbreviations';
 import { delay } from '@/utils/delay';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
 import { Page } from '@/components/layout';
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { IS_ANDROID, IS_TEST } from '@/env';
 import { LeaderboardRow } from '../components/LeaderboardRow';
 import { Skeleton } from '../components/Skeleton';
 import { InfoCard } from '../components/InfoCard';
@@ -58,6 +58,7 @@ import FastImage, { Source } from 'react-native-fast-image';
 import EthIcon from '@/assets/eth-icon.png';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import Animated, { runOnUI, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 
 const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined }) => {
   const labelSecondary = useForegroundColor('labelSecondary');
@@ -143,13 +144,21 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
         <Inset space="20px">
           <Inline separator={<Box width={{ custom: 12 }} />} wrap={false}>
             <InfoCard
+              loading={false}
+              title="Earned Last Week"
+              mainText="2,880"
+              icon="􀠐"
+              subtitle="Top 10 Earner"
+              accentColor={labelSecondary}
+            />
+            {/* <InfoCard
               loading={isLoadingNextRewardCard}
               title={i18n.t(i18n.l.points.points.next_drop)}
               mainText={getNextRewardCardMainText()}
               icon="􀉉"
               subtitle={getNextRewardCardSubtitle()}
               accentColor={labelSecondary}
-            />
+            /> */}
             <InfoCard
               loading={isLoadingReferralsCard}
               title={i18n.t(i18n.l.points.points.referrals)}
@@ -207,7 +216,7 @@ const ClaimCard = () => {
         </TextShadow>
         <Box alignItems="center" flexDirection="row" gap={8}>
           <Bleed vertical="8px">
-            <EthCoinIcon />
+            <EthRewardsCoinIcon animatedBorder />
           </Bleed>
           <TextShadow blur={28} shadowOpacity={0.2}>
             <Text align="center" color="label" size="44pt" weight="black">
@@ -241,7 +250,6 @@ const ClaimCard = () => {
         >
           <Bleed vertical={{ custom: 116 }}>
             <LinearGradient
-              // colors={['#B756A7', '#B756A7', '#DF5337', '#F0D83F', '#57EA5F', '#31BCC4', '#31BCC4', '#31BCC4']}
               colors={['#B2348C', '#B2348C', '#FF6040', '#FFFF00', '#34FF3B', '#24D2FB', '#24D2FB']}
               end={{ x: 1, y: 0.5 }}
               locations={[0, 0.08, 0.29, 0.5, 0.71, 0.92, 1]}
@@ -319,7 +327,7 @@ const EarningsCard = () => {
         <Columns alignHorizontal="justify" alignVertical="center">
           <Box alignItems="center" flexDirection="row" gap={10}>
             <Bleed vertical="8px">
-              <EthCoinIcon size={32} />
+              <EthRewardsCoinIcon size={32} />
             </Bleed>
             <Stack space="10px">
               <Text color="labelTertiary" size="13pt" weight="bold">
@@ -362,7 +370,7 @@ const TotalEarnedByRainbowUsers = () => {
         <Column width="content">
           <Box alignItems="center" flexDirection="row">
             <Bleed vertical="4px">
-              <EthCoinIcon borderWidth={1} size={14} style={{ marginRight: 4 }} />
+              <EthRewardsCoinIcon borderWidth={1} size={14} style={{ marginRight: 4 }} />
             </Bleed>
             <TextShadow blur={12} shadowOpacity={0.3}>
               <Text align="center" color="labelSecondary" size="13pt" weight="heavy">
@@ -376,39 +384,68 @@ const TotalEarnedByRainbowUsers = () => {
   );
 };
 
-const EthCoinIcon = ({
+export const EthRewardsCoinIcon = memo(function EthRewardsCoinIcon({
+  animatedBorder,
   borderWidth = THICK_BORDER_WIDTH,
+  showBorder = true,
   size = 44,
   style,
 }: {
+  animatedBorder?: boolean;
   borderWidth?: number;
+  showBorder?: boolean;
   size?: number;
   style?: StyleProp<ViewStyle>;
-}) => {
+}) {
+  const { isDarkMode } = useColorMode();
+
+  const rotation = useSharedValue(0);
+
+  const rotatingBorder = useAnimatedStyle(() => {
+    return {
+      transform: animatedBorder ? [{ rotate: `${rotation.value}deg` }] : undefined,
+    };
+  });
+
+  useEffect(() => {
+    if (animatedBorder && !IS_TEST) {
+      runOnUI(() => {
+        const currentRotation = rotation.value;
+        rotation.value = currentRotation;
+        rotation.value = withRepeat(withTiming(180, { duration: 6000 }), -1, true);
+      })();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <Box style={[{ height: size, overflow: 'hidden', width: size }, style]}>
       <FastImage source={EthIcon as Source} style={{ height: size, width: size }} />
-      <MaskedView
-        maskElement={<Border borderColor="label" borderRadius={size / 2} borderWidth={borderWidth} />}
-        style={{ height: size, position: 'absolute', width: size }}
-      >
-        <LinearGradient
-          colors={[
-            'rgba(255, 255, 255, 0)',
-            'rgba(255, 255, 255, 0)',
-            'rgba(255, 255, 255, 0.12)',
-            'rgba(255, 255, 255, 0)',
-            'rgba(255, 255, 255, 0)',
-          ]}
-          end={{ x: 1, y: 1 }}
-          locations={[0, 0.09, 0.41, 0.78, 1]}
-          start={{ x: 0, y: 0.5 }}
-          style={{ height: size, position: 'absolute', width: size }}
-        />
-      </MaskedView>
+      {showBorder && isDarkMode && (
+        <Animated.View style={[animatedBorder ? rotatingBorder : {}, { height: size, position: 'absolute', width: size }]}>
+          <MaskedView
+            maskElement={<Border borderColor="label" borderRadius={size / 2} borderWidth={borderWidth} />}
+            style={{ height: size, position: 'absolute', width: size }}
+          >
+            <LinearGradient
+              colors={[
+                'rgba(255, 255, 255, 0)',
+                'rgba(255, 255, 255, 0)',
+                'rgba(255, 255, 255, 0.12)',
+                'rgba(255, 255, 255, 0)',
+                'rgba(255, 255, 255, 0)',
+              ]}
+              end={{ x: 1, y: 1 }}
+              locations={[0, 0.09, 0.41, 0.78, 1]}
+              start={{ x: 0, y: 0.5 }}
+              style={{ height: size, position: 'absolute', width: size }}
+            />
+          </MaskedView>
+        </Animated.View>
+      )}
     </Box>
   );
-};
+});
 
 const NextDropCard = () => {
   const { isDarkMode } = useColorMode();
@@ -488,34 +525,38 @@ const RainbowText = ({ totalPointsString }: { totalPointsString: string | undefi
   }, [totalPointsString]);
 
   return (
-    <MaskedView
-      style={{
-        alignItems: 'center',
-        height: 31,
-        pointerEvents: 'none',
-      }}
-      androidRenderingMode="software"
-      maskElement={
-        <TextShadow blur={20} shadowOpacity={0.4}>
-          <Text color="label" size="44pt" weight="black">
-            {totalPointsString}
-          </Text>
-        </TextShadow>
-      }
-    >
-      <LinearGradient
-        colors={['#B756A7', '#B756A7', '#DF5337', '#F0D83F', '#57EA5F', '#31BCC4', '#31BCC4', '#31BCC4']}
-        end={{ x: 0, y: 0.5 }}
-        locations={[0, 0.08, 0.248, 0.416, 0.584, 0.752, 0.92, 1]}
-        start={{ x: 1, y: 0.5 }}
+    <Bleed vertical="10px">
+      <MaskedView
         style={{
-          height: 71,
-          left: -24,
-          top: -20,
-          width: totalPointsMaskSize,
+          alignItems: 'center',
+          height: 51,
+          pointerEvents: 'none',
         }}
-      />
-    </MaskedView>
+        androidRenderingMode="software"
+        maskElement={
+          <Box height="full" justifyContent="center" width="full">
+            <TextShadow blur={20} enableOnAndroid shadowOpacity={0.4}>
+              <Text color="label" size="44pt" weight="black">
+                {totalPointsString}
+              </Text>
+            </TextShadow>
+          </Box>
+        }
+      >
+        <LinearGradient
+          colors={['#B756A7', '#B756A7', '#DF5337', '#F0D83F', '#57EA5F', '#31BCC4', '#31BCC4', '#31BCC4']}
+          end={{ x: 0, y: 0.5 }}
+          locations={[0, 0.08, 0.248, 0.416, 0.584, 0.752, 0.92, 1]}
+          start={{ x: 1, y: 0.5 }}
+          style={{
+            height: 71,
+            left: -24,
+            top: -10,
+            width: totalPointsMaskSize,
+          }}
+        />
+      </MaskedView>
+    </Bleed>
   );
 };
 
@@ -595,6 +636,9 @@ export default function PointsContent() {
     ? `https://www.rainbow.me/points?ref=${points.points.user.referralCode}`
     : undefined;
 
+  const hasClaimedRewards = true;
+  const hasUnclaimedRewards = true;
+
   return (
     <Box height="full" as={Page} flex={1} style={{ backgroundColor: isDarkMode ? globalColors.grey100 : globalColors.white100 }}>
       <ScrollView
@@ -612,10 +656,10 @@ export default function PointsContent() {
         <AccentColorProvider color={accountColor}>
           <Inset horizontal="20px" top="12px">
             <Stack space="24px">
-              {/* <EarnRewardsCard /> */}
+              {!hasClaimedRewards && !hasUnclaimedRewards && <EarnRewardsCard />}
               <Stack space="20px">
-                <ClaimCard />
-                <EarningsCard />
+                {hasUnclaimedRewards && <ClaimCard />}
+                {hasClaimedRewards && <EarningsCard />}
               </Stack>
               <TotalEarnedByRainbowUsers />
               <NextDropCard />
@@ -629,7 +673,7 @@ export default function PointsContent() {
                   <Text color="label" size="20pt" style={{ marginLeft: 4 }} weight="heavy">
                     My Points
                   </Text>
-                  <Box flexDirection="row" alignItems="center" height={{ custom: 31 }} paddingLeft="4px">
+                  <Box flexDirection="row" alignItems="center" paddingLeft="4px">
                     {canDisplayTotalPoints ? <RainbowText totalPointsString={totalPointsString} /> : <Skeleton height={31} width={200} />}
                   </Box>
                 </Stack>
@@ -638,12 +682,16 @@ export default function PointsContent() {
                 <Separator color="separatorSecondary" thickness={1} />
                 {!isReadOnlyWallet && (
                   <>
-                    <Stack space="16px">
-                      <Inset left="4px">
-                        <Text weight="bold" color="labelTertiary" size="15pt">
+                    <Stack space="20px">
+                      {/* <Inset left="4px"> */}
+                      {/* <Text weight="bold" color="labelTertiary" size="15pt">
                           {i18n.t(i18n.l.points.points.referral_code)}
-                        </Text>
-                      </Inset>
+                        </Text> */}
+                      <Text color="label" size="20pt" style={{ marginLeft: 4 }} weight="heavy">
+                        {/* {i18n.t(i18n.l.points.points.referral_code)} */}
+                        Refer Friends
+                      </Text>
+                      {/* </Inset> */}
                       {referralCode ? (
                         <Columns space="12px">
                           <Column width="1/2">
