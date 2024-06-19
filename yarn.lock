@@ -16525,10 +16525,10 @@ react-native-randombytes@3.5.3:
     buffer "^4.9.1"
     sjcl "^1.0.3"
 
-react-native-reanimated@3.12.0:
-  version "3.12.0"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-3.12.0.tgz#2c768d43971bb19e425c436c892bf68c74b9ccab"
-  integrity sha512-Bwa4jKL/QttnV8pQYiX+1N5a6XgL8yZtMyH+7UbEaW7ZeNCv1Pxp2PmYu/bP3LafCkmS9Yj/hY2adYNKe58g9A==
+react-native-reanimated@3.13.0-rc.2:
+  version "3.13.0-rc.2"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-3.13.0-rc.2.tgz#55843a55eb6cb480be48456547127edab08e9337"
+  integrity sha512-5MVV8Xwh1S2PtXz3h6naTwyUu+T3gogF6FqVVAstrJ1G1OkE0HwIt6P9NA7VrU941xbY6rccFKQbj8D6n2a/7Q==
   dependencies:
     "@babel/plugin-transform-arrow-functions" "^7.0.0-0"
     "@babel/plugin-transform-nullish-coalescing-operator" "^7.0.0-0"
