@@ -47,7 +47,6 @@ export const AnimatedSwapCoinIcon = React.memo(function FeedCoinIcon({
   const size = small ? 16 : large ? 36 : 32;
 
   const animatedIconSource = useAnimatedProps(() => {
-    console.log(JSON.stringify(asset.value, null, 2));
     return {
       source: {
         ...DEFAULT_FASTER_IMAGE_CONFIG,

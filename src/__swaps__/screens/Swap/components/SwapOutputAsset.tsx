@@ -95,7 +95,7 @@ function SwapOutputAmount() {
   );
 }
 
-function SwapInputIcon() {
+function SwapOutputIcon() {
   const { internalSelectedOutputAsset } = useSwapContext();
 
   return (
@@ -136,7 +136,7 @@ export function SwapOutputAsset() {
         <Stack space="16px">
           <Columns alignHorizontal="justify" alignVertical="center">
             <Column width="content">
-              <SwapInputIcon />
+              <SwapOutputIcon />
             </Column>
             <SwapOutputAmount />
             <Column width="content">

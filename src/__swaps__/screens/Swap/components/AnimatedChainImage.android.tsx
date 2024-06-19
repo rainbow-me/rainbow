@@ -21,8 +21,6 @@ import { customChainIdsToAssetNames } from '@/__swaps__/utils/chains';
 import { AddressZero } from '@ethersproject/constants';
 import { ETH_ADDRESS } from '@/references';
 import { PIXEL_RATIO } from '@/utils/deviceUtils';
-import { he } from 'date-fns/locale';
-import { widths } from '@/design-system/docs/playroom.config';
 
 const networkBadges = {
   [ChainId.mainnet]: EthereumBadge,
@@ -70,8 +68,6 @@ export function AnimatedChainImage({
   size?: number;
 }) {
   const animatedIconSource = useAnimatedProps(() => {
-    console.log('animatedIconSource - ', asset.value?.symbol);
-
     const base = {
       source: null,
       height: size,
@@ -93,7 +89,6 @@ export function AnimatedChainImage({
       }
 
       base.source = networkBadges[asset.value.chainId];
-      console.log('base 3 ', asset.value?.symbol, networkBadges[asset.value.chainId]);
       return base;
     }
 
