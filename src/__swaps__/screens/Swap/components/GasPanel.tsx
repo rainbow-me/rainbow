@@ -2,7 +2,7 @@ import * as i18n from '@/languages';
 import React, { PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
-import { fadeConfig } from '@/__swaps__/screens/Swap/constants';
+import { MIN_FLASHBOTS_PRIORITY_FEE, fadeConfig } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/__swaps__/types/chains';
 import { GasSpeed } from '@/__swaps__/types/gas';
@@ -321,7 +321,6 @@ function EditMaxBaseFee() {
   );
 }
 
-const MIN_FLASHBOTS_PRIORITY_FEE = gweiToWei('6');
 function EditPriorityFee() {
   const { navigate } = useNavigation();
 
