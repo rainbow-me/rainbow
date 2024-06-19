@@ -1,6 +1,6 @@
 import * as i18n from '@/languages';
 import React, { PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
-import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
 import { MIN_FLASHBOTS_PRIORITY_FEE, fadeConfig } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
@@ -426,12 +426,18 @@ function saveCustomGasSettings() {
   useGasPanelStore.setState(undefined);
 }
 
-export function onCloseGasPanel() {
-  saveCustomGasSettings();
-}
-
 export function GasPanel() {
   const { configProgress } = useSwapContext();
+
+  useAnimatedReaction(
+    () => configProgress.value,
+    (current, previous) => {
+      // persist custom gas settings when navigating away from gas panel
+      if (previous === NavigationSteps.SHOW_GAS && current !== NavigationSteps.SHOW_GAS) {
+        runOnJS(saveCustomGasSettings)();
+      }
+    }
+  );
 
   const styles = useAnimatedStyle(() => {
     return {
