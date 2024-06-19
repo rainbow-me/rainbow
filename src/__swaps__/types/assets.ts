@@ -18,6 +18,9 @@ export interface ExtendedAnimatedAssetWithColors extends ParsedSearchAsset {
   tintedBackgroundColor: ResponseByTheme<string>;
   highContrastColor: ResponseByTheme<string>;
 
+  // total balance minus gas fee if native token
+  maxSwappableAmount: string;
+
   // price information
   nativePrice: number | undefined;
 }

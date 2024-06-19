@@ -1064,6 +1064,7 @@
       "warning_separator": "·",
       "lower_than_suggested": "Low · may get stuck",
       "higher_than_suggested": "High · overpaying",
+      "likely_to_fail": "Low · likely to fail",
       "max_base_fee_too_low_error": "Low · likely to fail",
       "tip_too_low_error": "Low · likely to fail",
       "alert_message_higher_miner_tip_needed": "Setting a higher miner tip is recommended to avoid issues.",
