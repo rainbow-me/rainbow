@@ -1,6 +1,5 @@
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { Input } from '@/components/inputs';
 import { AnimatedText, Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
@@ -10,7 +9,6 @@ import { useSwapsStore } from '@/state/swaps/swapsStore';
 import Clipboard from '@react-native-clipboard/clipboard';
 import React from 'react';
 import Animated, {
-  SharedValue,
   runOnJS,
   runOnUI,
   useAnimatedProps,
@@ -31,12 +29,10 @@ const CLOSE_LABEL = i18n.t(i18n.l.button.close);
 const PASTE_LABEL = i18n.t(i18n.l.button.paste);
 
 export const SearchInput = ({
-  asset,
   handleExitSearchWorklet,
   handleFocusSearchWorklet,
   output,
 }: {
-  asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   handleExitSearchWorklet: () => void;
   handleFocusSearchWorklet: () => void;
   output: boolean;
@@ -72,12 +68,11 @@ export const SearchInput = ({
   });
 
   const buttonVisibilityStyle = useAnimatedStyle(() => {
-    const isInputSearchFocused =
-      inputProgress.value === NavigationSteps.SEARCH_FOCUSED || inputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED;
-    const noInputAssetSelected = !internalSelectedOutputAsset.value;
-    const isVisible = output || isInputSearchFocused || noInputAssetSelected;
+    const isInputSearchFocused = inputProgress.value === NavigationSteps.SEARCH_FOCUSED;
+    const isVisible = isInputSearchFocused || output || (!output && internalSelectedInputAsset.value);
 
     return {
+      display: isVisible ? 'flex' : 'none',
       opacity: isVisible ? 1 : 0,
       pointerEvents: isVisible ? 'auto' : 'none',
     };
@@ -222,9 +217,14 @@ export const SearchInput = ({
                 height={{ custom: 36 }}
                 justifyContent="center"
                 paddingHorizontal={{ custom: 12 - THICK_BORDER_WIDTH }}
-                style={
-                  output ? AnimatedSwapStyles.searchOutputAssetButtonWrapperStyle : AnimatedSwapStyles.searchInputAssetButtonWrapperStyle
-                }
+                style={[
+                  output ? AnimatedSwapStyles.searchOutputAssetButtonWrapperStyle : AnimatedSwapStyles.searchInputAssetButtonWrapperStyle,
+                  {
+                    borderCurve: 'continuous',
+                    borderWidth: THICK_BORDER_WIDTH,
+                    overflow: 'hidden',
+                  },
+                ]}
               >
                 <AnimatedText
                   align="center"

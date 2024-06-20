@@ -308,24 +308,28 @@ export const SwapSlider = ({
         ),
         SPRING_CONFIGS.springConfig
       ),
-      borderWidth: interpolate(
-        xPercentage.value,
-        [0, (THICK_BORDER_WIDTH * 2) / width, (THICK_BORDER_WIDTH * 4) / width, 1],
-        [0, 0, THICK_BORDER_WIDTH, THICK_BORDER_WIDTH],
-        'clamp'
-      ),
+      borderWidth: IS_IOS
+        ? interpolate(
+            xPercentage.value,
+            [0, (THICK_BORDER_WIDTH * 2) / width, (THICK_BORDER_WIDTH * 4) / width, 1],
+            [0, 0, THICK_BORDER_WIDTH, THICK_BORDER_WIDTH],
+            'clamp'
+          )
+        : 0,
       width: `${uiXPercentage.value * 100}%`,
     };
   });
 
   const rightBarContainerStyle = useAnimatedStyle(() => {
     return {
-      borderWidth: interpolate(
-        xPercentage.value,
-        [0, 1 - (THICK_BORDER_WIDTH * 4) / width, 1 - (THICK_BORDER_WIDTH * 2) / width, 1],
-        [THICK_BORDER_WIDTH, THICK_BORDER_WIDTH, 0, 0],
-        'clamp'
-      ),
+      borderWidth: IS_IOS
+        ? interpolate(
+            xPercentage.value,
+            [0, 1 - (THICK_BORDER_WIDTH * 4) / width, 1 - (THICK_BORDER_WIDTH * 2) / width, 1],
+            [THICK_BORDER_WIDTH, THICK_BORDER_WIDTH, 0, 0],
+            'clamp'
+          )
+        : 0,
       backgroundColor: colors.value.inactiveColorRight,
       width: `${(1 - uiXPercentage.value - SCRUBBER_WIDTH / width) * 100}%`,
     };

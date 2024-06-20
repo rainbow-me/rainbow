@@ -12,7 +12,7 @@ import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
 import { AnimatedSwapCoinIcon } from '@/__swaps__/screens/Swap/components/AnimatedSwapCoinIcon';
 import { TokenList } from '@/__swaps__/screens/Swap/components/TokenList/TokenList';
 import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { IS_ANDROID } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -161,7 +161,6 @@ export function SwapOutputAsset() {
         width={{ custom: INPUT_INNER_WIDTH }}
       >
         <TokenList
-          asset={internalSelectedOutputAsset}
           handleExitSearchWorklet={SwapNavigation.handleExitSearch}
           handleFocusSearchWorklet={SwapNavigation.handleFocusOutputSearch}
           output
@@ -216,7 +215,7 @@ export const styles = StyleSheet.create({
   staticInputStyles: {
     borderCurve: 'continuous',
     borderRadius: 30,
-    borderWidth: THICK_BORDER_WIDTH,
+    borderWidth: IS_IOS ? THICK_BORDER_WIDTH : 0,
     overflow: 'hidden',
     padding: INPUT_PADDING,
     width: BASE_INPUT_WIDTH,
