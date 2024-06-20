@@ -14,7 +14,7 @@ import {
 } from '@/__swaps__/screens/Swap/constants';
 import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { ChainId, ChainName } from '@/__swaps__/types/chains';
-import { isLowerCaseMatch, isLowerCaseMatchWorklet } from '@/__swaps__/utils/strings';
+import { isLowerCaseMatchWorklet } from '@/__swaps__/utils/strings';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { RainbowConfig } from '@/model/remoteConfig';
 import { userAssetsStore } from '@/state/assets/userAssets';
@@ -246,21 +246,17 @@ export function precisionBasedOffMagnitude(amount: number | string, isStablecoin
 export function valueBasedDecimalFormatter({
   amount,
   nativePrice,
-  assetBalanceDisplay,
   roundingMode,
   precisionAdjustment,
   isStablecoin,
   stripSeparators = true,
-  isMaxAmount = false,
 }: {
   amount: number | string;
   nativePrice: number;
-  assetBalanceDisplay?: string;
   roundingMode?: 'up' | 'down';
   precisionAdjustment?: number;
   isStablecoin?: boolean;
   stripSeparators?: boolean;
-  isMaxAmount?: boolean;
 }): string {
   'worklet';
 
@@ -295,20 +291,6 @@ export function valueBasedDecimalFormatter({
   }
 
   const maximumFractionDigits = () => {
-    // if we're selling max amount, we want to match what's displayed on the balance badge
-    // let's base the decimal places based on that (capped at 6)
-    if (isMaxAmount && assetBalanceDisplay) {
-      const decimals = assetBalanceDisplay.split('.');
-      if (decimals.length > 1) {
-        const [, decimalPlacesFromDisplay] = decimals;
-        if (decimalPlacesFromDisplay.length < STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS && isStablecoin) {
-          return STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS;
-        }
-
-        return Math.min(decimalPlacesFromDisplay.length, MAXIMUM_SIGNIFICANT_DECIMALS);
-      }
-    }
-
     if (!isNaN(decimalPlaces)) {
       return isStablecoin && decimalPlaces < STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS
         ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS
@@ -335,7 +317,6 @@ export function niceIncrementFormatter({
   incrementDecimalPlaces,
   inputAssetBalance,
   inputAssetNativePrice,
-  assetBalanceDisplay,
   niceIncrement,
   percentageToSwap,
   sliderXPosition,
@@ -345,7 +326,6 @@ export function niceIncrementFormatter({
   incrementDecimalPlaces: number;
   inputAssetBalance: number | string;
   inputAssetNativePrice: number;
-  assetBalanceDisplay: string;
   niceIncrement: number | string;
   percentageToSwap: number;
   sliderXPosition: number;
@@ -360,7 +340,6 @@ export function niceIncrementFormatter({
     return valueBasedDecimalFormatter({
       nativePrice: inputAssetNativePrice,
       amount,
-      assetBalanceDisplay,
       roundingMode: 'up',
       precisionAdjustment: precisionBasedOffMagnitude(amount, isStablecoin),
       isStablecoin,
@@ -372,7 +351,6 @@ export function niceIncrementFormatter({
     return valueBasedDecimalFormatter({
       nativePrice: inputAssetNativePrice,
       amount,
-      assetBalanceDisplay,
       roundingMode: 'up',
       precisionAdjustment,
       isStablecoin,
@@ -383,7 +361,6 @@ export function niceIncrementFormatter({
     return valueBasedDecimalFormatter({
       nativePrice: inputAssetNativePrice,
       amount,
-      assetBalanceDisplay,
       roundingMode: 'up',
       precisionAdjustment: precisionBasedOffMagnitude(amount, isStablecoin),
       isStablecoin,
@@ -394,9 +371,7 @@ export function niceIncrementFormatter({
       amount: inputAssetBalance,
       nativePrice: inputAssetNativePrice,
       roundingMode: 'up',
-      assetBalanceDisplay,
       isStablecoin,
-      isMaxAmount: true,
     });
   }
 
