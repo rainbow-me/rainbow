@@ -1,8 +1,7 @@
-import { useCallback } from 'react';
-import { SharedValue, runOnJS, useSharedValue } from 'react-native-reanimated';
-import { onCloseGasPanel } from '../components/GasPanel';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
+import { useCallback } from 'react';
+import { SharedValue, useSharedValue } from 'react-native-reanimated';
 
 export const enum NavigationSteps {
   INPUT_ELEMENT_FOCUSED = 0,
@@ -68,7 +67,6 @@ export function useSwapNavigation({
     'worklet';
 
     if (configProgress.value === NavigationSteps.SHOW_GAS) {
-      runOnJS(onCloseGasPanel)();
       configProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
     }
   }, [configProgress]);

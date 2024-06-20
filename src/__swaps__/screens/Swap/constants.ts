@@ -1,3 +1,4 @@
+import { gweiToWei } from '@/__swaps__/utils/ethereum';
 import { getDefaultKeyboardHeight } from '@/redux/keyboardHeight';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { Easing } from 'react-native-reanimated';
@@ -13,8 +14,8 @@ export const NATIVE_KEYBOARD_HEIGHT = getDefaultKeyboardHeight();
 
 export const REVIEW_SHEET_ROW_HEIGHT = 10;
 export const REVIEW_SHEET_ROW_GAP = 24;
-export const REVIEW_SHEET_HEIGHT = 420;
-export const GAS_SHEET_HEIGHT = 308;
+export const REVIEW_SHEET_HEIGHT = 412;
+export const GAS_SHEET_HEIGHT = 274;
 export const BOTTOM_ACTION_BAR_HEIGHT = 114;
 export const BASE_INPUT_HEIGHT = 104;
 export const BASE_INPUT_WIDTH = deviceUtils.dimensions.width - 24;
@@ -70,3 +71,5 @@ export const highPriceImpactThreshold = 0.05;
 export const severePriceImpactThreshold = 0.1;
 
 export const slippageStep = 0.5;
+
+export const MIN_FLASHBOTS_PRIORITY_FEE = gweiToWei('6');

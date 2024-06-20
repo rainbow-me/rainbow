@@ -5,6 +5,7 @@ import { BASE_INPUT_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__
 import { useSwapInputStyles } from '@/__swaps__/screens/Swap/hooks/useSwapInputStyles';
 import { StyleSheet } from 'react-native';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { IS_IOS } from '@/env';
 
 export const SwapInput = ({
   children,
@@ -44,7 +45,7 @@ export const styles = StyleSheet.create({
   staticInputStyles: {
     borderCurve: 'continuous',
     borderRadius: 30,
-    borderWidth: THICK_BORDER_WIDTH,
+    borderWidth: IS_IOS ? THICK_BORDER_WIDTH : 0,
     overflow: 'hidden',
     padding: INPUT_PADDING,
     width: BASE_INPUT_WIDTH,
