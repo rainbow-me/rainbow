@@ -3,7 +3,7 @@
   "version": "1.9.26-1",
   "private": true,
   "scripts": {
-    "setup": "yarn install && yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn postinstall && yarn graphql-codegen",
+    "setup": "yarn install && yarn ds:install && yarn allow-scripts && yarn postinstall",
     "setup-ci": "./scripts/setup-ci.sh",
     "adb-all": "adb devices | tail -n +2 | cut -sf 1 | xargs -I {} adb -s {}",
     "android": "yarn uninstall:android && react-native run-android",
