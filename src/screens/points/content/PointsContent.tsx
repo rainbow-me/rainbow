@@ -695,16 +695,18 @@ export default function PointsContent() {
       >
         <AccentColorProvider color={accountColor}>
           <Inset horizontal="20px" top="12px">
-            <Stack space="24px">
+            <Box gap={24}>
               {showNoHistoricalRewards && <EarnRewardsCard />}
-              <Stack space="20px">
-                {showClaimYourPoints && <ClaimCard claim={claimableBalance.display} value={claimablePrice} />}
-                {showMyEarnings && <EarningsCard claimed={claimedBalance.display} value={claimedPrice} />}
-              </Stack>
+              {(showClaimYourPoints || showMyEarnings) && (
+                <Box gap={20}>
+                  {showClaimYourPoints && <ClaimCard claim={claimableBalance.display} value={claimablePrice} />}
+                  {showMyEarnings && <EarningsCard claimed={claimedBalance.display} value={claimedPrice} />}
+                </Box>
+              )}
               <TotalEarnedByRainbowUsers earned={totalRewardsDisplay} />
               {nextDistributionDate && <NextDropCard nextDistribution={nextDistributionDate} />}
-            </Stack>
-            <Separator color={isDarkMode ? 'separatorSecondary' : 'separatorTertiary'} thickness={1} />
+              <Separator color={isDarkMode ? 'separatorSecondary' : 'separatorTertiary'} thickness={1} />
+            </Box>
           </Inset>
           {!shouldDisplayError ? (
             <Inset horizontal="20px" top="24px">
@@ -842,7 +844,7 @@ export default function PointsContent() {
                     <Separator color={isDarkMode ? 'separatorSecondary' : 'separatorTertiary'} thickness={1} />
                   </>
                 )}
-                <Stack space="16px">
+                <Stack space="20px">
                   <Inset left="4px">
                     <Text color="label" size="20pt" weight="heavy">
                       {i18n.t(i18n.l.points.points.leaderboard)}
