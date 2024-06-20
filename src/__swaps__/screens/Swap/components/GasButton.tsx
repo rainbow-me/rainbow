@@ -7,7 +7,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { ContextMenu } from '@/components/context-menu';
 import { Centered } from '@/components/layout';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { Box, Inline, Text, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
+import { Box, Inline, Text, TextIcon, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import * as i18n from '@/languages';
 import { swapsStore } from '@/state/swaps/swapsStore';
@@ -15,8 +15,8 @@ import { gasUtils } from '@/utils';
 import React, { PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
-import { runOnJS, runOnUI } from 'react-native-reanimated';
-import { ETH_COLOR, ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '../constants';
+import { runOnUI } from 'react-native-reanimated';
+import { THICK_BORDER_WIDTH } from '../constants';
 import { GasSettings, useCustomGasSettings } from '../hooks/useCustomGas';
 import { setSelectedGasSpeed, useSelectedGas, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
@@ -111,12 +111,20 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
 
   const handlePressSpeedOption = useCallback(
     (selectedGasSpeed: GasSpeed) => {
-      setSelectedGasSpeed(chainId, selectedGasSpeed);
+      // when it's custom we let the custom gas panel handle setting the selected speed
+      // like if the user opens and closes the custom panel without changing anything
+      // we'll keep the "previous" selected speed
+
       if (selectedGasSpeed === GasSpeed.CUSTOM) {
+        // if we already have custom gas settings saved, we can safely set the selected speed as custom
+        if (customGasSettings) setSelectedGasSpeed(chainId, GasSpeed.CUSTOM);
+
         runOnUI(SwapNavigation.handleShowGas)({ backToReview });
+      } else {
+        setSelectedGasSpeed(chainId, selectedGasSpeed);
       }
     },
-    [SwapNavigation.handleShowGas, backToReview, chainId]
+    [SwapNavigation.handleShowGas, backToReview, chainId, customGasSettings]
   );
 
   const handlePressMenuItem = useCallback(
@@ -190,29 +198,19 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
 };
 
 export function ReviewGasButton() {
-  const { isDarkMode } = useColorMode();
-  const { SwapNavigation, internalSelectedInputAsset } = useSwapContext();
+  const { SwapNavigation } = useSwapContext();
 
-  const separatatorSecondary = useForegroundColor('separatorSecondary');
+  const borderColor = useForegroundColor('separatorSecondary');
 
   const handleShowCustomGas = () => {
     'worklet';
-
-    runOnJS(setSelectedGasSpeed)(internalSelectedInputAsset.value?.chainId || ChainId.mainnet, GasSpeed.CUSTOM);
     SwapNavigation.handleShowGas({ backToReview: true });
   };
 
   return (
-    <Inline alignVertical="center" wrap={false}>
+    <Inline alignVertical="center" wrap={false} space="8px">
       <GasMenu backToReview>
-        <Box
-          style={[
-            sx.reviewGasButtonPillStyles,
-            {
-              borderColor: isDarkMode ? ETH_COLOR_DARK : ETH_COLOR,
-            },
-          ]}
-        >
+        <Box style={[sx.reviewGasButtonPillStyles, { borderColor }]}>
           <SelectedGas />
         </Box>
       </GasMenu>
@@ -225,7 +223,7 @@ export function ReviewGasButton() {
             gap: 10,
             borderRadius: 15,
             borderWidth: THICK_BORDER_WIDTH,
-            borderColor: separatatorSecondary,
+            borderColor,
           }}
         >
           <Text weight="heavy" size="15pt" color="label">

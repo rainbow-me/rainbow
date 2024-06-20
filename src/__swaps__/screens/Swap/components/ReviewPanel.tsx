@@ -1,8 +1,23 @@
-import * as i18n from '@/languages';
-import React, { useCallback } from 'react';
+import { AnimatedChainImage } from '@/__swaps__/screens/Swap/components/AnimatedChainImage';
 import { ReviewGasButton } from '@/__swaps__/screens/Swap/components/GasButton';
+import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
+import { useNativeAssetForChain } from '@/__swaps__/screens/Swap/hooks/useNativeAssetForChain';
 import { ChainId, ChainNameDisplay } from '@/__swaps__/types/chains';
+import { chainNameFromChainId } from '@/__swaps__/utils/chains';
+import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
+import { convertRawAmountToBalance, convertRawAmountToNativeDisplay, handleSignificantDecimals, multiply } from '@/__swaps__/utils/numbers';
+import { ButtonPressAnimation } from '@/components/animations';
 import { AnimatedText, Bleed, Box, Inline, Separator, Stack, Text, globalColors, useColorMode } from '@/design-system';
+import { useAccountSettings } from '@/hooks';
+import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { getNetworkObj } from '@/networks';
+import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
+import { ethereumUtils } from '@/utils';
+import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
+import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
   runOnJS,
@@ -13,24 +28,9 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { fadeConfig } from '../constants';
+import { useSelectedGas, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { AnimatedSwitch } from './AnimatedSwitch';
-import { useAccountSettings } from '@/hooks';
-import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
-import { AnimatedChainImage } from '@/__swaps__/screens/Swap/components/AnimatedChainImage';
-import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
-import { useNativeAssetForChain } from '@/__swaps__/screens/Swap/hooks/useNativeAssetForChain';
-import { chainNameFromChainId } from '@/__swaps__/utils/chains';
-import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
-import { convertRawAmountToBalance, convertRawAmountToNativeDisplay, handleSignificantDecimals, multiply } from '@/__swaps__/utils/numbers';
-import { ButtonPressAnimation } from '@/components/animations';
-import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
-import { getNetworkObj } from '@/networks';
-import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
-import { ethereumUtils } from '@/utils';
-import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
-import { useSelectedGas, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 
@@ -318,7 +318,7 @@ export function ReviewPanel() {
                     justifyContent: 'center',
                     alignItems: 'center',
                     borderWidth: 1,
-                    borderColor: isDarkMode ? globalColors.white10 : globalColors.grey100,
+                    borderColor: isDarkMode ? globalColors.white10 : globalColors.grey20,
                   }}
                   height={{ custom: 16 }}
                   width={{ custom: 20 }}
@@ -349,7 +349,7 @@ export function ReviewPanel() {
                     justifyContent: 'center',
                     alignItems: 'center',
                     borderWidth: 1,
-                    borderColor: isDarkMode ? globalColors.white10 : globalColors.grey100,
+                    borderColor: isDarkMode ? globalColors.white10 : globalColors.grey20,
                   }}
                   height={{ custom: 16 }}
                   width={{ custom: 20 }}
