@@ -21,7 +21,8 @@ import { GasSettings } from './useCustomGas';
 import { useSwapEstimatedGasLimit } from './useSwapEstimatedGasLimit';
 import { useAccountSettings } from '@/hooks';
 
-const BUFFER_FACTOR = 1.3;
+const LOWER_BOUND_FACTOR = 0.75;
+const UPPER_BOUND_FACTOR = 1.25;
 
 function safeBigInt(value: string) {
   try {
@@ -42,7 +43,7 @@ export function useEstimatedGasFee({
 }) {
   const network = ethereumUtils.getNetworkFromChainId(chainId);
   const nativeNetworkAsset = useNativeAssetForNetwork(network);
-  const { internalSelectedInputAsset } = useSwapContext();
+  const { gasFeeRange, internalSelectedInputAsset } = useSwapContext();
   const { nativeCurrency } = useAccountSettings();
 
   return useMemo(() => {
@@ -52,22 +53,16 @@ export function useEstimatedGasFee({
 
     const totalWei = multiply(gasLimit, amount);
 
-    internalSelectedInputAsset.modify(asset => {
-      'worklet';
+    const inputAsset = internalSelectedInputAsset.value;
+    const range = gasFeeRange.value;
 
-      if (asset?.isNativeAsset) {
-        const gasFeeNativeCurrency = divWorklet(totalWei, powWorklet(10, asset.decimals));
-        const gasFeeWithBuffer = toFixedWorklet(mulWorklet(gasFeeNativeCurrency, BUFFER_FACTOR), asset.decimals);
-        const maxSwappableAmount = subWorklet(asset.balance.amount, gasFeeWithBuffer);
-
-        return {
-          ...asset,
-          maxSwappableAmount: lessThanWorklet(maxSwappableAmount, 0) ? '0' : maxSwappableAmount,
-        };
-      } else {
-        return asset;
-      }
-    });
+    // If the gas fee range hasn't been set or the estimated fee has exceeded the range, calculate the range based on the gas fee
+    if ((!range || lessThanWorklet(range[0], totalWei)) && inputAsset) {
+      const gasFee = divWorklet(totalWei, powWorklet(10, inputAsset.decimals));
+      const lowerBound = toFixedWorklet(mulWorklet(gasFee, LOWER_BOUND_FACTOR), inputAsset.decimals);
+      const upperBound = toFixedWorklet(mulWorklet(gasFee, UPPER_BOUND_FACTOR), inputAsset.decimals);
+      gasFeeRange.value = [lowerBound, upperBound];
+    }
 
     const networkAssetPrice = nativeNetworkAsset.price.value?.toString();
 
@@ -77,7 +72,15 @@ export function useEstimatedGasFee({
     const feeInUserCurrency = multiply(networkAssetPrice, gasAmount);
 
     return convertAmountToNativeDisplayWorklet(feeInUserCurrency, nativeCurrency);
-  }, [gasLimit, gasSettings, internalSelectedInputAsset, nativeCurrency, nativeNetworkAsset?.decimals, nativeNetworkAsset?.price]);
+  }, [
+    gasFeeRange,
+    gasLimit,
+    gasSettings,
+    internalSelectedInputAsset.value,
+    nativeCurrency,
+    nativeNetworkAsset.decimals,
+    nativeNetworkAsset.price,
+  ]);
 }
 
 export function useSwapEstimatedGasFee(gasSettings: GasSettings | undefined) {

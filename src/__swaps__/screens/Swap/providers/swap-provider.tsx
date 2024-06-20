@@ -7,6 +7,7 @@ import {
   SharedValue,
   runOnJS,
   runOnUI,
+  useAnimatedReaction,
   useAnimatedRef,
   useAnimatedStyle,
   useDerivedValue,
@@ -60,6 +61,8 @@ interface SwapContextType {
   isFetching: SharedValue<boolean>;
   isSwapping: SharedValue<boolean>;
   isQuoteStale: SharedValue<number>;
+
+  gasFeeRange: SharedValue<[string, string] | null>;
 
   inputSearchRef: AnimatedRef<TextInput>;
   outputSearchRef: AnimatedRef<TextInput>;
@@ -117,6 +120,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const isQuoteStale = useSharedValue(0); // TODO: Convert this to a boolean
   const isSwapping = useSharedValue(false);
 
+  const gasFeeRange = useSharedValue(null); // gets set in useEstimatedGasFee
+
   const inputSearchRef = useAnimatedRef<TextInput>();
   const outputSearchRef = useAnimatedRef<TextInput>();
 
@@ -159,6 +164,43 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     sliderXPosition,
     quote,
   });
+
+  const isSwappingMaxBalance = useDerivedValue(
+    () =>
+      internalSelectedInputAsset.value &&
+      SwapInputController.inputMethod.value === 'slider' &&
+      SwapInputController.percentageToSwap.value >= 1
+  );
+
+  // reset gas fee range when input/output assets change or when the input amount changes and it is not the max amount
+  useAnimatedReaction(
+    () => ({
+      inputAsset: internalSelectedInputAsset.value,
+      outputAsset: internalSelectedOutputAsset.value,
+      inputValue: isSwappingMaxBalance.value ? 'max' : internalSelectedInputAsset.value,
+    }),
+    (current, previous) => {
+      if (
+        current.inputAsset !== previous?.inputAsset ||
+        current.outputAsset !== previous?.outputAsset ||
+        current.inputValue !== previous?.inputValue
+      ) {
+        gasFeeRange.value = null;
+      }
+    }
+  );
+
+  // update maxSwappableAmount for input asset if it's the native asset and gas fee range is set
+  useAnimatedReaction(
+    () => ({
+      gasFeeRange: gasFeeRange.value,
+    }),
+    (current, previous) => {
+      if (current.gasFeeRange !== previous?.gasFeeRange && internalSelectedInputAsset.value?.isNativeAsset && current.gasFeeRange) {
+        internalSelectedInputAsset.value.maxSwappableAmount = current.gasFeeRange[1];
+      }
+    }
+  );
 
   const getNonceAndPerformSwap = async ({
     type,
@@ -668,6 +710,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         isFetching,
         isSwapping,
         isQuoteStale,
+
+        gasFeeRange,
 
         inputSearchRef,
         outputSearchRef,
