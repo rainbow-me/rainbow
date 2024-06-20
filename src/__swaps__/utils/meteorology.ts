@@ -208,7 +208,7 @@ function selectEstimatedTime({ data }: MeteorologyResult, selectedGas: GasSettin
   const value = findClosestValue(selectedGas.maxPriorityFee, Object.values(data.confirmationTimeByPriorityFee));
   const [time] = Object.entries(data.confirmationTimeByPriorityFee).find(([, v]) => v === value) || [];
   if (!time) return undefined;
-  return `${+time >= 3600 ? '>' : '~'} ${getMinimalTimeUnitStringForMs(+time * 1000)}`;
+  return `${+time >= 3600 ? '> ' : '~'}${getMinimalTimeUnitStringForMs(+time * 1000)}`;
 }
 
 export function useEstimatedTime({ chainId, speed }: { chainId: ChainId; speed: GasSpeed }) {
