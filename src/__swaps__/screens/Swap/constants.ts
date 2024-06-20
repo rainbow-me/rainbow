@@ -13,8 +13,8 @@ export const NATIVE_KEYBOARD_HEIGHT = getDefaultKeyboardHeight();
 
 export const REVIEW_SHEET_ROW_HEIGHT = 10;
 export const REVIEW_SHEET_ROW_GAP = 24;
-export const REVIEW_SHEET_HEIGHT = 420;
-export const GAS_SHEET_HEIGHT = 308;
+export const REVIEW_SHEET_HEIGHT = 412;
+export const GAS_SHEET_HEIGHT = 274;
 export const BOTTOM_ACTION_BAR_HEIGHT = 114;
 export const BASE_INPUT_HEIGHT = 104;
 export const BASE_INPUT_WIDTH = deviceUtils.dimensions.width - 24;
