@@ -154,7 +154,10 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
             asset =>
               (+asset.native?.balance?.amount ?? 0) > smallBalanceThreshold &&
               (!chainIdFilter || asset.chainId === chainIdFilter) &&
-              (!searchRegex || searchRegex.test(asset.name) || searchRegex.test(asset.symbol) || searchRegex.test(asset.address)),
+              (!searchRegex ||
+                searchRegex.test(asset.name) ||
+                searchRegex.test(asset.symbol) ||
+                asset.address.toLowerCase() === inputSearchQuery),
             filter
           )
         );
