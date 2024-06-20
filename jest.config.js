@@ -5,8 +5,8 @@ const { compilerOptions } = require('./tsconfig');
 module.exports = {
   preset: 'react-native',
   setupFiles: ['./config/test/jest-setup.js'],
-  // need to global mock reanimated to unblock __swaps__ tests
-  testPathIgnorePatterns: ['node_modules', 'e2e', 'src/__swaps__'],
+  // need to mock reanimated and some other things to unblock NiceIncrementerFormatter.test.ts
+  testPathIgnorePatterns: ['node_modules', 'e2e', 'src/__swaps__/screens/Swap/__tests__/NiceIncrementerFormatter.test.ts'],
   transform: {
     '\\.tsx?$': [
       'ts-jest',
