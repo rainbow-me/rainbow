@@ -42,7 +42,7 @@ import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { useAccountSettings } from '@/hooks';
 import { getGasSettingsBySpeed, getSelectedGas, getSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
-import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { equalWorklet, subWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { useSwapSettings } from '../hooks/useSwapSettings';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { getNetworkObj } from '@/networks';
@@ -165,26 +165,13 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     quote,
   });
 
-  const isSwappingMaxBalance = useDerivedValue(
-    () =>
-      internalSelectedInputAsset.value &&
-      SwapInputController.inputMethod.value === 'slider' &&
-      SwapInputController.percentageToSwap.value >= 1
-  );
-
-  // reset gas fee range when input/output assets change or when the input amount changes and it is not the max amount
+  // reset gas fee range when input chain changes
   useAnimatedReaction(
     () => ({
       inputAsset: internalSelectedInputAsset.value,
-      outputAsset: internalSelectedOutputAsset.value,
-      inputValue: isSwappingMaxBalance.value ? 'max' : internalSelectedInputAsset.value,
     }),
     (current, previous) => {
-      if (
-        current.inputAsset !== previous?.inputAsset ||
-        current.outputAsset !== previous?.outputAsset ||
-        current.inputValue !== previous?.inputValue
-      ) {
+      if (gasFeeRange.value && current.inputAsset?.chainId !== previous?.inputAsset?.chainId) {
         gasFeeRange.value = null;
       }
     }
@@ -196,8 +183,11 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       gasFeeRange: gasFeeRange.value,
     }),
     (current, previous) => {
-      if (current.gasFeeRange !== previous?.gasFeeRange && internalSelectedInputAsset.value?.isNativeAsset && current.gasFeeRange) {
-        internalSelectedInputAsset.value.maxSwappableAmount = current.gasFeeRange[1];
+      if (current.gasFeeRange && current.gasFeeRange !== previous?.gasFeeRange && internalSelectedInputAsset.value?.isNativeAsset) {
+        internalSelectedInputAsset.value.maxSwappableAmount = subWorklet(
+          internalSelectedInputAsset.value.balance.amount,
+          current.gasFeeRange[1]
+        );
       }
     }
   );

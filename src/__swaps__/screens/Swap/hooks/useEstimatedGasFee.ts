@@ -4,7 +4,6 @@ import {
   lessThanWorklet,
   mulWorklet,
   powWorklet,
-  subWorklet,
   toFixedWorklet,
   toScaledIntegerWorklet,
 } from '@/__swaps__/safe-math/SafeMath';
@@ -56,11 +55,15 @@ export function useEstimatedGasFee({
     const inputAsset = internalSelectedInputAsset.value;
     const range = gasFeeRange.value;
 
-    // If the gas fee range hasn't been set or the estimated fee has exceeded the range, calculate the range based on the gas fee
-    if ((!range || lessThanWorklet(range[0], totalWei)) && inputAsset) {
-      const gasFee = divWorklet(totalWei, powWorklet(10, inputAsset.decimals));
-      const lowerBound = toFixedWorklet(mulWorklet(gasFee, LOWER_BOUND_FACTOR), inputAsset.decimals);
-      const upperBound = toFixedWorklet(mulWorklet(gasFee, UPPER_BOUND_FACTOR), inputAsset.decimals);
+    const nativeGasFee = inputAsset ? divWorklet(totalWei, powWorklet(10, inputAsset.decimals)) : undefined;
+
+    const isEstimateOutsideRange =
+      range && nativeGasFee && (lessThanWorklet(nativeGasFee, range[0]) || greaterThanWorklet(nativeGasFee, range[1]));
+
+    // If the gas fee range hasn't been set or the estimated fee is outside the range, calculate the range based on the gas fee
+    if (inputAsset && nativeGasFee && (!range || isEstimateOutsideRange)) {
+      const lowerBound = toFixedWorklet(mulWorklet(nativeGasFee, LOWER_BOUND_FACTOR), inputAsset.decimals);
+      const upperBound = toFixedWorklet(mulWorklet(nativeGasFee, UPPER_BOUND_FACTOR), inputAsset.decimals);
       gasFeeRange.value = [lowerBound, upperBound];
     }
 
@@ -78,8 +81,8 @@ export function useEstimatedGasFee({
     gasSettings,
     internalSelectedInputAsset.value,
     nativeCurrency,
-    nativeNetworkAsset.decimals,
-    nativeNetworkAsset.price,
+    nativeNetworkAsset?.decimals,
+    nativeNetworkAsset?.price,
   ]);
 }
 
