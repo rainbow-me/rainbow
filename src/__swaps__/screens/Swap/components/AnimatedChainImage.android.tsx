@@ -46,7 +46,6 @@ const networkBadges = {
   [ChainId.degen]: DegenBadge,
 };
 
-
 export function AnimatedChainImage({
   assetType,
   showMainnetBadge = false,
