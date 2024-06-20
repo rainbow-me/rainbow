@@ -592,3 +592,15 @@ query priceChart($chainId: Int!, $address: String!, $day: Boolean!, $hour: Boole
     }
   }
 }
+
+mutation claimUserRewards($address: String!) {
+  claimUserRewards(address: $address) {
+    error {
+      type
+      message
+    }
+    chainID
+    uoHash
+    txHash
+  }
+}

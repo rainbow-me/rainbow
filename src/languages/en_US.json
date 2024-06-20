@@ -1418,7 +1418,14 @@
         "already_claimed_points": "Sorry! You have already claimed your points.",
         "now": "Now",
         "unranked": "Unranked",
-        "points_to_rank": "750 points to rank"
+        "points_to_rank": "750 points to rank",
+        "ranking": "Rank #%{rank}",
+        "available_to_claim": "Available to Claim",
+        "claim": "Claim %{value}",
+        "choose_claim_network": "Choose Claim Network",
+        "claiming_on_network": "Claiming on %{network}",
+        "free_to_claim": "Free to Claim",
+        "has_bridge_fee": "Has Bridge Fee"
       },
       "console": {
         "claim_bonus_paragraph": "You'll receive an additional 100 points once you swap at least $100 through Rainbow",

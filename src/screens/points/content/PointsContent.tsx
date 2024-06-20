@@ -71,26 +71,13 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
   const red = useForegroundColor('red');
 
   //
-  // NEXT REWARD CARD
+  // RECENT EARNINGS CARD
   //
-  const nextDistributionSeconds = points?.points?.meta?.distribution?.next;
-  const isLoadingNextRewardCard = nextDistributionSeconds === undefined;
-
-  const getNextRewardCardMainText = () => {
-    if (nextDistributionSeconds === undefined) return '';
-
-    // if next drop has not happened, show time remaining
-    return Date.now() >= nextDistributionSeconds * 1000
-      ? i18n.t(i18n.l.points.points.now)
-      : getFormattedTimeQuantity(nextDistributionSeconds * 1000 - Date.now(), 2);
-  };
-
-  const getNextRewardCardSubtitle = () => {
-    if (nextDistributionSeconds === undefined) return '';
-
-    // date and time of next drop
-    return displayNextDistribution(nextDistributionSeconds);
-  };
+  const lastPeriodLoading = points === undefined;
+  const lastPeriod = points?.points?.user?.stats?.last_period;
+  const lastPeriodEarnings = lastPeriod?.earnings?.total;
+  const lastPeriodRank = lastPeriod?.position?.current;
+  const lastPeriodUnranked = lastPeriod?.position?.unranked;
 
   //
   // REFERRALS CARD
@@ -142,27 +129,27 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
     return isUnranked ? i18n.t(i18n.l.points.points.unranked) : `#${rank.toLocaleString('en-US')}`;
   };
 
+  const getEarnedLastWeekSubtitle = () => {
+    if (lastPeriodUnranked || !lastPeriodRank) return i18n.t(i18n.l.points.points.unranked);
+    if ((lastPeriodRank || 11) <= 10) return 'Top 10 Earner';
+    return i18n.t(i18n.l.points.points.ranking, {
+      rank: lastPeriodRank,
+    });
+  };
+
   return (
     <Bleed space="20px">
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <Inset space="20px">
           <Inline separator={<Box width={{ custom: 12 }} />} wrap={false}>
             <InfoCard
-              loading={false}
+              loading={lastPeriodLoading}
               title="Earned Last Week"
-              mainText="2,880"
+              mainText={lastPeriodEarnings ? lastPeriodEarnings?.toString() : '0'}
               icon="􀠐"
-              subtitle="Top 10 Earner"
+              subtitle={getEarnedLastWeekSubtitle()}
               accentColor={labelSecondary}
             />
-            {/* <InfoCard
-              loading={isLoadingNextRewardCard}
-              title={i18n.t(i18n.l.points.points.next_drop)}
-              mainText={getNextRewardCardMainText()}
-              icon="􀉉"
-              subtitle={getNextRewardCardSubtitle()}
-              accentColor={labelSecondary}
-            /> */}
             <InfoCard
               loading={isLoadingReferralsCard}
               title={i18n.t(i18n.l.points.points.referrals)}
@@ -212,7 +199,7 @@ const ClaimCard = ({ claim, value }: { claim?: string; value?: string }) => {
       <Box alignItems="center" gap={20} paddingBottom="28px" paddingTop="16px">
         <TextShadow shadowOpacity={0.3}>
           <Text align="center" color="label" size="20pt" weight="heavy">
-            Available to Claim
+            {i18n.t(i18n.l.points.points.available_to_claim)}
           </Text>
         </TextShadow>
         <Box alignItems="center" flexDirection="row" gap={8}>
@@ -241,7 +228,13 @@ const ClaimCard = ({ claim, value }: { claim?: string; value?: string }) => {
         }}
       >
         <MaskedView
-          maskElement={<NeonRainbowButtonMask label={`Claim ${claim}`} />}
+          maskElement={
+            <NeonRainbowButtonMask
+              label={i18n.t(i18n.l.points.points.claim, {
+                value: claim || '',
+              })}
+            />
+          }
           style={{
             alignItems: 'center',
             justifyContent: 'center',
@@ -653,6 +646,9 @@ export default function PointsContent() {
   const eth = useNativeAssetForNetwork(Network.mainnet);
   const rewards = points?.points?.user?.rewards;
   const { claimed, claimable } = rewards || {};
+  const showClaimYourPoints = claimable && claimable !== '0';
+  const showMyEarnings = showClaimYourPoints || (claimed && claimed !== '0');
+  const showNoHistoricalRewards = !showMyEarnings;
 
   const claimedBalance = convertRawAmountToBalance(claimed || '0', {
     decimals: 18,
@@ -685,9 +681,6 @@ export default function PointsContent() {
     ? `https://www.rainbow.me/points?ref=${points.points.user.referralCode}`
     : undefined;
 
-  const hasClaimedRewards = true;
-  const hasUnclaimedRewards = true;
-
   return (
     <Box height="full" as={Page} flex={1} style={{ backgroundColor: isDarkMode ? globalColors.grey100 : globalColors.white100 }}>
       <ScrollView
@@ -705,10 +698,10 @@ export default function PointsContent() {
         <AccentColorProvider color={accountColor}>
           <Inset horizontal="20px" top="12px">
             <Stack space="24px">
-            {!hasClaimedRewards && !hasUnclaimedRewards && <EarnRewardsCard />}
+              {showNoHistoricalRewards && <EarnRewardsCard />}
               <Stack space="20px">
-                <ClaimCard claim={claimableBalance.display} value={claimablePrice} />
-                <EarningsCard claimed={claimedBalance.display} value={claimedPrice} />
+                {showClaimYourPoints && <ClaimCard claim={claimableBalance.display} value={claimablePrice} />}
+                {showMyEarnings && <EarningsCard claimed={claimedBalance.display} value={claimedPrice} />}
               </Stack>
               <TotalEarnedByRainbowUsers earned={totalRewardsDisplay} />
               {nextDistributionDate && <NextDropCard nextDistribution={nextDistributionDate} />}
