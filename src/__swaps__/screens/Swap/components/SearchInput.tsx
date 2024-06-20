@@ -1,6 +1,5 @@
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { Input } from '@/components/inputs';
 import { AnimatedText, Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
@@ -10,7 +9,6 @@ import { useSwapsStore } from '@/state/swaps/swapsStore';
 import Clipboard from '@react-native-clipboard/clipboard';
 import React from 'react';
 import Animated, {
-  SharedValue,
   runOnJS,
   runOnUI,
   useAnimatedProps,
@@ -31,12 +29,10 @@ const CLOSE_LABEL = i18n.t(i18n.l.button.close);
 const PASTE_LABEL = i18n.t(i18n.l.button.paste);
 
 export const SearchInput = ({
-  asset,
   handleExitSearchWorklet,
   handleFocusSearchWorklet,
   output,
 }: {
-  asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   handleExitSearchWorklet: () => void;
   handleFocusSearchWorklet: () => void;
   output: boolean;
