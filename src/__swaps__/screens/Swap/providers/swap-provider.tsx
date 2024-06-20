@@ -1,6 +1,6 @@
 // @refresh
 import React, { ReactNode, createContext, useCallback, useContext, useEffect, useRef } from 'react';
-import { StyleProp, TextStyle, TextInput, NativeModules, InteractionManager } from 'react-native';
+import { InteractionManager, NativeModules, StyleProp, TextInput, TextStyle } from 'react-native';
 import {
   AnimatedRef,
   DerivedValue,
@@ -13,41 +13,42 @@ import {
   useSharedValue,
 } from 'react-native-reanimated';
 
-import * as i18n from '@/languages';
-import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
+import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { INITIAL_SLIDER_POSITION, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useAnimatedSwapStyles } from '@/__swaps__/screens/Swap/hooks/useAnimatedSwapStyles';
-import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextStyles';
-import { useSwapNavigation, NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
-import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { NavigationSteps, useSwapNavigation } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
+import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextStyles';
 import { useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
-import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
-import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
-import { isUnwrapEthWorklet, isWrapEthWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
-import { ChainId } from '@/__swaps__/types/chains';
-import { RainbowError, logger } from '@/logger';
-import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
-import { Navigation } from '@/navigation';
-import { WrappedAlert as Alert } from '@/helpers/alert';
-import Routes from '@/navigation/routesNames';
-import { ethereumUtils } from '@/utils';
-import { getFlashbotsProvider, getIsHardhatConnected, getProviderForNetwork, isHardHat } from '@/handlers/web3';
-import { loadWallet } from '@/model/wallet';
-import { walletExecuteRap } from '@/raps/execute';
-import { queryClient } from '@/react-query';
 import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
-import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
-import { useAccountSettings } from '@/hooks';
-import { getGasSettingsBySpeed, getSelectedGas, getSelectedGasSpeed } from '../hooks/useSelectedGas';
-import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
-import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
-import { useSwapSettings } from '../hooks/useSwapSettings';
-import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
-import { getNetworkObj } from '@/networks';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { ChainId } from '@/__swaps__/types/chains';
+import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
+import { isUnwrapEthWorklet, isWrapEthWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
+import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
+import { getFlashbotsProvider, getIsHardhatConnected, getProviderForNetwork, isHardHat } from '@/handlers/web3';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import { useAccountSettings } from '@/hooks';
+import * as i18n from '@/languages';
+import { RainbowError, logger } from '@/logger';
+import { loadWallet } from '@/model/wallet';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { getNetworkObj } from '@/networks';
+import { walletExecuteRap } from '@/raps/execute';
+import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
+import { queryClient } from '@/react-query';
+import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
+import { ethereumUtils } from '@/utils';
+import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { Address } from 'viem';
+import { clearCustomGasSettings } from '../hooks/useCustomGas';
+import { getGasSettingsBySpeed, getSelectedGas, getSelectedGasSpeed } from '../hooks/useSelectedGas';
+import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
+import { useSwapSettings } from '../hooks/useSwapSettings';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const tapToSwap = i18n.t(i18n.l.swap.actions.tap_to_swap);
@@ -212,9 +213,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         };
       }
 
+      const chainId = getIsHardhatConnected() ? ChainId.hardhat : parameters.chainId;
       const { errorMessage } = await walletExecuteRap(wallet, type, {
         ...parameters,
-        chainId: getIsHardhatConnected() ? ChainId.hardhat : parameters.chainId,
+        chainId,
         gasParams,
         // @ts-expect-error - collision between old gas types and new
         gasFeeParamsBySpeed: gasFeeParamsBySpeed,
@@ -264,6 +266,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         },
       ]);
 
+      clearCustomGasSettings(chainId);
       NotificationManager?.postNotification('rapCompleted');
       Navigation.handleAction(Routes.PROFILE_SCREEN, {});
 
