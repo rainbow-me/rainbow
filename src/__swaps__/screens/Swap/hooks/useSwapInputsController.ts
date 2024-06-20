@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
-import { SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
+import { MAXIMUM_SIGNIFICANT_DECIMALS, SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
 import { RequestNewQuoteParams, inputKeys, inputMethods, inputValuesType } from '@/__swaps__/types/swap';
 import {
   addCommasToNumber,
@@ -144,18 +144,20 @@ export function useSwapInputsController({
       });
     }
 
-    const balance = internalSelectedInputAsset.value?.maxSwappableAmount || 0;
-    const isStablecoin = internalSelectedInputAsset.value?.type === 'stablecoin' ?? false;
+    if (percentageToSwap.value === 1) {
+      const formattedAmount = valueBasedDecimalFormatter({
+        amount: inputValues.value.inputAmount,
+        nativePrice: inputNativePrice.value,
+        roundingMode: 'up',
+        precisionAdjustment: -1,
+        isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
+        stripSeparators: false,
+      });
 
-    return niceIncrementFormatter({
-      incrementDecimalPlaces: incrementDecimalPlaces.value,
-      inputAssetBalance: balance,
-      inputAssetNativePrice: inputNativePrice.value,
-      niceIncrement: niceIncrement.value,
-      percentageToSwap: percentageToSwap.value,
-      sliderXPosition: sliderXPosition.value,
-      isStablecoin,
-    });
+      return formattedAmount;
+    } else {
+      return addCommasToNumber(inputValues.value.inputAmount, '0');
+    }
   });
 
   const formattedInputNativeValue = useDerivedValue(() => {

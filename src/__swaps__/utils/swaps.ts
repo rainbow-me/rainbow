@@ -260,9 +260,9 @@ export function valueBasedDecimalFormatter({
 }): string {
   'worklet';
 
-  function calculateDecimalPlaces(usdTokenPrice: number): number {
-    const fallbackDecimalPlaces = STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS;
-    if (usdTokenPrice <= 0) {
+  function calculateDecimalPlaces(): number {
+    const fallbackDecimalPlaces = MAXIMUM_SIGNIFICANT_DECIMALS;
+    if (nativePrice === 0) {
       return fallbackDecimalPlaces;
     }
     const unitsForOneCent = 0.01 / nativePrice;
@@ -275,7 +275,7 @@ export function valueBasedDecimalFormatter({
     );
   }
 
-  const decimalPlaces = calculateDecimalPlaces(nativePrice);
+  const decimalPlaces = calculateDecimalPlaces();
 
   let roundedAmount;
   const factor = Math.pow(10, decimalPlaces) || 1; // Prevent division by 0
@@ -290,25 +290,12 @@ export function valueBasedDecimalFormatter({
     roundedAmount = divWorklet(roundWorklet(mulWorklet(amount, factor)), factor);
   }
 
-  const maximumFractionDigits = () => {
-    if (!isNaN(decimalPlaces)) {
-      return isStablecoin && decimalPlaces < STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS
-        ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS
-        : decimalPlaces;
-    }
-
-    // default to 6 precision if we have no calculation
-    return MAXIMUM_SIGNIFICANT_DECIMALS;
-  };
-
   // Format the number to add separators and trim trailing zeros
   const numberFormatter = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 0,
-    maximumFractionDigits: maximumFractionDigits(),
-    useGrouping: true,
+    maximumFractionDigits: decimalPlaces,
+    useGrouping: !stripSeparators,
   });
-
-  if (stripSeparators) return stripCommas(numberFormatter.format(Number(roundedAmount)));
 
   return numberFormatter.format(Number(roundedAmount));
 }
