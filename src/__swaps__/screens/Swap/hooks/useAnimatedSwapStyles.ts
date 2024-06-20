@@ -247,17 +247,23 @@ export function useAnimatedSwapStyles({
         getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode, true),
         isDarkMode ? 0.06 : 0.01
       ),
-      borderWidth: THICK_BORDER_WIDTH,
     };
   });
 
   const searchOutputAssetButtonWrapperStyle = useAnimatedStyle(() => {
     const color = isPasteMode.value ? foregroundColors.blue : internalSelectedOutputAsset.value?.highContrastColor;
 
+    const darkModeBorderOpacity = isPasteMode.value ? 0.08 : 0.06;
+    const lightModeBorderOpacity = isPasteMode.value ? 0.06 : 0.01;
+
     return {
-      backgroundColor: opacityWorklet(getColorValueForThemeWorklet(color, isDarkMode, true), isDarkMode ? 0.1 : 0.08),
-      borderColor: opacityWorklet(getColorValueForThemeWorklet(color, isDarkMode, true), isDarkMode ? 0.06 : 0.01),
-      borderWidth: isPasteMode.value ? 0 : THICK_BORDER_WIDTH,
+      backgroundColor: isPasteMode.value
+        ? 'transparent'
+        : opacityWorklet(getColorValueForThemeWorklet(color, isDarkMode, true), isDarkMode ? 0.1 : 0.08),
+      borderColor: opacityWorklet(
+        getColorValueForThemeWorklet(color, isDarkMode, true),
+        isDarkMode ? darkModeBorderOpacity : lightModeBorderOpacity
+      ),
     };
   });
 

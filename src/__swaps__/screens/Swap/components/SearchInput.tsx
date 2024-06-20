@@ -68,12 +68,11 @@ export const SearchInput = ({
   });
 
   const buttonVisibilityStyle = useAnimatedStyle(() => {
-    const isInputSearchFocused =
-      inputProgress.value === NavigationSteps.SEARCH_FOCUSED || inputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED;
-    const noInputAssetSelected = !internalSelectedOutputAsset.value;
-    const isVisible = output || isInputSearchFocused || noInputAssetSelected;
+    const isInputSearchFocused = inputProgress.value === NavigationSteps.SEARCH_FOCUSED;
+    const isVisible = isInputSearchFocused || output || (!output && internalSelectedInputAsset.value);
 
     return {
+      display: isVisible ? 'flex' : 'none',
       opacity: isVisible ? 1 : 0,
       pointerEvents: isVisible ? 'auto' : 'none',
     };
@@ -218,9 +217,14 @@ export const SearchInput = ({
                 height={{ custom: 36 }}
                 justifyContent="center"
                 paddingHorizontal={{ custom: 12 - THICK_BORDER_WIDTH }}
-                style={
-                  output ? AnimatedSwapStyles.searchOutputAssetButtonWrapperStyle : AnimatedSwapStyles.searchInputAssetButtonWrapperStyle
-                }
+                style={[
+                  output ? AnimatedSwapStyles.searchOutputAssetButtonWrapperStyle : AnimatedSwapStyles.searchInputAssetButtonWrapperStyle,
+                  {
+                    borderCurve: 'continuous',
+                    borderWidth: THICK_BORDER_WIDTH,
+                    overflow: 'hidden',
+                  },
+                ]}
               >
                 <AnimatedText
                   align="center"
