@@ -47,7 +47,7 @@ export function useEstimatedGasFee({
     const feeFormatted = formatUnits(safeBigInt(fee), nativeNetworkAsset.decimals).toString();
     const feeInUserCurrency = multiply(networkAssetPrice, feeFormatted);
 
-    return convertAmountToNativeDisplayWorklet(feeInUserCurrency, nativeCurrency);
+    return convertAmountToNativeDisplayWorklet(feeInUserCurrency, nativeCurrency, true);
   }, [gasLimit, gasSettings, nativeCurrency, nativeNetworkAsset?.decimals, nativeNetworkAsset?.price]);
 }
 
