@@ -1,7 +1,8 @@
 import * as i18n from '@/languages';
 import React, { PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
-import Animated, { useAnimatedStyle, withDelay, withSpring } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, withDelay, withSpring } from 'react-native-reanimated';
 
+import { MIN_FLASHBOTS_PRIORITY_FEE, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/__swaps__/types/chains';
 import { GasSpeed } from '@/__swaps__/types/gas';
@@ -33,7 +34,6 @@ import { getSelectedGas, setSelectedGasSpeed, useSelectedGasSpeed } from '../hoo
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { THICK_BORDER_WIDTH } from '../constants';
 
 const { GAS_TRENDS } = gasUtils;
 
@@ -322,7 +322,6 @@ function EditMaxBaseFee() {
   );
 }
 
-const MIN_FLASHBOTS_PRIORITY_FEE = gweiToWei('6');
 function EditPriorityFee() {
   const { navigate } = useNavigation();
 
@@ -428,14 +427,19 @@ function saveCustomGasSettings() {
   useGasPanelStore.setState(undefined);
 }
 
-export function onCloseGasPanel() {
-  saveCustomGasSettings();
-}
-
 export function GasPanel() {
   const { configProgress } = useSwapContext();
-
   const separator = useForegroundColor('separator');
+
+  useAnimatedReaction(
+    () => configProgress.value,
+    (current, previous) => {
+      // persist custom gas settings when navigating away from gas panel
+      if (previous === NavigationSteps.SHOW_GAS && current !== NavigationSteps.SHOW_GAS) {
+        runOnJS(saveCustomGasSettings)();
+      }
+    }
+  );
 
   const styles = useAnimatedStyle(() => {
     return {
