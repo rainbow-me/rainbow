@@ -22,6 +22,7 @@ import { AddressZero } from '@ethersproject/constants';
 import { ETH_ADDRESS } from '@/references';
 import { IS_ANDROID } from '@/env';
 import { PIXEL_RATIO } from '@/utils/deviceUtils';
+import { useSwapContext } from '../providers/swap-provider';
 
 const networkBadges = {
   [ChainId.mainnet]: Image.resolveAssetSource(EthereumBadge).uri,
@@ -60,14 +61,17 @@ export const getCustomChainIconUrlWorklet = (chainId: ChainId, address: AddressO
 };
 
 export function AnimatedChainImage({
-  asset,
+  assetType,
   showMainnetBadge = false,
   size = 20,
 }: {
-  asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+  assetType: 'input' | 'output';
   showMainnetBadge?: boolean;
   size?: number;
 }) {
+  const { internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
+  const asset = assetType === 'input' ? internalSelectedInputAsset : internalSelectedOutputAsset;
+
   const animatedIconSource = useAnimatedProps(() => {
     const base = {
       source: {

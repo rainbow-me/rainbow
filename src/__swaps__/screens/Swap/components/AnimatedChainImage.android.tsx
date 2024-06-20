@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useMemo } from 'react';
+import { Image, StyleSheet, View } from 'react-native';
 
 const ArbitrumBadge = require('@/assets/badges/arbitrum.png');
 const BaseBadge = require('@/assets/badges/base.png');
@@ -21,6 +21,7 @@ import { customChainIdsToAssetNames } from '@/__swaps__/utils/chains';
 import { AddressZero } from '@ethersproject/constants';
 import { ETH_ADDRESS } from '@/references';
 import { PIXEL_RATIO } from '@/utils/deviceUtils';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
 
 const networkBadges = {
   [ChainId.mainnet]: EthereumBadge,
@@ -59,53 +60,31 @@ export const getCustomChainIconUrlWorklet = (chainId: ChainId, address: AddressO
 };
 
 export function AnimatedChainImage({
-  asset,
+  assetType,
   showMainnetBadge = false,
   size = 20,
 }: {
-  asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+  assetType: 'input' | 'output';
   showMainnetBadge?: boolean;
   size?: number;
 }) {
-  const animatedIconSource = useAnimatedProps(() => {
-    const base = {
-      source: null,
-      height: size,
-      width: size,
-      resizeMode: 'cover',
-    };
-    if (!asset?.value) {
-      if (!showMainnetBadge) {
-        return base;
-      }
+  const chainIdState = useSwapsStore(state => state[assetType === 'input' ? 'inputAsset' : 'outputAsset']?.chainId);
 
-      base.source = networkBadges[ChainId.mainnet];
-      return base;
+  const iconSource = useMemo(() => {
+    let source = { uri: '' };
+
+    if (chainIdState !== undefined && !(!showMainnetBadge && chainIdState === ChainId.mainnet)) {
+      source = networkBadges[chainIdState];
+    } else {
+      source = { uri: '' };
     }
 
-    if (networkBadges[asset.value.chainId]) {
-      if (!showMainnetBadge && asset.value.chainId === ChainId.mainnet) {
-        return base;
-      }
-
-      base.source = networkBadges[asset.value.chainId];
-      return base;
-    }
-
-    const url = getCustomChainIconUrlWorklet(asset.value.chainId, asset.value.address);
-    if (url) {
-      // @ts-ignore
-      base.source = { url };
-      return base;
-    }
-    return base;
-  });
+    return source;
+  }, [chainIdState, showMainnetBadge]);
 
   return (
     <View style={[sx.badge, { borderRadius: size / 2, height: size, width: size }]}>
-      {/* ⚠️ TODO: This works but we should figure out how to type this correctly to avoid this error */}
-      {/* @ts-expect-error: Doesn't pick up that it's getting a source prop via animatedProps */}
-      <Animated.Image style={{ width: size, height: size, borderRadius: (size / 2) * PIXEL_RATIO }} animatedProps={animatedIconSource} />
+      <Image resizeMode="cover" source={iconSource} style={{ width: size, height: size, borderRadius: (size / 2) * PIXEL_RATIO }} />
     </View>
   );
 }
