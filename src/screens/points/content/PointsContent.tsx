@@ -703,8 +703,8 @@ export default function PointsContent() {
               </Stack>
               <TotalEarnedByRainbowUsers earned={totalRewardsDisplay} />
               {nextDistributionDate && <NextDropCard nextDistribution={nextDistributionDate} />}
-              <Separator color="separatorSecondary" thickness={1} />
             </Stack>
+            <Separator color={isDarkMode ? 'separatorSecondary' : 'separatorTertiary'} thickness={1} />
           </Inset>
           {!shouldDisplayError ? (
             <Inset horizontal="20px" top="24px">
@@ -719,7 +719,7 @@ export default function PointsContent() {
                 </Stack>
                 {!!cardIds.length && !isReadOnlyWallet && <RemoteCardCarousel key="remote-cards" />}
                 <InfoCards points={points} />
-                <Separator color="separatorSecondary" thickness={1} />
+                <Separator color={isDarkMode ? 'separatorSecondary' : 'separatorTertiary'} thickness={1} />
                 {!isReadOnlyWallet && (
                   <>
                     <Stack space="20px">
@@ -839,7 +839,7 @@ export default function PointsContent() {
                         </Text>
                       </Inset>
                     </Stack>
-                    <Separator color="separatorSecondary" thickness={1} />
+                    <Separator color={isDarkMode ? 'separatorSecondary' : 'separatorTertiary'} thickness={1} />
                   </>
                 )}
                 <Stack space="16px">
