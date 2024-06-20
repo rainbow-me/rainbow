@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
-import { SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
+import { MAXIMUM_SIGNIFICANT_DECIMALS, SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
 import { RequestNewQuoteParams, inputKeys, inputMethods, inputValuesType } from '@/__swaps__/types/swap';
 import {
   addCommasToNumber,
@@ -36,7 +36,6 @@ import { supportedNativeCurrencies } from '@/references';
 
 function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetWithColors | null) {
   const initialBalance = Number(initialSelectedInputAsset?.maxSwappableAmount) || 0;
-  const assetBalanceDisplay = initialSelectedInputAsset?.balance.display ?? '';
   const initialNiceIncrement = findNiceIncrement(initialBalance);
   const initialDecimalPlaces = countDecimalPlaces(initialNiceIncrement);
   const isStablecoin = initialSelectedInputAsset?.type === 'stablecoin';
@@ -45,7 +44,6 @@ function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetW
     incrementDecimalPlaces: initialDecimalPlaces,
     inputAssetBalance: initialBalance,
     inputAssetNativePrice: initialSelectedInputAsset?.price?.value ?? 0,
-    assetBalanceDisplay,
     niceIncrement: initialNiceIncrement,
     percentageToSwap: 0.5,
     sliderXPosition: SLIDER_WIDTH / 2,
@@ -135,13 +133,10 @@ export function useSwapInputsController({
       return addCommasToNumber(inputValues.value.inputAmount, '0');
     }
 
-    const assetBalanceDisplay = internalSelectedInputAsset.value.balance.display ?? '';
-
     if (inputMethod.value === 'outputAmount') {
       return valueBasedDecimalFormatter({
         amount: inputValues.value.inputAmount,
         nativePrice: inputNativePrice.value,
-        assetBalanceDisplay,
         roundingMode: 'up',
         precisionAdjustment: -1,
         isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
@@ -149,19 +144,20 @@ export function useSwapInputsController({
       });
     }
 
-    const balance = internalSelectedInputAsset.value?.maxSwappableAmount || 0;
-    const isStablecoin = internalSelectedInputAsset.value?.type === 'stablecoin' ?? false;
+    if (percentageToSwap.value === 1) {
+      const formattedAmount = valueBasedDecimalFormatter({
+        amount: inputValues.value.inputAmount,
+        nativePrice: inputNativePrice.value,
+        roundingMode: 'up',
+        precisionAdjustment: -1,
+        isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
+        stripSeparators: false,
+      });
 
-    return niceIncrementFormatter({
-      incrementDecimalPlaces: incrementDecimalPlaces.value,
-      inputAssetBalance: balance,
-      inputAssetNativePrice: inputNativePrice.value,
-      assetBalanceDisplay,
-      niceIncrement: niceIncrement.value,
-      percentageToSwap: percentageToSwap.value,
-      sliderXPosition: sliderXPosition.value,
-      isStablecoin,
-    });
+      return formattedAmount;
+    } else {
+      return addCommasToNumber(inputValues.value.inputAmount, '0');
+    }
   });
 
   const formattedInputNativeValue = useDerivedValue(() => {
@@ -188,12 +184,9 @@ export function useSwapInputsController({
       return addCommasToNumber(inputValues.value.outputAmount, '0');
     }
 
-    const assetBalanceDisplay = internalSelectedOutputAsset.value.balance.display ?? '';
-
     return valueBasedDecimalFormatter({
       amount: inputValues.value.outputAmount,
       nativePrice: outputNativePrice.value,
-      assetBalanceDisplay,
       roundingMode: 'down',
       precisionAdjustment: -1,
       isStablecoin: internalSelectedOutputAsset.value?.type === 'stablecoin' ?? false,
@@ -730,13 +723,10 @@ export function useSwapInputsController({
               return;
             }
 
-            const assetBalanceDisplay = internalSelectedInputAsset.value.balance.display;
-
             const inputAmount = niceIncrementFormatter({
               incrementDecimalPlaces: incrementDecimalPlaces.value,
               inputAssetBalance: balance,
               inputAssetNativePrice: inputNativePrice.value,
-              assetBalanceDisplay,
               niceIncrement: niceIncrement.value,
               percentageToSwap: percentageToSwap.value,
               sliderXPosition: sliderXPosition.value,
@@ -896,13 +886,10 @@ export function useSwapInputsController({
             sliderXPosition.value = withSpring(SLIDER_WIDTH / 2, snappySpringConfig);
           }
 
-          const assetBalanceDisplay = internalSelectedInputAsset.value?.balance.display ?? '';
-
           const inputAmount = niceIncrementFormatter({
             incrementDecimalPlaces: incrementDecimalPlaces.value,
             inputAssetBalance: balance,
             inputAssetNativePrice: inputNativePrice.value,
-            assetBalanceDisplay,
             niceIncrement: niceIncrement.value,
             percentageToSwap: didInputAssetChange ? 0.5 : percentageToSwap.value,
             sliderXPosition: didInputAssetChange ? SLIDER_WIDTH / 2 : sliderXPosition.value,
@@ -925,14 +912,11 @@ export function useSwapInputsController({
           const inputNativePrice = internalSelectedInputAsset.value?.nativePrice || internalSelectedInputAsset.value?.price?.value || 0;
           const outputNativePrice = internalSelectedOutputAsset.value?.nativePrice || internalSelectedOutputAsset.value?.price?.value || 0;
 
-          const assetBalanceDisplay = internalSelectedInputAsset.value?.balance.display ?? '';
-
           const inputAmount = Number(
             valueBasedDecimalFormatter({
               amount:
                 inputNativePrice > 0 ? divWorklet(inputValues.value.inputNativeValue, inputNativePrice) : inputValues.value.outputAmount,
               nativePrice: inputNativePrice,
-              assetBalanceDisplay,
               roundingMode: 'up',
               precisionAdjustment: -1,
               isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,

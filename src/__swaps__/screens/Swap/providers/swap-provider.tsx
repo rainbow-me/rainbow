@@ -613,6 +613,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return { label: swapping, disabled: true };
     }
 
+    if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
+      return { icon: '􀎽', label: tapToSwap, disabled: false };
+    }
+
     if (configProgress.value === NavigationSteps.SHOW_GAS) {
       return { icon: '􀆅', label: save, disabled: false };
     }
@@ -620,6 +624,17 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const hasSelectedAssets = internalSelectedInputAsset.value && internalSelectedOutputAsset.value;
     if (!hasSelectedAssets) {
       return { label: selectToken, disabled: true };
+    }
+
+    const isInputZero = equalWorklet(SwapInputController.inputValues.value.inputAmount, 0);
+    const isOutputZero = equalWorklet(SwapInputController.inputValues.value.outputAmount, 0);
+
+    const userHasNotEnteredAmount = SwapInputController.inputMethod.value !== 'slider' && isInputZero && isOutputZero;
+
+    const userHasNotMovedSlider = SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0;
+
+    if (userHasNotEnteredAmount || userHasNotMovedSlider) {
+      return { label: enterAmount, disabled: true, opacity: 1 };
     }
 
     if (
@@ -630,24 +645,15 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return { icon: '􀕹', label: review, disabled: true };
     }
 
-    const inputAsset = internalSelectedInputAsset.value;
-    const sellAmount = (() => {
-      const inputAmount = SwapInputController.inputValues.value.inputAmount;
-      if (!quote.value || 'error' in quote.value) return inputAmount;
-      return quote.value.sellAmount.toString();
-    })();
-
+    const sellAsset = internalSelectedInputAsset.value;
     const enoughFundsForSwap =
-      inputAsset && lessThanOrEqualToWorklet(sellAmount, toScaledIntegerWorklet(inputAsset.balance.amount, inputAsset.decimals));
+      sellAsset && lessThanOrEqualToWorklet(SwapInputController.inputValues.value.inputAmount, sellAsset.maxSwappableAmount);
 
     if (!enoughFundsForSwap) {
       return { label: insufficientFunds, disabled: true };
     }
 
-    const isQuoteError = quote.value && 'error' in quote.value;
-    const isLoadingGas = !isQuoteError && hasEnoughFundsForGas.value === undefined;
-
-    if (isFetching.value || isLoadingGas) {
+    if (isFetching.value) {
       return { label: fetchingPrices, disabled: true, opacity: 1 };
     }
 
@@ -655,19 +661,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return { label: insufficientFunds, disabled: true };
     }
 
-    const isInputZero = equalWorklet(SwapInputController.inputValues.value.inputAmount, 0);
-    const isOutputZero = equalWorklet(SwapInputController.inputValues.value.outputAmount, 0);
-
-    if (!isQuoteError && (SwapInputController.percentageToSwap.value === 0 || isInputZero || isOutputZero)) {
-      return { label: enterAmount, disabled: true, opacity: 1 };
-    }
-
+    const isQuoteError = quote.value && 'error' in quote.value;
     if (isQuoteError) {
       return { icon: '􀕹', label: review, disabled: true };
-    }
-
-    if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
-      return { icon: '􀎽', label: tapToSwap, disabled: false };
     }
 
     return { icon: '􀕹', label: review, disabled: false };
