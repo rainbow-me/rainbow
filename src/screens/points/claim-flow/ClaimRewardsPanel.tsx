@@ -23,9 +23,7 @@ import { Network } from '@/helpers';
 
 const PAGES = {
   CHOOSE_CLAIM_NETWORK: 'choose-claim-network',
-  CLAIMING_OP: 'claiming-op',
-  CLAIMING_BASE: 'claiming-base',
-  CLAIMING_ZORA: 'claiming-zora',
+  CLAIMING_REWARDS: 'claiming-rewards',
 };
 const CLAIM_NETWORKS = [ChainId.optimism, ChainId.base, ChainId.zora];
 type ClaimNetwork = '10' | '8453' | '7777777';
@@ -43,7 +41,7 @@ export const ClaimRewardsPanel = () => {
             component={<ChooseClaimNetwork goBack={goBack} goToPage={goToPage} selectNetwork={setSelectedNetwork} />}
             id={PAGES.CHOOSE_CLAIM_NETWORK}
           />
-          <SmoothPager.Page component={<ClaimingRewards chainId={chainId} />} id={PAGES.CLAIMING_OP} />
+          <SmoothPager.Page component={<ClaimingRewards chainId={chainId} />} id={PAGES.CLAIMING_REWARDS} />
         </SmoothPager>
       </Box>
       <TapToDismiss />
@@ -83,13 +81,7 @@ const ChooseClaimNetwork = ({
   const handleOnSelect = useCallback(
     (selectedItemId: string) => {
       selectNetwork(selectedItemId as ClaimNetwork);
-      goToPage(
-        {
-          [ChainId.optimism]: PAGES.CLAIMING_OP,
-          [ChainId.base]: PAGES.CLAIMING_BASE,
-          [ChainId.zora]: PAGES.CLAIMING_ZORA,
-        }[selectedItemId as ClaimNetwork]
-      );
+      goToPage(PAGES.CLAIMING_REWARDS);
     },
     [goToPage]
   );
