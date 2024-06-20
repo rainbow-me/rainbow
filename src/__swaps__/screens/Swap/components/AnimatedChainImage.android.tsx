@@ -14,12 +14,7 @@ const BlastBadge = require('@/assets/badges/blast.png');
 const DegenBadge = require('@/assets/badges/degen.png');
 
 import { ChainId } from '@/__swaps__/types/chains';
-import Animated, { SharedValue, useAnimatedProps } from 'react-native-reanimated';
-import { AddressOrEth, ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { globalColors } from '@/design-system';
-import { customChainIdsToAssetNames } from '@/__swaps__/utils/chains';
-import { AddressZero } from '@ethersproject/constants';
-import { ETH_ADDRESS } from '@/references';
 import { PIXEL_RATIO } from '@/utils/deviceUtils';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 
