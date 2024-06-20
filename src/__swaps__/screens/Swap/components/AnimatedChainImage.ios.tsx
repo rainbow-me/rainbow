@@ -47,7 +47,7 @@ const networkBadges = {
   [ChainId.degen]: Image.resolveAssetSource(DegenBadge).uri,
 };
 
-export const getCustomChainIconUrlWorklet = (chainId: ChainId, address: AddressOrEth) => {
+const getCustomChainIconUrlWorklet = (chainId: ChainId, address: AddressOrEth) => {
   'worklet';
 
   if (!chainId || !customChainIdsToAssetNames[chainId]) return '';
