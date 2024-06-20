@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSharedValue } from 'react-native-reanimated';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
 import { Bleed, Box, Text, TextShadow, globalColors, useColorMode } from '@/design-system';
@@ -7,29 +7,41 @@ import { ListHeader, ListPanel, Panel, TapToDismiss, controlPanelStyles } from '
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ChainId } from '@rainbow-me/provider/dist/references/chains';
 import { ChainNameDisplay } from '@/__swaps__/types/chains';
-import { getNetworkFromChainId } from '@/utils/ethereumUtils';
-import { useAccountAccentColor } from '@/hooks';
+import { getNetworkFromChainId, useNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import { useAccountAccentColor, useAccountProfile, useAccountSettings } from '@/hooks';
 import { safeAreaInsetValues } from '@/utils';
 import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
 import { EthRewardsCoinIcon } from '../content/PointsContent';
 import { View } from 'react-native';
 import { IS_IOS } from '@/env';
+import { ClaimUserRewardsMutation, PointsErrorType } from '@/graphql/__generated__/metadata';
+import { useMutation } from '@tanstack/react-query';
+import { metadataPOSTClient } from '@/graphql';
+import { invalidatePointsQuery, usePoints } from '@/resources/points';
+import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
+import { Network } from '@/helpers';
 
 const PAGES = {
   CHOOSE_CLAIM_NETWORK: 'choose-claim-network',
   CLAIMING_REWARDS: 'claiming-rewards',
 };
+const CLAIM_NETWORKS = [ChainId.optimism, ChainId.base, ChainId.zora];
+type ClaimNetwork = '10' | '8453' | '7777777';
 
 export const ClaimRewardsPanel = () => {
   const { goBack, goToPage, ref } = usePagerNavigation();
+  const [selectedNetwork, setSelectedNetwork] = useState<ClaimNetwork>();
+  const chainId = selectedNetwork ? (parseInt(selectedNetwork) as ChainId) : undefined;
 
   return (
     <>
       <Box style={[controlPanelStyles.panelContainer, { bottom: Math.max(safeAreaInsetValues.bottom + 5, 8) }]}>
         <SmoothPager enableSwipeToGoBack={false} enableSwipeToGoForward={false} initialPage={PAGES.CHOOSE_CLAIM_NETWORK} ref={ref}>
-          <SmoothPager.Page component={<ChooseClaimNetwork goBack={goBack} goToPage={goToPage} />} id={PAGES.CHOOSE_CLAIM_NETWORK} />
-          <SmoothPager.Page component={<ChooseClaimNetwork goBack={goBack} goToPage={goToPage} />} id={PAGES.CHOOSE_CLAIM_NETWORK} />
-          <SmoothPager.Page component={<ClaimingRewards />} id={PAGES.CLAIMING_REWARDS} />
+          <SmoothPager.Page
+            component={<ChooseClaimNetwork goBack={goBack} goToPage={goToPage} selectNetwork={setSelectedNetwork} />}
+            id={PAGES.CHOOSE_CLAIM_NETWORK}
+          />
+          <SmoothPager.Page component={<ClaimingRewards chainId={chainId} />} id={PAGES.CLAIMING_REWARDS} />
         </SmoothPager>
       </Box>
       <TapToDismiss />
@@ -37,16 +49,22 @@ export const ClaimRewardsPanel = () => {
   );
 };
 
-const CLAIM_NETWORKS = [ChainId.optimism, ChainId.base, ChainId.zora];
-
-const ChooseClaimNetwork = ({ goBack, goToPage }: { goBack: () => void; goToPage: (id: string) => void }) => {
+const ChooseClaimNetwork = ({
+  goBack,
+  goToPage,
+  selectNetwork,
+}: {
+  goBack: () => void;
+  goToPage: (id: string) => void;
+  selectNetwork: (network: ClaimNetwork) => void;
+}) => {
   const { highContrastAccentColor } = useAccountAccentColor();
 
   const networkListItems = useMemo(() => {
     const claimFees = {
-      [ChainId.optimism]: 'Free to Claim',
-      [ChainId.base]: '$0.08 to Bridge',
-      [ChainId.zora]: '$0.10 to Bridge',
+      [ChainId.optimism]: i18n.t(i18n.l.points.points.free_to_claim),
+      [ChainId.base]: i18n.t(i18n.l.points.points.has_bridge_fee),
+      [ChainId.zora]: i18n.t(i18n.l.points.points.has_bridge_fee),
     };
 
     return CLAIM_NETWORKS.map(chainId => {
@@ -62,8 +80,8 @@ const ChooseClaimNetwork = ({ goBack, goToPage }: { goBack: () => void; goToPage
 
   const handleOnSelect = useCallback(
     (selectedItemId: string) => {
+      selectNetwork(selectedItemId as ClaimNetwork);
       goToPage(PAGES.CLAIMING_REWARDS);
-      // goBack();
     },
     [goToPage]
   );
@@ -76,7 +94,7 @@ const ChooseClaimNetwork = ({ goBack, goToPage }: { goBack: () => void; goToPage
       TitleComponent={
         <TextShadow shadowOpacity={0.3}>
           <Text align="center" color={{ custom: highContrastAccentColor }} size="20pt" weight="heavy">
-            Choose Claim Network
+            {i18n.t(i18n.l.points.points.choose_claim_network)}
           </Text>
         </TextShadow>
       }
@@ -84,7 +102,7 @@ const ChooseClaimNetwork = ({ goBack, goToPage }: { goBack: () => void; goToPage
       goBack={goBack}
       items={networkListItems}
       onSelect={handleOnSelect}
-      pageTitle="Choose Claim Network"
+      pageTitle={i18n.t(i18n.l.points.points.choose_claim_network)}
       renderLabelComponent={label => (
         <TextShadow shadowOpacity={0.3}>
           <Text color="label" size="17pt" weight="bold">
@@ -100,11 +118,54 @@ const ChooseClaimNetwork = ({ goBack, goToPage }: { goBack: () => void; goToPage
 
 const CLAIMING_STEP_HEIGHT = 272;
 
-const ClaimingRewards = () => {
+const ClaimingRewards = ({ chainId }: { chainId?: ChainId }) => {
+  const { accountAddress: address } = useAccountProfile();
+  const { nativeCurrency: currency } = useAccountSettings();
   const { highContrastAccentColor } = useAccountAccentColor();
   const { isDarkMode } = useColorMode();
+  const [claimError, setClaimError] = useState<PointsErrorType>();
+  const { data: points, refetch } = usePoints({
+    walletAddress: address,
+  });
+  const rewards = points?.points?.user?.rewards;
+  const { claimable } = rewards || {};
+  const claimableBalance = convertRawAmountToBalance(claimable || '0', {
+    decimals: 18,
+    symbol: 'ETH',
+  });
+  const eth = useNativeAssetForNetwork(Network.mainnet);
+  const unclaimedRewardsNativeCurrency = convertAmountAndPriceToNativeDisplay(
+    claimableBalance.amount,
+    eth?.price?.value || 0,
+    currency
+  )?.display;
 
-  const unclaimedRewardsNativeCurrency = '$375.36';
+  const { mutate: claimRewards, isSuccess: claimSuccess } = useMutation<ClaimUserRewardsMutation['claimUserRewards']>({
+    mutationFn: async () => {
+      const response = await metadataPOSTClient.claimUserRewards({ address });
+      const claimInfo = response?.claimUserRewards;
+
+      if (claimInfo?.error) {
+        setClaimError(claimInfo?.error.type);
+      }
+
+      // clear and refresh claim data so available claim UI disappears
+      invalidatePointsQuery(address);
+      await refetch();
+
+      return claimInfo;
+    },
+    onSuccess: async (data: ClaimUserRewardsMutation['claimUserRewards']) => {
+      // do bridging and clean up here
+    },
+  });
+
+  useEffect(() => {
+    if (chainId) {
+      claimRewards();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chainId]);
 
   return (
     <Panel>
@@ -112,7 +173,9 @@ const ClaimingRewards = () => {
         TitleComponent={
           <TextShadow shadowOpacity={0.3}>
             <Text align="center" color={{ custom: highContrastAccentColor }} size="20pt" weight="heavy">
-              Claiming on Optimism
+              {i18n.t(i18n.l.points.points.claiming_on_network, {
+                network: chainId ? ChainNameDisplay[chainId] : '',
+              })}
             </Text>
           </TextShadow>
         }

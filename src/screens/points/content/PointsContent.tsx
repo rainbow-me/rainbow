@@ -1,5 +1,5 @@
-import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { RefreshControl, Share, StyleProp, ViewStyle } from 'react-native';
+import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useState } from 'react';
 import { FloatingEmojis } from '@/components/floating-emojis';
 import {
   AccentColorProvider,
@@ -20,7 +20,7 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
-import { useAccountAccentColor, useAccountProfile, useClipboard, useDimensions, useWallets } from '@/hooks';
+import { useAccountAccentColor, useAccountProfile, useAccountSettings, useClipboard, useDimensions, useWallets } from '@/hooks';
 import { useTheme } from '@/theme';
 import { ScrollView } from 'react-native-gesture-handler';
 import MaskedView from '@react-native-masked-view/masked-view';
@@ -32,7 +32,7 @@ import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { useRecoilState } from 'recoil';
 import * as i18n from '@/languages';
 import { isNil } from 'lodash';
-import { getFormattedTimeQuantity } from '@/helpers/utilities';
+import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance, getFormattedTimeQuantity } from '@/helpers/utilities';
 import { address as formatAddress } from '@/utils/abbreviations';
 import { delay } from '@/utils/delay';
 import { Toast, ToastPositionContainer } from '@/components/toasts';
@@ -59,6 +59,10 @@ import EthIcon from '@/assets/eth-icon.png';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import Animated, { runOnUI, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+import { useNativeAssetForChain } from '@/__swaps__/screens/Swap/hooks/useNativeAssetForChain';
+import { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import { Network } from '@/helpers';
+import { format, intervalToDuration } from 'date-fns';
 
 const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined }) => {
   const labelSecondary = useForegroundColor('labelSecondary');
@@ -67,26 +71,13 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
   const red = useForegroundColor('red');
 
   //
-  // NEXT REWARD CARD
+  // RECENT EARNINGS CARD
   //
-  const nextDistributionSeconds = points?.points?.meta?.distribution?.next;
-  const isLoadingNextRewardCard = nextDistributionSeconds === undefined;
-
-  const getNextRewardCardMainText = () => {
-    if (nextDistributionSeconds === undefined) return '';
-
-    // if next drop has not happened, show time remaining
-    return Date.now() >= nextDistributionSeconds * 1000
-      ? i18n.t(i18n.l.points.points.now)
-      : getFormattedTimeQuantity(nextDistributionSeconds * 1000 - Date.now(), 2);
-  };
-
-  const getNextRewardCardSubtitle = () => {
-    if (nextDistributionSeconds === undefined) return '';
-
-    // date and time of next drop
-    return displayNextDistribution(nextDistributionSeconds);
-  };
+  const lastPeriodLoading = points === undefined;
+  const lastPeriod = points?.points?.user?.stats?.last_period;
+  const lastPeriodEarnings = lastPeriod?.earnings?.total;
+  const lastPeriodRank = lastPeriod?.position?.current;
+  const lastPeriodUnranked = lastPeriod?.position?.unranked;
 
   //
   // REFERRALS CARD
@@ -138,27 +129,27 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
     return isUnranked ? i18n.t(i18n.l.points.points.unranked) : `#${rank.toLocaleString('en-US')}`;
   };
 
+  const getEarnedLastWeekSubtitle = () => {
+    if (lastPeriodUnranked || !lastPeriodRank) return i18n.t(i18n.l.points.points.unranked);
+    if ((lastPeriodRank || 11) <= 10) return 'Top 10 Earner';
+    return i18n.t(i18n.l.points.points.ranking, {
+      rank: lastPeriodRank,
+    });
+  };
+
   return (
     <Bleed space="20px">
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <Inset space="20px">
           <Inline separator={<Box width={{ custom: 12 }} />} wrap={false}>
             <InfoCard
-              loading={false}
+              loading={lastPeriodLoading}
               title="Earned Last Week"
-              mainText="2,880"
+              mainText={lastPeriodEarnings ? lastPeriodEarnings?.toString() : '0'}
               icon="􀠐"
-              subtitle="Top 10 Earner"
+              subtitle={getEarnedLastWeekSubtitle()}
               accentColor={labelSecondary}
             />
-            {/* <InfoCard
-              loading={isLoadingNextRewardCard}
-              title={i18n.t(i18n.l.points.points.next_drop)}
-              mainText={getNextRewardCardMainText()}
-              icon="􀉉"
-              subtitle={getNextRewardCardSubtitle()}
-              accentColor={labelSecondary}
-            /> */}
             <InfoCard
               loading={isLoadingReferralsCard}
               title={i18n.t(i18n.l.points.points.referrals)}
@@ -200,18 +191,15 @@ const Card = ({ borderRadius = 32, children, padding = '12px' }: { borderRadius?
   );
 };
 
-const ClaimCard = () => {
+const ClaimCard = ({ claim, value }: { claim?: string; value?: string }) => {
   const { navigate } = useNavigation();
-
-  const unclaimedRewardsEth = '0.12502 ETH';
-  const unclaimedRewardsNativeCurrency = '$375.36';
 
   return (
     <Card>
       <Box alignItems="center" gap={20} paddingBottom="28px" paddingTop="16px">
         <TextShadow shadowOpacity={0.3}>
           <Text align="center" color="label" size="20pt" weight="heavy">
-            Available to Claim
+            {i18n.t(i18n.l.points.points.available_to_claim)}
           </Text>
         </TextShadow>
         <Box alignItems="center" flexDirection="row" gap={8}>
@@ -220,7 +208,7 @@ const ClaimCard = () => {
           </Bleed>
           <TextShadow blur={28} shadowOpacity={0.2}>
             <Text align="center" color="label" size="44pt" weight="black">
-              {unclaimedRewardsNativeCurrency}
+              {value}
             </Text>
           </TextShadow>
         </Box>
@@ -240,7 +228,13 @@ const ClaimCard = () => {
         }}
       >
         <MaskedView
-          maskElement={<NeonRainbowButtonMask label={`Claim ${unclaimedRewardsEth}`} />}
+          maskElement={
+            <NeonRainbowButtonMask
+              label={i18n.t(i18n.l.points.points.claim, {
+                value: claim || '',
+              })}
+            />
+          }
           style={{
             alignItems: 'center',
             justifyContent: 'center',
@@ -292,11 +286,8 @@ const EarnRewardsCard = () => {
   );
 };
 
-const EarningsCard = () => {
+const EarningsCard = ({ claimed, value }: { claimed?: string; value?: string }) => {
   const labelQuaternary = useForegroundColor('labelQuaternary');
-
-  const totalClaimedEth = '0.28125 ETH';
-  const totalClaimedNativeCurrency = '$1,024.32';
 
   return (
     <Card padding="20px">
@@ -335,7 +326,7 @@ const EarningsCard = () => {
               </Text>
               <TextShadow shadowOpacity={0.2}>
                 <Text color="label" size="17pt" weight="heavy">
-                  {totalClaimedEth}
+                  {claimed}
                 </Text>
               </TextShadow>
             </Stack>
@@ -346,7 +337,7 @@ const EarningsCard = () => {
             </Text>
             <TextShadow shadowOpacity={0.2}>
               <Text align="right" color="label" size="17pt" weight="heavy">
-                {totalClaimedNativeCurrency}
+                {value}
               </Text>
             </TextShadow>
           </Stack>
@@ -356,9 +347,8 @@ const EarningsCard = () => {
   );
 };
 
-const TotalEarnedByRainbowUsers = () => {
-  const totalEthEarnedByUsers = '42.825 ETH';
-
+const TotalEarnedByRainbowUsers = ({ earned }: { earned?: string }) => {
+  if (!earned) return null;
   return (
     <Box alignItems="center" justifyContent="center" width="full">
       <Columns alignHorizontal="center" alignVertical="center" space="6px">
@@ -374,7 +364,7 @@ const TotalEarnedByRainbowUsers = () => {
             </Bleed>
             <TextShadow blur={12} shadowOpacity={0.3}>
               <Text align="center" color="labelSecondary" size="13pt" weight="heavy">
-                {totalEthEarnedByUsers}
+                {earned}
               </Text>
             </TextShadow>
           </Box>
@@ -447,11 +437,40 @@ export const EthRewardsCoinIcon = memo(function EthRewardsCoinIcon({
   );
 });
 
-const NextDropCard = () => {
+const NextDistributionCountdown = ({ nextDistribution }: { nextDistribution: Date }) => {
+  const [nextDistributionIn, recalcNextDistributionDistance] = useReducer(
+    () =>
+      intervalToDuration({
+        start: Date.now(),
+        end: nextDistribution,
+      }),
+    intervalToDuration({
+      start: Date.now(),
+      end: nextDistribution,
+    })
+  );
+
+  useEffect(() => {
+    const interval = setInterval(recalcNextDistributionDistance, 1000);
+    return () => clearInterval(interval);
+  }, [nextDistribution]);
+
+  const { days, hours, minutes } = nextDistributionIn;
+  const dayStr = days ? `${days}d` : '';
+  const hourStr = hours ? `${hours}h` : '';
+  const minuteStr = minutes ? `${minutes}m` : '';
+
+  return (
+    <Text align="center" color="labelSecondary" size="17pt" weight="heavy">
+      {`${dayStr} ${hourStr} ${minuteStr}`}
+    </Text>
+  );
+};
+
+const NextDropCard = ({ nextDistribution }: { nextDistribution: Date }) => {
   const { isDarkMode } = useColorMode();
   const separatorSecondary = useForegroundColor('separatorSecondary');
-
-  const formattedTimeUntilNextDrop = '2d 19h 24m';
+  const nextDistributionWithDay = format(nextDistribution, 'cccc p');
 
   return (
     <Card>
@@ -472,7 +491,7 @@ const NextDropCard = () => {
                 </Text>
               </TextShadow>
               <Text color="labelTertiary" size="13pt" weight="bold">
-                Tuesday 4:20pm
+                {nextDistributionWithDay}
               </Text>
             </Stack>
           </Box>
@@ -494,9 +513,7 @@ const NextDropCard = () => {
           }}
         >
           <TextShadow shadowOpacity={0.24}>
-            <Text align="center" color="labelSecondary" size="17pt" weight="heavy">
-              {formattedTimeUntilNextDrop}
-            </Text>
+            <NextDistributionCountdown nextDistribution={nextDistribution} />
           </TextShadow>
         </Box>
       </Box>
@@ -570,6 +587,7 @@ export default function PointsContent() {
   const { setClipboard } = useClipboard();
   const { isReadOnlyWallet } = useWallets();
   const { highContrastAccentColor: accountColor } = useAccountAccentColor();
+  const { nativeCurrency: currency } = useAccountSettings();
 
   const {
     data: points,
@@ -625,6 +643,33 @@ export default function PointsContent() {
   const rank = points?.points?.user.stats.position.current;
   const isUnranked = !!points?.points?.user?.stats?.position?.unranked;
 
+  const eth = useNativeAssetForNetwork(Network.mainnet);
+  const rewards = points?.points?.user?.rewards;
+  const { claimed, claimable } = rewards || {};
+  const showClaimYourPoints = claimable && claimable !== '0';
+  const showMyEarnings = showClaimYourPoints || (claimed && claimed !== '0');
+  const showNoHistoricalRewards = !showMyEarnings;
+
+  const claimedBalance = convertRawAmountToBalance(claimed || '0', {
+    decimals: 18,
+    symbol: 'ETH',
+  });
+  const claimableBalance = convertRawAmountToBalance(claimable || '0', {
+    decimals: 18,
+    symbol: 'ETH',
+  });
+  const claimedPrice = convertAmountAndPriceToNativeDisplay(claimedBalance.amount, eth?.price?.value || 0, currency)?.display;
+  const claimablePrice = convertAmountAndPriceToNativeDisplay(claimableBalance.amount, eth?.price?.value || 0, currency)?.display;
+
+  const totalRewards = points?.points?.meta?.rewards?.total;
+  const totalRewardsDisplay = convertRawAmountToBalance(totalRewards || '0', {
+    decimals: 18,
+    symbol: 'ETH',
+  })?.display;
+
+  const nextDistribution = points?.points?.meta?.distribution?.next;
+  const nextDistributionDate = nextDistribution ? new Date(nextDistribution * 1000) : null;
+
   const canDisplayTotalPoints = !isNil(points?.points?.user.earnings.total);
   const canDisplayCurrentRank = !!rank;
 
@@ -635,9 +680,6 @@ export default function PointsContent() {
   const referralUrl = points?.points?.user?.referralCode
     ? `https://www.rainbow.me/points?ref=${points.points.user.referralCode}`
     : undefined;
-
-  const hasClaimedRewards = true;
-  const hasUnclaimedRewards = true;
 
   return (
     <Box height="full" as={Page} flex={1} style={{ backgroundColor: isDarkMode ? globalColors.grey100 : globalColors.white100 }}>
@@ -656,13 +698,13 @@ export default function PointsContent() {
         <AccentColorProvider color={accountColor}>
           <Inset horizontal="20px" top="12px">
             <Stack space="24px">
-              {!hasClaimedRewards && !hasUnclaimedRewards && <EarnRewardsCard />}
+              {showNoHistoricalRewards && <EarnRewardsCard />}
               <Stack space="20px">
-                {hasUnclaimedRewards && <ClaimCard />}
-                {hasClaimedRewards && <EarningsCard />}
+                {showClaimYourPoints && <ClaimCard claim={claimableBalance.display} value={claimablePrice} />}
+                {showMyEarnings && <EarningsCard claimed={claimedBalance.display} value={claimedPrice} />}
               </Stack>
-              <TotalEarnedByRainbowUsers />
-              <NextDropCard />
+              <TotalEarnedByRainbowUsers earned={totalRewardsDisplay} />
+              {nextDistributionDate && <NextDropCard nextDistribution={nextDistributionDate} />}
               <Separator color="separatorSecondary" thickness={1} />
             </Stack>
           </Inset>
