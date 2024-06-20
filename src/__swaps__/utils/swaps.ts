@@ -367,12 +367,7 @@ export function niceIncrementFormatter({
     });
   }
   if (percentageToSwap === 1) {
-    return valueBasedDecimalFormatter({
-      amount: inputAssetBalance,
-      nativePrice: inputAssetNativePrice,
-      roundingMode: 'up',
-      isStablecoin,
-    });
+    return inputAssetBalance;
   }
 
   const decimals = isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : incrementDecimalPlaces;
