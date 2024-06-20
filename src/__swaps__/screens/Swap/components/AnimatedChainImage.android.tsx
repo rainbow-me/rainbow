@@ -46,18 +46,6 @@ const networkBadges = {
   [ChainId.degen]: DegenBadge,
 };
 
-export const getCustomChainIconUrlWorklet = (chainId: ChainId, address: AddressOrEth) => {
-  'worklet';
-
-  if (!chainId || !customChainIdsToAssetNames[chainId]) return '';
-  const baseUrl = 'https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/';
-
-  if (address === AddressZero || address === ETH_ADDRESS) {
-    return `${baseUrl}${customChainIdsToAssetNames[chainId]}/info/logo.png`;
-  } else {
-    return `${baseUrl}${customChainIdsToAssetNames[chainId]}/assets/${address}/logo.png`;
-  }
-};
 
 export function AnimatedChainImage({
   assetType,
