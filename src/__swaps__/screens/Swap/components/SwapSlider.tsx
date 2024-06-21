@@ -387,7 +387,7 @@ export const SwapSlider = ({
               <Columns alignHorizontal="justify" alignVertical="center">
                 <Inline alignVertical="center" space="6px" wrap={false}>
                   <Bleed vertical="4px">
-                    <AnimatedSwapCoinIcon showBadge={false} asset={internalSelectedInputAsset} small />
+                    <AnimatedSwapCoinIcon showBadge={false} assetType={'input'} small />
                   </Bleed>
                   <Inline alignVertical="bottom" wrap={false}>
                     <AnimatedText

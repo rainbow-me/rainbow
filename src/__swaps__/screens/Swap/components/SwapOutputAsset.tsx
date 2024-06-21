@@ -95,12 +95,10 @@ function SwapOutputAmount() {
   );
 }
 
-function SwapInputIcon() {
-  const { internalSelectedOutputAsset } = useSwapContext();
-
+function SwapOutputIcon() {
   return (
     <Box paddingRight="10px">
-      <AnimatedSwapCoinIcon asset={internalSelectedOutputAsset} large />
+      <AnimatedSwapCoinIcon assetType="output" large />
     </Box>
   );
 }
@@ -136,7 +134,7 @@ export function SwapOutputAsset() {
         <Stack space="16px">
           <Columns alignHorizontal="justify" alignVertical="center">
             <Column width="content">
-              <SwapInputIcon />
+              <SwapOutputIcon />
             </Column>
             <SwapOutputAmount />
             <Column width="content">
