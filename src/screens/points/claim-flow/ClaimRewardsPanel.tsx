@@ -308,7 +308,6 @@ const ClaimingRewards = ({
                 </Bleed>
                 <TextShadow blur={12} color={globalColors.grey100} shadowOpacity={0.1} y={4}>
                   <Text align="center" color="label" size="44pt" weight="black">
-                    {/* {unclaimedRewardsNativeCurrency} */}
                     {initialClaimableAmounts.nativeCurrency}
                   </Text>
                 </TextShadow>
@@ -341,7 +340,7 @@ const ClaimingRewards = ({
                     maskElement={
                       <NeonRainbowButtonMask
                         borderRadius={22}
-                        label={claimStatus === 'success' ? 'Done' : 'Claim Rewards'}
+                        label={claimStatus === 'success' ? i18n.t(i18n.l.button.done) : i18n.t(i18n.l.points.points.claim_rewards)}
                         width={DEVICE_WIDTH - 28 * 2}
                       />
                     }

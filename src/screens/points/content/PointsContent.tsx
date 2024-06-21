@@ -142,8 +142,9 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
           <Inline separator={<Box width={{ custom: 12 }} />} wrap={false}>
             <InfoCard
               loading={lastPeriodLoading}
-              title="Earned Last Week"
-              mainText={lastPeriodEarnings ? lastPeriodEarnings?.toString() : '0'}
+              title={i18n.t(i18n.l.points.points.earned_last_week)}
+              mainText={lastPeriodEarnings ? lastPeriodEarnings.toLocaleString('en-US') : undefined}
+              placeholderMainText={i18n.t(i18n.l.points.points.no_earnings)}
               icon="􀠐"
               subtitle={getEarnedLastWeekSubtitle()}
               accentColor={labelSecondary}
@@ -151,7 +152,8 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
             <InfoCard
               loading={isLoadingReferralsCard}
               title={i18n.t(i18n.l.points.points.referrals)}
-              mainText={qualifiedReferees?.toLocaleString('en-US') ?? '0'}
+              mainText={qualifiedReferees ? qualifiedReferees.toLocaleString('en-US') : undefined}
+              placeholderMainText={i18n.t(i18n.l.points.points.none)}
               icon="􀇯"
               subtitle={`${referralsEarnings?.toLocaleString('en-US') ?? '0'} ${i18n.t(i18n.l.points.points.points)}`}
               accentColor={yellow}
@@ -270,13 +272,12 @@ const EarnRewardsCard = () => {
             </IconContainer>
             <TextShadow shadowOpacity={0.2}>
               <Text align="center" color="label" size="20pt" weight="heavy">
-                Earn ETH Rewards
+                {i18n.t(i18n.l.points.points.earn_eth_rewards)}
               </Text>
             </TextShadow>
           </Inline>
           <Text align="center" color="labelQuaternary" size="13pt / 135%" weight="semibold">
-            Every week, top points holders and the biggest weekly points earners will receive a portion of Rainbow’s onchain revenue.
-            Collect points by swapping or transacting in Rainbow.
+            {i18n.t(i18n.l.points.points.rewards_explainer)}
           </Text>
         </Stack>
       </Box>
@@ -285,8 +286,6 @@ const EarnRewardsCard = () => {
 };
 
 const EarningsCard = ({ claimed, value }: { claimed?: string; value?: string }) => {
-  const labelQuaternary = useForegroundColor('labelQuaternary');
-
   return (
     <Card padding="20px">
       <Box gap={24} paddingVertical="4px" width="full">
@@ -301,17 +300,19 @@ const EarningsCard = ({ claimed, value }: { claimed?: string; value?: string }) 
             </IconContainer>
             <TextShadow shadowOpacity={0.2}>
               <Text align="center" color="label" size="17pt" weight="heavy">
-                My Earnings
+                {i18n.t(i18n.l.points.points.my_earnings)}
               </Text>
             </TextShadow>
           </Inline>
-          <ButtonPressAnimation>
+          {/* ⚠️ TODO: Re-enable once we add an explain sheet
+
+           <ButtonPressAnimation>
             <IconContainer height={12} width={24}>
               <Text align="center" color={{ custom: opacity(labelQuaternary, 0.24) }} size="icon 15px" weight="heavy">
                 􀁝
               </Text>
             </IconContainer>
-          </ButtonPressAnimation>
+          </ButtonPressAnimation> */}
         </Inline>
         <Columns alignHorizontal="justify" alignVertical="center">
           <Box alignItems="center" flexDirection="row" gap={10}>
@@ -320,7 +321,7 @@ const EarningsCard = ({ claimed, value }: { claimed?: string; value?: string }) 
             </Bleed>
             <Stack space="10px">
               <Text color="labelTertiary" size="13pt" weight="bold">
-                Claimed Earnings
+                {i18n.t(i18n.l.points.points.claimed_earnings)}
               </Text>
               <TextShadow shadowOpacity={0.2}>
                 <Text color="label" size="17pt" weight="heavy">
@@ -331,7 +332,7 @@ const EarningsCard = ({ claimed, value }: { claimed?: string; value?: string }) 
           </Box>
           <Stack alignHorizontal="right" space="10px">
             <Text align="right" color="labelTertiary" size="13pt" weight="bold">
-              Current Value
+              {i18n.t(i18n.l.points.points.current_value)}
             </Text>
             <TextShadow shadowOpacity={0.2}>
               <Text align="right" color="label" size="17pt" weight="heavy">
@@ -352,7 +353,7 @@ const TotalEarnedByRainbowUsers = ({ earned }: { earned?: string }) => {
       <Columns alignHorizontal="center" alignVertical="center" space="6px">
         <Column width="content">
           <Text align="center" color="labelTertiary" size="13pt" weight="bold">
-            Rainbow users have earned
+            {i18n.t(i18n.l.points.points.rainbow_users_have_earned)}
           </Text>
         </Column>
         <Column width="content">
@@ -485,7 +486,7 @@ const NextDropCard = ({ nextDistribution }: { nextDistribution: Date }) => {
             <Stack space="10px">
               <TextShadow shadowOpacity={0.2}>
                 <Text color="label" size="17pt" weight="heavy">
-                  Next Drop
+                  {i18n.t(i18n.l.points.points.next_drop)}
                 </Text>
               </TextShadow>
               <Text color="labelTertiary" size="13pt" weight="bold">
@@ -713,7 +714,7 @@ export default function PointsContent() {
               <Stack space="28px">
                 <Stack space="20px">
                   <Text color="label" size="20pt" style={{ marginLeft: 4 }} weight="heavy">
-                    My Points
+                    {i18n.t(i18n.l.points.points.my_points)}
                   </Text>
                   <Box flexDirection="row" alignItems="center" paddingLeft="4px">
                     {canDisplayTotalPoints ? <RainbowText totalPointsString={totalPointsString} /> : <Skeleton height={31} width={200} />}
@@ -728,7 +729,7 @@ export default function PointsContent() {
                   <>
                     <Stack space="20px">
                       <Text color="label" size="20pt" style={{ marginLeft: 4 }} weight="heavy">
-                        Refer Friends
+                        {i18n.t(i18n.l.points.points.refer_friends)}
                       </Text>
                       {referralCode ? (
                         <Columns space="12px">

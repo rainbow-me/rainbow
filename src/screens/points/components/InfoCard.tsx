@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Border, Box, Inline, Stack, Text, TextShadow, globalColors, useColorMode } from '@/design-system';
 import { TextSize } from '@/design-system/components/Text/Text';
 import { Skeleton } from './Skeleton';
@@ -7,31 +7,43 @@ import { useAccountAccentColor } from '@/hooks';
 type LoadedProps = {
   title: string;
   subtitle: string;
-  mainText: string;
+  mainText: string | undefined;
   icon?: string;
   accentColor: string;
   mainTextColor?: 'primary' | 'secondary';
+  placeholderMainText?: string;
   loading?: false;
 };
 
 type LoadingProps = {
   title?: string;
   subtitle?: string;
-  mainText?: string;
+  mainText: string | undefined;
   icon?: string;
   accentColor?: string;
   mainTextColor?: 'primary' | 'secondary';
+  placeholderMainText?: string;
   loading: true;
 };
 
-export const InfoCard = ({ title, subtitle, mainText, icon, mainTextColor = 'primary', loading }: LoadedProps | LoadingProps) => {
+export const InfoCard = memo(function InfoCard({
+  title,
+  subtitle,
+  mainText,
+  icon,
+  mainTextColor = 'primary',
+  loading,
+  placeholderMainText,
+}: LoadedProps | LoadingProps) {
   const { highContrastAccentColor } = useAccountAccentColor();
   const { isDarkMode } = useColorMode();
 
   if (loading) return <Skeleton height={98} width={120} />;
 
   let mainTextFontSize: TextSize;
-  if (mainText.length > 10) {
+  if (!mainText) {
+    mainTextFontSize = '22pt';
+  } else if (mainText.length > 10) {
     mainTextFontSize = '17pt';
   } else if (mainText.length > 9) {
     mainTextFontSize = '20pt';
@@ -53,8 +65,13 @@ export const InfoCard = ({ title, subtitle, mainText, icon, mainTextColor = 'pri
           {title}
         </Text>
         <Box height={{ custom: 15 }} justifyContent="flex-end">
-          <Text color={mainTextColor === 'primary' ? 'label' : 'labelTertiary'} weight="heavy" size={mainTextFontSize}>
-            {mainText}
+          <Text
+            // eslint-disable-next-line no-nested-ternary
+            color={mainText && mainTextColor === 'primary' ? 'label' : 'labelQuaternary'}
+            weight="heavy"
+            size={mainTextFontSize}
+          >
+            {mainText || placeholderMainText}
           </Text>
         </Box>
         <Inline space="4px" wrap={false}>
@@ -75,4 +92,4 @@ export const InfoCard = ({ title, subtitle, mainText, icon, mainTextColor = 'pri
       <Border borderColor="separatorSecondary" borderRadius={20} />
     </Box>
   );
-};
+});
