@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
-import { MAXIMUM_SIGNIFICANT_DECIMALS, SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
+import { SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
 import { RequestNewQuoteParams, inputKeys, inputMethods, inputValuesType } from '@/__swaps__/types/swap';
 import {
   addCommasToNumber,
@@ -567,20 +567,11 @@ export function useSwapInputsController({
     maxSwappableAmount => {
       const isSwappingMaxBalance = internalSelectedInputAsset.value && inputMethod.value === 'slider' && percentageToSwap.value >= 1;
       if (maxSwappableAmount && isSwappingMaxBalance) {
-        const inputAmount = valueBasedDecimalFormatter({
-          amount: maxSwappableAmount,
-          nativePrice: inputNativePrice.value,
-          roundingMode: 'up',
-          precisionAdjustment: -1,
-          isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
-          stripSeparators: false,
-        });
-
         inputValues.modify(prev => {
           return {
             ...prev,
-            inputAmount,
-            inputNativeValue: mulWorklet(inputAmount, inputNativePrice.value),
+            inputAmount: +maxSwappableAmount,
+            inputNativeValue: +mulWorklet(maxSwappableAmount, inputNativePrice.value),
           };
         });
         fetchQuoteAndAssetPrices();
