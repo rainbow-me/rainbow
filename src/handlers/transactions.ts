@@ -80,7 +80,7 @@ export const getTransactionFlashbotStatus = async (
   transaction: RainbowTransaction,
   txHash: string
 ): Promise<{
-  flashbotsStatus: 'FAILED' | 'CANCELLED';
+  flashbotsStatus: 'FAILED' | 'CANCELLED' | 'UNKNOWN';
   status: 'failed';
   minedAt: number;
   title: string;
@@ -89,7 +89,7 @@ export const getTransactionFlashbotStatus = async (
     const fbStatus = await flashbotsApi.get<{ status: FlashbotsStatus }>(`/tx/${txHash}`);
     const flashbotsStatus = fbStatus.data.status;
     // Make sure it wasn't dropped after 25 blocks or never made it
-    if (flashbotsStatus === 'FAILED' || flashbotsStatus === 'CANCELLED') {
+    if (flashbotsStatus === 'FAILED' || flashbotsStatus === 'CANCELLED' || flashbotsStatus === 'UNKNOWN') {
       const status = 'failed';
       const minedAt = Math.floor(Date.now() / 1000);
       const title = `${transaction.type}.failed`;

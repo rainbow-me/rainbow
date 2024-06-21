@@ -27,6 +27,7 @@ import { LongPressGestureHandler, LongPressGestureHandlerGestureEvent } from 're
 import { ButtonPressAnimation } from '@/components/animations';
 import { colors } from '@/styles';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { IS_IOS } from '@/env';
 
 type numberPadCharacter = number | 'backspace' | '.';
 
@@ -333,7 +334,7 @@ const NumberPadKey = ({
                 !transparent && {
                   borderColor: isDarkMode ? separatorTertiary : 'transparent',
                   borderCurve: 'continuous',
-                  borderWidth: THICK_BORDER_WIDTH,
+                  borderWidth: IS_IOS ? THICK_BORDER_WIDTH : 0,
                   shadowColor: isDarkMode ? 'transparent' : colors.dark,
                   shadowOffset: {
                     width: 0,
