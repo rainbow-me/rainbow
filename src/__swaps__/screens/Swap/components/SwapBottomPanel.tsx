@@ -14,14 +14,8 @@ import { SwapActionButton } from './SwapActionButton';
 
 export function SwapBottomPanel() {
   const { isDarkMode } = useColorMode();
-  const {
-    AnimatedSwapStyles,
-    SwapNavigation,
-    configProgress,
-    confirmButtonIconStyle,
-    confirmButtonProps,
-    internalSelectedOutputAsset,
-  } = useSwapContext();
+  const { AnimatedSwapStyles, SwapNavigation, configProgress, confirmButtonIconStyle, confirmButtonProps, internalSelectedOutputAsset } =
+    useSwapContext();
 
   const { swipeToDismissGestureHandler, gestureY } = useBottomPanelGestureHandler();
 
