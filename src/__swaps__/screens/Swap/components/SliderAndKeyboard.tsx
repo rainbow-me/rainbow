@@ -7,10 +7,18 @@ import { Box } from '@/design-system';
 import { SwapNumberPad } from '@/__swaps__/screens/Swap/components/SwapNumberPad';
 import { SwapSlider } from '@/__swaps__/screens/Swap/components/SwapSlider';
 import { IS_ANDROID } from '@/env';
-import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
+import { getSoftMenuBarHeight, isSoftMenuBarEnabled } from 'react-native-extra-dimensions-android';
 import { safeAreaInsetValues } from '@/utils';
 
-const BOTTOM_OFFSET = IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16;
+const getAndroidPadding = () => {
+  if (isSoftMenuBarEnabled()) {
+    return getSoftMenuBarHeight() - 24;
+  } else {
+    return safeAreaInsetValues.bottom + 34;
+  }
+};
+
+const BOTTOM_OFFSET = IS_ANDROID ? getAndroidPadding() : safeAreaInsetValues.bottom + 16;
 const HEIGHT_OF_BOTTOM_TAB = 64;
 
 export function SliderAndKeyboard() {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { Box, Separator, globalColors, useColorMode } from '@/design-system';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
@@ -14,15 +14,8 @@ import { SwapActionButton } from './SwapActionButton';
 
 export function SwapBottomPanel() {
   const { isDarkMode } = useColorMode();
-  const {
-    AnimatedSwapStyles,
-    SwapNavigation,
-    configProgress,
-    confirmButtonIcon,
-    confirmButtonIconStyle,
-    confirmButtonLabel,
-    internalSelectedOutputAsset,
-  } = useSwapContext();
+  const { AnimatedSwapStyles, SwapNavigation, configProgress, confirmButtonIconStyle, confirmButtonProps, internalSelectedOutputAsset } =
+    useSwapContext();
 
   const { swipeToDismissGestureHandler, gestureY } = useBottomPanelGestureHandler();
 
@@ -37,6 +30,11 @@ export function SwapBottomPanel() {
       display: configProgress.value === NavigationSteps.SHOW_REVIEW || configProgress.value === NavigationSteps.SHOW_GAS ? 'none' : 'flex',
     };
   });
+
+  const icon = useDerivedValue(() => confirmButtonProps.value.icon);
+  const label = useDerivedValue(() => confirmButtonProps.value.label);
+  const disabled = useDerivedValue(() => confirmButtonProps.value.disabled);
+  const opacity = useDerivedValue(() => confirmButtonProps.value.opacity);
 
   return (
     // @ts-expect-error Property 'children' does not exist on type
@@ -74,10 +72,12 @@ export function SwapBottomPanel() {
           <Box style={{ flex: 1 }}>
             <SwapActionButton
               asset={internalSelectedOutputAsset}
-              icon={confirmButtonIcon}
+              icon={icon}
               iconStyle={confirmButtonIconStyle}
-              label={confirmButtonLabel}
+              label={label}
+              disabled={disabled}
               onPressWorklet={SwapNavigation.handleSwapAction}
+              opacity={opacity}
               scaleTo={0.9}
             />
           </Box>

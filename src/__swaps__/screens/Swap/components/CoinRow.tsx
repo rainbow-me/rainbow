@@ -102,9 +102,7 @@ export const CoinRow = memo(function CoinRow({ isFavorite, onPress, output, uniq
 
   const onPressHandler = useCallback(
     (event: GestureResponderEvent) => {
-      if (event?.stopPropagation) {
-        event.stopPropagation();
-      }
+      event?.stopPropagation();
 
       if (output) {
         return onPress();
