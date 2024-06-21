@@ -125,11 +125,11 @@ export function SyncGasStateToSharedValues() {
 
   useEffect(() => {
     hasEnoughFundsForGas.value = undefined;
-    if (!gasSettings || !estimatedGasLimit || !quote || 'error' in quote || !assetToSell) return;
+    if (!gasSettings || !estimatedGasLimit || !quote || 'error' in quote || !userNativeNetworkAsset) return;
 
     const gasFee = calculateGasFee(gasSettings, estimatedGasLimit);
 
-    const nativeGasFee = divWorklet(gasFee, powWorklet(10, assetToSell.decimals));
+    const nativeGasFee = divWorklet(gasFee, powWorklet(10, userNativeNetworkAsset.decimals));
 
     const isEstimateOutsideRange = !!(
       gasFeeRange.value &&
@@ -138,8 +138,8 @@ export function SyncGasStateToSharedValues() {
 
     // If the gas fee range hasn't been set or the estimated fee is outside the range, calculate the range based on the gas fee
     if (nativeGasFee && (!gasFeeRange.value || isEstimateOutsideRange)) {
-      const lowerBound = toFixedWorklet(mulWorklet(nativeGasFee, 1 - BUFFER_RATIO), assetToSell.decimals);
-      const upperBound = toFixedWorklet(mulWorklet(nativeGasFee, 1 + BUFFER_RATIO), assetToSell.decimals);
+      const lowerBound = toFixedWorklet(mulWorklet(nativeGasFee, 1 - BUFFER_RATIO), userNativeNetworkAsset.decimals);
+      const upperBound = toFixedWorklet(mulWorklet(nativeGasFee, 1 + BUFFER_RATIO), userNativeNetworkAsset.decimals);
       gasFeeRange.value = [lowerBound, upperBound];
     }
 
@@ -148,7 +148,7 @@ export function SyncGasStateToSharedValues() {
     return () => {
       hasEnoughFundsForGas.value = undefined;
     };
-  }, [assetToSell, estimatedGasLimit, gasFeeRange, gasSettings, hasEnoughFundsForGas, quote, userNativeNetworkAsset]);
+  }, [estimatedGasLimit, gasFeeRange, gasSettings, hasEnoughFundsForGas, quote, userNativeNetworkAsset]);
 
   return null;
 }
