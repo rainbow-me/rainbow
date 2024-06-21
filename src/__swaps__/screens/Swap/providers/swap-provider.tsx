@@ -42,7 +42,7 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { ethereumUtils } from '@/utils';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 
-import { equalWorklet, lessThanOrEqualToWorklet, toScaledIntegerWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { equalWorklet, lessThanOrEqualToWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { analyticsV2 } from '@/analytics';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { getNetworkObj } from '@/networks';
@@ -653,7 +653,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return { label: insufficientFunds, disabled: true };
     }
 
-    if (isFetching.value) {
+    const isQuoteError = quote.value && 'error' in quote.value;
+    const isLoadingGas = !isQuoteError && hasEnoughFundsForGas.value === undefined;
+    if (isFetching.value || isLoadingGas) {
       return { label: fetchingPrices, disabled: true, opacity: 1 };
     }
 
@@ -661,7 +663,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return { label: insufficientFunds, disabled: true };
     }
 
-    const isQuoteError = quote.value && 'error' in quote.value;
     if (isQuoteError) {
       return { icon: '􀕹', label: review, disabled: true };
     }

@@ -15,16 +15,17 @@ import { gasUtils } from '@/utils';
 import React, { PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
-import { runOnJS, runOnUI } from 'react-native-reanimated';
-import { ETH_COLOR, ETH_COLOR_DARK, THICK_BORDER_WIDTH } from '../constants';
+import Animated, { runOnJS, runOnUI, useAnimatedStyle } from 'react-native-reanimated';
+import { THICK_BORDER_WIDTH } from '../constants';
 import { GasSettings, useCustomGasSettings } from '../hooks/useCustomGas';
 import { setSelectedGasSpeed, useSelectedGas, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { GestureHandlerV1Button } from './GestureHandlerV1Button';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 
-const { GAS_ICONS } = gasUtils;
+const { SWAP_GAS_ICONS } = gasUtils;
 const GAS_BUTTON_HIT_SLOP = 16;
 
 function UnmountWhenGasButtonIsNotInScreen({ placeholder, children }: PropsWithChildren<{ placeholder: ReactNode }>) {
@@ -49,7 +50,7 @@ function EstimatedGasFee() {
 
   return (
     <Inline alignVertical="center" space="4px">
-      <TextIcon color="labelQuaternary" height={10} size="icon 11px" weight="heavy" width={16}>
+      <TextIcon color="labelQuaternary" height={10} size="icon 11px" weight="heavy" width={18}>
         􀵟
       </TextIcon>
       <UnmountWhenGasButtonIsNotInScreen placeholder={<EstimatedSwapGasFeeSlot text="--" />}>
@@ -59,17 +60,24 @@ function EstimatedGasFee() {
   );
 }
 
-function SelectedGas() {
+function SelectedGas({ isPill }: { isPill?: boolean }) {
   const chainId = swapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
   const selectedGasSpeed = useSelectedGasSpeed(chainId);
 
   return (
     <Inline alignVertical="center" space={{ custom: 5 }}>
       <Inline alignVertical="center" space="4px">
-        <TextIcon color={'red'} height={10} size="icon 12px" textStyle={{ marginTop: -1.5 }} width={16} weight="bold">
-          􀙭
+        <TextIcon
+          color={SWAP_GAS_ICONS[selectedGasSpeed].color}
+          height={10}
+          size="icon 13px"
+          textStyle={{ top: IS_ANDROID ? 1 : 0 + (selectedGasSpeed === 'fast' ? 0.5 : 0) }}
+          width={isPill ? 14 : 18}
+          weight="bold"
+        >
+          {SWAP_GAS_ICONS[selectedGasSpeed].icon}
         </TextIcon>
-        <Text color="label" size="15pt" weight="heavy">
+        <Text align={isPill ? 'center' : 'left'} color="label" size="15pt" weight="heavy">
           {i18n.t(i18n.l.gas.speeds[selectedGasSpeed])}
         </Text>
       </Inline>
@@ -95,7 +103,7 @@ function getEstimatedFeeRangeInGwei(gasSettings: GasSettings | undefined, curren
   return `${minFee} - ${maxFee} Gwei`;
 }
 
-function keys<const T extends string>(obj: Record<T, any> | undefined) {
+function keys<const T extends string>(obj: Record<T, unknown> | undefined) {
   if (!obj) return [];
   return Object.keys(obj) as T[];
 }
@@ -144,7 +152,7 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
         actionKey: gasOption,
         actionTitle: i18n.t(i18n.l.gas.speeds[gasOption]),
         discoverabilityTitle: subtitle,
-        icon: { iconType: 'ASSET', iconValue: GAS_ICONS[gasOption] },
+        icon: { iconType: 'SYSTEM', iconValue: SWAP_GAS_ICONS[gasOption].symbolName },
       };
     });
     return { menuItems, menuTitle: '' };
@@ -191,7 +199,7 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
 
 export function ReviewGasButton() {
   const { isDarkMode } = useColorMode();
-  const { SwapNavigation, internalSelectedInputAsset } = useSwapContext();
+  const { SwapNavigation, internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
 
   const separatatorSecondary = useForegroundColor('separatorSecondary');
 
@@ -202,33 +210,23 @@ export function ReviewGasButton() {
     SwapNavigation.handleShowGas({ backToReview: true });
   };
 
+  const animatedBorderColor = useAnimatedStyle(() => {
+    return {
+      borderColor: getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true),
+    };
+  });
+
   return (
-    <Inline alignVertical="center" wrap={false}>
+    <Inline alignVertical="center" space="8px" wrap={false}>
       <GasMenu backToReview>
-        <Box
-          style={[
-            sx.reviewGasButtonPillStyles,
-            {
-              borderColor: isDarkMode ? ETH_COLOR_DARK : ETH_COLOR,
-            },
-          ]}
-        >
-          <SelectedGas />
-        </Box>
+        <Animated.View style={[styles.reviewGasButtonPill, animatedBorderColor]}>
+          <SelectedGas isPill />
+        </Animated.View>
       </GasMenu>
 
       <GestureHandlerV1Button onPressStartWorklet={handleShowCustomGas}>
-        <Box
-          style={{
-            paddingHorizontal: 7,
-            paddingVertical: 6,
-            gap: 10,
-            borderRadius: 15,
-            borderWidth: THICK_BORDER_WIDTH,
-            borderColor: separatatorSecondary,
-          }}
-        >
-          <Text weight="heavy" size="15pt" color="label">
+        <Box style={[styles.customGasButtonPill, { borderColor: separatatorSecondary }]}>
+          <Text align="center" color="label" size="15pt" weight="heavy">
             􀌆
           </Text>
         </Box>
@@ -248,17 +246,29 @@ export const GasButton = () => {
   );
 };
 
-const sx = StyleSheet.create({
-  reviewGasButtonPillStyles: {
+const styles = StyleSheet.create({
+  customGasButtonPill: {
+    alignItems: 'center',
+    height: 30,
+    justifyContent: 'center',
+    borderCurve: 'continuous',
+    borderRadius: 15,
+    borderWidth: THICK_BORDER_WIDTH,
+    overflow: 'hidden',
+    paddingHorizontal: 7 - THICK_BORDER_WIDTH,
+  },
+  reviewGasButtonPill: {
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    borderCurve: 'continuous',
+    borderRadius: 15,
+    borderWidth: 2,
     display: 'flex',
     flexDirection: 'row',
-    backgroundColor: 'transparent',
-    borderWidth: 2,
-    borderRadius: 15,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
     gap: 5,
-    alignItems: 'center',
+    height: 30,
     justifyContent: 'center',
+    overflow: 'hidden',
+    paddingHorizontal: 8,
   },
 });

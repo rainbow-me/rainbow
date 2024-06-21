@@ -1,7 +1,9 @@
-import { colors } from '@/styles';
-import * as i18n from '@/languages';
-import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { TextColor } from '@/design-system/color/palettes';
 import { NativeCurrencyKey } from '@/entities';
+import { IS_IOS } from '@/env';
+import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import * as i18n from '@/languages';
+import { colors } from '@/styles';
 
 const CUSTOM = 'custom';
 const URGENT = 'urgent';
@@ -25,10 +27,37 @@ const GAS_ICONS = {
   [URGENT]: 'policeCarLight',
 };
 
+interface SwapGasIcons {
+  [key: string]: { color: TextColor; icon: string; symbolName: string };
+}
+
+const SWAP_GAS_ICONS: SwapGasIcons = {
+  [CUSTOM]: {
+    color: 'labelSecondary',
+    icon: '􀣌',
+    symbolName: 'gearshape',
+  },
+  [FAST]: {
+    color: 'red',
+    icon: '􀙭',
+    symbolName: 'flame',
+  },
+  [NORMAL]: {
+    color: 'blue',
+    icon: '􀐫',
+    symbolName: 'clock',
+  },
+  [URGENT]: {
+    color: 'yellow',
+    icon: '􀋦',
+    symbolName: 'bolt',
+  },
+};
+
 const GAS_EMOJIS = {
   [CUSTOM]: '⚙️',
   [FAST]: '🚀',
-  [NORMAL]: ios ? '⏱' : '🕘',
+  [NORMAL]: IS_IOS ? '⏱' : '🕘',
   [URGENT]: '🚨',
 };
 
@@ -88,5 +117,6 @@ export default {
   GasTrends,
   NORMAL,
   SLOW,
+  SWAP_GAS_ICONS,
   URGENT,
 };

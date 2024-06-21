@@ -13,9 +13,9 @@ import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapAction
 import { SwapInput } from '@/__swaps__/screens/Swap/components/SwapInput';
 import { TokenList } from '@/__swaps__/screens/Swap/components/TokenList/TokenList';
 import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/__swaps__/types/chains';
-import { IS_ANDROID } from '@/env';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -96,12 +96,10 @@ function SwapOutputAmount() {
   );
 }
 
-function SwapInputIcon() {
-  const { internalSelectedOutputAsset } = useSwapContext();
-
+function SwapOutputIcon() {
   return (
     <Box paddingRight="10px">
-      <AnimatedSwapCoinIcon asset={internalSelectedOutputAsset} large />
+      <AnimatedSwapCoinIcon assetType="output" large />
     </Box>
   );
 }
@@ -137,7 +135,7 @@ export function SwapOutputAsset() {
         <Stack space="16px">
           <Columns alignHorizontal="justify" alignVertical="center">
             <Column width="content">
-              <SwapInputIcon />
+              <SwapOutputIcon />
             </Column>
             <SwapOutputAmount />
             <Column width="content">
@@ -164,7 +162,6 @@ export function SwapOutputAsset() {
         width={{ custom: INPUT_INNER_WIDTH }}
       >
         <TokenList
-          asset={internalSelectedOutputAsset}
           handleExitSearchWorklet={SwapNavigation.handleExitSearch}
           handleFocusSearchWorklet={SwapNavigation.handleFocusOutputSearch}
           output
@@ -219,7 +216,7 @@ export const styles = StyleSheet.create({
   staticInputStyles: {
     borderCurve: 'continuous',
     borderRadius: 30,
-    borderWidth: THICK_BORDER_WIDTH,
+    borderWidth: IS_IOS ? THICK_BORDER_WIDTH : 0,
     overflow: 'hidden',
     padding: INPUT_PADDING,
     width: BASE_INPUT_WIDTH,
