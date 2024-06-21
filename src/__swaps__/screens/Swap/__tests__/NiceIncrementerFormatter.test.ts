@@ -4,7 +4,6 @@ import { SLIDER_WIDTH } from '../constants';
 type TestCase = {
   incrementDecimalPlaces: number;
   inputAssetBalance: number | string;
-  assetBalanceDisplay: string;
   inputAssetNativePrice: number;
   niceIncrement: number | string;
   percentageToSwap: number;
@@ -20,7 +19,6 @@ const TEST_CASES: TestCase[] = [
   {
     incrementDecimalPlaces: 0,
     inputAssetBalance: 45.47364224817269,
-    assetBalanceDisplay: '45.47364225',
     inputAssetNativePrice: 0.9995363790000001,
     niceIncrement: '1',
     percentageToSwap: 0.5,
@@ -33,7 +31,6 @@ const TEST_CASES: TestCase[] = [
   {
     incrementDecimalPlaces: 2,
     inputAssetBalance: 100,
-    assetBalanceDisplay: '100.00',
     inputAssetNativePrice: 10,
     niceIncrement: '0.1',
     percentageToSwap: 0,
@@ -46,7 +43,6 @@ const TEST_CASES: TestCase[] = [
   {
     incrementDecimalPlaces: 2,
     inputAssetBalance: 100,
-    assetBalanceDisplay: '100.00',
     inputAssetNativePrice: 10,
     niceIncrement: '0.1',
     percentageToSwap: 1,
@@ -59,7 +55,6 @@ const TEST_CASES: TestCase[] = [
   {
     incrementDecimalPlaces: 2,
     inputAssetBalance: 123.456,
-    assetBalanceDisplay: '123.46',
     inputAssetNativePrice: 1,
     niceIncrement: '0.05',
     percentageToSwap: 0.25,
@@ -72,7 +67,6 @@ const TEST_CASES: TestCase[] = [
   {
     incrementDecimalPlaces: 0,
     inputAssetBalance: '1000',
-    assetBalanceDisplay: '1,000',
     inputAssetNativePrice: 0.5,
     niceIncrement: '100',
     percentageToSwap: 0.75,
