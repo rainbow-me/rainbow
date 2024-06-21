@@ -105,6 +105,8 @@ export function useSwapInputsController({
   });
   const inputMethod = useSharedValue<inputMethods>('slider');
 
+  const maxSwappableAmount = useDerivedValue(() => internalSelectedInputAsset.value?.maxSwappableAmount);
+
   const percentageToSwap = useDerivedValue(() => {
     return Math.round(clamp((sliderXPosition.value - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1) * 100) / 100;
   });
@@ -558,6 +560,33 @@ export function useSwapInputsController({
       outputAmount: inputValues.value.outputAmount,
     });
   };
+
+  // update the input amount & quote if swapping max amount & maxSwappableAmount changes
+  useAnimatedReaction(
+    () => maxSwappableAmount.value,
+    maxSwappableAmount => {
+      const isSwappingMaxBalance = internalSelectedInputAsset.value && inputMethod.value === 'slider' && percentageToSwap.value >= 1;
+      if (maxSwappableAmount && isSwappingMaxBalance) {
+        const inputAmount = valueBasedDecimalFormatter({
+          amount: maxSwappableAmount,
+          nativePrice: inputNativePrice.value,
+          roundingMode: 'up',
+          precisionAdjustment: -1,
+          isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
+          stripSeparators: false,
+        });
+
+        inputValues.modify(prev => {
+          return {
+            ...prev,
+            inputAmount,
+            inputNativeValue: mulWorklet(inputAmount, inputNativePrice.value),
+          };
+        });
+        fetchQuoteAndAssetPrices();
+      }
+    }
+  );
 
   const quoteFetchingInterval = useAnimatedInterval({
     intervalMs: 12_000,
