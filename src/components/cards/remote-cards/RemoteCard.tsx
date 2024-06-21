@@ -5,6 +5,7 @@ import ConditionalWrap from 'conditional-wrap';
 
 import { Border, Box, Cover, IconContainer, Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
+import { ImgixImage } from '@/components/images';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { useNavigation } from '@/navigation';
 import { Language } from '@/languages';
@@ -17,11 +18,10 @@ import { analyticsV2 } from '@/analytics';
 import { FlashList } from '@shopify/flash-list';
 import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
 import { TrimmedCard } from '@/resources/cards/cardCollectionQuery';
-import RemoteSvg from '@/components/svg/RemoteSvg';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 
 const ICON_SIZE = 36;
-const INFO_CARD_BORDER_RADIUS = 20;
+const CARD_BORDER_RADIUS = 20;
 
 const getKeyForLanguage = (key: string, object: object, language: Language) => {
   if (!object) {
@@ -72,7 +72,6 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
   const { cardKey, accentColor, backgroundColor, primaryButton, imageIcon } = card;
 
   const accent = useForegroundColor(getColorFromString(accentColor));
-  const border = useForegroundColor('separatorSecondary');
 
   const onPress = useCallback(() => {
     analyticsV2.track(analyticsV2.event.remoteCardPrimaryButtonPressed, {
@@ -163,7 +162,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
         overflow="visible"
         justifyContent="center"
         height={'full'}
-        borderRadius={INFO_CARD_BORDER_RADIUS}
+        borderRadius={CARD_BORDER_RADIUS}
         padding="16px"
         shadow="12px"
         background={(backgroundColor as BackgroundColor) ?? 'surfaceSecondaryElevated'}
@@ -210,7 +209,15 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
                 )}
 
                 {!imageIcon && imageUri && (
-                  <Box as={RemoteSvg} uri={imageForPlatform()} borderRadius={card.imageRadius ?? 10} style={styles.image} />
+                  <Box
+                    as={ImgixImage}
+                    enableFasterImage
+                    fm="png"
+                    source={{ uri: imageForPlatform() }}
+                    borderRadius={card.imageRadius ?? 10}
+                    size={ICON_SIZE}
+                    style={styles.image}
+                  />
                 )}
               </Cover>
             </Box>
@@ -260,7 +267,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
             </Box>
           </Box>
         </Box>
-        <Border borderRadius={INFO_CARD_BORDER_RADIUS} />
+        <Border borderRadius={CARD_BORDER_RADIUS} />
       </Box>
     </ConditionalWrap>
   );
