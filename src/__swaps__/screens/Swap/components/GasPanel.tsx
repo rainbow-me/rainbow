@@ -1,8 +1,8 @@
 import * as i18n from '@/languages';
 import React, { PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
-import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, withDelay, withSpring } from 'react-native-reanimated';
 
-import { fadeConfig } from '@/__swaps__/screens/Swap/constants';
+import { MIN_FLASHBOTS_PRIORITY_FEE, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/__swaps__/types/chains';
 import { GasSpeed } from '@/__swaps__/types/gas';
@@ -33,6 +33,7 @@ import { GasSettings, getCustomGasSettings, setCustomGasSettings, useCustomGasSt
 import { getSelectedGas, setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 
 const { GAS_TRENDS } = gasUtils;
 
@@ -321,7 +322,6 @@ function EditMaxBaseFee() {
   );
 }
 
-const MIN_FLASHBOTS_PRIORITY_FEE = gweiToWei('6');
 function EditPriorityFee() {
   const { navigate } = useNavigation();
 
@@ -427,24 +427,34 @@ function saveCustomGasSettings() {
   useGasPanelStore.setState(undefined);
 }
 
-export function onCloseGasPanel() {
-  saveCustomGasSettings();
-}
-
 export function GasPanel() {
   const { configProgress } = useSwapContext();
+  const separator = useForegroundColor('separator');
+
+  useAnimatedReaction(
+    () => configProgress.value,
+    (current, previous) => {
+      // persist custom gas settings when navigating away from gas panel
+      if (previous === NavigationSteps.SHOW_GAS && current !== NavigationSteps.SHOW_GAS) {
+        runOnJS(saveCustomGasSettings)();
+      }
+    }
+  );
 
   const styles = useAnimatedStyle(() => {
     return {
       display: configProgress.value !== NavigationSteps.SHOW_GAS ? 'none' : 'flex',
       pointerEvents: configProgress.value !== NavigationSteps.SHOW_GAS ? 'none' : 'auto',
-      opacity: configProgress.value === NavigationSteps.SHOW_GAS ? withTiming(1, fadeConfig) : withTiming(0, fadeConfig),
+      opacity:
+        configProgress.value === NavigationSteps.SHOW_GAS
+          ? withDelay(120, withSpring(1, SPRING_CONFIGS.springConfig))
+          : withSpring(0, SPRING_CONFIGS.springConfig),
       flex: 1,
     };
   });
 
   return (
-    <Box as={Animated.View} zIndex={12} style={styles} testID="gas-panel" width="full">
+    <Box as={Animated.View} paddingHorizontal="12px" zIndex={12} style={styles} testID="gas-panel" width="full">
       <Stack alignHorizontal="center" space="28px">
         <Text weight="heavy" color="label" size="20pt">
           {i18n.t(i18n.l.gas.gas_settings)}
@@ -459,7 +469,7 @@ export function GasPanel() {
             <EditableGasSettings />
           </Box>
 
-          <Separator color="separatorSecondary" />
+          <Separator color={{ custom: opacity(separator, 0.03) }} thickness={THICK_BORDER_WIDTH} />
 
           <MaxTransactionFee />
         </Box>

@@ -1940,9 +1940,7 @@
         "enter_amount": "Enter Amount",
         "review": "Review",
         "fetching_prices": "Fetching",
-        "swapping": "Swapping",
-        "select_token": "Select Token",
-        "insufficient_funds": "Insufficient Funds"
+        "swapping": "Swapping"
       },
       "aggregators": {
         "rainbow": "Rainbow"
