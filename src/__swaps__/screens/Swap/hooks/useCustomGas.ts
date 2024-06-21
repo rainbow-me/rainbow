@@ -20,6 +20,9 @@ export const useCustomGasStore = createRainbowStore<CustomGasStoreState>(() => (
 export const useCustomGasSettings = (chainId: ChainId) => useCustomGasStore(s => s[chainId]);
 export const getCustomGasSettings = (chainId: ChainId) => useCustomGasStore.getState()[chainId];
 
+export const clearCustomGasSettings = (chainId?: ChainId) =>
+  useCustomGasStore.setState(s => (chainId ? { ...s, [chainId]: undefined } : {}), true);
+
 export const setCustomGasSettings = (chainId: ChainId, update: Partial<GasSettings>) => {
   useCustomGasStore.setState(s => {
     const state = s[chainId] || {
