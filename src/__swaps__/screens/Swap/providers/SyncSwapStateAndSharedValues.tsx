@@ -16,8 +16,8 @@ import { ParsedAddressAsset } from '@/entities';
 import { useUserNativeNetworkAsset } from '@/resources/assets/useUserAsset';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { debounce } from 'lodash';
-import { useEffect, useRef, useState } from 'react';
-import { SharedValue, runOnJS, useAnimatedReaction } from 'react-native-reanimated';
+import { useEffect, useRef } from 'react';
+import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { formatUnits } from 'viem';
 import { create } from 'zustand';
 import { calculateGasFee } from '../hooks/useEstimatedGasFee';
@@ -87,24 +87,6 @@ const getHasEnoughFundsForGas = (quote: Quote, gasFee: string, nativeNetworkAsse
   return lessThanOrEqualToWorklet(totalNativeSpentInTx, userBalance);
 };
 
-const BUFFER_FACTOR = 1.3;
-function updateMaxSwappableAmount(internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>, gasFee: string) {
-  internalSelectedInputAsset.modify(asset => {
-    'worklet';
-
-    if (!asset?.isNativeAsset) return asset;
-
-    const gasFeeNativeCurrency = divWorklet(gasFee, powWorklet(10, asset.decimals));
-    const gasFeeWithBuffer = toFixedWorklet(mulWorklet(gasFeeNativeCurrency, BUFFER_FACTOR), asset.decimals);
-    const maxSwappableAmount = subWorklet(asset.balance.amount, gasFeeWithBuffer);
-
-    return {
-      ...asset,
-      maxSwappableAmount: lessThanWorklet(maxSwappableAmount, 0) ? '0' : maxSwappableAmount,
-    };
-  });
-}
-
 export function SyncGasStateToSharedValues() {
   const { hasEnoughFundsForGas, internalSelectedInputAsset } = useSwapContext();
 
@@ -134,7 +116,7 @@ export function SyncGasStateToSharedValues() {
       (lessThanWorklet(nativeGasFee, gasFeeRange.current[0]) || greaterThanWorklet(nativeGasFee, gasFeeRange.current[1]));
 
     // If the gas fee range hasn't been set or the estimated fee is outside the range, calculate the range based on the gas fee
-    if (nativeGasFee && (!gasFeeRange || isEstimateOutsideRange)) {
+    if (nativeGasFee && (!gasFeeRange.current || isEstimateOutsideRange)) {
       const lowerBound = toFixedWorklet(mulWorklet(nativeGasFee, LOWER_BOUND_FACTOR), assetToSell.decimals);
       const upperBound = toFixedWorklet(mulWorklet(nativeGasFee, UPPER_BOUND_FACTOR), assetToSell.decimals);
       gasFeeRange.current = [lowerBound, upperBound];
