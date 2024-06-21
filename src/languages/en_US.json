@@ -1427,7 +1427,19 @@
         "claimed_on_network": "Claimed on %{network}",
         "claiming_on_network": "Claiming on %{network}",
         "free_to_claim": "Free to Claim",
-        "has_bridge_fee": "Has Bridge Fee"
+        "has_bridge_fee": "Has Bridge Fee",
+        "claim_rewards": "Claim Rewards",
+        "earned_last_week": "Earned Last Week",
+        "no_earnings": "No Earnings",
+        "none": "None",
+        "my_earnings": "My Earnings",
+        "claimed_earnings": "Claimed Earnings",
+        "current_value": "Current Value",
+        "rainbow_users_have_earned": "Rainbow users have earned",
+        "earn_eth_rewards": "Earn ETH Rewards",
+        "rewards_explainer": "Every week, top points holders and the biggest weekly points earners will receive a portion of Rainbow’s onchain revenue. Collect points by swapping or transacting in Rainbow.",
+        "my_points": "My Points",
+        "refer_friends": "Refer Friends"
       },
       "console": {
         "claim_bonus_paragraph": "You'll receive an additional 100 points once you swap at least $100 through Rainbow",
