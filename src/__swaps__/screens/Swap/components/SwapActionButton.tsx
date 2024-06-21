@@ -1,12 +1,13 @@
 /* eslint-disable no-nested-ternary */
 import React from 'react';
 import { StyleProp, StyleSheet, TextStyle, ViewStyle } from 'react-native';
-import Animated, { DerivedValue, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import Animated, { DerivedValue, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
 
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { AnimatedText, Box, Column, Columns, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { GestureHandlerV1Button } from './GestureHandlerV1Button';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 
 export const SwapActionButton = ({
   asset,
@@ -84,7 +85,7 @@ export const SwapActionButton = ({
       },
       shadowOpacity: isDarkMode ? 0.2 : small ? 0.2 : 0.36,
       shadowRadius: isDarkMode ? 26 : small ? 9 : 15,
-      opacity: opacity?.value ?? (disabled?.value ? 0.6 : 1),
+      opacity: withTiming(opacity?.value ?? (disabled?.value ? 0.6 : 1), TIMING_CONFIGS.slowerFadeConfig),
     };
   });
 

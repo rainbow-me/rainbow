@@ -655,7 +655,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const isReviewSheetOpen = configProgress.value === NavigationSteps.SHOW_REVIEW;
 
     if ((isFetching.value || isLoadingGas) && !isQuoteError) {
-      return { label: fetchingPrices, disabled: isReviewSheetOpen && isFetching.value };
+      return { label: fetchingPrices, disabled: (isReviewSheetOpen && isFetching.value) || !quote.value };
     }
 
     if (isQuoteError) {
