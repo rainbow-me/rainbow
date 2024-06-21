@@ -1,4 +1,4 @@
-import { BlurMask, Canvas, Circle, mix } from '@shopify/react-native-skia';
+import { BackdropBlur, Canvas, Circle, Group, Paint, Rect, mix } from '@shopify/react-native-skia';
 import React, { useEffect } from 'react';
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import { Source } from 'react-native-fast-image';
@@ -16,7 +16,7 @@ import gridDotsDark from '@/assets/dot-grid-dark.png';
 import gridDotsLight from '@/assets/dot-grid-light.png';
 import ledgerNano from '@/assets/ledger-nano.png';
 import { ImgixImage } from '@/components/images';
-import { useColorMode } from '@/design-system';
+import { useBackgroundColor, useColorMode } from '@/design-system';
 import { useTheme } from '@/theme';
 import { deviceUtils } from '@/utils';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -50,8 +50,15 @@ const CIRCLE_COLORS = [
 
 type Props = {
   CenterComponent?: React.ReactNode;
+  backgroundColor?: string;
+  blur?: number;
   centerComponentStyle?: StyleProp<ViewStyle>;
+  circleColors?: string[];
+  circleRadius?: number;
+  duration?: number;
   isConnected?: boolean;
+  movementFactor?: number;
+  opacity?: number;
   showGridDots?: boolean;
   state: 'idle' | 'loading';
   wrapperStyle?: StyleProp<ViewStyle>;
@@ -59,13 +66,21 @@ type Props = {
 
 export function NanoXDeviceAnimation({
   CenterComponent,
+  backgroundColor,
+  blur = 36,
   centerComponentStyle,
+  circleColors = CIRCLE_COLORS,
+  circleRadius = 48,
+  duration = 3000,
   isConnected,
+  movementFactor = 1,
+  opacity = 0.3,
   showGridDots = true,
   state,
   wrapperStyle,
 }: Props) {
   const { colorMode } = useColorMode();
+  const defaultBackgroundColor = useBackgroundColor('surfaceSecondary');
 
   // //////////////////////////////////////////////////////////////////
   // Ledger Nano X Image
@@ -109,9 +124,25 @@ export function NanoXDeviceAnimation({
       )}
       <Animated.View style={[animatedCirclesWrapperStyle, styles.circlesWrapper, wrapperStyle]}>
         <Canvas style={styles.circlesCanvas}>
-          {CIRCLE_COLORS.map((color, index) => (
-            <AnimatedCircle color={color} isConnected={isConnected} key={index} xOrigin={xOrigin} yOrigin={yOrigin} />
-          ))}
+          <Group antiAlias dither>
+            <Rect height={CIRCLES_HEIGHT} width={CIRCLES_WIDTH}>
+              <Paint color={backgroundColor || defaultBackgroundColor} />
+            </Rect>
+            {circleColors.map((color, index) => (
+              <AnimatedCircle
+                circleRadius={circleRadius}
+                color={color}
+                duration={duration}
+                isConnected={isConnected}
+                key={index}
+                movementFactor={movementFactor}
+                opacity={opacity}
+                xOrigin={xOrigin}
+                yOrigin={yOrigin}
+              />
+            ))}
+          </Group>
+          <BackdropBlur antiAlias blur={blur} color="rgba(255, 255, 255, 0)" dither />
         </Canvas>
       </Animated.View>
       <Animated.View style={[animatedLedgerNanoWrapperStyle, styles.ledgerNanoWrapper, centerComponentStyle]}>
@@ -126,18 +157,25 @@ export function NanoXDeviceAnimation({
 const getRandom = (min: number, max: number) => Math.random() * (max - min) + min;
 
 function AnimatedCircle({
+  circleRadius,
   color,
+  duration,
+  opacity,
+  movementFactor,
   xOrigin,
   yOrigin,
   isConnected,
 }: {
+  circleRadius: number;
   color: string;
+  duration: number;
+  opacity: number;
+  movementFactor: number;
   xOrigin: SharedValue<number>;
   yOrigin: SharedValue<number>;
   isConnected?: boolean;
 }) {
   const isConnectedValue = useSharedValue(isConnected ? 1 : 0);
-  const circleRadius = 48;
 
   const progressOffset = getRandom(0, 2 * Math.PI);
   const progress = useSharedValue(progressOffset);
@@ -153,7 +191,7 @@ function AnimatedCircle({
 
   useEffect(() => {
     progress.value = withRepeat(
-      withTiming(progressOffset + (getRandom(-1, 1) > 0 ? 1 : -1) * (2 * Math.PI), { duration: 3000, easing: Easing.linear }),
+      withTiming(progressOffset + (getRandom(-1, 1) > 0 ? 1 : -1) * (2 * Math.PI), { duration, easing: Easing.linear }),
       -1,
       false
     );
@@ -163,9 +201,10 @@ function AnimatedCircle({
   useEffect(() => {
     // logic for connected animation
     isConnectedValue.value = withTiming(isConnected ? 1 : 0, {
-      duration: 3000,
+      duration: 2000,
       easing: Easing.bezier(0.25, 0.1, 0.25, 1),
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnected, isConnectedValue]);
 
   useAnimatedReaction(
@@ -176,19 +215,21 @@ function AnimatedCircle({
     ({ isConnectedValue, progress }) => {
       // position animation
       const scalar = 0.5 - 0.4 * isConnectedValue;
-      x.value = xOrigin.value + mix(Math.cos(progress), scalar * -circleRadius, scalar * circleRadius) + xOffset.value;
-      y.value = yOrigin.value + mix(Math.sin(progress), scalar * -circleRadius, scalar * circleRadius) + yOffset.value;
+      x.value =
+        xOrigin.value +
+        mix(Math.cos(progress), scalar * -circleRadius * movementFactor, scalar * circleRadius * movementFactor) +
+        xOffset.value;
+      y.value =
+        yOrigin.value +
+        mix(Math.sin(progress), scalar * -circleRadius * movementFactor, scalar * circleRadius * movementFactor) +
+        yOffset.value;
 
       // color animation
       colorValue.value = interpolateColor(isConnectedValue, [0, 1], [color, colors.green]);
     }
   );
 
-  return (
-    <Circle antiAlias dither r={circleRadius} cx={x} cy={y} color={colorValue} opacity={0.3}>
-      <BlurMask blur={36} style="normal" />
-    </Circle>
-  );
+  return <Circle color={colorValue} cx={x} cy={y} opacity={opacity} r={circleRadius} />;
 }
 
 const styles = StyleSheet.create({

@@ -4,7 +4,17 @@ import { Text, TextShadow, useColorMode, useForegroundColor } from '@/design-sys
 import { IS_IOS } from '@/env';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
-export const NeonRainbowButtonMask = ({ color, label, width }: { color?: string; label: string; width?: number }) => {
+export const NeonRainbowButtonMask = ({
+  borderRadius = 20,
+  color,
+  label,
+  width,
+}: {
+  borderRadius?: number;
+  color?: string;
+  label: string;
+  width?: number;
+}) => {
   const { isDarkMode } = useColorMode();
   const defaultColor = useForegroundColor('label');
 
@@ -24,6 +34,7 @@ export const NeonRainbowButtonMask = ({ color, label, width }: { color?: string;
             alignItems: 'center',
             backgroundColor: isDarkMode ? `rgba(255, 255, 255, ${IS_IOS ? 0.025 : 0.15})` : 'transparent',
             borderColor: color || defaultColor,
+            borderRadius,
             justifyContent: 'center',
             width: width ?? DEVICE_WIDTH - 64,
           },
@@ -46,7 +57,6 @@ const styles = StyleSheet.create({
   neonButton: {
     alignItems: 'center',
     borderCurve: 'continuous',
-    borderRadius: 20,
     borderWidth: 2,
     height: 56,
     justifyContent: 'center',

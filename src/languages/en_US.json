@@ -1423,6 +1423,8 @@
         "available_to_claim": "Available to Claim",
         "claim": "Claim %{value}",
         "choose_claim_network": "Choose Claim Network",
+        "claim_on_network": "Claim on %{network}",
+        "claimed_on_network": "Claimed on %{network}",
         "claiming_on_network": "Claiming on %{network}",
         "free_to_claim": "Free to Claim",
         "has_bridge_fee": "Has Bridge Fee"

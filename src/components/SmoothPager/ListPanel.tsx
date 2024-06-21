@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { ScrollView, ScrollViewProps, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
@@ -21,14 +21,14 @@ import { TextColor } from '@/design-system/color/palettes';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { colors } from '@/styles';
-import { deviceUtils } from '@/utils';
 import { addressHashedEmoji } from '@/utils/profileUtils';
 import { TOP_INSET } from '../DappBrowser/Dimensions';
 import { useNavigation } from '@/navigation';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
 import { useAccountAccentColor } from '@/hooks';
+import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
-export const TapToDismiss = React.memo(function TapToDismiss() {
+export const TapToDismiss = memo(function TapToDismiss() {
   const { goBack } = useNavigation();
   return (
     <TouchableWithoutFeedback onPress={goBack}>
@@ -37,11 +37,15 @@ export const TapToDismiss = React.memo(function TapToDismiss() {
   );
 });
 
-const LIST_SCROLL_INDICATOR_BOTTOM_INSET = { bottom: 42 };
+const PANEL_INSET = 8;
+const PANEL_WIDTH = DEVICE_WIDTH - PANEL_INSET * 2;
+const PANEL_BORDER_RADIUS = 42;
+const LIST_SCROLL_INDICATOR_BOTTOM_INSET = { bottom: PANEL_BORDER_RADIUS };
 
 export const ListPanel = ({
   TitleComponent,
   animatedAccentColor,
+  disableSelectedStyle,
   goBack,
   items,
   onSelect,
@@ -53,6 +57,7 @@ export const ListPanel = ({
 }: {
   TitleComponent?: React.ReactNode;
   animatedAccentColor: SharedValue<string | undefined>;
+  disableSelectedStyle?: boolean;
   goBack: () => void;
   items?: ControlPanelMenuItemProps[];
   onSelect: (selectedItemId: string) => void;
@@ -81,6 +86,7 @@ export const ListPanel = ({
                 // eslint-disable-next-line react/jsx-props-no-spreading
                 {...item}
                 animatedAccentColor={animatedAccentColor}
+                disableSelectedStyle={disableSelectedStyle}
                 key={item.uniqueId}
                 onPress={() => onSelect(item.uniqueId)}
                 renderLabelComponent={renderLabelComponent}
@@ -94,40 +100,25 @@ export const ListPanel = ({
   );
 };
 
-export const ListHeader = React.memo(function ListHeader({
+export const ListHeader = memo(function ListHeader({
+  BackButtonComponent,
   TitleComponent,
   goBack,
   rightComponent,
-  showBackButton,
+  showBackButton = true,
   title,
 }: {
+  BackButtonComponent?: React.ReactNode;
   TitleComponent?: React.ReactNode;
   goBack?: () => void;
   rightComponent?: React.ReactNode;
   showBackButton?: boolean;
   title?: string;
 }) {
-  const { highContrastAccentColor } = useAccountAccentColor();
-
-  const backIconStyle = useAnimatedStyle(() => {
-    return {
-      color: highContrastAccentColor,
-      ...fontWithWidthWorklet('700'),
-    };
-  });
-
   return (
     <Box style={controlPanelStyles.listHeader}>
       <Box style={controlPanelStyles.listHeaderContent}>
-        {showBackButton && (
-          <ButtonPressAnimation onPress={goBack} scaleTo={0.8} style={controlPanelStyles.listHeaderButtonWrapper}>
-            <Box alignItems="center" height={{ custom: 20 }} justifyContent="center" width={{ custom: 20 }}>
-              <AnimatedText align="center" size="icon 20px" style={backIconStyle} weight="bold">
-                􀆉
-              </AnimatedText>
-            </Box>
-          </ButtonPressAnimation>
-        )}
+        {showBackButton && <BackButton BackButtonComponent={BackButtonComponent} goBack={goBack} />}
         <Box alignItems="center" justifyContent="center" paddingHorizontal="44px" width="full">
           {TitleComponent || (
             <Text align="center" color="label" size="20pt" weight="heavy">
@@ -144,9 +135,37 @@ export const ListHeader = React.memo(function ListHeader({
   );
 });
 
+const BackButton = ({
+  BackButtonComponent,
+  goBack,
+}: {
+  BackButtonComponent: React.ReactNode | undefined;
+  goBack: (() => void) | undefined;
+}) => {
+  const { highContrastAccentColor } = useAccountAccentColor();
+
+  const backIconStyle = useAnimatedStyle(() => {
+    return {
+      color: highContrastAccentColor,
+      ...fontWithWidthWorklet('700'),
+    };
+  });
+
+  return (
+    <ButtonPressAnimation onPress={goBack} scaleTo={0.8} style={controlPanelStyles.listHeaderButtonWrapper}>
+      {BackButtonComponent || (
+        <AnimatedText align="center" size="icon 20px" style={backIconStyle} weight="bold">
+          􀆉
+        </AnimatedText>
+      )}
+    </ButtonPressAnimation>
+  );
+};
+
 export interface ControlPanelMenuItemProps {
   IconComponent: React.ReactNode;
   animatedAccentColor?: SharedValue<string | undefined>;
+  disableSelectedStyle?: boolean;
   label: string;
   labelColor?: TextColor;
   imageUrl?: string;
@@ -160,9 +179,10 @@ export interface ControlPanelMenuItemProps {
   uniqueId: string;
 }
 
-export const ControlPanelMenuItem = React.memo(function ControlPanelMenuItem({
+export const ControlPanelMenuItem = memo(function ControlPanelMenuItem({
   IconComponent,
   animatedAccentColor,
+  disableSelectedStyle,
   label,
   onPress,
   renderLabelComponent,
@@ -185,7 +205,7 @@ export const ControlPanelMenuItem = React.memo(function ControlPanelMenuItem({
   }, [onPress, selectedItemId, uniqueId]);
 
   const selectedStyle = useAnimatedStyle(() => {
-    const selected = selectedItemId?.value === uniqueId;
+    const selected = !disableSelectedStyle && selectedItemId?.value === uniqueId;
     return {
       // eslint-disable-next-line no-nested-ternary
       backgroundColor: selected ? (isDarkMode ? globalColors.white10 : '#FBFCFD') : 'transparent',
@@ -198,7 +218,7 @@ export const ControlPanelMenuItem = React.memo(function ControlPanelMenuItem({
   });
 
   const selectedTextStyle = useAnimatedStyle(() => {
-    const selected = selectedItemId?.value === uniqueId;
+    const selected = !disableSelectedStyle && selectedItemId?.value === uniqueId;
     return {
       color: selected ? animatedAccentColor?.value : labelTextColor,
       ...fontWithWidthWorklet(selected ? '700' : '600'),
@@ -298,9 +318,13 @@ export const Panel = ({ children, height }: { children?: React.ReactNode; height
 
 export const controlPanelStyles = StyleSheet.create({
   cover: {
-    height: '100%',
+    bottom: 0,
+    height: DEVICE_HEIGHT,
+    left: 0,
     position: 'absolute',
-    width: '100%',
+    right: 0,
+    top: 0,
+    width: DEVICE_WIDTH,
   },
   listHeader: {
     alignItems: 'center',
@@ -312,8 +336,9 @@ export const controlPanelStyles = StyleSheet.create({
     alignItems: 'center',
     height: 52,
     justifyContent: 'center',
-    left: -6,
+    left: 6,
     position: 'absolute',
+    top: 6,
     width: 52,
     zIndex: 10,
   },
@@ -321,21 +346,22 @@ export const controlPanelStyles = StyleSheet.create({
     alignItems: 'center',
     height: 64,
     justifyContent: 'center',
-    width: '100%',
+    width: PANEL_WIDTH,
   },
   listHeaderRightComponent: {
     left: undefined,
-    right: -6,
+    right: 6,
+    top: 6,
   },
   listPanel: {
     paddingHorizontal: 14,
     paddingTop: 2,
-    width: '100%',
+    width: PANEL_WIDTH,
   },
   listScrollView: {
     marginHorizontal: -14,
     paddingHorizontal: 14,
-    maxHeight: deviceUtils.dimensions.height - TOP_INSET - 91 * 2 - 65 - 56,
+    maxHeight: DEVICE_HEIGHT - TOP_INSET - 91 * 2 - 65 - 56,
   },
   listScrollViewContentContainer: {
     paddingBottom: 14,
@@ -400,7 +426,7 @@ export const controlPanelStyles = StyleSheet.create({
   panelBorder: {
     backgroundColor: 'transparent',
     borderCurve: 'continuous',
-    borderRadius: 42 - 2 / 3,
+    borderRadius: PANEL_BORDER_RADIUS - 2 / 3,
     borderWidth: THICK_BORDER_WIDTH,
     height: '100%',
     overflow: 'hidden',
@@ -412,7 +438,7 @@ export const controlPanelStyles = StyleSheet.create({
     borderColor: opacity(globalColors.grey100, 0.4),
     borderCurve: 'continuous',
     borderWidth: 2 / 3,
-    borderRadius: 42,
+    borderRadius: PANEL_BORDER_RADIUS,
     height: '100%',
     overflow: 'hidden',
     pointerEvents: 'none',
@@ -421,9 +447,9 @@ export const controlPanelStyles = StyleSheet.create({
   },
   panel: {
     borderCurve: 'continuous',
-    borderRadius: 42,
+    borderRadius: PANEL_BORDER_RADIUS,
     overflow: 'hidden',
-    width: deviceUtils.dimensions.width - 16,
+    width: PANEL_WIDTH,
   },
   panelBackgroundDark: {
     backgroundColor: '#191A1C',

@@ -645,7 +645,7 @@ export default function PointsContent() {
   const rewards = points?.points?.user?.rewards;
   const { claimed, claimable } = rewards || {};
   const showClaimYourPoints = claimable && claimable !== '0';
-  const showMyEarnings = showClaimYourPoints || (claimed && claimed !== '0');
+  const showMyEarnings = claimed && claimed !== '0';
   const showNoHistoricalRewards = !showMyEarnings;
 
   const claimedBalance = convertRawAmountToBalance(claimed || '0', {
@@ -696,13 +696,13 @@ export default function PointsContent() {
         <AccentColorProvider color={accountColor}>
           <Inset horizontal="20px" top="12px">
             <Box gap={24}>
-              {showNoHistoricalRewards && <EarnRewardsCard />}
               {(showClaimYourPoints || showMyEarnings) && (
                 <Box gap={20}>
                   {showClaimYourPoints && <ClaimCard claim={claimableBalance.display} value={claimablePrice} />}
                   {showMyEarnings && <EarningsCard claimed={claimedBalance.display} value={claimedPrice} />}
                 </Box>
               )}
+              {showNoHistoricalRewards && <EarnRewardsCard />}
               <TotalEarnedByRainbowUsers earned={totalRewardsDisplay} />
               {nextDistributionDate && <NextDropCard nextDistribution={nextDistributionDate} />}
               <Separator color={isDarkMode ? 'separatorSecondary' : 'separatorTertiary'} thickness={1} />
@@ -719,21 +719,17 @@ export default function PointsContent() {
                     {canDisplayTotalPoints ? <RainbowText totalPointsString={totalPointsString} /> : <Skeleton height={31} width={200} />}
                   </Box>
                 </Stack>
-                {!!cardIds.length && !isReadOnlyWallet && <RemoteCardCarousel key="remote-cards" />}
-                <InfoCards points={points} />
+                <Box gap={24}>
+                  {!!cardIds.length && !isReadOnlyWallet && <RemoteCardCarousel key="remote-cards" />}
+                  <InfoCards points={points} />
+                </Box>
                 <Separator color={isDarkMode ? 'separatorSecondary' : 'separatorTertiary'} thickness={1} />
                 {!isReadOnlyWallet && (
                   <>
                     <Stack space="20px">
-                      {/* <Inset left="4px"> */}
-                      {/* <Text weight="bold" color="labelTertiary" size="15pt">
-                          {i18n.t(i18n.l.points.points.referral_code)}
-                        </Text> */}
                       <Text color="label" size="20pt" style={{ marginLeft: 4 }} weight="heavy">
-                        {/* {i18n.t(i18n.l.points.points.referral_code)} */}
                         Refer Friends
                       </Text>
-                      {/* </Inset> */}
                       {referralCode ? (
                         <Columns space="12px">
                           <Column width="1/2">
