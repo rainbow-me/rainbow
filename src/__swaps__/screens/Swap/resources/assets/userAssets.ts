@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { Address } from 'viem';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
+import { Address } from 'viem';
+
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
 
 import { getIsHardhatConnected } from '@/handlers/web3';

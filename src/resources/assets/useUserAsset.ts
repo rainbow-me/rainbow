@@ -1,7 +1,11 @@
+import { ChainId } from '@/__swaps__/types/chains';
 import { getIsHardhatConnected } from '@/handlers/web3';
+import { Network } from '@/helpers';
 import { useAccountSettings } from '@/hooks';
-import { selectUserAssetWithUniqueId } from '@/resources/assets/assetSelectors';
+import { getNetworkObj } from '@/networks';
 import { useUserAssets } from '@/resources/assets/UserAssetsQuery';
+import { selectUserAssetWithUniqueId } from '@/resources/assets/assetSelectors';
+import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 
 export function useUserAsset(uniqueId: string) {
   const { accountAddress, nativeCurrency } = useAccountSettings();
@@ -17,4 +21,12 @@ export function useUserAsset(uniqueId: string) {
       select: selectUserAssetWithUniqueId(uniqueId),
     }
   );
+}
+
+export function useUserNativeNetworkAsset(chainId: ChainId) {
+  const network = getNetworkFromChainId(chainId);
+  const { nativeCurrency } = getNetworkObj(network);
+  const { mainnetAddress, address } = nativeCurrency;
+  const uniqueId = mainnetAddress ? `${mainnetAddress}_${Network.mainnet}` : `${address}_${network}`;
+  return useUserAsset(uniqueId);
 }
