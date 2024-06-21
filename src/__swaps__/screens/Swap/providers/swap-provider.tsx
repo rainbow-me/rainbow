@@ -61,6 +61,7 @@ const review = i18n.t(i18n.l.swap.actions.review);
 const fetchingPrices = i18n.t(i18n.l.swap.actions.fetching_prices);
 const selectToken = i18n.t(i18n.l.swap.actions.select_token);
 const insufficientFunds = i18n.t(i18n.l.swap.actions.insufficient_funds);
+const quoteError = i18n.t(i18n.l.swap.actions.quote_error);
 
 interface SwapContextType {
   isFetching: SharedValue<boolean>;
@@ -659,7 +660,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
 
     if (isQuoteError) {
-      return { icon: '􀕹', label: review, disabled: true };
+      return { icon: isReviewSheetOpen ? undefined : '􀕹', label: isReviewSheetOpen ? quoteError : review, disabled: true };
     }
 
     if (!hasEnoughFundsForGas.value) {
