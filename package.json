@@ -13,6 +13,7 @@
     "android:load-apk": "adb install android/app/build/outputs/apk/release/app-release.apk",
     "android-all:load-apk": "yarn adb-all install android/app/build/outputs/apk/release/app-release.apk",
     "graphql-codegen:install": "yarn install --cwd src/graphql",
+    "graphql-prepare": "./scripts/graph-ens-key.sh",
     "graphql-codegen": "cd src/graphql && yarn codegen",
     "check-lockfile": "./scripts/check-lockfile.sh",
     "clean:android": "yarn uninstall:android && rm -rf android/build && yarn gradle clean && rm -rf ~/.gradle/caches",
