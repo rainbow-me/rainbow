@@ -261,10 +261,7 @@ export function valueBasedDecimalFormatter({
   'worklet';
 
   function calculateDecimalPlaces(): number {
-    const fallbackDecimalPlaces = MAXIMUM_SIGNIFICANT_DECIMALS;
-    if (nativePrice === 0) {
-      return fallbackDecimalPlaces;
-    }
+    if (nativePrice === 0) return MAXIMUM_SIGNIFICANT_DECIMALS;
     const unitsForOneCent = 0.01 / nativePrice;
     if (unitsForOneCent >= 1) {
       return isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0;
