@@ -232,7 +232,7 @@ export default function ReferralContent() {
           <Box
             alignItems="center"
             justifyContent="center"
-            paddingHorizontal={{ custom: 40 }}
+            paddingHorizontal={{ custom: 60 }}
             style={{ flex: 1 }}
             width={{ custom: deviceWidth }}
           >
