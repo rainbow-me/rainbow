@@ -52,6 +52,7 @@ import { clearCustomGasSettings } from '../hooks/useCustomGas';
 import { getGasSettingsBySpeed, getSelectedGas, getSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
+import { IS_IOS } from '@/env';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const tapToSwap = i18n.t(i18n.l.swap.actions.tap_to_swap);
@@ -61,6 +62,7 @@ const review = i18n.t(i18n.l.swap.actions.review);
 const fetchingPrices = i18n.t(i18n.l.swap.actions.fetching_prices);
 const selectToken = i18n.t(i18n.l.swap.actions.select_token);
 const insufficientFunds = i18n.t(i18n.l.swap.actions.insufficient_funds);
+const quoteError = i18n.t(i18n.l.swap.actions.quote_error);
 
 interface SwapContextType {
   isFetching: SharedValue<boolean>;
@@ -73,7 +75,7 @@ interface SwapContextType {
   // TODO: Combine navigation progress steps into a single shared value
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
-  configProgress: SharedValue<number>;
+  configProgress: SharedValue<NavigationSteps>;
 
   sliderXPosition: SharedValue<number>;
   sliderPressProgress: SharedValue<number>;
@@ -154,7 +156,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const outputProgress = useSharedValue(
     initialSelectedOutputAsset ? NavigationSteps.INPUT_ELEMENT_FOCUSED : NavigationSteps.TOKEN_LIST_FOCUSED
   );
-  const configProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
+  const configProgress = useSharedValue<NavigationSteps>(NavigationSteps.INPUT_ELEMENT_FOCUSED);
 
   const SwapSettings = useSwapSettings({
     inputAsset: internalSelectedInputAsset,
@@ -182,7 +184,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'>;
   }) => {
     try {
-      const NotificationManager = ios ? NativeModules.NotificationManager : null;
+      const NotificationManager = IS_IOS ? NativeModules.NotificationManager : null;
       NotificationManager?.postNotification('rapInProgress');
 
       const network = ethereumUtils.getNetworkFromChainId(parameters.chainId);
@@ -616,10 +618,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return { label: swapping, disabled: true };
     }
 
-    if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
-      return { icon: '􀎽', label: tapToSwap, disabled: false };
-    }
-
     if (configProgress.value === NavigationSteps.SHOW_GAS) {
       return { icon: '􀆅', label: save, disabled: false };
     }
@@ -658,16 +656,22 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
     const isQuoteError = quote.value && 'error' in quote.value;
     const isLoadingGas = !isQuoteError && hasEnoughFundsForGas.value === undefined;
-    if (isFetching.value || isLoadingGas) {
-      return { label: fetchingPrices, disabled: true, opacity: 1 };
+    const isReviewSheetOpen = configProgress.value === NavigationSteps.SHOW_REVIEW;
+
+    if ((isFetching.value || isLoadingGas) && !isQuoteError) {
+      return { label: fetchingPrices, disabled: (isReviewSheetOpen && isFetching.value) || !quote.value };
+    }
+
+    if (isQuoteError) {
+      return { icon: isReviewSheetOpen ? undefined : '􀕹', label: isReviewSheetOpen ? quoteError : review, disabled: true };
     }
 
     if (!hasEnoughFundsForGas.value) {
       return { label: insufficientFunds, disabled: true };
     }
 
-    if (isQuoteError) {
-      return { icon: '􀕹', label: review, disabled: true };
+    if (isReviewSheetOpen) {
+      return { icon: '􀎽', label: tapToSwap, disabled: false };
     }
 
     return { icon: '􀕹', label: review, disabled: false };

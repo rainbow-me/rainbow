@@ -103,7 +103,7 @@ export function useSwapInputsController({
     outputAmount: 0,
     outputNativeValue: 0,
   });
-  const inputMethod = useSharedValue<inputMethods>('slider');
+  const inputMethod = useSharedValue<inputMethods>(initialSelectedInputAsset ? 'inputAmount' : 'slider');
 
   const maxSwappableAmount = useDerivedValue(() => internalSelectedInputAsset.value?.maxSwappableAmount);
 
