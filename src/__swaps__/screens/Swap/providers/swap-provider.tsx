@@ -14,6 +14,7 @@ import {
   useSharedValue,
 } from 'react-native-reanimated';
 
+import { equalWorklet, lessThanOrEqualToWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { INITIAL_SLIDER_POSITION, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useAnimatedSwapStyles } from '@/__swaps__/screens/Swap/hooks/useAnimatedSwapStyles';
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
@@ -26,6 +27,8 @@ import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from
 import { ChainId } from '@/__swaps__/types/chains';
 import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
 import { isUnwrapEthWorklet, isWrapEthWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
+import { analyticsV2 } from '@/analytics';
+import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { getFlashbotsProvider, getIsHardhatConnected, getProviderForNetwork, isHardHat } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useAccountSettings } from '@/hooks';
@@ -34,23 +37,22 @@ import { RainbowError, logger } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
+import { getNetworkObj } from '@/networks';
 import { walletExecuteRap } from '@/raps/execute';
 import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
 import { queryClient } from '@/react-query';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
+import { userAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { ethereumUtils } from '@/utils';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 
-import { equalWorklet, lessThanOrEqualToWorklet } from '@/__swaps__/safe-math/SafeMath';
-import { analyticsV2 } from '@/analytics';
-import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
-import { getNetworkObj } from '@/networks';
-import { userAssetsStore } from '@/state/assets/userAssets';
 import { Address } from 'viem';
+import { clearCustomGasSettings } from '../hooks/useCustomGas';
 import { getGasSettingsBySpeed, getSelectedGas, getSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
+import { IS_IOS } from '@/env';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const tapToSwap = i18n.t(i18n.l.swap.actions.tap_to_swap);
@@ -60,6 +62,7 @@ const review = i18n.t(i18n.l.swap.actions.review);
 const fetchingPrices = i18n.t(i18n.l.swap.actions.fetching_prices);
 const selectToken = i18n.t(i18n.l.swap.actions.select_token);
 const insufficientFunds = i18n.t(i18n.l.swap.actions.insufficient_funds);
+const quoteError = i18n.t(i18n.l.swap.actions.quote_error);
 
 interface SwapContextType {
   isFetching: SharedValue<boolean>;
@@ -72,7 +75,7 @@ interface SwapContextType {
   // TODO: Combine navigation progress steps into a single shared value
   inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
-  configProgress: SharedValue<number>;
+  configProgress: SharedValue<NavigationSteps>;
 
   sliderXPosition: SharedValue<number>;
   sliderPressProgress: SharedValue<number>;
@@ -153,7 +156,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const outputProgress = useSharedValue(
     initialSelectedOutputAsset ? NavigationSteps.INPUT_ELEMENT_FOCUSED : NavigationSteps.TOKEN_LIST_FOCUSED
   );
-  const configProgress = useSharedValue(NavigationSteps.INPUT_ELEMENT_FOCUSED);
+  const configProgress = useSharedValue<NavigationSteps>(NavigationSteps.INPUT_ELEMENT_FOCUSED);
 
   const SwapSettings = useSwapSettings({
     inputAsset: internalSelectedInputAsset,
@@ -181,7 +184,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'>;
   }) => {
     try {
-      const NotificationManager = ios ? NativeModules.NotificationManager : null;
+      const NotificationManager = IS_IOS ? NativeModules.NotificationManager : null;
       NotificationManager?.postNotification('rapInProgress');
 
       const network = ethereumUtils.getNetworkFromChainId(parameters.chainId);
@@ -225,9 +228,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         };
       }
 
+      const chainId = getIsHardhatConnected() ? ChainId.hardhat : parameters.chainId;
       const { errorMessage } = await walletExecuteRap(wallet, type, {
         ...parameters,
-        chainId: getIsHardhatConnected() ? ChainId.hardhat : parameters.chainId,
+        chainId,
         gasParams,
         // @ts-expect-error - collision between old gas types and new
         gasFeeParamsBySpeed: gasFeeParamsBySpeed,
@@ -277,6 +281,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         },
       ]);
 
+      clearCustomGasSettings(chainId);
       NotificationManager?.postNotification('rapCompleted');
       Navigation.handleAction(Routes.PROFILE_SCREEN, {});
 
@@ -613,10 +618,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return { label: swapping, disabled: true };
     }
 
-    if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
-      return { icon: '􀎽', label: tapToSwap, disabled: false };
-    }
-
     if (configProgress.value === NavigationSteps.SHOW_GAS) {
       return { icon: '􀆅', label: save, disabled: false };
     }
@@ -655,16 +656,22 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
     const isQuoteError = quote.value && 'error' in quote.value;
     const isLoadingGas = !isQuoteError && hasEnoughFundsForGas.value === undefined;
-    if (isFetching.value || isLoadingGas) {
-      return { label: fetchingPrices, disabled: true, opacity: 1 };
+    const isReviewSheetOpen = configProgress.value === NavigationSteps.SHOW_REVIEW;
+
+    if ((isFetching.value || isLoadingGas) && !isQuoteError) {
+      return { label: fetchingPrices, disabled: (isReviewSheetOpen && isFetching.value) || !quote.value };
+    }
+
+    if (isQuoteError) {
+      return { icon: isReviewSheetOpen ? undefined : '􀕹', label: isReviewSheetOpen ? quoteError : review, disabled: true };
     }
 
     if (!hasEnoughFundsForGas.value) {
       return { label: insufficientFunds, disabled: true };
     }
 
-    if (isQuoteError) {
-      return { icon: '􀕹', label: review, disabled: true };
+    if (isReviewSheetOpen) {
+      return { icon: '􀎽', label: tapToSwap, disabled: false };
     }
 
     return { icon: '􀕹', label: review, disabled: false };

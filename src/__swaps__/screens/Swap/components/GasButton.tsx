@@ -3,6 +3,7 @@ import { GasSpeed } from '@/__swaps__/types/gas';
 import { weiToGwei } from '@/__swaps__/utils/ethereum';
 import { getCachedCurrentBaseFee, useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { add, formatNumber } from '@/__swaps__/utils/numbers';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ContextMenu } from '@/components/context-menu';
 import { Centered } from '@/components/layout';
@@ -15,7 +16,7 @@ import { gasUtils } from '@/utils';
 import React, { PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
-import Animated, { runOnJS, runOnUI, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { runOnUI, useAnimatedStyle } from 'react-native-reanimated';
 import { THICK_BORDER_WIDTH } from '../constants';
 import { GasSettings, useCustomGasSettings } from '../hooks/useCustomGas';
 import { setSelectedGasSpeed, useSelectedGas, useSelectedGasSpeed } from '../hooks/useSelectedGas';
@@ -23,7 +24,6 @@ import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { GestureHandlerV1Button } from './GestureHandlerV1Button';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
-import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 
 const { SWAP_GAS_ICONS } = gasUtils;
 const GAS_BUTTON_HIT_SLOP = 16;
@@ -119,12 +119,20 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
 
   const handlePressSpeedOption = useCallback(
     (selectedGasSpeed: GasSpeed) => {
-      setSelectedGasSpeed(chainId, selectedGasSpeed);
+      // when it's custom we let the custom gas panel handle setting the selected speed
+      // like if the user opens and closes the custom panel without changing anything
+      // we'll keep the "previous" selected speed
+
       if (selectedGasSpeed === GasSpeed.CUSTOM) {
+        // if we already have custom gas settings saved, we can safely set the selected speed as custom
+        if (customGasSettings) setSelectedGasSpeed(chainId, GasSpeed.CUSTOM);
+
         runOnUI(SwapNavigation.handleShowGas)({ backToReview });
+      } else {
+        setSelectedGasSpeed(chainId, selectedGasSpeed);
       }
     },
-    [SwapNavigation.handleShowGas, backToReview, chainId]
+    [SwapNavigation.handleShowGas, backToReview, chainId, customGasSettings]
   );
 
   const handlePressMenuItem = useCallback(
@@ -199,14 +207,12 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
 
 export function ReviewGasButton() {
   const { isDarkMode } = useColorMode();
-  const { SwapNavigation, internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
+  const { SwapNavigation, internalSelectedOutputAsset } = useSwapContext();
 
-  const separatatorSecondary = useForegroundColor('separatorSecondary');
+  const borderColor = useForegroundColor('separatorSecondary');
 
   const handleShowCustomGas = () => {
     'worklet';
-
-    runOnJS(setSelectedGasSpeed)(internalSelectedInputAsset.value?.chainId || ChainId.mainnet, GasSpeed.CUSTOM);
     SwapNavigation.handleShowGas({ backToReview: true });
   };
 
@@ -225,7 +231,7 @@ export function ReviewGasButton() {
       </GasMenu>
 
       <GestureHandlerV1Button onPressStartWorklet={handleShowCustomGas}>
-        <Box style={[styles.customGasButtonPill, { borderColor: separatatorSecondary }]}>
+        <Box style={[styles.customGasButtonPill, { borderColor }]}>
           <Text align="center" color="label" size="15pt" weight="heavy">
             􀌆
           </Text>

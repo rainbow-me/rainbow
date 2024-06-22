@@ -1,7 +1,14 @@
-import * as i18n from '@/languages';
-import React, { useCallback } from 'react';
+import { AnimatedChainImage } from '@/__swaps__/screens/Swap/components/AnimatedChainImage';
 import { ReviewGasButton } from '@/__swaps__/screens/Swap/components/GasButton';
+import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
+import { useNativeAssetForChain } from '@/__swaps__/screens/Swap/hooks/useNativeAssetForChain';
 import { ChainId, ChainNameDisplay } from '@/__swaps__/types/chains';
+import { chainNameFromChainId } from '@/__swaps__/utils/chains';
+import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
+import { convertRawAmountToBalance, convertRawAmountToNativeDisplay, handleSignificantDecimals, multiply } from '@/__swaps__/utils/numbers';
+import { opacity } from '@/__swaps__/utils/swaps';
+import { ButtonPressAnimation } from '@/components/animations';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import {
   AnimatedText,
   Bleed,
@@ -16,6 +23,16 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
+import { useAccountSettings } from '@/hooks';
+import * as i18n from '@/languages';
+import { useNavigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { getNetworkObj } from '@/networks';
+import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
+import { ethereumUtils } from '@/utils';
+import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
+import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
   runOnJS,
@@ -27,28 +44,11 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { REVIEW_SHEET_ROW_HEIGHT, THICK_BORDER_WIDTH } from '../constants';
+import { useSelectedGas, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { AnimatedSwitch } from './AnimatedSwitch';
-import { useAccountSettings } from '@/hooks';
-import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
-import { AnimatedChainImage } from '@/__swaps__/screens/Swap/components/AnimatedChainImage';
-import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
-import { useNativeAssetForChain } from '@/__swaps__/screens/Swap/hooks/useNativeAssetForChain';
-import { chainNameFromChainId } from '@/__swaps__/utils/chains';
-import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
-import { convertRawAmountToBalance, convertRawAmountToNativeDisplay, handleSignificantDecimals, multiply } from '@/__swaps__/utils/numbers';
-import { ButtonPressAnimation } from '@/components/animations';
-import { useNavigation } from '@/navigation';
-import Routes from '@/navigation/routesNames';
-import { getNetworkObj } from '@/networks';
-import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
-import { ethereumUtils } from '@/utils';
-import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
-import { useSelectedGas, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
-import { opacity } from '@/__swaps__/utils/swaps';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 
 const UNKNOWN_LABEL = i18n.t(i18n.l.swap.unknown);
 const REVIEW_LABEL = i18n.t(i18n.l.expanded_state.swap_details.review);
