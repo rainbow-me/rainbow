@@ -25,6 +25,8 @@ import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { NeonRainbowButtonMask } from '../components/NeonRainbowButtonMask';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import ImageAvatar from '@/components/contacts/ImageAvatar';
+import { ContactAvatar } from '@/components/contacts';
 import { useNavigation } from '@/navigation';
 
 type ClaimStatus = 'idle' | 'claiming' | 'success' | PointsErrorType;
@@ -133,7 +135,7 @@ const ChooseClaimNetwork = ({
   );
 };
 
-const CLAIMING_STEP_HEIGHT = 272;
+const CLAIMING_STEP_HEIGHT = 280;
 
 const ClaimingRewards = ({
   chainId,
@@ -146,7 +148,7 @@ const ClaimingRewards = ({
   goBack: () => void;
   setClaimStatus: React.Dispatch<React.SetStateAction<ClaimStatus>>;
 }) => {
-  const { accountAddress: address } = useAccountProfile();
+  const { accountAddress: address, accountImage, accountColor, accountSymbol } = useAccountProfile();
   const { nativeCurrency: currency } = useAccountSettings();
   const { highContrastAccentColor } = useAccountAccentColor();
   const { isDarkMode } = useColorMode();
@@ -229,10 +231,16 @@ const ClaimingRewards = ({
 
   const claimButtonStyle = useAnimatedStyle(() => {
     const shouldDisplay = claimStatus === 'idle' || claimStatus === 'success';
-
     return {
       opacity: withTiming(shouldDisplay ? 1 : 0, TIMING_CONFIGS.slowFadeConfig),
       pointerEvents: shouldDisplay ? 'auto' : 'none',
+    };
+  });
+
+  const panelAvatarStyle = useAnimatedStyle(() => {
+    const shouldDisplay = claimStatus === 'idle';
+    return {
+      opacity: withTiming(shouldDisplay ? 1 : 0, TIMING_CONFIGS.slowFadeConfig),
     };
   });
 
@@ -250,6 +258,15 @@ const ClaimingRewards = ({
               􀆉
             </Text>
           </TextShadow>
+        }
+        RightComponent={
+          <Animated.View style={panelAvatarStyle}>
+            {accountImage ? (
+              <ImageAvatar image={accountImage} marginRight={10} size="smaller" />
+            ) : (
+              <ContactAvatar color={accountColor} marginRight={10} size="smaller" value={accountSymbol} />
+            )}
+          </Animated.View>
         }
         TitleComponent={
           <Box alignItems="center" flexDirection="row" gap={6} justifyContent="center">
@@ -289,26 +306,45 @@ const ClaimingRewards = ({
               <Box
                 alignItems="center"
                 as={Animated.View}
-                flexDirection="row"
-                gap={8}
+                gap={28}
                 height={{ custom: CLAIMING_STEP_HEIGHT - 24 }}
                 justifyContent="center"
                 style={claimableAmountStyle}
               >
-                <Bleed vertical="8px">
-                  <View
-                    style={
-                      IS_IOS && isDarkMode
-                        ? { shadowColor: globalColors.grey100, shadowOpacity: 0.2, shadowOffset: { height: 4, width: 0 }, shadowRadius: 6 }
-                        : {}
-                    }
+                <Box alignItems="center" flexDirection="row" gap={8} justifyContent="center">
+                  <Bleed vertical="8px">
+                    <View
+                      style={
+                        IS_IOS && isDarkMode
+                          ? {
+                              shadowColor: globalColors.grey100,
+                              shadowOpacity: 0.2,
+                              shadowOffset: { height: 4, width: 0 },
+                              shadowRadius: 6,
+                            }
+                          : {}
+                      }
+                    >
+                      <EthRewardsCoinIcon animatedBorder />
+                    </View>
+                  </Bleed>
+                  <TextShadow blur={12} color={globalColors.grey100} shadowOpacity={0.1} y={4}>
+                    <Text align="center" color="label" size="44pt" weight="black">
+                      {initialClaimableAmounts.nativeCurrency}
+                    </Text>
+                  </TextShadow>
+                </Box>
+                <TextShadow
+                  color={claimStatus === 'success' ? globalColors.grey100 : undefined}
+                  shadowOpacity={claimStatus === 'success' ? 0.2 : 0.3}
+                >
+                  <Text
+                    align="center"
+                    color={claimStatus === 'success' ? 'green' : { custom: highContrastAccentColor }}
+                    size="20pt"
+                    weight="black"
                   >
-                    <EthRewardsCoinIcon animatedBorder />
-                  </View>
-                </Bleed>
-                <TextShadow blur={12} color={globalColors.grey100} shadowOpacity={0.1} y={4}>
-                  <Text align="center" color="label" size="44pt" weight="black">
-                    {initialClaimableAmounts.nativeCurrency}
+                    {initialClaimableAmounts.eth}
                   </Text>
                 </TextShadow>
               </Box>
@@ -365,14 +401,14 @@ const ClaimingRewards = ({
               </Animated.View>
             </Box>
           }
-          backgroundColor={isDarkMode ? '#0F1011' : globalColors.blueGrey10}
-          blur={32}
+          backgroundColor={isDarkMode ? '#191A1C' : globalColors.white100}
+          blur={isDarkMode ? 32 : 64}
           centerComponentStyle={{ height: CLAIMING_STEP_HEIGHT, left: 0, right: 0, top: 0 }}
           circleColors={['#B2348C', '#FF6040', '#FFFF00', '#34FF3B', '#24D2FB', '#B2348C', '#FF6040', '#24D2FB']}
           duration={10000}
           isConnected={claimStatus === 'success'}
           movementFactor={1.75}
-          opacity={0.4}
+          opacity={(isDarkMode ? 0.4 : 1) * (claimStatus === 'success' ? 0.8 : 1)}
           showGridDots={false}
           state={claimStatus === 'idle' ? 'idle' : 'loading'}
           wrapperStyle={{ height: CLAIMING_STEP_HEIGHT, top: 0 }}

@@ -102,16 +102,16 @@ export const ListPanel = ({
 
 export const ListHeader = memo(function ListHeader({
   BackButtonComponent,
+  RightComponent,
   TitleComponent,
   goBack,
-  rightComponent,
   showBackButton = true,
   title,
 }: {
   BackButtonComponent?: React.ReactNode;
+  RightComponent?: React.ReactNode;
   TitleComponent?: React.ReactNode;
   goBack?: () => void;
-  rightComponent?: React.ReactNode;
   showBackButton?: boolean;
   title?: string;
 }) {
@@ -126,7 +126,7 @@ export const ListHeader = memo(function ListHeader({
             </Text>
           )}
         </Box>
-        <Box style={[controlPanelStyles.listHeaderButtonWrapper, controlPanelStyles.listHeaderRightComponent]}>{rightComponent}</Box>
+        <Box style={[controlPanelStyles.listHeaderButtonWrapper, controlPanelStyles.listHeaderRightComponent]}>{RightComponent}</Box>
       </Box>
       <Box width="full">
         <Separator color="separatorTertiary" thickness={1} />

@@ -131,9 +131,9 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
 
   const getEarnedLastWeekSubtitle = () => {
     if (lastPeriodUnranked || !lastPeriodRank) return i18n.t(i18n.l.points.points.unranked);
-    if ((lastPeriodRank || 11) <= 10) return 'Top 10 Earner';
+    if (lastPeriodRank <= 10) return i18n.t(i18n.l.points.points.top_10_earner);
     return i18n.t(i18n.l.points.points.ranking, {
-      rank: lastPeriodRank,
+      rank: lastPeriodRank.toLocaleString('en-US'),
     });
   };
 
