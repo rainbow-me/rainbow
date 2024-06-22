@@ -225,7 +225,7 @@ export default function ReferralContent() {
       justifyContent="center"
       paddingBottom="20px"
       paddingHorizontal="20px"
-      style={{ backgroundColor: isDarkMode ? globalColors.grey100 : globalColors.white100, flex: 1 }}
+      style={{ backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD', flex: 1 }}
     >
       <Box alignItems="center" as={Animated.View} justifyContent="center" style={animatedStyle} width="full">
         <Rows>

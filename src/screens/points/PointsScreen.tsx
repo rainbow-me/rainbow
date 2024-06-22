@@ -68,7 +68,7 @@ export default function PointsScreen() {
       as={Page}
       flex={1}
       height="full"
-      style={{ backgroundColor: isDarkMode ? globalColors.grey100 : globalColors.white100 }}
+      style={{ backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD' }}
       testID="points-screen"
       width="full"
     >

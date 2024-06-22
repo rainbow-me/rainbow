@@ -68,8 +68,7 @@ export const InfoCard = memo(function InfoCard({
           <Text
             color={mainText && mainTextColor === 'primary' ? 'label' : 'labelQuaternary'}
             size={mainTextFontSize}
-            // eslint-disable-next-line no-nested-ternary
-            style={{ opacity: mainText && mainTextColor === 'primary' ? 1 : isDarkMode ? 0.6 : 0.8 }}
+            style={{ opacity: mainText && mainTextColor === 'primary' ? 1 : 0.6 }}
             weight="heavy"
           >
             {mainText || placeholderMainText}

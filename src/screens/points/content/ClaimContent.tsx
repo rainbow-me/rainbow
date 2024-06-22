@@ -33,7 +33,7 @@ export default function ClaimContent() {
       alignItems="center"
       paddingBottom="52px"
       paddingHorizontal={{ custom: 68 }}
-      style={{ backgroundColor: isDarkMode ? globalColors.grey100 : globalColors.white100, flex: 1 }}
+      style={{ backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD', flex: 1 }}
     >
       <Rows>
         <Box alignItems="center" justifyContent="center" style={{ flex: 1 }}>
