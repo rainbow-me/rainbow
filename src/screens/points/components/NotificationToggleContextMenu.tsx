@@ -16,10 +16,12 @@ import * as i18n from '@/languages';
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
 export const NotificationToggleContextMenu = () => {
-  const separatorTertiary = useForegroundColor('separatorTertiary');
-  const { colorMode } = useColorMode();
+  const { colorMode, isDarkMode } = useColorMode();
   const { isConnected } = useNetInfo();
   const { globalNotificationSettings } = useAllNotificationSettingsFromStorage();
+
+  const separatorSecondary = useForegroundColor('separatorSecondary');
+  const separatorTertiary = useForegroundColor('separatorTertiary');
 
   const [topicSubscriptionInProgress, setTopicSubscriptionInProgress] = useState<boolean>(false);
 
@@ -62,7 +64,7 @@ export const NotificationToggleContextMenu = () => {
   }, [toggleNotifications]);
 
   return (
-    <AccentColorProvider color={separatorTertiary}>
+    <AccentColorProvider color={isDarkMode ? separatorSecondary : separatorTertiary}>
       <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem}>
         <Box
           background="accent"
@@ -70,7 +72,7 @@ export const NotificationToggleContextMenu = () => {
             width: 36,
             height: 36,
             borderWidth: 1,
-            borderColor: separatorTertiary,
+            borderColor: isDarkMode ? separatorSecondary : separatorTertiary,
           }}
           alignItems="center"
           justifyContent="center"
@@ -78,11 +80,11 @@ export const NotificationToggleContextMenu = () => {
         >
           <ColorModeProvider value={colorMode}>
             {!topicSubscriptionInProgress ? (
-              <Text size="17pt" weight="heavy" color="label" align="center">
+              <Text size="icon 17px" weight="heavy" color="label" align="center">
                 {globalNotificationSettings[GlobalNotificationTopic.POINTS] ? '􀋚' : '􀋞'}
               </Text>
             ) : (
-              <LoadingSpinner color={colorMode === 'dark' ? globalColors.white100 : globalColors.grey100} size={20} />
+              <LoadingSpinner color={isDarkMode ? globalColors.white100 : globalColors.grey100} size={20} />
             )}
           </ColorModeProvider>
         </Box>

@@ -41,8 +41,8 @@ export const InfoCard = memo(function InfoCard({
   if (loading) return <Skeleton height={98} width={120} />;
 
   let mainTextFontSize: TextSize;
-  if (!mainText) {
-    mainTextFontSize = '22pt';
+  if (!mainText || mainTextColor === 'secondary') {
+    mainTextFontSize = '20pt';
   } else if (mainText.length > 10) {
     mainTextFontSize = '17pt';
   } else if (mainText.length > 9) {
@@ -66,10 +66,11 @@ export const InfoCard = memo(function InfoCard({
         </Text>
         <Box height={{ custom: 15 }} justifyContent="flex-end">
           <Text
-            // eslint-disable-next-line no-nested-ternary
             color={mainText && mainTextColor === 'primary' ? 'label' : 'labelQuaternary'}
-            weight="heavy"
             size={mainTextFontSize}
+            // eslint-disable-next-line no-nested-ternary
+            style={{ opacity: mainText && mainTextColor === 'primary' ? 1 : isDarkMode ? 0.6 : 0.8 }}
+            weight="heavy"
           >
             {mainText || placeholderMainText}
           </Text>
