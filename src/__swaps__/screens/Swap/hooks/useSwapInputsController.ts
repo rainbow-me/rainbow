@@ -32,7 +32,6 @@ import { queryClient } from '@/react-query';
 import { useAccountSettings } from '@/hooks';
 import { analyticsV2 } from '@/analytics';
 import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet } from '@/__swaps__/safe-math/SafeMath';
-import { supportedNativeCurrencies } from '@/references';
 
 function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetWithColors | null) {
   const initialBalance = Number(initialSelectedInputAsset?.maxSwappableAmount) || 0;
@@ -51,17 +50,7 @@ function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetW
     isStablecoin,
   });
 
-  const nativeCurrency = store.getState().settings.nativeCurrency;
-  const decimals = Math.min(6, supportedNativeCurrencies[nativeCurrency].decimals);
-
-  const initialInputNativeValue = Number(mulWorklet(initialInputAmount, initialSelectedInputAsset?.price?.value ?? 0)).toLocaleString(
-    'en-US',
-    {
-      useGrouping: false,
-      minimumFractionDigits: nativeCurrency === 'ETH' ? undefined : decimals,
-      maximumFractionDigits: decimals,
-    }
-  );
+  const initialInputNativeValue = mulWorklet(initialInputAmount, initialSelectedInputAsset?.price?.value ?? 0);
 
   return {
     initialInputAmount,
