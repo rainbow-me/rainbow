@@ -17,13 +17,15 @@ import { useUserNativeNetworkAsset } from '@/resources/assets/useUserAsset';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { debounce } from 'lodash';
 import { useEffect } from 'react';
-import { SharedValue, runOnJS, useAnimatedReaction } from 'react-native-reanimated';
+import { runOnJS, useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
 import { formatUnits } from 'viem';
 import { create } from 'zustand';
 import { calculateGasFee } from '../hooks/useEstimatedGasFee';
 import { useSelectedGas } from '../hooks/useSelectedGas';
 import { useSwapEstimatedGasLimit } from '../hooks/useSwapEstimatedGasLimit';
 import { useSwapContext } from './swap-provider';
+
+const BUFFER_RATIO = 0.25;
 
 type InternalSyncedSwapState = {
   assetToBuy: ExtendedAnimatedAssetWithColors | undefined;
@@ -84,55 +86,69 @@ const getHasEnoughFundsForGas = (quote: Quote, gasFee: string, nativeNetworkAsse
   return lessThanOrEqualToWorklet(totalNativeSpentInTx, userBalance);
 };
 
-const BUFFER_FACTOR = 1.3;
-function updateMaxSwappableAmount(internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>, gasFee: string) {
-  internalSelectedInputAsset.modify(asset => {
-    'worklet';
-
-    if (!asset?.isNativeAsset) return asset;
-
-    const gasFeeNativeCurrency = divWorklet(gasFee, powWorklet(10, asset.decimals));
-    const gasFeeWithBuffer = toFixedWorklet(mulWorklet(gasFeeNativeCurrency, BUFFER_FACTOR), asset.decimals);
-    const maxSwappableAmount = subWorklet(asset.balance.amount, gasFeeWithBuffer);
-
-    return {
-      ...asset,
-      maxSwappableAmount: lessThanWorklet(maxSwappableAmount, 0) ? '0' : maxSwappableAmount,
-    };
-  });
-}
-
 export function SyncGasStateToSharedValues() {
-  const { hasEnoughFundsForGas, internalSelectedInputAsset, SwapInputController } = useSwapContext();
+  const { hasEnoughFundsForGas, internalSelectedInputAsset } = useSwapContext();
 
   const { assetToSell, chainId = ChainId.mainnet, quote } = useSyncedSwapQuoteStore();
 
   const gasSettings = useSelectedGas(chainId);
   const { data: userNativeNetworkAsset } = useUserNativeNetworkAsset(chainId);
-  const { data: estimatedGasLimit, isFetching } = useSwapEstimatedGasLimit({ chainId, assetToSell, quote });
+  const { data: estimatedGasLimit } = useSwapEstimatedGasLimit({ chainId, assetToSell, quote });
+
+  const gasFeeRange = useSharedValue<[string, string] | null>(null);
+
+  useAnimatedReaction(
+    () => ({ inputAsset: internalSelectedInputAsset.value, bufferRange: gasFeeRange.value }),
+    (current, previous) => {
+      const { inputAsset: currInputAsset, bufferRange: currBufferRange } = current;
+      const { inputAsset: prevInputAsset, bufferRange: prevBufferRange } = previous || {};
+
+      const currBuffer = currBufferRange?.[1];
+      const prevBuffer = prevBufferRange?.[1];
+
+      if (currInputAsset?.chainId !== prevInputAsset?.chainId) {
+        // reset gas fee range when input chain changes
+        gasFeeRange.value = null;
+      } else if (currBuffer && (currBuffer !== prevBuffer || currInputAsset?.uniqueId !== prevInputAsset?.uniqueId)) {
+        // update maxSwappableAmount when gas fee range is set and there is a change to input asset or gas fee range
+        internalSelectedInputAsset.modify(asset => {
+          'worklet';
+          if (!asset || !asset.isNativeAsset) return asset;
+          return {
+            ...asset,
+            maxSwappableAmount: subWorklet(asset.balance.amount, currBuffer),
+          };
+        });
+      }
+    }
+  );
 
   useEffect(() => {
     hasEnoughFundsForGas.value = undefined;
-    if (!gasSettings || !estimatedGasLimit || !quote || 'error' in quote) return;
+    if (!gasSettings || !estimatedGasLimit || !quote || 'error' in quote || !userNativeNetworkAsset) return;
 
     const gasFee = calculateGasFee(gasSettings, estimatedGasLimit);
 
-    updateMaxSwappableAmount(internalSelectedInputAsset, gasFee);
+    const nativeGasFee = divWorklet(gasFee, powWorklet(10, userNativeNetworkAsset.decimals));
+
+    const isEstimateOutsideRange = !!(
+      gasFeeRange.value &&
+      (lessThanWorklet(nativeGasFee, gasFeeRange.value[0]) || greaterThanWorklet(nativeGasFee, gasFeeRange.value[1]))
+    );
+
+    // If the gas fee range hasn't been set or the estimated fee is outside the range, calculate the range based on the gas fee
+    if (nativeGasFee && (!gasFeeRange.value || isEstimateOutsideRange)) {
+      const lowerBound = toFixedWorklet(mulWorklet(nativeGasFee, 1 - BUFFER_RATIO), userNativeNetworkAsset.decimals);
+      const upperBound = toFixedWorklet(mulWorklet(nativeGasFee, 1 + BUFFER_RATIO), userNativeNetworkAsset.decimals);
+      gasFeeRange.value = [lowerBound, upperBound];
+    }
+
     hasEnoughFundsForGas.value = getHasEnoughFundsForGas(quote, gasFee, userNativeNetworkAsset);
 
     return () => {
       hasEnoughFundsForGas.value = undefined;
     };
-  }, [
-    estimatedGasLimit,
-    gasSettings,
-    hasEnoughFundsForGas,
-    quote,
-    internalSelectedInputAsset,
-    SwapInputController.inputValues.value.inputAmount,
-    userNativeNetworkAsset,
-    isFetching,
-  ]);
+  }, [estimatedGasLimit, gasFeeRange, gasSettings, hasEnoughFundsForGas, quote, userNativeNetworkAsset]);
 
   return null;
 }

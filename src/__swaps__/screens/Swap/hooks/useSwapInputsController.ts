@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
-import { MAXIMUM_SIGNIFICANT_DECIMALS, SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
+import { SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
 import { RequestNewQuoteParams, inputKeys, inputMethods, inputValuesType } from '@/__swaps__/types/swap';
 import {
   addCommasToNumber,
@@ -104,6 +104,8 @@ export function useSwapInputsController({
     outputNativeValue: 0,
   });
   const inputMethod = useSharedValue<inputMethods>('slider');
+
+  const maxSwappableAmount = useDerivedValue(() => internalSelectedInputAsset.value?.maxSwappableAmount);
 
   const percentageToSwap = useDerivedValue(() => {
     return Math.round(clamp((sliderXPosition.value - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1) * 100) / 100;
@@ -558,6 +560,24 @@ export function useSwapInputsController({
       outputAmount: inputValues.value.outputAmount,
     });
   };
+
+  // update the input amount & quote if swapping max amount & maxSwappableAmount changes
+  useAnimatedReaction(
+    () => maxSwappableAmount.value,
+    maxSwappableAmount => {
+      const isSwappingMaxBalance = internalSelectedInputAsset.value && inputMethod.value === 'slider' && percentageToSwap.value >= 1;
+      if (maxSwappableAmount && isSwappingMaxBalance) {
+        inputValues.modify(prev => {
+          return {
+            ...prev,
+            inputAmount: +maxSwappableAmount,
+            inputNativeValue: +mulWorklet(maxSwappableAmount, inputNativePrice.value),
+          };
+        });
+        fetchQuoteAndAssetPrices();
+      }
+    }
+  );
 
   const quoteFetchingInterval = useAnimatedInterval({
     intervalMs: 12_000,
