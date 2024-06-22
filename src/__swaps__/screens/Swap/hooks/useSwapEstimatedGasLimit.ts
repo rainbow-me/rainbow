@@ -5,18 +5,14 @@ import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { estimateUnlockAndCrosschainSwap } from '@/raps/unlockAndCrosschainSwap';
 import { estimateUnlockAndSwap } from '@/raps/unlockAndSwap';
-import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
+import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey } from '@/react-query';
 import { gasUnits } from '@/references/gasUnits';
 
 // ///////////////////////////////////////////////
 // Query Types
 
-export type EstimateSwapGasLimitResponse = {
-  gasLimit: string;
-};
-
-export type EstimateSwapGasLimitArgs = {
-  chainId: ChainId;
+type EstimateSwapGasLimitArgs = {
+  chainId?: ChainId;
   quote?: Quote | CrosschainQuote | QuoteError | null;
   assetToSell?: ParsedSearchAsset | null;
 };
@@ -35,8 +31,12 @@ type EstimateSwapGasLimitQueryKey = ReturnType<typeof estimateSwapGasLimitQueryK
 async function estimateSwapGasLimitQueryFunction({
   queryKey: [{ chainId, quote, assetToSell }],
 }: QueryFunctionArgs<typeof estimateSwapGasLimitQueryKey>) {
+  if (!chainId) throw 'chainId is required';
   if (!quote || 'error' in quote || !assetToSell) {
-    return gasUnits.basic_swap[chainId];
+    return {
+      gasLimit: gasUnits.basic_swap[chainId],
+      chainId,
+    };
   }
 
   const gasLimit = await (quote.swapType === SwapType.crossChain
@@ -54,30 +54,15 @@ async function estimateSwapGasLimitQueryFunction({
       }));
 
   if (!gasLimit) {
-    return gasUnits.basic_swap[chainId];
+    return {
+      gasLimit: gasUnits.basic_swap[chainId],
+      chainId,
+    };
   }
-  return gasLimit;
+  return { gasLimit, chainId };
 }
 
 type EstimateSwapGasLimitResult = QueryFunctionResult<typeof estimateSwapGasLimitQueryFunction>;
-
-// ///////////////////////////////////////////////
-// Query Fetcher
-
-export async function fetchSwapEstimatedGasLimit(
-  { chainId, quote, assetToSell }: EstimateSwapGasLimitArgs,
-  config: QueryConfigWithSelect<EstimateSwapGasLimitResult, Error, EstimateSwapGasLimitResult, EstimateSwapGasLimitQueryKey> = {}
-) {
-  return await queryClient.fetchQuery(
-    estimateSwapGasLimitQueryKey({
-      chainId,
-      quote,
-      assetToSell,
-    }),
-    estimateSwapGasLimitQueryFunction,
-    config
-  );
-}
 
 // ///////////////////////////////////////////////
 // Query Hook
@@ -86,7 +71,8 @@ export function useSwapEstimatedGasLimit(
   { chainId, quote, assetToSell }: EstimateSwapGasLimitArgs,
   config: QueryConfigWithSelect<EstimateSwapGasLimitResult, Error, EstimateSwapGasLimitResult, EstimateSwapGasLimitQueryKey> = {}
 ) {
-  return useQuery(
+  const initialData = chainId && { chainId, gasLimit: gasUnits.basic_swap[chainId] };
+  const { data, isFetching } = useQuery(
     estimateSwapGasLimitQueryKey({
       chainId,
       quote,
@@ -98,8 +84,18 @@ export function useSwapEstimatedGasLimit(
       cacheTime: 60 * 1000, // 1min
       notifyOnChangeProps: ['data', 'isFetching'],
       keepPreviousData: true,
-      placeholderData: gasUnits.basic_swap[chainId],
+      enabled: !!chainId && !!quote && !!assetToSell && assetToSell.chainId === chainId,
+      initialData,
+      initialDataUpdatedAt: 0,
       ...config,
     }
   );
+
+  // we keepPreviousData so we can return the previous gasLimit while fetching
+  // which is great when refetching for the same chainId, but we don't want to keep the previous data
+  // when fetching for a different chainId
+  return {
+    data: data && data.chainId === chainId ? data.gasLimit : initialData?.gasLimit,
+    isFetching,
+  };
 }

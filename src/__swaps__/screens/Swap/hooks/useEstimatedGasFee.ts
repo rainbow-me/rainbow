@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 import { formatUnits } from 'viem';
 
 import { useAccountSettings } from '@/hooks';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { useSyncedSwapQuoteStore } from '../providers/SyncSwapStateAndSharedValues';
 import { GasSettings } from './useCustomGas';
 import { useSwapEstimatedGasLimit } from './useSwapEstimatedGasLimit';
@@ -52,9 +53,10 @@ export function useEstimatedGasFee({
 }
 
 export function useSwapEstimatedGasFee(gasSettings: GasSettings | undefined) {
-  const { assetToSell, chainId = ChainId.mainnet, quote } = useSyncedSwapQuoteStore();
-  const { data: estimatedGasLimit, isFetching } = useSwapEstimatedGasLimit({ chainId, assetToSell, quote });
+  const { assetToSell, quote } = useSyncedSwapQuoteStore();
+  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
 
+  const { data: estimatedGasLimit, isFetching } = useSwapEstimatedGasLimit({ chainId, assetToSell, quote });
   const estimatedFee = useEstimatedGasFee({ chainId, gasLimit: estimatedGasLimit, gasSettings });
 
   return useMemo(() => ({ isLoading: isFetching, data: estimatedFee }), [estimatedFee, isFetching]);
