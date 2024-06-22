@@ -12,6 +12,7 @@ import { IS_ANDROID } from '@/env';
 import Spinner from '@/components/Spinner';
 import ActivityIndicator from '@/components/ActivityIndicator';
 import * as i18n from '@/languages';
+import { opacity } from '@/__swaps__/utils/swaps';
 
 const LoadingSpinner = IS_ANDROID ? Spinner : ActivityIndicator;
 
@@ -72,7 +73,7 @@ export const NotificationToggleContextMenu = () => {
             width: 36,
             height: 36,
             borderWidth: 1,
-            borderColor: isDarkMode ? separatorSecondary : separatorTertiary,
+            borderColor: isDarkMode ? opacity(separatorTertiary, 0.025) : separatorTertiary,
           }}
           alignItems="center"
           justifyContent="center"
