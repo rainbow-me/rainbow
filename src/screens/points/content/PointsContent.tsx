@@ -61,6 +61,8 @@ import Animated, { runOnUI, useAnimatedStyle, useSharedValue, withRepeat, withTi
 import { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { Network } from '@/helpers';
 import { format, intervalToDuration } from 'date-fns';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { ETH_REWARDS, useExperimentalFlag } from '@/config';
 
 const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined }) => {
   const labelSecondary = useForegroundColor('labelSecondary');
@@ -587,6 +589,9 @@ export default function PointsContent() {
   const { isReadOnlyWallet } = useWallets();
   const { highContrastAccentColor: accountColor } = useAccountAccentColor();
   const { nativeCurrency: currency } = useAccountSettings();
+  const { rewards_enabled } = useRemoteConfig();
+
+  const rewardsEnabled = useExperimentalFlag(ETH_REWARDS) || rewards_enabled;
 
   const {
     data: points,
@@ -697,14 +702,14 @@ export default function PointsContent() {
         <AccentColorProvider color={accountColor}>
           <Inset horizontal="20px" top="12px">
             <Box gap={24}>
-              {(showClaimYourPoints || showMyEarnings) && (
+              {rewardsEnabled && (showClaimYourPoints || showMyEarnings) && (
                 <Box gap={20}>
                   {showClaimYourPoints && <ClaimCard claim={claimableBalance.display} value={claimablePrice} />}
                   {showMyEarnings && <EarningsCard claimed={claimedBalance.display} value={claimedPrice} />}
                 </Box>
               )}
-              {showNoHistoricalRewards && <EarnRewardsCard />}
-              <TotalEarnedByRainbowUsers earned={totalRewardsDisplay} />
+              {rewardsEnabled && showNoHistoricalRewards && <EarnRewardsCard />}
+              {rewardsEnabled && <TotalEarnedByRainbowUsers earned={totalRewardsDisplay} />}
               {nextDistributionDate && <NextDropCard nextDistribution={nextDistributionDate} />}
               <Separator color={isDarkMode ? 'separatorSecondary' : 'separatorTertiary'} thickness={1} />
             </Box>
