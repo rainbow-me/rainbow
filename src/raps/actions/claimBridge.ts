@@ -4,7 +4,7 @@ import { Address } from 'viem';
 import { ActionProps } from '../references';
 import { executeCrosschainSwap } from './crosschainSwap';
 import { RainbowError } from '@/logger';
-import { add, lessThan, multiply, subtract } from '@/helpers/utilities';
+import { add, addBuffer, lessThan, multiply, subtract } from '@/helpers/utilities';
 import { getProviderForNetwork } from '@/handlers/web3';
 import { Network } from '@/helpers';
 import { TxHash } from '@/resources/transactions/types';
@@ -99,8 +99,12 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
       ...gasParams,
     });
   } catch (e) {
-    // Instead of failing we'll try using the default gas limit + 20%
-    gasLimit = (Number(bridgeQuote.defaultGasLimit) * 1.2).toString();
+    // Instead of failing we'll try using the default gas limit + 20% if it exists
+    gasLimit = bridgeQuote.defaultGasLimit ? addBuffer(bridgeQuote.defaultGasLimit) : null;
+  }
+
+  if (!gasLimit) {
+    throw new Error('[CLAIM-BRIDGE]: error estimating gas or using default gas limit');
   }
 
   // we need to bump the base nonce to next available one
