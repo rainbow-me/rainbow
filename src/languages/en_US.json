@@ -1430,6 +1430,7 @@
         "claim_on_network": "Claim on %{network}",
         "claimed_on_network": "Claimed on %{network}",
         "claiming_on_network": "Claiming on %{network}",
+        "error_claiming": "Claim Failed",
         "free_to_claim": "Free to Claim",
         "has_bridge_fee": "Has Bridge Fee",
         "claim_rewards": "Claim Rewards",
@@ -1444,7 +1445,8 @@
         "earn_eth_rewards": "Earn ETH Rewards",
         "rewards_explainer": "Every week, the top weekly points earners will receive a portion of Rainbow’s onchain revenue. Collect points by swapping or transacting in Rainbow, using dapps, or referring friends.",
         "my_points": "My Points",
-        "refer_friends": "Refer Friends"
+        "refer_friends": "Refer Friends",
+        "try_again": "Try Again"
       },
       "console": {
         "claim_bonus_paragraph": "You'll receive an additional 100 points once you swap at least $100 through Rainbow",
