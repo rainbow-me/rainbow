@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
 import { Bleed, Box, Text, TextShadow, globalColors, useBackgroundColor, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
@@ -28,11 +28,12 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
 import { useNavigation } from '@/navigation';
+import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 
 type ClaimStatus = 'idle' | 'claiming' | 'success' | PointsErrorType;
 type ClaimNetwork = '10' | '8453' | '7777777';
 
-const CLAIM_NETWORKS = [ChainId.optimism, ChainId.base, ChainId.zora];
+const CLAIM_NETWORKS = [ChainId.base, ChainId.optimism, ChainId.zora];
 
 const PAGES = {
   CHOOSE_CLAIM_NETWORK: 'choose-claim-network',
@@ -66,6 +67,15 @@ export const ClaimRewardsPanel = () => {
   );
 };
 
+const NETWORK_LIST_ITEMS = CLAIM_NETWORKS.map(chainId => {
+  return {
+    IconComponent: <ChainImage chain={getNetworkFromChainId(chainId)} size={36} />,
+    label: ChainNameDisplay[chainId],
+    uniqueId: chainId.toString(),
+    selected: false,
+  };
+});
+
 const ChooseClaimNetwork = ({
   goBack,
   goToPage,
@@ -76,24 +86,7 @@ const ChooseClaimNetwork = ({
   selectNetwork: (network: ClaimNetwork) => void;
 }) => {
   const { highContrastAccentColor } = useAccountAccentColor();
-
-  const networkListItems = useMemo(() => {
-    const claimFees = {
-      [ChainId.optimism]: i18n.t(i18n.l.points.points.free_to_claim),
-      [ChainId.base]: i18n.t(i18n.l.points.points.has_bridge_fee),
-      [ChainId.zora]: i18n.t(i18n.l.points.points.has_bridge_fee),
-    };
-
-    return CLAIM_NETWORKS.map(chainId => {
-      return {
-        IconComponent: <ChainImage chain={getNetworkFromChainId(chainId)} size={36} />,
-        label: ChainNameDisplay[chainId],
-        secondaryLabel: claimFees[chainId],
-        uniqueId: chainId.toString(),
-        selected: false,
-      };
-    });
-  }, []);
+  const { isDarkMode } = useColorMode();
 
   const handleOnSelect = useCallback(
     (selectedItemId: string) => {
@@ -102,9 +95,6 @@ const ChooseClaimNetwork = ({
     },
     [goToPage, selectNetwork]
   );
-
-  const animatedAccentColor = useSharedValue<string | undefined>(undefined);
-  const selectedItemId = useSharedValue('');
 
   return (
     <ListPanel
@@ -115,21 +105,19 @@ const ChooseClaimNetwork = ({
           </Text>
         </TextShadow>
       }
-      animatedAccentColor={animatedAccentColor}
       disableSelectedStyle
       goBack={goBack}
-      items={networkListItems}
+      items={NETWORK_LIST_ITEMS}
       onSelect={handleOnSelect}
       pageTitle={i18n.t(i18n.l.points.points.choose_claim_network)}
       renderLabelComponent={label => (
         <TextShadow shadowOpacity={0.3}>
-          <Text color="label" size="17pt" weight="bold">
+          <Text color="label" size="17pt" weight={isDarkMode ? 'bold' : 'heavy'}>
             {label}
           </Text>
         </TextShadow>
       )}
       scrollViewProps={{ scrollEnabled: false }}
-      selectedItemId={selectedItemId}
       showBackButton={false}
     />
   );
@@ -260,7 +248,7 @@ const ClaimingRewards = ({
           </TextShadow>
         }
         RightComponent={
-          <Animated.View style={panelAvatarStyle}>
+          <Animated.View style={[panelAvatarStyle, { height: 20, width: 20 }]}>
             {accountImage ? (
               <ImageAvatar image={accountImage} marginRight={10} size="smaller" />
             ) : (
@@ -269,7 +257,16 @@ const ClaimingRewards = ({
           </Animated.View>
         }
         TitleComponent={
-          <Box alignItems="center" flexDirection="row" gap={6} justifyContent="center">
+          <Box alignItems="center" flexDirection="row" gap={claimStatus === 'claiming' ? 8 : 6} justifyContent="center">
+            {claimStatus === 'claiming' && (
+              <AnimatedSpinner
+                color={highContrastAccentColor}
+                isLoading
+                requireSrc={require('@/assets/spinner.png')}
+                scaleInFrom={0.4}
+                size={17}
+              />
+            )}
             {claimStatus === 'success' && (
               <TextShadow shadowOpacity={0.3}>
                 <Text align="center" color="green" size="icon 17px" weight="heavy">

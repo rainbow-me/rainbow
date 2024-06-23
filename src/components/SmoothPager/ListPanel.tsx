@@ -56,7 +56,7 @@ export const ListPanel = ({
   showBackButton,
 }: {
   TitleComponent?: React.ReactNode;
-  animatedAccentColor: SharedValue<string | undefined>;
+  animatedAccentColor?: SharedValue<string | undefined>;
   disableSelectedStyle?: boolean;
   goBack: () => void;
   items?: ControlPanelMenuItemProps[];
@@ -64,7 +64,7 @@ export const ListPanel = ({
   pageTitle: string;
   renderLabelComponent?: (label: string) => React.ReactNode;
   scrollViewProps?: ScrollViewProps;
-  selectedItemId: SharedValue<string>;
+  selectedItemId?: SharedValue<string>;
   showBackButton?: boolean;
 }) => {
   const memoizedItems = useMemo(() => items, [items]);
@@ -336,7 +336,7 @@ export const controlPanelStyles = StyleSheet.create({
     alignItems: 'center',
     height: 52,
     justifyContent: 'center',
-    left: 6,
+    left: 8,
     position: 'absolute',
     top: 6,
     width: 52,
@@ -350,7 +350,7 @@ export const controlPanelStyles = StyleSheet.create({
   },
   listHeaderRightComponent: {
     left: undefined,
-    right: 6,
+    right: 8,
     top: 6,
   },
   listPanel: {
