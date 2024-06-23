@@ -32,7 +32,6 @@ import { queryClient } from '@/react-query';
 import { useAccountSettings } from '@/hooks';
 import { analyticsV2 } from '@/analytics';
 import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet } from '@/__swaps__/safe-math/SafeMath';
-import { supportedNativeCurrencies } from '@/references';
 
 function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetWithColors | null) {
   const initialBalance = Number(initialSelectedInputAsset?.maxSwappableAmount) || 0;
@@ -51,17 +50,7 @@ function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetW
     isStablecoin,
   });
 
-  const nativeCurrency = store.getState().settings.nativeCurrency;
-  const decimals = Math.min(6, supportedNativeCurrencies[nativeCurrency].decimals);
-
-  const initialInputNativeValue = Number(mulWorklet(initialInputAmount, initialSelectedInputAsset?.price?.value ?? 0)).toLocaleString(
-    'en-US',
-    {
-      useGrouping: false,
-      minimumFractionDigits: nativeCurrency === 'ETH' ? undefined : decimals,
-      maximumFractionDigits: decimals,
-    }
-  );
+  const initialInputNativeValue = mulWorklet(initialInputAmount, initialSelectedInputAsset?.price?.value ?? 0);
 
   return {
     initialInputAmount,
@@ -103,7 +92,7 @@ export function useSwapInputsController({
     outputAmount: 0,
     outputNativeValue: 0,
   });
-  const inputMethod = useSharedValue<inputMethods>(initialSelectedInputAsset ? 'inputAmount' : 'slider');
+  const inputMethod = useSharedValue<inputMethods>('slider');
 
   const maxSwappableAmount = useDerivedValue(() => internalSelectedInputAsset.value?.maxSwappableAmount);
 
@@ -131,7 +120,7 @@ export function useSwapInputsController({
       return '0';
     }
 
-    if (inputMethod.value === 'inputAmount' || typeof inputValues.value.inputAmount === 'string') {
+    if (inputMethod.value === 'inputAmount') {
       return addCommasToNumber(inputValues.value.inputAmount, '0');
     }
 
@@ -182,7 +171,7 @@ export function useSwapInputsController({
       return '0';
     }
 
-    if (inputMethod.value === 'outputAmount' || typeof inputValues.value.outputAmount === 'string') {
+    if (inputMethod.value === 'outputAmount') {
       return addCommasToNumber(inputValues.value.outputAmount, '0');
     }
 
@@ -665,7 +654,7 @@ export function useSwapInputsController({
   useAnimatedReaction(
     () => ({ focusedInput: focusedInput.value }),
     (current, previous) => {
-      if (previous && current !== previous && typeof inputValues.value[previous.focusedInput] === 'string') {
+      if (previous && current !== previous) {
         const typedValue = inputValues.value[previous.focusedInput].toString();
         if (equalWorklet(typedValue, 0)) {
           inputValues.modify(values => {
