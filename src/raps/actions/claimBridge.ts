@@ -3,7 +3,7 @@ import { CrosschainQuote, QuoteError, SwapType, getClaimBridgeQuote } from '@rai
 import { Address } from 'viem';
 import { ActionProps } from '../references';
 import { executeCrosschainSwap } from './crosschainSwap';
-import { RainbowError, logger } from '@/logger';
+import { RainbowError } from '@/logger';
 import { add, lessThan, multiply, subtract } from '@/helpers/utilities';
 import { getProviderForNetwork } from '@/handlers/web3';
 import { Network } from '@/helpers';
@@ -38,7 +38,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
 
   // if we don't get a quote or there's an error we can't continue
   if (!claimBridgeQuote || (claimBridgeQuote as QuoteError)?.error) {
-    throw new RainbowError('claimBridge: error getClaimBridgeQuote');
+    throw new Error('[CLAIM-BRIDGE]: error getting getClaimBridgeQuote');
   }
 
   let bridgeQuote = claimBridgeQuote as CrosschainQuote;
@@ -60,7 +60,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
   if (lessThan(subtract(balance.toString(), sellAmount), gasFeeInWei)) {
     // if the balance is less than the gas fee we can't continue
     if (lessThan(sellAmount, gasFeeInWei)) {
-      throw new RainbowError('claimBridge: error insufficient funds to pay gas fee');
+      throw new Error('[CLAIM-BRIDGE]: error insufficient funds to pay gas fee');
     } else {
       // otherwie we bridge the maximum amount we can afford
       maxBridgeableAmount = subtract(sellAmount, gasFeeInWei);
@@ -82,7 +82,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
     });
 
     if (!newQuote || (newQuote as QuoteError)?.error) {
-      throw new RainbowError('claimBridge: error getClaimBridgeQuote (new)');
+      throw new Error('[CLAIM-BRIDGE]: error getClaimBridgeQuote (new)');
     }
 
     bridgeQuote = newQuote as CrosschainQuote;
@@ -120,11 +120,11 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
   try {
     swap = await executeCrosschainSwap(swapParams);
   } catch (e) {
-    logger.error(new RainbowError('crosschainSwap: error executeCrosschainSwap'), { message: (e as Error)?.message });
-    throw e;
+    throw new Error('[CLAIM-BRIDGE]: crosschainSwap error');
   }
+
   if (!swap) {
-    throw new RainbowError('crosschainSwap: error executeCrosschainSwap');
+    throw new Error('[CLAIM-BRIDGE]: executeCrosschainSwap returned undefined');
   }
 
   const typedAssetToBuy = {

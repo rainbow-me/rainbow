@@ -36,6 +36,7 @@ import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/
 import { getGasSettingsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
+import { RainbowError, logger } from '@/logger';
 
 type ClaimStatus = 'idle' | 'claiming' | 'success' | PointsErrorType | 'error';
 type ClaimNetwork = '10' | '8453' | '7777777';
@@ -264,6 +265,8 @@ const ClaimingRewards = ({
       const provider = getProviderForNetwork(Network.optimism);
       const wallet = await loadWallet(address, false, provider);
       if (!wallet) {
+        // Here we need to handle biometrics auth failure.
+        // Maybe set to try again (?)
         setClaimStatus('error');
         return { nonce: null };
       }
@@ -277,7 +280,17 @@ const ClaimingRewards = ({
         );
 
         if (errorMessage) {
-          setClaimStatus('error');
+          if (errorMessage.includes('[CLAIM]')) {
+            // Handle claim error. Retry is possible
+            setClaimStatus('error');
+          } else {
+            // TODOL: Handle other errors(including bridge errors)
+            // Retry is not possible!
+            setClaimStatus('error');
+          }
+
+          logger.error(new RainbowError('ETH REWARDS CLAIM ERROR'), { message: errorMessage });
+
           return { nonce: null };
         }
 
