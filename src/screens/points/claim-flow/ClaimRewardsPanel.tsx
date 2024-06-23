@@ -222,13 +222,6 @@ const ClaimingRewards = ({
         maxPriorityFee: meteorologyData?.fast.maxPriorityFee,
       };
 
-      // We can't continue if we don't have the gas settings
-      // from meteorology! It's almost impossible for this to happen tho
-      if (!selectedGas) {
-        setClaimStatus('error');
-        return { nonce: null };
-      }
-
       let gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = {} as
         | TransactionGasParamAmounts
         | LegacyTransactionGasParamAmounts;
@@ -409,6 +402,11 @@ const ClaimingRewards = ({
                 <ButtonPressAnimation
                   onPress={() => {
                     if (claimStatus === 'idle') {
+                      // Almost impossible to reach here since gas prices load immediately
+                      // but in that case I'm disabling the action temporarily to prevent
+                      // any issues that might arise from the gas prices not being loaded
+                      if (!meteorologyData) return;
+
                       setClaimStatus('claiming');
                       claimRewards();
                     } else if (claimStatus === 'success') {
