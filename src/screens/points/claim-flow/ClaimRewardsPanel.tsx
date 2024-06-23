@@ -11,7 +11,7 @@ import { useAccountAccentColor, useAccountProfile, useAccountSettings } from '@/
 import { safeAreaInsetValues } from '@/utils';
 import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
 import { EthRewardsCoinIcon } from '../content/PointsContent';
-import { Alert, View } from 'react-native';
+import { View } from 'react-native';
 import { IS_IOS } from '@/env';
 import { PointsErrorType } from '@/graphql/__generated__/metadata';
 import { useMutation } from '@tanstack/react-query';
@@ -264,7 +264,7 @@ const ClaimingRewards = ({
       const provider = getProviderForNetwork(Network.optimism);
       const wallet = await loadWallet(address, false, provider);
       if (!wallet) {
-        Alert.alert(i18n.t(i18n.l.swap.unable_to_load_wallet));
+        setClaimStatus('error');
         return { nonce: null };
       }
 
@@ -294,6 +294,13 @@ const ClaimingRewards = ({
         setClaimStatus('error');
         return { nonce: null };
       }
+    },
+    onError: error => {
+      const errorCode =
+        error && typeof error === 'object' && 'code' in error && isClaimError(error.code as PointsErrorType)
+          ? (error.code as PointsErrorType)
+          : 'error';
+      setClaimStatus(errorCode);
     },
     onSuccess: async ({ nonce }: { nonce: number | null }) => {
       if (typeof nonce === 'number') {
