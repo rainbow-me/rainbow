@@ -5,7 +5,7 @@ import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
 import { Box, globalColors, useColorMode } from '@/design-system';
 import { useAccountProfile } from '@/hooks';
-import { POINTS, POINTS_NOTIFICATIONS_TOGGLE, useExperimentalFlag } from '@/config';
+import { ETH_REWARDS, POINTS, POINTS_NOTIFICATIONS_TOGGLE, useExperimentalFlag } from '@/config';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -36,9 +36,10 @@ const EmptyTabBar = () => <></>;
 export default function PointsScreen() {
   const { isDarkMode } = useColorMode();
   const { accountAddress, accountImage, accountColor, accountSymbol } = useAccountProfile();
-  const { points_enabled, points_notifications_toggle } = useRemoteConfig();
+  const { points_enabled, points_notifications_toggle, rewards_enabled } = useRemoteConfig();
   const pointsEnabled = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
   const pointsNotificationsToggleEnabled = useExperimentalFlag(POINTS_NOTIFICATIONS_TOGGLE) || points_notifications_toggle;
+  const rewardsEnabled = useExperimentalFlag(ETH_REWARDS) || rewards_enabled;
   const { navigate } = useNavigation();
   const { data } = usePoints({
     walletAddress: accountAddress,
@@ -67,7 +68,7 @@ export default function PointsScreen() {
       as={Page}
       flex={1}
       height="full"
-      style={{ backgroundColor: isDarkMode ? globalColors.grey100 : globalColors.white100 }}
+      style={{ backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD' }}
       testID="points-screen"
       width="full"
     >
@@ -85,7 +86,7 @@ export default function PointsScreen() {
           )
         }
         rightComponent={pointsNotificationsToggleEnabled ? <NotificationToggleContextMenu /> : undefined}
-        title={i18n.t(i18n.l.account.tab_points)}
+        title={rewardsEnabled ? i18n.t(i18n.l.account.tab_rewards) : i18n.t(i18n.l.account.tab_points)}
       />
       {/* eslint-disable-next-line no-nested-ternary */}
       {pointsEnabled ? (

@@ -113,13 +113,14 @@ export default function ChangeWalletSheet() {
 
   let headerHeight = 30;
   let listHeight = walletRowHeight * walletRowCount + (!watchOnly ? footerHeight + listPaddingBottom : android ? 20 : 0);
-  let scrollEnabled = false;
-  let showDividers = false;
+  let scrollEnabled = true;
+  let showDividers = true;
   if (listHeight > maxListHeight) {
     headerHeight = 40;
     listHeight = maxListHeight;
-    scrollEnabled = true;
-    showDividers = true;
+  } else {
+    scrollEnabled = false;
+    showDividers = false;
   }
 
   const onChangeAccount = useCallback(

@@ -61,6 +61,8 @@ import Animated, { runOnUI, useAnimatedStyle, useSharedValue, withRepeat, withTi
 import { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { Network } from '@/helpers';
 import { format, intervalToDuration } from 'date-fns';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { ETH_REWARDS, useExperimentalFlag } from '@/config';
 
 const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined }) => {
   const labelSecondary = useForegroundColor('labelSecondary');
@@ -129,9 +131,9 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
 
   const getEarnedLastWeekSubtitle = () => {
     if (lastPeriodUnranked || !lastPeriodRank) return i18n.t(i18n.l.points.points.unranked);
-    if ((lastPeriodRank || 11) <= 10) return 'Top 10 Earner';
+    if (lastPeriodRank <= 10) return i18n.t(i18n.l.points.points.top_10_earner);
     return i18n.t(i18n.l.points.points.ranking, {
-      rank: lastPeriodRank,
+      rank: lastPeriodRank.toLocaleString('en-US'),
     });
   };
 
@@ -192,6 +194,7 @@ const Card = ({ borderRadius = 32, children, padding = '12px' }: { borderRadius?
 };
 
 const ClaimCard = ({ claim, value }: { claim?: string; value?: string }) => {
+  const { isDarkMode } = useColorMode();
   const { navigate } = useNavigation();
 
   return (
@@ -244,7 +247,15 @@ const ClaimCard = ({ claim, value }: { claim?: string; value?: string }) => {
         >
           <Bleed vertical={{ custom: 116 }}>
             <LinearGradient
-              colors={['#B2348C', '#B2348C', '#FF6040', '#FFFF00', '#34FF3B', '#24D2FB', '#24D2FB']}
+              colors={[
+                '#B2348C',
+                '#B2348C',
+                '#FF6040',
+                isDarkMode ? '#FFFF00' : '#FFBB00',
+                isDarkMode ? '#34FF3B' : '#A6E000',
+                '#24D2FB',
+                '#24D2FB',
+              ]}
               end={{ x: 1, y: 0.5 }}
               locations={[0, 0.08, 0.29, 0.5, 0.71, 0.92, 1]}
               start={{ x: 0, y: 0.5 }}
@@ -530,6 +541,7 @@ const getTextWidth = async (text: string | undefined) => {
 };
 
 const RainbowText = ({ totalPointsString }: { totalPointsString: string | undefined }) => {
+  const { isDarkMode } = useColorMode();
   const [textWidth, setTextWidth] = useState<number | undefined>((totalPointsString?.length ?? 0) * 32);
 
   const totalPointsMaskSize = Math.min((textWidth ?? 32 * (totalPointsString?.length ?? 0)) + 20 * 2, DEVICE_WIDTH);
@@ -560,7 +572,16 @@ const RainbowText = ({ totalPointsString }: { totalPointsString: string | undefi
         }
       >
         <LinearGradient
-          colors={['#B756A7', '#B756A7', '#DF5337', '#F0D83F', '#57EA5F', '#31BCC4', '#31BCC4', '#31BCC4']}
+          colors={[
+            '#B2348C',
+            '#B2348C',
+            '#FF6040',
+            isDarkMode ? '#FFFF00' : '#FFBB00',
+            isDarkMode ? '#34FF3B' : '#A6E000',
+            '#24D2FB',
+            '#24D2FB',
+            '#24D2FB',
+          ]}
           end={{ x: 0, y: 0.5 }}
           locations={[0, 0.08, 0.248, 0.416, 0.584, 0.752, 0.92, 1]}
           start={{ x: 1, y: 0.5 }}
@@ -587,6 +608,9 @@ export default function PointsContent() {
   const { isReadOnlyWallet } = useWallets();
   const { highContrastAccentColor: accountColor } = useAccountAccentColor();
   const { nativeCurrency: currency } = useAccountSettings();
+  const { rewards_enabled } = useRemoteConfig();
+
+  const rewardsEnabled = useExperimentalFlag(ETH_REWARDS) || rewards_enabled;
 
   const {
     data: points,
@@ -681,7 +705,7 @@ export default function PointsContent() {
     : undefined;
 
   return (
-    <Box height="full" as={Page} flex={1} style={{ backgroundColor: isDarkMode ? globalColors.grey100 : globalColors.white100 }}>
+    <Box height="full" as={Page} flex={1} style={{ backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD' }}>
       <ScrollView
         refreshControl={<RefreshControl onRefresh={refresh} refreshing={isRefreshing} tintColor={colors.alpha(colors.blueGreyDark, 0.4)} />}
         scrollIndicatorInsets={{
@@ -697,14 +721,14 @@ export default function PointsContent() {
         <AccentColorProvider color={accountColor}>
           <Inset horizontal="20px" top="12px">
             <Box gap={24}>
-              {(showClaimYourPoints || showMyEarnings) && (
+              {rewardsEnabled && (showClaimYourPoints || showMyEarnings) && (
                 <Box gap={20}>
-                  {showClaimYourPoints && <ClaimCard claim={claimableBalance.display} value={claimablePrice} />}
+                  {showClaimYourPoints && !isReadOnlyWallet && <ClaimCard claim={claimableBalance.display} value={claimablePrice} />}
                   {showMyEarnings && <EarningsCard claimed={claimedBalance.display} value={claimedPrice} />}
                 </Box>
               )}
-              {showNoHistoricalRewards && <EarnRewardsCard />}
-              <TotalEarnedByRainbowUsers earned={totalRewardsDisplay} />
+              {rewardsEnabled && showNoHistoricalRewards && <EarnRewardsCard />}
+              {rewardsEnabled && <TotalEarnedByRainbowUsers earned={totalRewardsDisplay} />}
               {nextDistributionDate && <NextDropCard nextDistribution={nextDistributionDate} />}
               <Separator color={isDarkMode ? 'separatorSecondary' : 'separatorTertiary'} thickness={1} />
             </Box>
