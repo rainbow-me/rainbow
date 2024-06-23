@@ -5,18 +5,16 @@ import { Bleed, Box, Text, TextShadow, globalColors, useBackgroundColor, useColo
 import * as i18n from '@/languages';
 import { ListHeader, ListPanel, Panel, TapToDismiss, controlPanelStyles } from '@/components/SmoothPager/ListPanel';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { ChainId } from '@rainbow-me/provider/dist/references/chains';
-import { ChainNameDisplay } from '@/__swaps__/types/chains';
-import { getNetworkFromChainId, useNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import { ChainId, ChainNameDisplay } from '@/__swaps__/types/chains';
+import ethereumUtils, { getNetworkFromChainId, useNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { useAccountAccentColor, useAccountProfile, useAccountSettings } from '@/hooks';
 import { safeAreaInsetValues } from '@/utils';
 import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
 import { EthRewardsCoinIcon } from '../content/PointsContent';
-import { View } from 'react-native';
+import { Alert, View } from 'react-native';
 import { IS_IOS } from '@/env';
-import { ClaimUserRewardsMutation, PointsErrorType } from '@/graphql/__generated__/metadata';
+import { PointsErrorType } from '@/graphql/__generated__/metadata';
 import { useMutation } from '@tanstack/react-query';
-import { metadataPOSTClient } from '@/graphql';
 import { invalidatePointsQuery, usePoints } from '@/resources/points';
 import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
 import { Network } from '@/helpers';
@@ -28,9 +26,18 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
 import { useNavigation } from '@/navigation';
+import { RapSwapActionParameters } from '@/raps/references';
+import { walletExecuteRap } from '@/raps/execute';
+import { ParsedAsset } from '@/__swaps__/types/assets';
+import { chainNameFromChainId } from '@/__swaps__/utils/chains';
+import { loadWallet } from '@/model/wallet';
+import { getProviderForNetwork } from '@/handlers/web3';
+import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
+import { getGasSettingsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
+import { useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 
-type ClaimStatus = 'idle' | 'claiming' | 'success' | PointsErrorType;
+type ClaimStatus = 'idle' | 'claiming' | 'success' | PointsErrorType | 'error';
 type ClaimNetwork = '10' | '8453' | '7777777';
 
 const CLAIM_NETWORKS = [ChainId.base, ChainId.optimism, ChainId.zora];
@@ -142,6 +149,10 @@ const ClaimingRewards = ({
   const { isDarkMode } = useColorMode();
   const { goBack: closeClaimPanel } = useNavigation();
   const { data: points, refetch } = usePoints({ walletAddress: address });
+  const { data: meteorologyData } = useMeteorologySuggestions({
+    chainId: ChainId.optimism,
+    enabled: true,
+  });
 
   const green = useBackgroundColor('green');
 
@@ -169,24 +180,99 @@ const ClaimingRewards = ({
     [chainId]
   );
 
-  const { mutate: claimRewards } = useMutation<ClaimUserRewardsMutation['claimUserRewards']>({
+  const { mutate: claimRewards } = useMutation<{
+    nonce: number | null;
+  }>({
     mutationFn: async () => {
-      const response = await metadataPOSTClient.claimUserRewards({ address });
-      const claimInfo = response?.claimUserRewards;
+      // Fetch the native asset from the origin chain
+      const opEth_ = await ethereumUtils.getNativeAssetForNetwork(getNetworkFromChainId(ChainId.optimism));
+      const opEth = {
+        ...opEth_,
+        chainName: chainNameFromChainId(ChainId.optimism),
+      };
 
-      if (claimInfo?.error) {
-        setClaimStatus(claimInfo?.error.type);
+      // fetch the native asset from the destination chain
+      let destinationEth_;
+      if (chainId === ChainId.base) {
+        destinationEth_ = await ethereumUtils.getNativeAssetForNetwork(getNetworkFromChainId(ChainId.base));
+      } else if (chainId === ChainId.zora) {
+        destinationEth_ = await ethereumUtils.getNativeAssetForNetwork(getNetworkFromChainId(ChainId.zora));
+      } else {
+        destinationEth_ = opEth;
       }
 
-      // clear and refresh claim data so available claim UI disappears
-      invalidatePointsQuery(address);
-      await refetch();
+      // Add missing properties to match types
+      const destinationEth = {
+        ...destinationEth_,
+        chainName: chainNameFromChainId(chainId as ChainId),
+      };
 
-      return claimInfo;
+      const selectedGas = {
+        maxBaseFee: meteorologyData?.fast.maxBaseFee,
+        maxPriorityFee: meteorologyData?.fast.maxPriorityFee,
+      };
+
+      let gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = {} as
+        | TransactionGasParamAmounts
+        | LegacyTransactionGasParamAmounts;
+
+      gasParams = {
+        maxFeePerGas: selectedGas?.maxBaseFee as string,
+        maxPriorityFeePerGas: selectedGas?.maxPriorityFee as string,
+      };
+      const gasFeeParamsBySpeed = getGasSettingsBySpeed(ChainId.optimism);
+
+      const actionParams = {
+        address,
+        toChainId: chainId,
+        sellAmount: claimable as string,
+        chainId: ChainId.optimism,
+        assetToSell: opEth as ParsedAsset,
+        assetToBuy: destinationEth as ParsedAsset,
+        quote: undefined,
+        // @ts-expect-error - collision between old gas types and new
+        gasFeeParamsBySpeed,
+        gasParams,
+      } satisfies RapSwapActionParameters<'claimBridge'>;
+
+      const provider = await getProviderForNetwork(Network.optimism);
+      const wallet = await loadWallet(address, false, provider);
+      if (!wallet) {
+        Alert.alert(i18n.t(i18n.l.swap.unable_to_load_wallet));
+        return { nonce: null };
+      }
+
+      try {
+        const { errorMessage, nonce: bridgeNonce } = await walletExecuteRap(
+          wallet,
+          'claimBridge',
+          // @ts-expect-error - collision between old gas types and new
+          actionParams
+        );
+
+        if (errorMessage) {
+          setClaimStatus('error');
+          return { nonce: null };
+        }
+
+        if (typeof bridgeNonce === 'number' && bridgeNonce >= 0) {
+          // clear and refresh claim data so available claim UI disappears
+          invalidatePointsQuery(address);
+          refetch();
+          return { nonce: bridgeNonce };
+        } else {
+          setClaimStatus('error');
+          return { nonce: null };
+        }
+      } catch (e) {
+        setClaimStatus('error');
+        return { nonce: null };
+      }
     },
-    onSuccess: async (data: ClaimUserRewardsMutation['claimUserRewards']) => {
-      setClaimStatus('success');
-      // do bridging and clean up here
+    onSuccess: async ({ nonce }: { nonce: number | null }) => {
+      if (typeof nonce === 'number' && nonce >= 0) {
+        setClaimStatus('success');
+      }
     },
   });
 
@@ -349,6 +435,11 @@ const ClaimingRewards = ({
                 <ButtonPressAnimation
                   onPress={() => {
                     if (claimStatus === 'idle') {
+                      // Almost impossible to reach here since gas prices load immediately
+                      // but in that case I'm disabling the action temporarily to prevent
+                      // any issues that might arise from the gas prices not being loaded
+                      if (!meteorologyData) return;
+
                       setClaimStatus('claiming');
                       claimRewards();
                     } else if (claimStatus === 'success') {
