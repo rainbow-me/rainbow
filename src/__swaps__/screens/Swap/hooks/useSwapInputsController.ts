@@ -94,8 +94,6 @@ export function useSwapInputsController({
   });
   const inputMethod = useSharedValue<inputMethods>('slider');
 
-  const maxSwappableAmount = useDerivedValue(() => internalSelectedInputAsset.value?.maxSwappableAmount);
-
   const percentageToSwap = useDerivedValue(() => {
     return Math.round(clamp((sliderXPosition.value - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1) * 100) / 100;
   });
@@ -135,13 +133,12 @@ export function useSwapInputsController({
       });
     }
 
-    if (percentageToSwap.value === 1) {
+    if (inputValues.value.inputAmount === internalSelectedInputAsset.value.maxSwappableAmount) {
       const formattedAmount = valueBasedDecimalFormatter({
         amount: inputValues.value.inputAmount,
-        nativePrice: inputNativePrice.value,
-        roundingMode: 'up',
-        precisionAdjustment: -1,
         isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
+        nativePrice: inputNativePrice.value,
+        roundingMode: 'none',
         stripSeparators: false,
       });
 
@@ -550,24 +547,6 @@ export function useSwapInputsController({
     });
   };
 
-  // update the input amount & quote if swapping max amount & maxSwappableAmount changes
-  useAnimatedReaction(
-    () => maxSwappableAmount.value,
-    maxSwappableAmount => {
-      const isSwappingMaxBalance = internalSelectedInputAsset.value && inputMethod.value === 'slider' && percentageToSwap.value >= 1;
-      if (maxSwappableAmount && isSwappingMaxBalance) {
-        inputValues.modify(prev => {
-          return {
-            ...prev,
-            inputAmount: +maxSwappableAmount,
-            inputNativeValue: +mulWorklet(maxSwappableAmount, inputNativePrice.value),
-          };
-        });
-        fetchQuoteAndAssetPrices();
-      }
-    }
-  );
-
   const quoteFetchingInterval = useAnimatedInterval({
     intervalMs: 12_000,
     onIntervalWorklet: fetchQuoteAndAssetPrices,
@@ -649,6 +628,27 @@ export function useSwapInputsController({
   );
 
   /**
+   * Observes maxSwappableAmount and updates the input amount and quote when max amount is being swapped and maxSwappableAmount changes
+   */
+  useAnimatedReaction(
+    () => internalSelectedInputAsset.value?.maxSwappableAmount,
+    (maxSwappableAmount, prevMaxSwappableAmount) => {
+      const isSwappingMaxBalance = internalSelectedInputAsset.value && inputValues.value.inputAmount === prevMaxSwappableAmount;
+
+      if (maxSwappableAmount && maxSwappableAmount !== prevMaxSwappableAmount && isSwappingMaxBalance) {
+        inputValues.modify(prev => {
+          return {
+            ...prev,
+            inputAmount: maxSwappableAmount,
+            inputNativeValue: mulWorklet(maxSwappableAmount, inputNativePrice.value),
+          };
+        });
+        fetchQuoteAndAssetPrices();
+      }
+    }
+  );
+
+  /**
    * Observes the user-focused input and cleans up typed amounts when the input focus changes
    */
   useAnimatedReaction(
@@ -696,7 +696,7 @@ export function useSwapInputsController({
     (current, previous) => {
       if (previous && current !== previous) {
         // Handle updating input values based on the input method
-        if (inputMethod.value === 'slider' && current.sliderXPosition !== previous.sliderXPosition) {
+        if (inputMethod.value === 'slider' && internalSelectedInputAsset.value && current.sliderXPosition !== previous.sliderXPosition) {
           // If the slider position changes
           if (percentageToSwap.value === 0) {
             // If the change set the slider position to 0
@@ -717,9 +717,9 @@ export function useSwapInputsController({
             // If the change set the slider position to > 0
             if (!internalSelectedInputAsset.value) return;
 
-            const balance = Number(internalSelectedInputAsset.value.maxSwappableAmount);
+            const balance = internalSelectedInputAsset.value.maxSwappableAmount;
 
-            if (!balance) {
+            if (!balance || equalWorklet(balance, 0)) {
               inputValues.modify(values => {
                 return {
                   ...values,
@@ -867,7 +867,7 @@ export function useSwapInputsController({
       const didOutputAssetChange = current.assetToBuyId !== previous?.assetToBuyId;
 
       if (didInputAssetChange || didOutputAssetChange) {
-        const balance = Number(internalSelectedInputAsset.value?.maxSwappableAmount);
+        const balance = internalSelectedInputAsset.value?.maxSwappableAmount;
 
         const areBothAssetsSet = internalSelectedInputAsset.value && internalSelectedOutputAsset.value;
         const didFlipAssets =
@@ -875,7 +875,7 @@ export function useSwapInputsController({
 
         if (!didFlipAssets) {
           // If either asset was changed but the assets were not flipped
-          if (!balance) {
+          if (!balance || equalWorklet(balance, 0)) {
             isQuoteStale.value = 0;
             isFetching.value = false;
             inputValues.modify(values => {

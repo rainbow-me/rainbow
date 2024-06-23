@@ -25,7 +25,7 @@ import { useSelectedGas } from '../hooks/useSelectedGas';
 import { useSwapEstimatedGasLimit } from '../hooks/useSwapEstimatedGasLimit';
 import { useSwapContext } from './swap-provider';
 
-const BUFFER_RATIO = 0.25;
+const BUFFER_RATIO = 0.5;
 
 type InternalSyncedSwapState = {
   assetToBuy: ExtendedAnimatedAssetWithColors | undefined;
@@ -111,14 +111,15 @@ export function SyncGasStateToSharedValues() {
         gasFeeRange.value = null;
       } else if (currBuffer && (currBuffer !== prevBuffer || currInputAsset?.uniqueId !== prevInputAsset?.uniqueId)) {
         // update maxSwappableAmount when gas fee range is set and there is a change to input asset or gas fee range
-        internalSelectedInputAsset.modify(asset => {
-          'worklet';
-          if (!asset || !asset.isNativeAsset) return asset;
-          return {
-            ...asset,
-            maxSwappableAmount: subWorklet(asset.balance.amount, currBuffer),
-          };
-        });
+        if (currInputAsset?.isNativeAsset) {
+          internalSelectedInputAsset.modify(asset => {
+            if (!asset) return asset;
+            return {
+              ...asset,
+              maxSwappableAmount: subWorklet(asset.balance.amount, currBuffer),
+            };
+          });
+        }
       }
     }
   );
