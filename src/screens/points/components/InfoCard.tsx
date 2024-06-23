@@ -41,14 +41,10 @@ export const InfoCard = memo(function InfoCard({
   if (loading) return <Skeleton height={98} width={120} />;
 
   let mainTextFontSize: TextSize;
-  if (!mainText || mainTextColor === 'secondary') {
-    mainTextFontSize = '20pt';
-  } else if (mainText.length > 10) {
+  if (mainText && mainText.length > 10) {
     mainTextFontSize = '17pt';
-  } else if (mainText.length > 9) {
-    mainTextFontSize = '20pt';
   } else {
-    mainTextFontSize = '22pt';
+    mainTextFontSize = '20pt';
   }
 
   return (

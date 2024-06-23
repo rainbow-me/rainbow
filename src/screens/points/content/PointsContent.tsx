@@ -145,7 +145,11 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
             <InfoCard
               loading={lastPeriodLoading}
               title={i18n.t(i18n.l.points.points.earned_last_week)}
-              mainText={lastPeriodEarnings ? lastPeriodEarnings.toLocaleString('en-US') : undefined}
+              mainText={
+                lastPeriodEarnings
+                  ? `${lastPeriodEarnings.toLocaleString('en-US')} ${i18n.t(i18n.l.points.points.points_capitalized)}`
+                  : undefined
+              }
               placeholderMainText={i18n.t(i18n.l.points.points.zero_points)}
               icon="􀠐"
               subtitle={getEarnedLastWeekSubtitle()}
