@@ -1379,7 +1379,7 @@
         "title_rewards_line_1": "Welcome to",
         "title_rewards_line_2": "Rainbow Rewards",
         "subtitle": "Points are here. Find out how many you've been awarded.",
-        "subtitle_rewards": "Use Rainbow to do things onchain, get points, and earn ETH.",
+        "subtitle_rewards": "Get rewarded for using Rainbow. Do stuff onchain, get points, earn ETH.",
         "get_started": "Get Started",
         "use_referral_code": "Use Referral Code"
       },
@@ -1436,7 +1436,8 @@
         "claim_rewards": "Claim Rewards",
         "earned_last_week": "Earned Last Week",
         "top_10_earner": "Top 10 Earner",
-        "no_earnings": "No Earnings",
+        "zero_points": "0 Points",
+        "no_weekly_rank": "No Weekly Rank",
         "none": "None",
         "my_earnings": "My Earnings",
         "claimed_earnings": "Claimed Earnings",

@@ -130,7 +130,7 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
   };
 
   const getEarnedLastWeekSubtitle = () => {
-    if (lastPeriodUnranked || !lastPeriodRank) return i18n.t(i18n.l.points.points.unranked);
+    if (lastPeriodUnranked || !lastPeriodRank) return i18n.t(i18n.l.points.points.no_weekly_rank);
     if (lastPeriodRank <= 10) return i18n.t(i18n.l.points.points.top_10_earner);
     return i18n.t(i18n.l.points.points.ranking, {
       rank: lastPeriodRank.toLocaleString('en-US'),
@@ -146,7 +146,7 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
               loading={lastPeriodLoading}
               title={i18n.t(i18n.l.points.points.earned_last_week)}
               mainText={lastPeriodEarnings ? lastPeriodEarnings.toLocaleString('en-US') : undefined}
-              placeholderMainText={i18n.t(i18n.l.points.points.no_earnings)}
+              placeholderMainText={i18n.t(i18n.l.points.points.zero_points)}
               icon="􀠐"
               subtitle={getEarnedLastWeekSubtitle()}
               accentColor={labelSecondary}
