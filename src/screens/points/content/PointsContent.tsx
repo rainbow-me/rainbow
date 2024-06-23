@@ -47,7 +47,6 @@ import { RemoteCardCarousel } from '@/components/cards/remote-cards';
 import { usePoints } from '@/resources/points';
 import { GetPointsDataForWalletQuery } from '@/graphql/__generated__/metadataPOST';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
-import { NeonRainbowButtonMask } from '../components/NeonRainbowButtonMask';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { fonts } from '@/styles';
 import { typeHierarchy } from '@/design-system/typography/typeHierarchy';
@@ -63,6 +62,7 @@ import { Network } from '@/helpers';
 import { format, intervalToDuration } from 'date-fns';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { ETH_REWARDS, useExperimentalFlag } from '@/config';
+import { RewardsActionButton } from '../components/RewardsActionButton';
 
 const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined }) => {
   const labelSecondary = useForegroundColor('labelSecondary');
@@ -232,7 +232,7 @@ const ClaimCard = ({ claim, value }: { claim?: string; value?: string }) => {
       >
         <MaskedView
           maskElement={
-            <NeonRainbowButtonMask
+            <RewardsActionButton
               label={i18n.t(i18n.l.points.points.claim, {
                 value: claim || '',
               })}

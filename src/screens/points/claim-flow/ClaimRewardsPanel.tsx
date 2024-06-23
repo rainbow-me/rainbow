@@ -20,8 +20,6 @@ import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from 
 import { Network } from '@/helpers';
 import { ButtonPressAnimation } from '@/components/animations';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { NeonRainbowButtonMask } from '../components/NeonRainbowButtonMask';
-import MaskedView from '@react-native-masked-view/masked-view';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
@@ -37,6 +35,7 @@ import { getGasSettingsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelecte
 import { useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { RainbowError, logger } from '@/logger';
+import { RewardsActionButton } from '../components/RewardsActionButton';
 
 type ClaimStatus = 'idle' | 'claiming' | 'success' | PointsErrorType | 'error';
 type ClaimNetwork = '10' | '8453' | '7777777';
@@ -63,7 +62,7 @@ export const ClaimRewardsPanel = () => {
 
   return (
     <>
-      <Box style={[controlPanelStyles.panelContainer, { bottom: Math.max(safeAreaInsetValues.bottom + 5, 8) }]}>
+      <Box style={[controlPanelStyles.panelContainer, { bottom: Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30) }]}>
         <SmoothPager
           enableSwipeToGoBack={claimStatus === 'idle' || isClaimError(claimStatus)}
           initialPage={PAGES.CHOOSE_CLAIM_NETWORK}
@@ -133,7 +132,7 @@ const ChooseClaimNetwork = ({
     <ListPanel
       TitleComponent={
         <TextShadow shadowOpacity={0.3}>
-          <Text align="center" color={{ custom: highContrastAccentColor }} size="20pt" weight="heavy">
+          <Text align="center" color={{ custom: highContrastAccentColor }} numberOfLines={1} size="20pt" weight="heavy">
             {i18n.t(i18n.l.points.points.choose_claim_network)}
           </Text>
         </TextShadow>
@@ -512,17 +511,22 @@ const ClaimingRewards = ({
                   style={{
                     alignItems: 'center',
                     alignSelf: 'center',
-                    bottom: 10,
+                    bottom: 4,
                     left: 0,
                     height: 80,
                     justifyContent: 'center',
-                    marginVertical: -12,
                     paddingVertical: 12,
                     pointerEvents: 'box-only',
                     width: DEVICE_WIDTH - 28 * 2,
                   }}
                 >
-                  <MaskedView
+                  <RewardsActionButton
+                    borderRadius={22}
+                    color={claimStatus === 'success' ? green : highContrastAccentColor}
+                    label={buttonLabel}
+                    width={DEVICE_WIDTH - 28 * 2}
+                  />
+                  {/* <MaskedView
                     maskElement={<NeonRainbowButtonMask borderRadius={22} label={buttonLabel} width={DEVICE_WIDTH - 28 * 2} />}
                     style={{
                       alignItems: 'center',
@@ -540,7 +544,7 @@ const ClaimingRewards = ({
                         }}
                       />
                     </Bleed>
-                  </MaskedView>
+                  </MaskedView> */}
                 </ButtonPressAnimation>
               </Animated.View>
             </Box>

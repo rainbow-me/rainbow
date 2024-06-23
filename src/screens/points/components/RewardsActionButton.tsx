@@ -3,8 +3,9 @@ import { StyleSheet, View } from 'react-native';
 import { Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { opacity } from '@/__swaps__/utils/swaps';
 
-export const NeonRainbowButtonMask = ({
+export const RewardsActionButton = ({
   borderRadius = 20,
   color,
   label,
@@ -32,7 +33,7 @@ export const NeonRainbowButtonMask = ({
           styles.neonButton,
           {
             alignItems: 'center',
-            backgroundColor: isDarkMode ? `rgba(255, 255, 255, ${IS_IOS ? 0.025 : 0.15})` : 'transparent',
+            backgroundColor: isDarkMode ? opacity(color || defaultColor, IS_IOS ? 0.025 : 0.15) : 'transparent',
             borderColor: color || defaultColor,
             borderRadius,
             justifyContent: 'center',

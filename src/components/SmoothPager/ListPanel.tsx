@@ -118,10 +118,12 @@ export const ListHeader = memo(function ListHeader({
   return (
     <Box style={controlPanelStyles.listHeader}>
       <Box style={controlPanelStyles.listHeaderContent}>
-        {showBackButton && <BackButton BackButtonComponent={BackButtonComponent} goBack={goBack} />}
-        <Box alignItems="center" justifyContent="center" paddingHorizontal="44px" width="full">
+        <Box style={controlPanelStyles.listHeaderButtonWrapper}>
+          {showBackButton && <BackButton BackButtonComponent={BackButtonComponent} goBack={goBack} />}
+        </Box>
+        <Box style={controlPanelStyles.listHeaderTitle}>
           {TitleComponent || (
-            <Text align="center" color="label" size="20pt" weight="heavy">
+            <Text align="center" color="label" numberOfLines={1} size="20pt" weight="heavy">
               {title}
             </Text>
           )}
@@ -152,13 +154,13 @@ const BackButton = ({
   });
 
   return (
-    <ButtonPressAnimation onPress={goBack} scaleTo={0.8} style={controlPanelStyles.listHeaderButtonWrapper}>
+    <Box as={ButtonPressAnimation} onPress={goBack} scaleTo={0.8} style={controlPanelStyles.fillAndCenterContents}>
       {BackButtonComponent || (
         <AnimatedText align="center" size="icon 20px" style={backIconStyle} weight="bold">
           􀆉
         </AnimatedText>
       )}
-    </ButtonPressAnimation>
+    </Box>
   );
 };
 
@@ -326,11 +328,15 @@ export const controlPanelStyles = StyleSheet.create({
     top: 0,
     width: DEVICE_WIDTH,
   },
-  listHeader: {
+  fillAndCenterContents: {
     alignItems: 'center',
-    height: 65,
+    height: '100%',
     justifyContent: 'center',
     width: '100%',
+  },
+  listHeader: {
+    flex: 1,
+    height: 65,
   },
   listHeaderButtonWrapper: {
     alignItems: 'center',
@@ -343,15 +349,20 @@ export const controlPanelStyles = StyleSheet.create({
     zIndex: 10,
   },
   listHeaderContent: {
-    alignItems: 'center',
+    flexDirection: 'row',
     height: 64,
     justifyContent: 'center',
-    width: PANEL_WIDTH,
   },
   listHeaderRightComponent: {
     left: undefined,
     right: 8,
     top: 6,
+  },
+  listHeaderTitle: {
+    alignSelf: 'center',
+    flex: 1,
+    position: 'absolute',
+    width: PANEL_WIDTH - (44 + 12) * 2,
   },
   listPanel: {
     paddingHorizontal: 14,
@@ -366,13 +377,6 @@ export const controlPanelStyles = StyleSheet.create({
   listScrollViewContentContainer: {
     paddingBottom: 14,
     paddingTop: 8,
-  },
-  logo: {
-    borderCurve: 'continuous',
-    borderRadius: 12,
-    height: 44,
-    overflow: 'hidden',
-    width: 44,
   },
   menuItem: {
     alignItems: 'center',
