@@ -15,7 +15,6 @@ import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 // This action is used to bridge the claimed funds to another chain
 export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps<'claimBridge'>) {
   const { address, toChainId, sellAmount, chainId } = parameters;
-
   // Check if the address and toChainId are valid
   // otherwise we can't continue
   if (!toChainId || !address) {
@@ -92,29 +91,17 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
   // now that we have a valid quote for the maxBridgeableAmount we can estimate the gas limit
   let gasLimit;
   try {
-    try {
-      gasLimit = await provider.estimateGas({
-        from: address,
-        to: bridgeQuote.to as Address,
-        data: bridgeQuote.data,
-        value: bridgeQuote.value,
-        ...gasParams,
-      });
-    } catch (e) {
-      // Instead of failing we'll try using the default gas limit + 20%
-      gasLimit = (Number(bridgeQuote.defaultGasLimit) * 1.2).toString();
-    }
-  } catch (e) {
-    logger.error(new RainbowError('crosschainSwap: error estimateCrosschainSwapGasLimit'), {
-      message: (e as Error)?.message,
+    gasLimit = await provider.estimateGas({
+      from: address,
+      to: bridgeQuote.to as Address,
+      data: bridgeQuote.data,
+      value: bridgeQuote.value,
+      ...gasParams,
     });
-    throw e;
+  } catch (e) {
+    // Instead of failing we'll try using the default gas limit + 20%
+    gasLimit = (Number(bridgeQuote.defaultGasLimit) * 1.2).toString();
   }
-
-  // Just for ts purposes
-  // we'll never get here because the only scenario where gas limit is undefined
-  // it's when there's an error and we're throwing
-  if (!gasLimit) return;
 
   // we need to bump the base nonce to next available one
   const nonce = baseNonce ? baseNonce + 1 : undefined;

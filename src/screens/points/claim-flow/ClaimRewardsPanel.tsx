@@ -255,7 +255,7 @@ const ClaimingRewards = ({
           return { nonce: null };
         }
 
-        if (typeof bridgeNonce === 'number' && bridgeNonce >= 0) {
+        if (typeof bridgeNonce === 'number') {
           // clear and refresh claim data so available claim UI disappears
           invalidatePointsQuery(address);
           refetch();
@@ -270,7 +270,7 @@ const ClaimingRewards = ({
       }
     },
     onSuccess: async ({ nonce }: { nonce: number | null }) => {
-      if (typeof nonce === 'number' && nonce >= 0) {
+      if (typeof nonce === 'number') {
         setClaimStatus('success');
       }
     },
