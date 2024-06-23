@@ -17,7 +17,6 @@ import gridDotsLight from '@/assets/dot-grid-light.png';
 import ledgerNano from '@/assets/ledger-nano.png';
 import { ImgixImage } from '@/components/images';
 import { useBackgroundColor, useColorMode } from '@/design-system';
-import { useTheme } from '@/theme';
 import { deviceUtils } from '@/utils';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
@@ -55,6 +54,7 @@ type Props = {
   centerComponentStyle?: StyleProp<ViewStyle>;
   circleColors?: string[];
   circleRadius?: number;
+  connectedColor?: string;
   duration?: number;
   isConnected?: boolean;
   movementFactor?: number;
@@ -71,6 +71,7 @@ export function NanoXDeviceAnimation({
   centerComponentStyle,
   circleColors = CIRCLE_COLORS,
   circleRadius = 48,
+  connectedColor,
   duration = 3000,
   isConnected,
   movementFactor = 1,
@@ -80,7 +81,9 @@ export function NanoXDeviceAnimation({
   wrapperStyle,
 }: Props) {
   const { colorMode } = useColorMode();
+
   const defaultBackgroundColor = useBackgroundColor('surfaceSecondary');
+  const green = useBackgroundColor('green');
 
   // //////////////////////////////////////////////////////////////////
   // Ledger Nano X Image
@@ -132,6 +135,7 @@ export function NanoXDeviceAnimation({
               <AnimatedCircle
                 circleRadius={circleRadius}
                 color={color}
+                connectedColor={connectedColor || green}
                 duration={duration}
                 isConnected={isConnected}
                 key={index}
@@ -159,28 +163,29 @@ const getRandom = (min: number, max: number) => Math.random() * (max - min) + mi
 function AnimatedCircle({
   circleRadius,
   color,
+  connectedColor,
   duration,
+  isConnected,
   opacity,
   movementFactor,
   xOrigin,
   yOrigin,
-  isConnected,
 }: {
   circleRadius: number;
   color: string;
+  connectedColor: string;
   duration: number;
+  isConnected?: boolean;
   opacity: number;
   movementFactor: number;
   xOrigin: SharedValue<number>;
   yOrigin: SharedValue<number>;
-  isConnected?: boolean;
 }) {
   const isConnectedValue = useSharedValue(isConnected ? 1 : 0);
 
   const progressOffset = getRandom(0, 2 * Math.PI);
   const progress = useSharedValue(progressOffset);
 
-  const { colors } = useTheme();
   const colorValue = useSharedValue(color);
 
   const x = useSharedValue(0);
@@ -225,7 +230,7 @@ function AnimatedCircle({
         yOffset.value;
 
       // color animation
-      colorValue.value = interpolateColor(isConnectedValue, [0, 1], [color, colors.green]);
+      colorValue.value = interpolateColor(isConnectedValue, [0, 1], [color, connectedColor]);
     }
   );
 

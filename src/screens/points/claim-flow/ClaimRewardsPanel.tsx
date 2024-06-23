@@ -47,6 +47,11 @@ const PAGES = {
   CLAIMING_REWARDS: 'claiming-rewards',
 };
 
+const isClaimError = (claimStatus: ClaimStatus) => {
+  'worklet';
+  return claimStatus === 'error' || Object.values(PointsErrorType).includes(claimStatus as PointsErrorType);
+};
+
 export const ClaimRewardsPanel = () => {
   const { goBack, goToPage, ref } = usePagerNavigation();
 
@@ -58,9 +63,21 @@ export const ClaimRewardsPanel = () => {
   return (
     <>
       <Box style={[controlPanelStyles.panelContainer, { bottom: Math.max(safeAreaInsetValues.bottom + 5, 8) }]}>
-        <SmoothPager enableSwipeToGoBack={claimStatus === 'idle'} initialPage={PAGES.CHOOSE_CLAIM_NETWORK} ref={ref}>
+        <SmoothPager
+          enableSwipeToGoBack={claimStatus === 'idle' || isClaimError(claimStatus)}
+          initialPage={PAGES.CHOOSE_CLAIM_NETWORK}
+          ref={ref}
+        >
           <SmoothPager.Page
-            component={<ChooseClaimNetwork goBack={goBack} goToPage={goToPage} selectNetwork={setSelectedNetwork} />}
+            component={
+              <ChooseClaimNetwork
+                claimStatus={claimStatus}
+                goBack={goBack}
+                goToPage={goToPage}
+                selectNetwork={setSelectedNetwork}
+                setClaimStatus={setClaimStatus}
+              />
+            }
             id={PAGES.CHOOSE_CLAIM_NETWORK}
           />
           <SmoothPager.Page
@@ -84,13 +101,17 @@ const NETWORK_LIST_ITEMS = CLAIM_NETWORKS.map(chainId => {
 });
 
 const ChooseClaimNetwork = ({
+  claimStatus,
   goBack,
   goToPage,
   selectNetwork,
+  setClaimStatus,
 }: {
+  claimStatus: ClaimStatus;
   goBack: () => void;
   goToPage: (id: string) => void;
   selectNetwork: (network: ClaimNetwork) => void;
+  setClaimStatus: React.Dispatch<React.SetStateAction<ClaimStatus>>;
 }) => {
   const { highContrastAccentColor } = useAccountAccentColor();
   const { isDarkMode } = useColorMode();
@@ -99,8 +120,12 @@ const ChooseClaimNetwork = ({
     (selectedItemId: string) => {
       selectNetwork(selectedItemId as ClaimNetwork);
       goToPage(PAGES.CLAIMING_REWARDS);
+
+      if (isClaimError(claimStatus)) {
+        setClaimStatus('idle');
+      }
     },
-    [goToPage, selectNetwork]
+    [claimStatus, goToPage, selectNetwork, setClaimStatus]
   );
 
   return (
@@ -155,6 +180,7 @@ const ClaimingRewards = ({
   });
 
   const green = useBackgroundColor('green');
+  const red = useBackgroundColor('red');
 
   const rewards = points?.points?.user?.rewards;
   const { claimable } = rewards || {};
@@ -235,7 +261,7 @@ const ClaimingRewards = ({
         gasParams,
       } satisfies RapSwapActionParameters<'claimBridge'>;
 
-      const provider = await getProviderForNetwork(Network.optimism);
+      const provider = getProviderForNetwork(Network.optimism);
       const wallet = await loadWallet(address, false, provider);
       if (!wallet) {
         Alert.alert(i18n.t(i18n.l.swap.unable_to_load_wallet));
@@ -276,6 +302,19 @@ const ClaimingRewards = ({
     },
   });
 
+  const buttonLabel = useMemo(() => {
+    switch (claimStatus) {
+      case 'idle':
+      case 'claiming':
+        return i18n.t(i18n.l.points.points.claim_rewards);
+      case 'success':
+        return i18n.t(i18n.l.button.done);
+      case 'error':
+      default:
+        return i18n.t(i18n.l.points.points.try_again);
+    }
+  }, [claimStatus]);
+
   const panelTitle = useMemo(() => {
     switch (claimStatus) {
       case 'idle':
@@ -290,21 +329,34 @@ const ClaimingRewards = ({
         return i18n.t(i18n.l.points.points.claimed_on_network, {
           network: chainId ? ChainNameDisplay[chainId] : '',
         });
+      case 'error':
+      default:
+        return i18n.t(i18n.l.points.points.error_claiming);
     }
   }, [chainId, claimStatus]);
 
+  const panelTitleColor = useMemo(() => {
+    switch (claimStatus) {
+      case 'idle':
+      case 'claiming':
+        return highContrastAccentColor;
+      case 'success':
+        return green;
+      case 'error':
+      default:
+        return red;
+    }
+  }, [claimStatus, green, highContrastAccentColor, red]);
+
   const claimableAmountStyle = useAnimatedStyle(() => {
+    const shouldSlideUp = claimStatus === 'idle' || claimStatus === 'success' || isClaimError(claimStatus);
     return {
-      transform: [
-        {
-          translateY: withTiming(claimStatus === 'idle' || claimStatus === 'success' ? -12 : 12, TIMING_CONFIGS.slowFadeConfig),
-        },
-      ],
+      transform: [{ translateY: withTiming(shouldSlideUp ? -12 : 12, TIMING_CONFIGS.slowFadeConfig) }],
     };
   });
 
   const claimButtonStyle = useAnimatedStyle(() => {
-    const shouldDisplay = claimStatus === 'idle' || claimStatus === 'success';
+    const shouldDisplay = claimStatus === 'idle' || claimStatus === 'success' || isClaimError(claimStatus);
     return {
       opacity: withTiming(shouldDisplay ? 1 : 0, TIMING_CONFIGS.slowFadeConfig),
       pointerEvents: shouldDisplay ? 'auto' : 'none',
@@ -312,7 +364,7 @@ const ClaimingRewards = ({
   });
 
   const panelAvatarStyle = useAnimatedStyle(() => {
-    const shouldDisplay = claimStatus === 'idle';
+    const shouldDisplay = claimStatus === 'idle' || isClaimError(claimStatus);
     return {
       opacity: withTiming(shouldDisplay ? 1 : 0, TIMING_CONFIGS.slowFadeConfig),
     };
@@ -353,27 +405,22 @@ const ClaimingRewards = ({
                 size={18}
               />
             )}
-            {claimStatus === 'success' && (
+            {(claimStatus === 'success' || isClaimError(claimStatus)) && (
               <TextShadow shadowOpacity={0.3}>
-                <Text align="center" color="green" size="icon 17px" weight="heavy">
-                  􀁣
+                <Text align="center" color={{ custom: panelTitleColor }} size="icon 17px" weight="heavy">
+                  {claimStatus === 'success' ? '􀁣' : '􀇿'}
                 </Text>
               </TextShadow>
             )}
             <TextShadow shadowOpacity={0.3}>
-              <Text
-                align="center"
-                color={claimStatus === 'success' ? 'green' : { custom: highContrastAccentColor }}
-                size="20pt"
-                weight="heavy"
-              >
+              <Text align="center" color={{ custom: panelTitleColor }} size="20pt" weight="heavy">
                 {panelTitle}
               </Text>
             </TextShadow>
           </Box>
         }
         goBack={goBack}
-        showBackButton={claimStatus === 'idle'}
+        showBackButton={claimStatus === 'idle' || isClaimError(claimStatus)}
       />
       <Box
         alignItems="center"
@@ -421,12 +468,7 @@ const ClaimingRewards = ({
                   color={claimStatus === 'success' ? globalColors.grey100 : undefined}
                   shadowOpacity={claimStatus === 'success' ? 0.2 : 0.3}
                 >
-                  <Text
-                    align="center"
-                    color={claimStatus === 'success' ? 'green' : { custom: highContrastAccentColor }}
-                    size="20pt"
-                    weight="black"
-                  >
+                  <Text align="center" color={{ custom: panelTitleColor }} size="20pt" weight="black">
                     {initialClaimableAmounts.eth}
                   </Text>
                 </TextShadow>
@@ -434,7 +476,7 @@ const ClaimingRewards = ({
               <Animated.View style={claimButtonStyle}>
                 <ButtonPressAnimation
                   onPress={() => {
-                    if (claimStatus === 'idle') {
+                    if (claimStatus === 'idle' || isClaimError(claimStatus)) {
                       // Almost impossible to reach here since gas prices load immediately
                       // but in that case I'm disabling the action temporarily to prevent
                       // any issues that might arise from the gas prices not being loaded
@@ -461,13 +503,7 @@ const ClaimingRewards = ({
                   }}
                 >
                   <MaskedView
-                    maskElement={
-                      <NeonRainbowButtonMask
-                        borderRadius={22}
-                        label={claimStatus === 'success' ? i18n.t(i18n.l.button.done) : i18n.t(i18n.l.points.points.claim_rewards)}
-                        width={DEVICE_WIDTH - 28 * 2}
-                      />
-                    }
+                    maskElement={<NeonRainbowButtonMask borderRadius={22} label={buttonLabel} width={DEVICE_WIDTH - 28 * 2} />}
                     style={{
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -496,9 +532,9 @@ const ClaimingRewards = ({
           duration={10000}
           isConnected={claimStatus === 'success'}
           movementFactor={1.75}
-          opacity={(isDarkMode ? 0.4 : 1) * (claimStatus === 'success' ? 0.8 : 1)}
+          opacity={(isDarkMode ? 0.4 : 1) * (claimStatus === 'success' || isClaimError(claimStatus) ? 0.75 : 1)}
           showGridDots={false}
-          state={claimStatus === 'idle' ? 'idle' : 'loading'}
+          state={claimStatus === 'idle' || isClaimError(claimStatus) ? 'idle' : 'loading'}
           wrapperStyle={{ height: CLAIMING_STEP_HEIGHT, top: 0 }}
         />
       </Box>
