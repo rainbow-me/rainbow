@@ -1424,7 +1424,7 @@
         "now": "Now",
         "unranked": "Unranked",
         "points_to_rank": "750 points to rank",
-        "ranking": "Rank #%{rank}",
+        "ranking": "Placed #%{rank}",
         "available_to_claim": "Available to Claim",
         "claim": "Claim %{value}",
         "choose_claim_network": "Choose Claim Network",
