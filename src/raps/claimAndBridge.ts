@@ -3,7 +3,7 @@ import { RapAction, RapClaimActionParameters } from './references';
 
 export const createClaimAndBridgeRap = async (claimParameters: RapClaimActionParameters) => {
   let actions: RapAction<'crosschainSwap' | 'claim' | 'claimBridge'>[] = [];
-  const { assetToSell, sellAmount, assetToBuy, meta, chainId, toChainId, address } = claimParameters;
+  const { assetToSell, sellAmount, assetToBuy, meta, chainId, toChainId, address, gasParams } = claimParameters;
 
   const claim = createNewAction('claim', claimParameters);
   actions = actions.concat(claim);
@@ -20,6 +20,7 @@ export const createClaimAndBridgeRap = async (claimParameters: RapClaimActionPar
       sellAmount,
       assetToBuy,
       quote: undefined,
+      gasParams,
     } satisfies RapClaimActionParameters);
 
     actions = actions.concat(bridge);

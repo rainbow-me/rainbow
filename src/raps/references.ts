@@ -76,6 +76,7 @@ export interface RapClaimActionParameters {
   chainId: ChainId;
   toChainId?: ChainId;
   quote: undefined;
+  gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
 }
 
 export type RapActionParameters =
