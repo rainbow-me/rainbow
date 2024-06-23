@@ -343,14 +343,14 @@ const ClaimingRewards = ({
           </Animated.View>
         }
         TitleComponent={
-          <Box alignItems="center" flexDirection="row" gap={claimStatus === 'claiming' ? 8 : 6} justifyContent="center">
+          <Box alignItems="center" flexDirection="row" gap={claimStatus === 'claiming' ? 10 : 6} justifyContent="center">
             {claimStatus === 'claiming' && (
               <AnimatedSpinner
                 color={highContrastAccentColor}
                 isLoading
                 requireSrc={require('@/assets/spinner.png')}
                 scaleInFrom={0.4}
-                size={17}
+                size={18}
               />
             )}
             {claimStatus === 'success' && (
