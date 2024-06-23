@@ -17,6 +17,7 @@ import gridDotsLight from '@/assets/dot-grid-light.png';
 import ledgerNano from '@/assets/ledger-nano.png';
 import { ImgixImage } from '@/components/images';
 import { useBackgroundColor, useColorMode } from '@/design-system';
+import { useTheme } from '@/theme';
 import { deviceUtils } from '@/utils';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 
@@ -81,9 +82,9 @@ export function NanoXDeviceAnimation({
   wrapperStyle,
 }: Props) {
   const { colorMode } = useColorMode();
+  const { colors } = useTheme();
 
   const defaultBackgroundColor = useBackgroundColor('surfaceSecondary');
-  const green = useBackgroundColor('green');
 
   // //////////////////////////////////////////////////////////////////
   // Ledger Nano X Image
@@ -135,7 +136,7 @@ export function NanoXDeviceAnimation({
               <AnimatedCircle
                 circleRadius={circleRadius}
                 color={color}
-                connectedColor={connectedColor || green}
+                connectedColor={connectedColor || colors.green}
                 duration={duration}
                 isConnected={isConnected}
                 key={index}
