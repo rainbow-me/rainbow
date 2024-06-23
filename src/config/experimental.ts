@@ -61,7 +61,7 @@ export const defaultConfig: Record<string, ExperimentalValue> = {
   [POINTS_NOTIFICATIONS_TOGGLE]: { settings: true, value: false },
   [DAPP_BROWSER]: { settings: true, value: IS_TEST ? true : false },
   [SWAPS_V2]: { settings: true, value: false },
-  [ETH_REWARDS]: { settings: true, value: true },
+  [ETH_REWARDS]: { settings: true, value: false },
 };
 
 const storageKey = 'config';
