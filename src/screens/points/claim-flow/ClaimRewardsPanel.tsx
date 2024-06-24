@@ -517,7 +517,7 @@ const ClaimingRewards = ({
 
                       setClaimStatus('claiming');
                       claimRewards();
-                    } else if (claimStatus === 'success') {
+                    } else if (claimStatus === 'success' || claimStatus === 'bridge-error') {
                       closeClaimPanel();
                     }
                   }}
