@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import SheetActionButton from './SheetActionButton';
-import { useExpandedStateNavigation, useWallets } from '@/hooks';
+import { useExpandedStateNavigation, useSwapCurrencyHandlers, useWallets } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { RainbowToken } from '@/entities';
@@ -16,6 +16,7 @@ import assetInputTypes from '@/helpers/assetInputTypes';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
 import { AddressOrEth, AssetType, ParsedSearchAsset } from '@/__swaps__/types/assets';
+import exchangeModalTypes from '@/helpers/exchangeModalTypes';
 
 type SwapActionButtonProps = {
   asset: RainbowToken;
@@ -34,6 +35,13 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
   const { isReadOnlyWallet } = useWallets();
 
   const color = givenColor || colors.swapPurple;
+
+  useSwapCurrencyHandlers({
+    defaultInputAsset: inputType === assetInputTypes.in ? asset : null,
+    defaultOutputAsset: inputType === assetInputTypes.out ? asset : null,
+    shouldUpdate: true,
+    type: exchangeModalTypes.swap,
+  });
 
   const old_navigate = useExpandedStateNavigation(inputType, fromDiscover, asset);
   const goToSwap = useCallback(async () => {
