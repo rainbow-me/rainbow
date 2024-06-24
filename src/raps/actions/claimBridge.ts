@@ -4,13 +4,13 @@ import { Address } from 'viem';
 import { ActionProps } from '../references';
 import { executeCrosschainSwap } from './crosschainSwap';
 import { RainbowError } from '@/logger';
-import { add, addBuffer, lessThan, multiply, subtract } from '@/helpers/utilities';
+import { add, addBuffer, greaterThan, lessThan, multiply, subtract } from '@/helpers/utilities';
 import { getProviderForNetwork } from '@/handlers/web3';
 import { Network } from '@/helpers';
 import { TxHash } from '@/resources/transactions/types';
 import { NewTransaction, TransactionGasParamAmounts } from '@/entities';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { getNetworkFromChainId } from '@/utils/ethereumUtils';
+import ethereumUtils, { getNetworkFromChainId } from '@/utils/ethereumUtils';
 
 // This action is used to bridge the claimed funds to another chain
 export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps<'claimBridge'>) {
@@ -46,13 +46,28 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
   // 2 - We use the default gas limit (already inflated) from the quote to calculate the aproximate gas fee
   const initalGasLimit = bridgeQuote.defaultGasLimit as string;
 
+  const provider = getProviderForNetwork(Network.optimism);
+
+  const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
+    // @ts-ignore
+    {
+      data: bridgeQuote.data,
+      from: bridgeQuote.from,
+      to: bridgeQuote.to ?? null,
+      value: bridgeQuote.value,
+    },
+    provider
+  );
+
   // Force typing since we only deal with 1559 gas params here
   const gasParams = parameters.gasParams as TransactionGasParamAmounts;
   const feeAmount = add(gasParams.maxFeePerGas, gasParams.maxPriorityFeePerGas);
-  const gasFeeInWei = multiply(initalGasLimit, feeAmount);
+  let gasFeeInWei = multiply(initalGasLimit, feeAmount);
+  if (l1GasFeeOptimism && greaterThan(l1GasFeeOptimism.toString(), '0')) {
+    gasFeeInWei = add(gasFeeInWei, l1GasFeeOptimism.toString());
+  }
 
   // 3 - Check if the user has enough balance to pay the gas fee
-  const provider = getProviderForNetwork(Network.optimism);
 
   const balance = await provider.getBalance(address);
 
