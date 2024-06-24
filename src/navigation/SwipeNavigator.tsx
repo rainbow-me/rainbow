@@ -116,7 +116,7 @@ interface TabBarProps {
 }
 
 const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
-  const { accentColor } = useAccountAccentColor();
+  const { highContrastAccentColor: accentColor } = useAccountAccentColor();
   const { tabViewProgress } = useBrowserTabViewProgressContext();
   const { isDarkMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();
