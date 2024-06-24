@@ -59,5 +59,8 @@ export function useSwapEstimatedGasFee(gasSettings: GasSettings | undefined) {
   const { data: estimatedGasLimit, isFetching } = useSwapEstimatedGasLimit({ chainId, assetToSell, quote });
   const estimatedFee = useEstimatedGasFee({ chainId, gasLimit: estimatedGasLimit, gasSettings });
 
-  return useMemo(() => ({ isLoading: isFetching, data: estimatedFee }), [estimatedFee, isFetching]);
+  return {
+    data: estimatedFee,
+    isLoading: isFetching,
+  };
 }
