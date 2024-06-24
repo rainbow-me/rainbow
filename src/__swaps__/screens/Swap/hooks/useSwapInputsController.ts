@@ -133,7 +133,7 @@ export function useSwapInputsController({
       });
     }
 
-    if (inputValues.value.inputAmount === internalSelectedInputAsset.value.maxSwappableAmount) {
+    if (equalWorklet(inputValues.value.inputAmount, internalSelectedInputAsset.value.maxSwappableAmount)) {
       const formattedAmount = valueBasedDecimalFormatter({
         amount: inputValues.value.inputAmount,
         isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,

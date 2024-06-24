@@ -22,6 +22,7 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import { AnimatedText, Bleed, Box, Column, Columns, Inline, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { triggerHapticFeedback } from '@/screens/points/constants';
+import { equalWorklet, greaterThanWorklet } from '@/__swaps__/safe-math/SafeMath';
 import {
   SCRUBBER_WIDTH,
   SLIDER_COLLAPSED_HEIGHT,
@@ -34,7 +35,6 @@ import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider
 import { clamp, getColorValueForThemeWorklet, opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
 import { GestureHandlerV1Button } from './GestureHandlerV1Button';
-import { greaterThanWorklet } from '@/__swaps__/safe-math/SafeMath';
 
 type SwapSliderProps = {
   dualColor?: boolean;
@@ -160,6 +160,7 @@ export const SwapSlider = ({
           ctx.exceedsMax = true;
           isQuoteStale.value = 1;
           sliderXPosition.value = width * 0.999;
+          runOnJS(triggerHapticFeedback)('impactMedium');
         }
       }
 
@@ -418,24 +419,23 @@ export const SwapSlider = ({
                   </Inline>
                 </Inline>
                 <Column width="content">
-                  <GestureHandlerV1Button
-                    style={{ margin: -12, padding: 12 }}
+                <GestureHandlerV1Button
                     onPressWorklet={() => {
                       'worklet';
                       SwapInputController.inputMethod.value = 'slider';
-
+                      
                       const currentInputValue = SwapInputController.inputValues.value.inputAmount;
                       const maxSwappableAmount = internalSelectedInputAsset.value?.maxSwappableAmount;
-
-                      const isAlreadyMax = currentInputValue === maxSwappableAmount;
+                      
+                      const isAlreadyMax = maxSwappableAmount ? equalWorklet(currentInputValue, maxSwappableAmount) : false;
                       const exceedsMax = maxSwappableAmount ? greaterThanWorklet(currentInputValue, maxSwappableAmount) : false;
-
+                      
                       if (isAlreadyMax) {
                         runOnJS(triggerHapticFeedback)('impactMedium');
                       } else {
                         SwapInputController.quoteFetchingInterval.stop();
                         if (exceedsMax) sliderXPosition.value = width * 0.999;
-
+                        
                         sliderXPosition.value = withSpring(width, SPRING_CONFIGS.snappySpringConfig, isFinished => {
                           if (isFinished) {
                             runOnJS(onChangeWrapper)(1);
@@ -443,6 +443,7 @@ export const SwapSlider = ({
                         });
                       }
                     }}
+                    style={{ margin: -12, padding: 12 }}
                     ref={maxButtonRef}
                   >
                     <AnimatedText align="center" size="15pt" style={maxTextColor} weight="heavy">
