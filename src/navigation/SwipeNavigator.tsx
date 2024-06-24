@@ -43,6 +43,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import Routes from './routesNames';
 import { ScrollPositionContext } from './ScrollPositionContext';
 import SectionListScrollToTopProvider, { useSectionListScrollToTopContext } from './SectionListScrollToTopContext';
+import { TextSize } from '@/design-system/components/Text/Text';
 
 export const TAB_BAR_HEIGHT = getTabBarHeight();
 
@@ -77,15 +78,26 @@ const ActivityTabIcon = React.memo(
     reanimatedPosition: SharedValue<number>;
   }) => {
     const { pendingTransactions } = usePendingTransactions();
-    const isLoading = useSharedValue(true);
 
-    return pendingTransactions.length > 0 ? (
-      <Box width={{ custom: 32 }} height={{ custom: 32 }} alignItems="center" justifyContent="center">
-        <AnimatedSpinner isLoading={isLoading} color={accentColor} size={28} />
+    const pendingCount = pendingTransactions.length;
+
+    const textSize: TextSize = useMemo(() => {
+      if (pendingCount < 10) {
+        return '15pt';
+      } else if (pendingCount < 20) {
+        return '12pt';
+      } else {
+        return '11pt';
+      }
+    }, [pendingCount]);
+
+    return pendingCount > 0 ? (
+      <Box width={{ custom: 28 }} height={{ custom: 28 }} alignItems="center" justifyContent="center">
+        <AnimatedSpinner color={accentColor} isLoading requireSrc={require('@/assets/tabSpinner.png')} size={28} />
         <Cover>
-          <Box width="full" height="full" padding={{ custom: 7 }} alignItems="center" justifyContent="center">
-            <Text color={{ custom: accentColor }} size="13pt" weight="heavy" align="center">
-              {pendingTransactions.length}
+          <Box width="full" height="full" alignItems="center" justifyContent="center">
+            <Text color={{ custom: accentColor }} size={textSize} weight="heavy" align="center">
+              {pendingCount}
             </Text>
           </Box>
         </Cover>
