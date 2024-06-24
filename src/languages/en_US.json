@@ -1448,7 +1448,9 @@
         "rewards_explainer": "Every week, the top weekly points earners will receive a portion of Rainbow’s onchain revenue. Collect points by swapping or transacting in Rainbow, using dapps, or referring friends.",
         "my_points": "My Points",
         "refer_friends": "Refer Friends",
-        "try_again": "Try Again"
+        "try_again": "Try Again",
+        "bridge_error": "Partial Success",
+        "bridge_error_explainer": "Your rewards were successfully claimed on Optimism, but the transfer to %{network} failed. If you'd like, you can bridge your rewards manually using the Swap feature."
       },
       "console": {
         "claim_bonus_paragraph": "You'll receive an additional 100 points once you swap at least $100 through Rainbow",

@@ -37,7 +37,7 @@ import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { RainbowError, logger } from '@/logger';
 import { RewardsActionButton } from '../components/RewardsActionButton';
 
-type ClaimStatus = 'idle' | 'claiming' | 'success' | PointsErrorType | 'error';
+type ClaimStatus = 'idle' | 'claiming' | 'success' | PointsErrorType | 'error' | 'bridge-error';
 type ClaimNetwork = '10' | '8453' | '7777777';
 
 const CLAIM_NETWORKS = [ChainId.base, ChainId.optimism, ChainId.zora];
@@ -217,7 +217,7 @@ const ClaimingRewards = ({
         chainName: chainNameFromChainId(ChainId.optimism),
       };
 
-      // fetch the native asset from the destination chain
+      // Fetch the native asset from the destination chain
       let destinationEth_;
       if (chainId === ChainId.base) {
         destinationEth_ = await ethereumUtils.getNativeAssetForNetwork(getNetworkFromChainId(ChainId.base));
@@ -264,8 +264,7 @@ const ClaimingRewards = ({
       const provider = getProviderForNetwork(Network.optimism);
       const wallet = await loadWallet(address, false, provider);
       if (!wallet) {
-        // Here we need to handle biometrics auth failure.
-        // Maybe set to try again (?)
+        // Biometrics auth failure (retry possible)
         setClaimStatus('error');
         return { nonce: null };
       }
@@ -280,12 +279,11 @@ const ClaimingRewards = ({
 
         if (errorMessage) {
           if (errorMessage.includes('[CLAIM]')) {
-            // Handle claim error. Retry is possible
+            // Claim error (retry possible)
             setClaimStatus('error');
           } else {
-            // TODOL: Handle other errors(including bridge errors)
-            // Retry is not possible!
-            setClaimStatus('error');
+            // Bridge error (retry not possible)
+            setClaimStatus('bridge-error');
           }
 
           logger.error(new RainbowError('ETH REWARDS CLAIM ERROR'), { message: errorMessage });
@@ -294,7 +292,7 @@ const ClaimingRewards = ({
         }
 
         if (typeof bridgeNonce === 'number') {
-          // clear and refresh claim data so available claim UI disappears
+          // Clear and refresh claim data so available claim UI disappears
           invalidatePointsQuery(address);
           refetch();
           return { nonce: bridgeNonce };
@@ -327,6 +325,7 @@ const ClaimingRewards = ({
       case 'claiming':
         return i18n.t(i18n.l.points.points.claim_rewards);
       case 'success':
+      case 'bridge-error':
         return i18n.t(i18n.l.button.done);
       case 'error':
       default:
@@ -348,6 +347,8 @@ const ClaimingRewards = ({
         return i18n.t(i18n.l.points.points.claimed_on_network, {
           network: chainId ? ChainNameDisplay[chainId] : '',
         });
+      case 'bridge-error':
+        return i18n.t(i18n.l.points.points.bridge_error);
       case 'error':
       default:
         return i18n.t(i18n.l.points.points.error_claiming);
@@ -358,6 +359,7 @@ const ClaimingRewards = ({
     switch (claimStatus) {
       case 'idle':
       case 'claiming':
+      case 'bridge-error':
         return highContrastAccentColor;
       case 'success':
         return green;
@@ -368,14 +370,16 @@ const ClaimingRewards = ({
   }, [claimStatus, green, highContrastAccentColor, red]);
 
   const claimableAmountStyle = useAnimatedStyle(() => {
-    const shouldSlideUp = claimStatus === 'idle' || claimStatus === 'success' || isClaimError(claimStatus);
+    const shouldSlideUp =
+      claimStatus === 'idle' || claimStatus === 'success' || claimStatus === 'bridge-error' || isClaimError(claimStatus);
     return {
       transform: [{ translateY: withTiming(shouldSlideUp ? -12 : 12, TIMING_CONFIGS.slowFadeConfig) }],
     };
   });
 
   const claimButtonStyle = useAnimatedStyle(() => {
-    const shouldDisplay = claimStatus === 'idle' || claimStatus === 'success' || isClaimError(claimStatus);
+    const shouldDisplay =
+      claimStatus === 'idle' || claimStatus === 'success' || claimStatus === 'bridge-error' || isClaimError(claimStatus);
     return {
       opacity: withTiming(shouldDisplay ? 1 : 0, TIMING_CONFIGS.slowFadeConfig),
       pointerEvents: shouldDisplay ? 'auto' : 'none',
@@ -424,7 +428,7 @@ const ClaimingRewards = ({
                 size={18}
               />
             )}
-            {(claimStatus === 'success' || isClaimError(claimStatus)) && (
+            {(claimStatus === 'success' || isClaimError(claimStatus) || claimStatus === 'bridge-error') && (
               <TextShadow shadowOpacity={0.3}>
                 <Text align="center" color={{ custom: panelTitleColor }} size="icon 17px" weight="heavy">
                   {claimStatus === 'success' ? '􀁣' : '􀇿'}
@@ -483,14 +487,24 @@ const ClaimingRewards = ({
                     </Text>
                   </TextShadow>
                 </Box>
-                <TextShadow
-                  color={claimStatus === 'success' ? globalColors.grey100 : undefined}
-                  shadowOpacity={claimStatus === 'success' ? 0.2 : 0.3}
-                >
-                  <Text align="center" color={{ custom: panelTitleColor }} size="20pt" weight="black">
-                    {initialClaimableAmounts.eth}
-                  </Text>
-                </TextShadow>
+                {claimStatus === 'bridge-error' ? (
+                  <Box paddingHorizontal="44px">
+                    <Text align="center" color="labelQuaternary" size="13pt / 135%" weight="semibold">
+                      {i18n.t(i18n.l.points.points.bridge_error_explainer, {
+                        network: chainId ? ChainNameDisplay[chainId] : '',
+                      })}
+                    </Text>
+                  </Box>
+                ) : (
+                  <TextShadow
+                    color={claimStatus === 'success' ? globalColors.grey100 : undefined}
+                    shadowOpacity={claimStatus === 'success' ? 0.2 : 0.3}
+                  >
+                    <Text align="center" color={{ custom: panelTitleColor }} size="20pt" weight="black">
+                      {initialClaimableAmounts.eth}
+                    </Text>
+                  </TextShadow>
+                )}
               </Box>
               <Animated.View style={claimButtonStyle}>
                 <ButtonPressAnimation
@@ -526,25 +540,6 @@ const ClaimingRewards = ({
                     label={buttonLabel}
                     width={DEVICE_WIDTH - 28 * 2}
                   />
-                  {/* <MaskedView
-                    maskElement={<NeonRainbowButtonMask borderRadius={22} label={buttonLabel} width={DEVICE_WIDTH - 28 * 2} />}
-                    style={{
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      overflow: 'visible',
-                      width: DEVICE_WIDTH,
-                    }}
-                  >
-                    <Bleed vertical={{ custom: 116 }}>
-                      <Box
-                        style={{
-                          backgroundColor: claimStatus === 'success' ? green : highContrastAccentColor,
-                          height: 116 + 56 + 116,
-                          width: DEVICE_WIDTH,
-                        }}
-                      />
-                    </Bleed>
-                  </MaskedView> */}
                 </ButtonPressAnimation>
               </Animated.View>
             </Box>
@@ -558,7 +553,7 @@ const ClaimingRewards = ({
           movementFactor={1.75}
           opacity={(isDarkMode ? 0.4 : 1) * (claimStatus === 'success' || isClaimError(claimStatus) ? 0.75 : 1)}
           showGridDots={false}
-          state={claimStatus === 'idle' || isClaimError(claimStatus) ? 'idle' : 'loading'}
+          state={claimStatus === 'idle' || claimStatus === 'bridge-error' || isClaimError(claimStatus) ? 'idle' : 'loading'}
           wrapperStyle={{ height: CLAIMING_STEP_HEIGHT, top: 0 }}
         />
       </Box>
