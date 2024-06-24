@@ -36,6 +36,7 @@ import { useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { RainbowError, logger } from '@/logger';
 import { RewardsActionButton } from '../components/RewardsActionButton';
+import { DummyClaimStatus, useDummyClaimStore } from '../dummyClaimStore';
 
 type ClaimStatus = 'idle' | 'claiming' | 'success' | PointsErrorType | 'error' | 'bridge-error';
 type ClaimNetwork = '10' | '8453' | '7777777';
@@ -55,7 +56,10 @@ const isClaimError = (claimStatus: ClaimStatus) => {
 export const ClaimRewardsPanel = () => {
   const { goBack, goToPage, ref } = usePagerNavigation();
 
-  const [claimStatus, setClaimStatus] = useState<ClaimStatus>('idle');
+  // const [claimStatus, setClaimStatus] = useState<ClaimStatus>('idle');
+  const claimStatus = useDummyClaimStore(state => state.claimStatus);
+  const setClaimStatus = useDummyClaimStore(state => state.setClaimStatus);
+
   const [selectedNetwork, setSelectedNetwork] = useState<ClaimNetwork>();
 
   const chainId = selectedNetwork ? (parseInt(selectedNetwork) as ChainId) : undefined;
@@ -111,7 +115,7 @@ const ChooseClaimNetwork = ({
   goBack: () => void;
   goToPage: (id: string) => void;
   selectNetwork: (network: ClaimNetwork) => void;
-  setClaimStatus: React.Dispatch<React.SetStateAction<ClaimStatus>>;
+  setClaimStatus: (status: DummyClaimStatus) => void;
 }) => {
   const { highContrastAccentColor } = useAccountAccentColor();
   const { isDarkMode } = useColorMode();
@@ -166,14 +170,14 @@ const ClaimingRewards = ({
   chainId: ChainId | undefined;
   claimStatus: ClaimStatus;
   goBack: () => void;
-  setClaimStatus: React.Dispatch<React.SetStateAction<ClaimStatus>>;
+  setClaimStatus: (status: DummyClaimStatus) => void;
 }) => {
-  const { accountAddress: address, accountImage, accountColor, accountSymbol } = useAccountProfile();
-  const { nativeCurrency: currency } = useAccountSettings();
+  const { accountImage, accountColor, accountSymbol } = useAccountProfile();
+  // const { nativeCurrency: currency } = useAccountSettings();
   const { highContrastAccentColor } = useAccountAccentColor();
   const { isDarkMode } = useColorMode();
   const { goBack: closeClaimPanel } = useNavigation();
-  const { data: points, refetch } = usePoints({ walletAddress: address });
+  // const { data: points, refetch } = usePoints({ walletAddress: address });
   const { data: meteorologyData } = useMeteorologySuggestions({
     chainId: ChainId.optimism,
     enabled: true,
@@ -182,142 +186,142 @@ const ClaimingRewards = ({
   const green = useBackgroundColor('green');
   const red = useBackgroundColor('red');
 
-  const rewards = points?.points?.user?.rewards;
-  const { claimable } = rewards || {};
-  const claimableBalance = convertRawAmountToBalance(claimable || '0', {
-    decimals: 18,
-    symbol: 'ETH',
-  });
-  const eth = useNativeAssetForNetwork(Network.mainnet);
-  const unclaimedRewardsNativeCurrency = convertAmountAndPriceToNativeDisplay(
-    claimableBalance.amount,
-    eth?.price?.value || 0,
-    currency
-  )?.display;
+  // const rewards = points?.points?.user?.rewards;
+  // const { claimable } = rewards || {};
+  // const claimableBalance = convertRawAmountToBalance(claimable || '0', {
+  //   decimals: 18,
+  //   symbol: 'ETH',
+  // });
+  // const eth = useNativeAssetForNetwork(Network.mainnet);
+  // const unclaimedRewardsNativeCurrency = convertAmountAndPriceToNativeDisplay(
+  //   claimableBalance.amount,
+  //   eth?.price?.value || 0,
+  //   currency
+  // )?.display;
 
   // ⚠️ TODO: This should be reworked, but this temporarily addresses an issue where the claimable amount visible
   // in the panel would drop to 0 as soon as the claim transaction completed.
   const initialClaimableAmounts = useMemo(
     () => ({
-      eth: claimableBalance.display,
-      nativeCurrency: unclaimedRewardsNativeCurrency,
+      eth: useDummyClaimStore.getState().claimAmountEth,
+      nativeCurrency: useDummyClaimStore.getState().claimAmountUsd,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [chainId]
   );
 
-  const { mutate: claimRewards } = useMutation<{
-    nonce: number | null;
-  }>({
-    mutationFn: async () => {
-      // Fetch the native asset from the origin chain
-      const opEth_ = await ethereumUtils.getNativeAssetForNetwork(getNetworkFromChainId(ChainId.optimism));
-      const opEth = {
-        ...opEth_,
-        chainName: chainNameFromChainId(ChainId.optimism),
-      };
+  // const { mutate: claimRewards } = useMutation<{
+  //   nonce: number | null;
+  // }>({
+  //   mutationFn: async () => {
+  //     // Fetch the native asset from the origin chain
+  //     const opEth_ = await ethereumUtils.getNativeAssetForNetwork(getNetworkFromChainId(ChainId.optimism));
+  //     const opEth = {
+  //       ...opEth_,
+  //       chainName: chainNameFromChainId(ChainId.optimism),
+  //     };
 
-      // Fetch the native asset from the destination chain
-      let destinationEth_;
-      if (chainId === ChainId.base) {
-        destinationEth_ = await ethereumUtils.getNativeAssetForNetwork(getNetworkFromChainId(ChainId.base));
-      } else if (chainId === ChainId.zora) {
-        destinationEth_ = await ethereumUtils.getNativeAssetForNetwork(getNetworkFromChainId(ChainId.zora));
-      } else {
-        destinationEth_ = opEth;
-      }
+  //     // Fetch the native asset from the destination chain
+  //     let destinationEth_;
+  //     if (chainId === ChainId.base) {
+  //       destinationEth_ = await ethereumUtils.getNativeAssetForNetwork(getNetworkFromChainId(ChainId.base));
+  //     } else if (chainId === ChainId.zora) {
+  //       destinationEth_ = await ethereumUtils.getNativeAssetForNetwork(getNetworkFromChainId(ChainId.zora));
+  //     } else {
+  //       destinationEth_ = opEth;
+  //     }
 
-      // Add missing properties to match types
-      const destinationEth = {
-        ...destinationEth_,
-        chainName: chainNameFromChainId(chainId as ChainId),
-      };
+  //     // Add missing properties to match types
+  //     const destinationEth = {
+  //       ...destinationEth_,
+  //       chainName: chainNameFromChainId(chainId as ChainId),
+  //     };
 
-      const selectedGas = {
-        maxBaseFee: meteorologyData?.fast.maxBaseFee,
-        maxPriorityFee: meteorologyData?.fast.maxPriorityFee,
-      };
+  //     const selectedGas = {
+  //       maxBaseFee: meteorologyData?.fast.maxBaseFee,
+  //       maxPriorityFee: meteorologyData?.fast.maxPriorityFee,
+  //     };
 
-      let gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = {} as
-        | TransactionGasParamAmounts
-        | LegacyTransactionGasParamAmounts;
+  //     let gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = {} as
+  //       | TransactionGasParamAmounts
+  //       | LegacyTransactionGasParamAmounts;
 
-      gasParams = {
-        maxFeePerGas: selectedGas?.maxBaseFee as string,
-        maxPriorityFeePerGas: selectedGas?.maxPriorityFee as string,
-      };
-      const gasFeeParamsBySpeed = getGasSettingsBySpeed(ChainId.optimism);
+  //     gasParams = {
+  //       maxFeePerGas: selectedGas?.maxBaseFee as string,
+  //       maxPriorityFeePerGas: selectedGas?.maxPriorityFee as string,
+  //     };
+  //     const gasFeeParamsBySpeed = getGasSettingsBySpeed(ChainId.optimism);
 
-      const actionParams = {
-        address,
-        toChainId: chainId,
-        sellAmount: claimable as string,
-        chainId: ChainId.optimism,
-        assetToSell: opEth as ParsedAsset,
-        assetToBuy: destinationEth as ParsedAsset,
-        quote: undefined,
-        // @ts-expect-error - collision between old gas types and new
-        gasFeeParamsBySpeed,
-        gasParams,
-      } satisfies RapSwapActionParameters<'claimBridge'>;
+  //     const actionParams = {
+  //       address,
+  //       toChainId: chainId,
+  //       sellAmount: claimable as string,
+  //       chainId: ChainId.optimism,
+  //       assetToSell: opEth as ParsedAsset,
+  //       assetToBuy: destinationEth as ParsedAsset,
+  //       quote: undefined,
+  //       // @ts-expect-error - collision between old gas types and new
+  //       gasFeeParamsBySpeed,
+  //       gasParams,
+  //     } satisfies RapSwapActionParameters<'claimBridge'>;
 
-      const provider = getProviderForNetwork(Network.optimism);
-      const wallet = await loadWallet(address, false, provider);
-      if (!wallet) {
-        // Biometrics auth failure (retry possible)
-        setClaimStatus('error');
-        return { nonce: null };
-      }
+  //     const provider = getProviderForNetwork(Network.optimism);
+  //     const wallet = await loadWallet(address, false, provider);
+  //     if (!wallet) {
+  //       // Biometrics auth failure (retry possible)
+  //       // setClaimStatus('error');
+  //       return { nonce: null };
+  //     }
 
-      try {
-        const { errorMessage, nonce: bridgeNonce } = await walletExecuteRap(
-          wallet,
-          'claimBridge',
-          // @ts-expect-error - collision between old gas types and new
-          actionParams
-        );
+  //     try {
+  //       const { errorMessage, nonce: bridgeNonce } = await walletExecuteRap(
+  //         wallet,
+  //         'claimBridge',
+  //         // @ts-expect-error - collision between old gas types and new
+  //         actionParams
+  //       );
 
-        if (errorMessage) {
-          if (errorMessage.includes('[CLAIM]')) {
-            // Claim error (retry possible)
-            setClaimStatus('error');
-          } else {
-            // Bridge error (retry not possible)
-            setClaimStatus('bridge-error');
-          }
+  //       if (errorMessage) {
+  //         if (errorMessage.includes('[CLAIM]')) {
+  //           // Claim error (retry possible)
+  //           // setClaimStatus('error');
+  //         } else {
+  //           // Bridge error (retry not possible)
+  //           // setClaimStatus('bridge-error');
+  //         }
 
-          logger.error(new RainbowError('ETH REWARDS CLAIM ERROR'), { message: errorMessage });
+  //         logger.error(new RainbowError('ETH REWARDS CLAIM ERROR'), { message: errorMessage });
 
-          return { nonce: null };
-        }
+  //         return { nonce: null };
+  //       }
 
-        if (typeof bridgeNonce === 'number') {
-          // Clear and refresh claim data so available claim UI disappears
-          invalidatePointsQuery(address);
-          refetch();
-          return { nonce: bridgeNonce };
-        } else {
-          setClaimStatus('error');
-          return { nonce: null };
-        }
-      } catch (e) {
-        setClaimStatus('error');
-        return { nonce: null };
-      }
-    },
-    onError: error => {
-      const errorCode =
-        error && typeof error === 'object' && 'code' in error && isClaimError(error.code as PointsErrorType)
-          ? (error.code as PointsErrorType)
-          : 'error';
-      setClaimStatus(errorCode);
-    },
-    onSuccess: async ({ nonce }: { nonce: number | null }) => {
-      if (typeof nonce === 'number') {
-        setClaimStatus('success');
-      }
-    },
-  });
+  //       if (typeof bridgeNonce === 'number') {
+  //         // Clear and refresh claim data so available claim UI disappears
+  //         invalidatePointsQuery(address);
+  //         refetch();
+  //         return { nonce: bridgeNonce };
+  //       } else {
+  //         // setClaimStatus('error');
+  //         return { nonce: null };
+  //       }
+  //     } catch (e) {
+  //       // setClaimStatus('error');
+  //       return { nonce: null };
+  //     }
+  //   },
+  //   // onError: error => {
+  //   //   const errorCode =
+  //   //     error && typeof error === 'object' && 'code' in error && isClaimError(error.code as PointsErrorType)
+  //   //       ? (error.code as PointsErrorType)
+  //   //       : 'error';
+  //   //   setClaimStatus(errorCode);
+  //   // },
+  //   onSuccess: async ({ nonce }: { nonce: number | null }) => {
+  //     if (typeof nonce === 'number') {
+  //       setClaimStatus('success');
+  //     }
+  //   },
+  // });
 
   const buttonLabel = useMemo(() => {
     switch (claimStatus) {
@@ -516,7 +520,7 @@ const ClaimingRewards = ({
                       if (!meteorologyData) return;
 
                       setClaimStatus('claiming');
-                      claimRewards();
+                      // claimRewards();
                     } else if (claimStatus === 'success' || claimStatus === 'bridge-error') {
                       closeClaimPanel();
                     }

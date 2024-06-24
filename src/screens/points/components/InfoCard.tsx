@@ -42,7 +42,7 @@ export const InfoCard = memo(function InfoCard({
 
   let mainTextFontSize: TextSize;
   if (mainText && mainText.length > 10) {
-    mainTextFontSize = '17pt';
+    mainTextFontSize = '20pt';
   } else {
     mainTextFontSize = '20pt';
   }

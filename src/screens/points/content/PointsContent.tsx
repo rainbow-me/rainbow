@@ -63,6 +63,7 @@ import { format, intervalToDuration } from 'date-fns';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { ETH_REWARDS, useExperimentalFlag } from '@/config';
 import { RewardsActionButton } from '../components/RewardsActionButton';
+import { useDummyClaimStore } from '../dummyClaimStore';
 
 const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined }) => {
   const labelSecondary = useForegroundColor('labelSecondary');
@@ -73,9 +74,9 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
   //
   // RECENT EARNINGS CARD
   //
-  const lastPeriodLoading = points === undefined;
+  // const lastPeriodLoading = points === undefined;
   const lastPeriod = points?.points?.user?.stats?.last_period;
-  const lastPeriodEarnings = lastPeriod?.earnings?.total;
+  // const lastPeriodEarnings = lastPeriod?.earnings?.total;
   const lastPeriodRank = lastPeriod?.position?.current;
   const lastPeriodUnranked = lastPeriod?.position?.unranked;
 
@@ -143,33 +144,29 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
         <Inset space="20px">
           <Inline separator={<Box width={{ custom: 12 }} />} wrap={false}>
             <InfoCard
-              loading={lastPeriodLoading}
+              loading={false}
               title={i18n.t(i18n.l.points.points.earned_last_week)}
-              mainText={
-                lastPeriodEarnings
-                  ? `${lastPeriodEarnings.toLocaleString('en-US')} ${i18n.t(i18n.l.points.points.points_capitalized)}`
-                  : undefined
-              }
+              mainText={`6,250 ${i18n.t(i18n.l.points.points.points_capitalized)}`}
               placeholderMainText={i18n.t(i18n.l.points.points.zero_points)}
               icon="􀠐"
-              subtitle={getEarnedLastWeekSubtitle()}
+              subtitle="Placed #82"
               accentColor={labelSecondary}
             />
             <InfoCard
               loading={isLoadingReferralsCard}
               title={i18n.t(i18n.l.points.points.referrals)}
-              mainText={qualifiedReferees ? qualifiedReferees.toLocaleString('en-US') : undefined}
+              mainText="28"
               placeholderMainText={i18n.t(i18n.l.points.points.none)}
               icon="􀇯"
-              subtitle={`${referralsEarnings?.toLocaleString('en-US') ?? '0'} ${i18n.t(i18n.l.points.points.points)}`}
+              subtitle={`32,177 ${i18n.t(i18n.l.points.points.points)}`}
               accentColor={yellow}
             />
             <InfoCard
               loading={isLoadingRankCard}
               title={i18n.t(i18n.l.points.points.your_rank)}
-              mainText={getRankCardMainText()}
-              icon={getRankChangeIcon()}
-              subtitle={getRankCardSubtitle()}
+              mainText="#420"
+              icon="􀑁"
+              subtitle="8"
               mainTextColor={isUnranked ? 'secondary' : 'primary'}
               accentColor={getRankCardAccentColor()}
             />
@@ -378,7 +375,7 @@ const TotalEarnedByRainbowUsers = memo(function TotalEarnedByRainbowUsers({ earn
             </Bleed>
             <TextShadow blur={12} shadowOpacity={0.3}>
               <Text align="center" color="labelSecondary" size="13pt" weight="heavy">
-                {earned}
+                20 ETH
               </Text>
             </TextShadow>
           </Box>
@@ -611,7 +608,6 @@ export default function PointsContent() {
   const { setClipboard } = useClipboard();
   const { isReadOnlyWallet } = useWallets();
   const { highContrastAccentColor: accountColor } = useAccountAccentColor();
-  const { nativeCurrency: currency } = useAccountSettings();
   const { rewards_enabled } = useRemoteConfig();
 
   const rewardsEnabled = useExperimentalFlag(ETH_REWARDS) || rewards_enabled;
@@ -670,23 +666,12 @@ export default function PointsContent() {
   const rank = points?.points?.user.stats.position.current;
   const isUnranked = !!points?.points?.user?.stats?.position?.unranked;
 
-  const eth = useNativeAssetForNetwork(Network.mainnet);
-  const rewards = points?.points?.user?.rewards;
-  const { claimed, claimable } = rewards || {};
-  const showClaimYourPoints = claimable && claimable !== '0';
-  const showMyEarnings = claimed && claimed !== '0';
-  const showNoHistoricalRewards = !showMyEarnings;
+  const showClaimYourPoints = useDummyClaimStore(state => state.showClaimYourPoints);
+  const showMyEarnings = useDummyClaimStore(state => state.showMyEarnings);
+  const showNoHistoricalRewards = false;
 
-  const claimedBalance = convertRawAmountToBalance(claimed || '0', {
-    decimals: 18,
-    symbol: 'ETH',
-  });
-  const claimableBalance = convertRawAmountToBalance(claimable || '0', {
-    decimals: 18,
-    symbol: 'ETH',
-  });
-  const claimedPrice = convertAmountAndPriceToNativeDisplay(claimedBalance.amount, eth?.price?.value || 0, currency)?.display;
-  const claimablePrice = convertAmountAndPriceToNativeDisplay(claimableBalance.amount, eth?.price?.value || 0, currency)?.display;
+  const claimableEth = useDummyClaimStore(state => state.claimAmountEth);
+  const claimableUsd = useDummyClaimStore(state => state.claimAmountUsd);
 
   const totalRewards = points?.points?.meta?.rewards?.total;
   const totalRewardsDisplay = convertRawAmountToBalance(totalRewards || '0', {
@@ -727,8 +712,8 @@ export default function PointsContent() {
             <Box gap={24}>
               {rewardsEnabled && (showClaimYourPoints || showMyEarnings) && (
                 <Box gap={20}>
-                  {showClaimYourPoints && !isReadOnlyWallet && <ClaimCard claim={claimableBalance.display} value={claimablePrice} />}
-                  {showMyEarnings && <EarningsCard claimed={claimedBalance.display} value={claimedPrice} />}
+                  {showClaimYourPoints && <ClaimCard claim={claimableEth} value={claimableUsd} />}
+                  {showMyEarnings && <EarningsCard claimed={claimableEth} value={claimableUsd} />}
                 </Box>
               )}
               {rewardsEnabled && showNoHistoricalRewards && <EarnRewardsCard />}
@@ -745,11 +730,11 @@ export default function PointsContent() {
                     {i18n.t(i18n.l.points.points.my_points)}
                   </Text>
                   <Box flexDirection="row" alignItems="center" paddingLeft="4px">
-                    {canDisplayTotalPoints ? <RainbowText totalPointsString={totalPointsString} /> : <Skeleton height={31} width={200} />}
+                    {canDisplayTotalPoints ? <RainbowText totalPointsString="88,888" /> : <Skeleton height={31} width={200} />}
                   </Box>
                 </Stack>
                 <Box gap={24}>
-                  {!!cardIds.length && !isReadOnlyWallet && <RemoteCardCarousel key="remote-cards" />}
+                  {/* {!!cardIds.length && !isReadOnlyWallet && <RemoteCardCarousel key="remote-cards" />} */}
                   <InfoCards points={points} />
                 </Box>
                 <Separator color={isDarkMode ? 'separatorSecondary' : 'separatorTertiary'} thickness={1} />
@@ -875,41 +860,37 @@ export default function PointsContent() {
                       {i18n.t(i18n.l.points.points.leaderboard)}
                     </Text>
                   </Inset>
-                  {canDisplayCurrentRank ? (
+                  <Box
+                    background="surfaceSecondaryElevated"
+                    shadow="12px"
+                    as={LinearGradient}
+                    style={{ padding: 5 / 3, borderRadius: 18 + 5 / 3 }}
+                    colors={['#31BCC4', '#57EA5F', '#F0D83F', '#DF5337', '#B756A7']}
+                    useAngle={true}
+                    angle={-15}
+                    angleCenter={{ x: 0.5, y: 0.5 }}
+                  >
                     <Box
                       background="surfaceSecondaryElevated"
-                      shadow="12px"
-                      as={LinearGradient}
-                      style={{ padding: 5 / 3, borderRadius: 18 + 5 / 3 }}
-                      colors={['#31BCC4', '#57EA5F', '#F0D83F', '#DF5337', '#B756A7']}
-                      useAngle={true}
-                      angle={-15}
-                      angleCenter={{ x: 0.5, y: 0.5 }}
+                      width="full"
+                      height={{ custom: 48 }}
+                      borderRadius={18}
+                      flexDirection="row"
+                      paddingHorizontal="20px"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      style={{ backgroundColor: isDarkMode ? '#191A1C' : globalColors.white100 }}
                     >
-                      <Box
-                        background="surfaceSecondaryElevated"
-                        width="full"
-                        height={{ custom: 48 }}
-                        borderRadius={18}
-                        flexDirection="row"
-                        paddingHorizontal="20px"
-                        justifyContent="space-between"
-                        alignItems="center"
-                        style={{ backgroundColor: isDarkMode ? '#191A1C' : globalColors.white100 }}
-                      >
-                        <Box style={{ maxWidth: 220 }}>
-                          <Text color="label" size="17pt" weight="heavy" numberOfLines={1} ellipsizeMode="middle">
-                            {accountENS ? accountENS : formatAddress(accountAddress, 4, 5)}
-                          </Text>
-                        </Box>
-                        <Text color={isUnranked ? 'labelQuaternary' : 'label'} size="17pt" weight="heavy">
-                          {isUnranked ? i18n.t(i18n.l.points.points.unranked) : `#${rank.toLocaleString('en-US')}`}
+                      <Box style={{ maxWidth: 220 }}>
+                        <Text color="label" size="17pt" weight="heavy" numberOfLines={1} ellipsizeMode="middle">
+                          {accountENS ? accountENS : formatAddress(accountAddress, 4, 5)}
                         </Text>
                       </Box>
+                      <Text color={isUnranked ? 'labelQuaternary' : 'label'} size="17pt" weight="heavy">
+                        #420
+                      </Text>
                     </Box>
-                  ) : (
-                    <Skeleton width={deviceWidth - 40} height={51} />
-                  )}
+                  </Box>
                   {canDisplayLeaderboard ? (
                     <Box
                       background="surfaceSecondaryElevated"
