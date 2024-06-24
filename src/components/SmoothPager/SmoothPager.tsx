@@ -132,7 +132,7 @@ const SmoothPagerComponent = (
   const deepestReachedPageIndex = useSharedValue(pageIdToIndex[initialPage] ?? 0);
 
   // This represents the number of page slots in the pager (treating page groups as a single page)
-  const numberOfPages = children.length;
+  const numberOfPages = useMemo(() => children.length, [children.length]);
 
   useImperativeHandle(ref, () => ({
     goBack() {
@@ -462,6 +462,7 @@ const styles = StyleSheet.create({
   pageStyle: {
     alignItems: 'center',
     height: '100%',
+    pointerEvents: 'box-none',
     width: DEVICE_WIDTH,
   },
   pagerContainer: {
@@ -471,6 +472,7 @@ const styles = StyleSheet.create({
   },
   pagerWrapper: {
     flexDirection: 'row',
+    pointerEvents: 'box-none',
   },
   subPageStyle: {
     alignItems: 'center',
