@@ -419,23 +419,23 @@ export const SwapSlider = ({
                   </Inline>
                 </Inline>
                 <Column width="content">
-                <GestureHandlerV1Button
+                  <GestureHandlerV1Button
                     onPressWorklet={() => {
                       'worklet';
                       SwapInputController.inputMethod.value = 'slider';
-                      
+
                       const currentInputValue = SwapInputController.inputValues.value.inputAmount;
                       const maxSwappableAmount = internalSelectedInputAsset.value?.maxSwappableAmount;
-                      
+
                       const isAlreadyMax = maxSwappableAmount ? equalWorklet(currentInputValue, maxSwappableAmount) : false;
                       const exceedsMax = maxSwappableAmount ? greaterThanWorklet(currentInputValue, maxSwappableAmount) : false;
-                      
+
                       if (isAlreadyMax) {
                         runOnJS(triggerHapticFeedback)('impactMedium');
                       } else {
                         SwapInputController.quoteFetchingInterval.stop();
                         if (exceedsMax) sliderXPosition.value = width * 0.999;
-                        
+
                         sliderXPosition.value = withSpring(width, SPRING_CONFIGS.snappySpringConfig, isFinished => {
                           if (isFinished) {
                             runOnJS(onChangeWrapper)(1);
