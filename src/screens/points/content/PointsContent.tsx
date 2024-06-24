@@ -197,7 +197,7 @@ const Card = ({ borderRadius = 32, children, padding = '12px' }: { borderRadius?
   );
 };
 
-const ClaimCard = ({ claim, value }: { claim?: string; value?: string }) => {
+const ClaimCard = memo(function ClaimCard({ claim, value }: { claim?: string; value?: string }) {
   const { isDarkMode } = useColorMode();
   const { navigate } = useNavigation();
 
@@ -270,9 +270,9 @@ const ClaimCard = ({ claim, value }: { claim?: string; value?: string }) => {
       </ButtonPressAnimation>
     </Card>
   );
-};
+});
 
-const EarnRewardsCard = () => {
+const EarnRewardsCard = memo(function EarnRewardsCard() {
   return (
     <Card padding="20px">
       <Box paddingVertical="8px">
@@ -298,9 +298,9 @@ const EarnRewardsCard = () => {
       </Box>
     </Card>
   );
-};
+});
 
-const EarningsCard = ({ claimed, value }: { claimed?: string; value?: string }) => {
+const EarningsCard = memo(function EarningsCard({ claimed, value }: { claimed?: string; value?: string }) {
   return (
     <Card padding="20px">
       <Box gap={24} paddingVertical="4px" width="full">
@@ -359,9 +359,9 @@ const EarningsCard = ({ claimed, value }: { claimed?: string; value?: string }) 
       </Box>
     </Card>
   );
-};
+});
 
-const TotalEarnedByRainbowUsers = ({ earned }: { earned?: string }) => {
+const TotalEarnedByRainbowUsers = memo(function TotalEarnedByRainbowUsers({ earned }: { earned?: string }) {
   if (!earned) return null;
   return (
     <Box alignItems="center" justifyContent="center" width="full">
@@ -386,7 +386,7 @@ const TotalEarnedByRainbowUsers = ({ earned }: { earned?: string }) => {
       </Columns>
     </Box>
   );
-};
+});
 
 export const EthRewardsCoinIcon = memo(function EthRewardsCoinIcon({
   animatedBorder,
@@ -481,7 +481,7 @@ const NextDistributionCountdown = ({ nextDistribution }: { nextDistribution: Dat
   );
 };
 
-const NextDropCard = ({ nextDistribution }: { nextDistribution: Date }) => {
+const NextDropCard = memo(function NextDropCard({ nextDistribution }: { nextDistribution: Date }) {
   const { isDarkMode } = useColorMode();
   const separatorSecondary = useForegroundColor('separatorSecondary');
   const nextDistributionWithDay = format(nextDistribution, 'cccc p');
@@ -533,7 +533,7 @@ const NextDropCard = ({ nextDistribution }: { nextDistribution: Date }) => {
       </Box>
     </Card>
   );
-};
+});
 
 const getTextWidth = async (text: string | undefined) => {
   const { width } = await measureText(text, {
@@ -544,7 +544,7 @@ const getTextWidth = async (text: string | undefined) => {
   return width;
 };
 
-const RainbowText = ({ totalPointsString }: { totalPointsString: string | undefined }) => {
+const RainbowText = memo(function RainbowText({ totalPointsString }: { totalPointsString: string | undefined }) {
   const { isDarkMode } = useColorMode();
   const [textWidth, setTextWidth] = useState<number | undefined>((totalPointsString?.length ?? 0) * 32);
 
@@ -599,7 +599,7 @@ const RainbowText = ({ totalPointsString }: { totalPointsString: string | undefi
       </MaskedView>
     </Bleed>
   );
-};
+});
 
 export default function PointsContent() {
   const { isDarkMode } = useColorMode();
