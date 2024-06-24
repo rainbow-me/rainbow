@@ -72,13 +72,7 @@ function Skeleton({
     return (
       <MaskedView maskElement={<Wrapper style={style}>{children}</Wrapper>} style={{ flex: 1 }}>
         <ShimmerWrapper color={skeletonColor}>
-          <ShimmerAnimation
-            color={shimmerColor ?? colors.shimmer}
-            enabled
-            // @ts-expect-error JS Component
-            gradientColor={shimmerColor ?? colors.shimmer}
-            width={width}
-          />
+          <ShimmerAnimation color={shimmerColor ?? colors.shimmer} enabled gradientColor={shimmerColor ?? colors.shimmer} width={width} />
         </ShimmerWrapper>
       </MaskedView>
     );
