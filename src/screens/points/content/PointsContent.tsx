@@ -601,9 +601,9 @@ const RainbowText = memo(function RainbowText({ totalPointsString }: { totalPoin
 export default function PointsContent() {
   const { isDarkMode } = useColorMode();
   const { colors } = useTheme();
-  const { name } = useRoute();
+  // const { name } = useRoute();
   const { width: deviceWidth } = useDimensions();
-  const getCardIdsForScreen = remoteCardsStore(state => state.getCardIdsForScreen);
+  // const getCardIdsForScreen = remoteCardsStore(state => state.getCardIdsForScreen);
   const { accountAddress, accountENS } = useAccountProfile();
   const { setClipboard } = useClipboard();
   const { isReadOnlyWallet } = useWallets();
@@ -621,7 +621,7 @@ export default function PointsContent() {
     walletAddress: accountAddress,
   });
 
-  const cardIds = useMemo(() => getCardIdsForScreen(name as keyof typeof Routes), [getCardIdsForScreen, name]);
+  // const cardIds = useMemo(() => getCardIdsForScreen(name as keyof typeof Routes), [getCardIdsForScreen, name]);
 
   useFocusEffect(
     useCallback(() => {
@@ -661,14 +661,14 @@ export default function PointsContent() {
     setIsRefreshing(false);
   }, [dataUpdatedAt, refetch]);
 
-  const totalPointsString = points?.points?.user?.earnings?.total.toLocaleString('en-US');
+  // const totalPointsString = points?.points?.user?.earnings?.total.toLocaleString('en-US');
 
-  const rank = points?.points?.user.stats.position.current;
+  // const rank = points?.points?.user.stats.position.current;
   const isUnranked = !!points?.points?.user?.stats?.position?.unranked;
 
   const showClaimYourPoints = useDummyClaimStore(state => state.showClaimYourPoints);
   const showMyEarnings = useDummyClaimStore(state => state.showMyEarnings);
-  const showNoHistoricalRewards = false;
+  const showNoHistoricalRewards = !showMyEarnings;
 
   const claimableEth = useDummyClaimStore(state => state.claimAmountEth);
   const claimableUsd = useDummyClaimStore(state => state.claimAmountUsd);
@@ -683,7 +683,7 @@ export default function PointsContent() {
   const nextDistributionDate = nextDistribution ? new Date(nextDistribution * 1000) : null;
 
   const canDisplayTotalPoints = !isNil(points?.points?.user.earnings.total);
-  const canDisplayCurrentRank = !!rank;
+  // const canDisplayCurrentRank = !!rank;
 
   const canDisplayLeaderboard = !!points?.points?.leaderboard.accounts;
 
