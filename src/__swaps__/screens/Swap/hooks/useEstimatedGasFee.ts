@@ -6,9 +6,9 @@ import { useMemo } from 'react';
 import { formatUnits } from 'viem';
 
 import { useAccountSettings } from '@/hooks';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { useSyncedSwapQuoteStore } from '../providers/SyncSwapStateAndSharedValues';
 import { GasSettings } from './useCustomGas';
+import { useSelectedGas } from './useSelectedGas';
 import { useSwapEstimatedGasLimit } from './useSwapEstimatedGasLimit';
 
 function safeBigInt(value: string) {
@@ -52,15 +52,15 @@ export function useEstimatedGasFee({
   }, [gasLimit, gasSettings, nativeCurrency, nativeNetworkAsset?.decimals, nativeNetworkAsset?.price]);
 }
 
-export function useSwapEstimatedGasFee(gasSettings: GasSettings | undefined) {
-  const { assetToSell, quote } = useSyncedSwapQuoteStore();
-  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
+export function useSwapEstimatedGasFee(overrideGasSettings?: GasSettings) {
+  const { assetToSell, quote, chainId = ChainId.mainnet } = useSyncedSwapQuoteStore();
+  const gasSettings = useSelectedGas(chainId);
 
   const { data: estimatedGasLimit, isFetching } = useSwapEstimatedGasLimit({ chainId, assetToSell, quote });
-  const estimatedFee = useEstimatedGasFee({ chainId, gasLimit: estimatedGasLimit, gasSettings });
+  const estimatedFee = useEstimatedGasFee({ chainId, gasLimit: estimatedGasLimit, gasSettings: overrideGasSettings || gasSettings });
 
   return {
     data: estimatedFee,
-    isLoading: isFetching,
+    isFetching,
   };
 }
