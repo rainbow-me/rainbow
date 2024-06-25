@@ -398,7 +398,7 @@ function EditableGasSettings() {
         <CurrentBaseFee />
       </UnmountWhenGasPanelIsClosed>
       <EditMaxBaseFee />
-      {chainsThatIgnoreThePriorityFee.includes(chainId) && <EditPriorityFee />}
+      {!chainsThatIgnoreThePriorityFee.includes(chainId) && <EditPriorityFee />}
     </>
   );
 }
