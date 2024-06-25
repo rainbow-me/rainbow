@@ -1,6 +1,5 @@
 import { ChainId } from '@/__swaps__/types/chains';
 import { getIsHardhatConnected } from '@/handlers/web3';
-import { Network } from '@/helpers';
 import { useAccountSettings } from '@/hooks';
 import { getNetworkObj } from '@/networks';
 import { useUserAssets } from '@/resources/assets/UserAssetsQuery';
@@ -26,7 +25,7 @@ export function useUserAsset(uniqueId: string) {
 export function useUserNativeNetworkAsset(chainId: ChainId) {
   const network = getNetworkFromChainId(chainId);
   const { nativeCurrency } = getNetworkObj(network);
-  const { mainnetAddress, address } = nativeCurrency;
-  const uniqueId = mainnetAddress ? `${mainnetAddress}_${Network.mainnet}` : `${address}_${network}`;
+  const { address } = nativeCurrency;
+  const uniqueId = `${address}_${network}`;
   return useUserAsset(uniqueId);
 }
