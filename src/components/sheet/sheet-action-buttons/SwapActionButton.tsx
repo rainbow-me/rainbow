@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import SheetActionButton from './SheetActionButton';
-import { useExpandedStateNavigation, useWallets } from '@/hooks';
+import { useExpandedStateNavigation, useSwapCurrencyHandlers, useWallets } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { RainbowToken } from '@/entities';
@@ -10,12 +10,13 @@ import { useNavigation } from '@/navigation';
 import { SWAPS_V2, useExperimentalFlag, enableActionsOnReadOnlyWallet } from '@/config';
 import { ethereumUtils, watchingAlert } from '@/utils';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { parseSearchAsset } from '@/__swaps__/utils/assets';
+import { isSameAsset, parseSearchAsset } from '@/__swaps__/utils/assets';
 import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 import assetInputTypes from '@/helpers/assetInputTypes';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
-import { AddressOrEth, AssetType } from '@/__swaps__/types/assets';
+import { AddressOrEth, AssetType, ParsedSearchAsset } from '@/__swaps__/types/assets';
+import exchangeModalTypes from '@/helpers/exchangeModalTypes';
 
 type SwapActionButtonProps = {
   asset: RainbowToken;
@@ -35,8 +36,15 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
 
   const color = givenColor || colors.swapPurple;
 
+  useSwapCurrencyHandlers({
+    defaultInputAsset: inputType === assetInputTypes.in ? asset : null,
+    defaultOutputAsset: inputType === assetInputTypes.out ? asset : null,
+    shouldUpdate: true,
+    type: exchangeModalTypes.swap,
+  });
+
   const old_navigate = useExpandedStateNavigation(inputType, fromDiscover, asset);
-  const goToSwap = useCallback(() => {
+  const goToSwap = useCallback(async () => {
     if (swapsV2Enabled || swaps_v2) {
       if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
         watchingAlert();
@@ -76,6 +84,39 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
 
       if (inputType === assetInputTypes.in) {
         swapsStore.setState({ inputAsset: parsedAsset });
+
+        const nativeAssetForChain = await ethereumUtils.getNativeAssetForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
+        if (nativeAssetForChain && !isSameAsset({ address: nativeAssetForChain.address as AddressOrEth, chainId }, parsedAsset)) {
+          const outputAsset = {
+            ...nativeAssetForChain,
+            uniqueId: `${nativeAssetForChain.address}_${chainId}`,
+            chainId,
+            chainName: chainNameFromChainId(chainId),
+            address: nativeAssetForChain.address as AddressOrEth,
+            type: nativeAssetForChain.type as AssetType,
+            mainnetAddress: nativeAssetForChain.mainnet_address as AddressOrEth,
+            networks: nativeAssetForChain.networks,
+            colors: {
+              primary: nativeAssetForChain.colors?.primary,
+              fallback: nativeAssetForChain.colors?.fallback || undefined, // Ensure fallback is either string or undefined
+            },
+            highLiquidity: nativeAssetForChain.highLiquidity ?? false,
+            isRainbowCurated: nativeAssetForChain.isRainbowCurated ?? false,
+            isVerified: nativeAssetForChain.isVerified ?? false,
+            native: {} as ParsedSearchAsset['native'],
+            balance: {
+              amount: nativeAssetForChain.balance?.amount ?? '0',
+              display: nativeAssetForChain.balance?.display ?? '0',
+            },
+            isNativeAsset: true,
+            price: {
+              value: nativeAssetForChain.price?.value ?? 0,
+              relative_change_24h: nativeAssetForChain.price?.relative_change_24h ?? 0,
+            },
+          } satisfies ParsedSearchAsset;
+
+          swapsStore.setState({ outputAsset });
+        }
       } else {
         const largestBalanceSameChainUserAsset = userAssetsStore
           .getState()

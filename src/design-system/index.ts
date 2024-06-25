@@ -2,6 +2,7 @@ export { AccentColorProvider, useAccentColor } from './color/AccentColorContext'
 export { AnimatedText } from './components/Text/AnimatedText';
 export { BackgroundProvider, useBackgroundColor } from './components/BackgroundProvider/BackgroundProvider';
 export { Bleed } from './components/Bleed/Bleed';
+export { Border } from './components/Border/Border';
 export { Box } from './components/Box/Box';
 export { ColorModeProvider } from './color/ColorMode';
 export { Columns, Column } from './components/Columns/Columns';
@@ -31,6 +32,7 @@ export { useTextStyle } from './components/Text/useTextStyle';
 export type { AnimatedTextProps } from './components/Text/AnimatedText';
 export type { BackgroundProviderProps } from './components/BackgroundProvider/BackgroundProvider';
 export type { BleedProps } from './components/Bleed/Bleed';
+export type { BorderProps } from './components/Border/Border';
 export type { BoxProps } from './components/Box/Box';
 export type { ColumnsProps, ColumnProps } from './components/Columns/Columns';
 export type { CoverProps } from './components/Cover/Cover';

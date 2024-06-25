@@ -5,7 +5,7 @@ import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, useS
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
-import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager';
+import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ChainImage } from '@/components/coin-icon/ChainImage';

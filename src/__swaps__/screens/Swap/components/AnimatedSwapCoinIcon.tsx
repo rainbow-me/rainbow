@@ -3,8 +3,7 @@ import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { borders } from '@/styles';
 import { useTheme } from '@/theme';
-import Animated, { SharedValue, useAnimatedProps, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import Animated, { useAnimatedProps, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
 import { AnimatedChainImage } from './AnimatedChainImage';
@@ -13,6 +12,7 @@ import { SwapCoinIconTextFallback } from './SwapCoinIconTextFallback';
 import { Box } from '@/design-system';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { PIXEL_RATIO } from '@/utils/deviceUtils';
+import { useSwapContext } from '../providers/swap-provider';
 
 const fallbackIconStyle = {
   ...borders.buildCircleAsObject(32),
@@ -30,17 +30,20 @@ const smallFallbackIconStyle = {
 };
 
 export const AnimatedSwapCoinIcon = React.memo(function FeedCoinIcon({
-  asset,
+  assetType,
   large = true,
   small,
   showBadge = true,
 }: {
-  asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+  assetType: 'input' | 'output';
   large?: boolean;
   small?: boolean;
   showBadge?: boolean;
 }) {
   const { isDarkMode, colors } = useTheme();
+
+  const { internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
+  const asset = assetType === 'input' ? internalSelectedInputAsset : internalSelectedOutputAsset;
 
   const didErrorForUniqueId = useSharedValue<string | undefined>(undefined);
 
@@ -157,7 +160,7 @@ export const AnimatedSwapCoinIcon = React.memo(function FeedCoinIcon({
         />
       </Animated.View>
 
-      {showBadge && <AnimatedChainImage asset={asset} size={16} />}
+      {showBadge && <AnimatedChainImage assetType={assetType} size={16} />}
     </View>
   );
 });

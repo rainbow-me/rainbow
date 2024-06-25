@@ -107,6 +107,7 @@ const Routes = {
   SETTINGS_SECTION_NOTIFICATIONS: 'NotificationsSection',
   SETTINGS_SECTION_PRIVACY: 'PrivacySection',
   DAPP_BROWSER_CONTROL_PANEL: 'DappBrowserControlPanel',
+  CLAIM_REWARDS_PANEL: 'ClaimRewardsPanel',
 } as const;
 
 export const NATIVE_ROUTES = [

@@ -1,31 +1,32 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { StyleSheet, StatusBar } from 'react-native';
+import { StatusBar, StyleSheet } from 'react-native';
 import Animated, { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
-import { IS_ANDROID } from '@/env';
 import { Page } from '@/components/layout';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Box } from '@/design-system';
+import { IS_ANDROID } from '@/env';
 import { safeAreaInsetValues } from '@/utils';
 
-import { SwapSheetGestureBlocker } from '@/__swaps__/screens/Swap/components/SwapSheetGestureBlocker';
-import { SwapBackground } from '@/__swaps__/screens/Swap/components/SwapBackground';
-import { FlipButton } from '@/__swaps__/screens/Swap/components/FlipButton';
 import { ExchangeRateBubble } from '@/__swaps__/screens/Swap/components/ExchangeRateBubble';
-import { SwapInputAsset } from '@/__swaps__/screens/Swap/components/SwapInputAsset';
-import { SwapOutputAsset } from '@/__swaps__/screens/Swap/components/SwapOutputAsset';
-import { SwapNavbar } from '@/__swaps__/screens/Swap/components/SwapNavbar';
+import { FlipButton } from '@/__swaps__/screens/Swap/components/FlipButton';
 import { SliderAndKeyboard } from '@/__swaps__/screens/Swap/components/SliderAndKeyboard';
+import { SwapBackground } from '@/__swaps__/screens/Swap/components/SwapBackground';
 import { SwapBottomPanel } from '@/__swaps__/screens/Swap/components/SwapBottomPanel';
-import { SwapWarning } from './components/SwapWarning';
-import { SwapProvider, useSwapContext } from './providers/swap-provider';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { userAssetsStore } from '@/state/assets/userAssets';
-import { parseSearchAsset } from '@/__swaps__/utils/assets';
-import { SwapAssetType } from '@/__swaps__/types/swap';
+import { SwapInputAsset } from '@/__swaps__/screens/Swap/components/SwapInputAsset';
+import { SwapNavbar } from '@/__swaps__/screens/Swap/components/SwapNavbar';
+import { SwapOutputAsset } from '@/__swaps__/screens/Swap/components/SwapOutputAsset';
+import { SwapSheetGestureBlocker } from '@/__swaps__/screens/Swap/components/SwapSheetGestureBlocker';
 import { ChainId } from '@/__swaps__/types/chains';
+import { SwapAssetType } from '@/__swaps__/types/swap';
+import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { SwapWarning } from './components/SwapWarning';
+import { clearCustomGasSettings } from './hooks/useCustomGas';
+import { SwapProvider, useSwapContext } from './providers/swap-provider';
 
 /** README
  * This prototype is largely driven by Reanimated and Gesture Handler, which
@@ -96,7 +97,6 @@ const MountAndUnmountHandlers = () => {
 const useMountSignal = () => {
   useEffect(() => {
     useSwapsStore.setState({ isSwapsOpen: true });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 };
 
@@ -122,8 +122,9 @@ const useCleanupOnUnmount = () => {
       });
 
       userAssetsStore.setState({ filter: 'all', inputSearchQuery: '' });
+
+      clearCustomGasSettings();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 };
 

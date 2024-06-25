@@ -1,19 +1,20 @@
 import MaskedView from '@react-native-masked-view/masked-view';
 import React from 'react';
-import { StyleSheet, StatusBar } from 'react-native';
+import { StatusBar, StyleSheet } from 'react-native';
 import Animated, { useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
 
+import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
+import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
-import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import { SwapInput } from '@/__swaps__/screens/Swap/components/SwapInput';
-import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
 import { TokenList } from '@/__swaps__/screens/Swap/components/TokenList/TokenList';
 import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { IS_ANDROID } from '@/env';
+
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
 import * as i18n from '@/languages';
@@ -72,7 +73,7 @@ function SwapInputIcon() {
 
   return (
     <Box paddingRight="10px">
-      <AnimatedSwapCoinIcon asset={internalSelectedInputAsset} large />
+      <AnimatedSwapCoinIcon assetType={'input'} large />
     </Box>
   );
 }
@@ -134,7 +135,6 @@ export function SwapInputAsset() {
         width={{ custom: INPUT_INNER_WIDTH }}
       >
         <TokenList
-          asset={internalSelectedInputAsset}
           handleExitSearchWorklet={SwapNavigation.handleExitSearch}
           handleFocusSearchWorklet={SwapNavigation.handleFocusInputSearch}
           output={false}
@@ -189,7 +189,7 @@ export const styles = StyleSheet.create({
   staticInputStyles: {
     borderCurve: 'continuous',
     borderRadius: 30,
-    borderWidth: THICK_BORDER_WIDTH,
+    borderWidth: IS_IOS ? THICK_BORDER_WIDTH : 0,
     overflow: 'hidden',
     padding: INPUT_PADDING,
     width: BASE_INPUT_WIDTH,

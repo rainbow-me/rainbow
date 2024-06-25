@@ -17,6 +17,7 @@ import { AddressOrEth, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { SearchAsset } from '@/__swaps__/types/search';
 import { ChainId } from '@/__swaps__/types/chains';
+import { GestureResponderEvent } from 'react-native';
 
 export const COIN_ROW_WITH_PADDING_HEIGHT = 56;
 
@@ -99,13 +100,26 @@ export const CoinRow = memo(function CoinRow({ isFavorite, onPress, output, uniq
     toggleFavorite(addressToFetch, chainToFetchOn);
   }, [address, mainnetAddress, chainId]);
 
+  const onPressHandler = useCallback(
+    (event: GestureResponderEvent) => {
+      event?.stopPropagation();
+
+      if (output) {
+        return onPress();
+      }
+
+      return onPress(inputAsset || null);
+    },
+    [inputAsset, onPress, output]
+  );
+
   if (!address || !chainId) return null;
 
   return (
     <Box style={{ height: COIN_ROW_WITH_PADDING_HEIGHT, width: '100%' }}>
       <Columns alignVertical="center">
         <Column>
-          <ButtonPressAnimation disallowInterruption onPress={output ? onPress : () => onPress(inputAsset || null)} scaleTo={0.95}>
+          <ButtonPressAnimation disallowInterruption onPress={onPressHandler} scaleTo={0.95}>
             <HitSlop vertical="10px">
               <Box
                 alignItems="center"

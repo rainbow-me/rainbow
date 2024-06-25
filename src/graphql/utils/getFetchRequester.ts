@@ -2,7 +2,7 @@ import { rainbowFetch, RainbowFetchRequestOpts } from '@/rainbow-fetch';
 import { DocumentNode } from 'graphql';
 import { resolveRequestDocument } from 'graphql-request';
 import { buildGetQueryParams } from '@/graphql/utils/buildGetQueryParams';
-import { ARC_GRAPHQL_API_KEY, METADATA_GRAPHQL_API_KEY, GRAPH_ENS_API_KEY } from 'react-native-dotenv';
+import { ARC_GRAPHQL_API_KEY, METADATA_GRAPHQL_API_KEY } from 'react-native-dotenv';
 
 const allowedOperations = ['mutation', 'query'];
 
@@ -52,18 +52,7 @@ const additionalConfig: {
   },
 };
 
-const urlOverrides: {
-  [__name: string]: string;
-} = {
-  ens: `https://gateway-arbitrum.network.thegraph.com/api/${GRAPH_ENS_API_KEY}/subgraphs/id/5XqPmWe6gjyrJtFn9cLy237i4cWw2j9HcUJEXsP5qGtH`,
-};
-
 export function getFetchRequester(config: Config) {
-  // Because the API KEY is part of the URL for the graph hosted service, we need to replace it here
-  if (urlOverrides[config.__name]) {
-    config.schema.url = urlOverrides[config.__name];
-  }
-
   const { url, method = 'POST' } = config.schema;
 
   return async function requester<TResponse = unknown, TVariables = Record<string, unknown>>(

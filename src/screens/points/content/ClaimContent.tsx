@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Box, Row, Rows, Stack, Text } from '@/design-system';
+import { Box, Row, Rows, Stack, Text, globalColors, useColorMode } from '@/design-system';
 import { useAccountAccentColor, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import * as i18n from '@/languages';
@@ -10,11 +10,17 @@ import { watchingAlert } from '@/utils';
 import { POINTS_ROUTES } from '../PointsScreen';
 import { analyticsV2 } from '@/analytics';
 import { useFocusEffect } from '@react-navigation/native';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { ETH_REWARDS, useExperimentalFlag } from '@/config';
 
 export default function ClaimContent() {
   const { accentColor } = useAccountAccentColor();
+  const { isDarkMode } = useColorMode();
   const { navigate } = useNavigation();
+  const { rewards_enabled } = useRemoteConfig();
   const { isReadOnlyWallet } = useWallets();
+
+  const rewardsEnabled = useExperimentalFlag(ETH_REWARDS) || rewards_enabled;
 
   useFocusEffect(
     useCallback(() => {
@@ -23,7 +29,12 @@ export default function ClaimContent() {
   );
 
   return (
-    <Box alignItems="center" background="surfacePrimary" paddingBottom="52px" paddingHorizontal="60px" style={{ flex: 1 }}>
+    <Box
+      alignItems="center"
+      paddingBottom="52px"
+      paddingHorizontal={{ custom: 68 }}
+      style={{ backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD', flex: 1 }}
+    >
       <Rows>
         <Box alignItems="center" justifyContent="center" style={{ flex: 1 }}>
           <Stack space="32px" alignHorizontal="center">
@@ -31,11 +42,13 @@ export default function ClaimContent() {
               <Stack space="28px" alignHorizontal="center">
                 <PointsIconAnimation />
                 <Text size="22pt" weight="heavy" align="center" color="label">
-                  {i18n.t(i18n.l.points.claim.title)}
+                  {rewardsEnabled
+                    ? `${i18n.t(i18n.l.points.claim.title_rewards_line_1)}\n${i18n.t(i18n.l.points.claim.title_rewards_line_2)}`
+                    : i18n.t(i18n.l.points.claim.title)}
                 </Text>
               </Stack>
               <Text size="15pt" weight="semibold" align="center" color="labelTertiary">
-                {i18n.t(i18n.l.points.claim.subtitle)}
+                {rewardsEnabled ? i18n.t(i18n.l.points.claim.subtitle_rewards) : i18n.t(i18n.l.points.claim.subtitle)}
               </Text>
             </Stack>
             <ActionButton
