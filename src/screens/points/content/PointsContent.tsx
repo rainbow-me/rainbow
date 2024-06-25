@@ -474,9 +474,12 @@ const NextDistributionCountdown = ({ nextDistribution }: { nextDistribution: Dat
   const hourStr = hours ? `${hours}h` : '';
   const minuteStr = minutes ? `${minutes}m` : '';
 
+  const firstSpace = dayStr && (hourStr || minuteStr) ? ' ' : '';
+  const secondSpace = hourStr && minuteStr ? ' ' : '';
+
   return (
     <Text align="center" color="labelSecondary" size="17pt" weight="heavy">
-      {`${dayStr} ${hourStr} ${minuteStr}`}
+      {`${dayStr}${firstSpace}${hourStr}${secondSpace}${minuteStr}`}
     </Text>
   );
 };
