@@ -161,7 +161,7 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
               mainText={qualifiedReferees ? qualifiedReferees.toLocaleString('en-US') : undefined}
               placeholderMainText={i18n.t(i18n.l.points.points.none)}
               icon="􀇯"
-              subtitle={`${referralsEarnings?.toLocaleString('en-US') ?? '0'} ${i18n.t(i18n.l.points.points.points)}`}
+              subtitle={`${referralsEarnings?.toLocaleString('en-US') ?? '0'} ${i18n.t(i18n.l.points.points.points_capitalized)}`}
               accentColor={yellow}
             />
             <InfoCard
