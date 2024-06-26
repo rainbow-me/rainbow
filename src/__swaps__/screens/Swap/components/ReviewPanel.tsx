@@ -5,7 +5,13 @@ import { useNativeAssetForChain } from '@/__swaps__/screens/Swap/hooks/useNative
 import { ChainId, ChainNameDisplay } from '@/__swaps__/types/chains';
 import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
-import { convertRawAmountToBalance, convertRawAmountToNativeDisplay, handleSignificantDecimals, multiply } from '@/__swaps__/utils/numbers';
+import {
+  convertRawAmountToBalance,
+  convertRawAmountToBalanceWorklet,
+  convertRawAmountToNativeDisplay,
+  handleSignificantDecimals,
+  multiply,
+} from '@/__swaps__/utils/numbers';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -159,7 +165,7 @@ function FlashbotsToggle() {
 export function ReviewPanel() {
   const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
-  const { configProgress, lastTypedInput, SwapSettings, internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
+  const { configProgress, lastTypedInput, SwapSettings, internalSelectedInputAsset, internalSelectedOutputAsset, quote } = useSwapContext();
 
   const labelTertiary = useForegroundColor('labelTertiary');
   const separator = useForegroundColor('separator');
@@ -173,12 +179,25 @@ export function ReviewPanel() {
     return isInputBasedTrade ? MINIMUM_RECEIVED_LABEL : MAXIMUM_SOLD_LABEL;
   });
 
-  const minimumReceived = useDerivedValue(() => {
-    if (!SwapInputController.formattedOutputAmount.value || !internalSelectedOutputAsset.value?.symbol) {
+  const minReceivedOrMaxSoldValue = useDerivedValue(() => {
+    const isInputBasedTrade = lastTypedInput.value === 'inputAmount' || lastTypedInput.value === 'inputNativeValue';
+    if (!quote.value || (quote.value as QuoteError)?.error) {
       return unknown;
     }
 
-    return `${SwapInputController.formattedOutputAmount.value} ${internalSelectedOutputAsset.value.symbol}`;
+    const validQuote = quote.value as Quote;
+
+    if (isInputBasedTrade && internalSelectedOutputAsset.value) {
+      const minReceived = validQuote.buyAmountDisplayMinimum;
+      const { display: minReceivedDisplay } = convertRawAmountToBalanceWorklet(minReceived.toString(), internalSelectedOutputAsset.value);
+      return minReceivedDisplay;
+    } else if (!isInputBasedTrade && internalSelectedInputAsset.value) {
+      const maxSold = validQuote.sellAmountDisplay;
+      const { display: maxSoldDisplay } = convertRawAmountToBalanceWorklet(maxSold.toString(), internalSelectedInputAsset.value);
+      return maxSoldDisplay;
+    }
+
+    return unknown;
   });
 
   const handleDecrementSlippage = () => {
@@ -282,7 +301,7 @@ export function ReviewPanel() {
 
             <Column>
               <AnimatedText align="right" color={isDarkMode ? 'labelSecondary' : 'label'} numberOfLines={1} size="15pt" weight="bold">
-                {minimumReceived}
+                {minReceivedOrMaxSoldValue}
               </AnimatedText>
             </Column>
           </Columns>
