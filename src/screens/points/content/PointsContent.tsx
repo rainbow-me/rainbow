@@ -59,7 +59,7 @@ import Routes from '@/navigation/routesNames';
 import Animated, { runOnUI, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { Network } from '@/helpers';
-import { format, intervalToDuration } from 'date-fns';
+import { format, intervalToDuration, isToday } from 'date-fns';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { ETH_REWARDS, useExperimentalFlag } from '@/config';
 import { RewardsActionButton } from '../components/RewardsActionButton';
@@ -120,6 +120,7 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
     if (isUnranked) return i18n.t(i18n.l.points.points.points_to_rank);
 
     if (rankChange === undefined) return '';
+    if (rankChange === 0) return i18n.t(i18n.l.points.points.no_change);
 
     return Math.abs(rankChange).toLocaleString('en-US');
   };
@@ -474,12 +475,9 @@ const NextDistributionCountdown = ({ nextDistribution }: { nextDistribution: Dat
   const hourStr = hours ? `${hours}h` : '';
   const minuteStr = minutes ? `${minutes}m` : '';
 
-  const firstSpace = dayStr && (hourStr || minuteStr) ? ' ' : '';
-  const secondSpace = hourStr && minuteStr ? ' ' : '';
-
   return (
     <Text align="center" color="labelSecondary" size="17pt" weight="heavy">
-      {`${dayStr}${firstSpace}${hourStr}${secondSpace}${minuteStr}`}
+      {`${dayStr} ${hourStr} ${minuteStr}`.trim()}
     </Text>
   );
 };
@@ -487,7 +485,9 @@ const NextDistributionCountdown = ({ nextDistribution }: { nextDistribution: Dat
 const NextDropCard = memo(function NextDropCard({ nextDistribution }: { nextDistribution: Date }) {
   const { isDarkMode } = useColorMode();
   const separatorSecondary = useForegroundColor('separatorSecondary');
-  const nextDistributionWithDay = format(nextDistribution, 'cccc p');
+  const nextDistributionWithDay = isToday(nextDistribution)
+    ? `${i18n.t(i18n.l.points.points.today)} ${format(nextDistribution, 'p')}`
+    : format(nextDistribution, 'cccc p');
 
   return (
     <Card>
@@ -695,6 +695,7 @@ export default function PointsContent() {
   const totalRewardsDisplay = convertRawAmountToBalance(totalRewards || '0', {
     decimals: 18,
     symbol: 'ETH',
+    trimTrailingZeros: true,
   })?.display;
 
   const nextDistribution = points?.points?.meta?.distribution?.next;
