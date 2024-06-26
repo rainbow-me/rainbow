@@ -1,0 +1,102 @@
+diff --git a/node_modules/react-native-linear-gradient/ios/BVLinearGradientLayer.m b/node_modules/react-native-linear-gradient/ios/BVLinearGradientLayer.m
+index bda0a1b..4a3ede4 100644
+--- a/node_modules/react-native-linear-gradient/ios/BVLinearGradientLayer.m
++++ b/node_modules/react-native-linear-gradient/ios/BVLinearGradientLayer.m
+@@ -3,6 +3,26 @@
+ #include <math.h>
+ #import <UIKit/UIKit.h>
+ 
++@implementation UIColor (ColorSpace)
++
++- (UIColor *)colorWithCGColorSpace:(CGColorSpaceRef)colorSpace {
++    const CGFloat *components = CGColorGetComponents(self.CGColor);
++    size_t count = CGColorGetNumberOfComponents(self.CGColor);
++    CGFloat newComponents[count];
++
++    for (size_t i = 0; i < count; i++) {
++        newComponents[i] = components[i];
++    }
++
++    CGColorRef colorRef = CGColorCreate(colorSpace, newComponents);
++    UIColor *color = [UIColor colorWithCGColor:colorRef];
++    CGColorRelease(colorRef);
++
++    return color;
++}
++
++@end
++
+ @implementation BVLinearGradientLayer
+ 
+ - (instancetype)init
+@@ -182,59 +202,48 @@ - (void)drawInContext:(CGContextRef)ctx
+         return;
+ 
+     CGFloat *locations = nil;
+-
+     locations = malloc(sizeof(CGFloat) * self.colors.count);
+ 
+-    for (NSInteger i = 0; i < self.colors.count; i++)
+-    {
+-        if (self.locations.count > i)
+-        {
++    for (NSInteger i = 0; i < self.colors.count; i++) {
++        if (self.locations.count > i) {
+             locations[i] = self.locations[i].floatValue;
+-        }
+-        else
+-        {
++        } else {
+             locations[i] = (1.0 / (self.colors.count - 1)) * i;
+         }
+     }
+ 
+-    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
++    CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceDisplayP3);
+     NSMutableArray *colors = [[NSMutableArray alloc] initWithCapacity:self.colors.count];
++
+     for (UIColor *color in self.colors) {
+-        [colors addObject:(id)color.CGColor];
++        UIColor *p3Color = [color colorWithCGColorSpace:colorSpace];
++        [colors addObject:(__bridge id)p3Color.CGColor];
+     }
+ 
+-    CGGradientRef gradient = CGGradientCreateWithColors(colorSpace, (CFArrayRef)colors, locations);
++    CGGradientRef gradient = CGGradientCreateWithColors(colorSpace, (__bridge CFArrayRef)colors, locations);
+ 
+     free(locations);
+ 
+     CGPoint start, end;
+ 
+-    if (_useAngle)
+-    {
+-        // Angle is in bearing degrees (North = 0, East = 90)
+-        // convert it to cartesian (N = 90, E = 0)
++    if (_useAngle) {
+         float angle = (90 - _angle);
+         CGPoint relativeStartPoint = [BVLinearGradientLayer getGradientStartPointFromAngle:angle AndSize:size];
+ 
+-        // Get true angleCenter
+         CGPoint angleCenter = CGPointMake(
+             _angleCenter.x * size.width,
+             _angleCenter.y * size.height
+         );
+-        // Translate to center on angle center
+-        // Flip Y coordinate to convert from cartesian
++
+         start = CGPointMake(
+             angleCenter.x + relativeStartPoint.x,
+             angleCenter.y - relativeStartPoint.y
+         );
+-        // Reflect across the center to get the end point
+         end = CGPointMake(
+             angleCenter.x - relativeStartPoint.x,
+             angleCenter.y + relativeStartPoint.y
+         );
+-    }
+-    else
+-    {
++    } else {
+         start = CGPointMake(self.startPoint.x * size.width, self.startPoint.y * size.height);
+         end = CGPointMake(self.endPoint.x * size.width, self.endPoint.y * size.height);
+     }

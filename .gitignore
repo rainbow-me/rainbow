@@ -108,6 +108,9 @@ coverage-ts
 src/languages/types-generated.d.ts
 __generated__/
 
+# graphql codegen
+src/graphql/config.js
+
 # Test Coverage
 coverage
 

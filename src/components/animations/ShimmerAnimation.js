@@ -16,25 +16,43 @@ const ColorGradient = styled(AnimatedLinearGradient).attrs({
   start: { x: 1, y: 0.5 },
 })(position.coverAsObject);
 
-export default function ShimmerAnimation({ color, enabled = true, gradientColor = undefined, width = 0 }) {
+export default function ShimmerAnimation({
+  animationDuration = timingConfig.duration,
+  color,
+  enabled = true,
+  gradientColor = '',
+  width = 0,
+}) {
   const opacity = useSharedValue(1);
   const positionX = useSharedValue(-width * 1.5);
   const { colors } = useTheme();
 
   const gradientColors = useMemo(
-    () => [colors.alpha(color, 0), gradientColor ?? colors.alpha(colors.whiteLabel, 0.2), colors.alpha(color, 0)],
+    () => [colors.alpha(color, 0), gradientColor || colors.alpha(colors.whiteLabel, 0.2), colors.alpha(color, 0)],
     [gradientColor, color, colors]
   );
 
   useEffect(() => {
     if (enabled) {
-      opacity.value = withTiming(1, timingConfig);
-      positionX.value = withRepeat(withTiming(width * 1.5, timingConfig), -1);
+      opacity.value = withTiming(1, {
+        duration: animationDuration,
+        easing: timingConfig.easing,
+      });
+      positionX.value = withRepeat(
+        withTiming(width * 1.5, {
+          duration: animationDuration,
+          easing: timingConfig.easing,
+        }),
+        -1
+      );
     } else {
-      opacity.value = withTiming(0, timingConfig);
+      opacity.value = withTiming(0, {
+        duration: animationDuration,
+        easing: timingConfig.easing,
+      });
       positionX.value = -width * 1.5;
     }
-  }, [enabled, opacity, positionX, width]);
+  }, [animationDuration, enabled, opacity, positionX, width]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,

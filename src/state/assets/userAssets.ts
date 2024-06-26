@@ -1,10 +1,10 @@
-import { Address } from 'viem';
-import { RainbowError, logger } from '@/logger';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import store from '@/redux/store';
-import { SUPPORTED_CHAIN_IDS, supportedNativeCurrencies } from '@/references';
 import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
+import { RainbowError, logger } from '@/logger';
+import store from '@/redux/store';
+import { SUPPORTED_CHAIN_IDS, supportedNativeCurrencies } from '@/references';
+import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { Address } from 'viem';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 
@@ -154,7 +154,10 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
             asset =>
               (+asset.native?.balance?.amount ?? 0) > smallBalanceThreshold &&
               (!chainIdFilter || asset.chainId === chainIdFilter) &&
-              (!searchRegex || searchRegex.test(asset.name) || searchRegex.test(asset.symbol) || searchRegex.test(asset.address)),
+              (!searchRegex ||
+                searchRegex.test(asset.name) ||
+                searchRegex.test(asset.symbol) ||
+                asset.address.toLowerCase() === inputSearchQuery),
             filter
           )
         );

@@ -3320,10 +3320,10 @@
   dependencies:
     react-merge-refs "^1.0.0"
 
-"@rainbow-me/swaps@0.19.0":
-  version "0.19.0"
-  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.19.0.tgz#c4b86a69d814f5d7c5b39b9eb190c949be9e4568"
-  integrity sha512-cBlks1Yx7emNfbdgvhK5d+cchL2e6kCMtzvjGbqrUGnhWv+IQmT0AAdKCZu6KlK+S+3lPbGcEjZ+mUUum42//w==
+"@rainbow-me/swaps@0.21.0":
+  version "0.21.0"
+  resolved "https://registry.yarnpkg.com/@rainbow-me/swaps/-/swaps-0.21.0.tgz#c04e72c9bc8fccaa6865dba2386e78665c551747"
+  integrity sha512-ULTlMrPmJzsgKXJxDtsGMMPsFMtDG0HvAc2BS7LSfmg8IsBHOavr7fo+7LohV5IUnpCVTDYtsZei/mVBUgxSDg==
   dependencies:
     "@ethereumjs/util" "9.0.0"
     "@ethersproject/abi" "5.7.0"
@@ -4311,10 +4311,10 @@
     recyclerlistview "4.2.0"
     tslib "2.4.0"
 
-"@shopify/react-native-skia@1.3.0":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@shopify/react-native-skia/-/react-native-skia-1.3.0.tgz#b56c6e9b31d13868cc4c4ba8ff2494126ff0929e"
-  integrity sha512-TsQM6e9Cb8V2dukFwdjVurpynb1Avw3mxl6DZCLqDugGaVOCoWIkcJWPQEW62uXN/qumJ0dFOCKaXudo+Y4Z4A==
+"@shopify/react-native-skia@1.3.6":
+  version "1.3.6"
+  resolved "https://registry.yarnpkg.com/@shopify/react-native-skia/-/react-native-skia-1.3.6.tgz#074c419e87a1bfb65310b3ebfa74a342c2a07e06"
+  integrity sha512-AT+yxt0UiAakcqUzbaLCL4kj/9cDlerhuUw2z/U+K7xeudLcox6mbLse98i9E+fUdIctxNFa50ltCo+9hQOPkg==
   dependencies:
     canvaskit-wasm "0.39.1"
     react-reconciler "0.27.0"
@@ -16525,10 +16525,10 @@ react-native-randombytes@3.5.3:
     buffer "^4.9.1"
     sjcl "^1.0.3"
 
-react-native-reanimated@3.11.0:
-  version "3.11.0"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-3.11.0.tgz#d4265d4e0232623f5958ed60e1686ca884fc3452"
-  integrity sha512-BNw/XDgUfs8UhfY1X6IniU8kWpnotWGyt8qmQviaHisTi5lvwnaOdXQKfN1KGONx6ekdFRHRP5EFwLi0UajwKA==
+react-native-reanimated@3.13.0-rc.2:
+  version "3.13.0-rc.2"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-3.13.0-rc.2.tgz#55843a55eb6cb480be48456547127edab08e9337"
+  integrity sha512-5MVV8Xwh1S2PtXz3h6naTwyUu+T3gogF6FqVVAstrJ1G1OkE0HwIt6P9NA7VrU941xbY6rccFKQbj8D6n2a/7Q==
   dependencies:
     "@babel/plugin-transform-arrow-functions" "^7.0.0-0"
     "@babel/plugin-transform-nullish-coalescing-operator" "^7.0.0-0"

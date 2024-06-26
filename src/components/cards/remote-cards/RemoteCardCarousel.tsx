@@ -54,7 +54,7 @@ export const RemoteCardCarousel = () => {
         keyExtractor: item => item,
         placeholder: null,
         width: width - gutterSize,
-        height: 88,
+        height: 80,
         padding: 16,
         verticalOverflow: 12,
       }}

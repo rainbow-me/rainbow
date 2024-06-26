@@ -1,8 +1,8 @@
 import * as i18n from '@/languages';
 import React, { PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
-import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, withDelay, withSpring } from 'react-native-reanimated';
 
-import { fadeConfig } from '@/__swaps__/screens/Swap/constants';
+import { MIN_FLASHBOTS_PRIORITY_FEE, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/__swaps__/types/chains';
 import { GasSpeed } from '@/__swaps__/types/gas';
@@ -33,6 +33,7 @@ import { GasSettings, getCustomGasSettings, setCustomGasSettings, useCustomGasSt
 import { getSelectedGas, setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 
 const { GAS_TRENDS } = gasUtils;
 
@@ -227,13 +228,23 @@ const useGasPanelStore = createRainbowStore<GasPanelState | undefined>(() => und
 function useGasPanelState<
   Option extends 'maxBaseFee' | 'maxPriorityFee' | 'gasPrice' | undefined = undefined,
   Selected = Option extends string ? string : GasPanelState,
->(opt?: Option, select: (s: GasPanelState | undefined) => Selected = s => (opt ? s?.[opt] : s) as Selected) {
-  const state = useGasPanelStore(select);
-
+>(option?: Option, select: (s: GasPanelState | undefined) => Selected = s => (option ? s?.[option] : s) as Selected) {
   const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-  const currentGasSettings = useCustomGasStore(s => select(s?.[chainId]));
+  const speed = useSelectedGasSpeed(chainId);
 
-  return useMemo(() => state ?? currentGasSettings, [currentGasSettings, state]);
+  const editedSetting = useGasPanelStore(select);
+  const customSetting = useCustomGasStore(s => select(s?.[chainId]));
+  const { data: suggestedSetting } = useMeteorologySuggestion({
+    chainId,
+    speed,
+    select: useCallback((d?: GasSuggestion) => option && d?.[option], [option]),
+    enabled: !editedSetting,
+    notifyOnChangeProps: !editedSetting && speed !== 'custom' ? ['data'] : [],
+  });
+
+  if (editedSetting) return editedSetting;
+  if (speed === GasSpeed.CUSTOM) return customSetting;
+  return suggestedSetting;
 }
 
 const setGasPanelState = (update: Partial<GasPanelState>) => {
@@ -245,22 +256,6 @@ const setGasPanelState = (update: Partial<GasPanelState>) => {
   const suggestion = getSelectedSpeedSuggestion(chainId);
   useGasPanelStore.setState({ ...suggestion, ...update });
 };
-
-function useMetereologySuggested<Option extends 'maxBaseFee' | 'maxPriorityFee' | 'gasPrice'>(
-  option: Option,
-  { enabled = true }: { enabled?: boolean } = {}
-) {
-  const chainId = useSwapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-  const speed = useSelectedGasSpeed(chainId);
-  const { data: suggestion } = useMeteorologySuggestion({
-    chainId,
-    speed,
-    select: useCallback((d?: GasSuggestion) => d?.[option], [option]),
-    enabled,
-    notifyOnChangeProps: !!enabled && speed !== 'custom' ? ['data'] : [],
-  });
-  return suggestion;
-}
 
 const likely_to_fail = i18n.t(i18n.l.gas.likely_to_fail);
 const higher_than_suggested = i18n.t(i18n.l.gas.higher_than_suggested);
@@ -304,7 +299,6 @@ function EditMaxBaseFee() {
   const { navigate } = useNavigation();
 
   const maxBaseFee = useGasPanelState('maxBaseFee');
-  const placeholder = useMetereologySuggested('maxBaseFee', { enabled: !maxBaseFee });
 
   const warning = useMaxBaseFeeWarning(maxBaseFee);
 
@@ -316,12 +310,11 @@ function EditMaxBaseFee() {
         </PressableLabel>
         {warning && <Warning>{warning}</Warning>}
       </Box>
-      <GasSettingInput value={maxBaseFee || placeholder} onChange={maxBaseFee => setGasPanelState({ maxBaseFee })} />
+      <GasSettingInput value={maxBaseFee} onChange={maxBaseFee => setGasPanelState({ maxBaseFee })} />
     </Box>
   );
 }
 
-const MIN_FLASHBOTS_PRIORITY_FEE = gweiToWei('6');
 function EditPriorityFee() {
   const { navigate } = useNavigation();
 
@@ -329,14 +322,13 @@ function EditPriorityFee() {
   const min = isFlashbotsEnabled ? MIN_FLASHBOTS_PRIORITY_FEE : '0';
 
   const maxPriorityFee = useGasPanelState('maxPriorityFee');
-  const placeholder = useMetereologySuggested('maxPriorityFee', { enabled: !maxPriorityFee });
 
   return (
     <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
       <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MINER_TIP_TYPE })}>
         {i18n.t(i18n.l.gas.miner_tip)}
       </PressableLabel>
-      <GasSettingInput value={maxPriorityFee || placeholder} onChange={maxPriorityFee => setGasPanelState({ maxPriorityFee })} min={min} />
+      <GasSettingInput value={maxPriorityFee} onChange={maxPriorityFee => setGasPanelState({ maxPriorityFee })} min={min} />
     </Inline>
   );
 }
@@ -345,15 +337,13 @@ function EditGasPrice() {
   const { navigate } = useNavigation();
 
   const gasPrice = useGasPanelState('gasPrice');
-  const placeholder = useMetereologySuggested('gasPrice', { enabled: !gasPrice });
 
   return (
     <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
-      {/* TODO: Add error and warning values here */}
       <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MAX_BASE_FEE_TYPE })}>
         {i18n.t(i18n.l.gas.max_base_fee)}
       </PressableLabel>
-      <GasSettingInput value={gasPrice || placeholder} onChange={gasPrice => setGasPanelState({ gasPrice })} />
+      <GasSettingInput value={gasPrice} onChange={gasPrice => setGasPanelState({ gasPrice })} />
     </Inline>
   );
 }
@@ -414,37 +404,44 @@ function EditableGasSettings() {
 
 function saveCustomGasSettings() {
   const unsaved = useGasPanelStore.getState();
+  if (!unsaved) return;
 
   const { inputAsset } = useSwapsStore.getState();
   const chainId = inputAsset?.chainId || ChainId.mainnet;
-  if (!unsaved) {
-    if (getCustomGasSettings(chainId)) setSelectedGasSpeed(chainId, GasSpeed.CUSTOM);
-    return;
-  }
 
   setCustomGasSettings(chainId, unsaved);
   setSelectedGasSpeed(chainId, GasSpeed.CUSTOM);
   useGasPanelStore.setState(undefined);
 }
 
-export function onCloseGasPanel() {
-  saveCustomGasSettings();
-}
-
 export function GasPanel() {
   const { configProgress } = useSwapContext();
+  const separator = useForegroundColor('separator');
+
+  useAnimatedReaction(
+    () => configProgress.value,
+    (current, previous) => {
+      // persist custom gas settings when navigating away from gas panel
+      if (previous === NavigationSteps.SHOW_GAS && current !== NavigationSteps.SHOW_GAS) {
+        runOnJS(saveCustomGasSettings)();
+      }
+    }
+  );
 
   const styles = useAnimatedStyle(() => {
     return {
       display: configProgress.value !== NavigationSteps.SHOW_GAS ? 'none' : 'flex',
       pointerEvents: configProgress.value !== NavigationSteps.SHOW_GAS ? 'none' : 'auto',
-      opacity: configProgress.value === NavigationSteps.SHOW_GAS ? withTiming(1, fadeConfig) : withTiming(0, fadeConfig),
+      opacity:
+        configProgress.value === NavigationSteps.SHOW_GAS
+          ? withDelay(120, withSpring(1, SPRING_CONFIGS.springConfig))
+          : withSpring(0, SPRING_CONFIGS.springConfig),
       flex: 1,
     };
   });
 
   return (
-    <Box as={Animated.View} zIndex={12} style={styles} testID="gas-panel" width="full">
+    <Box as={Animated.View} paddingHorizontal="12px" zIndex={12} style={styles} testID="gas-panel" width="full">
       <Stack alignHorizontal="center" space="28px">
         <Text weight="heavy" color="label" size="20pt">
           {i18n.t(i18n.l.gas.gas_settings)}
@@ -459,7 +456,7 @@ export function GasPanel() {
             <EditableGasSettings />
           </Box>
 
-          <Separator color="separatorSecondary" />
+          <Separator color={{ custom: opacity(separator, 0.03) }} thickness={THICK_BORDER_WIDTH} />
 
           <MaxTransactionFee />
         </Box>
