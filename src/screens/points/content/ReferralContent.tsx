@@ -55,7 +55,7 @@ const parseReferralCodeFromLink = (code: string) => {
   return;
 };
 
-export default function ReferralContent() {
+export function ReferralContent() {
   const { accentColor } = useAccountAccentColor();
   const { isDarkMode } = useColorMode();
   const { goBack, navigate } = useNavigation();
@@ -280,8 +280,8 @@ export default function ReferralContent() {
                         ...(IS_IOS
                           ? inputTextStyle
                           : {
-                              color: label,
-                            }),
+                            color: label,
+                          }),
                       }}
                       autoCorrect={false}
                       autoFocus={false}

@@ -604,7 +604,7 @@ const RainbowText = memo(function RainbowText({ totalPointsString }: { totalPoin
   );
 });
 
-export default function PointsContent() {
+export function PointsContent() {
   const { isDarkMode } = useColorMode();
   const { colors } = useTheme();
   const { name } = useRoute();

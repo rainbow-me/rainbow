@@ -16,7 +16,7 @@ import RecyclerListViewScrollToTopProvider, {
 } from '@/navigation/RecyclerListViewScrollToTopContext';
 import DappBrowserScreen from '@/screens/dapp-browser/DappBrowserScreen';
 import { discoverOpenSearchFnRef } from '@/screens/discover/components/DiscoverSearchContainer';
-import PointsScreen from '@/screens/points/PointsScreen';
+import { PointsScreen } from '@/screens/points/PointsScreen';
 import WalletScreen from '@/screens/WalletScreen';
 import { useTheme } from '@/theme';
 import { deviceUtils } from '@/utils';
