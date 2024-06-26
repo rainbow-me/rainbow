@@ -695,8 +695,7 @@ export default function PointsContent() {
   const totalRewardsDisplay = convertRawAmountToBalance(totalRewards || '0', {
     decimals: 18,
     symbol: 'ETH',
-    trimTrailingZeros: true,
-  })?.display;
+  }, undefined, true)?.display;
 
   const nextDistribution = points?.points?.meta?.distribution?.next;
   const nextDistributionDate = nextDistribution ? new Date(nextDistribution * 1000) : null;
@@ -797,11 +796,11 @@ export default function PointsContent() {
                                   Share.share(
                                     IS_ANDROID
                                       ? {
-                                          message: referralUrl,
-                                        }
+                                        message: referralUrl,
+                                      }
                                       : {
-                                          url: referralUrl,
-                                        }
+                                        url: referralUrl,
+                                      }
                                   );
                                 }
                               }}

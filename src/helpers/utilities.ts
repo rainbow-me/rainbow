@@ -268,15 +268,16 @@ export const convertRawAmountToNativeDisplay = (
  */
 export const convertRawAmountToBalance = (
   value: BigNumberish,
-  asset: { decimals: number; symbol?: string; trimTrailingZeros?: boolean },
-  buffer?: number
+  asset: { decimals: number; symbol?: string },
+  buffer?: number,
+  trimTrailingZeros?: boolean
 ) => {
   const decimals = asset?.decimals ?? 18;
   const assetBalance = convertRawAmountToDecimalFormat(value, decimals);
 
   return {
     amount: assetBalance,
-    display: convertAmountToBalanceDisplay(assetBalance, asset, buffer, asset?.trimTrailingZeros),
+    display: convertAmountToBalanceDisplay(assetBalance, asset, buffer, trimTrailingZeros),
   };
 };
 
