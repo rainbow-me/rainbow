@@ -233,17 +233,6 @@ export function trimTrailingZeros(value: string) {
   return withTrimmedZeros.endsWith('.') ? withTrimmedZeros.slice(0, -1) : withTrimmedZeros;
 }
 
-export function precisionBasedOffMagnitude(amount: number | string, isStablecoin = false): number {
-  'worklet';
-
-  const magnitude = -orderOfMagnitudeWorklet(amount);
-  // don't let stablecoins go beneath 2nd order
-  if (magnitude < -2 && isStablecoin) {
-    return -STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS;
-  }
-  return magnitude;
-}
-
 export function valueBasedDecimalFormatter({
   amount,
   nativePrice,
@@ -265,27 +254,42 @@ export function valueBasedDecimalFormatter({
     minimumDecimalPlaces: number;
     maximumDecimalPlaces: number;
   } {
+    const orderOfMagnitude = orderOfMagnitudeWorklet(amount);
+    const decimalsBasedOnMagnitude = orderOfMagnitude > 0 ? 7 - orderOfMagnitude : -(orderOfMagnitude + 1);
+
     if (nativePrice === 0) {
       return {
-        minimumDecimalPlaces: 0,
-        maximumDecimalPlaces: MAXIMUM_SIGNIFICANT_DECIMALS,
+        minimumDecimalPlaces: Math.max(-orderOfMagnitude, isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0),
+        maximumDecimalPlaces: decimalsBasedOnMagnitude, // MAXIMUM_SIGNIFICANT_DECIMALS
       };
     }
 
+    // for when it has prices, it doesn't need to be much MORE than the $0.01 granularity
+    const significantDigits = 0;
+    const minimumDecimalPlaces = Math.max(significantDigits, isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0);
+
+    // for when it has a super tiny price...can we treat it the same as when it has no price?
+    let minDecimalsForOneCent = 0;
     const unitsForOneCent = 0.01 / nativePrice;
     if (unitsForOneCent >= 1) {
       return {
         minimumDecimalPlaces: 0,
         maximumDecimalPlaces: 0,
       };
+    } else {
+      // asset nativePrice > 0.01
+      minDecimalsForOneCent = Math.ceil(Math.log10(1 / unitsForOneCent));
     }
+    // when precisionAdjustment is negative, it means that the order of magnitude is large
+    // when precisionAdjustment is positive, it means that there are significant digits
+    const maximumDecimalPlaces = Math.max(
+      minDecimalsForOneCent + (precisionAdjustment ?? 0), // Math.ceil(Math.log10(1 / unitsForOneCent)) + (precisionAdjustment ?? 0),
+      isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0
+    );
 
     return {
-      minimumDecimalPlaces: isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0,
-      maximumDecimalPlaces: Math.max(
-        Math.ceil(Math.log10(1 / unitsForOneCent)) + (precisionAdjustment ?? 0),
-        isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0
-      ),
+      minimumDecimalPlaces,
+      maximumDecimalPlaces, // TODO JIN - asset.decimals
     };
   }
 
@@ -305,7 +309,6 @@ export function valueBasedDecimalFormatter({
     // Default to normal rounding if no rounding mode is specified
     roundedAmount = divWorklet(roundWorklet(mulWorklet(amount, factor)), factor);
   }
-
   // Format the number to add separators and trim trailing zeros
   const numberFormatter = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: minimumDecimalPlaces,
@@ -344,18 +347,15 @@ export function niceIncrementFormatter({
       nativePrice: inputAssetNativePrice,
       amount,
       roundingMode: 'up',
-      precisionAdjustment: precisionBasedOffMagnitude(amount, isStablecoin),
       isStablecoin,
     });
   }
   if (percentageToSwap === 0.5) {
     const amount = mulWorklet(inputAssetBalance, 0.5);
-    const precisionAdjustment = precisionBasedOffMagnitude(amount, isStablecoin);
     return valueBasedDecimalFormatter({
       nativePrice: inputAssetNativePrice,
       amount,
       roundingMode: 'up',
-      precisionAdjustment,
       isStablecoin,
     });
   }
@@ -365,7 +365,6 @@ export function niceIncrementFormatter({
       nativePrice: inputAssetNativePrice,
       amount,
       roundingMode: 'up',
-      precisionAdjustment: precisionBasedOffMagnitude(amount, isStablecoin),
       isStablecoin,
     });
   }
@@ -377,6 +376,7 @@ export function niceIncrementFormatter({
   const exactIncrement = divWorklet(inputAssetBalance, 100);
   const isIncrementExact = equalWorklet(niceIncrement, exactIncrement);
   const numberOfIncrements = divWorklet(inputAssetBalance, niceIncrement);
+  // TODO JIN - to work on next
   const incrementStep = divWorklet(1, numberOfIncrements);
   const percentage = isIncrementExact
     ? percentageToSwap
