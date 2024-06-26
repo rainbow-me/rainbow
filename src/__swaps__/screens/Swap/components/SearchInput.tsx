@@ -33,7 +33,7 @@ export const SearchInput = ({
   output: boolean;
 }) => {
   const { isDarkMode } = useColorMode();
-  const { inputProgress, inputSearchRef, internalSelectedInputAsset, outputProgress, outputSearchRef } = useSwapContext();
+  const { inputProgress, inputSearchRef, outputProgress, outputSearchRef } = useSwapContext();
 
   const fillTertiary = useForegroundColor('fillTertiary');
   const label = useForegroundColor('label');
