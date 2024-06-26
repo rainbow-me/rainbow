@@ -168,7 +168,7 @@ export const DEFAULT_CONFIG: RainbowConfig = {
   dapp_browser: true,
   swaps_v2: false,
   idfa_check_enabled: true,
-  rewards_enabled: false,
+  rewards_enabled: true,
 };
 
 export async function fetchRemoteConfig(): Promise<RainbowConfig> {
