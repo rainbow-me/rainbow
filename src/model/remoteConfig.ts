@@ -169,6 +169,8 @@ export const DEFAULT_CONFIG: RainbowConfig = {
   swaps_v2: false,
   idfa_check_enabled: true,
   rewards_enabled: false,
+  debug_iOS: false,
+  debug_android: false,
 };
 
 export async function fetchRemoteConfig(): Promise<RainbowConfig> {
@@ -182,6 +184,9 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
       if (key === 'default_slippage_bips') {
         config[key] = JSON.parse(entry.asString());
       } else if (
+        key === 'debug_iOS' ||
+        key === 'debug_android' ||
+        key === 'flashbots_enabled' ||
         key === 'flashbots_enabled' ||
         key === 'f2c_enabled' ||
         key === 'swagg_enabled' ||
