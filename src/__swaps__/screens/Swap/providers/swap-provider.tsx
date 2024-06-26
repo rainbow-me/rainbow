@@ -44,7 +44,7 @@ import { queryClient } from '@/react-query';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { ethereumUtils } from '@/utils';
+import { ethereumUtils, haptics } from '@/utils';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 
 import { Address } from 'viem';
@@ -206,7 +206,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       const wallet = await loadWallet(parameters.quote.from, false, provider);
       if (!wallet) {
         isSwapping.value = false;
-        Alert.alert(i18n.t(i18n.l.swap.unable_to_load_wallet));
+        haptics.notificationError();
         return;
       }
 
