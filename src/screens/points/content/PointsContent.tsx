@@ -692,10 +692,15 @@ export function PointsContent() {
   const claimablePrice = convertAmountAndPriceToNativeDisplay(claimableBalance.amount, eth?.price?.value || 0, currency)?.display;
 
   const totalRewards = points?.points?.meta?.rewards?.total;
-  const totalRewardsDisplay = convertRawAmountToBalance(totalRewards || '0', {
-    decimals: 18,
-    symbol: 'ETH',
-  }, undefined, true)?.display;
+  const totalRewardsDisplay = convertRawAmountToBalance(
+    totalRewards || '0',
+    {
+      decimals: 18,
+      symbol: 'ETH',
+    },
+    undefined,
+    true
+  )?.display;
 
   const nextDistribution = points?.points?.meta?.distribution?.next;
   const nextDistributionDate = nextDistribution ? new Date(nextDistribution * 1000) : null;
@@ -796,11 +801,11 @@ export function PointsContent() {
                                   Share.share(
                                     IS_ANDROID
                                       ? {
-                                        message: referralUrl,
-                                      }
+                                          message: referralUrl,
+                                        }
                                       : {
-                                        url: referralUrl,
-                                      }
+                                          url: referralUrl,
+                                        }
                                   );
                                 }
                               }}

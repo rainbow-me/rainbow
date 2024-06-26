@@ -280,8 +280,8 @@ export function ReferralContent() {
                         ...(IS_IOS
                           ? inputTextStyle
                           : {
-                            color: label,
-                          }),
+                              color: label,
+                            }),
                       }}
                       autoCorrect={false}
                       autoFocus={false}

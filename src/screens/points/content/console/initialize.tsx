@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { AnimatePresence } from '@/components/animations/AnimatePresence';
-import Paragraph from '../../components/Paragraph';
-import Line from '../../components/Line';
+import { Paragraph } from '../../components/Paragraph';
+import { Line } from '../../components/Line';
 import { AnimatedText } from '../../components/AnimatedText';
 import { RainbowPointsFlowSteps, rainbowText, textColors } from '../../constants';
 import * as i18n from '@/languages';
@@ -10,7 +10,7 @@ import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbre
 import { usePointsProfileContext } from '../../contexts/PointsProfileContext';
 import { NeonButton } from '../../components/NeonButton';
 import { Bleed, Box, Stack } from '@/design-system';
-import LineBreak from '../../components/LineBreak';
+import { LineBreak } from '../../components/LineBreak';
 
 export const Initialize = () => {
   const [showSignInButton, setShowSignInButton] = useState(false);
