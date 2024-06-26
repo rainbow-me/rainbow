@@ -59,7 +59,7 @@ import Routes from '@/navigation/routesNames';
 import Animated, { runOnUI, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { Network } from '@/helpers';
-import { format, intervalToDuration } from 'date-fns';
+import { format, intervalToDuration, isToday } from 'date-fns';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { ETH_REWARDS, useExperimentalFlag } from '@/config';
 import { RewardsActionButton } from '../components/RewardsActionButton';
@@ -120,6 +120,7 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
     if (isUnranked) return i18n.t(i18n.l.points.points.points_to_rank);
 
     if (rankChange === undefined) return '';
+    if (rankChange === 0) return i18n.t(i18n.l.points.points.no_change);
 
     return Math.abs(rankChange).toLocaleString('en-US');
   };
@@ -161,7 +162,7 @@ const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined
               mainText={qualifiedReferees ? qualifiedReferees.toLocaleString('en-US') : undefined}
               placeholderMainText={i18n.t(i18n.l.points.points.none)}
               icon="􀇯"
-              subtitle={`${referralsEarnings?.toLocaleString('en-US') ?? '0'} ${i18n.t(i18n.l.points.points.points)}`}
+              subtitle={`${referralsEarnings?.toLocaleString('en-US') ?? '0'} ${i18n.t(i18n.l.points.points.points_capitalized)}`}
               accentColor={yellow}
             />
             <InfoCard
@@ -197,7 +198,7 @@ const Card = ({ borderRadius = 32, children, padding = '12px' }: { borderRadius?
   );
 };
 
-const ClaimCard = ({ claim, value }: { claim?: string; value?: string }) => {
+const ClaimCard = memo(function ClaimCard({ claim, value }: { claim?: string; value?: string }) {
   const { isDarkMode } = useColorMode();
   const { navigate } = useNavigation();
 
@@ -270,9 +271,9 @@ const ClaimCard = ({ claim, value }: { claim?: string; value?: string }) => {
       </ButtonPressAnimation>
     </Card>
   );
-};
+});
 
-const EarnRewardsCard = () => {
+const EarnRewardsCard = memo(function EarnRewardsCard() {
   return (
     <Card padding="20px">
       <Box paddingVertical="8px">
@@ -298,9 +299,9 @@ const EarnRewardsCard = () => {
       </Box>
     </Card>
   );
-};
+});
 
-const EarningsCard = ({ claimed, value }: { claimed?: string; value?: string }) => {
+const EarningsCard = memo(function EarningsCard({ claimed, value }: { claimed?: string; value?: string }) {
   return (
     <Card padding="20px">
       <Box gap={24} paddingVertical="4px" width="full">
@@ -359,9 +360,9 @@ const EarningsCard = ({ claimed, value }: { claimed?: string; value?: string }) 
       </Box>
     </Card>
   );
-};
+});
 
-const TotalEarnedByRainbowUsers = ({ earned }: { earned?: string }) => {
+const TotalEarnedByRainbowUsers = memo(function TotalEarnedByRainbowUsers({ earned }: { earned?: string }) {
   if (!earned) return null;
   return (
     <Box alignItems="center" justifyContent="center" width="full">
@@ -386,7 +387,7 @@ const TotalEarnedByRainbowUsers = ({ earned }: { earned?: string }) => {
       </Columns>
     </Box>
   );
-};
+});
 
 export const EthRewardsCoinIcon = memo(function EthRewardsCoinIcon({
   animatedBorder,
@@ -476,15 +477,17 @@ const NextDistributionCountdown = ({ nextDistribution }: { nextDistribution: Dat
 
   return (
     <Text align="center" color="labelSecondary" size="17pt" weight="heavy">
-      {`${dayStr} ${hourStr} ${minuteStr}`}
+      {`${dayStr} ${hourStr} ${minuteStr}`.trim()}
     </Text>
   );
 };
 
-const NextDropCard = ({ nextDistribution }: { nextDistribution: Date }) => {
+const NextDropCard = memo(function NextDropCard({ nextDistribution }: { nextDistribution: Date }) {
   const { isDarkMode } = useColorMode();
   const separatorSecondary = useForegroundColor('separatorSecondary');
-  const nextDistributionWithDay = format(nextDistribution, 'cccc p');
+  const nextDistributionWithDay = isToday(nextDistribution)
+    ? `${i18n.t(i18n.l.points.points.today)} ${format(nextDistribution, 'p')}`
+    : format(nextDistribution, 'cccc p');
 
   return (
     <Card>
@@ -533,7 +536,7 @@ const NextDropCard = ({ nextDistribution }: { nextDistribution: Date }) => {
       </Box>
     </Card>
   );
-};
+});
 
 const getTextWidth = async (text: string | undefined) => {
   const { width } = await measureText(text, {
@@ -544,7 +547,7 @@ const getTextWidth = async (text: string | undefined) => {
   return width;
 };
 
-const RainbowText = ({ totalPointsString }: { totalPointsString: string | undefined }) => {
+const RainbowText = memo(function RainbowText({ totalPointsString }: { totalPointsString: string | undefined }) {
   const { isDarkMode } = useColorMode();
   const [textWidth, setTextWidth] = useState<number | undefined>((totalPointsString?.length ?? 0) * 32);
 
@@ -599,9 +602,9 @@ const RainbowText = ({ totalPointsString }: { totalPointsString: string | undefi
       </MaskedView>
     </Bleed>
   );
-};
+});
 
-export default function PointsContent() {
+export function PointsContent() {
   const { isDarkMode } = useColorMode();
   const { colors } = useTheme();
   const { name } = useRoute();
@@ -689,10 +692,15 @@ export default function PointsContent() {
   const claimablePrice = convertAmountAndPriceToNativeDisplay(claimableBalance.amount, eth?.price?.value || 0, currency)?.display;
 
   const totalRewards = points?.points?.meta?.rewards?.total;
-  const totalRewardsDisplay = convertRawAmountToBalance(totalRewards || '0', {
-    decimals: 18,
-    symbol: 'ETH',
-  })?.display;
+  const totalRewardsDisplay = convertRawAmountToBalance(
+    totalRewards || '0',
+    {
+      decimals: 18,
+      symbol: 'ETH',
+    },
+    undefined,
+    true
+  )?.display;
 
   const nextDistribution = points?.points?.meta?.distribution?.next;
   const nextDistributionDate = nextDistribution ? new Date(nextDistribution * 1000) : null;

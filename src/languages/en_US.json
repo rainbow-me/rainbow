@@ -1400,6 +1400,7 @@
         "share_link": "Share Link",
         "next_drop": "Next Drop",
         "your_rank": "Your Rank",
+        "no_change": "No Change",
         "of_x": "Of %{totalUsers}",
         "referrals": "Referrals",
         "streak": "Streak",
