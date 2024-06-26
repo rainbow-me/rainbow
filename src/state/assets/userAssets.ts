@@ -129,7 +129,12 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
     searchCache: new Map(),
     userAssets: new Map(),
 
-    getBalanceSortedChainList: () => Array.from(get().chainBalances.keys()),
+    getBalanceSortedChainList: () => {
+      const chainBalances = [...get().chainBalances.entries()];
+      const chainsWithBalances = chainBalances.filter(([, balance]) => !!balance);
+      chainsWithBalances.sort(([, balanceA], [, balanceB]) => balanceB - balanceA);
+      return chainsWithBalances.map(([chainId]) => chainId);
+    },
 
     getFilteredUserAssetIds: () => {
       const { filter, inputSearchQuery: rawSearchQuery, selectUserAssetIds, setSearchCache } = get();
