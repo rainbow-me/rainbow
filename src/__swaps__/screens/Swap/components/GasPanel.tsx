@@ -20,6 +20,7 @@ import {
 import { add, formatNumber, greaterThan, multiply, subtract } from '@/__swaps__/utils/numbers';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Bleed, Box, Inline, Separator, Stack, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { lessThan } from '@/helpers/utilities';
@@ -33,7 +34,6 @@ import { GasSettings, getCustomGasSettings, setCustomGasSettings, useCustomGasSt
 import { getSelectedGas, setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 
 const { GAS_TRENDS } = gasUtils;
 
@@ -341,7 +341,7 @@ function EditGasPrice() {
   return (
     <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
       <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MAX_BASE_FEE_TYPE })}>
-        {i18n.t(i18n.l.gas.max_base_fee)}
+        {i18n.t(i18n.l.gas.gas_price)}
       </PressableLabel>
       <GasSettingInput value={gasPrice} onChange={gasPrice => setGasPanelState({ gasPrice })} />
     </Inline>
@@ -392,12 +392,13 @@ function EditableGasSettings() {
 
   if (!isEIP1559) return <EditGasPrice />;
 
-  if (chainsThatIgnoreThePriorityFee.includes(chainId)) return <EditMaxBaseFee />;
-
   return (
     <>
+      <UnmountWhenGasPanelIsClosed placeholder={<CurrentBaseFeeSlot />}>
+        <CurrentBaseFee />
+      </UnmountWhenGasPanelIsClosed>
       <EditMaxBaseFee />
-      <EditPriorityFee />
+      {!chainsThatIgnoreThePriorityFee.includes(chainId) && <EditPriorityFee />}
     </>
   );
 }
@@ -448,11 +449,8 @@ export function GasPanel() {
         </Text>
 
         <Box gap={24} width="full" alignItems="stretch">
-          <UnmountWhenGasPanelIsClosed placeholder={<CurrentBaseFeeSlot />}>
+          <Box gap={24} height="104px">
             <CurrentBaseFee />
-          </UnmountWhenGasPanelIsClosed>
-
-          <Box gap={24} height="64px">
             <EditableGasSettings />
           </Box>
 
