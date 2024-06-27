@@ -18,7 +18,11 @@ import { CrosschainQuote, Quote, QuoteError, SwapType, getCrosschainQuote, getQu
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import store from '@/redux/store';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { convertAmountToNativeDisplayWorklet, convertRawAmountToDecimalFormat } from '@/__swaps__/utils/numbers';
+import {
+  convertAmountToNativeDisplayWorklet,
+  convertRawAmountToDecimalFormat,
+  handleSignificantDecimalsWorklet,
+} from '@/__swaps__/utils/numbers';
 import { NavigationSteps } from './useSwapNavigation';
 import { RainbowError, logger } from '@/logger';
 import {
@@ -134,14 +138,7 @@ export function useSwapInputsController({
     }
 
     if (equalWorklet(inputValues.value.inputAmount, internalSelectedInputAsset.value.maxSwappableAmount)) {
-      const formattedAmount = valueBasedDecimalFormatter({
-        amount: inputValues.value.inputAmount,
-        isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
-        nativePrice: inputNativePrice.value,
-        roundingMode: 'none',
-        stripSeparators: false,
-      });
-
+      const formattedAmount = handleSignificantDecimalsWorklet(inputValues.value.inputAmount, internalSelectedInputAsset.value.decimals);
       return formattedAmount;
     } else {
       return addCommasToNumber(inputValues.value.inputAmount, '0');
