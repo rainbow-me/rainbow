@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { opacity } from '@/__swaps__/utils/swaps';
 
-export const RewardsActionButton = ({
+export const RewardsActionButton = memo(function RewardsActionButton({
   borderRadius = 20,
   color,
   label,
@@ -15,7 +15,7 @@ export const RewardsActionButton = ({
   color?: string;
   label: string;
   width?: number;
-}) => {
+}) {
   const { isDarkMode } = useColorMode();
   const defaultColor = useForegroundColor('label');
 
@@ -49,7 +49,7 @@ export const RewardsActionButton = ({
       </View>
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   neonButtonWrapper: {

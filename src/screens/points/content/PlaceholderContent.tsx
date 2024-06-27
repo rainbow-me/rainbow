@@ -5,7 +5,7 @@ import { useDimensions } from '@/hooks';
 import { FloatingEmojisTapper } from '@/components/floating-emojis';
 import { PointsIconAnimation } from '../components/PointsIconAnimation';
 
-export default function PlaceholderContent() {
+export function PlaceholderContent() {
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
 
   return (

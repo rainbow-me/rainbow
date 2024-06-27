@@ -175,7 +175,7 @@ export function useAnimatedSwapStyles({
           : opacityWorklet(outputAssetColor.value, 0.06),
         SPRING_CONFIGS.springConfig
       ),
-      borderRadius: withSpring(isReviewingOrConfiguringGas ? (IS_ANDROID ? 40 : 40) : 0, SPRING_CONFIGS.springConfig),
+      borderRadius: withSpring(isReviewingOrConfiguringGas ? 40 : 0, SPRING_CONFIGS.springConfig),
       bottom: withSpring(isReviewingOrConfiguringGas ? Math.max(safeAreaInsetValues.bottom, 28) : -2, SPRING_CONFIGS.springConfig),
       height: withSpring(heightForCurrentSheet, SPRING_CONFIGS.springConfig),
       left: withSpring(isReviewingOrConfiguringGas ? 12 : -2, SPRING_CONFIGS.springConfig),

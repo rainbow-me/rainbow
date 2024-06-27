@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { AnimatePresence } from '@/components/animations/AnimatePresence';
-import Paragraph from '../../components/Paragraph';
-import Line from '../../components/Line';
+import { Paragraph } from '../../components/Paragraph';
+import { Line } from '../../components/Line';
 import { AnimatedText } from '../../components/AnimatedText';
 import { RainbowPointsFlowSteps, textColors } from '../../constants';
 import * as i18n from '@/languages';
@@ -9,7 +9,7 @@ import { useAccountProfile, useDimensions } from '@/hooks';
 import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';
 import { usePointsProfileContext } from '../../contexts/PointsProfileContext';
 import { NeonButton } from '../../components/NeonButton';
-import LineBreak from '../../components/LineBreak';
+import { LineBreak } from '../../components/LineBreak';
 import { Bleed, Box, Inline, Stack } from '@/design-system';
 import { Linking } from 'react-native';
 import { metadataPOSTClient } from '@/graphql';
