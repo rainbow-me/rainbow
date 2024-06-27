@@ -5,6 +5,7 @@ import { isNil } from 'lodash';
 
 import { supportedNativeCurrencies } from '@/references';
 import { BigNumberish } from '@/__swaps__/utils/hex';
+import { lessThanWorklet, orderOfMagnitudeWorklet } from '../safe-math/SafeMath';
 
 type nativeCurrencyType = typeof supportedNativeCurrencies;
 
@@ -146,11 +147,29 @@ export const handleSignificantDecimalsWithThreshold = (value: BigNumberish, deci
   return lessThan(result, threshold) ? `< ${threshold}` : result;
 };
 
+export const handleSignificantDecimalsWorklet = (value: number | string, decimals: number, buffer = 3): string => {
+  'worklet';
+  let dec;
+
+  if (lessThanWorklet(value, 1)) {
+    const orderOfMagnitude = orderOfMagnitudeWorklet(value);
+    const sigDigitsWithBuffer = -orderOfMagnitude - 1 + buffer;
+    dec = Math.min(sigDigitsWithBuffer, 8);
+  } else {
+    dec = Math.min(decimals, buffer);
+  }
+  return Number(value).toLocaleString('en-US', {
+    useGrouping: true,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: dec,
+  });
+};
+
 export const handleSignificantDecimals = (value: BigNumberish, decimals: number, buffer = 3, skipDecimals = false): string => {
   let dec;
   if (lessThan(new BigNumber(value).abs(), 1)) {
     dec = new BigNumber(value).toFixed()?.slice?.(2).search(/[^0]/g) + buffer;
-    dec = Math.min(decimals, 8);
+    dec = Math.min(dec, 8);
   } else {
     dec = Math.min(decimals, buffer);
   }
