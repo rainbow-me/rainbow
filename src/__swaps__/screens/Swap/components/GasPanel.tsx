@@ -1,5 +1,5 @@
 import * as i18n from '@/languages';
-import React, { PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
+import React, { PropsWithChildren, ReactNode, useMemo } from 'react';
 import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, withDelay, withSpring } from 'react-native-reanimated';
 
 import { MIN_FLASHBOTS_PRIORITY_FEE, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
@@ -8,7 +8,6 @@ import { ChainId } from '@/__swaps__/types/chains';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { gweiToWei, weiToGwei } from '@/__swaps__/utils/ethereum';
 import {
-  GasSuggestion,
   getCachedCurrentBaseFee,
   getSelectedSpeedSuggestion,
   useBaseFee,
@@ -20,6 +19,7 @@ import {
 import { add, formatNumber, greaterThan, multiply, subtract } from '@/__swaps__/utils/numbers';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Bleed, Box, Inline, Separator, Stack, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { lessThan } from '@/helpers/utilities';
@@ -33,7 +33,6 @@ import { GasSettings, getCustomGasSettings, setCustomGasSettings, useCustomGasSt
 import { getSelectedGas, setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 
 const { GAS_TRENDS } = gasUtils;
 
@@ -237,7 +236,7 @@ function useGasPanelState<
   const { data: suggestedSetting } = useMeteorologySuggestion({
     chainId,
     speed,
-    select: useCallback((d?: GasSuggestion) => option && d?.[option], [option]),
+    select,
     enabled: !editedSetting,
     notifyOnChangeProps: !editedSetting && speed !== 'custom' ? ['data'] : [],
   });
@@ -250,11 +249,15 @@ function useGasPanelState<
 const setGasPanelState = (update: Partial<GasPanelState>) => {
   const chainId = useSwapsStore.getState().inputAsset?.chainId || ChainId.mainnet;
 
-  const currentGasSettings = getCustomGasSettings(chainId);
-  if (currentGasSettings) useGasPanelStore.setState({ ...currentGasSettings, ...update });
+  useGasPanelStore.setState(state => {
+    if (state) return { ...state, ...update };
 
-  const suggestion = getSelectedSpeedSuggestion(chainId);
-  useGasPanelStore.setState({ ...suggestion, ...update });
+    const currentGasSettings = getCustomGasSettings(chainId);
+    if (currentGasSettings) return { ...currentGasSettings, ...update };
+
+    const suggestion = getSelectedSpeedSuggestion(chainId);
+    return { ...suggestion, ...update };
+  });
 };
 
 const likely_to_fail = i18n.t(i18n.l.gas.likely_to_fail);
