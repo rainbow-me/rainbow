@@ -353,8 +353,7 @@ function EditGasPrice() {
 
 const stateToGasSettings = (s: GasPanelState | undefined): GasSettings | undefined => {
   if (!s) return getSelectedGas(swapsStore.getState().inputAsset?.chainId || ChainId.mainnet);
-  if (s.gasPrice) return { isEIP1559: false, gasPrice: s.gasPrice || '0' };
-  return { isEIP1559: true, maxBaseFee: s.maxBaseFee || '0', maxPriorityFee: s.maxPriorityFee || '0' };
+  return { isEIP1559: !('gasPrice' in s && !!s.gasPrice), ...s } as GasSettings;
 };
 
 function MaxTransactionFee() {
