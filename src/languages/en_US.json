@@ -1400,6 +1400,7 @@
         "share_link": "Share Link",
         "next_drop": "Next Drop",
         "your_rank": "Your Rank",
+        "no_change": "No Change",
         "of_x": "Of %{totalUsers}",
         "referrals": "Referrals",
         "streak": "Streak",
@@ -2027,7 +2028,6 @@
         "withdraw_symbol": "Withdraw %{symbol}"
       },
       "unknown": "Unknown",
-      "unable_to_load_wallet": "Unable to load wallet",
       "warning": {
         "cost": {
           "are_you_sure_title": "Are you sure?",
