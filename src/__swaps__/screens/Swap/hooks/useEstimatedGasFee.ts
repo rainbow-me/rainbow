@@ -19,7 +19,7 @@ function safeBigInt(value: string) {
 }
 
 export function calculateGasFee(gasSettings: GasSettings, gasLimit: string) {
-  const amount = gasSettings.isEIP1559 ? add(gasSettings.maxBaseFee, gasSettings.maxPriorityFee) : gasSettings.gasPrice;
+  const amount = gasSettings.isEIP1559 ? add(gasSettings.maxBaseFee, gasSettings.maxPriorityFee || '0') : gasSettings.gasPrice;
   return multiply(gasLimit, amount);
 }
 

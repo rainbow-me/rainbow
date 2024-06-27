@@ -1061,6 +1061,7 @@
       "current_base_fee": "Current base fee",
       "max_base_fee": "Max base fee",
       "miner_tip": "Miner tip",
+      "gas_price": "Gas price",
       "max_transaction_fee": "Max transaction fee",
       "warning_separator": "·",
       "lower_than_suggested": "Low · may get stuck",
