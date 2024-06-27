@@ -1,11 +1,13 @@
 import { StyleSheet } from 'react-native';
 import { fonts } from '@/styles';
 
+const semibold = fonts.weight.semibold as '600';
+
 export const avatarBuilderStyles = StyleSheet.create({
   sectionHeader: {
     fontFamily: fonts.family.SFProRounded,
     fontSize: fonts.size.small,
-    fontWeight: fonts.weight.semibold,
+    fontWeight: semibold,
     letterSpacing: fonts.letterSpacing.rounded,
     paddingBottom: 3.75,
     paddingLeft: 9,

@@ -1,7 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Animated, StyleSheet, TouchableWithoutFeedback, View, ViewStyle } from 'react-native';
-// @ts-ignore
-import Video from 'react-native-video';
+import { Animated, StyleSheet, View, ViewStyle } from 'react-native';
+import Video, { VideoRef } from 'react-native-video';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
@@ -22,7 +21,7 @@ const absoluteFill = {
 
 const StyledBackground = styled(View)({
   ...absoluteFill,
-  // @ts-ignore
+  // @ts-expect-error colors has any type
   backgroundColor: ({ theme: { colors } }) => colors.white,
 });
 
@@ -37,8 +36,7 @@ const styles = StyleSheet.create({
 });
 
 export default function SimpleVideo({ style, uri, posterUri, loading, setLoading }: SimpleVideoProps): JSX.Element {
-  const ref = useRef<Video>();
-  const [controlsEnabled, setControlsEnabled] = useState(false);
+  const ref = useRef<VideoRef>();
   const [opacity] = useState<Animated.Value>(() => new Animated.Value(loading ? 1 : 0));
 
   useEffect(() => {
@@ -54,29 +52,19 @@ export default function SimpleVideo({ style, uri, posterUri, loading, setLoading
     const current = ref?.current;
     return () => {
       try {
-        current?.setNativeProps?.({ paused: true });
+        current?.pause();
       } catch (e) {
         logger.error(e);
       }
     };
   }, [ref]);
   return (
-    <TouchableWithoutFeedback onPress={() => !controlsEnabled && setControlsEnabled(true)}>
-      <View style={[styles.flex, StyleSheet.flatten(style)]}>
-        <StyledBackground />
-        <StyledVideo
-          controls={controlsEnabled}
-          ignoreSilentSwitch="obey"
-          onLoad={() => setLoading(false)}
-          ref={ref}
-          repeat
-          resizeMode="cover"
-          source={{ uri }}
-        />
-        <StyledPosterContainer pointerEvents={loading ? 'auto' : 'none'} style={{ opacity }}>
-          <StyledImgixImage source={{ uri: posterUri }} />
-        </StyledPosterContainer>
-      </View>
-    </TouchableWithoutFeedback>
+    <View style={[styles.flex, StyleSheet.flatten(style)]}>
+      <StyledBackground />
+      <StyledVideo ignoreSilentSwitch="obey" onLoad={() => setLoading(false)} ref={ref} repeat resizeMode="cover" source={{ uri }} />
+      <StyledPosterContainer pointerEvents={loading ? 'auto' : 'none'} style={{ opacity }}>
+        <StyledImgixImage source={{ uri: posterUri }} />
+      </StyledPosterContainer>
+    </View>
   );
 }

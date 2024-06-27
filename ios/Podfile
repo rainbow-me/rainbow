@@ -1,4 +1,4 @@
-platform :ios, '13.0'
+platform :ios, '13.4'
 source 'https://github.com/CocoaPods/Specs.git'
 #use_modular_headers!
 
@@ -40,6 +40,7 @@ target 'Rainbow' do
   flags = get_default_flags()
 
   use_react_native!(
+    privacy_file_aggregation_enabled: false,
     :path => config[:reactNativePath],
     # to enable hermes on iOS, change `false` to `true` and then install pods
     :hermes_enabled => ENV['USE_HERMES'] != 'NO',
@@ -76,7 +77,8 @@ target 'Rainbow' do
       config[:reactNativePath],
       # Set `mac_catalyst_enabled` to `true` in order to apply patches
       # necessary for Mac Catalyst builds
-      :mac_catalyst_enabled => false
+      :mac_catalyst_enabled => false,
+      # :ccache_enabled => true
     )
     # This is necessary for Xcode 14, because it signs resource bundles by default when building for devices.
     installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
@@ -87,7 +89,6 @@ target 'Rainbow' do
       end
     end
     installer.pods_project.build_configurations.each do |config|
-      __apply_Xcode_12_5_M1_post_install_workaround(installer)
       config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
     end
   end
