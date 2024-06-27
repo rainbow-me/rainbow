@@ -6,7 +6,6 @@ import { createQueryKey, queryClient } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { IS_TEST } from '@/env';
-import { WrappedAlert as Alert } from '@/helpers/alert';
 
 export function pointsQueryKey({ address }: { address: string }) {
   return createQueryKey('points', { address }, { persisterVersion: 1 });
@@ -29,15 +28,7 @@ export function usePointsReferralCode() {
 
 let nextDropTimeout: NodeJS.Timeout | undefined;
 export function usePoints({ walletAddress }: { walletAddress: string }) {
-  const { points_enabled, debug_iOS, debug_android } = useRemoteConfig();
-
-  useEffect(() => {
-    if (debug_iOS) {
-      Alert.alert('Firebase Test', 'debug_ios=true');
-    } else if (debug_android) {
-      Alert.alert('Firebase Test', 'debug_android=true');
-    }
-  }, [debug_android, debug_iOS]);
+  const { points_enabled } = useRemoteConfig();
 
   const pointsEnabled = useExperimentalFlag(POINTS) || points_enabled || IS_TEST;
   const queryKey = pointsQueryKey({
