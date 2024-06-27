@@ -1,24 +1,24 @@
 /* eslint-disable no-nested-ternary */
-import c from 'chroma-js';
 import * as i18n from '@/languages';
+import c from 'chroma-js';
+import React, { memo, useCallback, useMemo } from 'react';
 import { Text as RNText, StyleSheet } from 'react-native';
 import Animated, { useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import React, { memo, useCallback, useMemo } from 'react';
 
-import { AnimatedText, Bleed, Box, Inline, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
-import { opacity } from '@/__swaps__/utils/swaps';
-import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
-import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { ChainId, ChainName, ChainNameDisplay } from '@/__swaps__/types/chains';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { ContextMenuButton } from '@/components/context-menu';
-import { useAccountAccentColor } from '@/hooks';
-import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
-import { userAssetsStore } from '@/state/assets/userAssets';
-import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
+import { ChainId, ChainName, ChainNameDisplay } from '@/__swaps__/types/chains';
 import { chainNameForChainIdWithMainnetSubstitution } from '@/__swaps__/utils/chains';
+import { opacity } from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
+import { ChainImage } from '@/components/coin-icon/ChainImage';
+import { ContextMenuButton } from '@/components/context-menu';
+import { AnimatedText, Bleed, Box, Inline, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
+import { useAccountAccentColor } from '@/hooks';
+import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
+import { userAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
+import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
+import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 
 type ChainSelectionProps = {
   allText?: string;
@@ -30,7 +30,9 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
   const { accentColor: accountColor } = useAccountAccentColor();
   const { selectedOutputChainId, setSelectedOutputChainId } = useSwapContext();
 
-  const balanceSortedChainList = userAssetsStore.getState().getBalanceSortedChainList();
+  const { getBalanceSortedChainList, getChainsWithBalance } = userAssetsStore.getState();
+  // chains sorted by balance on output, chains without balance hidden on input
+  const balanceSortedChainList = output ? getBalanceSortedChainList() : getChainsWithBalance();
   const inputListFilter = useSharedValue(userAssetsStore.getState().filter);
 
   const accentColor = useMemo(() => {
