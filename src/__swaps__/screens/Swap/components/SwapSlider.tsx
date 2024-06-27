@@ -22,6 +22,7 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import { AnimatedText, Bleed, Box, Column, Columns, Inline, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { triggerHapticFeedback } from '@/screens/points/constants';
+import { equalWorklet, greaterThanWorklet } from '@/__swaps__/safe-math/SafeMath';
 import {
   SCRUBBER_WIDTH,
   SLIDER_COLLAPSED_HEIGHT,
@@ -144,17 +145,31 @@ export const SwapSlider = ({
   });
 
   const onSlide = useAnimatedGestureHandler({
-    onStart: (_, ctx: { startX: number }) => {
+    onStart: (_, ctx: { exceedsMax?: boolean; startX: number }) => {
+      ctx.exceedsMax = undefined;
       ctx.startX = sliderXPosition.value;
       sliderPressProgress.value = withSpring(1, SPRING_CONFIGS.sliderConfig);
       SwapInputController.inputMethod.value = 'slider';
+
+      if (ctx.startX >= width) {
+        const currentInputValue = SwapInputController.inputValues.value.inputAmount;
+        const maxSwappableAmount = internalSelectedInputAsset.value?.maxSwappableAmount;
+        const exceedsMax = maxSwappableAmount ? greaterThanWorklet(currentInputValue, maxSwappableAmount) : false;
+
+        if (exceedsMax) {
+          ctx.exceedsMax = true;
+          isQuoteStale.value = 1;
+          sliderXPosition.value = width * 0.999;
+          runOnJS(triggerHapticFeedback)('impactMedium');
+        }
+      }
 
       // On Android, for some reason waiting until onActive to set SwapInputController.isQuoteStale.value = 1 causes
       // the outputAmount text color to break. It's preferable to set it in onActive, so we're setting it in onStart
       // for Android only. It's possible that migrating this handler to the RNGH v2 API will remove the need for this.
       if (!IS_IOS) isQuoteStale.value = 1;
     },
-    onActive: (event, ctx: { startX: number }) => {
+    onActive: (event, ctx: { exceedsMax?: boolean; startX: number }) => {
       if (IS_IOS && sliderXPosition.value > 0 && isQuoteStale.value !== 1) {
         isQuoteStale.value = 1;
       }
@@ -171,7 +186,7 @@ export const SwapSlider = ({
         return adjustedMovement;
       };
 
-      if (ctx.startX === width && clamp(rawX, 0, width) >= width * 0.995) {
+      if (ctx.startX === width && !ctx.exceedsMax && clamp(rawX, 0, width) >= width * 0.995) {
         isQuoteStale.value = 0;
       }
 
@@ -405,16 +420,22 @@ export const SwapSlider = ({
                 </Inline>
                 <Column width="content">
                   <GestureHandlerV1Button
-                    style={{ margin: -12, padding: 12 }}
                     onPressWorklet={() => {
                       'worklet';
                       SwapInputController.inputMethod.value = 'slider';
-                      const isAlreadyMax = sliderXPosition.value === width;
+
+                      const currentInputValue = SwapInputController.inputValues.value.inputAmount;
+                      const maxSwappableAmount = internalSelectedInputAsset.value?.maxSwappableAmount;
+
+                      const isAlreadyMax = maxSwappableAmount ? equalWorklet(currentInputValue, maxSwappableAmount) : false;
+                      const exceedsMax = maxSwappableAmount ? greaterThanWorklet(currentInputValue, maxSwappableAmount) : false;
 
                       if (isAlreadyMax) {
                         runOnJS(triggerHapticFeedback)('impactMedium');
                       } else {
                         SwapInputController.quoteFetchingInterval.stop();
+                        if (exceedsMax) sliderXPosition.value = width * 0.999;
+
                         sliderXPosition.value = withSpring(width, SPRING_CONFIGS.snappySpringConfig, isFinished => {
                           if (isFinished) {
                             runOnJS(onChangeWrapper)(1);
@@ -422,6 +443,7 @@ export const SwapSlider = ({
                         });
                       }
                     }}
+                    style={{ margin: -12, padding: 12 }}
                     ref={maxButtonRef}
                   >
                     <AnimatedText align="center" size="15pt" style={maxTextColor} weight="heavy">

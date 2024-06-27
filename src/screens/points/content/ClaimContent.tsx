@@ -13,7 +13,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { ETH_REWARDS, useExperimentalFlag } from '@/config';
 
-export default function ClaimContent() {
+export function ClaimContent() {
   const { accentColor } = useAccountAccentColor();
   const { isDarkMode } = useColorMode();
   const { navigate } = useNavigation();

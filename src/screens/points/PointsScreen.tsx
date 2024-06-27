@@ -11,12 +11,12 @@ import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ButtonPressAnimation } from '@/components/animations';
 import * as i18n from '@/languages';
 import { usePoints, usePointsReferralCode } from '@/resources/points';
-import PointsContent from './content/PointsContent';
-import PlaceholderContent from './content/PlaceholderContent';
+import { PointsContent } from './content/PointsContent';
+import { PlaceholderContent } from './content/PlaceholderContent';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { deviceUtils } from '@/utils';
-import ClaimContent from './content/ClaimContent';
-import ReferralContent from './content/ReferralContent';
+import { ClaimContent } from './content/ClaimContent';
+import { ReferralContent } from './content/ReferralContent';
 import { PointsErrorType } from '@/graphql/__generated__/metadataPOST';
 import { delay } from '@/utils/delay';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -33,7 +33,7 @@ export const POINTS_ROUTES = {
 const Swipe = createMaterialTopTabNavigator();
 const EmptyTabBar = () => <></>;
 
-export default function PointsScreen() {
+export function PointsScreen() {
   const { isDarkMode } = useColorMode();
   const { accountAddress, accountImage, accountColor, accountSymbol } = useAccountProfile();
   const { points_enabled, points_notifications_toggle, rewards_enabled } = useRemoteConfig();
