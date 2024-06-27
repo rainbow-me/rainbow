@@ -54,6 +54,7 @@ const UNKNOWN_LABEL = i18n.t(i18n.l.swap.unknown);
 const REVIEW_LABEL = i18n.t(i18n.l.expanded_state.swap_details.review);
 const NETWORK_LABEL = i18n.t(i18n.l.settings.network);
 const MINIMUM_RECEIVED_LABEL = i18n.t(i18n.l.expanded_state.swap_details_v2.minimum_received);
+const MAXIMUM_SOLD_LABEL = i18n.t(i18n.l.expanded_state.swap_details_v2.maximum_sold);
 const RAINBOW_FEE_LABEL = i18n.t(i18n.l.expanded_state.swap_details_v2.rainbow_fee);
 const FLASHBOTS_PROTECTION_LABEL = i18n.t(i18n.l.swap.flashbots_protection);
 const MAX_SLIPPAGE_LABEL = i18n.t(i18n.l.exchange.slippage_tolerance);
@@ -158,7 +159,7 @@ function FlashbotsToggle() {
 export function ReviewPanel() {
   const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
-  const { configProgress, SwapSettings, SwapInputController, internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
+  const { configProgress, lastTypedInput, SwapSettings, internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
 
   const labelTertiary = useForegroundColor('labelTertiary');
   const separator = useForegroundColor('separator');
@@ -166,6 +167,11 @@ export function ReviewPanel() {
   const unknown = i18n.t(i18n.l.swap.unknown);
 
   const chainName = useDerivedValue(() => ChainNameDisplay[internalSelectedInputAsset.value?.chainId ?? ChainId.mainnet]);
+
+  const minReceivedOrMaxSoldLabel = useDerivedValue(() => {
+    const isInputBasedTrade = lastTypedInput.value === 'inputAmount' || lastTypedInput.value === 'inputNativeValue';
+    return isInputBasedTrade ? MINIMUM_RECEIVED_LABEL : MAXIMUM_SOLD_LABEL;
+  });
 
   const minimumReceived = useDerivedValue(() => {
     if (!SwapInputController.formattedOutputAmount.value || !internalSelectedOutputAsset.value?.symbol) {
@@ -268,9 +274,9 @@ export function ReviewPanel() {
                 <TextIcon color="labelTertiary" height={9} size="icon 13px" weight="bold" width={16}>
                   􀄩
                 </TextIcon>
-                <Text color="labelTertiary" weight="semibold" size="15pt">
-                  {MINIMUM_RECEIVED_LABEL}
-                </Text>
+                <AnimatedText color="labelTertiary" weight="semibold" size="15pt">
+                  {minReceivedOrMaxSoldLabel}
+                </AnimatedText>
               </Box>
             </Column>
 
