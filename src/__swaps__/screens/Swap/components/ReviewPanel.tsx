@@ -5,7 +5,13 @@ import { useNativeAssetForChain } from '@/__swaps__/screens/Swap/hooks/useNative
 import { ChainId, ChainNameDisplay } from '@/__swaps__/types/chains';
 import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
-import { convertRawAmountToBalance, convertRawAmountToNativeDisplay, handleSignificantDecimals, multiply } from '@/__swaps__/utils/numbers';
+import {
+  convertRawAmountToBalance,
+  convertRawAmountToBalanceWorklet,
+  convertRawAmountToNativeDisplay,
+  handleSignificantDecimals,
+  multiply,
+} from '@/__swaps__/utils/numbers';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -54,6 +60,7 @@ const UNKNOWN_LABEL = i18n.t(i18n.l.swap.unknown);
 const REVIEW_LABEL = i18n.t(i18n.l.expanded_state.swap_details.review);
 const NETWORK_LABEL = i18n.t(i18n.l.settings.network);
 const MINIMUM_RECEIVED_LABEL = i18n.t(i18n.l.expanded_state.swap_details_v2.minimum_received);
+const MAXIMUM_SOLD_LABEL = i18n.t(i18n.l.expanded_state.swap_details_v2.maximum_sold);
 const RAINBOW_FEE_LABEL = i18n.t(i18n.l.expanded_state.swap_details_v2.rainbow_fee);
 const FLASHBOTS_PROTECTION_LABEL = i18n.t(i18n.l.swap.flashbots_protection);
 const MAX_SLIPPAGE_LABEL = i18n.t(i18n.l.exchange.slippage_tolerance);
@@ -158,7 +165,7 @@ function FlashbotsToggle() {
 export function ReviewPanel() {
   const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
-  const { configProgress, SwapSettings, SwapInputController, internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
+  const { configProgress, lastTypedInput, SwapSettings, internalSelectedInputAsset, internalSelectedOutputAsset, quote } = useSwapContext();
 
   const labelTertiary = useForegroundColor('labelTertiary');
   const separator = useForegroundColor('separator');
@@ -167,12 +174,30 @@ export function ReviewPanel() {
 
   const chainName = useDerivedValue(() => ChainNameDisplay[internalSelectedInputAsset.value?.chainId ?? ChainId.mainnet]);
 
-  const minimumReceived = useDerivedValue(() => {
-    if (!SwapInputController.formattedOutputAmount.value || !internalSelectedOutputAsset.value?.symbol) {
+  const minReceivedOrMaxSoldLabel = useDerivedValue(() => {
+    const isInputBasedTrade = lastTypedInput.value === 'inputAmount' || lastTypedInput.value === 'inputNativeValue';
+    return isInputBasedTrade ? MINIMUM_RECEIVED_LABEL : MAXIMUM_SOLD_LABEL;
+  });
+
+  const minReceivedOrMaxSoldValue = useDerivedValue(() => {
+    const isInputBasedTrade = lastTypedInput.value === 'inputAmount' || lastTypedInput.value === 'inputNativeValue';
+    if (!quote.value || (quote.value as QuoteError)?.error) {
       return unknown;
     }
 
-    return `${SwapInputController.formattedOutputAmount.value} ${internalSelectedOutputAsset.value.symbol}`;
+    const validQuote = quote.value as Quote;
+
+    if (isInputBasedTrade && internalSelectedOutputAsset.value) {
+      const minReceived = validQuote.buyAmountDisplayMinimum;
+      const { display: minReceivedDisplay } = convertRawAmountToBalanceWorklet(minReceived.toString(), internalSelectedOutputAsset.value);
+      return minReceivedDisplay;
+    } else if (!isInputBasedTrade && internalSelectedInputAsset.value) {
+      const maxSold = validQuote.sellAmountDisplay;
+      const { display: maxSoldDisplay } = convertRawAmountToBalanceWorklet(maxSold.toString(), internalSelectedInputAsset.value);
+      return maxSoldDisplay;
+    }
+
+    return unknown;
   });
 
   const handleDecrementSlippage = () => {
@@ -268,15 +293,15 @@ export function ReviewPanel() {
                 <TextIcon color="labelTertiary" height={9} size="icon 13px" weight="bold" width={16}>
                   􀄩
                 </TextIcon>
-                <Text color="labelTertiary" weight="semibold" size="15pt">
-                  {MINIMUM_RECEIVED_LABEL}
-                </Text>
+                <AnimatedText color="labelTertiary" weight="semibold" size="15pt">
+                  {minReceivedOrMaxSoldLabel}
+                </AnimatedText>
               </Box>
             </Column>
 
             <Column>
               <AnimatedText align="right" color={isDarkMode ? 'labelSecondary' : 'label'} numberOfLines={1} size="15pt" weight="bold">
-                {minimumReceived}
+                {minReceivedOrMaxSoldValue}
               </AnimatedText>
             </Column>
           </Columns>
