@@ -260,22 +260,38 @@ export function valueBasedDecimalFormatter({
 }): string {
   'worklet';
 
-  function calculateDecimalPlaces(): number {
-    if (nativePrice === 0) return MAXIMUM_SIGNIFICANT_DECIMALS;
+  function calculateDecimalPlaces(): {
+    minimumDecimalPlaces: number;
+    maximumDecimalPlaces: number;
+  } {
+    if (nativePrice === 0) {
+      return {
+        minimumDecimalPlaces: 0,
+        maximumDecimalPlaces: MAXIMUM_SIGNIFICANT_DECIMALS,
+      };
+    }
+
     const unitsForOneCent = 0.01 / nativePrice;
     if (unitsForOneCent >= 1) {
-      return isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0;
+      return {
+        minimumDecimalPlaces: 0,
+        maximumDecimalPlaces: 0,
+      };
     }
-    return Math.max(
-      Math.ceil(Math.log10(1 / unitsForOneCent)) + (precisionAdjustment ?? 0),
-      isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0
-    );
+
+    return {
+      minimumDecimalPlaces: isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0,
+      maximumDecimalPlaces: Math.max(
+        Math.ceil(Math.log10(1 / unitsForOneCent)) + (precisionAdjustment ?? 0),
+        isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0
+      ),
+    };
   }
 
-  const decimalPlaces = calculateDecimalPlaces();
+  const { minimumDecimalPlaces, maximumDecimalPlaces } = calculateDecimalPlaces();
 
   let roundedAmount;
-  const factor = Math.pow(10, decimalPlaces) || 1; // Prevent division by 0
+  const factor = Math.pow(10, maximumDecimalPlaces) || 1; // Prevent division by 0
 
   // Apply rounding based on the specified rounding mode
   if (roundingMode === 'up') {
@@ -283,7 +299,7 @@ export function valueBasedDecimalFormatter({
   } else if (roundingMode === 'down') {
     roundedAmount = divWorklet(floorWorklet(mulWorklet(amount, factor)), factor);
   } else if (roundingMode === 'none') {
-    roundedAmount = toFixedWorklet(amount, decimalPlaces);
+    roundedAmount = toFixedWorklet(amount, maximumDecimalPlaces);
   } else {
     // Default to normal rounding if no rounding mode is specified
     roundedAmount = divWorklet(roundWorklet(mulWorklet(amount, factor)), factor);
@@ -291,8 +307,8 @@ export function valueBasedDecimalFormatter({
 
   // Format the number to add separators and trim trailing zeros
   const numberFormatter = new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: decimalPlaces,
+    minimumFractionDigits: minimumDecimalPlaces,
+    maximumFractionDigits: maximumDecimalPlaces,
     useGrouping: !stripSeparators,
   });
 
