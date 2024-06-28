@@ -5,20 +5,23 @@ const { compilerOptions } = require('./tsconfig');
 module.exports = {
   preset: 'react-native',
   setupFiles: ['./config/test/jest-setup.js'],
+  testRegex: '(/__tests__/.*|(\\.|/)(test|spec))(?<!\\.disabled)\\.[jt]sx?$',
   testPathIgnorePatterns: ['node_modules', 'e2e'],
-  globals: {
-    'ts-jest': {
-      tsconfig: 'tsconfig.jest.json',
-    },
-  },
   transform: {
-    // https://kulshekhar.github.io/ts-jest/docs/28.0/guides/react-native
-    '\\.tsx?$': 'ts-jest',
+    '\\.tsx?$': [
+      'ts-jest',
+      {
+        tsconfig: 'tsconfig.jest.json',
+      },
+    ],
   },
   transformIgnorePatterns: [
-    'node_modules/(?!((jest-)?react-native|react-native-keyboard-area|imgix-core-js|react-native-payments|@react-native-firebase|@react-native(-community)?)/)',
+    'node_modules/(?!((jest-)?react-native|react-native-keyboard-area|imgix-core-js|react-native-payments|@react-native-firebase|@react-native(-community)?|react-native-reanimated)/)',
   ],
-  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
-    prefix: '<rootDir>',
-  }),
+  moduleNameMapper: {
+    ...pathsToModuleNameMapper(compilerOptions.paths, {
+      prefix: '<rootDir>',
+    }),
+  },
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
 };

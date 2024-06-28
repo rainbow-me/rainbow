@@ -344,7 +344,7 @@ function EditGasPrice() {
   return (
     <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
       <PressableLabel onPress={() => navigate(Routes.EXPLAIN_SHEET, { type: MAX_BASE_FEE_TYPE })}>
-        {i18n.t(i18n.l.gas.max_base_fee)}
+        {i18n.t(i18n.l.gas.gas_price)}
       </PressableLabel>
       <GasSettingInput value={gasPrice} onChange={gasPrice => setGasPanelState({ gasPrice })} />
     </Inline>
@@ -394,12 +394,13 @@ function EditableGasSettings() {
 
   if (!isEIP1559) return <EditGasPrice />;
 
-  if (chainsThatIgnoreThePriorityFee.includes(chainId)) return <EditMaxBaseFee />;
-
   return (
     <>
+      <UnmountWhenGasPanelIsClosed placeholder={<CurrentBaseFeeSlot />}>
+        <CurrentBaseFee />
+      </UnmountWhenGasPanelIsClosed>
       <EditMaxBaseFee />
-      <EditPriorityFee />
+      {!chainsThatIgnoreThePriorityFee.includes(chainId) && <EditPriorityFee />}
     </>
   );
 }
@@ -450,11 +451,7 @@ export function GasPanel() {
         </Text>
 
         <Box gap={24} width="full" alignItems="stretch">
-          <UnmountWhenGasPanelIsClosed placeholder={<CurrentBaseFeeSlot />}>
-            <CurrentBaseFee />
-          </UnmountWhenGasPanelIsClosed>
-
-          <Box gap={24} height="64px">
+          <Box gap={24} height="104px">
             <EditableGasSettings />
           </Box>
 
