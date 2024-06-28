@@ -1,5 +1,11 @@
+import { MIN_FLASHBOTS_PRIORITY_FEE } from '@/__swaps__/screens/Swap/constants';
+import { getCustomGasSettings, setCustomMaxPriorityFee } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
+import { getSelectedGasSpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
+import { GasSpeed } from '@/__swaps__/types/gas';
+import { getCachedGasSuggestions } from '@/__swaps__/utils/meteorology';
+import { lessThan } from '@/__swaps__/utils/numbers';
 import { getDefaultSlippage } from '@/__swaps__/utils/swaps';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
@@ -28,8 +34,27 @@ export interface SwapsState {
   setSource: (source: Source | 'auto') => void;
 }
 
+const updateCustomGasSettingsForFlashbots = (flashbots: boolean, chainId: ChainId) => {
+  const gasSpeed = getSelectedGasSpeed(chainId);
+  if (gasSpeed !== GasSpeed.CUSTOM) return;
+
+  const customGasSettings = getCustomGasSettings(chainId);
+  if (!customGasSettings?.isEIP1559) return;
+
+  const currentMaxPriorityFee = customGasSettings.maxPriorityFee;
+  if (flashbots && lessThan(currentMaxPriorityFee, MIN_FLASHBOTS_PRIORITY_FEE)) {
+    setCustomMaxPriorityFee(chainId, MIN_FLASHBOTS_PRIORITY_FEE);
+    return;
+  }
+
+  if (!flashbots) {
+    const suggestion = getCachedGasSuggestions(chainId, false)?.[GasSpeed.FAST];
+    setCustomMaxPriorityFee(chainId, suggestion?.maxPriorityFee);
+  }
+};
+
 export const swapsStore = createRainbowStore<SwapsState>(
-  set => ({
+  (set, get) => ({
     isSwapsOpen: false,
     setIsSwapsOpen: (isSwapsOpen: boolean) => set({ isSwapsOpen }),
 
@@ -42,7 +67,10 @@ export const swapsStore = createRainbowStore<SwapsState>(
     outputSearchQuery: '',
 
     flashbots: false,
-    setFlashbots: (flashbots: boolean) => set({ flashbots }),
+    setFlashbots: (flashbots: boolean) => {
+      updateCustomGasSettingsForFlashbots(flashbots, get().inputAsset?.chainId || ChainId.mainnet);
+      set({ flashbots });
+    },
     slippage: getDefaultSlippage(ChainId.mainnet, getRemoteConfig()),
     setSlippage: (slippage: string) => set({ slippage }),
     source: 'auto',

@@ -270,9 +270,11 @@ export const useIsChainEIP1559 = (chainId: ChainId) => {
   return data;
 };
 
-export const getCachedGasSuggestions = (chainId: ChainId) => {
+export const getCachedGasSuggestions = (
+  chainId: ChainId,
+  flashbots = chainId === ChainId.mainnet && useSwapsStore.getState().flashbots
+) => {
   const data = getMeteorologyCachedData(chainId);
-  const flashbots = chainId === ChainId.mainnet && useSwapsStore.getState().flashbots;
   if (!data) return undefined;
   return selectGasSuggestions(data, flashbots);
 };
