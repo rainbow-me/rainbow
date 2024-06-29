@@ -1,19 +1,20 @@
-import React, { useCallback, useMemo } from 'react';
 import { COIN_ROW_WITH_PADDING_HEIGHT, CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
-import { ParsedSearchAsset } from '@/__swaps__/types/assets';
-import Animated, { runOnUI, useAnimatedProps, useAnimatedStyle } from 'react-native-reanimated';
-import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
-import { FlashList } from '@shopify/flash-list';
-import { ChainSelection } from './ChainSelection';
+import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { SwapAssetType } from '@/__swaps__/types/swap';
-import { userAssetsStore } from '@/state/assets/userAssets';
-import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
-import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
-import { useDelayedMount } from '@/hooks/useDelayedMount';
-import { swapsStore } from '@/state/swaps/swapsStore';
 import { analyticsV2 } from '@/analytics';
+import { useDelayedMount } from '@/hooks/useDelayedMount';
+import * as i18n from '@/languages';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { FlashList } from '@shopify/flash-list';
+import React, { useCallback, useMemo } from 'react';
+import Animated, { runOnUI, useAnimatedProps, useAnimatedStyle } from 'react-native-reanimated';
+import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
+import { ChainSelection } from './ChainSelection';
 
 export const SELL_LIST_HEADER_HEIGHT = 20 + 10 + 14; // paddingTop + height + paddingBottom
 
@@ -82,7 +83,7 @@ const TokenToSellListComponent = () => {
     <FlashList
       ListEmptyComponent={<ListEmpty />}
       ListFooterComponent={<Animated.View style={[animatedListPadding, { width: '100%' }]} />}
-      ListHeaderComponent={<ChainSelection allText="All Networks" output={false} />}
+      ListHeaderComponent={<ChainSelection allText={i18n.t(i18n.l.exchange.all_networks)} output={false} />}
       contentContainerStyle={{ paddingBottom: 16 }}
       // For some reason shallow copying the list data allows FlashList to more quickly pick up changes
       data={userAssetIds.slice(0)}
