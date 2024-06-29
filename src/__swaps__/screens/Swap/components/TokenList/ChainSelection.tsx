@@ -30,9 +30,8 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
   const { accentColor: accountColor } = useAccountAccentColor();
   const { selectedOutputChainId, setSelectedOutputChainId } = useSwapContext();
 
-  const { getBalanceSortedChainList, getChainsWithBalance } = userAssetsStore.getState();
   // chains sorted by balance on output, chains without balance hidden on input
-  const balanceSortedChainList = output ? getBalanceSortedChainList() : getChainsWithBalance();
+  const balanceSortedChainList = userAssetsStore(state => (output ? state.getBalanceSortedChainList() : state.getChainsWithBalance()));
   const inputListFilter = useSharedValue(userAssetsStore.getState().filter);
 
   const accentColor = useMemo(() => {
