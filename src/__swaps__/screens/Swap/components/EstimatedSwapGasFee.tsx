@@ -10,7 +10,7 @@ import { GasSettings } from '../hooks/useCustomGas';
 import { useSwapEstimatedGasFee } from '../hooks/useEstimatedGasFee';
 import { useSwapContext } from '../providers/swap-provider';
 
-type EstimatedSwapGasFeeProps = { gasSettings: GasSettings | undefined } & Partial<
+type EstimatedSwapGasFeeProps = { gasSettings?: GasSettings } & Partial<
   Pick<TextProps, 'align' | 'color' | 'size' | 'weight' | 'tabularNumbers'>
 >;
 export function EstimatedSwapGasFeeSlot({
