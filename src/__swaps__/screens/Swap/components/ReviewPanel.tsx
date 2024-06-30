@@ -188,11 +188,11 @@ export function ReviewPanel() {
     const validQuote = quote.value as Quote;
 
     if (isInputBasedTrade && internalSelectedOutputAsset.value) {
-      const minReceived = validQuote.buyAmountDisplayMinimum;
+      const minReceived = validQuote.buyAmountDisplayMinimum || validQuote.buyAmountMinusFees;
       const { display: minReceivedDisplay } = convertRawAmountToBalanceWorklet(minReceived.toString(), internalSelectedOutputAsset.value);
       return minReceivedDisplay;
     } else if (!isInputBasedTrade && internalSelectedInputAsset.value) {
-      const maxSold = validQuote.sellAmountDisplay;
+      const maxSold = validQuote.sellAmountDisplay || validQuote.sellAmountMinusFees;
       const { display: maxSoldDisplay } = convertRawAmountToBalanceWorklet(maxSold.toString(), internalSelectedInputAsset.value);
       return maxSoldDisplay;
     }
