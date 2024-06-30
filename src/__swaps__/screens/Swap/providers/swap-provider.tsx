@@ -173,6 +173,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     isFetching,
     isQuoteStale,
     sliderXPosition,
+    slippage: SwapSettings.slippage,
     quote,
   });
 

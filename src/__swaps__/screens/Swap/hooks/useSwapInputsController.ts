@@ -74,6 +74,7 @@ export function useSwapInputsController({
   outputProgress,
   quote,
   sliderXPosition,
+  slippage,
 }: {
   focusedInput: SharedValue<inputKeys>;
   inputProgress: SharedValue<number>;
@@ -86,6 +87,7 @@ export function useSwapInputsController({
   outputProgress: SharedValue<number>;
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
   sliderXPosition: SharedValue<number>;
+  slippage: SharedValue<string>;
 }) {
   const { initialInputAmount, initialInputNativeValue } = getInitialInputValues(initialSelectedInputAsset);
   const { nativeCurrency: currentCurrency } = useAccountSettings();
@@ -622,6 +624,23 @@ export function useSwapInputsController({
     },
     300,
     { leading: false, trailing: true }
+  );
+
+  const debouncedFetchQuote = useDebouncedCallback(
+    () => {
+      runOnUI(fetchQuoteAndAssetPrices)();
+    },
+    300,
+    { leading: false, trailing: true }
+  );
+
+  useAnimatedReaction(
+    () => slippage.value,
+    (slippage, prevSlippage) => {
+      if (prevSlippage && slippage !== prevSlippage) {
+        runOnJS(debouncedFetchQuote)();
+      }
+    }
   );
 
   /**
