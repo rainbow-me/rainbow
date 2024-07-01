@@ -1,32 +1,32 @@
 /* eslint-disable no-nested-ternary */
-import { isAddress } from '@ethersproject/address';
-import { useQuery } from '@tanstack/react-query';
-import qs from 'qs';
+import { ChainId } from '@/__swaps__/types/chains';
+import { SearchAsset, TokenSearchAssetKey, TokenSearchListId, TokenSearchThreshold } from '@/__swaps__/types/search';
+import { RainbowError, logger } from '@/logger';
+import { RainbowFetchClient } from '@/rainbow-fetch';
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
 import {
   ARBITRUM_ETH_ADDRESS,
   AVAX_AVALANCHE_ADDRESS,
   BASE_ETH_ADDRESS,
   BLAST_ETH_ADDRESS,
-  BNB_MAINNET_ADDRESS,
+  BNB_BSC_ADDRESS,
   DEGEN_CHAIN_DEGEN_ADDRESS,
   ETH_ADDRESS,
-  MATIC_MAINNET_ADDRESS,
+  MATIC_POLYGON_ADDRESS,
   OPTIMISM_ETH_ADDRESS,
   ZORA_ETH_ADDRESS,
 } from '@/references';
-import { ChainId } from '@/__swaps__/types/chains';
-import { SearchAsset, TokenSearchAssetKey, TokenSearchListId, TokenSearchThreshold } from '@/__swaps__/types/search';
-import { RainbowFetchClient } from '@/rainbow-fetch';
-import { RainbowError, logger } from '@/logger';
+import { isAddress } from '@ethersproject/address';
+import { useQuery } from '@tanstack/react-query';
+import qs from 'qs';
 import { Address } from 'viem';
 
 const NATIVE_ASSET_UNIQUE_IDS = new Set([
   `${ETH_ADDRESS}_${ChainId.mainnet}`,
   `${OPTIMISM_ETH_ADDRESS}_${ChainId.optimism}`,
   `${ARBITRUM_ETH_ADDRESS}_${ChainId.arbitrum}`,
-  `${BNB_MAINNET_ADDRESS}_${ChainId.bsc}`,
-  `${MATIC_MAINNET_ADDRESS}_${ChainId.polygon}`,
+  `${BNB_BSC_ADDRESS}_${ChainId.bsc}`,
+  `${MATIC_POLYGON_ADDRESS}_${ChainId.polygon}`,
   `${BASE_ETH_ADDRESS}_${ChainId.base}`,
   `${ZORA_ETH_ADDRESS}_${ChainId.zora}`,
   `${AVAX_AVALANCHE_ADDRESS}_${ChainId.avalanche}`,
