@@ -24,6 +24,7 @@ import { calculateGasFee } from '../hooks/useEstimatedGasFee';
 import { useSelectedGas } from '../hooks/useSelectedGas';
 import { useSwapEstimatedGasLimit } from '../hooks/useSwapEstimatedGasLimit';
 import { useSwapContext } from './swap-provider';
+import { lessThan } from '@/helpers/utilities';
 
 const BUFFER_RATIO = 0.5;
 
@@ -114,9 +115,10 @@ export function SyncGasStateToSharedValues() {
         if (currInputAsset?.isNativeAsset) {
           internalSelectedInputAsset.modify(asset => {
             if (!asset) return asset;
+            const maxSwappableAmount = subWorklet(asset.balance.amount, currBuffer);
             return {
               ...asset,
-              maxSwappableAmount: subWorklet(asset.balance.amount, currBuffer),
+              maxSwappableAmount: lessThanWorklet(maxSwappableAmount, 0) ? '0' : maxSwappableAmount,
             };
           });
         }
