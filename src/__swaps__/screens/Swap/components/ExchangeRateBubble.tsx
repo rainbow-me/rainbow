@@ -4,7 +4,8 @@ import Animated, { useAnimatedReaction, useAnimatedStyle, useSharedValue, withDe
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Box, Inline, TextIcon, useColorMode, useForegroundColor } from '@/design-system';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity, valueBasedDecimalFormatter } from '@/__swaps__/utils/swaps';
+import { valueBasedDecimalFormatter } from '@/__swaps__/utils/decimalFormatter';
+import { opacity } from '@/__swaps__/utils/swaps';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { IS_IOS } from '@/env';
 import { AddressZero } from '@ethersproject/constants';

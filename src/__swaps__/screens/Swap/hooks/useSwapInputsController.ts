@@ -3,6 +3,7 @@ import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, us
 import { useDebouncedCallback } from 'use-debounce';
 import { SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
 import { RequestNewQuoteParams, inputKeys, inputMethods, inputValuesType } from '@/__swaps__/types/swap';
+import { valueBasedDecimalFormatter } from '@/__swaps__/utils/decimalFormatter';
 import {
   addCommasToNumber,
   buildQuoteParams,
@@ -11,7 +12,6 @@ import {
   findNiceIncrement,
   niceIncrementFormatter,
   trimTrailingZeros,
-  valueBasedDecimalFormatter,
 } from '@/__swaps__/utils/swaps';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { CrosschainQuote, Quote, QuoteError, SwapType, getCrosschainQuote, getQuote } from '@rainbow-me/swaps';
