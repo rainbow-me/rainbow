@@ -1,20 +1,20 @@
-import { rankings } from 'match-sorter';
-import { useCallback, useMemo, useState } from 'react';
-import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { TokenSearchResult, useTokenSearch } from '@/__swaps__/screens/Swap/resources/search';
+import { AddressOrEth } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { SearchAsset, TokenSearchAssetKey, TokenSearchThreshold } from '@/__swaps__/types/search';
 import { addHexPrefix } from '@/__swaps__/utils/hex';
 import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
-import { filterList } from '@/utils';
-import { useFavorites } from '@/resources/favorites';
-import { isAddress } from '@ethersproject/address';
-import { useSwapContext } from '../providers/swap-provider';
-import { useDebouncedCallback } from 'use-debounce';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
-import { AddressOrEth } from '@/__swaps__/types/assets';
+import { useFavorites } from '@/resources/favorites';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { filterList } from '@/utils';
+import { isAddress } from '@ethersproject/address';
+import { rankings } from 'match-sorter';
+import { useCallback, useMemo, useState } from 'react';
+import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
+import { useDebouncedCallback } from 'use-debounce';
 import { TokenToBuyListItem } from '../components/TokenList/TokenToBuyList';
+import { useSwapContext } from '../providers/swap-provider';
 
 export type AssetToBuySectionId = 'bridge' | 'favorites' | 'verified' | 'unverified' | 'other_networks';
 
@@ -210,7 +210,7 @@ export function useSearchCurrencyLists() {
   const { data: verifiedAssets } = useTokenSearch(
     {
       list: 'verifiedAssets',
-      chainId: isAddress(query) ? state.toChainId : undefined,
+      chainId: state.toChainId,
       keys: isAddress(query) ? ['address'] : ['name', 'symbol'],
       threshold: isAddress(query) ? 'CASE_SENSITIVE_EQUAL' : 'CONTAINS',
       query: query.length > 0 ? query : undefined,
