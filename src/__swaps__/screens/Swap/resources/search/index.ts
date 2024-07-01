@@ -61,7 +61,7 @@ export type TokenSearchArgs = {
 // Query Key
 
 const tokenSearchQueryKey = ({ chainId, fromChainId, keys, list, threshold, query }: TokenSearchArgs) =>
-  createQueryKey('TokenSearch', { chainId, fromChainId, keys, list, threshold, query }, { persisterVersion: 1 });
+  createQueryKey('TokenSearch', { chainId, fromChainId, keys, list, threshold, query }, { persisterVersion: 2 });
 
 type TokenSearchQueryKey = ReturnType<typeof tokenSearchQueryKey>;
 
