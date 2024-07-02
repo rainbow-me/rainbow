@@ -133,7 +133,13 @@ const SecretWarningPage = () => {
         </Stack>
       </Inset>
 
-      <Box position="absolute" bottom={{ custom: IS_ANDROID ? 40 : 20 }} alignItems="center" style={{ paddingHorizontal: 24 }}>
+      <Box
+        testID={'show-secret-button'}
+        position="absolute"
+        bottom={{ custom: IS_ANDROID ? 40 : 20 }}
+        alignItems="center"
+        style={{ paddingHorizontal: 24 }}
+      >
         <SheetActionButton
           label={i18n.t(i18n.l.back_up.warning.button, {
             typeName: secretText,

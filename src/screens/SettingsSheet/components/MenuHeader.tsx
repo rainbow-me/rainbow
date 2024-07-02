@@ -128,14 +128,15 @@ interface LabelProps {
   text: string;
   linkText?: string;
   onPress?: () => void;
+  testID?: string;
 }
 
-const Label = ({ text, linkText, onPress }: LabelProps) => {
+const Label = ({ text, linkText, onPress, testID }: LabelProps) => {
   return (
     <Text color={'secondary60 (Deprecated)'} size="14px / 19px (Deprecated)" align="center" weight="medium">
       {text}
       {linkText && onPress && (
-        <Text onPress={onPress} color="blue" size="14px / 19px (Deprecated)" weight="medium">
+        <Text testID={testID} onPress={onPress} color="blue" size="14px / 19px (Deprecated)" weight="medium">
           {' '}
           {linkText}
         </Text>
