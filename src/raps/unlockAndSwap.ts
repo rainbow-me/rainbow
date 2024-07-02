@@ -13,7 +13,7 @@ import { add } from '@/helpers/utilities';
 import { ethereumUtils, isLowerCaseMatch } from '@/utils';
 import { ETH_ADDRESS } from '../references';
 
-import { isWrapNative } from '@/handlers/swap';
+import { isUnwrapNative } from '@/handlers/swap';
 import { assetNeedsUnlocking, estimateApprove, estimateSwapGasLimit } from './actions';
 import { estimateUnlockAndSwapFromMetadata } from './actions/swap';
 import { createNewAction, createNewRap } from './common';
@@ -108,7 +108,7 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
     buyTokenAddress: Address;
   };
 
-  const isNativeAssetUnwrapping = isWrapNative({
+  const isNativeAssetUnwrapping = isUnwrapNative({
     chainId,
     sellTokenAddress,
     buyTokenAddress,
