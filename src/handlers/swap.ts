@@ -20,9 +20,8 @@ import { estimateGasWithPadding, getProviderForNetwork, toHexNoLeadingZeros } fr
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { Asset } from '@/entities';
 import { add, convertRawAmountToDecimalFormat, divide, lessThan, multiply, subtract } from '@/helpers/utilities';
-import { ETH_ADDRESS, erc20ABI, ethUnits } from '@/references';
+import { erc20ABI, ethUnits } from '@/references';
 import { ethereumUtils, logger } from '@/utils';
-import { chain } from 'lodash';
 
 export enum Field {
   INPUT = 'INPUT',
