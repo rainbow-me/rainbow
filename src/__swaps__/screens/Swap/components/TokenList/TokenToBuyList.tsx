@@ -1,14 +1,3 @@
-import { FlashList } from '@shopify/flash-list';
-import React, { memo, useCallback, useMemo } from 'react';
-import Animated, { runOnUI, useAnimatedProps, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { analyticsV2 } from '@/analytics';
-import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
-import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { Box, Inline, Stack, Text, TextIcon, useColorMode } from '@/design-system';
-import { palettes } from '@/design-system/color/palettes';
-import * as i18n from '@/languages';
-import { userAssetsStore } from '@/state/assets/userAssets';
-import { swapsStore } from '@/state/swaps/swapsStore';
 import { COIN_ROW_WITH_PADDING_HEIGHT, CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { AssetToBuySectionId, useSearchCurrencyLists } from '@/__swaps__/screens/Swap/hooks/useSearchCurrencyLists';
@@ -18,7 +7,18 @@ import { SearchAsset } from '@/__swaps__/types/search';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { getChainColorWorklet, getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
+import { analyticsV2 } from '@/analytics';
+import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { Box, Inline, Stack, Text, TextIcon, useColorMode } from '@/design-system';
+import { palettes } from '@/design-system/color/palettes';
+import * as i18n from '@/languages';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { swapsStore } from '@/state/swaps/swapsStore';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { FlashList } from '@shopify/flash-list';
+import React, { memo, useCallback, useMemo } from 'react';
+import Animated, { runOnUI, useAnimatedProps, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
 import { ChainSelection } from './ChainSelection';
 
@@ -126,6 +126,7 @@ export const TokenToBuyList = () => {
   return (
     <Box style={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}>
       <FlashList
+        keyboardShouldPersistTaps="always"
         ListEmptyComponent={<ListEmpty output />}
         ListFooterComponent={<Animated.View style={[animatedListPadding, { width: '100%' }]} />}
         ListHeaderComponent={<ChainSelection output />}
