@@ -196,16 +196,10 @@ export const isUnwrapNative = ({
   sellTokenAddress: string;
   buyTokenAddress: string;
 }) => {
-  if (chainId === ChainId.mainnet) {
-    return (
-      sellTokenAddress.toLowerCase() === WRAPPED_ASSET[chainId].toLowerCase() && buyTokenAddress.toLowerCase() === ETH_ADDRESS.toLowerCase()
-    );
-  } else {
-    return (
-      sellTokenAddress.toLowerCase() === WRAPPED_ASSET[chainId].toLowerCase() &&
-      buyTokenAddress.toLowerCase() === ETH_ADDRESS_AGGREGATORS.toLowerCase()
-    );
-  }
+  return (
+    sellTokenAddress.toLowerCase() === WRAPPED_ASSET[chainId].toLowerCase() &&
+    buyTokenAddress.toLowerCase() === ETH_ADDRESS_AGGREGATORS.toLowerCase()
+  );
 };
 
 export const isWrapNative = ({
@@ -217,14 +211,10 @@ export const isWrapNative = ({
   sellTokenAddress: string;
   buyTokenAddress: string;
 }) => {
-  if (chainId === ChainId.mainnet) {
-    return sellTokenAddress.toLowerCase() === ETH_ADDRESS && buyTokenAddress.toLowerCase() === WRAPPED_ASSET[chainId].toLowerCase();
-  } else {
-    return (
-      sellTokenAddress.toLowerCase() === ETH_ADDRESS_AGGREGATORS.toLowerCase() &&
-      buyTokenAddress.toLowerCase() === WRAPPED_ASSET[chainId].toLowerCase()
-    );
-  }
+  return (
+    sellTokenAddress.toLowerCase() === ETH_ADDRESS_AGGREGATORS.toLowerCase() &&
+    buyTokenAddress.toLowerCase() === WRAPPED_ASSET[chainId].toLowerCase()
+  );
 };
 
 export const estimateSwapGasLimit = async ({
