@@ -108,12 +108,11 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
     buyTokenAddress: Address;
   };
 
-  const isNativeAssetUnwrapping =
-    isWrapNative({
-      chainId,
-      sellTokenAddress,
-      buyTokenAddress,
-    }) && chainId === ChainId.mainnet;
+  const isNativeAssetUnwrapping = isWrapNative({
+    chainId,
+    sellTokenAddress,
+    buyTokenAddress,
+  });
 
   // TODO: MARK - replace this when we migrate from network => chainId
   const network = ethereumUtils.getNetworkFromChainId(chainId);

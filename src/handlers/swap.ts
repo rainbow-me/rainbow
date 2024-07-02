@@ -20,8 +20,9 @@ import { estimateGasWithPadding, getProviderForNetwork, toHexNoLeadingZeros } fr
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { Asset } from '@/entities';
 import { add, convertRawAmountToDecimalFormat, divide, lessThan, multiply, subtract } from '@/helpers/utilities';
-import { erc20ABI, ethUnits } from '@/references';
+import { ETH_ADDRESS, erc20ABI, ethUnits } from '@/references';
 import { ethereumUtils, logger } from '@/utils';
+import { chain } from 'lodash';
 
 export enum Field {
   INPUT = 'INPUT',
@@ -195,10 +196,16 @@ export const isUnwrapNative = ({
   sellTokenAddress: string;
   buyTokenAddress: string;
 }) => {
-  return (
-    sellTokenAddress.toLowerCase() === WRAPPED_ASSET[chainId].toLowerCase() &&
-    buyTokenAddress.toLowerCase() === ETH_ADDRESS_AGGREGATORS.toLowerCase()
-  );
+  if (chainId === ChainId.mainnet) {
+    return (
+      sellTokenAddress.toLowerCase() === WRAPPED_ASSET[chainId].toLowerCase() && buyTokenAddress.toLowerCase() === ETH_ADDRESS.toLowerCase()
+    );
+  } else {
+    return (
+      sellTokenAddress.toLowerCase() === WRAPPED_ASSET[chainId].toLowerCase() &&
+      buyTokenAddress.toLowerCase() === ETH_ADDRESS_AGGREGATORS.toLowerCase()
+    );
+  }
 };
 
 export const isWrapNative = ({
@@ -210,10 +217,14 @@ export const isWrapNative = ({
   sellTokenAddress: string;
   buyTokenAddress: string;
 }) => {
-  return (
-    sellTokenAddress.toLowerCase() === ETH_ADDRESS_AGGREGATORS.toLowerCase() &&
-    buyTokenAddress.toLowerCase() === WRAPPED_ASSET[chainId].toLowerCase()
-  );
+  if (chainId === ChainId.mainnet) {
+    return sellTokenAddress.toLowerCase() === ETH_ADDRESS && buyTokenAddress.toLowerCase() === WRAPPED_ASSET[chainId].toLowerCase();
+  } else {
+    return (
+      sellTokenAddress.toLowerCase() === ETH_ADDRESS_AGGREGATORS.toLowerCase() &&
+      buyTokenAddress.toLowerCase() === WRAPPED_ASSET[chainId].toLowerCase()
+    );
+  }
 };
 
 export const estimateSwapGasLimit = async ({

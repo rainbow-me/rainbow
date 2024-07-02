@@ -97,9 +97,7 @@ export const createUnlockAndCrosschainSwapRap = async (swapParameters: RapSwapAc
   };
 
   const isNativeAssetUnwrapping =
-    isLowerCaseMatch(sellTokenAddress, WRAPPED_ASSET[`${chainId}`]) &&
-    isLowerCaseMatch(buyTokenAddress, ETH_ADDRESS) &&
-    chainId === ChainId.mainnet;
+    isLowerCaseMatch(sellTokenAddress, WRAPPED_ASSET[`${chainId}`]) && isLowerCaseMatch(buyTokenAddress, ETH_ADDRESS);
 
   // Aggregators represent native asset as 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
   const nativeAsset = isLowerCaseMatch(ETH_ADDRESS_AGGREGATOR, sellTokenAddress) || assetToSell?.isNativeAsset;
