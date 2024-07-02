@@ -15,6 +15,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.28] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.28)
+
+### Changed
+
+- rewards UI cleanup (#5896)
+- e2e change of rerunning only failed tests (#5878)
+- enable unit tests (#5874)
+- rewards flag is now enabled by default (#5899)
+
+### Fixed
+
+- Fixed an issue where firebase wasn't working correctly on Android (#5898)
+
 ## [1.9.27] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.27)
 
 ### Added
