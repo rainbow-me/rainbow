@@ -535,6 +535,7 @@ const ViewWalletBackup = () => {
             .map((account: RainbowAccount) => (
               <ContextMenuWrapper account={account} menuConfig={menuConfig} onPressMenuItem={onPressMenuItem} key={account.address}>
                 <MenuItem
+                  testID={'wallet-backup-button'}
                   size={60}
                   disabled
                   leftComponent={<WalletAvatar account={account} />}

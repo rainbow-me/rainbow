@@ -5,13 +5,14 @@ interface MenuProps {
   children: React.ReactNode;
   header?: string;
   description?: string | React.ReactNode;
+  testId?: string;
 }
 
-const Menu = ({ children, description, header }: MenuProps) => {
+const Menu = ({ children, description, header, testId }: MenuProps) => {
   return (
     <>
       {!!header && (
-        <Box paddingBottom="12px" paddingHorizontal={{ custom: 16 }}>
+        <Box paddingBottom="12px" paddingHorizontal={{ custom: 16 }} testID={testId}>
           <Text color="secondary60 (Deprecated)" size="16px / 22px (Deprecated)" weight="bold">
             {header}
           </Text>

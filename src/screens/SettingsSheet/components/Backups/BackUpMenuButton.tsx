@@ -84,6 +84,7 @@ export const BackUpMenuItem = ({
       >
         {({ onNewEmoji }: { onNewEmoji: () => void }) => (
           <MenuItem
+            testID={'backup-now-button'}
             hasSfSymbol
             leftComponent={
               loading === 'loading' ? (
