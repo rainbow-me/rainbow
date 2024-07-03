@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { AnimatePresence } from '@/components/animations/AnimatePresence';
-import Paragraph from '../../components/Paragraph';
-import Line from '../../components/Line';
+import { Paragraph } from '../../components/Paragraph';
+import { Line } from '../../components/Line';
 import { AnimatedText } from '../../components/AnimatedText';
 import { textColors } from '../../constants';
 import * as i18n from '@/languages';
 import { useAccountProfile } from '@/hooks';
 import { abbreviateEnsForDisplay, address as formatAddress } from '@/utils/abbreviations';
 import { NeonButton } from '../../components/NeonButton';
-import LineBreak from '../../components/LineBreak';
+import { LineBreak } from '../../components/LineBreak';
 import { Bleed, Box, Stack } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import { analyticsV2 } from '@/analytics';

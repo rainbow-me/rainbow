@@ -1,13 +1,13 @@
-import { Address } from 'viem';
-import { RainbowError, logger } from '@/logger';
-import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import store from '@/redux/store';
-import { SUPPORTED_CHAIN_IDS, supportedNativeCurrencies } from '@/references';
 import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { getIsHardhatConnected } from '@/handlers/web3';
 import { ethereumUtils } from '@/utils';
 import { NetworkTypes } from '@/helpers';
+import { RainbowError, logger } from '@/logger';
+import store from '@/redux/store';
+import { SUPPORTED_CHAIN_IDS, supportedNativeCurrencies } from '@/references';
+import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { Address } from 'viem';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 
@@ -35,6 +35,7 @@ export interface UserAssetsState {
   searchCache: Map<string, UniqueId[]>;
   userAssets: Map<UniqueId, ParsedSearchAsset>;
   getBalanceSortedChainList: () => ChainId[];
+  getChainsWithBalance: () => ChainId[];
   getFilteredUserAssetIds: () => UniqueId[];
   getHighestValueAsset: () => ParsedSearchAsset | null;
   getUserAsset: (uniqueId: UniqueId) => ParsedSearchAsset | null;
@@ -132,7 +133,17 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
     searchCache: new Map(),
     userAssets: new Map(),
 
-    getBalanceSortedChainList: () => Array.from(get().chainBalances.keys()),
+    getBalanceSortedChainList: () => {
+      const chainBalances = [...get().chainBalances.entries()];
+      chainBalances.sort(([, balanceA], [, balanceB]) => balanceB - balanceA);
+      return chainBalances.map(([chainId]) => chainId);
+    },
+
+    getChainsWithBalance: () => {
+      const chainBalances = [...get().chainBalances.entries()];
+      const chainsWithBalances = chainBalances.filter(([, balance]) => !!balance);
+      return chainsWithBalances.map(([chainId]) => chainId);
+    },
 
     getFilteredUserAssetIds: () => {
       const { filter, inputSearchQuery: rawSearchQuery, selectUserAssetIds, setSearchCache } = get();
@@ -157,7 +168,10 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
             asset =>
               (+asset.native?.balance?.amount ?? 0) > smallBalanceThreshold &&
               (!chainIdFilter || asset.chainId === chainIdFilter) &&
-              (!searchRegex || searchRegex.test(asset.name) || searchRegex.test(asset.symbol) || searchRegex.test(asset.address)),
+              (!searchRegex ||
+                searchRegex.test(asset.name) ||
+                searchRegex.test(asset.symbol) ||
+                asset.address.toLowerCase() === inputSearchQuery),
             filter
           )
         );

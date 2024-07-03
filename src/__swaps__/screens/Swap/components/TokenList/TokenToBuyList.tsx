@@ -1,14 +1,3 @@
-import { FlashList } from '@shopify/flash-list';
-import React, { memo, useCallback, useMemo } from 'react';
-import Animated, { runOnUI, useAnimatedProps, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { analyticsV2 } from '@/analytics';
-import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
-import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { Box, Inline, Stack, Text, TextIcon, useColorMode } from '@/design-system';
-import { palettes } from '@/design-system/color/palettes';
-import * as i18n from '@/languages';
-import { userAssetsStore } from '@/state/assets/userAssets';
-import { swapsStore } from '@/state/swaps/swapsStore';
 import { COIN_ROW_WITH_PADDING_HEIGHT, CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { AssetToBuySectionId, useSearchCurrencyLists } from '@/__swaps__/screens/Swap/hooks/useSearchCurrencyLists';
@@ -18,7 +7,18 @@ import { SearchAsset } from '@/__swaps__/types/search';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { getChainColorWorklet, getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
+import { analyticsV2 } from '@/analytics';
+import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { Box, Inline, Stack, Text, TextIcon, useColorMode } from '@/design-system';
+import { palettes } from '@/design-system/color/palettes';
+import * as i18n from '@/languages';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { swapsStore } from '@/state/swaps/swapsStore';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { FlashList } from '@shopify/flash-list';
+import React, { memo, useCallback, useMemo } from 'react';
+import Animated, { runOnUI, useAnimatedProps, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
 import { ChainSelection } from './ChainSelection';
 
@@ -64,7 +64,7 @@ export type TokenToBuyListItem = HeaderItem | CoinRowItem;
 
 export const TokenToBuyList = () => {
   const { internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, outputProgress, setAsset } = useSwapContext();
-  const { results: sections } = useSearchCurrencyLists();
+  const { results: sections, isLoading } = useSearchCurrencyLists();
 
   const handleSelectToken = useCallback(
     (token: SearchAsset) => {
@@ -126,6 +126,7 @@ export const TokenToBuyList = () => {
   const getFormattedTestId = (name: string, chainId: ChainId) => {
     return `token-to-buy-${name}-${chainId}`.toLowerCase().replace(/\s+/g, '-');
   };
+  if (isLoading) return null;
 
   return (
     <Box style={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}>
@@ -137,7 +138,7 @@ export const TokenToBuyList = () => {
         // For some reason shallow copying the list data allows FlashList to more quickly pick up changes
         data={sections.slice(0)}
         estimatedFirstItemOffset={BUY_LIST_HEADER_HEIGHT}
-        estimatedItemSize={averageItemSize}
+        estimatedItemSize={averageItemSize || undefined}
         estimatedListSize={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}
         getItemType={item => item.listItemType}
         keyExtractor={item => `${item.listItemType}-${item.listItemType === 'coinRow' ? item.uniqueId : item.id}`}

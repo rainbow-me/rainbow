@@ -5,6 +5,7 @@ import { isNil } from 'lodash';
 
 import { supportedNativeCurrencies } from '@/references';
 import { BigNumberish } from '@/__swaps__/utils/hex';
+import { divWorklet, lessThanWorklet, orderOfMagnitudeWorklet, powWorklet } from '../safe-math/SafeMath';
 
 type nativeCurrencyType = typeof supportedNativeCurrencies;
 
@@ -146,11 +147,29 @@ export const handleSignificantDecimalsWithThreshold = (value: BigNumberish, deci
   return lessThan(result, threshold) ? `< ${threshold}` : result;
 };
 
+export const handleSignificantDecimalsWorklet = (value: number | string, decimals: number, buffer = 3): string => {
+  'worklet';
+  let dec;
+
+  if (lessThanWorklet(value, 1)) {
+    const orderOfMagnitude = orderOfMagnitudeWorklet(value);
+    const sigDigitsWithBuffer = -orderOfMagnitude - 1 + buffer;
+    dec = Math.min(sigDigitsWithBuffer, 8);
+  } else {
+    dec = Math.min(decimals, buffer);
+  }
+  return Number(value).toLocaleString('en-US', {
+    useGrouping: true,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: dec,
+  });
+};
+
 export const handleSignificantDecimals = (value: BigNumberish, decimals: number, buffer = 3, skipDecimals = false): string => {
   let dec;
   if (lessThan(new BigNumber(value).abs(), 1)) {
     dec = new BigNumber(value).toFixed()?.slice?.(2).search(/[^0]/g) + buffer;
-    dec = Math.min(decimals, 8);
+    dec = Math.min(dec, 8);
   } else {
     dec = Math.min(decimals, buffer);
   }
@@ -199,6 +218,43 @@ export const convertRawAmountToNativeDisplay = (
   const assetBalance = convertRawAmountToDecimalFormat(rawAmount, assetDecimals);
   const ret = convertAmountAndPriceToNativeDisplay(assetBalance, priceUnit, nativeCurrency);
   return ret;
+};
+
+/**
+ * @desc convert from raw amount to decimal format
+ */
+export const convertRawAmountToDecimalFormatWorklet = (value: number | string, decimals = 18): string => {
+  'worklet';
+  return divWorklet(value, powWorklet(10, decimals));
+};
+
+/**
+ * @desc convert from amount value to display formatted string
+ */
+export const convertAmountToBalanceDisplayWorklet = (
+  value: number | string,
+  asset: { decimals: number; symbol?: string },
+  buffer?: number
+) => {
+  'worklet';
+  const decimals = asset?.decimals ?? 18;
+  const display = handleSignificantDecimalsWorklet(value, decimals, buffer);
+  return `${display} ${asset?.symbol || ''}`;
+};
+
+/**
+ * @desc convert from raw amount to balance object
+ */
+export const convertRawAmountToBalanceWorklet = (value: number | string, asset: { decimals: number; symbol?: string }, buffer?: number) => {
+  'worklet';
+  const decimals = asset?.decimals ?? 18;
+
+  const assetBalance = convertRawAmountToDecimalFormatWorklet(value, decimals);
+
+  return {
+    amount: assetBalance,
+    display: convertAmountToBalanceDisplayWorklet(assetBalance, asset, buffer),
+  };
 };
 
 /**

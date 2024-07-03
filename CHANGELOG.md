@@ -15,6 +15,42 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.28] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.28)
+
+### Changed
+
+- rewards UI cleanup (#5896)
+- e2e change of rerunning only failed tests (#5878)
+- enable unit tests (#5874)
+- rewards flag is now enabled by default (#5899)
+
+### Fixed
+
+- Fixed an issue where firebase wasn't working correctly on Android (#5898)
+
+## [1.9.27] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.27)
+
+### Added
+
+- Added more analytics to our Dapp browser (#5755)
+- Added e2e test for validating malicious Dapp warnings (#5764)
+- Added more analytics for Swaps v2 (#5805)
+- Use ens graph api key (#5848, #5882)
+- ETH Rewards (#5866)
+
+### Changed
+
+- Improved performance by limiting Sentry tracking and NFT hooks (#5819)
+- Migrate remote cards over to zustand (#5796)
+
+### Fixed
+
+- Fixed provider recursion bug where getProviderForNetwork was being repeatedly called (#5829)
+- Fixed crashes to swaps v2 flows (#5839)
+- Fixed a crash when attempting to swap on v1 (#5858)
+- Fixed a bug where we weren’t taking l1 op gas fees into account for claimBridge (#5889)
+- Fixed a bug where tapping swap button on token expanded state did not select the proper token (#5891)
+
 ## [1.9.25] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.25)
 
 ### Added

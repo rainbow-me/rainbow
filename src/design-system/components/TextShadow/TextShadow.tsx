@@ -1,6 +1,6 @@
 import React, { ReactElement, useMemo } from 'react';
 import { StyleProp, TextStyle, View, ViewStyle } from 'react-native';
-import { IS_ANDROID } from '@/env';
+import { IS_IOS } from '@/env';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { useColorMode } from '../../color/ColorMode';
 import { useForegroundColor } from '../../color/useForegroundColor';
@@ -13,6 +13,7 @@ export interface TextShadowProps {
   containerStyle?: StyleProp<ViewStyle>;
   disabled?: boolean;
   enableInLightMode?: boolean;
+  enableOnAndroid?: boolean;
   shadowOpacity?: number;
   textStyle?: StyleProp<TextStyle>;
   x?: number;
@@ -24,9 +25,9 @@ export const TextShadow = ({
   children,
   color,
   containerStyle,
-  // ⚠️ TODO: Need to test on Android - defaulting to disabled on Android for now
-  disabled = IS_ANDROID,
+  disabled,
   enableInLightMode,
+  enableOnAndroid,
   shadowOpacity = 0.6,
   textStyle,
   x = 0,
@@ -50,7 +51,7 @@ export const TextShadow = ({
     ];
   }, [blur, color, inferredTextColor, shadowOpacity, x, y]);
 
-  return !disabled && (isDarkMode || enableInLightMode) ? (
+  return !disabled && (IS_IOS || enableOnAndroid) && (isDarkMode || enableInLightMode) ? (
     <View style={[containerStyle, internalContainerStyle]}>
       <Text color={{ custom: 'transparent' }} size={inferredTextSize} style={[textStyle, internalTextStyle]} weight="bold">
         {children}

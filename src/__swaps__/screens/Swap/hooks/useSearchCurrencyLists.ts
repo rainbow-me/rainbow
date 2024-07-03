@@ -1,20 +1,20 @@
-import { rankings } from 'match-sorter';
-import { useCallback, useMemo, useState } from 'react';
-import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { TokenSearchResult, useTokenSearch } from '@/__swaps__/screens/Swap/resources/search';
+import { AddressOrEth } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { SearchAsset, TokenSearchAssetKey, TokenSearchThreshold } from '@/__swaps__/types/search';
 import { addHexPrefix } from '@/__swaps__/utils/hex';
 import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
-import { filterList } from '@/utils';
-import { useFavorites } from '@/resources/favorites';
-import { isAddress } from '@ethersproject/address';
-import { useSwapContext } from '../providers/swap-provider';
-import { useDebouncedCallback } from 'use-debounce';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
-import { AddressOrEth } from '@/__swaps__/types/assets';
+import { useFavorites } from '@/resources/favorites';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { filterList } from '@/utils';
+import { isAddress } from '@ethersproject/address';
+import { rankings } from 'match-sorter';
+import { useCallback, useMemo, useState } from 'react';
+import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
+import { useDebouncedCallback } from 'use-debounce';
 import { TokenToBuyListItem } from '../components/TokenList/TokenToBuyList';
+import { useSwapContext } from '../providers/swap-provider';
 
 export type AssetToBuySectionId = 'bridge' | 'favorites' | 'verified' | 'unverified' | 'other_networks';
 
@@ -207,7 +207,7 @@ export function useSearchCurrencyLists() {
     [query, state.toChainId]
   );
 
-  const { data: verifiedAssets } = useTokenSearch(
+  const { data: verifiedAssets, isLoading: isLoadingVerifiedAssets } = useTokenSearch(
     {
       list: 'verifiedAssets',
       chainId: isAddress(query) ? state.toChainId : undefined,
@@ -289,7 +289,7 @@ export function useSearchCurrencyLists() {
     }
   }, [memoizedData.keys, memoizedData.queryIsAddress, query, unfilteredFavorites]);
 
-  const { data: unverifiedAssets } = useTokenSearch(
+  const { data: unverifiedAssets, isLoading: isLoadingUnverifiedAssets } = useTokenSearch(
     {
       chainId: state.toChainId,
       keys: isAddress(query) ? ['address'] : ['name', 'symbol'],
@@ -324,13 +324,16 @@ export function useSearchCurrencyLists() {
         favoritesList,
         filteredBridgeAssetAddress: memoizedData.filteredBridgeAsset?.address,
       }),
+      isLoading: isLoadingVerifiedAssets || isLoadingUnverifiedAssets,
     };
   }, [
     favoritesList,
+    isLoadingUnverifiedAssets,
+    isLoadingVerifiedAssets,
     memoizedData.enableUnverifiedSearch,
     memoizedData.filteredBridgeAsset,
     query,
-    selectedOutputChainId,
+    selectedOutputChainId.value,
     state.assetToSellAddress,
     unverifiedAssets,
     verifiedAssets,

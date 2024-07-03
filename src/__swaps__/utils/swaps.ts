@@ -14,13 +14,13 @@ import {
 } from '@/__swaps__/screens/Swap/constants';
 import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { ChainId, ChainName } from '@/__swaps__/types/chains';
-import { isLowerCaseMatch, isLowerCaseMatchWorklet } from '@/__swaps__/utils/strings';
+import { isLowerCaseMatchWorklet } from '@/__swaps__/utils/strings';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { RainbowConfig } from '@/model/remoteConfig';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { colors } from '@/styles';
 import { BigNumberish } from '@ethersproject/bignumber';
-import { CrosschainQuote, ETH_ADDRESS, Quote, QuoteParams, SwapType, WRAPPED_ASSET } from '@rainbow-me/swaps';
+import { CrosschainQuote, ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR, Quote, QuoteParams, SwapType, WRAPPED_ASSET } from '@rainbow-me/swaps';
 import { swapsStore } from '../../state/swaps/swapsStore';
 import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '../types/assets';
 import { inputKeys } from '../types/swap';
@@ -39,6 +39,7 @@ import {
   orderOfMagnitudeWorklet,
   isNumberStringWorklet,
 } from '../safe-math/SafeMath';
+import { ETH_ADDRESS } from '@/references';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -246,87 +247,71 @@ export function precisionBasedOffMagnitude(amount: number | string, isStablecoin
 export function valueBasedDecimalFormatter({
   amount,
   nativePrice,
-  assetBalanceDisplay,
   roundingMode,
   precisionAdjustment,
   isStablecoin,
   stripSeparators = true,
-  isMaxAmount = false,
 }: {
   amount: number | string;
   nativePrice: number;
-  assetBalanceDisplay?: string;
-  roundingMode?: 'up' | 'down';
+  roundingMode?: 'up' | 'down' | 'none';
   precisionAdjustment?: number;
   isStablecoin?: boolean;
   stripSeparators?: boolean;
-  isMaxAmount?: boolean;
 }): string {
   'worklet';
 
-  function calculateDecimalPlaces(usdTokenPrice: number): number {
-    const fallbackDecimalPlaces = STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS;
-    if (usdTokenPrice <= 0) {
-      return fallbackDecimalPlaces;
+  function calculateDecimalPlaces(): {
+    minimumDecimalPlaces: number;
+    maximumDecimalPlaces: number;
+  } {
+    if (nativePrice === 0) {
+      return {
+        minimumDecimalPlaces: 0,
+        maximumDecimalPlaces: MAXIMUM_SIGNIFICANT_DECIMALS,
+      };
     }
+
     const unitsForOneCent = 0.01 / nativePrice;
     if (unitsForOneCent >= 1) {
-      return isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0;
+      return {
+        minimumDecimalPlaces: 0,
+        maximumDecimalPlaces: 0,
+      };
     }
-    return Math.max(
-      Math.ceil(Math.log10(1 / unitsForOneCent)) + (precisionAdjustment ?? 0),
-      isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0
-    );
+
+    return {
+      minimumDecimalPlaces: isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0,
+      maximumDecimalPlaces: Math.max(
+        Math.ceil(Math.log10(1 / unitsForOneCent)) + (precisionAdjustment ?? 0),
+        isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0
+      ),
+    };
   }
 
-  const decimalPlaces = calculateDecimalPlaces(nativePrice);
+  const { minimumDecimalPlaces, maximumDecimalPlaces } = calculateDecimalPlaces();
 
   let roundedAmount;
-  const factor = Math.pow(10, decimalPlaces) || 1; // Prevent division by 0
+  const factor = Math.pow(10, maximumDecimalPlaces) || 1; // Prevent division by 0
 
   // Apply rounding based on the specified rounding mode
   if (roundingMode === 'up') {
     roundedAmount = divWorklet(ceilWorklet(mulWorklet(amount, factor)), factor);
   } else if (roundingMode === 'down') {
     roundedAmount = divWorklet(floorWorklet(mulWorklet(amount, factor)), factor);
+  } else if (roundingMode === 'none') {
+    roundedAmount = toFixedWorklet(amount, maximumDecimalPlaces);
   } else {
     // Default to normal rounding if no rounding mode is specified
     roundedAmount = divWorklet(roundWorklet(mulWorklet(amount, factor)), factor);
   }
 
-  const maximumFractionDigits = () => {
-    // if we're selling max amount, we want to match what's displayed on the balance badge
-    // let's base the decimal places based on that (capped at 6)
-    if (isMaxAmount && assetBalanceDisplay) {
-      const decimals = assetBalanceDisplay.split('.');
-      if (decimals.length > 1) {
-        const [, decimalPlacesFromDisplay] = decimals;
-        if (decimalPlacesFromDisplay.length < STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS && isStablecoin) {
-          return STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS;
-        }
-
-        return Math.min(decimalPlacesFromDisplay.length, MAXIMUM_SIGNIFICANT_DECIMALS);
-      }
-    }
-
-    if (!isNaN(decimalPlaces)) {
-      return isStablecoin && decimalPlaces < STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS
-        ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS
-        : decimalPlaces;
-    }
-
-    // default to 6 precision if we have no calculation
-    return MAXIMUM_SIGNIFICANT_DECIMALS;
-  };
-
   // Format the number to add separators and trim trailing zeros
   const numberFormatter = new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: maximumFractionDigits(),
-    useGrouping: true,
+    minimumFractionDigits: minimumDecimalPlaces,
+    maximumFractionDigits: maximumDecimalPlaces,
+    useGrouping: !stripSeparators,
   });
-
-  if (stripSeparators) return stripCommas(numberFormatter.format(Number(roundedAmount)));
 
   return numberFormatter.format(Number(roundedAmount));
 }
@@ -335,7 +320,6 @@ export function niceIncrementFormatter({
   incrementDecimalPlaces,
   inputAssetBalance,
   inputAssetNativePrice,
-  assetBalanceDisplay,
   niceIncrement,
   percentageToSwap,
   sliderXPosition,
@@ -345,7 +329,6 @@ export function niceIncrementFormatter({
   incrementDecimalPlaces: number;
   inputAssetBalance: number | string;
   inputAssetNativePrice: number;
-  assetBalanceDisplay: string;
   niceIncrement: number | string;
   percentageToSwap: number;
   sliderXPosition: number;
@@ -360,7 +343,6 @@ export function niceIncrementFormatter({
     return valueBasedDecimalFormatter({
       nativePrice: inputAssetNativePrice,
       amount,
-      assetBalanceDisplay,
       roundingMode: 'up',
       precisionAdjustment: precisionBasedOffMagnitude(amount, isStablecoin),
       isStablecoin,
@@ -372,7 +354,6 @@ export function niceIncrementFormatter({
     return valueBasedDecimalFormatter({
       nativePrice: inputAssetNativePrice,
       amount,
-      assetBalanceDisplay,
       roundingMode: 'up',
       precisionAdjustment,
       isStablecoin,
@@ -383,21 +364,13 @@ export function niceIncrementFormatter({
     return valueBasedDecimalFormatter({
       nativePrice: inputAssetNativePrice,
       amount,
-      assetBalanceDisplay,
       roundingMode: 'up',
       precisionAdjustment: precisionBasedOffMagnitude(amount, isStablecoin),
       isStablecoin,
     });
   }
   if (percentageToSwap === 1) {
-    return valueBasedDecimalFormatter({
-      amount: inputAssetBalance,
-      nativePrice: inputAssetNativePrice,
-      roundingMode: 'up',
-      assetBalanceDisplay,
-      isStablecoin,
-      isMaxAmount: true,
-    });
+    return inputAssetBalance;
   }
 
   const decimals = isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : incrementDecimalPlaces;
@@ -624,7 +597,13 @@ export const isUnwrapEthWorklet = ({
   buyTokenAddress: string;
 }) => {
   'worklet';
-  return isLowerCaseMatchWorklet(sellTokenAddress, WRAPPED_ASSET[chainId]) && isLowerCaseMatchWorklet(buyTokenAddress, ETH_ADDRESS);
+  if (chainId === ChainId.mainnet) {
+    return isLowerCaseMatchWorklet(sellTokenAddress, WRAPPED_ASSET[chainId]) && isLowerCaseMatchWorklet(buyTokenAddress, ETH_ADDRESS);
+  } else {
+    return (
+      isLowerCaseMatchWorklet(sellTokenAddress, WRAPPED_ASSET[chainId]) && isLowerCaseMatchWorklet(buyTokenAddress, ETH_ADDRESS_AGGREGATOR)
+    );
+  }
 };
 
 export const isWrapEthWorklet = ({
@@ -637,7 +616,13 @@ export const isWrapEthWorklet = ({
   buyTokenAddress: string;
 }) => {
   'worklet';
-  return isLowerCaseMatchWorklet(sellTokenAddress, ETH_ADDRESS) && isLowerCaseMatchWorklet(buyTokenAddress, WRAPPED_ASSET[chainId]);
+  if (chainId === ChainId.mainnet) {
+    return isLowerCaseMatchWorklet(sellTokenAddress, ETH_ADDRESS) && isLowerCaseMatchWorklet(buyTokenAddress, WRAPPED_ASSET[chainId]);
+  } else {
+    return (
+      isLowerCaseMatchWorklet(sellTokenAddress, ETH_ADDRESS_AGGREGATOR) && isLowerCaseMatchWorklet(buyTokenAddress, WRAPPED_ASSET[chainId])
+    );
+  }
 };
 
 export const priceForAsset = ({
@@ -697,13 +682,14 @@ export const parseAssetAndExtend = ({
   });
 
   const uniqueId = getStandardizedUniqueIdWorklet({ address: asset.address, chainId: asset.chainId });
+  const balance = insertUserAssetBalance ? userAssetsStore.getState().getUserAsset(uniqueId)?.balance || asset.balance : asset.balance;
 
   return {
     ...asset,
     ...colors,
-    maxSwappableAmount: asset.balance.amount,
+    maxSwappableAmount: balance.amount,
     nativePrice: asset.price?.value,
-    balance: insertUserAssetBalance ? userAssetsStore.getState().getUserAsset(uniqueId)?.balance || asset.balance : asset.balance,
+    balance,
 
     // For some reason certain assets have a unique ID in the format of `${address}_mainnet` rather than
     // `${address}_${chainId}`, so at least for now we ensure consistency by reconstructing the unique ID here.
@@ -745,8 +731,8 @@ export const buildQuoteParams = ({
     source: source === 'auto' ? undefined : source,
     chainId: inputAsset.chainId,
     fromAddress: currentAddress,
-    sellTokenAddress: inputAsset.isNativeAsset ? ETH_ADDRESS : inputAsset.address,
-    buyTokenAddress: outputAsset.isNativeAsset ? ETH_ADDRESS : outputAsset.address,
+    sellTokenAddress: inputAsset.isNativeAsset ? ETH_ADDRESS_AGGREGATOR : inputAsset.address,
+    buyTokenAddress: outputAsset.isNativeAsset ? ETH_ADDRESS_AGGREGATOR : outputAsset.address,
     // TODO: Handle native input cases below
     sellAmount:
       lastTypedInput === 'inputAmount' || lastTypedInput === 'inputNativeValue'

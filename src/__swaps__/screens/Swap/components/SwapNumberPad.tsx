@@ -1,6 +1,7 @@
 import React from 'react';
 import Animated, {
   Easing,
+  SharedValue,
   interpolateColor,
   useAnimatedGestureHandler,
   useAnimatedReaction,
@@ -27,8 +28,24 @@ import { LongPressGestureHandler, LongPressGestureHandlerGestureEvent } from 're
 import { ButtonPressAnimation } from '@/components/animations';
 import { colors } from '@/styles';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { IS_IOS } from '@/env';
+import { inputKeys } from '@/__swaps__/types/swap';
 
 type numberPadCharacter = number | 'backspace' | '.';
+
+const getFormattedInputKey = (inputKey: inputKeys) => {
+  'worklet';
+  switch (inputKey) {
+    case 'inputAmount':
+      return 'formattedInputAmount';
+    case 'inputNativeValue':
+      return 'formattedInputNativeValue';
+    case 'outputAmount':
+      return 'formattedOutputAmount';
+    case 'outputNativeValue':
+      return 'formattedOutputNativeValue';
+  }
+};
 
 export const SwapNumberPad = () => {
   const { isDarkMode } = useColorMode();
@@ -46,7 +63,8 @@ export const SwapNumberPad = () => {
     SwapInputController.quoteFetchingInterval.stop();
 
     const inputKey = focusedInput.value;
-    const currentValue = SwapInputController.inputValues.value[inputKey].toString();
+    const currentValue = stripCommas(SwapInputController[getFormattedInputKey(inputKey)].value);
+
     const newValue = currentValue === '0' ? `${number}` : `${currentValue}${number}`;
 
     // For a uint256, the maximum value is:
@@ -63,18 +81,6 @@ export const SwapNumberPad = () => {
 
     if (SwapInputController.inputMethod.value !== inputKey) {
       SwapInputController.inputMethod.value = inputKey;
-
-      if (typeof SwapInputController.inputValues.value[inputKey] === 'number') {
-        SwapInputController.inputValues.modify(value => {
-          return {
-            ...value,
-            [inputKey]:
-              inputKey === 'inputAmount'
-                ? stripCommas(SwapInputController.formattedInputAmount.value)
-                : stripCommas(SwapInputController.formattedOutputAmount.value),
-          };
-        });
-      }
     }
 
     SwapInputController.inputValues.modify(value => {
@@ -88,20 +94,11 @@ export const SwapNumberPad = () => {
   const addDecimalPoint = () => {
     'worklet';
     const inputKey = focusedInput.value;
-    const currentValue = SwapInputController.inputValues.value[inputKey].toString();
+    const currentValue = stripCommas(SwapInputController[getFormattedInputKey(inputKey)].value);
+
     if (!currentValue.includes('.')) {
       if (SwapInputController.inputMethod.value !== inputKey) {
         SwapInputController.inputMethod.value = inputKey;
-
-        SwapInputController.inputValues.modify(values => {
-          return {
-            ...values,
-            [inputKey]:
-              inputKey === 'inputAmount'
-                ? stripCommas(SwapInputController.formattedInputAmount.value)
-                : stripCommas(SwapInputController.formattedOutputAmount.value),
-          };
-        });
       }
 
       const newValue = `${currentValue}.`;
@@ -126,19 +123,9 @@ export const SwapNumberPad = () => {
 
     if (SwapInputController.inputMethod.value !== inputKey) {
       SwapInputController.inputMethod.value = inputKey;
-
-      SwapInputController.inputValues.modify(values => {
-        return {
-          ...values,
-          [inputKey]:
-            inputKey === 'inputAmount'
-              ? stripCommas(SwapInputController.formattedInputAmount.value)
-              : stripCommas(SwapInputController.formattedOutputAmount.value),
-        };
-      });
     }
 
-    const currentValue = SwapInputController.inputValues.value[inputKey].toString();
+    const currentValue = stripCommas(SwapInputController[getFormattedInputKey(inputKey)].value);
     // Handle deletion, ensuring a placeholder zero remains if the entire number is deleted
     const newValue = currentValue.length > 1 ? currentValue.slice(0, -1) : 0;
 
@@ -220,7 +207,7 @@ const NumberPadKey = ({
   transparent,
 }: {
   char: numberPadCharacter;
-  longPressTimer?: Animated.SharedValue<number>;
+  longPressTimer?: SharedValue<number>;
   onPressWorklet: (number?: number) => void;
   small?: boolean;
   transparent?: boolean;
@@ -333,7 +320,7 @@ const NumberPadKey = ({
                 !transparent && {
                   borderColor: isDarkMode ? separatorTertiary : 'transparent',
                   borderCurve: 'continuous',
-                  borderWidth: THICK_BORDER_WIDTH,
+                  borderWidth: IS_IOS ? THICK_BORDER_WIDTH : 0,
                   shadowColor: isDarkMode ? 'transparent' : colors.dark,
                   shadowOffset: {
                     width: 0,

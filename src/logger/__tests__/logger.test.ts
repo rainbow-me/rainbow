@@ -149,7 +149,7 @@ describe('general functionality', () => {
       message,
       data: {},
       type: 'default',
-      level: undefined, // Sentry bug, undefined
+      level: 'debug',
       timestamp: Date.now(),
     });
     expect(Sentry.captureMessage).toHaveBeenCalledWith(message, {

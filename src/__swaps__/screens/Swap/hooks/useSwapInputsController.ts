@@ -18,7 +18,11 @@ import { CrosschainQuote, Quote, QuoteError, SwapType, getCrosschainQuote, getQu
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import store from '@/redux/store';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { convertAmountToNativeDisplayWorklet, convertRawAmountToDecimalFormat } from '@/__swaps__/utils/numbers';
+import {
+  convertAmountToNativeDisplayWorklet,
+  convertRawAmountToDecimalFormat,
+  handleSignificantDecimalsWorklet,
+} from '@/__swaps__/utils/numbers';
 import { NavigationSteps } from './useSwapNavigation';
 import { RainbowError, logger } from '@/logger';
 import {
@@ -32,11 +36,9 @@ import { queryClient } from '@/react-query';
 import { useAccountSettings } from '@/hooks';
 import { analyticsV2 } from '@/analytics';
 import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet } from '@/__swaps__/safe-math/SafeMath';
-import { supportedNativeCurrencies } from '@/references';
 
 function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetWithColors | null) {
   const initialBalance = Number(initialSelectedInputAsset?.maxSwappableAmount) || 0;
-  const assetBalanceDisplay = initialSelectedInputAsset?.balance.display ?? '';
   const initialNiceIncrement = findNiceIncrement(initialBalance);
   const initialDecimalPlaces = countDecimalPlaces(initialNiceIncrement);
   const isStablecoin = initialSelectedInputAsset?.type === 'stablecoin';
@@ -45,7 +47,6 @@ function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetW
     incrementDecimalPlaces: initialDecimalPlaces,
     inputAssetBalance: initialBalance,
     inputAssetNativePrice: initialSelectedInputAsset?.price?.value ?? 0,
-    assetBalanceDisplay,
     niceIncrement: initialNiceIncrement,
     percentageToSwap: 0.5,
     sliderXPosition: SLIDER_WIDTH / 2,
@@ -53,17 +54,7 @@ function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetW
     isStablecoin,
   });
 
-  const nativeCurrency = store.getState().settings.nativeCurrency;
-  const decimals = Math.min(6, supportedNativeCurrencies[nativeCurrency].decimals);
-
-  const initialInputNativeValue = Number(mulWorklet(initialInputAmount, initialSelectedInputAsset?.price?.value ?? 0)).toLocaleString(
-    'en-US',
-    {
-      useGrouping: false,
-      minimumFractionDigits: nativeCurrency === 'ETH' ? undefined : decimals,
-      maximumFractionDigits: decimals,
-    }
-  );
+  const initialInputNativeValue = mulWorklet(initialInputAmount, initialSelectedInputAsset?.price?.value ?? 0);
 
   return {
     initialInputAmount,
@@ -83,6 +74,7 @@ export function useSwapInputsController({
   outputProgress,
   quote,
   sliderXPosition,
+  slippage,
 }: {
   focusedInput: SharedValue<inputKeys>;
   inputProgress: SharedValue<number>;
@@ -95,6 +87,7 @@ export function useSwapInputsController({
   outputProgress: SharedValue<number>;
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
   sliderXPosition: SharedValue<number>;
+  slippage: SharedValue<string>;
 }) {
   const { initialInputAmount, initialInputNativeValue } = getInitialInputValues(initialSelectedInputAsset);
   const { nativeCurrency: currentCurrency } = useAccountSettings();
@@ -131,17 +124,14 @@ export function useSwapInputsController({
       return '0';
     }
 
-    if (inputMethod.value === 'inputAmount' || typeof inputValues.value.inputAmount === 'string') {
+    if (inputMethod.value === 'inputAmount') {
       return addCommasToNumber(inputValues.value.inputAmount, '0');
     }
-
-    const assetBalanceDisplay = internalSelectedInputAsset.value.balance.display ?? '';
 
     if (inputMethod.value === 'outputAmount') {
       return valueBasedDecimalFormatter({
         amount: inputValues.value.inputAmount,
         nativePrice: inputNativePrice.value,
-        assetBalanceDisplay,
         roundingMode: 'up',
         precisionAdjustment: -1,
         isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
@@ -149,19 +139,12 @@ export function useSwapInputsController({
       });
     }
 
-    const balance = internalSelectedInputAsset.value?.maxSwappableAmount || 0;
-    const isStablecoin = internalSelectedInputAsset.value?.type === 'stablecoin' ?? false;
-
-    return niceIncrementFormatter({
-      incrementDecimalPlaces: incrementDecimalPlaces.value,
-      inputAssetBalance: balance,
-      inputAssetNativePrice: inputNativePrice.value,
-      assetBalanceDisplay,
-      niceIncrement: niceIncrement.value,
-      percentageToSwap: percentageToSwap.value,
-      sliderXPosition: sliderXPosition.value,
-      isStablecoin,
-    });
+    if (equalWorklet(inputValues.value.inputAmount, internalSelectedInputAsset.value.maxSwappableAmount)) {
+      const formattedAmount = handleSignificantDecimalsWorklet(inputValues.value.inputAmount, internalSelectedInputAsset.value.decimals);
+      return formattedAmount;
+    } else {
+      return addCommasToNumber(inputValues.value.inputAmount, '0');
+    }
   });
 
   const formattedInputNativeValue = useDerivedValue(() => {
@@ -184,16 +167,13 @@ export function useSwapInputsController({
       return '0';
     }
 
-    if (inputMethod.value === 'outputAmount' || typeof inputValues.value.outputAmount === 'string') {
+    if (inputMethod.value === 'outputAmount') {
       return addCommasToNumber(inputValues.value.outputAmount, '0');
     }
-
-    const assetBalanceDisplay = internalSelectedOutputAsset.value.balance.display ?? '';
 
     return valueBasedDecimalFormatter({
       amount: inputValues.value.outputAmount,
       nativePrice: outputNativePrice.value,
-      assetBalanceDisplay,
       roundingMode: 'down',
       precisionAdjustment: -1,
       isStablecoin: internalSelectedOutputAsset.value?.type === 'stablecoin' ?? false,
@@ -646,13 +626,51 @@ export function useSwapInputsController({
     { leading: false, trailing: true }
   );
 
+  const debouncedFetchQuote = useDebouncedCallback(
+    () => {
+      runOnUI(fetchQuoteAndAssetPrices)();
+    },
+    300,
+    { leading: false, trailing: true }
+  );
+
+  useAnimatedReaction(
+    () => slippage.value,
+    (slippage, prevSlippage) => {
+      if (prevSlippage && slippage !== prevSlippage) {
+        runOnJS(debouncedFetchQuote)();
+      }
+    }
+  );
+
+  /**
+   * Observes maxSwappableAmount and updates the input amount and quote when max amount is being swapped and maxSwappableAmount changes
+   */
+  useAnimatedReaction(
+    () => internalSelectedInputAsset.value?.maxSwappableAmount,
+    (maxSwappableAmount, prevMaxSwappableAmount) => {
+      const isSwappingMaxBalance = internalSelectedInputAsset.value && inputValues.value.inputAmount === prevMaxSwappableAmount;
+
+      if (maxSwappableAmount && maxSwappableAmount !== prevMaxSwappableAmount && isSwappingMaxBalance) {
+        inputValues.modify(prev => {
+          return {
+            ...prev,
+            inputAmount: maxSwappableAmount,
+            inputNativeValue: mulWorklet(maxSwappableAmount, inputNativePrice.value),
+          };
+        });
+        fetchQuoteAndAssetPrices();
+      }
+    }
+  );
+
   /**
    * Observes the user-focused input and cleans up typed amounts when the input focus changes
    */
   useAnimatedReaction(
     () => ({ focusedInput: focusedInput.value }),
     (current, previous) => {
-      if (previous && current !== previous && typeof inputValues.value[previous.focusedInput] === 'string') {
+      if (previous && current !== previous) {
         const typedValue = inputValues.value[previous.focusedInput].toString();
         if (equalWorklet(typedValue, 0)) {
           inputValues.modify(values => {
@@ -694,7 +712,7 @@ export function useSwapInputsController({
     (current, previous) => {
       if (previous && current !== previous) {
         // Handle updating input values based on the input method
-        if (inputMethod.value === 'slider' && current.sliderXPosition !== previous.sliderXPosition) {
+        if (inputMethod.value === 'slider' && internalSelectedInputAsset.value && current.sliderXPosition !== previous.sliderXPosition) {
           // If the slider position changes
           if (percentageToSwap.value === 0) {
             // If the change set the slider position to 0
@@ -715,9 +733,9 @@ export function useSwapInputsController({
             // If the change set the slider position to > 0
             if (!internalSelectedInputAsset.value) return;
 
-            const balance = Number(internalSelectedInputAsset.value.maxSwappableAmount);
+            const balance = internalSelectedInputAsset.value.maxSwappableAmount;
 
-            if (!balance) {
+            if (!balance || equalWorklet(balance, 0)) {
               inputValues.modify(values => {
                 return {
                   ...values,
@@ -730,13 +748,10 @@ export function useSwapInputsController({
               return;
             }
 
-            const assetBalanceDisplay = internalSelectedInputAsset.value.balance.display;
-
             const inputAmount = niceIncrementFormatter({
               incrementDecimalPlaces: incrementDecimalPlaces.value,
               inputAssetBalance: balance,
               inputAssetNativePrice: inputNativePrice.value,
-              assetBalanceDisplay,
               niceIncrement: niceIncrement.value,
               percentageToSwap: percentageToSwap.value,
               sliderXPosition: sliderXPosition.value,
@@ -868,7 +883,7 @@ export function useSwapInputsController({
       const didOutputAssetChange = current.assetToBuyId !== previous?.assetToBuyId;
 
       if (didInputAssetChange || didOutputAssetChange) {
-        const balance = Number(internalSelectedInputAsset.value?.maxSwappableAmount);
+        const balance = internalSelectedInputAsset.value?.maxSwappableAmount;
 
         const areBothAssetsSet = internalSelectedInputAsset.value && internalSelectedOutputAsset.value;
         const didFlipAssets =
@@ -876,7 +891,7 @@ export function useSwapInputsController({
 
         if (!didFlipAssets) {
           // If either asset was changed but the assets were not flipped
-          if (!balance) {
+          if (!balance || equalWorklet(balance, 0)) {
             isQuoteStale.value = 0;
             isFetching.value = false;
             inputValues.modify(values => {
@@ -896,13 +911,10 @@ export function useSwapInputsController({
             sliderXPosition.value = withSpring(SLIDER_WIDTH / 2, snappySpringConfig);
           }
 
-          const assetBalanceDisplay = internalSelectedInputAsset.value?.balance.display ?? '';
-
           const inputAmount = niceIncrementFormatter({
             incrementDecimalPlaces: incrementDecimalPlaces.value,
             inputAssetBalance: balance,
             inputAssetNativePrice: inputNativePrice.value,
-            assetBalanceDisplay,
             niceIncrement: niceIncrement.value,
             percentageToSwap: didInputAssetChange ? 0.5 : percentageToSwap.value,
             sliderXPosition: didInputAssetChange ? SLIDER_WIDTH / 2 : sliderXPosition.value,
@@ -925,14 +937,11 @@ export function useSwapInputsController({
           const inputNativePrice = internalSelectedInputAsset.value?.nativePrice || internalSelectedInputAsset.value?.price?.value || 0;
           const outputNativePrice = internalSelectedOutputAsset.value?.nativePrice || internalSelectedOutputAsset.value?.price?.value || 0;
 
-          const assetBalanceDisplay = internalSelectedInputAsset.value?.balance.display ?? '';
-
           const inputAmount = Number(
             valueBasedDecimalFormatter({
               amount:
                 inputNativePrice > 0 ? divWorklet(inputValues.value.inputNativeValue, inputNativePrice) : inputValues.value.outputAmount,
               nativePrice: inputNativePrice,
-              assetBalanceDisplay,
               roundingMode: 'up',
               precisionAdjustment: -1,
               isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,

@@ -6,7 +6,7 @@ import { Box, BoxProps } from '../Box/Box';
 export type CoverProps = {
   alignHorizontal?: AlignHorizontal;
   alignVertical?: AlignVertical;
-  children: BoxProps['children'];
+  children?: BoxProps['children'];
   pointerEvents?: ViewProps['pointerEvents'];
   style?: StyleProp<ViewStyle>;
 };

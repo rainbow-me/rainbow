@@ -10,7 +10,7 @@ import { GasSettings } from '../hooks/useCustomGas';
 import { useSwapEstimatedGasFee } from '../hooks/useEstimatedGasFee';
 import { useSwapContext } from '../providers/swap-provider';
 
-type EstimatedSwapGasFeeProps = { gasSettings: GasSettings | undefined } & Partial<
+type EstimatedSwapGasFeeProps = { gasSettings?: GasSettings } & Partial<
   Pick<TextProps, 'align' | 'color' | 'size' | 'weight' | 'tabularNumbers'>
 >;
 export function EstimatedSwapGasFeeSlot({
@@ -37,6 +37,7 @@ const GasFeeText = memo(function GasFeeText({
 }: { label: SharedValue<string> } & Pick<TextProps, 'align' | 'color' | 'size' | 'weight' | 'tabularNumbers'>) {
   const { isFetching } = useSwapContext();
 
+  const textColor = useForegroundColor(color);
   const labelTertiary = useForegroundColor('labelTertiary');
   const zeroAmountColor = opacity(labelTertiary, 0.3);
 
@@ -44,7 +45,7 @@ const GasFeeText = memo(function GasFeeText({
   const isLoading = useDerivedValue(() => isFetching.value || isFetchingDelayed.value);
 
   const animatedTextOpacity = useAnimatedStyle(() => ({
-    color: withTiming(isLoading.value ? zeroAmountColor : labelTertiary, TIMING_CONFIGS.slowFadeConfig),
+    color: withTiming(isLoading.value ? zeroAmountColor : textColor, TIMING_CONFIGS.slowFadeConfig),
     opacity: isLoading.value
       ? withRepeat(withSequence(withTiming(0.5, pulsingConfig), withTiming(1, pulsingConfig)), -1, true)
       : withSpring(1, sliderConfig),

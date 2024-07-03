@@ -5,8 +5,9 @@ import { Signer } from '@ethersproject/abstract-signer';
 
 import { RainbowError, logger } from '@/logger';
 
-import { swap, unlock } from './actions';
+import { claim, swap, unlock } from './actions';
 import { crosschainSwap } from './actions/crosschainSwap';
+import { claimBridge } from './actions/claimBridge';
 import {
   ActionProps,
   Rap,
@@ -18,11 +19,14 @@ import {
   RapTypes,
 } from './references';
 import { createUnlockAndCrosschainSwapRap } from './unlockAndCrosschainSwap';
+import { createClaimAndBridgeRap } from './claimAndBridge';
 import { createUnlockAndSwapRap } from './unlockAndSwap';
 import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 
 export function createSwapRapByType<T extends RapTypes>(type: T, swapParameters: RapSwapActionParameters<T>) {
   switch (type) {
+    case 'claimBridge':
+      return createClaimAndBridgeRap(swapParameters as RapSwapActionParameters<'claimBridge'>);
     case 'crosschainSwap':
       return createUnlockAndCrosschainSwapRap(swapParameters as RapSwapActionParameters<'crosschainSwap'>);
     case 'swap':
@@ -34,10 +38,14 @@ export function createSwapRapByType<T extends RapTypes>(type: T, swapParameters:
 
 function typeAction<T extends RapActionTypes>(type: T, props: ActionProps<T>) {
   switch (type) {
+    case 'claim':
+      return () => claim(props as ActionProps<'claim'>);
     case 'unlock':
       return () => unlock(props as ActionProps<'unlock'>);
     case 'swap':
       return () => swap(props as ActionProps<'swap'>);
+    case 'claimBridge':
+      return () => claimBridge(props as ActionProps<'claimBridge'>);
     case 'crosschainSwap':
       return () => crosschainSwap(props as ActionProps<'crosschainSwap'>);
     default:
@@ -115,7 +123,7 @@ const waitForNodeAck = async (hash: string, provider: Signer['provider']): Promi
 export const walletExecuteRap = async (
   wallet: Signer,
   type: RapTypes,
-  parameters: RapSwapActionParameters<'swap' | 'crosschainSwap'>
+  parameters: RapSwapActionParameters<'swap' | 'crosschainSwap' | 'claimBridge'>
 ): Promise<{ nonce: number | undefined; errorMessage: string | null }> => {
   const rap: Rap = await createSwapRapByType(type, parameters);
 

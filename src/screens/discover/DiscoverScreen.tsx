@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect } from 'react';
-
 import { Keyboard, ScrollView } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { Box } from '@/design-system';
@@ -15,6 +14,7 @@ import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
 import { safeAreaInsetValues } from '@/utils';
 import * as i18n from '@/languages';
+import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 
 export let discoverScrollToTopFnRef: () => number | null = () => null;
 export default function DiscoverScreen() {
@@ -23,7 +23,7 @@ export default function DiscoverScreen() {
   const isFocused = useIsFocused();
   const { accountSymbol, accountColor, accountImage } = useAccountProfile();
 
-  const [scrollY, setScrollY] = React.useState(0);
+  const scrollY = useSharedValue(0);
   const [isSearchModeEnabled, setIsSearchModeEnabled] = React.useState(false);
 
   const onChangeWallet = React.useCallback(() => {
@@ -40,7 +40,7 @@ export default function DiscoverScreen() {
     if (!ref.current) return -1;
 
     // detect if scroll was already at top and return 0;
-    if (scrollY === 0) {
+    if (scrollY.value === 0) {
       return 0;
     }
 
@@ -51,6 +51,12 @@ export default function DiscoverScreen() {
 
     return 1;
   }, [scrollY]);
+
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: event => {
+      scrollY.value = event.contentOffset.y;
+    },
+  });
 
   useEffect(() => {
     discoverScrollToTopFnRef = scrollToTop;
@@ -77,14 +83,12 @@ export default function DiscoverScreen() {
           title={isSearchModeEnabled ? i18n.t(i18n.l.discover.search.search) : i18n.t(i18n.l.discover.search.discover)}
         />
         <Box
-          // @ts-expect-error
+          // @ts-expect-error not picking up the ScrollView ref prop
           ref={ref}
-          onScroll={e => {
-            setScrollY(e.nativeEvent.contentOffset.y);
-          }}
-          as={ScrollView}
+          as={Animated.ScrollView}
           automaticallyAdjustsScrollIndicatorInsets={false}
           contentContainerStyle={isSearchModeEnabled ? { height: '100%' } : {}}
+          onScroll={scrollHandler}
           scrollEnabled={!isSearchModeEnabled}
           bounces={!isSearchModeEnabled}
           removeClippedSubviews

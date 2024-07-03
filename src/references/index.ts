@@ -249,5 +249,5 @@ export const SUPPORTED_CHAINS = ({ testnetMode = false }: { testnetMode?: boolea
   return allChains.map(chain => ({ ...chain, name: ChainNameDisplay[chain.id] ?? chain.name }));
 };
 
-export const SUPPORTED_CHAIN_IDS = ({ testnetMode = false }: { testnetMode?: boolean }) =>
+export const SUPPORTED_CHAIN_IDS = ({ testnetMode = false }: { testnetMode?: boolean }): ChainId[] =>
   SUPPORTED_CHAINS({ testnetMode }).map(chain => chain.id);
