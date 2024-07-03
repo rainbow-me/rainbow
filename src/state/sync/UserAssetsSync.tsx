@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import { Address } from 'viem';
 import { useAccountSettings } from '@/hooks';
 import { userAssetsStore } from '@/state/assets/userAssets';
@@ -6,10 +5,14 @@ import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { selectUserAssetsList, selectorFilterByUserChains } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
+import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
 import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
 
-export const UserAssetsSync = memo(function UserAssetsSync() {
-  const { accountAddress: currentAddress, nativeCurrency: currentCurrency } = useAccountSettings();
+export const UserAssetsSync = function UserAssetsSync() {
+  const { accountAddress: currentAddress, nativeCurrency: currentCurrency, network: currentNetwork } = useAccountSettings();
+  const provider = getCachedProviderForNetwork(currentNetwork);
+  const providerUrl = provider?.connection?.url ?? '';
+  const connectedToHardhat = isHardHat(providerUrl);
 
   const userAssetsWalletAddress = userAssetsStore(state => state.associatedWalletAddress);
   const isSwapsOpen = useSwapsStore(state => state.isSwapsOpen);
@@ -18,6 +21,7 @@ export const UserAssetsSync = memo(function UserAssetsSync() {
     {
       address: currentAddress as Address,
       currency: currentCurrency,
+      testnetMode: connectedToHardhat,
     },
     {
       enabled: !isSwapsOpen || userAssetsWalletAddress !== currentAddress,
@@ -41,4 +45,4 @@ export const UserAssetsSync = memo(function UserAssetsSync() {
   );
 
   return null;
-});
+};

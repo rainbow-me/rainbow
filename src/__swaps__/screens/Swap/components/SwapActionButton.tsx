@@ -118,6 +118,7 @@ export const SwapActionButton = ({
         style={[hugContent && feedActionButtonStyles.buttonWrapper, style]}
       >
         <Box
+          testID={'swap-action-button'}
           as={Animated.View}
           paddingHorizontal={{ custom: small ? 14 : 20 - (outline ? 2 : 0) }}
           paddingLeft={small && icon ? '10px' : undefined}

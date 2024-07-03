@@ -1,6 +1,6 @@
 import { Canvas, Rect, LinearGradient, vec, Paint } from '@shopify/react-native-skia';
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useDerivedValue, withTiming } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -11,6 +11,8 @@ import { getColorValueForThemeWorklet, getTintedBackgroundColor } from '@/__swap
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { ETH_COLOR, ETH_COLOR_DARK } from '../constants';
 
+import { IS_TESTING } from 'react-native-dotenv';
+
 const DEFAULT_BACKGROUND_COLOR = getTintedBackgroundColor({ dark: ETH_COLOR_DARK, light: ETH_COLOR });
 
 export const SwapBackground = () => {
@@ -18,12 +20,15 @@ export const SwapBackground = () => {
   const { internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
 
   const animatedTopColor = useDerivedValue(() => {
+    if (IS_TESTING) return getColorValueForThemeWorklet(DEFAULT_BACKGROUND_COLOR, isDarkMode, true);
     return withTiming(
       getColorValueForThemeWorklet(internalSelectedInputAsset.value?.tintedBackgroundColor || DEFAULT_BACKGROUND_COLOR, isDarkMode, true),
       TIMING_CONFIGS.slowFadeConfig
     );
   });
+
   const animatedBottomColor = useDerivedValue(() => {
+    if (IS_TESTING) return getColorValueForThemeWorklet(DEFAULT_BACKGROUND_COLOR, isDarkMode, true);
     return withTiming(
       getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.tintedBackgroundColor || DEFAULT_BACKGROUND_COLOR, isDarkMode, true),
       TIMING_CONFIGS.slowFadeConfig
@@ -33,6 +38,10 @@ export const SwapBackground = () => {
   const gradientColors = useDerivedValue(() => {
     return [animatedTopColor.value, animatedBottomColor.value];
   });
+
+  if (IS_TESTING) {
+    return <View style={[styles.background, { backgroundColor: animatedTopColor.value }]} />;
+  }
 
   return (
     <Canvas style={styles.background}>
