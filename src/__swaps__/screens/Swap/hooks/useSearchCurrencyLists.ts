@@ -210,7 +210,7 @@ export function useSearchCurrencyLists() {
   const { data: verifiedAssets, isLoading: isLoadingVerifiedAssets } = useTokenSearch(
     {
       list: 'verifiedAssets',
-      chainId: state.toChainId,
+      chainId: isAddress(query) ? state.toChainId : undefined,
       keys: isAddress(query) ? ['address'] : ['name', 'symbol'],
       threshold: isAddress(query) ? 'CASE_SENSITIVE_EQUAL' : 'CONTAINS',
       query: query.length > 0 ? query : undefined,
