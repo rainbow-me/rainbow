@@ -20,7 +20,7 @@ import { RainbowConfig } from '@/model/remoteConfig';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { colors } from '@/styles';
 import { BigNumberish } from '@ethersproject/bignumber';
-import { CrosschainQuote, ETH_ADDRESS, Quote, QuoteParams, SwapType, WRAPPED_ASSET } from '@rainbow-me/swaps';
+import { CrosschainQuote, ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR, Quote, QuoteParams, SwapType, WRAPPED_ASSET } from '@rainbow-me/swaps';
 import { swapsStore } from '../../state/swaps/swapsStore';
 import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '../types/assets';
 import { inputKeys } from '../types/swap';
@@ -39,6 +39,7 @@ import {
   orderOfMagnitudeWorklet,
   isNumberStringWorklet,
 } from '../safe-math/SafeMath';
+import { ETH_ADDRESS } from '@/references';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -596,7 +597,13 @@ export const isUnwrapEthWorklet = ({
   buyTokenAddress: string;
 }) => {
   'worklet';
-  return isLowerCaseMatchWorklet(sellTokenAddress, WRAPPED_ASSET[chainId]) && isLowerCaseMatchWorklet(buyTokenAddress, ETH_ADDRESS);
+  if (chainId === ChainId.mainnet) {
+    return isLowerCaseMatchWorklet(sellTokenAddress, WRAPPED_ASSET[chainId]) && isLowerCaseMatchWorklet(buyTokenAddress, ETH_ADDRESS);
+  } else {
+    return (
+      isLowerCaseMatchWorklet(sellTokenAddress, WRAPPED_ASSET[chainId]) && isLowerCaseMatchWorklet(buyTokenAddress, ETH_ADDRESS_AGGREGATOR)
+    );
+  }
 };
 
 export const isWrapEthWorklet = ({
@@ -609,7 +616,13 @@ export const isWrapEthWorklet = ({
   buyTokenAddress: string;
 }) => {
   'worklet';
-  return isLowerCaseMatchWorklet(sellTokenAddress, ETH_ADDRESS) && isLowerCaseMatchWorklet(buyTokenAddress, WRAPPED_ASSET[chainId]);
+  if (chainId === ChainId.mainnet) {
+    return isLowerCaseMatchWorklet(sellTokenAddress, ETH_ADDRESS) && isLowerCaseMatchWorklet(buyTokenAddress, WRAPPED_ASSET[chainId]);
+  } else {
+    return (
+      isLowerCaseMatchWorklet(sellTokenAddress, ETH_ADDRESS_AGGREGATOR) && isLowerCaseMatchWorklet(buyTokenAddress, WRAPPED_ASSET[chainId])
+    );
+  }
 };
 
 export const priceForAsset = ({
@@ -718,8 +731,8 @@ export const buildQuoteParams = ({
     source: source === 'auto' ? undefined : source,
     chainId: inputAsset.chainId,
     fromAddress: currentAddress,
-    sellTokenAddress: inputAsset.isNativeAsset ? ETH_ADDRESS : inputAsset.address,
-    buyTokenAddress: outputAsset.isNativeAsset ? ETH_ADDRESS : outputAsset.address,
+    sellTokenAddress: inputAsset.isNativeAsset ? ETH_ADDRESS_AGGREGATOR : inputAsset.address,
+    buyTokenAddress: outputAsset.isNativeAsset ? ETH_ADDRESS_AGGREGATOR : outputAsset.address,
     // TODO: Handle native input cases below
     sellAmount:
       lastTypedInput === 'inputAmount' || lastTypedInput === 'inputNativeValue'
