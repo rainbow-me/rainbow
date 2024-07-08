@@ -304,13 +304,13 @@ export function niceIncrementFormatter({
 
   const amountToFixedDecimals = toFixedWorklet(rawAmount, decimals);
 
-  const formattedAmount = `${Number(amountToFixedDecimals).toLocaleString('en-US', {
-    useGrouping: !stripSeparators,
+  const numberFormatter = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 0,
     maximumFractionDigits: MAXIMUM_SIGNIFICANT_DECIMALS,
-  })}`;
+    useGrouping: !stripSeparators,
+  });
 
-  return formattedAmount;
+  return numberFormatter.format(Number(amountToFixedDecimals));
 }
 
 export const opacityWorklet = (color: string, opacity: number) => {
