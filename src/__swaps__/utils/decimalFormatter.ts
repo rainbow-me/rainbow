@@ -42,23 +42,23 @@ export function valueBasedDecimalFormatter({
 
     let minimumDecimalPlaces = 0;
     let maximumDecimalPlaces = MAXIMUM_SIGNIFICANT_DECIMALS;
+    const stablecoinMin = isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0;
 
+    const minBasedOnOrderOfMag = orderOfMagnitude > 2 ? 0 : 2;
     if (orderOfMagnitude < 1) {
-      minimumDecimalPlaces = Math.max(isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0, significantDecimals);
-      maximumDecimalPlaces = Math.max(Math.max(minDecimalsForOneCent, 2), significantDecimals + 1, minimumDecimalPlaces);
-    } else if (orderOfMagnitude >= 0 && orderOfMagnitude <= 2) {
-      minimumDecimalPlaces = Math.max(isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0, significantDecimals);
-      maximumDecimalPlaces = Math.max(minDecimalsForOneCent - orderOfMagnitude, significantDecimals + 1, minimumDecimalPlaces);
+      minimumDecimalPlaces = Math.max(stablecoinMin, significantDecimals);
+      maximumDecimalPlaces = Math.max(minBasedOnOrderOfMag, minDecimalsForOneCent, significantDecimals + 1);
     } else {
-      minimumDecimalPlaces = isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0;
-      maximumDecimalPlaces = Math.max(0, minDecimalsForOneCent - orderOfMagnitude, minimumDecimalPlaces);
+      minimumDecimalPlaces = stablecoinMin;
+      maximumDecimalPlaces = Math.max(minBasedOnOrderOfMag, minDecimalsForOneCent - orderOfMagnitude);
     }
 
     return {
       minimumDecimalPlaces,
       maximumDecimalPlaces: Math.max(
         maximumDecimalPlaces + (precisionAdjustment ?? 0),
-        niceIncrementMinimumDecimals ? niceIncrementMinimumDecimals + 1 : 0
+        niceIncrementMinimumDecimals ? niceIncrementMinimumDecimals + 1 : 0,
+        minimumDecimalPlaces
       ),
     };
   }
