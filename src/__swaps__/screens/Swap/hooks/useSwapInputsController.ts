@@ -4,14 +4,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
 import { RequestNewQuoteParams, inputKeys, inputMethods, inputValuesType } from '@/__swaps__/types/swap';
 import { valueBasedDecimalFormatter } from '@/__swaps__/utils/decimalFormatter';
-import {
-  addCommasToNumber,
-  buildQuoteParams,
-  clamp,
-  findNiceIncrement,
-  niceIncrementFormatter,
-  trimTrailingZeros,
-} from '@/__swaps__/utils/swaps';
+import { addCommasToNumber, buildQuoteParams, clamp, niceIncrementFormatter, trimTrailingZeros } from '@/__swaps__/utils/swaps';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { CrosschainQuote, Quote, QuoteError, SwapType, getCrosschainQuote, getQuote } from '@rainbow-me/swaps';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
@@ -38,13 +31,11 @@ import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mu
 
 function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetWithColors | null) {
   const initialBalance = Number(initialSelectedInputAsset?.maxSwappableAmount) || 0;
-  const initialNiceIncrement = findNiceIncrement(initialBalance);
   const isStablecoin = initialSelectedInputAsset?.type === 'stablecoin';
 
   const initialInputAmount = niceIncrementFormatter({
     inputAssetBalance: initialBalance,
     inputAssetNativePrice: initialSelectedInputAsset?.price?.value ?? 0,
-    niceIncrement: initialNiceIncrement,
     percentageToSwap: 0.5,
     sliderXPosition: SLIDER_WIDTH / 2,
     stripSeparators: true,
@@ -99,11 +90,6 @@ export function useSwapInputsController({
 
   const percentageToSwap = useDerivedValue(() => {
     return Math.round(clamp((sliderXPosition.value - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1) * 100) / 100;
-  });
-
-  const niceIncrement = useDerivedValue(() => {
-    if (!internalSelectedInputAsset.value?.maxSwappableAmount) return 0.1;
-    return findNiceIncrement(internalSelectedInputAsset.value?.maxSwappableAmount);
   });
 
   const inputNativePrice = useDerivedValue(() => {
@@ -747,7 +733,6 @@ export function useSwapInputsController({
             const inputAmount = niceIncrementFormatter({
               inputAssetBalance: balance,
               inputAssetNativePrice: inputNativePrice.value,
-              niceIncrement: niceIncrement.value,
               percentageToSwap: percentageToSwap.value,
               sliderXPosition: sliderXPosition.value,
               stripSeparators: true,
@@ -909,7 +894,6 @@ export function useSwapInputsController({
           const inputAmount = niceIncrementFormatter({
             inputAssetBalance: balance,
             inputAssetNativePrice: inputNativePrice.value,
-            niceIncrement: niceIncrement.value,
             percentageToSwap: didInputAssetChange ? 0.5 : percentageToSwap.value,
             sliderXPosition: didInputAssetChange ? SLIDER_WIDTH / 2 : sliderXPosition.value,
             stripSeparators: true,
@@ -969,7 +953,6 @@ export function useSwapInputsController({
     formattedOutputNativeValue,
     inputMethod,
     inputValues,
-    niceIncrement,
     onChangedPercentage,
     percentageToSwap,
     quoteFetchingInterval,

@@ -4,7 +4,6 @@ import { SLIDER_WIDTH } from '../constants';
 type TestCase = {
   inputAssetBalance: number | string;
   inputAssetNativePrice: number;
-  niceIncrement: number | string;
   percentageToSwap: number;
   sliderXPosition: number;
   stripSeparators?: boolean;
@@ -18,7 +17,6 @@ const TEST_CASES: TestCase[] = [
   {
     inputAssetBalance: 45.47364224817269,
     inputAssetNativePrice: 0.9995363790000001,
-    niceIncrement: '1',
     percentageToSwap: 0.5,
     sliderXPosition: SLIDER_WIDTH / 2,
     stripSeparators: true,
@@ -29,7 +27,6 @@ const TEST_CASES: TestCase[] = [
   {
     inputAssetBalance: 100,
     inputAssetNativePrice: 10,
-    niceIncrement: '0.1',
     percentageToSwap: 0,
     sliderXPosition: 0,
     stripSeparators: false,
@@ -40,7 +37,6 @@ const TEST_CASES: TestCase[] = [
   {
     inputAssetBalance: 100,
     inputAssetNativePrice: 10,
-    niceIncrement: '0.1',
     percentageToSwap: 1,
     sliderXPosition: SLIDER_WIDTH,
     stripSeparators: false,
@@ -51,7 +47,6 @@ const TEST_CASES: TestCase[] = [
   {
     inputAssetBalance: 123.456,
     inputAssetNativePrice: 1,
-    niceIncrement: '0.05',
     percentageToSwap: 0.25,
     sliderXPosition: SLIDER_WIDTH / 4,
     stripSeparators: true,
@@ -62,7 +57,6 @@ const TEST_CASES: TestCase[] = [
   {
     inputAssetBalance: '1000',
     inputAssetNativePrice: 0.5,
-    niceIncrement: '100',
     percentageToSwap: 0.75,
     sliderXPosition: (3 * SLIDER_WIDTH) / 4,
     stripSeparators: false,

@@ -235,7 +235,6 @@ export function trimTrailingZeros(value: string) {
 export function niceIncrementFormatter({
   inputAssetBalance,
   inputAssetNativePrice,
-  niceIncrement,
   percentageToSwap,
   sliderXPosition,
   stripSeparators,
@@ -243,13 +242,13 @@ export function niceIncrementFormatter({
 }: {
   inputAssetBalance: number | string;
   inputAssetNativePrice: number;
-  niceIncrement: number | string;
   percentageToSwap: number;
   sliderXPosition: number;
   stripSeparators?: boolean;
   isStablecoin?: boolean;
 }) {
   'worklet';
+  const niceIncrement = findNiceIncrement(inputAssetBalance);
 
   if (percentageToSwap === 0 || equalWorklet(niceIncrement, 0)) return '0';
   if (percentageToSwap === 0.25) {
