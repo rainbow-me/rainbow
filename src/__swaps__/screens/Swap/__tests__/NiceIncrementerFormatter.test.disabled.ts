@@ -2,7 +2,6 @@ import { niceIncrementFormatter } from '@/__swaps__/utils/swaps';
 import { SLIDER_WIDTH } from '../constants';
 
 type TestCase = {
-  incrementDecimalPlaces: number;
   inputAssetBalance: number | string;
   inputAssetNativePrice: number;
   niceIncrement: number | string;
@@ -17,7 +16,6 @@ type TestCase = {
 
 const TEST_CASES: TestCase[] = [
   {
-    incrementDecimalPlaces: 0,
     inputAssetBalance: 45.47364224817269,
     inputAssetNativePrice: 0.9995363790000001,
     niceIncrement: '1',
@@ -29,7 +27,6 @@ const TEST_CASES: TestCase[] = [
     expectedResult: '22.74',
   },
   {
-    incrementDecimalPlaces: 2,
     inputAssetBalance: 100,
     inputAssetNativePrice: 10,
     niceIncrement: '0.1',
@@ -41,7 +38,6 @@ const TEST_CASES: TestCase[] = [
     expectedResult: '0.00',
   },
   {
-    incrementDecimalPlaces: 2,
     inputAssetBalance: 100,
     inputAssetNativePrice: 10,
     niceIncrement: '0.1',
@@ -53,7 +49,6 @@ const TEST_CASES: TestCase[] = [
     expectedResult: '100.00',
   },
   {
-    incrementDecimalPlaces: 2,
     inputAssetBalance: 123.456,
     inputAssetNativePrice: 1,
     niceIncrement: '0.05',
@@ -65,7 +60,6 @@ const TEST_CASES: TestCase[] = [
     expectedResult: '30.86',
   },
   {
-    incrementDecimalPlaces: 0,
     inputAssetBalance: '1000',
     inputAssetNativePrice: 0.5,
     niceIncrement: '100',

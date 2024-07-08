@@ -8,7 +8,6 @@ import {
   addCommasToNumber,
   buildQuoteParams,
   clamp,
-  countDecimalPlaces,
   findNiceIncrement,
   niceIncrementFormatter,
   trimTrailingZeros,
@@ -40,11 +39,9 @@ import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mu
 function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetWithColors | null) {
   const initialBalance = Number(initialSelectedInputAsset?.maxSwappableAmount) || 0;
   const initialNiceIncrement = findNiceIncrement(initialBalance);
-  const initialDecimalPlaces = countDecimalPlaces(initialNiceIncrement);
   const isStablecoin = initialSelectedInputAsset?.type === 'stablecoin';
 
   const initialInputAmount = niceIncrementFormatter({
-    incrementDecimalPlaces: initialDecimalPlaces,
     inputAssetBalance: initialBalance,
     inputAssetNativePrice: initialSelectedInputAsset?.price?.value ?? 0,
     niceIncrement: initialNiceIncrement,
@@ -108,7 +105,6 @@ export function useSwapInputsController({
     if (!internalSelectedInputAsset.value?.maxSwappableAmount) return 0.1;
     return findNiceIncrement(internalSelectedInputAsset.value?.maxSwappableAmount);
   });
-  const incrementDecimalPlaces = useDerivedValue(() => countDecimalPlaces(niceIncrement.value));
 
   const inputNativePrice = useDerivedValue(() => {
     return internalSelectedInputAsset.value?.nativePrice || internalSelectedInputAsset.value?.price?.value || 0;
@@ -749,7 +745,6 @@ export function useSwapInputsController({
             }
 
             const inputAmount = niceIncrementFormatter({
-              incrementDecimalPlaces: incrementDecimalPlaces.value,
               inputAssetBalance: balance,
               inputAssetNativePrice: inputNativePrice.value,
               niceIncrement: niceIncrement.value,
@@ -912,7 +907,6 @@ export function useSwapInputsController({
           }
 
           const inputAmount = niceIncrementFormatter({
-            incrementDecimalPlaces: incrementDecimalPlaces.value,
             inputAssetBalance: balance,
             inputAssetNativePrice: inputNativePrice.value,
             niceIncrement: niceIncrement.value,
@@ -973,7 +967,6 @@ export function useSwapInputsController({
     formattedInputNativeValue,
     formattedOutputAmount,
     formattedOutputNativeValue,
-    incrementDecimalPlaces,
     inputMethod,
     inputValues,
     niceIncrement,

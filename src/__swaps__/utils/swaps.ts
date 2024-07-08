@@ -233,7 +233,6 @@ export function trimTrailingZeros(value: string) {
 }
 
 export function niceIncrementFormatter({
-  incrementDecimalPlaces,
   inputAssetBalance,
   inputAssetNativePrice,
   niceIncrement,
@@ -242,7 +241,6 @@ export function niceIncrementFormatter({
   stripSeparators,
   isStablecoin = false,
 }: {
-  incrementDecimalPlaces: number;
   inputAssetBalance: number | string;
   inputAssetNativePrice: number;
   niceIncrement: number | string;
@@ -285,6 +283,7 @@ export function niceIncrementFormatter({
     return inputAssetBalance;
   }
 
+  const incrementDecimalPlaces = countDecimalPlaces(niceIncrement);
   const decimals = isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : incrementDecimalPlaces;
   const exactIncrement = divWorklet(inputAssetBalance, 100);
   const isIncrementExact = equalWorklet(niceIncrement, exactIncrement);
