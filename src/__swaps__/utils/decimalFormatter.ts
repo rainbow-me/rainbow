@@ -14,17 +14,19 @@ const STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS = 2;
 
 export function valueBasedDecimalFormatter({
   amount,
-  nativePrice,
-  roundingMode,
-  precisionAdjustment,
   isStablecoin,
+  nativePrice,
+  niceIncrementMinimumDecimals,
+  precisionAdjustment,
+  roundingMode,
   stripSeparators = true,
 }: {
   amount: number | string;
-  nativePrice: number;
-  roundingMode?: 'up' | 'down' | 'none';
-  precisionAdjustment?: number;
   isStablecoin?: boolean;
+  nativePrice: number;
+  niceIncrementMinimumDecimals?: number;
+  precisionAdjustment?: number;
+  roundingMode?: 'up' | 'down' | 'none';
   stripSeparators?: boolean;
 }): string {
   'worklet';
@@ -54,7 +56,10 @@ export function valueBasedDecimalFormatter({
 
     return {
       minimumDecimalPlaces,
-      maximumDecimalPlaces: maximumDecimalPlaces + (precisionAdjustment ?? 0),
+      maximumDecimalPlaces: Math.max(
+        maximumDecimalPlaces + (precisionAdjustment ?? 0),
+        niceIncrementMinimumDecimals ? niceIncrementMinimumDecimals + 1 : 0
+      ),
     };
   }
 

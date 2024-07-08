@@ -249,12 +249,14 @@ export function niceIncrementFormatter({
 }) {
   'worklet';
   const niceIncrement = findNiceIncrement(inputAssetBalance);
+  const incrementDecimalPlaces = countDecimalPlaces(niceIncrement);
 
   if (percentageToSwap === 0 || equalWorklet(niceIncrement, 0)) return '0';
   if (percentageToSwap === 0.25) {
     const amount = mulWorklet(inputAssetBalance, 0.25);
     return valueBasedDecimalFormatter({
       nativePrice: inputAssetNativePrice,
+      niceIncrementMinimumDecimals: incrementDecimalPlaces,
       amount,
       roundingMode: 'up',
       isStablecoin,
@@ -264,6 +266,7 @@ export function niceIncrementFormatter({
     const amount = mulWorklet(inputAssetBalance, 0.5);
     return valueBasedDecimalFormatter({
       nativePrice: inputAssetNativePrice,
+      niceIncrementMinimumDecimals: incrementDecimalPlaces,
       amount,
       roundingMode: 'up',
       isStablecoin,
@@ -273,6 +276,7 @@ export function niceIncrementFormatter({
     const amount = mulWorklet(inputAssetBalance, 0.75);
     return valueBasedDecimalFormatter({
       nativePrice: inputAssetNativePrice,
+      niceIncrementMinimumDecimals: incrementDecimalPlaces,
       amount,
       roundingMode: 'up',
       isStablecoin,
@@ -282,12 +286,10 @@ export function niceIncrementFormatter({
     return inputAssetBalance;
   }
 
-  const incrementDecimalPlaces = countDecimalPlaces(niceIncrement);
   const decimals = isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : incrementDecimalPlaces;
   const exactIncrement = divWorklet(inputAssetBalance, 100);
   const isIncrementExact = equalWorklet(niceIncrement, exactIncrement);
   const numberOfIncrements = divWorklet(inputAssetBalance, niceIncrement);
-  // TODO JIN - to work on next
   const incrementStep = divWorklet(1, numberOfIncrements);
   const percentage = isIncrementExact
     ? percentageToSwap
