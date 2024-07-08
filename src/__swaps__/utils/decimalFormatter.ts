@@ -6,8 +6,10 @@ import {
   roundWorklet,
   toFixedWorklet,
   orderOfMagnitudeWorklet,
+  significantDecimalsWorklet,
 } from '../safe-math/SafeMath';
 
+const MAXIMUM_SIGNIFICANT_DECIMALS = 6;
 const STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS = 2;
 
 export function valueBasedDecimalFormatter({
@@ -32,41 +34,27 @@ export function valueBasedDecimalFormatter({
     maximumDecimalPlaces: number;
   } {
     const orderOfMagnitude = orderOfMagnitudeWorklet(amount);
-    const decimalsBasedOnMagnitude = orderOfMagnitude > 0 ? 7 - orderOfMagnitude : -(orderOfMagnitude + 1);
+    let minDecimalsForOneCent = nativePrice ? Math.round(Math.max(0, Math.log10(nativePrice / 0.01))) : MAXIMUM_SIGNIFICANT_DECIMALS;
 
-    if (nativePrice === 0) {
-      return {
-        minimumDecimalPlaces: Math.max(-orderOfMagnitude, isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0),
-        maximumDecimalPlaces: decimalsBasedOnMagnitude, // MAXIMUM_SIGNIFICANT_DECIMALS
-      };
-    }
+    const significantDecimals = significantDecimalsWorklet(amount);
 
-    // for when it has prices, it doesn't need to be much MORE than the $0.01 granularity
-    const significantDigits = 0;
-    const minimumDecimalPlaces = Math.max(significantDigits, isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0);
+    let minimumDecimalPlaces = 0;
+    let maximumDecimalPlaces = MAXIMUM_SIGNIFICANT_DECIMALS;
 
-    // for when it has a super tiny price...can we treat it the same as when it has no price?
-    let minDecimalsForOneCent = 0;
-    const unitsForOneCent = 0.01 / nativePrice;
-    if (unitsForOneCent >= 1) {
-      return {
-        minimumDecimalPlaces: 0,
-        maximumDecimalPlaces: 0,
-      };
+    if (orderOfMagnitude < 1) {
+      minimumDecimalPlaces = Math.max(isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0, significantDecimals);
+      maximumDecimalPlaces = Math.max(Math.max(minDecimalsForOneCent, 2), significantDecimals + 1, minimumDecimalPlaces);
+    } else if (orderOfMagnitude >= 0 && orderOfMagnitude <= 2) {
+      minimumDecimalPlaces = Math.max(isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0, significantDecimals);
+      maximumDecimalPlaces = Math.max(minDecimalsForOneCent - orderOfMagnitude, significantDecimals + 1, minimumDecimalPlaces);
     } else {
-      // asset nativePrice > 0.01
-      minDecimalsForOneCent = Math.ceil(Math.log10(1 / unitsForOneCent));
+      minimumDecimalPlaces = isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0;
+      maximumDecimalPlaces = Math.max(0, minDecimalsForOneCent - orderOfMagnitude, minimumDecimalPlaces);
     }
-    // when precisionAdjustment is negative, it means that the order of magnitude is large
-    // when precisionAdjustment is positive, it means that there are significant digits
-    const maximumDecimalPlaces = Math.max(
-      minDecimalsForOneCent + (precisionAdjustment ?? 0), // Math.ceil(Math.log10(1 / unitsForOneCent)) + (precisionAdjustment ?? 0),
-      isStablecoin ? STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS : 0
-    );
 
     return {
       minimumDecimalPlaces,
-      maximumDecimalPlaces, // TODO JIN - asset.decimals
+      maximumDecimalPlaces: maximumDecimalPlaces + (precisionAdjustment ?? 0),
     };
   }
 
