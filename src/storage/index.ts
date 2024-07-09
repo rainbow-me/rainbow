@@ -78,6 +78,13 @@ export const pendingTransactions = new Storage<[], { pendingTransactions: Record
 
 export const review = new Storage<[], Review>({ id: 'review' });
 
+/**
+ * @deprecated - use `remotePromoSheetStore` instead
+ */
 export const campaigns = new Storage<[], Campaigns>({ id: 'campaigns' });
 
 export const cards = new Storage<[], Cards>({ id: 'cards' });
+
+export const identifier = new Storage<[], { identifier: string }>({
+  id: 'identifier',
+});

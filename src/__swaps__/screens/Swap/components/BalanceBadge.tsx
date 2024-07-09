@@ -1,12 +1,20 @@
 /* eslint-disable no-nested-ternary */
 import React from 'react';
-import { Bleed, Box, Text, useColorMode } from '@/design-system';
+import { DerivedValue, useAnimatedStyle } from 'react-native-reanimated';
+import { AnimatedText, Bleed, Box, useColorMode } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
 import { TextWeight } from '@/design-system/components/Text/Text';
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../constants';
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 
-export const BalanceBadge = ({ color, label, weight }: { color?: TextColor; label: string; weight?: TextWeight }) => {
+export const BalanceBadge = ({ color, label, weight }: { color?: TextColor; label: DerivedValue<string>; weight?: TextWeight }) => {
   const { isDarkMode } = useColorMode();
+
+  const labelTextStyle = useAnimatedStyle(() => {
+    const isPlaceholderLabel = label.value === 'No Balance' || label.value === 'Token to Swap' || label.value === 'Token to Get';
+    return {
+      opacity: isPlaceholderLabel ? (isDarkMode ? 0.6 : 0.75) : 1,
+    };
+  });
 
   return (
     <Bleed vertical={{ custom: 5.5 }}>
@@ -21,17 +29,9 @@ export const BalanceBadge = ({ color, label, weight }: { color?: TextColor; labe
           borderWidth: THICK_BORDER_WIDTH,
         }}
       >
-        <Text
-          align="center"
-          color={color || 'labelQuaternary'}
-          size="13pt"
-          style={{
-            opacity: label === 'No Balance' ? (isDarkMode ? 0.6 : 0.75) : undefined,
-          }}
-          weight={weight || 'bold'}
-        >
+        <AnimatedText align="center" color={color || 'labelQuaternary'} size="13pt" style={labelTextStyle} weight={weight || 'bold'}>
           {label}
-        </Text>
+        </AnimatedText>
       </Box>
     </Bleed>
   );

@@ -18,9 +18,17 @@ beforeAll(async () => {
   await device.launchApp({ newInstance: true, delete: true });
   await device.setURLBlacklist([
     '.*api.thegraph.com.*',
+    '.*gateway-arbitrum.network.thegraph.com.*',
     '.*raw.githubusercontent.com.*',
     '.*api.coingecko.com.*',
     '.*rainbow.imgix.net.*',
     '.*infura.io.*',
+    '.*rainbow.me.*',
+    '.*rainbowjiumask.dataplane.rudderstack.com*',
+    '.*rainbowme-res.cloudinary.com*',
+    '.*rainbow-proxy-rpc.rainbowdotme.workers.*',
+    '.*localhost:8081/assets/src/assets*.',
+    '.*arc-graphql.rainbowdotme.workers.dev*.',
+    '.*googleapis.com*.',
   ]);
 });

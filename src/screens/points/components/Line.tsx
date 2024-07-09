@@ -29,5 +29,3 @@ export const Line = ({
     </View>
   );
 };
-
-export default Line;

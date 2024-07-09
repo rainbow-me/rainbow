@@ -5,22 +5,18 @@ import { get } from 'lodash';
 import { useNavigation } from '@/navigation/Navigation';
 import { PromoSheet } from '@/components/PromoSheet';
 import { useTheme } from '@/theme';
-import { CampaignCheckResult } from './checkForCampaign';
 import { usePromoSheetQuery } from '@/resources/promoSheet/promoSheetQuery';
 import { maybeSignUri } from '@/handlers/imgix';
-import { campaigns } from '@/storage';
 import { delay } from '@/utils/delay';
 import { Linking } from 'react-native';
 import Routes from '@/navigation/routesNames';
 import { Language } from '@/languages';
 import { useAccountSettings } from '@/hooks';
+import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
+import { RootStackParamList } from '@/navigation/types';
 
 const DEFAULT_HEADER_HEIGHT = 285;
 const DEFAULT_HEADER_WIDTH = 390;
-
-type RootStackParamList = {
-  RemotePromoSheet: CampaignCheckResult;
-};
 
 type Item = {
   title: Record<keyof Language, string>;
@@ -59,8 +55,15 @@ export function RemotePromoSheet() {
   const { language } = useAccountSettings();
 
   useEffect(() => {
+    remotePromoSheetsStore.setState({
+      isShown: true,
+      lastShownTimestamp: Date.now(),
+    });
+
     return () => {
-      campaigns.set(['isCurrentlyShown'], false);
+      remotePromoSheetsStore.setState({
+        isShown: false,
+      });
     };
   }, []);
 
@@ -85,7 +88,7 @@ export function RemotePromoSheet() {
 
   const externalNavigation = useCallback(() => {
     Linking.openURL(data?.promoSheet?.primaryButtonProps.props.url);
-  }, []);
+  }, [data?.promoSheet?.primaryButtonProps.props.url]);
 
   const internalNavigation = useCallback(() => {
     goBack();
@@ -114,13 +117,10 @@ export function RemotePromoSheet() {
   } = data.promoSheet;
 
   const accentColor = (colors as { [key: string]: any })[accentColorString as string] ?? accentColorString;
-
   const backgroundColor = (colors as { [key: string]: any })[backgroundColorString as string] ?? backgroundColorString;
-
   const sheetHandleColor = (colors as { [key: string]: any })[sheetHandleColorString as string] ?? sheetHandleColorString;
 
   const backgroundSignedImageUrl = backgroundImage?.url ? maybeSignUri(backgroundImage.url) : undefined;
-
   const headerSignedImageUrl = headerImage?.url ? maybeSignUri(headerImage.url) : undefined;
 
   return (

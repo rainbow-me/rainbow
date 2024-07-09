@@ -1,13 +1,20 @@
 import { FasterImageView, ImageOptions } from '@candlefinance/faster-image';
 import * as React from 'react';
-import { StyleSheet } from 'react-native';
+import { PixelRatio, StyleSheet } from 'react-native';
 import FastImage, { FastImageProps, Source } from 'react-native-fast-image';
 import { maybeSignSource } from '../../handlers/imgix';
-import { FASTER_IMAGE_CONFIG } from '../DappBrowser/constants';
+import { IS_IOS } from '@/env';
 
 export type ImgixImageProps = FastImageProps & {
   readonly Component?: React.ElementType;
   readonly size: number;
+};
+
+export const DEFAULT_FASTER_IMAGE_CONFIG: Partial<ImageOptions> = {
+  cachePolicy: 'discWithCacheControl',
+  resizeMode: 'cover',
+  showActivityIndicator: false,
+  transitionDuration: 0.175,
 };
 
 // Here we're emulating the pattern used in react-native-fast-image:
@@ -22,6 +29,8 @@ type HiddenImgixImageProps = {
   fasterImageConfig?: Omit<ImageOptions, 'borderRadius' | 'url'>;
 };
 type MergedImgixImageProps = ImgixImageProps & HiddenImgixImageProps;
+
+const PIXEL_RATIO = PixelRatio.get();
 
 // ImgixImage must be a class Component to support Animated.createAnimatedComponent.
 class ImgixImage extends React.PureComponent<MergedImgixImageProps, ImgixImageProps & { retryCount: number }> {
@@ -42,18 +51,21 @@ class ImgixImage extends React.PureComponent<MergedImgixImageProps, ImgixImagePr
       ...(shouldUseFasterImage
         ? {
             source: {
-              base64Placeholder: FASTER_IMAGE_CONFIG.base64Placeholder,
-              cachePolicy: 'discWithCacheControl',
-              resizeMode: resizeMode && resizeMode !== 'stretch' ? resizeMode : 'cover',
-              showActivityIndicator: false,
-              transitionDuration: 0.175,
+              ...DEFAULT_FASTER_IMAGE_CONFIG,
+              borderRadius:
+                !fasterImageStyle?.borderRadius || IS_IOS ? fasterImageStyle?.borderRadius : fasterImageStyle.borderRadius * PIXEL_RATIO,
+              resizeMode: resizeMode && resizeMode !== 'stretch' ? resizeMode : DEFAULT_FASTER_IMAGE_CONFIG.resizeMode,
               ...fasterImageConfig,
-              borderRadius: fasterImageStyle?.borderRadius,
               url: !!source && typeof source === 'object' ? maybeSignSource(source, options)?.uri : source,
             },
             style: [
+              {
+                borderCurve: 'continuous',
+                height: fasterImageStyle?.height || size || '100%',
+                overflow: 'hidden',
+                width: fasterImageStyle?.width || size || '100%',
+              },
               fasterImageStyle,
-              { height: fasterImageStyle?.height || size || '100%', width: fasterImageStyle?.width || size || '100%' },
             ],
           }
         : { retryCount: 0, source: !!source && typeof source === 'object' ? maybeSignSource(source, options) : source }),
@@ -84,8 +96,14 @@ class ImgixImage extends React.PureComponent<MergedImgixImageProps, ImgixImagePr
     const shouldUseFasterImage = props.enableFasterImage || props.fasterImageConfig;
 
     const Component = maybeComponent || (shouldUseFasterImage ? FasterImageView : FastImage);
+
     const conditionalProps = shouldUseFasterImage
-      ? { onError: this.props.onError, onLoad: undefined, onSuccess: this.props.onLoad }
+      ? {
+          key: `${typeof source === 'object' && source.uri ? source.uri : ''}` || undefined,
+          onError: this.props.onError,
+          onLoad: undefined,
+          onSuccess: this.props.onLoad,
+        }
       : {
           key: `${typeof source === 'object' && source.uri ? source.uri : JSON.stringify(source)}-${retryCount}`,
           onError: this.handleError,

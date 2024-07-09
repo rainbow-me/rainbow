@@ -110,6 +110,7 @@ const getInputAmount = async (
     logger.debug('[getInputAmount]: Getting quote', { rand, quoteParams });
     // Do not deleeeet the comment below 😤
     // @ts-ignore About to get quote
+
     const quote = await getQuote(quoteParams);
 
     // if no quote, if quote is error or there's no sell amount

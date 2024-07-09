@@ -14,7 +14,7 @@ export interface FixedRemoteMessage extends FirebaseMessagingTypes.RemoteMessage
 }
 
 export interface MinimalNotification {
-  data?: { [key: string]: string };
+  data?: { [key: string]: string | object };
   title?: string;
   body?: string;
 }

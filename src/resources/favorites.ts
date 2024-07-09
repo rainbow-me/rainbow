@@ -2,11 +2,12 @@ import { EthereumAddress, NativeCurrencyKeys, RainbowToken } from '@/entities';
 import { Network } from '@/networks/types';
 import { createQueryKey, queryClient } from '@/react-query';
 import { DAI_ADDRESS, ETH_ADDRESS, SOCKS_ADDRESS, WBTC_ADDRESS, WETH_ADDRESS } from '@/references';
-import { getUniqueId } from '@/utils/ethereumUtils';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import ethereumUtils, { getUniqueId } from '@/utils/ethereumUtils';
 import { useQuery } from '@tanstack/react-query';
-import { without } from 'lodash';
+import { omit } from 'lodash';
 import { externalTokenQueryKey, fetchExternalToken } from './assets/externalAssetsQuery';
+import { ChainId } from '@/__swaps__/types/chains';
+import { promiseUtils } from '@/utils';
 
 export const favoritesQueryKey = createQueryKey('favorites', {}, { persisterVersion: 1 });
 
@@ -67,35 +68,37 @@ const DEFAULT: Record<EthereumAddress, RainbowToken> = {
 /**
  * Returns a map of the given `addresses` to their corresponding `RainbowToken` metadata.
  */
-async function fetchMetadata(addresses: string[]) {
+async function fetchMetadata(addresses: string[], chainId = ChainId.mainnet) {
   const favoritesMetadata: Record<EthereumAddress, RainbowToken> = {};
   const newFavoritesMeta: Record<EthereumAddress, RainbowToken> = {};
 
+  const network = ethereumUtils.getNetworkFromChainId(chainId);
+
   // Map addresses to an array of promises returned by fetchExternalToken
-  const fetchPromises = addresses.map(async address => {
-    const externalAsset = await fetchExternalToken({ address, network: Network.mainnet, currency: NativeCurrencyKeys.USD });
-    await queryClient.fetchQuery(
-      externalTokenQueryKey({ address, network: Network.mainnet, currency: NativeCurrencyKeys.USD }),
-      async () => fetchExternalToken({ address, network: Network.mainnet, currency: NativeCurrencyKeys.USD }),
+  const fetchPromises: Promise<void>[] = addresses.map(async address => {
+    const externalAsset = await queryClient.fetchQuery(
+      externalTokenQueryKey({ address, network, currency: NativeCurrencyKeys.USD }),
+      async () => fetchExternalToken({ address, network, currency: NativeCurrencyKeys.USD }),
       {
         staleTime: Infinity,
       }
     );
 
-    // we only support mainnet favorites atm
     if (externalAsset) {
       newFavoritesMeta[address] = {
         ...externalAsset,
-        network: Network.mainnet,
-        address: externalAsset?.networks['1'].address,
-        uniqueId: getUniqueId(externalAsset?.networks['1'].address, Network.mainnet),
+        network: ethereumUtils.getNetworkFromChainId(ChainId.mainnet),
+        address,
+        networks: externalAsset.networks,
+        mainnet_address: externalAsset?.networks[ChainId.mainnet]?.address,
+        uniqueId: getUniqueId(externalAsset?.networks[chainId]?.address, Network.mainnet),
         isVerified: true,
       };
     }
   });
 
   // Wait for all promises to resolve
-  await Promise.all(fetchPromises);
+  await promiseUtils.PromiseAllWithFails(fetchPromises);
 
   const ethIsFavorited = addresses.includes(ETH_ADDRESS);
   const wethIsFavorited = addresses.includes(WETH_ADDRESS);
@@ -124,21 +127,29 @@ async function fetchMetadata(addresses: string[]) {
  */
 export async function refreshFavorites() {
   const favorites = Object.keys(queryClient.getQueryData(favoritesQueryKey) ?? DEFAULT);
-  const updatedMetadata = await fetchMetadata(favorites);
+  const updatedMetadata = await fetchMetadata(favorites, ChainId.mainnet);
   return updatedMetadata;
 }
 
-export async function toggleFavorite(address: string) {
-  const favorites = Object.keys(queryClient.getQueryData(favoritesQueryKey) ?? []);
-  const lowercasedAddress = address.toLowerCase();
-  let updatedFavorites;
-  if (favorites.includes(lowercasedAddress)) {
-    updatedFavorites = without(favorites, lowercasedAddress);
+/**
+ * Toggles the favorite status of the given address. Performs a fetch to refresh the metadata of the
+ * given address if it is not already favorited. If the address is already favorited, the favorite status
+ * is removed from the query data.
+ * @param address - The address to toggle the favorite status of.
+ * @param chainId - The chain id of the network to toggle the favorite status of @default ChainId.mainnet
+ */
+export async function toggleFavorite(address: string, chainId = ChainId.mainnet) {
+  const favorites = queryClient.getQueryData<Record<EthereumAddress, RainbowToken>>(favoritesQueryKey);
+  const lowercasedAddress = address.toLowerCase() as EthereumAddress;
+  if (Object.keys(favorites || {}).includes(lowercasedAddress)) {
+    queryClient.setQueryData(favoritesQueryKey, omit(favorites, lowercasedAddress));
   } else {
-    updatedFavorites = [...favorites, lowercasedAddress];
+    const metadata = await fetchMetadata([lowercasedAddress], chainId);
+    queryClient.setQueryData(favoritesQueryKey, {
+      ...favorites,
+      ...metadata,
+    });
   }
-  const metadata = await fetchMetadata(updatedFavorites);
-  queryClient.setQueryData(favoritesQueryKey, metadata);
 }
 
 /**

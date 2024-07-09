@@ -8,23 +8,33 @@ export const isValidUrl = (url: string) => {
 };
 
 export const getDappHost = (url: string) => {
-  const host = new URL(url).host;
-  if (host.indexOf('www.') === 0) {
-    return host.replace('www.', '');
+  if (!url) return '';
+  try {
+    const host = new URL(url).host;
+    if (host.indexOf('www.') === 0) {
+      return host.replace('www.', '');
+    }
+    return host;
+  } catch (err) {
+    return '';
   }
-  return host;
 };
 
 export const getDappHostname = (url: string) => {
-  const urlObject = new URL(url);
-  let hostname;
-  const subdomains = urlObject.hostname.split('.');
-  if (subdomains.length === 2) {
-    hostname = urlObject.hostname;
-  } else {
-    hostname = `${subdomains[subdomains.length - 2]}.${subdomains[subdomains.length - 1]}`;
+  if (!url) return '';
+  try {
+    const urlObject = new URL(url);
+    let hostname;
+    const subdomains = urlObject.hostname.split('.');
+    if (subdomains.length === 2) {
+      hostname = urlObject.hostname;
+    } else if (subdomains.length > 2) {
+      hostname = `${subdomains[subdomains.length - 2]}.${subdomains[subdomains.length - 1]}`;
+    }
+    return hostname;
+  } catch (err) {
+    return '';
   }
-  return hostname;
 };
 
 export const getPublicAppIcon = (host: string) => `https://icons.duckduckgo.com/ip3/${host}.ico`;

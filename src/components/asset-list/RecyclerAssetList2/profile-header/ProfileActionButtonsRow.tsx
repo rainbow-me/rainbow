@@ -1,7 +1,7 @@
 import Clipboard from '@react-native-clipboard/clipboard';
 import lang from 'i18n-js';
 import * as React from 'react';
-import { PressableProps } from 'react-native';
+import { InteractionManager, PressableProps } from 'react-native';
 import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import { CopyFloatingEmojis } from '@/components/floating-emojis';
@@ -19,7 +19,8 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { Network } from '@/networks/types';
-import { ETH_ADDRESS } from '@/references';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import { userAssetsStore } from '@/state/assets/userAssets';
 
 export const ProfileActionButtonsRowHeight = 80;
 
@@ -171,7 +172,6 @@ function SwapButton() {
   const { accountAddress } = useAccountSettings();
   const remoteConfig = useRemoteConfig();
   const swapsV2Enabled = useExperimentalFlag(SWAPS_V2) || remoteConfig.swaps_v2;
-
   const { navigate } = useNavigation();
 
   const handlePress = React.useCallback(async () => {
@@ -179,12 +179,17 @@ function SwapButton() {
       analytics.track('Tapped "Swap"', {
         category: 'home screen',
       });
-
-      android && delayNext();
       if (swapsV2Enabled) {
-        navigate(Routes.SWAP_NAVIGATOR);
+        swapsStore.setState({
+          inputAsset: userAssetsStore.getState().getHighestValueAsset(),
+        });
+        InteractionManager.runAfterInteractions(() => {
+          navigate(Routes.SWAP);
+        });
         return;
       }
+
+      android && delayNext();
 
       const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(Network.mainnet, accountAddress);
       navigate(Routes.EXCHANGE_MODAL, {

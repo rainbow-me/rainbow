@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import { RouteProp, useRoute } from '@react-navigation/native';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { ContextCircleButton } from '@/components/context-menu';
@@ -28,10 +29,16 @@ import Routes from '@/navigation/routesNames';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
 import { SETTINGS_BACKUP_ROUTES } from './routes';
 import { analyticsV2 } from '@/analytics';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, Linking } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { createAccountForWallet, walletsLoadState } from '@/redux/wallets';
-import { backupUserDataIntoCloud } from '@/handlers/cloudBackup';
+import {
+  GoogleDriveUserData,
+  backupUserDataIntoCloud,
+  getGoogleAccountUserData,
+  isCloudBackupAvailable,
+  login,
+} from '@/handlers/cloudBackup';
 import { logger, RainbowError } from '@/logger';
 import { captureException } from '@sentry/react-native';
 import { RainbowAccount, createWallet } from '@/model/wallet';
@@ -47,6 +54,7 @@ import { WalletCountPerType, useVisibleWallets } from '../../useVisibleWallets';
 import { format } from 'date-fns';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { Backup, parseTimestampFromFilename } from '@/model/backup';
+import { WrappedAlert as Alert } from '@/helpers/alert';
 
 type ViewWalletBackupParams = {
   ViewWalletBackup: { walletId: string; title: string; imported?: boolean };
@@ -180,6 +188,47 @@ const ViewWalletBackup = () => {
     walletId,
   });
 
+  const backupWalletsToCloud = useCallback(async () => {
+    if (IS_ANDROID) {
+      try {
+        await login();
+
+        getGoogleAccountUserData().then((accountDetails: GoogleDriveUserData | undefined) => {
+          if (accountDetails) {
+            return onSubmit({});
+          }
+          Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
+        });
+      } catch (e) {
+        Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
+        logger.error(e as RainbowError);
+      }
+    } else {
+      const isAvailable = await isCloudBackupAvailable();
+      if (!isAvailable) {
+        Alert.alert(
+          i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.label),
+          i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.description),
+          [
+            {
+              onPress: () => {
+                Linking.openURL('https://support.apple.com/en-us/HT204025');
+              },
+              text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.show_me),
+            },
+            {
+              style: 'cancel',
+              text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.no_thanks),
+            },
+          ]
+        );
+        return;
+      }
+    }
+
+    onSubmit({});
+  }, [onSubmit]);
+
   const onNavigateToSecretWarning = useCallback(() => {
     navigate(SETTINGS_BACKUP_ROUTES.SECRET_WARNING, {
       walletId,
@@ -224,7 +273,7 @@ const ViewWalletBackup = () => {
                   // If we found it and it's not damaged use it to create the new account
                   if (wallet && !wallet.damaged) {
                     const newWallets = await dispatch(createAccountForWallet(wallet.id, color, name));
-                    // @ts-ignore
+                    // @ts-expect-error - no params
                     await initializeWallet();
                     // If this wallet was previously backed up to the cloud
                     // We need to update userData backup so it can be restored too
@@ -248,7 +297,7 @@ const ViewWalletBackup = () => {
                       clearCallbackOnStartCreation: true,
                     });
                     await dispatch(walletsLoadState(profilesEnabled));
-                    // @ts-ignore
+                    // @ts-expect-error - no params
                     await initializeWallet();
                   }
                 } catch (e) {
@@ -395,7 +444,7 @@ const ViewWalletBackup = () => {
                   cloudPlatformName: cloudPlatform,
                 })}
                 loading={loading}
-                onPress={() => onSubmit({})}
+                onPress={backupWalletsToCloud}
               />
             </Menu>
           )}
@@ -415,7 +464,7 @@ const ViewWalletBackup = () => {
                   cloudPlatformName: cloudPlatform,
                 })}
                 loading={loading}
-                onPress={() => onSubmit({})}
+                onPress={backupWalletsToCloud}
               />
             </Menu>
           )}
@@ -490,12 +539,14 @@ const ViewWalletBackup = () => {
                   disabled
                   leftComponent={<WalletAvatar account={account} />}
                   labelComponent={
-                    account.label.endsWith('.eth') ? <MenuItem.Label text={abbreviations.address(account.address, 3, 5) || ''} /> : null
+                    account.label.endsWith('.eth') || account.label !== '' ? (
+                      <MenuItem.Label text={abbreviations.address(account.address, 3, 5) || ''} />
+                    ) : null
                   }
                   titleComponent={
                     <MenuItem.Title
                       text={
-                        account.label.endsWith('.eth')
+                        account.label.endsWith('.eth') || account.label !== ''
                           ? abbreviations.abbreviateEnsForDisplay(removeFirstEmojiFromString(account.label), 20) ?? ''
                           : abbreviations.address(account.address, 3, 5) ?? ''
                       }

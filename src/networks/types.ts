@@ -15,6 +15,7 @@ export enum Network {
   gnosis = 'gnosis',
   avalanche = 'avalanche',
   blast = 'blast',
+  degen = 'degen',
 }
 
 export type NetworkTypes = 'layer1' | 'layer2' | 'testnet';
@@ -36,8 +37,8 @@ export interface NetworkProperties extends Chain {
     mainnetAddress?: string;
   };
 
-  rpc: string;
-  getProvider: Promise<StaticJsonRpcProvider>;
+  rpc: () => string;
+  getProvider: () => StaticJsonRpcProvider;
   balanceCheckerAddress: EthereumAddress;
 
   // feature flags
@@ -71,7 +72,7 @@ export interface NetworkProperties extends Chain {
   };
 
   nfts: {
-    simplehashNetwork?: string;
+    simplehashNetwork: string | null;
   };
 
   // design tings

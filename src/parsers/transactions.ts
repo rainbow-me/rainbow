@@ -39,7 +39,7 @@ const TransactionOutTypes = [
 ] as const;
 
 export const getDirection = (type: TransactionType) => {
-  //@ts-expect-error - Ts doesnt like the weird type structure here
+  // @ts-expect-error - Ts doesnt like the weird type structure here
   if (TransactionOutTypes.includes(type as TransactionType)) return 'out';
   return 'in';
 };
@@ -68,7 +68,7 @@ export const parseTransaction = async (
 ): Promise<RainbowTransaction> => {
   const { status, hash, meta, nonce, protocol } = transaction;
 
-  let txn = {
+  const txn = {
     ...transaction,
   };
   const changes: TransactionChanges = txn.changes.map(change => {
@@ -133,6 +133,8 @@ export const parseTransaction = async (
     contract,
     native,
     fee,
+    explorerUrl: meta.explorer_url,
+    explorerLabel: meta.explorer_label,
   } as RainbowTransaction;
 };
 
@@ -194,12 +196,12 @@ export const getDescription = (asset: ParsedAsset | undefined, type: Transaction
 
 export const isValidTransactionType = (type: string | undefined): type is TransactionType =>
   !!type &&
-  //@ts-expect-error - Ts doesnt like the weird type structure here
+  // @ts-expect-error - Ts doesnt like the weird type structure here
   (transactionTypes.withChanges.includes(type as TransactionType) ||
-    //@ts-expect-error - Ts doesnt like the weird type structure here
+    // @ts-expect-error - Ts doesnt like the weird type structure here
     transactionTypes.withoutChanges.includes(type as TransactionType) ||
     type === ('sale' as TransactionType));
 
 export const transactionTypeShouldHaveChanges = (type: TransactionType): type is TransactionWithChangesType =>
-  //@ts-expect-error - Ts doesnt like the weird type structure here
+  // @ts-expect-error - Ts doesnt like the weird type structure here
   transactionTypes.withChanges.includes(type);

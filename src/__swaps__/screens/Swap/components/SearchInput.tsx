@@ -1,37 +1,80 @@
-import React from 'react';
-import { TextInput } from 'react-native';
-import { ButtonPressAnimation } from '@/components/animations';
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { opacity } from '@/__swaps__/utils/swaps';
 import { Input } from '@/components/inputs';
 import { Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../constants';
-import { opacity } from '../utils/swaps';
+import * as i18n from '@/languages';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
+import React from 'react';
+import Animated, {
+  runOnJS,
+  runOnUI,
+  useAnimatedProps,
+  useAnimatedReaction,
+  useDerivedValue,
+  useSharedValue,
+} from 'react-native-reanimated';
+import { useDebouncedCallback } from 'use-debounce';
+import { SearchInputButton } from './SearchInputButton';
+
+const AnimatedInput = Animated.createAnimatedComponent(Input);
+
+const FIND_A_TOKEN_TO_BUY_LABEL = i18n.t(i18n.l.swap.find_a_token_to_buy);
+const SEARCH_YOUR_TOKENS_LABEL = i18n.t(i18n.l.swap.search_your_tokens);
 
 export const SearchInput = ({
-  color,
-  handleExitSearch,
-  handleFocusSearch,
-  isFocused,
+  handleExitSearchWorklet,
+  handleFocusSearchWorklet,
   output,
-  setIsFocused,
 }: {
-  color: string;
-  handleExitSearch: () => void;
-  handleFocusSearch: () => void;
-  isFocused?: boolean;
-  output?: boolean;
-  setIsFocused: React.Dispatch<React.SetStateAction<boolean>>;
+  handleExitSearchWorklet: () => void;
+  handleFocusSearchWorklet: () => void;
+  output: boolean;
 }) => {
   const { isDarkMode } = useColorMode();
-
-  const inputRef = React.useRef<TextInput>(null);
-  const [query, setQuery] = React.useState('');
+  const { inputProgress, inputSearchRef, outputProgress, outputSearchRef } = useSwapContext();
 
   const fillTertiary = useForegroundColor('fillTertiary');
   const label = useForegroundColor('label');
   const labelQuaternary = useForegroundColor('labelQuaternary');
 
+  const onInputSearchQueryChange = userAssetsStore(state => state.setSearchQuery);
+
+  const onOutputSearchQueryChange = useDebouncedCallback((text: string) => useSwapsStore.setState({ outputSearchQuery: text }), 100, {
+    leading: false,
+    trailing: true,
+  });
+
+  const isSearchFocused = useDerivedValue(
+    () =>
+      (!output && inputProgress.value === NavigationSteps.SEARCH_FOCUSED) ||
+      (output && outputProgress.value === NavigationSteps.SEARCH_FOCUSED)
+  );
+
+  const pastedSearchInputValue = useSharedValue('');
+  const searchInputValue = useAnimatedProps(() => {
+    // Removing the value when the input is focused allows the input to be reset to the correct value on blur
+    const query = isSearchFocused.value ? undefined : '';
+    return {
+      text: pastedSearchInputValue.value || query,
+      defaultValue: '',
+    };
+  });
+
+  useAnimatedReaction(
+    () => isSearchFocused.value,
+    (focused, prevFocused) => {
+      if (focused === false && prevFocused === true) {
+        pastedSearchInputValue.value = '';
+        if (output) runOnJS(onOutputSearchQueryChange)('');
+        else runOnJS(onInputSearchQueryChange)('');
+      }
+    }
+  );
+
   return (
-    <Box width="full">
+    <Box paddingHorizontal="20px" width="full">
       <Columns alignHorizontal="justify" alignVertical="center" space="20px">
         <Box>
           <Bleed horizontal="8px" vertical="24px">
@@ -55,20 +98,33 @@ export const SearchInput = ({
                     </Text>
                   </Box>
                 </Column>
-                <Input
+                <AnimatedInput
+                  animatedProps={searchInputValue}
+                  onChangeText={output ? onOutputSearchQueryChange : onInputSearchQueryChange}
                   onBlur={() => {
-                    handleExitSearch();
-                    setIsFocused(false);
+                    runOnUI(() => {
+                      if (isSearchFocused.value) {
+                        handleExitSearchWorklet();
+                      }
+                    })();
+
+                    if (isSearchFocused.value) {
+                      if (output) {
+                        if (useSwapsStore.getState().outputSearchQuery !== '') {
+                          useSwapsStore.setState({ outputSearchQuery: '' });
+                        }
+                      } else {
+                        if (userAssetsStore.getState().inputSearchQuery !== '') {
+                          userAssetsStore.getState().setSearchQuery('');
+                        }
+                      }
+                    }
                   }}
-                  onChange={e => setQuery(e.nativeEvent.text)}
-                  onFocus={() => {
-                    handleFocusSearch();
-                    setIsFocused(true);
-                  }}
-                  placeholder={output ? 'Find a token to buy' : 'Search your tokens'}
+                  onFocus={() => runOnUI(handleFocusSearchWorklet)()}
+                  placeholder={output ? FIND_A_TOKEN_TO_BUY_LABEL : SEARCH_YOUR_TOKENS_LABEL}
                   placeholderTextColor={isDarkMode ? opacity(labelQuaternary, 0.3) : labelQuaternary}
-                  ref={inputRef}
-                  selectionColor={color}
+                  selectTextOnFocus
+                  ref={output ? outputSearchRef : inputSearchRef}
                   spellCheck={false}
                   style={{
                     color: label,
@@ -77,41 +133,18 @@ export const SearchInput = ({
                     height: 44,
                     zIndex: 10,
                   }}
-                  value={query}
                 />
               </Columns>
             </Box>
           </Bleed>
         </Box>
         <Column width="content">
-          <ButtonPressAnimation
-            onPress={() => {
-              if (!isFocused) {
-                handleExitSearch();
-              } else {
-                inputRef.current?.blur();
-                setIsFocused(false);
-              }
-            }}
-            scaleTo={0.8}
-          >
-            <Box
-              alignItems="center"
-              borderRadius={18}
-              height={{ custom: 36 }}
-              justifyContent="center"
-              paddingHorizontal={{ custom: 12 - THICK_BORDER_WIDTH }}
-              style={{
-                backgroundColor: opacity(color, isDarkMode ? 0.1 : 0.08),
-                borderColor: opacity(color, isDarkMode ? 0.06 : 0.01),
-                borderWidth: THICK_BORDER_WIDTH,
-              }}
-            >
-              <Text align="center" color={{ custom: color }} size="17pt" weight="heavy">
-                {isFocused ? 'Cancel' : 'Close'}
-              </Text>
-            </Box>
-          </ButtonPressAnimation>
+          <SearchInputButton
+            output={output}
+            pastedSearchInputValue={pastedSearchInputValue}
+            isSearchFocused={isSearchFocused}
+            handleExitSearchWorklet={handleExitSearchWorklet}
+          />
         </Column>
       </Columns>
     </Box>

@@ -24,6 +24,7 @@
       "tab_showcase": "Showcase",
       "tab_points": "Points",
       "tab_positions": "Positions",
+      "tab_rewards": "Rewards",
       "tab_transactions": "Transactions",
       "tab_transactions_tooltip": "Transactions and Token Transfers",
       "tab_uniquetokens": "Unique Tokens",
@@ -431,6 +432,23 @@
         "description": "You can also long press your\naddress above to copy it."
       }
     },
+    "check_identifier": {
+      "title": "Authentication Needed",
+      "description": "It looks like you may have switched devices or reinstalled Rainbow. Please authenticate so that we can validate your keychain data is still in a healthy state.",
+      "action": "Authenticate",
+      "dismiss": "Dismiss",
+      "error_alert": {
+        "title": "Error Validating Keychain",
+        "message": "We encountered an error while validating your keychain data. Please try again. If the issue persists, please contact support.",
+        "contact_support": "Contact Support",
+        "cancel": "Cancel"
+      },
+      "failure_alert": {
+        "title": "Invalid Keychain Data",
+        "message": "We were unable to verify the integrity of your keychain data. Please restore your wallet and try again. If the issue persists, please contact support.",
+        "action": "Continue"
+      }
+    },
     "cloud": {
       "backup_success": "Your wallet has been backed up successfully!"
     },
@@ -541,8 +559,12 @@
         "from_divider": "from",
         "to_divider": "to",
         "view_on": "View on %{blockExplorerName}",
-        "view_on_etherscan": "View on Etherscan"
+        "view_on_etherscan": "View on Etherscan",
+        "copy_contract_address": "Copy Contract Address"
       },
+      "all_networks": "All Networks",
+      "filter_by_network": "Filter by Network",
+      "my_tokens": "My Tokens",
       "flip": "Flip",
       "max": "Max",
       "movers": {
@@ -561,10 +583,34 @@
         "nothing_here": "Nothing here!",
         "nothing_to_send": "Nothing to send"
       },
+      "quote_errors": {
+        "501": "No quote available",
+        "no_quote_available": "No quote available",
+        "502": "Insufficient liquidity",
+        "insufficient_liquidity": "Insufficient liquidity",
+        "503": "Fee on Transfer Token",
+        "fee_on_transfer": "Fee on Transfer Token",
+        "504": "No route found",
+        "no_route_found": "No route found"
+      },
       "price_impact": {
+        "long_wait": {
+          "title": "Long wait",
+          "description": "Approx. %{time}",
+          "description_prefix": "Approx."
+        },
+        "unknown_price": {
+          "title": "Market Value Unknown",
+          "description": "If you decide to continue, be sure that you are satisfied receiving the quoted amount."
+        },
         "losing_prefix": "Losing",
         "small_market": "Small Market",
-        "label": "Possible loss"
+        "small_market_try_smaller_amount": "Small market — try a smaller amount",
+        "you_are_losing": "You're losing %{priceImpact}",
+        "you_are_losing_prefix": "You're losing",
+        "no_data": "Market Value Unknown",
+        "label": "Possible loss",
+        "no_data_subtitle": "If you decide to continue, be sure that you are satisfied with the quoted amount"
       },
       "source": {
         "rainbow": "Auto",
@@ -662,6 +708,7 @@
         "flashbots_protect": "Flashbots Protect",
         "losing": "Losing",
         "on": "On",
+        "off": "Off",
         "price_impact": "Price impact",
         "price_row_per_token": "per",
         "slippage_message": "This is a small market, so you’re getting a bad price. Try a smaller trade!",
@@ -698,6 +745,11 @@
         "number_of_steps": "%{number} Steps",
         "input_exchange_rate": "1 %{inputSymbol} for %{executionRate} %{outputSymbol}",
         "output_exchange_rate": "1 %{outputSymbol} for %{executionRate} %{inputSymbol}"
+      },
+      "swap_details_v2": {
+        "rainbow_fee": "Included Rainbow Fee",
+        "maximum_sold": "Maximum Sold",
+        "minimum_received": "Minimum Received"
       },
       "token_index": {
         "get_token": "Get %{assetSymbol}",
@@ -854,15 +906,19 @@
       },
       "base": {
         "text": "Base is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
-        "title": "What's Base"
+        "title": "What's Base?"
       },
       "avalanche": {
         "text": "Avalanche is a sidechain, a distinct network that runs alongside Ethereum and is compatible with it.\n\nIt allows for cheaper and faster transactions, but unlike Layer 2 networks, Avalanche has its own security and consensus mechanisms that differ from Ethereum.",
         "title": "What's Avalanche"
       },
+      "degen": {
+        "text": "Degen Chain is a Layer 3 network that runs on top of Arbitrum and Ethereum, offering incredibly fast and cheap transactions denominated in the Farcaster community token $degen.",
+        "title": "What's Degen Chain?"
+      },
       "blast": {
         "text": "Blast is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
-        "title": "What's Blast"
+        "title": "What's Blast?"
       },
       "zora": {
         "text": "Zora is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
@@ -987,6 +1043,7 @@
       }
     },
     "gas": {
+      "gas_settings": "Gas Settings",
       "card": {
         "falling": "Falling",
         "rising": "Rising",
@@ -1000,14 +1057,17 @@
         "urgent": "Urgent",
         "custom": "Custom"
       },
-      "network_fee": "Est. network fee",
+      "unable_to_determine_selected_gas": "Unable to determine selected gas",
+      "network_fee": "Est. Network Fee",
       "current_base_fee": "Current base fee",
       "max_base_fee": "Max base fee",
       "miner_tip": "Miner tip",
+      "gas_price": "Gas price",
       "max_transaction_fee": "Max transaction fee",
       "warning_separator": "·",
       "lower_than_suggested": "Low · may get stuck",
       "higher_than_suggested": "High · overpaying",
+      "likely_to_fail": "Low · likely to fail",
       "max_base_fee_too_low_error": "Low · likely to fail",
       "tip_too_low_error": "Low · likely to fail",
       "alert_message_higher_miner_tip_needed": "Setting a higher miner tip is recommended to avoid issues.",
@@ -1318,13 +1378,16 @@
       },
       "claim": {
         "title": "Claim your points",
+        "title_rewards_line_1": "Welcome to",
+        "title_rewards_line_2": "Rainbow Rewards",
         "subtitle": "Points are here. Find out how many you've been awarded.",
+        "subtitle_rewards": "Get rewarded for using Rainbow. Do stuff onchain, get points, earn ETH.",
         "get_started": "Get Started",
         "use_referral_code": "Use Referral Code"
       },
       "referral": {
         "title": "Enter your referral code",
-        "subtitle": "Enter a referral code below to claim your bonus reward.",
+        "subtitle": "Enter a referral code below to claim your points bonus.",
         "back": "Back",
         "error": "Something went wrong. Please restart the app and try again.",
         "get_started": "Get Started",
@@ -1339,6 +1402,7 @@
         "share_link": "Share Link",
         "next_drop": "Next Drop",
         "your_rank": "Your Rank",
+        "no_change": "No Change",
         "of_x": "Of %{totalUsers}",
         "referrals": "Referrals",
         "streak": "Streak",
@@ -1356,12 +1420,40 @@
         "today": "Today",
         "error": "Oops!\nPlease pull to refresh.",
         "points": "points",
+        "points_capitalized": "Points",
         "referral_code_copied": "Referral code copied",
         "earn_points_for_referring": "Earn points when your referrals swap $100 through Rainbow, plus earn 10% of the points your referrals earn",
         "already_claimed_points": "Sorry! You have already claimed your points.",
         "now": "Now",
         "unranked": "Unranked",
-        "points_to_rank": "750 points to rank"
+        "points_to_rank": "750 points to rank",
+        "ranking": "Placed #%{rank}",
+        "available_to_claim": "Available to Claim",
+        "claim": "Claim %{value}",
+        "choose_claim_network": "Choose Claim Network",
+        "claim_on_network": "Claim on %{network}",
+        "claimed_on_network": "Claimed on %{network}",
+        "claiming_on_network": "Claiming on %{network}",
+        "error_claiming": "Claim Failed",
+        "free_to_claim": "Free to Claim",
+        "has_bridge_fee": "Has Bridge Fee",
+        "claim_rewards": "Claim Rewards",
+        "earned_last_week": "Earned Last Week",
+        "top_10_earner": "Top 10 Earner",
+        "zero_points": "0 Points",
+        "no_weekly_rank": "No Weekly Rank",
+        "none": "None",
+        "my_earnings": "My Earnings",
+        "claimed_earnings": "Claimed Earnings",
+        "current_value": "Current Value",
+        "rainbow_users_have_earned": "Rainbow users have earned",
+        "earn_eth_rewards": "Earn ETH Rewards",
+        "rewards_explainer": "Every week, the top weekly points earners will receive a portion of Rainbow’s onchain revenue. Collect points by swapping or transacting in Rainbow, using dapps, or referring friends.",
+        "my_points": "My Points",
+        "refer_friends": "Refer Friends",
+        "try_again": "Try Again",
+        "bridge_error": "Partial Success",
+        "bridge_error_explainer": "Your rewards were successfully claimed on Optimism, but the transfer to %{network} failed. If you'd like, you can bridge your rewards manually using the Swap feature."
       },
       "console": {
         "claim_bonus_paragraph": "You'll receive an additional 100 points once you swap at least $100 through Rainbow",
@@ -1877,6 +1969,44 @@
       "too_many_signup_request": "Too many signup requests, please try again later"
     },
     "swap": {
+      "actions": {
+        "tap_to_swap": "Tap to Swap",
+        "save": "Save",
+        "enter_amount": "Enter Amount",
+        "review": "Review",
+        "fetching_prices": "Fetching",
+        "swapping": "Swapping",
+        "select_token": "Select Token",
+        "insufficient_funds": "Insufficient Funds",
+        "quote_error": "Quote Error"
+      },
+      "aggregators": {
+        "rainbow": "Rainbow"
+      },
+      "bridging": "Bridging",
+      "swapping": "Swapping",
+      "max": "Max",
+      "select": "Select",
+      "token_to_get": "Token to Get",
+      "token_to_swap": "Token to Swap",
+      "no_balance": "No Balance",
+      "find_a_token_to_buy": "Find a token to buy",
+      "search_your_tokens": "Search your tokens",
+      "error_executing_swap": "Error executing swap",
+      "flashbots_protection": "Flashbots Protection",
+      "tokens_input": {
+        "tokens": "Tokens",
+        "sort": "Sort",
+        "available": "available",
+        "token_balance": "Token Balance",
+        "networks": "Networks",
+        "filter_by_network": "Filter by Network",
+        "switch_networks": "Switch Networks",
+        "nothing_found": "Nothing found",
+        "nothing_found_description": "Some tokens don't have enough liquidity to perform a successful %{action}.",
+        "nothing_found_description_l2": "Some tokens don't have enough layer 2 liquidity to perform a successful %{action}.",
+        "output_quotes_disabled": "Output quotes disabled"
+      },
       "choose_token": "Choose Token",
       "gas": {
         "custom": "Custom",
@@ -1890,6 +2020,7 @@
       },
       "loading": "Loading...",
       "modal_types": {
+        "bridge": "Bridge",
         "confirm": "Confirm",
         "deposit": "Deposit",
         "receive": "Receive",
@@ -1898,6 +2029,7 @@
         "withdraw": "Withdraw",
         "withdraw_symbol": "Withdraw %{symbol}"
       },
+      "unknown": "Unknown",
       "warning": {
         "cost": {
           "are_you_sure_title": "Are you sure?",
@@ -1916,6 +2048,15 @@
           "message": "Setting a higher gas price is recommended to avoid issues.",
           "title": "Low gas price–transaction might get stuck!"
         }
+      }
+    },
+    "token_search": {
+      "section_header": {
+        "favorites": "Favorites",
+        "bridge": "Bridge",
+        "verified": "Verified",
+        "unverified": "Unverified",
+        "on_other_networks": "On Other Networks"
       }
     },
     "transactions": {
@@ -2158,6 +2299,9 @@
       "copied": "Copied \"%{copiedText}\"",
       "invalid_paste": "You can't paste that here"
     },
+    "tokens_tab": {
+      "unknown_token": "Unknown Token"
+    },
     "hardware_wallets": {
       "pair_your_nano": "Pair your Nano X",
       "connect_your_ledger": "Connect your Ledger Nano X to Rainbow through Bluetooth. If this is your first time, Rainbow will ask for Bluetooth access.",
@@ -2213,6 +2357,8 @@
         "delete_confirm": "Are you sure you want to delete this wallet?",
         "edit": "Edit Wallet",
         "hide": "Hide",
+        "create_wallet_group": "Create Group",
+        "create_wallet_group_placeholder": "Wallet Group %{numWalletGroups}",
         "import_wallet": "Add Wallet",
         "input": "Transaction Input",
         "notifications": {
@@ -2334,6 +2480,7 @@
       "balance_title": "Balance",
       "buy": "Buy",
       "change_wallet": {
+        "no_balance": "No Balance",
         "balance_eth": "%{balanceEth} ETH",
         "watching": "Watching",
         "ledger": "Ledger"
@@ -2543,7 +2690,7 @@
           "insufficient_funds": "Oh no! The gas price changed and you no longer have enough funds for this transaction. Please try again with a lower amount.",
           "generic": "Oh no! There was a problem submitting the transaction. Please try again."
         },
-        "complete_checks": "Complete checks",
+        "complete_check": "Complete check",
         "ens_configuration_options": "ENS configuration options",
         "confirm": "Confirm transaction",
         "max": "Max",
@@ -2627,6 +2774,7 @@
       },
       "menu_options": {
         "disconnect": "Disconnect",
+        "connect": "Connect",
         "switch_wallet": "Switch Wallet",
         "switch_network": "Switch Network",
         "available_networks": "Available Networks"
@@ -2733,6 +2881,49 @@
     "dapp_browser": {
       "address_bar": {
         "input_placeholder": "Search or enter website"
+      },
+      "control_panel": {
+        "connected": "Connected",
+        "not_connected": "Not Connected",
+        "switch_wallet": "Switch Wallet",
+        "switch_network": "Switch Network",
+        "disconnect": "Disconnect",
+        "favorite": "Favorite",
+        "undo_favorite": "Undo",
+        "connect": "Connect",
+        "swap": "Swap",
+        "bridge": "Bridge",
+        "more": "More"
+      },
+      "error": {
+        "title": "Something went wrong",
+        "default_msg": "There was an error loading the page. Please try again."
+      },
+      "no_wc_needed": {
+        "title": "Ooops!",
+        "description": "Seems like you're trying to connect to this dapp via WalletConnect. This is no longer necessary with Rainbow's in-app browser. Go back and choose \"MetaMask\" and everything should work just fine.",
+        "cta": "Got it"
+      },
+      "provider_error": {
+        "unsupported_chain": "Unsupported Chain",
+        "no_active_session": "You need to connect to the dapp before attempting to switch chains"
+      },
+      "homepage": {
+        "trending": "Trending",
+        "recents": "Recents",
+        "favorites": "Favorites"
+      },
+      "search": {
+        "find_apps_and_more": "Find apps and more",
+        "more_results": "More Results",
+        "search": "Search"
+      },
+      "menus": {
+        "favorite": "Favorite",
+        "undo_favorite": "Undo Favorite",
+        "remove": "Remove",
+        "forward": "Forward",
+        "back": "Back"
       }
     }
   }

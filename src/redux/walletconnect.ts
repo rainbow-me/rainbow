@@ -31,7 +31,7 @@ import { logger, RainbowError } from '@/logger';
 import { IS_DEV, IS_IOS, IS_TEST } from '@/env';
 import { RainbowNetworks } from '@/networks';
 import { Verify } from '@walletconnect/types';
-import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
+import { RequestSource, handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 
 // -- Variables --------------------------------------- //
 let showRedirectSheetThreshold = 300;
@@ -149,11 +149,14 @@ export interface WalletconnectApprovalSheetRouteParams {
      */
     chainIds: number[];
     isWalletConnectV2?: boolean;
+    proposedChainId?: number;
+    proposedAddress?: string;
   } & Pick<WalletconnectRequestData, 'dappName' | 'dappScheme' | 'dappUrl' | 'imageUrl' | 'peerId'>;
   timeout?: ReturnType<typeof setTimeout> | null;
   timedOut?: boolean;
   failureExplainSheetVariant?: string;
   verifiedData?: Verify.Context['verified'];
+  source?: RequestSource;
 }
 
 /**

@@ -110,6 +110,8 @@ export const globalColors = {
   blueGrey80: '#5F6670',
   blueGrey90: '#3C4047',
   blueGrey100: '#242529',
+
+  darkGrey: '#9CA6B1',
 };
 
 export const deprecatedColors = {
@@ -198,7 +200,7 @@ export type BackgroundColorValue = {
   mode: ColorMode;
 };
 
-export const backgroundColors: Record<BackgroundColor, BackgroundColorValue | ContextualColorValue<BackgroundColorValue>> = {
+export const backgroundColors: Record<BackgroundColor, ContextualColorValue<BackgroundColorValue>> = {
   'surfacePrimary': {
     light: {
       color: globalColors.white100,
@@ -398,8 +400,14 @@ export const backgroundColors: Record<BackgroundColor, BackgroundColorValue | Co
     },
   },
   'swap (Deprecated)': {
-    color: deprecatedColors.swapPurple,
-    mode: 'darkTinted',
+    dark: {
+      color: deprecatedColors.swapPurple,
+      mode: 'darkTinted',
+    },
+    light: {
+      color: deprecatedColors.swapPurple,
+      mode: 'darkTinted',
+    },
   },
 };
 
@@ -448,14 +456,20 @@ export type ForegroundColor =
   | 'secondary60 (Deprecated)'
   | 'secondary70 (Deprecated)'
   | 'secondary80 (Deprecated)'
-  | 'swap (Deprecated)';
+  | 'swap (Deprecated)'
+  | 'mainnet'
+  | 'arbitrum'
+  | 'optimism'
+  | 'polygon'
+  | 'base'
+  | 'zora'
+  | 'bsc'
+  | 'avalanche'
+  | 'blast'
+  | 'degen';
 
-function selectBackgroundAsForeground(backgroundName: BackgroundColor): string | ContextualColorValue<string> {
+function selectBackgroundAsForeground(backgroundName: BackgroundColor): ContextualColorValue<string> {
   const bg = backgroundColors[backgroundName];
-
-  if ('color' in bg) {
-    return bg.color;
-  }
 
   return {
     dark: bg.dark.color,
@@ -465,7 +479,7 @@ function selectBackgroundAsForeground(backgroundName: BackgroundColor): string |
   };
 }
 
-export const foregroundColors: Record<ForegroundColor, string | ContextualColorValue<string>> = {
+export const foregroundColors: Record<ForegroundColor, ContextualColorValue<string>> = {
   'label': {
     light: globalColors.grey100,
     dark: globalColors.white100,
@@ -620,12 +634,58 @@ export const foregroundColors: Record<ForegroundColor, string | ContextualColorV
     darkTinted: deprecatedColors.white80,
     light: deprecatedColors.grey80,
   },
-  'shadowNear': globalColors.grey100,
+  'shadowNear': {
+    light: globalColors.grey100,
+    dark: globalColors.grey100,
+  },
   'shadowFar': {
     dark: globalColors.grey100,
     light: '#25292E',
   },
-  'swap (Deprecated)': deprecatedColors.swapPurple,
+  'swap (Deprecated)': {
+    light: deprecatedColors.swapPurple,
+    dark: deprecatedColors.swapPurple,
+  },
+  'mainnet': {
+    light: '#6D6D6D',
+    dark: '#999BA1',
+  },
+  'arbitrum': {
+    light: '#1690E4',
+    dark: '#52B8FF',
+  },
+  'optimism': {
+    light: '#FF4040',
+    dark: '#FF8A8A',
+  },
+  'polygon': {
+    light: '#8247E5',
+    dark: '#BE97FF',
+  },
+  'base': {
+    light: '#0052FF',
+    dark: '#3979FF',
+  },
+  'zora': {
+    light: '#2B5DF0',
+    dark: '#6183F0',
+  },
+  'bsc': {
+    light: '#EBAF09',
+    dark: '#FFDA66',
+  },
+  'avalanche': {
+    light: '#EBAF09',
+    dark: '#FF5D5E',
+  },
+  'blast': {
+    light: '#FCFC06',
+    dark: '#FCFC06',
+  },
+  'degen': {
+    light: '#A36EFD',
+    dark: '#A36EFD',
+  },
 };
 
 /**
@@ -663,10 +723,6 @@ export type Palette = {
 function createPalette(colorMode: ColorMode): Palette {
   return {
     backgroundColors: mapValues(backgroundColors, value => {
-      if ('color' in value) {
-        return value;
-      }
-
       if (colorMode === 'darkTinted') {
         return value.darkTinted ?? value.dark;
       }
@@ -716,7 +772,17 @@ export const textColors = selectForegroundColors(
   'secondary50 (Deprecated)',
   'secondary60 (Deprecated)',
   'secondary70 (Deprecated)',
-  'secondary80 (Deprecated)'
+  'secondary80 (Deprecated)',
+  'mainnet',
+  'arbitrum',
+  'optimism',
+  'polygon',
+  'base',
+  'zora',
+  'bsc',
+  'avalanche',
+  'blast',
+  'degen'
 );
 export type TextColor = (typeof textColors)[number];
 

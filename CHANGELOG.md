@@ -15,6 +15,218 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.30] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.30)
+
+### Fixed
+
+- Fixed a crash that would happen when attempting a max swappable amount (#5907)
+- Fixed an issue where native network token was not at top of verified list (#5906)
+- Fixed an issue when tapping swap button on Degen Token expanded sheet would cause a crash (#5910)
+- Fixed broken searching of local and cross network search (#5912)
+- Fixed an issue where we would do an uncessary approval when unwrapping WETH (#5911)
+
+## [1.9.28] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.28)
+
+### Changed
+
+- rewards UI cleanup (#5896)
+- e2e change of rerunning only failed tests (#5878)
+- enable unit tests (#5874)
+- rewards flag is now enabled by default (#5899)
+
+### Fixed
+
+- Fixed an issue where firebase wasn't working correctly on Android (#5898)
+
+## [1.9.27] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.27)
+
+### Added
+
+- Added more analytics to our Dapp browser (#5755)
+- Added e2e test for validating malicious Dapp warnings (#5764)
+- Added more analytics for Swaps v2 (#5805)
+- Use ens graph api key (#5848, #5882)
+- ETH Rewards (#5866)
+
+### Changed
+
+- Improved performance by limiting Sentry tracking and NFT hooks (#5819)
+- Migrate remote cards over to zustand (#5796)
+
+### Fixed
+
+- Fixed provider recursion bug where getProviderForNetwork was being repeatedly called (#5829)
+- Fixed crashes to swaps v2 flows (#5839)
+- Fixed a crash when attempting to swap on v1 (#5858)
+- Fixed a bug where we weren’t taking l1 op gas fees into account for claimBridge (#5889)
+- Fixed a bug where tapping swap button on token expanded state did not select the proper token (#5891)
+
+## [1.9.25] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.25)
+
+### Added
+
+- Added IDFA check on app launch (#5653)
+- Added parallel tests for e2e (#5786)
+
+### Changed
+
+- Changed the size of the coin icon (#5771)
+- Updates to Swaps v2 (#5768, #5765, #5772, #5766, #5757, #5776, #5775, #5780, #5778, #5779, #5784, #5782, #5754, #5783, #5791, #5795)
+- Bumped reanimated (#5683)
+
+### Fixed
+
+- Fixed a bug where incorrect data would show in pending transactions (#5777)
+- Fixed a bug where the swap warning flashes when typing a larger number (#5769)
+- Fixed UX on receive sheet QR Code (#5672)
+
+## [1.9.24] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.24)
+
+### Added
+
+- Added new translations for various parts in the app (#5762)
+
+### Changed
+
+- Updated codeowners file (#5732, #5743)
+- Swaps v2 updates (#5725, #5727, #5733, #5722, #5724, #5741, #5747, #5748, #5751, #5752, #5758, #5759, #5760)
+- Increased timeout to open a new tab in dapp browser for promo cards (#5745)
+
+### Fixed
+
+- Fixed a bug where some mints with unknown price was showing as free (#5750)
+- Fixed issues with NFTs causing crashes on some wallets (#5761)
+- Fixed an issue where transaction sheet would show the Buy ETH button when the selected wallet already has ETH (#5763)
+
+## [1.9.23] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.23)
+
+### Added
+
+- Added a new useSyncSharedValue hook that makes it easy to keep a shared value in sync with equivalently typed state (#5662, #5664)
+- Implemented smaller state subscriptions for current zustand stores outside of the browser (#5661)
+- Implemented dapp browser architecture (#5669, #5671)
+- Handle web injection natively (#5677)
+- Added a new zustand store creator called createRainbowStore (#5689)
+- Added a new hook called useSharedValueState (#5698)
+- Added new hooks for working with time in reanimated (#5699)
+- Added documentation to reanimated hooks (#5701)
+- Added new backend-provided explorer labels for swaps v2 (#5690)
+- Added custom gas panel for swaps v2 (#5647)
+- Added the ability for a user to name a newly created wallet group in backups flow (#5696)
+- Added exchange rate bubble for swaps v2 flow on swap screen (#5723)
+- Added privacy manifest (#5736)
+
+### Changed
+
+- Simplified logic for Rainbow fee display in review panel for swaps v2 (#5660)
+- Upgraded swaps sdk to 0.19.0 (#5694)
+- Moved around swaps functionality that were being used in other places (#5708)
+- Swaps v2 re-architecture implementation (#5705)
+- Migrated nft requests from nft proxy to nfts graphql endpoint (#5704)
+- Bumped provider to improve connection flow to dapps and L2 connection issues (#5703)
+- Integrated new arch into asset colors for swaps v2 (#5709)
+- Improvements to swaps quote fetching (#5711)
+- Replaced swaps redux reliant state with parity to browser extension (#5608)
+
+### Fixed
+
+- Fixed a bug where dapp connection warning was not being displayed (#5710)
+- Fixed an issue where there’s no web3 provider injected on the current tab when doing an app cold start (#5663)
+- Fixed a bug where Google login button wouldn’t load on certain sites (#5670)
+- Fixed issues relating to account/network switching by refactoring AppSessionsStore to use RainbowStore (#5693)
+- Fixed numerous issues that arose from dapp browser bug bash session (#5695)
+- Fixed an issue with bridge assets and spacing between items for Swaps v2 (#5686)
+- Fixed supporting chain Id’s matching behavior with browser extension (#5697)
+- Fixed a bug where a newly created wallet with a custom name would have the address but not the custom name displayed in backups (#5692)
+- Fixed UI bug where Learn More Backups sheet was clipped at the topped (#5687)
+- Fixed a bug with favorites list on swaps v2 (#5659)
+- Fixed issue with running e2e tests by disabling sentry (#5707)
+- Fixed a bug where there weren’t any touch events executed on the webview (#5702)
+- Fixed a bug with dapp browser open in new tab (#5688)
+- Fixed a bunch of dapp browser bugs on Android devices (#5712, #5715)
+- Fixed a bug with searching in dapp browser that now allows you to navigate to an exact URL instead of suggested (#5719)
+- Fixed browser bugs and improved performance (#5721)
+- Fixed a bug on account switching from control panel on browser (#5726)
+- Fixed various bugs within the control panel on the browser (#5730, #5734, #5735)
+- Fixed search logic and homepage empty state bugs on browser (#5737)
+- Fixed an addys API error when no address is provided (#5729)
+- Fixed a swaps bug where chainID was undefined (#5738)
+- Fixed a crash when tapping settings while bridging in swaps flow (#5740)
+
+## [1.9.22] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.22)
+
+### Added
+
+- Swaps v2 updates (#5601, #5635, #5632, #5630, #5643, #5648, #5650, #5649)
+- We now show total USD value of wallet instead of just mainnet ETH balance inside the wallet switcher (#5631)
+
+### Changed
+
+- Updated booleans in remote config (#5627)
+- Removed codepush and unused updates to token list (#5622)
+- Copy update when sending on different networks (#5495)
+- Updates to e2e (#5637)
+- bumped sentry to latest sdk (#5640)
+- Updated firebase to better support notifications deeplinks and Apple privacy warnings (#5636)
+
+### Fixed
+
+- Fixed an edge case in swaps v2 when choosing to swap assets (#5644)
+- Fixed a bug where send sheet USD value was marked as ETH (#5665)
+- Fixed crash when swapping Degen token to ProxySwap token (#5667)
+
+## [1.9.21] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.21)
+
+### Added
+
+- Added support for other native currencies in transaction simulation sheet (#5585)
+- implement gas estimations for swaps v2 (#5526)
+- Add token search logic and ability to select assets for swaps v2 (#5547)
+- Added warning for when price impact is unknown (#5597)
+- Added a warning when user attempts to send to contract address (#5586)
+- Added support for Degen chain (#5621)
+
+### Changed
+
+- Updated audit for dependencies (#5594, #5615, #5624)
+- Bumped swaps SDK (#5583)
+- Improved type checking and error handling on web preferences (#5607)
+- Updated e2e test suite (#5558)
+- Updated transaction request analytic events (#5589)
+- Cleaned up file imports and duplicate types for swaps v2 (#5619)
+- Improved Wallet Connect flow and added performance tracking (#5616)
+
+### Fixed
+
+- Fixed an issue with scrolltoindex firing on the last card dismissal (#5606)
+- Fixed a bug where some NFTs won’t show up in wallet (#5537)
+- Fixed an bug where non backed up wallets would show as backed up under certain conditions (#5593)
+- Fixed dapp metadata issues regarding Zora mints (#5584)
+
+## [1.9.20] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.20)
+
+### Added
+
+- Added pending transaction indicator on nav bar (#5529)
+- Swaps v2 revamp work (#5536, #5538)
+- Added wallet connect v2 sessions data to state dump (#5382)
+
+### Changed
+
+- e2e cleanup (#5540)
+- NFT offers/mints gas estimation improvements (#5448)
+- Removed Apollo client in favor of @/graphql (#5555)
+- Refetch balances after a transaction is confirmed (#5551)
+- Hide favorites on non mainnet assets (#5565)
+- Updated transaction details sheet (#5535)
+- Bump Rudderstack version to v1.12.12 (#5556)
+- Backups v2 (#5310)
+
+### Fixed
+
+- Fixed a crash that happened when tapping settings button on develop (#5544)
+- Fixed token metadata issues for searching by contract address in discover (#5563)
+
 ## [1.9.19] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.19)
 
 ### Added

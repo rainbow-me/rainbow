@@ -111,6 +111,26 @@ query getdApp($shortName: String!, $url: String!, $status: Boolean!) {
   }
 }
 
+query getdApps {
+  dApps {
+    name
+    shortName
+    description
+    url
+    iconURL
+    colors {
+      primary
+      fallback
+      shadow
+    }
+    status
+    report {
+      url
+    }
+    trending
+  }
+}
+
 fragment asset on TransactionSimulationAsset {
   assetCode
   decimals
@@ -248,6 +268,9 @@ query getPointsDataForWallet($address: String!) {
         next
       }
       status
+      rewards {
+        total
+      }
     }
     leaderboard {
       stats {
@@ -275,6 +298,11 @@ query getPointsDataForWallet($address: String!) {
       earnings {
         total
       }
+      rewards {
+        total
+        claimable
+        claimed
+      }
       stats {
         position {
           unranked
@@ -300,8 +328,29 @@ query getPointsDataForWallet($address: String!) {
             }
           }
         }
+        last_period {
+          position {
+            unranked
+            current
+          }
+          earnings {
+            total
+          }
+        }
       }
     }
+  }
+}
+
+mutation claimUserRewards($address: String!) {
+  claimUserRewards(address: $address) {
+    error {
+      type
+      message
+    }
+    chainID
+    uoHash
+    txHash
   }
 }
 
@@ -541,5 +590,17 @@ query priceChart($chainId: Int!, $address: String!, $day: Boolean!, $hour: Boole
         points
       }
     }
+  }
+}
+
+mutation claimUserRewards($address: String!) {
+  claimUserRewards(address: $address) {
+    error {
+      type
+      message
+    }
+    chainID
+    uoHash
+    txHash
   }
 }

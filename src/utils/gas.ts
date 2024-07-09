@@ -1,5 +1,9 @@
-import { colors } from '@/styles';
+import { TextColor } from '@/design-system/color/palettes';
+import { NativeCurrencyKey } from '@/entities';
+import { IS_IOS } from '@/env';
+import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import * as i18n from '@/languages';
+import { colors } from '@/styles';
 
 const CUSTOM = 'custom';
 const URGENT = 'urgent';
@@ -23,10 +27,37 @@ const GAS_ICONS = {
   [URGENT]: 'policeCarLight',
 };
 
+interface SwapGasIcons {
+  [key: string]: { color: TextColor; icon: string; symbolName: string };
+}
+
+const SWAP_GAS_ICONS: SwapGasIcons = {
+  [CUSTOM]: {
+    color: 'labelSecondary',
+    icon: '􀣌',
+    symbolName: 'gearshape',
+  },
+  [FAST]: {
+    color: 'red',
+    icon: '􀙭',
+    symbolName: 'flame',
+  },
+  [NORMAL]: {
+    color: 'blue',
+    icon: '􀐫',
+    symbolName: 'clock',
+  },
+  [URGENT]: {
+    color: 'yellow',
+    icon: '􀋦',
+    symbolName: 'bolt',
+  },
+};
+
 const GAS_EMOJIS = {
   [CUSTOM]: '⚙️',
   [FAST]: '🚀',
-  [NORMAL]: ios ? '⏱' : '🕘',
+  [NORMAL]: IS_IOS ? '⏱' : '🕘',
   [URGENT]: '🚨',
 };
 
@@ -66,6 +97,11 @@ const getGasLabel = (speed: string) => {
   }
 };
 
+const getGasFallback = (nativeCurrency: NativeCurrencyKey) => {
+  const fallbackPrice = '0.01';
+  return convertAmountToNativeDisplay(fallbackPrice, nativeCurrency);
+};
+
 const FLASHBOTS_MIN_TIP = 6;
 
 export default {
@@ -73,6 +109,7 @@ export default {
   FAST,
   FLASHBOTS_MIN_TIP,
   getGasLabel,
+  getGasFallback,
   GAS_EMOJIS,
   GAS_ICONS,
   GAS_TRENDS,
@@ -80,5 +117,6 @@ export default {
   GasTrends,
   NORMAL,
   SLOW,
+  SWAP_GAS_ICONS,
   URGENT,
 };

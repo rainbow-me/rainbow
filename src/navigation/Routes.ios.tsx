@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext } from 'react';
@@ -25,10 +26,10 @@ import { SignTransactionSheet } from '../screens/SignTransactionSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import NotificationsPromoSheet from '../screens/NotificationsPromoSheet';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
+import NoNeedWCSheet from '../screens/NoNeedWCSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
 import { WalletDiagnosticsSheet } from '../screens/Diagnostics';
 import WelcomeScreen from '../screens/WelcomeScreen';
-import { useTheme } from '../theme/ThemeContext';
 import RegisterENSNavigator from './RegisterENSNavigator';
 import { SwipeNavigator } from './SwipeNavigator';
 import {
@@ -37,6 +38,7 @@ import {
   hardwareWalletTxNavigatorConfig,
   consoleSheetConfig,
   customGasSheetConfig,
+  dappBrowserControlPanelConfig,
   defaultScreenStackOptions,
   ensAdditionalRecordsSheetConfig,
   ensConfirmRegisterSheetConfig,
@@ -68,6 +70,8 @@ import {
   positionSheetConfig,
   appIconUnlockSheetConfig,
   swapConfig,
+  checkIdentifierSheetConfig,
+  recieveModalSheetConfig,
 } from './config';
 import { addCashSheet, emojiPreset, emojiPresetWallet, overlayExpandedPreset, sheetPreset } from './effects';
 import { InitialRouteContext } from './initialRoute';
@@ -97,12 +101,9 @@ import { PointsProfileProvider } from '@/screens/points/contexts/PointsProfileCo
 import AppIconUnlockSheet from '@/screens/AppIconUnlockSheet';
 import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { SwapProvider } from '@/__swaps__/screens/Swap/providers/swap-provider';
-
-type StackNavigatorParams = {
-  [Routes.SEND_SHEET]: unknown;
-  [Routes.MODAL_SCREEN]: unknown;
-};
+import CheckIdentifierScreen from '@/screens/CheckIdentifierScreen';
+import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPanel';
+import { ClaimRewardsPanel } from '@/screens/points/claim-flow/ClaimRewardsPanel';
 
 const Stack = createStackNavigator();
 const NativeStack = createNativeStackNavigator();
@@ -138,19 +139,8 @@ function MainStack() {
   );
 }
 
-function SwapsNavigator() {
-  return (
-    <SwapProvider>
-      <NativeStack.Navigator {...nativeStackConfig} initialRouteName={Routes.SWAP}>
-        <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />
-      </NativeStack.Navigator>
-    </SwapProvider>
-  );
-}
-
 function NativeStackNavigator() {
   const remoteConfig = useRemoteConfig();
-  const { colors, isDarkMode } = useTheme();
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const swapsV2Enabled = useExperimentalFlag(SWAPS_V2) || remoteConfig.swaps_v2;
 
@@ -158,15 +148,7 @@ function NativeStackNavigator() {
     <NativeStack.Navigator {...nativeStackConfig}>
       <NativeStack.Screen component={MainStack} name={Routes.STACK} />
       <NativeStack.Screen component={LearnWebViewScreen} name={Routes.LEARN_WEB_VIEW_SCREEN} {...learnWebViewScreenConfig} />
-      <NativeStack.Screen
-        component={ReceiveModal}
-        name={Routes.RECEIVE_MODAL}
-        options={{
-          backgroundColor: isDarkMode ? colors.offWhite : '#3B3E43',
-          backgroundOpacity: 1,
-          customStack: true,
-        }}
-      />
+      <NativeStack.Screen component={ReceiveModal} name={Routes.RECEIVE_MODAL} {...recieveModalSheetConfig} />
       <NativeStack.Screen component={SettingsSheet} name={Routes.SETTINGS_SHEET} {...settingsSheetConfig} />
       <NativeStack.Screen
         component={ExchangeModalNavigator}
@@ -233,6 +215,7 @@ function NativeStackNavigator() {
           transitionDuration: 0.25,
         }}
       />
+      <NativeStack.Screen component={CheckIdentifierScreen} name={Routes.CHECK_IDENTIFIER_SCREEN} {...checkIdentifierSheetConfig} />
       <NativeStack.Screen component={BackupSheet} name={Routes.BACKUP_SHEET} {...backupSheetConfig} />
       <NativeStack.Screen
         component={ModalScreen}
@@ -291,6 +274,7 @@ function NativeStackNavigator() {
         </>
       )}
       <NativeStack.Screen component={SendFlowNavigator} name={Routes.SEND_SHEET_NAVIGATOR} />
+      <NativeStack.Screen component={NoNeedWCSheet} name={Routes.NO_NEED_WC_SHEET} {...basicSheetConfig} />
       <NativeStack.Screen component={WalletConnectApprovalSheet} name={Routes.WALLET_CONNECT_APPROVAL_SHEET} {...basicSheetConfig} />
       <NativeStack.Screen component={WalletConnectRedirectSheet} name={Routes.WALLET_CONNECT_REDIRECT_SHEET} {...basicSheetConfig} />
       <NativeStack.Screen name={Routes.TRANSACTION_DETAILS} component={TransactionDetails} {...transactionDetailsConfig} />
@@ -300,8 +284,10 @@ function NativeStackNavigator() {
       <NativeStack.Screen name={Routes.MINTS_SHEET} component={MintsSheet} {...mintsSheetConfig} />
       <NativeStack.Screen component={ConsoleSheet} name={Routes.CONSOLE_SHEET} {...consoleSheetConfig} />
       <NativeStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} {...appIconUnlockSheetConfig} />
+      <NativeStack.Screen component={ControlPanel} name={Routes.DAPP_BROWSER_CONTROL_PANEL} {...dappBrowserControlPanelConfig} />
+      <NativeStack.Screen component={ClaimRewardsPanel} name={Routes.CLAIM_REWARDS_PANEL} {...dappBrowserControlPanelConfig} />
 
-      {swapsV2Enabled && <NativeStack.Screen component={SwapsNavigator} name={Routes.SWAP_NAVIGATOR} {...swapConfig} />}
+      {swapsV2Enabled && <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />}
     </NativeStack.Navigator>
   );
 }

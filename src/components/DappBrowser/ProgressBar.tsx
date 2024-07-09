@@ -1,34 +1,39 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import Animated, { useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import { StyleSheet, View } from 'react-native';
+import Animated, { useAnimatedReaction, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { Box } from '@/design-system';
 import { useAccountAccentColor } from '@/hooks';
-import { deviceUtils, safeAreaInsetValues } from '@/utils';
+import { deviceUtils } from '@/utils';
 import { useBrowserContext } from './BrowserContext';
-import { WEBVIEW_HEIGHT } from './Dimensions';
+import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 
 export const ProgressBar = () => {
   const { accentColor } = useAccountAccentColor();
-  const { loadProgress, tabViewVisible } = useBrowserContext();
+  const { animatedActiveTabIndex, loadProgress, tabViewVisible } = useBrowserContext();
 
   const progressBarStyle = useAnimatedStyle(() => ({
     // eslint-disable-next-line no-nested-ternary
-    opacity: tabViewVisible?.value
+    opacity: tabViewVisible.value
       ? withSpring(0, SPRING_CONFIGS.snappierSpringConfig)
-      : loadProgress?.value === 1
+      : loadProgress.value === 1
         ? withTiming(0, TIMING_CONFIGS.slowestFadeConfig)
         : withSpring(1, SPRING_CONFIGS.snappierSpringConfig),
-    width: (loadProgress?.value || 0) * deviceUtils.dimensions.width,
+    width: loadProgress.value * deviceUtils.dimensions.width,
   }));
 
+  useAnimatedReaction(
+    () => animatedActiveTabIndex.value,
+    (current, previous) => {
+      if (current !== previous) {
+        loadProgress.value = 1;
+      }
+    }
+  );
+
   return (
-    <Box as={Animated.View} style={[styles.progressBar, styles.centerAlign]}>
-      <Box
-        as={Animated.View}
-        style={[progressBarStyle, { backgroundColor: accentColor }, styles.progressBar, { position: 'relative', top: 0 }]}
-      />
-    </Box>
+    <View style={[styles.progressBarContainer, styles.centerAlign]}>
+      <Animated.View style={[progressBarStyle, { backgroundColor: accentColor }, styles.progressBar]} />
+    </View>
   );
 };
 
@@ -40,7 +45,12 @@ const styles = StyleSheet.create({
   progressBar: {
     borderRadius: 1,
     height: 2,
-    top: WEBVIEW_HEIGHT + safeAreaInsetValues.top + 88 - 2,
+    width: deviceUtils.dimensions.width,
+    pointerEvents: 'none',
+  },
+  progressBarContainer: {
+    height: 2,
+    bottom: TAB_BAR_HEIGHT,
     left: 0,
     width: deviceUtils.dimensions.width,
     pointerEvents: 'none',

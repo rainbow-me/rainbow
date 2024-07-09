@@ -2,7 +2,6 @@ import { BigNumberish } from '@ethersproject/bignumber';
 import { Provider } from '@ethersproject/providers';
 import { serialize } from '@ethersproject/transactions';
 import { RainbowAddressAssets } from '@/resources/assets/types';
-import { ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS } from '@rainbow-me/swaps';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { queryClient } from '@/react-query';
@@ -21,29 +20,25 @@ import {
   LegacySelectedGasFee,
   NewTransaction,
   ParsedAddressAsset,
-  RainbowToken,
   RainbowTransaction,
   SelectedGasFee,
 } from '@/entities';
 import { getOnchainAssetBalance } from '@/handlers/assets';
-import { getCachedProviderForNetwork, getProviderForNetwork, isHardHat, isTestnetNetwork, toHex } from '@/handlers/web3';
+import { getIsHardhatConnected, getProviderForNetwork, isTestnetNetwork, toHex } from '@/handlers/web3';
 import { Network } from '@/helpers/networkTypes';
 import { convertRawAmountToDecimalFormat, fromWei, greaterThan, isZero, subtract, add } from '@/helpers/utilities';
 import { Navigation } from '@/navigation';
 import { parseAssetNative } from '@/parsers';
 import store from '@/redux/store';
 import {
-  ARBITRUM_ETH_ADDRESS,
   ETH_ADDRESS,
   ethUnits,
   MATIC_MAINNET_ADDRESS,
-  MATIC_POLYGON_ADDRESS,
-  BNB_BSC_ADDRESS,
-  OPTIMISM_ETH_ADDRESS,
   optimismGasOracleAbi,
   OVM_GAS_PRICE_ORACLE,
   BNB_MAINNET_ADDRESS,
   AVAX_AVALANCHE_ADDRESS,
+  DEGEN_CHAIN_DEGEN_ADDRESS,
 } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
@@ -62,7 +57,7 @@ const getNetworkNativeAsset = (network: Network): ParsedAddressAsset | undefined
   return getAccountAsset(nativeAssetUniqueId);
 };
 
-export const getNativeAssetForNetwork = async (network: Network, address: EthereumAddress): Promise<ParsedAddressAsset | undefined> => {
+export const getNativeAssetForNetwork = async (network: Network, address?: EthereumAddress): Promise<ParsedAddressAsset | undefined> => {
   const networkNativeAsset = getNetworkNativeAsset(network);
   const { accountAddress, nativeCurrency } = store.getState().settings;
   const differentWallet = address?.toLowerCase() !== accountAddress?.toLowerCase();
@@ -92,7 +87,7 @@ export const getNativeAssetForNetwork = async (network: Network, address: Ethere
       };
     }
 
-    const provider = await getProviderForNetwork(network);
+    const provider = getProviderForNetwork(network);
     if (nativeAsset) {
       nativeAsset.mainnet_address = mainnetAddress;
       nativeAsset.address = getNetworkObj(network).nativeCurrency.address;
@@ -117,12 +112,11 @@ const getAsset = (accountAssets: Record<string, ParsedAddressAsset>, uniqueId: E
 };
 
 const getUserAssetFromCache = (uniqueId: string) => {
-  const { accountAddress, nativeCurrency, network } = store.getState().settings;
+  const { accountAddress, nativeCurrency } = store.getState().settings;
+  const connectedToHardhat = getIsHardhatConnected();
 
   const cache = queryClient.getQueryCache();
-  const provider = getCachedProviderForNetwork(network);
-  const providerUrl = provider?.connection?.url;
-  const connectedToHardhat = isHardHat(providerUrl);
+
   const cachedAddressAssets = (cache.find(
     userAssetsQueryKey({
       address: accountAddress,
@@ -175,9 +169,9 @@ export const useNativeAssetForNetwork = (network: Network) => {
   let address = getNetworkObj(network).nativeCurrency?.mainnetAddress || ETH_ADDRESS;
   let theNetwork = Network.mainnet;
   const { nativeCurrency } = store.getState().settings;
-  if (network === Network.avalanche) {
+  if (network === Network.avalanche || network === Network.degen) {
     address = getNetworkObj(network).nativeCurrency?.address;
-    theNetwork = Network.avalanche;
+    theNetwork = network;
   }
   const { data: nativeAsset } = useExternalToken({
     address,
@@ -196,6 +190,8 @@ const getPriceOfNativeAssetForNetwork = (network: Network) => {
     return getBnbPriceUnit();
   } else if (network === Network.avalanche) {
     return getAvaxPriceUnit();
+  } else if (network === Network.degen) {
+    return getDegenPriceUnit();
   }
   return getEthPriceUnit();
 };
@@ -205,6 +201,7 @@ const getEthPriceUnit = () => getAssetPrice();
 const getMaticPriceUnit = () => getAssetPrice(MATIC_MAINNET_ADDRESS);
 const getBnbPriceUnit = () => getAssetPrice(BNB_MAINNET_ADDRESS);
 const getAvaxPriceUnit = () => getAssetPrice(getUniqueId(AVAX_AVALANCHE_ADDRESS, Network.avalanche));
+const getDegenPriceUnit = () => getAssetPrice(getUniqueId(DEGEN_CHAIN_DEGEN_ADDRESS, Network.degen));
 
 const getBalanceAmount = (
   selectedGasFee: SelectedGasFee | LegacySelectedGasFee,
@@ -551,6 +548,7 @@ export default {
   getMaticPriceUnit,
   getBnbPriceUnit,
   getAvaxPriceUnit,
+  getDegenPriceUnit,
   getNativeAssetForNetwork,
   getNetworkFromChainId,
   getNetworkNameFromChainId,

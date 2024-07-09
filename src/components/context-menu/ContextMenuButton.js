@@ -1,9 +1,8 @@
 import React from 'react';
-
 import { ContextMenuButton as IOSContextMenuButton } from 'react-native-ios-context-menu';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 
-export default function ContextMenuButton({ children, menuItems, menuTitle, onPressAndroid, onPressMenuItem, testID }) {
+export default function ContextMenuButton({ children, hitSlop = 0, menuItems, menuTitle, onPressAndroid, onPressMenuItem, testID }) {
   return (
     <IOSContextMenuButton
       activeOpacity={0}
@@ -13,11 +12,14 @@ export default function ContextMenuButton({ children, menuItems, menuTitle, onPr
         menuItems,
         menuTitle,
       }}
+      style={{ margin: -hitSlop }}
       onPressMenuItem={onPressMenuItem}
       useActionSheetFallback={false}
       wrapNativeComponent={false}
     >
-      <ButtonPressAnimation testID={testID}>{children}</ButtonPressAnimation>
+      <ButtonPressAnimation style={{ padding: hitSlop }} testID={testID}>
+        {children}
+      </ButtonPressAnimation>
     </IOSContextMenuButton>
   );
 }

@@ -92,6 +92,7 @@ export const backupSheetSizes = {
     : deviceUtils.dimensions.height + safeAreaInsetValues.bottom + sharedCoolModalTopOffset + SheetHandleFixedToTopHeight,
   medium: 550,
   short: 424,
+  check_identifier: 414,
   shorter: 364,
 };
 
@@ -103,11 +104,33 @@ export const getHeightForStep = (step: string) => {
       return backupSheetSizes.long;
     case WalletBackupStepTypes.no_provider:
       return backupSheetSizes.medium;
+    case WalletBackupStepTypes.check_identifier:
+      return backupSheetSizes.check_identifier;
     case WalletBackupStepTypes.backup_now_manually:
       return backupSheetSizes.shorter;
     default:
       return backupSheetSizes.short;
   }
+};
+
+export const checkIdentifierSheetConfig: PartialNavigatorConfigOptions = {
+  options: ({ navigation, route }) => {
+    const { params: { longFormHeight, step, ...params } = {} } = route as {
+      params: any;
+    };
+
+    const heightForStep = getHeightForStep(step);
+    if (longFormHeight !== heightForStep) {
+      navigation.setParams({
+        longFormHeight: heightForStep,
+      });
+    }
+
+    return buildCoolModalConfig({
+      ...params,
+      longFormHeight: heightForStep,
+    });
+  },
 };
 
 export const backupSheetConfig: PartialNavigatorConfigOptions = {
@@ -224,6 +247,19 @@ export const consoleSheetConfig = {
   }),
 };
 
+export const dappBrowserControlPanelConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 0.7,
+      cornerRadius: 0,
+      springDamping: 1,
+      topOffset: 0,
+      transitionDuration: 0.3,
+    }),
+  }),
+};
+
 export const swapConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
@@ -241,7 +277,7 @@ export const signTransactionSheetConfig = {
   options: ({ route }: { route: SignTransactionSheetRouteProp }) => ({
     ...buildCoolModalConfig({
       ...route.params,
-      backgroundOpacity: route?.params?.requestType === 'walletconnect' ? 1 : 0.7,
+      backgroundOpacity: route?.params?.source === 'walletconnect' ? 1 : 0.7,
       cornerRadius: 0,
       springDamping: 1,
       topOffset: 0,
@@ -297,6 +333,17 @@ export const sendConfirmationSheetConfig = {
 };
 
 export const settingsSheetConfig: PartialNavigatorConfigOptions = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      scrollEnabled: false,
+      springDamping: 1,
+    }),
+  }),
+};
+
+export const recieveModalSheetConfig: PartialNavigatorConfigOptions = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,

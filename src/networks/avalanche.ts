@@ -25,8 +25,8 @@ export const getAvalancheNetworkObject = (): NetworkProperties => {
       address: AVAX_AVALANCHE_ADDRESS,
     },
 
-    rpc: proxyRpcEndpoint(avalanche.id),
-    getProvider: getProviderForNetwork(Network.avalanche),
+    rpc: () => proxyRpcEndpoint(avalanche.id),
+    getProvider: () => getProviderForNetwork(Network.avalanche),
     // need to find balance checker address
     balanceCheckerAddress: '',
 
@@ -57,7 +57,7 @@ export const getAvalancheNetworkObject = (): NetworkProperties => {
       defaultSlippage: 200,
     },
 
-    nfts: {},
+    nfts: { simplehashNetwork: 'avalanche' },
 
     // design tings
     colors: {

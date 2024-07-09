@@ -23,8 +23,8 @@ export const getGnosisNetworkObject = (): NetworkProperties => {
       address: ETH_ADDRESS,
     },
 
-    rpc: '',
-    getProvider: getProviderForNetwork(Network.optimism),
+    rpc: () => '',
+    getProvider: () => getProviderForNetwork(Network.optimism),
     balanceCheckerAddress: '',
 
     // features
@@ -56,7 +56,9 @@ export const getGnosisNetworkObject = (): NetworkProperties => {
       defaultSlippage: 200,
     },
 
-    nfts: {},
+    nfts: {
+      simplehashNetwork: 'gnosis',
+    },
 
     // design tings
     colors: {

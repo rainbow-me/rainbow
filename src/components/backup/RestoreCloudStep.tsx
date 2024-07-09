@@ -5,7 +5,14 @@ import { useDispatch } from 'react-redux';
 import WalletAndBackup from '@/assets/WalletsAndBackup.png';
 import { KeyboardArea } from 'react-native-keyboard-area';
 
-import { Backup, fetchBackupPassword, restoreCloudBackup, RestoreCloudBackupResultStates, saveBackupPassword } from '@/model/backup';
+import {
+  Backup,
+  fetchBackupPassword,
+  getLocalBackupPassword,
+  restoreCloudBackup,
+  RestoreCloudBackupResultStates,
+  saveLocalBackupPassword,
+} from '@/model/backup';
 import { cloudPlatform } from '@/utils/platform';
 import { PasswordField } from '../fields';
 import { Text } from '../text';
@@ -122,6 +129,8 @@ export default function RestoreCloudStep() {
         throw new Error('No backup file selected');
       }
 
+      const prevWalletsState = await dispatch(walletsLoadState());
+
       const status = await restoreCloudBackup({
         password,
         userData,
@@ -130,34 +139,49 @@ export default function RestoreCloudStep() {
 
       if (status === RestoreCloudBackupResultStates.success) {
         // Store it in the keychain in case it was missing
-        await saveBackupPassword(password);
+        const hasSavedPassword = await getLocalBackupPassword();
+        if (!hasSavedPassword) {
+          await saveLocalBackupPassword(password);
+        }
 
         InteractionManager.runAfterInteractions(async () => {
-          const wallets = await dispatch(walletsLoadState());
+          const newWalletsState = await dispatch(walletsLoadState());
           let filename = selectedBackup.name;
           if (IS_ANDROID && filename) {
-            /**
-             * We need to normalize the filename on Android, because sometimes
-             * the filename is returned with the path used for Google Drive storage.
-             * That is with REMOTE_BACKUP_WALLET_DIR included.
-             */
             filename = normalizeAndroidBackupFilename(filename);
           }
 
           logger.info('Done updating backup state');
-          const walletIdsToUpdate = Object.keys(wallets);
+          // NOTE: Marking the restored wallets as backed up
+          // @ts-expect-error TypeScript doesn't play nicely with Redux types here
+          const walletIdsToUpdate = Object.keys(newWalletsState || {}).filter(walletId => !(prevWalletsState || {})[walletId]);
           logger.log('updating backup state of wallets with ids', {
             walletIds: JSON.stringify(walletIdsToUpdate),
           });
           logger.log('backupSelected.name', {
             fileName: selectedBackup.name,
           });
+
           await dispatch(setAllWalletsWithIdsAsBackedUp(walletIdsToUpdate, walletBackupTypes.cloud, filename));
 
-          const walletKeys = Object.keys(wallets || {});
-          const firstWallet =
-            // @ts-expect-error TypeScript doesn't play nicely with Redux types here
-            walletKeys.length > 0 ? (wallets || {})[walletKeys[0]] : undefined;
+          const oldCloudIds: string[] = [];
+          const oldManualIds: string[] = [];
+          // NOTE: Looping over previous wallets and restoring backup state of that wallet
+          Object.values(prevWalletsState || {}).forEach(wallet => {
+            // NOTE: This handles cloud and manual backups
+            if (wallet.backedUp && wallet.backupType === walletBackupTypes.cloud) {
+              oldCloudIds.push(wallet.id);
+            } else if (wallet.backedUp && wallet.backupType === walletBackupTypes.manual) {
+              oldManualIds.push(wallet.id);
+            }
+          });
+
+          await dispatch(setAllWalletsWithIdsAsBackedUp(oldCloudIds, walletBackupTypes.cloud, filename));
+          await dispatch(setAllWalletsWithIdsAsBackedUp(oldManualIds, walletBackupTypes.manual, filename));
+
+          const walletKeys = Object.keys(newWalletsState || {});
+          // @ts-expect-error TypeScript doesn't play nicely with Redux types here
+          const firstWallet = walletKeys.length > 0 ? (newWalletsState || {})[walletKeys[0]] : undefined;
           const firstAddress = firstWallet ? firstWallet.addresses[0].address : undefined;
           const p1 = dispatch(walletsSetSelected(firstWallet));
           const p2 = dispatch(addressSetSelected(firstAddress));

@@ -10,6 +10,7 @@ import { getGnosisNetworkObject } from './gnosis';
 import { getBaseNetworkObject } from './base';
 import { getAvalancheNetworkObject } from './avalanche';
 import { getBlastNetworkObject } from './blast';
+import { getDegenNetworkObject } from './degen';
 import store from '@/redux/store';
 import * as ls from '@/storage';
 
@@ -29,6 +30,7 @@ export const RainbowNetworks = [
   getBSCNetworkObject(),
   getAvalancheNetworkObject(),
   getBlastNetworkObject(),
+  getDegenNetworkObject(),
 ];
 
 /**
@@ -36,6 +38,10 @@ export const RainbowNetworks = [
  */
 export function getNetworkObj(network: Network): NetworkProperties {
   switch (network) {
+    // Mainnet
+    case Network.mainnet:
+      return getMainnetNetworkObject();
+
     // L2s
     case Network.arbitrum:
       return getArbitrumNetworkObject();
@@ -53,14 +59,15 @@ export function getNetworkObj(network: Network): NetworkProperties {
       return getGnosisNetworkObject();
     case Network.avalanche:
       return getAvalancheNetworkObject();
-
     case Network.blast:
       return getBlastNetworkObject();
+    case Network.degen:
+      return getDegenNetworkObject();
     // Testnets
     case Network.goerli:
       return getGoerliNetworkObject();
 
-    // Mainnet
+    // Fallback
     default:
       return getMainnetNetworkObject();
   }

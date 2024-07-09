@@ -24,8 +24,8 @@ export const getArbitrumNetworkObject = (): NetworkProperties => {
       address: ARBITRUM_ETH_ADDRESS,
     },
 
-    rpc: proxyRpcEndpoint(arbitrum.id),
-    getProvider: getProviderForNetwork(Network.arbitrum),
+    rpc: () => proxyRpcEndpoint(arbitrum.id),
+    getProvider: () => getProviderForNetwork(Network.arbitrum),
     balanceCheckerAddress: '0x54A4E5800345c01455a7798E0D96438364e22723',
 
     // features
@@ -59,7 +59,7 @@ export const getArbitrumNetworkObject = (): NetworkProperties => {
       defaultSlippage: 200,
     },
 
-    nfts: {},
+    nfts: { simplehashNetwork: 'arbitrum' },
 
     // design tings
     colors: {

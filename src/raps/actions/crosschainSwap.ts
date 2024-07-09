@@ -1,176 +1,231 @@
-import { Wallet } from '@ethersproject/wallet';
 import { Signer } from '@ethersproject/abstract-signer';
-import { ChainId, CrosschainQuote, fillCrosschainQuote, SwapType } from '@rainbow-me/swaps';
-import { captureException } from '@sentry/react-native';
-import { CrosschainSwapActionParameters, Rap, RapExchangeActionParameters } from '../common';
-import { NewTransaction } from '@/entities';
+import { CrosschainQuote, fillCrosschainQuote } from '@rainbow-me/swaps';
+import { Address } from 'viem';
+import { getProviderForNetwork, estimateGasWithPadding } from '@/handlers/web3';
 
-import { toHex } from '@/handlers/web3';
-import { parseGasParamAmounts } from '@/parsers';
-import store from '@/redux/store';
-import { ethereumUtils } from '@/utils';
-import logger from '@/utils/logger';
-import { estimateCrosschainSwapGasLimit } from '@/handlers/swap';
-import { swapMetadataStorage } from './swap';
-import { REFERRER } from '@/references';
-import { overrideWithFastSpeedIfNeeded } from '../utils';
+import { REFERRER, gasUnits } from '@/references';
+import { ChainId } from '@/__swaps__/types/chains';
+import { NewTransaction } from '@/entities/transactions';
+import { TxHash } from '@/resources/transactions/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
+import { RainbowError, logger } from '@/logger';
 
-const actionName = 'crosschainSwap';
+import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
+import { toHex } from '@/__swaps__/utils/hex';
+import { ActionProps, RapActionResult } from '../references';
+import {
+  CHAIN_IDS_WITH_TRACE_SUPPORT,
+  SWAP_GAS_PADDING,
+  estimateSwapGasLimitWithFakeApproval,
+  getDefaultGasLimitForTrade,
+  overrideWithFastSpeedIfNeeded,
+} from '../utils';
+import { ethereumUtils } from '@/utils';
+import { TokenColors } from '@/graphql/__generated__/metadata';
+import { ParsedAsset } from '@/resources/assets/types';
+import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 
-export const executeCrosschainSwap = async ({
+const getCrosschainSwapDefaultGasLimit = (quote: CrosschainQuote) => quote?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
+
+export const estimateCrosschainSwapGasLimit = async ({
   chainId,
-  gasLimit,
-  maxFeePerGas,
-  maxPriorityFeePerGas,
-  gasPrice,
-  nonce,
-  tradeDetails,
-  wallet,
-  permit = false,
-  flashbots = false,
+  requiresApprove,
+  quote,
 }: {
   chainId: ChainId;
-  gasLimit: string | number;
-  maxFeePerGas: string;
-  maxPriorityFeePerGas: string;
-  gasPrice: string;
+  requiresApprove?: boolean;
+  quote: CrosschainQuote;
+}): Promise<string> => {
+  // TODO: MARK - Replace this once we migrate network => chainId
+  const provider = getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
+  if (!provider || !quote) {
+    return gasUnits.basic_swap[chainId];
+  }
+  try {
+    if (requiresApprove) {
+      if (CHAIN_IDS_WITH_TRACE_SUPPORT.includes(chainId)) {
+        try {
+          const gasLimitWithFakeApproval = await estimateSwapGasLimitWithFakeApproval(chainId, provider, quote);
+          return gasLimitWithFakeApproval;
+        } catch (e) {
+          const routeGasLimit = getCrosschainSwapDefaultGasLimit(quote);
+          if (routeGasLimit) return routeGasLimit;
+        }
+      }
+
+      return getCrosschainSwapDefaultGasLimit(quote) || getDefaultGasLimitForTrade(quote, chainId);
+    }
+
+    const gasLimit = await estimateGasWithPadding(
+      {
+        data: quote.data,
+        from: quote.from,
+        to: quote.to,
+        value: quote.value,
+      },
+      undefined,
+      null,
+      provider,
+      SWAP_GAS_PADDING
+    );
+
+    return gasLimit || getCrosschainSwapDefaultGasLimit(quote);
+  } catch (error) {
+    return getCrosschainSwapDefaultGasLimit(quote);
+  }
+};
+
+export const executeCrosschainSwap = async ({
+  gasLimit,
+  gasParams,
+  nonce,
+  quote,
+  wallet,
+}: {
+  gasLimit: string;
+  gasParams: TransactionGasParams | TransactionLegacyGasParams;
   nonce?: number;
-  tradeDetails: CrosschainQuote | null;
-  wallet: Wallet | Signer | null;
-  permit: boolean;
-  flashbots: boolean;
+  quote: CrosschainQuote;
+  wallet: Signer;
 }) => {
-  if (!wallet || !tradeDetails) return null;
-  const walletAddress = await wallet.getAddress();
+  if (!wallet || !quote) return null;
 
   const transactionParams = {
     gasLimit: toHex(gasLimit) || undefined,
-    // In case it's an L2 with legacy gas price like arbitrum
-    ...(gasPrice ? { gasPrice } : {}),
-    // EIP-1559 like networks
-    ...(maxFeePerGas ? { maxFeePerGas } : {}),
-    ...(maxPriorityFeePerGas ? { maxPriorityFeePerGas } : {}),
-    nonce: nonce ? toHex(nonce) : undefined,
+    nonce: nonce ? toHex(String(nonce)) : undefined,
+    ...gasParams,
   };
-
-  logger.debug('FILLCROSSCHAINSWAP', tradeDetails, transactionParams, walletAddress, permit, chainId);
-  return fillCrosschainQuote(tradeDetails, transactionParams, wallet, REFERRER);
+  return fillCrosschainQuote(quote, transactionParams, wallet, REFERRER);
 };
 
-const crosschainSwap = async (
-  wallet: Signer,
-  currentRap: Rap,
-  index: number,
-  parameters: RapExchangeActionParameters,
-  baseNonce?: number
-): Promise<number | undefined> => {
-  logger.log(`[${actionName}] base nonce`, baseNonce, 'index:', index);
-  const { inputAmount, tradeDetails, chainId, requiresApprove } = parameters as CrosschainSwapActionParameters;
-  const { dispatch } = store;
-  const { accountAddress } = store.getState().settings;
-  const { inputCurrency, outputCurrency } = store.getState().swap;
-  const { gasFeeParamsBySpeed, selectedGasFee } = store.getState().gas;
-  let gasParams = parseGasParamAmounts(selectedGasFee);
+export const crosschainSwap = async ({
+  wallet,
+  currentRap,
+  index,
+  parameters,
+  baseNonce,
+  gasParams,
+  gasFeeParamsBySpeed,
+}: ActionProps<'crosschainSwap'>): Promise<RapActionResult> => {
+  const { quote, chainId, requiresApprove } = parameters;
 
+  let gasParamsToUse = gasParams;
   if (currentRap.actions.length - 1 > index) {
-    gasParams = overrideWithFastSpeedIfNeeded({
+    gasParamsToUse = overrideWithFastSpeedIfNeeded({
       gasParams,
       chainId,
       gasFeeParamsBySpeed,
     });
   }
+
   let gasLimit;
   try {
-    const newGasLimit = await estimateCrosschainSwapGasLimit({
-      chainId: Number(chainId),
+    gasLimit = await estimateCrosschainSwapGasLimit({
+      chainId,
       requiresApprove,
-      tradeDetails: tradeDetails as CrosschainQuote,
+      quote,
     });
-    gasLimit = newGasLimit;
   } catch (e) {
-    logger.sentry(`[${actionName}] error estimateSwapGasLimit`);
-    captureException(e);
+    logger.error(new RainbowError('crosschainSwap: error estimateCrosschainSwapGasLimit'), {
+      message: (e as Error)?.message,
+    });
     throw e;
   }
+
+  const nonce = baseNonce ? baseNonce + index : undefined;
+
+  const swapParams = {
+    chainId,
+    gasLimit,
+    nonce,
+    quote,
+    wallet,
+    gasParams: gasParamsToUse,
+  };
 
   let swap;
   try {
-    logger.sentry(`[${actionName}] executing rap`, {
-      ...gasParams,
-      gasLimit,
-    });
-    const nonce = baseNonce ? baseNonce + index : undefined;
-
-    const swapParams = {
-      ...gasParams,
-      chainId,
-      flashbots: !!parameters.flashbots,
-      gasLimit,
-      nonce,
-      tradeDetails,
-      wallet,
-    };
-
-    // @ts-ignore
     swap = await executeCrosschainSwap(swapParams);
   } catch (e) {
-    logger.sentry('Error', e);
-    const fakeError = new Error('Failed to execute swap');
-    captureException(fakeError);
+    logger.error(new RainbowError('crosschainSwap: error executeCrosschainSwap'), { message: (e as Error)?.message });
     throw e;
   }
 
-  logger.log(`[${actionName}] response`, swap);
+  if (!swap) throw new RainbowError('crosschainSwap: error executeCrosschainSwap');
 
-  const isBridge = inputCurrency.symbol === outputCurrency.symbol;
-  if (!swap?.hash) return;
+  // TODO: MARK - Replace this once we migrate network => chainId
+  const network = ethereumUtils.getNetworkFromChainId(parameters.chainId);
 
-  const newTransaction: NewTransaction = {
-    data: swap?.data,
-    from: accountAddress,
-    to: swap?.to ?? null,
-    value: tradeDetails?.value?.toString() || '',
-    asset: outputCurrency,
+  const nativePriceForAssetToBuy = (parameters.assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice
+    ? {
+        value: (parameters.assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice,
+      }
+    : parameters.assetToBuy.price;
+
+  const nativePriceForAssetToSell = (parameters.assetToSell as ExtendedAnimatedAssetWithColors)?.nativePrice
+    ? {
+        value: (parameters.assetToSell as ExtendedAnimatedAssetWithColors)?.nativePrice,
+      }
+    : parameters.assetToSell.price;
+
+  const transaction = {
+    data: parameters.quote.data,
+    from: parameters.quote.from as Address,
+    to: parameters.quote.to as Address,
+    value: parameters.quote.value?.toString(),
+    asset: {
+      ...parameters.assetToBuy,
+      network: ethereumUtils.getNetworkFromChainId(parameters.assetToBuy.chainId),
+      colors: parameters.assetToBuy.colors as TokenColors,
+      price: nativePriceForAssetToBuy,
+    } as ParsedAsset,
     changes: [
       {
         direction: 'out',
-        asset: inputCurrency,
-        value: tradeDetails.sellAmount.toString(),
+        // TODO: MARK - Replace this once we migrate network => chainId
+        // asset: parameters.assetToSell,
+        asset: {
+          ...parameters.assetToSell,
+          network: ethereumUtils.getNetworkFromChainId(parameters.assetToSell.chainId),
+          colors: parameters.assetToSell.colors as TokenColors,
+          price: nativePriceForAssetToSell,
+        },
+        value: quote.sellAmount.toString(),
       },
       {
         direction: 'in',
-        asset: outputCurrency,
-        value: tradeDetails.buyAmount.toString(),
+        // TODO: MARK - Replace this once we migrate network => chainId
+        // asset: parameters.assetToBuy,
+        asset: {
+          ...parameters.assetToBuy,
+          network: ethereumUtils.getNetworkFromChainId(parameters.assetToBuy.chainId),
+          colors: parameters.assetToBuy.colors as TokenColors,
+          price: nativePriceForAssetToBuy,
+        },
+        value: quote.buyAmountMinusFees.toString(),
       },
     ],
-    hash: swap.hash,
-    network: inputCurrency.network,
-    nonce: swap?.nonce,
+    gasLimit,
+    hash: swap.hash as TxHash,
+    // TODO: MARK - Replace this once we migrate network => chainId
+    network,
+    // chainId: parameters.chainId,
+    nonce: swap.nonce,
     status: 'pending',
     type: 'swap',
     flashbots: parameters.flashbots,
-    swap: {
-      type: SwapType.crossChain,
-      fromChainId: ethereumUtils.getChainIdFromNetwork(inputCurrency?.network),
-      toChainId: ethereumUtils.getChainIdFromNetwork(outputCurrency?.network),
-      isBridge,
-    },
-    ...gasParams,
-  };
+    ...gasParamsToUse,
+  } satisfies NewTransaction;
 
   addNewTransaction({
-    address: accountAddress,
-    transaction: newTransaction,
-    network: inputCurrency.network,
+    address: parameters.quote.from as Address,
+    // chainId: parameters.chainId as ChainId,
+    network,
+    transaction,
   });
-  logger.log(`[${actionName}] adding new txn`, newTransaction);
 
-  if (parameters.meta && swap?.hash) {
-    swapMetadataStorage.set(swap.hash.toLowerCase(), JSON.stringify({ type: 'swap', data: parameters.meta }));
-  }
-
-  return swap?.nonce;
+  return {
+    nonce: swap.nonce,
+    hash: swap.hash,
+  };
 };
-
-export { crosschainSwap };

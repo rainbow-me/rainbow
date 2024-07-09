@@ -88,7 +88,10 @@ const SheetContainer = styled(Column).attrs({
   width: '100%',
 });
 
-const validateRecipient = toAddress => {
+const validateRecipient = (toAddress, tokenAddress) => {
+  if (toAddress?.toLowerCase() === tokenAddress?.toLowerCase()) {
+    return false;
+  }
   // Don't allow send to known ERC20 contracts on mainnet
   if (rainbowTokenList.RAINBOW_TOKEN_LIST[toAddress.toLowerCase()]) {
     return false;
@@ -279,23 +282,20 @@ export default function SendSheet(props) {
   }, [stopPollingGasFees]);
 
   useEffect(() => {
-    const updateNetworkAndProvider = async () => {
-      const assetNetwork = selected?.network;
-      if (assetNetwork && (assetNetwork !== currentNetwork || !currentNetwork || prevNetwork !== currentNetwork)) {
-        let provider = web3Provider;
-        const selectedNetwork = selected?.network;
-        if (network === Network.goerli) {
-          setCurrentNetwork(Network.goerli);
-          provider = await getProviderForNetwork(Network.goerli);
-          setCurrentProvider(provider);
-        } else {
-          setCurrentNetwork(selectedNetwork);
-          provider = await getProviderForNetwork(selectedNetwork);
-          setCurrentProvider(provider);
-        }
+    const assetNetwork = selected?.network;
+    if (assetNetwork && (assetNetwork !== currentNetwork || !currentNetwork || prevNetwork !== currentNetwork)) {
+      let provider = web3Provider;
+      const selectedNetwork = selected?.network;
+      if (network === Network.goerli) {
+        setCurrentNetwork(Network.goerli);
+        provider = getProviderForNetwork(Network.goerli);
+        setCurrentProvider(provider);
+      } else {
+        setCurrentNetwork(selectedNetwork);
+        provider = getProviderForNetwork(selectedNetwork);
+        setCurrentProvider(provider);
       }
-    };
-    updateNetworkAndProvider();
+    }
   }, [currentNetwork, isNft, network, prevNetwork, selected?.network, sendUpdateSelected]);
 
   const onChangeNativeAmount = useCallback(
@@ -619,7 +619,8 @@ export default function SendSheet(props) {
     if (isValid) {
       toAddress = await resolveNameOrAddress(recipient);
     }
-    const validRecipient = validateRecipient(toAddress);
+    const tokenAddress = selected?.address;
+    const validRecipient = validateRecipient(toAddress, tokenAddress);
     assetInputRef?.current?.blur();
     nativeCurrencyInputRef?.current?.blur();
     if (!validRecipient) {

@@ -1,7 +1,8 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
-import { Source, updateSwapSlippage as updateSwapSlippageRedux, updateSwapSource as updateSwapSourceRedux } from '@/redux/swap';
+import { Source } from '@/raps/references';
+import { updateSwapSlippage as updateSwapSlippageRedux, updateSwapSource as updateSwapSourceRedux } from '@/redux/swap';
 
 export default function useSwapSettings() {
   const dispatch = useDispatch();

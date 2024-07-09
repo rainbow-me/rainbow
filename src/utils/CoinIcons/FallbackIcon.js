@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
+import Animated from 'react-native-reanimated';
 
 const sx = StyleSheet.create({
   container: {
@@ -40,7 +41,7 @@ const FallbackIcon = ({ color = '#3A3D51', height, style, symbol = '', textStyle
   const fontSize = buildFallbackFontSize(formattedSymbol, width);
 
   return (
-    <View
+    <Animated.View
       {...props}
       style={[
         sx.container,
@@ -53,7 +54,7 @@ const FallbackIcon = ({ color = '#3A3D51', height, style, symbol = '', textStyle
       ]}
     >
       <Text style={[sx.text, { fontSize }, textStyles]}>{formattedSymbol}</Text>
-    </View>
+    </Animated.View>
   );
 };
 

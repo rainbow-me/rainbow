@@ -37,15 +37,14 @@ import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
 import { getNetworkObj } from '@/networks';
+import store from '@/redux/store';
 
 export enum TokenStandard {
   ERC1155 = 'ERC1155',
   ERC721 = 'ERC721',
 }
 
-export const networkProviders: {
-  [network in Network]?: StaticJsonRpcProvider;
-} = {};
+export const networkProviders = new Map<Network, StaticJsonRpcProvider>();
 
 /**
  * Creates an rpc endpoint for a given chain id using the Rainbow rpc proxy.
@@ -64,6 +63,7 @@ export const proxyRpcEndpoint = (chainId: number, customEndpoint?: string) => {
     avalanche_mainnet_rpc,
     ethereum_mainnet_rpc,
     blast_mainnet_rpc,
+    degen_mainnet_rpc,
   } = getRemoteConfig();
   if (rpc_proxy_enabled) {
     return `${RPC_PROXY_BASE_URL}/${chainId}/${RPC_PROXY_API_KEY}${
@@ -91,6 +91,8 @@ export const proxyRpcEndpoint = (chainId: number, customEndpoint?: string) => {
         return avalanche_mainnet_rpc;
       case Network.blast:
         return blast_mainnet_rpc;
+      case Network.degen:
+        return degen_mainnet_rpc;
       case Network.gnosis:
       case Network.mainnet:
       default:
@@ -204,8 +206,8 @@ export const getFlashbotsProvider = async () => {
   );
 };
 
-export const getCachedProviderForNetwork = (network: Network = Network.mainnet) => {
-  return networkProviders[network]!;
+export const getCachedProviderForNetwork = (network: Network = Network.mainnet): StaticJsonRpcProvider | undefined => {
+  return networkProviders.get(network);
 };
 
 /**
@@ -213,28 +215,38 @@ export const getCachedProviderForNetwork = (network: Network = Network.mainnet) 
  * @param network The network as a `Network` or string.
  * @return The provider for the network.
  */
-export const getProviderForNetwork = async (network: Network | string = Network.mainnet): Promise<StaticJsonRpcProvider> => {
-  if (isNetworkEnum(network) && networkProviders[network]) {
-    return networkProviders[network]!;
+export const getProviderForNetwork = (network: Network | string = Network.mainnet): StaticJsonRpcProvider => {
+  const isSupportedNetwork = isNetworkEnum(network);
+  const cachedProvider = isSupportedNetwork ? networkProviders.get(network) : undefined;
+
+  if (isSupportedNetwork && cachedProvider) {
+    return cachedProvider;
   }
 
-  if (!isNetworkEnum(network)) {
+  if (!isSupportedNetwork) {
     const provider = new StaticJsonRpcProvider(network, Network.mainnet);
-    networkProviders[Network.mainnet] = provider;
+    networkProviders.set(Network.mainnet, provider);
     return provider;
   } else {
-    const chainId = getNetworkObj(network).id;
-    const provider = new StaticJsonRpcProvider(getNetworkObj(network).rpc, chainId);
-    if (!networkProviders[network]) {
-      networkProviders[network] = provider;
-    }
-    await provider.ready;
+    const provider = new StaticJsonRpcProvider(getNetworkObj(network).rpc(), getNetworkObj(network).id);
+    networkProviders.set(network, provider);
     return provider;
   }
 };
 
 /**
- * @desc Sends an arbitrary RCP call using a given provider, or the default
+ * @desc Checks if the active network is Hardhat.
+ * @returns boolean: `true` if connected to Hardhat.
+ */
+export const getIsHardhatConnected = (): boolean => {
+  const currentNetwork = store.getState().settings.network;
+  const currentProviderUrl = getCachedProviderForNetwork(currentNetwork)?.connection?.url;
+  const connectedToHardhat = !!currentProviderUrl && isHardHat(currentProviderUrl);
+  return connectedToHardhat;
+};
+
+/**
+ * @desc Sends an arbitrary RPC call using a given provider, or the default
  * cached provider.
  * @param payload The payload, including a method and parameters, based on
  * the Ethers.js `StaticJsonRpcProvider.send` arguments.
@@ -245,10 +257,10 @@ export const getProviderForNetwork = async (network: Network | string = Network.
 export const sendRpcCall = async (
   payload: {
     method: string;
-    params: any[];
+    params: unknown[];
   },
   provider: StaticJsonRpcProvider | null = null
-): Promise<any> => (provider || web3Provider)?.send(payload.method, payload.params);
+): Promise<unknown> => (provider || web3Provider)?.send(payload.method, payload.params);
 
 /**
  * @desc check if hex string
@@ -356,9 +368,9 @@ export const estimateGas = async (
 export async function estimateGasWithPadding(
   txPayload: TransactionRequest,
   contractCallEstimateGas: Contract['estimateGas'][string] | null = null,
-  callArguments: any[] | null = null,
+  callArguments: unknown[] | null = null,
   provider: StaticJsonRpcProvider | null = null,
-  paddingFactor: number = 1.1
+  paddingFactor = 1.1
 ): Promise<string | null> {
   try {
     const p = provider || web3Provider;
@@ -380,16 +392,16 @@ export async function estimateGasWithPadding(
     const code = to ? await p.getCode(to) : undefined;
     // 2 - if it's not a contract AND it doesn't have any data use the default gas limit
     if ((!contractCallEstimateGas && !to) || (to && !data && (!code || code === '0x'))) {
-      logger.info('⛽ Skipping estimates, using default', {
+      logger.debug('⛽ Skipping estimates, using default', {
         ethUnits: ethUnits.basic_tx.toString(),
       });
       return ethUnits.basic_tx.toString();
     }
 
-    logger.info('⛽ Calculating safer gas limit for last block');
+    logger.debug('⛽ Calculating safer gas limit for last block');
     // 3 - If it is a contract, call the RPC method `estimateGas` with a safe value
     const saferGasLimit = fraction(gasLimit.toString(), 19, 20);
-    logger.info('⛽ safer gas limit for last block is', { saferGasLimit });
+    logger.debug('⛽ safer gas limit for last block is', { saferGasLimit });
 
     txPayloadToEstimate[contractCallEstimateGas ? 'gasLimit' : 'gas'] = toHex(saferGasLimit);
 
@@ -401,7 +413,7 @@ export async function estimateGasWithPadding(
 
     const lastBlockGasLimit = addBuffer(gasLimit.toString(), 0.9);
     const paddedGas = addBuffer(estimatedGas.toString(), paddingFactor.toString());
-    logger.info('⛽ GAS CALCULATIONS!', {
+    logger.debug('⛽ GAS CALCULATIONS!', {
       estimatedGas: estimatedGas.toString(),
       gasLimit: gasLimit.toString(),
       lastBlockGasLimit: lastBlockGasLimit,
@@ -410,26 +422,24 @@ export async function estimateGasWithPadding(
 
     // If the safe estimation is above the last block gas limit, use it
     if (greaterThan(estimatedGas.toString(), lastBlockGasLimit)) {
-      logger.info('⛽ returning orginal gas estimation', {
+      logger.debug('⛽ returning orginal gas estimation', {
         esimatedGas: estimatedGas.toString(),
       });
       return estimatedGas.toString();
     }
     // If the estimation is below the last block gas limit, use the padded estimate
     if (greaterThan(lastBlockGasLimit, paddedGas)) {
-      logger.info('⛽ returning padded gas estimation', { paddedGas });
+      logger.debug('⛽ returning padded gas estimation', { paddedGas });
       return paddedGas;
     }
     // otherwise default to the last block gas limit
-    logger.info('⛽ returning last block gas limit', { lastBlockGasLimit });
+    logger.debug('⛽ returning last block gas limit', { lastBlockGasLimit });
     return lastBlockGasLimit;
-  } catch (e: any) {
+  } catch (e) {
     /*
      * Reported ~400x per day, but if it's not actionable it might as well be a warning.
      */
-    logger.warn('Error calculating gas limit with padding', {
-      message: e.message,
-    });
+    logger.warn('Error calculating gas limit with padding', { message: e instanceof Error ? e.message : 'Unknown error' });
     return null;
   }
 }
@@ -519,7 +529,7 @@ export const resolveUnstoppableDomain = async (domain: string): Promise<string |
     .then((address: string) => {
       return address;
     })
-    .catch((error: any) => {
+    .catch(error => {
       logger.error(new RainbowError(`resolveUnstoppableDomain error`), {
         message: error.message,
       });
@@ -776,7 +786,7 @@ export const estimateGasLimit = async (
     recipient: string;
     amount: number;
   },
-  addPadding: boolean = false,
+  addPadding = false,
   provider: StaticJsonRpcProvider | null = null,
   network: Network = Network.mainnet
 ): Promise<string | null> => {

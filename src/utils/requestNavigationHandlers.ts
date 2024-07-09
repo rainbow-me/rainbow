@@ -18,8 +18,12 @@ import { getRequestDisplayDetails } from '@/parsers';
 import { RainbowNetworks } from '@/networks';
 import { maybeSignUri } from '@/handlers/imgix';
 import { getActiveRoute } from '@/navigation/Navigation';
+import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
+import { enableActionsOnReadOnlyWallet } from '@/config';
+import walletTypes from '@/helpers/walletTypes';
+import watchingAlert from './watchingAlert';
 
-export type RequestType = 'walletconnect' | 'browser';
+export type RequestSource = 'walletconnect' | 'browser';
 
 // Dapp Browser
 
@@ -27,6 +31,8 @@ export interface DappConnectionData {
   dappName?: string;
   dappUrl: string;
   imageUrl?: string;
+  chainId?: number;
+  address?: string;
 }
 
 export const handleDappBrowserConnectionPrompt = (dappData: DappConnectionData): Promise<{ chainId: number; address: string } | Error> => {
@@ -39,11 +45,14 @@ export const handleDappBrowserConnectionPrompt = (dappData: DappConnectionData):
         chainIds,
         dappName: dappData?.dappName || dappData.dappUrl,
         dappUrl: dappData.dappUrl,
-        imageUrl: maybeSignUri(dappData.dappUrl),
+        imageUrl: maybeSignUri(dappData.imageUrl),
         isWalletConnectV2: false,
         peerId: '',
         dappScheme: null,
+        proposedChainId: dappData.chainId,
+        proposedAddress: dappData.address,
       },
+      source: 'browser',
       timedOut: false,
       callback: async (approved, approvedChainId, accountAddress) => {
         if (approved) {
@@ -69,6 +78,13 @@ export const handleDappBrowserConnectionPrompt = (dappData: DappConnectionData):
 };
 
 export const handleDappBrowserRequest = async (request: Omit<RequestData, 'displayDetails'>): Promise<string | Error> => {
+  const { wallets } = store.getState().wallets;
+  const selectedWallet = findWalletWithAccount(wallets!, request.address);
+  const isReadOnlyWallet = selectedWallet!.type === walletTypes.readOnly;
+  if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
+    watchingAlert();
+    return Promise.reject(new Error('This wallet is read-only.'));
+  }
   const nativeCurrency = store.getState().settings.nativeCurrency;
   const displayDetails = getRequestDisplayDetails(request.payload, nativeCurrency, request.network);
 
@@ -102,7 +118,7 @@ export const handleDappBrowserRequest = async (request: Omit<RequestData, 'displ
       onCloseScreen,
       network: request.network,
       address: request.address,
-      requestType: 'browser',
+      source: 'browser',
     });
   });
 };
@@ -172,6 +188,6 @@ export const handleWalletConnectRequest = async (request: WalletconnectRequestDa
     onCloseScreen,
     network,
     address,
-    requestType: 'walletconnect',
+    source: 'walletconnect',
   });
 };

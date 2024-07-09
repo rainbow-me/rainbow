@@ -1,23 +1,32 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { NativeModules } from 'react-native';
 import { captureException } from '@sentry/react-native';
 import { endsWith } from 'lodash';
 import { CLOUD_BACKUP_ERRORS, encryptAndSaveDataToCloud, getDataFromCloud } from '@/handlers/cloudBackup';
 import WalletBackupTypes from '../helpers/walletBackupTypes';
 import WalletTypes from '../helpers/walletTypes';
-import { allWalletsKey, pinKey, privateKeyKey, seedPhraseKey, selectedWalletKey } from '@/utils/keychainConstants';
+import { Alert } from '@/components/alerts';
+import { allWalletsKey, pinKey, privateKeyKey, seedPhraseKey, selectedWalletKey, identifierForVendorKey } from '@/utils/keychainConstants';
 import * as keychain from '@/model/keychain';
 import * as kc from '@/keychain';
 import { AllRainbowWallets, allWalletsVersion, createWallet, RainbowWallet } from './wallet';
 import { analytics } from '@/analytics';
 import oldLogger from '@/utils/logger';
 import { logger, RainbowError } from '@/logger';
-import { IS_ANDROID } from '@/env';
+import { IS_ANDROID, IS_DEV } from '@/env';
 import AesEncryptor from '../handlers/aesEncryption';
 import { authenticateWithPIN, authenticateWithPINAndCreateIfNeeded, decryptPIN } from '@/handlers/authentication';
 import * as i18n from '@/languages';
 import { getUserError } from '@/hooks/useWalletCloudBackup';
 import { cloudPlatform } from '@/utils/platform';
 import { setAllWalletsWithIdsAsBackedUp } from '@/redux/wallets';
+import { Navigation } from '@/navigation';
+import Routes from '@/navigation/routesNames';
+import { clearAllStorages } from './mmkv';
+import walletBackupStepTypes from '@/helpers/walletBackupStepTypes';
+import { getRemoteConfig } from './remoteConfig';
 
+const { DeviceUUID } = NativeModules;
 const encryptor = new AesEncryptor();
 const PIN_REGEX = /^\d{4}$/;
 
@@ -622,7 +631,7 @@ async function decryptSecretFromBackupPin({ secret, backupPIN }: { secret?: stri
 // Attempts to save the password to decrypt the backup from the iCloud keychain
 export async function saveBackupPassword(password: BackupPassword): Promise<void> {
   try {
-    if (ios) {
+    if (!IS_ANDROID) {
       await kc.setSharedWebCredentials('Backup Password', password);
       analytics.track('Saved backup password on iCloud');
     }
@@ -653,7 +662,7 @@ export async function saveLocalBackupPassword(password: string) {
 
 // Attempts to fetch the password to decrypt the backup from the iCloud keychain
 export async function fetchBackupPassword(): Promise<null | BackupPassword> {
-  if (android) {
+  if (IS_ANDROID) {
     return null;
   }
 
@@ -668,4 +677,133 @@ export async function fetchBackupPassword(): Promise<null | BackupPassword> {
     captureException(e);
     return null;
   }
+}
+
+export async function getDeviceUUID(): Promise<string | null> {
+  if (IS_ANDROID) {
+    return null;
+  }
+
+  return new Promise(resolve => {
+    DeviceUUID.getUUID((error: unknown, uuid: string[]) => {
+      if (error) {
+        logger.error(new RainbowError('Received error when trying to get uuid from Native side'), {
+          error,
+        });
+        resolve(null);
+      } else {
+        resolve(uuid[0]);
+      }
+    });
+  });
+}
+
+const FailureAlert = () =>
+  Alert({
+    buttons: [
+      {
+        style: 'cancel',
+        text: i18n.t(i18n.l.check_identifier.failure_alert.action),
+      },
+    ],
+    message: i18n.t(i18n.l.check_identifier.failure_alert.message),
+    title: i18n.t(i18n.l.check_identifier.failure_alert.title),
+  });
+
+/**
+ * Checks if the identifier is the same as the one stored in localstorage
+ * The identifier can get out of sync in two instances:
+ * 1. when the user reinstalls the app
+ * 2. when the user migrates phones (we really only care about this instance)
+ *
+ * The goal here is to not allow them into the app if they have broken keychain data from a phone migration
+ *
+ * @returns a promise function to be ran after successful biometric authentication
+ */
+export async function checkIdentifierOnLaunch() {
+  // Unable to really persist things on Android, so let's just exit early...
+  if (IS_ANDROID) return;
+
+  const { idfa_check_enabled } = getRemoteConfig();
+  if (!idfa_check_enabled || IS_DEV) {
+    return;
+  }
+
+  try {
+    const uuid = await getDeviceUUID();
+    if (!uuid) {
+      throw new Error('Unable to retrieve identifier for vendor');
+    }
+
+    const currentIdentifier = await kc.get(identifierForVendorKey);
+    if (currentIdentifier.error) {
+      switch (currentIdentifier.error) {
+        case kc.ErrorType.Unavailable: {
+          logger.debug('Value for current identifier not found, setting it to new UUID...', {
+            uuid,
+            error: currentIdentifier.error,
+          });
+          await kc.set(identifierForVendorKey, uuid);
+          return;
+        }
+
+        default:
+          logger.error(new RainbowError('Error while checking identifier on launch'), {
+            error: currentIdentifier.error,
+          });
+          break;
+      }
+
+      throw new Error('Unable to retrieve current identifier');
+    }
+
+    // NOTE: This can only happen on a fresh install
+    if (!currentIdentifier.value) {
+      await kc.set(identifierForVendorKey, uuid);
+      return;
+    }
+
+    if (currentIdentifier.value === uuid) {
+      return;
+    }
+
+    return new Promise(resolve => {
+      Navigation.handleAction(Routes.CHECK_IDENTIFIER_SCREEN, {
+        step: walletBackupStepTypes.check_identifier,
+        // NOTE: Just a reinstall, let's update the identifer and send them back to the app
+        onSuccess: async () => {
+          await kc.set(identifierForVendorKey, uuid);
+          Navigation.goBack();
+          resolve(true);
+        },
+        // NOTE: Detected a phone migration, let's remove keychain keys and send them back to the welcome screen
+        onFailure: async () => {
+          FailureAlert();
+          // wipe keychain
+          await kc.clear();
+
+          // re-add the IDFA uuid
+          await kc.set(identifierForVendorKey, uuid);
+
+          // clear async storage
+          await AsyncStorage.clear();
+
+          // clear mmkv
+          clearAllStorages();
+
+          // send user back to welcome screen
+          Navigation.handleAction(Routes.WELCOME_SCREEN, {});
+          resolve(false);
+        },
+      });
+    });
+  } catch (error) {
+    logger.error(new RainbowError('Error while checking identifier on launch'), {
+      extra: {
+        error,
+      },
+    });
+  }
+
+  return false;
 }

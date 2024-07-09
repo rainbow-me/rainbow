@@ -1,7 +1,7 @@
 import React, { ElementRef, forwardRef, useMemo } from 'react';
 import { StyleProp, TextStyle } from 'react-native';
 import AnimateableText from 'react-native-animateable-text';
-import { DerivedValue, useAnimatedProps } from 'react-native-reanimated';
+import { SharedValue, useAnimatedProps } from 'react-native-reanimated';
 import { TextColor } from '../../color/palettes';
 import { CustomColor } from '../../color/useForegroundColor';
 import { createLineHeightFixNode } from '../../typography/createLineHeightFixNode';
@@ -10,36 +10,44 @@ import { useTextStyle } from './useTextStyle';
 
 export type AnimatedTextProps = {
   align?: 'center' | 'left' | 'right';
-  children?: DerivedValue<string | undefined>;
+  children?: SharedValue<string | null | undefined> | string | null | undefined;
   color?: TextColor | CustomColor;
   ellipsizeMode?: 'head' | 'middle' | 'tail' | 'clip' | undefined;
   numberOfLines?: number;
   selectable?: boolean;
   size: TextSize;
+  /**
+   * @deprecated
+   * Use `children` instead, which now accepts either a string or a shared value that holds a string.
+   */
+  staticText?: string;
   tabularNumbers?: boolean;
-  /** 
+  /**
    * @deprecated
    * You can now pass in a value like this:
-   * 
+   *
+   * ```
    * <AnimatedText>
    *   {derivedOrSharedValue}
    * </AnimatedText>
-   * 
-   * This should be a Reanimated shared or derived value.
-   * 
-   * To create a derived value, use the `useDerivedValue` hook from 'react-native-reanimated'. 
+   * ```
+   *
+   * `derivedOrSharedValue` should be a Reanimated shared or derived value.
+   *
+   * To create a derived value, use the `useDerivedValue` hook from 'react-native-reanimated'.
    * For example:
-   ```
-   const text = useDerivedValue(() => `Hello ${someOtherValue.value}`);
-   ```
+   * ```
+   * const text = useDerivedValue(() => `Hello ${someOtherValue.value}`);
+   * ```
    **/
-  text?: DerivedValue<string | undefined>;
+  text?: SharedValue<string | null | undefined>;
   testID?: string;
   uppercase?: boolean;
   weight?: TextWeight;
 } & {
   style?: StyleProp<TextStyle>;
 };
+
 export const AnimatedText = forwardRef<ElementRef<typeof AnimateableText>, AnimatedTextProps>(function Text(
   {
     align,
@@ -49,6 +57,7 @@ export const AnimatedText = forwardRef<ElementRef<typeof AnimateableText>, Anima
     numberOfLines,
     selectable,
     size,
+    staticText,
     tabularNumbers,
     testID,
     text,
@@ -71,7 +80,7 @@ export const AnimatedText = forwardRef<ElementRef<typeof AnimateableText>, Anima
 
   const animatedText = useAnimatedProps(() => {
     return {
-      text: children?.value ?? text?.value ?? '',
+      text: typeof children === 'string' ? children : children?.value ?? text?.value ?? staticText ?? '',
     };
   });
 

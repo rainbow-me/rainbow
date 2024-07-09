@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { metadataClient } from '@/graphql';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
-import { QueryFunctionArgs, createQueryKey, queryClient } from '@/react-query';
+import { QueryConfigWithSelect, QueryFunctionArgs, createQueryKey, queryClient } from '@/react-query';
 
 import { getDappHost, getDappHostname, getHardcodedDappInformation, isValidUrl } from '@/utils/connectedApps';
 import { capitalize } from 'lodash';
@@ -9,7 +9,7 @@ import { capitalize } from 'lodash';
 export interface DappMetadata {
   url: string;
   appHost: string;
-  appHostName: string;
+  appHostName?: string;
   appName: string;
   appShortName: string;
   appLogo?: string;
@@ -36,7 +36,7 @@ type DappMetadataQueryKey = ReturnType<typeof DappMetadataQueryKey>;
 
 export async function fetchDappMetadata({ url, status }: { url: string; status: boolean }) {
   const appHostName = url && isValidUrl(url) ? getDappHostname(url) : '';
-  const hardcodedAppName = url && isValidUrl(url) ? getHardcodedDappInformation(appHostName)?.name || '' : '';
+  const hardcodedAppName = url && isValidUrl(url) ? getHardcodedDappInformation(appHostName || getDappHostname(url) || '')?.name || '' : '';
 
   const response = await metadataClient.getdApp({
     shortName: hardcodedAppName,
@@ -71,6 +71,13 @@ export async function prefetchDappMetadata({ url }: { url: string }) {
   queryClient.prefetchQuery(DappMetadataQueryKey({ url }), async () => fetchDappMetadata({ url, status: false }), {
     staleTime: 60000,
   });
+}
+
+export async function getDappMetadata(
+  { url }: { url: string },
+  config: QueryConfigWithSelect<DappMetadata, Error, DappMetadata, DappMetadataQueryKey> = {}
+) {
+  return await queryClient.fetchQuery(DappMetadataQueryKey({ url }), dappMetadataQueryFunction, config);
 }
 
 // ///////////////////////////////////////////////

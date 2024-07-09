@@ -5,7 +5,7 @@ import { TabBarIcon } from '@/components/icons/TabBarIcon';
 import { FlexItem } from '@/components/layout';
 import { TestnetToast } from '@/components/toasts';
 import { DAPP_BROWSER, POINTS, useExperimentalFlag } from '@/config';
-import { Box, Columns, globalColors, Stack, useForegroundColor, Text, Cover } from '@/design-system';
+import { Box, Columns, globalColors, Stack, useForegroundColor, Text, Cover, useColorMode } from '@/design-system';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import { web3Provider } from '@/handlers/web3';
 import { isUsingButtonNavigation } from '@/helpers/statusBarHelper';
@@ -16,7 +16,7 @@ import RecyclerListViewScrollToTopProvider, {
 } from '@/navigation/RecyclerListViewScrollToTopContext';
 import DappBrowserScreen from '@/screens/dapp-browser/DappBrowserScreen';
 import { discoverOpenSearchFnRef } from '@/screens/discover/components/DiscoverSearchContainer';
-import PointsScreen from '@/screens/points/PointsScreen';
+import { PointsScreen } from '@/screens/points/PointsScreen';
 import WalletScreen from '@/screens/WalletScreen';
 import { useTheme } from '@/theme';
 import { deviceUtils } from '@/utils';
@@ -24,16 +24,26 @@ import { BlurView } from '@react-native-community/blur';
 import { createMaterialTopTabNavigator, MaterialTopTabNavigationEventMap } from '@react-navigation/material-top-tabs';
 import { MaterialTopTabDescriptorMap } from '@react-navigation/material-top-tabs/lib/typescript/src/types';
 import { NavigationHelpers, ParamListBase, RouteProp } from '@react-navigation/native';
-import React, { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { InteractionManager, View } from 'react-native';
-import Animated, { Easing, interpolate, SharedValue, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, {
+  Easing,
+  interpolate,
+  SharedValue,
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
-import { AnimatedSpinner } from '@/__swaps__/components/animations/AnimatedSpinner';
+import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import DiscoverScreen, { discoverScrollToTopFnRef } from '../screens/discover/DiscoverScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import Routes from './routesNames';
 import { ScrollPositionContext } from './ScrollPositionContext';
 import SectionListScrollToTopProvider, { useSectionListScrollToTopContext } from './SectionListScrollToTopContext';
+import { TextSize } from '@/design-system/components/Text/Text';
 
 export const TAB_BAR_HEIGHT = getTabBarHeight();
 
@@ -69,13 +79,25 @@ const ActivityTabIcon = React.memo(
   }) => {
     const { pendingTransactions } = usePendingTransactions();
 
-    return pendingTransactions.length > 0 ? (
-      <Box width={{ custom: 32 }} height={{ custom: 32 }} alignItems="center" justifyContent="center">
-        <AnimatedSpinner isLoading={true} color={accentColor} size={28} />
+    const pendingCount = pendingTransactions.length;
+
+    const textSize: TextSize = useMemo(() => {
+      if (pendingCount < 10) {
+        return '15pt';
+      } else if (pendingCount < 20) {
+        return '12pt';
+      } else {
+        return '11pt';
+      }
+    }, [pendingCount]);
+
+    return pendingCount > 0 ? (
+      <Box width={{ custom: 28 }} height={{ custom: 28 }} alignItems="center" justifyContent="center">
+        <AnimatedSpinner color={accentColor} isLoading requireSrc={require('@/assets/tabSpinner.png')} size={28} />
         <Cover>
-          <Box width="full" height="full" padding={{ custom: 7 }} alignItems="center" justifyContent="center">
-            <Text color={{ custom: accentColor }} size="13pt" weight="heavy" align="center">
-              {pendingTransactions.length}
+          <Box width="full" height="full" alignItems="center" justifyContent="center">
+            <Text color={{ custom: accentColor }} size={textSize} weight="heavy" align="center">
+              {pendingCount}
             </Text>
           </Box>
         </Cover>
@@ -94,10 +116,11 @@ interface TabBarProps {
 }
 
 const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
-  const { accentColor } = useAccountAccentColor();
+  const { highContrastAccentColor: accentColor } = useAccountAccentColor();
   const { tabViewProgress } = useBrowserTabViewProgressContext();
+  const { isDarkMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();
-  const { colors, isDarkMode } = useTheme();
+  const { colors } = useTheme();
   const recyclerList = useRecyclerListViewScrollToTopContext();
   const sectionList = useSectionListScrollToTopContext();
 
@@ -114,15 +137,14 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
 
   const reanimatedPosition = useSharedValue(0);
 
-  const tabPositions = useMemo(() => {
+  const tabPositions = useDerivedValue(() => {
     const inputRange = Array.from({ length: numberOfTabs }, (_, index) => index);
     const outputRange = Array.from({ length: numberOfTabs }, (_, index) => tabPillStartPosition + tabWidth * index);
     return { inputRange, outputRange };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [numberOfTabs]);
+  });
 
   const tabStyle = useAnimatedStyle(() => {
-    const translateX = interpolate(reanimatedPosition.value, tabPositions.inputRange, tabPositions.outputRange, 'clamp');
+    const translateX = interpolate(reanimatedPosition.value, tabPositions.value.inputRange, tabPositions.value.outputRange, 'clamp');
     return {
       transform: [{ translateX }],
       width: 72,
@@ -133,18 +155,21 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
     const shouldUseBrowserStyle = showDappBrowserTab && reanimatedPosition.value === 2;
     return {
       borderTopColor: isDarkMode ? separatorSecondary : LIGHT_SEPARATOR_COLOR,
-      borderTopWidth: shouldUseBrowserStyle ? withTiming(1, fadeConfig) : withTiming(0, fadeConfig),
-      opacity: shouldUseBrowserStyle ? withTiming(1, fadeConfig) : withTiming(0, fadeConfig),
+      borderTopWidth: withTiming(shouldUseBrowserStyle ? 1 : 0, fadeConfig),
+      opacity: withTiming(shouldUseBrowserStyle ? 1 : 0, fadeConfig),
     };
   });
 
-  const dappBrowserTabBarShadowStyle = useAnimatedStyle(() => ({
-    shadowOpacity:
-      showDappBrowserTab && reanimatedPosition.value === 2 ? withTiming(0, fadeConfig) : withTiming(isDarkMode ? 0.2 : 0.04, fadeConfig),
-  }));
+  const dappBrowserTabBarShadowStyle = useAnimatedStyle(() => {
+    const defaultShadowOpacity = isDarkMode ? 0.2 : 0.04;
+    const shadowOpacity = showDappBrowserTab && reanimatedPosition.value === 2 ? 0 : defaultShadowOpacity;
+    return {
+      shadowOpacity: withTiming(shadowOpacity, fadeConfig),
+    };
+  });
 
   const hideForBrowserTabViewStyle = useAnimatedStyle(() => {
-    const progress = tabViewProgress?.value || 0;
+    const progress = tabViewProgress.value || 0;
     const opacity = 1 - progress / 75;
     const pointerEvents = opacity < 1 ? 'none' : 'auto';
 
@@ -179,10 +204,14 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
   const canSwitchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastPressRef = useRef<number | undefined>(undefined);
 
-  useLayoutEffect(() => {
-    reanimatedPosition.value = state.index;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.index]);
+  useAnimatedReaction(
+    () => state.index,
+    (current, previous) => {
+      if (current !== previous) {
+        reanimatedPosition.value = current;
+      }
+    }
+  );
 
   const onPress = useCallback(
     (route: { key: string }, index: number, isFocused: boolean, tabBarIcon: string) => {
@@ -221,8 +250,7 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
 
       lastPressRef.current = time;
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [canSwitchRef, jumpTo, navigation, recyclerList, sectionList]
+    [canSwitchRef, jumpTo, reanimatedPosition, recyclerList, sectionList]
   );
 
   const onLongPress = useCallback(

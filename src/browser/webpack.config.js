@@ -25,7 +25,7 @@ module.exports = {
       http: false,
       stream: 'stream-browserify',
       https: 'agent-base',
-      crypto: 'false',
+      crypto: false,
     },
   },
   module: {

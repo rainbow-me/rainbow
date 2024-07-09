@@ -17,12 +17,7 @@ export const NOE_PAGE = 30;
 export default function useAccountTransactions() {
   const { accountAddress, nativeCurrency } = useAccountSettings();
 
-  const { pendingTransactions: storePendingTransactions } = usePendingTransactionsStore();
-
-  const pendingTransactions = useMemo(() => {
-    const txs = storePendingTransactions[accountAddress] || [];
-    return txs;
-  }, [accountAddress, storePendingTransactions]);
+  const pendingTransactions = usePendingTransactionsStore(state => state.pendingTransactions[accountAddress] || []);
 
   const { data, fetchNextPage, hasNextPage } = useConsolidatedTransactions({
     address: accountAddress,

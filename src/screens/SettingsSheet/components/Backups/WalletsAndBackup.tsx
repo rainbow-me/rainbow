@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, { useCallback, useMemo } from 'react';
 import { cloudPlatform } from '@/utils/platform';
 import Menu from '../Menu';
@@ -35,7 +36,10 @@ import { format } from 'date-fns';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { Backup, parseTimestampFromFilename } from '@/model/backup';
 import { useCloudBackups } from '@/components/backup/CloudBackupProvider';
-import { login } from '@/handlers/cloudBackup';
+import { GoogleDriveUserData, getGoogleAccountUserData, isCloudBackupAvailable, login } from '@/handlers/cloudBackup';
+import { WrappedAlert as Alert } from '@/helpers/alert';
+import { Linking } from 'react-native';
+import { noop } from 'lodash';
 
 type WalletPillProps = {
   account: RainbowAccount;
@@ -72,7 +76,7 @@ const WalletPill = ({ account }: WalletPillProps) => {
       <Text color={'secondary (Deprecated)'} size="11pt" weight="semibold">
         {label.endsWith('.eth')
           ? abbreviations.abbreviateEnsForDisplay(label, 8, 4) ?? ''
-          : abbreviations.address(account.address, 3, 5) ?? ''}
+          : abbreviations.address(label !== '' ? label : account.address, 3, 5) ?? ''}
       </Text>
     </Box>
   );
@@ -164,7 +168,40 @@ export const WalletsAndBackup = () => {
 
   const backupAllNonBackedUpWalletsTocloud = useCallback(async () => {
     if (IS_ANDROID) {
-      await login();
+      try {
+        await login();
+
+        getGoogleAccountUserData().then((accountDetails: GoogleDriveUserData | undefined) => {
+          if (accountDetails) {
+            return onSubmit({ type: BackupTypes.All });
+          }
+          Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
+        });
+      } catch (e) {
+        Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
+        logger.error(e as RainbowError);
+      }
+    } else {
+      const isAvailable = await isCloudBackupAvailable();
+      if (!isAvailable) {
+        Alert.alert(
+          i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.label),
+          i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.description),
+          [
+            {
+              onPress: () => {
+                Linking.openURL('https://support.apple.com/en-us/HT204025');
+              },
+              text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.show_me),
+            },
+            {
+              style: 'cancel',
+              text: i18n.t(i18n.l.modal.back_up.alerts.cloud_not_enabled.no_thanks),
+            },
+          ]
+        );
+        return;
+      }
     }
 
     onSubmit({ type: BackupTypes.All });
@@ -178,25 +215,32 @@ export const WalletsAndBackup = () => {
   }, [backups, navigate]);
 
   const onCreateNewSecretPhrase = useCallback(async () => {
-    try {
-      await createWallet({
-        color: null,
-        name: '',
-        clearCallbackOnStartCreation: true,
-      });
+    navigate(Routes.MODAL_SCREEN, {
+      type: 'new_wallet_group',
+      numWalletGroups: walletTypeCount.phrase + 1,
+      onCloseModal: async ({ name }: { name: string }) => {
+        const nameValue = name.trim() !== '' ? name.trim() : '';
+        try {
+          await createWallet({
+            color: null,
+            name: nameValue,
+            clearCallbackOnStartCreation: true,
+          });
 
-      await dispatch(walletsLoadState(profilesEnabled));
+          await dispatch(walletsLoadState(profilesEnabled));
 
-      // @ts-ignore
-      await initializeWallet();
-    } catch (err) {
-      logger.error(new RainbowError('Failed to create new secret phrase'), {
-        extra: {
-          error: err,
-        },
-      });
-    }
-  }, [dispatch, initializeWallet, profilesEnabled]);
+          // @ts-expect-error - no params
+          await initializeWallet();
+        } catch (err) {
+          logger.error(new RainbowError('Failed to create new secret phrase'), {
+            extra: {
+              error: err,
+            },
+          });
+        }
+      },
+    });
+  }, [dispatch, initializeWallet, navigate, profilesEnabled, walletTypeCount.phrase]);
 
   const onPressLearnMoreAboutCloudBackups = useCallback(() => {
     navigate(Routes.LEARN_WEB_VIEW_SCREEN, {
@@ -318,6 +362,37 @@ export const WalletsAndBackup = () => {
                   onPress={onCreateNewSecretPhrase}
                   size={52}
                   titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.manual.create_new_secret_phrase)} />}
+                />
+              </Menu>
+
+              <Menu>
+                <MenuItem
+                  hasSfSymbol
+                  leftComponent={<MenuItem.TextIcon icon="􀣔" isLink />}
+                  onPress={onViewCloudBackups}
+                  size={52}
+                  titleComponent={
+                    <MenuItem.Title
+                      isLink
+                      text={i18n.t(i18n.l.back_up.cloud.manage_platform_backups, {
+                        cloudPlatformName: cloudPlatform,
+                      })}
+                    />
+                  }
+                />
+                <MenuItem
+                  hasSfSymbol
+                  leftComponent={<MenuItem.TextIcon icon="􀍡" isLink />}
+                  onPress={manageCloudBackups}
+                  size={52}
+                  titleComponent={
+                    <MenuItem.Title
+                      isLink
+                      text={i18n.t(i18n.l.back_up.cloud.cloud_platform_backup_settings, {
+                        cloudPlatformName: cloudPlatform,
+                      })}
+                    />
+                  }
                 />
               </Menu>
             </Stack>
@@ -595,12 +670,13 @@ export const WalletsAndBackup = () => {
     backupAllNonBackedUpWalletsTocloud,
     sortedWallets,
     onCreateNewSecretPhrase,
+    onViewCloudBackups,
+    manageCloudBackups,
     navigate,
     onNavigateToWalletView,
     allBackedUp,
+    mostRecentBackup,
     lastBackupDate,
-    onViewCloudBackups,
-    manageCloudBackups,
     onPressLearnMoreAboutCloudBackups,
   ]);
 

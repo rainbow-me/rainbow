@@ -3,8 +3,6 @@ import * as Sentry from '@sentry/react-native';
 import React, { Component } from 'react';
 import { AppRegistry, AppState, Dimensions, InteractionManager, Linking, LogBox, View } from 'react-native';
 
-// eslint-disable-next-line import/default
-import codePush from 'react-native-code-push';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
@@ -20,7 +18,7 @@ import { TransactionType } from './entities';
 import appEvents from './handlers/appEvents';
 import handleDeeplink from './handlers/deeplinks';
 import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
-import { getCachedProviderForNetwork, isHardHat, isL2Network } from './handlers/web3';
+import { getIsHardhatConnected, isL2Network } from './handlers/web3';
 import RainbowContextWrapper from './helpers/RainbowContext';
 import isTestFlight from './helpers/isTestFlight';
 import networkTypes from './helpers/networkTypes';
@@ -35,7 +33,6 @@ import { PerformanceMetrics } from './performance/tracking/types/PerformanceMetr
 import { PersistQueryClientProvider, persistOptions, queryClient } from './react-query';
 import store from './redux/store';
 import { walletConnectLoadState } from './redux/walletconnect';
-import { rainbowTokenList } from './references';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { MainThemeProvider } from './theme/ThemeContext';
 import { ethereumUtils } from './utils';
@@ -46,7 +43,6 @@ import { InitialRouteContext } from '@/navigation/initialRoute';
 import Routes from '@/navigation/routesNames';
 import { Portal } from '@/react-native-cool-modals/Portal';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
-import { initSentry, sentryRoutingInstrumentation } from '@/logger/sentry';
 import { analyticsV2 } from '@/analytics';
 import { getOrCreateDeviceId, securelyHashWalletAddress } from '@/analytics/utils';
 import { logger, RainbowError } from '@/logger';
@@ -58,11 +54,11 @@ import branch from 'react-native-branch';
 import { initializeReservoirClient } from '@/resources/reservoir/client';
 import { ReviewPromptAction } from '@/storage/schema';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
-import { RemotePromoSheetProvider } from '@/components/remote-promo-sheet/RemotePromoSheetProvider';
-import { RemoteCardProvider } from '@/components/cards/remote-cards';
 import { initializeRemoteConfig } from '@/model/remoteConfig';
+import { IS_DEV } from './env';
+import { checkIdentifierOnLaunch } from './model/backup';
 
-if (__DEV__) {
+if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
   (showNetworkRequests || showNetworkResponses) && monitorNetwork(showNetworkRequests, showNetworkResponses);
 }
@@ -113,10 +109,8 @@ class OldApp extends Component {
     if (!__DEV__ && isTestFlight) {
       logger.info(`Test flight usage - ${isTestFlight}`);
     }
+
     this.identifyFlow();
-    InteractionManager.runAfterInteractions(() => {
-      rainbowTokenList.update();
-    });
     const eventSub = AppState?.addEventListener('change', this?.handleAppStateChange);
     this.setState({ eventSubscription: eventSub });
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
@@ -130,17 +124,6 @@ class OldApp extends Component {
      * Needs to be called AFTER FCM token is loaded
      */
     initWalletConnectListeners();
-
-    /**
-     * Launch the review prompt after the app is launched
-     * This is to avoid the review prompt showing up when the app is
-     * launched and not shown yet.
-     */
-    InteractionManager.runAfterInteractions(() => {
-      setTimeout(() => {
-        handleReviewPromptAction(ReviewPromptAction.TimesLaunchedSinceInstall);
-      }, 10_000);
-    });
 
     PerformanceTracking.finishMeasuring(PerformanceMetrics.loadRootAppComponent);
     analyticsV2.track(analyticsV2.event.applicationDidMount);
@@ -161,6 +144,17 @@ class OldApp extends Component {
 
   identifyFlow = async () => {
     const address = await loadAddress();
+
+    if (address) {
+      setTimeout(() => {
+        InteractionManager.runAfterInteractions(() => {
+          handleReviewPromptAction(ReviewPromptAction.TimesLaunchedSinceInstall);
+        });
+      }, 10_000);
+
+      checkIdentifierOnLaunch();
+    }
+
     const initialRoute = address ? Routes.SWIPE_LAYOUT : Routes.WELCOME_SCREEN;
     this.setState({ initialRoute });
     PerformanceContextMap.set('initialRoute', initialRoute);
@@ -170,9 +164,6 @@ class OldApp extends Component {
     // Restore WC connectors when going from BG => FG
     if (this.state.appState === 'background' && nextAppState === 'active') {
       store.dispatch(walletConnectLoadState());
-      InteractionManager.runAfterInteractions(() => {
-        rainbowTokenList.update();
-      });
     }
     this.setState({ appState: nextAppState });
 
@@ -191,9 +182,7 @@ class OldApp extends Component {
     const network = tx.chainId ? ethereumUtils.getNetworkFromChainId(tx.chainId) : tx.network || networkTypes.mainnet;
     const isL2 = isL2Network(network);
 
-    const provider = getCachedProviderForNetwork(network);
-    const providerUrl = provider?.connection?.url;
-    const connectedToHardhat = isHardHat(providerUrl);
+    const connectedToHardhat = getIsHardhatConnected();
 
     const updateBalancesAfter = (timeout, isL2, network) => {
       const { accountAddress, nativeCurrency } = store.getState().settings;
@@ -226,23 +215,15 @@ class OldApp extends Component {
     updateBalancesAfter(isL2 ? 10000 : 5000, isL2, network);
   };
 
-  handleSentryNavigationIntegration = () => {
-    sentryRoutingInstrumentation?.registerNavigationContainer(this.navigatorRef);
-  };
-
   render() {
     return (
       <Portal>
         <View style={containerStyle}>
           {this.state.initialRoute && (
-            <RemotePromoSheetProvider isWalletReady={this.props.walletReady}>
-              <RemoteCardProvider>
-                <InitialRouteContext.Provider value={this.state.initialRoute}>
-                  <RoutesComponent onReady={this.handleSentryNavigationIntegration} ref={this.handleNavigatorRef} />
-                  <PortalConsumer />
-                </InitialRouteContext.Provider>
-              </RemoteCardProvider>
-            </RemotePromoSheetProvider>
+            <InitialRouteContext.Provider value={this.state.initialRoute}>
+              <RoutesComponent ref={this.handleNavigatorRef} />
+              <PortalConsumer />
+            </InitialRouteContext.Provider>
           )}
           <OfflineToast />
         </View>
@@ -265,9 +246,7 @@ function Root() {
 
   React.useEffect(() => {
     async function initializeApplication() {
-      await initSentry(); // must be set up immediately
       await initializeRemoteConfig();
-      // must happen immediately, but after Sentry
       await migrate();
 
       const isReturningUser = ls.device.get(['isReturningUser']);
@@ -347,7 +326,7 @@ function Root() {
         // init complete, load the rest of the app
         setInitializing(false);
       })
-      .catch(e => {
+      .catch(() => {
         logger.error(new RainbowError(`initializeApplication failed`));
 
         // for failure, continue to rest of the app for now
@@ -379,8 +358,8 @@ function Root() {
   );
 }
 
+/** Wrapping Root allows Sentry to accurately track startup times */
 const RootWithSentry = Sentry.wrap(Root);
-const RootWithCodePush = codePush(RootWithSentry);
 
 const PlaygroundWithReduxStore = () => (
   <ReduxProvider store={store}>
@@ -388,4 +367,4 @@ const PlaygroundWithReduxStore = () => (
   </ReduxProvider>
 );
 
-AppRegistry.registerComponent('Rainbow', () => (designSystemPlaygroundEnabled ? PlaygroundWithReduxStore : RootWithCodePush));
+AppRegistry.registerComponent('Rainbow', () => (designSystemPlaygroundEnabled ? PlaygroundWithReduxStore : RootWithSentry));

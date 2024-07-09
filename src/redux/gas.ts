@@ -67,7 +67,7 @@ const getDefaultGasLimit = (network: Network, defaultGasLimit: number): number =
 
 let gasPricesHandle: NodeJS.Timeout | null = null;
 
-interface GasState {
+export interface GasState {
   defaultGasLimit: number;
   gasLimit: number | null;
   gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
@@ -135,6 +135,9 @@ const getUpdatedGasFeeParams = (
       break;
     case Network.avalanche:
       nativeTokenPriceUnit = ethereumUtils.getAvaxPriceUnit();
+      break;
+    case Network.degen:
+      nativeTokenPriceUnit = ethereumUtils.getDegenPriceUnit();
       break;
     default:
       nativeTokenPriceUnit = ethereumUtils.getEthPriceUnit();
@@ -309,7 +312,7 @@ export const getBscGasPrices = async () => {
   }
 };
 export const getArbitrumGasPrices = async () => {
-  const provider = await getProviderForNetwork(Network.arbitrum);
+  const provider = getProviderForNetwork(Network.arbitrum);
   const baseGasPrice = await provider.getGasPrice();
   const normalGasPrice = weiToGwei(baseGasPrice.toString());
 
@@ -327,7 +330,7 @@ export const getArbitrumGasPrices = async () => {
 };
 
 export const getOptimismGasPrices = async () => {
-  const provider = await getProviderForNetwork(Network.optimism);
+  const provider = getProviderForNetwork(Network.optimism);
   const baseGasPrice = await provider.getGasPrice();
   const normalGasPrice = weiToGwei(baseGasPrice.toString());
 
@@ -344,7 +347,7 @@ export const getOptimismGasPrices = async () => {
 };
 
 export const getBaseGasPrices = async () => {
-  const provider = await getProviderForNetwork(Network.base);
+  const provider = getProviderForNetwork(Network.base);
   const baseGasPrice = await provider.getGasPrice();
 
   const BasePriceBumpFactor = 1.05;
@@ -363,7 +366,7 @@ export const getBaseGasPrices = async () => {
 };
 
 export const getAvalancheGasPrices = async () => {
-  const provider = await getProviderForNetwork(Network.avalanche);
+  const provider = getProviderForNetwork(Network.avalanche);
   const baseGasPrice = await provider.getGasPrice();
 
   const AvalanchePriceBumpFactor = 1.05;
@@ -380,8 +383,28 @@ export const getAvalancheGasPrices = async () => {
   };
   return priceData;
 };
+
+export const getDegenGasPrices = async () => {
+  const provider = getProviderForNetwork(Network.degen);
+  const baseGasPrice = await provider.getGasPrice();
+
+  const DegenPriceBumpFactor = 1.05;
+  const normalGasPrice = toHex(Math.ceil(Number((baseGasPrice.toString(), DegenPriceBumpFactor))));
+
+  const priceData = {
+    fast: normalGasPrice,
+    fastWait: 0.34,
+    normal: normalGasPrice,
+    // 20 secs
+    normalWait: 0.34,
+    urgent: normalGasPrice,
+    urgentWait: 0.34,
+  };
+  return priceData;
+};
+
 export const getBlastGasPrices = async () => {
-  const provider = await getProviderForNetwork(Network.blast);
+  const provider = getProviderForNetwork(Network.blast);
   const baseGasPrice = await provider.getGasPrice();
 
   const BlastPriceBumpFactor = 1.05;
@@ -400,7 +423,7 @@ export const getBlastGasPrices = async () => {
 };
 
 export const getZoraGasPrices = async () => {
-  const provider = await getProviderForNetwork(Network.zora);
+  const provider = getProviderForNetwork(Network.zora);
   const baseGasPrice = await provider.getGasPrice();
 
   const ZoraPriceBumpFactor = 1.05;

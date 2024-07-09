@@ -5,3 +5,11 @@ export const filterList = <T>(list: T[], searchQuery: string, keys?: KeyOption<T
     keys,
     ...options,
   });
+
+export const filterListWorklet = <T>(list: T[], searchQuery: string, keys?: KeyOption<T>[], options?: MatchSorterOptions<T>) => {
+  'worklet';
+  return matchSorter(list, searchQuery, {
+    keys,
+    ...options,
+  });
+};

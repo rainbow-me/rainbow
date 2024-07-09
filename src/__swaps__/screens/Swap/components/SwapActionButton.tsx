@@ -1,163 +1,155 @@
 /* eslint-disable no-nested-ternary */
-import c from 'chroma-js';
-import React, { useMemo } from 'react';
-import { StyleProp, StyleSheet, TextStyle } from 'react-native';
-import { SharedValue } from 'react-native-reanimated';
+import React from 'react';
+import { StyleProp, StyleSheet, TextStyle, ViewStyle } from 'react-native';
+import Animated, { DerivedValue, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
 
-import { ButtonPressAnimation } from '@/components/animations';
-import { AnimatedText, Box, Column, Columns, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import { useTheme } from '@/theme';
+import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
+import { AnimatedText, Box, Column, Columns, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { GestureHandlerV1Button } from './GestureHandlerV1Button';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 
 export const SwapActionButton = ({
-  color,
+  asset,
   borderRadius,
   disableShadow,
   hugContent,
   icon,
   iconStyle,
   label,
-  onLongPress,
-  onPress,
+  onPressJS,
+  onPressWorklet,
   outline,
   rightIcon,
   scaleTo,
   small,
+  style,
+  disabled,
+  opacity,
 }: {
-  color?: string;
+  asset: DerivedValue<ExtendedAnimatedAssetWithColors | null>;
   borderRadius?: number;
   disableShadow?: boolean;
   hugContent?: boolean;
-  icon?: string | Readonly<SharedValue<string | undefined>>;
+  icon?: string | DerivedValue<string | undefined>;
   iconStyle?: StyleProp<TextStyle>;
-  label: string | Readonly<SharedValue<string | undefined>>;
-  onLongPress?: () => void;
-  onPress?: () => void;
+  label: string | DerivedValue<string | undefined>;
+  onPressJS?: () => void;
+  onPressWorklet?: () => void;
   outline?: boolean;
   rightIcon?: string;
   scaleTo?: number;
   small?: boolean;
+  style?: ViewStyle;
+  disabled?: DerivedValue<boolean | undefined>;
+  opacity?: DerivedValue<number | undefined>;
 }) => {
   const { isDarkMode } = useColorMode();
-  const { colors } = useTheme();
-
-  const fallbackColor = useForegroundColor('blue');
+  const fallbackColor = useForegroundColor('label');
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
-  const textColor = useMemo(() => {
-    if (!color) return globalColors.white100;
-    const contrastWithWhite = c.contrast(color, globalColors.white100);
+  const textStyles = useAnimatedStyle(() => {
+    return {
+      color: asset.value ? getColorValueForThemeWorklet(asset.value?.textColor, isDarkMode) : globalColors.white100,
+    };
+  });
 
-    if (contrastWithWhite < (isDarkMode ? 2.6 : 2)) {
-      return globalColors.grey100;
-    } else {
-      return globalColors.white100;
+  const secondaryTextStyles = useAnimatedStyle(() => {
+    const secondaryColor = getColorValueForThemeWorklet(asset.value?.textColor, isDarkMode, true);
+
+    let opacity = isDarkMode ? 0.76 : 0.8;
+    if (secondaryColor === globalColors.grey100) {
+      opacity = 0.76;
     }
-  }, [color, isDarkMode]);
 
-  const secondaryTextColor = useMemo(() => {
-    if (!color) return colors.alpha(globalColors.white100, 0.76);
-    const contrastWithWhite = c.contrast(color, globalColors.white100);
+    return {
+      opacity,
+    };
+  });
 
-    if (contrastWithWhite < (isDarkMode ? 2.6 : 2)) {
-      return colors.alpha(globalColors.grey100, 0.76);
-    } else {
-      return colors.alpha(globalColors.white100, isDarkMode ? 0.76 : 0.8);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [color, isDarkMode]);
+  const buttonWrapperStyles = useAnimatedStyle(() => {
+    return {
+      backgroundColor: outline
+        ? 'transparent'
+        : getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode, true) || fallbackColor,
+      borderColor: outline ? separatorSecondary : undefined,
+      borderRadius: borderRadius ?? 24,
+      height: small ? 36 : 48,
+      shadowColor:
+        disableShadow || outline
+          ? 'transparent'
+          : getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode) || fallbackColor,
+      shadowOffset: {
+        width: 0,
+        height: isDarkMode ? 13 : small ? 6 : 10,
+      },
+      shadowOpacity: isDarkMode ? 0.2 : small ? 0.2 : 0.36,
+      shadowRadius: isDarkMode ? 26 : small ? 9 : 15,
+      opacity: withTiming(opacity?.value ?? (disabled?.value ? 0.6 : 1), TIMING_CONFIGS.slowerFadeConfig),
+    };
+  });
+
+  const disabledWrapper = useAnimatedStyle(() => {
+    return {
+      pointerEvents: disabled && disabled?.value ? 'none' : 'auto',
+    };
+  });
+
+  const iconValue = useDerivedValue(() => {
+    if (typeof icon === 'string') return icon;
+    return icon?.value || '';
+  });
+
+  const labelValue = useDerivedValue(() => {
+    if (typeof label === 'string') return label;
+    return label?.value || '';
+  });
+
+  const rightIconValue = useDerivedValue(() => {
+    return rightIcon;
+  });
 
   return (
-    <ButtonPressAnimation
-      onLongPress={onLongPress}
-      onPress={onPress}
-      scaleTo={scaleTo || (hugContent ? undefined : 0.925)}
-      style={hugContent && feedActionButtonStyles.buttonWrapper}
-    >
-      <Box
-        paddingHorizontal={{ custom: small ? 14 : 20 - (outline ? 2 : 0) }}
-        paddingLeft={small && icon ? '10px' : undefined}
-        paddingRight={small && rightIcon ? '10px' : undefined}
-        style={[
-          feedActionButtonStyles.button,
-          outline && feedActionButtonStyles.outlineButton,
-          {
-            backgroundColor: outline ? 'transparent' : color || fallbackColor,
-            borderColor: outline ? separatorSecondary : undefined,
-            borderRadius: borderRadius ?? 24,
-            height: small ? 36 : 48,
-            shadowColor: disableShadow || outline ? 'transparent' : color || fallbackColor,
-            shadowOffset: {
-              width: 0,
-              height: isDarkMode ? 13 : small ? 6 : 10,
-            },
-            shadowOpacity: isDarkMode ? 0.2 : small ? 0.2 : 0.36,
-            shadowRadius: isDarkMode ? 26 : small ? 9 : 15,
-          },
-        ]}
+    <Animated.View style={disabledWrapper}>
+      <GestureHandlerV1Button
+        onPressWorklet={onPressWorklet}
+        onPressJS={onPressJS}
+        scaleTo={scaleTo || (hugContent ? undefined : 0.925)}
+        style={[hugContent && feedActionButtonStyles.buttonWrapper, style]}
       >
-        <Columns alignHorizontal="center" alignVertical="center" space="6px">
-          {icon && (
-            <Column width="content">
-              {typeof icon === 'string' ? (
-                <Text
-                  align="center"
-                  color={{ custom: outline ? color || fallbackColor : textColor }}
-                  size={small ? '15pt' : '17pt'}
-                  weight="heavy"
-                >
-                  {icon}
-                </Text>
-              ) : (
-                <AnimatedText
-                  align="center"
-                  color={{ custom: outline ? color || fallbackColor : textColor }}
-                  size={small ? '15pt' : '17pt'}
-                  style={iconStyle}
-                  text={icon}
-                  weight="heavy"
-                />
-              )}
-            </Column>
-          )}
-          <Column width="content">
-            {typeof label === 'string' ? (
-              <Text
-                align="center"
-                color={{ custom: outline ? color || fallbackColor : textColor }}
-                numberOfLines={1}
-                size={small ? '17pt' : '20pt'}
-                weight="heavy"
-              >
-                {label}
-              </Text>
-            ) : (
-              <AnimatedText
-                align="center"
-                color={{ custom: outline ? color || fallbackColor : textColor }}
-                numberOfLines={1}
-                size={small ? '17pt' : '20pt'}
-                text={label}
-                weight="heavy"
-              />
+        <Box
+          as={Animated.View}
+          paddingHorizontal={{ custom: small ? 14 : 20 - (outline ? 2 : 0) }}
+          paddingLeft={small && icon ? '10px' : undefined}
+          paddingRight={small && rightIcon ? '10px' : undefined}
+          style={[feedActionButtonStyles.button, outline && feedActionButtonStyles.outlineButton, buttonWrapperStyles]}
+        >
+          <Columns alignHorizontal="center" alignVertical="center" space="6px">
+            {icon && (
+              <Column width="content">
+                <AnimatedText align="center" size={small ? '15pt' : '17pt'} style={[iconStyle, textStyles]} weight="heavy">
+                  {iconValue}
+                </AnimatedText>
+              </Column>
             )}
-          </Column>
-          {rightIcon && (
-            <Column width="content">
-              <Text
-                align="center"
-                color={{
-                  custom: outline ? colors.alpha(color || fallbackColor, 0.76) : secondaryTextColor,
-                }}
-                size={small ? '15pt' : '17pt'}
-                weight="bold"
-              >
-                {rightIcon}
-              </Text>
-            </Column>
-          )}
-        </Columns>
-      </Box>
-    </ButtonPressAnimation>
+            {typeof label !== 'undefined' && (
+              <Column width="content">
+                <AnimatedText align="center" style={textStyles} numberOfLines={1} size={small ? '17pt' : '20pt'} weight="heavy">
+                  {labelValue}
+                </AnimatedText>
+              </Column>
+            )}
+            {rightIcon && (
+              <Column width="content">
+                <AnimatedText align="center" style={[textStyles, secondaryTextStyles]} size={small ? '15pt' : '17pt'} weight="bold">
+                  {rightIconValue}
+                </AnimatedText>
+              </Column>
+            )}
+          </Columns>
+        </Box>
+      </GestureHandlerV1Button>
+    </Animated.View>
   );
 };
 

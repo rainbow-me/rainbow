@@ -18,32 +18,35 @@ import {
   SLIDER_HEIGHT,
   caretConfig,
   pulsingConfig,
-  sliderConfig,
-  slowFadeConfig,
-} from '../constants';
-import { inputKeys, inputMethods } from '../types/swap';
-import { opacity } from '../utils/swaps';
+} from '@/__swaps__/screens/Swap/constants';
+import { inputKeys, inputMethods, inputValuesType } from '@/__swaps__/types/swap';
+import { getColorValueForThemeWorklet, opacity } from '@/__swaps__/utils/swaps';
+import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 
 export function useSwapTextStyles({
-  bottomColor,
-  focusedInput,
   inputMethod,
-  inputProgress,
   inputValues,
+  internalSelectedInputAsset,
+  internalSelectedOutputAsset,
+  isFetching,
   isQuoteStale,
+  focusedInput,
+  inputProgress,
   outputProgress,
   sliderPressProgress,
-  topColor,
 }: {
-  bottomColor: string;
-  focusedInput: SharedValue<inputKeys>;
   inputMethod: SharedValue<inputMethods>;
-  inputProgress: SharedValue<number>;
-  inputValues: SharedValue<{ [key in inputKeys]: number | string }>;
+  inputValues: SharedValue<inputValuesType>;
+  internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+  internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+  isFetching: SharedValue<boolean>;
   isQuoteStale: SharedValue<number>;
+  focusedInput: SharedValue<inputKeys>;
+  inputProgress: SharedValue<number>;
   outputProgress: SharedValue<number>;
   sliderPressProgress: SharedValue<number>;
-  topColor: string;
 }) {
   const { isDarkMode } = useColorMode();
 
@@ -52,86 +55,114 @@ export function useSwapTextStyles({
   const zeroAmountColor = opacity(labelSecondary, 0.2);
 
   const isInputStale = useDerivedValue(() => {
+    const inputAndOutputAssetsExist = internalSelectedInputAsset.value && internalSelectedOutputAsset.value;
     const isAdjustingOutputValue = inputMethod.value === 'outputAmount' || inputMethod.value === 'outputNativeValue';
-    return isQuoteStale.value === 1 && isAdjustingOutputValue ? 1 : 0;
+
+    return (isQuoteStale.value === 1 || isFetching.value) && inputAndOutputAssetsExist && isAdjustingOutputValue ? 1 : 0;
   });
 
   const isOutputStale = useDerivedValue(() => {
+    const inputAndOutputAssetsExist = internalSelectedInputAsset.value && internalSelectedOutputAsset.value;
     const isAdjustingInputValue =
       inputMethod.value === 'inputAmount' || inputMethod.value === 'inputNativeValue' || inputMethod.value === 'slider';
-    return isQuoteStale.value === 1 && isAdjustingInputValue ? 1 : 0;
+
+    return (isQuoteStale.value === 1 || isFetching.value) && inputAndOutputAssetsExist && isAdjustingInputValue ? 1 : 0;
   });
 
   const pulsingOpacity = useDerivedValue(() => {
     return isQuoteStale.value === 1
       ? withRepeat(withSequence(withTiming(0.5, pulsingConfig), withTiming(1, pulsingConfig)), -1, true)
-      : withSpring(1, sliderConfig);
-  }, []);
+      : withSpring(1, SPRING_CONFIGS.sliderConfig);
+  });
+
+  const isInputZero = useDerivedValue(() => {
+    const isZero =
+      !internalSelectedInputAsset.value ||
+      (inputValues.value.inputAmount === 0 && inputMethod.value !== 'slider') ||
+      (inputMethod.value === 'slider' && equalWorklet(inputValues.value.inputAmount, 0));
+    return isZero;
+  });
+
+  const isOutputZero = useDerivedValue(() => {
+    const isZero = !internalSelectedOutputAsset.value || equalWorklet(inputValues.value.outputAmount, 0);
+    return isZero;
+  });
+
+  const inputAssetColor = useDerivedValue(() => {
+    const color = getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode, true);
+    return color === ETH_COLOR_DARK ? ETH_COLOR_DARK_ACCENT : color;
+  });
+
+  const outputAssetColor = useDerivedValue(() => {
+    const color = getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true);
+    return color === ETH_COLOR_DARK ? ETH_COLOR_DARK_ACCENT : color;
+  });
 
   const inputAmountTextStyle = useAnimatedStyle(() => {
-    const isInputZero =
-      (inputValues.value.inputAmount === 0 && inputMethod.value !== 'slider') ||
-      (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0);
-    const isOutputZero = Number(inputValues.value.outputAmount) === 0;
-
     // eslint-disable-next-line no-nested-ternary
-    const zeroOrAssetColor = isInputZero ? zeroAmountColor : topColor === ETH_COLOR_DARK ? ETH_COLOR_DARK_ACCENT : topColor;
-    const opacity = isInputStale.value !== 1 || (isInputZero && isOutputZero) ? withSpring(1, sliderConfig) : pulsingOpacity.value;
+    const zeroOrAssetColor = isInputZero.value
+      ? zeroAmountColor
+      : inputAssetColor.value === ETH_COLOR_DARK
+        ? ETH_COLOR_DARK_ACCENT
+        : inputAssetColor.value;
+    const opacity =
+      isInputStale.value !== 1 || (isInputZero.value && isOutputZero.value)
+        ? withSpring(1, SPRING_CONFIGS.sliderConfig)
+        : pulsingOpacity.value;
 
     return {
-      color: withTiming(interpolateColor(isInputStale.value, [0, 1], [zeroOrAssetColor, zeroAmountColor]), slowFadeConfig),
+      color: interpolateColor(isInputStale.value, [0, 1], [zeroOrAssetColor, zeroAmountColor]),
       flexGrow: 0,
       flexShrink: 1,
       opacity,
     };
-  }, [isDarkMode, topColor]);
+  });
 
   const inputNativeValueStyle = useAnimatedStyle(() => {
-    const isInputZero =
-      Number(inputValues.value.inputAmount) === 0 || (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0);
-    const isOutputZero = Number(inputValues.value.outputAmount) === 0;
-
-    const zeroOrColor = isInputZero ? zeroAmountColor : labelTertiary;
-    const opacity = isInputStale.value !== 1 || (isInputZero && isOutputZero) ? withSpring(1, sliderConfig) : pulsingOpacity.value;
+    const zeroOrColor = isInputZero.value ? zeroAmountColor : labelTertiary;
+    const opacity =
+      isInputStale.value !== 1 || (isInputZero.value && isOutputZero.value)
+        ? withSpring(1, SPRING_CONFIGS.sliderConfig)
+        : pulsingOpacity.value;
 
     return {
-      color: withTiming(interpolateColor(isInputStale.value, [0, 1], [zeroOrColor, zeroAmountColor]), slowFadeConfig),
+      color: withTiming(interpolateColor(isInputStale.value, [0, 1], [zeroOrColor, zeroAmountColor]), TIMING_CONFIGS.slowFadeConfig),
       opacity,
     };
-  }, [isDarkMode]);
+  });
 
   const outputAmountTextStyle = useAnimatedStyle(() => {
-    const isInputZero =
-      Number(inputValues.value.inputAmount) === 0 || (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0);
-    const isOutputZero =
-      (inputValues.value.outputAmount === 0 && inputMethod.value !== 'slider') ||
-      (inputMethod.value === 'slider' && Number(inputValues.value.outputAmount) === 0);
-
     // eslint-disable-next-line no-nested-ternary
-    const zeroOrAssetColor = isOutputZero ? zeroAmountColor : bottomColor === ETH_COLOR_DARK ? ETH_COLOR_DARK_ACCENT : bottomColor;
-    const opacity = isOutputStale.value !== 1 || (isInputZero && isOutputZero) ? withSpring(1, sliderConfig) : pulsingOpacity.value;
+    const zeroOrAssetColor = isOutputZero.value
+      ? zeroAmountColor
+      : outputAssetColor.value === ETH_COLOR_DARK
+        ? ETH_COLOR_DARK_ACCENT
+        : outputAssetColor.value;
+    const opacity =
+      isOutputStale.value !== 1 || (isInputZero.value && isOutputZero.value)
+        ? withSpring(1, SPRING_CONFIGS.sliderConfig)
+        : pulsingOpacity.value;
 
     return {
-      color: withTiming(interpolateColor(isOutputStale.value, [0, 1], [zeroOrAssetColor, zeroAmountColor]), slowFadeConfig),
+      color: interpolateColor(isOutputStale.value, [0, 1], [zeroOrAssetColor, zeroAmountColor]),
       flexGrow: 0,
       flexShrink: 1,
       opacity,
     };
-  }, [bottomColor, isDarkMode]);
+  });
 
   const outputNativeValueStyle = useAnimatedStyle(() => {
-    const isInputZero =
-      Number(inputValues.value.inputAmount) === 0 || (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0);
-    const isOutputZero = Number(inputValues.value.outputAmount) === 0;
-
-    const zeroOrColor = isOutputZero ? zeroAmountColor : labelTertiary;
-    const opacity = isOutputStale.value !== 1 || (isInputZero && isOutputZero) ? withSpring(1, sliderConfig) : pulsingOpacity.value;
+    const zeroOrColor = isOutputZero.value ? zeroAmountColor : labelTertiary;
+    const opacity =
+      isOutputStale.value !== 1 || (isInputZero.value && isOutputZero.value)
+        ? withSpring(1, SPRING_CONFIGS.sliderConfig)
+        : pulsingOpacity.value;
 
     return {
-      color: withTiming(interpolateColor(isOutputStale.value, [0, 1], [zeroOrColor, zeroAmountColor]), slowFadeConfig),
+      color: withTiming(interpolateColor(isOutputStale.value, [0, 1], [zeroOrColor, zeroAmountColor]), TIMING_CONFIGS.slowFadeConfig),
       opacity,
     };
-  }, [isDarkMode]);
+  });
 
   // TODO: Create a reusable InputCaret component
   const inputCaretStyle = useAnimatedStyle(() => {
@@ -140,7 +171,7 @@ export function useSwapTextStyles({
       inputProgress.value === 0 &&
       outputProgress.value === 0 &&
       (inputMethod.value !== 'slider' ||
-        (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0) ||
+        (inputMethod.value === 'slider' && equalWorklet(inputValues.value.inputAmount, 0)) ||
         (sliderPressProgress.value === SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT && isQuoteStale.value === 0));
 
     const opacity = shouldShow
@@ -158,7 +189,7 @@ export function useSwapTextStyles({
 
     const isZero =
       (inputMethod.value !== 'slider' && inputValues.value.inputAmount === 0) ||
-      (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0);
+      (inputMethod.value === 'slider' && equalWorklet(inputValues.value.inputAmount, 0));
 
     return {
       display: shouldShow ? 'flex' : 'none',
@@ -173,7 +204,7 @@ export function useSwapTextStyles({
       inputProgress.value === 0 &&
       outputProgress.value === 0 &&
       (inputMethod.value !== 'slider' ||
-        (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0) ||
+        (inputMethod.value === 'slider' && equalWorklet(inputValues.value.inputAmount, 0)) ||
         (sliderPressProgress.value === SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT && isQuoteStale.value === 0));
 
     const opacity = shouldShow
@@ -191,7 +222,7 @@ export function useSwapTextStyles({
 
     const isZero =
       (inputMethod.value !== 'slider' && inputValues.value.outputAmount === 0) ||
-      (inputMethod.value === 'slider' && Number(inputValues.value.inputAmount) === 0);
+      (inputMethod.value === 'slider' && equalWorklet(inputValues.value.inputAmount, 0));
 
     return {
       display: shouldShow ? 'flex' : 'none',

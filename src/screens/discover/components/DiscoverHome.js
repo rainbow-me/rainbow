@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import useExperimentalFlag, { OP_REWARDS, PROFILES, HARDWARE_WALLETS, MINTS, NFT_OFFERS } from '@rainbow-me/config/experimentalHooks';
 import { isTestnetNetwork } from '@/handlers/web3';
-import { Inline, Inset, Stack } from '@/design-system';
+import { Inline, Inset, Stack, Box } from '@/design-system';
 import { useAccountSettings, useWallets } from '@/hooks';
 import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
 import { ENSSearchCard } from '@/components/cards/ENSSearchCard';
@@ -15,16 +15,12 @@ import walletTypes from '@/helpers/walletTypes';
 import { NFTOffersCard } from '@/components/cards/NFTOffersCard';
 import { MintsCard } from '@/components/cards/MintsCard/MintsCard';
 import { FeaturedMintCard } from '@/components/cards/FeaturedMintCard';
-import { useMints } from '@/resources/mints';
 import { IS_TEST } from '@/env';
-import { RemoteCardCarousel, useRemoteCardContext } from '@/components/cards/remote-cards';
-import { useRoute } from '@react-navigation/native';
+import { RemoteCardCarousel } from '@/components/cards/remote-cards';
 
 export default function DiscoverHome() {
   const { profiles_enabled, mints_enabled, op_rewards_enabled } = useRemoteConfig();
-  const { accountAddress, network } = useAccountSettings();
-  const { getCardsForPlacement } = useRemoteCardContext();
-  const { name } = useRoute();
+  const { network } = useAccountSettings();
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
   const profilesEnabledRemoteFlag = profiles_enabled;
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
@@ -36,27 +32,21 @@ export default function DiscoverHome() {
   const isProfilesEnabled = profilesEnabledLocalFlag && profilesEnabledRemoteFlag;
 
   const { wallets } = useWallets();
-  const {
-    data: { mints, featuredMint },
-    isFetching,
-  } = useMints({ walletAddress: accountAddress });
 
   const hasHardwareWallets = Object.keys(wallets || {}).filter(key => wallets[key].type === walletTypes.bluetooth).length > 0;
-
-  const cards = useMemo(() => getCardsForPlacement(name), [name, getCardsForPlacement]);
 
   return (
     <Inset top="20px" bottom={{ custom: 200 }} horizontal="20px">
       {!testNetwork ? (
-        <Stack space="20px">
+        <Box gap={20}>
           <Inline wrap={false} space="20px">
             <GasCard />
             {isProfilesEnabled && <ENSSearchCard />}
           </Inline>
-          {!!cards.length && <RemoteCardCarousel />}
-          {mintsEnabled && (mints?.length || isFetching) && (
+          <RemoteCardCarousel />
+          {mintsEnabled && (
             <Stack space="20px">
-              {!!featuredMint && <FeaturedMintCard />}
+              <FeaturedMintCard />
               <Inset top="12px">
                 <MintsCard />
               </Inset>
@@ -72,7 +62,7 @@ export default function DiscoverHome() {
             <LearnCard cardDetails={backupsCard} type="square" />
             <LearnCard cardDetails={avoidScamsCard} type="square" />
           </Inline>
-        </Stack>
+        </Box>
       ) : (
         <Stack space="20px">
           <Inline space="20px">

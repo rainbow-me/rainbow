@@ -1,5 +1,6 @@
 import { MMKV } from 'react-native-mmkv';
 import { STORAGE_IDS } from '@/model/mmkv';
+import { IS_TEST } from '@/env';
 
 /**
  * This file contains flags for enabling features which are still in development.
@@ -25,6 +26,7 @@ export const REMOTE_CARDS = 'RemoteCards';
 export const POINTS_NOTIFICATIONS_TOGGLE = 'PointsNotificationsToggle';
 export const SWAPS_V2 = 'SwapsV2';
 export const DAPP_BROWSER = 'Dapp Browser';
+export const ETH_REWARDS = 'ETH Rewards';
 
 /**
  * A developer setting that pushes log lines to an array in-memory so that
@@ -57,8 +59,9 @@ export const defaultConfig: Record<string, ExperimentalValue> = {
   [REMOTE_PROMO_SHEETS]: { settings: true, value: false },
   [REMOTE_CARDS]: { settings: true, value: false },
   [POINTS_NOTIFICATIONS_TOGGLE]: { settings: true, value: false },
-  [DAPP_BROWSER]: { settings: true, value: false },
+  [DAPP_BROWSER]: { settings: true, value: IS_TEST ? true : false },
   [SWAPS_V2]: { settings: true, value: false },
+  [ETH_REWARDS]: { settings: true, value: false },
 };
 
 const storageKey = 'config';

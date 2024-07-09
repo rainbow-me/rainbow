@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Text, useColorMode } from '@/design-system';
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '../constants';
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 
 export const BalancePill = ({ balance }: { balance: string }) => {
   const { isDarkMode } = useColorMode();

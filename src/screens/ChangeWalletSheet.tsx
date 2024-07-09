@@ -1,8 +1,7 @@
-import { IS_TESTING } from 'react-native-dotenv';
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo, useState } from 'react';
-import { Alert, InteractionManager } from 'react-native';
+import { Alert, InteractionManager, View } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
 import Divider from '../components/Divider';
@@ -12,26 +11,28 @@ import { Centered, Column, Row } from '../components/layout';
 import { Sheet, SheetTitle } from '../components/sheet';
 import { Text } from '../components/text';
 import { removeWalletData } from '../handlers/localstorage/removeWallet';
-import { cleanUpWalletKeys, RainbowWallet } from '../model/wallet';
+import { cleanUpWalletKeys } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import { addressSetSelected, walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import { analytics, analyticsV2 } from '@/analytics';
 import { getExperimetalFlag, HARDWARE_WALLETS } from '@/config';
-import { useRemotePromoSheetContext } from '@/components/remote-promo-sheet/RemotePromoSheetProvider';
 import { useAccountSettings, useInitializeWallet, useWallets, useWalletsWithBalancesAndNames, useWebData } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
-import { deviceUtils, doesWalletsContainAddress, showActionSheetWithOptions } from '@/utils';
+import { doesWalletsContainAddress, showActionSheetWithOptions } from '@/utils';
 import logger from '@/utils/logger';
 import { useTheme } from '@/theme';
 import { EthereumAddress } from '@/entities';
 import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
+import { useRunChecks } from '@/components/remote-promo-sheet/runChecks';
+import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
+import { IS_ANDROID, IS_IOS } from '@/env';
 
-const deviceHeight = deviceUtils.dimensions.height;
-const footerHeight = getExperimetalFlag(HARDWARE_WALLETS) ? 100 : 60;
-const listPaddingBottom = 6;
-const walletRowHeight = 59;
-const maxListHeight = deviceHeight - 220;
+const FOOTER_HEIGHT = getExperimetalFlag(HARDWARE_WALLETS) ? 100 : 60;
+const LIST_PADDING_BOTTOM = 6;
+const MAX_LIST_HEIGHT = DEVICE_HEIGHT - 220;
+const WALLET_ROW_HEIGHT = 59;
+const WATCH_ONLY_BOTTOM_PADDING = IS_ANDROID ? 20 : 0;
 
 const EditButton = styled(ButtonPressAnimation).attrs(({ editMode }: { editMode: boolean }) => ({
   scaleTo: 0.96,
@@ -40,7 +41,7 @@ const EditButton = styled(ButtonPressAnimation).attrs(({ editMode }: { editMode:
   },
   width: editMode ? 100 : 100,
 }))(
-  ios
+  IS_IOS
     ? {
         position: 'absolute',
         right: 20,
@@ -66,8 +67,7 @@ const EditButtonLabel = styled(Text).attrs(({ theme: { colors }, editMode }: { t
   height: 40,
 });
 
-// @ts-ignore
-const Whitespace = styled.View({
+const Whitespace = styled(View)({
   backgroundColor: ({ theme: { colors } }: any) => colors.white,
   bottom: -398,
   height: 400,
@@ -75,15 +75,20 @@ const Whitespace = styled.View({
   width: '100%',
 });
 
-const getWalletRowCount = (wallets: any) => {
-  let count = 0;
+const getWalletListHeight = (wallets: any, watchOnly: boolean) => {
+  let listHeight = !watchOnly ? FOOTER_HEIGHT + LIST_PADDING_BOTTOM : WATCH_ONLY_BOTTOM_PADDING;
+
   if (wallets) {
-    Object.keys(wallets).forEach(key => {
-      // Addresses
-      count += wallets[key].addresses.filter((account: any) => account.visible).length;
-    });
+    for (const key of Object.keys(wallets)) {
+      const visibleAccounts = wallets[key].addresses.filter((account: any) => account.visible);
+      listHeight += visibleAccounts.length * WALLET_ROW_HEIGHT;
+
+      if (listHeight > MAX_LIST_HEIGHT) {
+        return { listHeight: MAX_LIST_HEIGHT, scrollEnabled: true };
+      }
+    }
   }
-  return count;
+  return { listHeight, scrollEnabled: false };
 };
 
 export type EditWalletContextMenuActions = {
@@ -96,7 +101,7 @@ export default function ChangeWalletSheet() {
   const { params = {} as any } = useRoute();
   const { onChangeWallet, watchOnly = false, currentAccountAddress } = params;
   const { selectedWallet, wallets } = useWallets();
-  const { runChecks } = useRemotePromoSheetContext();
+  const { runChecks } = useRunChecks(false);
 
   const { colors } = useTheme();
   const { updateWebProfile } = useWebData();
@@ -110,18 +115,14 @@ export default function ChangeWalletSheet() {
   const [currentAddress, setCurrentAddress] = useState(currentAccountAddress || accountAddress);
   const [currentSelectedWallet, setCurrentSelectedWallet] = useState(selectedWallet);
 
-  const walletRowCount = useMemo(() => getWalletRowCount(wallets), [wallets]);
+  const [headerHeight, listHeight, scrollEnabled, showDividers] = useMemo(() => {
+    const { listHeight, scrollEnabled } = getWalletListHeight(wallets, watchOnly);
 
-  let headerHeight = 30;
-  let listHeight = walletRowHeight * walletRowCount + (!watchOnly ? footerHeight + listPaddingBottom : android ? 20 : 0);
-  let scrollEnabled = false;
-  let showDividers = false;
-  if (listHeight > maxListHeight) {
-    headerHeight = 40;
-    listHeight = maxListHeight;
-    scrollEnabled = true;
-    showDividers = true;
-  }
+    const headerHeight = scrollEnabled ? 40 : 30;
+    const showDividers = scrollEnabled;
+
+    return [headerHeight, listHeight, scrollEnabled, showDividers];
+  }, [wallets, watchOnly]);
 
   const onChangeAccount = useCallback(
     async (walletId: string, address: string, fromDeletion = false) => {
@@ -141,20 +142,17 @@ export default function ChangeWalletSheet() {
         const p1 = dispatch(walletsSetSelected(wallet));
         const p2 = dispatch(addressSetSelected(address));
         await Promise.all([p1, p2]);
-        // @ts-ignore
+        // @ts-expect-error initializeWallet is not typed correctly
         initializeWallet(null, null, null, false, false, null, true);
         if (!fromDeletion) {
           goBack();
-
-          if (IS_TESTING !== 'true') {
-            runChecks();
-          }
+          setTimeout(runChecks, 10_000);
         }
       } catch (e) {
         logger.log('error while switching account', e);
       }
     },
-    [currentAddress, dispatch, editMode, goBack, initializeWallet, onChangeWallet, wallets, watchOnly]
+    [currentAddress, dispatch, editMode, goBack, initializeWallet, onChangeWallet, runChecks, wallets, watchOnly]
   );
 
   const deleteWallet = useCallback(
@@ -178,9 +176,9 @@ export default function ChangeWalletSheet() {
       if (visibleAddresses.length === 0) {
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete newWallets[walletId];
-        await dispatch(walletsUpdate(newWallets));
+        dispatch(walletsUpdate(newWallets));
       } else {
-        await dispatch(walletsUpdate(newWallets));
+        dispatch(walletsUpdate(newWallets));
       }
       removeWalletData(address);
     },
@@ -231,13 +229,13 @@ export default function ChangeWalletSheet() {
                   };
 
                   if (currentSelectedWallet.id === walletId) {
-                    await setCurrentSelectedWallet(updatedWallet);
-                    await dispatch(walletsSetSelected(updatedWallet));
+                    setCurrentSelectedWallet(updatedWallet);
+                    dispatch(walletsSetSelected(updatedWallet));
                   }
 
                   updateWebProfile(address, args.name, colors.avatarBackgrounds[args.color]);
 
-                  await dispatch(walletsUpdate(updatedWallets));
+                  dispatch(walletsUpdate(updatedWallets));
                 } else {
                   analytics.track('Tapped "Cancel" after editing wallet');
                 }
@@ -373,9 +371,8 @@ export default function ChangeWalletSheet() {
   }, []);
 
   return (
-    // @ts-ignore
     <Sheet borderRadius={30}>
-      {android && <Whitespace />}
+      {IS_ANDROID && <Whitespace />}
       <Column height={headerHeight} justify="space-between">
         <Centered>
           <SheetTitle testID="change-wallet-sheet-title">{lang.t('wallet.label')}</SheetTitle>
@@ -389,7 +386,7 @@ export default function ChangeWalletSheet() {
           )}
         </Centered>
         {showDividers && (
-          // @ts-ignore
+          // @ts-expect-error JS component
           <Divider color={colors.rowDividerExtraLight} inset={[0, 15]} />
         )}
       </Column>

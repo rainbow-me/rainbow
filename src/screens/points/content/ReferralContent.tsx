@@ -1,5 +1,19 @@
 import { ButtonPressAnimation } from '@/components/animations';
-import { Bleed, Box, Column, Columns, Inline, Row, Rows, Stack, Text, useForegroundColor, useTextStyle } from '@/design-system';
+import {
+  Bleed,
+  Box,
+  Column,
+  Columns,
+  Inline,
+  Row,
+  Rows,
+  Stack,
+  Text,
+  globalColors,
+  useColorMode,
+  useForegroundColor,
+  useTextStyle,
+} from '@/design-system';
 import { IS_IOS } from '@/env';
 import { metadataPOSTClient } from '@/graphql';
 import { useAccountAccentColor, useDimensions, useKeyboardHeight, useWallets } from '@/hooks';
@@ -41,8 +55,9 @@ const parseReferralCodeFromLink = (code: string) => {
   return;
 };
 
-export default function ReferralContent() {
+export function ReferralContent() {
   const { accentColor } = useAccountAccentColor();
+  const { isDarkMode } = useColorMode();
   const { goBack, navigate } = useNavigation();
   const { isReadOnlyWallet } = useWallets();
 
@@ -210,14 +225,14 @@ export default function ReferralContent() {
       justifyContent="center"
       paddingBottom="20px"
       paddingHorizontal="20px"
-      style={{ flex: 1 }}
+      style={{ backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD', flex: 1 }}
     >
       <Box alignItems="center" as={Animated.View} justifyContent="center" style={animatedStyle} width="full">
         <Rows>
           <Box
             alignItems="center"
             justifyContent="center"
-            paddingHorizontal={{ custom: 40 }}
+            paddingHorizontal={{ custom: 60 }}
             style={{ flex: 1 }}
             width={{ custom: deviceWidth }}
           >

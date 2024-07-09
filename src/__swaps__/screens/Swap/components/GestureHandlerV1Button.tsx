@@ -1,12 +1,13 @@
+import { ButtonPressAnimation } from '@/components/animations';
+import { IS_IOS } from '@/env';
 import ConditionalWrap from 'conditional-wrap';
 import React from 'react';
 import { StyleProp, ViewProps, ViewStyle } from 'react-native';
 import { TapGestureHandler, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
-import Animated, { runOnJS, useAnimatedGestureHandler } from 'react-native-reanimated';
-import { ButtonPressAnimation } from '@/components/animations';
-import { IS_IOS } from '@/env';
+import Animated, { AnimatedStyle, runOnJS, useAnimatedGestureHandler } from 'react-native-reanimated';
 
-type GestureHandlerButtonProps = {
+export type GestureHandlerButtonProps = {
+  buttonPressWrapperStyleIOS?: StyleProp<ViewStyle>;
   children: React.ReactNode;
   disableButtonPressWrapper?: boolean;
   disabled?: boolean;
@@ -15,7 +16,7 @@ type GestureHandlerButtonProps = {
   onPressWorklet?: () => void;
   pointerEvents?: ViewProps['pointerEvents'];
   scaleTo?: number;
-  style?: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle> | AnimatedStyle;
 };
 
 /**
@@ -55,17 +56,21 @@ type GestureHandlerButtonProps = {
  * };
  * ```
  */
-export function GestureHandlerV1Button({
-  children,
-  disableButtonPressWrapper = false,
-  disabled = false,
-  onPressJS,
-  onPressStartWorklet,
-  onPressWorklet,
-  pointerEvents = 'box-only',
-  scaleTo = 0.86,
-  style,
-}: GestureHandlerButtonProps) {
+export const GestureHandlerV1Button = React.forwardRef(function GestureHandlerV1Button(
+  {
+    buttonPressWrapperStyleIOS,
+    children,
+    disableButtonPressWrapper = false,
+    disabled = false,
+    onPressJS,
+    onPressStartWorklet,
+    onPressWorklet,
+    pointerEvents = 'box-only',
+    scaleTo = 0.86,
+    style,
+  }: GestureHandlerButtonProps,
+  ref: React.LegacyRef<unknown> | undefined
+) {
   const pressHandler = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>({
     onStart: () => {
       if (onPressStartWorklet) onPressStartWorklet();
@@ -80,17 +85,17 @@ export function GestureHandlerV1Button({
     <ConditionalWrap
       condition={IS_IOS && !disableButtonPressWrapper}
       wrap={children => (
-        <ButtonPressAnimation scaleTo={disabled ? 1 : scaleTo} useLateHaptic={disabled}>
+        <ButtonPressAnimation scaleTo={disabled ? 1 : scaleTo} style={buttonPressWrapperStyleIOS} useLateHaptic={disabled}>
           {children}
         </ButtonPressAnimation>
       )}
     >
       {/* @ts-expect-error Property 'children' does not exist on type */}
-      <TapGestureHandler enabled={!disabled} onGestureEvent={pressHandler}>
+      <TapGestureHandler enabled={!disabled} onGestureEvent={pressHandler} ref={ref}>
         <Animated.View accessible accessibilityRole="button" pointerEvents={pointerEvents} style={style}>
           {children}
         </Animated.View>
       </TapGestureHandler>
     </ConditionalWrap>
   );
-}
+});

@@ -1,15 +1,16 @@
 /* eslint-disable no-nested-ternary */
 import React from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import EthIcon from '@/assets/eth-icon.png';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { globalColors } from '@/design-system';
-import { useColorForAsset } from '@/hooks';
 import { Network } from '@/networks/types';
 import { borders, fonts } from '@/styles';
-import { ThemeContextProps } from '@/theme';
+import { useTheme } from '@/theme';
 import { FallbackIcon as CoinIconTextFallback, isETH } from '@/utils';
-import { FastSwapCoinIconImage } from './FastSwapCoinIconImage';
+import { FastFallbackCoinIconImage } from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastFallbackCoinIconImage';
+import Animated from 'react-native-reanimated';
+import FastImage, { Source } from 'react-native-fast-image';
 
 // TODO: Delete this and replace with RainbowCoinIcon
 // ⚠️ When replacing this component with RainbowCoinIcon, make sure
@@ -61,17 +62,18 @@ function resolveNetworkAndAddress({ address, mainnetAddress, network }: { mainne
 export const SwapCoinIcon = React.memo(function FeedCoinIcon({
   address,
   color,
-  disableShadow,
+  iconUrl,
+  disableShadow = true,
   forceDarkMode,
   large,
   mainnetAddress,
   network,
   small,
   symbol,
-  theme,
 }: {
   address: string;
   color?: string;
+  iconUrl?: string;
   disableShadow?: boolean;
   forceDarkMode?: boolean;
   large?: boolean;
@@ -79,9 +81,8 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
   network: Network;
   small?: boolean;
   symbol: string;
-  theme: ThemeContextProps;
 }) {
-  const { colors } = theme;
+  const theme = useTheme();
 
   const { resolvedNetwork, resolvedAddress } = resolveNetworkAndAddress({
     address,
@@ -89,17 +90,15 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
     network,
   });
 
-  const fallbackIconColor = useColorForAsset({
-    address: resolvedAddress,
-  });
-
-  const shadowColor = theme.isDarkMode || forceDarkMode ? colors.shadow : color || fallbackIconColor;
+  const fallbackIconColor = color ?? theme.colors.purpleUniswap;
+  const shadowColor = theme.isDarkMode || forceDarkMode ? theme.colors.shadow : color || fallbackIconColor;
   const eth = isETH(resolvedAddress);
 
   return (
     <View style={small ? sx.containerSmall : large ? sx.containerLarge : sx.container}>
       {eth ? (
-        <View
+        <Animated.View
+          key={`${resolvedAddress}-${eth}`}
           style={[
             sx.reactCoinIconContainer,
             small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback,
@@ -107,19 +106,23 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
             { shadowColor },
           ]}
         >
-          <Image source={EthIcon} style={small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback} />
-        </View>
+          <FastImage
+            source={EthIcon as Source}
+            style={small ? sx.coinIconFallbackSmall : large ? sx.coinIconFallbackLarge : sx.coinIconFallback}
+          />
+        </Animated.View>
       ) : (
-        <FastSwapCoinIconImage
-          address={resolvedAddress}
-          disableShadow={small || disableShadow}
+        <FastFallbackCoinIconImage
+          size={small ? 16 : large ? 36 : 32}
+          icon={iconUrl}
           network={resolvedNetwork}
           shadowColor={shadowColor}
-          size={small ? 16 : large ? 36 : 32}
+          symbol={symbol}
+          theme={theme}
         >
           {() => (
             <CoinIconTextFallback
-              color={fallbackIconColor}
+              color={color}
               height={small ? 16 : large ? 36 : 32}
               style={small ? smallFallbackIconStyle : large ? largeFallbackIconStyle : fallbackIconStyle}
               symbol={symbol}
@@ -127,7 +130,7 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
               width={small ? 16 : large ? 36 : 32}
             />
           )}
-        </FastSwapCoinIconImage>
+        </FastFallbackCoinIconImage>
       )}
 
       {network && network !== Network.mainnet && !small && (

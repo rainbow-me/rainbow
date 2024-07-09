@@ -16,6 +16,7 @@ const DefaultMeasurementsState = {
 export default async function measureText(text: any, textStyles = {}) {
   // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ fontFamily: string; fontSize: ... Remove this comment to see the full error message
   return TextSize.measure({
+    allowFontScaling: false,
     text,
     ...defaultTextStyles,
     ...textStyles,

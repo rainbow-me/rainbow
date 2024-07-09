@@ -1,7 +1,7 @@
 import { SimpleSheet } from '@/components/sheet/SimpleSheet';
 import { useNavigation } from '@/navigation';
 import React, { useCallback, useEffect } from 'react';
-import { View } from 'react-native';
+import { StatusBar, View } from 'react-native';
 import { AccentColorProvider, Box, Inset, Stack, Text, useBackgroundColor } from '@/design-system';
 import { UnlockableAppIconKey, unlockableAppIcons } from '@/appIcons/appIcons';
 import { ImgixImage } from '@/components/images';
@@ -12,8 +12,9 @@ import * as i18n from '@/languages';
 import { delay } from '@/utils/delay';
 import Routes from '@/navigation/routesNames';
 import { SheetActionButton } from '@/components/sheet';
-import { campaigns } from '@/storage';
 import { analyticsV2 } from '@/analytics';
+import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
+import { IS_ANDROID } from '@/env';
 
 const APP_ICON_SIZE = 64;
 
@@ -43,13 +44,13 @@ export default function AppIconUnlockSheet() {
   useEffect(() => {
     analyticsV2.track(analyticsV2.event.appIconUnlockSheetViewed, { appIcon: appIconKey });
     return () => {
-      campaigns.set(['isCurrentlyShown'], false);
+      remotePromoSheetsStore.setState({ isShown: false });
     };
   }, [appIconKey]);
 
   return (
     <SimpleSheet backgroundColor={useBackgroundColor('surfacePrimary')} scrollEnabled={false}>
-      <View onLayout={e => setParams({ longFormHeight: e.nativeEvent.layout.height })}>
+      <View onLayout={e => setParams({ longFormHeight: e.nativeEvent.layout.height + (IS_ANDROID ? StatusBar.currentHeight ?? 0 : 0) })}>
         <Inset top="36px" bottom="20px" horizontal="20px">
           <Stack space="36px">
             <Inset horizontal="20px">

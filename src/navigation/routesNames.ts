@@ -12,6 +12,7 @@ const Routes = {
   BACKUP_SHEET: 'BackupSheet',
   CHANGE_WALLET_SHEET: 'ChangeWalletSheet',
   CHANGE_WALLET_SHEET_NAVIGATOR: 'ChangeWalletSheetNavigator',
+  CHECK_IDENTIFIER_SCREEN: 'CheckIdentifierScreen',
   CONFIRM_REQUEST: 'ConfirmRequest',
   CONNECTED_DAPPS: 'ConnectedDapps',
   CONSOLE_SHEET: 'ConsoleSheet',
@@ -19,10 +20,7 @@ const Routes = {
   CUSTOM_GAS_SHEET: 'CustomGasSheet',
   DAPP_BROWSER_SCREEN: 'DappBrowserScreen',
   DAPP_BROWSER: 'DappBrowser',
-  SWAP_NAVIGATOR: 'SwapNavigator',
   SWAP: 'Swap',
-  SWAP_REVIEW: 'SwapReview',
-  SWAP_GAS: 'SwapGas',
   DIAGNOSTICS_SHEET: 'DiagnosticsSheet',
   DISCOVER_SCREEN: 'DiscoverScreen',
   ENS_ADDITIONAL_RECORDS_SHEET: 'ENSAdditionalRecordsSheet',
@@ -90,6 +88,7 @@ const Routes = {
   SWAP_SETTINGS_SHEET: 'SwapSettingsSheet',
   SWIPE_LAYOUT: 'SwipeLayout',
   TRANSACTION_DETAILS: 'TransactionDetails',
+  NO_NEED_WC_SHEET: 'NoNeedWCSheet',
   WALLET_CONNECT_APPROVAL_SHEET: 'WalletConnectApprovalSheet',
   WALLET_CONNECT_REDIRECT_SHEET: 'WalletConnectRedirectSheet',
   WALLET_NOTIFICATIONS_SETTINGS: 'WalletNotificationsSettings',
@@ -107,6 +106,8 @@ const Routes = {
   SETTINGS_SECTION_NETWORK: 'NetworkSection',
   SETTINGS_SECTION_NOTIFICATIONS: 'NotificationsSection',
   SETTINGS_SECTION_PRIVACY: 'PrivacySection',
+  DAPP_BROWSER_CONTROL_PANEL: 'DappBrowserControlPanel',
+  CLAIM_REWARDS_PANEL: 'ClaimRewardsPanel',
 } as const;
 
 export const NATIVE_ROUTES = [

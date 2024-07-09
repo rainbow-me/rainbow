@@ -12,7 +12,11 @@ function createTimingConfigs<T extends Record<string, WithTimingConfig>>(configs
 const springAnimations = createSpringConfigs({
   browserTabTransition: { dampingRatio: 0.82, duration: 800 },
   keyboardConfig: { damping: 500, mass: 3, stiffness: 1000 },
+  sliderConfig: { damping: 40, mass: 1.25, stiffness: 450 },
+  slowSpring: { damping: 500, mass: 3, stiffness: 800 },
   snappierSpringConfig: { damping: 42, mass: 0.8, stiffness: 800 },
+  snappySpringConfig: { damping: 100, mass: 0.8, stiffness: 275 },
+  springConfig: { damping: 100, mass: 1.2, stiffness: 750 },
 });
 
 export const SPRING_CONFIGS: Record<keyof typeof springAnimations, WithSpringConfig> = springAnimations;
@@ -26,8 +30,9 @@ const timingAnimations = createTimingConfigs({
   fadeConfig: { duration: 200, easing: Easing.bezier(0.22, 1, 0.36, 1) },
   fastFadeConfig: { duration: 100, easing: Easing.bezier(0.22, 1, 0.36, 1) },
   slowFadeConfig: { duration: 300, easing: Easing.bezier(0.22, 1, 0.36, 1) },
+  slowerFadeConfig: { duration: 400, easing: Easing.bezier(0.22, 1, 0.36, 1) },
   slowestFadeConfig: { duration: 500, easing: Easing.bezier(0.22, 1, 0.36, 1) },
-  tabPressConfig: { duration: 750, easing: Easing.bezier(0.22, 1, 0.36, 1) },
+  tabPressConfig: { duration: 800, easing: Easing.bezier(0.22, 1, 0.36, 1) },
 });
 
 export const TIMING_CONFIGS: Record<keyof typeof timingAnimations, WithTimingConfig> = timingAnimations;

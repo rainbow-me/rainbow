@@ -1,5 +1,5 @@
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/screens/Swap/utils/swaps';
+import { opacity } from '@/__swaps__/utils/swaps';
 import { Bleed, Box, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
 import position from '@/styles/position';
@@ -8,36 +8,38 @@ import React from 'react';
 import { TextInput } from 'react-native';
 import { BrowserButtonShadows } from '../DappBrowserShadows';
 import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
-import { AnimatedRef, SharedValue, dispatchCommand, runOnJS } from 'react-native-reanimated';
-import { useBrowserContext } from '../BrowserContext';
+import { AnimatedRef, SharedValue, runOnJS } from 'react-native-reanimated';
+import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 
-export const TabButton = ({
+export const TabButton = React.memo(function TabButton({
   inputRef,
-  isFocused,
   isFocusedValue,
-  setIsFocused,
+  toggleTabViewWorklet,
 }: {
   inputRef: AnimatedRef<TextInput>;
-  isFocused: boolean;
   isFocusedValue: SharedValue<boolean>;
-  setIsFocused: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
-  const { toggleTabViewWorklet } = useBrowserContext();
+  toggleTabViewWorklet(tabIndex?: number): void;
+}) {
   const { isDarkMode } = useColorMode();
   const fillSecondary = useForegroundColor('fillSecondary');
   const separatorSecondary = useForegroundColor('separatorSecondary');
 
+  const isFocused = useSharedValueState(isFocusedValue);
+
   const buttonColorIOS = isDarkMode ? fillSecondary : opacity(globalColors.white100, 0.9);
   const buttonColorAndroid = isDarkMode ? globalColors.blueGrey100 : globalColors.white100;
   const buttonColor = IS_IOS ? buttonColorIOS : buttonColorAndroid;
+
+  const blurInput = () => {
+    inputRef?.current?.blur();
+  };
 
   const onPress = () => {
     'worklet';
     if (!isFocusedValue.value) {
       toggleTabViewWorklet();
     } else {
-      runOnJS(setIsFocused)(false);
-      dispatchCommand(inputRef, 'blur');
+      runOnJS(blurInput)();
     }
   };
 
@@ -86,4 +88,4 @@ export const TabButton = ({
       </Bleed>
     </BrowserButtonShadows>
   );
-};
+});

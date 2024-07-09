@@ -11,7 +11,6 @@ import { useNavigation } from '../navigation/Navigation';
 import { DoubleChevron } from '@/components/icons';
 import { Box } from '@/design-system';
 import networkTypes from '@/helpers/networkTypes';
-import { toFixedDecimals } from '@/helpers/utilities';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding, position } from '@/styles';
@@ -114,7 +113,11 @@ const POLYGON_EXPLAINER = lang.t('explain.polygon.text');
 const BSC_EXPLAINER = lang.t('explain.bsc.text');
 
 const BASE_EXPLAINER = lang.t('explain.base.text');
+
 const AVALANCHE_EXPLAINER = lang.t('explain.avalanche.text');
+
+const DEGEN_EXPLAINER = lang.t('explain.degen.text');
+
 const BLAST_EXPLAINER = lang.t('explain.blast.text');
 
 const ZORA_EXPLAINER = lang.t('explain.zora.text');
@@ -375,7 +378,7 @@ export const explainers = (params, theme) => {
       extraHeight: 150,
       logo: <ChainBadge network={networkTypes.optimism} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
-        url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
           campaign: 'explain',
         },
@@ -388,7 +391,7 @@ export const explainers = (params, theme) => {
       extraHeight: 144,
       logo: <ChainBadge network={networkTypes.arbitrum} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
-        url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
           campaign: 'explain',
         },
@@ -401,7 +404,7 @@ export const explainers = (params, theme) => {
       extraHeight: 120,
       logo: <ChainBadge network={networkTypes.polygon} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
-        url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
           campaign: 'explain',
         },
@@ -414,7 +417,7 @@ export const explainers = (params, theme) => {
       extraHeight: IS_ANDROID ? 120 : 160,
       logo: <ChainBadge network={networkTypes.bsc} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
-        url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
           campaign: 'explain',
         },
@@ -427,7 +430,7 @@ export const explainers = (params, theme) => {
       extraHeight: 144,
       logo: <ChainBadge network={networkTypes.zora} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
-        url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
           campaign: 'explain',
         },
@@ -440,7 +443,7 @@ export const explainers = (params, theme) => {
       extraHeight: 144,
       logo: <ChainBadge network={networkTypes.base} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
-        url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
           campaign: 'explain',
         },
@@ -453,7 +456,7 @@ export const explainers = (params, theme) => {
       extraHeight: 144,
       logo: <ChainBadge network={networkTypes.avalanche} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
-        url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
           campaign: 'explain',
         },
@@ -461,12 +464,25 @@ export const explainers = (params, theme) => {
       text: AVALANCHE_EXPLAINER,
       title: lang.t('explain.avalanche.title'),
     },
+    degen: {
+      emoji: '⛽️',
+      extraHeight: 144,
+      logo: <ChainBadge network={networkTypes.degen} marginBottom={8} position="relative" size="large" />,
+      readMoreLink: buildRainbowLearnUrl({
+        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
+        query: {
+          campaign: 'explain',
+        },
+      }),
+      text: DEGEN_EXPLAINER,
+      title: lang.t('explain.degen.title'),
+    },
     blast: {
       emoji: '⛽️',
       extraHeight: 144,
       logo: <ChainBadge network={networkTypes.blast} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
-        url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+        url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
           campaign: 'explain',
         },
@@ -737,7 +753,7 @@ export const explainers = (params, theme) => {
             onPress={() =>
               Linking.openURL(
                 buildRainbowLearnUrl({
-                  url: 'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
+                  url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
                   query: {
                     campaign: 'explain',
                   },
@@ -991,7 +1007,7 @@ const ExplainSheet = () => {
     const baseFeeLabel = label ? `${label} ·` : '';
     return (
       <Centered>
-        <GasTrendHeader color={color}>{`${baseFeeLabel} ${toFixedDecimals(currentBaseFee, 0)} Gwei`}</GasTrendHeader>
+        <GasTrendHeader color={color}>{`${baseFeeLabel} ${currentBaseFee}`}</GasTrendHeader>
       </Centered>
     );
   }, [params, type]);
