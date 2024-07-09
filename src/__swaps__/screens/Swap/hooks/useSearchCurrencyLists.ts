@@ -26,7 +26,7 @@ export interface AssetToBuySection {
 const MAX_UNVERIFIED_RESULTS = 8;
 const MAX_VERIFIED_RESULTS = 48;
 
-const filterAssetsFromBridgeAndAssetToSell = ({
+const filterAssetsFromBridge = ({
   assets,
   filteredBridgeAssetAddress,
 }: {
@@ -34,7 +34,7 @@ const filterAssetsFromBridgeAndAssetToSell = ({
   filteredBridgeAssetAddress: string | undefined;
 }): SearchAsset[] => assets?.filter(curatedAsset => !isLowerCaseMatch(curatedAsset?.address, filteredBridgeAssetAddress)) || [];
 
-const filterAssetsFromFavoritesBridgeAndAssetToSell = ({
+const filterAssetsFromFavoritesAndBridge = ({
   assets,
   favoritesList,
   filteredBridgeAssetAddress,
@@ -43,7 +43,7 @@ const filterAssetsFromFavoritesBridgeAndAssetToSell = ({
   favoritesList: SearchAsset[] | undefined;
   filteredBridgeAssetAddress: string | undefined;
 }): SearchAsset[] =>
-  filterAssetsFromBridgeAndAssetToSell({ assets, filteredBridgeAssetAddress })?.filter(
+  filterAssetsFromBridge({ assets, filteredBridgeAssetAddress })?.filter(
     curatedAsset => !favoritesList?.some(({ address }) => curatedAsset.address === address || curatedAsset.mainnetAddress === address)
   ) || [];
 
@@ -81,7 +81,7 @@ const buildListSectionsData = ({
   }
 
   if (favoritesList?.length) {
-    const filteredFavorites = filterAssetsFromBridgeAndAssetToSell({
+    const filteredFavorites = filterAssetsFromBridge({
       assets: favoritesList,
       filteredBridgeAssetAddress,
     });
@@ -89,7 +89,7 @@ const buildListSectionsData = ({
   }
 
   if (combinedData.verifiedAssets?.length) {
-    const filteredVerified = filterAssetsFromFavoritesBridgeAndAssetToSell({
+    const filteredVerified = filterAssetsFromFavoritesAndBridge({
       assets: combinedData.verifiedAssets,
       favoritesList,
       filteredBridgeAssetAddress,
@@ -98,7 +98,7 @@ const buildListSectionsData = ({
   }
 
   if (!formattedData.length && combinedData.crosschainExactMatches?.length) {
-    const filteredCrosschain = filterAssetsFromFavoritesBridgeAndAssetToSell({
+    const filteredCrosschain = filterAssetsFromFavoritesAndBridge({
       assets: combinedData.crosschainExactMatches,
       favoritesList,
       filteredBridgeAssetAddress,
@@ -107,7 +107,7 @@ const buildListSectionsData = ({
   }
 
   if (combinedData.unverifiedAssets?.length) {
-    const filteredUnverified = filterAssetsFromFavoritesBridgeAndAssetToSell({
+    const filteredUnverified = filterAssetsFromFavoritesAndBridge({
       assets: combinedData.unverifiedAssets,
       favoritesList,
       filteredBridgeAssetAddress,
