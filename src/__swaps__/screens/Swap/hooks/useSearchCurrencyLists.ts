@@ -29,29 +29,21 @@ const MAX_VERIFIED_RESULTS = 48;
 const filterAssetsFromBridgeAndAssetToSell = ({
   assets,
   filteredBridgeAssetAddress,
-  assetToSellAddress,
 }: {
   assets: SearchAsset[] | undefined;
   filteredBridgeAssetAddress: string | undefined;
-  assetToSellAddress: string | undefined;
-}): SearchAsset[] =>
-  assets?.filter(
-    curatedAsset =>
-      !isLowerCaseMatch(curatedAsset?.address, filteredBridgeAssetAddress) && !isLowerCaseMatch(curatedAsset?.address, assetToSellAddress)
-  ) || [];
+}): SearchAsset[] => assets?.filter(curatedAsset => !isLowerCaseMatch(curatedAsset?.address, filteredBridgeAssetAddress)) || [];
 
 const filterAssetsFromFavoritesBridgeAndAssetToSell = ({
   assets,
   favoritesList,
   filteredBridgeAssetAddress,
-  assetToSellAddress,
 }: {
   assets: SearchAsset[] | undefined;
   favoritesList: SearchAsset[] | undefined;
   filteredBridgeAssetAddress: string | undefined;
-  assetToSellAddress: string | undefined;
 }): SearchAsset[] =>
-  filterAssetsFromBridgeAndAssetToSell({ assets, filteredBridgeAssetAddress, assetToSellAddress })?.filter(
+  filterAssetsFromBridgeAndAssetToSell({ assets, filteredBridgeAssetAddress })?.filter(
     curatedAsset => !favoritesList?.some(({ address }) => curatedAsset.address === address || curatedAsset.mainnetAddress === address)
   ) || [];
 
@@ -65,9 +57,7 @@ const buildListSectionsData = ({
   combinedData,
   favoritesList,
   filteredBridgeAssetAddress,
-  assetToSellAddress,
 }: {
-  assetToSellAddress: string | undefined;
   combinedData: {
     bridgeAsset?: SearchAsset;
     verifiedAssets?: SearchAsset[];
@@ -94,7 +84,6 @@ const buildListSectionsData = ({
     const filteredFavorites = filterAssetsFromBridgeAndAssetToSell({
       assets: favoritesList,
       filteredBridgeAssetAddress,
-      assetToSellAddress,
     });
     addSection('favorites', filteredFavorites);
   }
@@ -104,7 +93,6 @@ const buildListSectionsData = ({
       assets: combinedData.verifiedAssets,
       favoritesList,
       filteredBridgeAssetAddress,
-      assetToSellAddress,
     });
     addSection('verified', filteredVerified);
   }
@@ -114,7 +102,6 @@ const buildListSectionsData = ({
       assets: combinedData.crosschainExactMatches,
       favoritesList,
       filteredBridgeAssetAddress,
-      assetToSellAddress,
     });
     addSection('other_networks', filteredCrosschain);
   }
@@ -124,7 +111,6 @@ const buildListSectionsData = ({
       assets: combinedData.unverifiedAssets,
       favoritesList,
       filteredBridgeAssetAddress,
-      assetToSellAddress,
     });
     addSection('unverified', filteredUnverified);
   }
@@ -150,7 +136,6 @@ export function useSearchCurrencyLists() {
   const query = useSwapsStore(state => state.outputSearchQuery.trim().toLowerCase());
 
   const [state, setState] = useState({
-    assetToSellAddress: assetToSell.value?.[assetToSell.value?.chainId === ChainId.mainnet ? 'mainnetAddress' : 'address'],
     fromChainId: assetToSell.value ? assetToSell.value.chainId ?? ChainId.mainnet : undefined,
     isCrosschainSearch: assetToSell.value ? assetToSell.value.chainId !== selectedOutputChainId.value : false,
     toChainId: selectedOutputChainId.value ?? ChainId.mainnet,
@@ -168,7 +153,6 @@ export function useSearchCurrencyLists() {
     (current, previous) => {
       if (previous && (current.isCrosschainSearch !== previous.isCrosschainSearch || current.toChainId !== previous.toChainId)) {
         runOnJS(debouncedStateSet)({
-          assetToSellAddress: assetToSell.value?.[assetToSell.value?.chainId === ChainId.mainnet ? 'mainnetAddress' : 'address'],
           fromChainId: assetToSell.value ? assetToSell.value.chainId ?? ChainId.mainnet : undefined,
           isCrosschainSearch: current.isCrosschainSearch,
           toChainId: current.toChainId,
@@ -314,7 +298,6 @@ export function useSearchCurrencyLists() {
 
     return {
       results: buildListSectionsData({
-        assetToSellAddress: state.assetToSellAddress,
         combinedData: {
           bridgeAsset: bridgeResult,
           crosschainExactMatches: crosschainMatches,
@@ -334,7 +317,6 @@ export function useSearchCurrencyLists() {
     memoizedData.filteredBridgeAsset,
     query,
     selectedOutputChainId.value,
-    state.assetToSellAddress,
     unverifiedAssets,
     verifiedAssets,
   ]);
