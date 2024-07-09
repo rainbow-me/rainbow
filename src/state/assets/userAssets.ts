@@ -32,6 +32,7 @@ export interface UserAssetsState {
   searchCache: Map<string, UniqueId[]>;
   userAssets: Map<UniqueId, ParsedSearchAsset>;
   getBalanceSortedChainList: () => ChainId[];
+  getChainsWithBalance: () => ChainId[];
   getFilteredUserAssetIds: () => UniqueId[];
   getHighestValueAsset: () => ParsedSearchAsset | null;
   getUserAsset: (uniqueId: UniqueId) => ParsedSearchAsset | null;
@@ -129,7 +130,17 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
     searchCache: new Map(),
     userAssets: new Map(),
 
-    getBalanceSortedChainList: () => Array.from(get().chainBalances.keys()),
+    getBalanceSortedChainList: () => {
+      const chainBalances = [...get().chainBalances.entries()];
+      chainBalances.sort(([, balanceA], [, balanceB]) => balanceB - balanceA);
+      return chainBalances.map(([chainId]) => chainId);
+    },
+
+    getChainsWithBalance: () => {
+      const chainBalances = [...get().chainBalances.entries()];
+      const chainsWithBalances = chainBalances.filter(([, balance]) => !!balance);
+      return chainsWithBalances.map(([chainId]) => chainId);
+    },
 
     getFilteredUserAssetIds: () => {
       const { filter, inputSearchQuery: rawSearchQuery, selectUserAssetIds, setSearchCache } = get();

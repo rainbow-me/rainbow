@@ -1,5 +1,5 @@
 import * as i18n from '@/languages';
-import React, { PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
+import React, { PropsWithChildren, ReactNode, useMemo } from 'react';
 import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, withDelay, withSpring } from 'react-native-reanimated';
 
 import { MIN_FLASHBOTS_PRIORITY_FEE, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
@@ -8,7 +8,6 @@ import { ChainId } from '@/__swaps__/types/chains';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { gweiToWei, weiToGwei } from '@/__swaps__/utils/ethereum';
 import {
-  GasSuggestion,
   getCachedCurrentBaseFee,
   getSelectedSpeedSuggestion,
   useBaseFee,
@@ -237,7 +236,7 @@ function useGasPanelState<
   const { data: suggestedSetting } = useMeteorologySuggestion({
     chainId,
     speed,
-    select: useCallback((d?: GasSuggestion) => option && d?.[option], [option]),
+    select,
     enabled: !editedSetting,
     notifyOnChangeProps: !editedSetting && speed !== 'custom' ? ['data'] : [],
   });
@@ -250,11 +249,15 @@ function useGasPanelState<
 const setGasPanelState = (update: Partial<GasPanelState>) => {
   const chainId = useSwapsStore.getState().inputAsset?.chainId || ChainId.mainnet;
 
-  const currentGasSettings = getCustomGasSettings(chainId);
-  if (currentGasSettings) useGasPanelStore.setState({ ...currentGasSettings, ...update });
+  useGasPanelStore.setState(state => {
+    if (state) return { ...state, ...update };
 
-  const suggestion = getSelectedSpeedSuggestion(chainId);
-  useGasPanelStore.setState({ ...suggestion, ...update });
+    const currentGasSettings = getCustomGasSettings(chainId);
+    if (currentGasSettings) return { ...currentGasSettings, ...update };
+
+    const suggestion = getSelectedSpeedSuggestion(chainId);
+    return { ...suggestion, ...update };
+  });
 };
 
 const likely_to_fail = i18n.t(i18n.l.gas.likely_to_fail);
@@ -350,8 +353,7 @@ function EditGasPrice() {
 
 const stateToGasSettings = (s: GasPanelState | undefined): GasSettings | undefined => {
   if (!s) return getSelectedGas(swapsStore.getState().inputAsset?.chainId || ChainId.mainnet);
-  if (s.gasPrice) return { isEIP1559: false, gasPrice: s.gasPrice || '0' };
-  return { isEIP1559: true, maxBaseFee: s.maxBaseFee || '0', maxPriorityFee: s.maxPriorityFee || '0' };
+  return { isEIP1559: !('gasPrice' in s && !!s.gasPrice), ...s } as GasSettings;
 };
 
 function MaxTransactionFee() {
@@ -450,7 +452,6 @@ export function GasPanel() {
 
         <Box gap={24} width="full" alignItems="stretch">
           <Box gap={24} height="104px">
-            <CurrentBaseFee />
             <EditableGasSettings />
           </Box>
 

@@ -1,20 +1,20 @@
-import { rankings } from 'match-sorter';
-import { useCallback, useMemo, useState } from 'react';
-import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { TokenSearchResult, useTokenSearch } from '@/__swaps__/screens/Swap/resources/search';
+import { AddressOrEth } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { SearchAsset, TokenSearchAssetKey, TokenSearchThreshold } from '@/__swaps__/types/search';
 import { addHexPrefix } from '@/__swaps__/utils/hex';
 import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
-import { filterList } from '@/utils';
-import { useFavorites } from '@/resources/favorites';
-import { isAddress } from '@ethersproject/address';
-import { useSwapContext } from '../providers/swap-provider';
-import { useDebouncedCallback } from 'use-debounce';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
-import { AddressOrEth } from '@/__swaps__/types/assets';
+import { useFavorites } from '@/resources/favorites';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { filterList } from '@/utils';
+import { isAddress } from '@ethersproject/address';
+import { rankings } from 'match-sorter';
+import { useCallback, useMemo, useState } from 'react';
+import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
+import { useDebouncedCallback } from 'use-debounce';
 import { TokenToBuyListItem } from '../components/TokenList/TokenToBuyList';
+import { useSwapContext } from '../providers/swap-provider';
 
 export type AssetToBuySectionId = 'bridge' | 'favorites' | 'verified' | 'unverified' | 'other_networks';
 
@@ -26,32 +26,24 @@ export interface AssetToBuySection {
 const MAX_UNVERIFIED_RESULTS = 8;
 const MAX_VERIFIED_RESULTS = 48;
 
-const filterAssetsFromBridgeAndAssetToSell = ({
+const filterAssetsFromBridge = ({
   assets,
   filteredBridgeAssetAddress,
-  assetToSellAddress,
 }: {
   assets: SearchAsset[] | undefined;
   filteredBridgeAssetAddress: string | undefined;
-  assetToSellAddress: string | undefined;
-}): SearchAsset[] =>
-  assets?.filter(
-    curatedAsset =>
-      !isLowerCaseMatch(curatedAsset?.address, filteredBridgeAssetAddress) && !isLowerCaseMatch(curatedAsset?.address, assetToSellAddress)
-  ) || [];
+}): SearchAsset[] => assets?.filter(curatedAsset => !isLowerCaseMatch(curatedAsset?.address, filteredBridgeAssetAddress)) || [];
 
-const filterAssetsFromFavoritesBridgeAndAssetToSell = ({
+const filterAssetsFromFavoritesAndBridge = ({
   assets,
   favoritesList,
   filteredBridgeAssetAddress,
-  assetToSellAddress,
 }: {
   assets: SearchAsset[] | undefined;
   favoritesList: SearchAsset[] | undefined;
   filteredBridgeAssetAddress: string | undefined;
-  assetToSellAddress: string | undefined;
 }): SearchAsset[] =>
-  filterAssetsFromBridgeAndAssetToSell({ assets, filteredBridgeAssetAddress, assetToSellAddress })?.filter(
+  filterAssetsFromBridge({ assets, filteredBridgeAssetAddress })?.filter(
     curatedAsset => !favoritesList?.some(({ address }) => curatedAsset.address === address || curatedAsset.mainnetAddress === address)
   ) || [];
 
@@ -65,9 +57,7 @@ const buildListSectionsData = ({
   combinedData,
   favoritesList,
   filteredBridgeAssetAddress,
-  assetToSellAddress,
 }: {
-  assetToSellAddress: string | undefined;
   combinedData: {
     bridgeAsset?: SearchAsset;
     verifiedAssets?: SearchAsset[];
@@ -91,40 +81,36 @@ const buildListSectionsData = ({
   }
 
   if (favoritesList?.length) {
-    const filteredFavorites = filterAssetsFromBridgeAndAssetToSell({
+    const filteredFavorites = filterAssetsFromBridge({
       assets: favoritesList,
       filteredBridgeAssetAddress,
-      assetToSellAddress,
     });
     addSection('favorites', filteredFavorites);
   }
 
   if (combinedData.verifiedAssets?.length) {
-    const filteredVerified = filterAssetsFromFavoritesBridgeAndAssetToSell({
+    const filteredVerified = filterAssetsFromFavoritesAndBridge({
       assets: combinedData.verifiedAssets,
       favoritesList,
       filteredBridgeAssetAddress,
-      assetToSellAddress,
     });
     addSection('verified', filteredVerified);
   }
 
   if (!formattedData.length && combinedData.crosschainExactMatches?.length) {
-    const filteredCrosschain = filterAssetsFromFavoritesBridgeAndAssetToSell({
+    const filteredCrosschain = filterAssetsFromFavoritesAndBridge({
       assets: combinedData.crosschainExactMatches,
       favoritesList,
       filteredBridgeAssetAddress,
-      assetToSellAddress,
     });
     addSection('other_networks', filteredCrosschain);
   }
 
   if (combinedData.unverifiedAssets?.length) {
-    const filteredUnverified = filterAssetsFromFavoritesBridgeAndAssetToSell({
+    const filteredUnverified = filterAssetsFromFavoritesAndBridge({
       assets: combinedData.unverifiedAssets,
       favoritesList,
       filteredBridgeAssetAddress,
-      assetToSellAddress,
     });
     addSection('unverified', filteredUnverified);
   }
@@ -150,7 +136,6 @@ export function useSearchCurrencyLists() {
   const query = useSwapsStore(state => state.outputSearchQuery.trim().toLowerCase());
 
   const [state, setState] = useState({
-    assetToSellAddress: assetToSell.value?.[assetToSell.value?.chainId === ChainId.mainnet ? 'mainnetAddress' : 'address'],
     fromChainId: assetToSell.value ? assetToSell.value.chainId ?? ChainId.mainnet : undefined,
     isCrosschainSearch: assetToSell.value ? assetToSell.value.chainId !== selectedOutputChainId.value : false,
     toChainId: selectedOutputChainId.value ?? ChainId.mainnet,
@@ -168,7 +153,6 @@ export function useSearchCurrencyLists() {
     (current, previous) => {
       if (previous && (current.isCrosschainSearch !== previous.isCrosschainSearch || current.toChainId !== previous.toChainId)) {
         runOnJS(debouncedStateSet)({
-          assetToSellAddress: assetToSell.value?.[assetToSell.value?.chainId === ChainId.mainnet ? 'mainnetAddress' : 'address'],
           fromChainId: assetToSell.value ? assetToSell.value.chainId ?? ChainId.mainnet : undefined,
           isCrosschainSearch: current.isCrosschainSearch,
           toChainId: current.toChainId,
@@ -207,7 +191,7 @@ export function useSearchCurrencyLists() {
     [query, state.toChainId]
   );
 
-  const { data: verifiedAssets } = useTokenSearch(
+  const { data: verifiedAssets, isLoading: isLoadingVerifiedAssets } = useTokenSearch(
     {
       list: 'verifiedAssets',
       chainId: isAddress(query) ? state.toChainId : undefined,
@@ -289,7 +273,7 @@ export function useSearchCurrencyLists() {
     }
   }, [memoizedData.keys, memoizedData.queryIsAddress, query, unfilteredFavorites]);
 
-  const { data: unverifiedAssets } = useTokenSearch(
+  const { data: unverifiedAssets, isLoading: isLoadingUnverifiedAssets } = useTokenSearch(
     {
       chainId: state.toChainId,
       keys: isAddress(query) ? ['address'] : ['name', 'symbol'],
@@ -314,7 +298,6 @@ export function useSearchCurrencyLists() {
 
     return {
       results: buildListSectionsData({
-        assetToSellAddress: state.assetToSellAddress,
         combinedData: {
           bridgeAsset: bridgeResult,
           crosschainExactMatches: crosschainMatches,
@@ -324,14 +307,16 @@ export function useSearchCurrencyLists() {
         favoritesList,
         filteredBridgeAssetAddress: memoizedData.filteredBridgeAsset?.address,
       }),
+      isLoading: isLoadingVerifiedAssets || isLoadingUnverifiedAssets,
     };
   }, [
     favoritesList,
+    isLoadingUnverifiedAssets,
+    isLoadingVerifiedAssets,
     memoizedData.enableUnverifiedSearch,
     memoizedData.filteredBridgeAsset,
     query,
-    selectedOutputChainId,
-    state.assetToSellAddress,
+    selectedOutputChainId.value,
     unverifiedAssets,
     verifiedAssets,
   ]);

@@ -19,7 +19,7 @@ import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import Animated, { runOnUI, useAnimatedStyle } from 'react-native-reanimated';
 import { THICK_BORDER_WIDTH } from '../constants';
 import { GasSettings, useCustomGasSettings } from '../hooks/useCustomGas';
-import { setSelectedGasSpeed, useSelectedGas, useSelectedGasSpeed } from '../hooks/useSelectedGas';
+import { setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { GestureHandlerV1Button } from './GestureHandlerV1Button';
@@ -45,16 +45,13 @@ function UnmountWhenGasButtonIsNotInScreen({ placeholder, children }: PropsWithC
 }
 
 function EstimatedGasFee() {
-  const chainId = swapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
-  const gasSettings = useSelectedGas(chainId);
-
   return (
     <Inline alignVertical="center" space="4px">
       <TextIcon color="labelQuaternary" height={10} size="icon 11px" weight="heavy" width={18}>
         􀵟
       </TextIcon>
       <UnmountWhenGasButtonIsNotInScreen placeholder={<EstimatedSwapGasFeeSlot text="--" />}>
-        <EstimatedSwapGasFee gasSettings={gasSettings} />
+        <EstimatedSwapGasFee />
       </UnmountWhenGasButtonIsNotInScreen>
     </Inline>
   );

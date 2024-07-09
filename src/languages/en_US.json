@@ -748,6 +748,7 @@
       },
       "swap_details_v2": {
         "rainbow_fee": "Included Rainbow Fee",
+        "maximum_sold": "Maximum Sold",
         "minimum_received": "Minimum Received"
       },
       "token_index": {
