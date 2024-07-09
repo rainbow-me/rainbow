@@ -1,0 +1,37 @@
+diff --git a/node_modules/react-native/React/Base/RCTConvert.mm b/node_modules/react-native/React/Base/RCTConvert.mm
+index b868ee7..50e3b1c 100644
+--- a/node_modules/react-native/React/Base/RCTConvert.mm
++++ b/node_modules/react-native/React/Base/RCTConvert.mm
+@@ -896,7 +896,7 @@ + (UIColor *)UIColor:(id)json
+   if ([json isKindOfClass:[NSArray class]]) {
+     NSArray *components = [self NSNumberArray:json];
+     CGFloat alpha = components.count > 3 ? [self CGFloat:components[3]] : 1.0;
+-    return [UIColor colorWithRed:[self CGFloat:components[0]]
++    return [UIColor colorWithDisplayP3Red:[self CGFloat:components[0]]
+                            green:[self CGFloat:components[1]]
+                             blue:[self CGFloat:components[2]]
+                            alpha:alpha];
+@@ -906,7 +906,7 @@ + (UIColor *)UIColor:(id)json
+     CGFloat r = ((argb >> 16) & 0xFF) / 255.0;
+     CGFloat g = ((argb >> 8) & 0xFF) / 255.0;
+     CGFloat b = (argb & 0xFF) / 255.0;
+-    return [UIColor colorWithRed:r green:g blue:b alpha:a];
++    return [UIColor colorWithDisplayP3Red:r green:g blue:b alpha:a];
+   } else if ([json isKindOfClass:[NSDictionary class]]) {
+     NSDictionary *dictionary = json;
+     id value = nil;
+diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/react-native/React/Views/RCTView.m
+index 3a86581..55e0671 100644
+--- a/node_modules/react-native/React/Views/RCTView.m
++++ b/node_modules/react-native/React/Views/RCTView.m
+@@ -820,6 +820,10 @@ - (void)displayLayer:(CALayer *)layer
+ 
+   backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
+     
++  if (@available(iOS 13.0, *)) {
++    layer.cornerCurve = kCACornerCurveContinuous;
++  }
++
+   if (useIOSBorderRendering) {
+     layer.cornerRadius = cornerRadii.topLeft;
+     layer.borderColor = borderColors.left;
