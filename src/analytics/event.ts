@@ -140,7 +140,7 @@ export const event = {
   swapsFlippedAssets: 'swaps.flipped_assets',
   swapsToggledFlashbots: 'swaps.toggled_flashbots',
   swapsReceivedQuote: 'swaps.received_quote',
-  swapsSubmitted: 'swaps.submitted',
+  swapsSubmitted: 'Submitted Swap',
   swapsFailed: 'swaps.failed',
   swapsSucceeded: 'swaps.succeeded',
 
