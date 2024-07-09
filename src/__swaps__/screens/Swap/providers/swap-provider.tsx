@@ -47,15 +47,15 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { ethereumUtils, haptics } from '@/utils';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 
+import { IS_IOS } from '@/env';
 import { Address } from 'viem';
 import { clearCustomGasSettings } from '../hooks/useCustomGas';
 import { getGasSettingsBySpeed, getSelectedGas, getSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
-import { IS_IOS } from '@/env';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
-const tapToSwap = i18n.t(i18n.l.swap.actions.tap_to_swap);
+const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
 const save = i18n.t(i18n.l.swap.actions.save);
 const enterAmount = i18n.t(i18n.l.swap.actions.enter_amount);
 const review = i18n.t(i18n.l.swap.actions.review);
@@ -113,6 +113,7 @@ interface SwapContextType {
       icon?: string;
       disabled?: boolean;
       opacity?: number;
+      type?: 'tap' | 'hold';
     }>
   >;
   confirmButtonIconStyle: StyleProp<TextStyle>;
@@ -672,7 +673,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
 
     if (isReviewSheetOpen) {
-      return { icon: '􀎽', label: tapToSwap, disabled: false };
+      return { icon: '􀎽', label: holdToSwap, disabled: false, type: 'hold' as const };
     }
 
     return { icon: '􀕹', label: review, disabled: false };

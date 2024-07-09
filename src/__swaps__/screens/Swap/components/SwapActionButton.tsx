@@ -1,49 +1,42 @@
 /* eslint-disable no-nested-ternary */
 import React from 'react';
-import { StyleProp, StyleSheet, TextStyle, ViewStyle } from 'react-native';
-import Animated, { DerivedValue, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
+import { StyleProp, StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
+import Animated, { DerivedValue, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
-import { AnimatedText, Box, Column, Columns, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import { GestureHandlerV1Button } from './GestureHandlerV1Button';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { AnimatedText, Box, Column, Columns, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { GestureHandlerHoldButton } from './GestureHandlerHoldButton';
+import { GestureHandlerV1Button } from './GestureHandlerV1Button';
 
-export const SwapActionButton = ({
+function SwapButton({
   asset,
   borderRadius,
   disableShadow,
-  hugContent,
   icon,
   iconStyle,
   label,
-  onPressJS,
-  onPressWorklet,
   outline,
   rightIcon,
-  scaleTo,
   small,
-  style,
   disabled,
   opacity,
+  children,
 }: {
   asset: DerivedValue<ExtendedAnimatedAssetWithColors | null>;
   borderRadius?: number;
   disableShadow?: boolean;
-  hugContent?: boolean;
   icon?: string | DerivedValue<string | undefined>;
   iconStyle?: StyleProp<TextStyle>;
   label: string | DerivedValue<string | undefined>;
-  onPressJS?: () => void;
-  onPressWorklet?: () => void;
   outline?: boolean;
   rightIcon?: string;
-  scaleTo?: number;
   small?: boolean;
-  style?: ViewStyle;
   disabled?: DerivedValue<boolean | undefined>;
   opacity?: DerivedValue<number | undefined>;
-}) => {
+  children?: React.ReactNode;
+}) {
   const { isDarkMode } = useColorMode();
   const fallbackColor = useForegroundColor('label');
   const separatorSecondary = useForegroundColor('separatorSecondary');
@@ -88,13 +81,6 @@ export const SwapActionButton = ({
       opacity: withTiming(opacity?.value ?? (disabled?.value ? 0.6 : 1), TIMING_CONFIGS.slowerFadeConfig),
     };
   });
-
-  const disabledWrapper = useAnimatedStyle(() => {
-    return {
-      pointerEvents: disabled && disabled?.value ? 'none' : 'auto',
-    };
-  });
-
   const iconValue = useDerivedValue(() => {
     if (typeof icon === 'string') return icon;
     return icon?.value || '';
@@ -110,6 +96,109 @@ export const SwapActionButton = ({
   });
 
   return (
+    <Box
+      as={Animated.View}
+      paddingHorizontal={{ custom: small ? 14 : 20 - (outline ? 2 : 0) }}
+      paddingLeft={small && icon ? '10px' : undefined}
+      paddingRight={small && rightIcon ? '10px' : undefined}
+      style={[
+        feedActionButtonStyles.button,
+        outline && feedActionButtonStyles.outlineButton,
+        buttonWrapperStyles,
+        { position: 'relative', overflow: 'hidden' },
+      ]}
+    >
+      <Columns alignHorizontal="center" alignVertical="center" space="6px">
+        {icon && (
+          <Column width="content">
+            <AnimatedText align="center" size={small ? '15pt' : '17pt'} style={[iconStyle, textStyles]} weight="heavy">
+              {iconValue}
+            </AnimatedText>
+          </Column>
+        )}
+        {typeof label !== 'undefined' && (
+          <Column width="content">
+            <AnimatedText align="center" style={textStyles} numberOfLines={1} size={small ? '17pt' : '20pt'} weight="heavy">
+              {labelValue}
+            </AnimatedText>
+          </Column>
+        )}
+        {rightIcon && (
+          <Column width="content">
+            <AnimatedText align="center" style={[textStyles, secondaryTextStyles]} size={small ? '15pt' : '17pt'} weight="bold">
+              {rightIconValue}
+            </AnimatedText>
+          </Column>
+        )}
+      </Columns>
+      {children}
+    </Box>
+  );
+}
+
+export const SwapActionButton = ({
+  hugContent,
+  onPressJS,
+  onPressWorklet,
+  scaleTo,
+  style,
+  disabled,
+  type,
+  ...props
+}: {
+  asset: DerivedValue<ExtendedAnimatedAssetWithColors | null>;
+  borderRadius?: number;
+  disableShadow?: boolean;
+  hugContent?: boolean;
+  icon?: string | DerivedValue<string | undefined>;
+  iconStyle?: StyleProp<TextStyle>;
+  label: string | DerivedValue<string | undefined>;
+  onPressJS?: () => void;
+  onPressWorklet?: () => void;
+  outline?: boolean;
+  rightIcon?: string;
+  scaleTo?: number;
+  small?: boolean;
+  style?: ViewStyle;
+  disabled?: DerivedValue<boolean | undefined>;
+  opacity?: DerivedValue<number | undefined>;
+  type?: 'tap' | 'hold';
+}) => {
+  const disabledWrapper = useAnimatedStyle(() => {
+    return {
+      pointerEvents: disabled && disabled?.value ? 'none' : 'auto',
+    };
+  });
+
+  const holdProgress = useSharedValue(0);
+
+  const holdProgressStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: globalColors.white50,
+      height: '100%',
+      width: `${holdProgress.value}%`,
+    };
+  });
+
+  if (type === 'hold')
+    return (
+      <Animated.View style={disabledWrapper}>
+        <GestureHandlerHoldButton
+          onPressWorklet={onPressWorklet}
+          onPressJS={onPressJS}
+          style={[hugContent && feedActionButtonStyles.buttonWrapper, style]}
+          holdProgress={holdProgress}
+        >
+          <SwapButton {...props} disabled={disabled}>
+            <View style={{ position: 'absolute', top: 0, bottom: 0, right: 0, left: 0 }}>
+              <Animated.View style={holdProgressStyle} />
+            </View>
+          </SwapButton>
+        </GestureHandlerHoldButton>
+      </Animated.View>
+    );
+
+  return (
     <Animated.View style={disabledWrapper}>
       <GestureHandlerV1Button
         onPressWorklet={onPressWorklet}
@@ -117,37 +206,7 @@ export const SwapActionButton = ({
         scaleTo={scaleTo || (hugContent ? undefined : 0.925)}
         style={[hugContent && feedActionButtonStyles.buttonWrapper, style]}
       >
-        <Box
-          as={Animated.View}
-          paddingHorizontal={{ custom: small ? 14 : 20 - (outline ? 2 : 0) }}
-          paddingLeft={small && icon ? '10px' : undefined}
-          paddingRight={small && rightIcon ? '10px' : undefined}
-          style={[feedActionButtonStyles.button, outline && feedActionButtonStyles.outlineButton, buttonWrapperStyles]}
-        >
-          <Columns alignHorizontal="center" alignVertical="center" space="6px">
-            {icon && (
-              <Column width="content">
-                <AnimatedText align="center" size={small ? '15pt' : '17pt'} style={[iconStyle, textStyles]} weight="heavy">
-                  {iconValue}
-                </AnimatedText>
-              </Column>
-            )}
-            {typeof label !== 'undefined' && (
-              <Column width="content">
-                <AnimatedText align="center" style={textStyles} numberOfLines={1} size={small ? '17pt' : '20pt'} weight="heavy">
-                  {labelValue}
-                </AnimatedText>
-              </Column>
-            )}
-            {rightIcon && (
-              <Column width="content">
-                <AnimatedText align="center" style={[textStyles, secondaryTextStyles]} size={small ? '15pt' : '17pt'} weight="bold">
-                  {rightIconValue}
-                </AnimatedText>
-              </Column>
-            )}
-          </Columns>
-        </Box>
+        <SwapButton {...props} disabled={disabled} />
       </GestureHandlerV1Button>
     </Animated.View>
   );
