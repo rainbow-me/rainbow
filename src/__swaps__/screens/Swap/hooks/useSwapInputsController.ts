@@ -548,7 +548,7 @@ export function useSwapInputsController({
   );
 
   const onTypedNumber = useDebouncedCallback(
-    (amount: number, inputKey: inputKeys, preserveAmount = true) => {
+    (amount: number, inputKey: inputKeys) => {
       lastTypedInput.value = inputKey;
 
       if (amount > 0) {
@@ -569,7 +569,7 @@ export function useSwapInputsController({
             const updatedValues = keysToReset.reduce(
               (acc, key) => {
                 const castedKey = key as keyof typeof inputValues.value;
-                acc[castedKey] = castedKey === inputKey && preserveAmount ? inputValues.value[castedKey] : 0;
+                acc[castedKey] = castedKey === inputKey ? inputValues.value[castedKey] : 0;
                 return acc;
               },
               {} as Partial<typeof inputValues.value>
@@ -755,11 +755,7 @@ export function useSwapInputsController({
                 outputNativeValue: 0,
               };
             });
-            if (hasDecimal) {
-              runOnJS(onTypedNumber)(0, 'inputAmount', true);
-            } else {
-              runOnJS(onTypedNumber)(0, 'inputAmount');
-            }
+            runOnJS(onTypedNumber)(0, 'inputAmount');
           } else {
             // If the input amount was set to a non-zero value
             if (!internalSelectedInputAsset.value) return;
@@ -787,7 +783,7 @@ export function useSwapInputsController({
               sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
             }
 
-            runOnJS(onTypedNumber)(Number(current.values.inputAmount), 'inputAmount', true);
+            runOnJS(onTypedNumber)(Number(current.values.inputAmount), 'inputAmount');
           }
         }
         if (inputMethod.value === 'outputAmount' && !equalWorklet(current.values.outputAmount, previous.values.outputAmount)) {
@@ -811,11 +807,7 @@ export function useSwapInputsController({
               };
             });
 
-            if (hasDecimal) {
-              runOnJS(onTypedNumber)(0, 'outputAmount', true);
-            } else {
-              runOnJS(onTypedNumber)(0, 'outputAmount');
-            }
+            runOnJS(onTypedNumber)(0, 'outputAmount');
           } else if (greaterThanWorklet(current.values.outputAmount, 0)) {
             // If the output amount was set to a non-zero value
             if (isQuoteStale.value !== 1) isQuoteStale.value = 1;
