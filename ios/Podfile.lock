@@ -756,7 +756,7 @@ PODS:
     - React-Core
   - RNFS (2.16.6):
     - React
-  - RNGestureHandler (2.15.0):
+  - RNGestureHandler (2.17.1):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - RNImageCropPicker (0.40.3):
@@ -1378,7 +1378,7 @@ SPEC CHECKSUMS:
   RNFBRemoteConfig: a8325e2d3772127358dd2e7d5e39c9ad3e3379ac
   RNFlashList: 25b0e092b4470c84db0386d4f5316dc34123bb6d
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
-  RNGestureHandler: 8c9cd013989564ceedc554d9ebfca84c95a01664
+  RNGestureHandler: bbb8e17b10afdafc5cc5746e8f60772236e7e2ca
   RNImageCropPicker: e7ab6fb43d2fc3e84651e786ef4a080d63b0ed3d
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeyboard: 14793d75953d99c6d950090b8e9698b234c5d08c
