@@ -579,12 +579,9 @@ export function useSwapInputsController({
   };
 
   const onTypedNumber = useDebouncedCallback(
-    (amount: number, inputKey: inputKeys) => {
+    (inputKey: inputKeys) => {
       lastTypedInput.value = inputKey;
-
-      if (amount > 0) {
-        runOnUI(fetchQuoteAndAssetPrices)();
-      }
+      runOnUI(fetchQuoteAndAssetPrices)();
     },
     300,
     { leading: false, trailing: true }
@@ -749,7 +746,7 @@ export function useSwapInputsController({
               sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
             }
 
-            runOnJS(onTypedNumber)(Number(current.values.inputAmount), 'inputAmount');
+            runOnJS(onTypedNumber)('inputAmount');
           }
         }
         if (inputMethod.value === 'outputAmount' && !equalWorklet(current.values.outputAmount, previous.values.outputAmount)) {
@@ -770,7 +767,7 @@ export function useSwapInputsController({
               };
             });
 
-            runOnJS(onTypedNumber)(Number(current.values.outputAmount), 'outputAmount');
+            runOnJS(onTypedNumber)('outputAmount');
           }
         }
       }
