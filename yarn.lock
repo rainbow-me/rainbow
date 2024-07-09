@@ -4745,9 +4745,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-firebase/app@npm:19.2.2":
-  version: 19.2.2
-  resolution: "@react-native-firebase/app@npm:19.2.2"
+"@react-native-firebase/app@npm:20.1.0":
+  version: 20.1.0
+  resolution: "@react-native-firebase/app@npm:20.1.0"
   dependencies:
     opencollective-postinstall: "npm:^2.0.3"
     superstruct: "npm:^0.6.2"
@@ -4758,30 +4758,30 @@ __metadata:
   peerDependenciesMeta:
     expo:
       optional: true
-  checksum: 10c0/0520edb28bc4261772f2ad5efa7b5581764b24e9b7592393fb4101af584b3649c849ef684432b40da7ec7060f211ed40cc639fee66017edd7fbd7b4b4ea592ae
+  checksum: 10c0/5a1d20c26ae2b53b4dd908a47568c7d5bdb0a5e86b6ee35efda67051d87c082903999744e9e480731dc979453bbcf17619c748f8aa2e20d36b67ad76a148beac
   languageName: node
   linkType: hard
 
-"@react-native-firebase/messaging@npm:19.2.2":
-  version: 19.2.2
-  resolution: "@react-native-firebase/messaging@npm:19.2.2"
+"@react-native-firebase/messaging@npm:20.1.0":
+  version: 20.1.0
+  resolution: "@react-native-firebase/messaging@npm:20.1.0"
   peerDependencies:
-    "@react-native-firebase/app": 19.2.2
+    "@react-native-firebase/app": 20.1.0
     expo: ">=47.0.0"
   peerDependenciesMeta:
     expo:
       optional: true
-  checksum: 10c0/71ad93f79dcd79589de8076a6eb12e348bc8667c7eb77a8828922c48c80027a269c69a159d5a6a508a935af6d9bef9b75fbc979a9f5a81d3bc4d87cd8f2a24bb
+  checksum: 10c0/4b4829be3e519ea58afaafe8ffed310b755d68ccc4574bc18a98a7651c8274f15445f6e7c9c3f887b393f39b9bc33f67e50371d03612d7fef0784dbeaf6ae060
   languageName: node
   linkType: hard
 
-"@react-native-firebase/remote-config@npm:19.2.2":
-  version: 19.2.2
-  resolution: "@react-native-firebase/remote-config@npm:19.2.2"
+"@react-native-firebase/remote-config@npm:20.1.0":
+  version: 20.1.0
+  resolution: "@react-native-firebase/remote-config@npm:20.1.0"
   peerDependencies:
-    "@react-native-firebase/analytics": 19.2.2
-    "@react-native-firebase/app": 19.2.2
-  checksum: 10c0/9c8999c6a5bfdc1e34416f6d5f2cee063ecdfdffd903d9397f1403472d98707cbe8cdbde5b19f6444c47dcd32582c7e6b60ac2491adf613e79c2e2f5a27be4d6
+    "@react-native-firebase/analytics": 20.1.0
+    "@react-native-firebase/app": 20.1.0
+  checksum: 10c0/28cb659bedd2d192d0e187691e8a4265e02dc82d895a22a0a83f7ee4d2ea1ca67b3d76f97d66f2cc5050e09132595312a5cb4a53a06cdc056d329f46172135f0
   languageName: node
   linkType: hard
 
@@ -8119,9 +8119,9 @@ __metadata:
     "@react-native-clipboard/clipboard": "npm:1.13.2"
     "@react-native-community/blur": "npm:4.4.0"
     "@react-native-community/netinfo": "npm:9.0.0"
-    "@react-native-firebase/app": "npm:19.2.2"
-    "@react-native-firebase/messaging": "npm:19.2.2"
-    "@react-native-firebase/remote-config": "npm:19.2.2"
+    "@react-native-firebase/app": "npm:20.1.0"
+    "@react-native-firebase/messaging": "npm:20.1.0"
+    "@react-native-firebase/remote-config": "npm:20.1.0"
     "@react-native-masked-view/masked-view": "npm:0.3.1"
     "@react-native-menu/menu": "npm:1.0.3"
     "@react-native/babel-preset": "npm:0.74.83"
@@ -13640,6 +13640,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fbjs-css-vars@npm:^1.0.0":
+  version: 1.0.2
+  resolution: "fbjs-css-vars@npm:1.0.2"
+  checksum: 10c0/dfb64116b125a64abecca9e31477b5edb9a2332c5ffe74326fe36e0a72eef7fc8a49b86adf36c2c293078d79f4524f35e80f5e62546395f53fb7c9e69821f54f
+  languageName: node
+  linkType: hard
+
 "fbjs@npm:^0.8.9":
   version: 0.8.18
   resolution: "fbjs@npm:0.8.18"
@@ -13652,6 +13659,21 @@ __metadata:
     setimmediate: "npm:^1.0.5"
     ua-parser-js: "npm:^0.7.30"
   checksum: 10c0/a7e1c64c349cde000e5d94ce0289c59b725a95fbdacc22529155c4dacea1dde37a4dae7e16f0f6602dca566f15978b42acd7ee973b620eaac612b5228687ffe0
+  languageName: node
+  linkType: hard
+
+"fbjs@npm:^3.0.0":
+  version: 3.0.5
+  resolution: "fbjs@npm:3.0.5"
+  dependencies:
+    cross-fetch: "npm:^3.1.5"
+    fbjs-css-vars: "npm:^1.0.0"
+    loose-envify: "npm:^1.0.0"
+    object-assign: "npm:^4.1.0"
+    promise: "npm:^7.1.1"
+    setimmediate: "npm:^1.0.5"
+    ua-parser-js: "npm:^1.0.35"
+  checksum: 10c0/66d0a2fc9a774f9066e35ac2ac4bf1245931d27f3ac287c7d47e6aa1fc152b243c2109743eb8f65341e025621fb51a12038fadb9fd8fda2e3ddae04ebab06f91
   languageName: node
   linkType: hard
 
@@ -24802,6 +24824,13 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   version: 0.7.33
   resolution: "ua-parser-js@npm:0.7.33"
   checksum: 10c0/d58bf54c91e3e80e6e086b6215fa15266791e23e6e403039179c020129940168634a5b931f65ce70c6550b05d0d62c7c944bf7378b6b42133cd4a7ccb07f1948
+  languageName: node
+  linkType: hard
+
+"ua-parser-js@npm:^1.0.35":
+  version: 1.0.38
+  resolution: "ua-parser-js@npm:1.0.38"
+  checksum: 10c0/b1dd11b87e1784c79f7129e9aec679753fccf8a9b22f5202b79b19492635b5b46b779607a3cfae0270999a0d48da223bf94015642d2abee69d83c9069ab37bd0
   languageName: node
   linkType: hard
 
