@@ -554,17 +554,6 @@ export function useSwapInputsController({
       if (amount > 0) {
         const updateWorklet = () => {
           'worklet';
-          // If the user enters a new inputAmount, update the slider position ahead of the quote fetch, because
-          // we can derive the slider position directly from the entered amount.
-          if (inputKey === 'inputAmount') {
-            const inputAssetBalance = internalSelectedInputAsset.value?.maxSwappableAmount || '0';
-            if (equalWorklet(inputAssetBalance, 0)) {
-              sliderXPosition.value = withSpring(0, snappySpringConfig);
-            } else {
-              const updatedSliderPosition = clamp(Number(divWorklet(amount, inputAssetBalance)) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
-              sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
-            }
-          }
           fetchQuoteAndAssetPrices();
         };
 
