@@ -552,7 +552,6 @@ export function useSwapInputsController({
     quoteFetchingInterval.stop();
     if (isFetching.value) isFetching.value = false;
     if (isQuoteStale.value !== 0) isQuoteStale.value = 0;
-    if (inputKey) lastTypedInput.value = inputKey;
 
     const keysToReset = ['inputAmount', 'inputNativeValue', 'outputAmount', 'outputNativeValue'];
     const inputKeyValue = inputKey ? inputValues.value[inputKey] : 0;
@@ -577,15 +576,6 @@ export function useSwapInputsController({
       sliderXPosition.value = withSpring(0, snappySpringConfig);
     }
   };
-
-  const onTypedNumber = useDebouncedCallback(
-    (inputKey: inputKeys) => {
-      lastTypedInput.value = inputKey;
-      runOnUI(fetchQuoteAndAssetPrices)();
-    },
-    300,
-    { leading: false, trailing: true }
-  );
 
   const debouncedFetchQuote = useDebouncedCallback(
     () => {
@@ -716,6 +706,7 @@ export function useSwapInputsController({
         }
         if (inputMethod.value === 'inputAmount' && !equalWorklet(current.values.inputAmount, previous.values.inputAmount)) {
           // If the number in the input field changes
+          lastTypedInput.value = 'inputAmount';
           if (equalWorklet(current.values.inputAmount, 0)) {
             // If the input amount was set to 0
             resetValuesToZeroWorklet('inputAmount');
@@ -746,11 +737,12 @@ export function useSwapInputsController({
               sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
             }
 
-            runOnJS(onTypedNumber)('inputAmount');
+            runOnJS(debouncedFetchQuote)();
           }
         }
         if (inputMethod.value === 'outputAmount' && !equalWorklet(current.values.outputAmount, previous.values.outputAmount)) {
           // If the number in the output field changes
+          lastTypedInput.value = 'outputAmount';
           if (equalWorklet(current.values.outputAmount, 0)) {
             // If the output amount was set to 0
             resetValuesToZeroWorklet('outputAmount');
@@ -767,7 +759,7 @@ export function useSwapInputsController({
               };
             });
 
-            runOnJS(onTypedNumber)('outputAmount');
+            runOnJS(debouncedFetchQuote)();
           }
         }
       }
