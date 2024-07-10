@@ -23,7 +23,7 @@ jobs:
 
       - name: Set up ENV vars & scripts
         env:
-          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
+          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS_RN_UPGRADE }}
         run: |
           source ~/.bashrc
           git clone git@github.com:rainbow-me/rainbow-env.git
