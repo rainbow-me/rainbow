@@ -3,7 +3,7 @@ name: iOS e2e tests
 on: [pull_request, workflow_dispatch]
 jobs:
   ios-e2e:
-    runs-on: ["self-hosted"]
+    runs-on: ["self-hosted", "CI-9"]
     concurrency: 
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
