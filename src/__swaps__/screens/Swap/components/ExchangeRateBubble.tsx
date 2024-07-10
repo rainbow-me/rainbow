@@ -74,8 +74,8 @@ export const ExchangeRateBubble = () => {
       const { symbol: inputAssetSymbol, nativePrice: inputAssetPrice, type: inputAssetType } = internalSelectedInputAsset.value;
       const { symbol: outputAssetSymbol, nativePrice: outputAssetPrice, type: outputAssetType } = internalSelectedOutputAsset.value;
 
-      const isInputAssetStablecoin = inputAssetType === 'stablecoin' ?? false;
-      const isOutputAssetStablecoin = outputAssetType === 'stablecoin' ?? false;
+      const isInputAssetStablecoin = inputAssetType === 'stablecoin';
+      const isOutputAssetStablecoin = outputAssetType === 'stablecoin';
 
       const inputAssetEthTransform =
         internalSelectedInputAsset.value?.address === ETH_ADDRESS ? AddressZero : internalSelectedInputAsset.value?.address;

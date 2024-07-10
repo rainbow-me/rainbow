@@ -115,8 +115,7 @@ export function useSwapInputsController({
         amount: inputValues.value.inputAmount,
         nativePrice: inputNativePrice.value,
         roundingMode: 'up',
-        precisionAdjustment: -1,
-        isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
+        isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin',
         stripSeparators: false,
       });
     }
@@ -157,8 +156,7 @@ export function useSwapInputsController({
       amount: inputValues.value.outputAmount,
       nativePrice: outputNativePrice.value,
       roundingMode: 'down',
-      precisionAdjustment: -1,
-      isStablecoin: internalSelectedOutputAsset.value?.type === 'stablecoin' ?? false,
+      isStablecoin: internalSelectedOutputAsset.value?.type === 'stablecoin',
       stripSeparators: false,
     });
   });
@@ -921,7 +919,6 @@ export function useSwapInputsController({
                 inputNativePrice > 0 ? divWorklet(inputValues.value.inputNativeValue, inputNativePrice) : inputValues.value.outputAmount,
               nativePrice: inputNativePrice,
               roundingMode: 'up',
-              precisionAdjustment: -1,
               isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
               stripSeparators: true,
             })
