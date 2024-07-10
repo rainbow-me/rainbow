@@ -1,5 +1,3 @@
-.vercel
-
 # Yarn
 .yarn/*
 !.yarn/patches
