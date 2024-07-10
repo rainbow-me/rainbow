@@ -3,7 +3,7 @@
   "version": "1.9.31-1",
   "private": true,
   "scripts": {
-    "setup": "yarn install && yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn postinstall && yarn graphql-codegen",
+    "setup": "yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn postinstall && yarn graphql-codegen",
     "setup-ci": "./scripts/setup-ci.sh",
     "adb-all": "adb devices | tail -n +2 | cut -sf 1 | xargs -I {} adb -s {}",
     "android": "yarn uninstall:android && react-native run-android",
@@ -28,7 +28,7 @@
     "detox:ios:release": "detox build -c ios.sim.release && detox test -c ios.sim.release --maxWorkers 2 -- --bail 1",
     "ds:install": "cd src/design-system/docs && yarn install",
     "ds": "cd src/design-system/docs && yarn dev",
-    "fast": "yarn setup && yarn install-pods-fast",
+    "fast": "yarn install && yarn setup && yarn install-pods-fast",
     "gradle": "cd android && ./gradlew",
     "hardhat": "source .env && npx hardhat node --fork ${ETHEREUM_MAINNET_RPC_DEV}",
     "install-all": "yarn setup && yarn install-pods",
