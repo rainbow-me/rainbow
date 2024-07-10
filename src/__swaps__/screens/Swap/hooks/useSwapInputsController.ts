@@ -854,9 +854,9 @@ export function useSwapInputsController({
             return {
               ...values,
               inputAmount,
-              inputNativeValue: inputValues.value.inputNativeValue,
+              inputNativeValue: mulWorklet(newInputAmount, inputNativePrice),
               outputAmount: newOutputAmount,
-              outputNativeValue: inputValues.value.outputNativeValue,
+              outputNativeValue: mulWorklet(newOutputAmount, outputNativePrice),
             };
           });
         }
