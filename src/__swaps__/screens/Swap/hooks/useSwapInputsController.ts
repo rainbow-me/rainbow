@@ -832,10 +832,13 @@ export function useSwapInputsController({
           const inputNativePrice = internalSelectedInputAsset.value?.nativePrice || internalSelectedInputAsset.value?.price?.value || 0;
           const outputNativePrice = internalSelectedOutputAsset.value?.nativePrice || internalSelectedOutputAsset.value?.price?.value || 0;
 
+          const prevInputNativeValue = inputValues.value.inputNativeValue;
+          const prevOutputAmount = inputValues.value.outputAmount;
+          const newInputAmount = inputNativePrice > 0 ? divWorklet(prevInputNativeValue, inputNativePrice) : prevOutputAmount;
+
           const inputAmount = Number(
             valueBasedDecimalFormatter({
-              amount:
-                inputNativePrice > 0 ? divWorklet(inputValues.value.inputNativeValue, inputNativePrice) : inputValues.value.outputAmount,
+              amount: newInputAmount,
               nativePrice: inputNativePrice,
               roundingMode: 'up',
               isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
@@ -843,13 +846,16 @@ export function useSwapInputsController({
             })
           );
 
+          const prevOutputNativeValue = inputValues.value.outputNativeValue;
+          const prevInputAmount = inputValues.value.inputAmount;
+          const newOutputAmount = outputNativePrice > 0 ? divWorklet(prevOutputNativeValue, outputNativePrice) : prevInputAmount;
+
           inputValues.modify(values => {
             return {
               ...values,
               inputAmount,
               inputNativeValue: inputValues.value.inputNativeValue,
-              outputAmount:
-                outputNativePrice > 0 ? divWorklet(inputValues.value.outputNativeValue, outputNativePrice) : inputValues.value.inputAmount,
+              outputAmount: newOutputAmount,
               outputNativeValue: inputValues.value.outputNativeValue,
             };
           });
