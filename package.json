@@ -350,7 +350,7 @@
     "babel-plugin-transform-remove-console": "6.9.4",
     "chai": "4.2.0",
     "depcheck": "1.4.7",
-    "detox": "20.19.3",
+    "detox": "20.23.1",
     "dotenv": "8.2.0",
     "eslint": "8.22.0",
     "eslint-config-rainbow": "4.3.0",
