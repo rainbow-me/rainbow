@@ -3,7 +3,7 @@ name: iOS e2e tests
 on: [pull_request, workflow_dispatch]
 jobs:
   ios-e2e:
-    runs-on: ["self-hosted"]
+    runs-on: ["self-hosted", "CI-9"]
     concurrency: 
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
@@ -23,7 +23,7 @@ jobs:
 
       - name: Set up ENV vars & scripts
         env:
-          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
+          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS_RN_UPGRADE }}
         run: |
           source ~/.bashrc
           git clone git@github.com:rainbow-me/rainbow-env.git
@@ -42,7 +42,7 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install dependencies
-        run: yarn setup-ci
+        run: yarn install && yarn setup-ci
 
       - name: Check for frozen lockfile
         run: yarn check-lockfile
