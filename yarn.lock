@@ -8001,7 +8001,7 @@ __metadata:
     react-native-text-input-mask: "npm:2.0.0"
     react-native-text-size: "rainbow-me/react-native-text-size#15b21c9f88c6df0d1b5e0f2ba792fe59b5dc255a"
     react-native-tooltip: "rainbow-me/react-native-tooltip#e0e88d212b5b7f350e5eabba87f588a32e0f2590"
-    react-native-tooltips: "rainbow-me/react-native-tooltips#3a0678d4404843dae27e222b341c625a9734b9b7"
+    react-native-tooltips: "rainbow-me/react-native-tooltips#77338abadbef8225870aea5cfc0dacf94a1448e3"
     react-native-udp: "npm:2.7.0"
     react-native-url-polyfill: "npm:2.0.0"
     react-native-version-number: "npm:0.3.6"
@@ -20595,7 +20595,7 @@ __metadata:
     react-native: "*"
     react-native-svg: "*"
     react-native-web: "*"
-  checksum: 10c0/20816fa41a49f6fad5b54a0406fae97fdf86ca5f03e35a873da7e3e5e220b2fc08e5fa9b066e983f38a76e5954451057a7453a57c6bb296855993da44aad31a1
+  checksum: 10c0/1eb98a6ddca0500739152c37215b1ee95fcf0aa83070222b09eacb3f6558ff8aeca399768a828405ca54675d1962695f92a66eea3d0226d9057aff4c2119c05c
   languageName: node
   linkType: hard
 
@@ -21313,12 +21313,12 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   languageName: node
   linkType: hard
 
-"react-native-tooltips@rainbow-me/react-native-tooltips#3a0678d4404843dae27e222b341c625a9734b9b7":
+"react-native-tooltips@rainbow-me/react-native-tooltips#77338abadbef8225870aea5cfc0dacf94a1448e3":
   version: 1.0.3
-  resolution: "react-native-tooltips@https://github.com/rainbow-me/react-native-tooltips.git#commit=3a0678d4404843dae27e222b341c625a9734b9b7"
+  resolution: "react-native-tooltips@https://github.com/rainbow-me/react-native-tooltips.git#commit=77338abadbef8225870aea5cfc0dacf94a1448e3"
   dependencies:
     deprecated-react-native-prop-types: "npm:2.2.0"
-  checksum: 10c0/266a292a9d2d1cd4171cff392c39b27163d9e561e33fa6067299f5bcfd6a8729b98958b5271c9322990dd7ad4f868ba943997713a82620a970b9ed7d1593352c
+  checksum: 10c0/b97f5891e583b15a37362f0b0bb2657a41728347bbf1bb4dc692a620db0ea87b02c11c633594e2c6dddcc3b116f6d186616761352f8f803768af3a9b98f9caab
   languageName: node
   linkType: hard
 
