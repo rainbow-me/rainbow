@@ -20645,7 +20645,7 @@ __metadata:
     react-native: "*"
     react-native-svg: "*"
     react-native-web: "*"
-  checksum: 10c0/d32e131cd8c7e05fa6d7712a6222974f19b36e82a9ce5871586482db3ef204d1b09aac657da19975669c05551f3f7bde40963a011943cc0bc4f5863193ad50b9
+  checksum: 10c0/5c8f3b16a6b2faf87b5730a7151268dec633aea744996cf14b8b475d5bff97fbca2aa82f1405d1278029d2a1243e27e6fbb7b830b0fcb143a4d1a5ad646361ee
   languageName: node
   linkType: hard
 
