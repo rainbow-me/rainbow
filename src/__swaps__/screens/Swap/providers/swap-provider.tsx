@@ -47,12 +47,12 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { ethereumUtils, haptics } from '@/utils';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 
+import { IS_IOS } from '@/env';
 import { Address } from 'viem';
 import { clearCustomGasSettings } from '../hooks/useCustomGas';
 import { getGasSettingsBySpeed, getSelectedGas, getSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
-import { IS_IOS } from '@/env';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const tapToSwap = i18n.t(i18n.l.swap.actions.tap_to_swap);
@@ -390,6 +390,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     quoteFetchingInterval: SwapInputController.quoteFetchingInterval,
     selectedInputAsset: internalSelectedInputAsset,
     selectedOutputAsset: internalSelectedOutputAsset,
+    isDegenMode: SwapSettings.degenMode,
   });
 
   const SwapWarning = useSwapWarning({
