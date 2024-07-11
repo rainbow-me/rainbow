@@ -42,7 +42,14 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install dependencies
-        run: yarn setup
+        run: |
+          yarn cache clean --all
+          yarn install
+          yarn graphql-codegen:install
+          yarn ds:install
+          yarn allow-scripts
+          yarn postinstall
+          yarn graphql-codegen
 
       - name: Check for frozen lockfile
         run: ./scripts/check-lockfile.sh
