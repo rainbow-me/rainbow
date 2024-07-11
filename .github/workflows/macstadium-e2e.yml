@@ -43,7 +43,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          yarn setup | yarn install && yarn setup
+          yarn install && yarn setup
 
       - name: Check for frozen lockfile
         run: ./scripts/check-lockfile.sh
