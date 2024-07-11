@@ -3,16 +3,8 @@ import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, us
 import { useDebouncedCallback } from 'use-debounce';
 import { SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
 import { RequestNewQuoteParams, inputKeys, inputMethods, inputValuesType } from '@/__swaps__/types/swap';
-import {
-  addCommasToNumber,
-  buildQuoteParams,
-  clamp,
-  countDecimalPlaces,
-  findNiceIncrement,
-  niceIncrementFormatter,
-  trimTrailingZeros,
-  valueBasedDecimalFormatter,
-} from '@/__swaps__/utils/swaps';
+import { valueBasedDecimalFormatter } from '@/__swaps__/utils/decimalFormatter';
+import { addCommasToNumber, buildQuoteParams, clamp, niceIncrementFormatter, trimTrailingZeros } from '@/__swaps__/utils/swaps';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { CrosschainQuote, Quote, QuoteError, SwapType, getCrosschainQuote, getQuote } from '@rainbow-me/swaps';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
@@ -39,15 +31,11 @@ import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mu
 
 function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetWithColors | null) {
   const initialBalance = Number(initialSelectedInputAsset?.maxSwappableAmount) || 0;
-  const initialNiceIncrement = findNiceIncrement(initialBalance);
-  const initialDecimalPlaces = countDecimalPlaces(initialNiceIncrement);
   const isStablecoin = initialSelectedInputAsset?.type === 'stablecoin';
 
   const initialInputAmount = niceIncrementFormatter({
-    incrementDecimalPlaces: initialDecimalPlaces,
     inputAssetBalance: initialBalance,
     inputAssetNativePrice: initialSelectedInputAsset?.price?.value ?? 0,
-    niceIncrement: initialNiceIncrement,
     percentageToSwap: 0.5,
     sliderXPosition: SLIDER_WIDTH / 2,
     stripSeparators: true,
@@ -104,12 +92,6 @@ export function useSwapInputsController({
     return Math.round(clamp((sliderXPosition.value - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1) * 100) / 100;
   });
 
-  const niceIncrement = useDerivedValue(() => {
-    if (!internalSelectedInputAsset.value?.maxSwappableAmount) return 0.1;
-    return findNiceIncrement(internalSelectedInputAsset.value?.maxSwappableAmount);
-  });
-  const incrementDecimalPlaces = useDerivedValue(() => countDecimalPlaces(niceIncrement.value));
-
   const inputNativePrice = useDerivedValue(() => {
     return internalSelectedInputAsset.value?.nativePrice || internalSelectedInputAsset.value?.price?.value || 0;
   });
@@ -133,8 +115,7 @@ export function useSwapInputsController({
         amount: inputValues.value.inputAmount,
         nativePrice: inputNativePrice.value,
         roundingMode: 'up',
-        precisionAdjustment: -1,
-        isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
+        isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin',
         stripSeparators: false,
       });
     }
@@ -175,8 +156,7 @@ export function useSwapInputsController({
       amount: inputValues.value.outputAmount,
       nativePrice: outputNativePrice.value,
       roundingMode: 'down',
-      precisionAdjustment: -1,
-      isStablecoin: internalSelectedOutputAsset.value?.type === 'stablecoin' ?? false,
+      isStablecoin: internalSelectedOutputAsset.value?.type === 'stablecoin',
       stripSeparators: false,
     });
   });
@@ -749,10 +729,8 @@ export function useSwapInputsController({
             }
 
             const inputAmount = niceIncrementFormatter({
-              incrementDecimalPlaces: incrementDecimalPlaces.value,
               inputAssetBalance: balance,
               inputAssetNativePrice: inputNativePrice.value,
-              niceIncrement: niceIncrement.value,
               percentageToSwap: percentageToSwap.value,
               sliderXPosition: sliderXPosition.value,
               stripSeparators: true,
@@ -912,10 +890,8 @@ export function useSwapInputsController({
           }
 
           const inputAmount = niceIncrementFormatter({
-            incrementDecimalPlaces: incrementDecimalPlaces.value,
             inputAssetBalance: balance,
             inputAssetNativePrice: inputNativePrice.value,
-            niceIncrement: niceIncrement.value,
             percentageToSwap: didInputAssetChange ? 0.5 : percentageToSwap.value,
             sliderXPosition: didInputAssetChange ? SLIDER_WIDTH / 2 : sliderXPosition.value,
             stripSeparators: true,
@@ -943,7 +919,6 @@ export function useSwapInputsController({
                 inputNativePrice > 0 ? divWorklet(inputValues.value.inputNativeValue, inputNativePrice) : inputValues.value.outputAmount,
               nativePrice: inputNativePrice,
               roundingMode: 'up',
-              precisionAdjustment: -1,
               isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
               stripSeparators: true,
             })
@@ -973,10 +948,8 @@ export function useSwapInputsController({
     formattedInputNativeValue,
     formattedOutputAmount,
     formattedOutputNativeValue,
-    incrementDecimalPlaces,
     inputMethod,
     inputValues,
-    niceIncrement,
     onChangedPercentage,
     percentageToSwap,
     quoteFetchingInterval,
