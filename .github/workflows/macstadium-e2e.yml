@@ -45,7 +45,7 @@ jobs:
         run: yarn install && yarn setup-ci
 
       - name: Check for frozen lockfile
-        run: yarn check-lockfile
+        run: ./scripts/check-lockfile.sh
 
       - name: Audit CI
         run: yarn audit-ci --config audit-ci.jsonc
