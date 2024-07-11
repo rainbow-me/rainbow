@@ -43,6 +43,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          yarn install
           yarn graphql-codegen:install
           yarn ds:install
           yarn allow-scripts
