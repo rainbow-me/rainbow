@@ -15,6 +15,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.31] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.31)
+
+### Fixed
+
+- fixed a bug causing assets in swap to sometimes not reflect your balance (#5919)
+- removed the filtering out of the assetToSell from the currency lists which fixed a bug where ETH wasn't showing in output list (#5921)
+
 ## [1.9.30] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.30)
 
 ### Fixed
