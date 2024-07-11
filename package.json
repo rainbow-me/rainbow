@@ -442,7 +442,11 @@
     "**/browserify-sign": "4.2.2",
     "**/axios": "1.6.1",
     "**/ip": "1.1.9",
-    "**/phin": "3.7.1"
+    "**/phin": "3.7.1",
+    "**/viem/ws": "8.17.1",
+    "**/socket.io-client/engine.io-client/ws": "8.17.1",
+    "**/@ethersproject/providers/ws": "7.5.10",
+    "**/@walletconnect/socket-transport/ws": "7.5.10"
   },
   "react-native": {
     "@tanstack/query-async-storage-persister": "@tanstack/query-async-storage-persister/build/esm/index",
