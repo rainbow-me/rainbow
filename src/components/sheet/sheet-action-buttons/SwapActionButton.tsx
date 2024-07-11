@@ -83,39 +83,45 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
       });
 
       if (inputType === assetInputTypes.in) {
-        swapsStore.setState({ inputAsset: parsedAsset });
+        swapsStore.setState({ inputAsset: userAsset || parsedAsset });
 
         const nativeAssetForChain = await ethereumUtils.getNativeAssetForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
         if (nativeAssetForChain && !isSameAsset({ address: nativeAssetForChain.address as AddressOrEth, chainId }, parsedAsset)) {
-          const outputAsset = {
-            ...nativeAssetForChain,
-            uniqueId: `${nativeAssetForChain.address}_${chainId}`,
-            chainId,
-            chainName: chainNameFromChainId(chainId),
-            address: nativeAssetForChain.address as AddressOrEth,
-            type: nativeAssetForChain.type as AssetType,
-            mainnetAddress: nativeAssetForChain.mainnet_address as AddressOrEth,
-            networks: nativeAssetForChain.networks,
-            colors: {
-              primary: nativeAssetForChain.colors?.primary,
-              fallback: nativeAssetForChain.colors?.fallback || undefined, // Ensure fallback is either string or undefined
-            },
-            highLiquidity: nativeAssetForChain.highLiquidity ?? false,
-            isRainbowCurated: nativeAssetForChain.isRainbowCurated ?? false,
-            isVerified: nativeAssetForChain.isVerified ?? false,
-            native: {} as ParsedSearchAsset['native'],
-            balance: {
-              amount: nativeAssetForChain.balance?.amount ?? '0',
-              display: nativeAssetForChain.balance?.display ?? '0',
-            },
-            isNativeAsset: true,
-            price: {
-              value: nativeAssetForChain.price?.value ?? 0,
-              relative_change_24h: nativeAssetForChain.price?.relative_change_24h ?? 0,
-            },
-          } satisfies ParsedSearchAsset;
+          const userOutputAsset = userAssetsStore.getState().getUserAsset(`${nativeAssetForChain.address}_${chainId}`);
 
-          swapsStore.setState({ outputAsset });
+          if (userOutputAsset) {
+            swapsStore.setState({ outputAsset: userOutputAsset });
+          } else {
+            const outputAsset = {
+              ...nativeAssetForChain,
+              uniqueId: `${nativeAssetForChain.address}_${chainId}`,
+              chainId,
+              chainName: chainNameFromChainId(chainId),
+              address: nativeAssetForChain.address as AddressOrEth,
+              type: nativeAssetForChain.type as AssetType,
+              mainnetAddress: nativeAssetForChain.mainnet_address as AddressOrEth,
+              networks: nativeAssetForChain.networks,
+              colors: {
+                primary: nativeAssetForChain.colors?.primary,
+                fallback: nativeAssetForChain.colors?.fallback || undefined, // Ensure fallback is either string or undefined
+              },
+              highLiquidity: nativeAssetForChain.highLiquidity ?? false,
+              isRainbowCurated: nativeAssetForChain.isRainbowCurated ?? false,
+              isVerified: nativeAssetForChain.isVerified ?? false,
+              native: {} as ParsedSearchAsset['native'],
+              balance: {
+                amount: nativeAssetForChain.balance?.amount ?? '0',
+                display: nativeAssetForChain.balance?.display ?? '0',
+              },
+              isNativeAsset: true,
+              price: {
+                value: nativeAssetForChain.price?.value ?? 0,
+                relative_change_24h: nativeAssetForChain.price?.relative_change_24h ?? 0,
+              },
+            } satisfies ParsedSearchAsset;
+
+            swapsStore.setState({ outputAsset });
+          }
         }
       } else {
         const largestBalanceSameChainUserAsset = userAssetsStore

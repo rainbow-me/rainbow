@@ -15,6 +15,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.31] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.31)
+
+### Fixed
+
+- fixed a bug causing assets in swap to sometimes not reflect your balance (#5919)
+- removed the filtering out of the assetToSell from the currency lists which fixed a bug where ETH wasn't showing in output list (#5921)
+
+## [1.9.30] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.30)
+
+### Fixed
+
+- Fixed a crash that would happen when attempting a max swappable amount (#5907)
+- Fixed an issue where native network token was not at top of verified list (#5906)
+- Fixed an issue when tapping swap button on Degen Token expanded sheet would cause a crash (#5910)
+- Fixed broken searching of local and cross network search (#5912)
+- Fixed an issue where we would do an uncessary approval when unwrapping WETH (#5911)
+
 ## [1.9.28] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.28)
 
 ### Changed
