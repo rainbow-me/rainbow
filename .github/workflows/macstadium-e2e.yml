@@ -35,18 +35,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-        - name: Clean iOS app
-          run: yarn clean:ios > /dev/null 2>&1 || true
+      - name: Clean iOS app
+        run: yarn clean:ios > /dev/null 2>&1 || true        
 
-        - name: Set up ENV vars & scripts
-          env:
-            CI_SCRIPTS: ${{ secrets.CI_SCRIPTS_RN_UPGRADE }}
-          run: |
-            source ~/.bashrc
-            git clone git@github.com:rainbow-me/rainbow-env.git
-            mv rainbow-env/dotenv .env && rm -rf rainbow-env
-            eval "$CI_SCRIPTS"
-            sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
+      - name: Set up ENV vars & scripts
+        env:
+          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS_RN_UPGRADE }}
+        run: |
+          source ~/.bashrc
+          git clone git@github.com:rainbow-me/rainbow-env.git
+          mv rainbow-env/dotenv .env && rm -rf rainbow-env
+          eval "$CI_SCRIPTS"
+          sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
 
       - name: Install dependencies
         run: ./scripts/setup-ci.sh
