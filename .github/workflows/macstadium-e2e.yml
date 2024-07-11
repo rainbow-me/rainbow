@@ -42,7 +42,7 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install dependencies
-        run: ./scripts/setup-ci.sh
+        run: yarn install
 
       - name: Check for frozen lockfile
         run: ./scripts/check-lockfile.sh
