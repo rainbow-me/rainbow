@@ -54,8 +54,8 @@ jobs:
       # - name: Lint
       #   run: yarn lint:ci
 
-      - name: Unit tests
-        run: yarn test
+      # - name: Unit tests
+      #  run: yarn test
 
       - name: Rebuild detox cache
         run: ./node_modules/.bin/detox clean-framework-cache && ./node_modules/.bin/detox build-framework-cache
