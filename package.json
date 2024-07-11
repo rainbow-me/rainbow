@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "setup": "yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn postinstall && yarn graphql-codegen",
-    "setup-ci": "sh ./scripts/setup-ci.sh",
+    "setup-ci": "./scripts/setup-ci.sh",
     "adb-all": "adb devices | tail -n +2 | cut -sf 1 | xargs -I {} adb -s {}",
     "android": "yarn uninstall:android && react-native run-android",
     "android:apk": "yarn gradle assembleRelease && yarn uninstall:android && yarn android:load-apk",
