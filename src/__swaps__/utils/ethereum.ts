@@ -1,8 +1,6 @@
 import { isAddress } from '@ethersproject/address';
 import { Mnemonic, isValidMnemonic } from '@ethersproject/hdnode';
-import { TransactionResponse } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
-import omit from 'lodash/omit';
 import { Address } from 'viem';
 import { EthereumPrivateKey } from '@/model/wallet';
 import { ethUnits } from '@/references';
@@ -89,16 +87,6 @@ export const weiToGwei = (weiAmount: string) => {
 export const toWei = (ether: string): string => {
   const result = parseEther(ether);
   return result.toString();
-};
-
-export const normalizeTransactionResponsePayload = (payload: TransactionResponse): TransactionResponse => {
-  // Firefox can't serialize functions
-  if (navigator.userAgent.toLowerCase().includes('firefox')) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    return omit(payload, 'wait') as TransactionResponse;
-  }
-  return payload;
 };
 
 // This function removes all the keys from the message that are not present in the types
