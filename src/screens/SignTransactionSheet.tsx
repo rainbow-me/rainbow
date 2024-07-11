@@ -776,6 +776,7 @@ export const SignTransactionSheet = () => {
   const canPressConfirm = isMessageRequest || (!!walletBalance?.isLoaded && !!currentNetwork && !!selectedGasFee?.gasFee?.estimatedFee);
 
   return (
+    // @ts-expect-error Property 'children' does not exist on type
     <PanGestureHandler enabled={IS_IOS}>
       <Animated.View>
         <Inset bottom={{ custom: SCREEN_BOTTOM_INSET }}>
