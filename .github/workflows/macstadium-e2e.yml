@@ -42,7 +42,7 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install dependencies
-        run: yarn install
+        run: yarn setup
 
       - name: Check for frozen lockfile
         run: ./scripts/check-lockfile.sh
@@ -50,12 +50,11 @@ jobs:
       - name: Audit CI
         run: yarn audit-ci --config audit-ci.jsonc
       
-      #  Disabled for now, as it's not working properly
-      # - name: Lint
-      #   run: yarn lint:ci
+      - name: Lint
+        run: yarn lint:ci
 
-      # - name: Unit tests
-      #  run: yarn test
+      - name: Unit tests
+        run: yarn test
 
       - name: Rebuild detox cache
         run: ./node_modules/.bin/detox clean-framework-cache && ./node_modules/.bin/detox build-framework-cache
