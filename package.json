@@ -11,7 +11,7 @@
     "android-all:apk": "yarn gradle assembleRelease && yarn uninstall:android && yarn android-all:load-apk",
     "android:bundle": "./scripts/check-env.sh && yarn gradle bundleRelease && open android/app/build/outputs/bundle/release/",
     "android:load-apk": "adb install android/app/build/outputs/apk/release/app-release.apk",
-    "android-all:load- apk": "yarn adb-all install android/app/build/outputs/apk/release/app-release.apk",
+    "android-all:load-apk": "yarn adb-all install android/app/build/outputs/apk/release/app-release.apk",
     "graphql-codegen:install": "cd src/graphql && yarn install",
     "graphql-prepare": "sh ./scripts/graph-ens-key.sh",
     "graphql-codegen": "yarn graphql-prepare && cd src/graphql && yarn codegen",
