@@ -43,6 +43,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          yarn cache clean --all
           yarn install
           yarn graphql-codegen:install
           yarn ds:install
