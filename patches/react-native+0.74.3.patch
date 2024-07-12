@@ -21,13 +21,13 @@ index b868ee7..50e3b1c 100644
      NSDictionary *dictionary = json;
      id value = nil;
 diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/react-native/React/Views/RCTView.m
-index 3a86581..55e0671 100644
+index 3a86581..1bd1458 100644
 --- a/node_modules/react-native/React/Views/RCTView.m
 +++ b/node_modules/react-native/React/Views/RCTView.m
 @@ -820,6 +820,10 @@ - (void)displayLayer:(CALayer *)layer
  
    backgroundColor = [_backgroundColor resolvedColorWithTraitCollection:self.traitCollection].CGColor;
-     
+ 
 +  if (@available(iOS 13.0, *)) {
 +    layer.cornerCurve = kCACornerCurveContinuous;
 +  }
@@ -35,3 +35,16 @@ index 3a86581..55e0671 100644
    if (useIOSBorderRendering) {
      layer.cornerRadius = cornerRadii.topLeft;
      layer.borderColor = borderColors.left;
+diff --git a/node_modules/react-native/scripts/react_native_pods_utils/script_phases.sh b/node_modules/react-native/scripts/react_native_pods_utils/script_phases.sh
+index a35272c..92325f1 100755
+--- a/node_modules/react-native/scripts/react_native_pods_utils/script_phases.sh
++++ b/node_modules/react-native/scripts/react_native_pods_utils/script_phases.sh
+@@ -104,7 +104,7 @@ moveOutputs () {
+     mkdir -p "$RCT_SCRIPT_OUTPUT_DIR"
+ 
+     # Copy all output to output_dir
+-    cp -R -X "$TEMP_OUTPUT_DIR/." "$RCT_SCRIPT_OUTPUT_DIR" || exit 1
++    /bin/cp -R -X "$TEMP_OUTPUT_DIR/." "$RCT_SCRIPT_OUTPUT_DIR" || exit 1
+     echo "$LIBRARY_NAME output has been written to $RCT_SCRIPT_OUTPUT_DIR:" >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
+     ls -1 "$RCT_SCRIPT_OUTPUT_DIR" >> "${SCRIPT_OUTPUT_FILE_0}" 2>&1
+ }
