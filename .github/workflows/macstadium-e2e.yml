@@ -71,8 +71,13 @@ jobs:
       - name: Install pods
         run: yarn install-bundle && yarn install-pods
 
+      - name: Fix permissions
+        run: |
+          chmod -R +x node_modules/react-native/scripts
+          chmod -R +x node_modules/@sentry/react-native/scripts
+
       - name: Build the app in release mode
-        run: yarn detox build --configuration ios.sim.release | xcpretty --color
+        run: yarn detox build --configuration ios.sim.release -verbose | xcpretty --color
 
       # change the '3' here to how many times you want the tests to rerun on failure
       - name: Run iOS e2e tests with retry
