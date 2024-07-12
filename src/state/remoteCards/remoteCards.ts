@@ -13,7 +13,7 @@ export interface RemoteCardsState {
   setCards: (cards: TrimmedCards) => void;
 
   getCard: (id: string) => TrimmedCard | undefined;
-  getCardPlacement: (id: string) => TrimmedCard['placement'];
+  getCardPlacement: (id: string) => TrimmedCard['placement'] | undefined;
   dismissCard: (id: string) => void;
 
   getCardIdsForScreen: (screen: keyof typeof Routes) => string[];
@@ -28,10 +28,18 @@ type RemoteCardsStateWithTransforms = Omit<Partial<RemoteCardsState>, 'cards' | 
 
 function serializeState(state: Partial<RemoteCardsState>, version?: number) {
   try {
+    const validCards = Array.from(state.cards?.entries() ?? []).filter(([, card]) => card && card.sys && card.sys.id);
+
+    if (state.cards && validCards.length < state.cards.size) {
+      logger.error(new RainbowError('remoteCardsStore: filtered cards without sys.id during serialization'), {
+        filteredCount: state.cards.size - validCards.length,
+      });
+    }
+
     const transformedStateToPersist: RemoteCardsStateWithTransforms = {
       ...state,
       cardsById: state.cardsById ? Array.from(state.cardsById) : [],
-      cards: state.cards ? Array.from(state.cards.entries()) : [],
+      cards: validCards,
     };
 
     return JSON.stringify({
@@ -58,7 +66,7 @@ function deserializeState(serializedState: string) {
   let cardsByIdData = new Set<string>();
   try {
     if (state.cardsById.length) {
-      cardsByIdData = new Set(state.cardsById);
+      cardsByIdData = new Set(state.cardsById.filter(id => typeof id === 'string' && id.length > 0));
     }
   } catch (error) {
     logger.error(new RainbowError('Failed to convert cardsById from remote cards storage'), { error });
@@ -68,7 +76,15 @@ function deserializeState(serializedState: string) {
   let cardsData: Map<string, TrimmedCard> = new Map();
   try {
     if (state.cards.length) {
-      cardsData = new Map(state.cards);
+      const validCards = state.cards.filter(([, card]) => card && card.sys && typeof card.sys.id === 'string');
+
+      if (validCards.length < state.cards.length) {
+        logger.error(new RainbowError('Filtered out cards without sys.id during deserialization'), {
+          filteredCount: state.cards.length - validCards.length,
+        });
+      }
+
+      cardsData = new Map(validCards);
     }
   } catch (error) {
     logger.error(new RainbowError('Failed to convert cards from remote cards storage'), { error });
@@ -109,10 +125,14 @@ export const remoteCardsStore = createRainbowStore<RemoteCardsState>(
       });
     },
 
-    getCard: (id: string) => get().cards.get(id),
+    getCard: (id: string) => {
+      const card = get().cards.get(id);
+      return card && card.sys.id ? card : undefined;
+    },
+
     getCardPlacement: (id: string) => {
       const card = get().getCard(id);
-      if (!card || !card.placement) {
+      if (!card || !card.sys.id || !card.placement) {
         return undefined;
       }
 
@@ -145,17 +165,18 @@ export const remoteCardsStore = createRainbowStore<RemoteCardsState>(
           cards: new Map(state.cards.set(id, newCard)),
         };
       }),
+
     getCardIdsForScreen: (screen: keyof typeof Routes) => {
       return Array.from(get().cards.values())
-        .filter(card => get().getCardPlacement(card.sys.id) === screen)
-        .filter(card => !card.dismissed)
+        .filter(card => card.sys.id && get().getCardPlacement(card.sys.id) === screen && !card.dismissed)
         .sort((a, b) => {
           if (a.index === b.index) return 0;
           if (a.index === undefined || a.index === null) return 1;
           if (b.index === undefined || b.index === null) return -1;
           return a.index - b.index;
         })
-        .map(card => card.sys.id);
+        .map(card => card.sys.id)
+        .filter((id): id is string => id !== undefined);
     },
   }),
   {
