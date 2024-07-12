@@ -31,10 +31,6 @@ jobs:
           eval $CI_SCRIPTS_RN_UPGRADE
           sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e 
       
-      - name: Version debug
-        run: |
-          npx react-native info
-
       # - name: Cache Yarn dependencies
       #   uses: actions/cache@v2
       #   with:
@@ -71,9 +67,13 @@ jobs:
         run: |
           chmod -R +x node_modules/react-native/scripts
           chmod -R +x node_modules/@sentry/react-native/scripts
+     
+      - name: Version debug
+        run: |
+          npx react-native info
 
       - name: Build the app in release mode
-        run: yarn detox build --configuration ios.sim.release -verbose | xcpretty --color
+        run: yarn detox build --configuration ios.sim.release
 
       # change the '3' here to how many times you want the tests to rerun on failure
       - name: Run iOS e2e tests with retry
