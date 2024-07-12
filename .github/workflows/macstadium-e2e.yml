@@ -72,7 +72,7 @@ jobs:
         run: yarn install-bundle && yarn install-pods
 
       - name: Build the app in release mode
-        run: ./node_modules/.bin/detox build --configuration ios.sim.release | xcpretty --color
+        run: yarn detox build --configuration ios.sim.release | xcpretty --color
 
       # change the '3' here to how many times you want the tests to rerun on failure
       - name: Run iOS e2e tests with retry
