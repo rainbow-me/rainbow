@@ -25,7 +25,7 @@ jobs:
         env:
           CI_SCRIPTS_RN_UPGRADE: ${{ secrets.CI_SCRIPTS_RN_UPGRADE }}
         run: |
-          source ~/.bashrc
+          source ~/.zshrc
           git clone git@github.com:rainbow-me/rainbow-env.git
           mv rainbow-env/dotenv .env && rm -rf rainbow-env
           eval $CI_SCRIPTS_RN_UPGRADE
