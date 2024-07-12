@@ -186,6 +186,7 @@
     "lodash": "4.17.21",
     "make-color-more-chill": "0.2.2",
     "match-sorter": "6.3.0",
+    "metro-react-native-babel-transformer": "^0.77.0",
     "mipd": "0.0.5",
     "mnemonist": "0.38.1",
     "moti": "0.28",
