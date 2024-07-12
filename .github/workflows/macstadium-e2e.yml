@@ -33,11 +33,7 @@ jobs:
       
       - name: Version debug
         run: |
-          echo "Node version:" $(node -v)
-          echo "Node path:" $(which node)
-          echo "Ruby Version: " $(ruby -v)
-          echo "Yarn Version: " $(yarn -v)
-          echo "Cocoapods Version: " $(pod --version)
+          npx react-native info
 
       # - name: Cache Yarn dependencies
       #   uses: actions/cache@v2
