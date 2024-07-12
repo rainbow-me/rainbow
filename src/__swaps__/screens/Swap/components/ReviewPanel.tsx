@@ -367,7 +367,7 @@ export function ReviewPanel() {
             </Inline>
           </Animated.View>
 
-          <Animated.View style={[{ height: REVIEW_SHEET_ROW_HEIGHT, justifyContent: 'center' }]}>
+          {/* <Animated.View style={[{ height: REVIEW_SHEET_ROW_HEIGHT, justifyContent: 'center' }]}>
             <Inline wrap={false} horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
               <Inline wrap={false} horizontalSpace="12px">
                 <TextIcon color="labelTertiary" height={9} size="icon 13px" weight="bold" width={16}>
@@ -395,7 +395,7 @@ export function ReviewPanel() {
 
               <DegenModeToggle />
             </Inline>
-          </Animated.View>
+          </Animated.View> */}
 
           <Box height={{ custom: REVIEW_SHEET_ROW_HEIGHT }} justifyContent="center">
             <Inline wrap={false} horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
