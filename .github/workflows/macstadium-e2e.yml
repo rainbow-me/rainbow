@@ -29,7 +29,15 @@ jobs:
           git clone git@github.com:rainbow-me/rainbow-env.git
           mv rainbow-env/dotenv .env && rm -rf rainbow-env
           eval $CI_SCRIPTS_RN_UPGRADE
-          sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
+          sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e 
+      
+      - name: Version debug
+        run: |
+          echo "Node version (nvm):" $(nvm current)
+          echo "Node version:" $(node -v)
+          echo "Ruby Version: " $(ruby -v)
+          echo "Yarn Version: " $(yarn -v)
+          echo "Cocoapods Version: " $(pod --version)
 
       - name: Cache Yarn dependencies
         uses: actions/cache@v2
@@ -50,7 +58,7 @@ jobs:
 
       - name: Audit CI
         run: yarn audit-ci --config audit-ci.jsonc
-      
+
       - name: Lint
         run: yarn lint:ci
 
