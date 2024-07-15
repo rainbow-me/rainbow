@@ -81,6 +81,7 @@ function SwapButton({
       opacity: withTiming(opacity?.value ?? (disabled?.value ? 0.6 : 1), TIMING_CONFIGS.slowerFadeConfig),
     };
   });
+
   const iconValue = useDerivedValue(() => {
     if (typeof icon === 'string') return icon;
     return icon?.value || '';
@@ -96,43 +97,49 @@ function SwapButton({
   });
 
   return (
-    <Box
-      as={Animated.View}
-      paddingHorizontal={{ custom: small ? 14 : 20 - (outline ? 2 : 0) }}
-      paddingLeft={small && icon ? '10px' : undefined}
-      paddingRight={small && rightIcon ? '10px' : undefined}
-      style={[
-        feedActionButtonStyles.button,
-        outline && feedActionButtonStyles.outlineButton,
-        buttonWrapperStyles,
-        { position: 'relative', overflow: 'hidden' },
-      ]}
-    >
-      <Columns alignHorizontal="center" alignVertical="center" space="6px">
-        {icon && (
-          <Column width="content">
-            <AnimatedText align="center" size={small ? '15pt' : '17pt'} style={[iconStyle, textStyles]} weight="heavy">
-              {iconValue}
-            </AnimatedText>
-          </Column>
-        )}
-        {typeof label !== 'undefined' && (
-          <Column width="content">
-            <AnimatedText align="center" style={textStyles} numberOfLines={1} size={small ? '17pt' : '20pt'} weight="heavy">
-              {labelValue}
-            </AnimatedText>
-          </Column>
-        )}
-        {rightIcon && (
-          <Column width="content">
-            <AnimatedText align="center" style={[textStyles, secondaryTextStyles]} size={small ? '15pt' : '17pt'} weight="bold">
-              {rightIconValue}
-            </AnimatedText>
-          </Column>
-        )}
-      </Columns>
-      {children}
-    </Box>
+    <Animated.View style={buttonWrapperStyles}>
+      <Box
+        as={Animated.View}
+        paddingHorizontal={{ custom: small ? 14 : 20 - (outline ? 2 : 0) }}
+        paddingLeft={small && icon ? '10px' : undefined}
+        paddingRight={small && rightIcon ? '10px' : undefined}
+        style={[
+          feedActionButtonStyles.button,
+          outline && feedActionButtonStyles.outlineButton,
+          {
+            position: 'relative',
+            overflow: 'hidden',
+            height: '100%',
+            borderRadius: buttonWrapperStyles.borderRadius,
+          },
+        ]}
+      >
+        <Columns alignHorizontal="center" alignVertical="center" space="6px">
+          {icon && (
+            <Column width="content">
+              <AnimatedText align="center" size={small ? '15pt' : '17pt'} style={[iconStyle, textStyles]} weight="heavy">
+                {iconValue}
+              </AnimatedText>
+            </Column>
+          )}
+          {typeof label !== 'undefined' && (
+            <Column width="content">
+              <AnimatedText align="center" style={textStyles} numberOfLines={1} size={small ? '17pt' : '20pt'} weight="heavy">
+                {labelValue}
+              </AnimatedText>
+            </Column>
+          )}
+          {rightIcon && (
+            <Column width="content">
+              <AnimatedText align="center" style={[textStyles, secondaryTextStyles]} size={small ? '15pt' : '17pt'} weight="bold">
+                {rightIconValue}
+              </AnimatedText>
+            </Column>
+          )}
+        </Columns>
+        {children}
+      </Box>
+    </Animated.View>
   );
 }
 
