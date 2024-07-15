@@ -547,64 +547,35 @@ export function useSwapInputsController({
     { leading: false, trailing: true }
   );
 
-  const onTypedNumber = useDebouncedCallback(
-    (amount: number, inputKey: inputKeys, preserveAmount = true) => {
-      lastTypedInput.value = inputKey;
+  const resetValuesToZeroWorklet = (inputKey?: inputKeys) => {
+    'worklet';
+    quoteFetchingInterval.stop();
+    if (isFetching.value) isFetching.value = false;
+    if (isQuoteStale.value !== 0) isQuoteStale.value = 0;
 
-      if (amount > 0) {
-        const updateWorklet = () => {
-          'worklet';
-          // If the user enters a new inputAmount, update the slider position ahead of the quote fetch, because
-          // we can derive the slider position directly from the entered amount.
-          if (inputKey === 'inputAmount') {
-            const inputAssetBalance = internalSelectedInputAsset.value?.maxSwappableAmount || '0';
-            if (equalWorklet(inputAssetBalance, 0)) {
-              sliderXPosition.value = withSpring(0, snappySpringConfig);
-            } else {
-              const updatedSliderPosition = clamp(Number(divWorklet(amount, inputAssetBalance)) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
-              sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
-            }
-          }
-          fetchQuoteAndAssetPrices();
-        };
+    const resetValues = {
+      inputAmount: 0,
+      inputNativeValue: 0,
+      outputAmount: 0,
+      outputNativeValue: 0,
+    };
 
-        runOnUI(updateWorklet)();
-      } else {
-        const resetValuesToZero = () => {
-          if (isFetching.value) isFetching.value = false;
-          if (isQuoteStale.value !== 0) isQuoteStale.value = 0;
+    if (!inputKey) {
+      inputValues.modify(values => ({ ...values, ...resetValues }));
+      return;
+    }
 
-          const updateWorklet = () => {
-            'worklet';
-            const keysToReset = ['inputAmount', 'inputNativeValue', 'outputAmount', 'outputNativeValue'];
-            const updatedValues = keysToReset.reduce(
-              (acc, key) => {
-                const castedKey = key as keyof typeof inputValues.value;
-                acc[castedKey] = castedKey === inputKey && preserveAmount ? inputValues.value[castedKey] : 0;
-                return acc;
-              },
-              {} as Partial<typeof inputValues.value>
-            );
-            inputValues.modify(values => {
-              return {
-                ...values,
-                ...updatedValues,
-              };
-            });
-            sliderXPosition.value = withSpring(0, snappySpringConfig);
-            isQuoteStale.value = 0;
-            quoteFetchingInterval.stop();
-          };
+    const inputKeyValue = inputValues.value[inputKey];
+    const hasDecimal = inputKeyValue.toString().includes('.');
 
-          runOnUI(updateWorklet)();
-        };
+    inputValues.modify(values => ({
+      ...values,
+      ...resetValues,
+      [inputKey]: hasDecimal ? inputKeyValue : 0,
+    }));
 
-        resetValuesToZero();
-      }
-    },
-    300,
-    { leading: false, trailing: true }
-  );
+    sliderXPosition.value = withSpring(0, snappySpringConfig);
+  };
 
   const debouncedFetchQuote = useDebouncedCallback(
     () => {
@@ -695,20 +666,7 @@ export function useSwapInputsController({
         if (inputMethod.value === 'slider' && internalSelectedInputAsset.value && current.sliderXPosition !== previous.sliderXPosition) {
           // If the slider position changes
           if (percentageToSwap.value === 0) {
-            // If the change set the slider position to 0
-            quoteFetchingInterval.stop();
-            isQuoteStale.value = 0;
-            isFetching.value = false;
-
-            inputValues.modify(values => {
-              return {
-                ...values,
-                inputAmount: 0,
-                inputNativeValue: 0,
-                outputAmount: 0,
-                outputNativeValue: 0,
-              };
-            });
+            resetValuesToZeroWorklet();
           } else {
             // If the change set the slider position to > 0
             if (!internalSelectedInputAsset.value) return;
@@ -748,29 +706,10 @@ export function useSwapInputsController({
         }
         if (inputMethod.value === 'inputAmount' && !equalWorklet(current.values.inputAmount, previous.values.inputAmount)) {
           // If the number in the input field changes
+          lastTypedInput.value = 'inputAmount';
           if (equalWorklet(current.values.inputAmount, 0)) {
             // If the input amount was set to 0
-            quoteFetchingInterval.stop();
-            isQuoteStale.value = 0;
-            isFetching.value = false;
-
-            const hasDecimal = current.values.inputAmount.toString().includes('.');
-
-            sliderXPosition.value = withSpring(0, snappySpringConfig);
-            inputValues.modify(values => {
-              return {
-                ...values,
-                inputAmount: hasDecimal ? current.values.inputAmount : 0,
-                inputNativeValue: 0,
-                outputAmount: 0,
-                outputNativeValue: 0,
-              };
-            });
-            if (hasDecimal) {
-              runOnJS(onTypedNumber)(0, 'inputAmount', true);
-            } else {
-              runOnJS(onTypedNumber)(0, 'inputAmount');
-            }
+            resetValuesToZeroWorklet('inputAmount');
           } else {
             // If the input amount was set to a non-zero value
             if (!internalSelectedInputAsset.value) return;
@@ -798,35 +737,15 @@ export function useSwapInputsController({
               sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
             }
 
-            runOnJS(onTypedNumber)(Number(current.values.inputAmount), 'inputAmount', true);
+            runOnJS(debouncedFetchQuote)();
           }
         }
         if (inputMethod.value === 'outputAmount' && !equalWorklet(current.values.outputAmount, previous.values.outputAmount)) {
           // If the number in the output field changes
+          lastTypedInput.value = 'outputAmount';
           if (equalWorklet(current.values.outputAmount, 0)) {
             // If the output amount was set to 0
-            quoteFetchingInterval.stop();
-            isQuoteStale.value = 0;
-            isFetching.value = false;
-
-            const hasDecimal = current.values.outputAmount.toString().includes('.');
-
-            sliderXPosition.value = withSpring(0, snappySpringConfig);
-            inputValues.modify(values => {
-              return {
-                ...values,
-                inputAmount: 0,
-                inputNativeValue: 0,
-                outputAmount: hasDecimal ? current.values.outputAmount : 0,
-                outputNativeValue: 0,
-              };
-            });
-
-            if (hasDecimal) {
-              runOnJS(onTypedNumber)(0, 'outputAmount', true);
-            } else {
-              runOnJS(onTypedNumber)(0, 'outputAmount');
-            }
+            resetValuesToZeroWorklet('outputAmount');
           } else if (greaterThanWorklet(current.values.outputAmount, 0)) {
             // If the output amount was set to a non-zero value
             if (isQuoteStale.value !== 1) isQuoteStale.value = 1;
@@ -840,7 +759,7 @@ export function useSwapInputsController({
               };
             });
 
-            runOnJS(onTypedNumber)(Number(current.values.outputAmount), 'outputAmount');
+            runOnJS(debouncedFetchQuote)();
           }
         }
       }
@@ -913,10 +832,13 @@ export function useSwapInputsController({
           const inputNativePrice = internalSelectedInputAsset.value?.nativePrice || internalSelectedInputAsset.value?.price?.value || 0;
           const outputNativePrice = internalSelectedOutputAsset.value?.nativePrice || internalSelectedOutputAsset.value?.price?.value || 0;
 
+          const prevInputNativeValue = inputValues.value.inputNativeValue;
+          const prevOutputAmount = inputValues.value.outputAmount;
+          const newInputAmount = inputNativePrice > 0 ? divWorklet(prevInputNativeValue, inputNativePrice) : prevOutputAmount;
+
           const inputAmount = Number(
             valueBasedDecimalFormatter({
-              amount:
-                inputNativePrice > 0 ? divWorklet(inputValues.value.inputNativeValue, inputNativePrice) : inputValues.value.outputAmount,
+              amount: newInputAmount,
               nativePrice: inputNativePrice,
               roundingMode: 'up',
               isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
@@ -924,14 +846,17 @@ export function useSwapInputsController({
             })
           );
 
+          const prevOutputNativeValue = inputValues.value.outputNativeValue;
+          const prevInputAmount = inputValues.value.inputAmount;
+          const newOutputAmount = outputNativePrice > 0 ? divWorklet(prevOutputNativeValue, outputNativePrice) : prevInputAmount;
+
           inputValues.modify(values => {
             return {
               ...values,
               inputAmount,
-              inputNativeValue: inputValues.value.inputNativeValue,
-              outputAmount:
-                outputNativePrice > 0 ? divWorklet(inputValues.value.outputNativeValue, outputNativePrice) : inputValues.value.inputAmount,
-              outputNativeValue: inputValues.value.outputNativeValue,
+              inputNativeValue: mulWorklet(newInputAmount, inputNativePrice),
+              outputAmount: newOutputAmount,
+              outputNativeValue: mulWorklet(newOutputAmount, outputNativePrice),
             };
           });
         }
