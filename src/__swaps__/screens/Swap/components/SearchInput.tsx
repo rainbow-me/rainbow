@@ -102,12 +102,6 @@ export const SearchInput = ({
                   animatedProps={searchInputValue}
                   onChangeText={output ? onOutputSearchQueryChange : onInputSearchQueryChange}
                   onBlur={() => {
-                    runOnUI(() => {
-                      if (isSearchFocused.value) {
-                        handleExitSearchWorklet();
-                      }
-                    })();
-
                     if (isSearchFocused.value) {
                       if (output) {
                         if (useSwapsStore.getState().outputSearchQuery !== '') {
