@@ -15,6 +15,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <mach/mach.h>
 
+#define APP_GROUP_ID @"group.me.rainbow"
 
 @interface RainbowSplashScreenManager : NSObject <RCTBridgeModule>
 @end
@@ -79,6 +80,9 @@ RCT_EXPORT_METHOD(hideAnimated) {
   selector:@selector(handleRapComplete:)
       name:@"rapCompleted"
     object:nil];
+  
+  // Read URL from shared container
+  [self readSharedURLFromExtension];
   
   [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleRsEscape:)
@@ -177,6 +181,20 @@ sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
     [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:identifiers];
   }];
   
+  // Read URL from shared container when app becomes active
+  [self readSharedURLFromExtension];
+}
+
+- (void)readSharedURLFromExtension {
+  NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:APP_GROUP_ID];
+  NSString *urlString = [sharedDefaults stringForKey:@"sharedURL"];
+  if (urlString != nil) {
+    NSURL *url = [NSURL URLWithString:urlString];
+    if (url != nil) {
+      [RCTLinkingManager application:[UIApplication sharedApplication] openURL:url options:@{}];
+      [sharedDefaults removeObjectForKey:@"sharedURL"];
+    }
+  }
 }
 
 @end
