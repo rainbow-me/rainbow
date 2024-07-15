@@ -218,7 +218,6 @@ class OldApp extends Component {
     return (
       <Portal>
         <View style={containerStyle}>
-          {test}
           {this.state.initialRoute && (
             <InitialRouteContext.Provider value={this.state.initialRoute}>
               <RoutesComponent ref={this.handleNavigatorRef} />
