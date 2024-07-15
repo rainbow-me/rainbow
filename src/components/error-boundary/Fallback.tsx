@@ -6,8 +6,8 @@ import { Centered } from '../layout';
 import { SheetActionButton } from '../sheet';
 import Text from '../text/Text';
 import styled from '@/styled-thing';
-import { useTheme } from '@/theme';
-import logger from '@/utils/logger';
+import { RainbowError, logger } from '@/logger';
+import { Colors } from '@/styles';
 
 const Spacer = styled(View)({
   height: ({ height }: { height: number }) => height,
@@ -25,10 +25,21 @@ const Message = styled(View)({
   textAlign: 'center',
 });
 
-export default function Fallback() {
-  const { colors } = useTheme();
+export default function Fallback({
+  colors,
+  error,
+  componentStack,
+  resetError,
+}: {
+  colors: Colors;
+  error: Error;
+  componentStack: string;
+  resetError: () => void;
+}) {
+  // const { colors } = useTheme();
   const handleRestart = () => {
-    logger.sentry('Restarting app after Error Boundary catch');
+    logger.error(new RainbowError('RainbowAppRestartFromErrorBoundary'), { data: { error: error.toString(), componentStack } });
+    resetError();
     RNExitApp.exitApp();
   };
   return (

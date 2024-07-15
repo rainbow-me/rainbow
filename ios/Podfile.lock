@@ -729,8 +729,8 @@ PODS:
     - React-Core
   - RNDeviceInfo (5.3.1):
     - React
-  - RNExitApp (1.1.0):
-    - React
+  - RNExitApp (2.0.0):
+    - React-Core
   - RNFastImage (8.5.11):
     - React-Core
     - SDWebImage (~> 5.18.11)
@@ -1369,7 +1369,7 @@ SPEC CHECKSUMS:
   RNCClipboard: 60fed4b71560d7bfe40e9d35dea9762b024da86d
   RNCMaskedView: 090213d32d8b3bb83a4dcb7d12c18f0152591906
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
-  RNExitApp: c4e052df2568b43bec8a37c7cd61194d4cfee2c3
+  RNExitApp: 00036cabe7bacbb413d276d5520bf74ba39afa6a
   RNFastImage: 4ce7636223e71615774b99004103e946a73e7c32
   RNFBApp: 1ae7462cddf74a49df206d3418bc0170f8fa53e5
   RNFBCrashlytics: f8e899ea95991b769802cf4cb7a0eb362b6ab0f7

@@ -27,6 +27,7 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactNativeHost;
 import me.rainbow.BuildConfig;
 import java.lang.reflect.InvocationTargetException;
+import com.github.wumke.RNExitApp.RNExitAppPackage;
 
 
 
@@ -56,6 +57,7 @@ public class MainApplication extends Application implements ReactApplication {
           packages.add(new KeychainPackage(new KeychainModuleBuilder().withoutWarmUp()));
           packages.add(new RNStartTimePackage(MainApplication.START_MARK));
           packages.add(new RNHapticsPackage());
+          packages.add(new RNExitAppPackage());
 
           return packages;
         }

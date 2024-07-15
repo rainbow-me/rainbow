@@ -222,6 +222,7 @@ dependencies {
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
     implementation "androidx.core:core-splashscreen:1.0.0"
     implementation project(':react-native-plaid-link-sdk')
+    implementation project(':react-native-exit-app')
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")

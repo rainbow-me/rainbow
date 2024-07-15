@@ -233,6 +233,10 @@ export class Logger {
     }
   }
 
+  fatal(message: string, metadata: Metadata = {}) {
+    this.transport(LogLevel.Fatal, message, metadata);
+  }
+
   addTransport(transport: Transport) {
     this.transports.push(transport);
     return () => {
