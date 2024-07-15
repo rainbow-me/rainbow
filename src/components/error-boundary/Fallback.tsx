@@ -36,7 +36,6 @@ export default function Fallback({
   componentStack: string;
   resetError: () => void;
 }) {
-  // const { colors } = useTheme();
   const handleRestart = () => {
     logger.error(new RainbowError('RainbowAppRestartFromErrorBoundary'), { data: { error: error.toString(), componentStack } });
     resetError();
