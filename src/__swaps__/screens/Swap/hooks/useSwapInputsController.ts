@@ -553,28 +553,28 @@ export function useSwapInputsController({
     if (isFetching.value) isFetching.value = false;
     if (isQuoteStale.value !== 0) isQuoteStale.value = 0;
 
-    const keysToReset = ['inputAmount', 'inputNativeValue', 'outputAmount', 'outputNativeValue'];
-    const inputKeyValue = inputKey ? inputValues.value[inputKey] : 0;
-    const hasDecimal = inputKeyValue.toString().includes('.');
-    const updatedValues = keysToReset.reduce(
-      (acc, key) => {
-        const castedKey = key as keyof typeof inputValues.value;
-        acc[castedKey] = castedKey === inputKey && hasDecimal ? inputValues.value[castedKey] : 0;
-        return acc;
-      },
-      {} as Partial<typeof inputValues.value>
-    );
+    const resetValues = {
+      inputAmount: 0,
+      inputNativeValue: 0,
+      outputAmount: 0,
+      outputNativeValue: 0,
+    };
 
-    inputValues.modify(values => {
-      return {
-        ...values,
-        ...updatedValues,
-      };
-    });
-
-    if (inputKey) {
-      sliderXPosition.value = withSpring(0, snappySpringConfig);
+    if (!inputKey) {
+      inputValues.modify(values => ({ ...values, ...resetValues }));
+      return;
     }
+
+    const inputKeyValue = inputValues.value[inputKey];
+    const hasDecimal = inputKeyValue.toString().includes('.');
+
+    inputValues.modify(values => ({
+      ...values,
+      ...resetValues,
+      [inputKey]: hasDecimal ? inputKeyValue : 0,
+    }));
+
+    sliderXPosition.value = withSpring(0, snappySpringConfig);
   };
 
   const debouncedFetchQuote = useDebouncedCallback(
