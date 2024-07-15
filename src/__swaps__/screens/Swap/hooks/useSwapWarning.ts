@@ -82,13 +82,13 @@ export const useSwapWarning = ({ inputAsset, outputAsset, inputValues, quote, is
     [label, orange, red]
   );
 
+  const NO_WARNING = { type: SwapWarningType.none, title: '', color: colorMap[SwapWarningType.none], icon: '', subtitle: '' };
+
   const swapWarning = useDerivedValue<SwapWarning>(() => {
-    const noWarning = { type: SwapWarningType.none, title: '', color: colorMap[SwapWarningType.none], icon: '', subtitle: '' };
-
     const doInputAndOutputAssetsExist = inputAsset.value && outputAsset.value;
-    if (!doInputAndOutputAssetsExist) return noWarning;
+    if (!doInputAndOutputAssetsExist) return NO_WARNING;
 
-    if (isQuoteStale.value || isFetching.value || !quote.value) return noWarning;
+    if (isQuoteStale.value || isFetching.value || !quote.value) return NO_WARNING;
 
     const inputNativeValue = inputValues.value.inputNativeValue;
     const outputNativeValue = inputValues.value.outputNativeValue;
@@ -155,7 +155,7 @@ export const useSwapWarning = ({ inputAsset, outputAsset, inputValues, quote, is
       };
     }
 
-    return noWarning;
+    return NO_WARNING;
   });
 
   return { swapWarning };
