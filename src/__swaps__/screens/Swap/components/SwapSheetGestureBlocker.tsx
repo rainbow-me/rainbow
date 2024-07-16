@@ -33,7 +33,6 @@ export const SwapSheetGestureBlocker = ({
   // );
 
   return IS_IOS ? (
-    // @ts-expect-error
     <PanGestureHandler enabled={false}>
       <View style={{ height: '100%', width: '100%' }}>
         <>

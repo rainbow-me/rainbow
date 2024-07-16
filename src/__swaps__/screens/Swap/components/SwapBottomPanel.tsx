@@ -37,7 +37,6 @@ export function SwapBottomPanel() {
   const opacity = useDerivedValue(() => confirmButtonProps.value.opacity);
 
   return (
-    // @ts-expect-error Property 'children' does not exist on type
     <PanGestureHandler maxPointers={1} onGestureEvent={swipeToDismissGestureHandler}>
       <Animated.View
         style={[

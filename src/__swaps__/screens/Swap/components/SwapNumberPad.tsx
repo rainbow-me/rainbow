@@ -299,7 +299,6 @@ const NumberPadKey = ({
   }, [isDarkMode]);
 
   return (
-    // @ts-expect-error Property 'children' does not exist on type
     <LongPressGestureHandler
       // This 0.1ms activation delay gives ButtonPressAnimation time to trigger
       // haptic feedback natively before the LongPressGestureHandler takes over

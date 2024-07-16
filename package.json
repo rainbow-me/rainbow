@@ -228,7 +228,7 @@
     "react-native-extra-dimensions-android": "1.2.2",
     "react-native-fast-image": "8.5.11",
     "react-native-fs": "2.16.6",
-    "react-native-gesture-handler": "1.10.3",
+    "react-native-gesture-handler": "2.17.1",
     "react-native-get-random-values": "1.5.0",
     "react-native-haptic-feedback": "2.2.0",
     "react-native-image-crop-picker": "0.41.0",
