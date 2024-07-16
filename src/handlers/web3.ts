@@ -542,15 +542,17 @@ export const resolveUnstoppableDomain = async (domain: string): Promise<string |
  * @param nameOrAddress The name or address to resolve.
  * @param provider If provided, a provider to use instead of the cached
  * `web3Provider`.
- * @return The address, or undefined if one could not be resolved.
+ * @return The address, or null if one could not be resolved.
  */
 export const resolveNameOrAddress = async (nameOrAddress: string): Promise<string | void | null> => {
   if (!isHexString(nameOrAddress)) {
     if (isUnstoppableAddressFormat(nameOrAddress)) {
       return resolveUnstoppableDomain(nameOrAddress);
     }
-    const p = await getProviderForNetwork(Network.mainnet);
-    return p?.resolveName(nameOrAddress);
+    const p = getProviderForNetwork(Network.mainnet);
+    const resolvedAddress = await p?.resolveName(nameOrAddress);
+
+    return resolvedAddress;
   }
   return nameOrAddress;
 };
