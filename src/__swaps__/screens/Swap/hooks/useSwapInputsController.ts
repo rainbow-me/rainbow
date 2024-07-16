@@ -29,24 +29,33 @@ import { useAccountSettings } from '@/hooks';
 import { analyticsV2 } from '@/analytics';
 import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet } from '@/__swaps__/safe-math/SafeMath';
 
-function getInitialInputValues(initialSelectedInputAsset: ExtendedAnimatedAssetWithColors | null) {
-  const initialBalance = Number(initialSelectedInputAsset?.maxSwappableAmount) || 0;
-  const isStablecoin = initialSelectedInputAsset?.type === 'stablecoin';
+function getInputValuesForSliderPositionWorklet({
+  selectedInputAsset,
+  percentageToSwap,
+  sliderXPosition,
+}: {
+  selectedInputAsset: ExtendedAnimatedAssetWithColors | null;
+  percentageToSwap: number;
+  sliderXPosition: number;
+}) {
+  'worklet';
+  const inputAssetMaxSwappableBalance = selectedInputAsset?.maxSwappableAmount || 0;
+  const isStablecoin = selectedInputAsset?.type === 'stablecoin';
 
-  const initialInputAmount = niceIncrementFormatter({
-    inputAssetBalance: initialBalance,
-    inputAssetNativePrice: initialSelectedInputAsset?.price?.value ?? 0,
-    percentageToSwap: 0.5,
-    sliderXPosition: SLIDER_WIDTH / 2,
+  const inputAmount = niceIncrementFormatter({
+    inputAssetBalance: inputAssetMaxSwappableBalance,
+    inputAssetNativePrice: selectedInputAsset?.price?.value ?? 0,
+    percentageToSwap,
+    sliderXPosition,
     stripSeparators: true,
     isStablecoin,
   });
 
-  const initialInputNativeValue = mulWorklet(initialInputAmount, initialSelectedInputAsset?.price?.value ?? 0);
+  const inputNativeValue = mulWorklet(inputAmount, selectedInputAsset?.price?.value ?? 0);
 
   return {
-    initialInputAmount,
-    initialInputNativeValue,
+    inputAmount,
+    inputNativeValue,
   };
 }
 
@@ -77,7 +86,16 @@ export function useSwapInputsController({
   sliderXPosition: SharedValue<number>;
   slippage: SharedValue<string>;
 }) {
-  const { initialInputAmount, initialInputNativeValue } = getInitialInputValues(initialSelectedInputAsset);
+  const percentageToSwap = useDerivedValue(() => {
+    return Math.round(clamp((sliderXPosition.value - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1) * 100) / 100;
+  });
+
+  const { inputAmount: initialInputAmount, inputNativeValue: initialInputNativeValue } = getInputValuesForSliderPositionWorklet({
+    selectedInputAsset: initialSelectedInputAsset,
+    percentageToSwap: percentageToSwap.value,
+    sliderXPosition: sliderXPosition.value,
+  });
+
   const { nativeCurrency: currentCurrency } = useAccountSettings();
 
   const inputValues = useSharedValue<inputValuesType>({
@@ -87,10 +105,6 @@ export function useSwapInputsController({
     outputNativeValue: 0,
   });
   const inputMethod = useSharedValue<inputMethods>('slider');
-
-  const percentageToSwap = useDerivedValue(() => {
-    return Math.round(clamp((sliderXPosition.value - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1) * 100) / 100;
-  });
 
   const inputNativePrice = useDerivedValue(() => {
     return internalSelectedInputAsset.value?.nativePrice || internalSelectedInputAsset.value?.price?.value || 0;
@@ -686,15 +700,12 @@ export function useSwapInputsController({
               return;
             }
 
-            const inputAmount = niceIncrementFormatter({
-              inputAssetBalance: balance,
-              inputAssetNativePrice: inputNativePrice.value,
+            const { inputAmount, inputNativeValue } = getInputValuesForSliderPositionWorklet({
+              selectedInputAsset: internalSelectedInputAsset.value,
               percentageToSwap: percentageToSwap.value,
               sliderXPosition: sliderXPosition.value,
-              stripSeparators: true,
-              isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
             });
-            const inputNativeValue = mulWorklet(inputAmount, inputNativePrice.value);
+
             inputValues.modify(values => {
               return {
                 ...values,
@@ -808,16 +819,12 @@ export function useSwapInputsController({
             sliderXPosition.value = withSpring(SLIDER_WIDTH / 2, snappySpringConfig);
           }
 
-          const inputAmount = niceIncrementFormatter({
-            inputAssetBalance: balance,
-            inputAssetNativePrice: inputNativePrice.value,
+          const { inputAmount, inputNativeValue } = getInputValuesForSliderPositionWorklet({
+            selectedInputAsset: internalSelectedInputAsset.value,
             percentageToSwap: didInputAssetChange ? 0.5 : percentageToSwap.value,
             sliderXPosition: didInputAssetChange ? SLIDER_WIDTH / 2 : sliderXPosition.value,
-            stripSeparators: true,
-            isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
           });
 
-          const inputNativeValue = mulWorklet(inputAmount, inputNativePrice.value);
           inputValues.modify(values => {
             return {
               ...values,
