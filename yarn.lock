@@ -5905,6 +5905,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/query-core@npm:4.2.1":
+  version: 4.2.1
+  resolution: "@tanstack/query-core@npm:4.2.1"
+  checksum: 10c0/a455517feca86dc03bea48f9d8553a744d54bc6d7a0e74ffe507c01aa732da0b8e55a01b8f2423f72541d833ea8f1ba691d2025729bbc290236d10f3b53d814d
+  languageName: node
+  linkType: hard
+
 "@tanstack/query-core@npm:^4.0.0-beta.1":
   version: 4.36.1
   resolution: "@tanstack/query-core@npm:4.36.1"
@@ -7820,6 +7827,7 @@ __metadata:
     "@shopify/flash-list": "npm:1.7.0"
     "@shopify/react-native-skia": "npm:1.3.8"
     "@tanstack/query-async-storage-persister": "npm:4.2.1"
+    "@tanstack/query-core": "npm:4.2.1"
     "@tanstack/react-query": "npm:4.2.1"
     "@tanstack/react-query-persist-client": "npm:4.2.1"
     "@testing-library/react-native": "npm:11.2.0"
