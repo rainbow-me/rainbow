@@ -1627,8 +1627,26 @@ PODS:
   - RNFS (2.16.6):
     - React
   - RNGestureHandler (2.17.1):
-    - RCT-Folly (= 2021.07.22.00)
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - RNImageCropPicker (0.41.0):
     - React-Core
     - React-RCTImage
@@ -2326,7 +2344,7 @@ SPEC CHECKSUMS:
   RNFBRemoteConfig: a8325e2d3772127358dd2e7d5e39c9ad3e3379ac
   RNFlashList: e9b57a5553639f9b528cc50ab53f25831722ed62
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
-  RNGestureHandler: bbb8e17b10afdafc5cc5746e8f60772236e7e2ca
+  RNGestureHandler: 8dbcccada4a7e702e7dec9338c251b1cf393c960
   RNImageCropPicker: 13eab07a785c7a8f8047a1146f7e59d1911c7bb8
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeyboard: 14793d75953d99c6d950090b8e9698b234c5d08c
