@@ -6,9 +6,7 @@ import android.os.Bundle
 import android.webkit.WebView
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
-import com.facebook.react.ReactRootView
 import com.facebook.react.modules.network.OkHttpClientProvider
-import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView
 import com.zoontek.rnbootsplash.RNBootSplash
 import io.branch.rnbranch.RNBranchModule
 import me.rainbow.NativeModules.Internals.CustomNetworkModule
@@ -26,7 +24,7 @@ class MainActivity : ReactActivity() {
      * Returns the name of the main component registered from JavaScript. This is used to schedule
      * rendering of the component.
      */
-    override fun getMainComponentName(): String? {
+    override fun getMainComponentName(): String {
         return "Rainbow"
     }
 
@@ -52,11 +50,6 @@ class MainActivity : ReactActivity() {
         RNBranchModule.onNewIntent(intent)
     }
 
-    override fun createReactActivityDelegate(): ReactActivityDelegate {
-        return object : ReactActivityDelegate(this, mainComponentName) {
-            override fun createRootView(): ReactRootView {
-                return RNGestureHandlerEnabledRootView(this@MainActivity)
-            }
-        }
-    }
+    override fun createReactActivityDelegate(): ReactActivityDelegate =
+        ReactActivityDelegate(this, mainComponentName)
 }
