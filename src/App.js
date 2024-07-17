@@ -218,6 +218,7 @@ class OldApp extends Component {
     return (
       <Portal>
         <View style={containerStyle}>
+        {purposefullyTriggerRuntimeError}
           {this.state.initialRoute && (
             <InitialRouteContext.Provider value={this.state.initialRoute}>
               <RoutesComponent ref={this.handleNavigatorRef} />
