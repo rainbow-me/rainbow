@@ -341,15 +341,15 @@ function Root() {
         <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
           <SafeAreaProvider>
             <MainThemeProvider>
-              <RainbowContextWrapper>
-                <SharedValuesProvider>
-                  <ErrorBoundary>
-                    <GestureHandlerRootView style={{ flex: 1 }}>
+              <GestureHandlerRootView style={{ flex: 1 }}>
+                <RainbowContextWrapper>
+                  <SharedValuesProvider>
+                    <ErrorBoundary>
                       <App />
-                    </GestureHandlerRootView>
-                  </ErrorBoundary>
-                </SharedValuesProvider>
-              </RainbowContextWrapper>
+                    </ErrorBoundary>
+                  </SharedValuesProvider>
+                </RainbowContextWrapper>
+              </GestureHandlerRootView>
             </MainThemeProvider>
           </SafeAreaProvider>
         </PersistQueryClientProvider>
