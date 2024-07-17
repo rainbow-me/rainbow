@@ -31,12 +31,17 @@ jobs:
           eval $CI_SCRIPTS_RN_UPGRADE
           sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e 
       
+      - name: Get Yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
       - name: Cache Yarn dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: |
-            ~/.cache/yarn
-            node_modules
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            .yarn/cache
+            .yarn/install-state.gz
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
