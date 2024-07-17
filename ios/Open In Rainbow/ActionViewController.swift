@@ -7,7 +7,6 @@ class ActionViewController: UIViewController {
         super.viewWillAppear(animated)
 
         print("in viewWillAppear")
-        print(extensionContext?.inputItems)
         for item in extensionContext?.inputItems as? [NSExtensionItem] ?? [] {
             for provider in item.attachments ?? [] {
 
@@ -18,6 +17,7 @@ class ActionViewController: UIViewController {
                             return
                         }
                         self.launchBrowser(withUrl: url)
+                        self.done()
                     }
                     break
                 }
@@ -26,6 +26,7 @@ class ActionViewController: UIViewController {
                     provider.loadItem(forTypeIdentifier: kUTTypeURL as String, options: nil) { url, _ in
                         guard let url = url as? URL else { return }
                         self.launchBrowser(withUrl: url)
+                        self.done()
                     }
                     break
                 }
@@ -35,23 +36,17 @@ class ActionViewController: UIViewController {
     }
 
     func launchBrowser(withUrl url: URL) {
-        // Save the URL to the shared container
-        let sharedDefaults = UserDefaults(suiteName: "group.me.rainbow")
-        sharedDefaults?.set(url.absoluteString, forKey: "sharedURL")
-        sharedDefaults?.synchronize()
-        
-        print("URL saved to shared container: \(url.absoluteString)")
-        
         // Open the main app using a custom URL scheme
         let urlScheme = "rainbow://open?url=\(url.absoluteString)"
+      
+        print("URL: \(urlScheme)")
+
         if let appURL = URL(string: urlScheme) {
             print("Opening URL scheme: \(urlScheme)")
             self.extensionContext?.open(appURL, completionHandler: nil)
         } else {
             print("Failed to create URL from scheme: \(urlScheme)")
         }
-
-        self.done()
     }
 
     func done() {
