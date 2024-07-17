@@ -1,6 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Workspace
    version = "1.0">
+   <Group
+      location = "group:Temp"
+      name = "Temp">
+      <Group
+         location = "group:Media.xcassets"
+         name = "Media.xcassets">
+         <Group
+            location = "group:TouchBarBezel.colorset"
+            name = "TouchBarBezel.colorset">
+            <FileRef
+               location = "group:Contents.json">
+            </FileRef>
+         </Group>
+         <FileRef
+            location = "group:Contents.json">
+         </FileRef>
+      </Group>
+      <FileRef
+         location = "group:ActionViewController.swift">
+      </FileRef>
+      <FileRef
+         location = "group:Info.plist">
+      </FileRef>
+   </Group>
    <FileRef
       location = "group:Rainbow.xcodeproj">
    </FileRef>

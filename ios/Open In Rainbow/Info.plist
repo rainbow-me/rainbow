@@ -7,20 +7,7 @@
 		<key>NSExtensionAttributes</key>
 		<dict>
 			<key>NSExtensionActivationRule</key>
-			<dict>
-				<key>NSExtensionActivationSupportsFileWithMaxCount</key>
-				<integer>0</integer>
-				<key>NSExtensionActivationSupportsImageWithMaxCount</key>
-				<integer>0</integer>
-				<key>NSExtensionActivationSupportsMovieWithMaxCount</key>
-				<integer>0</integer>
-				<key>NSExtensionActivationSupportsText</key>
-				<false/>
-				<key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
-				<integer>1</integer>
-			</dict>
-			<key>NSExtensionJavaScriptPreprocessingFile</key>
-			<string>Action</string>
+			<string>TRUEPREDICATE</string>
 			<key>NSExtensionServiceAllowsFinderPreviewItem</key>
 			<true/>
 			<key>NSExtensionServiceAllowsTouchBarItem</key>
@@ -32,10 +19,10 @@
 			<key>NSExtensionServiceTouchBarIconName</key>
 			<string>NSActionTemplate</string>
 		</dict>
+		<key>NSExtensionMainStoryboard</key>
+		<string>MainInterface</string>
 		<key>NSExtensionPointIdentifier</key>
-		<string>com.apple.services</string>
-		<key>NSExtensionPrincipalClass</key>
-		<string>$(PRODUCT_MODULE_NAME).ActionRequestHandler</string>
+		<string>com.apple.ui-services</string>
 	</dict>
 </dict>
 </plist>
