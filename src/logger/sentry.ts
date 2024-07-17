@@ -16,7 +16,6 @@ export const defaultOptions: Sentry.ReactNativeOptions = {
   enableTracing: false,
   environment: isTestFlight ? 'Testflight' : SENTRY_ENVIRONMENT,
   integrations: [],
-  debug: true,
   maxBreadcrumbs: 5,
   tracesSampleRate: 0,
 };
