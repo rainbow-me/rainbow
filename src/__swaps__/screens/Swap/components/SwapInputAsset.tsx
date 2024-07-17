@@ -14,10 +14,13 @@ import { SwapInput } from '@/__swaps__/screens/Swap/components/SwapInput';
 import { TokenList } from '@/__swaps__/screens/Swap/components/TokenList/TokenList';
 import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 
-import { IS_ANDROID, IS_IOS } from '@/env';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import * as i18n from '@/languages';
+
+import Clipboard from '@react-native-clipboard/clipboard';
+import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
+import { CopyPasteMenu } from './EditMenu';
 
 const SELECT_LABEL = i18n.t(i18n.l.swap.select);
 const NO_BALANCE_LABEL = i18n.t(i18n.l.swap.no_balance);
@@ -49,22 +52,33 @@ function SwapInputAmount() {
   const { focusedInput, SwapTextStyles, SwapInputController, AnimatedSwapStyles } = useSwapContext();
 
   return (
-    <GestureHandlerV1Button
-      disableButtonPressWrapper
-      onPressStartWorklet={() => {
-        'worklet';
-        focusedInput.value = 'inputAmount';
+    <CopyPasteMenu
+      onCopy={() => Clipboard.setString(SwapInputController.formattedInputAmount.value)}
+      onPaste={text => {
+        if (!text || !+text) return;
+        SwapInputController.inputValues.modify(values => {
+          'worklet';
+          return { ...values, inputAmount: text };
+        });
       }}
     >
-      <MaskedView maskElement={<FadeMask fadeEdgeInset={2} fadeWidth={8} height={36} side="right" />} style={styles.inputTextMask}>
-        <AnimatedText ellipsizeMode="clip" numberOfLines={1} size="30pt" style={SwapTextStyles.inputAmountTextStyle} weight="bold">
-          {SwapInputController.formattedInputAmount}
-        </AnimatedText>
-        <Animated.View style={[styles.caretContainer, SwapTextStyles.inputCaretStyle]}>
-          <Box as={Animated.View} borderRadius={1} style={[styles.caret, AnimatedSwapStyles.assetToSellCaretStyle]} />
-        </Animated.View>
-      </MaskedView>
-    </GestureHandlerV1Button>
+      <GestureHandlerV1Button
+        disableButtonPressWrapper
+        onPressStartWorklet={() => {
+          'worklet';
+          focusedInput.value = 'inputAmount';
+        }}
+      >
+        <MaskedView maskElement={<FadeMask fadeEdgeInset={2} fadeWidth={8} height={36} side="right" />} style={styles.inputTextMask}>
+          <AnimatedText ellipsizeMode="clip" numberOfLines={1} size="30pt" style={SwapTextStyles.inputAmountTextStyle} weight="bold">
+            {SwapInputController.formattedInputAmount}
+          </AnimatedText>
+          <Animated.View style={[styles.caretContainer, SwapTextStyles.inputCaretStyle]}>
+            <Box as={Animated.View} borderRadius={1} style={[styles.caret, AnimatedSwapStyles.assetToSellCaretStyle]} />
+          </Animated.View>
+        </MaskedView>
+      </GestureHandlerV1Button>
+    </CopyPasteMenu>
   );
 }
 

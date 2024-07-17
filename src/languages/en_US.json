@@ -2925,6 +2925,8 @@
         "forward": "Forward",
         "back": "Back"
       }
-    }
+    },
+    "copy": "Copy",
+    "paste": "Paste"
   }
 }
