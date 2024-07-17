@@ -31,31 +31,31 @@ jobs:
           eval $CI_SCRIPTS_RN_UPGRADE
           sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e 
       
-      # - name: Cache Yarn dependencies
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: |
-      #       ~/.cache/yarn
-      #       node_modules
-      #     key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-yarn-
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/yarn
+            node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
 
       - name: Install dependencies
         run: |
           yarn cache clean --all && yarn install && yarn setup
 
-      # - name: Check for frozen lockfile
-      #   run: ./scripts/check-lockfile.sh
+      - name: Check for frozen lockfile
+        run: ./scripts/check-lockfile.sh
 
-      # - name: Audit CI
-      #   run: yarn audit-ci --config audit-ci.jsonc
+      - name: Audit CI
+        run: yarn audit-ci --config audit-ci.jsonc
 
-      # - name: Lint
-      #   run: yarn lint:ci
+      - name: Lint
+        run: yarn lint:ci
 
-      # - name: Unit tests
-      #   run: yarn test
+      - name: Unit tests
+        run: yarn test
 
       - name: Rebuild detox cache
         run: ./node_modules/.bin/detox clean-framework-cache && ./node_modules/.bin/detox build-framework-cache
