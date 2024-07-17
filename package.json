@@ -30,7 +30,7 @@
     "ds": "cd src/design-system/docs && yarn dev",
     "fast": "yarn install && yarn setup && yarn install-pods-fast",
     "gradle": "cd android && ./gradlew",
-    "hardhat": "source .env && npx hardhat node --fork ${ETHEREUM_MAINNET_RPC_DEV}",
+    "hardhat": "sh ./scripts/hardhat.sh",
     "install-all": "yarn install && yarn setup && yarn install-pods",
     "install-all-no-flipper": "yarn install && yarn setup && yarn install-pods-no-flipper",
     "install-bundle": "cd ios && bundle install && cd ..",
