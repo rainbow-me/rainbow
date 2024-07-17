@@ -7934,7 +7934,7 @@ __metadata:
     lodash: "npm:4.17.21"
     make-color-more-chill: "npm:0.2.2"
     match-sorter: "npm:6.3.0"
-    metro-plugin-anisotropic-transform: "https://github.com/rainbow-me/metro-plugin-anisotropic-transform#6901cac1818b9c311f723ad927237076911f3518"
+    metro-plugin-anisotropic-transform: "https://github.com/rainbow-me/metro-plugin-anisotropic-transform#593b1299f4fec3ddd3f8ad92d381e3d9ad171b82"
     mipd: "npm:0.0.5"
     mnemonist: "npm:0.38.1"
     moti: "npm:0.28"
@@ -17845,9 +17845,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"metro-plugin-anisotropic-transform@https://github.com/rainbow-me/metro-plugin-anisotropic-transform#6901cac1818b9c311f723ad927237076911f3518":
+"metro-plugin-anisotropic-transform@https://github.com/rainbow-me/metro-plugin-anisotropic-transform#593b1299f4fec3ddd3f8ad92d381e3d9ad171b82":
   version: 1.0.0
-  resolution: "metro-plugin-anisotropic-transform@https://github.com/rainbow-me/metro-plugin-anisotropic-transform.git#commit=6901cac1818b9c311f723ad927237076911f3518"
+  resolution: "metro-plugin-anisotropic-transform@https://github.com/rainbow-me/metro-plugin-anisotropic-transform.git#commit=593b1299f4fec3ddd3f8ad92d381e3d9ad171b82"
   dependencies:
     app-root-path: "npm:^3.0.0"
     deepmerge: "npm:^4.2.2"
