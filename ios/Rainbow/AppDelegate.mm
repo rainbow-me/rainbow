@@ -85,6 +85,9 @@ RCT_EXPORT_METHOD(hideAnimated) {
                                                  name:@"rsEscape"
                                                object:nil];
 
+   // Read shared URL from extension
+  [self readSharedURLFromExtension];
+  
    return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
 
@@ -182,6 +185,20 @@ sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
     [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:identifiers];
   }];
   
+  // Read shared URL from extension
+  [self readSharedURLFromExtension];
+}
+
+- (void)readSharedURLFromExtension {
+  NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.me.rainbow"];
+  NSString *urlString = [sharedDefaults stringForKey:@"sharedURL"];
+  if (urlString != nil) {
+    NSURL *url = [NSURL URLWithString:urlString];
+    if (url != nil) {
+      [RCTLinkingManager application:[UIApplication sharedApplication] openURL:url options:@{}];
+      [sharedDefaults removeObjectForKey:@"sharedURL"];
+    }
+  }
 }
 
 @end

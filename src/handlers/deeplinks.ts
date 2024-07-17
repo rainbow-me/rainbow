@@ -27,6 +27,7 @@ import { pointsReferralCodeQueryKey } from '@/resources/points';
  */
 
 export default async function handleDeeplink(url: string, initialRoute: any = null) {
+  console.log(url);
   if (!url) {
     logger.warn(`handleDeeplink: No url provided`);
     return;
