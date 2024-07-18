@@ -94,13 +94,22 @@ export function useCoinListFinishEditingOptions() {
   const setPinnedCoins = useCallback(() => {
     setPinnedCoinsObject((pinnedCoins: BooleanMap | undefined) => {
       const safePinnedCoins = pinnedCoins ?? {};
-      return [
-        ...Object.keys(safePinnedCoins).filter(i => selectedItemsNonReactive.current?.includes(i)),
-        ...(currentActionNonReactive.current === EditAction.standard ? selectedItemsNonReactive.current || [] : []),
-      ].reduce((acc, curr) => {
-        acc[curr] = true;
-        return acc;
-      }, {} as BooleanMap);
+      if (currentActionNonReactive.current === EditAction.unpin) {
+        return Object.keys(safePinnedCoins).reduce((acc, curr) => {
+          if (!selectedItemsNonReactive.current?.includes(curr)) {
+            acc[curr] = true;
+          }
+          return acc;
+        }, {} as BooleanMap);
+      } else {
+        return [
+          ...Object.keys(safePinnedCoins),
+          ...(currentActionNonReactive.current === EditAction.standard ? selectedItemsNonReactive.current || [] : []),
+        ].reduce((acc, curr) => {
+          acc[curr] = true;
+          return acc;
+        }, {} as BooleanMap);
+      }
     });
     setSelectedItems([]);
   }, [setSelectedItems, setPinnedCoinsObject]);
