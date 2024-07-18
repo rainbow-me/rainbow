@@ -853,8 +853,15 @@ export function useSwapInputsController({
         sliderXPosition: sliderXPosition.value,
       });
       newInputAmount = inputAmountBasedOnSlider;
-      newOutputAmount = 0;
       inputMethod.value = 'slider';
+      inputValues.modify(values => {
+        return {
+          ...values,
+          inputAmount: newInputAmount,
+          inputNativeValue: mulWorklet(newInputAmount, inputNativePrice),
+        };
+      });
+      return;
     } else {
       inputMethod.value = 'inputAmount';
       const prevOutputAmount = inputValues.value.outputAmount;
