@@ -809,6 +809,79 @@ export function useSwapInputsController({
     }
   );
 
+  const updateInputValuesAfterFlip = () => {
+    'worklet';
+    const inputNativePrice = internalSelectedInputAsset.value?.nativePrice || internalSelectedInputAsset.value?.price?.value || 0;
+    const outputNativePrice = internalSelectedOutputAsset.value?.nativePrice || internalSelectedOutputAsset.value?.price?.value || 0;
+    const hasNonZeroInputPrice = inputNativePrice > 0;
+    const hasNonZeroOutputPrice = outputNativePrice > 0;
+
+    const inputBalance = internalSelectedInputAsset.value?.maxSwappableAmount || 0;
+    const hasInputBalance = greaterThanWorklet(inputBalance, 0);
+
+    const prevInputNativeValue = inputValues.value.inputNativeValue;
+
+    const outputBalance = internalSelectedOutputAsset.value?.maxSwappableAmount;
+    const hasOutputBalance = outputBalance && greaterThanWorklet(outputBalance, 0);
+
+    let newInputAmount: string | number = greaterThanWorklet(inputNativePrice, 0) ? divWorklet(prevInputNativeValue, inputNativePrice) : 0;
+    let newOutputAmount: string | number = 0;
+
+    const exceedsMaxBalance = greaterThanWorklet(newInputAmount, inputBalance);
+    const validBalanceIfAny = (hasInputBalance && !exceedsMaxBalance) || !hasInputBalance;
+
+    if (hasNonZeroInputPrice && hasNonZeroOutputPrice && validBalanceIfAny) {
+      // use previous native input amount if available
+      const formattedInputAmount = Number(
+        valueBasedDecimalFormatter({
+          amount: newInputAmount,
+          nativePrice: inputNativePrice,
+          roundingMode: 'up',
+          isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin',
+          stripSeparators: true,
+        })
+      );
+      newInputAmount = formattedInputAmount;
+      const prevOutputNativeValue = inputValues.value.outputNativeValue;
+      newOutputAmount = divWorklet(prevOutputNativeValue, outputNativePrice);
+      inputMethod.value = 'inputAmount';
+    } else if (hasInputBalance && hasOutputBalance) {
+      // use slider position if available
+      const { inputAmount: inputAmountBasedOnSlider } = getInputValuesForSliderPositionWorklet({
+        selectedInputAsset: internalSelectedInputAsset.value,
+        percentageToSwap: percentageToSwap.value,
+        sliderXPosition: sliderXPosition.value,
+      });
+      newInputAmount = inputAmountBasedOnSlider;
+      newOutputAmount = 0;
+      inputMethod.value = 'slider';
+    } else {
+      inputMethod.value = 'inputAmount';
+      const prevOutputAmount = inputValues.value.outputAmount;
+      const prevInputAmount = inputValues.value.inputAmount;
+
+      if (prevOutputAmount) {
+        // use previous output amount if available
+        newInputAmount = prevOutputAmount;
+        newOutputAmount = prevInputAmount;
+      } else {
+        // otherwise, reset to 0
+        newInputAmount = 0;
+        newOutputAmount = 0;
+      }
+    }
+
+    inputValues.modify(values => {
+      return {
+        ...values,
+        inputAmount: newInputAmount,
+        inputNativeValue: mulWorklet(newInputAmount, inputNativePrice),
+        outputAmount: newOutputAmount,
+        outputNativeValue: mulWorklet(newOutputAmount, outputNativePrice),
+      };
+    });
+  };
+
   /**
    * This observes changes in the selected assets and initiates new quote fetches when necessary. It also
    * handles flipping the inputValues when the assets are flipped.
@@ -859,38 +932,7 @@ export function useSwapInputsController({
         });
       } else {
         // If the assets were flipped
-        inputMethod.value = 'inputAmount';
-
-        const inputNativePrice = internalSelectedInputAsset.value?.nativePrice || internalSelectedInputAsset.value?.price?.value || 0;
-        const outputNativePrice = internalSelectedOutputAsset.value?.nativePrice || internalSelectedOutputAsset.value?.price?.value || 0;
-
-        const prevInputNativeValue = inputValues.value.inputNativeValue;
-        const prevOutputAmount = inputValues.value.outputAmount;
-        const newInputAmount = inputNativePrice > 0 ? divWorklet(prevInputNativeValue, inputNativePrice) : prevOutputAmount;
-
-        const inputAmount = Number(
-          valueBasedDecimalFormatter({
-            amount: newInputAmount,
-            nativePrice: inputNativePrice,
-            roundingMode: 'up',
-            isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin' ?? false,
-            stripSeparators: true,
-          })
-        );
-
-        const prevOutputNativeValue = inputValues.value.outputNativeValue;
-        const prevInputAmount = inputValues.value.inputAmount;
-        const newOutputAmount = outputNativePrice > 0 ? divWorklet(prevOutputNativeValue, outputNativePrice) : prevInputAmount;
-
-        inputValues.modify(values => {
-          return {
-            ...values,
-            inputAmount,
-            inputNativeValue: mulWorklet(newInputAmount, inputNativePrice),
-            outputAmount: newOutputAmount,
-            outputNativeValue: mulWorklet(newOutputAmount, outputNativePrice),
-          };
-        });
+        updateInputValuesAfterFlip();
       }
 
       if (areBothAssetsSet) {
