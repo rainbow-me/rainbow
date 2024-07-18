@@ -20,7 +20,7 @@ import * as i18n from '@/languages';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
-import { CopyPasteMenu } from './EditMenu';
+import { CopyPasteMenu } from './CopyPasteMenu';
 
 const SELECT_LABEL = i18n.t(i18n.l.swap.select);
 const NO_BALANCE_LABEL = i18n.t(i18n.l.swap.no_balance);

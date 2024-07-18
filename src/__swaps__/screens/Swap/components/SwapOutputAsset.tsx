@@ -13,14 +13,16 @@ import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapAction
 import { SwapInput } from '@/__swaps__/screens/Swap/components/SwapInput';
 import { TokenList } from '@/__swaps__/screens/Swap/components/TokenList/TokenList';
 import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/__swaps__/types/chains';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { ethereumUtils } from '@/utils';
+import Clipboard from '@react-native-clipboard/clipboard';
+import { CopyPasteMenu } from './CopyPasteMenu';
 
 const SELECT_LABEL = i18n.t(i18n.l.swap.select);
 const NO_BALANCE_LABEL = i18n.t(i18n.l.swap.no_balance);
@@ -73,26 +75,28 @@ function SwapOutputAmount() {
   }, [navigate]);
 
   return (
-    <GestureHandlerV1Button
-      disableButtonPressWrapper
-      onPressStartWorklet={() => {
-        'worklet';
-        if (outputQuotesAreDisabled.value) {
-          runOnJS(handleTapWhileDisabled)();
-        } else {
-          focusedInput.value = 'outputAmount';
-        }
-      }}
-    >
-      <MaskedView maskElement={<FadeMask fadeEdgeInset={2} fadeWidth={8} height={36} side="right" />} style={styles.inputTextMask}>
-        <AnimatedText ellipsizeMode="clip" numberOfLines={1} size="30pt" style={SwapTextStyles.outputAmountTextStyle} weight="bold">
-          {SwapInputController.formattedOutputAmount}
-        </AnimatedText>
-        <Animated.View style={[styles.caretContainer, SwapTextStyles.outputCaretStyle]}>
-          <Box as={Animated.View} borderRadius={1} style={[styles.caret, AnimatedSwapStyles.assetToBuyCaretStyle]} />
-        </Animated.View>
-      </MaskedView>
-    </GestureHandlerV1Button>
+    <CopyPasteMenu onCopy={() => Clipboard.setString(SwapInputController.formattedOutputAmount.value)}>
+      <GestureHandlerV1Button
+        disableButtonPressWrapper
+        onPressStartWorklet={() => {
+          'worklet';
+          if (outputQuotesAreDisabled.value) {
+            runOnJS(handleTapWhileDisabled)();
+          } else {
+            focusedInput.value = 'outputAmount';
+          }
+        }}
+      >
+        <MaskedView maskElement={<FadeMask fadeEdgeInset={2} fadeWidth={8} height={36} side="right" />} style={styles.inputTextMask}>
+          <AnimatedText ellipsizeMode="clip" numberOfLines={1} size="30pt" style={SwapTextStyles.outputAmountTextStyle} weight="bold">
+            {SwapInputController.formattedOutputAmount}
+          </AnimatedText>
+          <Animated.View style={[styles.caretContainer, SwapTextStyles.outputCaretStyle]}>
+            <Box as={Animated.View} borderRadius={1} style={[styles.caret, AnimatedSwapStyles.assetToBuyCaretStyle]} />
+          </Animated.View>
+        </MaskedView>
+      </GestureHandlerV1Button>
+    </CopyPasteMenu>
   );
 }
 
