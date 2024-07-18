@@ -5,7 +5,6 @@ import {
   AnimatedRef,
   DerivedValue,
   SharedValue,
-  runOnJS,
   runOnUI,
   useAnimatedReaction,
   useAnimatedRef,
@@ -364,10 +363,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       flashbots,
     };
 
-    runOnJS(getNonceAndPerformSwap)({
-      type,
-      parameters,
-    });
+    // runOnJS(getNonceAndPerformSwap)({
+    //   type,
+    //   parameters,
+    // });
   };
 
   const SwapTextStyles = useSwapTextStyles({

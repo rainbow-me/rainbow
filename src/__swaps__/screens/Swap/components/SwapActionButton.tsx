@@ -1,7 +1,15 @@
 /* eslint-disable no-nested-ternary */
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleProp, StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
-import Animated, { DerivedValue, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, {
+  DerivedValue,
+  runOnJS,
+  useAnimatedReaction,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
@@ -169,7 +177,7 @@ export const SwapActionButton = ({
   style?: ViewStyle;
   disabled?: DerivedValue<boolean | undefined>;
   opacity?: DerivedValue<number | undefined>;
-  type?: 'tap' | 'hold';
+  type?: DerivedValue<'tap' | 'hold' | undefined>;
 }) => {
   const disabledWrapper = useAnimatedStyle(() => {
     return {
@@ -187,7 +195,16 @@ export const SwapActionButton = ({
     };
   });
 
-  if (type === 'hold')
+  const [_type, setType] = useState<'tap' | 'hold'>('tap');
+  useAnimatedReaction(
+    () => type?.value,
+    (current = 'tap') => {
+      'worklet';
+      runOnJS(setType)(current);
+    }
+  );
+
+  if (_type === 'hold')
     return (
       <Animated.View style={disabledWrapper}>
         <GestureHandlerHoldButton

@@ -2,10 +2,10 @@ import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { Box, Separator, globalColors, useColorMode } from '@/design-system';
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleSheet } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
-import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import { useBottomPanelGestureHandler } from '../hooks/useBottomPanelGestureHandler';
 import { GasButton } from './GasButton';
 import { GasPanel } from './GasPanel';
@@ -35,15 +35,7 @@ export function SwapBottomPanel() {
   const label = useDerivedValue(() => confirmButtonProps.value.label);
   const disabled = useDerivedValue(() => confirmButtonProps.value.disabled);
   const opacity = useDerivedValue(() => confirmButtonProps.value.opacity);
-
-  const [type, setType] = useState<'tap' | 'hold'>('tap');
-  useAnimatedReaction(
-    () => confirmButtonProps.value.type,
-    (current = 'tap') => {
-      'worklet';
-      runOnJS(setType)(current);
-    }
-  );
+  const type = useDerivedValue(() => confirmButtonProps.value.type);
 
   return (
     // @ts-expect-error Property 'children' does not exist on type
