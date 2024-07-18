@@ -26,7 +26,6 @@ export function GestureHandlerHoldButton({
   );
 
   return (
-    /* @ts-expect-error Property 'children' does not exist on type */
     <LongPressGestureHandler
       minDurationMs={0.1}
       enabled={!disabled}
