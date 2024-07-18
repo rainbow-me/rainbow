@@ -195,7 +195,7 @@
     "p-wait-for": "4.1.0",
     "pako": "2.0.4",
     "parse-ms": "2.1.0",
-    "patch-package": "6.5.1",
+    "patch-package": "8.0.0",
     "path-browserify": "0.0.0",
     "prop-types": "15.8.1",
     "punycode": "1.4.1",
