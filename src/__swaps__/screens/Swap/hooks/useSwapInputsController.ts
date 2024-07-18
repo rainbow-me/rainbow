@@ -593,7 +593,7 @@ export function useSwapInputsController({
     });
   };
 
-  const resetValuesToZeroWorklet = (inputKey?: inputKeys) => {
+  const resetValuesToZeroWorklet = ({ updateSlider, inputKey }: { updateSlider: boolean; inputKey?: inputKeys }) => {
     'worklet';
     quoteFetchingInterval.stop();
     if (isFetching.value) isFetching.value = false;
@@ -620,7 +620,7 @@ export function useSwapInputsController({
       [inputKey]: hasDecimal ? inputKeyValue : 0,
     }));
 
-    sliderXPosition.value = withSpring(0, snappySpringConfig);
+    if (updateSlider) sliderXPosition.value = withSpring(0, snappySpringConfig);
   };
 
   const debouncedFetchQuote = useDebouncedCallback(
@@ -712,7 +712,7 @@ export function useSwapInputsController({
         if (inputMethod.value === 'slider' && internalSelectedInputAsset.value && current.sliderXPosition !== previous.sliderXPosition) {
           // If the slider position changes
           if (percentageToSwap.value === 0) {
-            resetValuesToZeroWorklet();
+            resetValuesToZeroWorklet({ updateSlider: false });
           } else {
             // If the change set the slider position to > 0
             if (!internalSelectedInputAsset.value) return;
@@ -752,7 +752,7 @@ export function useSwapInputsController({
           lastTypedInput.value = 'inputAmount';
           if (equalWorklet(current.values.inputAmount, 0)) {
             // If the input amount was set to 0
-            resetValuesToZeroWorklet('inputAmount');
+            resetValuesToZeroWorklet({ updateSlider: true, inputKey: 'inputAmount' });
           } else {
             // If the input amount was set to a non-zero value
             if (!internalSelectedInputAsset.value) return;
@@ -788,7 +788,7 @@ export function useSwapInputsController({
           lastTypedInput.value = 'outputAmount';
           if (equalWorklet(current.values.outputAmount, 0)) {
             // If the output amount was set to 0
-            resetValuesToZeroWorklet('outputAmount');
+            resetValuesToZeroWorklet({ updateSlider: true, inputKey: 'outputAmount' });
           } else if (greaterThanWorklet(current.values.outputAmount, 0)) {
             // If the output amount was set to a non-zero value
             if (isQuoteStale.value !== 1) isQuoteStale.value = 1;
@@ -836,17 +836,7 @@ export function useSwapInputsController({
 
         // Handle when there is no balance for the input
         if (!balance || equalWorklet(balance, 0)) {
-          isQuoteStale.value = 0;
-          isFetching.value = false;
-          inputValues.modify(values => {
-            return {
-              ...values,
-              inputAmount: 0,
-              inputNativeValue: 0,
-              outputAmount: 0,
-              outputNativeValue: 0,
-            };
-          });
+          resetValuesToZeroWorklet({ updateSlider: true });
           return;
         }
 
