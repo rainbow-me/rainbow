@@ -54,7 +54,7 @@ RCT_EXPORT_METHOD(hideAnimated) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
- self.moduleName = @"Rainbow";
+  self.moduleName = @"Rainbow";
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
   self.initialProps = @{};
@@ -84,9 +84,6 @@ RCT_EXPORT_METHOD(hideAnimated) {
                                              selector:@selector(handleRsEscape:)
                                                  name:@"rsEscape"
                                                object:nil];
-
-   // Read shared URL from extension
-  [self readSharedURLFromExtension];
   
    return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
@@ -184,21 +181,6 @@ sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
     }];
     [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:identifiers];
   }];
-  
-  // Read shared URL from extension
-  [self readSharedURLFromExtension];
-}
-
-- (void)readSharedURLFromExtension {
-  NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.me.rainbow"];
-  NSString *urlString = [sharedDefaults stringForKey:@"sharedURL"];
-  if (urlString != nil) {
-    NSURL *url = [NSURL URLWithString:urlString];
-    if (url != nil) {
-      [RCTLinkingManager application:[UIApplication sharedApplication] openURL:url options:@{}];
-      [sharedDefaults removeObjectForKey:@"sharedURL"];
-    }
-  }
 }
 
 @end

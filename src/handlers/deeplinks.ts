@@ -27,7 +27,6 @@ import { pointsReferralCodeQueryKey } from '@/resources/points';
  */
 
 export default async function handleDeeplink(url: string, initialRoute: any = null) {
-  console.log(url);
   if (!url) {
     logger.warn(`handleDeeplink: No url provided`);
     return;
@@ -186,6 +185,14 @@ export default async function handleDeeplink(url: string, initialRoute: any = nu
             pointsReferralCodeQueryKey,
             (referralCode.slice(0, 3) + '-' + referralCode.slice(3, 7)).toLocaleUpperCase()
           );
+        }
+        break;
+      }
+
+      case 'open-url': {
+        const { url } = query;
+        if (url) {
+          Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, { url });
         }
         break;
       }
