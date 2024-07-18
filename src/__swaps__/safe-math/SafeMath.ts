@@ -202,6 +202,32 @@ export function modWorklet(num1: string | number, num2: string | number): string
   return formatResultWorklet(result);
 }
 
+// return significant decimals in fractional portion of number
+export function significantDecimalsWorklet(num: string | number): number {
+  'worklet';
+  if (num === 0) {
+    return 0;
+  }
+
+  // Convert the number to a string to handle large numbers and fractional parts
+  const numStr = num.toString();
+
+  // Split the number into integer and fractional parts
+  const [_, fractionalPart] = numStr.split('.');
+
+  // Handle fractional parts
+  if (fractionalPart) {
+    // Find the first non-zero digit in the fractional part
+    for (let i = 0; i < fractionalPart.length; i++) {
+      if (fractionalPart[i] !== '0') {
+        return i + 1;
+      }
+    }
+  }
+
+  return 0;
+}
+
 export function orderOfMagnitudeWorklet(num: string | number): number {
   'worklet';
   if (num === 0) {

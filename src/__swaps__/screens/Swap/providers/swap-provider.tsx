@@ -397,7 +397,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     inputValues: SwapInputController.inputValues,
     outputAsset: internalSelectedOutputAsset,
     quote,
-    sliderXPosition,
     isFetching,
     isQuoteStale,
   });

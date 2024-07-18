@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.9.28-1",
+  "version": "1.9.32-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn postinstall && yarn graphql-codegen",
@@ -228,7 +228,7 @@
     "react-native-extra-dimensions-android": "1.2.2",
     "react-native-fast-image": "8.5.11",
     "react-native-fs": "2.16.6",
-    "react-native-gesture-handler": "1.10.3",
+    "react-native-gesture-handler": "2.17.1",
     "react-native-get-random-values": "1.5.0",
     "react-native-haptic-feedback": "1.11.0",
     "react-native-image-crop-picker": "0.40.3",
@@ -442,7 +442,11 @@
     "**/browserify-sign": "4.2.2",
     "**/axios": "1.6.1",
     "**/ip": "1.1.9",
-    "**/phin": "3.7.1"
+    "**/phin": "3.7.1",
+    "**/viem/ws": "8.17.1",
+    "**/socket.io-client/engine.io-client/ws": "8.17.1",
+    "**/@ethersproject/providers/ws": "7.5.10",
+    "**/@walletconnect/socket-transport/ws": "7.5.10"
   },
   "react-native": {
     "@tanstack/query-async-storage-persister": "@tanstack/query-async-storage-persister/build/esm/index",
