@@ -90,7 +90,7 @@ describe('Swap Sheet Interaction Flow', () => {
     // await tapByText('Tap to Swap');
   });
 
-  it('Should be able to verify swap is happening', async () => {
+  it.skip('Should be able to verify swap is happening', async () => {
     // await delayTime('very-long');
     // const activityListElements = await fetchElementAttributes('wallet-activity-list');
     // expect(activityListElements.label).toContain('ETH');
@@ -101,7 +101,7 @@ describe('Swap Sheet Interaction Flow', () => {
     // expect(transactionSheet).toBeTruthy();
   });
 
-  it('Should open swap screen from ProfileActionRowButton with largest user asset', async () => {
+  it.skip('Should open swap screen from ProfileActionRowButton with largest user asset', async () => {
     /**
      * tap swap button
      * wait for Swap header to be visible
@@ -110,7 +110,7 @@ describe('Swap Sheet Interaction Flow', () => {
      */
   });
 
-  it('Should open swap screen from  asset chart with that asset selected', async () => {
+  it.skip('Should open swap screen from  asset chart with that asset selected', async () => {
     /**
      * tap any user asset (store const uniqueId here)
      * wait for Swap header to be visible
@@ -118,7 +118,7 @@ describe('Swap Sheet Interaction Flow', () => {
      */
   });
 
-  it('Should open swap screen from dapp browser control panel with largest user asset', async () => {
+  it.skip('Should open swap screen from dapp browser control panel with largest user asset', async () => {
     /**
      * tap swap button
      * wait for Swap header to be visible
@@ -127,7 +127,7 @@ describe('Swap Sheet Interaction Flow', () => {
      */
   });
 
-  it('Should not be able to type in output amount if cross-chain quote', async () => {
+  it.skip('Should not be able to type in output amount if cross-chain quote', async () => {
     /**
      * tap swap button
      * wait for Swap header to be visible

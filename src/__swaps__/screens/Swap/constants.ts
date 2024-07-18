@@ -56,15 +56,27 @@ export const MAXIMUM_SIGNIFICANT_DECIMALS = 6;
 
 // /---- ⏱️ Animation configs ⏱️ ----/ //
 //
-export const buttonPressConfig = { duration: IS_TESTING ? 0 : 160, easing: Easing.bezier(0.25, 0.46, 0.45, 0.94) };
-export const caretConfig = { duration: IS_TESTING ? 0 : 300, easing: Easing.bezier(0.87, 0, 0.13, 1) };
-export const fadeConfig = { duration: IS_TESTING ? 0 : 200, easing: Easing.bezier(0.22, 1, 0.36, 1) };
-export const pulsingConfig = { duration: IS_TESTING ? 0 : 1000, easing: Easing.bezier(0.37, 0, 0.63, 1) };
-export const sliderConfig = { damping: IS_TESTING ? 0 : 40, mass: 1.25, stiffness: 450 };
-export const slowFadeConfig = { duration: IS_TESTING ? 0 : 300, easing: Easing.bezier(0.22, 1, 0.36, 1) };
-export const snappySpringConfig = { damping: IS_TESTING ? 0 : 100, mass: 0.8, stiffness: 275 };
-export const snappierSpringConfig = { damping: IS_TESTING ? 0 : 42, mass: 0.8, stiffness: 800 };
-export const springConfig = { damping: IS_TESTING ? 0 : 100, mass: 1.2, stiffness: 750 };
+
+export const disableForTestingEnvironment = (config: {
+  duration?: number;
+  easing?: any;
+  damping?: number;
+  mass?: number;
+  stiffness?: number;
+}) => {
+  if (!IS_TESTING) return config;
+  return { ...config, duration: 0, damping: 0 };
+};
+
+export const buttonPressConfig = disableForTestingEnvironment({ duration: 160, easing: Easing.bezier(0.25, 0.46, 0.45, 0.94) });
+export const caretConfig = disableForTestingEnvironment({ duration: 300, easing: Easing.bezier(0.87, 0, 0.13, 1) });
+export const fadeConfig = disableForTestingEnvironment({ duration: 200, easing: Easing.bezier(0.22, 1, 0.36, 1) });
+export const pulsingConfig = disableForTestingEnvironment({ duration: 1000, easing: Easing.bezier(0.37, 0, 0.63, 1) });
+export const sliderConfig = disableForTestingEnvironment({ damping: 40, mass: 1.25, stiffness: 450 });
+export const slowFadeConfig = disableForTestingEnvironment({ duration: 300, easing: Easing.bezier(0.22, 1, 0.36, 1) });
+export const snappySpringConfig = disableForTestingEnvironment({ damping: 100, mass: 0.8, stiffness: 275 });
+export const snappierSpringConfig = disableForTestingEnvironment({ damping: 42, mass: 0.8, stiffness: 800 });
+export const springConfig = disableForTestingEnvironment({ damping: 100, mass: 1.2, stiffness: 750 });
 //
 // /---- END animation configs ----/ //
 
