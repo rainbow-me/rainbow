@@ -1,4 +1,3 @@
----
 format_version: 1.1.0
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 trigger_map:
@@ -107,7 +106,7 @@ workflows:
             fi
     - yarn@0:
         inputs:
-        - args: " --config audit-ci.jsonc"
+        - args: ' --config audit-ci.jsonc'
         - command: audit-ci
         title: Audit dependencies
     before_run: []
@@ -130,7 +129,7 @@ workflows:
     - cache-pull@2: {}
     - nvm@1:
         inputs:
-        - node_version: '14'
+        - node_version: "14"
     - script@1:
         inputs:
         - content: |
@@ -147,8 +146,8 @@ workflows:
         title: Install dependencies via Yarn
     - file-downloader@1:
         inputs:
-        - destination: "$BITRISE_SOURCE_DIR/android/keystores/rainbow-key.keystore"
-        - source: "$BITRISEIO_ANDROID_KEYSTORE_URL"
+        - destination: $BITRISE_SOURCE_DIR/android/keystores/rainbow-key.keystore
+        - source: $BITRISEIO_ANDROID_KEYSTORE_URL
     - script@1:
         inputs:
         - content: |+
@@ -218,7 +217,7 @@ workflows:
     - cache-pull@2: {}
     - nvm@1:
         inputs:
-        - node_version: '14'
+        - node_version: "14"
     - script@1:
         inputs:
         - content: |
@@ -249,7 +248,7 @@ workflows:
     - git-clone@6: {}
     - nvm@1:
         inputs:
-        - node_version: '14'
+        - node_version: "14"
     - script@1:
         inputs:
         - content: |
@@ -270,7 +269,7 @@ workflows:
     steps:
     - cache-push@2:
         inputs:
-        - is_debug_mode: 'true'
+        - is_debug_mode: "true"
         - cache_paths: |
             $BITRISE_CACHE_DIR
             $BREW_APPLESIMUTILS
@@ -301,7 +300,7 @@ workflows:
     - avd-manager@1:
         inputs:
         - emulator_id: emulator-5554
-        - api_level: '29'
+        - api_level: "29"
   detox_ios_build:
     steps:
     - script@1.2:
@@ -326,7 +325,7 @@ workflows:
     steps:
     - yarn@0.1.2:
         inputs:
-        - cache_local_deps: 'yes'
+        - cache_local_deps: "yes"
         - command: global add detox-cli
         title: Detox - Install CLI
     - script:
@@ -586,7 +585,7 @@ workflows:
     steps:
     - cocoapods-install@2.3:
         inputs:
-        - podfile_path: "./ios/Podfile"
+        - podfile_path: ./ios/Podfile
   push_build_tags: {}
   set_yarn_cache_env_vars:
     steps:
@@ -601,40 +600,7 @@ workflows:
     - script@1:
         title: Tophatting
         inputs:
-        - content: "message=$(git log -1 --format=%B)\nbranch_name=$BITRISE_GIT_BRANCH\n\necho
-            $branch_name\n\nif [ \"$message\" != \"/preview\" ]\nthen\n    echo \"Not
-            matching name\"\n    exit 0\nfi\n\ntarget_name=\"per-commit-preview-\"$(date
-            +%s)\nios_app=\"rainbow-studio/rainbow-ios-codepush\"\nandroid_app=\"rainbow-studio/rainbow-android-codepush\"\n\nnpm
-            install -g appcenter-cli\n\nres_ios=$(appcenter codepush deployment add
-            -a $ios_app $target_name --token $APPCENTER_TOKEN_IOS)\nres_android=$(appcenter
-            codepush deployment add -a $android_app $target_name --token $APPCENTER_TOKEN_ANDROID)\n\necho
-            $res_ios\necho $res_android\n\nios_dep_key=$(echo $res_ios |  awk '{print
-            $NF}')\nandroid_dep_key=$(echo $res_android |  awk '{print $NF}')\n\necho
-            $ios_dep_key\necho $android_dep_key\n\nappcenter codepush release-react
-            -a $ios_app -d $target_name --token $APPCENTER_TOKEN_IOS\n\n#SLACK IOS\npayload=\"{\n
-            \ \\\"channel\\\": \\\"#previews\\\",\n  \\\"username\\\": \\\"Over the
-            rainbo update\\\",\n  \\\"icon_emoji\\\": \\\":rainbow2:\\\",\n  \\\"blocks\\\":
-            [{\n      \\\"type\\\": \\\"section\\\",\n      \\\"text\\\": {\n    \t\t\t\\\"type\\\":
-            \\\"mrkdwn\\\",\n    \t\t\t\\\"text\\\": \\\"iOS preview created for:
-            *$branch_name* \\n https://rnbwapp.com/update-ios/$ios_dep_key\\\"\n    \t\t},\n
-            \     \\\"accessory\\\": {\n            \\\"type\\\": \\\"button\\\",\n
-            \           \\\"text\\\": {\n              \\\"type\\\": \\\"plain_text\\\",\n
-            \             \\\"text\\\": \\\"View QR code\\\",\n              \\\"emoji\\\":
-            true\n            },\n            \\\"url\\\": \\\"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=update-ios-$ios_dep_key\\\",\n
-            \       },\n  }]\n}\"\n\ncurl -X POST -H \"Content-Type: application/json\"
-            -d \"$payload\" $SLACK_WEBHOOK_URL\n\n\nappcenter codepush release-react
-            -a $android_app -d $target_name --token $APPCENTER_TOKEN_ANDROID\n\n#SLACK
-            ANDROID\npayload=\"{\n  \\\"channel\\\": \\\"#previews\\\",\n  \\\"username\\\":
-            \\\"Over the rainbo update\\\",\n  \\\"icon_emoji\\\": \\\":rainbow2:\\\",\n
-            \ \\\"blocks\\\": [{\n      \\\"type\\\": \\\"section\\\",\n      \\\"text\\\":
-            {\n    \t\t\t\\\"type\\\": \\\"mrkdwn\\\",\n    \t\t\t\\\"text\\\": \\\"Android
-            preview created for branch: *$branch_name* \\n https://rnbwapp.com/update-android/$android_dep_key\\\"\n
-            \   \t\t},\n      \\\"accessory\\\": {\n            \\\"type\\\": \\\"button\\\",\n
-            \           \\\"text\\\": {\n              \\\"type\\\": \\\"plain_text\\\",\n
-            \             \\\"text\\\": \\\"View QR code\\\",\n              \\\"emoji\\\":
-            true\n            },\n            \\\"url\\\": \\\"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=update-android-$android_dep_key\\\",\n
-            \       },\n  }]\n}\"\n\ncurl -X POST -H \"Content-Type: application/json\"
-            -d \"$payload\" $SLACK_WEBHOOK_URL\n\n\nexit 0"
+        - content: "message=$(git log -1 --format=%B)\nbranch_name=$BITRISE_GIT_BRANCH\n\necho $branch_name\n\nif [ \"$message\" != \"/preview\" ]\nthen\n    echo \"Not matching name\"\n    exit 0\nfi\n\ntarget_name=\"per-commit-preview-\"$(date +%s)\nios_app=\"rainbow-studio/rainbow-ios-codepush\"\nandroid_app=\"rainbow-studio/rainbow-android-codepush\"\n\nnpm install -g appcenter-cli\n\nres_ios=$(appcenter codepush deployment add -a $ios_app $target_name --token $APPCENTER_TOKEN_IOS)\nres_android=$(appcenter codepush deployment add -a $android_app $target_name --token $APPCENTER_TOKEN_ANDROID)\n\necho $res_ios\necho $res_android\n\nios_dep_key=$(echo $res_ios |  awk '{print $NF}')\nandroid_dep_key=$(echo $res_android |  awk '{print $NF}')\n\necho $ios_dep_key\necho $android_dep_key\n\nappcenter codepush release-react -a $ios_app -d $target_name --token $APPCENTER_TOKEN_IOS\n\n#SLACK IOS\npayload=\"{\n  \\\"channel\\\": \\\"#previews\\\",\n  \\\"username\\\": \\\"Over the rainbo update\\\",\n  \\\"icon_emoji\\\": \\\":rainbow2:\\\",\n  \\\"blocks\\\": [{\n      \\\"type\\\": \\\"section\\\",\n      \\\"text\\\": {\n    \t\t\t\\\"type\\\": \\\"mrkdwn\\\",\n    \t\t\t\\\"text\\\": \\\"iOS preview created for: *$branch_name* \\n https://rnbwapp.com/update-ios/$ios_dep_key\\\"\n    \t\t},\n      \\\"accessory\\\": {\n            \\\"type\\\": \\\"button\\\",\n            \\\"text\\\": {\n              \\\"type\\\": \\\"plain_text\\\",\n              \\\"text\\\": \\\"View QR code\\\",\n              \\\"emoji\\\": true\n            },\n            \\\"url\\\": \\\"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=update-ios-$ios_dep_key\\\",\n        },\n  }]\n}\"\n\ncurl -X POST -H \"Content-Type: application/json\" -d \"$payload\" $SLACK_WEBHOOK_URL\n\n\nappcenter codepush release-react -a $android_app -d $target_name --token $APPCENTER_TOKEN_ANDROID\n\n#SLACK ANDROID\npayload=\"{\n  \\\"channel\\\": \\\"#previews\\\",\n  \\\"username\\\": \\\"Over the rainbo update\\\",\n  \\\"icon_emoji\\\": \\\":rainbow2:\\\",\n  \\\"blocks\\\": [{\n      \\\"type\\\": \\\"section\\\",\n      \\\"text\\\": {\n    \t\t\t\\\"type\\\": \\\"mrkdwn\\\",\n    \t\t\t\\\"text\\\": \\\"Android preview created for branch: *$branch_name* \\n https://rnbwapp.com/update-android/$android_dep_key\\\"\n    \t\t},\n      \\\"accessory\\\": {\n            \\\"type\\\": \\\"button\\\",\n            \\\"text\\\": {\n              \\\"type\\\": \\\"plain_text\\\",\n              \\\"text\\\": \\\"View QR code\\\",\n              \\\"emoji\\\": true\n            },\n            \\\"url\\\": \\\"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=update-android-$android_dep_key\\\",\n        },\n  }]\n}\"\n\ncurl -X POST -H \"Content-Type: application/json\" -d \"$payload\" $SLACK_WEBHOOK_URL\n\n\nexit 0"
   tophat-complete:
     before_run:
     - generate_dot_env_testflight
@@ -647,10 +613,10 @@ workflows:
       SENTRY_ENVIRONMENT: Release
     - opts:
         is_expand: false
-      IS_TESTING: 'false'
+      IS_TESTING: "false"
     - opts:
         is_expand: false
-      ENABLE_DEV_MODE: '0'
+      ENABLE_DEV_MODE: "0"
     - opts:
         is_expand: false
       GANACHE_URL: http://127.0.0.1:7545
@@ -663,55 +629,7 @@ workflows:
     - script@1:
         title: Tophatting
         inputs:
-        - content: "message=$(git log -1 --format=%B)\nbranch_name=$BITRISE_GIT_BRANCH\n\necho
-            $branch_name\n\ntarget_name=\"per-commit-preview-\"$(date +%s)\nios_app=\"rainbow-studio/rainbow-ios-codepush\"\nandroid_app=\"rainbow-studio/rainbow-android-codepush\"\n\nnpm
-            install -g appcenter-cli\n\nres_ios=$(appcenter codepush deployment add
-            -a $ios_app $target_name --token $APPCENTER_TOKEN_IOS)\nres_android=$(appcenter
-            codepush deployment add -a $android_app $target_name --token $APPCENTER_TOKEN_ANDROID)\n\necho
-            $res_ios\necho $res_android\n\nios_dep_key=$(echo $res_ios |  awk '{print
-            $NF}')\nandroid_dep_key=$(echo $res_android |  awk '{print $NF}')\n\necho
-            $ios_dep_key\necho $android_dep_key\n\nappcenter codepush release-react
-            -a $ios_app -d $target_name --token $APPCENTER_TOKEN_IOS --extra-bundler-option=\"--minify=false\"\nstatus=`echo
-            $?`\n\n#SLACK IOS\nif [ \"$status\" -eq \"3\" ]\nthen\n    payload=\"{\n
-            \       \\\"channel\\\": \\\"#previews\\\",\n        \\\"username\\\":
-            \\\"Over the rainbo update\\\",\n        \\\"icon_emoji\\\": \\\":rainbow2:\\\",\n
-            \       \\\"blocks\\\": [{\n            \\\"type\\\": \\\"section\\\",\n
-            \           \\\"text\\\": {\n                \\\"type\\\": \\\"mrkdwn\\\",\n
-            \               \\\"text\\\": \\\"iOS preview for *$branch_name* failed\\\"\n
-            \           },\n        }]\n    }\"\n    curl -X POST -H \"Content-Type:
-            application/json\" -d \"$payload\" $SLACK_WEBHOOK_URL\nelse\n    payload=\"{\n
-            \   \\\"channel\\\": \\\"#previews\\\",\n    \\\"username\\\": \\\"Over
-            the rainbo update\\\",\n    \\\"icon_emoji\\\": \\\":rainbow2:\\\",\n
-            \   \\\"blocks\\\": [{\n        \\\"type\\\": \\\"section\\\",\n        \\\"text\\\":
-            {\n                    \\\"type\\\": \\\"mrkdwn\\\",\n                    \\\"text\\\":
-            \\\"iOS preview created for: *$branch_name* \\n https://rnbwapp.com/update-ios/$ios_dep_key\\\"\n
-            \               },\n        \\\"accessory\\\": {\n                \\\"type\\\":
-            \\\"button\\\",\n                \\\"text\\\": {\n                \\\"type\\\":
-            \\\"plain_text\\\",\n                \\\"text\\\": \\\"View QR code\\\",\n
-            \               \\\"emoji\\\": true\n                },\n                \\\"url\\\":
-            \\\"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=update-ios-$ios_dep_key\\\",\n
-            \           },\n    }]\n    }\"\n\n    curl -X POST -H \"Content-Type:
-            application/json\" -d \"$payload\" $SLACK_WEBHOOK_URL\nfi\n\n\nappcenter
-            codepush release-react -a $android_app -d $target_name --token $APPCENTER_TOKEN_ANDROID
-            --extra-bundler-option=\"--minify=false\"\nstatus=`echo $?`\n\nif [ \"$status\"
-            -eq \"3\" ]\nthen\n    payload=\"{\n        \\\"channel\\\": \\\"#previews\\\",\n
-            \       \\\"username\\\": \\\"Over the rainbo update\\\",\n        \\\"icon_emoji\\\":
-            \\\":rainbow2:\\\",\n        \\\"blocks\\\": [{\n            \\\"type\\\":
-            \\\"section\\\",\n            \\\"text\\\": {\n                \\\"type\\\":
-            \\\"mrkdwn\\\",\n                \\\"text\\\": \\\"Android preview for
-            *$branch_name* failed\\\"\n            },\n        }]\n    }\"\n    curl
-            -X POST -H \"Content-Type: application/json\" -d \"$payload\" $SLACK_WEBHOOK_URL\nelse\n#SLACK
-            ANDROID\npayload=\"{\n  \\\"channel\\\": \\\"#previews\\\",\n  \\\"username\\\":
-            \\\"Over the rainbo update\\\",\n  \\\"icon_emoji\\\": \\\":rainbow2:\\\",\n
-            \ \\\"blocks\\\": [{\n      \\\"type\\\": \\\"section\\\",\n      \\\"text\\\":
-            {\n    \t\t\t\\\"type\\\": \\\"mrkdwn\\\",\n    \t\t\t\\\"text\\\": \\\"Android
-            preview created for branch: *$branch_name* \\n https://rnbwapp.com/update-android/$android_dep_key\\\"\n
-            \   \t\t},\n      \\\"accessory\\\": {\n            \\\"type\\\": \\\"button\\\",\n
-            \           \\\"text\\\": {\n              \\\"type\\\": \\\"plain_text\\\",\n
-            \             \\\"text\\\": \\\"View QR code\\\",\n              \\\"emoji\\\":
-            true\n            },\n            \\\"url\\\": \\\"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=update-android-$android_dep_key\\\",\n
-            \       },\n  }]\n}\"\n\ncurl -X POST -H \"Content-Type: application/json\"
-            -d \"$payload\" $SLACK_WEBHOOK_URL\nfi\n\n\nexit 0"
+        - content: "message=$(git log -1 --format=%B)\nbranch_name=$BITRISE_GIT_BRANCH\n\necho $branch_name\n\ntarget_name=\"per-commit-preview-\"$(date +%s)\nios_app=\"rainbow-studio/rainbow-ios-codepush\"\nandroid_app=\"rainbow-studio/rainbow-android-codepush\"\n\nnpm install -g appcenter-cli\n\nres_ios=$(appcenter codepush deployment add -a $ios_app $target_name --token $APPCENTER_TOKEN_IOS)\nres_android=$(appcenter codepush deployment add -a $android_app $target_name --token $APPCENTER_TOKEN_ANDROID)\n\necho $res_ios\necho $res_android\n\nios_dep_key=$(echo $res_ios |  awk '{print $NF}')\nandroid_dep_key=$(echo $res_android |  awk '{print $NF}')\n\necho $ios_dep_key\necho $android_dep_key\n\nappcenter codepush release-react -a $ios_app -d $target_name --token $APPCENTER_TOKEN_IOS --extra-bundler-option=\"--minify=false\"\nstatus=`echo $?`\n\n#SLACK IOS\nif [ \"$status\" -eq \"3\" ]\nthen\n    payload=\"{\n        \\\"channel\\\": \\\"#previews\\\",\n        \\\"username\\\": \\\"Over the rainbo update\\\",\n        \\\"icon_emoji\\\": \\\":rainbow2:\\\",\n        \\\"blocks\\\": [{\n            \\\"type\\\": \\\"section\\\",\n            \\\"text\\\": {\n                \\\"type\\\": \\\"mrkdwn\\\",\n                \\\"text\\\": \\\"iOS preview for *$branch_name* failed\\\"\n            },\n        }]\n    }\"\n    curl -X POST -H \"Content-Type: application/json\" -d \"$payload\" $SLACK_WEBHOOK_URL\nelse\n    payload=\"{\n    \\\"channel\\\": \\\"#previews\\\",\n    \\\"username\\\": \\\"Over the rainbo update\\\",\n    \\\"icon_emoji\\\": \\\":rainbow2:\\\",\n    \\\"blocks\\\": [{\n        \\\"type\\\": \\\"section\\\",\n        \\\"text\\\": {\n                    \\\"type\\\": \\\"mrkdwn\\\",\n                    \\\"text\\\": \\\"iOS preview created for: *$branch_name* \\n https://rnbwapp.com/update-ios/$ios_dep_key\\\"\n                },\n        \\\"accessory\\\": {\n                \\\"type\\\": \\\"button\\\",\n                \\\"text\\\": {\n                \\\"type\\\": \\\"plain_text\\\",\n                \\\"text\\\": \\\"View QR code\\\",\n                \\\"emoji\\\": true\n                },\n                \\\"url\\\": \\\"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=update-ios-$ios_dep_key\\\",\n            },\n    }]\n    }\"\n\n    curl -X POST -H \"Content-Type: application/json\" -d \"$payload\" $SLACK_WEBHOOK_URL\nfi\n\n\nappcenter codepush release-react -a $android_app -d $target_name --token $APPCENTER_TOKEN_ANDROID --extra-bundler-option=\"--minify=false\"\nstatus=`echo $?`\n\nif [ \"$status\" -eq \"3\" ]\nthen\n    payload=\"{\n        \\\"channel\\\": \\\"#previews\\\",\n        \\\"username\\\": \\\"Over the rainbo update\\\",\n        \\\"icon_emoji\\\": \\\":rainbow2:\\\",\n        \\\"blocks\\\": [{\n            \\\"type\\\": \\\"section\\\",\n            \\\"text\\\": {\n                \\\"type\\\": \\\"mrkdwn\\\",\n                \\\"text\\\": \\\"Android preview for *$branch_name* failed\\\"\n            },\n        }]\n    }\"\n    curl -X POST -H \"Content-Type: application/json\" -d \"$payload\" $SLACK_WEBHOOK_URL\nelse\n#SLACK ANDROID\npayload=\"{\n  \\\"channel\\\": \\\"#previews\\\",\n  \\\"username\\\": \\\"Over the rainbo update\\\",\n  \\\"icon_emoji\\\": \\\":rainbow2:\\\",\n  \\\"blocks\\\": [{\n      \\\"type\\\": \\\"section\\\",\n      \\\"text\\\": {\n    \t\t\t\\\"type\\\": \\\"mrkdwn\\\",\n    \t\t\t\\\"text\\\": \\\"Android preview created for branch: *$branch_name* \\n https://rnbwapp.com/update-android/$android_dep_key\\\"\n    \t\t},\n      \\\"accessory\\\": {\n            \\\"type\\\": \\\"button\\\",\n            \\\"text\\\": {\n              \\\"type\\\": \\\"plain_text\\\",\n              \\\"text\\\": \\\"View QR code\\\",\n              \\\"emoji\\\": true\n            },\n            \\\"url\\\": \\\"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=update-android-$android_dep_key\\\",\n        },\n  }]\n}\"\n\ncurl -X POST -H \"Content-Type: application/json\" -d \"$payload\" $SLACK_WEBHOOK_URL\nfi\n\n\nexit 0"
   update_token_list:
     steps:
     - yarn@0:
@@ -754,10 +672,10 @@ workflows:
       SENTRY_ENVIRONMENT: LocalRelease
     - opts:
         is_expand: false
-      IS_TESTING: 'true'
+      IS_TESTING: "true"
     - opts:
         is_expand: false
-      ENABLE_DEV_MODE: '1'
+      ENABLE_DEV_MODE: "1"
     - opts:
         is_expand: false
       GANACHE_URL_IOS: http://127.0.0.1:7545
@@ -768,64 +686,22 @@ workflows:
     steps:
     - slack@3:
         inputs:
-        - channel: "#bitrise"
+        - channel: '#bitrise'
         - from_username: Bitrise Bot
-        - pretext: "* All Tests Passed! *"
-        - channel_on_error: "#bitrise"
+        - pretext: '* All Tests Passed! *'
+        - channel_on_error: '#bitrise'
         - text_on_error: Build failed
-        - emoji_on_error: ''
+        - emoji_on_error: ""
         - from_username_on_error: Bitrise bot
         - buttons: |
             View Pull Request|${BITRISEIO_PULL_REQUEST_REPOSITORY_URL}
             View Build|${BITRISE_BUILD_URL}
-        - webhook_url: "$SLACK_WEBHOOK_URL"
+        - webhook_url: $SLACK_WEBHOOK_URL
   workflow_google_play:
     steps:
     - script@1:
         inputs:
-        - content: "#!/usr/bin/env bash\n# fail if any commands fails\nset -e\n# debug
-            log\nset -x\n\n# write your script here\ntouch .env\necho \"DATA_ORIGIN=$DATA_ORIGIN\"
-            >> .env\necho \"INFURA_PROJECT_ID=$INFURA_PROJECT_ID\" >> .env\necho \"INFURA_PROJECT_ID_DEV=$INFURA_PROJECT_ID_DEV\"
-            >> .env\necho \"REACT_APP_SEGMENT_API_WRITE_KEY=$REACT_APP_SEGMENT_API_WRITE_KEY\"
-            >> .env\necho \"DATA_API_KEY=$DATA_API_KEY\" >> .env\necho \"DATA_ENDPOINT=$DATA_ENDPOINT\"
-            >> .env\necho \"SENTRY_ENDPOINT=$SENTRY_ENDPOINT\" >> .env\necho \"SENTRY_ENVIRONMENT=LocalRelease\"
-            >> .env\necho \"WYRE_ENDPOINT=$WYRE_ENDPOINT\" >> .env\necho \"WYRE_ACCOUNT_ID=$WYRE_ACCOUNT_ID\"
-            >> .env\necho \"RAINBOW_WYRE_MERCHANT_ID=$RAINBOW_WYRE_MERCHANT_ID\" >>
-            .env\necho \"WYRE_ENDPOINT_TEST=$WYRE_ENDPOINT_TEST\" >> .env\necho \"WYRE_ACCOUNT_ID_TEST=$WYRE_ACCOUNT_ID_TEST\"
-            >> .env\necho \"RAINBOW_WYRE_MERCHANT_ID_TEST=$RAINBOW_WYRE_MERCHANT_ID_TEST\"
-            >> .env\necho \"ETHERSCAN_API_KEY=$ETHERSCAN_API_KEY\" >> .env\necho \"BRANCH_APP_DOMAIN=$BRANCH_APP_DOMAIN\"
-            >> .env\necho \"BRANCH_KEY=$BRANCH_KEY\" >> .env\necho \"RAINBOW_MASTER_KEY=$RAINBOW_MASTER_KEY\"
-            >> .env\necho \"DEV_PKEY=$DEV_PKEY_PROD\" >> .env\necho \"WYRE_TOKEN=$WYRE_TOKEN\"
-            >> .env\necho \"WYRE_TOKEN_TEST=$WYRE_TOKEN_TEST\" >> .env\necho \"ENABLE_DEV_MODE=0\"
-            >> .env\necho \"ETH_GAS_STATION_API_KEY=$ETH_GAS_STATION_API_KEY\" >>
-            .env\necho \"IMGIX_TOKEN=$IMGIX_TOKEN\" >> .env\necho \"IMGIX_DOMAIN=$IMGIX_DOMAIN\"
-            >> .env\necho \"DEBUG_NM=NO\" >> .env\necho \"CODEPUSH_KEY_RELEASE=$CODEPUSH_KEY_RELEASE\"
-            >> .env\necho \"CODEPUSH_KEY_STAGING=$CODEPUSH_KEY_STAGING\" >> .env\necho
-            \"CODE_PUSH_DEPLOYMENT_KEY_ANDROID=$CODE_PUSH_DEPLOYMENT_KEY_ANDROID\"
-            >> .env \necho \"GOOGLE_SERVICE_API_KEY=$GOOGLE_SERVICE_API_KEY\" >> .env\necho
-            \"COVALENT_IOS_API_KEY=$COVALENT_IOS_API_KEY\" >> .env\necho \"COVALENT_ANDROID_API_KEY=$COVALENT_ANDROID_API_KEY\"
-            >> .env\necho \"POLYGON_MAINNET_RPC=$POLYGON_MAINNET_RPC\" >> .env\necho
-            \"ARBITRUM_MAINNET_RPC=$ARBITRUM_MAINNET_RPC\" >> .env\necho \"OPTIMISM_MAINNET_RPC=$OPTIMISM_MAINNET_RPC\"
-            >> .env\necho \"OPENSEA_API_KEY=$OPENSEA_API_KEY\" >> .env\necho \"OPENSEA_RINKEBY_API_KEY=$OPENSEA_RINKEBY_API_KEY\"
-            >> .env\necho \"NFT_API_KEY=$NFT_API_KEY\" >> .env\necho \"NFT_API_URL=$NFT_API_URL\"
-            >> .env\necho \"ETHEREUM_MAINNET_RPC=$ETHEREUM_MAINNET_RPC\" >> .env\necho
-            \"ETHEREUM_MAINNET_RPC_DEV=$ETHEREUM_MAINNET_RPC_DEV\" >> .env\necho \"ETHEREUM_KOVAN_RPC=$ETHEREUM_KOVAN_RPC\"
-            >> .env\necho \"ETHEREUM_KOVAN_RPC_DEV=$ETHEREUM_KOVAN_RPC_DEV\" >> .env\necho
-            \"ETHEREUM_ROPSTEN_RPC=$ETHEREUM_ROPSTEN_RPC\" >> .env\necho \"ETHEREUM_ROPSTEN_RPC_DEV=$ETHEREUM_ROPSTEN_RPC_DEV\"
-            >> .env\necho \"ETHEREUM_RINKEBY_RPC=$ETHEREUM_RINKEBY_RPC\" >> .env\necho
-            \"ETHEREUM_RINKEBY_RPC_DEV=$ETHEREUM_RINKEBY_RPC_DEV\" >> .env\necho \"ETHEREUM_GOERLI_RPC=$ETHEREUM_GOERLI_RPC\"
-            >> .env\necho \"ETHEREUM_GOERLI_RPC_DEV=$ETHEREUM_GOERLI_RPC_DEV\" >>
-            .env\necho \"RAINBOW_TOKEN_LIST_URL=$RAINBOW_TOKEN_LIST_URL\" >>.env\necho
-            \"HARDHAT_URL_IOS=$HARDHAT_URL_IOS\" >>.env\necho \"HARDHAT_URL_ANDROID=$HARDHAT_URL_ANDROID\"
-            >>.env\necho \"COMPOUND_SUBGRAPH_ENDPOINT=$COMPOUND_SUBGRAPH_ENDPOINT\"
-            >>.env\necho \"CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME\" >>.env\necho
-            \"CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY\" >>.env\necho \"CLOUDINARY_API_SECRET=$CLOUDINARY_API_SECRET\"
-            >>.env\necho \"PINATA_API_URL=$PINATA_API_URL\" >>.env\necho \"PINATA_API_KEY=$PINATA_API_KEY\"
-            >>.env\necho \"PINATA_API_SECRET=$PINATA_API_SECRET\" >>.env\necho \"PINATA_GATEWAY_URL=$PINATA_GATEWAY_URL\"
-            >>.env\necho \"CODE_PUSH_DEPLOYMENT_KEY_IOS=$CODE_PUSH_DEPLOYMENT_KEY_IOS\"
-            >> .env\necho \"APP_CENTER_READ_ONLY_TOKEN_ANDROID=$APP_CENTER_READ_ONLY_TOKEN_ANDROID\"
-            >> .env\necho \"APP_CENTER_READ_ONLY_TOKEN_IOS=$APP_CENTER_READ_ONLY_TOKEN_IOS\"
-            >> .env"
+        - content: "#!/usr/bin/env bash\n# fail if any commands fails\nset -e\n# debug log\nset -x\n\n# write your script here\ntouch .env\necho \"DATA_ORIGIN=$DATA_ORIGIN\" >> .env\necho \"INFURA_PROJECT_ID=$INFURA_PROJECT_ID\" >> .env\necho \"INFURA_PROJECT_ID_DEV=$INFURA_PROJECT_ID_DEV\" >> .env\necho \"REACT_APP_SEGMENT_API_WRITE_KEY=$REACT_APP_SEGMENT_API_WRITE_KEY\" >> .env\necho \"DATA_API_KEY=$DATA_API_KEY\" >> .env\necho \"DATA_ENDPOINT=$DATA_ENDPOINT\" >> .env\necho \"SENTRY_ENDPOINT=$SENTRY_ENDPOINT\" >> .env\necho \"SENTRY_ENVIRONMENT=LocalRelease\" >> .env\necho \"WYRE_ENDPOINT=$WYRE_ENDPOINT\" >> .env\necho \"WYRE_ACCOUNT_ID=$WYRE_ACCOUNT_ID\" >> .env\necho \"RAINBOW_WYRE_MERCHANT_ID=$RAINBOW_WYRE_MERCHANT_ID\" >> .env\necho \"WYRE_ENDPOINT_TEST=$WYRE_ENDPOINT_TEST\" >> .env\necho \"WYRE_ACCOUNT_ID_TEST=$WYRE_ACCOUNT_ID_TEST\" >> .env\necho \"RAINBOW_WYRE_MERCHANT_ID_TEST=$RAINBOW_WYRE_MERCHANT_ID_TEST\" >> .env\necho \"ETHERSCAN_API_KEY=$ETHERSCAN_API_KEY\" >> .env\necho \"BRANCH_APP_DOMAIN=$BRANCH_APP_DOMAIN\" >> .env\necho \"BRANCH_KEY=$BRANCH_KEY\" >> .env\necho \"RAINBOW_MASTER_KEY=$RAINBOW_MASTER_KEY\" >> .env\necho \"DEV_PKEY=$DEV_PKEY_PROD\" >> .env\necho \"WYRE_TOKEN=$WYRE_TOKEN\" >> .env\necho \"WYRE_TOKEN_TEST=$WYRE_TOKEN_TEST\" >> .env\necho \"ENABLE_DEV_MODE=0\" >> .env\necho \"ETH_GAS_STATION_API_KEY=$ETH_GAS_STATION_API_KEY\" >> .env\necho \"IMGIX_TOKEN=$IMGIX_TOKEN\" >> .env\necho \"IMGIX_DOMAIN=$IMGIX_DOMAIN\" >> .env\necho \"DEBUG_NM=NO\" >> .env\necho \"CODEPUSH_KEY_RELEASE=$CODEPUSH_KEY_RELEASE\" >> .env\necho \"CODEPUSH_KEY_STAGING=$CODEPUSH_KEY_STAGING\" >> .env\necho \"CODE_PUSH_DEPLOYMENT_KEY_ANDROID=$CODE_PUSH_DEPLOYMENT_KEY_ANDROID\" >> .env \necho \"GOOGLE_SERVICE_API_KEY=$GOOGLE_SERVICE_API_KEY\" >> .env\necho \"COVALENT_IOS_API_KEY=$COVALENT_IOS_API_KEY\" >> .env\necho \"COVALENT_ANDROID_API_KEY=$COVALENT_ANDROID_API_KEY\" >> .env\necho \"POLYGON_MAINNET_RPC=$POLYGON_MAINNET_RPC\" >> .env\necho \"ARBITRUM_MAINNET_RPC=$ARBITRUM_MAINNET_RPC\" >> .env\necho \"OPTIMISM_MAINNET_RPC=$OPTIMISM_MAINNET_RPC\" >> .env\necho \"OPENSEA_API_KEY=$OPENSEA_API_KEY\" >> .env\necho \"OPENSEA_RINKEBY_API_KEY=$OPENSEA_RINKEBY_API_KEY\" >> .env\necho \"NFT_API_KEY=$NFT_API_KEY\" >> .env\necho \"NFT_API_URL=$NFT_API_URL\" >> .env\necho \"ETHEREUM_MAINNET_RPC=$ETHEREUM_MAINNET_RPC\" >> .env\necho \"ETHEREUM_MAINNET_RPC_DEV=$ETHEREUM_MAINNET_RPC_DEV\" >> .env\necho \"ETHEREUM_KOVAN_RPC=$ETHEREUM_KOVAN_RPC\" >> .env\necho \"ETHEREUM_KOVAN_RPC_DEV=$ETHEREUM_KOVAN_RPC_DEV\" >> .env\necho \"ETHEREUM_ROPSTEN_RPC=$ETHEREUM_ROPSTEN_RPC\" >> .env\necho \"ETHEREUM_ROPSTEN_RPC_DEV=$ETHEREUM_ROPSTEN_RPC_DEV\" >> .env\necho \"ETHEREUM_RINKEBY_RPC=$ETHEREUM_RINKEBY_RPC\" >> .env\necho \"ETHEREUM_RINKEBY_RPC_DEV=$ETHEREUM_RINKEBY_RPC_DEV\" >> .env\necho \"ETHEREUM_GOERLI_RPC=$ETHEREUM_GOERLI_RPC\" >> .env\necho \"ETHEREUM_GOERLI_RPC_DEV=$ETHEREUM_GOERLI_RPC_DEV\" >> .env\necho \"RAINBOW_TOKEN_LIST_URL=$RAINBOW_TOKEN_LIST_URL\" >>.env\necho \"HARDHAT_URL_IOS=$HARDHAT_URL_IOS\" >>.env\necho \"HARDHAT_URL_ANDROID=$HARDHAT_URL_ANDROID\" >>.env\necho \"COMPOUND_SUBGRAPH_ENDPOINT=$COMPOUND_SUBGRAPH_ENDPOINT\" >>.env\necho \"CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME\" >>.env\necho \"CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY\" >>.env\necho \"CLOUDINARY_API_SECRET=$CLOUDINARY_API_SECRET\" >>.env\necho \"PINATA_API_URL=$PINATA_API_URL\" >>.env\necho \"PINATA_API_KEY=$PINATA_API_KEY\" >>.env\necho \"PINATA_API_SECRET=$PINATA_API_SECRET\" >>.env\necho \"PINATA_GATEWAY_URL=$PINATA_GATEWAY_URL\" >>.env\necho \"CODE_PUSH_DEPLOYMENT_KEY_IOS=$CODE_PUSH_DEPLOYMENT_KEY_IOS\" >> .env\necho \"APP_CENTER_READ_ONLY_TOKEN_ANDROID=$APP_CENTER_READ_ONLY_TOKEN_ANDROID\" >> .env\necho \"APP_CENTER_READ_ONLY_TOKEN_IOS=$APP_CENTER_READ_ONLY_TOKEN_IOS\" >> .env"
         title: Generate .env
     - script@1:
         inputs:
@@ -844,7 +720,7 @@ workflows:
     - install-missing-android-tools@3: {}
     - nvm@1:
         inputs:
-        - node_version: '14'
+        - node_version: "14"
     - script@1:
         inputs:
         - content: |
@@ -861,13 +737,13 @@ workflows:
         title: Install dependencies via Yarn
     - file-downloader@1:
         inputs:
-        - source: "$BITRISEIO_ANDROID_KEYSTORE_URL"
-        - destination: "$BITRISE_SOURCE_DIR/android/keystores/rainbow-key.keystore"
+        - source: $BITRISEIO_ANDROID_KEYSTORE_URL
+        - destination: $BITRISE_SOURCE_DIR/android/keystores/rainbow-key.keystore
         title: Copy android keystore
     - file-downloader@1:
         inputs:
-        - source: "$BITRISEIO_ANDROID_GOOGLE_PLAY_PRIVATE_KEY_URL"
-        - destination: "$BITRISE_SOURCE_DIR/android/rainbow-google-play-key.json"
+        - source: $BITRISEIO_ANDROID_GOOGLE_PLAY_PRIVATE_KEY_URL
+        - destination: $BITRISE_SOURCE_DIR/android/rainbow-google-play-key.json
         title: Copy google play private key
     - script@1:
         inputs:
@@ -932,7 +808,7 @@ workflows:
         title: Add google--services.json
     - fastlane@3:
         inputs:
-        - work_dir: "$BITRISE_SOURCE_DIR/android"
+        - work_dir: $BITRISE_SOURCE_DIR/android
         - lane: android internal
         is_always_run: true
     before_run: []
@@ -943,7 +819,7 @@ workflows:
       RAINBOW_KEY_ANDROID_PASSWORD: hnSuNeVf^ud8D4Z7sSrLJ*esTQ$*hV
     - opts:
         is_expand: false
-      GRADLEW_PATH: "./android/gradlew"
+      GRADLEW_PATH: ./android/gradlew
   workflow_remote_access:
     before_run: []
     envs:
@@ -981,7 +857,7 @@ workflows:
     - certificate-and-profile-installer@1: {}
     - fastlane@3:
         inputs:
-        - work_dir: "$BITRISE_SOURCE_DIR/ios"
+        - work_dir: $BITRISE_SOURCE_DIR/ios
         - lane: beta
         title: Fastlane - Submit to Testflight
     - xcode-project-info@2:
@@ -991,7 +867,7 @@ workflows:
         title: Expose build number to ENV vars
     - fastlane@3:
         inputs:
-        - work_dir: "$BITRISE_SOURCE_DIR/ios"
+        - work_dir: $BITRISE_SOURCE_DIR/ios
         - lane: refresh_dsyms
         title: Fastlane - Upload debug symbols to Crashlytics
     - script@1.2:
@@ -1010,19 +886,18 @@ workflows:
 
     - slack@4.0:
         inputs:
-        - webhook_url: "$SLACK_WEBHOOK_URL"
-        - buttons: 'View Build|${BITRISE_BUILD_URL}
-
-            '
+        - webhook_url: $SLACK_WEBHOOK_URL
+        - buttons: |
+            View Build|${BITRISE_BUILD_URL}
         - fields: |
             App|${BITRISE_APP_TITLE}
             Branch|${BITRISE_GIT_BRANCH}
             Workflow|${BITRISE_TRIGGERED_WORKFLOW_ID}
             Version|${RAINBOW_VERSION} (${XPI_BUILD})
-        - pretext: "*Build Submitted to Testflight!*"
+        - pretext: '*Build Submitted to Testflight!*'
     - cache-push@2:
         inputs:
-        - is_debug_mode: 'true'
+        - is_debug_mode: "true"
         - cache_paths: |
             $BITRISE_CACHE_DIR
             $BREW_APPLESIMUTILS
@@ -1038,10 +913,10 @@ workflows:
       SENTRY_ENVIRONMENT: Release
     - opts:
         is_expand: false
-      IS_TESTING: 'false'
+      IS_TESTING: "false"
     - opts:
         is_expand: false
-      ENABLE_DEV_MODE: '0'
+      ENABLE_DEV_MODE: "0"
     - opts:
         is_expand: false
       GANACHE_URL: http://127.0.0.1:7545
@@ -1064,10 +939,10 @@ workflows:
       SENTRY_ENVIRONMENT: LocalRelease
     - opts:
         is_expand: false
-      IS_TESTING: 'true'
+      IS_TESTING: "true"
     - opts:
         is_expand: false
-      ENABLE_DEV_MODE: '1'
+      ENABLE_DEV_MODE: "1"
     - opts:
         is_expand: false
       GANACHE_URL_IOS: http://127.0.0.1:7545
@@ -1078,17 +953,17 @@ workflows:
     steps:
     - slack@3:
         inputs:
-        - channel: "#bitrise"
+        - channel: '#bitrise'
         - from_username: Bitrise Bot
-        - pretext: "* All Tests Passed! *"
-        - channel_on_error: "#bitrise"
+        - pretext: '* All Tests Passed! *'
+        - channel_on_error: '#bitrise'
         - text_on_error: Build failed
-        - emoji_on_error: ''
+        - emoji_on_error: ""
         - from_username_on_error: Bitrise bot
         - buttons: |
             View Pull Request|${BITRISEIO_PULL_REQUEST_REPOSITORY_URL}
             View Build|${BITRISE_BUILD_URL}
-        - webhook_url: "$SLACK_WEBHOOK_URL"
+        - webhook_url: $SLACK_WEBHOOK_URL
   workflow_tests_android:
     before_run:
     - create_android_emulator
@@ -1103,10 +978,10 @@ workflows:
       SENTRY_ENVIRONMENT: LocalRelease
     - opts:
         is_expand: false
-      IS_TESTING: 'true'
+      IS_TESTING: "true"
     - opts:
         is_expand: false
-      ENABLE_DEV_MODE: '1'
+      ENABLE_DEV_MODE: "1"
     - opts:
         is_expand: false
       GANACHE_URL_IOS: http://127.0.0.1:7545
@@ -1116,17 +991,17 @@ workflows:
     steps:
     - slack@3:
         inputs:
-        - channel: "#bitrise"
+        - channel: '#bitrise'
         - from_username: Bitrise Bot
-        - pretext: "* All Tests Passed! *"
-        - channel_on_error: "#bitrise"
+        - pretext: '* All Tests Passed! *'
+        - channel_on_error: '#bitrise'
         - text_on_error: Build failed
-        - emoji_on_error: ''
+        - emoji_on_error: ""
         - from_username_on_error: Bitrise bot
         - buttons: |
             View Pull Request|${BITRISEIO_PULL_REQUEST_REPOSITORY_URL}
             View Build|${BITRISE_BUILD_URL}
-        - webhook_url: "$SLACK_WEBHOOK_URL"
+        - webhook_url: $SLACK_WEBHOOK_URL
     - cache-push@2:
         inputs:
         - cache_paths: |
@@ -1147,10 +1022,10 @@ workflows:
       SENTRY_ENVIRONMENT: LocalRelease
     - opts:
         is_expand: false
-      IS_TESTING: 'true'
+      IS_TESTING: "true"
     - opts:
         is_expand: false
-      ENABLE_DEV_MODE: '1'
+      ENABLE_DEV_MODE: "1"
     - opts:
         is_expand: false
       GANACHE_URL_IOS: http://127.0.0.1:7545
@@ -1162,7 +1037,7 @@ app:
   envs:
   - opts:
       is_expand: false
-    SKIP_FLIPPER: 'true'
+    SKIP_FLIPPER: "true"
 meta:
   bitrise.io:
     stack: osx-xcode-15.2.x
