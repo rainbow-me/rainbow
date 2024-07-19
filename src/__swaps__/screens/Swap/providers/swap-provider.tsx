@@ -48,6 +48,7 @@ import { ethereumUtils, haptics } from '@/utils';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 
 import { IS_IOS } from '@/env';
+import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { Address } from 'viem';
 import { clearCustomGasSettings } from '../hooks/useCustomGas';
 import { getGasSettingsBySpeed, getSelectedGas, getSelectedGasSpeed } from '../hooks/useSelectedGas';
@@ -62,7 +63,6 @@ const review = i18n.t(i18n.l.swap.actions.review);
 const fetchingPrices = i18n.t(i18n.l.swap.actions.fetching_prices);
 const selectToken = i18n.t(i18n.l.swap.actions.select_token);
 const insufficientFunds = i18n.t(i18n.l.swap.actions.insufficient_funds);
-const insufficientGas = i18n.t(i18n.l.swap.actions.insufficient_gas);
 const quoteError = i18n.t(i18n.l.swap.actions.quote_error);
 
 interface SwapContextType {
@@ -669,7 +669,12 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
 
     if (!hasEnoughFundsForGas.value) {
-      return { label: insufficientGas, disabled: true };
+      const network = getNetworkFromChainId(sellAsset.chainId);
+      const { nativeCurrency } = getNetworkObj(network);
+      return {
+        label: i18n.t(i18n.l.swap.actions.insufficient_gas, { symbol: nativeCurrency.symbol }),
+        disabled: true,
+      };
     }
 
     if (isReviewSheetOpen) {
