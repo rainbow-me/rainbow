@@ -1,296 +1,1043 @@
----
 format_version: 1.1.0
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 trigger_map:
-  - push_branch: develop
-    workflow: workflow_testflight
-  - pull_request_source_branch: '*'
-    workflow: workflow_tests
-    pull_request_target_branch: develop
+- push_branch: develop
+  workflow: workflow_testflight
 workflows:
+  apply_rainbow_internals:
+    before_run: []
+    after_run: []
+    steps:
+    - activate-ssh-key@4: {}
+    - script@1:
+        inputs:
+        - content: |+
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            # Forking rainbow scripts
+            git clone git@github.com:rainbow-me/rainbow-scripts.git
+
+            # Setting permissions to execute the script
+            chmod +x "rainbow-scripts/rainbow/ios/prebuild.sh"
+
+            # Adding script to env vars
+            envman add --key RAINBOW_SCRIPTS_APP_IOS_PREBUILD_HOOK --value "./rainbow-scripts/rainbow/ios/prebuild.sh"
+
+            envman add --key RAINBOW_SCRIPTS_APP_ANDROID_PREBUILD_HOOK --value "./rainbow-scripts/rainbow/android/prebuild.sh"
+
+        title: Set Sandbox Env vars
+  audit_deps_diff:
+    steps:
+    - script@1:
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+
+            yarn audit-ci --moderate --config audit-ci.json > current.txt
+            current=$?
+
+            if [ $current -eq 0 ]; then
+              echo "✅ No vulnerabilities found"
+              exit 0
+            fi
+
+            git fetch origin develop:develop
+
+            git checkout develop
+            cp package.json develop.txt
+
+            git checkout -
+
+            length=$(diff develop.txt package.json)
+
+            if [ ${#length} -eq 0 ]; then
+              echo "✅ No new packages introduced."
+              exit 0
+            else
+              echo "⛔️ Vulnerabilities found and packages.json modified."
+              exit 1
+            fi
+        title: Check for new vulnerabilities
+    before_run: []
+    after_run: []
+  audit_deps_full:
+    steps:
+    - yarn@0:
+        title: Audit dependencies
+        inputs:
+        - command: audit-ci --moderate --config audit-ci.json
+    before_run: []
+    after_run: []
   build_setup:
     steps:
-      - activate-ssh-key@4.0.5:
-          run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
-      - git-clone@4: {}
-      - cache-pull@2: {}
-      - nvm@1:
-          inputs:
-            - node_version: 12.18.3
-      - yarn@0.1.1:
-          inputs:
-            - cache_local_deps: 'yes'
-            - command: install --network-timeout 300000 --network-concurrency 1
-          title: Installing dependencies via yarn
-      - script@1:
-          title: Check for lockfile changes (Fake --frozen-lockfile)
-          inputs:
-            - content: |-
-                git diff yarn.lock
-                if ! git diff --exit-code yarn.lock; then
-                  echo "Changes were detected in yarn.lock file after running 'yarn install', which is not expected. Please run 'yarn install' locally and commit the changes.";
-                  exit 1;
-                fi
-    before_run:
-    after_run:
+    - git-clone@8.1: {}
+    - cache-pull@2: {}
+    - nvm@1.3:
+        inputs:
+        - nvm_version: 0.39.2
+        - node_version: 18.19.0
+    - script@1:
+        inputs:
+        - content: |
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            # Yarn sucks and running a couple of times does the trick.
+            # See https://github.com/yarnpkg/yarn/issues/7212 before yelling at me
+
+            yarn setup || yarn setup || yarn setup
+        title: Install deps via Yarn
+    - script@1:
+        title: Check for lockfile changes (Fake --frozen-lockfile)
+        inputs:
+        - content: |-
+            git diff yarn.lock
+            if ! git diff --exit-code yarn.lock; then
+              echo "Changes were detected in yarn.lock file after running 'yarn install', which is not expected. Please run 'yarn install' locally and commit the changes.";
+              exit 1;
+            fi
+    - yarn@0:
+        inputs:
+        - args: ' --config audit-ci.jsonc'
+        - command: audit-ci
+        title: Audit dependencies
+    before_run: []
+    after_run: []
+  build_setup_android:
+    steps:
+    - script@1:
+        inputs:
+        - content: |-
+            #!/bin/bash
+            jenv add /usr/local/opt/openjdk/
+            jenv global 15
+            export JAVA_HOME="$(jenv prefix)"
+            envman add --key JAVA_HOME --value "$(jenv prefix)"
+            echo "openjdk-15 installed"
+        title: Install JVM 15
+    - activate-ssh-key@4:
+        run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
+    - git-clone@6: {}
+    - cache-pull@2: {}
+    - nvm@1:
+        inputs:
+        - node_version: "14"
+    - script@1:
+        inputs:
+        - content: |
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            # Yarn sucks and running a couple of times does the trick.
+            # See https://github.com/yarnpkg/yarn/issues/7212 before yelling at me
+
+            yarn setup || yarn setup || yarn setup
+        title: Install dependencies via Yarn
+    - file-downloader@1:
+        inputs:
+        - destination: $BITRISE_SOURCE_DIR/android/keystores/rainbow-key.keystore
+        - source: $BITRISEIO_ANDROID_KEYSTORE_URL
+    - script@1:
+        inputs:
+        - content: |+
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            # write your script here
+            echo '
+            {
+                "project_info": {
+                  "project_number": "498863290995",
+                  "firebase_url": "https://rainbow-me.firebaseio.com",
+                  "project_id": "rainbow-me",
+                  "storage_bucket": "rainbow-me.appspot.com"
+                },
+                "client": [
+                  {
+                    "client_info": {
+                      "mobilesdk_app_id": "1:498863290995:android:88d6b458fe86322e770806",
+                      "android_client_info": {
+                        "package_name": "me.rainbow"
+                      }
+                    },
+                    "oauth_client": [
+                      {
+                        "client_id": "498863290995-q6rjonkrm1s3njp6h63ro40qkdooi74o.apps.googleusercontent.com",
+                        "client_type": 3
+                      }
+                    ],
+                    "api_key": [
+                      {
+                        "current_key": "AIzaSyCSHCCcHYQ8ArLdNMTnlr7tHFZMB5SJr_k"
+                      }
+                    ],
+                    "services": {
+                      "appinvite_service": {
+                        "other_platform_oauth_client": [
+                          {
+                            "client_id": "498863290995-q6rjonkrm1s3njp6h63ro40qkdooi74o.apps.googleusercontent.com",
+                            "client_type": 3
+                          },
+                          {
+                            "client_id": "498863290995-9p1q0khft2ducvla1hmjgc7j083s662i.apps.googleusercontent.com",
+                            "client_type": 2,
+                            "ios_info": {
+                              "bundle_id": "me.rainbow"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ],
+                "configuration_version": "1"
+              }
+            ' >> ./android/app/google-services.json
+
+        title: Add google--services.json
+    before_run: []
+    after_run: []
+  build_setup_no_audit:
+    steps:
+    - git-clone@6: {}
+    - cache-pull@2: {}
+    - nvm@1:
+        inputs:
+        - node_version: "14"
+    - script@1:
+        inputs:
+        - content: |
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            # Yarn sucks and running a couple of times does the trick.
+            # See https://github.com/yarnpkg/yarn/issues/7212 before yelling at me
+
+            yarn setup || yarn setup || yarn setup
+        title: Install deps via Yarn
+    - script@1:
+        title: Check for lockfile changes (Fake --frozen-lockfile)
+        inputs:
+        - content: |-
+            git diff yarn.lock
+            if ! git diff --exit-code yarn.lock; then
+              echo "Changes were detected in yarn.lock file after running 'yarn install', which is not expected. Please run 'yarn install' locally and commit the changes.";
+              exit 1;
+            fi
+    before_run: []
+    after_run: []
+  build_setup_tophat:
+    steps:
+    - git-clone@6: {}
+    - nvm@1:
+        inputs:
+        - node_version: "14"
+    - script@1:
+        inputs:
+        - content: |
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            # Yarn sucks and running a couple of times does the trick.
+            # See https://github.com/yarnpkg/yarn/issues/7212 before yelling at me
+
+            yarn setup || yarn setup || yarn setup
+        title: Install deps via Yarn
+    before_run: []
+    after_run: []
+  cache_push:
+    steps:
+    - cache-push@2:
+        inputs:
+        - is_debug_mode: "true"
+        - cache_paths: |
+            $BITRISE_CACHE_DIR
+            $BREW_APPLESIMUTILS
+            $BREW_OPT_APPLESIMUTILS
+            $YARN_BITRISE_CACH
+            ${BITRISE_SOURCE_DIR}/ios/build
+            ${BITRISE_SOURCE_DIR}/node_modules
+            ~/.nvm
+            $TMPDIR/haste-map-*
+            ${BITRISE_SOURCE_DIR}/.eslintcache
+  check_dot_env:
+    steps:
+    - script@1:
+        title: Check dot env for production builds
+        inputs:
+        - content: |
+            #!/usr/bin/env bash
+            ./scripts/check-env.sh
+
+
+            # Disable swap fees for testflight and internal android builds (IS_APK_BUILD=true)
+            SRCROOT=`pwd`;
+            sed -i''-e "s/About to get quote/About to get quote\n    if(isTestFlight || IS_APK_BUILD === 'true'){ quoteParams.feePercentageBasisPoints = 0} \/\/ eslint-disable-line prettier\/prettier\n    \/\/ @ts-ignore/" $SRCROOT/src/hooks/useSwapDerivedOutputs.ts;
+  create_android_emulator:
+    before_run: []
+    after_run: []
+    steps:
+    - avd-manager@1:
+        inputs:
+        - emulator_id: emulator-5554
+        - api_level: "29"
+  detox_ios_build:
+    steps:
+    - script@1.2:
+        title: Detox - Build iOS App in Release Mode
+        inputs:
+        - content: |
+            #!/bin/bash
+            detox build --configuration ios.sim.release
+            # UNCOMMENT THE FOLLOWING CODE IF U NEED TO LOGIN VIA VNC TO DEBUG
+            # SLEEP 1 HOUR SO I CAN LOG IN A DO MANUAL SHIT
+            # echo "Sleeping, you can now connect via SSH"
+            # sleep 36000
+  detox_ios_test:
+    steps:
+    - script@1.2:
+        title: Detox - Run iOS E2E Tests on Release mode
+        inputs:
+        - content: |-
+            #!/bin/bash
+            detox test -R 8 --configuration ios.sim.release --forceExit
+  detox_setup:
+    steps:
+    - yarn@0.1.2:
+        inputs:
+        - cache_local_deps: "yes"
+        - command: global add detox-cli
+        title: Detox - Install CLI
+    - script:
+        inputs:
+        - content: |-
+            # Add cache directory to environment variable
+            envman add --key BREW_APPLESIMUTILS --value "$(brew --cellar)/applesimutils"
+            envman add --key BREW_OPT_APPLESIMUTILS --value "/usr/local/opt/applesimutils"
+        title: Detox- Set Env Path for caching deps
+    - script@1.2:
+        inputs:
+        - content: |-
+            #!/bin/bash
+            brew tap wix/brew
+
+            detox clean-framework-cache && detox build-framework-cache
+        title: Detox - Setup
+  detox_test_android:
+    before_run: []
+    after_run: []
+    steps:
+    - script@1.1.6:
+        inputs:
+        - content: |-
+            #!/bin/bash
+
+            detox build --configuration android.emu.release.bitrise
+        title: Detox - Build Android App in Release Mode
+    - wait-for-android-emulator@1: {}
+    - script@1.1.6:
+        inputs:
+        - content: |-
+            #!/bin/bash
+            yarn start > /dev/null 2>&1 &
+            sleep 90
+            detox test -R 1 --configuration android.emu.release.bitrise -l verbose
+        title: Detox - Run Android E2E Tests on Release mode
+  generate_appstore_connect_key:
+    steps:
+    - script@1:
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+
+            APPSTORE_CONNECT_AUTH_FILE="ios/fastlane/AuthKey_AU3T8TCRLN.p8"
+
+            echo "-----BEGIN PRIVATE KEY-----" >> $APPSTORE_CONNECT_AUTH_FILE
+            echo $APPSTORE_CONNECT_PRIVATE_KEY_1 >> $APPSTORE_CONNECT_AUTH_FILE
+            echo $APPSTORE_CONNECT_PRIVATE_KEY_2 >> $APPSTORE_CONNECT_AUTH_FILE
+            echo $APPSTORE_CONNECT_PRIVATE_KEY_3 >> $APPSTORE_CONNECT_AUTH_FILE
+            echo $APPSTORE_CONNECT_PRIVATE_KEY_4 >> $APPSTORE_CONNECT_AUTH_FILE
+            echo "-----END PRIVATE KEY-----" >> $APPSTORE_CONNECT_AUTH_FILE
+
+            echo "APPSTORE CONNECT AUTH KEY CREATED SUCCESSFULLY"
+        title: Generate Appstore Connect Key
+  generate_dot_env_testflight:
+    steps:
+    - script@1.2:
+        inputs:
+        - content: |
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            # write your script here
+            touch .env
+            echo "DATA_ORIGIN=$DATA_ORIGIN" >> .env
+            echo "INFURA_PROJECT_ID=$INFURA_PROJECT_ID" >> .env
+            echo "INFURA_PROJECT_ID_DEV=$INFURA_PROJECT_ID_DEV" >> .env
+            echo "REACT_APP_SEGMENT_API_WRITE_KEY=$REACT_APP_SEGMENT_API_WRITE_KEY" >> .env
+            echo "DATA_API_KEY=$DATA_API_KEY" >> .env
+            echo "DATA_ENDPOINT=$DATA_ENDPOINT" >> .env
+            echo "SENTRY_ENDPOINT=$SENTRY_ENDPOINT" >> .env
+            echo "SENTRY_ENVIRONMENT=$SENTRY_ENVIRONMENT" >> .env
+            echo "SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN" >> .env
+            echo "WYRE_ENDPOINT=$WYRE_ENDPOINT" >> .env
+            echo "WYRE_ACCOUNT_ID=$WYRE_ACCOUNT_ID" >> .env
+            echo "RAINBOW_WYRE_MERCHANT_ID=$RAINBOW_WYRE_MERCHANT_ID" >> .env
+            echo "WYRE_ENDPOINT_TEST=$WYRE_ENDPOINT_TEST" >> .env
+            echo "WYRE_ACCOUNT_ID_TEST=$WYRE_ACCOUNT_ID_TEST" >> .env
+            echo "RAINBOW_WYRE_MERCHANT_ID_TEST=$RAINBOW_WYRE_MERCHANT_ID_TEST" >> .env
+            echo "ETHERSCAN_API_KEY=$ETHERSCAN_API_KEY" >> .env
+            echo "BRANCH_APP_DOMAIN=$BRANCH_APP_DOMAIN" >> .env
+            echo "BRANCH_KEY=$BRANCH_KEY" >> .env
+            echo "RAINBOW_MASTER_KEY=$RAINBOW_MASTER_KEY" >> .env
+            echo "DEV_SEEDS=\"$DEV_SEEDS_PROD\"" >> .env
+            echo "DEV_PKEY=$DEV_PKEY_PROD" >> .env
+            echo "IS_TESTING=$IS_TESTING" >> .env
+            echo "WYRE_TOKEN=$WYRE_TOKEN" >> .env
+            echo "WYRE_TOKEN_TEST=$WYRE_TOKEN_TEST" >> .env
+            echo "ENABLE_DEV_MODE=$ENABLE_DEV_MODE" >> .env
+            echo "GANACHE_URL_IOS=$GANACHE_URL_IOS" >> .env
+            echo "GANACHE_URL_ANDROID=$GANACHE_URL_ANDROID" >> .env
+            echo "ETH_GAS_STATION_API_KEY=$ETH_GAS_STATION_API_KEY" >> .env
+            echo "IMGIX_TOKEN=$IMGIX_TOKEN" >> .env
+            echo "IMGIX_DOMAIN=$IMGIX_DOMAIN" >> .env
+            echo "DEBUG_NM=NO" >> .env
+            echo "SCRIPT_MN=$SCRIPT_MN" >> .env
+            echo "CODEPUSH_KEY_RELEASE=$CODEPUSH_KEY_RELEASE" >> .env
+            echo "CODEPUSH_KEY_STAGING=$CODEPUSH_KEY_STAGING" >> .env
+            echo "GOOGLE_SERVICE_API_KEY=$GOOGLE_SERVICE_API_KEY" >> .env
+            echo "COVALENT_IOS_API_KEY=$COVALENT_IOS_API_KEY" >> .env
+            echo "COVALENT_ANDROID_API_KEY=$COVALENT_ANDROID_API_KEY" >> .env
+            echo "POLYGON_MAINNET_RPC=$POLYGON_MAINNET_RPC" >> .env
+            echo "ARBITRUM_MAINNET_RPC=$ARBITRUM_MAINNET_RPC" >> .env
+            echo "OPTIMISM_MAINNET_RPC=$OPTIMISM_MAINNET_RPC" >> .env
+            echo "OPENSEA_API_KEY=$OPENSEA_API_KEY" >> .env
+            echo "OPENSEA_RINKEBY_API_KEY=$OPENSEA_RINKEBY_API_KEY" >> .env
+            echo "NFT_API_KEY=$NFT_API_KEY" >> .env
+            echo "NFT_API_URL=$NFT_API_URL" >> .env
+            echo "ETHEREUM_MAINNET_RPC=$ETHEREUM_MAINNET_RPC" >> .env
+            echo "ETHEREUM_MAINNET_RPC_DEV=$ETHEREUM_MAINNET_RPC_DEV" >> .env
+            echo "ETHEREUM_KOVAN_RPC=$ETHEREUM_KOVAN_RPC" >> .env
+            echo "ETHEREUM_KOVAN_RPC_DEV=$ETHEREUM_KOVAN_RPC_DEV" >> .env
+            echo "ETHEREUM_ROPSTEN_RPC=$ETHEREUM_ROPSTEN_RPC" >> .env
+            echo "ETHEREUM_ROPSTEN_RPC_DEV=$ETHEREUM_ROPSTEN_RPC_DEV" >> .env
+            echo "ETHEREUM_RINKEBY_RPC=$ETHEREUM_RINKEBY_RPC" >> .env
+            echo "ETHEREUM_RINKEBY_RPC_DEV=$ETHEREUM_RINKEBY_RPC_DEV" >> .env
+            echo "ETHEREUM_GOERLI_RPC=$ETHEREUM_GOERLI_RPC" >> .env
+            echo "ETHEREUM_GOERLI_RPC_DEV=$ETHEREUM_GOERLI_RPC_DEV" >> .env
+            echo "BSC_MAINNET_RPC=$BSC_MAINNET_RPC" >> .env
+            echo "ZORA_MAINNET_RPC=$ZORA_MAINNET_RPC" >> .env
+            echo "RAINBOW_TOKEN_LIST_URL=$RAINBOW_TOKEN_LIST_URL" >>.env
+            echo "RAINBOW_LEAN_TOKEN_LIST_URL=$RAINBOW_LEAN_TOKEN_LIST_URL" >>.env
+            echo "HARDHAT_URL_IOS=$HARDHAT_URL_IOS" >>.env
+            echo "HARDHAT_URL_ANDROID=$HARDHAT_URL_ANDROID" >>.env
+            echo "COMPOUND_SUBGRAPH_ENDPOINT=$COMPOUND_SUBGRAPH_ENDPOINT" >>.env
+            echo "CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME" >>.env
+            echo "CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY" >>.env
+            echo "CLOUDINARY_API_SECRET=$CLOUDINARY_API_SECRET" >>.env
+            echo "PINATA_API_URL=$PINATA_API_URL" >>.env
+            echo "PINATA_API_KEY=$PINATA_API_KEY" >>.env
+            echo "PINATA_API_SECRET=$PINATA_API_SECRET" >>.env
+            echo "PINATA_GATEWAY_URL=$PINATA_GATEWAY_URL" >>.env
+            echo "CODE_PUSH_DEPLOYMENT_KEY_IOS=$CODE_PUSH_DEPLOYMENT_KEY_IOS" >> .env
+            echo "APP_CENTER_READ_ONLY_TOKEN_ANDROID=$APP_CENTER_READ_ONLY_TOKEN_ANDROID" >> .env
+            echo "APP_CENTER_READ_ONLY_TOKEN_IOS=$APP_CENTER_READ_ONLY_TOKEN_IOS" >> .env
+            echo "OPTIMISM_KOVAN_RPC=$OPTIMISM_KOVAN_RPC" >> .env
+            echo "SIMPLEHASH_API_KEY=$SIMPLEHASH_API_KEY" >> .env
+            echo "POAP_API_KEY=$POAP_API_KEY" >> .env
+            echo "SECURE_WALLET_HASH_KEY=$SECURE_WALLET_HASH_KEY" >> .env
+            echo "LOG_LEVEL=$LOG_LEVEL" >> .env
+            echo "WC_PROJECT_ID=$WC_PROJECT_ID" >> .env
+            echo "ADDYS_API_KEY=$ADDYS_API_KEY" >> .env
+            echo "RESERVOIR_API_KEY_PROD=$RESERVOIR_API_KEY_PROD" >> .env
+            echo "RESERVOIR_API_KEY_DEV=$RESERVOIR_API_KEY_DEV" >> .env
+            echo "RPC_PROXY_BASE_URL_PROD=$RPC_PROXY_BASE_URL_PROD" >> .env
+            echo "RPC_PROXY_BASE_URL_DEV=$RPC_PROXY_BASE_URL_DEV" >> .env
+            echo "RPC_PROXY_API_KEY_PROD=$RPC_PROXY_API_KEY_PROD" >> .env
+            echo "RPC_PROXY_API_KEY_DEV=$RPC_PROXY_API_KEY_DEV" >> .env
+            echo "AVALANCHE_MAINNET_RPC=$AVALANCHE_MAINNET_RPC" >> .env
+            echo "AVALANCHE_MAINNET_RPC_DEV=$AVALANCHE_MAINNET_RPC_DEV" >> .env
+            echo "BLAST_MAINNET_RPC=$BLAST_MAINNET_RPC" >> .env
+            echo "DEGEN_MAINNET_RPC=$DEGEN_MAINNET_RPC" >> .env
+        title: Generate .env file for testflight
+  generate_dot_env_testing:
+    steps:
+    - script@1.2:
+        inputs:
+        - content: |
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
+
+            # write your script here
+            touch .env
+            echo "DATA_ORIGIN=ios://rainbow-wallet-test" >> .env
+            echo "INFURA_PROJECT_ID=$INFURA_PROJECT_ID" >> .env
+            echo "INFURA_PROJECT_ID_DEV=$INFURA_PROJECT_ID_DEV" >> .env
+            echo "REACT_APP_SEGMENT_API_WRITE_KEY=$REACT_APP_SEGMENT_API_WRITE_KEY" >> .env
+            echo "DATA_API_KEY=$DATA_API_KEY" >> .env
+            echo "DATA_ENDPOINT=$DATA_ENDPOINT" >> .env
+            echo "SENTRY_ENDPOINT=$SENTRY_ENDPOINT" >> .env
+            echo "SENTRY_ENVIRONMENT=$SENTRY_ENVIRONMENT" >> .env
+            echo "WYRE_ENDPOINT=$WYRE_ENDPOINT" >> .env
+            echo "WYRE_ACCOUNT_ID=$WYRE_ACCOUNT_ID" >> .env
+            echo "RAINBOW_WYRE_MERCHANT_ID=$RAINBOW_WYRE_MERCHANT_ID" >> .env
+            echo "WYRE_ENDPOINT_TEST=$WYRE_ENDPOINT_TEST" >> .env
+            echo "WYRE_ACCOUNT_ID_TEST=$WYRE_ACCOUNT_ID_TEST" >> .env
+            echo "RAINBOW_WYRE_MERCHANT_ID_TEST=$RAINBOW_WYRE_MERCHANT_ID_TEST" >> .env
+            echo "ETHERSCAN_API_KEY=$ETHERSCAN_API_KEY" >> .env
+            echo "BRANCH_APP_DOMAIN=$BRANCH_APP_DOMAIN" >> .env
+            echo "BRANCH_KEY=$BRANCH_KEY" >> .env
+            echo "RAINBOW_MASTER_KEY=$RAINBOW_MASTER_KEY" >> .env
+            echo "DEV_SEEDS=\"$DEV_SEEDS\"" >> .env
+            echo "DEV_PKEY=\$DEV_PKEY" >> .env
+            echo "TEST_SEEDS=\"$TEST_SEEDS\"" >> .env
+            echo "IS_TESTING=$IS_TESTING" >> .env
+            echo "WYRE_TOKEN=$WYRE_TOKEN" >> .env
+            echo "WYRE_TOKEN_TEST=$WYRE_TOKEN_TEST" >> .env
+            echo "ENABLE_DEV_MODE=$ENABLE_DEV_MODE" >> .env
+            echo "GANACHE_URL_IOS=$GANACHE_URL_IOS" >> .env
+            echo "GANACHE_URL_ANDROID=$GANACHE_URL_ANDROID" >> .env
+            echo "ETH_GAS_STATION_API_KEY=$ETH_GAS_STATION_API_KEY" >> .env
+            echo "IMGIX_TOKEN=$IMGIX_TOKEN" >> .env
+            echo "IMGIX_DOMAIN=$IMGIX_DOMAIN" >> .env
+            echo "SCRIPT_NM=$SCRIPT_NM" >> .env
+            echo "CODEPUSH_KEY_RELEASE=$CODEPUSH_KEY_RELEASE" >> .env
+            echo "CODEPUSH_KEY_STAGING=$CODEPUSH_KEY_STAGING" >> .env
+            echo "GOOGLE_SERVICE_API_KEY=$GOOGLE_SERVICE_API_KEY" >> .env
+            echo "COVALENT_IOS_API_KEY=$COVALENT_IOS_API_KEY" >> .env
+            echo "COVALENT_ANDROID_API_KEY=$COVALENT_ANDROID_API_KEY" >> .env
+            echo "POLYGON_MAINNET_RPC=$POLYGON_MAINNET_RPC" >> .env
+            echo "ARBITRUM_MAINNET_RPC=$ARBITRUM_MAINNET_RPC" >> .env
+            echo "OPTIMISM_MAINNET_RPC=$OPTIMISM_MAINNET_RPC" >> .env
+            echo "OPENSEA_API_KEY=$OPENSEA_API_KEY" >> .env
+            echo "OPENSEA_RINKEBY_API_KEY=$OPENSEA_RINKEBY_API_KEY" >> .env
+            echo "NFT_API_KEY=$NFT_API_KEY" >> .env
+            echo "NFT_API_URL=$NFT_API_URL" >> .env
+            echo "ETHEREUM_MAINNET_RPC=$ETHEREUM_MAINNET_RPC" >> .env
+            echo "ETHEREUM_MAINNET_RPC_DEV=$ETHEREUM_MAINNET_RPC_DEV" >> .env
+            echo "ETHEREUM_KOVAN_RPC=$ETHEREUM_KOVAN_RPC" >> .env
+            echo "ETHEREUM_KOVAN_RPC_DEV=$ETHEREUM_KOVAN_RPC_DEV" >> .env
+            echo "ETHEREUM_ROPSTEN_RPC=$ETHEREUM_ROPSTEN_RPC" >> .env
+            echo "ETHEREUM_ROPSTEN_RPC_DEV=$ETHEREUM_ROPSTEN_RPC_DEV" >> .env
+            echo "ETHEREUM_RINKEBY_RPC=$ETHEREUM_RINKEBY_RPC" >> .env
+            echo "ETHEREUM_RINKEBY_RPC_DEV=$ETHEREUM_RINKEBY_RPC_DEV" >> .env
+            echo "ETHEREUM_GOERLI_RPC=$ETHEREUM_GOERLI_RPC" >> .env
+            echo "ETHEREUM_GOERLI_RPC_DEV=$ETHEREUM_GOERLI_RPC_DEV" >> .env
+            echo "RAINBOW_TOKEN_LIST_URL=$RAINBOW_TOKEN_LIST_URL" >>.env
+            echo "RAINBOW_LEAN_TOKEN_LIST_URL=$RAINBOW_LEAN_TOKEN_LIST_URL" >>.env
+            echo "HARDHAT_URL_IOS=$HARDHAT_URL_IOS" >>.env
+            echo "HARDHAT_URL_ANDROID=$HARDHAT_URL_ANDROID" >>.env
+            echo "COMPOUND_SUBGRAPH_ENDPOINT=$COMPOUND_SUBGRAPH_ENDPOINT" >>.env
+            echo "CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME" >>.env
+            echo "CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY" >>.env
+            echo "CLOUDINARY_API_SECRET=$CLOUDINARY_API_SECRET" >>.env
+            echo "PINATA_API_URL=$PINATA_API_URL" >>.env
+            echo "PINATA_API_KEY=$PINATA_API_KEY" >>.env
+            echo "PINATA_API_SECRET=$PINATA_API_SECRET" >>.env
+            echo "PINATA_GATEWAY_URL=$PINATA_GATEWAY_URL" >>.env
+            echo "CODE_PUSH_DEPLOYMENT_KEY_IOS=$CODE_PUSH_DEPLOYMENT_KEY_IOS_STAGING" >> .env
+            echo "APP_CENTER_READ_ONLY_TOKEN_ANDROID=$APP_CENTER_READ_ONLY_TOKEN_ANDROID" >> .env
+            echo "APP_CENTER_READ_ONLY_TOKEN_IOS=$APP_CENTER_READ_ONLY_TOKEN_IOS" >> .env
+            echo "OPTIMISM_KOVAN_RPC=$OPTIMISM_KOVAN_RPC" >> .env
+            echo "ARC_GRAPHQL_API_KEY=$ARC_GRAPHQL_API_KEY" >> .env
+            echo "METADATA_GRAPHQL_API_KEY=$METADATA_GRAPHQL_API_KEY" >> .env
+        title: Generate .env file for testing
   lint:
     before_run: []
     after_run: []
     steps:
-      - yarn@0.1.1:
-          inputs:
-            - command: lint:ci
-          title: Linting for Errors
-  detox_tests:
-    before_run: []
-    after_run: []
-    steps:
-      - script@1.1.6:
-          inputs:
-            - content: |-
-                #!/bin/bash
-
-                detox build --configuration ios.sim.release
-          title: Detox - Build Release App
-      - script@1.1.6:
-          inputs:
-            - content: |-
-                #!/bin/bash
-
-                detox test -R 1 --configuration ios.sim.release -l verbose
-          title: Detox - Run E2E Tests
-  detox_setup:
-    steps:
-      - yarn@0.1.1:
-          inputs:
-            - cache_local_deps: 'yes'
-            - command: global add detox-cli
-          title: Detox - Install CLI
-      - script:
-          inputs:
-            - content: |-
-                # Add cache directory to environment variable
-                envman add --key BREW_APPLESIMUTILS --value "$(brew --cellar)/applesimutils"
-                envman add --key BREW_OPT_APPLESIMUTILS --value "/usr/local/opt/applesimutils"
-          title: Detox- Set Env Path for caching deps
-      - script@1.1.6:
-          inputs:
-            - content: |-
-                #!/bin/bash
-                brew tap wix/brew
-          title: Detox - Setup
+    - yarn@0.1.2:
+        inputs:
+        - command: lint
+        title: Linting for Errors
   pods_setup:
     steps:
-      - cocoapods-install@1.11:
-          inputs:
-            - podfile_path: './ios/Podfile'
-  workflow_testflight:
+    - cocoapods-install@2.3:
+        inputs:
+        - podfile_path: ./ios/Podfile
+  push_build_tags: {}
+  set_yarn_cache_env_vars:
+    steps:
+    - script:
+        title: Yarn- Set Env Path for caching deps
+        inputs:
+        - content: |-
+            # Add cache directory to environment variable
+            envman add --key YARN_BITRISE_CACHE --value "$(yarn cache dir)"
+  tophat:
+    steps:
+    - script@1:
+        title: Tophatting
+        inputs:
+        - content: "message=$(git log -1 --format=%B)\nbranch_name=$BITRISE_GIT_BRANCH\n\necho $branch_name\n\nif [ \"$message\" != \"/preview\" ]\nthen\n    echo \"Not matching name\"\n    exit 0\nfi\n\ntarget_name=\"per-commit-preview-\"$(date +%s)\nios_app=\"rainbow-studio/rainbow-ios-codepush\"\nandroid_app=\"rainbow-studio/rainbow-android-codepush\"\n\nnpm install -g appcenter-cli\n\nres_ios=$(appcenter codepush deployment add -a $ios_app $target_name --token $APPCENTER_TOKEN_IOS)\nres_android=$(appcenter codepush deployment add -a $android_app $target_name --token $APPCENTER_TOKEN_ANDROID)\n\necho $res_ios\necho $res_android\n\nios_dep_key=$(echo $res_ios |  awk '{print $NF}')\nandroid_dep_key=$(echo $res_android |  awk '{print $NF}')\n\necho $ios_dep_key\necho $android_dep_key\n\nappcenter codepush release-react -a $ios_app -d $target_name --token $APPCENTER_TOKEN_IOS\n\n#SLACK IOS\npayload=\"{\n  \\\"channel\\\": \\\"#previews\\\",\n  \\\"username\\\": \\\"Over the rainbo update\\\",\n  \\\"icon_emoji\\\": \\\":rainbow2:\\\",\n  \\\"blocks\\\": [{\n      \\\"type\\\": \\\"section\\\",\n      \\\"text\\\": {\n    \t\t\t\\\"type\\\": \\\"mrkdwn\\\",\n    \t\t\t\\\"text\\\": \\\"iOS preview created for: *$branch_name* \\n https://rnbwapp.com/update-ios/$ios_dep_key\\\"\n    \t\t},\n      \\\"accessory\\\": {\n            \\\"type\\\": \\\"button\\\",\n            \\\"text\\\": {\n              \\\"type\\\": \\\"plain_text\\\",\n              \\\"text\\\": \\\"View QR code\\\",\n              \\\"emoji\\\": true\n            },\n            \\\"url\\\": \\\"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=update-ios-$ios_dep_key\\\",\n        },\n  }]\n}\"\n\ncurl -X POST -H \"Content-Type: application/json\" -d \"$payload\" $SLACK_WEBHOOK_URL\n\n\nappcenter codepush release-react -a $android_app -d $target_name --token $APPCENTER_TOKEN_ANDROID\n\n#SLACK ANDROID\npayload=\"{\n  \\\"channel\\\": \\\"#previews\\\",\n  \\\"username\\\": \\\"Over the rainbo update\\\",\n  \\\"icon_emoji\\\": \\\":rainbow2:\\\",\n  \\\"blocks\\\": [{\n      \\\"type\\\": \\\"section\\\",\n      \\\"text\\\": {\n    \t\t\t\\\"type\\\": \\\"mrkdwn\\\",\n    \t\t\t\\\"text\\\": \\\"Android preview created for branch: *$branch_name* \\n https://rnbwapp.com/update-android/$android_dep_key\\\"\n    \t\t},\n      \\\"accessory\\\": {\n            \\\"type\\\": \\\"button\\\",\n            \\\"text\\\": {\n              \\\"type\\\": \\\"plain_text\\\",\n              \\\"text\\\": \\\"View QR code\\\",\n              \\\"emoji\\\": true\n            },\n            \\\"url\\\": \\\"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=update-android-$android_dep_key\\\",\n        },\n  }]\n}\"\n\ncurl -X POST -H \"Content-Type: application/json\" -d \"$payload\" $SLACK_WEBHOOK_URL\n\n\nexit 0"
+  tophat-complete:
     before_run:
-      - generate_dot_env_testflight
-      - build_setup
-      - lint
-      - pods_setup
-    steps:
-      - certificate-and-profile-installer@1.10.3: {}
-      - fastlane@2.7:
-          inputs:
-            - work_dir: '$BITRISE_SOURCE_DIR/ios'
-            - lane: beta
-          title: Fastlane - Submit to Testflight
-      - xcode-project-info@2:
-          inputs:
-            - xcodeproj_path: ios/Rainbow.xcodeproj
-            - info_plist_path: ios/Rainbow/Info.plist
-          title: Expose build number to ENV vars
-      - yarn@0.1.1:
-          inputs:
-            - command: global add @sentry/cli
-          title: Install Sentry CLI
-      - fastlane@2.7:
-          inputs:
-            - work_dir: '$BITRISE_SOURCE_DIR/ios'
-            - lane: refresh_dsyms
-          title: Fastlane - Upload debug symbols and sourcemaps
-      - script@1.1.6:
-          title: Expose version number to ENV vars
-          inputs:
-            - content: |+
-                #!/bin/bash
-                set -ex
-
-                # get the values
-                INFO_XCODE_PROJ=./ios/Rainbow.xcodeproj/project.pbxproj
-                version=$(cat "${INFO_XCODE_PROJ}" | grep "MARKETING_VERSION" | head -n 1 | sed  's/[^0-9\.]//g')
-
-                # expose the env vars for subsequent steps
-                envman add --key RAINBOW_VERSION --value "${version}"
-
-      - slack@3:
-          inputs:
-            - webhook_url: '$SLACK_WEBHOOK_URL'
-            - buttons: 'View Build|${BITRISE_BUILD_URL}'
-            - fields: |
-                App|${BITRISE_APP_TITLE}
-                Branch|${BITRISE_GIT_BRANCH}
-                Workflow|${BITRISE_TRIGGERED_WORKFLOW_ID}
-                Version|${RAINBOW_VERSION} (${XPI_BUILD})
-            - pretext: '*Build Submitted to Testflight!*'
-      - cache-push@2: {}
+    - generate_dot_env_testflight
+    - apply_rainbow_internals
+    - build_setup_no_audit
+    - tophat-no-commit-check
     envs:
-      - opts:
-          is_expand: false
-        SENTRY_ENVIRONMENT: Release
-      - opts:
-          is_expand: false
-        IS_TESTING: 'false'
-      - opts:
-          is_expand: false
-        ENABLE_DEV_MODE: '0'
-      - opts:
-          is_expand: false
-        GANACHE_URL: http://127.0.0.1:7545
-  workflow_tests:
+    - opts:
+        is_expand: false
+      SENTRY_ENVIRONMENT: Release
+    - opts:
+        is_expand: false
+      IS_TESTING: "false"
+    - opts:
+        is_expand: false
+      ENABLE_DEV_MODE: "0"
+    - opts:
+        is_expand: false
+      GANACHE_URL: http://127.0.0.1:7545
+    meta:
+      bitrise.io:
+        stack: osx-xcode-13.1.x
+        machine_type_id: g2-m1.4core
+  tophat-no-commit-check:
+    steps:
+    - script@1:
+        title: Tophatting
+        inputs:
+        - content: "message=$(git log -1 --format=%B)\nbranch_name=$BITRISE_GIT_BRANCH\n\necho $branch_name\n\ntarget_name=\"per-commit-preview-\"$(date +%s)\nios_app=\"rainbow-studio/rainbow-ios-codepush\"\nandroid_app=\"rainbow-studio/rainbow-android-codepush\"\n\nnpm install -g appcenter-cli\n\nres_ios=$(appcenter codepush deployment add -a $ios_app $target_name --token $APPCENTER_TOKEN_IOS)\nres_android=$(appcenter codepush deployment add -a $android_app $target_name --token $APPCENTER_TOKEN_ANDROID)\n\necho $res_ios\necho $res_android\n\nios_dep_key=$(echo $res_ios |  awk '{print $NF}')\nandroid_dep_key=$(echo $res_android |  awk '{print $NF}')\n\necho $ios_dep_key\necho $android_dep_key\n\nappcenter codepush release-react -a $ios_app -d $target_name --token $APPCENTER_TOKEN_IOS --extra-bundler-option=\"--minify=false\"\nstatus=`echo $?`\n\n#SLACK IOS\nif [ \"$status\" -eq \"3\" ]\nthen\n    payload=\"{\n        \\\"channel\\\": \\\"#previews\\\",\n        \\\"username\\\": \\\"Over the rainbo update\\\",\n        \\\"icon_emoji\\\": \\\":rainbow2:\\\",\n        \\\"blocks\\\": [{\n            \\\"type\\\": \\\"section\\\",\n            \\\"text\\\": {\n                \\\"type\\\": \\\"mrkdwn\\\",\n                \\\"text\\\": \\\"iOS preview for *$branch_name* failed\\\"\n            },\n        }]\n    }\"\n    curl -X POST -H \"Content-Type: application/json\" -d \"$payload\" $SLACK_WEBHOOK_URL\nelse\n    payload=\"{\n    \\\"channel\\\": \\\"#previews\\\",\n    \\\"username\\\": \\\"Over the rainbo update\\\",\n    \\\"icon_emoji\\\": \\\":rainbow2:\\\",\n    \\\"blocks\\\": [{\n        \\\"type\\\": \\\"section\\\",\n        \\\"text\\\": {\n                    \\\"type\\\": \\\"mrkdwn\\\",\n                    \\\"text\\\": \\\"iOS preview created for: *$branch_name* \\n https://rnbwapp.com/update-ios/$ios_dep_key\\\"\n                },\n        \\\"accessory\\\": {\n                \\\"type\\\": \\\"button\\\",\n                \\\"text\\\": {\n                \\\"type\\\": \\\"plain_text\\\",\n                \\\"text\\\": \\\"View QR code\\\",\n                \\\"emoji\\\": true\n                },\n                \\\"url\\\": \\\"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=update-ios-$ios_dep_key\\\",\n            },\n    }]\n    }\"\n\n    curl -X POST -H \"Content-Type: application/json\" -d \"$payload\" $SLACK_WEBHOOK_URL\nfi\n\n\nappcenter codepush release-react -a $android_app -d $target_name --token $APPCENTER_TOKEN_ANDROID --extra-bundler-option=\"--minify=false\"\nstatus=`echo $?`\n\nif [ \"$status\" -eq \"3\" ]\nthen\n    payload=\"{\n        \\\"channel\\\": \\\"#previews\\\",\n        \\\"username\\\": \\\"Over the rainbo update\\\",\n        \\\"icon_emoji\\\": \\\":rainbow2:\\\",\n        \\\"blocks\\\": [{\n            \\\"type\\\": \\\"section\\\",\n            \\\"text\\\": {\n                \\\"type\\\": \\\"mrkdwn\\\",\n                \\\"text\\\": \\\"Android preview for *$branch_name* failed\\\"\n            },\n        }]\n    }\"\n    curl -X POST -H \"Content-Type: application/json\" -d \"$payload\" $SLACK_WEBHOOK_URL\nelse\n#SLACK ANDROID\npayload=\"{\n  \\\"channel\\\": \\\"#previews\\\",\n  \\\"username\\\": \\\"Over the rainbo update\\\",\n  \\\"icon_emoji\\\": \\\":rainbow2:\\\",\n  \\\"blocks\\\": [{\n      \\\"type\\\": \\\"section\\\",\n      \\\"text\\\": {\n    \t\t\t\\\"type\\\": \\\"mrkdwn\\\",\n    \t\t\t\\\"text\\\": \\\"Android preview created for branch: *$branch_name* \\n https://rnbwapp.com/update-android/$android_dep_key\\\"\n    \t\t},\n      \\\"accessory\\\": {\n            \\\"type\\\": \\\"button\\\",\n            \\\"text\\\": {\n              \\\"type\\\": \\\"plain_text\\\",\n              \\\"text\\\": \\\"View QR code\\\",\n              \\\"emoji\\\": true\n            },\n            \\\"url\\\": \\\"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=update-android-$android_dep_key\\\",\n        },\n  }]\n}\"\n\ncurl -X POST -H \"Content-Type: application/json\" -d \"$payload\" $SLACK_WEBHOOK_URL\nfi\n\n\nexit 0"
+  update_token_list:
+    steps:
+    - yarn@0:
+        title: Update token list & metadata
+        inputs:
+        - command: update-tokens
+    before_run: []
+    after_run: []
+  upload_android_and_ios_builds:
+    before_run: []
+    after_run:
+    - workflow_testflight
+    steps:
+    - activate-ssh-key@4: {}
+    - script@1:
+        inputs:
+        - content: |-
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # make pipelines' return status equal the last command to exit with a non-zero status, or zero if all commands exit successfully
+            set -o pipefail
+            # debug log
+            set -x
+
+            git clone -b $BITRISE_GIT_BRANCH git@github.com:rainbow-me/rainbow.git $BITRISE_SOURCE_DIR
+            cd $BITRISE_SOURCE_DIR
+            git tag ios-beta-$BITRISE_BUILD_NUMBER
+            git tag android-beta-$BITRISE_BUILD_NUMBER
+            git push origin ios-beta-$BITRISE_BUILD_NUMBER
+            git push origin android-beta-$BITRISE_BUILD_NUMBER
+  workflow_audit:
     before_run:
-      - generate_dot_env_testing
-      - build_setup
-      - lint
-      - pods_setup
-      - detox_setup
-      - detox_tests
+    - generate_dot_env_testing
+    - apply_rainbow_internals
+    - build_setup
     envs:
-      - opts:
-          is_expand: false
-        SENTRY_ENVIRONMENT: LocalRelease
-      - opts:
-          is_expand: false
-        IS_TESTING: 'true'
-      - opts:
-          is_expand: false
-        ENABLE_DEV_MODE: '1'
-      - opts:
-          is_expand: false
-        GANACHE_URL: http://127.0.0.1:7545
+    - opts:
+        is_expand: false
+      SENTRY_ENVIRONMENT: LocalRelease
+    - opts:
+        is_expand: false
+      IS_TESTING: "true"
+    - opts:
+        is_expand: false
+      ENABLE_DEV_MODE: "1"
+    - opts:
+        is_expand: false
+      GANACHE_URL_IOS: http://127.0.0.1:7545
+    - opts:
+        is_expand: false
+      GANACHE_URL_ANDROID: http://10.0.2.2:7545
+    description: SANDBOX
     steps:
-      - slack@3:
-          inputs:
-            - channel: '#bitrise'
-            - from_username: Bitrise Bot
-            - pretext: '* All Tests Passed! *'
-            - channel_on_error: '#bitrise'
-            - text_on_error: Build failed
-            - emoji_on_error: ''
-            - from_username_on_error: Bitrise bot
-            - buttons: |
-                View Pull Request|${BITRISEIO_PULL_REQUEST_REPOSITORY_URL}
-                View Build|${BITRISE_BUILD_URL}
-            - webhook_url: '$SLACK_WEBHOOK_URL'
-      - cache-push@2:
-          inputs:
-            - cache_paths: |
-                $BITRISE_CACHE_DIR
-                # Add the following two to cache_path
-                $BREW_APPLESIMUTILS
-                $BREW_OPT_APPLESIMUTILS
-  generate_dot_env_testing:
+    - slack@3:
+        inputs:
+        - channel: '#bitrise'
+        - from_username: Bitrise Bot
+        - pretext: '* All Tests Passed! *'
+        - channel_on_error: '#bitrise'
+        - text_on_error: Build failed
+        - emoji_on_error: ""
+        - from_username_on_error: Bitrise bot
+        - buttons: |
+            View Pull Request|${BITRISEIO_PULL_REQUEST_REPOSITORY_URL}
+            View Build|${BITRISE_BUILD_URL}
+        - webhook_url: $SLACK_WEBHOOK_URL
+  workflow_google_play:
     steps:
-      - script@1.1.6:
-          inputs:
-            - content: |+
-                #!/usr/bin/env bash
-                # fail if any commands fails
-                set -e
-                # debug log
-                set -x
+    - script@1:
+        inputs:
+        - content: "#!/usr/bin/env bash\n# fail if any commands fails\nset -e\n# debug log\nset -x\n\n# write your script here\ntouch .env\necho \"DATA_ORIGIN=$DATA_ORIGIN\" >> .env\necho \"INFURA_PROJECT_ID=$INFURA_PROJECT_ID\" >> .env\necho \"INFURA_PROJECT_ID_DEV=$INFURA_PROJECT_ID_DEV\" >> .env\necho \"REACT_APP_SEGMENT_API_WRITE_KEY=$REACT_APP_SEGMENT_API_WRITE_KEY\" >> .env\necho \"DATA_API_KEY=$DATA_API_KEY\" >> .env\necho \"DATA_ENDPOINT=$DATA_ENDPOINT\" >> .env\necho \"SENTRY_ENDPOINT=$SENTRY_ENDPOINT\" >> .env\necho \"SENTRY_ENVIRONMENT=LocalRelease\" >> .env\necho \"WYRE_ENDPOINT=$WYRE_ENDPOINT\" >> .env\necho \"WYRE_ACCOUNT_ID=$WYRE_ACCOUNT_ID\" >> .env\necho \"RAINBOW_WYRE_MERCHANT_ID=$RAINBOW_WYRE_MERCHANT_ID\" >> .env\necho \"WYRE_ENDPOINT_TEST=$WYRE_ENDPOINT_TEST\" >> .env\necho \"WYRE_ACCOUNT_ID_TEST=$WYRE_ACCOUNT_ID_TEST\" >> .env\necho \"RAINBOW_WYRE_MERCHANT_ID_TEST=$RAINBOW_WYRE_MERCHANT_ID_TEST\" >> .env\necho \"ETHERSCAN_API_KEY=$ETHERSCAN_API_KEY\" >> .env\necho \"BRANCH_APP_DOMAIN=$BRANCH_APP_DOMAIN\" >> .env\necho \"BRANCH_KEY=$BRANCH_KEY\" >> .env\necho \"RAINBOW_MASTER_KEY=$RAINBOW_MASTER_KEY\" >> .env\necho \"DEV_PKEY=$DEV_PKEY_PROD\" >> .env\necho \"WYRE_TOKEN=$WYRE_TOKEN\" >> .env\necho \"WYRE_TOKEN_TEST=$WYRE_TOKEN_TEST\" >> .env\necho \"ENABLE_DEV_MODE=0\" >> .env\necho \"ETH_GAS_STATION_API_KEY=$ETH_GAS_STATION_API_KEY\" >> .env\necho \"IMGIX_TOKEN=$IMGIX_TOKEN\" >> .env\necho \"IMGIX_DOMAIN=$IMGIX_DOMAIN\" >> .env\necho \"DEBUG_NM=NO\" >> .env\necho \"CODEPUSH_KEY_RELEASE=$CODEPUSH_KEY_RELEASE\" >> .env\necho \"CODEPUSH_KEY_STAGING=$CODEPUSH_KEY_STAGING\" >> .env\necho \"CODE_PUSH_DEPLOYMENT_KEY_ANDROID=$CODE_PUSH_DEPLOYMENT_KEY_ANDROID\" >> .env \necho \"GOOGLE_SERVICE_API_KEY=$GOOGLE_SERVICE_API_KEY\" >> .env\necho \"COVALENT_IOS_API_KEY=$COVALENT_IOS_API_KEY\" >> .env\necho \"COVALENT_ANDROID_API_KEY=$COVALENT_ANDROID_API_KEY\" >> .env\necho \"POLYGON_MAINNET_RPC=$POLYGON_MAINNET_RPC\" >> .env\necho \"ARBITRUM_MAINNET_RPC=$ARBITRUM_MAINNET_RPC\" >> .env\necho \"OPTIMISM_MAINNET_RPC=$OPTIMISM_MAINNET_RPC\" >> .env\necho \"OPENSEA_API_KEY=$OPENSEA_API_KEY\" >> .env\necho \"OPENSEA_RINKEBY_API_KEY=$OPENSEA_RINKEBY_API_KEY\" >> .env\necho \"NFT_API_KEY=$NFT_API_KEY\" >> .env\necho \"NFT_API_URL=$NFT_API_URL\" >> .env\necho \"ETHEREUM_MAINNET_RPC=$ETHEREUM_MAINNET_RPC\" >> .env\necho \"ETHEREUM_MAINNET_RPC_DEV=$ETHEREUM_MAINNET_RPC_DEV\" >> .env\necho \"ETHEREUM_KOVAN_RPC=$ETHEREUM_KOVAN_RPC\" >> .env\necho \"ETHEREUM_KOVAN_RPC_DEV=$ETHEREUM_KOVAN_RPC_DEV\" >> .env\necho \"ETHEREUM_ROPSTEN_RPC=$ETHEREUM_ROPSTEN_RPC\" >> .env\necho \"ETHEREUM_ROPSTEN_RPC_DEV=$ETHEREUM_ROPSTEN_RPC_DEV\" >> .env\necho \"ETHEREUM_RINKEBY_RPC=$ETHEREUM_RINKEBY_RPC\" >> .env\necho \"ETHEREUM_RINKEBY_RPC_DEV=$ETHEREUM_RINKEBY_RPC_DEV\" >> .env\necho \"ETHEREUM_GOERLI_RPC=$ETHEREUM_GOERLI_RPC\" >> .env\necho \"ETHEREUM_GOERLI_RPC_DEV=$ETHEREUM_GOERLI_RPC_DEV\" >> .env\necho \"RAINBOW_TOKEN_LIST_URL=$RAINBOW_TOKEN_LIST_URL\" >>.env\necho \"HARDHAT_URL_IOS=$HARDHAT_URL_IOS\" >>.env\necho \"HARDHAT_URL_ANDROID=$HARDHAT_URL_ANDROID\" >>.env\necho \"COMPOUND_SUBGRAPH_ENDPOINT=$COMPOUND_SUBGRAPH_ENDPOINT\" >>.env\necho \"CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME\" >>.env\necho \"CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY\" >>.env\necho \"CLOUDINARY_API_SECRET=$CLOUDINARY_API_SECRET\" >>.env\necho \"PINATA_API_URL=$PINATA_API_URL\" >>.env\necho \"PINATA_API_KEY=$PINATA_API_KEY\" >>.env\necho \"PINATA_API_SECRET=$PINATA_API_SECRET\" >>.env\necho \"PINATA_GATEWAY_URL=$PINATA_GATEWAY_URL\" >>.env\necho \"CODE_PUSH_DEPLOYMENT_KEY_IOS=$CODE_PUSH_DEPLOYMENT_KEY_IOS\" >> .env\necho \"APP_CENTER_READ_ONLY_TOKEN_ANDROID=$APP_CENTER_READ_ONLY_TOKEN_ANDROID\" >> .env\necho \"APP_CENTER_READ_ONLY_TOKEN_IOS=$APP_CENTER_READ_ONLY_TOKEN_IOS\" >> .env"
+        title: Generate .env
+    - script@1:
+        inputs:
+        - content: |-
+            #!/bin/bash
+            jenv add /usr/local/opt/openjdk/
+            jenv global 15
+            export JAVA_HOME="$(jenv prefix)"
+            envman add --key JAVA_HOME --value "$(jenv prefix)"
+            echo "openjdk-15 installed"
+        title: Install JVM 15
+    - activate-ssh-key@4:
+        run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
+    - git-clone@6: {}
+    - cache-pull@2: {}
+    - install-missing-android-tools@3: {}
+    - nvm@1:
+        inputs:
+        - node_version: "14"
+    - script@1:
+        inputs:
+        - content: |
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
 
-                # write your script here
-                touch .env
-                echo "DATA_ORIGIN=$DATA_ORIGIN" >> .env
-                echo "INFURA_PROJECT_ID=$INFURA_PROJECT_ID" >> .env
-                echo "INFURA_PROJECT_ID_DEV=$INFURA_PROJECT_ID_DEV" >> .env
-                echo "REACT_APP_SEGMENT_API_WRITE_KEY=$REACT_APP_SEGMENT_API_WRITE_KEY" >> .env
-                echo "DATA_API_KEY=$DATA_API_KEY" >> .env
-                echo "DATA_ENDPOINT=$DATA_ENDPOINT" >> .env
-                echo "SENTRY_ENDPOINT=$SENTRY_ENDPOINT" >> .env
-                echo "SENTRY_ENVIRONMENT=$SENTRY_ENVIRONMENT" >> .env
-                echo "WYRE_ENDPOINT=$WYRE_ENDPOINT" >> .env
-                echo "WYRE_ACCOUNT_ID=$WYRE_ACCOUNT_ID" >> .env
-                echo "RAINBOW_WYRE_MERCHANT_ID=$RAINBOW_WYRE_MERCHANT_ID" >> .env
-                echo "WYRE_ENDPOINT_TEST=$WYRE_ENDPOINT_TEST" >> .env
-                echo "WYRE_ACCOUNT_ID_TEST=$WYRE_ACCOUNT_ID_TEST" >> .env
-                echo "RAINBOW_WYRE_MERCHANT_ID_TEST=$RAINBOW_WYRE_MERCHANT_ID_TEST" >> .env
-                echo "ETHERSCAN_API_KEY=$ETHERSCAN_API_KEY" >> .env
-                echo "BRANCH_APP_DOMAIN=$BRANCH_APP_DOMAIN" >> .env
-                echo "BRANCH_KEY=$BRANCH_KEY" >> .env
-                echo "RAINBOW_MASTER_KEY=$RAINBOW_MASTER_KEY" >> .env
-                echo "DEV_SEEDS=\"$DEV_SEEDS\"" >> .env
-                echo "DEV_PKEY=\$DEV_PKEY" >> .env
-                echo "TEST_SEEDS=\"$TEST_SEEDS\"" >> .env
-                echo "IS_TESTING=$IS_TESTING" >> .env
-                echo "WYRE_TOKEN=$WYRE_TOKEN" >> .env
-                echo "WYRE_TOKEN_TEST=$WYRE_TOKEN_TEST" >> .env
-                echo "ENABLE_DEV_MODE=$ENABLE_DEV_MODE" >> .env
-                echo "GANACHE_URL=$GANACHE_URL" >> .env
-                echo "ETH_GAS_STATION_API_KEY=$ETH_GAS_STATION_API_KEY" >> .env
+            # Yarn sucks and running a couple of times does the trick.
+            # See https://github.com/yarnpkg/yarn/issues/7212 before yelling at me
 
+            yarn setup || yarn setup || yarn setup
+        title: Install dependencies via Yarn
+    - file-downloader@1:
+        inputs:
+        - source: $BITRISEIO_ANDROID_KEYSTORE_URL
+        - destination: $BITRISE_SOURCE_DIR/android/keystores/rainbow-key.keystore
+        title: Copy android keystore
+    - file-downloader@1:
+        inputs:
+        - source: $BITRISEIO_ANDROID_GOOGLE_PLAY_PRIVATE_KEY_URL
+        - destination: $BITRISE_SOURCE_DIR/android/rainbow-google-play-key.json
+        title: Copy google play private key
+    - script@1:
+        inputs:
+        - content: |+
+            #!/usr/bin/env bash
+            # fail if any commands fails
+            set -e
+            # debug log
+            set -x
 
+            # write your script here
+            echo '
+            {
+                "project_info": {
+                  "project_number": "498863290995",
+                  "firebase_url": "https://rainbow-me.firebaseio.com",
+                  "project_id": "rainbow-me",
+                  "storage_bucket": "rainbow-me.appspot.com"
+                },
+                "client": [
+                  {
+                    "client_info": {
+                      "mobilesdk_app_id": "1:498863290995:android:88d6b458fe86322e770806",
+                      "android_client_info": {
+                        "package_name": "me.rainbow"
+                      }
+                    },
+                    "oauth_client": [
+                      {
+                        "client_id": "498863290995-q6rjonkrm1s3njp6h63ro40qkdooi74o.apps.googleusercontent.com",
+                        "client_type": 3
+                      }
+                    ],
+                    "api_key": [
+                      {
+                        "current_key": "AIzaSyCSHCCcHYQ8ArLdNMTnlr7tHFZMB5SJr_k"
+                      }
+                    ],
+                    "services": {
+                      "appinvite_service": {
+                        "other_platform_oauth_client": [
+                          {
+                            "client_id": "498863290995-q6rjonkrm1s3njp6h63ro40qkdooi74o.apps.googleusercontent.com",
+                            "client_type": 3
+                          },
+                          {
+                            "client_id": "498863290995-9p1q0khft2ducvla1hmjgc7j083s662i.apps.googleusercontent.com",
+                            "client_type": 2,
+                            "ios_info": {
+                              "bundle_id": "me.rainbow"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ],
+                "configuration_version": "1"
+              }
+            ' >> ./android/app/google-services.json
 
-          title: Generate .env file for testing
+        title: Add google--services.json
+    - fastlane@3:
+        inputs:
+        - work_dir: $BITRISE_SOURCE_DIR/android
+        - lane: android internal
+        is_always_run: true
+    before_run: []
+    after_run: []
+    envs:
+    - opts:
+        is_expand: false
+      RAINBOW_KEY_ANDROID_PASSWORD: hnSuNeVf^ud8D4Z7sSrLJ*esTQ$*hV
+    - opts:
+        is_expand: false
+      GRADLEW_PATH: ./android/gradlew
   workflow_remote_access:
     before_run: []
     envs:
-      - opts:
-          is_expand: false
-        SENTRY_ENVIRONMENT: LocalRelease
-    after_run: []
-    steps:
-      - activate-ssh-key@4.0.5: {}
-      - git-clone@4.0.18: {}
-      - script@1.1.6:
-          inputs:
-            - content: sleep 2700
-  generate_dot_env_testflight:
-    steps:
-      - script@1.1.6:
-          inputs:
-            - content: |+
-                #!/usr/bin/env bash
-                # fail if any commands fails
-                set -e
-                # debug log
-                set -x
-
-                # write your script here
-                touch .env
-                echo "DATA_ORIGIN=$DATA_ORIGIN" >> .env
-                echo "INFURA_PROJECT_ID=$INFURA_PROJECT_ID" >> .env
-                echo "INFURA_PROJECT_ID_DEV=$INFURA_PROJECT_ID_DEV" >> .env
-                echo "REACT_APP_SEGMENT_API_WRITE_KEY=$REACT_APP_SEGMENT_API_WRITE_KEY" >> .env
-                echo "DATA_API_KEY=$DATA_API_KEY" >> .env
-                echo "DATA_ENDPOINT=$DATA_ENDPOINT" >> .env
-                echo "SENTRY_ENDPOINT=$SENTRY_ENDPOINT" >> .env
-                echo "SENTRY_ENVIRONMENT=$SENTRY_ENVIRONMENT" >> .env
-                echo "WYRE_ENDPOINT=$WYRE_ENDPOINT" >> .env
-                echo "WYRE_ACCOUNT_ID=$WYRE_ACCOUNT_ID" >> .env
-                echo "RAINBOW_WYRE_MERCHANT_ID=$RAINBOW_WYRE_MERCHANT_ID" >> .env
-                echo "WYRE_ENDPOINT_TEST=$WYRE_ENDPOINT_TEST" >> .env
-                echo "WYRE_ACCOUNT_ID_TEST=$WYRE_ACCOUNT_ID_TEST" >> .env
-                echo "RAINBOW_WYRE_MERCHANT_ID_TEST=$RAINBOW_WYRE_MERCHANT_ID_TEST" >> .env
-                echo "ETHERSCAN_API_KEY=$ETHERSCAN_API_KEY" >> .env
-                echo "BRANCH_APP_DOMAIN=$BRANCH_APP_DOMAIN" >> .env
-                echo "BRANCH_KEY=$BRANCH_KEY" >> .env
-                echo "RAINBOW_MASTER_KEY=$RAINBOW_MASTER_KEY" >> .env
-                echo "DEV_SEEDS=\"$DEV_SEEDS_PROD\"" >> .env
-                echo "DEV_PKEY=$DEV_PKEY_PROD" >> .env
-                echo "IS_TESTING=$IS_TESTING" >> .env
-                echo "WYRE_TOKEN=$WYRE_TOKEN" >> .env
-                echo "WYRE_TOKEN_TEST=$WYRE_TOKEN_TEST" >> .env
-                echo "ENABLE_DEV_MODE=$ENABLE_DEV_MODE" >> .env
-                echo "GANACHE_URL=$GANACHE_URL" >> .env
-                echo "ETH_GAS_STATION_API_KEY=$ETH_GAS_STATION_API_KEY" >> .env
-
-          title: Generate .env file for testflight
-app:
-  envs:
     - opts:
         is_expand: false
-      SKIP_FLIPPER: 'true'
+      SENTRY_ENVIRONMENT: LocalRelease
+    after_run: []
+    steps:
+    - activate-ssh-key@4.0.5: {}
+    - git-clone@4.0.18: {}
+    - script@1.1.6:
+        inputs:
+        - content: sleep 2700
+  workflow_testflight:
+    before_run:
+    - generate_dot_env_testflight
+    - apply_rainbow_internals
+    - build_setup
+    - update_token_list
+    - check_dot_env
+    - pods_setup
+    - generate_appstore_connect_key
+    steps:
+    - script@1:
+        inputs:
+        - content: |
+            #!/usr/bin/env bash
+            # debug log
+            set -x
+
+            # write your script here
+            tmpfile=$(mktemp /tmp/wwdr-cert.cer)
+            curl -f -o $tmpfile https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer && security import $tmpfile /Users/vagrant/Library/Keychains/login.keychain-db
+        title: Install Apple's WWDR Cert
+    - certificate-and-profile-installer@1: {}
+    - fastlane@3:
+        inputs:
+        - work_dir: $BITRISE_SOURCE_DIR/ios
+        - lane: beta
+        title: Fastlane - Submit to Testflight
+    - xcode-project-info@2:
+        inputs:
+        - xcodeproj_path: ios/Rainbow.xcodeproj
+        - info_plist_path: ios/Rainbow/Info.plist
+        title: Expose build number to ENV vars
+    - fastlane@3:
+        inputs:
+        - work_dir: $BITRISE_SOURCE_DIR/ios
+        - lane: refresh_dsyms
+        title: Fastlane - Upload debug symbols to Crashlytics
+    - script@1.2:
+        title: Expose version number to ENV vars
+        inputs:
+        - content: |+
+            #!/bin/bash
+            set -ex
+
+            # get the values
+            INFO_XCODE_PROJ=./ios/Rainbow.xcodeproj/project.pbxproj
+            version=$(cat "${INFO_XCODE_PROJ}" | grep "MARKETING_VERSION" | head -n 1 | sed  's/[^0-9\.]//g')
+
+            # expose the env vars for subsequent steps
+            envman add --key RAINBOW_VERSION --value "${version}"
+
+    - slack@4.0:
+        inputs:
+        - webhook_url: $SLACK_WEBHOOK_URL
+        - buttons: |
+            View Build|${BITRISE_BUILD_URL}
+        - fields: |
+            App|${BITRISE_APP_TITLE}
+            Branch|${BITRISE_GIT_BRANCH}
+            Workflow|${BITRISE_TRIGGERED_WORKFLOW_ID}
+            Version|${RAINBOW_VERSION} (${XPI_BUILD})
+        - pretext: '*Build Submitted to Testflight!*'
+    - cache-push@2:
+        inputs:
+        - is_debug_mode: "true"
+        - cache_paths: |
+            $BITRISE_CACHE_DIR
+            $BREW_APPLESIMUTILS
+            $BREW_OPT_APPLESIMUTILS
+            $YARN_BITRISE_CACH
+            ${BITRISE_SOURCE_DIR}/ios/build
+            ${BITRISE_SOURCE_DIR}/node_modules
+            ~/.nvm
+            $TMPDIR/haste-map-*
+    envs:
+    - opts:
+        is_expand: false
+      SENTRY_ENVIRONMENT: Release
+    - opts:
+        is_expand: false
+      IS_TESTING: "false"
+    - opts:
+        is_expand: false
+      ENABLE_DEV_MODE: "0"
+    - opts:
+        is_expand: false
+      GANACHE_URL: http://127.0.0.1:7545
+  workflow_tests:
+    before_run:
+    - generate_dot_env_testing
+    - apply_rainbow_internals
+    - build_setup
+    - lint
+    - tophat
+    - detox_setup
+    - pods_setup
+    - set_yarn_cache_env_vars
+    - detox_ios_build
+    - cache_push
+    - detox_ios_test
+    envs:
+    - opts:
+        is_expand: false
+      SENTRY_ENVIRONMENT: LocalRelease
+    - opts:
+        is_expand: false
+      IS_TESTING: "true"
+    - opts:
+        is_expand: false
+      ENABLE_DEV_MODE: "1"
+    - opts:
+        is_expand: false
+      GANACHE_URL_IOS: http://127.0.0.1:7545
+    - opts:
+        is_expand: false
+      GANACHE_URL_ANDROID: http://10.0.2.2:7545
+    description: SANDBOX
+    steps:
+    - slack@3:
+        inputs:
+        - channel: '#bitrise'
+        - from_username: Bitrise Bot
+        - pretext: '* All Tests Passed! *'
+        - channel_on_error: '#bitrise'
+        - text_on_error: Build failed
+        - emoji_on_error: ""
+        - from_username_on_error: Bitrise bot
+        - buttons: |
+            View Pull Request|${BITRISEIO_PULL_REQUEST_REPOSITORY_URL}
+            View Build|${BITRISE_BUILD_URL}
+        - webhook_url: $SLACK_WEBHOOK_URL
+  workflow_tests_android:
+    before_run:
+    - create_android_emulator
+    - generate_dot_env_testing
+    - apply_rainbow_internals
+    - build_setup_android
+    - detox_setup
+    - detox_test_android
+    envs:
+    - opts:
+        is_expand: false
+      SENTRY_ENVIRONMENT: LocalRelease
+    - opts:
+        is_expand: false
+      IS_TESTING: "true"
+    - opts:
+        is_expand: false
+      ENABLE_DEV_MODE: "1"
+    - opts:
+        is_expand: false
+      GANACHE_URL_IOS: http://127.0.0.1:7545
+    - opts:
+        is_expand: false
+      GANACHE_URL_ANDROID: http://10.0.2.2:7545
+    steps:
+    - slack@3:
+        inputs:
+        - channel: '#bitrise'
+        - from_username: Bitrise Bot
+        - pretext: '* All Tests Passed! *'
+        - channel_on_error: '#bitrise'
+        - text_on_error: Build failed
+        - emoji_on_error: ""
+        - from_username_on_error: Bitrise bot
+        - buttons: |
+            View Pull Request|${BITRISEIO_PULL_REQUEST_REPOSITORY_URL}
+            View Build|${BITRISE_BUILD_URL}
+        - webhook_url: $SLACK_WEBHOOK_URL
+    - cache-push@2:
+        inputs:
+        - cache_paths: |
+            $BITRISE_CACHE_DIR
+            # Add the following two to cache_path
+            $BREW_APPLESIMUTILS
+            $BREW_OPT_APPLESIMUTILS
+    description: SANDBOX
+  workflow_tophat:
+    before_run:
+    - generate_dot_env_testing
+    - apply_rainbow_internals
+    - build_setup_tophat
+    - tophat
+    envs:
+    - opts:
+        is_expand: false
+      SENTRY_ENVIRONMENT: LocalRelease
+    - opts:
+        is_expand: false
+      IS_TESTING: "true"
+    - opts:
+        is_expand: false
+      ENABLE_DEV_MODE: "1"
+    - opts:
+        is_expand: false
+      GANACHE_URL_IOS: http://127.0.0.1:7545
+    - opts:
+        is_expand: false
+      GANACHE_URL_ANDROID: http://10.0.2.2:7545
+    description: SANDBOX
+app:
+  envs:
+  - opts:
+      is_expand: false
+    SKIP_FLIPPER: "true"
+meta:
+  bitrise.io:
+    stack: osx-xcode-15.2.x
+    machine_type_id: g2-m1.4core
