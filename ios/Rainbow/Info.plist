@@ -26,14 +26,14 @@
 				</array>
 			</dict>
 			<key>poolboy</key>
-    	<dict>
-        <key>UIPrerenderedIcon</key>
-        <false/>
-        <key>CFBundleIconFiles</key>
-        <array>
-          <string>poolboy</string>
-        </array>
-    	</dict>
+			<dict>
+				<key>UIPrerenderedIcon</key>
+				<false/>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>poolboy</string>
+				</array>
+			</dict>
 			<key>smol</key>
 			<dict>
 				<key>UIPrerenderedIcon</key>
@@ -185,14 +185,10 @@
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
-		<key>NSExceptionDomains</key>
-		<dict>
-			<key>localhost</key>
-			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-			</dict>
-		</dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>This lets you scan QR codes for connecting to dApps and discovering wallets</string>
@@ -240,7 +236,7 @@
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
-		<string>armv7</string>
+		<string>arm64</string>
 	</array>
 	<key>UIStatusBarHidden</key>
 	<true/>

@@ -1,3 +1,8 @@
+declare module '*.png';
+declare module '*.svg';
+declare module '*.jpeg';
+declare module '*.jpg';
+
 /**
  * @deprecated use `IS_ANDROID` from `@/env`
  */
