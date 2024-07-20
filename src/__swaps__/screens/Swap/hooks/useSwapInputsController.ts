@@ -821,8 +821,8 @@ export function useSwapInputsController({
 
     const prevInputNativeValue = inputValues.value.inputNativeValue;
 
-    const outputBalance = internalSelectedOutputAsset.value?.maxSwappableAmount;
-    const hasOutputBalance = outputBalance && greaterThanWorklet(outputBalance, 0);
+    const outputBalance = internalSelectedOutputAsset.value?.maxSwappableAmount || 0;
+    const hasOutputBalance = greaterThanWorklet(outputBalance, 0);
 
     let newInputAmount: string | number = greaterThanWorklet(inputNativePrice, 0) ? divWorklet(prevInputNativeValue, inputNativePrice) : 0;
     let newOutputAmount: string | number = 0;
@@ -830,7 +830,17 @@ export function useSwapInputsController({
     const exceedsMaxBalance = greaterThanWorklet(newInputAmount, inputBalance);
     const validBalanceIfAny = (hasInputBalance && !exceedsMaxBalance) || !hasInputBalance;
 
-    if (hasNonZeroInputPrice && hasNonZeroOutputPrice && validBalanceIfAny) {
+    // determine if we previously had max selected and can still set max on the new input
+    let setToMax = hasInputBalance && equalWorklet(percentageToSwap.value, 1);
+
+    /*
+    const prevInputAmount = inputValues.value.inputAmount;
+    if (hasInputBalance && hasOutputBalance && equalWorklet(prevInputAmount, outputBalance)) {
+      isNotMax = false;
+    }
+   */
+
+    if (hasNonZeroInputPrice && hasNonZeroOutputPrice && validBalanceIfAny && !setToMax) {
       // use previous native input amount if available
       const formattedInputAmount = Number(
         valueBasedDecimalFormatter({
