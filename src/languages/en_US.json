@@ -1978,7 +1978,7 @@
         "swapping": "Swapping",
         "select_token": "Select Token",
         "insufficient_funds": "Insufficient Funds",
-        "insufficient_gas": "Insufficient",
+        "insufficient": "Insufficient",
         "quote_error": "Quote Error"
       },
       "aggregators": {
