@@ -1,0 +1,156 @@
+diff --git a/node_modules/@tanstack/query-core/build/lib/types.d.ts b/node_modules/@tanstack/query-core/build/lib/types.d.ts
+index cbc511e..248fe46 100644
+--- a/node_modules/@tanstack/query-core/build/lib/types.d.ts
++++ b/node_modules/@tanstack/query-core/build/lib/types.d.ts
+@@ -238,6 +238,7 @@ export interface QueryObserverBaseResult<TData = unknown, TError = unknown> {
+     isFetched: boolean;
+     isFetchedAfterMount: boolean;
+     isFetching: boolean;
++    isIdle: boolean;
+     isLoading: boolean;
+     isLoadingError: boolean;
+     isInitialLoading: boolean;
+@@ -257,7 +258,8 @@ export interface QueryObserverLoadingResult<TData = unknown, TError = unknown> e
+     data: undefined;
+     error: null;
+     isError: false;
+-    isLoading: true;
++    isIdle: boolean;
++    isLoading: boolean;
+     isLoadingError: false;
+     isRefetchError: false;
+     isSuccess: false;
+@@ -267,6 +269,7 @@ export interface QueryObserverLoadingErrorResult<TData = unknown, TError = unkno
+     data: undefined;
+     error: TError;
+     isError: true;
++    isIdle: false;
+     isLoading: false;
+     isLoadingError: true;
+     isRefetchError: false;
+@@ -277,6 +280,7 @@ export interface QueryObserverRefetchErrorResult<TData = unknown, TError = unkno
+     data: TData;
+     error: TError;
+     isError: true;
++    isIdle: false;
+     isLoading: false;
+     isLoadingError: false;
+     isRefetchError: true;
+@@ -287,6 +291,7 @@ export interface QueryObserverSuccessResult<TData = unknown, TError = unknown> e
+     data: TData;
+     error: null;
+     isError: false;
++    isIdle: false;
+     isLoading: false;
+     isLoadingError: false;
+     isRefetchError: false;
+@@ -307,6 +312,7 @@ export interface InfiniteQueryObserverLoadingResult<TData = unknown, TError = un
+     data: undefined;
+     error: null;
+     isError: false;
++    isIdle: false;
+     isLoading: true;
+     isLoadingError: false;
+     isRefetchError: false;
+@@ -317,6 +323,7 @@ export interface InfiniteQueryObserverLoadingErrorResult<TData = unknown, TError
+     data: undefined;
+     error: TError;
+     isError: true;
++    isIdle: false;
+     isLoading: false;
+     isLoadingError: true;
+     isRefetchError: false;
+@@ -327,6 +334,7 @@ export interface InfiniteQueryObserverRefetchErrorResult<TData = unknown, TError
+     data: InfiniteData<TData>;
+     error: TError;
+     isError: true;
++    isIdle: false;
+     isLoading: false;
+     isLoadingError: false;
+     isRefetchError: true;
+@@ -337,6 +345,7 @@ export interface InfiniteQueryObserverSuccessResult<TData = unknown, TError = un
+     data: InfiniteData<TData>;
+     error: null;
+     isError: false;
++    isIdle: false;
+     isLoading: false;
+     isLoadingError: false;
+     isRefetchError: false;
+diff --git a/node_modules/@tanstack/query-core/src/types.ts b/node_modules/@tanstack/query-core/src/types.ts
+index cfeae31..37da5f8 100644
+--- a/node_modules/@tanstack/query-core/src/types.ts
++++ b/node_modules/@tanstack/query-core/src/types.ts
+@@ -393,6 +393,7 @@ export interface QueryObserverBaseResult<TData = unknown, TError = unknown> {
+   isFetched: boolean
+   isFetchedAfterMount: boolean
+   isFetching: boolean
++  isIdle: boolean
+   isLoading: boolean
+   isLoadingError: boolean
+   isInitialLoading: boolean
+@@ -416,7 +417,8 @@ export interface QueryObserverLoadingResult<TData = unknown, TError = unknown>
+   data: undefined
+   error: null
+   isError: false
+-  isLoading: true
++  isIdle: boolean
++  isLoading: boolean
+   isLoadingError: false
+   isRefetchError: false
+   isSuccess: false
+@@ -430,6 +432,7 @@ export interface QueryObserverLoadingErrorResult<
+   data: undefined
+   error: TError
+   isError: true
++  isIdle: false
+   isLoading: false
+   isLoadingError: true
+   isRefetchError: false
+@@ -444,6 +447,7 @@ export interface QueryObserverRefetchErrorResult<
+   data: TData
+   error: TError
+   isError: true
++  isIdle: false
+   isLoading: false
+   isLoadingError: false
+   isRefetchError: true
+@@ -456,6 +460,7 @@ export interface QueryObserverSuccessResult<TData = unknown, TError = unknown>
+   data: TData
+   error: null
+   isError: false
++  isIdle: false
+   isLoading: false
+   isLoadingError: false
+   isRefetchError: false
+@@ -495,6 +500,7 @@ export interface InfiniteQueryObserverLoadingResult<
+   data: undefined
+   error: null
+   isError: false
++  isIdle: false
+   isLoading: true
+   isLoadingError: false
+   isRefetchError: false
+@@ -509,6 +515,7 @@ export interface InfiniteQueryObserverLoadingErrorResult<
+   data: undefined
+   error: TError
+   isError: true
++  isIdle: false
+   isLoading: false
+   isLoadingError: true
+   isRefetchError: false
+@@ -523,6 +530,7 @@ export interface InfiniteQueryObserverRefetchErrorResult<
+   data: InfiniteData<TData>
+   error: TError
+   isError: true
++  isIdle: false
+   isLoading: false
+   isLoadingError: false
+   isRefetchError: true
+@@ -537,6 +545,7 @@ export interface InfiniteQueryObserverSuccessResult<
+   data: InfiniteData<TData>
+   error: null
+   isError: false
++  isIdle: false;
+   isLoading: false
+   isLoadingError: false
+   isRefetchError: false

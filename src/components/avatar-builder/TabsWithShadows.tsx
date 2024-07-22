@@ -22,12 +22,7 @@ const TabsWithShadows = ({ category, onTabSelect }: Props) => {
   return (
     <View style={sx.tabBar}>
       <View style={[sx.tabBarShadowImage, { opacity: isDarkMode ? 0.3 : 0.6 }]}>
-        <ImgixImage
-          pointerEvents="none"
-          // @ts-expect-error
-          source={EmojiTabBarShadow}
-          style={StyleSheet.absoluteFill}
-        />
+        <ImgixImage pointerEvents="none" source={EmojiTabBarShadow} style={StyleSheet.absoluteFill} />
       </View>
       <View style={[{ shadowColor: colors.shadowBlack }, sx.gradientContainer]}>
         <LinearGradient

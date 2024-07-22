@@ -180,17 +180,15 @@ public class RNTextAnimatorPackage implements ReactPackage {
                 handler.stopUpdates();
                 idsToViews.remove(viewId);
                 idsToHandler.remove(viewId);
-
             }
 
             @Override
-            public void onCatalystInstanceDestroy() {
+            public void invalidate() {
                 Object[] keys = idsToHandler.keySet().toArray();
-                for (Object viewId: keys) {
+                for (Object viewId : keys) {
                     stop((Integer) viewId);
                 }
-                super.onCatalystInstanceDestroy();
-
+                super.invalidate();
             }
         });
     }

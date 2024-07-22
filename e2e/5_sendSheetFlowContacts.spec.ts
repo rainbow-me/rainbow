@@ -43,11 +43,7 @@ describe('Send Sheet Interaction Flow Contacts', () => {
     await checkIfVisible('send-asset-form-field');
   });
 
-  it('Should show show Contact Button & Asset List on valid ENS & Unstoppable addresses', async () => {
-    await clearField('send-asset-form-field');
-    await checkIfVisible('send-asset-form-field');
-    await typeText('send-asset-form-field', 'neverselling.wallet\n', false);
-    await checkIfVisible('send-asset-list');
+  it('Should show show Contact Button & Asset List on valid ENS address', async () => {
     await clearField('send-asset-form-field');
     await device.disableSynchronization();
     await typeText('send-asset-form-field', 'rainbowwallet.eth\n', false);

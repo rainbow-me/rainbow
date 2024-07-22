@@ -38,7 +38,6 @@ export function SliderAndKeyboard() {
       ]}
       width="full"
     >
-      {/* @ts-expect-error Property 'children' does not exist on type */}
       <PanGestureHandler>
         <Box alignItems="center" style={{ flex: 1 }} width="full">
           <SwapSlider />

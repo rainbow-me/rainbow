@@ -14,7 +14,6 @@ export const BrowserGestureBlocker = ({
   enableOnAndroid?: boolean;
 }) => {
   return IS_IOS || enableOnAndroid ? (
-    // @ts-expect-error Property 'children' does not exist on type
     <PanGestureHandler enabled={!disabled}>
       <Animated.View style={styles.cover}>
         <>{children}</>

@@ -1,4 +1,5 @@
 apply plugin: "com.android.application"
+apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 
@@ -125,18 +126,8 @@ android {
         }
     }
 
-    def props = project.file('src/main/java/me/rainbow/MainApplication.java')
-    def contents2 = props.getText( 'UTF-8' ).replaceAll( "//_REA ", '' ).replaceAll('/\\* REA', '//_REA /* REA')
-    props.delete()
-    props << contents2
-
-    if (env.get('DISABLE_REANIMATED_IN_DEV') == 'YES') {
-        def contents = props.getText( 'UTF-8' ).replaceAll( "//_REA ", '' )
-        props.delete()
-        props << contents
-    }
-
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdk rootProject.ext.compileSdkVersion
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -220,8 +211,7 @@ dependencies {
     implementation 'io.github.novacrypto:BIP39:2019.01.27'
     implementation 'com.google.android.play:core:1.8.2'
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
-    implementation "androidx.core:core-splashscreen:1.0.0"
-    implementation project(':react-native-plaid-link-sdk')
+    implementation "androidx.core:core-splashscreen:1.0.1"
     implementation project(':react-native-exit-app')
 
     if (hermesEnabled.toBoolean()) {

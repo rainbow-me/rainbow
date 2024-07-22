@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unused-prop-types */
 /* 👆 Had to disable this ESLint rule it was false positive on shared Props interface */
-import React, { useState, PropsWithChildren, useCallback, useContext, useMemo } from 'react';
+import React, { PropsWithChildren, useCallback, useContext, useMemo } from 'react';
 import { processColor, requireNativeComponent, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { createNativeWrapper, NativeViewGestureHandlerGestureEvent, RawButtonProps } from 'react-native-gesture-handler';
 import { PureNativeButton } from 'react-native-gesture-handler/src/components/GestureButtons';
@@ -25,6 +25,7 @@ interface BaseProps extends BaseButtonAnimationProps {
   backgroundColor: string;
   borderRadius: number;
   contentContainerStyle: StyleProp<ViewStyle>;
+  exclusive?: boolean;
   isLongPress?: boolean;
   onLongPressEnded: () => void;
   overflowMargin: number;
@@ -65,6 +66,7 @@ const ScaleButton = ({
   children,
   contentContainerStyle,
   duration,
+  exclusive,
   minLongPressDuration,
   onLongPress,
   onPress,
@@ -129,7 +131,7 @@ const ScaleButton = ({
   return (
     <View style={[sx.overflow, wrapperStyle]} testID={testID}>
       <View style={{ margin: -overflowMargin }}>
-        <AnimatedRawButton hitSlop={-overflowMargin} onGestureEvent={gestureHandler} rippleColor={transparentColor}>
+        <AnimatedRawButton exclusive={exclusive} hitSlop={-overflowMargin} onGestureEvent={gestureHandler} rippleColor={transparentColor}>
           <View style={sx.transparentBackground}>
             <View style={{ padding: overflowMargin }}>
               <Animated.View style={[sz, contentContainerStyle]}>{children}</Animated.View>
@@ -142,23 +144,18 @@ const ScaleButton = ({
 };
 
 const SimpleScaleButton = ({
-  backgroundColor,
-  borderRadius,
   children,
-  contentContainerStyle,
   duration,
+  exclusive,
   minLongPressDuration,
   onLongPress,
   onLongPressEnded,
   shouldLongPressHoldPress,
   isLongPress,
-  onLayout,
   hapticType,
   enableHapticFeedback,
   onPress,
-  overflowMargin,
   scaleTo,
-  skipTopMargin,
   transformOrigin,
   wrapperStyle,
   testID,
@@ -171,68 +168,35 @@ const SimpleScaleButton = ({
       } else if (shouldLongPressHoldPress && type === 'longPressEnded') {
         onLongPressEnded?.();
       } else {
-        enableHapticFeedback && ReactNativeHapticFeedback.trigger(hapticType);
         onPress?.();
+        enableHapticFeedback && ReactNativeHapticFeedback.trigger(hapticType);
       }
     },
     [enableHapticFeedback, hapticType, onLongPress, onLongPressEnded, onPress, shouldLongPressHoldPress]
   );
 
-  // we won't guess if there are any animated styles in there but we can
-  // not render the Animated.View if we don't use that prop at all
-  const Wrapper: React.ComponentType<any> = contentContainerStyle ? Animated.View : View;
-  // hack to lay out BottomTab buttons normally instead of being stacked on top of each other
-  const [overflowMarginHelper, setOverflowMargin] = useState(overflowMargin);
-  const layoutHelper = () => setOverflowMargin(overflowMargin - 1);
   return (
-    <View
-      onLayout={onLayout || layoutHelper}
-      style={[
-        {
-          backgroundColor,
-          borderRadius,
-          overflow: 'visible',
-        },
-        wrapperStyle,
-      ]}
+    <ZoomableButton
+      duration={duration}
+      enableHapticFeedback={enableHapticFeedback}
+      exclusive={exclusive}
+      hapticType={hapticType}
+      isLongPress={isLongPress}
+      minLongPressDuration={minLongPressDuration}
+      onPress={onNativePress}
+      scaleTo={scaleTo}
+      rippleColor={transparentColor}
+      shouldLongPressHoldPress={shouldLongPressHoldPress}
+      style={[sx.overflow, wrapperStyle]}
       testID={testID}
+      transformOrigin={transformOrigin}
+      disallowInterruption={disallowInterruption}
     >
-      <View
-        style={{
-          margin: -overflowMarginHelper,
-          marginTop: skipTopMargin ? -OVERFLOW_MARGIN : -overflowMargin,
-        }}
-      >
-        <ZoomableButton
-          duration={duration}
-          enableHapticFeedback={enableHapticFeedback}
-          hapticType={hapticType}
-          hitSlop={-overflowMargin}
-          isLongPress={isLongPress}
-          minLongPressDuration={minLongPressDuration}
-          onPress={onNativePress}
-          rippleColor={transparentColor}
-          scaleTo={scaleTo}
-          shouldLongPressHoldPress={shouldLongPressHoldPress}
-          style={sx.overflow}
-          transformOrigin={transformOrigin}
-          disallowInterruption={disallowInterruption}
-        >
-          <View style={sx.transparentBackground}>
-            <View
-              style={{
-                padding: overflowMargin,
-                paddingTop: skipTopMargin ? OVERFLOW_MARGIN : overflowMargin,
-              }}
-            >
-              <Wrapper style={contentContainerStyle}>{children}</Wrapper>
-            </View>
-          </View>
-        </ZoomableButton>
-      </View>
-    </View>
+      {children}
+    </ZoomableButton>
   );
 };
+
 export default function ButtonPressAnimation({
   backgroundColor = 'transparent',
   borderRadius = 0,
@@ -240,6 +204,7 @@ export default function ButtonPressAnimation({
   contentContainerStyle,
   disabled,
   duration = 160,
+  exclusive,
   minLongPressDuration = 500,
   onLayout,
   onLongPress,
@@ -272,6 +237,7 @@ export default function ButtonPressAnimation({
       contentContainerStyle={contentContainerStyle}
       duration={duration}
       enableHapticFeedback={enableHapticFeedback}
+      exclusive={exclusive}
       hapticType={hapticType}
       isLongPress={!!onLongPress}
       minLongPressDuration={minLongPressDuration}
@@ -288,7 +254,7 @@ export default function ButtonPressAnimation({
       wrapperStyle={wrapperStyle}
       disallowInterruption={disallowInterruption}
     >
-      <View pointerEvents="box-only" style={[sx.overflow, style]}>
+      <View onLayout={onLayout} pointerEvents="box-only" style={[sx.overflow, style]}>
         {children}
       </View>
     </ButtonElement>
