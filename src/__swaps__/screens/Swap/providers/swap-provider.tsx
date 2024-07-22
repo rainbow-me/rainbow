@@ -37,7 +37,7 @@ import { RainbowError, logger } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { getNetworkObj } from '@/networks';
+import { RainbowNetworkByChainId, getNetworkObj } from '@/networks';
 import { walletExecuteRap } from '@/raps/execute';
 import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
 import { queryClient } from '@/react-query';
@@ -119,7 +119,6 @@ interface SwapContextType {
   confirmButtonIconStyle: StyleProp<TextStyle>;
 
   hasEnoughFundsForGas: SharedValue<boolean | undefined>;
-  gasAssetSymbol: SharedValue<string>;
 }
 
 const SwapContext = createContext<SwapContextType | undefined>(undefined);
@@ -608,7 +607,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   }, []);
 
   const hasEnoughFundsForGas = useSharedValue<boolean | undefined>(undefined);
-  const gasAssetSymbol = useSharedValue<string>('Gas');
   useAnimatedReaction(
     () => isFetching.value,
     fetching => {
@@ -670,8 +668,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
 
     if (!hasEnoughFundsForGas.value) {
+      const nativeCurrency = RainbowNetworkByChainId[sellAsset?.chainId]?.nativeCurrency;
       return {
-        label: `${insufficient} ${gasAssetSymbol.value}`,
+        label: `${insufficient} ${nativeCurrency?.symbol || 'Gas'}`,
         disabled: true,
       };
     }
@@ -743,7 +742,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         confirmButtonIconStyle,
 
         hasEnoughFundsForGas,
-        gasAssetSymbol,
       }}
     >
       {children}

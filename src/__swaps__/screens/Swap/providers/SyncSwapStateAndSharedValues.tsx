@@ -13,9 +13,7 @@ import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { add } from '@/__swaps__/utils/numbers';
 import { ParsedAddressAsset } from '@/entities';
-import { getNetworkObj } from '@/networks';
 import { useUserNativeNetworkAsset } from '@/resources/assets/useUserAsset';
-import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { debounce } from 'lodash';
 import { useEffect } from 'react';
@@ -89,7 +87,7 @@ const getHasEnoughFundsForGas = (quote: Quote, gasFee: string, nativeNetworkAsse
 };
 
 export function SyncGasStateToSharedValues() {
-  const { hasEnoughFundsForGas, gasAssetSymbol, internalSelectedInputAsset } = useSwapContext();
+  const { hasEnoughFundsForGas, internalSelectedInputAsset } = useSwapContext();
 
   const { assetToSell, chainId = ChainId.mainnet, quote } = useSyncedSwapQuoteStore();
 
@@ -133,9 +131,6 @@ export function SyncGasStateToSharedValues() {
 
     if (!userNativeNetworkAsset) {
       hasEnoughFundsForGas.value = false;
-      const network = getNetworkFromChainId(chainId);
-      const { nativeCurrency } = getNetworkObj(network);
-      gasAssetSymbol.value = nativeCurrency.symbol;
       return;
     }
 
@@ -156,7 +151,6 @@ export function SyncGasStateToSharedValues() {
     }
 
     hasEnoughFundsForGas.value = getHasEnoughFundsForGas(quote, gasFee, userNativeNetworkAsset);
-    gasAssetSymbol.value = userNativeNetworkAsset.symbol;
 
     return () => {
       hasEnoughFundsForGas.value = undefined;
@@ -169,7 +163,6 @@ export function SyncGasStateToSharedValues() {
     quote,
     userNativeNetworkAsset,
     isLoadingNativeNetworkAsset,
-    gasAssetSymbol,
     chainId,
   ]);
 
