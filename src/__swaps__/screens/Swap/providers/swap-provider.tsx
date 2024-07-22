@@ -668,9 +668,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
 
     if (!hasEnoughFundsForGas.value) {
-      const nativeCurrency = RainbowNetworkByChainId[sellAsset?.chainId]?.nativeCurrency;
+      const nativeCurrency = RainbowNetworkByChainId[sellAsset?.chainId || ChainId.mainnet].nativeCurrency;
       return {
-        label: `${insufficient} ${nativeCurrency?.symbol || 'Gas'}`,
+        label: `${insufficient} ${nativeCurrency.symbol}`,
         disabled: true,
       };
     }
