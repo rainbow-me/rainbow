@@ -1,6 +1,7 @@
 import UIKit
 import Social
 import MobileCoreServices
+import UniformTypeIdentifiers
 
 extension NSObject {
     func callSelector(selector: Selector, object: AnyObject?, delay: TimeInterval) {
@@ -17,28 +18,28 @@ extension NSURL {
 }
 
 extension NSItemProvider {
-    var isText: Bool { return hasItemConformingToTypeIdentifier(String(kUTTypeText)) }
-    var isUrl: Bool { return hasItemConformingToTypeIdentifier(String(kUTTypeURL)) }
+  var isText: Bool { return hasItemConformingToTypeIdentifier(UTType.text.identifier) }
+  var isUrl: Bool { return hasItemConformingToTypeIdentifier(UTType.url.identifier) }
 
     func processText(completion: CompletionHandler?) {
-        loadItem(forTypeIdentifier: String(kUTTypeText), options: nil, completionHandler: completion)
+      loadItem(forTypeIdentifier: UTType.text.identifier, options: nil, completionHandler: completion)
     }
 
     func processUrl(completion: CompletionHandler?) {
-        loadItem(forTypeIdentifier: String(kUTTypeURL), options: nil, completionHandler: completion)
+      loadItem(forTypeIdentifier: UTType.url.identifier, options: nil, completionHandler: completion)
     }
 }
 
-class ActionViewController: UIViewController {
+class ShareViewController: UIViewController {
     private var urlScheme: String = "rainbow"
 
     func focusUrl(url: String) -> NSURL? {
-        return NSURL(string: "\(self.urlScheme)://open-url?url=\(url)")
+        return NSURL(string: "\(self.urlScheme)://dapp?url=\(url)")
     }
 
     func textUrl(text: String) -> NSURL? {
         guard let query = text.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return nil }
-        return NSURL(string: "\(self.urlScheme)://open-url?url=\(query)")
+        return NSURL(string: "\(self.urlScheme)://dapp?url=\(query)")
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -109,7 +110,7 @@ class ActionViewController: UIViewController {
     }
 }
 
-extension ActionViewController {
+extension ShareViewController {
     func finish(afterDelay: TimeInterval = 0) {
         UIView.animate(
             withDuration: 0.2,

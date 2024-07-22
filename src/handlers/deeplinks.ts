@@ -189,7 +189,7 @@ export default async function handleDeeplink(url: string, initialRoute: any = nu
         break;
       }
 
-      case 'open-url': {
+      case 'dapp': {
         const { url } = query;
         if (url) {
           Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, { url });
