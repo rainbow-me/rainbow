@@ -671,7 +671,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
     if (!hasEnoughFundsForGas.value) {
       return {
-        label: `${insufficientGas} ${gasAssetSymbol.value}`,
+        label: `${insufficient} ${gasAssetSymbol.value}`,
         disabled: true,
       };
     }
