@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
 import FastTransactionStatusBadge from './FastTransactionStatusBadge';
 import { Bleed, Box, Inline, Text, globalColors, useForegroundColor } from '@/design-system';
-import { NativeCurrencyKey, NewTransaction, RainbowTransaction } from '@/entities';
+import { NativeCurrencyKey, RainbowTransaction } from '@/entities';
 import { ThemeContextProps } from '@/theme';
 import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
@@ -202,7 +202,7 @@ const BottomRow = React.memo(function BottomRow({
     .filter(Boolean).length;
   if (nftChangesAmount) tag = nftChangesAmount.toString();
 
-  const [topValue, bottomValue] = activityValues(transaction, nativeCurrency) ?? [];
+  const [, bottomValue] = activityValues(transaction, nativeCurrency) ?? [];
 
   return (
     <View style={sx.bottomRow}>
@@ -337,7 +337,7 @@ export const ActivityIcon = ({
             shadowRadius: 9,
           }}
         >
-          {/* @ts-ignore local nft assets have diff types */}
+          {/* @ts-expect-error local nft assets have diff types */}
           {transaction.asset.icon_url || transaction.asset.image_url ? (
             <ImgixImage
               size={CardSize}
@@ -347,7 +347,7 @@ export const ActivityIcon = ({
                 borderRadius: 10,
               }}
               source={{
-                // @ts-ignore local nft assets have diff types
+                // @ts-expect-error local nft assets have diff types
                 uri: transaction.asset.icon_url || transaction.asset.image_url,
               }}
             />
@@ -404,7 +404,7 @@ export default React.memo(function TransactionCoinRow({
     });
   }, [item, navigation]);
 
-  const [topValue, bottomValue] = activityValues(item, nativeCurrency) ?? [];
+  const [topValue] = activityValues(item, nativeCurrency) ?? [];
 
   return (
     <ButtonPressAnimation onPress={onPress} scaleTo={0.96} uniqueId={`${item.hash}-${item.network}`}>

@@ -45,7 +45,7 @@ module.exports = function (api) {
     ],
   ];
 
-  const presets = ['module:metro-react-native-babel-preset'];
+  const presets = ['module:@react-native/babel-preset'];
 
   return {
     env: {

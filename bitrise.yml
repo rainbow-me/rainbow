@@ -698,39 +698,43 @@ workflows:
         - webhook_url: $SLACK_WEBHOOK_URL
   workflow_google_play:
     steps:
-    - script@1:
-        inputs:
-        - content: "#!/usr/bin/env bash\n# fail if any commands fails\nset -e\n# debug log\nset -x\n\n# write your script here\ntouch .env\necho \"DATA_ORIGIN=$DATA_ORIGIN\" >> .env\necho \"INFURA_PROJECT_ID=$INFURA_PROJECT_ID\" >> .env\necho \"INFURA_PROJECT_ID_DEV=$INFURA_PROJECT_ID_DEV\" >> .env\necho \"REACT_APP_SEGMENT_API_WRITE_KEY=$REACT_APP_SEGMENT_API_WRITE_KEY\" >> .env\necho \"DATA_API_KEY=$DATA_API_KEY\" >> .env\necho \"DATA_ENDPOINT=$DATA_ENDPOINT\" >> .env\necho \"SENTRY_ENDPOINT=$SENTRY_ENDPOINT\" >> .env\necho \"SENTRY_ENVIRONMENT=LocalRelease\" >> .env\necho \"WYRE_ENDPOINT=$WYRE_ENDPOINT\" >> .env\necho \"WYRE_ACCOUNT_ID=$WYRE_ACCOUNT_ID\" >> .env\necho \"RAINBOW_WYRE_MERCHANT_ID=$RAINBOW_WYRE_MERCHANT_ID\" >> .env\necho \"WYRE_ENDPOINT_TEST=$WYRE_ENDPOINT_TEST\" >> .env\necho \"WYRE_ACCOUNT_ID_TEST=$WYRE_ACCOUNT_ID_TEST\" >> .env\necho \"RAINBOW_WYRE_MERCHANT_ID_TEST=$RAINBOW_WYRE_MERCHANT_ID_TEST\" >> .env\necho \"ETHERSCAN_API_KEY=$ETHERSCAN_API_KEY\" >> .env\necho \"BRANCH_APP_DOMAIN=$BRANCH_APP_DOMAIN\" >> .env\necho \"BRANCH_KEY=$BRANCH_KEY\" >> .env\necho \"RAINBOW_MASTER_KEY=$RAINBOW_MASTER_KEY\" >> .env\necho \"DEV_PKEY=$DEV_PKEY_PROD\" >> .env\necho \"WYRE_TOKEN=$WYRE_TOKEN\" >> .env\necho \"WYRE_TOKEN_TEST=$WYRE_TOKEN_TEST\" >> .env\necho \"ENABLE_DEV_MODE=0\" >> .env\necho \"ETH_GAS_STATION_API_KEY=$ETH_GAS_STATION_API_KEY\" >> .env\necho \"IMGIX_TOKEN=$IMGIX_TOKEN\" >> .env\necho \"IMGIX_DOMAIN=$IMGIX_DOMAIN\" >> .env\necho \"DEBUG_NM=NO\" >> .env\necho \"CODEPUSH_KEY_RELEASE=$CODEPUSH_KEY_RELEASE\" >> .env\necho \"CODEPUSH_KEY_STAGING=$CODEPUSH_KEY_STAGING\" >> .env\necho \"CODE_PUSH_DEPLOYMENT_KEY_ANDROID=$CODE_PUSH_DEPLOYMENT_KEY_ANDROID\" >> .env \necho \"GOOGLE_SERVICE_API_KEY=$GOOGLE_SERVICE_API_KEY\" >> .env\necho \"COVALENT_IOS_API_KEY=$COVALENT_IOS_API_KEY\" >> .env\necho \"COVALENT_ANDROID_API_KEY=$COVALENT_ANDROID_API_KEY\" >> .env\necho \"POLYGON_MAINNET_RPC=$POLYGON_MAINNET_RPC\" >> .env\necho \"ARBITRUM_MAINNET_RPC=$ARBITRUM_MAINNET_RPC\" >> .env\necho \"OPTIMISM_MAINNET_RPC=$OPTIMISM_MAINNET_RPC\" >> .env\necho \"OPENSEA_API_KEY=$OPENSEA_API_KEY\" >> .env\necho \"OPENSEA_RINKEBY_API_KEY=$OPENSEA_RINKEBY_API_KEY\" >> .env\necho \"NFT_API_KEY=$NFT_API_KEY\" >> .env\necho \"NFT_API_URL=$NFT_API_URL\" >> .env\necho \"ETHEREUM_MAINNET_RPC=$ETHEREUM_MAINNET_RPC\" >> .env\necho \"ETHEREUM_MAINNET_RPC_DEV=$ETHEREUM_MAINNET_RPC_DEV\" >> .env\necho \"ETHEREUM_KOVAN_RPC=$ETHEREUM_KOVAN_RPC\" >> .env\necho \"ETHEREUM_KOVAN_RPC_DEV=$ETHEREUM_KOVAN_RPC_DEV\" >> .env\necho \"ETHEREUM_ROPSTEN_RPC=$ETHEREUM_ROPSTEN_RPC\" >> .env\necho \"ETHEREUM_ROPSTEN_RPC_DEV=$ETHEREUM_ROPSTEN_RPC_DEV\" >> .env\necho \"ETHEREUM_RINKEBY_RPC=$ETHEREUM_RINKEBY_RPC\" >> .env\necho \"ETHEREUM_RINKEBY_RPC_DEV=$ETHEREUM_RINKEBY_RPC_DEV\" >> .env\necho \"ETHEREUM_GOERLI_RPC=$ETHEREUM_GOERLI_RPC\" >> .env\necho \"ETHEREUM_GOERLI_RPC_DEV=$ETHEREUM_GOERLI_RPC_DEV\" >> .env\necho \"RAINBOW_TOKEN_LIST_URL=$RAINBOW_TOKEN_LIST_URL\" >>.env\necho \"HARDHAT_URL_IOS=$HARDHAT_URL_IOS\" >>.env\necho \"HARDHAT_URL_ANDROID=$HARDHAT_URL_ANDROID\" >>.env\necho \"COMPOUND_SUBGRAPH_ENDPOINT=$COMPOUND_SUBGRAPH_ENDPOINT\" >>.env\necho \"CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME\" >>.env\necho \"CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY\" >>.env\necho \"CLOUDINARY_API_SECRET=$CLOUDINARY_API_SECRET\" >>.env\necho \"PINATA_API_URL=$PINATA_API_URL\" >>.env\necho \"PINATA_API_KEY=$PINATA_API_KEY\" >>.env\necho \"PINATA_API_SECRET=$PINATA_API_SECRET\" >>.env\necho \"PINATA_GATEWAY_URL=$PINATA_GATEWAY_URL\" >>.env\necho \"CODE_PUSH_DEPLOYMENT_KEY_IOS=$CODE_PUSH_DEPLOYMENT_KEY_IOS\" >> .env\necho \"APP_CENTER_READ_ONLY_TOKEN_ANDROID=$APP_CENTER_READ_ONLY_TOKEN_ANDROID\" >> .env\necho \"APP_CENTER_READ_ONLY_TOKEN_IOS=$APP_CENTER_READ_ONLY_TOKEN_IOS\" >> .env"
-        title: Generate .env
-    - script@1:
-        inputs:
-        - content: |-
-            #!/bin/bash
-            jenv add /usr/local/opt/openjdk/
-            jenv global 15
-            export JAVA_HOME="$(jenv prefix)"
-            envman add --key JAVA_HOME --value "$(jenv prefix)"
-            echo "openjdk-15 installed"
-        title: Install JVM 15
-    - activate-ssh-key@4:
-        run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
-    - git-clone@6: {}
-    - cache-pull@2: {}
-    - install-missing-android-tools@3: {}
-    - nvm@1:
-        inputs:
-        - node_version: "14"
-    - script@1:
-        inputs:
-        - content: |
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            # Yarn sucks and running a couple of times does the trick.
-            # See https://github.com/yarnpkg/yarn/issues/7212 before yelling at me
+      - script@1.1.6:
+          inputs:
+            - content: |+
+                #!/usr/bin/env bash
+                # fail if any commands fails
+                set -e
+                # debug log
+                set -x
+                # write your script here
+                touch .env
+                echo "DATA_ORIGIN=$DATA_ORIGIN" >> .env
+                echo "INFURA_PROJECT_ID=$INFURA_PROJECT_ID" >> .env
+                echo "INFURA_PROJECT_ID_DEV=$INFURA_PROJECT_ID_DEV" >> .env
+                echo "REACT_APP_SEGMENT_API_WRITE_KEY=$REACT_APP_SEGMENT_API_WRITE_KEY" >> .env
+                echo "DATA_API_KEY=$DATA_API_KEY" >> .env
+                echo "DATA_ENDPOINT=$DATA_ENDPOINT" >> .env
+                echo "SENTRY_ENDPOINT=$SENTRY_ENDPOINT" >> .env
+                echo "SENTRY_ENVIRONMENT=$SENTRY_ENVIRONMENT" >> .env
+                echo "WYRE_ENDPOINT=$WYRE_ENDPOINT" >> .env
+                echo "WYRE_ACCOUNT_ID=$WYRE_ACCOUNT_ID" >> .env
+                echo "RAINBOW_WYRE_MERCHANT_ID=$RAINBOW_WYRE_MERCHANT_ID" >> .env
+                echo "WYRE_ENDPOINT_TEST=$WYRE_ENDPOINT_TEST" >> .env
+                echo "WYRE_ACCOUNT_ID_TEST=$WYRE_ACCOUNT_ID_TEST" >> .env
+                echo "RAINBOW_WYRE_MERCHANT_ID_TEST=$RAINBOW_WYRE_MERCHANT_ID_TEST" >> .env
+                echo "ETHERSCAN_API_KEY=$ETHERSCAN_API_KEY" >> .env
+                echo "BRANCH_APP_DOMAIN=$BRANCH_APP_DOMAIN" >> .env
+                echo "BRANCH_KEY=$BRANCH_KEY" >> .env
+                echo "RAINBOW_MASTER_KEY=$RAINBOW_MASTER_KEY" >> .env
+                echo "DEV_SEEDS=\"$DEV_SEEDS\"" >> .env
+                echo "DEV_PKEY=\$DEV_PKEY" >> .env
+                echo "TEST_SEEDS=\"$TEST_SEEDS\"" >> .env
+                echo "IS_TESTING=$IS_TESTING" >> .env
+                echo "WYRE_TOKEN=$WYRE_TOKEN" >> .env
+                echo "WYRE_TOKEN_TEST=$WYRE_TOKEN_TEST" >> .env
+                echo "ENABLE_DEV_MODE=$ENABLE_DEV_MODE" >> .env
+                echo "GANACHE_URL=$GANACHE_URL" >> .env
+                echo "ETH_GAS_STATION_API_KEY=$ETH_GAS_STATION_API_KEY" >> .env
 
             yarn setup || yarn setup || yarn setup
         title: Install dependencies via Yarn

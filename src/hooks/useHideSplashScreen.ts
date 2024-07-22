@@ -1,5 +1,6 @@
 import { useCallback, useRef } from 'react';
 import { InteractionManager, NativeModules } from 'react-native';
+import RNBootSplash from 'react-native-bootsplash';
 import SplashScreen from 'react-native-splash-screen';
 import { PerformanceContextMap } from '../performance/PerformanceContextMap';
 import { StartTime } from '../performance/start-time';
@@ -13,7 +14,7 @@ import { RainbowError, logger } from '@/logger';
 import { AppIconKey } from '@/appIcons/appIcons';
 const Sound = require('react-native-sound');
 
-const { RainbowSplashScreen, RNBootSplash } = NativeModules;
+const { RainbowSplashScreen } = NativeModules;
 
 export default function useHideSplashScreen() {
   const alreadyLoggedPerformance = useRef(false);
@@ -23,7 +24,7 @@ export default function useHideSplashScreen() {
       RainbowSplashScreen.hideAnimated();
     } else {
       if (android) {
-        RNBootSplash.hide(true);
+        await RNBootSplash.hide({ fade: true });
       } else {
         SplashScreen.hide();
       }

@@ -1,7 +1,7 @@
 /* eslint-disable no-nested-ternary */
 import BigNumber from 'bignumber.js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AnimatePresence, MotiView } from 'moti';
+import { AnimatePresence, MotiView, TransitionConfig } from 'moti';
 import * as i18n from '@/languages';
 import { Image, InteractionManager, PixelRatio, ScrollView, StyleProp, TouchableWithoutFeedback, ViewStyle } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -44,7 +44,6 @@ import {
   TransactionScanResultType,
 } from '@/graphql/__generated__/metadataPOST';
 import { Network } from '@/networks/types';
-import { ETH_ADDRESS } from '@/references';
 import {
   convertAmountToNativeDisplay,
   convertHexToString,
@@ -62,7 +61,7 @@ import { useAccountSettings, useClipboard, useDimensions, useGas, useWallets } f
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
 import { IS_IOS } from '@/env';
-import { estimateGas, estimateGasWithPadding, getFlashbotsProvider, getProviderForNetwork, isHexString, toHex } from '@/handlers/web3';
+import { estimateGas, estimateGasWithPadding, getFlashbotsProvider, getProviderForNetwork, toHex } from '@/handlers/web3';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { GasSpeedButton } from '@/components/gas';
 import { getNetworkObj } from '@/networks';
@@ -130,6 +129,12 @@ const timingConfig = {
   easing: Easing.bezier(0.2, 0, 0, 1),
 };
 
+const motiTimingConfig: TransitionConfig = {
+  duration: 225,
+  easing: Easing.bezier(0.2, 0, 0, 1),
+  type: 'timing',
+};
+
 type SignTransactionSheetParams = {
   transactionDetails: RequestData;
   onSuccess: (hash: string) => void;
@@ -145,7 +150,6 @@ export type SignTransactionSheetRouteProp = RouteProp<{ SignTransactionSheet: Si
 export const SignTransactionSheet = () => {
   const { goBack, navigate } = useNavigation();
   const { colors, isDarkMode } = useTheme();
-  const { width: deviceWidth } = useDimensions();
   const { accountAddress, nativeCurrency } = useAccountSettings();
   const [simulationData, setSimulationData] = useState<TransactionSimulationResult | undefined>();
   const [simulationError, setSimulationError] = useState<TransactionErrorType | undefined>(undefined);
@@ -904,15 +908,7 @@ export const SignTransactionSheet = () => {
                           <Box style={{ height: 9 }}>
                             <AnimatePresence>
                               {!!currentNetwork && walletBalance?.isLoaded && (
-                                <MotiView
-                                  animate={{ opacity: 1 }}
-                                  from={{ opacity: 0 }}
-                                  transition={{
-                                    duration: 225,
-                                    easing: Easing.bezier(0.2, 0, 0, 1),
-                                    type: 'timing',
-                                  }}
-                                >
+                                <MotiView animate={{ opacity: 1 }} from={{ opacity: 0 }} transition={{ opacity: motiTimingConfig }}>
                                   <Inline alignVertical="center" space={{ custom: 5 }} wrap={false}>
                                     <Bleed vertical="4px">
                                       <ChainImage chain={currentNetwork} size={12} />
@@ -1509,12 +1505,7 @@ const SimulatedEventRow = ({
     fm: 'png',
     w: 16 * PixelRatio.get(),
   });
-  let assetCode = asset?.assetCode;
 
-  // this needs tweaks
-  if (asset?.type === TransactionAssetType.Native) {
-    assetCode = ETH_ADDRESS;
-  }
   const showUSD = (eventType === 'send' || eventType === 'receive') && !!price;
 
   const formattedPrice = price && convertAmountToNativeDisplay(price, nativeCurrency);
@@ -1738,9 +1729,9 @@ const AnimatedCheckmark = ({ visible }: { visible: boolean }) => {
           exit={{ opacity: 0, scale: 0.6, translateX: 0 }}
           from={{ opacity: 0, scale: 0.8, translateX: 10 }}
           transition={{
-            duration: 225,
-            easing: Easing.bezier(0.2, 0, 0, 1),
-            type: 'timing',
+            opacity: motiTimingConfig,
+            scale: motiTimingConfig,
+            translateX: motiTimingConfig,
           }}
         >
           <Bleed top={{ custom: 0.5 }}>
