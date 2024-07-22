@@ -396,7 +396,6 @@ workflows:
                 set -e
                 # debug log
                 set -x
-
                 # write your script here
                 touch .env
                 echo "DATA_ORIGIN=$DATA_ORIGIN" >> .env
