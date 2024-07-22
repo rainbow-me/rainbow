@@ -1,7 +1,6 @@
 import lang from 'i18n-js';
 import React from 'react';
 import { View } from 'react-native';
-import RNExitApp from 'react-native-exit-app';
 import { Centered } from '../layout';
 import { SheetActionButton } from '../sheet';
 import Text from '../text/Text';
@@ -44,7 +43,6 @@ export default function Fallback({
       },
     });
     resetError();
-    RNExitApp.exitApp();
   };
   return (
     <Container>

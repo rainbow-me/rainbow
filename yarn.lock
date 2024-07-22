@@ -7974,7 +7974,6 @@ __metadata:
     react-native-dark-mode: "npm:0.2.2"
     react-native-device-info: "npm:5.3.1"
     react-native-dotenv: "npm:2.4.2"
-    react-native-exit-app: "npm:2.0.0"
     react-native-extra-dimensions-android: "npm:1.2.2"
     react-native-fast-image: "npm:8.5.11"
     react-native-fs: "npm:2.16.6"
@@ -20885,13 +20884,6 @@ __metadata:
   dependencies:
     dotenv: "npm:^8.0.0"
   checksum: 10c0/ba14e1f32d579904f1919c0c79f5cf977c7e49d2770dd79d4fdcb5413755cb4f9478fa94a6951a86e0275e494d9c2ff64aec1e7e23d6fbc6d930be3a93b55c7d
-  languageName: node
-  linkType: hard
-
-"react-native-exit-app@npm:2.0.0":
-  version: 2.0.0
-  resolution: "react-native-exit-app@npm:2.0.0"
-  checksum: 10c0/301ce787e2a905cbfb8f3e19200c316c4c18274ccfea89c3b4f11cdeda3c88c3aa99cb4b16d360c0b7666e3275e75a074076234dc2f6c1ef937440f94ef07054
   languageName: node
   linkType: hard
 
