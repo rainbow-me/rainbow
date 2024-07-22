@@ -17,7 +17,7 @@ export function GestureHandlerHoldButton({
   useAnimatedReaction(
     () => holdProgress.value === 100,
     (current, previous) => {
-      if (current === true && !previous) {
+      if (current && !previous) {
         holdProgress.value = 0;
         onPressWorklet?.();
         if (onPressJS) runOnJS(onPressJS)();
