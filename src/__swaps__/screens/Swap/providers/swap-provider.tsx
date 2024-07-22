@@ -62,7 +62,7 @@ const review = i18n.t(i18n.l.swap.actions.review);
 const fetchingPrices = i18n.t(i18n.l.swap.actions.fetching_prices);
 const selectToken = i18n.t(i18n.l.swap.actions.select_token);
 const insufficientFunds = i18n.t(i18n.l.swap.actions.insufficient_funds);
-const insufficientGas = i18n.t(i18n.l.swap.actions.insufficient_gas);
+const insufficient = i18n.t(i18n.l.swap.actions.insufficient);
 const quoteError = i18n.t(i18n.l.swap.actions.quote_error);
 
 interface SwapContextType {
