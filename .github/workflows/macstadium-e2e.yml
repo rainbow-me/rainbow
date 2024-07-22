@@ -64,7 +64,11 @@ jobs:
 
       - name: Rebuild detox cache
         run: ./node_modules/.bin/detox clean-framework-cache && ./node_modules/.bin/detox build-framework-cache
-
+      
+      - name: Version debug
+        run: |
+          npx react-native info
+      
       - name: Install pods
         run: yarn install-bundle && yarn install-pods
 
@@ -72,10 +76,6 @@ jobs:
         run: |
           chmod -R +x node_modules/react-native/scripts
           chmod -R +x node_modules/@sentry/react-native/scripts
-     
-      - name: Version debug
-        run: |
-          npx react-native info
 
       - name: Build the app in release mode
         run: yarn detox build --configuration ios.sim.release
