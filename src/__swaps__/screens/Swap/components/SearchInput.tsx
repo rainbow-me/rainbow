@@ -1,81 +1,43 @@
+import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { opacity } from '@/__swaps__/utils/swaps';
+import { Input } from '@/components/inputs';
+import { Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
+import * as i18n from '@/languages';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
 import React from 'react';
 import Animated, {
-  SharedValue,
   runOnJS,
   runOnUI,
   useAnimatedProps,
   useAnimatedReaction,
-  useAnimatedStyle,
   useDerivedValue,
+  useSharedValue,
 } from 'react-native-reanimated';
-import { Input } from '@/components/inputs';
-import { AnimatedText, Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/utils/swaps';
-import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { userAssetsStore } from '@/state/assets/userAssets';
-import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { GestureHandlerV1Button } from './GestureHandlerV1Button';
 import { useDebouncedCallback } from 'use-debounce';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
-import * as i18n from '@/languages';
+import { SearchInputButton } from './SearchInputButton';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 
 const FIND_A_TOKEN_TO_BUY_LABEL = i18n.t(i18n.l.swap.find_a_token_to_buy);
 const SEARCH_YOUR_TOKENS_LABEL = i18n.t(i18n.l.swap.search_your_tokens);
-const CANCEL_LABEL = i18n.t(i18n.l.button.cancel);
-const CLOSE_LABEL = i18n.t(i18n.l.button.close);
-const PASTE_LABEL = i18n.t(i18n.l.button.paste);
 
 export const SearchInput = ({
-  asset,
   handleExitSearchWorklet,
   handleFocusSearchWorklet,
   output,
 }: {
-  asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   handleExitSearchWorklet: () => void;
   handleFocusSearchWorklet: () => void;
   output: boolean;
 }) => {
   const { isDarkMode } = useColorMode();
-  const {
-    inputProgress,
-    inputSearchRef,
-    internalSelectedInputAsset,
-    internalSelectedOutputAsset,
-    outputProgress,
-    outputSearchRef,
-    AnimatedSwapStyles,
-  } = useSwapContext();
+  const { inputProgress, inputSearchRef, outputProgress, outputSearchRef } = useSwapContext();
 
   const fillTertiary = useForegroundColor('fillTertiary');
   const label = useForegroundColor('label');
   const labelQuaternary = useForegroundColor('labelQuaternary');
-
-  const btnText = useDerivedValue(() => {
-    if ((inputProgress.value === 2 && !output) || (outputProgress.value === 2 && output)) {
-      return CANCEL_LABEL;
-    }
-
-    if ((output && internalSelectedOutputAsset.value) || !output) {
-      return CLOSE_LABEL;
-    }
-
-    // ⚠️ TODO: Add paste functionality to the asset to buy list when no asset is selected
-    // return PASTE_LABEL;
-  });
-
-  const buttonVisibilityStyle = useAnimatedStyle(() => {
-    const isSearchFocused = (output ? outputProgress : inputProgress).value === NavigationSteps.SEARCH_FOCUSED;
-    const isAssetSelected = output ? internalSelectedOutputAsset.value : internalSelectedInputAsset.value;
-
-    return {
-      opacity: isSearchFocused || isAssetSelected ? 1 : 0,
-      pointerEvents: isSearchFocused || isAssetSelected ? 'auto' : 'none',
-    };
-  });
 
   const onInputSearchQueryChange = userAssetsStore(state => state.setSearchQuery);
 
@@ -90,12 +52,12 @@ export const SearchInput = ({
       (output && outputProgress.value === NavigationSteps.SEARCH_FOCUSED)
   );
 
+  const pastedSearchInputValue = useSharedValue('');
   const searchInputValue = useAnimatedProps(() => {
     // Removing the value when the input is focused allows the input to be reset to the correct value on blur
     const query = isSearchFocused.value ? undefined : '';
-
     return {
-      text: query,
+      text: pastedSearchInputValue.value || query,
       defaultValue: '',
     };
   });
@@ -104,6 +66,7 @@ export const SearchInput = ({
     () => isSearchFocused.value,
     (focused, prevFocused) => {
       if (focused === false && prevFocused === true) {
+        pastedSearchInputValue.value = '';
         if (output) runOnJS(onOutputSearchQueryChange)('');
         else runOnJS(onInputSearchQueryChange)('');
       }
@@ -139,12 +102,6 @@ export const SearchInput = ({
                   animatedProps={searchInputValue}
                   onChangeText={output ? onOutputSearchQueryChange : onInputSearchQueryChange}
                   onBlur={() => {
-                    runOnUI(() => {
-                      if (isSearchFocused.value) {
-                        handleExitSearchWorklet();
-                      }
-                    })();
-
                     if (isSearchFocused.value) {
                       if (output) {
                         if (useSwapsStore.getState().outputSearchQuery !== '') {
@@ -176,43 +133,12 @@ export const SearchInput = ({
           </Bleed>
         </Box>
         <Column width="content">
-          <Animated.View style={buttonVisibilityStyle}>
-            <GestureHandlerV1Button
-              onPressJS={() => (output ? outputSearchRef : inputSearchRef).current?.blur()}
-              onPressWorklet={() => {
-                'worklet';
-                const isSearchFocused =
-                  (output && outputProgress.value === NavigationSteps.SEARCH_FOCUSED) ||
-                  (!output && inputProgress.value === NavigationSteps.SEARCH_FOCUSED);
-
-                if (isSearchFocused || (output && internalSelectedOutputAsset.value) || (!output && internalSelectedInputAsset.value)) {
-                  handleExitSearchWorklet();
-                }
-              }}
-              scaleTo={0.8}
-            >
-              <Box
-                as={Animated.View}
-                alignItems="center"
-                borderRadius={18}
-                height={{ custom: 36 }}
-                justifyContent="center"
-                paddingHorizontal={{ custom: 12 - THICK_BORDER_WIDTH }}
-                style={
-                  output ? AnimatedSwapStyles.searchOutputAssetButtonWrapperStyle : AnimatedSwapStyles.searchInputAssetButtonWrapperStyle
-                }
-              >
-                <AnimatedText
-                  align="center"
-                  style={output ? AnimatedSwapStyles.searchOutputAssetButtonStyle : AnimatedSwapStyles.searchInputAssetButtonStyle}
-                  size="17pt"
-                  weight="heavy"
-                >
-                  {btnText}
-                </AnimatedText>
-              </Box>
-            </GestureHandlerV1Button>
-          </Animated.View>
+          <SearchInputButton
+            output={output}
+            pastedSearchInputValue={pastedSearchInputValue}
+            isSearchFocused={isSearchFocused}
+            handleExitSearchWorklet={handleExitSearchWorklet}
+          />
         </Column>
       </Columns>
     </Box>

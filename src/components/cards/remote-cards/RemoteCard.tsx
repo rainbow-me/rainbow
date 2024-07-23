@@ -3,9 +3,9 @@ import React, { useCallback } from 'react';
 import { get } from 'lodash';
 import ConditionalWrap from 'conditional-wrap';
 
-import { Box, Cover, Stack, Text, useForegroundColor } from '@/design-system';
+import { Border, Box, Cover, IconContainer, Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
 import { ButtonPressAnimation } from '@/components/animations';
-import { useRemoteCardContext } from './RemoteCardProvider';
+import { ImgixImage } from '@/components/images';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { useNavigation } from '@/navigation';
 import { Language } from '@/languages';
@@ -13,15 +13,14 @@ import { useAccountSettings, useDimensions } from '@/hooks';
 import { BackgroundColor, ForegroundColor, TextColor } from '@/design-system/color/palettes';
 import { maybeSignUri } from '@/handlers/imgix';
 import { colors } from '@/styles';
-import { useTheme } from '@/theme';
 import LinearGradient from 'react-native-linear-gradient';
 import { analyticsV2 } from '@/analytics';
 import { FlashList } from '@shopify/flash-list';
 import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
-import { TrimmedCard } from '@/resources/cards/cardCollectionQuery';
-import RemoteSvg from '@/components/svg/RemoteSvg';
+import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 
-const ICON_SIZE = 40;
+const ICON_SIZE = 36;
+const CARD_BORDER_RADIUS = 20;
 
 const getKeyForLanguage = (key: string, object: object, language: Language) => {
   if (!object) {
@@ -58,36 +57,32 @@ const getColorFromString = (color: string | undefined | null) => {
 };
 
 type RemoteCardProps = {
-  card: TrimmedCard;
-  cards: TrimmedCard[];
+  id: string;
   gutterSize: number;
-  carouselRef: React.RefObject<FlashList<TrimmedCard>> | null;
+  carouselRef: React.RefObject<FlashList<string>> | null;
 };
 
-export const RemoteCard: React.FC<RemoteCardProps> = ({ card = {} as TrimmedCard, cards, gutterSize, carouselRef }) => {
-  const { isDarkMode } = useTheme();
+export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carouselRef }) => {
+  const { isDarkMode } = useColorMode();
   const { navigate } = useNavigation();
   const { language } = useAccountSettings();
   const { width } = useDimensions();
-  const { dismissCard } = useRemoteCardContext();
+  const card = remoteCardsStore(state => state.getCard(id));
 
-  const { cardKey, accentColor, backgroundColor, primaryButton, imageIcon } = card;
-
-  const accent = useForegroundColor(getColorFromString(accentColor));
-  const border = useForegroundColor('separatorSecondary');
+  const accent = useForegroundColor(getColorFromString(card?.accentColor || undefined));
 
   const onPress = useCallback(() => {
     analyticsV2.track(analyticsV2.event.remoteCardPrimaryButtonPressed, {
-      cardKey: cardKey ?? 'unknown-backend-driven-card',
-      action: primaryButton.url || primaryButton.route,
-      props: JSON.stringify(primaryButton.props),
+      cardKey: card?.cardKey ?? 'unknown-backend-driven-card',
+      action: card?.primaryButton.url || card?.primaryButton.route,
+      props: JSON.stringify(card?.primaryButton.props),
     });
-    if (primaryButton && primaryButton.url) {
-      Linking.openURL(primaryButton.url);
-    } else if (primaryButton && primaryButton.route) {
-      navigate(primaryButton.route, primaryButton.props);
+    if (card?.primaryButton && card?.primaryButton.url) {
+      Linking.openURL(card?.primaryButton.url);
+    } else if (card?.primaryButton && card?.primaryButton.route) {
+      navigate(card?.primaryButton.route, card?.primaryButton.props);
     }
-  }, [navigate, primaryButton, cardKey]);
+  }, [navigate, card?.primaryButton, card?.cardKey]);
 
   const onDismiss = useCallback(
     (e: ButtonPressAnimationTouchEvent) => {
@@ -95,26 +90,25 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ card = {} as TrimmedCard
         e.stopPropagation();
       }
       analyticsV2.track(analyticsV2.event.remoteCardDismissed, {
-        cardKey: cardKey ?? 'unknown-backend-driven-card',
+        cardKey: card?.cardKey ?? card?.sys.id ?? 'unknown-backend-driven-card',
       });
 
-      const isLastCard = cards.length === 1;
+      const { cards } = remoteCardsStore.getState();
 
-      dismissCard(card.sys.id);
+      const isLastCard = cards.size === 1;
+
+      card?.sys.id && remoteCardsStore.getState().dismissCard(card.sys.id);
       if (carouselRef?.current) {
-        const currentCardIdx = cards.findIndex(c => c.cardKey === cardKey);
-        if (currentCardIdx === -1) return;
-
         // check if this is the last card and don't scroll if so
         if (isLastCard) return;
 
         carouselRef.current.scrollToIndex({
-          index: currentCardIdx,
+          index: Array.from(cards.values()).findIndex(c => c.sys.id === card?.sys.id),
           animated: true,
         });
       }
     },
-    [carouselRef, dismissCard, cards, cardKey, card.sys.id]
+    [card?.cardKey, card?.sys.id, carouselRef]
   );
 
   const imageForPlatform = () => {
@@ -143,17 +137,17 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ card = {} as TrimmedCard
     }
   };
 
-  if (!card) {
+  if (!card || card.dismissed) {
     return null;
   }
 
   const imageUri = imageForPlatform() ? maybeSignUri(imageForPlatform(), { w: 40, h: 40 }) : undefined;
 
   // device width - gutter - icon size
-  const contentWidth = width - gutterSize - 16 * 2 - ICON_SIZE;
+  const contentWidth = width - gutterSize - 16 * 2 - ICON_SIZE - 12;
   return (
     <ConditionalWrap
-      condition={primaryButton.route || primaryButton.url}
+      condition={card?.primaryButton.route || card?.primaryButton.url}
       wrap={children => (
         <ButtonPressAnimation hapticType="impactHeavy" onPress={onPress} disabled={IS_ANDROID} scaleTo={0.94} disallowInterruption>
           {children}
@@ -161,55 +155,67 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ card = {} as TrimmedCard
       )}
     >
       <Box
-        testID={`remote-card-${cardKey}`}
+        testID={`remote-card-${card?.cardKey}`}
         width={{ custom: width - gutterSize }}
         overflow="visible"
         justifyContent="center"
         height={'full'}
-        borderRadius={18}
-        padding={{ custom: 16 }}
+        borderRadius={CARD_BORDER_RADIUS}
+        padding="16px"
         shadow="12px"
-        style={{
-          borderColor: border,
-          borderWidth: 1,
-        }}
-        background={(backgroundColor as BackgroundColor) ?? 'surfaceSecondaryElevated'}
+        background={(card?.backgroundColor as BackgroundColor) ?? 'surfaceSecondaryElevated'}
+        style={card?.backgroundColor || !isDarkMode ? {} : { backgroundColor: '#191A1C' }}
       >
         <Box flexDirection="row" width={{ custom: width - gutterSize - 16 * 2 }} gap={12}>
           <Box
             as={LinearGradient}
             style={{
+              backgroundColor: colors.alpha(accent, 0.12),
               borderColor: colors.alpha(accent, 0.06),
               borderWidth: 1,
               marginTop: 'auto',
               marginBottom: 'auto',
             }}
-            colors={[colors.alpha(accent, 0.1), colors.alpha(accent, 0.1), colors.alpha(accent, 0.12), colors.alpha(accent, 0.12)]}
-            start={{ x: -0.69, y: 0 }}
-            end={{ x: 0.99, y: 1 }}
+            colors={[colors.alpha(accent, isDarkMode ? 0.1 : 0), colors.alpha(accent, isDarkMode ? 0 : 0.1)]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
             borderRadius={card.imageRadius ?? 10}
             height={{ custom: ICON_SIZE }}
             width={{ custom: ICON_SIZE }}
           >
             <Box
               height="full"
-              style={{
-                shadowColor: isDarkMode ? colors.shadowBlack : accent,
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.3,
-                shadowRadius: 3,
-              }}
+              style={
+                !card?.imageIcon && imageUri
+                  ? {
+                      shadowColor: isDarkMode ? colors.shadowBlack : accent,
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowOpacity: 0.3,
+                      shadowRadius: 3,
+                    }
+                  : {}
+              }
               width="full"
             >
               <Cover alignHorizontal="center" alignVertical="center">
-                {imageIcon && (
-                  <Text align="center" color={{ custom: accent }} size="icon 17px" weight="bold">
-                    {imageIcon}
-                  </Text>
+                {card?.imageIcon && (
+                  <TextShadow blur={12}>
+                    <Text align="center" color={{ custom: accent }} size="icon 17px" weight="heavy">
+                      {card?.imageIcon}
+                    </Text>
+                  </TextShadow>
                 )}
 
-                {!imageIcon && imageUri && (
-                  <Box as={RemoteSvg} uri={imageForPlatform()} borderRadius={card.imageRadius ?? 10} style={styles.image} />
+                {!card?.imageIcon && imageUri && (
+                  <Box
+                    as={ImgixImage}
+                    enableFasterImage
+                    fm="png"
+                    source={{ uri: imageForPlatform() }}
+                    borderRadius={card.imageRadius ?? 10}
+                    size={ICON_SIZE}
+                    style={styles.image}
+                  />
                 )}
               </Cover>
             </Box>
@@ -220,19 +226,21 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ card = {} as TrimmedCard
               zIndex={1}
               position="absolute"
               top={{ custom: 2 }}
-              right={{ custom: 4 }}
-              hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
+              right={{ custom: 0 }}
+              hitSlop={{ top: 8, right: 12, bottom: 8, left: 8 }}
             >
               <ButtonPressAnimation scaleTo={0.8} overflowMargin={50} skipTopMargin disallowInterruption onPress={onDismiss}>
-                <Text color={'labelTertiary'} size="13pt" weight="bold">
-                  􀆄
-                </Text>
+                <IconContainer height={10} width={11}>
+                  <Text align="center" color={'labelTertiary'} size="13pt" weight="heavy">
+                    􀆄
+                  </Text>
+                </IconContainer>
               </ButtonPressAnimation>
             </Box>
           )}
           <Box width={{ custom: contentWidth }}>
-            <Stack space="10px">
-              <Text color={(card.titleColor as TextColor) ?? 'label'} size="17pt" weight="heavy" numberOfLines={1}>
+            <Box gap={10}>
+              <Text color={(card.titleColor as TextColor) ?? 'label'} size="15pt" weight="heavy" numberOfLines={1}>
                 {getKeyForLanguage('subtitle', card, language as Language)}
               </Text>
 
@@ -248,33 +256,22 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ card = {} as TrimmedCard
                 disallowInterruption
                 onPress={onPress}
               >
-                <Text
-                  numberOfLines={1}
-                  color={{ custom: accent }}
-                  size="13pt"
-                  weight="heavy"
-                  style={{
-                    textShadowOffset: { width: 0, height: 0 },
-                    textShadowRadius: 4,
-                    textShadowColor: isDarkMode ? colors.alpha(accent, 0.6) : colors.alpha(accent, 0.2),
-                  }}
-                >
-                  {getKeyForLanguage('primaryButton.text', card, language as Language)}
-                </Text>
+                <TextShadow blur={8} shadowOpacity={0.3}>
+                  <Text numberOfLines={1} color={{ custom: accent }} size="13pt" weight="heavy">
+                    {getKeyForLanguage('primaryButton.text', card, language as Language)}
+                  </Text>
+                </TextShadow>
               </ButtonPressAnimation>
-            </Stack>
+            </Box>
           </Box>
         </Box>
+        <Border borderRadius={CARD_BORDER_RADIUS} />
       </Box>
     </ConditionalWrap>
   );
 };
 
 const styles = StyleSheet.create({
-  buttonText: {
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 4,
-  },
   image: {
     height: ICON_SIZE,
     width: ICON_SIZE,

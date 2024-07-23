@@ -1,24 +1,49 @@
-import React, { memo, useCallback, useMemo } from 'react';
-import { ButtonPressAnimation } from '@/components/animations';
-import { Box, Column, Columns, HitSlop, Inline, Text } from '@/design-system';
-import { CoinRowButton } from '@/__swaps__/screens/Swap/components/CoinRowButton';
 import { BalancePill } from '@/__swaps__/screens/Swap/components/BalancePill';
-import { toggleFavorite } from '@/resources/favorites';
-import { SwapCoinIcon } from './SwapCoinIcon';
-import { ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
-import { ContextMenuButton, OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
-import { IS_ANDROID } from '@/env';
-import { startCase } from 'lodash';
-import { setClipboard } from '@/hooks/useClipboard';
-import { RainbowNetworks } from '@/networks';
-import * as i18n from '@/languages';
-import { ETH_ADDRESS } from '@/references';
-import { ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { userAssetsStore } from '@/state/assets/userAssets';
-import { SearchAsset } from '@/__swaps__/types/search';
+import { CoinRowButton } from '@/__swaps__/screens/Swap/components/CoinRowButton';
+import { AddressOrEth, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
+import { SearchAsset } from '@/__swaps__/types/search';
+import { ButtonPressAnimation } from '@/components/animations';
+import { ContextMenuButton } from '@/components/context-menu';
+import { Box, Column, Columns, HitSlop, Inline, Text } from '@/design-system';
+import { setClipboard } from '@/hooks/useClipboard';
+import * as i18n from '@/languages';
+import { RainbowNetworks } from '@/networks';
+import { BASE_DEGEN_ADDRESS, DEGEN_CHAIN_DEGEN_ADDRESS, ETH_ADDRESS } from '@/references';
+import { toggleFavorite } from '@/resources/favorites';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
+import { startCase } from 'lodash';
+import React, { memo, useCallback, useMemo } from 'react';
+import { GestureResponderEvent } from 'react-native';
+import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
+import { SwapCoinIcon } from './SwapCoinIcon';
 
 export const COIN_ROW_WITH_PADDING_HEIGHT = 56;
+
+function determineFavoriteAddressAndChain(address: AddressOrEth, mainnetAddress: AddressOrEth | undefined, chainId: ChainId | undefined) {
+  if (address === BASE_DEGEN_ADDRESS && chainId === ChainId.base) {
+    return {
+      addressToFetch: DEGEN_CHAIN_DEGEN_ADDRESS,
+      chainToFetchOn: ChainId.degen,
+    };
+  }
+
+  // if no mainnet address, default to fetch the favorite for the address we have and chain we have
+  if (!mainnetAddress) {
+    return {
+      addressToFetch: address,
+      chainToFetchOn: chainId ?? ChainId.mainnet,
+    };
+  }
+
+  const isL2Ethereum = mainnetAddress.toLowerCase() === ETH_ADDRESS;
+
+  return {
+    addressToFetch: isL2Ethereum ? ETH_ADDRESS : mainnetAddress,
+    chainToFetchOn: ChainId.mainnet,
+  };
+}
 
 interface InputCoinRowProps {
   isFavorite?: boolean;
@@ -69,11 +94,24 @@ export const CoinRow = memo(function CoinRow({ isFavorite, onPress, output, uniq
   }, [isFavorite]);
 
   const handleToggleFavorite = useCallback(() => {
-    // NOTE: It's important to always fetch ETH favorite on mainnet
-    if (address) {
-      return toggleFavorite(address, mainnetAddress === ETH_ADDRESS ? ChainId.mainnet : chainId);
-    }
+    if (!address) return;
+
+    const { addressToFetch, chainToFetchOn } = determineFavoriteAddressAndChain(address, mainnetAddress, chainId);
+    toggleFavorite(addressToFetch, chainToFetchOn);
   }, [address, mainnetAddress, chainId]);
+
+  const onPressHandler = useCallback(
+    (event: GestureResponderEvent) => {
+      event?.stopPropagation();
+
+      if (output) {
+        return onPress();
+      }
+
+      return onPress(inputAsset || null);
+    },
+    [inputAsset, onPress, output]
+  );
 
   if (!address || !chainId) return null;
 
@@ -81,7 +119,7 @@ export const CoinRow = memo(function CoinRow({ isFavorite, onPress, output, uniq
     <Box style={{ height: COIN_ROW_WITH_PADDING_HEIGHT, width: '100%' }}>
       <Columns alignVertical="center">
         <Column>
-          <ButtonPressAnimation disallowInterruption onPress={output ? onPress : () => onPress(inputAsset || null)} scaleTo={0.95}>
+          <ButtonPressAnimation disallowInterruption onPress={onPressHandler} scaleTo={0.95}>
             <HitSlop vertical="10px">
               <Box
                 alignItems="center"
@@ -219,13 +257,11 @@ const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId })
 
   return (
     <ContextMenuButton
-      isMenuPrimaryAction
-      // @ts-expect-error Types of property 'menuItems' are incompatible
-      menuConfig={menuConfig}
-      onPress={IS_ANDROID ? onPressAndroid : undefined}
+      menuItems={menuConfig.menuItems}
+      menuTitle={menuConfig.menuTitle}
+      onPressAndroid={onPressAndroid}
       onPressMenuItem={handlePressMenuItem}
-      useActionSheetFallback={false}
-      wrapNativeComponent={false}
+      testID={`coin-row-info-button-${address}`}
     >
       <CoinRowButton icon="􀅳" outline size="icon 14px" />
     </ContextMenuButton>

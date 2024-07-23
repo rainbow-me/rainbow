@@ -9,14 +9,16 @@ const useSelectedGasSpeedStore = createRainbowStore<{ [c in ChainId]?: GasSpeed 
   version: 0,
   storageKey: 'preferred gas speed',
 });
-export const useSelectedGasSpeed = (chainId: ChainId) =>
-  useSelectedGasSpeedStore(s => {
-    const speed = s[chainId] || GasSpeed.FAST;
-    if (speed === GasSpeed.CUSTOM && getCustomGasSettings(chainId) === undefined) return GasSpeed.FAST;
-    return speed;
-  });
+
+const selectSelectedGasSpeed = (chainId: ChainId) => (state: { [c in ChainId]?: GasSpeed }) => {
+  const speed = state[chainId] || GasSpeed.FAST;
+  if (speed === GasSpeed.CUSTOM && getCustomGasSettings(chainId) === undefined) return GasSpeed.FAST;
+  return speed;
+};
+
+export const useSelectedGasSpeed = (chainId: ChainId) => useSelectedGasSpeedStore(selectSelectedGasSpeed(chainId));
 export const setSelectedGasSpeed = (chainId: ChainId, speed: GasSpeed) => useSelectedGasSpeedStore.setState({ [chainId]: speed });
-export const getSelectedGasSpeed = (chainId: ChainId) => useSelectedGasSpeedStore.getState()[chainId] || GasSpeed.FAST;
+export const getSelectedGasSpeed = (chainId: ChainId) => selectSelectedGasSpeed(chainId)(useSelectedGasSpeedStore.getState());
 
 export function useGasSettings(chainId: ChainId, speed: GasSpeed) {
   const userCustomGasSettings = useCustomGasSettings(chainId);
@@ -54,6 +56,6 @@ export function getGasSettings(speed: GasSpeed, chainId: ChainId) {
 }
 
 export function getSelectedGas(chainId: ChainId) {
-  const selectedGasSpeed = useSelectedGasSpeedStore.getState()[chainId] || GasSpeed.FAST;
+  const selectedGasSpeed = getSelectedGasSpeed(chainId);
   return getGasSettings(selectedGasSpeed, chainId);
 }

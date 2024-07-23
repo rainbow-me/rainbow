@@ -21,15 +21,7 @@ const EmojisListHeader = ({ title, showSectionTitles, nextCategoryOffset }: Prop
   if (showSectionTitles) {
     return (
       <Animated.View style={[avatarBuilderStyles.sectionHeaderWrap, { backgroundColor: colors.white }, animatedStyle]}>
-        <Text
-          style={[
-            // @ts-expect-error Font weight type (string) is too broad to be used in styles when using TypeScript. Type Script complains that it should be a union of ... "900" | "800" ...
-            avatarBuilderStyles.sectionHeader,
-            { color: colors.alpha(colors.blueGreyDark, 0.5) },
-          ]}
-        >
-          {title}
-        </Text>
+        <Text style={[avatarBuilderStyles.sectionHeader, { color: colors.alpha(colors.blueGreyDark, 0.5) }]}>{title}</Text>
       </Animated.View>
     );
   }

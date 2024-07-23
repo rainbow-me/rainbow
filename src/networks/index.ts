@@ -1,18 +1,19 @@
+import { ChainId } from '@/__swaps__/types/chains';
+import store from '@/redux/store';
+import * as ls from '@/storage';
 import { getArbitrumNetworkObject } from './arbitrum';
+import { getAvalancheNetworkObject } from './avalanche';
+import { getBaseNetworkObject } from './base';
+import { getBlastNetworkObject } from './blast';
 import { getBSCNetworkObject } from './bsc';
-import { getMainnetNetworkObject } from './mainnet';
+import { getDegenNetworkObject } from './degen';
+import { getGnosisNetworkObject } from './gnosis';
 import { getGoerliNetworkObject } from './goerli';
+import { getMainnetNetworkObject } from './mainnet';
 import { getOptimismNetworkObject } from './optimism';
 import { getPolygonNetworkObject } from './polygon';
 import { Network, NetworkProperties } from './types';
 import { getZoraNetworkObject } from './zora';
-import { getGnosisNetworkObject } from './gnosis';
-import { getBaseNetworkObject } from './base';
-import { getAvalancheNetworkObject } from './avalanche';
-import { getBlastNetworkObject } from './blast';
-import { getDegenNetworkObject } from './degen';
-import store from '@/redux/store';
-import * as ls from '@/storage';
 
 /**
  * Array of all Rainbow Networks
@@ -93,3 +94,11 @@ export function sortNetworks(): NetworkProperties[] {
 export function getSwappableNetworks(): NetworkProperties[] {
   return RainbowNetworks.filter(network => network.features.swaps);
 }
+
+export const RainbowNetworkByChainId = RainbowNetworks.reduce(
+  (acc, network) => {
+    acc[network.id] = network;
+    return acc;
+  },
+  {} as Record<ChainId, NetworkProperties>
+);

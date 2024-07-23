@@ -60,7 +60,7 @@ export const estimateSwapGasLimit = async ({
   quote: Quote;
 }): Promise<string> => {
   // TODO: MARK - Replace this once we migrate network => chainId
-  const provider = await getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
+  const provider = getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
   if (!provider || !quote) {
     return gasUnits.basic_swap[chainId];
   }
@@ -79,14 +79,14 @@ export const estimateSwapGasLimit = async ({
       const gasLimit = await estimateGasWithPadding(
         {
           from: quote.from,
-          value: isWrapNativeAsset ? quote.buyAmount : '0',
+          value: isWrapNativeAsset ? quote.buyAmount.toString() : '0',
         },
         getWrappedAssetMethod(
           isWrapNativeAsset ? 'deposit' : 'withdraw',
           provider as StaticJsonRpcProvider,
           chainId as unknown as SwapChainId
         ),
-        null,
+        isWrapNativeAsset ? [] : [quote.buyAmount.toString()],
         provider,
         WRAP_GAS_PADDING
       );
@@ -144,7 +144,7 @@ export const estimateUnlockAndSwapFromMetadata = async ({
     });
 
     // TODO: MARK - Replace this once we migrate network => chainId
-    const provider = await getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
+    const provider = getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
     const swapTransaction = await populateSwap({
       provider,
       quote,

@@ -80,7 +80,7 @@ export const WelcomeScreenRainbowButton = ({
   ...props
 }: Props) => {
   return (
-    <ButtonPressAnimation onPress={onPress} overflowMargin={40} radiusAndroid={height / 2} scaleTo={0.9} {...props}>
+    <ButtonPressAnimation onPress={onPress} radiusAndroid={height / 2} scaleTo={0.9} {...props}>
       {ios && <DarkShadow style={darkShadowStyle} />}
       <Shadow style={shadowStyle} />
       <ButtonContainer height={height} style={style}>

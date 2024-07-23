@@ -16,5 +16,3 @@ export const Paragraph = ({ children, gap = 15, leftIndent = 0 }: { children: Re
     </View>
   );
 };
-
-export default Paragraph;

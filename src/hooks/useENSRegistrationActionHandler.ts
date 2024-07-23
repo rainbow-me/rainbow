@@ -77,8 +77,8 @@ export default function useENSRegistrationActionHandler(
       }
     };
 
-    (async () => {
-      provider = await getProviderForNetwork();
+    (() => {
+      provider = getProviderForNetwork();
       provider.on('block', updateAvatars);
     })();
     return () => {
@@ -91,7 +91,7 @@ export default function useENSRegistrationActionHandler(
     async (callback: () => void = NOOP) => {
       updateAvatarsOnNextBlock.current = true;
 
-      const provider = await getProviderForNetwork();
+      const provider = getProviderForNetwork();
       const wallet = await loadWallet(undefined, false, provider);
       if (!wallet) {
         return;
@@ -147,7 +147,7 @@ export default function useENSRegistrationActionHandler(
     async (callback: () => void = NOOP) => {
       const { name, duration } = registrationParameters as RegistrationParameters;
 
-      const provider = await getProviderForNetwork();
+      const provider = getProviderForNetwork();
       const wallet = await loadWallet(undefined, false, provider);
       if (!wallet) {
         return;
@@ -183,7 +183,7 @@ export default function useENSRegistrationActionHandler(
     async (callback: () => void = NOOP) => {
       const { name } = registrationParameters as RegistrationParameters;
 
-      const provider = await getProviderForNetwork();
+      const provider = getProviderForNetwork();
       const wallet = await loadWallet(undefined, false, provider);
       if (!wallet) {
         return;
@@ -208,7 +208,7 @@ export default function useENSRegistrationActionHandler(
     async (callback: () => void = NOOP) => {
       const { name } = registrationParameters as RegistrationParameters;
 
-      const provider = await getProviderForNetwork();
+      const provider = getProviderForNetwork();
       const wallet = await loadWallet(undefined, false, provider);
       if (!wallet) {
         return;
@@ -230,7 +230,7 @@ export default function useENSRegistrationActionHandler(
 
   const setRecordsAction = useCallback(
     async (callback: () => void = NOOP) => {
-      const provider = await getProviderForNetwork();
+      const provider = getProviderForNetwork();
       const wallet = await loadWallet(undefined, false, provider);
       if (!wallet) {
         return;
@@ -268,7 +268,7 @@ export default function useENSRegistrationActionHandler(
     ) => {
       let wallet = walletOverride;
       if (!wallet) {
-        const provider = await getProviderForNetwork();
+        const provider = getProviderForNetwork();
         wallet = await loadWallet(undefined, false, provider);
       }
       if (!wallet) {

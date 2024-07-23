@@ -11,3 +11,4 @@ rainbow-scripts
 __generated__
 coverage
 InjectedJSBundle.js
+.yarn

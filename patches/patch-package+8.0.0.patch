@@ -1,0 +1,143 @@
+diff --git a/node_modules/patch-package/dist/getPackageResolution.js b/node_modules/patch-package/dist/getPackageResolution.js
+index 3f56779..ca604b7 100644
+--- a/node_modules/patch-package/dist/getPackageResolution.js
++++ b/node_modules/patch-package/dist/getPackageResolution.js
+@@ -51,28 +51,33 @@ function getPackageResolution({ packageDetails, packageManager, appPath, }) {
+             // @ts-ignore
+             coerceSemVer_1.coerceSemVer(v.version) === coerceSemVer_1.coerceSemVer(installedVersion));
+         const resolutions = entries.map(([_, v]) => {
+-            // @ts-ignore
+             return v.resolved;
+         });
+         if (resolutions.length === 0) {
+             throw new Error(`\`${packageDetails.pathSpecifier}\`'s installed version is ${installedVersion} but a lockfile entry for it couldn't be found. Your lockfile is likely to be corrupt or you forgot to reinstall your packages.`);
+         }
+         if (new Set(resolutions).size !== 1) {
+-            console.log(`Ambigious lockfile entries for ${packageDetails.pathSpecifier}. Using version ${installedVersion}`);
++            console.log(`Ambiguous lockfile entries for ${packageDetails.pathSpecifier}. Using version ${installedVersion}`);
+             return installedVersion;
+         }
+         if (resolutions[0]) {
+             return resolutions[0];
+         }
+-        const resolution = entries[0][0].slice(packageDetails.name.length + 1);
++        const packageName = packageDetails.name;
++        const resolutionVersion = entries[0][1].version;
++        // `@backstage/integration@npm:^1.5.0, @backstage/integration@npm:^1.7.0, @backstage/integration@npm:^1.7.2`
++        // ->
++        // `^1.5.0 ^1.7.0 ^1.7.2`
++        const resolution = entries[0][0]
++            .replace(new RegExp(packageName + "@", "g"), "")
++            .replace(/npm:/g, "")
++            .replace(/,/g, "");
+         // resolve relative file path
+         if (resolution.startsWith("file:.")) {
+             return `file:${path_1.resolve(appPath, resolution.slice("file:".length))}`;
+         }
+-        if (resolution.startsWith("npm:")) {
+-            return resolution.replace("npm:", "");
+-        }
+-        return resolution;
++        // add `resolutionVersion` to ensure correct version, `^1.0.0` could resolve latest `v1.3.0`, but `^1.0.0 1.2.1` won't
++        return resolutionVersion ? resolution + " " + resolutionVersion : resolution;
+     }
+     else {
+         const lockfile = require(path_1.join(appPath, packageManager === "npm-shrinkwrap"
+diff --git a/node_modules/patch-package/dist/makePatch.js b/node_modules/patch-package/dist/makePatch.js
+index d8d0925..c6ae153 100644
+--- a/node_modules/patch-package/dist/makePatch.js
++++ b/node_modules/patch-package/dist/makePatch.js
+@@ -30,7 +30,7 @@ function printNoPackageFoundError(packageName, packageJsonPath) {
+   File not found: ${packageJsonPath}`);
+ }
+ function makePatch({ packagePathSpecifier, appPath, packageManager, includePaths, excludePaths, patchDir, createIssue, mode, }) {
+-    var _a, _b, _c, _d, _e;
++    var _a, _b, _c, _d, _e, _f, _g;
+     const packageDetails = PackageDetails_1.getPatchDetailsFromCliString(packagePathSpecifier);
+     if (!packageDetails) {
+         console_1.default.log("No such package", packagePathSpecifier);
+@@ -99,6 +99,8 @@ function makePatch({ packagePathSpecifier, appPath, packageManager, includePaths
+         // make a blank package.json
+         fs_extra_1.mkdirpSync(tmpRepoNpmRoot);
+         fs_extra_1.writeFileSync(tmpRepoPackageJsonPath, JSON.stringify({
++            // support `corepack` enabled without `.yarn/releases`
++            packageManager: appPackageJson.packageManager,
+             dependencies: {
+                 [packageDetails.name]: getPackageResolution_1.getPackageResolution({
+                     packageDetails,
+@@ -109,7 +111,14 @@ function makePatch({ packagePathSpecifier, appPath, packageManager, includePaths
+             resolutions: resolveRelativeFileDependencies_1.resolveRelativeFileDependencies(appPath, appPackageJson.resolutions || {}),
+         }));
+         const packageVersion = getPackageVersion_1.getPackageVersion(path_1.join(path_1.resolve(packageDetails.path), "package.json"));
+-        [".npmrc", ".yarnrc", ".yarn"].forEach((rcFile) => {
++        [
++            ".npmrc",
++            ".yarnrc",
++            ".yarnrc.yml",
++            // don't include the whole `.yarn` directory which could contain huge `cache`
++            ".yarn/plugins",
++            ".yarn/releases",
++        ].forEach((rcFile) => {
+             const rcPath = path_1.join(appPath, rcFile);
+             if (fs_extra_1.existsSync(rcPath)) {
+                 fs_extra_1.copySync(rcPath, path_1.join(tmpRepo.name, rcFile), { dereference: true });
+@@ -117,10 +126,19 @@ function makePatch({ packagePathSpecifier, appPath, packageManager, includePaths
+         });
+         if (packageManager === "yarn") {
+             console_1.default.info(chalk_1.default.grey("•"), `Installing ${packageDetails.name}@${packageVersion} with yarn`);
++            const yarnArgs = ["install"];
++            const yarnVersionCmd = spawnSafe_1.spawnSafeSync(`yarn`, ["--version"], {
++                cwd: tmpRepoNpmRoot,
++                logStdErrOnError: false,
++            });
++            const isYarnV1 = yarnVersionCmd.stdout.toString().startsWith("1.");
++            if (isYarnV1) {
++                yarnArgs.push("--ignore-engines");
++            }
+             try {
+                 // try first without ignoring scripts in case they are required
+                 // this works in 99.99% of cases
+-                spawnSafe_1.spawnSafeSync(`yarn`, ["install", "--ignore-engines"], {
++                spawnSafe_1.spawnSafeSync(`yarn`, yarnArgs, {
+                     cwd: tmpRepoNpmRoot,
+                     logStdErrOnError: false,
+                 });
+@@ -128,7 +146,7 @@ function makePatch({ packagePathSpecifier, appPath, packageManager, includePaths
+             catch (e) {
+                 // try again while ignoring scripts in case the script depends on
+                 // an implicit context which we haven't reproduced
+-                spawnSafe_1.spawnSafeSync(`yarn`, ["install", "--ignore-engines", "--ignore-scripts"], {
++                spawnSafe_1.spawnSafeSync(`yarn`, [...yarnArgs, isYarnV1 ? "--ignore-scripts" : "--mode=skip-build"], {
+                     cwd: tmpRepoNpmRoot,
+                 });
+             }
+@@ -217,7 +235,8 @@ function makePatch({ packagePathSpecifier, appPath, packageManager, includePaths
+             parse_1.parsePatchFile(diffResult.stdout.toString());
+         }
+         catch (e) {
+-            if (e.message.includes("Unexpected file mode string: 120000")) {
++            const err = e;
++            if (err.message.includes("Unexpected file mode string: 120000")) {
+                 console_1.default.log(`
+ ⛔️ ${chalk_1.default.red.bold("ERROR")}
+ 
+@@ -231,7 +250,7 @@ function makePatch({ packagePathSpecifier, appPath, packageManager, includePaths
+             else {
+                 const outPath = "./patch-package-error.json.gz";
+                 fs_extra_1.writeFileSync(outPath, zlib_1.gzipSync(JSON.stringify({
+-                    error: { message: e.message, stack: e.stack },
++                    error: { message: err.message, stack: err.stack },
+                     patch: diffResult.stdout.toString(),
+                 })));
+                 console_1.default.log(`
+@@ -391,7 +410,9 @@ function makePatch({ packagePathSpecifier, appPath, packageManager, includePaths
+         }
+     }
+     catch (e) {
+-        console_1.default.log(e);
++        const err = e;
++        // try to log more useful error message
++        console_1.default.log(((_f = err.stderr) === null || _f === void 0 ? void 0 : _f.toString()) || ((_g = err.stdout) === null || _g === void 0 ? void 0 : _g.toString()) || e);
+         throw e;
+     }
+     finally {

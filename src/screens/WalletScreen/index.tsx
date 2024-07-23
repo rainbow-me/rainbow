@@ -29,8 +29,10 @@ import { AppState } from '@/redux/store';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { usePositions } from '@/resources/defi/PositionsQuery';
 import styled from '@/styled-thing';
-import { UserAssetsSync } from '@/__swaps__/screens/Swap/components/UserAssetsSync';
 import { IS_ANDROID } from '@/env';
+import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
+import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
+import { UserAssetsSync } from '@/state/sync/UserAssetsSync';
 
 const WalletPage = styled(Page)({
   ...position.sizeAsObject('100%'),
@@ -116,7 +118,7 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
 
   const isLoadingUserAssetsAndAddress = isLoadingUserAssets && !!accountAddress;
 
-  const { accentColor } = useAccountAccentColor();
+  const { highContrastAccentColor } = useAccountAccentColor();
 
   return (
     <View
@@ -129,7 +131,7 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
         <Box style={{ flex: 1, marginTop: -(navbarHeight + insets.top) }}>
           {/* @ts-expect-error JavaScript component */}
           <AssetList
-            accentColor={accentColor}
+            accentColor={highContrastAccentColor}
             disableRefreshControl={isLoadingUserAssetsAndAddress}
             isLoading={IS_ANDROID && isLoadingUserAssetsAndAddress}
             isWalletEthZero={isWalletEthZero}
@@ -141,8 +143,10 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
           <Toast isVisible={isAddressCopiedToastActive} text="􀁣 Address Copied" testID="address-copied-toast" />
         </ToastPositionContainer>
 
-        {/* NOTE: The component below renders null and is solely for keeping react-query and Zustand in sync */}
+        {/* NOTE: The components below render null and are solely for keeping react-query and Zustand in sync */}
         <UserAssetsSync />
+        <RemoteCardsSync />
+        <RemotePromoSheetSync />
       </WalletPage>
     </View>
   );

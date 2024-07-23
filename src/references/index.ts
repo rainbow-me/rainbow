@@ -118,6 +118,8 @@ export const WBTC_ADDRESS = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599';
 export const DOG_ADDRESS = '0xbaac2b4491727d78d2b78815144570b9f2fe8899';
 export const OP_ADDRESS = '0x4200000000000000000000000000000000000042';
 
+export const BASE_DEGEN_ADDRESS = '0x4ed4e862860bed51a9570b96d89af5e1b0efefed';
+
 export const TRANSFER_EVENT_TOPIC_LENGTH = 3;
 export const TRANSFER_EVENT_KECCAK = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 
@@ -258,5 +260,5 @@ export const SUPPORTED_CHAINS = ({ testnetMode = false }: { testnetMode?: boolea
     return chainList;
   }, [] as Chain[]);
 
-export const SUPPORTED_CHAIN_IDS = ({ testnetMode = false }: { testnetMode?: boolean }) =>
+export const SUPPORTED_CHAIN_IDS = ({ testnetMode = false }: { testnetMode?: boolean }): ChainId[] =>
   SUPPORTED_CHAINS({ testnetMode }).map(chain => chain.id);

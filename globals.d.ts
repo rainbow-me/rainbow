@@ -1,3 +1,8 @@
+declare module '*.png';
+declare module '*.svg';
+declare module '*.jpeg';
+declare module '*.jpg';
+
 /**
  * @deprecated use `IS_ANDROID` from `@/env`
  */
@@ -94,6 +99,7 @@ declare module 'react-native-dotenv' {
   export const QUIET_OLD_LOGGER: string;
   export const ARC_GRAPHQL_API_KEY: string;
   export const METADATA_GRAPHQL_API_KEY: string;
+  export const GRAPH_ENS_API_KEY: string;
   export const RESERVOIR_API_KEY_PROD: string;
   export const RESERVOIR_API_KEY_DEV: string;
   export const RPC_PROXY_BASE_URL_PROD: string;
@@ -102,4 +108,5 @@ declare module 'react-native-dotenv' {
   export const RPC_PROXY_API_KEY_DEV: string;
   export const REACT_NATIVE_RUDDERSTACK_WRITE_KEY: string;
   export const RUDDERSTACK_DATA_PLANE_URL: string;
+  export const SILENCE_EMOJI_WARNINGS: boolean;
 }

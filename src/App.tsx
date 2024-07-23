@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { AppRegistry, AppState, AppStateStatus, Dimensions, InteractionManager, Linking, LogBox, View } from 'react-native';
 import branch from 'react-native-branch';
 
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { connect, Provider as ReduxProvider } from 'react-redux';
@@ -46,8 +47,6 @@ import { saveFCMToken } from '@/notifications/tokens';
 import { initializeReservoirClient } from '@/resources/reservoir/client';
 import { ReviewPromptAction } from '@/storage/schema';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
-import { RemotePromoSheetProvider } from '@/components/remote-promo-sheet/RemotePromoSheetProvider';
-import { RemoteCardProvider } from '@/components/cards/remote-cards';
 import { initializeRemoteConfig } from '@/model/remoteConfig';
 import { NavigationContainerRef } from '@react-navigation/native';
 import { RootStackParamList } from './navigation/types';
@@ -167,14 +166,10 @@ function App({ walletReady }: AppProps) {
     <Portal>
       <View style={containerStyle}>
         {initialRoute && (
-          <RemotePromoSheetProvider isWalletReady={walletReady}>
-            <RemoteCardProvider>
-              <InitialRouteContext.Provider value={initialRoute}>
-                <RoutesComponent ref={handleNavigatorRef} />
-                <PortalConsumer />
-              </InitialRouteContext.Provider>
-            </RemoteCardProvider>
-          </RemotePromoSheetProvider>
+          <InitialRouteContext.Provider value={initialRoute}>
+            <RoutesComponent ref={handleNavigatorRef} />
+            <PortalConsumer />
+          </InitialRouteContext.Provider>
         )}
         <OfflineToast />
       </View>
@@ -292,13 +287,15 @@ function Root() {
         <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
           <SafeAreaProvider>
             <MainThemeProvider>
-              <RainbowContextWrapper>
-                <SharedValuesProvider>
-                  <ErrorBoundary>
-                    <AppWithRedux walletReady={false} />
-                  </ErrorBoundary>
-                </SharedValuesProvider>
-              </RainbowContextWrapper>
+              <GestureHandlerRootView style={{ flex: 1 }}>
+                <RainbowContextWrapper>
+                  <SharedValuesProvider>
+                    <ErrorBoundary>
+                      <AppWithRedux walletReady={false} />
+                    </ErrorBoundary>
+                  </SharedValuesProvider>
+                </RainbowContextWrapper>
+              </GestureHandlerRootView>
             </MainThemeProvider>
           </SafeAreaProvider>
         </PersistQueryClientProvider>

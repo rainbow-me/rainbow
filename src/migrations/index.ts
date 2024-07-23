@@ -14,6 +14,7 @@ import { purgeWcConnectionsWithoutAccounts } from './migrations/purgeWcConnectio
 import { migratePinnedAndHiddenTokenUniqueIds } from './migrations/migratePinnedAndHiddenTokenUniqueIds';
 import { migrateUnlockableAppIconStorage } from './migrations/migrateUnlockableAppIconStorage';
 import { migratePersistedQueriesToMMKV } from './migrations/migratePersistedQueriesToMMKV';
+import { migrateRemotePromoSheetsToZustand } from './migrations/migrateRemotePromoSheetsToZustand';
 
 /**
  * Local storage for migrations only. Should not be exported.
@@ -39,6 +40,7 @@ const migrations: Migration[] = [
   migratePinnedAndHiddenTokenUniqueIds(),
   migrateUnlockableAppIconStorage(),
   migratePersistedQueriesToMMKV(),
+  migrateRemotePromoSheetsToZustand(),
 ];
 
 /**

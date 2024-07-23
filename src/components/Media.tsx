@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { maybeSignUri } from '@/handlers/imgix';
 import { StyleSheet, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
-// @ts-ignore
 import Video from 'react-native-video';
 import SvgImage from './svg/SvgImage';
 
@@ -35,8 +34,6 @@ export function Media({
   onLayout?: () => void;
   onError?: () => void;
 }) {
-  const [loading, setLoading] = useState(false);
-
   const signedUrl = maybeSignUri(url, {
     // resizing breaks svg
     w: mimeType === MimeType.SVG ? undefined : size,
@@ -52,17 +49,14 @@ export function Media({
       return (
         <Video
           onLayout={onLayout}
-          loading={loading}
           onError={onError}
           muted
           resizeMode="cover"
           poster={signedFallbackUrl}
           posterResizeMode="cover"
-          setLoading={setLoading}
           repeat
           style={style}
           source={{ uri: signedUrl }}
-          uri={signedUrl}
         />
       );
     case MimeType.SVG:

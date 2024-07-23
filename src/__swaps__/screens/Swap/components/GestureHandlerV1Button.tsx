@@ -1,10 +1,10 @@
+import { ButtonPressAnimation } from '@/components/animations';
+import { IS_IOS } from '@/env';
 import ConditionalWrap from 'conditional-wrap';
 import React from 'react';
 import { StyleProp, ViewProps, ViewStyle } from 'react-native';
 import { TapGestureHandler, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import Animated, { AnimatedStyle, runOnJS, useAnimatedGestureHandler } from 'react-native-reanimated';
-import { ButtonPressAnimation } from '@/components/animations';
-import { IS_IOS } from '@/env';
 
 export type GestureHandlerButtonProps = {
   buttonPressWrapperStyleIOS?: StyleProp<ViewStyle>;
@@ -90,7 +90,6 @@ export const GestureHandlerV1Button = React.forwardRef(function GestureHandlerV1
         </ButtonPressAnimation>
       )}
     >
-      {/* @ts-expect-error Property 'children' does not exist on type */}
       <TapGestureHandler enabled={!disabled} onGestureEvent={pressHandler} ref={ref}>
         <Animated.View accessible accessibilityRole="button" pointerEvents={pointerEvents} style={style}>
           {children}

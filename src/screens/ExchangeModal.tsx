@@ -56,9 +56,9 @@ import { ethereumUtils, gasUtils } from '@/utils';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import logger from '@/utils/logger';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
-import { ChainId, CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
+import { ChainId, CrosschainQuote, Quote } from '@rainbow-me/swaps';
 import store from '@/redux/store';
-import { getCrosschainSwapServiceTime } from '@/handlers/swap';
+import { getCrosschainSwapServiceTime, isUnwrapNative, isWrapNative } from '@/handlers/swap';
 import useParamsForExchangeModal from '@/hooks/useParamsForExchangeModal';
 import { Wallet } from '@ethersproject/wallet';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
@@ -76,7 +76,6 @@ import { AddressOrEth, ParsedAsset } from '@/__swaps__/types/assets';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { estimateSwapGasLimit } from '@/raps/actions';
 import { estimateCrosschainSwapGasLimit } from '@/raps/actions/crosschainSwap';
-import { isUnwrapEth, isWrapEth } from '@/__swaps__/utils/swaps';
 import { parseGasParamAmounts } from '@/parsers';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
@@ -296,7 +295,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
 
   const updateGasLimit = useCallback(async () => {
     try {
-      const provider = await getProviderForNetwork(currentNetwork);
+      const provider = getProviderForNetwork(currentNetwork);
 
       const quote = isCrosschainSwap ? (tradeDetails as CrosschainQuote) : (tradeDetails as Quote);
       const gasLimit = await (isCrosschainSwap ? estimateCrosschainSwapGasLimit : estimateSwapGasLimit)({
@@ -402,7 +401,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
       const NotificationManager = ios ? NativeModules.NotificationManager : null;
       try {
         // load the correct network provider for the wallet
-        const provider = await getProviderForNetwork(currentNetwork);
+        const provider = getProviderForNetwork(currentNetwork);
         let wallet = await loadWallet(accountAddress, false, provider);
         if (!wallet) {
           setIsAuthorizing(false);
@@ -453,12 +452,12 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
 
         const isWrapOrUnwrapEth = () => {
           return (
-            isWrapEth({
+            isWrapNative({
               buyTokenAddress: tradeDetails?.buyTokenAddress,
               sellTokenAddress: tradeDetails?.sellTokenAddress,
               chainId: inputCurrency?.chainId || ChainId.mainnet,
             }) ||
-            isUnwrapEth({
+            isUnwrapNative({
               buyTokenAddress: tradeDetails?.buyTokenAddress,
               sellTokenAddress: tradeDetails?.sellTokenAddress,
               chainId: inputCurrency?.chainId || ChainId.mainnet,

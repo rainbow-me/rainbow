@@ -64,6 +64,13 @@ const formatResultWorklet = (result: bigint): string => {
 const toStringWorklet = (value: string | number): string => {
   'worklet';
   const ret = typeof value === 'number' ? value.toString() : value;
+
+  if (ret.includes('e') && !ret.includes('e-')) {
+    const [base, exponent] = ret.split('e');
+    const exp = Number(exponent);
+    return base.replace('.', '') + '0'.repeat(exp);
+  }
+
   if (/^\d+\.$/.test(ret)) {
     return ret.slice(0, -1);
   }
@@ -195,23 +202,61 @@ export function modWorklet(num1: string | number, num2: string | number): string
   return formatResultWorklet(result);
 }
 
-// Logarithm base 10 function
-export function log10Worklet(num: string | number): string {
+// return significant decimals in fractional portion of number
+export function significantDecimalsWorklet(num: string | number): number {
   'worklet';
-  const numStr = toStringWorklet(num);
-
-  if (!isNumberStringWorklet(numStr)) {
-    throw new Error('Arguments must be a numeric string or number');
-  }
-  if (isZeroWorklet(numStr)) {
-    throw new Error('Argument must be greater than 0');
+  if (num === 0) {
+    return 0;
   }
 
-  const [bigIntNum, decimalPlaces] = removeDecimalWorklet(numStr);
-  const scaledBigIntNum = scaleUpWorklet(bigIntNum, decimalPlaces);
-  const result = Math.log10(Number(scaledBigIntNum)) - 20; // Adjust the scale factor for log10
-  const resultBigInt = BigInt(result * 10 ** 20);
-  return formatResultWorklet(resultBigInt);
+  // Convert the number to a string to handle large numbers and fractional parts
+  const numStr = num.toString();
+
+  // Split the number into integer and fractional parts
+  const [_, fractionalPart] = numStr.split('.');
+
+  // Handle fractional parts
+  if (fractionalPart) {
+    // Find the first non-zero digit in the fractional part
+    for (let i = 0; i < fractionalPart.length; i++) {
+      if (fractionalPart[i] !== '0') {
+        return i + 1;
+      }
+    }
+  }
+
+  return 0;
+}
+
+export function orderOfMagnitudeWorklet(num: string | number): number {
+  'worklet';
+  if (num === 0) {
+    return -Infinity; // log10(0) is -Infinity
+  }
+
+  // Convert the number to a string to handle large numbers and fractional parts
+  const numStr = num.toString();
+
+  // Split the number into integer and fractional parts
+  const [integerPart, fractionalPart] = numStr.split('.');
+
+  // Handle integer parts
+  if (BigInt(integerPart) !== 0n) {
+    return integerPart.length - 1;
+  }
+
+  // Handle fractional parts
+  if (fractionalPart) {
+    // Find the first non-zero digit in the fractional part
+    for (let i = 0; i < fractionalPart.length; i++) {
+      if (fractionalPart[i] !== '0') {
+        return -(i + 1);
+      }
+    }
+  }
+
+  // If the fractional part is all zeros, return a very negative number
+  return -Infinity;
 }
 
 // Equality function

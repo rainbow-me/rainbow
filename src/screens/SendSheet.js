@@ -4,7 +4,6 @@ import lang from 'i18n-js';
 import { isEmpty, isEqual, isString } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, StatusBar, View } from 'react-native';
-import { useDispatch } from 'react-redux';
 import { useDebounce } from 'use-debounce';
 import { GasSpeedButton } from '../components/gas';
 import { Column } from '../components/layout';
@@ -35,7 +34,6 @@ import {
   useCoinListEditOptions,
   useColorForAsset,
   useContacts,
-  useCurrentNonce,
   useENSProfile,
   useENSRegistrationActionHandler,
   useGas,
@@ -43,7 +41,6 @@ import {
   usePrevious,
   useSendableUniqueTokens,
   useSendSheetInputRefs,
-  useTransactionConfirmation,
   useUserAccounts,
   useWallets,
 } from '@/hooks';
@@ -282,23 +279,20 @@ export default function SendSheet(props) {
   }, [stopPollingGasFees]);
 
   useEffect(() => {
-    const updateNetworkAndProvider = async () => {
-      const assetNetwork = selected?.network;
-      if (assetNetwork && (assetNetwork !== currentNetwork || !currentNetwork || prevNetwork !== currentNetwork)) {
-        let provider = web3Provider;
-        const selectedNetwork = selected?.network;
-        if (network === Network.goerli) {
-          setCurrentNetwork(Network.goerli);
-          provider = await getProviderForNetwork(Network.goerli);
-          setCurrentProvider(provider);
-        } else {
-          setCurrentNetwork(selectedNetwork);
-          provider = await getProviderForNetwork(selectedNetwork);
-          setCurrentProvider(provider);
-        }
+    const assetNetwork = selected?.network;
+    if (assetNetwork && (assetNetwork !== currentNetwork || !currentNetwork || prevNetwork !== currentNetwork)) {
+      let provider = web3Provider;
+      const selectedNetwork = selected?.network;
+      if (network === Network.goerli) {
+        setCurrentNetwork(Network.goerli);
+        provider = getProviderForNetwork(Network.goerli);
+        setCurrentProvider(provider);
+      } else {
+        setCurrentNetwork(selectedNetwork);
+        provider = getProviderForNetwork(selectedNetwork);
+        setCurrentProvider(provider);
       }
-    };
-    updateNetworkAndProvider();
+    }
   }, [currentNetwork, isNft, network, prevNetwork, selected?.network, sendUpdateSelected]);
 
   const onChangeNativeAmount = useCallback(
@@ -350,11 +344,14 @@ export default function SendSheet(props) {
 
   useEffect(() => {
     const resolveAddressIfNeeded = async () => {
-      let realAddress = debouncedRecipient;
-      const isValid = await checkIsValidAddressOrDomainFormat(debouncedRecipient);
+      const isValid = checkIsValidAddressOrDomainFormat(debouncedRecipient);
       if (isValid) {
-        realAddress = await resolveNameOrAddress(debouncedRecipient);
-        setToAddress(realAddress);
+        const resolvedAddress = await resolveNameOrAddress(debouncedRecipient);
+        if (resolvedAddress && typeof resolvedAddress === 'string') {
+          setToAddress(resolvedAddress);
+        } else {
+          setIsValidAddress(false);
+        }
       } else {
         setIsValidAddress(false);
       }
