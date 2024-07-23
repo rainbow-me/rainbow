@@ -4,16 +4,16 @@ import ConditionalWrap from 'conditional-wrap';
 import React from 'react';
 import { StyleProp, ViewProps, ViewStyle } from 'react-native';
 import { TapGestureHandler, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
-import Animated, { AnimatedStyle, runOnJS, useAnimatedGestureHandler } from 'react-native-reanimated';
+import Animated, { AnimatedStyle, ReanimatedEvent, runOnJS, useAnimatedGestureHandler } from 'react-native-reanimated';
 
 export type GestureHandlerButtonProps = {
   buttonPressWrapperStyleIOS?: StyleProp<ViewStyle>;
   children: React.ReactNode;
   disableButtonPressWrapper?: boolean;
   disabled?: boolean;
-  onPressJS?: () => void;
-  onPressStartWorklet?: () => void;
-  onPressWorklet?: () => void;
+  onPressJS?: (e: ReanimatedEvent<TapGestureHandlerGestureEvent>) => void;
+  onPressStartWorklet?: (e: ReanimatedEvent<TapGestureHandlerGestureEvent>) => void;
+  onPressWorklet?: (e: ReanimatedEvent<TapGestureHandlerGestureEvent>) => void;
   pointerEvents?: ViewProps['pointerEvents'];
   scaleTo?: number;
   style?: StyleProp<ViewStyle> | AnimatedStyle;
@@ -72,12 +72,12 @@ export const GestureHandlerV1Button = React.forwardRef(function GestureHandlerV1
   ref: React.LegacyRef<unknown> | undefined
 ) {
   const pressHandler = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>({
-    onStart: () => {
-      if (onPressStartWorklet) onPressStartWorklet();
+    onStart: e => {
+      if (onPressStartWorklet) onPressStartWorklet(e);
     },
-    onActive: () => {
-      if (onPressWorklet) onPressWorklet();
-      if (onPressJS) runOnJS(onPressJS)();
+    onActive: e => {
+      if (onPressWorklet) onPressWorklet(e);
+      if (onPressJS) runOnJS(onPressJS)(e);
     },
   });
 
