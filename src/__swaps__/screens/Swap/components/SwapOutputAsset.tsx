@@ -1,8 +1,8 @@
 import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
 import MaskedView from '@react-native-masked-view/masked-view';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { StatusBar, StyleSheet } from 'react-native';
-import Animated, { runOnJS, useDerivedValue } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedReaction, useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { AnimatedSwapCoinIcon } from '@/__swaps__/screens/Swap/components/AnimatedSwapCoinIcon';
@@ -74,8 +74,30 @@ function SwapOutputAmount() {
     });
   }, [navigate]);
 
+  const [isPasteEnabled, setIsPasteEnabled] = useState(() => !outputQuotesAreDisabled.value);
+  useAnimatedReaction(
+    () => !outputQuotesAreDisabled.value,
+    v => {
+      'worklet';
+      runOnJS(setIsPasteEnabled)(v);
+    }
+  );
+
   return (
-    <CopyPasteMenu onCopy={() => Clipboard.setString(SwapInputController.formattedOutputAmount.value)}>
+    <CopyPasteMenu
+      onCopy={() => Clipboard.setString(SwapInputController.formattedOutputAmount.value)}
+      onPaste={
+        isPasteEnabled
+          ? text => {
+              if (!text || !+text) return;
+              SwapInputController.inputValues.modify(values => {
+                'worklet';
+                return { ...values, outputAmount: text };
+              });
+            }
+          : undefined
+      }
+    >
       <GestureHandlerV1Button
         disableButtonPressWrapper
         onPressStartWorklet={() => {
