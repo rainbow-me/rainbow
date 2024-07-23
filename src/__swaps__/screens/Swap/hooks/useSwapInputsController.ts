@@ -4,7 +4,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
 import { RequestNewQuoteParams, inputKeys, inputMethods, inputValuesType } from '@/__swaps__/types/swap';
 import { valueBasedDecimalFormatter } from '@/__swaps__/utils/decimalFormatter';
-import { addCommasToNumber, buildQuoteParams, clamp, niceIncrementFormatter, trimTrailingZeros } from '@/__swaps__/utils/swaps';
+import { addCommasToNumber, buildQuoteParams, clamp, trimTrailingZeros } from '@/__swaps__/utils/swaps';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { CrosschainQuote, Quote, QuoteError, SwapType, getCrosschainQuote, getQuote } from '@rainbow-me/swaps';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
@@ -30,36 +30,7 @@ import { analyticsV2 } from '@/analytics';
 import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { triggerHapticFeedback } from '@/screens/points/constants';
-
-function getInputValuesForSliderPositionWorklet({
-  selectedInputAsset,
-  percentageToSwap,
-  sliderXPosition,
-}: {
-  selectedInputAsset: ExtendedAnimatedAssetWithColors | null;
-  percentageToSwap: number;
-  sliderXPosition: number;
-}) {
-  'worklet';
-  const inputAssetMaxSwappableBalance = selectedInputAsset?.maxSwappableAmount || 0;
-  const isStablecoin = selectedInputAsset?.type === 'stablecoin';
-
-  const inputAmount = niceIncrementFormatter({
-    inputAssetBalance: inputAssetMaxSwappableBalance,
-    inputAssetNativePrice: selectedInputAsset?.price?.value ?? 0,
-    percentageToSwap,
-    sliderXPosition,
-    stripSeparators: true,
-    isStablecoin,
-  });
-
-  const inputNativeValue = mulWorklet(inputAmount, selectedInputAsset?.price?.value ?? 0);
-
-  return {
-    inputAmount,
-    inputNativeValue,
-  };
-}
+import { getInputValuesForSliderPositionWorklet, updateInputValuesAfterFlip } from '@/__swaps__/utils/flipAssets';
 
 export function useSwapInputsController({
   focusedInput,
@@ -809,96 +780,6 @@ export function useSwapInputsController({
     }
   );
 
-  const updateInputValuesAfterFlip = () => {
-    'worklet';
-    const inputNativePrice = internalSelectedInputAsset.value?.nativePrice || internalSelectedInputAsset.value?.price?.value || 0;
-    const outputNativePrice = internalSelectedOutputAsset.value?.nativePrice || internalSelectedOutputAsset.value?.price?.value || 0;
-    const hasNonZeroInputPrice = inputNativePrice > 0;
-    const hasNonZeroOutputPrice = outputNativePrice > 0;
-
-    const inputBalance = internalSelectedInputAsset.value?.maxSwappableAmount || 0;
-    const hasInputBalance = greaterThanWorklet(inputBalance, 0);
-
-    const prevInputNativeValue = inputValues.value.inputNativeValue;
-
-    const outputBalance = internalSelectedOutputAsset.value?.maxSwappableAmount || 0;
-    const hasOutputBalance = greaterThanWorklet(outputBalance, 0);
-
-    let newInputAmount: string | number = greaterThanWorklet(inputNativePrice, 0) ? divWorklet(prevInputNativeValue, inputNativePrice) : 0;
-    let newOutputAmount: string | number = 0;
-
-    const exceedsMaxBalance = greaterThanWorklet(newInputAmount, inputBalance);
-    const validBalanceIfAny = (hasInputBalance && !exceedsMaxBalance) || !hasInputBalance;
-
-    // determine if we previously had max selected and can still set max on the new input
-    let setToMax = hasInputBalance && equalWorklet(percentageToSwap.value, 1);
-
-    /*
-    const prevInputAmount = inputValues.value.inputAmount;
-    if (hasInputBalance && hasOutputBalance && equalWorklet(prevInputAmount, outputBalance)) {
-      isNotMax = false;
-    }
-   */
-
-    if (hasNonZeroInputPrice && hasNonZeroOutputPrice && validBalanceIfAny && !setToMax) {
-      // use previous native input amount if available
-      const formattedInputAmount = Number(
-        valueBasedDecimalFormatter({
-          amount: newInputAmount,
-          nativePrice: inputNativePrice,
-          roundingMode: 'up',
-          isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin',
-          stripSeparators: true,
-        })
-      );
-      newInputAmount = formattedInputAmount;
-      const prevOutputNativeValue = inputValues.value.outputNativeValue;
-      newOutputAmount = divWorklet(prevOutputNativeValue, outputNativePrice);
-      inputMethod.value = 'inputAmount';
-    } else if (hasInputBalance && hasOutputBalance) {
-      // use slider position if available
-      const { inputAmount: inputAmountBasedOnSlider } = getInputValuesForSliderPositionWorklet({
-        selectedInputAsset: internalSelectedInputAsset.value,
-        percentageToSwap: percentageToSwap.value,
-        sliderXPosition: sliderXPosition.value,
-      });
-      newInputAmount = inputAmountBasedOnSlider;
-      inputMethod.value = 'slider';
-      inputValues.modify(values => {
-        return {
-          ...values,
-          inputAmount: newInputAmount,
-          inputNativeValue: mulWorklet(newInputAmount, inputNativePrice),
-        };
-      });
-      return;
-    } else {
-      inputMethod.value = 'inputAmount';
-      const prevOutputAmount = inputValues.value.outputAmount;
-      const prevInputAmount = inputValues.value.inputAmount;
-
-      if (prevOutputAmount) {
-        // use previous output amount if available
-        newInputAmount = prevOutputAmount;
-        newOutputAmount = prevInputAmount;
-      } else {
-        // otherwise, reset to 0
-        newInputAmount = 0;
-        newOutputAmount = 0;
-      }
-    }
-
-    inputValues.modify(values => {
-      return {
-        ...values,
-        inputAmount: newInputAmount,
-        inputNativeValue: mulWorklet(newInputAmount, inputNativePrice),
-        outputAmount: newOutputAmount,
-        outputNativeValue: mulWorklet(newOutputAmount, outputNativePrice),
-      };
-    });
-  };
-
   /**
    * This observes changes in the selected assets and initiates new quote fetches when necessary. It also
    * handles flipping the inputValues when the assets are flipped.
@@ -949,7 +830,14 @@ export function useSwapInputsController({
         });
       } else {
         // If the assets were flipped
-        updateInputValuesAfterFlip();
+        updateInputValuesAfterFlip({
+          internalSelectedInputAsset,
+          internalSelectedOutputAsset,
+          inputValues,
+          percentageToSwap,
+          sliderXPosition,
+          inputMethod,
+        });
       }
 
       if (areBothAssetsSet) {
