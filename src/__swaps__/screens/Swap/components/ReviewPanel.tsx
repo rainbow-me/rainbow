@@ -162,12 +162,10 @@ function FlashbotsToggle() {
 function DegenModeToggle() {
   const { SwapSettings } = useSwapContext();
 
-  const degenMode = useDerivedValue(() => SwapSettings.degenMode.value);
-
   return (
     <AnimatedSwitch
       onToggle={SwapSettings.onToggleDegenMode}
-      value={degenMode}
+      value={SwapSettings.degenMode}
       activeLabel={i18n.t(i18n.l.expanded_state.swap.on)}
       inactiveLabel={i18n.t(i18n.l.expanded_state.swap.off)}
     />
