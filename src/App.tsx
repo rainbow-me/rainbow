@@ -105,6 +105,7 @@ function App({ walletReady }: AppProps) {
 
   const setupDeeplinking = async () => {
     const initialUrl = await Linking.getInitialURL();
+
     branchListenerRef.current = await branchListener(url => {
       logger.debug(`Branch: listener called`, {}, logger.DebugContext.deeplinks);
       try {
