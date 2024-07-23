@@ -18,7 +18,7 @@
     "check-lockfile": "./scripts/check-lockfile.sh",
     "clean:android": "yarn uninstall:android && rm -rf android/build && yarn gradle clean && rm -rf ~/.gradle/caches",
     "clean:ios": "rm -rf ios/build && cd ios && bundle exec pod deintegrate",
-    "clean:packager": "watchman watch-del-all && rm -rf $TMPDIR/react-* && rm -rf $TMPDIR/metro-* && rm -rf $TMPDIR/haste-map-*",
+    "clean:packager": "watchman watch-del-all",
     "clean:node": "rm -rf node_modules",
     "nuke": "./scripts/nuke.sh",
     "detox:android": "detox build -c android.emu.debug && detox test -c android.emu.debug --loglevel verbose",

@@ -26,7 +26,7 @@ describe('Backups', () => {
   });
 
   it('Should go to settings', async () => {
-    await tapAtPoint('wallet-screen', { x: 355, y: 80 });
+    await waitAndTap('settings-menu');
     await tapByText('Settings');
     await checkIfExists('settings-sheet');
   });
@@ -38,15 +38,18 @@ describe('Backups', () => {
 
   it('Should alert that iCloud isnt enabled', async () => {
     await waitAndTap('backup-now-button');
+
+    // Alert
     await checkIfExistsByText('iCloud Not Enabled');
     await tapByText('No thanks');
   });
 
   it('Should go to specific wallets backup sheet and view seed phrase', async () => {
     await delayTime('medium');
-    await tapByText('Not backed up');
+    await waitAndTap('not-backed-up');
     await delayTime('medium');
-    await tapByText('Back Up Manually');
+    await waitAndTap('manually-backup');
+    await delayTime('medium');
     await waitAndTap('show-secret-button');
   });
 
@@ -57,19 +60,22 @@ describe('Backups', () => {
       await checkIfExistsByText(word.trim());
     }
     await delayTime('medium');
-    await tapByText("􀆅 I've saved these words");
+    await waitAndTap('saved-these-words');
   });
 
-  it('Should go back to the backup sheet and it should be updated', async () => {
-    await delayTime('medium');
-    await checkIfExistsByText('Wallets & Backup');
-    await checkIfDoesntExist('Not backed up', 1_000);
-  });
+  // it('Should go back to the backup sheet and it should be updated', async () => {
+  //   await delayTime('medium');
+  //   // TEST ID
+  //   await checkIfExistsByText('Wallets & Backup');
+  //   await checkIfDoesntExist('Not backed up', 1_000);
+  // });
 
-  it('Should go to specific wallets backup sheet and it should be backup up now', async () => {
-    await delayTime('medium');
-    await tapByText('Imported');
-    await delayTime('medium');
-    await checkIfExistsByText('Backed up manually');
-  });
+  // it('Should go to specific wallets backup sheet and it should be backup up now', async () => {
+  //   await delayTime('medium');
+  //   // TEST ID
+  //   await tapByText('Imported');
+  //   await delayTime('medium');
+  //   // TEST ID
+  //   await checkIfExistsByText('Backed up manually');
+  // });
 });

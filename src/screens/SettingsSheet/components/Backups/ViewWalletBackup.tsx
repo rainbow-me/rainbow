@@ -457,6 +457,7 @@ const ViewWalletBackup = () => {
                 onPress={onManualBackup}
                 size={52}
                 titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.manual.backup_manually)} />}
+                testID={'back-up-manually'}
               />
               <BackUpMenuItem
                 icon="􀊯"

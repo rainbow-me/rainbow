@@ -222,7 +222,7 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
 
           {isBackingUp && (
             <Box position="absolute" bottom={{ custom: 20 }} alignItems="center" style={{ paddingHorizontal: 24 }}>
-              <SheetActionButton label={btnText} color="blue" weight="bold" onPress={handleConfirmSaved} />
+              <SheetActionButton testID={'saved-these-words'} label={btnText} color="blue" weight="bold" onPress={handleConfirmSaved} />
             </Box>
           )}
         </Box>
