@@ -6,7 +6,7 @@ ios/GoogleService-Info.plist
 ios/ReaHeader.h
 ios/AppDelegate.pch
 .DS_Store
-ios/Pods/
+**/Pods/
 ios/*dSYM.zip
 ios/debug.xcconfig
 ios/release.xcconfig
@@ -32,6 +32,7 @@ DerivedData
 *.hmap
 *.ipa
 *.xcuserstate
+**/.xcode.env.local
 project.xcworkspace
 ios/main.jsbundle.map
 src/config/debug.ts
@@ -122,3 +123,11 @@ coverage
 
 # Webpack
 InjectedJSBundle.js.LICENSE.txt
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions

@@ -24,7 +24,6 @@ import { calculateGasFee } from '../hooks/useEstimatedGasFee';
 import { useSelectedGas } from '../hooks/useSelectedGas';
 import { useSwapEstimatedGasLimit } from '../hooks/useSwapEstimatedGasLimit';
 import { useSwapContext } from './swap-provider';
-import { lessThan } from '@/helpers/utilities';
 
 const BUFFER_RATIO = 0.5;
 
@@ -93,7 +92,7 @@ export function SyncGasStateToSharedValues() {
   const { assetToSell, chainId = ChainId.mainnet, quote } = useSyncedSwapQuoteStore();
 
   const gasSettings = useSelectedGas(chainId);
-  const { data: userNativeNetworkAsset } = useUserNativeNetworkAsset(chainId);
+  const { data: userNativeNetworkAsset, isLoading: isLoadingNativeNetworkAsset } = useUserNativeNetworkAsset(chainId);
   const { data: estimatedGasLimit } = useSwapEstimatedGasLimit({ chainId, assetToSell, quote });
 
   const gasFeeRange = useSharedValue<[string, string] | null>(null);
@@ -128,7 +127,12 @@ export function SyncGasStateToSharedValues() {
 
   useEffect(() => {
     hasEnoughFundsForGas.value = undefined;
-    if (!gasSettings || !estimatedGasLimit || !quote || 'error' in quote || !userNativeNetworkAsset) return;
+    if (!gasSettings || !estimatedGasLimit || !quote || 'error' in quote || isLoadingNativeNetworkAsset) return;
+
+    if (!userNativeNetworkAsset) {
+      hasEnoughFundsForGas.value = false;
+      return;
+    }
 
     const gasFee = calculateGasFee(gasSettings, estimatedGasLimit);
 
@@ -151,7 +155,16 @@ export function SyncGasStateToSharedValues() {
     return () => {
       hasEnoughFundsForGas.value = undefined;
     };
-  }, [estimatedGasLimit, gasFeeRange, gasSettings, hasEnoughFundsForGas, quote, userNativeNetworkAsset]);
+  }, [
+    estimatedGasLimit,
+    gasFeeRange,
+    gasSettings,
+    hasEnoughFundsForGas,
+    quote,
+    userNativeNetworkAsset,
+    isLoadingNativeNetworkAsset,
+    chainId,
+  ]);
 
   return null;
 }

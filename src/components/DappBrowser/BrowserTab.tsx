@@ -519,7 +519,6 @@ const TabGestureHandlers = ({ animatedTabIndex, gestureScale, gestureX, tabId }:
   return (
     <>
       <Animated.View style={[styles.gestureHandlersContainer, animatedGestureHandlerStyle]}>
-        {/* @ts-expect-error Property 'children' does not exist on type */}
         <PanGestureHandler
           activeOffsetX={[-2, 2]}
           failOffsetY={[-12, 12]}
@@ -528,7 +527,6 @@ const TabGestureHandlers = ({ animatedTabIndex, gestureScale, gestureX, tabId }:
           waitFor={tapHandlerRef}
         >
           <Animated.View style={styles.gestureHandlersContainer}>
-            {/* @ts-expect-error Property 'children' does not exist on type */}
             <TapGestureHandler
               maxDeltaX={10}
               maxDeltaY={10}

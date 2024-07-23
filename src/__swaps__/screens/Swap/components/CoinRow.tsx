@@ -1,23 +1,23 @@
-import React, { memo, useCallback, useMemo } from 'react';
-import { ButtonPressAnimation } from '@/components/animations';
-import { Box, Column, Columns, HitSlop, Inline, Text } from '@/design-system';
-import { CoinRowButton } from '@/__swaps__/screens/Swap/components/CoinRowButton';
 import { BalancePill } from '@/__swaps__/screens/Swap/components/BalancePill';
-import { toggleFavorite } from '@/resources/favorites';
-import { SwapCoinIcon } from './SwapCoinIcon';
-import { ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
-import { ContextMenuButton, OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
-import { IS_ANDROID } from '@/env';
-import { startCase } from 'lodash';
-import { setClipboard } from '@/hooks/useClipboard';
-import { RainbowNetworks } from '@/networks';
-import * as i18n from '@/languages';
-import { ETH_ADDRESS, BASE_DEGEN_ADDRESS, DEGEN_CHAIN_DEGEN_ADDRESS } from '@/references';
+import { CoinRowButton } from '@/__swaps__/screens/Swap/components/CoinRowButton';
 import { AddressOrEth, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { userAssetsStore } from '@/state/assets/userAssets';
-import { SearchAsset } from '@/__swaps__/types/search';
 import { ChainId } from '@/__swaps__/types/chains';
+import { SearchAsset } from '@/__swaps__/types/search';
+import { ButtonPressAnimation } from '@/components/animations';
+import { ContextMenuButton } from '@/components/context-menu';
+import { Box, Column, Columns, HitSlop, Inline, Text } from '@/design-system';
+import { setClipboard } from '@/hooks/useClipboard';
+import * as i18n from '@/languages';
+import { RainbowNetworks } from '@/networks';
+import { BASE_DEGEN_ADDRESS, DEGEN_CHAIN_DEGEN_ADDRESS, ETH_ADDRESS } from '@/references';
+import { toggleFavorite } from '@/resources/favorites';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
+import { startCase } from 'lodash';
+import React, { memo, useCallback, useMemo } from 'react';
 import { GestureResponderEvent } from 'react-native';
+import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
+import { SwapCoinIcon } from './SwapCoinIcon';
 
 export const COIN_ROW_WITH_PADDING_HEIGHT = 56;
 
@@ -257,13 +257,11 @@ const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId })
 
   return (
     <ContextMenuButton
-      isMenuPrimaryAction
-      // @ts-expect-error Types of property 'menuItems' are incompatible
-      menuConfig={menuConfig}
-      onPress={IS_ANDROID ? onPressAndroid : undefined}
+      menuItems={menuConfig.menuItems}
+      menuTitle={menuConfig.menuTitle}
+      onPressAndroid={onPressAndroid}
       onPressMenuItem={handlePressMenuItem}
-      useActionSheetFallback={false}
-      wrapNativeComponent={false}
+      testID={`coin-row-info-button-${address}`}
     >
       <CoinRowButton icon="􀅳" outline size="icon 14px" />
     </ContextMenuButton>
