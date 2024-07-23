@@ -2,6 +2,9 @@ platform :ios, '15.0'
 source 'https://github.com/CocoaPods/Specs.git'
 #use_modular_headers!
 
+# Disable VisionCamera location API usage
+$VCEnableLocation = false
+
 pod 'Firebase', :modular_headers => true
 pod 'FirebaseCore', :modular_headers => true
 pod 'FirebaseRemoteConfig', :modular_headers => true

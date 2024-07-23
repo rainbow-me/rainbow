@@ -37,7 +37,7 @@ import { RainbowError, logger } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { getNetworkObj } from '@/networks';
+import { RainbowNetworkByChainId, getNetworkObj } from '@/networks';
 import { walletExecuteRap } from '@/raps/execute';
 import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
 import { queryClient } from '@/react-query';
@@ -47,12 +47,12 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { ethereumUtils, haptics } from '@/utils';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 
+import { IS_IOS } from '@/env';
 import { Address } from 'viem';
 import { clearCustomGasSettings } from '../hooks/useCustomGas';
 import { getGasSettingsBySpeed, getSelectedGas, getSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
-import { IS_IOS } from '@/env';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const tapToSwap = i18n.t(i18n.l.swap.actions.tap_to_swap);
@@ -62,6 +62,7 @@ const review = i18n.t(i18n.l.swap.actions.review);
 const fetchingPrices = i18n.t(i18n.l.swap.actions.fetching_prices);
 const selectToken = i18n.t(i18n.l.swap.actions.select_token);
 const insufficientFunds = i18n.t(i18n.l.swap.actions.insufficient_funds);
+const insufficient = i18n.t(i18n.l.swap.actions.insufficient);
 const quoteError = i18n.t(i18n.l.swap.actions.quote_error);
 
 interface SwapContextType {
@@ -667,7 +668,11 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
 
     if (!hasEnoughFundsForGas.value) {
-      return { label: insufficientFunds, disabled: true };
+      const nativeCurrency = RainbowNetworkByChainId[sellAsset?.chainId || ChainId.mainnet].nativeCurrency;
+      return {
+        label: `${insufficient} ${nativeCurrency.symbol}`,
+        disabled: true,
+      };
     }
 
     if (isReviewSheetOpen) {
