@@ -2,7 +2,7 @@ import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/desig
 import MaskedView from '@react-native-masked-view/masked-view';
 import React, { useCallback, useState } from 'react';
 import { StatusBar, StyleSheet } from 'react-native';
-import Animated, { runOnJS, useAnimatedReaction, useDerivedValue, withSpring } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedReaction, useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { AnimatedSwapCoinIcon } from '@/__swaps__/screens/Swap/components/AnimatedSwapCoinIcon';
@@ -12,19 +12,15 @@ import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/Gest
 import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
 import { SwapInput } from '@/__swaps__/screens/Swap/components/SwapInput';
 import { TokenList } from '@/__swaps__/screens/Swap/components/TokenList/TokenList';
-import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, SLIDER_WIDTH, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId } from '@/__swaps__/types/chains';
-import { IS_ANDROID, IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { ethereumUtils } from '@/utils';
-import { triggerHapticFeedback } from '@/screens/points/constants';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
-import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { CopyPasteMenu } from './CopyPasteMenu';
 
@@ -135,7 +131,7 @@ function SwapOutputIcon() {
 }
 
 function OutputAssetBalanceBadge() {
-  const { internalSelectedOutputAsset, SwapInputController, sliderXPosition } = useSwapContext();
+  const { internalSelectedOutputAsset, SwapInputController } = useSwapContext();
 
   const label = useDerivedValue(() => {
     const asset = internalSelectedOutputAsset.value;
@@ -145,26 +141,13 @@ function OutputAssetBalanceBadge() {
     return asset ? balance : TOKEN_TO_GET_LABEL;
   });
 
-  const onSetMaxBalance = () => {
-    'worklet';
-
-    const asset = internalSelectedOutputAsset.value;
-    if (!asset?.maxSwappableAmount || equalWorklet(asset.maxSwappableAmount, 0)) return;
-
-    const currentOutputValue = SwapInputController.inputValues.value.outputAmount;
-    const isAlreadyMax = equalWorklet(currentOutputValue, asset.maxSwappableAmount);
-    if (isAlreadyMax) {
-      runOnJS(triggerHapticFeedback)('impactMedium');
-      return;
-    }
-
-    SwapInputController.inputMethod.value = 'outputAmount';
-    SwapInputController.quoteFetchingInterval.stop();
-    SwapInputController.inputValues.modify(prev => ({ ...prev, outputAmount: asset.maxSwappableAmount }));
-  };
-
   return (
-    <GestureHandlerV1Button onPressWorklet={onSetMaxBalance}>
+    <GestureHandlerV1Button
+      onPressWorklet={() => {
+        'worklet';
+        SwapInputController.setValueToMaxSwappableAmount('outputAmount');
+      }}
+    >
       <BalanceBadge label={label} />
     </GestureHandlerV1Button>
   );

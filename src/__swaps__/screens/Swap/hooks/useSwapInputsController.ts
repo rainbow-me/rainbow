@@ -1,5 +1,14 @@
 import { useCallback } from 'react';
-import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
+import {
+  DerivedValue,
+  SharedValue,
+  runOnJS,
+  runOnUI,
+  useAnimatedReaction,
+  useDerivedValue,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 import { SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
 import { RequestNewQuoteParams, inputKeys, inputMethods, inputValuesType } from '@/__swaps__/types/swap';
@@ -28,6 +37,8 @@ import { queryClient } from '@/react-query';
 import { useAccountSettings } from '@/hooks';
 import { analyticsV2 } from '@/analytics';
 import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { triggerHapticFeedback } from '@/screens/points/constants';
 
 function getInputValuesForSliderPositionWorklet({
   selectedInputAsset,
@@ -72,6 +83,7 @@ export function useSwapInputsController({
   quote,
   sliderXPosition,
   slippage,
+  outputQuotesAreDisabled,
 }: {
   focusedInput: SharedValue<inputKeys>;
   inputProgress: SharedValue<number>;
@@ -85,6 +97,7 @@ export function useSwapInputsController({
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
   sliderXPosition: SharedValue<number>;
   slippage: SharedValue<string>;
+  outputQuotesAreDisabled: DerivedValue<boolean>;
 }) {
   const percentageToSwap = useDerivedValue(() => {
     return Math.round(clamp((sliderXPosition.value - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1) * 100) / 100;
@@ -561,6 +574,62 @@ export function useSwapInputsController({
     { leading: false, trailing: true }
   );
 
+  const setValueToMaxSwappableAmount = (inputkey: 'inputAmount' | 'outputAmount') => {
+    'worklet';
+
+    switch (inputkey) {
+      case 'inputAmount': {
+        const currentInputValue = inputValues.value.inputAmount;
+        const maxSwappableAmount = internalSelectedInputAsset.value?.maxSwappableAmount;
+        if (!maxSwappableAmount || equalWorklet(maxSwappableAmount, 0)) {
+          runOnJS(triggerHapticFeedback)('impactMedium');
+          return;
+        }
+
+        const isAlreadyMax = maxSwappableAmount ? equalWorklet(currentInputValue, maxSwappableAmount) : false;
+        const exceedsMax = maxSwappableAmount ? greaterThanWorklet(currentInputValue, maxSwappableAmount) : false;
+        if (isAlreadyMax) {
+          runOnJS(triggerHapticFeedback)('impactMedium');
+          return;
+        }
+
+        quoteFetchingInterval.stop();
+        isQuoteStale.value = 1;
+        inputMethod.value = 'slider';
+
+        if (exceedsMax) sliderXPosition.value = SLIDER_WIDTH * 0.999;
+
+        sliderXPosition.value = withSpring(SLIDER_WIDTH, SPRING_CONFIGS.snappySpringConfig, isFinished => {
+          if (isFinished) {
+            runOnJS(onChangedPercentage)(1);
+          }
+        });
+        break;
+      }
+
+      case 'outputAmount': {
+        const currentOutputValue = inputValues.value.outputAmount;
+        const maxSwappableAmount = internalSelectedOutputAsset.value?.maxSwappableAmount;
+
+        if (outputQuotesAreDisabled.value || !maxSwappableAmount || equalWorklet(maxSwappableAmount, 0)) {
+          runOnJS(triggerHapticFeedback)('impactMedium');
+          return;
+        }
+
+        const isAlreadyMax = equalWorklet(currentOutputValue, maxSwappableAmount);
+        if (isAlreadyMax) {
+          runOnJS(triggerHapticFeedback)('impactMedium');
+          return;
+        }
+
+        quoteFetchingInterval.stop();
+        inputMethod.value = 'outputAmount';
+        inputValues.modify(values => ({ ...values, outputAmount: maxSwappableAmount }));
+        break;
+      }
+    }
+  };
+
   const resetValuesToZeroWorklet = (inputKey?: inputKeys) => {
     'worklet';
     quoteFetchingInterval.stop();
@@ -889,5 +958,6 @@ export function useSwapInputsController({
     quoteFetchingInterval,
     fetchQuoteAndAssetPrices,
     setQuote,
+    setValueToMaxSwappableAmount,
   };
 }

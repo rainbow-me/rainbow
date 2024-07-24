@@ -159,6 +159,11 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   );
   const configProgress = useSharedValue<NavigationSteps>(NavigationSteps.INPUT_ELEMENT_FOCUSED);
 
+  const outputQuotesAreDisabled = useSwapOutputQuotesDisabled({
+    inputAsset: internalSelectedInputAsset,
+    outputAsset: internalSelectedOutputAsset,
+  });
+
   const SwapSettings = useSwapSettings({
     inputAsset: internalSelectedInputAsset,
   });
@@ -176,6 +181,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     sliderXPosition,
     slippage: SwapSettings.slippage,
     quote,
+    outputQuotesAreDisabled,
   });
 
   const getNonceAndPerformSwap = async ({
@@ -410,11 +416,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     outputProgress,
     configProgress,
     isFetching,
-  });
-
-  const outputQuotesAreDisabled = useSwapOutputQuotesDisabled({
-    inputAsset: internalSelectedInputAsset,
-    outputAsset: internalSelectedOutputAsset,
   });
 
   const swapInfo = useDerivedValue(() => {
