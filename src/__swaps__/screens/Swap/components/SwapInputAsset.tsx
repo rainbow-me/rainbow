@@ -56,6 +56,7 @@ function SwapInputAmount() {
       onCopy={() => Clipboard.setString(SwapInputController.formattedInputAmount.value)}
       onPaste={text => {
         if (!text || !+text) return;
+        SwapInputController.inputMethod.value = 'inputAmount';
         SwapInputController.inputValues.modify(values => {
           'worklet';
           return { ...values, inputAmount: text };

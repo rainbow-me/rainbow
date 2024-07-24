@@ -90,6 +90,7 @@ function SwapOutputAmount() {
         isPasteEnabled
           ? text => {
               if (!text || !+text) return;
+              SwapInputController.inputMethod.value = 'outputAmount';
               SwapInputController.inputValues.modify(values => {
                 'worklet';
                 return { ...values, outputAmount: text };
