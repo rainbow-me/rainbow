@@ -62,31 +62,30 @@ function SwapInputAmount() {
         });
       }}
     >
-<CopyPasteMenu>
-  <GestureHandlerV1Button
-    disableButtonPressWrapper
-    onPressStartWorklet={() => {
-      'worklet';
-      focusedInput.value = 'inputAmount';
-    }}
-  >
-    <MaskedView maskElement={<FadeMask fadeEdgeInset={2} fadeWidth={8} height={36} side="right" />} style={styles.inputTextMask}>
-      <AnimatedText
-        testID={'swap-asset-amount'}
-        ellipsizeMode="clip"
-        numberOfLines={1}
-        size="30pt"
-        style={SwapTextStyles.inputAmountTextStyle}
-        weight="bold"
+      <GestureHandlerV1Button
+        disableButtonPressWrapper
+        onPressStartWorklet={() => {
+          'worklet';
+          focusedInput.value = 'inputAmount';
+        }}
       >
-        {SwapInputController.formattedInputAmount}
-      </AnimatedText>
-      <Animated.View style={[styles.caretContainer, SwapTextStyles.inputCaretStyle]}>
-        <Box as={Animated.View} borderRadius={1} style={[styles.caret, AnimatedSwapStyles.assetToSellCaretStyle]} />
-      </Animated.View>
-    </MaskedView>
-  </GestureHandlerV1Button>
-</CopyPasteMenu>
+        <MaskedView maskElement={<FadeMask fadeEdgeInset={2} fadeWidth={8} height={36} side="right" />} style={styles.inputTextMask}>
+          <AnimatedText
+            testID={'swap-asset-amount'}
+            ellipsizeMode="clip"
+            numberOfLines={1}
+            size="30pt"
+            style={SwapTextStyles.inputAmountTextStyle}
+            weight="bold"
+          >
+            {SwapInputController.formattedInputAmount}
+          </AnimatedText>
+          <Animated.View style={[styles.caretContainer, SwapTextStyles.inputCaretStyle]}>
+            <Box as={Animated.View} borderRadius={1} style={[styles.caret, AnimatedSwapStyles.assetToSellCaretStyle]} />
+          </Animated.View>
+        </MaskedView>
+      </GestureHandlerV1Button>
+    </CopyPasteMenu>
   );
 }
 
