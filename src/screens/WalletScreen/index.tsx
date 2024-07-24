@@ -74,7 +74,13 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
   }, [currentNetwork, revertToMainnet]);
 
   const walletReady = useSelector(({ appState: { walletReady } }: AppState) => walletReady);
-  const { isWalletEthZero, isLoadingUserAssets, briefSectionsData: walletBriefSectionsData } = useWalletSectionsData();
+  const {
+    isWalletEthZero,
+    isLoadingUserAssets,
+    briefSectionsData: walletBriefSectionsData,
+    fetchNextNftPage,
+    hasMoreNfts,
+  } = useWalletSectionsData();
 
   useEffect(() => {
     // This is the fix for Android wallet creation problem.
@@ -86,7 +92,7 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
     if (isWelcomeScreen) {
       removeFirst();
     }
-  }, [dangerouslyGetState, removeFirst]);
+  }, [dangerouslyGetParent, dangerouslyGetState, removeFirst]);
 
   useEffect(() => {
     const initializeAndSetParams = async () => {
@@ -137,6 +143,8 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
             isWalletEthZero={isWalletEthZero}
             network={currentNetwork}
             walletBriefSectionsData={walletBriefSectionsData}
+            fetchNextNftPage={fetchNextNftPage}
+            hasMoreNfts={hasMoreNfts}
           />
         </Box>
         <ToastPositionContainer>

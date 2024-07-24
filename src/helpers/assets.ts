@@ -267,7 +267,8 @@ export const buildBriefUniqueTokenList = (
   hiddenTokens: string[] = [],
   listType: AssetListType = 'wallet',
   isReadOnlyWallet = false,
-  nftSort: string = CollectibleSortByOptions.MOST_RECENT
+  nftSort: string = CollectibleSortByOptions.MOST_RECENT,
+  hasMoreNfts: boolean
 ) => {
   const hiddenUniqueTokensIds = uniqueTokens
     .filter(({ fullUniqueId }: any) => hiddenTokens.includes(fullUniqueId))
@@ -361,6 +362,7 @@ export const buildBriefUniqueTokenList = (
 
     result.push({ type: 'NFT_SPACE_AFTER', uid: `${family}-space-after` });
   }
+
   if (hiddenUniqueTokensIds.length > 0 && listType === 'wallet' && !isReadOnlyWallet) {
     result.push({
       // @ts-expect-error "name" does not exist in type.

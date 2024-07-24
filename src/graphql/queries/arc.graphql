@@ -474,9 +474,9 @@ query getNFTs($walletAddress: String!) {
   }
 }
 
-query getNFTsByPage($walletAddress: String!, $networks: [String!]!, $cursor: String, $limit: Int) {
+query getNFTsByPage($walletAddress: String!, $networks: [String!], $cursor: String, $limit: Int) {
   nftsByPage(walletAddress: $walletAddress, networks: $networks, cursor: $cursor, limit: $limit) {
-    nfts {
+    data {
       nft_id
       chain
       contract_address
@@ -649,6 +649,7 @@ query getNFTsByPage($walletAddress: String!, $networks: [String!]!, $cursor: Str
         }
       }
     }
-    cursor
+    previousCursor
+    nextCursor
   }
 }

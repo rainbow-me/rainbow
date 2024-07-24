@@ -50,6 +50,7 @@ const showcaseTokensSelector = (state: any) => state.showcaseTokens;
 const hiddenTokensSelector = (state: any) => state.hiddenTokens;
 const uniqueTokensSelector = (state: any) => state.uniqueTokens;
 const listTypeSelector = (state: any) => state.listType;
+const nftSortSelector = (_: any, nftSort: string, __: boolean) => nftSort;
 
 const buildBriefWalletSections = (balanceSectionData: any, uniqueTokenFamiliesSection: any) => {
   const { balanceSection, isEmpty, isLoadingUserAssets } = balanceSectionData;
@@ -217,7 +218,8 @@ const briefUniqueTokenDataSelector = createSelector(
     hiddenTokensSelector,
     listTypeSelector,
     isReadOnlyWalletSelector,
-    (state: any, nftSort: string) => nftSort,
+    nftSortSelector,
+    (state: any, _: string, hasMoreNfts: boolean) => hasMoreNfts,
   ],
   buildBriefUniqueTokenList
 );
@@ -236,6 +238,9 @@ const briefBalanceSectionSelector = createSelector(
 );
 
 export const buildBriefWalletSectionsSelector = createSelector(
-  [briefBalanceSectionSelector, (state: any, nftSort: string) => briefUniqueTokenDataSelector(state, nftSort)],
+  [
+    briefBalanceSectionSelector,
+    (state: any, nftSort: string, hasMoreNfts: boolean) => briefUniqueTokenDataSelector(state, nftSort, hasMoreNfts),
+  ],
   buildBriefWalletSections
 );

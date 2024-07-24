@@ -39,6 +39,8 @@ export type ExtendedState = {
   additionalData: Record<string, CellTypes>;
   externalAddress?: string;
   onPressUniqueToken?: (asset: UniqueAsset) => void;
+  fetchNextNftPage: () => void;
+  hasMoreNfts: boolean | undefined;
 };
 
 const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
@@ -47,14 +49,12 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   scrollIndicatorInsets,
   extendedState,
   type,
-  recyclerListViewProps,
 }: {
   briefSectionsData: BaseCellType[];
   disablePullDownToRefresh: boolean;
   extendedState: Partial<ExtendedState> & Pick<ExtendedState, 'additionalData'>;
   scrollIndicatorInsets?: object;
   type?: AssetListType;
-  recyclerListViewProps: RecyclerListViewProps;
 }) {
   const currentDataProvider = useMemoOne(() => dataProvider.cloneWithRows(briefSectionsData), [briefSectionsData]);
   const { isCoinListEdited, setIsCoinListEdited } = useCoinListEdited();
@@ -151,7 +151,6 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
 
   return (
     <RecyclerListView
-      {...recyclerListViewProps}
       automaticallyAdjustScrollIndicatorInsets={true}
       dataProvider={currentDataProvider}
       extendedState={mergedExtendedState}
@@ -171,6 +170,8 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       renderAheadOffset={1000}
       rowRenderer={rowRenderer}
       scrollIndicatorInsets={scrollIndicatorInsets}
+      onEndReached={extendedState.hasMoreNfts ? extendedState.fetchNextNftPage : undefined}
+      onEndReachedThreshold={0.5}
     />
   );
 });

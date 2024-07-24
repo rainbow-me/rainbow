@@ -100,13 +100,20 @@ export function usePaginatedNFTs({
     queryFn: async ({ pageParam }) => {
       const queryResponse = await arcClient.getNFTsByPage({
         walletAddress: address,
-        cursor: pageParam,
+        cursor: pageParam || 'start',
         limit,
       });
 
+      const nfts = queryResponse.nftsByPage?.data.map(nft => simpleHashNFTToUniqueAsset(nft, address));
+      if (!nfts)
+        return {
+          ...queryResponse.nftsByPage,
+          data: [],
+        };
+
       return {
         ...queryResponse.nftsByPage,
-        data: queryResponse.nftsByPage?.data.map(nft => simpleHashNFTToUniqueAsset(nft, address)),
+        data: nfts,
       };
     },
     initialPageParam: cursor,

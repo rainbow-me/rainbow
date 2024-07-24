@@ -18,7 +18,8 @@ const AssetList = ({
   scrollViewTracker,
   sections,
   walletBriefSectionsData,
-  recyclerListViewProps,
+  fetchNextNftPage,
+  hasMoreNfts,
   ...props
 }) => {
   const insets = useSafeAreaInsets();
@@ -42,9 +43,10 @@ const AssetList = ({
     />
   ) : (
     <RecyclerAssetList2
-      recyclerListViewProps={recyclerListViewProps}
       accentColor={accentColor}
       walletBriefSectionsData={walletBriefSectionsData}
+      fetchNextNftPage={fetchNextNftPage}
+      hasMoreNfts={hasMoreNfts}
     />
   );
 };

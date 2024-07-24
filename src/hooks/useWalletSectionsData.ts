@@ -23,14 +23,7 @@ export default function useWalletSectionsData({
   const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
 
-  const {
-    data: nftPageData,
-    fetchNextPage,
-    hasNextPage,
-    isError,
-    isFetching,
-    isFetchingNextPage,
-  } = usePaginatedNFTs({ address: accountAddress });
+  const { data: nftPageData, fetchNextPage, hasNextPage } = usePaginatedNFTs({ address: accountAddress, limit: 25 });
 
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
@@ -41,6 +34,8 @@ export default function useWalletSectionsData({
   const { isCoinListEdited } = useCoinListEdited();
 
   const { nftSort } = useNftSort();
+
+  const nfts = useMemo(() => nftPageData?.pages.flatMap(page => page.data) ?? [], [nftPageData]);
 
   const walletSections = useMemo(() => {
     const accountInfo = {
@@ -59,22 +54,17 @@ export default function useWalletSectionsData({
       isReadOnlyWallet,
       listType: type,
       showcaseTokens,
-      nfts: {
-        pages: nftPageData?.pages,
-        fetchNextPage,
-        hasNextPage,
-        isError,
-        isFetching,
-        isFetchingNextPage,
-      },
+      uniqueTokens: nfts,
       nftSort,
     };
 
-    const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(accountInfo, nftSort);
-    const hasNFTs = nftPageData?.pages?.length ? nftPageData.pages[0].length > 0 : false;
+    const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(accountInfo, nftSort, hasNextPage);
+    const hasNFTs = !!nftPageData?.pages.flatMap(p => p.data).length;
 
     return {
       hasNFTs,
+      hasMoreNfts: hasNextPage,
+      fetchNextNftPage: fetchNextPage,
       isEmpty,
       isLoadingUserAssets,
       isWalletEthZero,
@@ -95,13 +85,11 @@ export default function useWalletSectionsData({
     isReadOnlyWallet,
     type,
     showcaseTokens,
-    nftPageData?.pages,
-    fetchNextPage,
+    nfts,
     hasNextPage,
-    isError,
-    isFetching,
-    isFetchingNextPage,
+    fetchNextPage,
     nftSort,
+    nftPageData?.pages,
   ]);
   return walletSections;
 }
