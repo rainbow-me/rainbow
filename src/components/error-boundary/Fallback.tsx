@@ -1,13 +1,12 @@
 import lang from 'i18n-js';
 import React from 'react';
 import { View } from 'react-native';
-import RNExitApp from 'react-native-exit-app';
 import { Centered } from '../layout';
 import { SheetActionButton } from '../sheet';
 import Text from '../text/Text';
 import styled from '@/styled-thing';
-import { useTheme } from '@/theme';
-import logger from '@/utils/logger';
+import { RainbowError, logger } from '@/logger';
+import { Colors } from '@/styles';
 
 const Spacer = styled(View)({
   height: ({ height }: { height: number }) => height,
@@ -25,11 +24,25 @@ const Message = styled(View)({
   textAlign: 'center',
 });
 
-export default function Fallback() {
-  const { colors } = useTheme();
+export default function Fallback({
+  colors,
+  error,
+  componentStack,
+  resetError,
+}: {
+  colors: Colors;
+  error: Error;
+  componentStack: string;
+  resetError: () => void;
+}) {
   const handleRestart = () => {
-    logger.sentry('Restarting app after Error Boundary catch');
-    RNExitApp.exitApp();
+    logger.error(new RainbowError('RainbowAppRestartFromErrorBoundary'), {
+      data: {
+        error: error.toString(),
+        componentStack,
+      },
+    });
+    resetError();
   };
   return (
     <Container>
