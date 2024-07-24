@@ -1,7 +1,6 @@
-import { BlurView } from '@react-native-community/blur';
-import React from 'react';
-import { StyleProp, ViewStyle } from 'react-native';
-import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
+import { GestureHandlerButtonProps, GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { opacity } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Bleed, Box, BoxProps, Inline, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
@@ -11,10 +10,11 @@ import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { position } from '@/styles';
-import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/utils/swaps';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
+import { BlurView } from '@react-native-community/blur';
+import React from 'react';
+import { StyleProp, ViewStyle } from 'react-native';
+import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { useBrowserContext } from './BrowserContext';
 import { useBrowserWorkletsContext } from './BrowserWorkletsContext';
 import { BrowserButtonShadows } from './DappBrowserShadows';
@@ -62,12 +62,29 @@ export const TabViewToolbar = () => {
 };
 
 const NewTabButton = ({ newTabWorklet }: { newTabWorklet: (newTabUrl?: string | undefined) => void }) => {
-  return <BaseButton onPressWorklet={newTabWorklet} icon="􀅼" iconColor="label" iconSize="icon 20px" width={44} />;
+  return (
+    <BaseButton
+      onPressWorklet={() => {
+        'worklet';
+        newTabWorklet();
+      }}
+      icon="􀅼"
+      iconColor="label"
+      iconSize="icon 20px"
+      width={44}
+    />
+  );
 };
 
 const DoneButton = ({ toggleTabViewWorklet }: { toggleTabViewWorklet: (activeIndex?: number | undefined) => void }) => {
   return (
-    <BaseButton onPressWorklet={toggleTabViewWorklet} paddingHorizontal="20px">
+    <BaseButton
+      onPressWorklet={() => {
+        'worklet';
+        toggleTabViewWorklet();
+      }}
+      paddingHorizontal="20px"
+    >
       <Text align="center" color="label" size="20pt" weight="heavy">
         {i18n.t(i18n.l.button.done)}
       </Text>
@@ -101,7 +118,7 @@ type BaseButtonProps = {
   iconWeight?: TextWeight;
   lightShadows?: boolean;
   onPress?: () => void;
-  onPressWorklet?: () => void;
+  onPressWorklet?: GestureHandlerButtonProps['onPressWorklet'];
   paddingHorizontal?: BoxProps['paddingHorizontal'];
   scaleTo?: number;
   width?: number;
@@ -185,7 +202,7 @@ const BaseButton = ({
 type HybridButtonProps = {
   children?: React.ReactNode;
   onPress?: () => void;
-  onPressWorklet?: () => void;
+  onPressWorklet?: GestureHandlerButtonProps['onPressWorklet'];
   scaleTo?: number;
   style?: StyleProp<ViewStyle>;
 };
