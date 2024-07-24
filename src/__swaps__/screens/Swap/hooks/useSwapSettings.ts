@@ -9,10 +9,12 @@ import { SharedValue, runOnJS, useSharedValue } from 'react-native-reanimated';
 
 export const useSwapSettings = ({ inputAsset }: { inputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null> }) => {
   const flashbots = useSharedValue(swapsStore.getState().flashbots);
+  const degenMode = useSharedValue(swapsStore.getState().degenMode);
   const slippage = useSharedValue(getDefaultSlippageWorklet(inputAsset.value?.chainId || ChainId.mainnet, getRemoteConfig()));
 
   const setSlippage = swapsStore(state => state.setSlippage);
   const setFlashbots = swapsStore(state => state.setFlashbots);
+  const setDegenMode = swapsStore(state => state.setFlashbots);
 
   const onToggleFlashbots = () => {
     'worklet';
@@ -37,11 +39,21 @@ export const useSwapSettings = ({ inputAsset }: { inputAsset: SharedValue<Extend
     runOnJS(setSlippage)(slippage.value);
   };
 
+  const onToggleDegenMode = () => {
+    'worklet';
+
+    const current = degenMode.value;
+    degenMode.value = !current;
+    runOnJS(setDegenMode)(!current);
+  };
+
   return {
     flashbots,
     slippage,
+    degenMode,
 
     onToggleFlashbots,
     onUpdateSlippage,
+    onToggleDegenMode,
   };
 };

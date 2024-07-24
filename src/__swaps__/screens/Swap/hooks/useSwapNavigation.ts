@@ -19,6 +19,7 @@ export function useSwapNavigation({
   quoteFetchingInterval,
   selectedInputAsset,
   selectedOutputAsset,
+  isDegenMode,
 }: {
   executeSwap: () => void;
   inputProgress: SharedValue<number>;
@@ -27,6 +28,7 @@ export function useSwapNavigation({
   quoteFetchingInterval: ReturnType<typeof useAnimatedInterval>;
   selectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   selectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+  isDegenMode: SharedValue<boolean>;
 }) {
   const navigateBackToReview = useSharedValue(false);
 
@@ -167,17 +169,18 @@ export function useSwapNavigation({
     if (configProgress.value === NavigationSteps.SHOW_GAS) {
       if (navigateBackToReview.value) {
         navigateBackToReview.value = false;
-        handleShowReview();
-      } else {
-        handleDismissGas();
+        return handleShowReview();
       }
-    } else if (configProgress.value === NavigationSteps.SHOW_REVIEW) {
-      // TODO: Handle long press
-      executeSwap();
-    } else {
-      handleShowReview();
+
+      return handleDismissGas();
     }
-  }, [configProgress, executeSwap, handleDismissGas, handleShowReview, navigateBackToReview]);
+
+    if (isDegenMode.value || configProgress.value === NavigationSteps.SHOW_REVIEW) {
+      return executeSwap();
+    }
+
+    return handleShowReview();
+  }, [configProgress.value, executeSwap, handleDismissGas, handleShowReview, isDegenMode.value, navigateBackToReview]);
 
   return {
     navigateBackToReview,

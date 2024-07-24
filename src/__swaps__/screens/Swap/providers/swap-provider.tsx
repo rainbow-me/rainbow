@@ -391,6 +391,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     quoteFetchingInterval: SwapInputController.quoteFetchingInterval,
     selectedInputAsset: internalSelectedInputAsset,
     selectedOutputAsset: internalSelectedOutputAsset,
+    isDegenMode: SwapSettings.degenMode,
   });
 
   const SwapWarning = useSwapWarning({
