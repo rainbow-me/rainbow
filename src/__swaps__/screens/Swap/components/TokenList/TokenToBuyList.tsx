@@ -132,6 +132,7 @@ export const TokenToBuyList = () => {
   return (
     <Box style={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}>
       <FlashList
+        keyboardShouldPersistTaps="always"
         ListEmptyComponent={<ListEmpty output />}
         ListFooterComponent={<Animated.View style={[animatedListPadding, { width: '100%' }]} />}
         ListHeaderComponent={<ChainSelection output />}

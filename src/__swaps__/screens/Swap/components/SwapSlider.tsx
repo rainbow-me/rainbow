@@ -392,10 +392,8 @@ export const SwapSlider = ({
   });
 
   return (
-    // @ts-expect-error Property 'children' does not exist on type
     <PanGestureHandler activeOffsetX={[0, 0]} activeOffsetY={[0, 0]} onGestureEvent={onSlide} simultaneousHandlers={[tapRef]}>
       <Animated.View style={AnimatedSwapStyles.hideWhileReviewingOrConfiguringGas}>
-        {/* @ts-expect-error Property 'children' does not exist on type */}
         <TapGestureHandler onGestureEvent={onPressDown} simultaneousHandlers={[maxButtonRef, panRef]}>
           <Animated.View style={{ gap: 14, paddingBottom: 20, paddingHorizontal: 20 }}>
             <View style={{ zIndex: 10 }}>

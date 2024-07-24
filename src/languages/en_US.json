@@ -1978,6 +1978,7 @@
         "swapping": "Swapping",
         "select_token": "Select Token",
         "insufficient_funds": "Insufficient Funds",
+        "insufficient": "Insufficient",
         "quote_error": "Quote Error"
       },
       "aggregators": {
@@ -2925,6 +2926,8 @@
         "forward": "Forward",
         "back": "Back"
       }
-    }
+    },
+    "copy": "Copy",
+    "paste": "Paste"
   }
 }

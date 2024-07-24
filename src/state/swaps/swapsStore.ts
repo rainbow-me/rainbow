@@ -32,6 +32,8 @@ export interface SwapsState {
   setSlippage: (slippage: string) => void;
   source: Source | 'auto';
   setSource: (source: Source | 'auto') => void;
+  degenMode: boolean;
+  setDegenMode: (degenMode: boolean) => void;
 }
 
 const updateCustomGasSettingsForFlashbots = (flashbots: boolean, chainId: ChainId) => {
@@ -75,6 +77,9 @@ export const swapsStore = createRainbowStore<SwapsState>(
     setSlippage: (slippage: string) => set({ slippage }),
     source: 'auto',
     setSource: (source: Source | 'auto') => set({ source }),
+
+    degenMode: false,
+    setDegenMode: (degenMode: boolean) => set({ degenMode }),
   }),
   {
     storageKey: 'swapsStore',

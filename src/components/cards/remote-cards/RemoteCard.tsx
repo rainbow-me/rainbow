@@ -17,7 +17,6 @@ import LinearGradient from 'react-native-linear-gradient';
 import { analyticsV2 } from '@/analytics';
 import { FlashList } from '@shopify/flash-list';
 import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
-import { TrimmedCard } from '@/resources/cards/cardCollectionQuery';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 
 const ICON_SIZE = 36;
@@ -68,23 +67,22 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
   const { navigate } = useNavigation();
   const { language } = useAccountSettings();
   const { width } = useDimensions();
-  const card = remoteCardsStore(state => state.getCard(id)) ?? ({} as TrimmedCard);
-  const { cardKey, accentColor, backgroundColor, primaryButton, imageIcon } = card;
+  const card = remoteCardsStore(state => state.getCard(id));
 
-  const accent = useForegroundColor(getColorFromString(accentColor));
+  const accent = useForegroundColor(getColorFromString(card?.accentColor || undefined));
 
   const onPress = useCallback(() => {
     analyticsV2.track(analyticsV2.event.remoteCardPrimaryButtonPressed, {
-      cardKey: cardKey ?? 'unknown-backend-driven-card',
-      action: primaryButton.url || primaryButton.route,
-      props: JSON.stringify(primaryButton.props),
+      cardKey: card?.cardKey ?? 'unknown-backend-driven-card',
+      action: card?.primaryButton.url || card?.primaryButton.route,
+      props: JSON.stringify(card?.primaryButton.props),
     });
-    if (primaryButton && primaryButton.url) {
-      Linking.openURL(primaryButton.url);
-    } else if (primaryButton && primaryButton.route) {
-      navigate(primaryButton.route, primaryButton.props);
+    if (card?.primaryButton && card?.primaryButton.url) {
+      Linking.openURL(card?.primaryButton.url);
+    } else if (card?.primaryButton && card?.primaryButton.route) {
+      navigate(card?.primaryButton.route, card?.primaryButton.props);
     }
-  }, [navigate, primaryButton, cardKey]);
+  }, [navigate, card?.primaryButton, card?.cardKey]);
 
   const onDismiss = useCallback(
     (e: ButtonPressAnimationTouchEvent) => {
@@ -92,25 +90,25 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
         e.stopPropagation();
       }
       analyticsV2.track(analyticsV2.event.remoteCardDismissed, {
-        cardKey: cardKey ?? card.sys.id ?? 'unknown-backend-driven-card',
+        cardKey: card?.cardKey ?? card?.sys.id ?? 'unknown-backend-driven-card',
       });
 
       const { cards } = remoteCardsStore.getState();
 
       const isLastCard = cards.size === 1;
 
-      remoteCardsStore.getState().dismissCard(card.sys.id);
+      card?.sys.id && remoteCardsStore.getState().dismissCard(card.sys.id);
       if (carouselRef?.current) {
         // check if this is the last card and don't scroll if so
         if (isLastCard) return;
 
         carouselRef.current.scrollToIndex({
-          index: Array.from(cards.values()).findIndex(c => c.sys.id === card.sys.id),
+          index: Array.from(cards.values()).findIndex(c => c.sys.id === card?.sys.id),
           animated: true,
         });
       }
     },
-    [carouselRef, cardKey, card.sys.id]
+    [card?.cardKey, card?.sys.id, carouselRef]
   );
 
   const imageForPlatform = () => {
@@ -149,7 +147,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
   const contentWidth = width - gutterSize - 16 * 2 - ICON_SIZE - 12;
   return (
     <ConditionalWrap
-      condition={primaryButton.route || primaryButton.url}
+      condition={card?.primaryButton.route || card?.primaryButton.url}
       wrap={children => (
         <ButtonPressAnimation hapticType="impactHeavy" onPress={onPress} disabled={IS_ANDROID} scaleTo={0.94} disallowInterruption>
           {children}
@@ -157,7 +155,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
       )}
     >
       <Box
-        testID={`remote-card-${cardKey}`}
+        testID={`remote-card-${card?.cardKey}`}
         width={{ custom: width - gutterSize }}
         overflow="visible"
         justifyContent="center"
@@ -165,8 +163,8 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
         borderRadius={CARD_BORDER_RADIUS}
         padding="16px"
         shadow="12px"
-        background={(backgroundColor as BackgroundColor) ?? 'surfaceSecondaryElevated'}
-        style={backgroundColor || !isDarkMode ? {} : { backgroundColor: '#191A1C' }}
+        background={(card?.backgroundColor as BackgroundColor) ?? 'surfaceSecondaryElevated'}
+        style={card?.backgroundColor || !isDarkMode ? {} : { backgroundColor: '#191A1C' }}
       >
         <Box flexDirection="row" width={{ custom: width - gutterSize - 16 * 2 }} gap={12}>
           <Box
@@ -188,7 +186,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
             <Box
               height="full"
               style={
-                !imageIcon && imageUri
+                !card?.imageIcon && imageUri
                   ? {
                       shadowColor: isDarkMode ? colors.shadowBlack : accent,
                       shadowOffset: { width: 0, height: 2 },
@@ -200,15 +198,15 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
               width="full"
             >
               <Cover alignHorizontal="center" alignVertical="center">
-                {imageIcon && (
+                {card?.imageIcon && (
                   <TextShadow blur={12}>
                     <Text align="center" color={{ custom: accent }} size="icon 17px" weight="heavy">
-                      {imageIcon}
+                      {card?.imageIcon}
                     </Text>
                   </TextShadow>
                 )}
 
-                {!imageIcon && imageUri && (
+                {!card?.imageIcon && imageUri && (
                   <Box
                     as={ImgixImage}
                     enableFasterImage

@@ -7,7 +7,7 @@ import { IS_IOS } from '@/env';
 
 export type ImgixImageProps = FastImageProps & {
   readonly Component?: React.ElementType;
-  readonly size: number;
+  readonly size?: number;
 };
 
 export const DEFAULT_FASTER_IMAGE_CONFIG: Partial<ImageOptions> = {
@@ -23,7 +23,7 @@ type HiddenImgixImageProps = {
   forwardedRef?: React.Ref<any>;
   maxRetries?: number;
   retryOnError?: boolean;
-  size: number;
+  size?: number;
   fm?: string;
   enableFasterImage?: boolean;
   fasterImageConfig?: Omit<ImageOptions, 'borderRadius' | 'url'>;
