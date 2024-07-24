@@ -20,6 +20,7 @@ import useWalletConnectConnections from '@/hooks/useWalletConnectConnections';
 import lang from 'i18n-js';
 import { useWalletConnectV2Sessions } from '@/walletConnect/hooks/useWalletConnectV2Sessions';
 import { IS_ANDROID } from '@/env';
+import { RecyclerListViewProps } from 'recyclerlistview';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 
@@ -30,6 +31,7 @@ function RecyclerAssetList({
   onPressUniqueToken,
   type = 'wallet',
   walletBriefSectionsData,
+  recyclerListViewProps,
 }: {
   accentColor?: string;
   disablePullDownToRefresh?: boolean;
@@ -38,6 +40,7 @@ function RecyclerAssetList({
   onPressUniqueToken?: (asset: UniqueAsset) => void;
   type?: AssetListType;
   walletBriefSectionsData: any[];
+  recyclerListViewProps: RecyclerListViewProps;
 }) {
   const { memoizedResult: briefSectionsData, additionalData } = useMemoBriefSectionData({
     briefSectionsData: walletBriefSectionsData,
@@ -67,6 +70,7 @@ function RecyclerAssetList({
             top: 132,
           }}
           type={type}
+          recyclerListViewProps={recyclerListViewProps}
         />
       </StickyHeaderManager>
     </RecyclerAssetListScrollPositionContext.Provider>

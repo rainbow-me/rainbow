@@ -9,7 +9,7 @@ import useShowcaseTokens from './useShowcaseTokens';
 import useWallets from './useWallets';
 import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
 import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
-import { useLegacyNFTs } from '@/resources/nfts';
+import { usePaginatedNFTs } from '@/resources/nfts';
 import useNftSort from './useNFTsSortBy';
 
 export default function useWalletSectionsData({
@@ -22,11 +22,16 @@ export default function useWalletSectionsData({
 
   const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
+
   const {
-    data: { nfts: allUniqueTokens },
-  } = useLegacyNFTs({
-    address: accountAddress,
-  });
+    data: nftPageData,
+    fetchNextPage,
+    hasNextPage,
+    isError,
+    isFetching,
+    isFetchingNextPage,
+  } = usePaginatedNFTs({ address: accountAddress });
+
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
   const { isReadOnlyWallet } = useWallets();
@@ -54,12 +59,19 @@ export default function useWalletSectionsData({
       isReadOnlyWallet,
       listType: type,
       showcaseTokens,
-      uniqueTokens: allUniqueTokens,
+      nfts: {
+        pages: nftPageData?.pages,
+        fetchNextPage,
+        hasNextPage,
+        isError,
+        isFetching,
+        isFetchingNextPage,
+      },
       nftSort,
     };
 
     const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(accountInfo, nftSort);
-    const hasNFTs = allUniqueTokens.length > 0;
+    const hasNFTs = nftPageData?.pages?.length ? nftPageData.pages[0].length > 0 : false;
 
     return {
       hasNFTs,
@@ -83,7 +95,12 @@ export default function useWalletSectionsData({
     isReadOnlyWallet,
     type,
     showcaseTokens,
-    allUniqueTokens,
+    nftPageData?.pages,
+    fetchNextPage,
+    hasNextPage,
+    isError,
+    isFetching,
+    isFetchingNextPage,
     nftSort,
   ]);
   return walletSections;

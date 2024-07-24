@@ -18,6 +18,7 @@ const AssetList = ({
   scrollViewTracker,
   sections,
   walletBriefSectionsData,
+  recyclerListViewProps,
   ...props
 }) => {
   const insets = useSafeAreaInsets();
@@ -40,7 +41,11 @@ const AssetList = ({
       {...props}
     />
   ) : (
-    <RecyclerAssetList2 accentColor={accentColor} walletBriefSectionsData={walletBriefSectionsData} />
+    <RecyclerAssetList2
+      recyclerListViewProps={recyclerListViewProps}
+      accentColor={accentColor}
+      walletBriefSectionsData={walletBriefSectionsData}
+    />
   );
 };
 

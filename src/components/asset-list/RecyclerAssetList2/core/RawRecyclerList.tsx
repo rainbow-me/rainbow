@@ -1,7 +1,7 @@
 import React, { LegacyRef, useCallback, useEffect, useMemo, useRef } from 'react';
 import { LayoutChangeEvent } from 'react-native';
 import { SetterOrUpdater } from 'recoil';
-import { DataProvider, RecyclerListView } from 'recyclerlistview';
+import { DataProvider, RecyclerListView, RecyclerListViewProps } from 'recyclerlistview';
 import { useMemoOne } from 'use-memo-one';
 import { BooleanMap } from '../../../../hooks/useCoinListEditOptions';
 import { AssetListType } from '..';
@@ -47,12 +47,14 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   scrollIndicatorInsets,
   extendedState,
   type,
+  recyclerListViewProps,
 }: {
   briefSectionsData: BaseCellType[];
   disablePullDownToRefresh: boolean;
   extendedState: Partial<ExtendedState> & Pick<ExtendedState, 'additionalData'>;
   scrollIndicatorInsets?: object;
   type?: AssetListType;
+  recyclerListViewProps: RecyclerListViewProps;
 }) {
   const currentDataProvider = useMemoOne(() => dataProvider.cloneWithRows(briefSectionsData), [briefSectionsData]);
   const { isCoinListEdited, setIsCoinListEdited } = useCoinListEdited();
@@ -149,6 +151,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
 
   return (
     <RecyclerListView
+      {...recyclerListViewProps}
       automaticallyAdjustScrollIndicatorInsets={true}
       dataProvider={currentDataProvider}
       extendedState={mergedExtendedState}
