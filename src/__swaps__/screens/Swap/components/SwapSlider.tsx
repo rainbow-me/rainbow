@@ -418,10 +418,7 @@ export const SwapSlider = ({
                 </Inline>
                 <Column width="content">
                   <GestureHandlerV1Button
-                    onPressWorklet={() => {
-                      'worklet';
-                      SwapInputController.setValueToMaxSwappableAmount('inputAmount');
-                    }}
+                    onPressWorklet={SwapInputController.setValueToMaxSwappableAmount}
                     style={{ margin: -12, padding: 12 }}
                     ref={maxButtonRef}
                   >
