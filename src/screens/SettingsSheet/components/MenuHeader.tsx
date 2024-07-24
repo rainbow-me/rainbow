@@ -116,10 +116,11 @@ interface TitleProps {
   weight?: 'regular' | 'medium' | 'semibold' | 'bold' | 'heavy';
   disabled?: boolean;
   isLink?: boolean;
+  testID?: string;
 }
 
-const Title = ({ text, weight = 'semibold' }: TitleProps) => (
-  <Text color={'primary (Deprecated)'} size="18px / 27px (Deprecated)" weight={weight} numberOfLines={1}>
+const Title = ({ text, weight = 'semibold', testID }: TitleProps) => (
+  <Text testID={testID} color={'primary (Deprecated)'} size="18px / 27px (Deprecated)" weight={weight} numberOfLines={1}>
     {text}
   </Text>
 );

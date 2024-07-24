@@ -221,8 +221,14 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
           </Inset>
 
           {isBackingUp && (
-            <Box position="absolute" bottom={{ custom: 20 }} alignItems="center" style={{ paddingHorizontal: 24 }}>
-              <SheetActionButton testID={'saved-these-words'} label={btnText} color="blue" weight="bold" onPress={handleConfirmSaved} />
+            <Box
+              position="absolute"
+              testID={'saved-these-words'}
+              bottom={{ custom: 20 }}
+              alignItems="center"
+              style={{ paddingHorizontal: 24 }}
+            >
+              <SheetActionButton label={btnText} color="blue" weight="bold" onPress={handleConfirmSaved} />
             </Box>
           )}
         </Box>

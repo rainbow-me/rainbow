@@ -47,8 +47,8 @@ describe('Backups', () => {
   it('Should go to specific wallets backup sheet and view seed phrase', async () => {
     await delayTime('medium');
     await waitAndTap('not-backed-up');
-    await delayTime('medium');
-    await waitAndTap('manually-backup');
+    await delayTime('long');
+    await waitAndTap('back-up-manually');
     await delayTime('medium');
     await waitAndTap('show-secret-button');
   });
@@ -63,19 +63,16 @@ describe('Backups', () => {
     await waitAndTap('saved-these-words');
   });
 
-  // it('Should go back to the backup sheet and it should be updated', async () => {
-  //   await delayTime('medium');
-  //   // TEST ID
-  //   await checkIfExistsByText('Wallets & Backup');
-  //   await checkIfDoesntExist('Not backed up', 1_000);
-  // });
+  it('Should go back to the backup sheet and it should be updated', async () => {
+    await delayTime('medium');
+    await checkIfExistsByText('Wallets & Backup');
+    await checkIfDoesntExist('not-backed-up', 1_000);
+  });
 
-  // it('Should go to specific wallets backup sheet and it should be backup up now', async () => {
-  //   await delayTime('medium');
-  //   // TEST ID
-  //   await tapByText('Imported');
-  //   await delayTime('medium');
-  //   // TEST ID
-  //   await checkIfExistsByText('Backed up manually');
-  // });
+  it('Should go to specific wallets backup sheet and it should be backup up now', async () => {
+    await delayTime('medium');
+    await tap('back-ups-imported');
+    await delayTime('medium');
+    await checkIfExists('backed-up-manually');
+  });
 });

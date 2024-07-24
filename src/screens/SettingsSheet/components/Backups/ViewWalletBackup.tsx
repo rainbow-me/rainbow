@@ -492,6 +492,7 @@ const ViewWalletBackup = () => {
                       : i18n.t(i18n.l.wallet.back_ups.backed_up_manually)
                   }
                   weight="heavy"
+                  testID={'backed-up-manually'}
                 />
               }
               labelComponent={
