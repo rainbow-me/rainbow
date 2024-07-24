@@ -5,7 +5,7 @@
   <key>CFBundleDevelopmentRegion</key>
   <string>en</string>
   <key>CFBundleDisplayName</key>
-  <string>Open in Rainbow</string>
+  <string>$(DISPLAY_NAME)</string>
   <key>CFBundleExecutable</key>
   <string>$(EXECUTABLE_NAME)</string>
   <key>CFBundleIdentifier</key>
@@ -43,3 +43,4 @@
   </dict>
 </dict>
 </plist>
+
