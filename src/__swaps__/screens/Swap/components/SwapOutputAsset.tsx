@@ -131,7 +131,7 @@ function SwapOutputIcon() {
 }
 
 function OutputAssetBalanceBadge() {
-  const { internalSelectedOutputAsset, SwapInputController } = useSwapContext();
+  const { internalSelectedOutputAsset } = useSwapContext();
 
   const label = useDerivedValue(() => {
     const asset = internalSelectedOutputAsset.value;
@@ -141,16 +141,7 @@ function OutputAssetBalanceBadge() {
     return asset ? balance : TOKEN_TO_GET_LABEL;
   });
 
-  return (
-    <GestureHandlerV1Button
-      onPressWorklet={() => {
-        'worklet';
-        SwapInputController.setValueToMaxSwappableAmount('outputAmount');
-      }}
-    >
-      <BalanceBadge label={label} />
-    </GestureHandlerV1Button>
-  );
+  return <BalanceBadge label={label} />;
 }
 
 export function SwapOutputAsset() {

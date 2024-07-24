@@ -102,12 +102,7 @@ function InputAssetBalanceBadge() {
   });
 
   return (
-    <GestureHandlerV1Button
-      onPressWorklet={() => {
-        'worklet';
-        SwapInputController.setValueToMaxSwappableAmount('inputAmount');
-      }}
-    >
+    <GestureHandlerV1Button onPressWorklet={SwapInputController.setValueToMaxSwappableAmount}>
       <BalanceBadge label={label} />
     </GestureHandlerV1Button>
   );

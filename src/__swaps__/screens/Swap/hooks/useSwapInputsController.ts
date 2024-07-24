@@ -574,60 +574,34 @@ export function useSwapInputsController({
     { leading: false, trailing: true }
   );
 
-  const setValueToMaxSwappableAmount = (inputkey: 'inputAmount' | 'outputAmount') => {
+  const setValueToMaxSwappableAmount = () => {
     'worklet';
 
-    switch (inputkey) {
-      case 'inputAmount': {
-        const currentInputValue = inputValues.value.inputAmount;
-        const maxSwappableAmount = internalSelectedInputAsset.value?.maxSwappableAmount;
-        if (!maxSwappableAmount || equalWorklet(maxSwappableAmount, 0)) {
-          runOnJS(triggerHapticFeedback)('impactMedium');
-          return;
-        }
-
-        const isAlreadyMax = maxSwappableAmount ? equalWorklet(currentInputValue, maxSwappableAmount) : false;
-        const exceedsMax = maxSwappableAmount ? greaterThanWorklet(currentInputValue, maxSwappableAmount) : false;
-        if (isAlreadyMax) {
-          runOnJS(triggerHapticFeedback)('impactMedium');
-          return;
-        }
-
-        quoteFetchingInterval.stop();
-        isQuoteStale.value = 1;
-        inputMethod.value = 'slider';
-
-        if (exceedsMax) sliderXPosition.value = SLIDER_WIDTH * 0.999;
-
-        sliderXPosition.value = withSpring(SLIDER_WIDTH, SPRING_CONFIGS.snappySpringConfig, isFinished => {
-          if (isFinished) {
-            runOnJS(onChangedPercentage)(1);
-          }
-        });
-        break;
-      }
-
-      case 'outputAmount': {
-        const currentOutputValue = inputValues.value.outputAmount;
-        const maxSwappableAmount = internalSelectedOutputAsset.value?.maxSwappableAmount;
-
-        if (outputQuotesAreDisabled.value || !maxSwappableAmount || equalWorklet(maxSwappableAmount, 0)) {
-          runOnJS(triggerHapticFeedback)('impactMedium');
-          return;
-        }
-
-        const isAlreadyMax = equalWorklet(currentOutputValue, maxSwappableAmount);
-        if (isAlreadyMax) {
-          runOnJS(triggerHapticFeedback)('impactMedium');
-          return;
-        }
-
-        quoteFetchingInterval.stop();
-        inputMethod.value = 'outputAmount';
-        inputValues.modify(values => ({ ...values, outputAmount: maxSwappableAmount }));
-        break;
-      }
+    const currentInputValue = inputValues.value.inputAmount;
+    const maxSwappableAmount = internalSelectedInputAsset.value?.maxSwappableAmount;
+    if (!maxSwappableAmount || equalWorklet(maxSwappableAmount, 0)) {
+      runOnJS(triggerHapticFeedback)('impactMedium');
+      return;
     }
+
+    const isAlreadyMax = maxSwappableAmount ? equalWorklet(currentInputValue, maxSwappableAmount) : false;
+    const exceedsMax = maxSwappableAmount ? greaterThanWorklet(currentInputValue, maxSwappableAmount) : false;
+    if (isAlreadyMax) {
+      runOnJS(triggerHapticFeedback)('impactMedium');
+      return;
+    }
+
+    quoteFetchingInterval.stop();
+    isQuoteStale.value = 1;
+    inputMethod.value = 'slider';
+
+    if (exceedsMax) sliderXPosition.value = SLIDER_WIDTH * 0.999;
+
+    sliderXPosition.value = withSpring(SLIDER_WIDTH, SPRING_CONFIGS.snappySpringConfig, isFinished => {
+      if (isFinished) {
+        runOnJS(onChangedPercentage)(1);
+      }
+    });
   };
 
   const resetValuesToZeroWorklet = (inputKey?: inputKeys) => {
