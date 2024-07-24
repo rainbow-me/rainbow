@@ -189,6 +189,14 @@ export default async function handleDeeplink(url: string, initialRoute: any = nu
         break;
       }
 
+      case 'dapp': {
+        const { url } = query;
+        if (url) {
+          Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, { url });
+        }
+        break;
+      }
+
       default: {
         const addressOrENS = pathname?.split('/profile/')?.[1] ?? pathname?.split('/')?.[1];
         /**

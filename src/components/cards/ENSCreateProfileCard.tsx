@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import ENSAvatarGrid from '../../assets/ensAvatarGrid.png';
 import ENSIcon from '../../assets/ensIcon.png';
 import { useNavigation } from '../../navigation/Navigation';
@@ -72,7 +72,6 @@ export const ENSCreateProfileCard = () => {
             </Column>
             <Column width="content">
               <Box alignItems="center" width={{ custom: ORB_SIZE }} height={{ custom: ORB_SIZE }}>
-                {/* @ts-expect-error JavaScript component */}
                 <Box
                   as={ImgixImage}
                   marginTop="-12px"
@@ -92,7 +91,6 @@ export const ENSCreateProfileCard = () => {
               alignItems="center"
               justifyContent="center"
             >
-              {/* @ts-expect-error JavaScript component */}
               <Box
                 as={ImgixImage}
                 alignItems="center"

@@ -267,7 +267,7 @@ export class Logger {
  *   `logger.debug(message[, metadata, debugContext])`
  *   `logger.info(message[, metadata])`
  *   `logger.warn(message[, metadata])`
- *   `logger.error(error[, metadata])`
+ *   `logger.error(RainbowError[, metadata])`
  *   `logger.disable()`
  *   `logger.enable()`
  */

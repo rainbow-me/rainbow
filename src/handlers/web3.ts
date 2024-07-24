@@ -519,7 +519,7 @@ export const getTxDetails = async (transaction: TransactionDetailsInput): Promis
  * @param domain The domain as a string.
  * @return The resolved address, or undefined if none could be found.
  */
-export const resolveUnstoppableDomain = async (domain: string): Promise<string | void> => {
+export const resolveUnstoppableDomain = async (domain: string): Promise<string | null> => {
   // This parameter doesn't line up with the `Resolution` type declaration,
   // but it can be casted to `any` as it does match the documentation here:
   // https://unstoppabledomains.github.io/resolution/v2.2.0/classes/resolution.html.
@@ -533,6 +533,7 @@ export const resolveUnstoppableDomain = async (domain: string): Promise<string |
       logger.error(new RainbowError(`resolveUnstoppableDomain error`), {
         message: error.message,
       });
+      return null;
     });
   return res;
 };
@@ -542,15 +543,18 @@ export const resolveUnstoppableDomain = async (domain: string): Promise<string |
  * @param nameOrAddress The name or address to resolve.
  * @param provider If provided, a provider to use instead of the cached
  * `web3Provider`.
- * @return The address, or undefined if one could not be resolved.
+ * @return The address, or null if one could not be resolved.
  */
-export const resolveNameOrAddress = async (nameOrAddress: string): Promise<string | void | null> => {
+export const resolveNameOrAddress = async (nameOrAddress: string): Promise<string | null> => {
   if (!isHexString(nameOrAddress)) {
     if (isUnstoppableAddressFormat(nameOrAddress)) {
-      return resolveUnstoppableDomain(nameOrAddress);
+      const resolvedAddress = await resolveUnstoppableDomain(nameOrAddress);
+      return resolvedAddress;
     }
-    const p = await getProviderForNetwork(Network.mainnet);
-    return p?.resolveName(nameOrAddress);
+    const p = getProviderForNetwork(Network.mainnet);
+    const resolvedAddress = await p?.resolveName(nameOrAddress);
+
+    return resolvedAddress;
   }
   return nameOrAddress;
 };

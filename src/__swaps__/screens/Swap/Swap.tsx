@@ -21,6 +21,7 @@ import { SwapSheetGestureBlocker } from '@/__swaps__/screens/Swap/components/Swa
 import { ChainId } from '@/__swaps__/types/chains';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
+import { AbsolutePortalRoot } from '@/components/AbsolutePortal';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
@@ -83,6 +84,7 @@ export function SwapScreen() {
         </Box>
       </SwapSheetGestureBlocker>
       <WalletAddressObserver />
+      <AbsolutePortalRoot />
     </SwapProvider>
   );
 }

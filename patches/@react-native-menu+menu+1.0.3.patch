@@ -8,10 +8,10 @@ diff --git a/node_modules/@react-native-menu/menu/android/src/main/.DS_Store b/n
 new file mode 100644
 index 0000000..e69de29
 diff --git a/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuPackage.kt b/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuPackage.kt
-index 978d5e6..4ebfbc2 100644
+index 81b77bf..e72978b 100644
 --- a/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuPackage.kt
 +++ b/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuPackage.kt
-@@ -1,20 +1,32 @@
+@@ -1,20 +1,31 @@
  package com.reactnativemenu
  
 -import java.util.Arrays
@@ -50,12 +50,11 @@ index 978d5e6..4ebfbc2 100644
 +    }
 +  }
 +}
-+
 diff --git a/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuView.kt b/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuView.kt
-index 1cec798..5e87989 100644
+index d30534e..51853cb 100644
 --- a/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuView.kt
 +++ b/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuView.kt
-@@ -16,6 +16,9 @@ import java.lang.reflect.Field
+@@ -18,6 +18,9 @@ import java.lang.reflect.Field
  
  
  class MenuView(private val mContext: ReactContext): ReactViewGroup(mContext) {
@@ -65,7 +64,7 @@ index 1cec798..5e87989 100644
    private lateinit var mActions: ReadableArray
    private var mIsAnchoredToRight = false
    private val mPopupMenu: PopupMenu = PopupMenu(context, this)
-@@ -54,6 +57,9 @@ class MenuView(private val mContext: ReactContext): ReactViewGroup(mContext) {
+@@ -56,6 +59,9 @@ class MenuView(private val mContext: ReactContext): ReactViewGroup(mContext) {
      super.onDetachedFromWindow()
      if (mIsMenuDisplayed) {
        mPopupMenu.dismiss()
@@ -75,7 +74,7 @@ index 1cec798..5e87989 100644
      }
    }
  
-@@ -92,6 +98,12 @@ class MenuView(private val mContext: ReactContext): ReactViewGroup(mContext) {
+@@ -94,6 +100,12 @@ class MenuView(private val mContext: ReactContext): ReactViewGroup(mContext) {
        true -> config.getMap("attributes")
        else -> null
      }
@@ -88,7 +87,7 @@ index 1cec798..5e87989 100644
      val subactions = when (config != null && config.hasKey("subactions") && !config.isNull(("subactions"))) {
        true -> config.getArray("subactions")
        else -> null
-@@ -101,6 +113,8 @@ class MenuView(private val mContext: ReactContext): ReactViewGroup(mContext) {
+@@ -103,6 +115,8 @@ class MenuView(private val mContext: ReactContext): ReactViewGroup(mContext) {
        menuItem.title = getMenuItemTextWithColor(menuItem.title.toString(), titleColor)
      }
  
@@ -97,7 +96,7 @@ index 1cec798..5e87989 100644
      if (imageName != null) {
        val resourceId: Int = getDrawableIdWithName(imageName)
        if (resourceId != 0) {
-@@ -229,7 +243,9 @@ class MenuView(private val mContext: ReactContext): ReactViewGroup(mContext) {
+@@ -233,7 +247,9 @@ class MenuView(private val mContext: ReactContext): ReactViewGroup(mContext) {
          mIsMenuDisplayed = false
        }
        mIsMenuDisplayed = true

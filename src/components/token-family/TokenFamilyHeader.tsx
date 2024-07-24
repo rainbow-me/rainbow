@@ -163,7 +163,6 @@ const TokenFamilyHeader = ({ childrenAmount, emoji, familyImage, isOpen, onPress
           <Animated.View style={imageAnimatedStyles}>
             <FastImage
               resizeMode={ImgixImage.resizeMode.contain}
-              // @ts-expect-error static image source
               source={CaretImageSource}
               style={sx.chevron}
               tintColor={title === lang.t('button.hidden') ? colors.blueGreyDark60 : colors.dark}

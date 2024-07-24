@@ -92,14 +92,24 @@ export function useCoinListFinishEditingOptions() {
   currentActionNonReactive.current = currentAction;
 
   const setPinnedCoins = useCallback(() => {
-    setPinnedCoinsObject((pinnedCoins: BooleanMap) => {
-      return [
-        ...Object.keys(pinnedCoins ?? []).filter(i => !selectedItemsNonReactive.current!.includes(i)),
-        ...(currentActionNonReactive.current === EditAction.standard ? selectedItemsNonReactive.current! : []),
-      ].reduce((acc, curr) => {
-        acc[curr] = true;
-        return acc;
-      }, {} as BooleanMap);
+    setPinnedCoinsObject((pinnedCoins: BooleanMap | undefined) => {
+      const safePinnedCoins = pinnedCoins ?? {};
+      if (currentActionNonReactive.current === EditAction.unpin) {
+        return Object.keys(safePinnedCoins).reduce((acc, curr) => {
+          if (!selectedItemsNonReactive.current?.includes(curr)) {
+            acc[curr] = true;
+          }
+          return acc;
+        }, {} as BooleanMap);
+      } else {
+        return [
+          ...Object.keys(safePinnedCoins),
+          ...(currentActionNonReactive.current === EditAction.standard ? selectedItemsNonReactive.current || [] : []),
+        ].reduce((acc, curr) => {
+          acc[curr] = true;
+          return acc;
+        }, {} as BooleanMap);
+      }
     });
     setSelectedItems([]);
   }, [setSelectedItems, setPinnedCoinsObject]);
@@ -107,10 +117,11 @@ export function useCoinListFinishEditingOptions() {
   const dispatch = useDispatch();
 
   const setHiddenCoins = useCallback(() => {
-    setHiddenCoinsObject((hiddenCoins: BooleanMap) => {
+    setHiddenCoinsObject((hiddenCoins: BooleanMap | undefined) => {
+      const safeHiddenCoins = hiddenCoins ?? {};
       const newList = [
-        ...Object.keys(hiddenCoins ?? []).filter(i => !selectedItemsNonReactive.current!.includes(i)),
-        ...(currentActionNonReactive.current === EditAction.standard ? selectedItemsNonReactive.current! : []),
+        ...Object.keys(safeHiddenCoins).filter(i => !selectedItemsNonReactive.current?.includes(i)),
+        ...(currentActionNonReactive.current === EditAction.standard ? selectedItemsNonReactive.current || [] : []),
       ].reduce((acc, curr) => {
         acc[curr] = true;
         return acc;

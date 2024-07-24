@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/react-native';
 import { SENTRY_ENDPOINT, SENTRY_ENVIRONMENT } from 'react-native-dotenv';
 import VersionNumber from 'react-native-version-number';
 
-import { IS_PROD, IS_TEST } from '@/env';
+import { IS_TEST } from '@/env';
 import { logger, RainbowError } from '@/logger';
 import isTestFlight from '@/helpers/isTestFlight';
 
