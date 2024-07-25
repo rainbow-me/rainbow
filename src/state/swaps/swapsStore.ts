@@ -40,6 +40,7 @@ export interface SwapsState {
   // recent swaps
   latestSwapAt: Map<ChainId, number>;
   recentSwaps: Map<ChainId, RecentSwap[]>;
+  getRecentSwapsByChain: (chainId: ChainId) => RecentSwap[];
   addRecentSwap: (asset: ExtendedAnimatedAssetWithColors) => void;
 }
 
@@ -152,6 +153,12 @@ export const swapsStore = createRainbowStore<SwapsState>(
 
     latestSwapAt: new Map(),
     recentSwaps: new Map(),
+    getRecentSwapsByChain: (chainId: ChainId) => {
+      const { recentSwaps } = get();
+
+      const chainSwaps = recentSwaps.get(chainId) || [];
+      return chainSwaps.sort((a, b) => b.swappedAt - a.swappedAt);
+    },
     addRecentSwap(asset) {
       const { recentSwaps, latestSwapAt } = get();
       const now = Date.now();

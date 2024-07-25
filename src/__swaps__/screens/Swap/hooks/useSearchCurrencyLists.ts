@@ -145,7 +145,7 @@ export function useSearchCurrencyLists() {
   const { internalSelectedInputAsset: assetToSell, selectedOutputChainId } = useSwapContext();
 
   const query = useSwapsStore(state => state.outputSearchQuery.trim().toLowerCase());
-  const recentSwaps = useSwapsStore(state => state.recentSwaps);
+  const getRecentSwapsByChain = useSwapsStore(state => state.getRecentSwapsByChain);
 
   const [state, setState] = useState({
     fromChainId: assetToSell.value ? assetToSell.value.chainId ?? ChainId.mainnet : undefined,
@@ -237,8 +237,8 @@ export function useSearchCurrencyLists() {
   }, [favorites, state.toChainId]);
 
   const recentsForChain = useMemo(() => {
-    return recentSwaps.get(state.toChainId);
-  }, [recentSwaps, state.toChainId]);
+    return getRecentSwapsByChain(state.toChainId);
+  }, [getRecentSwapsByChain, state.toChainId]);
 
   const memoizedData = useMemo(() => {
     const queryIsAddress = isAddress(query);
