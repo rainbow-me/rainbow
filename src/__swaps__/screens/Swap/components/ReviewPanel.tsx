@@ -159,6 +159,19 @@ function FlashbotsToggle() {
   );
 }
 
+function DegenModeToggle() {
+  const { SwapSettings } = useSwapContext();
+
+  return (
+    <AnimatedSwitch
+      onToggle={SwapSettings.onToggleDegenMode}
+      value={SwapSettings.degenMode}
+      activeLabel={i18n.t(i18n.l.expanded_state.swap.on)}
+      inactiveLabel={i18n.t(i18n.l.expanded_state.swap.off)}
+    />
+  );
+}
+
 export function ReviewPanel() {
   const { navigate } = useNavigation();
   const { isDarkMode } = useColorMode();
@@ -351,6 +364,36 @@ export function ReviewPanel() {
               <FlashbotsToggle />
             </Inline>
           </Animated.View>
+
+          {/* <Animated.View style={[{ height: REVIEW_SHEET_ROW_HEIGHT, justifyContent: 'center' }]}>
+            <Inline wrap={false} horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
+              <Inline wrap={false} horizontalSpace="12px">
+                <TextIcon color="labelTertiary" height={9} size="icon 13px" weight="bold" width={16}>
+                  🐵
+                </TextIcon>
+                <Inline wrap={false} horizontalSpace="4px">
+                  <Text color="labelTertiary" weight="semibold" size="15pt">
+                    DEGEN MODE
+                  </Text>
+                  <Bleed space="12px">
+                    <ButtonPressAnimation onPress={openFlashbotsExplainer} scaleTo={0.8}>
+                      <Text
+                        align="center"
+                        color={{ custom: opacity(labelTertiary, 0.24) }}
+                        size="icon 13px"
+                        style={{ padding: 12, top: 0.5 }}
+                        weight="semibold"
+                      >
+                        􀅴
+                      </Text>
+                    </ButtonPressAnimation>
+                  </Bleed>
+                </Inline>
+              </Inline>
+
+              <DegenModeToggle />
+            </Inline>
+          </Animated.View> */}
 
           <Box height={{ custom: REVIEW_SHEET_ROW_HEIGHT }} justifyContent="center">
             <Inline wrap={false} horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
