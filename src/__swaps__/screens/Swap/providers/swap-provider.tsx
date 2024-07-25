@@ -14,7 +14,7 @@ import {
   useSharedValue,
 } from 'react-native-reanimated';
 
-import { equalWorklet, lessThanOrEqualToWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { equalWorklet, lessThanOrEqualToWorklet, sumWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { INITIAL_SLIDER_POSITION, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useAnimatedSwapStyles } from '@/__swaps__/screens/Swap/hooks/useAnimatedSwapStyles';
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
@@ -221,7 +221,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       if (selectedGas.isEIP1559) {
         gasParams = {
-          maxFeePerGas: selectedGas.maxBaseFee,
+          maxFeePerGas: sumWorklet(selectedGas.maxBaseFee, selectedGas.maxPriorityFee),
           maxPriorityFeePerGas: selectedGas.maxPriorityFee,
         };
       } else {
@@ -391,6 +391,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     quoteFetchingInterval: SwapInputController.quoteFetchingInterval,
     selectedInputAsset: internalSelectedInputAsset,
     selectedOutputAsset: internalSelectedOutputAsset,
+    isDegenMode: SwapSettings.degenMode,
   });
 
   const SwapWarning = useSwapWarning({
