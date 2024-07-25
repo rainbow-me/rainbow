@@ -1,14 +1,5 @@
 import { useCallback } from 'react';
-import {
-  DerivedValue,
-  SharedValue,
-  runOnJS,
-  runOnUI,
-  useAnimatedReaction,
-  useDerivedValue,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 import { SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
 import { RequestNewQuoteParams, inputKeys, inputMethods, inputValuesType } from '@/__swaps__/types/swap';
@@ -83,7 +74,6 @@ export function useSwapInputsController({
   quote,
   sliderXPosition,
   slippage,
-  outputQuotesAreDisabled,
 }: {
   focusedInput: SharedValue<inputKeys>;
   inputProgress: SharedValue<number>;
@@ -97,7 +87,6 @@ export function useSwapInputsController({
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
   sliderXPosition: SharedValue<number>;
   slippage: SharedValue<string>;
-  outputQuotesAreDisabled: DerivedValue<boolean>;
 }) {
   const percentageToSwap = useDerivedValue(() => {
     return Math.round(clamp((sliderXPosition.value - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1) * 100) / 100;
