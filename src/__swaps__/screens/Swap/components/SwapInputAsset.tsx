@@ -83,8 +83,6 @@ function SwapInputAmount() {
 }
 
 function SwapInputIcon() {
-  const { internalSelectedInputAsset } = useSwapContext();
-
   return (
     <Box paddingRight="10px">
       <AnimatedSwapCoinIcon assetType={'input'} large />
@@ -93,7 +91,7 @@ function SwapInputIcon() {
 }
 
 function InputAssetBalanceBadge() {
-  const { internalSelectedInputAsset } = useSwapContext();
+  const { internalSelectedInputAsset, SwapInputController } = useSwapContext();
 
   const label = useDerivedValue(() => {
     const asset = internalSelectedInputAsset.value;
@@ -103,7 +101,11 @@ function InputAssetBalanceBadge() {
     return asset ? balance : TOKEN_TO_SWAP_LABEL;
   });
 
-  return <BalanceBadge label={label} />;
+  return (
+    <GestureHandlerV1Button onPressWorklet={SwapInputController.setValueToMaxSwappableAmount}>
+      <BalanceBadge label={label} />
+    </GestureHandlerV1Button>
+  );
 }
 
 export function SwapInputAsset() {

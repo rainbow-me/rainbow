@@ -28,6 +28,8 @@ import { queryClient } from '@/react-query';
 import { useAccountSettings } from '@/hooks';
 import { analyticsV2 } from '@/analytics';
 import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { triggerHapticFeedback } from '@/screens/points/constants';
 
 function getInputValuesForSliderPositionWorklet({
   selectedInputAsset,
@@ -561,6 +563,36 @@ export function useSwapInputsController({
     { leading: false, trailing: true }
   );
 
+  const setValueToMaxSwappableAmount = () => {
+    'worklet';
+
+    const currentInputValue = inputValues.value.inputAmount;
+    const maxSwappableAmount = internalSelectedInputAsset.value?.maxSwappableAmount;
+    if (!maxSwappableAmount || equalWorklet(maxSwappableAmount, 0)) {
+      runOnJS(triggerHapticFeedback)('impactMedium');
+      return;
+    }
+
+    const isAlreadyMax = maxSwappableAmount ? equalWorklet(currentInputValue, maxSwappableAmount) : false;
+    const exceedsMax = maxSwappableAmount ? greaterThanWorklet(currentInputValue, maxSwappableAmount) : false;
+    if (isAlreadyMax) {
+      runOnJS(triggerHapticFeedback)('impactMedium');
+      return;
+    }
+
+    quoteFetchingInterval.stop();
+    isQuoteStale.value = 1;
+    inputMethod.value = 'slider';
+
+    if (exceedsMax) sliderXPosition.value = SLIDER_WIDTH * 0.999;
+
+    sliderXPosition.value = withSpring(SLIDER_WIDTH, SPRING_CONFIGS.snappySpringConfig, isFinished => {
+      if (isFinished) {
+        runOnJS(onChangedPercentage)(1);
+      }
+    });
+  };
+
   const resetValuesToZeroWorklet = (inputKey?: inputKeys) => {
     'worklet';
     quoteFetchingInterval.stop();
@@ -889,5 +921,6 @@ export function useSwapInputsController({
     quoteFetchingInterval,
     fetchQuoteAndAssetPrices,
     setQuote,
+    setValueToMaxSwappableAmount,
   };
 }
