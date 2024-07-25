@@ -267,8 +267,7 @@ export const buildBriefUniqueTokenList = (
   hiddenTokens: string[] = [],
   listType: AssetListType = 'wallet',
   isReadOnlyWallet = false,
-  nftSort: string = CollectibleSortByOptions.MOST_RECENT,
-  hasMoreNfts: boolean
+  nftSort: string = CollectibleSortByOptions.MOST_RECENT
 ) => {
   const hiddenUniqueTokensIds = uniqueTokens
     .filter(({ fullUniqueId }: any) => hiddenTokens.includes(fullUniqueId))

@@ -1,5 +1,5 @@
 import React, { LegacyRef, useCallback, useEffect, useMemo, useRef } from 'react';
-import { LayoutChangeEvent } from 'react-native';
+import { LayoutChangeEvent, View } from 'react-native';
 import { SetterOrUpdater } from 'recoil';
 import { DataProvider, RecyclerListView, RecyclerListViewProps } from 'recyclerlistview';
 import { useMemoOne } from 'use-memo-one';
@@ -21,6 +21,8 @@ import { useTheme } from '@/theme';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { useRoute } from '@react-navigation/native';
 import Routes from '@/navigation/routesNames';
+import ActivityIndicator from '@/components/ActivityIndicator';
+import { Text, useForegroundColor } from '@/design-system';
 
 const dataProvider = new DataProvider((r1, r2) => {
   return r1.uid !== r2.uid;
@@ -39,8 +41,8 @@ export type ExtendedState = {
   additionalData: Record<string, CellTypes>;
   externalAddress?: string;
   onPressUniqueToken?: (asset: UniqueAsset) => void;
-  fetchNextNftPage: () => void;
-  hasMoreNfts: boolean | undefined;
+  fetchNextNftPage?: () => void;
+  hasMoreNfts?: boolean | undefined;
 };
 
 const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
@@ -170,10 +172,22 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       renderAheadOffset={1000}
       rowRenderer={rowRenderer}
       scrollIndicatorInsets={scrollIndicatorInsets}
+      renderFooter={() => (extendedState.hasMoreNfts ? <LoadMoreComponent /> : null)}
       onEndReached={extendedState.hasMoreNfts ? extendedState.fetchNextNftPage : undefined}
       onEndReachedThreshold={0.5}
     />
   );
 });
+
+const LoadMoreComponent = () => {
+  return (
+    <View style={{ padding: 12, display: 'flex', alignItems: 'center' }}>
+      <ActivityIndicator color={undefined} />
+      <Text color="label" size="13pt">
+        Loading more NFTs...
+      </Text>
+    </View>
+  );
+};
 
 export default RawMemoRecyclerAssetList;

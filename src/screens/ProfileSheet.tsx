@@ -41,7 +41,12 @@ export default function ProfileSheet() {
   const { isSuccess: hasFirstTxTimestampFetched } = useFirstTransactionTimestamp({ addressOrName: ensName });
 
   // Prefetch asset list
-  const { isSuccess: hasListFetched, briefSectionsData } = useExternalWalletSectionsData({
+  const {
+    isSuccess: hasListFetched,
+    briefSectionsData,
+    fetchMoreNfts,
+    hasMoreNfts,
+  } = useExternalWalletSectionsData({
     address: profileAddress || undefined,
   });
 
@@ -82,7 +87,13 @@ export default function ProfileSheet() {
                   <PlaceholderList />
                 </Stack>
               ) : (
-                <RecyclerAssetList2 externalAddress={profileAddress || ''} type="ens-profile" walletBriefSectionsData={briefSectionsData} />
+                <RecyclerAssetList2
+                  externalAddress={profileAddress || ''}
+                  type="ens-profile"
+                  walletBriefSectionsData={briefSectionsData}
+                  fetchNextNftPage={fetchMoreNfts}
+                  hasMoreNfts={hasMoreNfts}
+                />
               )}
             </Box>
           </Box>

@@ -1,6 +1,5 @@
-import { QueryFunction, useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { InfiniteQueryConfig, QueryConfigWithSelect, createQueryKey } from '@/react-query';
-import { NFT } from '@/resources/nfts/types';
+import { QueryFunction, UseInfiniteQueryResult, useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { QueryConfigWithSelect, createQueryKey } from '@/react-query';
 import { fetchSimpleHashNFTListing } from '@/resources/nfts/simplehash';
 import { simpleHashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
 import { useSelector } from 'react-redux';
@@ -58,7 +57,6 @@ interface NFTsByPageData {
 }
 
 type NFTQueryKey = ReturnType<typeof nftsQueryKey>;
-type NFTByPageQueryKey = ReturnType<typeof nftsByPageQueryKey>;
 
 const fetchNFTData: QueryFunction<NFTData, NFTQueryKey> = async ({ queryKey }) => {
   const [{ address }] = queryKey;
@@ -91,13 +89,15 @@ export function usePaginatedNFTs({
   address: string;
   cursor?: string;
   limit?: number;
-  config?: InfiniteQueryConfig<NFTsByPageData, unknown, NFTByPageQueryKey>;
-}) {
+  config?: any; // what the hell is this type supposed to be.. InfiniteQueryConfig does NOT work
+}): UseInfiniteQueryResult<NFTsByPageData, unknown> {
   const isImportedWallet = useSelector((state: AppState) => isImportedWalletSelector(state, address));
 
-  return useInfiniteQuery({
-    queryKey: nftsByPageQueryKey({ address, limit }),
-    queryFn: async ({ pageParam }) => {
+  const queryKey = nftsByPageQueryKey({ address, limit });
+
+  return useInfiniteQuery<NFTsByPageData, unknown>(
+    queryKey,
+    async ({ pageParam = cursor }) => {
       const queryResponse = await arcClient.getNFTsByPage({
         walletAddress: address,
         cursor: pageParam || 'start',
@@ -109,21 +109,25 @@ export function usePaginatedNFTs({
         return {
           ...queryResponse.nftsByPage,
           data: [],
+          previousCursor: queryResponse.nftsByPage?.previousCursor ?? undefined, // Ensure it's string or undefined
+          nextCursor: queryResponse.nftsByPage?.nextCursor ?? undefined, // Ensure it's string or undefined
         };
 
       return {
         ...queryResponse.nftsByPage,
         data: nfts,
+        previousCursor: queryResponse.nftsByPage?.previousCursor ?? undefined, // Ensure it's string or undefined
+        nextCursor: queryResponse.nftsByPage?.nextCursor ?? undefined, // Ensure it's string or undefined
       };
     },
-    initialPageParam: cursor,
-    retry: 3,
-    staleTime: NFTS_STALE_TIME,
-    cacheTime: isImportedWallet ? NFTS_CACHE_TIME_INTERNAL : NFTS_CACHE_TIME_EXTERNAL,
-    getNextPageParam: (lastPage: NFTsByPageData) => lastPage.nextCursor,
-    getPreviousPageParam: (firstPage: NFTsByPageData) => firstPage.previousCursor,
-    ...config,
-  });
+    {
+      enabled: !!address,
+      cacheTime: isImportedWallet ? NFTS_CACHE_TIME_INTERNAL : NFTS_CACHE_TIME_EXTERNAL,
+      retry: 3,
+      staleTime: NFTS_STALE_TIME,
+      ...config,
+    }
+  );
 }
 
 export function useLegacyNFTs<TSelected = NFTData>({

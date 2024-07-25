@@ -23,7 +23,11 @@ export default function SelectUniqueTokenSheet() {
     },
     [goBack, params]
   );
-  const { briefSectionsData: walletBriefSectionsData } = useWalletSectionsData({
+  const {
+    briefSectionsData: walletBriefSectionsData,
+    fetchNextNftPage,
+    hasMoreNfts,
+  } = useWalletSectionsData({
     type: 'select-nft',
   });
 
@@ -42,6 +46,8 @@ export default function SelectUniqueTokenSheet() {
         onPressUniqueToken={handlePressUniqueToken}
         type="select-nft"
         walletBriefSectionsData={walletBriefSectionsData}
+        fetchNextNftPage={fetchNextNftPage}
+        hasMoreNfts={hasMoreNfts}
       />
     </Box>
   );
