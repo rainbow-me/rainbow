@@ -4,9 +4,11 @@ import { getSelectedGasSpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedG
 import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { GasSpeed } from '@/__swaps__/types/gas';
+import { RecentSwap } from '@/__swaps__/types/swap';
 import { getCachedGasSuggestions } from '@/__swaps__/utils/meteorology';
 import { lessThan } from '@/__swaps__/utils/numbers';
 import { getDefaultSlippage } from '@/__swaps__/utils/swaps';
+import { RainbowError, logger } from '@/logger';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { CrosschainQuote, Quote, QuoteError, Source } from '@rainbow-me/swaps';
@@ -34,6 +36,73 @@ export interface SwapsState {
   setSource: (source: Source | 'auto') => void;
   degenMode: boolean;
   setDegenMode: (degenMode: boolean) => void;
+
+  // recent swaps
+  latestSwapAt: Map<ChainId, number>;
+  recentSwaps: Map<ChainId, RecentSwap[]>;
+  addRecentSwap: (asset: ExtendedAnimatedAssetWithColors) => void;
+}
+
+type StateWithTransforms = Omit<Partial<SwapsState>, 'latestSwapAt' | 'recentSwaps'> & {
+  latestSwapAt: Array<[ChainId, number]>;
+  recentSwaps: Array<[ChainId, RecentSwap[]]>;
+};
+
+function serialize(state: Partial<SwapsState>, version?: number) {
+  try {
+    const transformedStateToPersist: StateWithTransforms = {
+      ...state,
+      latestSwapAt: state.latestSwapAt ? Array.from(state.latestSwapAt) : [],
+      recentSwaps: state.recentSwaps ? Array.from(state.recentSwaps) : [],
+    };
+
+    return JSON.stringify({
+      state: transformedStateToPersist,
+      version,
+    });
+  } catch (error) {
+    logger.error(new RainbowError('Failed to serialize state for swaps storage'), { error });
+    throw error;
+  }
+}
+
+function deserialize(serializedState: string) {
+  let parsedState: { state: StateWithTransforms; version: number };
+  try {
+    parsedState = JSON.parse(serializedState);
+  } catch (error) {
+    logger.error(new RainbowError('Failed to parse serialized state from swaps storage'), { error });
+    throw error;
+  }
+
+  const { state, version } = parsedState;
+
+  let recentSwaps = new Map<ChainId, RecentSwap[]>();
+  try {
+    if (state.recentSwaps) {
+      recentSwaps = new Map(state.recentSwaps);
+    }
+  } catch (error) {
+    logger.error(new RainbowError('Failed to convert recentSwaps from swaps storage'), { error });
+  }
+
+  let latestSwapAt: Map<ChainId, number> = new Map();
+  try {
+    if (state.latestSwapAt) {
+      latestSwapAt = new Map(state.latestSwapAt);
+    }
+  } catch (error) {
+    logger.error(new RainbowError('Failed to convert latestSwapAt from swaps storage'), { error });
+  }
+
+  return {
+    state: {
+      ...state,
+      latestSwapAt,
+      recentSwaps,
+    },
+    version,
+  };
 }
 
 const updateCustomGasSettingsForFlashbots = (flashbots: boolean, chainId: ChainId) => {
@@ -80,15 +149,34 @@ export const swapsStore = createRainbowStore<SwapsState>(
 
     degenMode: false,
     setDegenMode: (degenMode: boolean) => set({ degenMode }),
+
+    latestSwapAt: new Map(),
+    recentSwaps: new Map(),
+    addRecentSwap(asset) {
+      const { recentSwaps, latestSwapAt } = get();
+      const now = Date.now();
+      const chainId = asset.chainId;
+      const chainSwaps = recentSwaps.get(chainId) || [];
+
+      const updatedSwaps = [...chainSwaps, { ...asset, swappedAt: now }].slice(-3);
+      recentSwaps.set(chainId, updatedSwaps);
+      latestSwapAt.set(chainId, now);
+
+      set({ recentSwaps: new Map(recentSwaps) });
+    },
   }),
   {
     storageKey: 'swapsStore',
-    version: 1,
-    // NOTE: Only persist the settings
+    version: 3,
+    deserializer: deserialize,
+    serializer: serialize,
+    // NOTE: Only persist the following
     partialize(state) {
       return {
         flashbots: state.flashbots,
         source: state.source,
+        latestSwapAt: state.latestSwapAt,
+        recentSwaps: state.recentSwaps,
       };
     },
   }
