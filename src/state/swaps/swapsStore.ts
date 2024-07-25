@@ -167,7 +167,7 @@ export const swapsStore = createRainbowStore<SwapsState>(
   }),
   {
     storageKey: 'swapsStore',
-    version: 3,
+    version: 2,
     deserializer: deserialize,
     serializer: serialize,
     // NOTE: Only persist the following
