@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.33] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.33)
+
+## Fixed
+
+- Fixed an issue where swaps / bridges could not be sent due to gas being incorrect (#5949)
+
 ## [1.9.32] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.32)
 
 ## Changed
