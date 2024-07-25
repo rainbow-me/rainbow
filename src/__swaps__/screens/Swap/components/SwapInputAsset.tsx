@@ -55,11 +55,12 @@ function SwapInputAmount() {
     <CopyPasteMenu
       onCopy={() => Clipboard.setString(SwapInputController.formattedInputAmount.value)}
       onPaste={text => {
-        if (!text || !+text) return;
+        const numericValue = text && +text.replaceAll(',', '');
+        if (!numericValue) return;
         SwapInputController.inputMethod.value = 'inputAmount';
         SwapInputController.inputValues.modify(values => {
           'worklet';
-          return { ...values, inputAmount: text };
+          return { ...values, inputAmount: numericValue };
         });
       }}
     >
