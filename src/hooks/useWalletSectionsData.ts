@@ -25,6 +25,8 @@ export default function useWalletSectionsData({
 
   const { data: nftPageData, fetchNextPage, hasNextPage } = usePaginatedNFTs({ address: accountAddress, limit: 25 });
 
+  console.log(nftPageData);
+
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
   const { isReadOnlyWallet } = useWallets();

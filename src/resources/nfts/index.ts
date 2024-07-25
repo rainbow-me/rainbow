@@ -100,7 +100,7 @@ export function usePaginatedNFTs({
     async ({ pageParam = cursor }) => {
       const queryResponse = await arcClient.getNFTsByPage({
         walletAddress: address,
-        cursor: pageParam || 'start',
+        cursor: pageParam,
         limit,
       });
 
@@ -125,6 +125,8 @@ export function usePaginatedNFTs({
       cacheTime: isImportedWallet ? NFTS_CACHE_TIME_INTERNAL : NFTS_CACHE_TIME_EXTERNAL,
       retry: 3,
       staleTime: NFTS_STALE_TIME,
+      getNextPageParam: lastPage => lastPage.nextCursor,
+      getPreviousPageParam: prevPage => prevPage.previousCursor,
       ...config,
     }
   );

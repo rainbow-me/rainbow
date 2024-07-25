@@ -174,7 +174,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       scrollIndicatorInsets={scrollIndicatorInsets}
       renderFooter={() => (extendedState.hasMoreNfts ? <LoadMoreComponent /> : null)}
       onEndReached={extendedState.hasMoreNfts ? extendedState.fetchNextNftPage : undefined}
-      onEndReachedThreshold={0.5}
+      onEndReachedThreshold={0.25} // a quarter of the way down, start fetching the next batch
     />
   );
 });
@@ -183,9 +183,6 @@ const LoadMoreComponent = () => {
   return (
     <View style={{ padding: 12, display: 'flex', alignItems: 'center' }}>
       <ActivityIndicator color={undefined} />
-      <Text color="label" size="13pt">
-        Loading more NFTs...
-      </Text>
     </View>
   );
 };
