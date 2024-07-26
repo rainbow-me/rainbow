@@ -80,15 +80,13 @@ export const updateInputValuesAfterFlip = ({
 
   if (hasNonZeroInputPrice && hasNonZeroOutputPrice && validBalanceIfAny && !setToMax) {
     // use previous native input amount if available
-    const formattedInputAmount = Number(
-      valueBasedDecimalFormatter({
-        amount: newInputAmount,
-        nativePrice: inputNativePrice,
-        roundingMode: 'up',
-        isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin',
-        stripSeparators: true,
-      })
-    );
+    const formattedInputAmount = valueBasedDecimalFormatter({
+      amount: newInputAmount,
+      nativePrice: inputNativePrice,
+      roundingMode: 'up',
+      isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin',
+      stripSeparators: true,
+    });
     newInputAmount = formattedInputAmount;
     const prevOutputNativeValue = inputValues.value.outputNativeValue;
     newOutputAmount = divWorklet(prevOutputNativeValue, outputNativePrice);
