@@ -3,7 +3,7 @@ import { CrosschainQuote, fillCrosschainQuote } from '@rainbow-me/swaps';
 import { Address } from 'viem';
 import { getProviderForNetwork, estimateGasWithPadding } from '@/handlers/web3';
 
-import { REFERRER, gasUnits } from '@/references';
+import { REFERRER, gasUnits, ReferrerType } from '@/references';
 import { ChainId } from '@/__swaps__/types/chains';
 import { NewTransaction } from '@/entities/transactions';
 import { TxHash } from '@/resources/transactions/types';
@@ -81,12 +81,14 @@ export const executeCrosschainSwap = async ({
   nonce,
   quote,
   wallet,
+  referrer = REFERRER,
 }: {
   gasLimit: string;
   gasParams: TransactionGasParams | TransactionLegacyGasParams;
   nonce?: number;
   quote: CrosschainQuote;
   wallet: Signer;
+  referrer?: ReferrerType;
 }) => {
   if (!wallet || !quote) return null;
 
@@ -95,7 +97,7 @@ export const executeCrosschainSwap = async ({
     nonce: nonce ? toHex(String(nonce)) : undefined,
     ...gasParams,
   };
-  return fillCrosschainQuote(quote, transactionParams, wallet, REFERRER);
+  return fillCrosschainQuote(quote, transactionParams, wallet, referrer);
 };
 
 export const crosschainSwap = async ({

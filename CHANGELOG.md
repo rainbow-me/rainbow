@@ -15,6 +15,30 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.33] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.33)
+
+## Fixed
+
+- Fixed an issue where swaps / bridges could not be sent due to gas being incorrect (#5949)
+
+## [1.9.32] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.32)
+
+## Changed
+
+- Updated audit issues for CI fixes (#5929)
+- Improved decimal formatter functions (#5918)
+- Simplified SwapInputController animated reaction logic for responding to input value changes (#5923)
+- Updated the swap warning to be a derived value instead of an animated reaction (#5930)
+- Cleaned up swapInputsController that had repeated logic around niceIncrementFormatter (#5931)
+- Upgraded react-native-gesture-handler to v2.17.1 (#5925)
+- Upgraded RN to v0.74.3 and bumped outdated packages (#5739)
+
+## Fixed
+
+- We’re now preventing a crash on remote cards code (#5924)
+- Fixed an issue with the keyboard dismissing option to copy contract address or view on ehterscan from swaps search (#5908)
+- Fixed a bug where changing output asset leads to a weird state (#5934)
+
 ## [1.9.31] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.31)
 
 ### Fixed
