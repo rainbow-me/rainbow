@@ -101,7 +101,7 @@ export default function BackupSheetSectionNoProvider() {
   };
 
   return (
-    <Inset horizontal={'24px'} vertical={'44px'}>
+    <Inset horizontal={'24px'} vertical={'44px'} testId={'backup-reminder-sheet'}>
       <Inset bottom={'44px'} horizontal={'24px'}>
         <Text align="center" size="26pt" weight="bold" color="label">
           {lang.t(lang.l.back_up.cloud.how_would_you_like_to_backup)}

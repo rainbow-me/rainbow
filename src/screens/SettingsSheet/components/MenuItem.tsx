@@ -136,15 +136,17 @@ interface LabelProps {
   text: string;
   warn?: boolean;
   color?: string;
+  testID?: string;
 }
 
-const Label = ({ text, warn, color }: LabelProps) => {
+const Label = ({ text, warn, color, testID }: LabelProps) => {
   const { colors } = useTheme();
   return (
     <Text
       color={color ? { custom: color } : warn ? { custom: colors.orangeLight } : 'secondary60 (Deprecated)'}
       size="14px / 19px (Deprecated)"
       weight="medium"
+      testID={testID}
     >
       {text}
     </Text>

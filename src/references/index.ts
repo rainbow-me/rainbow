@@ -220,7 +220,9 @@ export const NATIVE_ASSETS_MAP_PER_CHAIN: Record<ChainId, AddressOrEth> = {
   [ChainId.zoraSepolia]: ETH_ADDRESS,
 };
 
-export const REFERRER = 'native-app';
+export type ReferrerType = 'native-app' | 'app-claim';
+export const REFERRER: ReferrerType = 'native-app';
+export const REFERRER_CLAIM: ReferrerType = 'app-claim';
 
 export const SUPPORTED_MAINNET_CHAINS: Chain[] = [mainnet, polygon, optimism, arbitrum, base, zora, bsc, avalanche, blast].map(chain => ({
   ...chain,
