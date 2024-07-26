@@ -8,7 +8,7 @@ run_tests() {
     if [ -z "$failed_specs" ]; then
         ./node_modules/.bin/detox test -c ios.sim.release --cleanup --maxWorkers 2 -- --forceExit
     else
-        ./node_modules/.bin/detox test -c ios.sim.release --cleanup --maxWorkers 2 -f "$failed_specs" -- --forceExit
+        ./node_modules/.bin/detox test -c ios.sim.release --cleanup --maxWorkers 2 --spec $failed_specs -- --forceExit
     fi
 }
 
@@ -23,7 +23,12 @@ do
     fi
 
     # Update failed_specs based on Jest output
-    failed_specs=$(grep "FAIL" output.log | grep -oE "e2e/.*\.spec\.[jt]s" | sort -u | tr '\n' ' ')
+    failed_specs=$(grep "FAIL" output.log | grep -oE "e2e/[^ ]+" | sort -u | tr '\n' ' ')
+
+    # Debug echo statements
+    echo "Debug: grep output"
+    grep "FAIL" output.log | grep -oE "e2e/[^ ]+"
+    echo "Debug: failed_specs=$failed_specs"
 
     ((count++))
     if [ $count -lt $max_retries ]; then
