@@ -612,6 +612,72 @@ export function useSwapInputsController({
   );
 
   /**
+   * This observes changes in the selected assets and initiates new quote fetches when necessary. It also
+   * handles flipping the inputValues when the assets are flipped.
+   */
+  useAnimatedReaction(
+    () => ({
+      assetToBuyId: internalSelectedOutputAsset.value?.uniqueId,
+      assetToSellId: internalSelectedInputAsset.value?.uniqueId,
+    }),
+    (current, previous) => {
+      const didInputAssetChange = current.assetToSellId !== previous?.assetToSellId;
+      const didOutputAssetChange = current.assetToBuyId !== previous?.assetToBuyId;
+
+      if (!didInputAssetChange && !didOutputAssetChange) return;
+
+      const balance = internalSelectedInputAsset.value?.maxSwappableAmount;
+
+      const areBothAssetsSet = internalSelectedInputAsset.value && internalSelectedOutputAsset.value;
+      const didFlipAssets =
+        didInputAssetChange && didOutputAssetChange && areBothAssetsSet && previous && current.assetToSellId === previous.assetToBuyId;
+
+      if (!didFlipAssets) {
+        // If either asset was changed but the assets were not flipped
+        inputMethod.value = 'inputAmount';
+
+        // Handle when there is no balance for the input
+        if (!balance || equalWorklet(balance, 0)) {
+          resetValuesToZeroWorklet({ updateSlider: true });
+          return;
+        }
+
+        if (didInputAssetChange) {
+          sliderXPosition.value = withSpring(SLIDER_WIDTH / 2, snappySpringConfig);
+        }
+
+        const { inputAmount, inputNativeValue } = getInputValuesForSliderPositionWorklet({
+          selectedInputAsset: internalSelectedInputAsset.value,
+          percentageToSwap: didInputAssetChange ? 0.5 : percentageToSwap.value,
+          sliderXPosition: didInputAssetChange ? SLIDER_WIDTH / 2 : sliderXPosition.value,
+        });
+
+        inputValues.modify(values => {
+          return {
+            ...values,
+            inputAmount,
+            inputNativeValue,
+          };
+        });
+      } else {
+        // If the assets were flipped
+        updateInputValuesAfterFlip({
+          internalSelectedInputAsset,
+          internalSelectedOutputAsset,
+          inputValues,
+          percentageToSwap,
+          sliderXPosition,
+          inputMethod,
+        });
+      }
+
+      if (areBothAssetsSet) {
+        fetchQuoteAndAssetPrices();
+      }
+    }
+  );
+
+  /**
    * Observes maxSwappableAmount and updates the input amount and quote when max amount is being swapped and maxSwappableAmount changes
    */
   useAnimatedReaction(
@@ -776,72 +842,6 @@ export function useSwapInputsController({
             runOnJS(debouncedFetchQuote)();
           }
         }
-      }
-    }
-  );
-
-  /**
-   * This observes changes in the selected assets and initiates new quote fetches when necessary. It also
-   * handles flipping the inputValues when the assets are flipped.
-   */
-  useAnimatedReaction(
-    () => ({
-      assetToBuyId: internalSelectedOutputAsset.value?.uniqueId,
-      assetToSellId: internalSelectedInputAsset.value?.uniqueId,
-    }),
-    (current, previous) => {
-      const didInputAssetChange = current.assetToSellId !== previous?.assetToSellId;
-      const didOutputAssetChange = current.assetToBuyId !== previous?.assetToBuyId;
-
-      if (!didInputAssetChange && !didOutputAssetChange) return;
-
-      const balance = internalSelectedInputAsset.value?.maxSwappableAmount;
-
-      const areBothAssetsSet = internalSelectedInputAsset.value && internalSelectedOutputAsset.value;
-      const didFlipAssets =
-        didInputAssetChange && didOutputAssetChange && areBothAssetsSet && previous && current.assetToSellId === previous.assetToBuyId;
-
-      if (!didFlipAssets) {
-        // If either asset was changed but the assets were not flipped
-        inputMethod.value = 'inputAmount';
-
-        // Handle when there is no balance for the input
-        if (!balance || equalWorklet(balance, 0)) {
-          resetValuesToZeroWorklet({ updateSlider: true });
-          return;
-        }
-
-        if (didInputAssetChange) {
-          sliderXPosition.value = withSpring(SLIDER_WIDTH / 2, snappySpringConfig);
-        }
-
-        const { inputAmount, inputNativeValue } = getInputValuesForSliderPositionWorklet({
-          selectedInputAsset: internalSelectedInputAsset.value,
-          percentageToSwap: didInputAssetChange ? 0.5 : percentageToSwap.value,
-          sliderXPosition: didInputAssetChange ? SLIDER_WIDTH / 2 : sliderXPosition.value,
-        });
-
-        inputValues.modify(values => {
-          return {
-            ...values,
-            inputAmount,
-            inputNativeValue,
-          };
-        });
-      } else {
-        // If the assets were flipped
-        updateInputValuesAfterFlip({
-          internalSelectedInputAsset,
-          internalSelectedOutputAsset,
-          inputValues,
-          percentageToSwap,
-          sliderXPosition,
-          inputMethod,
-        });
-      }
-
-      if (areBothAssetsSet) {
-        fetchQuoteAndAssetPrices();
       }
     }
   );
