@@ -17,6 +17,7 @@ import { margin } from '@/styles';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import * as i18n from '@/languages';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { useAssetsBalanceForAddress } from '@/hooks/useAssetsBalanceForAddress';
 
 const ContactAddress = styled(TruncatedAddress).attrs(({ theme: { colors }, lite }) => ({
   align: 'left',
@@ -58,17 +59,20 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const { width: deviceWidth } = useDimensions();
   const { onAddOrUpdateContacts } = useContacts();
-  const { nativeCurrency } = useAccountSettings();
   const { colors } = useTheme();
-  const { accountType, balance, ens, image, label, network, onPress, showcaseItem, testID } = props;
+  const { accountType, ens, image, label, network, onPress, showcaseItem, testID } = props;
+
+  const { display, isLoading } = useAssetsBalanceForAddress(address);
 
   const cleanedUpBalance = useMemo(() => {
-    if (balance) {
-      return convertAmountToNativeDisplay(balance, nativeCurrency);
+    if (display) {
+      return display;
+    } else if (isLoading) {
+      return i18n.t(i18n.l.wallet.change_wallet.loading);
     } else {
       return i18n.t(i18n.l.wallet.change_wallet.no_balance);
     }
-  }, [balance, nativeCurrency]);
+  }, [display, isLoading]);
 
   // show avatar for contact rows that are accounts, not contacts
   const avatar = accountType !== 'contacts' ? returnStringFirstEmoji(label) || profileUtils.addressHashedEmoji(address) : null;
