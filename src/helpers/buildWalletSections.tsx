@@ -1,13 +1,13 @@
 import { createSelector } from 'reselect';
 import { buildBriefCoinsList, buildBriefUniqueTokenList } from './assets';
-import { add, convertAmountToNativeDisplay } from './utilities';
-import { NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
+import { NativeCurrencyKey } from '@/entities';
 import { queryClient } from '@/react-query';
 import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import store from '@/redux/store';
 import { PositionExtraData } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { getExperimetalFlag, DEFI_POSITIONS } from '@/config/experimental';
 import { RainbowPositions } from '@/resources/defi/types';
+import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 
 const CONTENT_PLACEHOLDER = [
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },
@@ -39,6 +39,8 @@ const EMPTY_WALLET_CONTENT = [
 const ONLY_NFTS_CONTENT = [{ type: 'ETH_CARD', uid: 'eth-card' }];
 
 const sortedAssetsSelector = (state: any) => state.sortedAssets;
+const accountBalanceSelector = (state: any) => state.accountBalance;
+const isLoadingBalanceSelector = (state: any) => state.isLoadingBalance;
 const hiddenCoinsSelector = (state: any) => state.hiddenCoins;
 const isCoinListEditedSelector = (state: any) => state.isCoinListEdited;
 const isLoadingUserAssetsSelector = (state: any) => state.isLoadingUserAssets;
@@ -103,25 +105,17 @@ const withPositionsSection = (isLoadingUserAssets: boolean) => {
 };
 
 const withBriefBalanceSection = (
-  sortedAssets: ParsedAddressAsset[],
+  sortedAssets: ParsedSearchAsset[],
   isLoadingUserAssets: boolean,
+  accountBalance: string | undefined,
+  isLoadingBalance: boolean,
   nativeCurrency: NativeCurrencyKey,
   isCoinListEdited: boolean,
   pinnedCoins: any,
   hiddenCoins: any,
-  collectibles: any,
-  nftSort: string
+  collectibles: any
 ) => {
-  const { briefAssets, totalBalancesValue } = buildBriefCoinsList(sortedAssets, nativeCurrency, isCoinListEdited, pinnedCoins, hiddenCoins);
-
-  const { accountAddress: address } = store.getState().settings;
-  const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(positionsQueryKey({ address, currency: nativeCurrency }));
-
-  const positionsTotal = positionsObj?.totals?.total?.amount || '0';
-
-  const totalBalanceWithPositionsValue = add(totalBalancesValue, positionsTotal);
-
-  const totalValue = convertAmountToNativeDisplay(totalBalanceWithPositionsValue, nativeCurrency);
+  const { briefAssets } = buildBriefCoinsList(sortedAssets, nativeCurrency, isCoinListEdited, pinnedCoins, hiddenCoins);
 
   const hasTokens = briefAssets?.length;
   const hasNFTs = collectibles?.length;
@@ -133,8 +127,8 @@ const withBriefBalanceSection = (
     {
       type: 'PROFILE_STICKY_HEADER',
       uid: 'assets-profile-header-compact',
-      value: totalValue,
-      isLoadingUserAssets,
+      value: accountBalance,
+      isLoadingUserAssets: isLoadingBalance,
     },
     {
       type: 'PROFILE_AVATAR_ROW_SPACE_BEFORE',
@@ -162,7 +156,7 @@ const withBriefBalanceSection = (
           {
             type: 'PROFILE_BALANCE_ROW',
             uid: 'profile-balance',
-            value: totalValue,
+            value: accountBalance,
           },
           {
             type: 'PROFILE_BALANCE_ROW_SPACE_AFTER',
@@ -172,13 +166,13 @@ const withBriefBalanceSection = (
     {
       type: 'PROFILE_ACTION_BUTTONS_ROW',
       uid: 'profile-action-buttons',
-      value: totalValue,
+      value: accountBalance,
     },
     hasTokens
       ? {
           type: 'PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER',
           uid: 'profile-action-buttons-space-after',
-          value: totalValue,
+          value: accountBalance,
         }
       : { type: 'BIG_EMPTY_WALLET_SPACER', uid: 'big-empty-wallet-spacer-1' },
   ];
@@ -226,6 +220,8 @@ const briefBalanceSectionSelector = createSelector(
   [
     sortedAssetsSelector,
     isLoadingUserAssetsSelector,
+    accountBalanceSelector,
+    isLoadingBalanceSelector,
     nativeCurrencySelector,
     isCoinListEditedSelector,
     pinnedCoinsSelector,
