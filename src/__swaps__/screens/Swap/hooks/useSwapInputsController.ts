@@ -668,6 +668,8 @@ export function useSwapInputsController({
           percentageToSwap,
           sliderXPosition,
           inputMethod,
+          lastTypedInput,
+          focusedInput,
         });
       }
 

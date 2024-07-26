@@ -1,5 +1,5 @@
 import { SharedValue } from 'react-native-reanimated';
-import { inputMethods, inputValuesType } from '@/__swaps__/types/swap';
+import { inputKeys, inputMethods, inputValuesType } from '@/__swaps__/types/swap';
 import { valueBasedDecimalFormatter } from '@/__swaps__/utils/decimalFormatter';
 import { niceIncrementFormatter } from '@/__swaps__/utils/swaps';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
@@ -42,6 +42,8 @@ export const updateInputValuesAfterFlip = ({
   percentageToSwap,
   sliderXPosition,
   inputMethod,
+  lastTypedInput,
+  focusedInput,
 }: {
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
@@ -49,6 +51,8 @@ export const updateInputValuesAfterFlip = ({
   percentageToSwap: SharedValue<number>;
   sliderXPosition: SharedValue<number>;
   inputMethod: SharedValue<inputMethods>;
+  lastTypedInput: SharedValue<inputKeys>;
+  focusedInput: SharedValue<inputKeys>;
 }) => {
   'worklet';
   const inputNativePrice = internalSelectedInputAsset.value?.nativePrice || internalSelectedInputAsset.value?.price?.value || 0;
@@ -98,6 +102,8 @@ export const updateInputValuesAfterFlip = ({
     });
     newInputAmount = inputAmountBasedOnSlider;
     inputMethod.value = 'slider';
+    lastTypedInput.value = 'inputAmount';
+    focusedInput.value = 'inputAmount';
     inputValues.modify(values => {
       return {
         ...values,
