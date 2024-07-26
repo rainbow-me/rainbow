@@ -116,10 +116,11 @@ interface TitleProps {
   weight?: 'regular' | 'medium' | 'semibold' | 'bold' | 'heavy';
   disabled?: boolean;
   isLink?: boolean;
+  testID?: string;
 }
 
-const Title = ({ text, weight = 'semibold' }: TitleProps) => (
-  <Text color={'primary (Deprecated)'} size="18px / 27px (Deprecated)" weight={weight} numberOfLines={1}>
+const Title = ({ text, weight = 'semibold', testID }: TitleProps) => (
+  <Text testID={testID} color={'primary (Deprecated)'} size="18px / 27px (Deprecated)" weight={weight} numberOfLines={1}>
     {text}
   </Text>
 );
@@ -128,14 +129,15 @@ interface LabelProps {
   text: string;
   linkText?: string;
   onPress?: () => void;
+  testID?: string;
 }
 
-const Label = ({ text, linkText, onPress }: LabelProps) => {
+const Label = ({ text, linkText, onPress, testID }: LabelProps) => {
   return (
     <Text color={'secondary60 (Deprecated)'} size="14px / 19px (Deprecated)" align="center" weight="medium">
       {text}
       {linkText && onPress && (
-        <Text onPress={onPress} color="blue" size="14px / 19px (Deprecated)" weight="medium">
+        <Text testID={testID} onPress={onPress} color="blue" size="14px / 19px (Deprecated)" weight="medium">
           {' '}
           {linkText}
         </Text>
