@@ -105,7 +105,7 @@ const withPositionsSection = (isLoadingUserAssets: boolean) => {
 };
 
 const withBriefBalanceSection = (
-  sortedAssets: ParsedSearchAsset[],
+  sortedAssets: ParsedAddressAsset[],
   isLoadingUserAssets: boolean,
   accountBalance: string | undefined,
   isLoadingBalance: boolean,
