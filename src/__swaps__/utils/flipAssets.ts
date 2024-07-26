@@ -68,7 +68,18 @@ export const updateInputValuesAfterFlip = ({
   const outputBalance = internalSelectedOutputAsset.value?.maxSwappableAmount || 0;
   const hasOutputBalance = greaterThanWorklet(outputBalance, 0);
 
-  let newInputAmount: string | number = greaterThanWorklet(inputNativePrice, 0) ? divWorklet(prevInputNativeValue, inputNativePrice) : 0;
+  const calculatedInputAmount: string | number = greaterThanWorklet(inputNativePrice, 0)
+    ? divWorklet(prevInputNativeValue, inputNativePrice)
+    : 0;
+  const newFormattedInputAmount = valueBasedDecimalFormatter({
+    amount: calculatedInputAmount,
+    nativePrice: inputNativePrice,
+    roundingMode: 'up',
+    isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin',
+    stripSeparators: true,
+  });
+
+  let newInputAmount: string | number = newFormattedInputAmount;
   let newOutputAmount: string | number = 0;
 
   const exceedsMaxBalance = greaterThanWorklet(newInputAmount, inputBalance);
@@ -80,14 +91,6 @@ export const updateInputValuesAfterFlip = ({
 
   if (hasNonZeroInputPrice && hasNonZeroOutputPrice && validBalanceIfAny && !setToMax) {
     // use previous native input amount if available
-    const formattedInputAmount = valueBasedDecimalFormatter({
-      amount: newInputAmount,
-      nativePrice: inputNativePrice,
-      roundingMode: 'up',
-      isStablecoin: internalSelectedInputAsset.value?.type === 'stablecoin',
-      stripSeparators: true,
-    });
-    newInputAmount = formattedInputAmount;
     const prevOutputNativeValue = inputValues.value.outputNativeValue;
     newOutputAmount = divWorklet(prevOutputNativeValue, outputNativePrice);
     inputMethod.value = 'inputAmount';
