@@ -1,22 +1,25 @@
 /* eslint-disable no-nested-ternary */
+import chroma from 'chroma-js';
 import React, { useState } from 'react';
-import { StyleProp, StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import Animated, {
   DerivedValue,
+  interpolate,
   runOnJS,
+  SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
-  useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
 
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { AnimatedText, Box, Column, Columns, globalColors, useColorMode, useForegroundColor } from '@/design-system';
-import { GestureHandlerHoldButton } from './GestureHandlerHoldButton';
-import { GestureHandlerV1Button } from './GestureHandlerV1Button';
+import { AnimatedText, Box, Column, Columns, Cover, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { IS_IOS } from '@/env';
+import { GestureHandlerButton, GestureHandlerButtonProps } from './GestureHandlerButton';
+import { useSwapContext } from '../providers/swap-provider';
 
 function SwapButton({
   asset,
@@ -122,6 +125,7 @@ function SwapButton({
           },
         ]}
       >
+        {children}
         <Columns alignHorizontal="center" alignVertical="center" space="6px">
           {icon && (
             <Column width="content">
@@ -145,31 +149,93 @@ function SwapButton({
             </Column>
           )}
         </Columns>
-        {children}
       </Box>
     </Animated.View>
   );
 }
 
+const HoldProgress = ({ holdProgress }: { holdProgress: SharedValue<number> }) => {
+  const { isDarkMode } = useColorMode();
+  const { internalSelectedOutputAsset } = useSwapContext();
+
+  const [brightenedColor, setBrightenedColor] = useState<string>(
+    getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true)
+  );
+
+  const holdProgressStyle = useAnimatedStyle(() => {
+    return {
+      opacity: interpolate(holdProgress?.value, [0, 4, 20, 96, 100], [0, 0, 1, 1, 0], 'clamp'),
+      width: `${holdProgress?.value ?? 0}%`,
+    };
+  });
+
+  const transformColor = (assetColor: string) => {
+    setBrightenedColor(chroma(assetColor).saturate(0.15).brighten(0.4).css());
+  };
+
+  useAnimatedReaction(
+    () => internalSelectedOutputAsset.value?.highContrastColor,
+    (current, previous) => {
+      if (current && current !== previous) {
+        runOnJS(transformColor)(getColorValueForThemeWorklet(current, isDarkMode, true));
+      }
+    }
+  );
+
+  return (
+    <Cover style={{ borderRadius: 100, overflow: 'hidden' }}>
+      <Animated.View
+        style={[
+          holdProgressStyle,
+          {
+            backgroundColor: brightenedColor,
+            height: '100%',
+            ...(IS_IOS
+              ? {
+                  shadowColor: brightenedColor,
+                  shadowOffset: {
+                    width: 12,
+                    height: 0,
+                  },
+                  shadowOpacity: 1,
+                  shadowRadius: 6,
+                }
+              : {}),
+          },
+        ]}
+      />
+    </Cover>
+  );
+};
+
 export const SwapActionButton = ({
+  holdProgress,
   hugContent,
+  longPressDuration,
+  onLongPressEndWorklet,
+  onLongPressWorklet,
   onPressJS,
+  onPressStartWorklet,
   onPressWorklet,
   scaleTo,
   style,
   disabled,
-  type,
   ...props
 }: {
   asset: DerivedValue<ExtendedAnimatedAssetWithColors | null>;
   borderRadius?: number;
   disableShadow?: boolean;
+  holdProgress?: SharedValue<number>;
   hugContent?: boolean;
   icon?: string | DerivedValue<string | undefined>;
   iconStyle?: StyleProp<TextStyle>;
   label: string | DerivedValue<string | undefined>;
-  onPressJS?: () => void;
-  onPressWorklet?: () => void;
+  longPressDuration?: GestureHandlerButtonProps['longPressDuration'];
+  onLongPressEndWorklet?: GestureHandlerButtonProps['onLongPressEndWorklet'];
+  onLongPressWorklet?: GestureHandlerButtonProps['onLongPressWorklet'];
+  onPressJS?: GestureHandlerButtonProps['onPressJS'];
+  onPressStartWorklet?: GestureHandlerButtonProps['onPressStartWorklet'];
+  onPressWorklet?: GestureHandlerButtonProps['onPressWorklet'];
   outline?: boolean;
   rightIcon?: string;
   scaleTo?: number;
@@ -177,7 +243,6 @@ export const SwapActionButton = ({
   style?: ViewStyle;
   disabled?: DerivedValue<boolean | undefined>;
   opacity?: DerivedValue<number | undefined>;
-  type?: DerivedValue<'tap' | 'hold' | undefined>;
 }) => {
   const disabledWrapper = useAnimatedStyle(() => {
     return {
@@ -185,53 +250,23 @@ export const SwapActionButton = ({
     };
   });
 
-  const holdProgress = useSharedValue(0);
-
-  const holdProgressStyle = useAnimatedStyle(() => {
-    return {
-      backgroundColor: globalColors.white50,
-      height: '100%',
-      width: `${holdProgress.value}%`,
-    };
-  });
-
-  const [_type, setType] = useState<'tap' | 'hold'>('tap');
-  useAnimatedReaction(
-    () => type?.value,
-    (current = 'tap') => {
-      'worklet';
-      runOnJS(setType)(current);
-    }
-  );
-
-  if (_type === 'hold')
-    return (
-      <Animated.View style={disabledWrapper}>
-        <GestureHandlerHoldButton
-          onPressWorklet={onPressWorklet}
-          onPressJS={onPressJS}
-          style={[hugContent && feedActionButtonStyles.buttonWrapper, style]}
-          holdProgress={holdProgress}
-        >
-          <SwapButton {...props} disabled={disabled}>
-            <View style={{ position: 'absolute', top: 0, bottom: 0, right: 0, left: 0 }}>
-              <Animated.View style={holdProgressStyle} />
-            </View>
-          </SwapButton>
-        </GestureHandlerHoldButton>
-      </Animated.View>
-    );
-
   return (
     <Animated.View style={disabledWrapper}>
-      <GestureHandlerV1Button
-        onPressWorklet={onPressWorklet}
+      <GestureHandlerButton
+        longPressDuration={longPressDuration}
+        onLongPressEndWorklet={onLongPressEndWorklet}
+        onLongPressWorklet={onLongPressWorklet}
         onPressJS={onPressJS}
+        onPressStartWorklet={onPressStartWorklet}
+        onPressWorklet={onPressWorklet}
         scaleTo={scaleTo || (hugContent ? undefined : 0.925)}
         style={[hugContent && feedActionButtonStyles.buttonWrapper, style]}
       >
-        <SwapButton {...props} disabled={disabled} />
-      </GestureHandlerV1Button>
+        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+        <SwapButton {...props} disabled={disabled}>
+          {holdProgress && <HoldProgress holdProgress={holdProgress} />}
+        </SwapButton>
+      </GestureHandlerButton>
     </Animated.View>
   );
 };
