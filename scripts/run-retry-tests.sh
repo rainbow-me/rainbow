@@ -23,10 +23,10 @@ do
     fi
 
     # Update failed_specs based on Jest output
-    failed_specs=$(grep "FAIL" output.log | grep -oE "e2e/[^ ]+" | sort -u | tr '\n' ' ')
-
-    # Debug echo statements
-    echo "Debug: grep output"
+    failed_specs=$(grep -E "FAIL.*e2e/.*\.spec\.[jt]s" output.log | sed -E 's/FAIL.*e2e/(e2e/' | sort -u | tr '\n' ' ') 
+    echo "Debug: Grep command output:"
+    grep -E "FAIL.*e2e/.*\.spec\.[jt]s" output.log
+    echo "Debug: Updated failed_specs=$failed_specs"
     grep "FAIL" output.log | grep -oE "e2e/[^ ]+"
     echo "Debug: failed_specs=$failed_specs"
 
