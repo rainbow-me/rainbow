@@ -159,7 +159,7 @@ const HoldProgress = ({ holdProgress }: { holdProgress: SharedValue<number> }) =
   const { internalSelectedOutputAsset } = useSwapContext();
 
   const [brightenedColor, setBrightenedColor] = useState<string>(
-    getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true)
+    transformColor(getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true), false)
   );
 
   const holdProgressStyle = useAnimatedStyle(() => {
@@ -169,9 +169,11 @@ const HoldProgress = ({ holdProgress }: { holdProgress: SharedValue<number> }) =
     };
   });
 
-  const transformColor = (assetColor: string) => {
-    setBrightenedColor(chroma(assetColor).saturate(0.15).brighten(0.4).css());
-  };
+  function transformColor(assetColor: string, shouldSetColor = true) {
+    const newColor = chroma(assetColor).saturate(0.15).brighten(0.4).css();
+    if (shouldSetColor) setBrightenedColor(newColor);
+    return newColor;
+  }
 
   useAnimatedReaction(
     () => internalSelectedOutputAsset.value?.highContrastColor,
