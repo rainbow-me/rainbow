@@ -14,7 +14,7 @@ export const useSwapSettings = ({ inputAsset }: { inputAsset: SharedValue<Extend
 
   const setSlippage = swapsStore(state => state.setSlippage);
   const setFlashbots = swapsStore(state => state.setFlashbots);
-  const setDegenMode = swapsStore(state => state.setFlashbots);
+  const setDegenMode = swapsStore(state => state.setDegenMode);
 
   const onToggleFlashbots = () => {
     'worklet';

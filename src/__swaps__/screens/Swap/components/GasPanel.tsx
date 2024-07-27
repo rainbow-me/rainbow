@@ -439,12 +439,11 @@ export function GasPanel() {
         configProgress.value === NavigationSteps.SHOW_GAS
           ? withDelay(120, withSpring(1, SPRING_CONFIGS.springConfig))
           : withSpring(0, SPRING_CONFIGS.springConfig),
-      flex: 1,
     };
   });
 
   return (
-    <Box as={Animated.View} paddingHorizontal="12px" zIndex={12} style={styles} testID="gas-panel" width="full">
+    <Box as={Animated.View} paddingHorizontal="12px" zIndex={12} style={[styles, { flex: 1 }]} testID="gas-panel" width="full">
       <Stack alignHorizontal="center" space="28px">
         <Text weight="heavy" color="label" size="20pt">
           {i18n.t(i18n.l.gas.gas_settings)}

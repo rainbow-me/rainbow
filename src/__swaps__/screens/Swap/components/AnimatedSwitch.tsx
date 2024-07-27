@@ -13,9 +13,18 @@ type AnimatedSwitchProps = {
   activeLabel?: string;
   inactiveLabel?: string;
   disabled?: boolean;
+  size?: 'small' | 'large';
 } & Omit<GestureHandlerButtonProps, 'children'>;
 
-export function AnimatedSwitch({ value, onToggle, activeLabel, inactiveLabel, disabled = false, ...props }: AnimatedSwitchProps) {
+export function AnimatedSwitch({
+  value,
+  onToggle,
+  activeLabel,
+  inactiveLabel,
+  disabled = false,
+  size = 'small',
+  ...props
+}: AnimatedSwitchProps) {
   const { isDarkMode } = useColorMode();
 
   const inactiveBg = useForegroundColor('fillSecondary');
@@ -65,8 +74,8 @@ export function AnimatedSwitch({ value, onToggle, activeLabel, inactiveLabel, di
               <AnimatedText align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="bold">
                 {labelItem}
               </AnimatedText>
-              <Box as={Animated.View} style={[styles.containerStyles, containerStyles]}>
-                <Box style={[styles.circleStyles, circleStyles]} as={Animated.View} />
+              <Box as={Animated.View} style={[styles.containerStyles, size === 'large' && styles.containerStylesLarge, containerStyles]}>
+                <Box style={[styles.circleStyles, size === 'large' && styles.circleStylesLarge, circleStyles]} as={Animated.View} />
               </Box>
             </Inline>
           </Box>
@@ -76,8 +85,12 @@ export function AnimatedSwitch({ value, onToggle, activeLabel, inactiveLabel, di
   }
 
   return (
-    <GestureHandlerV1Button onPressWorklet={onToggle} style={[styles.containerStyles, containerStyles]} {...props}>
-      <Box style={[styles.circleStyles, circleStyles]} as={Animated.View} />
+    <GestureHandlerV1Button
+      onPressWorklet={onToggle}
+      style={[styles.containerStyles, size === 'large' && styles.containerStylesLarge, containerStyles]}
+      {...props}
+    >
+      <Box style={[styles.circleStyles, size === 'large' && styles.circleStylesLarge, circleStyles]} as={Animated.View} />
     </GestureHandlerV1Button>
   );
 }
@@ -90,11 +103,19 @@ const styles = StyleSheet.create({
     width: 26,
     height: 16,
   },
+  containerStylesLarge: {
+    width: 30,
+    height: 20,
+  },
   circleStyles: {
     top: 1,
     backgroundColor: globalColors.white100,
     borderRadius: 100,
     width: 12,
     height: 12,
+  },
+  circleStylesLarge: {
+    height: 16,
+    width: 16,
   },
 });

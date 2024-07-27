@@ -19,6 +19,7 @@ import { GasButton } from './GasButton';
 import { GasPanel } from './GasPanel';
 import { ReviewPanel } from './ReviewPanel';
 import { SwapActionButton } from './SwapActionButton';
+import { SettingsPanel } from './SettingsPanel';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { triggerHapticFeedback } from '@/screens/points/constants';
 import { LONG_PRESS_DURATION_IN_MS } from '@/components/buttons/hold-to-authorize/constants';
@@ -47,7 +48,12 @@ export function SwapBottomPanel() {
 
   const gasButtonVisibilityStyle = useAnimatedStyle(() => {
     return {
-      display: configProgress.value === NavigationSteps.SHOW_REVIEW || configProgress.value === NavigationSteps.SHOW_GAS ? 'none' : 'flex',
+      display:
+        configProgress.value === NavigationSteps.SHOW_REVIEW ||
+        configProgress.value === NavigationSteps.SHOW_GAS ||
+        configProgress.value === NavigationSteps.SHOW_SETTINGS
+          ? 'none'
+          : 'flex',
     };
   });
 
@@ -68,6 +74,7 @@ export function SwapBottomPanel() {
         ]}
       >
         <ReviewPanel />
+        <SettingsPanel />
         <GasPanel />
         <Box
           alignItems="center"

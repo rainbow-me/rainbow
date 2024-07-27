@@ -1,13 +1,14 @@
 import React, { useCallback } from 'react';
 import { GestureHandlerV1Button } from './GestureHandlerV1Button';
 import { AnimatedText, Box } from '@/design-system';
-import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '../constants';
 import { useClipboard } from '@/hooks';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 
 const CANCEL_LABEL = i18n.t(i18n.l.button.cancel);
 const CLOSE_LABEL = i18n.t(i18n.l.button.close);
@@ -73,7 +74,7 @@ export const SearchInputButton = ({
 
     return {
       display: isVisible ? 'flex' : 'none',
-      opacity: isVisible ? 1 : 0,
+      opacity: isVisible ? withTiming(1, TIMING_CONFIGS.slowerFadeConfig) : 0,
       pointerEvents: isVisible ? 'auto' : 'none',
     };
   });

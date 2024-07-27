@@ -565,32 +565,31 @@ export function useSwapInputsController({
 
   const setValueToMaxSwappableAmount = () => {
     'worklet';
+    inputMethod.value = 'slider';
 
     const currentInputValue = inputValues.value.inputAmount;
     const maxSwappableAmount = internalSelectedInputAsset.value?.maxSwappableAmount;
-    if (!maxSwappableAmount || equalWorklet(maxSwappableAmount, 0)) {
-      runOnJS(triggerHapticFeedback)('impactMedium');
-      return;
-    }
 
     const isAlreadyMax = maxSwappableAmount ? equalWorklet(currentInputValue, maxSwappableAmount) : false;
     const exceedsMax = maxSwappableAmount ? greaterThanWorklet(currentInputValue, maxSwappableAmount) : false;
+
     if (isAlreadyMax) {
       runOnJS(triggerHapticFeedback)('impactMedium');
-      return;
-    }
+    } else {
+      quoteFetchingInterval.stop();
 
-    quoteFetchingInterval.stop();
-    isQuoteStale.value = 1;
-    inputMethod.value = 'slider';
-
-    if (exceedsMax) sliderXPosition.value = SLIDER_WIDTH * 0.999;
-
-    sliderXPosition.value = withSpring(SLIDER_WIDTH, SPRING_CONFIGS.snappySpringConfig, isFinished => {
-      if (isFinished) {
-        runOnJS(onChangedPercentage)(1);
+      if (exceedsMax) {
+        sliderXPosition.value = SLIDER_WIDTH * 0.999;
+      } else {
+        isQuoteStale.value = 1;
       }
-    });
+
+      sliderXPosition.value = withSpring(SLIDER_WIDTH, SPRING_CONFIGS.snappySpringConfig, isFinished => {
+        if (isFinished) {
+          runOnJS(onChangedPercentage)(1);
+        }
+      });
+    }
   };
 
   const resetValuesToZeroWorklet = (inputKey?: inputKeys) => {
