@@ -47,12 +47,7 @@ export function SwapBottomPanel() {
 
   const gasButtonVisibilityStyle = useAnimatedStyle(() => {
     return {
-      display:
-        configProgress.value === NavigationSteps.SHOW_REVIEW ||
-        configProgress.value === NavigationSteps.SHOW_GAS ||
-        configProgress.value === NavigationSteps.SHOW_SETTINGS
-          ? 'none'
-          : 'flex',
+      display: configProgress.value === NavigationSteps.SHOW_REVIEW || configProgress.value === NavigationSteps.SHOW_GAS ? 'none' : 'flex',
     };
   });
 

@@ -32,6 +32,7 @@ import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/
 import { getFlashbotsProvider, getIsHardhatConnected, getProviderForNetwork, isHardHat } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useAccountSettings } from '@/hooks';
+import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { loadWallet } from '@/model/wallet';
@@ -94,6 +95,7 @@ interface SwapContextType {
 
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
   executeSwap: () => void;
+  quoteFetchingInterval: ReturnType<typeof useAnimatedInterval>;
 
   outputQuotesAreDisabled: DerivedValue<boolean>;
   swapInfo: DerivedValue<{
@@ -732,6 +734,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         outputQuotesAreDisabled,
         swapInfo,
         executeSwap,
+        quoteFetchingInterval: SwapInputController.quoteFetchingInterval,
 
         SwapSettings,
         SwapInputController,
