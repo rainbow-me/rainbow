@@ -176,13 +176,13 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     isFetching,
     isQuoteStale,
     sliderXPosition,
-    slippage: slippage,
+    slippage,
     quote,
   });
 
   const SwapSettings = useSwapSettings({
     debouncedFetchQuote: SwapInputController.debouncedFetchQuote,
-    slippage: slippage,
+    slippage,
   });
 
   const getNonceAndPerformSwap = async ({
