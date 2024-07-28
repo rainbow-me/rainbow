@@ -628,7 +628,6 @@ export const buildQuoteParams = ({
     fromAddress: currentAddress,
     sellTokenAddress: inputAsset.isNativeAsset ? ETH_ADDRESS_AGGREGATOR : inputAsset.address,
     buyTokenAddress: outputAsset.isNativeAsset ? ETH_ADDRESS_AGGREGATOR : outputAsset.address,
-    // TODO: Handle native input cases below
     sellAmount:
       lastTypedInput === 'inputAmount' || lastTypedInput === 'inputNativeValue'
         ? convertAmountToRawAmount(inputAmount.toString(), inputAsset.decimals)
