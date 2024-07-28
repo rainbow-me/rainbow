@@ -8,7 +8,7 @@ import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/desig
 
 import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
-import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
+import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
 import { SwapInput } from '@/__swaps__/screens/Swap/components/SwapInput';
 import { TokenList } from '@/__swaps__/screens/Swap/components/TokenList/TokenList';
@@ -62,7 +62,7 @@ function SwapInputAmount() {
         });
       }}
     >
-      <GestureHandlerV1Button
+      <GestureHandlerButton
         disableButtonPressWrapper
         onPressStartWorklet={() => {
           'worklet';
@@ -77,7 +77,7 @@ function SwapInputAmount() {
             <Box as={Animated.View} borderRadius={1} style={[styles.caret, AnimatedSwapStyles.assetToSellCaretStyle]} />
           </Animated.View>
         </MaskedView>
-      </GestureHandlerV1Button>
+      </GestureHandlerButton>
     </CopyPasteMenu>
   );
 }
@@ -102,9 +102,9 @@ function InputAssetBalanceBadge() {
   });
 
   return (
-    <GestureHandlerV1Button onPressWorklet={SwapInputController.setValueToMaxSwappableAmount}>
+    <GestureHandlerButton onPressWorklet={SwapInputController.setValueToMaxSwappableAmount}>
       <BalanceBadge label={label} />
-    </GestureHandlerV1Button>
+    </GestureHandlerButton>
   );
 }
 

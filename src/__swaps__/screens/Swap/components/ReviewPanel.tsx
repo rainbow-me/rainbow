@@ -1,6 +1,6 @@
 import { AnimatedChainImage } from '@/__swaps__/screens/Swap/components/AnimatedChainImage';
 import { ReviewGasButton } from '@/__swaps__/screens/Swap/components/GasButton';
-import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
+import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { useNativeAssetForChain } from '@/__swaps__/screens/Swap/hooks/useNativeAssetForChain';
 import { ChainId, ChainNameDisplay } from '@/__swaps__/types/chains';
 import { chainNameFromChainId } from '@/__swaps__/utils/chains';
@@ -114,13 +114,13 @@ const RainbowFee = () => {
 
   return (
     <Bleed space="12px">
-      <GestureHandlerV1Button onPressWorklet={swapIndex}>
+      <GestureHandlerButton onPressWorklet={swapIndex}>
         <Box padding="12px">
           <AnimatedText align="right" color={isDarkMode ? 'labelSecondary' : 'label'} size="15pt" weight="bold">
             {feeToDisplay}
           </AnimatedText>
         </Box>
-      </GestureHandlerV1Button>
+      </GestureHandlerButton>
     </Bleed>
   );
 };
@@ -263,7 +263,7 @@ export const SlippageRow = () => {
 
         <Box alignItems="center" flexDirection="row">
           <Bleed horizontal="12px" vertical="8px">
-            <GestureHandlerV1Button onPressWorklet={handleDecrementSlippage}>
+            <GestureHandlerButton onPressWorklet={handleDecrementSlippage}>
               <Box paddingHorizontal="12px" paddingVertical="8px">
                 <Box
                   style={{
@@ -282,7 +282,7 @@ export const SlippageRow = () => {
                   </Text>
                 </Box>
               </Box>
-            </GestureHandlerV1Button>
+            </GestureHandlerButton>
           </Bleed>
 
           <Box
@@ -302,7 +302,7 @@ export const SlippageRow = () => {
           </Box>
 
           <Bleed horizontal="12px" vertical="8px">
-            <GestureHandlerV1Button onPressWorklet={handleIncrementSlippage}>
+            <GestureHandlerButton onPressWorklet={handleIncrementSlippage}>
               <Box paddingHorizontal="12px" paddingVertical="8px">
                 <Box
                   style={{
@@ -321,7 +321,7 @@ export const SlippageRow = () => {
                   </Text>
                 </Box>
               </Box>
-            </GestureHandlerV1Button>
+            </GestureHandlerButton>
           </Bleed>
         </Box>
       </Inline>

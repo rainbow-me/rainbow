@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { GestureHandlerV1Button } from './GestureHandlerV1Button';
+import { GestureHandlerButton } from './GestureHandlerButton';
 import { AnimatedText, Box } from '@/design-system';
 import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
@@ -81,7 +81,7 @@ export const SearchInputButton = ({
 
   return (
     <Animated.View style={buttonVisibilityStyle}>
-      <GestureHandlerV1Button
+      <GestureHandlerButton
         onPressJS={() => {
           (output ? outputSearchRef : inputSearchRef).current?.blur();
         }}
@@ -122,7 +122,7 @@ export const SearchInputButton = ({
             {btnText}
           </AnimatedText>
         </Box>
-      </GestureHandlerV1Button>
+      </GestureHandlerButton>
     </Animated.View>
   );
 };
