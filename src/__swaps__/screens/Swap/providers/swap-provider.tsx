@@ -26,7 +26,7 @@ import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/scree
 import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
-import { isUnwrapEthWorklet, isWrapEthWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
+import { getDefaultSlippageWorklet, isUnwrapEthWorklet, isWrapEthWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { getFlashbotsProvider, getIsHardhatConnected, getProviderForNetwork, isHardHat } from '@/handlers/web3';
@@ -54,6 +54,7 @@ import { clearCustomGasSettings } from '../hooks/useCustomGas';
 import { getGasSettingsBySpeed, getSelectedGas, getSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
+import { getRemoteConfig } from '@/model/remoteConfig';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
@@ -162,9 +163,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   );
   const configProgress = useSharedValue<NavigationSteps>(NavigationSteps.INPUT_ELEMENT_FOCUSED);
 
-  const SwapSettings = useSwapSettings({
-    inputAsset: internalSelectedInputAsset,
-  });
+  const slippage = useSharedValue(getDefaultSlippageWorklet(initialSelectedInputAsset?.chainId || ChainId.mainnet, getRemoteConfig()));
 
   const SwapInputController = useSwapInputsController({
     focusedInput,
@@ -177,8 +176,13 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     isFetching,
     isQuoteStale,
     sliderXPosition,
-    slippage: SwapSettings.slippage,
+    slippage: slippage,
     quote,
+  });
+
+  const SwapSettings = useSwapSettings({
+    debouncedFetchQuote: SwapInputController.debouncedFetchQuote,
+    slippage: slippage,
   });
 
   const getNonceAndPerformSwap = async ({
