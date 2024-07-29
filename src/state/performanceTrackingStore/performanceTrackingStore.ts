@@ -1,13 +1,28 @@
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { RainbowError, logger } from '@/logger';
-import { AnyPerformanceLog, OperationForScreen, PerformanceLog, Screen } from './operations';
+import { AnyPerformanceLog, OperationForScreen, PerformanceLog, Screen, TimeToSignOperation } from './operations';
+import { runOnJS } from 'react-native-reanimated';
+
+type AnyFunction = (...args: unknown[]) => unknown;
+
+type IsWorklet<T> = T extends { toString(): string } ? (T['toString'] extends () => `worklet;${string}` ? true : false) : false;
+
+type ReturnTypeOrVoid<T extends AnyFunction> =
+  IsWorklet<T> extends true ? void : ReturnType<T> extends Promise<unknown> ? ReturnType<T> : ReturnType<T>;
 
 interface PerformanceTrackingState {
   logs: Map<Screen, AnyPerformanceLog[]>;
   lastSentTimestamp: number;
   intervalId: NodeJS.Timeout | null;
   sendInterval: number;
-  executeFn: <S extends Screen, T extends (...args: unknown[]) => unknown>(screen: S, operation: OperationForScreen<S>, fn: T) => T;
+  executeFn: {
+    <S extends Screen, T extends AnyFunction>(
+      screen: S,
+      operation: OperationForScreen<S>,
+      fn: T
+    ): (...args: Parameters<T>) => ReturnTypeOrVoid<T>;
+    <S extends Screen, T>(screen: S, operation: OperationForScreen<S>, promise: Promise<T>): Promise<T>;
+  };
   sendLogsToAmplitude: () => Promise<void>;
   flushLogs: () => Promise<void>;
   startInterval: () => void;
@@ -15,21 +30,15 @@ interface PerformanceTrackingState {
   setSendInterval: (interval: number) => void;
   getScreenLogs: (screen: Screen) => AnyPerformanceLog[];
   clearScreenLogs: (screen: Screen) => void;
-  getAggregatedLogs: (screen: Screen) => {
-    [operation: string]: {
-      count: number;
-      totalDuration: number;
-      averageDuration: number;
-      minDuration: number;
-      maxDuration: number;
-    };
-  };
 }
 
-const DEFAULT_SEND_INTERVAL = 5_000; // 5 seconds
-const MAX_LOGS_PER_SCREEN = 1000;
+const DEFAULT_SEND_INTERVAL = 10_000; // 10 seconds
+const MAX_LOGS_PER_SCREEN = 30; // 30 logs per screen (LIFO)
 
+// See https://docs.swmansion.com/react-native-reanimated/docs/threading/createWorkletRuntime/#remarks
+// TLDR; performance is an installed API in worklet context
 const getCurrentTime = (): number => {
+  'worklet';
   return performance.now();
 };
 
@@ -90,45 +99,81 @@ export const performanceTrackingStore = createRainbowStore<PerformanceTrackingSt
     intervalId: null,
     sendInterval: DEFAULT_SEND_INTERVAL,
 
-    executeFn: <S extends Screen, T extends (...args: unknown[]) => unknown>(screen: S, operation: OperationForScreen<S>, fn: T): T => {
-      return ((...args: Parameters<T>) => {
-        const startTime = getCurrentTime();
-        try {
-          const result = fn(...args);
+    executeFn: (<S extends Screen, T extends AnyFunction | Promise<unknown>>(
+      screen: S,
+      operation: OperationForScreen<S>,
+      fnOrPromise: T
+    ) => {
+      'worklet';
+      const startTime = getCurrentTime();
 
-          if (result instanceof Promise) {
-            return result.finally(() => {
-              const endTime = getCurrentTime();
-              logPerformance(screen, operation, startTime, endTime, set);
-            });
+      const logPerformanceAndReturn = <R>(result: R): R => {
+        'worklet';
+
+        const endTime = getCurrentTime();
+        runOnJS(logPerformance)(screen, operation, startTime, endTime);
+        return result;
+      };
+
+      if (fnOrPromise instanceof Promise) {
+        return fnOrPromise.then(logPerformanceAndReturn);
+      } else if (typeof fnOrPromise === 'function') {
+        return (...args: Parameters<T extends AnyFunction ? T : never>) => {
+          'worklet';
+          try {
+            const result = (fnOrPromise as AnyFunction)(...args);
+            if (result instanceof Promise) {
+              return result.then(logPerformanceAndReturn);
+            } else {
+              return logPerformanceAndReturn(result);
+            }
+          } catch (error) {
+            // Logging?
+            return logPerformanceAndReturn(undefined);
           }
-
-          const endTime = getCurrentTime();
-          logPerformance(screen, operation, startTime, endTime, set);
-          return result;
-        } catch (error) {
-          const endTime = getCurrentTime();
-          logPerformance(screen, operation, startTime, endTime, set);
-          throw error;
-        }
-      }) as T;
-    },
+        };
+      } else {
+        throw new Error('executeFn expects a function or a Promise');
+      }
+    }) as PerformanceTrackingState['executeFn'],
 
     sendLogsToAmplitude: async () => {
       const { logs, lastSentTimestamp, sendInterval } = get();
       const currentTime = Date.now();
 
+      console.log('Current time:', currentTime);
+      console.log('Last sent timestamp:', lastSentTimestamp);
+      console.log('Diff between sends: ', currentTime - lastSentTimestamp);
+      console.log('Send interval:', sendInterval);
+      console.log('Logs size:', logs.size);
+
       if (logs.size > 0 && currentTime - lastSentTimestamp >= sendInterval) {
         try {
+          console.log('Preparing to send logs');
+
+          const logsArray = Array.from(logs.entries());
+          console.log('Logs as array:', JSON.stringify(logsArray, null, 2));
+
+          // Convert logs to a more easily loggable format
+          const logsSummary = logsArray.map(([screen, screenLogs]) => ({
+            screen,
+            logCount: screenLogs.length,
+            operations: screenLogs.map(log => log.operation),
+          }));
+          console.log('Logs summary:', JSON.stringify(logsSummary, null, 2));
+
           // Implement Amplitude logging logic here
           // For example:
-          // const allLogs = Array.from(logs.entries()).map(([screen, screenLogs]) => ({ screen, logs: screenLogs }));
-          // await Amplitude.logEvent('PerformanceMetrics', { logs: allLogs });
+          // await Amplitude.logEvent('PerformanceMetrics', { logs: logsArray });
 
           set({ logs: new Map(), lastSentTimestamp: currentTime });
+          console.log('Logs sent and reset');
         } catch (error) {
+          console.error('Failed to send logs to Amplitude:', error);
           logger.error(new RainbowError('Failed to send logs to Amplitude'), { error });
         }
+      } else {
+        console.log('Not sending logs: size or time condition not met');
       }
     },
 
@@ -184,40 +229,6 @@ export const performanceTrackingStore = createRainbowStore<PerformanceTrackingSt
         return { logs: newLogs };
       });
     },
-
-    getAggregatedLogs: (screen: Screen) => {
-      const logs = get().logs.get(screen) || [];
-      const aggregated: {
-        [operation: string]: {
-          count: number;
-          totalDuration: number;
-          averageDuration: number;
-          minDuration: number;
-          maxDuration: number;
-        };
-      } = {};
-
-      logs.forEach(log => {
-        if (!aggregated[log.operation]) {
-          aggregated[log.operation] = {
-            count: 0,
-            totalDuration: 0,
-            averageDuration: 0,
-            minDuration: Infinity,
-            maxDuration: -Infinity,
-          };
-        }
-
-        const entry = aggregated[log.operation];
-        entry.count += 1;
-        entry.totalDuration += log.duration;
-        entry.minDuration = Math.min(entry.minDuration, log.duration);
-        entry.maxDuration = Math.max(entry.maxDuration, log.duration);
-        entry.averageDuration = entry.totalDuration / entry.count;
-      });
-
-      return aggregated;
-    },
   }),
   {
     storageKey: 'performanceTracking',
@@ -235,28 +246,25 @@ export const performanceTrackingStore = createRainbowStore<PerformanceTrackingSt
 );
 
 // Helper function to log performance
-function logPerformance<S extends Screen>(
-  screen: S,
-  operation: OperationForScreen<S>,
-  startTime: number,
-  endTime: number,
-  set: (partial: Partial<PerformanceTrackingState> | ((state: PerformanceTrackingState) => Partial<PerformanceTrackingState>)) => void
-) {
-  const duration = endTime - startTime;
+function logPerformance<S extends Screen>(screen: S, operation: OperationForScreen<S>, startTime: number, endTime: number) {
+  const timeToCompletion = endTime - startTime;
   const log: PerformanceLog<S> = {
+    completedAt: Date.now(),
     screen,
     operation,
-    duration,
-    timestamp: Date.now(),
+    startTime,
+    endTime,
+    timeToCompletion,
   };
-  set(state => {
+  console.log('Logging performance:', JSON.stringify(log, null, 2));
+  performanceTrackingStore.setState(state => {
     const screenLogs = state.logs.get(screen) || [];
     if (screenLogs.length >= MAX_LOGS_PER_SCREEN) {
       screenLogs.shift(); // Remove the oldest log
     }
-    return {
-      logs: new Map(state.logs).set(screen, [...screenLogs, log] as AnyPerformanceLog[]),
-    };
+    const newLogs = new Map(state.logs).set(screen, [...screenLogs, log] as AnyPerformanceLog[]);
+    console.log('Updated logs size:', newLogs.size);
+    return { logs: newLogs };
   });
 }
 
@@ -265,3 +273,6 @@ export const flushPerformanceLogs = async () => {
   performanceTrackingStore.getState().stopInterval();
   await performanceTrackingStore.getState().flushLogs();
 };
+
+export { TimeToSignOperation };
+export type { OperationForScreen };

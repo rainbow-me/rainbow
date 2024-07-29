@@ -52,6 +52,7 @@ import { Address } from 'viem';
 import { clearCustomGasSettings } from '../hooks/useCustomGas';
 import { getGasSettingsBySpeed, getSelectedGas, getSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
+import { performanceTrackingStore, TimeToSignOperation } from '@/state/performanceTrackingStore/performanceTrackingStore';
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
@@ -205,7 +206,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         return;
       }
 
-      const wallet = await loadWallet(parameters.quote.from, false, provider);
+      const wallet = await performanceTrackingStore
+        .getState()
+        .executeFn(Routes.SWAP, TimeToSignOperation.KeychainRead, loadWallet(parameters.quote.from, false, provider));
+
       if (!wallet) {
         isSwapping.value = false;
         haptics.notificationError();
@@ -312,7 +316,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
   };
 
-  const executeSwap = () => {
+  const executeSwap = performanceTrackingStore.getState().executeFn(Routes.SWAP, TimeToSignOperation.CallToAction, () => {
     'worklet';
 
     if (configProgress.value !== NavigationSteps.SHOW_REVIEW) return;
@@ -368,7 +372,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       type,
       parameters,
     });
-  };
+  });
 
   const SwapTextStyles = useSwapTextStyles({
     inputMethod: SwapInputController.inputMethod,
