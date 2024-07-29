@@ -320,7 +320,13 @@ export const WalletsAndBackup = () => {
                             </Text>
                           }
                         >
-                          {!backedUp && <MenuItem.Label color={'#FF584D'} text={i18n.t(i18n.l.back_up.needs_backup.not_backed_up)} />}
+                          {!backedUp && (
+                            <MenuItem.Label
+                              testID={'not-backed-up'}
+                              color={'#FF584D'}
+                              text={i18n.t(i18n.l.back_up.needs_backup.not_backed_up)}
+                            />
+                          )}
                           {imported && <MenuItem.Label text={i18n.t(i18n.l.wallet.back_ups.imported)} />}
                           <MenuItem.Label
                             text={
@@ -593,7 +599,7 @@ export const WalletsAndBackup = () => {
                         }
                       >
                         {!backedUp && <MenuItem.Label color={'#FF584D'} text={i18n.t(i18n.l.back_up.needs_backup.not_backed_up)} />}
-                        {imported && <MenuItem.Label text={i18n.t(i18n.l.wallet.back_ups.imported)} />}
+                        {imported && <MenuItem.Label testID={'back-ups-imported'} text={i18n.t(i18n.l.wallet.back_ups.imported)} />}
                         <MenuItem.Label
                           text={
                             numAccounts > 1

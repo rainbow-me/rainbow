@@ -14,7 +14,7 @@ import {
   useSharedValue,
 } from 'react-native-reanimated';
 
-import { equalWorklet, lessThanOrEqualToWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { equalWorklet, lessThanOrEqualToWorklet, sumWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { INITIAL_SLIDER_POSITION, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useAnimatedSwapStyles } from '@/__swaps__/screens/Swap/hooks/useAnimatedSwapStyles';
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
@@ -32,6 +32,7 @@ import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/
 import { getFlashbotsProvider, getIsHardhatConnected, getProviderForNetwork, isHardHat } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useAccountSettings } from '@/hooks';
+import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { loadWallet } from '@/model/wallet';
@@ -55,7 +56,7 @@ import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisable
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
-const tapToSwap = i18n.t(i18n.l.swap.actions.tap_to_swap);
+const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
 const save = i18n.t(i18n.l.swap.actions.save);
 const enterAmount = i18n.t(i18n.l.swap.actions.enter_amount);
 const review = i18n.t(i18n.l.swap.actions.review);
@@ -94,6 +95,7 @@ interface SwapContextType {
 
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
   executeSwap: () => void;
+  quoteFetchingInterval: ReturnType<typeof useAnimatedInterval>;
 
   outputQuotesAreDisabled: DerivedValue<boolean>;
   swapInfo: DerivedValue<{
@@ -114,6 +116,7 @@ interface SwapContextType {
       icon?: string;
       disabled?: boolean;
       opacity?: number;
+      type?: 'tap' | 'hold';
     }>
   >;
   confirmButtonIconStyle: StyleProp<TextStyle>;
@@ -221,7 +224,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       if (selectedGas.isEIP1559) {
         gasParams = {
-          maxFeePerGas: selectedGas.maxBaseFee,
+          maxFeePerGas: sumWorklet(selectedGas.maxBaseFee, selectedGas.maxPriorityFee),
           maxPriorityFeePerGas: selectedGas.maxPriorityFee,
         };
       } else {
@@ -677,7 +680,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
 
     if (isReviewSheetOpen) {
-      return { icon: '􀎽', label: tapToSwap, disabled: false };
+      return { icon: '􀎽', label: holdToSwap, disabled: false, type: 'hold' as const };
     }
 
     return { icon: '􀕹', label: review, disabled: false };
@@ -731,6 +734,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         outputQuotesAreDisabled,
         swapInfo,
         executeSwap,
+        quoteFetchingInterval: SwapInputController.quoteFetchingInterval,
 
         SwapSettings,
         SwapInputController,

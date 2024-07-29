@@ -1970,7 +1970,7 @@
     },
     "swap": {
       "actions": {
-        "tap_to_swap": "Tap to Swap",
+        "hold_to_swap": "Hold to Swap",
         "save": "Save",
         "enter_amount": "Enter Amount",
         "review": "Review",

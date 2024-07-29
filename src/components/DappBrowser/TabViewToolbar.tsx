@@ -1,7 +1,6 @@
-import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/utils/swaps';
-import { ButtonPressAnimation } from '@/components/animations';
+import { BlurView } from '@react-native-community/blur';
+import React from 'react';
+import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { Bleed, Box, BoxProps, Inline, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { TextColor } from '@/design-system/color/palettes';
 import { TextWeight } from '@/design-system/components/Text/Text';
@@ -10,14 +9,13 @@ import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { position } from '@/styles';
+import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { opacity } from '@/__swaps__/utils/swaps';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { BlurView } from '@react-native-community/blur';
-import React from 'react';
-import { StyleProp, ViewStyle } from 'react-native';
-import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { useBrowserContext } from './BrowserContext';
 import { useBrowserWorkletsContext } from './BrowserWorkletsContext';
 import { BrowserButtonShadows } from './DappBrowserShadows';
+import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 
 export const TabViewToolbar = () => {
   const { tabViewProgress, tabViewVisible } = useBrowserContext();
@@ -131,7 +129,15 @@ const BaseButton = ({
   return (
     <BrowserButtonShadows lightShadows={lightShadows}>
       <Bleed space="8px">
-        <HybridWorkletButton onPress={onPress} onPressWorklet={onPressWorklet} scaleTo={scaleTo} style={{ padding: 8 }}>
+        <GestureHandlerButton
+          onPressJS={onPress}
+          onPressWorklet={() => {
+            'worklet';
+            onPressWorklet?.();
+          }}
+          scaleTo={scaleTo}
+          style={{ padding: 8 }}
+        >
           <Box
             borderRadius={22}
             paddingHorizontal={width ? undefined : paddingHorizontal}
@@ -176,34 +182,8 @@ const BaseButton = ({
               ]}
             />
           </Box>
-        </HybridWorkletButton>
+        </GestureHandlerButton>
       </Bleed>
     </BrowserButtonShadows>
   );
-};
-
-type HybridButtonProps = {
-  children?: React.ReactNode;
-  onPress?: () => void;
-  onPressWorklet?: () => void;
-  scaleTo?: number;
-  style?: StyleProp<ViewStyle>;
-};
-
-const HybridWorkletButton = ({ children, onPress, onPressWorklet, scaleTo, style }: HybridButtonProps) => {
-  if (onPressWorklet) {
-    return (
-      <GestureHandlerV1Button onPressWorklet={onPressWorklet} scaleTo={scaleTo} style={style}>
-        {children}
-      </GestureHandlerV1Button>
-    );
-  } else if (onPress) {
-    return (
-      <ButtonPressAnimation onPress={onPress} scaleTo={scaleTo} style={style}>
-        {children}
-      </ButtonPressAnimation>
-    );
-  } else {
-    return <>{children}</>;
-  }
 };
