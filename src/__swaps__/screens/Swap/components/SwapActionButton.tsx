@@ -170,7 +170,10 @@ const HoldProgress = ({ holdProgress }: { holdProgress: SharedValue<number> }) =
   });
 
   function transformColor(assetColor: string, shouldSetColor = true) {
-    const newColor = chroma(assetColor).saturate(0.15).brighten(0.4).css();
+    const newColor = chroma(assetColor)
+      .saturate(isDarkMode ? 0.15 : 0.1)
+      .brighten(isDarkMode ? 0.5 : 0.3)
+      .css();
     if (shouldSetColor) setBrightenedColor(newColor);
     return newColor;
   }
