@@ -408,9 +408,12 @@ function SwipeNavigatorScreens() {
     <Swipe.Navigator
       initialLayout={deviceUtils.dimensions}
       initialRouteName={Routes.WALLET_SCREEN}
-      screenOptions={{
-        animationEnabled: false,
-        swipeEnabled: !isCoinListEdited || IS_TEST,
+      screenOptions={props => {
+        const isOnBrowserTab = props.route.name === Routes.DAPP_BROWSER_SCREEN;
+        return {
+          animationEnabled: false,
+          swipeEnabled: (!isOnBrowserTab && !isCoinListEdited) || IS_TEST,
+        };
       }}
       tabBar={({ descriptors, jumpTo, navigation, state: { index, routes } }) => (
         <TabBar descriptors={descriptors} jumpTo={jumpTo} navigation={navigation} state={{ index, routes }} />
