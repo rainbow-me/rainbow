@@ -52,8 +52,8 @@ import { Address } from 'viem';
 import { clearCustomGasSettings } from '../hooks/useCustomGas';
 import { getGasSettingsBySpeed, getSelectedGas, getSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
-import { performanceTrackingStore, TimeToSignOperation } from '@/state/performanceTrackingStore/performanceTrackingStore';
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
+import { performanceTracking, TimeToSignOperation } from '@/analytics/performance';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const tapToSwap = i18n.t(i18n.l.swap.actions.tap_to_swap);
@@ -206,9 +206,11 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         return;
       }
 
-      const wallet = await performanceTrackingStore
-        .getState()
-        .executeFn(Routes.SWAP, TimeToSignOperation.KeychainRead, loadWallet(parameters.quote.from, false, provider));
+      const wallet = await performanceTracking.executeFn(
+        Routes.SWAP,
+        TimeToSignOperation.KeychainRead,
+        loadWallet(parameters.quote.from, false, provider)
+      );
 
       if (!wallet) {
         isSwapping.value = false;
@@ -316,7 +318,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
   };
 
-  const executeSwap = performanceTrackingStore.getState().executeFn(Routes.SWAP, TimeToSignOperation.CallToAction, () => {
+  const executeSwap = performanceTracking.executeFn(Routes.SWAP, TimeToSignOperation.CallToAction, () => {
     'worklet';
 
     if (configProgress.value !== NavigationSteps.SHOW_REVIEW) return;
