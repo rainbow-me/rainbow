@@ -1,4 +1,4 @@
-import { GestureHandlerButtonProps, GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
+import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -62,29 +62,12 @@ export const TabViewToolbar = () => {
 };
 
 const NewTabButton = ({ newTabWorklet }: { newTabWorklet: (newTabUrl?: string | undefined) => void }) => {
-  return (
-    <BaseButton
-      onPressWorklet={() => {
-        'worklet';
-        newTabWorklet();
-      }}
-      icon="􀅼"
-      iconColor="label"
-      iconSize="icon 20px"
-      width={44}
-    />
-  );
+  return <BaseButton onPressWorklet={newTabWorklet} icon="􀅼" iconColor="label" iconSize="icon 20px" width={44} />;
 };
 
 const DoneButton = ({ toggleTabViewWorklet }: { toggleTabViewWorklet: (activeIndex?: number | undefined) => void }) => {
   return (
-    <BaseButton
-      onPressWorklet={() => {
-        'worklet';
-        toggleTabViewWorklet();
-      }}
-      paddingHorizontal="20px"
-    >
+    <BaseButton onPressWorklet={toggleTabViewWorklet} paddingHorizontal="20px">
       <Text align="center" color="label" size="20pt" weight="heavy">
         {i18n.t(i18n.l.button.done)}
       </Text>
@@ -118,7 +101,7 @@ type BaseButtonProps = {
   iconWeight?: TextWeight;
   lightShadows?: boolean;
   onPress?: () => void;
-  onPressWorklet?: GestureHandlerButtonProps['onPressWorklet'];
+  onPressWorklet?: () => void;
   paddingHorizontal?: BoxProps['paddingHorizontal'];
   scaleTo?: number;
   width?: number;
@@ -202,7 +185,7 @@ const BaseButton = ({
 type HybridButtonProps = {
   children?: React.ReactNode;
   onPress?: () => void;
-  onPressWorklet?: GestureHandlerButtonProps['onPressWorklet'];
+  onPressWorklet?: () => void;
   scaleTo?: number;
   style?: StyleProp<ViewStyle>;
 };
