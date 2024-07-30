@@ -399,7 +399,6 @@ export const SendConfirmationSheet = () => {
     },
     operation: TimeToSignOperation.CallToAction,
     screen: Routes.SEND_SHEET,
-    startOfOperation: true,
   });
 
   const existingAccount = useMemo(() => {

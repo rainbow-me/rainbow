@@ -488,6 +488,7 @@ export const SignTransactionSheet = () => {
     },
     screen: SCREEN_FOR_REQUEST_SOURCE[source],
     operation: TimeToSignOperation.SheetDismissal,
+    endOfOperation: true,
   });
 
   const onCancel = useCallback(
