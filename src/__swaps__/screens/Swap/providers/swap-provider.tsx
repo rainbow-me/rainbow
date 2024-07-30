@@ -626,22 +626,22 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
   );
 
-  const confirmButtonProps = useDerivedValue(() => {
+  const confirmButtonProps: SwapContextType['confirmButtonProps'] = useDerivedValue(() => {
     if (isSwapping.value) {
-      return { label: swapping, disabled: true, type: 'hold' as const };
+      return { label: swapping, disabled: true, type: 'hold' };
     }
 
     if (configProgress.value === NavigationSteps.SHOW_GAS) {
-      return { label: done, disabled: false, type: 'tap' as const };
+      return { label: done, disabled: false, type: 'tap' };
     }
 
     if (configProgress.value === NavigationSteps.SHOW_SETTINGS) {
-      return { label: done, disabled: false, type: 'tap' as const };
+      return { label: done, disabled: false, type: 'tap' };
     }
 
     const hasSelectedAssets = internalSelectedInputAsset.value && internalSelectedOutputAsset.value;
     if (!hasSelectedAssets) {
-      return { label: selectToken, disabled: true, type: 'hold' as const };
+      return { label: selectToken, disabled: true, type: 'hold' };
     }
 
     const isInputZero = equalWorklet(SwapInputController.inputValues.value.inputAmount, 0);
@@ -652,7 +652,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const userHasNotMovedSlider = SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0;
 
     if (userHasNotEnteredAmount || userHasNotMovedSlider) {
-      return { label: enterAmount, disabled: true, opacity: 1, type: 'hold' as const };
+      return { label: enterAmount, disabled: true, opacity: 1, type: 'hold' };
     }
 
     if (
@@ -660,7 +660,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         SwapWarning.swapWarning.value.type
       )
     ) {
-      return { icon: '􀕹', label: review, disabled: true, type: 'hold' as const };
+      return { icon: '􀕹', label: review, disabled: true, type: 'hold' };
     }
 
     const sellAsset = internalSelectedInputAsset.value;
@@ -668,7 +668,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       sellAsset && lessThanOrEqualToWorklet(SwapInputController.inputValues.value.inputAmount, sellAsset.maxSwappableAmount);
 
     if (!enoughFundsForSwap) {
-      return { label: insufficientFunds, disabled: true, type: 'hold' as const };
+      return { label: insufficientFunds, disabled: true, type: 'hold' };
     }
 
     const isQuoteError = quote.value && 'error' in quote.value;
@@ -677,7 +677,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
     if ((isFetching.value || isLoadingGas) && !isQuoteError) {
       const disabled = (isReviewSheetOpen && (isFetching.value || isLoadingGas)) || !quote.value;
-      const buttonType = isReviewSheetOpen ? ('hold' as const) : ('tap' as const);
+      const buttonType = isReviewSheetOpen ? 'hold' : 'tap';
       return { label: fetchingPrices, disabled, type: buttonType };
     }
 
@@ -685,7 +685,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
     if (isQuoteError) {
       const icon = isReviewSheetOpen ? undefined : '􀕹';
-      return { icon, label: isReviewSheetOpen ? quoteError : reviewLabel, disabled: true, type: 'hold' as const };
+      return { icon, label: isReviewSheetOpen ? quoteError : reviewLabel, disabled: true, type: 'hold' };
     }
 
     if (!hasEnoughFundsForGas.value) {
@@ -693,15 +693,15 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return {
         label: `${insufficient} ${nativeCurrency.symbol}`,
         disabled: true,
-        type: 'hold' as const,
+        type: 'hold',
       };
     }
 
     if (isReviewSheetOpen) {
-      return { icon: '􀎽', label: holdToSwap, disabled: false, type: 'hold' as const };
+      return { icon: '􀎽', label: holdToSwap, disabled: false, type: 'hold' };
     }
 
-    return { icon: '􀕹', label: reviewLabel, disabled: false, type: 'tap' as const };
+    return { icon: '􀕹', label: reviewLabel, disabled: false, type: 'tap' };
   });
 
   const confirmButtonIconStyle = useAnimatedStyle(() => {
