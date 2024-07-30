@@ -34,6 +34,8 @@ export interface SwapsState {
   setSource: (source: Source | 'auto') => void;
   degenMode: boolean;
   setDegenMode: (degenMode: boolean) => void;
+  preferredNetwork: ChainId | undefined;
+  setPreferredNetwork: (preferredNetwork: ChainId | undefined) => void;
 }
 
 const updateCustomGasSettingsForFlashbots = (flashbots: boolean, chainId: ChainId) => {
@@ -80,6 +82,9 @@ export const swapsStore = createRainbowStore<SwapsState>(
 
     degenMode: false,
     setDegenMode: (degenMode: boolean) => set({ degenMode }),
+
+    preferredNetwork: undefined,
+    setPreferredNetwork: (preferredNetwork: ChainId | undefined) => set({ preferredNetwork }),
   }),
   {
     storageKey: 'swapsStore',
@@ -87,7 +92,9 @@ export const swapsStore = createRainbowStore<SwapsState>(
     // NOTE: Only persist the settings
     partialize(state) {
       return {
+        degenMode: state.degenMode,
         flashbots: state.flashbots,
+        preferredNetwork: state.preferredNetwork,
         source: state.source,
       };
     },

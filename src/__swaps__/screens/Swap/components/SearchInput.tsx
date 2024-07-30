@@ -1,4 +1,4 @@
-import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { INPUT_PADDING, LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { Input } from '@/components/inputs';
@@ -74,7 +74,7 @@ export const SearchInput = ({
   );
 
   return (
-    <Box paddingHorizontal="20px" width="full">
+    <Box paddingHorizontal={{ custom: INPUT_PADDING }} width="full">
       <Columns alignHorizontal="justify" alignVertical="center" space="20px">
         <Box>
           <Bleed horizontal="8px" vertical="24px">

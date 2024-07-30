@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import Animated, { SharedValue, interpolate, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { Box, TextIcon, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
+import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { deviceUtils } from '@/utils';
 import { AnimatedBlurView } from '../AnimatedComponents/AnimatedBlurView';
 import { TIMING_CONFIGS } from '../animations/animationConfigs';
@@ -131,12 +131,7 @@ export const CloseTabButton = ({ animatedTabIndex, gestureScale, gestureX, tabId
 
   return (
     <Animated.View style={[styles.containerStyle, containerStyle]}>
-      <GestureHandlerV1Button
-        disableButtonPressWrapper
-        onPressWorklet={closeTab}
-        pointerEvents="auto"
-        style={styles.buttonPressWrapperStyle}
-      >
+      <GestureHandlerButton disableButtonPressWrapper onPressWorklet={closeTab} pointerEvents="auto" style={styles.buttonPressWrapperStyle}>
         <Box as={Animated.View} position="absolute" style={singleTabStyle}>
           {IS_IOS ? (
             <Box
@@ -207,7 +202,7 @@ export const CloseTabButton = ({ animatedTabIndex, gestureScale, gestureX, tabId
             </Box>
           )}
         </Box>
-      </GestureHandlerV1Button>
+      </GestureHandlerButton>
     </Animated.View>
   );
 };
