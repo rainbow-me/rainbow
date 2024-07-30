@@ -42,7 +42,8 @@
       "tx_timestamp": "Timestamp",
       "tx_to": "करने के लिए",
       "tx_to_lowercase": "करने के लिए",
-      "unknown_token": "अज्ञात टोकन"
+      "unknown_token": "अज्ञात टोकन",
+      "tab_rewards": "पुरस्कार"
     },
     "activity_list": {
       "empty_state": {
@@ -541,7 +542,8 @@
         "from_divider": "से",
         "to_divider": "करने के लिए",
         "view_on": "देखें %{blockExplorerName}पर",
-        "view_on_etherscan": "Etherscan पर देखें"
+        "view_on_etherscan": "Etherscan पर देखें",
+        "copy_contract_address": "कॉपी कॉन्ट्रैक्ट पता"
       },
       "all_networks": "सभी नेटवर्क",
       "filter_by_network": "नेटवर्क के आधार पर फ़िल्टर करें",
@@ -577,7 +579,8 @@
       "price_impact": {
         "long_wait": {
           "title": "लंबा इंतजार",
-          "description": "अनुमानित %{time}"
+          "description": "अनुमानित %{time}",
+          "description_prefix": "लगभग"
         },
         "unknown_price": {
           "title": "बाजार मूल्य अज्ञात",
@@ -589,7 +592,8 @@
         "you_are_losing": "आप %{priceImpact} खो रहे हैं",
         "no_data": "बाजार मूल्य अज्ञात",
         "label": "संभावित हानि",
-        "no_data_subtitle": "यदि आप जारी रखने का निर्णय लेते हैं, तो सुनिश्चित करें कि आप उद्धृत राशि से संतुष्ट हैं"
+        "no_data_subtitle": "यदि आप जारी रखने का निर्णय लेते हैं, तो सुनिश्चित करें कि आप उद्धृत राशि से संतुष्ट हैं",
+        "you_are_losing_prefix": "आप हार रहे हैं"
       },
       "source": {
         "rainbow": "ऑटो",
@@ -705,7 +709,8 @@
         "swap_max_insufficient_alert": {
           "title": "अपर्याप्त %{symbol}",
           "message": "आपके पास अधिकतम राशि अदला-बदली करने के लिए शुल्क के लिए अपर्याप्त %{symbol} है।"
-        }
+        },
+        "off": "बंद"
       },
       "swap_details": {
         "reward": "मुकाम",
@@ -782,6 +787,16 @@
         "report": "स्पैम के रूप में रिपोर्ट करें",
         "hide": "छुपाएं",
         "unhide": "अदृश्यता रद्द करें"
+      },
+      "swap_details_v2": {
+        "automatic": "स्वचालित",
+        "degen_mode": "डीजन मोड",
+        "degen_mode_description": "फास्ट स्वैप करने के लिए समीक्षा पत्र को छोड़ें",
+        "maximum_sold": "अधिकतम बेचा गया",
+        "minimum_received": "न्यूनतम प्राप्त",
+        "preferred_network": "पसंदीदा नेटवर्क",
+        "rainbow_fee": "शामिल रेनबो शुल्क",
+        "settings": "सेटिंग्स"
       }
     },
     "app_icon_unlock_sheet": {
@@ -1049,7 +1064,10 @@
       "alert_title_lower_miner_tip_needed": "उच्च खननकर्ता टिप!",
       "proceed_anyway": "फिर भी आगे बढ़ें",
       "edit_max_bass_fee": "अधिकतम आधार शुल्क संपादित करें",
-      "edit_miner_tip": "खननकर्ता टिप संपादित करें"
+      "edit_miner_tip": "खननकर्ता टिप संपादित करें",
+      "gas_price": "गैस कीमत",
+      "likely_to_fail": "कम · असफल होने की संभावना",
+      "unable_to_determine_selected_gas": "चयनित गैस निर्धारित करने में असमर्थ"
     },
     "homepage": {
       "back": "rainbow.me की ओर वापस जाएं",
@@ -1359,7 +1377,10 @@
         "title": "अपने अंक दावा करें",
         "subtitle": "अंक यहाँ हैं। जानिए आपको कितने अंक मिले हैं।",
         "get_started": "शुरुआत करें",
-        "use_referral_code": "रेफरल कोड का प्रयोग करें"
+        "use_referral_code": "रेफरल कोड का प्रयोग करें",
+        "subtitle_rewards": "Rainbow का उपयोग करके पुरस्कृत किए जाने के लिए पुरस्कृत हों। ऑनचैन पर कार्य करें, अंक प्राप्त करें, ETH कमाएं।",
+        "title_rewards_line_1": "स्वागत है",
+        "title_rewards_line_2": "Rainbow Rewards में"
       },
       "referral": {
         "title": "अपना रेफरल कोड दर्ज करें",
@@ -1400,7 +1421,36 @@
         "already_claimed_points": "क्षमा करें! आप पहले ही अपने अंक दावा कर चुके हैं।",
         "now": "अब",
         "unranked": "अश्रेणीकृत",
-        "points_to_rank": "रैंक हेतु 750 अंक आवश्यक"
+        "points_to_rank": "रैंक हेतु 750 अंक आवश्यक",
+        "available_to_claim": "दावा करने के लिए उपलब्ध",
+        "bridge_error": "आंशिक सफलता",
+        "bridge_error_explainer": "आपके पुरस्कारों को Optimism पर सफलतापूर्वक दावा किया गया, लेकिन %{network} में स्थानांतरण असफल रहा। अगर आप चाहें, तो आप स्वैप की सुविधा का उपयोग करके अपने पुरस्कारों को मैन्युअल रूप से स्थानांतरित कर सकते हैं।",
+        "choose_claim_network": "दावा नेटवर्क चुनें",
+        "claim": "%{value} दावा करें",
+        "claim_on_network": "%{network} पर दावा करें",
+        "claim_rewards": "पुरस्कार दावा करें",
+        "claimed_earnings": "दावा किए गए आय",
+        "claimed_on_network": "%{network} पर दावा किया गया",
+        "claiming_on_network": "%{network} पर दावा किया जा रहा है",
+        "current_value": "वर्तमान मूल्य",
+        "earn_eth_rewards": "ETH पुरस्कार कमाएं",
+        "earned_last_week": "पिछले सप्ताह में कमाया",
+        "error_claiming": "दावा में विफलता",
+        "free_to_claim": "दावा करने के लिए मुक्त",
+        "has_bridge_fee": "पंजी शुल्क है",
+        "my_earnings": "मेरी कमाई",
+        "my_points": "मेरे अंक",
+        "no_change": "कोई परिवर्तन नहीं",
+        "no_weekly_rank": "साप्ताहिक रैंक नहीं",
+        "none": "कोई नहीं",
+        "points_capitalized": "अंक",
+        "rainbow_users_have_earned": "Rainbow उपयोगकर्ताओं ने कमाया है",
+        "ranking": "स्थान #%{rank}",
+        "refer_friends": "मित्रों को संदर्भित करें",
+        "rewards_explainer": "हर सप्ताह, शीर्ष साप्ताहिक अंक कमाने वाले उपयोगकर्ताओं को Rainbow के ऑनचैन राजस्व का एक हिस्सा मिलेगा। Rainbow में स्वैपिंग या लेन-देन करके, dapps का उपयोग करके, या मित्रों को संदर्भित करके अंक जमा करें।",
+        "top_10_earner": "शीर्ष 10 अर्नर",
+        "try_again": "फिर से कोशिश करें",
+        "zero_points": "0 अंक"
       },
       "console": {
         "claim_bonus_paragraph": "आपको Rainbow के माध्यम से कम से कम $100 बदलने पर अतिरिक्त 100 अंक मिलेंगे",
@@ -1951,7 +2001,8 @@
         "swap": "अदला-बदली करें",
         "get_symbol_with": "%{symbol} प्राप्त करें इसके साथ",
         "withdraw": "निकासी",
-        "withdraw_symbol": "निकासी %{symbol}"
+        "withdraw_symbol": "निकासी %{symbol}",
+        "bridge": "ब्रिज"
       },
       "unknown": "अज्ञात",
       "warning": {
@@ -1972,7 +2023,30 @@
           "message": "समस्याओं से बचने के लिए अधिक गैस मूल्य सेट करने की सिफारिश की जाती है।",
           "title": "कम गैस मूल्य-लेन-देन अटक सकता है!"
         }
-      }
+      },
+      "actions": {
+        "enter_amount": "राशि दर्ज करें",
+        "fetching_prices": "ले रहा है",
+        "hold_to_swap": "स्वैप करने के लिए पकड़ें",
+        "insufficient": "अपर्याप्त",
+        "insufficient_funds": "अपर्याप्त फंड्स",
+        "quote_error": "कोट त्रुटि",
+        "review": "समीक्षा",
+        "save": "सहेजें",
+        "select_token": "टोकन चुनें",
+        "swapping": "स्वैप कर रहे हैं"
+      },
+      "bridging": "ब्रिजिंग",
+      "error_executing_swap": "स्वैप करने में त्रुटि",
+      "find_a_token_to_buy": "खरीदने के लिए टोकन खोजें",
+      "flashbots_protection": "फ्लैशबॉट्स सुरक्षा",
+      "max": "अधिकतम",
+      "no_balance": "कोई शेष राशि नहीं",
+      "search_your_tokens": "अपने टोकन खोजें",
+      "select": "चुनें",
+      "swapping": "स्वैपिंग",
+      "token_to_get": "प्राप्त करने के लिए टोकन",
+      "token_to_swap": "स्वैप करने के लिए टोकन"
     },
     "token_search": {
       "section_header": {
@@ -2849,6 +2923,25 @@
         "forward": "आगे",
         "back": "वापस"
       }
-    }
+    },
+    "check_identifier": {
+      "action": "प्रमाणित करें",
+      "description": "लगता है कि आपने उपकरण बदल लिया हो या Rainbow को पुनः स्थापित कर लिया हो। कृपया प्रमाणित करें ताकि हम आपके कीचेन डेटा को अभी भी स्वस्थ स्थिति में होने की पुष्टि कर सकें।",
+      "dismiss": "खारिज करें",
+      "error_alert": {
+        "cancel": "रद्द करें",
+        "contact_support": "समर्थन से संपर्क करें",
+        "message": "हमारे कीचेन डेटा की पुष्टि करते समय हमें त्रुटि आई है। कृपया पुनः प्रयास करें। यदि समस्या बनी रहती है, तो कृपया समर्थन से संपर्क करें।",
+        "title": "कीचेन की पुष्टि में त्रुटि"
+      },
+      "failure_alert": {
+        "action": "जारी रखें",
+        "message": "हम आपके कीचेन डेटा की पुष्टि करने में असमर्थ रहे। कृपया अपना वॉलेट पुनः स्थापित करें और पुनः प्रयास करें। यदि समस्या बनी रहती है, तो कृपया समर्थन से संपर्क करें।",
+        "title": "अमान्य कीचेन डेटा"
+      },
+      "title": "प्रमाणीकरण आवश्यक है"
+    },
+    "copy": "कॉपी",
+    "paste": "पेस्ट"
   }
 }

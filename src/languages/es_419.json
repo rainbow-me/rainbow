@@ -42,7 +42,8 @@
       "tx_timestamp": "Marca de tiempo",
       "tx_to": "A",
       "tx_to_lowercase": "a",
-      "unknown_token": "Token desconocido"
+      "unknown_token": "Token desconocido",
+      "tab_rewards": "Recompensas"
     },
     "activity_list": {
       "empty_state": {
@@ -541,7 +542,8 @@
         "from_divider": "desde",
         "to_divider": "a",
         "view_on": "Ver en %{blockExplorerName}",
-        "view_on_etherscan": "Ver en Etherscan"
+        "view_on_etherscan": "Ver en Etherscan",
+        "copy_contract_address": "Copiar Dirección del Contrato"
       },
       "all_networks": "Todas las Redes",
       "filter_by_network": "Filtrar por red",
@@ -577,7 +579,8 @@
       "price_impact": {
         "long_wait": {
           "title": "Larga espera",
-          "description": "Aprox. %{time}"
+          "description": "Aprox. %{time}",
+          "description_prefix": "Aprox."
         },
         "unknown_price": {
           "title": "Valor de Mercado Desconocido",
@@ -589,7 +592,8 @@
         "you_are_losing": "Estás perdiendo %{priceImpact}",
         "no_data": "Valor de Mercado Desconocido",
         "label": "Posible pérdida",
-        "no_data_subtitle": "Si decides continuar, asegúrate de estar satisfecho con la cantidad indicada."
+        "no_data_subtitle": "Si decides continuar, asegúrate de estar satisfecho con la cantidad indicada.",
+        "you_are_losing_prefix": "Estás perdiendo"
       },
       "source": {
         "rainbow": "Automático",
@@ -705,7 +709,8 @@
         "swap_max_insufficient_alert": {
           "title": "Insuficiente %{symbol}",
           "message": "No tienes suficiente %{symbol} para cubrir las comisiones de intercambio del monto máximo."
-        }
+        },
+        "off": "Desactivado"
       },
       "swap_details": {
         "reward": "Recompensa",
@@ -782,6 +787,16 @@
         "report": "Reportar como Spam",
         "hide": "Ocultar",
         "unhide": "Mostrar"
+      },
+      "swap_details_v2": {
+        "automatic": "Automático",
+        "degen_mode": "Modo Degen",
+        "degen_mode_description": "Omite la hoja de revisión para intercambiar más rápido",
+        "maximum_sold": "Máximo Vendido",
+        "minimum_received": "Mínimo Recibido",
+        "preferred_network": "Red Preferida",
+        "rainbow_fee": "Tarifa Incluida de Rainbow",
+        "settings": "Configuraciones"
       }
     },
     "app_icon_unlock_sheet": {
@@ -1049,7 +1064,10 @@
       "alert_title_lower_miner_tip_needed": "¡Propina de minero alta!",
       "proceed_anyway": "Continuar de todas formas",
       "edit_max_bass_fee": "Editar límite base máximo",
-      "edit_miner_tip": "Editar propina de minero"
+      "edit_miner_tip": "Editar propina de minero",
+      "gas_price": "Precio del Gas",
+      "likely_to_fail": "Bajo · probable fallo",
+      "unable_to_determine_selected_gas": "No se puede determinar el gas seleccionado"
     },
     "homepage": {
       "back": "Volver a rainbow.me",
@@ -1359,7 +1377,10 @@
         "title": "Reclama tus puntos",
         "subtitle": "Los puntos están aquí. Descubre cuántos has recibido.",
         "get_started": "Comenzar",
-        "use_referral_code": "Usar Código de Referencia"
+        "use_referral_code": "Usar Código de Referencia",
+        "subtitle_rewards": "Obtén recompensas por usar Rainbow. Haz cosas en la cadena, obtén puntos, gana ETH.",
+        "title_rewards_line_1": "Bienvenido a",
+        "title_rewards_line_2": "Rainbow Rewards"
       },
       "referral": {
         "title": "Ingresa tu código de referido",
@@ -1400,7 +1421,36 @@
         "already_claimed_points": "¡Lo siento! Ya has reclamado tus puntos.",
         "now": "Ahora",
         "unranked": "Sin clasificar",
-        "points_to_rank": "750 puntos para clasificar"
+        "points_to_rank": "750 puntos para clasificar",
+        "available_to_claim": "Disponible para Reclamar",
+        "bridge_error": "Error de Puente",
+        "bridge_error_explainer": "Tus recompensas se reclamaron con éxito en Optimism, pero la transferencia a %{network} falló. Si lo deseas, puedes transferir manualmente tus recompensas utilizando la función de Swap.",
+        "choose_claim_network": "Elige la Red para Reclamar",
+        "claim": "Reclamar %{value}",
+        "claim_on_network": "Reclamar en %{network}",
+        "claim_rewards": "Reclamar Recompensas",
+        "claimed_earnings": "Ganancias Reclamadas",
+        "claimed_on_network": "Reclamado en %{network}",
+        "claiming_on_network": "Reclamando en %{network}",
+        "current_value": "Valor Actual",
+        "earn_eth_rewards": "Ganar Recompensas ETH",
+        "earned_last_week": "Ganado la Semana Pasada",
+        "error_claiming": "Fallo al Reclamar",
+        "free_to_claim": "Gratis para Reclamar",
+        "has_bridge_fee": "Tiene Tarifa de Puente",
+        "my_earnings": "Mis Ganancias",
+        "my_points": "Mis Puntos",
+        "no_change": "Sin Cambios",
+        "no_weekly_rank": "Sin Rango Semanal",
+        "none": "Ninguno",
+        "points_capitalized": "Puntos",
+        "rainbow_users_have_earned": "Los usuarios de Rainbow han ganado",
+        "ranking": "Posición #%{rank}",
+        "refer_friends": "Referir Amigos",
+        "rewards_explainer": "Cada semana, los mejores ganadores de puntos semanales recibirán una parte de los ingresos onchain de Rainbow. Recoge puntos intercambiando o realizando transacciones en Rainbow, usando dapps o refiriendo amigos.",
+        "top_10_earner": "Top 10 Ganador",
+        "try_again": "Intentar de Nuevo",
+        "zero_points": "0 Puntos"
       },
       "console": {
         "claim_bonus_paragraph": "Recibirás 100 puntos adicionales una vez que cambies al menos $100 a través de Rainbow",
@@ -1951,7 +2001,8 @@
         "swap": "Intercambiar",
         "get_symbol_with": "Obtener %{symbol} con",
         "withdraw": "Retirar",
-        "withdraw_symbol": "Retirar %{symbol}"
+        "withdraw_symbol": "Retirar %{symbol}",
+        "bridge": "Puente"
       },
       "unknown": "Desconocido",
       "warning": {
@@ -1972,7 +2023,30 @@
           "message": "Se recomienda establecer un precio de gas más alto para evitar problemas.",
           "title": "¡Precio del gas bajo - la transacción podría quedar atascada!"
         }
-      }
+      },
+      "actions": {
+        "enter_amount": "Introducir Cantidad",
+        "fetching_prices": "Obteniendo",
+        "hold_to_swap": "Mantener para Intercambiar",
+        "insufficient": "Insuficiente",
+        "insufficient_funds": "Fondos Insuficientes",
+        "quote_error": "Error en la Cotización",
+        "review": "Revisar",
+        "save": "Guardar",
+        "select_token": "Seleccionar Token",
+        "swapping": "Intercambiando"
+      },
+      "bridging": "Puenteando",
+      "error_executing_swap": "Error al Ejecutar el Intercambio",
+      "find_a_token_to_buy": "Encuentra un token para comprar",
+      "flashbots_protection": "Protección contra Flashbots",
+      "max": "Máx",
+      "no_balance": "Sin Saldo",
+      "search_your_tokens": "Buscar tus tokens",
+      "select": "Seleccionar",
+      "swapping": "Intercambiando",
+      "token_to_get": "Token a Obtener",
+      "token_to_swap": "Token a Intercambiar"
     },
     "token_search": {
       "section_header": {
@@ -2849,6 +2923,25 @@
         "forward": "Adelante",
         "back": "Atrás"
       }
-    }
+    },
+    "check_identifier": {
+      "action": "Autenticar",
+      "description": "Parece que has cambiado de dispositivo o reinstalado Rainbow. Por favor, autentícate para que podamos validar que tus datos del llavero siguen en un estado saludable.",
+      "dismiss": "Descartar",
+      "error_alert": {
+        "cancel": "Cancelar",
+        "contact_support": "Contactar Soporte",
+        "message": "Se produjo un error al validar tus datos del llavero. Por favor, inténtalo de nuevo. Si el problema persiste, por favor, contacta con soporte.",
+        "title": "Error al Validar el Llavero"
+      },
+      "failure_alert": {
+        "action": "Continuar",
+        "message": "No pudimos verificar la integridad de tus datos del llavero. Por favor, restaura tu monedero e inténtalo de nuevo. Si el problema persiste, por favor, contacta con soporte.",
+        "title": "Datos del Llavero Inválidos"
+      },
+      "title": "Autenticación Necesaria"
+    },
+    "copy": "Copiar",
+    "paste": "Pegar"
   }
 }

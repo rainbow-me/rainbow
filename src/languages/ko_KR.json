@@ -42,7 +42,8 @@
       "tx_timestamp": "타임스탬프",
       "tx_to": "에게",
       "tx_to_lowercase": "에게",
-      "unknown_token": "알 수 없는 토큰"
+      "unknown_token": "알 수 없는 토큰",
+      "tab_rewards": "보상"
     },
     "activity_list": {
       "empty_state": {
@@ -541,7 +542,8 @@
         "from_divider": "from",
         "to_divider": "에게",
         "view_on": "%{blockExplorerName}에서 보기",
-        "view_on_etherscan": "Etherscan에서 보기"
+        "view_on_etherscan": "Etherscan에서 보기",
+        "copy_contract_address": "컨트랙트 주소 복사"
       },
       "all_networks": "모든 네트워크",
       "filter_by_network": "네트워크별 필터링",
@@ -577,7 +579,8 @@
       "price_impact": {
         "long_wait": {
           "title": "긴 대기 시간",
-          "description": "약 %{time}"
+          "description": "약 %{time}",
+          "description_prefix": "약"
         },
         "unknown_price": {
           "title": "시장 가치 불명",
@@ -589,7 +592,8 @@
         "you_are_losing": "당신은 %{priceImpact}를 잃었습니다",
         "no_data": "시장 가치 불명",
         "label": "가능한 손실",
-        "no_data_subtitle": "계속하기로 결정하시면, 인용된 금액에 만족하는지 확인하세요"
+        "no_data_subtitle": "계속하기로 결정하시면, 인용된 금액에 만족하는지 확인하세요",
+        "you_are_losing_prefix": "손해를 보는 중입니다"
       },
       "source": {
         "rainbow": "자동",
@@ -705,7 +709,8 @@
         "swap_max_insufficient_alert": {
           "title": "불충분한 %{symbol}",
           "message": "최대 금액을 교환하기 위한 수수료를 충당할 충분한 %{symbol} 가 없습니다."
-        }
+        },
+        "off": "끄기"
       },
       "swap_details": {
         "reward": "보상",
@@ -782,6 +787,16 @@
         "report": "스팸으로 신고하기",
         "hide": "숨기다",
         "unhide": "숨김 해제"
+      },
+      "swap_details_v2": {
+        "automatic": "자동",
+        "degen_mode": "디젠 모드",
+        "degen_mode_description": "스왑을 더 빠르게 진행하기 위해 리뷰 시트를 건너뜁니다",
+        "maximum_sold": "최대 판매",
+        "minimum_received": "최소 수령",
+        "preferred_network": "선호하는 네트워크",
+        "rainbow_fee": "포함된 Rainbow 수수료",
+        "settings": "설정"
       }
     },
     "app_icon_unlock_sheet": {
@@ -1049,7 +1064,10 @@
       "alert_title_lower_miner_tip_needed": "마이너 팁이 높습니다!",
       "proceed_anyway": "그래도 진행",
       "edit_max_bass_fee": "최대 기본 수수료 편집",
-      "edit_miner_tip": "마이너 팁 편집"
+      "edit_miner_tip": "마이너 팁 편집",
+      "gas_price": "가스 가격",
+      "likely_to_fail": "낮음 · 실패 가능성 있음",
+      "unable_to_determine_selected_gas": "선택된 가스를 결정할 수 없음"
     },
     "homepage": {
       "back": "rainbow.me로 돌아가기",
@@ -1359,7 +1377,10 @@
         "title": "포인트를 청구하세요",
         "subtitle": "포인트가 도착했습니다. 얼마나 많은 포인트를 받았는지 확인하세요.",
         "get_started": "시작하기",
-        "use_referral_code": "추천 코드 사용"
+        "use_referral_code": "추천 코드 사용",
+        "subtitle_rewards": "Rainbow을 사용하여 보상을 받으세요. 온체인으로 활동을 하고 포인트를 얻어 ETH를 벌 수 있습니다.",
+        "title_rewards_line_1": "환영합니다",
+        "title_rewards_line_2": "Rainbow 보상"
       },
       "referral": {
         "title": "추천 코드를 입력하세요",
@@ -1400,7 +1421,36 @@
         "already_claimed_points": "죄송합니다! 이미 포인트를 청구하셨습니다.",
         "now": "지금",
         "unranked": "순위 없음",
-        "points_to_rank": "등급까지 750포인트"
+        "points_to_rank": "등급까지 750포인트",
+        "available_to_claim": "청구 가능",
+        "bridge_error": "부분적 성공",
+        "bridge_error_explainer": "보상이 Optimism에서 성공적으로 청구되었지만, %{network}로의 이체에 실패했습니다. 원하시면 스왑 기능을 사용하여 보상을 수동으로 브릿지할 수 있습니다.",
+        "choose_claim_network": "청구 네트워크 선택",
+        "claim": "%{value} 청구",
+        "claim_on_network": "%{network}에서 청구",
+        "claim_rewards": "보상 청구",
+        "claimed_earnings": "청구된 수익",
+        "claimed_on_network": "%{network}에서 청구됨",
+        "claiming_on_network": "%{network}에서 청구 중",
+        "current_value": "현재 가치",
+        "earn_eth_rewards": "ETH 보상을 받으세요",
+        "earned_last_week": "지난 주 수익",
+        "error_claiming": "청구 실패",
+        "free_to_claim": "무료로 청구",
+        "has_bridge_fee": "브릿지 수수료 있음",
+        "my_earnings": "내 수익",
+        "my_points": "내 포인트",
+        "no_change": "변경 없음",
+        "no_weekly_rank": "주간 순위 없음",
+        "none": "없음",
+        "points_capitalized": "포인트",
+        "rainbow_users_have_earned": "Rainbow 사용자들이 벌어들였습니다",
+        "ranking": "순위 #%{rank}",
+        "refer_friends": "친구 추천",
+        "rewards_explainer": "매주 상위 포인트 획득자들은 Rainbow의 온체인 수익의 일부를 받습니다. Rainbow에서 스왑하거나 거래하거나 Dapp을 사용하거나 친구를 추천함으로써 포인트를 모을 수 있습니다.",
+        "top_10_earner": "상위 10명 수익자",
+        "try_again": "다시 시도",
+        "zero_points": "0 포인트"
       },
       "console": {
         "claim_bonus_paragraph": "Rainbow에서 최소 $100를 스왑하면 추가로 100점을 받게 됩니다",
@@ -1951,7 +2001,8 @@
         "swap": "교환",
         "get_symbol_with": "%{symbol} 받기",
         "withdraw": "인출",
-        "withdraw_symbol": "%{symbol}출금"
+        "withdraw_symbol": "%{symbol}출금",
+        "bridge": "브릿지"
       },
       "unknown": "미지",
       "warning": {
@@ -1972,7 +2023,30 @@
           "message": "문제를 피하기 위해 더 높은 가스 가격을 설정하는 것이 권장됩니다.",
           "title": "낮은 가스 가격-거래가 정체될 수 있습니다!"
         }
-      }
+      },
+      "actions": {
+        "enter_amount": "금액 입력",
+        "fetching_prices": "가격 가져오는 중",
+        "hold_to_swap": "스왑 유지",
+        "insufficient": "부족함",
+        "insufficient_funds": "자금 부족",
+        "quote_error": "견적 오류",
+        "review": "검토",
+        "save": "저장",
+        "select_token": "토큰 선택",
+        "swapping": "스왑 중"
+      },
+      "bridging": "브릿징 중",
+      "error_executing_swap": "스왑 실행 오류",
+      "find_a_token_to_buy": "구매할 토큰 찾기",
+      "flashbots_protection": "Flashbots 보호",
+      "max": "최대",
+      "no_balance": "잔고 없음",
+      "search_your_tokens": "내 토큰 검색",
+      "select": "선택",
+      "swapping": "스왑 중",
+      "token_to_get": "받을 토큰",
+      "token_to_swap": "스왑할 토큰"
     },
     "token_search": {
       "section_header": {
@@ -2849,6 +2923,25 @@
         "forward": "앞으로",
         "back": "뒤로"
       }
-    }
+    },
+    "check_identifier": {
+      "action": "인증",
+      "description": "기기를 변경하거나 Rainbow을 재설치한 것 같습니다. 키체인 데이터가 여전히 건강한 상태인지 확인하기 위해 인증하십시오.",
+      "dismiss": "닫기",
+      "error_alert": {
+        "cancel": "취소",
+        "contact_support": "고객 지원에 문의",
+        "message": "키체인 데이터를 확인하는 중에 오류가 발생했습니다. 다시 시도해 주세요. 문제가 지속되면 고객 지원에 문의하십시오.",
+        "title": "키체인 확인 오류"
+      },
+      "failure_alert": {
+        "action": "계속",
+        "message": "키체인 데이터의 무결성을 확인할 수 없었습니다. 지갑을 복원하고 다시 시도해 주세요. 문제가 지속되면 고객 지원에 문의하십시오.",
+        "title": "유효하지 않은 키체인 데이터"
+      },
+      "title": "인증이 필요함"
+    },
+    "copy": "복사",
+    "paste": "붙여넣기"
   }
 }

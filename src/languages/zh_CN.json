@@ -42,7 +42,8 @@
       "tx_timestamp": "时间戳",
       "tx_to": "至",
       "tx_to_lowercase": "至",
-      "unknown_token": "未知代币"
+      "unknown_token": "未知代币",
+      "tab_rewards": "奖励"
     },
     "activity_list": {
       "empty_state": {
@@ -541,7 +542,8 @@
         "from_divider": "来自",
         "to_divider": "至",
         "view_on": "在 %{blockExplorerName}查看",
-        "view_on_etherscan": "在 Etherscan 上查看"
+        "view_on_etherscan": "在 Etherscan 上查看",
+        "copy_contract_address": "复制合约地址"
       },
       "all_networks": "所有网络",
       "filter_by_network": "按网络筛选",
@@ -577,7 +579,8 @@
       "price_impact": {
         "long_wait": {
           "title": "等待时间较长",
-          "description": "大约%{time}"
+          "description": "大约%{time}",
+          "description_prefix": "大约"
         },
         "unknown_price": {
           "title": "市场价值未知",
@@ -589,7 +592,8 @@
         "you_are_losing": "您失去了%{priceImpact}",
         "no_data": "市场价值未知",
         "label": "可能的损失",
-        "no_data_subtitle": "如果您决定继续，请确保您对所引用的金额感到满意"
+        "no_data_subtitle": "如果您决定继续，请确保您对所引用的金额感到满意",
+        "you_are_losing_prefix": "您正在亏损"
       },
       "source": {
         "rainbow": "自动",
@@ -705,7 +709,8 @@
         "swap_max_insufficient_alert": {
           "title": "%{symbol}不足",
           "message": "您的 %{symbol} 不足以支付交换最大金额的费用。"
-        }
+        },
+        "off": "关闭"
       },
       "swap_details": {
         "reward": "奖励",
@@ -782,6 +787,16 @@
         "report": "报告为垃圾邮件",
         "hide": "隐藏",
         "unhide": "取消隐藏"
+      },
+      "swap_details_v2": {
+        "automatic": "自动",
+        "degen_mode": "疯狂模式",
+        "degen_mode_description": "跳过审查表格以加快交换速度",
+        "maximum_sold": "最大销售量",
+        "minimum_received": "最小接收量",
+        "preferred_network": "首选网络",
+        "rainbow_fee": "包含Rainbow费用",
+        "settings": "设置"
       }
     },
     "app_icon_unlock_sheet": {
@@ -1049,7 +1064,10 @@
       "alert_title_lower_miner_tip_needed": "矿工小费高！",
       "proceed_anyway": "无论如何进行",
       "edit_max_bass_fee": "编辑最大基础费用",
-      "edit_miner_tip": "编辑矿工小费"
+      "edit_miner_tip": "编辑矿工小费",
+      "gas_price": "燃气价格",
+      "likely_to_fail": "低 · 可能失败",
+      "unable_to_determine_selected_gas": "无法确定所选燃气"
     },
     "homepage": {
       "back": "返回rainbow.me",
@@ -1359,7 +1377,10 @@
         "title": "领取你的积分",
         "subtitle": "积分就在这里。查看你获得了多少积分。",
         "get_started": "开始",
-        "use_referral_code": "使用推荐码"
+        "use_referral_code": "使用推荐码",
+        "subtitle_rewards": "使用Rainbow获得奖励。在链上完成任务，获取积分，赚取ETH。",
+        "title_rewards_line_1": "欢迎来到",
+        "title_rewards_line_2": "Rainbow奖励"
       },
       "referral": {
         "title": "输入你的推荐码",
@@ -1400,7 +1421,36 @@
         "already_claimed_points": "抱歉！您已经领取了您的积分。",
         "now": "现在",
         "unranked": "未排名",
-        "points_to_rank": "距离排名还需750积分"
+        "points_to_rank": "距离排名还需750积分",
+        "available_to_claim": "可领取",
+        "bridge_error": "部分成功",
+        "bridge_error_explainer": "您的奖励已成功在Optimism上领取，但是向%{network}的转账失败。如果愿意，您可以使用交换功能手动桥接您的奖励。",
+        "choose_claim_network": "选择领取网络",
+        "claim": "领取 %{value}",
+        "claim_on_network": "在 %{network} 上领取",
+        "claim_rewards": "领取奖励",
+        "claimed_earnings": "已领取收益",
+        "claimed_on_network": "在 %{network} 上领取",
+        "claiming_on_network": "在 %{network} 上领取中",
+        "current_value": "当前价值",
+        "earn_eth_rewards": "赚取ETH奖励",
+        "earned_last_week": "上周收益",
+        "error_claiming": "领取失败",
+        "free_to_claim": "免费领取",
+        "has_bridge_fee": "有桥接费用",
+        "my_earnings": "我的收益",
+        "my_points": "我的积分",
+        "no_change": "无变化",
+        "no_weekly_rank": "无周排名",
+        "none": "无",
+        "points_capitalized": "积分",
+        "rainbow_users_have_earned": "Rainbow用户已赚取",
+        "ranking": "排名 #%{rank}",
+        "refer_friends": "推荐朋友",
+        "rewards_explainer": "每周，积分最高的用户将获得Rainbow链上收入的一部分。通过在Rainbow中交换或交易、使用Dapp或推荐朋友来积累积分。",
+        "top_10_earner": "前十名收益者",
+        "try_again": "重试",
+        "zero_points": "0 积分"
       },
       "console": {
         "claim_bonus_paragraph": "一旦您通过Rainbow兑换至少$100，您将额外获得100积分",
@@ -1951,7 +2001,8 @@
         "swap": "交换",
         "get_symbol_with": "获取 %{symbol} 用",
         "withdraw": "提款",
-        "withdraw_symbol": "取款 %{symbol}"
+        "withdraw_symbol": "取款 %{symbol}",
+        "bridge": "桥接"
       },
       "unknown": "未知",
       "warning": {
@@ -1972,7 +2023,30 @@
           "message": "建议设置更高的燃气价格以避免问题。",
           "title": "低燃气价格-交易可能会卡住！"
         }
-      }
+      },
+      "actions": {
+        "enter_amount": "输入金额",
+        "fetching_prices": "获取中",
+        "hold_to_swap": "按住以交换",
+        "insufficient": "余额不足",
+        "insufficient_funds": "资金不足",
+        "quote_error": "报价错误",
+        "review": "查看",
+        "save": "保存",
+        "select_token": "选择代币",
+        "swapping": "交换中"
+      },
+      "bridging": "桥接中",
+      "error_executing_swap": "执行交换错误",
+      "find_a_token_to_buy": "找到要购买的代币",
+      "flashbots_protection": "Flashbots保护",
+      "max": "最大",
+      "no_balance": "无余额",
+      "search_your_tokens": "搜索您的代币",
+      "select": "选择",
+      "swapping": "交换中",
+      "token_to_get": "要获取的代币",
+      "token_to_swap": "要交换的代币"
     },
     "token_search": {
       "section_header": {
@@ -2849,6 +2923,25 @@
         "forward": "前进",
         "back": "返回"
       }
-    }
+    },
+    "check_identifier": {
+      "action": "认证",
+      "description": "看起来您可能更换了设备或重新安装了Rainbow。请进行认证，以便我们验证您的钥匙链数据仍处于健康状态。",
+      "dismiss": "忽略",
+      "error_alert": {
+        "cancel": "取消",
+        "contact_support": "联系支持",
+        "message": "在验证您的钥匙链数据时遇到错误。请重试。如果问题仍然存在，请联系支持。",
+        "title": "验证钥匙链错误"
+      },
+      "failure_alert": {
+        "action": "继续",
+        "message": "我们无法验证您的钥匙链数据的完整性。请恢复您的钱包并重试。如果问题仍然存在，请联系支持。",
+        "title": "无效的钥匙链数据"
+      },
+      "title": "需要认证"
+    },
+    "copy": "复制",
+    "paste": "粘贴"
   }
 }

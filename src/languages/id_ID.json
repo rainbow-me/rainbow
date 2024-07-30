@@ -42,7 +42,8 @@
       "tx_timestamp": "Timestamp",
       "tx_to": "Ke",
       "tx_to_lowercase": "ke",
-      "unknown_token": "Token Tidak Dikenal"
+      "unknown_token": "Token Tidak Dikenal",
+      "tab_rewards": "Hadiah"
     },
     "activity_list": {
       "empty_state": {
@@ -541,7 +542,8 @@
         "from_divider": "dari",
         "to_divider": "ke",
         "view_on": "Tampilkan di %{blockExplorerName}",
-        "view_on_etherscan": "Tampilkan di Etherscan"
+        "view_on_etherscan": "Tampilkan di Etherscan",
+        "copy_contract_address": "Salin Alamat Kontrak"
       },
       "all_networks": "Semua Jaringan",
       "filter_by_network": "Filter berdasarkan Jaringan",
@@ -577,7 +579,8 @@
       "price_impact": {
         "long_wait": {
           "title": "Menunggu lama",
-          "description": "Perkiraan %{time}"
+          "description": "Perkiraan %{time}",
+          "description_prefix": "Perkiraan."
         },
         "unknown_price": {
           "title": "Nilai Pasar Tidak Diketahui",
@@ -589,7 +592,8 @@
         "you_are_losing": "Anda kehilangan %{priceImpact}",
         "no_data": "Nilai Pasar Tidak Diketahui",
         "label": "Kemungkinan kerugian",
-        "no_data_subtitle": "Jika Anda memutuskan untuk melanjutkan, pastikan Anda puas dengan jumlah yang dikutip"
+        "no_data_subtitle": "Jika Anda memutuskan untuk melanjutkan, pastikan Anda puas dengan jumlah yang dikutip",
+        "you_are_losing_prefix": "Anda kehilangan"
       },
       "source": {
         "rainbow": "Otomatis",
@@ -705,7 +709,8 @@
         "swap_max_insufficient_alert": {
           "title": "Kurang %{symbol}",
           "message": "Anda tidak memiliki cukup %{symbol} untuk menutupi biaya untuk menukar jumlah maksimum."
-        }
+        },
+        "off": "Mati"
       },
       "swap_details": {
         "reward": "Hadiah",
@@ -782,6 +787,16 @@
         "report": "Laporkan sebagai Spam",
         "hide": "Sembunyikan",
         "unhide": "Batal Sembunyikan"
+      },
+      "swap_details_v2": {
+        "automatic": "Otomoatis",
+        "degen_mode": "Mode Degen",
+        "degen_mode_description": "Lewati lembar review untuk swap lebih cepat",
+        "maximum_sold": "Terjual Maksimum",
+        "minimum_received": "Diterima Minimum",
+        "preferred_network": "Jaringan Pilihan",
+        "rainbow_fee": "Biaya Termasuk Rainbow",
+        "settings": "Pengaturan"
       }
     },
     "app_icon_unlock_sheet": {
@@ -1049,7 +1064,10 @@
       "alert_title_lower_miner_tip_needed": "Miner tip tinggi!",
       "proceed_anyway": "Lanjutkan Saja",
       "edit_max_bass_fee": "Edit Max Base Fee",
-      "edit_miner_tip": "Edit Miner Tip"
+      "edit_miner_tip": "Edit Miner Tip",
+      "gas_price": "Harga Gas",
+      "likely_to_fail": "Rendah · Kemungkinan gagal",
+      "unable_to_determine_selected_gas": "Tidak dapat menentukan gas yang dipilih"
     },
     "homepage": {
       "back": "Kembali ke rainbow.me",
@@ -1359,7 +1377,10 @@
         "title": "Klaim poin Anda",
         "subtitle": "Poin telah ada. Cari tahu berapa banyak yang telah Anda dapatkan.",
         "get_started": "Mulai",
-        "use_referral_code": "Gunakan Kode Referral"
+        "use_referral_code": "Gunakan Kode Referral",
+        "subtitle_rewards": "Dapatkan hadiah untuk menggunakan Rainbow. Lakukan hal-hal onchain, dapatkan poin, hasilkan ETH.",
+        "title_rewards_line_1": "Selamat datang di",
+        "title_rewards_line_2": "Rainbow Rewards"
       },
       "referral": {
         "title": "Masukkan kode rujukan Anda",
@@ -1400,7 +1421,36 @@
         "already_claimed_points": "Maaf! Kamu sudah mengklaim poinmu.",
         "now": "Sekarang",
         "unranked": "Tidak Terperingkat",
-        "points_to_rank": "750 poin untuk naik peringkat"
+        "points_to_rank": "750 poin untuk naik peringkat",
+        "available_to_claim": "Tersedia untuk Diklaim",
+        "bridge_error": "Keberhasilan Parsial",
+        "bridge_error_explainer": "Hadiah Anda berhasil diklaim di Optimism, tetapi transfer ke %{network} gagal. Jika Anda ingin, Anda dapat memindahkan hadiah Anda secara manual menggunakan fitur Swap.",
+        "choose_claim_network": "Pilih Jaringan Klaim",
+        "claim": "Klaim %{value}",
+        "claim_on_network": "Klaim di %{network}",
+        "claim_rewards": "Klaim Hadiah",
+        "claimed_earnings": "Pendapatan yang Diklaim",
+        "claimed_on_network": "Diklaim di %{network}",
+        "claiming_on_network": "Mengklaim di %{network}",
+        "current_value": "Nilai Saat Ini",
+        "earn_eth_rewards": "Dapatkan Hadiah ETH",
+        "earned_last_week": "Diperoleh Minggu Lalu",
+        "error_claiming": "Klaim Gagal",
+        "free_to_claim": "Gratis untuk Diklaim",
+        "has_bridge_fee": "Memiliki Biaya Jembatan",
+        "my_earnings": "Pendapatan Saya",
+        "my_points": "Poin Saya",
+        "no_change": "Tidak Ada Perubahan",
+        "no_weekly_rank": "Tidak Ada Peringkat Mingguan",
+        "none": "Tidak ada",
+        "points_capitalized": "Poin",
+        "rainbow_users_have_earned": "Pengguna Rainbow telah mendapatkan",
+        "ranking": "Ditempatkan #%{rank}",
+        "refer_friends": "Rujuk Teman",
+        "rewards_explainer": "Setiap minggu, pengguna dengan poin mingguan tertinggi akan menerima bagian dari pendapatan onchain Rainbow. Kumpulkan poin dengan menukar atau melakukan transaksi di Rainbow, menggunakan dapps, atau merujuk teman.",
+        "top_10_earner": "Top 10 Earner",
+        "try_again": "Coba Lagi",
+        "zero_points": "0 Poin"
       },
       "console": {
         "claim_bonus_paragraph": "Anda akan mendapatkan tambahan 100 poin setelah Anda menukar minimal $100 melalui Rainbow",
@@ -1951,7 +2001,8 @@
         "swap": "Tukar",
         "get_symbol_with": "Dapatkan %{symbol} dengan",
         "withdraw": "Tarik",
-        "withdraw_symbol": "Tarik %{symbol}"
+        "withdraw_symbol": "Tarik %{symbol}",
+        "bridge": "Jembatan"
       },
       "unknown": "Tidak Diketahui",
       "warning": {
@@ -1972,7 +2023,30 @@
           "message": "Direkomendasikan untuk menetapkan harga gas yang lebih tinggi untuk menghindari masalah.",
           "title": "Harga gas rendah–transaksi mungkin macet!"
         }
-      }
+      },
+      "actions": {
+        "enter_amount": "Masukkan Jumlah",
+        "fetching_prices": "Mengambil",
+        "hold_to_swap": "Tahan untuk Swap",
+        "insufficient": "Tidak Cukup",
+        "insufficient_funds": "Dana Tidak Cukup",
+        "quote_error": "Kesalahan Kutipan",
+        "review": "Review",
+        "save": "Simpan",
+        "select_token": "Pilih Token",
+        "swapping": "Melayangkan"
+      },
+      "bridging": "Membuat Jembatan",
+      "error_executing_swap": "Kesalahan saat melakukan swap",
+      "find_a_token_to_buy": "Temukan token untuk dibeli",
+      "flashbots_protection": "Perlindungan Flashbots",
+      "max": "Maks",
+      "no_balance": "Saldo Tidak Ada",
+      "search_your_tokens": "Cari token Anda",
+      "select": "Pilih",
+      "swapping": "Melayangkan",
+      "token_to_get": "Token yang akan Didapat",
+      "token_to_swap": "Token yang akan Dilayangkan"
     },
     "token_search": {
       "section_header": {
@@ -2849,6 +2923,25 @@
         "forward": "Maju",
         "back": "Kembali"
       }
-    }
+    },
+    "check_identifier": {
+      "action": "Autentikasi",
+      "description": "Sepertinya Anda mungkin telah mengganti perangkat atau menginstal ulang Rainbow. Harap autentikasi agar kami dapat memvalidasi bahwa data keychain Anda masih dalam keadaan sehat.",
+      "dismiss": "Tutup",
+      "error_alert": {
+        "cancel": "Batal",
+        "contact_support": "Hubungi Dukungan",
+        "message": "Kami mengalami kesalahan saat memvalidasi data keychain Anda. Silakan coba lagi. Jika masalah tetap berlanjut, hubungi dukungan.",
+        "title": "Kesalahan Memvalidasi Keychain"
+      },
+      "failure_alert": {
+        "action": "Lanjutkan",
+        "message": "Kami tidak dapat memverifikasi integritas data keychain Anda. Harap pulihkan dompet Anda dan coba lagi. Jika masalah tetap berlanjut, hubungi dukungan.",
+        "title": "Data Keychain Tidak Valid"
+      },
+      "title": "Autentikasi Diperlukan"
+    },
+    "copy": "Salin",
+    "paste": "Tempel"
   }
 }

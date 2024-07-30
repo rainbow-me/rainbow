@@ -42,7 +42,8 @@
       "tx_timestamp": "Zaman Damgası",
       "tx_to": "Kime",
       "tx_to_lowercase": "kime",
-      "unknown_token": "Bilinmeyen Token"
+      "unknown_token": "Bilinmeyen Token",
+      "tab_rewards": "Ödüller"
     },
     "activity_list": {
       "empty_state": {
@@ -541,7 +542,8 @@
         "from_divider": "gönderen",
         "to_divider": "kime",
         "view_on": "%{blockExplorerName}'da Görüntüle",
-        "view_on_etherscan": "Etherscan'da Görüntüle"
+        "view_on_etherscan": "Etherscan'da Görüntüle",
+        "copy_contract_address": "Sözleşme Adresini Kopyala"
       },
       "all_networks": "Tüm Ağlar",
       "filter_by_network": "Ağa Göre Filtrele",
@@ -577,7 +579,8 @@
       "price_impact": {
         "long_wait": {
           "title": "Uzun bekleme",
-          "description": "Yaklaşık %{time}"
+          "description": "Yaklaşık %{time}",
+          "description_prefix": "Yaklaşık"
         },
         "unknown_price": {
           "title": "Piyasa Değeri Bilinmiyor",
@@ -589,7 +592,8 @@
         "you_are_losing": "%{priceImpact} kaybediyorsun",
         "no_data": "Piyasa Değeri Bilinmiyor",
         "label": "Olası kayıp",
-        "no_data_subtitle": "Devam etmeye karar verirseniz, belirtilen miktardan memnun olduğunuzdan emin olun"
+        "no_data_subtitle": "Devam etmeye karar verirseniz, belirtilen miktardan memnun olduğunuzdan emin olun",
+        "you_are_losing_prefix": "Kaybediyorsunuz"
       },
       "source": {
         "rainbow": "Oto",
@@ -705,7 +709,8 @@
         "swap_max_insufficient_alert": {
           "title": "Yetersiz %{symbol}",
           "message": "Maksimum miktarı değiştirmek için gereken ücreti karşılamak için yetersiz %{symbol} sahibisiniz."
-        }
+        },
+        "off": "Kapalı"
       },
       "swap_details": {
         "reward": "Ödül",
@@ -782,6 +787,16 @@
         "report": "Spam olarak bildir",
         "hide": "Gizle",
         "unhide": "Gizlemeyi Kaldır"
+      },
+      "swap_details_v2": {
+        "automatic": "Oto",
+        "degen_mode": "Degen Modu",
+        "degen_mode_description": "Daha hızlı takas yapabilmek için gözden geçirme sayfasını atla",
+        "maximum_sold": "Maksimum Satılan",
+        "minimum_received": "Minimum Alınan",
+        "preferred_network": "Tercih Edilen Ağ",
+        "rainbow_fee": "Dahil Rainbow Ücreti",
+        "settings": "Ayarlar"
       }
     },
     "app_icon_unlock_sheet": {
@@ -1049,7 +1064,10 @@
       "alert_title_lower_miner_tip_needed": "Yüksek madenci bahşişi!",
       "proceed_anyway": "Yine de Devam Et",
       "edit_max_bass_fee": "Max Taban Ücretini Düzenle",
-      "edit_miner_tip": "Madenci Bahşişini Düzenle"
+      "edit_miner_tip": "Madenci Bahşişini Düzenle",
+      "gas_price": "Gaz fiyatı",
+      "likely_to_fail": "Düşük · Başarısız olma olasılığı yüksek",
+      "unable_to_determine_selected_gas": "Seçilen gazı belirleyemedi"
     },
     "homepage": {
       "back": "Rainbow.me'ye geri dön",
@@ -1359,7 +1377,10 @@
         "title": "Puanlarınızı Talep Edin",
         "subtitle": "Puanların burada. Ne kadar puan kazandığınızı öğrenin.",
         "get_started": "Başlayın",
-        "use_referral_code": "Yönlendirme Kodu Kullan"
+        "use_referral_code": "Yönlendirme Kodu Kullan",
+        "subtitle_rewards": "Rainbow'u kullanarak ödüllendirilin. Onchain işlemler yapın, puanlar kazanın, ETH kazanın.",
+        "title_rewards_line_1": "Hoş geldiniz",
+        "title_rewards_line_2": "Rainbow Ödülleri"
       },
       "referral": {
         "title": "Referans kodunuzu girin",
@@ -1400,7 +1421,36 @@
         "already_claimed_points": "Üzgünüz! Puanlarınızı zaten talep ettiniz.",
         "now": "Şimdi",
         "unranked": "Sıralamasız",
-        "points_to_rank": "Rütbeye ulaşmak için 750 puan"
+        "points_to_rank": "Rütbeye ulaşmak için 750 puan",
+        "available_to_claim": "Talep Edilebilir",
+        "bridge_error": "Kısmi Başarı",
+        "bridge_error_explainer": "Ödülleriniz Optimism üzerinde başarıyla talep edildi, ancak %{network} ağında transfer başarısız oldu. İsterseniz Swap özelliğini kullanarak ödüllerinizi manuel olarak köprüleyebilirsiniz.",
+        "choose_claim_network": "Talep Ağı Seçin",
+        "claim": "%{value} Talep Et",
+        "claim_on_network": "%{network} Ağında Talep Et",
+        "claim_rewards": "Ödülleri Talep Et",
+        "claimed_earnings": "Talep Edilen Kazançlar",
+        "claimed_on_network": "%{network} Ağında Talep Edildi",
+        "claiming_on_network": "%{network} Ağında Talep Ediliyor",
+        "current_value": "Geçerli Değer",
+        "earn_eth_rewards": "ETH Ödülleri Kazanın",
+        "earned_last_week": "Geçen Hafta Kazanılan",
+        "error_claiming": "Talep Edilirken Hata Oluştu",
+        "free_to_claim": "Ücretsiz Talep Edilebilir",
+        "has_bridge_fee": "Köprü Ücreti Var",
+        "my_earnings": "Kazancım",
+        "my_points": "Puanlarım",
+        "no_change": "Değişiklik Yok",
+        "no_weekly_rank": "Haftalık Sıralama Yok",
+        "none": "Hiçbiri",
+        "points_capitalized": "Puanlar",
+        "rainbow_users_have_earned": "Rainbow kullanıcıları kazanmıştır",
+        "ranking": "#%{rank} Sıralaması",
+        "refer_friends": "Arkadaşlarınızı Tavsiye Edin",
+        "rewards_explainer": "Her hafta, en çok puan kazananlar Rainbow'un onchain gelirinin bir kısmını alacaklar. Puanlarınızı Rainbow'da takas yaparak, işlem yaparak, dapps kullanarak veya arkadaşlarınızı tavsiye ederek toplayın.",
+        "top_10_earner": "En Çok Kazanan İlk 10",
+        "try_again": "Tekrar Deneyin",
+        "zero_points": "0 Puan"
       },
       "console": {
         "claim_bonus_paragraph": "Rainbow üzerinden en az 100 dolarlık takas yapmanız durumunda ekstra 100 puan alacaksınız",
@@ -1951,7 +2001,8 @@
         "swap": "Değiştir",
         "get_symbol_with": "%{symbol} elde etmek için",
         "withdraw": "Çek",
-        "withdraw_symbol": "%{symbol}çek"
+        "withdraw_symbol": "%{symbol}çek",
+        "bridge": "Köprü"
       },
       "unknown": "Bilinmeyen",
       "warning": {
@@ -1972,7 +2023,30 @@
           "message": "Daha yüksek bir gaz fiyatı ayarlamanın sorunlardan kaçınmak için tavsiye edilir.",
           "title": "Düşük gaz fiyatı–işlem sıkışabilir!"
         }
-      }
+      },
+      "actions": {
+        "enter_amount": "Miktarı Girin",
+        "fetching_prices": "Alınıyor",
+        "hold_to_swap": "Takas İçin Tutun",
+        "insufficient": "Yetersiz",
+        "insufficient_funds": "Yetersiz Fon",
+        "quote_error": "Teklif Hatası",
+        "review": "İncele",
+        "save": "Kaydet",
+        "select_token": "Token Seç",
+        "swapping": "Takas Yapılıyor"
+      },
+      "bridging": "Köprü İşlemi",
+      "error_executing_swap": "Takas İşlemi Hatası",
+      "find_a_token_to_buy": "Satın alınacak bir token bulun",
+      "flashbots_protection": "Flashbots Koruması",
+      "max": "Maks.",
+      "no_balance": "Bakiye Yok",
+      "search_your_tokens": "Token'larınızı arayın",
+      "select": "Seç",
+      "swapping": "Takas Yapılıyor",
+      "token_to_get": "Alınacak Token",
+      "token_to_swap": "Takas Edilecek Token"
     },
     "token_search": {
       "section_header": {
@@ -2849,6 +2923,25 @@
         "forward": "İleri",
         "back": "Geri"
       }
-    }
+    },
+    "check_identifier": {
+      "action": "Doğrula",
+      "description": "Cihazınızı değiştirmiş olabilir veya Rainbow'u yeniden yüklemiş olabilirsiniz. Lütfen kimlik doğrulaması yapın, böylece keychain verilerinizin hala sağlıklı bir durumda olup olmadığını doğrulayabiliriz.",
+      "dismiss": "Kapat",
+      "error_alert": {
+        "cancel": "İptal",
+        "contact_support": "Destek İle İletişime Geçin",
+        "message": "Keychain verilerinizi doğrularken bir hata oluştu. Lütfen tekrar deneyin. Sorun devam ederse lütfen destek ile iletişime geçin.",
+        "title": "Keychain Doğrulama Hatası"
+      },
+      "failure_alert": {
+        "action": "Devam Et",
+        "message": "Keychain verilerinizin bütünlüğünü doğrulayamadık. Lütfen cüzdanınızı geri yükleyip tekrar deneyin. Sorun devam ederse lütfen destek ile iletişime geçin.",
+        "title": "Geçersiz Keychain Verisi"
+      },
+      "title": "Kimlik Doğrulaması Gerekiyor"
+    },
+    "copy": "Kopyala",
+    "paste": "Yapıştır"
   }
 }

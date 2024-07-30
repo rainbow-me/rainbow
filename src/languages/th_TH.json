@@ -42,7 +42,8 @@
       "tx_timestamp": "ตราเวลา",
       "tx_to": "ถึง",
       "tx_to_lowercase": "ถึง",
-      "unknown_token": "โทเคนที่ไม่รู้จัก"
+      "unknown_token": "โทเคนที่ไม่รู้จัก",
+      "tab_rewards": "รางวัล"
     },
     "activity_list": {
       "empty_state": {
@@ -541,7 +542,8 @@
         "from_divider": "จาก",
         "to_divider": "ไปยัง",
         "view_on": "ดูบน %{blockExplorerName}",
-        "view_on_etherscan": "ดูบน Etherscan"
+        "view_on_etherscan": "ดูบน Etherscan",
+        "copy_contract_address": "คัดลอกที่อยู่สัญญา"
       },
       "all_networks": "ทุกเครือข่าย",
       "filter_by_network": "กรองตามเครือข่าย",
@@ -577,7 +579,8 @@
       "price_impact": {
         "long_wait": {
           "title": "รอนาน",
-          "description": "ประมาณ %{time}"
+          "description": "ประมาณ %{time}",
+          "description_prefix": "ประมาณ"
         },
         "unknown_price": {
           "title": "ไม่ทราบมูลค่าตลาด",
@@ -589,7 +592,8 @@
         "you_are_losing": "คุณสูญเสีย %{priceImpact}",
         "no_data": "ไม่ทราบมูลค่าตลาด",
         "label": "เสี่ยงที่จะสูญเสีย",
-        "no_data_subtitle": "หากคุณตัดสินใจดำเนินการต่อ โปรดแน่ใจว่าคุณพอใจกับจำนวนที่ได้รับการเสนอราคา"
+        "no_data_subtitle": "หากคุณตัดสินใจดำเนินการต่อ โปรดแน่ใจว่าคุณพอใจกับจำนวนที่ได้รับการเสนอราคา",
+        "you_are_losing_prefix": "คุณกำลังขาดทุน"
       },
       "source": {
         "rainbow": "อัตโนมัติ",
@@ -705,7 +709,8 @@
         "swap_max_insufficient_alert": {
           "title": "%{symbol}ไม่เพียงพอ",
           "message": "คุณมี %{symbol} ไม่เพียงพอที่จะครอบคลุมค่าธรรมเนียมในการแลกเปลี่ยนจำนวนสูงสุด"
-        }
+        },
+        "off": "ปิด"
       },
       "swap_details": {
         "reward": "รางวัล",
@@ -782,6 +787,16 @@
         "report": "รายงานเป็นสแปม",
         "hide": "ซ่อน",
         "unhide": "เปิดซ่อน"
+      },
+      "swap_details_v2": {
+        "automatic": "อัตโนมัติ",
+        "degen_mode": "โหมดแรง",
+        "degen_mode_description": "ข้ามชีทที่ต้องตรวจสอบเพื่อทำการสวิฟที่เร็วขึ้น",
+        "maximum_sold": "ขายสูงสุด",
+        "minimum_received": "ได้รับต่ำสุด",
+        "preferred_network": "เครือข่ายที่ต้องการ",
+        "rainbow_fee": "ค่าธรรมเนียม Rainbow รวม",
+        "settings": "การตั้งค่า"
       }
     },
     "app_icon_unlock_sheet": {
@@ -1049,7 +1064,10 @@
       "alert_title_lower_miner_tip_needed": "เคล็ดคุณภาพขุดเหมืองสูง!",
       "proceed_anyway": "ดำเนินการต่อ",
       "edit_max_bass_fee": "แก้ไขฐานค่าธรรมเนียมสูงสุด",
-      "edit_miner_tip": "แก้ไขเคล็ดคุณภาพขุดเหมือง"
+      "edit_miner_tip": "แก้ไขเคล็ดคุณภาพขุดเหมือง",
+      "gas_price": "ราคาแก๊ส",
+      "likely_to_fail": "ต่ำ · น่าจะล้มเหลว",
+      "unable_to_determine_selected_gas": "ไม่สามารถระบุแก๊สที่เลือกไว้"
     },
     "homepage": {
       "back": "กลับไปที่ rainbow.me",
@@ -1359,7 +1377,10 @@
         "title": "เรียกร้องคะแนนของคุณ",
         "subtitle": "คะแนนของคุณมาแล้ว หากดูว่าคุณได้รับกี่คะแนน",
         "get_started": "เริ่มทำงาน",
-        "use_referral_code": "ใช้รหัสอ้างอิง"
+        "use_referral_code": "ใช้รหัสอ้างอิง",
+        "subtitle_rewards": "ได้รับรางวัลจากการใช้ Rainbow ทำสิ่งต่างๆ ในเครือข่าย ได้รับคะแนน และได้รับ ETH",
+        "title_rewards_line_1": "ยินดีต้อนรับสู่",
+        "title_rewards_line_2": "Rainbow Rewards"
       },
       "referral": {
         "title": "กรอกรหัสอ้างอิงของคุณ",
@@ -1400,7 +1421,36 @@
         "already_claimed_points": "ขออภัย! คุณได้รับคะแนนนี้แล้ว.",
         "now": "ตอนนี้",
         "unranked": "ไม่มีอันดับ",
-        "points_to_rank": "ต้องการคะแนนอีก 750 คะแนนเพื่อจัดอันดับ"
+        "points_to_rank": "ต้องการคะแนนอีก 750 คะแนนเพื่อจัดอันดับ",
+        "available_to_claim": "พร้อมรับ",
+        "bridge_error": "เกิดข้อผิดพลาดบางส่วน",
+        "bridge_error_explainer": "การขอรับรางวัลของคุณสำเร็จบน Optimism แต่การโอนไปยัง %{network} ล้มเหลว หากคุณต้องการ คุณสามารถโอนเหรียญรางวัลของคุณด้วยตัวเองโดยใช้คุณสมบัติ Swap",
+        "choose_claim_network": "เลือกเครือข่ายที่ต้องการรับ",
+        "claim": "รับ %{value}",
+        "claim_on_network": "รับบน %{network}",
+        "claim_rewards": "รับรางวัล",
+        "claimed_earnings": "ได้รับรายได้",
+        "claimed_on_network": "รับบน %{network}",
+        "claiming_on_network": "กำลังรับบน %{network}",
+        "current_value": "มูลค่าปัจจุบัน",
+        "earn_eth_rewards": "ได้รับรางวัล ETH",
+        "earned_last_week": "ได้รับรายได้สัปดาห์ที่แล้ว",
+        "error_claiming": "การรับล้มเหลว",
+        "free_to_claim": "ฟรีที่จะรับ",
+        "has_bridge_fee": "มีค่าธรรมเนียมสะพาน",
+        "my_earnings": "รายได้ของฉัน",
+        "my_points": "คะแนนของฉัน",
+        "no_change": "ไม่มีการเปลี่ยนแปลง",
+        "no_weekly_rank": "ไม่มีการจัดอันดับสัปดาห์",
+        "none": "ไม่มี",
+        "points_capitalized": "คะแนน",
+        "rainbow_users_have_earned": "ผู้ใช้ Rainbow ได้รับรายได้",
+        "ranking": "อันดับ #%{rank}",
+        "refer_friends": "แนะนำเพื่อน",
+        "rewards_explainer": "ทุกสัปดาห์ ผู้ที่ได้คะแนนสูงสุดจะได้รับส่วนหนึ่งของรายได้ทางโซ่ของ Rainbow รวมถึงคะแนนที่ได้จากการสวิฟหรือทำธุรกรรมใน Rainbow ใช้ Dapps หรือแนะนำเพื่อน",
+        "top_10_earner": "ผู้รับรายได้สูงสุด 10 อันดับแรก",
+        "try_again": "ลองอีกครั้ง",
+        "zero_points": "0 คะแนน"
       },
       "console": {
         "claim_bonus_paragraph": "คุณจะได้รับแต้มเพิ่มอีก 100 แต้ม เมื่อคุณทำการแลกเปลี่ยนเงินอย่างน้อย $100 ผ่าน Rainbow",
@@ -1951,7 +2001,8 @@
         "swap": "แลกเปลี่ยน",
         "get_symbol_with": "รับ %{symbol} ด้วย",
         "withdraw": "ถอน",
-        "withdraw_symbol": "ถอน %{symbol}"
+        "withdraw_symbol": "ถอน %{symbol}",
+        "bridge": "สะพาน"
       },
       "unknown": "ไม่ทราบ",
       "warning": {
@@ -1972,7 +2023,30 @@
           "message": "แนะนำให้ตั้งราคาแก๊สที่สูงขึ้นเพื่อหลีกเลี่ยงปัญหา",
           "title": "ราคาแก๊สต่ำ - ธุรกรรมอาจติดขัด!"
         }
-      }
+      },
+      "actions": {
+        "enter_amount": "ป้อนจำนวน",
+        "fetching_prices": "กำลังดึงข้อมูล",
+        "hold_to_swap": "กดค้างเพื่อสวิฟ",
+        "insufficient": "ยอดเงินไม่เพียงพอ",
+        "insufficient_funds": "เงินไม่เพียงพอ",
+        "quote_error": "ข้อผิดพลาดในการให้ราคา",
+        "review": "ตรวจสอบ",
+        "save": "บันทึก",
+        "select_token": "เลือกโทเค็น",
+        "swapping": "กำลังสวิฟ"
+      },
+      "bridging": "กำลังทำการสะพาน",
+      "error_executing_swap": "เกิดข้อผิดพลาดในการทำการสวิฟ",
+      "find_a_token_to_buy": "ค้นหาโทเค็นที่จะซื้อ",
+      "flashbots_protection": "การป้องกัน Flashbots",
+      "max": "สูงสุด",
+      "no_balance": "ไม่มียอดเงิน",
+      "search_your_tokens": "ค้นหาโทเค็นของคุณ",
+      "select": "เลือก",
+      "swapping": "กำลังสวิฟ",
+      "token_to_get": "โทเค็นที่จะได้รับ",
+      "token_to_swap": "โทเค็นที่จะสวิฟ"
     },
     "token_search": {
       "section_header": {
@@ -2849,6 +2923,25 @@
         "forward": "ส่งต่อ",
         "back": "ย้อนกลับ"
       }
-    }
+    },
+    "check_identifier": {
+      "action": "รับรองความถูกต้อง",
+      "description": "ดูเหมือนว่าคุณอาจเปลี่ยนอุปกรณ์หรือติดตั้ง Rainbow ใหม่ โปรดรับรองความถูกต้องเพื่อที่เราจะสามารถตรวจสอบว่าข้อมูล keychain ของคุณยังอยู่ในสภาพที่ดีได้อยู่",
+      "dismiss": "ปิด",
+      "error_alert": {
+        "cancel": "ยกเลิก",
+        "contact_support": "ติดต่อฝ่ายสนับสนุน",
+        "message": "พบข้อผิดพลาดในขณะที่ตรวจสอบข้อมูล keychain ของคุณ โปรดลองอีกครั้ง หากปัญหายังคงอยู่ โปรดติดต่อฝ่ายสนับสนุน",
+        "title": "ข้อผิดพลาดในการตรวจสอบ Keychain"
+      },
+      "failure_alert": {
+        "action": "ดำเนินการต่อ",
+        "message": "เราไม่สามารถยืนยันความ完整ของข้อมูล keychain ของคุณได้ โปรดกู้คืนกระเป๋าเงินของคุณและลองอีกครั้ง หากปัญหายังคงอยู่ โปรดติดต่อฝ่ายสนับสนุน",
+        "title": "ข้อมูล Keychain ไม่ถูกต้อง"
+      },
+      "title": "ต้องการการรับรองความถูกต้อง"
+    },
+    "copy": "คัดลอก",
+    "paste": "วาง"
   }
 }
