@@ -157,7 +157,9 @@ export const SwapNumberPad = () => {
   const numpadContainerStyles = useAnimatedStyle(() => {
     return {
       opacity:
-        configProgress.value === NavigationSteps.SHOW_REVIEW || configProgress.value === NavigationSteps.SHOW_GAS
+        configProgress.value === NavigationSteps.SHOW_REVIEW ||
+        configProgress.value === NavigationSteps.SHOW_GAS ||
+        configProgress.value === NavigationSteps.SHOW_SETTINGS
           ? withTiming(0, fadeConfig)
           : withTiming(1, fadeConfig),
     };

@@ -22,7 +22,7 @@ import { GasSettings, useCustomGasSettings } from '../hooks/useCustomGas';
 import { setSelectedGasSpeed, useSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
-import { GestureHandlerV1Button } from './GestureHandlerV1Button';
+import { GestureHandlerButton } from './GestureHandlerButton';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
 
 const { SWAP_GAS_ICONS } = gasUtils;
@@ -227,13 +227,13 @@ export function ReviewGasButton() {
         </Animated.View>
       </GasMenu>
 
-      <GestureHandlerV1Button onPressStartWorklet={handleShowCustomGas}>
+      <GestureHandlerButton onPressStartWorklet={handleShowCustomGas}>
         <Box style={[styles.customGasButtonPill, { borderColor }]}>
           <Text align="center" color="label" size="15pt" weight="heavy">
             􀌆
           </Text>
         </Box>
-      </GestureHandlerV1Button>
+      </GestureHandlerButton>
     </Inline>
   );
 }

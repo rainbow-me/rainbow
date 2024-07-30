@@ -42,8 +42,8 @@ describe('Home Screen', () => {
 
   it('tapping "Swap" opens the swap screen', async () => {
     await waitAndTap('swap-button');
-    await checkIfExists('exchange-modal-input-selection-button');
-    await swipe('exchange-modal-notch', 'down', 'slow');
+    await checkIfExists('swap-screen');
+    await swipe('swap-screen', 'down', 'slow');
   });
 
   it('tapping "Send" opens the send screen', async () => {
