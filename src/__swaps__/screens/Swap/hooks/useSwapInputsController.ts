@@ -660,7 +660,7 @@ export function useSwapInputsController({
         }
 
         if (didInputAssetChange) {
-          sliderXPosition.value = withSpring(SLIDER_WIDTH / 2, snappySpringConfig);
+          sliderXPosition.value = withSpring(SLIDER_WIDTH / 2, snappySpringConfig as WithSpringConfig);
         }
 
         const { inputAmount, inputNativeValue } = getInputValuesForSliderPositionWorklet({

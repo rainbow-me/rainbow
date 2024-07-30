@@ -8,8 +8,6 @@ import { RainbowError, logger } from '@/logger';
 import store from '@/redux/store';
 import { SUPPORTED_CHAIN_IDS, supportedNativeCurrencies } from '@/references';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
-import { ChainId } from '@/__swaps__/types/chains';
 import { swapsStore } from '../swaps/swapsStore';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
@@ -185,6 +183,11 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
       }
     },
     getHighestValueAsset: (usePreferredNetwork = true) => {
+      const highestValueAsset = get().userAssets.values().next().value || null;
+
+      if (!highestValueAsset && getIsHardhatConnected()) {
+        return ethereumUtils.getNetworkNativeAsset(NetworkTypes.mainnet);
+      }
       const preferredNetwork = usePreferredNetwork ? swapsStore.getState().preferredNetwork : undefined;
       const assets = get().userAssets;
 
@@ -198,7 +201,7 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
       }
 
       // If no preferred network asset, return the highest-value asset
-      return assets.values().next().value || null;
+      return highestValueAsset;
     },
 
     getUserAsset: (uniqueId: UniqueId) => get().userAssets.get(uniqueId) || null,
