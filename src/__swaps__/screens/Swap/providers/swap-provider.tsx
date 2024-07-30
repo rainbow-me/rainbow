@@ -222,7 +222,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         provider,
         timeTracking: {
           screen: Routes.SWAP,
-          operation: TimeToSignOperation.KeychainRead,
+          operation: TimeToSignOperation.Authentication,
         },
       });
 

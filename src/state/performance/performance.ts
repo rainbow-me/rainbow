@@ -30,35 +30,41 @@ function logPerformance<S extends Screen>({
   endTime,
   endOfOperation,
 }: ExecuteFnParamsWithoutFn<S> & { startTime: number; endTime: number }) {
-  const timeToCompletion = endTime - startTime;
-  const log: PerformanceLog<S> = {
-    completedAt: Date.now(),
-    screen,
-    operation,
-    startTime,
-    endTime,
-    timeToCompletion,
-  };
-
-  logger.debug('[performance]: Time to complete operation', { log });
-
-  analyticsV2.track(analyticsV2.event.performanceTimeToSignOperation, log);
-
-  if (endOfOperation) {
-    const { elapsedTime } = performanceTracking.getState();
-
-    analyticsV2.track(analyticsV2.event.performanceTimeToSign, {
-      screen,
+  performanceTracking.setState(state => {
+    const timeToCompletion = endTime - startTime;
+    const log: PerformanceLog<S> = {
       completedAt: Date.now(),
-      elapsedTime: elapsedTime + timeToCompletion,
-    });
+      screen,
+      operation,
+      startTime,
+      endTime,
+      timeToCompletion,
+    };
 
-    logger.debug('[performance]: Time to sign', { screen, elapsedTime, completedAt: Date.now() });
+    logger.debug('[performance]: Time to complete operation', { log });
 
-    performanceTracking.setState({ elapsedTime: 0 });
-  } else {
-    performanceTracking.setState(state => ({ elapsedTime: state.elapsedTime + timeToCompletion }));
-  }
+    analyticsV2.track(analyticsV2.event.performanceTimeToSignOperation, log);
+
+    if (endOfOperation) {
+      analyticsV2.track(analyticsV2.event.performanceTimeToSign, {
+        screen,
+        completedAt: Date.now(),
+        elapsedTime: state.elapsedTime + timeToCompletion,
+      });
+
+      logger.debug('[performance]: Time to sign', { screen, elapsedTime: state.elapsedTime + timeToCompletion, completedAt: Date.now() });
+
+      return {
+        ...state,
+        elapsedTime: 0,
+      };
+    }
+
+    return {
+      ...state,
+      elapsedTime: state.elapsedTime + timeToCompletion,
+    };
+  });
 }
 
 // See https://docs.swmansion.com/react-native-reanimated/docs/threading/createWorkletRuntime/#remarks

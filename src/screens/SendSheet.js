@@ -487,8 +487,8 @@ export default function SendSheet(props) {
         } else {
           const { result: txResult, error } = await performanceTracking.getState().executeFn({
             fn: sendTransaction,
-            operation: TimeToSignOperation.BroadcastTransaction,
             screen: Routes.SEND_SHEET,
+            operation: TimeToSignOperation.BroadcastTransaction,
           })({
             existingWallet: wallet,
             provider: currentProvider,
