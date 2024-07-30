@@ -586,6 +586,7 @@ export default function SendSheet(props) {
           fn: goBackAndNavigate,
           screen: Routes.SEND_SHEET,
           operation: TimeToSignOperation.SheetDismissal,
+          endOfOperation: true,
         })();
       }
     },

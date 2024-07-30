@@ -1,5 +1,5 @@
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { OperationForScreen, PerformanceLog, Screen, TimeToSignOperation } from '@/state/performance/operations';
+import { OperationForScreen, PerformanceLog, Screen } from '@/state/performance/operations';
 import { analyticsV2 } from '@/analytics';
 import { logger } from '@/logger';
 import { runOnJS } from 'react-native-reanimated';
@@ -10,7 +10,6 @@ export interface ExecuteFnParams<S extends Screen, T extends AnyFunction> {
   screen: S;
   operation: OperationForScreen<S>;
   fn: T;
-  startOfOperation?: boolean;
   endOfOperation?: boolean;
 }
 

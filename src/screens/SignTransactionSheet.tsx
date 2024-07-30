@@ -96,6 +96,7 @@ import { RequestData } from '@/redux/requests';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { event } from '@/analytics/event';
 import { getOnchainAssetBalance } from '@/handlers/assets';
+import { performanceTracking, TimeToSignOperation } from '@/state/performance/performance';
 
 const COLLAPSED_CARD_HEIGHT = 56;
 const MAX_CARD_HEIGHT = 176;
@@ -143,6 +144,11 @@ type SignTransactionSheetParams = {
   network: Network;
   address: string;
   source: RequestSource;
+};
+
+const SCREEN_FOR_REQUEST_SOURCE = {
+  browser: Routes.DAPP_BROWSER,
+  walletconnect: Routes.WALLET_CONNECT_REDIRECT_SHEET,
 };
 
 export type SignTransactionSheetRouteProp = RouteProp<{ SignTransactionSheet: SignTransactionSheetParams }, 'SignTransactionSheet'>;
@@ -454,10 +460,20 @@ export const SignTransactionSheet = () => {
     return () => {
       clearTimeout(timeout);
     };
-  }, [accountAddress, currentNetwork, isMessageRequest, isPersonalSign, req, request.message, simulationUnavailable, transactionDetails]);
+  }, [
+    accountAddress,
+    currentNetwork,
+    isMessageRequest,
+    isPersonalSign,
+    nativeCurrency,
+    req,
+    request.message,
+    simulationUnavailable,
+    transactionDetails,
+  ]);
 
-  const closeScreen = useCallback(
-    (canceled: boolean) => {
+  const closeScreen = performanceTracking.getState().executeFn({
+    fn: (canceled: boolean) => {
       // we need to close the hw navigator too
       if (accountInfo.isHardwareWallet) {
         delay(300);
@@ -470,8 +486,9 @@ export const SignTransactionSheet = () => {
 
       onCloseScreenCallback?.(canceled);
     },
-    [accountInfo.isHardwareWallet, goBack, isMessageRequest, onCloseScreenCallback, stopPollingGasFees]
-  );
+    screen: SCREEN_FOR_REQUEST_SOURCE[source],
+    operation: TimeToSignOperation.SheetDismissal,
+  });
 
   const onCancel = useCallback(
     async (error?: Error) => {
@@ -505,21 +522,38 @@ export const SignTransactionSheet = () => {
       return;
     }
 
-    const existingWallet = await loadWallet({
+    const existingWallet = await performanceTracking.getState().executeFn({
+      fn: loadWallet,
+      screen: SCREEN_FOR_REQUEST_SOURCE[source],
+      operation: TimeToSignOperation.KeychainRead,
+    })({
       address: accountInfo.address,
       showErrorIfNotLoaded: true,
       provider,
+      timeTracking: {
+        screen: SCREEN_FOR_REQUEST_SOURCE[source],
+        operation: TimeToSignOperation.KeychainRead,
+      },
     });
+
     if (!existingWallet) {
       return;
     }
     switch (transactionDetails?.payload?.method) {
       case PERSONAL_SIGN:
-        response = await signPersonalMessage(message, existingWallet);
+        response = await performanceTracking.getState().executeFn({
+          fn: signPersonalMessage,
+          screen: SCREEN_FOR_REQUEST_SOURCE[source],
+          operation: TimeToSignOperation.SignTransaction,
+        })(message, existingWallet);
         break;
       case SIGN_TYPED_DATA_V4:
       case SIGN_TYPED_DATA:
-        response = await signTypedDataMessage(message, existingWallet);
+        response = await performanceTracking.getState().executeFn({
+          fn: signTypedDataMessage,
+          screen: SCREEN_FOR_REQUEST_SOURCE[source],
+          operation: TimeToSignOperation.SignTransaction,
+        })(message, existingWallet);
         break;
       default:
         break;
@@ -616,10 +650,18 @@ export const SignTransactionSheet = () => {
       if (!provider) {
         return;
       }
-      const existingWallet = await loadWallet({
+      const existingWallet = await performanceTracking.getState().executeFn({
+        fn: loadWallet,
+        screen: SCREEN_FOR_REQUEST_SOURCE[source],
+        operation: TimeToSignOperation.KeychainRead,
+      })({
         address: accountInfo.address,
         showErrorIfNotLoaded: true,
         provider,
+        timeTracking: {
+          screen: SCREEN_FOR_REQUEST_SOURCE[source],
+          operation: TimeToSignOperation.KeychainRead,
+        },
       });
       if (!existingWallet) {
         return;
@@ -628,13 +670,21 @@ export const SignTransactionSheet = () => {
         if (isHex(txPayloadUpdated?.type)) {
           txPayloadUpdated.type = hexToNumber(txPayloadUpdated?.type);
         }
-        response = await sendTransaction({
+        response = await performanceTracking.getState().executeFn({
+          fn: sendTransaction,
+          screen: SCREEN_FOR_REQUEST_SOURCE[source],
+          operation: TimeToSignOperation.BroadcastTransaction,
+        })({
           existingWallet: existingWallet,
           provider,
           transaction: txPayloadUpdated,
         });
       } else {
-        response = await signTransaction({
+        response = await performanceTracking.getState().executeFn({
+          fn: signTransaction,
+          screen: SCREEN_FOR_REQUEST_SOURCE[source],
+          operation: TimeToSignOperation.SignTransaction,
+        })({
           existingWallet,
           provider,
           transaction: txPayloadUpdated,
@@ -773,7 +823,7 @@ export const SignTransactionSheet = () => {
     if (accountInfo.isHardwareWallet) {
       navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: onPressSend });
     } else {
-      await onPressSend();
+      onPressSend();
     }
   }, [accountInfo.isHardwareWallet, isBalanceEnough, navigate, onPressSend]);
 
@@ -954,7 +1004,9 @@ export const SignTransactionSheet = () => {
                         : i18n.t(i18n.l.walletconnect.simulation.buttons.confirm)
                     }
                     newShadows
-                    onPress={submitFn}
+                    onPress={performanceTracking
+                      .getState()
+                      .executeFn({ fn: submitFn, operation: TimeToSignOperation.CallToAction, screen: SCREEN_FOR_REQUEST_SOURCE[source] })}
                     disabled={!canPressConfirm}
                     size="big"
                     weight="heavy"
