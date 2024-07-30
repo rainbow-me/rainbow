@@ -387,7 +387,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         parameters,
       });
     },
-    startOfOperation: true,
   });
 
   const SwapTextStyles = useSwapTextStyles({

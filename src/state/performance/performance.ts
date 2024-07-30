@@ -1,15 +1,10 @@
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { OperationForScreen, PerformanceLog, Screen } from '@/state/performance/operations';
+import { OperationForScreen, PerformanceLog, Screen, TimeToSignOperation } from '@/state/performance/operations';
 import { analyticsV2 } from '@/analytics';
 import { logger } from '@/logger';
 import { runOnJS } from 'react-native-reanimated';
 
 type AnyFunction = (...args: any[]) => any;
-
-type IsWorklet<T> = T extends { toString(): string } ? (T['toString'] extends () => `worklet;${string}` ? true : false) : false;
-
-type ReturnTypeOrVoid<T extends AnyFunction> =
-  IsWorklet<T> extends true ? void : ReturnType<T> extends Promise<unknown> ? ReturnType<T> : ReturnType<T> | void;
 
 interface ExecuteFnParams<S extends Screen, T extends AnyFunction> {
   screen: S;
@@ -20,21 +15,20 @@ interface ExecuteFnParams<S extends Screen, T extends AnyFunction> {
 }
 
 interface PerformanceTrackingState {
-  startTimeOfOperation: number;
+  elapsedTime: number;
   executeFn: {
-    <S extends Screen, T extends AnyFunction>(params: ExecuteFnParams<S, T>): (...args: Parameters<T>) => ReturnTypeOrVoid<T>;
-    <S extends Screen, T>(params: Omit<ExecuteFnParams<S, AnyFunction>, 'fn'> & { promise: Promise<T> }): Promise<T>;
+    <S extends Screen, T extends AnyFunction>(params: ExecuteFnParams<S, T>): (...args: Parameters<T>) => ReturnType<T>;
   };
 }
 
 // Helper function to log performance to Rudderstack
-function logPerformance<S extends Screen>(
-  screen: S,
-  operation: OperationForScreen<S>,
-  startTime: number,
-  endTime: number,
-  endOfOperation: boolean
-) {
+function logPerformance<S extends Screen>({
+  screen,
+  operation,
+  startTime,
+  endTime,
+  endOfOperation,
+}: Omit<ExecuteFnParams<S, AnyFunction> & { startTime: number; endTime: number }, 'fn'>) {
   const timeToCompletion = endTime - startTime;
   const log: PerformanceLog<S> = {
     completedAt: Date.now(),
@@ -50,18 +44,19 @@ function logPerformance<S extends Screen>(
   analyticsV2.track(analyticsV2.event.performanceTimeToSignOperation, log);
 
   if (endOfOperation) {
-    const { startTimeOfOperation } = performanceTracking.getState();
-    const elapsedTime = performance.now() - startTimeOfOperation;
+    const { elapsedTime } = performanceTracking.getState();
 
     analyticsV2.track(analyticsV2.event.performanceTimeToSign, {
       screen,
       completedAt: Date.now(),
-      elapsedTime,
+      elapsedTime: elapsedTime + timeToCompletion,
     });
 
     logger.debug('[performance]: Time to sign', { screen, elapsedTime, completedAt: Date.now() });
 
-    performanceTracking.setState({ startTimeOfOperation: -1 });
+    performanceTracking.setState({ elapsedTime: 0 });
+  } else {
+    performanceTracking.setState(state => ({ elapsedTime: state.elapsedTime + timeToCompletion }));
   }
 }
 
@@ -73,42 +68,40 @@ const getCurrentTime = (): number => {
 };
 
 export const performanceTracking = createRainbowStore<PerformanceTrackingState>(() => ({
-  startTimeOfOperation: -1,
+  elapsedTime: 0,
 
-  executeFn: (<S extends Screen, T extends AnyFunction>(
-    params: ExecuteFnParams<S, T> | (Omit<ExecuteFnParams<S, AnyFunction>, 'fn'> & { promise: Promise<T> })
-  ) => {
+  executeFn: (<S extends Screen, T extends AnyFunction>({ fn, screen, operation, endOfOperation = false }: ExecuteFnParams<S, T>) => {
     'worklet';
-
-    const { screen, operation, startOfOperation, endOfOperation = false } = params;
-
-    if (startOfOperation) runOnJS(performanceTracking.setState)({ startTimeOfOperation: performance.now() });
-
     const logPerformanceAndReturn = <R>(startTime: number, endTime: number, result: R): R => {
       'worklet';
-      runOnJS(logPerformance)(screen, operation, startTime, endTime, endOfOperation);
+      runOnJS(logPerformance)({
+        screen,
+        operation,
+        startTime,
+        endTime,
+        endOfOperation,
+      });
       return result;
     };
 
-    if ('promise' in params) {
-      return async () => {
-        const startTime = getCurrentTime();
-        try {
-          const result = await params.promise;
-          return logPerformanceAndReturn(startTime, performance.now(), result);
-        } catch (error) {
-          return logPerformanceAndReturn(startTime, performance.now(), undefined);
-        }
-      };
-    }
-
-    return async (...args: Parameters<T>) => {
+    return (...args: Parameters<T>) => {
       'worklet';
 
       const startTime = getCurrentTime();
+
       try {
-        const fnResult = await params.fn(...args);
-        return logPerformanceAndReturn(startTime, performance.now(), fnResult);
+        const fnResult = fn(...args);
+        if (fnResult instanceof Promise) {
+          return fnResult
+            .then(result => {
+              return logPerformanceAndReturn(startTime, performance.now(), result);
+            })
+            .catch(error => {
+              throw error;
+            });
+        } else {
+          return logPerformanceAndReturn(startTime, performance.now(), fnResult);
+        }
       } catch (error) {
         return logPerformanceAndReturn(startTime, performance.now(), undefined);
       }
