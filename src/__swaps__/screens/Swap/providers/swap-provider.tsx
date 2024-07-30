@@ -676,7 +676,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const isReviewSheetOpen = configProgress.value === NavigationSteps.SHOW_REVIEW || SwapSettings.degenMode.value;
 
     if ((isFetching.value || isLoadingGas) && !isQuoteError) {
-      return { label: fetchingPrices, disabled: (isReviewSheetOpen && isFetching.value) || !quote.value, type: 'hold' as const };
+      const disabled = (isReviewSheetOpen && (isFetching.value || isLoadingGas)) || !quote.value;
+      const buttonType = isReviewSheetOpen ? ('hold' as const) : ('tap' as const);
+      return { label: fetchingPrices, disabled, type: buttonType };
     }
 
     const reviewLabel = SwapSettings.degenMode.value ? holdToSwap : review;
