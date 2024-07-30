@@ -213,6 +213,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       })({
         address: parameters.quote.from,
         provider,
+        timeTracking: {
+          screen: Routes.SWAP,
+          operation: TimeToSignOperation.KeychainRead,
+        },
       });
 
       if (!wallet) {
