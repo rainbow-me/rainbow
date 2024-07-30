@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import { captureEvent, captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
-import { isEmpty, isEqual, isString } from 'lodash';
+import { isEmpty, isEqual, isString, noop } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, StatusBar, View } from 'react-native';
 import { useDebounce } from 'use-debounce';
@@ -389,6 +389,10 @@ export default function SendSheet(props) {
         address: undefined,
         showErrorIfNotLoaded: true,
         provider: currentProvider,
+        timeTracking: {
+          screen: Routes.SEND_SHEET,
+          operation: TimeToSignOperation.Authentication,
+        },
       });
       if (!wallet) return;
 
@@ -436,7 +440,7 @@ export default function SendSheet(props) {
       let nextNonce;
 
       if (isENS && toAddress && (clearRecords || setAddress || transferControl)) {
-        const { nonce } = await transferENS(() => null, {
+        const { nonce } = await transferENS(noop, {
           clearRecords,
           name: ensName,
           records: {
@@ -467,7 +471,11 @@ export default function SendSheet(props) {
       };
 
       try {
-        const signableTransaction = await createSignableTransaction(txDetails);
+        const signableTransaction = await performanceTracking.getState().executeFn({
+          fn: createSignableTransaction,
+          operation: TimeToSignOperation.SignTransaction,
+          screen: Routes.SEND_SHEET,
+        })(txDetails);
         if (!signableTransaction.to) {
           logger.sentry('txDetails', txDetails);
           logger.sentry('signableTransaction', signableTransaction);
@@ -477,7 +485,11 @@ export default function SendSheet(props) {
           Alert.alert(lang.t('wallet.transaction.alert.invalid_transaction'));
           submitSuccess = false;
         } else {
-          const { result: txResult, error } = await sendTransaction({
+          const { result: txResult, error } = await performanceTracking.getState().executeFn({
+            fn: sendTransaction,
+            operation: TimeToSignOperation.BroadcastTransaction,
+            screen: Routes.SEND_SHEET,
+          })({
             existingWallet: wallet,
             provider: currentProvider,
             transaction: signableTransaction,
@@ -561,12 +573,20 @@ export default function SendSheet(props) {
         isHardwareWallet,
       });
 
-      if (submitSuccessful) {
+      const goBackAndNavigate = () => {
         goBack();
         navigate(Routes.WALLET_SCREEN);
         InteractionManager.runAfterInteractions(() => {
           navigate(Routes.PROFILE_SCREEN);
         });
+      };
+
+      if (submitSuccessful) {
+        performanceTracking.getState().executeFn({
+          fn: goBackAndNavigate,
+          screen: Routes.SEND_SHEET,
+          operation: TimeToSignOperation.SheetDismissal,
+        })();
       }
     },
     [amountDetails.assetAmount, goBack, isHardwareWallet, navigate, onSubmit, recipient, selected?.name, selected?.network]

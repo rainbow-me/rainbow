@@ -23,6 +23,7 @@ import { Network } from '@/networks/types';
 import { Hex } from 'viem';
 import { executeENSRap } from '@/raps/actions/ens';
 import store from '@/redux/store';
+import { performanceTracking, TimeToSignOperation } from '@/state/performance/performance';
 
 const NOOP = () => null;
 
@@ -281,10 +282,10 @@ export default function useENSRegistrationActionHandler(
       callback: () => void = NOOP,
       { clearRecords, records, name, setAddress, toAddress, transferControl, wallet: walletOverride }: any
     ) => {
-      const wallet = walletOverride;
+      let wallet = walletOverride;
       if (!wallet) {
         const provider = getProviderForNetwork();
-        const wallet = await loadWallet({
+        wallet = await loadWallet({
           address: undefined,
           provider,
         });
@@ -309,7 +310,11 @@ export default function useENSRegistrationActionHandler(
         transferControl,
       };
 
-      const { nonce: newNonce } = await executeENSRap(wallet, ENSRapActionType.transferENS, transferEnsParameters, callback);
+      const { nonce: newNonce } = await performanceTracking.getState().executeFn({
+        fn: executeENSRap,
+        screen: Routes.SEND_SHEET,
+        operation: TimeToSignOperation.BroadcastTransaction,
+      })(wallet, ENSRapActionType.transferENS, transferEnsParameters, callback);
 
       return { nonce: newNonce };
     },
@@ -331,7 +336,7 @@ export default function useENSRegistrationActionHandler(
   );
 
   return {
-    action: actions[registrationStep] as (...args: any) => void,
+    action: actions[registrationStep],
   };
 }
 
