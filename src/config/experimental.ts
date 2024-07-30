@@ -1,6 +1,6 @@
-import { MMKV } from 'react-native-mmkv';
-import { STORAGE_IDS } from '@/model/mmkv';
 import { IS_TEST } from '@/env';
+import { STORAGE_IDS } from '@/model/mmkv';
+import { MMKV } from 'react-native-mmkv';
 
 /**
  * This file contains flags for enabling features which are still in development.
@@ -27,6 +27,7 @@ export const POINTS_NOTIFICATIONS_TOGGLE = 'PointsNotificationsToggle';
 export const SWAPS_V2 = 'SwapsV2';
 export const DAPP_BROWSER = 'Dapp Browser';
 export const ETH_REWARDS = 'ETH Rewards';
+export const DEGEN_MODE = 'Degen Mode';
 
 /**
  * A developer setting that pushes log lines to an array in-memory so that
@@ -62,6 +63,7 @@ export const defaultConfig: Record<string, ExperimentalValue> = {
   [DAPP_BROWSER]: { settings: true, value: !!IS_TEST },
   [SWAPS_V2]: { settings: true, value: !!IS_TEST },
   [ETH_REWARDS]: { settings: true, value: false },
+  [DEGEN_MODE]: { settings: true, value: false },
 };
 
 const storageKey = 'config';

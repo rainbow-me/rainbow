@@ -21,7 +21,6 @@ import { BrowserTab } from './BrowserTab';
 import { BrowserWorkletsContextProvider, useBrowserWorkletsContext } from './BrowserWorkletsContext';
 import { ProgressBar } from './ProgressBar';
 import { TabViewToolbar } from './TabViewToolbar';
-import { BrowserGestureBlocker } from './components/BrowserGestureBlocker';
 import { calculateScrollPositionToCenterTab, useScreenshotAndScrollTriggers } from './hooks/useScreenshotAndScrollTriggers';
 import { useSmoothScrollView } from './hooks/useSmoothScrollView';
 import { pruneScreenshots } from './screenshots';
@@ -39,20 +38,18 @@ type RouteParams = {
 export const DappBrowser = () => {
   const { isDarkMode } = useColorMode();
   return (
-    <BrowserGestureBlocker>
-      <Box
-        as={Page}
-        height="full"
-        style={[isDarkMode ? styles.rootViewBackground : styles.rootViewBackgroundLight, styles.overflowHidden]}
-        width="full"
-      >
-        <BrowserContextProvider>
-          <BrowserWorkletsContextProvider>
-            <DappBrowserComponent />
-          </BrowserWorkletsContextProvider>
-        </BrowserContextProvider>
-      </Box>
-    </BrowserGestureBlocker>
+    <Box
+      as={Page}
+      height="full"
+      style={[isDarkMode ? styles.rootViewBackground : styles.rootViewBackgroundLight, styles.overflowHidden]}
+      width="full"
+    >
+      <BrowserContextProvider>
+        <BrowserWorkletsContextProvider>
+          <DappBrowserComponent />
+        </BrowserWorkletsContextProvider>
+      </BrowserContextProvider>
+    </Box>
   );
 };
 

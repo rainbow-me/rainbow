@@ -11,9 +11,9 @@ export type GestureHandlerButtonProps = {
   children: React.ReactNode;
   disableButtonPressWrapper?: boolean;
   disabled?: boolean;
-  onPressJS?: (e: ReanimatedEvent<TapGestureHandlerGestureEvent>) => void;
-  onPressStartWorklet?: (e: ReanimatedEvent<TapGestureHandlerGestureEvent>) => void;
-  onPressWorklet?: (e: ReanimatedEvent<TapGestureHandlerGestureEvent>) => void;
+  onPressJS?: (e?: ReanimatedEvent<TapGestureHandlerGestureEvent>) => void;
+  onPressStartWorklet?: (e?: ReanimatedEvent<TapGestureHandlerGestureEvent>) => void;
+  onPressWorklet?: (e?: ReanimatedEvent<TapGestureHandlerGestureEvent>) => void;
   pointerEvents?: ViewProps['pointerEvents'];
   scaleTo?: number;
   style?: StyleProp<ViewStyle> | AnimatedStyle;

@@ -1,9 +1,9 @@
 /* eslint-disable no-nested-ternary */
-import React from 'react';
+import React, { memo } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { borders } from '@/styles';
 import { useTheme } from '@/theme';
-import Animated, { useAnimatedProps, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedProps, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
 import { AnimatedChainImage } from './AnimatedChainImage';
@@ -29,7 +29,7 @@ const smallFallbackIconStyle = {
   position: 'absolute' as ViewStyle['position'],
 };
 
-export const AnimatedSwapCoinIcon = React.memo(function FeedCoinIcon({
+export const AnimatedSwapCoinIcon = memo(function FeedCoinIcon({
   assetType,
   large = true,
   small,
@@ -49,13 +49,16 @@ export const AnimatedSwapCoinIcon = React.memo(function FeedCoinIcon({
 
   const size = small ? 16 : large ? 36 : 32;
 
+  // Shield animated props from unnecessary updates to avoid flicker
+  const coinIconUrl = useDerivedValue(() => asset.value?.icon_url ?? '');
+
   const animatedIconSource = useAnimatedProps(() => {
     return {
       source: {
         ...DEFAULT_FASTER_IMAGE_CONFIG,
         borderRadius: IS_ANDROID ? (size / 2) * PIXEL_RATIO : undefined,
         transitionDuration: 0,
-        url: asset.value?.icon_url ?? '',
+        url: coinIconUrl.value,
       },
     };
   });
