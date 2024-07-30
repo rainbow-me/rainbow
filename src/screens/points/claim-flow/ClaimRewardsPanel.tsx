@@ -262,7 +262,10 @@ const ClaimingRewards = ({
       } satisfies RapSwapActionParameters<'claimBridge'>;
 
       const provider = getProviderForNetwork(Network.optimism);
-      const wallet = await loadWallet(address, false, provider);
+      const wallet = await loadWallet({
+        address,
+        provider,
+      });
       if (!wallet) {
         // Biometrics auth failure (retry possible)
         setClaimStatus('error');

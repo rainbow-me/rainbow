@@ -61,6 +61,7 @@ import { getNetworkObj } from '@/networks';
 import { IS_ANDROID } from '@/env';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { performanceTracking, TimeToSignOperation } from '@/state/performance/performance';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -376,25 +377,30 @@ export const SendConfirmationSheet = () => {
 
   const insufficientEth = isSufficientGas === false && isValidGas;
 
-  const handleSubmit = useCallback(async () => {
-    if (!canSubmit) return;
-    try {
-      setIsAuthorizing(true);
-      if (isENS) {
-        const clearRecords = checkboxes.some(({ checked, id }) => checked && id === 'clear-records');
-        const setAddress = checkboxes.some(({ checked, id }) => checked && id === 'set-address');
-        const transferControl = checkboxes.some(({ checked, id }) => checked && id === 'transfer-control');
-        await callback({
-          ens: { clearRecords, setAddress, transferControl },
-        });
-      } else {
-        await callback();
+  const handleSubmit = performanceTracking.getState().executeFn({
+    fn: async () => {
+      if (!canSubmit) return;
+      try {
+        setIsAuthorizing(true);
+        if (isENS) {
+          const clearRecords = checkboxes.some(({ checked, id }) => checked && id === 'clear-records');
+          const setAddress = checkboxes.some(({ checked, id }) => checked && id === 'set-address');
+          const transferControl = checkboxes.some(({ checked, id }) => checked && id === 'transfer-control');
+          callback({
+            ens: { clearRecords, setAddress, transferControl },
+          });
+        } else {
+          callback();
+        }
+      } catch (e) {
+        logger.sentry('TX submit failed', e);
+        setIsAuthorizing(false);
       }
-    } catch (e) {
-      logger.sentry('TX submit failed', e);
-      setIsAuthorizing(false);
-    }
-  }, [callback, canSubmit, checkboxes, isENS]);
+    },
+    operation: TimeToSignOperation.CallToAction,
+    screen: Routes.SEND_SHEET,
+    startOfOperation: true,
+  });
 
   const existingAccount = useMemo(() => {
     let existingAcct = null;

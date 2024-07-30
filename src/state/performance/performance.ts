@@ -6,13 +6,15 @@ import { runOnJS } from 'react-native-reanimated';
 
 type AnyFunction = (...args: any[]) => any;
 
-interface ExecuteFnParams<S extends Screen, T extends AnyFunction> {
+export interface ExecuteFnParams<S extends Screen, T extends AnyFunction> {
   screen: S;
   operation: OperationForScreen<S>;
   fn: T;
   startOfOperation?: boolean;
   endOfOperation?: boolean;
 }
+
+export type ExecuteFnParamsWithoutFn<S extends Screen> = Omit<ExecuteFnParams<S, AnyFunction>, 'fn'>;
 
 interface PerformanceTrackingState {
   elapsedTime: number;
@@ -28,7 +30,7 @@ function logPerformance<S extends Screen>({
   startTime,
   endTime,
   endOfOperation,
-}: Omit<ExecuteFnParams<S, AnyFunction> & { startTime: number; endTime: number }, 'fn'>) {
+}: ExecuteFnParamsWithoutFn<S> & { startTime: number; endTime: number }) {
   const timeToCompletion = endTime - startTime;
   const log: PerformanceLog<S> = {
     completedAt: Date.now(),

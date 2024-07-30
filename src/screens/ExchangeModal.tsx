@@ -402,7 +402,10 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
       try {
         // load the correct network provider for the wallet
         const provider = getProviderForNetwork(currentNetwork);
-        let wallet = await loadWallet(accountAddress, false, provider);
+        let wallet = await loadWallet({
+          address: undefined,
+          provider,
+        });
         if (!wallet) {
           setIsAuthorizing(false);
           logger.sentry(`aborting ${type} due to missing wallet`);

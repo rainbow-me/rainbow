@@ -19,7 +19,6 @@ export type ScreenOperations = Partial<{
   [Routes.SWAP]: TimeToSignOperation;
   [Routes.SEND_SHEET]: TimeToSignOperation;
   [Routes.DAPP_BROWSER]: TimeToSignOperation;
-  [Routes.WALLET_CONNECT_APPROVAL_SHEET]: TimeToSignOperation;
 }>;
 
 export type OperationForScreen<S extends Screen> = S extends keyof ScreenOperations

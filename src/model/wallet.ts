@@ -57,8 +57,7 @@ import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { Signer } from '@ethersproject/abstract-signer';
 import { sanitizeTypedData } from '@/utils/signingUtils';
 import { Network } from '@/helpers';
-import { performanceTracking, TimeToSignOperation } from '@/state/performance/performance';
-import Routes from '@/navigation/routesNames';
+import { ExecuteFnParamsWithoutFn, performanceTracking, Screen } from '@/state/performance/performance';
 
 export type EthereumPrivateKey = string;
 type EthereumMnemonic = string;
@@ -259,11 +258,17 @@ export const walletInit = async (
   return { isNew, walletAddress };
 };
 
-export const loadWalletWithTimeTracking = async (
-  address?: EthereumAddress | undefined,
-  showErrorIfNotLoaded = true,
-  provider?: Provider
-): Promise<null | Wallet | LedgerSigner> => {
+export const loadWallet = async <S extends Screen>({
+  address,
+  showErrorIfNotLoaded = false,
+  provider = web3Provider,
+  timeTracking,
+}: {
+  address: EthereumAddress | undefined;
+  showErrorIfNotLoaded?: boolean;
+  provider?: Provider;
+  timeTracking?: ExecuteFnParamsWithoutFn<S>;
+}): Promise<null | Wallet | LedgerSigner> => {
   const addressToUse = address || (await loadAddress());
   if (!addressToUse) {
     return null;
@@ -274,46 +279,16 @@ export const loadWalletWithTimeTracking = async (
   const selectedWallet = findWalletWithAccount(wallets!, addressToUse);
   const isHardwareWallet = selectedWallet?.type === walletTypes.bluetooth;
 
-  const privateKey = await performanceTracking.getState().executeFn({
-    fn: loadPrivateKey,
-    screen: Routes.SWAP,
-    operation: TimeToSignOperation.Authentication,
-  })(addressToUse, isHardwareWallet);
-  if (privateKey === -1 || privateKey === -2) {
-    return null;
-  }
-  if (isHardwareWalletKey(privateKey)) {
-    const index = privateKey?.split('/')[1];
-    const deviceId = privateKey?.split('/')[0];
-    if (typeof index !== undefined && provider && deviceId) {
-      return new LedgerSigner(provider, getHdPath({ type: WalletLibraryType.ledger, index: Number(index) }), deviceId);
-    }
-  } else if (privateKey) {
-    // @ts-ignore
-    return new Wallet(privateKey, provider || web3Provider);
-  }
-  if (ios && showErrorIfNotLoaded) {
-    showWalletErrorAlert();
-  }
-  return null;
-};
-
-export const loadWallet = async (
-  address?: EthereumAddress | undefined,
-  showErrorIfNotLoaded = true,
-  provider?: Provider
-): Promise<null | Wallet | LedgerSigner> => {
-  const addressToUse = address || (await loadAddress());
-  if (!addressToUse) {
-    return null;
+  let privateKey: Awaited<ReturnType<typeof loadPrivateKey>>;
+  if (timeTracking) {
+    privateKey = await performanceTracking.getState().executeFn({
+      ...timeTracking,
+      fn: loadPrivateKey,
+    })(addressToUse, isHardwareWallet);
+  } else {
+    privateKey = await loadPrivateKey(addressToUse, isHardwareWallet);
   }
 
-  // checks if the address is a hardware wallet for proper handling
-  const { wallets } = store.getState().wallets;
-  const selectedWallet = findWalletWithAccount(wallets!, addressToUse);
-  const isHardwareWallet = selectedWallet?.type === walletTypes.bluetooth;
-
-  const privateKey = await loadPrivateKey(addressToUse, isHardwareWallet);
   if (privateKey === -1 || privateKey === -2) {
     return null;
   }
@@ -344,7 +319,13 @@ export const sendTransaction = async ({
   let isHardwareWallet = false;
   try {
     logger.info('wallet: sending transaction', { transaction });
-    const wallet = existingWallet || (await loadWallet(undefined, true, provider));
+    const wallet =
+      existingWallet ||
+      (await loadWallet({
+        address: undefined,
+        showErrorIfNotLoaded: true,
+        provider,
+      }));
     // have to check inverse or we trigger unwanted BT permissions requests
     if (!(wallet instanceof Wallet)) {
       isHardwareWallet = true;
@@ -388,7 +369,13 @@ export const signTransaction = async ({
   let isHardwareWallet = false;
   try {
     logger.info('wallet: signing transaction');
-    const wallet = existingWallet || (await loadWallet(undefined, true, provider));
+    const wallet =
+      existingWallet ||
+      (await loadWallet({
+        address: undefined,
+        showErrorIfNotLoaded: true,
+        provider,
+      }));
     // have to check inverse or we trigger unwanted BT permissions requests
     if (!(wallet instanceof Wallet)) {
       isHardwareWallet = true;
@@ -430,7 +417,13 @@ export const signPersonalMessage = async (
   let isHardwareWallet = false;
   try {
     logger.info('wallet: signing personal message', { message });
-    const wallet = existingWallet || (await loadWallet(undefined, true, provider));
+    const wallet =
+      existingWallet ||
+      (await loadWallet({
+        address: undefined,
+        showErrorIfNotLoaded: true,
+        provider,
+      }));
     // have to check inverse or we trigger unwanted BT permissions requests
     if (!(wallet instanceof Wallet)) {
       isHardwareWallet = true;
@@ -474,7 +467,13 @@ export const signTypedDataMessage = async (
   let isHardwareWallet = false;
   try {
     logger.info('wallet: signing typed data message', { message });
-    const wallet = existingWallet || (await loadWallet(undefined, true, provider));
+    const wallet =
+      existingWallet ||
+      (await loadWallet({
+        address: undefined,
+        showErrorIfNotLoaded: true,
+        provider,
+      }));
     if (!wallet) return null;
     // have to check inverse or we trigger unwanted BT permissions requests
     if (!(wallet instanceof Wallet)) {

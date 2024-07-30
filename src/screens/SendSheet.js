@@ -64,6 +64,7 @@ import { getNetworkObj } from '@/networks';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { getNextNonce } from '@/state/nonces';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import { performanceTracking, TimeToSignOperation } from '@/state/performance/performance';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
@@ -380,7 +381,15 @@ export default function SendSheet(props) {
 
   const onSubmit = useCallback(
     async ({ ens: { setAddress, transferControl, clearRecords } = {} } = {}) => {
-      const wallet = await loadWallet(undefined, true, currentProvider);
+      const wallet = await performanceTracking.getState().executeFn({
+        fn: loadWallet,
+        operation: TimeToSignOperation.KeychainRead,
+        screen: Routes.SEND_SHEET,
+      })({
+        address: undefined,
+        showErrorIfNotLoaded: true,
+        provider: currentProvider,
+      });
       if (!wallet) return;
 
       const validTransaction = isValidAddress && amountDetails.isSufficientBalance && isSufficientGas && isValidGas;

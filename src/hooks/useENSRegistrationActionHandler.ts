@@ -92,7 +92,10 @@ export default function useENSRegistrationActionHandler(
       updateAvatarsOnNextBlock.current = true;
 
       const provider = getProviderForNetwork();
-      const wallet = await loadWallet(undefined, false, provider);
+      const wallet = await loadWallet({
+        address: undefined,
+        provider,
+      });
       if (!wallet) {
         return;
       }
@@ -148,7 +151,10 @@ export default function useENSRegistrationActionHandler(
       const { name, duration } = registrationParameters as RegistrationParameters;
 
       const provider = getProviderForNetwork();
-      const wallet = await loadWallet(undefined, false, provider);
+      const wallet = await loadWallet({
+        address: undefined,
+        provider,
+      });
       if (!wallet) {
         return;
       }
@@ -184,7 +190,10 @@ export default function useENSRegistrationActionHandler(
       const { name } = registrationParameters as RegistrationParameters;
 
       const provider = getProviderForNetwork();
-      const wallet = await loadWallet(undefined, false, provider);
+      const wallet = await loadWallet({
+        address: undefined,
+        provider,
+      });
       if (!wallet) {
         return;
       }
@@ -209,7 +218,10 @@ export default function useENSRegistrationActionHandler(
       const { name } = registrationParameters as RegistrationParameters;
 
       const provider = getProviderForNetwork();
-      const wallet = await loadWallet(undefined, false, provider);
+      const wallet = await loadWallet({
+        address: undefined,
+        provider,
+      });
       if (!wallet) {
         return;
       }
@@ -231,7 +243,10 @@ export default function useENSRegistrationActionHandler(
   const setRecordsAction = useCallback(
     async (callback: () => void = NOOP) => {
       const provider = getProviderForNetwork();
-      const wallet = await loadWallet(undefined, false, provider);
+      const wallet = await loadWallet({
+        address: undefined,
+        provider,
+      });
       if (!wallet) {
         return;
       }
@@ -266,10 +281,13 @@ export default function useENSRegistrationActionHandler(
       callback: () => void = NOOP,
       { clearRecords, records, name, setAddress, toAddress, transferControl, wallet: walletOverride }: any
     ) => {
-      let wallet = walletOverride;
+      const wallet = walletOverride;
       if (!wallet) {
         const provider = getProviderForNetwork();
-        wallet = await loadWallet(undefined, false, provider);
+        const wallet = await loadWallet({
+          address: undefined,
+          provider,
+        });
       }
       if (!wallet) {
         return;

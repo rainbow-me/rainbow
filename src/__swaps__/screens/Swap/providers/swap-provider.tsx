@@ -34,7 +34,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useAccountSettings } from '@/hooks';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
-import { loadWalletWithTimeTracking } from '@/model/wallet';
+import { loadWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { RainbowNetworkByChainId, getNetworkObj } from '@/networks';
@@ -207,10 +207,13 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }
 
       const wallet = await performanceTracking.getState().executeFn({
-        fn: loadWalletWithTimeTracking,
+        fn: loadWallet,
         screen: Routes.SWAP,
         operation: TimeToSignOperation.KeychainRead,
-      })(parameters.quote.from, false, provider);
+      })({
+        address: parameters.quote.from,
+        provider,
+      });
 
       if (!wallet) {
         isSwapping.value = false;

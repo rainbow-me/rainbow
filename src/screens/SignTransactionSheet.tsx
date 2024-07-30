@@ -493,7 +493,7 @@ export const SignTransactionSheet = () => {
         closeScreen(true);
       }
     },
-    [accountInfo.isHardwareWallet, closeScreen, onCancelCallback, transactionDetails?.payload?.method]
+    [accountInfo.isHardwareWallet, closeScreen, onCancelCallback, source, transactionDetails?.payload?.method]
   );
 
   const handleSignMessage = useCallback(async () => {
@@ -505,7 +505,11 @@ export const SignTransactionSheet = () => {
       return;
     }
 
-    const existingWallet = await loadWallet(accountInfo.address, true, provider);
+    const existingWallet = await loadWallet({
+      address: accountInfo.address,
+      showErrorIfNotLoaded: true,
+      provider,
+    });
     if (!existingWallet) {
       return;
     }
@@ -612,7 +616,11 @@ export const SignTransactionSheet = () => {
       if (!provider) {
         return;
       }
-      const existingWallet = await loadWallet(accountInfo.address, true, provider);
+      const existingWallet = await loadWallet({
+        address: accountInfo.address,
+        showErrorIfNotLoaded: true,
+        provider,
+      });
       if (!existingWallet) {
         return;
       }
