@@ -111,15 +111,13 @@ interface SwapContextType {
   SwapNavigation: ReturnType<typeof useSwapNavigation>;
   SwapWarning: ReturnType<typeof useSwapWarning>;
 
-  confirmButtonProps: Readonly<
-    SharedValue<{
-      label: string;
-      icon?: string;
-      disabled?: boolean;
-      opacity?: number;
-      type?: 'tap' | 'hold';
-    }>
-  >;
+  confirmButtonProps: DerivedValue<{
+    label: string;
+    icon?: string;
+    disabled?: boolean;
+    opacity?: number;
+    type: 'tap' | 'hold';
+  }>;
   confirmButtonIconStyle: StyleProp<TextStyle>;
 
   hasEnoughFundsForGas: SharedValue<boolean | undefined>;
@@ -630,20 +628,20 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
   const confirmButtonProps = useDerivedValue(() => {
     if (isSwapping.value) {
-      return { label: swapping, disabled: true };
+      return { label: swapping, disabled: true, type: 'hold' as const };
     }
 
     if (configProgress.value === NavigationSteps.SHOW_GAS) {
-      return { label: done, disabled: false };
+      return { label: done, disabled: false, type: 'tap' as const };
     }
 
     if (configProgress.value === NavigationSteps.SHOW_SETTINGS) {
-      return { label: done, disabled: false };
+      return { label: done, disabled: false, type: 'tap' as const };
     }
 
     const hasSelectedAssets = internalSelectedInputAsset.value && internalSelectedOutputAsset.value;
     if (!hasSelectedAssets) {
-      return { label: selectToken, disabled: true };
+      return { label: selectToken, disabled: true, type: 'hold' as const };
     }
 
     const isInputZero = equalWorklet(SwapInputController.inputValues.value.inputAmount, 0);
@@ -654,7 +652,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const userHasNotMovedSlider = SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0;
 
     if (userHasNotEnteredAmount || userHasNotMovedSlider) {
-      return { label: enterAmount, disabled: true, opacity: 1 };
+      return { label: enterAmount, disabled: true, opacity: 1, type: 'hold' as const };
     }
 
     if (
@@ -662,7 +660,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         SwapWarning.swapWarning.value.type
       )
     ) {
-      return { icon: '􀕹', label: review, disabled: true };
+      return { icon: '􀕹', label: review, disabled: true, type: 'hold' as const };
     }
 
     const sellAsset = internalSelectedInputAsset.value;
@@ -670,7 +668,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       sellAsset && lessThanOrEqualToWorklet(SwapInputController.inputValues.value.inputAmount, sellAsset.maxSwappableAmount);
 
     if (!enoughFundsForSwap) {
-      return { label: insufficientFunds, disabled: true };
+      return { label: insufficientFunds, disabled: true, type: 'hold' as const };
     }
 
     const isQuoteError = quote.value && 'error' in quote.value;
@@ -678,12 +676,14 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const isReviewSheetOpen = configProgress.value === NavigationSteps.SHOW_REVIEW || SwapSettings.degenMode.value;
 
     if ((isFetching.value || isLoadingGas) && !isQuoteError) {
-      return { label: fetchingPrices, disabled: (isReviewSheetOpen && isFetching.value) || !quote.value };
+      return { label: fetchingPrices, disabled: (isReviewSheetOpen && isFetching.value) || !quote.value, type: 'hold' as const };
     }
+
+    const reviewLabel = SwapSettings.degenMode.value ? holdToSwap : review;
 
     if (isQuoteError) {
       const icon = isReviewSheetOpen ? undefined : '􀕹';
-      return { icon, label: isReviewSheetOpen ? quoteError : review, disabled: true };
+      return { icon, label: isReviewSheetOpen ? quoteError : reviewLabel, disabled: true, type: 'hold' as const };
     }
 
     if (!hasEnoughFundsForGas.value) {
@@ -691,6 +691,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return {
         label: `${insufficient} ${nativeCurrency.symbol}`,
         disabled: true,
+        type: 'hold' as const,
       };
     }
 
@@ -698,7 +699,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return { icon: '􀎽', label: holdToSwap, disabled: false, type: 'hold' as const };
     }
 
-    return { icon: '􀕹', label: review, disabled: false };
+    return { icon: '􀕹', label: reviewLabel, disabled: false, type: 'tap' as const };
   });
 
   const confirmButtonIconStyle = useAnimatedStyle(() => {
