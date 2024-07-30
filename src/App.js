@@ -57,7 +57,6 @@ import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { initializeRemoteConfig } from '@/model/remoteConfig';
 import { IS_DEV } from './env';
 import { checkIdentifierOnLaunch } from './model/backup';
-import { performanceTrackingStore } from './state/performanceTrackingStore/performanceTrackingStore';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -126,8 +125,6 @@ class OldApp extends Component {
      */
     initWalletConnectListeners();
 
-    performanceTrackingStore.getState().startInterval();
-
     PerformanceTracking.finishMeasuring(PerformanceMetrics.loadRootAppComponent);
     analyticsV2.track(analyticsV2.event.applicationDidMount);
   }
@@ -167,8 +164,6 @@ class OldApp extends Component {
     // Restore WC connectors when going from BG => FG
     if (this.state.appState === 'background' && nextAppState === 'active') {
       store.dispatch(walletConnectLoadState());
-    } else if (this.state.appState === 'active' && (nextAppState === 'background' || nextAppState === 'inactive')) {
-      await performanceTrackingStore.getState().flushLogs();
     }
     this.setState({ appState: nextAppState });
 

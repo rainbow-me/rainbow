@@ -22,8 +22,13 @@ import { createUnlockAndCrosschainSwapRap } from './unlockAndCrosschainSwap';
 import { createClaimAndBridgeRap } from './claimAndBridge';
 import { createUnlockAndSwapRap } from './unlockAndSwap';
 import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
+import { TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
+import Routes from '@/navigation/routesNames';
 
-export function createSwapRapByType<T extends RapTypes>(type: T, swapParameters: RapSwapActionParameters<T>) {
+export function createSwapRapByType<T extends RapTypes>(
+  type: T,
+  swapParameters: RapSwapActionParameters<T>
+): Promise<{ actions: RapAction<RapActionTypes>[] }> {
   switch (type) {
     case 'claimBridge':
       return createClaimAndBridgeRap(swapParameters as RapSwapActionParameters<'claimBridge'>);
@@ -32,7 +37,7 @@ export function createSwapRapByType<T extends RapTypes>(type: T, swapParameters:
     case 'swap':
       return createUnlockAndSwapRap(swapParameters as RapSwapActionParameters<'swap'>);
     default:
-      return { actions: [] };
+      return Promise.resolve({ actions: [] });
   }
 }
 
@@ -125,50 +130,45 @@ export const walletExecuteRap = async (
   type: RapTypes,
   parameters: RapSwapActionParameters<'swap' | 'crosschainSwap' | 'claimBridge'>
 ): Promise<{ nonce: number | undefined; errorMessage: string | null }> => {
-  const rap: Rap = await createSwapRapByType(type, parameters);
+  // NOTE: We don't care to track claimBridge raps
+  const rap =
+    type === 'claimBridge'
+      ? await createSwapRapByType(type, parameters)
+      : await performanceTracking.getState().executeFn({
+          fn: createSwapRapByType,
+          screen: Routes.SWAP,
+          operation: TimeToSignOperation.CreateRap,
+        })(type, parameters);
 
   const { actions } = rap;
   const rapName = getRapFullName(rap.actions);
   let nonce = parameters?.nonce;
   let errorMessage = null;
+
   if (actions.length) {
-    const firstAction = actions[0];
-    const actionParams = {
-      action: firstAction,
-      wallet,
-      rap,
-      index: 0,
-      baseNonce: nonce,
-      rapName,
-      flashbots: parameters?.flashbots,
-      gasParams: parameters?.gasParams,
-      gasFeeParamsBySpeed: parameters?.gasFeeParamsBySpeed,
-    };
+    for (let index = 0; index < actions.length; index++) {
+      const action = actions[index];
+      const actionParams = {
+        action,
+        wallet,
+        rap,
+        index,
+        baseNonce: nonce,
+        rapName,
+        flashbots: parameters?.flashbots,
+        gasParams: parameters?.gasParams,
+        gasFeeParamsBySpeed: parameters?.gasFeeParamsBySpeed,
+      };
 
-    const { baseNonce, errorMessage: error, hash } = await executeAction(actionParams);
-
-    if (typeof baseNonce === 'number') {
+      const { hash, baseNonce, errorMessage: error } = await executeAction(actionParams);
       actions.length > 1 && hash && (await waitForNodeAck(hash, wallet.provider));
-      for (let index = 1; index < actions.length; index++) {
-        const action = actions[index];
-        const actionParams = {
-          action,
-          wallet,
-          rap,
-          index,
-          baseNonce,
-          rapName,
-          flashbots: parameters?.flashbots,
-          gasParams: parameters?.gasParams,
-          gasFeeParamsBySpeed: parameters?.gasFeeParamsBySpeed,
-        };
-        const { hash } = await executeAction(actionParams);
-        hash && (await waitForNodeAck(hash, wallet.provider));
+
+      if (typeof baseNonce === 'number') {
+        nonce = baseNonce;
       }
-      nonce = baseNonce + actions.length - 1;
-    } else {
       errorMessage = error;
     }
   }
+
   return { nonce, errorMessage };
 };

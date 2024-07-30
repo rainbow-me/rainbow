@@ -57,6 +57,8 @@ import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { Signer } from '@ethersproject/abstract-signer';
 import { sanitizeTypedData } from '@/utils/signingUtils';
 import { Network } from '@/helpers';
+import { performanceTracking, TimeToSignOperation } from '@/state/performance/performance';
+import Routes from '@/navigation/routesNames';
 
 export type EthereumPrivateKey = string;
 type EthereumMnemonic = string;
@@ -255,6 +257,45 @@ export const walletInit = async (
   }
 
   return { isNew, walletAddress };
+};
+
+export const loadWalletWithTimeTracking = async (
+  address?: EthereumAddress | undefined,
+  showErrorIfNotLoaded = true,
+  provider?: Provider
+): Promise<null | Wallet | LedgerSigner> => {
+  const addressToUse = address || (await loadAddress());
+  if (!addressToUse) {
+    return null;
+  }
+
+  // checks if the address is a hardware wallet for proper handling
+  const { wallets } = store.getState().wallets;
+  const selectedWallet = findWalletWithAccount(wallets!, addressToUse);
+  const isHardwareWallet = selectedWallet?.type === walletTypes.bluetooth;
+
+  const privateKey = await performanceTracking.getState().executeFn({
+    fn: loadPrivateKey,
+    screen: Routes.SWAP,
+    operation: TimeToSignOperation.Authentication,
+  })(addressToUse, isHardwareWallet);
+  if (privateKey === -1 || privateKey === -2) {
+    return null;
+  }
+  if (isHardwareWalletKey(privateKey)) {
+    const index = privateKey?.split('/')[1];
+    const deviceId = privateKey?.split('/')[0];
+    if (typeof index !== undefined && provider && deviceId) {
+      return new LedgerSigner(provider, getHdPath({ type: WalletLibraryType.ledger, index: Number(index) }), deviceId);
+    }
+  } else if (privateKey) {
+    // @ts-ignore
+    return new Wallet(privateKey, provider || web3Provider);
+  }
+  if (ios && showErrorIfNotLoaded) {
+    showWalletErrorAlert();
+  }
+  return null;
 };
 
 export const loadWallet = async (

@@ -11,7 +11,7 @@ import { Network } from '@/networks/types';
 import { RapSwapActionParameters } from '@/raps/references';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
-import { AnyPerformanceLog } from './operations';
+import { AnyPerformanceLog, Screen } from '../state/performance/operations';
 
 /**
  * All events, used by `analytics.track()`
@@ -149,6 +149,7 @@ export const event = {
   browserTrendingDappClicked: 'browser.trending_dapp_pressed',
 
   performanceTimeToSign: 'performance.time_to_sign',
+  performanceTimeToSignOperation: 'performance.time_to_sign.operation',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -562,5 +563,11 @@ export type EventProperties = {
     index: number;
   };
 
-  [event.performanceTimeToSign]: AnyPerformanceLog;
+  [event.performanceTimeToSign]: {
+    screen: Screen;
+    completedAt: number;
+    elapsedTime: number;
+  };
+
+  [event.performanceTimeToSignOperation]: AnyPerformanceLog;
 };
