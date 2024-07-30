@@ -57,8 +57,8 @@ export function useLedgerImport({
 
     const newObserver = TransportBLE.observeState({
       // havnt seen complete or error fire yet but its in the docs so keeping for reporting purposes
-      complete: (e: any) => {
-        logger.debug('[useLedgerImport]: Observer complete', { e }, DebugContext.ledger);
+      complete: () => {
+        logger.debug('[useLedgerImport]: Observer complete', {}, DebugContext.ledger);
       },
       error: (e: any) => {
         logger.debug('[useLedgerImport]: Observer error ', { e }, DebugContext.ledger);
