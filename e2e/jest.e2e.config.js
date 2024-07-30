@@ -4,7 +4,6 @@ const { pathsToModuleNameMapper } = require('ts-jest');
 const { compilerOptions } = require('../tsconfig');
 
 module.exports = {
-  cache: false, // Disable cache to ensure accurate results on reruns
   setupFilesAfterEnv: ['./init.js'],
   testEnvironment: './environment',
 
