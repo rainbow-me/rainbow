@@ -19,7 +19,7 @@ module.exports = {
     },
     'android.emulator': {
       type: 'android.emulator',
-      device: { avdName: 'Pixel_7_Pro_API_34' },
+      device: { avdName: 'Pixel_7_Pro_API_VanillaIceCream' },
     },
   },
   apps: {
