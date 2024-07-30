@@ -2,7 +2,7 @@ import chroma from 'chroma-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import Animated, { SharedValue, runOnJS, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
-import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
+import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity, opacityWorklet } from '@/__swaps__/utils/swaps';
 import { SmoothPager, usePagerNavigation } from '@/components/SmoothPager/SmoothPager';
@@ -1012,7 +1012,7 @@ const ConnectButton = React.memo(function ControlPanelButton({
   }, [isConnected, onConnect, onDisconnect]);
 
   return (
-    <GestureHandlerV1Button
+    <GestureHandlerButton
       buttonPressWrapperStyleIOS={controlPanelStyles.connectButtonContainer}
       onPressWorklet={handlePress}
       pointerEvents="auto"
@@ -1035,7 +1035,7 @@ const ConnectButton = React.memo(function ControlPanelButton({
           </Bleed>
         </Stack>
       </Box>
-    </GestureHandlerV1Button>
+    </GestureHandlerButton>
   );
 });
 

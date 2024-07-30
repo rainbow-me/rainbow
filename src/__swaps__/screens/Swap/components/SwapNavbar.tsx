@@ -1,20 +1,33 @@
 import React from 'react';
-import { StyleSheet, /* Text as RNText, */ Pressable } from 'react-native';
+import { StyleSheet, Pressable } from 'react-native';
 import Animated, { useDerivedValue } from 'react-native-reanimated';
 
 import { ButtonPressAnimation } from '@/components/animations';
 import { ContactAvatar } from '@/components/contacts';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { Navbar } from '@/components/navbar/Navbar';
-import { AnimatedText, Box, Inset, globalColors, useColorMode } from '@/design-system';
+import {
+  AnimatedText,
+  Bleed,
+  Box,
+  IconContainer,
+  Inset,
+  Text,
+  TextShadow,
+  globalColors,
+  useColorMode,
+  useForegroundColor,
+} from '@/design-system';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { useAccountProfile } from '@/hooks';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { safeAreaInsetValues } from '@/utils';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { IS_ANDROID, IS_IOS } from '@/env';
-import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
+import { opacity } from '@/__swaps__/utils/swaps';
+import { GestureHandlerButton } from './GestureHandlerButton';
 
 const SWAP_TITLE_LABEL = i18n.t(i18n.l.swap.modal_types.swap);
 const BRIDGE_TITLE_LABEL = i18n.t(i18n.l.swap.modal_types.bridge);
@@ -24,10 +37,10 @@ export function SwapNavbar() {
   const { isDarkMode } = useColorMode();
   const { navigate, goBack } = useNavigation();
 
-  const { AnimatedSwapStyles, swapInfo } = useSwapContext();
+  const { AnimatedSwapStyles, SwapNavigation, configProgress, swapInfo } = useSwapContext();
 
-  // const separatorSecondary = useForegroundColor('separatorSecondary');
-  // const separatorTertiary = useForegroundColor('separatorTertiary');
+  const separatorSecondary = useForegroundColor('separatorSecondary');
+  const separatorTertiary = useForegroundColor('separatorTertiary');
 
   const swapOrBridgeLabel = useDerivedValue(() => {
     return swapInfo.value.isBridging ? BRIDGE_TITLE_LABEL : SWAP_TITLE_LABEL;
@@ -61,54 +74,54 @@ export function SwapNavbar() {
       <Navbar
         hasStatusBarInset={IS_IOS}
         leftComponent={
-          <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8}>
-            {accountImage ? (
-              <ImageAvatar image={accountImage} marginRight={10} size="header" />
-            ) : (
-              <ContactAvatar color={accountColor} marginRight={10} size="small" value={accountSymbol} />
-            )}
-          </ButtonPressAnimation>
+          <Bleed space="10px">
+            <ButtonPressAnimation onPress={onChangeWallet} scaleTo={0.8} style={{ padding: 10 }}>
+              {accountImage ? (
+                <ImageAvatar image={accountImage} marginRight={10} size="header" />
+              ) : (
+                <ContactAvatar color={accountColor} marginRight={10} size="small" value={accountSymbol} />
+              )}
+            </ButtonPressAnimation>
+          </Bleed>
         }
-        /**
-         * TODO: Bring this back once we know what will go on the settings panel
-         */
-        // rightComponent={
-        //   <ButtonPressAnimation
-        //     onPress={() => {
-        //       // TODO: implement navigation to settings sheet
-        //     }}
-        //     scaleTo={0.8}
-        //   >
-        //     <Box
-        //       alignItems="center"
-        //       justifyContent="center"
-        //       style={[
-        //         styles.headerButton,
-        //         {
-        //           backgroundColor: isDarkMode ? separatorSecondary : opacity(separatorSecondary, 0.03),
-        //           borderColor: isDarkMode ? separatorTertiary : opacity(separatorTertiary, 0.01),
-        //         },
-        //       ]}
-        //     >
-        //       <IconContainer opacity={0.8} size={34}>
-        //         <Bleed space={isDarkMode ? '12px' : undefined}>
-        //           <RNText style={isDarkMode ? styles.headerTextShadow : undefined}>
-        //             <Text
-        //               align="center"
-        //               color={isDarkMode ? 'label' : 'labelSecondary'}
-        //               size="icon 17px"
-        //               style={{ lineHeight: IS_IOS ? 33 : 17 }}
-        //               weight="regular"
-        //             >
-        //               􀣌
-        //             </Text>
-        //           </RNText>
-        //         </Bleed>
-        //       </IconContainer>
-        //     </Box>
-        //   </ButtonPressAnimation>
-        // }
-        rightComponent={null}
+        rightComponent={
+          <Bleed space="10px">
+            <GestureHandlerButton
+              onPressWorklet={() => {
+                'worklet';
+                if (configProgress.value !== NavigationSteps.SHOW_SETTINGS) {
+                  SwapNavigation.handleShowSettings();
+                } else {
+                  SwapNavigation.handleDismissSettings();
+                }
+              }}
+              scaleTo={0.8}
+              style={{ padding: 10 }}
+            >
+              <Box
+                alignItems="center"
+                justifyContent="center"
+                style={[
+                  styles.headerButton,
+                  {
+                    backgroundColor: isDarkMode ? separatorSecondary : opacity(separatorSecondary, 0.03),
+                    borderColor: isDarkMode ? separatorTertiary : opacity(separatorTertiary, 0.01),
+                  },
+                ]}
+              >
+                <IconContainer opacity={0.8} size={34}>
+                  <Bleed space={isDarkMode ? '12px' : undefined}>
+                    <TextShadow blur={6} color={globalColors.grey100} shadowOpacity={0.2} y={2}>
+                      <Text align="center" color={isDarkMode ? 'label' : 'labelSecondary'} size="icon 17px" weight="regular">
+                        􀜊
+                      </Text>
+                    </TextShadow>
+                  </Bleed>
+                </IconContainer>
+              </Box>
+            </GestureHandlerButton>
+          </Bleed>
+        }
         titleComponent={
           <Inset bottom={{ custom: IS_IOS ? 5.5 : 14 }}>
             <AnimatedText align="center" color="label" size="20pt" weight="heavy">
@@ -121,17 +134,11 @@ export function SwapNavbar() {
   );
 }
 
-// export const styles = StyleSheet.create({
-//   headerButton: {
-//     borderRadius: 18,
-//     borderWidth: THICK_BORDER_WIDTH,
-//     height: 36,
-//     width: 36,
-//   },
-//   headerTextShadow: {
-//     padding: 12,
-//     textShadowColor: 'rgba(0, 0, 0, 0.2)',
-//     textShadowOffset: { width: 0, height: 2 },
-//     textShadowRadius: 6,
-//   },
-// });
+export const styles = StyleSheet.create({
+  headerButton: {
+    borderRadius: 18,
+    borderWidth: THICK_BORDER_WIDTH,
+    height: 36,
+    width: 36,
+  },
+});

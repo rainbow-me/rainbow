@@ -8,7 +8,7 @@ import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 import { AnimatedSwapCoinIcon } from '@/__swaps__/screens/Swap/components/AnimatedSwapCoinIcon';
 import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
-import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
+import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
 import { SwapInput } from '@/__swaps__/screens/Swap/components/SwapInput';
 import { TokenList } from '@/__swaps__/screens/Swap/components/TokenList/TokenList';
@@ -98,7 +98,7 @@ function SwapOutputAmount() {
           : undefined
       }
     >
-      <GestureHandlerV1Button
+      <GestureHandlerButton
         disableButtonPressWrapper
         onPressStartWorklet={() => {
           'worklet';
@@ -117,7 +117,7 @@ function SwapOutputAmount() {
             <Box as={Animated.View} borderRadius={1} style={[styles.caret, AnimatedSwapStyles.assetToBuyCaretStyle]} />
           </Animated.View>
         </MaskedView>
-      </GestureHandlerV1Button>
+      </GestureHandlerButton>
     </CopyPasteMenu>
   );
 }

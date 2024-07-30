@@ -8,6 +8,8 @@ import {
   REVIEW_SHEET_HEIGHT,
   REVIEW_SHEET_ROW_GAP,
   REVIEW_SHEET_ROW_HEIGHT,
+  SETTINGS_SHEET_HEIGHT,
+  SETTINGS_SHEET_ROW_GAP,
   THICK_BORDER_WIDTH,
 } from '@/__swaps__/screens/Swap/constants';
 import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
@@ -19,7 +21,7 @@ import { foregroundColors } from '@/design-system/color/palettes';
 import { IS_ANDROID } from '@/env';
 import { safeAreaInsetValues } from '@/utils';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
-import { SharedValue, interpolate, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
+import { DerivedValue, SharedValue, interpolate, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { NavigationSteps } from './useSwapNavigation';
 import { ChainId } from '@/__swaps__/types/chains';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -31,24 +33,29 @@ const HEIGHT_FOR_PANEL: { [key in NavigationSteps]: number } = {
   [NavigationSteps.TOKEN_LIST_FOCUSED]: BOTTOM_ACTION_BAR_HEIGHT,
   [NavigationSteps.SHOW_REVIEW]: REVIEW_SHEET_HEIGHT,
   [NavigationSteps.SHOW_GAS]: GAS_SHEET_HEIGHT + INSET_BOTTOM,
+  [NavigationSteps.SHOW_SETTINGS]: SETTINGS_SHEET_HEIGHT,
 };
 
 export function useAnimatedSwapStyles({
   SwapWarning,
+  configProgress,
+  degenMode,
+  inputProgress,
   internalSelectedInputAsset,
   internalSelectedOutputAsset,
-  inputProgress,
-  outputProgress,
-  configProgress,
   isFetching,
+  outputProgress,
+  swapInfo,
 }: {
   SwapWarning: ReturnType<typeof useSwapWarning>;
+  configProgress: SharedValue<NavigationSteps>;
+  degenMode: SharedValue<boolean>;
+  inputProgress: SharedValue<number>;
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
-  inputProgress: SharedValue<number>;
-  outputProgress: SharedValue<number>;
-  configProgress: SharedValue<NavigationSteps>;
   isFetching: SharedValue<boolean>;
+  outputProgress: SharedValue<number>;
+  swapInfo: DerivedValue<{ areBothAssetsSet: boolean; isBridging: boolean }>;
 }) {
   const { isDarkMode } = useColorMode();
 
@@ -159,29 +166,37 @@ export function useAnimatedSwapStyles({
 
   const swapActionWrapperStyle = useAnimatedStyle(() => {
     const isReviewing = configProgress.value === NavigationSteps.SHOW_REVIEW;
-    const isReviewingOrConfiguringGas = isReviewing || configProgress.value === NavigationSteps.SHOW_GAS;
+    const isSettingsOpen = configProgress.value === NavigationSteps.SHOW_SETTINGS;
+    const isBottomSheetOpen = isReviewing || isSettingsOpen || configProgress.value === NavigationSteps.SHOW_GAS;
+
+    const shouldHideFlashbotsRow = (internalSelectedInputAsset.value?.chainId ?? ChainId.mainnet) !== ChainId.mainnet;
 
     let heightForCurrentSheet = HEIGHT_FOR_PANEL[configProgress.value];
-    if (isReviewing && (internalSelectedInputAsset.value?.chainId ?? ChainId.mainnet) !== ChainId.mainnet) {
+    if (isReviewing && shouldHideFlashbotsRow) {
       // Remove height when the Flashbots row in the review sheet is hidden
       heightForCurrentSheet -= REVIEW_SHEET_ROW_HEIGHT + REVIEW_SHEET_ROW_GAP;
+    } else if (degenMode.value && isSettingsOpen && swapInfo.value.areBothAssetsSet) {
+      heightForCurrentSheet += REVIEW_SHEET_ROW_HEIGHT + SETTINGS_SHEET_ROW_GAP * 2 + THICK_BORDER_WIDTH;
+      if (!shouldHideFlashbotsRow) heightForCurrentSheet += REVIEW_SHEET_ROW_HEIGHT + SETTINGS_SHEET_ROW_GAP;
     }
 
     return {
       backgroundColor: opacityWorklet(outputAssetColor.value, 0.06),
       borderColor: withSpring(
-        configProgress.value === NavigationSteps.SHOW_REVIEW || configProgress.value === NavigationSteps.SHOW_GAS
+        configProgress.value === NavigationSteps.SHOW_REVIEW ||
+          configProgress.value === NavigationSteps.SHOW_GAS ||
+          configProgress.value === NavigationSteps.SHOW_SETTINGS
           ? opacityWorklet(outputAssetColor.value, 0.2)
           : opacityWorklet(outputAssetColor.value, 0.06),
         SPRING_CONFIGS.springConfig
       ),
-      borderRadius: withSpring(isReviewingOrConfiguringGas ? 40 : 0, SPRING_CONFIGS.springConfig),
-      bottom: withSpring(isReviewingOrConfiguringGas ? Math.max(safeAreaInsetValues.bottom, 28) : -2, SPRING_CONFIGS.springConfig),
+      borderRadius: withSpring(isBottomSheetOpen ? 40 : 0, SPRING_CONFIGS.springConfig),
+      bottom: withSpring(isBottomSheetOpen ? Math.max(safeAreaInsetValues.bottom, 28) : -2, SPRING_CONFIGS.springConfig),
       height: withSpring(heightForCurrentSheet, SPRING_CONFIGS.springConfig),
-      left: withSpring(isReviewingOrConfiguringGas ? 12 : -2, SPRING_CONFIGS.springConfig),
-      right: withSpring(isReviewingOrConfiguringGas ? 12 : -2, SPRING_CONFIGS.springConfig),
-      paddingHorizontal: withSpring((isReviewingOrConfiguringGas ? 16 : 18) - THICK_BORDER_WIDTH, SPRING_CONFIGS.springConfig),
-      paddingTop: withSpring((isReviewingOrConfiguringGas ? 28 : 16) - THICK_BORDER_WIDTH, SPRING_CONFIGS.springConfig),
+      left: withSpring(isBottomSheetOpen ? 12 : -2, SPRING_CONFIGS.springConfig),
+      right: withSpring(isBottomSheetOpen ? 12 : -2, SPRING_CONFIGS.springConfig),
+      paddingHorizontal: withSpring((isBottomSheetOpen ? 16 : 18) - THICK_BORDER_WIDTH, SPRING_CONFIGS.springConfig),
+      paddingTop: withSpring((isBottomSheetOpen ? 28 : 16) - THICK_BORDER_WIDTH, SPRING_CONFIGS.springConfig),
     };
   });
 
@@ -237,11 +252,17 @@ export function useAnimatedSwapStyles({
   const hideWhileReviewingOrConfiguringGas = useAnimatedStyle(() => {
     return {
       opacity:
-        configProgress.value === NavigationSteps.SHOW_REVIEW || configProgress.value === NavigationSteps.SHOW_GAS
+        configProgress.value === NavigationSteps.SHOW_REVIEW ||
+        configProgress.value === NavigationSteps.SHOW_GAS ||
+        configProgress.value === NavigationSteps.SHOW_SETTINGS
           ? withTiming(0, TIMING_CONFIGS.fadeConfig)
           : withTiming(1, TIMING_CONFIGS.fadeConfig),
       pointerEvents:
-        configProgress.value === NavigationSteps.SHOW_REVIEW || configProgress.value === NavigationSteps.SHOW_GAS ? 'none' : 'auto',
+        configProgress.value === NavigationSteps.SHOW_REVIEW ||
+        configProgress.value === NavigationSteps.SHOW_GAS ||
+        configProgress.value === NavigationSteps.SHOW_SETTINGS
+          ? 'none'
+          : 'auto',
     };
   });
 

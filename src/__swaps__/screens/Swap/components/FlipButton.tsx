@@ -12,7 +12,7 @@ import { AnimatedBlurView } from '@/__swaps__/screens/Swap/components/AnimatedBl
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { SwapAssetType } from '@/__swaps__/types/swap';
-import { GestureHandlerV1Button } from './GestureHandlerV1Button';
+import { GestureHandlerButton } from './GestureHandlerButton';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { ChainId } from '@/__swaps__/types/chains';
 
@@ -116,7 +116,7 @@ export const FlipButton = () => {
           },
         ]}
       >
-        <GestureHandlerV1Button onPressWorklet={handleFlipAssets} scaleTo={0.8} style={{ paddingHorizontal: 20, paddingVertical: 8 }}>
+        <GestureHandlerButton onPressWorklet={handleFlipAssets} scaleTo={0.8} style={{ paddingHorizontal: 20, paddingVertical: 8 }}>
           {/* TODO: Temp fix - rewrite to actually avoid type errors */}
           {/* @ts-expect-error The conditional as={} is causing type errors */}
           <Box
@@ -147,7 +147,7 @@ export const FlipButton = () => {
               </Box>
             </IconContainer>
           </Box>
-        </GestureHandlerV1Button>
+        </GestureHandlerButton>
       </Box>
       <Box pointerEvents="none" position="absolute">
         <SpinnerComponent />

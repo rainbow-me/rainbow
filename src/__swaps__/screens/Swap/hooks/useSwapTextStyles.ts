@@ -24,8 +24,10 @@ import { getColorValueForThemeWorklet, opacity } from '@/__swaps__/utils/swaps';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { NavigationSteps } from './useSwapNavigation';
 
 export function useSwapTextStyles({
+  configProgress,
   inputMethod,
   inputValues,
   internalSelectedInputAsset,
@@ -37,6 +39,7 @@ export function useSwapTextStyles({
   outputProgress,
   sliderPressProgress,
 }: {
+  configProgress: SharedValue<NavigationSteps>;
   inputMethod: SharedValue<inputMethods>;
   inputValues: SharedValue<inputValuesType>;
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
@@ -167,6 +170,7 @@ export function useSwapTextStyles({
   // TODO: Create a reusable InputCaret component
   const inputCaretStyle = useAnimatedStyle(() => {
     const shouldShow =
+      configProgress.value === NavigationSteps.INPUT_ELEMENT_FOCUSED &&
       focusedInput.value === 'inputAmount' &&
       inputProgress.value === 0 &&
       outputProgress.value === 0 &&
@@ -200,6 +204,7 @@ export function useSwapTextStyles({
 
   const outputCaretStyle = useAnimatedStyle(() => {
     const shouldShow =
+      configProgress.value === NavigationSteps.INPUT_ELEMENT_FOCUSED &&
       focusedInput.value === 'outputAmount' &&
       inputProgress.value === 0 &&
       outputProgress.value === 0 &&

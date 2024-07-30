@@ -4,7 +4,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
 import { RequestNewQuoteParams, inputKeys, inputMethods, inputValuesType } from '@/__swaps__/types/swap';
 import { valueBasedDecimalFormatter } from '@/__swaps__/utils/decimalFormatter';
-import { addCommasToNumber, buildQuoteParams, clamp, trimTrailingZeros } from '@/__swaps__/utils/swaps';
+import { addCommasToNumber, buildQuoteParams, clamp, getDefaultSlippageWorklet, trimTrailingZeros } from '@/__swaps__/utils/swaps';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { CrosschainQuote, Quote, QuoteError, SwapType, getCrosschainQuote, getQuote } from '@rainbow-me/swaps';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
@@ -31,6 +31,10 @@ import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mu
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { triggerHapticFeedback } from '@/screens/points/constants';
 import { getInputValuesForSliderPositionWorklet, updateInputValuesAfterFlip } from '@/__swaps__/utils/flipAssets';
+import { getRemoteConfig } from '@/model/remoteConfig';
+import { ChainId } from '@/__swaps__/types/chains';
+
+const REMOTE_CONFIG = getRemoteConfig();
 
 export function useSwapInputsController({
   focusedInput,
@@ -70,6 +74,7 @@ export function useSwapInputsController({
   });
 
   const { nativeCurrency: currentCurrency } = useAccountSettings();
+  const setSlippage = swapsStore(state => state.setSlippage);
 
   const inputValues = useSharedValue<inputValuesType>({
     inputAmount: initialInputAmount,
@@ -536,32 +541,31 @@ export function useSwapInputsController({
 
   const setValueToMaxSwappableAmount = () => {
     'worklet';
+    inputMethod.value = 'slider';
 
     const currentInputValue = inputValues.value.inputAmount;
     const maxSwappableAmount = internalSelectedInputAsset.value?.maxSwappableAmount;
-    if (!maxSwappableAmount || equalWorklet(maxSwappableAmount, 0)) {
-      runOnJS(triggerHapticFeedback)('impactMedium');
-      return;
-    }
 
     const isAlreadyMax = maxSwappableAmount ? equalWorklet(currentInputValue, maxSwappableAmount) : false;
     const exceedsMax = maxSwappableAmount ? greaterThanWorklet(currentInputValue, maxSwappableAmount) : false;
+
     if (isAlreadyMax) {
       runOnJS(triggerHapticFeedback)('impactMedium');
-      return;
-    }
+    } else {
+      quoteFetchingInterval.stop();
 
-    quoteFetchingInterval.stop();
-    isQuoteStale.value = 1;
-    inputMethod.value = 'slider';
-
-    if (exceedsMax) sliderXPosition.value = SLIDER_WIDTH * 0.999;
-
-    sliderXPosition.value = withSpring(SLIDER_WIDTH, SPRING_CONFIGS.snappySpringConfig, isFinished => {
-      if (isFinished) {
-        runOnJS(onChangedPercentage)(1);
+      if (exceedsMax) {
+        sliderXPosition.value = SLIDER_WIDTH * 0.999;
+      } else {
+        isQuoteStale.value = 1;
       }
-    });
+
+      sliderXPosition.value = withSpring(SLIDER_WIDTH, SPRING_CONFIGS.snappySpringConfig, isFinished => {
+        if (isFinished) {
+          runOnJS(onChangedPercentage)(1);
+        }
+      });
+    }
   };
 
   const resetValuesToZeroWorklet = ({ updateSlider, inputKey }: { updateSlider: boolean; inputKey?: inputKeys }) => {
@@ -602,29 +606,33 @@ export function useSwapInputsController({
     { leading: false, trailing: true }
   );
 
-  useAnimatedReaction(
-    () => slippage.value,
-    (slippage, prevSlippage) => {
-      if (prevSlippage && slippage !== prevSlippage) {
-        runOnJS(debouncedFetchQuote)();
-      }
-    }
-  );
-
   /**
    * This observes changes in the selected assets and initiates new quote fetches when necessary. It also
-   * handles flipping the inputValues when the assets are flipped.
+   * handles flipping the inputValues when the assets are flipped, and updates the default slippage value
+   * when the input asset network changes.
    */
   useAnimatedReaction(
     () => ({
       assetToBuyId: internalSelectedOutputAsset.value?.uniqueId,
       assetToSellId: internalSelectedInputAsset.value?.uniqueId,
+      assetToSellNetwork: internalSelectedInputAsset.value?.chainId,
     }),
     (current, previous) => {
       const didInputAssetChange = current.assetToSellId !== previous?.assetToSellId;
       const didOutputAssetChange = current.assetToBuyId !== previous?.assetToBuyId;
 
       if (!didInputAssetChange && !didOutputAssetChange) return;
+
+      if (current.assetToSellNetwork !== previous?.assetToSellNetwork) {
+        const previousDefaultSlippage = getDefaultSlippageWorklet(previous?.assetToSellNetwork || ChainId.mainnet, REMOTE_CONFIG);
+
+        // If the user has not overridden the default slippage, update it
+        if (slippage.value === previousDefaultSlippage) {
+          const newSlippage = getDefaultSlippageWorklet(current.assetToSellNetwork || ChainId.mainnet, REMOTE_CONFIG);
+          slippage.value = newSlippage;
+          runOnJS(setSlippage)(newSlippage);
+        }
+      }
 
       const balance = internalSelectedInputAsset.value?.maxSwappableAmount;
 
@@ -849,6 +857,7 @@ export function useSwapInputsController({
   );
 
   return {
+    debouncedFetchQuote,
     formattedInputAmount,
     formattedInputNativeValue,
     formattedOutputAmount,

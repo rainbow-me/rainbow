@@ -747,9 +747,14 @@
         "output_exchange_rate": "1 %{outputSymbol} for %{executionRate} %{inputSymbol}"
       },
       "swap_details_v2": {
-        "rainbow_fee": "Included Rainbow Fee",
+        "automatic": "Auto",
+        "degen_mode": "Degen Mode",
+        "degen_mode_description": "Skip the review sheet to swap faster",
         "maximum_sold": "Maximum Sold",
-        "minimum_received": "Minimum Received"
+        "minimum_received": "Minimum Received",
+        "preferred_network": "Preferred Network",
+        "rainbow_fee": "Included Rainbow Fee",
+        "settings": "Settings"
       },
       "token_index": {
         "get_token": "Get %{assetSymbol}",
