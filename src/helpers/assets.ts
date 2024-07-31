@@ -318,10 +318,10 @@ export const buildBriefUniqueTokenList = (
   if (!Object.keys(assetsByName).length) {
     if (!isFetchingNfts) {
       // empty NFT section
-      result.push({ type: 'NFT_EMPTY', uid: `nft-empty`});
+      result.push({ type: 'NFTS_EMPTY', uid: `nft-empty` });
     } else {
       // loading NFTs section (most likely from a sortBy change) but initial load too
-      result.push({ type: 'NFT_LOADING', uid: `nft-loading-${nftSort}`});
+      result.push({ type: 'NFTS_LOADING', uid: `nft-loading-${nftSort}` });
     }
   } else {
     for (const family of Object.keys(assetsByName)) {
@@ -336,16 +336,15 @@ export const buildBriefUniqueTokenList = (
       const tokens = assetsByName[family].map(({ uniqueId }) => uniqueId);
       for (let index = 0; index < tokens.length; index++) {
         const uniqueId = tokens[index];
-  
+
         // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
         result.push({ index, type: 'NFT', uid: uniqueId, uniqueId });
       }
-  
+
       result.push({ type: 'NFT_SPACE_AFTER', uid: `${family}-space-after` });
     }
   }
 
-  
   if (hiddenUniqueTokensIds.length > 0 && listType === 'wallet' && !isReadOnlyWallet) {
     result.push({
       // @ts-expect-error "name" does not exist in type.
@@ -368,7 +367,7 @@ export const buildBriefUniqueTokenList = (
     result.push({ type: 'NFT_SPACE_AFTER', uid: `showcase-space-after` });
   }
 
-  console.log(result.map((r => r.type)));
+  console.log(result.map(r => r.type));
 
   return result;
 };

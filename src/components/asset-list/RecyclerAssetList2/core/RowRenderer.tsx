@@ -29,9 +29,10 @@ import { DiscoverMoreButton } from './DiscoverMoreButton';
 import { RotatingLearnCard } from '@/components/cards/RotatingLearnCard';
 import WrappedPosition from '../WrappedPosition';
 import WrappedPositionsListHeader from '../WrappedPositionsListHeader';
-import * as lang from '@/languages';
 import { RemoteCardCarousel } from '@/components/cards/remote-cards';
 import WrappedCollectiblesHeader from '../WrappedCollectiblesHeader';
+import NFTLoadingSkeleton from '../NFTLoadingSkeleton';
+import { NFTEmptyState } from '../NFTEmptyState';
 
 function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, extendedState: ExtendedState) {
   const data = extendedState.additionalData[uid];
@@ -129,6 +130,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
       return <NFTEmptyState />;
     case CellType.FAMILY_HEADER: {
       const { name, image, total } = data as NFTFamilyExtraData;
+
       return (
         <WrappedTokenFamilyHeader
           image={image}

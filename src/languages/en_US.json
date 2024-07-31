@@ -1321,7 +1321,9 @@
         "most_recent": "Recent",
         "FLOOR_PRICE": "Floor Price",
         "floor_price": "Floor Price"
-      }
+      },
+      "empty": "Collectibles",
+      "will_appear_here": "Your Collectibles Will Appear Here"
     },
     "nft_offers": {
       "card": {

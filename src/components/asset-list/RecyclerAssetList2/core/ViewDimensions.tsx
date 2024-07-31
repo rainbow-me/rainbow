@@ -55,15 +55,11 @@ const ViewDimensions: Record<CellType, Dim> = {
     height: UniqueTokenRow.height,
     width: deviceUtils.dimensions.width / 2 - 0.1,
   },
-  [CellType.NFT_LOADING]: {
-    // @ts-expect-error
-    height: UniqueTokenRow.height * 5,
-    width: deviceUtils.dimensions.width / 2 - 0.1,
+  [CellType.NFTS_LOADING]: {
+    height: TokenFamilyHeaderHeight * 5,
   },
-  [CellType.NFT_EMPTY]: {
-    // @ts-expect-error
-    height: UniqueTokenRow.height * 5,
-    width: deviceUtils.dimensions.width / 2 - 0.1,
+  [CellType.NFTS_EMPTY]: {
+    height: TokenFamilyHeaderHeight * 5,
   },
   [CellType.NFT_SPACE_AFTER]: { height: 5 },
   [CellType.LOADING_ASSETS]: { height: AssetListItemSkeletonHeight },
