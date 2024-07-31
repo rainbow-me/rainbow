@@ -135,7 +135,7 @@ export const PointsProfileProvider = ({ children }: { children: React.ReactNode 
         throw new RainbowError('Points: Error getting onboard challenge');
       }
       const provider = getProviderForNetwork(Network.mainnet);
-      const wallet = await loadWallet({ address: accountAddress, showErrorIfNotLoaded: true, provider });
+      const wallet = await loadWallet({ address: accountAddress, provider });
       if (!wallet) {
         Alert.alert(i18n.t(i18n.l.points.console.generic_alert));
         throw new RainbowError('Points: Error loading wallet');

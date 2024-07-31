@@ -529,7 +529,6 @@ export const SignTransactionSheet = () => {
       operation: TimeToSignOperation.KeychainRead,
     })({
       address: accountInfo.address,
-      showErrorIfNotLoaded: true,
       provider,
       timeTracking: {
         screen: SCREEN_FOR_REQUEST_SOURCE[source],
@@ -657,7 +656,6 @@ export const SignTransactionSheet = () => {
         operation: TimeToSignOperation.KeychainRead,
       })({
         address: accountInfo.address,
-        showErrorIfNotLoaded: true,
         provider,
         timeTracking: {
           screen: SCREEN_FOR_REQUEST_SOURCE[source],

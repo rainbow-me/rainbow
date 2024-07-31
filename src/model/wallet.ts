@@ -260,7 +260,7 @@ export const walletInit = async (
 
 export const loadWallet = async <S extends Screen>({
   address,
-  showErrorIfNotLoaded = false,
+  showErrorIfNotLoaded = true,
   provider = web3Provider,
   timeTracking,
 }: {
@@ -323,7 +323,6 @@ export const sendTransaction = async ({
       existingWallet ||
       (await loadWallet({
         address: undefined,
-        showErrorIfNotLoaded: true,
         provider,
       }));
     // have to check inverse or we trigger unwanted BT permissions requests
@@ -373,7 +372,6 @@ export const signTransaction = async ({
       existingWallet ||
       (await loadWallet({
         address: undefined,
-        showErrorIfNotLoaded: true,
         provider,
       }));
     // have to check inverse or we trigger unwanted BT permissions requests
@@ -421,7 +419,6 @@ export const signPersonalMessage = async (
       existingWallet ||
       (await loadWallet({
         address: undefined,
-        showErrorIfNotLoaded: true,
         provider,
       }));
     // have to check inverse or we trigger unwanted BT permissions requests
@@ -471,7 +468,6 @@ export const signTypedDataMessage = async (
       existingWallet ||
       (await loadWallet({
         address: undefined,
-        showErrorIfNotLoaded: true,
         provider,
       }));
     if (!wallet) return null;

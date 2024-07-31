@@ -219,6 +219,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         operation: TimeToSignOperation.KeychainRead,
       })({
         address: parameters.quote.from,
+        showErrorIfNotLoaded: false,
         provider,
         timeTracking: {
           screen: Routes.SWAP,

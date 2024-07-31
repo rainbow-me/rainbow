@@ -388,7 +388,6 @@ export default function SendSheet(props) {
         screen: Routes.SEND_SHEET,
       })({
         address: undefined,
-        showErrorIfNotLoaded: true,
         provider: currentProvider,
         timeTracking: {
           screen: Routes.SEND_SHEET,

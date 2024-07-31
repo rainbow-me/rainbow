@@ -404,6 +404,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
         const provider = getProviderForNetwork(currentNetwork);
         let wallet = await loadWallet({
           address: undefined,
+          showErrorIfNotLoaded: false,
           provider,
         });
         if (!wallet) {
