@@ -98,7 +98,7 @@
     "@ledgerhq/hw-app-eth": "6.29.9",
     "@ledgerhq/react-native-hw-transport-ble": "6.27.7",
     "@metamask/eth-sig-util": "7.0.2",
-    "@notifee/react-native": "5.6.0",
+    "@notifee/react-native": "7.8.2",
     "@rainbow-me/provider": "0.0.12",
     "@rainbow-me/react-native-animated-number": "0.0.2",
     "@rainbow-me/swaps": "0.22.0",
