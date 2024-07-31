@@ -129,7 +129,6 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
 
       const provider = getProviderForNetwork();
       const wallet = await loadWallet({
-        address: undefined,
         showErrorIfNotLoaded: false,
         provider,
       });
@@ -188,7 +187,6 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
 
       const provider = getProviderForNetwork();
       const wallet = await loadWallet({
-        address: undefined,
         showErrorIfNotLoaded: false,
         provider,
       });
@@ -228,7 +226,6 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
 
       const provider = getProviderForNetwork();
       const wallet = await loadWallet({
-        address: undefined,
         showErrorIfNotLoaded: false,
         provider,
       });
@@ -257,7 +254,6 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
 
       const provider = getProviderForNetwork();
       const wallet = await loadWallet({
-        address: undefined,
         showErrorIfNotLoaded: false,
         provider,
       });
@@ -283,7 +279,6 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
     async (callback = noop) => {
       const provider = getProviderForNetwork();
       const wallet = await loadWallet({
-        address: undefined,
         showErrorIfNotLoaded: false,
         provider,
       });
@@ -322,7 +317,6 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
       if (!wallet) {
         const provider = getProviderForNetwork();
         wallet = await loadWallet({
-          address: undefined,
           showErrorIfNotLoaded: false,
           provider,
         });

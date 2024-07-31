@@ -387,7 +387,6 @@ export default function SendSheet(props) {
         operation: TimeToSignOperation.KeychainRead,
         screen: Routes.SEND_SHEET,
       })({
-        address: undefined,
         provider: currentProvider,
         timeTracking: {
           screen: Routes.SEND_SHEET,
