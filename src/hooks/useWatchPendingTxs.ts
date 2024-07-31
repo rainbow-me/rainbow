@@ -1,21 +1,21 @@
 import { useCallback, useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
 import { RainbowTransaction, MinedTransaction } from '@/entities/transactions/transaction';
-import { fetchUserAssets } from '@/resources/assets/UserAssetsQuery';
+import { fetchUserAssets, userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
+import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { transactionFetchQuery } from '@/resources/transactions/transaction';
 import { RainbowError, logger } from '@/logger';
 import { Network } from '@/networks/types';
-import { getProviderForNetwork } from '@/handlers/web3';
+import { getIsHardhatConnected, getProviderForNetwork } from '@/handlers/web3';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
 import { RainbowNetworks } from '@/networks';
 import { queryClient } from '@/react-query/queryClient';
 import { getTransactionFlashbotStatus } from '@/handlers/transactions';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { useNonceStore } from '@/state/nonces';
+import { Address } from 'viem';
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
-  //const { swapRefreshAssets } = useSwapRefreshAssets();
-
   const { storePendingTransactions, setPendingTransactions } = usePendingTransactionsStore(state => ({
     storePendingTransactions: state.pendingTransactions,
     setPendingTransactions: state.setPendingTransactions,
@@ -28,20 +28,29 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
   const { nativeCurrency, accountAddress } = useAccountSettings();
 
   const refreshAssets = useCallback(
-    (tx: RainbowTransaction) => {
-      if (tx.type === 'swap') {
-        // update swap assets
-        //swapRefreshAssets(tx.nonce);
-      } else {
-        // fetch assets again
-        fetchUserAssets({
-          address: accountAddress,
-          currency: nativeCurrency,
-          connectedToHardhat: false,
-        });
-      }
+    (_: RainbowTransaction) => {
+      // NOTE: We have two user assets stores right now, so let's invalidate both queries and trigger a refetch
+      const connectedToHardhat = getIsHardhatConnected();
+      queryClient.invalidateQueries([
+        // old user assets invalidation
+        {
+          queryKey: userAssetsQueryKey({
+            address,
+            currency: nativeCurrency,
+            connectedToHardhat,
+          }),
+        },
+        // new swaps user assets invalidations
+        {
+          queryKey: swapsUserAssetsQueryKey({
+            address: address as Address,
+            currency: nativeCurrency,
+            testnetMode: !!connectedToHardhat,
+          }),
+        },
+      ]);
     },
-    [accountAddress, nativeCurrency]
+    [address, nativeCurrency]
   );
 
   const processFlashbotsTransaction = useCallback(async (tx: RainbowTransaction): Promise<RainbowTransaction> => {

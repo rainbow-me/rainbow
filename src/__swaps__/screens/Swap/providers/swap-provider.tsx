@@ -265,7 +265,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }
 
       queryClient.invalidateQueries([
-        // old user assets invalidation (will cause a re-fetch)
+        // old user assets invalidation
         {
           queryKey: userAssetsQueryKey({
             address: parameters.quote.from,

@@ -10,8 +10,10 @@ import { PROFILES, useExperimentalFlag } from '@/config';
 import logger from '@/utils/logger';
 import { queryClient } from '@/react-query';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
+import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { nftsQueryKey } from '@/resources/nfts';
 import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
+import { Address } from 'viem';
 
 export default function useRefreshAccountData() {
   const dispatch = useDispatch();
@@ -22,22 +24,33 @@ export default function useRefreshAccountData() {
   const fetchAccountData = useCallback(async () => {
     const connectedToHardhat = getIsHardhatConnected();
 
-    queryClient.invalidateQueries({
-      queryKey: nftsQueryKey({ address: accountAddress }),
-    });
-    queryClient.invalidateQueries({
-      queryKey: positionsQueryKey({
-        address: accountAddress,
-        currency: nativeCurrency,
-      }),
-    });
-    queryClient.invalidateQueries({
-      queryKey: userAssetsQueryKey({
-        address: accountAddress,
-        currency: nativeCurrency,
-        connectedToHardhat,
-      }),
-    });
+    queryClient.invalidateQueries([
+      {
+        queryKey: nftsQueryKey({ address: accountAddress }),
+      },
+      {
+        queryKey: positionsQueryKey({
+          address: accountAddress,
+          currency: nativeCurrency,
+        }),
+      },
+      // old user assets invalidation
+      {
+        queryKey: userAssetsQueryKey({
+          address: accountAddress,
+          currency: nativeCurrency,
+          connectedToHardhat,
+        }),
+      },
+      // new swaps user assets invalidations
+      {
+        queryKey: swapsUserAssetsQueryKey({
+          address: accountAddress as Address,
+          currency: nativeCurrency,
+          testnetMode: !!connectedToHardhat,
+        }),
+      },
+    ]);
 
     try {
       const getWalletNames = dispatch(fetchWalletNames());

@@ -4,7 +4,7 @@ exports.config = {
     document: './queries/ens.graphql',
     schema: {
       method: 'POST',
-      url: 'https://api.thegraph.com/subgraphs/name/ensdomains/ens',
+      url: 'https://gateway-arbitrum.network.thegraph.com/api/35a75cae48aab2b771d1e53543a37a0f/subgraphs/id/5XqPmWe6gjyrJtFn9cLy237i4cWw2j9HcUJEXsP5qGtH',
     },
   },
   metadata: {
