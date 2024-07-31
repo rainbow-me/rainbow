@@ -15,7 +15,8 @@ const NFTS_STALE_TIME = 600000; // 10 minutes
 const NFTS_CACHE_TIME_EXTERNAL = 3600000; // 1 hour
 const NFTS_CACHE_TIME_INTERNAL = 604800000; // 1 week
 
-export const nftsQueryKey = ({ address, sortBy }: { address: string; sortBy: NftCollectionSortCriterion }) => createQueryKey('nfts', { address, sortBy }, { persisterVersion: 4 });
+export const nftsQueryKey = ({ address, sortBy }: { address: string; sortBy: NftCollectionSortCriterion }) =>
+  createQueryKey('nfts', { address, sortBy }, { persisterVersion: 4 });
 
 export const nftListingQueryKey = ({
   contractAddress,
@@ -97,7 +98,7 @@ export function useLegacyNFTs<TSelected = NFTData>({
     data: (config?.select ? data ?? config.select(FALLBACK_DATA) : data ?? FALLBACK_DATA) as TSelected,
     error,
     isFetching,
-    isInitialLoading
+    isInitialLoading,
   };
 }
 

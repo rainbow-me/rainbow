@@ -12,18 +12,20 @@ import { queryClient } from '@/react-query';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { nftsQueryKey } from '@/resources/nfts';
 import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
+import useNftSort from './useNFTsSortBy';
 
 export default function useRefreshAccountData() {
   const dispatch = useDispatch();
   const { accountAddress, nativeCurrency } = useAccountSettings();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const { nftSort } = useNftSort();
 
   const fetchAccountData = useCallback(async () => {
     const connectedToHardhat = getIsHardhatConnected();
 
     queryClient.invalidateQueries({
-      queryKey: nftsQueryKey({ address: accountAddress }),
+      queryKey: nftsQueryKey({ address: accountAddress, sortBy: nftSort }),
     });
     queryClient.invalidateQueries({
       queryKey: positionsQueryKey({

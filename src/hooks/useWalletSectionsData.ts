@@ -29,7 +29,7 @@ export default function useWalletSectionsData({
     isFetching: isFetchingNfts,
   } = useLegacyNFTs({
     address: accountAddress,
-    sortBy: nftSort
+    sortBy: nftSort,
   });
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
@@ -61,7 +61,7 @@ export default function useWalletSectionsData({
       nftSort,
     };
 
-    const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(accountInfo, nftSort);
+    const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(accountInfo);
     const hasNFTs = allUniqueTokens.length > 0;
 
     return {
@@ -87,6 +87,7 @@ export default function useWalletSectionsData({
     type,
     showcaseTokens,
     allUniqueTokens,
+    isFetchingNfts,
     nftSort,
   ]);
   return walletSections;

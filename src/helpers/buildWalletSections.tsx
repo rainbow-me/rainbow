@@ -238,6 +238,6 @@ const briefBalanceSectionSelector = createSelector(
 );
 
 export const buildBriefWalletSectionsSelector = createSelector(
-  [briefBalanceSectionSelector, (state: any, nftSort: string) => briefUniqueTokenDataSelector(state, nftSort)],
+  [briefBalanceSectionSelector, (state: any) => briefUniqueTokenDataSelector(state)],
   buildBriefWalletSections
 );
