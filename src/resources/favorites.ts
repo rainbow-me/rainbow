@@ -1,21 +1,24 @@
-import { UniqueId } from '@/__swaps__/types/assets';
+import { AddressOrEth, UniqueId } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
-import { EthereumAddress, NativeCurrencyKeys, RainbowToken } from '@/entities';
+import { getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
+import { NativeCurrencyKeys, RainbowToken } from '@/entities';
 import { Network } from '@/networks/types';
 import { createQueryKey, queryClient } from '@/react-query';
 import { DAI_ADDRESS, ETH_ADDRESS, SOCKS_ADDRESS, WBTC_ADDRESS, WETH_ADDRESS } from '@/references';
 import { promiseUtils } from '@/utils';
-import ethereumUtils, { getUniqueId } from '@/utils/ethereumUtils';
+import ethereumUtils from '@/utils/ethereumUtils';
 import { useQuery } from '@tanstack/react-query';
 import { omit } from 'lodash';
 import { externalTokenQueryKey, fetchExternalToken } from './assets/externalAssetsQuery';
 
-export const favoritesQueryKey = createQueryKey('favorites', {}, { persisterVersion: 141224 });
+export const favoritesQueryKey = createQueryKey('favorites', {}, { persisterVersion: 2 });
 
-const DAI_uniqueId = getUniqueId(DAI_ADDRESS, Network.mainnet);
-const ETH_uniqueId = getUniqueId(ETH_ADDRESS, Network.mainnet);
-const SOCKS_uniqueId = getUniqueId(SOCKS_ADDRESS, Network.mainnet);
-const WBTC_uniqueId = getUniqueId(WBTC_ADDRESS, Network.mainnet);
+const getUniqueId = (address: AddressOrEth, chainId: ChainId) => getStandardizedUniqueIdWorklet({ address, chainId });
+
+const DAI_uniqueId = getUniqueId(DAI_ADDRESS, ChainId.mainnet);
+const ETH_uniqueId = getUniqueId(ETH_ADDRESS, ChainId.mainnet);
+const SOCKS_uniqueId = getUniqueId(SOCKS_ADDRESS, ChainId.mainnet);
+const WBTC_uniqueId = getUniqueId(WBTC_ADDRESS, ChainId.mainnet);
 
 const DEFAULT: Record<UniqueId, RainbowToken> = {
   [DAI_uniqueId]: {
@@ -91,7 +94,7 @@ async function fetchMetadata(addresses: string[], chainId = ChainId.mainnet) {
     );
 
     if (externalAsset) {
-      const uniqueId = getUniqueId(externalAsset?.networks[chainId]?.address, network);
+      const uniqueId = getUniqueId(externalAsset?.networks[chainId]?.address, chainId);
       newFavoritesMeta[uniqueId] = {
         ...externalAsset,
         network,
@@ -110,10 +113,10 @@ async function fetchMetadata(addresses: string[], chainId = ChainId.mainnet) {
   const ethIsFavorited = addresses.includes(ETH_ADDRESS);
   const wethIsFavorited = addresses.includes(WETH_ADDRESS);
   if (newFavoritesMeta) {
-    const WETH_uniqueId = getUniqueId(WETH_ADDRESS, Network.mainnet);
+    const WETH_uniqueId = getUniqueId(WETH_ADDRESS, ChainId.mainnet);
     if (newFavoritesMeta[WETH_uniqueId] && ethIsFavorited) {
       const favorite = newFavoritesMeta[WETH_uniqueId];
-      const uniqueId = getUniqueId(ETH_ADDRESS, Network.mainnet);
+      const uniqueId = getUniqueId(ETH_ADDRESS, ChainId.mainnet);
       newFavoritesMeta[uniqueId] = {
         ...favorite,
         address: ETH_ADDRESS,
@@ -171,8 +174,8 @@ export async function refreshFavorites() {
  */
 export async function toggleFavorite(address: string, chainId = ChainId.mainnet) {
   const favorites = queryClient.getQueryData<Record<UniqueId, RainbowToken>>(favoritesQueryKey);
-  const lowercasedAddress = address.toLowerCase() as EthereumAddress;
-  const uniqueId = getUniqueId(lowercasedAddress, ethereumUtils.getNetworkFromChainId(chainId));
+  const lowercasedAddress = address.toLowerCase() as AddressOrEth;
+  const uniqueId = getUniqueId(lowercasedAddress, chainId);
   if (Object.keys(favorites || {}).includes(uniqueId)) {
     queryClient.setQueryData(favoritesQueryKey, omit(favorites, uniqueId));
   } else {
@@ -198,6 +201,7 @@ export function useFavorites(): {
     queryFn: refreshFavorites,
     staleTime: 24 * 60 * 60 * 1000, // 24hrs
     cacheTime: Infinity,
+    initialData: DEFAULT,
   });
 
   const favoritesMetadata = query.data ?? {};
