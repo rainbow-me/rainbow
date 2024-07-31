@@ -1,6 +1,6 @@
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { useNavigation } from '@react-navigation/native';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { Image } from 'react-native-image-crop-picker';
 import { useRecoilValue } from 'recoil';
 import { avatarMetadataAtom } from '../components/ens-registration/RegistrationAvatar/RegistrationAvatar';
@@ -24,8 +24,53 @@ import { Hex } from 'viem';
 import { executeENSRap } from '@/raps/actions/ens';
 import store from '@/redux/store';
 import { performanceTracking, TimeToSignOperation } from '@/state/performance/performance';
+import { noop } from 'lodash';
 
-const NOOP = () => null;
+// Generic type for action functions
+type ActionFunction<P extends any[] = [], R = void> = (...params: P) => Promise<R>;
+
+// Define action types using the generic ActionFunction
+export type ActionTypes = {
+  [REGISTRATION_STEPS.COMMIT]: ActionFunction<[callback?: () => void]>;
+  [REGISTRATION_STEPS.REGISTER]: ActionFunction<[callback?: () => void]>;
+  [REGISTRATION_STEPS.RENEW]: ActionFunction<[callback?: () => void]>;
+  [REGISTRATION_STEPS.EDIT]: ActionFunction<[callback?: () => void]>;
+  [REGISTRATION_STEPS.SET_NAME]: ActionFunction<[callback?: () => void]>;
+  [REGISTRATION_STEPS.TRANSFER]: ActionFunction<
+    [
+      params: {
+        clearRecords: boolean;
+        records: any;
+        name: string;
+        setAddress: boolean;
+        toAddress: string;
+        transferControl: boolean;
+        wallet?: any;
+      },
+      callback?: () => void,
+    ],
+    { nonce: number | undefined } | undefined
+  >;
+  [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: ActionFunction<[accentColor: string]>;
+  [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: ActionFunction;
+};
+
+// Generic helper type to extract parameters from a function type
+type ParamsOf<T> = T extends (...args: infer P) => any ? P : never;
+
+// StepParams type derived from ActionTypes
+type StepParams = {
+  [K in keyof ActionTypes]: ParamsOf<ActionTypes[K]>[0] extends object ? ParamsOf<ActionTypes[K]>[0] : Record<string, never>;
+};
+
+// Generic hook type
+type UseENSRegistrationActionHandler = <T extends keyof StepParams>(params: {
+  step: T;
+  sendReverseRecord?: boolean;
+  yearsDuration?: number;
+}) => {
+  action: ActionTypes[T];
+};
 
 const formatENSActionParams = (registrationParameters: RegistrationParameters): ENSActionParameters => {
   const { selectedGasFee, gasFeeParamsBySpeed } = store.getState().gas;
@@ -44,17 +89,7 @@ const formatENSActionParams = (registrationParameters: RegistrationParameters): 
   };
 };
 
-export default function useENSRegistrationActionHandler(
-  {
-    sendReverseRecord = false,
-    yearsDuration = 1,
-    step: registrationStep,
-  }: {
-    yearsDuration?: number;
-    sendReverseRecord?: boolean;
-    step: keyof typeof REGISTRATION_STEPS;
-  } = {} as any
-) {
+const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step, sendReverseRecord = false, yearsDuration = 1 }) => {
   const { accountAddress } = useAccountSettings();
   const { registrationParameters } = useENSRegistration();
   const { navigate, goBack } = useNavigation();
@@ -88,8 +123,8 @@ export default function useENSRegistrationActionHandler(
   }, [updateWalletENSAvatars]);
 
   // actions
-  const commitAction = useCallback(
-    async (callback: () => void = NOOP) => {
+  const commitAction: ActionTypes[typeof REGISTRATION_STEPS.COMMIT] = useCallback(
+    async (callback = noop) => {
       updateAvatarsOnNextBlock.current = true;
 
       const provider = getProviderForNetwork();
@@ -124,21 +159,20 @@ export default function useENSRegistrationActionHandler(
         if (isHardwareWallet) {
           goBack();
         }
-        callback;
+        callback();
       });
     },
     [registrationParameters, duration, accountAddress, isHardwareWallet, goBack]
   );
 
-  const speedUpCommitAction = useCallback(
+  const speedUpCommitAction: ActionTypes[typeof REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION] = useCallback(
     async (accentColor: string) => {
-      // we want to speed up the last commit tx sent
       const commitTransactionHash = registrationParameters?.commitTransactionHash;
 
       const tx = getPendingTransactionByHash(commitTransactionHash || '');
       commitTransactionHash &&
         tx &&
-        navigate(ios ? Routes.SPEED_UP_AND_CANCEL_SHEET : Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET, {
+        navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
           accentColor,
           tx,
           type: 'speed_up',
@@ -147,8 +181,8 @@ export default function useENSRegistrationActionHandler(
     [getPendingTransactionByHash, navigate, registrationParameters?.commitTransactionHash]
   );
 
-  const registerAction = useCallback(
-    async (callback: () => void = NOOP) => {
+  const registerAction: ActionTypes[typeof REGISTRATION_STEPS.REGISTER] = useCallback(
+    async (callback = noop) => {
       const { name, duration } = registrationParameters as RegistrationParameters;
 
       const provider = getProviderForNetwork();
@@ -186,8 +220,8 @@ export default function useENSRegistrationActionHandler(
     [accountAddress, avatarMetadata, coverMetadata, registrationParameters, sendReverseRecord]
   );
 
-  const renewAction = useCallback(
-    async (callback: () => void = NOOP) => {
+  const renewAction: ActionTypes[typeof REGISTRATION_STEPS.RENEW] = useCallback(
+    async (callback = noop) => {
       const { name } = registrationParameters as RegistrationParameters;
 
       const provider = getProviderForNetwork();
@@ -214,8 +248,8 @@ export default function useENSRegistrationActionHandler(
     [accountAddress, duration, registrationParameters]
   );
 
-  const setNameAction = useCallback(
-    async (callback: () => void = NOOP) => {
+  const setNameAction: ActionTypes[typeof REGISTRATION_STEPS.SET_NAME] = useCallback(
+    async (callback = noop) => {
       const { name } = registrationParameters as RegistrationParameters;
 
       const provider = getProviderForNetwork();
@@ -241,8 +275,8 @@ export default function useENSRegistrationActionHandler(
     [accountAddress, registrationParameters]
   );
 
-  const setRecordsAction = useCallback(
-    async (callback: () => void = NOOP) => {
+  const setRecordsAction: ActionTypes[typeof REGISTRATION_STEPS.EDIT] = useCallback(
+    async (callback = noop) => {
       const provider = getProviderForNetwork();
       const wallet = await loadWallet({
         address: undefined,
@@ -277,11 +311,8 @@ export default function useENSRegistrationActionHandler(
     [accountAddress, avatarMetadata, coverMetadata, registrationParameters, sendReverseRecord]
   );
 
-  const transferAction = useCallback(
-    async (
-      callback: () => void = NOOP,
-      { clearRecords, records, name, setAddress, toAddress, transferControl, wallet: walletOverride }: any
-    ) => {
+  const transferAction: ActionTypes[typeof REGISTRATION_STEPS.TRANSFER] = useCallback(
+    async ({ clearRecords, records, name, setAddress, toAddress, transferControl, wallet: walletOverride }, callback = noop) => {
       let wallet = walletOverride;
       if (!wallet) {
         const provider = getProviderForNetwork();
@@ -321,24 +352,21 @@ export default function useENSRegistrationActionHandler(
     [accountAddress, registrationParameters]
   );
 
-  const actions = useMemo(
-    () => ({
-      [REGISTRATION_STEPS.COMMIT]: commitAction,
-      [REGISTRATION_STEPS.EDIT]: setRecordsAction,
-      [REGISTRATION_STEPS.REGISTER]: registerAction,
-      [REGISTRATION_STEPS.RENEW]: renewAction,
-      [REGISTRATION_STEPS.SET_NAME]: setNameAction,
-      [REGISTRATION_STEPS.TRANSFER]: transferAction,
-      [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: speedUpCommitAction,
-      [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: () => null,
-    }),
-    [commitAction, registerAction, renewAction, setNameAction, setRecordsAction, speedUpCommitAction, transferAction]
-  );
+  const actions: ActionTypes = {
+    [REGISTRATION_STEPS.COMMIT]: commitAction,
+    [REGISTRATION_STEPS.EDIT]: setRecordsAction,
+    [REGISTRATION_STEPS.REGISTER]: registerAction,
+    [REGISTRATION_STEPS.RENEW]: renewAction,
+    [REGISTRATION_STEPS.SET_NAME]: setNameAction,
+    [REGISTRATION_STEPS.TRANSFER]: transferAction,
+    [REGISTRATION_STEPS.WAIT_COMMIT_CONFIRMATION]: speedUpCommitAction,
+    [REGISTRATION_STEPS.WAIT_ENS_COMMITMENT]: () => Promise.resolve(),
+  };
 
   return {
-    action: actions[registrationStep],
+    action: actions[step] as ActionTypes[typeof step],
   };
-}
+};
 
 async function uploadRecordImages(records: Partial<Records> | undefined, imageMetadata: { avatar?: Image; header?: Image }) {
   const uploadRecordImage = async (key: 'avatar' | 'header') => {
@@ -366,3 +394,5 @@ async function uploadRecordImages(records: Partial<Records> | undefined, imageMe
     header,
   };
 }
+
+export default useENSRegistrationActionHandler;

@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import { captureEvent, captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
-import { isEmpty, isEqual, isString, noop } from 'lodash';
+import { isEmpty, isEqual, isString } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, StatusBar, View } from 'react-native';
 import { useDebounce } from 'use-debounce';
@@ -65,6 +65,7 @@ import { addNewTransaction } from '@/state/pendingTransactions';
 import { getNextNonce } from '@/state/nonces';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { performanceTracking, TimeToSignOperation } from '@/state/performance/performance';
+import { REGISTRATION_STEPS } from '@/helpers/ens';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
@@ -122,7 +123,7 @@ export default function SendSheet(props) {
   const { isHardwareWallet } = useWallets();
 
   const { action: transferENS } = useENSRegistrationActionHandler({
-    step: 'TRANSFER',
+    step: REGISTRATION_STEPS.TRANSFER,
   });
 
   const { hiddenCoinsObj, pinnedCoinsObj } = useCoinListEditOptions();
@@ -440,7 +441,7 @@ export default function SendSheet(props) {
       let nextNonce;
 
       if (isENS && toAddress && (clearRecords || setAddress || transferControl)) {
-        const { nonce } = await transferENS(noop, {
+        const { nonce } = await transferENS({
           clearRecords,
           name: ensName,
           records: {
