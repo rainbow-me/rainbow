@@ -20,12 +20,16 @@ export default function useWalletSectionsData({
   const { isLoading: isLoadingUserAssets, data: sortedAssets = [] } = useSortedUserAssets();
   const isWalletEthZero = useIsWalletEthZero();
 
+  const { nftSort } = useNftSort();
+
   const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const {
     data: { nfts: allUniqueTokens },
+    isFetching: isFetchingNfts,
   } = useLegacyNFTs({
     address: accountAddress,
+    sortBy: nftSort
   });
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
@@ -34,8 +38,6 @@ export default function useWalletSectionsData({
   const { hiddenCoinsObj: hiddenCoins, pinnedCoinsObj: pinnedCoins } = useCoinListEditOptions();
 
   const { isCoinListEdited } = useCoinListEdited();
-
-  const { nftSort } = useNftSort();
 
   const walletSections = useMemo(() => {
     const accountInfo = {
@@ -55,6 +57,7 @@ export default function useWalletSectionsData({
       listType: type,
       showcaseTokens,
       uniqueTokens: allUniqueTokens,
+      isFetchingNfts,
       nftSort,
     };
 

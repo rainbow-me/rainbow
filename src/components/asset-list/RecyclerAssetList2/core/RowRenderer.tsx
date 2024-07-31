@@ -123,6 +123,10 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
       );
     case CellType.NFTS_HEADER:
       return <WrappedCollectiblesHeader />;
+    case CellType.NFTS_LOADING:
+      return <NFTLoadingSkeleton />;
+    case CellType.NFTS_EMPTY:
+      return <NFTEmptyState />;
     case CellType.FAMILY_HEADER: {
       const { name, image, total } = data as NFTFamilyExtraData;
       return (

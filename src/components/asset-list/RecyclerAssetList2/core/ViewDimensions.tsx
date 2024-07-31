@@ -52,7 +52,17 @@ const ViewDimensions: Record<CellType, Dim> = {
   [CellType.FAMILY_HEADER]: { height: TokenFamilyHeaderHeight },
   [CellType.NFT]: {
     // @ts-expect-error
-    height: UniqueTokenRow.cardSize + UniqueTokenRow.cardMargin,
+    height: UniqueTokenRow.height,
+    width: deviceUtils.dimensions.width / 2 - 0.1,
+  },
+  [CellType.NFT_LOADING]: {
+    // @ts-expect-error
+    height: UniqueTokenRow.height * 5,
+    width: deviceUtils.dimensions.width / 2 - 0.1,
+  },
+  [CellType.NFT_EMPTY]: {
+    // @ts-expect-error
+    height: UniqueTokenRow.height * 5,
     width: deviceUtils.dimensions.width / 2 - 0.1,
   },
   [CellType.NFT_SPACE_AFTER]: { height: 5 },

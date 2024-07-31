@@ -5,9 +5,8 @@ import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { supportedNativeCurrencies } from '@/references';
 import { getUniqueTokenFormat, getUniqueTokenType } from '@/utils';
 import * as i18n from '@/languages';
-import * as ls from '@/storage';
 import { UniqueAsset } from '@/entities';
-import { CollectibleSortByOptions } from '@/hooks/useNFTsSortBy';
+import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 
 const COINS_TO_SHOW = 5;
 
@@ -235,39 +234,15 @@ export const buildUniqueTokenList = (uniqueTokens: any, selectedShowcaseTokens: 
   return rows;
 };
 
-const regex = RegExp(/\s*(the)\s/, 'i');
-
-const sortCollectibles = (assetsByName: Dictionary<UniqueAsset[]>, collectibleSortBy: string) => {
-  const families = Object.keys(assetsByName);
-
-  switch (collectibleSortBy) {
-    case CollectibleSortByOptions.MOST_RECENT:
-      return families.sort((a, b) => {
-        const maxDateA = Math.max(Number(...assetsByName[a].map(asset => asset.acquisition_date)));
-        const maxDateB = Math.max(Number(...assetsByName[b].map(asset => asset.acquisition_date)));
-        return maxDateB - maxDateA;
-      });
-    case CollectibleSortByOptions.ABC:
-      return families.sort((a, b) => a.replace(regex, '').toLowerCase().localeCompare(b.replace(regex, '').toLowerCase()));
-    case CollectibleSortByOptions.FLOOR_PRICE:
-      return families.sort((a, b) => {
-        const minPriceA = Math.min(...assetsByName[a].map(asset => (asset.floorPriceEth !== undefined ? asset.floorPriceEth : -1)));
-        const minPriceB = Math.min(...assetsByName[b].map(asset => (asset.floorPriceEth !== undefined ? asset.floorPriceEth : -1)));
-        return minPriceB - minPriceA;
-      });
-    default:
-      return families;
-  }
-};
-
 export const buildBriefUniqueTokenList = (
-  uniqueTokens: any,
+  uniqueTokens: UniqueAsset[],
   selectedShowcaseTokens: any,
   sellingTokens: any[] = [],
   hiddenTokens: string[] = [],
   listType: AssetListType = 'wallet',
   isReadOnlyWallet = false,
-  nftSort: string = CollectibleSortByOptions.MOST_RECENT
+  nftSort: string,
+  isFetchingNfts: boolean
 ) => {
   const hiddenUniqueTokensIds = uniqueTokens
     .filter(({ fullUniqueId }: any) => hiddenTokens.includes(fullUniqueId))
@@ -277,7 +252,7 @@ export const buildBriefUniqueTokenList = (
     .filter(({ uniqueId }: any) => selectedShowcaseTokens?.includes(uniqueId))
     .map(({ uniqueId }: any) => uniqueId);
 
-  const filteredUniqueTokens = nonHiddenUniqueTokens.filter((token: any) => {
+  const filteredUniqueTokens = nonHiddenUniqueTokens.filter((token: UniqueAsset) => {
     if (listType === 'select-nft') {
       const format = getUniqueTokenFormat(token);
       const type = getUniqueTokenType(token);
@@ -287,10 +262,7 @@ export const buildBriefUniqueTokenList = (
   });
 
   // group the assets by collection name
-  const assetsByName = groupBy(filteredUniqueTokens, token => token.familyName);
-
-  // depending on the sort by option, sort the collections
-  const families2 = sortCollectibles(assetsByName, nftSort);
+  const assetsByName = groupBy<UniqueAsset>(filteredUniqueTokens, token => token.familyName);
 
   const result = [
     {
@@ -342,25 +314,38 @@ export const buildBriefUniqueTokenList = (
     }
     result.push({ type: 'NFT_SPACE_AFTER', uid: `showcase-space-after` });
   }
-  for (const family of families2) {
-    result.push({
-      // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
-      image: assetsByName[family][0].familyImage,
-      name: family,
-      total: assetsByName[family].length,
-      type: 'FAMILY_HEADER',
-      uid: family,
-    });
-    const tokens = assetsByName[family].map(({ uniqueId }) => uniqueId);
-    for (let index = 0; index < tokens.length; index++) {
-      const uniqueId = tokens[index];
 
-      // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
-      result.push({ index, type: 'NFT', uid: uniqueId, uniqueId });
+  if (!Object.keys(assetsByName).length) {
+    if (!isFetchingNfts) {
+      // empty NFT section
+      result.push({ type: 'NFT_EMPTY', uid: `nft-empty`});
+    } else {
+      // loading NFTs section (most likely from a sortBy change) but initial load too
+      result.push({ type: 'NFT_LOADING', uid: `nft-loading-${nftSort}`});
     }
-
-    result.push({ type: 'NFT_SPACE_AFTER', uid: `${family}-space-after` });
+  } else {
+    for (const family of Object.keys(assetsByName)) {
+      result.push({
+        // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
+        image: assetsByName[family][0].familyImage,
+        name: family,
+        total: assetsByName[family].length,
+        type: 'FAMILY_HEADER',
+        uid: family,
+      });
+      const tokens = assetsByName[family].map(({ uniqueId }) => uniqueId);
+      for (let index = 0; index < tokens.length; index++) {
+        const uniqueId = tokens[index];
+  
+        // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
+        result.push({ index, type: 'NFT', uid: uniqueId, uniqueId });
+      }
+  
+      result.push({ type: 'NFT_SPACE_AFTER', uid: `${family}-space-after` });
+    }
   }
+
+  
   if (hiddenUniqueTokensIds.length > 0 && listType === 'wallet' && !isReadOnlyWallet) {
     result.push({
       // @ts-expect-error "name" does not exist in type.
@@ -382,6 +367,9 @@ export const buildBriefUniqueTokenList = (
 
     result.push({ type: 'NFT_SPACE_AFTER', uid: `showcase-space-after` });
   }
+
+  console.log(result.map((r => r.type)));
+
   return result;
 };
 

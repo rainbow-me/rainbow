@@ -1315,8 +1315,11 @@
     "nfts": {
       "selling": "Selling",
       "sort": {
+        "ABC": "Alphabetical",
         "abc": "Alphabetical",
+        "MOST_RECENT": "Recent",
         "most_recent": "Recent",
+        "FLOOR_PRICE": "Floor Price",
         "floor_price": "Floor Price"
       }
     },

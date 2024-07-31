@@ -49,6 +49,8 @@ const sellingTokensSelector = (state: any) => state.sellingTokens;
 const showcaseTokensSelector = (state: any) => state.showcaseTokens;
 const hiddenTokensSelector = (state: any) => state.hiddenTokens;
 const uniqueTokensSelector = (state: any) => state.uniqueTokens;
+const nftSortSelector = (state: any) => state.nftSort;
+const isFetchingNftsSelector = (state: any) => state.isFetchingNfts;
 const listTypeSelector = (state: any) => state.listType;
 
 const buildBriefWalletSections = (balanceSectionData: any, uniqueTokenFamiliesSection: any) => {
@@ -109,8 +111,7 @@ const withBriefBalanceSection = (
   isCoinListEdited: boolean,
   pinnedCoins: any,
   hiddenCoins: any,
-  collectibles: any,
-  nftSort: string
+  collectibles: any
 ) => {
   const { briefAssets, totalBalancesValue } = buildBriefCoinsList(sortedAssets, nativeCurrency, isCoinListEdited, pinnedCoins, hiddenCoins);
 
@@ -217,7 +218,8 @@ const briefUniqueTokenDataSelector = createSelector(
     hiddenTokensSelector,
     listTypeSelector,
     isReadOnlyWalletSelector,
-    (state: any, nftSort: string) => nftSort,
+    nftSortSelector,
+    isFetchingNftsSelector,
   ],
   buildBriefUniqueTokenList
 );
