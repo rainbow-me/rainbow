@@ -288,6 +288,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         },
       ]);
 
+      swapsStore.getState().addRecentSwap(parameters.assetToBuy as ExtendedAnimatedAssetWithColors);
       clearCustomGasSettings(chainId);
       NotificationManager?.postNotification('rapCompleted');
       Navigation.handleAction(Routes.PROFILE_SCREEN, {});

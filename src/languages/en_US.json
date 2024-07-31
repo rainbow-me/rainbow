@@ -2058,6 +2058,7 @@
     },
     "token_search": {
       "section_header": {
+        "recent": "Recent",
         "favorites": "Favorites",
         "bridge": "Bridge",
         "verified": "Verified",
