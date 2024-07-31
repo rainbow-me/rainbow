@@ -33,6 +33,9 @@ const DEFAULT: Record<UniqueId, RainbowToken> = {
     symbol: 'DAI',
     network: Network.mainnet,
     uniqueId: DAI_uniqueId,
+    networks: {
+      [ChainId.mainnet]: { address: DAI_ADDRESS },
+    },
   },
   [ETH_uniqueId]: {
     address: ETH_ADDRESS,
@@ -45,6 +48,9 @@ const DEFAULT: Record<UniqueId, RainbowToken> = {
     symbol: 'ETH',
     network: Network.mainnet,
     uniqueId: ETH_uniqueId,
+    networks: {
+      [ChainId.mainnet]: { address: ETH_ADDRESS },
+    },
   },
   [SOCKS_uniqueId]: {
     address: SOCKS_ADDRESS,
@@ -58,6 +64,9 @@ const DEFAULT: Record<UniqueId, RainbowToken> = {
     symbol: 'SOCKS',
     network: Network.mainnet,
     uniqueId: SOCKS_uniqueId,
+    networks: {
+      [ChainId.mainnet]: { address: SOCKS_ADDRESS },
+    },
   },
   [WBTC_uniqueId]: {
     address: WBTC_ADDRESS,
@@ -71,6 +80,9 @@ const DEFAULT: Record<UniqueId, RainbowToken> = {
     symbol: 'WBTC',
     network: Network.mainnet,
     uniqueId: WBTC_uniqueId,
+    networks: {
+      [ChainId.mainnet]: { address: WBTC_ADDRESS },
+    },
   },
 };
 
