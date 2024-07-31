@@ -264,6 +264,7 @@ const ClaimingRewards = ({
       const provider = getProviderForNetwork(Network.optimism);
       const wallet = await loadWallet({
         address,
+        showErrorIfNotLoaded: false,
         provider,
       });
       if (!wallet) {
