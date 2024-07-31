@@ -9,7 +9,11 @@ export const useBottomPanelGestureHandler = () => {
 
   const swipeToDismissGestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
     onStart: (_, ctx: { startY?: number }) => {
-      if (configProgress.value !== NavigationSteps.SHOW_REVIEW && configProgress.value !== NavigationSteps.SHOW_GAS) {
+      if (
+        configProgress.value !== NavigationSteps.SHOW_REVIEW &&
+        configProgress.value !== NavigationSteps.SHOW_GAS &&
+        configProgress.value !== NavigationSteps.SHOW_SETTINGS
+      ) {
         return;
       }
 
@@ -18,7 +22,11 @@ export const useBottomPanelGestureHandler = () => {
       }
     },
     onActive: (e, ctx: { startY?: number }) => {
-      if (configProgress.value !== NavigationSteps.SHOW_REVIEW && configProgress.value !== NavigationSteps.SHOW_GAS) {
+      if (
+        configProgress.value !== NavigationSteps.SHOW_REVIEW &&
+        configProgress.value !== NavigationSteps.SHOW_GAS &&
+        configProgress.value !== NavigationSteps.SHOW_SETTINGS
+      ) {
         return;
       }
 
@@ -44,6 +52,8 @@ export const useBottomPanelGestureHandler = () => {
           SwapNavigation.handleDismissReview();
         } else if (configProgress.value === NavigationSteps.SHOW_GAS) {
           SwapNavigation.handleDismissGas();
+        } else if (configProgress.value === NavigationSteps.SHOW_SETTINGS) {
+          SwapNavigation.handleDismissSettings();
         }
       }
       gestureY.value = withSpring(0, SPRING_CONFIGS.springConfig);

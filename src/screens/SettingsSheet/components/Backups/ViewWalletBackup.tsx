@@ -457,6 +457,7 @@ const ViewWalletBackup = () => {
                 onPress={onManualBackup}
                 size={52}
                 titleComponent={<MenuItem.Title isLink text={i18n.t(i18n.l.back_up.manual.backup_manually)} />}
+                testID={'back-up-manually'}
               />
               <BackUpMenuItem
                 icon="􀊯"
@@ -491,6 +492,7 @@ const ViewWalletBackup = () => {
                       : i18n.t(i18n.l.wallet.back_ups.backed_up_manually)
                   }
                   weight="heavy"
+                  testID={'backed-up-manually'}
                 />
               }
               labelComponent={
@@ -535,6 +537,7 @@ const ViewWalletBackup = () => {
             .map((account: RainbowAccount) => (
               <ContextMenuWrapper account={account} menuConfig={menuConfig} onPressMenuItem={onPressMenuItem} key={account.address}>
                 <MenuItem
+                  testID={'wallet-backup-button'}
                   size={60}
                   disabled
                   leftComponent={<WalletAvatar account={account} />}

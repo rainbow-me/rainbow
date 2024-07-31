@@ -22,7 +22,7 @@ import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animatio
 import { AnimatedText, Bleed, Box, Column, Columns, Inline, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { triggerHapticFeedback } from '@/screens/points/constants';
-import { equalWorklet, greaterThanWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { greaterThanWorklet } from '@/__swaps__/safe-math/SafeMath';
 import {
   SCRUBBER_WIDTH,
   SLIDER_COLLAPSED_HEIGHT,
@@ -418,29 +418,7 @@ export const SwapSlider = ({
                 </Inline>
                 <Column width="content">
                   <GestureHandlerV1Button
-                    onPressWorklet={() => {
-                      'worklet';
-                      SwapInputController.inputMethod.value = 'slider';
-
-                      const currentInputValue = SwapInputController.inputValues.value.inputAmount;
-                      const maxSwappableAmount = internalSelectedInputAsset.value?.maxSwappableAmount;
-
-                      const isAlreadyMax = maxSwappableAmount ? equalWorklet(currentInputValue, maxSwappableAmount) : false;
-                      const exceedsMax = maxSwappableAmount ? greaterThanWorklet(currentInputValue, maxSwappableAmount) : false;
-
-                      if (isAlreadyMax) {
-                        runOnJS(triggerHapticFeedback)('impactMedium');
-                      } else {
-                        SwapInputController.quoteFetchingInterval.stop();
-                        if (exceedsMax) sliderXPosition.value = width * 0.999;
-
-                        sliderXPosition.value = withSpring(width, SPRING_CONFIGS.snappySpringConfig, isFinished => {
-                          if (isFinished) {
-                            runOnJS(onChangeWrapper)(1);
-                          }
-                        });
-                      }
-                    }}
+                    onPressWorklet={SwapInputController.setValueToMaxSwappableAmount}
                     style={{ margin: -12, padding: 12 }}
                     ref={maxButtonRef}
                   >

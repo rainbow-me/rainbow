@@ -1,30 +1,30 @@
-import { useQuery } from '@tanstack/react-query';
+import { getNetwork, saveNetwork } from '@/handlers/localstorage/globalSettings';
+import { web3SetHttpProvider } from '@/handlers/web3';
+import { RainbowError, logger } from '@/logger';
 import { createQueryKey, queryClient } from '@/react-query';
+import { delay } from '@/utils/delay';
 import remoteConfig from '@react-native-firebase/remote-config';
+import { useQuery } from '@tanstack/react-query';
 import {
   ARBITRUM_MAINNET_RPC,
+  AVALANCHE_MAINNET_RPC,
+  AVALANCHE_MAINNET_RPC_DEV,
+  BASE_MAINNET_RPC,
+  BASE_MAINNET_RPC_DEV,
+  BLAST_MAINNET_RPC,
+  BSC_MAINNET_RPC,
   DATA_API_KEY,
   DATA_ENDPOINT,
   DATA_ORIGIN,
+  DEGEN_MAINNET_RPC,
   ETHEREUM_GOERLI_RPC,
   ETHEREUM_GOERLI_RPC_DEV,
   ETHEREUM_MAINNET_RPC,
   ETHEREUM_MAINNET_RPC_DEV,
   OPTIMISM_MAINNET_RPC,
   POLYGON_MAINNET_RPC,
-  BASE_MAINNET_RPC,
-  BASE_MAINNET_RPC_DEV,
-  BSC_MAINNET_RPC,
   ZORA_MAINNET_RPC,
-  AVALANCHE_MAINNET_RPC,
-  AVALANCHE_MAINNET_RPC_DEV,
-  BLAST_MAINNET_RPC,
-  DEGEN_MAINNET_RPC,
 } from 'react-native-dotenv';
-import { RainbowError, logger } from '@/logger';
-import { getNetwork, saveNetwork } from '@/handlers/localstorage/globalSettings';
-import { web3SetHttpProvider } from '@/handlers/web3';
-import { delay } from '@/utils/delay';
 
 export interface RainbowConfig extends Record<string, string | boolean | number> {
   arbitrum_mainnet_rpc: string;
@@ -89,6 +89,8 @@ export interface RainbowConfig extends Record<string, string | boolean | number>
   swaps_v2: boolean;
   idfa_check_enabled: boolean;
   rewards_enabled: boolean;
+
+  degen_mode: boolean;
 }
 
 export const DEFAULT_CONFIG: RainbowConfig = {
@@ -169,6 +171,8 @@ export const DEFAULT_CONFIG: RainbowConfig = {
   swaps_v2: false,
   idfa_check_enabled: true,
   rewards_enabled: true,
+
+  degen_mode: false,
 };
 
 export async function fetchRemoteConfig(): Promise<RainbowConfig> {
@@ -222,7 +226,8 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
         key === 'dapp_browser' ||
         key === 'swaps_v2' ||
         key === 'idfa_check_enabled' ||
-        key === 'rewards_enabled'
+        key === 'rewards_enabled' ||
+        key === 'degen_mode'
       ) {
         config[key] = entry.asBoolean();
       } else {

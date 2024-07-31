@@ -4027,12 +4027,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@notifee/react-native@npm:5.6.0":
-  version: 5.6.0
-  resolution: "@notifee/react-native@npm:5.6.0"
+"@notifee/react-native@npm:7.8.2":
+  version: 7.8.2
+  resolution: "@notifee/react-native@npm:7.8.2"
   peerDependencies:
     react-native: "*"
-  checksum: 10c0/f0d3c93e1752c068a7b249386f9675951d4250ee6860d27bde8726bbcab612eb0a26126942c558585467c727bc5b961f9a3150dc9d36ac72e8f88d4739fa7230
+  checksum: 10c0/1559caa74ccc057aa4a4a6fe15bcaf0fe0371ece045a0923c051fcef312e4c2b3e2f38e5032a15d2be327fd707492d014f2f074405123ed561ba368906413f29
   languageName: node
   linkType: hard
 
@@ -7808,7 +7808,7 @@ __metadata:
     "@metamask/eth-sig-util": "npm:7.0.2"
     "@nomiclabs/hardhat-ethers": "npm:2.2.3"
     "@nomiclabs/hardhat-waffle": "npm:2.0.6"
-    "@notifee/react-native": "npm:5.6.0"
+    "@notifee/react-native": "npm:7.8.2"
     "@rainbow-me/provider": "npm:0.0.12"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"
     "@rainbow-me/swaps": "npm:0.22.0"

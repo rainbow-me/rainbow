@@ -44,7 +44,7 @@ export default function BackupSheet() {
       <BackgroundProvider color="surfaceSecondary">
         {({ backgroundColor }) => (
           <SimpleSheet
-            testID="backup-sheet"
+            testID={'backup-sheet'}
             backgroundColor={backgroundColor as string}
             customHeight={getHeightForStep(step)}
             scrollEnabled={false}

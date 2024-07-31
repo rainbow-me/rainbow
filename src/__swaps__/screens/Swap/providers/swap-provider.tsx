@@ -26,12 +26,13 @@ import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/scree
 import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
-import { isUnwrapEthWorklet, isWrapEthWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
+import { getDefaultSlippageWorklet, isUnwrapEthWorklet, isWrapEthWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { getFlashbotsProvider, getIsHardhatConnected, getProviderForNetwork, isHardHat } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useAccountSettings } from '@/hooks';
+import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { loadWallet } from '@/model/wallet';
@@ -53,10 +54,11 @@ import { clearCustomGasSettings } from '../hooks/useCustomGas';
 import { getGasSettingsBySpeed, getSelectedGas, getSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
+import { getRemoteConfig } from '@/model/remoteConfig';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
-const tapToSwap = i18n.t(i18n.l.swap.actions.tap_to_swap);
-const save = i18n.t(i18n.l.swap.actions.save);
+const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
+const done = i18n.t(i18n.l.button.done);
 const enterAmount = i18n.t(i18n.l.swap.actions.enter_amount);
 const review = i18n.t(i18n.l.swap.actions.review);
 const fetchingPrices = i18n.t(i18n.l.swap.actions.fetching_prices);
@@ -94,6 +96,7 @@ interface SwapContextType {
 
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
   executeSwap: () => void;
+  quoteFetchingInterval: ReturnType<typeof useAnimatedInterval>;
 
   outputQuotesAreDisabled: DerivedValue<boolean>;
   swapInfo: DerivedValue<{
@@ -108,14 +111,13 @@ interface SwapContextType {
   SwapNavigation: ReturnType<typeof useSwapNavigation>;
   SwapWarning: ReturnType<typeof useSwapWarning>;
 
-  confirmButtonProps: Readonly<
-    SharedValue<{
-      label: string;
-      icon?: string;
-      disabled?: boolean;
-      opacity?: number;
-    }>
-  >;
+  confirmButtonProps: DerivedValue<{
+    label: string;
+    icon?: string;
+    disabled?: boolean;
+    opacity?: number;
+    type: 'tap' | 'hold';
+  }>;
   confirmButtonIconStyle: StyleProp<TextStyle>;
 
   hasEnoughFundsForGas: SharedValue<boolean | undefined>;
@@ -159,9 +161,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   );
   const configProgress = useSharedValue<NavigationSteps>(NavigationSteps.INPUT_ELEMENT_FOCUSED);
 
-  const SwapSettings = useSwapSettings({
-    inputAsset: internalSelectedInputAsset,
-  });
+  const slippage = useSharedValue(getDefaultSlippageWorklet(initialSelectedInputAsset?.chainId || ChainId.mainnet, getRemoteConfig()));
 
   const SwapInputController = useSwapInputsController({
     focusedInput,
@@ -174,8 +174,13 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     isFetching,
     isQuoteStale,
     sliderXPosition,
-    slippage: SwapSettings.slippage,
+    slippage,
     quote,
+  });
+
+  const SwapSettings = useSwapSettings({
+    debouncedFetchQuote: SwapInputController.debouncedFetchQuote,
+    slippage,
   });
 
   const getNonceAndPerformSwap = async ({
@@ -316,7 +321,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const executeSwap = () => {
     'worklet';
 
-    if (configProgress.value !== NavigationSteps.SHOW_REVIEW) return;
+    if (configProgress.value !== NavigationSteps.SHOW_REVIEW && !SwapSettings.degenMode.value) return;
 
     const inputAsset = internalSelectedInputAsset.value;
     const outputAsset = internalSelectedOutputAsset.value;
@@ -371,15 +376,30 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     });
   };
 
+  const swapInfo = useDerivedValue(() => {
+    const areBothAssetsSet = !!internalSelectedInputAsset.value && !!internalSelectedOutputAsset.value;
+    const isBridging =
+      !!internalSelectedInputAsset.value?.networks &&
+      !!internalSelectedOutputAsset.value?.chainId &&
+      (internalSelectedInputAsset.value.networks[internalSelectedOutputAsset.value.chainId]?.address as unknown as AddressOrEth) ===
+        internalSelectedOutputAsset.value.address;
+
+    return {
+      areBothAssetsSet,
+      isBridging,
+    };
+  });
+
   const SwapTextStyles = useSwapTextStyles({
+    configProgress,
+    focusedInput,
     inputMethod: SwapInputController.inputMethod,
+    inputProgress,
     inputValues: SwapInputController.inputValues,
     internalSelectedInputAsset,
     internalSelectedOutputAsset,
     isFetching,
     isQuoteStale,
-    focusedInput,
-    inputProgress,
     outputProgress,
     sliderPressProgress,
   });
@@ -388,11 +408,12 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     configProgress,
     executeSwap,
     inputProgress,
+    isDegenMode: SwapSettings.degenMode,
     outputProgress,
     quoteFetchingInterval: SwapInputController.quoteFetchingInterval,
     selectedInputAsset: internalSelectedInputAsset,
     selectedOutputAsset: internalSelectedOutputAsset,
-    isDegenMode: SwapSettings.degenMode,
+    swapInfo,
   });
 
   const SwapWarning = useSwapWarning({
@@ -406,31 +427,19 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
   const AnimatedSwapStyles = useAnimatedSwapStyles({
     SwapWarning,
+    configProgress,
+    degenMode: SwapSettings.degenMode,
+    inputProgress,
     internalSelectedInputAsset,
     internalSelectedOutputAsset,
-    inputProgress,
-    outputProgress,
-    configProgress,
     isFetching,
+    outputProgress,
+    swapInfo,
   });
 
   const outputQuotesAreDisabled = useSwapOutputQuotesDisabled({
     inputAsset: internalSelectedInputAsset,
     outputAsset: internalSelectedOutputAsset,
-  });
-
-  const swapInfo = useDerivedValue(() => {
-    const areBothAssetsSet = !!internalSelectedInputAsset.value && !!internalSelectedOutputAsset.value;
-    const isBridging =
-      !!internalSelectedInputAsset.value?.networks &&
-      !!internalSelectedOutputAsset.value?.chainId &&
-      (internalSelectedInputAsset.value.networks[internalSelectedOutputAsset.value.chainId]?.address as unknown as AddressOrEth) ===
-        internalSelectedOutputAsset.value.address;
-
-    return {
-      areBothAssetsSet,
-      isBridging,
-    };
   });
 
   const handleProgressNavigation = useCallback(
@@ -448,6 +457,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           } else {
             inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
             outputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
+            SwapNavigation.handleDismissSettings({ skipAssetChecks: true });
           }
           break;
         case SwapAssetType.outputAsset:
@@ -458,11 +468,12 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           } else {
             inputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
             outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+            SwapNavigation.handleDismissSettings({ skipAssetChecks: true });
           }
           break;
       }
     },
-    [internalSelectedInputAsset, internalSelectedOutputAsset, inputProgress, outputProgress]
+    [SwapNavigation, internalSelectedInputAsset, internalSelectedOutputAsset, inputProgress, outputProgress]
   );
 
   const setSelectedOutputChainId = (chainId: ChainId) => {
@@ -616,18 +627,22 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
   );
 
-  const confirmButtonProps = useDerivedValue(() => {
+  const confirmButtonProps: SwapContextType['confirmButtonProps'] = useDerivedValue(() => {
     if (isSwapping.value) {
-      return { label: swapping, disabled: true };
+      return { label: swapping, disabled: true, type: 'hold' };
     }
 
     if (configProgress.value === NavigationSteps.SHOW_GAS) {
-      return { icon: '􀆅', label: save, disabled: false };
+      return { label: done, disabled: false, type: 'tap' };
+    }
+
+    if (configProgress.value === NavigationSteps.SHOW_SETTINGS) {
+      return { label: done, disabled: false, type: 'tap' };
     }
 
     const hasSelectedAssets = internalSelectedInputAsset.value && internalSelectedOutputAsset.value;
     if (!hasSelectedAssets) {
-      return { label: selectToken, disabled: true };
+      return { label: selectToken, disabled: true, type: 'hold' };
     }
 
     const isInputZero = equalWorklet(SwapInputController.inputValues.value.inputAmount, 0);
@@ -638,7 +653,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const userHasNotMovedSlider = SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0;
 
     if (userHasNotEnteredAmount || userHasNotMovedSlider) {
-      return { label: enterAmount, disabled: true, opacity: 1 };
+      return { label: enterAmount, disabled: true, opacity: 1, type: 'hold' };
     }
 
     if (
@@ -646,7 +661,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         SwapWarning.swapWarning.value.type
       )
     ) {
-      return { icon: '􀕹', label: review, disabled: true };
+      return { icon: '􀕹', label: review, disabled: true, type: 'hold' };
     }
 
     const sellAsset = internalSelectedInputAsset.value;
@@ -654,19 +669,24 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       sellAsset && lessThanOrEqualToWorklet(SwapInputController.inputValues.value.inputAmount, sellAsset.maxSwappableAmount);
 
     if (!enoughFundsForSwap) {
-      return { label: insufficientFunds, disabled: true };
+      return { label: insufficientFunds, disabled: true, type: 'hold' };
     }
 
     const isQuoteError = quote.value && 'error' in quote.value;
     const isLoadingGas = !isQuoteError && hasEnoughFundsForGas.value === undefined;
-    const isReviewSheetOpen = configProgress.value === NavigationSteps.SHOW_REVIEW;
+    const isReviewSheetOpen = configProgress.value === NavigationSteps.SHOW_REVIEW || SwapSettings.degenMode.value;
 
     if ((isFetching.value || isLoadingGas) && !isQuoteError) {
-      return { label: fetchingPrices, disabled: (isReviewSheetOpen && isFetching.value) || !quote.value };
+      const disabled = (isReviewSheetOpen && (isFetching.value || isLoadingGas)) || !quote.value;
+      const buttonType = isReviewSheetOpen ? 'hold' : 'tap';
+      return { label: fetchingPrices, disabled, type: buttonType };
     }
 
+    const reviewLabel = SwapSettings.degenMode.value ? holdToSwap : review;
+
     if (isQuoteError) {
-      return { icon: isReviewSheetOpen ? undefined : '􀕹', label: isReviewSheetOpen ? quoteError : review, disabled: true };
+      const icon = isReviewSheetOpen ? undefined : '􀕹';
+      return { icon, label: isReviewSheetOpen ? quoteError : reviewLabel, disabled: true, type: 'hold' };
     }
 
     if (!hasEnoughFundsForGas.value) {
@@ -674,14 +694,15 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return {
         label: `${insufficient} ${nativeCurrency.symbol}`,
         disabled: true,
+        type: 'hold',
       };
     }
 
     if (isReviewSheetOpen) {
-      return { icon: '􀎽', label: tapToSwap, disabled: false };
+      return { icon: '􀎽', label: holdToSwap, disabled: false, type: 'hold' };
     }
 
-    return { icon: '􀕹', label: review, disabled: false };
+    return { icon: '􀕹', label: reviewLabel, disabled: false, type: 'tap' };
   });
 
   const confirmButtonIconStyle = useAnimatedStyle(() => {
@@ -732,6 +753,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         outputQuotesAreDisabled,
         swapInfo,
         executeSwap,
+        quoteFetchingInterval: SwapInputController.quoteFetchingInterval,
 
         SwapSettings,
         SwapInputController,

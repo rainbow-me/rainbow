@@ -11,6 +11,7 @@ import { TxHash } from '@/resources/transactions/types';
 import { NewTransaction, TransactionGasParamAmounts } from '@/entities';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import ethereumUtils, { getNetworkFromChainId } from '@/utils/ethereumUtils';
+import { REFERRER_CLAIM, ReferrerType } from '@/references';
 
 // This action is used to bridge the claimed funds to another chain
 export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps<'claimBridge'>) {
@@ -133,6 +134,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
     quote: bridgeQuote,
     wallet,
     gasParams,
+    referrer: REFERRER_CLAIM,
   };
 
   let swap;

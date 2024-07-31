@@ -181,7 +181,7 @@ const SettingsSection = ({
               </Box>
             }
             size={60}
-            testID="backup-section"
+            testID={'backup-section'}
             titleComponent={<MenuItem.Title text={lang.t(lang.l.settings.backup)} />}
           />
         )}

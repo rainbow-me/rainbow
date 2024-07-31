@@ -42,6 +42,10 @@ export interface SwapsState {
   recentSwaps: Map<ChainId, RecentSwap[]>;
   getRecentSwapsByChain: (chainId: ChainId) => RecentSwap[];
   addRecentSwap: (asset: ExtendedAnimatedAssetWithColors) => void;
+  
+  // degen mode preferences
+  preferredNetwork: ChainId | undefined;
+  setPreferredNetwork: (preferredNetwork: ChainId | undefined) => void;
 }
 
 type StateWithTransforms = Omit<Partial<SwapsState>, 'latestSwapAt' | 'recentSwaps'> & {
@@ -150,6 +154,8 @@ export const swapsStore = createRainbowStore<SwapsState>(
 
     degenMode: false,
     setDegenMode: (degenMode: boolean) => set({ degenMode }),
+    preferredNetwork: undefined,
+    setPreferredNetwork: (preferredNetwork: ChainId | undefined) => set({ preferredNetwork }),
 
     latestSwapAt: new Map(),
     recentSwaps: new Map(),
@@ -180,7 +186,9 @@ export const swapsStore = createRainbowStore<SwapsState>(
     // NOTE: Only persist the following
     partialize(state) {
       return {
+        degenMode: state.degenMode,
         flashbots: state.flashbots,
+        preferredNetwork: state.preferredNetwork,
         source: state.source,
         latestSwapAt: state.latestSwapAt,
         recentSwaps: state.recentSwaps,
