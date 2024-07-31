@@ -261,7 +261,7 @@ export const walletInit = async (
 export const loadWallet = async <S extends Screen>({
   address,
   showErrorIfNotLoaded = true,
-  provider = web3Provider,
+  provider,
   timeTracking,
 }: {
   address?: EthereumAddress;
@@ -299,7 +299,6 @@ export const loadWallet = async <S extends Screen>({
       return new LedgerSigner(provider, getHdPath({ type: WalletLibraryType.ledger, index: Number(index) }), deviceId);
     }
   } else if (privateKey) {
-    // @ts-ignore
     return new Wallet(privateKey, provider || web3Provider);
   }
   if (ios && showErrorIfNotLoaded) {
