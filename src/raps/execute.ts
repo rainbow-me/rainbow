@@ -144,31 +144,44 @@ export const walletExecuteRap = async (
   const rapName = getRapFullName(rap.actions);
   let nonce = parameters?.nonce;
   let errorMessage = null;
-
   if (actions.length) {
-    for (let index = 0; index < actions.length; index++) {
-      const action = actions[index];
-      const actionParams = {
-        action,
-        wallet,
-        rap,
-        index,
-        baseNonce: nonce,
-        rapName,
-        flashbots: parameters?.flashbots,
-        gasParams: parameters?.gasParams,
-        gasFeeParamsBySpeed: parameters?.gasFeeParamsBySpeed,
-      };
+    const firstAction = actions[0];
+    const actionParams = {
+      action: firstAction,
+      wallet,
+      rap,
+      index: 0,
+      baseNonce: nonce,
+      rapName,
+      flashbots: parameters?.flashbots,
+      gasParams: parameters?.gasParams,
+      gasFeeParamsBySpeed: parameters?.gasFeeParamsBySpeed,
+    };
 
-      const { hash, baseNonce, errorMessage: error } = await executeAction(actionParams);
+    const { baseNonce, errorMessage: error, hash } = await executeAction(actionParams);
+
+    if (typeof baseNonce === 'number') {
       actions.length > 1 && hash && (await waitForNodeAck(hash, wallet.provider));
-
-      if (typeof baseNonce === 'number') {
-        nonce = baseNonce;
+      for (let index = 1; index < actions.length; index++) {
+        const action = actions[index];
+        const actionParams = {
+          action,
+          wallet,
+          rap,
+          index,
+          baseNonce,
+          rapName,
+          flashbots: parameters?.flashbots,
+          gasParams: parameters?.gasParams,
+          gasFeeParamsBySpeed: parameters?.gasFeeParamsBySpeed,
+        };
+        const { hash } = await executeAction(actionParams);
+        hash && (await waitForNodeAck(hash, wallet.provider));
       }
+      nonce = baseNonce + actions.length - 1;
+    } else {
       errorMessage = error;
     }
   }
-
   return { nonce, errorMessage };
 };
