@@ -42,7 +42,7 @@ export interface SwapsState {
   recentSwaps: Map<ChainId, RecentSwap[]>;
   getRecentSwapsByChain: (chainId: ChainId) => RecentSwap[];
   addRecentSwap: (asset: ExtendedAnimatedAssetWithColors) => void;
-  
+
   // degen mode preferences
   preferredNetwork: ChainId | undefined;
   setPreferredNetwork: (preferredNetwork: ChainId | undefined) => void;
