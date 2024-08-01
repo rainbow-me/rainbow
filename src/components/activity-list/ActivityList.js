@@ -79,8 +79,6 @@ function ListFooterComponent({ label, onPress }) {
 const ActivityList = ({
   hasPendingTransaction,
   header,
-  isEmpty,
-  isLoading,
   nativeCurrency,
   network,
   nextPage,
@@ -109,41 +107,38 @@ const ActivityList = ({
     setScrollToTopRef(ref);
   };
 
-  if (network === networkTypes.mainnet || sections.length) {
-    if (isEmpty && !isLoading) {
-      return <ActivityListEmptyState>{header}</ActivityListEmptyState>;
-    } else {
-      return (
-        <SectionList
-          ListFooterComponent={() => remainingItemsLabel && <ListFooterComponent label={remainingItemsLabel} onPress={nextPage} />}
-          ref={handleListRef}
-          ListHeaderComponent={header}
-          alwaysBounceVertical={false}
-          contentContainerStyle={{ paddingBottom: !transactionsCount ? 0 : 90 }}
-          extraData={{
-            hasPendingTransaction,
-            nativeCurrency,
-            pendingTransactionsCount,
-          }}
-          getItemLayout={getItemLayout}
-          initialNumToRender={12}
-          keyExtractor={keyExtractor}
-          removeClippedSubviews
-          renderSectionHeader={renderSectionHeaderWithTheme}
-          scrollIndicatorInsets={{
-            bottom: safeAreaInsetValues.bottom + 14,
-          }}
-          sections={sections}
-        />
-      );
-    }
-  } else {
+  if (network === networkTypes.mainnet) {
     return (
-      <ActivityListEmptyState emoji="👻" label={lang.t(lang.l.empty_state.testnet_label)}>
-        {header}
-      </ActivityListEmptyState>
+      <SectionList
+        ListFooterComponent={() => remainingItemsLabel && <ListFooterComponent label={remainingItemsLabel} onPress={nextPage} />}
+        ref={handleListRef}
+        ListHeaderComponent={header}
+        alwaysBounceVertical={false}
+        contentContainerStyle={{ paddingBottom: !transactionsCount ? 0 : 90 }}
+        extraData={{
+          hasPendingTransaction,
+          nativeCurrency,
+          pendingTransactionsCount,
+        }}
+        ListEmptyComponent={<ActivityListEmptyState />}
+        getItemLayout={getItemLayout}
+        initialNumToRender={12}
+        keyExtractor={keyExtractor}
+        removeClippedSubviews
+        renderSectionHeader={renderSectionHeaderWithTheme}
+        scrollIndicatorInsets={{
+          bottom: safeAreaInsetValues.bottom + 14,
+        }}
+        sections={sections}
+      />
     );
   }
+
+  return (
+    <ActivityListEmptyState emoji="👻" label={lang.t(lang.l.empty_state.testnet_label)}>
+      {header}
+    </ActivityListEmptyState>
+  );
 };
 
 export default ActivityList;
