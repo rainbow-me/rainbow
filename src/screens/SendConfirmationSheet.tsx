@@ -388,11 +388,11 @@ export const SendConfirmationSheet = () => {
               const clearRecords = checkboxes.some(({ checked, id }) => checked && id === 'clear-records');
               const setAddress = checkboxes.some(({ checked, id }) => checked && id === 'set-address');
               const transferControl = checkboxes.some(({ checked, id }) => checked && id === 'transfer-control');
-              callback({
+              await callback({
                 ens: { clearRecords, setAddress, transferControl },
               });
             } else {
-              callback();
+              await callback();
             }
           } catch (e) {
             logger.sentry('TX submit failed', e);
