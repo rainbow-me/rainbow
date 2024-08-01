@@ -367,8 +367,6 @@ export const buildBriefUniqueTokenList = (
     result.push({ type: 'NFT_SPACE_AFTER', uid: `showcase-space-after` });
   }
 
-  console.log(result.map(r => r.type));
-
   return result;
 };
 
