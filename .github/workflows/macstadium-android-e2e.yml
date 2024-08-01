@@ -1,56 +1,82 @@
-# This is a basic workflow to help you get started with Actions
-
 name: Android e2e tests
 
-# Controls when the workflow will run
 on: [pull_request, workflow_dispatch]
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "android-e2e"
-  android-e2e:
-    if: startsWith(github.head_ref, 'android-ci')
-    # The type of runner that the job will run on
-    runs-on: ["self-hosted", "ci-5"]
-    # Cancel current builds if there's a newer commit on the same branch
-    concurrency:
+  ios-e2e:
+    runs-on: ["self-hosted"]
+    concurrency: 
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    permissions:
+      contents: read
+
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
       - name: Set up github keys
         run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
 
+      - name: Clean Android app
+        run: yarn clean:android > /dev/null 2>&1 || true
+
       - name: Set up ENV vars & scripts
+        env:
+          CI_SCRIPTS_RN_UPGRADE: ${{ secrets.CI_SCRIPTS_RN_UPGRADE }}
         run: |
-          # read local env vars
-          source ~/.bashrc
-          # fetch env vars
+          source ~/.zshrc
           git clone git@github.com:rainbow-me/rainbow-env.git
-          # unpack dotenv
-          mv rainbow-env/android/app/google-services.json android/app
           mv rainbow-env/dotenv .env && rm -rf rainbow-env
-          # run CI scripts
-          eval $CI_SCRIPTS
-          # tweak dotenv for e2e
-          sed -i''-e "s/\IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e
-          # set up password
-          cp android/keystores/debug.keystore android/keystores/rainbow-key.keystore
-          sed -i -e "s:rainbow-alias:androiddebugkey:g" android/app/build.gradle
-          export RAINBOW_KEY_ANDROID_PASSWORD=android
-      - name: Install deps via Yarn
-        run: yarn setup-ci
+          eval $CI_SCRIPTS_RN_UPGRADE
+          sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e 
+      
+      - name: Get Yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            .yarn/cache
+            .yarn/install-state.gz
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        run: |
+          yarn cache clean --all && yarn install && yarn setup
+
+      - name: Check for frozen lockfile
+        run: ./scripts/check-lockfile.sh
+
+      - name: Audit CI
+        run: yarn audit-ci --config audit-ci.jsonc
+
+      - name: Lint
+        run: yarn lint:ci
+
+      - name: Unit tests
+        run: yarn test
 
       - name: Rebuild detox cache
         run: ./node_modules/.bin/detox clean-framework-cache && ./node_modules/.bin/detox build-framework-cache
+      
+      - name: Version debug
+        run: |
+          npx react-native info
+
+      - name: Fix permissions
+        run: |
+          chmod -R +x node_modules/react-native/scripts
+          chmod -R +x node_modules/@sentry/react-native/scripts
 
       - name: Build the app in Release mode
-        run: ./node_modules/.bin/detox build --configuration android.emu.release
+        run: yarn detox build --configuration android.emu.release
 
-      - name: Run Android e2e tests
-        run: ./node_modules/.bin/detox test -R 5 --configuration android.emu.release --forceExit
-
+      # change the '3' here to how many times you want the tests to rerun on failure
+      - name: Run iOS e2e tests with retry
+        run: ./scripts/run-retry-tests.sh 3
