@@ -26,6 +26,7 @@ import { ParsedAsset } from '@/resources/assets/types';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
 import Routes from '@/navigation/routesNames';
+import { swapsStore } from '@/state/swaps/swapsStore';
 
 const getCrosschainSwapDefaultGasLimit = (quote: CrosschainQuote) => quote?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
 
@@ -153,6 +154,9 @@ export const crosschainSwap = async ({
       fn: executeCrosschainSwap,
       screen: Routes.SWAP,
       operation: TimeToSignOperation.BroadcastTransaction,
+      metadata: {
+        degenMode: swapsStore.getState().degenMode,
+      },
     })(swapParams);
   } catch (e) {
     logger.error(new RainbowError('crosschainSwap: error executeCrosschainSwap'), { message: (e as Error)?.message });

@@ -49,6 +49,7 @@ import { ParsedAsset } from '@/resources/assets/types';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
 import Routes from '@/navigation/routesNames';
+import { swapsStore } from '@/state/swaps/swapsStore';
 
 const WRAP_GAS_PADDING = 1.002;
 
@@ -290,6 +291,9 @@ export const swap = async ({
       fn: executeSwap,
       screen: Routes.SWAP,
       operation: TimeToSignOperation.BroadcastTransaction,
+      metadata: {
+        degenMode: swapsStore.getState().degenMode,
+      },
     })(swapParams);
   } catch (e) {
     logger.error(new RainbowError('swap: error executeSwap'), {

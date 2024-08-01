@@ -34,6 +34,7 @@ export interface PerformanceLog<S extends Screen> {
   endTime: number;
   timeToCompletion: number;
   completedAt: number;
+  metadata?: Record<string, string | number | boolean>;
 }
 
 export type AnyPerformanceLog = PerformanceLog<Screen>;

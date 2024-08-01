@@ -24,6 +24,7 @@ import { createUnlockAndSwapRap } from './unlockAndSwap';
 import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
 import Routes from '@/navigation/routesNames';
+import { swapsStore } from '@/state/swaps/swapsStore';
 
 export function createSwapRapByType<T extends RapTypes>(
   type: T,
@@ -138,6 +139,9 @@ export const walletExecuteRap = async (
           fn: createSwapRapByType,
           screen: Routes.SWAP,
           operation: TimeToSignOperation.CreateRap,
+          metadata: {
+            degenMode: swapsStore.getState().degenMode,
+          },
         })(type, parameters);
 
   const { actions } = rap;

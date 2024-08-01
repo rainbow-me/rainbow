@@ -10,6 +10,7 @@ export interface ExecuteFnParams<S extends Screen, T extends AnyFunction> {
   screen: S;
   operation: OperationForScreen<S>;
   fn: T;
+  metadata?: Record<string, string | number | boolean>;
   endOfOperation?: boolean;
 }
 
@@ -28,6 +29,7 @@ function logPerformance<S extends Screen>({
   operation,
   startTime,
   endTime,
+  metadata,
   endOfOperation,
 }: ExecuteFnParamsWithoutFn<S> & { startTime: number; endTime: number }) {
   performanceTracking.setState(state => {
@@ -38,6 +40,7 @@ function logPerformance<S extends Screen>({
       operation,
       startTime,
       endTime,
+      metadata,
       timeToCompletion,
     };
 
@@ -77,7 +80,13 @@ const getCurrentTime = (): number => {
 export const performanceTracking = createRainbowStore<PerformanceTrackingState>(() => ({
   elapsedTime: 0,
 
-  executeFn: (<S extends Screen, T extends AnyFunction>({ fn, screen, operation, endOfOperation = false }: ExecuteFnParams<S, T>) => {
+  executeFn: (<S extends Screen, T extends AnyFunction>({
+    fn,
+    screen,
+    operation,
+    metadata,
+    endOfOperation = false,
+  }: ExecuteFnParams<S, T>) => {
     'worklet';
     const logPerformanceAndReturn = <R>(startTime: number, endTime: number, result: R): R => {
       'worklet';
@@ -86,6 +95,7 @@ export const performanceTracking = createRainbowStore<PerformanceTrackingState>(
         operation,
         startTime,
         endTime,
+        metadata,
         endOfOperation,
       });
       return result;

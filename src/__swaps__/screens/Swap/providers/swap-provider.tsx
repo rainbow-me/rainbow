@@ -217,6 +217,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         fn: loadWallet,
         screen: Routes.SWAP,
         operation: TimeToSignOperation.KeychainRead,
+        metadata: {
+          degenMode: swapsStore.getState().degenMode,
+        },
       })({
         address: parameters.quote.from,
         showErrorIfNotLoaded: false,
@@ -224,6 +227,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         timeTracking: {
           screen: Routes.SWAP,
           operation: TimeToSignOperation.Authentication,
+          metadata: {
+            degenMode: swapsStore.getState().degenMode,
+          },
         },
       });
 
@@ -256,6 +262,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         fn: walletExecuteRap,
         screen: Routes.SWAP,
         operation: TimeToSignOperation.SignTransaction,
+        metadata: {
+          degenMode: swapsStore.getState().degenMode,
+        },
       })(wallet, type, {
         ...parameters,
         chainId,
@@ -315,6 +324,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         screen: Routes.SWAP,
         operation: TimeToSignOperation.SheetDismissal,
         endOfOperation: true,
+        metadata: {
+          degenMode: swapsStore.getState().degenMode,
+        },
       })(Routes.PROFILE_SCREEN, {});
 
       analyticsV2.track(analyticsV2.event.swapsSubmitted, {
@@ -401,6 +413,9 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         type,
         parameters,
       });
+    },
+    metadata: {
+      degenMode: swapsStore.getState().degenMode,
     },
   });
 
