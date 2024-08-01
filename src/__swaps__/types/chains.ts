@@ -2,10 +2,6 @@ import * as chain from 'viem/chains';
 import type { Chain } from 'viem/chains';
 
 const HARDHAT_CHAIN_ID = 1337;
-const BLAST_CHAIN_ID = 81457;
-const BLAST_SEPOLIA_CHAIN_ID = 168587773;
-const POLYGON_AMOY_CHAIN_ID = 80002;
-
 const HARDHAT_OP_CHAIN_ID = 1338;
 
 export const chainHardhat: Chain = {
@@ -34,55 +30,6 @@ export const chainHardhatOptimism: Chain = {
   rpcUrls: {
     public: { http: ['http://127.0.0.1:8545'] },
     default: { http: ['http://127.0.0.1:8545'] },
-  },
-  testnet: true,
-};
-
-export const chainBlast: Chain = {
-  id: BLAST_CHAIN_ID,
-  name: 'Blast',
-  rpcUrls: {
-    public: { http: [process.env.BLAST_MAINNET_RPC as string] },
-    default: {
-      http: [process.env.BLAST_MAINNET_RPC as string],
-    },
-  },
-  blockExplorers: {
-    default: { name: 'Blastscan', url: 'https://blastscan.io/' },
-  },
-  nativeCurrency: {
-    name: 'Blast',
-    symbol: 'BLAST',
-    decimals: 18,
-  },
-};
-
-export const chainBlastSepolia: Chain = {
-  id: BLAST_SEPOLIA_CHAIN_ID,
-  name: 'Blast Sepolia',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'Ether',
-    symbol: 'ETH',
-  },
-  rpcUrls: {
-    public: { http: ['https://sepolia.blast.io'] },
-    default: { http: ['https://sepolia.blast.io'] },
-  },
-  testnet: true,
-};
-
-export const chainPolygonAmoy: Chain = {
-  id: POLYGON_AMOY_CHAIN_ID,
-  name: 'Polygon Amoy',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'MATIC',
-    symbol: 'MATIC',
-  },
-  rpcUrls: {
-    public: { http: ['https://rpc-amoy.polygon.technology'] },
-    default: { http: ['https://rpc-amoy.polygon.technology'] },
   },
   testnet: true,
 };
@@ -129,8 +76,8 @@ export enum ChainId {
   avalancheFuji = chain.avalancheFuji.id,
   base = chain.base.id,
   baseSepolia = chain.baseSepolia.id,
-  blast = BLAST_CHAIN_ID,
-  blastSepolia = BLAST_SEPOLIA_CHAIN_ID,
+  blast = chain.blast.id,
+  blastSepolia = chain.blastSepolia.id,
   bsc = chain.bsc.id,
   bscTestnet = chain.bscTestnet.id,
   celo = chain.celo.id,
@@ -145,7 +92,7 @@ export enum ChainId {
   optimism = chain.optimism.id,
   optimismSepolia = chain.optimismSepolia.id,
   polygon = chain.polygon.id,
-  polygonAmoy = chainPolygonAmoy.id,
+  polygonAmoy = chain.polygonAmoy.id,
   polygonMumbai = chain.polygonMumbai.id,
   polygonZkEvm = chain.polygonZkEvm.id,
   rari = 1380012617,
