@@ -288,7 +288,7 @@ export const SignTransactionSheet = () => {
         analytics.track(event.txRequestShownSheet), { source };
       }
     });
-  }, [isMessageRequest, currentNetwork, startPollingGasFees, fetchMethodName, transactionDetails?.payload?.params]);
+  }, [isMessageRequest, currentNetwork, startPollingGasFees, fetchMethodName, transactionDetails?.payload?.params, source]);
 
   // get gas limit
   useEffect(() => {
@@ -472,24 +472,28 @@ export const SignTransactionSheet = () => {
     transactionDetails,
   ]);
 
-  const closeScreen = performanceTracking.getState().executeFn({
-    fn: (canceled: boolean) => {
-      // we need to close the hw navigator too
-      if (accountInfo.isHardwareWallet) {
-        delay(300);
-        goBack();
-      }
-      goBack();
-      if (!isMessageRequest) {
-        stopPollingGasFees();
-      }
+  const closeScreen = useCallback(
+    (canceled: boolean) =>
+      performanceTracking.getState().executeFn({
+        fn: () => {
+          // we need to close the hw navigator too
+          if (accountInfo.isHardwareWallet) {
+            delay(300);
+            goBack();
+          }
+          goBack();
+          if (!isMessageRequest) {
+            stopPollingGasFees();
+          }
 
-      onCloseScreenCallback?.(canceled);
-    },
-    screen: SCREEN_FOR_REQUEST_SOURCE[source],
-    operation: TimeToSignOperation.SheetDismissal,
-    endOfOperation: true,
-  });
+          onCloseScreenCallback?.(canceled);
+        },
+        screen: SCREEN_FOR_REQUEST_SOURCE[source],
+        operation: TimeToSignOperation.SheetDismissal,
+        endOfOperation: true,
+      })(),
+    [accountInfo.isHardwareWallet, goBack, isMessageRequest, onCloseScreenCallback, source, stopPollingGasFees]
+  );
 
   const onCancel = useCallback(
     async (error?: Error) => {
@@ -814,17 +818,25 @@ export const SignTransactionSheet = () => {
     }
   }, [isAuthorizing, onConfirm]);
 
-  const submitFn = useCallback(async () => {
-    if (!isBalanceEnough) {
-      navigate(Routes.ADD_CASH_SHEET);
-      return;
-    }
-    if (accountInfo.isHardwareWallet) {
-      navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: onPressSend });
-    } else {
-      onPressSend();
-    }
-  }, [accountInfo.isHardwareWallet, isBalanceEnough, navigate, onPressSend]);
+  const submitFn = useCallback(
+    () =>
+      performanceTracking.getState().executeFn({
+        fn: () => {
+          if (!isBalanceEnough) {
+            navigate(Routes.ADD_CASH_SHEET);
+            return;
+          }
+          if (accountInfo.isHardwareWallet) {
+            navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: onPressSend });
+          } else {
+            onPressSend();
+          }
+        },
+        operation: TimeToSignOperation.CallToAction,
+        screen: SCREEN_FOR_REQUEST_SOURCE[source],
+      })(),
+    [accountInfo.isHardwareWallet, isBalanceEnough, navigate, onPressSend, source]
+  );
 
   const onPressCancel = useCallback(() => onCancel(), [onCancel]);
 
@@ -1003,9 +1015,7 @@ export const SignTransactionSheet = () => {
                         : i18n.t(i18n.l.walletconnect.simulation.buttons.confirm)
                     }
                     newShadows
-                    onPress={performanceTracking
-                      .getState()
-                      .executeFn({ fn: submitFn, operation: TimeToSignOperation.CallToAction, screen: SCREEN_FOR_REQUEST_SOURCE[source] })}
+                    onPress={submitFn}
                     disabled={!canPressConfirm}
                     size="big"
                     weight="heavy"
