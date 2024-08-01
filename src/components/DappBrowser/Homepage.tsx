@@ -35,6 +35,7 @@ import haptics from '@/utils/haptics';
 import * as i18n from '@/languages';
 import { getNameFromFormattedUrl } from './utils';
 import { useTrendingDApps } from '@/resources/metadata/trendingDapps';
+import { DApp } from '@/graphql/__generated__/metadata';
 
 const HORIZONTAL_PAGE_INSET = 24;
 const MAX_RECENTS_TO_DISPLAY = 6;
@@ -100,9 +101,11 @@ const Trending = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
         >
           <Inset space="24px">
             <Box flexDirection="row" gap={CARD_PADDING}>
-              {data.dApps.map((dApp, index) => (
-                <Card goToUrl={goToUrl} index={index} key={dApp.url} site={{ ...dApp, image: dApp.iconURL }} />
-              ))}
+              {data.dApps
+                .filter((dApp): dApp is DApp => dApp !== null)
+                .map((dApp, index) => (
+                  <Card goToUrl={goToUrl} index={index} key={dApp.url} site={{ ...dApp, image: dApp.iconURL }} />
+                ))}
             </Box>
           </Inset>
         </ScrollView>

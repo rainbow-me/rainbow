@@ -16,6 +16,14 @@ const fetchTrendingDApps: QueryFunction<TrendingDAppsQuery, TrendingDAppsQueryKe
   });
 };
 
+export function selectValidDApps(data: TrendingDAppsQuery): TrendingDAppsQuery {
+  if (!data.dApps?.length) return { dApps: [] };
+  return {
+    ...data,
+    dApps: data.dApps.filter(Boolean),
+  };
+}
+
 export function selectNonScamDApps(data: TrendingDAppsQuery): TrendingDAppsQuery {
   if (!data.dApps?.length) return { dApps: [] };
   return {
@@ -41,7 +49,7 @@ export function useTrendingDApps(
     cacheTime: 1000 * 60 * 60 * 24 * 2, // 2 days
     retry: 3,
     keepPreviousData: true,
-    select: data => selectFirstEightDApps(selectNonScamDApps(data)),
+    select: data => selectFirstEightDApps(selectNonScamDApps(selectValidDApps(data))),
     ...config,
   });
 }
