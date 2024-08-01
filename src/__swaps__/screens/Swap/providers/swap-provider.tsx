@@ -54,7 +54,7 @@ import { clearCustomGasSettings } from '../hooks/useCustomGas';
 import { getGasSettingsBySpeed, getSelectedGas, getSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
-import { performanceTracking, TimeToSignOperation } from '@/state/performance/performance';
+import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
@@ -215,7 +215,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       const wallet = await performanceTracking.getState().executeFn({
         fn: loadWallet,
-        screen: Routes.SWAP,
+        screen: Screens.SWAPS,
         operation: TimeToSignOperation.KeychainRead,
         metadata: {
           degenMode: swapsStore.getState().degenMode,
@@ -225,7 +225,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         showErrorIfNotLoaded: false,
         provider,
         timeTracking: {
-          screen: Routes.SWAP,
+          screen: Screens.SWAPS,
           operation: TimeToSignOperation.Authentication,
           metadata: {
             degenMode: swapsStore.getState().degenMode,
@@ -260,7 +260,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       const chainId = getIsHardhatConnected() ? ChainId.hardhat : parameters.chainId;
       const { errorMessage } = await performanceTracking.getState().executeFn({
         fn: walletExecuteRap,
-        screen: Routes.SWAP,
+        screen: Screens.SWAPS,
         operation: TimeToSignOperation.SignTransaction,
         metadata: {
           degenMode: swapsStore.getState().degenMode,
@@ -321,7 +321,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       NotificationManager?.postNotification('rapCompleted');
       performanceTracking.getState().executeFn({
         fn: Navigation.handleAction,
-        screen: Routes.SWAP,
+        screen: Screens.SWAPS,
         operation: TimeToSignOperation.SheetDismissal,
         endOfOperation: true,
         metadata: {
@@ -355,7 +355,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   };
 
   const executeSwap = performanceTracking.getState().executeFn({
-    screen: Routes.SWAP,
+    screen: Screens.SWAPS,
     operation: TimeToSignOperation.CallToAction,
     fn: () => {
       'worklet';

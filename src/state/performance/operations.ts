@@ -1,6 +1,12 @@
-import Routes from '@/navigation/routesNames';
+export enum Screens {
+  DAPP_BROWSER = 'DappBrowser',
+  SWAPS = 'Swaps',
+  SEND = 'Send',
+  SEND_ENS = 'SendENS',
+  WALLETCONNECT = 'WalletConnect',
+}
 
-type RouteValues = (typeof Routes)[keyof typeof Routes];
+type RouteValues = (typeof Screens)[keyof typeof Screens];
 
 // Now, define Screen as the type of these values
 export type Screen = RouteValues;
@@ -16,9 +22,11 @@ export enum TimeToSignOperation {
 }
 
 export type ScreenOperations = Partial<{
-  [Routes.SWAP]: TimeToSignOperation;
-  [Routes.SEND_SHEET]: TimeToSignOperation;
-  [Routes.DAPP_BROWSER]: TimeToSignOperation;
+  [Screens.SWAPS]: TimeToSignOperation;
+  [Screens.SEND]: TimeToSignOperation;
+  [Screens.SEND_ENS]: TimeToSignOperation;
+  [Screens.DAPP_BROWSER]: TimeToSignOperation;
+  [Screens.WALLETCONNECT]: TimeToSignOperation;
 }>;
 
 export type OperationForScreen<S extends Screen> = S extends keyof ScreenOperations

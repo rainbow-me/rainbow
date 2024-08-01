@@ -23,7 +23,7 @@ import { Network } from '@/networks/types';
 import { Hex } from 'viem';
 import { executeENSRap } from '@/raps/actions/ens';
 import store from '@/redux/store';
-import { performanceTracking, TimeToSignOperation } from '@/state/performance/performance';
+import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { noop } from 'lodash';
 
 // Generic type for action functions
@@ -343,7 +343,7 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
 
       const { nonce: newNonce } = await performanceTracking.getState().executeFn({
         fn: executeENSRap,
-        screen: Routes.SEND_SHEET,
+        screen: Screens.SEND_ENS,
         operation: TimeToSignOperation.BroadcastTransaction,
       })(wallet, ENSRapActionType.transferENS, transferEnsParameters, callback);
 

@@ -96,7 +96,7 @@ import { RequestData } from '@/redux/requests';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { event } from '@/analytics/event';
 import { getOnchainAssetBalance } from '@/handlers/assets';
-import { performanceTracking, TimeToSignOperation } from '@/state/performance/performance';
+import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 
 const COLLAPSED_CARD_HEIGHT = 56;
 const MAX_CARD_HEIGHT = 176;
@@ -147,8 +147,8 @@ type SignTransactionSheetParams = {
 };
 
 const SCREEN_FOR_REQUEST_SOURCE = {
-  browser: Routes.DAPP_BROWSER,
-  walletconnect: Routes.WALLET_CONNECT_REDIRECT_SHEET,
+  browser: Screens.DAPP_BROWSER,
+  walletconnect: Screens.WALLETCONNECT,
 };
 
 export type SignTransactionSheetRouteProp = RouteProp<{ SignTransactionSheet: SignTransactionSheetParams }, 'SignTransactionSheet'>;

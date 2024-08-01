@@ -22,8 +22,7 @@ import { createUnlockAndCrosschainSwapRap } from './unlockAndCrosschainSwap';
 import { createClaimAndBridgeRap } from './claimAndBridge';
 import { createUnlockAndSwapRap } from './unlockAndSwap';
 import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
-import { TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
-import Routes from '@/navigation/routesNames';
+import { Screens, TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
 
 export function createSwapRapByType<T extends RapTypes>(
@@ -137,7 +136,7 @@ export const walletExecuteRap = async (
       ? await createSwapRapByType(type, parameters)
       : await performanceTracking.getState().executeFn({
           fn: createSwapRapByType,
-          screen: Routes.SWAP,
+          screen: Screens.SWAPS,
           operation: TimeToSignOperation.CreateRap,
           metadata: {
             degenMode: swapsStore.getState().degenMode,

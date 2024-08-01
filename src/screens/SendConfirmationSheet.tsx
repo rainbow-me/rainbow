@@ -61,7 +61,7 @@ import { getNetworkObj } from '@/networks';
 import { IS_ANDROID } from '@/env';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { performanceTracking, TimeToSignOperation } from '@/state/performance/performance';
+import { performanceTracking, TimeToSignOperation, Screens } from '@/state/performance/performance';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -400,7 +400,7 @@ export const SendConfirmationSheet = () => {
           }
         },
         operation: TimeToSignOperation.CallToAction,
-        screen: Routes.SEND_SHEET,
+        screen: isENS ? Screens.SEND_ENS : Screens.SEND,
       })(),
     [callback, canSubmit, checkboxes, isENS]
   );

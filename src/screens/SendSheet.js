@@ -64,7 +64,7 @@ import { getNetworkObj } from '@/networks';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { getNextNonce } from '@/state/nonces';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import { performanceTracking, TimeToSignOperation } from '@/state/performance/performance';
+import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { REGISTRATION_STEPS } from '@/helpers/ens';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
@@ -385,11 +385,11 @@ export default function SendSheet(props) {
       const wallet = await performanceTracking.getState().executeFn({
         fn: loadWallet,
         operation: TimeToSignOperation.KeychainRead,
-        screen: Routes.SEND_SHEET,
+        screen: isENS ? Screens.SEND_ENS : Screens.SEND,
       })({
         provider: currentProvider,
         timeTracking: {
-          screen: Routes.SEND_SHEET,
+          screen: isENS ? Screens.SEND_ENS : Screens.SEND,
           operation: TimeToSignOperation.Authentication,
         },
       });
@@ -473,7 +473,7 @@ export default function SendSheet(props) {
         const signableTransaction = await performanceTracking.getState().executeFn({
           fn: createSignableTransaction,
           operation: TimeToSignOperation.SignTransaction,
-          screen: Routes.SEND_SHEET,
+          screen: isENS ? Screens.SEND_ENS : Screens.SEND,
         })(txDetails);
         if (!signableTransaction.to) {
           logger.sentry('txDetails', txDetails);
@@ -486,7 +486,7 @@ export default function SendSheet(props) {
         } else {
           const { result: txResult, error } = await performanceTracking.getState().executeFn({
             fn: sendTransaction,
-            screen: Routes.SEND_SHEET,
+            screen: isENS ? Screens.SEND_ENS : Screens.SEND,
             operation: TimeToSignOperation.BroadcastTransaction,
           })({
             existingWallet: wallet,
@@ -583,13 +583,13 @@ export default function SendSheet(props) {
       if (submitSuccessful) {
         performanceTracking.getState().executeFn({
           fn: goBackAndNavigate,
-          screen: Routes.SEND_SHEET,
+          screen: isENS ? Screens.SEND_ENS : Screens.SEND,
           operation: TimeToSignOperation.SheetDismissal,
           endOfOperation: true,
         })();
       }
     },
-    [amountDetails.assetAmount, goBack, isHardwareWallet, navigate, onSubmit, recipient, selected?.name, selected?.network]
+    [amountDetails.assetAmount, goBack, isENS, isHardwareWallet, navigate, onSubmit, recipient, selected?.name, selected?.network]
   );
 
   const { buttonDisabled, buttonLabel } = useMemo(() => {
