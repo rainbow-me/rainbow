@@ -183,11 +183,6 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
       }
     },
     getHighestValueAsset: (usePreferredNetwork = true) => {
-      const highestValueAsset = get().userAssets.values().next().value || null;
-
-      if (!highestValueAsset && getIsHardhatConnected()) {
-        return ethereumUtils.getNetworkNativeAsset(NetworkTypes.mainnet);
-      }
       const preferredNetwork = usePreferredNetwork ? swapsStore.getState().preferredNetwork : undefined;
       const assets = get().userAssets;
 
@@ -201,7 +196,7 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
       }
 
       // If no preferred network asset, return the highest-value asset
-      return highestValueAsset;
+      return assets.values().next().value || null;
     },
 
     getUserAsset: (uniqueId: UniqueId) => get().userAssets.get(uniqueId) || null,
