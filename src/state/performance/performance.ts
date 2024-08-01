@@ -120,7 +120,8 @@ export const performanceTracking = createRainbowStore<PerformanceTrackingState>(
           return logPerformanceAndReturn(startTime, performance.now(), fnResult);
         }
       } catch (error) {
-        return logPerformanceAndReturn(startTime, performance.now(), undefined);
+        logPerformanceAndReturn(startTime, performance.now(), undefined);
+        throw error;
       }
     };
   }) as PerformanceTrackingState['executeFn'],
