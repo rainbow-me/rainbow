@@ -83,6 +83,7 @@ export enum ChainId {
   celo = chain.celo.id,
   degen = chain.degen.id,
   gnosis = chain.gnosis.id,
+  goerli = chain.goerli.id,
   hardhat = HARDHAT_CHAIN_ID,
   hardhatOptimism = chainHardhatOptimism.id,
   holesky = chain.holesky.id,
