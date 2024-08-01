@@ -34,6 +34,7 @@ import { analyticsV2 } from '@/analytics';
 import haptics from '@/utils/haptics';
 import * as i18n from '@/languages';
 import { getNameFromFormattedUrl } from './utils';
+import { useTrendingDApps } from '@/resources/metadata/trendingDapps';
 
 const HORIZONTAL_PAGE_INSET = 24;
 const MAX_RECENTS_TO_DISPLAY = 6;
@@ -73,9 +74,9 @@ export const Homepage = () => {
 };
 
 const Trending = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
-  const { dapps } = useDapps({ select: dapps => dapps.filter(dapp => dapp.trending).slice(0, 8) });
+  const { data } = useTrendingDApps();
 
-  if (dapps.length === 0) {
+  if (!data?.dApps?.length) {
     return null;
   }
 
@@ -95,12 +96,12 @@ const Trending = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
           decelerationRate="fast"
           disableIntervalMomentum
           showsHorizontalScrollIndicator={false}
-          snapToOffsets={dapps.map((_, index) => index * (CARD_WIDTH + CARD_PADDING))}
+          snapToOffsets={data.dApps.map((_, index) => index * (CARD_WIDTH + CARD_PADDING))}
         >
           <Inset space="24px">
             <Box flexDirection="row" gap={CARD_PADDING}>
-              {dapps.map((site, index) => (
-                <Card goToUrl={goToUrl} index={index} key={site.url} site={{ ...site, image: site.iconUrl }} />
+              {data.dApps.map((dApp, index) => (
+                <Card goToUrl={goToUrl} index={index} key={dApp.url} site={{ ...dApp, image: dApp.iconURL }} />
               ))}
             </Box>
           </Inset>
