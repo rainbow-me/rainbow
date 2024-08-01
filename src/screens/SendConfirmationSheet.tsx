@@ -377,29 +377,33 @@ export const SendConfirmationSheet = () => {
 
   const insufficientEth = isSufficientGas === false && isValidGas;
 
-  const handleSubmit = performanceTracking.getState().executeFn({
-    fn: async () => {
-      if (!canSubmit) return;
-      try {
-        setIsAuthorizing(true);
-        if (isENS) {
-          const clearRecords = checkboxes.some(({ checked, id }) => checked && id === 'clear-records');
-          const setAddress = checkboxes.some(({ checked, id }) => checked && id === 'set-address');
-          const transferControl = checkboxes.some(({ checked, id }) => checked && id === 'transfer-control');
-          callback({
-            ens: { clearRecords, setAddress, transferControl },
-          });
-        } else {
-          callback();
-        }
-      } catch (e) {
-        logger.sentry('TX submit failed', e);
-        setIsAuthorizing(false);
-      }
-    },
-    operation: TimeToSignOperation.CallToAction,
-    screen: Routes.SEND_SHEET,
-  });
+  const handleSubmit = useCallback(
+    () =>
+      performanceTracking.getState().executeFn({
+        fn: async () => {
+          if (!canSubmit) return;
+          try {
+            setIsAuthorizing(true);
+            if (isENS) {
+              const clearRecords = checkboxes.some(({ checked, id }) => checked && id === 'clear-records');
+              const setAddress = checkboxes.some(({ checked, id }) => checked && id === 'set-address');
+              const transferControl = checkboxes.some(({ checked, id }) => checked && id === 'transfer-control');
+              callback({
+                ens: { clearRecords, setAddress, transferControl },
+              });
+            } else {
+              callback();
+            }
+          } catch (e) {
+            logger.sentry('TX submit failed', e);
+            setIsAuthorizing(false);
+          }
+        },
+        operation: TimeToSignOperation.CallToAction,
+        screen: Routes.SEND_SHEET,
+      })(),
+    [callback, canSubmit, checkboxes, isENS]
+  );
 
   const existingAccount = useMemo(() => {
     let existingAcct = null;
