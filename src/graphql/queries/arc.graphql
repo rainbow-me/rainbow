@@ -298,17 +298,6 @@ fragment simpleHashPaymentToken on SimpleHashPaymentToken {
   decimals
 }
 
-enum NFTCollectionSortCriterion {
-  MOST_RECENT
-  ABC
-  FLOOR_PRICE
-}
-
-enum SortDirection {
-  ASC
-  DESC
-}
-
 query getNFTs($walletAddress: String!, $sortBy: NFTCollectionSortCriterion, $sortDirection: SortDirection) {
   nftsV2(walletAddress: $walletAddress, sortBy: $sortBy, sortDirection: $sortDirection) {
     nft_id
