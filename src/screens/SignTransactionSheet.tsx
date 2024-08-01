@@ -532,7 +532,7 @@ export const SignTransactionSheet = () => {
       provider,
       timeTracking: {
         screen: SCREEN_FOR_REQUEST_SOURCE[source],
-        operation: TimeToSignOperation.KeychainRead,
+        operation: TimeToSignOperation.Authentication,
       },
     });
 
