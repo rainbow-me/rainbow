@@ -5,8 +5,9 @@ import {
   Gesture,
   GestureDetector,
   GestureStateChangeEvent,
-  GestureType,
+  LongPressGesture,
   LongPressGestureHandlerEventPayload,
+  TapGesture,
   TapGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
 import Animated, { AnimatedStyle, runOnJS } from 'react-native-reanimated';
@@ -20,7 +21,7 @@ export type GestureHandlerButtonProps = {
   disableButtonPressWrapper?: boolean;
   disabled?: boolean;
   longPressDuration?: number;
-  longPressRef?: MutableRefObject<GestureType>;
+  longPressRef?: MutableRefObject<LongPressGesture>;
   onLongPressEndWorklet?: (success?: boolean) => void;
   onLongPressJS?: (e?: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>) => void;
   onLongPressWorklet?: (e?: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>) => void;
@@ -30,7 +31,7 @@ export type GestureHandlerButtonProps = {
   pointerEvents?: ViewProps['pointerEvents'];
   scaleTo?: number;
   style?: StyleProp<ViewStyle> | AnimatedStyle;
-  tapRef?: MutableRefObject<GestureType>;
+  tapRef?: MutableRefObject<TapGesture>;
 };
 
 /**
