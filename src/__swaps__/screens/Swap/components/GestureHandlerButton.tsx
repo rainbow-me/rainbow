@@ -118,7 +118,7 @@ export function GestureHandlerButton({
       wrap={children => (
         <ButtonPressAnimation
           disabled={disabled}
-          minLongPressDuration={longPressDuration}
+          minLongPressDuration={longPressDuration * 1.2}
           scaleTo={disableButtonPressWrapper ? 1 : scaleTo}
           style={buttonPressWrapperStyleIOS}
           useLateHaptic={disableButtonPressWrapper}
