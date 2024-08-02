@@ -63,6 +63,7 @@ import { SWAPS_V2, useExperimentalFlag } from '@/config';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { greaterThan } from '@/helpers/utilities';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const PAGES = {
   HOME: 'home',
@@ -187,7 +188,7 @@ export const ControlPanel = () => {
       ({ networkType, features: { walletconnect } }) => walletconnect && (testnetsEnabled || networkType !== 'testnet')
     ).map(network => {
       return {
-        IconComponent: <ChainImage chain={network.value} size={36} />,
+        IconComponent: <ChainImage chainId={network.id} size={36} />,
         label: network.name,
         secondaryLabel: i18n.t(
           isConnected && network.value === currentNetwork
@@ -196,6 +197,7 @@ export const ControlPanel = () => {
         ),
         uniqueId: network.value,
         selected: network.value === currentNetwork,
+        chainId: network.id,
       };
     });
   }, [currentNetwork, isConnected, testnetsEnabled]);
@@ -392,7 +394,7 @@ const HomePanel = ({
     const walletSecondaryLabel = selectedWallet?.secondaryLabel || '';
 
     const network = allNetworkItems.find(item => item.uniqueId === selectedNetwork);
-    const networkIcon = <ChainImage chain={(network?.uniqueId as Network) || 'mainnet'} size={36} />;
+    const networkIcon = <ChainImage chainId={network?.chainId || ChainId.mainnet} size={36} />;
     const networkLabel = network?.label || '';
     const networkSecondaryLabel = network?.secondaryLabel || '';
 
@@ -458,7 +460,7 @@ const HomePanel = ({
       return;
     }
 
-    const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(Network.mainnet, selectedWallet?.uniqueId);
+    const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(ChainId.mainnet, selectedWallet?.uniqueId);
     Navigation.handleAction(Routes.EXCHANGE_MODAL, {
       fromDiscover: true,
       params: {
@@ -486,7 +488,7 @@ const HomePanel = ({
       return;
     }
 
-    const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(Network.mainnet, selectedWallet?.uniqueId);
+    const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(ChainId.mainnet, selectedWallet?.uniqueId);
     Navigation.handleAction(Routes.EXCHANGE_MODAL, {
       fromDiscover: true,
       params: {
@@ -735,6 +737,7 @@ interface ControlPanelMenuItemProps {
   label: string;
   labelColor?: TextColor;
   imageUrl?: string;
+  chainId?: ChainId;
   color?: string;
   onPress?: () => void;
   secondaryLabel?: string;

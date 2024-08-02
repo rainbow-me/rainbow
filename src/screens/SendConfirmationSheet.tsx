@@ -55,7 +55,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { getUniqueTokenType, promiseUtils } from '@/utils';
+import { ethereumUtils, getUniqueTokenType, promiseUtils } from '@/utils';
 import logger from '@/utils/logger';
 import { getNetworkObj } from '@/networks';
 import { IS_ANDROID } from '@/env';
@@ -670,7 +670,7 @@ export const SendConfirmationSheet = () => {
           </SendButtonWrapper>
           {isENS && (
             /* @ts-expect-error JavaScript component */
-            <GasSpeedButton currentNetwork={network} theme={theme.isDarkMode ? 'dark' : 'light'} />
+            <GasSpeedButton chainId={ethereumUtils.getChainIdFromNetwork(network)} theme={theme.isDarkMode ? 'dark' : 'light'} />
           )}
         </Column>
       </SlackSheet>

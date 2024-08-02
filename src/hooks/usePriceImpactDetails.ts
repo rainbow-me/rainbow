@@ -16,6 +16,7 @@ import {
 import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
 import ethereumUtils, { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { isUnwrapNative, isWrapNative } from '@/handlers/swap';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export enum SwapPriceImpactType {
   none = 'none',
@@ -31,34 +32,33 @@ export default function usePriceImpactDetails(
   inputCurrency: SwappableAsset | null,
   outputCurrency: SwappableAsset | null,
   tradeDetails: CrosschainQuote | Quote | null,
-  currentNetwork = Network.mainnet
+  chainId: ChainId = ChainId.mainnet
 ) {
   const { nativeCurrency } = useAccountSettings();
   const { colors } = useTheme();
 
-  const sellNetwork = (tradeDetails as CrosschainQuote)?.fromChainId
-    ? ethereumUtils.getNetworkFromChainId((tradeDetails as CrosschainQuote)?.fromChainId)
-    : currentNetwork;
-  const buyNetwork = outputCurrency?.network || currentNetwork;
-  const sellNativeAsset = useNativeAssetForNetwork(sellNetwork);
-  const buyNativeAsset = useNativeAssetForNetwork(buyNetwork);
+  const sellChainId = (
+    (tradeDetails as CrosschainQuote)?.fromChainId ? (tradeDetails as CrosschainQuote)?.fromChainId : chainId
+  ) as ChainId;
+  const buyChainId = (outputCurrency?.chainId || chainId) as ChainId;
+  const sellNativeAsset = useNativeAssetForNetwork(sellChainId);
+  const buyNativeAsset = useNativeAssetForNetwork(buyChainId);
 
   const isWrapOrUnwrap = useMemo(() => {
     if (!tradeDetails) return false;
-    const chainId = ethereumUtils.getChainIdFromNetwork(buyNetwork);
     return (
       isWrapNative({
         buyTokenAddress: tradeDetails?.buyTokenAddress,
         sellTokenAddress: tradeDetails?.sellTokenAddress,
-        chainId,
+        chainId: buyChainId,
       }) ||
       isUnwrapNative({
         buyTokenAddress: tradeDetails?.buyTokenAddress,
         sellTokenAddress: tradeDetails?.sellTokenAddress,
-        chainId,
+        chainId: buyChainId,
       })
     );
-  }, [buyNetwork, tradeDetails]);
+  }, [buyChainId, tradeDetails]);
 
   const inputNativeAmount = useMemo(() => {
     if (isWrapOrUnwrap) {

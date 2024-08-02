@@ -2,7 +2,6 @@ import { BigNumberish } from '@ethersproject/bignumber';
 import { Block, StaticJsonRpcProvider } from '@ethersproject/providers';
 import {
   ALLOWS_PERMIT,
-  ChainId,
   CrosschainQuote,
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
   getQuoteExecutionDetails,
@@ -22,6 +21,7 @@ import { Asset } from '@/entities';
 import { add, convertRawAmountToDecimalFormat, divide, lessThan, multiply, subtract } from '@/helpers/utilities';
 import { erc20ABI, ethUnits } from '@/references';
 import { ethereumUtils, logger } from '@/utils';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export enum Field {
   INPUT = 'INPUT',

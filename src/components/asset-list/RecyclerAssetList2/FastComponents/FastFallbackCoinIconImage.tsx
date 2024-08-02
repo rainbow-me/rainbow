@@ -1,7 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Network } from '@/networks/types';
 import { ImgixImage } from '@/components/images';
 import { ThemeContextProps } from '@/theme';
 
@@ -13,7 +12,6 @@ export const FastFallbackCoinIconImage = React.memo(function FastFallbackCoinIco
 }: {
   children: () => React.ReactNode;
   icon?: string;
-  network: Network;
   shadowColor: string;
   size?: number;
   symbol: string;

@@ -116,7 +116,7 @@ export const handleDappBrowserRequest = async (request: Omit<RequestData, 'displ
       onSuccess,
       onCancel,
       onCloseScreen,
-      network: request.network,
+      chainId: request.chainId,
       address: request.address,
       source: 'browser',
     });
@@ -129,7 +129,8 @@ export const handleWalletConnectRequest = async (request: WalletconnectRequestDa
   const walletConnector = store.getState().walletconnect.walletConnectors[request.peerId];
 
   // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
-  const network = ethereumUtils.getNetworkFromChainId(request?.walletConnectV2RequestValues?.chainId || walletConnector?._chainId);
+  const chainId = request?.walletConnectV2RequestValues?.chainId || walletConnector?._chainId;
+  const network = ethereumUtils.getNetworkFromChainId(chainId);
   // @ts-expect-error Property '_accounts' is private and only accessible within class 'Connector'.ts(2341)
   const address = request?.walletConnectV2RequestValues?.address || walletConnector?._accounts?.[0];
 
@@ -188,6 +189,7 @@ export const handleWalletConnectRequest = async (request: WalletconnectRequestDa
     onCloseScreen,
     network,
     address,
+    chainId,
     source: 'walletconnect',
   });
 };

@@ -34,7 +34,6 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { getNetworkObject } from '@/networks';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
-import { ethereumUtils } from '@/utils';
 import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import React, { useCallback } from 'react';
@@ -365,9 +364,7 @@ export function ReviewPanel() {
   });
 
   const openGasExplainer = useCallback(async () => {
-    const nativeAsset = await getNativeAssetForNetwork(
-      ethereumUtils.getNetworkFromChainId(swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet)
-    );
+    const nativeAsset = await getNativeAssetForNetwork(swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet);
 
     navigate(Routes.EXPLAIN_SHEET, {
       network: chainNameFromChainId(swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet),

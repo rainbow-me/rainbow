@@ -27,7 +27,7 @@ import { updateGasFeeForSpeed } from '@/redux/gas';
 import { ethUnits } from '@/references';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { gasUtils, safeAreaInsetValues } from '@/utils';
+import { ethereumUtils, gasUtils, safeAreaInsetValues } from '@/utils';
 import logger from '@/utils/logger';
 import { getNetworkObj } from '@/networks';
 import * as i18n from '@/languages';
@@ -475,6 +475,7 @@ export default function SpeedUpAndCancelSheet() {
                     <GasSpeedButton
                       asset={{ color: accentColor }}
                       currentNetwork={currentNetwork}
+                      chainId={ethereumUtils.getChainIdFromNetwork(currentNetwork)}
                       flashbotTransaction={tx.flashbots}
                       speeds={speeds}
                       theme={isDarkMode ? 'dark' : 'light'}

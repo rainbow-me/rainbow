@@ -59,8 +59,8 @@ const getNetworkNativeAsset = (chainId: ChainId): ParsedAddressAsset | undefined
   return getAccountAsset(nativeAssetUniqueId);
 };
 
-export const getNativeAssetForNetwork = async (network: Network, address?: EthereumAddress): Promise<ParsedAddressAsset | undefined> => {
-  const chainId = getChainIdFromNetwork(network);
+export const getNativeAssetForNetwork = async (chainId: ChainId, address?: EthereumAddress): Promise<ParsedAddressAsset | undefined> => {
+  const network = getNetworkFromChainId(chainId);
   const networkNativeAsset = getNetworkNativeAsset(chainId);
   const { accountAddress, nativeCurrency } = store.getState().settings;
   const differentWallet = address?.toLowerCase() !== accountAddress?.toLowerCase();
@@ -72,8 +72,8 @@ export const getNativeAssetForNetwork = async (network: Network, address?: Ether
     const nativeAssetAddress = getNetworkObject({ chainId }).nativeCurrency.address;
 
     const externalAsset = await queryClient.fetchQuery(
-      externalTokenQueryKey({ address: nativeAssetAddress, network, currency: nativeCurrency }),
-      async () => fetchExternalToken({ address: nativeAssetAddress, network, currency: nativeCurrency }),
+      externalTokenQueryKey({ address: nativeAssetAddress, chainId, currency: nativeCurrency }),
+      async () => fetchExternalToken({ address: nativeAssetAddress, chainId, currency: nativeCurrency }),
       {
         staleTime: 60000,
       }
@@ -132,14 +132,14 @@ const getUserAssetFromCache = (uniqueId: string) => {
 
 const getExternalAssetFromCache = (uniqueId: string) => {
   const { nativeCurrency } = store.getState().settings;
-  const { network, address } = getAddressAndNetworkFromUniqueId(uniqueId);
+  const { address, chainId } = getAddressAndChainIdFromUniqueId(uniqueId);
 
   try {
     const cachedExternalAsset = queryClient.getQueryData<FormattedExternalAsset>(
       externalTokenQueryKey({
         address,
         currency: nativeCurrency,
-        network,
+        chainId,
       })
     );
 
@@ -375,13 +375,11 @@ export const getFirstTransactionTimestamp = async (address: EthereumAddress): Pr
   return timestamp ? timestamp * 1000 : undefined;
 };
 
-function getBlockExplorer(network: Network) {
-  const chainId = getChainIdFromNetwork(network);
+function getBlockExplorer(chainId: ChainId) {
   return getNetworkObject({ chainId }).blockExplorers?.default.name || 'etherscan';
 }
 
-function openAddressInBlockExplorer(address: EthereumAddress, network: Network) {
-  const chainId = getChainIdFromNetwork(network);
+function openAddressInBlockExplorer(address: EthereumAddress, chainId: ChainId) {
   const explorer = getNetworkObject({ chainId })?.blockExplorers?.default?.url;
   Linking.openURL(`${explorer}/address/${address}`);
 }
@@ -468,19 +466,20 @@ async function parseEthereumUrl(data: string) {
 
 export const getUniqueId = (address: EthereumAddress, network: Network) => `${address}_${network}`;
 
-export const getAddressAndNetworkFromUniqueId = (uniqueId: string): { address: EthereumAddress; network: Network } => {
+export const getAddressAndChainIdFromUniqueId = (uniqueId: string): { address: EthereumAddress; chainId: ChainId } => {
   const parts = uniqueId.split('_');
 
   // If the unique ID does not contain '_', it's a mainnet address
   if (parts.length === 1) {
-    return { address: parts[0], network: Network.mainnet };
+    return { address: parts[0], chainId: ChainId.mainnet };
   }
 
   // If the unique ID contains '_', the last part is the network and the rest is the address
   const network = parts[1] as Network; // Assuming the last part is a valid Network enum value
   const address = parts[0];
+  const chainId = getChainIdFromNetwork(network);
 
-  return { address, network };
+  return { address, chainId };
 };
 
 const calculateL1FeeOptimism = async (tx: RainbowTransaction, provider: Provider): Promise<BigNumberish | undefined> => {

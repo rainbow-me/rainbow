@@ -124,6 +124,7 @@ const TransactionTimeLabel = ({ formatter, isLongWait, theme }) => {
 const GasSpeedButton = ({
   asset,
   currentNetwork,
+  chainId,
   horizontalPadding = 19,
   fallbackColor,
   marginBottom = 20,
@@ -291,12 +292,16 @@ const GasSpeedButton = ({
       return '';
     }
     return `${timeSymbol}${time} ${estimatedTimeUnit}`;
-  }, [crossChainServiceTime, currentNetwork, gasPriceReady, selectedGasFee?.estimatedTime?.amount, selectedGasFee?.estimatedTime?.display]);
+  }, [
+    crossChainServiceTime,
+    gasPriceReady,
+    isLegacyGasNetwork,
+    selectedGasFee?.estimatedTime?.amount,
+    selectedGasFee?.estimatedTime?.display,
+  ]);
 
   const openGasHelper = useCallback(async () => {
     Keyboard.dismiss();
-    const networkObj = getNetworkObj(currentNetwork);
-    const networkName = networkObj.name;
     if (crossChainServiceTime) {
       navigate(Routes.EXPLAIN_SHEET, {
         inputCurrency,
@@ -441,6 +446,7 @@ const GasSpeedButton = ({
     currentNetwork,
     gasIsNotReady,
     gasOptionsAvailable,
+    handlePressActionSheet,
     handlePressMenuItem,
     menuConfig,
     rawColorForAsset,
