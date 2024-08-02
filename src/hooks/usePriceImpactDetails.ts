@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
 import { SwappableAsset } from '@/entities';
-import { Network } from '@/helpers';
 
 import { useTheme } from '@/theme';
 import {
@@ -14,7 +13,7 @@ import {
 } from '@/helpers/utilities';
 
 import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
-import ethereumUtils, { useNativeAsset } from '@/utils/ethereumUtils';
+import { useNativeAsset } from '@/utils/ethereumUtils';
 import { isUnwrapNative, isWrapNative } from '@/handlers/swap';
 import { ChainId } from '@/__swaps__/types/chains';
 

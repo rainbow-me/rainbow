@@ -849,6 +849,10 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
                   nativeAmount={nativeAmountDisplay}
                   nativeCurrency={nativeCurrency}
                   nativeFieldRef={nativeFieldRef}
+<<<<<<< HEAD
+=======
+                  network={ethereumUtils.getNetworkFromChainId(inputNetwork)}
+>>>>>>> de7ba31b9 (use chainid in <GasSpeedButton)
                   onFocus={handleFocus}
                   onPressMaxBalance={updateMaxInputAmount}
                   onPressSelectInputCurrency={chainId => {
@@ -920,7 +924,11 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
               {/* @ts-expect-error - Javascript Component */}
               <GasSpeedButton
                 asset={outputCurrency}
+<<<<<<< HEAD
                 chainId={currentChainId}
+=======
+                currentNetwork={ethereumUtils.getNetworkFromChainId(currentChainId)}
+>>>>>>> de7ba31b9 (use chainid in <GasSpeedButton)
                 flashbotTransaction={flashbots}
                 marginBottom={0}
                 marginTop={0}

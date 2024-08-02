@@ -908,7 +908,11 @@ export default function SendSheet(props) {
               <GasSpeedButton
                 asset={selected}
                 fallbackColor={colorForAsset}
+<<<<<<< HEAD
                 chainId={currentChainId}
+=======
+                chainId={ethereumUtils.getChainIdFromNetwork(currentNetwork)}
+>>>>>>> de7ba31b9 (use chainid in <GasSpeedButton)
                 horizontalPadding={0}
                 marginBottom={17}
                 theme={isDarkMode ? 'dark' : 'light'}
