@@ -17,6 +17,7 @@ export enum TimeToSignOperation {
   Authentication = 'Authentication',
   CreateRap = 'CreateRap',
   SignTransaction = 'SignTransaction',
+  CreateSignableTransaction = 'CreateSignableTransaction',
   BroadcastTransaction = 'BroadcastTransaction',
   SheetDismissal = 'SheetDismissal',
 }

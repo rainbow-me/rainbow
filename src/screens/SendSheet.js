@@ -472,7 +472,7 @@ export default function SendSheet(props) {
       try {
         const signableTransaction = await performanceTracking.getState().executeFn({
           fn: createSignableTransaction,
-          operation: TimeToSignOperation.SignTransaction,
+          operation: TimeToSignOperation.CreateSignableTransaction,
           screen: isENS ? Screens.SEND_ENS : Screens.SEND,
         })(txDetails);
         if (!signableTransaction.to) {

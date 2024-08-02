@@ -821,7 +821,7 @@ export const SignTransactionSheet = () => {
   const submitFn = useCallback(
     () =>
       performanceTracking.getState().executeFn({
-        fn: () => {
+        fn: async () => {
           if (!isBalanceEnough) {
             navigate(Routes.ADD_CASH_SHEET);
             return;
@@ -829,7 +829,7 @@ export const SignTransactionSheet = () => {
           if (accountInfo.isHardwareWallet) {
             navigate(Routes.HARDWARE_WALLET_TX_NAVIGATOR, { submit: onPressSend });
           } else {
-            onPressSend();
+            await onPressSend();
           }
         },
         operation: TimeToSignOperation.CallToAction,
