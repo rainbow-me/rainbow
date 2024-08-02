@@ -32,7 +32,7 @@ import { useAccountSettings } from '@/hooks';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { getNetworkObj } from '@/networks';
+import { getNetworkObject } from '@/networks';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import { ethereumUtils } from '@/utils';
 import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
@@ -142,7 +142,7 @@ function FlashbotsToggle() {
   const { SwapSettings } = useSwapContext();
 
   const inputAssetChainId = swapsStore(state => state.inputAsset?.chainId) ?? ChainId.mainnet;
-  const isFlashbotsEnabledForNetwork = getNetworkObj(ethereumUtils.getNetworkFromChainId(inputAssetChainId)).features.flashbots;
+  const isFlashbotsEnabledForNetwork = getNetworkObject({ chainId: inputAssetChainId }).features.flashbots;
   const flashbotsToggleValue = useDerivedValue(() => isFlashbotsEnabledForNetwork && SwapSettings.flashbots.value);
 
   return (

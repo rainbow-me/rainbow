@@ -38,6 +38,7 @@ import { logger, RainbowError } from '@/logger';
 import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
 import { getNetworkObj } from '@/networks';
 import store from '@/redux/store';
+import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 
 export enum TokenStandard {
   ERC1155 = 'ERC1155',
@@ -216,6 +217,26 @@ export const getCachedProviderForNetwork = (network: Network = Network.mainnet):
  * @return The provider for the network.
  */
 export const getProviderForNetwork = (network: Network | string = Network.mainnet): StaticJsonRpcProvider => {
+  const isSupportedNetwork = isNetworkEnum(network);
+  const cachedProvider = isSupportedNetwork ? networkProviders.get(network) : undefined;
+
+  if (isSupportedNetwork && cachedProvider) {
+    return cachedProvider;
+  }
+
+  if (!isSupportedNetwork) {
+    const provider = new StaticJsonRpcProvider(network, Network.mainnet);
+    networkProviders.set(Network.mainnet, provider);
+    return provider;
+  } else {
+    const provider = new StaticJsonRpcProvider(getNetworkObj(network).rpc(), getNetworkObj(network).id);
+    networkProviders.set(network, provider);
+    return provider;
+  }
+};
+
+export const getProvider = ({ chainId }: { chainId: number }): StaticJsonRpcProvider => {
+  const network = getNetworkFromChainId(chainId);
   const isSupportedNetwork = isNetworkEnum(network);
   const cachedProvider = isSupportedNetwork ? networkProviders.get(network) : undefined;
 
