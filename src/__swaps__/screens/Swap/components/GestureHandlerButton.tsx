@@ -86,7 +86,7 @@ export function GestureHandlerButton({
     if (!longPressEnabled) return tap;
 
     const longPress = Gesture.LongPress()
-      .enabled(!disabled && !!(onLongPressEndWorklet || onLongPressJS || onLongPressWorklet))
+      .enabled(!disabled)
       .minDuration(longPressDuration)
       .onStart(e => {
         if (onLongPressWorklet) onLongPressWorklet(e);
