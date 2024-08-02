@@ -37,6 +37,8 @@ import { queryClient } from '@/react-query';
 import { favoritesQueryKey } from '@/resources/favorites';
 import { EthereumAddress, RainbowToken } from '@/entities';
 import { getUniqueId } from '@/utils/ethereumUtils';
+import { useFavoriteDappsStore } from '@/state/favoriteDapps/favoriteDapps';
+import { useLegacyFavoriteDappsStore } from '@/state/legacyFavoriteDapps';
 
 export default async function runMigrations() {
   // get current version
@@ -636,6 +638,31 @@ export default async function runMigrations() {
   };
 
   migrations.push(v18);
+
+  /**
+   *************** Migration v19 ******************
+   * Migrates dapp browser favorites store from createStore to createRainbowStore
+   */
+  const v19 = async () => {
+    const initializeLegacyStore = () => {
+      return new Promise<void>(resolve => {
+        // Give the async legacy store a moment to initialize
+        setTimeout(() => {
+          resolve();
+        }, 1000);
+      });
+    };
+
+    await initializeLegacyStore();
+    const legacyFavorites = useLegacyFavoriteDappsStore.getState().favoriteDapps;
+
+    if (legacyFavorites.length > 0) {
+      useFavoriteDappsStore.setState({ favoriteDapps: legacyFavorites });
+      useLegacyFavoriteDappsStore.setState({ favoriteDapps: [] });
+    }
+  };
+
+  migrations.push(v19);
 
   logger.sentry(`Migrations: ready to run migrations starting on number ${currentVersion}`);
   // await setMigrationVersion(17);

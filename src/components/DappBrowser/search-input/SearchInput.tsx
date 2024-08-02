@@ -24,7 +24,7 @@ import { fontWithWidth } from '@/styles';
 import font from '@/styles/fonts';
 import { Site } from '@/state/browserHistory';
 import { useBrowserStore } from '@/state/browser/browserStore';
-import { useFavoriteDappsStore } from '@/state/favoriteDapps';
+import { useFavoriteDappsStore } from '@/state/favoriteDapps/favoriteDapps';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';

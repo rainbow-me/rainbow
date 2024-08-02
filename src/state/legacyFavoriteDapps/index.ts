@@ -11,8 +11,10 @@ interface Site {
 interface FavoriteDappsStore {
   favoriteDapps: Site[];
   addFavorite: (site: Site) => void;
+  getFavorites: (sort?: Site['url'][]) => Site[];
   removeFavorite: (url: string) => void;
   isFavorite: (url: string) => boolean;
+  reorderFavorites: (newOrder: Site['url'][]) => void;
 }
 
 const standardizeUrl = (url: string) => {
@@ -26,9 +28,10 @@ const standardizeUrl = (url: string) => {
   return standardizedUrl;
 };
 
-export const favoriteDappsStore = createStore<FavoriteDappsStore>(
+export const legacyFavoriteDappsStore = createStore<FavoriteDappsStore>(
   (set, get) => ({
     favoriteDapps: [],
+
     addFavorite: site => {
       const { favoriteDapps } = get();
       const standardizedUrl = standardizeUrl(site.url);
@@ -37,15 +40,37 @@ export const favoriteDappsStore = createStore<FavoriteDappsStore>(
         set({ favoriteDapps: [...favoriteDapps, { ...site, url: standardizedUrl }] });
       }
     },
+
+    getFavorites: (sort?: Site['url'][]) => {
+      const { favoriteDapps } = get();
+      if (!sort) return favoriteDapps;
+
+      const sortMap = new Map(sort.map((url, index) => [url, index]));
+
+      return [...favoriteDapps].sort((a, b) => {
+        const indexA = sortMap.get(a.url) ?? Infinity;
+        const indexB = sortMap.get(b.url) ?? Infinity;
+        return indexA - indexB;
+      });
+    },
+
+    isFavorite: url => {
+      const { favoriteDapps } = get();
+      const standardizedUrl = standardizeUrl(url);
+      return favoriteDapps.some(dapp => dapp.url === standardizedUrl);
+    },
+
     removeFavorite: url => {
       const { favoriteDapps } = get();
       const standardizedUrl = standardizeUrl(url);
       set({ favoriteDapps: favoriteDapps.filter(dapp => dapp.url !== standardizedUrl) });
     },
-    isFavorite: url => {
+
+    reorderFavorites: newOrder => {
       const { favoriteDapps } = get();
-      const standardizedUrl = standardizeUrl(url);
-      return favoriteDapps.some(dapp => dapp.url === standardizedUrl);
+      const urlMap = new Map(favoriteDapps.map(dapp => [dapp.url, dapp]));
+      const reorderedFavorites = newOrder.map(url => urlMap.get(url)).filter((dapp): dapp is Site => dapp !== undefined);
+      set({ favoriteDapps: reorderedFavorites });
     },
   }),
   {
@@ -56,4 +81,4 @@ export const favoriteDappsStore = createStore<FavoriteDappsStore>(
   }
 );
 
-export const useFavoriteDappsStore = create(favoriteDappsStore);
+export const useLegacyFavoriteDappsStore = create(legacyFavoriteDappsStore);
