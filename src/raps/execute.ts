@@ -22,8 +22,13 @@ import { createUnlockAndCrosschainSwapRap } from './unlockAndCrosschainSwap';
 import { createClaimAndBridgeRap } from './claimAndBridge';
 import { createUnlockAndSwapRap } from './unlockAndSwap';
 import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
+import { Screens, TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
+import { swapsStore } from '@/state/swaps/swapsStore';
 
-export function createSwapRapByType<T extends RapTypes>(type: T, swapParameters: RapSwapActionParameters<T>) {
+export function createSwapRapByType<T extends RapTypes>(
+  type: T,
+  swapParameters: RapSwapActionParameters<T>
+): Promise<{ actions: RapAction<RapActionTypes>[] }> {
   switch (type) {
     case 'claimBridge':
       return createClaimAndBridgeRap(swapParameters as RapSwapActionParameters<'claimBridge'>);
@@ -32,7 +37,7 @@ export function createSwapRapByType<T extends RapTypes>(type: T, swapParameters:
     case 'swap':
       return createUnlockAndSwapRap(swapParameters as RapSwapActionParameters<'swap'>);
     default:
-      return { actions: [] };
+      return Promise.resolve({ actions: [] });
   }
 }
 
@@ -125,7 +130,18 @@ export const walletExecuteRap = async (
   type: RapTypes,
   parameters: RapSwapActionParameters<'swap' | 'crosschainSwap' | 'claimBridge'>
 ): Promise<{ nonce: number | undefined; errorMessage: string | null }> => {
-  const rap: Rap = await createSwapRapByType(type, parameters);
+  // NOTE: We don't care to track claimBridge raps
+  const rap =
+    type === 'claimBridge'
+      ? await createSwapRapByType(type, parameters)
+      : await performanceTracking.getState().executeFn({
+          fn: createSwapRapByType,
+          screen: Screens.SWAPS,
+          operation: TimeToSignOperation.CreateRap,
+          metadata: {
+            degenMode: swapsStore.getState().degenMode,
+          },
+        })(type, parameters);
 
   const { actions } = rap;
   const rapName = getRapFullName(rap.actions);
