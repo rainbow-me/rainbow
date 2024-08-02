@@ -1,10 +1,11 @@
 import ConditionalWrap from 'conditional-wrap';
-import React, { useMemo } from 'react';
+import React, { MutableRefObject, useMemo } from 'react';
 import { StyleProp, ViewProps, ViewStyle } from 'react-native';
 import {
   Gesture,
   GestureDetector,
   GestureStateChangeEvent,
+  GestureType,
   LongPressGestureHandlerEventPayload,
   TapGestureHandlerEventPayload,
 } from 'react-native-gesture-handler';
@@ -19,6 +20,7 @@ export type GestureHandlerButtonProps = {
   disableButtonPressWrapper?: boolean;
   disabled?: boolean;
   longPressDuration?: number;
+  longPressRef?: MutableRefObject<GestureType>;
   onLongPressEndWorklet?: (success?: boolean) => void;
   onLongPressJS?: (e?: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>) => void;
   onLongPressWorklet?: (e?: GestureStateChangeEvent<LongPressGestureHandlerEventPayload>) => void;
@@ -28,6 +30,7 @@ export type GestureHandlerButtonProps = {
   pointerEvents?: ViewProps['pointerEvents'];
   scaleTo?: number;
   style?: StyleProp<ViewStyle> | AnimatedStyle;
+  tapRef?: MutableRefObject<GestureType>;
 };
 
 /**
@@ -53,6 +56,7 @@ export function GestureHandlerButton({
   disableButtonPressWrapper = false,
   disabled = false,
   longPressDuration = LONG_PRESS_DURATION_IN_MS,
+  longPressRef,
   onLongPressEndWorklet,
   onLongPressJS,
   onLongPressWorklet,
@@ -62,32 +66,51 @@ export function GestureHandlerButton({
   pointerEvents = 'box-only',
   scaleTo = 0.86,
   style,
+  tapRef,
 }: GestureHandlerButtonProps) {
-  const gesture = useMemo(
-    () =>
-      Gesture.Race(
-        Gesture.Tap()
-          .enabled(!disabled)
-          .onBegin(e => {
-            if (onPressStartWorklet) onPressStartWorklet(e);
-          })
-          .onEnd(e => {
-            if (onPressWorklet) onPressWorklet(e);
-            if (onPressJS) runOnJS(onPressJS)(e);
-          }),
-        Gesture.LongPress()
-          .enabled(!disabled && !!(onLongPressEndWorklet || onLongPressJS || onLongPressWorklet))
-          .minDuration(longPressDuration)
-          .onStart(e => {
-            if (onLongPressWorklet) onLongPressWorklet(e);
-            if (onLongPressJS) runOnJS(onLongPressJS)(e);
-          })
-          .onFinalize((_, success) => {
-            if (onLongPressEndWorklet) onLongPressEndWorklet(success);
-          })
-      ),
-    [disabled, longPressDuration, onLongPressEndWorklet, onLongPressJS, onLongPressWorklet, onPressJS, onPressStartWorklet, onPressWorklet]
-  );
+  const gesture = useMemo(() => {
+    const tap = Gesture.Tap()
+      .enabled(!disabled)
+      .onBegin(e => {
+        if (onPressStartWorklet) onPressStartWorklet(e);
+      })
+      .onEnd(e => {
+        if (onPressWorklet) onPressWorklet(e);
+        if (onPressJS) runOnJS(onPressJS)(e);
+      });
+
+    if (tapRef) tap.withRef(tapRef);
+
+    const longPressEnabled = !!(onLongPressEndWorklet || onLongPressJS || onLongPressWorklet);
+
+    if (!longPressEnabled) return tap;
+
+    const longPress = Gesture.LongPress()
+      .enabled(!disabled && !!(onLongPressEndWorklet || onLongPressJS || onLongPressWorklet))
+      .minDuration(longPressDuration)
+      .onStart(e => {
+        if (onLongPressWorklet) onLongPressWorklet(e);
+        if (onLongPressJS) runOnJS(onLongPressJS)(e);
+      })
+      .onFinalize((_, success) => {
+        if (onLongPressEndWorklet) onLongPressEndWorklet(success);
+      });
+
+    if (longPressRef) longPress.withRef(longPressRef);
+
+    return Gesture.Race(tap, longPress);
+  }, [
+    disabled,
+    longPressDuration,
+    longPressRef,
+    onLongPressEndWorklet,
+    onLongPressJS,
+    onLongPressWorklet,
+    onPressJS,
+    onPressStartWorklet,
+    onPressWorklet,
+    tapRef,
+  ]);
 
   return (
     <ConditionalWrap
