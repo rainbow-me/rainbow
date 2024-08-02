@@ -72,7 +72,7 @@ export interface WalletconnectRequestData extends RequestData {
 /**
  * Display details loaded for a request.
  */
-interface RequestDisplayDetails {
+export interface RequestDisplayDetails {
   /**
    * Data loaded for the request, depending on the type of request.
    */

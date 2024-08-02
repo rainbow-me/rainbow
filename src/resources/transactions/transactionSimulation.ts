@@ -1,0 +1,146 @@
+import { createQueryKey, QueryFunctionArgs } from '@/react-query';
+import { useQuery } from '@tanstack/react-query';
+import { Network } from '@/networks/types';
+import { RainbowError, logger } from '@/logger';
+import { metadataPOSTClient } from '@/graphql';
+import { TransactionErrorType, TransactionScanResultType, TransactionSimulationResult } from '@/graphql/__generated__/metadataPOST';
+import { ethereumUtils } from '@/utils';
+import { isNil } from 'lodash';
+import { RequestData } from '@/redux/requests';
+
+type SimulationArgs = {
+  accountAddress: string;
+  currentNetwork: Network;
+  isMessageRequest: boolean;
+  nativeCurrency: string;
+  req: any; // Replace 'any' with the correct type for 'req'
+  requestMessage: string;
+  simulationUnavailable: boolean;
+  transactionDetails: RequestData;
+};
+
+type SimulationResult = {
+  simulationData: TransactionSimulationResult | undefined;
+  simulationError: TransactionErrorType | undefined;
+  simulationScanResult: TransactionScanResultType | undefined;
+};
+
+const simulationQueryKey = ({
+  accountAddress,
+  currentNetwork,
+  isMessageRequest,
+  nativeCurrency,
+  req,
+  requestMessage,
+  simulationUnavailable,
+  transactionDetails,
+}: SimulationArgs) =>
+  createQueryKey(
+    'txSimulation',
+    {
+      accountAddress,
+      currentNetwork,
+      isMessageRequest,
+      nativeCurrency,
+      req,
+      requestMessage,
+      simulationUnavailable,
+      transactionDetails,
+    },
+    { persisterVersion: 1 }
+  );
+
+const fetchSimulation = async ({
+  queryKey: [
+    { accountAddress, currentNetwork, isMessageRequest, nativeCurrency, req, requestMessage, simulationUnavailable, transactionDetails },
+  ],
+}: QueryFunctionArgs<typeof simulationQueryKey>): Promise<SimulationResult> => {
+  try {
+    const chainId = ethereumUtils.getChainIdFromNetwork(currentNetwork);
+    let simulationData;
+
+    if (isMessageRequest) {
+      simulationData = await metadataPOSTClient.simulateMessage({
+        address: accountAddress,
+        chainId: chainId,
+        message: {
+          method: transactionDetails?.payload?.method,
+          params: [requestMessage],
+        },
+        domain: transactionDetails?.dappUrl,
+      });
+
+      if (isNil(simulationData?.simulateMessage?.simulation) && isNil(simulationData?.simulateMessage?.error)) {
+        return {
+          simulationData: { in: [], out: [], approvals: [] },
+          simulationError: undefined,
+          simulationScanResult: simulationData?.simulateMessage?.scanning?.result,
+        };
+      } else if (simulationData?.simulateMessage?.error && !simulationUnavailable) {
+        return {
+          simulationData: undefined,
+          simulationError: simulationData?.simulateMessage?.error?.type,
+          simulationScanResult: simulationData?.simulateMessage?.scanning?.result,
+        };
+      } else if (simulationData.simulateMessage?.simulation && !simulationUnavailable) {
+        return {
+          simulationData: simulationData.simulateMessage?.simulation,
+          simulationError: undefined,
+          simulationScanResult: simulationData?.simulateMessage?.scanning?.result,
+        };
+      }
+    } else {
+      simulationData = await metadataPOSTClient.simulateTransactions({
+        chainId: chainId,
+        currency: nativeCurrency?.toLowerCase(),
+        transactions: [
+          {
+            from: req?.from,
+            to: req?.to,
+            data: req?.data,
+            value: req?.value || '0x0',
+          },
+        ],
+        domain: transactionDetails?.dappUrl,
+      });
+
+      if (isNil(simulationData?.simulateTransactions?.[0]?.simulation) && isNil(simulationData?.simulateTransactions?.[0]?.error)) {
+        return {
+          simulationData: { in: [], out: [], approvals: [] },
+          simulationError: undefined,
+          simulationScanResult: simulationData?.simulateTransactions?.[0]?.scanning?.result,
+        };
+      } else if (simulationData?.simulateTransactions?.[0]?.error) {
+        return {
+          simulationData: undefined,
+          simulationError: simulationData?.simulateTransactions?.[0]?.error?.type,
+          simulationScanResult: simulationData?.simulateTransactions[0]?.scanning?.result,
+        };
+      } else if (simulationData.simulateTransactions?.[0]?.simulation) {
+        return {
+          simulationData: simulationData.simulateTransactions[0]?.simulation,
+          simulationError: undefined,
+          simulationScanResult: simulationData?.simulateTransactions[0]?.scanning?.result,
+        };
+      }
+    }
+
+    return {
+      simulationData: undefined,
+      simulationError: undefined,
+      simulationScanResult: undefined,
+    };
+  } catch (error) {
+    logger.error(new RainbowError('Error while simulating'), { error });
+    throw error;
+  }
+};
+
+export const useSimulation = (args: SimulationArgs) => {
+  return useQuery(simulationQueryKey(args), fetchSimulation, {
+    enabled: !!args.accountAddress && !!args.currentNetwork,
+    retry: 3,
+    refetchOnWindowFocus: false,
+    staleTime: Infinity,
+  });
+};
