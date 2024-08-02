@@ -118,7 +118,7 @@ export function GestureHandlerButton({
       wrap={children => (
         <ButtonPressAnimation
           disabled={disabled}
-          // This buffer ensures the native iOS button press wrapper doesn't cancel the RNGH long press event before it fires
+          // This buffer ensures the native iOS button press wrapper doesn't cancel the RNGH long press events before they fire
           minLongPressDuration={longPressDuration * 1.2}
           scaleTo={disableButtonPressWrapper ? 1 : scaleTo}
           style={buttonPressWrapperStyleIOS}
