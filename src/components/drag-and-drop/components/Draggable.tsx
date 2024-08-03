@@ -11,6 +11,7 @@ export type DraggableProps = AnimatedProps<ViewProps> &
   Partial<DraggableConstraints> & {
     animatedStyleWorklet?: AnimatedStyleWorklet;
     activeOpacity?: number;
+    activeScale?: number;
   };
 
 /**
@@ -30,6 +31,7 @@ export type DraggableProps = AnimatedProps<ViewProps> &
  * @param {number} props.activationTolerance - A number representing the distance, in pixels, of motion that is tolerated before the drag operation is aborted.
  * @param {object} props.style - An object that defines the style of the Draggable component.
  * @param {number} props.activeOpacity - A number that defines the opacity of the Draggable component when it is active.
+ * @param {number} props.activeScale - A number that defines the scale of the Draggable component when it is active.
  * @param {Function} props.animatedStyleWorklet - A worklet function that modifies the animated style of the Draggable component.
  * @returns {React.Component} Returns a Draggable component that can be moved by the user within a Drag and Drop context.
  */
@@ -39,7 +41,8 @@ export const Draggable: FunctionComponent<PropsWithChildren<DraggableProps>> = (
   data,
   disabled,
   style,
-  activeOpacity = 0.9,
+  activeOpacity = 1,
+  activeScale = 1.05,
   activationDelay,
   activationTolerance,
   animatedStyleWorklet,
@@ -59,11 +62,12 @@ export const Draggable: FunctionComponent<PropsWithChildren<DraggableProps>> = (
     // eslint-disable-next-line no-nested-ternary
     const zIndex = isActive ? 999 : isActing ? 998 : 1;
     const style = {
-      opacity: isActive ? activeOpacity : 1,
+      opacity: withTiming(isActive ? activeOpacity : 1, TIMING_CONFIGS.slowestFadeConfig),
       zIndex,
       transform: [
         { translateX: isActive ? offset.x.value : withTiming(offset.x.value, TIMING_CONFIGS.slowestFadeConfig) },
         { translateY: isActive ? offset.y.value : withTiming(offset.y.value, TIMING_CONFIGS.slowestFadeConfig) },
+        { scale: withTiming(activeScale && isActive ? activeScale : 1, TIMING_CONFIGS.slowestFadeConfig) },
       ],
     };
     if (animatedStyleWorklet) {

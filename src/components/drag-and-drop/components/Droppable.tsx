@@ -1,14 +1,16 @@
 import React, { type FunctionComponent, type PropsWithChildren } from 'react';
 import { type ViewProps } from 'react-native';
-import Animated, { useAnimatedStyle, type AnimatedProps } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, withTiming, type AnimatedProps } from 'react-native-reanimated';
+import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { IS_IOS } from '@/env';
 import { useDroppable, type UseDraggableOptions } from '../hooks';
 import type { AnimatedStyleWorklet } from '../types';
-import { IS_IOS } from '@/env';
 
 export type DroppableProps = AnimatedProps<ViewProps> &
   UseDraggableOptions & {
     animatedStyleWorklet?: AnimatedStyleWorklet;
     activeOpacity?: number;
+    activeScale?: number;
   };
 
 /**
@@ -26,6 +28,7 @@ export type DroppableProps = AnimatedProps<ViewProps> &
  * @param {object} props.data - An object that contains data associated with the Droppable component.
  * @param {object} props.style - An object that defines the style of the Droppable component.
  * @param {number} props.activeOpacity - A number that defines the opacity of the Droppable component when it is active.
+ * @param {number} props.activeScale - A number that defines the scale of the Droppable component when it is active.
  * @param {Function} props.animatedStyleWorklet - A worklet function that modifies the animated style of the Droppable component.
  * @returns {React.Component} Returns a Droppable component that can serve as a drop target within a Drag and Drop context.
  */
@@ -36,6 +39,7 @@ export const Droppable: FunctionComponent<PropsWithChildren<DroppableProps>> = (
   data,
   style,
   activeOpacity = 0.9,
+  activeScale,
   animatedStyleWorklet,
   ...otherProps
 }) => {
@@ -48,7 +52,8 @@ export const Droppable: FunctionComponent<PropsWithChildren<DroppableProps>> = (
   const animatedStyle = useAnimatedStyle(() => {
     const isActive = activeId.value === id;
     const style = {
-      opacity: isActive ? activeOpacity : 1,
+      opacity: withTiming(isActive ? activeOpacity : 1, TIMING_CONFIGS.slowestFadeConfig),
+      transform: [{ scale: withTiming(activeScale && isActive ? activeScale : 1, TIMING_CONFIGS.slowestFadeConfig) }],
     };
     if (animatedStyleWorklet) {
       Object.assign(style, animatedStyleWorklet(style, { isActive, isDisabled: !!disabled }));
