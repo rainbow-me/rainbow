@@ -1,6 +1,6 @@
-import { IS_IOS } from '@/env';
 import { useEvent } from 'react-native-reanimated';
 import { WorkletFunction } from 'react-native-reanimated/lib/typescript/commonTypes';
+import { IS_IOS } from '@/env';
 
 interface Layout {
   x: number;
