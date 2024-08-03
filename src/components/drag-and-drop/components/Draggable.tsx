@@ -67,14 +67,14 @@ export const Draggable: FunctionComponent<PropsWithChildren<DraggableProps>> = (
       transform: [
         { translateX: isActive ? offset.x.value : withTiming(offset.x.value, TIMING_CONFIGS.slowestFadeConfig) },
         { translateY: isActive ? offset.y.value : withTiming(offset.y.value, TIMING_CONFIGS.slowestFadeConfig) },
-        { scale: withTiming(activeScale && isActive ? activeScale : 1, TIMING_CONFIGS.slowestFadeConfig) },
+        { scale: activeScale === undefined ? 1 : withTiming(isActive ? activeScale : 1, TIMING_CONFIGS.slowestFadeConfig) },
       ],
     };
     if (animatedStyleWorklet) {
       Object.assign(style, animatedStyleWorklet(style, { isActive, isActing, isDisabled: !!disabled }));
     }
     return style;
-  }, [id, state, activeOpacity]);
+  }, [id, state, activeOpacity, activeScale]);
 
   return (
     <Animated.View

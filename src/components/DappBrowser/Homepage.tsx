@@ -196,7 +196,7 @@ const Favorites = ({
           >
             {favoriteDapps.map(dapp =>
               dapp ? (
-                <Draggable activationTolerance={DEVICE_WIDTH} activeScale={1.05} id={dapp.url} key={dapp.url}>
+                <Draggable activationTolerance={DEVICE_WIDTH} activeScale={1.06} id={dapp.url} key={dapp.url}>
                   <Logo goToUrl={goToUrl} key={`${dapp.url}-${dapp.name}`} site={dapp} />
                 </Draggable>
               ) : null

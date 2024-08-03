@@ -53,13 +53,13 @@ export const Droppable: FunctionComponent<PropsWithChildren<DroppableProps>> = (
     const isActive = activeId.value === id;
     const style = {
       opacity: withTiming(isActive ? activeOpacity : 1, TIMING_CONFIGS.slowestFadeConfig),
-      transform: [{ scale: withTiming(activeScale && isActive ? activeScale : 1, TIMING_CONFIGS.slowestFadeConfig) }],
+      transform: [{ scale: activeScale === undefined ? 1 : withTiming(isActive ? activeScale : 1, TIMING_CONFIGS.slowestFadeConfig) }],
     };
     if (animatedStyleWorklet) {
       Object.assign(style, animatedStyleWorklet(style, { isActive, isDisabled: !!disabled }));
     }
     return style;
-  }, [id, activeOpacity]);
+  }, [id, activeOpacity, activeScale]);
 
   return (
     <Animated.View
