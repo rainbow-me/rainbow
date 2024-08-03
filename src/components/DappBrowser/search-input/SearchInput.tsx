@@ -22,9 +22,8 @@ import { IS_IOS } from '@/env';
 import * as i18n from '@/languages';
 import { fontWithWidth } from '@/styles';
 import font from '@/styles/fonts';
-import { Site } from '@/state/browserHistory';
 import { useBrowserStore } from '@/state/browser/browserStore';
-import { useFavoriteDappsStore } from '@/state/favoriteDapps/favoriteDapps';
+import { FavoritedSite, useFavoriteDappsStore } from '@/state/favoriteDapps/favoriteDapps';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
@@ -64,7 +63,7 @@ const TheeDotMenu = function TheeDotMenu({
       if (isFavorite) {
         removeFavorite(url);
       } else {
-        const site: Omit<Site, 'timestamp'> = {
+        const site: FavoritedSite = {
           name: getNameFromFormattedUrl(formattedUrlValue.value),
           url: url,
           image: useBrowserStore.getState().getActiveTabLogo() || `https://${formattedUrlValue.value}/apple-touch-icon.png`,

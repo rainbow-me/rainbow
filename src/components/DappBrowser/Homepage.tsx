@@ -23,7 +23,7 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
-import { useFavoriteDappsStore } from '@/state/favoriteDapps/favoriteDapps';
+import { FavoritedSite, useFavoriteDappsStore } from '@/state/favoriteDapps/favoriteDapps';
 import { Site, useBrowserHistoryStore } from '@/state/browserHistory';
 import { getDappHost } from './handleProviderRequest';
 import { uniqBy } from 'lodash';
@@ -82,7 +82,7 @@ export const Homepage = ({ tabId }: { tabId: string }) => {
 const Trending = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
   const { dapps } = useDapps({ select: dapps => dapps.filter(dapp => dapp.trending).slice(0, 8) });
 
-  if (dapps.length === 0) {
+  if (!dapps.length) {
     return null;
   }
 
@@ -495,7 +495,7 @@ export const PlaceholderCard = memo(function PlaceholderCard() {
   );
 });
 
-export const Logo = memo(function Logo({ goToUrl, site }: { goToUrl: (url: string) => void; site: Omit<Site, 'timestamp'> }) {
+export const Logo = memo(function Logo({ goToUrl, site }: { goToUrl: (url: string) => void; site: FavoritedSite }) {
   const { isDarkMode } = useColorMode();
 
   const imageOrFallback = useMemo(() => {
