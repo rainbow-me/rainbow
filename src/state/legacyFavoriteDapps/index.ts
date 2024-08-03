@@ -1,5 +1,5 @@
 import create from 'zustand';
-import { standardizeUrl } from '../favoriteDapps/favoriteDapps';
+import { standardizeUrl } from '../browser/favoriteDappsStore';
 import { createStore } from '../internal/createStore';
 
 interface Site {

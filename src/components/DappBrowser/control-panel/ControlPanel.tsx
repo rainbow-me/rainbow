@@ -54,7 +54,7 @@ import { address } from '@/utils/abbreviations';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
 import { useAppSessionsStore } from '@/state/appSessions';
 import { DEFAULT_TAB_URL, RAINBOW_HOME } from '../constants';
-import { FavoritedSite, useFavoriteDappsStore } from '@/state/favoriteDapps/favoriteDapps';
+import { FavoritedSite, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
 import WalletTypes from '@/helpers/walletTypes';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';

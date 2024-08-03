@@ -15,13 +15,22 @@ interface FavoriteDappsStore {
   reorderFavorites: (newOrder: FavoritedSite['url'][]) => void;
 }
 
-/** Strips a URL down from e.g. `https://www.rainbow.me/app/` to `rainbow.me/app` */
-export const standardizeUrl = (url: string) => {
+/**
+ * Strips a URL down from e.g. `https://www.rainbow.me/app/` to `rainbow.me/app`.
+ * @param stripPath - Optionally strip the path from the URL, leaving `rainbow.me`.
+ */
+export const standardizeUrl = (url: string, stripPath?: boolean) => {
   let standardizedUrl = url?.trim();
   standardizedUrl = standardizedUrl?.replace(/^https?:\/\//, '');
   standardizedUrl = standardizedUrl?.replace(/^www\./, '');
   if (standardizedUrl?.endsWith('/')) {
     standardizedUrl = standardizedUrl?.slice(0, -1);
+  }
+  if (standardizedUrl?.includes('?')) {
+    standardizedUrl = standardizedUrl?.split('?')[0];
+  }
+  if (stripPath) {
+    standardizedUrl = standardizedUrl?.split('/')?.[0] || standardizedUrl;
   }
   return standardizedUrl;
 };
@@ -55,13 +64,27 @@ export const useFavoriteDappsStore = createRainbowStore<FavoriteDappsStore>(
     isFavorite: url => {
       const { favoriteDapps } = get();
       const standardizedUrl = standardizeUrl(url);
-      return favoriteDapps.some(dapp => dapp.url === standardizedUrl);
+      const foundMatch = favoriteDapps.some(dapp => dapp.url === standardizedUrl);
+      if (foundMatch) return true;
+
+      const baseUrl = standardizeUrl(url, true);
+      return favoriteDapps.some(dapp => dapp.url.startsWith(baseUrl));
     },
 
     removeFavorite: url => {
       const { favoriteDapps } = get();
       const standardizedUrl = standardizeUrl(url);
-      set({ favoriteDapps: favoriteDapps.filter(dapp => dapp.url !== standardizedUrl) });
+      const match = favoriteDapps.find(dapp => dapp.url === standardizedUrl);
+
+      if (match) {
+        set({ favoriteDapps: favoriteDapps.filter(dapp => dapp.url !== standardizedUrl) });
+      } else {
+        const baseUrl = standardizeUrl(url, true);
+        const baseUrlMatch = favoriteDapps.find(dapp => dapp.url.startsWith(baseUrl));
+        if (baseUrlMatch) {
+          set({ favoriteDapps: favoriteDapps.filter(dapp => dapp.url !== baseUrlMatch.url) });
+        }
+      }
     },
 
     reorderFavorites: newOrder => {

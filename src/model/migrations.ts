@@ -37,7 +37,7 @@ import { queryClient } from '@/react-query';
 import { favoritesQueryKey } from '@/resources/favorites';
 import { EthereumAddress, RainbowToken } from '@/entities';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { useFavoriteDappsStore } from '@/state/favoriteDapps/favoriteDapps';
+import { standardizeUrl, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
 import { useLegacyFavoriteDappsStore } from '@/state/legacyFavoriteDapps';
 
 export default async function runMigrations() {
@@ -657,6 +657,10 @@ export default async function runMigrations() {
     const legacyFavorites = useLegacyFavoriteDappsStore.getState().favoriteDapps;
 
     if (legacyFavorites.length > 0) {
+      // Re-standardize URLs to ensure they're in the correct format
+      for (const favorite of legacyFavorites) {
+        favorite.url = standardizeUrl(favorite.url);
+      }
       useFavoriteDappsStore.setState({ favoriteDapps: legacyFavorites });
       useLegacyFavoriteDappsStore.setState({ favoriteDapps: [] });
     }

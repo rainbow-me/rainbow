@@ -1,4 +1,4 @@
-import { useFavoriteDappsStore } from './favoriteDapps';
+import { useFavoriteDappsStore } from './favoriteDappsStore';
 
 // TODO: Fix test. skipping for now to unblock CI
 describe.skip('FavoriteDappsStore', () => {
