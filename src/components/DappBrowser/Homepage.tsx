@@ -498,57 +498,63 @@ export const PlaceholderCard = memo(function PlaceholderCard() {
 export const Logo = memo(function Logo({ goToUrl, site }: { goToUrl: (url: string) => void; site: Omit<Site, 'timestamp'> }) {
   const { isDarkMode } = useColorMode();
 
-  // Prevent Android flicker due to unnecessary image re-renders
-  const memoizedImage = useMemo(() => {
+  const imageOrFallback = useMemo(() => {
     return (
-      <Box
-        as={ImgixImage}
-        background="fillTertiary"
-        enableFasterImage
-        fm="png"
-        height={{ custom: LOGO_SIZE }}
-        size={LOGO_SIZE}
-        source={{ uri: site.image }}
-        style={{ borderRadius: IS_IOS ? LOGO_BORDER_RADIUS : LOGO_BORDER_RADIUS / 2 }}
-        width={{ custom: LOGO_SIZE }}
-      />
+      <>
+        {site.image && (
+          <Box
+            as={ImgixImage}
+            background="fillTertiary"
+            borderRadius={LOGO_BORDER_RADIUS}
+            enableFasterImage
+            fm="png"
+            height={{ custom: LOGO_SIZE }}
+            size={LOGO_SIZE}
+            source={{ uri: site.image }}
+            style={{
+              borderRadius: IS_IOS ? LOGO_BORDER_RADIUS : LOGO_BORDER_RADIUS / 2,
+              overflow: 'hidden',
+            }}
+            width={{ custom: LOGO_SIZE }}
+          />
+        )}
+
+        <Box
+          background={site.image ? undefined : 'fillTertiary'}
+          borderRadius={LOGO_BORDER_RADIUS}
+          height={{ custom: LOGO_SIZE }}
+          position={site.image ? 'absolute' : undefined}
+          style={[
+            IS_IOS
+              ? {
+                  borderColor: isDarkMode ? opacity(globalColors.white100, 0.04) : opacity(globalColors.grey100, 0.02),
+                  borderWidth: THICK_BORDER_WIDTH,
+                }
+              : {},
+            {
+              overflow: 'hidden',
+              pointerEvents: 'none',
+            },
+          ]}
+          width={{ custom: LOGO_SIZE }}
+        />
+
+        {!site.image && (
+          <Box alignItems="center" height="full" position="absolute" width="full">
+            <TextIcon color="labelQuaternary" containerSize={LOGO_SIZE} opacity={isDarkMode ? 0.4 : 0.6} size="icon 28px" weight="black">
+              􀎭
+            </TextIcon>
+          </Box>
+        )}
+      </>
     );
-  }, [site.image]);
+  }, [isDarkMode, site.image]);
 
   return (
     <View style={{ width: LOGO_SIZE }}>
       <ButtonPressAnimation onPress={() => goToUrl(site.url)}>
         <Stack alignHorizontal="center">
-          <Box>
-            {IS_IOS && !site.image && (
-              <Box alignItems="center" height="full" position="absolute" width="full">
-                <TextIcon
-                  color="labelQuaternary"
-                  containerSize={LOGO_SIZE}
-                  opacity={isDarkMode ? 0.4 : 0.6}
-                  size="icon 28px"
-                  weight="black"
-                >
-                  􀎭
-                </TextIcon>
-              </Box>
-            )}
-            {memoizedImage}
-            {IS_IOS && (
-              <Box
-                borderRadius={LOGO_BORDER_RADIUS}
-                height="full"
-                position="absolute"
-                style={{
-                  borderColor: isDarkMode ? opacity(globalColors.white100, 0.04) : opacity(globalColors.grey100, 0.02),
-                  borderWidth: THICK_BORDER_WIDTH,
-                  overflow: 'hidden',
-                  pointerEvents: 'none',
-                }}
-                width="full"
-              />
-            )}
-          </Box>
+          <Box>{imageOrFallback}</Box>
           <Bleed bottom="10px" horizontal="8px">
             <Box width={{ custom: LOGO_SIZE + LOGO_LABEL_SPILLOVER * 2 }}>
               <Text align="center" color="labelSecondary" numberOfLines={1} size="13pt" style={{ paddingVertical: 10 }} weight="bold">
