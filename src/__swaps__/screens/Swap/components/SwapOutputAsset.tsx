@@ -89,10 +89,12 @@ function SwapOutputAmount() {
       onPaste={
         isPasteEnabled
           ? text => {
-              if (!text || !+text) return;
+              const numericValue = text && +text.replaceAll(',', '');
+              if (!numericValue) return;
+              SwapInputController.inputMethod.value = 'outputAmount';
               SwapInputController.inputValues.modify(values => {
                 'worklet';
-                return { ...values, outputAmount: text };
+                return { ...values, outputAmount: numericValue };
               });
             }
           : undefined
