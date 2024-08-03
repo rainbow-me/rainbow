@@ -68,7 +68,7 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
     if (display) {
       return display;
     } else if (isLoading) {
-      return i18n.t(i18n.l.wallet.change_wallet.loading);
+      return i18n.t(i18n.l.wallet.change_wallet.loading_balance);
     } else {
       return i18n.t(i18n.l.wallet.change_wallet.no_balance);
     }

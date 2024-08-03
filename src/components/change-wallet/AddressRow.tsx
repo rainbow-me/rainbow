@@ -133,7 +133,7 @@ export default function AddressRow({ contextMenuActions, data, editMode, onPress
     if (display) {
       return display;
     } else if (isLoading) {
-      return lang.t('wallet.change_wallet.loading');
+      return lang.t('wallet.change_wallet.loading_balance');
     } else {
       return lang.t('wallet.change_wallet.no_balance');
     }
