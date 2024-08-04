@@ -1,4 +1,8 @@
-import React, { memo, MutableRefObject, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { BlurView } from '@react-native-community/blur';
+import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import Animated from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import {
   Bleed,
@@ -14,10 +18,6 @@ import {
   useBackgroundColor,
   useColorMode,
 } from '@/design-system';
-import { StyleSheet, View } from 'react-native';
-import { Gesture, PanGesture, ScrollView } from 'react-native-gesture-handler';
-import LinearGradient from 'react-native-linear-gradient';
-import { BlurView } from '@react-native-community/blur';
 import { ImgixImage } from '@/components/images';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { IS_ANDROID, IS_IOS } from '@/env';
@@ -35,6 +35,7 @@ import haptics from '@/utils/haptics';
 import * as i18n from '@/languages';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { DndProvider, Draggable, DraggableGrid, DraggableGridProps, UniqueIdentifier } from '../drag-and-drop';
+import { EasingGradient } from '../easing-gradient/EasingGradient';
 import { useBrowserContext } from './BrowserContext';
 import { getNameFromFormattedUrl } from './utils';
 
@@ -59,22 +60,19 @@ export const Homepage = ({ tabId }: { tabId: string }) => {
   const { goToUrl } = useBrowserContext();
   const { isDarkMode } = useColorMode();
 
-  const favoritesGestureRef = useRef(Gesture.Pan());
-
   return (
     <View style={[isDarkMode ? styles.pageBackgroundDark : styles.pageBackgroundLight, styles.pageContainer]}>
-      <ScrollView
+      <Animated.ScrollView
         scrollIndicatorInsets={SCROLL_INDICATOR_INSETS}
         contentContainerStyle={[styles.scrollViewContainer, isDarkMode ? styles.pageBackgroundDark : styles.pageBackgroundLight]}
         showsVerticalScrollIndicator={false}
-        waitFor={favoritesGestureRef}
       >
         <Box gap={44}>
           <Trending goToUrl={goToUrl} />
-          <Favorites gestureRef={favoritesGestureRef} goToUrl={goToUrl} tabId={tabId} />
+          <Favorites goToUrl={goToUrl} tabId={tabId} />
           <Recents goToUrl={goToUrl} />
         </Box>
-      </ScrollView>
+      </Animated.ScrollView>
     </View>
   );
 };
@@ -117,15 +115,7 @@ const Trending = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
   );
 };
 
-const Favorites = ({
-  gestureRef,
-  goToUrl,
-  tabId,
-}: {
-  gestureRef: MutableRefObject<PanGesture>;
-  goToUrl: (url: string) => void;
-  tabId: string;
-}) => {
+const Favorites = ({ goToUrl, tabId }: { goToUrl: (url: string) => void; tabId: string }) => {
   const isActiveTab = useBrowserStore(state => state.isTabActive(tabId));
 
   const isFirstRender = useRef(true);
@@ -185,7 +175,7 @@ const Favorites = ({
         </Text>
       </Inline>
       {favoriteDapps.length > 0 && localGridSort ? (
-        <DndProvider activationDelay={150} gestureRef={gestureRef}>
+        <DndProvider activationDelay={150}>
           <DraggableGrid
             direction="row"
             gap={LOGO_PADDING}
@@ -369,15 +359,7 @@ const Card = memo(function Card({
                     source={{ uri: dappIconUrl || site.screenshot }}
                     style={{ width: CARD_WIDTH, height: CARD_HEIGHT }}
                   />
-                  <Cover>
-                    <LinearGradient
-                      colors={['rgba(0, 0, 0, 0.6)', 'rgba(0, 0, 0, 0.6)', '#000']}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 0, y: 1 }}
-                      locations={[0, 0.5, 1]}
-                      style={{ borderRadius: IS_IOS ? undefined : 24, height: '100%', width: '100%' }}
-                    />
-                  </Cover>
+                  <CardBackgroundOverlay isDarkMode={isDarkMode} />
                 </Cover>
               )}
               <Box height={{ custom: 48 }} left={{ custom: -8 }} style={styles.cardLogoWrapper} top={{ custom: -8 }} width={{ custom: 48 }}>
@@ -408,7 +390,7 @@ const Card = memo(function Card({
               height="full"
               position="absolute"
               style={{
-                borderColor: isDarkMode ? opacity(globalColors.white100, 0.1) : opacity(globalColors.grey100, 0.12),
+                borderColor: isDarkMode ? opacity(globalColors.white100, 0.09) : opacity(globalColors.grey100, 0.08),
                 borderWidth: THICK_BORDER_WIDTH,
                 overflow: 'hidden',
                 pointerEvents: 'none',
@@ -426,11 +408,11 @@ const Card = memo(function Card({
                 {IS_IOS ? (
                   <BlurView
                     blurAmount={10}
-                    blurType={isDarkMode ? 'chromeMaterialDark' : 'chromeMaterialLight'}
+                    blurType={isDarkMode ? 'chromeMaterialDark' : 'light'}
                     style={{
                       width: '100%',
                       height: '100%',
-                      backgroundColor: 'rgba(244, 248, 255, 0.08)',
+                      backgroundColor: isDarkMode ? undefined : 'rgba(244, 248, 255, 0.04)',
                     }}
                   />
                 ) : (
@@ -445,7 +427,13 @@ const Card = memo(function Card({
                   width: '100%',
                 }}
               >
-                <Text align="center" weight="heavy" color="labelSecondary" size="13pt">
+                <Text
+                  align="center"
+                  color="labelSecondary"
+                  size="13pt"
+                  style={{ opacity: isDarkMode || IS_ANDROID ? 1 : 0.9 }}
+                  weight="heavy"
+                >
                   􀍠
                 </Text>
               </View>
@@ -454,6 +442,39 @@ const Card = memo(function Card({
         </ContextMenuButton>
       )}
     </Box>
+  );
+});
+
+const CardBackgroundOverlay = memo(function CardBackgroundOverlay({ isDarkMode }: { isDarkMode: boolean }) {
+  return (
+    <Cover>
+      {IS_IOS ? (
+        <>
+          <BlurView
+            blurAmount={isDarkMode ? 36 : 64}
+            blurType={isDarkMode ? undefined : 'light'}
+            style={{ height: '100%', position: 'absolute', width: '100%' }}
+          />
+          {!isDarkMode && (
+            <EasingGradient
+              endColor={globalColors.grey100}
+              endOpacity={0.12}
+              startColor={globalColors.grey100}
+              startOpacity={0.06}
+              style={{ height: '100%', width: '100%' }}
+            />
+          )}
+        </>
+      ) : (
+        <EasingGradient
+          endColor={globalColors.grey100}
+          endOpacity={0.9}
+          startColor={globalColors.white100}
+          startOpacity={0.4}
+          style={{ borderRadius: 24, height: '100%', width: '100%' }}
+        />
+      )}
+    </Cover>
   );
 });
 
