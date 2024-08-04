@@ -21,6 +21,7 @@ interface TimeoutConfig {
  *
  * @returns An object containing:
  *   - `start` - A function to initiate the timeout.
+ *   - `stop` - A function to clear the timeout.
  *
  * @example
  * const { start } = useAnimatedTimeout({
@@ -38,11 +39,11 @@ interface TimeoutConfig {
 export function useAnimatedTimeout(config: TimeoutConfig) {
   const { autoStart, delayMs, onTimeoutWorklet } = config;
 
-  const { start } = useAnimatedTime({
+  const { start, stop } = useAnimatedTime({
     autoStart,
     durationMs: delayMs,
     onEndWorklet: onTimeoutWorklet,
   });
 
-  return { start };
+  return { start, stop };
 }
