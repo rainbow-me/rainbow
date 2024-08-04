@@ -172,7 +172,7 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
     }
   }, [debug, draggableActiveId, draggableActiveLayout, draggableLayouts, draggableOffsets, draggablePendingId, draggableStates]);
 
-  const { start: setActiveIdWithDelay, stop: clearActiveIdTimeout } = useAnimatedTimeout({
+  const { clearTimeout: clearActiveIdTimeout, start: setActiveIdWithDelay } = useAnimatedTimeout({
     delayMs: activationDelay,
     onTimeoutWorklet: setActiveId,
   });
