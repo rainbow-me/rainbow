@@ -12,6 +12,7 @@ export type DraggableProps = AnimatedProps<ViewProps> &
     animatedStyleWorklet?: AnimatedStyleWorklet;
     activeOpacity?: number;
     activeScale?: number;
+    dragDirection?: 'x' | 'y';
   };
 
 /**
@@ -24,28 +25,30 @@ export type DraggableProps = AnimatedProps<ViewProps> &
  * </Draggable>
  *
  * @param {object} props - The properties that define the Draggable component.
- * @param {string} props.id - A unique identifier for the Draggable component.
- * @param {object} props.data - An object that contains data associated with the Draggable component.
- * @param {boolean} props.disabled - A flag that indicates whether the Draggable component is disabled.
  * @param {number} props.activationDelay - A number representing the duration, in milliseconds, that this draggable item needs to be held for before allowing a drag to start.
  * @param {number} props.activationTolerance - A number representing the distance, in pixels, of motion that is tolerated before the drag operation is aborted.
- * @param {object} props.style - An object that defines the style of the Draggable component.
  * @param {number} props.activeOpacity - A number that defines the opacity of the Draggable component when it is active.
  * @param {number} props.activeScale - A number that defines the scale of the Draggable component when it is active.
  * @param {Function} props.animatedStyleWorklet - A worklet function that modifies the animated style of the Draggable component.
+ * @param {object} props.data - An object that contains data associated with the Draggable component.
+ * @param {boolean} props.disabled - A flag that indicates whether the Draggable component is disabled.
+ * @param {string} props.dragDirection - Locks the drag direction to the x or y axis.
+ * @param {string} props.id - A unique identifier for the Draggable component.
+ * @param {object} props.style - An object that defines the style of the Draggable component.
  * @returns {React.Component} Returns a Draggable component that can be moved by the user within a Drag and Drop context.
  */
 export const Draggable: FunctionComponent<PropsWithChildren<DraggableProps>> = ({
-  children,
-  id,
-  data,
-  disabled,
-  style,
-  activeOpacity = 1,
-  activeScale = 1.05,
   activationDelay,
   activationTolerance,
+  activeOpacity = 1,
+  activeScale = 1.05,
   animatedStyleWorklet,
+  children,
+  data,
+  disabled,
+  dragDirection,
+  id,
+  style,
   ...otherProps
 }) => {
   const { setNodeRef, onLayout, onLayoutWorklet, offset, state } = useDraggable({
@@ -65,8 +68,16 @@ export const Draggable: FunctionComponent<PropsWithChildren<DraggableProps>> = (
       opacity: withTiming(isActive ? activeOpacity : 1, TIMING_CONFIGS.slowestFadeConfig),
       zIndex,
       transform: [
-        { translateX: isActive ? offset.x.value : withTiming(offset.x.value, TIMING_CONFIGS.slowestFadeConfig) },
-        { translateY: isActive ? offset.y.value : withTiming(offset.y.value, TIMING_CONFIGS.slowestFadeConfig) },
+        {
+          translateX:
+            // eslint-disable-next-line no-nested-ternary
+            dragDirection !== 'y' ? (isActive ? offset.x.value : withTiming(offset.x.value, TIMING_CONFIGS.slowestFadeConfig)) : 0,
+        },
+        {
+          translateY:
+            // eslint-disable-next-line no-nested-ternary
+            dragDirection !== 'x' ? (isActive ? offset.y.value : withTiming(offset.y.value, TIMING_CONFIGS.slowestFadeConfig)) : 0,
+        },
         { scale: activeScale === undefined ? 1 : withTiming(isActive ? activeScale : 1, TIMING_CONFIGS.slowestFadeConfig) },
       ],
     };
