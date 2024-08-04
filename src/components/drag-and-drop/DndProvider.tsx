@@ -4,6 +4,7 @@ import React, {
   MutableRefObject,
   PropsWithChildren,
   RefObject,
+  useCallback,
   useImperativeHandle,
   useMemo,
   useRef,
@@ -20,7 +21,8 @@ import {
   State,
 } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback, { HapticFeedbackTypes } from 'react-native-haptic-feedback';
-import { cancelAnimation, runOnJS, runOnUI, useAnimatedReaction, useSharedValue, type WithSpringConfig } from 'react-native-reanimated';
+import { cancelAnimation, runOnJS, useAnimatedReaction, useSharedValue, type WithSpringConfig } from 'react-native-reanimated';
+import { useAnimatedTimeout } from '@/hooks/reanimated/useAnimatedTimeout';
 import {
   DndContext,
   DraggableStates,
@@ -149,6 +151,32 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
     []
   );
 
+  const setActiveId = useCallback(() => {
+    'worklet';
+    const id = draggablePendingId.value;
+
+    if (id !== null) {
+      debug && console.log(`draggableActiveId.value = ${id}`);
+      draggableActiveId.value = id;
+
+      const { value: layouts } = draggableLayouts;
+      const { value: offsets } = draggableOffsets;
+      const { value: activeLayout } = layouts[id];
+      const activeOffset = offsets[id];
+
+      draggableActiveLayout.value = applyOffset(activeLayout, {
+        x: activeOffset.x.value,
+        y: activeOffset.y.value,
+      });
+      draggableStates.value[id].value = 'dragging';
+    }
+  }, [debug, draggableActiveId, draggableActiveLayout, draggableLayouts, draggableOffsets, draggablePendingId, draggableStates]);
+
+  const { start: setActiveIdWithDelay, stop: clearActiveIdTimeout } = useAnimatedTimeout({
+    delayMs: activationDelay,
+    onTimeoutWorklet: setActiveId,
+  });
+
   const panGesture = useMemo(() => {
     const findActiveLayoutId = (point: Point): UniqueIdentifier | null => {
       'worklet';
@@ -187,25 +215,8 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
       return null;
     };
 
-    // Helpers for delayed activation (eg. long press)
-    let timeout: ReturnType<typeof setTimeout> | null = null;
-    const clearActiveIdTimeout = () => {
-      if (timeout) {
-        clearTimeout(timeout);
-      }
-    };
-    const setActiveId = (id: UniqueIdentifier, delay: number) => {
-      timeout = setTimeout(() => {
-        runOnUI(() => {
-          'worklet';
-          debug && console.log(`draggableActiveId.value = ${id}`);
-          draggableActiveId.value = id;
-          draggableStates.value[id].value = 'dragging';
-        })();
-      }, delay);
-    };
-
     const panGesture = Gesture.Pan()
+      .maxPointers(1)
       .onBegin(event => {
         const { state, x, y } = event;
         debug && console.log('begin', { state, x, y });
@@ -249,11 +260,11 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
           }
           // Update activeId directly or with an optional delay
           const { activationDelay } = options[activeId];
+
           if (activationDelay > 0) {
             draggablePendingId.value = activeId;
             draggableStates.value[activeId].value = 'pending';
-            runOnJS(setActiveId)(activeId, activationDelay);
-            // @TODO activeLayout
+            setActiveIdWithDelay();
           } else {
             draggableActiveId.value = activeId;
             draggableActiveLayout.value = applyOffset(activeLayout, {
@@ -262,6 +273,7 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
             });
             draggableStates.value[activeId].value = 'dragging';
           }
+
           if (onBegin) {
             onBegin(event, { activeId, activeLayout });
           }
@@ -278,7 +290,6 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
         const { value: options } = draggableOptions;
         const { value: layouts } = draggableLayouts;
         const { value: offsets } = draggableOffsets;
-        // const { value: states } = draggableStates;
         if (activeId === null) {
           // Check if we are currently waiting for activation delay
           if (pendingId !== null) {
@@ -286,8 +297,8 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
             // Check if we've moved beyond the activation tolerance
             const distance = getDistance(translationX, translationY);
             if (distance > activationTolerance) {
-              runOnJS(clearActiveIdTimeout)();
               draggablePendingId.value = null;
+              clearActiveIdTimeout();
             }
           }
           // Ignore item-free interactions
@@ -323,8 +334,8 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
         if (activeId === null) {
           // Check if we were currently waiting for activation delay
           if (pendingId !== null) {
-            runOnJS(clearActiveIdTimeout)();
             draggablePendingId.value = null;
+            clearActiveIdTimeout();
           }
           return;
         }
@@ -361,16 +372,13 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
             { ...springConfig, velocity: velocityX / 4 },
             { ...springConfig, velocity: velocityY / 4 },
           ],
-          ([finishedX, finishedY]) => {
+          () => {
             // Cancel if we are interacting again with this item
             if (panGestureState.value !== State.END && panGestureState.value !== State.FAILED && states[activeId].value !== 'acting') {
               return;
             }
             if (states[activeId]) {
               states[activeId].value = 'resting';
-            }
-            if (!finishedX || !finishedY) {
-              // console.log(`${activeId} did not finish to reach ${targetX.toFixed(2)} ${currentX}`);
             }
             // for (const [id, offset] of Object.entries(offsets)) {
             //   console.log({ [id]: [offset.x.value.toFixed(2), offset.y.value.toFixed(2)] });

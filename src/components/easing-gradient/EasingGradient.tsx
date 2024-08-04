@@ -62,5 +62,5 @@ export const EasingGradient = memo(function EasingGradient({
   });
 
   // eslint-disable-next-line react/jsx-props-no-spreading
-  return <LinearGradient colors={colors} start={start} end={end} locations={locations} {...props} />;
+  return <LinearGradient colors={colors} end={end} locations={locations} start={start} {...props} />;
 });
