@@ -2,7 +2,6 @@ import { BlurView } from '@react-native-community/blur';
 import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import Animated from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import {
   Bleed,
@@ -62,7 +61,7 @@ export const Homepage = ({ tabId }: { tabId: string }) => {
 
   return (
     <View style={[isDarkMode ? styles.pageBackgroundDark : styles.pageBackgroundLight, styles.pageContainer]}>
-      <Animated.ScrollView
+      <ScrollView
         scrollIndicatorInsets={SCROLL_INDICATOR_INSETS}
         contentContainerStyle={[styles.scrollViewContainer, isDarkMode ? styles.pageBackgroundDark : styles.pageBackgroundLight]}
         showsVerticalScrollIndicator={false}
@@ -72,7 +71,7 @@ export const Homepage = ({ tabId }: { tabId: string }) => {
           <Favorites goToUrl={goToUrl} tabId={tabId} />
           <Recents goToUrl={goToUrl} />
         </Box>
-      </Animated.ScrollView>
+      </ScrollView>
     </View>
   );
 };
@@ -458,9 +457,9 @@ const CardBackgroundOverlay = memo(function CardBackgroundOverlay({ isDarkMode }
           {!isDarkMode && (
             <EasingGradient
               endColor={globalColors.grey100}
-              endOpacity={0.12}
+              endOpacity={0.28}
               startColor={globalColors.grey100}
-              startOpacity={0.06}
+              startOpacity={0.2}
               style={{ height: '100%', width: '100%' }}
             />
           )}
@@ -469,8 +468,8 @@ const CardBackgroundOverlay = memo(function CardBackgroundOverlay({ isDarkMode }
         <EasingGradient
           endColor={globalColors.grey100}
           endOpacity={0.9}
-          startColor={globalColors.white100}
-          startOpacity={0.4}
+          startColor={globalColors.grey100}
+          startOpacity={0.5}
           style={{ borderRadius: 24, height: '100%', width: '100%' }}
         />
       )}
