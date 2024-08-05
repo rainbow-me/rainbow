@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
 import { RainbowTransaction, MinedTransaction } from '@/entities/transactions/transaction';
-import { fetchUserAssets, userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
+import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { transactionFetchQuery } from '@/resources/transactions/transaction';
 import { RainbowError, logger } from '@/logger';
@@ -14,6 +14,7 @@ import { getTransactionFlashbotStatus } from '@/handlers/transactions';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { useNonceStore } from '@/state/nonces';
 import { Address } from 'viem';
+import { nftsQueryKey } from '@/resources/nfts';
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
   const { storePendingTransactions, setPendingTransactions } = usePendingTransactionsStore(state => ({
@@ -31,24 +32,21 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
     (_: RainbowTransaction) => {
       // NOTE: We have two user assets stores right now, so let's invalidate both queries and trigger a refetch
       const connectedToHardhat = getIsHardhatConnected();
-      queryClient.invalidateQueries([
-        // old user assets invalidation
-        {
-          queryKey: userAssetsQueryKey({
-            address,
-            currency: nativeCurrency,
-            connectedToHardhat,
-          }),
-        },
-        // new swaps user assets invalidations
-        {
-          queryKey: swapsUserAssetsQueryKey({
-            address: address as Address,
-            currency: nativeCurrency,
-            testnetMode: !!connectedToHardhat,
-          }),
-        },
-      ]);
+      queryClient.invalidateQueries(
+        userAssetsQueryKey({
+          address,
+          currency: nativeCurrency,
+          connectedToHardhat,
+        })
+      );
+      queryClient.invalidateQueries(
+        swapsUserAssetsQueryKey({
+          address: address as Address,
+          currency: nativeCurrency,
+          testnetMode: !!connectedToHardhat,
+        })
+      );
+      queryClient.invalidateQueries(nftsQueryKey({ address }));
     },
     [address, nativeCurrency]
   );
