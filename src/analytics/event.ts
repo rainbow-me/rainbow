@@ -140,6 +140,7 @@ export const event = {
   swapsChangedChainId: 'swaps.changed_chain_id',
   swapsFlippedAssets: 'swaps.flipped_assets',
   swapsToggledFlashbots: 'swaps.toggled_flashbots',
+  swapsToggledDegenMode: 'swaps.toggled_degen_mode',
   swapsReceivedQuote: 'swaps.received_quote',
   swapsSubmitted: 'swaps.submitted',
   swapsFailed: 'swaps.failed',
@@ -162,6 +163,7 @@ type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
   selectedGas: GasSettings;
   selectedGasSpeed: GasSpeed;
   slippage: string;
+  degenMode: boolean;
 };
 
 type SwapsEventFailedParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -543,6 +545,10 @@ export type EventProperties = {
   };
 
   [event.swapsToggledFlashbots]: {
+    enabled: boolean;
+  };
+
+  [event.swapsToggledDegenMode]: {
     enabled: boolean;
   };
 
