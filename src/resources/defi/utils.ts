@@ -145,7 +145,7 @@ export const parsePositions = (data: AddysPositionsResponse, currency: NativeCur
 
   parsedPositions.forEach(({ deposits }) => {
     deposits.forEach(({ asset }) => {
-      const uniqueId = ethereumUtils.getUniqueId(asset.asset_code.toLowerCase(), asset.network);
+      const uniqueId = ethereumUtils.getUniqueId(asset.asset_code.toLowerCase(), ethereumUtils.getChainIdFromNetwork(asset.network));
       positionTokens.push(uniqueId);
     });
   });

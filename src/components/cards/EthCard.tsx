@@ -45,7 +45,7 @@ export const EthCard = () => {
       ...externalEthAsset,
       address: ETH_ADDRESS,
       network: Network.mainnet,
-      uniqueId: getUniqueId(ETH_ADDRESS, Network.mainnet),
+      uniqueId: getUniqueId(ETH_ADDRESS, ChainId.mainnet),
     }),
     [externalEthAsset]
   );
@@ -134,12 +134,7 @@ export const EthCard = () => {
   const { f2c_enabled: addCashEnabled } = useRemoteConfig();
 
   return (
-    <GenericCard
-      /** @ts-ignore */
-      onPress={IS_IOS ? handleAssetPress : handlePressBuy}
-      type={cardType}
-      testID="eth-card"
-    >
+    <GenericCard onPress={IS_IOS ? handleAssetPress : handlePressBuy} type={cardType} testID="eth-card">
       <Stack space={{ custom: 41 }}>
         <Stack space="12px">
           <Bleed top="4px">

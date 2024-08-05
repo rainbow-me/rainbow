@@ -54,8 +54,7 @@ import { ChainId } from '@/__swaps__/types/chains';
 
 const getNetworkNativeAsset = (chainId: ChainId): ParsedAddressAsset | undefined => {
   const nativeAssetAddress = getNetworkObject({ chainId }).nativeCurrency.address;
-  const network = getNetworkFromChainId(chainId);
-  const nativeAssetUniqueId = getUniqueId(nativeAssetAddress, network);
+  const nativeAssetUniqueId = getUniqueId(nativeAssetAddress, chainId);
   return getAccountAsset(nativeAssetUniqueId);
 };
 
@@ -83,7 +82,7 @@ export const getNativeAssetForNetwork = async (chainId: ChainId, address?: Ether
       nativeAsset = {
         ...externalAsset,
         network,
-        uniqueId: getUniqueId(getNetworkObject({ chainId }).nativeCurrency.address, network),
+        uniqueId: getUniqueId(getNetworkObject({ chainId }).nativeCurrency.address, chainId),
         address: getNetworkObject({ chainId }).nativeCurrency.address,
         decimals: getNetworkObject({ chainId }).nativeCurrency.decimals,
         symbol: getNetworkObject({ chainId }).nativeCurrency.symbol,
@@ -203,8 +202,8 @@ const getEthPriceUnit = () => getAssetPrice();
 
 const getMaticPriceUnit = () => getAssetPrice(MATIC_MAINNET_ADDRESS);
 const getBnbPriceUnit = () => getAssetPrice(BNB_MAINNET_ADDRESS);
-const getAvaxPriceUnit = () => getAssetPrice(getUniqueId(AVAX_AVALANCHE_ADDRESS, Network.avalanche));
-const getDegenPriceUnit = () => getAssetPrice(getUniqueId(DEGEN_CHAIN_DEGEN_ADDRESS, Network.degen));
+const getAvaxPriceUnit = () => getAssetPrice(getUniqueId(AVAX_AVALANCHE_ADDRESS, ChainId.avalanche));
+const getDegenPriceUnit = () => getAssetPrice(getUniqueId(DEGEN_CHAIN_DEGEN_ADDRESS, ChainId.degen));
 
 const getBalanceAmount = (
   selectedGasFee: SelectedGasFee | LegacySelectedGasFee,
@@ -417,7 +416,8 @@ async function parseEthereumUrl(data: string) {
 
   const functionName = ethUrl.function_name;
   let asset = null;
-  const network = getNetworkFromChainId(Number(ethUrl.chain_id || 1));
+  const chainId = (ethUrl.chain_id as ChainId) || ChainId.mainnet;
+  const network = getNetworkFromChainId(chainId);
   let address: any = null;
   let nativeAmount: any = null;
   const { nativeCurrency } = store.getState().settings;
@@ -436,7 +436,7 @@ async function parseEthereumUrl(data: string) {
     nativeAmount = ethUrl.parameters?.value && fromWei(ethUrl.parameters.value);
   } else if (functionName === 'transfer') {
     // Send ERC-20
-    const targetUniqueId = getUniqueId(ethUrl.target_address, network);
+    const targetUniqueId = getUniqueId(ethUrl.target_address, chainId);
     asset = getAccountAsset(targetUniqueId);
     // @ts-ignore
     if (!asset || asset?.balance.amount === 0) {
@@ -465,7 +465,9 @@ async function parseEthereumUrl(data: string) {
   });
 }
 
-export const getUniqueId = (address: EthereumAddress, network: Network) => `${address}_${network}`;
+export const getUniqueIdNetwork = (address: EthereumAddress, network: Network) => `${address}_${network}`;
+
+export const getUniqueId = (address: EthereumAddress, chainId: ChainId) => `${address}_${chainId}`;
 
 export const getAddressAndChainIdFromUniqueId = (uniqueId: string): { address: EthereumAddress; chainId: ChainId } => {
   const parts = uniqueId.split('_');

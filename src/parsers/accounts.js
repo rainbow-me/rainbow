@@ -38,7 +38,7 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
     isNativeAsset: isNativeAsset(address, asset.network || networkTypes.mainnet),
     name,
     symbol,
-    uniqueId: getUniqueId(address, asset.network),
+    uniqueId: getUniqueId(address, asset.chain_id),
   };
 
   return parsedAsset;

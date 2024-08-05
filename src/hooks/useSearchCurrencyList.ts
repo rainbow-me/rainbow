@@ -180,7 +180,7 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = MAINNET_CHAI
               tokenContract.decimals(),
               getAddress(searchQuery),
             ]);
-            const uniqueId = getUniqueId(address, network);
+            const uniqueId = getUniqueId(address, chainId);
 
             return [
               {

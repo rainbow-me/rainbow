@@ -405,7 +405,7 @@ const MintSheet = () => {
                   name: mintCollection.publicMintInfo?.price?.currency?.name || 'Ethereum',
                   decimals: mintCollection.publicMintInfo?.price?.currency?.decimals || 18,
                   symbol: ETH_SYMBOL,
-                  uniqueId: getUniqueId(ETH_ADDRESS, currentNetwork),
+                  uniqueId: getUniqueId(ETH_ADDRESS, chainId),
                 };
 
                 const tx: NewTransaction = {
