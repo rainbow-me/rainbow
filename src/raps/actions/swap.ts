@@ -47,6 +47,8 @@ import { TokenColors } from '@/graphql/__generated__/metadata';
 import { swapMetadataStorage } from '../common';
 import { ParsedAsset } from '@/resources/assets/types';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { Screens, TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
+import { swapsStore } from '@/state/swaps/swapsStore';
 
 const WRAP_GAS_PADDING = 1.002;
 
@@ -284,7 +286,14 @@ export const swap = async ({
       quote,
       wallet,
     };
-    swap = await executeSwap(swapParams);
+    swap = await performanceTracking.getState().executeFn({
+      fn: executeSwap,
+      screen: Screens.SWAPS,
+      operation: TimeToSignOperation.BroadcastTransaction,
+      metadata: {
+        degenMode: swapsStore.getState().degenMode,
+      },
+    })(swapParams);
   } catch (e) {
     logger.error(new RainbowError('swap: error executeSwap'), {
       message: (e as Error)?.message,

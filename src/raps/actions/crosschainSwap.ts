@@ -24,6 +24,8 @@ import { ethereumUtils } from '@/utils';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { ParsedAsset } from '@/resources/assets/types';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { Screens, TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
+import { swapsStore } from '@/state/swaps/swapsStore';
 
 const getCrosschainSwapDefaultGasLimit = (quote: CrosschainQuote) => quote?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
 
@@ -147,7 +149,14 @@ export const crosschainSwap = async ({
 
   let swap;
   try {
-    swap = await executeCrosschainSwap(swapParams);
+    swap = await performanceTracking.getState().executeFn({
+      fn: executeCrosschainSwap,
+      screen: Screens.SWAPS,
+      operation: TimeToSignOperation.BroadcastTransaction,
+      metadata: {
+        degenMode: swapsStore.getState().degenMode,
+      },
+    })(swapParams);
   } catch (e) {
     logger.error(new RainbowError('crosschainSwap: error executeCrosschainSwap'), { message: (e as Error)?.message });
     throw e;

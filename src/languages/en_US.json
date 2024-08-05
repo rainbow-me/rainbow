@@ -749,7 +749,7 @@
       "swap_details_v2": {
         "automatic": "Auto",
         "degen_mode": "Degen Mode",
-        "degen_mode_description": "Skip the review sheet to swap faster",
+        "degen_mode_description": "Skip the review step to swap faster",
         "maximum_sold": "Maximum Sold",
         "minimum_received": "Minimum Received",
         "preferred_network": "Preferred Network",

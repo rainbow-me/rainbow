@@ -11,6 +11,7 @@ import { Network } from '@/networks/types';
 import { RapSwapActionParameters } from '@/raps/references';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
+import { AnyPerformanceLog, Screen } from '../state/performance/operations';
 
 /**
  * All events, used by `analytics.track()`
@@ -138,7 +139,7 @@ export const event = {
   swapsSearchedForToken: 'swaps.searched_for_token',
   swapsChangedChainId: 'swaps.changed_chain_id',
   swapsFlippedAssets: 'swaps.flipped_assets',
-  swapsToggledFlashbots: 'swaps.toggled_flashbots',
+  swapsToggledDegenMode: 'swaps.toggled_degen_mode',
   swapsReceivedQuote: 'swaps.received_quote',
   swapsSubmitted: 'swaps.submitted',
   swapsFailed: 'swaps.failed',
@@ -146,6 +147,9 @@ export const event = {
 
   // app browser events
   browserTrendingDappClicked: 'browser.trending_dapp_pressed',
+
+  performanceTimeToSign: 'performance.time_to_sign',
+  performanceTimeToSignOperation: 'performance.time_to_sign.operation',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -158,6 +162,7 @@ type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
   selectedGas: GasSettings;
   selectedGasSpeed: GasSpeed;
   slippage: string;
+  degenMode: boolean;
 };
 
 type SwapsEventFailedParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -538,7 +543,7 @@ export type EventProperties = {
     previousOutputAsset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
   };
 
-  [event.swapsToggledFlashbots]: {
+  [event.swapsToggledDegenMode]: {
     enabled: boolean;
   };
 
@@ -558,4 +563,12 @@ export type EventProperties = {
     hasClickedBefore: boolean;
     index: number;
   };
+
+  [event.performanceTimeToSign]: {
+    screen: Screen;
+    completedAt: number;
+    elapsedTime: number;
+  };
+
+  [event.performanceTimeToSignOperation]: AnyPerformanceLog;
 };

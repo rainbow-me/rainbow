@@ -120,6 +120,7 @@ const ActivityList = ({
           nativeCurrency,
           pendingTransactionsCount,
         }}
+        testID={'wallet-activity-list'}
         ListEmptyComponent={<ActivityListEmptyState />}
         getItemLayout={getItemLayout}
         initialNumToRender={12}

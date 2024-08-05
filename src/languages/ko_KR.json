@@ -24,6 +24,7 @@
       "tab_showcase": "쇼케이스",
       "tab_points": "포인트",
       "tab_positions": "포지션",
+      "tab_rewards": "보상",
       "tab_transactions": "거래",
       "tab_transactions_tooltip": "거래 및 토큰 이전",
       "tab_uniquetokens": "고유한 토큰",
@@ -431,6 +432,23 @@
         "description": "\n주소를 길게 눌러 복사할 수도 있습니다."
       }
     },
+    "check_identifier": {
+      "title": "인증 필요",
+      "description": "기기를 변경하거나 레인보우를 재설치한 것 같습니다. 키체인 데이터의 건강 상태를 확인할 수 있도록 인증해 주시기 바랍니다.",
+      "action": "인증",
+      "dismiss": "거부",
+      "error_alert": {
+        "title": "키체인 검증 오류",
+        "message": "키체인 데이터를 검증하는 중에 오류가 발생했습니다. 다시 시도해 주세요. 문제가 계속되면 지원팀에 문의해 주세요.",
+        "contact_support": "지원팀에 문의",
+        "cancel": "취소"
+      },
+      "failure_alert": {
+        "title": "키체인 데이터 무효",
+        "message": "키체인 데이터의 무결성을 확인할 수 없었습니다. 지갑을 복원하고 다시 시도해 주세요. 문제가 계속되면 지원팀에 문의해 주세요.",
+        "action": "계속"
+      }
+    },
     "cloud": {
       "backup_success": "당신의 지갑이 성공적으로 백업되었습니다!"
     },
@@ -541,7 +559,8 @@
         "from_divider": "from",
         "to_divider": "에게",
         "view_on": "%{blockExplorerName}에서 보기",
-        "view_on_etherscan": "Etherscan에서 보기"
+        "view_on_etherscan": "Etherscan에서 보기",
+        "copy_contract_address": "계약 주소 복사"
       },
       "all_networks": "모든 네트워크",
       "filter_by_network": "네트워크별 필터링",
@@ -577,7 +596,8 @@
       "price_impact": {
         "long_wait": {
           "title": "긴 대기 시간",
-          "description": "약 %{time}"
+          "description": "약 %{time}",
+          "description_prefix": "약."
         },
         "unknown_price": {
           "title": "시장 가치 불명",
@@ -587,6 +607,7 @@
         "small_market": "소형 시장",
         "small_market_try_smaller_amount": "수요가 작은 시장 — 더 작은 금액을 시도해 보세요",
         "you_are_losing": "당신은 %{priceImpact}를 잃었습니다",
+        "you_are_losing_prefix": "손실 중",
         "no_data": "시장 가치 불명",
         "label": "가능한 손실",
         "no_data_subtitle": "계속하기로 결정하시면, 인용된 금액에 만족하는지 확인하세요"
@@ -687,6 +708,7 @@
         "flashbots_protect": "Flashbots 보호",
         "losing": "손실",
         "on": "켜기",
+        "off": "끄기",
         "price_impact": "가격 영향",
         "price_row_per_token": "당",
         "slippage_message": "이것은 작은 시장이므로 나쁜 가격을 얻고 있습니다. 더 작은 거래를 시도해보세요!",
@@ -723,6 +745,16 @@
         "number_of_steps": "%{number} 단계",
         "input_exchange_rate": "1 %{inputSymbol} 에 대해 %{executionRate} %{outputSymbol}",
         "output_exchange_rate": "1 %{outputSymbol} 에 대해 %{executionRate} %{inputSymbol}"
+      },
+      "swap_details_v2": {
+        "automatic": "자동",
+        "degen_mode": "디겐 모드",
+        "degen_mode_description": "검토 시트를 건너뛰어 더 빠르게 스왑",
+        "maximum_sold": "최대 판매",
+        "minimum_received": "최소 수령량",
+        "preferred_network": "선호 네트워크",
+        "rainbow_fee": "포함된 레인보우 비용",
+        "settings": "설정"
       },
       "token_index": {
         "get_token": "%{assetSymbol}얻기",
@@ -1030,14 +1062,17 @@
         "urgent": "긴급",
         "custom": "사용자 정의"
       },
-      "network_fee": "예상 네트워크 수수료",
+      "unable_to_determine_selected_gas": "선택된 가스를 확인할 수 없음",
+      "network_fee": "추정 네트워크 수수료",
       "current_base_fee": "현재 기본 수수료",
       "max_base_fee": "최대 기본료",
       "miner_tip": "마이너 팁",
+      "gas_price": "가스 가격",
       "max_transaction_fee": "최대 거래 수수료",
       "warning_separator": "·",
       "lower_than_suggested": "낮음 · 특이사항 가능성",
       "higher_than_suggested": "높음 · 과도한 지불",
+      "likely_to_fail": "낮음 · 실패 가능성 큼",
       "max_base_fee_too_low_error": "낮음 · 실패 가능성 큼",
       "tip_too_low_error": "낮음 · 실패 가능성 큼",
       "alert_message_higher_miner_tip_needed": "문제를 피하기 위해 더 높은 광부 팁 설정이 권장됩니다.",
@@ -1357,13 +1392,16 @@
       },
       "claim": {
         "title": "포인트를 청구하세요",
+        "title_rewards_line_1": "환영합니다",
+        "title_rewards_line_2": "레인보우 리워드",
         "subtitle": "포인트가 도착했습니다. 얼마나 많은 포인트를 받았는지 확인하세요.",
+        "subtitle_rewards": "레인보우 사용으로 리워드를 받으세요. 온체인에서 활동하고, 포인트를 얻고, ETH를 벌 수 있습니다.",
         "get_started": "시작하기",
         "use_referral_code": "추천 코드 사용"
       },
       "referral": {
         "title": "추천 코드를 입력하세요",
-        "subtitle": "아래에 추천 코드를 입력하여 보너스 보상을 받으세요.",
+        "subtitle": "포인트 보너스를 받으려면 아래에 추천 코드를 입력하세요.",
         "back": "뒤로",
         "error": "문제가 발생했습니다. 앱을 다시 시작하고 다시 시도해 주세요.",
         "get_started": "시작하기",
@@ -1378,6 +1416,7 @@
         "share_link": "링크 공유하기",
         "next_drop": "다음 드롭",
         "your_rank": "당신의 순위",
+        "no_change": "변경 없음",
         "of_x": "%{totalUsers}의",
         "referrals": "추천인",
         "streak": "연속",
@@ -1395,12 +1434,40 @@
         "today": "오늘",
         "error": "이런!\n새로고침해 주세요.",
         "points": "포인트",
+        "points_capitalized": "포인트",
         "referral_code_copied": "추천 코드가 복사되었습니다",
         "earn_points_for_referring": "당신의 추천인이 Rainbow를 통해 $100를 교환할 때 포인트를 적립하고, 추천인이 적립한 포인트의 10%를 추가로 적립하세요",
         "already_claimed_points": "죄송합니다! 이미 포인트를 청구하셨습니다.",
         "now": "지금",
         "unranked": "순위 없음",
-        "points_to_rank": "등급까지 750포인트"
+        "points_to_rank": "등급까지 750포인트",
+        "ranking": "%{rank}위에 배치됨",
+        "available_to_claim": "클레임 가능",
+        "claim": "%{value} 클레임",
+        "choose_claim_network": "클레임 네트워크 선택",
+        "claim_on_network": "%{network}에서 클레임하기",
+        "claimed_on_network": "%{network}에서 클레임됨",
+        "claiming_on_network": "%{network}에서 클레임 중",
+        "error_claiming": "청구 실패",
+        "free_to_claim": "무료 클레임 가능",
+        "has_bridge_fee": "브릿지 수수료 있음",
+        "claim_rewards": "리워드 클레임",
+        "earned_last_week": "지난주 적립",
+        "top_10_earner": "상위 10위 적립자",
+        "zero_points": "0 포인트",
+        "no_weekly_rank": "주간 순위 없음",
+        "none": "없음",
+        "my_earnings": "나의 수익",
+        "claimed_earnings": "클레임된 수익",
+        "current_value": "현재 값",
+        "rainbow_users_have_earned": "레인보우 사용자가 벌어들인 수익",
+        "earn_eth_rewards": "ETH 리워드 적립",
+        "rewards_explainer": "매주 상위 주간 포인트 적립자는 레인보우의 온체인 수익의 일부를 받습니다. 레인보우에서 스왑하거나 거래를 하고, Dapp을 사용하거나 친구를 추천하여 포인트를 모으세요.",
+        "my_points": "나의 포인트",
+        "refer_friends": "친구 추천",
+        "try_again": "다시 시도하기",
+        "bridge_error": "부분 성공",
+        "bridge_error_explainer": "귀하의 보상은 Optimism에서 성공적으로 수령되었지만, %{network}으로의 전송이 실패했습니다. 원하시면 Swap 기능을 사용하여 보상을 수동으로 브리지할 수 있습니다."
       },
       "console": {
         "claim_bonus_paragraph": "Rainbow에서 최소 $100를 스왑하면 추가로 100점을 받게 됩니다",
@@ -1916,9 +1983,32 @@
       "too_many_signup_request": "가입 요청이 너무 많습니다, 나중에 다시 시도해주세요"
     },
     "swap": {
+      "actions": {
+        "hold_to_swap": "스왑하기 위해 누르고 있기",
+        "save": "저장",
+        "enter_amount": "금액 입력",
+        "review": "리뷰",
+        "fetching_prices": "가져오는 중",
+        "swapping": "교환 중",
+        "select_token": "토큰 선택",
+        "insufficient_funds": "자금이 부족합니다",
+        "insufficient": "부족한",
+        "quote_error": "견적 오류"
+      },
       "aggregators": {
         "rainbow": "Rainbow"
       },
+      "bridging": "브릿징 중",
+      "swapping": "교환 중",
+      "max": "최대",
+      "select": "선택",
+      "token_to_get": "받을 토큰",
+      "token_to_swap": "스왑할 토큰",
+      "no_balance": "잔액 없음",
+      "find_a_token_to_buy": "구매할 토큰 찾기",
+      "search_your_tokens": "토큰 검색",
+      "error_executing_swap": "스왑 실행 오류",
+      "flashbots_protection": "Flashbots 보호",
       "tokens_input": {
         "tokens": "토큰",
         "sort": "정렬",
@@ -1945,6 +2035,7 @@
       },
       "loading": "로딩 중...",
       "modal_types": {
+        "bridge": "브릿지",
         "confirm": "확인",
         "deposit": "예금",
         "receive": "받기",
@@ -1976,6 +2067,7 @@
     },
     "token_search": {
       "section_header": {
+        "recent": "최근",
         "favorites": "즐겨찾기",
         "bridge": "브릿지",
         "verified": "인증됨",
@@ -2849,6 +2941,8 @@
         "forward": "앞으로",
         "back": "뒤로"
       }
-    }
+    },
+    "copy": "복사",
+    "paste": "붙여넣기"
   }
 }
