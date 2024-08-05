@@ -5,13 +5,11 @@ import { useDerivedValue, withTiming } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useColorMode } from '@/design-system';
-import { IS_ANDROID } from '@/env';
+import { IS_ANDROID, IS_TEST } from '@/env';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { getColorValueForThemeWorklet, getTintedBackgroundColor } from '@/__swaps__/utils/swaps';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { ETH_COLOR, ETH_COLOR_DARK } from '../constants';
-
-import { IS_TEST } from '@/env';
 
 const DEFAULT_BACKGROUND_COLOR = getTintedBackgroundColor({ dark: ETH_COLOR_DARK, light: ETH_COLOR });
 
