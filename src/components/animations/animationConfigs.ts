@@ -1,4 +1,4 @@
-import { IS_TESTING } from 'react-native-dotenv';
+import { IS_TEST } from '@/env';
 import { Easing, WithSpringConfig, WithTimingConfig } from 'react-native-reanimated';
 
 function createSpringConfigs<T extends Record<string, WithSpringConfig>>(configs: T): T {
@@ -11,13 +11,13 @@ function createTimingConfigs<T extends Record<string, WithTimingConfig>>(configs
 
 // Wrapper function for spring configs
 const disableSpringForTesting = (config: WithSpringConfig): WithSpringConfig => {
-  if (!IS_TESTING) return config;
+  if (!IS_TEST) return config;
   return { ...config, damping: undefined, stiffness: undefined, duration: undefined };
 };
 
 // Wrapper function for timing configs
 const disableTimingForTesting = (config: WithTimingConfig): WithTimingConfig => {
-  if (!IS_TESTING) return config;
+  if (!IS_TEST) return config;
   return { ...config, duration: 0 };
 };
 

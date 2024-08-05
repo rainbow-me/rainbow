@@ -2,7 +2,7 @@ import { gweiToWei } from '@/__swaps__/utils/ethereum';
 import { getDefaultKeyboardHeight } from '@/redux/keyboardHeight';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { Easing } from 'react-native-reanimated';
-import { IS_TESTING } from 'react-native-dotenv';
+import { IS_TEST } from '@/env';
 
 // /---- 🔒 Constants 🔒 ----/ //
 //
@@ -66,7 +66,7 @@ export const disableForTestingEnvironment = (config: {
   mass?: number;
   stiffness?: number;
 }) => {
-  if (!IS_TESTING) return config;
+  if (!IS_TEST) return config;
   return { ...config, duration: 0, damping: 0 };
 };
 

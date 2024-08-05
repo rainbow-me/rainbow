@@ -11,7 +11,7 @@ import { getColorValueForThemeWorklet, getTintedBackgroundColor } from '@/__swap
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { ETH_COLOR, ETH_COLOR_DARK } from '../constants';
 
-import { IS_TESTING } from 'react-native-dotenv';
+import { IS_TEST } from '@/env';
 
 const DEFAULT_BACKGROUND_COLOR = getTintedBackgroundColor({ dark: ETH_COLOR_DARK, light: ETH_COLOR });
 
@@ -20,7 +20,7 @@ export const SwapBackground = () => {
   const { internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
 
   const animatedTopColor = useDerivedValue(() => {
-    if (IS_TESTING) return getColorValueForThemeWorklet(DEFAULT_BACKGROUND_COLOR, isDarkMode, true);
+    if (IS_TEST) return getColorValueForThemeWorklet(DEFAULT_BACKGROUND_COLOR, isDarkMode, true);
     return withTiming(
       getColorValueForThemeWorklet(internalSelectedInputAsset.value?.tintedBackgroundColor || DEFAULT_BACKGROUND_COLOR, isDarkMode, true),
       TIMING_CONFIGS.slowFadeConfig
@@ -28,7 +28,7 @@ export const SwapBackground = () => {
   });
 
   const animatedBottomColor = useDerivedValue(() => {
-    if (IS_TESTING) return getColorValueForThemeWorklet(DEFAULT_BACKGROUND_COLOR, isDarkMode, true);
+    if (IS_TEST) return getColorValueForThemeWorklet(DEFAULT_BACKGROUND_COLOR, isDarkMode, true);
     return withTiming(
       getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.tintedBackgroundColor || DEFAULT_BACKGROUND_COLOR, isDarkMode, true),
       TIMING_CONFIGS.slowFadeConfig
@@ -39,7 +39,7 @@ export const SwapBackground = () => {
     return [animatedTopColor.value, animatedBottomColor.value];
   });
 
-  if (IS_TESTING) {
+  if (IS_TEST) {
     return <View style={[styles.background, { backgroundColor: animatedTopColor.value }]} />;
   }
 
