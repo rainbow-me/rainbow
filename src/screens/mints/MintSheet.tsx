@@ -409,6 +409,7 @@ const MintSheet = () => {
                 };
 
                 const tx: NewTransaction = {
+                  chainId,
                   status: 'pending',
                   to: item.data?.to,
                   from: item.data?.from,
@@ -700,12 +701,7 @@ const MintSheet = () => {
                         {chainId === ChainId.mainnet ? (
                           <EthCoinIcon size={16} />
                         ) : (
-                          <ChainBadge
-                            network={ethereumUtils.getNetworkFromChainId(chainId)}
-                            position="relative"
-                            size="small"
-                            forceDark={true}
-                          />
+                          <ChainBadge chainId={chainId} position="relative" size="small" forceDark={true} />
                         )}
                         <Text color="labelSecondary" align="right" size="17pt" weight="medium">
                           {`${getNetworkObject({ chainId }).name}`}

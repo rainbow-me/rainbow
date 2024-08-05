@@ -26,6 +26,7 @@ export interface RainbowTransaction {
     amount: string;
     display: string;
   } | null;
+  chainId: ChainId;
   changes?: Array<
     | {
         asset: ParsedAddressAsset;
@@ -57,7 +58,6 @@ export interface RainbowTransaction {
     display: string;
   };
   network: Network;
-  chainId: ChainId;
   nft?: UniqueAsset;
   nonce?: number | null;
   protocol?: ProtocolType | null;

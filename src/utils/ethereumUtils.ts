@@ -298,10 +298,11 @@ const getChainIdFromNetwork = (network?: Network): ChainId => {
  * @desc get etherscan host from network string
  * @param  {String} network
  */
-function getEtherscanHostForNetwork(network?: Network): string {
+function getEtherscanHostForNetwork(chainId: ChainId): string {
   const base_host = 'etherscan.io';
-  const chainId = getChainIdFromNetwork(network);
-  const blockExplorer = getNetworkObject({ chainId }).blockExplorers?.default?.url;
+  const networkObject = getNetworkObject({ chainId });
+  const blockExplorer = networkObject.blockExplorers?.default?.url;
+  const network = networkObject.network as Network;
 
   if (network && isTestnetNetwork(network)) {
     return `${network}.${base_host}`;

@@ -25,7 +25,7 @@ import {
 } from '../registerENS';
 import { Logger } from '@ethersproject/logger';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
-import Routes from '@/navigation/routesNames';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export interface ENSRapActionResponse {
   baseNonce?: number | null;
@@ -465,6 +465,7 @@ const ensAction = async (
   logger.log(`[${actionName}] response`, tx);
 
   const newTransaction: NewTransaction = {
+    chainId: ChainId.mainnet,
     data: tx.data,
     ensCommitRegistrationName: type === ENSRegistrationTransactionType.COMMIT ? name : undefined,
     ensRegistration: true,

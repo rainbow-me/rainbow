@@ -18,6 +18,7 @@ import { convertAPINetworkToInternalNetwork } from '@/screens/AddCash/utils';
 import { ProviderConfig, CalloutType, PaymentMethod } from '@/screens/AddCash/types';
 import * as i18n from '@/languages';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
+import { ethereumUtils } from '@/utils';
 
 type PaymentMethodConfig = {
   name: string;
@@ -95,7 +96,11 @@ function NetworkIcons({ networks }: { networks: Network[] }) {
               borderRadius: 30,
             }}
           >
-            {network !== Network.mainnet ? <ChainBadge network={network} position="relative" size="small" /> : <EthCoinIcon size={20} />}
+            {network !== Network.mainnet ? (
+              <ChainBadge chainId={ethereumUtils.getChainIdFromNetwork(network)} position="relative" size="small" />
+            ) : (
+              <EthCoinIcon size={20} />
+            )}
           </Box>
         );
       })}

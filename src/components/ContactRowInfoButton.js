@@ -114,7 +114,7 @@ const ContactRowInfoButton = ({ children, item, network, scaleTo }) => {
   }, [item?.network, item?.name, item?.address, handleCopyAddress, network]);
 
   const menuConfig = useMemo(() => {
-    const blockExplorerAction = buildBlockExplorerAction(item?.network);
+    const blockExplorerAction = buildBlockExplorerAction(ethereumUtils.getChainIdFromNetwork(item?.network));
     return {
       menuItems: [
         blockExplorerAction,

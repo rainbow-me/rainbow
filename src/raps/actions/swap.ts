@@ -319,6 +319,7 @@ export const swap = async ({
     : parameters.assetToSell.price;
 
   const transaction = {
+    chainId: parameters.chainId,
     data: swap.data,
     from: swap.from as Address,
     to: swap.to as Address,
@@ -367,8 +368,8 @@ export const swap = async ({
     type: 'swap',
     swap: {
       type: SwapType.normal,
-      fromChainId: parameters.assetToSell.chainId as unknown as SwapChainId,
-      toChainId: parameters.assetToBuy.chainId as unknown as SwapChainId,
+      fromChainId: parameters.assetToSell.chainId,
+      toChainId: parameters.assetToBuy.chainId,
 
       // TODO: Is this right?
       isBridge:

@@ -28,6 +28,7 @@ export const parseNewTransaction = async (
     maxFeePerGas,
     maxPriorityFeePerGas,
     network,
+    chainId,
     nft,
     nonce,
     hash,
@@ -58,6 +59,7 @@ export const parseNewTransaction = async (
 
   return {
     address: asset?.address ?? ETH_ADDRESS,
+    chainId,
     balance,
     data,
     ensCommitRegistrationName,

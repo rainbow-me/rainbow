@@ -38,9 +38,9 @@ const ContractActions = {
   },
 };
 
-const buildBlockExplorerAction = type => {
+const buildBlockExplorerAction = chainId => {
   const blockExplorerText = lang.t('expanded_state.swap.view_on', {
-    blockExplorerName: startCase(ethereumUtils.getBlockExplorer(type)),
+    blockExplorerName: startCase(ethereumUtils.getBlockExplorer(chainId)),
   });
   return {
     actionKey: ContractActionsEnum.blockExplorer,
@@ -105,7 +105,7 @@ export default function SwapDetailsContractRow({ asset, onCopySwapDetailsText, .
   const [menuVisible, setMenuVisible] = useState(false);
 
   const menuConfig = useMemo(() => {
-    const blockExplorerAction = buildBlockExplorerAction(asset?.network);
+    const blockExplorerAction = buildBlockExplorerAction(ethereumUtils.getChainIdFromNetwork(asset?.network));
     return {
       menuItems: [
         blockExplorerAction,

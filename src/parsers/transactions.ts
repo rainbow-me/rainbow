@@ -20,6 +20,7 @@ import {
   TransactionType,
   TransactionWithChangesType,
 } from '@/resources/transactions/types';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const LAST_TXN_HASH_BUFFER = 20;
 
@@ -64,7 +65,8 @@ export const getAssetFromChanges = (changes: TransactionChanges, type: Transacti
 
 export const parseTransaction = async (
   transaction: TransactionApiResponse,
-  nativeCurrency: NativeCurrencyKey
+  nativeCurrency: NativeCurrencyKey,
+  chainId: ChainId
 ): Promise<RainbowTransaction> => {
   const { status, hash, meta, nonce, protocol } = transaction;
 
@@ -112,6 +114,7 @@ export const parseTransaction = async (
   };
 
   return {
+    chainId,
     from: txn.address_from,
     to: txn.address_to,
     title: `${type}.${status}`,

@@ -174,16 +174,16 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
 
   const { updateInputAmount, updateMaxInputAmount, updateNativeAmount, updateOutputAmount } = useSwapInputHandlers();
 
-  const { inputNetwork, outputNetwork, currentChainId, isCrosschainSwap, isBridgeSwap } = useMemo(() => {
-    const inputNetwork = inputCurrency?.chainId || ChainId.mainnet;
-    const outputNetwork = outputCurrency?.chainId || ChainId.mainnet;
-    const chainId: ChainId = inputNetwork || outputNetwork;
+  const { inputChainId, outputChainId, currentChainId, isCrosschainSwap, isBridgeSwap } = useMemo(() => {
+    const inputChainId = inputCurrency?.chainId || ChainId.mainnet;
+    const outputChainId = outputCurrency?.chainId || ChainId.mainnet;
+    const chainId: ChainId = inputChainId || outputChainId;
 
-    const isCrosschainSwap = crosschainSwapsEnabled && inputNetwork !== outputNetwork;
+    const isCrosschainSwap = crosschainSwapsEnabled && inputChainId !== outputChainId;
     const isBridgeSwap = inputCurrency?.symbol === outputCurrency?.symbol;
     return {
-      inputNetwork,
-      outputNetwork,
+      inputChainId,
+      outputChainId,
       currentChainId: chainId,
       isCrosschainSwap,
       isBridgeSwap,
@@ -191,8 +191,8 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
   }, [inputCurrency?.chainId, inputCurrency?.symbol, outputCurrency?.chainId, outputCurrency?.symbol, crosschainSwapsEnabled]);
 
   const { flipCurrencies, navigateToSelectInputCurrency, navigateToSelectOutputCurrency } = useSwapCurrencyHandlers({
-    inputNetwork,
-    outputNetwork,
+    inputChainId,
+    outputChainId,
     defaultInputAsset,
     defaultOutputAsset,
     fromDiscover,
@@ -781,8 +781,8 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
     lastFocusedInput?.blur();
     navigate(Routes.EXPLAIN_SHEET, {
       inputToken: inputCurrency?.symbol,
-      fromNetwork: inputNetwork,
-      toNetwork: outputNetwork,
+      fromNetwork: inputChainId,
+      toNetwork: outputChainId,
       isCrosschainSwap,
       isBridgeSwap,
       onClose: () => {
@@ -797,13 +797,13 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
     });
   }, [
     inputCurrency?.symbol,
-    inputNetwork,
+    inputChainId,
     isBridgeSwap,
     isCrosschainSwap,
     lastFocusedInputHandle,
     navigate,
     outputCurrency?.symbol,
-    outputNetwork,
+    outputChainId,
   ]);
 
   const showConfirmButton = !!inputCurrency && !!outputCurrency;
@@ -835,6 +835,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
                 <ExchangeHeader testID={testID} title={title} />
                 <ExchangeInputField
                   color={inputCurrencyColor}
+                  chainId={inputChainId}
                   disableInputCurrencySelection={false}
                   editable={!!inputCurrency}
                   inputAmount={inputAmountDisplay}
@@ -848,7 +849,6 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
                   nativeAmount={nativeAmountDisplay}
                   nativeCurrency={nativeCurrency}
                   nativeFieldRef={nativeFieldRef}
-                  network={ethereumUtils.getNetworkFromChainId(inputNetwork)}
                   onFocus={handleFocus}
                   onPressMaxBalance={updateMaxInputAmount}
                   onPressSelectInputCurrency={chainId => {
@@ -862,7 +862,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
                 <ExchangeOutputField
                   color={outputCurrencyColor}
                   editable={!!outputCurrency && !isCrosschainSwap}
-                  network={outputNetwork}
+                  chainId={outputChainId}
                   onFocus={handleFocus}
                   onPressSelectOutputCurrency={() => {
                     navigateToSelectOutputCurrency(currentChainId);
