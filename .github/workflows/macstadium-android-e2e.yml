@@ -3,7 +3,7 @@ name: Android e2e tests
 on: [pull_request, workflow_dispatch]
 jobs:
   android-e2e:
-    runs-on: ["self-hosted"]
+    runs-on: ["skip"]
     concurrency: 
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
