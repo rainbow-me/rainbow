@@ -7,7 +7,6 @@ import store from '@/redux/store';
 import { PositionExtraData } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { getExperimetalFlag, DEFI_POSITIONS } from '@/config/experimental';
 import { RainbowPositions } from '@/resources/defi/types';
-import { add, convertAmountToNativeDisplay } from './utilities';
 
 const CONTENT_PLACEHOLDER = [
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },
@@ -40,7 +39,6 @@ const ONLY_NFTS_CONTENT = [{ type: 'ETH_CARD', uid: 'eth-card' }];
 
 const sortedAssetsSelector = (state: any) => state.sortedAssets;
 const accountBalanceSelector = (state: any) => state.accountBalance;
-const isLoadingBalanceSelector = (state: any) => state.isLoadingBalance;
 const hiddenCoinsSelector = (state: any) => state.hiddenCoins;
 const isCoinListEditedSelector = (state: any) => state.isCoinListEdited;
 const isLoadingUserAssetsSelector = (state: any) => state.isLoadingUserAssets;
@@ -108,7 +106,6 @@ const withBriefBalanceSection = (
   sortedAssets: ParsedAddressAsset[],
   isLoadingUserAssets: boolean,
   accountBalance: number | undefined,
-  isLoadingBalance: boolean,
   nativeCurrency: NativeCurrencyKey,
   isCoinListEdited: boolean,
   pinnedCoins: any,
@@ -128,7 +125,7 @@ const withBriefBalanceSection = (
       type: 'PROFILE_STICKY_HEADER',
       uid: 'assets-profile-header-compact',
       value: accountBalance,
-      isLoadingUserAssets: isLoadingBalance,
+      isLoadingUserAssets,
     },
     {
       type: 'PROFILE_AVATAR_ROW_SPACE_BEFORE',
@@ -221,7 +218,6 @@ const briefBalanceSectionSelector = createSelector(
     sortedAssetsSelector,
     isLoadingUserAssetsSelector,
     accountBalanceSelector,
-    isLoadingBalanceSelector,
     nativeCurrencySelector,
     isCoinListEditedSelector,
     pinnedCoinsSelector,
