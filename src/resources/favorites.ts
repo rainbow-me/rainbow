@@ -23,6 +23,7 @@ const getUniqueId = (address: AddressOrEth, chainId: ChainId) => getStandardized
 async function fetchMetadata(addresses: string[], chainId = ChainId.mainnet) {
   const favoritesMetadata: Record<UniqueId, RainbowToken> = {};
   const newFavoritesMeta: Record<UniqueId, RainbowToken> = {};
+  const network = ethereumUtils.getNetworkFromChainId(chainId);
 
   // Map addresses to an array of promises returned by fetchExternalToken
   const fetchPromises: Promise<void>[] = addresses.map(async address => {

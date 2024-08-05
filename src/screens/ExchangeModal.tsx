@@ -29,7 +29,7 @@ import { Box, Row, Rows } from '@/design-system';
 import { GasFee, LegacyGasFee, LegacyGasFeeParams, SwappableAsset } from '@/entities';
 import { ExchangeModalTypes, isKeyboardOpen, Network } from '@/helpers';
 import { KeyboardType } from '@/helpers/keyboardTypes';
-import { getProviderForNetwork, getFlashbotsProvider, getProvider } from '@/handlers/web3';
+import { getFlashbotsProvider, getProvider } from '@/handlers/web3';
 import { delay, greaterThan } from '@/helpers/utilities';
 import {
   useAccountSettings,
@@ -115,7 +115,7 @@ interface ExchangeModalProps {
   typeSpecificParams: TypeSpecificParameters;
 }
 
-export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, type, typeSpecificParams }: ExchangeModalProps) {
+export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, type, typeSpecificParams }: ExchangeModalProps) {
   const { isHardwareWallet } = useWallets();
   const dispatch = useDispatch();
   const { slippageInBips, maxInputUpdate, flipCurrenciesUpdate } = useSwapSettings();
@@ -296,12 +296,14 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
       const quote = isCrosschainSwap ? (tradeDetails as CrosschainQuote) : (tradeDetails as Quote);
       const gasLimit = await (isCrosschainSwap ? estimateCrosschainSwapGasLimit : estimateSwapGasLimit)({
         chainId: currentChainId,
-        quote: quote as any, // this is a temporary fix until we have the correct type coersion here
+        quote: quote as CrosschainQuote,
       });
+
       if (gasLimit) {
         if (getNetworkObject({ chainId: currentChainId }).gas?.OptimismTxFee) {
           if (tradeDetails) {
             const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
               {
                 data: tradeDetails.data,
@@ -392,13 +394,13 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
   });
 
   const submit = useCallback(
-    async (amountInUSD: any): Promise<boolean> => {
+    async (amountInUSD: string): Promise<boolean> => {
       setIsAuthorizing(true);
       const NotificationManager = ios ? NativeModules.NotificationManager : null;
       try {
         // load the correct network provider for the wallet
-		const provider = getProvider({ chainId: currentChainId });
-		let wallet = await loadWallet({
+        const provider = getProvider({ chainId: currentChainId });
+        let wallet = await loadWallet({
           address: accountAddress,
           showErrorIfNotLoaded: false,
           provider,
@@ -436,17 +438,17 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
 
         const transformedAssetToSell = {
           ...inputCurrency,
-          chainName: getChainName({ chainId: inputCurrency.chainId! }) as ChainName,
+          chainName: getChainName({ chainId: inputCurrency.chainId as number }) as ChainName,
           address: inputCurrency.address as AddressOrEth,
-          chainId: inputCurrency.chainId!,
+          chainId: inputCurrency.chainId,
           colors: inputCurrency.colors as TokenColors,
         } as ParsedAsset;
 
         const transformedAssetToBuy = {
           ...outputCurrency,
-          chainName: getChainName({ chainId: outputCurrency.chainId! }) as ChainName,
+          chainName: getChainName({ chainId: outputCurrency.chainId as number }) as ChainName,
           address: outputCurrency.address as AddressOrEth,
-          chainId: outputCurrency.chainId!,
+          chainId: outputCurrency.chainId,
           colors: outputCurrency.colors as TokenColors,
         } as ParsedAsset;
 
@@ -465,7 +467,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
           );
         };
 
-        const { nonce, errorMessage } = await walletExecuteRap(wallet, isCrosschainSwap ? 'crosschainSwap' : 'swap', {
+        const { errorMessage } = await walletExecuteRap(wallet, isCrosschainSwap ? 'crosschainSwap' : 'swap', {
           chainId: currentChainId,
           flashbots,
           nonce: currentNonce,
@@ -867,6 +869,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
                   onPressSelectOutputCurrency={() => {
                     navigateToSelectOutputCurrency(currentChainId);
                   }}
+                  // eslint-disable-next-line react/jsx-props-no-spreading
                   {...(isCrosschainSwap &&
                     !!outputCurrency && {
                       onTapWhileDisabled: handleTapWhileDisabled,
@@ -908,6 +911,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
             <Row height="content">
               {showConfirmButton && (
                 <ConfirmExchangeButton
+                  // eslint-disable-next-line react/jsx-props-no-spreading
                   {...confirmButtonProps}
                   onPressViewDetails={handleConfirmExchangePress}
                   testID={`${testID}-confirm-button`}

@@ -61,7 +61,7 @@ import { useAccountSettings, useClipboard, useDimensions, useGas, useSwitchWalle
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
 import { IS_IOS } from '@/env';
-import { estimateGas, estimateGasWithPadding, getFlashbotsProvider, getProvider, getProviderForNetwork, toHex } from '@/handlers/web3';
+import { estimateGas, estimateGasWithPadding, getFlashbotsProvider, getProvider, toHex } from '@/handlers/web3';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { GasSpeedButton } from '@/components/gas';
 import { getNetworkObj, getNetworkObject } from '@/networks';
@@ -342,7 +342,7 @@ export const SignTransactionSheet = () => {
   }, [isMessageRequest, isSufficientGas, selectedGasFee, walletBalance, req, currentChainId]);
 
   const accountInfo = useMemo(() => {
-    const selectedWallet = findWalletWithAccount(wallets!, currentAddress);
+    const selectedWallet = wallets ? findWalletWithAccount(wallets, currentAddress) : undefined;
     const profileInfo = getAccountProfileInfo(selectedWallet, walletNames, currentAddress);
     return {
       ...profileInfo,
@@ -468,7 +468,17 @@ export const SignTransactionSheet = () => {
     return () => {
       clearTimeout(timeout);
     };
-  }, [accountAddress, currentChainId, isMessageRequest, isPersonalSign, nativeCurrency, req, request.message, simulationUnavailable, transactionDetails]);
+  }, [
+    accountAddress,
+    currentChainId,
+    isMessageRequest,
+    isPersonalSign,
+    nativeCurrency,
+    req,
+    request.message,
+    simulationUnavailable,
+    transactionDetails,
+  ]);
 
   const closeScreen = useCallback(
     (canceled: boolean) =>
@@ -593,7 +603,8 @@ export const SignTransactionSheet = () => {
   const handleConfirmTransaction = useCallback(async () => {
     const sendInsteadOfSign = transactionDetails.payload.method === SEND_TRANSACTION;
     const txPayload = req;
-    let { gas, gasLimit: gasLimitFromPayload } = txPayload;
+    let { gas } = txPayload;
+    const gasLimitFromPayload = txPayload?.gasLimit;
     if (!currentChainId) return;
     try {
       logger.debug(
@@ -1018,6 +1029,7 @@ export const SignTransactionSheet = () => {
                     disabled={!canPressConfirm}
                     size="big"
                     weight="heavy"
+                    // eslint-disable-next-line react/jsx-props-no-spreading
                     {...((simulationError || (simulationScanResult && simulationScanResult !== TransactionScanResultType.Ok)) && {
                       color: simulationScanResult === TransactionScanResultType.Warning ? 'orange' : colors.red,
                     })}
@@ -1415,7 +1427,7 @@ const DetailsCard = ({
                 detailType={isContract ? 'contract' : 'to'}
                 onPress={() =>
                   ethereumUtils.openAddressInBlockExplorer(
-                    meta?.to?.address! || toAddress || meta?.transferTo?.address || '',
+                    meta?.to?.address || toAddress || meta?.transferTo?.address || '',
                     ethereumUtils.getChainIdFromNetwork(currentNetwork)
                   )
                 }
