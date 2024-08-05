@@ -7,7 +7,7 @@ import { BlurView } from '@react-native-community/blur';
 import React from 'react';
 import { TextInput } from 'react-native';
 import { BrowserButtonShadows } from '../DappBrowserShadows';
-import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
+import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { AnimatedRef, SharedValue, runOnJS } from 'react-native-reanimated';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 
@@ -46,7 +46,7 @@ export const TabButton = React.memo(function TabButton({
   return (
     <BrowserButtonShadows>
       <Bleed space="8px">
-        <GestureHandlerV1Button onPressWorklet={onPress} style={{ padding: 8 }}>
+        <GestureHandlerButton onPressWorklet={onPress} style={{ padding: 8 }}>
           <Box
             borderRadius={22}
             style={{ height: 44, paddingTop: isFocused ? 1 : undefined, width: 44 }}
@@ -84,7 +84,7 @@ export const TabButton = React.memo(function TabButton({
               ]}
             />
           </Box>
-        </GestureHandlerV1Button>
+        </GestureHandlerButton>
       </Bleed>
     </BrowserButtonShadows>
   );

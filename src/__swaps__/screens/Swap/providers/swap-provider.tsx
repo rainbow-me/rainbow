@@ -26,12 +26,13 @@ import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/scree
 import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
-import { isUnwrapEthWorklet, isWrapEthWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
+import { getDefaultSlippageWorklet, isUnwrapEthWorklet, isWrapEthWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { getFlashbotsProvider, getIsHardhatConnected, getProviderForNetwork, isHardHat } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useAccountSettings } from '@/hooks';
+import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
 import { loadWallet } from '@/model/wallet';
@@ -53,10 +54,12 @@ import { clearCustomGasSettings } from '../hooks/useCustomGas';
 import { getGasSettingsBySpeed, getSelectedGas, getSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
+import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
+import { getRemoteConfig } from '@/model/remoteConfig';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
-const tapToSwap = i18n.t(i18n.l.swap.actions.tap_to_swap);
-const save = i18n.t(i18n.l.swap.actions.save);
+const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
+const done = i18n.t(i18n.l.button.done);
 const enterAmount = i18n.t(i18n.l.swap.actions.enter_amount);
 const review = i18n.t(i18n.l.swap.actions.review);
 const fetchingPrices = i18n.t(i18n.l.swap.actions.fetching_prices);
@@ -94,6 +97,7 @@ interface SwapContextType {
 
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
   executeSwap: () => void;
+  quoteFetchingInterval: ReturnType<typeof useAnimatedInterval>;
 
   outputQuotesAreDisabled: DerivedValue<boolean>;
   swapInfo: DerivedValue<{
@@ -108,14 +112,13 @@ interface SwapContextType {
   SwapNavigation: ReturnType<typeof useSwapNavigation>;
   SwapWarning: ReturnType<typeof useSwapWarning>;
 
-  confirmButtonProps: Readonly<
-    SharedValue<{
-      label: string;
-      icon?: string;
-      disabled?: boolean;
-      opacity?: number;
-    }>
-  >;
+  confirmButtonProps: DerivedValue<{
+    label: string;
+    icon?: string;
+    disabled?: boolean;
+    opacity?: number;
+    type: 'tap' | 'hold';
+  }>;
   confirmButtonIconStyle: StyleProp<TextStyle>;
 
   hasEnoughFundsForGas: SharedValue<boolean | undefined>;
@@ -159,9 +162,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   );
   const configProgress = useSharedValue<NavigationSteps>(NavigationSteps.INPUT_ELEMENT_FOCUSED);
 
-  const SwapSettings = useSwapSettings({
-    inputAsset: internalSelectedInputAsset,
-  });
+  const slippage = useSharedValue(getDefaultSlippageWorklet(initialSelectedInputAsset?.chainId || ChainId.mainnet, getRemoteConfig()));
 
   const SwapInputController = useSwapInputsController({
     focusedInput,
@@ -174,8 +175,13 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     isFetching,
     isQuoteStale,
     sliderXPosition,
-    slippage: SwapSettings.slippage,
+    slippage,
     quote,
+  });
+
+  const SwapSettings = useSwapSettings({
+    debouncedFetchQuote: SwapInputController.debouncedFetchQuote,
+    slippage,
   });
 
   const getNonceAndPerformSwap = async ({
@@ -196,6 +202,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       const connectedToHardhat = !!providerUrl && isHardHat(providerUrl);
 
       const isBridge = swapsStore.getState().inputAsset?.mainnetAddress === swapsStore.getState().outputAsset?.mainnetAddress;
+      const isDegenModeEnabled = swapsStore.getState().degenMode;
       const slippage = swapsStore.getState().slippage;
 
       const selectedGas = getSelectedGas(parameters.chainId);
@@ -205,7 +212,26 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         return;
       }
 
-      const wallet = await loadWallet(parameters.quote.from, false, provider);
+      const wallet = await performanceTracking.getState().executeFn({
+        fn: loadWallet,
+        screen: Screens.SWAPS,
+        operation: TimeToSignOperation.KeychainRead,
+        metadata: {
+          degenMode: isDegenModeEnabled,
+        },
+      })({
+        address: parameters.quote.from,
+        showErrorIfNotLoaded: false,
+        provider,
+        timeTracking: {
+          screen: Screens.SWAPS,
+          operation: TimeToSignOperation.Authentication,
+          metadata: {
+            degenMode: isDegenModeEnabled,
+          },
+        },
+      });
+
       if (!wallet) {
         isSwapping.value = false;
         haptics.notificationError();
@@ -231,7 +257,14 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }
 
       const chainId = getIsHardhatConnected() ? ChainId.hardhat : parameters.chainId;
-      const { errorMessage } = await walletExecuteRap(wallet, type, {
+      const { errorMessage } = await performanceTracking.getState().executeFn({
+        fn: walletExecuteRap,
+        screen: Screens.SWAPS,
+        operation: TimeToSignOperation.SignTransaction,
+        metadata: {
+          degenMode: isDegenModeEnabled,
+        },
+      })(wallet, type, {
         ...parameters,
         chainId,
         gasParams,
@@ -254,6 +287,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           errorMessage,
           inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
           outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
+          degenMode: isDegenModeEnabled,
         });
 
         if (errorMessage !== 'handled') {
@@ -279,9 +313,18 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         })
       );
 
+      swapsStore.getState().addRecentSwap(parameters.assetToBuy as ExtendedAnimatedAssetWithColors);
       clearCustomGasSettings(chainId);
       NotificationManager?.postNotification('rapCompleted');
-      Navigation.handleAction(Routes.PROFILE_SCREEN, {});
+      performanceTracking.getState().executeFn({
+        fn: Navigation.handleAction,
+        screen: Screens.SWAPS,
+        operation: TimeToSignOperation.SheetDismissal,
+        endOfOperation: true,
+        metadata: {
+          degenMode: isDegenModeEnabled,
+        },
+      })(Routes.PROFILE_SCREEN, {});
 
       analyticsV2.track(analyticsV2.event.swapsSubmitted, {
         createdAt: Date.now(),
@@ -293,6 +336,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         bridge: isBridge,
         inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
         outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
+        degenMode: isDegenModeEnabled,
       });
     } catch (error) {
       isSwapping.value = false;
@@ -308,110 +352,69 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
   };
 
-  const executeSwap = () => {
-    'worklet';
+  const executeSwap = performanceTracking.getState().executeFn({
+    screen: Screens.SWAPS,
+    operation: TimeToSignOperation.CallToAction,
+    fn: () => {
+      'worklet';
 
-    if (configProgress.value !== NavigationSteps.SHOW_REVIEW) return;
+      if (configProgress.value !== NavigationSteps.SHOW_REVIEW && !SwapSettings.degenMode.value) return;
 
-    const inputAsset = internalSelectedInputAsset.value;
-    const outputAsset = internalSelectedOutputAsset.value;
-    const q = quote.value;
+      const inputAsset = internalSelectedInputAsset.value;
+      const outputAsset = internalSelectedOutputAsset.value;
+      const q = quote.value;
 
-    // TODO: What other checks do we need here?
-    if (isSwapping.value || !inputAsset || !outputAsset || !q || (q as QuoteError)?.error) {
-      return;
-    }
+      // TODO: What other checks do we need here?
+      if (isSwapping.value || !inputAsset || !outputAsset || !q || (q as QuoteError)?.error) {
+        return;
+      }
 
-    isSwapping.value = true;
-    SwapInputController.quoteFetchingInterval.stop();
+      isSwapping.value = true;
+      SwapInputController.quoteFetchingInterval.stop();
 
-    const type = inputAsset.chainId !== outputAsset.chainId ? 'crosschainSwap' : 'swap';
-    const quoteData = q as QuoteTypeMap[typeof type];
-    const flashbots = (SwapSettings.flashbots.value && inputAsset.chainId === ChainId.mainnet) ?? false;
+      const type = inputAsset.chainId !== outputAsset.chainId ? 'crosschainSwap' : 'swap';
+      const quoteData = q as QuoteTypeMap[typeof type];
+      const flashbots = (SwapSettings.flashbots.value && inputAsset.chainId === ChainId.mainnet) ?? false;
 
-    const isNativeWrapOrUnwrap =
-      isWrapEthWorklet({
-        buyTokenAddress: quoteData.buyTokenAddress,
-        sellTokenAddress: quoteData.sellTokenAddress,
+      const isNativeWrapOrUnwrap =
+        isWrapEthWorklet({
+          buyTokenAddress: quoteData.buyTokenAddress,
+          sellTokenAddress: quoteData.sellTokenAddress,
+          chainId: inputAsset.chainId,
+        }) ||
+        isUnwrapEthWorklet({
+          buyTokenAddress: quoteData.buyTokenAddress,
+          sellTokenAddress: quoteData.sellTokenAddress,
+          chainId: inputAsset.chainId,
+        });
+
+      // Do not deleeeet the comment below 😤
+      // About to get quote
+      const parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'> = {
+        sellAmount: quoteData.sellAmount?.toString(),
+        buyAmount: quoteData.buyAmount?.toString(),
         chainId: inputAsset.chainId,
-      }) ||
-      isUnwrapEthWorklet({
-        buyTokenAddress: quoteData.buyTokenAddress,
-        sellTokenAddress: quoteData.sellTokenAddress,
-        chainId: inputAsset.chainId,
+        assetToSell: inputAsset,
+        assetToBuy: outputAsset,
+        quote: {
+          ...quoteData,
+          buyAmountDisplay: isNativeWrapOrUnwrap ? quoteData.buyAmount : quoteData.buyAmountDisplay,
+          sellAmountDisplay: isNativeWrapOrUnwrap ? quoteData.sellAmount : quoteData.sellAmountDisplay,
+          feeInEth: isNativeWrapOrUnwrap ? '0' : quoteData.feeInEth,
+          fromChainId: inputAsset.chainId,
+          toChainId: outputAsset.chainId,
+        },
+        flashbots,
+      };
+
+      runOnJS(getNonceAndPerformSwap)({
+        type,
+        parameters,
       });
-
-    // Do not deleeeet the comment below 😤
-    // About to get quote
-    const parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'> = {
-      sellAmount: quoteData.sellAmount?.toString(),
-      buyAmount: quoteData.buyAmount?.toString(),
-      chainId: inputAsset.chainId,
-      assetToSell: inputAsset,
-      assetToBuy: outputAsset,
-      quote: {
-        ...quoteData,
-        buyAmountDisplay: isNativeWrapOrUnwrap ? quoteData.buyAmount : quoteData.buyAmountDisplay,
-        sellAmountDisplay: isNativeWrapOrUnwrap ? quoteData.sellAmount : quoteData.sellAmountDisplay,
-        feeInEth: isNativeWrapOrUnwrap ? '0' : quoteData.feeInEth,
-        fromChainId: inputAsset.chainId,
-        toChainId: outputAsset.chainId,
-      },
-      flashbots,
-    };
-
-    runOnJS(getNonceAndPerformSwap)({
-      type,
-      parameters,
-    });
-  };
-
-  const SwapTextStyles = useSwapTextStyles({
-    inputMethod: SwapInputController.inputMethod,
-    inputValues: SwapInputController.inputValues,
-    internalSelectedInputAsset,
-    internalSelectedOutputAsset,
-    isFetching,
-    isQuoteStale,
-    focusedInput,
-    inputProgress,
-    outputProgress,
-    sliderPressProgress,
-  });
-
-  const SwapNavigation = useSwapNavigation({
-    configProgress,
-    executeSwap,
-    inputProgress,
-    outputProgress,
-    quoteFetchingInterval: SwapInputController.quoteFetchingInterval,
-    selectedInputAsset: internalSelectedInputAsset,
-    selectedOutputAsset: internalSelectedOutputAsset,
-    isDegenMode: SwapSettings.degenMode,
-  });
-
-  const SwapWarning = useSwapWarning({
-    inputAsset: internalSelectedInputAsset,
-    inputValues: SwapInputController.inputValues,
-    outputAsset: internalSelectedOutputAsset,
-    quote,
-    isFetching,
-    isQuoteStale,
-  });
-
-  const AnimatedSwapStyles = useAnimatedSwapStyles({
-    SwapWarning,
-    internalSelectedInputAsset,
-    internalSelectedOutputAsset,
-    inputProgress,
-    outputProgress,
-    configProgress,
-    isFetching,
-  });
-
-  const outputQuotesAreDisabled = useSwapOutputQuotesDisabled({
-    inputAsset: internalSelectedInputAsset,
-    outputAsset: internalSelectedOutputAsset,
+    },
+    metadata: {
+      degenMode: swapsStore.getState().degenMode,
+    },
   });
 
   const swapInfo = useDerivedValue(() => {
@@ -426,6 +429,58 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       areBothAssetsSet,
       isBridging,
     };
+  });
+
+  const SwapTextStyles = useSwapTextStyles({
+    configProgress,
+    focusedInput,
+    inputMethod: SwapInputController.inputMethod,
+    inputProgress,
+    inputValues: SwapInputController.inputValues,
+    internalSelectedInputAsset,
+    internalSelectedOutputAsset,
+    isFetching,
+    isQuoteStale,
+    outputProgress,
+    sliderPressProgress,
+  });
+
+  const SwapNavigation = useSwapNavigation({
+    configProgress,
+    executeSwap,
+    inputProgress,
+    isDegenMode: SwapSettings.degenMode,
+    outputProgress,
+    quoteFetchingInterval: SwapInputController.quoteFetchingInterval,
+    selectedInputAsset: internalSelectedInputAsset,
+    selectedOutputAsset: internalSelectedOutputAsset,
+    swapInfo,
+  });
+
+  const SwapWarning = useSwapWarning({
+    inputAsset: internalSelectedInputAsset,
+    inputValues: SwapInputController.inputValues,
+    outputAsset: internalSelectedOutputAsset,
+    quote,
+    isFetching,
+    isQuoteStale,
+  });
+
+  const AnimatedSwapStyles = useAnimatedSwapStyles({
+    SwapWarning,
+    configProgress,
+    degenMode: SwapSettings.degenMode,
+    inputProgress,
+    internalSelectedInputAsset,
+    internalSelectedOutputAsset,
+    isFetching,
+    outputProgress,
+    swapInfo,
+  });
+
+  const outputQuotesAreDisabled = useSwapOutputQuotesDisabled({
+    inputAsset: internalSelectedInputAsset,
+    outputAsset: internalSelectedOutputAsset,
   });
 
   const handleProgressNavigation = useCallback(
@@ -443,6 +498,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           } else {
             inputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
             outputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
+            SwapNavigation.handleDismissSettings({ skipAssetChecks: true });
           }
           break;
         case SwapAssetType.outputAsset:
@@ -453,11 +509,12 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           } else {
             inputProgress.value = NavigationSteps.TOKEN_LIST_FOCUSED;
             outputProgress.value = NavigationSteps.INPUT_ELEMENT_FOCUSED;
+            SwapNavigation.handleDismissSettings({ skipAssetChecks: true });
           }
           break;
       }
     },
-    [internalSelectedInputAsset, internalSelectedOutputAsset, inputProgress, outputProgress]
+    [SwapNavigation, internalSelectedInputAsset, internalSelectedOutputAsset, inputProgress, outputProgress]
   );
 
   const setSelectedOutputChainId = (chainId: ChainId) => {
@@ -611,18 +668,22 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
   );
 
-  const confirmButtonProps = useDerivedValue(() => {
+  const confirmButtonProps: SwapContextType['confirmButtonProps'] = useDerivedValue(() => {
     if (isSwapping.value) {
-      return { label: swapping, disabled: true };
+      return { label: swapping, disabled: true, type: 'hold' };
     }
 
     if (configProgress.value === NavigationSteps.SHOW_GAS) {
-      return { icon: '􀆅', label: save, disabled: false };
+      return { label: done, disabled: false, type: 'tap' };
+    }
+
+    if (configProgress.value === NavigationSteps.SHOW_SETTINGS) {
+      return { label: done, disabled: false, type: 'tap' };
     }
 
     const hasSelectedAssets = internalSelectedInputAsset.value && internalSelectedOutputAsset.value;
     if (!hasSelectedAssets) {
-      return { label: selectToken, disabled: true };
+      return { label: selectToken, disabled: true, type: 'hold' };
     }
 
     const isInputZero = equalWorklet(SwapInputController.inputValues.value.inputAmount, 0);
@@ -633,7 +694,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     const userHasNotMovedSlider = SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0;
 
     if (userHasNotEnteredAmount || userHasNotMovedSlider) {
-      return { label: enterAmount, disabled: true, opacity: 1 };
+      return { label: enterAmount, disabled: true, opacity: 1, type: 'hold' };
     }
 
     if (
@@ -641,7 +702,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         SwapWarning.swapWarning.value.type
       )
     ) {
-      return { icon: '􀕹', label: review, disabled: true };
+      return { icon: '􀕹', label: review, disabled: true, type: 'hold' };
     }
 
     const sellAsset = internalSelectedInputAsset.value;
@@ -649,19 +710,24 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       sellAsset && lessThanOrEqualToWorklet(SwapInputController.inputValues.value.inputAmount, sellAsset.maxSwappableAmount);
 
     if (!enoughFundsForSwap) {
-      return { label: insufficientFunds, disabled: true };
+      return { label: insufficientFunds, disabled: true, type: 'hold' };
     }
 
     const isQuoteError = quote.value && 'error' in quote.value;
     const isLoadingGas = !isQuoteError && hasEnoughFundsForGas.value === undefined;
-    const isReviewSheetOpen = configProgress.value === NavigationSteps.SHOW_REVIEW;
+    const isReviewSheetOpen = configProgress.value === NavigationSteps.SHOW_REVIEW || SwapSettings.degenMode.value;
 
     if ((isFetching.value || isLoadingGas) && !isQuoteError) {
-      return { label: fetchingPrices, disabled: (isReviewSheetOpen && isFetching.value) || !quote.value };
+      const disabled = (isReviewSheetOpen && (isFetching.value || isLoadingGas)) || !quote.value;
+      const buttonType = isReviewSheetOpen ? 'hold' : 'tap';
+      return { label: fetchingPrices, disabled, type: buttonType };
     }
 
+    const reviewLabel = SwapSettings.degenMode.value ? holdToSwap : review;
+
     if (isQuoteError) {
-      return { icon: isReviewSheetOpen ? undefined : '􀕹', label: isReviewSheetOpen ? quoteError : review, disabled: true };
+      const icon = isReviewSheetOpen ? undefined : '􀕹';
+      return { icon, label: isReviewSheetOpen ? quoteError : reviewLabel, disabled: true, type: 'hold' };
     }
 
     if (!hasEnoughFundsForGas.value) {
@@ -669,14 +735,15 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return {
         label: `${insufficient} ${nativeCurrency.symbol}`,
         disabled: true,
+        type: 'hold',
       };
     }
 
     if (isReviewSheetOpen) {
-      return { icon: '􀎽', label: tapToSwap, disabled: false };
+      return { icon: '􀎽', label: holdToSwap, disabled: false, type: 'hold' };
     }
 
-    return { icon: '􀕹', label: review, disabled: false };
+    return { icon: '􀕹', label: reviewLabel, disabled: false, type: 'tap' };
   });
 
   const confirmButtonIconStyle = useAnimatedStyle(() => {
@@ -727,6 +794,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         outputQuotesAreDisabled,
         swapInfo,
         executeSwap,
+        quoteFetchingInterval: SwapInputController.quoteFetchingInterval,
 
         SwapSettings,
         SwapInputController,

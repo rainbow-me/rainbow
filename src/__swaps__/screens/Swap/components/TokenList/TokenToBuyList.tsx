@@ -31,6 +31,11 @@ interface SectionHeaderProp {
 }
 
 const SECTION_HEADER_INFO: { [id in AssetToBuySectionId]: SectionHeaderProp } = {
+  recent: {
+    title: i18n.t(i18n.l.token_search.section_header.recent),
+    symbol: '􀐫',
+    color: 'rgba(38, 143, 255, 1)',
+  },
   favorites: {
     title: i18n.t(i18n.l.token_search.section_header.favorites),
     symbol: '􀋃',
@@ -125,6 +130,10 @@ export const TokenToBuyList = () => {
 
   if (isLoading) return null;
 
+  const getFormattedTestId = (name: string, chainId: ChainId) => {
+    return `token-to-buy-${name}-${chainId}`.toLowerCase().replace(/\s+/g, '-');
+  };
+
   return (
     <Box style={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}>
       <FlashList
@@ -146,6 +155,7 @@ export const TokenToBuyList = () => {
           }
           return (
             <CoinRow
+              testID={getFormattedTestId(item.name, item.chainId)}
               address={item.address}
               chainId={item.chainId}
               colors={item.colors}

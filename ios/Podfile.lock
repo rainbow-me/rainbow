@@ -1659,10 +1659,10 @@ PODS:
     - React
   - RNKeychain (8.0.0):
     - React-Core
-  - RNNotifee (5.6.0):
+  - RNNotifee (7.8.2):
     - React-Core
-    - RNNotifee/NotifeeCore (= 5.6.0)
-  - RNNotifee/NotifeeCore (5.6.0):
+    - RNNotifee/NotifeeCore (= 7.8.2)
+  - RNNotifee/NotifeeCore (7.8.2):
     - React-Core
   - RNOS (1.2.8):
     - React
@@ -2343,7 +2343,7 @@ SPEC CHECKSUMS:
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeyboard: 14793d75953d99c6d950090b8e9698b234c5d08c
   RNKeychain: 4f63aada75ebafd26f4bc2c670199461eab85d94
-  RNNotifee: 8ee6ddabfc44b16600b978983162e0d4db20ce19
+  RNNotifee: 8e2d3df3f0e9ce8f5d1fe4c967431138190b6175
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
   RNPermissions: 4e3714e18afe7141d000beae3755e5b5fb2f5e05
   RNReactNativeHapticFeedback: ec56a5f81c3941206fd85625fa669ffc7b4545f9
@@ -2369,7 +2369,7 @@ SPEC CHECKSUMS:
   TOCropViewController: b9b2905938c0424f289ea2d9964993044913fac6
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   VisionCamera: 2af28201c3de77245f8c58b7a5274d5979df70df
-  Yoga: 04f1db30bb810187397fa4c37dd1868a27af229c
+  Yoga: 88480008ccacea6301ff7bf58726e27a72931c8d
 
 PODFILE CHECKSUM: 0839e4141c8f26133bf9a961f5ded1ea3127af54
 

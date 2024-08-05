@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { ANDROID_DEFAULT_CHANNEL_ID } from '@/notifications/constants';
+import { ANDROID_DEFAULT_CHANNEL_ID, ANDROID_GROUP_ID } from '@/notifications/constants';
 import notifee, { AndroidStyle, Notification } from '@notifee/react-native';
 import { FixedRemoteMessage } from '@/notifications/types';
 import { logger, RainbowError } from '@/logger';
@@ -14,6 +14,7 @@ export function handleShowingForegroundNotification(remoteMessage: FixedRemoteMe
       smallIcon: 'ic_state_ic_notification',
       channelId: ANDROID_DEFAULT_CHANNEL_ID,
       pressAction: { id: 'default' },
+      groupId: ANDROID_GROUP_ID,
     },
     data,
     ios: {},

@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { Source } from 'react-native-fast-image';
-import Animated, { SharedValue, useAnimatedProps, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedProps, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 import GoogleSearchIcon from '@/assets/googleSearchIcon.png';
 import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -9,26 +9,25 @@ import { ImgixImage } from '@/components/images';
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 import { AnimatedText, Box, Inline, Stack, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { useDimensions } from '@/hooks';
-import { Dapp } from '@/resources/metadata/dapps';
+import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useSearchContext } from '../SearchContext';
-import * as i18n from '@/languages';
 
 export const SearchResult = ({ index, goToUrl }: { index: number; goToUrl: (url: string) => void }) => {
   const { searchResults } = useSearchContext();
   const { isDarkMode } = useColorMode();
   const { width: deviceWidth } = useDimensions();
 
-  const dapp: SharedValue<Dapp | undefined> = useDerivedValue(() => searchResults?.value[index]);
-  const name: SharedValue<string | undefined> = useDerivedValue(() => dapp.value?.name);
-  const url: SharedValue<string | undefined> = useDerivedValue(() => dapp.value?.url);
-  const urlDisplay: SharedValue<string | undefined> = useDerivedValue(() => dapp.value?.urlDisplay);
+  const dapp = useDerivedValue(() => searchResults?.value[index]);
+  const iconUrl = useDerivedValue(() => dapp.value?.iconUrl ?? '');
+  const name = useDerivedValue(() => dapp.value?.name);
+  const urlDisplay = useDerivedValue(() => dapp.value?.urlDisplay);
 
   const animatedIconSource = useAnimatedProps(() => {
     return {
       source: {
         ...DEFAULT_FASTER_IMAGE_CONFIG,
-        url: dapp.value?.iconUrl ?? '',
+        url: iconUrl.value,
       },
     };
   });
@@ -42,11 +41,17 @@ export const SearchResult = ({ index, goToUrl }: { index: number; goToUrl: (url:
   const separatorSecondary = useForegroundColor('separatorSecondary');
   const separatorTertiary = useForegroundColor('separatorTertiary');
 
-  const onPress = useCallback(() => url.value && goToUrl(url.value), [goToUrl, url.value]);
+  const onPress = useCallback(() => {
+    const url = dapp.value?.url;
+    if (url) {
+      goToUrl(url);
+    }
+  }, [dapp, goToUrl]);
 
   const fallbackIconStyle = useAnimatedStyle(() => {
     return { display: dapp.value?.iconUrl ? 'none' : 'flex' };
   });
+
   return (
     <Animated.View style={animatedStyle}>
       <Box

@@ -15,8 +15,9 @@ import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 import { TokenToBuyListItem } from '../components/TokenList/TokenToBuyList';
 import { useSwapContext } from '../providers/swap-provider';
+import { RecentSwap } from '@/__swaps__/types/swap';
 
-export type AssetToBuySectionId = 'bridge' | 'favorites' | 'verified' | 'unverified' | 'other_networks';
+export type AssetToBuySectionId = 'bridge' | 'recent' | 'favorites' | 'verified' | 'unverified' | 'other_networks';
 
 export interface AssetToBuySection {
   data: SearchAsset[];
@@ -63,6 +64,7 @@ const buildListSectionsData = ({
     verifiedAssets?: SearchAsset[];
     unverifiedAssets?: SearchAsset[];
     crosschainExactMatches?: SearchAsset[];
+    recentSwaps?: RecentSwap[];
   };
   favoritesList: SearchAsset[] | undefined;
   filteredBridgeAssetAddress: string | undefined;
@@ -78,6 +80,15 @@ const buildListSectionsData = ({
 
   if (combinedData.bridgeAsset) {
     addSection('bridge', [combinedData.bridgeAsset]);
+  }
+
+  if (combinedData.recentSwaps?.length) {
+    const filteredRecents = filterAssetsFromFavoritesAndBridge({
+      assets: combinedData.recentSwaps,
+      favoritesList,
+      filteredBridgeAssetAddress,
+    });
+    addSection('recent', filteredRecents);
   }
 
   if (favoritesList?.length) {
@@ -134,6 +145,7 @@ export function useSearchCurrencyLists() {
   const { internalSelectedInputAsset: assetToSell, selectedOutputChainId } = useSwapContext();
 
   const query = useSwapsStore(state => state.outputSearchQuery.trim().toLowerCase());
+  const getRecentSwapsByChain = useSwapsStore(state => state.getRecentSwapsByChain);
 
   const [state, setState] = useState({
     fromChainId: assetToSell.value ? assetToSell.value.chainId ?? ChainId.mainnet : undefined,
@@ -224,6 +236,10 @@ export function useSearchCurrencyLists() {
       })) as SearchAsset[];
   }, [favorites, state.toChainId]);
 
+  const recentsForChain = useMemo(() => {
+    return getRecentSwapsByChain(state.toChainId);
+  }, [getRecentSwapsByChain, state.toChainId]);
+
   const memoizedData = useMemo(() => {
     const queryIsAddress = isAddress(query);
     const keys: TokenSearchAssetKey[] = queryIsAddress ? ['address'] : ['name', 'symbol'];
@@ -303,6 +319,7 @@ export function useSearchCurrencyLists() {
           crosschainExactMatches: crosschainMatches,
           unverifiedAssets: unverifiedResults,
           verifiedAssets: verifiedResults,
+          recentSwaps: recentsForChain,
         },
         favoritesList,
         filteredBridgeAssetAddress: memoizedData.filteredBridgeAsset?.address,
@@ -319,5 +336,6 @@ export function useSearchCurrencyLists() {
     selectedOutputChainId.value,
     unverifiedAssets,
     verifiedAssets,
+    recentsForChain,
   ]);
 }
