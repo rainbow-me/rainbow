@@ -1,11 +1,11 @@
 import { useEffect, useRef, useCallback } from 'react';
-import { estimateGas, web3Provider } from '@/handlers/web3';
+import { estimateGas, web3Provider, toHex } from '@/handlers/web3';
 import { convertHexToString, omitFlatten } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
 import { Network } from '@/helpers';
 import { getNetworkObj } from '@/networks';
 import { ethereumUtils } from '@/utils';
-import { hexToNumber, isHex, toHex } from 'viem';
+import { hexToNumber, isHex } from 'viem';
 import { isEmpty } from 'lodash';
 import { InteractionManager } from 'react-native';
 import { GasFeeParamsBySpeed } from '@/entities';
