@@ -24,6 +24,7 @@
       "tab_showcase": "展示",
       "tab_points": "积分",
       "tab_positions": "持仓",
+      "tab_rewards": "奖励",
       "tab_transactions": "交易",
       "tab_transactions_tooltip": "交易和代币转账",
       "tab_uniquetokens": "唯一代币",
@@ -431,6 +432,23 @@
         "description": "您也可以长按上面的\n地址来复制。"
       }
     },
+    "check_identifier": {
+      "title": "需要认证",
+      "description": "看起来您可能已经更换了设备或重新安装了彩虹钱包。请进行认证，以便我们可以验证您的密钥链数据是否仍处于健康状态。",
+      "action": "认证",
+      "dismiss": "关闭",
+      "error_alert": {
+        "title": "密钥链验证错误",
+        "message": "我们在验证您的密钥链数据时遇到了错误。请再试一次。如果问题仍然存在，请联系支持人员。",
+        "contact_support": "联系支持",
+        "cancel": "取消"
+      },
+      "failure_alert": {
+        "title": "无效的密钥链数据",
+        "message": "我们无法验证您的密钥链数据的完整性。请恢复您的钱包并重试。如果问题仍然存在，请联系支持人员。",
+        "action": "继续"
+      }
+    },
     "cloud": {
       "backup_success": "您的钱包已成功备份！"
     },
@@ -541,7 +559,8 @@
         "from_divider": "来自",
         "to_divider": "至",
         "view_on": "在 %{blockExplorerName}查看",
-        "view_on_etherscan": "在 Etherscan 上查看"
+        "view_on_etherscan": "在 Etherscan 上查看",
+        "copy_contract_address": "复制合约地址"
       },
       "all_networks": "所有网络",
       "filter_by_network": "按网络筛选",
@@ -577,7 +596,8 @@
       "price_impact": {
         "long_wait": {
           "title": "等待时间较长",
-          "description": "大约%{time}"
+          "description": "大约%{time}",
+          "description_prefix": "约"
         },
         "unknown_price": {
           "title": "市场价值未知",
@@ -587,6 +607,7 @@
         "small_market": "小市场",
         "small_market_try_smaller_amount": "市场较小—尝试较小的金额",
         "you_are_losing": "您失去了%{priceImpact}",
+        "you_are_losing_prefix": "您正在损失",
         "no_data": "市场价值未知",
         "label": "可能的损失",
         "no_data_subtitle": "如果您决定继续，请确保您对所引用的金额感到满意"
@@ -687,6 +708,7 @@
         "flashbots_protect": "Flashbots保护",
         "losing": "正在损失",
         "on": "开",
+        "off": "关闭",
         "price_impact": "价格影响",
         "price_row_per_token": "每",
         "slippage_message": "这是一个小市场，所以您的价格不好。尝试较小的交易！",
@@ -723,6 +745,16 @@
         "number_of_steps": "%{number} 步骤",
         "input_exchange_rate": "1 %{inputSymbol} 兑换至 %{executionRate} %{outputSymbol}",
         "output_exchange_rate": "1 %{outputSymbol} 兑换至 %{executionRate} %{inputSymbol}"
+      },
+      "swap_details_v2": {
+        "automatic": "自动",
+        "degen_mode": "Degen 模式",
+        "degen_mode_description": "跳过审核表以更快地交换",
+        "maximum_sold": "最大出售量",
+        "minimum_received": "最低接收金额",
+        "preferred_network": "首选网络",
+        "rainbow_fee": "包括彩虹费",
+        "settings": "设置"
       },
       "token_index": {
         "get_token": "获取 %{assetSymbol}",
@@ -1030,14 +1062,17 @@
         "urgent": "紧急",
         "custom": "自定义"
       },
-      "network_fee": "预计网络费",
+      "unable_to_determine_selected_gas": "无法确定选择的Gas",
+      "network_fee": "估计网络费用",
       "current_base_fee": "当前基本费用",
       "max_base_fee": "最大基础费用",
       "miner_tip": "矿工小费",
+      "gas_price": "Gas价格",
       "max_transaction_fee": "最大交易费用",
       "warning_separator": "·",
       "lower_than_suggested": "低·可能会卡住",
       "higher_than_suggested": "高·过度支付",
+      "likely_to_fail": "低·可能会失败",
       "max_base_fee_too_low_error": "低·可能会失败",
       "tip_too_low_error": "低·可能会失败",
       "alert_message_higher_miner_tip_needed": "建议设置更高的矿工小费以避免问题。",
@@ -1357,13 +1392,16 @@
       },
       "claim": {
         "title": "领取你的积分",
+        "title_rewards_line_1": "欢迎来到",
+        "title_rewards_line_2": "彩虹奖励",
         "subtitle": "积分就在这里。查看你获得了多少积分。",
+        "subtitle_rewards": "使用彩虹钱包获取奖励。在链上做事，获取积分，赚取ETH。",
         "get_started": "开始",
         "use_referral_code": "使用推荐码"
       },
       "referral": {
         "title": "输入你的推荐码",
-        "subtitle": "在下方输入推荐码以领取你的奖励红利。",
+        "subtitle": "在下面输入推荐代码以领取您的积分奖励。",
         "back": "返回",
         "error": "出现了一些问题。请重启应用并重试。",
         "get_started": "开始",
@@ -1378,6 +1416,7 @@
         "share_link": "分享链接",
         "next_drop": "下一次发布",
         "your_rank": "你的排名",
+        "no_change": "无变化",
         "of_x": "共 %{totalUsers}个",
         "referrals": "推荐人",
         "streak": "连续登录",
@@ -1395,12 +1434,40 @@
         "today": "今天",
         "error": "糟糕！\n请下拉刷新。",
         "points": "积分",
+        "points_capitalized": "积分",
         "referral_code_copied": "推荐码已复制",
         "earn_points_for_referring": "当您的推荐人通过Rainbow换取100美元时，您可以获得积分，此外您还可以获得推荐人所赚积分的10%",
         "already_claimed_points": "抱歉！您已经领取了您的积分。",
         "now": "现在",
         "unranked": "未排名",
-        "points_to_rank": "距离排名还需750积分"
+        "points_to_rank": "距离排名还需750积分",
+        "ranking": "排名第%{rank}位",
+        "available_to_claim": "可领取",
+        "claim": "领取%{value}",
+        "choose_claim_network": "选择领取网络",
+        "claim_on_network": "在%{network}上领取",
+        "claimed_on_network": "已在%{network}上领取",
+        "claiming_on_network": "正在%{network}上领取",
+        "error_claiming": "认领失败",
+        "free_to_claim": "免费领取",
+        "has_bridge_fee": "有桥接费用",
+        "claim_rewards": "领取奖励",
+        "earned_last_week": "上周赚取",
+        "top_10_earner": "前10名收入者",
+        "zero_points": "0分",
+        "no_weekly_rank": "无每周排名",
+        "none": "无",
+        "my_earnings": "我的收入",
+        "claimed_earnings": "已领取收入",
+        "current_value": "当前价值",
+        "rainbow_users_have_earned": "彩虹钱包用户已经赚取",
+        "earn_eth_rewards": "赚取ETH奖励",
+        "rewards_explainer": "每周，排名前列的积分赚取者将获得彩虹钱包链上收入的一部分。通过在彩虹钱包中换币或交易、使用dapp或推荐朋友来收集积分。",
+        "my_points": "我的积分",
+        "refer_friends": "推荐朋友",
+        "try_again": "再试一次",
+        "bridge_error": "部分成功",
+        "bridge_error_explainer": "您的奖励已成功在 Optimism 上领取，但转移到 %{network} 失败。如果您愿意，可以使用交换功能手动桥接您的奖励。"
       },
       "console": {
         "claim_bonus_paragraph": "一旦您通过Rainbow兑换至少$100，您将额外获得100积分",
@@ -1916,9 +1983,32 @@
       "too_many_signup_request": "过多的注册请求，请稍后再试"
     },
     "swap": {
+      "actions": {
+        "hold_to_swap": "按住以交换",
+        "save": "保存",
+        "enter_amount": "输入金额",
+        "review": "审阅",
+        "fetching_prices": "获取中",
+        "swapping": "交换中",
+        "select_token": "选择代币",
+        "insufficient_funds": "资金不足",
+        "insufficient": "不足",
+        "quote_error": "报价错误"
+      },
       "aggregators": {
         "rainbow": "Rainbow"
       },
+      "bridging": "桥接中",
+      "swapping": "交换中",
+      "max": "最大",
+      "select": "选择",
+      "token_to_get": "获取的代币",
+      "token_to_swap": "交换的代币",
+      "no_balance": "无余额",
+      "find_a_token_to_buy": "找一个要购买的代币",
+      "search_your_tokens": "搜索你的代币",
+      "error_executing_swap": "执行交换时出错",
+      "flashbots_protection": "Flashbots 保护",
       "tokens_input": {
         "tokens": "代币",
         "sort": "排序",
@@ -1945,6 +2035,7 @@
       },
       "loading": "载入中...",
       "modal_types": {
+        "bridge": "桥接",
         "confirm": "确认",
         "deposit": "存款",
         "receive": "接收",
@@ -1976,6 +2067,7 @@
     },
     "token_search": {
       "section_header": {
+        "recent": "最近",
         "favorites": "收藏夹",
         "bridge": "桥接",
         "verified": "已验证",
@@ -2849,6 +2941,8 @@
         "forward": "前进",
         "back": "返回"
       }
-    }
+    },
+    "copy": "复制",
+    "paste": "粘贴"
   }
 }
