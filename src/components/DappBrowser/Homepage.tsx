@@ -350,17 +350,7 @@ const Card = memo(function Card({
             width={{ custom: CARD_WIDTH }}
           >
             <ColorModeProvider value="dark">
-              {(site.screenshot || dappIconUrl) && (
-                <Cover>
-                  <ImgixImage
-                    enableFasterImage
-                    size={CARD_WIDTH}
-                    source={{ uri: dappIconUrl || site.screenshot }}
-                    style={{ width: CARD_WIDTH, height: CARD_HEIGHT }}
-                  />
-                  <CardBackgroundOverlay isDarkMode={isDarkMode} />
-                </Cover>
-              )}
+              <CardBackground imageUrl={dappIconUrl || site.screenshot} isDarkMode={isDarkMode} />
               <Box height={{ custom: 48 }} left={{ custom: -8 }} style={styles.cardLogoWrapper} top={{ custom: -8 }} width={{ custom: 48 }}>
                 <ImgixImage
                   enableFasterImage
@@ -444,9 +434,16 @@ const Card = memo(function Card({
   );
 });
 
-const CardBackgroundOverlay = memo(function CardBackgroundOverlay({ isDarkMode }: { isDarkMode: boolean }) {
-  return (
-    <Cover>
+const CardBackground = memo(function CardBackgroundOverlay({
+  imageUrl,
+  isDarkMode,
+}: {
+  imageUrl: string | undefined;
+  isDarkMode: boolean;
+}) {
+  return imageUrl ? (
+    <Box shouldRasterizeIOS style={StyleSheet.absoluteFill}>
+      <ImgixImage enableFasterImage size={CARD_WIDTH} source={{ uri: imageUrl }} style={{ height: CARD_HEIGHT, width: CARD_WIDTH }} />
       {IS_IOS ? (
         <>
           <BlurView
@@ -460,7 +457,7 @@ const CardBackgroundOverlay = memo(function CardBackgroundOverlay({ isDarkMode }
               endOpacity={0.28}
               startColor={globalColors.grey100}
               startOpacity={0.2}
-              style={{ height: '100%', width: '100%' }}
+              style={{ height: '100%', position: 'absolute', width: '100%' }}
             />
           )}
         </>
@@ -470,11 +467,11 @@ const CardBackgroundOverlay = memo(function CardBackgroundOverlay({ isDarkMode }
           endOpacity={0.9}
           startColor={globalColors.grey100}
           startOpacity={0.5}
-          style={{ borderRadius: 24, height: '100%', width: '100%' }}
+          style={{ borderRadius: 24, height: '100%', position: 'absolute', width: '100%' }}
         />
       )}
-    </Cover>
-  );
+    </Box>
+  ) : null;
 });
 
 export const PlaceholderCard = memo(function PlaceholderCard() {
