@@ -22,11 +22,13 @@ buildscript {
             url 'https://maven.fabric.io/public'
         }
         mavenCentral()
+        maven {
+            url("${rootProject.projectDir}/../node_modules/detox/Detox-android")
+        }
     }
     dependencies {
         classpath("com.android.tools.build:gradle")
         classpath("com.facebook.react:react-native-gradle-plugin")
-        // classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.22"
         classpath("de.undercouch:gradle-download-task:5.0.1")
         classpath 'com.google.gms:google-services:4.3.15'

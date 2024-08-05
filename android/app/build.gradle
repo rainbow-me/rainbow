@@ -136,7 +136,8 @@ android {
         renderscriptTargetApi 23
         renderscriptSupportModeEnabled true
         multiDexEnabled true
-        testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
+        testBuildType System.getProperty('testBuildType', 'debug')
+        missingDimensionStrategy 'detox', 'full'        
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
         manifestPlaceholders = [
@@ -236,6 +237,7 @@ dependencies {
     // DETOX
     androidTestImplementation('com.wix:detox:+') { transitive = true }
     implementation 'com.google.guava:guava:31.1-android'
+    androidTestImplementation(project(path: ":detox"))
 
 }
 
