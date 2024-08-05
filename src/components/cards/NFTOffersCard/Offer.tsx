@@ -13,7 +13,6 @@ import Routes from '@/navigation/routesNames';
 import { analyticsV2 } from '@/analytics';
 import { useTheme } from '@/theme';
 import { CardSize } from '@/components/unique-token/CardSize';
-// import { deviceUtils } from '@/utils';
 import * as i18n from '@/languages';
 import { useRecoilValue } from 'recoil';
 import { nftOffersSortAtom } from '@/components/nft-offers/SortMenu';
@@ -23,6 +22,7 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { useAccountSettings } from '@/hooks';
 import { Network } from '@/networks/types';
+import { ethereumUtils } from '@/utils';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 export const CELL_HORIZONTAL_PADDING = 7;
@@ -69,7 +69,7 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
   const { nativeCurrency } = useAccountSettings();
   const { data: externalAsset } = useExternalToken({
     address: offer.paymentToken.address,
-    network: offer.network as Network,
+    chainId: ethereumUtils.getChainIdFromNetwork(offer.network as Network),
     currency: nativeCurrency,
   });
 
@@ -238,7 +238,7 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
           <RainbowCoinIcon
             size={12}
             icon={externalAsset?.icon_url}
-            network={offer?.network as Network}
+            chainId={ethereumUtils.getChainIdFromNetwork(offer.network as Network)}
             symbol={offer.paymentToken.symbol}
             theme={theme}
             colors={externalAsset?.colors}

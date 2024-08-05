@@ -225,14 +225,14 @@ export const executeSwap = async ({
   };
 
   // Wrap Eth
-  if (isWrapNative({ buyTokenAddress, sellTokenAddress, chainId: chainId as unknown as SwapChainId })) {
+  if (isWrapNative({ buyTokenAddress, sellTokenAddress, chainId })) {
     return wrapNativeAsset(quote.buyAmount, wallet, chainId as unknown as SwapChainId, transactionParams);
     // Unwrap Weth
-  } else if (isUnwrapNative({ buyTokenAddress, sellTokenAddress, chainId: chainId as unknown as SwapChainId })) {
+  } else if (isUnwrapNative({ buyTokenAddress, sellTokenAddress, chainId })) {
     return unwrapNativeAsset(quote.sellAmount, wallet, chainId as unknown as SwapChainId, transactionParams);
     // Swap
   } else {
-    return fillQuote(quote, transactionParams, wallet, permit, chainId as unknown as SwapChainId, REFERRER);
+    return fillQuote(quote, transactionParams, wallet, permit, chainId as number, REFERRER);
   }
 };
 

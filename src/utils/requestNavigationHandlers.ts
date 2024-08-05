@@ -86,7 +86,7 @@ export const handleDappBrowserRequest = async (request: Omit<RequestData, 'displ
     return Promise.reject(new Error('This wallet is read-only.'));
   }
   const nativeCurrency = store.getState().settings.nativeCurrency;
-  const displayDetails = getRequestDisplayDetails(request.payload, nativeCurrency, request.network);
+  const displayDetails = getRequestDisplayDetails(request.payload, nativeCurrency, request.chainId);
 
   const requestWithDetails: RequestData = {
     ...request,

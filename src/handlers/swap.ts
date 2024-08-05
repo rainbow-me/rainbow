@@ -251,7 +251,7 @@ export const estimateSwapGasLimit = async ({
           from: tradeDetails.from,
           value: isWrapNativeAsset ? tradeDetails.buyAmount : '0',
         },
-        getWrappedAssetMethod(isWrapNativeAsset ? 'deposit' : 'withdraw', provider, chainId),
+        getWrappedAssetMethod(isWrapNativeAsset ? 'deposit' : 'withdraw', provider, chainId as number),
         // @ts-ignore
         isUnwrapNativeAsset ? [tradeDetails.buyAmount] : null,
         provider,
@@ -377,5 +377,5 @@ export const computeSlippageAdjustedAmounts = (trade: any, allowedSlippageInBlip
 };
 
 export const getTokenForCurrency = (currency: Asset, chainId: ChainId): Token => {
-  return { ...currency, chainId } as Token;
+  return { ...currency, chainId: chainId as number } as Token;
 };

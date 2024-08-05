@@ -6,7 +6,6 @@ import React, { Fragment, ReactElement, useCallback, useEffect, useMemo, useRef,
 import { DefaultSectionT, InteractionManager, Keyboard, Linking, SectionList, TextInput } from 'react-native';
 import { MMKV } from 'react-native-mmkv';
 import Animated from 'react-native-reanimated';
-import { useDispatch } from 'react-redux';
 import { useDebounce } from 'use-debounce';
 import GestureBlocker from '../components/GestureBlocker';
 import { CurrencySelectionList, CurrencySelectModalHeader, ExchangeSearch } from '../components/exchange';
@@ -40,8 +39,8 @@ import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import DiscoverSearchInput from '@/components/discover/DiscoverSearchInput';
 import { externalTokenQueryKey, fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
-import { getNetworkObj } from '@/networks';
 import { queryClient } from '@/react-query/queryClient';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;
@@ -100,7 +99,6 @@ export default function CurrencySelectModal() {
   const { goBack, navigate, getState: dangerouslyGetState } = useNavigation();
   const { nativeCurrency } = useAccountSettings();
   const { colors } = useTheme();
-  const dispatch = useDispatch();
   const {
     params: {
       defaultOutputAsset,
@@ -318,7 +316,7 @@ export default function CurrencySelectModal() {
   );
   const checkForRequiredAssets = useCallback(
     (item: any) => {
-      if (type === CurrencySelectionTypes.output && currentChainId && currentChainId !== getNetworkObj(Network.mainnet).id) {
+      if (type === CurrencySelectionTypes.output && currentChainId && currentChainId !== ChainId.mainnet) {
         const currentL2Name = ethereumUtils.getNetworkNameFromChainId(currentChainId);
         const currentL2WalletAssets = assetsInWallet.filter(
           ({ network }) => network && network?.toLowerCase() === currentL2Name?.toLowerCase()
@@ -350,18 +348,16 @@ export default function CurrencySelectModal() {
 
       const selectAsset = async () => {
         if (!item?.balance) {
-          const network = getNetworkFromChainId(currentChainId);
-
           const externalAsset = await queryClient.fetchQuery(
             externalTokenQueryKey({
               address: item.address,
-              network,
+              chainId: currentChainId,
               currency: nativeCurrency,
             }),
             async () =>
               fetchExternalToken({
                 address: item.address,
-                network,
+                chainId: currentChainId,
                 currency: nativeCurrency,
               }),
             {
@@ -407,11 +403,10 @@ export default function CurrencySelectModal() {
   );
 
   const itemProps = useMemo(() => {
-    const isMainnet = currentChainId === getNetworkObj(Network.mainnet).id;
     return {
       onPress: handleSelectAsset,
       showBalance: type === CurrencySelectionTypes.input,
-      showFavoriteButton: type === CurrencySelectionTypes.output && isMainnet,
+      showFavoriteButton: type === CurrencySelectionTypes.output && currentChainId === ChainId.mainnet,
     };
   }, [handleSelectAsset, type, currentChainId]);
 

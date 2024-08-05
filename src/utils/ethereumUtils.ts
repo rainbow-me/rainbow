@@ -290,7 +290,7 @@ const getNetworkNameFromChainId = (chainId: ChainId): string => {
  * @desc get chainId from network string
  * @param  {String} network
  */
-const getChainIdFromNetwork = (network?: Network): number => {
+const getChainIdFromNetwork = (network?: Network): ChainId => {
   return network ? getNetworkObj(network).id : ChainId.mainnet;
 };
 

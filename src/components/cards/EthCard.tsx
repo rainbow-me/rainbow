@@ -25,6 +25,7 @@ import assetTypes from '@/entities/assetTypes';
 import { Network } from '@/networks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export const ETH_CARD_HEIGHT = 284.3;
 
@@ -35,7 +36,7 @@ export const EthCard = () => {
   const { isDamaged } = useWallets();
   const { data: externalEthAsset } = useExternalToken({
     address: ETH_ADDRESS,
-    network: Network.mainnet,
+    chainId: ChainId.mainnet,
     currency: nativeCurrency,
   });
 

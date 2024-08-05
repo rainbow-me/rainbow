@@ -24,13 +24,11 @@ async function fetchMetadata(addresses: string[], chainId = ChainId.mainnet) {
   const favoritesMetadata: Record<UniqueId, RainbowToken> = {};
   const newFavoritesMeta: Record<UniqueId, RainbowToken> = {};
 
-  const network = ethereumUtils.getNetworkFromChainId(chainId);
-
   // Map addresses to an array of promises returned by fetchExternalToken
   const fetchPromises: Promise<void>[] = addresses.map(async address => {
     const externalAsset = await queryClient.fetchQuery(
-      externalTokenQueryKey({ address, network, currency: NativeCurrencyKeys.USD }),
-      async () => fetchExternalToken({ address, network, currency: NativeCurrencyKeys.USD }),
+      externalTokenQueryKey({ address, chainId, currency: NativeCurrencyKeys.USD }),
+      async () => fetchExternalToken({ address, chainId, currency: NativeCurrencyKeys.USD }),
       {
         staleTime: Infinity,
       }

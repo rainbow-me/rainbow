@@ -24,7 +24,6 @@ export interface RequestData {
   dappName: string;
   imageUrl: string | undefined;
   address: string;
-  network: Network;
   chainId: ChainId;
   dappUrl: string;
   payload: any;
@@ -184,7 +183,6 @@ export const addRequestToApprove =
 
     const request: WalletconnectRequestData = {
       address,
-      network: ethereumUtils.getNetworkFromChainId(chainId),
       chainId,
       clientId,
       dappName,
