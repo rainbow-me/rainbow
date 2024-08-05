@@ -139,7 +139,6 @@ export const event = {
   swapsSearchedForToken: 'swaps.searched_for_token',
   swapsChangedChainId: 'swaps.changed_chain_id',
   swapsFlippedAssets: 'swaps.flipped_assets',
-  swapsToggledFlashbots: 'swaps.toggled_flashbots',
   swapsToggledDegenMode: 'swaps.toggled_degen_mode',
   swapsReceivedQuote: 'swaps.received_quote',
   swapsSubmitted: 'swaps.submitted',
@@ -542,10 +541,6 @@ export type EventProperties = {
     inputAmount: string | number;
     previousInputAsset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
     previousOutputAsset: ParsedSearchAsset | ExtendedAnimatedAssetWithColors | null;
-  };
-
-  [event.swapsToggledFlashbots]: {
-    enabled: boolean;
   };
 
   [event.swapsToggledDegenMode]: {
