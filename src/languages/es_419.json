@@ -24,6 +24,7 @@
       "tab_showcase": "Escaparate",
       "tab_points": "Puntos",
       "tab_positions": "Posiciones",
+      "tab_rewards": "Recompensas",
       "tab_transactions": "Transacciones",
       "tab_transactions_tooltip": "Transacciones y Transferencias de Tokens",
       "tab_uniquetokens": "Tokens Únicos",
@@ -431,6 +432,23 @@
         "description": "También puedes mantener presionada tu dirección\nde arriba para copiarla."
       }
     },
+    "check_identifier": {
+      "title": "Autenticación Necesaria",
+      "description": "Parece que has cambiado de dispositivo o reinstalado Rainbow. Por favor, autentícate para que podamos validar que los datos de tu llavero aún están en buen estado.",
+      "action": "Autenticar",
+      "dismiss": "Descartar",
+      "error_alert": {
+        "title": "Error al Validar el Llavero",
+        "message": "Encontramos un error al validar los datos de tu llavero. Por favor, intenta nuevamente. Si el problema persiste, contacta al soporte.",
+        "contact_support": "Contactar Soporte",
+        "cancel": "Cancelar"
+      },
+      "failure_alert": {
+        "title": "Datos de Llavero Inválidos",
+        "message": "No pudimos verificar la integridad de los datos de tu llavero. Por favor, restaura tu monedero e intenta nuevamente. Si el problema persiste, contacta al soporte.",
+        "action": "Continuar"
+      }
+    },
     "cloud": {
       "backup_success": "¡Tu billetera se ha respaldado exitosamente!"
     },
@@ -541,7 +559,8 @@
         "from_divider": "desde",
         "to_divider": "a",
         "view_on": "Ver en %{blockExplorerName}",
-        "view_on_etherscan": "Ver en Etherscan"
+        "view_on_etherscan": "Ver en Etherscan",
+        "copy_contract_address": "Copiar dirección del contrato"
       },
       "all_networks": "Todas las Redes",
       "filter_by_network": "Filtrar por red",
@@ -577,7 +596,8 @@
       "price_impact": {
         "long_wait": {
           "title": "Larga espera",
-          "description": "Aprox. %{time}"
+          "description": "Aprox. %{time}",
+          "description_prefix": "Aprox."
         },
         "unknown_price": {
           "title": "Valor de Mercado Desconocido",
@@ -587,6 +607,7 @@
         "small_market": "Mercado pequeño",
         "small_market_try_smaller_amount": "Mercado pequeño — prueba con una cantidad menor",
         "you_are_losing": "Estás perdiendo %{priceImpact}",
+        "you_are_losing_prefix": "Estás perdiendo",
         "no_data": "Valor de Mercado Desconocido",
         "label": "Posible pérdida",
         "no_data_subtitle": "Si decides continuar, asegúrate de estar satisfecho con la cantidad indicada."
@@ -687,6 +708,7 @@
         "flashbots_protect": "Protección de Flashbots",
         "losing": "Perdiendo",
         "on": "Encendido",
+        "off": "Desactivado",
         "price_impact": "Impacto de precio",
         "price_row_per_token": "por",
         "slippage_message": "Este es un mercado pequeño, por lo que estás obteniendo un mal precio. ¡Intenta hacer un intercambio más pequeño!",
@@ -723,6 +745,16 @@
         "number_of_steps": "%{number} pasos",
         "input_exchange_rate": "1 %{inputSymbol} para %{executionRate} %{outputSymbol}",
         "output_exchange_rate": "1 %{outputSymbol} para %{executionRate} %{inputSymbol}"
+      },
+      "swap_details_v2": {
+        "automatic": "Automático",
+        "degen_mode": "Modo Degen",
+        "degen_mode_description": "Omitir la hoja de revisión para intercambiar más rápido",
+        "maximum_sold": "Máximo Vendido",
+        "minimum_received": "Mínimo Recibido",
+        "preferred_network": "Red preferida",
+        "rainbow_fee": "Tarifa Rainbow incluida",
+        "settings": "Configuraciones"
       },
       "token_index": {
         "get_token": "Obtener %{assetSymbol}",
@@ -1030,14 +1062,17 @@
         "urgent": "Urgente",
         "custom": "Personalizado"
       },
-      "network_fee": "Comisión estimada de red",
+      "unable_to_determine_selected_gas": "No se puede determinar el gas seleccionado",
+      "network_fee": "Tarifa Est. de Red",
       "current_base_fee": "Tarifa base actual",
       "max_base_fee": "Tarifa base máxima",
       "miner_tip": "Propina al minero",
+      "gas_price": "Precio del Gas",
       "max_transaction_fee": "Comisión máxima de transacción",
       "warning_separator": "·",
       "lower_than_suggested": "Baja · puede quedarse atascada",
       "higher_than_suggested": "Alta · pago excesivo",
+      "likely_to_fail": "Baja · probablemente fallará",
       "max_base_fee_too_low_error": "Baja · probablemente fallará",
       "tip_too_low_error": "Baja · probablemente fallará",
       "alert_message_higher_miner_tip_needed": "Se recomienda establecer una propina más alta para los mineros para evitar problemas.",
@@ -1357,13 +1392,16 @@
       },
       "claim": {
         "title": "Reclama tus puntos",
+        "title_rewards_line_1": "Bienvenido a",
+        "title_rewards_line_2": "Recompensas de Rainbow",
         "subtitle": "Los puntos están aquí. Descubre cuántos has recibido.",
+        "subtitle_rewards": "Obtén recompensas por usar Rainbow. Haz cosas en la cadena, gana puntos, gana ETH.",
         "get_started": "Comenzar",
         "use_referral_code": "Usar Código de Referencia"
       },
       "referral": {
         "title": "Ingresa tu código de referido",
-        "subtitle": "Ingresa un código de referido abajo para reclamar tu recompensa adicional.",
+        "subtitle": "Ingresa un código de referencia abajo para reclamar tu bono de puntos.",
         "back": "Atrás",
         "error": "Algo salió mal. Por favor reinicia la app e intenta de nuevo.",
         "get_started": "Comenzar",
@@ -1378,6 +1416,7 @@
         "share_link": "Compartir enlace",
         "next_drop": "Próxima entrega",
         "your_rank": "Tu Rango",
+        "no_change": "Sin cambios",
         "of_x": "De %{totalUsers}",
         "referrals": "Referidos",
         "streak": "Racha",
@@ -1395,12 +1434,40 @@
         "today": "Hoy",
         "error": "¡Ups!\nPor favor, desliza para actualizar.",
         "points": "puntos",
+        "points_capitalized": "Puntos",
         "referral_code_copied": "Código de referencia copiado",
         "earn_points_for_referring": "Gana puntos cuando tus referidos intercambien $100 a través de Rainbow, además gana el 10% de los puntos que tus referidos ganan",
         "already_claimed_points": "¡Lo siento! Ya has reclamado tus puntos.",
         "now": "Ahora",
         "unranked": "Sin clasificar",
-        "points_to_rank": "750 puntos para clasificar"
+        "points_to_rank": "750 puntos para clasificar",
+        "ranking": "Colocado #%{rank}",
+        "available_to_claim": "Disponible para Reclamar",
+        "claim": "Reclamar %{value}",
+        "choose_claim_network": "Elegir Red de Reclamo",
+        "claim_on_network": "Reclamar en %{network}",
+        "claimed_on_network": "Reclamado en %{network}",
+        "claiming_on_network": "Reclamando en %{network}",
+        "error_claiming": "Reclamo fallido",
+        "free_to_claim": "Libre para Reclamar",
+        "has_bridge_fee": "Tiene Tarifa de Puente",
+        "claim_rewards": "Reclamar Recompensas",
+        "earned_last_week": "Ganado la Semana Pasada",
+        "top_10_earner": "Top 10 Ganador",
+        "zero_points": "0 Puntos",
+        "no_weekly_rank": "Sin Rango Semanal",
+        "none": "Ninguno",
+        "my_earnings": "Mis Ganancias",
+        "claimed_earnings": "Ganancias Reclamadas",
+        "current_value": "Valor Actual",
+        "rainbow_users_have_earned": "Los usuarios de Rainbow han ganado",
+        "earn_eth_rewards": "Gana Recompensas en ETH",
+        "rewards_explainer": "Cada semana, los principales ganadores de puntos semanales recibirán una porción de los ingresos en cadena de Rainbow. Recoge puntos intercambiando o transaccionando en Rainbow, usando dapps o refiriendo a amigos.",
+        "my_points": "Mis Puntos",
+        "refer_friends": "Referir Amigos",
+        "try_again": "Intenta de Nuevo",
+        "bridge_error": "Éxito parcial",
+        "bridge_error_explainer": "Tus recompensas fueron reclamadas con éxito en Optimism, pero la transferencia a %{network} falló. Si lo deseas, puedes enviar tus recompensas manualmente usando la función de Swap."
       },
       "console": {
         "claim_bonus_paragraph": "Recibirás 100 puntos adicionales una vez que cambies al menos $100 a través de Rainbow",
@@ -1916,9 +1983,32 @@
       "too_many_signup_request": "Demasiadas solicitudes de registro, por favor intentalo nuevamente más tarde"
     },
     "swap": {
+      "actions": {
+        "hold_to_swap": "Mantener para Intercambiar",
+        "save": "Guardar",
+        "enter_amount": "Ingresa una cantidad",
+        "review": "Revisar",
+        "fetching_prices": "Obteniendo",
+        "swapping": "Intercambiando",
+        "select_token": "Seleccionar token",
+        "insufficient_funds": "Fondos Insuficientes",
+        "insufficient": "Insuficiente",
+        "quote_error": "Error en la cotización"
+      },
       "aggregators": {
         "rainbow": "Rainbow"
       },
+      "bridging": "Puentificando",
+      "swapping": "Intercambiando",
+      "max": "Máx.",
+      "select": "Seleccionar",
+      "token_to_get": "Token a recibir",
+      "token_to_swap": "Token a intercambiar",
+      "no_balance": "Sin Balance",
+      "find_a_token_to_buy": "Encuentra un token para comprar",
+      "search_your_tokens": "Busca tus tokens",
+      "error_executing_swap": "Error ejecutando intercambio",
+      "flashbots_protection": "Protección Flashbots",
       "tokens_input": {
         "tokens": "Tokens",
         "sort": "Ordenar",
@@ -1945,6 +2035,7 @@
       },
       "loading": "Cargando...",
       "modal_types": {
+        "bridge": "Puente",
         "confirm": "Confirmar",
         "deposit": "Depósito",
         "receive": "Recibir",
@@ -1976,6 +2067,7 @@
     },
     "token_search": {
       "section_header": {
+        "recent": "Reciente",
         "favorites": "Favoritos",
         "bridge": "Puente",
         "verified": "Verificado",
@@ -2849,6 +2941,8 @@
         "forward": "Adelante",
         "back": "Atrás"
       }
-    }
+    },
+    "copy": "Copiar",
+    "paste": "Pegar"
   }
 }
