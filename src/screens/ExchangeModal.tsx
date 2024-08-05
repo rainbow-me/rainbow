@@ -850,9 +850,12 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
                   nativeCurrency={nativeCurrency}
                   nativeFieldRef={nativeFieldRef}
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
                   network={ethereumUtils.getNetworkFromChainId(inputNetwork)}
 >>>>>>> de7ba31b9 (use chainid in <GasSpeedButton)
+=======
+>>>>>>> b16a1ad7b (lintprogressmoree)
                   onFocus={handleFocus}
                   onPressMaxBalance={updateMaxInputAmount}
                   onPressSelectInputCurrency={chainId => {
