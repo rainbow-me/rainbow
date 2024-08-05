@@ -4,16 +4,16 @@ import useWalletBalances from './useWalletBalances';
 import useWallets from './useWallets';
 import { Address } from 'viem';
 
-export default function useWalletsWithBalancesAndNames() {
+export default function useWalletsWithBalancesAndNames(withPositions = true) {
   const { walletNames, wallets } = useWallets();
-  const walletBalances = useWalletBalances(wallets!);
+  const walletBalances = useWalletBalances(wallets || {}, withPositions);
 
   const walletsWithBalancesAndNames = useMemo(
     () =>
       mapValues(wallets, wallet => {
         const updatedAccounts = (wallet.addresses ?? []).map(account => ({
           ...account,
-          balance: walletBalances?.balances?.[account.address?.toLowerCase() as Address]?.summary?.asset_value,
+          balance: walletBalances.balances[account.address.toLowerCase() as Address].totalBalanceDisplay,
           ens: walletNames[account.address],
         }));
         return { ...wallet, addresses: updatedAccounts };

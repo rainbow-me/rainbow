@@ -56,7 +56,7 @@ export type AddysSummaryArgs = {
 // ///////////////////////////////////////////////
 // Query Key
 
-const addysSummaryQueryKey = ({ addresses, currency }: AddysSummaryArgs) =>
+export const addysSummaryQueryKey = ({ addresses, currency }: AddysSummaryArgs) =>
   createQueryKey('addysSummary', { addresses, currency }, { persisterVersion: 1 });
 
 type AddysSummaryQueryKey = ReturnType<typeof addysSummaryQueryKey>;

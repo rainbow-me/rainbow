@@ -23,7 +23,6 @@ import { toChecksumAddress } from '@/handlers/web3';
 import { IS_IOS, IS_ANDROID } from '@/env';
 import { ContextMenu } from '../context-menu';
 import { useForegroundColor } from '@/design-system';
-import { useAssetsBalanceForAddress } from '@/hooks/useAssetsBalanceForAddress';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 const NOOP = () => undefined;
@@ -121,23 +120,19 @@ interface AddressRowProps {
 export default function AddressRow({ contextMenuActions, data, editMode, onPress }: AddressRowProps) {
   const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
-  const { address, color: accountColor, ens, image: accountImage, isSelected, isReadOnly, isLedger, label, walletId } = data;
-
-  const { display, isLoading } = useAssetsBalanceForAddress(address);
+  const { address, balance, color: accountColor, ens, image: accountImage, isSelected, isReadOnly, isLedger, label, walletId } = data;
 
   const { colors, isDarkMode } = useTheme();
 
   const labelQuaternary = useForegroundColor('labelQuaternary');
 
   const balanceOrNoBalance = useMemo(() => {
-    if (display) {
-      return display;
-    } else if (isLoading) {
-      return lang.t('wallet.change_wallet.loading_balance');
+    if (balance) {
+      return balance;
     } else {
       return lang.t('wallet.change_wallet.no_balance');
     }
-  }, [isLoading, display]);
+  }, [balance]);
 
   const cleanedUpLabel = useMemo(() => removeFirstEmojiFromString(label), [label]);
 

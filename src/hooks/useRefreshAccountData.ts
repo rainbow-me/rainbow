@@ -1,6 +1,6 @@
 import { captureException } from '@sentry/react-native';
 import delay from 'delay';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { getIsHardhatConnected } from '@/handlers/web3';
 import { walletConnectLoadState } from '../redux/walletconnect';
@@ -14,6 +14,8 @@ import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/scree
 import { nftsQueryKey } from '@/resources/nfts';
 import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import { Address } from 'viem';
+import { addysSummaryQueryKey } from '@/resources/summary/summary';
+import useWallets from './useWallets';
 
 export default function useRefreshAccountData() {
   const dispatch = useDispatch();
@@ -21,36 +23,23 @@ export default function useRefreshAccountData() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
+  const { wallets } = useWallets();
+
+  const allAddresses = useMemo(
+    () => Object.values(wallets || {}).flatMap(wallet => wallet.addresses.map(account => account.address as Address)),
+    [wallets]
+  );
+
   const fetchAccountData = useCallback(async () => {
     const connectedToHardhat = getIsHardhatConnected();
 
-    queryClient.invalidateQueries([
-      {
-        queryKey: nftsQueryKey({ address: accountAddress }),
-      },
-      {
-        queryKey: positionsQueryKey({
-          address: accountAddress,
-          currency: nativeCurrency,
-        }),
-      },
-      // old user assets invalidation
-      {
-        queryKey: userAssetsQueryKey({
-          address: accountAddress,
-          currency: nativeCurrency,
-          connectedToHardhat,
-        }),
-      },
-      // new swaps user assets invalidations
-      {
-        queryKey: swapsUserAssetsQueryKey({
-          address: accountAddress as Address,
-          currency: nativeCurrency,
-          testnetMode: !!connectedToHardhat,
-        }),
-      },
-    ]);
+    queryClient.invalidateQueries(nftsQueryKey({ address: accountAddress }));
+    queryClient.invalidateQueries(positionsQueryKey({ address: accountAddress as Address, currency: nativeCurrency }));
+    queryClient.invalidateQueries(addysSummaryQueryKey({ addresses: allAddresses, currency: nativeCurrency }));
+    queryClient.invalidateQueries(userAssetsQueryKey({ address: accountAddress, currency: nativeCurrency, connectedToHardhat }));
+    queryClient.invalidateQueries(
+      swapsUserAssetsQueryKey({ address: accountAddress as Address, currency: nativeCurrency, testnetMode: !!connectedToHardhat })
+    );
 
     try {
       const getWalletNames = dispatch(fetchWalletNames());

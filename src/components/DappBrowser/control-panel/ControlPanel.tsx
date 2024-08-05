@@ -158,7 +158,7 @@ export const ControlPanel = () => {
               wallet.type === WalletTypes.readOnly
                 ? i18n.t(i18n.l.wallet.change_wallet.watching)
                 : account.balance
-                  ? convertAmountToNativeDisplay(account.balance, nativeCurrency)
+                  ? account.balance
                   : i18n.t(i18n.l.wallet.change_wallet.no_balance),
             uniqueId: account.address,
             color: colors.avatarBackgrounds[account.color],
@@ -472,7 +472,7 @@ const HomePanel = ({
       },
       screen: Routes.MAIN_EXCHANGE_SCREEN,
     });
-  }, [runWalletChecksBeforeSwapOrBridge, selectedWallet?.uniqueId]);
+  }, [navigate, runWalletChecksBeforeSwapOrBridge, selectedWallet?.uniqueId, swapsV2Enabled]);
 
   const handleOnPressBridge = useCallback(async () => {
     const valid = await runWalletChecksBeforeSwapOrBridge();

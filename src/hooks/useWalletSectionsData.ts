@@ -11,13 +11,14 @@ import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections'
 import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import { useLegacyNFTs } from '@/resources/nfts';
 import useNftSort from './useNFTsSortBy';
-import { useAssetsBalanceForAddress } from './useAssetsBalanceForAddress';
+import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 
 export default function useWalletSectionsData({
   type,
 }: {
   type?: string;
 } = {}) {
+  const { selectedWallet } = useWallets();
   const { isLoading: isLoadingUserAssets, data: sortedAssets = [] } = useSortedUserAssets();
   const isWalletEthZero = useIsWalletEthZero();
 
@@ -29,7 +30,11 @@ export default function useWalletSectionsData({
     address: accountAddress,
   });
 
-  const { display: accountBalance, isLoading: isLoadingBalance } = useAssetsBalanceForAddress(accountAddress);
+  const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
+
+  const accountWithBalance = walletsWithBalancesAndNames[selectedWallet.id]?.addresses.find(
+    address => address.address.toLowerCase() === accountAddress.toLowerCase()
+  );
 
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
@@ -52,8 +57,8 @@ export default function useWalletSectionsData({
       pinnedCoins,
       sendableUniqueTokens,
       sortedAssets,
-      accountBalance,
-      isLoadingBalance,
+      accountBalance: accountWithBalance?.balance,
+      isLoadingBalance: !accountWithBalance,
       // @ts-expect-error ts-migrate(2698) FIXME: Spread types may only be created from object types... Remove this comment to see the full error message
       ...isWalletEthZero,
       hiddenTokens,
@@ -70,8 +75,8 @@ export default function useWalletSectionsData({
     return {
       hasNFTs,
       isEmpty,
+      isLoadingBalance: !accountWithBalance,
       isLoadingUserAssets,
-      isLoadingBalance,
       isWalletEthZero,
       briefSectionsData,
     };
@@ -85,8 +90,7 @@ export default function useWalletSectionsData({
     pinnedCoins,
     sendableUniqueTokens,
     sortedAssets,
-    accountBalance,
-    isLoadingBalance,
+    accountWithBalance,
     isWalletEthZero,
     hiddenTokens,
     isReadOnlyWallet,

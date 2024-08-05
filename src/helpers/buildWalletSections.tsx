@@ -7,6 +7,7 @@ import store from '@/redux/store';
 import { PositionExtraData } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { getExperimetalFlag, DEFI_POSITIONS } from '@/config/experimental';
 import { RainbowPositions } from '@/resources/defi/types';
+import { add, convertAmountToNativeDisplay } from './utilities';
 
 const CONTENT_PLACEHOLDER = [
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },
@@ -106,7 +107,7 @@ const withPositionsSection = (isLoadingUserAssets: boolean) => {
 const withBriefBalanceSection = (
   sortedAssets: ParsedAddressAsset[],
   isLoadingUserAssets: boolean,
-  accountBalance: string | undefined,
+  accountBalance: number | undefined,
   isLoadingBalance: boolean,
   nativeCurrency: NativeCurrencyKey,
   isCoinListEdited: boolean,
