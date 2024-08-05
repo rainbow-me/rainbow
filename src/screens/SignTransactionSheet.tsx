@@ -705,6 +705,7 @@ export const SignTransactionSheet = () => {
       if (sendInsteadOfSign && sendResult?.hash) {
         txDetails = {
           status: 'pending',
+          chainId: currentChainId,
           asset: displayDetails?.request?.asset || nativeAsset,
           contract: {
             name: transactionDetails.dappName,
@@ -1600,7 +1601,7 @@ const SimulatedEventRow = ({
               <RainbowCoinIcon
                 size={16}
                 icon={externalAsset?.icon_url}
-                network={(asset?.network as Network) || Network.mainnet}
+                chainId={ethereumUtils.getChainIdFromNetwork(asset?.network as Network) || ChainId.mainnet}
                 symbol={externalAsset?.symbol || ''}
                 theme={theme}
                 colors={externalAsset?.colors}

@@ -57,7 +57,7 @@ const getAssetActions = (network: Network) =>
     [AssetActionsEnum.etherscan]: {
       actionKey: AssetActionsEnum.etherscan,
       actionTitle: lang.t('expanded_state.unique_expanded.view_on_block_explorer', {
-        blockExplorerName: startCase(ethereumUtils.getBlockExplorer(network)),
+        blockExplorerName: startCase(ethereumUtils.getBlockExplorer(ethereumUtils.getChainIdFromNetwork(network))),
       }),
       icon: {
         iconType: 'SYSTEM',

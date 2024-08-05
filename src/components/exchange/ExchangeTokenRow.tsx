@@ -2,7 +2,6 @@ import React from 'react';
 import isEqual from 'react-fast-compare';
 import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
-import { Network } from '@/networks/types';
 import { useAsset, useDimensions } from '@/hooks';
 import { ButtonPressAnimation } from '../animations';
 import { FloatingEmojis } from '../floating-emojis';
@@ -10,6 +9,8 @@ import { IS_IOS } from '@/env';
 import { FavStar, Info } from '../asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
 import { View } from 'react-native';
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
+import { ethereumUtils } from '@/utils';
+import { ChainId } from '@/__swaps__/types/chains';
 
 interface ExchangeTokenRowProps {
   item: any;
@@ -39,7 +40,7 @@ export default React.memo(function ExchangeTokenRow({
     network,
   });
 
-  const rowTestID = `${testID}-exchange-coin-row-${symbol ?? item?.symbol ?? ''}-${network || Network.mainnet}`;
+  const rowTestID = `${testID}-exchange-coin-row-${symbol ?? item?.symbol ?? ''}-${network || ChainId.mainnet}`;
 
   const isInfoButtonVisible = !item?.isNativeAsset || (!isNativeAsset(address ?? item?.address, network) && !showBalance);
   return (
@@ -60,7 +61,7 @@ export default React.memo(function ExchangeTokenRow({
                 <RainbowCoinIcon
                   size={40}
                   icon={item?.icon_url || item?.iconUrl || ''}
-                  network={network}
+                  chainId={ethereumUtils.getChainIdFromNetwork(network)}
                   symbol={item?.symbol || symbol}
                   theme={theme}
                   colors={item?.colors || undefined}

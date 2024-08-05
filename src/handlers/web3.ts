@@ -39,7 +39,6 @@ import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
 import { getNetworkObj } from '@/networks';
 import store from '@/redux/store';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
-import { ChainId } from '@/__swaps__/types/chains';
 
 export enum TokenStandard {
   ERC1155 = 'ERC1155',
@@ -777,7 +776,7 @@ export const buildTransaction = async (
       from: address,
       to: contractAddress,
     };
-  } else if (!isNativeAsset(asset.address, network)) {
+  } else if (!isNativeAsset(asset.address, ethereumUtils.getChainIdFromNetwork(network))) {
     const transferData = getDataForTokenTransfer(value, _recipient);
     txData = {
       data: transferData,

@@ -40,7 +40,7 @@ import { createWalletClient, http } from 'viem';
 import { RainbowError, logger } from '@/logger';
 import { useTheme } from '@/theme';
 import { Network } from '@/helpers';
-import { getNetworkObj, getNetworkObject } from '@/networks';
+import { getNetworkObject } from '@/networks';
 import { CardSize } from '@/components/unique-token/CardSize';
 import { queryClient } from '@/react-query';
 import { nftOffersQueryKey } from '@/resources/reservoir/nftOffersQuery';
@@ -325,6 +325,7 @@ export function NFTSingleOfferSheet() {
                 if (step.id === 'sale') {
                   tx = {
                     status: 'pending',
+                    chainId: offerChainId,
                     to: item.data?.to,
                     from: item.data?.from,
                     hash: item.txHashes[0].txHash,
@@ -356,6 +357,7 @@ export function NFTSingleOfferSheet() {
                 } else if (step.id === 'nft-approval') {
                   tx = {
                     status: 'pending',
+                    chainId: offerChainId,
                     to: item.data?.to,
                     from: item.data?.from,
                     hash: item.txHashes[0].txHash,
@@ -521,7 +523,7 @@ export function NFTSingleOfferSheet() {
                       <RainbowCoinIcon
                         size={16}
                         icon={externalAsset?.icon_url}
-                        network={offer?.network as Network}
+                        chainId={offerChainId}
                         symbol={offer.paymentToken.symbol}
                         theme={theme}
                         colors={externalAsset?.colors}
@@ -559,7 +561,7 @@ export function NFTSingleOfferSheet() {
                       <RainbowCoinIcon
                         size={16}
                         icon={externalAsset?.icon_url}
-                        network={offer?.network as Network}
+                        chainId={offerChainId}
                         symbol={offer.paymentToken.symbol}
                         theme={theme}
                         colors={externalAsset?.colors}
@@ -647,7 +649,7 @@ export function NFTSingleOfferSheet() {
                       <RainbowCoinIcon
                         size={16}
                         icon={externalAsset?.icon_url}
-                        network={offer?.network as Network}
+                        chainId={offerChainId}
                         symbol={offer.paymentToken.symbol}
                         theme={theme}
                         colors={externalAsset?.colors}

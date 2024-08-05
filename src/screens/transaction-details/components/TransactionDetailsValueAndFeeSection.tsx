@@ -17,6 +17,7 @@ import ImgixImage from '@/components/images/ImgixImage';
 import { View } from 'react-native';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { checkForPendingSwap } from '../helpers/checkForPendingSwap';
+import { ChainId } from '@/__swaps__/types/chains';
 
 type Props = {
   transaction: RainbowTransaction;
@@ -84,13 +85,13 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
                         }}
                       />
                     </View>
-                    {transaction.network !== Network.mainnet && <ChainBadge network={transaction.network} badgeYPosition={10} />}
+                    {transaction.network !== Network.mainnet && <ChainBadge chainId={transaction.chainId} badgeYPosition={10} />}
                   </View>
                 ) : (
                   <RainbowCoinIcon
                     size={40}
                     icon={assetData?.icon_url}
-                    network={assetData?.network || Network.mainnet}
+                    chainId={assetData?.chainId || ChainId.mainnet}
                     symbol={assetData?.symbol || ''}
                     theme={theme}
                     colors={assetData?.colors}

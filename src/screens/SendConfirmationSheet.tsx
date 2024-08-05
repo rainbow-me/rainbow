@@ -508,7 +508,7 @@ export const SendConfirmationSheet = () => {
                     <RainbowCoinIcon
                       size={50}
                       icon={asset?.icon_url}
-                      network={asset?.network}
+                      chainId={ethereumUtils.getChainIdFromNetwork(asset?.network)}
                       symbol={asset?.symbol || ''}
                       theme={theme}
                       colors={asset?.colors}

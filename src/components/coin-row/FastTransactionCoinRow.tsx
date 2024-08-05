@@ -26,6 +26,7 @@ import Spinner from '../Spinner';
 import * as lang from '@/languages';
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 import { checkForPendingSwap } from '@/screens/transaction-details/helpers/checkForPendingSwap';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export const getApprovalLabel = ({ approvalAmount, asset, type }: Pick<RainbowTransaction, 'type' | 'asset' | 'approvalAmount'>) => {
   if (!approvalAmount || !asset) return;
@@ -294,7 +295,7 @@ export const ActivityIcon = ({
             }}
           />
         </View>
-        {transaction.network !== Network.mainnet && <ChainBadge network={transaction.network} badgeYPosition={0} />}
+        {transaction.chainId !== ChainId.mainnet && <ChainBadge chainId={transaction.chainId} badgeYPosition={0} />}
       </View>
     );
   }
@@ -367,7 +368,7 @@ export const ActivityIcon = ({
             </Box>
           )}
         </View>
-        {transaction.network !== Network.mainnet && <ChainBadge network={transaction.network} badgeYPosition={0} />}
+        {transaction.chainId !== ChainId.mainnet && <ChainBadge chainId={transaction.chainId} badgeYPosition={0} />}
       </View>
     );
   }
@@ -377,7 +378,7 @@ export const ActivityIcon = ({
       <RainbowCoinIcon
         size={40}
         icon={transaction?.asset?.icon_url}
-        network={transaction?.asset?.network || Network.mainnet}
+        chainId={transaction?.asset?.chainId || ChainId.mainnet}
         symbol={transaction?.asset?.symbol || ''}
         theme={theme}
         colors={transaction?.asset?.colors}
