@@ -203,12 +203,6 @@ android {
     }
 }
 
-configurations.all {
-    resolutionStrategy {
-        force 'com.google.guava:guava:31.1-android'
-    }
-}
-
 dependencies {
 
     // The version of react-native is set by the React Native Gradle Plugin
@@ -236,9 +230,7 @@ dependencies {
 
     // DETOX
     androidTestImplementation('com.wix:detox:+') { transitive = true }
-    implementation 'com.google.guava:guava:31.1-android'
     androidTestImplementation(project(path: ":detox"))
-
 }
 
 // Run this once to be able to run the application with BUCK
