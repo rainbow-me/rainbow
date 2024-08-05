@@ -2,7 +2,7 @@ name: Android e2e tests
 
 on: [pull_request, workflow_dispatch]
 jobs:
-  ios-e2e:
+  android-e2e:
     runs-on: ["self-hosted"]
     concurrency: 
       group: ${{ github.workflow }}-${{ github.ref }}
