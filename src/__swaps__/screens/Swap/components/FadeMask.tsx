@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Columns, Column, globalColors } from '@/design-system';
 import LinearGradient from 'react-native-linear-gradient';
-import { IS_TESTING } from 'react-native-dotenv';
+import { IS_TEST } from '@/env';
 import { View } from 'react-native';
 
 export const FadeMask = ({
