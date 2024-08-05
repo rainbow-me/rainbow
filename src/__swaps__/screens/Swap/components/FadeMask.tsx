@@ -24,7 +24,7 @@ export const FadeMask = ({
               <Box height="full" width={{ custom: fadeEdgeInset }} />
             </Column>
             <Column width="content">
-              {IS_TESTING ? (
+              {IS_TEST ? (
                 <Box as={View} height="full" width={{ custom: fadeWidth }} />
               ) : (
                 <Box
@@ -45,7 +45,7 @@ export const FadeMask = ({
         {!side || side === 'right' ? (
           <>
             <Column width="content">
-              {IS_TESTING ? (
+              {IS_TEST ? (
                 <Box as={View} height="full" width={{ custom: fadeWidth }} />
               ) : (
                 <Box
