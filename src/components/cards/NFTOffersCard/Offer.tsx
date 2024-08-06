@@ -67,9 +67,10 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
   const { colorMode } = useColorMode();
   const theme = useTheme();
   const { nativeCurrency } = useAccountSettings();
+  const offerChainId = ethereumUtils.getChainIdFromNetwork(offer.network as Network);
   const { data: externalAsset } = useExternalToken({
     address: offer.paymentToken.address,
-    chainId: ethereumUtils.getChainIdFromNetwork(offer.network as Network),
+    chainId: offerChainId,
     currency: nativeCurrency,
   });
 
@@ -238,7 +239,7 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
           <RainbowCoinIcon
             size={12}
             icon={externalAsset?.icon_url}
-            chainId={ethereumUtils.getChainIdFromNetwork(offer.network as Network)}
+            chainId={offerChainId}
             symbol={offer.paymentToken.symbol}
             theme={theme}
             colors={externalAsset?.colors}
