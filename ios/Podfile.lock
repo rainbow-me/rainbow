@@ -1585,8 +1585,6 @@ PODS:
     - React-Core
   - RNDeviceInfo (5.3.1):
     - React
-  - RNExitApp (1.1.0):
-    - React
   - RNFastImage (8.5.11):
     - React-Core
     - SDWebImage (~> 5.18.11)
@@ -1661,10 +1659,10 @@ PODS:
     - React
   - RNKeychain (8.0.0):
     - React-Core
-  - RNNotifee (5.6.0):
+  - RNNotifee (7.8.2):
     - React-Core
-    - RNNotifee/NotifeeCore (= 5.6.0)
-  - RNNotifee/NotifeeCore (5.6.0):
+    - RNNotifee/NotifeeCore (= 7.8.2)
+  - RNNotifee/NotifeeCore (7.8.2):
     - React-Core
   - RNOS (1.2.8):
     - React
@@ -1878,7 +1876,6 @@ DEPENDENCIES:
   - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - "RNCMaskedView (from `../node_modules/@react-native-masked-view/masked-view`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
-  - RNExitApp (from `../node_modules/react-native-exit-app`)
   - RNFastImage (from `../node_modules/react-native-fast-image`)
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
@@ -2149,8 +2146,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-masked-view/masked-view"
   RNDeviceInfo:
     :path: "../node_modules/react-native-device-info"
-  RNExitApp:
-    :path: "../node_modules/react-native-exit-app"
   RNFastImage:
     :path: "../node_modules/react-native-fast-image"
   RNFBApp:
@@ -2337,7 +2332,6 @@ SPEC CHECKSUMS:
   RNCClipboard: 60fed4b71560d7bfe40e9d35dea9762b024da86d
   RNCMaskedView: 090213d32d8b3bb83a4dcb7d12c18f0152591906
   RNDeviceInfo: 6f20764111df002b4484f90cbe0a861be29bcc6c
-  RNExitApp: c4e052df2568b43bec8a37c7cd61194d4cfee2c3
   RNFastImage: 4ce7636223e71615774b99004103e946a73e7c32
   RNFBApp: 1ae7462cddf74a49df206d3418bc0170f8fa53e5
   RNFBMessaging: 85f661b9f16e2b081e6809ef63d3daa4458b9042
@@ -2349,7 +2343,7 @@ SPEC CHECKSUMS:
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeyboard: 14793d75953d99c6d950090b8e9698b234c5d08c
   RNKeychain: 4f63aada75ebafd26f4bc2c670199461eab85d94
-  RNNotifee: 8ee6ddabfc44b16600b978983162e0d4db20ce19
+  RNNotifee: 8e2d3df3f0e9ce8f5d1fe4c967431138190b6175
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
   RNPermissions: 4e3714e18afe7141d000beae3755e5b5fb2f5e05
   RNReactNativeHapticFeedback: ec56a5f81c3941206fd85625fa669ffc7b4545f9
@@ -2377,6 +2371,6 @@ SPEC CHECKSUMS:
   VisionCamera: 2af28201c3de77245f8c58b7a5274d5979df70df
   Yoga: 88480008ccacea6301ff7bf58726e27a72931c8d
 
-PODFILE CHECKSUM: 0f0a1ebe553d4680f84239a817bfe3b3d1ce74f9
+PODFILE CHECKSUM: 0839e4141c8f26133bf9a961f5ded1ea3127af54
 
 COCOAPODS: 1.14.3

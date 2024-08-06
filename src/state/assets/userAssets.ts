@@ -1,10 +1,14 @@
 import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
+import { getIsHardhatConnected } from '@/handlers/web3';
+import { ethereumUtils } from '@/utils';
+import { NetworkTypes } from '@/helpers';
+import { Address } from 'viem';
 import { RainbowError, logger } from '@/logger';
 import store from '@/redux/store';
 import { SUPPORTED_CHAIN_IDS, supportedNativeCurrencies } from '@/references';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { Address } from 'viem';
+import { swapsStore } from '../swaps/swapsStore';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 
@@ -34,7 +38,7 @@ export interface UserAssetsState {
   getBalanceSortedChainList: () => ChainId[];
   getChainsWithBalance: () => ChainId[];
   getFilteredUserAssetIds: () => UniqueId[];
-  getHighestValueAsset: () => ParsedSearchAsset | null;
+  getHighestValueAsset: (usePreferredNetwork?: boolean) => ParsedSearchAsset | null;
   getUserAsset: (uniqueId: UniqueId) => ParsedSearchAsset | null;
   getUserAssets: () => ParsedSearchAsset[];
   selectUserAssetIds: (selector: (asset: ParsedSearchAsset) => boolean, filter?: UserAssetFilter) => Generator<UniqueId, void, unknown>;
@@ -178,8 +182,22 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
         return filteredIds;
       }
     },
+    getHighestValueAsset: (usePreferredNetwork = true) => {
+      const preferredNetwork = usePreferredNetwork ? swapsStore.getState().preferredNetwork : undefined;
+      const assets = get().userAssets;
 
-    getHighestValueAsset: () => get().userAssets.values().next().value || null,
+      if (preferredNetwork && get().getChainsWithBalance().includes(preferredNetwork)) {
+        // Find the highest-value asset on the preferred network
+        for (const [, asset] of assets) {
+          if (asset.chainId === preferredNetwork) {
+            return asset;
+          }
+        }
+      }
+
+      // If no preferred network asset, return the highest-value asset
+      return assets.values().next().value || null;
+    },
 
     getUserAsset: (uniqueId: UniqueId) => get().userAssets.get(uniqueId) || null,
 

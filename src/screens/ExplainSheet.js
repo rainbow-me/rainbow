@@ -1021,8 +1021,8 @@ const ExplainSheet = () => {
   }, [goBack, params]);
 
   const handleReadMore = useCallback(() => {
-    Linking.openURL(explainSheetConfig.readMoreLink);
-  }, [explainSheetConfig.readMoreLink]);
+    explainSheetConfig?.readMoreLink && Linking.openURL(explainSheetConfig.readMoreLink);
+  }, [explainSheetConfig?.readMoreLink]);
 
   const EmojiText = type === 'verified' ? Gradient : Emoji;
   const Title = type === 'verified' ? Gradient : SheetTitle;

@@ -142,8 +142,8 @@ sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity
  restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
 {
-
-  return [RNBranch continueUserActivity:userActivity];
+  [RNBranch continueUserActivity:userActivity];
+  return YES;
 
 }
 
@@ -159,9 +159,7 @@ sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 }
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
-    if ([RNBranch application:app openURL:url options:options])  {
-        // do other deep link routing for other SDKs
-    }
+    [RNBranch application:app openURL:url options:options];
     return YES;
 }
 

@@ -1,18 +1,19 @@
-import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-
 import { slippageStep } from '@/__swaps__/screens/Swap/constants';
-import { ChainId } from '@/__swaps__/types/chains';
-import { getDefaultSlippageWorklet } from '@/__swaps__/utils/swaps';
-import { getRemoteConfig } from '@/model/remoteConfig';
+import { analyticsV2 } from '@/analytics';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { SharedValue, runOnJS, useSharedValue } from 'react-native-reanimated';
+import { runOnJS, SharedValue, useSharedValue } from 'react-native-reanimated';
 
-export const useSwapSettings = ({ inputAsset }: { inputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null> }) => {
+export const useSwapSettings = ({ debouncedFetchQuote, slippage }: { debouncedFetchQuote: () => void; slippage: SharedValue<string> }) => {
   const flashbots = useSharedValue(swapsStore.getState().flashbots);
-  const slippage = useSharedValue(getDefaultSlippageWorklet(inputAsset.value?.chainId || ChainId.mainnet, getRemoteConfig()));
+  const degenMode = useSharedValue(swapsStore.getState().degenMode);
 
   const setSlippage = swapsStore(state => state.setSlippage);
   const setFlashbots = swapsStore(state => state.setFlashbots);
+
+  const setDegenMode = (value: boolean) => {
+    swapsStore.getState().setDegenMode(value);
+    analyticsV2.track(analyticsV2.event.swapsToggledDegenMode, { enabled: value });
+  };
 
   const onToggleFlashbots = () => {
     'worklet';
@@ -25,23 +26,37 @@ export const useSwapSettings = ({ inputAsset }: { inputAsset: SharedValue<Extend
   const onUpdateSlippage = (operation: 'plus' | 'minus') => {
     'worklet';
 
-    const value = operation === 'plus' ? slippageStep : -slippageStep;
+    const increment = operation === 'plus' ? slippageStep : -slippageStep;
+    const prevSlippage = Number(slippage.value);
 
     // if we're trying to decrement below the minimum, set to the minimum
-    if (Number(slippage.value) + value <= slippageStep) {
+    if (prevSlippage + increment <= slippageStep) {
       slippage.value = slippageStep.toFixed(1).toString();
     } else {
-      slippage.value = (Number(slippage.value) + value).toFixed(1).toString();
+      slippage.value = (prevSlippage + increment).toFixed(1).toString();
     }
 
-    runOnJS(setSlippage)(slippage.value);
+    if (prevSlippage !== Number(slippage.value)) {
+      runOnJS(setSlippage)(slippage.value);
+      runOnJS(debouncedFetchQuote)();
+    }
+  };
+
+  const onToggleDegenMode = () => {
+    'worklet';
+
+    const current = degenMode.value;
+    degenMode.value = !current;
+    runOnJS(setDegenMode)(!current);
   };
 
   return {
     flashbots,
     slippage,
+    degenMode,
 
     onToggleFlashbots,
     onUpdateSlippage,
+    onToggleDegenMode,
   };
 };

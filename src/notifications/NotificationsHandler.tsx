@@ -114,7 +114,15 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
 
   const handleNotificationPressed = (event: NotifeeEvent) => {
     if (event.type === EventType.PRESS) {
-      handleOpenedNotification(event.detail.notification);
+      const notification = event.detail.notification;
+      if (notification) {
+        const minimalNotification: MinimalNotification = {
+          title: notification.title,
+          body: notification.body,
+          data: notification.data as { [key: string]: string | object },
+        };
+        handleOpenedNotification(minimalNotification);
+      }
     }
   };
 

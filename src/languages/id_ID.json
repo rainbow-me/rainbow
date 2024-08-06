@@ -24,6 +24,7 @@
       "tab_showcase": "Pameran",
       "tab_points": "Poin",
       "tab_positions": "Posisi",
+      "tab_rewards": "Hadiah",
       "tab_transactions": "Transaksi",
       "tab_transactions_tooltip": "Transaksi dan Transfer Token",
       "tab_uniquetokens": "Token Unik",
@@ -431,6 +432,23 @@
         "description": "Anda juga bisa menekan lama alamat\ndi atas untuk menyalinnya."
       }
     },
+    "check_identifier": {
+      "title": "Otentikasi Diperlukan",
+      "description": "Sepertinya Anda mungkin telah mengganti perangkat atau menginstal ulang Rainbow. Harap otentikasi sehingga kami dapat memvalidasi data keychain Anda masih dalam kondisi sehat.",
+      "action": "Otentikasi",
+      "dismiss": "Tutup",
+      "error_alert": {
+        "title": "Kesalahan Memvalidasi Keychain",
+        "message": "Kami mengalami kesalahan saat memvalidasi data keychain Anda. Harap coba lagi. Jika masalah berlanjut, harap hubungi dukungan.",
+        "contact_support": "Hubungi Dukungan",
+        "cancel": "Batal"
+      },
+      "failure_alert": {
+        "title": "Data Keychain Tidak Valid",
+        "message": "Kami tidak dapat memverifikasi integritas data keychain Anda. Harap pulihkan dompet Anda dan coba lagi. Jika masalah berlanjut, harap hubungi dukungan.",
+        "action": "Lanjutkan"
+      }
+    },
     "cloud": {
       "backup_success": "Dompet Anda telah berhasil dicadangkan!"
     },
@@ -541,7 +559,8 @@
         "from_divider": "dari",
         "to_divider": "ke",
         "view_on": "Tampilkan di %{blockExplorerName}",
-        "view_on_etherscan": "Tampilkan di Etherscan"
+        "view_on_etherscan": "Tampilkan di Etherscan",
+        "copy_contract_address": "Salin Alamat Kontrak"
       },
       "all_networks": "Semua Jaringan",
       "filter_by_network": "Filter berdasarkan Jaringan",
@@ -577,7 +596,8 @@
       "price_impact": {
         "long_wait": {
           "title": "Menunggu lama",
-          "description": "Perkiraan %{time}"
+          "description": "Perkiraan %{time}",
+          "description_prefix": "Kira-kira."
         },
         "unknown_price": {
           "title": "Nilai Pasar Tidak Diketahui",
@@ -587,6 +607,7 @@
         "small_market": "Pasar Kecil",
         "small_market_try_smaller_amount": "Pasar kecil — coba jumlah yang lebih kecil",
         "you_are_losing": "Anda kehilangan %{priceImpact}",
+        "you_are_losing_prefix": "Anda kehilangan",
         "no_data": "Nilai Pasar Tidak Diketahui",
         "label": "Kemungkinan kerugian",
         "no_data_subtitle": "Jika Anda memutuskan untuk melanjutkan, pastikan Anda puas dengan jumlah yang dikutip"
@@ -687,6 +708,7 @@
         "flashbots_protect": "Pelindung Flashbots",
         "losing": "Kalah",
         "on": "On",
+        "off": "Mati",
         "price_impact": "Dampak harga",
         "price_row_per_token": "per",
         "slippage_message": "Ini adalah pasar kecil, jadi Anda mendapatkan harga yang buruk. Coba perdagangan yang lebih kecil!",
@@ -723,6 +745,16 @@
         "number_of_steps": "%{number} Langkah",
         "input_exchange_rate": "1 %{inputSymbol} untuk %{executionRate} %{outputSymbol}",
         "output_exchange_rate": "1 %{outputSymbol} untuk %{executionRate} %{inputSymbol}"
+      },
+      "swap_details_v2": {
+        "automatic": "Otomatis",
+        "degen_mode": "Mode Degen",
+        "degen_mode_description": "Lewati lembar tinjauan untuk swap lebih cepat",
+        "maximum_sold": "Maksimum Dijual",
+        "minimum_received": "Minimum yang diterima",
+        "preferred_network": "Jaringan yang Disukai",
+        "rainbow_fee": "Termasuk biaya Rainbow",
+        "settings": "Pengaturan"
       },
       "token_index": {
         "get_token": "Dapatkan %{assetSymbol}",
@@ -1030,14 +1062,17 @@
         "urgent": "Mendesak",
         "custom": "Kustom"
       },
-      "network_fee": "Biaya jaringan Est.",
+      "unable_to_determine_selected_gas": "Tidak dapat menentukan gas yang dipilih",
+      "network_fee": "Perk. Biaya Jaringan",
       "current_base_fee": "Biaya dasar saat ini",
       "max_base_fee": "Biaya dasar maksimum",
       "miner_tip": "Tip penambang",
+      "gas_price": "Harga Gas",
       "max_transaction_fee": "Biaya transaksi maksimum",
       "warning_separator": "·",
       "lower_than_suggested": "Rendah · mungkin terjebak",
       "higher_than_suggested": "Tinggi · membayar lebih",
+      "likely_to_fail": "Rendah · cenderung gagal",
       "max_base_fee_too_low_error": "Rendah · cenderung gagal",
       "tip_too_low_error": "Rendah · cenderung gagal",
       "alert_message_higher_miner_tip_needed": "Mengatur tip penambang yang lebih tinggi direkomendasikan untuk menghindari masalah.",
@@ -1357,13 +1392,16 @@
       },
       "claim": {
         "title": "Klaim poin Anda",
+        "title_rewards_line_1": "Selamat datang di",
+        "title_rewards_line_2": "Rainbow Rewards",
         "subtitle": "Poin telah ada. Cari tahu berapa banyak yang telah Anda dapatkan.",
+        "subtitle_rewards": "Dapatkan hadiah karena menggunakan Rainbow. Lakukan aktivitas onchain, dapatkan poin, dan dapatkan ETH.",
         "get_started": "Mulai",
         "use_referral_code": "Gunakan Kode Referral"
       },
       "referral": {
         "title": "Masukkan kode rujukan Anda",
-        "subtitle": "Masukkan kode referral di bawah untuk mengklaim hadiah bonus Anda.",
+        "subtitle": "Masukkan kode referensi di bawah untuk mengklaim bonus poin Anda.",
         "back": "Kembali",
         "error": "Terjadi kesalahan. Silakan memulai ulang aplikasi dan coba lagi.",
         "get_started": "Mulai",
@@ -1378,6 +1416,7 @@
         "share_link": "Bagikan Tautan",
         "next_drop": "Pengeluaran Berikutnya",
         "your_rank": "Peringkat Anda",
+        "no_change": "Tidak Ada Perubahan",
         "of_x": "Dari %{totalUsers}",
         "referrals": "Referal",
         "streak": "Streak",
@@ -1395,12 +1434,40 @@
         "today": "Hari Ini",
         "error": "Ups!\nSilakan tarik untuk memuat ulang.",
         "points": "poin",
+        "points_capitalized": "Poin",
         "referral_code_copied": "Kode rujukan telah disalin",
         "earn_points_for_referring": "Dapatkan poin ketika rujukanmu menukar $100 melalui Rainbow, plus dapatkan 10% dari poin yang diperoleh rujukanmu",
         "already_claimed_points": "Maaf! Kamu sudah mengklaim poinmu.",
         "now": "Sekarang",
         "unranked": "Tidak Terperingkat",
-        "points_to_rank": "750 poin untuk naik peringkat"
+        "points_to_rank": "750 poin untuk naik peringkat",
+        "ranking": "Ditempatkan #%{rank}",
+        "available_to_claim": "Tersedia untuk Diklaim",
+        "claim": "Klaim %{value}",
+        "choose_claim_network": "Pilih Jaringan Klaim",
+        "claim_on_network": "Klaim di %{network}",
+        "claimed_on_network": "Sudah Diklaim di %{network}",
+        "claiming_on_network": "Mengklaim di %{network}",
+        "error_claiming": "Klaim Gagal",
+        "free_to_claim": "Gratis untuk Diklaim",
+        "has_bridge_fee": "Ada Biaya Jembatan",
+        "claim_rewards": "Klaim Hadiah",
+        "earned_last_week": "Diperoleh Minggu Lalu",
+        "top_10_earner": "Top 10 Pendapatan",
+        "zero_points": "0 Poin",
+        "no_weekly_rank": "Tidak Ada Peringkat Mingguan",
+        "none": "Tidak ada",
+        "my_earnings": "Pendapatan Saya",
+        "claimed_earnings": "Pendapatan yang Diklaim",
+        "current_value": "Nilai Saat Ini",
+        "rainbow_users_have_earned": "Pengguna Rainbow telah mendapatkan",
+        "earn_eth_rewards": "Dapatkan Hadiah ETH",
+        "rewards_explainer": "Setiap minggu, penghasil poin mingguan tertinggi akan menerima sebagian dari pendapatan onchain Rainbow. Kumpulkan poin dengan menukar atau bertransaksi di Rainbow, menggunakan dapps, atau merujuk teman.",
+        "my_points": "Poin Saya",
+        "refer_friends": "Rujukkan Teman",
+        "try_again": "Coba Lagi",
+        "bridge_error": "Keberhasilan Sebagian",
+        "bridge_error_explainer": "Hadiah Anda berhasil diklaim di Optimism, tetapi transfer ke %{network} gagal. Jika Anda mau, Anda bisa menjembatani hadiah Anda secara manual menggunakan fitur Swap."
       },
       "console": {
         "claim_bonus_paragraph": "Anda akan mendapatkan tambahan 100 poin setelah Anda menukar minimal $100 melalui Rainbow",
@@ -1916,9 +1983,32 @@
       "too_many_signup_request": "Terlalu banyak permintaan pendaftaran, silakan coba lagi nanti"
     },
     "swap": {
+      "actions": {
+        "hold_to_swap": "Tahan untuk Tukar",
+        "save": "Simpan",
+        "enter_amount": "Masukkan Jumlah",
+        "review": "Tinjau",
+        "fetching_prices": "Mengambil Data",
+        "swapping": "Menukar",
+        "select_token": "Pilih Token",
+        "insufficient_funds": "Dana Tidak Cukup",
+        "insufficient": "Kurangnya",
+        "quote_error": "Kesalahan Kutipan"
+      },
       "aggregators": {
         "rainbow": "Rainbow"
       },
+      "bridging": "Membuat Jembatan",
+      "swapping": "Menukar",
+      "max": "Maks",
+      "select": "Pilih",
+      "token_to_get": "Token untuk Dapatkan",
+      "token_to_swap": "Token untuk Tukar",
+      "no_balance": "Tidak Ada Saldo",
+      "find_a_token_to_buy": "Cari token untuk beli",
+      "search_your_tokens": "Cari token Anda",
+      "error_executing_swap": "Kesalahan saat melakukan swap",
+      "flashbots_protection": "Perlindungan Flashbots",
       "tokens_input": {
         "tokens": "Token",
         "sort": "Urutkan",
@@ -1945,6 +2035,7 @@
       },
       "loading": "Memuat...",
       "modal_types": {
+        "bridge": "Jembatan",
         "confirm": "Konfirmasi",
         "deposit": "Deposit",
         "receive": "Terima",
@@ -1976,6 +2067,7 @@
     },
     "token_search": {
       "section_header": {
+        "recent": "Baru-baru ini",
         "favorites": "Favorit",
         "bridge": "Jembatan",
         "verified": "Terverifikasi",
@@ -2849,6 +2941,8 @@
         "forward": "Maju",
         "back": "Kembali"
       }
-    }
+    },
+    "copy": "Salin",
+    "paste": "Tempel"
   }
 }

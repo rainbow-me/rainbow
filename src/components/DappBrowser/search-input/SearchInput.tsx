@@ -25,7 +25,7 @@ import font from '@/styles/fonts';
 import { Site } from '@/state/browserHistory';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { useFavoriteDappsStore } from '@/state/favoriteDapps';
-import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
+import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import { opacity } from '@/__swaps__/utils/swaps';
@@ -333,7 +333,7 @@ const AddressBar = React.memo(function AddressBar({
   return (
     <View style={styles.inputContainer}>
       <Animated.View style={[styles.gestureHandlerButton, animatedButtonWrapperStyle]}>
-        <GestureHandlerV1Button
+        <GestureHandlerButton
           buttonPressWrapperStyleIOS={styles.gestureHandlerButton}
           onPressWorklet={onPressWorklet}
           scaleTo={0.965}
@@ -389,7 +389,7 @@ const AddressBar = React.memo(function AddressBar({
               pointerEventsStyle,
             ]}
           />
-        </GestureHandlerV1Button>
+        </GestureHandlerButton>
       </Animated.View>
       <Animated.View style={[styles.inputContentWrapper, animatedInputContentWrapperStyle]}>
         <AnimatedInput

@@ -58,7 +58,7 @@ platform :ios do
     match(
       force: true,
       type: "appstore",
-      app_identifier: ["me.rainbow", "me.rainbow.PriceWidget", "me.rainbow.SelectTokenIntent", "me.rainbow.ImageNotification"],
+      app_identifier: ["me.rainbow", "me.rainbow.PriceWidget", "me.rainbow.SelectTokenIntent", "me.rainbow.ImageNotification", "me.rainbow.OpenInRainbow", "me.rainbow.ShareWithRainbow"],
       git_url: "git@github.com:rainbow-me/rainbow-code-signing.git"
     )
     

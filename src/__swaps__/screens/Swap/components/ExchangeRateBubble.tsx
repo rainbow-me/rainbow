@@ -11,7 +11,7 @@ import { IS_IOS } from '@/env';
 import { AddressZero } from '@ethersproject/constants';
 import { ETH_ADDRESS } from '@/references';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { GestureHandlerV1Button } from './GestureHandlerV1Button';
+import { GestureHandlerButton } from './GestureHandlerButton';
 import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
 import { useAccountSettings } from '@/hooks';
 
@@ -141,7 +141,7 @@ export const ExchangeRateBubble = () => {
   });
 
   return (
-    <GestureHandlerV1Button
+    <GestureHandlerButton
       buttonPressWrapperStyleIOS={IS_IOS ? styles.buttonPosition : undefined}
       onPressWorklet={onChangeIndex}
       scaleTo={0.9}
@@ -186,7 +186,7 @@ export const ExchangeRateBubble = () => {
           </Inline>
         </Box>
       </Box>
-    </GestureHandlerV1Button>
+    </GestureHandlerButton>
   );
 };
 

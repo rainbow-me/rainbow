@@ -1,14 +1,14 @@
 import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
 import MaskedView from '@react-native-masked-view/masked-view';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { StatusBar, StyleSheet } from 'react-native';
-import Animated, { runOnJS, useDerivedValue } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedReaction, useDerivedValue } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { AnimatedSwapCoinIcon } from '@/__swaps__/screens/Swap/components/AnimatedSwapCoinIcon';
 import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
-import { GestureHandlerV1Button } from '@/__swaps__/screens/Swap/components/GestureHandlerV1Button';
+import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
 import { SwapInput } from '@/__swaps__/screens/Swap/components/SwapInput';
 import { TokenList } from '@/__swaps__/screens/Swap/components/TokenList/TokenList';
@@ -21,6 +21,8 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { ethereumUtils } from '@/utils';
+import Clipboard from '@react-native-clipboard/clipboard';
+import { CopyPasteMenu } from './CopyPasteMenu';
 
 const SELECT_LABEL = i18n.t(i18n.l.swap.select);
 const NO_BALANCE_LABEL = i18n.t(i18n.l.swap.no_balance);
@@ -72,27 +74,53 @@ function SwapOutputAmount() {
     });
   }, [navigate]);
 
+  const [isPasteEnabled, setIsPasteEnabled] = useState(() => !outputQuotesAreDisabled.value);
+  useAnimatedReaction(
+    () => !outputQuotesAreDisabled.value,
+    v => {
+      'worklet';
+      runOnJS(setIsPasteEnabled)(v);
+    }
+  );
+
   return (
-    <GestureHandlerV1Button
-      disableButtonPressWrapper
-      onPressStartWorklet={() => {
-        'worklet';
-        if (outputQuotesAreDisabled.value) {
-          runOnJS(handleTapWhileDisabled)();
-        } else {
-          focusedInput.value = 'outputAmount';
-        }
-      }}
+    <CopyPasteMenu
+      onCopy={() => Clipboard.setString(SwapInputController.formattedOutputAmount.value)}
+      onPaste={
+        isPasteEnabled
+          ? text => {
+              const numericValue = text && +text.replaceAll(',', '');
+              if (!numericValue) return;
+              SwapInputController.inputMethod.value = 'outputAmount';
+              SwapInputController.inputValues.modify(values => {
+                'worklet';
+                return { ...values, outputAmount: numericValue };
+              });
+            }
+          : undefined
+      }
     >
-      <MaskedView maskElement={<FadeMask fadeEdgeInset={2} fadeWidth={8} height={36} side="right" />} style={styles.inputTextMask}>
-        <AnimatedText ellipsizeMode="clip" numberOfLines={1} size="30pt" style={SwapTextStyles.outputAmountTextStyle} weight="bold">
-          {SwapInputController.formattedOutputAmount}
-        </AnimatedText>
-        <Animated.View style={[styles.caretContainer, SwapTextStyles.outputCaretStyle]}>
-          <Box as={Animated.View} borderRadius={1} style={[styles.caret, AnimatedSwapStyles.assetToBuyCaretStyle]} />
-        </Animated.View>
-      </MaskedView>
-    </GestureHandlerV1Button>
+      <GestureHandlerButton
+        disableButtonPressWrapper
+        onPressStartWorklet={() => {
+          'worklet';
+          if (outputQuotesAreDisabled.value) {
+            runOnJS(handleTapWhileDisabled)();
+          } else {
+            focusedInput.value = 'outputAmount';
+          }
+        }}
+      >
+        <MaskedView maskElement={<FadeMask fadeEdgeInset={2} fadeWidth={8} height={36} side="right" />} style={styles.inputTextMask}>
+          <AnimatedText ellipsizeMode="clip" numberOfLines={1} size="30pt" style={SwapTextStyles.outputAmountTextStyle} weight="bold">
+            {SwapInputController.formattedOutputAmount}
+          </AnimatedText>
+          <Animated.View style={[styles.caretContainer, SwapTextStyles.outputCaretStyle]}>
+            <Box as={Animated.View} borderRadius={1} style={[styles.caret, AnimatedSwapStyles.assetToBuyCaretStyle]} />
+          </Animated.View>
+        </MaskedView>
+      </GestureHandlerButton>
+    </CopyPasteMenu>
   );
 }
 

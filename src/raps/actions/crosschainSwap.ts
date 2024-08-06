@@ -3,7 +3,7 @@ import { CrosschainQuote, fillCrosschainQuote } from '@rainbow-me/swaps';
 import { Address } from 'viem';
 import { getProviderForNetwork, estimateGasWithPadding } from '@/handlers/web3';
 
-import { REFERRER, gasUnits } from '@/references';
+import { REFERRER, gasUnits, ReferrerType } from '@/references';
 import { ChainId } from '@/__swaps__/types/chains';
 import { NewTransaction } from '@/entities/transactions';
 import { TxHash } from '@/resources/transactions/types';
@@ -24,6 +24,8 @@ import { ethereumUtils } from '@/utils';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { ParsedAsset } from '@/resources/assets/types';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { Screens, TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
+import { swapsStore } from '@/state/swaps/swapsStore';
 
 const getCrosschainSwapDefaultGasLimit = (quote: CrosschainQuote) => quote?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
 
@@ -81,12 +83,14 @@ export const executeCrosschainSwap = async ({
   nonce,
   quote,
   wallet,
+  referrer = REFERRER,
 }: {
   gasLimit: string;
   gasParams: TransactionGasParams | TransactionLegacyGasParams;
   nonce?: number;
   quote: CrosschainQuote;
   wallet: Signer;
+  referrer?: ReferrerType;
 }) => {
   if (!wallet || !quote) return null;
 
@@ -95,7 +99,7 @@ export const executeCrosschainSwap = async ({
     nonce: nonce ? toHex(String(nonce)) : undefined,
     ...gasParams,
   };
-  return fillCrosschainQuote(quote, transactionParams, wallet, REFERRER);
+  return fillCrosschainQuote(quote, transactionParams, wallet, referrer);
 };
 
 export const crosschainSwap = async ({
@@ -145,7 +149,14 @@ export const crosschainSwap = async ({
 
   let swap;
   try {
-    swap = await executeCrosschainSwap(swapParams);
+    swap = await performanceTracking.getState().executeFn({
+      fn: executeCrosschainSwap,
+      screen: Screens.SWAPS,
+      operation: TimeToSignOperation.BroadcastTransaction,
+      metadata: {
+        degenMode: swapsStore.getState().degenMode,
+      },
+    })(swapParams);
   } catch (e) {
     logger.error(new RainbowError('crosschainSwap: error executeCrosschainSwap'), { message: (e as Error)?.message });
     throw e;

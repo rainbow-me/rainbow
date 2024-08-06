@@ -4027,12 +4027,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@notifee/react-native@npm:5.6.0":
-  version: 5.6.0
-  resolution: "@notifee/react-native@npm:5.6.0"
+"@notifee/react-native@npm:7.8.2":
+  version: 7.8.2
+  resolution: "@notifee/react-native@npm:7.8.2"
   peerDependencies:
     react-native: "*"
-  checksum: 10c0/f0d3c93e1752c068a7b249386f9675951d4250ee6860d27bde8726bbcab612eb0a26126942c558585467c727bc5b961f9a3150dc9d36ac72e8f88d4739fa7230
+  checksum: 10c0/1559caa74ccc057aa4a4a6fe15bcaf0fe0371ece045a0923c051fcef312e4c2b3e2f38e5032a15d2be327fd707492d014f2f074405123ed561ba368906413f29
   languageName: node
   linkType: hard
 
@@ -7808,7 +7808,7 @@ __metadata:
     "@metamask/eth-sig-util": "npm:7.0.2"
     "@nomiclabs/hardhat-ethers": "npm:2.2.3"
     "@nomiclabs/hardhat-waffle": "npm:2.0.6"
-    "@notifee/react-native": "npm:5.6.0"
+    "@notifee/react-native": "npm:7.8.2"
     "@rainbow-me/provider": "npm:0.0.12"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"
     "@rainbow-me/swaps": "npm:0.22.0"
@@ -7974,7 +7974,6 @@ __metadata:
     react-native-dark-mode: "npm:0.2.2"
     react-native-device-info: "npm:5.3.1"
     react-native-dotenv: "npm:2.4.2"
-    react-native-exit-app: "npm:1.1.0"
     react-native-extra-dimensions-android: "npm:1.2.2"
     react-native-fast-image: "npm:8.5.11"
     react-native-fs: "npm:2.16.6"
@@ -13411,13 +13410,13 @@ __metadata:
   linkType: hard
 
 "fast-xml-parser@npm:^4.0.12, fast-xml-parser@npm:^4.2.4":
-  version: 4.4.0
-  resolution: "fast-xml-parser@npm:4.4.0"
+  version: 4.4.1
+  resolution: "fast-xml-parser@npm:4.4.1"
   dependencies:
     strnum: "npm:^1.0.5"
   bin:
     fxparser: src/cli/cli.js
-  checksum: 10c0/ce32fad713471a40bea67959894168f297a5dd0aba64b89a2abc71a4fec0b1ae1d49c2dd8d8719ca8beeedf477824358c8a486b360b9f3ef12abc2e355d11318
+  checksum: 10c0/7f334841fe41bfb0bf5d920904ccad09cefc4b5e61eaf4c225bf1e1bb69ee77ef2147d8942f783ee8249e154d1ca8a858e10bda78a5d78b8bed3f48dcee9bf33
   languageName: node
   linkType: hard
 
@@ -20885,13 +20884,6 @@ __metadata:
   dependencies:
     dotenv: "npm:^8.0.0"
   checksum: 10c0/ba14e1f32d579904f1919c0c79f5cf977c7e49d2770dd79d4fdcb5413755cb4f9478fa94a6951a86e0275e494d9c2ff64aec1e7e23d6fbc6d930be3a93b55c7d
-  languageName: node
-  linkType: hard
-
-"react-native-exit-app@npm:1.1.0":
-  version: 1.1.0
-  resolution: "react-native-exit-app@npm:1.1.0"
-  checksum: 10c0/e653f9c329de6300ad46d753919ee32767e6d1ca8139969f1c241a43eb12e9b29bd1dbac48f27d14de614674419fbd79b4a84c10c5848e726f197ed2fb547c96
   languageName: node
   linkType: hard
 

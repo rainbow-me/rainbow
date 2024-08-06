@@ -747,9 +747,14 @@
         "output_exchange_rate": "1 %{outputSymbol} for %{executionRate} %{inputSymbol}"
       },
       "swap_details_v2": {
-        "rainbow_fee": "Included Rainbow Fee",
+        "automatic": "Auto",
+        "degen_mode": "Degen Mode",
+        "degen_mode_description": "Skip the review step to swap faster",
         "maximum_sold": "Maximum Sold",
-        "minimum_received": "Minimum Received"
+        "minimum_received": "Minimum Received",
+        "preferred_network": "Preferred Network",
+        "rainbow_fee": "Included Rainbow Fee",
+        "settings": "Settings"
       },
       "token_index": {
         "get_token": "Get %{assetSymbol}",
@@ -1970,7 +1975,7 @@
     },
     "swap": {
       "actions": {
-        "tap_to_swap": "Tap to Swap",
+        "hold_to_swap": "Hold to Swap",
         "save": "Save",
         "enter_amount": "Enter Amount",
         "review": "Review",
@@ -2053,6 +2058,7 @@
     },
     "token_search": {
       "section_header": {
+        "recent": "Recent",
         "favorites": "Favorites",
         "bridge": "Bridge",
         "verified": "Verified",
@@ -2926,6 +2932,8 @@
         "forward": "Forward",
         "back": "Back"
       }
-    }
+    },
+    "copy": "Copy",
+    "paste": "Paste"
   }
 }
