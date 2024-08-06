@@ -43,16 +43,11 @@ export function Inline({
       alignItems={alignVertical ? alignVerticalToFlexAlign[alignVertical] : undefined}
       flexDirection="row"
       flexWrap={wrap ? 'wrap' : undefined}
-      gap={resolveToken(spaceTokens, space)}
       justifyContent={alignHorizontal ? alignHorizontalToFlexAlign[alignHorizontal] : undefined}
-      style={
-        wrap
-          ? {
-              columnGap: resolveToken(spaceTokens, horizontalSpace),
-              rowGap: resolveToken(spaceTokens, verticalSpace),
-            }
-          : undefined
-      }
+      style={{
+        columnGap: horizontalSpace ? resolveToken(spaceTokens, horizontalSpace) : undefined,
+        rowGap: verticalSpace ? resolveToken(spaceTokens, verticalSpace) : undefined,
+      }}
     >
       {wrap || !separator
         ? children
