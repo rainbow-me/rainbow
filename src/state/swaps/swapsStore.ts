@@ -171,11 +171,35 @@ export const swapsStore = createRainbowStore<SwapsState>(
       const chainId = asset.chainId;
       const chainSwaps = recentSwaps.get(chainId) || [];
 
-      const updatedSwaps = [...chainSwaps, { ...asset, swappedAt: now }].slice(-3);
+      const [latestSwap] = chainSwaps;
+
+      // Check if the most recent swap is the same as the incoming asset
+      if (latestSwap && latestSwap.uniqueId === asset.uniqueId) {
+        latestSwapAt.set(chainId, now);
+        recentSwaps.set(chainId, [
+          {
+            ...latestSwap,
+            swappedAt: now,
+          },
+          ...chainSwaps,
+        ]);
+
+        set({ latestSwapAt: new Map(latestSwapAt), recentSwaps: new Map(recentSwaps) });
+        return;
+      }
+
+      // Remove any existing entries of the same asset
+      const filteredSwaps = chainSwaps.filter(swap => swap.uniqueId !== asset.uniqueId);
+
+      // Add the new swap at the beginning
+      const updatedSwaps = [{ ...asset, swappedAt: now }, ...filteredSwaps].slice(0, 3);
       recentSwaps.set(chainId, updatedSwaps);
       latestSwapAt.set(chainId, now);
 
-      set({ recentSwaps: new Map(recentSwaps) });
+      set({
+        recentSwaps: new Map(recentSwaps),
+        latestSwapAt: new Map(latestSwapAt),
+      });
     },
   }),
   {
