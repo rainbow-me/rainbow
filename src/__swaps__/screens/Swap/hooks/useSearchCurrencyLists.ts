@@ -316,6 +316,7 @@ export function useSearchCurrencyLists() {
   const recentsForChain = useMemo(() => {
     return filterList(getRecentSwapsByChain(state.toChainId), query, memoizedData.keys, {
       threshold: memoizedData.queryIsAddress ? rankings.CASE_SENSITIVE_EQUAL : rankings.CONTAINS,
+      sorter: matchItems => matchItems.sort((a, b) => b.item.swappedAt - a.item.swappedAt),
     });
   }, [getRecentSwapsByChain, state.toChainId, query, memoizedData.keys, memoizedData.queryIsAddress]);
 
