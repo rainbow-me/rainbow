@@ -375,6 +375,14 @@ export function useSearchCurrencyLists() {
     });
   }, [getRecentSwapsByChain, state.toChainId, query, memoizedData.keys, memoizedData.queryIsAddress]);
 
+  const popularAssetsForChain = useMemo(() => {
+    return popularAssets
+      ? filterList(popularAssets, query, memoizedData.keys, {
+          threshold: memoizedData.queryIsAddress ? rankings.CASE_SENSITIVE_EQUAL : rankings.CONTAINS,
+        })
+      : undefined;
+  }, [popularAssets, query, memoizedData.keys, memoizedData.queryIsAddress]);
+
   const favoritesList = useMemo(() => {
     if (query === '') {
       return unfilteredFavorites;
@@ -421,7 +429,7 @@ export function useSearchCurrencyLists() {
           unverifiedAssets: unverifiedResults,
           verifiedAssets: verifiedResults,
           recentSwaps: recentsForChain,
-          popularAssets: popularAssets,
+          popularAssets: popularAssetsForChain,
         },
         favoritesList,
         filteredBridgeAssetAddress: memoizedData.filteredBridgeAsset?.address,
@@ -440,6 +448,6 @@ export function useSearchCurrencyLists() {
     unverifiedAssets,
     verifiedAssets,
     recentsForChain,
-    popularAssets,
+    popularAssetsForChain,
   ]);
 }
