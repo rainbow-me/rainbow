@@ -287,10 +287,6 @@ export function useSearchCurrencyLists() {
       })) as SearchAsset[];
   }, [favorites, state.toChainId]);
 
-  const recentsForChain = useMemo(() => {
-    return getRecentSwapsByChain(state.toChainId);
-  }, [getRecentSwapsByChain, state.toChainId]);
-
   const memoizedData = useMemo(() => {
     const queryIsAddress = isAddress(query);
     const keys: TokenSearchAssetKey[] = queryIsAddress ? ['address'] : ['name', 'symbol'];
@@ -316,6 +312,12 @@ export function useSearchCurrencyLists() {
       filteredBridgeAsset,
     };
   }, [assetToSell, query, selectedOutputChainId, state, verifiedAssets]);
+
+  const recentsForChain = useMemo(() => {
+    return filterList(getRecentSwapsByChain(state.toChainId), query, memoizedData.keys, {
+      threshold: memoizedData.queryIsAddress ? rankings.CASE_SENSITIVE_EQUAL : rankings.CONTAINS,
+    });
+  }, [getRecentSwapsByChain, state.toChainId, query, memoizedData.keys, memoizedData.queryIsAddress]);
 
   const favoritesList = useMemo(() => {
     if (query === '') {
