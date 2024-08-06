@@ -376,11 +376,11 @@ export function useSearchCurrencyLists() {
   }, [getRecentSwapsByChain, state.toChainId, query, memoizedData.keys, memoizedData.queryIsAddress]);
 
   const popularAssetsForChain = useMemo(() => {
-    return popularAssets
-      ? filterList(popularAssets, query, memoizedData.keys, {
-          threshold: memoizedData.queryIsAddress ? rankings.CASE_SENSITIVE_EQUAL : rankings.CONTAINS,
-        })
-      : undefined;
+    if (!popularAssets) return undefined;
+    if (!query) return popularAssets;
+    return filterList(popularAssets, query, memoizedData.keys, {
+      threshold: memoizedData.queryIsAddress ? rankings.CASE_SENSITIVE_EQUAL : rankings.CONTAINS,
+    });
   }, [popularAssets, query, memoizedData.keys, memoizedData.queryIsAddress]);
 
   const favoritesList = useMemo(() => {
