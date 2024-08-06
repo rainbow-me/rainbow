@@ -241,7 +241,7 @@ export const explainers = (params, theme) => {
           size={40}
           icon={params?.nativeAsset?.icon_url}
           symbol={params?.nativeAsset?.symbol}
-          network={params?.network?.toLowerCase()}
+          chainId={ethereumUtils.getChainIdFromNetwork(params?.network)}
           colors={params?.nativeAsset?.colors}
           theme={theme}
         />
@@ -589,6 +589,7 @@ export const explainers = (params, theme) => {
             icon={params?.inputCurrency?.icon_url}
             symbol={params?.inputCurrency?.symbol}
             network={params?.inputCurrency?.network}
+            chainId={ethereumUtils.getChainIdFromNetwork(params?.inputCurrency?.network)}
             colors={params?.inputCurrency?.colors}
             theme={theme}
           />
@@ -644,7 +645,7 @@ export const explainers = (params, theme) => {
             size={40}
             icon={params?.inputCurrency?.icon_url}
             symbol={params?.inputCurrency?.symbol}
-            network={params?.inputCurrency?.network}
+            chainId={ethereumUtils.getChainIdFromNetwork(params?.inputCurrency?.network)}
             colors={params?.inputCurrency?.colors}
             theme={theme}
           />
@@ -653,7 +654,7 @@ export const explainers = (params, theme) => {
             size={40}
             icon={params?.outputCurrency?.icon_url}
             symbol={params?.outputCurrency?.symbol}
-            network={params?.outputCurrency?.network}
+            chainId={ethereumUtils.getChainIdFromNetwork(params?.outputCurrency?.network)}
             colors={params?.outputCurrency?.colors}
             theme={theme}
           />
@@ -670,7 +671,7 @@ export const explainers = (params, theme) => {
             size={40}
             icon={params?.inputCurrency?.icon_url}
             symbol={params?.inputCurrency?.symbol}
-            network={params?.inputCurrency?.network}
+            chainId={ethereumUtils.getChainIdFromNetwork(params?.inputCurrency?.network)}
             colors={params?.inputCurrency?.colors}
             theme={theme}
           />
@@ -679,7 +680,7 @@ export const explainers = (params, theme) => {
             size={40}
             icon={params?.outputCurrency?.icon_url}
             symbol={params?.outputCurrency?.symbol}
-            network={params?.outputCurrency?.network}
+            chainId={ethereumUtils.getChainIdFromNetwork(params?.outputCurrency?.network)}
             colors={params?.outputCurrency?.colors}
             theme={theme}
           />
@@ -871,7 +872,7 @@ export const explainers = (params, theme) => {
             size={30}
             icon={params?.nativeAsset?.icon_url}
             symbol={params?.nativeAsset?.symbol}
-            network={params?.nativeAsset?.network}
+            chainId={ethereumUtils.getChainIdFromNetwork(params?.nativeAsset?.network)}
             colors={params?.nativeAssety?.colors}
             theme={theme}
             ignoreBadge
@@ -916,7 +917,7 @@ export const explainers = (params, theme) => {
             size={30}
             icon={params?.nativeAsset?.icon_url}
             symbol={params?.nativeAsset?.symbol}
-            network={params?.nativeAsset?.network}
+            chainId={ethereumUtils.getChainIdFromNetwork(params?.nativeAsset?.network)}
             colors={params?.nativeAsset?.colors}
             theme={theme}
             ignoreBadge
@@ -962,7 +963,7 @@ export const explainers = (params, theme) => {
             size={30}
             icon={params?.nativeAsset?.icon_url}
             symbol={params?.nativeAsset?.symbol}
-            network={params?.nativeAsset?.network}
+            chainId={ethereumUtils.getChainIdFromNetwork(params?.nativeAsset?.network)}
             colors={params?.nativeAsset?.colors}
             theme={theme}
           />
