@@ -171,7 +171,10 @@ export const swapsStore = createRainbowStore<SwapsState>(
       const chainId = asset.chainId;
       const chainSwaps = recentSwaps.get(chainId) || [];
 
-      const updatedSwaps = [...chainSwaps, { ...asset, swappedAt: now }].slice(-3);
+      // Remove any existing entries of the same asset
+      const filteredSwaps = chainSwaps.filter(swap => swap.uniqueId !== asset.uniqueId);
+
+      const updatedSwaps = [{ ...asset, swappedAt: now }, ...filteredSwaps].slice(0, 3);
       recentSwaps.set(chainId, updatedSwaps);
       latestSwapAt.set(chainId, now);
 
