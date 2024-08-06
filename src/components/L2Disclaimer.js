@@ -9,7 +9,7 @@ import { padding, position } from '@/styles';
 import { darkModeThemeColors } from '@/styles/colors';
 import { getNetworkObj } from '@/networks';
 import * as lang from '@/languages';
-import { isL2Network } from '@/handlers/web3';
+import { isL2Chain } from '@/handlers/web3';
 import { EthCoinIcon } from './coin-icon/EthCoinIcon';
 import { ethereumUtils } from '@/utils';
 
@@ -37,8 +37,8 @@ const L2Disclaimer = ({
     },
   };
 
-  const isL2 = isL2Network(network);
   const chainId = ethereumUtils.getChainIdFromNetwork(network);
+  const isL2 = isL2Chain({ chainId });
 
   return (
     <>

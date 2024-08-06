@@ -17,7 +17,7 @@ import { Emoji, Text } from '../components/text';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { removeRegistrationByName, saveCommitRegistrationParameters } from '@/redux/ensRegistration';
 import { GasFeeTypes } from '@/entities';
-import { getFlashbotsProvider, getProviderForNetwork, isL2Network, toHex } from '@/handlers/web3';
+import { getFlashbotsProvider, getProviderForNetwork, isL2Chain, toHex } from '@/handlers/web3';
 import { greaterThan } from '@/helpers/utilities';
 import { useAccountSettings, useDimensions, useGas, useWallets } from '@/hooks';
 import { sendTransaction } from '@/model/wallet';
@@ -125,7 +125,7 @@ export default function SpeedUpAndCancelSheet() {
   const [nonce, setNonce] = useState(null);
   const [to, setTo] = useState(tx.to);
   const [value, setValue] = useState(null);
-  const isL2 = isL2Network(tx?.network || null);
+  const isL2 = isL2Chain({ chainId: tx?.chainId });
 
   const getNewTransactionGasParams = useCallback(() => {
     const gasParams = parseGasParamsForTransaction(selectedGasFee);

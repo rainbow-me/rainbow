@@ -15,7 +15,7 @@ import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import { GasSpeedLabelPager } from '.';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { isL2Network } from '@/handlers/web3';
+import { isL2Chain } from '@/handlers/web3';
 import { Network } from '@/helpers/networkTypes';
 import { add, greaterThan, toFixedDecimals } from '@/helpers/utilities';
 import { getCrossChainTimeEstimate } from '@/utils/crossChainTimeEstimates';
@@ -25,7 +25,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, margin, padding } from '@/styles';
 import { ethereumUtils, gasUtils } from '@/utils';
-import { getNetworkObj } from '@/networks';
+import { getNetworkObject } from '@/networks';
 import { IS_ANDROID } from '@/env';
 import { ContextMenu } from '../context-menu';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
@@ -123,7 +123,6 @@ const TransactionTimeLabel = ({ formatter, isLongWait, theme }) => {
 
 const GasSpeedButton = ({
   asset,
-  currentNetwork,
   chainId,
   horizontalPadding = 19,
   fallbackColor,
@@ -169,8 +168,10 @@ const GasSpeedButton = ({
       .trim();
   }, [nativeCurrencySymbol, selectedGasFee]);
 
-  const isL2 = useMemo(() => isL2Network(currentNetwork), [currentNetwork]);
-  const isLegacyGasNetwork = getNetworkObj(currentNetwork).gas.gasType === 'legacy';
+  const isL2 = useMemo(() => isL2Chain({ chainId }), [chainId]);
+  const networkObject = useMemo(() => getNetworkObject({ chainId }), [chainId]);
+
+  const isLegacyGasNetwork = networkObject.gas.gasType === 'legacy';
 
   const gasIsNotReady = useMemo(
     () => isNil(price) || isEmpty(gasFeeParamsBySpeed) || isEmpty(selectedGasFee?.gasFee),
@@ -309,14 +310,14 @@ const GasSpeedButton = ({
         type: 'crossChainGas',
       });
     } else {
-      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(ethereumUtils.getChainIdFromNetwork(currentNetwork));
+      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(chainId);
       navigate(Routes.EXPLAIN_SHEET, {
         network: currentNetwork,
         type: 'gas',
         nativeAsset,
       });
     }
-  }, [crossChainServiceTime, currentNetwork, inputCurrency, navigate, outputCurrency]);
+  }, [chainId, crossChainServiceTime, inputCurrency, navigate, outputCurrency]);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
@@ -346,8 +347,8 @@ const GasSpeedButton = ({
 
   const speedOptions = useMemo(() => {
     if (speeds) return speeds;
-    return getNetworkObj(currentNetwork).gas.speeds;
-  }, [currentNetwork, speeds]);
+    return networkObject.gas.speeds;
+  }, [networkObject.gas.speeds, speeds]);
 
   const menuConfig = useMemo(() => {
     const menuOptions = speedOptions.map(gasOption => {
@@ -356,7 +357,7 @@ const GasSpeedButton = ({
       const totalGwei = add(gasFeeParamsBySpeed[gasOption]?.maxBaseFee?.gwei, gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei);
       const estimatedGwei = add(currentBlockParams?.baseFeePerGas?.gwei, gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei);
 
-      const shouldRoundGwei = getNetworkObj(currentNetwork).gas.roundGasDisplay;
+      const shouldRoundGwei = networkObject.gas.roundGasDisplay;
       const gweiDisplay = !shouldRoundGwei
         ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
         : gasOption === 'custom' && selectedGasFeeOption !== 'custom'
@@ -378,7 +379,14 @@ const GasSpeedButton = ({
       menuItems: menuOptions,
       menuTitle: '',
     };
-  }, [currentBlockParams?.baseFeePerGas?.gwei, currentNetwork, gasFeeParamsBySpeed, selectedGasFeeOption, speedOptions, isL2]);
+  }, [
+    speedOptions,
+    gasFeeParamsBySpeed,
+    currentBlockParams?.baseFeePerGas?.gwei,
+    networkObject.gas.roundGasDisplay,
+    selectedGasFeeOption,
+    isL2,
+  ]);
 
   const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [speedOptions.length]);
 
@@ -443,7 +451,6 @@ const GasSpeedButton = ({
     );
   }, [
     colors,
-    currentNetwork,
     gasIsNotReady,
     gasOptionsAvailable,
     handlePressActionSheet,

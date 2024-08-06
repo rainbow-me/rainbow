@@ -36,9 +36,10 @@ import {
 import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
-import { getNetworkObj } from '@/networks';
+import { getNetworkObj, getNetworkObject } from '@/networks';
 import store from '@/redux/store';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export enum TokenStandard {
   ERC1155 = 'ERC1155',
@@ -171,11 +172,11 @@ export const web3SetHttpProvider = async (network: Network | string): Promise<Et
 
 /**
  * @desc Checks if the given network is a Layer 2.
- * @param network The network to check.
+ * @param chainId The network to check.
  * @return Whether or not the network is a L2 network.
  */
-export const isL2Network = (network: Network | string): boolean => {
-  return getNetworkObj(network as Network).networkType === 'layer2';
+export const isL2Chain = ({ chainId }: { chainId: ChainId }): boolean => {
+  return getNetworkObject({ chainId }).networkType === 'layer2';
 };
 
 /**

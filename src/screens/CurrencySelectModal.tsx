@@ -14,7 +14,7 @@ import { KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import { STORAGE_IDS } from '../model/mmkv';
 import { analytics } from '@/analytics';
-import { addHexPrefix, isL2Network } from '@/handlers/web3';
+import { addHexPrefix, isL2Chain } from '@/handlers/web3';
 import { CurrencySelectionTypes, Network, TokenSectionTypes } from '@/helpers';
 import {
   useAccountSettings,
@@ -410,7 +410,7 @@ export default function CurrencySelectModal() {
     };
   }, [handleSelectAsset, type, currentChainId]);
 
-  const searchingOnL2Network = useMemo(() => isL2Network(ethereumUtils.getNetworkFromChainId(currentChainId)), [currentChainId]);
+  const searchingOnL2Network = useMemo(() => isL2Chain({ chainId: currentChainId }), [currentChainId]);
 
   const [startInteraction] = useInteraction();
   useEffect(() => {

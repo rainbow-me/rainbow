@@ -922,7 +922,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
               {/* @ts-expect-error - Javascript Component */}
               <GasSpeedButton
                 asset={outputCurrency}
-                currentNetwork={ethereumUtils.getNetworkFromChainId(currentChainId)}
+                chainId={currentChainId}
                 flashbotTransaction={flashbots}
                 marginBottom={0}
                 marginTop={0}

@@ -1062,7 +1062,6 @@ export const SignTransactionSheet = () => {
                   marginTop={0}
                   horizontalPadding={20}
                   chainId={currentChainId}
-                  currentNetwork={ethereumUtils.getNetworkFromChainId(currentChainId)}
                   theme={'dark'}
                   marginBottom={0}
                   asset={undefined}

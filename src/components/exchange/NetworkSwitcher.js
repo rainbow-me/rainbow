@@ -83,7 +83,7 @@ const NetworkSwitcherv1 = ({
         >
           <RadialGradient {...radialGradientProps} borderRadius={16} radius={600} />
           <Column justify="center">
-            {currentChainId !== 1 ? <ChainBadge network={currentChainId} position="relative" size="small" /> : <EthCoinIcon size={20} />}
+            {currentChainId !== 1 ? <ChainBadge chainId={currentChainId} position="relative" size="small" /> : <EthCoinIcon size={20} />}
           </Column>
           <Column flex={1} justify="center" marginHorizontal={8}>
             <Text
