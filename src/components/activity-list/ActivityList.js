@@ -125,7 +125,6 @@ const ActivityList = ({
             nativeCurrency,
             pendingTransactionsCount,
           }}
-          testID={'wallet-activity-list'}
           getItemLayout={getItemLayout}
           initialNumToRender={12}
           keyExtractor={keyExtractor}
