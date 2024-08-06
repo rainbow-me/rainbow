@@ -91,7 +91,7 @@ const MemoizedBalanceCoinRow = React.memo(
     const valueColor = nativeDisplay ? theme.colors.dark : theme.colors.blueGreyLight;
 
     return (
-      <View style={sx.flex}>
+      <View style={sx.flex} testID={'fast-coin-info'}>
         <ButtonPressAnimation onPress={handlePress} scaleTo={0.96} testID={`balance-coin-row-${item?.name}`}>
           <View style={[sx.container]}>
             <View style={sx.iconContainer}>

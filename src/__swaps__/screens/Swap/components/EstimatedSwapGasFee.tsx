@@ -9,6 +9,7 @@ import { pulsingConfig, sliderConfig } from '../constants';
 import { GasSettings } from '../hooks/useCustomGas';
 import { useSwapEstimatedGasFee } from '../hooks/useEstimatedGasFee';
 import { useSwapContext } from '../providers/swap-provider';
+import { SpringConfig } from 'react-native-reanimated/lib/typescript/animation/springUtils';
 
 type EstimatedSwapGasFeeProps = { gasSettings?: GasSettings } & Partial<
   Pick<TextProps, 'align' | 'color' | 'size' | 'weight' | 'tabularNumbers'>
@@ -48,7 +49,7 @@ const GasFeeText = memo(function GasFeeText({
     color: withTiming(isLoading.value ? zeroAmountColor : textColor, TIMING_CONFIGS.slowFadeConfig),
     opacity: isLoading.value
       ? withRepeat(withSequence(withTiming(0.5, pulsingConfig), withTiming(1, pulsingConfig)), -1, true)
-      : withSpring(1, sliderConfig),
+      : withSpring(1, sliderConfig as SpringConfig),
   }));
 
   return (
