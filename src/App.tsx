@@ -33,7 +33,7 @@ import { MainThemeProvider } from './theme/ThemeContext';
 import { branchListener } from './utils/branch';
 import { addressKey } from './utils/keychainConstants';
 import { SharedValuesProvider } from '@/helpers/SharedValuesContext';
-import { InitialRouteContext } from '@/navigation/initialRoute';
+import { InitialRoute, InitialRouteContext } from '@/navigation/initialRoute';
 import Routes from '@/navigation/routesNames';
 import { Portal } from '@/react-native-cool-modals/Portal';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
@@ -69,7 +69,7 @@ interface AppProps {
 
 function App({ walletReady }: AppProps) {
   const [appState, setAppState] = useState(AppState.currentState);
-  const [initialRoute, setInitialRoute] = useState<typeof Routes.WELCOME_SCREEN | typeof Routes.SWIPE_LAYOUT | null>(null);
+  const [initialRoute, setInitialRoute] = useState<InitialRoute>(null);
   const eventSubscription = useRef<ReturnType<typeof AppState.addEventListener> | null>(null);
   const branchListenerRef = useRef<ReturnType<typeof branch.subscribe> | null>(null);
   const navigatorRef = useRef<NavigationContainerRef<RootStackParamList> | null>(null);
