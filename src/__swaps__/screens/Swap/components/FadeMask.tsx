@@ -1,8 +1,6 @@
 import React from 'react';
 import { Box, Columns, Column, globalColors } from '@/design-system';
 import LinearGradient from 'react-native-linear-gradient';
-import { IS_TEST } from '@/env';
-import { View } from 'react-native';
 
 export const FadeMask = ({
   fadeEdgeInset = 6,
@@ -24,18 +22,14 @@ export const FadeMask = ({
               <Box height="full" width={{ custom: fadeEdgeInset }} />
             </Column>
             <Column width="content">
-              {IS_TEST ? (
-                <Box as={View} height="full" width={{ custom: fadeWidth }} />
-              ) : (
-                <Box
-                  as={LinearGradient}
-                  colors={['transparent', globalColors.grey100]}
-                  end={{ x: 1, y: 0.5 }}
-                  height="full"
-                  start={{ x: 0, y: 0.5 }}
-                  width={{ custom: fadeWidth }}
-                />
-              )}
+              <Box
+                as={LinearGradient}
+                colors={['transparent', globalColors.grey100]}
+                end={{ x: 1, y: 0.5 }}
+                height="full"
+                start={{ x: 0, y: 0.5 }}
+                width={{ custom: fadeWidth }}
+              />
             </Column>
           </>
         ) : null}
@@ -45,18 +39,14 @@ export const FadeMask = ({
         {!side || side === 'right' ? (
           <>
             <Column width="content">
-              {IS_TEST ? (
-                <Box as={View} height="full" width={{ custom: fadeWidth }} />
-              ) : (
-                <Box
-                  as={LinearGradient}
-                  colors={[globalColors.grey100, 'transparent']}
-                  end={{ x: 1, y: 0.5 }}
-                  height="full"
-                  start={{ x: 0, y: 0.5 }}
-                  width={{ custom: fadeWidth }}
-                />
-              )}
+              <Box
+                as={LinearGradient}
+                colors={[globalColors.grey100, 'transparent']}
+                end={{ x: 1, y: 0.5 }}
+                height="full"
+                start={{ x: 0, y: 0.5 }}
+                width={{ custom: fadeWidth }}
+              />
             </Column>
             <Column width="content">
               <Box height="full" width={{ custom: fadeEdgeInset }} />
