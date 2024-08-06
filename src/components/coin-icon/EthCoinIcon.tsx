@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTheme } from '@/theme';
-import { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import { useNativeAsset } from '@/utils/ethereumUtils';
 import RainbowCoinIcon from './RainbowCoinIcon';
 import { ETH_SYMBOL } from '@/references';
 import { ChainId } from '@/__swaps__/types/chains';
@@ -10,7 +10,7 @@ type EthCoinIconProps = {
 };
 
 export const EthCoinIcon = ({ size = 40 }: EthCoinIconProps) => {
-  const ethAsset = useNativeAssetForNetwork(ChainId.mainnet);
+  const ethAsset = useNativeAsset({ chainId: ChainId.mainnet });
   const theme = useTheme();
   return (
     <RainbowCoinIcon

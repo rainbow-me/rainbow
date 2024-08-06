@@ -14,7 +14,7 @@ import {
 } from '@/helpers/utilities';
 
 import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
-import ethereumUtils, { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import ethereumUtils, { useNativeAsset } from '@/utils/ethereumUtils';
 import { isUnwrapNative, isWrapNative } from '@/handlers/swap';
 import { ChainId } from '@/__swaps__/types/chains';
 
@@ -41,8 +41,8 @@ export default function usePriceImpactDetails(
     (tradeDetails as CrosschainQuote)?.fromChainId ? (tradeDetails as CrosschainQuote)?.fromChainId : chainId
   ) as ChainId;
   const buyChainId = (outputCurrency?.chainId || chainId) as ChainId;
-  const sellNativeAsset = useNativeAssetForNetwork(sellChainId);
-  const buyNativeAsset = useNativeAssetForNetwork(buyChainId);
+  const sellNativeAsset = useNativeAsset({ chainId: sellChainId });
+  const buyNativeAsset = useNativeAsset({ chainId: buyChainId });
 
   const isWrapOrUnwrap = useMemo(() => {
     if (!tradeDetails) return false;

@@ -167,7 +167,7 @@ const getAssetPrice = (address: EthereumAddress = ETH_ADDRESS): number => {
   return genericPrice || getAccountAsset(address)?.price?.value || 0;
 };
 
-export const useNativeAssetForNetwork = (chainId: ChainId) => {
+export const useNativeAsset = ({ chainId }: { chainId: ChainId }) => {
   let address = getNetworkObject({ chainId }).nativeCurrency?.mainnetAddress || ETH_ADDRESS;
   let internalChainId = ChainId.mainnet;
   const { nativeCurrency } = store.getState().settings;

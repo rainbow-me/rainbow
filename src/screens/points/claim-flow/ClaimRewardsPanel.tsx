@@ -6,7 +6,7 @@ import * as i18n from '@/languages';
 import { ListHeader, ListPanel, Panel, TapToDismiss, controlPanelStyles } from '@/components/SmoothPager/ListPanel';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ChainId, ChainNameDisplay } from '@/__swaps__/types/chains';
-import ethereumUtils, { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import ethereumUtils, { useNativeAsset } from '@/utils/ethereumUtils';
 import { useAccountAccentColor, useAccountProfile, useAccountSettings } from '@/hooks';
 import { safeAreaInsetValues } from '@/utils';
 import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
@@ -188,7 +188,7 @@ const ClaimingRewards = ({
     decimals: 18,
     symbol: 'ETH',
   });
-  const eth = useNativeAssetForNetwork(ChainId.mainnet);
+  const eth = useNativeAsset({ chainId: ChainId.mainnet });
   const unclaimedRewardsNativeCurrency = convertAmountAndPriceToNativeDisplay(
     claimableBalance.amount,
     eth?.price?.value || 0,
