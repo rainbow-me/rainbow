@@ -18,7 +18,8 @@ export enum MigrationName {
   migrateUnlockableAppIconStorage = 'migration_migrateUnlockableAppIconStorage',
   migratePersistedQueriesToMMKV = 'migration_migratePersistedQueriesToMMKV',
   migrateRemotePromoSheetsToZustand = 'migration_migrateRemotePromoSheetsToZustand',
-  migrateFavoritesToV2 = 'migration_migrateFavoritesToV2',
+  migrateFavoritesV2 = 'migration_migrateFavoritesV2',
+  migrateFavoritesV3 = 'migration_migrateFavoritesV3',
 }
 
 export type Migration = {

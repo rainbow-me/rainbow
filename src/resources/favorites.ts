@@ -11,7 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 import { omit } from 'lodash';
 import { externalTokenQueryKey, fetchExternalToken } from './assets/externalAssetsQuery';
 
-export const favoritesQueryKey = createQueryKey('favorites', {}, { persisterVersion: 2 });
+export const favoritesQueryKey = createQueryKey('favorites', {}, { persisterVersion: 3 });
 
 const DEFAULT_FAVORITES = [DAI_ADDRESS, ETH_ADDRESS, SOCKS_ADDRESS, WBTC_ADDRESS];
 
@@ -82,6 +82,8 @@ async function fetchMetadata(addresses: string[], chainId = ChainId.mainnet) {
  * Refreshes the metadata associated with all favorites.
  */
 export async function refreshFavorites() {
+  console.log('REFRESH');
+
   const favorites = queryClient.getQueryData<Record<UniqueId, RainbowToken>>(favoritesQueryKey);
   if (!favorites) return;
 
