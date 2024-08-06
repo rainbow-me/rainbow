@@ -81,7 +81,7 @@ function splitPositionStyles(style: ViewStyle) {
       width,
       zIndex,
     },
-    rest,
+    { ...rest, overflow: 'visible' as ViewStyle['overflow'] },
   ];
 }
 
