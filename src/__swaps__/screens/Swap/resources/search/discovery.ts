@@ -4,8 +4,9 @@ import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { QueryFunctionArgs, createQueryKey } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
+import { parseTokenSearch } from './utils';
 
-const tokenSearchHttp = new RainbowFetchClient({
+const tokenDiscoveryHttp = new RainbowFetchClient({
   baseURL: 'https://token-search.rainbow.me/v3/discovery',
   headers: {
     'Accept': 'application/json',
@@ -15,17 +16,17 @@ const tokenSearchHttp = new RainbowFetchClient({
 });
 
 export type TokenDiscoveryArgs = {
-  chainId?: ChainId;
+  chainId: ChainId;
 };
 
 const tokenDiscoveryQueryKey = ({ chainId }: TokenDiscoveryArgs) => createQueryKey('TokenDiscovery', { chainId }, { persisterVersion: 1 });
 
 async function tokenSearchQueryFunction({ queryKey: [{ chainId }] }: QueryFunctionArgs<typeof tokenDiscoveryQueryKey>) {
-  const url = `${chainId ? `/${chainId}` : ''}`;
+  const url = `/${chainId}`;
 
   try {
-    const tokenSearch = await tokenSearchHttp.get<{ data: SearchAsset[] }>(url);
-    return tokenSearch.data.data;
+    const tokenSearch = await tokenDiscoveryHttp.get<{ data: SearchAsset[] }>(url);
+    return parseTokenSearch(tokenSearch.data.data, chainId);
   } catch (e) {
     logger.error(new RainbowError('Token discovery failed'), { url });
     return [];
@@ -34,6 +35,7 @@ async function tokenSearchQueryFunction({ queryKey: [{ chainId }] }: QueryFuncti
 
 export function useTokenDiscovery({ chainId }: TokenDiscoveryArgs) {
   return useQuery(tokenDiscoveryQueryKey({ chainId }), tokenSearchQueryFunction, {
-    keepPreviousData: true,
+    staleTime: 15 * 60 * 1000, // 15 min
+    cacheTime: 24 * 60 * 60 * 1000, // 1 day
   });
 }

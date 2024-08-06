@@ -1,4 +1,4 @@
-import { TokenSearchResult, useTokenSearch } from '@/__swaps__/screens/Swap/resources/search';
+import { TokenSearchResult, useTokenSearch } from '@/__swaps__/screens/Swap/resources/search/search';
 import { AddressOrEth } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { SearchAsset, TokenSearchAssetKey, TokenSearchThreshold } from '@/__swaps__/types/search';
@@ -16,8 +16,9 @@ import { useDebouncedCallback } from 'use-debounce';
 import { TokenToBuyListItem } from '../components/TokenList/TokenToBuyList';
 import { useSwapContext } from '../providers/swap-provider';
 import { RecentSwap } from '@/__swaps__/types/swap';
+import { useTokenDiscovery } from '../resources/search';
 
-export type AssetToBuySectionId = 'bridge' | 'recent' | 'favorites' | 'verified' | 'unverified' | 'other_networks';
+export type AssetToBuySectionId = 'bridge' | 'recent' | 'favorites' | 'verified' | 'unverified' | 'other_networks' | 'popular';
 
 export interface AssetToBuySection {
   data: SearchAsset[];
@@ -65,6 +66,7 @@ const buildListSectionsData = ({
     unverifiedAssets?: SearchAsset[];
     crosschainExactMatches?: SearchAsset[];
     recentSwaps?: RecentSwap[];
+    popularAssets?: SearchAsset[];
   };
   favoritesList: SearchAsset[] | undefined;
   filteredBridgeAssetAddress: string | undefined;
@@ -89,6 +91,21 @@ const buildListSectionsData = ({
       filteredBridgeAssetAddress,
     });
     addSection('recent', filteredRecents);
+  }
+
+  if (combinedData.popularAssets?.length) {
+    let filteredPopular = filterAssetsFromFavoritesAndBridge({
+      assets: combinedData.popularAssets,
+      favoritesList,
+      filteredBridgeAssetAddress,
+    });
+    if (combinedData.recentSwaps?.length) {
+      filteredPopular = filteredPopular.filter(
+        asset => !combinedData.recentSwaps?.some(({ address }) => asset.address === address || asset.mainnetAddress === address)
+      );
+    }
+    filteredPopular = filteredPopular.slice(0, 6);
+    addSection('popular', filteredPopular);
   }
 
   if (favoritesList?.length) {
@@ -218,6 +235,8 @@ export function useSearchCurrencyLists() {
     }
   );
 
+  const { data: popularAssets, isLoading: isLoadingPopularAssets } = useTokenDiscovery({ chainId: state.toChainId });
+
   const { favoritesMetadata: favorites } = useFavorites();
 
   const unfilteredFavorites = useMemo(() => {
@@ -320,16 +339,18 @@ export function useSearchCurrencyLists() {
           unverifiedAssets: unverifiedResults,
           verifiedAssets: verifiedResults,
           recentSwaps: recentsForChain,
+          popularAssets: popularAssets,
         },
         favoritesList,
         filteredBridgeAssetAddress: memoizedData.filteredBridgeAsset?.address,
       }),
-      isLoading: isLoadingVerifiedAssets || isLoadingUnverifiedAssets,
+      isLoading: isLoadingVerifiedAssets || isLoadingUnverifiedAssets || isLoadingPopularAssets,
     };
   }, [
     favoritesList,
     isLoadingUnverifiedAssets,
     isLoadingVerifiedAssets,
+    isLoadingPopularAssets,
     memoizedData.enableUnverifiedSearch,
     memoizedData.filteredBridgeAsset,
     query,
@@ -337,5 +358,6 @@ export function useSearchCurrencyLists() {
     unverifiedAssets,
     verifiedAssets,
     recentsForChain,
+    popularAssets,
   ]);
 }
