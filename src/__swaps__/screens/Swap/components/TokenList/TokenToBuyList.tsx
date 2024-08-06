@@ -148,11 +148,13 @@ export const TokenToBuyList = () => {
         estimatedItemSize={averageItemSize || undefined}
         estimatedListSize={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}
         getItemType={item => item.listItemType}
+        onBlankArea={console.error}
         keyExtractor={item => `${item.listItemType}-${item.listItemType === 'coinRow' ? item.uniqueId : item.id}`}
         renderItem={({ item }) => {
           if (item.listItemType === 'header') {
             return <TokenToBuySectionHeader section={{ data: item.data, id: item.id }} />;
           }
+
           return (
             <CoinRow
               testID={getFormattedTestId(item.name, item.chainId)}
