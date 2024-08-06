@@ -52,6 +52,14 @@ const filterAssetsFromRecentSwaps = ({
   recentSwaps: RecentSwap[] | undefined;
 }): SearchAsset[] => (assets || []).filter(asset => !recentSwaps?.some(recent => recent.address === asset.address));
 
+const filterAssetsFromPopularAssets = ({
+  assets,
+  popularAssets,
+}: {
+  assets: SearchAsset[] | undefined;
+  popularAssets: SearchAsset[] | undefined;
+}): SearchAsset[] => (assets || []).filter(asset => !popularAssets?.some(popular => popular.address === asset.address));
+
 const filterAssetsFromBridgeAndRecent = ({
   assets,
   recentSwaps,
@@ -66,20 +74,44 @@ const filterAssetsFromBridgeAndRecent = ({
     recentSwaps: recentSwaps,
   });
 
-const filterAssetsFromFavoritesAndBridgeAndRecent = ({
+const filterAssetsFromBridgeAndRecentAndPopular = ({
+  assets,
+  recentSwaps,
+  popularAssets,
+  filteredBridgeAssetAddress,
+}: {
+  assets: SearchAsset[] | undefined;
+  recentSwaps: RecentSwap[] | undefined;
+  popularAssets: SearchAsset[] | undefined;
+  filteredBridgeAssetAddress: string | undefined;
+}): SearchAsset[] =>
+  filterAssetsFromPopularAssets({
+    assets: filterAssetsFromRecentSwaps({
+      assets: filterAssetsFromBridge({ assets, filteredBridgeAssetAddress }),
+      recentSwaps: recentSwaps,
+    }),
+    popularAssets,
+  });
+
+const filterAssetsFromFavoritesAndBridgeAndRecentAndPopular = ({
   assets,
   favoritesList,
   filteredBridgeAssetAddress,
   recentSwaps,
+  popularAssets,
 }: {
   assets: SearchAsset[] | undefined;
   favoritesList: SearchAsset[] | undefined;
   filteredBridgeAssetAddress: string | undefined;
   recentSwaps: RecentSwap[] | undefined;
+  popularAssets: SearchAsset[] | undefined;
 }): SearchAsset[] =>
-  filterAssetsFromRecentSwaps({
-    assets: filterAssetsFromBridge({ assets, filteredBridgeAssetAddress }),
-    recentSwaps: recentSwaps,
+  filterAssetsFromPopularAssets({
+    assets: filterAssetsFromRecentSwaps({
+      assets: filterAssetsFromBridge({ assets, filteredBridgeAssetAddress }),
+      recentSwaps: recentSwaps,
+    }),
+    popularAssets,
   })?.filter(
     curatedAsset => !favoritesList?.some(({ address }) => curatedAsset.address === address || curatedAsset.mainnetAddress === address)
   ) || [];
@@ -141,55 +173,59 @@ const buildListSectionsData = ({
   }
 
   if (combinedData.popularAssets?.length) {
-    let filteredPopular = filterAssetsFromFavoritesAndBridge({
+    const filteredPopular = filterAssetsFromBridgeAndRecent({
       assets: combinedData.popularAssets,
-      favoritesList,
+      recentSwaps: combinedData.recentSwaps,
       filteredBridgeAssetAddress,
-    });
-    if (combinedData.recentSwaps?.length) {
-      filteredPopular = filteredPopular.filter(
-        asset => !combinedData.recentSwaps?.some(({ address }) => asset.address === address || asset.mainnetAddress === address)
-      );
-    }
-    filteredPopular = filteredPopular.slice(0, 6);
-    addSection('popular', filteredPopular);
+    }).slice(0, 6);
+    addSection(
+      'popular',
+      mergeAssetsFavoriteStatus({
+        assets: filteredPopular,
+        favoritesList,
+      })
+    );
   }
 
   if (favoritesList?.length) {
-    const filteredFavorites = filterAssetsFromBridgeAndRecent({
+    const filteredFavorites = filterAssetsFromBridgeAndRecentAndPopular({
       assets: favoritesList,
       filteredBridgeAssetAddress,
       recentSwaps: combinedData.recentSwaps,
+      popularAssets: combinedData.popularAssets,
     });
     addSection('favorites', filteredFavorites);
   }
 
   if (combinedData.verifiedAssets?.length) {
-    const filteredVerified = filterAssetsFromFavoritesAndBridgeAndRecent({
+    const filteredVerified = filterAssetsFromFavoritesAndBridgeAndRecentAndPopular({
       assets: combinedData.verifiedAssets,
       favoritesList,
       filteredBridgeAssetAddress,
       recentSwaps: combinedData.recentSwaps,
+      popularAssets: combinedData.popularAssets,
     });
     addSection('verified', filteredVerified);
   }
 
   if (!formattedData.length && combinedData.crosschainExactMatches?.length) {
-    const filteredCrosschain = filterAssetsFromFavoritesAndBridgeAndRecent({
+    const filteredCrosschain = filterAssetsFromFavoritesAndBridgeAndRecentAndPopular({
       assets: combinedData.crosschainExactMatches,
       favoritesList,
       filteredBridgeAssetAddress,
       recentSwaps: combinedData.recentSwaps,
+      popularAssets: combinedData.popularAssets,
     });
     addSection('other_networks', filteredCrosschain);
   }
 
   if (combinedData.unverifiedAssets?.length) {
-    const filteredUnverified = filterAssetsFromFavoritesAndBridgeAndRecent({
+    const filteredUnverified = filterAssetsFromFavoritesAndBridgeAndRecentAndPopular({
       assets: combinedData.unverifiedAssets,
       favoritesList,
       filteredBridgeAssetAddress,
       recentSwaps: combinedData.recentSwaps,
+      popularAssets: combinedData.popularAssets,
     });
     addSection('unverified', filteredUnverified);
   }
