@@ -51,7 +51,7 @@ export function Inline({
               columnGap: resolveToken(spaceTokens, horizontalSpace),
               rowGap: resolveToken(spaceTokens, verticalSpace),
             }
-          : {}
+          : undefined
       }
     >
       {wrap || !separator
