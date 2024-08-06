@@ -1,6 +1,6 @@
 import './languages';
 import * as Sentry from '@sentry/react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AppRegistry, AppState, AppStateStatus, Dimensions, InteractionManager, Linking, LogBox, View } from 'react-native';
 import branch from 'react-native-branch';
 
@@ -74,36 +74,7 @@ function App({ walletReady }: AppProps) {
   const branchListenerRef = useRef<ReturnType<typeof branch.subscribe> | null>(null);
   const navigatorRef = useRef<NavigationContainerRef<RootStackParamList> | null>(null);
 
-  useEffect(() => {
-    if (!__DEV__ && isTestFlight) {
-      logger.info(`Test flight usage - ${isTestFlight}`);
-    }
-    identifyFlow();
-    eventSubscription.current = AppState.addEventListener('change', handleAppStateChange);
-
-    const p1 = analyticsV2.initializeRudderstack();
-    const p2 = setupDeeplinking();
-    const p3 = saveFCMToken();
-    Promise.all([p1, p2, p3]).then(() => {
-      initWalletConnectListeners();
-      PerformanceTracking.finishMeasuring(PerformanceMetrics.loadRootAppComponent);
-      analyticsV2.track(analyticsV2.event.applicationDidMount);
-    });
-
-    return () => {
-      eventSubscription.current?.remove();
-      branchListenerRef.current?.();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (walletReady) {
-      logger.info('✅ Wallet ready!');
-      runWalletBackupStatusChecks();
-    }
-  }, [walletReady]);
-
-  const setupDeeplinking = async () => {
+  const setupDeeplinking = useCallback(async () => {
     const initialUrl = await Linking.getInitialURL();
 
     branchListenerRef.current = await branchListener(url => {
@@ -129,9 +100,9 @@ function App({ walletReady }: AppProps) {
       logger.debug(`App: has initial URL, opening with Branch`, { initialUrl });
       branch.openURL(initialUrl);
     }
-  };
+  }, [initialRoute]);
 
-  const identifyFlow = async () => {
+  const identifyFlow = useCallback(async () => {
     const address = await loadAddress();
     if (address) {
       setTimeout(() => {
@@ -145,23 +116,55 @@ function App({ walletReady }: AppProps) {
 
     setInitialRoute(address ? Routes.SWIPE_LAYOUT : Routes.WELCOME_SCREEN);
     PerformanceContextMap.set('initialRoute', address ? Routes.SWIPE_LAYOUT : Routes.WELCOME_SCREEN);
-  };
+  }, []);
 
-  const handleAppStateChange = (nextAppState: AppStateStatus) => {
-    if (appState === 'background' && nextAppState === 'active') {
-      store.dispatch(walletConnectLoadState());
-    }
-    setAppState(nextAppState);
-    analyticsV2.track(analyticsV2.event.appStateChange, {
-      category: 'app state',
-      label: nextAppState,
-    });
-  };
+  const handleAppStateChange = useCallback(
+    (nextAppState: AppStateStatus) => {
+      if (appState === 'background' && nextAppState === 'active') {
+        store.dispatch(walletConnectLoadState());
+      }
+      setAppState(nextAppState);
+      analyticsV2.track(analyticsV2.event.appStateChange, {
+        category: 'app state',
+        label: nextAppState,
+      });
+    },
+    [appState]
+  );
 
-  const handleNavigatorRef = (ref: NavigationContainerRef<RootStackParamList>) => {
+  const handleNavigatorRef = useCallback((ref: NavigationContainerRef<RootStackParamList>) => {
     navigatorRef.current = ref;
     Navigation.setTopLevelNavigator(ref);
-  };
+  }, []);
+
+  useEffect(() => {
+    if (!__DEV__ && isTestFlight) {
+      logger.info(`Test flight usage - ${isTestFlight}`);
+    }
+    identifyFlow();
+    eventSubscription.current = AppState.addEventListener('change', handleAppStateChange);
+
+    const p1 = analyticsV2.initializeRudderstack();
+    const p2 = setupDeeplinking();
+    const p3 = saveFCMToken();
+    Promise.all([p1, p2, p3]).then(() => {
+      initWalletConnectListeners();
+      PerformanceTracking.finishMeasuring(PerformanceMetrics.loadRootAppComponent);
+      analyticsV2.track(analyticsV2.event.applicationDidMount);
+    });
+
+    return () => {
+      eventSubscription.current?.remove();
+      branchListenerRef.current?.();
+    };
+  }, [handleAppStateChange, identifyFlow, setupDeeplinking]);
+
+  useEffect(() => {
+    if (walletReady) {
+      logger.info('✅ Wallet ready!');
+      runWalletBackupStatusChecks();
+    }
+  }, [walletReady]);
 
   return (
     <Portal>
