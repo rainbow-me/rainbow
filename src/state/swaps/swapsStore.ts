@@ -162,8 +162,7 @@ export const swapsStore = createRainbowStore<SwapsState>(
     getRecentSwapsByChain: (chainId: ChainId) => {
       const { recentSwaps } = get();
 
-      const chainSwaps = recentSwaps.get(chainId) || [];
-      return chainSwaps.sort((a, b) => b.swappedAt - a.swappedAt);
+      return recentSwaps.get(chainId) || [];
     },
     addRecentSwap(asset) {
       const { recentSwaps, latestSwapAt } = get();
@@ -178,7 +177,10 @@ export const swapsStore = createRainbowStore<SwapsState>(
       recentSwaps.set(chainId, updatedSwaps);
       latestSwapAt.set(chainId, now);
 
-      set({ recentSwaps: new Map(recentSwaps) });
+      set({
+        recentSwaps: new Map(recentSwaps),
+        latestSwapAt: new Map(latestSwapAt),
+      });
     },
   }),
   {
