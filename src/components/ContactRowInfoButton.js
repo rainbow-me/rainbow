@@ -67,9 +67,9 @@ const ContactRowActions = {
   },
 };
 
-const buildBlockExplorerAction = type => {
+const buildBlockExplorerAction = chainId => {
   const blockExplorerText = lang.t('wallet.action.view_on', {
-    blockExplorerName: startCase(ethereumUtils.getBlockExplorer(type)),
+    blockExplorerName: startCase(ethereumUtils.getBlockExplorer(chainId)),
   });
 
   return {

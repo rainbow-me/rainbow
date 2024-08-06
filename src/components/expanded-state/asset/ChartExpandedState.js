@@ -144,7 +144,7 @@ export default function ChartExpandedState({ asset }) {
 
   const { data: genericAsset } = useExternalToken({
     address: asset?.address,
-    network: asset?.network,
+    chainId: ethereumUtils.getChainIdFromNetwork(asset?.network),
     currency: nativeCurrency,
   });
   const {
