@@ -19,6 +19,7 @@ export enum MigrationName {
   migratePersistedQueriesToMMKV = 'migration_migratePersistedQueriesToMMKV',
   migrateRemotePromoSheetsToZustand = 'migration_migrateRemotePromoSheetsToZustand',
   migrateFavoritesToV2 = 'migration_migrateFavoritesToV2',
+  removeDuplicateRecentSwaps = 'migration_removeDuplicateRecentSwaps',
 }
 
 export type Migration = {
