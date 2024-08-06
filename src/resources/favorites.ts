@@ -82,7 +82,6 @@ async function fetchMetadata(addresses: string[], chainId = ChainId.mainnet) {
  * Refreshes the metadata associated with all favorites.
  */
 export async function refreshFavorites() {
-  console.log('REFRESH');
 
   const favorites = queryClient.getQueryData<Record<UniqueId, RainbowToken>>(favoritesQueryKey);
   if (!favorites) return;
