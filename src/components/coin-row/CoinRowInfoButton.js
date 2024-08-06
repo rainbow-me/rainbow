@@ -67,9 +67,9 @@ const CoinRowActions = {
   },
 };
 
-const buildBlockExplorerAction = type => {
+const buildBlockExplorerAction = chainId => {
   const blockExplorerText = lang.t('exchange.coin_row.view_on', {
-    blockExplorerName: startCase(ethereumUtils.getBlockExplorer(type)),
+    blockExplorerName: startCase(ethereumUtils.getBlockExplorer(chainId)),
   });
   return {
     actionKey: CoinRowActionsEnum.blockExplorer,

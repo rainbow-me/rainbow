@@ -131,7 +131,7 @@ export default function SwapDetailsContractRow({ asset, onCopySwapDetailsText, .
 
   const onPressAndroid = useCallback(() => {
     const blockExplorerText = lang.t('expanded_state.swap.view_on', {
-      blockExplorerName: startCase(ethereumUtils.getBlockExplorer(asset?.network)),
+      blockExplorerName: startCase(ethereumUtils.getBlockExplorer(ethereumUtils.getChainIdFromNetwork(asset?.network))),
     });
     const androidContractActions = [lang.t('wallet.action.copy_contract_address'), blockExplorerText, lang.t('button.cancel')];
     showActionSheetWithOptions(
