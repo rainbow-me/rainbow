@@ -1,7 +1,7 @@
 import { gweiToWei } from '@/__swaps__/utils/ethereum';
 import { getDefaultKeyboardHeight } from '@/redux/keyboardHeight';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
-import { Easing } from 'react-native-reanimated';
+import { Easing, WithSpringConfig, WithTimingConfig } from 'react-native-reanimated';
 import { IS_TEST } from '@/env';
 
 // /---- 🔒 Constants 🔒 ----/ //
@@ -59,15 +59,14 @@ export const MAXIMUM_SIGNIFICANT_DECIMALS = 6;
 // /---- ⏱️ Animation configs ⏱️ ----/ //
 //
 
-export const disableForTestingEnvironment = (config: {
-  duration?: number;
-  easing?: any;
-  damping?: number;
-  mass?: number;
-  stiffness?: number;
-}) => {
+type AnyConfig = WithSpringConfig | WithTimingConfig;
+
+export const disableForTestingEnvironment = <T extends AnyConfig>(config: T): T => {
   if (!IS_TEST) return config;
-  return { ...config, duration: 0, damping: 0 };
+  return {
+    ...config,
+    duration: 0,
+  } as T;
 };
 
 export const buttonPressConfig = disableForTestingEnvironment({ duration: 160, easing: Easing.bezier(0.25, 0.46, 0.45, 0.94) });
