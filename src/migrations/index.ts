@@ -16,6 +16,7 @@ import { migratePinnedAndHiddenTokenUniqueIds } from './migrations/migratePinned
 import { migrateRemotePromoSheetsToZustand } from './migrations/migrateRemotePromoSheetsToZustand';
 import { migrateUnlockableAppIconStorage } from './migrations/migrateUnlockableAppIconStorage';
 import { purgeWcConnectionsWithoutAccounts } from './migrations/purgeWcConnectionsWithoutAccounts';
+import { removeDuplicateRecentSwaps } from './migrations/removeDuplicateRecentSwaps';
 
 /**
  * Local storage for migrations only. Should not be exported.
@@ -44,6 +45,7 @@ const migrations: Migration[] = [
   migrateRemotePromoSheetsToZustand(),
   migrateFavoritesV2(),
   migrateFavoritesV3(),
+  removeDuplicateRecentSwaps(),
 ];
 
 /**

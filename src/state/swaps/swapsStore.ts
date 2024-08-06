@@ -162,8 +162,7 @@ export const swapsStore = createRainbowStore<SwapsState>(
     getRecentSwapsByChain: (chainId: ChainId) => {
       const { recentSwaps } = get();
 
-      const chainSwaps = recentSwaps.get(chainId) || [];
-      return chainSwaps.sort((a, b) => b.swappedAt - a.swappedAt);
+      return recentSwaps.get(chainId) || [];
     },
     addRecentSwap(asset) {
       const { recentSwaps, latestSwapAt } = get();
@@ -171,11 +170,34 @@ export const swapsStore = createRainbowStore<SwapsState>(
       const chainId = asset.chainId;
       const chainSwaps = recentSwaps.get(chainId) || [];
 
-      const updatedSwaps = [...chainSwaps, { ...asset, swappedAt: now }].slice(-3);
+      const [latestSwap] = chainSwaps;
+
+      // Check if the most recent swap is the same as the incoming asset
+      if (latestSwap && latestSwap.uniqueId === asset.uniqueId) {
+        latestSwapAt.set(chainId, now);
+        recentSwaps.set(chainId, [
+          ...chainSwaps.slice(1),
+          {
+            ...latestSwap,
+            swappedAt: now,
+          },
+        ]);
+
+        set({ latestSwapAt: new Map(latestSwapAt), recentSwaps: new Map(recentSwaps) });
+        return;
+      }
+
+      // Remove any existing entries of the same asset
+      const filteredSwaps = chainSwaps.filter(swap => swap.uniqueId !== asset.uniqueId);
+
+      const updatedSwaps = [...filteredSwaps, { ...asset, swappedAt: now }].slice(0, 3);
       recentSwaps.set(chainId, updatedSwaps);
       latestSwapAt.set(chainId, now);
 
-      set({ recentSwaps: new Map(recentSwaps) });
+      set({
+        recentSwaps: new Map(recentSwaps),
+        latestSwapAt: new Map(latestSwapAt),
+      });
     },
   }),
   {
