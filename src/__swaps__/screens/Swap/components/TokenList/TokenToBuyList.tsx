@@ -130,10 +130,6 @@ export const TokenToBuyList = () => {
 
   if (isLoading) return null;
 
-  const getFormattedTestId = (name: string, chainId: ChainId) => {
-    return `token-to-buy-${name}-${chainId}`.toLowerCase().replace(/\s+/g, '-');
-  };
-
   return (
     <Box style={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}>
       <FlashList
@@ -155,7 +151,6 @@ export const TokenToBuyList = () => {
           }
           return (
             <CoinRow
-              testID={getFormattedTestId(item.name, item.chainId)}
               address={item.address}
               chainId={item.chainId}
               colors={item.colors}

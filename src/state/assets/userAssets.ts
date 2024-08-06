@@ -1,13 +1,10 @@
-import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
-import { ChainId } from '@/__swaps__/types/chains';
-import { getIsHardhatConnected } from '@/handlers/web3';
-import { ethereumUtils } from '@/utils';
-import { NetworkTypes } from '@/helpers';
 import { Address } from 'viem';
 import { RainbowError, logger } from '@/logger';
 import store from '@/redux/store';
 import { SUPPORTED_CHAIN_IDS, supportedNativeCurrencies } from '@/references';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
+import { ChainId } from '@/__swaps__/types/chains';
 import { swapsStore } from '../swaps/swapsStore';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
@@ -182,6 +179,7 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
         return filteredIds;
       }
     },
+
     getHighestValueAsset: (usePreferredNetwork = true) => {
       const preferredNetwork = usePreferredNetwork ? swapsStore.getState().preferredNetwork : undefined;
       const assets = get().userAssets;
