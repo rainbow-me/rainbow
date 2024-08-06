@@ -1,8 +1,7 @@
-import React, { Children, ReactElement, ReactNode, useMemo } from 'react';
-import flattenChildren from 'react-flatten-children';
+import React, { Children, ReactElement, ReactNode } from 'react';
 import { AlignHorizontal, alignHorizontalToFlexAlign, AlignVertical, alignVerticalToFlexAlign } from '../../layout/alignment';
-import { negateSpace, Space } from '../../layout/space';
-import { Box } from '../Box/Box';
+import { Space, space as spaceTokens } from '../../layout/space';
+import { Box, resolveToken } from '../Box/Box';
 
 export type InlineProps = {
   children: ReactNode;
@@ -39,34 +38,33 @@ export function Inline({
   const verticalSpace = verticalSpaceProp ?? space;
   const horizontalSpace = horizontalSpaceProp ?? space;
 
-  const flattenedChildren = useMemo(() => flattenChildren(children), [children]);
-
   return (
     <Box
       alignItems={alignVertical ? alignVerticalToFlexAlign[alignVertical] : undefined}
       flexDirection="row"
       flexWrap={wrap ? 'wrap' : undefined}
+      gap={resolveToken(spaceTokens, space)}
       justifyContent={alignHorizontal ? alignHorizontalToFlexAlign[alignHorizontal] : undefined}
-      marginRight={wrap && horizontalSpace ? negateSpace(horizontalSpace) : undefined}
-      marginTop={wrap && verticalSpace ? negateSpace(verticalSpace) : undefined}
+      style={
+        wrap
+          ? {
+              columnGap: resolveToken(spaceTokens, horizontalSpace),
+              rowGap: resolveToken(spaceTokens, verticalSpace),
+            }
+          : {}
+      }
     >
-      {Children.map(flattenedChildren, (child, index) => {
-        if (wrap) {
-          return (
-            <Box paddingRight={horizontalSpace} paddingTop={verticalSpace}>
-              {child}
-            </Box>
-          );
-        }
-
-        const isLastChild = index === flattenedChildren.length - 1;
-        return (
-          <>
-            {horizontalSpace && !isLastChild ? <Box paddingRight={horizontalSpace}>{child}</Box> : child}
-            {separator && !isLastChild ? <Box paddingRight={horizontalSpace}>{separator}</Box> : null}
-          </>
-        );
-      })}
+      {wrap || !separator
+        ? children
+        : Children.map(children, (child, index) => {
+            if (!child) return null;
+            return (
+              <>
+                {index > 0 && separator}
+                {child}
+              </>
+            );
+          })}
     </Box>
   );
 }
