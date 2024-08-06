@@ -16,24 +16,16 @@ const fetchTrendingDApps: QueryFunction<TrendingDAppsQuery, TrendingDAppsQueryKe
   });
 };
 
-export function selectValidDApps(data: TrendingDAppsQuery): TrendingDAppsQuery {
-  if (!data.dApps?.length) return { dApps: [] };
+export function selectValidNonScamDApps(data: TrendingDAppsQuery): TrendingDAppsQuery {
+  if (!data.dApps?.length) return { ...data, dApps: [] };
   return {
     ...data,
-    dApps: data.dApps.filter(Boolean),
-  };
-}
-
-export function selectNonScamDApps(data: TrendingDAppsQuery): TrendingDAppsQuery {
-  if (!data.dApps?.length) return { dApps: [] };
-  return {
-    ...data,
-    dApps: data.dApps.filter(d => d?.status !== DAppStatus.Scam),
+    dApps: data.dApps.filter(d => Boolean(d) && d?.status !== DAppStatus.Scam),
   };
 }
 
 export function selectFirstEightDApps(data: TrendingDAppsQuery): TrendingDAppsQuery {
-  if (!data.dApps?.length) return { dApps: [] };
+  if (!data.dApps?.length) return { ...data, dApps: [] };
   return {
     ...data,
     dApps: data.dApps.slice(0, 8),
@@ -42,14 +34,14 @@ export function selectFirstEightDApps(data: TrendingDAppsQuery): TrendingDAppsQu
 
 export function useTrendingDApps(
   period = DAppRankingPeriod.Day,
-  config: QueryConfigWithSelect<TrendingDAppsQuery, unknown, ReturnType<typeof selectNonScamDApps>, TrendingDAppsQueryKey> = {}
+  config: QueryConfigWithSelect<TrendingDAppsQuery, unknown, ReturnType<typeof selectFirstEightDApps>, TrendingDAppsQueryKey> = {}
 ) {
   return useQuery(trendingDAppsQueryKey({ period }), fetchTrendingDApps, {
     staleTime: 1000 * 60 * 20, // 20 minutes
     cacheTime: 1000 * 60 * 60 * 24 * 2, // 2 days
     retry: 3,
     keepPreviousData: true,
-    select: data => selectFirstEightDApps(selectNonScamDApps(selectValidDApps(data))),
+    select: data => selectFirstEightDApps(selectValidNonScamDApps(data)),
     ...config,
   });
 }
