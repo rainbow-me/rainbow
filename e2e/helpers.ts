@@ -4,9 +4,8 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { expect, device, element, by, waitFor } from 'detox';
 import { parseEther } from '@ethersproject/units';
-import { IosElementAttributes, AndroidElementAttributes } from 'detox/detox';
 
-const TESTING_WALLET = '0x3637f053D542E6D00Eee42D656dD7C59Fa33a62F';
+const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 
 const DEFAULT_TIMEOUT = 20_000;
 const android = device.getPlatform() === 'android';
@@ -70,16 +69,6 @@ export async function tap(elementId: string | RegExp) {
     throw new Error(`Error tapping element by id "${elementId}": ${error}`);
   }
 }
-
-interface CustomElementAttributes {
-  elements: Array<IosElementAttributes | AndroidElementAttributes>;
-}
-
-type ElementAttributes = IosElementAttributes & AndroidElementAttributes & CustomElementAttributes;
-
-export const fetchElementAttributes = async (testId: string): Promise<ElementAttributes> => {
-  return (await element(by.id(testId)).getAttributes()) as ElementAttributes;
-};
 
 export async function waitAndTap(elementId: string | RegExp, timeout = DEFAULT_TIMEOUT) {
   await delayTime('medium');
