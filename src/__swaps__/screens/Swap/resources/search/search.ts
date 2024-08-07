@@ -118,9 +118,8 @@ export function useTokenSearch(
   { chainId, fromChainId, keys, list, threshold, query }: TokenSearchArgs,
   config: QueryConfigWithSelect<TokenSearchResult, Error, TokenSearchResult, TokenSearchQueryKey> = {}
 ) {
-  return useQuery(
-    tokenSearchQueryKey({ chainId, fromChainId, keys, list, threshold, query }),
-    tokenSearchQueryFunction,
-    { ...config, keepPreviousData: true }
-  );
+  return useQuery(tokenSearchQueryKey({ chainId, fromChainId, keys, list, threshold, query }), tokenSearchQueryFunction, {
+    ...config,
+    keepPreviousData: true,
+  });
 }
