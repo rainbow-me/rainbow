@@ -323,13 +323,13 @@ export function useSwapInputsController({
       // Handle updating the slider position if the quote was output based
       if (originalQuoteParams.lastTypedInput === 'outputAmount' || originalQuoteParams.lastTypedInput === 'outputNativeValue') {
         if (!inputAmount || inputAmount === 0) {
-          sliderXPosition.value = withSpring(0, snappySpringConfig);
+          sliderXPosition.value = withSpring(0, snappySpringConfig as WithSpringConfig);
         } else {
           const inputBalance = internalSelectedInputAsset.value?.maxSwappableAmount || '0';
           const updatedSliderPosition = greaterThanWorklet(inputBalance, 0)
             ? clamp(Number(divWorklet(inputAmount, inputBalance)) * SLIDER_WIDTH, 0, SLIDER_WIDTH)
             : 0;
-          sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
+          sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig as WithSpringConfig);
         }
       }
 
@@ -604,7 +604,7 @@ export function useSwapInputsController({
       [inputKey]: hasDecimal ? inputKeyValue : 0,
     }));
 
-    if (updateSlider) sliderXPosition.value = withSpring(0, snappySpringConfig);
+    if (updateSlider) sliderXPosition.value = withSpring(0, snappySpringConfig as WithSpringConfig);
   };
 
   const debouncedFetchQuote = useDebouncedCallback(
@@ -660,7 +660,7 @@ export function useSwapInputsController({
         }
 
         if (didInputAssetChange) {
-          sliderXPosition.value = withSpring(SLIDER_WIDTH / 2, snappySpringConfig);
+          sliderXPosition.value = withSpring(SLIDER_WIDTH / 2, snappySpringConfig as WithSpringConfig);
         }
 
         const { inputAmount, inputNativeValue } = getInputValuesForSliderPositionWorklet({
@@ -826,14 +826,14 @@ export function useSwapInputsController({
             const inputAssetBalance = internalSelectedInputAsset.value?.maxSwappableAmount || '0';
 
             if (equalWorklet(inputAssetBalance, 0)) {
-              sliderXPosition.value = withSpring(0, snappySpringConfig);
+              sliderXPosition.value = withSpring(0, snappySpringConfig as WithSpringConfig);
             } else {
               const updatedSliderPosition = clamp(
                 Number(divWorklet(current.values.inputAmount, inputAssetBalance)) * SLIDER_WIDTH,
                 0,
                 SLIDER_WIDTH
               );
-              sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
+              sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig as WithSpringConfig);
             }
 
             runOnJS(debouncedFetchQuote)();
