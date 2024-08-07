@@ -121,6 +121,6 @@ export function useTokenSearch(
   return useQuery(
     tokenSearchQueryKey({ chainId, fromChainId, keys, list, threshold, query }),
     tokenSearchQueryFunction,
-    config ? { ...config, keepPreviousData: true } : { keepPreviousData: true }
+    { ...config, keepPreviousData: true }
   );
 }
