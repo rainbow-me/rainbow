@@ -54,6 +54,13 @@ import { Address } from 'viem';
 import { IS_DEV } from './env';
 import { checkIdentifierOnLaunch } from './model/backup';
 
+import {
+  addDiagnosticLogListener,
+  getAndroidIntentUrl,
+  MobileWalletProtocolProvider,
+  useMobileWalletProtocolHost,
+} from '@coinbase/mobile-wallet-protocol-host';
+
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
   (showNetworkRequests || showNetworkResponses) && monitorNetwork(showNetworkRequests, showNetworkResponses);
@@ -289,19 +296,21 @@ function Root() {
     <ReduxProvider store={store}>
       <RecoilRoot>
         <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
-          <SafeAreaProvider>
-            <MainThemeProvider>
-              <GestureHandlerRootView style={{ flex: 1 }}>
-                <RainbowContextWrapper>
-                  <SharedValuesProvider>
-                    <ErrorBoundary>
-                      <AppWithRedux walletReady={false} />
-                    </ErrorBoundary>
-                  </SharedValuesProvider>
-                </RainbowContextWrapper>
-              </GestureHandlerRootView>
-            </MainThemeProvider>
-          </SafeAreaProvider>
+          <MobileWalletProtocolProvider secureStorage={ls.mwp} sessionExpiryDays={7}>
+            <SafeAreaProvider>
+              <MainThemeProvider>
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                  <RainbowContextWrapper>
+                    <SharedValuesProvider>
+                      <ErrorBoundary>
+                        <AppWithRedux walletReady={false} />
+                      </ErrorBoundary>
+                    </SharedValuesProvider>
+                  </RainbowContextWrapper>
+                </GestureHandlerRootView>
+              </MainThemeProvider>
+            </SafeAreaProvider>
+          </MobileWalletProtocolProvider>
         </PersistQueryClientProvider>
       </RecoilRoot>
     </ReduxProvider>
