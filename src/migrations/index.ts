@@ -10,7 +10,7 @@ import { prepareDefaultNotificationGroupSettingsState } from '@/migrations/migra
 import { Migration, MigrationName, MIGRATIONS_DEBUG_CONTEXT, MIGRATIONS_STORAGE_ID } from '@/migrations/types';
 import { changeLanguageKeys } from './migrations/changeLanguageKeys';
 import { fixHiddenUSDC } from './migrations/fixHiddenUSDC';
-import { migrateFavoritesToV2 } from './migrations/migrateFavoritesToV2';
+import { migrateFavoritesV2, migrateFavoritesV3 } from './migrations/migrateFavorites';
 import { migratePersistedQueriesToMMKV } from './migrations/migratePersistedQueriesToMMKV';
 import { migratePinnedAndHiddenTokenUniqueIds } from './migrations/migratePinnedAndHiddenTokenUniqueIds';
 import { migrateRemotePromoSheetsToZustand } from './migrations/migrateRemotePromoSheetsToZustand';
@@ -42,7 +42,8 @@ const migrations: Migration[] = [
   migrateUnlockableAppIconStorage(),
   migratePersistedQueriesToMMKV(),
   migrateRemotePromoSheetsToZustand(),
-  migrateFavoritesToV2(),
+  migrateFavoritesV2(),
+  migrateFavoritesV3(),
 ];
 
 /**

@@ -1,14 +1,10 @@
-import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
-import { ChainId } from '@/__swaps__/types/chains';
-import { add, convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
-import { getIsHardhatConnected } from '@/handlers/web3';
-import { ethereumUtils } from '@/utils';
-import { NetworkTypes } from '@/helpers';
 import { Address } from 'viem';
 import { RainbowError, logger } from '@/logger';
 import store from '@/redux/store';
 import { SUPPORTED_CHAIN_IDS, supportedNativeCurrencies } from '@/references';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
+import { ChainId } from '@/__swaps__/types/chains';
 import { swapsStore } from '../swaps/swapsStore';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
@@ -31,12 +27,6 @@ export interface UserAssetsState {
   associatedWalletAddress: Address | undefined;
   chainBalances: Map<ChainId, number>;
   currentAbortController: AbortController;
-  totalAssetNativeBalance:
-    | {
-        amount: string;
-        display: string;
-      }
-    | undefined;
   filter: UserAssetFilter;
   idsByChain: Map<UserAssetFilter, UniqueId[]>;
   inputSearchQuery: string;
@@ -48,10 +38,6 @@ export interface UserAssetsState {
   getHighestValueAsset: (usePreferredNetwork?: boolean) => ParsedSearchAsset | null;
   getUserAsset: (uniqueId: UniqueId) => ParsedSearchAsset | null;
   getUserAssets: () => ParsedSearchAsset[];
-  getTotalAssetNativeBalance: () => {
-    amount: string;
-    display: string;
-  };
   selectUserAssetIds: (selector: (asset: ParsedSearchAsset) => boolean, filter?: UserAssetFilter) => Generator<UniqueId, void, unknown>;
   selectUserAssets: (selector: (asset: ParsedSearchAsset) => boolean) => Generator<[UniqueId, ParsedSearchAsset], void, unknown>;
   setSearchCache: (queryKey: string, filteredIds: UniqueId[]) => void;
@@ -144,7 +130,6 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
     inputSearchQuery: '',
     searchCache: new Map(),
     userAssets: new Map(),
-    totalAssetNativeBalance: undefined,
 
     getBalanceSortedChainList: () => {
       const chainBalances = [...get().chainBalances.entries()];
@@ -194,6 +179,7 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
         return filteredIds;
       }
     },
+
     getHighestValueAsset: (usePreferredNetwork = true) => {
       const preferredNetwork = usePreferredNetwork ? swapsStore.getState().preferredNetwork : undefined;
       const assets = get().userAssets;
@@ -214,17 +200,6 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
     getUserAsset: (uniqueId: UniqueId) => get().userAssets.get(uniqueId) || null,
 
     getUserAssets: () => Array.from(get().userAssets.values()) || [],
-
-    getTotalAssetNativeBalance: () => {
-      const { getUserAssets } = get();
-
-      const amount = getUserAssets().reduce((prev, curr) => add(prev, curr.native.balance.amount), '0');
-
-      return {
-        amount,
-        display: convertAmountToNativeDisplayWorklet(amount, store.getState().settings.nativeCurrency),
-      };
-    },
 
     selectUserAssetIds: function* (selector: (asset: ParsedSearchAsset) => boolean, filter?: UserAssetFilter) {
       const { currentAbortController, idsByChain, userAssets } = get();

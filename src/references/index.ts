@@ -229,10 +229,21 @@ export const SUPPORTED_MAINNET_CHAINS: Chain[] = [mainnet, polygon, optimism, ar
   name: ChainNameDisplay[chain.id],
 }));
 
-export const SUPPORTED_CHAINS = ({ testnetMode = false }: { testnetMode?: boolean }): Chain[] => {
-  const mainnetChains: Chain[] = [mainnet, base, optimism, arbitrum, polygon, zora, blast, degen, avalanche, bsc];
+export const SUPPORTED_CHAINS = ({ testnetMode = false }: { testnetMode?: boolean }): Chain[] =>
+  [
+    // In default order of appearance
+    mainnet,
+    base,
+    optimism,
+    arbitrum,
+    polygon,
+    zora,
+    blast,
+    degen,
+    avalanche,
+    bsc,
 
-  const testnetChains: Chain[] = [
+    // Testnets
     goerli,
     holesky,
     sepolia,
@@ -244,12 +255,12 @@ export const SUPPORTED_CHAINS = ({ testnetMode = false }: { testnetMode?: boolea
     zoraSepolia,
     avalancheFuji,
     bscTestnet,
-  ];
-
-  const allChains = mainnetChains.concat(testnetMode ? testnetChains : []);
-
-  return allChains.map(chain => ({ ...chain, name: ChainNameDisplay[chain.id] ?? chain.name }));
-};
+  ].reduce((chainList, chain) => {
+    if (testnetMode || !chain.testnet) {
+      chainList.push({ ...chain, name: ChainNameDisplay[chain.id] });
+    }
+    return chainList;
+  }, [] as Chain[]);
 
 export const SUPPORTED_CHAIN_IDS = ({ testnetMode = false }: { testnetMode?: boolean }): ChainId[] =>
   SUPPORTED_CHAINS({ testnetMode }).map(chain => chain.id);

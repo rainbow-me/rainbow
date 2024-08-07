@@ -9,7 +9,7 @@
         },
         "decimals": 18,
         "icon_url": "https://s3.amazonaws.com/icons.assets/ETH.png",
-        "name": "Goerli",
+        "name": "Ether",
         "network": "goerli",
         "price": {
           "changed_at": 1582568575,
@@ -31,7 +31,7 @@
         },
         "decimals": 18,
         "icon_url": "https://s3.amazonaws.com/icons.assets/ETH.png",
-        "name": "Ethereum",
+        "name": "Ether",
         "network": "mainnet",
         "price": {
           "changed_at": 1582568575,
