@@ -471,11 +471,26 @@ const HomePanel = ({
       },
       screen: Routes.MAIN_EXCHANGE_SCREEN,
     });
-  }, [runWalletChecksBeforeSwapOrBridge, selectedWallet?.uniqueId]);
+  }, [navigate, runWalletChecksBeforeSwapOrBridge, selectedWallet?.uniqueId, swapsV2Enabled]);
 
   const handleOnPressBridge = useCallback(async () => {
     const valid = await runWalletChecksBeforeSwapOrBridge();
     if (!valid) return;
+
+    const { swaps_v2 } = getRemoteConfig();
+
+    if (swaps_v2 || swapsV2Enabled) {
+      // TODO: We need to set something in swapsStore that deliniates between a swap and bridge
+      // for now let's just treat it like a normal swap
+      swapsStore.setState({
+        inputAsset: userAssetsStore.getState().getHighestValueAsset(),
+      });
+      InteractionManager.runAfterInteractions(() => {
+        navigate(Routes.SWAP);
+      });
+      return;
+    }
+
     const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(Network.mainnet, selectedWallet?.uniqueId);
     Navigation.handleAction(Routes.EXCHANGE_MODAL, {
       fromDiscover: true,
@@ -484,7 +499,7 @@ const HomePanel = ({
       },
       screen: Routes.MAIN_EXCHANGE_SCREEN,
     });
-  }, [runWalletChecksBeforeSwapOrBridge, selectedWallet?.uniqueId]);
+  }, [navigate, runWalletChecksBeforeSwapOrBridge, selectedWallet?.uniqueId, swapsV2Enabled]);
 
   const isOnHomepage = useBrowserStore(state => (state.getActiveTabUrl() || DEFAULT_TAB_URL) === RAINBOW_HOME);
 

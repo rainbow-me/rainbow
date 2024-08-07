@@ -202,6 +202,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       const connectedToHardhat = !!providerUrl && isHardHat(providerUrl);
 
       const isBridge = swapsStore.getState().inputAsset?.mainnetAddress === swapsStore.getState().outputAsset?.mainnetAddress;
+      const isDegenModeEnabled = swapsStore.getState().degenMode;
       const slippage = swapsStore.getState().slippage;
 
       const selectedGas = getSelectedGas(parameters.chainId);
@@ -216,7 +217,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         screen: Screens.SWAPS,
         operation: TimeToSignOperation.KeychainRead,
         metadata: {
-          degenMode: swapsStore.getState().degenMode,
+          degenMode: isDegenModeEnabled,
         },
       })({
         address: parameters.quote.from,
@@ -226,7 +227,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           screen: Screens.SWAPS,
           operation: TimeToSignOperation.Authentication,
           metadata: {
-            degenMode: swapsStore.getState().degenMode,
+            degenMode: isDegenModeEnabled,
           },
         },
       });
@@ -261,7 +262,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         screen: Screens.SWAPS,
         operation: TimeToSignOperation.SignTransaction,
         metadata: {
-          degenMode: swapsStore.getState().degenMode,
+          degenMode: isDegenModeEnabled,
         },
       })(wallet, type, {
         ...parameters,
@@ -286,6 +287,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           errorMessage,
           inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
           outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
+          degenMode: isDegenModeEnabled,
         });
 
         if (errorMessage !== 'handled') {
@@ -324,7 +326,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         operation: TimeToSignOperation.SheetDismissal,
         endOfOperation: true,
         metadata: {
-          degenMode: swapsStore.getState().degenMode,
+          degenMode: isDegenModeEnabled,
         },
       })(Routes.PROFILE_SCREEN, {});
 
@@ -338,6 +340,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         bridge: isBridge,
         inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
         outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
+        degenMode: isDegenModeEnabled,
       });
     } catch (error) {
       isSwapping.value = false;

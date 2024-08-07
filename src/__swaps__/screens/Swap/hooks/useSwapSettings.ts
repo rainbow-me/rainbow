@@ -1,4 +1,5 @@
 import { slippageStep } from '@/__swaps__/screens/Swap/constants';
+import { analyticsV2 } from '@/analytics';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { runOnJS, SharedValue, useSharedValue } from 'react-native-reanimated';
 
@@ -8,7 +9,11 @@ export const useSwapSettings = ({ debouncedFetchQuote, slippage }: { debouncedFe
 
   const setSlippage = swapsStore(state => state.setSlippage);
   const setFlashbots = swapsStore(state => state.setFlashbots);
-  const setDegenMode = swapsStore(state => state.setDegenMode);
+
+  const setDegenMode = (value: boolean) => {
+    swapsStore.getState().setDegenMode(value);
+    analyticsV2.track(analyticsV2.event.swapsToggledDegenMode, { enabled: value });
+  };
 
   const onToggleFlashbots = () => {
     'worklet';
