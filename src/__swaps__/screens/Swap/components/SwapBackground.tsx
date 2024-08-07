@@ -1,11 +1,11 @@
 import { Canvas, Rect, LinearGradient, vec, Paint } from '@shopify/react-native-skia';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useDerivedValue, withTiming } from 'react-native-reanimated';
 import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useColorMode } from '@/design-system';
-import { IS_ANDROID, IS_TEST } from '@/env';
+import { IS_ANDROID } from '@/env';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { getColorValueForThemeWorklet, getTintedBackgroundColor } from '@/__swaps__/utils/swaps';
 import { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
@@ -18,15 +18,12 @@ export const SwapBackground = () => {
   const { internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
 
   const animatedTopColor = useDerivedValue(() => {
-    if (IS_TEST) return getColorValueForThemeWorklet(DEFAULT_BACKGROUND_COLOR, isDarkMode, true);
     return withTiming(
       getColorValueForThemeWorklet(internalSelectedInputAsset.value?.tintedBackgroundColor || DEFAULT_BACKGROUND_COLOR, isDarkMode, true),
       TIMING_CONFIGS.slowFadeConfig
     );
   });
-
   const animatedBottomColor = useDerivedValue(() => {
-    if (IS_TEST) return getColorValueForThemeWorklet(DEFAULT_BACKGROUND_COLOR, isDarkMode, true);
     return withTiming(
       getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.tintedBackgroundColor || DEFAULT_BACKGROUND_COLOR, isDarkMode, true),
       TIMING_CONFIGS.slowFadeConfig
@@ -36,10 +33,6 @@ export const SwapBackground = () => {
   const gradientColors = useDerivedValue(() => {
     return [animatedTopColor.value, animatedBottomColor.value];
   });
-
-  if (IS_TEST) {
-    return <View style={[styles.background, { backgroundColor: animatedTopColor.value }]} />;
-  }
 
   return (
     <Canvas style={styles.background}>

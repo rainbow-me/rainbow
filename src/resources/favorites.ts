@@ -11,80 +11,11 @@ import { useQuery } from '@tanstack/react-query';
 import { omit } from 'lodash';
 import { externalTokenQueryKey, fetchExternalToken } from './assets/externalAssetsQuery';
 
-export const favoritesQueryKey = createQueryKey('favorites', {}, { persisterVersion: 2 });
+export const favoritesQueryKey = createQueryKey('favorites', {}, { persisterVersion: 3 });
+
+const DEFAULT_FAVORITES = [DAI_ADDRESS, ETH_ADDRESS, SOCKS_ADDRESS, WBTC_ADDRESS];
 
 const getUniqueId = (address: AddressOrEth, chainId: ChainId) => getStandardizedUniqueIdWorklet({ address, chainId });
-
-const DAI_uniqueId = getUniqueId(DAI_ADDRESS, ChainId.mainnet);
-const ETH_uniqueId = getUniqueId(ETH_ADDRESS, ChainId.mainnet);
-const SOCKS_uniqueId = getUniqueId(SOCKS_ADDRESS, ChainId.mainnet);
-const WBTC_uniqueId = getUniqueId(WBTC_ADDRESS, ChainId.mainnet);
-
-const DEFAULT: Record<UniqueId, RainbowToken> = {
-  [DAI_uniqueId]: {
-    address: DAI_ADDRESS,
-    color: '#F0B340',
-    decimals: 18,
-    favorite: true,
-    highLiquidity: true,
-    isRainbowCurated: true,
-    isVerified: true,
-    name: 'Dai',
-    symbol: 'DAI',
-    network: Network.mainnet,
-    uniqueId: DAI_uniqueId,
-    networks: {
-      [ChainId.mainnet]: { address: DAI_ADDRESS },
-    },
-  },
-  [ETH_uniqueId]: {
-    address: ETH_ADDRESS,
-    color: '#25292E',
-    decimals: 18,
-    favorite: true,
-    highLiquidity: true,
-    isVerified: true,
-    name: 'Ethereum',
-    symbol: 'ETH',
-    network: Network.mainnet,
-    uniqueId: ETH_uniqueId,
-    networks: {
-      [ChainId.mainnet]: { address: ETH_ADDRESS },
-    },
-  },
-  [SOCKS_uniqueId]: {
-    address: SOCKS_ADDRESS,
-    color: '#E15EE5',
-    decimals: 18,
-    favorite: true,
-    highLiquidity: true,
-    isRainbowCurated: true,
-    isVerified: true,
-    name: 'Unisocks',
-    symbol: 'SOCKS',
-    network: Network.mainnet,
-    uniqueId: SOCKS_uniqueId,
-    networks: {
-      [ChainId.mainnet]: { address: SOCKS_ADDRESS },
-    },
-  },
-  [WBTC_uniqueId]: {
-    address: WBTC_ADDRESS,
-    color: '#FF9900',
-    decimals: 8,
-    favorite: true,
-    highLiquidity: true,
-    isRainbowCurated: true,
-    isVerified: true,
-    name: 'Wrapped Bitcoin',
-    symbol: 'WBTC',
-    network: Network.mainnet,
-    uniqueId: WBTC_uniqueId,
-    networks: {
-      [ChainId.mainnet]: { address: WBTC_ADDRESS },
-    },
-  },
-};
 
 /**
  * Returns a map of the given `addresses` to their corresponding `RainbowToken` metadata.
@@ -151,7 +82,8 @@ async function fetchMetadata(addresses: string[], chainId = ChainId.mainnet) {
  * Refreshes the metadata associated with all favorites.
  */
 export async function refreshFavorites() {
-  const favorites = queryClient.getQueryData<Record<UniqueId, RainbowToken>>(favoritesQueryKey) ?? DEFAULT;
+  const favorites = queryClient.getQueryData<Record<UniqueId, RainbowToken>>(favoritesQueryKey);
+  if (!favorites) return;
 
   const favoritesByNetwork = Object.values(favorites).reduce(
     (favoritesByChain, token) => {
@@ -192,11 +124,18 @@ export async function toggleFavorite(address: string, chainId = ChainId.mainnet)
     queryClient.setQueryData(favoritesQueryKey, omit(favorites, uniqueId));
   } else {
     const metadata = await fetchMetadata([lowercasedAddress], chainId);
-    queryClient.setQueryData(favoritesQueryKey, {
-      ...favorites,
-      ...metadata,
-    });
+    queryClient.setQueryData(favoritesQueryKey, { ...favorites, ...metadata });
   }
+}
+
+export async function prefetchDefaultFavorites() {
+  const favorites = queryClient.getQueryData<Record<UniqueId, RainbowToken>>(favoritesQueryKey);
+  if (favorites) return;
+
+  const defaultFavorites = await fetchMetadata(DEFAULT_FAVORITES, ChainId.mainnet);
+  queryClient.setQueryData(favoritesQueryKey, defaultFavorites);
+
+  return defaultFavorites;
 }
 
 /**
@@ -213,7 +152,6 @@ export function useFavorites(): {
     queryFn: refreshFavorites,
     staleTime: 24 * 60 * 60 * 1000, // 24hrs
     cacheTime: Infinity,
-    initialData: DEFAULT,
   });
 
   const favoritesMetadata = query.data ?? {};
