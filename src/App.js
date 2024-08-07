@@ -57,6 +57,7 @@ import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { initializeRemoteConfig } from '@/model/remoteConfig';
 import { IS_DEV } from './env';
 import { checkIdentifierOnLaunch } from './model/backup';
+import { prefetchDefaultFavorites } from './resources/favorites';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -338,7 +339,13 @@ function Root() {
   return initializing ? null : (
     <ReduxProvider store={store}>
       <RecoilRoot>
-        <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
+        <PersistQueryClientProvider
+          client={queryClient}
+          persistOptions={persistOptions}
+          onSuccess={() => {
+            prefetchDefaultFavorites();
+          }}
+        >
           <SafeAreaProvider>
             <MainThemeProvider>
               <GestureHandlerRootView style={{ flex: 1 }}>
