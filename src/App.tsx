@@ -53,6 +53,7 @@ import { RootStackParamList } from './navigation/types';
 import { Address } from 'viem';
 import { IS_DEV } from './env';
 import { checkIdentifierOnLaunch } from './model/backup';
+import { prefetchDefaultFavorites } from './resources/favorites';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -288,7 +289,13 @@ function Root() {
     // @ts-expect-error - Property 'children' does not exist on type 'IntrinsicAttributes & IntrinsicClassAttributes<Provider<AppStateUpdateAction | ChartsUpdateAction | ContactsAction | ... 13 more ... | WalletsAction>> & Readonly<...>'
     <ReduxProvider store={store}>
       <RecoilRoot>
-        <PersistQueryClientProvider client={queryClient} persistOptions={persistOptions}>
+        <PersistQueryClientProvider
+          client={queryClient}
+          persistOptions={persistOptions}
+          onSuccess={() => {
+            prefetchDefaultFavorites();
+          }}
+        >
           <SafeAreaProvider>
             <MainThemeProvider>
               <GestureHandlerRootView style={{ flex: 1 }}>
