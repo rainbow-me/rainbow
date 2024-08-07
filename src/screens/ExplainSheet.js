@@ -157,7 +157,7 @@ const ENS_CONFIGURATION_EXPLAINER =
 
 export const explainers = (params, theme) => {
   const colors = theme?.colors;
-  const fromNetworkObject = getNetworkObject(params?.fromNetwork);
+  const fromNetworkObject = getNetworkObj(params?.fromNetwork);
   const toNetworkObject = getNetworkObj(params?.toNetwork);
   return {
     op_rewards_airdrop_timing: {
