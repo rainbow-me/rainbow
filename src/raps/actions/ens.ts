@@ -24,6 +24,8 @@ import {
   createTransferENSRap,
 } from '../registerENS';
 import { Logger } from '@ethersproject/logger';
+import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
+import Routes from '@/navigation/routesNames';
 
 export interface ENSRapActionResponse {
   baseNonce?: number | null;
@@ -673,7 +675,11 @@ const executeAction = async (
   try {
     logger.log('[2 INNER] executing type', type);
     const actionPromise = findENSActionByType(type);
-    nonce = await actionPromise(wallet, rap, index, parameters as RapENSActionParameters, baseNonce);
+    nonce = await performanceTracking.getState().executeFn({
+      fn: actionPromise,
+      screen: Screens.SEND_ENS,
+      operation: TimeToSignOperation.SignTransaction,
+    })(wallet, rap, index, parameters as RapENSActionParameters, baseNonce);
     return { baseNonce: nonce, errorMessage: null };
   } catch (error: any) {
     logger.debug('Rap blew up', error);
@@ -700,7 +706,11 @@ export const executeENSRap = async (
   parameters: ENSActionParameters,
   callback: (success?: boolean, errorMessage?: string | null) => void
 ) => {
-  const rap = await createENSRapByType(type, parameters as ENSActionParameters);
+  const rap = await performanceTracking.getState().executeFn({
+    fn: createENSRapByType,
+    operation: TimeToSignOperation.CreateRap,
+    screen: Screens.SEND_ENS,
+  })(type, parameters as ENSActionParameters);
   const { actions } = rap;
   const rapName = getRapFullName(actions);
 

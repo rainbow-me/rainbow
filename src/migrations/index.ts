@@ -1,20 +1,21 @@
 import { InteractionManager } from 'react-native';
 
 import * as env from '@/env';
-import { Storage } from '@/storage';
 import { logger, RainbowError } from '@/logger';
+import { Storage } from '@/storage';
 
-import { MIGRATIONS_DEBUG_CONTEXT, MIGRATIONS_STORAGE_ID, MigrationName, Migration } from '@/migrations/types';
 import { deleteImgixMMKVCache } from '@/migrations/migrations/deleteImgixMMKVCache';
 import { migrateNotificationSettingsToV2 } from '@/migrations/migrations/migrateNotificationSettingsToV2';
 import { prepareDefaultNotificationGroupSettingsState } from '@/migrations/migrations/prepareDefaultNotificationGroupSettingsState';
+import { Migration, MigrationName, MIGRATIONS_DEBUG_CONTEXT, MIGRATIONS_STORAGE_ID } from '@/migrations/types';
 import { changeLanguageKeys } from './migrations/changeLanguageKeys';
 import { fixHiddenUSDC } from './migrations/fixHiddenUSDC';
-import { purgeWcConnectionsWithoutAccounts } from './migrations/purgeWcConnectionsWithoutAccounts';
-import { migratePinnedAndHiddenTokenUniqueIds } from './migrations/migratePinnedAndHiddenTokenUniqueIds';
-import { migrateUnlockableAppIconStorage } from './migrations/migrateUnlockableAppIconStorage';
+import { migrateFavoritesV2, migrateFavoritesV3 } from './migrations/migrateFavorites';
 import { migratePersistedQueriesToMMKV } from './migrations/migratePersistedQueriesToMMKV';
+import { migratePinnedAndHiddenTokenUniqueIds } from './migrations/migratePinnedAndHiddenTokenUniqueIds';
 import { migrateRemotePromoSheetsToZustand } from './migrations/migrateRemotePromoSheetsToZustand';
+import { migrateUnlockableAppIconStorage } from './migrations/migrateUnlockableAppIconStorage';
+import { purgeWcConnectionsWithoutAccounts } from './migrations/purgeWcConnectionsWithoutAccounts';
 
 /**
  * Local storage for migrations only. Should not be exported.
@@ -41,6 +42,8 @@ const migrations: Migration[] = [
   migrateUnlockableAppIconStorage(),
   migratePersistedQueriesToMMKV(),
   migrateRemotePromoSheetsToZustand(),
+  migrateFavoritesV2(),
+  migrateFavoritesV3(),
 ];
 
 /**

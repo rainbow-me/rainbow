@@ -1,3 +1,6 @@
+import { ExtendedAnimatedAssetWithColors, UniqueId } from './assets';
+import { SearchAsset } from './search';
+
 export type inputKeys = 'inputAmount' | 'inputNativeValue' | 'outputAmount' | 'outputNativeValue';
 export type inputMethods = inputKeys | 'slider';
 export type inputValuesType = { [key in inputKeys]: number | string };
@@ -21,3 +24,7 @@ export interface RequestNewQuoteParams {
   lastTypedInput: inputKeys;
   outputAmount: inputValuesType['outputAmount'];
 }
+
+export type RecentSwap = {
+  swappedAt: number;
+} & ExtendedAnimatedAssetWithColors;

@@ -856,7 +856,7 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
        */
       const loadWalletAndSignMessage = async () => {
         const provider = getProviderForNetwork();
-        const wallet = await loadWallet(address, false, provider);
+        const wallet = await loadWallet({ address, showErrorIfNotLoaded: false, provider });
 
         if (!wallet) {
           logger.error(new RainbowError(`WC v2: could not loadWallet to sign auth_request`));

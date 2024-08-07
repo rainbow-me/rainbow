@@ -64,6 +64,8 @@ import { getNetworkObj } from '@/networks';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { getNextNonce } from '@/state/nonces';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
+import { REGISTRATION_STEPS } from '@/helpers/ens';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
@@ -121,7 +123,7 @@ export default function SendSheet(props) {
   const { isHardwareWallet } = useWallets();
 
   const { action: transferENS } = useENSRegistrationActionHandler({
-    step: 'TRANSFER',
+    step: REGISTRATION_STEPS.TRANSFER,
   });
 
   const { hiddenCoinsObj, pinnedCoinsObj } = useCoinListEditOptions();
@@ -380,7 +382,17 @@ export default function SendSheet(props) {
 
   const onSubmit = useCallback(
     async ({ ens: { setAddress, transferControl, clearRecords } = {} } = {}) => {
-      const wallet = await loadWallet(undefined, true, currentProvider);
+      const wallet = await performanceTracking.getState().executeFn({
+        fn: loadWallet,
+        operation: TimeToSignOperation.KeychainRead,
+        screen: isENS ? Screens.SEND_ENS : Screens.SEND,
+      })({
+        provider: currentProvider,
+        timeTracking: {
+          screen: isENS ? Screens.SEND_ENS : Screens.SEND,
+          operation: TimeToSignOperation.Authentication,
+        },
+      });
       if (!wallet) return;
 
       const validTransaction = isValidAddress && amountDetails.isSufficientBalance && isSufficientGas && isValidGas;
@@ -427,7 +439,7 @@ export default function SendSheet(props) {
       let nextNonce;
 
       if (isENS && toAddress && (clearRecords || setAddress || transferControl)) {
-        const { nonce } = await transferENS(() => null, {
+        const { nonce } = await transferENS({
           clearRecords,
           name: ensName,
           records: {
@@ -458,7 +470,11 @@ export default function SendSheet(props) {
       };
 
       try {
-        const signableTransaction = await createSignableTransaction(txDetails);
+        const signableTransaction = await performanceTracking.getState().executeFn({
+          fn: createSignableTransaction,
+          operation: TimeToSignOperation.CreateSignableTransaction,
+          screen: isENS ? Screens.SEND_ENS : Screens.SEND,
+        })(txDetails);
         if (!signableTransaction.to) {
           logger.sentry('txDetails', txDetails);
           logger.sentry('signableTransaction', signableTransaction);
@@ -468,7 +484,11 @@ export default function SendSheet(props) {
           Alert.alert(lang.t('wallet.transaction.alert.invalid_transaction'));
           submitSuccess = false;
         } else {
-          const { result: txResult, error } = await sendTransaction({
+          const { result: txResult, error } = await performanceTracking.getState().executeFn({
+            fn: sendTransaction,
+            screen: isENS ? Screens.SEND_ENS : Screens.SEND,
+            operation: TimeToSignOperation.BroadcastTransaction,
+          })({
             existingWallet: wallet,
             provider: currentProvider,
             transaction: signableTransaction,
@@ -552,15 +572,24 @@ export default function SendSheet(props) {
         isHardwareWallet,
       });
 
-      if (submitSuccessful) {
+      const goBackAndNavigate = () => {
         goBack();
         navigate(Routes.WALLET_SCREEN);
         InteractionManager.runAfterInteractions(() => {
           navigate(Routes.PROFILE_SCREEN);
         });
+      };
+
+      if (submitSuccessful) {
+        performanceTracking.getState().executeFn({
+          fn: goBackAndNavigate,
+          screen: isENS ? Screens.SEND_ENS : Screens.SEND,
+          operation: TimeToSignOperation.SheetDismissal,
+          endOfOperation: true,
+        })();
       }
     },
-    [amountDetails.assetAmount, goBack, isHardwareWallet, navigate, onSubmit, recipient, selected?.name, selected?.network]
+    [amountDetails.assetAmount, goBack, isENS, isHardwareWallet, navigate, onSubmit, recipient, selected?.name, selected?.network]
   );
 
   const { buttonDisabled, buttonLabel } = useMemo(() => {
