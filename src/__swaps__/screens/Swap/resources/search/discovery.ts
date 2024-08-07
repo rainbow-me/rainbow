@@ -6,7 +6,7 @@ import { QueryFunctionArgs, createQueryKey } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { parseTokenSearch } from './utils';
 
-const tokenDiscoveryHttp = new RainbowFetchClient({
+const tokenSearchHttp = new RainbowFetchClient({
   baseURL: 'https://token-search.rainbow.me/v3/discovery',
   headers: {
     'Accept': 'application/json',
@@ -25,7 +25,7 @@ async function tokenSearchQueryFunction({ queryKey: [{ chainId }] }: QueryFuncti
   const url = `/${chainId}`;
 
   try {
-    const tokenSearch = await tokenDiscoveryHttp.get<{ data: SearchAsset[] }>(url);
+    const tokenSearch = await tokenSearchHttp.get<{ data: SearchAsset[] }>(url);
     return parseTokenSearch(tokenSearch.data.data, chainId);
   } catch (e) {
     logger.error(new RainbowError('Token discovery failed'), { url });
