@@ -4,6 +4,7 @@ import { safeAreaInsetValues } from '@/utils';
 import { TransitionConfig } from 'moti';
 import { Easing } from 'react-native-reanimated';
 import { EventInfo } from '@/components/Transactions/types';
+import { RequestSource } from '@/utils/requestNavigationHandlers';
 
 export const SCREEN_BOTTOM_INSET = safeAreaInsetValues.bottom + 20;
 export const GAS_BUTTON_SPACE =
@@ -44,8 +45,9 @@ export const motiTimingConfig: TransitionConfig = {
 };
 
 export const SCREEN_FOR_REQUEST_SOURCE = {
-  browser: Screens.DAPP_BROWSER,
-  walletconnect: Screens.WALLETCONNECT,
+  [RequestSource.BROWSER]: Screens.DAPP_BROWSER,
+  [RequestSource.WALLETCONNECT]: Screens.WALLETCONNECT,
+  [RequestSource.MOBILE_WALLET_PROTOCOL]: Screens.MOBILE_WALLET_PROTOCOL,
 };
 
 export const CHARACTERS_PER_LINE = 40;

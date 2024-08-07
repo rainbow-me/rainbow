@@ -54,6 +54,7 @@ import { Address } from 'viem';
 import { IS_ANDROID, IS_DEV } from './env';
 import { checkIdentifierOnLaunch } from './model/backup';
 import { prefetchDefaultFavorites } from './resources/favorites';
+import { handleMobileWalletProtocolRequest } from '@/utils/requestNavigationHandlers';
 
 import {
   addDiagnosticLogListener,
@@ -83,7 +84,7 @@ function App({ walletReady }: AppProps) {
   const branchListenerRef = useRef<ReturnType<typeof branch.subscribe> | null>(null);
   const navigatorRef = useRef<NavigationContainerRef<RootStackParamList> | null>(null);
 
-  const { handleRequestUrl, sendFailureToClient } = useMobileWalletProtocolHost();
+  const { message, handleRequestUrl, sendFailureToClient } = useMobileWalletProtocolHost();
 
   const setupDeeplinking = useCallback(async () => {
     const initialUrl = await Linking.getInitialURL();
@@ -203,6 +204,12 @@ function App({ walletReady }: AppProps) {
       })();
     }
   }, [handleRequestUrl, sendFailureToClient]);
+
+  useEffect(() => {
+    if (message) {
+      handleMobileWalletProtocolRequest(message);
+    }
+  }, [message]);
 
   useEffect(() => {
     if (IS_DEV) {

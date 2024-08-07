@@ -22,8 +22,14 @@ import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import walletTypes from '@/helpers/walletTypes';
 import watchingAlert from './watchingAlert';
+import { RequestMessage } from '@coinbase/mobile-wallet-protocol-host';
+import { ChainId } from '@/__swaps__/types/chains';
 
-export type RequestSource = 'walletconnect' | 'browser';
+export enum RequestSource {
+  WALLETCONNECT = 'walletconnect',
+  BROWSER = 'browser',
+  MOBILE_WALLET_PROTOCOL = 'mobile-wallet-protocol',
+}
 
 // Dapp Browser
 
@@ -52,7 +58,7 @@ export const handleDappBrowserConnectionPrompt = (dappData: DappConnectionData):
         proposedChainId: dappData.chainId,
         proposedAddress: dappData.address,
       },
-      source: 'browser',
+      source: RequestSource.BROWSER,
       timedOut: false,
       callback: async (approved, approvedChainId, accountAddress) => {
         if (approved) {
@@ -77,14 +83,58 @@ export const handleDappBrowserConnectionPrompt = (dappData: DappConnectionData):
   });
 };
 
-export const handleDappBrowserRequest = async (request: Omit<RequestData, 'displayDetails'>): Promise<string | Error> => {
+const findWalletForAddress = async (address: string) => {
   const { wallets } = store.getState().wallets;
-  const selectedWallet = findWalletWithAccount(wallets!, request.address);
-  const isReadOnlyWallet = selectedWallet!.type === walletTypes.readOnly;
+  const selectedWallet = findWalletWithAccount(wallets!, address);
+  if (!selectedWallet) {
+    return Promise.reject(new Error('Wallet not found'));
+  }
+
+  const isReadOnlyWallet = selectedWallet.type === walletTypes.readOnly;
   if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
     watchingAlert();
     return Promise.reject(new Error('This wallet is read-only.'));
   }
+
+  return selectedWallet;
+};
+
+export const handleMobileWalletProtocolRequest = async (request: RequestMessage): Promise<string | Error> => {
+  await findWalletForAddress(request.account?.address ?? '');
+
+  return new Promise((resolve, reject) => {
+    const onSuccess = (result: string) => {
+      resolve(result);
+    };
+
+    const onCancel = (error?: Error) => {
+      if (error) {
+        reject(error); // Reject the promise with the provided error
+      } else {
+        reject(new Error('Operation cancelled by the user.')); // Reject with a default error if none provided
+      }
+    };
+
+    const onCloseScreen = (canceled: boolean) => {
+      // This function might not be necessary for the promise logic,
+      // but you can still use it for cleanup or logging if needed.
+    };
+
+    Navigation.handleAction(Routes.CONFIRM_REQUEST, {
+      transactionDetails: request,
+      onSuccess,
+      onCancel,
+      onCloseScreen,
+      network: ethereumUtils.getNetworkNameFromChainId(request.account?.networkId as ChainId),
+      address: request.account?.address,
+      source: RequestSource.MOBILE_WALLET_PROTOCOL,
+    });
+  });
+};
+
+export const handleDappBrowserRequest = async (request: Omit<RequestData, 'displayDetails'>): Promise<string | Error> => {
+  await findWalletForAddress(request.address);
+
   const nativeCurrency = store.getState().settings.nativeCurrency;
   const displayDetails = getRequestDisplayDetails(request.payload, nativeCurrency, request.network);
 
@@ -118,7 +168,7 @@ export const handleDappBrowserRequest = async (request: Omit<RequestData, 'displ
       onCloseScreen,
       network: request.network,
       address: request.address,
-      source: 'browser',
+      source: RequestSource.BROWSER,
     });
   });
 };
@@ -188,6 +238,6 @@ export const handleWalletConnectRequest = async (request: WalletconnectRequestDa
     onCloseScreen,
     network,
     address,
-    source: 'walletconnect',
+    source: RequestSource.WALLETCONNECT,
   });
 };

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { AnimatePresence, MotiView } from 'moti';
 import * as i18n from '@/languages';
 import { Image, InteractionManager, PixelRatio, ScrollView } from 'react-native';
@@ -13,8 +13,6 @@ import { useNavigation } from '@/navigation';
 
 import { useTheme } from '@/theme';
 import { deviceUtils } from '@/utils';
-import { PanGestureHandler } from 'react-native-gesture-handler';
-import { RouteProp, useRoute } from '@react-navigation/native';
 import { TransactionScanResultType } from '@/graphql/__generated__/metadataPOST';
 import { Network } from '@/networks/types';
 import { convertHexToString, delay, greaterThan, omitFlatten } from '@/helpers/utilities';
@@ -48,7 +46,6 @@ import { isAddress } from '@ethersproject/address';
 import { hexToNumber, isHex } from 'viem';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { getNextNonce } from '@/state/nonces';
-import { RequestData } from '@/redux/requests';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { event } from '@/analytics/event';
 import { performanceTracking, TimeToSignOperation } from '@/state/performance/performance';
@@ -62,7 +59,6 @@ import {
   EXPANDED_CARD_BOTTOM_INSET,
   GAS_BUTTON_SPACE,
   motiTimingConfig,
-  SCREEN_BOTTOM_INSET,
   infoForEventType,
 } from '@/components/Transactions/constants';
 import { useCalculateGasLimit } from '@/hooks/useCalculateGasLimit';
@@ -72,42 +68,26 @@ import { useNonceForDisplay } from '@/hooks/useNonceForDisplay';
 import { useProviderSetup } from '@/hooks/useProviderSetup';
 import { useTransactionSubmission } from '@/hooks/useSubmitTransaction';
 import { useConfirmTransaction } from '@/hooks/useConfirmTransaction';
-import { RequestMessage } from '@coinbase/mobile-wallet-protocol-host';
+import { SignTransactionSheetParams } from '@/screens/SignTransactionSheet';
 
-type SignTransactionSheetParams = {
-  transactionDetails: RequestData;
-  onSuccess: (hash: string) => void;
-  onCancel: (error?: Error) => void;
-  onCloseScreen: (canceled: boolean) => void;
-  network: Network;
-  address: string;
-  source: RequestSource;
-};
-
-export type SignTransactionSheetRouteProp = RouteProp<{ SignTransactionSheet: SignTransactionSheetParams }, 'SignTransactionSheet'>;
-
-export const SignTransactionSheet = () => {
+export const MWPSignTransaction = <T extends RequestSource.MOBILE_WALLET_PROTOCOL>({
+  transactionDetails,
+  onSuccess: onSuccessCallback,
+  onCancel: onCancelCallback,
+  onCloseScreen: onCloseScreenCallback,
+  network: currentNetwork,
+  address: currentAddress,
+  source,
+}: SignTransactionSheetParams<T>) => {
   const { goBack } = useNavigation();
   const { colors, isDarkMode } = useTheme();
   const { accountAddress, nativeCurrency } = useAccountSettings();
 
-  const { params: routeParams } = useRoute<SignTransactionSheetRouteProp>();
+  const [activeAction, setActiveAction] = useState(transactionDetails.actions[0]);
+
   const { wallets, walletNames, switchToWalletWithAddress } = useWallets();
-  const {
-    transactionDetails,
-    onSuccess: onSuccessCallback,
-    onCancel: onCancelCallback,
-    onCloseScreen: onCloseScreenCallback,
-    network: currentNetwork,
-    address: currentAddress,
-    // for request type specific handling
-    source,
-  } = routeParams;
 
   const { provider, nativeAsset } = useProviderSetup(currentNetwork, accountAddress);
-
-  const isMessageRequest = isMessageDisplayType(transactionDetails.payload.method);
-  const isPersonalSignRequest = isPersonalSign(transactionDetails.payload.method);
 
   const label = useForegroundColor('label');
   const surfacePrimary = useBackgroundColor('surfacePrimary');
@@ -223,7 +203,7 @@ export const SignTransactionSheet = () => {
 
           onCloseScreenCallback?.(canceled);
         },
-        screen: SCREEN_FOR_REQUEST_SOURCE[source],
+        screen: SCREEN_FOR_REQUEST_SOURCE[source as RequestSource],
         operation: TimeToSignOperation.SheetDismissal,
         endOfOperation: true,
       })(),
@@ -317,13 +297,13 @@ export const SignTransactionSheet = () => {
       }
       const existingWallet = await performanceTracking.getState().executeFn({
         fn: loadWallet,
-        screen: SCREEN_FOR_REQUEST_SOURCE[source],
+        screen: SCREEN_FOR_REQUEST_SOURCE[source as RequestSource],
         operation: TimeToSignOperation.KeychainRead,
       })({
         address: accountInfo.address,
         provider,
         timeTracking: {
-          screen: SCREEN_FOR_REQUEST_SOURCE[source],
+          screen: SCREEN_FOR_REQUEST_SOURCE[source as RequestSource],
           operation: TimeToSignOperation.Authentication,
         },
       });
@@ -336,7 +316,7 @@ export const SignTransactionSheet = () => {
         }
         response = await performanceTracking.getState().executeFn({
           fn: sendTransaction,
-          screen: SCREEN_FOR_REQUEST_SOURCE[source],
+          screen: SCREEN_FOR_REQUEST_SOURCE[source as RequestSource],
           operation: TimeToSignOperation.BroadcastTransaction,
         })({
           existingWallet: existingWallet,
@@ -346,7 +326,7 @@ export const SignTransactionSheet = () => {
       } else {
         response = await performanceTracking.getState().executeFn({
           fn: signTransaction,
-          screen: SCREEN_FOR_REQUEST_SOURCE[source],
+          screen: SCREEN_FOR_REQUEST_SOURCE[source as RequestSource],
           operation: TimeToSignOperation.SignTransaction,
         })({
           existingWallet,
@@ -471,13 +451,13 @@ export const SignTransactionSheet = () => {
 
     const existingWallet = await performanceTracking.getState().executeFn({
       fn: loadWallet,
-      screen: SCREEN_FOR_REQUEST_SOURCE[source],
+      screen: SCREEN_FOR_REQUEST_SOURCE[source as RequestSource],
       operation: TimeToSignOperation.KeychainRead,
     })({
       address: accountInfo.address,
       provider,
       timeTracking: {
-        screen: SCREEN_FOR_REQUEST_SOURCE[source],
+        screen: SCREEN_FOR_REQUEST_SOURCE[source as RequestSource],
         operation: TimeToSignOperation.Authentication,
       },
     });
@@ -489,7 +469,7 @@ export const SignTransactionSheet = () => {
       case PERSONAL_SIGN:
         response = await performanceTracking.getState().executeFn({
           fn: signPersonalMessage,
-          screen: SCREEN_FOR_REQUEST_SOURCE[source],
+          screen: SCREEN_FOR_REQUEST_SOURCE[source as RequestSource],
           operation: TimeToSignOperation.SignTransaction,
         })(message, existingWallet);
         break;
@@ -497,7 +477,7 @@ export const SignTransactionSheet = () => {
       case SIGN_TYPED_DATA:
         response = await performanceTracking.getState().executeFn({
           fn: signTypedDataMessage,
-          screen: SCREEN_FOR_REQUEST_SOURCE[source],
+          screen: SCREEN_FOR_REQUEST_SOURCE[source as RequestSource],
           operation: TimeToSignOperation.SignTransaction,
         })(message, existingWallet);
         break;
@@ -556,235 +536,228 @@ export const SignTransactionSheet = () => {
   const canPressConfirm = isMessageRequest || (!!walletBalance?.isLoaded && !!currentNetwork && !!selectedGasFee?.gasFee?.estimatedFee);
 
   return (
-    <PanGestureHandler enabled={IS_IOS}>
-      <Animated.View>
-        <Inset bottom={{ custom: SCREEN_BOTTOM_INSET }}>
-          <Box height="full" justifyContent="flex-end" style={{ gap: 24 }} width="full">
-            <Box
-              as={Animated.View}
-              borderRadius={39}
-              paddingBottom="24px"
-              paddingHorizontal="20px"
-              paddingTop="32px"
-              style={{
-                backgroundColor: isDarkMode ? '#191A1C' : surfacePrimary,
-                zIndex: 2,
-              }}
-            >
-              <Box style={{ gap: 24 }}>
-                <Inset horizontal="12px" right={{ custom: 110 }}>
-                  <Inline alignVertical="center" space="12px" wrap={false}>
-                    <Box
-                      height={{ custom: 44 }}
-                      style={{
-                        backgroundColor: isDarkMode ? globalColors.white10 : '#FBFCFD',
-                        borderRadius: 12,
-                        shadowColor: isDarkMode ? colors.trueBlack : colors.dark,
-                        shadowOffset: {
-                          width: 0,
-                          height: 18,
-                        },
-                        shadowOpacity: isDarkMode ? 1 : 0.12,
-                        shadowRadius: 27,
-                      }}
-                      width={{ custom: 44 }}
-                    >
-                      <Image
-                        source={{
-                          uri: maybeSignUri(transactionDetails.imageUrl, {
-                            w: 44 * PixelRatio.get(),
-                          }),
-                        }}
-                        style={{ borderRadius: 12, height: 44, width: 44 }}
-                      />
-                    </Box>
-                    <Stack space="12px">
-                      <Inline alignVertical="center" space={{ custom: 5 }} wrap={false}>
-                        <Text
-                          color={
-                            simulationResult?.simulationScanResult &&
-                            simulationResult?.simulationScanResult !== TransactionScanResultType.Ok
-                              ? infoForEventType[simulationResult?.simulationScanResult].textColor
-                              : 'label'
-                          }
-                          numberOfLines={1}
-                          size="20pt"
-                          weight="heavy"
-                        >
-                          {transactionDetails.dappName}
-                        </Text>
-                        {source === RequestSource.BROWSER && <VerifiedBadge />}
-                      </Inline>
-                      <Text color="labelTertiary" size="15pt" weight="bold">
-                        {isMessageRequest
-                          ? i18n.t(i18n.l.walletconnect.simulation.titles.message_request)
-                          : i18n.t(i18n.l.walletconnect.simulation.titles.transaction_request)}
-                      </Text>
-                    </Stack>
-                  </Inline>
-                </Inset>
-
-                <Box style={{ gap: 14, zIndex: 2 }}>
-                  <TransactionSimulationCard
-                    currentNetwork={currentNetwork}
-                    expandedCardBottomInset={expandedCardBottomInset}
-                    isBalanceEnough={isBalanceEnough}
-                    isPersonalSignRequest={isPersonalSignRequest}
-                    isLoading={txSimulationLoading}
-                    txSimulationApiError={txSimulationApiError}
-                    noChanges={noChanges}
-                    simulation={simulationResult?.simulationData}
-                    simulationError={simulationResult?.simulationError}
-                    simulationScanResult={simulationResult?.simulationScanResult}
-                    walletBalance={walletBalance}
-                  />
-                  {isMessageRequest ? (
-                    <TransactionMessageCard
-                      expandedCardBottomInset={expandedCardBottomInset}
-                      message={request.message}
-                      method={transactionDetails?.payload?.method}
-                    />
-                  ) : (
-                    <TransactionDetailsCard
-                      currentNetwork={currentNetwork}
-                      expandedCardBottomInset={expandedCardBottomInset}
-                      isBalanceEnough={isBalanceEnough}
-                      isLoading={txSimulationLoading}
-                      meta={simulationResult?.simulationData?.meta || {}}
-                      methodName={
-                        methodName ||
-                        simulationResult?.simulationData?.meta?.to?.function ||
-                        i18n.t(i18n.l.walletconnect.simulation.details_card.unknown)
-                      }
-                      noChanges={noChanges}
-                      nonce={nonceForDisplay}
-                      toAddress={transactionDetails?.payload?.params?.[0]?.to}
-                    />
-                  )}
-                </Box>
-
-                <Box pointerEvents="none" style={{ zIndex: -1 }}>
-                  <Inset horizontal="12px">
-                    <Inline alignVertical="center" space="12px" wrap={false}>
-                      {accountInfo.accountImage ? (
-                        <ImageAvatar image={accountInfo.accountImage} size="signing" />
-                      ) : (
-                        <ContactAvatar
-                          color={isNaN(accountInfo.accountColor) ? colors.skeleton : accountInfo.accountColor}
-                          size="signing"
-                          value={accountInfo.accountSymbol}
-                        />
-                      )}
-                      <Stack space="10px">
-                        <Inline space="3px" wrap={false}>
-                          <Text color="labelTertiary" size="15pt" weight="semibold">
-                            {i18n.t(i18n.l.walletconnect.simulation.profile_section.signing_with)}
-                          </Text>
-                          <Text color="label" size="15pt" weight="bold" numberOfLines={1}>
-                            {accountInfo.accountName}
-                          </Text>
-                        </Inline>
-                        {isMessageRequest ? (
-                          <Text color="labelQuaternary" size="13pt" weight="semibold">
-                            {i18n.t(i18n.l.walletconnect.simulation.profile_section.free_to_sign)}
-                          </Text>
-                        ) : (
-                          <Box style={{ height: 9 }}>
-                            <AnimatePresence>
-                              {!!currentNetwork && walletBalance?.isLoaded && (
-                                <MotiView animate={{ opacity: 1 }} from={{ opacity: 0 }} transition={{ opacity: motiTimingConfig }}>
-                                  <Inline alignVertical="center" space={{ custom: 5 }} wrap={false}>
-                                    <Bleed vertical="4px">
-                                      <ChainImage chain={currentNetwork} size={12} />
-                                    </Bleed>
-                                    <Text color="labelQuaternary" size="13pt" weight="semibold">
-                                      {`${walletBalance?.display} ${i18n.t(i18n.l.walletconnect.simulation.profile_section.on_network, {
-                                        network: getNetworkObj(currentNetwork)?.name,
-                                      })}`}
-                                    </Text>
-                                  </Inline>
-                                </MotiView>
-                              )}
-                            </AnimatePresence>
-                          </Box>
-                        )}
-                      </Stack>
-                    </Inline>
-                  </Inset>
-                </Box>
-
-                <Columns space="16px">
-                  <SheetActionButton
-                    color={isDarkMode ? globalColors.blueGrey100 : '#F5F5F7'}
-                    isTransparent
-                    label={i18n.t(i18n.l.walletconnect.simulation.buttons.cancel)}
-                    textColor={label}
-                    onPress={onPressCancel}
-                    size="big"
-                    weight="bold"
-                  />
-                  <SheetActionButton
-                    label={
-                      !txSimulationLoading && isBalanceEnough === false
-                        ? i18n.t(i18n.l.walletconnect.simulation.buttons.buy_native_token, { symbol: walletBalance?.symbol })
-                        : i18n.t(i18n.l.walletconnect.simulation.buttons.confirm)
-                    }
-                    newShadows
-                    onPress={submitFn}
-                    disabled={!canPressConfirm}
-                    size="big"
-                    weight="heavy"
-                    color={
-                      simulationResult?.simulationError ||
-                      (simulationResult?.simulationScanResult && simulationResult?.simulationScanResult !== TransactionScanResultType.Ok)
-                        ? simulationResult?.simulationScanResult === TransactionScanResultType.Warning
-                          ? 'orange'
-                          : colors.red
-                        : undefined
-                    }
-                  />
-                </Columns>
-              </Box>
-
-              {/* Extra ScrollView to prevent the sheet from hijacking the real ScrollViews */}
-              {IS_IOS && (
-                <Box height={{ custom: 0 }} pointerEvents="none" position="absolute" style={{ opacity: 0 }}>
-                  <ScrollView scrollEnabled={false} />
-                </Box>
-              )}
-            </Box>
-
-            {source === RequestSource.BROWSER && (
+    <>
+      <Box
+        as={Animated.View}
+        borderRadius={39}
+        paddingBottom="24px"
+        paddingHorizontal="20px"
+        paddingTop="32px"
+        style={{
+          backgroundColor: isDarkMode ? '#191A1C' : surfacePrimary,
+          zIndex: 2,
+        }}
+      >
+        <Box style={{ gap: 24 }}>
+          <Inset horizontal="12px" right={{ custom: 110 }}>
+            <Inline alignVertical="center" space="12px" wrap={false}>
               <Box
-                height={{ custom: 160 }}
-                position="absolute"
-                style={{ bottom: -24, zIndex: 0, backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD' }}
-                width={{ custom: deviceUtils.dimensions.width }}
+                height={{ custom: 44 }}
+                style={{
+                  backgroundColor: isDarkMode ? globalColors.white10 : '#FBFCFD',
+                  borderRadius: 12,
+                  shadowColor: isDarkMode ? colors.trueBlack : colors.dark,
+                  shadowOffset: {
+                    width: 0,
+                    height: 18,
+                  },
+                  shadowOpacity: isDarkMode ? 1 : 0.12,
+                  shadowRadius: 27,
+                }}
+                width={{ custom: 44 }}
               >
-                <Box height="full" width="full" style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)' }} />
-              </Box>
-            )}
-
-            {!isMessageRequest && (
-              <Box alignItems="center" justifyContent="center" style={{ height: 30, zIndex: 1 }}>
-                <GasSpeedButton
-                  marginTop={0}
-                  horizontalPadding={20}
-                  currentNetwork={currentNetwork}
-                  theme={'dark'}
-                  marginBottom={0}
-                  asset={undefined}
-                  fallbackColor={simulationResult?.simulationError ? colors.red : undefined}
-                  testID={undefined}
-                  showGasOptions={undefined}
-                  validateGasParams={undefined}
-                  crossChainServiceTime={undefined}
+                <Image
+                  source={{
+                    uri: maybeSignUri(transactionDetails.imageUrl, {
+                      w: 44 * PixelRatio.get(),
+                    }),
+                  }}
+                  style={{ borderRadius: 12, height: 44, width: 44 }}
                 />
               </Box>
+              <Stack space="12px">
+                <Inline alignVertical="center" space={{ custom: 5 }} wrap={false}>
+                  <Text
+                    color={
+                      simulationResult?.simulationScanResult && simulationResult?.simulationScanResult !== TransactionScanResultType.Ok
+                        ? infoForEventType[simulationResult?.simulationScanResult].textColor
+                        : 'label'
+                    }
+                    numberOfLines={1}
+                    size="20pt"
+                    weight="heavy"
+                  >
+                    {transactionDetails.dappName}
+                  </Text>
+                  {source === RequestSource.BROWSER && <VerifiedBadge />}
+                </Inline>
+                <Text color="labelTertiary" size="15pt" weight="bold">
+                  {isMessageRequest
+                    ? i18n.t(i18n.l.walletconnect.simulation.titles.message_request)
+                    : i18n.t(i18n.l.walletconnect.simulation.titles.transaction_request)}
+                </Text>
+              </Stack>
+            </Inline>
+          </Inset>
+
+          <Box style={{ gap: 14, zIndex: 2 }}>
+            <TransactionSimulationCard
+              currentNetwork={currentNetwork}
+              expandedCardBottomInset={expandedCardBottomInset}
+              isBalanceEnough={isBalanceEnough}
+              isPersonalSignRequest={isPersonalSignRequest}
+              isLoading={txSimulationLoading}
+              txSimulationApiError={txSimulationApiError}
+              noChanges={noChanges}
+              simulation={simulationResult?.simulationData}
+              simulationError={simulationResult?.simulationError}
+              simulationScanResult={simulationResult?.simulationScanResult}
+              walletBalance={walletBalance}
+            />
+            {isMessageRequest ? (
+              <TransactionMessageCard
+                expandedCardBottomInset={expandedCardBottomInset}
+                message={request.message}
+                method={transactionDetails?.payload?.method}
+              />
+            ) : (
+              <TransactionDetailsCard
+                currentNetwork={currentNetwork}
+                expandedCardBottomInset={expandedCardBottomInset}
+                isBalanceEnough={isBalanceEnough}
+                isLoading={txSimulationLoading}
+                meta={simulationResult?.simulationData?.meta || {}}
+                methodName={
+                  methodName ||
+                  simulationResult?.simulationData?.meta?.to?.function ||
+                  i18n.t(i18n.l.walletconnect.simulation.details_card.unknown)
+                }
+                noChanges={noChanges}
+                nonce={nonceForDisplay}
+                toAddress={transactionDetails?.payload?.params?.[0]?.to}
+              />
             )}
           </Box>
-        </Inset>
-      </Animated.View>
-    </PanGestureHandler>
+
+          <Box pointerEvents="none" style={{ zIndex: -1 }}>
+            <Inset horizontal="12px">
+              <Inline alignVertical="center" space="12px" wrap={false}>
+                {accountInfo.accountImage ? (
+                  <ImageAvatar image={accountInfo.accountImage} size="signing" />
+                ) : (
+                  <ContactAvatar
+                    color={isNaN(accountInfo.accountColor) ? colors.skeleton : accountInfo.accountColor}
+                    size="signing"
+                    value={accountInfo.accountSymbol}
+                  />
+                )}
+                <Stack space="10px">
+                  <Inline space="3px" wrap={false}>
+                    <Text color="labelTertiary" size="15pt" weight="semibold">
+                      {i18n.t(i18n.l.walletconnect.simulation.profile_section.signing_with)}
+                    </Text>
+                    <Text color="label" size="15pt" weight="bold" numberOfLines={1}>
+                      {accountInfo.accountName}
+                    </Text>
+                  </Inline>
+                  {isMessageRequest ? (
+                    <Text color="labelQuaternary" size="13pt" weight="semibold">
+                      {i18n.t(i18n.l.walletconnect.simulation.profile_section.free_to_sign)}
+                    </Text>
+                  ) : (
+                    <Box style={{ height: 9 }}>
+                      <AnimatePresence>
+                        {!!currentNetwork && walletBalance?.isLoaded && (
+                          <MotiView animate={{ opacity: 1 }} from={{ opacity: 0 }} transition={{ opacity: motiTimingConfig }}>
+                            <Inline alignVertical="center" space={{ custom: 5 }} wrap={false}>
+                              <Bleed vertical="4px">
+                                <ChainImage chain={currentNetwork} size={12} />
+                              </Bleed>
+                              <Text color="labelQuaternary" size="13pt" weight="semibold">
+                                {`${walletBalance?.display} ${i18n.t(i18n.l.walletconnect.simulation.profile_section.on_network, {
+                                  network: getNetworkObj(currentNetwork)?.name,
+                                })}`}
+                              </Text>
+                            </Inline>
+                          </MotiView>
+                        )}
+                      </AnimatePresence>
+                    </Box>
+                  )}
+                </Stack>
+              </Inline>
+            </Inset>
+          </Box>
+
+          <Columns space="16px">
+            <SheetActionButton
+              color={isDarkMode ? globalColors.blueGrey100 : '#F5F5F7'}
+              isTransparent
+              label={i18n.t(i18n.l.walletconnect.simulation.buttons.cancel)}
+              textColor={label}
+              onPress={onPressCancel}
+              size="big"
+              weight="bold"
+            />
+            <SheetActionButton
+              label={
+                !txSimulationLoading && isBalanceEnough === false
+                  ? i18n.t(i18n.l.walletconnect.simulation.buttons.buy_native_token, { symbol: walletBalance?.symbol })
+                  : i18n.t(i18n.l.walletconnect.simulation.buttons.confirm)
+              }
+              newShadows
+              onPress={submitFn}
+              disabled={!canPressConfirm}
+              size="big"
+              weight="heavy"
+              color={
+                simulationResult?.simulationError ||
+                (simulationResult?.simulationScanResult && simulationResult?.simulationScanResult !== TransactionScanResultType.Ok)
+                  ? simulationResult?.simulationScanResult === TransactionScanResultType.Warning
+                    ? 'orange'
+                    : colors.red
+                  : undefined
+              }
+            />
+          </Columns>
+        </Box>
+
+        {/* Extra ScrollView to prevent the sheet from hijacking the real ScrollViews */}
+        {IS_IOS && (
+          <Box height={{ custom: 0 }} pointerEvents="none" position="absolute" style={{ opacity: 0 }}>
+            <ScrollView scrollEnabled={false} />
+          </Box>
+        )}
+      </Box>
+
+      {source === RequestSource.BROWSER && (
+        <Box
+          height={{ custom: 160 }}
+          position="absolute"
+          style={{ bottom: -24, zIndex: 0, backgroundColor: isDarkMode ? globalColors.grey100 : '#FBFCFD' }}
+          width={{ custom: deviceUtils.dimensions.width }}
+        >
+          <Box height="full" width="full" style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)' }} />
+        </Box>
+      )}
+
+      {!isMessageRequest && (
+        <Box alignItems="center" justifyContent="center" style={{ height: 30, zIndex: 1 }}>
+          <GasSpeedButton
+            marginTop={0}
+            horizontalPadding={20}
+            currentNetwork={currentNetwork}
+            theme={'dark'}
+            marginBottom={0}
+            asset={undefined}
+            fallbackColor={simulationResult?.simulationError ? colors.red : undefined}
+            testID={undefined}
+            showGasOptions={undefined}
+            validateGasParams={undefined}
+            crossChainServiceTime={undefined}
+          />
+        </Box>
+      )}
+    </>
   );
 };
