@@ -54,6 +54,7 @@ import { clearCustomGasSettings } from '../hooks/useCustomGas';
 import { getGasSettingsBySpeed, getSelectedGas, getSelectedGasSpeed } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
+import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
@@ -201,6 +202,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       const connectedToHardhat = !!providerUrl && isHardHat(providerUrl);
 
       const isBridge = swapsStore.getState().inputAsset?.mainnetAddress === swapsStore.getState().outputAsset?.mainnetAddress;
+      const isDegenModeEnabled = swapsStore.getState().degenMode;
       const slippage = swapsStore.getState().slippage;
 
       const selectedGas = getSelectedGas(parameters.chainId);
@@ -210,7 +212,26 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         return;
       }
 
-      const wallet = await loadWallet(parameters.quote.from, false, provider);
+      const wallet = await performanceTracking.getState().executeFn({
+        fn: loadWallet,
+        screen: Screens.SWAPS,
+        operation: TimeToSignOperation.KeychainRead,
+        metadata: {
+          degenMode: isDegenModeEnabled,
+        },
+      })({
+        address: parameters.quote.from,
+        showErrorIfNotLoaded: false,
+        provider,
+        timeTracking: {
+          screen: Screens.SWAPS,
+          operation: TimeToSignOperation.Authentication,
+          metadata: {
+            degenMode: isDegenModeEnabled,
+          },
+        },
+      });
+
       if (!wallet) {
         isSwapping.value = false;
         haptics.notificationError();
@@ -236,7 +257,14 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }
 
       const chainId = getIsHardhatConnected() ? ChainId.hardhat : parameters.chainId;
-      const { errorMessage } = await walletExecuteRap(wallet, type, {
+      const { errorMessage } = await performanceTracking.getState().executeFn({
+        fn: walletExecuteRap,
+        screen: Screens.SWAPS,
+        operation: TimeToSignOperation.SignTransaction,
+        metadata: {
+          degenMode: isDegenModeEnabled,
+        },
+      })(wallet, type, {
         ...parameters,
         chainId,
         gasParams,
@@ -259,6 +287,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           errorMessage,
           inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
           outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
+          degenMode: isDegenModeEnabled,
         });
 
         if (errorMessage !== 'handled') {
@@ -291,7 +320,15 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       swapsStore.getState().addRecentSwap(parameters.assetToBuy as ExtendedAnimatedAssetWithColors);
       clearCustomGasSettings(chainId);
       NotificationManager?.postNotification('rapCompleted');
-      Navigation.handleAction(Routes.PROFILE_SCREEN, {});
+      performanceTracking.getState().executeFn({
+        fn: Navigation.handleAction,
+        screen: Screens.SWAPS,
+        operation: TimeToSignOperation.SheetDismissal,
+        endOfOperation: true,
+        metadata: {
+          degenMode: isDegenModeEnabled,
+        },
+      })(Routes.PROFILE_SCREEN, {});
 
       analyticsV2.track(analyticsV2.event.swapsSubmitted, {
         createdAt: Date.now(),
@@ -303,6 +340,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         bridge: isBridge,
         inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
         outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
+        degenMode: isDegenModeEnabled,
       });
     } catch (error) {
       isSwapping.value = false;
@@ -318,63 +356,70 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
   };
 
-  const executeSwap = () => {
-    'worklet';
+  const executeSwap = performanceTracking.getState().executeFn({
+    screen: Screens.SWAPS,
+    operation: TimeToSignOperation.CallToAction,
+    fn: () => {
+      'worklet';
 
-    if (configProgress.value !== NavigationSteps.SHOW_REVIEW && !SwapSettings.degenMode.value) return;
+      if (configProgress.value !== NavigationSteps.SHOW_REVIEW && !SwapSettings.degenMode.value) return;
 
-    const inputAsset = internalSelectedInputAsset.value;
-    const outputAsset = internalSelectedOutputAsset.value;
-    const q = quote.value;
+      const inputAsset = internalSelectedInputAsset.value;
+      const outputAsset = internalSelectedOutputAsset.value;
+      const q = quote.value;
 
-    // TODO: What other checks do we need here?
-    if (isSwapping.value || !inputAsset || !outputAsset || !q || (q as QuoteError)?.error) {
-      return;
-    }
+      // TODO: What other checks do we need here?
+      if (isSwapping.value || !inputAsset || !outputAsset || !q || (q as QuoteError)?.error) {
+        return;
+      }
 
-    isSwapping.value = true;
-    SwapInputController.quoteFetchingInterval.stop();
+      isSwapping.value = true;
+      SwapInputController.quoteFetchingInterval.stop();
 
-    const type = inputAsset.chainId !== outputAsset.chainId ? 'crosschainSwap' : 'swap';
-    const quoteData = q as QuoteTypeMap[typeof type];
-    const flashbots = (SwapSettings.flashbots.value && inputAsset.chainId === ChainId.mainnet) ?? false;
+      const type = inputAsset.chainId !== outputAsset.chainId ? 'crosschainSwap' : 'swap';
+      const quoteData = q as QuoteTypeMap[typeof type];
+      const flashbots = (SwapSettings.flashbots.value && inputAsset.chainId === ChainId.mainnet) ?? false;
 
-    const isNativeWrapOrUnwrap =
-      isWrapEthWorklet({
-        buyTokenAddress: quoteData.buyTokenAddress,
-        sellTokenAddress: quoteData.sellTokenAddress,
+      const isNativeWrapOrUnwrap =
+        isWrapEthWorklet({
+          buyTokenAddress: quoteData.buyTokenAddress,
+          sellTokenAddress: quoteData.sellTokenAddress,
+          chainId: inputAsset.chainId,
+        }) ||
+        isUnwrapEthWorklet({
+          buyTokenAddress: quoteData.buyTokenAddress,
+          sellTokenAddress: quoteData.sellTokenAddress,
+          chainId: inputAsset.chainId,
+        });
+
+      // Do not deleeeet the comment below 😤
+      // About to get quote
+      const parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'> = {
+        sellAmount: quoteData.sellAmount?.toString(),
+        buyAmount: quoteData.buyAmount?.toString(),
         chainId: inputAsset.chainId,
-      }) ||
-      isUnwrapEthWorklet({
-        buyTokenAddress: quoteData.buyTokenAddress,
-        sellTokenAddress: quoteData.sellTokenAddress,
-        chainId: inputAsset.chainId,
+        assetToSell: inputAsset,
+        assetToBuy: outputAsset,
+        quote: {
+          ...quoteData,
+          buyAmountDisplay: isNativeWrapOrUnwrap ? quoteData.buyAmount : quoteData.buyAmountDisplay,
+          sellAmountDisplay: isNativeWrapOrUnwrap ? quoteData.sellAmount : quoteData.sellAmountDisplay,
+          feeInEth: isNativeWrapOrUnwrap ? '0' : quoteData.feeInEth,
+          fromChainId: inputAsset.chainId,
+          toChainId: outputAsset.chainId,
+        },
+        flashbots,
+      };
+
+      runOnJS(getNonceAndPerformSwap)({
+        type,
+        parameters,
       });
-
-    // Do not deleeeet the comment below 😤
-    // About to get quote
-    const parameters: Omit<RapSwapActionParameters<typeof type>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'> = {
-      sellAmount: quoteData.sellAmount?.toString(),
-      buyAmount: quoteData.buyAmount?.toString(),
-      chainId: inputAsset.chainId,
-      assetToSell: inputAsset,
-      assetToBuy: outputAsset,
-      quote: {
-        ...quoteData,
-        buyAmountDisplay: isNativeWrapOrUnwrap ? quoteData.buyAmount : quoteData.buyAmountDisplay,
-        sellAmountDisplay: isNativeWrapOrUnwrap ? quoteData.sellAmount : quoteData.sellAmountDisplay,
-        feeInEth: isNativeWrapOrUnwrap ? '0' : quoteData.feeInEth,
-        fromChainId: inputAsset.chainId,
-        toChainId: outputAsset.chainId,
-      },
-      flashbots,
-    };
-
-    runOnJS(getNonceAndPerformSwap)({
-      type,
-      parameters,
-    });
-  };
+    },
+    metadata: {
+      degenMode: swapsStore.getState().degenMode,
+    },
+  });
 
   const swapInfo = useDerivedValue(() => {
     const areBothAssetsSet = !!internalSelectedInputAsset.value && !!internalSelectedOutputAsset.value;
