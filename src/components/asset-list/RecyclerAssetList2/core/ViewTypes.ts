@@ -56,7 +56,7 @@ export type AssetListHeaderExtraData = {
 export type AssetsHeaderExtraData = {
   type: CellType.PROFILE_STICKY_HEADER;
   value: string;
-  isLoadingUserAssets: boolean;
+  isLoadingBalance: boolean;
 };
 export type CoinExtraData = { type: CellType.COIN; uniqueId: string };
 export type NFTExtraData = {

@@ -42,6 +42,7 @@ const accountBalanceSelector = (state: any) => state.accountBalance;
 const hiddenCoinsSelector = (state: any) => state.hiddenCoins;
 const isCoinListEditedSelector = (state: any) => state.isCoinListEdited;
 const isLoadingUserAssetsSelector = (state: any) => state.isLoadingUserAssets;
+const isLoadingBalanceSelector = (state: any) => state.isLoadingBalance;
 const isReadOnlyWalletSelector = (state: any) => state.isReadOnlyWallet;
 const nativeCurrencySelector = (state: any) => state.nativeCurrency;
 const pinnedCoinsSelector = (state: any) => state.pinnedCoins;
@@ -105,6 +106,7 @@ const withPositionsSection = (isLoadingUserAssets: boolean) => {
 const withBriefBalanceSection = (
   sortedAssets: ParsedAddressAsset[],
   isLoadingUserAssets: boolean,
+  isLoadingBalance: boolean,
   accountBalance: string | undefined,
   nativeCurrency: NativeCurrencyKey,
   isCoinListEdited: boolean,
@@ -125,7 +127,7 @@ const withBriefBalanceSection = (
       type: 'PROFILE_STICKY_HEADER',
       uid: 'assets-profile-header-compact',
       value: accountBalance,
-      isLoadingUserAssets,
+      isLoadingBalance,
     },
     {
       type: 'PROFILE_AVATAR_ROW_SPACE_BEFORE',
@@ -217,6 +219,7 @@ const briefBalanceSectionSelector = createSelector(
   [
     sortedAssetsSelector,
     isLoadingUserAssetsSelector,
+    isLoadingBalanceSelector,
     accountBalanceSelector,
     nativeCurrencySelector,
     isCoinListEditedSelector,
