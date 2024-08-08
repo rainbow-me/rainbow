@@ -40,7 +40,7 @@ const ContractActions = {
 
 const buildBlockExplorerAction = chainId => {
   const blockExplorerText = lang.t('expanded_state.swap.view_on', {
-    blockExplorerName: startCase(ethereumUtils.getBlockExplorer(chainId)),
+    blockExplorerName: startCase(ethereumUtils.getBlockExplorer({ chainId })),
   });
   return {
     actionKey: ContractActionsEnum.blockExplorer,
@@ -131,7 +131,7 @@ export default function SwapDetailsContractRow({ asset, onCopySwapDetailsText, .
 
   const onPressAndroid = useCallback(() => {
     const blockExplorerText = lang.t('expanded_state.swap.view_on', {
-      blockExplorerName: startCase(ethereumUtils.getBlockExplorer(asset?.chainId)),
+      blockExplorerName: startCase(ethereumUtils.getBlockExplorer({ chainId: asset?.chainId })),
     });
     const androidContractActions = [lang.t('wallet.action.copy_contract_address'), blockExplorerText, lang.t('button.cancel')];
     showActionSheetWithOptions(

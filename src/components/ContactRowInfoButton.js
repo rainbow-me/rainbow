@@ -69,7 +69,7 @@ const ContactRowActions = {
 
 const buildBlockExplorerAction = chainId => {
   const blockExplorerText = lang.t('wallet.action.view_on', {
-    blockExplorerName: startCase(ethereumUtils.getBlockExplorer(chainId)),
+    blockExplorerName: startCase(ethereumUtils.getBlockExplorer({ chainId })),
   });
 
   return {
@@ -93,7 +93,7 @@ const ContactRowInfoButton = ({ children, item, network, scaleTo }) => {
   );
 
   const onPressAndroid = useCallback(() => {
-    const blockExplorerText = `View on ${startCase(ethereumUtils.getBlockExplorer(ethereumUtils.getChainIdFromNetwork(item?.network)))}`;
+    const blockExplorerText = `View on ${startCase(ethereumUtils.getBlockExplorer({ chainId: ethereumUtils.getChainIdFromNetwork(item?.network) }))}`;
     const androidContractActions = [lang.t('wallet.action.copy_contract_address'), blockExplorerText, lang.t('button.cancel')];
     showActionSheetWithOptions(
       {

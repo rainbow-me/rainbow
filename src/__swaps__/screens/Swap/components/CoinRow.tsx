@@ -200,7 +200,7 @@ const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId })
     ...(network
       ? {
           blockExplorer: {
-            title: i18n.t(i18n.l.exchange.coin_row.view_on, { blockExplorerName: startCase(ethereumUtils.getBlockExplorer(chainId)) }),
+            title: i18n.t(i18n.l.exchange.coin_row.view_on, { blockExplorerName: startCase(ethereumUtils.getBlockExplorer({ chainId })) }),
             action: () => ethereumUtils.openAddressInBlockExplorer(address, chainId),
           },
         }

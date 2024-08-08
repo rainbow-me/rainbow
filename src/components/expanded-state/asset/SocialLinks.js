@@ -29,7 +29,7 @@ const CommunityLink = styled(Link).attrs({
 
 export default function SocialLinks({ address, color, isNativeAsset, links, marginTop, chainId }) {
   const etherscanURL = ethereumUtils.getEtherscanHostForNetwork(chainId);
-  const blockExplorerName = ethereumUtils.getBlockExplorer(chainId);
+  const blockExplorerName = ethereumUtils.getBlockExplorer({ chainId });
   return (
     <>
       <Carousel height={59} marginBottom={1} marginTop={marginTop || 0}>
