@@ -84,7 +84,7 @@ function App({ walletReady }: AppProps) {
   const branchListenerRef = useRef<ReturnType<typeof branch.subscribe> | null>(null);
   const navigatorRef = useRef<NavigationContainerRef<RootStackParamList> | null>(null);
 
-  const { message, handleRequestUrl, sendFailureToClient } = useMobileWalletProtocolHost();
+  const { message, handleRequestUrl, sendFailureToClient, ...mwpProps } = useMobileWalletProtocolHost();
 
   const setupDeeplinking = useCallback(async () => {
     const initialUrl = await Linking.getInitialURL();
@@ -207,9 +207,15 @@ function App({ walletReady }: AppProps) {
 
   useEffect(() => {
     if (message) {
-      handleMobileWalletProtocolRequest(message);
+      try {
+        handleMobileWalletProtocolRequest({ request: message, ...mwpProps });
+      } catch (error) {
+        logger.error(new RainbowError('Error handling Mobile Wallet Protocol request'), {
+          error,
+        });
+      }
     }
-  }, [message]);
+  }, [message, mwpProps]);
 
   useEffect(() => {
     if (IS_DEV) {

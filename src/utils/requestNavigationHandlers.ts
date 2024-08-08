@@ -22,7 +22,7 @@ import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import walletTypes from '@/helpers/walletTypes';
 import watchingAlert from './watchingAlert';
-import { RequestMessage } from '@coinbase/mobile-wallet-protocol-host';
+import { isEthereumAction, isHandshakeAction, RequestMessage, useMobileWalletProtocolHost } from '@coinbase/mobile-wallet-protocol-host';
 import { ChainId } from '@/__swaps__/types/chains';
 
 export enum RequestSource {
@@ -99,37 +99,57 @@ const findWalletForAddress = async (address: string) => {
   return selectedWallet;
 };
 
-export const handleMobileWalletProtocolRequest = async (request: RequestMessage): Promise<string | Error> => {
+interface HandleMobileWalletProtocolRequestProps
+  extends Omit<ReturnType<typeof useMobileWalletProtocolHost>, 'message' | 'handleRequestUrl' | 'sendFailureToClient'> {
+  request: RequestMessage;
+}
+
+export const handleMobileWalletProtocolRequest = async ({
+  request,
+  fetchClientAppMetadata,
+  isClientAppVerified,
+  approveHandshake,
+  rejectHandshake,
+}: HandleMobileWalletProtocolRequestProps): Promise<string | Error> => {
   await findWalletForAddress(request.account?.address ?? '');
 
-  return new Promise((resolve, reject) => {
-    const onSuccess = (result: string) => {
-      resolve(result);
-    };
+  const [action] = request.actions;
 
-    const onCancel = (error?: Error) => {
-      if (error) {
-        reject(error); // Reject the promise with the provided error
-      } else {
-        reject(new Error('Operation cancelled by the user.')); // Reject with a default error if none provided
-      }
-    };
+  if (isHandshakeAction(action)) {
+    // TODO: Request metadata, verification, and build transactionDetails to pass to the confirmRequest screen
+  } else if (isEthereumAction(action)) {
+    // TODO: Use metadata from mwp storage, and build transactionDetails to pass to the confirmRequest screen
+  }
 
-    const onCloseScreen = (canceled: boolean) => {
-      // This function might not be necessary for the promise logic,
-      // but you can still use it for cleanup or logging if needed.
-    };
+  throw new Error('Unsupported action type');
+  // return new Promise((resolve, reject) => {
+  //   const onSuccess = (result: string) => {
+  //     resolve(result);
+  //   };
 
-    Navigation.handleAction(Routes.CONFIRM_REQUEST, {
-      transactionDetails: request,
-      onSuccess,
-      onCancel,
-      onCloseScreen,
-      network: ethereumUtils.getNetworkNameFromChainId(request.account?.networkId as ChainId),
-      address: request.account?.address,
-      source: RequestSource.MOBILE_WALLET_PROTOCOL,
-    });
-  });
+  //   const onCancel = (error?: Error) => {
+  //     if (error) {
+  //       reject(error); // Reject the promise with the provided error
+  //     } else {
+  //       reject(new Error('Operation cancelled by the user.')); // Reject with a default error if none provided
+  //     }
+  //   };
+
+  //   const onCloseScreen = (canceled: boolean) => {
+  //     // This function might not be necessary for the promise logic,
+  //     // but you can still use it for cleanup or logging if needed.
+  //   };
+
+  //   Navigation.handleAction(Routes.CONFIRM_REQUEST, {
+  //     transactionDetails: request,
+  //     onSuccess,
+  //     onCancel,
+  //     onCloseScreen,
+  //     network: ethereumUtils.getNetworkNameFromChainId(request.account?.networkId as ChainId),
+  //     address: request.account?.address,
+  //     source: RequestSource.MOBILE_WALLET_PROTOCOL,
+  //   });
+  // });
 };
 
 export const handleDappBrowserRequest = async (request: Omit<RequestData, 'displayDetails'>): Promise<string | Error> => {
