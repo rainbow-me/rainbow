@@ -52,7 +52,7 @@ import {
 } from '@/resources/assets/externalAssetsQuery';
 import { ChainId } from '@/__swaps__/types/chains';
 
-const getNetworkNativeAsset = (chainId: ChainId): ParsedAddressAsset | undefined => {
+const getNetworkNativeAsset = ({ chainId }: { chainId: ChainId }): ParsedAddressAsset | undefined => {
   const nativeAssetAddress = getNetworkObject({ chainId }).nativeCurrency.address;
   const nativeAssetUniqueId = getUniqueId(nativeAssetAddress, chainId);
   return getAccountAsset(nativeAssetUniqueId);
@@ -60,7 +60,7 @@ const getNetworkNativeAsset = (chainId: ChainId): ParsedAddressAsset | undefined
 
 export const getNativeAssetForNetwork = async (chainId: ChainId, address?: EthereumAddress): Promise<ParsedAddressAsset | undefined> => {
   const network = getNetworkFromChainId(chainId);
-  const networkNativeAsset = getNetworkNativeAsset(chainId);
+  const networkNativeAsset = getNetworkNativeAsset({ chainId });
   const { accountAddress, nativeCurrency } = store.getState().settings;
   const differentWallet = address?.toLowerCase() !== accountAddress?.toLowerCase();
   let nativeAsset = differentWallet ? undefined : networkNativeAsset;
@@ -425,7 +425,7 @@ async function parseEthereumUrl(data: string) {
   if (!functionName) {
     // Send native asset
     const chainId = getChainIdFromNetwork(network);
-    asset = getNetworkNativeAsset(chainId);
+    asset = getNetworkNativeAsset({ chainId });
 
     // @ts-ignore
     if (!asset || asset?.balance.amount === 0) {

@@ -93,7 +93,7 @@ export default function useENSRegistrationCosts({
   const rentPriceInWei = rentPrice?.wei?.toString();
 
   const checkIfSufficientEth = useCallback((wei: string) => {
-    const nativeAsset = ethereumUtils.getNetworkNativeAsset(ChainId.mainnet);
+    const nativeAsset = ethereumUtils.getNetworkNativeAsset({ chainId: ChainId.mainnet });
     const balanceAmount = nativeAsset?.balance?.amount || 0;
     const txFeeAmount = fromWei(wei);
     const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);

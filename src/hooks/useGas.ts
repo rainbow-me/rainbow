@@ -34,7 +34,7 @@ const checkSufficientGas = (txFee: LegacyGasFee | GasFee, network: Network, nati
   const isLegacyGasNetwork = getNetworkObj(network).gas.gasType === 'legacy';
   const txFeeValue = isLegacyGasNetwork ? (txFee as LegacyGasFee)?.estimatedFee : (txFee as GasFee)?.maxFee;
   const chainId = ethereumUtils.getChainIdFromNetwork(network);
-  const networkNativeAsset = nativeAsset || ethereumUtils.getNetworkNativeAsset(chainId);
+  const networkNativeAsset = nativeAsset || ethereumUtils.getNetworkNativeAsset({ chainId });
   const balanceAmount = networkNativeAsset?.balance?.amount || 0;
   const txFeeAmount = fromWei(txFeeValue?.value?.amount);
   const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
