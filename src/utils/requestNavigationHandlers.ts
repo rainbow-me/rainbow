@@ -23,7 +23,7 @@ import { enableActionsOnReadOnlyWallet } from '@/config';
 import walletTypes from '@/helpers/walletTypes';
 import watchingAlert from './watchingAlert';
 import { isEthereumAction, isHandshakeAction, RequestMessage, useMobileWalletProtocolHost } from '@coinbase/mobile-wallet-protocol-host';
-import { mwp } from '@/storage';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export enum RequestSource {
   WALLETCONNECT = 'walletconnect',
@@ -110,6 +110,9 @@ export const handleMobileWalletProtocolRequest = async ({
   isClientAppVerified,
   approveHandshake,
   rejectHandshake,
+  approveAction,
+  rejectAction,
+  session,
 }: HandleMobileWalletProtocolRequestProps): Promise<boolean> => {
   await findWalletForAddress(request.account?.address ?? '');
 
@@ -132,9 +135,9 @@ export const handleMobileWalletProtocolRequest = async ({
           imageUrl: maybeSignUri(dappMetadata?.iconUrl),
           isWalletConnectV2: false,
           peerId: '',
-          dappScheme: null,
-          proposedChainId: request.account?.networkId,
-          proposedAddress: request.sender,
+          dappScheme: action.callback,
+          proposedChainId: request.account?.networkId, // TODO: is `networkId` correct for chainId here?
+          proposedAddress: request.sender, // TODO: is `request.sender` correct for address here?
         },
         verifiedData: {
           origin: dappMetadata?.appUrl || '',
@@ -144,7 +147,6 @@ export const handleMobileWalletProtocolRequest = async ({
         source: RequestSource.MOBILE_WALLET_PROTOCOL,
         timedOut: false,
         callback: async approved => {
-          // TODO: Do we need to call action.callback here?
           if (approved) {
             const success = await approveHandshake(dappMetadata);
             resolve(success);
@@ -162,6 +164,61 @@ export const handleMobileWalletProtocolRequest = async ({
       );
     });
   } else if (isEthereumAction(action)) {
+    if (!session) {
+      throw new Error('Session for request not found');
+    }
+
+    const nativeCurrency = store.getState().settings.nativeCurrency;
+    const network = ethereumUtils.getNetworkFromChainId(request.account?.networkId ?? ChainId.mainnet);
+
+    const requestWithDetails: RequestData = {
+      dappName: session.dappName,
+      dappUrl: session.dappURL,
+      imageUrl: session.dappImageURL,
+      address: request.sender, // TODO: is `request.sender` correct for address here?
+      network,
+      payload: action,
+      displayDetails: getRequestDisplayDetails(action, nativeCurrency, network), // TODO: does `action` map 1:1 with other instances? https://github.com/rainbow-me/rainbow/blob/fe6f5d62fe4b3f731cbfc2dbb2c862931f3d84fe/src/utils/requestNavigationHandlers.ts#L233
+    };
+
+    return new Promise((resolve, reject) => {
+      const onSuccess = async (result: string) => {
+        const successfullyApproved = await approveAction(action, { value: result });
+        resolve(successfullyApproved);
+      };
+
+      const onCancel = async (error?: Error) => {
+        if (error) {
+          const successfullyRejected = await rejectAction(action, {
+            message: error.message,
+            code: 4001, // TODO: Replace this?
+          });
+          reject(successfullyRejected);
+        } else {
+          const successfullyRejected = await rejectAction(action, {
+            message: 'User rejected request',
+            code: 4001,
+          });
+          reject(successfullyRejected);
+        }
+      };
+
+      const onCloseScreen = (canceled: boolean) => {
+        // This function might not be necessary for the promise logic,
+        // but you can still use it for cleanup or logging if needed.
+      };
+
+      Navigation.handleAction(Routes.CONFIRM_REQUEST, {
+        transactionDetails: requestWithDetails,
+        onSuccess,
+        onCancel,
+        onCloseScreen,
+        network,
+        address: request.sender,
+        source: RequestSource.MOBILE_WALLET_PROTOCOL,
+      });
+    });
+
     // TODO: Use metadata from mwp storage, and build transactionDetails to pass to the confirmRequest screen
   }
 
