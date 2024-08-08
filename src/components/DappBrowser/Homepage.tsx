@@ -1,7 +1,8 @@
 import { BlurView } from '@react-native-community/blur';
-import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import {
   Bleed,
@@ -39,6 +40,7 @@ import { useBrowserContext } from './BrowserContext';
 import { getNameFromFormattedUrl } from './utils';
 import { useTrendingDApps } from '@/resources/metadata/trendingDapps';
 import { DApp } from '@/graphql/__generated__/metadata';
+import { DEFAULT_TAB_URL } from './constants';
 
 const HORIZONTAL_PAGE_INSET = 24;
 const MAX_RECENTS_TO_DISPLAY = 6;
@@ -61,11 +63,13 @@ export const Homepage = ({ tabId }: { tabId: string }) => {
   const { goToUrl } = useBrowserContext();
   const { isDarkMode } = useColorMode();
 
+  const backgroundStyle = isDarkMode ? styles.pageBackgroundDark : styles.pageBackgroundLight;
+
   return (
-    <View style={[isDarkMode ? styles.pageBackgroundDark : styles.pageBackgroundLight, styles.pageContainer]}>
+    <View style={[backgroundStyle, styles.pageContainer]}>
       <ScrollView
+        contentContainerStyle={[styles.scrollViewContainer, backgroundStyle]}
         scrollIndicatorInsets={SCROLL_INDICATOR_INSETS}
-        contentContainerStyle={[styles.scrollViewContainer, isDarkMode ? styles.pageBackgroundDark : styles.pageBackgroundLight]}
         showsVerticalScrollIndicator={false}
       >
         <Box gap={44}>
@@ -119,15 +123,16 @@ const Trending = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
 };
 
 const Favorites = ({ goToUrl, tabId }: { goToUrl: (url: string) => void; tabId: string }) => {
-  const isActiveTab = useBrowserStore(state => state.isTabActive(tabId));
+  const { animatedTabUrls, activeTabInfo, currentlyOpenTabIds, tabViewProgress, tabViewVisible } = useBrowserContext();
 
-  const isFirstRender = useRef(true);
-  const [localGridSort, setLocalGridSort] = useState(
-    isActiveTab ? useFavoriteDappsStore.getState().favoriteDapps.map(dapp => dapp.url) : undefined
-  );
+  const [localGridSort, setLocalGridSort] = useState<string[] | undefined>(() => {
+    const orderedIds = useFavoriteDappsStore.getState().getOrderedIds();
+    return orderedIds && orderedIds.length > 0 ? orderedIds : undefined;
+  });
 
-  const gridKey = useMemo(() => (localGridSort ? localGridSort.join('-') : undefined), [localGridSort]);
   const favoriteDapps = useFavoriteDappsStore(state => state.getFavorites(localGridSort));
+  const gridKey = useMemo(() => localGridSort?.join('-'), [localGridSort]);
+  const isFirstRender = useRef(true);
 
   const reorderFavorites = useFavoriteDappsStore(state => state.reorderFavorites);
 
@@ -138,34 +143,66 @@ const Favorites = ({ goToUrl, tabId }: { goToUrl: (url: string) => void; tabId: 
     [reorderFavorites]
   );
 
+  const reinitializeGridSort = useCallback(() => {
+    setLocalGridSort(useFavoriteDappsStore.getState().getOrderedIds());
+  }, []);
+
+  const needsToSyncWorklet = useCallback(
+    ({ currentGridSort, isActiveTab }: { currentGridSort: string[] | undefined; isActiveTab: boolean }) => {
+      'worklet';
+      const homepageTabsCount = currentlyOpenTabIds.value.filter(
+        tabId => !animatedTabUrls.value[tabId] || animatedTabUrls.value[tabId] === DEFAULT_TAB_URL
+      ).length;
+      const inactiveAndMounted = !isActiveTab && currentGridSort !== undefined;
+
+      if (homepageTabsCount === 1) {
+        if (inactiveAndMounted) return true;
+        return false;
+      }
+
+      const activeAndUnmounted = isActiveTab && !currentGridSort;
+
+      return activeAndUnmounted || inactiveAndMounted;
+    },
+    [animatedTabUrls, currentlyOpenTabIds]
+  );
+
+  // Unmount drag and drop grid on inactive homepage tabs
+  useAnimatedReaction(
+    () => ({
+      needsToSync: needsToSyncWorklet({ currentGridSort: localGridSort, isActiveTab: activeTabInfo.value.tabId === tabId }),
+      tabAnimationProgress: tabViewProgress.value,
+    }),
+    (current, previous) => {
+      if (!previous || (!current.needsToSync && current.tabAnimationProgress === previous.tabAnimationProgress) || !favoriteDapps.length) {
+        return;
+      }
+
+      const enterTabViewAnimationIsComplete =
+        !tabViewVisible.value && previous.tabAnimationProgress < 0 && current.tabAnimationProgress >= 0;
+
+      if (!enterTabViewAnimationIsComplete) return;
+
+      if (activeTabInfo.value.tabId === tabId) {
+        runOnJS(reinitializeGridSort)();
+      } else {
+        runOnJS(setLocalGridSort)(undefined);
+      }
+    },
+    []
+  );
+
   // Reinitialize grid sort when favorites are added or removed
   useLayoutEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
     }
-    if (!favoriteDapps.length || !isActiveTab) {
+    if (!favoriteDapps.length || !useBrowserStore.getState().isTabActive(tabId)) {
       return;
     }
-    setLocalGridSort(useFavoriteDappsStore.getState().favoriteDapps.map(dapp => dapp.url));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [favoriteDapps.length]);
-
-  // Unmount drag-and-drop grid on inactive homepage tabs
-  useEffect(() => {
-    if (!favoriteDapps.length) return;
-
-    if (isActiveTab) {
-      setTimeout(() => {
-        setLocalGridSort(useFavoriteDappsStore.getState().favoriteDapps.map(dapp => dapp.url));
-      }, 300);
-    } else {
-      setTimeout(() => {
-        setLocalGridSort(undefined);
-      }, 300);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isActiveTab]);
+    reinitializeGridSort();
+  }, [favoriteDapps.length, reinitializeGridSort, tabId]);
 
   return (
     <Box gap={20} style={styles.favoritesContainer}>
