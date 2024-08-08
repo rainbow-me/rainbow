@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import { findLatestBackUp } from '../model/backup';
 import WalletTypes from '@/helpers/walletTypes';
 import { RainbowWallet } from '@/model/wallet';
 import { AppState } from '@/redux/store';
@@ -16,7 +15,6 @@ const walletSelector = createSelector(
   }),
   ({ isWalletLoading, selectedWallet, walletNames, wallets }) => ({
     isWalletLoading,
-    latestBackup: findLatestBackUp(wallets),
     selectedWallet,
     walletNames,
     wallets,
@@ -24,7 +22,7 @@ const walletSelector = createSelector(
 );
 
 export default function useWallets() {
-  const { isWalletLoading, latestBackup, selectedWallet, walletNames, wallets } = useSelector(walletSelector);
+  const { isWalletLoading, selectedWallet, walletNames, wallets } = useSelector(walletSelector);
 
   const isDamaged = useMemo(() => {
     const bool = selectedWallet?.damaged;
@@ -41,7 +39,6 @@ export default function useWallets() {
     isReadOnlyWallet: selectedWallet.type === WalletTypes.readOnly,
     isHardwareWallet: !!selectedWallet.deviceId,
     isWalletLoading,
-    latestBackup,
     selectedWallet,
     walletNames,
     wallets,
