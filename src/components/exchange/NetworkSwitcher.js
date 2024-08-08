@@ -8,8 +8,9 @@ import { Column, Row } from '../layout';
 import { Text } from '../text';
 import { padding, position } from '@/styles';
 import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
-import { RainbowNetworks, getNetworkObj } from '@/networks';
+import { RainbowNetworks } from '@/networks';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
+import { chainIdToNameMapping } from '@/__swaps__/types/chains';
 
 const networkMenuItems = () => {
   return RainbowNetworks.filter(network => network.features.swaps).map(network => ({
@@ -93,7 +94,7 @@ const NetworkSwitcherv1 = ({
               weight={prominent ? 'heavy' : 'bold'}
             >
               {lang.t('expanded_state.swap.network_switcher', {
-                network: getNetworkObj(ethereumUtils.getNetworkFromChainId(currentChainId)).name,
+                network: chainIdToNameMapping[currentChainId],
               })}
             </Text>
           </Column>

@@ -367,7 +367,7 @@ export function ReviewPanel() {
     const nativeAsset = await getNativeAssetForNetwork(swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet);
 
     navigate(Routes.EXPLAIN_SHEET, {
-      network: chainNameFromChainId(swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet),
+      chainId: swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet,
       type: 'gas',
       nativeAsset,
     });

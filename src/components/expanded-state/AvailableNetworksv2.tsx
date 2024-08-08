@@ -151,7 +151,7 @@ const AvailableNetworksv2 = ({
         screen: Routes.CURRENCY_SELECT_SCREEN,
       });
     },
-    [asset, goBack, navigate, networks, swapsV2Enabled, swaps_v2, updateInputCurrency]
+    [asset, goBack, isReadOnlyWallet, navigate, networks, swapsV2Enabled, swaps_v2, updateInputCurrency]
   );
 
   const handlePressContextMenu = useCallback(
