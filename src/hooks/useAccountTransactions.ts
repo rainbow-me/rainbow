@@ -19,7 +19,7 @@ export default function useAccountTransactions() {
 
   const pendingTransactions = usePendingTransactionsStore(state => state.pendingTransactions[accountAddress] || []);
 
-  const { data, fetchNextPage, hasNextPage } = useConsolidatedTransactions({
+  const { data, isLoading, fetchNextPage, hasNextPage } = useConsolidatedTransactions({
     address: accountAddress,
     currency: nativeCurrency,
   });
@@ -132,7 +132,7 @@ export default function useAccountTransactions() {
   }, [hasNextPage]);
 
   return {
-    isLoadingTransactions: !!allTransactions,
+    isLoadingTransactions: isLoading,
     nextPage: fetchNextPage,
     remainingItemsLabel,
     sections,
