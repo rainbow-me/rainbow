@@ -364,7 +364,7 @@ export function ReviewPanel() {
   });
 
   const openGasExplainer = useCallback(async () => {
-    const nativeAsset = await getNativeAssetForNetwork(swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet);
+    const nativeAsset = await getNativeAssetForNetwork({ chainId: swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet });
 
     navigate(Routes.EXPLAIN_SHEET, {
       chainId: swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet,

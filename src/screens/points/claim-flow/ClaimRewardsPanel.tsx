@@ -211,7 +211,7 @@ const ClaimingRewards = ({
   }>({
     mutationFn: async () => {
       // Fetch the native asset from the origin chain
-      const opEth_ = await ethereumUtils.getNativeAssetForNetwork(ChainId.optimism);
+      const opEth_ = await ethereumUtils.getNativeAssetForNetwork({ chainId: ChainId.optimism });
       const opEth = {
         ...opEth_,
         chainName: chainNameFromChainId(ChainId.optimism),
@@ -220,9 +220,9 @@ const ClaimingRewards = ({
       // Fetch the native asset from the destination chain
       let destinationEth_;
       if (chainId === ChainId.base) {
-        destinationEth_ = await ethereumUtils.getNativeAssetForNetwork(ChainId.base);
+        destinationEth_ = await ethereumUtils.getNativeAssetForNetwork({ chainId: ChainId.base });
       } else if (chainId === ChainId.zora) {
-        destinationEth_ = await ethereumUtils.getNativeAssetForNetwork(ChainId.zora);
+        destinationEth_ = await ethereumUtils.getNativeAssetForNetwork({ chainId: ChainId.zora });
       } else {
         destinationEth_ = opEth;
       }

@@ -58,7 +58,13 @@ const getNetworkNativeAsset = ({ chainId }: { chainId: ChainId }): ParsedAddress
   return getAccountAsset(nativeAssetUniqueId);
 };
 
-export const getNativeAssetForNetwork = async (chainId: ChainId, address?: EthereumAddress): Promise<ParsedAddressAsset | undefined> => {
+export const getNativeAssetForNetwork = async ({
+  chainId,
+  address,
+}: {
+  chainId: ChainId;
+  address?: EthereumAddress;
+}): Promise<ParsedAddressAsset | undefined> => {
   const network = getNetworkFromChainId(chainId);
   const networkNativeAsset = getNetworkNativeAsset({ chainId });
   const { accountAddress, nativeCurrency } = store.getState().settings;

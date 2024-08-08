@@ -200,7 +200,7 @@ const MintSheet = () => {
   // check address balance
   useEffect(() => {
     const checkInsufficientEth = async () => {
-      const nativeBalance = (await ethereumUtils.getNativeAssetForNetwork(chainId, accountAddress))?.balance?.amount ?? 0;
+      const nativeBalance = (await ethereumUtils.getNativeAssetForNetwork({ chainId, address: accountAddress }))?.balance?.amount ?? 0;
 
       const totalMintPrice = multiply(price.amount, quantity);
       if (greaterThanOrEqualTo(totalMintPrice, nativeBalance)) {

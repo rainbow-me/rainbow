@@ -460,7 +460,7 @@ const HomePanel = ({
       return;
     }
 
-    const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(ChainId.mainnet, selectedWallet?.uniqueId);
+    const mainnetEth = await ethereumUtils.getNativeAssetForNetwork({ chainId: ChainId.mainnet, address: selectedWallet?.uniqueId });
     Navigation.handleAction(Routes.EXCHANGE_MODAL, {
       fromDiscover: true,
       params: {
@@ -488,7 +488,7 @@ const HomePanel = ({
       return;
     }
 
-    const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(ChainId.mainnet, selectedWallet?.uniqueId);
+    const mainnetEth = await ethereumUtils.getNativeAssetForNetwork({ chainId: ChainId.mainnet, address: selectedWallet?.uniqueId });
     Navigation.handleAction(Routes.EXCHANGE_MODAL, {
       fromDiscover: true,
       params: {

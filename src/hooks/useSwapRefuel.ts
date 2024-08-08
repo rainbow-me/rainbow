@@ -7,8 +7,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { useAccountSettings, useGas } from '.';
 import { isNativeAsset } from '@/handlers/assets';
-import { NetworkTypes } from '@/helpers';
 import { toWei } from '@/handlers/web3';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export enum RefuelState {
   'Add' = 'Add',
@@ -32,7 +32,7 @@ export default function useSwapRefuel({
   const [outputNativeAsset, setOutputNativeAsset] = useState<ParsedAddressAsset>();
   const [inputNativeAsset, setInputNativeAsset] = useState<ParsedAddressAsset>();
 
-  const { inputNetwork, outputNetwork, chainId, toChainId, isCrosschainSwap } = useMemo(() => {
+  const { chainId, toChainId, isCrosschainSwap } = useMemo(() => {
     const inputNetwork = inputCurrency.network;
     const outputNetwork = outputCurrency.network;
     const chainId = ethereumUtils.getChainIdFromNetwork(inputNetwork);
@@ -41,8 +41,6 @@ export default function useSwapRefuel({
     const isCrosschainSwap = crosschainSwapsEnabled && inputNetwork !== outputNetwork;
 
     return {
-      inputNetwork,
-      outputNetwork,
       chainId,
       toChainId,
       isCrosschainSwap,
@@ -59,14 +57,14 @@ export default function useSwapRefuel({
 
   useEffect(() => {
     const getNativeInputOutputAssets = async () => {
-      if (!outputNetwork || !inputNetwork || !accountAddress) return;
-      const outputNativeAsset = await ethereumUtils.getNativeAssetForNetwork(toChainId, accountAddress);
-      const inputNativeAsset = await ethereumUtils.getNativeAssetForNetwork(chainId, accountAddress);
+      if (!chainId || !toChainId || !accountAddress) return;
+      const outputNativeAsset = await ethereumUtils.getNativeAssetForNetwork({ chainId: toChainId, address: accountAddress });
+      const inputNativeAsset = await ethereumUtils.getNativeAssetForNetwork({ chainId, address: accountAddress });
       setOutputNativeAsset(outputNativeAsset);
       setInputNativeAsset(inputNativeAsset);
     };
     getNativeInputOutputAssets();
-  }, [outputNetwork, inputNetwork, accountAddress, toChainId, chainId]);
+  }, [accountAddress, toChainId, chainId]);
 
   const { showRefuelSheet, refuelState } = useMemo(() => {
     const swappingToNativeAsset = isNativeAsset(outputCurrency?.address, toChainId);
@@ -79,7 +77,7 @@ export default function useSwapRefuel({
       return { showRefuelSheet: false, refuelState: null };
     }
     // If we are swapping to mainnet then ignore
-    if (outputNetwork === NetworkTypes.mainnet) return { showRefuelSheet: false, refuelState: null };
+    if (toChainId === ChainId.mainnet) return { showRefuelSheet: false, refuelState: null };
 
     // Does the user have an existing balance on the output native asset
     const hasZeroOutputNativeAssetBalance = isZero(outputNativeAsset?.balance?.amount || 0);
@@ -130,7 +128,6 @@ export default function useSwapRefuel({
     minRefuelAmount,
     outputCurrency?.address,
     outputNativeAsset?.balance?.amount,
-    outputNetwork,
     selectedGasFee?.gasFee?.estimatedFee?.value?.amount,
     toChainId,
     tradeDetails?.sellAmount,

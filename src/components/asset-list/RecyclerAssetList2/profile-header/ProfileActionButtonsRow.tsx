@@ -191,7 +191,7 @@ function SwapButton() {
 
       android && delayNext();
 
-      const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(ChainId.mainnet, accountAddress);
+      const mainnetEth = await ethereumUtils.getNativeAssetForNetwork({ chainId: ChainId.mainnet, address: accountAddress });
       navigate(Routes.EXCHANGE_MODAL, {
         fromDiscover: true,
         params: {
