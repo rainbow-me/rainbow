@@ -91,7 +91,7 @@ async function userAssetsQueryFunction({ queryKey: [{ address, currency, testnet
     const formattedHardhatResults = {
       '1': hardhatResults,
     };
-    return formattedHardhatResults;
+    return formattedHardhatResults as typeof formattedHardhatResults & ParsedAssetsDictByChain;
   }
   const cache = queryClient.getQueryCache();
   const cachedUserAssets = (cache.find(userAssetsQueryKey({ address, currency, testnetMode }))?.state?.data ||
