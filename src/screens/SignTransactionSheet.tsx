@@ -97,6 +97,7 @@ import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { event } from '@/analytics/event';
 import { getOnchainAssetBalance } from '@/handlers/assets';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
+import useSwitchWallet from '@/hooks/useSwitchWallet';
 
 const COLLAPSED_CARD_HEIGHT = 56;
 const MAX_CARD_HEIGHT = 176;
@@ -162,7 +163,8 @@ export const SignTransactionSheet = () => {
   const [simulationScanResult, setSimulationScanResult] = useState<TransactionScanResultType | undefined>(undefined);
 
   const { params: routeParams } = useRoute<SignTransactionSheetRouteProp>();
-  const { wallets, walletNames, switchToWalletWithAddress } = useWallets();
+  const { wallets, walletNames } = useWallets();
+  const { switchToWalletWithAddress } = useSwitchWallet();
   const {
     transactionDetails,
     onSuccess: onSuccessCallback,

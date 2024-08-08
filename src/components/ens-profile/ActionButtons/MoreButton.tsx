@@ -13,6 +13,7 @@ import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
 import { Network } from '@/networks/types';
+import useSwitchWallet from '@/hooks/useSwitchWallet';
 
 const ACTIONS = {
   ADD_CONTACT: 'add-contact',
@@ -24,7 +25,8 @@ const ACTIONS = {
 };
 
 export default function MoreButton({ address, ensName }: { address?: string; ensName?: string }) {
-  const { switchToWalletWithAddress, selectedWallet } = useWallets();
+  const { selectedWallet } = useWallets();
+  const { switchToWalletWithAddress } = useSwitchWallet();
   const { isWatching } = useWatchWallet({ address });
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();

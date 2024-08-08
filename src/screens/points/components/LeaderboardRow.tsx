@@ -20,6 +20,7 @@ import { useTheme } from '@/theme';
 import LinearGradient from 'react-native-linear-gradient';
 import { ButtonPressAnimation } from '@/components/animations';
 import { noop } from 'lodash';
+import useSwitchWallet from '@/hooks/useSwitchWallet';
 
 const ACTIONS = {
   ADD_CONTACT: 'add-contact',
@@ -43,7 +44,8 @@ export const LeaderboardRow = memo(function LeaderboardRow({
   points: number;
   rank: number;
 }) {
-  const { switchToWalletWithAddress, selectedWallet } = useWallets();
+  const { selectedWallet } = useWallets();
+  const { switchToWalletWithAddress } = useSwitchWallet();
   const { isWatching } = useWatchWallet({ address });
   const { colors } = useTheme();
   const { navigate } = useNavigation();
