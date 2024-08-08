@@ -4,9 +4,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAccountSettings, useENSLocalTransactions } from '.';
 import { fetchRegistrationDate } from '@/handlers/ens';
 import { ENS_DOMAIN, formatRentPrice, getAvailable, getENSRegistrarControllerContract, getNameExpires, getRentPrice } from '@/helpers/ens';
-import { Network } from '@/helpers/networkTypes';
 import { timeUnits } from '@/references';
 import { ethereumUtils, validateENS } from '@/utils';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const formatTime = (timestamp: string, abbreviated = true) => {
   const style = abbreviated ? 'MMM d, y' : 'MMMM d, y';
@@ -51,7 +51,7 @@ export default function useENSSearch({ yearsDuration = 1, name: inputName }: { y
     }
 
     const [isAvailable, rentPrice] = await Promise.all([getAvailable(name, contract), getRentPrice(name, duration, contract)]);
-    const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(Network.mainnet);
+    const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork({ chainId: ChainId.mainnet });
     const formattedRentPrice = formatRentPrice(rentPrice, yearsDuration, nativeCurrency, nativeAssetPrice);
 
     if (isAvailable) {

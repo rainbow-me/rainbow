@@ -191,14 +191,14 @@ export const useNativeAsset = ({ chainId }: { chainId: ChainId }) => {
 };
 
 // anotha 1
-const getPriceOfNativeAssetForNetwork = (network: Network) => {
-  if (network === Network.polygon) {
+const getPriceOfNativeAssetForNetwork = ({ chainId }: { chainId: ChainId }) => {
+  if (chainId === ChainId.polygon) {
     return getMaticPriceUnit();
-  } else if (network === Network.bsc) {
+  } else if (chainId === ChainId.bsc) {
     return getBnbPriceUnit();
-  } else if (network === Network.avalanche) {
+  } else if (chainId === ChainId.avalanche) {
     return getAvaxPriceUnit();
-  } else if (network === Network.degen) {
+  } else if (chainId === ChainId.degen) {
     return getDegenPriceUnit();
   }
   return getEthPriceUnit();
