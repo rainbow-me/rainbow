@@ -204,6 +204,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       const isBridge = swapsStore.getState().inputAsset?.mainnetAddress === swapsStore.getState().outputAsset?.mainnetAddress;
       const isDegenModeEnabled = swapsStore.getState().degenMode;
       const slippage = swapsStore.getState().slippage;
+      const isSwappingToPopularAsset = swapsStore.getState().outputAsset?.sectionId === 'popular';
 
       const selectedGas = getSelectedGas(parameters.chainId);
       if (!selectedGas) {
@@ -288,6 +289,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
           outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
           degenMode: isDegenModeEnabled,
+          isSwappingToPopularAsset,
         });
 
         if (errorMessage !== 'handled') {
@@ -337,6 +339,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
         outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
         degenMode: isDegenModeEnabled,
+        isSwappingToPopularAsset,
       });
     } catch (error) {
       isSwapping.value = false;
