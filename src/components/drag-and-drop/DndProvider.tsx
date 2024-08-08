@@ -116,7 +116,8 @@ export const DndProvider = forwardRef<DndProviderHandle, PropsWithChildren<DndPr
       if (current !== null) {
         runOnJS(runFeedback)();
       }
-    }
+    },
+    []
   );
 
   const contextValue = useRef<DndContextValue>({

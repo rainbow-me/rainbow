@@ -120,7 +120,8 @@ export const DraggableFlatList = <T extends { id: UniqueIdentifier }>({
             break;
         }
       }
-    }
+    },
+    []
   );
 
   const scrollHandler = useAnimatedScrollHandler(event => {

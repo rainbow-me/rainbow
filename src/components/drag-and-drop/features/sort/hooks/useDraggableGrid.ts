@@ -95,7 +95,8 @@ export const useDraggableGrid = ({
             break;
         }
       }
-    }
+    },
+    [direction, gap, size]
   );
 
   return { draggablePlaceholderIndex, draggableSortOrder };

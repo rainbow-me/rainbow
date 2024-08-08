@@ -65,7 +65,7 @@ export const Draggable: FunctionComponent<PropsWithChildren<DraggableProps>> = (
     // eslint-disable-next-line no-nested-ternary
     const zIndex = isActive ? 999 : isActing ? 998 : 1;
     const style = {
-      opacity: withTiming(isActive ? activeOpacity : 1, TIMING_CONFIGS.slowestFadeConfig),
+      opacity: withTiming(isActive ? activeOpacity : 1, TIMING_CONFIGS.tabPressConfig),
       zIndex,
       transform: [
         {
@@ -78,7 +78,7 @@ export const Draggable: FunctionComponent<PropsWithChildren<DraggableProps>> = (
             // eslint-disable-next-line no-nested-ternary
             dragDirection !== 'x' ? (isActive ? offset.y.value : withTiming(offset.y.value, TIMING_CONFIGS.slowestFadeConfig)) : 0,
         },
-        { scale: activeScale === undefined ? 1 : withTiming(isActive ? activeScale : 1, TIMING_CONFIGS.slowestFadeConfig) },
+        { scale: activeScale === undefined ? 1 : withTiming(isActive ? activeScale : 1, TIMING_CONFIGS.tabPressConfig) },
       ],
     };
     if (animatedStyleWorklet) {
