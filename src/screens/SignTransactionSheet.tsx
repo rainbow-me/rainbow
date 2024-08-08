@@ -57,7 +57,7 @@ import {
 
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
-import { useAccountSettings, useClipboard, useDimensions, useGas, useWallets } from '@/hooks';
+import { useAccountSettings, useClipboard, useDimensions, useGas, useSwitchWallet, useWallets } from '@/hooks';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
 import { IS_IOS } from '@/env';
@@ -97,7 +97,6 @@ import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { event } from '@/analytics/event';
 import { getOnchainAssetBalance } from '@/handlers/assets';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
-import useSwitchWallet from '@/hooks/useSwitchWallet';
 
 const COLLAPSED_CARD_HEIGHT = 56;
 const MAX_CARD_HEIGHT = 176;

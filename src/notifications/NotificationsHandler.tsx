@@ -1,5 +1,5 @@
 import { PropsWithChildren, useCallback, useEffect, useRef } from 'react';
-import { usePrevious, useWallets } from '@/hooks';
+import { usePrevious, useSwitchWallet, useWallets } from '@/hooks';
 import { setupAndroidChannels } from '@/notifications/setupAndroidChannels';
 import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
 import {
@@ -38,7 +38,6 @@ import {
 } from '@/notifications/settings/initialization';
 import { logger } from '@/logger';
 import { transactionFetchQuery } from '@/resources/transactions/transaction';
-import useSwitchWallet from '@/hooks/useSwitchWallet';
 
 type Callback = () => void;
 
