@@ -71,7 +71,7 @@ describe('Swap Sheet Interaction Flow', () => {
     const reviewActionElements = await fetchElementAttributes('swap-action-button');
     expect(reviewActionElements.elements[0].label).toContain('ETH');
     expect(reviewActionElements.elements[1].label).toContain('DAI');
-    expect(reviewActionElements.elements[2].label).toContain('Tap to Swap');
+    expect(reviewActionElements.elements[2].label).toContain('􀎽 Hold to Swap');
 
     /*
      *

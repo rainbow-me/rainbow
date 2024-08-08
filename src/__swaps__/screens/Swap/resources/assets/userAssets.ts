@@ -15,6 +15,7 @@ import { filterAsset, parseUserAsset } from '@/__swaps__/utils/assets';
 import { greaterThan } from '@/__swaps__/utils/numbers';
 
 import { fetchUserAssetsByChain } from './userAssetsByChain';
+import { fetchHardhatBalances } from '@/resources/assets/hardhatAssets';
 
 const addysHttp = new RainbowFetchClient({
   baseURL: 'https://addys.p.rainbow.me/v3',
@@ -84,6 +85,13 @@ export const userAssetsSetQueryData = ({ address, currency, userAssets, testnetM
 async function userAssetsQueryFunction({ queryKey: [{ address, currency, testnetMode }] }: QueryFunctionArgs<typeof userAssetsQueryKey>) {
   if (!address) {
     return {};
+  }
+  if (testnetMode) {
+    const hardhatResults = await fetchHardhatBalances(address);
+    const formattedHardhatResults = {
+      '1': hardhatResults,
+    };
+    return formattedHardhatResults;
   }
   const cache = queryClient.getQueryCache();
   const cachedUserAssets = (cache.find(userAssetsQueryKey({ address, currency, testnetMode }))?.state?.data ||
