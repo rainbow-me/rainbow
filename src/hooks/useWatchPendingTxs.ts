@@ -26,7 +26,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
 
   const pendingTransactions = useMemo(() => storePendingTransactions[address] || [], [address, storePendingTransactions]);
 
-  const { nativeCurrency, accountAddress } = useAccountSettings();
+  const { nativeCurrency } = useAccountSettings();
 
   const refreshAssets = useCallback(
     (_: RainbowTransaction) => {
@@ -190,7 +190,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       const chainIds = RainbowNetworks.filter(network => network.enabled && network.networkType !== 'testnet').map(network => network.id);
       await queryClient.refetchQueries({
         queryKey: consolidatedTransactionsQueryKey({
-          address: accountAddress,
+          address,
           currency: nativeCurrency,
           chainIds,
         }),
@@ -200,7 +200,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       setTimeout(() => {
         queryClient.refetchQueries({
           queryKey: consolidatedTransactionsQueryKey({
-            address: accountAddress,
+            address,
             currency: nativeCurrency,
             chainIds,
           }),
@@ -208,10 +208,10 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       }, 2000);
     }
     setPendingTransactions({
-      address: accountAddress,
+      address,
       pendingTransactions: newPendingTransactions,
     });
-  }, [accountAddress, nativeCurrency, pendingTransactions, processNonces, processPendingTransaction, setPendingTransactions]);
+  }, [address, nativeCurrency, pendingTransactions, processNonces, processPendingTransaction, setPendingTransactions]);
 
   return { watchPendingTransactions };
 };
