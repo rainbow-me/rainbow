@@ -4,9 +4,9 @@ import useWalletBalances from './useWalletBalances';
 import useWallets from './useWallets';
 import { Address } from 'viem';
 
-export default function useWalletsWithBalancesAndNames(withPositions = true) {
+export default function useWalletsWithBalancesAndNames() {
   const { walletNames, wallets } = useWallets();
-  const walletBalances = useWalletBalances(wallets || {}, withPositions);
+  const walletBalances = useWalletBalances(wallets || {});
 
   const walletsWithBalancesAndNames = useMemo(
     () =>

@@ -25,7 +25,7 @@ type WalletBalanceResult<T extends boolean> = {
   isLoading: boolean;
 };
 
-const useWalletBalances = <T extends boolean = true>(wallets: AllRainbowWallets, withPositions: T = true as T): WalletBalanceResult<T> => {
+const useWalletBalances = <T extends boolean = true>(wallets: AllRainbowWallets): WalletBalanceResult<T> => {
   const { nativeCurrency } = useAccountSettings();
 
   const allAddresses = useMemo(
@@ -42,7 +42,7 @@ const useWalletBalances = <T extends boolean = true>(wallets: AllRainbowWallets,
     queries: allAddresses.map(address => ({
       queryKey: positionsQueryKey({ address, currency: nativeCurrency }),
       queryFn: () => fetchPositions({ address, currency: nativeCurrency }),
-      enabled: !!address && (withPositions as boolean),
+      enabled: !!address,
     })),
   });
 
@@ -53,33 +53,22 @@ const useWalletBalances = <T extends boolean = true>(wallets: AllRainbowWallets,
       const lowerCaseAddress = address.toLowerCase() as Address;
       const assetBalance = summaryData?.data?.addresses?.[lowerCaseAddress]?.summary?.asset_value || 0;
 
-      if (!withPositions) {
-        result[lowerCaseAddress] = {
-          assetBalanceAmount: assetBalance,
-          assetBalanceDisplay: convertAmountToNativeDisplay(assetBalance, nativeCurrency),
-          totalBalanceAmount: assetBalance,
-          totalBalanceDisplay: convertAmountToNativeDisplay(assetBalance, nativeCurrency),
-        };
-      } else {
-        const positionData = queryClient.getQueryData<RainbowPositions | undefined>(
-          positionsQueryKey({ address, currency: nativeCurrency })
-        );
-        const positionsBalance = positionData?.totals?.total?.amount || '0';
-        const totalAccountBalance = add(assetBalance, positionsBalance);
+      const positionData = queryClient.getQueryData<RainbowPositions | undefined>(positionsQueryKey({ address, currency: nativeCurrency }));
+      const positionsBalance = positionData?.totals?.total?.amount || '0';
+      const totalAccountBalance = add(assetBalance, positionsBalance);
 
-        result[lowerCaseAddress] = {
-          assetBalanceAmount: assetBalance,
-          assetBalanceDisplay: convertAmountToNativeDisplay(assetBalance, nativeCurrency),
-          positionsBalanceAmount: positionsBalance,
-          positionsBalanceDisplay: convertAmountToNativeDisplay(positionsBalance, nativeCurrency),
-          totalBalanceAmount: totalAccountBalance,
-          totalBalanceDisplay: convertAmountToNativeDisplay(totalAccountBalance, nativeCurrency),
-        };
-      }
+      result[lowerCaseAddress] = {
+        assetBalanceAmount: assetBalance,
+        assetBalanceDisplay: convertAmountToNativeDisplay(assetBalance, nativeCurrency),
+        positionsBalanceAmount: positionsBalance,
+        positionsBalanceDisplay: convertAmountToNativeDisplay(positionsBalance, nativeCurrency),
+        totalBalanceAmount: totalAccountBalance,
+        totalBalanceDisplay: convertAmountToNativeDisplay(totalAccountBalance, nativeCurrency),
+      };
     }
 
     return result;
-  }, [allAddresses, summaryData, withPositions, nativeCurrency]);
+  }, [allAddresses, summaryData, nativeCurrency]);
 
   const isLoading = isSummaryLoading || positionQueries.some(query => query.isLoading);
 
