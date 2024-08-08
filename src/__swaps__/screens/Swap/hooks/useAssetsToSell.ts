@@ -10,7 +10,7 @@ import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
 import { ParsedAssetsDictByChain, ParsedSearchAsset, UserAssetFilter } from '@/__swaps__/types/assets';
 import { useAccountSettings, useDebounce } from '@/hooks';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { getCachedProviderForNetwork, isHardHat } from '@/handlers/web3';
+import { getIsHardhatConnected } from '@/handlers/web3';
 
 const sortBy = (by: UserAssetFilter) => {
   switch (by) {
@@ -24,9 +24,7 @@ const sortBy = (by: UserAssetFilter) => {
 export const useAssetsToSell = () => {
   const { accountAddress: currentAddress, nativeCurrency: currentCurrency, network: currentNetwork } = useAccountSettings();
 
-  const provider = getCachedProviderForNetwork(currentNetwork);
-  const providerUrl = provider?.connection?.url ?? '';
-  const connectedToHardhat = isHardHat(providerUrl);
+  const connectedToHardhat = getIsHardhatConnected();
 
   const filter = userAssetsStore(state => state.filter);
   const searchQuery = userAssetsStore(state => state.inputSearchQuery);
