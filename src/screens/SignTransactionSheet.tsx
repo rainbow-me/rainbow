@@ -72,7 +72,6 @@ import { useNonceForDisplay } from '@/hooks/useNonceForDisplay';
 import { useProviderSetup } from '@/hooks/useProviderSetup';
 import { useTransactionSubmission } from '@/hooks/useSubmitTransaction';
 import { useConfirmTransaction } from '@/hooks/useConfirmTransaction';
-import { RequestMessage } from '@coinbase/mobile-wallet-protocol-host';
 
 type SignTransactionSheetParams = {
   transactionDetails: RequestData;

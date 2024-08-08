@@ -23,7 +23,7 @@ import { enableActionsOnReadOnlyWallet } from '@/config';
 import walletTypes from '@/helpers/walletTypes';
 import watchingAlert from './watchingAlert';
 import { isEthereumAction, isHandshakeAction, RequestMessage, useMobileWalletProtocolHost } from '@coinbase/mobile-wallet-protocol-host';
-import { ChainId } from '@/__swaps__/types/chains';
+import { mwp } from '@/storage';
 
 export enum RequestSource {
   WALLETCONNECT = 'walletconnect',
@@ -110,46 +110,62 @@ export const handleMobileWalletProtocolRequest = async ({
   isClientAppVerified,
   approveHandshake,
   rejectHandshake,
-}: HandleMobileWalletProtocolRequestProps): Promise<string | Error> => {
+}: HandleMobileWalletProtocolRequestProps): Promise<boolean> => {
   await findWalletForAddress(request.account?.address ?? '');
 
   const [action] = request.actions;
 
   if (isHandshakeAction(action)) {
-    // TODO: Request metadata, verification, and build transactionDetails to pass to the confirmRequest screen
+    const chainIds = RainbowNetworks.filter(network => network.enabled && network.networkType !== 'testnet').map(network => network.id);
+    const receivedTimestamp = Date.now();
+
+    // TODO: Parallelize these calls
+    const dappMetadata = await fetchClientAppMetadata();
+    const isVerified = await isClientAppVerified();
+    return new Promise(resolve => {
+      const routeParams: WalletconnectApprovalSheetRouteParams = {
+        receivedTimestamp,
+        meta: {
+          chainIds,
+          dappName: dappMetadata?.appName || dappMetadata?.appUrl || 'Unknown DApp',
+          dappUrl: dappMetadata?.appUrl || '',
+          imageUrl: maybeSignUri(dappMetadata?.iconUrl),
+          isWalletConnectV2: false,
+          peerId: '',
+          dappScheme: null,
+          proposedChainId: request.account?.networkId,
+          proposedAddress: request.sender,
+        },
+        verifiedData: {
+          origin: dappMetadata?.appUrl || '',
+          verifyUrl: dappMetadata?.appUrl || '',
+          validation: isVerified ? 'VALID' : 'INVALID',
+        },
+        source: RequestSource.MOBILE_WALLET_PROTOCOL,
+        timedOut: false,
+        callback: async approved => {
+          // TODO: Do we need to call action.callback here?
+          if (approved) {
+            const success = await approveHandshake(dappMetadata);
+            resolve(success);
+          } else {
+            const failed = await rejectHandshake('User rejected the handshake');
+            resolve(failed);
+          }
+        },
+      };
+
+      Navigation.handleAction(
+        Routes.WALLET_CONNECT_APPROVAL_SHEET,
+        routeParams,
+        getActiveRoute()?.name === Routes.WALLET_CONNECT_APPROVAL_SHEET
+      );
+    });
   } else if (isEthereumAction(action)) {
     // TODO: Use metadata from mwp storage, and build transactionDetails to pass to the confirmRequest screen
   }
 
   throw new Error('Unsupported action type');
-  // return new Promise((resolve, reject) => {
-  //   const onSuccess = (result: string) => {
-  //     resolve(result);
-  //   };
-
-  //   const onCancel = (error?: Error) => {
-  //     if (error) {
-  //       reject(error); // Reject the promise with the provided error
-  //     } else {
-  //       reject(new Error('Operation cancelled by the user.')); // Reject with a default error if none provided
-  //     }
-  //   };
-
-  //   const onCloseScreen = (canceled: boolean) => {
-  //     // This function might not be necessary for the promise logic,
-  //     // but you can still use it for cleanup or logging if needed.
-  //   };
-
-  //   Navigation.handleAction(Routes.CONFIRM_REQUEST, {
-  //     transactionDetails: request,
-  //     onSuccess,
-  //     onCancel,
-  //     onCloseScreen,
-  //     network: ethereumUtils.getNetworkNameFromChainId(request.account?.networkId as ChainId),
-  //     address: request.account?.address,
-  //     source: RequestSource.MOBILE_WALLET_PROTOCOL,
-  //   });
-  // });
 };
 
 export const handleDappBrowserRequest = async (request: Omit<RequestData, 'displayDetails'>): Promise<string | Error> => {
