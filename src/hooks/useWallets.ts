@@ -4,7 +4,7 @@ import { createSelector } from 'reselect';
 import WalletTypes from '@/helpers/walletTypes';
 import { RainbowWallet } from '@/model/wallet';
 import { AppState } from '@/redux/store';
-import logger from '@/utils/logger';
+import { logger } from '@/logger';
 
 const walletSelector = createSelector(
   ({ wallets: { isWalletLoading, selected = {} as RainbowWallet, walletNames, wallets } }: AppState) => ({
@@ -28,9 +28,7 @@ export default function useWallets() {
 
   useEffect(() => {
     if (isDamaged) {
-      logger.sentry('Wallet is damaged. Check values below:');
-      logger.sentry('selectedWallet: ', selectedWallet);
-      logger.sentry('wallets: ', wallets);
+      logger.warn('Wallet is damaged. Check attached metadata.', { selectedWallet, wallets });
     }
   }, [isDamaged, selectedWallet, wallets]);
 
