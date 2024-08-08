@@ -61,7 +61,7 @@ export default function ProfileScreen() {
         }
       />
 
-      <ActivityList isEmpty={isEmpty} isLoading={isLoading} network={network} sections={sections} {...accountTransactions} />
+      <ActivityList network={network} sections={sections} {...accountTransactions} />
     </ProfileScreenPage>
   );
 }
