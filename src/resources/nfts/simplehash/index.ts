@@ -1,11 +1,11 @@
 import { NFT_API_KEY, NFT_API_URL } from 'react-native-dotenv';
 import { RainbowFetchClient } from '@/rainbow-fetch';
-import { Network } from '@/helpers';
 import { SimpleHashListing, SimpleHashNFT, SimpleHashMarketplaceId } from '@/resources/nfts/simplehash/types';
-import { getNetworkObj } from '@/networks';
+import { getNetworkObject } from '@/networks';
 import { UniqueAsset } from '@/entities';
 import { RainbowError, logger } from '@/logger';
 import { getGnosisNetworkObject } from '@/networks/gnosis';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export const START_CURSOR = 'start';
 
@@ -18,16 +18,16 @@ const createCursorSuffix = (cursor: string) => (cursor === START_CURSOR ? '' : `
 export async function fetchSimpleHashNFT(
   contractAddress: string,
   tokenId: string,
-  network: Omit<Network, Network.goerli> = Network.mainnet
+  chainId: Omit<ChainId, ChainId.goerli> = ChainId.mainnet
 ): Promise<SimpleHashNFT | undefined> {
-  const chain = getNetworkObj(network as Network).nfts.simplehashNetwork;
+  const simplehashNetwork = getNetworkObject({ chainId: chainId as ChainId })?.nfts?.simplehashNetwork;
 
-  if (!chain) {
-    logger.warn(`[simplehash]: no SimpleHash chain for network: ${network}`);
+  if (!simplehashNetwork) {
+    logger.warn(`[simplehash]: no SimpleHash for chainId: ${chainId}`);
     return;
   }
 
-  const response = await nftApi.get(`/nfts/${chain}/${contractAddress}/${tokenId}`, {
+  const response = await nftApi.get(`/nfts/${simplehashNetwork}/${contractAddress}/${tokenId}`, {
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
@@ -40,15 +40,15 @@ export async function fetchSimpleHashNFT(
 export async function fetchSimpleHashNFTListing(
   contractAddress: string,
   tokenId: string,
-  network: Omit<Network, Network.goerli> = Network.mainnet
+  chainId: Omit<ChainId, ChainId.goerli> = ChainId.mainnet
 ): Promise<SimpleHashListing | undefined> {
   // array of all eth listings on OpenSea for this token
   let listings: SimpleHashListing[] = [];
   let cursor = START_CURSOR;
-  const chain = getNetworkObj(network as Network).nfts.simplehashNetwork;
+  const simplehashNetwork = getNetworkObject({ chainId: chainId as ChainId })?.nfts?.simplehashNetwork;
 
-  if (!chain) {
-    logger.warn(`[simplehash]: no SimpleHash chain for network: ${network}`);
+  if (!simplehashNetwork) {
+    logger.warn(`[simplehash]: no SimpleHash for chainId: ${chainId}`);
     return;
   }
 
@@ -57,7 +57,7 @@ export async function fetchSimpleHashNFTListing(
     // eslint-disable-next-line no-await-in-loop
     const response = await nftApi.get(
       // OpenSea ETH offers only for now
-      `/nfts/listings/${chain}/${contractAddress}/${tokenId}?marketplaces=${SimpleHashMarketplaceId.OpenSea}${cursorSuffix}`,
+      `/nfts/listings/${simplehashNetwork}/${contractAddress}/${tokenId}?marketplaces=${SimpleHashMarketplaceId.OpenSea}${cursorSuffix}`,
       {
         headers: {
           'Accept': 'application/json',
@@ -84,16 +84,16 @@ export async function fetchSimpleHashNFTListing(
  * @param nft
  */
 export async function refreshNFTContractMetadata(nft: UniqueAsset) {
-  const chain = (nft.isPoap ? getGnosisNetworkObject() : getNetworkObj(nft.network)).nfts.simplehashNetwork;
+  const simplehashNetwork = (nft.isPoap ? getGnosisNetworkObject() : getNetworkObject({ chainId: nft.chainId }))?.nfts?.simplehashNetwork;
 
-  if (!chain) {
-    logger.warn(`[simplehash]: no SimpleHash chain for network: ${nft.network}`);
+  if (!simplehashNetwork) {
+    logger.warn(`[simplehash]: no SimpleHash for chainId: ${nft.chainId}`);
     return;
   }
 
   try {
     await nftApi.post(
-      `/nfts/refresh/${chain}/${nft.asset_contract.address}`,
+      `/nfts/refresh/${simplehashNetwork}/${nft.asset_contract.address}`,
       {},
       {
         headers: {
@@ -111,7 +111,7 @@ export async function refreshNFTContractMetadata(nft: UniqueAsset) {
       // If the collection has > 20k NFTs, the above request will fail.
       // In that case, we need to refresh the given NFT individually.
       await nftApi.post(
-        `/nfts/refresh/${chain}/${nft.asset_contract.address}/${nft.id}`,
+        `/nfts/refresh/${simplehashNetwork}/${nft.asset_contract.address}/${nft.id}`,
         {},
         {
           headers: {
@@ -136,10 +136,10 @@ export async function refreshNFTContractMetadata(nft: UniqueAsset) {
  * @param nft
  */
 export async function reportNFT(nft: UniqueAsset) {
-  const chain = (nft.isPoap ? getGnosisNetworkObject() : getNetworkObj(nft.network)).nfts.simplehashNetwork;
+  const simplehashNetwork = (nft.isPoap ? getGnosisNetworkObject() : getNetworkObject({ chainId: nft.chainId }))?.nfts?.simplehashNetwork;
 
-  if (!chain) {
-    logger.warn(`[simplehash]: no SimpleHash chain for network: ${nft.network}`);
+  if (!simplehashNetwork) {
+    logger.warn(`[simplehash]: no SimpleHash for chainId: ${nft.chainId}`);
     return;
   }
 
@@ -148,7 +148,7 @@ export async function reportNFT(nft: UniqueAsset) {
       '/nfts/report/spam',
       {
         contract_address: nft.asset_contract.address,
-        chain_id: chain,
+        chain_id: simplehashNetwork,
         token_id: nft.id,
         event_type: 'mark_as_spam',
       },

@@ -1,5 +1,6 @@
 import { Network } from '../helpers/networkTypes';
 import { AssetContract, AssetType } from '.';
+import { ChainId } from '@/__swaps__/types/chains';
 
 interface UniqueAssetLastSale {
   total_price: string;
@@ -11,6 +12,7 @@ interface UniqueAssetLastSale {
 
 export interface UniqueAsset {
   animation_url?: string | null;
+  chainId: ChainId;
   description?: string | null;
   external_link?: string | null;
   image_original_url?: string | null;

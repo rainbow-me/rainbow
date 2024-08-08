@@ -52,9 +52,6 @@ export default function ChartExpandedStateHeader({
 }) {
   const theme = useTheme();
   const color = givenColors || theme.colors.dark;
-  const tokens = useMemo(() => {
-    return isPool ? asset.tokens : [asset];
-  }, [asset, isPool]);
   const { nativeCurrency } = useAccountSettings();
   const tabularNums = useTabularNumsWhileScrubbing();
 
@@ -114,7 +111,7 @@ export default function ChartExpandedStateHeader({
         <RainbowCoinIcon
           size={40}
           icon={asset?.icon_url}
-          chainId={ethereumUtils.getChainIdFromNetwork(asset?.network)}
+          chainId={asset?.chainId}
           symbol={asset?.symbol}
           theme={theme}
           colors={asset?.colors}

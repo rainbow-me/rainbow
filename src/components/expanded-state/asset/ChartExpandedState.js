@@ -140,12 +140,12 @@ function Description({ text = '' }) {
 }
 
 export default function ChartExpandedState({ asset }) {
+  console.log('ChartExpandedState', asset.chainId);
   const { nativeCurrency, network: currentNetwork } = useAccountSettings();
-  const assetChainId = ethereumUtils.getChainIdFromNetwork(asset?.network);
 
   const { data: genericAsset } = useExternalToken({
     address: asset?.address,
-    chainId: assetChainId,
+    chainId: asset?.chainId,
     currency: nativeCurrency,
   });
   const {
@@ -171,7 +171,7 @@ export default function ChartExpandedState({ asset }) {
         : asset;
   }, [asset, genericAsset, hasBalance]);
 
-  const isL2 = useMemo(() => isL2Chain({ chainId: assetChainId }), [assetChainId]);
+  const isL2 = useMemo(() => isL2Chain({ chainId: asset?.chainId }), [asset?.chainId]);
   const isTestnet = isTestnetNetwork(currentNetwork);
 
   const { data, isLoading: additionalAssetDataLoading } = useAdditionalAssetData({
@@ -375,7 +375,7 @@ export default function ChartExpandedState({ asset }) {
           isNativeAsset={assetWithPrice?.isNativeAsset}
           links={data?.links}
           marginTop={!delayedDescriptions && 19}
-          chainId={ethereumUtils.getChainIdFromNetwork(asset?.network)}
+          chainId={asset?.chainId}
         />
         <Spacer />
       </AdditionalContentWrapper>

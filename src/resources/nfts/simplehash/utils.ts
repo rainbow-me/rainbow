@@ -21,6 +21,7 @@ import { TokenStandard } from '@/handlers/web3';
 import { handleNFTImages } from '@/utils/handleNFTImages';
 import { SimpleHashNft } from '@/graphql/__generated__/arc';
 import { Network } from '@/helpers';
+import { chainNameToIdMapping } from '@/__swaps__/types/chains';
 
 const ENS_COLLECTION_NAME = 'ENS';
 const SVG_MIME_TYPE = 'image/svg+xml';
@@ -78,6 +79,7 @@ export function simpleHashNFTToUniqueAsset(nft: SimpleHashNft, address: string):
       slug: marketplace?.marketplace_collection_id ?? '',
       twitter_username: collection.twitter_username,
     },
+    chainId: chainNameToIdMapping[nft.chain as keyof typeof chainNameToIdMapping],
     description: nft.description,
     external_link: nft.external_url,
     familyImage: collection.image_url,

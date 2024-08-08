@@ -1,15 +1,14 @@
 import { QueryFunction, useQuery } from '@tanstack/react-query';
 import { QueryConfigWithSelect, createQueryKey } from '@/react-query';
-import { NFT } from '@/resources/nfts/types';
 import { fetchSimpleHashNFTListing } from '@/resources/nfts/simplehash';
 import { simpleHashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
-import { Network } from '@/helpers';
 import { UniqueAsset } from '@/entities';
 import { arcClient } from '@/graphql';
 import { createSelector } from 'reselect';
 import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const NFTS_STALE_TIME = 600000; // 10 minutes
 const NFTS_CACHE_TIME_EXTERNAL = 3600000; // 1 hour
@@ -21,12 +20,12 @@ export const nftsQueryKey = ({ address, sortBy }: { address: string; sortBy: Nft
 export const nftListingQueryKey = ({
   contractAddress,
   tokenId,
-  network,
+  chainId,
 }: {
   contractAddress: string;
   tokenId: string;
-  network: Omit<Network, Network.goerli>;
-}) => createQueryKey('nftListing', { contractAddress, tokenId, network });
+  chainId: Omit<ChainId, ChainId.goerli>;
+}) => createQueryKey('nftListing', { contractAddress, tokenId, chainId });
 
 const walletsSelector = (state: AppState) => state.wallets?.wallets;
 
@@ -105,17 +104,17 @@ export function useLegacyNFTs<TSelected = NFTData>({
 export function useNFTListing({
   contractAddress,
   tokenId,
-  network,
+  chainId,
 }: {
   contractAddress: string;
   tokenId: string;
-  network: Omit<Network, Network.goerli>;
+  chainId: Omit<ChainId, ChainId.goerli>;
 }) {
   return useQuery(
-    nftListingQueryKey({ contractAddress, tokenId, network }),
-    async () => (await fetchSimpleHashNFTListing(contractAddress, tokenId, network)) ?? null,
+    nftListingQueryKey({ contractAddress, tokenId, chainId }),
+    async () => (await fetchSimpleHashNFTListing(contractAddress, tokenId, chainId)) ?? null,
     {
-      enabled: !!network && !!contractAddress && !!tokenId,
+      enabled: !!chainId && !!contractAddress && !!tokenId,
       staleTime: 0,
       cacheTime: 0,
     }
