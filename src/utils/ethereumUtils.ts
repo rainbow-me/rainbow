@@ -536,13 +536,13 @@ const calculateL1FeeOptimism = async (tx: RainbowTransaction, provider: Provider
 
 const getBasicSwapGasLimit = (chainId: ChainId) => {
   switch (chainId) {
-    case getChainIdFromNetwork(Network.arbitrum):
+    case ChainId.arbitrum:
       return ethUnits.basic_swap_arbitrum;
-    case getChainIdFromNetwork(Network.polygon):
+    case ChainId.polygon:
       return ethUnits.basic_swap_polygon;
-    case getChainIdFromNetwork(Network.bsc):
+    case ChainId.bsc:
       return ethUnits.basic_swap_bsc;
-    case getChainIdFromNetwork(Network.optimism):
+    case ChainId.optimism:
       return ethUnits.basic_swap_optimism;
     default:
       return ethUnits.basic_swap;
