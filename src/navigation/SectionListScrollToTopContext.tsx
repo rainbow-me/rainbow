@@ -17,6 +17,7 @@ const SectionListScrollToTopProvider: React.FC<ScrollToTopProviderProps> = ({ ch
   const [scrollToTopRef, setScrollToTopRef] = useState<SectionList | null>(null);
 
   const scrollToTop = () => {
+    if (!scrollToTopRef?.props.sections.length) return;
     scrollToTopRef?.scrollToLocation({
       animated: true,
       itemIndex: 0,
