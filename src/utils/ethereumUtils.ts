@@ -381,7 +381,7 @@ export const getFirstTransactionTimestamp = async (address: EthereumAddress): Pr
   return timestamp ? timestamp * 1000 : undefined;
 };
 
-function getBlockExplorer(chainId: ChainId) {
+function getBlockExplorer({ chainId }: { chainId: ChainId }) {
   return getNetworkObject({ chainId }).blockExplorers?.default.name || 'etherscan';
 }
 
