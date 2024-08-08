@@ -105,7 +105,7 @@ const withPositionsSection = (isLoadingUserAssets: boolean) => {
 const withBriefBalanceSection = (
   sortedAssets: ParsedAddressAsset[],
   isLoadingUserAssets: boolean,
-  accountBalance: number | undefined,
+  accountBalance: string | undefined,
   nativeCurrency: NativeCurrencyKey,
   isCoinListEdited: boolean,
   pinnedCoins: any,
