@@ -783,8 +783,8 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
     lastFocusedInput?.blur();
     navigate(Routes.EXPLAIN_SHEET, {
       inputToken: inputCurrency?.symbol,
-      fromNetwork: inputChainId,
-      toNetwork: outputChainId,
+      fromNetwork: ethereumUtils.getNetworkFromChainId(inputChainId),
+      toNetwork: ethereumUtils.getNetworkFromChainId(outputChainId),
       isCrosschainSwap,
       isBridgeSwap,
       onClose: () => {

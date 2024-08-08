@@ -16,7 +16,6 @@ import { Text } from '../text';
 import { GasSpeedLabelPager } from '.';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { isL2Chain } from '@/handlers/web3';
-import { Network } from '@/helpers/networkTypes';
 import { add, greaterThan, toFixedDecimals } from '@/helpers/utilities';
 import { getCrossChainTimeEstimate } from '@/utils/crossChainTimeEstimates';
 import { useAccountSettings, useColorForAsset, useGas, usePrevious, useSwapCurrencies } from '@/hooks';
@@ -29,6 +28,7 @@ import { getNetworkObject } from '@/networks';
 import { IS_ANDROID } from '@/env';
 import { ContextMenu } from '../context-menu';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const { GAS_EMOJIS, GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST, getGasLabel } = gasUtils;
 
@@ -312,7 +312,7 @@ const GasSpeedButton = ({
     } else {
       const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(chainId);
       navigate(Routes.EXPLAIN_SHEET, {
-        network: currentNetwork,
+        network: ethereumUtils.getNetworkFromChainId(chainId),
         type: 'gas',
         nativeAsset,
       });
@@ -408,7 +408,6 @@ const GasSpeedButton = ({
             ? makeColorMoreChill(rawColorForAsset || colors.appleBlue, colors.shadowBlack)
             : colors.alpha(colors.blueGreyDark, 0.12)
         }
-        currentNetwork={currentNetwork}
         dropdownEnabled={gasOptionsAvailable}
         label={label}
         showGasOptions={showGasOptions}
@@ -489,7 +488,7 @@ const GasSpeedButton = ({
           <Row>
             <NativeCoinIconWrapper>
               <AnimatePresence>
-                {!!currentNetwork && (
+                {!!chainId && (
                   <MotiView
                     animate={{ opacity: 1 }}
                     from={{ opacity: 0 }}
@@ -499,10 +498,10 @@ const GasSpeedButton = ({
                       type: 'timing',
                     }}
                   >
-                    {currentNetwork === Network.mainnet ? (
+                    {chainId === ChainId.mainnet ? (
                       <EthCoinIcon size={18} />
                     ) : (
-                      <ChainBadge network={currentNetwork} size="gas" position="relative" />
+                      <ChainBadge chainId={chainId} size="gas" position="relative" />
                     )}
                   </MotiView>
                 )}
@@ -548,7 +547,7 @@ const GasSpeedButton = ({
           <Centered>
             {isLegacyGasNetwork ? (
               <ChainBadgeContainer>
-                <ChainBadge network={currentNetwork} position="relative" />
+                <ChainBadge chainId={chainId} position="relative" />
               </ChainBadgeContainer>
             ) : showGasOptions ? (
               <CustomGasButton

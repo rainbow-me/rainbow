@@ -21,9 +21,10 @@ import { useTheme } from '@/theme';
 import { isL2Chain } from '@/handlers/web3';
 import { IS_ANDROID } from '@/env';
 import * as i18n from '@/languages';
-import { getNetworkObj, getNetworkObject } from '@/networks';
+import { getNetworkObj } from '@/networks';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;
@@ -228,7 +229,7 @@ export const explainers = (params, theme) => {
       logo: !isL2Chain({ chainId: fromNetworkObject.id }) ? (
         <EthCoinIcon size={40} />
       ) : (
-        <ChainBadge network={params?.fromNetwork} marginBottom={8} position="relative" size="large" />
+        <ChainBadge chainId={ethereumUtils.getChainIdFromNetwork(params?.fromNetwork)} marginBottom={8} position="relative" size="large" />
       ),
     },
     floor_price: {
@@ -378,7 +379,7 @@ export const explainers = (params, theme) => {
     optimism: {
       emoji: '⛽️',
       extraHeight: 150,
-      logo: <ChainBadge network={networkTypes.optimism} marginBottom={8} position="relative" size="large" />,
+      logo: <ChainBadge chainId={ChainId.optimism} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
         url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
@@ -391,7 +392,7 @@ export const explainers = (params, theme) => {
     arbitrum: {
       emoji: '⛽️',
       extraHeight: 144,
-      logo: <ChainBadge network={networkTypes.arbitrum} marginBottom={8} position="relative" size="large" />,
+      logo: <ChainBadge chainId={ChainId.arbitrum} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
         url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
@@ -404,7 +405,7 @@ export const explainers = (params, theme) => {
     polygon: {
       emoji: '⛽️',
       extraHeight: 120,
-      logo: <ChainBadge network={networkTypes.polygon} marginBottom={8} position="relative" size="large" />,
+      logo: <ChainBadge chainId={ChainId.polygon} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
         url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
@@ -417,7 +418,7 @@ export const explainers = (params, theme) => {
     bsc: {
       emoji: '⛽️',
       extraHeight: IS_ANDROID ? 120 : 160,
-      logo: <ChainBadge network={networkTypes.bsc} marginBottom={8} position="relative" size="large" />,
+      logo: <ChainBadge chainId={ChainId.bsc} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
         url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
@@ -430,7 +431,7 @@ export const explainers = (params, theme) => {
     zora: {
       emoji: '⛽️',
       extraHeight: 144,
-      logo: <ChainBadge network={networkTypes.zora} marginBottom={8} position="relative" size="large" />,
+      logo: <ChainBadge chainId={ChainId.zora} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
         url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
@@ -443,7 +444,7 @@ export const explainers = (params, theme) => {
     base: {
       emoji: '⛽️',
       extraHeight: 144,
-      logo: <ChainBadge network={networkTypes.base} marginBottom={8} position="relative" size="large" />,
+      logo: <ChainBadge chainId={ChainId.base} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
         url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
@@ -456,7 +457,7 @@ export const explainers = (params, theme) => {
     avalanche: {
       emoji: '⛽️',
       extraHeight: 144,
-      logo: <ChainBadge network={networkTypes.avalanche} marginBottom={8} position="relative" size="large" />,
+      logo: <ChainBadge chainId={ChainId.avalanche} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
         url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
@@ -469,7 +470,7 @@ export const explainers = (params, theme) => {
     degen: {
       emoji: '⛽️',
       extraHeight: 144,
-      logo: <ChainBadge network={networkTypes.degen} marginBottom={8} position="relative" size="large" />,
+      logo: <ChainBadge chainId={ChainId.degen} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
         url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
@@ -482,7 +483,7 @@ export const explainers = (params, theme) => {
     blast: {
       emoji: '⛽️',
       extraHeight: 144,
-      logo: <ChainBadge network={networkTypes.blast} marginBottom={8} position="relative" size="large" />,
+      logo: <ChainBadge chainId={ChainId.blast} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
         url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
@@ -542,7 +543,12 @@ export const explainers = (params, theme) => {
       title: `Switching to ${getNetworkObj(params?.network)?.name}`,
       logo:
         params?.network !== 'mainnet' ? (
-          <ChainBadge network={networkTypes[params?.network]} marginBottom={8} position="relative" size="large" />
+          <ChainBadge
+            chainId={ethereumUtils.getChainIdFromNetwork(networkTypes[params?.network])}
+            marginBottom={8}
+            position="relative"
+            size="large"
+          />
         ) : (
           <EthCoinIcon size={40} />
         ),
@@ -721,7 +727,7 @@ export const explainers = (params, theme) => {
                 zIndex={params?.networks?.length - index}
               >
                 {network !== 'mainnet' ? (
-                  <ChainBadge network={network} position="relative" size="large" />
+                  <ChainBadge chainId={ethereumUtils.getChainIdFromNetwork(network)} position="relative" size="large" />
                 ) : (
                   <View style={{ marginTop: 4 }}>
                     <EthCoinIcon size={40} />
@@ -774,7 +780,7 @@ export const explainers = (params, theme) => {
           {lang.t('explain.obtain_l2_asset.fragment3')}
         </Text>
       ),
-      logo: <ChainBadge network={params?.network} marginBottom={8} position="relative" size="large" />,
+      logo: <ChainBadge chainId={ethereumUtils.getChainIdFromNetwork(params?.network)} marginBottom={8} position="relative" size="large" />,
       title: lang.t('explain.obtain_l2_asset.title', {
         networkName: params?.networkName,
       }),
