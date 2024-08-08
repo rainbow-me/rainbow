@@ -136,6 +136,7 @@ export enum ChainId {
   bscTestnet = chain.bscTestnet.id,
   celo = chain.celo.id,
   degen = chain.degen.id,
+  goerli = chain.goerli.id,
   gnosis = chain.gnosis.id,
   hardhat = HARDHAT_CHAIN_ID,
   hardhatOptimism = chainHardhatOptimism.id,
