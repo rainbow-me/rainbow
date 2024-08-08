@@ -159,7 +159,7 @@ export default function CurrencySelectModal() {
         Keyboard.dismiss();
         InteractionManager.runAfterInteractions(() => {
           navigate(Routes.EXPLAIN_SHEET, {
-            network: newAsset?.network,
+            chainId: ethereumUtils.getChainIdFromNetwork(newAsset?.network),
             onClose: () => {
               setHasShownWarning();
               selectAsset();
@@ -326,8 +326,7 @@ export default function CurrencySelectModal() {
           InteractionManager.runAfterInteractions(() => {
             navigate(Routes.EXPLAIN_SHEET, {
               assetName: item?.symbol,
-              network: ethereumUtils.getNetworkFromChainId(currentChainId),
-              networkName: currentL2Name,
+              chainId: currentChainId,
               onClose: linkToHop,
               type: 'obtainL2Assets',
             });

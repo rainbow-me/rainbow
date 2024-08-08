@@ -11,7 +11,6 @@ import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import { DoubleChevron } from '@/components/icons';
 import { Box } from '@/design-system';
-import networkTypes from '@/helpers/networkTypes';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding, position } from '@/styles';
@@ -25,7 +24,7 @@ import * as i18n from '@/languages';
 import { getNetworkObj } from '@/networks';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId, chainIdToNameMapping } from '@/__swaps__/types/chains';
 
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;
@@ -159,8 +158,11 @@ const ENS_CONFIGURATION_EXPLAINER =
 
 export const explainers = (params, theme) => {
   const colors = theme?.colors;
-  const fromNetworkObject = getNetworkObj(params?.fromNetwork);
-  const toNetworkObject = getNetworkObj(params?.toNetwork);
+  const chainId = params?.chainId;
+  const network = ethereumUtils.getNetworkFromChainId(chainId);
+  const networkName = chainIdToNameMapping[chainId];
+  const fromChainId = params?.fromChainId;
+  const toChainId = params?.toChainId;
   return {
     op_rewards_airdrop_timing: {
       emoji: '📦',
@@ -211,7 +213,7 @@ export const explainers = (params, theme) => {
       title: params?.inputToken
         ? lang.t(`explain.output_disabled.${params?.isCrosschainSwap ? 'title_crosschain' : 'title'}`, {
             inputToken: params?.inputToken,
-            fromNetwork: fromNetworkObject.name,
+            fromNetwork: chainIdToNameMapping[fromChainId],
           })
         : lang.t('explain.output_disabled.title_empty'),
 
@@ -219,18 +221,18 @@ export const explainers = (params, theme) => {
         ? lang.t(`explain.output_disabled.${params?.isBridgeSwap ? 'text_bridge' : 'text_crosschain'}`, {
             inputToken: params?.inputToken,
             outputToken: params?.outputToken,
-            fromNetwork: fromNetworkObject.name,
-            toNetwork: toNetworkObject.name,
+            fromNetwork: chainIdToNameMapping[fromChainId],
+            toNetwork: chainIdToNameMapping[toChainId],
           })
         : lang.t('explain.output_disabled.text', {
-            fromNetwork: fromNetworkObject?.name,
+            fromNetwork: chainIdToNameMapping[fromChainId]?.name,
             inputToken: params?.inputToken,
             outputToken: params?.outputToken,
           }),
-      logo: !isL2Chain({ chainId: fromNetworkObject.id }) ? (
+      logo: !isL2Chain({ chainId: fromChainId }) ? (
         <EthCoinIcon size={40} />
       ) : (
-        <ChainBadge chainId={ethereumUtils.getChainIdFromNetwork(params?.fromNetwork)} marginBottom={8} position="relative" size="large" />
+        <ChainBadge chainId={fromChainId} marginBottom={8} position="relative" size="large" />
       ),
     },
     floor_price: {
@@ -245,15 +247,15 @@ export const explainers = (params, theme) => {
           size={40}
           icon={params?.nativeAsset?.icon_url}
           symbol={params?.nativeAsset?.symbol}
-          chainId={ethereumUtils.getChainIdFromNetwork(params?.network)}
+          chainId={chainId}
           colors={params?.nativeAsset?.colors}
           theme={theme}
         />
       ),
       extraHeight: 2,
-      text: gasExplainer(getNetworkObj(params?.network).name),
+      text: gasExplainer(chainIdToNameMapping[chainId]),
       title: lang.t('explain.gas.title', {
-        networkName: getNetworkObj(params?.network).name,
+        networkName: chainIdToNameMapping[chainId],
       }),
     },
     ens_primary_name: {
@@ -534,22 +536,17 @@ export const explainers = (params, theme) => {
     },
     swapResetInputs: {
       button: {
-        label: `Continue with ${getNetworkObj(params?.network)?.name}`,
-        bgColor: colors?.networkColors[params?.network] && colors?.alpha(colors?.networkColors[params?.network], 0.06),
-        textColor: colors?.networkColors[params?.network] && colors?.networkColors?.[params?.network],
+        label: `Continue with ${networkName}`,
+        bgColor: colors?.networkColors[network] && colors?.alpha(colors?.networkColors[network], 0.06),
+        textColor: colors?.networkColors[network] && colors?.networkColors?.[network],
       },
       emoji: '🔐',
       extraHeight: -90,
       text: SWAP_RESET_EXPLAINER,
-      title: `Switching to ${getNetworkObj(params?.network)?.name}`,
+      title: `Switching to ${networkName}`,
       logo:
-        params?.network !== 'mainnet' ? (
-          <ChainBadge
-            chainId={ethereumUtils.getChainIdFromNetwork(networkTypes[params?.network])}
-            marginBottom={8}
-            position="relative"
-            size="large"
-          />
+	  chainId !== ChainId.mainnet ? (
+          <ChainBadge chainId={chainId} marginBottom={8} position="relative" size="large" />
         ) : (
           <EthCoinIcon size={40} />
         ),
@@ -780,7 +777,7 @@ export const explainers = (params, theme) => {
           {lang.t('explain.obtain_l2_asset.fragment3')}
         </Text>
       ),
-      logo: <ChainBadge chainId={ethereumUtils.getChainIdFromNetwork(params?.network)} marginBottom={8} position="relative" size="large" />,
+      logo: <ChainBadge chainId={fromChainId} marginBottom={8} position="relative" size="large" />,
       title: lang.t('explain.obtain_l2_asset.title', {
         networkName: params?.networkName,
       }),
@@ -871,10 +868,7 @@ export const explainers = (params, theme) => {
         <DashedWrapper
           size={50}
           childXPosition={10}
-          colors={[
-            colors?.networkColors[params?.network],
-            getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ?? colors?.appleBlue,
-          ]}
+          colors={[colors?.networkColors[network], getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ?? colors?.appleBlue]}
         >
           <RainbowCoinIcon
             size={30}
@@ -906,8 +900,8 @@ export const explainers = (params, theme) => {
           networkName: params?.networkName,
           gasToken: params?.gasToken,
         }),
-        textColor: colors?.networkColors[params?.network],
-        bgColor: colors?.networkColors[params?.network] && colors?.alpha(colors?.networkColors[params?.network], 0.05),
+        textColor: colors?.networkColors[network],
+        bgColor: colors?.networkColors[network] && colors?.alpha(colors?.networkColors[network], 0.05),
         onPress: params?.onRefuel,
       },
     },
@@ -916,10 +910,7 @@ export const explainers = (params, theme) => {
         <DashedWrapper
           size={50}
           childXPosition={10}
-          colors={[
-            colors?.networkColors[params?.network],
-            getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ?? colors?.appleBlue,
-          ]}
+          colors={[colors?.networkColors[network], getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ?? colors?.appleBlue]}
         >
           <RainbowCoinIcon
             size={30}
@@ -951,8 +942,8 @@ export const explainers = (params, theme) => {
           networkName: params?.networkName,
           gasToken: params?.gasToken,
         }),
-        textColor: colors?.networkColors[params?.network],
-        bgColor: colors?.networkColors[params?.network] && colors?.alpha(colors?.networkColors[params?.network], 0.05),
+        textColor: colors?.networkColors[network],
+        bgColor: colors?.networkColors[network] && colors?.alpha(colors?.networkColors[network], 0.05),
         onPress: params?.onRefuel,
       },
     },
@@ -962,10 +953,7 @@ export const explainers = (params, theme) => {
         <DashedWrapper
           size={50}
           childXPosition={10}
-          colors={[
-            colors?.networkColors[params?.network],
-            getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ?? colors?.appleBlue,
-          ]}
+          colors={[colors?.networkColors[network], getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ?? colors?.appleBlue]}
         >
           <RainbowCoinIcon
             size={30}

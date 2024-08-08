@@ -59,15 +59,13 @@ function SwapOutputAmount() {
     const { inputAsset, outputAsset } = useSwapsStore.getState();
     const inputTokenSymbol = inputAsset?.symbol;
     const outputTokenSymbol = outputAsset?.symbol;
-    const inputNetwork = ethereumUtils.getNetworkFromChainId(inputAsset?.chainId ?? ChainId.mainnet);
-    const outputNetwork = ethereumUtils.getNetworkFromChainId(outputAsset?.chainId ?? ChainId.mainnet);
     const isCrosschainSwap = inputAsset?.chainId !== outputAsset?.chainId;
     const isBridgeSwap = inputTokenSymbol === outputTokenSymbol;
 
     navigate(Routes.EXPLAIN_SHEET, {
       inputToken: inputTokenSymbol,
-      fromNetwork: inputNetwork,
-      toNetwork: outputNetwork,
+      fromChainId: inputAsset?.chainId ?? ChainId.mainnet,
+      toChainId: outputAsset?.chainId ?? ChainId.mainnet,
       isCrosschainSwap,
       isBridgeSwap,
       outputToken: outputTokenSymbol,

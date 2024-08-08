@@ -312,7 +312,7 @@ const GasSpeedButton = ({
     } else {
       const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(chainId);
       navigate(Routes.EXPLAIN_SHEET, {
-        network: ethereumUtils.getNetworkFromChainId(chainId),
+        chainId,
         type: 'gas',
         nativeAsset,
       });
