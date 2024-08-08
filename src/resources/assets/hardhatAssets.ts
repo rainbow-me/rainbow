@@ -4,11 +4,12 @@ import { keyBy, mapValues } from 'lodash';
 import { Network } from '@/helpers/networkTypes';
 import { web3Provider } from '@/handlers/web3'; // TODO JIN
 import { getNetworkObj } from '@/networks';
-import { balanceCheckerContractAbi, chainAssets, chainAssetsByChainId, ETH_ADDRESS, SUPPORTED_CHAIN_IDS } from '@/references';
+import { balanceCheckerContractAbi, chainAssets, ETH_ADDRESS } from '@/references';
 import { parseAddressAsset } from './assets';
 import { RainbowAddressAssets } from './types';
 import logger from '@/utils/logger';
-import { AddressZero } from '@ethersproject/constants';
+
+const ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT = '0x0000000000000000000000000000000000000000';
 
 const fetchHardhatBalancesWithBalanceChecker = async (
   tokens: string[],
@@ -23,7 +24,7 @@ const fetchHardhatBalancesWithBalanceChecker = async (
     } = {};
     tokens.forEach((tokenAddr, tokenIdx) => {
       const balance = values[tokenIdx];
-      const assetCode = tokenAddr === AddressZero ? ETH_ADDRESS : tokenAddr;
+      const assetCode = tokenAddr === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT ? ETH_ADDRESS : tokenAddr;
       balances[assetCode] = balance.toString();
     });
     return balances;
@@ -38,7 +39,7 @@ export const fetchHardhatBalances = async (accountAddress: string, network: Netw
   const chainAssetsMap = keyBy(chainAssets[network as keyof typeof chainAssets], ({ asset }) => `${asset.asset_code}_${asset.network}`);
 
   const tokenAddresses = Object.values(chainAssetsMap).map(({ asset: { asset_code } }) =>
-    asset_code === ETH_ADDRESS ? AddressZero : asset_code.toLowerCase()
+    asset_code === ETH_ADDRESS ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT : asset_code.toLowerCase()
   );
   const balances = await fetchHardhatBalancesWithBalanceChecker(tokenAddresses, accountAddress, network);
   if (!balances) return {};
@@ -54,42 +55,5 @@ export const fetchHardhatBalances = async (accountAddress: string, network: Netw
     };
     return parseAddressAsset({ assetData: updatedAsset });
   });
-  return updatedAssets;
-};
-
-export const fetchHardhatBalancesByChainId = async (accountAddress: string): Promise<RainbowAddressAssets> => {
-  const chainIds = SUPPORTED_CHAIN_IDS({ testnetMode: true });
-  const tokenAddresses: string[] = [];
-  const chainAssetsMap: Record<string, any> = {};
-
-  chainIds.forEach(chainId => {
-    const chainAssets = chainAssetsByChainId[chainId] || [];
-    chainAssets.forEach(asset => {
-      const assetCode = asset.asset.address;
-      const tokenAddress = assetCode === ETH_ADDRESS ? AddressZero : assetCode.toLowerCase();
-      tokenAddresses.push(tokenAddress);
-      chainAssetsMap[tokenAddress] = { ...asset, asset_code: assetCode };
-    });
-  });
-
-  const balances = await fetchHardhatBalancesWithBalanceChecker(tokenAddresses, accountAddress, Network.mainnet);
-  if (!balances) return {};
-
-  const updatedAssets = Object.entries(balances).reduce((acc, [tokenAddress, balance]) => {
-    const chainAsset = chainAssetsMap[tokenAddress];
-    if (chainAsset) {
-      const assetCode = chainAsset.asset.asset_code.toLowerCase();
-      const updatedAsset = {
-        asset: {
-          ...chainAsset.asset,
-          network: chainAsset.asset.network as Network,
-        },
-        quantity: balance,
-      };
-      acc[assetCode] = parseAddressAsset({ assetData: updatedAsset });
-    }
-    return acc;
-  }, {} as RainbowAddressAssets);
-
   return updatedAssets;
 };

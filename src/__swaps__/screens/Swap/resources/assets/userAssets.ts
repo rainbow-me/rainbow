@@ -8,14 +8,14 @@ import { getIsHardhatConnected } from '@/handlers/web3';
 import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { SupportedCurrencyKey, SUPPORTED_CHAIN_IDS } from '@/references';
-import { AddressOrEth, ParsedAssetsDictByChain, ZerionAsset } from '@/__swaps__/types/assets';
-import { ChainId, ChainName } from '@/__swaps__/types/chains';
+import { ParsedAssetsDictByChain, ZerionAsset } from '@/__swaps__/types/assets';
+import { ChainId } from '@/__swaps__/types/chains';
 import { AddressAssetsReceivedMessage } from '@/__swaps__/types/refraction';
 import { filterAsset, parseUserAsset } from '@/__swaps__/utils/assets';
 import { greaterThan } from '@/__swaps__/utils/numbers';
 
 import { fetchUserAssetsByChain } from './userAssetsByChain';
-import { fetchHardhatBalancesByChainId } from '@/resources/assets/hardhatAssets';
+import { fetchHardhatBalances } from '@/resources/assets/hardhatAssets';
 
 const addysHttp = new RainbowFetchClient({
   baseURL: 'https://addys.p.rainbow.me/v3',
@@ -87,35 +87,11 @@ async function userAssetsQueryFunction({ queryKey: [{ address, currency, testnet
     return {};
   }
   if (testnetMode) {
-    const hardhatBalances = await fetchHardhatBalancesByChainId(address);
-    const parsedAssetsDict = await parseUserAssets({
-      assets: Object.values(hardhatBalances).map(asset => ({
-        asset: {
-          ...asset,
-          asset_code: asset.address as AddressOrEth,
-          bridging: {
-            bridgeable: false,
-            networks: {},
-          },
-          type: 'native',
-          network: asset.network as unknown as ChainName,
-          price: {
-            value: asset.price?.value || 0,
-            relative_change_24h: asset.price?.relative_change_24h || 0,
-          },
-          mainnet_address: asset.address as AddressOrEth,
-          colors: {
-            primary: asset.colors?.primary || '#000000',
-            fallback: asset.colors?.fallback || '#000000',
-          },
-        },
-        quantity: asset.balance?.amount || '0',
-        small_balance: false, // Assuming testnet balances are never considered small
-      })),
-      chainIds: SUPPORTED_CHAIN_IDS({ testnetMode }),
-      currency,
-    });
-    return parsedAssetsDict;
+    const hardhatResults = await fetchHardhatBalances(address);
+    const formattedHardhatResults = {
+      '1': hardhatResults,
+    };
+    return formattedHardhatResults as typeof formattedHardhatResults & ParsedAssetsDictByChain;
   }
   const cache = queryClient.getQueryCache();
   const cachedUserAssets = (cache.find(userAssetsQueryKey({ address, currency, testnetMode }))?.state?.data ||

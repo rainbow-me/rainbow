@@ -1,5 +1,8 @@
 import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
+import { getIsHardhatConnected } from '@/handlers/web3';
+import { ethereumUtils } from '@/utils';
+import { NetworkTypes } from '@/helpers';
 import { Address } from 'viem';
 import { RainbowError, logger } from '@/logger';
 import store from '@/redux/store';
@@ -265,9 +268,11 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
       set(() => {
         const idsByChain = new Map<UserAssetFilter, UniqueId[]>();
         const unsortedChainBalances = new Map<ChainId, number>();
+        const isMap = userAssets instanceof Map;
+        const userAssetsArray = isMap ? Array.from(userAssets.values()) : userAssets;
 
-        userAssets.forEach(asset => {
-          const balance = Number(asset.native.balance.amount) ?? 0;
+        userAssetsArray.forEach(asset => {
+          const balance = Number(asset.native?.balance?.amount ?? asset.balance?.amount) ?? 0;
           unsortedChainBalances.set(asset.chainId, (unsortedChainBalances.get(asset.chainId) || 0) + balance);
           idsByChain.set(asset.chainId, (idsByChain.get(asset.chainId) || []).concat(asset.uniqueId));
         });
@@ -289,9 +294,8 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
           idsByChain.set(chainId, idsByChain.get(chainId) || []);
         });
 
-        const isMap = userAssets instanceof Map;
-        const allIdsArray = isMap ? Array.from(userAssets.keys()) : userAssets.map(asset => asset.uniqueId);
-        const userAssetsMap = isMap ? userAssets : new Map(userAssets.map(asset => [asset.uniqueId, asset]));
+        const allIdsArray = userAssetsArray.map(asset => asset.uniqueId);
+        const userAssetsMap = new Map(userAssetsArray.map(asset => [asset.uniqueId, asset]));
 
         idsByChain.set('all', allIdsArray);
 
@@ -299,7 +303,7 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
 
         const filteredAllIdsArray = allIdsArray.filter(id => {
           const asset = userAssetsMap.get(id);
-          return asset && (+asset.native?.balance?.amount ?? 0) > smallBalanceThreshold;
+          return asset && (+(asset.native?.balance?.amount ?? asset.balance?.amount) ?? 0) > smallBalanceThreshold;
         });
 
         const searchCache = new Map<string, UniqueId[]>();
