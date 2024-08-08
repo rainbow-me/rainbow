@@ -126,13 +126,7 @@ export default function AddressRow({ contextMenuActions, data, editMode, onPress
 
   const labelQuaternary = useForegroundColor('labelQuaternary');
 
-  const balanceOrNoBalance = useMemo(() => {
-    if (balance) {
-      return balance;
-    } else {
-      return lang.t('wallet.change_wallet.no_balance');
-    }
-  }, [balance]);
+  const balanceOrNoBalance = balance || lang.t('wallet.change_wallet.no_balance');
 
   const cleanedUpLabel = useMemo(() => removeFirstEmojiFromString(label), [label]);
 

@@ -18,7 +18,7 @@ export default function useWalletSectionsData({
 }: {
   type?: string;
 } = {}) {
-  const { selectedWallet } = useWallets();
+  const { selectedWallet, isReadOnlyWallet } = useWallets();
   const { isLoading: isLoadingUserAssets, data: sortedAssets = [] } = useSortedUserAssets();
   const isWalletEthZero = useIsWalletEthZero();
 
@@ -38,7 +38,6 @@ export default function useWalletSectionsData({
 
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
-  const { isReadOnlyWallet } = useWallets();
 
   const { hiddenCoinsObj: hiddenCoins, pinnedCoinsObj: pinnedCoins } = useCoinListEditOptions();
 

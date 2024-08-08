@@ -60,13 +60,7 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
   const { colors } = useTheme();
   const { accountType, balance, ens, image, label, network, onPress, showcaseItem, testID } = props;
 
-  const cleanedUpBalance = useMemo(() => {
-    if (balance) {
-      return balance;
-    } else {
-      return i18n.t(i18n.l.wallet.change_wallet.no_balance);
-    }
-  }, [balance]);
+  const cleanedUpBalance = balance || i18n.t(i18n.l.wallet.change_wallet.no_balance);
 
   // show avatar for contact rows that are accounts, not contacts
   const avatar = accountType !== 'contacts' ? returnStringFirstEmoji(label) || profileUtils.addressHashedEmoji(address) : null;

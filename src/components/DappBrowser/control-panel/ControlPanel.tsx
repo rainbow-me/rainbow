@@ -154,12 +154,9 @@ export const ControlPanel = () => {
             ),
             label: removeFirstEmojiFromString(account.label) || address(account.address, 6, 4),
             secondaryLabel:
-              // eslint-disable-next-line no-nested-ternary
               wallet.type === WalletTypes.readOnly
                 ? i18n.t(i18n.l.wallet.change_wallet.watching)
-                : account.balance
-                  ? account.balance
-                  : i18n.t(i18n.l.wallet.change_wallet.no_balance),
+                : account.balance ?? i18n.t(i18n.l.wallet.change_wallet.no_balance),
             uniqueId: account.address,
             color: colors.avatarBackgrounds[account.color],
             imageUrl: account.image || undefined,
@@ -184,7 +181,7 @@ export const ControlPanel = () => {
     const sortedItems = [...sortedWallets, ...bluetoothWallets, ...readOnlyWallets];
 
     return sortedItems;
-  }, [walletsWithBalancesAndNames, currentAddress, nativeCurrency]);
+  }, [walletsWithBalancesAndNames, currentAddress]);
 
   const { testnetsEnabled } = store.getState().settings;
 
