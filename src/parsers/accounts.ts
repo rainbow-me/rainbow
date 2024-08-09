@@ -1,7 +1,7 @@
 import isNil from 'lodash/isNil';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay, convertAmountToPercentageDisplay } from '@/helpers/utilities';
 import { isLowerCaseMatch } from '@/utils';
-import { NativeCurrencyKey, ParsedAddressAsset, SwappableAsset } from '@/entities';
+import { NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
 
 export const parseAssetsNative = (assets: ParsedAddressAsset[], nativeCurrency: NativeCurrencyKey) =>
   assets.map(asset => parseAssetNative(asset, nativeCurrency));

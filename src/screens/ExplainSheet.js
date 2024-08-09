@@ -14,7 +14,7 @@ import { Box } from '@/design-system';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding, position } from '@/styles';
-import { ethereumUtils, gasUtils, getTokenMetadata } from '@/utils';
+import { ethereumUtils, gasUtils } from '@/utils';
 import { buildRainbowLearnUrl } from '@/utils/buildRainbowUrl';
 import { cloudPlatformAccountName } from '@/utils/platform';
 import { useTheme } from '@/theme';
@@ -545,7 +545,7 @@ export const explainers = (params, theme) => {
       text: SWAP_RESET_EXPLAINER,
       title: `Switching to ${networkName}`,
       logo:
-	  chainId !== ChainId.mainnet ? (
+        chainId !== ChainId.mainnet ? (
           <ChainBadge chainId={chainId} marginBottom={8} position="relative" size="large" />
         ) : (
           <EthCoinIcon size={40} />
@@ -865,11 +865,7 @@ export const explainers = (params, theme) => {
     },
     swap_refuel_add: {
       logo: (
-        <DashedWrapper
-          size={50}
-          childXPosition={10}
-          colors={[colors?.networkColors[network], getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ?? colors?.appleBlue]}
-        >
+        <DashedWrapper size={50} childXPosition={10} colors={[colors?.networkColors[network], colors?.appleBlue]}>
           <RainbowCoinIcon
             size={30}
             icon={params?.nativeAsset?.icon_url}
@@ -907,11 +903,7 @@ export const explainers = (params, theme) => {
     },
     swap_refuel_deduct: {
       logo: (
-        <DashedWrapper
-          size={50}
-          childXPosition={10}
-          colors={[colors?.networkColors[network], getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ?? colors?.appleBlue]}
-        >
+        <DashedWrapper size={50} childXPosition={10} colors={[colors?.networkColors[network], colors?.appleBlue]}>
           <RainbowCoinIcon
             size={30}
             icon={params?.nativeAsset?.icon_url}
@@ -950,11 +942,7 @@ export const explainers = (params, theme) => {
     swap_refuel_notice: {
       extraHeight: 50,
       logo: (
-        <DashedWrapper
-          size={50}
-          childXPosition={10}
-          colors={[colors?.networkColors[network], getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ?? colors?.appleBlue]}
-        >
+        <DashedWrapper size={50} childXPosition={10} colors={[colors?.networkColors[network], colors?.appleBlue]}>
           <RainbowCoinIcon
             size={30}
             icon={params?.nativeAsset?.icon_url}

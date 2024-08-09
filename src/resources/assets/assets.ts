@@ -74,6 +74,7 @@ export function parseAddressAsset({ assetData }: { assetData: AddysAddressAsset 
   const asset = assetData?.asset;
   const quantity = assetData?.quantity;
   const address = assetData?.asset?.asset_code;
+
   const parsedAsset = parseAsset({
     address,
     asset,

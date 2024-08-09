@@ -12,6 +12,7 @@ import Routes from '@/navigation/routesNames';
 import { borders, colors, padding, shadow } from '@/styles';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { ethereumUtils } from '@/utils';
+import { NativeCurrencyKey } from '@/entities';
 
 interface CoinCheckButtonProps {
   isHidden: boolean;
@@ -55,7 +56,7 @@ const formatPercentageString = (percentString?: string) => (percentString ? perc
 
 interface MemoizedBalanceCoinRowProps {
   uniqueId: string;
-  nativeCurrency: string;
+  nativeCurrency: NativeCurrencyKey;
   theme: any;
   navigate: any;
   nativeCurrencySymbol: string;
@@ -65,7 +66,7 @@ interface MemoizedBalanceCoinRowProps {
 
 const MemoizedBalanceCoinRow = React.memo(
   ({ uniqueId, nativeCurrency, theme, navigate, nativeCurrencySymbol, isHidden, maybeCallback }: MemoizedBalanceCoinRowProps) => {
-    const item = useAccountAsset(uniqueId, nativeCurrency) as any;
+    const item = useAccountAsset(uniqueId, nativeCurrency);
 
     const handlePress = useCallback(() => {
       if (maybeCallback.current) {
@@ -80,7 +81,7 @@ const MemoizedBalanceCoinRow = React.memo(
       }
     }, [navigate, item, maybeCallback]);
 
-    const percentChange = item?.native?.change;
+    const percentChange = item?.native?.change || undefined;
     const percentageChangeDisplay = formatPercentageString(percentChange);
 
     const isPositive = percentChange && percentageChangeDisplay.charAt(0) !== '-';
@@ -102,7 +103,7 @@ const MemoizedBalanceCoinRow = React.memo(
                 size={40}
                 icon={item?.icon_url}
                 chainId={chainId}
-                symbol={item?.symbol}
+                symbol={item?.symbol || ''}
                 theme={theme}
                 colors={item?.colors}
               />

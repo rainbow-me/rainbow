@@ -51,8 +51,9 @@ import {
   useExternalToken,
 } from '@/resources/assets/externalAssetsQuery';
 import { ChainId } from '@/__swaps__/types/chains';
+import { AddressOrEth } from '@/__swaps__/types/assets';
 
-const getNetworkNativeAsset = ({ chainId }: { chainId: ChainId }): ParsedAddressAsset | undefined => {
+const getNetworkNativeAsset = ({ chainId }: { chainId: ChainId }) => {
   const nativeAssetAddress = getNetworkObject({ chainId }).nativeCurrency.address;
   const nativeAssetUniqueId = getUniqueId(nativeAssetAddress, chainId);
   return getAccountAsset(nativeAssetUniqueId);
@@ -74,7 +75,7 @@ export const getNativeAssetForNetwork = async ({
   // If the asset is on a different wallet, or not available in this wallet
   if (differentWallet || !nativeAsset) {
     const mainnetAddress = getNetworkObject({ chainId })?.nativeCurrency?.mainnetAddress || ETH_ADDRESS;
-    const nativeAssetAddress = getNetworkObject({ chainId }).nativeCurrency.address;
+    const nativeAssetAddress = getNetworkObject({ chainId }).nativeCurrency.address as AddressOrEth;
 
     const externalAsset = await queryClient.fetchQuery(
       externalTokenQueryKey({ address: nativeAssetAddress, chainId, currency: nativeCurrency }),
@@ -174,11 +175,11 @@ const getAssetPrice = (address: EthereumAddress = ETH_ADDRESS): number => {
 };
 
 export const useNativeAsset = ({ chainId }: { chainId: ChainId }) => {
-  let address = getNetworkObject({ chainId }).nativeCurrency?.mainnetAddress || ETH_ADDRESS;
+  let address = (getNetworkObject({ chainId }).nativeCurrency?.mainnetAddress || ETH_ADDRESS) as AddressOrEth;
   let internalChainId = ChainId.mainnet;
   const { nativeCurrency } = store.getState().settings;
   if (chainId === ChainId.avalanche || chainId === ChainId.degen) {
-    address = getNetworkObject({ chainId }).nativeCurrency?.address;
+    address = getNetworkObject({ chainId }).nativeCurrency?.address as AddressOrEth;
     internalChainId = chainId;
   }
   const { data: nativeAsset } = useExternalToken({
@@ -475,17 +476,17 @@ export const getUniqueIdNetwork = (address: EthereumAddress, network: Network) =
 
 export const getUniqueId = (address: EthereumAddress, chainId: ChainId) => `${address}_${chainId}`;
 
-export const getAddressAndChainIdFromUniqueId = (uniqueId: string): { address: EthereumAddress; chainId: ChainId } => {
+export const getAddressAndChainIdFromUniqueId = (uniqueId: string): { address: AddressOrEth; chainId: ChainId } => {
   const parts = uniqueId.split('_');
 
   // If the unique ID does not contain '_', it's a mainnet address
   if (parts.length === 1) {
-    return { address: parts[0], chainId: ChainId.mainnet };
+    return { address: parts[0] as AddressOrEth, chainId: ChainId.mainnet };
   }
 
   // If the unique ID contains '_', the last part is the network and the rest is the address
   const network = parts[1] as Network; // Assuming the last part is a valid Network enum value
-  const address = parts[0];
+  const address = parts[0] as AddressOrEth;
   const chainId = getChainIdFromNetwork(network);
 
   return { address, chainId };

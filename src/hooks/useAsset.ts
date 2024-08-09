@@ -1,14 +1,16 @@
 import { useMemo } from 'react';
 import useAccountAsset from './useAccountAsset';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { FormattedExternalAsset, useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { ChainId } from '@/__swaps__/types/chains';
+import { ParsedAddressAsset } from '@/entities';
+import { Address } from 'viem';
 
 // To fetch an asset from account assets,
 // generic assets, and uniqueTokens
-export default function useAsset({ address, chainId }: { address: string; chainId: ChainId }) {
+export default function useAsset({ address, chainId }: { address: Address; chainId: ChainId }) {
   const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
   const uniqueId = getUniqueId(address, chainId);
   const accountAsset = useAccountAsset(uniqueId);

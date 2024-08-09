@@ -67,6 +67,17 @@ export interface ParsedAddressAsset extends Asset, Partial<RainbowTokenOwnFields
   type?: string;
   id?: string;
   uniqueId: string;
+  native?: {
+    balance?: {
+      amount?: string;
+      display?: string;
+    };
+    change?: string;
+    price?: {
+      amount?: string;
+      display?: string;
+    };
+  };
   mainnet_address?: EthereumAddress;
   isNativeAsset?: boolean;
   network: Network;
@@ -81,7 +92,6 @@ export interface SwappableAsset extends ParsedAddressAsset {
   implementations?: {
     [network: string]: { address: EthereumAddress; decimals: number };
   };
-  network: Network;
 }
 
 export interface TokenSearchNetwork {

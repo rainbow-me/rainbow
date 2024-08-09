@@ -6,6 +6,9 @@ import { NativeCurrencyKey } from '@/entities';
 import { Token } from '@/graphql/__generated__/metadata';
 import { ethereumUtils } from '@/utils';
 import { ChainId } from '@/__swaps__/types/chains';
+import { Address } from 'viem';
+import { isNativeAsset } from '@/__swaps__/utils/chains';
+import { AddressOrEth } from '@/__swaps__/types/assets';
 
 export const EXTERNAL_TOKEN_CACHE_TIME = 1000 * 60 * 60 * 24; // 24 hours
 export const EXTERNAL_TOKEN_STALE_TIME = 1000 * 60; // 1 minute
@@ -19,7 +22,9 @@ export const EXTERNAL_TOKEN_STALE_TIME = 1000 * 60; // 1 minute
 // Types
 type ExternalToken = Pick<Token, 'decimals' | 'iconUrl' | 'name' | 'networks' | 'symbol' | 'colors' | 'price'>;
 export type FormattedExternalAsset = ExternalToken & {
+  address: AddressOrEth;
   icon_url?: string;
+  isNativeAsset: boolean;
   native: {
     change: string;
     price: {
@@ -31,7 +36,7 @@ export type FormattedExternalAsset = ExternalToken & {
 
 // Query Types for External Token
 type ExternalTokenArgs = {
-  address: string;
+  address: AddressOrEth;
   chainId: ChainId;
   currency: NativeCurrencyKey;
 };
@@ -43,9 +48,16 @@ export const externalTokenQueryKey = ({ address, chainId, currency }: ExternalTo
 type externalTokenQueryKey = ReturnType<typeof externalTokenQueryKey>;
 
 // Helpers
-const formatExternalAsset = (asset: ExternalToken, nativeCurrency: NativeCurrencyKey): FormattedExternalAsset => {
+const formatExternalAsset = (
+  address: AddressOrEth,
+  chainId: ChainId,
+  asset: ExternalToken,
+  nativeCurrency: NativeCurrencyKey
+): FormattedExternalAsset => {
   return {
     ...asset,
+    address,
+    isNativeAsset: isNativeAsset(address, chainId),
     native: {
       change: asset?.price?.relativeChange24h ? convertAmountToPercentageDisplay(`${asset?.price?.relativeChange24h}`) : '',
       price: convertAmountAndPriceToNativeDisplay(1, asset?.price?.value || 0, nativeCurrency),
@@ -62,7 +74,8 @@ export async function fetchExternalToken({ address, chainId, currency }: Externa
     currency,
   });
   if (response.token) {
-    return formatExternalAsset(response.token, currency);
+    console.log('external token ', formatExternalAsset(address, chainId, response.token, currency));
+    return formatExternalAsset(address, chainId, response.token, currency);
   } else {
     return null;
   }
