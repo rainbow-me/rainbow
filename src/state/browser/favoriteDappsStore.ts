@@ -10,6 +10,7 @@ interface FavoriteDappsStore {
   favoriteDapps: FavoritedSite[];
   addFavorite: (site: FavoritedSite) => void;
   getFavorites: (sort?: FavoritedSite['url'][]) => FavoritedSite[];
+  getOrderedIds: () => FavoritedSite['url'][];
   removeFavorite: (url: string) => void;
   isFavorite: (url: string) => boolean;
   reorderFavorites: (newOrder: FavoritedSite['url'][]) => void;
@@ -60,6 +61,8 @@ export const useFavoriteDappsStore = createRainbowStore<FavoriteDappsStore>(
         return indexA - indexB;
       });
     },
+
+    getOrderedIds: () => get().favoriteDapps.map(dapp => dapp.url),
 
     isFavorite: url => {
       const { favoriteDapps } = get();
