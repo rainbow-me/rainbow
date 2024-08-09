@@ -1,7 +1,7 @@
 import { Address } from 'viem';
 import { RainbowError, logger } from '@/logger';
 import store from '@/redux/store';
-import { SUPPORTED_CHAIN_IDS, supportedNativeCurrencies } from '@/references';
+import { ETH_ADDRESS, SUPPORTED_CHAIN_IDS, supportedNativeCurrencies } from '@/references';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
@@ -36,6 +36,7 @@ export interface UserAssetsState {
   getChainsWithBalance: () => ChainId[];
   getFilteredUserAssetIds: () => UniqueId[];
   getHighestValueAsset: (usePreferredNetwork?: boolean) => ParsedSearchAsset | null;
+  getHighestValueEth: () => ParsedSearchAsset | null;
   getUserAsset: (uniqueId: UniqueId) => ParsedSearchAsset | null;
   getUserAssets: () => ParsedSearchAsset[];
   selectUserAssetIds: (selector: (asset: ParsedSearchAsset) => boolean, filter?: UserAssetFilter) => Generator<UniqueId, void, unknown>;
@@ -195,6 +196,25 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
 
       // If no preferred network asset, return the highest-value asset
       return assets.values().next().value || null;
+    },
+
+    getHighestValueEth: () => {
+      // const preferredNetwork = usePreferredNetwork ? swapsStore.getState().preferredNetwork : undefined;
+      const assets = get().userAssets;
+
+      // if (preferredNetwork && get().getChainsWithBalance().includes(preferredNetwork)) {
+      //   // Find the highest-value asset on the preferred network
+      //   for (const [, asset] of assets) {
+      //     if (asset.chainId === preferredNetwork) {
+      //       return asset;
+      //     }
+      //   }
+      // }
+      const x = Array.from(assets.values()).filter(asset => asset.name === 'Ethereum');
+      console.log(x);
+      return x?.[0] || null;
+      // // If no preferred network asset, return the highest-value asset
+      // return assets.values().next().value || null;
     },
 
     getUserAsset: (uniqueId: UniqueId) => get().userAssets.get(uniqueId) || null,
