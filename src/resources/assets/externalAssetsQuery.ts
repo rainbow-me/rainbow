@@ -4,9 +4,7 @@ import { createQueryKey, queryClient, QueryConfig, QueryFunctionArgs, QueryFunct
 import { convertAmountAndPriceToNativeDisplay, convertAmountToPercentageDisplay } from '@/helpers/utilities';
 import { NativeCurrencyKey } from '@/entities';
 import { Token } from '@/graphql/__generated__/metadata';
-import { ethereumUtils } from '@/utils';
 import { ChainId } from '@/__swaps__/types/chains';
-import { Address } from 'viem';
 import { isNativeAsset } from '@/__swaps__/utils/chains';
 import { AddressOrEth } from '@/__swaps__/types/assets';
 
@@ -74,7 +72,6 @@ export async function fetchExternalToken({ address, chainId, currency }: Externa
     currency,
   });
   if (response.token) {
-    console.log('external token ', formatExternalAsset(address, chainId, response.token, currency));
     return formatExternalAsset(address, chainId, response.token, currency);
   } else {
     return null;

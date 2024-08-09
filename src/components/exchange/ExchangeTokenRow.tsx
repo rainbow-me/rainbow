@@ -40,8 +40,6 @@ export default React.memo(function ExchangeTokenRow({
     chainId,
   });
 
-  console.log('- item', item);
-
   const rowTestID = `${testID}-exchange-coin-row-${symbol ?? item?.symbol ?? ''}-${chainId || ChainId.mainnet}`;
 
   const isInfoButtonVisible = !item?.isNativeAsset || (!isNativeAsset(address ?? item?.address, chainId) && !showBalance);
