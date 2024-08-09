@@ -43,9 +43,8 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { toHex } from 'viem';
 import { RainbowNetworks } from '@/networks';
 import * as i18n from '@/languages';
-import { convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { useDispatch, useSelector } from 'react-redux';
-import store, { AppState } from '@/redux/store';
+import { useDispatch } from 'react-redux';
+import store from '@/redux/store';
 import { getDappHost } from '@/utils/connectedApps';
 import WebView from 'react-native-webview';
 import { Navigation, useNavigation } from '@/navigation';
@@ -88,8 +87,7 @@ export const ControlPanel = () => {
   const {
     params: { activeTabRef },
   } = useRoute<RouteProp<ControlPanelParams, 'ControlPanel'>>();
-  const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
-  const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
+  const { walletsWithBalancesAndNames } = useWalletsWithBalancesAndNames();
   const activeTabUrl = useBrowserStore(state => state.getActiveTabUrl());
   const activeTabHost = getDappHost(activeTabUrl || '') || DEFAULT_TAB_URL;
   const updateActiveSessionNetwork = useAppSessionsStore(state => state.updateActiveSessionNetwork);

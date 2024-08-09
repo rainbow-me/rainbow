@@ -109,7 +109,7 @@ export default function ChangeWalletSheet() {
   const { goBack, navigate } = useNavigation();
   const dispatch = useDispatch();
   const initializeWallet = useInitializeWallet();
-  const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
+  const { walletsWithBalancesAndNames } = useWalletsWithBalancesAndNames();
 
   const [editMode, setEditMode] = useState(false);
   const [currentAddress, setCurrentAddress] = useState(currentAccountAddress || accountAddress);
