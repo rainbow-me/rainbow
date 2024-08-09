@@ -1,11 +1,13 @@
 import React, { forwardRef, ReactNode, useMemo } from 'react';
 import { View, ViewStyle } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { useForegroundColor, useForegroundColors } from '../../color/useForegroundColor';
 import { useColorMode } from '../../color/ColorMode';
 import { Shadow, shadows } from '../../layout/shadow';
 import { Height, heights, Width, widths } from '../../layout/size';
 import { NegativeSpace, negativeSpace, positionSpace, PositionSpace, Space, space } from '../../layout/space';
 import { BackgroundProvider, BackgroundProviderProps } from '../BackgroundProvider/BackgroundProvider';
+import { Border, BorderProps } from '../Border/Border';
 import { ApplyShadow } from '../private/ApplyShadow/ApplyShadow';
 import type * as Polymorphic from './polymorphic';
 
@@ -26,6 +28,8 @@ export type BoxProps = {
   borderTopRightRadius?: number;
   borderBottomLeftRadius?: number;
   borderBottomRightRadius?: number;
+  borderColor?: BorderProps['borderColor'];
+  borderWidth?: BorderProps['borderWidth'];
   bottom?: PositionSpace;
   children?: ReactNode;
   flexBasis?: 0;
@@ -45,6 +49,7 @@ export type BoxProps = {
   marginRight?: NegativeSpace;
   marginTop?: NegativeSpace;
   marginVertical?: NegativeSpace;
+  overflow?: 'visible' | 'hidden' | 'scroll';
   padding?: Space;
   paddingBottom?: Space;
   paddingHorizontal?: Space;
@@ -61,7 +66,6 @@ export type BoxProps = {
   elevation?: number;
   shadowOpacity?: number;
   shadowRadius?: number;
-  overflow?: 'visible' | 'hidden' | 'scroll' | 'auto';
 } & (
   | {
       borderBottomRadius?: number;
@@ -103,12 +107,14 @@ export const Box = forwardRef(function Box(
     borderBottomLeftRadius,
     borderBottomRadius,
     borderBottomRightRadius,
+    borderColor,
     borderLeftRadius,
     borderRadius,
     borderRightRadius,
     borderTopLeftRadius,
     borderTopRadius,
     borderTopRightRadius,
+    borderWidth,
     bottom: bottomProp,
     children,
     flexBasis,
@@ -165,14 +171,25 @@ export const Box = forwardRef(function Box(
   const right = resolveToken(positionSpace, rightProp);
   const top = resolveToken(positionSpace, topProp);
 
-  const width = resolveToken(widths, widthProp);
-  const height = resolveToken(heights, heightProp);
+  const width = typeof widthProp === 'number' ? widthProp : resolveToken(widths, widthProp);
+  const height = typeof heightProp === 'number' ? heightProp : resolveToken(heights, heightProp);
+
+  const isView = Component === View || Component === Animated.View;
+
+  const shadowStylesExist =
+    !!styleProp &&
+    ('shadowColor' in styleProp ||
+      'shadowOffset' in styleProp ||
+      'shadowOpacity' in styleProp ||
+      'shadowRadius' in styleProp ||
+      'elevation' in styleProp);
 
   const shadows = useShadow(shadow);
 
   const styles = useMemo(() => {
     return {
       alignItems,
+      borderRadius: borderRadius, // Apply this first as certain components don't support individual corner radii
       borderBottomLeftRadius: borderBottomLeftRadius ?? borderBottomRadius ?? borderLeftRadius ?? borderRadius,
       borderBottomRightRadius: borderBottomRightRadius ?? borderBottomRadius ?? borderRightRadius ?? borderRadius,
       borderCurve: 'continuous' as ViewStyle['borderCurve'],
@@ -194,6 +211,7 @@ export const Box = forwardRef(function Box(
       marginRight,
       marginTop,
       marginVertical,
+      ...((isView || borderRadius) && !shadowStylesExist && { overflow: borderRadius ? 'hidden' : overflow }),
       padding,
       paddingBottom,
       paddingHorizontal,
@@ -224,6 +242,7 @@ export const Box = forwardRef(function Box(
     flexShrink,
     flexWrap,
     height,
+    isView,
     justifyContent,
     left,
     margin,
@@ -233,6 +252,7 @@ export const Box = forwardRef(function Box(
     marginRight,
     marginTop,
     marginVertical,
+    overflow,
     padding,
     paddingBottom,
     paddingHorizontal,
@@ -242,6 +262,7 @@ export const Box = forwardRef(function Box(
     paddingVertical,
     position,
     right,
+    shadowStylesExist,
     top,
     width,
   ]);
@@ -254,6 +275,17 @@ export const Box = forwardRef(function Box(
         <ApplyShadow backgroundColor={backgroundColor} shadows={shadows}>
           <Component style={backgroundStyle} {...restProps} ref={ref}>
             {children}
+            {borderColor || borderWidth ? (
+              <Border
+                borderBottomLeftRadius={styles.borderBottomLeftRadius}
+                borderBottomRightRadius={styles.borderBottomRightRadius}
+                borderColor={borderColor}
+                borderTopLeftRadius={styles.borderTopLeftRadius}
+                borderTopRightRadius={styles.borderTopRightRadius}
+                borderWidth={borderWidth}
+                enableInLightMode
+              />
+            ) : null}
           </Component>
         </ApplyShadow>
       )}
@@ -261,6 +293,17 @@ export const Box = forwardRef(function Box(
   ) : (
     <Component style={style} {...restProps} ref={ref}>
       {children}
+      {borderColor || borderWidth ? (
+        <Border
+          borderBottomLeftRadius={styles.borderBottomLeftRadius}
+          borderBottomRightRadius={styles.borderBottomRightRadius}
+          borderColor={borderColor}
+          borderTopLeftRadius={styles.borderTopLeftRadius}
+          borderTopRightRadius={styles.borderTopRightRadius}
+          borderWidth={borderWidth}
+          enableInLightMode
+        />
+      ) : null}
     </Component>
   );
 }) as PolymorphicBox;
