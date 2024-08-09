@@ -9,7 +9,7 @@ import { RainbowPositions } from '@/resources/defi/types';
 import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { queryClient } from '@/react-query';
 
-type WalletBalanceWithPositions = {
+type WalletBalance = {
   assetBalanceAmount: number;
   assetBalanceDisplay: string;
   positionsBalanceAmount: string | number;
@@ -18,14 +18,12 @@ type WalletBalanceWithPositions = {
   totalBalanceDisplay: string;
 };
 
-type WalletBalanceWithoutPositions = Omit<WalletBalanceWithPositions, 'positionsBalanceAmount' | 'positionsBalanceDisplay'>;
-
-type WalletBalanceResult<T extends boolean> = {
-  balances: Record<Address, T extends true ? WalletBalanceWithPositions : WalletBalanceWithoutPositions>;
+type WalletBalanceResult = {
+  balances: Record<Address, WalletBalance>;
   isLoading: boolean;
 };
 
-const useWalletBalances = <T extends boolean = true>(wallets: AllRainbowWallets): WalletBalanceResult<T> => {
+const useWalletBalances = (wallets: AllRainbowWallets): WalletBalanceResult => {
   const { nativeCurrency } = useAccountSettings();
 
   const allAddresses = useMemo(
@@ -46,8 +44,8 @@ const useWalletBalances = <T extends boolean = true>(wallets: AllRainbowWallets)
     })),
   });
 
-  const balancesWithPositions = useMemo(() => {
-    const result: Record<Address, WalletBalanceWithPositions | WalletBalanceWithoutPositions> = {};
+  const balances = useMemo(() => {
+    const result: Record<Address, WalletBalance> = {};
 
     for (const address of allAddresses) {
       const lowerCaseAddress = address.toLowerCase() as Address;
@@ -73,7 +71,7 @@ const useWalletBalances = <T extends boolean = true>(wallets: AllRainbowWallets)
   const isLoading = isSummaryLoading || positionQueries.some(query => query.isLoading);
 
   return {
-    balances: balancesWithPositions as WalletBalanceResult<T>['balances'],
+    balances,
     isLoading,
   };
 };
