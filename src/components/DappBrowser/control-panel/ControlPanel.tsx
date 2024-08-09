@@ -63,6 +63,7 @@ import { getRemoteConfig } from '@/model/remoteConfig';
 import { SWAPS_V2, useExperimentalFlag } from '@/config';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { greaterThan } from '@/helpers/utilities';
 
 const PAGES = {
   HOME: 'home',
@@ -138,7 +139,7 @@ export const ControlPanel = () => {
     const bluetoothWallets: ControlPanelMenuItemProps[] = [];
     const readOnlyWallets: ControlPanelMenuItemProps[] = [];
 
-    const accountBalances: Record<string, number> = {};
+    const accountBalances: Record<string, string | number> = {};
 
     Object.values(walletsWithBalancesAndNames).forEach(wallet => {
       wallet.addresses
@@ -154,14 +155,14 @@ export const ControlPanel = () => {
             secondaryLabel:
               wallet.type === WalletTypes.readOnly
                 ? i18n.t(i18n.l.wallet.change_wallet.watching)
-                : account.balance ?? i18n.t(i18n.l.wallet.change_wallet.no_balance),
+                : account.balances.totalBalanceDisplay ?? i18n.t(i18n.l.wallet.change_wallet.no_balance),
             uniqueId: account.address,
             color: colors.avatarBackgrounds[account.color],
             imageUrl: account.image || undefined,
             selected: account.address === currentAddress,
           };
 
-          accountBalances[account.address] = Number(account.balance);
+          accountBalances[account.address] = account.balances.totalBalanceAmount;
 
           if ([WalletTypes.mnemonic, WalletTypes.seed, WalletTypes.privateKey].includes(wallet.type)) {
             sortedWallets.push(item);
@@ -173,8 +174,8 @@ export const ControlPanel = () => {
         });
     });
 
-    sortedWallets.sort((a, b) => accountBalances[b.uniqueId] - accountBalances[a.uniqueId]);
-    bluetoothWallets.sort((a, b) => accountBalances[b.uniqueId] - accountBalances[a.uniqueId]);
+    sortedWallets.sort((a, b) => (greaterThan(accountBalances[b.uniqueId], accountBalances[a.uniqueId]) ? 1 : -1));
+    bluetoothWallets.sort((a, b) => (greaterThan(accountBalances[b.uniqueId], accountBalances[a.uniqueId]) ? 1 : -1));
 
     const sortedItems = [...sortedWallets, ...bluetoothWallets, ...readOnlyWallets];
 

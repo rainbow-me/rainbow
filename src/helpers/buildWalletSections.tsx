@@ -38,7 +38,7 @@ const EMPTY_WALLET_CONTENT = [
 const ONLY_NFTS_CONTENT = [{ type: 'ETH_CARD', uid: 'eth-card' }];
 
 const sortedAssetsSelector = (state: any) => state.sortedAssets;
-const accountBalanceSelector = (state: any) => state.accountBalance;
+const accountBalanceDisplaySelector = (state: any) => state.accountBalanceDisplay;
 const hiddenCoinsSelector = (state: any) => state.hiddenCoins;
 const isCoinListEditedSelector = (state: any) => state.isCoinListEdited;
 const isLoadingUserAssetsSelector = (state: any) => state.isLoadingUserAssets;
@@ -107,7 +107,7 @@ const withBriefBalanceSection = (
   sortedAssets: ParsedAddressAsset[],
   isLoadingUserAssets: boolean,
   isLoadingBalance: boolean,
-  accountBalance: string | undefined,
+  accountBalanceDisplay: string | undefined,
   nativeCurrency: NativeCurrencyKey,
   isCoinListEdited: boolean,
   pinnedCoins: any,
@@ -121,7 +121,7 @@ const withBriefBalanceSection = (
 
   const isEmpty = !hasTokens && !hasNFTs;
   const hasNFTsOnly = !hasTokens && hasNFTs;
-  console.log(accountBalance);
+
   const header = [
     {
       type: 'PROFILE_STICKY_HEADER',
@@ -153,7 +153,7 @@ const withBriefBalanceSection = (
           {
             type: 'PROFILE_BALANCE_ROW',
             uid: 'profile-balance',
-            value: accountBalance,
+            value: accountBalanceDisplay,
             isLoadingBalance,
           },
           {
@@ -164,13 +164,13 @@ const withBriefBalanceSection = (
     {
       type: 'PROFILE_ACTION_BUTTONS_ROW',
       uid: 'profile-action-buttons',
-      value: accountBalance,
+      value: accountBalanceDisplay,
     },
     hasTokens
       ? {
           type: 'PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER',
           uid: 'profile-action-buttons-space-after',
-          value: accountBalance,
+          value: accountBalanceDisplay,
         }
       : { type: 'BIG_EMPTY_WALLET_SPACER', uid: 'big-empty-wallet-spacer-1' },
   ];
@@ -219,7 +219,7 @@ const briefBalanceSectionSelector = createSelector(
     sortedAssetsSelector,
     isLoadingUserAssetsSelector,
     isLoadingBalanceSelector,
-    accountBalanceSelector,
+    accountBalanceDisplaySelector,
     nativeCurrencySelector,
     isCoinListEditedSelector,
     pinnedCoinsSelector,
