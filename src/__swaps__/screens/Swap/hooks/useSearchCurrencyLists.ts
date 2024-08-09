@@ -1,4 +1,4 @@
-import { TokenSearchResult, useTokenSearch } from '@/__swaps__/screens/Swap/resources/search';
+import { TokenSearchResult, useTokenSearch } from '@/__swaps__/screens/Swap/resources/search/search';
 import { AddressOrEth } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { SearchAsset, TokenSearchAssetKey, TokenSearchThreshold } from '@/__swaps__/types/search';
@@ -16,8 +16,9 @@ import { useDebouncedCallback } from 'use-debounce';
 import { TokenToBuyListItem } from '../components/TokenList/TokenToBuyList';
 import { useSwapContext } from '../providers/swap-provider';
 import { RecentSwap } from '@/__swaps__/types/swap';
+import { useTokenDiscovery } from '../resources/search';
 
-export type AssetToBuySectionId = 'bridge' | 'recent' | 'favorites' | 'verified' | 'unverified' | 'other_networks';
+export type AssetToBuySectionId = 'bridge' | 'recent' | 'favorites' | 'verified' | 'unverified' | 'other_networks' | 'popular';
 
 export interface AssetToBuySection {
   data: SearchAsset[];
@@ -51,6 +52,14 @@ const filterAssetsFromRecentSwaps = ({
   recentSwaps: RecentSwap[] | undefined;
 }): SearchAsset[] => (assets || []).filter(asset => !recentSwaps?.some(recent => recent.address === asset.address));
 
+const filterAssetsFromPopularAssets = ({
+  assets,
+  popularAssets,
+}: {
+  assets: SearchAsset[] | undefined;
+  popularAssets: SearchAsset[] | undefined;
+}): SearchAsset[] => (assets || []).filter(asset => !popularAssets?.some(popular => popular.address === asset.address));
+
 const filterAssetsFromBridgeAndRecent = ({
   assets,
   recentSwaps,
@@ -65,20 +74,44 @@ const filterAssetsFromBridgeAndRecent = ({
     recentSwaps: recentSwaps,
   });
 
-const filterAssetsFromFavoritesAndBridgeAndRecent = ({
+const filterAssetsFromBridgeAndRecentAndPopular = ({
+  assets,
+  recentSwaps,
+  popularAssets,
+  filteredBridgeAssetAddress,
+}: {
+  assets: SearchAsset[] | undefined;
+  recentSwaps: RecentSwap[] | undefined;
+  popularAssets: SearchAsset[] | undefined;
+  filteredBridgeAssetAddress: string | undefined;
+}): SearchAsset[] =>
+  filterAssetsFromPopularAssets({
+    assets: filterAssetsFromRecentSwaps({
+      assets: filterAssetsFromBridge({ assets, filteredBridgeAssetAddress }),
+      recentSwaps: recentSwaps,
+    }),
+    popularAssets,
+  });
+
+const filterAssetsFromFavoritesAndBridgeAndRecentAndPopular = ({
   assets,
   favoritesList,
   filteredBridgeAssetAddress,
   recentSwaps,
+  popularAssets,
 }: {
   assets: SearchAsset[] | undefined;
   favoritesList: SearchAsset[] | undefined;
   filteredBridgeAssetAddress: string | undefined;
   recentSwaps: RecentSwap[] | undefined;
+  popularAssets: SearchAsset[] | undefined;
 }): SearchAsset[] =>
-  filterAssetsFromRecentSwaps({
-    assets: filterAssetsFromBridge({ assets, filteredBridgeAssetAddress }),
-    recentSwaps: recentSwaps,
+  filterAssetsFromPopularAssets({
+    assets: filterAssetsFromRecentSwaps({
+      assets: filterAssetsFromBridge({ assets, filteredBridgeAssetAddress }),
+      recentSwaps: recentSwaps,
+    }),
+    popularAssets,
   })?.filter(
     curatedAsset => !favoritesList?.some(({ address }) => curatedAsset.address === address || curatedAsset.mainnetAddress === address)
   ) || [];
@@ -100,6 +133,7 @@ const buildListSectionsData = ({
     unverifiedAssets?: SearchAsset[];
     crosschainExactMatches?: SearchAsset[];
     recentSwaps?: RecentSwap[];
+    popularAssets?: SearchAsset[];
   };
   favoritesList: SearchAsset[] | undefined;
   filteredBridgeAssetAddress: string | undefined;
@@ -138,41 +172,60 @@ const buildListSectionsData = ({
     );
   }
 
+  if (combinedData.popularAssets?.length) {
+    const filteredPopular = filterAssetsFromBridgeAndRecent({
+      assets: combinedData.popularAssets,
+      recentSwaps: combinedData.recentSwaps,
+      filteredBridgeAssetAddress,
+    }).slice(0, 6);
+    addSection(
+      'popular',
+      mergeAssetsFavoriteStatus({
+        assets: filteredPopular,
+        favoritesList,
+      })
+    );
+  }
+
   if (favoritesList?.length) {
-    const filteredFavorites = filterAssetsFromBridgeAndRecent({
+    const filteredFavorites = filterAssetsFromBridgeAndRecentAndPopular({
       assets: favoritesList,
       filteredBridgeAssetAddress,
       recentSwaps: combinedData.recentSwaps,
+      popularAssets: combinedData.popularAssets,
     });
     addSection('favorites', filteredFavorites);
   }
 
   if (combinedData.verifiedAssets?.length) {
-    const filteredVerified = filterAssetsFromFavoritesAndBridgeAndRecent({
+    const filteredVerified = filterAssetsFromFavoritesAndBridgeAndRecentAndPopular({
       assets: combinedData.verifiedAssets,
       favoritesList,
       filteredBridgeAssetAddress,
       recentSwaps: combinedData.recentSwaps,
+      popularAssets: combinedData.popularAssets,
     });
     addSection('verified', filteredVerified);
   }
 
   if (!formattedData.length && combinedData.crosschainExactMatches?.length) {
-    const filteredCrosschain = filterAssetsFromFavoritesAndBridgeAndRecent({
+    const filteredCrosschain = filterAssetsFromFavoritesAndBridgeAndRecentAndPopular({
       assets: combinedData.crosschainExactMatches,
       favoritesList,
       filteredBridgeAssetAddress,
       recentSwaps: combinedData.recentSwaps,
+      popularAssets: combinedData.popularAssets,
     });
     addSection('other_networks', filteredCrosschain);
   }
 
   if (combinedData.unverifiedAssets?.length) {
-    const filteredUnverified = filterAssetsFromFavoritesAndBridgeAndRecent({
+    const filteredUnverified = filterAssetsFromFavoritesAndBridgeAndRecentAndPopular({
       assets: combinedData.unverifiedAssets,
       favoritesList,
       filteredBridgeAssetAddress,
       recentSwaps: combinedData.recentSwaps,
+      popularAssets: combinedData.popularAssets,
     });
     addSection('unverified', filteredUnverified);
   }
@@ -269,6 +322,8 @@ export function useSearchCurrencyLists() {
     }
   );
 
+  const { data: popularAssets, isLoading: isLoadingPopularAssets } = useTokenDiscovery({ chainId: state.toChainId });
+
   const { favoritesMetadata: favorites } = useFavorites();
 
   const unfilteredFavorites = useMemo(() => {
@@ -320,6 +375,14 @@ export function useSearchCurrencyLists() {
     });
   }, [getRecentSwapsByChain, state.toChainId, query, memoizedData.keys, memoizedData.queryIsAddress]);
 
+  const popularAssetsForChain = useMemo(() => {
+    if (!popularAssets) return [];
+    if (!query) return popularAssets;
+    return filterList(popularAssets, query, memoizedData.keys, {
+      threshold: memoizedData.queryIsAddress ? rankings.CASE_SENSITIVE_EQUAL : rankings.CONTAINS,
+    });
+  }, [popularAssets, query, memoizedData.keys, memoizedData.queryIsAddress]);
+
   const favoritesList = useMemo(() => {
     if (query === '') {
       return unfilteredFavorites;
@@ -366,16 +429,18 @@ export function useSearchCurrencyLists() {
           unverifiedAssets: unverifiedResults,
           verifiedAssets: verifiedResults,
           recentSwaps: recentsForChain,
+          popularAssets: popularAssetsForChain,
         },
         favoritesList,
         filteredBridgeAssetAddress: memoizedData.filteredBridgeAsset?.address,
       }),
-      isLoading: isLoadingVerifiedAssets || isLoadingUnverifiedAssets,
+      isLoading: isLoadingVerifiedAssets || isLoadingUnverifiedAssets || isLoadingPopularAssets,
     };
   }, [
     favoritesList,
     isLoadingUnverifiedAssets,
     isLoadingVerifiedAssets,
+    isLoadingPopularAssets,
     memoizedData.enableUnverifiedSearch,
     memoizedData.filteredBridgeAsset,
     query,
@@ -383,5 +448,6 @@ export function useSearchCurrencyLists() {
     unverifiedAssets,
     verifiedAssets,
     recentsForChain,
+    popularAssetsForChain,
   ]);
 }

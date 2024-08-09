@@ -2,6 +2,7 @@ import { Address } from 'viem';
 
 import { AddressOrEth, AssetType, ParsedAsset, UniqueId } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
+import { AssetToBuySectionId } from '../screens/Swap/hooks/useSearchCurrencyLists';
 
 export type TokenSearchAssetKey = keyof ParsedAsset;
 
@@ -16,6 +17,7 @@ export type SearchAsset = {
   decimals: number;
   highLiquidity: boolean;
   icon_url?: string;
+  isPopular?: boolean;
   isRainbowCurated: boolean;
   isNativeAsset?: boolean;
   isVerified: boolean;
@@ -28,6 +30,7 @@ export type SearchAsset = {
     };
   };
   rainbowMetadataId?: number;
+  sectionId?: AssetToBuySectionId;
   symbol: string;
   type?: AssetType;
   uniqueId: UniqueId;
