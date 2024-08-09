@@ -26,7 +26,7 @@ export default function useWalletSectionsData({
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const {
     data: { nfts: allUniqueTokens },
-    isFetching: isFetchingNfts,
+    isLoading: isFetchingNfts,
   } = useLegacyNFTs({
     address: accountAddress,
     sortBy: nftSort,

@@ -86,7 +86,7 @@ export function useLegacyNFTs<TSelected = NFTData>({
 }) {
   const isImportedWallet = useSelector((state: AppState) => isImportedWalletSelector(state, address));
 
-  const { data, error, isFetching, isInitialLoading } = useQuery(nftsQueryKey({ address, sortBy }), fetchNFTData, {
+  const { data, error, isLoading, isInitialLoading } = useQuery(nftsQueryKey({ address, sortBy }), fetchNFTData, {
     cacheTime: isImportedWallet ? NFTS_CACHE_TIME_INTERNAL : NFTS_CACHE_TIME_EXTERNAL,
     enabled: !!address,
     retry: 3,
@@ -97,7 +97,7 @@ export function useLegacyNFTs<TSelected = NFTData>({
   return {
     data: (config?.select ? data ?? config.select(FALLBACK_DATA) : data ?? FALLBACK_DATA) as TSelected,
     error,
-    isFetching,
+    isLoading,
     isInitialLoading,
   };
 }
