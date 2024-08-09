@@ -163,6 +163,7 @@ type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
   selectedGasSpeed: GasSpeed;
   slippage: string;
   degenMode: boolean;
+  isSwappingToPopularAsset: boolean;
 };
 
 type SwapsEventFailedParameters<T extends 'swap' | 'crosschainSwap'> = {

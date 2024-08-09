@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import type { AndroidShadowItem } from './ApplyShadow';
 
@@ -10,7 +10,7 @@ export function AndroidShadow({
 }: {
   backgroundColor: ViewStyle['backgroundColor'];
   shadow: AndroidShadowItem;
-  style: ViewStyle;
+  style: StyleProp<ViewStyle>;
 }) {
   const { color, elevation = 0, opacity } = shadow;
   return (
