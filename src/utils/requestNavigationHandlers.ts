@@ -24,12 +24,146 @@ import walletTypes from '@/helpers/walletTypes';
 import watchingAlert from './watchingAlert';
 import { isEthereumAction, isHandshakeAction, RequestMessage, useMobileWalletProtocolHost } from '@coinbase/mobile-wallet-protocol-host';
 import { ChainId } from '@/__swaps__/types/chains';
+import { logger, RainbowError } from '@/logger';
 
 export enum RequestSource {
   WALLETCONNECT = 'walletconnect',
   BROWSER = 'browser',
   MOBILE_WALLET_PROTOCOL = 'mobile-wallet-protocol',
 }
+
+// Mobile Wallet Protocol
+
+interface HandleMobileWalletProtocolRequestProps
+  extends Omit<ReturnType<typeof useMobileWalletProtocolHost>, 'message' | 'handleRequestUrl' | 'sendFailureToClient'> {
+  request: RequestMessage;
+}
+
+export const handleMobileWalletProtocolRequest = async ({
+  request,
+  fetchClientAppMetadata,
+  isClientAppVerified,
+  approveHandshake,
+  rejectHandshake,
+  approveAction,
+  rejectAction,
+  session,
+}: HandleMobileWalletProtocolRequestProps): Promise<boolean> => {
+  // TODO: Do we want to always check this since it's an optional parameter
+  await findWalletForAddress(request.account?.address ?? '');
+
+  // Assume there is only one action in the request for now
+  const [action] = request.actions;
+
+  if (isHandshakeAction(action)) {
+    // TODO: Do we need to deny requests for chainIds we don't support?
+    const chainIds = RainbowNetworks.filter(network => network.enabled && network.networkType !== 'testnet').map(network => network.id);
+    const receivedTimestamp = Date.now();
+
+    const [dappMetadata, isVerified] = await Promise.all([fetchClientAppMetadata(), isClientAppVerified()]);
+    return new Promise((resolve, reject) => {
+      const routeParams: WalletconnectApprovalSheetRouteParams = {
+        receivedTimestamp,
+        meta: {
+          chainIds,
+          dappName: dappMetadata?.appName || dappMetadata?.appUrl || action.appName || action.appIconUrl || '',
+          dappUrl: dappMetadata?.appUrl || action.appId || '',
+          imageUrl: maybeSignUri(dappMetadata?.iconUrl || action.appIconUrl),
+          isWalletConnectV2: false,
+          peerId: '',
+          dappScheme: action.callback,
+          proposedChainId: request.account?.networkId,
+          proposedAddress: request.sender, // TODO: is `request.sender` correct for address here?
+        },
+        verifiedData: {
+          origin: dappMetadata?.appUrl || '',
+          verifyUrl: dappMetadata?.appUrl || '',
+          validation: isVerified ? 'VALID' : 'INVALID',
+        },
+        source: RequestSource.MOBILE_WALLET_PROTOCOL,
+        timedOut: false,
+        callback: async approved => {
+          if (approved) {
+            const success = await approveHandshake(dappMetadata);
+            resolve(success);
+          } else {
+            await rejectHandshake('User rejected the handshake');
+            reject('User rejected the handshake');
+          }
+        },
+      };
+
+      Navigation.handleAction(
+        Routes.WALLET_CONNECT_APPROVAL_SHEET,
+        routeParams,
+        getActiveRoute()?.name === Routes.WALLET_CONNECT_APPROVAL_SHEET
+      );
+    });
+  } else if (isEthereumAction(action)) {
+    if (!session) {
+      throw new Error('Session for request not found');
+    }
+
+    const nativeCurrency = store.getState().settings.nativeCurrency;
+
+    // TODO: Do we want to fallback to mainnet here?
+    const network = ethereumUtils.getNetworkFromChainId(request.account?.networkId ?? ChainId.mainnet);
+
+    const requestWithDetails: RequestData = {
+      dappName: session.dappName,
+      dappUrl: session.dappURL,
+      imageUrl: session.dappImageURL,
+      // TODO: Where does this come from?
+      address: '',
+      network,
+      // TODO: verify that action passes correct data for payload since it's `any` type
+      payload: action,
+      // TODO: does `action` map 1:1 with other instances? https://github.com/rainbow-me/rainbow/blob/fe6f5d62fe4b3f731cbfc2dbb2c862931f3d84fe/src/utils/requestNavigationHandlers.ts#L233
+      displayDetails: getRequestDisplayDetails(action, nativeCurrency, network),
+    };
+
+    return new Promise((resolve, reject) => {
+      const onSuccess = async (result: string) => {
+        const successfullyApproved = await approveAction(action, { value: result });
+        resolve(successfullyApproved);
+      };
+
+      const onCancel = async (error?: Error) => {
+        if (error) {
+          await rejectAction(action, {
+            message: error.message,
+            code: 4001, // TODO: What is the proper error code for this?
+          });
+          reject(error.message);
+        } else {
+          await rejectAction(action, {
+            message: 'User rejected request',
+            code: 4001,
+          });
+          reject('User rejected request');
+        }
+      };
+
+      const onCloseScreen = (canceled: boolean) => {
+        // This function might not be necessary for the promise logic,
+        // but you can still use it for cleanup or logging if needed.
+      };
+
+      Navigation.handleAction(Routes.CONFIRM_REQUEST, {
+        transactionDetails: requestWithDetails,
+        onSuccess,
+        onCancel,
+        onCloseScreen,
+        network,
+        address: request.sender,
+        source: RequestSource.MOBILE_WALLET_PROTOCOL,
+      });
+    });
+  }
+
+  logger.error(new RainbowError(`[handleMobileWalletProtocolRequest]: Unsupported action type, ${action}`));
+  throw new Error('Unsupported action type');
+};
 
 // Dapp Browser
 
@@ -84,6 +218,10 @@ export const handleDappBrowserConnectionPrompt = (dappData: DappConnectionData):
 };
 
 const findWalletForAddress = async (address: string) => {
+  if (!address.trim()) {
+    return Promise.reject(new Error('Invalid address'));
+  }
+
   const { wallets } = store.getState().wallets;
   const selectedWallet = findWalletWithAccount(wallets!, address);
   if (!selectedWallet) {
@@ -97,132 +235,6 @@ const findWalletForAddress = async (address: string) => {
   }
 
   return selectedWallet;
-};
-
-interface HandleMobileWalletProtocolRequestProps
-  extends Omit<ReturnType<typeof useMobileWalletProtocolHost>, 'message' | 'handleRequestUrl' | 'sendFailureToClient'> {
-  request: RequestMessage;
-}
-
-export const handleMobileWalletProtocolRequest = async ({
-  request,
-  fetchClientAppMetadata,
-  isClientAppVerified,
-  approveHandshake,
-  rejectHandshake,
-  approveAction,
-  rejectAction,
-  session,
-}: HandleMobileWalletProtocolRequestProps): Promise<boolean> => {
-  await findWalletForAddress(request.account?.address ?? '');
-
-  const [action] = request.actions;
-
-  if (isHandshakeAction(action)) {
-    const chainIds = RainbowNetworks.filter(network => network.enabled && network.networkType !== 'testnet').map(network => network.id);
-    const receivedTimestamp = Date.now();
-
-    // TODO: Parallelize these calls
-    const dappMetadata = await fetchClientAppMetadata();
-    const isVerified = await isClientAppVerified();
-    return new Promise(resolve => {
-      const routeParams: WalletconnectApprovalSheetRouteParams = {
-        receivedTimestamp,
-        meta: {
-          chainIds,
-          dappName: dappMetadata?.appName || dappMetadata?.appUrl || 'Unknown DApp',
-          dappUrl: dappMetadata?.appUrl || '',
-          imageUrl: maybeSignUri(dappMetadata?.iconUrl),
-          isWalletConnectV2: false,
-          peerId: '',
-          dappScheme: action.callback,
-          proposedChainId: request.account?.networkId, // TODO: is `networkId` correct for chainId here?
-          proposedAddress: request.sender, // TODO: is `request.sender` correct for address here?
-        },
-        verifiedData: {
-          origin: dappMetadata?.appUrl || '',
-          verifyUrl: dappMetadata?.appUrl || '',
-          validation: isVerified ? 'VALID' : 'INVALID',
-        },
-        source: RequestSource.MOBILE_WALLET_PROTOCOL,
-        timedOut: false,
-        callback: async approved => {
-          if (approved) {
-            const success = await approveHandshake(dappMetadata);
-            resolve(success);
-          } else {
-            const failed = await rejectHandshake('User rejected the handshake');
-            resolve(failed);
-          }
-        },
-      };
-
-      Navigation.handleAction(
-        Routes.WALLET_CONNECT_APPROVAL_SHEET,
-        routeParams,
-        getActiveRoute()?.name === Routes.WALLET_CONNECT_APPROVAL_SHEET
-      );
-    });
-  } else if (isEthereumAction(action)) {
-    if (!session) {
-      throw new Error('Session for request not found');
-    }
-
-    const nativeCurrency = store.getState().settings.nativeCurrency;
-    const network = ethereumUtils.getNetworkFromChainId(request.account?.networkId ?? ChainId.mainnet);
-
-    const requestWithDetails: RequestData = {
-      dappName: session.dappName,
-      dappUrl: session.dappURL,
-      imageUrl: session.dappImageURL,
-      address: request.sender, // TODO: is `request.sender` correct for address here?
-      network,
-      payload: action,
-      displayDetails: getRequestDisplayDetails(action, nativeCurrency, network), // TODO: does `action` map 1:1 with other instances? https://github.com/rainbow-me/rainbow/blob/fe6f5d62fe4b3f731cbfc2dbb2c862931f3d84fe/src/utils/requestNavigationHandlers.ts#L233
-    };
-
-    return new Promise((resolve, reject) => {
-      const onSuccess = async (result: string) => {
-        const successfullyApproved = await approveAction(action, { value: result });
-        resolve(successfullyApproved);
-      };
-
-      const onCancel = async (error?: Error) => {
-        if (error) {
-          const successfullyRejected = await rejectAction(action, {
-            message: error.message,
-            code: 4001, // TODO: Replace this?
-          });
-          reject(successfullyRejected);
-        } else {
-          const successfullyRejected = await rejectAction(action, {
-            message: 'User rejected request',
-            code: 4001,
-          });
-          reject(successfullyRejected);
-        }
-      };
-
-      const onCloseScreen = (canceled: boolean) => {
-        // This function might not be necessary for the promise logic,
-        // but you can still use it for cleanup or logging if needed.
-      };
-
-      Navigation.handleAction(Routes.CONFIRM_REQUEST, {
-        transactionDetails: requestWithDetails,
-        onSuccess,
-        onCancel,
-        onCloseScreen,
-        network,
-        address: request.sender,
-        source: RequestSource.MOBILE_WALLET_PROTOCOL,
-      });
-    });
-
-    // TODO: Use metadata from mwp storage, and build transactionDetails to pass to the confirmRequest screen
-  }
-
-  throw new Error('Unsupported action type');
 };
 
 export const handleDappBrowserRequest = async (request: Omit<RequestData, 'displayDetails'>): Promise<string | Error> => {
