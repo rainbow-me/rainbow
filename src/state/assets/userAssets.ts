@@ -182,22 +182,23 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
 
     getHighestValueEth: () => {
       const preferredNetwork = swapsStore.getState().preferredNetwork;
-      const assets = Array.from(get().userAssets.values());
+      const assets = get().userAssets;
 
-      const ethAssets = assets.filter(asset => asset.mainnetAddress === ETH_ADDRESS);
+      let highestValueEth = null;
 
-      if (!ethAssets.length) {
-        return null;
-      }
+      for (const [, asset] of assets) {
+        if (asset.mainnetAddress !== ETH_ADDRESS) continue;
 
-      if (preferredNetwork) {
-        const preferredEthAsset = ethAssets.find(asset => asset.chainId === preferredNetwork);
-        if (preferredEthAsset) {
-          return preferredEthAsset;
+        if (preferredNetwork && asset.chainId === preferredNetwork) {
+          return asset;
+        }
+
+        if (!highestValueEth || asset.balance > highestValueEth.balance) {
+          highestValueEth = asset;
         }
       }
 
-      return ethAssets.reduce((highest, current) => (current.balance > highest.balance ? current : highest));
+      return highestValueEth;
     },
 
     getUserAsset: (uniqueId: UniqueId) => get().userAssets.get(uniqueId) || null,
