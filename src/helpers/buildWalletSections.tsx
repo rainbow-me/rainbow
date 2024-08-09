@@ -121,13 +121,11 @@ const withBriefBalanceSection = (
 
   const isEmpty = !hasTokens && !hasNFTs;
   const hasNFTsOnly = !hasTokens && hasNFTs;
-
+  console.log(accountBalance);
   const header = [
     {
       type: 'PROFILE_STICKY_HEADER',
       uid: 'assets-profile-header-compact',
-      value: accountBalance,
-      isLoadingBalance,
     },
     {
       type: 'PROFILE_AVATAR_ROW_SPACE_BEFORE',
@@ -149,13 +147,14 @@ const withBriefBalanceSection = (
       type: 'PROFILE_NAME_ROW_SPACE_AFTER',
       uid: 'profile-name-space-after',
     },
-    ...(!hasTokens && !isLoadingUserAssets
+    ...(!hasTokens && !isLoadingUserAssets && !isLoadingBalance
       ? []
       : [
           {
             type: 'PROFILE_BALANCE_ROW',
             uid: 'profile-balance',
             value: accountBalance,
+            isLoadingBalance,
           },
           {
             type: 'PROFILE_BALANCE_ROW_SPACE_AFTER',

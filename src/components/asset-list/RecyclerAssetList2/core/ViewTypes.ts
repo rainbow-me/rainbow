@@ -54,7 +54,7 @@ export type AssetListHeaderExtraData = {
 };
 
 export type AssetsHeaderExtraData = {
-  type: CellType.PROFILE_STICKY_HEADER;
+  type: CellType.PROFILE_BALANCE_ROW;
   value: string;
   isLoadingBalance: boolean;
 };
