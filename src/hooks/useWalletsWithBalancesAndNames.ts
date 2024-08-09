@@ -6,7 +6,7 @@ import { Address } from 'viem';
 
 export default function useWalletsWithBalancesAndNames() {
   const { walletNames, wallets } = useWallets();
-  const { balances, isLoading } = useWalletBalances(wallets || {});
+  const { balances } = useWalletBalances(wallets || {});
 
   const walletsWithBalancesAndNames = useMemo(
     () =>
@@ -21,5 +21,5 @@ export default function useWalletsWithBalancesAndNames() {
     [balances, walletNames, wallets]
   );
 
-  return { isLoading, walletsWithBalancesAndNames };
+  return walletsWithBalancesAndNames;
 }

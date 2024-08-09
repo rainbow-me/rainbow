@@ -88,7 +88,7 @@ export const ControlPanel = () => {
   const {
     params: { activeTabRef },
   } = useRoute<RouteProp<ControlPanelParams, 'ControlPanel'>>();
-  const { walletsWithBalancesAndNames } = useWalletsWithBalancesAndNames();
+  const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const activeTabUrl = useBrowserStore(state => state.getActiveTabUrl());
   const activeTabHost = getDappHost(activeTabUrl || '') || DEFAULT_TAB_URL;
   const updateActiveSessionNetwork = useAppSessionsStore(state => state.updateActiveSessionNetwork);
@@ -155,14 +155,14 @@ export const ControlPanel = () => {
             secondaryLabel:
               wallet.type === WalletTypes.readOnly
                 ? i18n.t(i18n.l.wallet.change_wallet.watching)
-                : account.balances.totalBalanceDisplay ?? i18n.t(i18n.l.wallet.change_wallet.no_balance),
+                : account.balances?.totalBalanceDisplay ?? i18n.t(i18n.l.wallet.change_wallet.no_balance),
             uniqueId: account.address,
             color: colors.avatarBackgrounds[account.color],
             imageUrl: account.image || undefined,
             selected: account.address === currentAddress,
           };
 
-          accountBalances[account.address] = account.balances.totalBalanceAmount;
+          accountBalances[account.address] = account.balances?.totalBalanceAmount;
 
           if ([WalletTypes.mnemonic, WalletTypes.seed, WalletTypes.privateKey].includes(wallet.type)) {
             sortedWallets.push(item);

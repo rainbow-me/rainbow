@@ -8,7 +8,7 @@ import { RainbowAccount } from '@/model/wallet';
 import { Network } from '@/helpers';
 
 export default function useUserAccounts() {
-  const { walletsWithBalancesAndNames } = useWalletsWithBalancesAndNames();
+  const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const network = useSelector((state: AppState) => state.settings.network);
 
   const userAccounts = useMemo(() => {

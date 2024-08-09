@@ -33,7 +33,7 @@ export const WalletDiagnosticsSheet = () => {
   const [toastVisible, setToastVisible] = useState(false);
   const toastTimeout = useRef<NodeJS.Timeout>();
 
-  const { walletsWithBalancesAndNames } = useWalletsWithBalancesAndNames();
+  const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
   useEffect(() => {
     const init = async () => {
