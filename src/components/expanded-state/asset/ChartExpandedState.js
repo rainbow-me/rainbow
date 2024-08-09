@@ -140,7 +140,6 @@ function Description({ text = '' }) {
 }
 
 export default function ChartExpandedState({ asset }) {
-  console.log('ChartExpandedState', asset.chainId);
   const { nativeCurrency, network: currentNetwork } = useAccountSettings();
 
   const { data: genericAsset } = useExternalToken({
@@ -176,7 +175,7 @@ export default function ChartExpandedState({ asset }) {
 
   const { data, isLoading: additionalAssetDataLoading } = useAdditionalAssetData({
     address: asset?.address,
-    network: asset?.network,
+    chainId: asset?.chainId,
     currency: nativeCurrency,
   });
 
