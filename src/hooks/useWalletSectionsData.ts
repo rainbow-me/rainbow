@@ -35,7 +35,7 @@ export default function useWalletSectionsData({
   const accountWithBalance = walletsWithBalancesAndNames[selectedWallet.id]?.addresses.find(
     address => address.address.toLowerCase() === accountAddress.toLowerCase()
   );
-
+  console.log(accountWithBalance);
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
 
@@ -57,7 +57,7 @@ export default function useWalletSectionsData({
       sendableUniqueTokens,
       sortedAssets,
       accountBalance: accountWithBalance?.balance,
-      isLoadingBalance: isLoadingWalletBalances,
+      isLoadingBalance: !accountWithBalance,
       // @ts-expect-error ts-migrate(2698) FIXME: Spread types may only be created from object types... Remove this comment to see the full error message
       ...isWalletEthZero,
       hiddenTokens,
@@ -74,7 +74,7 @@ export default function useWalletSectionsData({
     return {
       hasNFTs,
       isEmpty,
-      isLoadingBalance: isLoadingWalletBalances,
+      isLoadingBalance: !accountWithBalance,
       isLoadingUserAssets,
       isWalletEthZero,
       briefSectionsData,

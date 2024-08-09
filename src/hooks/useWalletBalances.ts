@@ -44,8 +44,12 @@ const useWalletBalances = (wallets: AllRainbowWallets): WalletBalanceResult => {
     })),
   });
 
+  const isLoading = isSummaryLoading || positionQueries.some(query => query.isLoading);
+
   const balances = useMemo(() => {
     const result: Record<Address, WalletBalance> = {};
+
+    if (isLoading) return result;
 
     for (const address of allAddresses) {
       const lowerCaseAddress = address.toLowerCase() as Address;
@@ -67,8 +71,6 @@ const useWalletBalances = (wallets: AllRainbowWallets): WalletBalanceResult => {
 
     return result;
   }, [allAddresses, summaryData, nativeCurrency]);
-
-  const isLoading = isSummaryLoading || positionQueries.some(query => query.isLoading);
 
   return {
     balances,
