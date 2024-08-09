@@ -35,7 +35,6 @@ export interface UserAssetsState {
   getBalanceSortedChainList: () => ChainId[];
   getChainsWithBalance: () => ChainId[];
   getFilteredUserAssetIds: () => UniqueId[];
-  getHighestValueAsset: (usePreferredNetwork?: boolean) => ParsedSearchAsset | null;
   getHighestValueEth: () => ParsedSearchAsset | null;
   getUserAsset: (uniqueId: UniqueId) => ParsedSearchAsset | null;
   getUserAssets: () => ParsedSearchAsset[];
@@ -181,40 +180,26 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
       }
     },
 
-    getHighestValueAsset: (usePreferredNetwork = true) => {
-      const preferredNetwork = usePreferredNetwork ? swapsStore.getState().preferredNetwork : undefined;
+    getHighestValueEth: () => {
+      const preferredNetwork = swapsStore.getState().preferredNetwork;
       const assets = get().userAssets;
 
-      if (preferredNetwork && get().getChainsWithBalance().includes(preferredNetwork)) {
-        // Find the highest-value asset on the preferred network
-        for (const [, asset] of assets) {
-          if (asset.chainId === preferredNetwork) {
+      let highestValueEth: ParsedSearchAsset | null = null;
+
+      for (const [, asset] of assets) {
+        if (asset.mainnetAddress === ETH_ADDRESS) {
+          // if there is a preferredNetwork & this eth asset is on that network, return it
+          if (preferredNetwork && asset.chainId === preferredNetwork) {
             return asset;
+            // if this eth asset is not on the preferredNetwork, update highestValueEth if applicable
+          } else if (!highestValueEth || asset.balance > highestValueEth.balance) {
+            highestValueEth = asset;
           }
         }
       }
 
-      // If no preferred network asset, return the highest-value asset
-      return assets.values().next().value || null;
-    },
-
-    getHighestValueEth: () => {
-      // const preferredNetwork = usePreferredNetwork ? swapsStore.getState().preferredNetwork : undefined;
-      const assets = get().userAssets;
-
-      // if (preferredNetwork && get().getChainsWithBalance().includes(preferredNetwork)) {
-      //   // Find the highest-value asset on the preferred network
-      //   for (const [, asset] of assets) {
-      //     if (asset.chainId === preferredNetwork) {
-      //       return asset;
-      //     }
-      //   }
-      // }
-      const x = Array.from(assets.values()).filter(asset => asset.name === 'Ethereum');
-      console.log(x);
-      return x?.[0] || null;
-      // // If no preferred network asset, return the highest-value asset
-      // return assets.values().next().value || null;
+      // If no eth on the preferred network, return the highest value eth asset
+      return highestValueEth;
     },
 
     getUserAsset: (uniqueId: UniqueId) => get().userAssets.get(uniqueId) || null,
