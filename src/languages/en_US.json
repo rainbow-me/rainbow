@@ -1323,6 +1323,7 @@
         "floor_price": "Floor Price"
       },
       "empty": "Collectibles",
+      "collect_now": "Collect Now",
       "will_appear_here": "Your Collectibles Will Appear Here"
     },
     "nft_offers": {

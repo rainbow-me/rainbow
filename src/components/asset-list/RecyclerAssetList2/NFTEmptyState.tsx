@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import Animated from 'react-native-reanimated';
-import { Box, Inline, Stack, Text, useColorMode } from '@/design-system';
+import { Box, Stack, Text, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import { TokenFamilyHeaderHeight } from './NFTLoadingSkeleton';
 import { MINTS, useExperimentalFlag } from '@/config';
@@ -50,7 +50,7 @@ const LaunchFeaturedMintButton = ({ featuredMint }: LaunchFeaturedMintButtonProp
             style={[{ backgroundColor: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }]}
           >
             <Text size="13pt" color={'label'} style={{ opacity: isDarkMode ? 0.6 : 0.75 }} weight="heavy">
-              Collect Now
+              {i18n.t(i18n.l.nfts.collect_now)}
             </Text>
           </Box>
         </Box>
