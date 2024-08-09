@@ -120,7 +120,7 @@ export default function SendSheet(props) {
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
-  const { accountAddress, nativeCurrency, network } = useAccountSettings();
+  const { accountAddress, nativeCurrency, chainId } = useAccountSettings();
   const { isHardwareWallet } = useWallets();
 
   const { action: transferENS } = useENSRegistrationActionHandler({
@@ -283,10 +283,9 @@ export default function SendSheet(props) {
 
   useEffect(() => {
     const assetChainId = ethereumUtils.getChainIdFromNetwork(selected?.network);
-    const networkChainId = ethereumUtils.getChainIdFromNetwork(network);
     if (assetChainId && (assetChainId !== currentChainId || !currentChainId || prevChainId !== currentChainId)) {
       let provider = web3Provider;
-      if (networkChainId === ChainId.goerli) {
+      if (chainId === ChainId.goerli) {
         setCurrentChainId(ChainId.goerli);
         provider = getProvider({ chainId: ChainId.goerli });
         setCurrentProvider(provider);
@@ -296,7 +295,7 @@ export default function SendSheet(props) {
         setCurrentProvider(provider);
       }
     }
-  }, [currentChainId, isNft, network, prevChainId, selected?.network, sendUpdateSelected]);
+  }, [currentChainId, isNft, chainId, prevChainId, selected?.network, sendUpdateSelected]);
 
   const onChangeNativeAmount = useCallback(
     newNativeAmount => {
@@ -674,7 +673,7 @@ export default function SendSheet(props) {
     const checkboxes = getDefaultCheckboxes({
       ensProfile,
       isENS: true,
-      network,
+      chainId,
       toAddress: recipient,
     });
     navigate(Routes.SEND_CONFIRMATION_SHEET, {
@@ -686,7 +685,7 @@ export default function SendSheet(props) {
       isENS,
       isL2,
       isNft,
-      network: ethereumUtils.getNetworkFromChainId(currentChainId),
+      chainId: currentChainId,
       profilesEnabled,
       to: recipient,
       toAddress,
@@ -701,7 +700,7 @@ export default function SendSheet(props) {
     isNft,
     nativeCurrencyInputRef,
     navigate,
-    network,
+    chainId,
     profilesEnabled,
     recipient,
     selected,
@@ -751,11 +750,11 @@ export default function SendSheet(props) {
   const [ensSuggestions, setEnsSuggestions] = useState([]);
   const [loadingEnsSuggestions, setLoadingEnsSuggestions] = useState(false);
   useEffect(() => {
-    if (network === Network.mainnet && !recipientOverride && recipient?.length) {
+    if (chainId === ChainId.mainnet && !recipientOverride && recipient?.length) {
       setLoadingEnsSuggestions(true);
       debouncedFetchSuggestions(recipient, setEnsSuggestions, setLoadingEnsSuggestions, profilesEnabled);
     }
-  }, [network, recipient, recipientOverride, setEnsSuggestions, watchedAccounts, profilesEnabled]);
+  }, [chainId, recipient, recipientOverride, setEnsSuggestions, watchedAccounts, profilesEnabled]);
 
   useEffect(() => {
     checkAddress(debouncedInput);
@@ -801,7 +800,7 @@ export default function SendSheet(props) {
     toAddress,
     updateTxFee,
     updateTxFeeForOptimism,
-    network,
+    chainId,
     isNft,
     currentChainId,
   ]);
@@ -854,7 +853,6 @@ export default function SendSheet(props) {
             <SendAssetList
               hiddenCoins={hiddenCoinsObj}
               nativeCurrency={nativeCurrency}
-              network={network}
               onSelectAsset={sendUpdateSelected}
               pinnedCoins={pinnedCoinsObj}
               sortedAssets={sortedAssets}

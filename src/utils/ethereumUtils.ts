@@ -304,7 +304,7 @@ const getChainIdFromNetwork = (network?: Network): ChainId => {
  * @desc get etherscan host from network string
  * @param  {String} network
  */
-function getEtherscanHostForNetwork(chainId: ChainId): string {
+function getEtherscanHostForNetwork({ chainId }: { chainId: ChainId }): string {
   const base_host = 'etherscan.io';
   const networkObject = getNetworkObject({ chainId });
   const blockExplorer = networkObject.blockExplorers?.default?.url;
@@ -386,7 +386,7 @@ function getBlockExplorer({ chainId }: { chainId: ChainId }) {
   return getNetworkObject({ chainId }).blockExplorers?.default.name || 'etherscan';
 }
 
-function openAddressInBlockExplorer(address: EthereumAddress, chainId: ChainId) {
+function openAddressInBlockExplorer({ address, chainId }: { address: EthereumAddress; chainId: ChainId }) {
   const explorer = getNetworkObject({ chainId })?.blockExplorers?.default?.url;
   Linking.openURL(`${explorer}/address/${address}`);
 }

@@ -28,7 +28,7 @@ const CommunityLink = styled(Link).attrs({
 });
 
 export default function SocialLinks({ address, color, isNativeAsset, links, marginTop, chainId }) {
-  const etherscanURL = ethereumUtils.getEtherscanHostForNetwork(chainId);
+  const etherscanURL = ethereumUtils.getEtherscanHostForNetwork({ chainId });
   const blockExplorerName = ethereumUtils.getBlockExplorer({ chainId });
   return (
     <>

@@ -33,7 +33,7 @@ export default function RequestVendorLogoIcon({
   shouldPrioritizeImageLoading,
   showLargeShadow,
   size = CoinIconSize,
-  network,
+  chainId,
   ...props
 }) {
   const [error, setError] = useState(null);
@@ -71,7 +71,7 @@ export default function RequestVendorLogoIcon({
           )}
         </Content>
       </ShadowStack>
-      <ChainBadge chainId={ethereumUtils.getChainIdFromNetwork(network)} badgeYPosition={badgeYPosition} />
+      <ChainBadge chainId={chainId} badgeYPosition={badgeYPosition} />
     </View>
   );
 }
