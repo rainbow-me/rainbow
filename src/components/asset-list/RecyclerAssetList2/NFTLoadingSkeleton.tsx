@@ -8,7 +8,7 @@ import { deviceUtils } from '@/utils';
 export const TokenFamilyHeaderHeight = 50;
 
 const getRandomBetween = (min: number, max: number) => {
-  return Math.floor(Math.random() * (max - min + 1) + min);
+  return Math.random() * (max - min) + min;
 };
 
 const NFTItem = () => {
@@ -24,26 +24,21 @@ const NFTItem = () => {
         },
       ]}
     >
-      <View style={sx.leftContainer}>
+      <View
+        style={[
+          sx.image,
+          {
+            backgroundColor: opacity(labelTertiary, 0.04),
+          },
+        ]}
+      />
+      <View style={sx.textContainer}>
         <View
           style={[
-            sx.image,
-            {
-              backgroundColor: opacity(labelTertiary, 0.04),
-            },
+            sx.title,
+            { backgroundColor: opacity(labelTertiary, 0.08), width: deviceUtils.dimensions.width / getRandomBetween(1.8, 3) },
           ]}
         />
-        <View style={sx.textContainer}>
-          <View
-            style={[
-              sx.title,
-              { backgroundColor: opacity(labelTertiary, 0.08), width: deviceUtils.dimensions.width / getRandomBetween(2, 4) },
-            ]}
-          />
-        </View>
-      </View>
-      <View style={sx.rightContainer}>
-        <View style={[sx.amount, { backgroundColor: opacity(labelTertiary, 0.14) }]} />
       </View>
     </View>
   );
@@ -63,10 +58,7 @@ const sx = StyleSheet.create({
   container: {
     flex: 1,
     width: '100%',
-  },
-  leftContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    gap: 5,
   },
   image: {
     height: 30,
@@ -79,32 +71,15 @@ const sx = StyleSheet.create({
   },
   title: {
     width: deviceUtils.dimensions.width / 2,
-    height: 12,
-    borderRadius: 4,
-    marginBottom: 4,
+    height: 14,
+    borderRadius: 7,
     paddingRight: 9,
-  },
-  rightContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: 10,
-  },
-  amount: {
-    width: 23,
-    height: 16,
-    borderRadius: 4,
-  },
-  chevron: {
-    height: 18,
-    width: 8,
   },
   content: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     height: TokenFamilyHeaderHeight,
     padding: 19,
-    paddingRight: 14,
     width: '100%',
   },
 });
