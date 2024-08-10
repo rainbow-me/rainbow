@@ -2065,6 +2065,7 @@
     "token_search": {
       "section_header": {
         "recent": "Recent",
+        "popular": "Popular in Rainbow",
         "favorites": "Favorites",
         "bridge": "Bridge",
         "verified": "Verified",
