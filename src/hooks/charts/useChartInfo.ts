@@ -1,18 +1,11 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { isEmpty } from 'lodash';
-import { useCallback, useEffect, useState } from 'react';
-import isEqual from 'react-fast-compare';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import { useCallbackOne } from 'use-memo-one';
-import { disableCharts } from '../../config/debug';
+import { useCallback } from 'react';
 import { DEFAULT_CHART_TYPE } from '../../redux/charts';
 import { metadataClient } from '@/graphql';
 import { useQuery } from '@tanstack/react-query';
 import { createQueryKey } from '@/react-query';
-import { getNetworkObj } from '@/networks';
 import { NetworkProperties } from '@/networks/types';
-import { Network } from '@/helpers';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const chartTimes = ['hour', 'day', 'week', 'month', 'year'] as const;
 type ChartTime = (typeof chartTimes)[number];
@@ -33,7 +26,7 @@ const fetchPriceChart = async (time: ChartTime, chainId: NetworkProperties['id']
   }, [] as ChartData[]);
 };
 
-export const usePriceChart = ({ mainnetAddress, address, network }: { mainnetAddress?: string; address: string; network: Network }) => {
+export const usePriceChart = ({ mainnetAddress, address, chainId }: { mainnetAddress?: string; address: string; chainId: ChainId }) => {
   const { setParams } = useNavigation();
   const updateChartType = useCallback(
     (type: ChartTime) => {
@@ -47,12 +40,10 @@ export const usePriceChart = ({ mainnetAddress, address, network }: { mainnetAdd
     params: any;
   }>();
   const chartType = params?.chartType ?? DEFAULT_CHART_TYPE;
-  const chainId = getNetworkObj(network).id;
-  const mainnetChainId = getNetworkObj(Network.mainnet).id;
   const query = useQuery({
     queryFn: async () => {
       const chart = await fetchPriceChart(chartType, chainId, address);
-      if (!chart && mainnetAddress) return fetchPriceChart(chartType, mainnetChainId, mainnetAddress);
+      if (!chart && mainnetAddress) return fetchPriceChart(chartType, ChainId.mainnet, mainnetAddress);
       return chart || null;
     },
     queryKey: createQueryKey('price chart', { address, chainId, chartType }),
