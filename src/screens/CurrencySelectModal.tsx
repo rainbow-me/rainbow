@@ -209,6 +209,7 @@ export default function CurrencySelectModal() {
             name: 'Unswappable',
             symbol: 'UNSWAP',
             network: Network.mainnet,
+            chainId: ChainId.mainnet,
             id: 'foobar',
             uniqueId: '0x123',
           });

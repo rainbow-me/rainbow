@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { getTimeElapsedFromDate } from '../utils';
 import { Bleed, Box, Cover, Inline, Inset, Stack, Text, useForegroundColor } from '@/design-system';
 import { abbreviateNumber, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
-import { getNetworkObj } from '@/networks';
+import { getNetworkObject } from '@/networks';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Placeholder, RecentMintCell } from './RecentMintCell';
@@ -29,7 +29,7 @@ export function Card({ collection }: { collection: MintableCollection }) {
   const separatorTertiary = useForegroundColor('separatorTertiary');
 
   const price = convertRawAmountToRoundedDecimal(collection.mintStatus.price, 18, 6);
-  const currencySymbol = getNetworkObj(getNetworkFromChainId(collection.chainId)).nativeCurrency.symbol;
+  const currencySymbol = getNetworkObject({ chainId: collection.chainId }).nativeCurrency.symbol;
   const isFree = !price;
 
   const network = getNetworkFromChainId(collection.chainId);
@@ -106,7 +106,7 @@ export function Card({ collection }: { collection: MintableCollection }) {
               chainId: collection.chainId,
               priceInEth: price,
             });
-            navigateToMintCollection(collection.contract, collection.mintStatus.price, network);
+            navigateToMintCollection(collection.contract, collection.mintStatus.price, collection.chainId);
           }}
           style={{
             borderRadius: 99,

@@ -29,7 +29,7 @@ import { ethereumUtils, watchingAlert } from '@/utils';
 import { getFCMToken } from '@/notifications/tokens';
 import { logger, RainbowError } from '@/logger';
 import { IS_DEV, IS_IOS, IS_TEST } from '@/env';
-import { RainbowNetworks } from '@/networks';
+import { RainbowNetworkObjects } from '@/networks';
 import { Verify } from '@walletconnect/types';
 import { RequestSource, handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 
@@ -474,7 +474,9 @@ const listenOnNewMessages =
           // @ts-expect-error "_chainId" is private.
           Number(walletConnector._chainId)
         );
-        const supportedChains = RainbowNetworks.filter(network => network.features.walletconnect).map(network => network.id.toString());
+        const supportedChains = RainbowNetworkObjects.filter(network => network.features.walletconnect).map(network =>
+          network.id.toString()
+        );
         const numericChainId = convertHexToString(chainId);
         if (supportedChains.includes(numericChainId)) {
           dispatch(walletConnectSetPendingRedirect());

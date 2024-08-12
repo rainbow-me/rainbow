@@ -2,14 +2,9 @@ import { Contract } from '@ethersproject/contracts';
 
 import { erc20ABI } from '@/references';
 import { convertAmountToBalanceDisplay, convertRawAmountToDecimalFormat } from '@/helpers/utilities';
-import { getNetworkObj, getNetworkObject } from '@/networks';
-import { Network } from '@/networks/types';
+import { getNetworkObject } from '@/networks';
 import { ChainId } from '@/__swaps__/types/chains';
 import { ethereumUtils } from '@/utils';
-
-export function isL2Asset(network: Network) {
-  return getNetworkObj(network).networkType === 'layer2';
-}
 
 export function isNativeAsset(address: string, chainId: ChainId) {
   return getNetworkObject({ chainId }).nativeCurrency.address.toLowerCase() === address?.toLowerCase();

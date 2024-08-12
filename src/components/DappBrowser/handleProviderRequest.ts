@@ -4,14 +4,13 @@ import * as lang from '@/languages';
 
 import { Provider } from '@ethersproject/providers';
 
-import { RainbowNetworks, getNetworkObj } from '@/networks';
+import { RainbowNetworkObjects, RainbowSupportedChainIds } from '@/networks';
 import { getProviderForNetwork } from '@/handlers/web3';
 import ethereumUtils, { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { UserRejectedRequestError } from 'viem';
 import { convertHexToString } from '@/helpers/utilities';
 import { logger } from '@/logger';
 import { ActiveSession } from '@rainbow-me/provider/dist/references/appSession';
-import { Network } from '@/helpers';
 import { handleDappBrowserConnectionPrompt, handleDappBrowserRequest } from '@/utils/requestNavigationHandlers';
 import { Tab } from '@rainbow-me/provider/dist/references/messengers';
 import { getDappMetadata } from '@/resources/metadata/dapp';
@@ -172,7 +171,7 @@ const messengerProviderRequestFn = async (messenger: Messenger, request: Provide
 
 const isSupportedChainId = (chainId: number | string) => {
   const numericChainId = BigNumber.from(chainId).toNumber();
-  return !!RainbowNetworks.find(network => Number(network.id) === numericChainId);
+  return !!RainbowSupportedChainIds.find(chainId => chainId === numericChainId);
 };
 const getActiveSession = ({ host }: { host: string }): ActiveSession => {
   const hostSessions = useAppSessionsStore.getState().getActiveSession({ host });
@@ -187,14 +186,12 @@ const getActiveSession = ({ host }: { host: string }): ActiveSession => {
   if (!appSession) return null;
   return {
     address: appSession?.address || '',
-    chainId: getChainIdByNetwork(appSession.network),
+    chainId: ethereumUtils.getChainIdFromNetwork(appSession.network),
   };
   // return null;
 };
 
-const getChainIdByNetwork = (network: Network) => getNetworkObj(network).id;
-
-const getChain = (chainId: number) => RainbowNetworks.find(network => Number(network.id) === chainId);
+const getChain = (chainId: number) => RainbowNetworkObjects.find(network => Number(network.id) === chainId);
 
 const getProvider = ({ chainId }: { chainId?: number | undefined }) => {
   const network = getNetworkFromChainId(chainId || 1);
@@ -284,7 +281,7 @@ export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger:
     callbackOptions?: CallbackOptions;
   }): { chainAlreadyAdded: boolean } => {
     const { chainId } = proposedChain;
-    const supportedChains = RainbowNetworks.filter(network => network.features.walletconnect).map(network => network.id.toString());
+    const supportedChains = RainbowNetworkObjects.filter(network => network.features.walletconnect).map(network => network.id.toString());
     const numericChainId = convertHexToString(chainId);
     if (supportedChains.includes(numericChainId)) {
       // TODO - Open add / switch ethereum chain
@@ -341,7 +338,7 @@ export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger:
     callbackOptions?: CallbackOptions;
   }) => {
     const { chainId } = proposedChain;
-    const supportedChains = RainbowNetworks.filter(network => network.features.walletconnect).map(network => network.id.toString());
+    const supportedChains = RainbowNetworkObjects.filter(network => network.features.walletconnect).map(network => network.id.toString());
     const numericChainId = convertHexToString(chainId);
     const supportedChainId = supportedChains.includes(numericChainId);
     if (supportedChainId) {

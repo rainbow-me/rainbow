@@ -649,7 +649,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
 
   const confirmButtonProps = useMemoOne(
     () => ({
-      currentNetwork: ethereumUtils.getNetworkFromChainId(currentChainId),
+      chainId: currentChainId,
       disabled: !Number(inputAmount) || (!loading && !tradeDetails),
       inputAmount,
       isAuthorizing,

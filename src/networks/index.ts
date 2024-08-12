@@ -19,7 +19,7 @@ import { getZoraNetworkObject } from './zora';
  * Array of all Rainbow Networks
  * the ordering is the default sorting
  */
-export const RainbowNetworks = [
+export const RainbowNetworkObjects = [
   getMainnetNetworkObject(),
   getArbitrumNetworkObject(),
   getBaseNetworkObject(),
@@ -32,6 +32,21 @@ export const RainbowNetworks = [
   getAvalancheNetworkObject(),
   getBlastNetworkObject(),
   getDegenNetworkObject(),
+];
+
+export const RainbowSupportedChainIds = [
+  ChainId.mainnet,
+  ChainId.arbitrum,
+  ChainId.base,
+  ChainId.optimism,
+  ChainId.polygon,
+  ChainId.zora,
+  ChainId.gnosis,
+  ChainId.goerli,
+  ChainId.bsc,
+  ChainId.avalanche,
+  ChainId.blast,
+  ChainId.degen,
 ];
 
 /**
@@ -125,14 +140,14 @@ export function sortNetworks(): NetworkProperties[] {
     return count1 > count2 ? -1 : 1;
   };
 
-  return RainbowNetworks.sort(tokenSort);
+  return RainbowNetworkObjects.sort(tokenSort);
 }
 
 export function getSwappableNetworks(): NetworkProperties[] {
-  return RainbowNetworks.filter(network => network.features.swaps);
+  return RainbowNetworkObjects.filter(network => network.features.swaps);
 }
 
-export const RainbowNetworkByChainId = RainbowNetworks.reduce(
+export const RainbowNetworkByChainId = RainbowNetworkObjects.reduce(
   (acc, network) => {
     acc[network.id] = network;
     return acc;

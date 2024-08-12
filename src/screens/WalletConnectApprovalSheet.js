@@ -21,17 +21,16 @@ import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { ethereumUtils } from '@/utils';
-import { Network } from '@/helpers';
 import { Box, Columns, Column as RDSColumn, Inline, Text } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import * as lang from '@/languages';
-import { RainbowNetworks, getNetworkObj } from '@/networks';
+import { RainbowNetworkObjects, getNetworkObject } from '@/networks';
 import { useDappMetadata } from '@/resources/metadata/dapp';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { InfoAlert } from '@/components/info-alert/info-alert';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId, chainIdToNameMapping } from '@/__swaps__/types/chains';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.3),
@@ -69,7 +68,7 @@ const NetworkPill = ({ chainIds }) => {
   const availableNetworkChainIds = useMemo(() => chainIds.sort(chainId => (chainId === ChainId.mainnet ? -1 : 1)), [chainIds]);
 
   const networkMenuItems = useMemo(() => {
-    RainbowNetworks.filter(({ features, id }) => features.walletconnect && chainIds.includes(id)).map(network => ({
+    RainbowNetworkObjects.filter(({ features, id }) => features.walletconnect && chainIds.includes(id)).map(network => ({
       actionKey: network.value,
       actionTitle: network.name,
       icon: {
@@ -128,7 +127,7 @@ const NetworkPill = ({ chainIds }) => {
             </>
           ) : (
             <Inline alignVertical="center" wrap={false}>
-              {availableNetworkChainIds[0] !== Network.mainnet ? (
+              {availableNetworkChainIds[0] !== ChainId.mainnet ? (
                 <ChainBadge chainId={availableNetworkChainIds[0]} position="relative" size="small" />
               ) : (
                 <EthCoinIcon size={20} />
@@ -136,7 +135,7 @@ const NetworkPill = ({ chainIds }) => {
 
               <Box paddingLeft="6px">
                 <Text color="primary (Deprecated)" numberOfLines={1} size="18px / 27px (Deprecated)" weight="bold">
-                  {getNetworkObj(availableNetworkChainIds[0]).name}
+                  {chainIdToNameMapping[availableNetworkChainIds[0]]}
                 </Text>
               </Box>
             </Inline>
@@ -225,7 +224,7 @@ export default function WalletConnectApprovalSheet() {
    * v2.
    */
   const approvalNetworkInfo = useMemo(() => {
-    const networkObj = getNetworkObj(approvalNetwork);
+    const networkObj = getNetworkObject({ chainId: ethereumUtils.getChainIdFromNetwork(approvalNetwork) });
     return {
       chainId: networkObj.id,
       color: isDarkMode ? networkObj.colors.dark : networkObj.colors.light,

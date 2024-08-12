@@ -10,9 +10,9 @@ import { Separator, Stack } from '@/design-system';
 import { useAccountSettings, useInitializeAccountData, useLoadAccountData, useResetAccountState } from '@/hooks';
 import { settingsUpdateNetwork } from '@/redux/settings';
 import { Network } from '@/helpers';
-import { RainbowNetworks } from '@/networks';
+import { RainbowNetworkObjects } from '@/networks';
 
-const networks = values(RainbowNetworks).filter(({ networkType }) => networkType !== 'layer2');
+const networks = values(RainbowNetworkObjects).filter(({ networkType }) => networkType !== 'layer2');
 
 interface NetworkSectionProps {
   inDevSection?: boolean;

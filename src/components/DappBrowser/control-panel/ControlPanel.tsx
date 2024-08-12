@@ -41,7 +41,7 @@ import { TOP_INSET } from '../Dimensions';
 import { formatUrl } from '../utils';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { toHex } from 'viem';
-import { RainbowNetworks } from '@/networks';
+import { RainbowNetworkObjects } from '@/networks';
 import * as i18n from '@/languages';
 import { useDispatch } from 'react-redux';
 import store from '@/redux/store';
@@ -184,7 +184,7 @@ export const ControlPanel = () => {
   const { testnetsEnabled } = store.getState().settings;
 
   const allNetworkItems = useMemo(() => {
-    return RainbowNetworks.filter(
+    return RainbowNetworkObjects.filter(
       ({ networkType, features: { walletconnect } }) => walletconnect && (testnetsEnabled || networkType !== 'testnet')
     ).map(network => {
       return {
@@ -205,7 +205,7 @@ export const ControlPanel = () => {
   const selectedWallet = allWalletItems.find(item => item.selected);
 
   const animatedAccentColor = useSharedValue(selectedWallet?.color || globalColors.blue10);
-  const selectedNetworkId = useSharedValue(currentNetwork?.toString() || RainbowNetworks[0].value);
+  const selectedNetworkId = useSharedValue(currentNetwork?.toString() || RainbowNetworkObjects[0].value);
   const selectedWalletId = useSharedValue(selectedWallet?.uniqueId || accountAddress);
 
   const handleSwitchWallet = useCallback(
@@ -225,7 +225,7 @@ export const ControlPanel = () => {
   const handleNetworkSwitch = useCallback(
     (selectedItemId: string) => {
       updateActiveSessionNetwork({ host: activeTabHost, network: selectedItemId as Network });
-      const chainId = RainbowNetworks.find(({ value }) => value === (selectedItemId as Network))?.id as number;
+      const chainId = RainbowNetworkObjects.find(({ value }) => value === (selectedItemId as Network))?.id as number;
       activeTabRef.current?.injectJavaScript(`window.ethereum.emit('chainChanged', ${toHex(chainId)}); true;`);
       setCurrentNetwork(selectedItemId as Network);
     },

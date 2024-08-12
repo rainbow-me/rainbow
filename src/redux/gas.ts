@@ -39,7 +39,8 @@ import {
 import { ethUnits } from '@/references';
 import { multiply } from '@/helpers/utilities';
 import { ethereumUtils, gasUtils } from '@/utils';
-import { getNetworkObj } from '@/networks';
+import { getNetworkObject } from '@/networks';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const { CUSTOM, FAST, NORMAL, SLOW, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
 
@@ -47,8 +48,8 @@ const mutex = new Mutex();
 
 const withRunExclusive = async (callback: (...args: any[]) => void) => await mutex.runExclusive(callback);
 
-const getGasPricePollingInterval = (network: Network): number => {
-  return getNetworkObj(network).gas.pollingIntervalInMs;
+const getGasPricePollingInterval = (chainId: ChainId): number => {
+  return getNetworkObject({ chainId }).gas.pollingIntervalInMs;
 };
 
 const getDefaultGasLimit = (network: Network, defaultGasLimit: number): number => {
@@ -144,7 +145,7 @@ const getUpdatedGasFeeParams = (
       break;
   }
 
-  const isLegacyGasNetwork = getNetworkObj(txNetwork).gas.gasType === 'legacy';
+  const isLegacyGasNetwork = getNetworkObject({ chainId: ethereumUtils.getChainIdFromNetwork(txNetwork) }).gas.gasType === 'legacy';
 
   const gasFeesBySpeed = isLegacyGasNetwork
     ? parseLegacyGasFeesBySpeed(
@@ -486,16 +487,17 @@ export const gasPricesStartPolling =
               } = getState().gas;
               const { nativeCurrency } = getState().settings;
 
-              const networkObj = getNetworkObj(network);
+              const chainId = ethereumUtils.getChainIdFromNetwork(network);
+              const networkObject = getNetworkObject({ chainId });
               let dataIsReady = true;
 
-              if (networkObj.gas.gasType === 'legacy') {
+              if (networkObject.gas.gasType === 'legacy') {
                 // OP chains have an additional fee we need to load
-                if (getNetworkObj(network).gas?.OptimismTxFee) {
+                if (networkObject.gas?.OptimismTxFee) {
                   dataIsReady = l1GasFeeOptimism !== null;
                 }
 
-                const adjustedGasFees = await networkObj.gas.getGasPrices();
+                const adjustedGasFees = await networkObject.gas.getGasPrices();
 
                 if (!adjustedGasFees) return;
 
@@ -627,7 +629,7 @@ export const gasPricesStartPolling =
       }
     };
 
-    const pollingInterval = getGasPricePollingInterval(network);
+    const pollingInterval = getGasPricePollingInterval(ethereumUtils.getChainIdFromNetwork(network));
     watchGasPrices(network, pollingInterval);
   };
 
@@ -663,7 +665,10 @@ export const gasUpdateTxFee =
       const { defaultGasLimit, gasLimit, gasFeeParamsBySpeed, selectedGasFee, txNetwork, currentBlockParams } = getState().gas;
 
       const { nativeCurrency } = getState().settings;
-      if (isEmpty(gasFeeParamsBySpeed) || (getNetworkObj(txNetwork).gas?.OptimismTxFee && l1GasFeeOptimism === null)) {
+      if (
+        isEmpty(gasFeeParamsBySpeed) ||
+        (getNetworkObject({ chainId: ethereumUtils.getChainIdFromNetwork(txNetwork) }).gas?.OptimismTxFee && l1GasFeeOptimism === null)
+      ) {
         // if fee prices not ready, we need to store the gas limit for future calculations
         // the rest is as the initial state value
         if (updatedGasLimit) {

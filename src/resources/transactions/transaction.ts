@@ -3,7 +3,7 @@ import { createQueryKey, queryClient, QueryFunctionArgs, QueryFunctionResult } f
 import { useQuery } from '@tanstack/react-query';
 import { consolidatedTransactionsQueryFunction, consolidatedTransactionsQueryKey } from './consolidatedTransactions';
 import { useAccountSettings } from '@/hooks';
-import { RainbowNetworks, getNetworkObj } from '@/networks';
+import { RainbowNetworkObjects, getNetworkObj } from '@/networks';
 import { rainbowFetch } from '@/rainbow-fetch';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { parseTransaction } from '@/parsers/transactions';
@@ -82,7 +82,7 @@ export const transactionFetchQuery = async ({
 export function useBackendTransaction({ hash, network }: BackendTransactionArgs) {
   const { accountAddress, nativeCurrency } = useAccountSettings();
 
-  const chainIds = RainbowNetworks.filter(network => network.enabled && network.networkType !== 'testnet').map(network => network.id);
+  const chainIds = RainbowNetworkObjects.filter(network => network.enabled && network.networkType !== 'testnet').map(network => network.id);
 
   const paginatedTransactionsKey = consolidatedTransactionsQueryKey({
     address: accountAddress,

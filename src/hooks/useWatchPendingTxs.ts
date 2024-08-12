@@ -8,7 +8,7 @@ import { RainbowError, logger } from '@/logger';
 import { Network } from '@/networks/types';
 import { getIsHardhatConnected, getProviderForNetwork } from '@/handlers/web3';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
-import { RainbowNetworks } from '@/networks';
+import { RainbowNetworkObjects } from '@/networks';
 import { queryClient } from '@/react-query/queryClient';
 import { getTransactionFlashbotStatus } from '@/handlers/transactions';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
@@ -187,7 +187,9 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
     );
 
     if (minedTransactions.length) {
-      const chainIds = RainbowNetworks.filter(network => network.enabled && network.networkType !== 'testnet').map(network => network.id);
+      const chainIds = RainbowNetworkObjects.filter(network => network.enabled && network.networkType !== 'testnet').map(
+        network => network.id
+      );
       await queryClient.refetchQueries({
         queryKey: consolidatedTransactionsQueryKey({
           address,

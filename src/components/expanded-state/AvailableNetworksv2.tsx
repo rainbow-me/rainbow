@@ -15,7 +15,7 @@ import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../animations';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { implementation } from '@/entities/dispersion';
-import { RainbowNetworks, getNetworkObj } from '@/networks';
+import { RainbowNetworkObjects, getNetworkObj } from '@/networks';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 import { SWAPS_V2, enableActionsOnReadOnlyWallet, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -167,7 +167,7 @@ const AvailableNetworksv2 = ({
   }, [availableNetworks, convertAssetAndNavigate]);
 
   const networkMenuItems = useMemo(() => {
-    return RainbowNetworks.filter(({ features, value, id }) => features.swaps && value !== Network.mainnet && !!networks[id]).map(
+    return RainbowNetworkObjects.filter(({ features, value, id }) => features.swaps && value !== Network.mainnet && !!networks[id]).map(
       network => ({
         actionKey: network.value,
         actionTitle: network.name,

@@ -4,7 +4,7 @@ import { NativeCurrencyKey } from '@/entities';
 import { saveAccountEmptyState } from '@/handlers/localstorage/accountLocal';
 import { Network } from '@/helpers/networkTypes';
 import { greaterThan } from '@/helpers/utilities';
-import { RainbowNetworks } from '@/networks';
+import { RainbowNetworkObjects } from '@/networks';
 import { rainbowFetch } from '@/rainbow-fetch';
 import { createQueryKey, queryClient, QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
@@ -62,7 +62,9 @@ async function userAssetsQueryFunction({
   }
 
   try {
-    const chainIds = RainbowNetworks.filter(network => network.enabled && network.networkType !== 'testnet').map(network => network.id);
+    const chainIds = RainbowNetworkObjects.filter(network => network.enabled && network.networkType !== 'testnet').map(
+      network => network.id
+    );
 
     const { erroredChainIds, results } = await fetchAndParseUserAssetsForChainIds(address, currency, chainIds);
     let parsedSuccessResults = results;

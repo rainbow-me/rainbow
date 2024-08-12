@@ -134,7 +134,7 @@ export default function DiscoverSearch() {
           network === Network.optimism;
         }
         const contractAddress = query.split('/')[1];
-        navigateToMintCollection(contractAddress, network);
+        navigateToMintCollection(contractAddress, ethereumUtils.getChainIdFromNetwork(network));
       }
     };
     checkAndHandleMint(searchQuery);

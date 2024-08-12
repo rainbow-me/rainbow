@@ -64,7 +64,7 @@ import { IS_IOS } from '@/env';
 import { estimateGas, estimateGasWithPadding, getFlashbotsProvider, getProvider, toHex } from '@/handlers/web3';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { GasSpeedButton } from '@/components/gas';
-import { getNetworkObj, getNetworkObject } from '@/networks';
+import { getNetworkObject } from '@/networks';
 import { RainbowError, logger } from '@/logger';
 import {
   PERSONAL_SIGN,
@@ -929,7 +929,7 @@ export const SignTransactionSheet = () => {
 
                 <Box style={{ gap: 14, zIndex: 2 }}>
                   <SimulationCard
-                    currentNetwork={ethereumUtils.getNetworkFromChainId(currentChainId)}
+                    chainId={currentChainId}
                     expandedCardBottomInset={expandedCardBottomInset}
                     isBalanceEnough={isBalanceEnough}
                     isPersonalSign={isPersonalSign}
@@ -1086,7 +1086,7 @@ export const SignTransactionSheet = () => {
 };
 
 interface SimulationCardProps {
-  currentNetwork: Network;
+  chainId: ChainId;
   expandedCardBottomInset: number;
   isBalanceEnough: boolean | undefined;
   isLoading: boolean;
@@ -1104,7 +1104,7 @@ interface SimulationCardProps {
 }
 
 const SimulationCard = ({
-  currentNetwork,
+  chainId,
   expandedCardBottomInset,
   isBalanceEnough,
   isLoading,
@@ -1317,7 +1317,7 @@ const SimulationCard = ({
               <Text color="labelQuaternary" size="13pt" weight="semibold">
                 {i18n.t(i18n.l.walletconnect.simulation.simulation_card.messages.need_more_native, {
                   symbol: walletBalance?.symbol,
-                  network: getNetworkObj(currentNetwork).name,
+                  network: chainIdToNameMapping[chainId],
                 })}
               </Text>
             ) : (

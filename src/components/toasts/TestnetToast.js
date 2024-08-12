@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import networkTypes from '../../helpers/networkTypes';
 import { Icon } from '../icons';
 import { Nbsp, Text } from '../text';
 import Toast from './Toast';
 import { isHardHat } from '@/handlers/web3';
 import { useInternetStatus } from '@/hooks';
-import { getNetworkObj } from '@/networks';
+import { getNetworkObject } from '@/networks';
+import { ChainId } from '@/__swaps__/types/chains';
 
-const TestnetToast = ({ network, web3Provider }) => {
+const TestnetToast = ({ chainId, web3Provider }) => {
   const isConnected = useInternetStatus();
   const providerUrl = web3Provider?.connection?.url;
-  const { name, colors: networkColors } = getNetworkObj(network);
-  const [visible, setVisible] = useState(!network === networkTypes.mainnet);
+  const { name, colors: networkColors } = getNetworkObject({ chainId });
+  const [visible, setVisible] = useState(!chainId === ChainId.mainnet);
   const [networkName, setNetworkName] = useState(name);
 
   useEffect(() => {
-    if (network === networkTypes.mainnet) {
+    if (chainId === ChainId.mainnet) {
       if (isHardHat(providerUrl)) {
         setVisible(true);
         setNetworkName('Hardhat');
@@ -26,7 +26,7 @@ const TestnetToast = ({ network, web3Provider }) => {
       setVisible(true);
       setNetworkName(name + (isConnected ? '' : ' (offline)'));
     }
-  }, [name, network, providerUrl, isConnected]);
+  }, [name, providerUrl, isConnected, chainId]);
 
   const { colors, isDarkMode } = useTheme();
 

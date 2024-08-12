@@ -1,14 +1,12 @@
 import React from 'react';
-import { Keyboard, StatusBar } from 'react-native';
+import { Keyboard } from 'react-native';
 
 import { useTheme } from '@/theme/ThemeContext';
 import colors from '@/theme/currentColors';
 import styled from '@/styled-thing';
 import { fonts } from '@/styles';
-import networkTypes from '@/helpers/networkTypes';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
-import { getNetworkObj } from '@/networks';
 import { getPositionSheetHeight } from '@/screens/positions/PositionSheet';
 
 import { Icon } from '@/components/icons';
@@ -29,6 +27,7 @@ import { BottomSheetNavigationOptions } from '@/navigation/bottom-sheet/types';
 import { Box } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { SignTransactionSheetRouteProp } from '@/screens/SignTransactionSheet';
+import { ChainId, chainIdToNameMapping } from '@/__swaps__/types/chains';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 
@@ -490,7 +489,7 @@ export const ensAdditionalRecordsSheetConfig: PartialNavigatorConfigOptions = {
 };
 
 export const explainSheetConfig: PartialNavigatorConfigOptions = {
-  options: ({ route: { params = { network: getNetworkObj(networkTypes.mainnet).name } } }) => {
+  options: ({ route: { params = { network: chainIdToNameMapping[ChainId.mainnet] } } }) => {
     // @ts-ignore
     const explainerConfig = explainers(params.network)[params?.type];
     return buildCoolModalConfig({

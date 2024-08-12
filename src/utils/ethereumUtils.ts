@@ -43,7 +43,7 @@ import {
 import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS } from '@/env';
-import { RainbowNetworks, getNetworkObj, getNetworkObject } from '@/networks';
+import { RainbowNetworkObjects, getNetworkObj, getNetworkObject } from '@/networks';
 import {
   externalTokenQueryKey,
   FormattedExternalAsset,
@@ -281,7 +281,7 @@ const getDataString = (func: string, arrVals: string[]) => {
  * @param  {Number} chainId
  */
 export const getNetworkFromChainId = (chainId: ChainId): Network => {
-  return RainbowNetworks.find(network => network.id === chainId)?.value || getNetworkObject({ chainId: ChainId.mainnet }).value;
+  return RainbowNetworkObjects.find(network => network.id === chainId)?.value || getNetworkObject({ chainId: ChainId.mainnet }).value;
 };
 
 /**
@@ -289,7 +289,7 @@ export const getNetworkFromChainId = (chainId: ChainId): Network => {
  * @param  {Number} chainId
  */
 const getNetworkNameFromChainId = (chainId: ChainId): string => {
-  return RainbowNetworks.find(network => network.id === chainId)?.name || getNetworkObject({ chainId: ChainId.mainnet }).name;
+  return RainbowNetworkObjects.find(network => network.id === chainId)?.name || getNetworkObject({ chainId: ChainId.mainnet }).name;
 };
 
 /**

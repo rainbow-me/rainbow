@@ -8,7 +8,7 @@ import { useTheme } from '@/theme';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
 import { RainbowTransaction } from '@/entities';
 import { pendingTransactionsStore, usePendingTransactionsStore } from '@/state/pendingTransactions';
-import { RainbowNetworks } from '@/networks';
+import { RainbowNetworkObjects } from '@/networks';
 import { Network } from '@/networks/types';
 import { nonceStore } from '@/state/nonces';
 
@@ -43,7 +43,7 @@ export default function useAccountTransactions() {
           }
           return latestTxMap;
         },
-        new Map(RainbowNetworks.map(chain => [chain.value, null as RainbowTransaction | null]))
+        new Map(RainbowNetworkObjects.map(chain => [chain.value, null as RainbowTransaction | null]))
       );
     watchForPendingTransactionsReportedByRainbowBackend({
       currentAddress: accountAddress,
@@ -61,7 +61,7 @@ export default function useAccountTransactions() {
     const { setNonce } = nonceStore.getState();
     const { setPendingTransactions, pendingTransactions: storePendingTransactions } = pendingTransactionsStore.getState();
     const pendingTransactions = storePendingTransactions[currentAddress] || [];
-    const networks = RainbowNetworks.filter(({ enabled, networkType }) => enabled && networkType !== 'testnet');
+    const networks = RainbowNetworkObjects.filter(({ enabled, networkType }) => enabled && networkType !== 'testnet');
     for (const network of networks) {
       const latestTxConfirmedByBackend = latestTransactions.get(network.value);
       if (latestTxConfirmedByBackend) {

@@ -7,11 +7,11 @@ import { Column, Row } from './layout';
 import { Text } from './text';
 import { padding, position } from '@/styles';
 import { darkModeThemeColors } from '@/styles/colors';
-import { getNetworkObj } from '@/networks';
 import * as lang from '@/languages';
 import { isL2Chain } from '@/handlers/web3';
 import { EthCoinIcon } from './coin-icon/EthCoinIcon';
 import { ethereumUtils } from '@/utils';
+import { chainIdToNameMapping } from '@/__swaps__/types/chains';
 
 const L2Disclaimer = ({
   network,
@@ -59,7 +59,7 @@ const L2Disclaimer = ({
                 ? customText
                 : lang.t(lang.l.expanded_state.asset.l2_disclaimer, {
                     symbol,
-                    network: getNetworkObj(network).name,
+                    network: chainIdToNameMapping[chainId],
                   })}
             </Text>
           </Column>

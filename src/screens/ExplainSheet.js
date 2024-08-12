@@ -21,7 +21,6 @@ import { useTheme } from '@/theme';
 import { isL2Chain } from '@/handlers/web3';
 import { IS_ANDROID } from '@/env';
 import * as i18n from '@/languages';
-import { getNetworkObj } from '@/networks';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { ChainId, chainIdToNameMapping } from '@/__swaps__/types/chains';
@@ -79,7 +78,7 @@ const FLOOR_PRICE_EXPLAINER = lang.t('explain.floor_price.text');
 const gasExplainer = network => lang.t('explain.gas.text', { networkName: network });
 
 const availableNetworksExplainer = (tokenSymbol, networks) => {
-  const readableNetworks = networks?.map(network => getNetworkObj(network).name)?.join(', ');
+  const readableNetworks = networks?.map(network => chainIdToNameMapping[ethereumUtils.getChainIdFromNetwork(network)])?.join(', ');
 
   return lang.t('explain.available_networks.text', {
     tokenSymbol: tokenSymbol,

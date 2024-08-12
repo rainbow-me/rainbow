@@ -74,8 +74,7 @@ export function FeaturedMintCard() {
         mintsLastHour: featuredMint.totalMints,
         priceInEth: convertRawAmountToRoundedDecimal(featuredMint.mintStatus.price, 18, 6),
       });
-      const network = ethereumUtils.getNetworkFromChainId(featuredMint.chainId);
-      navigateToMintCollection(featuredMint.contract, featuredMint.mintStatus.price, network);
+      navigateToMintCollection(featuredMint.contract, featuredMint.mintStatus.price, featuredMint.chainId);
     }
   }, [featuredMint]);
 
