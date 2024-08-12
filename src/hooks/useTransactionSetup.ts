@@ -48,7 +48,7 @@ export const useTransactionSetup = ({
       if (currentNetwork) {
         if (!isMessageRequest) {
           startPollingGasFees(currentNetwork);
-          fetchMethodName(transactionDetails?.payload?.params[0].data);
+          fetchMethodName(transactionDetails?.payload?.params?.[0].data);
         } else {
           setMethodName(i18n.t(i18n.l.wallet.message_signing.request));
         }

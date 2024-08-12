@@ -1,6 +1,8 @@
-import { createContext } from 'react';
+import { createContext, useContext } from 'react';
 import Routes from './routesNames';
 
 export type InitialRoute = typeof Routes.WELCOME_SCREEN | typeof Routes.SWIPE_LAYOUT | null;
 
 export const InitialRouteContext = createContext<InitialRoute>(null);
+
+export const useInitialRouteContext = () => useContext(InitialRouteContext);

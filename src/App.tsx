@@ -51,17 +51,11 @@ import { initializeRemoteConfig } from '@/model/remoteConfig';
 import { NavigationContainerRef } from '@react-navigation/native';
 import { RootStackParamList } from './navigation/types';
 import { Address } from 'viem';
-import { IS_ANDROID, IS_DEV } from './env';
+import { IS_DEV } from './env';
 import { checkIdentifierOnLaunch } from './model/backup';
 import { prefetchDefaultFavorites } from './resources/favorites';
-import { handleMobileWalletProtocolRequest } from '@/utils/requestNavigationHandlers';
 
-import {
-  addDiagnosticLogListener,
-  getAndroidIntentUrl,
-  MobileWalletProtocolProvider,
-  useMobileWalletProtocolHost,
-} from '@coinbase/mobile-wallet-protocol-host';
+import { MobileWalletProtocolProvider, useMobileWalletProtocolHost } from '@coinbase/mobile-wallet-protocol-host';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -80,28 +74,25 @@ function App({ walletReady }: AppProps) {
   const [appState, setAppState] = useState(AppState.currentState);
   const [initialRoute, setInitialRoute] = useState<InitialRoute>(null);
   const eventSubscription = useRef<ReturnType<typeof AppState.addEventListener> | null>(null);
-  const urlListener = useRef<ReturnType<typeof Linking.addEventListener> | null>(null);
   const branchListenerRef = useRef<ReturnType<typeof branch.subscribe> | null>(null);
   const navigatorRef = useRef<NavigationContainerRef<RootStackParamList> | null>(null);
 
-  const { message, handleRequestUrl, sendFailureToClient, ...mwpProps } = useMobileWalletProtocolHost();
+  // TODO: We need to move deeplinks to a different file?
+  const { handleRequestUrl, sendFailureToClient } = useMobileWalletProtocolHost();
 
   const setupDeeplinking = useCallback(async () => {
     const initialUrl = await Linking.getInitialURL();
 
-    urlListener.current = Linking.addEventListener('url', async ({ url }) => {
-      const response = await handleRequestUrl(url);
-      if (response.error) {
-        // Return error to client app if session is expired or invalid
-        const { errorMessage, decodedRequest } = response.error;
-        await sendFailureToClient(errorMessage, decodedRequest);
-      }
-    });
-
-    branchListenerRef.current = await branchListener(url => {
+    branchListenerRef.current = await branchListener(async url => {
       logger.debug(`Branch: listener called`, {}, logger.DebugContext.deeplinks);
+
       try {
-        handleDeeplink(url, initialRoute);
+        handleDeeplink({
+          url,
+          initialRoute,
+          handleRequestUrl,
+          sendFailureToClient,
+        });
       } catch (error) {
         if (error instanceof Error) {
           logger.error(new RainbowError('Error opening deeplink'), {
@@ -120,7 +111,6 @@ function App({ walletReady }: AppProps) {
     if (initialUrl) {
       logger.debug(`App: has initial URL, opening with Branch`, { initialUrl });
       branch.openURL(initialUrl);
-      Linking.emit('url', { url: initialUrl });
     }
   }, [handleRequestUrl, initialRoute, sendFailureToClient]);
 
@@ -178,7 +168,6 @@ function App({ walletReady }: AppProps) {
     return () => {
       eventSubscription.current?.remove();
       branchListenerRef.current?.();
-      urlListener.current?.remove();
     };
   }, [handleAppStateChange, identifyFlow, setupDeeplinking]);
 
@@ -189,43 +178,7 @@ function App({ walletReady }: AppProps) {
     }
   }, [walletReady]);
 
-  useEffect(() => {
-    if (IS_ANDROID) {
-      (async function handleAndroidIntent() {
-        const intentUrl = await getAndroidIntentUrl();
-        if (intentUrl) {
-          const response = await handleRequestUrl(intentUrl);
-          if (response.error) {
-            // Return error to client app if session is expired or invalid
-            const { errorMessage, decodedRequest } = response.error;
-            await sendFailureToClient(errorMessage, decodedRequest);
-          }
-        }
-      })();
-    }
-  }, [handleRequestUrl, sendFailureToClient]);
-
-  useEffect(() => {
-    if (message) {
-      try {
-        handleMobileWalletProtocolRequest({ request: message, ...mwpProps });
-      } catch (error) {
-        logger.error(new RainbowError('Error handling Mobile Wallet Protocol request'), {
-          error,
-        });
-      }
-    }
-  }, [message, mwpProps]);
-
-  useEffect(() => {
-    if (IS_DEV) {
-      const removeListener = addDiagnosticLogListener(event => {
-        console.log('Event:', JSON.stringify(event, null, 2));
-      });
-
-      return () => removeListener();
-    }
-  }, []);
+  console.log('rendering app.tsx');
 
   return (
     <Portal>
