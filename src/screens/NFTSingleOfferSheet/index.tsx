@@ -53,6 +53,7 @@ import { getNextNonce } from '@/state/nonces';
 import { metadataPOSTClient } from '@/graphql';
 import { ethUnits } from '@/references';
 import { Transaction } from '@/graphql/__generated__/metadataPOST';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const NFT_IMAGE_HEIGHT = 160;
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
