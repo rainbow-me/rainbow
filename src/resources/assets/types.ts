@@ -54,7 +54,7 @@ export interface ParsedAsset {
   address: string;
   color?: string;
   colors?: TokenColors;
-  chainId?: number;
+  chainId: number;
   chainName?: string;
   decimals: number;
   icon_url?: string;

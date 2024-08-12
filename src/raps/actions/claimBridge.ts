@@ -1,4 +1,4 @@
-import { NewTransaction, TransactionGasParamAmounts } from '@/entities';
+import { NewTransaction, ParsedAddressAsset, TransactionGasParamAmounts } from '@/entities';
 import { getProviderForNetwork } from '@/handlers/web3';
 import { Network } from '@/helpers';
 import { add, addBuffer, greaterThan, lessThan, multiply, subtract } from '@/helpers/utilities';
@@ -153,17 +153,21 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
     throw new Error('[CLAIM-BRIDGE]: executeCrosschainSwap returned undefined');
   }
 
-  const typedAssetToBuy = {
+  const typedAssetToBuy: ParsedAddressAsset = {
     ...parameters.assetToBuy,
     network: getNetworkFromChainId(parameters.assetToBuy.chainId),
+    chainId: parameters.assetToBuy.chainId,
     colors: undefined,
     networks: undefined,
+    native: undefined,
   };
   const typedAssetToSell = {
     ...parameters.assetToSell,
     network: getNetworkFromChainId(parameters.assetToSell.chainId),
+    chainId: parameters.assetToSell.chainId,
     colors: undefined,
     networks: undefined,
+    native: undefined,
   };
 
   // 5 - if the swap was successful we add the transaction to the store

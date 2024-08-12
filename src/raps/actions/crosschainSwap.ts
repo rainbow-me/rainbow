@@ -201,8 +201,10 @@ export const crosschainSwap = async ({
         asset: {
           ...parameters.assetToSell,
           network: ethereumUtils.getNetworkFromChainId(parameters.assetToSell.chainId),
+          chainId: parameters.assetToSell.chainId,
           colors: parameters.assetToSell.colors as TokenColors,
           price: nativePriceForAssetToSell,
+          native: undefined,
         },
         value: quote.sellAmount.toString(),
       },
@@ -213,8 +215,10 @@ export const crosschainSwap = async ({
         asset: {
           ...parameters.assetToBuy,
           network: ethereumUtils.getNetworkFromChainId(parameters.assetToBuy.chainId),
+          chainId: parameters.assetToBuy.chainId,
           colors: parameters.assetToBuy.colors as TokenColors,
           price: nativePriceForAssetToBuy,
+          native: undefined,
         },
         value: quote.buyAmountMinusFees.toString(),
       },

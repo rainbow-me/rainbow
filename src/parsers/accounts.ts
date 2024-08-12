@@ -19,7 +19,7 @@ export const parseAssetNative = (asset: ParsedAddressAsset, nativeCurrency: Nati
     native: {
       balance: nativeDisplay,
       change: isLowerCaseMatch(asset.symbol, nativeCurrency)
-        ? null
+        ? undefined
         : assetNativePrice.relative_change_24h
           ? convertAmountToPercentageDisplay(assetNativePrice.relative_change_24h)
           : '',

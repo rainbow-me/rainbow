@@ -27,6 +27,7 @@ const ethWithAddress: RainbowToken = {
   symbol: 'ETH',
   chainId: ChainId.mainnet,
   network: Network.mainnet,
+  chainId: ChainId.mainnet,
   uniqueId: 'eth',
 };
 
