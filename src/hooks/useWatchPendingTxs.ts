@@ -72,7 +72,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
     async (tx: RainbowTransaction) => {
       const transaction = await transactionFetchQuery({
         hash: tx.hash!,
-        network: tx.network,
+        chainId: tx.chainId,
         address,
         currency: nativeCurrency,
       });
