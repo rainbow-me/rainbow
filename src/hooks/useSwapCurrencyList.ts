@@ -164,6 +164,8 @@ const useSwapCurrencyList = (searchQuery: string, searchChainId = MAINNET_CHAINI
       });
   }, [curatedMap, favoriteAddresses]);
 
+  console.log('unfilteredFavorites', unfilteredFavorites);
+
   const getFavorites = useCallback(async () => {
     return searching
       ? await searchCurrencyList({

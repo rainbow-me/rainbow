@@ -86,7 +86,6 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
   const [highLiquidityAssets, setHighLiquidityAssets] = useState<RainbowToken[]>([]);
   const [lowLiquidityAssets, setLowLiquidityAssets] = useState<RainbowToken[]>([]);
   const [verifiedAssets, setVerifiedAssets] = useState<RainbowToken[]>([]);
-
   const [fetchingCrosschainAssets, setFetchingCrosschainAssets] = useState(false);
   const [crosschainVerifiedAssets, setCrosschainVerifiedAssets] = useState<CrosschainVerifiedAssets>({
     [ChainId.mainnet]: [],
