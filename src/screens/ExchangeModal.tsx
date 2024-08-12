@@ -145,15 +145,14 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
     updateDefaultGasLimit,
     updateGasFeeOption,
     updateTxFee,
-    txNetwork,
-
+    chainId,
     isGasReady,
   } = useGas();
   const { accountAddress, flashbotsEnabled, nativeCurrency } = useAccountSettings();
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const prevGasFeesParamsBySpeed = usePrevious(gasFeeParamsBySpeed);
-  const prevChainId = usePrevious(ethereumUtils.getChainIdFromNetwork(txNetwork));
+  const prevChainId = usePrevious(chainId);
 
   const keyboardListenerSubscription = useRef<EmitterSubscription>();
 
@@ -222,7 +221,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
     if (currentChainId !== prevChainId) {
       speedUrgentSelected.current = false;
     }
-  }, [currentChainId, prevChainId, txNetwork]);
+  }, [currentChainId, prevChainId]);
 
   const defaultGasLimit = useMemo(() => {
     return ethereumUtils.getBasicSwapGasLimit(Number(currentChainId));
@@ -347,14 +346,14 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
     ) {
       updateGasLimit();
     }
-  }, [currentChainId, gasFeeParamsBySpeed, isGasReady, prevChainId, prevGasFeesParamsBySpeed, txNetwork, updateGasLimit]);
+  }, [currentChainId, gasFeeParamsBySpeed, isGasReady, prevChainId, prevGasFeesParamsBySpeed, updateGasLimit]);
 
   // Listen to gas prices, Uniswap reserves updates
   useEffect(() => {
     updateDefaultGasLimit(defaultGasLimit);
     InteractionManager.runAfterInteractions(() => {
       // Start polling in the current network
-      startPollingGasFees(ethereumUtils.getNetworkFromChainId(currentChainId), flashbots);
+      startPollingGasFees(currentChainId, flashbots);
     });
     return () => {
       stopPollingGasFees();
