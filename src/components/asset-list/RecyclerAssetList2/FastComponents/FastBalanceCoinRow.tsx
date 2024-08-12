@@ -11,7 +11,6 @@ import { useAccountAsset, useCoinListFinishEditingOptions } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { borders, colors, padding, shadow } from '@/styles';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { ethereumUtils } from '@/utils';
 import { NativeCurrencyKey } from '@/entities';
 import { ChainId } from '@/networks/types';
 
