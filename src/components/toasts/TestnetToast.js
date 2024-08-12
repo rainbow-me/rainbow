@@ -26,7 +26,11 @@ const TestnetToast = ({ chainId }) => {
       setVisible(true);
       setNetworkName(name + (isConnected ? '' : ' (offline)'));
     }
+<<<<<<< HEAD
   }, [name, isConnected, chainId, connectedToHardhat]);
+=======
+  }, [name, providerUrl, isConnected, chainId]);
+>>>>>>> 7cf075ae3 (start removing getObj)
 
   const { colors, isDarkMode } = useTheme();
 
