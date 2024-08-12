@@ -348,6 +348,7 @@ export function NFTSingleOfferSheet() {
                         asset: {
                           ...offer.paymentToken,
                           network: offer.network as Network,
+                          chainId: offerChainId,
                           uniqueId: getUniqueId(offer.paymentToken.address, offerChainId),
                         },
                         value: offer.grossAmount.raw,

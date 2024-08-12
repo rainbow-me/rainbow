@@ -20,7 +20,7 @@ export const EXTERNAL_TOKEN_STALE_TIME = 1000 * 60; // 1 minute
 // Types
 type ExternalToken = Pick<Token, 'decimals' | 'iconUrl' | 'name' | 'networks' | 'symbol' | 'colors' | 'price'>;
 export type FormattedExternalAsset = ExternalToken & {
-  address: AddressOrEth;
+  address: string;
   icon_url?: string;
   isNativeAsset: boolean;
   native: {
@@ -34,7 +34,7 @@ export type FormattedExternalAsset = ExternalToken & {
 
 // Query Types for External Token
 type ExternalTokenArgs = {
-  address: AddressOrEth;
+  address: string;
   chainId: ChainId;
   currency: NativeCurrencyKey;
 };
@@ -47,7 +47,7 @@ type externalTokenQueryKey = ReturnType<typeof externalTokenQueryKey>;
 
 // Helpers
 const formatExternalAsset = (
-  address: AddressOrEth,
+  address: string,
   chainId: ChainId,
   asset: ExternalToken,
   nativeCurrency: NativeCurrencyKey
@@ -55,7 +55,7 @@ const formatExternalAsset = (
   return {
     ...asset,
     address,
-    isNativeAsset: isNativeAsset(address, chainId),
+    isNativeAsset: isNativeAsset(address as AddressOrEth, chainId),
     native: {
       change: asset?.price?.relativeChange24h ? convertAmountToPercentageDisplay(`${asset?.price?.relativeChange24h}`) : '',
       price: convertAmountAndPriceToNativeDisplay(1, asset?.price?.value || 0, nativeCurrency),
