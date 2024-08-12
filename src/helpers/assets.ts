@@ -68,7 +68,6 @@ export const buildCoinsList = (sortedAssets: any, nativeCurrency: any, isCoinLis
     }
   });
 
-  console.log('pinnedAssets', pinnedAssets);
   // decide which assets to show above or below the coin divider
   // FIXME: Parameter 'allAssets' implicitly has an 'any' type.
   const nonHidden = pinnedAssets.concat(standardAssets) as any[];

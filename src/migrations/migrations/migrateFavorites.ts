@@ -25,7 +25,7 @@ export function migrateFavoritesV2(): Migration {
       for (const favorite of Object.values(v1Data)) {
         const uniqueId = getStandardizedUniqueIdWorklet({
           address: favorite.address as AddressOrEth,
-          chainId: ethereumUtils.getChainIdFromNetwork(favorite.network),
+          chainId: favorite.chainId,
         });
         favorite.uniqueId = uniqueId; // v2 unique uses chainId instead of Network
         migratedFavorites[uniqueId] = favorite;

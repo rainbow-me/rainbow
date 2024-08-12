@@ -13,6 +13,7 @@ import { borders, colors, padding, shadow } from '@/styles';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { ethereumUtils } from '@/utils';
 import { NativeCurrencyKey } from '@/entities';
+import { ChainId } from '@/__swaps__/types/chains';
 
 interface CoinCheckButtonProps {
   isHidden: boolean;
@@ -92,7 +93,7 @@ const MemoizedBalanceCoinRow = React.memo(
 
     const valueColor = nativeDisplay ? theme.colors.dark : theme.colors.blueGreyLight;
 
-    const chainId = ethereumUtils.getChainIdFromNetwork(item?.network);
+    const chainId = item?.chainId || ChainId.mainnet;
 
     return (
       <View style={sx.flex} testID={'fast-coin-info'}>

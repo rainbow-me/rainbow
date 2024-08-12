@@ -3,7 +3,7 @@ import { TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import { useTheme } from '../../theme/ThemeContext';
-import { deviceUtils, ethereumUtils } from '../../utils';
+import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
 import CoinName from './CoinName';
@@ -105,9 +105,7 @@ const SendCoinRow = ({
 
   const Wrapper = disablePressAnimation ? TouchableWithoutFeedback : ButtonPressAnimation;
 
-  const isL2 = useMemo(() => {
-    return isL2Chain({ chainId: ethereumUtils.getChainIdFromNetwork(item?.network) });
-  }, [item?.network]);
+  const isL2 = useMemo(() => isL2Chain({ chainId: item?.chainId }), [item?.chainId]);
 
   const containerSelectedStyles = {
     height: selectedHeight,

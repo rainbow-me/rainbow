@@ -33,19 +33,16 @@ export default function useSwapRefuel({
   const [inputNativeAsset, setInputNativeAsset] = useState<ParsedAddressAsset>();
 
   const { chainId, toChainId, isCrosschainSwap } = useMemo(() => {
-    const inputNetwork = inputCurrency.network;
-    const outputNetwork = outputCurrency.network;
-    const chainId = ethereumUtils.getChainIdFromNetwork(inputNetwork);
-
-    const toChainId = ethereumUtils.getChainIdFromNetwork(outputNetwork);
-    const isCrosschainSwap = crosschainSwapsEnabled && inputNetwork !== outputNetwork;
+    const chainId = inputCurrency.chainId;
+    const toChainId = outputCurrency.chainId;
+    const isCrosschainSwap = crosschainSwapsEnabled && chainId !== toChainId;
 
     return {
       chainId,
       toChainId,
       isCrosschainSwap,
     };
-  }, [crosschainSwapsEnabled, inputCurrency.network, outputCurrency.network]);
+  }, [crosschainSwapsEnabled, inputCurrency.chainId, outputCurrency.chainId]);
 
   const { data: minRefuelAmount } = useMinRefuelAmount(
     {

@@ -54,7 +54,7 @@ export interface ParsedAddressAsset extends Asset, Partial<RainbowTokenOwnFields
     amount?: string;
     display?: string;
   };
-  chainId?: number;
+  chainId: number;
   color?: string;
   colors?: TokenColors;
   icon_url?: string;

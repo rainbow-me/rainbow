@@ -101,8 +101,8 @@ const useSwapCurrencyList = (searchQuery: string, searchChainId = MAINNET_CHAINI
 
   const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
   const { inputCurrency } = useSwapCurrencies();
-  const previousInputCurrencyNetwork = usePrevious(inputCurrency?.network);
-  const inputChainId = useMemo(() => ethereumUtils.getChainIdFromNetwork(inputCurrency?.network), [inputCurrency?.network]);
+  const previousInputCurrencyChainId = usePrevious(inputCurrency?.chainId);
+  const inputChainId = inputCurrency?.chainId;
   const isCrosschainSearch = useMemo(() => {
     if (inputChainId && inputChainId !== searchChainId && crosschainSwapsEnabled && !isDiscover) {
       return true;
@@ -353,7 +353,7 @@ const useSwapCurrencyList = (searchQuery: string, searchChainId = MAINNET_CHAINI
         (searching && !wasSearching) ||
         (searching && previousSearchQuery !== searchQuery) ||
         searchChainId !== previousChainId ||
-        inputCurrency?.network !== previousInputCurrencyNetwork
+        inputCurrency?.chainId !== previousInputCurrencyChainId
       ) {
         if (searchChainId === MAINNET_CHAINID) {
           search();
@@ -370,14 +370,14 @@ const useSwapCurrencyList = (searchQuery: string, searchChainId = MAINNET_CHAINI
     };
     doSearch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searching, searchQuery, searchChainId, isCrosschainSearch, inputCurrency?.network]);
+  }, [searching, searchQuery, searchChainId, isCrosschainSearch, inputCurrency?.chainId]);
 
   const { colors } = useTheme();
 
   const currencyList = useMemo(() => {
     const list = [];
     let bridgeAsset = isCrosschainSearch
-      ? verifiedAssets.find(asset => isLowerCaseMatch(asset?.name, inputCurrency?.name) && asset?.network !== inputCurrency?.network)
+      ? verifiedAssets.find(asset => isLowerCaseMatch(asset?.name, inputCurrency?.name) && asset?.chainId !== inputCurrency?.chainId)
       : null;
     if (searching) {
       const importedAsset = importedAssets?.[0];
@@ -471,21 +471,21 @@ const useSwapCurrencyList = (searchQuery: string, searchChainId = MAINNET_CHAINI
     }
     return list;
   }, [
-    searching,
-    importedAssets,
-    favoriteAssets,
+    isCrosschainSearch,
     verifiedAssets,
+    searching,
+    inputCurrency?.name,
+    inputCurrency?.chainId,
+    importedAssets,
     highLiquidityAssets,
     lowLiquidityAssets,
-    colors.yellowFavorite,
-    unfilteredFavorites,
-    searchChainId,
-    getCurated,
     isFavorite,
-    inputCurrency?.name,
+    favoriteAssets,
+    searchChainId,
     colors.networkColors,
-    isCrosschainSearch,
-    inputCurrency?.network,
+    colors.yellowFavorite,
+    getCurated,
+    unfilteredFavorites,
   ]);
 
   const crosschainExactMatches = useMemo(() => {
