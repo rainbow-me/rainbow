@@ -270,7 +270,7 @@ export default function SendSheet(props) {
         startPollingGasFees(ethereumUtils.getNetworkFromChainId(currentChainId));
       });
     }
-  }, [startPollingGasFees, selected.network, prevChainId, currentChainId]);
+  }, [startPollingGasFees, selected.chainId, prevChainId, currentChainId]);
 
   // Stop polling when the sheet is unmounted
   useEffect(() => {
@@ -282,7 +282,7 @@ export default function SendSheet(props) {
   }, [stopPollingGasFees]);
 
   useEffect(() => {
-    const assetChainId = ethereumUtils.getChainIdFromNetwork(selected?.network);
+    const assetChainId = selected.chainId;
     if (assetChainId && (assetChainId !== currentChainId || !currentChainId || prevChainId !== currentChainId)) {
       let provider = web3Provider;
       if (chainId === ChainId.goerli) {
@@ -295,7 +295,7 @@ export default function SendSheet(props) {
         setCurrentProvider(provider);
       }
     }
-  }, [currentChainId, isNft, chainId, prevChainId, selected?.network, sendUpdateSelected]);
+  }, [currentChainId, isNft, chainId, prevChainId, selected?.chainId, sendUpdateSelected]);
 
   const onChangeNativeAmount = useCallback(
     newNativeAmount => {
@@ -763,7 +763,7 @@ export default function SendSheet(props) {
   useEffect(() => {
     if (!currentProvider?._network?.chainId) return;
 
-    const assetChainId = ethereumUtils.getChainIdFromNetwork(selected?.network);
+    const assetChainId = selected.chainId;
     const currentProviderChainId = currentProvider._network.chainId;
 
     if (assetChainId === currentChainId && currentProviderChainId === currentChainId && isValidAddress && !isEmpty(selected)) {

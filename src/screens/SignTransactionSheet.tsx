@@ -98,6 +98,7 @@ import { event } from '@/analytics/event';
 import { getOnchainAssetBalance } from '@/handlers/assets';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { ChainId } from '@/__swaps__/types/chains';
+import { AddressOrEth } from '@/__swaps__/types/assets';
 
 const COLLAPSED_CARD_HEIGHT = 56;
 const MAX_CARD_HEIGHT = 176;
@@ -1560,7 +1561,7 @@ const SimulatedEventRow = ({
   const theme = useTheme();
   const { nativeCurrency } = useAccountSettings();
   const { data: externalAsset } = useExternalToken({
-    address: asset?.assetCode || '',
+    address: (asset?.assetCode || '') as AddressOrEth,
     chainId: ethereumUtils.getChainIdFromNetwork((asset?.network as Network) || Network.mainnet),
     currency: nativeCurrency,
   });

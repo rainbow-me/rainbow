@@ -151,15 +151,11 @@ export default function CurrencySelectModal() {
     (newAsset: any, selectAsset: any, type: any) => {
       const otherAsset = type === 'input' ? outputCurrency : inputCurrency;
       const hasShownWarning = getHasShownWarning();
-      if (
-        otherAsset &&
-        ethereumUtils.getChainIdFromNetwork(newAsset?.network) !== ethereumUtils.getChainIdFromNetwork(otherAsset?.network) &&
-        !hasShownWarning
-      ) {
+      if (otherAsset && newAsset?.chainId !== otherAsset?.chainId && !hasShownWarning) {
         Keyboard.dismiss();
         InteractionManager.runAfterInteractions(() => {
           navigate(Routes.EXPLAIN_SHEET, {
-            chainId: ethereumUtils.getChainIdFromNetwork(newAsset?.network),
+            chainId: newAsset?.chainId,
             onClose: () => {
               setHasShownWarning();
               selectAsset();
@@ -293,14 +289,14 @@ export default function CurrencySelectModal() {
               screen: Routes.MAIN_EXCHANGE_SCREEN,
             });
             setSearchQuery('');
-            setCurrentChainId(ethereumUtils.getChainIdFromNetwork(item.network));
+            setCurrentChainId(item.chainId);
           },
           android ? 500 : 0
         );
       } else {
         navigate(Routes.MAIN_EXCHANGE_SCREEN);
         setSearchQuery('');
-        setCurrentChainId(ethereumUtils.getChainIdFromNetwork(item.network));
+        setCurrentChainId(item.chainId);
       }
       if (searchQueryForSearch) {
         analytics.track('Selected a search result in Swap', {
@@ -429,11 +425,10 @@ export default function CurrencySelectModal() {
   const handleBackButton = useCallback(() => {
     setSearchQuery('');
     InteractionManager.runAfterInteractions(() => {
-      const inputChainId = ethereumUtils.getChainIdFromNetwork(inputCurrency?.network);
-      setCurrentChainId(inputChainId);
+      setCurrentChainId(inputCurrency?.chainId);
     });
     setIsTransitioning(true); // continue to display list while transitiong back
-  }, [inputCurrency?.network]);
+  }, [inputCurrency?.chainId]);
 
   useEffect(() => {
     // check if list has items before attempting to scroll

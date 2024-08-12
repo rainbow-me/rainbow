@@ -35,7 +35,7 @@ export const pendingTransactionsStore = createStore<PendingTransactionsState>(
           ...currentPendingTransactions,
           [address]: [
             ...addressPendingTransactions.filter(tx => {
-              if (tx.network === pendingTransaction.network) {
+              if (tx.chainId === pendingTransaction.chainId) {
                 return tx.nonce !== pendingTransaction.nonce;
               }
               return true;
