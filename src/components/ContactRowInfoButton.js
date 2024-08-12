@@ -125,17 +125,17 @@ const ContactRowInfoButton = ({ children, item, chainId, scaleTo }) => {
       ],
       menuTitle: `${item?.name}`,
     };
-  }, [item]);
+  }, [chainId, item?.address, item?.name]);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === ContactRowActionsEnum.copyAddress) {
         handleCopyAddress(item?.address);
       } else if (actionKey === ContactRowActionsEnum.blockExplorer) {
-        ethereumUtils.openAddressInBlockExplorer(item?.address);
+        ethereumUtils.openAddressInBlockExplorer({ address: item?.address, chainId });
       }
     },
-    [item, handleCopyAddress]
+    [handleCopyAddress, item?.address, chainId]
   );
 
   const Container = children ? Centered : InfoButton;

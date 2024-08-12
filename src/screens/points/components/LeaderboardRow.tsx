@@ -128,7 +128,7 @@ export const LeaderboardRow = memo(function LeaderboardRow({
         setClipboard(address);
       }
       if (address && actionKey === ACTIONS.ETHERSCAN) {
-        ethereumUtils.openAddressInBlockExplorer(address, ChainId.mainnet);
+        ethereumUtils.openAddressInBlockExplorer({ address: address, chainId: ChainId.mainnet });
       }
       if (actionKey === ACTIONS.ADD_CONTACT) {
         navigate(Routes.MODAL_SCREEN, {

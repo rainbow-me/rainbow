@@ -112,7 +112,7 @@ export default function MoreButton({ address, ensName }: { address?: string; ens
         setClipboard(address!);
       }
       if (address && actionKey === ACTIONS.ETHERSCAN) {
-        ethereumUtils.openAddressInBlockExplorer(address, ChainId.mainnet);
+        ethereumUtils.openAddressInBlockExplorer({ address, chainId: ChainId.mainnet });
       }
       if (actionKey === ACTIONS.ADD_CONTACT) {
         navigate(Routes.MODAL_SCREEN, {

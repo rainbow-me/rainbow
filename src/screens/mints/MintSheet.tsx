@@ -683,7 +683,9 @@ const MintSheet = () => {
                     symbol="􀉆"
                     label={i18n.t(i18n.l.minting.contract)}
                     value={
-                      <ButtonPressAnimation onPress={() => ethereumUtils.openAddressInBlockExplorer(mintCollection.id!, chainId)}>
+                      <ButtonPressAnimation
+                        onPress={() => ethereumUtils.openAddressInBlockExplorer({ address: mintCollection.id!, chainId })}
+                      >
                         <Text color={{ custom: imageColor }} align="right" size="17pt" weight="medium">
                           {contractAddressDisplay}
                         </Text>

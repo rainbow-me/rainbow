@@ -97,7 +97,7 @@ import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { event } from '@/analytics/event';
 import { getOnchainAssetBalance } from '@/handlers/assets';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId, chainIdToNameMapping } from '@/__swaps__/types/chains';
 import { AddressOrEth } from '@/__swaps__/types/assets';
 
 const COLLAPSED_CARD_HEIGHT = 56;
@@ -948,7 +948,7 @@ export const SignTransactionSheet = () => {
                     />
                   ) : (
                     <DetailsCard
-                      currentNetwork={ethereumUtils.getNetworkFromChainId(currentChainId)}
+                      chainId={currentChainId}
                       expandedCardBottomInset={expandedCardBottomInset}
                       isBalanceEnough={isBalanceEnough}
                       isLoading={isLoading}
@@ -1355,7 +1355,7 @@ const SimulationCard = ({
 };
 
 interface DetailsCardProps {
-  currentNetwork: Network;
+  chainId: ChainId;
   expandedCardBottomInset: number;
   isBalanceEnough: boolean | undefined;
   isLoading: boolean;
@@ -1367,7 +1367,7 @@ interface DetailsCardProps {
 }
 
 const DetailsCard = ({
-  currentNetwork,
+  chainId,
   expandedCardBottomInset,
   isBalanceEnough,
   isLoading,
@@ -1425,15 +1425,15 @@ const DetailsCard = ({
         </Box>
         <Animated.View style={listStyle}>
           <Stack space="24px">
-            {<DetailRow currentNetwork={currentNetwork} detailType="chain" value={getNetworkObj(currentNetwork).name} />}
+            {<DetailRow chainId={chainId} detailType="chain" value={chainIdToNameMapping[chainId]} />}
             {!!(meta?.to?.address || toAddress || showTransferToRow) && (
               <DetailRow
                 detailType={isContract ? 'contract' : 'to'}
                 onPress={() =>
-                  ethereumUtils.openAddressInBlockExplorer(
-                    meta?.to?.address || toAddress || meta?.transferTo?.address || '',
-                    ethereumUtils.getChainIdFromNetwork(currentNetwork)
-                  )
+                  ethereumUtils.openAddressInBlockExplorer({
+                    address: meta?.to?.address || toAddress || meta?.transferTo?.address || '',
+                    chainId,
+                  })
                 }
                 value={
                   meta?.to?.name ||
@@ -1637,12 +1637,12 @@ const SimulatedEventRow = ({
 };
 
 const DetailRow = ({
-  currentNetwork,
+  chainId,
   detailType,
   onPress,
   value,
 }: {
-  currentNetwork?: Network;
+  chainId?: ChainId;
   detailType: DetailType;
   onPress?: () => void;
   value: string;
@@ -1663,9 +1663,7 @@ const DetailRow = ({
           {detailType === 'sourceCodeVerification' && (
             <DetailBadge type={value === 'VERIFIED' ? 'verified' : value === 'UNVERIFIED' ? 'unverified' : 'unknown'} value={value} />
           )}
-          {detailType === 'chain' && currentNetwork && (
-            <ChainImage size={12} chainId={ethereumUtils.getChainIdFromNetwork(currentNetwork)} />
-          )}
+          {detailType === 'chain' && chainId && <ChainImage size={12} chainId={chainId} />}
           {detailType !== 'function' && detailType !== 'sourceCodeVerification' && (
             <Text align="right" color="labelTertiary" numberOfLines={1} size="15pt" weight="semibold">
               {value}
