@@ -18,6 +18,16 @@ export const defaultOptions: Sentry.ReactNativeOptions = {
   integrations: [],
   maxBreadcrumbs: 5,
   tracesSampleRate: 0,
+  beforeSend(event) {
+    const deviceFamily = event.tags?.['device.family'];
+
+    // See https://linear.app/rainbow/issue/APP-1760/sentry-bot-resilience-updates
+    if (!deviceFamily) {
+      return null;
+    }
+
+    return event;
+  },
 };
 
 export function initSentry() {
