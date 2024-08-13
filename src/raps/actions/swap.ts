@@ -388,8 +388,7 @@ export const swap = async ({
 
   addNewTransaction({
     address: parameters.quote.from as Address,
-    // chainId: parameters.chainId as ChainId,
-    network,
+    chainId: parameters.chainId,
     transaction,
   });
 

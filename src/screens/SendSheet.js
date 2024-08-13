@@ -25,7 +25,6 @@ import {
   resolveNameOrAddress,
   web3Provider,
 } from '@/handlers/web3';
-import Network from '@/helpers/networkTypes';
 import { checkIsValidAddressOrDomain, checkIsValidAddressOrDomainFormat, isENSAddressFormat } from '@/helpers/validators';
 import {
   prefetchENSAvatar,
@@ -514,7 +513,7 @@ export default function SendSheet(props) {
             txDetails.status = 'pending';
             addNewTransaction({
               address: accountAddress,
-              network: currentChainIdNetwork,
+              chainId: currentChainId,
               transaction: txDetails,
             });
           }

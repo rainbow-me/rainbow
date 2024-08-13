@@ -284,8 +284,7 @@ export const SignTransactionSheet = () => {
     InteractionManager.runAfterInteractions(() => {
       if (currentChainId) {
         if (!isMessageRequest) {
-          const network = ethereumUtils.getNetworkFromChainId(currentChainId);
-          startPollingGasFees(network);
+          startPollingGasFees(currentChainId);
           fetchMethodName(transactionDetails?.payload?.params[0].data);
         } else {
           setMethodName(i18n.t(i18n.l.wallet.message_signing.request));
@@ -391,7 +390,7 @@ export const SignTransactionSheet = () => {
     (async () => {
       if (!isMessageRequest && !nonceForDisplay) {
         try {
-          const nonce = await getNextNonce({ address: currentAddress, network: ethereumUtils.getNetworkFromChainId(currentChainId) });
+          const nonce = await getNextNonce({ address: currentAddress, chainId: currentChainId });
           if (nonce || nonce === 0) {
             const nonceAsString = nonce.toString();
             setNonceForDisplay(nonceAsString);
@@ -645,7 +644,7 @@ export const SignTransactionSheet = () => {
     const gasParams = parseGasParamsForTransaction(selectedGasFee);
     const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
 
-    const nonce = await getNextNonce({ address: accountInfo.address, network: ethereumUtils.getNetworkFromChainId(currentChainId) });
+    const nonce = await getNextNonce({ address: accountInfo.address, chainId: currentChainId });
     let txPayloadUpdated = {
       ...cleanTxPayload,
       ...gasParams,
@@ -741,7 +740,7 @@ export const SignTransactionSheet = () => {
         if (accountAddress?.toLowerCase() === txDetails.from?.toLowerCase()) {
           addNewTransaction({
             transaction: txDetails,
-            network: ethereumUtils.getNetworkFromChainId(currentChainId) || Network.mainnet,
+            chainId: currentChainId,
             address: accountAddress,
           });
           txSavedInCurrentWallet = true;
@@ -773,7 +772,7 @@ export const SignTransactionSheet = () => {
           await switchToWalletWithAddress(txDetails?.from as string);
           addNewTransaction({
             transaction: txDetails as NewTransaction,
-            network: ethereumUtils.getNetworkFromChainId(currentChainId) || Network.mainnet,
+            chainId: currentChainId,
             address: txDetails?.from as string,
           });
         });

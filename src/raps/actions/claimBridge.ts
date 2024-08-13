@@ -201,7 +201,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
 
   addNewTransaction({
     address: bridgeQuote.from as Address,
-    network: getNetworkFromChainId(parameters.chainId),
+    chainId: parameters.chainId,
     transaction,
   });
 

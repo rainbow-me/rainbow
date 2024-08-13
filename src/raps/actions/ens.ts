@@ -490,7 +490,7 @@ const ensAction = async (
   addNewTransaction({
     address: ownerAddress,
     transaction: newTransaction,
-    network: Network.mainnet,
+    chainId: ChainId.mainnet,
   });
   return tx?.nonce;
 };

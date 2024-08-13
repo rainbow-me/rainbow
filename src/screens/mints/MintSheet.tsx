@@ -237,8 +237,7 @@ const MintSheet = () => {
 
   // start poll gas price
   useEffect(() => {
-    const network = ethereumUtils.getNetworkFromChainId(chainId);
-    startPollingGasFees(network);
+    startPollingGasFees(chainId);
 
     return () => {
       stopPollingGasFees();
@@ -365,9 +364,8 @@ const MintSheet = () => {
     });
 
     const feeAddress = getRainbowFeeAddress(chainId);
-    const nonce = await getNextNonce({ address: accountAddress, network: ethereumUtils.getNetworkFromChainId(chainId) });
+    const nonce = await getNextNonce({ address: accountAddress, chainId });
     try {
-      const currentNetwork = ethereumUtils.getNetworkFromChainId(chainId);
       await getClient()?.actions.mintToken({
         items: [
           {
@@ -388,10 +386,11 @@ const MintSheet = () => {
             step.items?.forEach(item => {
               if (item.txHashes?.[0]?.txHash && txRef.current !== item.txHashes[0].txHash && item.status === 'incomplete') {
                 const asset = {
+                  chainId,
                   type: 'nft',
                   icon_url: imageUrl,
                   address: mintCollection.id || '',
-                  network: currentNetwork,
+                  network: ethereumUtils.getNetworkFromChainId(chainId),
                   name: mintCollection.name || '',
                   decimals: 18,
                   symbol: 'NFT',
@@ -401,7 +400,7 @@ const MintSheet = () => {
                 const paymentAsset = {
                   type: 'nft',
                   address: ETH_ADDRESS,
-                  network: currentNetwork,
+                  network: ethereumUtils.getNetworkFromChainId(chainId),
                   name: mintCollection.publicMintInfo?.price?.currency?.name || 'Ethereum',
                   decimals: mintCollection.publicMintInfo?.price?.currency?.decimals || 18,
                   symbol: ETH_SYMBOL,
@@ -414,7 +413,7 @@ const MintSheet = () => {
                   to: item.data?.to,
                   from: item.data?.from,
                   hash: item.txHashes[0].txHash,
-                  network: currentNetwork,
+                  network: ethereumUtils.getNetworkFromChainId(chainId),
                   nonce,
                   changes: [
                     {
@@ -437,7 +436,7 @@ const MintSheet = () => {
                 addNewTransaction({
                   transaction: tx,
                   address: accountAddress,
-                  network: currentNetwork,
+                  chainId,
                 });
                 analyticsV2.track(event.mintsMintedNFT, {
                   collectionName: mintCollection.name || '',

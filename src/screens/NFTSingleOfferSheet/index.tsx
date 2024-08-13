@@ -248,13 +248,13 @@ export function NFTSingleOfferSheet() {
   // estimate gas
   useEffect(() => {
     if (!isReadOnlyWallet && !isExpired) {
-      startPollingGasFees(offer?.network as Network);
+      startPollingGasFees(offerChainId);
       estimateGas();
     }
     return () => {
       stopPollingGasFees();
     };
-  }, [estimateGas, isExpired, isReadOnlyWallet, offer?.network, startPollingGasFees, stopPollingGasFees, updateTxFee]);
+  }, [estimateGas, isExpired, isReadOnlyWallet, offer.network, offerChainId, startPollingGasFees, stopPollingGasFees, updateTxFee]);
 
   const acceptOffer = useCallback(async () => {
     logger.debug(`[NFTSingleOfferSheet]: Initiating sale of NFT ${offer.nft.contractAddress}:${offer.nft.tokenId}`);
@@ -288,7 +288,7 @@ export function NFTSingleOfferSheet() {
       chain: networkObj,
       transport: http(networkObj.rpc()),
     });
-    const nonce = await getNextNonce({ address: accountAddress, network: networkObj.value });
+    const nonce = await getNextNonce({ address: accountAddress, chainId: networkObj.id });
     try {
       let errorMessage = '';
       let didComplete = false;
@@ -334,6 +334,7 @@ export function NFTSingleOfferSheet() {
                     nonce: item?.txHashes?.length > 1 ? nonce + 1 : nonce,
                     asset: {
                       ...offer.paymentToken,
+                      chainId: offerChainId,
                       network: offer.network as Network,
                       uniqueId: getUniqueId(offer.paymentToken.address, offerChainId),
                     },
@@ -373,7 +374,7 @@ export function NFTSingleOfferSheet() {
                   addNewTransaction({
                     transaction: tx,
                     address: accountAddress,
-                    network: offer.network as Network,
+                    chainId: offerChainId,
                   });
                   txsRef.current.push(tx.hash);
                 }

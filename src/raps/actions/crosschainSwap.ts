@@ -227,7 +227,6 @@ export const crosschainSwap = async ({
     hash: swap.hash as TxHash,
     // TODO: MARK - Replace this once we migrate network => chainId
     network,
-    // chainId: parameters.chainId,
     nonce: swap.nonce,
     status: 'pending',
     type: 'swap',
@@ -237,8 +236,7 @@ export const crosschainSwap = async ({
 
   addNewTransaction({
     address: parameters.quote.from as Address,
-    // chainId: parameters.chainId as ChainId,
-    network,
+    chainId,
     transaction,
   });
 

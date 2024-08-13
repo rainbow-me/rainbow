@@ -290,12 +290,9 @@ export const unlock = async ({
     ...gasParams,
   } satisfies NewTransaction;
 
-  // TODO: MARK - Replace this once we migrate network => chainId
-  const network = ethereumUtils.getNetworkFromChainId(approval.chainId);
-
   addNewTransaction({
     address: parameters.fromAddress as Address,
-    network,
+    chainId: approval.chainId,
     transaction,
   });
 
