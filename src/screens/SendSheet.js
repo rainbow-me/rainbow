@@ -422,7 +422,7 @@ export default function SendSheet(props) {
             },
             true,
             currentProvider,
-            currentChainIdNetwork
+            currentChainId
           );
 
           if (!lessThan(updatedGasLimit, gasLimit)) {
@@ -775,7 +775,7 @@ export default function SendSheet(props) {
         },
         false,
         currentProvider,
-        ethereumUtils.getNetworkFromChainId(currentChainId)
+        currentChainId
       )
         .then(async gasLimit => {
           if (getNetworkObject({ chainId: currentChainId }).gas?.OptimismTxFee) {

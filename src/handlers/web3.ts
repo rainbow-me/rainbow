@@ -758,7 +758,7 @@ export const buildTransaction = async (
     gasLimit?: string;
   },
   provider: StaticJsonRpcProvider | null,
-  network: Network
+  chainId: ChainId
 ): Promise<TransactionRequest> => {
   const _amount = amount && Number(amount) ? convertAmountToRawAmount(amount, asset.decimals) : estimateAssetBalancePortion(asset);
   const value = _amount.toString();
@@ -777,7 +777,7 @@ export const buildTransaction = async (
       from: address,
       to: contractAddress,
     };
-  } else if (!isNativeAsset(asset.address, ethereumUtils.getChainIdFromNetwork(network))) {
+  } else if (!isNativeAsset(asset.address, chainId)) {
     const transferData = getDataForTokenTransfer(value, _recipient);
     txData = {
       data: transferData,
@@ -814,9 +814,9 @@ export const estimateGasLimit = async (
   },
   addPadding = false,
   provider: StaticJsonRpcProvider | null = null,
-  network: Network = Network.mainnet
+  chainId: ChainId = ChainId.mainnet
 ): Promise<string | null> => {
-  const estimateGasData = await buildTransaction({ address, amount, asset, recipient }, provider, network);
+  const estimateGasData = await buildTransaction({ address, amount, asset, recipient }, provider, chainId);
 
   if (addPadding) {
     return estimateGasWithPadding(estimateGasData, null, null, provider);

@@ -1,11 +1,10 @@
 import { useMemo } from 'react';
 import useAccountAsset from './useAccountAsset';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { FormattedExternalAsset, useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { ChainId } from '@/__swaps__/types/chains';
-import { ParsedAddressAsset } from '@/entities';
 import { Address } from 'viem';
 
 // To fetch an asset from account assets,
