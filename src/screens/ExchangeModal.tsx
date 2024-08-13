@@ -431,7 +431,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
         }
 
         logger.debug(`[ExchangeModal]: getting nonce for account ${accountAddress}`);
-        const currentNonce = await getNextNonce({ address: accountAddress, network: ethereumUtils.getNetworkFromChainId(currentChainId) });
+        const currentNonce = await getNextNonce({ address: accountAddress, chainId: currentChainId });
         logger.debug(`[ExchangeModal]: nonce for account ${accountAddress} is ${currentNonce}`);
         const { independentField, independentValue, slippageInBips, source } = store.getState().swap;
 
@@ -848,13 +848,6 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
                   nativeAmount={nativeAmountDisplay}
                   nativeCurrency={nativeCurrency}
                   nativeFieldRef={nativeFieldRef}
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-                  network={ethereumUtils.getNetworkFromChainId(inputNetwork)}
->>>>>>> de7ba31b9 (use chainid in <GasSpeedButton)
-=======
->>>>>>> b16a1ad7b (lintprogressmoree)
                   onFocus={handleFocus}
                   onPressMaxBalance={updateMaxInputAmount}
                   onPressSelectInputCurrency={chainId => {
@@ -926,11 +919,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
               {/* @ts-expect-error - Javascript Component */}
               <GasSpeedButton
                 asset={outputCurrency}
-<<<<<<< HEAD
                 chainId={currentChainId}
-=======
-                currentNetwork={ethereumUtils.getNetworkFromChainId(currentChainId)}
->>>>>>> de7ba31b9 (use chainid in <GasSpeedButton)
                 flashbotTransaction={flashbots}
                 marginBottom={0}
                 marginTop={0}

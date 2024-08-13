@@ -464,7 +464,7 @@ export default function SendSheet(props) {
         from: accountAddress,
         gasLimit: gasLimitToUse,
         network: currentChainIdNetwork,
-        nonce: nextNonce ?? (await getNextNonce({ address: accountAddress, network: currentChainIdNetwork })),
+        nonce: nextNonce ?? (await getNextNonce({ address: accountAddress, chainId: currentChainId })),
         to: toAddress,
         ...gasParams,
       };

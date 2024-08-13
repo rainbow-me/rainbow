@@ -19,13 +19,13 @@ import { timeUnits } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { labelhash } from '@/utils';
 import { getNextNonce } from '@/state/nonces';
-import { Network } from '@/networks/types';
 import { Hex } from 'viem';
 import { executeENSRap } from '@/raps/actions/ens';
 import store from '@/redux/store';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { noop } from 'lodash';
 import { logger, RainbowError } from '@/logger';
+import { ChainId } from '@/__swaps__/types/chains';
 
 // Generic type for action functions
 type ActionFunction<P extends any[] = [], R = void> = (...params: P) => Promise<R>;
@@ -139,7 +139,7 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
       const salt = generateSalt();
 
       const [nonce, rentPrice] = await Promise.all([
-        getNextNonce({ network: Network.mainnet, address: accountAddress }),
+        getNextNonce({ chainId: ChainId.mainnet, address: accountAddress }),
         getRentPrice(registrationParameters.name.replace(ENS_DOMAIN, ''), duration),
       ]);
 
@@ -196,7 +196,7 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
       }
 
       const [nonce, rentPrice, changedRecords] = await Promise.all([
-        getNextNonce({ network: Network.mainnet, address: accountAddress }),
+        getNextNonce({ chainId: ChainId.mainnet, address: accountAddress }),
         getRentPrice(name.replace(ENS_DOMAIN, ''), duration),
         uploadRecordImages(registrationParameters.changedRecords, {
           avatar: avatarMetadata,
@@ -234,7 +234,7 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
         return;
       }
 
-      const nonce = await getNextNonce({ network: Network.mainnet, address: accountAddress });
+      const nonce = await getNextNonce({ chainId: ChainId.mainnet, address: accountAddress });
       const rentPrice = await getRentPrice(name.replace(ENS_DOMAIN, ''), duration);
 
       const registerEnsRegistrationParameters: ENSActionParameters = {
@@ -262,7 +262,7 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
         return;
       }
 
-      const nonce = await getNextNonce({ network: Network.mainnet, address: accountAddress });
+      const nonce = await getNextNonce({ chainId: ChainId.mainnet, address: accountAddress });
 
       const registerEnsRegistrationParameters: ENSActionParameters = {
         ...formatENSActionParams(registrationParameters),
@@ -288,7 +288,7 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
       }
 
       const [nonce, changedRecords, resolver] = await Promise.all([
-        getNextNonce({ network: Network.mainnet, address: accountAddress }),
+        getNextNonce({ chainId: ChainId.mainnet, address: accountAddress }),
         uploadRecordImages(registrationParameters.changedRecords, {
           avatar: avatarMetadata,
           header: coverMetadata,
@@ -326,7 +326,7 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
         return;
       }
 
-      const nonce = await getNextNonce({ network: Network.mainnet, address: accountAddress });
+      const nonce = await getNextNonce({ chainId: ChainId.mainnet, address: accountAddress });
 
       const transferEnsParameters: ENSActionParameters = {
         ...formatENSActionParams({
