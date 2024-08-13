@@ -1,8 +1,8 @@
 import './languages';
 import * as Sentry from '@sentry/react-native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import { AppRegistry, Dimensions, LogBox, StyleSheet, View } from 'react-native';
-import { MobileWalletProtocolProvider } from '@coinbase/mobile-wallet-protocol-host';
+import { MobileWalletProtocolProvider, useMobileWalletProtocolHost } from '@coinbase/mobile-wallet-protocol-host';
 import { DeeplinkHandler } from '@/components/DeeplinkHandler';
 import { AppStateChangeHandler } from '@/components/AppStateChangeHandler';
 import { useApplicationSetup } from '@/hooks/useApplicationSetup';
@@ -43,6 +43,8 @@ import { Address } from 'viem';
 import { IS_DEV } from './env';
 import { prefetchDefaultFavorites } from './resources/favorites';
 
+const LazyRoutesComponent = lazy(() => import('./navigation/Routes'));
+
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
   (showNetworkRequests || showNetworkResponses) && monitorNetwork(showNetworkRequests, showNetworkResponses);
@@ -74,7 +76,10 @@ function App({ walletReady }: AppProps) {
       <View style={sx.container}>
         {initialRoute && (
           <InitialRouteContext.Provider value={initialRoute}>
-            <RoutesComponent ref={handleNavigatorRef} />
+            <Suspense fallback={<View />}>
+              {/* @ts-expect-error - Property 'ref' does not exist on the 'IntrinsicAttributes' object */}
+              <LazyRoutesComponent ref={handleNavigatorRef} />
+            </Suspense>
             <PortalConsumer />
           </InitialRouteContext.Provider>
         )}

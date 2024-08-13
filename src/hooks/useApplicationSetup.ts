@@ -30,11 +30,9 @@ export function useApplicationSetup() {
       InteractionManager.runAfterInteractions(checkIdentifierOnLaunch);
     }
 
-    console.log(address ? Routes.SWIPE_LAYOUT : Routes.WELCOME_SCREEN);
-
     setInitialRoute(address ? Routes.SWIPE_LAYOUT : Routes.WELCOME_SCREEN);
     PerformanceContextMap.set('initialRoute', address ? Routes.SWIPE_LAYOUT : Routes.WELCOME_SCREEN);
-  }, [setInitialRoute]);
+  }, []);
 
   useEffect(() => {
     if (!IS_DEV && isTestFlight) {
