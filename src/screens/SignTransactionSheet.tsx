@@ -215,6 +215,133 @@ export const SignTransactionSheet = () => {
     };
   }, [wallets, addressToUse, walletNames]);
 
+<<<<<<< HEAD
+=======
+  useEffect(() => {
+    const initProvider = async () => {
+      let p;
+      // check on this o.O
+      if (currentChainId === ChainId.mainnet) {
+        p = await getFlashbotsProvider();
+      } else {
+        p = getProvider({ chainId: currentChainId });
+      }
+
+      setProvider(p);
+    };
+    initProvider();
+  }, [currentChainId, setProvider]);
+
+  useEffect(() => {
+    (async () => {
+      const asset = await ethereumUtils.getNativeAssetForNetwork({ chainId: currentChainId, address: accountInfo.address });
+      if (asset && provider) {
+        const balance = await getOnchainAssetBalance(asset, accountInfo.address, currentChainId, provider);
+        if (balance) {
+          const assetWithOnchainBalance: ParsedAddressAsset = { ...asset, balance };
+          setNativeAsset(assetWithOnchainBalance);
+        } else {
+          setNativeAsset(asset);
+        }
+      }
+    })();
+  }, [accountInfo.address, currentChainId, provider]);
+
+  useEffect(() => {
+    (async () => {
+      if (!isMessageRequest && !nonceForDisplay) {
+        try {
+          const nonce = await getNextNonce({ address: currentAddress, chainId: currentChainId });
+          if (nonce || nonce === 0) {
+            const nonceAsString = nonce.toString();
+            setNonceForDisplay(nonceAsString);
+          }
+        } catch (error) {
+          console.error('Failed to get nonce for display:', error);
+        }
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accountInfo.address, currentChainId, getNextNonce, isMessageRequest]);
+
+  useEffect(() => {
+    const timeout = setTimeout(async () => {
+      try {
+        let simulationData;
+        if (isMessageRequest) {
+          // Message Signing
+          simulationData = await metadataPOSTClient.simulateMessage({
+            address: accountAddress,
+            chainId: currentChainId,
+            message: {
+              method: transactionDetails?.payload?.method,
+              params: [request.message],
+            },
+            domain: transactionDetails?.dappUrl,
+          });
+          // Handle message simulation response
+          if (isNil(simulationData?.simulateMessage?.simulation) && isNil(simulationData?.simulateMessage?.error)) {
+            setSimulationData({ in: [], out: [], approvals: [] });
+            setSimulationScanResult(simulationData?.simulateMessage?.scanning?.result);
+          } else if (simulationData?.simulateMessage?.error && !simulationUnavailable) {
+            setSimulationError(simulationData?.simulateMessage?.error?.type);
+            setSimulationScanResult(simulationData?.simulateMessage?.scanning?.result);
+            setSimulationData(undefined);
+          } else if (simulationData.simulateMessage?.simulation && !simulationUnavailable) {
+            setSimulationData(simulationData.simulateMessage?.simulation);
+            setSimulationScanResult(simulationData?.simulateMessage?.scanning?.result);
+          }
+        } else {
+          // TX Signing
+          simulationData = await metadataPOSTClient.simulateTransactions({
+            chainId: currentChainId,
+            currency: nativeCurrency?.toLowerCase(),
+            transactions: [
+              {
+                from: req?.from,
+                to: req?.to,
+                data: req?.data,
+                value: req?.value || '0x0',
+              },
+            ],
+            domain: transactionDetails?.dappUrl,
+          });
+          // Handle TX simulation response
+          if (isNil(simulationData?.simulateTransactions?.[0]?.simulation) && isNil(simulationData?.simulateTransactions?.[0]?.error)) {
+            setSimulationData({ in: [], out: [], approvals: [] });
+            setSimulationScanResult(simulationData?.simulateTransactions?.[0]?.scanning?.result);
+          } else if (simulationData?.simulateTransactions?.[0]?.error) {
+            setSimulationError(simulationData?.simulateTransactions?.[0]?.error?.type);
+            setSimulationData(undefined);
+            setSimulationScanResult(simulationData?.simulateTransactions[0]?.scanning?.result);
+          } else if (simulationData.simulateTransactions?.[0]?.simulation) {
+            setSimulationData(simulationData.simulateTransactions[0]?.simulation);
+            setSimulationScanResult(simulationData?.simulateTransactions[0]?.scanning?.result);
+          }
+        }
+      } catch (error) {
+        logger.error(new RainbowError('[SignTransactionSheet]: Error while simulating'), { error });
+      } finally {
+        setIsLoading(false);
+      }
+    }, 750);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [
+    accountAddress,
+    currentChainId,
+    isMessageRequest,
+    isPersonalSign,
+    nativeCurrency,
+    req,
+    request.message,
+    simulationUnavailable,
+    transactionDetails,
+  ]);
+
+>>>>>>> 83a254d0e (getOnchainAssetBalance)
   const closeScreen = useCallback(
     (canceled: boolean) =>
       performanceTracking.getState().executeFn({
