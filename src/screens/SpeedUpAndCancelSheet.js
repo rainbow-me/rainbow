@@ -26,7 +26,7 @@ import { updateGasFeeForSpeed } from '@/redux/gas';
 import { ethUnits } from '@/references';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { ethereumUtils, gasUtils, safeAreaInsetValues } from '@/utils';
+import { gasUtils, safeAreaInsetValues } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { getNetworkObject } from '@/networks';
 import * as i18n from '@/languages';
@@ -291,7 +291,7 @@ export default function SpeedUpAndCancelSheet() {
   // Set the provider
   useEffect(() => {
     if (currentChainId) {
-      startPollingGasFees(ethereumUtils.getNetworkFromChainId({ chainId: currentChainId }), tx.flashbots);
+      startPollingGasFees(currentChainId, tx.flashbots);
       const updateProvider = async () => {
         let provider;
         if (getNetworkObject({ chainId: tx?.chainId })?.features?.flashbots && tx.flashbots) {
