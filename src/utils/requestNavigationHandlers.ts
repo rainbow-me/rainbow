@@ -58,51 +58,47 @@ export const handleMobileWalletProtocolRequest = async ({
     return Promise.reject(new Error('This wallet is read-only.'));
   }
 
-  const [action] = request.actions;
+  const handleAction = async (action: (typeof request.actions)[number]): Promise<boolean> => {
+    if (isHandshakeAction(action)) {
+      const chainIds = RainbowNetworks.filter(network => network.enabled && network.networkType !== 'testnet').map(network => network.id);
+      const receivedTimestamp = Date.now();
 
-  if (isHandshakeAction(action)) {
-    const chainIds = RainbowNetworks.filter(network => network.enabled && network.networkType !== 'testnet').map(network => network.id);
-    const receivedTimestamp = Date.now();
+      const dappMetadata = await fetchClientAppMetadata();
+      return new Promise((resolve, reject) => {
+        const routeParams: WalletconnectApprovalSheetRouteParams = {
+          receivedTimestamp,
+          meta: {
+            chainIds,
+            dappName: dappMetadata?.appName || dappMetadata?.appUrl || action.appName || action.appIconUrl || action.appId || '',
+            dappUrl: dappMetadata?.appUrl || action.appId || '',
+            imageUrl: maybeSignUri(dappMetadata?.iconUrl || action.appIconUrl),
+            isWalletConnectV2: false,
+            peerId: '',
+            dappScheme: action.callback,
+            proposedChainId: request.account?.networkId,
+            proposedAddress: request.account?.address || accountAddress,
+          },
+          source: RequestSource.MOBILE_WALLET_PROTOCOL,
+          timedOut: false,
+          callback: async approved => {
+            if (approved) {
+              const success = await approveHandshake(dappMetadata);
+              resolve(success);
+            } else {
+              await rejectHandshake('User rejected the handshake');
+              reject('User rejected the handshake');
+            }
+          },
+        };
 
-    const dappMetadata = await fetchClientAppMetadata();
-    return new Promise((resolve, reject) => {
-      const routeParams: WalletconnectApprovalSheetRouteParams = {
-        receivedTimestamp,
-        meta: {
-          chainIds,
-          dappName: dappMetadata?.appName || dappMetadata?.appUrl || action.appName || action.appIconUrl || action.appId || '',
-          dappUrl: dappMetadata?.appUrl || action.appId || '',
-          imageUrl: maybeSignUri(dappMetadata?.iconUrl || action.appIconUrl),
-          isWalletConnectV2: false,
-          peerId: '',
-          dappScheme: action.callback,
-          proposedChainId: request.account?.networkId,
-          proposedAddress: request.account?.address || accountAddress,
-        },
-        source: RequestSource.MOBILE_WALLET_PROTOCOL,
-        timedOut: false,
-        callback: async approved => {
-          console.log({ approved });
-          if (approved) {
-            const success = await approveHandshake(dappMetadata);
-            resolve(success);
-          } else {
-            await rejectHandshake('User rejected the handshake');
-            reject('User rejected the handshake');
-          }
-        },
-      };
-
-      Navigation.handleAction(
-        Routes.WALLET_CONNECT_APPROVAL_SHEET,
-        routeParams,
-        getActiveRoute()?.name === Routes.WALLET_CONNECT_APPROVAL_SHEET
-      );
-    });
-  } else if (isEthereumAction(action)) {
-    try {
+        Navigation.handleAction(
+          Routes.WALLET_CONNECT_APPROVAL_SHEET,
+          routeParams,
+          getActiveRoute()?.name === Routes.WALLET_CONNECT_APPROVAL_SHEET
+        );
+      });
+    } else if (isEthereumAction(action)) {
       const nativeCurrency = store.getState().settings.nativeCurrency;
-      // TODO: Do we want to fallback to mainnet here?
       const network = ethereumUtils.getNetworkFromChainId(request.account?.networkId ?? ChainId.mainnet);
 
       const requestWithDetails: RequestData = {
@@ -111,7 +107,6 @@ export const handleMobileWalletProtocolRequest = async ({
         imageUrl: '', // TODO: get dapp image url from session?
         address: accountAddress,
         network,
-        // TODO: verify that action passes correct data for payload since it's `any` type
         payload: {
           ...action,
           params: Object.values(action.params),
@@ -129,7 +124,7 @@ export const handleMobileWalletProtocolRequest = async ({
           if (error) {
             await rejectAction(action, {
               message: error.message,
-              code: 4001, // TODO: What is the proper error code for this?
+              code: 4001,
             });
             reject(error.message);
           } else {
@@ -147,17 +142,33 @@ export const handleMobileWalletProtocolRequest = async ({
           onCancel,
           onCloseScreen: noop,
           network,
-          address: request.sender,
+          address: accountAddress,
           source: RequestSource.MOBILE_WALLET_PROTOCOL,
         });
       });
-    } catch (error) {
-      console.log(error);
+    } else {
+      logger.error(new RainbowError(`[handleMobileWalletProtocolRequest]: Unsupported action type, ${action}`));
+      return false;
     }
-  }
+  };
 
-  logger.error(new RainbowError(`[handleMobileWalletProtocolRequest]: Unsupported action type, ${action}`));
-  throw new Error('Unsupported action type');
+  const handleActions = async (actions: typeof request.actions, currentIndex: number = 0): Promise<boolean> => {
+    if (currentIndex >= actions.length) {
+      console.log('resolving after all actions have completed');
+      return true;
+    }
+
+    const success = await handleAction(actions[currentIndex]);
+    if (success) {
+      return handleActions(actions, currentIndex + 1);
+    } else {
+      // stop processing if an action fails
+      return false;
+    }
+  };
+
+  // start processing actions starting at index 0
+  return handleActions(request.actions);
 };
 
 // Dapp Browser
