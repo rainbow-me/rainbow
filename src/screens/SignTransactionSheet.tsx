@@ -370,12 +370,7 @@ export const SignTransactionSheet = () => {
     (async () => {
       const asset = await ethereumUtils.getNativeAssetForNetwork({ chainId: currentChainId, address: accountInfo.address });
       if (asset && provider) {
-        const balance = await getOnchainAssetBalance(
-          asset,
-          accountInfo.address,
-          ethereumUtils.getNetworkFromChainId(currentChainId),
-          provider
-        );
+        const balance = await getOnchainAssetBalance(asset, accountInfo.address, currentChainId, provider);
         if (balance) {
           const assetWithOnchainBalance: ParsedAddressAsset = { ...asset, balance };
           setNativeAsset(assetWithOnchainBalance);
