@@ -1,7 +1,8 @@
 {
-  "goerli": [
+  "5": [
     {
       "asset": {
+		"chainId": 5,
         "asset_code": "eth",
         "mainnet_address": "eth",
         "colors": {
@@ -29,9 +30,10 @@
       "quantity": "0"
     }
   ],
-  "mainnet": [
+  "1": [
     {
       "asset": {
+		"chainId": 1,
         "asset_code": "eth",
         "colors": {
           "fallback": "#E8EAF5",
