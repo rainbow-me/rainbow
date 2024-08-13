@@ -22,7 +22,13 @@ import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import walletTypes from '@/helpers/walletTypes';
 import watchingAlert from './watchingAlert';
-import { isEthereumAction, isHandshakeAction, RequestMessage, useMobileWalletProtocolHost } from '@coinbase/mobile-wallet-protocol-host';
+import {
+  isEthereumAction,
+  isHandshakeAction,
+  PersonalSignAction,
+  RequestMessage,
+  useMobileWalletProtocolHost,
+} from '@coinbase/mobile-wallet-protocol-host';
 import { ChainId } from '@/__swaps__/types/chains';
 import { logger, RainbowError } from '@/logger';
 import { noop } from 'lodash';
@@ -49,17 +55,25 @@ export const handleMobileWalletProtocolRequest = async ({
   rejectAction,
   session,
 }: HandleMobileWalletProtocolRequestProps): Promise<boolean> => {
+  logger.debug(`Handling Mobile Wallet Protocol request: ${request.uuid}`);
+
   const { selected } = store.getState().wallets;
   const { accountAddress } = store.getState().settings;
 
   const isReadOnlyWallet = selected?.type === walletTypes.readOnly;
   if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
+    logger.debug('Rejecting request due to read-only wallet');
     watchingAlert();
     return Promise.reject(new Error('This wallet is read-only.'));
   }
 
-  const handleAction = async (action: (typeof request.actions)[number]): Promise<boolean> => {
+  const handleAction = async (currentIndex: number): Promise<boolean> => {
+    const action = request.actions[currentIndex];
+    logger.debug(`Handling action: ${action.kind}`);
+
     if (isHandshakeAction(action)) {
+      logger.debug(`Processing handshake action for ${action.appId}`);
+
       const chainIds = RainbowNetworks.filter(network => network.enabled && network.networkType !== 'testnet').map(network => network.id);
       const receivedTimestamp = Date.now();
 
@@ -82,9 +96,21 @@ export const handleMobileWalletProtocolRequest = async ({
           timedOut: false,
           callback: async approved => {
             if (approved) {
+              logger.debug(`Handshake approved for ${action.appId}`);
               const success = await approveHandshake(dappMetadata);
+              const nextAction = request.actions[currentIndex + 1];
+              // NOTE: The connection prompt should automatically approve eth_requestAccounts actions
+              if (nextAction && isEthereumAction(nextAction) && nextAction.method === 'eth_requestAccounts') {
+                logger.debug('Approving eth_requestAccounts');
+                await approveAction(nextAction, {
+                  value: JSON.stringify({
+                    account: accountAddress,
+                  }),
+                });
+              }
               resolve(success);
             } else {
+              logger.debug(`Handshake rejected for ${action.appId}`);
               await rejectHandshake('User rejected the handshake');
               reject('User rejected the handshake');
             }
@@ -98,54 +124,67 @@ export const handleMobileWalletProtocolRequest = async ({
         );
       });
     } else if (isEthereumAction(action)) {
-      const nativeCurrency = store.getState().settings.nativeCurrency;
-      const network = ethereumUtils.getNetworkFromChainId(request.account?.networkId ?? ChainId.mainnet);
+      try {
+        logger.debug(`Processing ethereum action: ${action.method}`);
+        const nativeCurrency = store.getState().settings.nativeCurrency;
+        const network = ethereumUtils.getNetworkFromChainId(request.account?.networkId ?? ChainId.mainnet);
 
-      const requestWithDetails: RequestData = {
-        dappName: '', // TODO: get dapp name from session?
-        dappUrl: '', // TODO: get dapp url from session?
-        imageUrl: '', // TODO: get dapp image url from session?
-        address: accountAddress,
-        network,
-        payload: {
-          ...action,
-          params: Object.values(action.params),
-        },
-        displayDetails: getRequestDisplayDetails(action, nativeCurrency, network),
-      };
+        console.log(JSON.stringify(action, null, 2));
 
-      return new Promise((resolve, reject) => {
-        const onSuccess = async (result: string) => {
-          const success = await approveAction(action, { value: result });
-          resolve(success);
+        const payload = {
+          method: action.method,
+          params: [Object.values(action.params)],
         };
 
-        const onCancel = async (error?: Error) => {
-          if (error) {
-            await rejectAction(action, {
-              message: error.message,
-              code: 4001,
-            });
-            reject(error.message);
-          } else {
-            await rejectAction(action, {
-              message: 'User rejected request',
-              code: 4001,
-            });
-            reject('User rejected request');
-          }
-        };
-
-        Navigation.handleAction(Routes.CONFIRM_REQUEST, {
-          transactionDetails: requestWithDetails,
-          onSuccess,
-          onCancel,
-          onCloseScreen: noop,
+        const requestWithDetails: RequestData = {
+          dappName: session?.dappName ?? session?.dappId ?? '',
+          dappUrl: session?.dappURL ?? '',
+          imageUrl: session?.dappImageURL ?? '',
+          address: (action as PersonalSignAction).params.address ?? accountAddress,
           network,
-          address: accountAddress,
-          source: RequestSource.MOBILE_WALLET_PROTOCOL,
+          payload,
+          displayDetails: getRequestDisplayDetails(payload, nativeCurrency, network),
+        };
+
+        return new Promise((resolve, reject) => {
+          const onSuccess = async (result: string) => {
+            logger.debug(`Ethereum action approved: [${action.method}]: ${result}`);
+
+            const success = await approveAction(action, { value: result });
+            resolve(success);
+          };
+
+          const onCancel = async (error?: Error) => {
+            if (error) {
+              logger.debug(`Ethereum action rejected: [${action.method}]: ${error.message}`);
+              await rejectAction(action, {
+                message: error.message,
+                code: 4001,
+              });
+              reject(error.message);
+            } else {
+              logger.debug(`Ethereum action rejected: [${action.method}]: User rejected request`);
+              await rejectAction(action, {
+                message: 'User rejected request',
+                code: 4001,
+              });
+              reject('User rejected request');
+            }
+          };
+
+          Navigation.handleAction(Routes.CONFIRM_REQUEST, {
+            transactionDetails: requestWithDetails,
+            onSuccess,
+            onCancel,
+            onCloseScreen: noop,
+            network,
+            address: accountAddress,
+            source: RequestSource.MOBILE_WALLET_PROTOCOL,
+          });
         });
-      });
+      } catch (error) {
+        console.log(error);
+      }
     } else {
       logger.error(new RainbowError(`[handleMobileWalletProtocolRequest]: Unsupported action type, ${action}`));
       return false;
@@ -154,11 +193,12 @@ export const handleMobileWalletProtocolRequest = async ({
 
   const handleActions = async (actions: typeof request.actions, currentIndex: number = 0): Promise<boolean> => {
     if (currentIndex >= actions.length) {
-      console.log('resolving after all actions have completed');
+      logger.debug(`All actions completed successfully: ${actions.length}`);
       return true;
     }
 
-    const success = await handleAction(actions[currentIndex]);
+    logger.debug(`Processing action ${currentIndex + 1} of ${actions.length}`);
+    const success = await handleAction(currentIndex);
     if (success) {
       return handleActions(actions, currentIndex + 1);
     } else {

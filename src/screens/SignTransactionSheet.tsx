@@ -559,8 +559,6 @@ export const SignTransactionSheet = () => {
 
   const canPressConfirm = isMessageRequest || (!!walletBalance?.isLoaded && !!currentNetwork && !!selectedGasFee?.gasFee?.estimatedFee);
 
-  console.log(walletBalance.isLoaded, currentNetwork, selectedGasFee?.gasFee?.estimatedFee);
-
   return (
     <PanGestureHandler enabled={IS_IOS}>
       <Animated.View>
