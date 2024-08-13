@@ -596,7 +596,6 @@ export const explainers = (params, theme) => {
             size={40}
             icon={params?.inputCurrency?.icon_url}
             symbol={params?.inputCurrency?.symbol}
-            network={params?.inputCurrency?.network}
             chainId={ethereumUtils.getChainIdFromNetwork(params?.inputCurrency?.network)}
             colors={params?.inputCurrency?.colors}
             theme={theme}

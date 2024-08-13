@@ -354,7 +354,7 @@ export function useSwapInputsController({
     try {
       const tokenData = await fetchExternalToken({
         address,
-        chainId: asset.chainId,
+        chainId,
         currency,
       });
 
