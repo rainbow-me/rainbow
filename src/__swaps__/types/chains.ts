@@ -1,3 +1,4 @@
+import { Network } from '@/networks/types';
 import * as chain from 'viem/chains';
 import type { Chain } from 'viem/chains';
 
@@ -103,6 +104,21 @@ export enum ChainId {
   zora = chain.zora.id,
   zoraSepolia = chain.zoraSepolia.id,
 }
+
+export const networkToIdMapping: { [key in Network]: ChainId } = {
+  [Network.arbitrum]: ChainId.arbitrum,
+  [Network.goerli]: ChainId.goerli,
+  [Network.mainnet]: ChainId.mainnet,
+  [Network.optimism]: ChainId.optimism,
+  [Network.polygon]: ChainId.polygon,
+  [Network.base]: ChainId.base,
+  [Network.bsc]: ChainId.bsc,
+  [Network.zora]: ChainId.zora,
+  [Network.gnosis]: ChainId.gnosis,
+  [Network.avalanche]: ChainId.avalanche,
+  [Network.blast]: ChainId.blast,
+  [Network.degen]: ChainId.degen,
+};
 
 export const chainNameToIdMapping: {
   [key in ChainName | 'ethereum' | 'ethereum-sepolia']: ChainId;

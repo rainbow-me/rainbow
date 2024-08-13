@@ -1,7 +1,8 @@
 import create from 'zustand';
 import { createStore } from '../internal/createStore';
 import { Network } from '@/networks/types';
-import { getProviderForNetwork } from '@/handlers/web3';
+import { getProvider } from '@/handlers/web3';
+import { ChainId, networkToIdMapping } from '@/__swaps__/types/chains';
 
 type NonceData = {
   currentNonce?: number;
@@ -10,41 +11,49 @@ type NonceData = {
 
 type GetNonceArgs = {
   address: string;
-  network: Network;
+  chainId: ChainId;
 };
 
 type UpdateNonceArgs = NonceData & GetNonceArgs;
 
-export async function getNextNonce({ address, network }: { address: string; network: Network }) {
+export async function getNextNonce({ address, chainId }: { address: string; chainId: ChainId }) {
   const { getNonce } = nonceStore.getState();
-  const localNonceData = getNonce({ address, network });
+  const localNonceData = getNonce({ address, chainId });
   const localNonce = localNonceData?.currentNonce || 0;
-  const provider = getProviderForNetwork(network);
+  const provider = getProvider({ chainId });
   const txCountIncludingPending = await provider.getTransactionCount(address, 'pending');
   if (!localNonce && !txCountIncludingPending) return 0;
   const ret = Math.max(localNonce + 1, txCountIncludingPending);
   return ret;
 }
 
-export interface CurrentNonceState {
-  nonces: Record<string, Record<Network, NonceData>>;
-  setNonce: ({ address, currentNonce, latestConfirmedNonce, network }: UpdateNonceArgs) => void;
-  getNonce: ({ address, network }: GetNonceArgs) => NonceData | null;
+type NoncesV0 = {
+  [network in Network]: NonceData;
+};
+
+type Nonces = {
+  [chainId in ChainId]: NonceData;
+};
+
+export interface CurrentNonceState<T extends Nonces | NoncesV0> {
+  nonces: Record<string, T>;
+  setNonce: ({ address, currentNonce, latestConfirmedNonce, chainId }: UpdateNonceArgs) => void;
+  getNonce: ({ address, chainId }: GetNonceArgs) => NonceData | null;
   clearNonces: () => void;
 }
 
-export const nonceStore = createStore<CurrentNonceState>(
+export const nonceStore = createStore<CurrentNonceState<Nonces>>(
   (set, get) => ({
     nonces: {},
-    setNonce: ({ address, currentNonce, latestConfirmedNonce, network }) => {
+    setNonce: ({ address, currentNonce, latestConfirmedNonce, chainId }) => {
       const { nonces: oldNonces } = get();
-      const addressAndChainIdNonces = oldNonces?.[address]?.[network] || {};
+      const addressAndChainIdNonces = oldNonces?.[address]?.[chainId] || {};
       set({
         nonces: {
           ...oldNonces,
           [address]: {
             ...oldNonces[address],
-            [network]: {
+            [chainId]: {
               currentNonce: currentNonce ?? addressAndChainIdNonces?.currentNonce,
               latestConfirmedNonce: latestConfirmedNonce ?? addressAndChainIdNonces?.latestConfirmedNonce,
             },
@@ -52,9 +61,9 @@ export const nonceStore = createStore<CurrentNonceState>(
         },
       });
     },
-    getNonce: ({ address, network }) => {
+    getNonce: ({ address, chainId }) => {
       const { nonces } = get();
-      return nonces[address]?.[network] ?? null;
+      return nonces[address]?.[chainId] ?? null;
     },
     clearNonces: () => {
       set({ nonces: {} });
@@ -63,7 +72,26 @@ export const nonceStore = createStore<CurrentNonceState>(
   {
     persist: {
       name: 'nonces',
-      version: 0,
+      version: 1,
+      migrate: (persistedState: unknown, version: number) => {
+        if (version === 0) {
+          const oldState = persistedState as CurrentNonceState<NoncesV0>;
+          const newNonces: CurrentNonceState<Nonces>['nonces'] = {};
+          for (const [address, networkNonces] of Object.entries(oldState.nonces)) {
+            for (const [network, nonceData] of Object.entries(networkNonces)) {
+              if (!newNonces[address]) {
+                newNonces[address] = {} as Record<ChainId, NonceData>;
+              }
+              newNonces[address][networkToIdMapping[network as Network]] = nonceData;
+            }
+          }
+          return {
+            ...oldState,
+            nonces: newNonces,
+          };
+        }
+        return persistedState as CurrentNonceState<Nonces>;
+      },
     },
   }
 );

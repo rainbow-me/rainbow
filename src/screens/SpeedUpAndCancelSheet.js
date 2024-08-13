@@ -174,7 +174,7 @@ export default function SpeedUpAndCancelSheet() {
       updateTransaction({
         address: accountAddress,
         transaction: updatedTx,
-        network: ethereumUtils.getNetworkFromChainId({ chainId: currentChainId }),
+        chainId: currentChainId,
       });
     } catch (e) {
       logger.error(new RainbowError(`[SpeedUpAndCancelSheet]: error submitting cancel tx: ${e}`));
@@ -248,7 +248,7 @@ export default function SpeedUpAndCancelSheet() {
       updateTransaction({
         address: accountAddress,
         transaction: updatedTx,
-        network: ethereumUtils.getNetworkFromChainId({ chainId: currentChainId }),
+        chainId: currentChainId,
       });
     } catch (e) {
       logger.error(new RainbowError(`[SpeedUpAndCancelSheet]: error submitting speed up tx: ${e}`));
