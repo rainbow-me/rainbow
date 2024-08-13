@@ -6,10 +6,8 @@ import { ChainId, ChainNameDisplay } from '@/__swaps__/types/chains';
 import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
 import {
-  convertAmountToBalanceDisplay,
   convertRawAmountToBalance,
   convertRawAmountToBalanceWorklet,
-  convertRawAmountToNativeDisplay,
   handleSignificantDecimals,
   multiply,
 } from '@/__swaps__/utils/numbers';
