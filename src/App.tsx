@@ -5,7 +5,6 @@ import { AppRegistry, Dimensions, LogBox, StyleSheet, View } from 'react-native'
 import { MobileWalletProtocolProvider } from '@coinbase/mobile-wallet-protocol-host';
 import { DeeplinkHandler } from '@/components/DeeplinkHandler';
 import { AppStateChangeHandler } from '@/components/AppStateChangeHandler';
-import { useRunBackupStatusChecks } from '@/hooks/useRunBackupStatusChecks';
 import { useApplicationSetup } from '@/hooks/useApplicationSetup';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -64,7 +63,6 @@ interface AppProps {
 function App({ walletReady }: AppProps) {
   const [initialRoute, setInitialRoute] = useState<InitialRoute>(null);
 
-  useRunBackupStatusChecks({ walletReady });
   useApplicationSetup({ setInitialRoute });
 
   const handleNavigatorRef = useCallback((ref: NavigationContainerRef<RootStackParamList>) => {
