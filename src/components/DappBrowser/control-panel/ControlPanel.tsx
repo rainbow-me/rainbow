@@ -145,6 +145,8 @@ export const ControlPanel = () => {
       wallet.addresses
         .filter(account => account.visible)
         .forEach(account => {
+          const balanceText = account.balances ? account.balances.totalBalanceDisplay : i18n.t(i18n.l.wallet.change_wallet.loading_balance);
+
           const item: ControlPanelMenuItemProps = {
             IconComponent: account.image ? (
               <ListAvatar url={account.image} />
@@ -152,10 +154,7 @@ export const ControlPanel = () => {
               <ListEmojiAvatar address={account.address} color={account.color} label={account.label} />
             ),
             label: removeFirstEmojiFromString(account.label) || address(account.address, 6, 4),
-            secondaryLabel:
-              wallet.type === WalletTypes.readOnly
-                ? i18n.t(i18n.l.wallet.change_wallet.watching)
-                : account.balances?.totalBalanceDisplay ?? i18n.t(i18n.l.wallet.change_wallet.no_balance),
+            secondaryLabel: wallet.type === WalletTypes.readOnly ? i18n.t(i18n.l.wallet.change_wallet.watching) : balanceText,
             uniqueId: account.address,
             color: colors.avatarBackgrounds[account.color],
             imageUrl: account.image || undefined,

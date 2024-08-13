@@ -126,7 +126,7 @@ export default function AddressRow({ contextMenuActions, data, editMode, onPress
 
   const labelQuaternary = useForegroundColor('labelQuaternary');
 
-  const balanceOrNoBalance = balances?.totalBalanceDisplay || lang.t('wallet.change_wallet.no_balance');
+  const balanceText = balances ? balances.totalBalanceDisplay : lang.t('wallet.change_wallet.loading_balance');
 
   const cleanedUpLabel = useMemo(() => removeFirstEmojiFromString(label), [label]);
 
@@ -244,7 +244,7 @@ export default function AddressRow({ contextMenuActions, data, editMode, onPress
               <StyledTruncatedText color={colors.dark} testID={`change-wallet-address-row-label-${walletName}`}>
                 {walletName}
               </StyledTruncatedText>
-              <StyledBottomRowText color={labelQuaternary}>{balanceOrNoBalance}</StyledBottomRowText>
+              <StyledBottomRowText color={labelQuaternary}>{balanceText}</StyledBottomRowText>
             </ColumnWithMargins>
           </Row>
           <Column style={sx.rightContent}>
