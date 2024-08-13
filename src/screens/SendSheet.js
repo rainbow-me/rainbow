@@ -266,7 +266,7 @@ export default function SendSheet(props) {
     // belongs to
     if (prevChainId !== currentChainId) {
       InteractionManager.runAfterInteractions(() => {
-        startPollingGasFees(ethereumUtils.getNetworkFromChainId(currentChainId));
+        startPollingGasFees(currentChainId);
       });
     }
   }, [startPollingGasFees, selected.chainId, prevChainId, currentChainId]);
