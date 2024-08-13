@@ -551,7 +551,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
                     {asset.network !== Network.mainnet ? (
                       // @ts-expect-error JavaScript component
                       <L2Disclaimer
-                        network={asset.network}
+                        chainId={asset.chainId}
                         colors={colors}
                         hideDivider
                         isNft

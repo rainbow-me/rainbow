@@ -10,11 +10,10 @@ import { darkModeThemeColors } from '@/styles/colors';
 import * as lang from '@/languages';
 import { isL2Chain } from '@/handlers/web3';
 import { EthCoinIcon } from './coin-icon/EthCoinIcon';
-import { ethereumUtils } from '@/utils';
 import { chainIdToNameMapping } from '@/__swaps__/types/chains';
 
 const L2Disclaimer = ({
-  network,
+  chainId,
   colors,
   hideDivider,
   isNft = false,
@@ -37,7 +36,6 @@ const L2Disclaimer = ({
     },
   };
 
-  const chainId = ethereumUtils.getChainIdFromNetwork(network);
   const isL2 = isL2Chain({ chainId });
 
   return (

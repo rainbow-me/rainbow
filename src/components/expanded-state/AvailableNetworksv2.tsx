@@ -84,8 +84,7 @@ const AvailableNetworksv2 = ({
       goBack();
 
       if (swapsV2Enabled || swaps_v2) {
-        const chainId = ethereumUtils.getChainIdFromNetwork(newAsset.network);
-        const uniqueId = `${newAsset.address}_${chainId}`;
+        const uniqueId = `${newAsset.address}_${asset.chainId}`;
         const userAsset = userAssetsStore.getState().userAssets.get(uniqueId);
 
         const parsedAsset = parseSearchAsset({
@@ -94,16 +93,16 @@ const AvailableNetworksv2 = ({
             uniqueId,
             address: newAsset.address as AddressOrEth,
             type: newAsset.type as AssetType,
-            chainId,
-            chainName: chainNameFromChainId(chainId),
+            chainId: asset.chainId,
+            chainName: chainNameFromChainId(asset.chainId),
             isNativeAsset: false,
             native: {},
           },
           searchAsset: {
             ...newAsset,
             uniqueId,
-            chainId,
-            chainName: chainNameFromChainId(chainId),
+            chainId: asset.chainId,
+            chainName: chainNameFromChainId(asset.chainId),
             address: newAsset.address as AddressOrEth,
             highLiquidity: newAsset.highLiquidity ?? false,
             isRainbowCurated: newAsset.isRainbowCurated ?? false,
@@ -118,7 +117,7 @@ const AvailableNetworksv2 = ({
         const largestBalanceSameChainUserAsset = userAssetsStore
           .getState()
           .getUserAssets()
-          .find(userAsset => userAsset.chainId === chainId && userAsset.address !== newAsset.address);
+          .find(userAsset => userAsset.chainId === asset.chainId && userAsset.address !== newAsset.address);
         if (largestBalanceSameChainUserAsset) {
           swapsStore.setState({ inputAsset: largestBalanceSameChainUserAsset });
         } else {

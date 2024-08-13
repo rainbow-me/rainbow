@@ -33,11 +33,12 @@ import { ethereumUtils, safeAreaInsetValues } from '@/utils';
 import AvailableNetworksv2 from '@/components/expanded-state/AvailableNetworksv2';
 import AvailableNetworksv1 from '@/components/expanded-state/AvailableNetworks';
 import { Box } from '@/design-system';
-import { getNetworkObj } from '@/networks';
+import { getNetworkObj, getNetworkObject } from '@/networks';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { greaterThanOrEqualTo } from '@/helpers/utilities';
 import { Network } from '@/networks/types';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const defaultCarouselHeight = 60;
 const baseHeight = 386 + (android && 20 - getSoftMenuBarHeight()) - defaultCarouselHeight;
@@ -163,9 +164,10 @@ export default function ChartExpandedState({ asset }) {
       : genericAsset
         ? {
             ...genericAsset,
+            chainId: asset.chainId,
             network: asset.network,
             address: asset.address,
-            mainnetAddress: asset?.networks?.[getNetworkObj(Network.mainnet)]?.address,
+            mainnetAddress: asset?.networks?.[getNetworkObject({ chainId: ChainId.mainnet })]?.address,
           }
         : asset;
   }, [asset, genericAsset, hasBalance]);
@@ -236,10 +238,10 @@ export default function ChartExpandedState({ asset }) {
   const crosschainEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
   const AvailableNetworks = !crosschainEnabled ? AvailableNetworksv1 : AvailableNetworksv2;
 
-  const assetNetwork = assetWithPrice.network;
+  const assetChainId = assetWithPrice.chainId;
 
   const { swagg_enabled, f2c_enabled } = useRemoteConfig();
-  const swapEnabled = swagg_enabled && getNetworkObj(assetNetwork).features.swaps;
+  const swapEnabled = swagg_enabled && getNetworkObject({ chainId: assetChainId }).features.swaps;
   const addCashEnabled = f2c_enabled;
 
   const format = useCallback(
@@ -313,7 +315,7 @@ export default function ChartExpandedState({ asset }) {
         </SheetActionButtonRow>
       ) : null}
       {!data?.networks && isL2 && (
-        <L2Disclaimer network={assetWithPrice.network} colors={colors} onPress={handleL2DisclaimerPress} symbol={assetWithPrice.symbol} />
+        <L2Disclaimer chainId={assetChainId} colors={colors} onPress={handleL2DisclaimerPress} symbol={assetWithPrice.symbol} />
       )}
       {data?.networks && !hasBalance && (
         <Box paddingBottom={{ custom: 27 }}>

@@ -592,7 +592,7 @@ export const SendConfirmationSheet = () => {
                   <Fragment>
                     {/* @ts-expect-error JavaScript component */}
                     <L2Disclaimer
-                      network={asset.network}
+                      chainId={asset.chainId}
                       colors={theme.colors}
                       hideDivider
                       marginBottom={0}
