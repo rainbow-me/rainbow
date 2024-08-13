@@ -123,7 +123,7 @@ export const SignTransactionSheet = () => {
   const req = transactionDetails?.payload?.params?.[0];
   const request = useMemo(() => {
     return isMessageRequest
-      ? { message: transactionDetails?.displayDetails?.request }
+      ? { message: transactionDetails?.displayDetails?.request || '' }
       : {
           ...transactionDetails?.displayDetails?.request,
           nativeAsset: nativeAsset,
@@ -177,16 +177,21 @@ export const SignTransactionSheet = () => {
     data: simulationResult,
     isLoading: txSimulationLoading,
     error: txSimulationApiError,
-  } = useSimulation({
-    accountAddress,
-    currentNetwork,
-    isMessageRequest,
-    nativeCurrency,
-    req,
-    requestMessage: request.message,
-    simulationUnavailable: isPersonalSignRequest,
-    transactionDetails,
-  });
+  } = useSimulation(
+    {
+      accountAddress,
+      currentNetwork,
+      isMessageRequest,
+      nativeCurrency,
+      req,
+      requestMessage: request.message,
+      simulationUnavailable: isPersonalSignRequest,
+      transactionDetails,
+    },
+    {
+      enabled: !isPersonalSignRequest,
+    }
+  );
 
   const itemCount =
     (simulationResult?.simulationData?.in?.length || 0) +
@@ -554,6 +559,8 @@ export const SignTransactionSheet = () => {
 
   const canPressConfirm = isMessageRequest || (!!walletBalance?.isLoaded && !!currentNetwork && !!selectedGasFee?.gasFee?.estimatedFee);
 
+  console.log(walletBalance.isLoaded, currentNetwork, selectedGasFee?.gasFee?.estimatedFee);
+
   return (
     <PanGestureHandler enabled={IS_IOS}>
       <Animated.View>
@@ -640,7 +647,7 @@ export const SignTransactionSheet = () => {
                   {isMessageRequest ? (
                     <TransactionMessageCard
                       expandedCardBottomInset={expandedCardBottomInset}
-                      message={request.message}
+                      message={request.message || ''}
                       method={transactionDetails?.payload?.method}
                     />
                   ) : (

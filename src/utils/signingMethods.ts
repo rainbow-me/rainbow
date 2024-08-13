@@ -4,9 +4,10 @@ export const SIGN = 'eth_sign';
 export const SIGN_TRANSACTION = 'eth_signTransaction';
 export const SIGN_TYPED_DATA = 'eth_signTypedData';
 export const SIGN_TYPED_DATA_V4 = 'eth_signTypedData_v4';
+export const ETH_ACCOUNT_TYPE = 'eth_requestAccounts';
 
 const displayTypes = {
-  message: [SIGN, PERSONAL_SIGN, SIGN_TYPED_DATA, SIGN_TYPED_DATA_V4],
+  message: [SIGN, PERSONAL_SIGN, SIGN_TYPED_DATA, SIGN_TYPED_DATA_V4, ETH_ACCOUNT_TYPE],
   transaction: [SEND_TRANSACTION, SIGN_TRANSACTION],
 };
 
