@@ -25,6 +25,7 @@ import { prefetchENSAddress } from '@/resources/ens/ensAddressQuery';
 import { MimeType, handleNFTImages } from '@/utils/handleNFTImages';
 import store from '@/redux/store';
 import { logger, RainbowError } from '@/logger';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const DUMMY_RECORDS = {
   description: 'description',
@@ -51,6 +52,7 @@ const buildEnsToken = ({
   });
   return {
     acquisition_date: undefined,
+    chainId: ChainId.mainnet,
     animation_url: null,
     asset_contract: {
       address: contractAddress,

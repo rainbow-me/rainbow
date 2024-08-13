@@ -193,8 +193,8 @@ export const isHardHat = (providerUrl: string): boolean => {
  * @param network The network to check.
  * @return Whether or not the network is a testnet.
  */
-export const isTestnetNetwork = (network: Network): boolean => {
-  return getNetworkObj(network as Network).networkType === 'testnet';
+export const isTestnetChain = ({ chainId }: { chainId: ChainId }): boolean => {
+  return getNetworkObject({ chainId }).networkType === 'testnet';
 };
 
 // shoudl figure out better way to include this in networks

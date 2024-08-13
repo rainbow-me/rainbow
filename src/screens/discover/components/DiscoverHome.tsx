@@ -1,13 +1,6 @@
 import React, { useCallback } from 'react';
-import useExperimentalFlag, {
-  OP_REWARDS,
-  PROFILES,
-  HARDWARE_WALLETS,
-  MINTS,
-  NFT_OFFERS,
-  FEATURED_RESULTS,
-} from '@rainbow-me/config/experimentalHooks';
-import { isTestnetNetwork } from '@/handlers/web3';
+import useExperimentalFlag, { OP_REWARDS, PROFILES, HARDWARE_WALLETS, MINTS, NFT_OFFERS, FEATURED_RESULTS } from '@rainbow-me/config/experimentalHooks';
+import { isTestnetChain } from '@/handlers/web3';
 import { Inline, Inset, Stack, Box } from '@/design-system';
 import { useAccountSettings, useWallets } from '@/hooks';
 import { ENSCreateProfileCard } from '@/components/cards/ENSCreateProfileCard';
@@ -33,7 +26,7 @@ export const HORIZONTAL_PADDING = 20;
 
 export default function DiscoverHome() {
   const { profiles_enabled, mints_enabled, op_rewards_enabled, featured_results } = useRemoteConfig();
-  const { network } = useAccountSettings();
+  const { chainId } = useAccountSettings();
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
   const profilesEnabledRemoteFlag = profiles_enabled;
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
@@ -42,8 +35,8 @@ export default function DiscoverHome() {
   const mintsEnabled = (useExperimentalFlag(MINTS) || mints_enabled) && !IS_TEST;
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
   const opRewardsRemoteFlag = op_rewards_enabled;
-  const testNetwork = isTestnetNetwork(network);
-  const { navigate } = useNavigation();
+const testNetwork = isTestnetChain({ chainId });
+const { navigate } = useNavigation();
   const isProfilesEnabled = profilesEnabledLocalFlag && profilesEnabledRemoteFlag;
 
   const { wallets } = useWallets();

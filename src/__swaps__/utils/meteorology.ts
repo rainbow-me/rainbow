@@ -6,7 +6,6 @@ import { abs, lessThan, subtract } from '@/helpers/utilities';
 import { gweiToWei } from '@/parsers';
 import { QueryConfig, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { useCallback } from 'react';
 import { MIN_FLASHBOTS_PRIORITY_FEE } from '../screens/Swap/constants';
 import { GasSettings } from '../screens/Swap/hooks/useCustomGas';
@@ -72,8 +71,7 @@ type MeteorologyQueryKey = ReturnType<typeof meteorologyQueryKey>;
 // Query Function
 
 async function meteorologyQueryFunction({ queryKey: [{ chainId }] }: QueryFunctionArgs<typeof meteorologyQueryKey>) {
-  const network = getNetworkFromChainId(chainId);
-  const parsedResponse = await rainbowMeteorologyGetData(network);
+  const parsedResponse = await rainbowMeteorologyGetData(chainId);
   const meteorologyData = parsedResponse.data as MeteorologyResponse | MeteorologyLegacyResponse;
   return meteorologyData;
 }

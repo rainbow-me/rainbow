@@ -15,7 +15,7 @@ import { Chart } from '../../value-chart';
 import ExpandedStateSection from '../ExpandedStateSection';
 import SocialLinks from './SocialLinks';
 import { ChartPathProvider } from '@/react-native-animated-charts/src';
-import { isL2Chain, isTestnetNetwork } from '@/handlers/web3';
+import { isL2Chain, isTestnetChain } from '@/handlers/web3';
 import AssetInputTypes from '@/helpers/assetInputTypes';
 import {
   useAccountSettings,
@@ -140,7 +140,7 @@ function Description({ text = '' }) {
 }
 
 export default function ChartExpandedState({ asset }) {
-  const { nativeCurrency, network: currentNetwork } = useAccountSettings();
+  const { nativeCurrency, chainId: currentChainId } = useAccountSettings();
 
   const { data: genericAsset } = useExternalToken({
     address: asset?.address,
@@ -171,7 +171,7 @@ export default function ChartExpandedState({ asset }) {
   }, [asset, genericAsset, hasBalance]);
 
   const isL2 = useMemo(() => isL2Chain({ chainId: asset?.chainId }), [asset?.chainId]);
-  const isTestnet = isTestnetNetwork(currentNetwork);
+  const isTestnet = isTestnetChain({ chainId: currentChainId });
 
   const { data, isLoading: additionalAssetDataLoading } = useAdditionalAssetData({
     address: asset?.address,

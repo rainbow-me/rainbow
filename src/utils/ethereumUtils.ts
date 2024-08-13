@@ -24,7 +24,7 @@ import {
   SelectedGasFee,
 } from '@/entities';
 import { getOnchainAssetBalance } from '@/handlers/assets';
-import { getIsHardhatConnected, getProvider, getProviderForNetwork, isTestnetNetwork, toHex } from '@/handlers/web3';
+import { getIsHardhatConnected, getProvider, isTestnetChain, toHex } from '@/handlers/web3';
 import { Network } from '@/helpers/networkTypes';
 import { convertRawAmountToDecimalFormat, fromWei, greaterThan, isZero, subtract, add } from '@/helpers/utilities';
 import { Navigation } from '@/navigation';
@@ -310,7 +310,7 @@ function getEtherscanHostForNetwork({ chainId }: { chainId: ChainId }): string {
   const blockExplorer = networkObject.blockExplorers?.default?.url;
   const network = networkObject.network as Network;
 
-  if (network && isTestnetNetwork(network)) {
+  if (network && isTestnetChain({ chainId })) {
     return `${network}.${base_host}`;
   } else {
     return blockExplorer || base_host;
