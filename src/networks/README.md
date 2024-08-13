@@ -3,9 +3,9 @@
 Handling for networks throughout the codebase.
 
 ```typescript
-import { getNetworkObj, Networks } from '@/networks';
+import { getNetworkObject } from '@/networks';
 
-const networkObj = getNetworkObj(Networks.mainnet);
+const networkObj = getNetworkObject({ chainId: ChainId.mainnet });
 
 // Get static properties based on network
 const networkName = networkObj.name;

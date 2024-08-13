@@ -1,12 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import lang from 'i18n-js';
 import React, { useCallback, useContext, useState } from 'react';
-import {
-  // @ts-ignore
-  HARDHAT_URL_ANDROID,
-  // @ts-ignore
-  HARDHAT_URL_IOS,
-} from 'react-native-dotenv';
 // @ts-ignore
 import Restart from 'react-native-restart';
 import { useDispatch } from 'react-redux';
@@ -16,10 +10,8 @@ import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { deleteAllBackups } from '@/handlers/cloudBackup';
-import { web3SetHttpProvider } from '@/handlers/web3';
 import { RainbowContext } from '@/helpers/RainbowContext';
 import isTestFlight from '@/helpers/isTestFlight';
-import networkTypes from '@/helpers/networkTypes';
 import { useWallets } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { wipeKeychain } from '@/model/keychain';
@@ -48,11 +40,13 @@ import { getFCMToken } from '@/notifications/tokens';
 import { removeGlobalNotificationSettings } from '@/notifications/settings/settings';
 import { nonceStore } from '@/state/nonces';
 import { pendingTransactionsStore } from '@/state/pendingTransactions';
+import { connectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
   const { config, setConfig } = useContext(RainbowContext) as any;
   const { wallets } = useWallets();
+  const setConnectedToHardhat = connectedToHardhatStore.getState().setConnectedToHardhat;
   const { walletNotificationSettings } = useAllNotificationSettingsFromStorage();
   const dispatch = useDispatch();
 
@@ -75,15 +69,15 @@ const DevSection = () => {
 
   const connectToHardhat = useCallback(async () => {
     try {
-      const ready = await web3SetHttpProvider((ios && HARDHAT_URL_IOS) || (android && HARDHAT_URL_ANDROID) || 'http://127.0.0.1:8545');
-      logger.debug(`[DevSection] connected to hardhat: ${ready}`);
+      setConnectedToHardhat(true);
+	  logger.debug(`[DevSection] connected to hardhat`);
     } catch (e) {
-      await web3SetHttpProvider(networkTypes.mainnet);
+      setConnectedToHardhat(false);
       logger.error(new RainbowError(`[DevSection] error connecting to hardhat: ${e}`));
     }
     navigate(Routes.PROFILE_SCREEN);
     dispatch(explorerInit());
-  }, [dispatch, navigate]);
+  }, [dispatch, navigate, setConnectedToHardhat]);
 
   const checkAlert = useCallback(async () => {
     try {

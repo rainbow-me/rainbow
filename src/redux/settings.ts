@@ -10,16 +10,16 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 
 import {
   getAppIcon,
+  getChainId,
   getFlashbotsEnabled,
   getLanguage,
   getNativeCurrency,
-  getNetwork,
   getTestnetsEnabled,
   saveAppIcon,
+  saveChainId,
   saveFlashbotsEnabled,
   saveLanguage,
   saveNativeCurrency,
-  saveNetwork,
   saveTestnetsEnabled,
 } from '@/handlers/localstorage/globalSettings';
 import { web3SetHttpProvider } from '@/handlers/web3';
@@ -105,7 +105,6 @@ interface SettingsStateUpdateNetworkSuccessAction {
   type: typeof SETTINGS_UPDATE_NETWORK_SUCCESS;
   payload: {
     chainId: SettingsState['chainId'];
-    network: SettingsState['network'];
   };
 }
 
@@ -151,11 +150,10 @@ export const settingsLoadState =
 
 export const settingsLoadNetwork = () => async (dispatch: Dispatch<SettingsStateUpdateNetworkSuccessAction>) => {
   try {
-    const network = await getNetwork();
-    const chainId = ethereumUtils.getChainIdFromNetwork(network);
-    await web3SetHttpProvider(network);
+    const chainId = await getChainId();
+    await web3SetHttpProvider(chainId);
     dispatch({
-      payload: { chainId, network },
+      payload: { chainId },
       type: SETTINGS_UPDATE_NETWORK_SUCCESS,
     });
   } catch (error) {
@@ -239,13 +237,13 @@ export const settingsUpdateAccountAddress =
 
 export const settingsUpdateNetwork = (network: Network) => async (dispatch: Dispatch<SettingsStateUpdateNetworkSuccessAction>) => {
   const chainId = ethereumUtils.getChainIdFromNetwork(network);
-  await web3SetHttpProvider(network);
+  await web3SetHttpProvider(chainId);
   try {
     dispatch({
-      payload: { chainId, network },
+      payload: { chainId },
       type: SETTINGS_UPDATE_NETWORK_SUCCESS,
     });
-    saveNetwork(network);
+    saveChainId(chainId);
   } catch (error) {
     logger.error(new RainbowError(`[redux/settings]: Error updating network settings: ${error}`));
   }
@@ -315,7 +313,6 @@ export default (state = INITIAL_STATE, action: SettingsStateUpdateAction) => {
       return {
         ...state,
         chainId: action.payload.chainId,
-        network: action.payload.network,
       };
     case SETTINGS_UPDATE_LANGUAGE_SUCCESS:
       return {
