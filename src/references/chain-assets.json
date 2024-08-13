@@ -2,7 +2,11 @@
   "5": [
     {
       "asset": {
+<<<<<<< HEAD
         "chainId": 5,
+=======
+		"chainId": 5,
+>>>>>>> d5d379b84 (fetchHardhatBalancesWithBalanceChecker)
         "asset_code": "eth",
         "mainnet_address": "eth",
         "colors": {
