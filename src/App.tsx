@@ -61,15 +61,13 @@ interface AppProps {
 }
 
 function App({ walletReady }: AppProps) {
-  const [initialRoute, setInitialRoute] = useState<InitialRoute>(null);
-
-  useApplicationSetup({ setInitialRoute });
+  const { initialRoute } = useApplicationSetup();
 
   const handleNavigatorRef = useCallback((ref: NavigationContainerRef<RootStackParamList>) => {
     Navigation.setTopLevelNavigator(ref);
   }, []);
 
-  console.log('rendering app.tsx');
+  console.log('rendering app.tsx', initialRoute);
 
   return (
     <Portal>
