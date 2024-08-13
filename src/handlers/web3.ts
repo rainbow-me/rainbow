@@ -35,9 +35,8 @@ import {
 import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
-import { getNetworkObj, getNetworkObject } from '@/networks';
+import { getNetworkObject } from '@/networks';
 import store from '@/redux/store';
-import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { ChainId } from '@/__swaps__/types/chains';
 
 export enum TokenStandard {
@@ -197,25 +196,6 @@ export const getFlashbotsProvider = async () => {
 
 export const getCachedProviderForNetwork = (chainId: ChainId = ChainId.mainnet): StaticJsonRpcProvider | undefined => {
   return chainsProviders.get(chainId);
-};
-
-/**
- * @desc Gets or constructs a web3 provider for the specified network.
- * @param network The network as a `Network` or string.
- * @return The provider for the network.
- */
-export const getProviderForNetwork = (chainId: ChainId = ChainId.mainnet): StaticJsonRpcProvider => {
-  const cachedProvider = chainsProviders.get(chainId);
-
-  if (cachedProvider) {
-    return cachedProvider;
-  }
-
-  const networkObject = getNetworkObject({ chainId });
-  const provider = new StaticJsonRpcProvider(networkObject.rpc(), networkObject.id);
-  chainsProviders.set(chainId, provider);
-
-  return provider;
 };
 
 export const getProvider = ({ chainId }: { chainId: number }): StaticJsonRpcProvider => {

@@ -12,7 +12,7 @@ import { Records, RegistrationParameters } from '@/entities';
 import { fetchResolver } from '@/handlers/ens';
 import { saveNameFromLabelhash } from '@/handlers/localstorage/ens';
 import { uploadImage } from '@/handlers/pinata';
-import { getProviderForNetwork } from '@/handlers/web3';
+import { getProvider } from '@/handlers/web3';
 import { ENS_DOMAIN, generateSalt, getRentPrice, REGISTRATION_STEPS } from '@/helpers/ens';
 import { loadWallet } from '@/model/wallet';
 import { timeUnits } from '@/references';
@@ -115,7 +115,7 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
     };
 
     (() => {
-      provider = getProviderForNetwork();
+      provider = getProvider({ chainId: ChainId.mainnet });
       provider.on('block', updateAvatars);
     })();
     return () => {
@@ -128,7 +128,7 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
     async (callback = noop) => {
       updateAvatarsOnNextBlock.current = true;
 
-      const provider = getProviderForNetwork();
+      const provider = getProvider({ chainId: ChainId.mainnet });
       const wallet = await loadWallet({
         showErrorIfNotLoaded: false,
         provider,
@@ -186,7 +186,7 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
     async (callback = noop) => {
       const { name, duration } = registrationParameters as RegistrationParameters;
 
-      const provider = getProviderForNetwork();
+      const provider = getProvider({ chainId: ChainId.mainnet });
       const wallet = await loadWallet({
         showErrorIfNotLoaded: false,
         provider,
@@ -225,7 +225,7 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
     async (callback = noop) => {
       const { name } = registrationParameters as RegistrationParameters;
 
-      const provider = getProviderForNetwork();
+      const provider = getProvider({ chainId: ChainId.mainnet });
       const wallet = await loadWallet({
         showErrorIfNotLoaded: false,
         provider,
@@ -253,7 +253,7 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
     async (callback = noop) => {
       const { name } = registrationParameters as RegistrationParameters;
 
-      const provider = getProviderForNetwork();
+      const provider = getProvider({ chainId: ChainId.mainnet });
       const wallet = await loadWallet({
         showErrorIfNotLoaded: false,
         provider,
@@ -278,7 +278,7 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
 
   const setRecordsAction: ActionTypes[typeof REGISTRATION_STEPS.EDIT] = useCallback(
     async (callback = noop) => {
-      const provider = getProviderForNetwork();
+      const provider = getProvider({ chainId: ChainId.mainnet });
       const wallet = await loadWallet({
         showErrorIfNotLoaded: false,
         provider,
@@ -316,7 +316,7 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
     async ({ clearRecords, records, name, setAddress, toAddress, transferControl, wallet: walletOverride }, callback = noop) => {
       let wallet = walletOverride;
       if (!wallet) {
-        const provider = getProviderForNetwork();
+        const provider = getProvider({ chainId: ChainId.mainnet });
         wallet = await loadWallet({
           showErrorIfNotLoaded: false,
           provider,

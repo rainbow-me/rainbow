@@ -1,8 +1,9 @@
 import { Contract } from '@ethersproject/contracts';
 import { EthereumAddress } from '@/entities';
-import { getProviderForNetwork } from '@/handlers/web3';
+import { getProvider } from '@/handlers/web3';
 import { Network } from '@/helpers';
 import { tokenGateCheckerAbi } from '@/references';
+import { ethereumUtils } from '@/utils';
 
 export type TokenGateCheckerNetwork =
   | Network.arbitrum
@@ -28,7 +29,8 @@ export const checkIfWalletsOwnNft = async (
   network: TokenGateCheckerNetwork,
   walletsToCheck: EthereumAddress[]
 ) => {
-  const p = await getProviderForNetwork(network);
+  const chainId = ethereumUtils.getChainIdFromNetwork(network);
+  const p = await getProvider({ chainId });
 
   const contractInstance = new Contract(TOKEN_GATE_CHECKER_ADDRESS[network], tokenGateCheckerAbi, p);
 

@@ -1,7 +1,7 @@
 import { Signer } from '@ethersproject/abstract-signer';
 import { CrosschainQuote, fillCrosschainQuote } from '@rainbow-me/swaps';
 import { Address } from 'viem';
-import { getProviderForNetwork, estimateGasWithPadding } from '@/handlers/web3';
+import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
 
 import { REFERRER, gasUnits, ReferrerType } from '@/references';
 import { ChainId } from '@/__swaps__/types/chains';
@@ -39,7 +39,7 @@ export const estimateCrosschainSwapGasLimit = async ({
   quote: CrosschainQuote;
 }): Promise<string> => {
   // TODO: MARK - Replace this once we migrate network => chainId
-  const provider = getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
+  const provider = getProvider({ chainId });
   if (!provider || !quote) {
     return gasUnits.basic_swap[chainId];
   }

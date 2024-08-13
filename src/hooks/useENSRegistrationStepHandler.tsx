@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import usePrevious from './usePrevious';
 import { useENSRegistration, useInterval } from '.';
 import { RegistrationParameters } from '@/entities';
-import { getProviderForNetwork, isHardHat, web3Provider } from '@/handlers/web3';
+import { getProvider, isHardHat, web3Provider } from '@/handlers/web3';
 import {
   ENS_SECONDS_PADDING,
   ENS_SECONDS_WAIT,
@@ -14,6 +14,7 @@ import {
   REGISTRATION_STEPS,
 } from '@/helpers/ens';
 import { updateTransactionRegistrationParameters } from '@/redux/ensRegistration';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const checkRegisterBlockTimestamp = async ({
   registrationParameters,
@@ -25,7 +26,7 @@ const checkRegisterBlockTimestamp = async ({
   isTestingHardhat: boolean;
 }) => {
   try {
-    const provider = getProviderForNetwork();
+    const provider = getProvider({ chainId: ChainId.mainnet });
     const block = await provider.getBlock('latest');
     const msBlockTimestamp = getBlockMsTimestamp(block);
     const secs = differenceInSeconds(msBlockTimestamp, registrationParameters?.commitTransactionConfirmedAt || msBlockTimestamp);
@@ -90,7 +91,7 @@ export default function useENSRegistrationStepHandler(observer = true) {
 
   const watchCommitTransaction = useCallback(async () => {
     if (observer) return;
-    const provider = getProviderForNetwork();
+    const provider = getProvider({ chainId: ChainId.mainnet });
     let confirmed = false;
     const tx = await provider.getTransaction(commitTransactionHash || '');
     if (!tx?.blockHash) return confirmed;

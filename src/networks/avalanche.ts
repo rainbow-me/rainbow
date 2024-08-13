@@ -1,10 +1,11 @@
-import { getProviderForNetwork, proxyRpcEndpoint } from '@/handlers/web3';
+import { getProvider, proxyRpcEndpoint } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { avalanche } from '@wagmi/chains';
 import { AVAX_AVALANCHE_ADDRESS } from '@/references';
 import { getAvalancheGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export const getAvalancheNetworkObject = (): NetworkProperties => {
   const { avalanche_enabled, avalanche_tx_enabled } = getRemoteConfig();
@@ -26,7 +27,7 @@ export const getAvalancheNetworkObject = (): NetworkProperties => {
     },
 
     rpc: () => proxyRpcEndpoint(avalanche.id),
-    getProvider: () => getProviderForNetwork(Network.avalanche),
+    getProvider: () => getProvider({ chainId: ChainId.avalanche }),
     // need to find balance checker address
     balanceCheckerAddress: '',
 

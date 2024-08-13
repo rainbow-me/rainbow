@@ -5,7 +5,7 @@ import * as lang from '@/languages';
 import { Provider } from '@ethersproject/providers';
 
 import { RainbowNetworkObjects, RainbowSupportedChainIds } from '@/networks';
-import { getProviderForNetwork } from '@/handlers/web3';
+import { getProvider } from '@/handlers/web3';
 import ethereumUtils, { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { UserRejectedRequestError } from 'viem';
 import { convertHexToString } from '@/helpers/utilities';
@@ -193,11 +193,6 @@ const getActiveSession = ({ host }: { host: string }): ActiveSession => {
 
 const getChain = (chainId: number) => RainbowNetworkObjects.find(network => Number(network.id) === chainId);
 
-const getProvider = ({ chainId }: { chainId?: number | undefined }) => {
-  const network = getNetworkFromChainId(chainId || 1);
-  return getProviderForNetwork(network) as unknown as Provider;
-};
-
 const checkRateLimitFn = async (host: string) => {
   // try {
   //   // Read from session
@@ -361,7 +356,7 @@ export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger:
     checkRateLimit,
     onSwitchEthereumChainNotSupported,
     onSwitchEthereumChainSupported,
-    getProvider,
+    getProvider: chainId => getProvider({ chainId: chainId as number }) as unknown as Provider,
     getActiveSession,
     getChain,
   });

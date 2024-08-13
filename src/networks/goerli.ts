@@ -1,9 +1,10 @@
-import { getProviderForNetwork, proxyRpcEndpoint } from '@/handlers/web3';
+import { getProvider, proxyRpcEndpoint } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { goerli } from '@wagmi/chains';
 import { ETH_ADDRESS } from '@/references';
 import { getRemoteConfig } from '@/model/remoteConfig';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export const getGoerliNetworkObject = (): NetworkProperties => {
   const { goerli_enabled, goerli_tx_enabled } = getRemoteConfig();
@@ -25,7 +26,7 @@ export const getGoerliNetworkObject = (): NetworkProperties => {
     },
 
     // this should be refactored to have less deps
-    getProvider: () => getProviderForNetwork(Network.goerli),
+    getProvider: () => getProvider({ chainId: ChainId.goerli }),
     rpc: () => proxyRpcEndpoint(goerli.id),
     balanceCheckerAddress: '0xf3352813b612a2d198e437691557069316b84ebe',
 

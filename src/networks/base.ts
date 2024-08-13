@@ -1,10 +1,11 @@
-import { getProviderForNetwork, proxyRpcEndpoint } from '@/handlers/web3';
+import { getProvider, proxyRpcEndpoint } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { base } from '@wagmi/chains';
 import { BASE_ETH_ADDRESS } from '@/references';
 import { getBaseGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export const getBaseNetworkObject = (): NetworkProperties => {
   const { base_enabled, base_tx_enabled, op_chains_enabled, op_chains_tx_enabled } = getRemoteConfig();
@@ -26,7 +27,7 @@ export const getBaseNetworkObject = (): NetworkProperties => {
     },
 
     rpc: () => proxyRpcEndpoint(base.id),
-    getProvider: () => getProviderForNetwork(Network.base),
+    getProvider: () => getProvider({ chainId: ChainId.base }),
     balanceCheckerAddress: '0x1C8cFdE3Ba6eFc4FF8Dd5C93044B9A690b6CFf36',
 
     // features

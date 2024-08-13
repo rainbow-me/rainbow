@@ -2,7 +2,7 @@ import { Signer } from '@ethersproject/abstract-signer';
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract, PopulatedTransaction } from '@ethersproject/contracts';
 import { parseUnits } from '@ethersproject/units';
-import { getProviderForNetwork } from '@/handlers/web3';
+import { getProvider } from '@/handlers/web3';
 import { Address, erc20Abi, erc721Abi } from 'viem';
 
 import { ChainId } from '@/__swaps__/types/chains';
@@ -35,8 +35,7 @@ export const getAssetRawAllowance = async ({
   chainId: ChainId;
 }) => {
   try {
-    // TODO: MARK - Replace this once we migrate network => chainId
-    const provider = getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
+    const provider = getProvider({ chainId });
     const tokenContract = new Contract(assetAddress, erc20Abi, provider);
     const allowance = await tokenContract.allowance(owner, spender);
     return allowance.toString();
@@ -87,8 +86,7 @@ export const estimateApprove = async ({
   chainId: ChainId;
 }): Promise<string> => {
   try {
-    // TODO: MARK - Replace this once we migrate network => chainId
-    const provider = getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
+    const provider = getProvider({ chainId });
     const tokenContract = new Contract(tokenAddress, erc20Abi, provider);
     const gasLimit = await tokenContract.estimateGas.approve(spender, MaxUint256, {
       from: owner,
@@ -114,8 +112,7 @@ export const populateApprove = async ({
   chainId: ChainId;
 }): Promise<PopulatedTransaction | null> => {
   try {
-    // TODO: MARK - Replace this once we migrate network => chainId
-    const provider = getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
+    const provider = getProvider({ chainId });
     const tokenContract = new Contract(tokenAddress, erc20Abi, provider);
     const approveTransaction = await tokenContract.populateTransaction.approve(spender, MaxUint256, {
       from: owner,
@@ -141,8 +138,7 @@ export const estimateERC721Approval = async ({
   chainId: ChainId;
 }): Promise<string> => {
   try {
-    // TODO: MARK - Replace this once we migrate network => chainId
-    const provider = getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
+    const provider = getProvider({ chainId });
     const tokenContract = new Contract(tokenAddress, erc721Abi, provider);
     const gasLimit = await tokenContract.estimateGas.setApprovalForAll(spender, false, {
       from: owner,
@@ -168,8 +164,7 @@ export const populateRevokeApproval = async ({
   type: 'erc20' | 'nft';
 }): Promise<PopulatedTransaction> => {
   if (!tokenAddress || !spenderAddress || !chainId) return {};
-  // TODO: MARK - Replace this once we migrate network => chainId
-  const provider = getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
+  const provider = getProvider({ chainId });
   const tokenContract = new Contract(tokenAddress, erc721Abi, provider);
   if (type === 'erc20') {
     const amountToApprove = parseUnits('0', 'ether');

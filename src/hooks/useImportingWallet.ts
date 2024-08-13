@@ -17,7 +17,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { fetchReverseRecord } from '@/handlers/ens';
-import { getProviderForNetwork, isValidBluetoothDeviceId, resolveUnstoppableDomain } from '@/handlers/web3';
+import { getProvider, isValidBluetoothDeviceId, resolveUnstoppableDomain } from '@/handlers/web3';
 import { isENSAddressFormat, isUnstoppableAddressFormat, isValidWallet } from '@/helpers/validators';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { walletInit } from '@/model/wallet';
@@ -31,6 +31,7 @@ import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
 import { checkWalletsForBackupStatus } from '@/screens/SettingsSheet/utils';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
@@ -122,7 +123,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       // Validate ENS
       if (isENSAddressFormat(input)) {
         try {
-          const web3Provider = getProviderForNetwork();
+          const web3Provider = getProvider({ chainId: ChainId.mainnet });
           const [address, avatar] = await Promise.all([
             web3Provider.resolveName(input),
             !avatarUrl && profilesEnabled && fetchENSAvatar(input, { swallowError: true }),

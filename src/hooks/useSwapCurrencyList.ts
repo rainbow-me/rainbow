@@ -8,7 +8,7 @@ import { useTheme } from '../theme/ThemeContext';
 import usePrevious from './usePrevious';
 import { RainbowToken, RainbowToken as RT, TokenSearchTokenListId } from '@/entities';
 import { swapSearch } from '@/handlers/tokenSearch';
-import { addHexPrefix, getProviderForNetwork } from '@/handlers/web3';
+import { addHexPrefix, getProvider } from '@/handlers/web3';
 import tokenSectionTypes from '@/helpers/tokenSectionTypes';
 import { DAI_ADDRESS, erc20ABI, ETH_ADDRESS, rainbowTokenList, USDC_ADDRESS, WBTC_ADDRESS, WETH_ADDRESS } from '@/references';
 import { ethereumUtils, filterList, isLowerCaseMatch } from '@/utils';
@@ -185,7 +185,7 @@ const useSwapCurrencyList = (searchQuery: string, searchChainId = MAINNET_CHAINI
             return [tokenListEntry];
           }
           const network = ethereumUtils.getNetworkFromChainId(chainId);
-          const provider = getProviderForNetwork(network);
+          const provider = getProvider({ chainId });
           const tokenContract = new Contract(searchQuery, erc20ABI, provider);
           try {
             const [name, symbol, decimals, address] = await Promise.all([
@@ -194,10 +194,11 @@ const useSwapCurrencyList = (searchQuery: string, searchChainId = MAINNET_CHAINI
               tokenContract.decimals(),
               getAddress(searchQuery),
             ]);
-            const uniqueId = `${address}_${network}`;
+            const uniqueId = getUniqueId(address, chainId);
             return [
               {
                 address,
+                chainId,
                 decimals,
                 favorite: false,
                 highLiquidity: false,

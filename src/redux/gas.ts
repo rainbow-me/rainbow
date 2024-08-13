@@ -23,8 +23,7 @@ import {
 } from '@/entities';
 
 import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
-import { getProviderForNetwork, isHardHat, toHex, web3Provider } from '@/handlers/web3';
-import { Network } from '@/helpers/networkTypes';
+import { getProvider, isHardHat, toHex, web3Provider } from '@/handlers/web3';
 import {
   defaultGasParamsFormat,
   gweiToWei,
@@ -313,7 +312,7 @@ export const getBscGasPrices = async () => {
   }
 };
 export const getArbitrumGasPrices = async () => {
-  const provider = getProviderForNetwork(Network.arbitrum);
+  const provider = getProvider({ chainId: ChainId.arbitrum });
   const baseGasPrice = await provider.getGasPrice();
   const normalGasPrice = weiToGwei(baseGasPrice.toString());
 
@@ -331,7 +330,7 @@ export const getArbitrumGasPrices = async () => {
 };
 
 export const getOptimismGasPrices = async () => {
-  const provider = getProviderForNetwork(Network.optimism);
+  const provider = getProvider({ chainId: ChainId.optimism });
   const baseGasPrice = await provider.getGasPrice();
   const normalGasPrice = weiToGwei(baseGasPrice.toString());
 
@@ -348,7 +347,7 @@ export const getOptimismGasPrices = async () => {
 };
 
 export const getBaseGasPrices = async () => {
-  const provider = getProviderForNetwork(Network.base);
+  const provider = getProvider({ chainId: ChainId.base });
   const baseGasPrice = await provider.getGasPrice();
 
   const BasePriceBumpFactor = 1.05;
@@ -367,7 +366,7 @@ export const getBaseGasPrices = async () => {
 };
 
 export const getAvalancheGasPrices = async () => {
-  const provider = getProviderForNetwork(Network.avalanche);
+  const provider = getProvider({ chainId: ChainId.avalanche });
   const baseGasPrice = await provider.getGasPrice();
 
   const AvalanchePriceBumpFactor = 1.05;
@@ -386,7 +385,7 @@ export const getAvalancheGasPrices = async () => {
 };
 
 export const getDegenGasPrices = async () => {
-  const provider = getProviderForNetwork(Network.degen);
+  const provider = getProvider({ chainId: ChainId.degen });
   const baseGasPrice = await provider.getGasPrice();
 
   const DegenPriceBumpFactor = 1.05;
@@ -405,7 +404,7 @@ export const getDegenGasPrices = async () => {
 };
 
 export const getBlastGasPrices = async () => {
-  const provider = getProviderForNetwork(Network.blast);
+  const provider = getProvider({ chainId: ChainId.blast });
   const baseGasPrice = await provider.getGasPrice();
 
   const BlastPriceBumpFactor = 1.05;
@@ -424,7 +423,7 @@ export const getBlastGasPrices = async () => {
 };
 
 export const getZoraGasPrices = async () => {
-  const provider = getProviderForNetwork(Network.zora);
+  const provider = getProvider({ chainId: ChainId.zora });
   const baseGasPrice = await provider.getGasPrice();
 
   const ZoraPriceBumpFactor = 1.05;

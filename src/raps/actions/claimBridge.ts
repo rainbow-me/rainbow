@@ -1,6 +1,5 @@
 import { NewTransaction, ParsedAddressAsset, TransactionGasParamAmounts } from '@/entities';
-import { getProviderForNetwork } from '@/handlers/web3';
-import { Network } from '@/helpers';
+import { getProvider } from '@/handlers/web3';
 import { add, addBuffer, greaterThan, lessThan, multiply, subtract } from '@/helpers/utilities';
 import { RainbowError } from '@/logger';
 import store from '@/redux/store';
@@ -13,6 +12,7 @@ import { CrosschainQuote, QuoteError, SwapType, getClaimBridgeQuote } from '@rai
 import { Address } from 'viem';
 import { ActionProps } from '../references';
 import { executeCrosschainSwap } from './crosschainSwap';
+import { ChainId } from '@/__swaps__/types/chains';
 
 // This action is used to bridge the claimed funds to another chain
 export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps<'claimBridge'>) {
@@ -51,7 +51,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
   // 2 - We use the default gas limit (already inflated) from the quote to calculate the aproximate gas fee
   const initalGasLimit = bridgeQuote.defaultGasLimit as string;
 
-  const provider = getProviderForNetwork(Network.optimism);
+  const provider = getProvider({ chainId: ChainId.optimism });
 
   const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
     // @ts-ignore

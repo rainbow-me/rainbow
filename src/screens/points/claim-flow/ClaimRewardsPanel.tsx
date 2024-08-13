@@ -17,7 +17,6 @@ import { PointsErrorType } from '@/graphql/__generated__/metadata';
 import { useMutation } from '@tanstack/react-query';
 import { invalidatePointsQuery, usePoints } from '@/resources/points';
 import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
-import { Network } from '@/helpers';
 import { ButtonPressAnimation } from '@/components/animations';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -29,7 +28,7 @@ import { walletExecuteRap } from '@/raps/execute';
 import { ParsedAsset } from '@/__swaps__/types/assets';
 import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 import { loadWallet } from '@/model/wallet';
-import { getProviderForNetwork } from '@/handlers/web3';
+import { getProvider } from '@/handlers/web3';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { getGasSettingsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
@@ -261,7 +260,7 @@ const ClaimingRewards = ({
         gasParams,
       } satisfies RapSwapActionParameters<'claimBridge'>;
 
-      const provider = getProviderForNetwork(Network.optimism);
+      const provider = getProvider({ chainId: ChainId.optimism });
       const wallet = await loadWallet({
         address,
         showErrorIfNotLoaded: false,

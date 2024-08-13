@@ -15,7 +15,7 @@ import {
   unwrapNativeAsset,
   wrapNativeAsset,
 } from '@rainbow-me/swaps';
-import { getProviderForNetwork, estimateGasWithPadding } from '@/handlers/web3';
+import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
 import { Address } from 'viem';
 
 import { metadataPOSTClient } from '@/graphql';
@@ -62,7 +62,7 @@ export const estimateSwapGasLimit = async ({
   quote: Quote;
 }): Promise<string> => {
   // TODO: MARK - Replace this once we migrate network => chainId
-  const provider = getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
+  const provider = getProvider({ chainId });
   if (!provider || !quote) {
     return gasUnits.basic_swap[chainId];
   }
@@ -145,8 +145,7 @@ export const estimateUnlockAndSwapFromMetadata = async ({
       chainId,
     });
 
-    // TODO: MARK - Replace this once we migrate network => chainId
-    const provider = getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
+    const provider = getProvider({ chainId });
     const swapTransaction = await populateSwap({
       provider,
       quote,
@@ -302,9 +301,6 @@ export const swap = async ({
   }
 
   if (!swap || !swap?.hash) throw new RainbowError('swap: error executeSwap');
-
-  // TODO: MARK - Replace this once we migrate network => chainId
-  const network = ethereumUtils.getNetworkFromChainId(parameters.chainId);
 
   const nativePriceForAssetToBuy = (parameters.assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice
     ? {
