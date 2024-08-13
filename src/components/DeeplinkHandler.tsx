@@ -9,9 +9,10 @@ import { branchListener } from '@/utils/branch';
 
 type DeeplinkHandlerProps = {
   initialRoute: InitialRoute;
+  walletReady: boolean;
 };
 
-export function DeeplinkHandler({ initialRoute }: DeeplinkHandlerProps) {
+export function DeeplinkHandler({ initialRoute, walletReady }: DeeplinkHandlerProps) {
   const branchListenerRef = useRef<ReturnType<typeof branch.subscribe> | null>(null);
   const { handleRequestUrl, sendFailureToClient } = useMobileWalletProtocolHost();
 
@@ -50,13 +51,15 @@ export function DeeplinkHandler({ initialRoute }: DeeplinkHandlerProps) {
   }, [handleRequestUrl, initialRoute, sendFailureToClient]);
 
   useEffect(() => {
+    if (!walletReady) return;
+
     setupDeeplinking();
     return () => {
       if (branchListenerRef.current) {
         branchListenerRef.current();
       }
     };
-  }, [setupDeeplinking]);
+  }, [setupDeeplinking, walletReady]);
 
   return null;
 }
