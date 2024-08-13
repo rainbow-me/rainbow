@@ -10,11 +10,11 @@ import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { queryClient } from '@/react-query';
 
 type WalletBalance = {
-  assetBalanceAmount: number;
+  assetBalanceAmount: string;
   assetBalanceDisplay: string;
-  positionsBalanceAmount: string | number;
+  positionsBalanceAmount: string;
   positionsBalanceDisplay: string;
-  totalBalanceAmount: string | number;
+  totalBalanceAmount: string;
   totalBalanceDisplay: string;
 };
 
@@ -53,7 +53,7 @@ const useWalletBalances = (wallets: AllRainbowWallets): WalletBalanceResult => {
 
     for (const address of allAddresses) {
       const lowerCaseAddress = address.toLowerCase() as Address;
-      const assetBalance = summaryData?.data?.addresses?.[lowerCaseAddress]?.summary?.asset_value || 0;
+      const assetBalance = summaryData?.data?.addresses?.[lowerCaseAddress]?.summary?.asset_value.toString() || '0';
 
       const positionData = queryClient.getQueryData<RainbowPositions | undefined>(positionsQueryKey({ address, currency: nativeCurrency }));
       const positionsBalance = positionData?.totals?.total?.amount || '0';

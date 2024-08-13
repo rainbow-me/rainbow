@@ -139,7 +139,7 @@ export const ControlPanel = () => {
     const bluetoothWallets: ControlPanelMenuItemProps[] = [];
     const readOnlyWallets: ControlPanelMenuItemProps[] = [];
 
-    const accountBalances: Record<string, string | number> = {};
+    const accountBalances: Record<string, string> = {};
 
     Object.values(walletsWithBalancesAndNames).forEach(wallet => {
       wallet.addresses
