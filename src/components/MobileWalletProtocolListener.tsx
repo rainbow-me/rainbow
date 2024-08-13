@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { addDiagnosticLogListener, getAndroidIntentUrl, useMobileWalletProtocolHost } from '@coinbase/mobile-wallet-protocol-host';
 import { handleMobileWalletProtocolRequest } from '@/utils/requestNavigationHandlers';
 import { logger, RainbowError } from '@/logger';
@@ -6,9 +6,11 @@ import { IS_ANDROID, IS_DEV } from '@/env';
 
 export const MobileWalletProtocolListener = () => {
   const { message, handleRequestUrl, sendFailureToClient, ...mwpProps } = useMobileWalletProtocolHost();
+  const lastMessageUuidRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (message) {
+    if (message && lastMessageUuidRef.current !== message.uuid) {
+      lastMessageUuidRef.current = message.uuid;
       try {
         handleMobileWalletProtocolRequest({ request: message, ...mwpProps });
       } catch (error) {
@@ -18,7 +20,7 @@ export const MobileWalletProtocolListener = () => {
         });
       }
     }
-  }, [message, mwpProps]);
+  }, [message]);
 
   useEffect(() => {
     if (IS_DEV) {
