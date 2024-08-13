@@ -1,11 +1,10 @@
 import { getProvider, proxyRpcEndpoint } from '@/handlers/web3';
-import { Network, NetworkProperties } from './types';
+import { Network, NetworkProperties , ChainId } from './types';
 import { gasUtils } from '@/utils';
 import { bsc } from '@wagmi/chains';
 import { BNB_BSC_ADDRESS, BNB_MAINNET_ADDRESS } from '@/references';
 import { getBscGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
-import { ChainId } from '@/networks/types';
 
 export const getBSCNetworkObject = (): NetworkProperties => {
   const { bsc_enabled, bsc_tx_enabled } = getRemoteConfig();

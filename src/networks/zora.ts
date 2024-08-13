@@ -1,11 +1,10 @@
 import { getProvider, proxyRpcEndpoint } from '@/handlers/web3';
-import { Network, NetworkProperties } from './types';
+import { Network, NetworkProperties , ChainId } from './types';
 import { gasUtils } from '@/utils';
 import { zora } from '@wagmi/chains';
 import { ZORA_ETH_ADDRESS } from '@/references';
 import { getZoraGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
-import { ChainId } from '@/networks/types';
 
 export const getZoraNetworkObject = (): NetworkProperties => {
   const { zora_enabled, zora_tx_enabled, op_chains_enabled, op_chains_tx_enabled } = getRemoteConfig();

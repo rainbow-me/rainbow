@@ -1,11 +1,10 @@
 import { getProvider, proxyRpcEndpoint } from '@/handlers/web3';
-import { Network, NetworkProperties } from './types';
+import { Network, NetworkProperties , ChainId } from './types';
 import { gasUtils } from '@/utils';
 import { base } from '@wagmi/chains';
 import { BASE_ETH_ADDRESS } from '@/references';
 import { getBaseGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
-import { ChainId } from '@/networks/types';
 
 export const getBaseNetworkObject = (): NetworkProperties => {
   const { base_enabled, base_tx_enabled, op_chains_enabled, op_chains_tx_enabled } = getRemoteConfig();

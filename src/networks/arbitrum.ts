@@ -1,11 +1,10 @@
 import { getProvider, proxyRpcEndpoint } from '@/handlers/web3';
-import { Network, NetworkProperties } from './types';
+import { Network, NetworkProperties , ChainId } from './types';
 import { gasUtils } from '@/utils';
 import { arbitrum } from '@wagmi/chains';
 import { ARBITRUM_ETH_ADDRESS } from '@/references';
 import { getArbitrumGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
-import { ChainId } from '@/networks/types';
 
 export const getArbitrumNetworkObject = (): NetworkProperties => {
   const { arbitrum_enabled, arbitrum_tx_enabled } = getRemoteConfig();

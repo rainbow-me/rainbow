@@ -1,11 +1,10 @@
 import { getProvider, proxyRpcEndpoint } from '@/handlers/web3';
-import { Network, NetworkProperties } from './types';
+import { Network, NetworkProperties , ChainId } from './types';
 import { gasUtils } from '@/utils';
 import { optimism } from '@wagmi/chains';
 import { OPTIMISM_ETH_ADDRESS } from '@/references';
 import { getOptimismGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
-import { ChainId } from '@/networks/types';
 
 export const getOptimismNetworkObject = (): NetworkProperties => {
   const { optimism_enabled, optimism_tx_enabled, op_chains_enabled, op_chains_tx_enabled } = getRemoteConfig();

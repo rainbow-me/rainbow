@@ -1,10 +1,9 @@
 import { getProvider, proxyRpcEndpoint } from '@/handlers/web3';
-import { Network, NetworkProperties } from './types';
+import { Network, NetworkProperties , ChainId } from './types';
 import { gasUtils } from '@/utils';
 import { goerli } from '@wagmi/chains';
 import { ETH_ADDRESS } from '@/references';
 import { getRemoteConfig } from '@/model/remoteConfig';
-import { ChainId } from '@/networks/types';
 
 export const getGoerliNetworkObject = (): NetworkProperties => {
   const { goerli_enabled, goerli_tx_enabled } = getRemoteConfig();
