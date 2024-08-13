@@ -1,4 +1,4 @@
-import { createQueryKey, QueryFunctionArgs } from '@/react-query';
+import { createQueryKey, QueryConfig, QueryFunctionArgs } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { Network } from '@/networks/types';
 import { RainbowError, logger } from '@/logger';
@@ -136,11 +136,15 @@ const fetchSimulation = async ({
   }
 };
 
-export const useSimulation = (args: SimulationArgs) => {
+export const useSimulation = (
+  args: SimulationArgs,
+  config: QueryConfig<SimulationResult, Error, ReturnType<typeof simulationQueryKey>> = {}
+) => {
   return useQuery(simulationQueryKey(args), fetchSimulation, {
     enabled: !!args.accountAddress && !!args.currentNetwork,
     retry: 3,
     refetchOnWindowFocus: false,
     staleTime: Infinity,
+    ...config,
   });
 };
