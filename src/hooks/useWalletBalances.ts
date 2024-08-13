@@ -9,6 +9,11 @@ import { RainbowPositions } from '@/resources/defi/types';
 import { add, convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { queryClient } from '@/react-query';
 
+const QUERY_CONFIG = {
+  staleTime: 1000 * 60 * 2, // 2 minutes
+  cacheTime: 1000 * 60 * 60 * 24, // 24 hours
+};
+
 type WalletBalance = {
   assetBalanceAmount: string;
   assetBalanceDisplay: string;
@@ -31,16 +36,20 @@ const useWalletBalances = (wallets: AllRainbowWallets): WalletBalanceResult => {
     [wallets]
   );
 
-  const { data: summaryData, isLoading: isSummaryLoading } = useAddysSummary({
-    addresses: allAddresses,
-    currency: nativeCurrency,
-  });
+  const { data: summaryData, isLoading: isSummaryLoading } = useAddysSummary(
+    {
+      addresses: allAddresses,
+      currency: nativeCurrency,
+    },
+    QUERY_CONFIG
+  );
 
   const positionQueries = useQueries({
     queries: allAddresses.map(address => ({
       queryKey: positionsQueryKey({ address, currency: nativeCurrency }),
       queryFn: () => fetchPositions({ address, currency: nativeCurrency }),
       enabled: !!address,
+      ...QUERY_CONFIG,
     })),
   });
 
