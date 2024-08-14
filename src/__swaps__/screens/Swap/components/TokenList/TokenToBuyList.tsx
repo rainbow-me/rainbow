@@ -17,7 +17,7 @@ import { userAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { FlashList } from '@shopify/flash-list';
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { forwardRef, memo, useCallback, useMemo } from 'react';
 import Animated, { runOnUI, useAnimatedProps, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
 import { ChainSelection } from './ChainSelection';
@@ -71,6 +71,17 @@ const SECTION_HEADER_INFO: { [id in AssetToBuySectionId]: SectionHeaderProp } = 
 export type HeaderItem = { listItemType: 'header'; id: AssetToBuySectionId; data: SearchAsset[] };
 export type CoinRowItem = SearchAsset & { listItemType: 'coinRow'; sectionId: AssetToBuySectionId };
 export type TokenToBuyListItem = HeaderItem | CoinRowItem;
+
+const ScrollViewWithRef = forwardRef(function ScrollViewWithRef(props, ref) {
+  const { outputProgress } = useSwapContext();
+  const animatedListProps = useAnimatedProps(() => {
+    const isFocused = outputProgress.value === 2;
+    return {
+      scrollIndicatorInsets: { bottom: 28 + (isFocused ? EXPANDED_INPUT_HEIGHT - FOCUSED_INPUT_HEIGHT : 0) },
+    };
+  });
+  return <Animated.ScrollView {...props} ref={ref} animatedProps={animatedListProps} />;
+}); // as typeof ScrollView
 
 export const TokenToBuyList = () => {
   const { internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, outputProgress, setAsset } = useSwapContext();
@@ -144,7 +155,7 @@ export const TokenToBuyList = () => {
         ListHeaderComponent={<ChainSelection output />}
         contentContainerStyle={{ paddingBottom: 16 }}
         // For some reason shallow copying the list data allows FlashList to more quickly pick up changes
-        data={sections.slice(0)}
+        data={sections}
         estimatedFirstItemOffset={BUY_LIST_HEADER_HEIGHT}
         estimatedItemSize={averageItemSize || undefined}
         estimatedListSize={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}
@@ -171,6 +182,7 @@ export const TokenToBuyList = () => {
             />
           );
         }}
+        // renderScrollComponent={ScrollViewWithRef}
         renderScrollComponent={props => {
           return (
             <Animated.ScrollView

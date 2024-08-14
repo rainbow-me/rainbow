@@ -14,7 +14,7 @@ import { toggleFavorite } from '@/resources/favorites';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
 import { startCase } from 'lodash';
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { GestureResponderEvent } from 'react-native';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import { SwapCoinIcon } from './SwapCoinIcon';
@@ -66,7 +66,7 @@ interface OutputCoinRowProps extends PartialAsset {
 
 type CoinRowProps = InputCoinRowProps | OutputCoinRowProps;
 
-export const CoinRow = memo(function CoinRow({ isFavorite, onPress, output, uniqueId, ...assetProps }: CoinRowProps) {
+export function CoinRow({ isFavorite, onPress, output, uniqueId, ...assetProps }: CoinRowProps) {
   const inputAsset = userAssetsStore(state => (output ? undefined : state.getUserAsset(uniqueId)));
   const outputAsset = output ? (assetProps as PartialAsset) : undefined;
 
@@ -180,7 +180,7 @@ export const CoinRow = memo(function CoinRow({ isFavorite, onPress, output, uniq
       </Columns>
     </Box>
   );
-});
+}
 
 const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId }) => {
   const network = RainbowNetworks.find(network => network.id === chainId)?.value;
