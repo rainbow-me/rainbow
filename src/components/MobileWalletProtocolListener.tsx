@@ -14,13 +14,12 @@ export const MobileWalletProtocolListener = () => {
       try {
         handleMobileWalletProtocolRequest({ request: message, ...mwpProps });
       } catch (error) {
-        console.log(error);
         logger.error(new RainbowError('Error handling Mobile Wallet Protocol request'), {
           error,
         });
       }
     }
-  }, [message]);
+  }, [message, mwpProps]);
 
   useEffect(() => {
     if (IS_DEV) {

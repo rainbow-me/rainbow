@@ -559,7 +559,9 @@ const listenOnNewMessages =
           return;
         }
         const { requests: pendingRequests } = getState().requests;
-        const request = !pendingRequests[requestId] ? dispatch(addRequestToApprove(clientId, peerId, requestId, payload, peerMeta)) : null;
+        const request = !pendingRequests[requestId]
+          ? await dispatch(addRequestToApprove(clientId, peerId, requestId, payload, peerMeta))
+          : null;
         if (request) {
           handleWalletConnectRequest(request);
           InteractionManager.runAfterInteractions(() => {

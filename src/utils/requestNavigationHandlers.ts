@@ -123,17 +123,6 @@ export const handleMobileWalletProtocolRequest = async ({
             if (approved) {
               logger.debug(`Handshake approved for ${action.appId}`);
               const success = await approveHandshake(dappMetadata);
-              const nextAction = request.actions[currentIndex + 1];
-              if (nextAction && isEthereumAction(nextAction) && nextAction.method === 'eth_requestAccounts') {
-                logger.debug('Approving eth_requestAccounts');
-                await approveAction(nextAction, {
-                  value: JSON.stringify({
-                    chain: request.account?.chain,
-                    networkId: request.account?.networkId,
-                    address: accountAddress,
-                  }),
-                });
-              }
               resolve(success);
             } else {
               logger.debug(`Handshake rejected for ${action.appId}`);
@@ -158,6 +147,20 @@ export const handleMobileWalletProtocolRequest = async ({
           code: 4001,
         });
         return false;
+      }
+
+      // NOTE: This is a workaround to approve the eth_requestAccounts action if the previous action was a handshake action.
+      const previousAction = request.actions[currentIndex - 1];
+      if (previousAction && isHandshakeAction(previousAction)) {
+        logger.debug('Approving eth_requestAccounts');
+        await approveAction(action, {
+          value: JSON.stringify({
+            chain: request.account?.chain,
+            networkId: request.account?.networkId,
+            address: accountAddress,
+          }),
+        });
+        return true;
       }
 
       const nativeCurrency = store.getState().settings.nativeCurrency;
@@ -186,6 +189,8 @@ export const handleMobileWalletProtocolRequest = async ({
         payload,
         displayDetails,
       };
+
+      console.log(JSON.stringify(requestWithDetails, null, 2));
 
       return new Promise((resolve, reject) => {
         const onSuccess = async (result: string) => {

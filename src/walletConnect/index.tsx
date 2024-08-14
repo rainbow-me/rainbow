@@ -700,7 +700,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
     logger.debug(`WC v2: handling request`, {}, logger.DebugContext.walletconnect);
 
     const dappNetwork = ethereumUtils.getNetworkFromChainId(chainId);
-    const displayDetails = getRequestDisplayDetails(event.params.request, nativeCurrency, dappNetwork);
+    const displayDetails = await getRequestDisplayDetails(event.params.request, nativeCurrency, dappNetwork);
     const peerMeta = session.peer.metadata;
 
     const metadata = await fetchDappMetadata({ url: peerMeta.url, status: true });

@@ -155,7 +155,7 @@ export const addRequestToApprove =
           icons?: string[];
         }
   ) =>
-  (dispatch: Dispatch<RequestsUpdateRequestsToApproveAction>, getState: AppGetState) => {
+  async (dispatch: Dispatch<RequestsUpdateRequestsToApproveAction>, getState: AppGetState) => {
     const { requests } = getState().requests;
     const { walletConnectors } = getState().walletconnect;
     const { accountAddress, network, nativeCurrency } = getState().settings;
@@ -166,7 +166,7 @@ export const addRequestToApprove =
     // @ts-expect-error "_accounts" is private.
     const address = walletConnector._accounts[0];
     const dappNetwork = ethereumUtils.getNetworkFromChainId(Number(chainId));
-    const displayDetails = getRequestDisplayDetails(payload, nativeCurrency, dappNetwork);
+    const displayDetails = await getRequestDisplayDetails(payload, nativeCurrency, dappNetwork);
     const oneHourAgoTs = Date.now() - EXPIRATION_THRESHOLD_IN_MS;
     // @ts-expect-error This fails to compile as `displayDetails` does not
     // always return an object with `timestampInMs`. Still, the error thrown
