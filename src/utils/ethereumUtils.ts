@@ -42,7 +42,7 @@ import {
 import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS } from '@/env';
-import { RainbowNetworkObjects, getNetworkObj, getNetworkObject } from '@/networks';
+import { RainbowNetworkObjects, getNetworkObject } from '@/networks';
 import {
   externalTokenQueryKey,
   FormattedExternalAsset,
