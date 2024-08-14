@@ -3,7 +3,7 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { Keyboard, Share } from 'react-native';
 import { MenuActionConfig } from 'react-native-ios-context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { useClipboard, useContacts, useWallets, useWatchWallet } from '@/hooks';
+import { useClipboard, useContacts, useSwitchWallet, useWallets, useWatchWallet } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import Routes from '@/navigation/routesNames';
@@ -43,7 +43,8 @@ export const LeaderboardRow = memo(function LeaderboardRow({
   points: number;
   rank: number;
 }) {
-  const { switchToWalletWithAddress, selectedWallet } = useWallets();
+  const { selectedWallet } = useWallets();
+  const { switchToWalletWithAddress } = useSwitchWallet();
   const { isWatching } = useWatchWallet({ address });
   const { colors } = useTheme();
   const { navigate } = useNavigation();
