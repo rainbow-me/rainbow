@@ -5,11 +5,9 @@ import chroma from 'chroma-js';
 
 import { IS_IOS } from '@/env';
 import { Box, Text, Inline, Bleed, useBackgroundColor } from '@/design-system';
-import { Network } from '@/helpers/networkTypes';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 
 import { Ramp as RampLogo } from '@/components/icons/svg/Ramp';
-import { Ratio as RatioLogo } from '@/components/icons/svg/Ratio';
 import { Coinbase as CoinbaseLogo } from '@/components/icons/svg/Coinbase';
 import { Moonpay as MoonpayLogo } from '@/components/icons/svg/Moonpay';
 
@@ -19,6 +17,7 @@ import { ProviderConfig, CalloutType, PaymentMethod } from '@/screens/AddCash/ty
 import * as i18n from '@/languages';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { ethereumUtils } from '@/utils';
+import { Network } from '@/networks/types';
 
 type PaymentMethodConfig = {
   name: string;

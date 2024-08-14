@@ -1,6 +1,5 @@
 import { Contract } from '@ethersproject/contracts';
 import { keyBy, mapValues } from 'lodash';
-import { Network } from '@/helpers/networkTypes';
 import { web3Provider } from '@/handlers/web3'; // TODO JIN
 import { balanceCheckerContractAbi, chainAssets, ETH_ADDRESS, SUPPORTED_CHAIN_IDS } from '@/references';
 import { parseAddressAsset } from './assets';
@@ -11,6 +10,7 @@ import { ChainId, ChainName } from '@/__swaps__/types/chains';
 import { AddressZero } from '@ethersproject/constants';
 import chainAssetsByChainId from '@/references/testnet-assets-by-chain';
 import { getNetworkObject } from '@/networks';
+import { Network } from '@/networks/types';
 
 const fetchHardhatBalancesWithBalanceChecker = async (
   tokens: string[],

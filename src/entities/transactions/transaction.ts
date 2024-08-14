@@ -2,7 +2,6 @@ import { BigNumberish } from '@ethersproject/bignumber';
 import { ProtocolType } from '../protocolTypes';
 import { ParsedAddressAsset } from '../tokens';
 import { EthereumAddress } from '../wallet';
-import { Network } from '@/helpers/networkTypes';
 import { AddCashCurrencyAsset } from '@/references';
 import { SwapType } from '@rainbow-me/swaps';
 import { SwapMetadata } from '@/raps/references';
@@ -10,6 +9,7 @@ import { UniqueAsset } from '../uniqueAssets';
 import { ParsedAsset } from '@/resources/assets/types';
 import { TransactionStatus, TransactionType } from '@/resources/transactions/types';
 import { ChainId } from '@/__swaps__/types/chains';
+import { Network } from '@/networks/types';
 
 export type TransactionDirection = 'in' | 'out' | 'self';
 

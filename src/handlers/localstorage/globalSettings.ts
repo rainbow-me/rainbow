@@ -1,7 +1,6 @@
 import { ChainId } from '@/__swaps__/types/chains';
 import { getGlobal, saveGlobal } from './common';
 import { NativeCurrencyKeys } from '@/entities';
-import networkTypes from '@/helpers/networkTypes';
 import { Language } from '@/languages';
 
 export const IMAGE_METADATA = 'imageMetadata';
@@ -9,7 +8,6 @@ const KEYBOARD_HEIGHT = 'keyboardHeight';
 const APP_ICON = 'appIcon';
 const LANGUAGE = 'language';
 const NATIVE_CURRENCY = 'nativeCurrency';
-const NETWORK = 'network';
 const CHAIN_ID = 'chainId';
 const KEYCHAIN_INTEGRITY_STATE = 'keychainIntegrityState';
 const AUTH_TIMELOCK = 'authTimelock';

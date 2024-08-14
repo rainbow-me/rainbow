@@ -25,7 +25,6 @@ import {
 } from '@/entities';
 import { getOnchainAssetBalance } from '@/handlers/assets';
 import { getIsHardhatConnected, getProvider, isTestnetChain, toHex } from '@/handlers/web3';
-import { Network } from '@/helpers/networkTypes';
 import { convertRawAmountToDecimalFormat, fromWei, greaterThan, isZero, subtract, add } from '@/helpers/utilities';
 import { Navigation } from '@/navigation';
 import { parseAssetNative } from '@/parsers';
@@ -52,6 +51,7 @@ import {
 } from '@/resources/assets/externalAssetsQuery';
 import { ChainId } from '@/__swaps__/types/chains';
 import { AddressOrEth } from '@/__swaps__/types/assets';
+import { Network } from '@/networks/types';
 
 const getNetworkNativeAsset = ({ chainId }: { chainId: ChainId }) => {
   const nativeAssetAddress = getNetworkObject({ chainId }).nativeCurrency.address;

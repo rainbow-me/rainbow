@@ -2,7 +2,6 @@ import isEmpty from 'lodash/isEmpty';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { NativeCurrencyKey } from '@/entities';
 import { saveAccountEmptyState } from '@/handlers/localstorage/accountLocal';
-import { Network } from '@/helpers/networkTypes';
 import { greaterThan } from '@/helpers/utilities';
 import { RainbowNetworkObjects } from '@/networks';
 import { rainbowFetch } from '@/rainbow-fetch';
@@ -11,6 +10,7 @@ import { useQuery } from '@tanstack/react-query';
 import { filterPositionsData, parseAddressAsset } from './assets';
 import { fetchHardhatBalances } from './hardhatAssets';
 import { AddysAccountAssetsMeta, AddysAccountAssetsResponse, RainbowAddressAssets } from './types';
+import { Network } from '@/networks/types';
 
 // ///////////////////////////////////////////////
 // Query Types

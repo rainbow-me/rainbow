@@ -1,4 +1,4 @@
-import { Network } from '../helpers/networkTypes';
+import { Network } from '@/networks/types';
 import { AssetContract, AssetType } from '.';
 import { ChainId } from '@/__swaps__/types/chains';
 

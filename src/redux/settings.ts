@@ -23,11 +23,11 @@ import {
   saveTestnetsEnabled,
 } from '@/handlers/localstorage/globalSettings';
 import { web3SetHttpProvider } from '@/handlers/web3';
-import { Network } from '@/helpers/networkTypes';
 import { explorerClearState, explorerInit } from '@/redux/explorer';
 import { AppState } from '@/redux/store';
 import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
+import { Network } from '@/networks/types';
 
 // -- Constants ------------------------------------------------------------- //
 const SETTINGS_UPDATE_SETTINGS_ADDRESS = 'settings/SETTINGS_UPDATE_SETTINGS_ADDRESS';

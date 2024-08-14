@@ -2,9 +2,9 @@ import { sortBy, values } from 'lodash';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import networkTypes from '../helpers/networkTypes';
 import { contactsAddOrUpdate, removeContact } from '../redux/contacts';
 import { AppState } from '@/redux/store';
+import { Network } from '@/networks/types';
 
 const contactsSelector = createSelector(
   ({ contacts: { contacts } }: AppState) => contacts,
@@ -30,7 +30,7 @@ export default function useContacts() {
   const onRemoveContact = useCallback((data: string) => dispatch(removeContact(data)), [dispatch]);
 
   const filteredContacts = sortedContacts.filter(contact =>
-    contact.network === network || (!contact.network && network === networkTypes.mainnet) ? contact : false
+    contact.network === network || (!contact.network && network === Network.mainnet) ? contact : false
   );
 
   return {
