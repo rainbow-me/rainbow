@@ -4,6 +4,7 @@ import { omitFlatten } from '@/helpers/utilities';
 import { AppGetState } from '@/redux/store';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
+import { Network } from '@/networks/types';
 
 // -- Constants --------------------------------------- //
 const CONTACTS_UPDATE = 'contacts/CONTACTS_UPDATE';
