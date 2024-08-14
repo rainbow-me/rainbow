@@ -236,6 +236,7 @@ export default function ChartExpandedState({ asset }) {
   const { colors } = useTheme();
 
   const crosschainEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
+
   const AvailableNetworks = !crosschainEnabled ? AvailableNetworksv1 : AvailableNetworksv2;
 
   const assetChainId = assetWithPrice.chainId;

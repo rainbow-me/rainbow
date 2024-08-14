@@ -77,8 +77,8 @@ const FLOOR_PRICE_EXPLAINER = lang.t('explain.floor_price.text');
 
 const gasExplainer = network => lang.t('explain.gas.text', { networkName: network });
 
-const availableNetworksExplainer = (tokenSymbol, networks) => {
-  const readableNetworks = networks?.map(network => chainIdToNameMapping[ethereumUtils.getChainIdFromNetwork(network)])?.join(', ');
+const availableNetworksExplainer = (tokenSymbol, chainIds) => {
+  const readableNetworks = chainIds?.map(chainId => chainIdToNameMapping[chainId])?.join(', ');
 
   return lang.t('explain.available_networks.text', {
     tokenSymbol: tokenSymbol,
@@ -694,24 +694,24 @@ export const explainers = (params, theme) => {
     availableNetworks: {
       buttonText: `Go to Hop`,
       extraHeight: -90,
-      text: availableNetworksExplainer(params?.tokenSymbol, params?.networks),
+      text: availableNetworksExplainer(params?.tokenSymbol, params?.chainIds),
       title:
-        params?.networks?.length > 1
+        params?.chainIds?.length > 1
           ? lang.t('explain.available_networks.title_plural', {
-              length: params?.networks?.length,
+              length: params?.chainIds?.length,
             })
           : lang.t('explain.available_networks.title_singular', {
-              network: params?.networks?.[0],
+              network: params?.chainIds?.[0],
             }),
       logo: (
         <Row justify="center" marginBottom={10}>
-          {params?.networks?.map((network, index) => {
+          {params?.chainIds?.map((chainId, index) => {
             return (
               <Box
                 height={{ custom: 40 }}
-                key={`networks-${network}`}
+                key={`chainId-${chainId}`}
                 marginLeft={{
-                  custom: index > 0 ? -12 : params?.networks?.length % 2 === 0 ? -2 : -30,
+                  custom: index > 0 ? -12 : params?.chainIds?.length % 2 === 0 ? -2 : -30,
                 }}
                 style={{
                   borderColor: colors.transparent,
@@ -720,10 +720,10 @@ export const explainers = (params, theme) => {
                   zIndex: index,
                 }}
                 width={{ custom: 40 }}
-                zIndex={params?.networks?.length - index}
+                zIndex={params?.chainIds?.length - index}
               >
-                {network !== 'mainnet' ? (
-                  <ChainBadge chainId={ethereumUtils.getChainIdFromNetwork(network)} position="relative" size="large" />
+                {chainId !== ChainId.mainnet ? (
+                  <ChainBadge chainId={chainId} position="relative" size="large" />
                 ) : (
                   <View style={{ marginTop: 4 }}>
                     <EthCoinIcon size={40} />
