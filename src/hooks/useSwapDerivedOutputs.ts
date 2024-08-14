@@ -103,6 +103,7 @@ const getInputAmount = async (
       slippage: IS_TESTING !== 'true' ? slippage : 5,
       ...(quoteSource ? { source } : {}),
       swapType: SwapType.normal,
+      currency: store.getState().settings.nativeCurrency,
     };
 
     const rand = Math.floor(Math.random() * 100);
