@@ -74,7 +74,7 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
   }, [currentNetwork, revertToMainnet]);
 
   const walletReady = useSelector(({ appState: { walletReady } }: AppState) => walletReady);
-  const { isWalletEthZero, isLoadingUserAssets, briefSectionsData: walletBriefSectionsData } = useWalletSectionsData();
+  const { isWalletEthZero, isLoadingUserAssets, isLoadingBalance, briefSectionsData: walletBriefSectionsData } = useWalletSectionsData();
 
   useEffect(() => {
     // This is the fix for Android wallet creation problem.
@@ -86,7 +86,7 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
     if (isWelcomeScreen) {
       removeFirst();
     }
-  }, [dangerouslyGetState, removeFirst]);
+  }, [dangerouslyGetParent, dangerouslyGetState, removeFirst]);
 
   useEffect(() => {
     const initializeAndSetParams = async () => {
@@ -132,8 +132,8 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
           {/* @ts-expect-error JavaScript component */}
           <AssetList
             accentColor={highContrastAccentColor}
-            disableRefreshControl={isLoadingUserAssetsAndAddress}
-            isLoading={IS_ANDROID && isLoadingUserAssetsAndAddress}
+            disableRefreshControl={isLoadingUserAssetsAndAddress || isLoadingBalance}
+            isLoading={IS_ANDROID && (isLoadingUserAssetsAndAddress || isLoadingBalance)}
             isWalletEthZero={isWalletEthZero}
             network={currentNetwork}
             walletBriefSectionsData={walletBriefSectionsData}

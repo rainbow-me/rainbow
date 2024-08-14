@@ -11,12 +11,14 @@ import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections'
 import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import { useLegacyNFTs } from '@/resources/nfts';
 import useNftSort from './useNFTsSortBy';
+import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 
 export default function useWalletSectionsData({
   type,
 }: {
   type?: string;
 } = {}) {
+  const { selectedWallet, isReadOnlyWallet } = useWallets();
   const { isLoading: isLoadingUserAssets, data: sortedAssets = [] } = useSortedUserAssets();
   const isWalletEthZero = useIsWalletEthZero();
 
@@ -27,9 +29,15 @@ export default function useWalletSectionsData({
   } = useLegacyNFTs({
     address: accountAddress,
   });
+
+  const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
+
+  const accountWithBalance = walletsWithBalancesAndNames[selectedWallet.id]?.addresses.find(
+    address => address.address.toLowerCase() === accountAddress.toLowerCase()
+  );
+
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
-  const { isReadOnlyWallet } = useWallets();
 
   const { hiddenCoinsObj: hiddenCoins, pinnedCoinsObj: pinnedCoins } = useCoinListEditOptions();
 
@@ -48,6 +56,8 @@ export default function useWalletSectionsData({
       pinnedCoins,
       sendableUniqueTokens,
       sortedAssets,
+      accountBalanceDisplay: accountWithBalance?.balances?.totalBalanceDisplay,
+      isLoadingBalance: !accountWithBalance?.balances,
       // @ts-expect-error ts-migrate(2698) FIXME: Spread types may only be created from object types... Remove this comment to see the full error message
       ...isWalletEthZero,
       hiddenTokens,
@@ -64,6 +74,7 @@ export default function useWalletSectionsData({
     return {
       hasNFTs,
       isEmpty,
+      isLoadingBalance: !accountWithBalance?.balances,
       isLoadingUserAssets,
       isWalletEthZero,
       briefSectionsData,
@@ -78,6 +89,7 @@ export default function useWalletSectionsData({
     pinnedCoins,
     sendableUniqueTokens,
     sortedAssets,
+    accountWithBalance,
     isWalletEthZero,
     hiddenTokens,
     isReadOnlyWallet,

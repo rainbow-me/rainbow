@@ -1,6 +1,6 @@
 /* eslint-disable no-promise-executor-return */
-import { useCallback, useState } from 'react';
-import { backupAllWalletsToCloud, getLocalBackupPassword, saveLocalBackupPassword } from '@/model/backup';
+import { useCallback, useMemo, useState } from 'react';
+import { backupAllWalletsToCloud, findLatestBackUp, getLocalBackupPassword, saveLocalBackupPassword } from '@/model/backup';
 import { useCloudBackups } from './CloudBackupProvider';
 import { cloudPlatform } from '@/utils/platform';
 import { analytics } from '@/analytics';
@@ -34,7 +34,8 @@ export const useCreateBackup = ({ walletId, navigateToRoute }: UseCreateBackupPr
 
   const { fetchBackups } = useCloudBackups();
   const walletCloudBackup = useWalletCloudBackup();
-  const { latestBackup, wallets } = useWallets();
+  const { wallets } = useWallets();
+  const latestBackup = useMemo(() => findLatestBackUp(wallets), [wallets]);
   const [loading, setLoading] = useState<useCreateBackupStateType>('none');
 
   const [password, setPassword] = useState('');
