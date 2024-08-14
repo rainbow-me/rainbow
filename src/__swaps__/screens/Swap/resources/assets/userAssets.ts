@@ -11,7 +11,7 @@ import { SupportedCurrencyKey, SUPPORTED_CHAIN_IDS } from '@/references';
 import { ParsedAssetsDictByChain, ZerionAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { AddressAssetsReceivedMessage } from '@/__swaps__/types/refraction';
-import { filterAsset, parseUserAsset } from '@/__swaps__/utils/assets';
+import { parseUserAsset } from '@/__swaps__/utils/assets';
 import { greaterThan } from '@/__swaps__/utils/numbers';
 
 import { fetchUserAssetsByChain } from './userAssetsByChain';
@@ -198,7 +198,7 @@ export async function parseUserAssets({
 }) {
   const parsedAssetsDict = chainIds.reduce((dict, currentChainId) => ({ ...dict, [currentChainId]: {} }), {}) as ParsedAssetsDictByChain;
   for (const { asset, quantity, small_balance } of assets) {
-    if (!filterAsset(asset) && greaterThan(quantity, 0)) {
+    if (greaterThan(quantity, 0)) {
       const parsedAsset = parseUserAsset({
         asset,
         currency,

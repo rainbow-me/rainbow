@@ -31,6 +31,11 @@ interface SectionHeaderProp {
 }
 
 const SECTION_HEADER_INFO: { [id in AssetToBuySectionId]: SectionHeaderProp } = {
+  popular: {
+    title: i18n.t(i18n.l.token_search.section_header.popular),
+    symbol: '􀙬',
+    color: 'rgba(255, 88, 77, 1)',
+  },
   recent: {
     title: i18n.t(i18n.l.token_search.section_header.recent),
     symbol: '􀐫',

@@ -105,12 +105,12 @@ const useMountSignal = () => {
 const useCleanupOnUnmount = () => {
   useEffect(() => {
     return () => {
-      const highestValueAsset = userAssetsStore.getState().getHighestValueAsset();
-      const parsedAsset = highestValueAsset
+      const highestValueEth = userAssetsStore.getState().getHighestValueEth();
+      const parsedAsset = highestValueEth
         ? parseSearchAsset({
             assetWithPrice: undefined,
-            searchAsset: highestValueAsset,
-            userAsset: highestValueAsset,
+            searchAsset: highestValueEth,
+            userAsset: highestValueEth,
           })
         : null;
 
@@ -135,7 +135,7 @@ const WalletAddressObserver = () => {
   const { setAsset } = useSwapContext();
 
   const setNewInputAsset = useCallback(() => {
-    const newHighestValueAsset = userAssetsStore.getState().getHighestValueAsset();
+    const newHighestValueEth = userAssetsStore.getState().getHighestValueEth();
 
     if (userAssetsStore.getState().filter !== 'all') {
       userAssetsStore.setState({ filter: 'all' });
@@ -143,7 +143,7 @@ const WalletAddressObserver = () => {
 
     setAsset({
       type: SwapAssetType.inputAsset,
-      asset: newHighestValueAsset,
+      asset: newHighestValueEth,
     });
 
     if (userAssetsStore.getState().userAssets.size === 0) {

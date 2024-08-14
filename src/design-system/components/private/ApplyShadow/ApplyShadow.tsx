@@ -97,8 +97,10 @@ export const ApplyShadow = React.forwardRef(({ backgroundColor, children: child,
 
   return (
     <View ref={ref} style={parentStyles}>
-      {(ios || web) && <IOSShadow backgroundColor={backgroundColor} shadows={iosShadows} style={childStyles} />}
-      {android && <AndroidShadow backgroundColor={backgroundColor} shadow={shadows.android} style={childStyles} />}
+      {(ios || web) && <IOSShadow backgroundColor={backgroundColor} shadows={iosShadows} style={[childStyles, { overflow: 'visible' }]} />}
+      {android && (
+        <AndroidShadow backgroundColor={backgroundColor} shadow={shadows.android} style={[childStyles, { overflow: 'visible' }]} />
+      )}
 
       {React.cloneElement(child, {
         style: [{ flex: 1 }, childStyles, android ? androidChildStyles : undefined],

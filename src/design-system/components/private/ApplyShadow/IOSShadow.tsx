@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import type { ShadowItem } from './ApplyShadow';
 
@@ -10,7 +10,7 @@ export function IOSShadow({
 }: {
   backgroundColor: ViewStyle['backgroundColor'];
   shadows: ShadowItem[];
-  style: ViewStyle;
+  style: StyleProp<ViewStyle>;
 }) {
   return (
     <>

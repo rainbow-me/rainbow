@@ -456,7 +456,7 @@ const HomePanel = ({
 
     if (swaps_v2 || swapsV2Enabled) {
       swapsStore.setState({
-        inputAsset: userAssetsStore.getState().getHighestValueAsset(),
+        inputAsset: userAssetsStore.getState().getHighestValueEth(),
       });
       InteractionManager.runAfterInteractions(() => {
         navigate(Routes.SWAP);
@@ -484,7 +484,7 @@ const HomePanel = ({
       // TODO: We need to set something in swapsStore that deliniates between a swap and bridge
       // for now let's just treat it like a normal swap
       swapsStore.setState({
-        inputAsset: userAssetsStore.getState().getHighestValueAsset(),
+        inputAsset: userAssetsStore.getState().getHighestValueEth(),
       });
       InteractionManager.runAfterInteractions(() => {
         navigate(Routes.SWAP);

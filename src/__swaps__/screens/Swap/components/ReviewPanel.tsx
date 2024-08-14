@@ -471,7 +471,7 @@ export function ReviewPanel() {
           <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
             <ButtonPressAnimation onPress={openGasExplainer} scaleTo={0.925}>
               <Stack space="10px">
-                <Inline alignVertical="center" horizontalSpace="6px">
+                <Inline alignVertical="center" horizontalSpace="6px" wrap={false}>
                   <View style={sx.chainBadgeContainer}>
                     <AnimatedChainImage showMainnetBadge assetType="input" size={16} />
                   </View>

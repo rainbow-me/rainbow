@@ -31,7 +31,7 @@ export const UserAssetsSync = function UserAssetsSync() {
         if (!isSwapsOpen || userAssetsWalletAddress !== currentAddress) {
           userAssetsStore.getState().setUserAssets(currentAddress as Address, data as ParsedSearchAsset[]);
 
-          const inputAsset = userAssetsStore.getState().getHighestValueAsset();
+          const inputAsset = userAssetsStore.getState().getHighestValueEth();
           useSwapsStore.setState({
             inputAsset,
             selectedOutputChainId: inputAsset?.chainId ?? ChainId.mainnet,
