@@ -54,8 +54,7 @@ import { address } from '@/utils/abbreviations';
 import { fontWithWidthWorklet } from '@/styles/buildTextStyles';
 import { useAppSessionsStore } from '@/state/appSessions';
 import { DEFAULT_TAB_URL, RAINBOW_HOME } from '../constants';
-import { useFavoriteDappsStore } from '@/state/favoriteDapps';
-import { Site } from '@/state/browserHistory';
+import { FavoritedSite, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
 import WalletTypes from '@/helpers/walletTypes';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
@@ -921,7 +920,7 @@ const FavoriteButton = React.memo(function FavButton({ animatedAccentColor }: { 
     if (isFavorite) {
       removeFavorite(tabData?.url || '');
     } else {
-      const site: Omit<Site, 'timestamp'> = {
+      const site: FavoritedSite = {
         name: tabData?.title || '',
         url: tabData?.url || '',
         image: tabData?.logoUrl || '',
