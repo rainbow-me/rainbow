@@ -421,7 +421,6 @@ export function useSwapInputsController({
       lastTypedInput: lastTypedInputParam,
       outputAmount,
       outputAsset: internalSelectedOutputAsset.value,
-      currency: store.getState().settings.nativeCurrency,
     });
 
     logger.debug(`[useSwapInputsController]: quote params`, {
