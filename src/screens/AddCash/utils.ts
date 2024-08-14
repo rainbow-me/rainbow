@@ -1,14 +1,14 @@
-import { Network } from '@/networks/types';
+import { ChainId } from '@/__swaps__/types/chains';
 import { Network as APINetwork } from '@/screens/AddCash/types';
 
-export function convertAPINetworkToInternalNetwork(network: APINetwork): Network | undefined {
+export function convertAPINetworkToInternalChainIds(network: APINetwork): ChainId | undefined {
   const networkMap = {
-    [APINetwork.Ethereum]: Network.mainnet,
-    [APINetwork.Arbitrum]: Network.arbitrum,
-    [APINetwork.Optimism]: Network.optimism,
-    [APINetwork.Polygon]: Network.polygon,
-    [APINetwork.Base]: Network.base,
-    [APINetwork.BSC]: Network.bsc,
+    [APINetwork.Ethereum]: ChainId.mainnet,
+    [APINetwork.Arbitrum]: ChainId.arbitrum,
+    [APINetwork.Optimism]: ChainId.optimism,
+    [APINetwork.Polygon]: ChainId.polygon,
+    [APINetwork.Base]: ChainId.base,
+    [APINetwork.BSC]: ChainId.bsc,
   };
 
   // @ts-ignore

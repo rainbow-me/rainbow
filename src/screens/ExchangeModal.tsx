@@ -690,7 +690,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
       setParams({ focused: false });
       navigate(Routes.SWAP_SETTINGS_SHEET, {
         asset: outputCurrency,
-        network: ethereumUtils.getNetworkFromChainId(currentChainId),
+        chainId: currentChainId,
         restoreFocusOnSwapModal: () => {
           android && (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
           setParams({ focused: true });

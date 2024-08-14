@@ -12,12 +12,11 @@ import { Coinbase as CoinbaseLogo } from '@/components/icons/svg/Coinbase';
 import { Moonpay as MoonpayLogo } from '@/components/icons/svg/Moonpay';
 
 import { FiatProviderName } from '@/entities/f2c';
-import { convertAPINetworkToInternalNetwork } from '@/screens/AddCash/utils';
+import { convertAPINetworkToInternalChainIds } from '@/screens/AddCash/utils';
 import { ProviderConfig, CalloutType, PaymentMethod } from '@/screens/AddCash/types';
 import * as i18n from '@/languages';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
-import { ethereumUtils } from '@/utils';
-import { Network } from '@/networks/types';
+import { ChainId } from '@/__swaps__/types/chains';
 
 type PaymentMethodConfig = {
   name: string;
@@ -80,26 +79,22 @@ function getPaymentMethodConfigs(paymentMethods: { type: PaymentMethod }[]) {
   return methods;
 }
 
-function NetworkIcons({ networks }: { networks: Network[] }) {
+function NetworkIcons({ chainIds }: { chainIds?: ChainId[] }) {
   return (
     <Box flexDirection="row" alignItems="center">
-      {networks.map((network, index) => {
+      {chainIds?.map((chainId, index) => {
         return (
           <Box
-            key={`availableNetwork-${network}`}
+            key={`availableNetwork-${chainId}`}
             marginTop={{ custom: -2 }}
             marginLeft={{ custom: index > 0 ? -6 : 0 }}
             style={{
               position: 'relative',
-              zIndex: networks.length - index,
+              zIndex: chainIds.length - index,
               borderRadius: 30,
             }}
           >
-            {network !== Network.mainnet ? (
-              <ChainBadge chainId={ethereumUtils.getChainIdFromNetwork(network)} position="relative" size="small" />
-            ) : (
-              <EthCoinIcon size={20} />
-            )}
+            {chainId !== ChainId.mainnet ? <ChainBadge chainId={chainId} position="relative" size="small" /> : <EthCoinIcon size={20} />}
           </Box>
         );
       })}
@@ -232,7 +227,7 @@ export function ProviderCard({ config }: { config: ProviderConfig }) {
                     <Box flexDirection="row" alignItems="center" paddingTop="8px">
                       <NetworkIcons
                         /* @ts-ignore */
-                        networks={callout.networks.map(convertAPINetworkToInternalNetwork).filter(Boolean)}
+                        chainIds={callout.networks.map(convertAPINetworkToInternalChainIds).filter(Boolean)}
                       />
                     </Box>
                   );

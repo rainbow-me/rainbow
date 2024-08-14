@@ -12,7 +12,7 @@ import { settingsUpdateNetwork } from '@/redux/settings';
 import { Network } from '@/networks/types';
 import { RainbowNetworkObjects } from '@/networks';
 
-const networks = values(RainbowNetworkObjects).filter(({ networkType }) => networkType !== 'layer2');
+const networkObjects = values(RainbowNetworkObjects).filter(({ networkType }) => networkType !== 'layer2');
 
 interface NetworkSectionProps {
   inDevSection?: boolean;
@@ -39,7 +39,7 @@ const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
   );
 
   const renderNetworkList = useCallback(() => {
-    return networks.map(({ name, value, networkType }) => (
+    return networkObjects.map(({ name, value, networkType }) => (
       <MenuItem
         disabled={!testnetsEnabled && networkType === 'testnet'}
         key={value}

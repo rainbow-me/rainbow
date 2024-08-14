@@ -65,7 +65,7 @@ import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 import isHttpUrl from '@/helpers/isHttpUrl';
 import { useNFTOffers } from '@/resources/reservoir/nftOffersQuery';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { Network } from '@/networks/types';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
@@ -211,9 +211,9 @@ interface UniqueTokenExpandedStateProps {
 }
 
 // TODO(RNBW-4552): renable polygon once remote allowlist is updated on web.
-const getIsSupportedOnRainbowWeb = (network: Network) => {
-  switch (network) {
-    case Network.mainnet:
+const getIsSupportedOnRainbowWeb = (chainId: ChainId) => {
+  switch (chainId) {
+    case ChainId.mainnet:
       return true;
     default:
       return false;
@@ -251,7 +251,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
     [offer]
   );
 
-  const isSupportedOnRainbowWeb = getIsSupportedOnRainbowWeb(asset.network);
+  const isSupportedOnRainbowWeb = getIsSupportedOnRainbowWeb(asset.chainId);
 
   const [isRefreshMetadataToastActive, setIsRefreshMetadataToastActive] = useState(false);
   const [isReportSpamToastActive, setIsReportSpamToastActive] = useState(false);
@@ -548,7 +548,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
                         />
                       )}
                     </Stack>
-                    {asset.network !== Network.mainnet ? (
+                    {asset.chainId !== ChainId.mainnet ? (
                       // @ts-expect-error JavaScript component
                       <L2Disclaimer
                         chainId={asset.chainId}
