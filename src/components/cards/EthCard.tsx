@@ -45,6 +45,7 @@ export const EthCard = () => {
       ...externalEthAsset,
       address: ETH_ADDRESS,
       network: Network.mainnet,
+      chainId: ChainId.mainnet,
       uniqueId: getUniqueId(ETH_ADDRESS, ChainId.mainnet),
     }),
     [externalEthAsset]

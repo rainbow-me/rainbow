@@ -88,7 +88,7 @@ export const getNativeAssetForNetwork = async ({
       // @ts-ignore
       nativeAsset = {
         ...externalAsset,
-        network: getNetworkFromChainId(chainId),
+        network: networkObject.value,
         uniqueId: getUniqueId(networkObject.nativeCurrency.address, chainId),
         address: networkObject.nativeCurrency.address,
         decimals: networkObject.nativeCurrency.decimals,
