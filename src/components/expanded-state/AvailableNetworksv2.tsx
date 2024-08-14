@@ -8,14 +8,14 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { position } from '@/styles';
 import { ethereumUtils, watchingAlert } from '@/utils';
-import { CurrencySelectionTypes, ExchangeModalTypes, Network } from '@/helpers';
+import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
 import { useSwapCurrencyHandlers, useWallets } from '@/hooks';
 import { RainbowToken } from '@/entities';
 import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../animations';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { implementation } from '@/entities/dispersion';
-import { RainbowNetworkObjects, getNetworkObj } from '@/networks';
+import { RainbowNetworkObjects, getNetworkObject } from '@/networks';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 import { SWAPS_V2, enableActionsOnReadOnlyWallet, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -26,6 +26,7 @@ import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
 import { ChainId } from '@/__swaps__/types/chains';
+import { Network } from '@/networks/types';
 
 const NOOP = () => null;
 
@@ -237,7 +238,8 @@ const AvailableNetworksv2 = ({
                           availableNetworks: availableNetworks?.length,
                         })
                       : lang.t('expanded_state.asset.available_networkv2', {
-                          availableNetwork: getNetworkObj(availableNetworks?.[0])?.name,
+                          availableNetwork: getNetworkObject({ chainId: ethereumUtils.getChainIdFromNetwork(availableNetworks?.[0]) })
+                            ?.name,
                         })}
                   </Text>
                 </Box>

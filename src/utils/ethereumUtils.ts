@@ -297,7 +297,7 @@ const getNetworkNameFromChainId = (chainId: ChainId): string => {
  * @param  {String} network
  */
 const getChainIdFromNetwork = (network?: Network): ChainId => {
-  return network ? getNetworkObj(network).id : ChainId.mainnet;
+  return RainbowNetworkObjects.find(networkObject => networkObject.value === network)?.id || ChainId.mainnet;
 };
 
 /**

@@ -52,43 +52,6 @@ export const RainbowSupportedChainIds = [
 /**
  * Helper function to get specific Rainbow Network's Object
  */
-export function getNetworkObj(network: Network): NetworkProperties {
-  switch (network) {
-    // Mainnet
-    case Network.mainnet:
-      return getMainnetNetworkObject();
-
-    // L2s
-    case Network.arbitrum:
-      return getArbitrumNetworkObject();
-    case Network.base:
-      return getBaseNetworkObject();
-    case Network.bsc:
-      return getBSCNetworkObject();
-    case Network.optimism:
-      return getOptimismNetworkObject();
-    case Network.polygon:
-      return getPolygonNetworkObject();
-    case Network.zora:
-      return getZoraNetworkObject();
-    case Network.gnosis:
-      return getGnosisNetworkObject();
-    case Network.avalanche:
-      return getAvalancheNetworkObject();
-    case Network.blast:
-      return getBlastNetworkObject();
-    case Network.degen:
-      return getDegenNetworkObject();
-    // Testnets
-    case Network.goerli:
-      return getGoerliNetworkObject();
-
-    // Fallback
-    default:
-      return getMainnetNetworkObject();
-  }
-}
-
 export function getNetworkObject({ chainId }: { chainId: ChainId }): NetworkProperties {
   switch (chainId) {
     // Mainnet
