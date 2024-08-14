@@ -23,6 +23,7 @@ import { enableActionsOnReadOnlyWallet } from '@/config';
 import walletTypes from '@/helpers/walletTypes';
 import watchingAlert from './watchingAlert';
 import {
+  EthereumAction,
   isEthereumAction,
   isHandshakeAction,
   PersonalSignAction,
@@ -46,6 +47,29 @@ interface HandleMobileWalletProtocolRequestProps
   extends Omit<ReturnType<typeof useMobileWalletProtocolHost>, 'message' | 'handleRequestUrl' | 'sendFailureToClient'> {
   request: RequestMessage;
 }
+
+const constructEthereumActionPayload = (action: EthereumAction) => {
+  if (action.method === 'eth_sendTransaction') {
+    const { weiValue, fromAddress, toAddress, actionSource, gasPriceInWei, ...rest } = action.params;
+    return [
+      {
+        ...rest,
+        from: fromAddress,
+        to: toAddress,
+        value: weiValue,
+      },
+    ];
+  }
+
+  return Object.values(action.params);
+};
+
+const supportedMobileWalletProtocolActions: string[] = [
+  'eth_requestAccounts',
+  'eth_sendTransaction',
+  'eth_signTypedData_v4',
+  'personal_sign',
+];
 
 export const handleMobileWalletProtocolRequest = async ({
   request,
@@ -127,6 +151,15 @@ export const handleMobileWalletProtocolRequest = async ({
       });
     } else if (isEthereumAction(action)) {
       logger.debug(`Processing ethereum action: ${action.method}`);
+      if (!supportedMobileWalletProtocolActions.includes(action.method)) {
+        logger.error(new RainbowError(`[handleMobileWalletProtocolRequest]: Unsupported action type ${action.method}`));
+        await rejectAction(action, {
+          message: 'Unsupported action type',
+          code: 4001,
+        });
+        return false;
+      }
+
       const nativeCurrency = store.getState().settings.nativeCurrency;
       const network = ethereumUtils.getNetworkFromChainId(request.account?.networkId ?? ChainId.mainnet);
 
@@ -139,20 +172,8 @@ export const handleMobileWalletProtocolRequest = async ({
 
       const payload = {
         method: action.method,
-        params: Object.values(action.params),
+        params: constructEthereumActionPayload(action),
       };
-
-      if (action.method === 'eth_sendTransaction') {
-        const { weiValue, fromAddress, toAddress, actionSource, gasPriceInWei, ...rest } = action.params;
-        payload.params = [
-          {
-            ...rest,
-            from: fromAddress,
-            to: toAddress,
-            value: weiValue,
-          },
-        ];
-      }
 
       const displayDetails = await getRequestDisplayDetails(payload, nativeCurrency, network);
 
@@ -166,12 +187,9 @@ export const handleMobileWalletProtocolRequest = async ({
         displayDetails,
       };
 
-      console.log(JSON.stringify(requestWithDetails, null, 2));
-
       return new Promise((resolve, reject) => {
         const onSuccess = async (result: string) => {
           logger.debug(`Ethereum action approved: [${action.method}]: ${result}`);
-
           const success = await approveAction(action, { value: JSON.stringify(result) });
           resolve(success);
         };
