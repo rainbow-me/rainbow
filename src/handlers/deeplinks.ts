@@ -33,8 +33,7 @@ interface DeeplinkHandlerProps extends Pick<ReturnType<typeof useMobileWalletPro
  *    `xcrun simctl openurl booted "https://link.rainbow.me/0x123"`
  */
 
-export default async function handleDeeplink(props: DeeplinkHandlerProps) {
-  const { url, initialRoute, handleRequestUrl, sendFailureToClient } = props;
+export default async function handleDeeplink({ url, initialRoute, handleRequestUrl, sendFailureToClient }: DeeplinkHandlerProps) {
 
   if (!url) {
     logger.warn(`handleDeeplink: No url provided`);
