@@ -97,7 +97,7 @@ const fetchSimulation = async ({
           {
             from: req?.from,
             to: req?.to,
-            data: req?.data,
+            data: req?.data || '0x',
             value: req?.value || '0x0',
           },
         ],

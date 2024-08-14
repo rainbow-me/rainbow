@@ -100,7 +100,6 @@ export const handleMobileWalletProtocolRequest = async ({
               logger.debug(`Handshake approved for ${action.appId}`);
               const success = await approveHandshake(dappMetadata);
               const nextAction = request.actions[currentIndex + 1];
-              // NOTE: The connection prompt should automatically approve eth_requestAccounts actions
               if (nextAction && isEthereumAction(nextAction) && nextAction.method === 'eth_requestAccounts') {
                 logger.debug('Approving eth_requestAccounts');
                 await approveAction(nextAction, {
@@ -143,6 +142,20 @@ export const handleMobileWalletProtocolRequest = async ({
         params: Object.values(action.params),
       };
 
+      if (action.method === 'eth_sendTransaction') {
+        const { weiValue, fromAddress, toAddress, actionSource, gasPriceInWei, ...rest } = action.params;
+        payload.params = [
+          {
+            ...rest,
+            from: fromAddress,
+            to: toAddress,
+            value: weiValue,
+          },
+        ];
+      }
+
+      const displayDetails = await getRequestDisplayDetails(payload, nativeCurrency, network);
+
       const requestWithDetails: RequestData = {
         dappName: session?.dappName ?? session?.dappId ?? '',
         dappUrl: session?.dappURL ?? '',
@@ -150,8 +163,10 @@ export const handleMobileWalletProtocolRequest = async ({
         address: (action as PersonalSignAction).params.address ?? accountAddress,
         network,
         payload,
-        displayDetails: getRequestDisplayDetails(payload, nativeCurrency, network),
+        displayDetails,
       };
+
+      console.log(JSON.stringify(requestWithDetails, null, 2));
 
       return new Promise((resolve, reject) => {
         const onSuccess = async (result: string) => {
@@ -291,7 +306,7 @@ export const handleDappBrowserRequest = async (request: Omit<RequestData, 'displ
   await findWalletForAddress(request.address);
 
   const nativeCurrency = store.getState().settings.nativeCurrency;
-  const displayDetails = getRequestDisplayDetails(request.payload, nativeCurrency, request.network);
+  const displayDetails = await getRequestDisplayDetails(request.payload, nativeCurrency, request.network);
 
   const requestWithDetails: RequestData = {
     ...request,

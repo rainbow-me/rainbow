@@ -126,7 +126,7 @@ export const SignTransactionSheet = () => {
       ? { message: transactionDetails?.displayDetails?.request || '' }
       : {
           ...transactionDetails?.displayDetails?.request,
-          nativeAsset: nativeAsset,
+          nativeAsset,
         };
   }, [isMessageRequest, transactionDetails?.displayDetails?.request, nativeAsset]);
 
