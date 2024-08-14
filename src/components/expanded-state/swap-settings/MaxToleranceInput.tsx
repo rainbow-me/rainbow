@@ -6,7 +6,7 @@ import { ButtonPressAnimation } from '../../animations';
 import { Icon } from '../../icons';
 import StepButtonInput from './StepButtonInput';
 import { AccentColorProvider, Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
-import { Network } from '@/helpers';
+import { Network } from '@/networks/types';
 import { add, convertNumberToString, greaterThan } from '@/helpers/utilities';
 import { useMagicAutofocus, useSwapSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';

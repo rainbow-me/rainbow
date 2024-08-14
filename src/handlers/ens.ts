@@ -12,7 +12,6 @@ import { ENSActionParameters, ENSRapActionType } from '@/raps/common';
 import { getENSData, getNameFromLabelhash, saveENSData } from './localstorage/ens';
 import { estimateGasWithPadding, getProvider, TokenStandard } from './web3';
 import { ENSRegistrationRecords, Records, UniqueAsset } from '@/entities';
-import { Network } from '@/helpers';
 import { ENS_DOMAIN, ENS_RECORDS, ENSRegistrationTransactionType, generateSalt, getENSExecutionDetails, getNameOwner } from '@/helpers/ens';
 import { add } from '@/helpers/utilities';
 import { ImgixImage } from '@/components/images';
@@ -26,6 +25,7 @@ import { MimeType, handleNFTImages } from '@/utils/handleNFTImages';
 import store from '@/redux/store';
 import { logger, RainbowError } from '@/logger';
 import { ChainId } from '@/__swaps__/types/chains';
+import { Network } from '@/networks/types';
 
 const DUMMY_RECORDS = {
   description: 'description',

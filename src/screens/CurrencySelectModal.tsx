@@ -15,7 +15,7 @@ import { Modal } from '../components/modal';
 import { STORAGE_IDS } from '../model/mmkv';
 import { analytics } from '@/analytics';
 import { addHexPrefix, isL2Chain } from '@/handlers/web3';
-import { CurrencySelectionTypes, Network, TokenSectionTypes } from '@/helpers';
+import { CurrencySelectionTypes, TokenSectionTypes } from '@/helpers';
 import {
   useAccountSettings,
   useInteraction,
@@ -41,6 +41,7 @@ import { externalTokenQueryKey, fetchExternalToken } from '@/resources/assets/ex
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { queryClient } from '@/react-query/queryClient';
 import { ChainId } from '@/__swaps__/types/chains';
+import { Network } from '@/networks/types';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Network } from '@/helpers';
+import { Network } from '@/networks/types';
 
 import ArbitrumBadge from '@/assets/badges/arbitrum.png';
 import BaseBadge from '@/assets/badges/base.png';

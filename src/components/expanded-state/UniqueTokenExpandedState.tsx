@@ -42,7 +42,6 @@ import {
   TextProps,
 } from '@/design-system';
 import { UniqueAsset } from '@/entities';
-import { Network } from '@/helpers';
 import { buildUniqueTokenName } from '@/helpers/assets';
 import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
 import {
@@ -66,6 +65,7 @@ import { buildRainbowUrl } from '@/utils/buildRainbowUrl';
 import isHttpUrl from '@/helpers/isHttpUrl';
 import { useNFTOffers } from '@/resources/reservoir/nftOffersQuery';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { Network } from '@/networks/types';
 
 const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,

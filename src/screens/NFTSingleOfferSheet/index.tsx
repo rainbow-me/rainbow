@@ -39,7 +39,7 @@ import { createWalletClient, http } from 'viem';
 
 import { RainbowError, logger } from '@/logger';
 import { useTheme } from '@/theme';
-import { Network } from '@/helpers';
+import { Network } from '@/networks/types';
 import { getNetworkObject } from '@/networks';
 import { CardSize } from '@/components/unique-token/CardSize';
 import { queryClient } from '@/react-query';

@@ -56,8 +56,8 @@ import { IS_ANDROID } from '@/env';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { Signer } from '@ethersproject/abstract-signer';
 import { sanitizeTypedData } from '@/utils/signingUtils';
-import { Network } from '@/helpers';
 import { ExecuteFnParamsWithoutFn, performanceTracking, Screen } from '@/state/performance/performance';
+import { Network } from '@/networks/types';
 
 export type EthereumPrivateKey = string;
 type EthereumMnemonic = string;

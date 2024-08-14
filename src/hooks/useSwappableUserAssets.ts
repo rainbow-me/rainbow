@@ -1,6 +1,5 @@
 import { SwappableAsset } from '@/entities';
 import { walletFilter } from '@/handlers/tokenSearch';
-import { Network } from '@/helpers';
 import { useCoinListEditOptions } from '@/hooks';
 import { ETH_ADDRESS } from '@/references';
 import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
@@ -8,6 +7,7 @@ import { EthereumAddress, ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS } from '@rainbo
 import { ethereumUtils } from '@/utils';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { RainbowNetworkObjects, getNetworkObject, getSwappableNetworks } from '@/networks';
+import { Network } from '@/networks/types';
 
 type SwappableAddresses = Record<Network, EthereumAddress[]>;
 

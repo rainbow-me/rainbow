@@ -19,11 +19,11 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { ethereumUtils } from '@/utils';
-import { Network } from '@/helpers';
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { ChainId } from '@/__swaps__/types/chains';
+import { Network } from '@/networks/types';
 
 export const SearchContainer = styled(Row)({
   height: '100%',

@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AssetList } from '../../components/asset-list';
 import { Page } from '../../components/layout';
-import { Network } from '@/helpers';
 import { useRemoveFirst } from '@/navigation/useRemoveFirst';
 import { settingsUpdateNetwork } from '@/redux/settings';
 import { navbarHeight } from '@/components/navbar/Navbar';
@@ -33,6 +32,7 @@ import { IS_ANDROID } from '@/env';
 import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
 import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
 import { UserAssetsSync } from '@/state/sync/UserAssetsSync';
+import { Network } from '@/networks/types';
 
 const WalletPage = styled(Page)({
   ...position.sizeAsObject('100%'),

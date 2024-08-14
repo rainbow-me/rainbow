@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { useMemo } from 'react';
 import { RainbowAccount } from '@/model/wallet';
-import { Network } from '@/helpers';
+import { Network } from '@/networks/types';
 
 export default function useUserAccounts() {
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();

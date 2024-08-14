@@ -4,11 +4,11 @@ import RadialGradient from 'react-native-radial-gradient';
 import { ButtonPressAnimation } from '../animations';
 import ChainBadge from '../coin-icon/ChainBadge';
 import { Bleed, Box, Columns, Inline, Text } from '@/design-system';
-import { Network } from '@/helpers';
 import { position } from '@rainbow-me/styles';
 import { useTheme } from '@/theme';
 import { sortNetworks } from '@/networks';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
+import { Network } from '@/networks/types';
 
 const NetworkSwitcherv2 = ({
   currentChainId,

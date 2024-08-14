@@ -27,7 +27,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { Box, Row, Rows } from '@/design-system';
 import { GasFee, LegacyGasFee, LegacyGasFeeParams, SwappableAsset } from '@/entities';
-import { ExchangeModalTypes, isKeyboardOpen, Network } from '@/helpers';
+import { ExchangeModalTypes, isKeyboardOpen } from '@/helpers';
 import { KeyboardType } from '@/helpers/keyboardTypes';
 import { getFlashbotsProvider, getProvider } from '@/handlers/web3';
 import { delay, greaterThan } from '@/helpers/utilities';
@@ -82,7 +82,7 @@ export const DEFAULT_SLIPPAGE_BIPS = {
   [ChainId.polygon]: 200,
   [ChainId.base]: 200,
   [ChainId.bsc]: 200,
-  [Network.optimism]: 200,
+  [ChainId.optimism]: 200,
   [ChainId.arbitrum]: 200,
   [ChainId.goerli]: 100,
   [ChainId.gnosis]: 200,

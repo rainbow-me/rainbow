@@ -1,9 +1,9 @@
 import { Contract } from '@ethersproject/contracts';
 import { EthereumAddress } from '@/entities';
 import { getProvider } from '@/handlers/web3';
-import { Network } from '@/helpers';
 import { tokenGateCheckerAbi } from '@/references';
 import { ethereumUtils } from '@/utils';
+import { Network } from '@/networks/types';
 
 export type TokenGateCheckerNetwork =
   | Network.arbitrum
