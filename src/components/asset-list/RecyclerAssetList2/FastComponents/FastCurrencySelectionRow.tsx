@@ -103,7 +103,6 @@ export default React.memo(function FastCurrencySelectionRow({
   },
 }: FastCurrencySelectionRowProps) {
   const { colors } = theme;
-
   const { data: item } = useExternalToken({ address, chainId, currency: nativeCurrency });
   const rowTestID = `${testID}-exchange-coin-row-${symbol ?? item?.symbol ?? ''}-${chainId || ChainId.mainnet}`;
   const isInfoButtonVisible = !isNativeAsset(address, chainId) && !showBalance;

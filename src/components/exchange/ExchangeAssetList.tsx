@@ -201,6 +201,7 @@ const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetList
     }, {})
   );
 
+  console.log('items 0', items[0]);
   const enrichedItems = useMemo(
     () =>
       items.map(({ data, ...item }) => ({
