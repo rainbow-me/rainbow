@@ -13,17 +13,11 @@ import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
 // DO NOT REMOVE THESE COMMENTED ENV VARS
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { IS_APK_BUILD, IS_TESTING } from 'react-native-dotenv';
+import { IS_TESTING } from 'react-native-dotenv';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import isTestFlight from '@/helpers/isTestFlight';
-import { useDispatch, useSelector } from 'react-redux';
-import { SwappableAsset } from '../entities/tokens';
-import useAccountSettings from './useAccountSettings';
 import { analytics } from '@/analytics';
 import { EthereumAddress } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
-import { AppState } from '@/redux/store';
-import { SwapModalField, updateSwapQuote } from '@/redux/swap';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
@@ -33,8 +27,13 @@ import {
   isZero,
   updatePrecisionToDisplay,
 } from '@/helpers/utilities';
-import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
+import store, { AppState } from '@/redux/store';
+import { SwapModalField, updateSwapQuote } from '@/redux/swap';
+import { ethereumUtils } from '@/utils';
+import { useDispatch, useSelector } from 'react-redux';
+import { SwappableAsset } from '../entities/tokens';
+import useAccountSettings from './useAccountSettings';
 
 const SWAP_POLLING_INTERVAL = 5000;
 
@@ -200,6 +199,7 @@ const getOutputAmount = async (
       swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
       toChainId: Number(outputChainId),
       refuel,
+      currency: store.getState().settings.nativeCurrency,
     };
 
     const rand = Math.floor(Math.random() * 100);

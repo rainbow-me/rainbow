@@ -1,9 +1,6 @@
 import c from 'chroma-js';
 import { SharedValue, convertToRGBA, isColor } from 'react-native-reanimated';
 
-import * as i18n from '@/languages';
-import { globalColors } from '@/design-system';
-import { ForegroundColor, palettes } from '@/design-system/color/palettes';
 import {
   ETH_COLOR,
   ETH_COLOR_DARK,
@@ -12,33 +9,37 @@ import {
   SLIDER_WIDTH,
   STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS,
 } from '@/__swaps__/screens/Swap/constants';
-import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { ChainId, ChainName } from '@/__swaps__/types/chains';
+import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { isLowerCaseMatchWorklet } from '@/__swaps__/utils/strings';
+import { globalColors } from '@/design-system';
+import { ForegroundColor, palettes } from '@/design-system/color/palettes';
 import { TokenColors } from '@/graphql/__generated__/metadata';
+import * as i18n from '@/languages';
 import { RainbowConfig } from '@/model/remoteConfig';
+import store from '@/redux/store';
+import { ETH_ADDRESS } from '@/references';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { colors } from '@/styles';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { CrosschainQuote, ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR, Quote, QuoteParams, SwapType, WRAPPED_ASSET } from '@rainbow-me/swaps';
 import { swapsStore } from '../../state/swaps/swapsStore';
+import {
+  divWorklet,
+  equalWorklet,
+  greaterThanOrEqualToWorklet,
+  isNumberStringWorklet,
+  lessThanOrEqualToWorklet,
+  mulWorklet,
+  orderOfMagnitudeWorklet,
+  powWorklet,
+  roundWorklet,
+  toFixedWorklet,
+} from '../safe-math/SafeMath';
 import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '../types/assets';
 import { inputKeys } from '../types/swap';
 import { valueBasedDecimalFormatter } from './decimalFormatter';
 import { convertAmountToRawAmount } from './numbers';
-import {
-  divWorklet,
-  equalWorklet,
-  lessThanOrEqualToWorklet,
-  mulWorklet,
-  powWorklet,
-  roundWorklet,
-  toFixedWorklet,
-  greaterThanOrEqualToWorklet,
-  orderOfMagnitudeWorklet,
-  isNumberStringWorklet,
-} from '../safe-math/SafeMath';
-import { ETH_ADDRESS } from '@/references';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -659,5 +660,6 @@ export const buildQuoteParams = ({
     refuel: false,
     swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
     toChainId: isCrosschainSwap ? outputAsset.chainId : inputAsset.chainId,
+    currency: store.getState().settings.nativeCurrency,
   };
 };
