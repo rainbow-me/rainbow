@@ -69,8 +69,6 @@ function App({ walletReady }: AppProps) {
     Navigation.setTopLevelNavigator(ref);
   }, []);
 
-  console.log('rendering app.tsx', initialRoute);
-
   return (
     <Portal>
       <View style={sx.container}>

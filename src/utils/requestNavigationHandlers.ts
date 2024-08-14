@@ -32,6 +32,7 @@ import {
 import { ChainId } from '@/__swaps__/types/chains';
 import { logger, RainbowError } from '@/logger';
 import { noop } from 'lodash';
+import { toUtf8String } from '@ethersproject/strings';
 
 export enum RequestSource {
   WALLETCONNECT = 'walletconnect',
@@ -104,7 +105,9 @@ export const handleMobileWalletProtocolRequest = async ({
                 logger.debug('Approving eth_requestAccounts');
                 await approveAction(nextAction, {
                   value: JSON.stringify({
-                    account: accountAddress,
+                    chain: request.account?.chain,
+                    networkId: request.account?.networkId,
+                    address: accountAddress,
                   }),
                 });
               }
@@ -124,67 +127,68 @@ export const handleMobileWalletProtocolRequest = async ({
         );
       });
     } else if (isEthereumAction(action)) {
-      try {
-        logger.debug(`Processing ethereum action: ${action.method}`);
-        const nativeCurrency = store.getState().settings.nativeCurrency;
-        const network = ethereumUtils.getNetworkFromChainId(request.account?.networkId ?? ChainId.mainnet);
+      logger.debug(`Processing ethereum action: ${action.method}`);
+      const nativeCurrency = store.getState().settings.nativeCurrency;
+      const network = ethereumUtils.getNetworkFromChainId(request.account?.networkId ?? ChainId.mainnet);
 
-        console.log(JSON.stringify(action, null, 2));
-
-        const payload = {
-          method: action.method,
-          params: [Object.values(action.params)],
-        };
-
-        const requestWithDetails: RequestData = {
-          dappName: session?.dappName ?? session?.dappId ?? '',
-          dappUrl: session?.dappURL ?? '',
-          imageUrl: session?.dappImageURL ?? '',
-          address: (action as PersonalSignAction).params.address ?? accountAddress,
-          network,
-          payload,
-          displayDetails: getRequestDisplayDetails(payload, nativeCurrency, network),
-        };
-
-        return new Promise((resolve, reject) => {
-          const onSuccess = async (result: string) => {
-            logger.debug(`Ethereum action approved: [${action.method}]: ${result}`);
-
-            const success = await approveAction(action, { value: result });
-            resolve(success);
-          };
-
-          const onCancel = async (error?: Error) => {
-            if (error) {
-              logger.debug(`Ethereum action rejected: [${action.method}]: ${error.message}`);
-              await rejectAction(action, {
-                message: error.message,
-                code: 4001,
-              });
-              reject(error.message);
-            } else {
-              logger.debug(`Ethereum action rejected: [${action.method}]: User rejected request`);
-              await rejectAction(action, {
-                message: 'User rejected request',
-                code: 4001,
-              });
-              reject('User rejected request');
-            }
-          };
-
-          Navigation.handleAction(Routes.CONFIRM_REQUEST, {
-            transactionDetails: requestWithDetails,
-            onSuccess,
-            onCancel,
-            onCloseScreen: noop,
-            network,
-            address: accountAddress,
-            source: RequestSource.MOBILE_WALLET_PROTOCOL,
-          });
-        });
-      } catch (error) {
-        console.log(error);
+      // @ts-expect-error - coinbase host protocol types are NOT correct e.g. {"data": [72, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100], "type": "Buffer"}
+      if ((action as PersonalSignAction).params.message && (action as PersonalSignAction).params.message.type === 'Buffer') {
+        // @ts-expect-error - coinbase host protocol types are NOT correct e.g. {"data": [72, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100], "type": "Buffer"}
+        const messageFromBuffer = toUtf8String(Buffer.from((action as PersonalSignAction).params.message.data, 'hex'));
+        (action as PersonalSignAction).params.message = messageFromBuffer;
       }
+
+      const payload = {
+        method: action.method,
+        params: Object.values(action.params),
+      };
+
+      const requestWithDetails: RequestData = {
+        dappName: session?.dappName ?? session?.dappId ?? '',
+        dappUrl: session?.dappURL ?? '',
+        imageUrl: session?.dappImageURL ?? '',
+        address: (action as PersonalSignAction).params.address ?? accountAddress,
+        network,
+        payload,
+        displayDetails: getRequestDisplayDetails(payload, nativeCurrency, network),
+      };
+
+      return new Promise((resolve, reject) => {
+        const onSuccess = async (result: string) => {
+          logger.debug(`Ethereum action approved: [${action.method}]: ${result}`);
+
+          const success = await approveAction(action, { value: JSON.stringify(result) });
+          resolve(success);
+        };
+
+        const onCancel = async (error?: Error) => {
+          if (error) {
+            logger.debug(`Ethereum action rejected: [${action.method}]: ${error.message}`);
+            await rejectAction(action, {
+              message: error.message,
+              code: 4001,
+            });
+            reject(error.message);
+          } else {
+            logger.debug(`Ethereum action rejected: [${action.method}]: User rejected request`);
+            await rejectAction(action, {
+              message: 'User rejected request',
+              code: 4001,
+            });
+            reject('User rejected request');
+          }
+        };
+
+        Navigation.handleAction(Routes.CONFIRM_REQUEST, {
+          transactionDetails: requestWithDetails,
+          onSuccess,
+          onCancel,
+          onCloseScreen: noop,
+          network,
+          address: accountAddress,
+          source: RequestSource.MOBILE_WALLET_PROTOCOL,
+        });
+      });
     } else {
       logger.error(new RainbowError(`[handleMobileWalletProtocolRequest]: Unsupported action type, ${action}`));
       return false;
