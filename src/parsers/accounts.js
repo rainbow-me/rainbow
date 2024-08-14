@@ -1,12 +1,12 @@
 import isNil from 'lodash/isNil';
 import toUpper from 'lodash/toUpper';
 import { isNativeAsset } from '@/handlers/assets';
-import networkTypes from '@/helpers/networkTypes';
 import * as i18n from '@/languages';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplay, convertAmountToPercentageDisplay } from '@/helpers/utilities';
 import { getTokenMetadata, isLowerCaseMatch } from '@/utils';
 import { memoFn } from '@/utils/memoFn';
 import { getUniqueId } from '@/utils/ethereumUtils';
+import { ChainId } from '@/__swaps__/types/chains';
 
 // eslint-disable-next-line no-useless-escape
 const sanitize = memoFn(s => s.replace(/[^a-z0-9áéíóúñü \.,_@:-]/gim, ''));
@@ -35,7 +35,7 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
     ...asset,
     ...metadata,
     address,
-    isNativeAsset: isNativeAsset(address, asset.network || networkTypes.mainnet),
+    isNativeAsset: isNativeAsset(address, asset.chain_id || ChainId.mainnet),
     name,
     symbol,
     uniqueId: getUniqueId(address, asset.chain_id),
