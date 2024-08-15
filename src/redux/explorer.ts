@@ -5,7 +5,7 @@ import { io, Socket } from 'socket.io-client';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { AppGetState, AppState } from './store';
 import { getProvider, isHardHat } from '@/handlers/web3';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 // -- Constants --------------------------------------- //
 const EXPLORER_UPDATE_SOCKETS = 'explorer/EXPLORER_UPDATE_SOCKETS';

@@ -61,7 +61,7 @@ import { IS_ANDROID } from '@/env';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { performanceTracking, TimeToSignOperation, Screens } from '@/state/performance/performance';
-import { ChainId, chainIdToNameMapping } from '@/__swaps__/types/chains';
+import { ChainId, chainIdToNameMapping } from '@/networks/types';
 
 const Container = styled(Centered).attrs({
   direction: 'column',

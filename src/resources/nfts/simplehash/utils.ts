@@ -20,8 +20,7 @@ import { deviceUtils } from '@/utils';
 import { TokenStandard } from '@/handlers/web3';
 import { handleNFTImages } from '@/utils/handleNFTImages';
 import { SimpleHashNft } from '@/graphql/__generated__/arc';
-import { Network } from '@/networks/types';
-import { chainNameToIdMapping } from '@/__swaps__/types/chains';
+import { Network, chainNameToIdMapping } from '@/networks/types';
 
 const ENS_COLLECTION_NAME = 'ENS';
 const SVG_MIME_TYPE = 'image/svg+xml';

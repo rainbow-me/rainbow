@@ -1,6 +1,5 @@
-import { Network } from '@/networks/types';
+import { Network, ChainId } from '@/networks/types';
 import { AssetContract, AssetType } from '.';
-import { ChainId } from '@/__swaps__/types/chains';
 
 interface UniqueAssetLastSale {
   total_price: string;

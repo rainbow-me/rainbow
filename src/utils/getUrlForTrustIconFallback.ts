@@ -1,4 +1,4 @@
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 import { EthereumAddress } from '@/entities';
 import ethereumUtils from './ethereumUtils';
 

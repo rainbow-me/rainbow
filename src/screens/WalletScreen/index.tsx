@@ -32,8 +32,7 @@ import { IS_ANDROID } from '@/env';
 import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
 import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
 import { UserAssetsSync } from '@/state/sync/UserAssetsSync';
-import { Network } from '@/networks/types';
-import { ChainId } from '@/__swaps__/types/chains';
+import { Network, ChainId } from '@/networks/types';
 
 const WalletPage = styled(Page)({
   ...position.sizeAsObject('100%'),

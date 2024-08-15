@@ -8,7 +8,7 @@ import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { useAccountSettings, useGas } from '.';
 import { isNativeAsset } from '@/handlers/assets';
 import { toWei } from '@/handlers/web3';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 export enum RefuelState {
   'Add' = 'Add',

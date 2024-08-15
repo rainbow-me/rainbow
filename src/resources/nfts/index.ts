@@ -8,7 +8,7 @@ import { UniqueAsset } from '@/entities';
 import { arcClient } from '@/graphql';
 import { createSelector } from 'reselect';
 import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 const NFTS_STALE_TIME = 600000; // 10 minutes
 const NFTS_CACHE_TIME_EXTERNAL = 3600000; // 1 hour

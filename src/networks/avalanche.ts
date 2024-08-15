@@ -5,7 +5,7 @@ import { avalanche } from '@wagmi/chains';
 import { AVAX_AVALANCHE_ADDRESS } from '@/references';
 import { getAvalancheGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 export const getAvalancheNetworkObject = (): NetworkProperties => {
   const { avalanche_enabled, avalanche_tx_enabled } = getRemoteConfig();

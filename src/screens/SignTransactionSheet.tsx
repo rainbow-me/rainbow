@@ -43,7 +43,7 @@ import {
   TransactionSimulationResult,
   TransactionScanResultType,
 } from '@/graphql/__generated__/metadataPOST';
-import { Network } from '@/networks/types';
+import { Network, ChainId, chainIdToNameMapping } from '@/networks/types';
 import {
   convertAmountToNativeDisplay,
   convertHexToString,
@@ -97,7 +97,6 @@ import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { event } from '@/analytics/event';
 import { getOnchainAssetBalance } from '@/handlers/assets';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
-import { ChainId, chainIdToNameMapping } from '@/__swaps__/types/chains';
 import { AddressOrEth } from '@/__swaps__/types/assets';
 
 const COLLAPSED_CARD_HEIGHT = 56;

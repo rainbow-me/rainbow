@@ -16,7 +16,7 @@ import { useNavigation } from '@/navigation';
 import { getProvider } from '@/handlers/web3';
 import { analyticsV2 } from '@/analytics';
 import { delay } from '@/utils/delay';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 type PointsProfileContext = {
   step: RainbowPointsFlowSteps;

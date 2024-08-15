@@ -5,7 +5,7 @@ import { getNetworkObject } from '@/networks';
 import { UniqueAsset } from '@/entities';
 import { RainbowError, logger } from '@/logger';
 import { getGnosisNetworkObject } from '@/networks/gnosis';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 export const START_CURSOR = 'start';
 

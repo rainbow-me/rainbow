@@ -10,7 +10,7 @@ import { RainbowTransaction } from '@/entities';
 import { pendingTransactionsStore, usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { RainbowNetworkObjects } from '@/networks';
 import { nonceStore } from '@/state/nonces';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 export const NOE_PAGE = 30;
 

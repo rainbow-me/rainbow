@@ -6,11 +6,10 @@ import { parseAddressAsset } from './assets';
 import { RainbowAddressAssets } from './types';
 import { logger, RainbowError } from '@/logger';
 import { AddressOrEth, UniqueId, ZerionAsset } from '@/__swaps__/types/assets';
-import { ChainId, ChainName } from '@/__swaps__/types/chains';
 import { AddressZero } from '@ethersproject/constants';
 import chainAssetsByChainId from '@/references/testnet-assets-by-chain';
 import { getNetworkObject } from '@/networks';
-import { Network } from '@/networks/types';
+import { ChainId, ChainName, Network } from '@/networks/types';
 
 const fetchHardhatBalancesWithBalanceChecker = async (
   tokens: string[],

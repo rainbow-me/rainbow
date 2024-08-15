@@ -21,8 +21,8 @@ import { Asset } from '@/entities';
 import { add, convertRawAmountToDecimalFormat, divide, lessThan, multiply, subtract } from '@/helpers/utilities';
 import { erc20ABI, ethUnits } from '@/references';
 import { ethereumUtils } from '@/utils';
-import { ChainId } from '@/__swaps__/types/chains';
 import { logger, RainbowError } from '@/logger';
+import { ChainId } from '@/networks/types';
 
 export enum Field {
   INPUT = 'INPUT',

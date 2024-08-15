@@ -4,7 +4,7 @@ import { createQueryKey, queryClient, QueryConfig, QueryFunctionArgs, QueryFunct
 import { convertAmountAndPriceToNativeDisplay, convertAmountToPercentageDisplay } from '@/helpers/utilities';
 import { NativeCurrencyKey } from '@/entities';
 import { Token } from '@/graphql/__generated__/metadata';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 import { isNativeAsset } from '@/__swaps__/utils/chains';
 import { AddressOrEth } from '@/__swaps__/types/assets';
 

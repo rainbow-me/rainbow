@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Network } from '@/networks/types';
+import { ChainId } from '@/networks/types';
 
 import ArbitrumBadge from '@/assets/badges/arbitrum.png';
 import BaseBadge from '@/assets/badges/base.png';
@@ -12,7 +12,6 @@ import AvalancheBadge from '@/assets/badges/avalanche.png';
 import BlastBadge from '@/assets/badges/blast.png';
 import DegenBadge from '@/assets/badges/degen.png';
 import FastImage, { Source } from 'react-native-fast-image';
-import { ChainId } from '@/__swaps__/types/chains';
 
 export function ChainImage({ chainId, size = 20 }: { chainId: ChainId | null | undefined; size?: number }) {
   const source = useMemo(() => {

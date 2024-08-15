@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { globalColors } from '@/design-system';
 import currentColors from '../theme/currentColors';
 import { memoFn } from '../utils/memoFn';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 export type Colors = ReturnType<typeof getColorsByTheme>;
 

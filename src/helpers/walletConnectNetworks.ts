@@ -2,7 +2,7 @@ import { RainbowNetworkObjects, getNetworkObject } from '@/networks';
 import store from '@/redux/store';
 import { showActionSheetWithOptions } from '@/utils';
 import * as i18n from '@/languages';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 const androidNetworkActions = () => {
   const { testnetsEnabled } = store.getState().settings;

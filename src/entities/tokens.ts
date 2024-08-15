@@ -1,8 +1,7 @@
 import { EthereumAddress } from '.';
 import { Chain } from '@wagmi/chains';
-import { Network } from '@/networks/types';
+import { Network, ChainId } from '@/networks/types';
 import { TokenColors } from '@/graphql/__generated__/metadata';
-import { ChainId } from '@/__swaps__/types/chains';
 
 export interface ZerionAssetPrice {
   value: number;

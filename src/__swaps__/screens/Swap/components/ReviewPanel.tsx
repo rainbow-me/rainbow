@@ -2,8 +2,7 @@ import { AnimatedChainImage } from '@/__swaps__/screens/Swap/components/Animated
 import { ReviewGasButton } from '@/__swaps__/screens/Swap/components/GasButton';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { useNativeAssetForChain } from '@/__swaps__/screens/Swap/hooks/useNativeAssetForChain';
-import { ChainId, ChainNameDisplay } from '@/__swaps__/types/chains';
-import { chainNameFromChainId } from '@/__swaps__/utils/chains';
+import { ChainNameDisplay, ChainId } from '@/networks/types';
 import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
 import {
   convertRawAmountToBalance,

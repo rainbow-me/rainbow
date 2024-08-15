@@ -4,7 +4,7 @@ import { gasUtils } from '@/utils';
 import { goerli } from '@wagmi/chains';
 import { ETH_ADDRESS } from '@/references';
 import { getRemoteConfig } from '@/model/remoteConfig';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 export const getGoerliNetworkObject = (): NetworkProperties => {
   const { goerli_enabled, goerli_tx_enabled } = getRemoteConfig();

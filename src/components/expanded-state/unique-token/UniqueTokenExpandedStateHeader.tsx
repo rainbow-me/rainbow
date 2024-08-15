@@ -22,7 +22,7 @@ import { refreshNFTContractMetadata, reportNFT } from '@/resources/nfts/simpleha
 import { ContextCircleButton } from '@/components/context-menu';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { MenuActionConfig, MenuConfig } from 'react-native-ios-context-menu';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',

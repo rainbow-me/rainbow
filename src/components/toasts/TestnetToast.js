@@ -5,7 +5,7 @@ import Toast from './Toast';
 import { isHardHat } from '@/handlers/web3';
 import { useInternetStatus } from '@/hooks';
 import { getNetworkObject } from '@/networks';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 const TestnetToast = ({ chainId, web3Provider }) => {
   const isConnected = useInternetStatus();

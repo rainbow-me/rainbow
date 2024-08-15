@@ -37,7 +37,7 @@ import { logger, RainbowError } from '@/logger';
 import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
 import { getNetworkObject } from '@/networks';
 import store from '@/redux/store';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 export enum TokenStandard {
   ERC1155 = 'ERC1155',

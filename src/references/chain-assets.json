@@ -2,7 +2,7 @@
   "5": [
     {
       "asset": {
-		"chainId": 5,
+        "chainId": 5,
         "asset_code": "eth",
         "mainnet_address": "eth",
         "colors": {
@@ -33,7 +33,7 @@
   "1": [
     {
       "asset": {
-		"chainId": 1,
+        "chainId": 1,
         "asset_code": "eth",
         "colors": {
           "fallback": "#E8EAF5",

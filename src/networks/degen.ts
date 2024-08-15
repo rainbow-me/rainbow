@@ -6,7 +6,7 @@ import { DEGEN_CHAIN_DEGEN_ADDRESS } from '@/references';
 import { getDegenGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { DEGEN_MAINNET_RPC } from 'react-native-dotenv';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 export const getDegenNetworkObject = (): NetworkProperties => {
   const { degen_enabled, degen_tx_enabled } = getRemoteConfig();

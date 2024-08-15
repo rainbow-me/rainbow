@@ -10,7 +10,7 @@ import { Separator, Stack } from '@/design-system';
 import { useAccountSettings, useInitializeAccountData, useLoadAccountData, useResetAccountState } from '@/hooks';
 import { settingsUpdateNetwork } from '@/redux/settings';
 import { RainbowNetworkObjects } from '@/networks';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 const networkObjects = values(RainbowNetworkObjects).filter(({ networkType }) => networkType !== 'layer2');
 

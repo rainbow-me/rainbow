@@ -8,8 +8,7 @@ import { SwapMetadata } from '@/raps/references';
 import { UniqueAsset } from '../uniqueAssets';
 import { ParsedAsset } from '@/resources/assets/types';
 import { TransactionStatus, TransactionType } from '@/resources/transactions/types';
-import { ChainId } from '@/__swaps__/types/chains';
-import { Network } from '@/networks/types';
+import { ChainId, Network } from '@/networks/types';
 
 export type TransactionDirection = 'in' | 'out' | 'self';
 

@@ -4,7 +4,7 @@ import { gasUtils } from '@/utils';
 import { mainnet } from '@wagmi/chains';
 import { ETH_ADDRESS } from '@/references';
 import { getRemoteConfig } from '@/model/remoteConfig';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 export const getMainnetNetworkObject = (): NetworkProperties => {
   const { mainnet_enabled, mainnet_tx_enabled } = getRemoteConfig();

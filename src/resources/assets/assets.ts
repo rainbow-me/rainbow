@@ -13,7 +13,7 @@ import { RainbowPositions } from '@/resources/defi/types';
 import { ethereumUtils } from '@/utils';
 import { AddysAddressAsset, AddysAsset, ParsedAsset, RainbowAddressAssets } from './types';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 const storage = new MMKV();
 

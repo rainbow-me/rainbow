@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { NativeCurrencyKey } from '@/entities';
 import { metadataClient } from '@/graphql';
 import { Token } from '@/graphql/__generated__/metadata';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 // Types
 type TokenMetadata = Pick<

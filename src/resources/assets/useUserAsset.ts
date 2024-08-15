@@ -1,4 +1,4 @@
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 import { getIsHardhatConnected } from '@/handlers/web3';
 import { useAccountSettings } from '@/hooks';
 import { getNetworkObject } from '@/networks';

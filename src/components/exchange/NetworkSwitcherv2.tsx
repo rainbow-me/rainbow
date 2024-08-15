@@ -8,7 +8,7 @@ import { position } from '@rainbow-me/styles';
 import { useTheme } from '@/theme';
 import { sortNetworks } from '@/networks';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 const NetworkSwitcherv2 = ({
   currentChainId,

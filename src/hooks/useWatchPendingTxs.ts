@@ -15,7 +15,7 @@ import { useNonceStore } from '@/state/nonces';
 import { Address } from 'viem';
 import { nftsQueryKey } from '@/resources/nfts';
 import { getNftSortForAddress } from './useNFTsSortBy';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
   const { storePendingTransactions, setPendingTransactions } = usePendingTransactionsStore(state => ({

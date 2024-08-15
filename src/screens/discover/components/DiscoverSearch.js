@@ -22,8 +22,7 @@ import { ethereumUtils } from '@/utils';
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
-import { ChainId } from '@/__swaps__/types/chains';
-import { Network } from '@/networks/types';
+import { ChainId, Network } from '@/networks/types';
 
 export const SearchContainer = styled(Row)({
   height: '100%',

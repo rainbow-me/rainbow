@@ -1,4 +1,4 @@
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 import store from '@/redux/store';
 import * as ls from '@/storage';
 import { getArbitrumNetworkObject } from './arbitrum';

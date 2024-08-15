@@ -32,7 +32,7 @@ import { IS_DEV, IS_IOS, IS_TEST } from '@/env';
 import { RainbowNetworkObjects } from '@/networks';
 import { Verify } from '@walletconnect/types';
 import { RequestSource, handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 import { Address } from 'viem';
 
 // -- Variables --------------------------------------- //

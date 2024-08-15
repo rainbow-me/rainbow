@@ -27,7 +27,7 @@ import { getNetworkObject } from '@/networks';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { BNB_MAINNET_ADDRESS, ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@/references';
 import useAccountSettings from './useAccountSettings';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 const checkSufficientGas = (txFee: LegacyGasFee | GasFee, chainId: ChainId, nativeAsset?: ParsedAddressAsset) => {
   const isLegacyGasNetwork = getNetworkObject({ chainId }).gas.gasType === 'legacy';

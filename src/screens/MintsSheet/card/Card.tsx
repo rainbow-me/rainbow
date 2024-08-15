@@ -14,7 +14,7 @@ import * as i18n from '@/languages';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 export const NUM_NFTS = 3;
 

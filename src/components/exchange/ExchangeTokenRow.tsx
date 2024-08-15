@@ -9,7 +9,7 @@ import { IS_IOS } from '@/env';
 import { FavStar, Info } from '../asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
 import { View } from 'react-native';
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 import { ParsedAddressAsset } from '@/entities';
 
 interface ExchangeTokenRowProps {

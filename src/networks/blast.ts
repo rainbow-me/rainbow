@@ -6,7 +6,7 @@ import { getBlastGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { BLAST_MAINNET_RPC } from 'react-native-dotenv';
 import { BLAST_ETH_ADDRESS } from '@/references';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 export const getBlastNetworkObject = (): NetworkProperties => {
   const { blast_enabled, blast_tx_enabled } = getRemoteConfig();

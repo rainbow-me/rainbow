@@ -1,7 +1,7 @@
 import { memoFn } from '../utils/memoFn';
 import { gasUtils } from '@/utils';
 import { getNetworkObject } from '@/networks';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 const { GasTrends } = gasUtils;
 const { FALLING, NO_TREND, RISING, STABLE, SURGING } = GasTrends;

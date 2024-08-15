@@ -10,7 +10,7 @@ import { padding, position } from '@/styles';
 import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
 import { RainbowNetworkObjects } from '@/networks';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
-import { chainIdToNameMapping } from '@/__swaps__/types/chains';
+import { chainIdToNameMapping } from '@/networks/types';
 
 const networkMenuItems = () => {
   return RainbowNetworkObjects.filter(network => network.features.swaps).map(network => ({

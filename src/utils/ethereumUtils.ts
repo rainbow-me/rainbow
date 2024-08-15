@@ -49,9 +49,8 @@ import {
   fetchExternalToken,
   useExternalToken,
 } from '@/resources/assets/externalAssetsQuery';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId, Network } from '@/networks/types';
 import { AddressOrEth } from '@/__swaps__/types/assets';
-import { Network } from '@/networks/types';
 
 const getNetworkNativeAsset = ({ chainId }: { chainId: ChainId }) => {
   const nativeAssetAddress = getNetworkObject({ chainId }).nativeCurrency.address;

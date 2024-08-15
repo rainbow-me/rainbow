@@ -13,7 +13,7 @@ import styled from '@/styled-thing';
 import { margin, padding } from '@/styles';
 import { deviceUtils } from '@/utils';
 import DiscoverSheetContext from '@/screens/discover/DiscoverScreenContext';
-import { chainIdToNameMapping } from '@/__swaps__/types/chains';
+import { chainIdToNameMapping } from '@/networks/types';
 
 export const ExchangeSearchHeight = 40;
 const ExchangeSearchWidth = deviceUtils.dimensions.width - 30;

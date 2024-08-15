@@ -3,7 +3,7 @@ import { Contract } from '@ethersproject/contracts';
 import { erc20ABI } from '@/references';
 import { convertAmountToBalanceDisplay, convertRawAmountToDecimalFormat } from '@/helpers/utilities';
 import { getNetworkObject } from '@/networks';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 export function isNativeAsset(address: string, chainId: ChainId) {
   return getNetworkObject({ chainId }).nativeCurrency.address.toLowerCase() === address?.toLowerCase();
