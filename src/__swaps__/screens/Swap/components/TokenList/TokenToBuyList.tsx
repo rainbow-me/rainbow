@@ -148,7 +148,7 @@ export const TokenToBuyList = () => {
         ListHeaderComponent={<ChainSelection output />}
         contentContainerStyle={{ paddingBottom: 16 }}
         // For some reason shallow copying the list data allows FlashList to more quickly pick up changes
-        data={sections}
+        data={sections.slice(0)}
         estimatedFirstItemOffset={BUY_LIST_HEADER_HEIGHT}
         estimatedItemSize={averageItemSize || undefined}
         estimatedListSize={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}
