@@ -1,9 +1,13 @@
-import { IS_IOS } from '@/env';
+import { IS_ANDROID, IS_IOS } from '@/env';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { deviceUtils, safeAreaInsetValues } from '@/utils';
+import { StatusBar } from 'react-native';
+import { isUsingButtonNavigation } from '@/helpers/statusBarHelper';
 
-export const TOP_INSET = IS_IOS ? safeAreaInsetValues.top : 40;
-export const WEBVIEW_HEIGHT = deviceUtils.dimensions.height - TOP_INSET - TAB_BAR_HEIGHT - 88;
+export const BOTTOM_BAR_HEIGHT = 88;
+export const TOP_INSET = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight ?? 40;
+export const BOTTOM_INSET = IS_ANDROID ? (isUsingButtonNavigation() ? 32 : 12) : BOTTOM_BAR_HEIGHT;
+export const WEBVIEW_HEIGHT = deviceUtils.dimensions.height - TOP_INSET - TAB_BAR_HEIGHT - BOTTOM_INSET;
 export const COLLAPSED_WEBVIEW_ASPECT_RATIO = 4 / 3;
 export const COLLAPSED_WEBVIEW_HEIGHT_UNSCALED = Math.min(WEBVIEW_HEIGHT, deviceUtils.dimensions.width * COLLAPSED_WEBVIEW_ASPECT_RATIO);
 
