@@ -92,6 +92,8 @@ export const handleMobileWalletProtocolRequest = async ({
     return Promise.reject(new Error('This wallet is read-only.'));
   }
 
+  console.log(JSON.stringify(request.actions, null, 2));
+
   const handleAction = async (currentIndex: number): Promise<boolean> => {
     const action = request.actions[currentIndex];
     logger.debug(`Handling action: ${action.kind}`);
@@ -114,7 +116,7 @@ export const handleMobileWalletProtocolRequest = async ({
             isWalletConnectV2: false,
             peerId: '',
             dappScheme: action.callback,
-            proposedChainId: request.account?.networkId,
+            proposedChainId: request.account?.networkId ?? ChainId.mainnet,
             proposedAddress: request.account?.address || accountAddress,
           },
           source: RequestSource.MOBILE_WALLET_PROTOCOL,
@@ -155,8 +157,8 @@ export const handleMobileWalletProtocolRequest = async ({
         logger.debug('Approving eth_requestAccounts');
         await approveAction(action, {
           value: JSON.stringify({
-            chain: request.account?.chain,
-            networkId: request.account?.networkId,
+            chain: request.account?.chain ?? 'eth',
+            networkId: request.account?.networkId ?? ChainId.mainnet,
             address: accountAddress,
           }),
         });
@@ -189,8 +191,6 @@ export const handleMobileWalletProtocolRequest = async ({
         payload,
         displayDetails,
       };
-
-      console.log(JSON.stringify(requestWithDetails, null, 2));
 
       return new Promise((resolve, reject) => {
         const onSuccess = async (result: string) => {
