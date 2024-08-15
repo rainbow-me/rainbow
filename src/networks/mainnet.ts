@@ -1,5 +1,5 @@
 import { getProvider, proxyRpcEndpoint } from '@/handlers/web3';
-import { Network, NetworkProperties, ChainId } from './types';
+import { Network, NetworkProperties, ChainId  } from './types';
 import { gasUtils } from '@/utils';
 import { mainnet } from '@wagmi/chains';
 import { ETH_ADDRESS } from '@/references';
