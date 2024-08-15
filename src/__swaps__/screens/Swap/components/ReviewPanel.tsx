@@ -8,7 +8,6 @@ import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
 import {
   convertRawAmountToBalance,
   convertRawAmountToBalanceWorklet,
-  convertRawAmountToNativeDisplay,
   handleSignificantDecimals,
   multiply,
 } from '@/__swaps__/utils/numbers';
@@ -91,14 +90,12 @@ const RainbowFee = () => {
         decimals: 18,
       }).amount;
 
-      const feeInEth = convertRawAmountToNativeDisplay(
-        quote.feeInEth.toString(),
-        nativeAsset?.value?.decimals || 18,
-        nativeAsset?.value?.price?.value || '0',
-        nativeCurrency
-      ).display;
+      const { display: feeDisplay } = convertRawAmountToBalance(quote.fee.toString(), {
+        decimals: quote.feeTokenAsset.decimals,
+        symbol: quote.feeTokenAsset.symbol,
+      });
 
-      rainbowFee.value = [feeInEth, `${handleSignificantDecimals(multiply(feePercentage, 100), 2)}%`];
+      rainbowFee.value = [feeDisplay, `${handleSignificantDecimals(multiply(feePercentage, 100), 2)}%`];
     },
     [nativeAsset?.value?.decimals, nativeAsset?.value?.price?.value, nativeCurrency, rainbowFee]
   );
@@ -471,7 +468,7 @@ export function ReviewPanel() {
           <Inline horizontalSpace="10px" alignVertical="center" alignHorizontal="justify">
             <ButtonPressAnimation onPress={openGasExplainer} scaleTo={0.925}>
               <Stack space="10px">
-                <Inline alignVertical="center" horizontalSpace="6px">
+                <Inline alignVertical="center" horizontalSpace="6px" wrap={false}>
                   <View style={sx.chainBadgeContainer}>
                     <AnimatedChainImage showMainnetBadge assetType="input" size={16} />
                   </View>

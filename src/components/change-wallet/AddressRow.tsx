@@ -22,9 +22,6 @@ import { EditWalletContextMenuActions } from '@/screens/ChangeWalletSheet';
 import { toChecksumAddress } from '@/handlers/web3';
 import { IS_IOS, IS_ANDROID } from '@/env';
 import { ContextMenu } from '../context-menu';
-import { convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { useSelector } from 'react-redux';
-import { AppState } from '@/redux/store';
 import { useForegroundColor } from '@/design-system';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
@@ -121,22 +118,15 @@ interface AddressRowProps {
 }
 
 export default function AddressRow({ contextMenuActions, data, editMode, onPress }: AddressRowProps) {
-  const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
   const notificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
-  const { address, balance, color: accountColor, ens, image: accountImage, isSelected, isReadOnly, isLedger, label, walletId } = data;
+  const { address, balances, color: accountColor, ens, image: accountImage, isSelected, isReadOnly, isLedger, label, walletId } = data;
 
   const { colors, isDarkMode } = useTheme();
 
   const labelQuaternary = useForegroundColor('labelQuaternary');
 
-  const cleanedUpBalance = useMemo(() => {
-    if (balance) {
-      return convertAmountToNativeDisplay(balance, nativeCurrency);
-    } else {
-      return lang.t('wallet.change_wallet.no_balance');
-    }
-  }, [balance, nativeCurrency]);
+  const balanceText = balances ? balances.totalBalanceDisplay : lang.t('wallet.change_wallet.loading_balance');
 
   const cleanedUpLabel = useMemo(() => removeFirstEmojiFromString(label), [label]);
 
@@ -254,7 +244,7 @@ export default function AddressRow({ contextMenuActions, data, editMode, onPress
               <StyledTruncatedText color={colors.dark} testID={`change-wallet-address-row-label-${walletName}`}>
                 {walletName}
               </StyledTruncatedText>
-              <StyledBottomRowText color={labelQuaternary}>{cleanedUpBalance}</StyledBottomRowText>
+              <StyledBottomRowText color={labelQuaternary}>{balanceText}</StyledBottomRowText>
             </ColumnWithMargins>
           </Row>
           <Column style={sx.rightContent}>

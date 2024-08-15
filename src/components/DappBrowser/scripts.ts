@@ -102,7 +102,7 @@ export const getWebsiteMetadata = `
   };
 
   window.ReactNativeWebView.postMessage(JSON.stringify(websiteMetadata));
-  true;
+    true;
   });
   `;
 

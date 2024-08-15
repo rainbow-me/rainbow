@@ -21,7 +21,7 @@ import { convertHexToString, delay, greaterThan, omitFlatten } from '@/helpers/u
 
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
-import { useAccountSettings, useGas, useWallets } from '@/hooks';
+import { useAccountSettings, useGas, useSwitchWallet, useWallets } from '@/hooks';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
 import { IS_IOS } from '@/env';
@@ -91,7 +91,8 @@ export const SignTransactionSheet = () => {
   const { accountAddress, nativeCurrency } = useAccountSettings();
 
   const { params: routeParams } = useRoute<SignTransactionSheetRouteProp>();
-  const { wallets, walletNames, switchToWalletWithAddress } = useWallets();
+  const { wallets, walletNames } = useWallets();
+  const { switchToWalletWithAddress } = useSwitchWallet();
   const {
     transactionDetails,
     onSuccess: onSuccessCallback,

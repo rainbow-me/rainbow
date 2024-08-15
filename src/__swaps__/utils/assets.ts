@@ -305,15 +305,6 @@ export const parseSearchAsset = ({
   type: userAsset?.type || assetWithPrice?.type || searchAsset?.type,
 });
 
-export function filterAsset(asset: ZerionAsset) {
-  const nameFragments = asset?.name?.split(' ');
-  const nameContainsURL = nameFragments.some(f => isValidDomain(f));
-  const symbolFragments = asset?.symbol?.split(' ');
-  const symbolContainsURL = symbolFragments.some(f => isValidDomain(f));
-  const shouldFilter = nameContainsURL || symbolContainsURL;
-  return shouldFilter;
-}
-
 const assetQueryFragment = (
   address: AddressOrEth,
   chainId: ChainId,
