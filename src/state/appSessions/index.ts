@@ -2,6 +2,7 @@ import { Address } from 'viem';
 
 import { Network, ChainId, networkToIdMapping } from '@/networks/types';
 import { createRainbowStore } from '../internal/createRainbowStore';
+import { ChainId, networkToIdMapping } from '@/__swaps__/types/chains';
 
 export interface AppSessionV0 {
   activeSessionAddress: Address;
