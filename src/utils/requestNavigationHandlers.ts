@@ -13,7 +13,7 @@ import {
 import { InteractionManager } from 'react-native';
 import { SEND_TRANSACTION } from './signingMethods';
 import { handleSessionRequestResponse } from '@/walletConnect';
-import ethereumUtils from './ethereumUtils';
+import ethereumUtils, { getNetworkFromChainId } from './ethereumUtils';
 import { getRequestDisplayDetails } from '@/parsers';
 import { RainbowNetworks } from '@/networks';
 import { maybeSignUri } from '@/handlers/imgix';
@@ -34,6 +34,7 @@ import { ChainId } from '@/__swaps__/types/chains';
 import { logger, RainbowError } from '@/logger';
 import { noop } from 'lodash';
 import { toUtf8String } from '@ethersproject/strings';
+import { BigNumber } from '@ethersproject/bignumber';
 
 export enum RequestSource {
   WALLETCONNECT = 'walletconnect',
@@ -69,6 +70,7 @@ const supportedMobileWalletProtocolActions: string[] = [
   'eth_sendTransaction',
   'eth_signTypedData_v4',
   'personal_sign',
+  'wallet_switchEthereumChain',
 ];
 
 export const handleMobileWalletProtocolRequest = async ({
@@ -91,8 +93,6 @@ export const handleMobileWalletProtocolRequest = async ({
     watchingAlert();
     return Promise.reject(new Error('This wallet is read-only.'));
   }
-
-  console.log(JSON.stringify(request.actions, null, 2));
 
   const handleAction = async (currentIndex: number): Promise<boolean> => {
     const action = request.actions[currentIndex];
@@ -149,6 +149,20 @@ export const handleMobileWalletProtocolRequest = async ({
           code: 4001,
         });
         return false;
+      }
+
+      if (action.method === 'wallet_switchEthereumChain') {
+        const isSupportedChain = RainbowNetworks.find(network => network.id === BigNumber.from(action.params.chainId).toNumber());
+        if (!isSupportedChain) {
+          await rejectAction(action, {
+            message: 'Unsupported chain',
+            code: 4001,
+          });
+          return false;
+        }
+
+        await approveAction(action, { value: 'null' });
+        return true;
       }
 
       // NOTE: This is a workaround to approve the eth_requestAccounts action if the previous action was a handshake action.
