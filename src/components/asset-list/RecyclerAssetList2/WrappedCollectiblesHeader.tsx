@@ -1,8 +1,8 @@
-import { ListHeaderMenu } from '@/components/list/ListHeaderMenu';
-import { Box, Inline, Text } from '@/design-system';
-import useNftSort, { CollectibleSortByOptions } from '@/hooks/useNFTsSortBy';
-import * as i18n from '@/languages';
 import React from 'react';
+import { Box, Inline, Text } from '@/design-system';
+import * as i18n from '@/languages';
+import { ListHeaderMenu } from '@/components/list/ListHeaderMenu';
+import useNftSort, { CollectibleSortByOptions } from '@/hooks/useNFTsSortBy';
 
 const TokenFamilyHeaderHeight = 48;
 
@@ -27,6 +27,7 @@ const getMenuItemIcon = (value: CollectibleSortByOptions) => {
     case CollectibleSortByOptions.MOST_RECENT:
       return 'clock';
   }
+  return '';
 };
 
 const CollectiblesHeader = () => {
