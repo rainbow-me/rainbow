@@ -6,8 +6,7 @@ import { Provider } from '@ethersproject/providers';
 
 import { RainbowNetworkObjects, RainbowSupportedChainIds } from '@/networks';
 import { getProvider } from '@/handlers/web3';
-import ethereumUtils, { getNetworkFromChainId } from '@/utils/ethereumUtils';
-import { UserRejectedRequestError } from 'viem';
+import { Address, UserRejectedRequestError } from 'viem';
 import { convertHexToString } from '@/helpers/utilities';
 import { logger } from '@/logger';
 import { ActiveSession } from '@rainbow-me/provider/dist/references/appSession';
@@ -122,51 +121,46 @@ const messengerProviderRequestFn = async (messenger: Messenger, request: Provide
     hostSessions && hostSessions.sessions?.[hostSessions.activeSessionAddress]
       ? {
           address: hostSessions.activeSessionAddress,
-          network: hostSessions.sessions[hostSessions.activeSessionAddress],
+          chainId: hostSessions.sessions[hostSessions.activeSessionAddress],
         }
       : null;
-
-  // Wait for response from the popup.
-  let response: unknown | null;
 
   if (request.method === 'eth_requestAccounts') {
     const dappData = await getDappMetadata({ url: getDappHost(request.meta?.sender.url) });
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore - chainId is not defined in the type
     const chainId = request.params?.[0]?.chainId ? BigNumber.from(request.params?.[0]?.chainId).toNumber() : undefined;
-    response = await handleDappBrowserConnectionPrompt({
+    const response = await handleDappBrowserConnectionPrompt({
       dappName: dappData?.appName || request.meta?.sender.title || '',
       dappUrl: request.meta?.sender.url || '',
       chainId,
       address: hostSessions?.activeSessionAddress || undefined,
     });
 
+    if (!response || response instanceof Error) {
+      throw new UserRejectedRequestError(Error('User rejected the request.'));
+    }
+
     useAppSessionsStore.getState().addSession({
       host: getDappHost(request.meta?.sender.url) || '',
-      // @ts-ignore
-      address: response.address,
-      // @ts-ignore
-      network: getNetworkFromChainId(response.chainId),
-      // @ts-ignore
+      address: response?.address,
+      chainId: response.chainId,
       url: request.meta?.sender.url || '',
     });
+    return response;
   } else {
     const dappData = await getDappMetadata({ url: getDappHost(request.meta?.sender.url) });
 
-    response = await handleDappBrowserRequest({
+    const response = await handleDappBrowserRequest({
       dappName: dappData?.appName || request.meta?.sender.title || request.meta?.sender.url || '',
       imageUrl: dappData?.appLogo || '',
       address: appSession?.address || '',
       dappUrl: request.meta?.sender.url || '',
       payload: request,
-      chainId: appSession?.network ? ethereumUtils.getChainIdFromNetwork(appSession.network) : ChainId.mainnet,
+      chainId: appSession?.chainId ? appSession?.chainId : ChainId.mainnet,
     });
+    return response as object;
   }
-
-  if (!response) {
-    throw new UserRejectedRequestError(Error('User rejected the request.'));
-  }
-  return response;
 };
 
 const isSupportedChainId = (chainId: number | string) => {
@@ -179,14 +173,14 @@ const getActiveSession = ({ host }: { host: string }): ActiveSession => {
     hostSessions && hostSessions.sessions?.[hostSessions.activeSessionAddress]
       ? {
           address: hostSessions.activeSessionAddress,
-          network: hostSessions.sessions[hostSessions.activeSessionAddress],
+          chainId: hostSessions.sessions[hostSessions.activeSessionAddress],
         }
       : null;
 
   if (!appSession) return null;
   return {
     address: appSession?.address || '',
-    chainId: ethereumUtils.getChainIdFromNetwork(appSession.network),
+    chainId: appSession.chainId,
   };
   // return null;
 };
@@ -340,7 +334,7 @@ export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger:
       const host = getDappHost(callbackOptions?.sender.url) || '';
       const activeSession = getActiveSession({ host });
       if (activeSession) {
-        useAppSessionsStore.getState().updateActiveSessionNetwork({ host: host, network: getNetworkFromChainId(Number(numericChainId)) });
+        useAppSessionsStore.getState().updateActiveSessionNetwork({ host: host, chainId: Number(numericChainId) });
         messenger.send(`chainChanged:${host}`, Number(numericChainId));
       }
       console.warn('PROVIDER TODO: TODO SEND NOTIFICATION');

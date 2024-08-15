@@ -25,13 +25,15 @@ import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { convertHexToString, delay, omitBy, pickBy } from '@/helpers/utilities';
 import WalletConnectApprovalSheetType from '@/helpers/walletConnectApprovalSheetTypes';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils, watchingAlert } from '@/utils';
+import { watchingAlert } from '@/utils';
 import { getFCMToken } from '@/notifications/tokens';
 import { logger, RainbowError } from '@/logger';
 import { IS_DEV, IS_IOS, IS_TEST } from '@/env';
 import { RainbowNetworkObjects } from '@/networks';
 import { Verify } from '@walletconnect/types';
 import { RequestSource, handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
+import { ChainId } from '@/__swaps__/types/chains';
+import { Address } from 'viem';
 
 // -- Variables --------------------------------------- //
 let showRedirectSheetThreshold = 300;
@@ -132,8 +134,8 @@ export type WalletconnectResultType = 'timedOut' | 'sign' | 'transaction' | 'sig
 export interface WalletconnectApprovalSheetRouteParams {
   callback: (
     approved: boolean,
-    chainId: number,
-    accountAddress: string,
+    chainId: ChainId,
+    accountAddress: Address,
     peerId: WalletconnectRequestData['peerId'],
     dappScheme: WalletconnectRequestData['dappScheme'],
     dappName: WalletconnectRequestData['dappName'],

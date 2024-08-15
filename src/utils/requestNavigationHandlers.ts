@@ -22,6 +22,8 @@ import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import walletTypes from '@/helpers/walletTypes';
 import watchingAlert from './watchingAlert';
+import { Address } from 'viem';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export type RequestSource = 'walletconnect' | 'browser';
 
@@ -35,7 +37,9 @@ export interface DappConnectionData {
   address?: string;
 }
 
-export const handleDappBrowserConnectionPrompt = (dappData: DappConnectionData): Promise<{ chainId: number; address: string } | Error> => {
+export const handleDappBrowserConnectionPrompt = (
+  dappData: DappConnectionData
+): Promise<{ chainId: ChainId; address: Address } | Error> => {
   return new Promise((resolve, reject) => {
     const chainIds = RainbowNetworkObjects.filter(network => network.enabled && network.networkType !== 'testnet').map(
       network => network.id
