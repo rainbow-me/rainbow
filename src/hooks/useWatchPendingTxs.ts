@@ -15,6 +15,7 @@ import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { useNonceStore } from '@/state/nonces';
 import { Address } from 'viem';
 import { nftsQueryKey } from '@/resources/nfts';
+import { getNftSortForAddress } from './useNFTsSortBy';
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
   const { storePendingTransactions, setPendingTransactions } = usePendingTransactionsStore(state => ({
@@ -46,7 +47,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
           testnetMode: !!connectedToHardhat,
         })
       );
-      queryClient.invalidateQueries(nftsQueryKey({ address }));
+      queryClient.invalidateQueries(nftsQueryKey({ address, sortBy: getNftSortForAddress(address) }));
     },
     [address, nativeCurrency]
   );

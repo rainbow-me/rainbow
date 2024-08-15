@@ -7,7 +7,7 @@ const mmkv = new MMKV();
 const getStorageKey = (accountAddress: string) => `nfts-sort-${accountAddress}`;
 
 export const getNftSortForAddress = (accountAddress: string) => {
-  mmkv.getString(getStorageKey(accountAddress));
+  return mmkv.getString(getStorageKey(accountAddress)) as NftCollectionSortCriterion;
 };
 
 export default function useNftSort(): {
