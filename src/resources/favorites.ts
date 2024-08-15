@@ -41,7 +41,6 @@ async function fetchMetadata(addresses: string[], chainId = ChainId.mainnet) {
         ...externalAsset,
         chainId,
         network,
-        chainId,
         address,
         networks: externalAsset.networks,
         mainnet_address: externalAsset?.networks[ChainId.mainnet]?.address,
