@@ -128,7 +128,7 @@ function CurrencyTile({
         }
       });
     }
-  }, []);
+  }, [accountName, address, addressContact?.nickname]);
 
   useEffect(() => {
     if (!addressAccount?.image && (fetchedEnsName || addressContact?.ens)) {
