@@ -66,7 +66,7 @@ export const MainThemeProvider = (props: PropsWithChildren) => {
   // Listening to changes of device appearance while in run-time
   useEffect(() => {
     if (colorScheme) {
-      saveTheme(colorScheme, isSystemDarkMode);
+      saveTheme(colorScheme);
     }
   }, [colorScheme]);
 

@@ -2,8 +2,6 @@
 
 package me.rainbow.NativeModules.SystemNavigationBar;
 
-import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
@@ -86,9 +84,6 @@ public class SystemNavigationBarModule extends ReactContextBaseJavaModule {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            WindowInsetsControllerCompat insetsController = WindowCompat.getInsetsController(window, window.getDecorView());
-                            insetsController.setAppearanceLightNavigationBars(!light);
-                            
                             if (color.equals("transparent") || color.equals("translucent")) {
                                 window.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
                                 window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
@@ -97,25 +92,31 @@ public class SystemNavigationBarModule extends ReactContextBaseJavaModule {
                                 } else {
                                     window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION, WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
                                 }
+                                setNavigationBarTheme(getCurrentActivity(), light);
+                                map.putBoolean("success", true);
+                                promise.resolve(map);
+                                return;
                             } else {
                                 window.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
                                 window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-                                if (animated) {
-                                    Integer colorFrom = window.getNavigationBarColor();
-                                    Integer colorTo = Color.parseColor(String.valueOf(color));
-                                    ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
-                                    colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                                        @Override
-                                        public void onAnimationUpdate(ValueAnimator animator) {
-                                            window.setNavigationBarColor((Integer) animator.getAnimatedValue());
-                                        }
-                                    });
-                                    colorAnimation.start();
-                                } else {
-                                    window.setNavigationBarColor(Color.parseColor(String.valueOf(color)));
-                                }
+                            }
+                            if (animated) {
+                                Integer colorFrom = window.getNavigationBarColor();
+                                Integer colorTo = Color.parseColor(String.valueOf(color));
+                                //window.setNavigationBarColor(colorTo);
+                                ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+                                colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                                    @Override
+                                    public void onAnimationUpdate(ValueAnimator animator) {
+                                        window.setNavigationBarColor((Integer) animator.getAnimatedValue());
+                                    }
+                                });
+                                colorAnimation.start();
+                            } else {
+                                window.setNavigationBarColor(Color.parseColor(String.valueOf(color)));
                             }
                             setNavigationBarTheme(getCurrentActivity(), light);
+                            WritableMap map = Arguments.createMap();
                             map.putBoolean("success", true);
                             promise.resolve(map);
                         }
@@ -124,8 +125,10 @@ public class SystemNavigationBarModule extends ReactContextBaseJavaModule {
                     map.putBoolean("success", false);
                     promise.reject("error", e);
                 }
+
             } else {
                 promise.reject(ERROR_NO_ACTIVITY, new Throwable(ERROR_NO_ACTIVITY_MESSAGE));
+
             }
         } else {
             promise.reject(ERROR_API_LEVEL, new Throwable(ERROR_API_LEVEL_MESSAGE));

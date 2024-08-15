@@ -3,18 +3,17 @@ import { getGlobal, saveGlobal } from './common';
 import { NativeModules } from 'react-native';
 import { colors } from '@/styles';
 import { isUsingButtonNavigation } from '@/helpers/statusBarHelper';
-import { Themes, ThemesType } from '@/theme';
 
 const { NavigationBar } = NativeModules;
 
 const THEME = 'theme';
 
-export const getColorForThemeAndNavigationStyle = (theme: ThemesType) => {
+export const getColorForThemeAndNavigationStyle = (theme: string) => {
   if (!isUsingButtonNavigation()) {
     return 'transparent';
   }
 
-  return theme === Themes.DARK ? '#191A1C' : colors.white;
+  return theme === 'dark' ? '#191A1C' : colors.white;
 };
 
 /**
@@ -26,10 +25,9 @@ export const getTheme = () => getGlobal(THEME, 'system');
 /**
  * @desc save theme
  */
-export const saveTheme = (theme: ThemesType, isSystemDarkMode: boolean) => {
+export const saveTheme = (theme: string) => {
   if (IS_ANDROID) {
-    const themeToUse = theme === Themes.SYSTEM ? (isSystemDarkMode ? Themes.DARK : Themes.LIGHT) : theme;
-    NavigationBar.changeNavigationBarColor(getColorForThemeAndNavigationStyle(themeToUse), themeToUse === Themes.DARK, true);
+    NavigationBar.changeNavigationBarColor(getColorForThemeAndNavigationStyle(theme), theme === 'light', true);
   }
 
   return saveGlobal(THEME, theme);
