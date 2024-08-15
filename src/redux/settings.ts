@@ -28,6 +28,7 @@ import { AppState } from '@/redux/store';
 import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { Network } from '@/networks/types';
+import { ChainId } from '@/__swaps__/types/chains';
 
 // -- Constants ------------------------------------------------------------- //
 const SETTINGS_UPDATE_SETTINGS_ADDRESS = 'settings/SETTINGS_UPDATE_SETTINGS_ADDRESS';
@@ -235,8 +236,7 @@ export const settingsUpdateAccountAddress =
     });
   };
 
-export const settingsUpdateNetwork = (network: Network) => async (dispatch: Dispatch<SettingsStateUpdateNetworkSuccessAction>) => {
-  const chainId = ethereumUtils.getChainIdFromNetwork(network);
+export const settingsUpdateNetwork = (chainId: ChainId) => async (dispatch: Dispatch<SettingsStateUpdateNetworkSuccessAction>) => {
   await web3SetHttpProvider(chainId);
   try {
     dispatch({

@@ -33,6 +33,7 @@ import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
 import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
 import { UserAssetsSync } from '@/state/sync/UserAssetsSync';
 import { Network } from '@/networks/types';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const WalletPage = styled(Page)({
   ...position.sizeAsObject('100%'),
@@ -59,7 +60,7 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
 
   const revertToMainnet = useCallback(async () => {
     await resetAccountState();
-    await dispatch(settingsUpdateNetwork(Network.mainnet));
+    await dispatch(settingsUpdateNetwork(ChainId.mainnet));
     InteractionManager.runAfterInteractions(async () => {
       await loadAccountData();
       initializeAccountData();

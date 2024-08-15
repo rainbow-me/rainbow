@@ -9,8 +9,8 @@ import { analytics } from '@/analytics';
 import { Separator, Stack } from '@/design-system';
 import { useAccountSettings, useInitializeAccountData, useLoadAccountData, useResetAccountState } from '@/hooks';
 import { settingsUpdateNetwork } from '@/redux/settings';
-import { Network } from '@/networks/types';
 import { RainbowNetworkObjects } from '@/networks';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const networkObjects = values(RainbowNetworkObjects).filter(({ networkType }) => networkType !== 'layer2');
 
@@ -19,34 +19,34 @@ interface NetworkSectionProps {
 }
 
 const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
-  const { network, testnetsEnabled } = useAccountSettings();
+  const { chainId, testnetsEnabled } = useAccountSettings();
   const resetAccountState = useResetAccountState();
   const loadAccountData = useLoadAccountData();
   const initializeAccountData = useInitializeAccountData();
   const dispatch = useDispatch();
 
   const onNetworkChange = useCallback(
-    async (network: Network) => {
+    async (chainId: ChainId) => {
       await resetAccountState();
-      await dispatch(settingsUpdateNetwork(network));
+      await dispatch(settingsUpdateNetwork(chainId));
       InteractionManager.runAfterInteractions(async () => {
         await loadAccountData();
         initializeAccountData();
-        analytics.track('Changed network', { network });
+        analytics.track('Changed network', { chainId });
       });
     },
     [dispatch, initializeAccountData, loadAccountData, resetAccountState]
   );
 
   const renderNetworkList = useCallback(() => {
-    return networkObjects.map(({ name, value, networkType }) => (
+    return networkObjects.map(({ name, id, networkType }) => (
       <MenuItem
         disabled={!testnetsEnabled && networkType === 'testnet'}
-        key={value}
-        onPress={() => onNetworkChange(value)}
-        rightComponent={value === network && <MenuItem.StatusIcon status="selected" />}
+        key={id}
+        onPress={() => onNetworkChange(id)}
+        rightComponent={id === chainId && <MenuItem.StatusIcon status="selected" />}
         size={52}
-        testID={`${value}-network`}
+        testID={`${id}-network`}
         titleComponent={
           <MenuItem.Title
             disabled={!testnetsEnabled && networkType === 'testnet'}
@@ -56,7 +56,7 @@ const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
         }
       />
     ));
-  }, [inDevSection, network, onNetworkChange, testnetsEnabled]);
+  }, [inDevSection, chainId, onNetworkChange, testnetsEnabled]);
 
   return inDevSection ? (
     <Stack separator={<Separator color="divider60 (Deprecated)" />}>{renderNetworkList()}</Stack>
