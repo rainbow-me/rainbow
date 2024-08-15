@@ -195,7 +195,7 @@ export default function WalletConnectListItem({ account, chainId, dappIcon, dapp
           >
             <NetworkPill mainnet={connectionNetworkInfo.value === 'mainnet'}>
               <Row align="center">
-                <ChainLogo marginRight={5} network={connectionNetworkInfo.value} />
+                <ChainLogo marginRight={5} chainId={connectionNetworkInfo.chainId} />
                 <LabelText
                   color={
                     connectionNetworkInfo.value === 'mainnet'

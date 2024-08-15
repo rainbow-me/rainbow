@@ -470,10 +470,8 @@ const listenOnNewMessages =
       const requestId = payload.id;
       if (payload.method === 'wallet_addEthereumChain' || payload.method === `wallet_switchEthereumChain`) {
         const { chainId } = payload.params[0];
-        const currentNetwork = ethereumUtils.getNetworkFromChainId(
-          // @ts-expect-error "_chainId" is private.
-          Number(walletConnector._chainId)
-        );
+        // @ts-expect-error "_chainId" is private.
+        const currentChainId = Number(walletConnector._chainId);
         const supportedChains = RainbowNetworkObjects.filter(network => network.features.walletconnect).map(network =>
           network.id.toString()
         );
@@ -513,7 +511,7 @@ const listenOnNewMessages =
                 });
               }
             },
-            currentNetwork,
+            currentChainId,
             meta: {
               chainIds: [Number(numericChainId)],
               dappName,

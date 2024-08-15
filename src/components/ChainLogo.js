@@ -22,6 +22,7 @@ import { Centered } from './layout';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { Network } from '@/networks/types';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const ChainIcon = styled(FastImage)({
   height: ({ size }) => size,
@@ -34,25 +35,25 @@ const Content = styled(Centered)(({ size }) => ({
   overflow: 'visible',
 }));
 
-export default function ChainLogo({ network, size = 44, withShadows = true, ...props }) {
+export default function ChainLogo({ chainId, size = 44, withShadows = true, ...props }) {
   const { isDarkMode } = useTheme();
   const source = useMemo(() => {
     let val = null;
-    if (network === Network.arbitrum) {
+    if (chainId === ChainId.arbitrum) {
       val = withShadows ? (isDarkMode ? ArbitrumBadgeDark : ArbitrumBadge) : ArbitrumBadgeNoShadow;
-    } else if (network === Network.optimism) {
+    } else if (chainId === ChainId.optimism) {
       val = withShadows ? (isDarkMode ? OptimismBadgeDark : OptimismBadge) : OptimismBadgeNoShadow;
-    } else if (network === Network.polygon) {
+    } else if (chainId === ChainId.polygon) {
       val = withShadows ? (isDarkMode ? PolygonBadgeDark : PolygonBadge) : PolygonBadgeNoShadow;
-    } else if (network === Network.bsc) {
+    } else if (chainId === ChainId.bsc) {
       val = withShadows ? (isDarkMode ? BscBadgeDark : BscBadge) : BscBadgeNoShadow;
-    } else if (network === Network.zora) {
+    } else if (chainId === ChainId.zora) {
       val = withShadows ? (isDarkMode ? ZoraBadgeDark : ZoraBadge) : ZoraBadgeNoShadow;
-    } else if (network === Network.base) {
+    } else if (chainId === ChainId.base) {
       val = withShadows ? (isDarkMode ? BaseBadgeDark : BaseBadge) : BaseBadgeNoShadow;
     }
     return val;
-  }, [isDarkMode, network, withShadows]);
+  }, [isDarkMode, chainId, withShadows]);
 
   if (!source) return null;
 
