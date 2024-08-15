@@ -12,7 +12,7 @@ import { getGoerliNetworkObject } from './goerli';
 import { getMainnetNetworkObject } from './mainnet';
 import { getOptimismNetworkObject } from './optimism';
 import { getPolygonNetworkObject } from './polygon';
-import { Network, NetworkProperties } from './types';
+import { NetworkProperties } from './types';
 import { getZoraNetworkObject } from './zora';
 
 /**

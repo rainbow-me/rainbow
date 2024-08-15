@@ -120,7 +120,6 @@ export interface TokenSearchToken {
 export interface RainbowToken extends Asset {
   chainId: ChainId;
   color?: string;
-  chainId: ChainId;
   highLiquidity?: boolean;
   totalLiquidity?: number;
   favorite?: boolean;

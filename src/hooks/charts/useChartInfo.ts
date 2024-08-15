@@ -4,7 +4,6 @@ import { DEFAULT_CHART_TYPE } from '../../redux/charts';
 import { metadataClient } from '@/graphql';
 import { useQuery } from '@tanstack/react-query';
 import { createQueryKey } from '@/react-query';
-import { NetworkProperties } from '@/networks/types';
 import { ChainId } from '@/__swaps__/types/chains';
 
 const chartTimes = ['hour', 'day', 'week', 'month', 'year'] as const;
@@ -16,7 +15,7 @@ const getChartTimeArg = (selected: ChartTime) =>
 
 export type ChartData = { x: number; y: number };
 
-const fetchPriceChart = async (time: ChartTime, chainId: NetworkProperties['id'], address: string) => {
+const fetchPriceChart = async (time: ChartTime, chainId: ChainId, address: string) => {
   const priceChart = await metadataClient
     .priceChart({ address, chainId, ...getChartTimeArg(time) })
     .then(d => d.token?.priceCharts[time] as PriceChartTimeData);
