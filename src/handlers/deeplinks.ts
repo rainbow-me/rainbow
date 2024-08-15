@@ -34,7 +34,6 @@ interface DeeplinkHandlerProps extends Pick<ReturnType<typeof useMobileWalletPro
  */
 
 export default async function handleDeeplink({ url, initialRoute, handleRequestUrl, sendFailureToClient }: DeeplinkHandlerProps) {
-
   if (!url) {
     logger.warn(`handleDeeplink: No url provided`);
     return;
