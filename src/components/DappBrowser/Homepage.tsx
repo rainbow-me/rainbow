@@ -1,4 +1,8 @@
-import React, { useCallback, useMemo } from 'react';
+import { BlurView } from '@react-native-community/blur';
+import React, { memo, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
 import {
   Bleed,
@@ -14,28 +18,29 @@ import {
   useBackgroundColor,
   useColorMode,
 } from '@/design-system';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import { BlurView } from '@react-native-community/blur';
 import { ImgixImage } from '@/components/images';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
-import { useFavoriteDappsStore } from '@/state/favoriteDapps';
+import { FavoritedSite, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
 import { Site, useBrowserHistoryStore } from '@/state/browserHistory';
 import { getDappHost } from './handleProviderRequest';
 import { uniqBy } from 'lodash';
-import { useBrowserContext } from './BrowserContext';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { WEBVIEW_HEIGHT } from './Dimensions';
 import { useDapps } from '@/resources/metadata/dapps';
 import { analyticsV2 } from '@/analytics';
 import haptics from '@/utils/haptics';
 import * as i18n from '@/languages';
+import { useBrowserStore } from '@/state/browser/browserStore';
+import { DndProvider, Draggable, DraggableGrid, DraggableGridProps, UniqueIdentifier } from '../drag-and-drop';
+import { EasingGradient } from '../easing-gradient/EasingGradient';
+import { useBrowserContext } from './BrowserContext';
 import { getNameFromFormattedUrl } from './utils';
 import { useTrendingDApps } from '@/resources/metadata/trendingDapps';
 import { DApp } from '@/graphql/__generated__/metadata';
+import { DEFAULT_TAB_URL } from './constants';
 
 const HORIZONTAL_PAGE_INSET = 24;
 const MAX_RECENTS_TO_DISPLAY = 6;
@@ -43,7 +48,8 @@ const SCROLL_INDICATOR_INSETS = { bottom: 20, top: 36 };
 
 const LOGOS_PER_ROW = 4;
 const LOGO_SIZE = 64;
-const LOGO_PADDING = (DEVICE_WIDTH - LOGOS_PER_ROW * LOGO_SIZE - HORIZONTAL_PAGE_INSET * 2) / (LOGOS_PER_ROW - 1);
+const RAW_LOGO_PADDING = (DEVICE_WIDTH - LOGOS_PER_ROW * LOGO_SIZE - HORIZONTAL_PAGE_INSET * 2) / (LOGOS_PER_ROW - 1);
+const LOGO_PADDING = IS_IOS ? RAW_LOGO_PADDING : Math.floor(RAW_LOGO_PADDING);
 const LOGO_BORDER_RADIUS = IS_ANDROID ? 32 : 16;
 const LOGO_LABEL_SPILLOVER = 12;
 
@@ -53,22 +59,24 @@ const CARD_HEIGHT = 137;
 const RAW_CARD_WIDTH = (DEVICE_WIDTH - HORIZONTAL_PAGE_INSET * 2 - (NUM_CARDS - 1) * CARD_PADDING) / NUM_CARDS;
 const CARD_WIDTH = IS_IOS ? RAW_CARD_WIDTH : Math.floor(RAW_CARD_WIDTH);
 
-export const Homepage = () => {
+export const Homepage = ({ tabId }: { tabId: string }) => {
   const { goToUrl } = useBrowserContext();
   const { isDarkMode } = useColorMode();
 
+  const backgroundStyle = isDarkMode ? styles.pageBackgroundDark : styles.pageBackgroundLight;
+
   return (
-    <View style={[isDarkMode ? styles.pageBackgroundDark : styles.pageBackgroundLight, styles.pageContainer]}>
+    <View style={[backgroundStyle, styles.pageContainer]}>
       <ScrollView
+        contentContainerStyle={[styles.scrollViewContainer, backgroundStyle]}
         scrollIndicatorInsets={SCROLL_INDICATOR_INSETS}
-        contentContainerStyle={[styles.scrollViewContainer, isDarkMode ? styles.pageBackgroundDark : styles.pageBackgroundLight]}
         showsVerticalScrollIndicator={false}
       >
-        <Stack space="44px">
+        <Box gap={44}>
           <Trending goToUrl={goToUrl} />
-          <Favorites goToUrl={goToUrl} />
+          <Favorites goToUrl={goToUrl} tabId={tabId} />
           <Recents goToUrl={goToUrl} />
-        </Stack>
+        </Box>
       </ScrollView>
     </View>
   );
@@ -114,11 +122,90 @@ const Trending = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
   );
 };
 
-const Favorites = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
-  const favoriteDapps = useFavoriteDappsStore(state => state.favoriteDapps);
+const Favorites = ({ goToUrl, tabId }: { goToUrl: (url: string) => void; tabId: string }) => {
+  const { animatedTabUrls, activeTabInfo, currentlyOpenTabIds, tabViewProgress, tabViewVisible } = useBrowserContext();
+
+  const [localGridSort, setLocalGridSort] = useState<string[] | undefined>(() => {
+    const orderedIds = useFavoriteDappsStore.getState().getOrderedIds();
+    return orderedIds && orderedIds.length > 0 ? orderedIds : undefined;
+  });
+
+  const favoriteDapps = useFavoriteDappsStore(state => state.getFavorites(localGridSort));
+  const gridKey = useMemo(() => localGridSort?.join('-'), [localGridSort]);
+  const isFirstRender = useRef(true);
+
+  const reorderFavorites = useFavoriteDappsStore(state => state.reorderFavorites);
+
+  const onGridOrderChange: DraggableGridProps['onOrderChange'] = useCallback(
+    (value: UniqueIdentifier[]) => {
+      reorderFavorites(value as string[]);
+    },
+    [reorderFavorites]
+  );
+
+  const reinitializeGridSort = useCallback(() => {
+    setLocalGridSort(useFavoriteDappsStore.getState().getOrderedIds());
+  }, []);
+
+  const needsToSyncWorklet = useCallback(
+    ({ currentGridSort, isActiveTab }: { currentGridSort: string[] | undefined; isActiveTab: boolean }) => {
+      'worklet';
+      const homepageTabsCount = currentlyOpenTabIds.value.filter(
+        tabId => !animatedTabUrls.value[tabId] || animatedTabUrls.value[tabId] === DEFAULT_TAB_URL
+      ).length;
+      const inactiveAndMounted = !isActiveTab && currentGridSort !== undefined;
+
+      if (homepageTabsCount === 1) {
+        if (inactiveAndMounted) return true;
+        return false;
+      }
+
+      const activeAndUnmounted = isActiveTab && !currentGridSort;
+
+      return activeAndUnmounted || inactiveAndMounted;
+    },
+    [animatedTabUrls, currentlyOpenTabIds]
+  );
+
+  // Unmount drag and drop grid on inactive homepage tabs
+  useAnimatedReaction(
+    () => ({
+      needsToSync: needsToSyncWorklet({ currentGridSort: localGridSort, isActiveTab: activeTabInfo.value.tabId === tabId }),
+      tabAnimationProgress: tabViewProgress.value,
+    }),
+    (current, previous) => {
+      if (!previous || (!current.needsToSync && current.tabAnimationProgress === previous.tabAnimationProgress) || !favoriteDapps.length) {
+        return;
+      }
+
+      const enterTabViewAnimationIsComplete =
+        !tabViewVisible.value && previous.tabAnimationProgress < 0 && current.tabAnimationProgress >= 0;
+
+      if (!enterTabViewAnimationIsComplete) return;
+
+      if (activeTabInfo.value.tabId === tabId) {
+        runOnJS(reinitializeGridSort)();
+      } else {
+        runOnJS(setLocalGridSort)(undefined);
+      }
+    },
+    []
+  );
+
+  // Reinitialize grid sort when favorites are added or removed
+  useLayoutEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    if (!favoriteDapps.length || !useBrowserStore.getState().isTabActive(tabId)) {
+      return;
+    }
+    reinitializeGridSort();
+  }, [favoriteDapps.length, reinitializeGridSort, tabId]);
 
   return (
-    <Stack space="20px">
+    <Box gap={20} style={styles.favoritesContainer}>
       <Inline alignVertical="center" space="6px">
         <Text color="yellow" size="15pt" align="center" weight="heavy">
           􀋃
@@ -127,14 +214,35 @@ const Favorites = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
           {i18n.t(i18n.l.dapp_browser.homepage.favorites)}
         </Text>
       </Inline>
-      <Box flexDirection="row" flexWrap="wrap" gap={LOGO_PADDING} width={{ custom: DEVICE_WIDTH - HORIZONTAL_PAGE_INSET * 2 }}>
-        {favoriteDapps.length > 0
-          ? favoriteDapps.map(dapp => <Logo goToUrl={goToUrl} key={`${dapp.url}-${dapp.name}`} site={dapp} />)
-          : Array(4)
-              .fill(null)
-              .map((_, index) => <PlaceholderLogo key={index} />)}
-      </Box>
-    </Stack>
+      {favoriteDapps.length > 0 && localGridSort ? (
+        <DndProvider activationDelay={150}>
+          <DraggableGrid
+            direction="row"
+            gap={LOGO_PADDING}
+            key={gridKey}
+            onOrderChange={onGridOrderChange}
+            size={LOGOS_PER_ROW}
+            style={styles.favoritesGrid}
+          >
+            {favoriteDapps.map(dapp =>
+              dapp ? (
+                <Draggable activationTolerance={DEVICE_WIDTH} activeScale={1.06} id={dapp.url} key={dapp.url}>
+                  <Logo goToUrl={goToUrl} key={`${dapp.url}-${dapp.name}`} site={dapp} />
+                </Draggable>
+              ) : null
+            )}
+          </DraggableGrid>
+        </DndProvider>
+      ) : (
+        <Box flexDirection="row" flexWrap="wrap" gap={LOGO_PADDING} style={styles.favoritesGrid}>
+          {favoriteDapps.length > 0
+            ? favoriteDapps.map(dapp => <Logo goToUrl={goToUrl} key={`${dapp.url}-${dapp.name}`} site={dapp} />)
+            : Array(4)
+                .fill(null)
+                .map((_, index) => <PlaceholderLogo key={index} />)}
+        </Box>
+      )}
+    </Box>
   );
 };
 
@@ -164,7 +272,7 @@ const Recents = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
   );
 };
 
-const Card = React.memo(function Card({
+const Card = memo(function Card({
   goToUrl,
   site,
   showMenuButton,
@@ -283,25 +391,7 @@ const Card = React.memo(function Card({
             width={{ custom: CARD_WIDTH }}
           >
             <ColorModeProvider value="dark">
-              {(site.screenshot || dappIconUrl) && (
-                <Cover>
-                  <ImgixImage
-                    enableFasterImage
-                    size={CARD_WIDTH}
-                    source={{ uri: dappIconUrl || site.screenshot }}
-                    style={{ width: CARD_WIDTH, height: CARD_HEIGHT }}
-                  />
-                  <Cover>
-                    <LinearGradient
-                      colors={['rgba(0, 0, 0, 0.6)', 'rgba(0, 0, 0, 0.6)', '#000']}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 0, y: 1 }}
-                      locations={[0, 0.5, 1]}
-                      style={{ borderRadius: IS_IOS ? undefined : 24, height: '100%', width: '100%' }}
-                    />
-                  </Cover>
-                </Cover>
-              )}
+              <CardBackground imageUrl={dappIconUrl || site.screenshot} isDarkMode={isDarkMode} />
               <Box height={{ custom: 48 }} left={{ custom: -8 }} style={styles.cardLogoWrapper} top={{ custom: -8 }} width={{ custom: 48 }}>
                 <ImgixImage
                   enableFasterImage
@@ -330,7 +420,7 @@ const Card = React.memo(function Card({
               height="full"
               position="absolute"
               style={{
-                borderColor: isDarkMode ? opacity(globalColors.white100, 0.1) : opacity(globalColors.grey100, 0.12),
+                borderColor: isDarkMode ? opacity(globalColors.white100, 0.09) : opacity(globalColors.grey100, 0.08),
                 borderWidth: THICK_BORDER_WIDTH,
                 overflow: 'hidden',
                 pointerEvents: 'none',
@@ -343,16 +433,16 @@ const Card = React.memo(function Card({
       {showMenuButton && (
         <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem} style={styles.cardContextMenuButton}>
           <ButtonPressAnimation scaleTo={0.8} style={{ padding: 12 }}>
-            <Box height={{ custom: 24 }} width={{ custom: 24 }} borderRadius={32} style={{ overflow: 'hidden' }}>
+            <Box borderRadius={32} height={{ custom: 24 }} style={{ overflow: 'hidden' }} width={{ custom: 24 }}>
               <Cover>
                 {IS_IOS ? (
                   <BlurView
-                    blurType={isDarkMode ? 'chromeMaterialDark' : 'chromeMaterialLight'}
                     blurAmount={10}
+                    blurType={isDarkMode ? 'chromeMaterialDark' : 'light'}
                     style={{
                       width: '100%',
                       height: '100%',
-                      backgroundColor: 'rgba(244, 248, 255, 0.08)',
+                      backgroundColor: isDarkMode ? undefined : 'rgba(244, 248, 255, 0.04)',
                     }}
                   />
                 ) : (
@@ -361,13 +451,19 @@ const Card = React.memo(function Card({
               </Cover>
               <View
                 style={{
-                  width: '100%',
+                  alignItems: 'center',
                   height: '100%',
                   justifyContent: 'center',
-                  alignItems: 'center',
+                  width: '100%',
                 }}
               >
-                <Text align="center" weight="heavy" color="labelSecondary" size="13pt">
+                <Text
+                  align="center"
+                  color="labelSecondary"
+                  size="13pt"
+                  style={{ opacity: isDarkMode || IS_ANDROID ? 1 : 0.9 }}
+                  weight="heavy"
+                >
                   􀍠
                 </Text>
               </View>
@@ -379,7 +475,47 @@ const Card = React.memo(function Card({
   );
 });
 
-export const PlaceholderCard = React.memo(function PlaceholderCard() {
+const CardBackground = memo(function CardBackgroundOverlay({
+  imageUrl,
+  isDarkMode,
+}: {
+  imageUrl: string | undefined;
+  isDarkMode: boolean;
+}) {
+  return imageUrl ? (
+    <Box shouldRasterizeIOS style={StyleSheet.absoluteFill}>
+      <ImgixImage enableFasterImage size={CARD_WIDTH} source={{ uri: imageUrl }} style={{ height: CARD_HEIGHT, width: CARD_WIDTH }} />
+      {IS_IOS ? (
+        <>
+          <BlurView
+            blurAmount={isDarkMode ? 36 : 64}
+            blurType={isDarkMode ? undefined : 'light'}
+            style={{ height: '100%', position: 'absolute', width: '100%' }}
+          />
+          {!isDarkMode && (
+            <EasingGradient
+              endColor={globalColors.grey100}
+              endOpacity={0.28}
+              startColor={globalColors.grey100}
+              startOpacity={0.2}
+              style={{ height: '100%', position: 'absolute', width: '100%' }}
+            />
+          )}
+        </>
+      ) : (
+        <EasingGradient
+          endColor={globalColors.grey100}
+          endOpacity={0.9}
+          startColor={globalColors.grey100}
+          startOpacity={0.5}
+          style={{ borderRadius: 24, height: '100%', position: 'absolute', width: '100%' }}
+        />
+      )}
+    </Box>
+  ) : null;
+});
+
+export const PlaceholderCard = memo(function PlaceholderCard() {
   const { isDarkMode } = useColorMode();
 
   const fillTertiary = useBackgroundColor('fillTertiary');
@@ -417,56 +553,69 @@ export const PlaceholderCard = React.memo(function PlaceholderCard() {
   );
 });
 
-export const Logo = React.memo(function Logo({ goToUrl, site }: { goToUrl: (url: string) => void; site: Omit<Site, 'timestamp'> }) {
+export const Logo = memo(function Logo({ goToUrl, site }: { goToUrl: (url: string) => void; site: FavoritedSite }) {
   const { isDarkMode } = useColorMode();
+
+  const imageOrFallback = useMemo(() => {
+    return (
+      <>
+        {site.image && (
+          <Box
+            as={ImgixImage}
+            background="fillTertiary"
+            borderRadius={LOGO_BORDER_RADIUS}
+            enableFasterImage
+            fm="png"
+            height={{ custom: LOGO_SIZE }}
+            size={LOGO_SIZE}
+            source={{ uri: site.image }}
+            style={{
+              borderRadius: IS_IOS ? LOGO_BORDER_RADIUS : LOGO_BORDER_RADIUS / 2,
+              overflow: 'hidden',
+            }}
+            width={{ custom: LOGO_SIZE }}
+          />
+        )}
+
+        <Box
+          background={site.image ? undefined : 'fillTertiary'}
+          borderRadius={LOGO_BORDER_RADIUS}
+          height={{ custom: LOGO_SIZE }}
+          position={site.image ? 'absolute' : undefined}
+          style={[
+            IS_IOS
+              ? {
+                  borderColor: isDarkMode ? opacity(globalColors.white100, 0.04) : opacity(globalColors.grey100, 0.02),
+                  borderWidth: THICK_BORDER_WIDTH,
+                }
+              : {},
+            {
+              overflow: 'hidden',
+              pointerEvents: 'none',
+            },
+          ]}
+          width={{ custom: LOGO_SIZE }}
+        />
+
+        {!site.image && (
+          <Box alignItems="center" height="full" position="absolute" width="full">
+            <TextIcon color="labelQuaternary" containerSize={LOGO_SIZE} opacity={isDarkMode ? 0.4 : 0.6} size="icon 28px" weight="black">
+              􀎭
+            </TextIcon>
+          </Box>
+        )}
+      </>
+    );
+  }, [isDarkMode, site.image]);
 
   return (
     <View style={{ width: LOGO_SIZE }}>
       <ButtonPressAnimation onPress={() => goToUrl(site.url)}>
         <Stack alignHorizontal="center">
-          <Box>
-            {IS_IOS && !site.image && (
-              <Box alignItems="center" height="full" position="absolute" width="full">
-                <TextIcon
-                  color="labelQuaternary"
-                  containerSize={LOGO_SIZE}
-                  opacity={isDarkMode ? 0.4 : 0.6}
-                  size="icon 28px"
-                  weight="black"
-                >
-                  􀎭
-                </TextIcon>
-              </Box>
-            )}
-            <Box
-              as={ImgixImage}
-              enableFasterImage
-              fm="png"
-              size={LOGO_SIZE}
-              source={{ uri: site.image }}
-              width={{ custom: LOGO_SIZE }}
-              height={{ custom: LOGO_SIZE }}
-              background="fillTertiary"
-              style={{ borderRadius: LOGO_BORDER_RADIUS }}
-            />
-            {IS_IOS && (
-              <Box
-                borderRadius={LOGO_BORDER_RADIUS}
-                height="full"
-                position="absolute"
-                style={{
-                  borderColor: isDarkMode ? opacity(globalColors.white100, 0.04) : opacity(globalColors.grey100, 0.02),
-                  borderWidth: THICK_BORDER_WIDTH,
-                  overflow: 'hidden',
-                  pointerEvents: 'none',
-                }}
-                width="full"
-              />
-            )}
-          </Box>
+          <Box>{imageOrFallback}</Box>
           <Bleed bottom="10px" horizontal="8px">
             <Box width={{ custom: LOGO_SIZE + LOGO_LABEL_SPILLOVER * 2 }}>
-              <Text size="13pt" numberOfLines={1} weight="bold" color="labelSecondary" align="center" style={{ paddingVertical: 10 }}>
+              <Text align="center" color="labelSecondary" numberOfLines={1} size="13pt" style={{ paddingVertical: 10 }} weight="bold">
                 {site.name}
               </Text>
             </Box>
@@ -477,13 +626,13 @@ export const Logo = React.memo(function Logo({ goToUrl, site }: { goToUrl: (url:
   );
 });
 
-export const PlaceholderLogo = React.memo(function PlaceholderLogo() {
+export const PlaceholderLogo = memo(function PlaceholderLogo() {
   const { isDarkMode } = useColorMode();
   const borderRadius = IS_ANDROID ? LOGO_BORDER_RADIUS / 2 : LOGO_BORDER_RADIUS;
 
   return (
     <View style={{ opacity: isDarkMode ? 0.6 : 0.5, width: LOGO_SIZE }}>
-      <Box width={{ custom: LOGO_SIZE }} height={{ custom: LOGO_SIZE }} background="fillTertiary" style={{ borderRadius }} />
+      <Box background="fillTertiary" height={{ custom: LOGO_SIZE }} style={{ borderRadius }} width={{ custom: LOGO_SIZE }} />
       {IS_IOS && (
         <Box
           borderRadius={borderRadius}
@@ -525,6 +674,12 @@ const styles = StyleSheet.create({
   cardLogoWrapper: {
     borderRadius: 12,
     overflow: 'hidden',
+  },
+  favoritesContainer: {
+    zIndex: 10,
+  },
+  favoritesGrid: {
+    width: DEVICE_WIDTH - HORIZONTAL_PAGE_INSET * 2,
   },
   pageBackgroundDark: {
     backgroundColor: globalColors.grey100,

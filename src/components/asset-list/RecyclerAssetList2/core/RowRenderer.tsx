@@ -112,7 +112,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
         <ProfileRowWrapper>
           <ProfileBalanceRow
             totalValue={(data as AssetsHeaderExtraData).value}
-            isLoadingUserAssets={(data as AssetsHeaderExtraData).isLoadingUserAssets}
+            isLoadingBalance={(data as AssetsHeaderExtraData).isLoadingBalance}
           />
         </ProfileRowWrapper>
       );

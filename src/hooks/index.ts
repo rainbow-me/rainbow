@@ -94,6 +94,7 @@ export { default as useSwapSettings } from './useSwapSettings';
 export { default as useSwapDerivedOutputs } from './useSwapDerivedOutputs';
 export { default as useSwapDerivedValues } from './useSwapDerivedValues';
 export { default as useSwapRefuel } from './useSwapRefuel';
+export { default as useSwitchWallet } from './useSwitchWallet';
 export { default as useTimeout } from './useTimeout';
 export { default as useTransactionConfirmation } from './useTransactionConfirmation';
 export { default as usePendingTransactions } from './usePendingTransactions';

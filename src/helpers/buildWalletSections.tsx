@@ -1,6 +1,5 @@
 import { createSelector } from 'reselect';
 import { buildBriefCoinsList, buildBriefUniqueTokenList } from './assets';
-import { add, convertAmountToNativeDisplay } from './utilities';
 import { NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
 import { queryClient } from '@/react-query';
 import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
@@ -39,9 +38,11 @@ const EMPTY_WALLET_CONTENT = [
 const ONLY_NFTS_CONTENT = [{ type: 'ETH_CARD', uid: 'eth-card' }];
 
 const sortedAssetsSelector = (state: any) => state.sortedAssets;
+const accountBalanceDisplaySelector = (state: any) => state.accountBalanceDisplay;
 const hiddenCoinsSelector = (state: any) => state.hiddenCoins;
 const isCoinListEditedSelector = (state: any) => state.isCoinListEdited;
 const isLoadingUserAssetsSelector = (state: any) => state.isLoadingUserAssets;
+const isLoadingBalanceSelector = (state: any) => state.isLoadingBalance;
 const isReadOnlyWalletSelector = (state: any) => state.isReadOnlyWallet;
 const nativeCurrencySelector = (state: any) => state.nativeCurrency;
 const pinnedCoinsSelector = (state: any) => state.pinnedCoins;
@@ -107,22 +108,15 @@ const withPositionsSection = (isLoadingUserAssets: boolean) => {
 const withBriefBalanceSection = (
   sortedAssets: ParsedAddressAsset[],
   isLoadingUserAssets: boolean,
+  isLoadingBalance: boolean,
+  accountBalanceDisplay: string | undefined,
   nativeCurrency: NativeCurrencyKey,
   isCoinListEdited: boolean,
   pinnedCoins: any,
   hiddenCoins: any,
   collectibles: any
 ) => {
-  const { briefAssets, totalBalancesValue } = buildBriefCoinsList(sortedAssets, nativeCurrency, isCoinListEdited, pinnedCoins, hiddenCoins);
-
-  const { accountAddress: address } = store.getState().settings;
-  const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(positionsQueryKey({ address, currency: nativeCurrency }));
-
-  const positionsTotal = positionsObj?.totals?.total?.amount || '0';
-
-  const totalBalanceWithPositionsValue = add(totalBalancesValue, positionsTotal);
-
-  const totalValue = convertAmountToNativeDisplay(totalBalanceWithPositionsValue, nativeCurrency);
+  const { briefAssets } = buildBriefCoinsList(sortedAssets, nativeCurrency, isCoinListEdited, pinnedCoins, hiddenCoins);
 
   const hasTokens = briefAssets?.length;
   const hasNFTs = collectibles?.length;
@@ -134,8 +128,6 @@ const withBriefBalanceSection = (
     {
       type: 'PROFILE_STICKY_HEADER',
       uid: 'assets-profile-header-compact',
-      value: totalValue,
-      isLoadingUserAssets,
     },
     {
       type: 'PROFILE_AVATAR_ROW_SPACE_BEFORE',
@@ -157,13 +149,14 @@ const withBriefBalanceSection = (
       type: 'PROFILE_NAME_ROW_SPACE_AFTER',
       uid: 'profile-name-space-after',
     },
-    ...(!hasTokens && !isLoadingUserAssets
+    ...(!hasTokens && !isLoadingUserAssets && !isLoadingBalance
       ? []
       : [
           {
             type: 'PROFILE_BALANCE_ROW',
             uid: 'profile-balance',
-            value: totalValue,
+            value: accountBalanceDisplay,
+            isLoadingBalance,
           },
           {
             type: 'PROFILE_BALANCE_ROW_SPACE_AFTER',
@@ -173,13 +166,13 @@ const withBriefBalanceSection = (
     {
       type: 'PROFILE_ACTION_BUTTONS_ROW',
       uid: 'profile-action-buttons',
-      value: totalValue,
+      value: accountBalanceDisplay,
     },
     hasTokens
       ? {
           type: 'PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER',
           uid: 'profile-action-buttons-space-after',
-          value: totalValue,
+          value: accountBalanceDisplay,
         }
       : { type: 'BIG_EMPTY_WALLET_SPACER', uid: 'big-empty-wallet-spacer-1' },
   ];
@@ -228,6 +221,8 @@ const briefBalanceSectionSelector = createSelector(
   [
     sortedAssetsSelector,
     isLoadingUserAssetsSelector,
+    isLoadingBalanceSelector,
+    accountBalanceDisplaySelector,
     nativeCurrencySelector,
     isCoinListEditedSelector,
     pinnedCoinsSelector,

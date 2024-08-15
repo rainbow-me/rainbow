@@ -20,6 +20,7 @@ interface TimeoutConfig {
  *   - `onTimeoutWorklet` - The worklet function to be executed when the timeout completes.
  *
  * @returns An object containing:
+ *   - `clearTimeout` - A function to clear the timeout.
  *   - `start` - A function to initiate the timeout.
  *
  * @example
@@ -38,11 +39,11 @@ interface TimeoutConfig {
 export function useAnimatedTimeout(config: TimeoutConfig) {
   const { autoStart, delayMs, onTimeoutWorklet } = config;
 
-  const { start } = useAnimatedTime({
+  const { start, stop: clearTimeout } = useAnimatedTime({
     autoStart,
     durationMs: delayMs,
     onEndWorklet: onTimeoutWorklet,
   });
 
-  return { start };
+  return { clearTimeout, start };
 }
