@@ -3,7 +3,7 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Bleed, Box, Inline, Text, useForegroundColor } from '@/design-system';
 import { haptics } from '@/utils';
-import { CollectibleSortByOptions } from '@/hooks/useNFTsSortBy';
+import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 
 type MenuItem = {
   actionKey: string;
@@ -12,7 +12,7 @@ type MenuItem = {
 };
 
 type ListHeaderMenuProps = {
-  selected: CollectibleSortByOptions;
+  selected: NftCollectionSortCriterion;
   menuItems: MenuItem[];
   selectItem: (item: string) => void;
   icon: string;
