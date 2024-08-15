@@ -7,10 +7,13 @@ import { ButtonPressAnimation } from '../../../animations';
 import { ExtendedState } from '../core/RawRecyclerList';
 
 import { Text } from '@/design-system';
-import { useAccountAsset, useCoinListFinishEditingOptions } from '@/hooks';
+import { useCoinListFinishEditingOptions } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { borders, colors, padding, shadow } from '@/styles';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { userAssetsStore } from '@/state/assets/userAssets';
+import { getNetworkFromChainId } from '@/utils/ethereumUtils';
+import { Network } from '@/networks/types';
 
 interface CoinCheckButtonProps {
   isHidden: boolean;
@@ -54,7 +57,6 @@ const formatPercentageString = (percentString?: string) => (percentString ? perc
 
 interface MemoizedBalanceCoinRowProps {
   uniqueId: string;
-  nativeCurrency: string;
   theme: any;
   navigate: any;
   nativeCurrencySymbol: string;
@@ -63,8 +65,8 @@ interface MemoizedBalanceCoinRowProps {
 }
 
 const MemoizedBalanceCoinRow = React.memo(
-  ({ uniqueId, nativeCurrency, theme, navigate, nativeCurrencySymbol, isHidden, maybeCallback }: MemoizedBalanceCoinRowProps) => {
-    const item = useAccountAsset(uniqueId, nativeCurrency) as any;
+  ({ uniqueId, theme, navigate, nativeCurrencySymbol, isHidden, maybeCallback }: MemoizedBalanceCoinRowProps) => {
+    const item = userAssetsStore(state => state.getUserAsset(uniqueId));
 
     const handlePress = useCallback(() => {
       if (maybeCallback.current) {
@@ -79,7 +81,7 @@ const MemoizedBalanceCoinRow = React.memo(
       }
     }, [navigate, item, maybeCallback]);
 
-    const percentChange = item?.native?.change;
+    const percentChange = item?.native?.price?.change;
     const percentageChangeDisplay = formatPercentageString(percentChange);
 
     const isPositive = percentChange && percentageChangeDisplay.charAt(0) !== '-';
@@ -98,8 +100,8 @@ const MemoizedBalanceCoinRow = React.memo(
               <RainbowCoinIcon
                 size={40}
                 icon={item?.icon_url}
-                network={item?.network}
-                symbol={item?.symbol}
+                network={item?.chainId ? getNetworkFromChainId(item.chainId) : Network.mainnet}
+                symbol={item?.symbol ?? ''}
                 theme={theme}
                 colors={item?.colors}
               />
@@ -140,8 +142,7 @@ const MemoizedBalanceCoinRow = React.memo(
 MemoizedBalanceCoinRow.displayName = 'MemoizedBalanceCoinRow';
 
 export default React.memo(function BalanceCoinRow({ uniqueId, extendedState }: { uniqueId: string; extendedState: ExtendedState }) {
-  const { theme, nativeCurrencySymbol, navigate, nativeCurrency, hiddenCoins, pinnedCoins, toggleSelectedCoin, isCoinListEdited } =
-    extendedState;
+  const { theme, nativeCurrencySymbol, navigate, hiddenCoins, pinnedCoins, toggleSelectedCoin, isCoinListEdited } = extendedState;
 
   const onPress = useCallback(() => {
     toggleSelectedCoin(uniqueId);
@@ -162,7 +163,6 @@ export default React.memo(function BalanceCoinRow({ uniqueId, extendedState }: {
       <MemoizedBalanceCoinRow
         isHidden={isHidden}
         maybeCallback={maybeCallback}
-        nativeCurrency={nativeCurrency}
         nativeCurrencySymbol={nativeCurrencySymbol}
         navigate={navigate}
         theme={theme}

@@ -29,7 +29,6 @@ const dataProvider = new DataProvider((r1, r2) => {
 export type ExtendedState = {
   theme: any;
   nativeCurrencySymbol: string;
-  nativeCurrency: string;
   navigate: any;
   isCoinListEdited: boolean;
   hiddenCoins: BooleanMap;
@@ -116,7 +115,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   const layoutItemAnimator = useLayoutItemAnimator(ref, topMarginRef);
 
   const theme = useTheme();
-  const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
+  const { nativeCurrencySymbol } = useAccountSettings();
   const { hiddenCoinsObj: hiddenCoins, pinnedCoinsObj: pinnedCoins, toggleSelectedCoin } = useCoinListEditOptions();
 
   const { navigate } = useNavigation();
@@ -126,7 +125,6 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       ...extendedState,
       hiddenCoins,
       isCoinListEdited,
-      nativeCurrency,
       nativeCurrencySymbol,
       navigate,
       pinnedCoins,
@@ -139,7 +137,6 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     theme,
     navigate,
     nativeCurrencySymbol,
-    nativeCurrency,
     pinnedCoins,
     hiddenCoins,
     toggleSelectedCoin,

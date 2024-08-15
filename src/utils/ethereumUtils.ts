@@ -287,7 +287,7 @@ const getNetworkNameFromChainId = (chainId: number): string => {
  * @desc get chainId from network string
  * @param  {String} network
  */
-const getChainIdFromNetwork = (network: Network): number => {
+export const getChainIdFromNetwork = (network: Network): number => {
   return getNetworkObj(network).id;
 };
 

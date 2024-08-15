@@ -8,10 +8,10 @@ import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
 import useWallets from './useWallets';
 import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
-import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import { useLegacyNFTs } from '@/resources/nfts';
 import useNftSort from './useNFTsSortBy';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
+import { userAssetsStore } from '@/state/assets/userAssets';
 
 export default function useWalletSectionsData({
   type,
@@ -19,7 +19,8 @@ export default function useWalletSectionsData({
   type?: string;
 } = {}) {
   const { selectedWallet, isReadOnlyWallet } = useWallets();
-  const { isLoading: isLoadingUserAssets, data: sortedAssets = [] } = useSortedUserAssets();
+  const isLoadingUserAssets = false; // FIX ME
+  const sortedAssets = userAssetsStore(state => Array.from(state.userAssets.values())); // FIX ME
   const isWalletEthZero = useIsWalletEthZero();
 
   const { accountAddress, language, network, nativeCurrency } = useAccountSettings();

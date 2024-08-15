@@ -7,7 +7,7 @@ import { FallbackIcon as CoinIconTextFallback } from '@/utils';
 
 import { FastFallbackCoinIconImage } from '../asset-list/RecyclerAssetList2/FastComponents/FastFallbackCoinIconImage';
 import { FastChainBadge } from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinBadge';
-import { TokenColors } from '@/graphql/__generated__/metadata';
+import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 
 const fallbackTextStyles = {
   fontFamily: fonts.family.SFProRounded,
@@ -38,7 +38,7 @@ export default React.memo(function RainbowCoinIcon({
   network: Network;
   symbol: string;
   theme: ThemeContextProps;
-  colors?: TokenColors;
+  colors?: ParsedSearchAsset['colors'];
   ignoreBadge?: boolean;
   badgeXPosition?: number;
   badgeYPosition?: number;

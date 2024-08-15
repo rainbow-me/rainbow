@@ -1,6 +1,5 @@
 export { useChartDataLabels, useChartThrottledPoints } from './charts';
 export { default as useDelayedValueWithLayoutAnimation } from './useDelayedValueWithLayoutAnimation';
-export { default as useAccountAsset } from './useAccountAsset';
 export { default as useFrameDelayedValue } from './useFrameDelayedValue';
 export { default as useAccountENSDomains, prefetchAccountENSDomains } from './useAccountENSDomains';
 export { default as useAndroidScrollViewGestureHandler } from './useAndroidScrollViewGestureHandler';
