@@ -298,8 +298,8 @@ fragment simpleHashPaymentToken on SimpleHashPaymentToken {
   decimals
 }
 
-query getNFTs($walletAddress: String!) {
-  nfts(walletAddress: $walletAddress) {
+query getNFTs($walletAddress: String!, $sortBy: NFTCollectionSortCriterion, $sortDirection: SortDirection) {
+  nftsV2(walletAddress: $walletAddress, sortBy: $sortBy, sortDirection: $sortDirection) {
     nft_id
     chain
     contract_address

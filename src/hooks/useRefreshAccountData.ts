@@ -13,6 +13,7 @@ import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { nftsQueryKey } from '@/resources/nfts';
 import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
+import useNftSort from './useNFTsSortBy';
 import { Address } from 'viem';
 import { addysSummaryQueryKey } from '@/resources/summary/summary';
 import useWallets from './useWallets';
@@ -22,6 +23,7 @@ export default function useRefreshAccountData() {
   const { accountAddress, nativeCurrency } = useAccountSettings();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const { nftSort } = useNftSort();
 
   const { wallets } = useWallets();
 
@@ -33,7 +35,7 @@ export default function useRefreshAccountData() {
   const fetchAccountData = useCallback(async () => {
     const connectedToHardhat = getIsHardhatConnected();
 
-    queryClient.invalidateQueries(nftsQueryKey({ address: accountAddress }));
+    queryClient.invalidateQueries(nftsQueryKey({ address: accountAddress, sortBy: nftSort }));
     queryClient.invalidateQueries(positionsQueryKey({ address: accountAddress as Address, currency: nativeCurrency }));
     queryClient.invalidateQueries(addysSummaryQueryKey({ addresses: allAddresses, currency: nativeCurrency }));
     queryClient.invalidateQueries(userAssetsQueryKey({ address: accountAddress, currency: nativeCurrency, connectedToHardhat }));
