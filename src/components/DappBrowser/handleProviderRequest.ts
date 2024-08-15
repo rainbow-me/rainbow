@@ -6,7 +6,7 @@ import { Provider } from '@ethersproject/providers';
 
 import { RainbowNetworkObjects, RainbowSupportedChainIds } from '@/networks';
 import { getProvider } from '@/handlers/web3';
-import { Address, UserRejectedRequestError } from 'viem';
+import { UserRejectedRequestError } from 'viem';
 import { convertHexToString } from '@/helpers/utilities';
 import { logger } from '@/logger';
 import { ActiveSession } from '@rainbow-me/provider/dist/references/appSession';
