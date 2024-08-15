@@ -6,7 +6,7 @@ import { useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { margin, padding } from '@/styles';
-import { Box, Stack } from '@/design-system';
+import { Box, Stack, Text } from '@/design-system';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { ImgixImage } from '../images';
@@ -162,7 +162,7 @@ export function ChooseBackupStep() {
             </Stack>
           )}
 
-          {!isFetching && cloudBackups.length && (
+          {!isFetching && cloudBackups.length > 0 && (
             <Stack width="full" space="44px">
               {mostRecentBackup && (
                 <Menu
@@ -217,13 +217,11 @@ export function ChooseBackupStep() {
           {isFetching && (
             <Centered zIndex={2}>
               {android ? <Spinner color={colors.blueGreyDark} /> : <ActivityIndicator color={colors.blueGreyDark} />}
-              {
-                <LoadingText>
-                  {lang.t(lang.l.back_up.cloud.fetching_backups, {
-                    cloudPlatformName: cloudPlatform,
-                  })}
-                </LoadingText>
-              }
+              <LoadingText>
+                {lang.t(lang.l.back_up.cloud.fetching_backups, {
+                  cloudPlatformName: cloudPlatform,
+                })}
+              </LoadingText>
             </Centered>
           )}
         </Stack>
