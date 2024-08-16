@@ -123,7 +123,7 @@ const HomepageOrWebView = ({
   const isOnHomepage = useBrowserStore(state => !state.getTabData?.(tabId)?.url || state.getTabData?.(tabId)?.url === RAINBOW_HOME);
 
   return isOnHomepage ? (
-    <Homepage tabId={tabId} />
+    <Homepage />
   ) : (
     <FreezableWebView
       addRecent={addRecent}
