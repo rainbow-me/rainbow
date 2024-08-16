@@ -69,7 +69,8 @@ const DevSection = () => {
 
   const connectToHardhat = useCallback(async () => {
     try {
-      setConnectedToHardhat(true);
+      const connectToHardhat = connectedToHardhatStore.getState().connectedToHardhat;
+      setConnectedToHardhat(!connectToHardhat);
 	  logger.debug(`[DevSection] connected to hardhat`);
     } catch (e) {
       setConnectedToHardhat(false);
@@ -311,7 +312,15 @@ const DevSection = () => {
               onPress={connectToHardhat}
               size={52}
               testID="hardhat-section"
-              titleComponent={<MenuItem.Title text={lang.t('developer_settings.connect_to_hardhat')} />}
+              titleComponent={
+                <MenuItem.Title
+                  text={
+                    connectedToHardhatStore.getState().connectedToHardhat
+                      ? lang.t('developer_settings.disconnect_to_hardhat')
+                      : lang.t('developer_settings.connect_to_hardhat')
+                  }
+                />
+              }
             />
             <MenuItem
               leftComponent={<MenuItem.TextIcon icon="🏖️" isEmoji />}

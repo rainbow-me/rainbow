@@ -6,16 +6,19 @@ import { isHardHat } from '@/handlers/web3';
 import { useInternetStatus } from '@/hooks';
 import { getNetworkObject } from '@/networks';
 import { ChainId } from '@/networks/types';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
-const TestnetToast = ({ chainId, web3Provider }) => {
+const TestnetToast = ({ chainId }) => {
+  const { connectedToHardhat } = useConnectedToHardhatStore();
   const isConnected = useInternetStatus();
-  const providerUrl = web3Provider?.connection?.url;
   const { name, colors: networkColors } = getNetworkObject({ chainId });
-  const [visible, setVisible] = useState(!chainId === ChainId.mainnet);
+  const [visible, setVisible] = useState(true);
   const [networkName, setNetworkName] = useState(name);
 
   useEffect(() => {
-    if (chainId === ChainId.mainnet) {
+    if ((connectedToHardhat, chainId === ChainId.mainnet)) {
+      const networkObject = getNetworkObject({ chainId });
+      const providerUrl = networkObject.rpc();
       if (isHardHat(providerUrl)) {
         setVisible(true);
         setNetworkName('Hardhat');
@@ -26,7 +29,7 @@ const TestnetToast = ({ chainId, web3Provider }) => {
       setVisible(true);
       setNetworkName(name + (isConnected ? '' : ' (offline)'));
     }
-  }, [name, providerUrl, isConnected, chainId]);
+  }, [name, isConnected, chainId, connectedToHardhat]);
 
   const { colors, isDarkMode } = useTheme();
 

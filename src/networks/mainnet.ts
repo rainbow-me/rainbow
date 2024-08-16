@@ -25,7 +25,7 @@ export const getMainnetNetworkObject = (): NetworkProperties => {
       address: ETH_ADDRESS,
     },
 
-    getProvider: () => getProvider({ chainId: ChainId.arbitrum }),
+    getProvider: () => getProvider({ chainId: ChainId.mainnet }),
     rpc: () => (connectedToHardhatStore.getState().connectedToHardhat ? 'http://127.0.0.1:8545' : proxyRpcEndpoint(mainnet.id)),
     balanceCheckerAddress: '0x4dcf4562268dd384fe814c00fad239f06c2a0c2b',
 

@@ -15,6 +15,7 @@ import { explorerInit } from '@/redux/explorer';
 import { Navigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import { connectedToHardhatStore } from '@/state/connectedToHardhat';
+import { web3SetHttpProvider } from '@/handlers/web3';
 
 export const RainbowContext = createContext({});
 const storageKey = 'config';
