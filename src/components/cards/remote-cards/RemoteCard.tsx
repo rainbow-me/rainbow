@@ -147,9 +147,9 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
   const contentWidth = width - gutterSize - 16 * 2 - ICON_SIZE - 12;
   return (
     <ConditionalWrap
-      condition={card?.primaryButton.route || card?.primaryButton.url}
+      condition={card?.primaryButton.route || (card?.primaryButton.url && !IS_ANDROID)}
       wrap={children => (
-        <ButtonPressAnimation hapticType="impactHeavy" onPress={onPress} disabled={IS_ANDROID} scaleTo={0.94} disallowInterruption>
+        <ButtonPressAnimation hapticType="impactHeavy" onPress={onPress} scaleTo={0.94} disallowInterruption>
           {children}
         </ButtonPressAnimation>
       )}
@@ -248,20 +248,27 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
                 {getKeyForLanguage('title', card, language as Language)}
               </Text>
 
-              <ButtonPressAnimation
-                scaleTo={0.96}
-                overflowMargin={50}
-                skipTopMargin
-                disabled={!IS_ANDROID}
-                disallowInterruption
-                onPress={onPress}
+              <ConditionalWrap
+                condition={IS_ANDROID}
+                wrap={children => (
+                  <ButtonPressAnimation
+                    scaleTo={0.96}
+                    overflowMargin={50}
+                    skipTopMargin
+                    disabled={!IS_ANDROID}
+                    disallowInterruption
+                    onPress={onPress}
+                  >
+                    {children}
+                  </ButtonPressAnimation>
+                )}
               >
                 <TextShadow blur={8} shadowOpacity={0.3}>
                   <Text numberOfLines={1} color={{ custom: accent }} size="13pt" weight="heavy">
                     {getKeyForLanguage('primaryButton.text', card, language as Language)}
                   </Text>
                 </TextShadow>
-              </ButtonPressAnimation>
+              </ConditionalWrap>
             </Box>
           </Box>
         </Box>
