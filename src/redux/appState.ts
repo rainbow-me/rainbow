@@ -11,7 +11,7 @@ const APP_STATE_UPDATE = 'contacts/APP_STATE_UPDATE';
  * is called `appState`, matching the pattern used by other reducers makes
  * this interface `AppStateState` :).
  */
-export interface AppStateState {
+interface AppStateState {
   /**
    * Whether or not the user's wallet has loaded.
    */
