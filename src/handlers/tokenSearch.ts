@@ -100,7 +100,6 @@ export const tokenSearch = async (searchParams: {
         chainId,
         address: token.networks['1']?.address || token.networks[chainId]?.address,
         network,
-        chainId: searchParams.chainId,
         mainnet_address: token.networks['1']?.address,
       };
     });
