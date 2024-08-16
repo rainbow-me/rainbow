@@ -1,6 +1,6 @@
-import { useCallback, useMemo } from 'react';
 import ChartTypes from '@/helpers/chartTypes';
 import { toFixedDecimals } from '@/helpers/utilities';
+import { useCallback, useMemo } from 'react';
 
 const formatPercentChange = (change = 0) => toFixedDecimals(change, 2);
 
@@ -9,9 +9,16 @@ export default function useChartDataLabels({ asset, chartType, points }: any) {
 
   const getPercentChangeForPrice = useCallback(
     (startPrice: number) => {
-      const endPrice = points?.[points.length - 1].y;
-      const percent = ((endPrice - startPrice) / startPrice) * 100;
-      return formatPercentChange(percent);
+      try {
+        const endPrice = points?.[points.length - 1].y;
+        const percent = ((endPrice - startPrice) / startPrice) * 100;
+        return formatPercentChange(percent);
+      } catch {
+        // couldn't repro but sentry caught `y undefined in points?.[points.length - 1]`
+        // apparently it happens when zerion is starting to collect price data for this new token
+        // Chart checks if latestPrice is NaN later that's why Im returing NaN
+        return NaN;
+      }
     },
     [points]
   );
