@@ -158,7 +158,7 @@ function App({ walletReady }: AppProps) {
       eventSubscription.current?.remove();
       branchListenerRef.current?.();
     };
-  }, [handleAppStateChange, identifyFlow, setupDeeplinking]);
+  }, []);
 
   useEffect(() => {
     if (walletReady) {
