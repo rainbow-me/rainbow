@@ -9,11 +9,25 @@ import { getSdk as getArcDevSdk } from './__generated__/arcDev';
 import { IS_PROD } from '@/env';
 import { RainbowFetchRequestOpts } from '@/rainbow-fetch';
 
-export const metadataRequester = getFetchRequester(config.metadata);
+export const metadataRequester = getFetchRequester({
+  ...config.metadata,
+  schema: {
+    ...config.metadata.schema,
+    url: 'https://metadata.s.rainbow.me/v1/graph',
+  },
+});
 
 export const ensClient = getEnsSdk(getFetchRequester(config.ens));
 export const metadataClient = getMetadataSdk(metadataRequester);
-export const metadataPOSTClient = getMetadataSdk(getFetchRequester(config.metadataPOST));
+export const metadataPOSTClient = getMetadataSdk(
+  getFetchRequester({
+    ...config.metadataPOST,
+    schema: {
+      ...config.metadataPOST.schema,
+      url: 'https://metadata.s.rainbow.me/v1/graph',
+    },
+  })
+);
 export const arcClient = IS_PROD ? getArcSdk(getFetchRequester(config.arc)) : getArcDevSdk(getFetchRequester(config.arcDev));
 
 export const requestMetadata = (q: string, options?: Pick<RainbowFetchRequestOpts, 'timeout' | 'headers'>) =>
