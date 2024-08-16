@@ -147,7 +147,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
   const contentWidth = width - gutterSize - 16 * 2 - ICON_SIZE - 12;
   return (
     <ConditionalWrap
-      condition={card?.primaryButton.route || (card?.primaryButton.url && !IS_ANDROID)}
+      condition={(card?.primaryButton.route || card?.primaryButton.url) && !IS_ANDROID}
       wrap={children => (
         <ButtonPressAnimation hapticType="impactHeavy" onPress={onPress} scaleTo={0.94} disallowInterruption>
           {children}
