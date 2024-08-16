@@ -51,7 +51,6 @@ export const useSendTransactionMessage = ({ isL2, toAddress, network }: UseSendT
       const checkBatch = (txs: typeof transactions) => {
         for (const tx of txs) {
           if (tx.to?.toLowerCase() === toAddress?.toLowerCase() && tx.from?.toLowerCase() === accountAddress?.toLowerCase()) {
-            console.log('tx', tx.to.toLowerCase(), toAddress?.toLowerCase(), tx.from?.toLowerCase(), accountAddress?.toLowerCase());
             sends.current += 1;
             if (tx.network === network) {
               sendsCurrentNetwork.current += 1;
