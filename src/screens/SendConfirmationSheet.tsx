@@ -62,6 +62,8 @@ import { IS_ANDROID } from '@/env';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { performanceTracking, TimeToSignOperation, Screens } from '@/state/performance/performance';
+import { useSendTransactionMessage } from '@/hooks/useSendTransactionMessage';
+import Skeleton, { FakeText } from '@/components/skeleton/Skeleton';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -199,49 +201,16 @@ export const SendConfirmationSheet = () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } = useRoute<any>();
 
-  const [alreadySentTransactionsTotal, setAlreadySentTransactionsTotal] = useState(0);
-  const [alreadySentTransactionsCurrentNetwork, setAlreadySentTransactionsCurrentNetwork] = useState(0);
-
-  const { data } = useConsolidatedTransactions({
-    address: accountAddress,
-    currency: nativeCurrency,
+  const { message, shouldShowChecks } = useSendTransactionMessage({
+    isL2,
+    network,
+    toAddress,
   });
-
-  const pages = data?.pages;
-
-  const transactions = useMemo(() => pages?.flatMap(p => p.transactions) || [], [pages]);
 
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const { walletNames } = useWallets();
-  const isSendingToUserAccount = useMemo(() => {
-    const found = userAccounts?.find(account => {
-      return account.address.toLowerCase() === toAddress?.toLowerCase();
-    });
-    return !!found;
-  }, [toAddress, userAccounts]);
 
   const { isSufficientGas, isValidGas, updateTxFee } = useGas();
-
-  useEffect(() => {
-    if (!isSendingToUserAccount) {
-      let sends = 0;
-      let sendsCurrentNetwork = 0;
-      transactions.forEach(tx => {
-        if (tx.to?.toLowerCase() === toAddress?.toLowerCase() && tx.from?.toLowerCase() === accountAddress?.toLowerCase()) {
-          sends += 1;
-          if (tx.network === network) {
-            sendsCurrentNetwork += 1;
-          }
-        }
-      });
-      if (sends > 0) {
-        setAlreadySentTransactionsTotal(sends);
-        if (sendsCurrentNetwork > 0) {
-          setAlreadySentTransactionsCurrentNetwork(sendsCurrentNetwork);
-        }
-      }
-    }
-  }, [accountAddress, isSendingToUserAccount, network, toAddress, transactions]);
 
   const contact = useMemo(() => {
     return contacts?.[toAddress?.toLowerCase()];
@@ -366,8 +335,6 @@ export const SendConfirmationSheet = () => {
     color = theme.colors.appleBlue;
   }
 
-  const shouldShowChecks = isL2 && !isSendingToUserAccount && alreadySentTransactionsCurrentNetwork < 3;
-
   useEffect(() => {
     setParams({ shouldShowChecks });
   }, [setParams, shouldShowChecks]);
@@ -449,20 +416,6 @@ export const SendConfirmationSheet = () => {
     isL2,
     shouldShowChecks,
   });
-
-  const getMessage = () => {
-    let message;
-    if (isSendingToUserAccount) {
-      message = i18n.t(i18n.l.wallet.transaction.you_own_this_wallet);
-    } else if (alreadySentTransactionsTotal === 0) {
-      message = i18n.t(i18n.l.wallet.transaction.first_time_send);
-    } else {
-      message = i18n.t(i18n.l.wallet.transaction.previous_sends, {
-        number: alreadySentTransactionsTotal,
-      });
-    }
-    return message;
-  };
 
   return (
     <Container deviceHeight={deviceHeight} height={contentHeight} insets={insets}>
@@ -565,13 +518,22 @@ export const SendConfirmationSheet = () => {
                   </Centered>
                 </Row>
                 <Row marginTop={12}>
-                  <Text
-                    color={{ custom: theme.colors.alpha(theme.colors.blueGreyDark, 0.6) }}
-                    size="16px / 22px (Deprecated)"
-                    weight="bold"
-                  >
-                    {getMessage()}
-                  </Text>
+                  {!message && (
+                    <Box height={{ custom: 20 }} width={{ custom: 100 }}>
+                      <Skeleton>
+                        <FakeText height={20} width={100} />
+                      </Skeleton>
+                    </Box>
+                  )}
+                  {message && (
+                    <Text
+                      color={{ custom: theme.colors.alpha(theme.colors.blueGreyDark, 0.6) }}
+                      size="16px / 22px (Deprecated)"
+                      weight="bold"
+                    >
+                      {message}
+                    </Text>
+                  )}
                 </Row>
               </Column>
               <Column align="end" justify="center">
