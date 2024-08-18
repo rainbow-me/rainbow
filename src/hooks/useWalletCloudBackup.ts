@@ -1,10 +1,10 @@
 import { captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
 import { values } from 'lodash';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Linking } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { addWalletToCloudBackup, backupWalletToCloud } from '../model/backup';
+import { addWalletToCloudBackup, backupWalletToCloud, findLatestBackUp } from '../model/backup';
 import { setWalletBackedUp } from '../redux/wallets';
 import { cloudPlatform } from '../utils/platform';
 import useWallets from './useWallets';
@@ -40,7 +40,8 @@ export function getUserError(e: Error) {
 
 export default function useWalletCloudBackup() {
   const dispatch = useDispatch();
-  const { latestBackup, wallets } = useWallets();
+  const { wallets } = useWallets();
+  const latestBackup = useMemo(() => findLatestBackUp(wallets), [wallets]);
 
   const walletCloudBackup = useCallback(
     async ({

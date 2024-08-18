@@ -18,6 +18,7 @@ import { SearchResults } from './results/SearchResults';
 import { useSearchContext } from './SearchContext';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
+import { BOTTOM_BAR_HEIGHT } from '../Dimensions';
 
 export const Search = () => {
   const { goToUrl, searchViewProgress, tabViewProgress, tabViewVisible } = useBrowserContext();
@@ -179,7 +180,7 @@ const styles = StyleSheet.create({
   },
   bottomBarStyle: {
     bottom: 0,
-    height: TAB_BAR_HEIGHT + 88,
+    height: BOTTOM_BAR_HEIGHT + TAB_BAR_HEIGHT,
     paddingTop: 20,
     pointerEvents: 'box-none',
     position: 'absolute',

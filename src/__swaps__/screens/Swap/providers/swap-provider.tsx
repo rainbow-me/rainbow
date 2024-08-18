@@ -300,24 +300,20 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         }
       }
 
-      queryClient.invalidateQueries([
-        // old user assets invalidation (will cause a re-fetch)
-        {
-          queryKey: userAssetsQueryKey({
-            address: parameters.quote.from,
-            currency: nativeCurrency,
-            connectedToHardhat,
-          }),
-        },
-        // new swaps user assets invalidations
-        {
-          queryKey: swapsUserAssetsQueryKey({
-            address: parameters.quote.from as Address,
-            currency: nativeCurrency,
-            testnetMode: !!connectedToHardhat,
-          }),
-        },
-      ]);
+      queryClient.invalidateQueries(
+        userAssetsQueryKey({
+          address: parameters.quote.from,
+          currency: nativeCurrency,
+          connectedToHardhat,
+        })
+      );
+      queryClient.invalidateQueries(
+        swapsUserAssetsQueryKey({
+          address: parameters.quote.from as Address,
+          currency: nativeCurrency,
+          testnetMode: !!connectedToHardhat,
+        })
+      );
 
       swapsStore.getState().addRecentSwap(parameters.assetToBuy as ExtendedAnimatedAssetWithColors);
       clearCustomGasSettings(chainId);

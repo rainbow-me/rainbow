@@ -1,5 +1,5 @@
 import { PropsWithChildren, useCallback, useEffect, useRef } from 'react';
-import { usePrevious, useWallets } from '@/hooks';
+import { usePrevious, useSwitchWallet, useWallets } from '@/hooks';
 import { setupAndroidChannels } from '@/notifications/setupAndroidChannels';
 import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
 import {
@@ -44,9 +44,10 @@ type Callback = () => void;
 type Props = PropsWithChildren<{ walletReady: boolean }>;
 
 export const NotificationsHandler = ({ walletReady }: Props) => {
-  const wallets = useWallets();
+  const { wallets } = useWallets();
+  const walletSwitcher = useSwitchWallet();
   const dispatch: ThunkDispatch<AppState, unknown, AnyAction> = useDispatch();
-  const walletsRef = useRef(wallets);
+  const walletSwitcherRef = useRef(walletSwitcher);
   const prevWalletReady = usePrevious(walletReady);
   const subscriptionChangesListener = useRef<NotificationSubscriptionChangesListener>();
   const onTokenRefreshListener = useRef<Callback>();
@@ -61,7 +62,7 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
   We need to save wallets property to a ref in order to have an up-to-date value
   inside the event listener callbacks closure
    */
-  walletsRef.current = wallets;
+  walletSwitcherRef.current = walletSwitcher;
 
   const onForegroundRemoteNotification = (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
     const type = remoteMessage?.data?.type;
@@ -152,12 +153,12 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
       // casting data payload to type that was agreed on with backend
       const data = notification.data as unknown as TransactionNotificationData;
 
-      const wallets = walletsRef.current;
+      const walletSwitcher = walletSwitcherRef.current;
       const { accountAddress, nativeCurrency } = store.getState().settings;
 
       let walletAddress: string | null | undefined = accountAddress;
       if (!isLowerCaseMatch(accountAddress, data.address)) {
-        walletAddress = await wallets.switchToWalletWithAddress(data.address);
+        walletAddress = await walletSwitcher.switchToWalletWithAddress(data.address);
       }
       if (!walletAddress) {
         return;
@@ -242,7 +243,7 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
     if (walletReady && !alreadyRanInitialization.current) {
       const addresses: AddressWithRelationship[] = [];
 
-      Object.values(wallets.wallets ?? {}).forEach(wallet =>
+      Object.values(wallets ?? {}).forEach(wallet =>
         wallet?.addresses.forEach(
           ({ address, visible }: { address: string; visible: boolean }) =>
             visible &&

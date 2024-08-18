@@ -1,38 +1,38 @@
-import { useCallback } from 'react';
-import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
-import { useDebouncedCallback } from 'use-debounce';
+import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
+import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { ChainId } from '@/__swaps__/types/chains';
 import { RequestNewQuoteParams, inputKeys, inputMethods, inputValuesType } from '@/__swaps__/types/swap';
 import { valueBasedDecimalFormatter } from '@/__swaps__/utils/decimalFormatter';
-import { addCommasToNumber, buildQuoteParams, clamp, getDefaultSlippageWorklet, trimTrailingZeros } from '@/__swaps__/utils/swaps';
-import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { CrosschainQuote, Quote, QuoteError, SwapType, getCrosschainQuote, getQuote } from '@rainbow-me/swaps';
-import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
-import store from '@/redux/store';
-import { swapsStore } from '@/state/swaps/swapsStore';
+import { getInputValuesForSliderPositionWorklet, updateInputValuesAfterFlip } from '@/__swaps__/utils/flipAssets';
 import {
   convertAmountToNativeDisplayWorklet,
   convertRawAmountToDecimalFormat,
   handleSignificantDecimalsWorklet,
 } from '@/__swaps__/utils/numbers';
-import { NavigationSteps } from './useSwapNavigation';
+import { addCommasToNumber, buildQuoteParams, clamp, getDefaultSlippageWorklet, trimTrailingZeros } from '@/__swaps__/utils/swaps';
+import { analyticsV2 } from '@/analytics';
+import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { useAccountSettings } from '@/hooks';
+import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import { RainbowError, logger } from '@/logger';
+import { getRemoteConfig } from '@/model/remoteConfig';
+import { queryClient } from '@/react-query';
+import store from '@/redux/store';
 import {
   EXTERNAL_TOKEN_STALE_TIME,
   ExternalTokenQueryFunctionResult,
   externalTokenQueryKey,
   fetchExternalToken,
 } from '@/resources/assets/externalAssetsQuery';
-import { ethereumUtils } from '@/utils';
-import { queryClient } from '@/react-query';
-import { useAccountSettings } from '@/hooks';
-import { analyticsV2 } from '@/analytics';
-import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet } from '@/__swaps__/safe-math/SafeMath';
-import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { triggerHapticFeedback } from '@/screens/points/constants';
-import { getInputValuesForSliderPositionWorklet, updateInputValuesAfterFlip } from '@/__swaps__/utils/flipAssets';
-import { getRemoteConfig } from '@/model/remoteConfig';
-import { ChainId } from '@/__swaps__/types/chains';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import { ethereumUtils } from '@/utils';
+import { CrosschainQuote, Quote, QuoteError, SwapType, getCrosschainQuote, getQuote } from '@rainbow-me/swaps';
+import { useCallback } from 'react';
+import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
+import { useDebouncedCallback } from 'use-debounce';
+import { NavigationSteps } from './useSwapNavigation';
 
 const REMOTE_CONFIG = getRemoteConfig();
 
@@ -433,19 +433,14 @@ export function useSwapInputsController({
     }
 
     try {
-      const [quoteResponse, fetchedPrices] = await Promise.all([
-        params.swapType === SwapType.crossChain ? getCrosschainQuote(params) : getQuote(params),
-        fetchAssetPrices({
-          inputAsset: internalSelectedInputAsset.value,
-          outputAsset: internalSelectedOutputAsset.value,
-        }),
-      ]);
+      const quoteResponse = await (params.swapType === SwapType.crossChain ? getCrosschainQuote(params) : getQuote(params));
+      if (!quoteResponse || 'error' in quoteResponse) throw '';
 
       const quotedInputAmount =
         lastTypedInputParam === 'outputAmount'
           ? Number(
               convertRawAmountToDecimalFormat(
-                (quoteResponse as Quote)?.sellAmount?.toString(),
+                quoteResponse.sellAmount.toString(),
                 internalSelectedInputAsset.value?.networks[internalSelectedInputAsset.value.chainId]?.decimals ||
                   internalSelectedInputAsset.value?.decimals ||
                   18
@@ -457,7 +452,7 @@ export function useSwapInputsController({
         lastTypedInputParam === 'inputAmount'
           ? Number(
               convertRawAmountToDecimalFormat(
-                (quoteResponse as Quote)?.buyAmountMinusFees?.toString(),
+                quoteResponse.buyAmountMinusFees.toString(),
                 internalSelectedOutputAsset.value?.networks[internalSelectedOutputAsset.value.chainId]?.decimals ||
                   internalSelectedOutputAsset.value?.decimals ||
                   18
@@ -475,7 +470,7 @@ export function useSwapInputsController({
         setQuote({
           data: quoteResponse,
           inputAmount: quotedInputAmount,
-          inputPrice: fetchedPrices.inputPrice,
+          inputPrice: quoteResponse.sellTokenAsset.price.value,
           originalQuoteParams: {
             assetToBuyUniqueId: originalOutputAssetUniqueId,
             assetToSellUniqueId: originalInputAssetUniqueId,
@@ -484,7 +479,7 @@ export function useSwapInputsController({
             outputAmount: outputAmount,
           },
           outputAmount: quotedOutputAmount,
-          outputPrice: fetchedPrices.outputPrice,
+          outputPrice: quoteResponse.buyTokenAsset.price.value,
           quoteFetchingInterval,
         });
       })();
