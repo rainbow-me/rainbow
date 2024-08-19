@@ -49,8 +49,26 @@ function SwapInputActionButton() {
   );
 }
 
+function SwapInputNativeAmount() {
+  const { SwapTextStyles, SwapInputController } = useSwapContext();
+  return (
+    <AnimatedText numberOfLines={1} size="17pt" style={SwapTextStyles.inputNativeValueStyle} weight="heavy">
+      {SwapInputController.formattedInputNativeValue}
+    </AnimatedText>
+  );
+}
+
+function SwapInputAmountCaret() {
+  const { SwapTextStyles, AnimatedSwapStyles } = useSwapContext();
+  return (
+    <Animated.View style={[styles.caretContainer, SwapTextStyles.inputCaretStyle]}>
+      <Box as={Animated.View} borderRadius={1} style={[styles.caret, AnimatedSwapStyles.assetToSellCaretStyle]} />
+    </Animated.View>
+  );
+}
+
 function SwapInputAmount() {
-  const { focusedInput, SwapTextStyles, SwapInputController, AnimatedSwapStyles } = useSwapContext();
+  const { focusedInput, SwapTextStyles, SwapInputController } = useSwapContext();
 
   return (
     <CopyPasteMenu
@@ -83,9 +101,7 @@ function SwapInputAmount() {
           >
             {SwapInputController.formattedInputAmount}
           </AnimatedText>
-          <Animated.View style={[styles.caretContainer, SwapTextStyles.inputCaretStyle]}>
-            <Box as={Animated.View} borderRadius={1} style={[styles.caret, AnimatedSwapStyles.assetToSellCaretStyle]} />
-          </Animated.View>
+          <SwapInputAmountCaret />
         </MaskedView>
       </GestureHandlerButton>
     </CopyPasteMenu>
@@ -119,15 +135,7 @@ function InputAssetBalanceBadge() {
 }
 
 export function SwapInputAsset() {
-  const {
-    outputProgress,
-    inputProgress,
-    AnimatedSwapStyles,
-    SwapTextStyles,
-    SwapInputController,
-    internalSelectedInputAsset,
-    SwapNavigation,
-  } = useSwapContext();
+  const { outputProgress, inputProgress, AnimatedSwapStyles, internalSelectedInputAsset, SwapNavigation } = useSwapContext();
 
   return (
     <SwapInput asset={internalSelectedInputAsset} otherInputProgress={outputProgress} progress={inputProgress}>
@@ -143,9 +151,7 @@ export function SwapInputAsset() {
             </Column>
           </Columns>
           <Columns alignHorizontal="justify" alignVertical="center" space="10px">
-            <AnimatedText numberOfLines={1} size="17pt" style={SwapTextStyles.inputNativeValueStyle} weight="heavy">
-              {SwapInputController.formattedInputNativeValue}
-            </AnimatedText>
+            <SwapInputNativeAmount />
             <Column width="content">
               <InputAssetBalanceBadge />
             </Column>
