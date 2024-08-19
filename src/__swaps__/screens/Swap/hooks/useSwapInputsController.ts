@@ -762,7 +762,7 @@ export function useSwapInputsController({
   /**
    * Observes value changes in the active inputMethod, which can be any of the following:
    *  - inputAmount
-   *  - inputNativeValue (TODO)
+   *  - inputNativeValue
    *  - outputAmount
    *  - outputNativeValue (TODO)
    *  - sliderXPosition
@@ -845,6 +845,41 @@ export function useSwapInputsController({
                 0,
                 SLIDER_WIDTH
               );
+              sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
+            }
+
+            runOnJS(debouncedFetchQuote)();
+          }
+        }
+        if (inputMethod.value === 'inputNativeValue' && !equalWorklet(current.values.inputNativeValue, previous.values.inputNativeValue)) {
+          // If the number in the input native field changes
+          lastTypedInput.value = 'inputNativeValue';
+          if (equalWorklet(current.values.inputNativeValue, 0)) {
+            // If the input native amount was set to 0
+            resetValuesToZeroWorklet({ updateSlider: true, inputKey: 'inputNativeValue' });
+          } else {
+            // If the input native amount was set to a non-zero value
+            if (!internalSelectedInputAsset.value) return;
+
+            // If the input price is zero
+            if (equalWorklet(inputNativePrice.value, 0)) return;
+
+            if (isQuoteStale.value !== 1) isQuoteStale.value = 1;
+            const inputAmount = divWorklet(current.values.inputNativeValue, inputNativePrice.value);
+
+            inputValues.modify(values => {
+              return {
+                ...values,
+                inputAmount,
+              };
+            });
+
+            const inputAssetBalance = internalSelectedInputAsset.value?.maxSwappableAmount || '0';
+
+            if (equalWorklet(inputAssetBalance, 0)) {
+              sliderXPosition.value = withSpring(0, snappySpringConfig);
+            } else {
+              const updatedSliderPosition = clamp(Number(divWorklet(inputAmount, inputAssetBalance)) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
               sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
             }
 
