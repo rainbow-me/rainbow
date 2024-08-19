@@ -169,7 +169,7 @@ const GasSpeedButton = ({
   }, [nativeCurrencySymbol, selectedGasFee]);
 
   const isL2 = useMemo(() => isL2Chain({ chainId }), [chainId]);
-  const networkObject = networkObjects[chainId];
+  const networkObject = networkObjects[chainId || ChainId.mainnet];
 
   const isLegacyGasNetwork = networkObject.gas.gasType === 'legacy';
 

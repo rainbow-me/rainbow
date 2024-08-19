@@ -24,6 +24,7 @@ import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
 import { networkObjects } from '@/networks';
+import { ChainId } from '@/networks/types';
 
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;
@@ -69,7 +70,7 @@ export default function WalletConnectListItem({ account, chainId, dappIcon, dapp
   }, [wallets, walletNames, account]);
 
   const connectionNetworkInfo = useMemo(() => {
-    const networkObj = networkObjects[chainId];
+    const networkObj = networkObjects[chainId || ChainId.mainnet];
     return {
       chainId,
       color: isDarkMode ? networkObj.colors.dark : networkObj.colors.light,

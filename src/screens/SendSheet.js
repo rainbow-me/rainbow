@@ -135,7 +135,7 @@ export default function SendSheet(props) {
   const prevChainId = usePrevious(currentChainId);
   const [currentInput, setCurrentInput] = useState('');
 
-  const networkObject = useMemo(() => networkObjects[currentChainId], [currentChainId]);
+  const networkObject = useMemo(() => networkObjects[currentChainId || ChainId.mainnet], [currentChainId]);
 
   const { params } = useRoute();
   const assetOverride = params?.asset;

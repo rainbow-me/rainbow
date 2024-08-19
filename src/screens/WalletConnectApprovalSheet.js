@@ -223,7 +223,7 @@ export default function WalletConnectApprovalSheet() {
    * v2.
    */
   const approvalNetworkInfo = useMemo(() => {
-    const networkObj = networkObjects[approvalChainId];
+    const networkObj = networkObjects[approvalChainId || ChainId.mainnet];
     return {
       chainId: networkObj.id,
       color: isDarkMode ? networkObj.colors.dark : networkObj.colors.light,

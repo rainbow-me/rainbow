@@ -6,7 +6,7 @@ import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode'
 import { Block, Network as EthersNetwork, StaticJsonRpcProvider, TransactionRequest, TransactionResponse } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
-import { startsWith } from 'lodash';
+import { chain, startsWith } from 'lodash';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { AssetType, NewTransaction, ParsedAddressAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
@@ -161,7 +161,7 @@ export const web3SetHttpProvider = async (chainId: ChainId): Promise<EthersNetwo
  * @param chainId The network to check.
  * @return Whether or not the network is a L2 network.
  */
-export const isL2Chain = ({ chainId }: { chainId: ChainId }): boolean => {
+export const isL2Chain = ({ chainId = ChainId.mainnet }: { chainId?: ChainId }): boolean => {
   return networkObjects[chainId].networkType === 'layer2';
 };
 
@@ -170,7 +170,7 @@ export const isL2Chain = ({ chainId }: { chainId: ChainId }): boolean => {
  * @param network The network to check.
  * @return Whether or not the network is a testnet.
  */
-export const isTestnetChain = ({ chainId }: { chainId: ChainId }): boolean => {
+export const isTestnetChain = ({ chainId = ChainId.mainnet }: { chainId?: ChainId }): boolean => {
   return networkObjects[chainId].networkType === 'testnet';
 };
 
@@ -188,7 +188,7 @@ export const getCachedProviderForNetwork = (chainId: ChainId = ChainId.mainnet):
   return chainsProviders.get(chainId);
 };
 
-export const getProvider = ({ chainId }: { chainId: number }): StaticJsonRpcProvider => {
+export const getProvider = ({ chainId = ChainId.mainnet }: { chainId?: number }): StaticJsonRpcProvider => {
   const cachedProvider = chainsProviders.get(chainId);
 
   const networkObject = networkObjects[chainId];

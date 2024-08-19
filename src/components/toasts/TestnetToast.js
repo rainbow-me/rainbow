@@ -10,7 +10,7 @@ import { networkObjects } from '@/networks';
 const TestnetToast = ({ chainId }) => {
   const { connectedToHardhat } = useConnectedToHardhatStore();
   const isConnected = useInternetStatus();
-  const networkObject = networkObjects[chainId];
+  const networkObject = networkObjects[chainId || ChainId.mainnet];
   const { name, colors: networkColors } = networkObject;
   const [visible, setVisible] = useState(true);
   const [networkName, setNetworkName] = useState(name);
