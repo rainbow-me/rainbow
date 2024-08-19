@@ -8,23 +8,29 @@ import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
 import useWallets from './useWallets';
 import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
-import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import { useLegacyNFTs } from '@/resources/nfts';
 import useNftSort from './useNFTsSortBy';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
+import { userAssetsStore } from '@/state/assets/userAssets';
 
 export default function useWalletSectionsData({
   type,
 }: {
   type?: string;
 } = {}) {
+  const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
   const { selectedWallet, isReadOnlyWallet } = useWallets();
-  const { isLoading: isLoadingUserAssets, data: sortedAssets = [] } = useSortedUserAssets();
+  const { isLoadingUserAssets, sortedAssets } = userAssetsStore(state => {
+    const isAddressSynced = state.associatedWalletAddress === accountAddress;
+    return {
+      sortedAssets: isAddressSynced ? state.legacyUserAssets : [],
+      isLoadingUserAssets: isAddressSynced ? state.isLoadingUserAssets : true,
+    };
+  });
   const isWalletEthZero = useIsWalletEthZero();
 
   const { nftSort } = useNftSort();
 
-  const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const {
     data: { nfts: allUniqueTokens },

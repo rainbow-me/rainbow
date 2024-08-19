@@ -6,7 +6,6 @@ import React, { Fragment, ReactElement, useCallback, useEffect, useMemo, useRef,
 import { DefaultSectionT, InteractionManager, Keyboard, Linking, SectionList, TextInput } from 'react-native';
 import { MMKV } from 'react-native-mmkv';
 import Animated from 'react-native-reanimated';
-import { useDispatch } from 'react-redux';
 import { useDebounce } from 'use-debounce';
 import GestureBlocker from '../components/GestureBlocker';
 import { CurrencySelectionList, CurrencySelectModalHeader, ExchangeSearch } from '../components/exchange';
@@ -36,12 +35,12 @@ import { SwappableAsset } from '@/entities';
 import { Box, Row, Rows } from '@/design-system';
 import { useTheme } from '@/theme';
 import { IS_TEST } from '@/env';
-import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import DiscoverSearchInput from '@/components/discover/DiscoverSearchInput';
 import { externalTokenQueryKey, fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { getNetworkObj } from '@/networks';
 import { queryClient } from '@/react-query/queryClient';
+import { userAssetsStore } from '@/state/assets/userAssets';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;
@@ -98,9 +97,8 @@ export default function CurrencySelectModal() {
   const isFocused = useIsFocused();
   const prevIsFocused = usePrevious(isFocused);
   const { goBack, navigate, getState: dangerouslyGetState } = useNavigation();
-  const { nativeCurrency } = useAccountSettings();
+  const { accountAddress, nativeCurrency } = useAccountSettings();
   const { colors } = useTheme();
-  const dispatch = useDispatch();
   const {
     params: {
       defaultOutputAsset,
@@ -123,7 +121,12 @@ export default function CurrencySelectModal() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);
-  const { data: sortedAssets } = useSortedUserAssets();
+  const { sortedAssets } = userAssetsStore(state => {
+    const isAddressSynced = state.associatedWalletAddress === accountAddress;
+    return {
+      sortedAssets: isAddressSynced ? state.legacyUserAssets : [],
+    };
+  });
   const assetsInWallet = sortedAssets as SwappableAsset[];
 
   const [currentChainId, setCurrentChainId] = useState(chainId);

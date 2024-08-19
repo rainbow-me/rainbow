@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useEffect } from 'react';
 import { Address } from 'viem';
 import { useAccountSettings } from '@/hooks';
 import { userAssetsStore } from '@/state/assets/userAssets';
@@ -14,13 +14,14 @@ export const UserAssetsSync = memo(function UserAssetsSync() {
   const userAssetsWalletAddress = userAssetsStore(state => state.associatedWalletAddress);
   const isSwapsOpen = useSwapsStore(state => state.isSwapsOpen);
 
-  useUserAssets(
+  const { isLoading } = useUserAssets(
     {
       address: currentAddress as Address,
       currency: currentCurrency,
     },
     {
-      enabled: !isSwapsOpen || userAssetsWalletAddress !== currentAddress,
+      enabled: !!currentAddress && (!isSwapsOpen || userAssetsWalletAddress !== currentAddress),
+      staleTime: 1000 * 60,
       select: data =>
         selectorFilterByUserChains({
           data,
@@ -39,6 +40,8 @@ export const UserAssetsSync = memo(function UserAssetsSync() {
       },
     }
   );
+
+  useEffect(() => userAssetsStore.setState({ isLoadingUserAssets: isLoading }), [isLoading]);
 
   return null;
 });

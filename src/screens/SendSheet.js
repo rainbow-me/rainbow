@@ -48,7 +48,6 @@ import { loadWallet, sendTransaction } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import { parseGasParamsForTransaction } from '@/parsers';
 import { rainbowTokenList } from '@/references';
-import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { borders } from '@/styles';
@@ -66,6 +65,7 @@ import { getNextNonce } from '@/state/nonces';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { REGISTRATION_STEPS } from '@/helpers/ens';
+import { userAssetsStore } from '@/state/assets/userAssets';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
@@ -100,7 +100,13 @@ const validateRecipient = (toAddress, tokenAddress) => {
 
 export default function SendSheet(props) {
   const { goBack, navigate } = useNavigation();
-  const { data: sortedAssets } = useSortedUserAssets();
+  const { accountAddress, nativeCurrency, network } = useAccountSettings();
+  const { sortedAssets } = userAssetsStore(state => {
+    const isAddressSynced = state.associatedWalletAddress === accountAddress;
+    return {
+      sortedAssets: isAddressSynced ? state.legacyUserAssets : [],
+    };
+  });
   const {
     gasFeeParamsBySpeed,
     gasLimit,
@@ -119,7 +125,6 @@ export default function SendSheet(props) {
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
-  const { accountAddress, nativeCurrency, network } = useAccountSettings();
   const { isHardwareWallet } = useWallets();
 
   const { action: transferENS } = useENSRegistrationActionHandler({

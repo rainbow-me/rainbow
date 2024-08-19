@@ -6,8 +6,48 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { swapsStore } from '../swaps/swapsStore';
+import { ParsedAddressAsset } from '@/entities';
+import { getNetworkFromChainId, getUniqueId } from '@/utils/ethereumUtils';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
+
+const parsedSearchAssetToParsedAddressAsset = (asset: ParsedSearchAsset): ParsedAddressAsset => {
+  const network = getNetworkFromChainId(asset.chainId);
+  return {
+    balance: {
+      amount: asset.balance.amount,
+      display: asset.balance.display,
+    },
+    network,
+    name: asset.name,
+    chainId: asset.chainId,
+    color: asset.colors?.primary ?? asset.colors?.fallback,
+    colors: asset.colors?.primary
+      ? {
+          primary: asset.colors.primary,
+          fallback: asset.colors.fallback,
+          shadow: asset.colors.shadow,
+        }
+      : undefined,
+    icon_url: asset.icon_url,
+    price: {
+      changed_at: undefined,
+      relative_change_24h: asset.price?.relative_change_24h,
+      value: asset.price?.value,
+    },
+    type: asset.type,
+    uniqueId: getUniqueId(asset.address, network),
+    mainnet_address: asset.mainnetAddress,
+    isNativeAsset: asset.isNativeAsset,
+    address: asset.address,
+    decimals: asset.decimals,
+    symbol: asset.symbol,
+    highLiquidity: asset.highLiquidity,
+    isVerified: asset.isVerified,
+    shadowColor: asset.colors?.shadow,
+    networks: asset.networks,
+  };
+};
 
 const getSearchQueryKey = ({ filter, searchQuery }: { filter: UserAssetFilter; searchQuery: string }) => `${filter}${searchQuery}`;
 
@@ -32,6 +72,8 @@ export interface UserAssetsState {
   inputSearchQuery: string;
   searchCache: Map<string, UniqueId[]>;
   userAssets: Map<UniqueId, ParsedSearchAsset>;
+  legacyUserAssets: ParsedAddressAsset[];
+  isLoadingUserAssets: boolean;
   getBalanceSortedChainList: () => ChainId[];
   getChainsWithBalance: () => ChainId[];
   getFilteredUserAssetIds: () => UniqueId[];
@@ -45,6 +87,8 @@ export interface UserAssetsState {
   setUserAssets: (associatedWalletAddress: Address, userAssets: Map<UniqueId, ParsedSearchAsset> | ParsedSearchAsset[]) => void;
 }
 
+export type AllUserAssetsState = Map<Address, UserAssetsState>;
+
 // NOTE: We are serializing Map as an Array<[UniqueId, ParsedSearchAsset]>
 type UserAssetsStateWithTransforms = Omit<Partial<UserAssetsState>, 'chainBalances' | 'idsByChain' | 'userAssets'> & {
   chainBalances: Array<[ChainId, number]>;
@@ -52,7 +96,9 @@ type UserAssetsStateWithTransforms = Omit<Partial<UserAssetsState>, 'chainBalanc
   userAssets: Array<[UniqueId, ParsedSearchAsset]>;
 };
 
-function serializeUserAssetsState(state: Partial<UserAssetsState>, version?: number) {
+type AllUserAssetsStateWithTransforms = Map<Address, Array<[Address, UserAssetsState]>>;
+
+function serializeUserAssetsState(state: Map<Address, Array<[Address, UserAssetsState]>>, version?: number) {
   try {
     const transformedStateToPersist: UserAssetsStateWithTransforms = {
       ...state,
@@ -60,6 +106,8 @@ function serializeUserAssetsState(state: Partial<UserAssetsState>, version?: num
       idsByChain: state.idsByChain ? Array.from(state.idsByChain.entries()) : [],
       userAssets: state.userAssets ? Array.from(state.userAssets.entries()) : [],
     };
+
+    const x = Array.from(state.entries()).map();
 
     return JSON.stringify({
       state: transformedStateToPersist,
@@ -130,7 +178,8 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
     inputSearchQuery: '',
     searchCache: new Map(),
     userAssets: new Map(),
-
+    legacyUserAssets: [],
+    isLoadingUserAssets: false,
     getBalanceSortedChainList: () => {
       const chainBalances = [...get().chainBalances.entries()];
       chainBalances.sort(([, balanceA], [, balanceB]) => balanceB - balanceA);
@@ -297,6 +346,9 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
         const isMap = userAssets instanceof Map;
         const allIdsArray = isMap ? Array.from(userAssets.keys()) : userAssets.map(asset => asset.uniqueId);
         const userAssetsMap = isMap ? userAssets : new Map(userAssets.map(asset => [asset.uniqueId, asset]));
+        const legacyUserAssets = (isMap ? Array.from(userAssets.values()) : userAssets).map(asset =>
+          parsedSearchAssetToParsedAddressAsset(asset)
+        );
 
         idsByChain.set('all', allIdsArray);
 
@@ -317,12 +369,13 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
         searchCache.set('all', filteredAllIdsArray);
 
         if (isMap) {
-          return { associatedWalletAddress, chainBalances, idsByChain, searchCache, userAssets };
+          return { associatedWalletAddress, chainBalances, idsByChain, legacyUserAssets, searchCache, userAssets };
         } else
           return {
             associatedWalletAddress,
             chainBalances,
             idsByChain,
+            legacyUserAssets,
             searchCache,
             userAssets: userAssetsMap,
           };
@@ -335,6 +388,7 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
       chainBalances: state.chainBalances,
       idsByChain: state.idsByChain,
       userAssets: state.userAssets,
+      legacyUserAssets: state.legacyUserAssets,
     }),
     serializer: serializeUserAssetsState,
     storageKey: 'userAssets',

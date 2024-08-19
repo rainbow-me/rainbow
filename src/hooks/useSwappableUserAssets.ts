@@ -1,19 +1,25 @@
 import { SwappableAsset } from '@/entities';
 import { walletFilter } from '@/handlers/tokenSearch';
 import { Network } from '@/helpers';
-import { useCoinListEditOptions } from '@/hooks';
+import { useAccountSettings, useCoinListEditOptions } from '@/hooks';
 import { ETH_ADDRESS } from '@/references';
-import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import { EthereumAddress, ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS } from '@rainbow-me/swaps';
 import { ethereumUtils } from '@/utils';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { RainbowNetworks, getNetworkObj, getSwappableNetworks } from '@/networks';
+import { userAssetsStore } from '@/state/assets/userAssets';
 
 type SwappableAddresses = Record<Network, EthereumAddress[]>;
 
 export const useSwappableUserAssets = (params: { outputCurrency: SwappableAsset }) => {
   const { outputCurrency } = params;
-  const { data: sortedAssets } = useSortedUserAssets();
+  const { accountAddress } = useAccountSettings();
+  const { sortedAssets } = userAssetsStore(state => {
+    const isAddressSynced = state.associatedWalletAddress === accountAddress;
+    return {
+      sortedAssets: isAddressSynced ? state.legacyUserAssets : [],
+    };
+  });
   const assetsInWallet = sortedAssets as SwappableAsset[];
   const { hiddenCoinsObj } = useCoinListEditOptions();
 
