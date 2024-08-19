@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.36] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.36)
+
+### Changed
+
+- Sentry tracking audit (#6012)
+
 ## [1.9.35] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.35)
 
 ### Added
