@@ -17,10 +17,10 @@ const gasPrices = networkObj.getGasPrices();
 
 // Getting a subset of network objects
 
-const layer2s = RainbowNetworkObjects.filter(network => network.networkType === 'layer2');
+const layer2s = Object.values(networkObjects).filter(network => network.networkType === 'layer2');
 
 // Or networks that match specific properties
-const walletconnectNetworks = RainbowNetworkObjects.filter(network => network.features.walletconnect).map(network => network.value);
+const walletconnectNetworks = Object.values(networkObjects).filter(network => network.features.walletconnect).map(network => network.value);
 ```
 
 ## Network Objects

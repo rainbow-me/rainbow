@@ -23,7 +23,7 @@ import styled from '@/styled-thing';
 import { Box, Columns, Column as RDSColumn, Inline, Text } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import * as lang from '@/languages';
-import { networkObjects, RainbowNetworkObjects } from '@/networks';
+import { networkObjects } from '@/networks';
 import { useDappMetadata } from '@/resources/metadata/dapp';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { InfoAlert } from '@/components/info-alert/info-alert';
@@ -67,14 +67,16 @@ const NetworkPill = ({ chainIds }) => {
   const availableNetworkChainIds = useMemo(() => chainIds.sort(chainId => (chainId === ChainId.mainnet ? -1 : 1)), [chainIds]);
 
   const networkMenuItems = useMemo(() => {
-    RainbowNetworkObjects.filter(({ features, id }) => features.walletconnect && chainIds.includes(id)).map(network => ({
-      actionKey: network.id,
-      actionTitle: network.name,
-      icon: {
-        iconType: 'ASSET',
-        iconValue: `${network.networkType === 'layer2' ? `${network.value}BadgeNoShadow` : 'ethereumBadge'}`,
-      },
-    }));
+    Object.values(networkObjects)
+      .filter(({ features, id }) => features.walletconnect && chainIds.includes(id))
+      .map(network => ({
+        actionKey: network.id,
+        actionTitle: network.name,
+        icon: {
+          iconType: 'ASSET',
+          iconValue: `${network.networkType === 'layer2' ? `${network.value}BadgeNoShadow` : 'ethereumBadge'}`,
+        },
+      }));
   }, [chainIds]);
 
   if (availableNetworkChainIds.length === 0) return null;

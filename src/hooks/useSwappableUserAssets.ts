@@ -6,7 +6,7 @@ import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import { EthereumAddress, ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS } from '@rainbow-me/swaps';
 import { ethereumUtils } from '@/utils';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { RainbowNetworkObjects, getSwappableNetworks, networkObjects } from '@/networks';
+import { getSwappableNetworks, networkObjects } from '@/networks';
 import { Network } from '@/networks/types';
 
 type SwappableAddresses = Record<Network, EthereumAddress[]>;
@@ -59,7 +59,9 @@ export const useSwappableUserAssets = (params: { outputCurrency: SwappableAsset 
   );
 
   const getSwappableAddressesInWallet = useCallback(async () => {
-    const networks = RainbowNetworkObjects.filter(({ features }) => features.swaps).map(({ value }) => value);
+    const networks = Object.values(networkObjects)
+      .filter(({ features }) => features.swaps)
+      .map(({ value }) => value);
 
     const walletFilterRequests: Promise<void>[] = [];
     networks.forEach(network => {

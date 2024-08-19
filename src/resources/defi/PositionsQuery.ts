@@ -3,14 +3,15 @@ import { useQuery } from '@tanstack/react-query';
 import { createQueryKey, queryClient, QueryConfig, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 
 import { NativeCurrencyKey } from '@/entities';
-import { RainbowNetworkObjects } from '@/networks';
+import { networkObjects } from '@/networks';
 import { rainbowFetch } from '@/rainbow-fetch';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { AddysPositionsResponse, PositionsArgs } from './types';
 import { parsePositions } from './utils';
 
 export const buildPositionsUrl = (address: string) => {
-  const networkString = RainbowNetworkObjects.filter(network => network.enabled)
+  const networkString = Object.values(networkObjects)
+    .filter(network => network.enabled)
     .map(network => network.id)
     .join(',');
   return `https://addys.p.rainbow.me/v3/${networkString}/${address}/positions`;

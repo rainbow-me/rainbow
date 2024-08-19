@@ -29,7 +29,7 @@ import { watchingAlert } from '@/utils';
 import { getFCMToken } from '@/notifications/tokens';
 import { logger, RainbowError } from '@/logger';
 import { IS_DEV, IS_IOS, IS_TEST } from '@/env';
-import { RainbowNetworkObjects } from '@/networks';
+import { networkObjects } from '@/networks';
 import { Verify } from '@walletconnect/types';
 import { RequestSource, handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 import { ChainId } from '@/networks/types';
@@ -474,9 +474,9 @@ const listenOnNewMessages =
         const { chainId } = payload.params[0];
         // @ts-expect-error "_chainId" is private.
         const currentChainId = Number(walletConnector._chainId);
-        const supportedChains = RainbowNetworkObjects.filter(network => network.features.walletconnect).map(network =>
-          network.id.toString()
-        );
+        const supportedChains = Object.values(networkObjects)
+          .filter(network => network.features.walletconnect)
+          .map(network => network.id.toString());
         const numericChainId = convertHexToString(chainId);
         if (supportedChains.includes(numericChainId)) {
           dispatch(walletConnectSetPendingRedirect());

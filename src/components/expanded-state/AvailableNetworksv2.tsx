@@ -15,7 +15,7 @@ import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../animations';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { implementation } from '@/entities/dispersion';
-import { RainbowNetworkObjects } from '@/networks';
+import { networkObjects } from '@/networks';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 import { SWAPS_V2, enableActionsOnReadOnlyWallet, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -167,14 +167,16 @@ const AvailableNetworksv2 = ({
   }, [availableChainIds, convertAssetAndNavigate]);
 
   const networkMenuItems = useMemo(() => {
-    return RainbowNetworkObjects.filter(({ features, id }) => features.swaps && id !== ChainId.mainnet && !!networks[id]).map(network => ({
-      actionKey: `${network.id}`,
-      actionTitle: network.name,
-      icon: {
-        iconType: 'ASSET',
-        iconValue: `${network.networkType === 'layer2' ? `${network.value}BadgeNoShadow` : 'ethereumBadge'}`,
-      },
-    }));
+    return Object.values(networkObjects)
+      .filter(({ features, id }) => features.swaps && id !== ChainId.mainnet && !!networks[id])
+      .map(network => ({
+        actionKey: `${network.id}`,
+        actionTitle: network.name,
+        icon: {
+          iconType: 'ASSET',
+          iconValue: `${network.networkType === 'layer2' ? `${network.value}BadgeNoShadow` : 'ethereumBadge'}`,
+        },
+      }));
   }, [networks]);
 
   const MenuWrapper = availableChainIds.length > 1 ? ContextMenuButton : Box;

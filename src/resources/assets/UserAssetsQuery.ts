@@ -3,7 +3,7 @@ import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { NativeCurrencyKey } from '@/entities';
 import { saveAccountEmptyState } from '@/handlers/localstorage/accountLocal';
 import { greaterThan } from '@/helpers/utilities';
-import { RainbowNetworkObjects } from '@/networks';
+import { networkObjects } from '@/networks';
 import { rainbowFetch } from '@/rainbow-fetch';
 import { createQueryKey, queryClient, QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
@@ -74,9 +74,9 @@ async function userAssetsQueryFunction({
   }
 
   try {
-    const chainIds = RainbowNetworkObjects.filter(network => network.enabled && network.networkType !== 'testnet').map(
-      network => network.id
-    );
+    const chainIds = Object.values(networkObjects)
+      .filter(network => network.enabled && network.networkType !== 'testnet')
+      .map(network => network.id);
 
     staleBalancesStore.getState().clearExpiredData(address);
     const staleBalanceParam = staleBalancesStore.getState().getStaleBalancesQueryParam(address);

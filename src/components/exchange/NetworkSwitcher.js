@@ -8,22 +8,26 @@ import { Column, Row } from '../layout';
 import { Text } from '../text';
 import { padding, position } from '@/styles';
 import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
-import { RainbowNetworkObjects } from '@/networks';
+import { networkObjects } from '@/networks';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 import { chainIdToNameMapping } from '@/networks/types';
 
 const networkMenuItems = () => {
-  return RainbowNetworkObjects.filter(network => network.features.swaps).map(network => ({
-    actionKey: network.value,
-    actionTitle: network.name,
-    icon: {
-      iconType: 'ASSET',
-      iconValue: `${network.networkType === 'layer2' ? `${network.value}BadgeNoShadow` : 'ethereumBadge'}`,
-    },
-  }));
+  return Object.values(networkObjects)
+    .filter(network => network.features.swaps)
+    .map(network => ({
+      actionKey: network.value,
+      actionTitle: network.name,
+      icon: {
+        iconType: 'ASSET',
+        iconValue: `${network.networkType === 'layer2' ? `${network.value}BadgeNoShadow` : 'ethereumBadge'}`,
+      },
+    }));
 };
 const androidNetworkMenuItems = () => {
-  return RainbowNetworkObjects.filter(network => network.features.swaps).map(network => network.name);
+  return Object.values(networkObjects)
+    .filter(network => network.features.swaps)
+    .map(network => network.name);
 };
 
 const NetworkSwitcherv1 = ({

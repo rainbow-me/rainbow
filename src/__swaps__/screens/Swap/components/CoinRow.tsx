@@ -8,7 +8,7 @@ import { ContextMenuButton } from '@/components/context-menu';
 import { Box, Column, Columns, HitSlop, Inline, Text } from '@/design-system';
 import { setClipboard } from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
-import { RainbowNetworkObjects } from '@/networks';
+import { networkObjects } from '@/networks';
 import { BASE_DEGEN_ADDRESS, DEGEN_CHAIN_DEGEN_ADDRESS, ETH_ADDRESS } from '@/references';
 import { toggleFavorite } from '@/resources/favorites';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
@@ -185,7 +185,7 @@ export function CoinRow({ isFavorite, onPress, output, uniqueId, testID, ...asse
 }
 
 const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId }) => {
-  const networkObject = RainbowNetworkObjects.find(networkObject => networkObject.id === chainId)?.value;
+  const networkObject = networkObjects[chainId]?.value;
 
   const handleCopy = useCallback(() => {
     haptics.selection();

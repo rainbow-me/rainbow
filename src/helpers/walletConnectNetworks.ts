@@ -1,4 +1,4 @@
-import { networkObjects, RainbowNetworkObjects } from '@/networks';
+import { networkObjects } from '@/networks';
 import store from '@/redux/store';
 import { showActionSheetWithOptions } from '@/utils';
 import * as i18n from '@/languages';
@@ -6,25 +6,25 @@ import { ChainId } from '@/networks/types';
 
 const androidNetworkActions = () => {
   const { testnetsEnabled } = store.getState().settings;
-  return RainbowNetworkObjects.filter(
-    ({ features, networkType }) => features.walletconnect && (testnetsEnabled || networkType !== 'testnet')
-  ).map(network => network.name);
+  return Object.values(networkObjects)
+    .filter(({ features, networkType }) => features.walletconnect && (testnetsEnabled || networkType !== 'testnet'))
+    .map(network => network.name);
 };
 
 export const NETWORK_MENU_ACTION_KEY_FILTER = 'switch-to-network-';
 
 export const networksMenuItems = () => {
   const { testnetsEnabled } = store.getState().settings;
-  return RainbowNetworkObjects.filter(
-    ({ features, networkType }) => features.walletconnect && (testnetsEnabled || networkType !== 'testnet')
-  ).map(network => ({
-    actionKey: `${NETWORK_MENU_ACTION_KEY_FILTER}${network.value}`,
-    actionTitle: network.name,
-    icon: {
-      iconType: 'ASSET',
-      iconValue: `${network.networkType === 'layer2' ? `${network.value}BadgeNoShadow` : 'ethereumBadge'}`,
-    },
-  }));
+  return Object.values(networkObjects)
+    .filter(({ features, networkType }) => features.walletconnect && (testnetsEnabled || networkType !== 'testnet'))
+    .map(network => ({
+      actionKey: `${NETWORK_MENU_ACTION_KEY_FILTER}${network.value}`,
+      actionTitle: network.name,
+      icon: {
+        iconType: 'ASSET',
+        iconValue: `${network.networkType === 'layer2' ? `${network.value}BadgeNoShadow` : 'ethereumBadge'}`,
+      },
+    }));
 };
 
 const networksAvailable = networksMenuItems();
@@ -76,7 +76,8 @@ export const androidShowNetworksActionSheet = (callback: any) => {
     (idx: any) => {
       if (idx !== undefined) {
         const networkActions = androidNetworkActions();
-        const networkObj = RainbowNetworkObjects.find(network => network.name === networkActions[idx]) || networkObjects[ChainId.mainnet];
+        const networkObj =
+          Object.values(networkObjects).find(network => network.name === networkActions[idx]) || networkObjects[ChainId.mainnet];
         callback({ chainId: networkObj.id, network: networkObj.value });
       }
     }

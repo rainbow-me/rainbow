@@ -15,7 +15,6 @@ import { SEND_TRANSACTION } from './signingMethods';
 import { handleSessionRequestResponse } from '@/walletConnect';
 import ethereumUtils from './ethereumUtils';
 import { getRequestDisplayDetails } from '@/parsers';
-import { RainbowNetworkObjects } from '@/networks';
 import { maybeSignUri } from '@/handlers/imgix';
 import { getActiveRoute } from '@/navigation/Navigation';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
@@ -36,6 +35,7 @@ import { toUtf8String } from '@ethersproject/strings';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Address } from 'viem';
 import { ChainId } from '@/networks/types';
+import { networkObjects } from '@/networks';
 
 export enum RequestSource {
   WALLETCONNECT = 'walletconnect',
@@ -290,9 +290,9 @@ export const handleDappBrowserConnectionPrompt = (
   dappData: DappConnectionData
 ): Promise<{ chainId: ChainId; address: Address } | Error> => {
   return new Promise((resolve, reject) => {
-    const chainIds = RainbowNetworkObjects.filter(network => network.enabled && network.networkType !== 'testnet').map(
-      network => network.id
-    );
+    const chainIds = Object.values(networkObjects)
+      .filter(network => network.enabled && network.networkType !== 'testnet')
+      .map(network => network.id);
     const receivedTimestamp = Date.now();
     const routeParams: WalletconnectApprovalSheetRouteParams = {
       receivedTimestamp,

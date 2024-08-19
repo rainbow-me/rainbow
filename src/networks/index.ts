@@ -14,25 +14,6 @@ import { getOptimismNetworkObject } from './optimism';
 import { getPolygonNetworkObject } from './polygon';
 import { getZoraNetworkObject } from './zora';
 
-/**
- * Array of all Rainbow Networks
- * the ordering is the default sorting
- */
-export const RainbowNetworkObjects = [
-  getMainnetNetworkObject(),
-  getArbitrumNetworkObject(),
-  getBaseNetworkObject(),
-  getOptimismNetworkObject(),
-  getPolygonNetworkObject(),
-  getZoraNetworkObject(),
-  getGnosisNetworkObject(),
-  getGoerliNetworkObject(),
-  getBSCNetworkObject(),
-  getAvalancheNetworkObject(),
-  getBlastNetworkObject(),
-  getDegenNetworkObject(),
-];
-
 export const RainbowSupportedChainIds = [
   ChainId.mainnet,
   ChainId.arbitrum,
@@ -80,14 +61,14 @@ export function sortNetworks(): NetworkProperties[] {
     return count1 > count2 ? -1 : 1;
   };
 
-  return RainbowNetworkObjects.sort(tokenSort);
+  return Object.values(networkObjects).sort(tokenSort);
 }
 
 export function getSwappableNetworks(): NetworkProperties[] {
-  return RainbowNetworkObjects.filter(network => network.features.swaps);
+  return Object.values(networkObjects).filter(network => network.features.swaps);
 }
 
-export const RainbowNetworkByChainId = RainbowNetworkObjects.reduce(
+export const RainbowNetworkByChainId = Object.values(networkObjects).reduce(
   (acc, network) => {
     acc[network.id] = network;
     return acc;

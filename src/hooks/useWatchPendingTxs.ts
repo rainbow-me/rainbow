@@ -7,7 +7,6 @@ import { transactionFetchQuery } from '@/resources/transactions/transaction';
 import { RainbowError, logger } from '@/logger';
 import { getProvider } from '@/handlers/web3';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
-import { RainbowNetworkObjects } from '@/networks';
 import { queryClient } from '@/react-query/queryClient';
 import { getTransactionFlashbotStatus } from '@/handlers/transactions';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
@@ -18,6 +17,7 @@ import { getNftSortForAddress } from './useNFTsSortBy';
 import { ChainId } from '@/networks/types';
 import { staleBalancesStore } from '@/state/staleBalances';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { networkObjects } from '@/networks';
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
   const { storePendingTransactions, setPendingTransactions } = usePendingTransactionsStore(state => ({
@@ -189,9 +189,10 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
     );
 
     if (minedTransactions.length) {
-      const chainIds = RainbowNetworkObjects.filter(networkObject => networkObject.enabled && networkObject.networkType !== 'testnet').map(
-        networkObject => networkObject.id
-      );
+		const chainIds = Object.values(networkObjects)
+        .filter(networkObject => networkObject.enabled && networkObject.networkType !== 'testnet')
+        .map(networkObject => networkObject.id);
+
       minedTransactions.forEach(tx => {
         if (tx.changes?.length) {
           tx.changes?.forEach(change => {

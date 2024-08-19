@@ -38,7 +38,7 @@ import { Box } from '@/design-system';
 import { AuthRequestAuthenticateSignature, AuthRequestResponseErrorReason, RPCMethod, RPCPayload } from '@/walletConnect/types';
 import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
 import { getProvider } from '@/handlers/web3';
-import { RainbowNetworkObjects } from '@/networks';
+import { networkObjects } from '@/networks';
 import { uniq } from 'lodash';
 import { fetchDappMetadata } from '@/resources/metadata/dapp';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
@@ -47,7 +47,9 @@ import { PerformanceMetrics } from '@/performance/tracking/types/PerformanceMetr
 import { PerformanceTracking } from '@/performance/tracking';
 import { ChainId } from '@/networks/types';
 
-const SUPPORTED_EVM_CHAIN_IDS = RainbowNetworkObjects.filter(({ features }) => features.walletconnect).map(({ id }) => id);
+const SUPPORTED_EVM_CHAIN_IDS = Object.values(networkObjects)
+  .filter(({ features }) => features.walletconnect)
+  .map(({ id }) => id);
 
 const SUPPORTED_SESSION_EVENTS = ['chainChanged', 'accountsChanged'];
 
@@ -265,7 +267,7 @@ export function isSupportedMethod(method: RPCMethod) {
 }
 
 export function isSupportedChain(chainId: number) {
-  return !!RainbowNetworkObjects.find(({ id, features }) => id === chainId && features.walletconnect);
+  return networkObjects[chainId].features.walletconnect;
 }
 
 /**
