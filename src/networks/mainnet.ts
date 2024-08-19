@@ -4,7 +4,7 @@ import { gasUtils } from '@/utils';
 import { mainnet } from '@wagmi/chains';
 import { ETH_ADDRESS } from '@/references';
 import { getRemoteConfig } from '@/model/remoteConfig';
-import { connectedToHardhatStore } from '@/state/connectedToHardhat';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 export const getMainnetNetworkObject = (): NetworkProperties => {
   const { mainnet_enabled, mainnet_tx_enabled } = getRemoteConfig();
@@ -26,7 +26,7 @@ export const getMainnetNetworkObject = (): NetworkProperties => {
     },
 
     getProvider: () => getProvider({ chainId: ChainId.mainnet }),
-    rpc: () => (connectedToHardhatStore.getState().connectedToHardhat ? 'http://127.0.0.1:8545' : proxyRpcEndpoint(mainnet.id)),
+    rpc: () => (useConnectedToHardhatStore.getState().connectedToHardhat ? 'http://127.0.0.1:8545' : proxyRpcEndpoint(mainnet.id)),
     balanceCheckerAddress: '0x4dcf4562268dd384fe814c00fad239f06c2a0c2b',
 
     // features

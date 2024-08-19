@@ -40,13 +40,13 @@ import { getFCMToken } from '@/notifications/tokens';
 import { removeGlobalNotificationSettings } from '@/notifications/settings/settings';
 import { nonceStore } from '@/state/nonces';
 import { pendingTransactionsStore } from '@/state/pendingTransactions';
-import { connectedToHardhatStore } from '@/state/connectedToHardhat';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
   const { config, setConfig } = useContext(RainbowContext) as any;
   const { wallets } = useWallets();
-  const setConnectedToHardhat = connectedToHardhatStore.getState().setConnectedToHardhat;
+  const setConnectedToHardhat = useConnectedToHardhatStore.getState().setConnectedToHardhat;
   const { walletNotificationSettings } = useAllNotificationSettingsFromStorage();
   const dispatch = useDispatch();
 
@@ -69,7 +69,7 @@ const DevSection = () => {
 
   const connectToHardhat = useCallback(async () => {
     try {
-      const connectToHardhat = connectedToHardhatStore.getState().connectedToHardhat;
+      const connectToHardhat = useConnectedToHardhatStore.getState().connectedToHardhat;
       setConnectedToHardhat(!connectToHardhat);
 	  logger.debug(`[DevSection] connected to hardhat`);
     } catch (e) {
@@ -315,7 +315,7 @@ const DevSection = () => {
               titleComponent={
                 <MenuItem.Title
                   text={
-                    connectedToHardhatStore.getState().connectedToHardhat
+                    useConnectedToHardhatStore.getState().connectedToHardhat
                       ? lang.t('developer_settings.disconnect_to_hardhat')
                       : lang.t('developer_settings.connect_to_hardhat')
                   }

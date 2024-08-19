@@ -14,8 +14,7 @@ import { logger, RainbowError } from '@/logger';
 import { explorerInit } from '@/redux/explorer';
 import { Navigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
-import { connectedToHardhatStore } from '@/state/connectedToHardhat';
-import { web3SetHttpProvider } from '@/handlers/web3';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 export const RainbowContext = createContext({});
 const storageKey = 'config';
@@ -28,7 +27,7 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
   // This value is hold here to prevent JS VM from shutting down
   // on unmounting all shared values.
   useSharedValue(0);
-  const setConnectedToHardhat = connectedToHardhatStore.getState().setConnectedToHardhat;
+  const setConnectedToHardhat = useConnectedToHardhatStore.getState().setConnectedToHardhat;
   const [config, setConfig] = useState<Record<string, boolean>>(
     Object.entries(defaultConfig).reduce((acc, [key, { value }]) => ({ ...acc, [key]: value }), {})
   );
