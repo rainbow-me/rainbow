@@ -17,6 +17,8 @@ export enum CellType {
   PROFILE_NAME_ROW_SPACE_AFTER = 'PROFILE_NAME_ROW_SPACE_AFTER',
   PROFILE_STICKY_HEADER = 'PROFILE_STICKY_HEADER',
   NFTS_HEADER = 'NFTS_HEADER',
+  NFTS_LOADING = 'NFTS_LOADING',
+  NFTS_EMPTY = 'NFTS_EMPTY',
   NFTS_HEADER_SPACE_BEFORE = 'NFTS_HEADER_SPACE_BEFORE',
   NFTS_HEADER_SPACE_AFTER = 'NFTS_HEADER_SPACE_AFTER',
   FAMILY_HEADER = 'FAMILY_HEADER',
@@ -54,9 +56,9 @@ export type AssetListHeaderExtraData = {
 };
 
 export type AssetsHeaderExtraData = {
-  type: CellType.PROFILE_STICKY_HEADER;
+  type: CellType.PROFILE_BALANCE_ROW;
   value: string;
-  isLoadingUserAssets: boolean;
+  isLoadingBalance: boolean;
 };
 export type CoinExtraData = { type: CellType.COIN; uniqueId: string };
 export type NFTExtraData = {

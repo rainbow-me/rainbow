@@ -14,7 +14,7 @@ import { toggleFavorite } from '@/resources/favorites';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
 import { startCase } from 'lodash';
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { GestureResponderEvent } from 'react-native';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import { SwapCoinIcon } from './SwapCoinIcon';
@@ -68,7 +68,7 @@ interface OutputCoinRowProps extends PartialAsset {
 
 type CoinRowProps = InputCoinRowProps | OutputCoinRowProps;
 
-export const CoinRow = memo(function CoinRow({ isFavorite, onPress, output, uniqueId, testID, ...assetProps }: CoinRowProps) {
+export function CoinRow({ isFavorite, onPress, output, uniqueId, testID, ...assetProps }: CoinRowProps) {
   const inputAsset = userAssetsStore(state => (output ? undefined : state.getUserAsset(uniqueId)));
   const outputAsset = output ? (assetProps as PartialAsset) : undefined;
 
@@ -139,7 +139,7 @@ export const CoinRow = memo(function CoinRow({ isFavorite, onPress, output, uniq
                     address={address}
                     mainnetAddress={mainnetAddress}
                     large
-                    network={ethereumUtils.getNetworkFromChainId(chainId)}
+                    chainId={chainId}
                     symbol={symbol || ''}
                     color={colors?.primary}
                   />
@@ -182,7 +182,7 @@ export const CoinRow = memo(function CoinRow({ isFavorite, onPress, output, uniq
       </Columns>
     </Box>
   );
-});
+}
 
 const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId }) => {
   const network = RainbowNetworks.find(network => network.id === chainId)?.value;
@@ -200,8 +200,8 @@ const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId })
     ...(network
       ? {
           blockExplorer: {
-            title: i18n.t(i18n.l.exchange.coin_row.view_on, { blockExplorerName: startCase(ethereumUtils.getBlockExplorer(network)) }),
-            action: () => ethereumUtils.openAddressInBlockExplorer(address, network),
+            title: i18n.t(i18n.l.exchange.coin_row.view_on, { blockExplorerName: startCase(ethereumUtils.getBlockExplorer(chainId)) }),
+            action: () => ethereumUtils.openAddressInBlockExplorer(address, chainId),
           },
         }
       : {}),

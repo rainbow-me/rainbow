@@ -12,6 +12,7 @@ import { useMagicAutofocus, useSwapSettings } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
+import { ethereumUtils } from '@/utils';
 
 const convertBipsToPercent = (bips: number) => (bips / 100).toString();
 const convertPercentToBips = (percent: number) => (percent * 100).toString();
@@ -41,7 +42,7 @@ export const MaxToleranceInput = forwardRef(
         slippageRef?.current?.blur();
       },
       reset: () => {
-        const slippage = getDefaultSlippageFromConfig(currentNetwork) as unknown as number;
+        const slippage = getDefaultSlippageFromConfig(ethereumUtils.getChainIdFromNetwork(currentNetwork)) as unknown as number;
         onSlippageChange(convertBipsToPercent(slippage));
       },
     }));

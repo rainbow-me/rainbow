@@ -24,7 +24,7 @@ export default function useSwapInputHandlers() {
     const accountAsset = ethereumUtils.getAccountAsset(inputCurrencyUniqueId);
     const oldAmount = accountAsset?.balance?.amount ?? '0';
     let newAmount = oldAmount;
-    if (isNativeAsset(inputCurrencyAddress, inputCurrencyNetwork) && accountAsset) {
+    if (isNativeAsset(inputCurrencyAddress, ethereumUtils.getChainIdFromNetwork(inputCurrencyNetwork)) && accountAsset) {
       // this subtracts gas from the balance of the asset
       newAmount = toFixedDecimals(ethereumUtils.getBalanceAmount(selectedGasFee, accountAsset, l1GasFeeOptimism), 6);
 

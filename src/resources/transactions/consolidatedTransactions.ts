@@ -7,6 +7,7 @@ import { rainbowFetch } from '@/rainbow-fetch';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { RainbowNetworks } from '@/networks';
 import { parseTransaction } from '@/parsers/transactions';
+import { ethereumUtils } from '@/utils';
 
 const CONSOLIDATED_TRANSACTIONS_INTERVAL = 30000;
 const CONSOLIDATED_TRANSACTIONS_TIMEOUT = 20000;
@@ -107,7 +108,9 @@ async function parseConsolidatedTransactions(
 ): Promise<RainbowTransaction[]> {
   const data = message?.payload?.transactions || [];
 
-  const parsedTransactionPromises = data.map((tx: TransactionApiResponse) => parseTransaction(tx, currency));
+  const parsedTransactionPromises = data.map((tx: TransactionApiResponse) =>
+    parseTransaction(tx, currency, ethereumUtils.getChainIdFromNetwork(tx.network))
+  );
   // Filter out undefined values immediately
 
   const parsedConsolidatedTransactions = (await Promise.all(parsedTransactionPromises)).flat(); // Filter out any remaining undefined values

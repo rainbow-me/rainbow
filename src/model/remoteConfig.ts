@@ -164,11 +164,11 @@ export const DEFAULT_CONFIG: RainbowConfig = {
   points_enabled: true,
   points_fully_enabled: true,
   rpc_proxy_enabled: true,
-  remote_cards_enabled: false,
+  remote_cards_enabled: true,
   remote_promo_enabled: false,
   points_notifications_toggle: true,
   dapp_browser: true,
-  swaps_v2: false,
+  swaps_v2: true,
   idfa_check_enabled: true,
   rewards_enabled: true,
 

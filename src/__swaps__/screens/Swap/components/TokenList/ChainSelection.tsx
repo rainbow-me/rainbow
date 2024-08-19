@@ -17,7 +17,7 @@ import { useAccountAccentColor } from '@/hooks';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
+import { showActionSheetWithOptions } from '@/utils';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 
 type ChainSelectionProps = {
@@ -195,12 +195,9 @@ const ChainButtonIcon = ({ output }: { output: boolean | undefined }) => {
   return (
     <Bleed vertical="6px">
       {output ? (
-        <ChainImage
-          chain={ethereumUtils.getNetworkFromChainId(selectedOutputChainId ?? animatedSelectedOutputChainId.value ?? ChainId.mainnet)}
-          size={16}
-        />
+        <ChainImage chainId={selectedOutputChainId ?? animatedSelectedOutputChainId.value ?? ChainId.mainnet} size={16} />
       ) : userAssetsFilter && userAssetsFilter !== 'all' ? (
-        <ChainImage chain={ethereumUtils.getNetworkFromChainId(userAssetsFilter)} size={16} />
+        <ChainImage chainId={userAssetsFilter} size={16} />
       ) : (
         <></>
       )}

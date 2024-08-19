@@ -2,7 +2,6 @@ import { Dimension, Layout, LayoutManager, LayoutProvider } from 'recyclerlistvi
 import ViewDimensions from './ViewDimensions';
 import { BaseCellType, CellType } from './ViewTypes';
 import { deviceUtils } from '@/utils';
-import { TrimmedCard } from '@/resources/cards/cardCollectionQuery';
 
 const getStyleOverridesForIndex = (indices: number[]) => (index: number) => {
   if (indices.includes(index)) {

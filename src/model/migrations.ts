@@ -36,7 +36,9 @@ import logger from '@/utils/logger';
 import { queryClient } from '@/react-query';
 import { favoritesQueryKey } from '@/resources/favorites';
 import { EthereumAddress, RainbowToken } from '@/entities';
-import { getUniqueId } from '@/utils/ethereumUtils';
+import { standardizeUrl, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
+import { useLegacyFavoriteDappsStore } from '@/state/legacyFavoriteDapps';
+import { getUniqueIdNetwork } from '@/utils/ethereumUtils';
 
 export default async function runMigrations() {
   // get current version
@@ -461,12 +463,12 @@ export default async function runMigrations() {
 
         const pinnedCoinsMigrated = pinnedCoins.map((address: string) => {
           const asset = assets?.find((asset: any) => asset.address === address.toLowerCase());
-          return getUniqueId(asset?.address, network);
+          return getUniqueIdNetwork(asset?.address, network);
         });
 
         const hiddenCoinsMigrated = hiddenCoins.map((address: string) => {
           const asset = ethereumUtils.getAsset(assets, address);
-          return getUniqueId(asset?.address, network);
+          return getUniqueIdNetwork(asset?.address, network);
         });
 
         logger.log(JSON.stringify({ pinnedCoinsMigrated }, null, 2));
@@ -636,6 +638,35 @@ export default async function runMigrations() {
   };
 
   migrations.push(v18);
+
+  /**
+   *************** Migration v19 ******************
+   * Migrates dapp browser favorites store from createStore to createRainbowStore
+   */
+  const v19 = async () => {
+    const initializeLegacyStore = () => {
+      return new Promise<void>(resolve => {
+        // Give the async legacy store a moment to initialize
+        setTimeout(() => {
+          resolve();
+        }, 1000);
+      });
+    };
+
+    await initializeLegacyStore();
+    const legacyFavorites = useLegacyFavoriteDappsStore.getState().favoriteDapps;
+
+    if (legacyFavorites.length > 0) {
+      // Re-standardize URLs to ensure they're in the correct format
+      for (const favorite of legacyFavorites) {
+        favorite.url = standardizeUrl(favorite.url);
+      }
+      useFavoriteDappsStore.setState({ favoriteDapps: legacyFavorites });
+      useLegacyFavoriteDappsStore.setState({ favoriteDapps: [] });
+    }
+  };
+
+  migrations.push(v19);
 
   logger.sentry(`Migrations: ready to run migrations starting on number ${currentVersion}`);
   // await setMigrationVersion(17);

@@ -38,9 +38,9 @@ const ContractActions = {
   },
 };
 
-const buildBlockExplorerAction = type => {
+const buildBlockExplorerAction = chainId => {
   const blockExplorerText = lang.t('expanded_state.swap.view_on', {
-    blockExplorerName: startCase(ethereumUtils.getBlockExplorer(type)),
+    blockExplorerName: startCase(ethereumUtils.getBlockExplorer(chainId)),
   });
   return {
     actionKey: ContractActionsEnum.blockExplorer,
@@ -105,7 +105,7 @@ export default function SwapDetailsContractRow({ asset, onCopySwapDetailsText, .
   const [menuVisible, setMenuVisible] = useState(false);
 
   const menuConfig = useMemo(() => {
-    const blockExplorerAction = buildBlockExplorerAction(asset?.network);
+    const blockExplorerAction = buildBlockExplorerAction(ethereumUtils.getChainIdFromNetwork(asset?.network));
     return {
       menuItems: [
         blockExplorerAction,
@@ -131,7 +131,7 @@ export default function SwapDetailsContractRow({ asset, onCopySwapDetailsText, .
 
   const onPressAndroid = useCallback(() => {
     const blockExplorerText = lang.t('expanded_state.swap.view_on', {
-      blockExplorerName: startCase(ethereumUtils.getBlockExplorer(asset?.network)),
+      blockExplorerName: startCase(ethereumUtils.getBlockExplorer(ethereumUtils.getChainIdFromNetwork(asset?.network))),
     });
     const androidContractActions = [lang.t('wallet.action.copy_contract_address'), blockExplorerText, lang.t('button.cancel')];
     showActionSheetWithOptions(

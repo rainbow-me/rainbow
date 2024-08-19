@@ -7,8 +7,6 @@ import { getRemoteConfig } from '@/model/remoteConfig';
 import { BLAST_MAINNET_RPC } from 'react-native-dotenv';
 import { BLAST_ETH_ADDRESS } from '@/references';
 
-const BLAST_CHAIN_ID = 81457;
-
 export const getBlastNetworkObject = (): NetworkProperties => {
   const { blast_enabled, blast_tx_enabled } = getRemoteConfig();
   return {
@@ -30,7 +28,7 @@ export const getBlastNetworkObject = (): NetworkProperties => {
     },
 
     balanceCheckerAddress: '',
-    rpc: () => proxyRpcEndpoint(BLAST_CHAIN_ID),
+    rpc: () => proxyRpcEndpoint(blast.id),
     getProvider: () => getProviderForNetwork(Network.blast),
 
     // features

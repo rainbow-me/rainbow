@@ -36,8 +36,10 @@ import {
 import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
-import { getNetworkObj } from '@/networks';
+import { getNetworkObj, getNetworkObject } from '@/networks';
 import store from '@/redux/store';
+import { getNetworkFromChainId } from '@/utils/ethereumUtils';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export enum TokenStandard {
   ERC1155 = 'ERC1155',
@@ -170,11 +172,11 @@ export const web3SetHttpProvider = async (network: Network | string): Promise<Et
 
 /**
  * @desc Checks if the given network is a Layer 2.
- * @param network The network to check.
+ * @param chainId The network to check.
  * @return Whether or not the network is a L2 network.
  */
-export const isL2Network = (network: Network | string): boolean => {
-  return getNetworkObj(network as Network).networkType === 'layer2';
+export const isL2Chain = ({ chainId }: { chainId: ChainId }): boolean => {
+  return getNetworkObject({ chainId }).networkType === 'layer2';
 };
 
 /**
@@ -216,6 +218,26 @@ export const getCachedProviderForNetwork = (network: Network = Network.mainnet):
  * @return The provider for the network.
  */
 export const getProviderForNetwork = (network: Network | string = Network.mainnet): StaticJsonRpcProvider => {
+  const isSupportedNetwork = isNetworkEnum(network);
+  const cachedProvider = isSupportedNetwork ? networkProviders.get(network) : undefined;
+
+  if (isSupportedNetwork && cachedProvider) {
+    return cachedProvider;
+  }
+
+  if (!isSupportedNetwork) {
+    const provider = new StaticJsonRpcProvider(network, Network.mainnet);
+    networkProviders.set(Network.mainnet, provider);
+    return provider;
+  } else {
+    const provider = new StaticJsonRpcProvider(getNetworkObj(network).rpc(), getNetworkObj(network).id);
+    networkProviders.set(network, provider);
+    return provider;
+  }
+};
+
+export const getProvider = ({ chainId }: { chainId: number }): StaticJsonRpcProvider => {
+  const network = getNetworkFromChainId(chainId);
   const isSupportedNetwork = isNetworkEnum(network);
   const cachedProvider = isSupportedNetwork ? networkProviders.get(network) : undefined;
 
@@ -755,7 +777,7 @@ export const buildTransaction = async (
       from: address,
       to: contractAddress,
     };
-  } else if (!isNativeAsset(asset.address, network)) {
+  } else if (!isNativeAsset(asset.address, ethereumUtils.getChainIdFromNetwork(network))) {
     const transferData = getDataForTokenTransfer(value, _recipient);
     txData = {
       data: transferData,

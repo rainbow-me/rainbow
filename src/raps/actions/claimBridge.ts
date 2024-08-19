@@ -1,17 +1,18 @@
+import { NewTransaction, TransactionGasParamAmounts } from '@/entities';
+import { getProviderForNetwork } from '@/handlers/web3';
+import { Network } from '@/helpers';
+import { add, addBuffer, greaterThan, lessThan, multiply, subtract } from '@/helpers/utilities';
+import { RainbowError } from '@/logger';
+import store from '@/redux/store';
+import { REFERRER_CLAIM } from '@/references';
+import { TxHash } from '@/resources/transactions/types';
+import { addNewTransaction } from '@/state/pendingTransactions';
+import ethereumUtils, { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { AddressZero } from '@ethersproject/constants';
 import { CrosschainQuote, QuoteError, SwapType, getClaimBridgeQuote } from '@rainbow-me/swaps';
 import { Address } from 'viem';
 import { ActionProps } from '../references';
 import { executeCrosschainSwap } from './crosschainSwap';
-import { RainbowError } from '@/logger';
-import { add, addBuffer, greaterThan, lessThan, multiply, subtract } from '@/helpers/utilities';
-import { getProviderForNetwork } from '@/handlers/web3';
-import { Network } from '@/helpers';
-import { TxHash } from '@/resources/transactions/types';
-import { NewTransaction, TransactionGasParamAmounts } from '@/entities';
-import { addNewTransaction } from '@/state/pendingTransactions';
-import ethereumUtils, { getNetworkFromChainId } from '@/utils/ethereumUtils';
-import { REFERRER_CLAIM, ReferrerType } from '@/references';
 
 // This action is used to bridge the claimed funds to another chain
 export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps<'claimBridge'>) {
@@ -25,6 +26,8 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
   let maxBridgeableAmount = sellAmount;
   let needsNewQuote = false;
 
+  const currency = store.getState().settings.nativeCurrency;
+
   // 1 - Get a quote to bridge the claimed funds
   const claimBridgeQuote = await getClaimBridgeQuote({
     chainId,
@@ -35,6 +38,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
     sellAmount: sellAmount,
     slippage: 2,
     swapType: SwapType.crossChain,
+    currency,
   });
 
   // if we don't get a quote or there's an error we can't continue
@@ -95,6 +99,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
       sellAmount: maxBridgeableAmount,
       slippage: 2,
       swapType: SwapType.crossChain,
+      currency,
     });
 
     if (!newQuote || (newQuote as QuoteError)?.error) {
@@ -163,6 +168,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
 
   // 5 - if the swap was successful we add the transaction to the store
   const transaction = {
+    chainId,
     data: bridgeQuote.data,
     value: bridgeQuote.value?.toString(),
     asset: typedAssetToBuy,
