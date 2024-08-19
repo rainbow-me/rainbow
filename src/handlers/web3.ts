@@ -35,9 +35,8 @@ import {
 import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
-import { getNetworkObject } from '@/networks';
-import store from '@/redux/store';
 import { ChainId } from '@/networks/types';
+import { networkObjects } from '@/networks';
 
 export enum TokenStandard {
   ERC1155 = 'ERC1155',
@@ -163,7 +162,7 @@ export const web3SetHttpProvider = async (chainId: ChainId): Promise<EthersNetwo
  * @return Whether or not the network is a L2 network.
  */
 export const isL2Chain = ({ chainId }: { chainId: ChainId }): boolean => {
-  return getNetworkObject({ chainId }).networkType === 'layer2';
+  return networkObjects[chainId].networkType === 'layer2';
 };
 
 /**
@@ -172,7 +171,7 @@ export const isL2Chain = ({ chainId }: { chainId: ChainId }): boolean => {
  * @return Whether or not the network is a testnet.
  */
 export const isTestnetChain = ({ chainId }: { chainId: ChainId }): boolean => {
-  return getNetworkObject({ chainId }).networkType === 'testnet';
+  return networkObjects[chainId].networkType === 'testnet';
 };
 
 // shoudl figure out better way to include this in networks
@@ -192,11 +191,12 @@ export const getCachedProviderForNetwork = (chainId: ChainId = ChainId.mainnet):
 export const getProvider = ({ chainId }: { chainId: number }): StaticJsonRpcProvider => {
   const cachedProvider = chainsProviders.get(chainId);
 
-  const networkObject = getNetworkObject({ chainId });
+  const networkObject = networkObjects[chainId];
 
   if (cachedProvider && cachedProvider?.connection.url === networkObject.rpc()) {
     return cachedProvider;
   }
+
 
   const provider = new StaticJsonRpcProvider(networkObject.rpc(), networkObject.id);
   chainsProviders.set(chainId, provider);
@@ -434,7 +434,7 @@ export const getTransactionCount = async (address: string): Promise<number | nul
  * @returns - object with `gasPrice` or `maxFeePerGas` and `maxPriorityFeePerGas`
  */
 export const getTransactionGasParams = (transaction: Pick<NewTransactionNonNullable, 'chainId'> & GasParamsInput): GasParamsReturned => {
-  return getNetworkObject({ chainId: transaction.chainId }).gas.gasType === 'legacy'
+  return networkObjects[transaction.chainId].gas.gasType === 'legacy'
     ? {
         gasPrice: toHex(transaction.gasPrice),
       }

@@ -3,11 +3,9 @@
 Handling for networks throughout the codebase.
 
 ```typescript
-import { getNetworkObject } from '@/networks';
-
-const networkObj = getNetworkObject({ chainId: ChainId.mainnet });
 
 // Get static properties based on network
+const networkObj = networkObjects[chainId]
 const networkName = networkObj.name;
 const isSwapEnabled = networkObj.swaps.enabled;
 const isNFTsEnabled = networkObj.nfts.enabled;

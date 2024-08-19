@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { getTimeElapsedFromDate } from '../utils';
 import { Bleed, Box, Cover, Inline, Inset, Stack, Text, useForegroundColor } from '@/design-system';
 import { abbreviateNumber, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
-import { getNetworkObject } from '@/networks';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Placeholder, RecentMintCell } from './RecentMintCell';
 import { View } from 'react-native';
@@ -14,6 +13,7 @@ import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { ChainId } from '@/networks/types';
+import { networkObjects } from '@/networks';
 
 export const NUM_NFTS = 3;
 
@@ -28,7 +28,7 @@ export function Card({ collection }: { collection: MintableCollection }) {
   const separatorTertiary = useForegroundColor('separatorTertiary');
 
   const price = convertRawAmountToRoundedDecimal(collection.mintStatus.price, 18, 6);
-  const currencySymbol = getNetworkObject({ chainId: collection.chainId }).nativeCurrency.symbol;
+  const currencySymbol = networkObjects[collection.chainId].nativeCurrency.symbol;
   const isFree = !price;
 
   // update elapsed time every minute if it's less than an hour

@@ -63,7 +63,6 @@ import useParamsForExchangeModal from '@/hooks/useParamsForExchangeModal';
 import { Wallet } from '@ethersproject/wallet';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { useTheme } from '@/theme';
-import { getNetworkObject } from '@/networks';
 import Animated from 'react-native-reanimated';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
@@ -76,6 +75,7 @@ import { TokenColors } from '@/graphql/__generated__/metadata';
 import { estimateSwapGasLimit } from '@/raps/actions';
 import { estimateCrosschainSwapGasLimit } from '@/raps/actions/crosschainSwap';
 import { parseGasParamAmounts } from '@/parsers';
+import { networkObjects } from '@/networks';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [ChainId.mainnet]: 100,
@@ -205,17 +205,15 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
   });
   const speedUrgentSelected = useRef(false);
 
+  const networkObject = useMemo(() => networkObjects[currentChainId], [currentChainId]);
+
   useEffect(() => {
-    if (
-      !speedUrgentSelected.current &&
-      !isEmpty(gasFeeParamsBySpeed) &&
-      getNetworkObject({ chainId: currentChainId }).swaps?.defaultToFastGas
-    ) {
+    if (!speedUrgentSelected.current && !isEmpty(gasFeeParamsBySpeed) && networkObject.swaps?.defaultToFastGas) {
       // Default to fast for networks with speed options
       updateGasFeeOption(gasUtils.FAST);
       speedUrgentSelected.current = true;
     }
-  }, [currentChainId, gasFeeParamsBySpeed, selectedGasFee, updateGasFeeOption, updateTxFee]);
+  }, [currentChainId, gasFeeParamsBySpeed, networkObject.swaps?.defaultToFastGas, selectedGasFee, updateGasFeeOption, updateTxFee]);
 
   useEffect(() => {
     if (currentChainId !== prevChainId) {
@@ -245,7 +243,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
   const [debouncedIsHighPriceImpact] = useDebounce(priceImpact.type !== SwapPriceImpactType.none, 1000);
   // For a limited period after the merge we need to block the use of flashbots.
   // This line should be removed after reenabling flashbots in remote config.
-  const swapSupportsFlashbots = getNetworkObject({ chainId: currentChainId }).features.flashbots;
+  const swapSupportsFlashbots = networkObjects[currentChainId].features.flashbots;
   const flashbots = swapSupportsFlashbots && flashbotsEnabled;
 
   const isDismissing = useRef(false);
@@ -298,7 +296,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
       });
 
       if (gasLimit) {
-        if (getNetworkObject({ chainId: currentChainId }).gas?.OptimismTxFee) {
+        if (networkObject.gas?.OptimismTxFee) {
           if (tradeDetails) {
             const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -322,7 +320,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
     } catch (error) {
       updateTxFee(defaultGasLimit, null);
     }
-  }, [currentChainId, defaultGasLimit, isCrosschainSwap, tradeDetails, updateTxFee]);
+  }, [currentChainId, defaultGasLimit, isCrosschainSwap, networkObject.gas?.OptimismTxFee, tradeDetails, updateTxFee]);
 
   useEffect(() => {
     if (tradeDetails && !equal(tradeDetails, lastTradeDetails)) {
@@ -412,9 +410,9 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
 
         // Switch to the flashbots provider if enabled
         // TODO(skylarbarrera): need to check if ledger and handle differently here
-        if (flashbots && getNetworkObject({ chainId: currentChainId }).features?.flashbots && wallet instanceof Wallet) {
-          logger.debug('[ExchangeModal]: flashbots provider being set on mainnet');
-          const flashbotsProvider = await getFlashbotsProvider();
+        if (flashbots && networkObject.features?.flashbots && wallet instanceof Wallet) {
+			logger.debug('[ExchangeModal]: flashbots provider being set on mainnet');
+			const flashbotsProvider = await getFlashbotsProvider();
           wallet = new Wallet(wallet.privateKey, flashbotsProvider);
         }
 
@@ -568,6 +566,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
       isCrosschainSwap,
       isHardwareWallet,
       navigate,
+      networkObject.features?.flashbots,
       outputAmount,
       outputCurrency,
       priceImpact.percentDisplay,

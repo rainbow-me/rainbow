@@ -1,10 +1,10 @@
 import { ChainId } from '@/networks/types';
 import { useAccountSettings } from '@/hooks';
-import { getNetworkObject } from '@/networks';
 import { useUserAssets } from '@/resources/assets/UserAssetsQuery';
 import { selectUserAssetWithUniqueId } from '@/resources/assets/assetSelectors';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { networkObjects } from '@/networks';
 
 export function useUserAsset(uniqueId: string) {
   const { accountAddress, nativeCurrency } = useAccountSettings();
@@ -23,7 +23,7 @@ export function useUserAsset(uniqueId: string) {
 }
 
 export function useUserNativeNetworkAsset(chainId: ChainId) {
-  const { nativeCurrency } = getNetworkObject({ chainId });
+  const { nativeCurrency } = networkObjects[chainId];
   const { address } = nativeCurrency;
   const uniqueId = getUniqueId(address, chainId);
   return useUserAsset(uniqueId);

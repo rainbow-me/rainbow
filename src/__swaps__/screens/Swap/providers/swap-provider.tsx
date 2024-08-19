@@ -38,7 +38,7 @@ import { RainbowError, logger } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { RainbowNetworkByChainId, getNetworkObject } from '@/networks';
+import { networkObjects, RainbowNetworkByChainId } from '@/networks';
 import { walletExecuteRap } from '@/raps/execute';
 import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
 import { queryClient } from '@/react-query';
@@ -200,7 +200,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       NotificationManager?.postNotification('rapInProgress');
 
       const provider =
-        parameters.flashbots && getNetworkObject({ chainId: parameters.chainId }).features.flashbots
+        parameters.flashbots && networkObjects[parameters.chainId].features.flashbots
           ? await getFlashbotsProvider()
           : getProvider({ chainId: parameters.chainId });
       const connectedToHardhat = useConnectedToHardhatStore.getState().connectedToHardhat;

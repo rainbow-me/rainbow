@@ -1,4 +1,4 @@
-import { RainbowNetworkObjects, getNetworkObject } from '@/networks';
+import { networkObjects, RainbowNetworkObjects } from '@/networks';
 import store from '@/redux/store';
 import { showActionSheetWithOptions } from '@/utils';
 import * as i18n from '@/languages';
@@ -76,8 +76,7 @@ export const androidShowNetworksActionSheet = (callback: any) => {
     (idx: any) => {
       if (idx !== undefined) {
         const networkActions = androidNetworkActions();
-        const networkObj =
-          RainbowNetworkObjects.find(network => network.name === networkActions[idx]) || getNetworkObject({ chainId: ChainId.mainnet });
+        const networkObj = RainbowNetworkObjects.find(network => network.name === networkActions[idx]) || networkObjects[ChainId.mainnet];
         callback({ chainId: networkObj.id, network: networkObj.value });
       }
     }

@@ -38,9 +38,9 @@ import {
 import { ethUnits } from '@/references';
 import { multiply } from '@/helpers/utilities';
 import { ethereumUtils, gasUtils } from '@/utils';
-import { getNetworkObject } from '@/networks';
 import { ChainId } from '@/networks/types';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { networkObjects } from '@/networks';
 
 const { CUSTOM, FAST, NORMAL, SLOW, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
 
@@ -49,7 +49,7 @@ const mutex = new Mutex();
 const withRunExclusive = async (callback: (...args: any[]) => void) => await mutex.runExclusive(callback);
 
 const getGasPricePollingInterval = (chainId: ChainId): number => {
-  return getNetworkObject({ chainId }).gas.pollingIntervalInMs;
+  return networkObjects[chainId].gas.pollingIntervalInMs;
 };
 
 const getDefaultGasLimit = (chainId: ChainId, defaultGasLimit: number): number => {
@@ -145,7 +145,7 @@ const getUpdatedGasFeeParams = (
       break;
   }
 
-  const isLegacyGasNetwork = getNetworkObject({ chainId }).gas.gasType === 'legacy';
+  const isLegacyGasNetwork = networkObjects[chainId].gas.gasType === 'legacy';
 
   const gasFeesBySpeed = isLegacyGasNetwork
     ? parseLegacyGasFeesBySpeed(
@@ -487,7 +487,7 @@ export const gasPricesStartPolling =
 
               const { nativeCurrency } = getState().settings;
 
-              const networkObject = getNetworkObject({ chainId });
+              const networkObject = networkObjects[chainId];
               let dataIsReady = true;
 
               if (networkObject.gas.gasType === 'legacy') {
@@ -656,7 +656,7 @@ export const gasUpdateTxFee =
       const { defaultGasLimit, gasLimit, gasFeeParamsBySpeed, selectedGasFee, chainId, currentBlockParams } = getState().gas;
 
       const { nativeCurrency } = getState().settings;
-      if (isEmpty(gasFeeParamsBySpeed) || (getNetworkObject({ chainId }).gas?.OptimismTxFee && l1GasFeeOptimism === null)) {
+      if (isEmpty(gasFeeParamsBySpeed) || (networkObjects[chainId].gas?.OptimismTxFee && l1GasFeeOptimism === null)) {
         // if fee prices not ready, we need to store the gas limit for future calculations
         // the rest is as the initial state value
         if (updatedGasLimit) {

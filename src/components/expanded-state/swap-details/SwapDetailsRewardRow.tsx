@@ -6,10 +6,10 @@ import { Reward } from '@rainbow-me/swaps';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ChainBadge } from '@/components/coin-icon';
-import { getNetworkObject } from '@/networks';
 import { useTheme } from '@/theme';
 import * as i18n from '@/languages';
 import { ChainId } from '@/networks/types';
+import { networkObjects } from '@/networks';
 
 export function SwapDetailsRewardRow({ reward }: { reward: Reward }) {
   const { navigate } = useNavigation();
@@ -17,7 +17,7 @@ export function SwapDetailsRewardRow({ reward }: { reward: Reward }) {
 
   const roundedAmount = Math.round(reward.amount * 1000) / 1000;
 
-  const opNetwork = getNetworkObject({ chainId: ChainId.optimism });
+  const opNetwork = networkObjects[ChainId.optimism];
   const accentColor = isDarkMode ? opNetwork.colors.dark : opNetwork.colors.light;
 
   return (

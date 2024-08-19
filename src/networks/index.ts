@@ -1,4 +1,4 @@
-import { ChainId } from '@/networks/types';
+import { ChainId, NetworkProperties } from '@/networks/types';
 import store from '@/redux/store';
 import * as ls from '@/storage';
 import { getArbitrumNetworkObject } from './arbitrum';
@@ -12,7 +12,6 @@ import { getGoerliNetworkObject } from './goerli';
 import { getMainnetNetworkObject } from './mainnet';
 import { getOptimismNetworkObject } from './optimism';
 import { getPolygonNetworkObject } from './polygon';
-import { NetworkProperties } from './types';
 import { getZoraNetworkObject } from './zora';
 
 /**
@@ -52,42 +51,20 @@ export const RainbowSupportedChainIds = [
 /**
  * Helper function to get specific Rainbow Network's Object
  */
-export function getNetworkObject({ chainId }: { chainId: ChainId }): NetworkProperties {
-  switch (chainId) {
-    // Mainnet
-    case ChainId.mainnet:
-      return getMainnetNetworkObject();
-
-    // L2s
-    case ChainId.arbitrum:
-      return getArbitrumNetworkObject();
-    case ChainId.base:
-      return getBaseNetworkObject();
-    case ChainId.bsc:
-      return getBSCNetworkObject();
-    case ChainId.optimism:
-      return getOptimismNetworkObject();
-    case ChainId.polygon:
-      return getPolygonNetworkObject();
-    case ChainId.zora:
-      return getZoraNetworkObject();
-    case ChainId.gnosis:
-      return getGnosisNetworkObject();
-    case ChainId.avalanche:
-      return getAvalancheNetworkObject();
-    case ChainId.blast:
-      return getBlastNetworkObject();
-    case ChainId.degen:
-      return getDegenNetworkObject();
-    // Testnets
-    case ChainId.goerli:
-      return getGoerliNetworkObject();
-
-    // Fallback
-    default:
-      return getMainnetNetworkObject();
-  }
-}
+export const networkObjects = {
+  [ChainId.arbitrum]: getArbitrumNetworkObject(),
+  [ChainId.avalanche]: getAvalancheNetworkObject(),
+  [ChainId.base]: getBaseNetworkObject(),
+  [ChainId.blast]: getBlastNetworkObject(),
+  [ChainId.bsc]: getBSCNetworkObject(),
+  [ChainId.degen]: getDegenNetworkObject(),
+  [ChainId.gnosis]: getGnosisNetworkObject(),
+  [ChainId.goerli]: getGoerliNetworkObject(),
+  [ChainId.mainnet]: getMainnetNetworkObject(),
+  [ChainId.optimism]: getOptimismNetworkObject(),
+  [ChainId.polygon]: getPolygonNetworkObject(),
+  [ChainId.zora]: getZoraNetworkObject(),
+};
 
 /**
  * Sorts Networks based on addresses assets

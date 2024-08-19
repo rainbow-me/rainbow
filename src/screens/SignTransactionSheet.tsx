@@ -27,7 +27,6 @@ import { ContactAvatar } from '@/components/contacts';
 import { IS_IOS } from '@/env';
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { GasSpeedButton } from '@/components/gas';
-import { getNetworkObject } from '@/networks';
 import { RainbowError, logger } from '@/logger';
 import {
   PERSONAL_SIGN,
@@ -73,6 +72,7 @@ import { useProviderSetup } from '@/hooks/useProviderSetup';
 import { useTransactionSubmission } from '@/hooks/useSubmitTransaction';
 import { useConfirmTransaction } from '@/hooks/useConfirmTransaction';
 import { toChecksumAddress } from 'ethereumjs-util';
+import { networkObjects } from '@/networks';
 
 type SignTransactionSheetParams = {
   transactionDetails: RequestData;
@@ -391,7 +391,7 @@ export const SignTransactionSheet = () => {
           from: displayDetails?.request?.from,
           gasLimit,
           hash: sendResult.hash,
-          network: getNetworkObject({ chainId }).value,
+          network: networkObjects[chainId].value,
           nonce: sendResult.nonce,
           to: displayDetails?.request?.to,
           value: sendResult.value.toString(),
@@ -413,7 +413,7 @@ export const SignTransactionSheet = () => {
         dappName: transactionDetails.dappName,
         dappUrl: transactionDetails.dappUrl,
         isHardwareWallet: accountInfo.isHardwareWallet,
-        network: getNetworkObject({ chainId }).value,
+        network: networkObjects[chainId].value,
       });
 
       if (!sendInsteadOfSign) {
@@ -444,7 +444,7 @@ export const SignTransactionSheet = () => {
         dappUrl: transactionDetails?.dappUrl,
         formattedDappUrl,
         rpcMethod: req?.method,
-        network: getNetworkObject({ chainId }).value,
+        network: networkObjects[chainId].value,
       });
       // If the user is using a hardware wallet, we don't want to close the sheet on an error
       if (!accountInfo.isHardwareWallet) {
@@ -525,7 +525,7 @@ export const SignTransactionSheet = () => {
         dappName: transactionDetails?.dappName,
         dappUrl: transactionDetails?.dappUrl,
         isHardwareWallet: accountInfo.isHardwareWallet,
-        network: getNetworkObject({ chainId }).value,
+        network: networkObjects[chainId].value,
       });
       onSuccessCallback?.(response.result);
 
@@ -533,19 +533,7 @@ export const SignTransactionSheet = () => {
     } else {
       await onCancel(response?.error);
     }
-  }, [
-    transactionDetails?.payload?.params,
-    transactionDetails?.payload?.method,
-    transactionDetails?.dappName,
-    transactionDetails?.dappUrl,
-    chainId,
-    accountInfo.address,
-    accountInfo.isHardwareWallet,
-    source,
-    onSuccessCallback,
-    closeScreen,
-    onCancel,
-  ]);
+  }, [transactionDetails?.payload?.params, transactionDetails?.payload?.method, transactionDetails?.dappName, transactionDetails?.dappUrl, provider, chainId, source, accountInfo.address, accountInfo.isHardwareWallet, onSuccessCallback, closeScreen, onCancel]);
 
   const { onConfirm } = useConfirmTransaction({
     isMessageRequest,
@@ -712,7 +700,7 @@ export const SignTransactionSheet = () => {
                                     </Bleed>
                                     <Text color="labelQuaternary" size="13pt" weight="semibold">
                                       {`${walletBalance?.display} ${i18n.t(i18n.l.walletconnect.simulation.profile_section.on_network, {
-                                        network: getNetworkObject({ chainId })?.name,
+                                        network: networkObjects[chainId]?.name,
                                       })}`}
                                     </Text>
                                   </Inline>

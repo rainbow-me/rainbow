@@ -8,17 +8,19 @@ import { logger, RainbowError } from '@/logger';
 import { AddressOrEth, UniqueId, ZerionAsset } from '@/__swaps__/types/assets';
 import { AddressZero } from '@ethersproject/constants';
 import chainAssetsByChainId from '@/references/testnet-assets-by-chain';
-import { getNetworkObject } from '@/networks';
 import { ChainId, ChainName, Network } from '@/networks/types';
+import { networkObjects } from '@/networks';
 
 const fetchHardhatBalancesWithBalanceChecker = async (
   tokens: string[],
   address: string,
   chainId: ChainId = ChainId.mainnet
 ): Promise<{ [tokenAddress: string]: string } | null> => {
-  const networkObject = getNetworkObject({ chainId });
+
+  const networkObject = networkObjects[chainId];
   const provider = getProvider({ chainId });
   const balanceCheckerContract = new Contract(networkObject.balanceCheckerAddress, balanceCheckerContractAbi, provider);
+  
   try {
     const values = await balanceCheckerContract.balances([address], tokens);
     const balances: {

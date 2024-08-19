@@ -23,7 +23,7 @@ import styled from '@/styled-thing';
 import { Box, Columns, Column as RDSColumn, Inline, Text } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import * as lang from '@/languages';
-import { RainbowNetworkObjects, getNetworkObject } from '@/networks';
+import { networkObjects, RainbowNetworkObjects } from '@/networks';
 import { useDappMetadata } from '@/resources/metadata/dapp';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { InfoAlert } from '@/components/info-alert/info-alert';
@@ -223,7 +223,7 @@ export default function WalletConnectApprovalSheet() {
    * v2.
    */
   const approvalNetworkInfo = useMemo(() => {
-    const networkObj = getNetworkObject({ chainId: approvalChainId });
+    const networkObj = networkObjects[approvalChainId];
     return {
       chainId: networkObj.id,
       color: isDarkMode ? networkObj.colors.dark : networkObj.colors.light,

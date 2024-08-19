@@ -23,14 +23,14 @@ import {
   gasUpdateTxFee,
 } from '@/redux/gas';
 import { ethereumUtils } from '@/utils';
-import { getNetworkObject } from '@/networks';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { BNB_MAINNET_ADDRESS, ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@/references';
 import useAccountSettings from './useAccountSettings';
 import { ChainId } from '@/networks/types';
+import { networkObjects } from '@/networks';
 
 const checkSufficientGas = (txFee: LegacyGasFee | GasFee, chainId: ChainId, nativeAsset?: ParsedAddressAsset) => {
-  const isLegacyGasNetwork = getNetworkObject({ chainId }).gas.gasType === 'legacy';
+  const isLegacyGasNetwork = networkObjects[chainId].gas.gasType === 'legacy';
   const txFeeValue = isLegacyGasNetwork ? (txFee as LegacyGasFee)?.estimatedFee : (txFee as GasFee)?.maxFee;
   const networkNativeAsset = nativeAsset || ethereumUtils.getNetworkNativeAsset({ chainId });
   const balanceAmount = networkNativeAsset?.balance?.amount || 0;
@@ -40,7 +40,7 @@ const checkSufficientGas = (txFee: LegacyGasFee | GasFee, chainId: ChainId, nati
 };
 
 const checkValidGas = (selectedGasParams: LegacyGasFeeParams | GasFeeParams, chainId: ChainId) => {
-  const isLegacyGasNetwork = getNetworkObject({ chainId }).gas.gasType === 'legacy';
+  const isLegacyGasNetwork = networkObjects[chainId].gas.gasType === 'legacy';
   const gasValue = isLegacyGasNetwork
     ? (selectedGasParams as LegacyGasFeeParams)?.gasPrice
     : (selectedGasParams as GasFeeParams)?.maxBaseFee;
@@ -49,7 +49,7 @@ const checkValidGas = (selectedGasParams: LegacyGasFeeParams | GasFeeParams, cha
 };
 
 const checkGasReady = (txFee: LegacyGasFee | GasFee, selectedGasParams: LegacyGasFeeParams | GasFeeParams, chainId: ChainId) => {
-  const isLegacyGasNetwork = getNetworkObject({ chainId }).gas.gasType === 'legacy';
+  const isLegacyGasNetwork = networkObjects[chainId].gas.gasType === 'legacy';
   const gasValue = isLegacyGasNetwork
     ? (selectedGasParams as LegacyGasFeeParams)?.gasPrice
     : (selectedGasParams as GasFeeParams)?.maxBaseFee;
@@ -151,7 +151,7 @@ export default function useGas({ nativeAsset }: { nativeAsset?: ParsedAddressAss
 
   const getTotalGasPrice = useCallback(() => {
     const txFee = gasData?.selectedGasFee?.gasFee;
-    const isLegacyGasNetwork = getNetworkObject({ chainId: gasData?.chainId }).gas.gasType === 'legacy';
+    const isLegacyGasNetwork = networkObjects[gasData?.chainId]?.gas.gasType === 'legacy';
     const txFeeValue = isLegacyGasNetwork ? (txFee as LegacyGasFee)?.estimatedFee : (txFee as GasFee)?.maxFee;
 
     const txFeeAmount = fromWei(txFeeValue?.value?.amount);

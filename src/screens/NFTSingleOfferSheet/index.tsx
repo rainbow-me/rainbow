@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import lang from 'i18n-js';
 import { Linking, View } from 'react-native';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -40,7 +40,6 @@ import { createWalletClient, http } from 'viem';
 import { RainbowError, logger } from '@/logger';
 import { useTheme } from '@/theme';
 import { Network, ChainId } from '@/networks/types';
-import { getNetworkObject } from '@/networks';
 import { CardSize } from '@/components/unique-token/CardSize';
 import { queryClient } from '@/react-query';
 import { nftOffersQueryKey } from '@/resources/reservoir/nftOffersQuery';
@@ -53,6 +52,7 @@ import { getNextNonce } from '@/state/nonces';
 import { metadataPOSTClient } from '@/graphql';
 import { ethUnits } from '@/references';
 import { Transaction } from '@/graphql/__generated__/metadataPOST';
+import { networkObjects } from '@/networks';
 
 const NFT_IMAGE_HEIGHT = 160;
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
@@ -164,6 +164,8 @@ export function NFTSingleOfferSheet() {
   const feesPercentage = Math.floor(offer.feesPercentage * 10) / 10;
   const royaltiesPercentage = Math.floor(offer.royaltiesPercentage * 10) / 10;
 
+  const networkObject = useMemo(() => networkObjects[offerChainId], [offerChainId]);
+
   useEffect(() => {
     setParams({ longFormHeight: height });
   }, [height, setParams]);
@@ -179,12 +181,11 @@ export function NFTSingleOfferSheet() {
 
   const estimateGas = useCallback(() => {
     try {
-      const networkObj = getNetworkObject({ chainId: offerChainId });
       const signer = createWalletClient({
         // @ts-ignore
         account: accountAddress,
-        chain: networkObj,
-        transport: http(networkObj.rpc()),
+        chain: networkObject,
+        transport: http(networkObject.rpc()),
       });
       getClient()?.actions.acceptOffer({
         items: [
@@ -198,7 +199,7 @@ export function NFTSingleOfferSheet() {
               feesOnTop: [feeParam],
             }
           : undefined,
-        chainId: networkObj.id,
+        chainId: networkObject.id,
         precheck: true,
         wallet: signer,
         onProgress: async (steps: Execute['steps']) => {
@@ -226,7 +227,7 @@ export function NFTSingleOfferSheet() {
           const txSimEstimate = parseInt(
             (
               await metadataPOSTClient.simulateTransactions({
-                chainId: networkObj.id,
+                chainId: networkObject.id,
                 transactions: txs,
               })
             )?.simulateTransactions?.[0]?.gas?.estimate ?? '0x0',
@@ -280,14 +281,13 @@ export function NFTSingleOfferSheet() {
     const privateKey = await loadPrivateKey(accountAddress, false);
     // @ts-ignore
     const account = privateKeyToAccount(privateKey);
-    const networkObj = getNetworkObject({ chainId: offerChainId });
 
     const signer = createWalletClient({
       account,
-      chain: networkObj,
-      transport: http(networkObj.rpc()),
+      chain: networkObject,
+      transport: http(networkObject.rpc()),
     });
-    const nonce = await getNextNonce({ address: accountAddress, chainId: networkObj.id });
+    const nonce = await getNextNonce({ address: accountAddress, chainId: networkObject.id });
     try {
       let errorMessage = '';
       let didComplete = false;
@@ -303,7 +303,7 @@ export function NFTSingleOfferSheet() {
               feesOnTop: [feeParam],
             }
           : undefined,
-        chainId: networkObj.id,
+        chainId: networkObject.id,
         wallet: signer!,
         onProgress: (steps: Execute['steps']) => {
           setIsAccepting(true);
@@ -431,7 +431,7 @@ export function NFTSingleOfferSheet() {
   if (!isAccepting) {
     if (insufficientEth) {
       buttonLabel = lang.t('button.confirm_exchange.insufficient_token', {
-        tokenName: getNetworkObject({ chainId: offerChainId }).nativeCurrency.symbol,
+        tokenName: networkObject.nativeCurrency.symbol,
       });
     } else {
       buttonLabel = i18n.t(i18n.l.nft_offers.single_offer_sheet.hold_to_sell);

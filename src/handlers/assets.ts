@@ -2,11 +2,11 @@ import { Contract } from '@ethersproject/contracts';
 
 import { erc20ABI } from '@/references';
 import { convertAmountToBalanceDisplay, convertRawAmountToDecimalFormat } from '@/helpers/utilities';
-import { getNetworkObject } from '@/networks';
 import { ChainId } from '@/networks/types';
+import { networkObjects } from '@/networks';
 
 export function isNativeAsset(address: string, chainId: ChainId) {
-  return getNetworkObject({ chainId }).nativeCurrency.address.toLowerCase() === address?.toLowerCase();
+  return networkObjects[chainId].nativeCurrency.address.toLowerCase() === address?.toLowerCase();
 }
 
 export async function getOnchainAssetBalance({ address, decimals, symbol }: any, userAddress: any, chainId: ChainId, provider: any) {

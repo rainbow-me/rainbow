@@ -27,10 +27,10 @@ import { ethUnits } from '@/references';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { gasUtils, safeAreaInsetValues } from '@/utils';
-import { logger, RainbowError } from '@/logger';
-import { getNetworkObject } from '@/networks';
 import * as i18n from '@/languages';
 import { updateTransaction } from '@/state/pendingTransactions';
+import { networkObjects } from '@/networks';
+import { logger, RainbowError } from '@/logger';
 
 const { CUSTOM, URGENT } = gasUtils;
 
@@ -294,9 +294,9 @@ export default function SpeedUpAndCancelSheet() {
       startPollingGasFees(currentChainId, tx.flashbots);
       const updateProvider = async () => {
         let provider;
-        if (getNetworkObject({ chainId: tx?.chainId })?.features?.flashbots && tx.flashbots) {
-          logger.debug(`[SpeedUpAndCancelSheet]: using flashbots provider for chainId ${tx?.chainId}`);
-          provider = await getFlashbotsProvider();
+        if (networkObjects[tx?.chainId].features.flashbots && tx.flashbots) {
+			logger.debug(`[SpeedUpAndCancelSheet]: using flashbots provider for chainId ${tx?.chainId}`);
+			provider = await getFlashbotsProvider();
         } else {
           logger.debug(`[SpeedUpAndCancelSheet]: using provider for network ${tx?.chainId}`);
           provider = getProvider({ chainId: currentChainId });

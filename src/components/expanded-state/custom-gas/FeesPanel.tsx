@@ -16,7 +16,7 @@ import Routes from '@/navigation/routesNames';
 import { gasUtils } from '@/utils';
 import { Box, Inline, Inset, Row, Rows, Text } from '@/design-system';
 import { IS_ANDROID } from '@/env';
-import { getNetworkObject } from '@/networks';
+import { networkObjects } from '@/networks';
 
 const MAX_TEXT_WIDTH = 210;
 const { CUSTOM, GAS_TRENDS, NORMAL, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
@@ -74,7 +74,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
   const [startPriorityFeeTimeout, stopPriorityFeeTimeout] = useTimeout();
   const [startBaseFeeTimeout, stopBaseFeeTimeout] = useTimeout();
 
-  const isL2 = getNetworkObject({ chainId })?.networkType === 'layer2';
+  const isL2 = networkObjects[chainId]?.networkType === 'layer2';
 
   const [maxPriorityFeeWarning, setMaxPriorityFeeWarning] = useState<AlertInfo>(null);
   const [maxPriorityFeeError, setMaxPriorityFeeError] = useState<AlertInfo>(null);

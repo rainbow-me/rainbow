@@ -1,11 +1,10 @@
 import { NFT_API_KEY, NFT_API_URL } from 'react-native-dotenv';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { SimpleHashListing, SimpleHashNFT, SimpleHashMarketplaceId } from '@/resources/nfts/simplehash/types';
-import { getNetworkObject } from '@/networks';
 import { UniqueAsset } from '@/entities';
 import { RainbowError, logger } from '@/logger';
-import { getGnosisNetworkObject } from '@/networks/gnosis';
 import { ChainId } from '@/networks/types';
+import { networkObjects } from '@/networks';
 
 export const START_CURSOR = 'start';
 
@@ -20,7 +19,7 @@ export async function fetchSimpleHashNFT(
   tokenId: string,
   chainId: Omit<ChainId, ChainId.goerli> = ChainId.mainnet
 ): Promise<SimpleHashNFT | undefined> {
-  const simplehashNetwork = getNetworkObject({ chainId: chainId as ChainId })?.nfts?.simplehashNetwork;
+  const simplehashNetwork = networkObjects[chainId as ChainId]?.nfts?.simplehashNetwork;
 
   if (!simplehashNetwork) {
     logger.warn(`[simplehash]: no SimpleHash for chainId: ${chainId}`);
@@ -45,7 +44,7 @@ export async function fetchSimpleHashNFTListing(
   // array of all eth listings on OpenSea for this token
   let listings: SimpleHashListing[] = [];
   let cursor = START_CURSOR;
-  const simplehashNetwork = getNetworkObject({ chainId: chainId as ChainId })?.nfts?.simplehashNetwork;
+  const simplehashNetwork = networkObjects[chainId as ChainId]?.nfts?.simplehashNetwork;
 
   if (!simplehashNetwork) {
     logger.warn(`[simplehash]: no SimpleHash for chainId: ${chainId}`);
@@ -84,7 +83,7 @@ export async function fetchSimpleHashNFTListing(
  * @param nft
  */
 export async function refreshNFTContractMetadata(nft: UniqueAsset) {
-  const simplehashNetwork = (nft.isPoap ? getGnosisNetworkObject() : getNetworkObject({ chainId: nft.chainId }))?.nfts?.simplehashNetwork;
+  const simplehashNetwork = networkObjects[nft.isPoap ? ChainId.gnosis : nft.chainId]?.nfts?.simplehashNetwork;
 
   if (!simplehashNetwork) {
     logger.warn(`[simplehash]: no SimpleHash for chainId: ${nft.chainId}`);
@@ -136,7 +135,7 @@ export async function refreshNFTContractMetadata(nft: UniqueAsset) {
  * @param nft
  */
 export async function reportNFT(nft: UniqueAsset) {
-  const simplehashNetwork = (nft.isPoap ? getGnosisNetworkObject() : getNetworkObject({ chainId: nft.chainId }))?.nfts?.simplehashNetwork;
+  const simplehashNetwork = networkObjects[nft.isPoap ? ChainId.gnosis : nft.chainId]?.nfts?.simplehashNetwork;
 
   if (!simplehashNetwork) {
     logger.warn(`[simplehash]: no SimpleHash for chainId: ${nft.chainId}`);

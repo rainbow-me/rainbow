@@ -31,7 +31,6 @@ import * as i18n from '@/languages';
 import { analyticsV2 } from '@/analytics';
 import { event } from '@/analytics/event';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
-import { getNetworkObject } from '@/networks';
 import { fetchReverseRecord } from '@/handlers/ens';
 import { ContactAvatar } from '@/components/contacts';
 import { addressHashedColorIndex } from '@/utils/profileUtils';
@@ -57,6 +56,7 @@ import { getNextNonce } from '@/state/nonces';
 import { metadataPOSTClient } from '@/graphql';
 import { Transaction } from '@/graphql/__generated__/metadataPOST';
 import { ChainId } from '@/networks/types';
+import { networkObjects } from '@/networks';
 
 const NFT_IMAGE_HEIGHT = 250;
 // inset * 2 -> 28 *2
@@ -247,7 +247,7 @@ const MintSheet = () => {
   // estimate gas limit
   useEffect(() => {
     const estimateMintGas = async () => {
-      const networkObj = getNetworkObject({ chainId });
+      const networkObj = networkObjects[chainId];
       const signer = createWalletClient({
         account: accountAddress,
         chain: networkObj,
@@ -356,7 +356,7 @@ const MintSheet = () => {
     const privateKey = await loadPrivateKey(accountAddress, false);
     // @ts-ignore
     const account = privateKeyToAccount(privateKey);
-    const networkObj = getNetworkObject({ chainId });
+    const networkObj = networkObjects[chainId];
     const signer = createWalletClient({
       account,
       chain: networkObj,
@@ -705,7 +705,7 @@ const MintSheet = () => {
                           <ChainBadge chainId={chainId} position="relative" size="small" forceDark={true} />
                         )}
                         <Text color="labelSecondary" align="right" size="17pt" weight="medium">
-                          {`${getNetworkObject({ chainId }).name}`}
+                          {`${networkObjects[chainId].name}`}
                         </Text>
                       </Inline>
                     </Inset>

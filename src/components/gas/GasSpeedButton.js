@@ -24,11 +24,11 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, margin, padding } from '@/styles';
 import { ethereumUtils, gasUtils } from '@/utils';
-import { getNetworkObject } from '@/networks';
 import { IS_ANDROID } from '@/env';
 import { ContextMenu } from '../context-menu';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 import { ChainId } from '@/networks/types';
+import { networkObjects } from '@/networks';
 
 const { GAS_EMOJIS, GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST, getGasLabel } = gasUtils;
 
@@ -169,7 +169,7 @@ const GasSpeedButton = ({
   }, [nativeCurrencySymbol, selectedGasFee]);
 
   const isL2 = useMemo(() => isL2Chain({ chainId }), [chainId]);
-  const networkObject = useMemo(() => getNetworkObject({ chainId }), [chainId]);
+  const networkObject = networkObjects[chainId];
 
   const isLegacyGasNetwork = networkObject.gas.gasType === 'legacy';
 

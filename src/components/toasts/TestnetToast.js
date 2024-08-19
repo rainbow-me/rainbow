@@ -3,15 +3,16 @@ import { Icon } from '../icons';
 import { Nbsp, Text } from '../text';
 import Toast from './Toast';
 import { useInternetStatus } from '@/hooks';
-import { getNetworkObject } from '@/networks';
 import { ChainId } from '@/networks/types';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { networkObjects } from '@/networks';
 
 const TestnetToast = ({ chainId }) => {
   const { connectedToHardhat } = useConnectedToHardhatStore();
   const isConnected = useInternetStatus();
-  const { name, colors: networkColors } = getNetworkObject({ chainId });
-  const [visible, setVisible] = useState(chainId !== ChainId.mainnet);
+  const networkObject = networkObjects[chainId];
+  const { name, colors: networkColors } = networkObject;
+  const [visible, setVisible] = useState(true);
   const [networkName, setNetworkName] = useState(name);
 
   useEffect(() => {
@@ -26,7 +27,7 @@ const TestnetToast = ({ chainId }) => {
       setVisible(true);
       setNetworkName(name + (isConnected ? '' : ' (offline)'));
     }
-  }, [name, isConnected, chainId, connectedToHardhat]);
+  }, [name, isConnected, chainId, connectedToHardhat, networkObject]);
 
   const { colors, isDarkMode } = useTheme();
 
