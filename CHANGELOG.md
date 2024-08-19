@@ -24,8 +24,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Changed
 
-### Removed
-
 - Bump fast-xml-parser from 4.4.0 to 4.4.1 (#5965)
 - Convert App.js => App.tsx (#5792)
 - No longer have the restricted codeowners for reviews (#5991)
