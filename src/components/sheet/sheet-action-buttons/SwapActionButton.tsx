@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import SheetActionButton from './SheetActionButton';
-import { useExpandedStateNavigation, useSwapCurrencyHandlers, useWallets } from '@/hooks';
+import { useAccountSettings, useExpandedStateNavigation, useSwapCurrencyHandlers, useWallets } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { RainbowToken } from '@/entities';
@@ -9,7 +9,7 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
 import { SWAPS_V2, useExperimentalFlag, enableActionsOnReadOnlyWallet } from '@/config';
 import { ethereumUtils, watchingAlert } from '@/utils';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { getUserAssetsStore } from '@/state/assets/userAssets';
 import { isSameAsset, parseSearchAsset } from '@/__swaps__/utils/assets';
 import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 import assetInputTypes from '@/helpers/assetInputTypes';
@@ -17,6 +17,7 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
 import { AddressOrEth, AssetType, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import exchangeModalTypes from '@/helpers/exchangeModalTypes';
+import { Address } from 'viem';
 
 type SwapActionButtonProps = {
   asset: RainbowToken;
@@ -31,6 +32,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
   const { colors } = useTheme();
   const { swaps_v2 } = useRemoteConfig();
   const { navigate } = useNavigation();
+  const { accountAddress } = useAccountSettings();
   const swapsV2Enabled = useExperimentalFlag(SWAPS_V2);
   const { isReadOnlyWallet } = useWallets();
 
@@ -53,7 +55,9 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
 
       const chainId = ethereumUtils.getChainIdFromNetwork(asset.network);
       const uniqueId = `${asset.address}_${chainId}`;
-      const userAsset = userAssetsStore.getState().userAssets.get(uniqueId);
+      const userAsset = getUserAssetsStore(accountAddress as Address)
+        ?.getState()
+        .userAssets.get(uniqueId);
 
       const parsedAsset = parseSearchAsset({
         assetWithPrice: {
@@ -87,7 +91,9 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
 
         const nativeAssetForChain = await ethereumUtils.getNativeAssetForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
         if (nativeAssetForChain && !isSameAsset({ address: nativeAssetForChain.address as AddressOrEth, chainId }, parsedAsset)) {
-          const userOutputAsset = userAssetsStore.getState().getUserAsset(`${nativeAssetForChain.address}_${chainId}`);
+          const userOutputAsset = getUserAssetsStore(accountAddress as Address)
+            ?.getState()
+            .getUserAsset(`${nativeAssetForChain.address}_${chainId}`);
 
           if (userOutputAsset) {
             swapsStore.setState({ outputAsset: userOutputAsset });
@@ -124,8 +130,8 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
           }
         }
       } else {
-        const largestBalanceSameChainUserAsset = userAssetsStore
-          .getState()
+        const largestBalanceSameChainUserAsset = getUserAssetsStore(accountAddress as Address)
+          ?.getState()
           .getUserAssets()
           .find(userAsset => userAsset.chainId === chainId && userAsset.address !== asset.address);
         if (largestBalanceSameChainUserAsset) {

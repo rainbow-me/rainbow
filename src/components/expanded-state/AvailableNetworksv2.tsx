@@ -9,7 +9,7 @@ import Routes from '@/navigation/routesNames';
 import { position } from '@/styles';
 import { ethereumUtils, watchingAlert } from '@/utils';
 import { CurrencySelectionTypes, ExchangeModalTypes, Network } from '@/helpers';
-import { useSwapCurrencyHandlers, useWallets } from '@/hooks';
+import { useAccountSettings, useSwapCurrencyHandlers, useWallets } from '@/hooks';
 import { RainbowToken } from '@/entities';
 import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../animations';
@@ -19,12 +19,13 @@ import { RainbowNetworks, getNetworkObj } from '@/networks';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 import { SWAPS_V2, enableActionsOnReadOnlyWallet, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { getUserAssetsStore } from '@/state/assets/userAssets';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { AddressOrEth, AssetType } from '@/__swaps__/types/assets';
 import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
+import { Address } from 'viem';
 
 const NOOP = () => null;
 
@@ -41,6 +42,7 @@ const AvailableNetworksv2 = ({
 }) => {
   const { colors } = useTheme();
   const { goBack, navigate } = useNavigation();
+  const { accountAddress } = useAccountSettings();
   const { swaps_v2 } = useRemoteConfig();
   const swapsV2Enabled = useExperimentalFlag(SWAPS_V2);
   const { isReadOnlyWallet } = useWallets();
@@ -85,7 +87,9 @@ const AvailableNetworksv2 = ({
       if (swapsV2Enabled || swaps_v2) {
         const chainId = ethereumUtils.getChainIdFromNetwork(newAsset.network);
         const uniqueId = `${newAsset.address}_${chainId}`;
-        const userAsset = userAssetsStore.getState().userAssets.get(uniqueId);
+        const userAsset = getUserAssetsStore(accountAddress as Address)
+          ?.getState()
+          .userAssets.get(uniqueId);
 
         const parsedAsset = parseSearchAsset({
           assetWithPrice: {
@@ -114,8 +118,8 @@ const AvailableNetworksv2 = ({
           userAsset,
         });
 
-        const largestBalanceSameChainUserAsset = userAssetsStore
-          .getState()
+        const largestBalanceSameChainUserAsset = getUserAssetsStore(accountAddress as Address)
+          ?.getState()
           .getUserAssets()
           .find(userAsset => userAsset.chainId === chainId && userAsset.address !== newAsset.address);
         if (largestBalanceSameChainUserAsset) {
@@ -150,7 +154,7 @@ const AvailableNetworksv2 = ({
         screen: Routes.CURRENCY_SELECT_SCREEN,
       });
     },
-    [asset, goBack, navigate, networks, swapsV2Enabled, swaps_v2, updateInputCurrency]
+    [accountAddress, asset, goBack, navigate, networks, swapsV2Enabled, swaps_v2, updateInputCurrency]
   );
 
   const handlePressContextMenu = useCallback(

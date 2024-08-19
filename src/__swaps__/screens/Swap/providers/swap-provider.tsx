@@ -43,7 +43,7 @@ import { walletExecuteRap } from '@/raps/execute';
 import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
 import { queryClient } from '@/react-query';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { getUserAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { ethereumUtils, haptics } from '@/utils';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
@@ -131,7 +131,7 @@ interface SwapProviderProps {
 }
 
 export const SwapProvider = ({ children }: SwapProviderProps) => {
-  const { nativeCurrency } = useAccountSettings();
+  const { accountAddress, nativeCurrency } = useAccountSettings();
 
   const isFetching = useSharedValue(false);
   const isQuoteStale = useSharedValue(0); // TODO: Convert this to a boolean
@@ -146,8 +146,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const lastTypedInput = useSharedValue<inputKeys>('inputAmount');
   const focusedInput = useSharedValue<inputKeys>('inputAmount');
 
-  const initialSelectedInputAsset = parseAssetAndExtend({ asset: swapsStore.getState().inputAsset });
-  const initialSelectedOutputAsset = parseAssetAndExtend({ asset: swapsStore.getState().outputAsset });
+  const initialSelectedInputAsset = parseAssetAndExtend({ asset: swapsStore.getState().inputAsset, walletAddress: accountAddress });
+  const initialSelectedOutputAsset = parseAssetAndExtend({ asset: swapsStore.getState().outputAsset, walletAddress: accountAddress });
 
   const internalSelectedInputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(initialSelectedInputAsset);
   const internalSelectedOutputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(initialSelectedOutputAsset);
@@ -551,7 +551,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const setAsset = useCallback(
     ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset | null }) => {
       const insertUserAssetBalance = type !== SwapAssetType.inputAsset;
-      const extendedAsset = parseAssetAndExtend({ asset, insertUserAssetBalance });
+      const extendedAsset = parseAssetAndExtend({ asset, insertUserAssetBalance, walletAddress: accountAddress });
 
       const otherSelectedAsset = type === SwapAssetType.inputAsset ? internalSelectedOutputAsset.value : internalSelectedInputAsset.value;
       const isSameAsOtherAsset = !!(otherSelectedAsset && otherSelectedAsset.uniqueId === extendedAsset?.uniqueId);
@@ -595,7 +595,15 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       if (didSelectedAssetChange) {
         const assetToSet = insertUserAssetBalance
-          ? { ...asset, balance: (asset && userAssetsStore.getState().getUserAsset(asset.uniqueId)?.balance) || asset?.balance }
+          ? {
+              ...asset,
+              balance:
+                (asset &&
+                  getUserAssetsStore(accountAddress as Address)
+                    ?.getState()
+                    .getUserAsset(asset.uniqueId)?.balance) ||
+                asset?.balance,
+            }
           : asset;
 
         if (isSameAsOtherAsset) {
@@ -646,9 +654,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     },
     [
       SwapInputController.quoteFetchingInterval,
+      accountAddress,
       handleProgressNavigation,
-      internalSelectedInputAsset,
-      internalSelectedOutputAsset,
+      internalSelectedInputAsset.value,
+      internalSelectedOutputAsset.value,
       selectedOutputChainId,
       updateAssetValue,
     ]

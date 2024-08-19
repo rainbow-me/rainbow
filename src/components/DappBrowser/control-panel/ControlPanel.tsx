@@ -40,7 +40,7 @@ import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { TOP_INSET } from '../Dimensions';
 import { formatUrl } from '../utils';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { toHex } from 'viem';
+import { Address, toHex } from 'viem';
 import { RainbowNetworks } from '@/networks';
 import * as i18n from '@/languages';
 import { useDispatch } from 'react-redux';
@@ -61,7 +61,7 @@ import { addressSetSelected, walletsSetSelected } from '@/redux/wallets';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { SWAPS_V2, useExperimentalFlag } from '@/config';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { getUserAssetsStore } from '@/state/assets/userAssets';
 import { greaterThan } from '@/helpers/utilities';
 
 const PAGES = {
@@ -450,7 +450,9 @@ const HomePanel = ({
 
     if (swaps_v2 || swapsV2Enabled) {
       swapsStore.setState({
-        inputAsset: userAssetsStore.getState().getHighestValueEth(),
+        inputAsset: getUserAssetsStore(accountAddress as Address)
+          ?.getState()
+          .getHighestValueEth(),
       });
       InteractionManager.runAfterInteractions(() => {
         navigate(Routes.SWAP);
@@ -466,7 +468,7 @@ const HomePanel = ({
       },
       screen: Routes.MAIN_EXCHANGE_SCREEN,
     });
-  }, [navigate, runWalletChecksBeforeSwapOrBridge, selectedWallet?.uniqueId, swapsV2Enabled]);
+  }, [accountAddress, navigate, runWalletChecksBeforeSwapOrBridge, selectedWallet?.uniqueId, swapsV2Enabled]);
 
   const handleOnPressBridge = useCallback(async () => {
     const valid = await runWalletChecksBeforeSwapOrBridge();
@@ -478,7 +480,9 @@ const HomePanel = ({
       // TODO: We need to set something in swapsStore that deliniates between a swap and bridge
       // for now let's just treat it like a normal swap
       swapsStore.setState({
-        inputAsset: userAssetsStore.getState().getHighestValueEth(),
+        inputAsset: getUserAssetsStore(accountAddress as Address)
+          ?.getState()
+          .getHighestValueEth(),
       });
       InteractionManager.runAfterInteractions(() => {
         navigate(Routes.SWAP);
@@ -494,7 +498,7 @@ const HomePanel = ({
       },
       screen: Routes.MAIN_EXCHANGE_SCREEN,
     });
-  }, [navigate, runWalletChecksBeforeSwapOrBridge, selectedWallet?.uniqueId, swapsV2Enabled]);
+  }, [accountAddress, navigate, runWalletChecksBeforeSwapOrBridge, selectedWallet?.uniqueId, swapsV2Enabled]);
 
   const isOnHomepage = useBrowserStore(state => (state.getActiveTabUrl() || DEFAULT_TAB_URL) === RAINBOW_HOME);
 

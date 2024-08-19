@@ -24,7 +24,7 @@ const getDefaultCacheKeys = (): Set<string> => {
 const CACHE_ITEMS_TO_PRESERVE = getDefaultCacheKeys();
 
 export interface UserAssetsState {
-  associatedWalletAddress: Address | undefined;
+  associatedWalletAddress: Address;
   chainBalances: Map<ChainId, number>;
   currentAbortController: AbortController;
   filter: UserAssetFilter;
@@ -120,228 +120,243 @@ function deserializeUserAssetsState(serializedState: string) {
   };
 }
 
-export const userAssetsStore = createRainbowStore<UserAssetsState>(
-  (set, get) => ({
-    associatedWalletAddress: undefined,
-    chainBalances: new Map(),
-    currentAbortController: new AbortController(),
-    filter: 'all',
-    idsByChain: new Map<UserAssetFilter, UniqueId[]>(),
-    inputSearchQuery: '',
-    searchCache: new Map(),
-    userAssets: new Map(),
+export const createUserAssetsStore = (address: Address) =>
+  createRainbowStore<UserAssetsState>(
+    (set, get) => ({
+      associatedWalletAddress: address,
+      chainBalances: new Map(),
+      currentAbortController: new AbortController(),
+      filter: 'all',
+      idsByChain: new Map<UserAssetFilter, UniqueId[]>(),
+      inputSearchQuery: '',
+      searchCache: new Map(),
+      userAssets: new Map(),
 
-    getBalanceSortedChainList: () => {
-      const chainBalances = [...get().chainBalances.entries()];
-      chainBalances.sort(([, balanceA], [, balanceB]) => balanceB - balanceA);
-      return chainBalances.map(([chainId]) => chainId);
-    },
+      getBalanceSortedChainList: () => {
+        const chainBalances = [...get().chainBalances.entries()];
+        chainBalances.sort(([, balanceA], [, balanceB]) => balanceB - balanceA);
+        return chainBalances.map(([chainId]) => chainId);
+      },
 
-    getChainsWithBalance: () => {
-      const chainBalances = [...get().chainBalances.entries()];
-      const chainsWithBalances = chainBalances.filter(([, balance]) => !!balance);
-      return chainsWithBalances.map(([chainId]) => chainId);
-    },
+      getChainsWithBalance: () => {
+        const chainBalances = [...get().chainBalances.entries()];
+        const chainsWithBalances = chainBalances.filter(([, balance]) => !!balance);
+        return chainsWithBalances.map(([chainId]) => chainId);
+      },
 
-    getFilteredUserAssetIds: () => {
-      const { filter, inputSearchQuery: rawSearchQuery, selectUserAssetIds, setSearchCache } = get();
-
-      const smallBalanceThreshold = supportedNativeCurrencies[store.getState().settings.nativeCurrency].userAssetsSmallThreshold;
-
-      const inputSearchQuery = rawSearchQuery.trim().toLowerCase();
-      const queryKey = getSearchQueryKey({ filter, searchQuery: inputSearchQuery });
-
-      // Use an external function to get the cache to prevent updates in response to changes in the cache
-      const cachedData = getCurrentCache().get(queryKey);
-
-      // Check if the search results are already cached
-      if (cachedData) {
-        return cachedData;
-      } else {
-        const chainIdFilter = filter === 'all' ? null : filter;
-        const searchRegex = inputSearchQuery.length > 0 ? new RegExp(inputSearchQuery, 'i') : null;
-
-        const filteredIds = Array.from(
-          selectUserAssetIds(
-            asset =>
-              (+asset.native?.balance?.amount ?? 0) > smallBalanceThreshold &&
-              (!chainIdFilter || asset.chainId === chainIdFilter) &&
-              (!searchRegex ||
-                searchRegex.test(asset.name) ||
-                searchRegex.test(asset.symbol) ||
-                asset.address.toLowerCase() === inputSearchQuery),
-            filter
-          )
-        );
-
-        setSearchCache(queryKey, filteredIds);
-
-        return filteredIds;
-      }
-    },
-
-    getHighestValueEth: () => {
-      const preferredNetwork = swapsStore.getState().preferredNetwork;
-      const assets = get().userAssets;
-
-      let highestValueEth = null;
-
-      for (const [, asset] of assets) {
-        if (asset.mainnetAddress !== ETH_ADDRESS) continue;
-
-        if (preferredNetwork && asset.chainId === preferredNetwork) {
-          return asset;
-        }
-
-        if (!highestValueEth || asset.balance > highestValueEth.balance) {
-          highestValueEth = asset;
-        }
-      }
-
-      return highestValueEth;
-    },
-
-    getUserAsset: (uniqueId: UniqueId) => get().userAssets.get(uniqueId) || null,
-
-    getUserAssets: () => Array.from(get().userAssets.values()) || [],
-
-    selectUserAssetIds: function* (selector: (asset: ParsedSearchAsset) => boolean, filter?: UserAssetFilter) {
-      const { currentAbortController, idsByChain, userAssets } = get();
-
-      const assetIds = filter ? idsByChain.get(filter) || [] : idsByChain.get('all') || [];
-
-      for (const id of assetIds) {
-        if (currentAbortController?.signal.aborted) {
-          return;
-        }
-        const asset = userAssets.get(id);
-        if (asset && selector(asset)) {
-          yield id;
-        }
-      }
-    },
-
-    selectUserAssets: function* (selector: (asset: ParsedSearchAsset) => boolean) {
-      const { currentAbortController, userAssets } = get();
-
-      for (const [id, asset] of userAssets) {
-        if (currentAbortController?.signal.aborted) {
-          return;
-        }
-        if (selector(asset)) {
-          yield [id, asset];
-        }
-      }
-    },
-
-    setSearchQuery: query =>
-      set(state => {
-        const { currentAbortController } = state;
-
-        // Abort any ongoing search work
-        currentAbortController.abort();
-
-        // Create a new AbortController for the new query
-        const abortController = new AbortController();
-
-        return { inputSearchQuery: query.trim().toLowerCase(), currentAbortController: abortController };
-      }),
-
-    setSearchCache: (queryKey: string, filteredIds: UniqueId[]) => {
-      set(state => {
-        const newCache = new Map(state.searchCache).set(queryKey, filteredIds);
-
-        // Prune the cache if it exceeds the maximum size
-        if (newCache.size > SEARCH_CACHE_MAX_ENTRIES) {
-          // Get the oldest key that isn't a key to preserve
-          for (const key of newCache.keys()) {
-            if (!CACHE_ITEMS_TO_PRESERVE.has(key)) {
-              newCache.delete(key);
-              break;
-            }
-          }
-        }
-
-        return { searchCache: newCache };
-      });
-    },
-
-    setUserAssets: (associatedWalletAddress: Address, userAssets: Map<UniqueId, ParsedSearchAsset> | ParsedSearchAsset[]) =>
-      set(() => {
-        const idsByChain = new Map<UserAssetFilter, UniqueId[]>();
-        const unsortedChainBalances = new Map<ChainId, number>();
-
-        userAssets.forEach(asset => {
-          const balance = Number(asset.native.balance.amount) ?? 0;
-          unsortedChainBalances.set(asset.chainId, (unsortedChainBalances.get(asset.chainId) || 0) + balance);
-          idsByChain.set(asset.chainId, (idsByChain.get(asset.chainId) || []).concat(asset.uniqueId));
-        });
-
-        // Ensure all supported chains are in the map with a fallback value of 0
-        SUPPORTED_CHAIN_IDS({ testnetMode: false }).forEach(chainId => {
-          if (!unsortedChainBalances.has(chainId)) {
-            unsortedChainBalances.set(chainId, 0);
-            idsByChain.set(chainId, []);
-          }
-        });
-
-        // Sort the existing map by balance in descending order
-        const sortedEntries = Array.from(unsortedChainBalances.entries()).sort(([, balanceA], [, balanceB]) => balanceB - balanceA);
-        const chainBalances = new Map<number, number>();
-
-        sortedEntries.forEach(([chainId, balance]) => {
-          chainBalances.set(chainId, balance);
-          idsByChain.set(chainId, idsByChain.get(chainId) || []);
-        });
-
-        const isMap = userAssets instanceof Map;
-        const allIdsArray = isMap ? Array.from(userAssets.keys()) : userAssets.map(asset => asset.uniqueId);
-        const userAssetsMap = isMap ? userAssets : new Map(userAssets.map(asset => [asset.uniqueId, asset]));
-
-        idsByChain.set('all', allIdsArray);
+      getFilteredUserAssetIds: () => {
+        const { filter, inputSearchQuery: rawSearchQuery, selectUserAssetIds, setSearchCache } = get();
 
         const smallBalanceThreshold = supportedNativeCurrencies[store.getState().settings.nativeCurrency].userAssetsSmallThreshold;
 
-        const filteredAllIdsArray = allIdsArray.filter(id => {
-          const asset = userAssetsMap.get(id);
-          return asset && (+asset.native?.balance?.amount ?? 0) > smallBalanceThreshold;
+        const inputSearchQuery = rawSearchQuery.trim().toLowerCase();
+        const queryKey = getSearchQueryKey({ filter, searchQuery: inputSearchQuery });
+
+        // Use an external function to get the cache to prevent updates in response to changes in the cache
+        const cachedData = getCurrentSearchCache(address)?.get(queryKey);
+
+        // Check if the search results are already cached
+        if (cachedData) {
+          return cachedData;
+        } else {
+          const chainIdFilter = filter === 'all' ? null : filter;
+          const searchRegex = inputSearchQuery.length > 0 ? new RegExp(inputSearchQuery, 'i') : null;
+
+          const filteredIds = Array.from(
+            selectUserAssetIds(
+              asset =>
+                (+asset.native?.balance?.amount ?? 0) > smallBalanceThreshold &&
+                (!chainIdFilter || asset.chainId === chainIdFilter) &&
+                (!searchRegex ||
+                  searchRegex.test(asset.name) ||
+                  searchRegex.test(asset.symbol) ||
+                  asset.address.toLowerCase() === inputSearchQuery),
+              filter
+            )
+          );
+
+          setSearchCache(queryKey, filteredIds);
+
+          return filteredIds;
+        }
+      },
+
+      getHighestValueEth: () => {
+        const preferredNetwork = swapsStore.getState().preferredNetwork;
+        const assets = get().userAssets;
+
+        let highestValueEth = null;
+
+        for (const [, asset] of assets) {
+          if (asset.mainnetAddress !== ETH_ADDRESS) continue;
+
+          if (preferredNetwork && asset.chainId === preferredNetwork) {
+            return asset;
+          }
+
+          if (!highestValueEth || asset.balance > highestValueEth.balance) {
+            highestValueEth = asset;
+          }
+        }
+
+        return highestValueEth;
+      },
+
+      getUserAsset: (uniqueId: UniqueId) => get().userAssets.get(uniqueId) || null,
+
+      getUserAssets: () => Array.from(get().userAssets.values()) || [],
+
+      selectUserAssetIds: function* (selector: (asset: ParsedSearchAsset) => boolean, filter?: UserAssetFilter) {
+        const { currentAbortController, idsByChain, userAssets } = get();
+
+        const assetIds = filter ? idsByChain.get(filter) || [] : idsByChain.get('all') || [];
+
+        for (const id of assetIds) {
+          if (currentAbortController?.signal.aborted) {
+            return;
+          }
+          const asset = userAssets.get(id);
+          if (asset && selector(asset)) {
+            yield id;
+          }
+        }
+      },
+
+      selectUserAssets: function* (selector: (asset: ParsedSearchAsset) => boolean) {
+        const { currentAbortController, userAssets } = get();
+
+        for (const [id, asset] of userAssets) {
+          if (currentAbortController?.signal.aborted) {
+            return;
+          }
+          if (selector(asset)) {
+            yield [id, asset];
+          }
+        }
+      },
+
+      setSearchQuery: query =>
+        set(state => {
+          const { currentAbortController } = state;
+
+          // Abort any ongoing search work
+          currentAbortController.abort();
+
+          // Create a new AbortController for the new query
+          const abortController = new AbortController();
+
+          return { inputSearchQuery: query.trim().toLowerCase(), currentAbortController: abortController };
+        }),
+
+      setSearchCache: (queryKey: string, filteredIds: UniqueId[]) => {
+        set(state => {
+          const newCache = new Map(state.searchCache).set(queryKey, filteredIds);
+
+          // Prune the cache if it exceeds the maximum size
+          if (newCache.size > SEARCH_CACHE_MAX_ENTRIES) {
+            // Get the oldest key that isn't a key to preserve
+            for (const key of newCache.keys()) {
+              if (!CACHE_ITEMS_TO_PRESERVE.has(key)) {
+                newCache.delete(key);
+                break;
+              }
+            }
+          }
+
+          return { searchCache: newCache };
         });
+      },
 
-        const searchCache = new Map<string, UniqueId[]>();
+      setUserAssets: (associatedWalletAddress: Address, userAssets: Map<UniqueId, ParsedSearchAsset> | ParsedSearchAsset[]) =>
+        set(() => {
+          const idsByChain = new Map<UserAssetFilter, UniqueId[]>();
+          const unsortedChainBalances = new Map<ChainId, number>();
 
-        Array.from(chainBalances.keys()).forEach(userAssetFilter => {
-          const filteredIds = (idsByChain.get(userAssetFilter) || []).filter(id => filteredAllIdsArray.includes(id));
-          searchCache.set(`${userAssetFilter}`, filteredIds);
-        });
+          userAssets.forEach(asset => {
+            const balance = Number(asset.native.balance.amount) ?? 0;
+            unsortedChainBalances.set(asset.chainId, (unsortedChainBalances.get(asset.chainId) || 0) + balance);
+            idsByChain.set(asset.chainId, (idsByChain.get(asset.chainId) || []).concat(asset.uniqueId));
+          });
 
-        searchCache.set('all', filteredAllIdsArray);
+          // Ensure all supported chains are in the map with a fallback value of 0
+          SUPPORTED_CHAIN_IDS({ testnetMode: false }).forEach(chainId => {
+            if (!unsortedChainBalances.has(chainId)) {
+              unsortedChainBalances.set(chainId, 0);
+              idsByChain.set(chainId, []);
+            }
+          });
 
-        if (isMap) {
-          return { associatedWalletAddress, chainBalances, idsByChain, searchCache, userAssets };
-        } else
-          return {
-            associatedWalletAddress,
-            chainBalances,
-            idsByChain,
-            searchCache,
-            userAssets: userAssetsMap,
-          };
-      }),
-  }),
-  {
-    deserializer: deserializeUserAssetsState,
-    partialize: state => ({
-      associatedWalletAddress: state.associatedWalletAddress,
-      chainBalances: state.chainBalances,
-      idsByChain: state.idsByChain,
-      userAssets: state.userAssets,
+          // Sort the existing map by balance in descending order
+          const sortedEntries = Array.from(unsortedChainBalances.entries()).sort(([, balanceA], [, balanceB]) => balanceB - balanceA);
+          const chainBalances = new Map<number, number>();
+
+          sortedEntries.forEach(([chainId, balance]) => {
+            chainBalances.set(chainId, balance);
+            idsByChain.set(chainId, idsByChain.get(chainId) || []);
+          });
+
+          const isMap = userAssets instanceof Map;
+          const allIdsArray = isMap ? Array.from(userAssets.keys()) : userAssets.map(asset => asset.uniqueId);
+          const userAssetsMap = isMap ? userAssets : new Map(userAssets.map(asset => [asset.uniqueId, asset]));
+
+          idsByChain.set('all', allIdsArray);
+
+          const smallBalanceThreshold = supportedNativeCurrencies[store.getState().settings.nativeCurrency].userAssetsSmallThreshold;
+
+          const filteredAllIdsArray = allIdsArray.filter(id => {
+            const asset = userAssetsMap.get(id);
+            return asset && (+asset.native?.balance?.amount ?? 0) > smallBalanceThreshold;
+          });
+
+          const searchCache = new Map<string, UniqueId[]>();
+
+          Array.from(chainBalances.keys()).forEach(userAssetFilter => {
+            const filteredIds = (idsByChain.get(userAssetFilter) || []).filter(id => filteredAllIdsArray.includes(id));
+            searchCache.set(`${userAssetFilter}`, filteredIds);
+          });
+
+          searchCache.set('all', filteredAllIdsArray);
+
+          if (isMap) {
+            return { associatedWalletAddress, chainBalances, idsByChain, searchCache, userAssets };
+          } else
+            return {
+              associatedWalletAddress,
+              chainBalances,
+              idsByChain,
+              searchCache,
+              userAssets: userAssetsMap,
+            };
+        }),
     }),
-    serializer: serializeUserAssetsState,
-    storageKey: 'userAssets',
-    version: 3,
-  }
-);
+    {
+      deserializer: deserializeUserAssetsState,
+      partialize: state => ({
+        associatedWalletAddress: state.associatedWalletAddress,
+        chainBalances: state.chainBalances,
+        idsByChain: state.idsByChain,
+        userAssets: state.userAssets,
+      }),
+      serializer: serializeUserAssetsState,
+      storageKey: `userAssets_${address}`,
+      version: 1,
+    }
+  );
 
-function getCurrentCache(): Map<string, UniqueId[]> {
-  return userAssetsStore.getState().searchCache;
+const userAssetsStoreCache: Record<Address, ReturnType<typeof createUserAssetsStore>> = {};
+
+export const useUserAssetsStore = (address: Address): ReturnType<typeof createUserAssetsStore> => {
+  if (!userAssetsStoreCache[address]) {
+    userAssetsStoreCache[address] = createUserAssetsStore(address);
+  }
+
+  return userAssetsStoreCache[address];
+};
+
+export const getUserAssetsStore = (address: Address): ReturnType<typeof createUserAssetsStore> | undefined => {
+  return userAssetsStoreCache[address];
+};
+
+function getCurrentSearchCache(address: Address): Map<string, UniqueId[]> | undefined {
+  return userAssetsStoreCache[address]?.getState().searchCache;
 }

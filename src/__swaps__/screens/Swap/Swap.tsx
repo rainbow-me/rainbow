@@ -23,11 +23,14 @@ import { SwapAssetType } from '@/__swaps__/types/swap';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { AbsolutePortalRoot } from '@/components/AbsolutePortal';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { getUserAssetsStore } from '@/state/assets/userAssets';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { SwapWarning } from './components/SwapWarning';
 import { clearCustomGasSettings } from './hooks/useCustomGas';
 import { SwapProvider, useSwapContext } from './providers/swap-provider';
+import store from '@/redux/store';
+import { Address } from 'viem';
+import { useAccountSettings } from '@/hooks';
 
 /** README
  * This prototype is largely driven by Reanimated and Gesture Handler, which
@@ -103,59 +106,68 @@ const useMountSignal = () => {
 };
 
 const useCleanupOnUnmount = () => {
+  const { accountAddress } = useAccountSettings();
+
   useEffect(() => {
     return () => {
-      const highestValueEth = userAssetsStore.getState().getHighestValueEth();
-      const parsedAsset = highestValueEth
-        ? parseSearchAsset({
-            assetWithPrice: undefined,
-            searchAsset: highestValueEth,
-            userAsset: highestValueEth,
-          })
-        : null;
+      const userAssetsStore = getUserAssetsStore(accountAddress as Address);
 
-      useSwapsStore.setState({
-        inputAsset: parsedAsset,
-        isSwapsOpen: false,
-        outputAsset: null,
-        outputSearchQuery: '',
-        quote: null,
-        selectedOutputChainId: parsedAsset?.chainId ?? ChainId.mainnet,
-      });
+      if (userAssetsStore) {
+        const highestValueEth = userAssetsStore.getState().getHighestValueEth();
+        const parsedAsset = highestValueEth
+          ? parseSearchAsset({
+              assetWithPrice: undefined,
+              searchAsset: highestValueEth,
+              userAsset: highestValueEth,
+            })
+          : null;
 
-      userAssetsStore.setState({ filter: 'all', inputSearchQuery: '' });
+        useSwapsStore.setState({
+          inputAsset: parsedAsset,
+          isSwapsOpen: false,
+          outputAsset: null,
+          outputSearchQuery: '',
+          quote: null,
+          selectedOutputChainId: parsedAsset?.chainId ?? ChainId.mainnet,
+        });
+
+        userAssetsStore.setState({ filter: 'all', inputSearchQuery: '' });
+      }
 
       clearCustomGasSettings();
     };
-  }, []);
+  }, [accountAddress]);
 };
 
 const WalletAddressObserver = () => {
-  const currentWalletAddress = userAssetsStore(state => state.associatedWalletAddress);
+  const { accountAddress } = useAccountSettings();
   const { setAsset } = useSwapContext();
 
   const setNewInputAsset = useCallback(() => {
-    const newHighestValueEth = userAssetsStore.getState().getHighestValueEth();
+    const userAssetsStore = getUserAssetsStore(accountAddress as Address);
+    if (userAssetsStore) {
+      const newHighestValueEth = userAssetsStore.getState().getHighestValueEth();
 
-    if (userAssetsStore.getState().filter !== 'all') {
-      userAssetsStore.setState({ filter: 'all' });
-    }
+      if (userAssetsStore.getState().filter !== 'all') {
+        userAssetsStore.setState({ filter: 'all' });
+      }
 
-    setAsset({
-      type: SwapAssetType.inputAsset,
-      asset: newHighestValueEth,
-    });
-
-    if (userAssetsStore.getState().userAssets.size === 0) {
       setAsset({
-        type: SwapAssetType.outputAsset,
-        asset: null,
+        type: SwapAssetType.inputAsset,
+        asset: newHighestValueEth,
       });
+
+      if (userAssetsStore.getState().userAssets.size === 0) {
+        setAsset({
+          type: SwapAssetType.outputAsset,
+          asset: null,
+        });
+      }
     }
-  }, [setAsset]);
+  }, [accountAddress, setAsset]);
 
   useAnimatedReaction(
-    () => currentWalletAddress,
+    () => accountAddress,
     (current, previous) => {
       const didWalletAddressChange = previous && current !== previous;
 

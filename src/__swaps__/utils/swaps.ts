@@ -19,7 +19,7 @@ import * as i18n from '@/languages';
 import { RainbowConfig } from '@/model/remoteConfig';
 import store from '@/redux/store';
 import { ETH_ADDRESS } from '@/references';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { getUserAssetsStore } from '@/state/assets/userAssets';
 import { colors } from '@/styles';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { CrosschainQuote, ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR, Quote, QuoteParams, SwapType, WRAPPED_ASSET } from '@rainbow-me/swaps';
@@ -40,6 +40,7 @@ import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from
 import { inputKeys } from '../types/swap';
 import { valueBasedDecimalFormatter } from './decimalFormatter';
 import { convertAmountToRawAmount } from './numbers';
+import { Address } from 'viem';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -569,6 +570,7 @@ export const priceForAsset = ({
 type ParseAssetAndExtendProps = {
   asset: ParsedSearchAsset | null;
   insertUserAssetBalance?: boolean;
+  walletAddress: string;
 };
 
 const ETH_COLORS: Colors = {
@@ -585,6 +587,7 @@ export const getStandardizedUniqueIdWorklet = ({ address, chainId }: { address: 
 export const parseAssetAndExtend = ({
   asset,
   insertUserAssetBalance,
+  walletAddress,
 }: ParseAssetAndExtendProps): ExtendedAnimatedAssetWithColors | null => {
   if (!asset) {
     return null;
@@ -596,7 +599,11 @@ export const parseAssetAndExtend = ({
   });
 
   const uniqueId = getStandardizedUniqueIdWorklet({ address: asset.address, chainId: asset.chainId });
-  const balance = insertUserAssetBalance ? userAssetsStore.getState().getUserAsset(uniqueId)?.balance || asset.balance : asset.balance;
+  const balance = insertUserAssetBalance
+    ? getUserAssetsStore(walletAddress as Address)
+        ?.getState()
+        .getUserAsset(uniqueId)?.balance || asset.balance
+    : asset.balance;
 
   return {
     ...asset,

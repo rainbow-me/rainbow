@@ -20,7 +20,8 @@ import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { Network } from '@/networks/types';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { getUserAssetsStore } from '@/state/assets/userAssets';
+import { Address } from 'viem';
 
 export const ProfileActionButtonsRowHeight = 80;
 
@@ -181,7 +182,9 @@ function SwapButton() {
       });
       if (swapsV2Enabled) {
         swapsStore.setState({
-          inputAsset: userAssetsStore.getState().getHighestValueEth(),
+          inputAsset: getUserAssetsStore(accountAddress as Address)
+            ?.getState()
+            .getHighestValueEth(),
         });
         InteractionManager.runAfterInteractions(() => {
           navigate(Routes.SWAP);
