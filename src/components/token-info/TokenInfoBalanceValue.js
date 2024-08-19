@@ -3,7 +3,7 @@ import { RowWithMargins } from '../layout';
 import TokenInfoValue from './TokenInfoValue';
 import { useColorForAsset } from '@/hooks';
 import styled from '@/styled-thing';
-import { magicMemo } from '@/utils';
+import { ethereumUtils, magicMemo } from '@/utils';
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 import { useTheme } from '@/theme';
 import { View } from 'react-native';
@@ -28,7 +28,7 @@ const TokenInfoBalanceValue = ({ align, asset, ...props }) => {
         <RainbowCoinIcon
           size={20}
           icon={asset?.icon_url}
-          network={asset?.network}
+          chainId={ethereumUtils.getChainIdFromNetwork(asset?.network)}
           symbol={asset?.symbol}
           theme={theme}
           colors={asset?.colors}

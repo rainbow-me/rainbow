@@ -24,7 +24,7 @@ import * as lang from '@/languages';
 import store from '@/redux/store';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import WalletTypes from '@/helpers/walletTypes';
-import ethereumUtils, { getNetworkFromChainId } from '@/utils/ethereumUtils';
+import ethereumUtils from '@/utils/ethereumUtils';
 import { getRequestDisplayDetails } from '@/parsers/requests';
 import { WalletconnectRequestData, REQUESTS_UPDATE_REQUESTS_TO_APPROVE, removeRequest } from '@/redux/requests';
 import { saveLocalRequests } from '@/handlers/localstorage/walletconnectRequests';
@@ -718,7 +718,7 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
       displayDetails,
       imageUrl: maybeSignUri(dappImage, { w: 200 }),
       address,
-      network: getNetworkFromChainId(chainId),
+      chainId,
       payload: event.params.request,
       walletConnectV2RequestValues: {
         sessionRequestEvent: event,

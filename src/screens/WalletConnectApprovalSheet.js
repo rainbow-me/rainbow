@@ -31,6 +31,7 @@ import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { InfoAlert } from '@/components/info-alert/info-alert';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.3),
@@ -65,12 +66,7 @@ const SwitchText = ({ children, ...props }) => {
 const NetworkPill = ({ chainIds }) => {
   const { colors } = useTheme();
 
-  const availableNetworks = useMemo(() => {
-    // we dont want to show mainnet
-    return chainIds
-      .map(network => ethereumUtils.getNetworkFromChainId(Number(network)))
-      .sort(network => (network === Network.mainnet ? -1 : 1));
-  }, [chainIds]);
+  const availableNetworkChainIds = useMemo(() => chainIds.sort(chainId => (chainId === ChainId.mainnet ? -1 : 1)), [chainIds]);
 
   const networkMenuItems = useMemo(() => {
     RainbowNetworks.filter(({ features, id }) => features.walletconnect && chainIds.includes(id)).map(network => ({
@@ -83,7 +79,7 @@ const NetworkPill = ({ chainIds }) => {
     }));
   }, [chainIds]);
 
-  if (availableNetworks.length === 0) return null;
+  if (availableNetworkChainIds.length === 0) return null;
 
   return (
     <ContextMenuButton
@@ -104,25 +100,25 @@ const NetworkPill = ({ chainIds }) => {
         marginRight={{ custom: -2 }}
       >
         <Box flexDirection="row" justifyContent="flex-end" alignItems="center" width="100%">
-          {availableNetworks.length > 1 ? (
+          {availableNetworkChainIds.length > 1 ? (
             <>
-              {availableNetworks.map((network, index) => {
+              {availableNetworkChainIds.map((chainId, index) => {
                 return (
                   <Box
-                    key={`availableNetwork-${network}`}
+                    key={`availableNetwork-${chainId}`}
                     marginTop={{ custom: -2 }}
                     marginLeft={{ custom: index > 0 ? -6 : 0 }}
                     style={{
                       position: 'relative',
                       backgroundColor: colors.transparent,
-                      zIndex: availableNetworks.length - index,
+                      zIndex: availableNetworkChainIds.length - index,
                       borderRadius: 30,
                       borderWidth: 2,
                       borderColor: colors.white,
                     }}
                   >
-                    {network !== Network.mainnet ? (
-                      <ChainBadge network={network} position="relative" size="small" />
+                    {chainId !== ChainId.mainnet ? (
+                      <ChainBadge chainId={chainId} position="relative" size="small" />
                     ) : (
                       <EthCoinIcon size={20} />
                     )}
@@ -132,15 +128,15 @@ const NetworkPill = ({ chainIds }) => {
             </>
           ) : (
             <Inline alignVertical="center" wrap={false}>
-              {availableNetworks[0] !== Network.mainnet ? (
-                <ChainBadge network={availableNetworks[0]} position="relative" size="small" />
+              {availableNetworkChainIds[0] !== Network.mainnet ? (
+                <ChainBadge chainId={availableNetworkChainIds[0]} position="relative" size="small" />
               ) : (
                 <EthCoinIcon size={20} />
               )}
 
               <Box paddingLeft="6px">
                 <Text color="primary (Deprecated)" numberOfLines={1} size="18px / 27px (Deprecated)" weight="bold">
-                  {getNetworkObj(availableNetworks[0]).name}
+                  {getNetworkObj(availableNetworkChainIds[0]).name}
                 </Text>
               </Box>
             </Inline>

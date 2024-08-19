@@ -17,7 +17,7 @@ import { Emoji, Text } from '../components/text';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { removeRegistrationByName, saveCommitRegistrationParameters } from '@/redux/ensRegistration';
 import { GasFeeTypes } from '@/entities';
-import { getFlashbotsProvider, getProviderForNetwork, isL2Network, toHex } from '@/handlers/web3';
+import { getFlashbotsProvider, getProviderForNetwork, isL2Chain, toHex } from '@/handlers/web3';
 import { greaterThan } from '@/helpers/utilities';
 import { useAccountSettings, useDimensions, useGas, useWallets } from '@/hooks';
 import { sendTransaction } from '@/model/wallet';
@@ -27,7 +27,7 @@ import { updateGasFeeForSpeed } from '@/redux/gas';
 import { ethUnits } from '@/references';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { gasUtils, safeAreaInsetValues } from '@/utils';
+import { ethereumUtils, gasUtils, safeAreaInsetValues } from '@/utils';
 import logger from '@/utils/logger';
 import { getNetworkObj } from '@/networks';
 import * as i18n from '@/languages';
@@ -125,7 +125,7 @@ export default function SpeedUpAndCancelSheet() {
   const [nonce, setNonce] = useState(null);
   const [to, setTo] = useState(tx.to);
   const [value, setValue] = useState(null);
-  const isL2 = isL2Network(tx?.network || null);
+  const isL2 = isL2Chain({ chainId: tx?.chainId });
 
   const getNewTransactionGasParams = useCallback(() => {
     const gasParams = parseGasParamsForTransaction(selectedGasFee);
@@ -475,6 +475,7 @@ export default function SpeedUpAndCancelSheet() {
                     <GasSpeedButton
                       asset={{ color: accentColor }}
                       currentNetwork={currentNetwork}
+                      chainId={ethereumUtils.getChainIdFromNetwork(currentNetwork)}
                       flashbotTransaction={tx.flashbots}
                       speeds={speeds}
                       theme={isDarkMode ? 'dark' : 'light'}

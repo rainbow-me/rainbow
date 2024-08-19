@@ -53,7 +53,7 @@ export const fetchTransaction = async ({
     if (!tx) {
       return null;
     }
-    const parsedTx = await parseTransaction(tx, currency);
+    const parsedTx = await parseTransaction(tx, currency, chainId);
     if (!parsedTx) throw new Error('Failed to parse transaction');
     return parsedTx;
   } catch (e) {

@@ -4,11 +4,12 @@ import { ParsedAddressAsset } from '../tokens';
 import { EthereumAddress } from '../wallet';
 import { Network } from '@/helpers/networkTypes';
 import { AddCashCurrencyAsset } from '@/references';
-import { ChainId, SwapType } from '@rainbow-me/swaps';
+import { SwapType } from '@rainbow-me/swaps';
 import { SwapMetadata } from '@/raps/references';
 import { UniqueAsset } from '../uniqueAssets';
 import { ParsedAsset } from '@/resources/assets/types';
 import { TransactionStatus, TransactionType } from '@/resources/transactions/types';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export type TransactionDirection = 'in' | 'out' | 'self';
 
@@ -25,6 +26,7 @@ export interface RainbowTransaction {
     amount: string;
     display: string;
   } | null;
+  chainId: ChainId;
   changes?: Array<
     | {
         asset: ParsedAddressAsset;

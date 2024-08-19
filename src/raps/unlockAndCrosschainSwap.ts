@@ -3,7 +3,7 @@ import { Address } from 'viem';
 
 import { isNativeAsset } from '@/handlers/assets';
 import { add } from '@/helpers/utilities';
-import { ethereumUtils, isLowerCaseMatch } from '@/utils';
+import { isLowerCaseMatch } from '@/utils';
 import { ETH_ADDRESS } from '../references';
 
 import { assetNeedsUnlocking, estimateApprove } from './actions';
@@ -38,10 +38,8 @@ export const estimateUnlockAndCrosschainSwap = async ({
   let gasLimits: (string | number)[] = [];
   let swapAssetNeedsUnlocking = false;
 
-  // TODO: MARK - Replace this once we migrate network => chainId
-  const network = ethereumUtils.getNetworkFromChainId(chainId);
   // Aggregators represent native asset as 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
-  const nativeAsset = isLowerCaseMatch(ETH_ADDRESS_AGGREGATOR, sellTokenAddress) || isNativeAsset(assetToSell.address, network);
+  const nativeAsset = isLowerCaseMatch(ETH_ADDRESS_AGGREGATOR, sellTokenAddress) || isNativeAsset(assetToSell.address, chainId);
 
   const shouldNotHaveApproval = no_approval !== undefined && no_approval;
 

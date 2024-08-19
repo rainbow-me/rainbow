@@ -180,6 +180,7 @@ export const crosschainSwap = async ({
     : parameters.assetToSell.price;
 
   const transaction = {
+    chainId,
     data: parameters.quote.data,
     from: parameters.quote.from as Address,
     to: parameters.quote.to as Address,
