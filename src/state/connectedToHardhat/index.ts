@@ -1,5 +1,5 @@
 import create from 'zustand';
-import { createStore } from '../internal/createStore';
+import { createRainbowStore } from '../internal/createRainbowStore';
 
 export interface ConnectedToHardhatState {
   connectedToHardhat: boolean;
@@ -9,7 +9,7 @@ export interface ConnectedToHardhatState {
   setConnectedToHardhatOp: (connectedToHardhatOp: boolean) => void;
 }
 
-export const connectedToHardhatStore = createStore<ConnectedToHardhatState>(
+export const connectedToHardhatStore = createRainbowStore<ConnectedToHardhatState>(
   set => ({
     connectedToHardhat: false,
     setConnectedToHardhat: connectedToHardhat => {
@@ -22,10 +22,8 @@ export const connectedToHardhatStore = createStore<ConnectedToHardhatState>(
     },
   }),
   {
-    persist: {
-      name: 'connectedToHardhat',
-      version: 0,
-    },
+    storageKey: 'connectedToHardhat',
+    version: 0,
   }
 );
 
