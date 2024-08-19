@@ -51,9 +51,27 @@ function SwapOutputActionButton() {
   );
 }
 
+function SwapOutputNativeAmount() {
+  const { SwapTextStyles, SwapInputController } = useSwapContext();
+  return (
+    <AnimatedText numberOfLines={1} size="17pt" style={SwapTextStyles.outputNativeValueStyle} weight="heavy">
+      {SwapInputController.formattedOutputNativeValue}
+    </AnimatedText>
+  );
+}
+
+function SwapOutputAmountCaret() {
+  const { SwapTextStyles, AnimatedSwapStyles } = useSwapContext();
+  return (
+    <Animated.View style={[styles.caretContainer, SwapTextStyles.outputCaretStyle]}>
+      <Box as={Animated.View} borderRadius={1} style={[styles.caret, AnimatedSwapStyles.assetToBuyCaretStyle]} />
+    </Animated.View>
+  );
+}
+
 function SwapOutputAmount() {
   const { navigate } = useNavigation();
-  const { focusedInput, SwapTextStyles, SwapInputController, AnimatedSwapStyles, outputQuotesAreDisabled } = useSwapContext();
+  const { focusedInput, SwapTextStyles, SwapInputController, outputQuotesAreDisabled } = useSwapContext();
 
   const handleTapWhileDisabled = useCallback(() => {
     const { inputAsset, outputAsset } = useSwapsStore.getState();
@@ -115,9 +133,7 @@ function SwapOutputAmount() {
           <AnimatedText ellipsizeMode="clip" numberOfLines={1} size="30pt" style={SwapTextStyles.outputAmountTextStyle} weight="bold">
             {SwapInputController.formattedOutputAmount}
           </AnimatedText>
-          <Animated.View style={[styles.caretContainer, SwapTextStyles.outputCaretStyle]}>
-            <Box as={Animated.View} borderRadius={1} style={[styles.caret, AnimatedSwapStyles.assetToBuyCaretStyle]} />
-          </Animated.View>
+          <SwapOutputAmountCaret />
         </MaskedView>
       </GestureHandlerButton>
     </CopyPasteMenu>
@@ -147,15 +163,7 @@ function OutputAssetBalanceBadge() {
 }
 
 export function SwapOutputAsset() {
-  const {
-    outputProgress,
-    inputProgress,
-    AnimatedSwapStyles,
-    SwapTextStyles,
-    SwapInputController,
-    internalSelectedOutputAsset,
-    SwapNavigation,
-  } = useSwapContext();
+  const { outputProgress, inputProgress, AnimatedSwapStyles, internalSelectedOutputAsset, SwapNavigation } = useSwapContext();
 
   return (
     <SwapInput asset={internalSelectedOutputAsset} bottomInput otherInputProgress={inputProgress} progress={outputProgress}>
@@ -171,9 +179,7 @@ export function SwapOutputAsset() {
             </Column>
           </Columns>
           <Columns alignHorizontal="justify" alignVertical="center" space="10px">
-            <AnimatedText numberOfLines={1} size="17pt" style={SwapTextStyles.outputNativeValueStyle} weight="heavy">
-              {SwapInputController.formattedOutputNativeValue}
-            </AnimatedText>
+            <SwapOutputNativeAmount />
             <Column width="content">
               <OutputAssetBalanceBadge />
             </Column>
