@@ -604,3 +604,23 @@ mutation claimUserRewards($address: String!) {
     txHash
   }
 }
+
+query trendingDApps($period: DAppRankingPeriod) {
+  dApps(trending: true, period: $period) {
+    name
+    shortName
+    description
+    url
+    iconURL
+    colors {
+      primary
+      fallback
+      shadow
+    }
+    status
+    report {
+      url
+    }
+    trending
+  }
+}

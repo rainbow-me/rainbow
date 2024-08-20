@@ -24,6 +24,7 @@
       "tab_showcase": "शोकेस",
       "tab_points": "अंक",
       "tab_positions": "पोजीशन्स",
+      "tab_rewards": "इनाम",
       "tab_transactions": "लेन-देन",
       "tab_transactions_tooltip": "लेन-देन और टोकन स्थानांतरण",
       "tab_uniquetokens": "अद्वितीय टोकन्स",
@@ -431,6 +432,23 @@
         "description": "आप यह भी कर सकते हैं เพื่อ किसी अपने\nपते को कॉपी करने के लिए दबाएं।"
       }
     },
+    "check_identifier": {
+      "title": "प्रमाणीकरण आवश्यक",
+      "description": "ऐसा लगता है कि आपने डिवाइस बदल लिया है या रेनबो को पुनः स्थापित कर दिया है। कृपया प्रमाणीकरण करें ताकि हम आपके कीचेन डेटा को सत्यापित कर सकें कि यह अभी भी एक स्वस्थ स्थिति में है।",
+      "action": "प्रमाणित करें",
+      "dismiss": "खारिज करें",
+      "error_alert": {
+        "title": "कीचेन सत्यापन में त्रुटि",
+        "message": "आपके कीचेन डेटा को सत्यापित करते समय हमें एक त्रुटि का सामना करना पड़ा। कृपया पुनः प्रयास करें। यदि समस्या बनी रहती है, तो कृपया समर्थन से संपर्क करें।",
+        "contact_support": "समर्थन से संपर्क करें",
+        "cancel": "रद्द करें"
+      },
+      "failure_alert": {
+        "title": "अमान्य कीचेन डेटा",
+        "message": "हम आपके कीचेन डेटा की अखंडता की पुष्टि करने में असमर्थ थे। कृपया अपना वॉलेट बहाल करें और पुनः प्रयास करें। यदि समस्या बनी रहती है, तो कृपया समर्थन से संपर्क करें।",
+        "action": "जारी रखें"
+      }
+    },
     "cloud": {
       "backup_success": "आपका वॉलेट सफलतापूर्वक बैकअप कर दिया गया है!"
     },
@@ -541,7 +559,8 @@
         "from_divider": "से",
         "to_divider": "करने के लिए",
         "view_on": "देखें %{blockExplorerName}पर",
-        "view_on_etherscan": "Etherscan पर देखें"
+        "view_on_etherscan": "Etherscan पर देखें",
+        "copy_contract_address": "कॉंट्रैक्ट एड्रेस कॉपी करें"
       },
       "all_networks": "सभी नेटवर्क",
       "filter_by_network": "नेटवर्क के आधार पर फ़िल्टर करें",
@@ -577,7 +596,8 @@
       "price_impact": {
         "long_wait": {
           "title": "लंबा इंतजार",
-          "description": "अनुमानित %{time}"
+          "description": "अनुमानित %{time}",
+          "description_prefix": "लगभग।"
         },
         "unknown_price": {
           "title": "बाजार मूल्य अज्ञात",
@@ -587,6 +607,7 @@
         "small_market": "लघु बाजार",
         "small_market_try_smaller_amount": "छोटा बाजार — एक छोटी राशि आज़माएँ",
         "you_are_losing": "आप %{priceImpact} खो रहे हैं",
+        "you_are_losing_prefix": "आप खो रहे हैं",
         "no_data": "बाजार मूल्य अज्ञात",
         "label": "संभावित हानि",
         "no_data_subtitle": "यदि आप जारी रखने का निर्णय लेते हैं, तो सुनिश्चित करें कि आप उद्धृत राशि से संतुष्ट हैं"
@@ -687,6 +708,7 @@
         "flashbots_protect": "फ्लैशबॉट्स सुरक्षित",
         "losing": "हानि हो रही है",
         "on": "पर",
+        "off": "बंद",
         "price_impact": "मूल्य प्रभाव",
         "price_row_per_token": "प्रति",
         "slippage_message": "यह एक छोटा बाजार है, इसलिए आपको खराब मूल्य मिल रहा है। एक छोटा काम करके देखें!",
@@ -723,6 +745,16 @@
         "number_of_steps": "%{number} कदम",
         "input_exchange_rate": "1 %{inputSymbol} के लिए %{executionRate} %{outputSymbol}",
         "output_exchange_rate": "1 %{outputSymbol} के लिए %{executionRate} %{inputSymbol}"
+      },
+      "swap_details_v2": {
+        "automatic": "ऑटो",
+        "degen_mode": "डिजन मोड",
+        "degen_mode_description": "तेज स्वैप करने के लिए समीक्षा शीट को छोड़ें",
+        "maximum_sold": "अधिकतम बेचा गया",
+        "minimum_received": "न्यूनतम प्राप्त",
+        "preferred_network": "पसंदीदा नेटवर्क",
+        "rainbow_fee": "रेनबो शुल्क शामिल",
+        "settings": "सेटिंग्स"
       },
       "token_index": {
         "get_token": "प्राप्त करें %{assetSymbol}",
@@ -1030,14 +1062,17 @@
         "urgent": "अत्यावश्यक",
         "custom": "कस्टम"
       },
+      "unable_to_determine_selected_gas": "चयनित गैस का निर्धारण करने में असमर्थ",
       "network_fee": "अनुमानित नेटवर्क शुल्क",
       "current_base_fee": "वर्तमान बेस फीस",
       "max_base_fee": "अधिकतम मूल शुल्क",
       "miner_tip": "खनकर्मी का टिप",
+      "gas_price": "गैस की कीमत",
       "max_transaction_fee": "अधिकतम लेन-देन शुल्क",
       "warning_separator": "·",
       "lower_than_suggested": "कम · अटक सकता है",
       "higher_than_suggested": "अधिक · अधिक भुगतान कर रहे हैं",
+      "likely_to_fail": "कम · असफल होने की संभावना",
       "max_base_fee_too_low_error": "कम · असफल होने की संभावना",
       "tip_too_low_error": "कम · असफल होने की संभावना",
       "alert_message_higher_miner_tip_needed": "समस्याओं से बचने के लिए अधिक माइनर टिप की सेटिंग करने की सिफारिश की जाती है।",
@@ -1357,13 +1392,16 @@
       },
       "claim": {
         "title": "अपने अंक दावा करें",
+        "title_rewards_line_1": "में आपका स्वागत है",
+        "title_rewards_line_2": "रेनबो रिवार्ड्स",
         "subtitle": "अंक यहाँ हैं। जानिए आपको कितने अंक मिले हैं।",
+        "subtitle_rewards": "रेनबो का उपयोग करने के लिए पुरस्कृत होइए। ब्लॉकचेन पर कार्य करें, अंक प्राप्त करें, ETH अर्जित करें।",
         "get_started": "शुरुआत करें",
         "use_referral_code": "रेफरल कोड का प्रयोग करें"
       },
       "referral": {
         "title": "अपना रेफरल कोड दर्ज करें",
-        "subtitle": "अपने बोनस रिवार्ड का दावा करने के लिए नीचे एक रेफरल कोड दर्ज करें।",
+        "subtitle": "अंक बोनस का दावा करने के लिए नीचे एक रेफरल कोड दर्ज करें।",
         "back": "वापस",
         "error": "कुछ गलत हो गया। कृपया ऐप को पुनः आरंभ करें और फिर से प्रयास करें।",
         "get_started": "शुरुआत करें",
@@ -1378,6 +1416,7 @@
         "share_link": "लिंक साझा करें",
         "next_drop": "अगला ड्रॉप",
         "your_rank": "आपका रैंक",
+        "no_change": "कोई बदलाव नहीं",
         "of_x": "का %{totalUsers}",
         "referrals": "रेफरल्स",
         "streak": "स्ट्रीक",
@@ -1395,12 +1434,40 @@
         "today": "आज",
         "error": "उफ़!\nकृपया ताज़ा करने के लिए खींचें।",
         "points": "अंक",
+        "points_capitalized": "अंक",
         "referral_code_copied": "रेफरल कोड कॉपी किया गया",
         "earn_points_for_referring": "जब आपके रेफरल Rainbow के माध्यम से $100 का आदान-प्रदान करते हैं तो अंक अर्जित करें, साथ ही अपने रेफरल्स द्वारा अर्जित अंकों का 10% भी कमाएं",
         "already_claimed_points": "क्षमा करें! आप पहले ही अपने अंक दावा कर चुके हैं।",
         "now": "अब",
         "unranked": "अश्रेणीकृत",
-        "points_to_rank": "रैंक हेतु 750 अंक आवश्यक"
+        "points_to_rank": "रैंक हेतु 750 अंक आवश्यक",
+        "ranking": "स्थान #%{rank}",
+        "available_to_claim": "दावा करने के लिए उपलब्ध",
+        "claim": "%{value} का दावा करें",
+        "choose_claim_network": "दावा नेटवर्क चुनें",
+        "claim_on_network": "%{network} पर दावा करें",
+        "claimed_on_network": "%{network} पर दावा किया गया",
+        "claiming_on_network": "%{network} पर दावा हो रहा है",
+        "error_claiming": "दावा विफल",
+        "free_to_claim": "दावा करने के लिए मुफ्त",
+        "has_bridge_fee": "ब्रिज शुल्क है",
+        "claim_rewards": "पुरस्कार दावा करें",
+        "earned_last_week": "पिछले सप्ताह अर्जित",
+        "top_10_earner": "शीर्ष 10 कमाने वाला",
+        "zero_points": "0 अंक",
+        "no_weekly_rank": "कोई साप्ताहिक रैंक नहीं",
+        "none": "कोई नहीं",
+        "my_earnings": "मेरी कमाई",
+        "claimed_earnings": "दावा की गई कमाई",
+        "current_value": "वर्तमान मूल्य",
+        "rainbow_users_have_earned": "रेनबो उपयोगकर्ताओं ने कमाए हैं",
+        "earn_eth_rewards": "ETH पुरस्कार अर्जित करें",
+        "rewards_explainer": "हर सप्ताह, शीर्ष साप्ताहिक अंक अर्जित करने वालों को रेनबो की ऑनचेन राजस्व का एक हिस्सा प्राप्त होगा। रेनबो में स्वैप या लेनदेन करके, dapps का उपयोग करके, या दोस्तों को रेफर करके अंक अर्जित करें।",
+        "my_points": "मेरे अंक",
+        "refer_friends": "दोस्तों को रेफर करें",
+        "try_again": "फिर से प्रयास करें",
+        "bridge_error": "आंशिक सफलता",
+        "bridge_error_explainer": "आपके पुरस्कारों को सफलतापूर्वक Optimism पर दावा किया गया है, लेकिन %{network} पर स्थानांतरण विफल हो गया। यदि आप चाहें, तो आप स्वैप फीचर का उपयोग करके अपने पुरस्कारों को मैन्युअल रूप से पुल कर सकते हैं।"
       },
       "console": {
         "claim_bonus_paragraph": "आपको Rainbow के माध्यम से कम से कम $100 बदलने पर अतिरिक्त 100 अंक मिलेंगे",
@@ -1916,9 +1983,32 @@
       "too_many_signup_request": "बहुत सारे साइनअप अनुरोध, कृपया बाद में पुनः प्रयास करें"
     },
     "swap": {
+      "actions": {
+        "hold_to_swap": "बदलने के लिए होल्ड करें",
+        "save": "सहेजें",
+        "enter_amount": "राशि दर्ज करें",
+        "review": "समीक्षा करें",
+        "fetching_prices": "प्राप्त किया जा रहा है",
+        "swapping": "स्वापिंग",
+        "select_token": "टोकन चुनें",
+        "insufficient_funds": "अपर्याप्त धन",
+        "insufficient": "पर्याप्त",
+        "quote_error": "कोट त्रुटि"
+      },
       "aggregators": {
         "rainbow": "रेनबो"
       },
+      "bridging": "ब्रिजिंग",
+      "swapping": "स्वापिंग",
+      "max": "अधिकतम",
+      "select": "चुनें",
+      "token_to_get": "प्राप्त करने के लिए टोकन",
+      "token_to_swap": "स्वैप करने के लिए टोकन",
+      "no_balance": "कोई बैलेंस नहीं",
+      "find_a_token_to_buy": "खरीदने के लिए टोकन खोजें",
+      "search_your_tokens": "अपने टोकन खोजें",
+      "error_executing_swap": "स्वैप निष्पादित करते समय त्रुटि",
+      "flashbots_protection": "फ़्लैशबॉट्स सुरक्षा",
       "tokens_input": {
         "tokens": "Tokens",
         "sort": "Sort",
@@ -1945,6 +2035,7 @@
       },
       "loading": "लोड हो रहा है...",
       "modal_types": {
+        "bridge": "ब्रिज",
         "confirm": "पुष्टि करें",
         "deposit": "जमा",
         "receive": "प्राप्त करें",
@@ -1976,11 +2067,12 @@
     },
     "token_search": {
       "section_header": {
+        "recent": "हाल का",
         "favorites": "पसंदीदा",
         "bridge": "ब्रिज",
         "verified": "सत्यापित",
         "unverified": "असत्यापित",
-        "on_other_networks": "अन्य नेटवर्क पर"
+        "on_other_networks": "अन्य नेटवर्कों पर"
       }
     },
     "transactions": {
@@ -2849,6 +2941,8 @@
         "forward": "आगे",
         "back": "वापस"
       }
-    }
+    },
+    "copy": "कॉपी",
+    "paste": "चिपकाएं"
   }
 }

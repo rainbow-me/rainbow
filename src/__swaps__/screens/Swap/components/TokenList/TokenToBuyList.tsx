@@ -17,7 +17,8 @@ import { userAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { FlashList } from '@shopify/flash-list';
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { ComponentType, forwardRef, memo, useCallback, useMemo } from 'react';
+import { ScrollViewProps } from 'react-native';
 import Animated, { runOnUI, useAnimatedProps, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
 import { ChainSelection } from './ChainSelection';
@@ -31,6 +32,11 @@ interface SectionHeaderProp {
 }
 
 const SECTION_HEADER_INFO: { [id in AssetToBuySectionId]: SectionHeaderProp } = {
+  popular: {
+    title: i18n.t(i18n.l.token_search.section_header.popular),
+    symbol: '􀙬',
+    color: 'rgba(255, 88, 77, 1)',
+  },
   recent: {
     title: i18n.t(i18n.l.token_search.section_header.recent),
     symbol: '􀐫',
@@ -66,6 +72,16 @@ const SECTION_HEADER_INFO: { [id in AssetToBuySectionId]: SectionHeaderProp } = 
 export type HeaderItem = { listItemType: 'header'; id: AssetToBuySectionId; data: SearchAsset[] };
 export type CoinRowItem = SearchAsset & { listItemType: 'coinRow'; sectionId: AssetToBuySectionId };
 export type TokenToBuyListItem = HeaderItem | CoinRowItem;
+
+const ScrollViewWithRef = forwardRef<Animated.ScrollView>(function ScrollViewWithRef(props, ref) {
+  const { outputProgress } = useSwapContext();
+  const animatedListProps = useAnimatedProps(() => {
+    const isFocused = outputProgress.value === 2;
+    return { scrollIndicatorInsets: { bottom: 28 + (isFocused ? EXPANDED_INPUT_HEIGHT - FOCUSED_INPUT_HEIGHT : 0) } };
+  });
+  // eslint-disable-next-line react/jsx-props-no-spreading
+  return <Animated.ScrollView {...props} ref={ref} animatedProps={animatedListProps} />;
+});
 
 export const TokenToBuyList = () => {
   const { internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, outputProgress, setAsset } = useSwapContext();
@@ -114,13 +130,6 @@ export const TokenToBuyList = () => {
     return { height: bottomPadding };
   });
 
-  const animatedListProps = useAnimatedProps(() => {
-    const isFocused = outputProgress.value === 2;
-    return {
-      scrollIndicatorInsets: { bottom: 28 + (isFocused ? EXPANDED_INPUT_HEIGHT - FOCUSED_INPUT_HEIGHT : 0) },
-    };
-  });
-
   const averageItemSize = useMemo(() => {
     const numberOfHeaders = sections.filter(section => section.listItemType === 'header').length;
     const numberOfCoinRows = sections.filter(section => section.listItemType === 'coinRow').length;
@@ -166,15 +175,7 @@ export const TokenToBuyList = () => {
             />
           );
         }}
-        renderScrollComponent={props => {
-          return (
-            <Animated.ScrollView
-              // eslint-disable-next-line react/jsx-props-no-spreading
-              {...props}
-              animatedProps={animatedListProps}
-            />
-          );
-        }}
+        renderScrollComponent={ScrollViewWithRef as ComponentType<ScrollViewProps>}
         style={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}
       />
     </Box>

@@ -24,6 +24,7 @@
       "tab_showcase": "Витрина",
       "tab_points": "Очки",
       "tab_positions": "Позиции",
+      "tab_rewards": "Награды",
       "tab_transactions": "Транзакции",
       "tab_transactions_tooltip": "Транзакции и передачи токенов",
       "tab_uniquetokens": "Уникальные токены",
@@ -431,6 +432,23 @@
         "description": "Вы также можете долго нажать на ваш адрес\nвыше, чтобы скопировать его."
       }
     },
+    "check_identifier": {
+      "title": "Требуется аутентификация",
+      "description": "Похоже, вы сменили устройство или переустановили Rainbow. Пожалуйста, аутентифицируйтесь, чтобы мы могли убедиться, что ваши данные в связке ключей находятся в хорошем состоянии.",
+      "action": "Аутентифицироваться",
+      "dismiss": "Отклонить",
+      "error_alert": {
+        "title": "Ошибка при проверке связки ключей",
+        "message": "Во время проверки данных вашей связки ключей произошла ошибка. Пожалуйста, попробуйте снова. Если ошибка повторяется, обратитесь в службу поддержки.",
+        "contact_support": "Обратитесь в службу поддержки",
+        "cancel": "Отменить"
+      },
+      "failure_alert": {
+        "title": "Неверные данные связки ключей",
+        "message": "Мы не смогли проверить целостность данных вашей связки ключей. Пожалуйста, восстановите свой кошелек и попробуйте снова. Если ошибка повторяется, обратитесь в службу поддержки.",
+        "action": "Продолжить"
+      }
+    },
     "cloud": {
       "backup_success": "Ваш кошелек успешно создан резервная копия!"
     },
@@ -541,7 +559,8 @@
         "from_divider": "отправитель",
         "to_divider": "кому",
         "view_on": "Посмотреть на %{blockExplorerName}",
-        "view_on_etherscan": "Посмотреть на Etherscan"
+        "view_on_etherscan": "Посмотреть на Etherscan",
+        "copy_contract_address": "Скопировать адрес контракта"
       },
       "all_networks": "Все сети",
       "filter_by_network": "Фильтр по сети",
@@ -577,7 +596,8 @@
       "price_impact": {
         "long_wait": {
           "title": "Длительное ожидание",
-          "description": "Примерно %{time}"
+          "description": "Примерно %{time}",
+          "description_prefix": "Примерно"
         },
         "unknown_price": {
           "title": "Рыночная стоимость неизвестна",
@@ -587,6 +607,7 @@
         "small_market": "Маленький рынок",
         "small_market_try_smaller_amount": "Небольшой рынок — попробуйте меньшую сумму",
         "you_are_losing": "Вы теряете %{priceImpact}",
+        "you_are_losing_prefix": "Вы теряете",
         "no_data": "Рыночная стоимость неизвестна",
         "label": "Возможная потеря",
         "no_data_subtitle": "Если вы решите продолжить, убедитесь, что вас устраивает указанное количество"
@@ -687,6 +708,7 @@
         "flashbots_protect": "Защита от Flashbots",
         "losing": "Убыток",
         "on": "Включено",
+        "off": "Выкл.",
         "price_impact": "Влияние на цену",
         "price_row_per_token": "за",
         "slippage_message": "Это небольшой рынок, поэтому вы получаете плохую цену. Попробуйте сделать меньшую сделку!",
@@ -723,6 +745,16 @@
         "number_of_steps": "%{number} Шагов",
         "input_exchange_rate": "1 %{inputSymbol} по %{executionRate} %{outputSymbol}",
         "output_exchange_rate": "1 %{outputSymbol} по %{executionRate} %{inputSymbol}"
+      },
+      "swap_details_v2": {
+        "automatic": "Авто",
+        "degen_mode": "Режим Degen",
+        "degen_mode_description": "Пропустите лист проверки для ускорения обмена",
+        "maximum_sold": "Максимум продано",
+        "minimum_received": "Минимальная получаемая",
+        "preferred_network": "Предпочитаемая сеть",
+        "rainbow_fee": "Включена комиссия Rainbow",
+        "settings": "Настройки"
       },
       "token_index": {
         "get_token": "Получите %{assetSymbol}",
@@ -1030,14 +1062,17 @@
         "urgent": "Срочный",
         "custom": "Пользовательский"
       },
-      "network_fee": "Ожидаемая сетевая комиссия",
+      "unable_to_determine_selected_gas": "Не удалось определить выбранный газ",
+      "network_fee": "Оценочная сетевая комиссия",
       "current_base_fee": "Текущая базовая комиссия",
       "max_base_fee": "Максимальная базовая комиссия",
       "miner_tip": "Чаевые для майнера",
+      "gas_price": "Цена газа",
       "max_transaction_fee": "Максимальная комиссия за транзакцию",
       "warning_separator": "·",
       "lower_than_suggested": "Низкая · может застрять",
       "higher_than_suggested": "Высокая · переплата",
+      "likely_to_fail": "Низкая · вероятность сбоя",
       "max_base_fee_too_low_error": "Низкая · вероятность сбоя",
       "tip_too_low_error": "Низкая · вероятность сбоя",
       "alert_message_higher_miner_tip_needed": "Рекомендуется установить более высокий сбор майнера, чтобы избежать проблем.",
@@ -1357,13 +1392,16 @@
       },
       "claim": {
         "title": "Заберите свои баллы",
+        "title_rewards_line_1": "Добро пожаловать",
+        "title_rewards_line_2": "Rainbow Rewards",
         "subtitle": "Баллы у вас. Узнайте, сколько вам начислено.",
+        "subtitle_rewards": "Получите награды за использование Rainbow. Выполняйте действия onchain, получайте баллы, зарабатывайте ETH.",
         "get_started": "Начать",
         "use_referral_code": "Используйте реферальный код"
       },
       "referral": {
         "title": "Введите ваш реферальный код",
-        "subtitle": "Введите реферальный код ниже, чтобы получить ваш бонусный приз.",
+        "subtitle": "Введите реферальный код ниже, чтобы получить бонусные баллы.",
         "back": "Назад",
         "error": "Что-то пошло не так. Пожалуйста, перезапустите приложение и попробуйте снова.",
         "get_started": "Начать",
@@ -1378,6 +1416,7 @@
         "share_link": "Поделиться ссылкой",
         "next_drop": "Следующее начисление",
         "your_rank": "Ваш ранг",
+        "no_change": "Без изменений",
         "of_x": "Из %{totalUsers}",
         "referrals": "Рефералы",
         "streak": "Серия",
@@ -1395,12 +1434,40 @@
         "today": "Сегодня",
         "error": "Упс!\nПожалуйста, потяните вниз для обновления.",
         "points": "баллы",
+        "points_capitalized": "Очки",
         "referral_code_copied": "Реферальный код скопирован",
         "earn_points_for_referring": "Получайте баллы, когда ваши рефералы меняют $100 через Rainbow, плюс зарабатывайте 10% от баллов, которые получают ваши рефералы",
         "already_claimed_points": "Извините! Вы уже забрали свои баллы.",
         "now": "Сейчас",
         "unranked": "Без ранга",
-        "points_to_rank": "750 баллов до ранга"
+        "points_to_rank": "750 баллов до ранга",
+        "ranking": "Место #%{rank}",
+        "available_to_claim": "Доступно для получения",
+        "claim": "Получить %{value}",
+        "choose_claim_network": "Выбрать сеть для получения",
+        "claim_on_network": "Получить в сети %{network}",
+        "claimed_on_network": "Получено в сети %{network}",
+        "claiming_on_network": "Получение в сети %{network}",
+        "error_claiming": "Получение не удалось",
+        "free_to_claim": "Бесплатно для получения",
+        "has_bridge_fee": "Имеется комиссия за мост",
+        "claim_rewards": "Получение наград",
+        "earned_last_week": "Заработано на прошлой неделе",
+        "top_10_earner": "Топ 10 заработавших",
+        "zero_points": "0 баллов",
+        "no_weekly_rank": "Нет недельного рейтинга",
+        "none": "Нет",
+        "my_earnings": "Мои заработки",
+        "claimed_earnings": "Полученные заработки",
+        "current_value": "Текущая стоимость",
+        "rainbow_users_have_earned": "Пользователи Rainbow заработали",
+        "earn_eth_rewards": "Зарабатывайте ETH награды",
+        "rewards_explainer": "Каждую неделю лучшие зарабатыватели баллов получат часть дохода Rainbow в сети. Собирайте баллы, обменяя или проводя транзакции в Rainbow, используя dapps или приглашая друзей.",
+        "my_points": "Мои баллы",
+        "refer_friends": "Пригласить друзей",
+        "try_again": "Попробуйте снова",
+        "bridge_error": "Частичный успех",
+        "bridge_error_explainer": "Ваши награды были успешно получены на Optimism, но перевод на %{network} не удался. Если хотите, вы можете вручную перевести ваши награды, используя функцию обмена."
       },
       "console": {
         "claim_bonus_paragraph": "Вы получите дополнительные 100 баллов, когда обменяете хотя бы $100 через Rainbow",
@@ -1916,9 +1983,32 @@
       "too_many_signup_request": "Слишком много запросов на регистрацию, пожалуйста, попробуйте позже"
     },
     "swap": {
+      "actions": {
+        "hold_to_swap": "Удерживайте для обмена",
+        "save": "Сохранить",
+        "enter_amount": "Введите сумму",
+        "review": "Просмотр",
+        "fetching_prices": "Получение данных",
+        "swapping": "Смена",
+        "select_token": "Выберите токен",
+        "insufficient_funds": "Недостаточно средств",
+        "insufficient": "Недостаточно",
+        "quote_error": "Ошибка котировки"
+      },
       "aggregators": {
         "rainbow": "Rainbow"
       },
+      "bridging": "Перевод",
+      "swapping": "Смена",
+      "max": "Макс.",
+      "select": "Выбрать",
+      "token_to_get": "Токен для получения",
+      "token_to_swap": "Токен для обмена",
+      "no_balance": "Нет Баланса",
+      "find_a_token_to_buy": "Найдите токен для покупки",
+      "search_your_tokens": "Поиск ваших токенов",
+      "error_executing_swap": "Ошибка при выполнении обмена",
+      "flashbots_protection": "Защита Flashbots",
       "tokens_input": {
         "tokens": "Токены",
         "sort": "Сортировать",
@@ -1945,6 +2035,7 @@
       },
       "loading": "Загрузка...",
       "modal_types": {
+        "bridge": "Мост",
         "confirm": "Подтвердить",
         "deposit": "Депозит",
         "receive": "Получить",
@@ -1976,6 +2067,7 @@
     },
     "token_search": {
       "section_header": {
+        "recent": "Последние",
         "favorites": "Избранное",
         "bridge": "Мост",
         "verified": "Проверенные",
@@ -2849,6 +2941,8 @@
         "forward": "Вперед",
         "back": "Назад"
       }
-    }
+    },
+    "copy": "Копировать",
+    "paste": "Вставить"
   }
 }

@@ -15,6 +15,41 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.34] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.34)
+
+### Added
+
+- Added the ability to copy/paste swap inputs (#5938)
+- Added tracking of critical errors to sentry (#5936)
+- Added ability to open in Rainbow from mobile browsers (#5939)
+- Added Degen mode to skip review sheet for swaps (#5933, #5963, #5969)
+- Added ability to set max on a balance when tapping on badge (#5947)
+- Added e2e coverage for manual wallet backups (#5913)
+- Added a hold to swap button on swaps flow (#5920, #5976)
+- Added a new section that shows the last three user swaps per chain (#5956)
+- Added performance tracking on TimeToSign (#5962)
+
+### Changed
+
+- Disabled location APIs in VisionCamera since we don’t use location features (#5942)
+- Removed FULL_SCREEN_INTENT permission from the manifest (#5955)
+- App is now using different referrer for ETH rewards claims (#5954)
+- Bumped Android dependencies (#5960)
+- Updated Degen mode copy and enabled tracking (#5979)
+
+### Fixed
+
+- Fixed a crash on explainer sheet when there wasn’t a read more link (#5945)
+- Fixed a bug where some bridges couldn’t be made due to gas (#5949)
+- Fixed bugs around flipping logic in swap flow (#5948)
+- Fixed issue where there would be a tab swipe from dapp browser on Android devices (#5964)
+- Fixed a bug where one could proceed to review on a swap when they shouldn’t (#5967)
+- Fixed favorites bugs on search list (#5972)
+- Fixed bugs around copy and pasting (#5953)
+- Fixed an old route that led to Swaps v1 (#5971)
+- Fixed a bug that showed an empty space on token to buy list (#5983, #5989)
+- Fixed issues when saving assets as favorites (#5972, #5982)
+
 ## [1.9.33] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.33)
 
 ## Fixed

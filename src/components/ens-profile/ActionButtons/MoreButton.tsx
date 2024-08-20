@@ -6,7 +6,7 @@ import { MenuActionConfig } from 'react-native-ios-context-menu';
 import { showDeleteContactActionSheet } from '../../contacts';
 import More from '../MoreButton/MoreButton';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { useClipboard, useContacts, useWallets, useWatchWallet } from '@/hooks';
+import { useClipboard, useContacts, useSwitchWallet, useWallets, useWatchWallet } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import Routes from '@/navigation/routesNames';
@@ -24,7 +24,8 @@ const ACTIONS = {
 };
 
 export default function MoreButton({ address, ensName }: { address?: string; ensName?: string }) {
-  const { switchToWalletWithAddress, selectedWallet } = useWallets();
+  const { selectedWallet } = useWallets();
+  const { switchToWalletWithAddress } = useSwitchWallet();
   const { isWatching } = useWatchWallet({ address });
   const { navigate } = useNavigation();
   const { setClipboard } = useClipboard();

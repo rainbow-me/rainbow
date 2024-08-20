@@ -4,13 +4,13 @@ import { Box, Heading } from '@/design-system';
 
 export const ProfileBalanceRowHeight = 24;
 
-export function ProfileBalanceRow({ totalValue, isLoadingUserAssets }: { totalValue: string; isLoadingUserAssets: boolean }) {
+export function ProfileBalanceRow({ totalValue, isLoadingBalance }: { totalValue: string; isLoadingBalance: boolean }) {
   const placeholderHeight = ProfileBalanceRowHeight;
   const placeholderWidth = 200;
 
   return (
     <>
-      {isLoadingUserAssets ? (
+      {isLoadingBalance ? (
         <Box height={{ custom: placeholderHeight }} width={{ custom: placeholderWidth }}>
           <Skeleton>
             <FakeText height={placeholderHeight} width={placeholderWidth} />

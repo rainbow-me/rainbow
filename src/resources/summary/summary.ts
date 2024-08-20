@@ -56,7 +56,7 @@ export type AddysSummaryArgs = {
 // ///////////////////////////////////////////////
 // Query Key
 
-const addysSummaryQueryKey = ({ addresses, currency }: AddysSummaryArgs) =>
+export const addysSummaryQueryKey = ({ addresses, currency }: AddysSummaryArgs) =>
   createQueryKey('addysSummary', { addresses, currency }, { persisterVersion: 1 });
 
 type AddysSummaryQueryKey = ReturnType<typeof addysSummaryQueryKey>;
@@ -88,6 +88,5 @@ export function useAddysSummary(
     ...config,
     staleTime: 1000 * 60 * 2, // Set data to become stale after 2 minutes
     cacheTime: 1000 * 60 * 60 * 24, // Keep unused data in cache for 24 hours
-    keepPreviousData: true, // Use previous data while new data is loading after it becomes stale
   });
 }

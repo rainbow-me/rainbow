@@ -4299,9 +4299,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rainbow-me/swaps@npm:0.22.0":
-  version: 0.22.0
-  resolution: "@rainbow-me/swaps@npm:0.22.0"
+"@rainbow-me/swaps@npm:0.23.0":
+  version: 0.23.0
+  resolution: "@rainbow-me/swaps@npm:0.23.0"
   dependencies:
     "@ethereumjs/util": "npm:9.0.0"
     "@ethersproject/abi": "npm:5.7.0"
@@ -4316,7 +4316,7 @@ __metadata:
     "@ethersproject/transactions": "npm:5.7.0"
     "@ethersproject/wallet": "npm:5.7.0"
     "@metamask/eth-sig-util": "npm:7.0.0"
-  checksum: 10c0/5a466d3d03c5e2f80970750a111f5531ade3a1d85c76d3863e538869adebeaf7c4ce6a7c892f340c603ce5f980f742b3bfc2865fc60cf1fe062072aaa2a710e9
+  checksum: 10c0/3029ca9ed16a45af1961d2fdc79c545ae20a55212b38c8d3daba707617f8630f5328bc52e0e4732d97bffdbda62408093b3c871ef696322f1853d71231561a0f
   languageName: node
   linkType: hard
 
@@ -7811,7 +7811,7 @@ __metadata:
     "@notifee/react-native": "npm:7.8.2"
     "@rainbow-me/provider": "npm:0.0.12"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"
-    "@rainbow-me/swaps": "npm:0.22.0"
+    "@rainbow-me/swaps": "npm:0.23.0"
     "@react-native-async-storage/async-storage": "npm:1.23.1"
     "@react-native-camera-roll/camera-roll": "npm:7.7.0"
     "@react-native-clipboard/clipboard": "npm:1.13.2"
@@ -13410,13 +13410,13 @@ __metadata:
   linkType: hard
 
 "fast-xml-parser@npm:^4.0.12, fast-xml-parser@npm:^4.2.4":
-  version: 4.4.0
-  resolution: "fast-xml-parser@npm:4.4.0"
+  version: 4.4.1
+  resolution: "fast-xml-parser@npm:4.4.1"
   dependencies:
     strnum: "npm:^1.0.5"
   bin:
     fxparser: src/cli/cli.js
-  checksum: 10c0/ce32fad713471a40bea67959894168f297a5dd0aba64b89a2abc71a4fec0b1ae1d49c2dd8d8719ca8beeedf477824358c8a486b360b9f3ef12abc2e355d11318
+  checksum: 10c0/7f334841fe41bfb0bf5d920904ccad09cefc4b5e61eaf4c225bf1e1bb69ee77ef2147d8942f783ee8249e154d1ca8a858e10bda78a5d78b8bed3f48dcee9bf33
   languageName: node
   linkType: hard
 

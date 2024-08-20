@@ -24,6 +24,7 @@
       "tab_showcase": "ショーケース",
       "tab_points": "ポイント",
       "tab_positions": "ポジション",
+      "tab_rewards": "報酬",
       "tab_transactions": "取引",
       "tab_transactions_tooltip": "取引とトークンの送金",
       "tab_uniquetokens": "ユニークトークン",
@@ -431,6 +432,23 @@
         "description": "また、上記の\nアドレスを長押ししてコピーすることもできます"
       }
     },
+    "check_identifier": {
+      "title": "認証が必要です",
+      "description": "デバイスを変更するか、またはRainbowを再インストールした可能性があります。キー チェーンデータが健全な状態にあることを確認するために、認証を行ってください。",
+      "action": "認証",
+      "dismiss": "閉じる",
+      "error_alert": {
+        "title": "キーチェーンの検証エラー",
+        "message": "キーチェーンデータの検証中にエラーが発生しました。もう一度試してください。問題が解決しない場合は、サポートに連絡してください。",
+        "contact_support": "サポートに連絡",
+        "cancel": "キャンセル"
+      },
+      "failure_alert": {
+        "title": "無効なキーチェーンデータ",
+        "message": "キーチェーンデータの整合性を確認できませんでした。ウォレットをリストアしてから再試行してください。問題が解決しない場合は、サポートに連絡してください。",
+        "action": "続ける"
+      }
+    },
     "cloud": {
       "backup_success": "ウォレットは正常にバックアップされました！"
     },
@@ -541,7 +559,8 @@
         "from_divider": "送信元",
         "to_divider": "to",
         "view_on": "%{blockExplorerName}で表示する",
-        "view_on_etherscan": "Etherscanで見る"
+        "view_on_etherscan": "Etherscanで見る",
+        "copy_contract_address": "契約アドレスをコピー"
       },
       "all_networks": "全てのネットワーク",
       "filter_by_network": "ネットワークでフィルタリング",
@@ -577,7 +596,8 @@
       "price_impact": {
         "long_wait": {
           "title": "長い待ち時間",
-          "description": "Approx. %{time}"
+          "description": "Approx. %{time}",
+          "description_prefix": "約"
         },
         "unknown_price": {
           "title": "市場価値不明",
@@ -587,6 +607,7 @@
         "small_market": "小さな市場",
         "small_market_try_smaller_amount": "小さな市場 — より小さい金額を試してください",
         "you_are_losing": "価格インパクト %{priceImpact}",
+        "you_are_losing_prefix": "損失が発生しています",
         "no_data": "市場価値不明",
         "label": "可能な損失",
         "no_data_subtitle": "続行する場合は、提示された金額に満足していることを確認してください。"
@@ -687,6 +708,7 @@
         "flashbots_protect": "Flashbots Protect",
         "losing": "損失中",
         "on": "オン",
+        "off": "オフ",
         "price_impact": "価格へのインパクト",
         "price_row_per_token": "あたり",
         "slippage_message": "これは小さな市場なので、あなたは悪い価格を取得しています。 より小さな取引を試してみてください！",
@@ -723,6 +745,16 @@
         "number_of_steps": "%{number} ステップ",
         "input_exchange_rate": "1 %{inputSymbol} につき %{executionRate} %{outputSymbol}",
         "output_exchange_rate": "1 %{outputSymbol} につき %{executionRate} %{inputSymbol}"
+      },
+      "swap_details_v2": {
+        "automatic": "自動",
+        "degen_mode": "デゲンモード",
+        "degen_mode_description": "レビューページをスキップして速くスワップする",
+        "maximum_sold": "最大売却数量",
+        "minimum_received": "受け取る最小額",
+        "preferred_network": "優先ネットワーク",
+        "rainbow_fee": "Rainbow手数料込み",
+        "settings": "設定"
       },
       "token_index": {
         "get_token": "%{assetSymbol}を入手",
@@ -1030,14 +1062,17 @@
         "urgent": "緊急",
         "custom": "カスタム"
       },
+      "unable_to_determine_selected_gas": "選択されたガスを判断できません",
       "network_fee": "推定ネットワーク手数料",
       "current_base_fee": "現在の基本手数料",
       "max_base_fee": "最大ベース手数料",
       "miner_tip": "マイナーチップ",
+      "gas_price": "ガス価格",
       "max_transaction_fee": "最大取引手数料",
       "warning_separator": "·",
       "lower_than_suggested": "低い · スタックする可能性あり",
       "higher_than_suggested": "高い · 過剰支払い",
+      "likely_to_fail": "低い · 失敗する可能性が高い",
       "max_base_fee_too_low_error": "低い · 失敗する可能性が高い",
       "tip_too_low_error": "低い · 失敗する可能性が高い",
       "alert_message_higher_miner_tip_needed": "問題を回避するために、より高いマイナーチップの設定が推奨されます。",
@@ -1357,13 +1392,16 @@
       },
       "claim": {
         "title": "ポイントを請求する",
+        "title_rewards_line_1": "ようこそ",
+        "title_rewards_line_2": "Rainbow報酬",
         "subtitle": "ポイントがここに。あなたがいくつ獲得したかを確認してください。",
+        "subtitle_rewards": "Rainbowを使用することで報酬を獲得できます。オンチェーンで操作を行い、ポイントを獲得し、ETHを得ることができます。",
         "get_started": "始める",
         "use_referral_code": "紹介コードを使用する"
       },
       "referral": {
         "title": "あなたの紹介コードを入力してください",
-        "subtitle": "以下に紹介コードを入力して、ボーナス報酬を請求してください。",
+        "subtitle": "下に紹介コードを入力して、ポイントボーナスを獲得してください。",
         "back": "戻る",
         "error": "何か問題が発生しました。アプリを再起動して、もう一度お試しください。",
         "get_started": "始める",
@@ -1378,6 +1416,7 @@
         "share_link": "リンクを共有する",
         "next_drop": "次のドロップ",
         "your_rank": "あなたのランク",
+        "no_change": "変更なし",
         "of_x": "%{totalUsers}個中の",
         "referrals": "紹介",
         "streak": "ストリーク",
@@ -1395,12 +1434,40 @@
         "today": "今日",
         "error": "おっと！\nリフレッシュするには引っ張ってください。",
         "points": "ポイント",
+        "points_capitalized": "ポイント",
         "referral_code_copied": "紹介コードをコピーしました",
         "earn_points_for_referring": "あなたの紹介者がRainbowを通じて$100を交換するとポイントが獲得でき、さらに紹介者が獲得するポイントの10%を獲得できます",
         "already_claimed_points": "申し訳ありません！ ポイントは既に請求済みです。",
         "now": "今",
         "unranked": "ランク外",
-        "points_to_rank": "ランクには750ポイントが必要です"
+        "points_to_rank": "ランクには750ポイントが必要です",
+        "ranking": "%{rank}位にランクイン",
+        "available_to_claim": "請求可能",
+        "claim": "%{value}を請求",
+        "choose_claim_network": "請求ネットワークを選択",
+        "claim_on_network": "%{network}で請求",
+        "claimed_on_network": "%{network}で請求済み",
+        "claiming_on_network": "%{network}で請求中",
+        "error_claiming": "主張失敗",
+        "free_to_claim": "無料で請求",
+        "has_bridge_fee": "ブリッジ手数料あり",
+        "claim_rewards": "報酬を請求",
+        "earned_last_week": "先週獲得",
+        "top_10_earner": "トップ10獲得者",
+        "zero_points": "0ポイント",
+        "no_weekly_rank": "週間ランクなし",
+        "none": "なし",
+        "my_earnings": "私の収益",
+        "claimed_earnings": "請求された収益",
+        "current_value": "現在の値",
+        "rainbow_users_have_earned": "Rainbowユーザーが稼いだ",
+        "earn_eth_rewards": "ETH報酬を稼ぐ",
+        "rewards_explainer": "毎週、トップ週次ポイント獲得者はRainbowのオンチェーン収益の一部を受け取ります。 Rainbowでのスワップまたはトランザクション、dappsの使用、または友達を紹介してポイントを集めましょう。",
+        "my_points": "私のポイント",
+        "refer_friends": "友達を紹介",
+        "try_again": "再試行",
+        "bridge_error": "部分的な成功",
+        "bridge_error_explainer": "報酬はOptimismで正常に受け取られましたが、%{network}への転送に失敗しました。必要に応じて、Swap機能を使用して手動で報酬をブリッジすることができます。"
       },
       "console": {
         "claim_bonus_paragraph": "Rainbowで少なくとも$100をスワップすると、追加で100ポイントがもらえます",
@@ -1916,9 +1983,32 @@
       "too_many_signup_request": "登録リクエストが多すぎるため、後でもう一度お試しください"
     },
     "swap": {
+      "actions": {
+        "hold_to_swap": "スワップを保持",
+        "save": "保存する",
+        "enter_amount": "金額を入力してください",
+        "review": "レビュー",
+        "fetching_prices": "取得中",
+        "swapping": "スワップ中",
+        "select_token": "トークンを選択",
+        "insufficient_funds": "資金が不足しています",
+        "insufficient": "不足しています",
+        "quote_error": "見積りエラー"
+      },
       "aggregators": {
         "rainbow": "Rainbow"
       },
+      "bridging": "ブリッジング中",
+      "swapping": "スワップ中",
+      "max": "最大",
+      "select": "選択",
+      "token_to_get": "取得するトークン",
+      "token_to_swap": "交換するトークン",
+      "no_balance": "残高なし",
+      "find_a_token_to_buy": "購入するトークンを探す",
+      "search_your_tokens": "トークンを検索",
+      "error_executing_swap": "スワップの実行エラー",
+      "flashbots_protection": "Flashbots保護",
       "tokens_input": {
         "tokens": "トークン",
         "sort": "ソート",
@@ -1945,6 +2035,7 @@
       },
       "loading": "読み込み中...",
       "modal_types": {
+        "bridge": "ブリッジ",
         "confirm": "確認",
         "deposit": "預金",
         "receive": "受け取る",
@@ -1976,6 +2067,7 @@
     },
     "token_search": {
       "section_header": {
+        "recent": "最近の",
         "favorites": "お気に入り",
         "bridge": "ブリッジ",
         "verified": "確認済み",
@@ -2849,6 +2941,8 @@
         "forward": "進む",
         "back": "戻る"
       }
-    }
+    },
+    "copy": "Copy",
+    "paste": "貼り付け"
   }
 }

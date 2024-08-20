@@ -43,9 +43,8 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { toHex } from 'viem';
 import { RainbowNetworks } from '@/networks';
 import * as i18n from '@/languages';
-import { convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { useDispatch, useSelector } from 'react-redux';
-import store, { AppState } from '@/redux/store';
+import { useDispatch } from 'react-redux';
+import store from '@/redux/store';
 import { getDappHost } from '@/utils/connectedApps';
 import WebView from 'react-native-webview';
 import { Navigation, useNavigation } from '@/navigation';
@@ -64,6 +63,7 @@ import { getRemoteConfig } from '@/model/remoteConfig';
 import { SWAPS_V2, useExperimentalFlag } from '@/config';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { greaterThan } from '@/helpers/utilities';
 
 const PAGES = {
   HOME: 'home',
@@ -88,7 +88,6 @@ export const ControlPanel = () => {
   const {
     params: { activeTabRef },
   } = useRoute<RouteProp<ControlPanelParams, 'ControlPanel'>>();
-  const nativeCurrency = useSelector((state: AppState) => state.settings.nativeCurrency);
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
   const activeTabUrl = useBrowserStore(state => state.getActiveTabUrl());
   const activeTabHost = getDappHost(activeTabUrl || '') || DEFAULT_TAB_URL;
@@ -140,12 +139,14 @@ export const ControlPanel = () => {
     const bluetoothWallets: ControlPanelMenuItemProps[] = [];
     const readOnlyWallets: ControlPanelMenuItemProps[] = [];
 
-    const accountBalances: Record<string, number> = {};
+    const accountBalances: Record<string, string> = {};
 
     Object.values(walletsWithBalancesAndNames).forEach(wallet => {
       wallet.addresses
         .filter(account => account.visible)
         .forEach(account => {
+          const balanceText = account.balances ? account.balances.totalBalanceDisplay : i18n.t(i18n.l.wallet.change_wallet.loading_balance);
+
           const item: ControlPanelMenuItemProps = {
             IconComponent: account.image ? (
               <ListAvatar url={account.image} />
@@ -153,20 +154,14 @@ export const ControlPanel = () => {
               <ListEmojiAvatar address={account.address} color={account.color} label={account.label} />
             ),
             label: removeFirstEmojiFromString(account.label) || address(account.address, 6, 4),
-            secondaryLabel:
-              // eslint-disable-next-line no-nested-ternary
-              wallet.type === WalletTypes.readOnly
-                ? i18n.t(i18n.l.wallet.change_wallet.watching)
-                : account.balance
-                  ? convertAmountToNativeDisplay(account.balance, nativeCurrency)
-                  : i18n.t(i18n.l.wallet.change_wallet.no_balance),
+            secondaryLabel: wallet.type === WalletTypes.readOnly ? i18n.t(i18n.l.wallet.change_wallet.watching) : balanceText,
             uniqueId: account.address,
             color: colors.avatarBackgrounds[account.color],
             imageUrl: account.image || undefined,
             selected: account.address === currentAddress,
           };
 
-          accountBalances[account.address] = Number(account.balance);
+          accountBalances[account.address] = account.balances?.totalBalanceAmount;
 
           if ([WalletTypes.mnemonic, WalletTypes.seed, WalletTypes.privateKey].includes(wallet.type)) {
             sortedWallets.push(item);
@@ -178,13 +173,13 @@ export const ControlPanel = () => {
         });
     });
 
-    sortedWallets.sort((a, b) => accountBalances[b.uniqueId] - accountBalances[a.uniqueId]);
-    bluetoothWallets.sort((a, b) => accountBalances[b.uniqueId] - accountBalances[a.uniqueId]);
+    sortedWallets.sort((a, b) => (greaterThan(accountBalances[b.uniqueId], accountBalances[a.uniqueId]) ? 1 : -1));
+    bluetoothWallets.sort((a, b) => (greaterThan(accountBalances[b.uniqueId], accountBalances[a.uniqueId]) ? 1 : -1));
 
     const sortedItems = [...sortedWallets, ...bluetoothWallets, ...readOnlyWallets];
 
     return sortedItems;
-  }, [walletsWithBalancesAndNames, currentAddress, nativeCurrency]);
+  }, [walletsWithBalancesAndNames, currentAddress]);
 
   const { testnetsEnabled } = store.getState().settings;
 
@@ -456,7 +451,7 @@ const HomePanel = ({
 
     if (swaps_v2 || swapsV2Enabled) {
       swapsStore.setState({
-        inputAsset: userAssetsStore.getState().getHighestValueAsset(),
+        inputAsset: userAssetsStore.getState().getHighestValueEth(),
       });
       InteractionManager.runAfterInteractions(() => {
         navigate(Routes.SWAP);
@@ -484,7 +479,7 @@ const HomePanel = ({
       // TODO: We need to set something in swapsStore that deliniates between a swap and bridge
       // for now let's just treat it like a normal swap
       swapsStore.setState({
-        inputAsset: userAssetsStore.getState().getHighestValueAsset(),
+        inputAsset: userAssetsStore.getState().getHighestValueEth(),
       });
       InteractionManager.runAfterInteractions(() => {
         navigate(Routes.SWAP);
