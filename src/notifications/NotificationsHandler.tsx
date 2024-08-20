@@ -181,9 +181,9 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
         transaction,
       });
     } else if (type === NotificationTypes.walletConnect) {
-      logger.info(`NotificationsHandler: handling wallet connect notification`, { notification });
+      logger.debug(`[NotificationsHandler]: handling wallet connect notification`, { notification });
     } else if (type === NotificationTypes.marketing) {
-      logger.info(`NotificationsHandler: handling marketing notification`, {
+      logger.debug(`[NotificationsHandler]: handling marketing notification`, {
         notification,
       });
       const data = notification.data as unknown as MarketingNotificationData;
@@ -194,7 +194,7 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
         });
       }
     } else {
-      logger.warn(`NotificationsHandler: received unknown notification`, {
+      logger.warn(`[NotificationsHandler]: received unknown notification`, {
         notification,
       });
     }

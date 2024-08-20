@@ -162,7 +162,7 @@ export const walletsLoadState =
             });
             if (found) {
               selectedWallet = someWallet;
-              logger.info('Found selected wallet based on loadAddress result');
+              logger.debug('[redux/wallets]: Found selected wallet based on loadAddress result');
             }
             return found;
           });
@@ -172,7 +172,7 @@ export const walletsLoadState =
       // Recover from broken state (account address not in selected wallet)
       if (!addressFromKeychain) {
         addressFromKeychain = await loadAddress();
-        logger.info("addressFromKeychain wasn't set on settings so it is being loaded from loadAddress");
+        logger.debug("[redux/wallets]: addressFromKeychain wasn't set on settings so it is being loaded from loadAddress");
       }
 
       const selectedAddress = selectedWallet?.addresses.find(a => {
@@ -194,7 +194,7 @@ export const walletsLoadState =
         if (!account) return;
         await dispatch(settingsUpdateAccountAddress(account.address));
         await saveAddress(account.address);
-        logger.info('Selected the first visible address because there was not selected one');
+        logger.debug('[redux/wallets]: Selected the first visible address because there was not selected one');
       }
 
       const walletNames = await getWalletNames();
@@ -209,7 +209,7 @@ export const walletsLoadState =
 
       return wallets;
     } catch (error) {
-      logger.error(new RainbowError('Exception during walletsLoadState'), {
+      logger.error(new RainbowError('[redux/wallets]: Exception during walletsLoadState'), {
         message: (error as Error)?.message,
       });
     }
@@ -281,7 +281,7 @@ export const setAllWalletsWithIdsAsBackedUp =
       try {
         await backupUserDataIntoCloud({ wallets: newWallets });
       } catch (e) {
-        logger.error(new RainbowError('Saving multiple wallets UserData to cloud failed.'), {
+        logger.error(new RainbowError('[redux/wallets]: Saving multiple wallets UserData to cloud failed.'), {
           message: (e as Error)?.message,
         });
         throw e;
@@ -325,7 +325,7 @@ export const setWalletBackedUp =
       try {
         await backupUserDataIntoCloud({ wallets: newWallets });
       } catch (e) {
-        logger.error(new RainbowError('Saving wallet UserData to cloud failed.'), {
+        logger.error(new RainbowError('[redux/wallets]: Saving wallet UserData to cloud failed.'), {
           message: (e as Error)?.message,
         });
         throw e;
@@ -346,7 +346,7 @@ export const updateWalletBackupStatusesBasedOnCloudUserData =
     try {
       currentUserData = await fetchUserDataFromCloud();
     } catch (error) {
-      logger.error(new RainbowError('There was an error when trying to update wallet backup statuses'), {
+      logger.error(new RainbowError('[redux/wallets]: There was an error when trying to update wallet backup statuses'), {
         error: (error as Error).message,
       });
       return;
@@ -385,7 +385,7 @@ export const updateWalletBackupStatusesBasedOnCloudUserData =
           relatedCloudWalletId = walletDataForCurrentAddress.id;
         } else if (relatedCloudWalletId !== walletDataForCurrentAddress.id) {
           logger.warn(
-            'Wallet address is linked to multiple or different accounts in the cloud backup metadata. It could mean that there is an issue with the cloud backup metadata.'
+            '[redux/wallets]: Wallet address is linked to multiple or different accounts in the cloud backup metadata. It could mean that there is an issue with the cloud backup metadata.'
           );
           return;
         }
@@ -612,37 +612,37 @@ export const fetchWalletNames = () => async (dispatch: Dispatch<WalletsUpdateNam
 export const checkKeychainIntegrity = () => async (dispatch: ThunkDispatch<AppState, unknown, never>, getState: AppGetState) => {
   try {
     let healthyKeychain = true;
-    logger.info('[KeychainIntegrityCheck]: starting checks');
+    logger.debug('[redux/wallets]: Starting keychain integrity checks');
 
     const hasAddress = await hasKey(addressKey);
     if (hasAddress) {
-      logger.info('[KeychainIntegrityCheck]: address is ok');
+      logger.debug('[redux/wallets]: address is ok');
     } else {
       healthyKeychain = false;
-      logger.info(`[KeychainIntegrityCheck]: address is missing: ${hasAddress}`);
+      logger.debug(`[redux/wallets]: address is missing: ${hasAddress}`);
     }
 
     const hasOldSeedPhraseMigratedFlag = await hasKey(oldSeedPhraseMigratedKey);
     if (hasOldSeedPhraseMigratedFlag) {
-      logger.info('[KeychainIntegrityCheck]: migrated flag is OK');
+      logger.debug('[redux/wallets]: migrated flag is OK');
     } else {
-      logger.info(`[KeychainIntegrityCheck]: migrated flag is present: ${hasOldSeedPhraseMigratedFlag}`);
+      logger.debug(`[redux/wallets]: migrated flag is present: ${hasOldSeedPhraseMigratedFlag}`);
     }
 
     const hasOldSeedphrase = await hasKey(seedPhraseKey);
     if (hasOldSeedphrase) {
-      logger.info('[KeychainIntegrityCheck]: old seed is still present!');
+      logger.debug('[redux/wallets]: old seed is still present!');
     } else {
-      logger.info(`[KeychainIntegrityCheck]: old seed is present: ${hasOldSeedphrase}`);
+      logger.debug(`[redux/wallets]: old seed is present: ${hasOldSeedphrase}`);
     }
 
     const { wallets, selected } = getState().wallets;
     if (!wallets) {
-      logger.warn('[KeychainIntegrityCheck]: wallets are missing from redux');
+      logger.warn('[redux/wallets]: wallets are missing from redux');
     }
 
     if (!selected) {
-      logger.warn('[KeychainIntegrityCheck]: selectedWallet is missing from redux');
+      logger.warn('[redux/wallets]: selectedWallet is missing from redux');
     }
 
     const nonReadOnlyWalletKeys = keys(wallets).filter(key => wallets![key].type !== WalletTypes.readOnly);
@@ -654,18 +654,18 @@ export const checkKeychainIntegrity = () => async (dispatch: ThunkDispatch<AppSt
       const seedKeyFound = await hasKey(`${key}_${seedPhraseKey}`);
       if (!seedKeyFound) {
         healthyWallet = false;
-        logger.warn('[KeychainIntegrityCheck]: seed key is missing');
+        logger.warn('[redux/wallets]: seed key is missing');
       } else {
-        logger.info('[KeychainIntegrityCheck]: seed key is present');
+        logger.debug('[redux/wallets]: seed key is present');
       }
 
       for (const account of wallet.addresses) {
         const pkeyFound = await hasKey(`${account.address}_${privateKeyKey}`);
         if (!pkeyFound) {
           healthyWallet = false;
-          logger.warn(`[KeychainIntegrityCheck]: pkey is missing`);
+          logger.warn(`[redux/wallets]: pkey is missing`);
         } else {
-          logger.info(`[KeychainIntegrityCheck]: pkey is present`);
+          logger.debug(`[redux/wallets]: pkey is present`);
         }
       }
 
@@ -679,25 +679,25 @@ export const checkKeychainIntegrity = () => async (dispatch: ThunkDispatch<AppSt
       }
 
       if (!healthyWallet) {
-        logger.warn('[KeychainIntegrityCheck]: declaring wallet unhealthy...');
+        logger.warn('[redux/wallets]: declaring wallet unhealthy...');
         healthyKeychain = false;
         wallet.damaged = true;
         await dispatch(walletsUpdate(wallets!));
         // Update selected wallet if needed
         if (wallet.id === selected!.id) {
-          logger.warn('[KeychainIntegrityCheck]: declaring selected wallet unhealthy...');
+          logger.warn('[redux/wallets]: declaring selected wallet unhealthy...');
           await dispatch(walletsSetSelected(wallets![wallet.id]));
         }
-        logger.info('[KeychainIntegrityCheck]: done updating wallets');
+        logger.debug('[redux/wallets]: done updating wallets');
       }
     }
     if (!healthyKeychain) {
       captureMessage('Keychain Integrity is not OK');
     }
-    logger.info('[KeychainIntegrityCheck]: check completed');
+    logger.debug('[redux/wallets]: check completed');
     await saveKeychainIntegrityState('done');
   } catch (e) {
-    logger.error(new RainbowError("[KeychainIntegrityCheck]: error thrown'"), {
+    logger.error(new RainbowError("[redux/wallets]: error thrown'"), {
       message: (e as Error)?.message,
     });
     captureMessage('Error running keychain integrity checks');

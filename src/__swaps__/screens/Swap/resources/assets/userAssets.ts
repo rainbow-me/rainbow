@@ -123,7 +123,7 @@ async function userAssetsQueryFunction({ queryKey: [{ address, currency, testnet
     }
     return cachedUserAssets;
   } catch (e) {
-    logger.error(new RainbowError('userAssetsQueryFunction: '), {
+    logger.error(new RainbowError('[userAssetsQueryFunction]: Failed to fetch user assets'), {
       message: (e as Error)?.message,
     });
     return cachedUserAssets;
@@ -169,7 +169,7 @@ async function userAssetsQueryFunctionRetryByChain({
     }
     queryClient.setQueryData(userAssetsQueryKey({ address, currency, testnetMode }), cachedUserAssets);
   } catch (e) {
-    logger.error(new RainbowError('userAssetsQueryFunctionRetryByChain: '), {
+    logger.error(new RainbowError('[userAssetsQueryFunctionRetryByChain]: Failed to retry fetching user assets'), {
       message: (e as Error)?.message,
     });
   }

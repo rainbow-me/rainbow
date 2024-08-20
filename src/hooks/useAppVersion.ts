@@ -1,7 +1,7 @@
 import VersionNumber from 'react-native-version-number';
 import { useState } from 'react';
 function formatAppVersion(appVersion = VersionNumber.appVersion) {
-  let version = `${appVersion} (${VersionNumber.buildVersion})`;
+  const version = `${appVersion} (${VersionNumber.buildVersion})`;
   return version;
 }
 

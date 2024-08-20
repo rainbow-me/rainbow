@@ -56,7 +56,7 @@ import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
 import { ethereumUtils, getUniqueTokenType, promiseUtils } from '@/utils';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
 import { getNetworkObj } from '@/networks';
 import { IS_ANDROID } from '@/env';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
@@ -318,7 +318,7 @@ export const SendConfirmationSheet = () => {
           updateTxFee(gasLimit, null);
         })
         .catch(e => {
-          logger.sentry('Error calculating gas limit', e);
+          logger.error(new RainbowError(`[SendConfirmationSheet]: error calculating gas limit: ${e}`));
           updateTxFee(null, null);
         });
     }
@@ -395,7 +395,7 @@ export const SendConfirmationSheet = () => {
               await callback();
             }
           } catch (e) {
-            logger.sentry('TX submit failed', e);
+            logger.error(new RainbowError(`[SendConfirmationSheet]: error submitting transaction: ${e}`));
             setIsAuthorizing(false);
           }
         },

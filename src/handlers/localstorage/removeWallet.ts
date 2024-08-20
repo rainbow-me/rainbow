@@ -8,16 +8,18 @@ import { logger, RainbowError } from '@/logger';
 import { removeNotificationSettingsForWallet } from '@/notifications/settings';
 
 export const removeWalletData = async (accountAddress: any) => {
-  logger.debug('[remove wallet]', { accountAddress });
+  logger.debug('[localstorage/removeWallet]: removing wallet data', { accountAddress });
   const allPrefixes = accountLocalKeys.concat(walletConnectAccountLocalKeys);
-  logger.debug('[remove wallet] - all prefixes', { allPrefixes });
+  logger.debug('[localstorage/removeWallet]: all prefixes', { allPrefixes });
   const networks = keys(NetworkTypes);
   const allKeysWithNetworks = allPrefixes.map(prefix => networks.map(network => getKey(prefix, accountAddress, network)));
   const allKeys = allKeysWithNetworks.flat();
   try {
     await AsyncStorage.multiRemove(allKeys);
   } catch (error) {
-    logger.error(new RainbowError('Error removing wallet data from storage'));
+    logger.error(new RainbowError('[localstorage/removeWallet]: Error removing wallet data from storage'), {
+      error,
+    });
   }
   removeNotificationSettingsForWallet(accountAddress);
 };

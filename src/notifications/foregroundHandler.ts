@@ -30,6 +30,8 @@ export function handleShowingForegroundNotification(remoteMessage: FixedRemoteMe
   }
 
   notifee.displayNotification(notification).catch(error => {
-    logger.error(new RainbowError('Error while displaying notification with notifee library'), { error });
+    logger.error(new RainbowError('[notifications]: Error while displaying notification with notifee library'), {
+      error,
+    });
   });
 }

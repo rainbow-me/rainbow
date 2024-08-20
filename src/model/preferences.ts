@@ -88,13 +88,13 @@ export async function setPreference<K extends keyof PreferencesDataMap>(
     };
     const message = JSON.stringify(objToSign);
     const signature2 = await signWithSigningWallet(message);
-    logger.debug('☁️  SENDING ', { message });
+    logger.debug(`[preferences]: ☁️  SENDING `, { message });
     const { data } = await preferencesAPI.post<PreferencesResponse<K>>(`${PREFS_ENDPOINT}/${key}`, {
       message,
       signature,
       signature2,
     });
-    logger.debug('☁️  RESPONSE', {
+    logger.debug(`[preferences]: ☁️  RESPONSE`, {
       reason: data?.reason,
       success: data?.success,
     });
@@ -105,7 +105,7 @@ export async function setPreference<K extends keyof PreferencesDataMap>(
 
     return data?.success;
   } catch (e) {
-    logger.warn(`Preferences API failed to set preference`, {
+    logger.warn(`[preferences]: Preferences API failed to set preference`, {
       preferenceKey: key,
     });
     return false;
@@ -120,7 +120,7 @@ export async function getPreference<K extends keyof PreferencesDataMap>(
     const { data } = await preferencesAPI.get<PreferencesResponse<K>>(`${PREFS_ENDPOINT}/${key}`, {
       params: { address },
     });
-    logger.debug('☁️  RESPONSE', {
+    logger.debug(`[preferences]: ☁️  RESPONSE`, {
       reason: data?.reason,
       success: data?.success,
     });
@@ -131,8 +131,9 @@ export async function getPreference<K extends keyof PreferencesDataMap>(
 
     return data.data;
   } catch (e) {
-    logger.warn(`Preferences API failed to get preference`, {
+    logger.warn(`[preferences]: Preferences API failed to get preference`, {
       preferenceKey: key,
+      error: e,
     });
     return null;
   }

@@ -6,7 +6,7 @@ import { Duration, sub } from 'date-fns';
 import { isValidAddress, isZeroAddress } from 'ethereumjs-util';
 import { BigNumber } from '@ethersproject/bignumber';
 import { debounce, isEmpty, sortBy } from 'lodash';
-import { fetchENSAvatar, prefetchENSAvatar } from '../hooks/useENSAvatar';
+import { fetchENSAvatar } from '../hooks/useENSAvatar';
 import { prefetchENSCover } from '../hooks/useENSCover';
 import { prefetchENSRecords } from '../hooks/useENSRecords';
 import { ENSActionParameters, ENSRapActionType } from '@/raps/common';
@@ -18,16 +18,14 @@ import { ENS_DOMAIN, ENS_RECORDS, ENSRegistrationTransactionType, generateSalt, 
 import { add } from '@/helpers/utilities';
 import { ImgixImage } from '@/components/images';
 import { ENS_NFT_CONTRACT_ADDRESS, ethUnits } from '@/references';
-import { labelhash, logger, profileUtils } from '@/utils';
+import { labelhash, profileUtils } from '@/utils';
 import { AvatarResolver } from '@/ens-avatar/src';
 import { ensClient } from '@/graphql';
 import { prefetchFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
 import { prefetchENSAddress } from '@/resources/ens/ensAddressQuery';
-import { ENS_MARQUEE_QUERY_KEY } from '@/resources/metadata/ensMarqueeQuery';
-import { queryClient } from '@/react-query';
-import { EnsMarqueeAccount } from '@/graphql/__generated__/metadata';
 import { MimeType, handleNFTImages } from '@/utils/handleNFTImages';
 import store from '@/redux/store';
+import { logger, RainbowError } from '@/logger';
 
 const DUMMY_RECORDS = {
   description: 'description',
@@ -137,8 +135,9 @@ export const fetchMetadata = async ({
     const image_url = `https://metadata.ens.domains/mainnet/${contractAddress}/${tokenId}/image`;
     return { image_url, name };
   } catch (error) {
-    logger.sentry('ENS: Error getting ENS metadata', error);
-    captureException(new Error('ENS: Error getting ENS metadata'));
+    logger.error(new RainbowError(`[ENS]: fetchMetadata failed`), {
+      error,
+    });
     throw error;
   }
 };
@@ -175,8 +174,9 @@ export const fetchEnsTokens = async ({
         .filter(<TToken>(token: TToken | null | undefined): token is TToken => !!token) || []
     );
   } catch (error) {
-    logger.sentry('ENS: Error getting ENS unique tokens', error);
-    captureException(new Error('ENS: Error getting ENS unique tokens'));
+    logger.error(new RainbowError(`[ENS]: fetchEnsTokens failed`), {
+      error,
+    });
     return [];
   }
 };

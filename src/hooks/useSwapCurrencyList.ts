@@ -11,7 +11,7 @@ import { swapSearch } from '@/handlers/tokenSearch';
 import { addHexPrefix, getProviderForNetwork } from '@/handlers/web3';
 import tokenSectionTypes from '@/helpers/tokenSectionTypes';
 import { DAI_ADDRESS, erc20ABI, ETH_ADDRESS, rainbowTokenList, USDC_ADDRESS, WBTC_ADDRESS, WETH_ADDRESS } from '@/references';
-import { ethereumUtils, filterList, isLowerCaseMatch, logger } from '@/utils';
+import { ethereumUtils, filterList, isLowerCaseMatch } from '@/utils';
 import useSwapCurrencies from '@/hooks/useSwapCurrencies';
 import { Network } from '@/helpers';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
@@ -19,6 +19,7 @@ import { IS_TEST } from '@/env';
 import { useFavorites } from '@/resources/favorites';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { ChainId } from '@/__swaps__/types/chains';
+import { logger } from '@/logger';
 
 const MAINNET_CHAINID = 1;
 type swapCurrencyListType =
@@ -213,8 +214,7 @@ const useSwapCurrencyList = (searchQuery: string, searchChainId = MAINNET_CHAINI
               } as RainbowToken,
             ];
           } catch (e) {
-            logger.log('error getting token data');
-            logger.log(e);
+            logger.warn('[useSwapCurrencyList]: error getting token data', { error: (e as Error).message });
             return null;
           }
         }
