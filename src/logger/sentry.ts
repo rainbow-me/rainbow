@@ -8,7 +8,6 @@ import isTestFlight from '@/helpers/isTestFlight';
 
 export const defaultOptions: Sentry.ReactNativeOptions = {
   attachStacktrace: true,
-  defaultIntegrations: false,
   dsn: SENTRY_ENDPOINT,
   enableAppHangTracking: false,
   enableAutoPerformanceTracing: false,
@@ -18,13 +17,13 @@ export const defaultOptions: Sentry.ReactNativeOptions = {
   integrations: [],
   maxBreadcrumbs: 10,
   tracesSampleRate: 0,
-  // beforeSend(event) {
-  //   if (!event.contexts?.device?.family) {
-  //     return null;
-  //   }
+  beforeSend(event) {
+    if (!event.contexts?.device) {
+      return null; // Drop the event
+    }
 
-  //   return event;
-  // },
+    return event; // Keep the event if it passes the checks
+  },
 };
 
 export function initSentry() {
