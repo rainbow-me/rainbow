@@ -1,4 +1,4 @@
-import { Box } from '@/design-system';
+import { Box, useColorMode } from '@/design-system';
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, { Easing, useAnimatedStyle, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
@@ -7,17 +7,20 @@ import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { inputKeys } from '@/__swaps__/types/swap';
+import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 
 export function SwapInputValuesCaret({ inputCaretType }: { inputCaretType: inputKeys }) {
+  const { isDarkMode } = useColorMode();
   const {
     configProgress,
     focusedInput,
     inputProgress,
+    internalSelectedInputAsset,
+    internalSelectedOutputAsset,
     isQuoteStale,
     outputProgress,
     SwapInputController,
     sliderPressProgress,
-    AnimatedSwapStyles,
   } = useSwapContext();
 
   const inputMethod = SwapInputController.inputMethod;
@@ -57,8 +60,13 @@ export function SwapInputValuesCaret({ inputCaretType }: { inputCaretType: input
     };
   });
 
-  const assetCaretStyle =
-    inputCaretType === 'inputAmount' ? AnimatedSwapStyles.assetToSellCaretStyle : AnimatedSwapStyles.assetToBuyCaretStyle;
+  const assetCaretStyle = useAnimatedStyle(() => {
+    const selectedAsset =
+      inputCaretType === 'inputAmount' || inputCaretType === 'inputNativeValue' ? internalSelectedInputAsset : internalSelectedOutputAsset;
+    return {
+      backgroundColor: getColorValueForThemeWorklet(selectedAsset.value?.highContrastColor, isDarkMode, true),
+    };
+  });
 
   return (
     <Animated.View style={[styles.caretContainer, caretStyle]}>
