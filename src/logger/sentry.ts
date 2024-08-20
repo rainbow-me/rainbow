@@ -8,7 +8,6 @@ import isTestFlight from '@/helpers/isTestFlight';
 
 export const defaultOptions: Sentry.ReactNativeOptions = {
   attachStacktrace: true,
-  defaultIntegrations: false,
   dsn: SENTRY_ENDPOINT,
   enableAppHangTracking: false,
   enableAutoPerformanceTracing: false,
