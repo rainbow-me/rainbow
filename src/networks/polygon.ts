@@ -17,7 +17,6 @@ export const polygonNetworkObject: NetworkProperties = {
   longName: 'Polygon',
   value: Network.polygon,
   networkType: 'layer2',
-  blockTimeInMs: 2_000,
 
   nativeCurrency: {
     ...polygon.nativeCurrency,

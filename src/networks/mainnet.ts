@@ -18,7 +18,6 @@ export const mainnetNetworkObject: NetworkProperties = {
   longName: 'Ethereum',
   value: Network.mainnet,
   networkType: 'layer1',
-  blockTimeInMs: 15_000,
 
   nativeCurrency: {
     ...mainnet.nativeCurrency,

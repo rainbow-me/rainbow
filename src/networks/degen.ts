@@ -19,7 +19,6 @@ export const degenNetworkObject: NetworkProperties = {
   longName: 'Degen Chain',
   value: Network.degen,
   networkType: 'layer2',
-  blockTimeInMs: 5_000,
 
   nativeCurrency: {
     ...degen.nativeCurrency,

@@ -17,7 +17,6 @@ export const bscNetworkObject: NetworkProperties = {
   longName: 'Binance Smart Chain',
   value: Network.bsc,
   networkType: 'layer2',
-  blockTimeInMs: 3_000,
 
   nativeCurrency: {
     ...bsc.nativeCurrency,

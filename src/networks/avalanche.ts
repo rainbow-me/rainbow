@@ -17,7 +17,6 @@ export const avalancheNetworkObject: NetworkProperties = {
   longName: 'Avalanche',
   value: Network.avalanche,
   networkType: 'layer2',
-  blockTimeInMs: 5_000,
 
   nativeCurrency: {
     ...avalanche.nativeCurrency,

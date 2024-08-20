@@ -17,7 +17,6 @@ export const optimismNetworkObject: NetworkProperties = {
   longName: 'Optimism',
   value: Network.optimism,
   networkType: 'layer2',
-  blockTimeInMs: 5_000,
 
   nativeCurrency: {
     ...optimism.nativeCurrency,

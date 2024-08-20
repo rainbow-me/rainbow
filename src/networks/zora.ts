@@ -17,7 +17,6 @@ export const zoraNetworkObject: NetworkProperties = {
   longName: 'Zora',
   value: Network.zora,
   networkType: 'layer2',
-  blockTimeInMs: 5_000,
 
   nativeCurrency: {
     ...zora.nativeCurrency,

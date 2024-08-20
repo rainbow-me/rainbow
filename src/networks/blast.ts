@@ -19,7 +19,6 @@ export const blastNetworkObject: NetworkProperties = {
   longName: 'Blast',
   value: Network.blast,
   networkType: 'layer2',
-  blockTimeInMs: 5_000,
 
   nativeCurrency: {
     ...blast.nativeCurrency,

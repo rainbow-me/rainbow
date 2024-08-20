@@ -17,7 +17,6 @@ export const baseNetworkObject: NetworkProperties = {
   longName: 'Base',
   value: Network.base,
   networkType: 'layer2',
-  blockTimeInMs: 5_000,
 
   nativeCurrency: {
     ...base.nativeCurrency,

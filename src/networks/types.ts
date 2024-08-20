@@ -224,7 +224,6 @@ export interface NetworkProperties extends Chain {
   longName: string;
   value: Network;
   networkType: 'layer1' | 'layer2' | 'testnet';
-  blockTimeInMs: number;
 
   nativeCurrency: {
     name: string;

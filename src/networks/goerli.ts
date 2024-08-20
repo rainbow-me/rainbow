@@ -17,7 +17,6 @@ export const goerliNetworkObject: NetworkProperties = {
   longName: 'Goerli',
   value: Network.goerli,
   networkType: 'testnet',
-  blockTimeInMs: 15_000,
 
   nativeCurrency: {
     ...goerli.nativeCurrency,

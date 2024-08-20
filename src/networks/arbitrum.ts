@@ -3,7 +3,6 @@ import { Network, NetworkProperties  } from './types';
 import { gasUtils } from '@/utils';
 import { arbitrum } from '@wagmi/chains';
 import { ARBITRUM_ETH_ADDRESS } from '@/references';
-import { getArbitrumGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
 const { arbitrum_enabled, arbitrum_tx_enabled } = getRemoteConfig();
@@ -17,7 +16,6 @@ export const arbitrumNetworkObject: NetworkProperties = {
   longName: 'Arbitrum',
   value: Network.arbitrum,
   networkType: 'layer2',
-  blockTimeInMs: 5_000,
 
   nativeCurrency: {
     ...arbitrum.nativeCurrency,

@@ -13,7 +13,6 @@ export const gnosisNetworkObject: NetworkProperties = {
   longName: 'Gnosis',
   value: Network.gnosis,
   networkType: 'layer1',
-  blockTimeInMs: 5_000,
 
   nativeCurrency: {
     ...gnosis.nativeCurrency,
