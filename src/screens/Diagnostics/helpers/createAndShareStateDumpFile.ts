@@ -72,6 +72,6 @@ export async function createAndShareStateDumpFile() {
     // clean up the file since we don't need it anymore
     await RNFS.unlink(documentsFilePath);
   } catch (error) {
-    logger.error(new RainbowError('Saving app state dump data failed'));
+    logger.error(new RainbowError('[createAndShareStateDumpFile]: Saving app state dump data failed'));
   }
 }

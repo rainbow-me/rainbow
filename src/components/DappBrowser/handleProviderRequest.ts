@@ -290,7 +290,7 @@ export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger:
       // TODO - Open add / switch ethereum chain
       return { chainAlreadyAdded: true };
     } else {
-      logger.info('[DAPPBROWSER]: NOT SUPPORTED CHAIN');
+      logger.debug(`[handleProviderRequestApp]: Dapp requested unsupported chain ${chainId}`);
       return { chainAlreadyAdded: false };
     }
   };

@@ -4,7 +4,7 @@ import Video, { VideoRef } from 'react-native-video';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
 
 export type SimpleVideoProps = {
   readonly style?: ViewStyle;
@@ -54,7 +54,7 @@ export default function SimpleVideo({ style, uri, posterUri, loading, setLoading
       try {
         current?.pause();
       } catch (e) {
-        logger.error(e);
+        logger.error(new RainbowError(`[SimpleVideo]: Error pausing video: ${e}`));
       }
     };
   }, [ref]);

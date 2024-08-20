@@ -90,7 +90,7 @@ async function tokenSearchQueryFunction({
       return parseTokenSearch(tokenSearch.data.data, chainId);
     }
   } catch (e) {
-    logger.error(new RainbowError('Token search failed'), { url });
+    logger.error(new RainbowError('[tokenSearchQueryFunction]: Token search failed'), { url });
     return [];
   }
 }

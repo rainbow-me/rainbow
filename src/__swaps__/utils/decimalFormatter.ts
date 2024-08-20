@@ -36,7 +36,7 @@ export function valueBasedDecimalFormatter({
     maximumDecimalPlaces: number;
   } {
     const orderOfMagnitude = orderOfMagnitudeWorklet(amount);
-    let minDecimalsForOneCent = nativePrice ? Math.round(Math.max(0, Math.log10(nativePrice / 0.01))) : MAXIMUM_SIGNIFICANT_DECIMALS;
+    const minDecimalsForOneCent = nativePrice ? Math.round(Math.max(0, Math.log10(nativePrice / 0.01))) : MAXIMUM_SIGNIFICANT_DECIMALS;
 
     const significantDecimals = significantDecimalsWorklet(amount);
 

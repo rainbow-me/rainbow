@@ -28,7 +28,7 @@ function serializeState(state: Partial<RemoteCardsState>, version?: number) {
     const validCards = Array.from(state.cards?.entries() ?? []).filter(([, card]) => card && card.sys?.id);
 
     if (state.cards && validCards.length < state.cards.size) {
-      logger.error(new RainbowError('remoteCardsStore: filtered cards without sys.id during serialization'), {
+      logger.error(new RainbowError(`[remoteCardsStore]: filtered cards without sys.id during serialization`), {
         filteredCount: state.cards.size - validCards.length,
       });
     }
@@ -44,7 +44,7 @@ function serializeState(state: Partial<RemoteCardsState>, version?: number) {
       version,
     });
   } catch (error) {
-    logger.error(new RainbowError('Failed to serialize state for remote cards storage'), { error });
+    logger.error(new RainbowError(`[remoteCardsStore]: Failed to serialize state for remote cards storage`), { error });
     throw error;
   }
 }
@@ -54,7 +54,7 @@ function deserializeState(serializedState: string) {
   try {
     parsedState = JSON.parse(serializedState);
   } catch (error) {
-    logger.error(new RainbowError('Failed to parse serialized state from remote cards storage'), { error });
+    logger.error(new RainbowError(`[remoteCardsStore]: Failed to parse serialized state from remote cards storage`), { error });
     throw error;
   }
 
@@ -66,7 +66,7 @@ function deserializeState(serializedState: string) {
       cardsByIdData = new Set(state.cardsById.filter(id => typeof id === 'string' && id.length > 0));
     }
   } catch (error) {
-    logger.error(new RainbowError('Failed to convert cardsById from remote cards storage'), { error });
+    logger.error(new RainbowError(`[remoteCardsStore]: Failed to convert cardsById from remote cards storage`), { error });
     throw error;
   }
 
@@ -76,7 +76,7 @@ function deserializeState(serializedState: string) {
       const validCards = state.cards.filter(([, card]) => card && card.sys?.id);
 
       if (validCards.length < state.cards.length) {
-        logger.error(new RainbowError('Filtered out cards without sys.id during deserialization'), {
+        logger.error(new RainbowError(`[remoteCardsStore]: Filtered out cards without sys.id during deserialization`), {
           filteredCount: state.cards.length - validCards.length,
         });
       }
@@ -84,7 +84,7 @@ function deserializeState(serializedState: string) {
       cardsData = new Map(validCards);
     }
   } catch (error) {
-    logger.error(new RainbowError('Failed to convert cards from remote cards storage'), { error });
+    logger.error(new RainbowError(`[remoteCardsStore]: Failed to convert cards from remote cards storage`), { error });
     throw error;
   }
 
