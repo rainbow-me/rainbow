@@ -6,7 +6,7 @@ import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode'
 import { Block, Network as EthersNetwork, StaticJsonRpcProvider, TransactionRequest, TransactionResponse } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
-import { chain, startsWith } from 'lodash';
+import { startsWith } from 'lodash';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { AssetType, NewTransaction, ParsedAddressAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';

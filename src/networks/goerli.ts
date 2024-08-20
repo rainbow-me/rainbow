@@ -2,7 +2,6 @@ import { proxyRpcEndpoint } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { goerli } from '@wagmi/chains';
-import { ETH_ADDRESS } from '@/references';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
 const { goerli_enabled, goerli_tx_enabled } = getRemoteConfig();
@@ -17,11 +16,6 @@ export const goerliNetworkObject: NetworkProperties = {
   longName: 'Goerli',
   value: Network.goerli,
   networkType: 'testnet',
-
-  nativeCurrency: {
-    ...goerli.nativeCurrency,
-    address: ETH_ADDRESS,
-  },
 
   // this should be refactored to have less deps
   rpc: () => proxyRpcEndpoint(goerli.id),

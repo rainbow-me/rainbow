@@ -2,7 +2,6 @@ import { proxyRpcEndpoint } from '@/handlers/web3';
 import { Network, NetworkProperties  } from './types';
 import { gasUtils } from '@/utils';
 import { arbitrum } from '@wagmi/chains';
-import { ARBITRUM_ETH_ADDRESS } from '@/references';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
 const { arbitrum_enabled, arbitrum_tx_enabled } = getRemoteConfig();
@@ -16,11 +15,6 @@ export const arbitrumNetworkObject: NetworkProperties = {
   longName: 'Arbitrum',
   value: Network.arbitrum,
   networkType: 'layer2',
-
-  nativeCurrency: {
-    ...arbitrum.nativeCurrency,
-    address: ARBITRUM_ETH_ADDRESS,
-  },
 
   rpc: () => proxyRpcEndpoint(arbitrum.id),
   balanceCheckerAddress: '0x54A4E5800345c01455a7798E0D96438364e22723',

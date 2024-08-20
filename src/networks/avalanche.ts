@@ -2,7 +2,6 @@ import { proxyRpcEndpoint } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { avalanche } from '@wagmi/chains';
-import { AVAX_AVALANCHE_ADDRESS } from '@/references';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
 const { avalanche_enabled, avalanche_tx_enabled } = getRemoteConfig();
@@ -17,11 +16,6 @@ export const avalancheNetworkObject: NetworkProperties = {
   longName: 'Avalanche',
   value: Network.avalanche,
   networkType: 'layer2',
-
-  nativeCurrency: {
-    ...avalanche.nativeCurrency,
-    address: AVAX_AVALANCHE_ADDRESS,
-  },
 
   rpc: () => proxyRpcEndpoint(avalanche.id),
   // need to find balance checker address

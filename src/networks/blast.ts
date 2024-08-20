@@ -4,7 +4,6 @@ import { gasUtils } from '@/utils';
 import { blast } from 'viem/chains';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { BLAST_MAINNET_RPC } from 'react-native-dotenv';
-import { BLAST_ETH_ADDRESS } from '@/references';
 
 const { blast_enabled, blast_tx_enabled } = getRemoteConfig();
 
@@ -19,11 +18,6 @@ export const blastNetworkObject: NetworkProperties = {
   longName: 'Blast',
   value: Network.blast,
   networkType: 'layer2',
-
-  nativeCurrency: {
-    ...blast.nativeCurrency,
-    address: BLAST_ETH_ADDRESS,
-  },
 
   balanceCheckerAddress: '',
   rpc: () => proxyRpcEndpoint(blast.id),

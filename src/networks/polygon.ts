@@ -2,7 +2,6 @@ import { proxyRpcEndpoint } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { polygon } from '@wagmi/chains';
-import { MATIC_MAINNET_ADDRESS, MATIC_POLYGON_ADDRESS } from '@/references';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
 const { polygon_tx_enabled } = getRemoteConfig();
@@ -17,12 +16,6 @@ export const polygonNetworkObject: NetworkProperties = {
   longName: 'Polygon',
   value: Network.polygon,
   networkType: 'layer2',
-
-  nativeCurrency: {
-    ...polygon.nativeCurrency,
-    address: MATIC_POLYGON_ADDRESS,
-    mainnetAddress: MATIC_MAINNET_ADDRESS,
-  },
 
   rpc: () => proxyRpcEndpoint(polygon.id),
   balanceCheckerAddress: '0x54A4E5800345c01455a77798E0D96438364e22723',

@@ -2,7 +2,6 @@ import { proxyRpcEndpoint } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { bsc } from '@wagmi/chains';
-import { BNB_BSC_ADDRESS, BNB_MAINNET_ADDRESS } from '@/references';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
 const { bsc_enabled, bsc_tx_enabled } = getRemoteConfig();
@@ -17,12 +16,6 @@ export const bscNetworkObject: NetworkProperties = {
   longName: 'Binance Smart Chain',
   value: Network.bsc,
   networkType: 'layer2',
-
-  nativeCurrency: {
-    ...bsc.nativeCurrency,
-    address: BNB_BSC_ADDRESS,
-    mainnetAddress: BNB_MAINNET_ADDRESS,
-  },
 
   // this should be refactored to have less deps
   rpc: () => proxyRpcEndpoint(bsc.id),

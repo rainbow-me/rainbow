@@ -38,7 +38,7 @@ import { RainbowError, logger } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { networkObjects, RainbowNetworkByChainId } from '@/networks';
+import { networkObjects } from '@/networks';
 import { walletExecuteRap } from '@/raps/execute';
 import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
 import { queryClient } from '@/react-query';
@@ -57,6 +57,7 @@ import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './Sync
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { chainsNativeAsset } from '@/networks/chains';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
@@ -750,8 +751,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return { icon, label: isReviewSheetOpen ? quoteError : reviewLabel, disabled: true, type: 'hold' };
     }
 
-    if (hasEnoughFundsForGas.value === false) {
-      const nativeCurrency = RainbowNetworkByChainId[sellAsset?.chainId || ChainId.mainnet].nativeCurrency;
+    if (!hasEnoughFundsForGas.value) {
+      const nativeCurrency = chainsNativeAsset[sellAsset?.chainId || ChainId.mainnet];
       return {
         label: `${insufficient} ${nativeCurrency.symbol}`,
         disabled: true,

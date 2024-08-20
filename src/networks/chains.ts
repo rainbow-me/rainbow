@@ -1,10 +1,8 @@
-import { Address } from 'viem';
 import { Chain } from 'viem/chains';
 
 import backendNetworks from '../references/networks.json';
 
 import { BackendNetwork, BackendNetworkServices, chainHardhat, chainHardhatOptimism } from './types/chains';
-import { AddressOrEth } from '@/__swaps__/types/assets';
 import { ChainId } from './types';
 import { transformBackendNetworksToChains } from './utils/backendNetworks';
 
@@ -22,12 +20,12 @@ export const needsL1SecurityFeeChains = backendNetworks.networks
   .filter((backendNetwork: BackendNetwork) => backendNetwork.opStack)
   .map((backendNetwork: BackendNetwork) => parseInt(backendNetwork.id, 10));
 
-export const chainsNativeAsset: Record<number, AddressOrEth> = backendNetworks.networks.reduce(
+export const chainsNativeAsset: Record<number, BackendNetwork['nativeAsset']> = backendNetworks.networks.reduce(
   (acc, backendNetwork: BackendNetwork) => {
-    acc[parseInt(backendNetwork.id, 10)] = backendNetwork.nativeAsset.address as Address;
+    acc[parseInt(backendNetwork.id, 10)] = backendNetwork.nativeAsset;
     return acc;
   },
-  {} as Record<number, AddressOrEth>
+  {} as Record<number, BackendNetwork['nativeAsset']>
 );
 
 export const chainsLabel: Record<number, string> = backendNetworks.networks.reduce(

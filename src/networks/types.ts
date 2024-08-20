@@ -225,14 +225,6 @@ export interface NetworkProperties extends Chain {
   value: Network;
   networkType: 'layer1' | 'layer2' | 'testnet';
 
-  nativeCurrency: {
-    name: string;
-    symbol: string;
-    decimals: number;
-    address: string;
-    mainnetAddress?: string;
-  };
-
   rpc: () => string;
   balanceCheckerAddress: EthereumAddress;
 

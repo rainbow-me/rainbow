@@ -2,7 +2,6 @@ import { proxyRpcEndpoint } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { base } from '@wagmi/chains';
-import { BASE_ETH_ADDRESS } from '@/references';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
 const { base_enabled, base_tx_enabled, op_chains_enabled, op_chains_tx_enabled } = getRemoteConfig();
@@ -17,11 +16,6 @@ export const baseNetworkObject: NetworkProperties = {
   longName: 'Base',
   value: Network.base,
   networkType: 'layer2',
-
-  nativeCurrency: {
-    ...base.nativeCurrency,
-    address: BASE_ETH_ADDRESS,
-  },
 
   rpc: () => proxyRpcEndpoint(base.id),
   balanceCheckerAddress: '0x1C8cFdE3Ba6eFc4FF8Dd5C93044B9A690b6CFf36',

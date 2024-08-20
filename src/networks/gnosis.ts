@@ -1,7 +1,6 @@
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { gnosis } from '@wagmi/chains';
-import { ETH_ADDRESS } from '@/references';
 
 export const gnosisNetworkObject: NetworkProperties = {
   // wagmi chain data
@@ -13,11 +12,6 @@ export const gnosisNetworkObject: NetworkProperties = {
   longName: 'Gnosis',
   value: Network.gnosis,
   networkType: 'layer1',
-
-  nativeCurrency: {
-    ...gnosis.nativeCurrency,
-    address: ETH_ADDRESS,
-  },
 
   rpc: () => '',
   balanceCheckerAddress: '',

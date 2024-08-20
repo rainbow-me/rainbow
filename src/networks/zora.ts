@@ -2,7 +2,6 @@ import { proxyRpcEndpoint } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { zora } from '@wagmi/chains';
-import { ZORA_ETH_ADDRESS } from '@/references';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
 const { zora_enabled, zora_tx_enabled, op_chains_enabled, op_chains_tx_enabled } = getRemoteConfig();
@@ -17,11 +16,6 @@ export const zoraNetworkObject: NetworkProperties = {
   longName: 'Zora',
   value: Network.zora,
   networkType: 'layer2',
-
-  nativeCurrency: {
-    ...zora.nativeCurrency,
-    address: ZORA_ETH_ADDRESS,
-  },
 
   rpc: () => proxyRpcEndpoint(zora.id),
   balanceCheckerAddress: '0x1C8cFdE3Ba6eFc4FF8Dd5C93044B9A690b6CFf36',
