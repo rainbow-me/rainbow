@@ -18,13 +18,13 @@ export const defaultOptions: Sentry.ReactNativeOptions = {
   integrations: [],
   maxBreadcrumbs: 10,
   tracesSampleRate: 0,
-  beforeSend(event) {
-    if (!event.contexts?.device?.family) {
-      return null;
-    }
+  // beforeSend(event) {
+  //   if (!event.contexts?.device?.family) {
+  //     return null;
+  //   }
 
-    return event;
-  },
+  //   return event;
+  // },
 };
 
 export function initSentry() {
