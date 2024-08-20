@@ -28,11 +28,13 @@ import { getNetworkObj } from '@/networks';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { BNB_MAINNET_ADDRESS, ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@/references';
 import useAccountSettings from './useAccountSettings';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const checkSufficientGas = (txFee: LegacyGasFee | GasFee, network: Network, nativeAsset?: ParsedAddressAsset) => {
   const isLegacyGasNetwork = getNetworkObj(network).gas.gasType === 'legacy';
   const txFeeValue = isLegacyGasNetwork ? (txFee as LegacyGasFee)?.estimatedFee : (txFee as GasFee)?.maxFee;
-  const networkNativeAsset = nativeAsset || ethereumUtils.getNetworkNativeAsset(network);
+  const chainId = ethereumUtils.getChainIdFromNetwork(network);
+  const networkNativeAsset = nativeAsset || ethereumUtils.getNetworkNativeAsset(chainId);
   const balanceAmount = networkNativeAsset?.balance?.amount || 0;
   const txFeeAmount = fromWei(txFeeValue?.value?.amount);
   const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
@@ -64,17 +66,17 @@ export default function useGas({ nativeAsset }: { nativeAsset?: ParsedAddressAss
   // keep native assets up to date
   useExternalToken({
     address: BNB_MAINNET_ADDRESS,
-    network: Network.mainnet,
+    chainId: ChainId.mainnet,
     currency: nativeCurrency,
   });
   useExternalToken({
     address: ETH_ADDRESS,
-    network: Network.mainnet,
+    chainId: ChainId.mainnet,
     currency: nativeCurrency,
   });
   useExternalToken({
     address: MATIC_MAINNET_ADDRESS,
-    network: Network.mainnet,
+    chainId: ChainId.mainnet,
     currency: nativeCurrency,
   });
 

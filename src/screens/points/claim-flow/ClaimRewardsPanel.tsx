@@ -6,7 +6,7 @@ import * as i18n from '@/languages';
 import { ListHeader, ListPanel, Panel, TapToDismiss, controlPanelStyles } from '@/components/SmoothPager/ListPanel';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ChainId, ChainNameDisplay } from '@/__swaps__/types/chains';
-import ethereumUtils, { getNetworkFromChainId, useNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import ethereumUtils, { useNativeAsset } from '@/utils/ethereumUtils';
 import { useAccountAccentColor, useAccountProfile, useAccountSettings } from '@/hooks';
 import { safeAreaInsetValues } from '@/utils';
 import { NanoXDeviceAnimation } from '@/screens/hardware-wallets/components/NanoXDeviceAnimation';
@@ -93,7 +93,7 @@ export const ClaimRewardsPanel = () => {
 
 const NETWORK_LIST_ITEMS = CLAIM_NETWORKS.map(chainId => {
   return {
-    IconComponent: <ChainImage chain={getNetworkFromChainId(chainId)} size={36} />,
+    IconComponent: <ChainImage chainId={chainId} size={36} />,
     label: ChainNameDisplay[chainId],
     uniqueId: chainId.toString(),
     selected: false,
@@ -188,7 +188,7 @@ const ClaimingRewards = ({
     decimals: 18,
     symbol: 'ETH',
   });
-  const eth = useNativeAssetForNetwork(Network.mainnet);
+  const eth = useNativeAsset({ chainId: ChainId.mainnet });
   const unclaimedRewardsNativeCurrency = convertAmountAndPriceToNativeDisplay(
     claimableBalance.amount,
     eth?.price?.value || 0,
@@ -211,7 +211,7 @@ const ClaimingRewards = ({
   }>({
     mutationFn: async () => {
       // Fetch the native asset from the origin chain
-      const opEth_ = await ethereumUtils.getNativeAssetForNetwork(getNetworkFromChainId(ChainId.optimism));
+      const opEth_ = await ethereumUtils.getNativeAssetForNetwork(ChainId.optimism);
       const opEth = {
         ...opEth_,
         chainName: chainNameFromChainId(ChainId.optimism),
@@ -220,9 +220,9 @@ const ClaimingRewards = ({
       // Fetch the native asset from the destination chain
       let destinationEth_;
       if (chainId === ChainId.base) {
-        destinationEth_ = await ethereumUtils.getNativeAssetForNetwork(getNetworkFromChainId(ChainId.base));
+        destinationEth_ = await ethereumUtils.getNativeAssetForNetwork(ChainId.base);
       } else if (chainId === ChainId.zora) {
-        destinationEth_ = await ethereumUtils.getNativeAssetForNetwork(getNetworkFromChainId(ChainId.zora));
+        destinationEth_ = await ethereumUtils.getNativeAssetForNetwork(ChainId.zora);
       } else {
         destinationEth_ = opEth;
       }

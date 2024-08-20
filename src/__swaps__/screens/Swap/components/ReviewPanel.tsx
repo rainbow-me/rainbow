@@ -32,9 +32,8 @@ import { useAccountSettings } from '@/hooks';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { getNetworkObj } from '@/networks';
+import { getNetworkObject } from '@/networks';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
-import { ethereumUtils } from '@/utils';
 import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import React, { useCallback } from 'react';
@@ -142,7 +141,7 @@ function FlashbotsToggle() {
   const { SwapSettings } = useSwapContext();
 
   const inputAssetChainId = swapsStore(state => state.inputAsset?.chainId) ?? ChainId.mainnet;
-  const isFlashbotsEnabledForNetwork = getNetworkObj(ethereumUtils.getNetworkFromChainId(inputAssetChainId)).features.flashbots;
+  const isFlashbotsEnabledForNetwork = getNetworkObject({ chainId: inputAssetChainId }).features.flashbots;
   const flashbotsToggleValue = useDerivedValue(() => isFlashbotsEnabledForNetwork && SwapSettings.flashbots.value);
 
   return (
@@ -365,9 +364,7 @@ export function ReviewPanel() {
   });
 
   const openGasExplainer = useCallback(async () => {
-    const nativeAsset = await getNativeAssetForNetwork(
-      ethereumUtils.getNetworkFromChainId(swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet)
-    );
+    const nativeAsset = await getNativeAssetForNetwork(swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet);
 
     navigate(Routes.EXPLAIN_SHEET, {
       network: chainNameFromChainId(swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet),

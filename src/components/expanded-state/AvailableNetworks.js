@@ -69,7 +69,11 @@ const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginBottom = 24, 
                   width={{ custom: 22 }}
                   zIndex={availableNetworks?.length - index}
                 >
-                  {network !== 'mainnet' ? <ChainBadge network={network} position="relative" size="small" /> : <EthCoinIcon size={20} />}
+                  {network !== 'mainnet' ? (
+                    <ChainBadge chainId={ethereumUtils.getChainIdFromNetwork(network)} position="relative" size="small" />
+                  ) : (
+                    <EthCoinIcon size={20} />
+                  )}
                 </Box>
               );
             })}

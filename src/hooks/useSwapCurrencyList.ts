@@ -1,12 +1,12 @@
 import lang from 'i18n-js';
 import { getAddress, isAddress } from '@ethersproject/address';
-import { ChainId, EthereumAddress } from '@rainbow-me/swaps';
+import { EthereumAddress } from '@rainbow-me/swaps';
 import { Contract } from '@ethersproject/contracts';
 import { rankings } from 'match-sorter';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTheme } from '../theme/ThemeContext';
 import usePrevious from './usePrevious';
-import { AssetType, RainbowToken, RainbowToken as RT, TokenSearchTokenListId } from '@/entities';
+import { RainbowToken, RainbowToken as RT, TokenSearchTokenListId } from '@/entities';
 import { swapSearch } from '@/handlers/tokenSearch';
 import { addHexPrefix, getProviderForNetwork } from '@/handlers/web3';
 import tokenSectionTypes from '@/helpers/tokenSectionTypes';
@@ -18,6 +18,7 @@ import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { IS_TEST } from '@/env';
 import { useFavorites } from '@/resources/favorites';
 import { getUniqueId } from '@/utils/ethereumUtils';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const MAINNET_CHAINID = 1;
 type swapCurrencyListType =
@@ -124,7 +125,7 @@ const useSwapCurrencyList = (searchQuery: string, searchChainId = MAINNET_CHAINI
           if (token.networks[MAINNET_CHAINID]) {
             token.mainnet_address = token.networks[MAINNET_CHAINID].address;
           }
-          token.uniqueId = getUniqueId(token.address, network);
+          token.uniqueId = getUniqueId(token.address, activeChainId);
 
           return token;
         })
@@ -157,7 +158,7 @@ const useSwapCurrencyList = (searchQuery: string, searchChainId = MAINNET_CHAINI
         return {
           ...token,
           network: Network.mainnet,
-          uniqueId: getUniqueId(token.address, Network.mainnet),
+          uniqueId: getUniqueId(token.address, ChainId.mainnet),
         };
       });
   }, [curatedMap, favoriteAddresses]);

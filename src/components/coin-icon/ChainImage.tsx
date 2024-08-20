@@ -12,38 +12,39 @@ import AvalancheBadge from '@/assets/badges/avalanche.png';
 import BlastBadge from '@/assets/badges/blast.png';
 import DegenBadge from '@/assets/badges/degen.png';
 import FastImage, { Source } from 'react-native-fast-image';
+import { ChainId } from '@/__swaps__/types/chains';
 
-export function ChainImage({ chain, size = 20 }: { chain: Network | null | undefined; size?: number }) {
+export function ChainImage({ chainId, size = 20 }: { chainId: ChainId | null | undefined; size?: number }) {
   const source = useMemo(() => {
-    switch (chain) {
-      case Network.arbitrum:
+    switch (chainId) {
+      case ChainId.arbitrum:
         return ArbitrumBadge;
-      case Network.base:
+      case ChainId.base:
         return BaseBadge;
-      case Network.bsc:
+      case ChainId.bsc:
         return BscBadge;
-      case Network.mainnet:
+      case ChainId.mainnet:
         return EthereumBadge;
-      case Network.optimism:
+      case ChainId.optimism:
         return OptimismBadge;
-      case Network.polygon:
+      case ChainId.polygon:
         return PolygonBadge;
-      case Network.zora:
+      case ChainId.zora:
         return ZoraBadge;
-      case Network.avalanche:
+      case ChainId.avalanche:
         return AvalancheBadge;
-      case Network.blast:
+      case ChainId.blast:
         return BlastBadge;
-      case Network.degen:
+      case ChainId.degen:
         return DegenBadge;
       default:
         return { uri: '' };
     }
-  }, [chain]);
+  }, [chainId]);
 
-  if (!chain) return null;
+  if (!chainId) return null;
 
   return (
-    <FastImage key={`${chain}-badge-${size}`} source={source as Source} style={{ borderRadius: size / 2, height: size, width: size }} />
+    <FastImage key={`${chainId}-badge-${size}`} source={source as Source} style={{ borderRadius: size / 2, height: size, width: size }} />
   );
 }

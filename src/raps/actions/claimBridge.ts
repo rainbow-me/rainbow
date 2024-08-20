@@ -168,6 +168,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
 
   // 5 - if the swap was successful we add the transaction to the store
   const transaction = {
+    chainId,
     data: bridgeQuote.data,
     value: bridgeQuote.value?.toString(),
     asset: typedAssetToBuy,

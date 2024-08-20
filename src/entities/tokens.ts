@@ -1,8 +1,8 @@
-import { ChainId } from '@rainbow-me/swaps';
 import { EthereumAddress } from '.';
 import { Chain } from '@wagmi/chains';
 import { Network } from '@/networks/types';
 import { TokenColors } from '@/graphql/__generated__/metadata';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export interface ZerionAssetPrice {
   value: number;
@@ -108,6 +108,7 @@ export interface TokenSearchToken {
 }
 
 export interface RainbowToken extends Asset {
+  chainId: ChainId;
   color?: string;
   highLiquidity?: boolean;
   totalLiquidity?: number;

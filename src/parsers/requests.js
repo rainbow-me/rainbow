@@ -9,7 +9,7 @@ import { isSignTypedData, SIGN, PERSONAL_SIGN, SEND_TRANSACTION, SIGN_TRANSACTIO
 import { isAddress } from '@ethersproject/address';
 import { toUtf8String } from '@ethersproject/strings';
 
-export const getRequestDisplayDetails = (payload, nativeCurrency, dappNetwork) => {
+export const getRequestDisplayDetails = (payload, nativeCurrency, chainId) => {
   const timestampInMs = Date.now();
   if (payload.method === SEND_TRANSACTION || payload.method === SIGN_TRANSACTION) {
     const transaction = Object.assign(payload?.params?.[0] ?? null);
@@ -29,7 +29,7 @@ export const getRequestDisplayDetails = (payload, nativeCurrency, dappNetwork) =
       transaction.data = '0x';
     }
 
-    return getTransactionDisplayDetails(transaction, nativeCurrency, timestampInMs, dappNetwork);
+    return getTransactionDisplayDetails(transaction, nativeCurrency, timestampInMs, chainId);
   }
   if (payload.method === SIGN) {
     const message = payload?.params?.find(p => !isAddress(p));
@@ -71,9 +71,9 @@ const getMessageDisplayDetails = (message, timestampInMs) => ({
   timestampInMs,
 });
 
-const getTransactionDisplayDetails = (transaction, nativeCurrency, timestampInMs, dappNetwork) => {
+const getTransactionDisplayDetails = (transaction, nativeCurrency, timestampInMs, chainId) => {
   const tokenTransferHash = smartContractMethods.token_transfer.hash;
-  const nativeAsset = ethereumUtils.getNativeAssetForNetwork(dappNetwork);
+  const nativeAsset = ethereumUtils.getNativeAssetForNetwork(chainId);
   if (transaction.data === '0x') {
     const value = fromWei(convertHexToString(transaction.value));
     const priceUnit = nativeAsset?.price?.value ?? 0;
@@ -95,7 +95,7 @@ const getTransactionDisplayDetails = (transaction, nativeCurrency, timestampInMs
   }
   if (transaction.data.startsWith(tokenTransferHash)) {
     const contractAddress = transaction.to;
-    const accountAssetUniqueId = ethereumUtils.getUniqueId(contractAddress, dappNetwork);
+    const accountAssetUniqueId = ethereumUtils.getUniqueId(contractAddress, chainId);
     const asset = ethereumUtils.getAccountAsset(accountAssetUniqueId);
     const dataPayload = transaction.data.replace(tokenTransferHash, '');
     const toAddress = `0x${dataPayload.slice(0, 64).replace(/^0+/, '')}`;

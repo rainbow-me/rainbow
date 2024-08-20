@@ -25,6 +25,7 @@ import { AddressOrEth, AssetType } from '@/__swaps__/types/assets';
 import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const NOOP = () => null;
 
@@ -208,6 +209,7 @@ const AvailableNetworksv2 = ({
               <Inline alignVertical="center">
                 <Box style={{ flexDirection: 'row' }}>
                   {availableNetworks?.map((network, index) => {
+                    const chainId = ethereumUtils.getChainIdFromNetwork(network);
                     return (
                       <Box
                         background="body (Deprecated)"
@@ -219,8 +221,8 @@ const AvailableNetworksv2 = ({
                           borderRadius: 30,
                         }}
                       >
-                        {network !== Network.mainnet ? (
-                          <ChainBadge network={network} position="relative" size="small" />
+                        {chainId !== ChainId.mainnet ? (
+                          <ChainBadge chainId={chainId} position="relative" size="small" />
                         ) : (
                           <EthCoinIcon size={20} />
                         )}

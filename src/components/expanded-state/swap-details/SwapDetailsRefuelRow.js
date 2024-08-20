@@ -9,7 +9,7 @@ import { ImgixImage } from '@/components/images';
 import CaretImageSource from '@/assets/family-dropdown-arrow.png';
 import Spinner from '@/components/Spinner';
 import { useTheme } from '@/theme';
-import { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import { useNativeAsset } from '@/utils/ethereumUtils';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 
 const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
@@ -34,11 +34,8 @@ export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
   });
   const toSymbol = tradeDetails?.refuel?.toAsset?.symbol;
 
-  const fromNetwork = ethereumUtils.getNetworkFromChainId(fromAsset?.chainId);
-  const toNetwork = ethereumUtils.getNetworkFromChainId(toAsset?.chainId);
-
-  const fromNativeAsset = useNativeAssetForNetwork(fromNetwork);
-  const toNativeAsset = useNativeAssetForNetwork(toNetwork);
+  const fromNativeAsset = useNativeAsset({ chainId: fromAsset?.chainId });
+  const toNativeAsset = useNativeAsset({ chainId: toAsset?.chainId });
 
   return (
     <Rows testID={testID}>
@@ -53,7 +50,7 @@ export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
                 <RainbowCoinIcon
                   size={20}
                   icon={fromNativeAsset?.icon_url}
-                  network={fromNetwork}
+                  chainId={fromAsset?.chainId}
                   symbol={fromAsset?.symbol}
                   colors={fromNativeAsset?.colors}
                   ignoreBadge
@@ -70,7 +67,7 @@ export default function SwapDetailsRefuelRow({ tradeDetails, testID }) {
                 <RainbowCoinIcon
                   size={20}
                   icon={toNativeAsset?.icon_url}
-                  network={toNetwork}
+                  chainId={toAsset?.chainId}
                   symbol={toAsset?.symbol}
                   colors={toNativeAsset?.colors}
                   ignoreBadge

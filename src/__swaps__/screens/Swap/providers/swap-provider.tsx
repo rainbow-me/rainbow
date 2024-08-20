@@ -29,7 +29,7 @@ import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
 import { getDefaultSlippageWorklet, isUnwrapEthWorklet, isWrapEthWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
-import { getFlashbotsProvider, getIsHardhatConnected, getProviderForNetwork, isHardHat } from '@/handlers/web3';
+import { getFlashbotsProvider, getIsHardhatConnected, getProvider, isHardHat } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useAccountSettings } from '@/hooks';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
@@ -38,14 +38,14 @@ import { RainbowError, logger } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { RainbowNetworkByChainId, getNetworkObj } from '@/networks';
+import { RainbowNetworkByChainId, getNetworkObject } from '@/networks';
 import { walletExecuteRap } from '@/raps/execute';
 import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
 import { queryClient } from '@/react-query';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { ethereumUtils, haptics } from '@/utils';
+import { haptics } from '@/utils';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 
 import { IS_IOS } from '@/env';
@@ -195,9 +195,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       const NotificationManager = IS_IOS ? NativeModules.NotificationManager : null;
       NotificationManager?.postNotification('rapInProgress');
 
-      const network = ethereumUtils.getNetworkFromChainId(parameters.chainId);
       const provider =
-        parameters.flashbots && getNetworkObj(network).features.flashbots ? await getFlashbotsProvider() : getProviderForNetwork(network);
+        parameters.flashbots && getNetworkObject({ chainId: parameters.chainId }).features.flashbots
+          ? await getFlashbotsProvider()
+          : getProvider({ chainId: parameters.chainId });
       const providerUrl = provider?.connection?.url;
       const connectedToHardhat = !!providerUrl && isHardHat(providerUrl);
 

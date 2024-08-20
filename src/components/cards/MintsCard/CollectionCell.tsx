@@ -6,7 +6,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { useTheme } from '@/theme';
 import { View } from 'react-native';
 import { MintableCollection } from '@/graphql/__generated__/arc';
-import ethereumUtils, { getNetworkFromChainId, useNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import ethereumUtils, { useNativeAsset } from '@/utils/ethereumUtils';
 import { analyticsV2 } from '@/analytics';
 import * as i18n from '@/languages';
 import { IS_IOS } from '@/env';
@@ -41,7 +41,7 @@ export function CollectionCell({ collection }: { collection: MintableCollection 
 
   const [mediaRendered, setMediaRendered] = useState(false);
 
-  const currency = useNativeAssetForNetwork(getNetworkFromChainId(collection.chainId));
+  const currency = useNativeAsset({ chainId: collection.chainId });
 
   const amount = convertRawAmountToRoundedDecimal(collection.mintStatus.price, 18, 6);
 
@@ -131,7 +131,7 @@ export function CollectionCell({ collection }: { collection: MintableCollection 
             <RainbowCoinIcon
               icon={currency?.icon_url || ''}
               size={12}
-              network={getNetworkFromChainId(collection.chainId)}
+              chainId={collection.chainId}
               symbol={currency?.symbol || ''}
               theme={theme}
               colors={currency?.colors}

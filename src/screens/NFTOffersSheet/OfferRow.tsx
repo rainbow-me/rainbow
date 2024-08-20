@@ -17,6 +17,7 @@ import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { Network } from '@/networks/types';
 import { useAccountSettings } from '@/hooks';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { ethereumUtils } from '@/utils';
 
 const NFT_SIZE = 50;
 const MARKETPLACE_ORB_SIZE = 18;
@@ -97,9 +98,10 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
   const { colorMode } = useColorMode();
   const theme = useTheme();
   const bgColor = useBackgroundColor('surfaceSecondaryElevated');
+  const chainId = ethereumUtils.getChainIdFromNetwork(offer.network as Network);
   const { data: externalAsset } = useExternalToken({
     address: offer.paymentToken.address,
-    network: offer.network as Network,
+    chainId,
     currency: nativeCurrency,
   });
 
@@ -213,7 +215,7 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
               <RainbowCoinIcon
                 size={COIN_ICON_SIZE}
                 icon={externalAsset?.icon_url}
-                network={offer?.network as Network}
+                chainId={chainId}
                 symbol={offer.paymentToken.symbol}
                 theme={theme}
                 colors={externalAsset?.colors}

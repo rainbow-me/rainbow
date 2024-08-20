@@ -1,7 +1,7 @@
 import { ChainId } from '@/__swaps__/types/chains';
 import { weiToGwei } from '@/__swaps__/utils/ethereum';
 import { add, convertAmountToNativeDisplayWorklet, formatNumber, multiply } from '@/__swaps__/utils/numbers';
-import ethereumUtils, { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
+import { useNativeAsset } from '@/utils/ethereumUtils';
 import { useMemo } from 'react';
 import { formatUnits } from 'viem';
 
@@ -33,8 +33,7 @@ export function useEstimatedGasFee({
   gasLimit: string | undefined;
   gasSettings: GasSettings | undefined;
 }) {
-  const network = ethereumUtils.getNetworkFromChainId(chainId);
-  const nativeNetworkAsset = useNativeAssetForNetwork(network);
+  const nativeNetworkAsset = useNativeAsset({ chainId });
   const { nativeCurrency } = useAccountSettings();
 
   return useMemo(() => {

@@ -13,7 +13,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
 // DO NOT REMOVE THESE COMMENTED ENV VARS
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { IS_TESTING } from 'react-native-dotenv';
+import { IS_APK_BUILD, IS_TESTING } from 'react-native-dotenv';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { analytics } from '@/analytics';
 import { EthereumAddress } from '@/entities';
@@ -66,16 +66,14 @@ const getInputAmount = async (
 
   try {
     const outputChainId = ethereumUtils.getChainIdFromNetwork(outputToken?.network);
-    const outputNetwork = ethereumUtils.getNetworkFromChainId(outputChainId);
 
     const inputChainId = ethereumUtils.getChainIdFromNetwork(inputToken?.network);
-    const inputNetwork = ethereumUtils.getNetworkFromChainId(inputChainId);
 
-    const inputTokenAddress = isNativeAsset(inputToken?.address, inputNetwork) ? ETH_ADDRESS_AGGREGATORS : inputToken?.address;
+    const inputTokenAddress = isNativeAsset(inputToken?.address, inputChainId) ? ETH_ADDRESS_AGGREGATORS : inputToken?.address;
 
-    const outputTokenAddress = isNativeAsset(outputToken?.address, outputNetwork) ? ETH_ADDRESS_AGGREGATORS : outputToken?.address;
+    const outputTokenAddress = isNativeAsset(outputToken?.address, outputChainId) ? ETH_ADDRESS_AGGREGATORS : outputToken?.address;
 
-    const isCrosschainSwap = inputNetwork !== outputNetwork;
+    const isCrosschainSwap = inputChainId !== outputChainId;
     if (isCrosschainSwap) return null;
 
     const buyAmount = convertAmountToRawAmount(convertNumberToString(outputAmount), outputToken.decimals);
@@ -83,11 +81,11 @@ const getInputAmount = async (
     logger.info(`[getInputAmount]: `, {
       outputToken,
       outputChainId,
-      outputNetwork,
+      outputNetwork: outputToken?.network,
       outputTokenAddress,
       inputToken,
       inputChainId,
-      inputNetwork,
+      inputNetwork: inputToken?.network,
       inputTokenAddress,
       isCrosschainSwap,
     });
@@ -167,15 +165,13 @@ const getOutputAmount = async (
 
   try {
     const outputChainId = ethereumUtils.getChainIdFromNetwork(outputToken.network);
-    const outputNetwork = outputToken.network;
-    const buyTokenAddress = isNativeAsset(outputToken?.address, outputNetwork) ? ETH_ADDRESS_AGGREGATORS : outputToken?.address;
-    const inputChainId = ethereumUtils.getChainIdFromNetwork(inputToken.network);
-    const inputNetwork = inputToken.network;
+    const buyTokenAddress = isNativeAsset(outputToken?.address, outputChainId) ? ETH_ADDRESS_AGGREGATORS : outputToken?.address;
 
-    const sellTokenAddress = isNativeAsset(inputToken?.address, inputNetwork) ? ETH_ADDRESS_AGGREGATORS : inputToken?.address;
+    const inputChainId = ethereumUtils.getChainIdFromNetwork(inputToken.network);
+    const sellTokenAddress = isNativeAsset(inputToken?.address, inputChainId) ? ETH_ADDRESS_AGGREGATORS : inputToken?.address;
 
     const sellAmount = convertAmountToRawAmount(convertNumberToString(inputAmount), inputToken.decimals);
-    const isCrosschainSwap = outputNetwork !== inputNetwork;
+    const isCrosschainSwap = outputChainId !== inputChainId;
 
     // logger.info(`[getOutputAmount]: `, {
     //   outputToken,

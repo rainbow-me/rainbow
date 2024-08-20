@@ -6,10 +6,10 @@ import { Reward } from '@rainbow-me/swaps';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { ChainBadge } from '@/components/coin-icon';
-import { getNetworkObj } from '@/networks';
-import { Network } from '@/networks/types';
+import { getNetworkObject } from '@/networks';
 import { useTheme } from '@/theme';
 import * as i18n from '@/languages';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export function SwapDetailsRewardRow({ reward }: { reward: Reward }) {
   const { navigate } = useNavigation();
@@ -17,7 +17,7 @@ export function SwapDetailsRewardRow({ reward }: { reward: Reward }) {
 
   const roundedAmount = Math.round(reward.amount * 1000) / 1000;
 
-  const opNetwork = getNetworkObj(Network.optimism);
+  const opNetwork = getNetworkObject({ chainId: ChainId.optimism });
   const accentColor = isDarkMode ? opNetwork.colors.dark : opNetwork.colors.light;
 
   return (
@@ -39,7 +39,7 @@ export function SwapDetailsRewardRow({ reward }: { reward: Reward }) {
             gap: 5,
           }}
         >
-          <ChainBadge network={Network.optimism} position="relative" />
+          <ChainBadge chainId={ChainId.optimism} position="relative" />
           <Text align="center" size="14px / 19px (Deprecated)" weight="bold" color={{ custom: accentColor }}>
             {roundedAmount || '<0.001'} {reward.token.symbol}
           </Text>
