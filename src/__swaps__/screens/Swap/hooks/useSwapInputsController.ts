@@ -15,16 +15,9 @@ import { analyticsV2 } from '@/analytics';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useAccountSettings } from '@/hooks';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
-import { RainbowError, logger } from '@/logger';
+import { logger } from '@/logger';
 import { getRemoteConfig } from '@/model/remoteConfig';
-import { queryClient } from '@/react-query';
 import store from '@/redux/store';
-import {
-  EXTERNAL_TOKEN_STALE_TIME,
-  ExternalTokenQueryFunctionResult,
-  externalTokenQueryKey,
-  fetchExternalToken,
-} from '@/resources/assets/externalAssetsQuery';
 import { triggerHapticFeedback } from '@/screens/points/constants';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { CrosschainQuote, Quote, QuoteError, SwapType, getCrosschainQuote, getQuote } from '@rainbow-me/swaps';
@@ -344,67 +337,6 @@ export function useSwapInputsController({
     ]
   );
 
-  const getAssetNativePrice = useCallback(async ({ asset }: { asset: ExtendedAnimatedAssetWithColors | null }) => {
-    if (!asset) return null;
-
-    const address = asset.address;
-    const chainId = asset.chainId;
-    const currency = store.getState().settings.nativeCurrency;
-
-    try {
-      const tokenData = await fetchExternalToken({
-        address,
-        chainId,
-        currency,
-      });
-
-      if (tokenData?.price.value) {
-        queryClient.setQueryData(externalTokenQueryKey({ address, chainId, currency }), tokenData);
-        return tokenData.price.value;
-      }
-    } catch (error) {
-      logger.error(new RainbowError('[useSwapInputsController]: get asset prices failed'));
-
-      const now = Date.now();
-      const state = queryClient.getQueryState<ExternalTokenQueryFunctionResult>(externalTokenQueryKey({ address, chainId, currency }));
-      const price = state?.data?.price.value;
-      if (price) {
-        const updatedAt = state.dataUpdatedAt;
-        // NOTE: if the data is older than 60 seconds, we need to invalidate it and not use it
-        if (now - updatedAt > EXTERNAL_TOKEN_STALE_TIME) {
-          queryClient.invalidateQueries(externalTokenQueryKey({ address, chainId, currency }));
-          return null;
-        }
-        return price;
-      }
-    }
-    return null;
-  }, []);
-
-  const fetchAssetPrices = useCallback(
-    async ({
-      inputAsset,
-      outputAsset,
-    }: {
-      inputAsset: ExtendedAnimatedAssetWithColors | null;
-      outputAsset: ExtendedAnimatedAssetWithColors | null;
-    }) => {
-      return Promise.all(
-        [
-          {
-            asset: inputAsset,
-            type: 'inputAsset',
-          },
-          {
-            asset: outputAsset,
-            type: 'outputAsset',
-          },
-        ].map(getAssetNativePrice)
-      ).then(([inputPrice, outputPrice]) => ({ inputPrice, outputPrice }));
-    },
-    [getAssetNativePrice]
-  );
-
   const fetchAndUpdateQuote = async ({ inputAmount, lastTypedInput: lastTypedInputParam, outputAmount }: RequestNewQuoteParams) => {
     const originalInputAssetUniqueId = internalSelectedInputAsset.value?.uniqueId;
     const originalOutputAssetUniqueId = internalSelectedOutputAsset.value?.uniqueId;
@@ -431,9 +363,17 @@ export function useSwapInputsController({
       return;
     }
 
+    const originalQuoteParams = {
+      assetToBuyUniqueId: originalOutputAssetUniqueId,
+      assetToSellUniqueId: originalInputAssetUniqueId,
+      inputAmount: inputAmount,
+      lastTypedInput: lastTypedInputParam,
+      outputAmount: outputAmount,
+    };
+
     try {
       const quoteResponse = await (params.swapType === SwapType.crossChain ? getCrosschainQuote(params) : getQuote(params));
-      if (!quoteResponse || 'error' in quoteResponse) throw '';
+      if (!quoteResponse || 'error' in quoteResponse) throw quoteResponse;
 
       const quotedInputAmount =
         lastTypedInputParam === 'outputAmount'
@@ -470,19 +410,26 @@ export function useSwapInputsController({
           data: quoteResponse,
           inputAmount: quotedInputAmount,
           inputPrice: quoteResponse.sellTokenAsset.price.value,
-          originalQuoteParams: {
-            assetToBuyUniqueId: originalOutputAssetUniqueId,
-            assetToSellUniqueId: originalInputAssetUniqueId,
-            inputAmount: inputAmount,
-            lastTypedInput: lastTypedInputParam,
-            outputAmount: outputAmount,
-          },
           outputAmount: quotedOutputAmount,
           outputPrice: quoteResponse.buyTokenAsset.price.value,
+          originalQuoteParams,
           quoteFetchingInterval,
         });
       })();
-    } catch (error) {
+    } catch (erroredQuoteResponse) {
+      console.log(erroredQuoteResponse);
+      runOnUI(() => {
+        setQuote({
+          data: erroredQuoteResponse as QuoteError | null,
+          originalQuoteParams,
+          quoteFetchingInterval,
+          inputAmount: 0,
+          inputPrice: null,
+          outputAmount: 0,
+          outputPrice: null,
+        });
+      })();
+
       runOnUI(resetFetchingStatus)({ fromError: true, quoteFetchingInterval });
     }
   };
