@@ -6,63 +6,62 @@ import { AVAX_AVALANCHE_ADDRESS } from '@/references';
 import { getAvalancheGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
-export const getAvalancheNetworkObject = (): NetworkProperties => {
-  const { avalanche_enabled, avalanche_tx_enabled } = getRemoteConfig();
-  return {
-    // wagmi chain data
-    ...avalanche,
+const { avalanche_enabled, avalanche_tx_enabled } = getRemoteConfig();
 
-    // network related data
-    enabled: avalanche_enabled,
-    name: 'Avalanche',
-    longName: 'Avalanche',
-    value: Network.avalanche,
-    networkType: 'layer2',
-    blockTimeInMs: 5_000,
+export const avalancheNetworkObject: NetworkProperties = {
+  // wagmi chain data
+  ...avalanche,
 
-    nativeCurrency: {
-      ...avalanche.nativeCurrency,
-      address: AVAX_AVALANCHE_ADDRESS,
-    },
+  // network related data
+  enabled: avalanche_enabled,
+  name: 'Avalanche',
+  longName: 'Avalanche',
+  value: Network.avalanche,
+  networkType: 'layer2',
+  blockTimeInMs: 5_000,
 
-    rpc: () => proxyRpcEndpoint(avalanche.id),
-    getProvider: () => getProvider({ chainId: ChainId.avalanche }),
-    // need to find balance checker address
-    balanceCheckerAddress: '',
+  nativeCurrency: {
+    ...avalanche.nativeCurrency,
+    address: AVAX_AVALANCHE_ADDRESS,
+  },
 
-    // features
-    features: {
-      txHistory: true,
-      flashbots: false,
-      walletconnect: true,
-      swaps: true,
-      nfts: true,
-      pools: false,
-      txs: avalanche_tx_enabled,
-    },
+  rpc: () => proxyRpcEndpoint(avalanche.id),
+  getProvider: () => getProvider({ chainId: ChainId.avalanche }),
+  // need to find balance checker address
+  balanceCheckerAddress: '',
 
-    gas: {
-      speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT, gasUtils.CUSTOM],
-      // ?
-      gasType: 'eip1559',
-      roundGasDisplay: true,
+  // features
+  features: {
+    txHistory: true,
+    flashbots: false,
+    walletconnect: true,
+    swaps: true,
+    nfts: true,
+    pools: false,
+    txs: avalanche_tx_enabled,
+  },
 
-      // this prob can just be blockTime,
-      pollingIntervalInMs: 5_000,
+  gas: {
+    speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT, gasUtils.CUSTOM],
+    // ?
+    gasType: 'eip1559',
+    roundGasDisplay: true,
 
-      getGasPrices: getAvalancheGasPrices,
-    },
+    // this prob can just be blockTime,
+    pollingIntervalInMs: 5_000,
 
-    swaps: {
-      defaultSlippage: 200,
-    },
+    getGasPrices: getAvalancheGasPrices,
+  },
 
-    nfts: { simplehashNetwork: 'avalanche' },
+  swaps: {
+    defaultSlippage: 200,
+  },
 
-    // design tings
-    colors: {
-      light: '#E84142',
-      dark: '#FF5D5E',
-    },
-  };
+  nfts: { simplehashNetwork: 'avalanche' },
+
+  // design tings
+  colors: {
+    light: '#E84142',
+    dark: '#FF5D5E',
+  },
 };

@@ -6,63 +6,62 @@ import { BASE_ETH_ADDRESS } from '@/references';
 import { getBaseGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
-export const getBaseNetworkObject = (): NetworkProperties => {
-  const { base_enabled, base_tx_enabled, op_chains_enabled, op_chains_tx_enabled } = getRemoteConfig();
-  return {
-    // wagmi chain data
-    ...base,
+const { base_enabled, base_tx_enabled, op_chains_enabled, op_chains_tx_enabled } = getRemoteConfig();
 
-    // network related data
-    enabled: base_enabled && op_chains_enabled,
-    name: 'Base',
-    longName: 'Base',
-    value: Network.base,
-    networkType: 'layer2',
-    blockTimeInMs: 5_000,
+export const baseNetworkObject: NetworkProperties = {
+  // wagmi chain data
+  ...base,
 
-    nativeCurrency: {
-      ...base.nativeCurrency,
-      address: BASE_ETH_ADDRESS,
-    },
+  // network related data
+  enabled: base_enabled && op_chains_enabled,
+  name: 'Base',
+  longName: 'Base',
+  value: Network.base,
+  networkType: 'layer2',
+  blockTimeInMs: 5_000,
 
-    rpc: () => proxyRpcEndpoint(base.id),
-    getProvider: () => getProvider({ chainId: ChainId.base }),
-    balanceCheckerAddress: '0x1C8cFdE3Ba6eFc4FF8Dd5C93044B9A690b6CFf36',
+  nativeCurrency: {
+    ...base.nativeCurrency,
+    address: BASE_ETH_ADDRESS,
+  },
 
-    // features
-    features: {
-      txHistory: true,
-      flashbots: false,
-      walletconnect: true,
-      swaps: true,
-      nfts: true,
-      pools: false,
-      txs: base_tx_enabled && op_chains_tx_enabled,
-    },
+  rpc: () => proxyRpcEndpoint(base.id),
+  getProvider: () => getProvider({ chainId: ChainId.base }),
+  balanceCheckerAddress: '0x1C8cFdE3Ba6eFc4FF8Dd5C93044B9A690b6CFf36',
 
-    gas: {
-      speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT, gasUtils.CUSTOM],
-      // ?
-      gasType: 'eip1559',
-      roundGasDisplay: true,
-      OptimismTxFee: true,
+  // features
+  features: {
+    txHistory: true,
+    flashbots: false,
+    walletconnect: true,
+    swaps: true,
+    nfts: true,
+    pools: false,
+    txs: base_tx_enabled && op_chains_tx_enabled,
+  },
 
-      // this prob can just be blockTime,
-      pollingIntervalInMs: 5_000,
+  gas: {
+    speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT, gasUtils.CUSTOM],
+    // ?
+    gasType: 'eip1559',
+    roundGasDisplay: true,
+    OptimismTxFee: true,
 
-      getGasPrices: getBaseGasPrices,
-    },
+    // this prob can just be blockTime,
+    pollingIntervalInMs: 5_000,
 
-    swaps: {
-      defaultSlippage: 200,
-    },
+    getGasPrices: getBaseGasPrices,
+  },
 
-    nfts: { simplehashNetwork: 'base' },
+  swaps: {
+    defaultSlippage: 200,
+  },
 
-    // design tings
-    colors: {
-      light: '#0052FF',
-      dark: '#3979FF',
-    },
-  };
+  nfts: { simplehashNetwork: 'base' },
+
+  // design tings
+  colors: {
+    light: '#0052FF',
+    dark: '#3979FF',
+  },
 };

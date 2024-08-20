@@ -6,66 +6,65 @@ import { ZORA_ETH_ADDRESS } from '@/references';
 import { getZoraGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
-export const getZoraNetworkObject = (): NetworkProperties => {
-  const { zora_enabled, zora_tx_enabled, op_chains_enabled, op_chains_tx_enabled } = getRemoteConfig();
-  return {
-    // wagmi chain data
-    ...zora,
+const { zora_enabled, zora_tx_enabled, op_chains_enabled, op_chains_tx_enabled } = getRemoteConfig();
 
-    // network related data
-    enabled: zora_enabled && op_chains_enabled,
-    name: 'Zora',
-    longName: 'Zora',
-    value: Network.zora,
-    networkType: 'layer2',
-    blockTimeInMs: 5_000,
+export const zoraNetworkObject: NetworkProperties = {
+  // wagmi chain data
+  ...zora,
 
-    nativeCurrency: {
-      ...zora.nativeCurrency,
-      address: ZORA_ETH_ADDRESS,
-    },
+  // network related data
+  enabled: zora_enabled && op_chains_enabled,
+  name: 'Zora',
+  longName: 'Zora',
+  value: Network.zora,
+  networkType: 'layer2',
+  blockTimeInMs: 5_000,
 
-    rpc: () => proxyRpcEndpoint(zora.id),
-    getProvider: () => getProvider({ chainId: ChainId.arbitrum }),
-    balanceCheckerAddress: '0x1C8cFdE3Ba6eFc4FF8Dd5C93044B9A690b6CFf36',
+  nativeCurrency: {
+    ...zora.nativeCurrency,
+    address: ZORA_ETH_ADDRESS,
+  },
 
-    // features
-    features: {
-      txHistory: true,
-      flashbots: false,
-      walletconnect: true,
-      swaps: true,
-      nfts: true,
-      pools: false,
-      txs: zora_tx_enabled && op_chains_tx_enabled,
-    },
+  rpc: () => proxyRpcEndpoint(zora.id),
+  getProvider: () => getProvider({ chainId: ChainId.arbitrum }),
+  balanceCheckerAddress: '0x1C8cFdE3Ba6eFc4FF8Dd5C93044B9A690b6CFf36',
 
-    gas: {
-      speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT, gasUtils.CUSTOM],
+  // features
+  features: {
+    txHistory: true,
+    flashbots: false,
+    walletconnect: true,
+    swaps: true,
+    nfts: true,
+    pools: false,
+    txs: zora_tx_enabled && op_chains_tx_enabled,
+  },
 
-      // ?
-      gasType: 'eip1559',
-      roundGasDisplay: true,
-      OptimismTxFee: true,
+  gas: {
+    speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT, gasUtils.CUSTOM],
 
-      // this prob can just be blockTime,
-      pollingIntervalInMs: 5_000,
+    // ?
+    gasType: 'eip1559',
+    roundGasDisplay: true,
+    OptimismTxFee: true,
 
-      getGasPrices: getZoraGasPrices,
-    },
+    // this prob can just be blockTime,
+    pollingIntervalInMs: 5_000,
 
-    swaps: {
-      defaultSlippage: 200,
-    },
+    getGasPrices: getZoraGasPrices,
+  },
 
-    nfts: {
-      simplehashNetwork: 'zora',
-    },
+  swaps: {
+    defaultSlippage: 200,
+  },
 
-    // design tings
-    colors: {
-      light: '#2B5DF0',
-      dark: '#6183F0',
-    },
-  };
+  nfts: {
+    simplehashNetwork: 'zora',
+  },
+
+  // design tings
+  colors: {
+    light: '#2B5DF0',
+    dark: '#6183F0',
+  },
 };

@@ -6,68 +6,67 @@ import { BNB_BSC_ADDRESS, BNB_MAINNET_ADDRESS } from '@/references';
 import { getBscGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
-export const getBSCNetworkObject = (): NetworkProperties => {
-  const { bsc_enabled, bsc_tx_enabled } = getRemoteConfig();
-  return {
-    // wagmi chain data
-    ...bsc,
+const { bsc_enabled, bsc_tx_enabled } = getRemoteConfig();
 
-    // network related data
-    enabled: bsc_enabled,
-    name: 'BSC',
-    longName: 'Binance Smart Chain',
-    value: Network.bsc,
-    networkType: 'layer2',
-    blockTimeInMs: 3_000,
+export const bscNetworkObject: NetworkProperties = {
+  // wagmi chain data
+  ...bsc,
 
-    nativeCurrency: {
-      ...bsc.nativeCurrency,
-      address: BNB_BSC_ADDRESS,
-      mainnetAddress: BNB_MAINNET_ADDRESS,
-    },
+  // network related data
+  enabled: bsc_enabled,
+  name: 'BSC',
+  longName: 'Binance Smart Chain',
+  value: Network.bsc,
+  networkType: 'layer2',
+  blockTimeInMs: 3_000,
 
-    // this should be refactored to have less deps
-    rpc: () => proxyRpcEndpoint(bsc.id),
-    getProvider: () => getProvider({ chainId: ChainId.bsc }),
-    balanceCheckerAddress: '0x400A9f1Bb1Db80643C33710C2232A0D74EF5CFf1',
+  nativeCurrency: {
+    ...bsc.nativeCurrency,
+    address: BNB_BSC_ADDRESS,
+    mainnetAddress: BNB_MAINNET_ADDRESS,
+  },
 
-    // features
-    features: {
-      txHistory: true,
-      flashbots: false,
-      walletconnect: true,
-      swaps: true,
-      nfts: true,
-      pools: false,
-      txs: bsc_tx_enabled,
-    },
+  // this should be refactored to have less deps
+  rpc: () => proxyRpcEndpoint(bsc.id),
+  getProvider: () => getProvider({ chainId: ChainId.bsc }),
+  balanceCheckerAddress: '0x400A9f1Bb1Db80643C33710C2232A0D74EF5CFf1',
 
-    gas: {
-      speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT],
+  // features
+  features: {
+    txHistory: true,
+    flashbots: false,
+    walletconnect: true,
+    swaps: true,
+    nfts: true,
+    pools: false,
+    txs: bsc_tx_enabled,
+  },
 
-      // ?
-      gasType: 'legacy',
-      roundGasDisplay: false,
+  gas: {
+    speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT],
 
-      // this prob can just be blockTime
-      pollingIntervalInMs: 3_000,
+    // ?
+    gasType: 'legacy',
+    roundGasDisplay: false,
 
-      // needs more research
-      getGasPrices: getBscGasPrices,
-    },
+    // this prob can just be blockTime
+    pollingIntervalInMs: 3_000,
 
-    swaps: {
-      defaultSlippage: 200,
-    },
+    // needs more research
+    getGasPrices: getBscGasPrices,
+  },
 
-    nfts: {
-      simplehashNetwork: 'bsc',
-    },
+  swaps: {
+    defaultSlippage: 200,
+  },
 
-    // design tings
-    colors: {
-      light: '#8247E5',
-      dark: '#F0B90B',
-    },
-  };
+  nfts: {
+    simplehashNetwork: 'bsc',
+  },
+
+  // design tings
+  colors: {
+    light: '#8247E5',
+    dark: '#F0B90B',
+  },
 };

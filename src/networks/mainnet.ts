@@ -6,67 +6,66 @@ import { ETH_ADDRESS } from '@/references';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
-export const getMainnetNetworkObject = (): NetworkProperties => {
-  const { mainnet_enabled, mainnet_tx_enabled } = getRemoteConfig();
-  return {
-    // wagmi chain data
-    ...mainnet,
+const { mainnet_enabled, mainnet_tx_enabled } = getRemoteConfig();
 
-    // network related data
-    enabled: mainnet_enabled,
-    name: 'Ethereum',
-    longName: 'Ethereum',
-    value: Network.mainnet,
-    networkType: 'layer1',
-    blockTimeInMs: 15_000,
+export const mainnetNetworkObject: NetworkProperties = {
+  // wagmi chain data
+  ...mainnet,
 
-    nativeCurrency: {
-      ...mainnet.nativeCurrency,
-      address: ETH_ADDRESS,
-    },
+  // network related data
+  enabled: mainnet_enabled,
+  name: 'Ethereum',
+  longName: 'Ethereum',
+  value: Network.mainnet,
+  networkType: 'layer1',
+  blockTimeInMs: 15_000,
 
-    getProvider: () => getProvider({ chainId: ChainId.mainnet }),
-    rpc: () => (useConnectedToHardhatStore.getState().connectedToHardhat ? 'http://127.0.0.1:8545' : proxyRpcEndpoint(mainnet.id)),
-    balanceCheckerAddress: '0x4dcf4562268dd384fe814c00fad239f06c2a0c2b',
+  nativeCurrency: {
+    ...mainnet.nativeCurrency,
+    address: ETH_ADDRESS,
+  },
 
-    // features
-    features: {
-      txHistory: true,
+  getProvider: () => getProvider({ chainId: ChainId.mainnet }),
+  rpc: () => (useConnectedToHardhatStore.getState().connectedToHardhat ? 'http://127.0.0.1:8545' : proxyRpcEndpoint(mainnet.id)),
+  balanceCheckerAddress: '0x4dcf4562268dd384fe814c00fad239f06c2a0c2b',
 
-      // not sure if flashbots is being used app wide vs just swaps
-      flashbots: true,
-      walletconnect: true,
-      swaps: true,
-      nfts: true,
-      pools: true,
-      txs: mainnet_tx_enabled,
-    },
+  // features
+  features: {
+    txHistory: true,
 
-    gas: {
-      speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT, gasUtils.CUSTOM],
-      gasType: 'eip1559',
-      roundGasDisplay: true,
+    // not sure if flashbots is being used app wide vs just swaps
+    flashbots: true,
+    walletconnect: true,
+    swaps: true,
+    nfts: true,
+    pools: true,
+    txs: mainnet_tx_enabled,
+  },
 
-      // this prob can just be blockTime
-      pollingIntervalInMs: 5_000,
+  gas: {
+    speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT, gasUtils.CUSTOM],
+    gasType: 'eip1559',
+    roundGasDisplay: true,
 
-      // needs more research
-      getGasPrices: async () => null,
-    },
+    // this prob can just be blockTime
+    pollingIntervalInMs: 5_000,
 
-    swaps: {
-      defaultSlippage: 100,
-      defaultToFastGas: true,
-    },
+    // needs more research
+    getGasPrices: async () => null,
+  },
 
-    nfts: {
-      simplehashNetwork: 'ethereum',
-    },
+  swaps: {
+    defaultSlippage: 100,
+    defaultToFastGas: true,
+  },
 
-    // design tings
-    colors: {
-      light: '#25292E',
-      dark: '#25292E',
-    },
-  };
+  nfts: {
+    simplehashNetwork: 'ethereum',
+  },
+
+  // design tings
+  colors: {
+    light: '#25292E',
+    dark: '#25292E',
+  },
 };

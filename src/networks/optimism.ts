@@ -6,64 +6,63 @@ import { OPTIMISM_ETH_ADDRESS } from '@/references';
 import { getOptimismGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
-export const getOptimismNetworkObject = (): NetworkProperties => {
-  const { optimism_enabled, optimism_tx_enabled, op_chains_enabled, op_chains_tx_enabled } = getRemoteConfig();
-  return {
-    // wagmi chain data
-    ...optimism,
+const { optimism_enabled, optimism_tx_enabled, op_chains_enabled, op_chains_tx_enabled } = getRemoteConfig();
 
-    // network related data
-    enabled: optimism_enabled && op_chains_enabled,
-    name: 'Optimism',
-    longName: 'Optimism',
-    value: Network.optimism,
-    networkType: 'layer2',
-    blockTimeInMs: 5_000,
+export const optimismNetworkObject: NetworkProperties = {
+  // wagmi chain data
+  ...optimism,
 
-    nativeCurrency: {
-      ...optimism.nativeCurrency,
-      address: OPTIMISM_ETH_ADDRESS,
-    },
+  // network related data
+  enabled: optimism_enabled && op_chains_enabled,
+  name: 'Optimism',
+  longName: 'Optimism',
+  value: Network.optimism,
+  networkType: 'layer2',
+  blockTimeInMs: 5_000,
 
-    rpc: () => proxyRpcEndpoint(optimism.id),
-    getProvider: () => getProvider({ chainId: ChainId.optimism }),
-    balanceCheckerAddress: '0x1C8cFdE3Ba6eFc4FF8Dd5C93044B9A690b6CFf36',
+  nativeCurrency: {
+    ...optimism.nativeCurrency,
+    address: OPTIMISM_ETH_ADDRESS,
+  },
 
-    // features
-    features: {
-      txHistory: true,
-      flashbots: false,
-      walletconnect: true,
-      swaps: true,
-      nfts: true,
-      pools: false,
-      txs: optimism_tx_enabled && op_chains_tx_enabled,
-    },
+  rpc: () => proxyRpcEndpoint(optimism.id),
+  getProvider: () => getProvider({ chainId: ChainId.optimism }),
+  balanceCheckerAddress: '0x1C8cFdE3Ba6eFc4FF8Dd5C93044B9A690b6CFf36',
 
-    gas: {
-      speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT, gasUtils.CUSTOM],
+  // features
+  features: {
+    txHistory: true,
+    flashbots: false,
+    walletconnect: true,
+    swaps: true,
+    nfts: true,
+    pools: false,
+    txs: optimism_tx_enabled && op_chains_tx_enabled,
+  },
 
-      // ?
-      gasType: 'eip1559',
-      roundGasDisplay: true,
-      OptimismTxFee: true,
+  gas: {
+    speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT, gasUtils.CUSTOM],
 
-      // this prob can just be blockTime,
-      pollingIntervalInMs: 5_000,
+    // ?
+    gasType: 'eip1559',
+    roundGasDisplay: true,
+    OptimismTxFee: true,
 
-      getGasPrices: getOptimismGasPrices,
-    },
+    // this prob can just be blockTime,
+    pollingIntervalInMs: 5_000,
 
-    swaps: {
-      defaultSlippage: 200,
-    },
+    getGasPrices: getOptimismGasPrices,
+  },
 
-    nfts: { simplehashNetwork: 'optimism' },
+  swaps: {
+    defaultSlippage: 200,
+  },
 
-    // design tings
-    colors: {
-      light: '#FF4040',
-      dark: '#FF6A6A',
-    },
-  };
+  nfts: { simplehashNetwork: 'optimism' },
+
+  // design tings
+  colors: {
+    light: '#FF4040',
+    dark: '#FF6A6A',
+  },
 };

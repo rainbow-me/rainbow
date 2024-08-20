@@ -6,65 +6,64 @@ import { ARBITRUM_ETH_ADDRESS } from '@/references';
 import { getArbitrumGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
-export const getArbitrumNetworkObject = (): NetworkProperties => {
-  const { arbitrum_enabled, arbitrum_tx_enabled } = getRemoteConfig();
-  return {
-    // wagmi chain data
-    ...arbitrum,
-    // network related data
-    enabled: arbitrum_enabled,
-    name: 'Arbitrum',
-    longName: 'Arbitrum',
-    value: Network.arbitrum,
-    networkType: 'layer2',
-    blockTimeInMs: 5_000,
+const { arbitrum_enabled, arbitrum_tx_enabled } = getRemoteConfig();
 
-    nativeCurrency: {
-      ...arbitrum.nativeCurrency,
-      address: ARBITRUM_ETH_ADDRESS,
-    },
+export const arbitrumNetworkObject: NetworkProperties = {
+  // wagmi chain data
+  ...arbitrum,
+  // network related data
+  enabled: arbitrum_enabled,
+  name: 'Arbitrum',
+  longName: 'Arbitrum',
+  value: Network.arbitrum,
+  networkType: 'layer2',
+  blockTimeInMs: 5_000,
 
-    rpc: () => proxyRpcEndpoint(arbitrum.id),
-    getProvider: () => getProvider({ chainId: ChainId.arbitrum }),
-    balanceCheckerAddress: '0x54A4E5800345c01455a7798E0D96438364e22723',
+  nativeCurrency: {
+    ...arbitrum.nativeCurrency,
+    address: ARBITRUM_ETH_ADDRESS,
+  },
 
-    // features
-    features: {
-      txHistory: true,
+  rpc: () => proxyRpcEndpoint(arbitrum.id),
+  getProvider: () => getProvider({ chainId: ChainId.arbitrum }),
+  balanceCheckerAddress: '0x54A4E5800345c01455a7798E0D96438364e22723',
 
-      // not sure if flashbots is being used app wide vs just swaps
-      flashbots: false,
-      walletconnect: true,
-      swaps: true,
-      nfts: true,
-      pools: false,
-      txs: arbitrum_tx_enabled,
-    },
+  // features
+  features: {
+    txHistory: true,
 
-    gas: {
-      speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT, gasUtils.CUSTOM],
+    // not sure if flashbots is being used app wide vs just swaps
+    flashbots: false,
+    walletconnect: true,
+    swaps: true,
+    nfts: true,
+    pools: false,
+    txs: arbitrum_tx_enabled,
+  },
 
-      // ?
-      gasType: 'eip1559',
-      roundGasDisplay: true,
+  gas: {
+    speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT, gasUtils.CUSTOM],
 
-      // this prob can just be blockTime
-      pollingIntervalInMs: 3_000,
+    // ?
+    gasType: 'eip1559',
+    roundGasDisplay: true,
 
-      // needs more research
-      getGasPrices: getArbitrumGasPrices,
-    },
+    // this prob can just be blockTime
+    pollingIntervalInMs: 3_000,
 
-    swaps: {
-      defaultSlippage: 200,
-    },
+    // needs more research
+    getGasPrices: getArbitrumGasPrices,
+  },
 
-    nfts: { simplehashNetwork: 'arbitrum' },
+  swaps: {
+    defaultSlippage: 200,
+  },
 
-    // design tings
-    colors: {
-      light: '#2D374B',
-      dark: '#ADBFE3',
-    },
-  };
+  nfts: { simplehashNetwork: 'arbitrum' },
+
+  // design tings
+  colors: {
+    light: '#2D374B',
+    dark: '#ADBFE3',
+  },
 };

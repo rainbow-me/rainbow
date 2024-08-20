@@ -6,65 +6,64 @@ import { MATIC_MAINNET_ADDRESS, MATIC_POLYGON_ADDRESS } from '@/references';
 import { getPolygonGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
-export const getPolygonNetworkObject = (): NetworkProperties => {
-  const { polygon_tx_enabled } = getRemoteConfig();
-  return {
-    // wagmi chain data
-    ...polygon,
+const { polygon_tx_enabled } = getRemoteConfig();
 
-    // network related data
-    enabled: true,
-    name: 'Polygon',
-    longName: 'Polygon',
-    value: Network.polygon,
-    networkType: 'layer2',
-    blockTimeInMs: 2_000,
+export const polygonNetworkObject: NetworkProperties = {
+  // wagmi chain data
+  ...polygon,
 
-    nativeCurrency: {
-      ...polygon.nativeCurrency,
-      address: MATIC_POLYGON_ADDRESS,
-      mainnetAddress: MATIC_MAINNET_ADDRESS,
-    },
+  // network related data
+  enabled: true,
+  name: 'Polygon',
+  longName: 'Polygon',
+  value: Network.polygon,
+  networkType: 'layer2',
+  blockTimeInMs: 2_000,
 
-    rpc: () => proxyRpcEndpoint(polygon.id),
-    getProvider: () => getProvider({ chainId: ChainId.polygon }),
-    balanceCheckerAddress: '0x54A4E5800345c01455a77798E0D96438364e22723',
+  nativeCurrency: {
+    ...polygon.nativeCurrency,
+    address: MATIC_POLYGON_ADDRESS,
+    mainnetAddress: MATIC_MAINNET_ADDRESS,
+  },
 
-    // features
-    features: {
-      txHistory: true,
-      flashbots: false,
-      walletconnect: true,
-      swaps: true,
-      nfts: true,
-      pools: false,
-      txs: polygon_tx_enabled,
-    },
+  rpc: () => proxyRpcEndpoint(polygon.id),
+  getProvider: () => getProvider({ chainId: ChainId.polygon }),
+  balanceCheckerAddress: '0x54A4E5800345c01455a77798E0D96438364e22723',
 
-    gas: {
-      speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT],
+  // features
+  features: {
+    txHistory: true,
+    flashbots: false,
+    walletconnect: true,
+    swaps: true,
+    nfts: true,
+    pools: false,
+    txs: polygon_tx_enabled,
+  },
 
-      // ?
-      gasType: 'legacy',
-      roundGasDisplay: false,
+  gas: {
+    speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT],
 
-      // this prob can just be blockTime
-      pollingIntervalInMs: 2_000,
+    // ?
+    gasType: 'legacy',
+    roundGasDisplay: false,
 
-      getGasPrices: getPolygonGasPrices,
-    },
+    // this prob can just be blockTime
+    pollingIntervalInMs: 2_000,
 
-    swaps: {
-      defaultSlippage: 200,
-      defaultToFastGas: true,
-    },
+    getGasPrices: getPolygonGasPrices,
+  },
 
-    nfts: { simplehashNetwork: 'polygon' },
+  swaps: {
+    defaultSlippage: 200,
+    defaultToFastGas: true,
+  },
 
-    // design tings
-    colors: {
-      light: '#8247E5',
-      dark: '#A275EE',
-    },
-  };
+  nfts: { simplehashNetwork: 'polygon' },
+
+  // design tings
+  colors: {
+    light: '#8247E5',
+    dark: '#A275EE',
+  },
 };

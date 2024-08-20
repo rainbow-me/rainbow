@@ -5,68 +5,67 @@ import { goerli } from '@wagmi/chains';
 import { ETH_ADDRESS } from '@/references';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
-export const getGoerliNetworkObject = (): NetworkProperties => {
-  const { goerli_enabled, goerli_tx_enabled } = getRemoteConfig();
-  return {
-    // wagmi chain data
-    ...goerli,
+const { goerli_enabled, goerli_tx_enabled } = getRemoteConfig();
 
-    // network related data
-    enabled: goerli_enabled,
-    name: 'Goerli',
-    longName: 'Goerli',
-    value: Network.goerli,
-    networkType: 'testnet',
-    blockTimeInMs: 15_000,
+export const goerliNetworkObject: NetworkProperties = {
+  // wagmi chain data
+  ...goerli,
 
-    nativeCurrency: {
-      ...goerli.nativeCurrency,
-      address: ETH_ADDRESS,
-    },
+  // network related data
+  enabled: goerli_enabled,
+  name: 'Goerli',
+  longName: 'Goerli',
+  value: Network.goerli,
+  networkType: 'testnet',
+  blockTimeInMs: 15_000,
 
-    // this should be refactored to have less deps
-    getProvider: () => getProvider({ chainId: ChainId.goerli }),
-    rpc: () => proxyRpcEndpoint(goerli.id),
-    balanceCheckerAddress: '0xf3352813b612a2d198e437691557069316b84ebe',
+  nativeCurrency: {
+    ...goerli.nativeCurrency,
+    address: ETH_ADDRESS,
+  },
 
-    // features
-    features: {
-      txHistory: true,
+  // this should be refactored to have less deps
+  getProvider: () => getProvider({ chainId: ChainId.goerli }),
+  rpc: () => proxyRpcEndpoint(goerli.id),
+  balanceCheckerAddress: '0xf3352813b612a2d198e437691557069316b84ebe',
 
-      // not sure if flashbots is being used app wide vs just swaps
-      flashbots: false,
-      walletconnect: false,
-      swaps: false,
-      nfts: false,
-      pools: true,
-      txs: goerli_tx_enabled,
-    },
+  // features
+  features: {
+    txHistory: true,
 
-    gas: {
-      speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.CUSTOM],
-      gasType: 'eip1559',
-      roundGasDisplay: true,
+    // not sure if flashbots is being used app wide vs just swaps
+    flashbots: false,
+    walletconnect: false,
+    swaps: false,
+    nfts: false,
+    pools: true,
+    txs: goerli_tx_enabled,
+  },
 
-      // this prob can just be blockTime
-      pollingIntervalInMs: 5_000,
+  gas: {
+    speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.CUSTOM],
+    gasType: 'eip1559',
+    roundGasDisplay: true,
 
-      // needs more research
-      getGasPrices: async () => null,
-    },
+    // this prob can just be blockTime
+    pollingIntervalInMs: 5_000,
 
-    swaps: {
-      defaultSlippage: 100,
-      defaultToFastGas: true,
-    },
+    // needs more research
+    getGasPrices: async () => null,
+  },
 
-    nfts: {
-      simplehashNetwork: 'ethereum-goerli',
-    },
+  swaps: {
+    defaultSlippage: 100,
+    defaultToFastGas: true,
+  },
 
-    // design tings
-    colors: {
-      light: '#f6c343',
-      dark: '#f6c343',
-    },
-  };
+  nfts: {
+    simplehashNetwork: 'ethereum-goerli',
+  },
+
+  // design tings
+  colors: {
+    light: '#f6c343',
+    dark: '#f6c343',
+  },
 };
