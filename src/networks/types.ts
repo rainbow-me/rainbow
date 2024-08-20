@@ -258,8 +258,6 @@ export interface NetworkProperties extends Chain {
 
     // this prob can just be blockTime
     pollingIntervalInMs: number;
-
-    getGasPrices: () => Promise<GasPricesAPIData | null>;
   };
 
   swaps: {

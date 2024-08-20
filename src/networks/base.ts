@@ -3,7 +3,6 @@ import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { base } from '@wagmi/chains';
 import { BASE_ETH_ADDRESS } from '@/references';
-import { getBaseGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
 const { base_enabled, base_tx_enabled, op_chains_enabled, op_chains_tx_enabled } = getRemoteConfig();
@@ -48,8 +47,6 @@ export const baseNetworkObject: NetworkProperties = {
 
     // this prob can just be blockTime,
     pollingIntervalInMs: 5_000,
-
-    getGasPrices: getBaseGasPrices,
   },
 
   swaps: {

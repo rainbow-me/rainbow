@@ -2,7 +2,6 @@ import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { gnosis } from '@wagmi/chains';
 import { ETH_ADDRESS } from '@/references';
-import { getOptimismGasPrices } from '@/redux/gas';
 
 export const gnosisNetworkObject: NetworkProperties = {
   // wagmi chain data
@@ -45,8 +44,6 @@ export const gnosisNetworkObject: NetworkProperties = {
 
     // this prob can just be blockTime,
     pollingIntervalInMs: 5_000,
-
-    getGasPrices: getOptimismGasPrices,
   },
 
   swaps: {

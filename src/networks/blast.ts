@@ -2,7 +2,6 @@ import { proxyRpcEndpoint } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { blast } from 'viem/chains';
-import { getBlastGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { BLAST_MAINNET_RPC } from 'react-native-dotenv';
 import { BLAST_ETH_ADDRESS } from '@/references';
@@ -49,8 +48,6 @@ export const blastNetworkObject: NetworkProperties = {
 
     // this prob can just be blockTime,
     pollingIntervalInMs: 5_000,
-
-    getGasPrices: getBlastGasPrices,
   },
 
   swaps: {

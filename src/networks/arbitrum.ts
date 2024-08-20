@@ -49,9 +49,6 @@ export const arbitrumNetworkObject: NetworkProperties = {
 
     // this prob can just be blockTime
     pollingIntervalInMs: 3_000,
-
-    // needs more research
-    getGasPrices: getArbitrumGasPrices,
   },
 
   swaps: {

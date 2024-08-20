@@ -11,10 +11,6 @@ const isSwapEnabled = networkObj.swaps.enabled;
 const isNFTsEnabled = networkObj.nfts.enabled;
 const networkColors: { light: string; dark: string } = networkObj.colors;
 
-// Use network functions to get dynamic data
-const provider: StaticJsonRpcProvider = await networkObj.getProvider();
-const gasPrices = networkObj.getGasPrices();
-
 // Getting a subset of network objects
 
 const layer2s = Object.values(networkObjects).filter(network => network.networkType === 'layer2');

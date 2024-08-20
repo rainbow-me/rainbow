@@ -48,9 +48,6 @@ export const goerliNetworkObject: NetworkProperties = {
 
     // this prob can just be blockTime
     pollingIntervalInMs: 5_000,
-
-    // needs more research
-    getGasPrices: async () => null,
   },
 
   swaps: {

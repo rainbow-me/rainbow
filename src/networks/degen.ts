@@ -3,7 +3,6 @@ import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { degen } from 'viem/chains';
 import { DEGEN_CHAIN_DEGEN_ADDRESS } from '@/references';
-import { getDegenGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { DEGEN_MAINNET_RPC } from 'react-native-dotenv';
 
@@ -50,8 +49,6 @@ export const degenNetworkObject: NetworkProperties = {
 
     // this prob can just be blockTime,
     pollingIntervalInMs: 5_000,
-
-    getGasPrices: getDegenGasPrices,
   },
 
   swaps: {

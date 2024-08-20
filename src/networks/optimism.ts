@@ -3,7 +3,6 @@ import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { optimism } from '@wagmi/chains';
 import { OPTIMISM_ETH_ADDRESS } from '@/references';
-import { getOptimismGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
 const { optimism_enabled, optimism_tx_enabled, op_chains_enabled, op_chains_tx_enabled } = getRemoteConfig();
@@ -49,8 +48,6 @@ export const optimismNetworkObject: NetworkProperties = {
 
     // this prob can just be blockTime,
     pollingIntervalInMs: 5_000,
-
-    getGasPrices: getOptimismGasPrices,
   },
 
   swaps: {
