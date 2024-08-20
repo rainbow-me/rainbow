@@ -748,8 +748,8 @@
       },
       "swap_details_v2": {
         "automatic": "أوتو",
-        "degen_mode": "وضع ديجين",
-        "degen_mode_description": "تجاوز ورقة المراجعة للتبديل بشكل أسرع",
+        "degen_mode": "وضع Degen",
+        "degen_mode_description": "تخطي خطوة المراجعة للتبديل بشكل أسرع",
         "maximum_sold": "الحد الأقصى المباع",
         "minimum_received": "الحد الأدنى المستلم",
         "preferred_network": "الشبكة المفضلة",
@@ -1321,10 +1321,16 @@
     "nfts": {
       "selling": "بيع",
       "sort": {
+        "ABC": "أبج",
         "abc": "أبج",
+        "MOST_RECENT": "الأخير",
         "most_recent": "الأحدث",
+        "FLOOR_PRICE": "سعر الأرضية",
         "floor_price": "سعر الأرضية"
-      }
+      },
+      "empty": "القطع التذكارية",
+      "collect_now": "اجمع الآن",
+      "will_appear_here": "سوف تظهر مقتنياتك هنا"
     },
     "nft_offers": {
       "card": {
@@ -2068,6 +2074,7 @@
     "token_search": {
       "section_header": {
         "recent": "الأخير",
+        "popular": "شائع في Rainbow",
         "favorites": "المفضلة",
         "bridge": "جسر",
         "verified": "تم التحقق منه",
@@ -2496,7 +2503,7 @@
       "balance_title": "رصيد",
       "buy": "شراء",
       "change_wallet": {
-        "no_balance": "لا يوجد رصيد",
+        "loading_balance": "جاري تحميل الرصيد...",
         "balance_eth": "%{balanceEth} ETH",
         "watching": "مشاهدة",
         "ledger": "ليدجر"
