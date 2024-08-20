@@ -70,7 +70,7 @@ interface OutputCoinRowProps extends PartialAsset {
 type CoinRowProps = InputCoinRowProps | OutputCoinRowProps;
 
 export function CoinRow({ isFavorite, onPress, output, uniqueId, walletAddress, ...assetProps }: CoinRowProps) {
-  const inputAsset = useUserAssetsStore(walletAddress as Address)(state => (output ? undefined : state.getUserAsset(uniqueId)));
+  const inputAsset = useUserAssetsStore(walletAddress as Address, state => (output ? undefined : state.getUserAsset(uniqueId)));
   const outputAsset = output ? (assetProps as PartialAsset) : undefined;
 
   const asset = output ? outputAsset : inputAsset;

@@ -19,7 +19,7 @@ import { RainbowNetworks, getNetworkObj } from '@/networks';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 import { SWAPS_V2, enableActionsOnReadOnlyWallet, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { getUserAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsStore } from '@/state/assets/userAssets';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { AddressOrEth, AssetType } from '@/__swaps__/types/assets';
 import { chainNameFromChainId } from '@/__swaps__/utils/chains';
@@ -88,9 +88,7 @@ const AvailableNetworksv2 = ({
       if (swapsV2Enabled || swaps_v2) {
         const chainId = ethereumUtils.getChainIdFromNetwork(newAsset.network);
         const uniqueId = `${newAsset.address}_${chainId}`;
-        const userAsset = getUserAssetsStore(accountAddress as Address)
-          ?.getState()
-          .userAssets.get(uniqueId);
+        const userAsset = userAssetsStore.getState(accountAddress as Address).userAssets.get(uniqueId);
 
         const parsedAsset = parseSearchAsset({
           assetWithPrice: {
@@ -119,8 +117,8 @@ const AvailableNetworksv2 = ({
           userAsset,
         });
 
-        const largestBalanceSameChainUserAsset = getUserAssetsStore(accountAddress as Address)
-          ?.getState()
+        const largestBalanceSameChainUserAsset = userAssetsStore
+          .getState(accountAddress as Address)
           .getUserAssets()
           .find(userAsset => userAsset.chainId === chainId && userAsset.address !== newAsset.address);
         if (largestBalanceSameChainUserAsset) {

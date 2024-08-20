@@ -52,7 +52,7 @@ export const ChainContextMenu = ({
     textWeight = 'heavy',
   } = defaultButtonOptions;
 
-  const balanceSortedChains = useUserAssetsStore(accountAddress as Address)(state =>
+  const balanceSortedChains = useUserAssetsStore(accountAddress as Address, state =>
     // eslint-disable-next-line no-nested-ternary
     chainsToDisplay ? chainsToDisplay : excludeChainsWithNoBalance ? state.getChainsWithBalance() : state.getBalanceSortedChainList()
   );

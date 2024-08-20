@@ -4,7 +4,7 @@ import { opacity } from '@/__swaps__/utils/swaps';
 import { Input } from '@/components/inputs';
 import { Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
 import * as i18n from '@/languages';
-import { getUserAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import React from 'react';
 import Animated, {
@@ -42,7 +42,7 @@ export const SearchInput = ({
   const label = useForegroundColor('label');
   const labelQuaternary = useForegroundColor('labelQuaternary');
 
-  const onInputSearchQueryChange = useUserAssetsStore(accountAddress as Address)(state => state.setSearchQuery);
+  const onInputSearchQueryChange = useUserAssetsStore(accountAddress as Address, state => state.setSearchQuery);
 
   const onOutputSearchQueryChange = useDebouncedCallback((text: string) => useSwapsStore.setState({ outputSearchQuery: text }), 100, {
     leading: false,
@@ -111,9 +111,8 @@ export const SearchInput = ({
                           useSwapsStore.setState({ outputSearchQuery: '' });
                         }
                       } else {
-                        const userAssetsStore = getUserAssetsStore(accountAddress as Address);
-                        if (userAssetsStore && userAssetsStore.getState().inputSearchQuery !== '') {
-                          userAssetsStore.getState().setSearchQuery('');
+                        if (userAssetsStore.getState(accountAddress as Address).inputSearchQuery !== '') {
+                          userAssetsStore.getState(accountAddress as Address).setSearchQuery('');
                         }
                       }
                     }

@@ -9,7 +9,7 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import { useNavigation } from '@/navigation';
 import { SWAPS_V2, useExperimentalFlag, enableActionsOnReadOnlyWallet } from '@/config';
 import { ethereumUtils, watchingAlert } from '@/utils';
-import { getUserAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsStore } from '@/state/assets/userAssets';
 import { isSameAsset, parseSearchAsset } from '@/__swaps__/utils/assets';
 import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 import assetInputTypes from '@/helpers/assetInputTypes';
@@ -55,9 +55,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
 
       const chainId = ethereumUtils.getChainIdFromNetwork(asset.network);
       const uniqueId = `${asset.address}_${chainId}`;
-      const userAsset = getUserAssetsStore(accountAddress as Address)
-        ?.getState()
-        .userAssets.get(uniqueId);
+      const userAsset = userAssetsStore.getState(accountAddress as Address).userAssets.get(uniqueId);
 
       const parsedAsset = parseSearchAsset({
         assetWithPrice: {
@@ -91,8 +89,8 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
 
         const nativeAssetForChain = await ethereumUtils.getNativeAssetForNetwork(chainId);
         if (nativeAssetForChain && !isSameAsset({ address: nativeAssetForChain.address as AddressOrEth, chainId }, parsedAsset)) {
-          const userOutputAsset = getUserAssetsStore(accountAddress as Address)
-            ?.getState()
+          const userOutputAsset = userAssetsStore
+            .getState(accountAddress as Address)
             .getUserAsset(`${nativeAssetForChain.address}_${chainId}`);
 
           if (userOutputAsset) {
@@ -130,8 +128,8 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
           }
         }
       } else {
-        const largestBalanceSameChainUserAsset = getUserAssetsStore(accountAddress as Address)
-          ?.getState()
+        const largestBalanceSameChainUserAsset = userAssetsStore
+          .getState(accountAddress as Address)
           .getUserAssets()
           .find(userAsset => userAsset.chainId === chainId && userAsset.address !== asset.address);
         if (largestBalanceSameChainUserAsset) {

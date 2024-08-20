@@ -19,7 +19,7 @@ import * as i18n from '@/languages';
 import { RainbowConfig } from '@/model/remoteConfig';
 import store from '@/redux/store';
 import { ETH_ADDRESS } from '@/references';
-import { getUserAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsStore } from '@/state/assets/userAssets';
 import { colors } from '@/styles';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { CrosschainQuote, ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR, Quote, QuoteParams, SwapType, WRAPPED_ASSET } from '@rainbow-me/swaps';
@@ -600,9 +600,7 @@ export const parseAssetAndExtend = ({
 
   const uniqueId = getStandardizedUniqueIdWorklet({ address: asset.address, chainId: asset.chainId });
   const balance = insertUserAssetBalance
-    ? getUserAssetsStore(walletAddress as Address)
-        ?.getState()
-        .getUserAsset(uniqueId)?.balance || asset.balance
+    ? userAssetsStore.getState(walletAddress as Address).getUserAsset(uniqueId)?.balance || asset.balance
     : asset.balance;
 
   return {

@@ -13,7 +13,7 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, Inline, Stack, Text, TextIcon, useColorMode } from '@/design-system';
 import { palettes } from '@/design-system/color/palettes';
 import * as i18n from '@/languages';
-import { getUserAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { FlashList } from '@shopify/flash-list';
@@ -102,20 +102,17 @@ export const TokenToBuyList = () => {
         }
       })();
 
-      const userAssetsStore = getUserAssetsStore(accountAddress as Address);
-      if (userAssetsStore) {
-        const userAsset = userAssetsStore.getState().getUserAsset(token.uniqueId);
-        const parsedAsset = parseSearchAsset({
-          assetWithPrice: undefined,
-          searchAsset: token,
-          userAsset: userAsset ?? undefined,
-        });
+      const userAsset = userAssetsStore.getState(accountAddress as Address).getUserAsset(token.uniqueId);
+      const parsedAsset = parseSearchAsset({
+        assetWithPrice: undefined,
+        searchAsset: token,
+        userAsset: userAsset ?? undefined,
+      });
 
-        setAsset({
-          type: SwapAssetType.outputAsset,
-          asset: parsedAsset,
-        });
-      }
+      setAsset({
+        type: SwapAssetType.outputAsset,
+        asset: parsedAsset,
+      });
 
       const { outputSearchQuery } = swapsStore.getState();
 

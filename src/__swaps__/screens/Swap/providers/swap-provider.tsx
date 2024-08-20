@@ -43,7 +43,7 @@ import { walletExecuteRap } from '@/raps/execute';
 import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
 import { queryClient } from '@/react-query';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
-import { getUserAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { haptics } from '@/utils';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
@@ -599,11 +599,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           ? {
               ...asset,
               balance:
-                (asset &&
-                  getUserAssetsStore(accountAddress as Address)
-                    ?.getState()
-                    .getUserAsset(asset.uniqueId)?.balance) ||
-                asset?.balance,
+                (asset && userAssetsStore.getState(accountAddress as Address).getUserAsset(asset.uniqueId)?.balance) || asset?.balance,
             }
           : asset;
 

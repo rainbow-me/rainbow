@@ -19,7 +19,7 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { getUserAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsStore } from '@/state/assets/userAssets';
 import { Address } from 'viem';
 import { ChainId } from '@/__swaps__/types/chains';
 
@@ -182,9 +182,7 @@ function SwapButton() {
       });
       if (swapsV2Enabled) {
         swapsStore.setState({
-          inputAsset: getUserAssetsStore(accountAddress as Address)
-            ?.getState()
-            .getHighestValueEth(),
+          inputAsset: userAssetsStore.getState(accountAddress as Address).getHighestValueEth(),
         });
         InteractionManager.runAfterInteractions(() => {
           navigate(Routes.SWAP);
