@@ -1,15 +1,3 @@
-import { useCallback } from 'react';
-import {
-  SharedValue,
-  WithSpringConfig,
-  runOnJS,
-  runOnUI,
-  useAnimatedReaction,
-  useDerivedValue,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
-import { useDebouncedCallback } from 'use-debounce';
 import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
