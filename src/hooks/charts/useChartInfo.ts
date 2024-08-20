@@ -1,18 +1,12 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { isEmpty } from 'lodash';
-import { useCallback, useEffect, useState } from 'react';
-import isEqual from 'react-fast-compare';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import { useCallbackOne } from 'use-memo-one';
-import { disableCharts } from '../../config/debug';
-import { DEFAULT_CHART_TYPE } from '../../redux/charts';
 import { metadataClient } from '@/graphql';
-import { useQuery } from '@tanstack/react-query';
-import { createQueryKey } from '@/react-query';
+import { Network } from '@/helpers';
 import { getNetworkObj } from '@/networks';
 import { NetworkProperties } from '@/networks/types';
-import { Network } from '@/helpers';
+import { createQueryKey } from '@/react-query';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { useQuery } from '@tanstack/react-query';
+import { useCallback } from 'react';
+import { DEFAULT_CHART_TYPE } from '../../redux/charts';
 
 const chartTimes = ['hour', 'day', 'week', 'month', 'year'] as const;
 type ChartTime = (typeof chartTimes)[number];
@@ -53,7 +47,7 @@ export const usePriceChart = ({ mainnetAddress, address, network }: { mainnetAdd
     queryFn: async () => {
       const chart = await fetchPriceChart(chartType, chainId, address);
       if (!chart && mainnetAddress) return fetchPriceChart(chartType, mainnetChainId, mainnetAddress);
-      return chart || null;
+      return chart || [];
     },
     queryKey: createQueryKey('price chart', { address, chainId, chartType }),
     keepPreviousData: true,
