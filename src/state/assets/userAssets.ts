@@ -6,6 +6,8 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { swapsStore } from '../swaps/swapsStore';
+import { useStore } from 'zustand';
+import { useCallback } from 'react';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 
@@ -343,20 +345,78 @@ export const createUserAssetsStore = (address: Address) =>
     }
   );
 
-const userAssetsStoreCache: Map<Address, ReturnType<typeof createUserAssetsStore>> = new Map();
+type UserAssetsStoreType = ReturnType<typeof createUserAssetsStore>;
 
-export const useUserAssetsStore = (address: Address): ReturnType<typeof createUserAssetsStore> => {
-  if (!userAssetsStoreCache.get(address)) {
-    userAssetsStoreCache.set(address, createUserAssetsStore(address));
+interface StoreManagerState {
+  stores: Map<Address, UserAssetsStoreType>;
+}
+
+function serializeStoreManager(state: StoreManagerState, version?: number) {
+  try {
+    const x = Array.from(state.stores.entries()).map(([address, store]) => {
+      const storeState = store.getState();
+      const transformedStore = {
+        ...storeState,
+        chainBalances: storeState.chainBalances ? Array.from(storeState.chainBalances.entries()) : [],
+        idsByChain: storeState.idsByChain ? Array.from(storeState.idsByChain.entries()) : [],
+        userAssets: storeState.userAssets ? Array.from(storeState.userAssets.entries()) : [],
+      };
+    });
+
+    const transformedStateToPersist: UserAssetsStateWithTransforms = {
+      ...state,
+      chainBalances: state.chainBalances ? Array.from(state.chainBalances.entries()) : [],
+      idsByChain: state.idsByChain ? Array.from(state.idsByChain.entries()) : [],
+      userAssets: state.userAssets ? Array.from(state.userAssets.entries()) : [],
+    };
+
+    return JSON.stringify({
+      state: transformedStateToPersist,
+      version,
+    });
+  } catch (error) {
+    logger.error(new RainbowError('Failed to serialize state for user assets storage'), { error });
+    throw error;
+  }
+}
+
+const storeManager = createRainbowStore<StoreManagerState>(
+  () => ({
+    stores: new Map(),
+  }),
+  {
+    storageKey: 'userAssetsStoreManager',
+    version: 1,
+    serialize: serializeStoreManager,
+    deserialize: deserializeStoreManager,
+  }
+);
+
+function getOrCreateStore(address: Address): UserAssetsStoreType {
+  const { stores } = storeManager.getState();
+  let store = stores.get(address);
+
+  if (!store) {
+    store = createUserAssetsStore(address);
+    storeManager.setState(state => ({
+      stores: new Map(state.stores).set(address, store as UserAssetsStoreType),
+    }));
   }
 
-  return userAssetsStoreCache.get(address) as ReturnType<typeof createUserAssetsStore>;
+  return store;
+}
+
+export const userAssetsStore = {
+  getState: (address: Address) => getOrCreateStore(address).getState(),
+  setState: (address: Address, partial: Partial<UserAssetsState> | ((state: UserAssetsState) => Partial<UserAssetsState>)) =>
+    getOrCreateStore(address).setState(partial),
 };
 
-export const getUserAssetsStore = (address: Address): ReturnType<typeof createUserAssetsStore> | undefined => {
-  return userAssetsStoreCache.get(address);
-};
+export function useUserAssetsStore<T>(address: Address, selector: (state: UserAssetsState) => T) {
+  const store = getOrCreateStore(address);
+  return useStore(store, useCallback(selector, [address]));
+}
 
 function getCurrentSearchCache(address: Address): Map<string, UniqueId[]> | undefined {
-  return userAssetsStoreCache.get(address)?.getState().searchCache;
+  return getOrCreateStore(address).getState().searchCache;
 }
