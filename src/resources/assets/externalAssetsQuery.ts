@@ -5,7 +5,7 @@ import { convertAmountAndPriceToNativeDisplay, convertAmountToPercentageDisplay 
 import { NativeCurrencyKey } from '@/entities';
 import { Token } from '@/graphql/__generated__/metadata';
 import { ethereumUtils } from '@/utils';
-import { Network } from '@/networks/types';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export const EXTERNAL_TOKEN_CACHE_TIME = 1000 * 60 * 60 * 24; // 24 hours
 export const EXTERNAL_TOKEN_STALE_TIME = 1000 * 60; // 1 minute
@@ -32,13 +32,13 @@ export type FormattedExternalAsset = ExternalToken & {
 // Query Types for External Token
 type ExternalTokenArgs = {
   address: string;
-  network: Network;
+  chainId: ChainId;
   currency: NativeCurrencyKey;
 };
 
 // Query Key for Token Price
-export const externalTokenQueryKey = ({ address, network, currency }: ExternalTokenArgs) =>
-  createQueryKey('externalToken', { address, network, currency }, { persisterVersion: 1 });
+export const externalTokenQueryKey = ({ address, chainId, currency }: ExternalTokenArgs) =>
+  createQueryKey('externalToken', { address, chainId, currency }, { persisterVersion: 1 });
 
 type externalTokenQueryKey = ReturnType<typeof externalTokenQueryKey>;
 
@@ -55,8 +55,7 @@ const formatExternalAsset = (asset: ExternalToken, nativeCurrency: NativeCurrenc
 };
 
 // Query Function for Token Price
-export async function fetchExternalToken({ address, network, currency }: ExternalTokenArgs) {
-  const chainId = ethereumUtils.getChainIdFromNetwork(network);
+export async function fetchExternalToken({ address, chainId, currency }: ExternalTokenArgs) {
   const response = await metadataClient.externalToken({
     address,
     chainId,
@@ -70,19 +69,19 @@ export async function fetchExternalToken({ address, network, currency }: Externa
 }
 
 export async function externalTokenQueryFunction({
-  queryKey: [{ address, network, currency }],
+  queryKey: [{ address, chainId, currency }],
 }: QueryFunctionArgs<typeof externalTokenQueryKey>): Promise<FormattedExternalAsset | null> {
-  if (!address || !network) return null;
-  return await fetchExternalToken({ address, network, currency });
+  if (!address || !chainId) return null;
+  return await fetchExternalToken({ address, chainId, currency });
 }
 
 export type ExternalTokenQueryFunctionResult = QueryFunctionResult<typeof externalTokenQueryFunction>;
 
 // Prefetch function for Token Price
-export async function prefetchExternalToken({ address, network, currency }: ExternalTokenArgs) {
+export async function prefetchExternalToken({ address, chainId, currency }: ExternalTokenArgs) {
   await queryClient.prefetchQuery(
-    externalTokenQueryKey({ address, network, currency }),
-    async () => await fetchExternalToken({ address, network, currency }),
+    externalTokenQueryKey({ address, chainId, currency }),
+    async () => await fetchExternalToken({ address, chainId, currency }),
     {
       staleTime: EXTERNAL_TOKEN_STALE_TIME,
       cacheTime: EXTERNAL_TOKEN_CACHE_TIME,
@@ -92,13 +91,13 @@ export async function prefetchExternalToken({ address, network, currency }: Exte
 
 // Query Hook for Token Price
 export function useExternalToken(
-  { address, network, currency }: ExternalTokenArgs,
+  { address, chainId, currency }: ExternalTokenArgs,
   config: QueryConfig<ExternalTokenQueryFunctionResult, Error, externalTokenQueryKey> = {}
 ) {
-  return useQuery(externalTokenQueryKey({ address, network, currency }), externalTokenQueryFunction, {
+  return useQuery(externalTokenQueryKey({ address, chainId, currency }), externalTokenQueryFunction, {
     staleTime: EXTERNAL_TOKEN_STALE_TIME,
     cacheTime: EXTERNAL_TOKEN_CACHE_TIME,
-    enabled: !!address && !!network,
+    enabled: !!address && !!chainId,
     ...config,
   });
 }

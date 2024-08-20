@@ -4,8 +4,8 @@ import { ContextMenuButton } from '@/components/context-menu';
 import { Bleed, Box, Inline, Text, TextProps } from '@/design-system';
 import * as i18n from '@/languages';
 import { ChainId, ChainNameDisplay } from '@/__swaps__/types/chains';
-import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { showActionSheetWithOptions } from '@/utils';
 import { chainNameForChainIdWithMainnetSubstitution } from '@/__swaps__/utils/chains';
 import { useAccountSettings } from '@/hooks';
 import { Address } from 'viem';
@@ -150,7 +150,7 @@ export const ChainContextMenu = ({
               )}
               {selectedChainId && (
                 <Bleed vertical="4px">
-                  <ChainImage chain={ethereumUtils.getNetworkFromChainId(selectedChainId)} size={16} />
+                  <ChainImage chainId={selectedChainId} size={16} />
                 </Bleed>
               )}
               <Text color={textColor} numberOfLines={1} size={textSize} weight={textWeight}>

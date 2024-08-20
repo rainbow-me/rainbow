@@ -1,4 +1,4 @@
-import { NativeCurrencyKey, ZerionAsset } from '@/entities';
+import { NativeCurrencyKey } from '@/entities';
 import {
   AddysPositionsResponse,
   Borrow,
@@ -17,7 +17,6 @@ import {
 import { add, convertAmountToNativeDisplay, convertRawAmountToNativeDisplay, subtract } from '@/helpers/utilities';
 import { maybeSignUri } from '@/handlers/imgix';
 import { ethereumUtils } from '@/utils';
-import { Network } from '@/networks/types';
 
 export const parsePosition = (position: Position, currency: NativeCurrencyKey): RainbowPosition => {
   let totalDeposits = '0';
@@ -146,7 +145,7 @@ export const parsePositions = (data: AddysPositionsResponse, currency: NativeCur
 
   parsedPositions.forEach(({ deposits }) => {
     deposits.forEach(({ asset }) => {
-      const uniqueId = ethereumUtils.getUniqueId(asset.asset_code.toLowerCase(), asset.network);
+      const uniqueId = ethereumUtils.getUniqueId(asset.asset_code.toLowerCase(), ethereumUtils.getChainIdFromNetwork(asset.network));
       positionTokens.push(uniqueId);
     });
   });

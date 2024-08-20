@@ -2,7 +2,6 @@ import { BigNumberish } from '@ethersproject/bignumber';
 import { Block, StaticJsonRpcProvider } from '@ethersproject/providers';
 import {
   ALLOWS_PERMIT,
-  ChainId,
   CrosschainQuote,
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
   getQuoteExecutionDetails,
@@ -22,6 +21,7 @@ import { Asset } from '@/entities';
 import { add, convertRawAmountToDecimalFormat, divide, lessThan, multiply, subtract } from '@/helpers/utilities';
 import { erc20ABI, ethUnits } from '@/references';
 import { ethereumUtils, logger } from '@/utils';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export enum Field {
   INPUT = 'INPUT',
@@ -251,7 +251,7 @@ export const estimateSwapGasLimit = async ({
           from: tradeDetails.from,
           value: isWrapNativeAsset ? tradeDetails.buyAmount : '0',
         },
-        getWrappedAssetMethod(isWrapNativeAsset ? 'deposit' : 'withdraw', provider, chainId),
+        getWrappedAssetMethod(isWrapNativeAsset ? 'deposit' : 'withdraw', provider, chainId as number),
         // @ts-ignore
         isUnwrapNativeAsset ? [tradeDetails.buyAmount] : null,
         provider,
@@ -377,5 +377,5 @@ export const computeSlippageAdjustedAmounts = (trade: any, allowedSlippageInBlip
 };
 
 export const getTokenForCurrency = (currency: Asset, chainId: ChainId): Token => {
-  return { ...currency, chainId } as Token;
+  return { ...currency, chainId: chainId as number } as Token;
 };

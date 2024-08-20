@@ -74,6 +74,43 @@ export function getNetworkObj(network: Network): NetworkProperties {
   }
 }
 
+export function getNetworkObject({ chainId }: { chainId: ChainId }): NetworkProperties {
+  switch (chainId) {
+    // Mainnet
+    case ChainId.mainnet:
+      return getMainnetNetworkObject();
+
+    // L2s
+    case ChainId.arbitrum:
+      return getArbitrumNetworkObject();
+    case ChainId.base:
+      return getBaseNetworkObject();
+    case ChainId.bsc:
+      return getBSCNetworkObject();
+    case ChainId.optimism:
+      return getOptimismNetworkObject();
+    case ChainId.polygon:
+      return getPolygonNetworkObject();
+    case ChainId.zora:
+      return getZoraNetworkObject();
+    case ChainId.gnosis:
+      return getGnosisNetworkObject();
+    case ChainId.avalanche:
+      return getAvalancheNetworkObject();
+    case ChainId.blast:
+      return getBlastNetworkObject();
+    case ChainId.degen:
+      return getDegenNetworkObject();
+    // Testnets
+    case ChainId.goerli:
+      return getGoerliNetworkObject();
+
+    // Fallback
+    default:
+      return getMainnetNetworkObject();
+  }
+}
+
 /**
  * Sorts Networks based on addresses assets
  */

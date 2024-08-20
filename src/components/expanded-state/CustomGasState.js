@@ -93,7 +93,7 @@ export default function CustomGasState({ asset }) {
         <GasSpeedButton
           asset={asset}
           canGoBack={canGoBack}
-          currentNetwork={txNetwork}
+          chainId={txNetwork?.chainId}
           showGasOptions
           testID="swap-details-gas"
           theme="dark"

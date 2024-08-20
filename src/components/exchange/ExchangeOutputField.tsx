@@ -2,14 +2,14 @@ import React, { MutableRefObject } from 'react';
 import { TextInput } from 'react-native';
 import ExchangeField from './ExchangeField';
 import { Box } from '@rainbow-me/design-system';
-import { Network } from '@rainbow-me/helpers';
 import { TokenColors } from '@/graphql/__generated__/metadata';
+import { ChainId } from '@/__swaps__/types/chains';
 
 interface ExchangeOutputFieldProps {
   color: string;
+  chainId: ChainId;
   editable: boolean;
   loading: boolean;
-  network: Network;
   onFocus: ({ target }: { target: Element }) => void;
   onPressSelectOutputCurrency: () => void;
   onTapWhileDisabled?: () => void;
@@ -30,7 +30,7 @@ export default function ExchangeOutputField({
   color,
   editable,
   loading,
-  network,
+  chainId,
   onFocus,
   onPressSelectOutputCurrency,
   onTapWhileDisabled,
@@ -62,7 +62,7 @@ export default function ExchangeOutputField({
         editable={editable}
         loading={loading}
         mainnetAddress={outputCurrencyMainnetAddress}
-        network={network}
+        chainId={chainId}
         onFocus={onFocus}
         onPressSelectCurrency={onPressSelectOutputCurrency}
         onTapWhileDisabled={onTapWhileDisabled}

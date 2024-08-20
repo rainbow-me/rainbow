@@ -15,7 +15,7 @@ import { Chart } from '../../value-chart';
 import ExpandedStateSection from '../ExpandedStateSection';
 import SocialLinks from './SocialLinks';
 import { ChartPathProvider } from '@/react-native-animated-charts/src';
-import { isL2Network, isTestnetNetwork } from '@/handlers/web3';
+import { isL2Chain, isTestnetNetwork } from '@/handlers/web3';
 import AssetInputTypes from '@/helpers/assetInputTypes';
 import {
   useAccountSettings,
@@ -29,7 +29,7 @@ import { useNavigation } from '@/navigation';
 import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
-import { safeAreaInsetValues } from '@/utils';
+import { ethereumUtils, safeAreaInsetValues } from '@/utils';
 import AvailableNetworksv2 from '@/components/expanded-state/AvailableNetworksv2';
 import AvailableNetworksv1 from '@/components/expanded-state/AvailableNetworks';
 import { Box } from '@/design-system';
@@ -141,10 +141,11 @@ function Description({ text = '' }) {
 
 export default function ChartExpandedState({ asset }) {
   const { nativeCurrency, network: currentNetwork } = useAccountSettings();
+  const assetChainId = ethereumUtils.getChainIdFromNetwork(asset?.network);
 
   const { data: genericAsset } = useExternalToken({
     address: asset?.address,
-    network: asset?.network,
+    chainId: assetChainId,
     currency: nativeCurrency,
   });
   const {
@@ -170,7 +171,7 @@ export default function ChartExpandedState({ asset }) {
         : asset;
   }, [asset, genericAsset, hasBalance]);
 
-  const isL2 = useMemo(() => isL2Network(assetWithPrice.network), [assetWithPrice.network]);
+  const isL2 = useMemo(() => isL2Chain({ chainId: assetChainId }), [assetChainId]);
   const isTestnet = isTestnetNetwork(currentNetwork);
 
   const { data, isLoading: additionalAssetDataLoading } = useAdditionalAssetData({
@@ -374,7 +375,7 @@ export default function ChartExpandedState({ asset }) {
           isNativeAsset={assetWithPrice?.isNativeAsset}
           links={data?.links}
           marginTop={!delayedDescriptions && 19}
-          type={asset?.network}
+          chainId={ethereumUtils.getChainIdFromNetwork(asset?.network)}
         />
         <Spacer />
       </AdditionalContentWrapper>

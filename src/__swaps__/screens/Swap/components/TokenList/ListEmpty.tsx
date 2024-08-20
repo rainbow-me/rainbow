@@ -4,11 +4,11 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, Stack, Text } from '@/design-system';
 import * as i18n from '@/languages';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { isL2Chain } from '@/__swaps__/utils/chains';
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
 import { useSwapContext } from '../../providers/swap-provider';
 import { BUY_LIST_HEADER_HEIGHT } from './TokenToBuyList';
 import { SELL_LIST_HEADER_HEIGHT } from './TokenToSellList';
+import { isL2Chain } from '@/handlers/web3';
 
 type ListEmptyProps = {
   action?: 'swap' | 'bridge';
@@ -19,7 +19,7 @@ export const ListEmpty = memo(function ListEmpty({ action = 'swap', output = fal
   const { inputProgress, outputProgress } = useSwapContext();
 
   const isL2 = useMemo(() => {
-    return output ? isL2Chain(swapsStore.getState().selectedOutputChainId) : false;
+    return output ? isL2Chain({ chainId: swapsStore.getState().selectedOutputChainId }) : false;
   }, [output]);
 
   const containerHeight = useAnimatedStyle(() => {

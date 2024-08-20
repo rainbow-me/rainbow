@@ -282,7 +282,7 @@ export const unlock = async ({
     hash: approval.hash as TxHash,
     // TODO: MARK - Replace this once we migrate network => chainId
     network: ethereumUtils.getNetworkFromChainId(chainId),
-    // chainId: approval.chainId,
+    chainId: approval.chainId,
     nonce: approval.nonce,
     status: 'pending',
     type: 'approve',

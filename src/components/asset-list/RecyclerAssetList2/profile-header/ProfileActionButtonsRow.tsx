@@ -18,10 +18,10 @@ import { useRecoilState } from 'recoil';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
-import { Network } from '@/networks/types';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { getUserAssetsStore } from '@/state/assets/userAssets';
 import { Address } from 'viem';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export const ProfileActionButtonsRowHeight = 80;
 
@@ -194,7 +194,7 @@ function SwapButton() {
 
       android && delayNext();
 
-      const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(Network.mainnet, accountAddress);
+      const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(ChainId.mainnet, accountAddress);
       navigate(Routes.EXCHANGE_MODAL, {
         fromDiscover: true,
         params: {

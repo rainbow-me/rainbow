@@ -11,7 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 import { omit } from 'lodash';
 import { externalTokenQueryKey, fetchExternalToken } from './assets/externalAssetsQuery';
 
-export const favoritesQueryKey = createQueryKey('favorites', {}, { persisterVersion: 3 });
+export const favoritesQueryKey = createQueryKey('favorites', {}, { persisterVersion: 4 });
 
 const DEFAULT_FAVORITES = [DAI_ADDRESS, ETH_ADDRESS, SOCKS_ADDRESS, WBTC_ADDRESS];
 
@@ -23,14 +23,13 @@ const getUniqueId = (address: AddressOrEth, chainId: ChainId) => getStandardized
 async function fetchMetadata(addresses: string[], chainId = ChainId.mainnet) {
   const favoritesMetadata: Record<UniqueId, RainbowToken> = {};
   const newFavoritesMeta: Record<UniqueId, RainbowToken> = {};
-
   const network = ethereumUtils.getNetworkFromChainId(chainId);
 
   // Map addresses to an array of promises returned by fetchExternalToken
   const fetchPromises: Promise<void>[] = addresses.map(async address => {
     const externalAsset = await queryClient.fetchQuery(
-      externalTokenQueryKey({ address, network, currency: NativeCurrencyKeys.USD }),
-      async () => fetchExternalToken({ address, network, currency: NativeCurrencyKeys.USD }),
+      externalTokenQueryKey({ address, chainId, currency: NativeCurrencyKeys.USD }),
+      async () => fetchExternalToken({ address, chainId, currency: NativeCurrencyKeys.USD }),
       {
         staleTime: Infinity,
       }
@@ -40,6 +39,7 @@ async function fetchMetadata(addresses: string[], chainId = ChainId.mainnet) {
       const uniqueId = getUniqueId(externalAsset?.networks[chainId]?.address, chainId);
       newFavoritesMeta[uniqueId] = {
         ...externalAsset,
+        chainId,
         network,
         address,
         networks: externalAsset.networks,
@@ -156,6 +156,8 @@ export function useFavorites(): {
 
   const favoritesMetadata = query.data ?? {};
   const favorites = Object.keys(favoritesMetadata);
+
+  console.log('favoritesMetadata', favoritesMetadata);
 
   return {
     favorites,
