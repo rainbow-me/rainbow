@@ -423,9 +423,9 @@ export function useSwapInputsController({
         setQuote({
           data: quoteResponse,
           inputAmount: quotedInputAmount,
-          inputPrice: quoteResponse.sellTokenAsset.price.value,
+          inputPrice: quoteResponse?.sellTokenAsset?.price?.value,
           outputAmount: quotedOutputAmount,
-          outputPrice: quoteResponse.buyTokenAsset.price.value,
+          outputPrice: quoteResponse?.buyTokenAsset?.price?.value,
           originalQuoteParams,
           quoteFetchingInterval,
         });
