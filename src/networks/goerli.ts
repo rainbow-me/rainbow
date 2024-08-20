@@ -1,5 +1,5 @@
-import { getProvider, proxyRpcEndpoint } from '@/handlers/web3';
-import { Network, NetworkProperties , ChainId } from './types';
+import { proxyRpcEndpoint } from '@/handlers/web3';
+import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { goerli } from '@wagmi/chains';
 import { ETH_ADDRESS } from '@/references';
@@ -25,7 +25,6 @@ export const goerliNetworkObject: NetworkProperties = {
   },
 
   // this should be refactored to have less deps
-  getProvider: () => getProvider({ chainId: ChainId.goerli }),
   rpc: () => proxyRpcEndpoint(goerli.id),
   balanceCheckerAddress: '0xf3352813b612a2d198e437691557069316b84ebe',
 

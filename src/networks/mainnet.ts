@@ -1,5 +1,5 @@
-import { getProvider, proxyRpcEndpoint } from '@/handlers/web3';
-import { Network, NetworkProperties, ChainId  } from './types';
+import { proxyRpcEndpoint } from '@/handlers/web3';
+import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { mainnet } from '@wagmi/chains';
 import { ETH_ADDRESS } from '@/references';
@@ -25,7 +25,6 @@ export const mainnetNetworkObject: NetworkProperties = {
     address: ETH_ADDRESS,
   },
 
-  getProvider: () => getProvider({ chainId: ChainId.mainnet }),
   rpc: () => (useConnectedToHardhatStore.getState().connectedToHardhat ? 'http://127.0.0.1:8545' : proxyRpcEndpoint(mainnet.id)),
   balanceCheckerAddress: '0x4dcf4562268dd384fe814c00fad239f06c2a0c2b',
 

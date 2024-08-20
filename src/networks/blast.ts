@@ -1,5 +1,5 @@
-import { getProvider, proxyRpcEndpoint } from '@/handlers/web3';
-import { Network, NetworkProperties , ChainId } from './types';
+import { proxyRpcEndpoint } from '@/handlers/web3';
+import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { blast } from 'viem/chains';
 import { getBlastGasPrices } from '@/redux/gas';
@@ -29,7 +29,6 @@ export const blastNetworkObject: NetworkProperties = {
 
   balanceCheckerAddress: '',
   rpc: () => proxyRpcEndpoint(blast.id),
-  getProvider: () => getProvider({ chainId: ChainId.blast }),
 
   // features
   features: {

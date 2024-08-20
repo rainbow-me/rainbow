@@ -1,5 +1,5 @@
-import { getProvider, proxyRpcEndpoint } from '@/handlers/web3';
-import { Network, NetworkProperties , ChainId } from './types';
+import { proxyRpcEndpoint } from '@/handlers/web3';
+import { Network, NetworkProperties  } from './types';
 import { gasUtils } from '@/utils';
 import { arbitrum } from '@wagmi/chains';
 import { ARBITRUM_ETH_ADDRESS } from '@/references';
@@ -25,7 +25,6 @@ export const arbitrumNetworkObject: NetworkProperties = {
   },
 
   rpc: () => proxyRpcEndpoint(arbitrum.id),
-  getProvider: () => getProvider({ chainId: ChainId.arbitrum }),
   balanceCheckerAddress: '0x54A4E5800345c01455a7798E0D96438364e22723',
 
   // features

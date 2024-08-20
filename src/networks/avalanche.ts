@@ -1,5 +1,5 @@
-import { getProvider, proxyRpcEndpoint } from '@/handlers/web3';
-import { Network, NetworkProperties , ChainId } from './types';
+import { proxyRpcEndpoint } from '@/handlers/web3';
+import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { avalanche } from '@wagmi/chains';
 import { AVAX_AVALANCHE_ADDRESS } from '@/references';
@@ -26,7 +26,6 @@ export const avalancheNetworkObject: NetworkProperties = {
   },
 
   rpc: () => proxyRpcEndpoint(avalanche.id),
-  getProvider: () => getProvider({ chainId: ChainId.avalanche }),
   // need to find balance checker address
   balanceCheckerAddress: '',
 

@@ -1,5 +1,4 @@
-import { getProvider } from '@/handlers/web3';
-import { Network, NetworkProperties , ChainId } from './types';
+import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { gnosis } from '@wagmi/chains';
 import { ETH_ADDRESS } from '@/references';
@@ -23,7 +22,6 @@ export const gnosisNetworkObject: NetworkProperties = {
   },
 
   rpc: () => '',
-  getProvider: () => getProvider({ chainId: ChainId.gnosis }),
   balanceCheckerAddress: '',
 
   // features

@@ -1,5 +1,5 @@
-import { getProvider, proxyRpcEndpoint } from '@/handlers/web3';
-import { Network, NetworkProperties , ChainId } from './types';
+import { proxyRpcEndpoint } from '@/handlers/web3';
+import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { polygon } from '@wagmi/chains';
 import { MATIC_MAINNET_ADDRESS, MATIC_POLYGON_ADDRESS } from '@/references';
@@ -27,7 +27,6 @@ export const polygonNetworkObject: NetworkProperties = {
   },
 
   rpc: () => proxyRpcEndpoint(polygon.id),
-  getProvider: () => getProvider({ chainId: ChainId.polygon }),
   balanceCheckerAddress: '0x54A4E5800345c01455a77798E0D96438364e22723',
 
   // features

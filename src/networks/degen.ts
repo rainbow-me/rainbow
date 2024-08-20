@@ -1,5 +1,5 @@
-import { getProvider, proxyRpcEndpoint } from '@/handlers/web3';
-import { Network, NetworkProperties , ChainId } from './types';
+import { proxyRpcEndpoint } from '@/handlers/web3';
+import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { degen } from 'viem/chains';
 import { DEGEN_CHAIN_DEGEN_ADDRESS } from '@/references';
@@ -28,7 +28,6 @@ export const degenNetworkObject: NetworkProperties = {
   },
 
   rpc: () => proxyRpcEndpoint(degen.id),
-  getProvider: () => getProvider({ chainId: ChainId.degen }),
   // need to find balance checker address
   balanceCheckerAddress: '',
 
