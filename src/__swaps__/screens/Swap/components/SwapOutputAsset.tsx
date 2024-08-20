@@ -7,6 +7,7 @@ import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { AnimatedSwapCoinIcon } from '@/__swaps__/screens/Swap/components/AnimatedSwapCoinIcon';
 import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
+import { SwapInputValuesCaret } from '@/__swaps__/screens/Swap/components/SwapInputValuesCaret';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
@@ -57,15 +58,6 @@ function SwapOutputNativeAmount() {
     <AnimatedText numberOfLines={1} size="17pt" style={SwapTextStyles.outputNativeValueStyle} weight="heavy">
       {SwapInputController.formattedOutputNativeValue}
     </AnimatedText>
-  );
-}
-
-function SwapOutputAmountCaret() {
-  const { SwapTextStyles, AnimatedSwapStyles } = useSwapContext();
-  return (
-    <Animated.View style={[styles.caretContainer, SwapTextStyles.outputCaretStyle]}>
-      <Box as={Animated.View} borderRadius={1} style={[styles.caret, AnimatedSwapStyles.assetToBuyCaretStyle]} />
-    </Animated.View>
   );
 }
 
@@ -133,7 +125,7 @@ function SwapOutputAmount() {
           <AnimatedText ellipsizeMode="clip" numberOfLines={1} size="30pt" style={SwapTextStyles.outputAmountTextStyle} weight="bold">
             {SwapInputController.formattedOutputAmount}
           </AnimatedText>
-          <SwapOutputAmountCaret />
+          <SwapInputValuesCaret inputCaretType="outputAmount" />
         </MaskedView>
       </GestureHandlerButton>
     </CopyPasteMenu>

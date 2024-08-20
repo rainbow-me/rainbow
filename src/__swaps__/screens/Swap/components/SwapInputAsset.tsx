@@ -11,6 +11,7 @@ import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
 import { SwapInput } from '@/__swaps__/screens/Swap/components/SwapInput';
+import { SwapInputValuesCaret } from '@/__swaps__/screens/Swap/components/SwapInputValuesCaret';
 import { TokenList } from '@/__swaps__/screens/Swap/components/TokenList/TokenList';
 import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 
@@ -58,15 +59,6 @@ function SwapInputNativeAmount() {
   );
 }
 
-function SwapInputAmountCaret() {
-  const { SwapTextStyles, AnimatedSwapStyles } = useSwapContext();
-  return (
-    <Animated.View style={[styles.caretContainer, SwapTextStyles.inputCaretStyle]}>
-      <Box as={Animated.View} borderRadius={1} style={[styles.caret, AnimatedSwapStyles.assetToSellCaretStyle]} />
-    </Animated.View>
-  );
-}
-
 function SwapInputAmount() {
   const { focusedInput, SwapTextStyles, SwapInputController } = useSwapContext();
 
@@ -101,7 +93,7 @@ function SwapInputAmount() {
           >
             {SwapInputController.formattedInputAmount}
           </AnimatedText>
-          <SwapInputAmountCaret />
+          <SwapInputValuesCaret inputCaretType="inputAmount" />
         </MaskedView>
       </GestureHandlerButton>
     </CopyPasteMenu>
