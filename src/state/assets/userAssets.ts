@@ -343,20 +343,20 @@ export const createUserAssetsStore = (address: Address) =>
     }
   );
 
-const userAssetsStoreCache: Record<Address, ReturnType<typeof createUserAssetsStore>> = {};
+const userAssetsStoreCache: Map<Address, ReturnType<typeof createUserAssetsStore>> = new Map();
 
 export const useUserAssetsStore = (address: Address): ReturnType<typeof createUserAssetsStore> => {
-  if (!userAssetsStoreCache[address]) {
-    userAssetsStoreCache[address] = createUserAssetsStore(address);
+  if (!userAssetsStoreCache.get(address)) {
+    userAssetsStoreCache.set(address, createUserAssetsStore(address));
   }
 
-  return userAssetsStoreCache[address];
+  return userAssetsStoreCache.get(address) as ReturnType<typeof createUserAssetsStore>;
 };
 
 export const getUserAssetsStore = (address: Address): ReturnType<typeof createUserAssetsStore> | undefined => {
-  return userAssetsStoreCache[address];
+  return userAssetsStoreCache.get(address);
 };
 
 function getCurrentSearchCache(address: Address): Map<string, UniqueId[]> | undefined {
-  return userAssetsStoreCache[address]?.getState().searchCache;
+  return userAssetsStoreCache.get(address)?.getState().searchCache;
 }
