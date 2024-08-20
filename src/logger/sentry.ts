@@ -16,14 +16,7 @@ export const defaultOptions: Sentry.ReactNativeOptions = {
   environment: isTestFlight ? 'Testflight' : SENTRY_ENVIRONMENT,
   integrations: [],
   maxBreadcrumbs: 10,
-  tracesSampleRate: 0,
-  beforeSend(event) {
-    if (!event.contexts?.device?.family) {
-      return null;
-    }
-
-    return event;
-  },
+  tracesSampleRate: 0
 };
 
 export function initSentry() {
