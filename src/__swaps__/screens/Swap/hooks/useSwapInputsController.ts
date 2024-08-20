@@ -373,16 +373,38 @@ export function useSwapInputsController({
 
     try {
       const quoteResponse = await (params.swapType === SwapType.crossChain ? getCrosschainQuote(params) : getQuote(params));
-      if (!quoteResponse || 'error' in quoteResponse) throw quoteResponse;
+
+      const inputAsset = internalSelectedInputAsset.value;
+      const outputAsset = internalSelectedOutputAsset.value;
+
+      analyticsV2.track(analyticsV2.event.swapsReceivedQuote, {
+        inputAsset,
+        outputAsset,
+        quote: quoteResponse,
+      });
+
+      if (!quoteResponse || 'error' in quoteResponse) {
+        runOnUI(() => {
+          setQuote({
+            data: quoteResponse,
+            inputAmount: undefined,
+            inputPrice: undefined,
+            outputAmount: undefined,
+            outputPrice: undefined,
+            originalQuoteParams,
+            quoteFetchingInterval,
+          });
+        })();
+
+        return;
+      }
 
       const quotedInputAmount =
         lastTypedInputParam === 'outputAmount'
           ? Number(
               convertRawAmountToDecimalFormat(
                 quoteResponse.sellAmount.toString(),
-                internalSelectedInputAsset.value?.networks[internalSelectedInputAsset.value.chainId]?.decimals ||
-                  internalSelectedInputAsset.value?.decimals ||
-                  18
+                inputAsset?.networks[inputAsset.chainId]?.decimals || inputAsset?.decimals || 18
               )
             )
           : undefined;
@@ -392,18 +414,10 @@ export function useSwapInputsController({
           ? Number(
               convertRawAmountToDecimalFormat(
                 quoteResponse.buyAmountMinusFees.toString(),
-                internalSelectedOutputAsset.value?.networks[internalSelectedOutputAsset.value.chainId]?.decimals ||
-                  internalSelectedOutputAsset.value?.decimals ||
-                  18
+                outputAsset?.networks[outputAsset.chainId]?.decimals || outputAsset?.decimals || 18
               )
             )
           : undefined;
-
-      analyticsV2.track(analyticsV2.event.swapsReceivedQuote, {
-        inputAsset: internalSelectedInputAsset.value,
-        outputAsset: internalSelectedOutputAsset.value,
-        quote: quoteResponse,
-      });
 
       runOnUI(() => {
         setQuote({
@@ -416,20 +430,7 @@ export function useSwapInputsController({
           quoteFetchingInterval,
         });
       })();
-    } catch (erroredQuoteResponse) {
-      console.log(erroredQuoteResponse);
-      runOnUI(() => {
-        setQuote({
-          data: erroredQuoteResponse as QuoteError | null,
-          originalQuoteParams,
-          quoteFetchingInterval,
-          inputAmount: 0,
-          inputPrice: null,
-          outputAmount: 0,
-          outputPrice: null,
-        });
-      })();
-
+    } catch {
       runOnUI(resetFetchingStatus)({ fromError: true, quoteFetchingInterval });
     }
   };
