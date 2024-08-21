@@ -79,7 +79,7 @@ const useWalletBalances = (wallets: AllRainbowWallets): WalletBalanceResult => {
     }
 
     return result;
-  }, [allAddresses, summaryData, nativeCurrency]);
+  }, [isLoading, allAddresses, summaryData?.data?.addresses, nativeCurrency]);
 
   return {
     balances,
