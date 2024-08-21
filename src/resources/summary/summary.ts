@@ -26,7 +26,7 @@ export interface AddySummary {
           };
           num_erc20s: number;
           last_activity: number;
-          asset_value: number;
+          asset_value: number | null;
         };
       };
       summary_by_chain: {
@@ -38,7 +38,7 @@ export interface AddySummary {
           };
           num_erc20s: number;
           last_activity: number;
-          asset_value: number;
+          asset_value: number | null;
         };
       };
     };
