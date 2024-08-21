@@ -208,7 +208,15 @@ dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
     
-    implementation 'io.github.novacrypto:BIP39:2019.01.27'
+    implementation("com.github.NovaCrypto:BIP39:0e7fa95f80") {
+        exclude group: "io.github.novacrypto", module: "ToRuntime"
+        exclude group: "io.github.novacrypto", module: "SHA256"
+    }
+    implementation("com.github.NovaCrypto:Sha256:57bed72da5") {
+        exclude group: "io.github.novacrypto", module: "ToRuntime"
+    }
+    implementation "com.github.NovaCrypto:ToRuntime:c3ae3080eb"
+
     implementation 'com.google.android.play:review:2.0.1'
     implementation 'com.google.android.play:app-update:2.1.0'
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
