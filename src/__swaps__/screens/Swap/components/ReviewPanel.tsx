@@ -90,13 +90,13 @@ const RainbowFee = () => {
       }).amount;
 
       const { display: feeDisplay } = convertRawAmountToBalance(quote.fee.toString(), {
-        decimals: quote.feeTokenAsset.decimals,
-        symbol: quote.feeTokenAsset.symbol,
+        decimals: quote?.feeTokenAsset?.decimals || 18,
+        symbol: quote?.feeTokenAsset?.symbol || 'ETH',
       });
 
       rainbowFee.value = [feeDisplay, `${handleSignificantDecimals(multiply(feePercentage, 100), 2)}%`];
     },
-    [nativeAsset?.value?.decimals, nativeAsset?.value?.price?.value, nativeCurrency, rainbowFee]
+    [rainbowFee]
   );
 
   useAnimatedReaction(
