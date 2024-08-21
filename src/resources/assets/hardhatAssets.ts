@@ -4,14 +4,14 @@ import { keyBy, mapValues } from 'lodash';
 import { Network } from '@/helpers/networkTypes';
 import { web3Provider } from '@/handlers/web3'; // TODO JIN
 import { getNetworkObj } from '@/networks';
-import { balanceCheckerContractAbi, chainAssets, chainAssetsByChainId, ETH_ADDRESS, SUPPORTED_CHAIN_IDS } from '@/references';
+import { balanceCheckerContractAbi, chainAssets, ETH_ADDRESS, SUPPORTED_CHAIN_IDS } from '@/references';
 import { parseAddressAsset } from './assets';
 import { RainbowAddressAssets } from './types';
 import logger from '@/utils/logger';
 import { AddressOrEth, UniqueId, ZerionAsset } from '@/__swaps__/types/assets';
 import { ChainId, ChainName } from '@/__swaps__/types/chains';
-import { chainIdFromChainName } from '@/__swaps__/utils/chains';
 import { AddressZero } from '@ethersproject/constants';
+import chainAssetsByChainId from '@/references/testnet-assets-by-chain';
 
 const fetchHardhatBalancesWithBalanceChecker = async (
   tokens: string[],
