@@ -530,13 +530,12 @@ export const isWrapEthWorklet = ({
   buyTokenAddress: string;
 }) => {
   'worklet';
-  if (chainId === ChainId.mainnet) {
-    return isLowerCaseMatchWorklet(sellTokenAddress, ETH_ADDRESS) && isLowerCaseMatchWorklet(buyTokenAddress, WRAPPED_ASSET[chainId]);
-  } else {
-    return (
-      isLowerCaseMatchWorklet(sellTokenAddress, ETH_ADDRESS_AGGREGATOR) && isLowerCaseMatchWorklet(buyTokenAddress, WRAPPED_ASSET[chainId])
-    );
-  }
+  return (
+    (chainId === ChainId.mainnet &&
+      isLowerCaseMatchWorklet(sellTokenAddress, ETH_ADDRESS) &&
+      isLowerCaseMatchWorklet(buyTokenAddress, WRAPPED_ASSET[chainId])) ||
+    (isLowerCaseMatchWorklet(sellTokenAddress, ETH_ADDRESS_AGGREGATOR) && isLowerCaseMatchWorklet(buyTokenAddress, WRAPPED_ASSET[chainId]))
+  );
 };
 
 export const priceForAsset = ({

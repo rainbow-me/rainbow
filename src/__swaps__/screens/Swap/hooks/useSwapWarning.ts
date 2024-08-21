@@ -4,12 +4,18 @@ import * as i18n from '@/languages';
 import { useAccountSettings } from '@/hooks';
 import { useForegroundColor } from '@/design-system';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
-import { getCrossChainTimeEstimateWorklet, getQuoteServiceTimeWorklet } from '@/__swaps__/utils/swaps';
+import {
+  getCrossChainTimeEstimateWorklet,
+  getQuoteServiceTimeWorklet,
+  isUnwrapEthWorklet,
+  isWrapEthWorklet,
+} from '@/__swaps__/utils/swaps';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { highPriceImpactThreshold, severePriceImpactThreshold } from '@/__swaps__/screens/Swap/constants';
 import { divWorklet, greaterThanOrEqualToWorklet, subWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { inputValuesType } from '@/__swaps__/types/swap';
 import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export enum SwapWarningType {
   unknown = 'unknown',
@@ -107,6 +113,22 @@ export const useSwapWarning = ({ inputAsset, outputAsset, inputValues, quote, is
       const errorType: SwapWarningType = quoteError.error_code || SwapWarningType.no_quote_available;
       const title = I18N_WARNINGS.titles[errorType];
       return { type: errorType, title, color: colorMap[errorType], icon: '􀇿', subtitle: '' };
+    }
+
+    const isNativeWrapOrUnwrap =
+      isWrapEthWorklet({
+        buyTokenAddress: (quote.value as Quote)?.buyTokenAddress || '',
+        sellTokenAddress: (quote.value as Quote)?.sellTokenAddress || '',
+        chainId: inputAsset.value?.chainId || ChainId.mainnet,
+      }) ||
+      isUnwrapEthWorklet({
+        buyTokenAddress: (quote.value as Quote)?.buyTokenAddress,
+        sellTokenAddress: (quote.value as Quote)?.sellTokenAddress,
+        chainId: inputAsset.value?.chainId || ChainId.mainnet,
+      });
+
+    if (isNativeWrapOrUnwrap) {
+      return NO_WARNING;
     }
 
     // missing asset native price
