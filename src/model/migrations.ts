@@ -641,9 +641,19 @@ export default async function runMigrations() {
 
   /**
    *************** Migration v19 ******************
-   * Migrates dapp browser favorites store from createStore to createRainbowStore
+   * Deleted migration
    */
   const v19 = async () => {
+    return;
+  };
+
+  migrations.push(v19);
+
+  /**
+   *************** Migration v20 ******************
+   * Migrates dapp browser favorites store from createStore to createRainbowStore
+   */
+  const v20 = async () => {
     const initializeLegacyStore = () => {
       return new Promise<void>(resolve => {
         // Give the async legacy store a moment to initialize
@@ -666,7 +676,7 @@ export default async function runMigrations() {
     }
   };
 
-  migrations.push(v19);
+  migrations.push(v20);
 
   logger.sentry(`Migrations: ready to run migrations starting on number ${currentVersion}`);
   // await setMigrationVersion(17);
