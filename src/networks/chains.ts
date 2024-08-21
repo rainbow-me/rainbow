@@ -12,6 +12,14 @@ const BACKEND_CHAINS = transformBackendNetworksToChains(backendNetworks.networks
 
 export const SUPPORTED_CHAINS: Chain[] = IS_TESTING ? [...BACKEND_CHAINS, chainHardhat, chainHardhatOptimism] : BACKEND_CHAINS;
 
+export const defaultChains: Record<ChainId, Chain> = SUPPORTED_CHAINS.reduce(
+  (acc, chain) => {
+    acc[chain.id] = chain;
+    return acc;
+  },
+  {} as Record<ChainId, Chain>
+);
+
 export const SUPPORTED_CHAIN_IDS = SUPPORTED_CHAINS.map(chain => chain.id);
 
 export const SUPPORTED_MAINNET_CHAINS: Chain[] = SUPPORTED_CHAINS.filter(chain => !chain.testnet);

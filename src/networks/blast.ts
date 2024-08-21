@@ -1,9 +1,9 @@
-import { proxyRpcEndpoint } from '@/handlers/web3';
-import { Network, NetworkProperties } from './types';
+import { ChainId, Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { blast } from 'viem/chains';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { BLAST_MAINNET_RPC } from 'react-native-dotenv';
+import { defaultChains } from './chains';
 
 const { blast_enabled, blast_tx_enabled } = getRemoteConfig();
 
@@ -19,8 +19,8 @@ export const blastNetworkObject: NetworkProperties = {
   value: Network.blast,
   networkType: 'layer2',
 
+  rpc: defaultChains[ChainId.blast].rpcUrls.default.http[0],
   balanceCheckerAddress: '',
-  rpc: () => proxyRpcEndpoint(blast.id),
 
   // features
   features: {

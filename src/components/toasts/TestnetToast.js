@@ -6,6 +6,7 @@ import { useInternetStatus } from '@/hooks';
 import { ChainId } from '@/networks/types';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 import { networkObjects } from '@/networks';
+import { SUPPORTED_CHAINS } from '@/networks/chains';
 
 const TestnetToast = ({ chainId }) => {
   const { connectedToHardhat } = useConnectedToHardhatStore();
@@ -14,6 +15,7 @@ const TestnetToast = ({ chainId }) => {
   const { name, colors: networkColors } = networkObject;
   const [visible, setVisible] = useState(true);
   const [networkName, setNetworkName] = useState(name);
+  const chain = SUPPORTED_CHAINS[chainId || ChainId.mainnet];
 
   useEffect(() => {
     if (chainId === ChainId.mainnet) {
@@ -27,7 +29,7 @@ const TestnetToast = ({ chainId }) => {
       setVisible(true);
       setNetworkName(name + (isConnected ? '' : ' (offline)'));
     }
-  }, [name, isConnected, chainId, connectedToHardhat, networkObject]);
+  }, [name, isConnected, chainId, connectedToHardhat, chain.rpcUrls.default.http, networkObject.rpc]);
 
   const { colors, isDarkMode } = useTheme();
 

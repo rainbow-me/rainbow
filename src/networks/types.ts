@@ -225,7 +225,7 @@ export interface NetworkProperties extends Chain {
   value: Network;
   networkType: 'layer1' | 'layer2' | 'testnet';
 
-  rpc: () => string;
+  rpc: string;
   balanceCheckerAddress: EthereumAddress;
 
   // feature flags

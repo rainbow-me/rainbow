@@ -1,8 +1,8 @@
-import { proxyRpcEndpoint } from '@/handlers/web3';
-import { Network, NetworkProperties } from './types';
+import { ChainId, Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { avalanche } from '@wagmi/chains';
 import { getRemoteConfig } from '@/model/remoteConfig';
+import { defaultChains } from './chains';
 
 const { avalanche_enabled, avalanche_tx_enabled } = getRemoteConfig();
 
@@ -17,7 +17,7 @@ export const avalancheNetworkObject: NetworkProperties = {
   value: Network.avalanche,
   networkType: 'layer2',
 
-  rpc: () => proxyRpcEndpoint(avalanche.id),
+  rpc: defaultChains[ChainId.avalanche].rpcUrls.default.http[0],
   // need to find balance checker address
   balanceCheckerAddress: '',
 

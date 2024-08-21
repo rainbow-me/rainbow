@@ -37,6 +37,7 @@ import { logger, RainbowError } from '@/logger';
 import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
 import { ChainId } from '@/networks/types';
 import { networkObjects } from '@/networks';
+import { defaultChains, SUPPORTED_CHAINS } from '@/networks/chains';
 
 export enum TokenStandard {
   ERC1155 = 'ERC1155',
@@ -191,14 +192,13 @@ export const getCachedProviderForNetwork = (chainId: ChainId = ChainId.mainnet):
 export const getProvider = ({ chainId = ChainId.mainnet }: { chainId?: number }): StaticJsonRpcProvider => {
   const cachedProvider = chainsProviders.get(chainId);
 
-  const networkObject = networkObjects[chainId];
+  const providerUrl = defaultChains[chainId].rpcUrls.default.http[0];
 
-  if (cachedProvider && cachedProvider?.connection.url === networkObject.rpc()) {
+  if (cachedProvider && cachedProvider?.connection.url === providerUrl) {
     return cachedProvider;
   }
 
-
-  const provider = new StaticJsonRpcProvider(networkObject.rpc(), networkObject.id);
+  const provider = new StaticJsonRpcProvider(providerUrl, chainId);
   chainsProviders.set(chainId, provider);
 
   return provider;

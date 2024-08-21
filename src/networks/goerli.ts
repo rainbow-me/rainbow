@@ -1,8 +1,8 @@
-import { proxyRpcEndpoint } from '@/handlers/web3';
-import { Network, NetworkProperties } from './types';
+import { ChainId, Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { goerli } from '@wagmi/chains';
 import { getRemoteConfig } from '@/model/remoteConfig';
+import { defaultChains } from './chains';
 
 const { goerli_enabled, goerli_tx_enabled } = getRemoteConfig();
 
@@ -17,8 +17,8 @@ export const goerliNetworkObject: NetworkProperties = {
   value: Network.goerli,
   networkType: 'testnet',
 
+  rpc: defaultChains[ChainId.goerli].rpcUrls.default.http[0],
   // this should be refactored to have less deps
-  rpc: () => proxyRpcEndpoint(goerli.id),
   balanceCheckerAddress: '0xf3352813b612a2d198e437691557069316b84ebe',
 
   // features

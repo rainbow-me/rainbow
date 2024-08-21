@@ -1,8 +1,8 @@
-import { proxyRpcEndpoint } from '@/handlers/web3';
-import { Network, NetworkProperties } from './types';
+import { ChainId, Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { bsc } from '@wagmi/chains';
 import { getRemoteConfig } from '@/model/remoteConfig';
+import { defaultChains } from './chains';
 
 const { bsc_enabled, bsc_tx_enabled } = getRemoteConfig();
 
@@ -17,8 +17,8 @@ export const bscNetworkObject: NetworkProperties = {
   value: Network.bsc,
   networkType: 'layer2',
 
+  rpc: defaultChains[ChainId.bsc].rpcUrls.default.http[0],
   // this should be refactored to have less deps
-  rpc: () => proxyRpcEndpoint(bsc.id),
   balanceCheckerAddress: '0x400A9f1Bb1Db80643C33710C2232A0D74EF5CFf1',
 
   // features

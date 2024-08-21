@@ -1,9 +1,9 @@
-import { proxyRpcEndpoint } from '@/handlers/web3';
-import { Network, NetworkProperties } from './types';
+import { ChainId, Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { degen } from 'viem/chains';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { DEGEN_MAINNET_RPC } from 'react-native-dotenv';
+import { defaultChains } from './chains';
 
 const { degen_enabled, degen_tx_enabled } = getRemoteConfig();
 
@@ -19,7 +19,7 @@ export const degenNetworkObject: NetworkProperties = {
   value: Network.degen,
   networkType: 'layer2',
 
-  rpc: () => proxyRpcEndpoint(degen.id),
+  rpc: defaultChains[ChainId.degen].rpcUrls.default.http[0],
   // need to find balance checker address
   balanceCheckerAddress: '',
 
