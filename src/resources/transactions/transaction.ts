@@ -3,13 +3,13 @@ import { createQueryKey, queryClient, QueryFunctionArgs, QueryFunctionResult } f
 import { useQuery } from '@tanstack/react-query';
 import { consolidatedTransactionsQueryFunction, consolidatedTransactionsQueryKey } from './consolidatedTransactions';
 import { useAccountSettings } from '@/hooks';
-import { networkObjects } from '@/networks';
 import { rainbowFetch } from '@/rainbow-fetch';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { parseTransaction } from '@/parsers/transactions';
 import { RainbowError, logger } from '@/logger';
 import { TransactionApiResponse } from './types';
 import { ChainId } from '@/networks/types';
+import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/networks/chains';
 
 export type ConsolidatedTransactionsResult = QueryFunctionResult<typeof consolidatedTransactionsQueryFunction>;
 export type PaginatedTransactions = { pages: ConsolidatedTransactionsResult[] };
@@ -20,8 +20,6 @@ export type TransactionArgs = {
   currency: NativeCurrencyKey;
   chainId: ChainId;
 };
-
-type TransactionQueryKey = ReturnType<typeof transactionQueryKey>;
 
 export type BackendTransactionArgs = {
   hash: string;
@@ -81,14 +79,10 @@ export const transactionFetchQuery = async ({
 export function useBackendTransaction({ hash, chainId }: BackendTransactionArgs) {
   const { accountAddress, nativeCurrency } = useAccountSettings();
 
-  const chainIds = Object.values(networkObjects)
-    .filter(network => network.enabled && network.networkType !== 'testnet')
-    .map(network => network.id);
-
   const paginatedTransactionsKey = consolidatedTransactionsQueryKey({
     address: accountAddress,
     currency: nativeCurrency,
-    chainIds,
+    chainIds: SUPPORTED_MAINNET_CHAIN_IDS,
   });
 
   const params: TransactionArgs = {

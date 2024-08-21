@@ -18,6 +18,7 @@ import { ChainId } from '@/networks/types';
 import { staleBalancesStore } from '@/state/staleBalances';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 import { networkObjects } from '@/networks';
+import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/networks/chains';
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
   const { storePendingTransactions, setPendingTransactions } = usePendingTransactionsStore(state => ({
@@ -221,7 +222,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
           queryKey: consolidatedTransactionsQueryKey({
             address,
             currency: nativeCurrency,
-            chainIds,
+            chainIds: SUPPORTED_MAINNET_CHAIN_IDS,
           }),
         });
       }, 2000);

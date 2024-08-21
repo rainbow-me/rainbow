@@ -5,9 +5,9 @@ import { TransactionApiResponse, TransactionsReceivedMessage } from './types';
 import { RainbowError, logger } from '@/logger';
 import { rainbowFetch } from '@/rainbow-fetch';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
-import { networkObjects } from '@/networks';
 import { parseTransaction } from '@/parsers/transactions';
 import { ethereumUtils } from '@/utils';
+import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/networks/chains';
 
 const CONSOLIDATED_TRANSACTIONS_INTERVAL = 30000;
 const CONSOLIDATED_TRANSACTIONS_TIMEOUT = 20000;
@@ -125,15 +125,11 @@ export function useConsolidatedTransactions(
   { address, currency }: Pick<ConsolidatedTransactionsArgs, 'address' | 'currency'>,
   config: InfiniteQueryConfig<ConsolidatedTransactionsResult, Error, ConsolidatedTransactionsResult> = {}
 ) {
-  const chainIds = Object.values(networkObjects)
-    .filter(network => network.enabled && network.networkType !== 'testnet')
-    .map(network => network.id);
-
   return useInfiniteQuery(
     consolidatedTransactionsQueryKey({
       address,
       currency,
-      chainIds,
+      chainIds: SUPPORTED_MAINNET_CHAIN_IDS,
     }),
     consolidatedTransactionsQueryFunction,
     {

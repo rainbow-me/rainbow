@@ -24,6 +24,8 @@ export const SUPPORTED_CHAIN_IDS = SUPPORTED_CHAINS.map(chain => chain.id);
 
 export const SUPPORTED_MAINNET_CHAINS: Chain[] = SUPPORTED_CHAINS.filter(chain => !chain.testnet);
 
+export const SUPPORTED_MAINNET_CHAIN_IDS: ChainId[] = SUPPORTED_MAINNET_CHAINS.map(chain => chain.id);
+
 export const needsL1SecurityFeeChains = backendNetworks.networks
   .filter((backendNetwork: BackendNetwork) => backendNetwork.opStack)
   .map((backendNetwork: BackendNetwork) => parseInt(backendNetwork.id, 10));

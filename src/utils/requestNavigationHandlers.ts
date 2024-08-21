@@ -35,6 +35,7 @@ import { toUtf8String } from '@ethersproject/strings';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Address } from 'viem';
 import { ChainId } from '@/networks/types';
+import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/networks/chains';
 import { networkObjects } from '@/networks';
 
 export enum RequestSource {
@@ -105,9 +106,9 @@ export const handleMobileWalletProtocolRequest = async ({
     if (isHandshakeAction(action)) {
       logger.debug(`Processing handshake action for ${action.appId}`);
 
-      const chainIds = RainbowNetworkObjects.filter(network => network.enabled && network.networkType !== 'testnet').map(
-        network => network.id
-      );
+	  const chainIds = Object.values(networkObjects)
+	  .filter(networkObject => networkObject.enabled && networkObject.networkType !== 'testnet')
+	  .map(networkObject => networkObject.id);
       const receivedTimestamp = Date.now();
 
       const dappMetadata = await fetchClientAppMetadata();
@@ -290,14 +291,11 @@ export const handleDappBrowserConnectionPrompt = (
   dappData: DappConnectionData
 ): Promise<{ chainId: ChainId; address: Address } | Error> => {
   return new Promise((resolve, reject) => {
-    const chainIds = Object.values(networkObjects)
-      .filter(network => network.enabled && network.networkType !== 'testnet')
-      .map(network => network.id);
     const receivedTimestamp = Date.now();
     const routeParams: WalletconnectApprovalSheetRouteParams = {
       receivedTimestamp,
       meta: {
-        chainIds,
+        chainIds: SUPPORTED_MAINNET_CHAIN_IDS,
         dappName: dappData?.dappName || dappData.dappUrl,
         dappUrl: dappData.dappUrl,
         imageUrl: maybeSignUri(dappData.imageUrl),
