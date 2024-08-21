@@ -157,8 +157,6 @@ export function useFavorites(): {
   const favoritesMetadata = query.data ?? {};
   const favorites = Object.keys(favoritesMetadata);
 
-  console.log('favoritesMetadata', favoritesMetadata);
-
   return {
     favorites,
     favoritesMetadata,
