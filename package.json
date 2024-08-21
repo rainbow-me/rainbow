@@ -65,7 +65,7 @@
     "codegen-translations": "node ./scripts/codegen-translations.js",
     "prepare": "husky install",
     "bundle-inpage": "yarn webpack --config src/browser/webpack.config.js && cp InjectedJSBundle.js android/app/src/main/res/raw/injected_js_bundle.js",
-	"// Fetch backend networks": "",
+    "// Fetch backend networks": "",
     "fetch:networks": "node ./scripts/networks.js"
   },
   "dependencies": {

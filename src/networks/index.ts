@@ -67,11 +67,3 @@ export function sortNetworks(): NetworkProperties[] {
 export function getSwappableNetworks(): NetworkProperties[] {
   return Object.values(networkObjects).filter(network => network.features.swaps);
 }
-
-export const RainbowNetworkByChainId = Object.values(networkObjects).reduce(
-  (acc, network) => {
-    acc[network.id] = network;
-    return acc;
-  },
-  {} as Record<ChainId, NetworkProperties>
-);
