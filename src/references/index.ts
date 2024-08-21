@@ -32,6 +32,7 @@ import {
 
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
 export { default as chainAssets } from './chain-assets.json';
+export { default as chainAssetsByChainId } from './testnet-assets-by-chain';
 export { signatureRegistryABI, SIGNATURE_REGISTRY_ADDRESS } from './signatureRegistry';
 export { default as emojis } from './emojis.json';
 export { default as ensIntroMarqueeNames } from './ens-intro-marquee-names.json';

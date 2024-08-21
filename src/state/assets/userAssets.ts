@@ -9,6 +9,7 @@ import store from '@/redux/store';
 import { ETH_ADDRESS, SUPPORTED_CHAIN_IDS, supportedNativeCurrencies } from '@/references';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { swapsStore } from '../swaps/swapsStore';
+import { IS_TEST } from '@/env';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 
@@ -272,17 +273,15 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
       set(() => {
         const idsByChain = new Map<UserAssetFilter, UniqueId[]>();
         const unsortedChainBalances = new Map<ChainId, number>();
-        const isMap = userAssets instanceof Map;
-        const userAssetsArray = isMap ? Array.from(userAssets.values()) : userAssets;
 
-        userAssetsArray.forEach(asset => {
-          const balance = Number(asset.native?.balance?.amount ?? asset.balance?.amount) ?? 0;
+        userAssets.forEach(asset => {
+          const balance = Number(asset.native.balance.amount) ?? 0;
           unsortedChainBalances.set(asset.chainId, (unsortedChainBalances.get(asset.chainId) || 0) + balance);
           idsByChain.set(asset.chainId, (idsByChain.get(asset.chainId) || []).concat(asset.uniqueId));
         });
 
         // Ensure all supported chains are in the map with a fallback value of 0
-        SUPPORTED_CHAIN_IDS({ testnetMode: false }).forEach(chainId => {
+        SUPPORTED_CHAIN_IDS({ testnetMode: getIsHardhatConnected() }).forEach(chainId => {
           if (!unsortedChainBalances.has(chainId)) {
             unsortedChainBalances.set(chainId, 0);
             idsByChain.set(chainId, []);
@@ -298,8 +297,9 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
           idsByChain.set(chainId, idsByChain.get(chainId) || []);
         });
 
-        const allIdsArray = userAssetsArray.map(asset => asset.uniqueId);
-        const userAssetsMap = new Map(userAssetsArray.map(asset => [asset.uniqueId, asset]));
+        const isMap = userAssets instanceof Map;
+        const allIdsArray = isMap ? Array.from(userAssets.keys()) : userAssets.map(asset => asset.uniqueId);
+        const userAssetsMap = isMap ? userAssets : new Map(userAssets.map(asset => [asset.uniqueId, asset]));
 
         idsByChain.set('all', allIdsArray);
 
@@ -307,7 +307,7 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
 
         const filteredAllIdsArray = allIdsArray.filter(id => {
           const asset = userAssetsMap.get(id);
-          return asset && (+(asset.native?.balance?.amount ?? asset.balance?.amount) ?? 0) > smallBalanceThreshold;
+          return asset && (+asset.native?.balance?.amount ?? 0) > smallBalanceThreshold;
         });
 
         const searchCache = new Map<string, UniqueId[]>();

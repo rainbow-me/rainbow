@@ -15,7 +15,7 @@ import { parseUserAsset } from '@/__swaps__/utils/assets';
 import { greaterThan } from '@/__swaps__/utils/numbers';
 
 import { fetchUserAssetsByChain } from './userAssetsByChain';
-import { fetchHardhatBalances } from '@/resources/assets/hardhatAssets';
+import { fetchHardhatBalances, fetchHardhatBalancesByChainId } from '@/resources/assets/hardhatAssets';
 
 const addysHttp = new RainbowFetchClient({
   baseURL: 'https://addys.p.rainbow.me/v3',
@@ -82,16 +82,31 @@ export const userAssetsSetQueryData = ({ address, currency, userAssets, testnetM
   queryClient.setQueryData(userAssetsQueryKey({ address, currency, testnetMode }), userAssets);
 };
 
-async function userAssetsQueryFunction({ queryKey: [{ address, currency, testnetMode }] }: QueryFunctionArgs<typeof userAssetsQueryKey>) {
+async function userAssetsQueryFunction({
+  queryKey: [{ address, currency, testnetMode }],
+}: QueryFunctionArgs<typeof userAssetsQueryKey>): Promise<ParsedAssetsDictByChain> {
   if (!address) {
     return {};
   }
   if (testnetMode) {
-    const hardhatResults = await fetchHardhatBalances(address);
-    const formattedHardhatResults = {
-      '1': hardhatResults,
-    };
-    return formattedHardhatResults as typeof formattedHardhatResults & ParsedAssetsDictByChain;
+    const { assets, chainIdsInResponse } = await fetchHardhatBalancesByChainId(address);
+    const parsedAssets: Array<{
+      asset: ZerionAsset;
+      quantity: string;
+      small_balances: boolean;
+    }> = Object.values(assets).map(asset => ({
+      asset: asset.asset,
+      quantity: asset.quantity,
+      small_balances: false,
+    }));
+
+    const parsedAssetsDict = await parseUserAssets({
+      assets: parsedAssets,
+      chainIds: chainIdsInResponse,
+      currency,
+    });
+
+    return parsedAssetsDict;
   }
   const cache = queryClient.getQueryCache();
   const cachedUserAssets = (cache.find(userAssetsQueryKey({ address, currency, testnetMode }))?.state?.data ||
@@ -216,12 +231,10 @@ export async function parseUserAssets({
 // Query Hook
 
 export function useUserAssets<TSelectResult = UserAssetsResult>(
-  { address, currency }: UserAssetsArgs,
+  { address, currency, testnetMode }: UserAssetsArgs,
   config: QueryConfigWithSelect<UserAssetsResult, Error, TSelectResult, UserAssetsQueryKey> = {}
 ) {
-  const isHardhatConnected = getIsHardhatConnected();
-
-  return useQuery(userAssetsQueryKey({ address, currency, testnetMode: isHardhatConnected }), userAssetsQueryFunction, {
+  return useQuery(userAssetsQueryKey({ address, currency, testnetMode }), userAssetsQueryFunction, {
     ...config,
     refetchInterval: USER_ASSETS_REFETCH_INTERVAL,
     staleTime: process.env.IS_TESTING === 'true' ? 0 : 1000,
