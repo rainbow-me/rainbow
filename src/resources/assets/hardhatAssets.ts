@@ -9,17 +9,16 @@ import { AddressOrEth, UniqueId, ZerionAsset } from '@/__swaps__/types/assets';
 import { AddressZero } from '@ethersproject/constants';
 import chainAssetsByChainId from '@/references/testnet-assets-by-chain';
 import { ChainId, ChainName, Network } from '@/networks/types';
-import { networkObjects } from '@/networks';
+
+const MAINNET_BALANCE_CHECKER = '0x4dcf4562268dd384fe814c00fad239f06c2a0c2b';
 
 const fetchHardhatBalancesWithBalanceChecker = async (
   tokens: string[],
-  address: string,
-  chainId: ChainId = ChainId.mainnet
+  address: string
 ): Promise<{ [tokenAddress: string]: string } | null> => {
 
-  const networkObject = networkObjects[chainId];
-  const provider = getProvider({ chainId });
-  const balanceCheckerContract = new Contract(networkObject.balanceCheckerAddress, balanceCheckerContractAbi, provider);
+  const provider = getProvider({ chainId: ChainId.mainnet });
+  const balanceCheckerContract = new Contract(MAINNET_BALANCE_CHECKER, balanceCheckerContractAbi, provider);
   
   try {
     const values = await balanceCheckerContract.balances([address], tokens);
@@ -54,7 +53,7 @@ export const fetchHardhatBalances = async (accountAddress: string, chainId: Chai
   const tokenAddresses = Object.values(chainAssetsMap).map(({ asset: { asset_code } }) =>
     asset_code === ETH_ADDRESS ? AddressZero : asset_code.toLowerCase()
   );
-  const balances = await fetchHardhatBalancesWithBalanceChecker(tokenAddresses, accountAddress, chainId);
+  const balances = await fetchHardhatBalancesWithBalanceChecker(tokenAddresses, accountAddress);
   if (!balances) return {};
 
   const updatedAssets = mapValues(chainAssetsMap, chainAsset => {
@@ -89,7 +88,7 @@ export const fetchHardhatBalancesByChainId = async (
     asset.asset_code === ETH_ADDRESS ? AddressZero : asset.asset_code.toLowerCase()
   );
 
-  const balances = await fetchHardhatBalancesWithBalanceChecker(tokenAddresses, accountAddress, chainId);
+  const balances = await fetchHardhatBalancesWithBalanceChecker(tokenAddresses, accountAddress);
   if (!balances)
     return {
       assets: {},

@@ -20,8 +20,6 @@ export const degenNetworkObject: NetworkProperties = {
   networkType: 'layer2',
 
   rpc: defaultChains[ChainId.degen].rpcUrls.default.http[0],
-  // need to find balance checker address
-  balanceCheckerAddress: '',
 
   // features
   features: {

@@ -20,7 +20,6 @@ export const blastNetworkObject: NetworkProperties = {
   networkType: 'layer2',
 
   rpc: defaultChains[ChainId.blast].rpcUrls.default.http[0],
-  balanceCheckerAddress: '',
 
   // features
   features: {

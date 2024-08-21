@@ -18,8 +18,6 @@ export const avalancheNetworkObject: NetworkProperties = {
   networkType: 'layer2',
 
   rpc: defaultChains[ChainId.avalanche].rpcUrls.default.http[0],
-  // need to find balance checker address
-  balanceCheckerAddress: '',
 
   // features
   features: {

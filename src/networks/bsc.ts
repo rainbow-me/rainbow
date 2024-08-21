@@ -18,8 +18,6 @@ export const bscNetworkObject: NetworkProperties = {
   networkType: 'layer2',
 
   rpc: defaultChains[ChainId.bsc].rpcUrls.default.http[0],
-  // this should be refactored to have less deps
-  balanceCheckerAddress: '0x400A9f1Bb1Db80643C33710C2232A0D74EF5CFf1',
 
   // features
   features: {

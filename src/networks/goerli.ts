@@ -18,8 +18,6 @@ export const goerliNetworkObject: NetworkProperties = {
   networkType: 'testnet',
 
   rpc: defaultChains[ChainId.goerli].rpcUrls.default.http[0],
-  // this should be refactored to have less deps
-  balanceCheckerAddress: '0xf3352813b612a2d198e437691557069316b84ebe',
 
   // features
   features: {

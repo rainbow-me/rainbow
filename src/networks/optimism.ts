@@ -19,8 +19,6 @@ export const optimismNetworkObject: NetworkProperties = {
 
   rpc: defaultChains[ChainId.optimism].rpcUrls.default.http[0],
 
-  balanceCheckerAddress: '0x1C8cFdE3Ba6eFc4FF8Dd5C93044B9A690b6CFf36',
-
   // features
   features: {
     txHistory: true,

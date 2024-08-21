@@ -15,7 +15,6 @@ export const gnosisNetworkObject: NetworkProperties = {
   networkType: 'layer1',
 
   rpc: defaultChains[ChainId.gnosis].rpcUrls.default.http[0],
-  balanceCheckerAddress: '',
 
   // features
   features: {

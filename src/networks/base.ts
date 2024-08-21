@@ -18,7 +18,6 @@ export const baseNetworkObject: NetworkProperties = {
   networkType: 'layer2',
 
   rpc: defaultChains[ChainId.base].rpcUrls.default.http[0],
-  balanceCheckerAddress: '0x1C8cFdE3Ba6eFc4FF8Dd5C93044B9A690b6CFf36',
 
   // features
   features: {

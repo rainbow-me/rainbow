@@ -19,8 +19,6 @@ export const polygonNetworkObject: NetworkProperties = {
 
   rpc: defaultChains[ChainId.polygon].rpcUrls.default.http[0],
 
-  balanceCheckerAddress: '0x54A4E5800345c01455a77798E0D96438364e22723',
-
   // features
   features: {
     txHistory: true,

@@ -18,8 +18,6 @@ export const arbitrumNetworkObject: NetworkProperties = {
 
   rpc: defaultChains[ChainId.arbitrum].rpcUrls.default.http[0],
 
-  balanceCheckerAddress: '0x54A4E5800345c01455a7798E0D96438364e22723',
-
   // features
   features: {
     txHistory: true,

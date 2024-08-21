@@ -21,7 +21,6 @@ export const mainnetNetworkObject: NetworkProperties = {
   rpc: useConnectedToHardhatStore.getState().connectedToHardhat
     ? 'http://127.0.0.1:8545'
     : defaultChains[ChainId.mainnet].rpcUrls.default.http[0],
-  balanceCheckerAddress: '0x4dcf4562268dd384fe814c00fad239f06c2a0c2b',
 
   // features
   features: {
