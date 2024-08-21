@@ -63,7 +63,3 @@ export function sortNetworks(): NetworkProperties[] {
 
   return Object.values(networkObjects).sort(tokenSort);
 }
-
-export function getSwappableNetworks(): NetworkProperties[] {
-  return Object.values(networkObjects).filter(network => network.features.swaps);
-}
