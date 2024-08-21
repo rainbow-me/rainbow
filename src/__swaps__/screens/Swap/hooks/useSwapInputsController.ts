@@ -349,31 +349,31 @@ export function useSwapInputsController({
     if (!asset) return null;
 
     const address = asset.address;
-    const chainId = asset.chainId;
+    const network = ethereumUtils.getNetworkFromChainId(asset.chainId);
     const currency = store.getState().settings.nativeCurrency;
 
     try {
       const tokenData = await fetchExternalToken({
         address,
-        chainId,
+        network,
         currency,
       });
 
       if (tokenData?.price.value) {
-        queryClient.setQueryData(externalTokenQueryKey({ address, chainId, currency }), tokenData);
+        queryClient.setQueryData(externalTokenQueryKey({ address, network, currency }), tokenData);
         return tokenData.price.value;
       }
     } catch (error) {
       logger.error(new RainbowError('[useSwapInputsController]: get asset prices failed'));
 
       const now = Date.now();
-      const state = queryClient.getQueryState<ExternalTokenQueryFunctionResult>(externalTokenQueryKey({ address, chainId, currency }));
+      const state = queryClient.getQueryState<ExternalTokenQueryFunctionResult>(externalTokenQueryKey({ address, network, currency }));
       const price = state?.data?.price.value;
       if (price) {
         const updatedAt = state.dataUpdatedAt;
         // NOTE: if the data is older than 60 seconds, we need to invalidate it and not use it
         if (now - updatedAt > EXTERNAL_TOKEN_STALE_TIME) {
-          queryClient.invalidateQueries(externalTokenQueryKey({ address, chainId, currency }));
+          queryClient.invalidateQueries(externalTokenQueryKey({ address, network, currency }));
           return null;
         }
         return price;
