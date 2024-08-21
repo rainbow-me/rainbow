@@ -5,7 +5,7 @@ import { arcClient } from '@/graphql';
 const defaultStaleTime = 60_000;
 
 export type FeaturedResultsVariables = Parameters<typeof arcClient.getFeaturedResults>['0'];
-export type FeaturedResultsResult = Awaited<ReturnType<typeof arcClient.getFeaturedResults>>;
+export type FeaturedResults = Awaited<ReturnType<typeof arcClient.getFeaturedResults>>;
 
 // ///////////////////////////////////////////////
 // Query Key
@@ -17,9 +17,9 @@ export type FeaturedResultsQueryKey = ReturnType<typeof featuredResultsQueryKey>
 // ///////////////////////////////////////////////
 // Query Hook
 
-export function useFeaturedResults(
+export function useFeaturedResults<T = FeaturedResults>(
   props: FeaturedResultsVariables,
-  config: QueryConfigWithSelect<FeaturedResultsResult, Error, FeaturedResultsResult, FeaturedResultsQueryKey> = {}
+  config: QueryConfigWithSelect<FeaturedResults, Error, T, FeaturedResultsQueryKey> = {}
 ) {
   return useQuery(featuredResultsQueryKey(props), () => arcClient.getFeaturedResults(props), {
     ...config,
