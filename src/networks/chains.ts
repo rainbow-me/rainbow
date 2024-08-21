@@ -79,6 +79,19 @@ export const supportedTokenSearchChainIds = filterChainIdsByService(services => 
 
 export const supportedNftChainIds = filterChainIdsByService(services => services.nftProxy.enabled);
 
+export const supportedWalletConnectChainIds = [
+  ChainId.arbitrum,
+  ChainId.avalanche,
+  ChainId.base,
+  ChainId.blast,
+  ChainId.bsc,
+  ChainId.degen,
+  ChainId.mainnet,
+  ChainId.optimism,
+  ChainId.polygon,
+  ChainId.zora,
+];
+
 export const oldDefaultRPC: { [key in ChainId]?: string } = {
   [ChainId.mainnet]: process.env.ETH_MAINNET_RPC,
   [ChainId.optimism]: process.env.OPTIMISM_MAINNET_RPC,

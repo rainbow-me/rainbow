@@ -163,7 +163,7 @@ export const web3SetHttpProvider = async (chainId: ChainId): Promise<EthersNetwo
  * @return Whether or not the network is a L2 network.
  */
 export const isL2Chain = ({ chainId = ChainId.mainnet }: { chainId?: ChainId }): boolean => {
-  return networkObjects[chainId].networkType === 'layer2';
+  return defaultChains[chainId].id !== ChainId.mainnet && !defaultChains[chainId].testnet;
 };
 
 /**
@@ -172,7 +172,7 @@ export const isL2Chain = ({ chainId = ChainId.mainnet }: { chainId?: ChainId }):
  * @return Whether or not the network is a testnet.
  */
 export const isTestnetChain = ({ chainId = ChainId.mainnet }: { chainId?: ChainId }): boolean => {
-  return networkObjects[chainId].networkType === 'testnet';
+  return !!defaultChains[chainId].testnet;
 };
 
 // shoudl figure out better way to include this in networks

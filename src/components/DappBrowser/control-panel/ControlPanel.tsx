@@ -40,7 +40,6 @@ import { TOP_INSET } from '../Dimensions';
 import { formatUrl } from '../utils';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { toHex } from 'viem';
-import { networkObjects } from '@/networks';
 import * as i18n from '@/languages';
 import { useDispatch } from 'react-redux';
 import store from '@/redux/store';
@@ -63,6 +62,7 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { greaterThan } from '@/helpers/utilities';
 import { ChainId } from '@/networks/types';
+import { defaultChains, supportedWalletConnectChainIds } from '@/networks/chains';
 
 const PAGES = {
   HOME: 'home',
@@ -183,19 +183,20 @@ export const ControlPanel = () => {
   const { testnetsEnabled } = store.getState().settings;
 
   const allNetworkItems = useMemo(() => {
-    return Object.values(networkObjects)
-      .filter(({ networkType, features: { walletconnect } }) => walletconnect && (testnetsEnabled || networkType !== 'testnet'))
-      .map(network => {
+    const chains = supportedWalletConnectChainIds.map(chainId => defaultChains[chainId]);
+    return chains
+      .filter(({ testnet }) => testnetsEnabled || !testnet)
+      .map(chain => {
         return {
-          IconComponent: <ChainImage chainId={network.id} size={36} />,
-          label: network.name,
+          IconComponent: <ChainImage chainId={chain.id} size={36} />,
+          label: chain.name,
           secondaryLabel: i18n.t(
-            isConnected && network.id === currentChainId
+            isConnected && chain.id === currentChainId
               ? i18n.l.dapp_browser.control_panel.connected
               : i18n.l.dapp_browser.control_panel.not_connected
           ),
-          uniqueId: String(network.id),
-          selected: network.id === currentChainId,
+          uniqueId: String(chain.id),
+          selected: chain.id === currentChainId,
         };
       });
   }, [currentChainId, isConnected, testnetsEnabled]);

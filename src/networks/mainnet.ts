@@ -16,7 +16,6 @@ export const mainnetNetworkObject: NetworkProperties = {
   name: 'Ethereum',
   longName: 'Ethereum',
   value: Network.mainnet,
-  networkType: 'layer1',
 
   rpc: useConnectedToHardhatStore.getState().connectedToHardhat
     ? 'http://127.0.0.1:8545'

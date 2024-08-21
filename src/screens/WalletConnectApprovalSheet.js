@@ -30,6 +30,8 @@ import { InfoAlert } from '@/components/info-alert/info-alert';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { ChainId, chainIdToNameMapping } from '@/networks/types';
+import { defaultChains, supportedWalletConnectChainIds } from '@/networks/chains';
+import { isL2Chain } from '@/handlers/web3';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.3),
@@ -66,18 +68,20 @@ const NetworkPill = ({ chainIds }) => {
 
   const availableNetworkChainIds = useMemo(() => chainIds.sort(chainId => (chainId === ChainId.mainnet ? -1 : 1)), [chainIds]);
 
+  const walletConnectSupportedChains = supportedWalletConnectChainIds.map(chainId => defaultChains[chainId]);
+
   const networkMenuItems = useMemo(() => {
-    Object.values(networkObjects)
-      .filter(({ features, id }) => features.walletconnect && chainIds.includes(id))
-      .map(network => ({
-        actionKey: network.id,
-        actionTitle: network.name,
+    walletConnectSupportedChains
+      .filter(({ id }) => chainIds.includes(id))
+      .map(chain => ({
+        actionKey: chain.id,
+        actionTitle: chain.name,
         icon: {
           iconType: 'ASSET',
-          iconValue: `${network.networkType === 'layer2' ? `${network.value}BadgeNoShadow` : 'ethereumBadge'}`,
+          iconValue: `${isL2Chain({ chainId: chain.id }) ? `${chain.name}BadgeNoShadow` : 'ethereumBadge'}`,
         },
       }));
-  }, [chainIds]);
+  }, [chainIds, walletConnectSupportedChains]);
 
   if (availableNetworkChainIds.length === 0) return null;
 

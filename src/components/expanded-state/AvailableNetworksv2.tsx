@@ -27,6 +27,8 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
 import { ChainId, chainIdToNameMapping } from '@/networks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
+import { defaultChains, SUPPORTED_CHAINS, supportedSwapChainIds } from '@/networks/chains';
+import { isL2Chain } from '@/handlers/web3';
 
 const NOOP = () => null;
 
@@ -166,18 +168,17 @@ const AvailableNetworksv2 = ({
     convertAssetAndNavigate(availableChainIds[0]);
   }, [availableChainIds, convertAssetAndNavigate]);
 
-  const networkMenuItems = useMemo(() => {
-    return Object.values(networkObjects)
-      .filter(({ features, id }) => features.swaps && id !== ChainId.mainnet && !!networks[id])
-      .map(network => ({
-        actionKey: `${network.id}`,
-        actionTitle: network.name,
-        icon: {
-          iconType: 'ASSET',
-          iconValue: `${network.networkType === 'layer2' ? `${network.value}BadgeNoShadow` : 'ethereumBadge'}`,
-        },
-      }));
-  }, [networks]);
+  const networkMenuItems = supportedSwapChainIds
+    .filter(chainId => chainId !== ChainId.mainnet)
+    .map(chainId => defaultChains[chainId])
+    .map(chain => ({
+      actionKey: chain.id,
+      actionTitle: chain.name,
+      icon: {
+        iconType: 'ASSET',
+        iconValue: `${isL2Chain({ chainId: chain.id }) ? `${chain.name}BadgeNoShadow` : 'ethereumBadge'}`,
+      },
+    }));
 
   const MenuWrapper = availableChainIds.length > 1 ? ContextMenuButton : Box;
 

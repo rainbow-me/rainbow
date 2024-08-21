@@ -17,7 +17,6 @@ export const blastNetworkObject: NetworkProperties = {
   network: 'blast',
   longName: 'Blast',
   value: Network.blast,
-  networkType: 'layer2',
 
   rpc: defaultChains[ChainId.blast].rpcUrls.default.http[0],
 

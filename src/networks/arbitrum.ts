@@ -14,7 +14,6 @@ export const arbitrumNetworkObject: NetworkProperties = {
   name: 'Arbitrum',
   longName: 'Arbitrum',
   value: Network.arbitrum,
-  networkType: 'layer2',
 
   rpc: defaultChains[ChainId.arbitrum].rpcUrls.default.http[0],
 

@@ -13,8 +13,6 @@ const networkColors: { light: string; dark: string } = networkObj.colors;
 
 // Getting a subset of network objects
 
-const layer2s = Object.values(networkObjects).filter(network => network.networkType === 'layer2');
-
 // Or networks that match specific properties
 const walletconnectNetworks = Object.values(networkObjects).filter(network => network.features.walletconnect).map(network => network.value);
 ```

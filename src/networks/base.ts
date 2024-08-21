@@ -15,7 +15,6 @@ export const baseNetworkObject: NetworkProperties = {
   name: 'Base',
   longName: 'Base',
   value: Network.base,
-  networkType: 'layer2',
 
   rpc: defaultChains[ChainId.base].rpcUrls.default.http[0],
 

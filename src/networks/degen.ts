@@ -17,7 +17,6 @@ export const degenNetworkObject: NetworkProperties = {
   network: 'degen',
   longName: 'Degen Chain',
   value: Network.degen,
-  networkType: 'layer2',
 
   rpc: defaultChains[ChainId.degen].rpcUrls.default.http[0],
 

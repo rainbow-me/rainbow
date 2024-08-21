@@ -215,15 +215,12 @@ export const ChainNameDisplay = {
   [ChainId.polygonAmoy]: 'Polygon Amoy',
 } as const;
 
-export type NetworkTypes = 'layer1' | 'layer2' | 'testnet';
-
 export interface NetworkProperties extends Chain {
   // network related data
   enabled: boolean;
   name: string;
   longName: string;
   value: Network;
-  networkType: 'layer1' | 'layer2' | 'testnet';
 
   rpc: string;
 

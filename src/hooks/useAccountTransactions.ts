@@ -11,6 +11,7 @@ import { pendingTransactionsStore, usePendingTransactionsStore } from '@/state/p
 import { networkObjects } from '@/networks';
 import { nonceStore } from '@/state/nonces';
 import { ChainId } from '@/networks/types';
+import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/networks/chains';
 
 export const NOE_PAGE = 30;
 
@@ -61,12 +62,11 @@ export default function useAccountTransactions() {
     const { setNonce } = nonceStore.getState();
     const { setPendingTransactions, pendingTransactions: storePendingTransactions } = pendingTransactionsStore.getState();
     const pendingTransactions = storePendingTransactions[currentAddress] || [];
-    const networks = Object.values(networkObjects).filter(({ enabled, networkType }) => enabled && networkType !== 'testnet');
-    for (const network of networks) {
-      const latestTxConfirmedByBackend = latestTransactions.get(network.id);
+    for (const chainId of SUPPORTED_MAINNET_CHAIN_IDS) {
+      const latestTxConfirmedByBackend = latestTransactions.get(chainId);
       if (latestTxConfirmedByBackend) {
         const latestNonceConfirmedByBackend = latestTxConfirmedByBackend.nonce || 0;
-        const [latestPendingTx] = pendingTransactions.filter(tx => tx?.chainId === network.id);
+        const [latestPendingTx] = pendingTransactions.filter(tx => tx?.chainId === chainId);
 
         let currentNonce;
         if (latestPendingTx) {
@@ -79,7 +79,7 @@ export default function useAccountTransactions() {
 
         setNonce({
           address: currentAddress,
-          chainId: network.id,
+          chainId: chainId,
           currentNonce,
           latestConfirmedNonce: latestNonceConfirmedByBackend,
         });

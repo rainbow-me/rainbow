@@ -15,7 +15,6 @@ export const optimismNetworkObject: NetworkProperties = {
   name: 'Optimism',
   longName: 'Optimism',
   value: Network.optimism,
-  networkType: 'layer2',
 
   rpc: defaultChains[ChainId.optimism].rpcUrls.default.http[0],
 

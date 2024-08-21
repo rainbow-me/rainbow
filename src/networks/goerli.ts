@@ -15,7 +15,6 @@ export const goerliNetworkObject: NetworkProperties = {
   name: 'Goerli',
   longName: 'Goerli',
   value: Network.goerli,
-  networkType: 'testnet',
 
   rpc: defaultChains[ChainId.goerli].rpcUrls.default.http[0],
 

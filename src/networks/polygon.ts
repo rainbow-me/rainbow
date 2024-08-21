@@ -15,7 +15,6 @@ export const polygonNetworkObject: NetworkProperties = {
   name: 'Polygon',
   longName: 'Polygon',
   value: Network.polygon,
-  networkType: 'layer2',
 
   rpc: defaultChains[ChainId.polygon].rpcUrls.default.http[0],
 

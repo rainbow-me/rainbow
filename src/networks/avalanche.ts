@@ -15,7 +15,6 @@ export const avalancheNetworkObject: NetworkProperties = {
   name: 'Avalanche',
   longName: 'Avalanche',
   value: Network.avalanche,
-  networkType: 'layer2',
 
   rpc: defaultChains[ChainId.avalanche].rpcUrls.default.http[0],
 

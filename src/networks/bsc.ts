@@ -15,7 +15,6 @@ export const bscNetworkObject: NetworkProperties = {
   name: 'BSC',
   longName: 'Binance Smart Chain',
   value: Network.bsc,
-  networkType: 'layer2',
 
   rpc: defaultChains[ChainId.bsc].rpcUrls.default.http[0],
 

@@ -15,7 +15,6 @@ export const zoraNetworkObject: NetworkProperties = {
   name: 'Zora',
   longName: 'Zora',
   value: Network.zora,
-  networkType: 'layer2',
 
   rpc: defaultChains[ChainId.zora].rpcUrls.default.http[0],
 

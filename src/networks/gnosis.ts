@@ -12,7 +12,6 @@ export const gnosisNetworkObject: NetworkProperties = {
   name: 'Gnosis',
   longName: 'Gnosis',
   value: Network.gnosis,
-  networkType: 'layer1',
 
   rpc: defaultChains[ChainId.gnosis].rpcUrls.default.http[0],
 
