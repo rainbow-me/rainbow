@@ -19,8 +19,6 @@ export const arbitrumNetworkObject: NetworkProperties = {
 
   // features
   features: {
-    txHistory: true,
-
     // not sure if flashbots is being used app wide vs just swaps
     flashbots: false,
     walletconnect: true,

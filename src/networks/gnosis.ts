@@ -1,7 +1,6 @@
-import { ChainId, Network, NetworkProperties } from './types';
+import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { gnosis } from '@wagmi/chains';
-import { defaultChains } from './chains';
 
 export const gnosisNetworkObject: NetworkProperties = {
   // wagmi chain data
@@ -13,11 +12,10 @@ export const gnosisNetworkObject: NetworkProperties = {
   longName: 'Gnosis',
   value: Network.gnosis,
 
-  rpc: defaultChains[ChainId.gnosis].rpcUrls.default.http[0],
+  rpc: '',
 
   // features
   features: {
-    txHistory: false,
     flashbots: false,
     walletconnect: false,
     swaps: false,

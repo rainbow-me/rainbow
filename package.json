@@ -31,7 +31,7 @@
     "detox:ios:release": "detox build -c ios.sim.release && detox test -c ios.sim.release --maxWorkers 2 -- --bail 1",
     "ds:install": "cd src/design-system/docs && yarn install",
     "ds": "cd src/design-system/docs && yarn dev",
-    "fast": "yarn install && yarn setup && yarn install-pods-fast && fetch:networks",
+    "fast": "yarn install && yarn setup && yarn install-pods-fast && yarn fetch:networks",
     "gradle": "cd android && ./gradlew",
     "hardhat": "sh ./scripts/hardhat.sh",
     "install-all": "yarn install && yarn setup && yarn install-pods",

@@ -20,7 +20,6 @@ export const polygonNetworkObject: NetworkProperties = {
 
   // features
   features: {
-    txHistory: true,
     flashbots: false,
     walletconnect: true,
     swaps: true,
