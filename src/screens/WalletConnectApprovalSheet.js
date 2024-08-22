@@ -30,8 +30,9 @@ import { InfoAlert } from '@/components/info-alert/info-alert';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { ChainId, chainIdToNameMapping } from '@/networks/types';
-import { defaultChains, supportedWalletConnectChainIds } from '@/networks/chains';
+import { chainsNativeAsset, defaultChains, supportedWalletConnectChainIds } from '@/networks/chains';
 import { isL2Chain } from '@/handlers/web3';
+import networkInfo from '@/helpers/networkInfo';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.3),
@@ -229,12 +230,12 @@ export default function WalletConnectApprovalSheet() {
    * v2.
    */
   const approvalNetworkInfo = useMemo(() => {
-    const networkObj = networkObjects[approvalChainId || ChainId.mainnet];
+    const chain = defaultChains[approvalChainId || ChainId.mainnet];
+    const nativeAsset = chainsNativeAsset[chain.id];
     return {
-      chainId: networkObj.id,
-      color: isDarkMode ? networkObj.colors.dark : networkObj.colors.light,
-      name: networkObj.name,
-      value: networkObj.value,
+      chainId: chain.id,
+      color: isDarkMode ? nativeAsset.colors.primary : nativeAsset.colors.fallback || nativeAsset.colors.primary,
+      name: chain.name,
     };
   }, [approvalChainId, isDarkMode]);
 

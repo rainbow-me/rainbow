@@ -1,8 +1,8 @@
 import { ChainId, Network, NetworkProperties } from './types';
-import { mainnet } from '@wagmi/chains';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 import { defaultChains } from './chains';
+import { mainnet } from 'viem/chains';
 
 const { mainnet_enabled } = getRemoteConfig();
 
@@ -19,10 +19,4 @@ export const mainnetNetworkObject: NetworkProperties = {
   rpc: useConnectedToHardhatStore.getState().connectedToHardhat
     ? 'http://127.0.0.1:8545'
     : defaultChains[ChainId.mainnet].rpcUrls.default.http[0],
-
-  // design tings
-  colors: {
-    light: '#25292E',
-    dark: '#25292E',
-  },
 };

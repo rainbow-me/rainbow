@@ -1,10 +1,9 @@
 import { ChainId, Network, NetworkProperties } from './types';
-import { gasUtils } from '@/utils';
-import { arbitrum } from '@wagmi/chains';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { defaultChains } from './chains';
+import { arbitrum } from 'viem/chains';
 
-const { arbitrum_enabled, arbitrum_tx_enabled } = getRemoteConfig();
+const { arbitrum_enabled } = getRemoteConfig();
 
 export const arbitrumNetworkObject: NetworkProperties = {
   // wagmi chain data
@@ -16,10 +15,4 @@ export const arbitrumNetworkObject: NetworkProperties = {
   value: Network.arbitrum,
 
   rpc: defaultChains[ChainId.arbitrum].rpcUrls.default.http[0],
-
-  // design tings
-  colors: {
-    light: '#2D374B',
-    dark: '#ADBFE3',
-  },
 };

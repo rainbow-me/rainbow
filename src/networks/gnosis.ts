@@ -1,5 +1,5 @@
+import { gnosis } from 'viem/chains';
 import { Network, NetworkProperties } from './types';
-import { gnosis } from '@wagmi/chains';
 
 export const gnosisNetworkObject: NetworkProperties = {
   // wagmi chain data
@@ -12,10 +12,4 @@ export const gnosisNetworkObject: NetworkProperties = {
   value: Network.gnosis,
 
   rpc: '',
-
-  // design tings
-  colors: {
-    light: '#FF4040',
-    dark: '#FF6A6A',
-  },
 };

@@ -1,6 +1,6 @@
 import { ChainId, Network, NetworkProperties } from './types';
-import { polygon } from '@wagmi/chains';
 import { defaultChains } from './chains';
+import { polygon } from 'viem/chains';
 
 export const polygonNetworkObject: NetworkProperties = {
   // wagmi chain data
@@ -13,10 +13,4 @@ export const polygonNetworkObject: NetworkProperties = {
   value: Network.polygon,
 
   rpc: defaultChains[ChainId.polygon].rpcUrls.default.http[0],
-
-  // design tings
-  colors: {
-    light: '#8247E5',
-    dark: '#A275EE',
-  },
 };

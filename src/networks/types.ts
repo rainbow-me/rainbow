@@ -1,4 +1,3 @@
-import { Chain } from '@wagmi/chains';
 import * as chain from 'viem/chains';
 
 const HARDHAT_CHAIN_ID = 1337;
@@ -212,7 +211,7 @@ export const ChainNameDisplay = {
   [ChainId.polygonAmoy]: 'Polygon Amoy',
 } as const;
 
-export interface NetworkProperties extends Chain {
+export interface NetworkProperties extends chain.Chain {
   // network related data
   enabled: boolean;
   name: string;
@@ -220,10 +219,4 @@ export interface NetworkProperties extends Chain {
   value: Network;
 
   rpc: string;
-
-  // design tings
-  colors: {
-    light: string;
-    dark: string;
-  };
 }

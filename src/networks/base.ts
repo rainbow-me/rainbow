@@ -1,7 +1,7 @@
 import { ChainId, Network, NetworkProperties } from './types';
-import { base } from '@wagmi/chains';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { defaultChains } from './chains';
+import { base } from 'viem/chains';
 
 const { base_enabled, op_chains_enabled } = getRemoteConfig();
 
@@ -16,10 +16,4 @@ export const baseNetworkObject: NetworkProperties = {
   value: Network.base,
 
   rpc: defaultChains[ChainId.base].rpcUrls.default.http[0],
-
-  // design tings
-  colors: {
-    light: '#0052FF',
-    dark: '#3979FF',
-  },
 };

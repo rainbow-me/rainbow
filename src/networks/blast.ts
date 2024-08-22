@@ -1,9 +1,7 @@
 import { ChainId, Network, NetworkProperties } from './types';
-import { gasUtils } from '@/utils';
-import { blast } from 'viem/chains';
 import { getRemoteConfig } from '@/model/remoteConfig';
-import { BLAST_MAINNET_RPC } from 'react-native-dotenv';
 import { defaultChains } from './chains';
+import { blast } from 'viem/chains';
 
 const { blast_enabled } = getRemoteConfig();
 
@@ -14,22 +12,8 @@ export const blastNetworkObject: NetworkProperties = {
   // network related data
   enabled: blast_enabled,
   name: 'Blast',
-  network: 'blast',
   longName: 'Blast',
   value: Network.blast,
 
   rpc: defaultChains[ChainId.blast].rpcUrls.default.http[0],
-
-  // design tings
-  colors: {
-    light: '#25292E',
-    dark: '#FCFC03',
-  },
-
-  rpcUrls: {
-    public: { http: [BLAST_MAINNET_RPC as string] },
-    default: {
-      http: [BLAST_MAINNET_RPC as string],
-    },
-  },
 };
