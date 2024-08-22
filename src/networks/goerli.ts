@@ -1,9 +1,8 @@
 import { Network, NetworkProperties } from './types';
-import { gasUtils } from '@/utils';
 import { goerli } from '@wagmi/chains';
 import { getRemoteConfig } from '@/model/remoteConfig';
 
-const { goerli_enabled, goerli_tx_enabled } = getRemoteConfig();
+const { goerli_enabled } = getRemoteConfig();
 
 export const goerliNetworkObject: NetworkProperties = {
   // wagmi chain data
@@ -16,16 +15,6 @@ export const goerliNetworkObject: NetworkProperties = {
   value: Network.goerli,
 
   rpc: '',
-
-  // features
-  features: {
-    // not sure if flashbots is being used app wide vs just swaps
-    flashbots: false,
-    walletconnect: false,
-    swaps: false,
-    nfts: false,
-    txs: goerli_tx_enabled,
-  },
 
   gas: {
     roundGasDisplay: true,

@@ -1,10 +1,9 @@
 import { ChainId, Network, NetworkProperties } from './types';
-import { gasUtils } from '@/utils';
 import { bsc } from '@wagmi/chains';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { defaultChains } from './chains';
 
-const { bsc_enabled, bsc_tx_enabled } = getRemoteConfig();
+const { bsc_enabled } = getRemoteConfig();
 
 export const bscNetworkObject: NetworkProperties = {
   // wagmi chain data
@@ -17,15 +16,6 @@ export const bscNetworkObject: NetworkProperties = {
   value: Network.bsc,
 
   rpc: defaultChains[ChainId.bsc].rpcUrls.default.http[0],
-
-  // features
-  features: {
-    flashbots: false,
-    walletconnect: true,
-    swaps: true,
-    nfts: true,
-    txs: bsc_tx_enabled,
-  },
 
   gas: {
     // ?

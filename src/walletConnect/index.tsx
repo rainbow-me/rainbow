@@ -263,10 +263,6 @@ export function isSupportedMethod(method: RPCMethod) {
   return isSupportedSigningMethod(method) || isSupportedTransactionMethod(method);
 }
 
-export function isSupportedChain(chainId: number) {
-  return networkObjects[chainId].features.walletconnect;
-}
-
 /**
  * Navigates to `ExplainSheet` by way of `WalletConnectApprovalSheet`, and
  * shows the text configured by the `reason` string, which is a key of the
@@ -452,7 +448,7 @@ export async function onSessionProposal(proposal: Web3WalletTypes.SessionProposa
 
     // we already checked for eip155 namespace above
     const chainIds = chains?.map(chain => parseInt(chain.split('eip155:')[1]));
-    const supportedChainIds = chainIds.filter(isSupportedChain);
+    const supportedChainIds = chainIds.filter(chainId => supportedWalletConnectChainIds.includes(chainId));
 
     const peerMeta = proposer.metadata;
     const metadata = await fetchDappMetadata({ url: peerMeta.url, status: true });

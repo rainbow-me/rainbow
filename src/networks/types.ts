@@ -221,15 +221,6 @@ export interface NetworkProperties extends Chain {
 
   rpc: string;
 
-  // feature flags
-  features: {
-    flashbots: boolean;
-    walletconnect: boolean;
-    swaps: boolean;
-    nfts: boolean;
-    txs: boolean;
-  };
-
   gas: {
     OptimismTxFee?: boolean;
 

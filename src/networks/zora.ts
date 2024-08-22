@@ -1,10 +1,9 @@
 import { ChainId, Network, NetworkProperties } from './types';
-import { gasUtils } from '@/utils';
 import { zora } from '@wagmi/chains';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { defaultChains } from './chains';
 
-const { zora_enabled, zora_tx_enabled, op_chains_enabled, op_chains_tx_enabled } = getRemoteConfig();
+const { zora_enabled, op_chains_enabled } = getRemoteConfig();
 
 export const zoraNetworkObject: NetworkProperties = {
   // wagmi chain data
@@ -17,15 +16,6 @@ export const zoraNetworkObject: NetworkProperties = {
   value: Network.zora,
 
   rpc: defaultChains[ChainId.zora].rpcUrls.default.http[0],
-
-  // features
-  features: {
-    flashbots: false,
-    walletconnect: true,
-    swaps: true,
-    nfts: true,
-    txs: zora_tx_enabled && op_chains_tx_enabled,
-  },
 
   gas: {
     // ?

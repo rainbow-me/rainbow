@@ -5,7 +5,7 @@ import { getRemoteConfig } from '@/model/remoteConfig';
 import { BLAST_MAINNET_RPC } from 'react-native-dotenv';
 import { defaultChains } from './chains';
 
-const { blast_enabled, blast_tx_enabled } = getRemoteConfig();
+const { blast_enabled } = getRemoteConfig();
 
 export const blastNetworkObject: NetworkProperties = {
   // where wagmi chain data usually is
@@ -19,15 +19,6 @@ export const blastNetworkObject: NetworkProperties = {
   value: Network.blast,
 
   rpc: defaultChains[ChainId.blast].rpcUrls.default.http[0],
-
-  // features
-  features: {
-    flashbots: false,
-    walletconnect: true,
-    swaps: true,
-    nfts: true,
-    txs: blast_tx_enabled,
-  },
 
   gas: {
     // ?

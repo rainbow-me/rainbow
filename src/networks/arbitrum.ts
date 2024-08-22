@@ -17,16 +17,6 @@ export const arbitrumNetworkObject: NetworkProperties = {
 
   rpc: defaultChains[ChainId.arbitrum].rpcUrls.default.http[0],
 
-  // features
-  features: {
-    // not sure if flashbots is being used app wide vs just swaps
-    flashbots: false,
-    walletconnect: true,
-    swaps: true,
-    nfts: true,
-    txs: arbitrum_tx_enabled,
-  },
-
   gas: {
     // ?
     roundGasDisplay: true,

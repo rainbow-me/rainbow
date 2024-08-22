@@ -1,5 +1,4 @@
 import { Network, NetworkProperties } from './types';
-import { gasUtils } from '@/utils';
 import { gnosis } from '@wagmi/chains';
 
 export const gnosisNetworkObject: NetworkProperties = {
@@ -13,15 +12,6 @@ export const gnosisNetworkObject: NetworkProperties = {
   value: Network.gnosis,
 
   rpc: '',
-
-  // features
-  features: {
-    flashbots: false,
-    walletconnect: false,
-    swaps: false,
-    nfts: true,
-    txs: false,
-  },
 
   gas: {
     // ?
