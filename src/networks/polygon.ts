@@ -32,9 +32,6 @@ export const polygonNetworkObject: NetworkProperties = {
 
     // ?
     roundGasDisplay: false,
-
-    // this prob can just be blockTime
-    pollingIntervalInMs: 2_000,
   },
 
   swaps: {

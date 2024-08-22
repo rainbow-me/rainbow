@@ -232,14 +232,10 @@ export interface NetworkProperties extends Chain {
 
   gas: {
     speeds: string[];
-    gasType: 'eip1559' | 'legacy';
     OptimismTxFee?: boolean;
 
     // for some networks gas is so cheap we dont want to round the gwei #
     roundGasDisplay: boolean;
-
-    // this prob can just be blockTime
-    pollingIntervalInMs: number;
   };
 
   swaps: {

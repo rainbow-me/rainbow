@@ -32,9 +32,6 @@ export const arbitrumNetworkObject: NetworkProperties = {
 
     // ?
     roundGasDisplay: true,
-
-    // this prob can just be blockTime
-    pollingIntervalInMs: 3_000,
   },
 
   swaps: {

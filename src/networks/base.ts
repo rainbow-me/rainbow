@@ -32,9 +32,6 @@ export const baseNetworkObject: NetworkProperties = {
     // ?
     roundGasDisplay: true,
     OptimismTxFee: true,
-
-    // this prob can just be blockTime,
-    pollingIntervalInMs: 5_000,
   },
 
   swaps: {

@@ -54,6 +54,26 @@ export const chainsName: Record<number, string> = backendNetworks.networks.reduc
   {} as Record<number, string>
 );
 
+const defaultPollingIntervals = (chainId: ChainId) => {
+  switch (chainId) {
+    case ChainId.polygon:
+      return 2_000;
+    case ChainId.arbitrum:
+    case ChainId.bsc:
+      return 3_000;
+    default:
+      return 5_000;
+  }
+};
+
+export const chainsSwapPollingInterval: Record<ChainId, number> = backendNetworks.networks.reduce(
+  (acc, backendNetwork: BackendNetwork) => {
+    acc[parseInt(backendNetwork.id, 10)] = defaultPollingIntervals(parseInt(backendNetwork.id, 10));
+    return acc;
+  },
+  {} as Record<number, number>
+);
+
 const filterChainIdsByService = (servicePath: (services: BackendNetworkServices) => boolean): number[] => {
   return backendNetworks.networks
     .filter((network: BackendNetwork) => {

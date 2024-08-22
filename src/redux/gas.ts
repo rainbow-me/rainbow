@@ -42,17 +42,13 @@ import { ethereumUtils, gasUtils } from '@/utils';
 import { ChainId } from '@/networks/types';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 import { networkObjects } from '@/networks';
-import { needsL1SecurityFeeChains } from '@/networks/chains';
+import { chainsSwapPollingInterval, needsL1SecurityFeeChains } from '@/networks/chains';
 
 const { CUSTOM, FAST, NORMAL, SLOW, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
 
 const mutex = new Mutex();
 
 const withRunExclusive = async (callback: (...args: any[]) => void) => await mutex.runExclusive(callback);
-
-const getGasPricePollingInterval = (chainId: ChainId): number => {
-  return networkObjects[chainId].gas.pollingIntervalInMs;
-};
 
 const getDefaultGasLimit = (chainId: ChainId, defaultGasLimit: number): number => {
   switch (chainId) {
@@ -624,7 +620,7 @@ export const gasPricesStartPolling =
       }
     };
 
-    const pollingInterval = getGasPricePollingInterval(chainId);
+    const pollingInterval = chainsSwapPollingInterval[chainId];
     watchGasPrices(chainId, pollingInterval);
   };
 
