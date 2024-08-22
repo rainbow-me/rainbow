@@ -24,7 +24,6 @@ export const bscNetworkObject: NetworkProperties = {
     walletconnect: true,
     swaps: true,
     nfts: true,
-    pools: false,
     txs: bsc_tx_enabled,
   },
 

@@ -223,12 +223,10 @@ export interface NetworkProperties extends Chain {
 
   // feature flags
   features: {
-    txHistory: boolean;
     flashbots: boolean;
     walletconnect: boolean;
     swaps: boolean;
     nfts: boolean;
-    pools: boolean;
     txs: boolean;
   };
 

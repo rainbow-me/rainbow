@@ -24,7 +24,6 @@ export const zoraNetworkObject: NetworkProperties = {
     walletconnect: true,
     swaps: true,
     nfts: true,
-    pools: false,
     txs: zora_tx_enabled && op_chains_tx_enabled,
   },
 

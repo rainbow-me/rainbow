@@ -24,7 +24,6 @@ export const avalancheNetworkObject: NetworkProperties = {
     walletconnect: true,
     swaps: true,
     nfts: true,
-    pools: false,
     txs: avalanche_tx_enabled,
   },
 

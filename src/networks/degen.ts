@@ -26,7 +26,6 @@ export const degenNetworkObject: NetworkProperties = {
     walletconnect: true,
     swaps: true,
     nfts: true,
-    pools: false,
     txs: degen_tx_enabled,
   },
 

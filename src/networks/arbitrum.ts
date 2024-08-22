@@ -24,7 +24,6 @@ export const arbitrumNetworkObject: NetworkProperties = {
     walletconnect: true,
     swaps: true,
     nfts: true,
-    pools: false,
     txs: arbitrum_tx_enabled,
   },
 

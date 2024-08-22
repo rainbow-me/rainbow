@@ -24,7 +24,6 @@ export const baseNetworkObject: NetworkProperties = {
     walletconnect: true,
     swaps: true,
     nfts: true,
-    pools: false,
     txs: base_tx_enabled && op_chains_tx_enabled,
   },
 

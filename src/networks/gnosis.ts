@@ -20,7 +20,6 @@ export const gnosisNetworkObject: NetworkProperties = {
     walletconnect: false,
     swaps: false,
     nfts: true,
-    pools: false,
     txs: false,
   },
 

@@ -24,7 +24,6 @@ export const polygonNetworkObject: NetworkProperties = {
     walletconnect: true,
     swaps: true,
     nfts: true,
-    pools: false,
     txs: polygon_tx_enabled,
   },
 

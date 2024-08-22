@@ -26,7 +26,6 @@ export const blastNetworkObject: NetworkProperties = {
     walletconnect: true,
     swaps: true,
     nfts: true,
-    pools: false,
     txs: blast_tx_enabled,
   },
 
