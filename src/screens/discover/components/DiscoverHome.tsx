@@ -17,6 +17,8 @@ import { MintsCard } from '@/components/cards/MintsCard/MintsCard';
 import { FeaturedMintCard } from '@/components/cards/FeaturedMintCard';
 import { IS_TEST } from '@/env';
 import { RemoteCardCarousel } from '@/components/cards/remote-cards';
+import { useFeaturedResults } from '@/resources/featuredResults/getFeaturedResults';
+import { languageLocaleToCountry } from '@/utils/languageLocaleToCountry';
 
 export default function DiscoverHome() {
   const { profiles_enabled, mints_enabled, op_rewards_enabled } = useRemoteConfig();
@@ -32,8 +34,17 @@ export default function DiscoverHome() {
   const isProfilesEnabled = profilesEnabledLocalFlag && profilesEnabledRemoteFlag;
 
   const { wallets } = useWallets();
+  const { language, accountAddress } = useAccountSettings();
+  const hasHardwareWallets = Object.keys(wallets || {}).filter(key => (wallets || {})[key].type === walletTypes.bluetooth).length > 0;
 
-  const hasHardwareWallets = Object.keys(wallets || {}).filter(key => wallets[key].type === walletTypes.bluetooth).length > 0;
+  const { data } = useFeaturedResults({
+    placementId: 'discover_big',
+    walletAddress: accountAddress,
+    // @ts-expect-error - language is not typeof Language
+    country: languageLocaleToCountry(language),
+  });
+
+  console.log(JSON.stringify(data, null, 2));
 
   return (
     <Inset top="20px" bottom={{ custom: 200 }} horizontal="20px">

@@ -1,15 +1,14 @@
 import lang from 'i18n-js';
 import { uniqBy } from 'lodash';
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { InteractionManager, SectionList, View } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { useDebounce } from 'use-debounce';
-import CurrencySelectionTypes from '@/helpers/currencySelectionTypes';
 
 import deviceUtils from '@/utils/deviceUtils';
 import { CurrencySelectionList } from '@/components/exchange';
 import { Row } from '@/components/layout';
-import DiscoverSheetContext from '../DiscoverScreenContext';
+import { useDiscoverScreenContext } from '../DiscoverScreenContext';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { fetchSuggestions } from '@/handlers/ens';
@@ -24,6 +23,7 @@ import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { ChainId } from '@/__swaps__/types/chains';
+import { EnrichedExchangeAsset } from '@/screens/CurrencySelectModal';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
@@ -42,15 +42,15 @@ export default function DiscoverSearch() {
     setIsSearchModeEnabled,
     searchInputRef,
     cancelSearch,
-  } = useContext(DiscoverSheetContext);
+  } = useDiscoverScreenContext();
 
   const { colors } = useTheme();
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const marginBottom = TAB_BAR_HEIGHT;
 
-  const currencySelectionListRef = useRef();
+  const currencySelectionListRef = useRef<SectionList | null>(null);
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);
-  const [ensResults, setEnsResults] = useState([]);
+  const [ensResults, setEnsResults] = useState<{ color: string; data: EnrichedExchangeAsset[]; key: string; title: string }[]>([]);
   const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList(searchQueryForSearch, ChainId.mainnet, true);
 
   // we want to debounce the poap search further
@@ -80,7 +80,7 @@ export default function DiscoverSearch() {
 
     // ONLY FOR e2e!!! Fake tokens with same symbols break detox e2e tests
     if (IS_TESTING === 'true') {
-      let symbols = [];
+      let symbols: EnrichedExchangeAsset[] = [];
       list = list?.map(section => {
         // Remove dupes
         section.data = uniqBy(section?.data, 'symbol');
@@ -97,7 +97,7 @@ export default function DiscoverSearch() {
         key: `${section.key}-${index}`,
       }));
     }
-    return list.filter(section => section.data.length > 0);
+    return list.filter(section => section.data.length > 0) as { data: EnrichedExchangeAsset[]; title: string }[];
   }, [swapCurrencyList, ensResults]);
   const lastSearchQuery = usePrevious(searchQueryForSearch);
 
@@ -113,7 +113,7 @@ export default function DiscoverSearch() {
   });
 
   useEffect(() => {
-    const checkAndHandlePoaps = async secretWordOrHash => {
+    const checkAndHandlePoaps = async (secretWordOrHash: string) => {
       await getPoapAndOpenSheetWithSecretWord(secretWordOrHash);
       await getPoapAndOpenSheetWithQRHash(secretWordOrHash);
     };
@@ -123,7 +123,7 @@ export default function DiscoverSearch() {
   useEffect(() => {
     // probably dont need this entry point but seems worth keeping?
     // could do the same with zora, etc
-    const checkAndHandleMint = async seachQueryForMint => {
+    const checkAndHandleMint = async (seachQueryForMint: string) => {
       if (seachQueryForMint.includes('mint.fun')) {
         const mintdotfunURL = seachQueryForMint.split('https://mint.fun/');
         const query = mintdotfunURL[1];
@@ -131,17 +131,17 @@ export default function DiscoverSearch() {
         if (network === 'ethereum') {
           network = Network.mainnet;
         } else if (network === 'op') {
-          network === Network.optimism;
+          network = Network.optimism;
         }
         const contractAddress = query.split('/')[1];
-        navigateToMintCollection(contractAddress, network);
+        navigateToMintCollection(contractAddress, '', network as Network);
       }
     };
     checkAndHandleMint(searchQuery);
   }, [accountAddress, navigate, searchQuery]);
 
   const handlePress = useCallback(
-    item => {
+    (item: EnrichedExchangeAsset) => {
       if (item.ens) {
         // navigate to Showcase sheet
         searchInputRef?.current?.blur();
@@ -184,8 +184,8 @@ export default function DiscoverSearch() {
   );
 
   const addEnsResults = useCallback(
-    ensResults => {
-      let ensSearchResults = [];
+    (ensResults: EnrichedExchangeAsset[]) => {
+      let ensSearchResults: { color: string; data: EnrichedExchangeAsset[]; key: string; title: string }[] = [];
       if (ensResults && ensResults.length) {
         ensSearchResults = [
           {
@@ -211,12 +211,6 @@ export default function DiscoverSearch() {
   }, [addEnsResults, isSearching, lastSearchQuery, searchQuery, searchQueryForSearch, setIsFetchingEns, setIsSearching, profilesEnabled]);
 
   useEffect(() => {
-    if (!swapCurrencyListLoading && !isFetchingEns) {
-      setIsSearching(false);
-    }
-  }, [isFetchingEns, setIsSearching, swapCurrencyListLoading]);
-
-  useEffect(() => {
     currencySelectionListRef.current?.scrollToLocation({
       animated: false,
       itemIndex: 0,
@@ -240,7 +234,6 @@ export default function DiscoverSearch() {
           ref={currencySelectionListRef}
           showList
           testID="discover-currency-select-list"
-          type={CurrencySelectionTypes.output}
         />
       </SearchContainer>
     </View>

@@ -1,13 +1,15 @@
 import React, { useRef, useState } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { FlexItem } from '@/components/layout';
 import DiscoverHome from './DiscoverHome';
 import DiscoverSearch from './DiscoverSearch';
 import DiscoverSearchContainer from './DiscoverSearchContainer';
 import { Box, Inset } from '@/design-system';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useDiscoverScreenContext } from '../DiscoverScreenContext';
 
-function Switcher({ showSearch, children }) {
+type SwitcherProps = { showSearch: boolean; children: React.ReactNode[] };
+function Switcher({ showSearch, children }: SwitcherProps) {
   return (
     <>
       <View style={{ display: showSearch ? 'flex' : 'none' }}>{showSearch ? children[0] : <FlexItem />}</View>
@@ -17,16 +19,15 @@ function Switcher({ showSearch, children }) {
 }
 
 export default function DiscoverScreenContent() {
-  const [showSearch, setShowSearch] = useState(false);
-  const ref = useRef();
+  const { isSearching } = useDiscoverScreenContext();
 
   const insets = useSafeAreaInsets();
 
   return (
-    <Box flex={1} testID="discover-home">
+    <Box style={sx.container} testID="discover-home">
       <Inset top="8px" bottom={{ custom: insets.bottom }}>
-        <DiscoverSearchContainer ref={ref} setShowSearch={setShowSearch} showSearch={showSearch}>
-          <Switcher showSearch={showSearch}>
+        <DiscoverSearchContainer>
+          <Switcher showSearch={isSearching}>
             <DiscoverSearch />
             <DiscoverHome />
           </Switcher>
@@ -35,3 +36,9 @@ export default function DiscoverScreenContent() {
     </Box>
   );
 }
+
+const sx = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

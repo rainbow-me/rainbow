@@ -33,6 +33,9 @@ import { IS_ANDROID } from '@/env';
 import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
 import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
 import { UserAssetsSync } from '@/state/sync/UserAssetsSync';
+import { queryClient } from '@/react-query';
+import { featuredResultsQueryKey } from '@/resources/featuredResults/getFeaturedResults';
+import { languageLocaleToCountry } from '@/utils/languageLocaleToCountry';
 
 const WalletPage = styled(Page)({
   ...position.sizeAsObject('100%'),
@@ -46,7 +49,7 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
   const removeFirst = useRemoveFirst();
   const [initialized, setInitialized] = useState(!!params?.initialized);
   const initializeWallet = useInitializeWallet();
-  const { network: currentNetwork, accountAddress, appIcon, nativeCurrency } = useAccountSettings();
+  const { network: currentNetwork, accountAddress, appIcon, nativeCurrency, language } = useAccountSettings();
   usePositions({ address: accountAddress, currency: nativeCurrency });
 
   const loadAccountLateData = useLoadAccountLateData();
@@ -106,6 +109,14 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
     if (walletReady) {
       loadAccountLateData();
       loadGlobalLateData();
+      queryClient.prefetchQuery(
+        // @ts-expect-error - language is a string and not typeof Language
+        featuredResultsQueryKey({ placementId: 'discover_big', walletAddress: accountAddress, country: languageLocaleToCountry(language) })
+      );
+      queryClient.prefetchQuery(
+        // @ts-expect-error - language is a string and not typeof Language
+        featuredResultsQueryKey({ placementId: 'dapp_browser', walletAddress: accountAddress, country: languageLocaleToCountry(language) })
+      );
     }
   }, [loadAccountLateData, loadGlobalLateData, walletReady]);
 

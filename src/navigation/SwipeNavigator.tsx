@@ -38,7 +38,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
-import DiscoverScreen, { discoverScrollToTopFnRef } from '../screens/discover/DiscoverScreen';
+import DiscoverScreen, { discoverScrollToTopFnRef } from '@/screens/discover/DiscoverScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import Routes from './routesNames';
 import { ScrollPositionContext } from './ScrollPositionContext';

@@ -1,21 +1,22 @@
-import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
-import React, { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Column, Row } from '@/components/layout';
 import { Text } from '@/components/text';
 import DiscoverSearchInput from '@/components/discover/DiscoverSearchInput';
-import DiscoverSheetContext from '../DiscoverScreenContext';
+import { useDiscoverScreenContext } from '@/screens/discover/DiscoverScreenContext';
 import { deviceUtils } from '@/utils';
 import { analytics } from '@/analytics';
 import { useDelayedValueWithLayoutAnimation } from '@/hooks';
 import styled from '@/styled-thing';
+import { SectionList, TextInput } from 'react-native';
+import { ThemeContextProps } from '@/theme';
 
 const CancelButton = styled(ButtonPressAnimation)({
   marginTop: 9,
 });
 
-const CancelText = styled(Text).attrs(({ theme: { colors } }) => ({
+const CancelText = styled(Text).attrs(({ theme: { colors } }: { theme: ThemeContextProps }) => ({
   align: 'right',
   color: colors.appleBlue,
   letterSpacing: 'roundedMedium',
@@ -27,7 +28,7 @@ const CancelText = styled(Text).attrs(({ theme: { colors } }) => ({
   marginRight: 15,
 });
 
-const sendQueryAnalytics = query => {
+const sendQueryAnalytics = (query: string) => {
   if (query.length > 1) {
     analytics.track('Search Query', {
       category: 'discover',
@@ -37,25 +38,29 @@ const sendQueryAnalytics = query => {
   }
 };
 
-export let discoverOpenSearchFnRef = null;
+export default function ({ children }: { children: React.ReactNode }) {
+  const searchInputRef = useRef<TextInput>(null);
+  const sectionListRef = useRef<SectionList>(null);
 
-export default forwardRef(function DiscoverSearchContainer({ children, showSearch, setShowSearch }, ref) {
-  const searchInputRef = useRef();
-  const sectionListRef = useRef();
-  useImperativeHandle(ref, () => searchInputRef.current);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
-  const [isFetchingEns, setIsFetchingEns] = useState(false);
-  const delayedShowSearch = useDelayedValueWithLayoutAnimation(showSearch);
+  const {
+    setIsSearchModeEnabled,
+    isSearchModeEnabled,
+    isFetchingEns,
+    isSearching,
+    setIsSearching,
+    setIsFetchingEns,
+    searchQuery,
+    setSearchQuery,
+  } = useDiscoverScreenContext();
 
-  const { setIsSearchModeEnabled, isSearchModeEnabled } = useContext(DiscoverSheetContext);
+  const delayedShowSearch = useDelayedValueWithLayoutAnimation(isSearching);
 
   const setIsInputFocused = useCallback(
-    value => {
-      setShowSearch(value);
+    (value: boolean) => {
+      setIsSearching(value);
       setIsSearchModeEnabled(value);
     },
-    [setIsSearchModeEnabled, setShowSearch]
+    [setIsSearchModeEnabled, setIsSearching]
   );
 
   const scrollToTop = useCallback(() => {
@@ -71,7 +76,7 @@ export default forwardRef(function DiscoverSearchContainer({ children, showSearc
   const onTapSearch = useCallback(() => {
     if (isSearchModeEnabled) {
       scrollToTop();
-      searchInputRef.current.focus();
+      searchInputRef.current?.focus();
     } else {
       setIsInputFocused(true);
       analytics.track('Tapped Search', {
@@ -80,31 +85,11 @@ export default forwardRef(function DiscoverSearchContainer({ children, showSearc
     }
   }, [isSearchModeEnabled, scrollToTop, setIsInputFocused]);
 
-  useEffect(() => {
-    discoverOpenSearchFnRef = onTapSearch;
-  }, [onTapSearch]);
-
   const cancelSearch = useCallback(() => {
     searchInputRef.current?.blur();
     setIsInputFocused(false);
     sendQueryAnalytics(searchQuery);
   }, [searchInputRef, setIsInputFocused, searchQuery]);
-
-  const contextValue = useMemo(
-    () => ({
-      isSearchModeEnabled,
-      setIsSearchModeEnabled,
-      cancelSearch,
-      isFetchingEns,
-      isSearching,
-      searchInputRef,
-      searchQuery,
-      sectionListRef,
-      setIsFetchingEns,
-      setIsSearching,
-    }),
-    [isSearchModeEnabled, setIsSearchModeEnabled, cancelSearch, isFetchingEns, isSearching, searchQuery]
-  );
 
   useEffect(() => {
     if (!isSearchModeEnabled) {
@@ -113,7 +98,7 @@ export default forwardRef(function DiscoverSearchContainer({ children, showSearc
       setIsFetchingEns(false);
       searchInputRef.current?.blur();
       setIsInputFocused(false);
-    } else if (!searchInputRef.current.isFocused()) {
+    } else if (!searchInputRef.current?.isFocused()) {
       searchInputRef.current?.focus();
     }
   }, [isSearchModeEnabled, setIsInputFocused]);
@@ -143,7 +128,7 @@ export default forwardRef(function DiscoverSearchContainer({ children, showSearc
           {delayedShowSearch && <CancelText>{lang.t('button.done')}</CancelText>}
         </CancelButton>
       </Row>
-      <DiscoverSheetContext.Provider value={contextValue}>{children}</DiscoverSheetContext.Provider>
+      {children}
     </>
   );
-});
+}
