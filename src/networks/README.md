@@ -11,10 +11,6 @@ const isSwapEnabled = networkObj.swaps.enabled;
 const isNFTsEnabled = networkObj.nfts.enabled;
 const networkColors: { light: string; dark: string } = networkObj.colors;
 
-// Getting a subset of network objects
-
-// Or networks that match specific properties
-const walletconnectNetworks = Object.values(networkObjects).filter(network => network.features.walletconnect).map(network => network.value);
 ```
 
 ## Network Objects

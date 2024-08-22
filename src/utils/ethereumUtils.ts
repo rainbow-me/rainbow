@@ -51,10 +51,11 @@ import {
 } from '@/resources/assets/externalAssetsQuery';
 import { ChainId, Network } from '@/networks/types';
 import { AddressOrEth } from '@/__swaps__/types/assets';
+import { chainsNativeAsset } from '@/networks/chains';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const getNetworkNativeAsset = ({ chainId }: { chainId: ChainId }) => {
-  const nativeAssetAddress = networkObjects[chainId].nativeCurrency.address;
+  const nativeAssetAddress = chainsNativeAsset[chainId].address;
   const nativeAssetUniqueId = getUniqueId(nativeAssetAddress, chainId);
   return getAccountAsset(nativeAssetUniqueId);
 };
@@ -73,9 +74,9 @@ export const getNativeAssetForNetwork = async ({
 
   // If the asset is on a different wallet, or not available in this wallet
   if (differentWallet || !nativeAsset) {
-    const networkObject = networkObjects[chainId];
-    const mainnetAddress = networkObject?.nativeCurrency?.mainnetAddress || ETH_ADDRESS;
-    const nativeAssetAddress = networkObject.nativeCurrency.address as AddressOrEth;
+    const chainNativeAsset = chainsNativeAsset[chainId];
+    const mainnetAddress = chainNativeAsset?.address || ETH_ADDRESS;
+    const nativeAssetAddress = chainNativeAsset.address as AddressOrEth;
 
     const externalAsset = await queryClient.fetchQuery(
       externalTokenQueryKey({ address: nativeAssetAddress, chainId, currency: nativeCurrency }),
@@ -88,18 +89,18 @@ export const getNativeAssetForNetwork = async ({
       // @ts-ignore
       nativeAsset = {
         ...externalAsset,
-        network: networkObject.value,
-        uniqueId: getUniqueId(networkObject.nativeCurrency.address, chainId),
-        address: networkObject.nativeCurrency.address,
-        decimals: networkObject.nativeCurrency.decimals,
-        symbol: networkObject.nativeCurrency.symbol,
+        network: getNetworkFromChainId(chainId),
+        uniqueId: getUniqueId(chainNativeAsset.address, chainId),
+        address: chainNativeAsset.address,
+        decimals: chainNativeAsset.decimals,
+        symbol: chainNativeAsset.symbol,
       };
     }
 
     const provider = getProvider({ chainId });
     if (nativeAsset) {
       nativeAsset.mainnet_address = mainnetAddress;
-      nativeAsset.address = networkObject.nativeCurrency.address;
+      nativeAsset.address = chainNativeAsset.address;
 
       const balance = await getOnchainAssetBalance(nativeAsset, address, chainId, provider);
 
@@ -175,11 +176,11 @@ const getAssetPrice = (address: EthereumAddress = ETH_ADDRESS): number => {
 };
 
 export const useNativeAsset = ({ chainId }: { chainId: ChainId }) => {
-  let address = (networkObjects[chainId].nativeCurrency?.mainnetAddress || ETH_ADDRESS) as AddressOrEth;
+  let address = (chainsNativeAsset[chainId]?.address || ETH_ADDRESS) as AddressOrEth;
   let internalChainId = ChainId.mainnet;
   const { nativeCurrency } = store.getState().settings;
   if (chainId === ChainId.avalanche || chainId === ChainId.degen) {
-    address = networkObjects[chainId].nativeCurrency?.address as AddressOrEth;
+    address = chainsNativeAsset[chainId]?.address as AddressOrEth;
     internalChainId = chainId;
   }
   const { data: nativeAsset } = useExternalToken({

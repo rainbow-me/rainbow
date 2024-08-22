@@ -46,10 +46,7 @@ import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 import { PerformanceMetrics } from '@/performance/tracking/types/PerformanceMetrics';
 import { PerformanceTracking } from '@/performance/tracking';
 import { ChainId } from '@/networks/types';
-
-const SUPPORTED_EVM_CHAIN_IDS = Object.values(networkObjects)
-  .filter(({ features }) => features.walletconnect)
-  .map(({ id }) => id);
+import { supportedWalletConnectChainIds } from '@/networks/chains';
 
 const SUPPORTED_SESSION_EVENTS = ['chainChanged', 'accountsChanged'];
 
@@ -495,7 +492,7 @@ export async function onSessionProposal(proposal: Web3WalletTypes.SessionProposa
           const supportedEvents = requiredNamespaces?.eip155?.events || SUPPORTED_SESSION_EVENTS;
 
           /** @see https://chainagnostic.org/CAIPs/caip-2 */
-          const caip2ChainIds = SUPPORTED_EVM_CHAIN_IDS.map(id => `eip155:${id}`);
+          const caip2ChainIds = supportedWalletConnectChainIds.map(id => `eip155:${id}`);
           const namespaces = getApprovedNamespaces({
             proposal: proposal.params,
             supportedNamespaces: {
