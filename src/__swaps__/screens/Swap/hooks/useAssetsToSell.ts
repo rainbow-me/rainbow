@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { Address } from 'viem';
 
 import {
   selectUserAssetsList,
@@ -32,7 +31,7 @@ export const useAssetsToSell = () => {
 
   const { data: userAssets = [] } = useUserAssets(
     {
-      address: currentAddress as Address,
+      address: currentAddress,
       currency: currentCurrency,
     },
     {

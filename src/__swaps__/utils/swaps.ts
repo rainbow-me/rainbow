@@ -40,7 +40,6 @@ import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from
 import { inputKeys } from '../types/swap';
 import { valueBasedDecimalFormatter } from './decimalFormatter';
 import { convertAmountToRawAmount } from './numbers';
-import { Address } from 'viem';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -600,7 +599,7 @@ export const parseAssetAndExtend = ({
 
   const uniqueId = getStandardizedUniqueIdWorklet({ address: asset.address, chainId: asset.chainId });
   const balance = insertUserAssetBalance
-    ? userAssetsStore.getState(walletAddress as Address).getUserAsset(uniqueId)?.balance || asset.balance
+    ? userAssetsStore.getState(walletAddress).getUserAsset(uniqueId)?.balance || asset.balance
     : asset.balance;
 
   return {

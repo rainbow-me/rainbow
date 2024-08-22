@@ -1,5 +1,4 @@
 import { memo } from 'react';
-import { Address } from 'viem';
 import { useAccountSettings } from '@/hooks';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
@@ -15,7 +14,7 @@ export const UserAssetsSync = memo(function UserAssetsSync() {
 
   useUserAssets(
     {
-      address: accountAddress as Address,
+      address: accountAddress,
       currency: currentCurrency,
     },
     {

@@ -25,7 +25,7 @@ const addysHttp = new RainbowFetchClient({
 // Query Types
 
 export type UserAssetsByChainArgs = {
-  address: Address;
+  address: Address | string;
   chainId: ChainId;
   currency: SupportedCurrencyKey;
 };
