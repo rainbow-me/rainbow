@@ -274,14 +274,17 @@ export async function scrollTo(scrollviewId: string | RegExp, edge: Direction) {
   }
 }
 
-export async function swipeUntilVisible(elementId: string | RegExp, scrollViewId: string, direction: Direction, pctVisible = 75) {
+export async function swipeUntilVisible(elementId: string | RegExp, scrollViewId: string, direction: Direction) {
   let stop = false;
+  console.log('stop: ', stop);
+
   while (!stop) {
     try {
       await waitFor(element(by.id(elementId)))
-        .toBeVisible(pctVisible)
+        .toBeVisible()
         .withTimeout(500);
       stop = true;
+      console.log('stop: ', stop);
     } catch {
       await swipe(scrollViewId, direction, 'slow', 0.2);
     }

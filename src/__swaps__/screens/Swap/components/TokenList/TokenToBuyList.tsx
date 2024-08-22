@@ -144,7 +144,7 @@ export const TokenToBuyList = () => {
   };
 
   return (
-    <Box style={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}>
+    <Box style={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }} testID={'token-to-buy-list'}>
       <FlashList
         keyboardShouldPersistTaps="always"
         ListEmptyComponent={<ListEmpty output />}
