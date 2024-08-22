@@ -12,7 +12,7 @@ const addysHttp = new RainbowFetchClient({
   },
 });
 
-export interface AddySummary {
+interface AddysSummary {
   data: {
     addresses: {
       [key: Address]: {
@@ -26,7 +26,7 @@ export interface AddySummary {
           };
           num_erc20s: number;
           last_activity: number;
-          asset_value: number;
+          asset_value: number | null;
         };
       };
       summary_by_chain: {
@@ -38,7 +38,7 @@ export interface AddySummary {
           };
           num_erc20s: number;
           last_activity: number;
-          asset_value: number;
+          asset_value: number | null;
         };
       };
     };
@@ -72,7 +72,7 @@ async function addysSummaryQueryFunction({ queryKey: [{ addresses, currency }] }
       addresses,
     })
   );
-  return data as AddySummary;
+  return data as AddysSummary;
 }
 
 type AddysSumaryResult = QueryFunctionResult<typeof addysSummaryQueryFunction>;
