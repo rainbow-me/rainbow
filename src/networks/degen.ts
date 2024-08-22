@@ -39,8 +39,6 @@ export const degenNetworkObject: NetworkProperties = {
     defaultSlippage: 200,
   },
 
-  nfts: { simplehashNetwork: 'degen' },
-
   // design tings
   colors: {
     light: '#A36EFD',

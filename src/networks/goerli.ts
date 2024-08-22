@@ -36,10 +36,6 @@ export const goerliNetworkObject: NetworkProperties = {
     defaultSlippage: 100,
   },
 
-  nfts: {
-    simplehashNetwork: 'ethereum-goerli',
-  },
-
   // design tings
   colors: {
     light: '#f6c343',

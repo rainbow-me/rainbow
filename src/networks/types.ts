@@ -242,10 +242,6 @@ export interface NetworkProperties extends Chain {
     defaultSlippage: number;
   };
 
-  nfts: {
-    simplehashNetwork: string | null;
-  };
-
   // design tings
   colors: {
     light: string;

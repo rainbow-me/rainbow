@@ -40,10 +40,6 @@ export const mainnetNetworkObject: NetworkProperties = {
     defaultSlippage: 100,
   },
 
-  nfts: {
-    simplehashNetwork: 'ethereum',
-  },
-
   // design tings
   colors: {
     light: '#25292E',

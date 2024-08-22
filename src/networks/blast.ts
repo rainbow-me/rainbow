@@ -39,8 +39,6 @@ export const blastNetworkObject: NetworkProperties = {
     defaultSlippage: 200,
   },
 
-  nfts: { simplehashNetwork: 'blast' },
-
   // design tings
   colors: {
     light: '#25292E',

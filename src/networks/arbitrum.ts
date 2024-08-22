@@ -38,8 +38,6 @@ export const arbitrumNetworkObject: NetworkProperties = {
     defaultSlippage: 200,
   },
 
-  nfts: { simplehashNetwork: 'arbitrum' },
-
   // design tings
   colors: {
     light: '#2D374B',

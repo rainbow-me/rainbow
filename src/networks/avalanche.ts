@@ -37,8 +37,6 @@ export const avalancheNetworkObject: NetworkProperties = {
     defaultSlippage: 200,
   },
 
-  nfts: { simplehashNetwork: 'avalanche' },
-
   // design tings
   colors: {
     light: '#E84142',

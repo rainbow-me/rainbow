@@ -38,8 +38,6 @@ export const polygonNetworkObject: NetworkProperties = {
     defaultSlippage: 200,
   },
 
-  nfts: { simplehashNetwork: 'polygon' },
-
   // design tings
   colors: {
     light: '#8247E5',

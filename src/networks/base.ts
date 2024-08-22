@@ -38,8 +38,6 @@ export const baseNetworkObject: NetworkProperties = {
     defaultSlippage: 200,
   },
 
-  nfts: { simplehashNetwork: 'base' },
-
   // design tings
   colors: {
     light: '#0052FF',

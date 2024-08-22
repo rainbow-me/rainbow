@@ -39,8 +39,6 @@ export const optimismNetworkObject: NetworkProperties = {
     defaultSlippage: 200,
   },
 
-  nfts: { simplehashNetwork: 'optimism' },
-
   // design tings
   colors: {
     light: '#FF4040',

@@ -74,6 +74,45 @@ export const chainsSwapPollingInterval: Record<ChainId, number> = backendNetwork
   {} as Record<number, number>
 );
 
+const defaultSimplehashNetworks = (chainId: ChainId) => {
+  switch (chainId) {
+    case ChainId.arbitrum:
+      return 'arbitrum';
+    case ChainId.avalanche:
+      return 'avalanche';
+    case ChainId.base:
+      return 'base';
+    case ChainId.blast:
+      return 'blast';
+    case ChainId.bsc:
+      return 'bsc';
+    case ChainId.degen:
+      return 'degen';
+    case ChainId.gnosis:
+      return 'gnosis';
+    case ChainId.goerli:
+      return 'ethereum-goerli';
+    case ChainId.mainnet:
+      return 'ethereum';
+    case ChainId.optimism:
+      return 'optimism';
+    case ChainId.polygon:
+      return 'polygon';
+    case ChainId.zora:
+      return 'zora';
+    default:
+      return '';
+  }
+};
+
+export const chainsSimplehashNetwork: Record<ChainId, string> = backendNetworks.networks.reduce(
+  (acc, backendNetwork: BackendNetwork) => {
+    acc[parseInt(backendNetwork.id, 10)] = defaultSimplehashNetworks(parseInt(backendNetwork.id, 10));
+    return acc;
+  },
+  {} as Record<number, string>
+);
+
 const filterChainIdsByService = (servicePath: (services: BackendNetworkServices) => boolean): number[] => {
   return backendNetworks.networks
     .filter((network: BackendNetwork) => {

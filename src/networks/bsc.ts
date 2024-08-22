@@ -38,10 +38,6 @@ export const bscNetworkObject: NetworkProperties = {
     defaultSlippage: 200,
   },
 
-  nfts: {
-    simplehashNetwork: 'bsc',
-  },
-
   // design tings
   colors: {
     light: '#8247E5',

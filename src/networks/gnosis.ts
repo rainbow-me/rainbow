@@ -35,10 +35,6 @@ export const gnosisNetworkObject: NetworkProperties = {
     defaultSlippage: 200,
   },
 
-  nfts: {
-    simplehashNetwork: 'gnosis',
-  },
-
   // design tings
   colors: {
     light: '#FF4040',
