@@ -51,11 +51,23 @@ function SwapInputActionButton() {
 }
 
 function SwapInputNativeAmount() {
-  const { SwapTextStyles, SwapInputController } = useSwapContext();
+  const { focusedInput, SwapTextStyles, SwapInputController } = useSwapContext();
+
   return (
-    <AnimatedText numberOfLines={1} size="17pt" style={SwapTextStyles.inputNativeValueStyle} weight="heavy">
-      {SwapInputController.formattedInputNativeValue}
-    </AnimatedText>
+    <GestureHandlerButton
+      disableButtonPressWrapper
+      onPressStartWorklet={() => {
+        'worklet';
+        focusedInput.value = 'inputNativeValue';
+      }}
+    >
+      <Box style={styles.inputNativeContainer}>
+        <AnimatedText numberOfLines={1} size="17pt" style={SwapTextStyles.inputNativeValueStyle} weight="heavy">
+          {SwapInputController.formattedInputNativeValue}
+        </AnimatedText>
+        <SwapInputValuesCaret inputCaretType="inputNativeValue" />
+      </Box>
+    </GestureHandlerButton>
   );
 }
 
@@ -198,6 +210,7 @@ export const styles = StyleSheet.create({
     textShadowRadius: 6,
   },
   inputTextMask: { alignItems: 'center', flexDirection: 'row', height: 36, pointerEvents: 'box-only' },
+  inputNativeContainer: { alignItems: 'center', flexDirection: 'row', height: 17, pointerEvents: 'box-only' },
   rootViewBackground: {
     backgroundColor: 'transparent',
     borderRadius: IS_ANDROID ? 20 : ScreenCornerRadius,
