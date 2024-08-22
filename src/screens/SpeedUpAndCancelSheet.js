@@ -29,8 +29,9 @@ import { position } from '@/styles';
 import { gasUtils, safeAreaInsetValues } from '@/utils';
 import * as i18n from '@/languages';
 import { updateTransaction } from '@/state/pendingTransactions';
-import { networkObjects } from '@/networks';
 import { logger, RainbowError } from '@/logger';
+import { supportedFlashbotsChainIds } from '@/networks/chains';
+import { ChainId } from '@/networks/types';
 
 const { CUSTOM, URGENT } = gasUtils;
 
@@ -294,9 +295,9 @@ export default function SpeedUpAndCancelSheet() {
       startPollingGasFees(currentChainId, tx.flashbots);
       const updateProvider = async () => {
         let provider;
-        if (networkObjects[tx?.chainId].features.flashbots && tx.flashbots) {
+        if (supportedFlashbotsChainIds.includes(tx.chainId || ChainId.mainnet) && tx.flashbots) {
 			logger.debug(`[SpeedUpAndCancelSheet]: using flashbots provider for chainId ${tx?.chainId}`);
-			provider = await getFlashbotsProvider();
+          provider = await getFlashbotsProvider();
         } else {
           logger.debug(`[SpeedUpAndCancelSheet]: using provider for network ${tx?.chainId}`);
           provider = getProvider({ chainId: currentChainId });

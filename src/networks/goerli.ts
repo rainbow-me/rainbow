@@ -42,7 +42,6 @@ export const goerliNetworkObject: NetworkProperties = {
 
   swaps: {
     defaultSlippage: 100,
-    defaultToFastGas: true,
   },
 
   nfts: {

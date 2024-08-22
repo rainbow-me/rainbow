@@ -42,7 +42,6 @@ export const polygonNetworkObject: NetworkProperties = {
 
   swaps: {
     defaultSlippage: 200,
-    defaultToFastGas: true,
   },
 
   nfts: { simplehashNetwork: 'polygon' },

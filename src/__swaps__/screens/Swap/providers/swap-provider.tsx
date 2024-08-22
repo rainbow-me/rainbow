@@ -38,7 +38,6 @@ import { RainbowError, logger } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { networkObjects } from '@/networks';
 import { walletExecuteRap } from '@/raps/execute';
 import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
 import { queryClient } from '@/react-query';
@@ -57,7 +56,7 @@ import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './Sync
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
-import { chainsNativeAsset } from '@/networks/chains';
+import { chainsNativeAsset, supportedFlashbotsChainIds } from '@/networks/chains';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
@@ -201,7 +200,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       NotificationManager?.postNotification('rapInProgress');
 
       const provider =
-        parameters.flashbots && networkObjects[parameters.chainId].features.flashbots
+        parameters.flashbots && supportedFlashbotsChainIds.includes(parameters.chainId)
           ? await getFlashbotsProvider()
           : getProvider({ chainId: parameters.chainId });
       const connectedToHardhat = useConnectedToHardhatStore.getState().connectedToHardhat;
@@ -382,7 +381,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       const type = inputAsset.chainId !== outputAsset.chainId ? 'crosschainSwap' : 'swap';
       const quoteData = q as QuoteTypeMap[typeof type];
-      const flashbots = (SwapSettings.flashbots.value && inputAsset.chainId === ChainId.mainnet) ?? false;
+      const flashbots = (SwapSettings.flashbots.value && !!supportedFlashbotsChainIds.includes(inputAsset.chainId)) ?? false;
 
       const isNativeWrapOrUnwrap =
         isWrapEthWorklet({

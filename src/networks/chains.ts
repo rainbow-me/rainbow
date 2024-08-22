@@ -92,6 +92,10 @@ export const supportedWalletConnectChainIds = [
   ChainId.zora,
 ];
 
+export const supportedFlashbotsChainIds = [ChainId.mainnet];
+
+export const shouldDefaultToFastGasChainIds = [ChainId.mainnet, ChainId.polygon, ChainId.goerli];
+
 export const oldDefaultRPC: { [key in ChainId]?: string } = {
   [ChainId.mainnet]: process.env.ETH_MAINNET_RPC,
   [ChainId.optimism]: process.env.OPTIMISM_MAINNET_RPC,

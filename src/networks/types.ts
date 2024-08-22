@@ -1,6 +1,3 @@
-import { EthereumAddress } from '@/entities';
-import { GasPricesAPIData } from '@/entities/gas';
-import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Chain } from '@wagmi/chains';
 import * as chain from 'viem/chains';
 
@@ -249,7 +246,6 @@ export interface NetworkProperties extends Chain {
 
   swaps: {
     defaultSlippage: number;
-    defaultToFastGas?: boolean;
   };
 
   nfts: {

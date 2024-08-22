@@ -45,7 +45,6 @@ export const mainnetNetworkObject: NetworkProperties = {
 
   swaps: {
     defaultSlippage: 100,
-    defaultToFastGas: true,
   },
 
   nfts: {

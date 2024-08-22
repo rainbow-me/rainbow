@@ -49,7 +49,7 @@ import {
   fetchExternalToken,
   useExternalToken,
 } from '@/resources/assets/externalAssetsQuery';
-import { ChainId, Network } from '@/networks/types';
+import { ChainId, Network, networkToIdMapping } from '@/networks/types';
 import { AddressOrEth } from '@/__swaps__/types/assets';
 import { chainsNativeAsset } from '@/networks/chains';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
@@ -298,7 +298,7 @@ const getNetworkNameFromChainId = (chainId: ChainId): string => {
  * @param  {String} network
  */
 const getChainIdFromNetwork = (network?: Network): ChainId => {
-  return Object.values(networkObjects).find(networkObject => networkObject.value === network)?.id || ChainId.mainnet;
+  return networkToIdMapping[network || Network.mainnet];
 };
 
 /**

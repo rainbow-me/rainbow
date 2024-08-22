@@ -38,6 +38,7 @@ import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { greaterThanOrEqualTo } from '@/helpers/utilities';
 import { ChainId } from '@/networks/types';
 import { networkObjects } from '@/networks';
+import { supportedSwapChainIds } from '@/networks/chains';
 
 const defaultCarouselHeight = 60;
 const baseHeight = 386 + (android && 20 - getSoftMenuBarHeight()) - defaultCarouselHeight;
@@ -241,7 +242,7 @@ export default function ChartExpandedState({ asset }) {
   const assetChainId = assetWithPrice.chainId;
 
   const { swagg_enabled, f2c_enabled } = useRemoteConfig();
-  const swapEnabled = swagg_enabled && networkObjects[assetChainId].features.swaps;
+  const swapEnabled = swagg_enabled && supportedSwapChainIds.includes(assetChainId);
   const addCashEnabled = f2c_enabled;
 
   const format = useCallback(

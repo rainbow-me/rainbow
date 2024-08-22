@@ -5,7 +5,6 @@ import { ETH_ADDRESS } from '@/references';
 import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import { EthereumAddress, ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS } from '@rainbow-me/swaps';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { networkObjects } from '@/networks';
 import { ChainId } from '@/networks/types';
 import { supportedSwapChainIds } from '@/networks/chains';
 
@@ -29,7 +28,7 @@ export const useSwappableUserAssets = (params: { outputCurrency: SwappableAsset 
     if (hiddenCoinsObj[asset.uniqueId]) return true;
 
     // filter out networks where swaps are not enabled
-    if (networkObjects[asset.chainId].features.swaps) return true;
+    if (supportedSwapChainIds.includes(asset.chainId)) return true;
 
     return false;
   });
