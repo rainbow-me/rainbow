@@ -26,7 +26,6 @@ const NetworkSwitcherv2 = ({
       .filter(network => supportedSwapChainIds.includes(network.id))
       .map(network => ({
         chainId: network.id,
-        network: network.value,
         title: network.name,
       }));
   }, []);

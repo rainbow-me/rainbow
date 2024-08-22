@@ -13,7 +13,7 @@ import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { ChainId } from '@/networks/types';
-import { networkObjects } from '@/networks';
+import { chainsNativeAsset } from '@/networks/chains';
 
 export const NUM_NFTS = 3;
 
@@ -28,7 +28,7 @@ export function Card({ collection }: { collection: MintableCollection }) {
   const separatorTertiary = useForegroundColor('separatorTertiary');
 
   const price = convertRawAmountToRoundedDecimal(collection.mintStatus.price, 18, 6);
-  const currencySymbol = networkObjects[collection.chainId].nativeCurrency.symbol;
+  const currencySymbol = chainsNativeAsset[collection.chainId].symbol;
   const isFree = !price;
 
   // update elapsed time every minute if it's less than an hour

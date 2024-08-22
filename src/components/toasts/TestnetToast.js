@@ -5,17 +5,15 @@ import Toast from './Toast';
 import { useInternetStatus } from '@/hooks';
 import { ChainId } from '@/networks/types';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
-import { networkObjects } from '@/networks';
-import { SUPPORTED_CHAINS } from '@/networks/chains';
+import { chainsNativeAsset } from '@/networks/chains';
 
 const TestnetToast = ({ chainId }) => {
   const { connectedToHardhat } = useConnectedToHardhatStore();
   const isConnected = useInternetStatus();
-  const networkObject = networkObjects[chainId || ChainId.mainnet];
-  const { name, colors: networkColors } = networkObject;
+  const nativeAsset = chainsNativeAsset[chainId];
+  const color = isDarkMode ? nativeAsset.colors.primary : nativeAsset.colors.fallback || nativeAsset.colors.primary;
   const [visible, setVisible] = useState(true);
   const [networkName, setNetworkName] = useState(name);
-  const chain = SUPPORTED_CHAINS[chainId || ChainId.mainnet];
 
   useEffect(() => {
     if (chainId === ChainId.mainnet) {
@@ -29,13 +27,13 @@ const TestnetToast = ({ chainId }) => {
       setVisible(true);
       setNetworkName(name + (isConnected ? '' : ' (offline)'));
     }
-  }, [name, isConnected, chainId, connectedToHardhat, chain.rpcUrls.default.http, networkObject.rpc]);
+  }, [isConnected, chainId, connectedToHardhat, chainId.rpcUrls.default.http]);
 
   const { colors, isDarkMode } = useTheme();
 
   return (
     <Toast isVisible={visible} testID={`testnet-toast-${networkName}`}>
-      <Icon color={isDarkMode ? networkColors.dark : networkColors.light} marginHorizontal={5} marginTop={1} name="dot" />
+      <Icon color={color} marginHorizontal={5} marginTop={1} name="dot" />
       <Text color={colors.white} size="smedium" weight="semibold">
         <Nbsp /> {networkName} <Nbsp />
       </Text>

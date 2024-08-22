@@ -9,16 +9,15 @@ import { ChainBadge } from '@/components/coin-icon';
 import { useTheme } from '@/theme';
 import * as i18n from '@/languages';
 import { ChainId } from '@/networks/types';
-import { networkObjects } from '@/networks';
+import { chainsNativeAsset } from '@/networks/chains';
 
 export function SwapDetailsRewardRow({ reward }: { reward: Reward }) {
   const { navigate } = useNavigation();
   const { isDarkMode } = useTheme();
 
   const roundedAmount = Math.round(reward.amount * 1000) / 1000;
-
-  const opNetwork = networkObjects[ChainId.optimism];
-  const accentColor = isDarkMode ? opNetwork.colors.dark : opNetwork.colors.light;
+  const nativeAsset = chainsNativeAsset[ChainId.optimism];
+  const accentColor = isDarkMode ? nativeAsset.colors.primary : nativeAsset.colors.fallback || nativeAsset.colors.primary;
 
   return (
     <Box flexDirection="row" alignItems="center" justifyContent="space-between">

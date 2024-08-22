@@ -8,7 +8,6 @@ import { ContextMenuButton } from '@/components/context-menu';
 import { Box, Column, Columns, HitSlop, Inline, Text } from '@/design-system';
 import { setClipboard } from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
-import { networkObjects } from '@/networks';
 import { BASE_DEGEN_ADDRESS, DEGEN_CHAIN_DEGEN_ADDRESS, ETH_ADDRESS } from '@/references';
 import { toggleFavorite } from '@/resources/favorites';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
@@ -18,6 +17,7 @@ import React, { useCallback, useMemo } from 'react';
 import { GestureResponderEvent } from 'react-native';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import { SwapCoinIcon } from './SwapCoinIcon';
+import { SUPPORTED_CHAIN_IDS } from '@/networks/chains';
 
 export const COIN_ROW_WITH_PADDING_HEIGHT = 56;
 
@@ -185,7 +185,7 @@ export function CoinRow({ isFavorite, onPress, output, uniqueId, testID, ...asse
 }
 
 const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId }) => {
-  const networkObject = networkObjects[chainId]?.value;
+  const supportedChain = SUPPORTED_CHAIN_IDS.includes(chainId);
 
   const handleCopy = useCallback(() => {
     haptics.selection();
@@ -197,7 +197,7 @@ const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId })
       title: i18n.t(i18n.l.exchange.coin_row.copy_contract_address),
       action: handleCopy,
     },
-    ...(networkObject
+    ...(supportedChain
       ? {
           blockExplorer: {
             title: i18n.t(i18n.l.exchange.coin_row.view_on, { blockExplorerName: startCase(ethereumUtils.getBlockExplorer({ chainId })) }),
@@ -217,7 +217,7 @@ const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId })
           iconValue: 'doc.on.doc',
         },
       },
-      ...(networkObject
+      ...(supportedChain
         ? [
             {
               actionKey: 'blockExplorer',
@@ -236,7 +236,7 @@ const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId })
   const handlePressMenuItem = async ({ nativeEvent: { actionKey } }: OnPressMenuItemEventObject) => {
     if (actionKey === 'copyAddress') {
       options.copy.action();
-    } else if (actionKey === 'blockExplorer' && networkObject) {
+    } else if (actionKey === 'blockExplorer' && supportedChain) {
       options.blockExplorer?.action();
     }
   };
@@ -244,14 +244,14 @@ const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId })
   const onPressAndroid = () =>
     showActionSheetWithOptions(
       {
-        options: [options.copy.title, ...(networkObject ? [options.blockExplorer?.title] : [])],
+        options: [options.copy.title, ...(supportedChain ? [options.blockExplorer?.title] : [])],
         showSeparators: true,
       },
       (idx: number) => {
         if (idx === 0) {
           options.copy.action();
         }
-        if (idx === 1 && networkObject) {
+        if (idx === 1 && supportedChain) {
           options.blockExplorer?.action();
         }
       }

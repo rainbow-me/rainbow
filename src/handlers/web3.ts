@@ -36,8 +36,7 @@ import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
 import { ChainId } from '@/networks/types';
-import { networkObjects } from '@/networks';
-import { defaultChains, SUPPORTED_CHAINS } from '@/networks/chains';
+import { defaultChains } from '@/networks/chains';
 
 export enum TokenStandard {
   ERC1155 = 'ERC1155',

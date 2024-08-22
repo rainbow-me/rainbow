@@ -15,7 +15,6 @@ import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../animations';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { implementation } from '@/entities/dispersion';
-import { networkObjects } from '@/networks';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 import { SWAPS_V2, enableActionsOnReadOnlyWallet, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -27,7 +26,7 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
 import { ChainId, chainIdToNameMapping } from '@/networks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { defaultChains, SUPPORTED_CHAINS, supportedSwapChainIds } from '@/networks/chains';
+import { defaultChains, supportedSwapChainIds } from '@/networks/chains';
 import { isL2Chain } from '@/handlers/web3';
 
 const NOOP = () => null;

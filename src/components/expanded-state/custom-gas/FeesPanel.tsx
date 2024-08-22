@@ -16,7 +16,6 @@ import Routes from '@/navigation/routesNames';
 import { gasUtils } from '@/utils';
 import { Box, Inline, Inset, Row, Rows, Text } from '@/design-system';
 import { IS_ANDROID } from '@/env';
-import { networkObjects } from '@/networks';
 import { isL2Chain } from '@/handlers/web3';
 
 const MAX_TEXT_WIDTH = 210;

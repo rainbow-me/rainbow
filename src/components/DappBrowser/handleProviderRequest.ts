@@ -4,7 +4,6 @@ import * as lang from '@/languages';
 
 import { Provider } from '@ethersproject/providers';
 
-import { networkObjects, RainbowSupportedChainIds } from '@/networks';
 import { getProvider } from '@/handlers/web3';
 import { UserRejectedRequestError } from 'viem';
 import { logger } from '@/logger';
@@ -15,6 +14,8 @@ import { getDappMetadata } from '@/resources/metadata/dapp';
 import { useAppSessionsStore } from '@/state/appSessions';
 import { BigNumber } from '@ethersproject/bignumber';
 import { ChainId } from '@/networks/types';
+import { defaultChains, SUPPORTED_CHAIN_IDS } from '@/networks/chains';
+import { Chain } from '@wagmi/chains';
 
 export type ProviderRequestPayload = RequestArguments & {
   id: number;
@@ -164,7 +165,7 @@ const messengerProviderRequestFn = async (messenger: Messenger, request: Provide
 
 const isSupportedChainId = (chainId: number | string) => {
   const numericChainId = BigNumber.from(chainId).toNumber();
-  return !!RainbowSupportedChainIds.find(chainId => chainId === numericChainId);
+  return !!SUPPORTED_CHAIN_IDS.find(chainId => chainId === numericChainId);
 };
 const getActiveSession = ({ host }: { host: string }): ActiveSession => {
   const hostSessions = useAppSessionsStore.getState().getActiveSession({ host });
@@ -267,7 +268,7 @@ export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger:
     callbackOptions?: CallbackOptions;
   }): { chainAlreadyAdded: boolean } => {
     const { chainId } = proposedChain;
-    if (networkObjects[Number(chainId)]) {
+    if (defaultChains[Number(chainId)]) {
       // TODO - Open add / switch ethereum chain
       return { chainAlreadyAdded: true };
     } else {
@@ -322,7 +323,7 @@ export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger:
     callbackOptions?: CallbackOptions;
   }) => {
     const { chainId } = proposedChain;
-    const supportedChainId = RainbowSupportedChainIds.includes(Number(chainId));
+    const supportedChainId = SUPPORTED_CHAIN_IDS.includes(Number(chainId));
     if (supportedChainId) {
       const host = getDappHost(callbackOptions?.sender.url) || '';
       const activeSession = getActiveSession({ host });
@@ -345,7 +346,7 @@ export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger:
     onSwitchEthereumChainSupported,
     getProvider: chainId => getProvider({ chainId: chainId as number }) as unknown as Provider,
     getActiveSession,
-    getChain: chainId => networkObjects[chainId],
+    getChain: chainId => defaultChains[chainId] as Chain,
   });
 
   // @ts-ignore

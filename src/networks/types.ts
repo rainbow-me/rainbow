@@ -210,7 +210,3 @@ export const ChainNameDisplay = {
   [ChainId.zoraSepolia]: 'Zora Sepolia',
   [ChainId.polygonAmoy]: 'Polygon Amoy',
 } as const;
-
-export interface NetworkProperties extends chain.Chain {
-  rpc: string;
-}

@@ -42,7 +42,6 @@ import {
 import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS } from '@/env';
-import { networkObjects } from '@/networks';
 import {
   externalTokenQueryKey,
   FormattedExternalAsset,
@@ -51,7 +50,7 @@ import {
 } from '@/resources/assets/externalAssetsQuery';
 import { ChainId, Network, networkToIdMapping } from '@/networks/types';
 import { AddressOrEth } from '@/__swaps__/types/assets';
-import { chainsNativeAsset } from '@/networks/chains';
+import { chainsNativeAsset, defaultChains } from '@/networks/chains';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const getNetworkNativeAsset = ({ chainId }: { chainId: ChainId }) => {
@@ -282,7 +281,32 @@ const getDataString = (func: string, arrVals: string[]) => {
  * @param  {Number} chainId
  */
 export const getNetworkFromChainId = (chainId: ChainId): Network => {
-  return networkObjects[chainId]?.value || networkObjects[ChainId.mainnet].value;
+  switch (chainId) {
+    case ChainId.arbitrum:
+      return Network.arbitrum;
+    case ChainId.goerli:
+      return Network.goerli;
+    case ChainId.optimism:
+      return Network.optimism;
+    case ChainId.polygon:
+      return Network.polygon;
+    case ChainId.base:
+      return Network.base;
+    case ChainId.bsc:
+      return Network.bsc;
+    case ChainId.zora:
+      return Network.zora;
+    case ChainId.gnosis:
+      return Network.gnosis;
+    case ChainId.avalanche:
+      return Network.avalanche;
+    case ChainId.blast:
+      return Network.blast;
+    case ChainId.degen:
+      return Network.degen;
+    default:
+      return Network.mainnet;
+  }
 };
 
 /**
@@ -290,7 +314,7 @@ export const getNetworkFromChainId = (chainId: ChainId): Network => {
  * @param  {Number} chainId
  */
 const getNetworkNameFromChainId = (chainId: ChainId): string => {
-  return networkObjects[chainId]?.name || networkObjects[ChainId.mainnet].name;
+  return defaultChains[chainId]?.name || defaultChains[ChainId.mainnet].name;
 };
 
 /**
@@ -307,9 +331,8 @@ const getChainIdFromNetwork = (network?: Network): ChainId => {
  */
 function getEtherscanHostForNetwork({ chainId }: { chainId: ChainId }): string {
   const base_host = 'etherscan.io';
-  const networkObject = networkObjects[chainId];
-  const blockExplorer = networkObject.blockExplorers?.default?.url;
-  const network = networkObject.network as Network;
+  const blockExplorer = defaultChains[chainId].blockExplorers?.default?.url;
+  const network = getNetworkFromChainId(chainId);
 
   if (network && isTestnetChain({ chainId })) {
     return `${network}.${base_host}`;
@@ -384,24 +407,24 @@ export const getFirstTransactionTimestamp = async (address: EthereumAddress): Pr
 };
 
 function getBlockExplorer({ chainId }: { chainId: ChainId }) {
-  return networkObjects[chainId].blockExplorers?.default.name || 'etherscan';
+  return defaultChains[chainId].blockExplorers?.default.name || 'etherscan';
 }
 
 function openAddressInBlockExplorer({ address, chainId }: { address: EthereumAddress; chainId: ChainId }) {
-  const explorer = networkObjects[chainId]?.blockExplorers?.default?.url;
+  const explorer = defaultChains[chainId]?.blockExplorers?.default?.url;
   Linking.openURL(`${explorer}/address/${address}`);
 }
 
 function openTokenEtherscanURL(address: EthereumAddress, network: Network) {
   if (!isString(address)) return;
   const chainId = getChainIdFromNetwork(network);
-  const explorer = networkObjects[chainId]?.blockExplorers?.default?.url;
+  const explorer = defaultChains[chainId]?.blockExplorers?.default?.url;
   Linking.openURL(`${explorer}/token/${address}`);
 }
 
 function openNftInBlockExplorer(contractAddress: string, tokenId: string, network: Network) {
   const chainId = getChainIdFromNetwork(network);
-  const explorer = networkObjects[chainId]?.blockExplorers?.default?.url;
+  const explorer = defaultChains[chainId]?.blockExplorers?.default?.url;
   Linking.openURL(`${explorer}/token/${contractAddress}?a=${tokenId}`);
 }
 
@@ -409,7 +432,7 @@ function openTransactionInBlockExplorer(hash: string, network: Network) {
   const normalizedHash = hash.replace(/-.*/g, '');
   if (!isString(hash)) return;
   const chainId = getChainIdFromNetwork(network);
-  const explorer = networkObjects[chainId]?.blockExplorers?.default?.url;
+  const explorer = defaultChains[chainId]?.blockExplorers?.default?.url;
   Linking.openURL(`${explorer}/tx/${normalizedHash}`);
 }
 

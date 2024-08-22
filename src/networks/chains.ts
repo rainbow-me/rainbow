@@ -6,6 +6,7 @@ import { BackendNetwork, BackendNetworkServices, chainHardhat, chainHardhatOptim
 import { ChainId } from './types';
 import { transformBackendNetworksToChains } from './utils/backendNetworks';
 import { gasUtils } from '@/utils';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const IS_TESTING = process.env.IS_TESTING === 'true';
 
@@ -210,4 +211,15 @@ const chainsGasUnits = backendNetworks.networks.reduce(
 
 export const getChainGasUnits = (chainId?: number) => {
   return (chainId ? chainsGasUnits[chainId] : undefined) || chainsGasUnits[ChainId.mainnet];
+};
+
+export const getChainDefaultRpc = (chainId: ChainId) => {
+  switch (chainId) {
+    case ChainId.mainnet:
+      return useConnectedToHardhatStore.getState().connectedToHardhat
+        ? 'http://127.0.0.1:8545'
+        : defaultChains[ChainId.mainnet].rpcUrls.default.http[0];
+    default:
+      return defaultChains[chainId].rpcUrls.default.http[0];
+  }
 };

@@ -16,7 +16,7 @@ import { deviceUtils } from '@/utils';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { TransactionScanResultType } from '@/graphql/__generated__/metadataPOST';
-import { ChainId } from '@/networks/types';
+import { ChainId, Network } from '@/networks/types';
 import { convertHexToString, delay, greaterThan, omitFlatten } from '@/helpers/utilities';
 
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
@@ -72,8 +72,7 @@ import { useProviderSetup } from '@/hooks/useProviderSetup';
 import { useTransactionSubmission } from '@/hooks/useSubmitTransaction';
 import { useConfirmTransaction } from '@/hooks/useConfirmTransaction';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { networkObjects } from '@/networks';
-import { needsL1SecurityFeeChains } from '@/networks/chains';
+import { chainsName, defaultChains } from '@/networks/chains';
 
 type SignTransactionSheetParams = {
   transactionDetails: RequestData;
@@ -392,7 +391,7 @@ export const SignTransactionSheet = () => {
           from: displayDetails?.request?.from,
           gasLimit,
           hash: sendResult.hash,
-          network: networkObjects[chainId].value,
+		  network: chainsName[chainId] as Network,
           nonce: sendResult.nonce,
           to: displayDetails?.request?.to,
           value: sendResult.value.toString(),
@@ -414,7 +413,7 @@ export const SignTransactionSheet = () => {
         dappName: transactionDetails.dappName,
         dappUrl: transactionDetails.dappUrl,
         isHardwareWallet: accountInfo.isHardwareWallet,
-        network: networkObjects[chainId].value,
+        network: chainsName[chainId] as Network
       });
 
       if (!sendInsteadOfSign) {
@@ -445,7 +444,7 @@ export const SignTransactionSheet = () => {
         dappUrl: transactionDetails?.dappUrl,
         formattedDappUrl,
         rpcMethod: req?.method,
-        network: networkObjects[chainId].value,
+        network: chainsName[chainId] as Network
       });
       // If the user is using a hardware wallet, we don't want to close the sheet on an error
       if (!accountInfo.isHardwareWallet) {
@@ -526,7 +525,7 @@ export const SignTransactionSheet = () => {
         dappName: transactionDetails?.dappName,
         dappUrl: transactionDetails?.dappUrl,
         isHardwareWallet: accountInfo.isHardwareWallet,
-        network: networkObjects[chainId].value,
+        network: chainsName[chainId] as Network
       });
       onSuccessCallback?.(response.result);
 
@@ -701,7 +700,7 @@ export const SignTransactionSheet = () => {
                                     </Bleed>
                                     <Text color="labelQuaternary" size="13pt" weight="semibold">
                                       {`${walletBalance?.display} ${i18n.t(i18n.l.walletconnect.simulation.profile_section.on_network, {
-                                        network: networkObjects[chainId]?.name,
+                                        network: defaultChains[chainId]?.name,
                                       })}`}
                                     </Text>
                                   </Inline>

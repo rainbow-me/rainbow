@@ -23,8 +23,8 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
-import { networkObjects } from '@/networks';
 import { ChainId } from '@/networks/types';
+import { chainsNativeAsset, defaultChains } from '@/networks/chains';
 
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;
@@ -70,12 +70,12 @@ export default function WalletConnectListItem({ account, chainId, dappIcon, dapp
   }, [wallets, walletNames, account]);
 
   const connectionNetworkInfo = useMemo(() => {
-    const networkObj = networkObjects[chainId || ChainId.mainnet];
+    const nativeAsset = chainsNativeAsset[chainId];
+    const chain = defaultChains[chainId];
     return {
-      chainId,
-      color: isDarkMode ? networkObj.colors.dark : networkObj.colors.light,
-      name: networkObj.name,
-      value: networkObj.value,
+      id: chainId,
+      color: isDarkMode ? nativeAsset.colors.primary : nativeAsset.colors.fallback || nativeAsset.colors.primary,
+      name: chain.name,
     };
   }, [chainId, isDarkMode]);
 
@@ -194,12 +194,12 @@ export default function WalletConnectListItem({ account, chainId, dappIcon, dapp
             onPressAndroid={onPressAndroid}
             onPressMenuItem={handleOnPressMenuItem}
           >
-            <NetworkPill mainnet={connectionNetworkInfo.value === 'mainnet'}>
+            <NetworkPill mainnet={connectionNetworkInfo.id === ChainId.mainnet}>
               <Row align="center">
-                <ChainLogo marginRight={5} chainId={connectionNetworkInfo.chainId} />
+                <ChainLogo marginRight={5} chainId={connectionNetworkInfo.id} />
                 <LabelText
                   color={
-                    connectionNetworkInfo.value === 'mainnet'
+                    connectionNetworkInfo.is === ChainId.mainnet
                       ? colors.alpha(colors.blueGreyDark, 0.5)
                       : colors.alpha(colors.blueGreyDark, 0.8)
                   }

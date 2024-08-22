@@ -52,7 +52,7 @@ import { getNextNonce } from '@/state/nonces';
 import { metadataPOSTClient } from '@/graphql';
 import { ethUnits } from '@/references';
 import { Transaction } from '@/graphql/__generated__/metadataPOST';
-import { networkObjects } from '@/networks';
+import { chainsNativeAsset, defaultChains, getChainDefaultRpc } from '@/networks/chains';
 
 const NFT_IMAGE_HEIGHT = 160;
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
@@ -164,7 +164,7 @@ export function NFTSingleOfferSheet() {
   const feesPercentage = Math.floor(offer.feesPercentage * 10) / 10;
   const royaltiesPercentage = Math.floor(offer.royaltiesPercentage * 10) / 10;
 
-  const networkObject = useMemo(() => networkObjects[offerChainId], [offerChainId]);
+  const chain = useMemo(() => defaultChains[offerChainId], [offerChainId]);
 
   useEffect(() => {
     setParams({ longFormHeight: height });
@@ -184,8 +184,8 @@ export function NFTSingleOfferSheet() {
       const signer = createWalletClient({
         // @ts-ignore
         account: accountAddress,
-        chain: networkObject,
-        transport: http(networkObject.rpc),
+        chain,
+        transport: http(getChainDefaultRpc(offerChainId)),
       });
       getClient()?.actions.acceptOffer({
         items: [
@@ -199,7 +199,7 @@ export function NFTSingleOfferSheet() {
               feesOnTop: [feeParam],
             }
           : undefined,
-        chainId: networkObject.id,
+        chainId: offerChainId,
         precheck: true,
         wallet: signer,
         onProgress: async (steps: Execute['steps']) => {
@@ -227,7 +227,7 @@ export function NFTSingleOfferSheet() {
           const txSimEstimate = parseInt(
             (
               await metadataPOSTClient.simulateTransactions({
-                chainId: networkObject.id,
+                chainId: offerChainId,
                 transactions: txs,
               })
             )?.simulateTransactions?.[0]?.gas?.estimate ?? '0x0',
@@ -284,10 +284,10 @@ export function NFTSingleOfferSheet() {
 
     const signer = createWalletClient({
       account,
-      chain: networkObject,
-      transport: http(networkObject.rpc),
+      chain,
+      transport: http(getChainDefaultRpc(offerChainId)),
     });
-    const nonce = await getNextNonce({ address: accountAddress, chainId: networkObject.id });
+    const nonce = await getNextNonce({ address: accountAddress, chainId: offerChainId });
     try {
       let errorMessage = '';
       let didComplete = false;
@@ -303,7 +303,7 @@ export function NFTSingleOfferSheet() {
               feesOnTop: [feeParam],
             }
           : undefined,
-        chainId: networkObject.id,
+        chainId: offerChainId,
         wallet: signer!,
         onProgress: (steps: Execute['steps']) => {
           setIsAccepting(true);
@@ -425,13 +425,13 @@ export function NFTSingleOfferSheet() {
     } finally {
       setIsAccepting(false);
     }
-  }, [accountAddress, feeParam, navigate, offerChainId, nft, offer, rainbowFeeDecimal]);
+  }, [offer, rainbowFeeDecimal, accountAddress, chain, offerChainId, feeParam, navigate, nft]);
 
   let buttonLabel = '';
   if (!isAccepting) {
     if (insufficientEth) {
       buttonLabel = lang.t('button.confirm_exchange.insufficient_token', {
-        tokenName: networkObject.nativeCurrency.symbol,
+        tokenName: chainsNativeAsset[offerChainId].symbol,
       });
     } else {
       buttonLabel = i18n.t(i18n.l.nft_offers.single_offer_sheet.hold_to_sell);

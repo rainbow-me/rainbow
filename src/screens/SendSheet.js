@@ -63,8 +63,7 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { REGISTRATION_STEPS } from '@/helpers/ens';
 import { ChainId } from '@/networks/types';
-import { networkObjects } from '@/networks';
-import { needsL1SecurityFeeChains } from '@/networks/chains';
+import { chainsNativeAsset, needsL1SecurityFeeChains } from '@/networks/chains';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
@@ -135,8 +134,6 @@ export default function SendSheet(props) {
   const [currentChainId, setCurrentChainId] = useState();
   const prevChainId = usePrevious(currentChainId);
   const [currentInput, setCurrentInput] = useState('');
-
-  const networkObject = useMemo(() => networkObjects[currentChainId || ChainId.mainnet], [currentChainId]);
 
   const { params } = useRoute();
   const assetOverride = params?.asset;
@@ -614,7 +611,7 @@ export default function SendSheet(props) {
     } else if (!isZeroAssetAmount && !isSufficientGas) {
       disabled = true;
       label = lang.t('button.confirm_exchange.insufficient_token', {
-        tokenName: networkObject.nativeCurrency.symbol,
+        tokenName: chainsNativeAsset[currentChainId || ChainId.mainnet].symbol,
       });
     } else if (!isValidGas) {
       disabled = true;
@@ -640,7 +637,6 @@ export default function SendSheet(props) {
     l1GasFeeOptimism,
     isSufficientGas,
     isValidGas,
-    networkObject.nativeCurrency.symbol,
   ]);
 
   const showConfirmationSheet = useCallback(async () => {

@@ -14,7 +14,7 @@ import Routes from '@/navigation/routesNames';
 import { lightModeThemeColors } from '@/styles';
 import { useTheme } from '@/theme';
 import handleSwapErrorCodes from '@/utils/exchangeErrorCodes';
-import { networkObjects } from '@/networks';
+import { chainsNativeAsset } from '@/networks/chains';
 
 const NOOP = () => null;
 
@@ -95,7 +95,7 @@ export default function ConfirmExchangeButton({
     label = lang.t('button.confirm_exchange.insufficient_funds');
   } else if (isSufficientGas != null && !isSufficientGas) {
     label = lang.t('button.confirm_exchange.insufficient_token', {
-      tokenName: networkObjects[chainId].nativeCurrency.symbol,
+      tokenName: chainsNativeAsset[chainId].symbol,
     });
   } else if (!isValidGas && isGasReady) {
     label = lang.t('button.confirm_exchange.invalid_fee');

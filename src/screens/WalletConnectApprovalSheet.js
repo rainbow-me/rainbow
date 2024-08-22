@@ -23,7 +23,6 @@ import styled from '@/styled-thing';
 import { Box, Columns, Column as RDSColumn, Inline, Text } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import * as lang from '@/languages';
-import { networkObjects } from '@/networks';
 import { useDappMetadata } from '@/resources/metadata/dapp';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { InfoAlert } from '@/components/info-alert/info-alert';
@@ -32,7 +31,6 @@ import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { ChainId, chainIdToNameMapping } from '@/networks/types';
 import { chainsNativeAsset, defaultChains, supportedWalletConnectChainIds } from '@/networks/chains';
 import { isL2Chain } from '@/handlers/web3';
-import networkInfo from '@/helpers/networkInfo';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.3),
