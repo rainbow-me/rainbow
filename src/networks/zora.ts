@@ -20,7 +20,6 @@ export const zoraNetworkObject: NetworkProperties = {
   gas: {
     // ?
     roundGasDisplay: true,
-    OptimismTxFee: true,
   },
 
   // design tings

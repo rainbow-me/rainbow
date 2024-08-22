@@ -222,8 +222,6 @@ export interface NetworkProperties extends Chain {
   rpc: string;
 
   gas: {
-    OptimismTxFee?: boolean;
-
     // for some networks gas is so cheap we dont want to round the gwei #
     roundGasDisplay: boolean;
   };

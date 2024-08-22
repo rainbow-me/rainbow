@@ -20,7 +20,6 @@ export const baseNetworkObject: NetworkProperties = {
   gas: {
     // ?
     roundGasDisplay: true,
-    OptimismTxFee: true,
   },
 
   // design tings

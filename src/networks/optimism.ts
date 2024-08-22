@@ -20,7 +20,6 @@ export const optimismNetworkObject: NetworkProperties = {
   gas: {
     // ?
     roundGasDisplay: true,
-    OptimismTxFee: true,
   },
 
   // design tings

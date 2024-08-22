@@ -73,6 +73,7 @@ import { useTransactionSubmission } from '@/hooks/useSubmitTransaction';
 import { useConfirmTransaction } from '@/hooks/useConfirmTransaction';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { networkObjects } from '@/networks';
+import { needsL1SecurityFeeChains } from '@/networks/chains';
 
 type SignTransactionSheetParams = {
   transactionDetails: RequestData;

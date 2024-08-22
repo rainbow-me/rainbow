@@ -656,7 +656,7 @@ export const gasUpdateTxFee =
       const { defaultGasLimit, gasLimit, gasFeeParamsBySpeed, selectedGasFee, chainId, currentBlockParams } = getState().gas;
 
       const { nativeCurrency } = getState().settings;
-      if (isEmpty(gasFeeParamsBySpeed) || (networkObjects[chainId].gas?.OptimismTxFee && l1GasFeeOptimism === null)) {
+      if (isEmpty(gasFeeParamsBySpeed) || (needsL1SecurityFeeChains.includes(chainId) && l1GasFeeOptimism === null)) {
         // if fee prices not ready, we need to store the gas limit for future calculations
         // the rest is as the initial state value
         if (updatedGasLimit) {
@@ -676,7 +676,8 @@ export const gasUpdateTxFee =
           nativeCurrency,
           _selectedGasFeeOption,
           chainId,
-          l1GasFeeOptimism
+          l1GasFeeOptimism,
+          (selectedGasFee as LegacyGasFee).estimatedFee !== undefined
         );
         dispatch({
           payload: {

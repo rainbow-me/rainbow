@@ -76,7 +76,7 @@ import { estimateSwapGasLimit } from '@/raps/actions';
 import { estimateCrosschainSwapGasLimit } from '@/raps/actions/crosschainSwap';
 import { parseGasParamAmounts } from '@/parsers';
 import { networkObjects } from '@/networks';
-import { shouldDefaultToFastGasChainIds, supportedFlashbotsChainIds } from '@/networks/chains';
+import { needsL1SecurityFeeChains, shouldDefaultToFastGasChainIds, supportedFlashbotsChainIds } from '@/networks/chains';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [ChainId.mainnet]: 100,
@@ -297,7 +297,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
       });
 
       if (gasLimit) {
-        if (networkObject.gas?.OptimismTxFee) {
+        if (needsL1SecurityFeeChains.includes(currentChainId)) {
           if (tradeDetails) {
             const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -321,7 +321,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
     } catch (error) {
       updateTxFee(defaultGasLimit, null);
     }
-  }, [currentChainId, defaultGasLimit, isCrosschainSwap, networkObject.gas?.OptimismTxFee, tradeDetails, updateTxFee]);
+  }, [currentChainId, defaultGasLimit, isCrosschainSwap, tradeDetails, updateTxFee]);
 
   useEffect(() => {
     if (tradeDetails && !equal(tradeDetails, lastTradeDetails)) {

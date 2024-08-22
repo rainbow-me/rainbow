@@ -16,7 +16,6 @@ export const gnosisNetworkObject: NetworkProperties = {
   gas: {
     // ?
     roundGasDisplay: true,
-    OptimismTxFee: true,
   },
 
   // design tings

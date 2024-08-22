@@ -64,6 +64,7 @@ import { performanceTracking, Screens, TimeToSignOperation } from '@/state/perfo
 import { REGISTRATION_STEPS } from '@/helpers/ens';
 import { ChainId } from '@/networks/types';
 import { networkObjects } from '@/networks';
+import { needsL1SecurityFeeChains } from '@/networks/chains';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
@@ -425,7 +426,7 @@ export default function SendSheet(props) {
           );
 
           if (!lessThan(updatedGasLimit, gasLimit)) {
-            if (networkObject.gas?.OptimismTxFee) {
+            if (needsL1SecurityFeeChains.includes(currentChainId)) {
               updateTxFeeForOptimism(updatedGasLimit);
             } else {
               updateTxFee(updatedGasLimit, null);
@@ -548,7 +549,6 @@ export default function SendSheet(props) {
       isSufficientGas,
       isValidAddress,
       isValidGas,
-      networkObject.gas?.OptimismTxFee,
       selected,
       selectedGasFee,
       toAddress,
@@ -607,7 +607,7 @@ export default function SendSheet(props) {
       !selectedGasFee ||
       isEmpty(selectedGasFee?.gasFee) ||
       !toAddress ||
-      (networkObject.gas?.OptimismTxFee && l1GasFeeOptimism === null)
+      (needsL1SecurityFeeChains.includes(currentChainId) && l1GasFeeOptimism === null)
     ) {
       label = lang.t('button.confirm_exchange.loading');
       disabled = true;
@@ -636,11 +636,11 @@ export default function SendSheet(props) {
     gasFeeParamsBySpeed,
     selectedGasFee,
     toAddress,
-    networkObject.gas?.OptimismTxFee,
-    networkObject.nativeCurrency.symbol,
+    currentChainId,
     l1GasFeeOptimism,
     isSufficientGas,
     isValidGas,
+    networkObject.nativeCurrency.symbol,
   ]);
 
   const showConfirmationSheet = useCallback(async () => {
@@ -787,7 +787,7 @@ export default function SendSheet(props) {
         currentChainId
       )
         .then(async gasLimit => {
-          if (networkObject.gas?.OptimismTxFee) {
+          if (needsL1SecurityFeeChains.includes(currentChainId)) {
             updateTxFeeForOptimism(gasLimit);
           } else {
             updateTxFee(gasLimit, null);
@@ -811,7 +811,6 @@ export default function SendSheet(props) {
     chainId,
     isNft,
     currentChainId,
-    networkObject.gas?.OptimismTxFee,
   ]);
 
   const sendContactListDataKey = useMemo(() => `${ensSuggestions?.[0]?.address || '_'}`, [ensSuggestions]);
