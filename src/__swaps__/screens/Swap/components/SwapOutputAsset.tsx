@@ -7,6 +7,7 @@ import { ScreenCornerRadius } from 'react-native-screen-corner-radius';
 
 import { AnimatedSwapCoinIcon } from '@/__swaps__/screens/Swap/components/AnimatedSwapCoinIcon';
 import { BalanceBadge } from '@/__swaps__/screens/Swap/components/BalanceBadge';
+import { SwapNativeInput } from '@/__swaps__/screens/Swap/components/SwapNativeInput';
 import { SwapInputValuesCaret } from '@/__swaps__/screens/Swap/components/SwapInputValuesCaret';
 import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
@@ -49,15 +50,6 @@ function SwapOutputActionButton() {
       rightIcon={'􀆏'}
       small
     />
-  );
-}
-
-function SwapOutputNativeAmount() {
-  const { SwapTextStyles, SwapInputController } = useSwapContext();
-  return (
-    <AnimatedText numberOfLines={1} size="17pt" style={SwapTextStyles.outputNativeValueStyle} weight="heavy">
-      {SwapInputController.formattedOutputNativeValue}
-    </AnimatedText>
   );
 }
 
@@ -171,7 +163,7 @@ export function SwapOutputAsset() {
             </Column>
           </Columns>
           <Columns alignHorizontal="justify" alignVertical="center" space="10px">
-            <SwapOutputNativeAmount />
+            <SwapNativeInput nativeInputType="outputNativeValue" />
             <Column width="content">
               <OutputAssetBalanceBadge />
             </Column>

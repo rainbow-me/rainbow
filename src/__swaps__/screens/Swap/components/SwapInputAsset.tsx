@@ -11,6 +11,7 @@ import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
 import { SwapInput } from '@/__swaps__/screens/Swap/components/SwapInput';
+import { SwapNativeInput } from '@/__swaps__/screens/Swap/components/SwapNativeInput';
 import { SwapInputValuesCaret } from '@/__swaps__/screens/Swap/components/SwapInputValuesCaret';
 import { TokenList } from '@/__swaps__/screens/Swap/components/TokenList/TokenList';
 import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
@@ -47,27 +48,6 @@ function SwapInputActionButton() {
       rightIcon={'􀆏'}
       small
     />
-  );
-}
-
-function SwapInputNativeAmount() {
-  const { focusedInput, SwapTextStyles, SwapInputController } = useSwapContext();
-
-  return (
-    <GestureHandlerButton
-      disableButtonPressWrapper
-      onPressStartWorklet={() => {
-        'worklet';
-        focusedInput.value = 'inputNativeValue';
-      }}
-    >
-      <Box style={styles.inputNativeContainer}>
-        <AnimatedText numberOfLines={1} size="17pt" style={SwapTextStyles.inputNativeValueStyle} weight="heavy">
-          {SwapInputController.formattedInputNativeValue}
-        </AnimatedText>
-        <SwapInputValuesCaret inputCaretType="inputNativeValue" />
-      </Box>
-    </GestureHandlerButton>
   );
 }
 
@@ -155,7 +135,7 @@ export function SwapInputAsset() {
             </Column>
           </Columns>
           <Columns alignHorizontal="justify" alignVertical="center" space="10px">
-            <SwapInputNativeAmount />
+            <SwapNativeInput nativeInputType="inputNativeValue" />
             <Column width="content">
               <InputAssetBalanceBadge />
             </Column>
@@ -210,7 +190,6 @@ export const styles = StyleSheet.create({
     textShadowRadius: 6,
   },
   inputTextMask: { alignItems: 'center', flexDirection: 'row', height: 36, pointerEvents: 'box-only' },
-  inputNativeContainer: { alignItems: 'center', flexDirection: 'row', height: 17, pointerEvents: 'box-only' },
   rootViewBackground: {
     backgroundColor: 'transparent',
     borderRadius: IS_ANDROID ? 20 : ScreenCornerRadius,
