@@ -222,9 +222,9 @@ export function clamp(value: number, lowerBound: number, upperBound: number) {
   return Math.min(Math.max(lowerBound, value), upperBound);
 }
 
-export function stripCommas(value: string) {
+export function stripNonDecimalNumbers(value: string) {
   'worklet';
-  return value.replace(/,/g, '');
+  return value.replace(/[^0-9.]/g, '');
 }
 
 export function trimTrailingZeros(value: string) {

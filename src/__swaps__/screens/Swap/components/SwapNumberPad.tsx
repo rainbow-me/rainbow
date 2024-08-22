@@ -11,9 +11,9 @@ import Animated, {
   withDelay,
   withTiming,
 } from 'react-native-reanimated';
-
 import { Bleed, Box, Columns, HitSlop, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
-import { stripCommas } from '@/__swaps__/utils/swaps';
+import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
 import {
   CUSTOM_KEYBOARD_HEIGHT,
   LIGHT_SEPARATOR_COLOR,
@@ -49,13 +49,44 @@ const getFormattedInputKey = (inputKey: inputKeys) => {
 
 export const SwapNumberPad = () => {
   const { isDarkMode } = useColorMode();
-  const { focusedInput, isQuoteStale, SwapInputController, configProgress, outputQuotesAreDisabled } = useSwapContext();
+  const {
+    focusedInput,
+    internalSelectedInputAsset,
+    internalSelectedOutputAsset,
+    isQuoteStale,
+    SwapInputController,
+    configProgress,
+    outputQuotesAreDisabled,
+  } = useSwapContext();
 
   const longPressTimer = useSharedValue(0);
 
-  const addNumber = (number?: number) => {
+  const removeFormatting = (inputKey: inputKeys) => {
+    'worklet';
+    return stripNonDecimalNumbers(SwapInputController[getFormattedInputKey(inputKey)].value);
+  };
+
+  const ignoreChange = () => {
     'worklet';
     if ((focusedInput.value === 'outputAmount' || focusedInput.value === 'outputNativeValue') && outputQuotesAreDisabled.value) {
+      return true;
+    }
+    const inputAssetPrice = internalSelectedInputAsset.value?.nativePrice || internalSelectedInputAsset.value?.price?.value || 0;
+    const outputAssetPrice = internalSelectedOutputAsset.value?.nativePrice || internalSelectedOutputAsset.value?.price?.value || 0;
+    const outputAssetHasNoPrice = !outputAssetPrice || equalWorklet(outputAssetPrice, 0);
+    const inputAssetHasNoPrice = !inputAssetPrice || equalWorklet(inputAssetPrice, 0);
+    if (
+      (focusedInput.value === 'outputNativeValue' && outputAssetHasNoPrice) ||
+      (focusedInput.value === 'inputNativeValue' && inputAssetHasNoPrice)
+    ) {
+      return true;
+    }
+    return false;
+  };
+
+  const addNumber = (number?: number) => {
+    'worklet';
+    if (ignoreChange()) {
       return;
     }
 
@@ -63,7 +94,7 @@ export const SwapNumberPad = () => {
     SwapInputController.quoteFetchingInterval.stop();
 
     const inputKey = focusedInput.value;
-    const currentValue = stripCommas(SwapInputController[getFormattedInputKey(inputKey)].value);
+    const currentValue = removeFormatting(inputKey);
 
     const newValue = currentValue === '0' ? `${number}` : `${currentValue}${number}`;
 
@@ -94,7 +125,7 @@ export const SwapNumberPad = () => {
   const addDecimalPoint = () => {
     'worklet';
     const inputKey = focusedInput.value;
-    const currentValue = stripCommas(SwapInputController[getFormattedInputKey(inputKey)].value);
+    const currentValue = removeFormatting(inputKey);
 
     if (!currentValue.includes('.')) {
       if (SwapInputController.inputMethod.value !== inputKey) {
@@ -115,7 +146,7 @@ export const SwapNumberPad = () => {
   const deleteLastCharacter = () => {
     'worklet';
 
-    if ((focusedInput.value === 'outputAmount' || focusedInput.value === 'outputNativeValue') && outputQuotesAreDisabled.value) {
+    if (ignoreChange()) {
       return;
     }
 
@@ -125,7 +156,7 @@ export const SwapNumberPad = () => {
       SwapInputController.inputMethod.value = inputKey;
     }
 
-    const currentValue = stripCommas(SwapInputController[getFormattedInputKey(inputKey)].value);
+    const currentValue = removeFormatting(inputKey);
     // Handle deletion, ensuring a placeholder zero remains if the entire number is deleted
     const newValue = currentValue.length > 1 ? currentValue.slice(0, -1) : 0;
 
