@@ -17,9 +17,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [1.9.36] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.36)
 
-### Changed
+### Fixed
 
-- Sentry tracking audit (#6012)
+- Fixed Sentry logging issues (#6012, #6018, #6019)
+- Fixed issue in swaps where certain errors were not being handled (#6017)
+- Fixed a bug with wrapping and unwrapping ETH (#6022, #6026)
+- Fixed a crash that was happening on asset balance (#6025)
+- Fixed missing pricing on swaps (#6023)
 
 ## [1.9.35] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.35)
 
