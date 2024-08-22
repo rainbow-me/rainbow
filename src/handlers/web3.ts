@@ -434,7 +434,7 @@ export const getTransactionCount = async (address: string): Promise<number | nul
  * @returns - object with `gasPrice` or `maxFeePerGas` and `maxPriorityFeePerGas`
  */
 export const getTransactionGasParams = (transaction: Pick<NewTransactionNonNullable, 'chainId'> & GasParamsInput): GasParamsReturned => {
-  return networkObjects[transaction.chainId].gas.gasType === 'legacy'
+  return transaction.gasPrice
     ? {
         gasPrice: toHex(transaction.gasPrice),
       }

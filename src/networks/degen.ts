@@ -32,7 +32,6 @@ export const degenNetworkObject: NetworkProperties = {
   gas: {
     speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT, gasUtils.CUSTOM],
     // ?
-    gasType: 'eip1559',
     roundGasDisplay: true,
 
     // this prob can just be blockTime,

@@ -13,6 +13,7 @@ import {
   GasFeeParams,
   GasFeeParamsBySpeed,
   GasFeesBySpeed,
+  LegacyGasFee,
   LegacyGasFeeParamsBySpeed,
   LegacyGasFeesBySpeed,
   LegacySelectedGasFee,
@@ -41,6 +42,7 @@ import { ethereumUtils, gasUtils } from '@/utils';
 import { ChainId } from '@/networks/types';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 import { networkObjects } from '@/networks';
+import { needsL1SecurityFeeChains } from '@/networks/chains';
 
 const { CUSTOM, FAST, NORMAL, SLOW, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
 
@@ -123,7 +125,8 @@ const getUpdatedGasFeeParams = (
   nativeCurrency: NativeCurrencyKey,
   selectedGasFeeOption: string,
   chainId: ChainId,
-  l1GasFeeOptimism: BigNumber | null = null
+  l1GasFeeOptimism: BigNumber | null,
+  isLegacyGasNetwork: boolean
 ) => {
   let nativeTokenPriceUnit = ethereumUtils.getEthPriceUnit();
 
@@ -144,8 +147,6 @@ const getUpdatedGasFeeParams = (
       nativeTokenPriceUnit = ethereumUtils.getEthPriceUnit();
       break;
   }
-
-  const isLegacyGasNetwork = networkObjects[chainId].gas.gasType === 'legacy';
 
   const gasFeesBySpeed = isLegacyGasNetwork
     ? parseLegacyGasFeesBySpeed(
@@ -489,10 +490,11 @@ export const gasPricesStartPolling =
 
               const networkObject = networkObjects[chainId];
               let dataIsReady = true;
+              const isLegacyGasNetwork = !!(lastSelectedGasFee as LegacyGasFee)?.estimatedFee;
 
-              if (networkObject.gas.gasType === 'legacy') {
+              if (isLegacyGasNetwork) {
                 // OP chains have an additional fee we need to load
-                if (networkObject.gas?.OptimismTxFee) {
+                if (needsL1SecurityFeeChains.includes(chainId)) {
                   dataIsReady = l1GasFeeOptimism !== null;
                 }
 
@@ -513,7 +515,8 @@ export const gasPricesStartPolling =
                       nativeCurrency,
                       _selectedGasFeeOption,
                       chainId,
-                      l1GasFeeOptimism
+                      l1GasFeeOptimism,
+                      isLegacyGasNetwork
                     )
                   : {
                       gasFeesBySpeed: lastGasFeesBySpeed,
@@ -578,7 +581,8 @@ export const gasPricesStartPolling =
                     nativeCurrency,
                     _selectedGasFeeOption,
                     chainId,
-                    l1GasFeeOptimism
+                    l1GasFeeOptimism,
+                    isLegacyGasNetwork
                   );
 
                   dispatch({

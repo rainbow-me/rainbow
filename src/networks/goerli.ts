@@ -29,7 +29,6 @@ export const goerliNetworkObject: NetworkProperties = {
 
   gas: {
     speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.CUSTOM],
-    gasType: 'eip1559',
     roundGasDisplay: true,
 
     // this prob can just be blockTime

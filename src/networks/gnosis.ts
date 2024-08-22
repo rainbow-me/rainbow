@@ -27,7 +27,6 @@ export const gnosisNetworkObject: NetworkProperties = {
     speeds: [gasUtils.NORMAL],
 
     // ?
-    gasType: 'legacy',
     roundGasDisplay: true,
     OptimismTxFee: true,
 

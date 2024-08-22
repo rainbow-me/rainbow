@@ -30,7 +30,7 @@ import { ChainId } from '@/networks/types';
 import { networkObjects } from '@/networks';
 
 const checkSufficientGas = (txFee: LegacyGasFee | GasFee, chainId: ChainId, nativeAsset?: ParsedAddressAsset) => {
-  const isLegacyGasNetwork = networkObjects[chainId].gas.gasType === 'legacy';
+  const isLegacyGasNetwork = !(txFee as GasFee)?.maxFee;
   const txFeeValue = isLegacyGasNetwork ? (txFee as LegacyGasFee)?.estimatedFee : (txFee as GasFee)?.maxFee;
   const networkNativeAsset = nativeAsset || ethereumUtils.getNetworkNativeAsset({ chainId });
   const balanceAmount = networkNativeAsset?.balance?.amount || 0;
@@ -39,8 +39,8 @@ const checkSufficientGas = (txFee: LegacyGasFee | GasFee, chainId: ChainId, nati
   return isSufficientGas;
 };
 
-const checkValidGas = (selectedGasParams: LegacyGasFeeParams | GasFeeParams, chainId: ChainId) => {
-  const isLegacyGasNetwork = networkObjects[chainId].gas.gasType === 'legacy';
+const checkValidGas = (selectedGasParams: LegacyGasFeeParams | GasFeeParams) => {
+  const isLegacyGasNetwork = !!(selectedGasParams as LegacyGasFeeParams)?.gasPrice;
   const gasValue = isLegacyGasNetwork
     ? (selectedGasParams as LegacyGasFeeParams)?.gasPrice
     : (selectedGasParams as GasFeeParams)?.maxBaseFee;
@@ -48,8 +48,8 @@ const checkValidGas = (selectedGasParams: LegacyGasFeeParams | GasFeeParams, cha
   return isValidGas;
 };
 
-const checkGasReady = (txFee: LegacyGasFee | GasFee, selectedGasParams: LegacyGasFeeParams | GasFeeParams, chainId: ChainId) => {
-  const isLegacyGasNetwork = networkObjects[chainId].gas.gasType === 'legacy';
+const checkGasReady = (txFee: LegacyGasFee | GasFee, selectedGasParams: LegacyGasFeeParams | GasFeeParams) => {
+  const isLegacyGasNetwork = !!(selectedGasParams as LegacyGasFeeParams)?.gasPrice;
   const gasValue = isLegacyGasNetwork
     ? (selectedGasParams as LegacyGasFeeParams)?.gasPrice
     : (selectedGasParams as GasFeeParams)?.maxBaseFee;
@@ -120,14 +120,11 @@ export default function useGas({ nativeAsset }: { nativeAsset?: ParsedAddressAss
     [gasData?.selectedGasFee?.gasFee, gasData?.chainId, nativeAsset]
   );
 
-  const isValidGas = useMemo(
-    () => checkValidGas(gasData?.selectedGasFee?.gasFeeParams, gasData?.chainId),
-    [gasData?.selectedGasFee, gasData?.chainId]
-  );
+  const isValidGas = useMemo(() => checkValidGas(gasData?.selectedGasFee?.gasFeeParams), [gasData?.selectedGasFee]);
 
   const isGasReady = useMemo(
-    () => checkGasReady(gasData?.selectedGasFee?.gasFee, gasData?.selectedGasFee?.gasFeeParams, gasData?.chainId),
-    [gasData?.selectedGasFee?.gasFee, gasData?.selectedGasFee?.gasFeeParams, gasData?.chainId]
+    () => checkGasReady(gasData?.selectedGasFee?.gasFee, gasData?.selectedGasFee?.gasFeeParams),
+    [gasData?.selectedGasFee?.gasFee, gasData?.selectedGasFee?.gasFeeParams]
   );
 
   const startPollingGasFees = useCallback(

@@ -31,7 +31,6 @@ export const polygonNetworkObject: NetworkProperties = {
     speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT],
 
     // ?
-    gasType: 'legacy',
     roundGasDisplay: false,
 
     // this prob can just be blockTime
