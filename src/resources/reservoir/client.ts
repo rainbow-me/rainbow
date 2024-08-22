@@ -1,12 +1,7 @@
 import { createClient } from '@reservoir0x/reservoir-sdk';
 import { IS_PROD } from '@/env';
 import { RESERVOIR_API_KEY_PROD, RESERVOIR_API_KEY_DEV } from 'react-native-dotenv';
-import { baseNetworkObject } from '@/networks/base';
-import { arbitrumNetworkObject } from '@/networks/arbitrum';
-import { optimismNetworkObject } from '@/networks/optimism';
-import { zoraNetworkObject } from '@/networks/zora';
-import { polygonNetworkObject } from '@/networks/polygon';
-import { mainnetNetworkObject } from '@/networks/mainnet';
+import { ChainId, Network } from '@/networks/types';
 
 const RESERVOIR_API_KEY = IS_PROD ? RESERVOIR_API_KEY_PROD : RESERVOIR_API_KEY_DEV;
 
@@ -14,38 +9,38 @@ export function initializeReservoirClient() {
   createClient({
     chains: [
       {
-        name: mainnetNetworkObject.value,
-        id: mainnetNetworkObject.id,
+        name: Network.mainnet,
+        id: ChainId.mainnet,
         baseApiUrl: 'https://api.reservoir.tools',
         active: true,
       },
       {
-        name: polygonNetworkObject.value,
-        id: polygonNetworkObject.id,
+        name: Network.polygon,
+        id: ChainId.polygon,
         baseApiUrl: 'https://api-polygon.reservoir.tools',
         active: false,
       },
       {
-        name: zoraNetworkObject.value,
-        id: zoraNetworkObject.id,
+        name: Network.zora,
+        id: ChainId.zora,
         baseApiUrl: 'https://api-zora.reservoir.tools',
         active: false,
       },
       {
-        name: baseNetworkObject.value,
-        id: baseNetworkObject.id,
+        name: Network.base,
+        id: ChainId.base,
         baseApiUrl: 'https://api-base.reservoir.tools',
         active: false,
       },
       {
-        name: optimismNetworkObject.value,
-        id: optimismNetworkObject.id,
+        name: Network.optimism,
+        id: ChainId.optimism,
         baseApiUrl: 'https://api-optimism.reservoir.tools',
         active: false,
       },
       {
-        name: arbitrumNetworkObject.value,
-        id: arbitrumNetworkObject.id,
+        name: Network.arbitrum,
+        id: ChainId.arbitrum,
         baseApiUrl: 'https://api-arbitrum.reservoir.tools',
         active: false,
       },
