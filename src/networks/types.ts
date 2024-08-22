@@ -221,11 +221,6 @@ export interface NetworkProperties extends Chain {
 
   rpc: string;
 
-  gas: {
-    // for some networks gas is so cheap we dont want to round the gwei #
-    roundGasDisplay: boolean;
-  };
-
   // design tings
   colors: {
     light: string;

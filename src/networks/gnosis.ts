@@ -13,11 +13,6 @@ export const gnosisNetworkObject: NetworkProperties = {
 
   rpc: '',
 
-  gas: {
-    // ?
-    roundGasDisplay: true,
-  },
-
   // design tings
   colors: {
     light: '#FF4040',

@@ -17,11 +17,6 @@ export const arbitrumNetworkObject: NetworkProperties = {
 
   rpc: defaultChains[ChainId.arbitrum].rpcUrls.default.http[0],
 
-  gas: {
-    // ?
-    roundGasDisplay: true,
-  },
-
   // design tings
   colors: {
     light: '#2D374B',

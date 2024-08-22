@@ -17,11 +17,6 @@ export const optimismNetworkObject: NetworkProperties = {
 
   rpc: defaultChains[ChainId.optimism].rpcUrls.default.http[0],
 
-  gas: {
-    // ?
-    roundGasDisplay: true,
-  },
-
   // design tings
   colors: {
     light: '#FF4040',

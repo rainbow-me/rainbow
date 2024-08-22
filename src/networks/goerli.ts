@@ -16,10 +16,6 @@ export const goerliNetworkObject: NetworkProperties = {
 
   rpc: '',
 
-  gas: {
-    roundGasDisplay: true,
-  },
-
   // design tings
   colors: {
     light: '#f6c343',

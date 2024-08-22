@@ -20,11 +20,6 @@ export const blastNetworkObject: NetworkProperties = {
 
   rpc: defaultChains[ChainId.blast].rpcUrls.default.http[0],
 
-  gas: {
-    // ?
-    roundGasDisplay: true,
-  },
-
   // design tings
   colors: {
     light: '#25292E',

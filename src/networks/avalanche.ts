@@ -17,11 +17,6 @@ export const avalancheNetworkObject: NetworkProperties = {
 
   rpc: defaultChains[ChainId.avalanche].rpcUrls.default.http[0],
 
-  gas: {
-    // ?
-    roundGasDisplay: true,
-  },
-
   // design tings
   colors: {
     light: '#E84142',

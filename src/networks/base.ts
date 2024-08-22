@@ -17,11 +17,6 @@ export const baseNetworkObject: NetworkProperties = {
 
   rpc: defaultChains[ChainId.base].rpcUrls.default.http[0],
 
-  gas: {
-    // ?
-    roundGasDisplay: true,
-  },
-
   // design tings
   colors: {
     light: '#0052FF',

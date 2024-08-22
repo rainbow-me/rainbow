@@ -17,11 +17,6 @@ export const zoraNetworkObject: NetworkProperties = {
 
   rpc: defaultChains[ChainId.zora].rpcUrls.default.http[0],
 
-  gas: {
-    // ?
-    roundGasDisplay: true,
-  },
-
   // design tings
   colors: {
     light: '#2B5DF0',

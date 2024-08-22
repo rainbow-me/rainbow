@@ -20,10 +20,6 @@ export const mainnetNetworkObject: NetworkProperties = {
     ? 'http://127.0.0.1:8545'
     : defaultChains[ChainId.mainnet].rpcUrls.default.http[0],
 
-  gas: {
-    roundGasDisplay: true,
-  },
-
   // design tings
   colors: {
     light: '#25292E',

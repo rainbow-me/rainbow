@@ -19,11 +19,6 @@ export const degenNetworkObject: NetworkProperties = {
 
   rpc: defaultChains[ChainId.degen].rpcUrls.default.http[0],
 
-  gas: {
-    // ?
-    roundGasDisplay: true,
-  },
-
   // design tings
   colors: {
     light: '#A36EFD',

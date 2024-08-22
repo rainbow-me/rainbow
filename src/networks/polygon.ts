@@ -14,11 +14,6 @@ export const polygonNetworkObject: NetworkProperties = {
 
   rpc: defaultChains[ChainId.polygon].rpcUrls.default.http[0],
 
-  gas: {
-    // ?
-    roundGasDisplay: false,
-  },
-
   // design tings
   colors: {
     light: '#8247E5',

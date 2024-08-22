@@ -17,11 +17,6 @@ export const bscNetworkObject: NetworkProperties = {
 
   rpc: defaultChains[ChainId.bsc].rpcUrls.default.http[0],
 
-  gas: {
-    // ?
-    roundGasDisplay: false,
-  },
-
   // design tings
   colors: {
     light: '#8247E5',
