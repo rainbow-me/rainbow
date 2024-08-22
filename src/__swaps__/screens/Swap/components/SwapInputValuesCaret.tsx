@@ -68,14 +68,21 @@ export function SwapInputValuesCaret({ inputCaretType }: { inputCaretType: input
     };
   });
 
+  const caretSizeStyle =
+    inputCaretType === 'inputNativeValue' || inputCaretType === 'outputNativeValue' ? styles.nativeCaret : styles.caret;
+
   return (
     <Animated.View style={[styles.caretContainer, caretStyle]}>
-      <Box as={Animated.View} borderRadius={1} style={[styles.caret, assetCaretStyle]} />
+      <Box as={Animated.View} borderRadius={1} style={[caretSizeStyle, assetCaretStyle]} />
     </Animated.View>
   );
 }
 
 export const styles = StyleSheet.create({
+  nativeCaret: {
+    height: 19,
+    width: 1,
+  },
   caret: {
     height: 32,
     width: 2,
