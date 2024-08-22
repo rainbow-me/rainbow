@@ -32,10 +32,6 @@ export const polygonNetworkObject: NetworkProperties = {
     roundGasDisplay: false,
   },
 
-  swaps: {
-    defaultSlippage: 200,
-  },
-
   // design tings
   colors: {
     light: '#8247E5',

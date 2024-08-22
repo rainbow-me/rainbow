@@ -33,10 +33,6 @@ export const zoraNetworkObject: NetworkProperties = {
     OptimismTxFee: true,
   },
 
-  swaps: {
-    defaultSlippage: 200,
-  },
-
   // design tings
   colors: {
     light: '#2B5DF0',

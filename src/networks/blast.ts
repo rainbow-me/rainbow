@@ -34,10 +34,6 @@ export const blastNetworkObject: NetworkProperties = {
     roundGasDisplay: true,
   },
 
-  swaps: {
-    defaultSlippage: 200,
-  },
-
   // design tings
   colors: {
     light: '#25292E',

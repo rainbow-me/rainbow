@@ -33,10 +33,6 @@ export const baseNetworkObject: NetworkProperties = {
     OptimismTxFee: true,
   },
 
-  swaps: {
-    defaultSlippage: 200,
-  },
-
   // design tings
   colors: {
     light: '#0052FF',

@@ -34,10 +34,6 @@ export const degenNetworkObject: NetworkProperties = {
     roundGasDisplay: true,
   },
 
-  swaps: {
-    defaultSlippage: 200,
-  },
-
   // design tings
   colors: {
     light: '#A36EFD',

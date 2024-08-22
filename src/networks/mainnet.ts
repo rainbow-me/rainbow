@@ -35,10 +35,6 @@ export const mainnetNetworkObject: NetworkProperties = {
     roundGasDisplay: true,
   },
 
-  swaps: {
-    defaultSlippage: 100,
-  },
-
   // design tings
   colors: {
     light: '#25292E',

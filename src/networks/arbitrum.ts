@@ -32,10 +32,6 @@ export const arbitrumNetworkObject: NetworkProperties = {
     roundGasDisplay: true,
   },
 
-  swaps: {
-    defaultSlippage: 200,
-  },
-
   // design tings
   colors: {
     light: '#2D374B',

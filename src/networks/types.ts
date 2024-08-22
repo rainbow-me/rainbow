@@ -237,10 +237,6 @@ export interface NetworkProperties extends Chain {
     roundGasDisplay: boolean;
   };
 
-  swaps: {
-    defaultSlippage: number;
-  };
-
   // design tings
   colors: {
     light: string;

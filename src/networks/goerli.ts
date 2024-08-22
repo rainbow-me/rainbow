@@ -31,10 +31,6 @@ export const goerliNetworkObject: NetworkProperties = {
     roundGasDisplay: true,
   },
 
-  swaps: {
-    defaultSlippage: 100,
-  },
-
   // design tings
   colors: {
     light: '#f6c343',
