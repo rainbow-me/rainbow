@@ -8,7 +8,6 @@ import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { showActionSheetWithOptions } from '@/utils';
 import { chainNameForChainIdWithMainnetSubstitution } from '@/__swaps__/utils/chains';
 import { useAccountSettings } from '@/hooks';
-import { Address } from 'viem';
 
 interface DefaultButtonOptions {
   iconColor?: TextProps['color'];
@@ -52,7 +51,7 @@ export const ChainContextMenu = ({
     textWeight = 'heavy',
   } = defaultButtonOptions;
 
-  const balanceSortedChains = useUserAssetsStore(accountAddress as Address, state =>
+  const balanceSortedChains = useUserAssetsStore(accountAddress, state =>
     // eslint-disable-next-line no-nested-ternary
     chainsToDisplay ? chainsToDisplay : excludeChainsWithNoBalance ? state.getChainsWithBalance() : state.getBalanceSortedChainList()
   );

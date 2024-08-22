@@ -18,7 +18,6 @@ import React, { useCallback, useMemo } from 'react';
 import { GestureResponderEvent } from 'react-native';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import { SwapCoinIcon } from './SwapCoinIcon';
-import { Address } from 'viem';
 
 export const COIN_ROW_WITH_PADDING_HEIGHT = 56;
 
@@ -70,7 +69,7 @@ interface OutputCoinRowProps extends PartialAsset {
 type CoinRowProps = InputCoinRowProps | OutputCoinRowProps;
 
 export function CoinRow({ isFavorite, onPress, output, uniqueId, walletAddress, ...assetProps }: CoinRowProps) {
-  const inputAsset = useUserAssetsStore(walletAddress as Address, state => (output ? undefined : state.getUserAsset(uniqueId)));
+  const inputAsset = useUserAssetsStore(walletAddress, state => (output ? undefined : state.getUserAsset(uniqueId)));
   const outputAsset = output ? (assetProps as PartialAsset) : undefined;
 
   const asset = output ? outputAsset : inputAsset;
