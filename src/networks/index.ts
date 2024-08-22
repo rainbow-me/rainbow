@@ -46,20 +46,3 @@ export const networkObjects = {
   [ChainId.polygon]: polygonNetworkObject,
   [ChainId.zora]: zoraNetworkObject,
 };
-
-/**
- * Sorts Networks based on addresses assets
- */
-export function sortNetworks(): NetworkProperties[] {
-  const accountAddress = store.getState().settings.accountAddress;
-
-  // sorting based on # of tokens
-  const tokenSort = (network1: NetworkProperties, network2: NetworkProperties) => {
-    const count1 = ls.account.get([accountAddress, network1.value, 'totalTokens']) || 0;
-    const count2 = ls.account.get([accountAddress, network2.value, 'totalTokens']) || 0;
-
-    return count1 > count2 ? -1 : 1;
-  };
-
-  return Object.values(networkObjects).sort(tokenSort);
-}

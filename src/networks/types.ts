@@ -212,11 +212,5 @@ export const ChainNameDisplay = {
 } as const;
 
 export interface NetworkProperties extends chain.Chain {
-  // network related data
-  enabled: boolean;
-  name: string;
-  longName: string;
-  value: Network;
-
   rpc: string;
 }
