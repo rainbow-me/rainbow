@@ -172,7 +172,7 @@ const GasSpeedButton = ({
   const isL2 = useMemo(() => isL2Chain({ chainId }), [chainId]);
   const networkObject = networkObjects[chainId || ChainId.mainnet];
 
-  const isLegacyGasNetwork = !!selectedGasParams?.gasPrice;
+  const isLegacyGasNetwork = !selectedGasFee?.gasFee?.maxFee;
 
   const gasIsNotReady = useMemo(
     () => isNil(price) || isEmpty(gasFeeParamsBySpeed) || isEmpty(selectedGasFee?.gasFee),
@@ -352,7 +352,7 @@ const GasSpeedButton = ({
   }, [chainId, speeds]);
 
   const menuConfig = useMemo(() => {
-    const menuOptions = speedOptions.map(gasOption => {
+    const menuOptions = speedOptions?.map(gasOption => {
       if (IS_ANDROID) return gasOption;
 
       const totalGwei = add(gasFeeParamsBySpeed[gasOption]?.maxBaseFee?.gwei, gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei);
@@ -389,7 +389,7 @@ const GasSpeedButton = ({
     isL2,
   ]);
 
-  const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [speedOptions.length]);
+  const gasOptionsAvailable = useMemo(() => speedOptions?.length > 1, [speedOptions?.length]);
 
   const onDonePress = useCallback(() => {
     if (canGoBack) {

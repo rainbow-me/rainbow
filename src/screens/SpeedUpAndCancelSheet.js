@@ -394,6 +394,7 @@ export default function SpeedUpAndCancelSheet() {
   const marginTop = android ? deviceHeight - sheetHeight + (type === CANCEL_TX ? 290 : 340) : null;
 
   const { colors, isDarkMode } = useTheme();
+
   const speeds = useMemo(() => {
     const defaultSpeeds = [URGENT];
     if (!isL2) {

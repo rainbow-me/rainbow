@@ -148,12 +148,12 @@ export default function useGas({ nativeAsset }: { nativeAsset?: ParsedAddressAss
 
   const getTotalGasPrice = useCallback(() => {
     const txFee = gasData?.selectedGasFee?.gasFee;
-    const isLegacyGasNetwork = networkObjects[gasData?.chainId]?.gas.gasType === 'legacy';
+    const isLegacyGasNetwork = !!(txFee as LegacyGasFee)?.estimatedFee;
     const txFeeValue = isLegacyGasNetwork ? (txFee as LegacyGasFee)?.estimatedFee : (txFee as GasFee)?.maxFee;
 
     const txFeeAmount = fromWei(txFeeValue?.value?.amount);
     return txFeeAmount;
-  }, [gasData?.selectedGasFee?.gasFee, gasData?.chainId]);
+  }, [gasData?.selectedGasFee?.gasFee]);
 
   return {
     isGasReady,
