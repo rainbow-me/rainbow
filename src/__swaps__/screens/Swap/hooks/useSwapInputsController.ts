@@ -1,4 +1,11 @@
-import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet } from '@/__swaps__/safe-math/SafeMath';
+import {
+  divWorklet,
+  equalWorklet,
+  greaterThanWorklet,
+  isNumberStringWorklet,
+  mulWorklet,
+  toFixedWorklet,
+} from '@/__swaps__/safe-math/SafeMath';
 import { SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { ChainId } from '@/chains/types';
@@ -6,12 +13,18 @@ import { RequestNewQuoteParams, inputKeys, inputMethods, inputValuesType } from 
 import { valueBasedDecimalFormatter } from '@/__swaps__/utils/decimalFormatter';
 import { getInputValuesForSliderPositionWorklet, updateInputValuesAfterFlip } from '@/__swaps__/utils/flipAssets';
 import {
-  addSymbolToNativeDisplayWorklet,
   convertAmountToNativeDisplayWorklet,
   convertRawAmountToDecimalFormat,
   handleSignificantDecimalsWorklet,
 } from '@/__swaps__/utils/numbers';
-import { addCommasToNumber, buildQuoteParams, clamp, getDefaultSlippageWorklet, trimTrailingZeros } from '@/__swaps__/utils/swaps';
+import {
+  addCommasToNumber,
+  addSymbolToNativeDisplayWorklet,
+  buildQuoteParams,
+  clamp,
+  getDefaultSlippageWorklet,
+  trimTrailingZeros,
+} from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useAccountSettings } from '@/hooks';
@@ -253,7 +266,6 @@ export function useSwapInputsController({
       quoteFetchingInterval: ReturnType<typeof useAnimatedInterval>;
     }) => {
       'worklet';
-
       // Check whether the quote has been superseded by new user input so we don't introduce conflicting updates
       const isLastTypedInputStillValid = originalQuoteParams.lastTypedInput === lastTypedInput.value;
 
@@ -858,41 +870,6 @@ export function useSwapInputsController({
             runOnJS(debouncedFetchQuote)();
           }
         }
-        if (inputMethod.value === 'inputNativeValue' && !equalWorklet(current.values.inputNativeValue, previous.values.inputNativeValue)) {
-          // If the number in the input native field changes
-          lastTypedInput.value = 'inputNativeValue';
-          if (equalWorklet(current.values.inputNativeValue, 0)) {
-            // If the input native amount was set to 0
-            resetValuesToZeroWorklet({ updateSlider: true, inputKey: 'inputNativeValue' });
-          } else {
-            // If the input native amount was set to a non-zero value
-            if (!internalSelectedInputAsset.value) return;
-
-            // If the input price is zero
-            if (equalWorklet(inputNativePrice.value, 0)) return;
-
-            if (isQuoteStale.value !== 1) isQuoteStale.value = 1;
-            const inputAmount = divWorklet(current.values.inputNativeValue, inputNativePrice.value);
-
-            inputValues.modify(values => {
-              return {
-                ...values,
-                inputAmount,
-              };
-            });
-
-            const inputAssetBalance = internalSelectedInputAsset.value?.maxSwappableAmount || '0';
-
-            if (equalWorklet(inputAssetBalance, 0)) {
-              sliderXPosition.value = withSpring(0, snappySpringConfig);
-            } else {
-              const updatedSliderPosition = clamp(Number(divWorklet(inputAmount, inputAssetBalance)) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
-              sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
-            }
-
-            runOnJS(debouncedFetchQuote)();
-          }
-        }
         if (inputMethod.value === 'outputAmount' && !equalWorklet(current.values.outputAmount, previous.values.outputAmount)) {
           // If the number in the output field changes
           lastTypedInput.value = 'outputAmount';
@@ -911,6 +888,56 @@ export function useSwapInputsController({
                 outputNativeValue,
               };
             });
+
+            runOnJS(debouncedFetchQuote)();
+          }
+        }
+        const inputMethodValue = inputMethod.value;
+        const isNativeInputMethod = inputMethodValue === 'inputNativeValue';
+        const isNativeOutputMethod = inputMethodValue === 'outputNativeValue';
+        if (
+          (isNativeInputMethod || isNativeOutputMethod) &&
+          !equalWorklet(current.values[inputMethodValue], previous.values[inputMethodValue])
+        ) {
+          // If the number in the native field changes
+          lastTypedInput.value = inputMethodValue;
+          if (equalWorklet(current.values[inputMethodValue], 0)) {
+            // If the native amount was set to 0
+            resetValuesToZeroWorklet({ updateSlider: true, inputKey: inputMethodValue });
+          } else {
+            // If the native amount was set to a non-zero value
+            if (isNativeInputMethod && !internalSelectedInputAsset.value) return;
+            if (isNativeOutputMethod && !internalSelectedOutputAsset.value) return;
+
+            // If the asset price is zero
+            if (isNativeInputMethod && equalWorklet(inputNativePrice.value, 0)) return;
+            if (isNativeOutputMethod && equalWorklet(outputNativePrice.value, 0)) return;
+
+            if (isQuoteStale.value !== 1) isQuoteStale.value = 1;
+            const nativePrice = isNativeInputMethod ? inputNativePrice.value : outputNativePrice.value;
+            const decimalPlaces = isNativeInputMethod
+              ? internalSelectedInputAsset.value?.decimals
+              : internalSelectedOutputAsset.value?.decimals;
+            const amount = toFixedWorklet(divWorklet(current.values[inputMethodValue], nativePrice), decimalPlaces || 18);
+            const amountKey = isNativeInputMethod ? 'inputAmount' : 'outputAmount';
+
+            inputValues.modify(values => {
+              return {
+                ...values,
+                [amountKey]: amount,
+              };
+            });
+
+            if (isNativeInputMethod) {
+              const inputAssetBalance = internalSelectedInputAsset.value?.maxSwappableAmount || '0';
+
+              if (equalWorklet(inputAssetBalance, 0)) {
+                sliderXPosition.value = withSpring(0, snappySpringConfig);
+              } else {
+                const updatedSliderPosition = clamp(Number(divWorklet(amount, inputAssetBalance)) * SLIDER_WIDTH, 0, SLIDER_WIDTH);
+                sliderXPosition.value = withSpring(updatedSliderPosition, snappySpringConfig);
+              }
+            }
 
             runOnJS(debouncedFetchQuote)();
           }

@@ -308,20 +308,6 @@ export const convertBipsToPercentage = (value: BigNumberish, decimals = 2): stri
   return new BigNumber(value || 0).shiftedBy(-2).toFixed(decimals);
 };
 
-export const addSymbolToNativeDisplayWorklet = (value: number | string, nativeCurrency: keyof nativeCurrencyType): string => {
-  'worklet';
-
-  const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
-  const { symbol } = nativeSelected;
-  const valueNumber = Number(value);
-
-  const nativeValue = valueNumber.toLocaleString('en-US', {
-    useGrouping: true,
-  });
-
-  return `${symbol}${nativeValue}`;
-};
-
 /**
  * @desc convert from amount value to display formatted string
  */
