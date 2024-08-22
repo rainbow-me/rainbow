@@ -23,7 +23,6 @@ import Animated, { runOnUI, useAnimatedProps, useAnimatedStyle, withTiming } fro
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
 import { ChainSelection } from './ChainSelection';
 import { useAccountSettings } from '@/hooks';
-import { Address } from 'viem';
 
 export const BUY_LIST_HEADER_HEIGHT = 20 + 10 + 8; // paddingTop + height + paddingBottom
 
@@ -102,7 +101,7 @@ export const TokenToBuyList = () => {
         }
       })();
 
-      const userAsset = userAssetsStore.getState(accountAddress as Address).getUserAsset(token.uniqueId);
+      const userAsset = userAssetsStore.getState(accountAddress).getUserAsset(token.uniqueId);
       const parsedAsset = parseSearchAsset({
         assetWithPrice: undefined,
         searchAsset: token,

@@ -25,7 +25,6 @@ import { AddressOrEth, AssetType } from '@/__swaps__/types/assets';
 import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
-import { Address } from 'viem';
 import { ChainId } from '@/__swaps__/types/chains';
 
 const NOOP = () => null;
@@ -88,7 +87,7 @@ const AvailableNetworksv2 = ({
       if (swapsV2Enabled || swaps_v2) {
         const chainId = ethereumUtils.getChainIdFromNetwork(newAsset.network);
         const uniqueId = `${newAsset.address}_${chainId}`;
-        const userAsset = userAssetsStore.getState(accountAddress as Address).userAssets.get(uniqueId);
+        const userAsset = userAssetsStore.getState(accountAddress).userAssets.get(uniqueId);
 
         const parsedAsset = parseSearchAsset({
           assetWithPrice: {
@@ -118,7 +117,7 @@ const AvailableNetworksv2 = ({
         });
 
         const largestBalanceSameChainUserAsset = userAssetsStore
-          .getState(accountAddress as Address)
+          .getState(accountAddress)
           .getUserAssets()
           .find(userAsset => userAsset.chainId === chainId && userAsset.address !== newAsset.address);
         if (largestBalanceSameChainUserAsset) {

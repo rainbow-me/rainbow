@@ -46,7 +46,7 @@ export interface UserAssetsState {
   setUserAssets: (userAssets: Map<UniqueId, ParsedSearchAsset> | ParsedSearchAsset[]) => void;
 }
 
-export const createUserAssetsStore = (address: Address) =>
+export const createUserAssetsStore = (address: Address | string) =>
   createRainbowStore<UserAssetsState>((set, get) => ({
     chainBalances: new Map(),
     currentAbortController: new AbortController(),
@@ -256,7 +256,7 @@ export const createUserAssetsStore = (address: Address) =>
 type UserAssetsStoreType = ReturnType<typeof createUserAssetsStore>;
 
 interface StoreManagerState {
-  stores: Map<Address, UserAssetsStoreType>;
+  stores: Map<Address | string, UserAssetsStoreType>;
 }
 
 // NOTE: We are serializing Map as an Array<[UniqueId, ParsedSearchAsset]>
@@ -266,7 +266,7 @@ type UserAssetsStateWithTransforms = Omit<Partial<UserAssetsState>, 'chainBalanc
   userAssets: Array<[UniqueId, ParsedSearchAsset]>;
 };
 
-type StoreManagerStateWithTransforms = { stores: Array<[Address, UserAssetsStateWithTransforms]> };
+type StoreManagerStateWithTransforms = { stores: Array<[Address | string, UserAssetsStateWithTransforms]> };
 
 function serializeStoreManager(state: Partial<StoreManagerState>, version?: number) {
   try {
@@ -305,7 +305,7 @@ function deserializeStoreManager(serializedState: string) {
 
   const { state, version } = parsedState;
 
-  const stores = new Map<Address, UserAssetsStoreType>();
+  const stores = new Map<Address | string, UserAssetsStoreType>();
 
   state.stores.forEach(([address, transformedStore]) => {
     let chainBalances = new Map<ChainId, number>();
@@ -366,7 +366,7 @@ const storeManager = createRainbowStore<StoreManagerState>(
   }
 );
 
-function getOrCreateStore(address: Address): UserAssetsStoreType {
+function getOrCreateStore(address: Address | string): UserAssetsStoreType {
   const { stores } = storeManager.getState();
   let store = stores.get(address);
 
@@ -381,16 +381,16 @@ function getOrCreateStore(address: Address): UserAssetsStoreType {
 }
 
 export const userAssetsStore = {
-  getState: (address: Address) => getOrCreateStore(address).getState(),
-  setState: (address: Address, partial: Partial<UserAssetsState> | ((state: UserAssetsState) => Partial<UserAssetsState>)) =>
+  getState: (address: Address | string) => getOrCreateStore(address).getState(),
+  setState: (address: Address | string, partial: Partial<UserAssetsState> | ((state: UserAssetsState) => Partial<UserAssetsState>)) =>
     getOrCreateStore(address).setState(partial),
 };
 
-export function useUserAssetsStore<T>(address: Address, selector: (state: UserAssetsState) => T) {
+export function useUserAssetsStore<T>(address: Address | string, selector: (state: UserAssetsState) => T) {
   const store = getOrCreateStore(address);
   return useStore(store, useCallback(selector, [address]));
 }
 
-function getCurrentSearchCache(address: Address): Map<string, UniqueId[]> | undefined {
+function getCurrentSearchCache(address: Address | string): Map<string, UniqueId[]> | undefined {
   return getOrCreateStore(address).getState().searchCache;
 }

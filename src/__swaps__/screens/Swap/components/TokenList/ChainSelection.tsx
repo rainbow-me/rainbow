@@ -19,7 +19,6 @@ import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { showActionSheetWithOptions } from '@/utils';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
-import { Address } from 'viem';
 
 type ChainSelectionProps = {
   allText?: string;
@@ -33,7 +32,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
   const { selectedOutputChainId, setSelectedOutputChainId } = useSwapContext();
 
   // chains sorted by balance on output, chains without balance hidden on input
-  const { balanceSortedChainList, filter } = useUserAssetsStore(accountAddress as Address, state => ({
+  const { balanceSortedChainList, filter } = useUserAssetsStore(accountAddress, state => ({
     balanceSortedChainList: output ? state.getBalanceSortedChainList() : state.getChainsWithBalance(),
     filter: state.filter,
   }));
@@ -68,7 +67,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
         setSelectedOutputChainId(Number(actionKey) as ChainId);
       } else {
         inputListFilter.value = actionKey === 'all' ? 'all' : (Number(actionKey) as ChainId);
-        userAssetsStore.setState(accountAddress as Address, {
+        userAssetsStore.setState(accountAddress, {
           filter: actionKey === 'all' ? 'all' : (Number(actionKey) as ChainId),
         });
       }
@@ -195,7 +194,7 @@ const ChainButtonIcon = ({ output }: { output: boolean | undefined }) => {
   const { selectedOutputChainId: animatedSelectedOutputChainId } = useSwapContext();
   const { accountAddress } = useAccountSettings();
 
-  const userAssetsFilter = useUserAssetsStore(accountAddress as Address, state => (output ? undefined : state.filter));
+  const userAssetsFilter = useUserAssetsStore(accountAddress, state => (output ? undefined : state.filter));
   const selectedOutputChainId = useSharedValueState(animatedSelectedOutputChainId, { pauseSync: !output });
 
   return (

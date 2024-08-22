@@ -16,7 +16,6 @@ import Animated, { runOnUI, useAnimatedProps, useAnimatedStyle } from 'react-nat
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
 import { ChainSelection } from './ChainSelection';
 import { useAccountSettings } from '@/hooks';
-import { Address } from 'viem';
 
 export const SELL_LIST_HEADER_HEIGHT = 20 + 10 + 14; // paddingTop + height + paddingBottom
 
@@ -35,7 +34,7 @@ const TokenToSellListComponent = () => {
   const { inputProgress, internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, setAsset } = useSwapContext();
   const { accountAddress } = useAccountSettings();
 
-  const userAssetIds = useUserAssetsStore(accountAddress as Address, state => state.getFilteredUserAssetIds());
+  const userAssetIds = useUserAssetsStore(accountAddress, state => state.getFilteredUserAssetIds());
 
   const handleSelectToken = useCallback(
     (token: ParsedSearchAsset | null) => {
@@ -56,7 +55,7 @@ const TokenToSellListComponent = () => {
         asset: token,
       });
 
-      const { inputSearchQuery } = userAssetsStore.getState(accountAddress as Address);
+      const { inputSearchQuery } = userAssetsStore.getState(accountAddress);
 
       // track what search query the user had prior to selecting an asset
       if (inputSearchQuery.trim().length) {

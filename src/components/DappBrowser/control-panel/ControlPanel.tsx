@@ -40,7 +40,7 @@ import { getHighContrastTextColorWorklet } from '@/worklets/colors';
 import { TOP_INSET } from '../Dimensions';
 import { formatUrl } from '../utils';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { Address, toHex } from 'viem';
+import { toHex } from 'viem';
 import { RainbowNetworks } from '@/networks';
 import * as i18n from '@/languages';
 import { useDispatch } from 'react-redux';
@@ -452,7 +452,7 @@ const HomePanel = ({
 
     if (swaps_v2 || swapsV2Enabled) {
       swapsStore.setState({
-        inputAsset: userAssetsStore.getState(accountAddress as Address).getHighestValueEth(),
+        inputAsset: userAssetsStore.getState(accountAddress).getHighestValueEth(),
       });
       InteractionManager.runAfterInteractions(() => {
         navigate(Routes.SWAP);
@@ -480,7 +480,7 @@ const HomePanel = ({
       // TODO: We need to set something in swapsStore that deliniates between a swap and bridge
       // for now let's just treat it like a normal swap
       swapsStore.setState({
-        inputAsset: userAssetsStore.getState(accountAddress as Address).getHighestValueEth(),
+        inputAsset: userAssetsStore.getState(accountAddress).getHighestValueEth(),
       });
       InteractionManager.runAfterInteractions(() => {
         navigate(Routes.SWAP);

@@ -28,7 +28,6 @@ import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { SwapWarning } from './components/SwapWarning';
 import { clearCustomGasSettings } from './hooks/useCustomGas';
 import { SwapProvider, useSwapContext } from './providers/swap-provider';
-import { Address } from 'viem';
 import { useAccountSettings } from '@/hooks';
 
 /** README
@@ -109,7 +108,7 @@ const useCleanupOnUnmount = () => {
 
   useEffect(() => {
     return () => {
-      const highestValueEth = userAssetsStore.getState(accountAddress as Address).getHighestValueEth();
+      const highestValueEth = userAssetsStore.getState(accountAddress).getHighestValueEth();
       const parsedAsset = highestValueEth
         ? parseSearchAsset({
             assetWithPrice: undefined,
@@ -127,7 +126,7 @@ const useCleanupOnUnmount = () => {
         selectedOutputChainId: parsedAsset?.chainId ?? ChainId.mainnet,
       });
 
-      userAssetsStore.setState(accountAddress as Address, { filter: 'all', inputSearchQuery: '' });
+      userAssetsStore.setState(accountAddress, { filter: 'all', inputSearchQuery: '' });
 
       clearCustomGasSettings();
     };
@@ -139,10 +138,10 @@ const WalletAddressObserver = () => {
   const { setAsset } = useSwapContext();
 
   const setNewInputAsset = useCallback(() => {
-    const newHighestValueEth = userAssetsStore.getState(accountAddress as Address).getHighestValueEth();
+    const newHighestValueEth = userAssetsStore.getState(accountAddress).getHighestValueEth();
 
-    if (userAssetsStore.getState(accountAddress as Address).filter !== 'all') {
-      userAssetsStore.setState(accountAddress as Address, { filter: 'all' });
+    if (userAssetsStore.getState(accountAddress).filter !== 'all') {
+      userAssetsStore.setState(accountAddress, { filter: 'all' });
     }
 
     setAsset({
@@ -150,7 +149,7 @@ const WalletAddressObserver = () => {
       asset: newHighestValueEth,
     });
 
-    if (userAssetsStore.getState(accountAddress as Address).userAssets.size === 0) {
+    if (userAssetsStore.getState(accountAddress).userAssets.size === 0) {
       setAsset({
         type: SwapAssetType.outputAsset,
         asset: null,

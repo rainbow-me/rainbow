@@ -18,7 +18,6 @@ import Animated, {
 import { useDebouncedCallback } from 'use-debounce';
 import { SearchInputButton } from './SearchInputButton';
 import { useAccountSettings } from '@/hooks';
-import { Address } from 'viem';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 
@@ -42,7 +41,7 @@ export const SearchInput = ({
   const label = useForegroundColor('label');
   const labelQuaternary = useForegroundColor('labelQuaternary');
 
-  const onInputSearchQueryChange = useUserAssetsStore(accountAddress as Address, state => state.setSearchQuery);
+  const onInputSearchQueryChange = useUserAssetsStore(accountAddress, state => state.setSearchQuery);
 
   const onOutputSearchQueryChange = useDebouncedCallback((text: string) => useSwapsStore.setState({ outputSearchQuery: text }), 100, {
     leading: false,
@@ -111,8 +110,8 @@ export const SearchInput = ({
                           useSwapsStore.setState({ outputSearchQuery: '' });
                         }
                       } else {
-                        if (userAssetsStore.getState(accountAddress as Address).inputSearchQuery !== '') {
-                          userAssetsStore.getState(accountAddress as Address).setSearchQuery('');
+                        if (userAssetsStore.getState(accountAddress).inputSearchQuery !== '') {
+                          userAssetsStore.getState(accountAddress).setSearchQuery('');
                         }
                       }
                     }

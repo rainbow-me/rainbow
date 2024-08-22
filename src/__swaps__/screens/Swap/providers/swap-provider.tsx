@@ -598,8 +598,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         const assetToSet = insertUserAssetBalance
           ? {
               ...asset,
-              balance:
-                (asset && userAssetsStore.getState(accountAddress as Address).getUserAsset(asset.uniqueId)?.balance) || asset?.balance,
+              balance: (asset && userAssetsStore.getState(accountAddress).getUserAsset(asset.uniqueId)?.balance) || asset?.balance,
             }
           : asset;
 

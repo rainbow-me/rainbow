@@ -17,7 +17,6 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
 import { AddressOrEth, AssetType, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import exchangeModalTypes from '@/helpers/exchangeModalTypes';
-import { Address } from 'viem';
 
 type SwapActionButtonProps = {
   asset: RainbowToken;
@@ -55,7 +54,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
 
       const chainId = ethereumUtils.getChainIdFromNetwork(asset.network);
       const uniqueId = `${asset.address}_${chainId}`;
-      const userAsset = userAssetsStore.getState(accountAddress as Address).userAssets.get(uniqueId);
+      const userAsset = userAssetsStore.getState(accountAddress).userAssets.get(uniqueId);
 
       const parsedAsset = parseSearchAsset({
         assetWithPrice: {
@@ -89,9 +88,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
 
         const nativeAssetForChain = await ethereumUtils.getNativeAssetForNetwork(chainId);
         if (nativeAssetForChain && !isSameAsset({ address: nativeAssetForChain.address as AddressOrEth, chainId }, parsedAsset)) {
-          const userOutputAsset = userAssetsStore
-            .getState(accountAddress as Address)
-            .getUserAsset(`${nativeAssetForChain.address}_${chainId}`);
+          const userOutputAsset = userAssetsStore.getState(accountAddress).getUserAsset(`${nativeAssetForChain.address}_${chainId}`);
 
           if (userOutputAsset) {
             swapsStore.setState({ outputAsset: userOutputAsset });
@@ -129,7 +126,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
         }
       } else {
         const largestBalanceSameChainUserAsset = userAssetsStore
-          .getState(accountAddress as Address)
+          .getState(accountAddress)
           .getUserAssets()
           .find(userAsset => userAsset.chainId === chainId && userAsset.address !== asset.address);
         if (largestBalanceSameChainUserAsset) {
