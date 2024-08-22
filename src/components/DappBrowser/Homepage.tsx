@@ -41,6 +41,10 @@ import { getNameFromFormattedUrl } from './utils';
 import { useTrendingDApps } from '@/resources/metadata/trendingDapps';
 import { DApp } from '@/graphql/__generated__/metadata';
 import { DEFAULT_TAB_URL } from './constants';
+import { FeaturedResult } from '@/graphql/__generated__/arc';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { FEATURED_RESULTS, useExperimentalFlag } from '@/config';
+import { FeaturedResultStack } from '../FeaturedResult/FeaturedResultStack';
 
 const HORIZONTAL_PAGE_INSET = 24;
 const MAX_RECENTS_TO_DISPLAY = 6;
@@ -57,7 +61,7 @@ const NUM_CARDS = 2;
 const CARD_PADDING = 12;
 const CARD_HEIGHT = 137;
 const RAW_CARD_WIDTH = (DEVICE_WIDTH - HORIZONTAL_PAGE_INSET * 2 - (NUM_CARDS - 1) * CARD_PADDING) / NUM_CARDS;
-const CARD_WIDTH = IS_IOS ? RAW_CARD_WIDTH : Math.floor(RAW_CARD_WIDTH);
+export const CARD_WIDTH = IS_IOS ? RAW_CARD_WIDTH : Math.floor(RAW_CARD_WIDTH);
 
 export const Homepage = ({ tabId }: { tabId: string }) => {
   const { goToUrl } = useBrowserContext();
@@ -80,6 +84,25 @@ export const Homepage = ({ tabId }: { tabId: string }) => {
       </ScrollView>
     </View>
   );
+};
+
+const DappBrowserFeaturedResults = () => {
+  const { goToUrl } = useBrowserContext();
+  const { featured_results } = useRemoteConfig();
+  const featuredResultsEnabled = useExperimentalFlag(FEATURED_RESULTS) || featured_results;
+
+  const onNavigate = useCallback(
+    (href: string) => {
+      goToUrl(href);
+    },
+    [goToUrl]
+  );
+
+  if (!featuredResultsEnabled) {
+    return null;
+  }
+
+  return <FeaturedResultStack onNavigate={onNavigate} placementId="dapp_browser" Card={DappBrowserFeaturedResultsCard} />;
 };
 
 const Trending = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
@@ -109,6 +132,7 @@ const Trending = ({ goToUrl }: { goToUrl: (url: string) => void }) => {
         >
           <Inset space="24px">
             <Box flexDirection="row" gap={CARD_PADDING}>
+              <DappBrowserFeaturedResults />
               {data.dApps
                 .filter((dApp): dApp is DApp => dApp !== null)
                 .map((dApp, index) => (
@@ -472,6 +496,57 @@ const Card = memo(function Card({
         </ContextMenuButton>
       )}
     </Box>
+  );
+});
+
+export const DappBrowserFeaturedResultsCard = memo(function Card({
+  handlePress,
+  featuredResult,
+}: {
+  handlePress: () => void;
+  featuredResult: FeaturedResult;
+}) {
+  const { isDarkMode } = useColorMode();
+
+  return (
+    <ButtonPressAnimation onPress={handlePress} scaleTo={0.94}>
+      <Box
+        background="surfacePrimary"
+        borderRadius={24}
+        style={{
+          width: CARD_WIDTH,
+        }}
+      >
+        <Box
+          borderRadius={24}
+          height={{ custom: CARD_HEIGHT }}
+          justifyContent="space-between"
+          style={[styles.cardContainer, isDarkMode && styles.cardContainerDark]}
+          width={{ custom: CARD_WIDTH }}
+        >
+          <ImgixImage
+            enableFasterImage
+            size={CARD_WIDTH}
+            source={{ uri: featuredResult.imageUrl }}
+            style={{ height: CARD_HEIGHT, width: CARD_WIDTH }}
+          />
+        </Box>
+        {IS_IOS && (
+          <Box
+            borderRadius={24}
+            height="full"
+            position="absolute"
+            style={{
+              borderColor: isDarkMode ? opacity(globalColors.white100, 0.09) : opacity(globalColors.grey100, 0.08),
+              borderWidth: THICK_BORDER_WIDTH,
+              overflow: 'hidden',
+              pointerEvents: 'none',
+            }}
+            width="full"
+          />
+        )}
+      </Box>
+    </ButtonPressAnimation>
   );
 });
 

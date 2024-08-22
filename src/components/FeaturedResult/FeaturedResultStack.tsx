@@ -4,16 +4,16 @@ import { useFeaturedResults } from '@/resources/featuredResults/getFeaturedResul
 import { languageLocaleToCountry } from '@/utils/languageLocaleToCountry';
 import { getFeaturedResultsById } from '@/resources/featuredResults/_selectors/getFeaturedResultIds';
 import { useSharedValue } from 'react-native-reanimated';
-import { CardType } from '@/components/cards/GenericCard';
 import { FeaturedResultCard } from '@/components/FeaturedResult/FeaturedResultCard';
-import { deviceUtils } from '@/utils';
+import { FeaturedResult } from '@/graphql/__generated__/arc';
 
 export type FeaturedResultStackProps = {
+  onNavigate: (url: string) => void;
   placementId: string;
-  cardType: CardType;
+  Card: React.FC<{ handlePress: () => void; featuredResult: FeaturedResult }>;
 };
 
-export const FeaturedResultStack = ({ placementId, cardType }: FeaturedResultStackProps) => {
+export const FeaturedResultStack = ({ onNavigate, placementId, Card }: FeaturedResultStackProps) => {
   const { accountAddress, language } = useAccountSettings();
   const currentIndex = useSharedValue(0);
 
@@ -39,9 +39,10 @@ export const FeaturedResultStack = ({ placementId, cardType }: FeaturedResultSta
     <FeaturedResultCard
       walletAddress={accountAddress}
       country={country}
-      cardType={cardType}
       featuredResultId={featuredResultId}
       placementId={placementId}
+      onNavigate={onNavigate}
+      Card={Card}
     />
   );
 };
