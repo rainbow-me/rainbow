@@ -69,7 +69,7 @@ export function SwapInputValuesCaret({ inputCaretType }: { inputCaretType: input
   });
 
   const caretSizeStyle =
-    inputCaretType === 'inputNativeValue' || inputCaretType === 'outputNativeValue' ? styles.nativeCaret : styles.caret;
+    inputCaretType === 'inputNativeValue' || inputCaretType === 'outputNativeValue' ? styles.nativeCaret : styles.inputCaret;
 
   return (
     <Animated.View style={[styles.caretContainer, caretStyle]}>
@@ -81,9 +81,9 @@ export function SwapInputValuesCaret({ inputCaretType }: { inputCaretType: input
 export const styles = StyleSheet.create({
   nativeCaret: {
     height: 19,
-    width: 1,
+    width: 1.5,
   },
-  caret: {
+  inputCaret: {
     height: 32,
     width: 2,
   },
