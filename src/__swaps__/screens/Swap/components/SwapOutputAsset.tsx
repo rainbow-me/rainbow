@@ -193,14 +193,6 @@ export const styles = StyleSheet.create({
   backgroundOverlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.88)',
   },
-  caret: {
-    height: 32,
-    width: 2,
-  },
-  caretContainer: {
-    flexGrow: 100,
-    flexShrink: 0,
-  },
   flipButton: {
     borderRadius: 15,
     height: 30,
