@@ -28,7 +28,6 @@ export const goerliNetworkObject: NetworkProperties = {
   },
 
   gas: {
-    speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.CUSTOM],
     roundGasDisplay: true,
   },
 

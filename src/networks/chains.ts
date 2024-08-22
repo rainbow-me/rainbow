@@ -5,6 +5,7 @@ import backendNetworks from '../references/networks.json';
 import { BackendNetwork, BackendNetworkServices, chainHardhat, chainHardhatOptimism } from './types/chains';
 import { ChainId } from './types';
 import { transformBackendNetworksToChains } from './utils/backendNetworks';
+import { gasUtils } from '@/utils';
 
 const IS_TESTING = process.env.IS_TESTING === 'true';
 
@@ -52,6 +53,27 @@ export const chainsName: Record<number, string> = backendNetworks.networks.reduc
     return acc;
   },
   {} as Record<number, string>
+);
+
+const defaultGasSpeeds = (chainId: ChainId) => {
+  switch (chainId) {
+    case ChainId.bsc:
+    case ChainId.goerli:
+    case ChainId.polygon:
+      return [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT];
+    case ChainId.gnosis:
+      return [gasUtils.NORMAL];
+    default:
+      return [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT, gasUtils.CUSTOM];
+  }
+};
+
+export const chainsGasSpeeds: Record<ChainId, string[]> = backendNetworks.networks.reduce(
+  (acc, backendNetwork: BackendNetwork) => {
+    acc[parseInt(backendNetwork.id, 10)] = defaultGasSpeeds(parseInt(backendNetwork.id, 10));
+    return acc;
+  },
+  {} as Record<number, string[]>
 );
 
 const defaultPollingIntervals = (chainId: ChainId) => {

@@ -28,7 +28,6 @@ export const avalancheNetworkObject: NetworkProperties = {
   },
 
   gas: {
-    speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT, gasUtils.CUSTOM],
     // ?
     roundGasDisplay: true,
   },

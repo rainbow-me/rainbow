@@ -28,8 +28,6 @@ export const zoraNetworkObject: NetworkProperties = {
   },
 
   gas: {
-    speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT, gasUtils.CUSTOM],
-
     // ?
     roundGasDisplay: true,
     OptimismTxFee: true,
@@ -37,10 +35,6 @@ export const zoraNetworkObject: NetworkProperties = {
 
   swaps: {
     defaultSlippage: 200,
-  },
-
-  nfts: {
-    simplehashNetwork: 'zora',
   },
 
   // design tings

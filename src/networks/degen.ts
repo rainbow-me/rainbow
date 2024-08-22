@@ -30,7 +30,6 @@ export const degenNetworkObject: NetworkProperties = {
   },
 
   gas: {
-    speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT, gasUtils.CUSTOM],
     // ?
     roundGasDisplay: true,
   },

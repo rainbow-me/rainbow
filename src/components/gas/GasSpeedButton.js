@@ -29,6 +29,7 @@ import { ContextMenu } from '../context-menu';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 import { ChainId } from '@/networks/types';
 import { networkObjects } from '@/networks';
+import { chainsGasSpeeds } from '@/networks/chains';
 
 const { GAS_EMOJIS, GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST, getGasLabel } = gasUtils;
 
@@ -347,8 +348,8 @@ const GasSpeedButton = ({
 
   const speedOptions = useMemo(() => {
     if (speeds) return speeds;
-    return networkObject.gas.speeds;
-  }, [networkObject.gas.speeds, speeds]);
+    return chainsGasSpeeds[chainId];
+  }, [chainId, speeds]);
 
   const menuConfig = useMemo(() => {
     const menuOptions = speedOptions.map(gasOption => {

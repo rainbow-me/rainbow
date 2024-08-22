@@ -28,8 +28,6 @@ export const polygonNetworkObject: NetworkProperties = {
   },
 
   gas: {
-    speeds: [gasUtils.NORMAL, gasUtils.FAST, gasUtils.URGENT],
-
     // ?
     roundGasDisplay: false,
   },

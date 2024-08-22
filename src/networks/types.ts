@@ -231,7 +231,6 @@ export interface NetworkProperties extends Chain {
   };
 
   gas: {
-    speeds: string[];
     OptimismTxFee?: boolean;
 
     // for some networks gas is so cheap we dont want to round the gwei #
