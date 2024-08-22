@@ -308,13 +308,28 @@ export const convertBipsToPercentage = (value: BigNumberish, decimals = 2): stri
   return new BigNumber(value || 0).shiftedBy(-2).toFixed(decimals);
 };
 
+export const addSymbolToNativeDisplayWorklet = (value: number | string, nativeCurrency: keyof nativeCurrencyType): string => {
+  'worklet';
+
+  const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
+  const { symbol } = nativeSelected;
+  const valueNumber = Number(value);
+
+  const nativeValue = valueNumber.toLocaleString('en-US', {
+    useGrouping: true,
+  });
+
+  return `${symbol}${nativeValue}`;
+};
+
 /**
  * @desc convert from amount value to display formatted string
  */
 export const convertAmountToNativeDisplayWorklet = (
   value: number | string,
   nativeCurrency: keyof nativeCurrencyType,
-  useThreshold = false
+  useThreshold = false,
+  ignoreAlignment = false
 ) => {
   'worklet';
 
@@ -338,7 +353,7 @@ export const convertAmountToNativeDisplayWorklet = (
         maximumFractionDigits: decimals,
       });
 
-  const nativeDisplay = `${thresholdReached ? '<' : ''}${alignment === 'left' ? symbol : ''}${nativeValue}${alignment === 'right' ? symbol : ''}`;
+  const nativeDisplay = `${thresholdReached ? '<' : ''}${alignment === 'left' || ignoreAlignment ? symbol : ''}${nativeValue}${!ignoreAlignment && alignment === 'right' ? symbol : ''}`;
 
   return nativeDisplay;
 };

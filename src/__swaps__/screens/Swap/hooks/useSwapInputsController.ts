@@ -6,6 +6,7 @@ import { RequestNewQuoteParams, inputKeys, inputMethods, inputValuesType } from 
 import { valueBasedDecimalFormatter } from '@/__swaps__/utils/decimalFormatter';
 import { getInputValuesForSliderPositionWorklet, updateInputValuesAfterFlip } from '@/__swaps__/utils/flipAssets';
 import {
+  addSymbolToNativeDisplayWorklet,
   convertAmountToNativeDisplayWorklet,
   convertRawAmountToDecimalFormat,
   handleSignificantDecimalsWorklet,
@@ -121,16 +122,19 @@ export function useSwapInputsController({
   });
 
   const formattedInputNativeValue = useDerivedValue(() => {
+    if (inputMethod.value === 'inputNativeValue') {
+      return addSymbolToNativeDisplayWorklet(inputValues.value.inputNativeValue, currentCurrency);
+    }
     if (
       (inputMethod.value === 'slider' && percentageToSwap.value === 0) ||
       !inputValues.value.inputNativeValue ||
       !isNumberStringWorklet(inputValues.value.inputNativeValue.toString()) ||
       equalWorklet(inputValues.value.inputNativeValue, 0)
     ) {
-      return convertAmountToNativeDisplayWorklet(0, currentCurrency);
+      return convertAmountToNativeDisplayWorklet(0, currentCurrency, false, true);
     }
 
-    return convertAmountToNativeDisplayWorklet(inputValues.value.inputNativeValue, currentCurrency);
+    return convertAmountToNativeDisplayWorklet(inputValues.value.inputNativeValue, currentCurrency, false, true);
   });
 
   const formattedOutputAmount = useDerivedValue(() => {
@@ -154,16 +158,19 @@ export function useSwapInputsController({
   });
 
   const formattedOutputNativeValue = useDerivedValue(() => {
+    if (inputMethod.value === 'outputNativeValue') {
+      return addSymbolToNativeDisplayWorklet(inputValues.value.outputNativeValue, currentCurrency);
+    }
     if (
       (inputMethod.value === 'slider' && percentageToSwap.value === 0) ||
       !inputValues.value.outputNativeValue ||
       !isNumberStringWorklet(inputValues.value.outputNativeValue.toString()) ||
       equalWorklet(inputValues.value.outputNativeValue, 0)
     ) {
-      return convertAmountToNativeDisplayWorklet(0, currentCurrency);
+      return convertAmountToNativeDisplayWorklet(0, currentCurrency, false, true);
     }
 
-    return convertAmountToNativeDisplayWorklet(inputValues.value.outputNativeValue, currentCurrency);
+    return convertAmountToNativeDisplayWorklet(inputValues.value.outputNativeValue, currentCurrency, false, true);
   });
 
   const updateNativePriceForAsset = useCallback(
