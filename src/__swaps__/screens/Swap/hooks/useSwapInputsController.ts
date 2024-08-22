@@ -226,7 +226,7 @@ export function useSwapInputsController({
       }
 
       // NOTE: if we encounter a quote error, let's make sure to update the outputAmount and inputAmount to 0 accordingly
-      if (lastTypedInput.value === 'inputAmount') {
+      if (lastTypedInput.value === 'inputAmount' || lastTypedInput.value === 'inputNativeValue') {
         inputValues.modify(prev => {
           return {
             ...prev,
@@ -234,7 +234,7 @@ export function useSwapInputsController({
             outputNativeValue: 0,
           };
         });
-      } else if (lastTypedInput.value === 'outputAmount') {
+      } else if (lastTypedInput.value === 'outputAmount' || lastTypedInput.value === 'outputNativeValue') {
         inputValues.modify(prev => {
           return {
             ...prev,
@@ -278,7 +278,9 @@ export function useSwapInputsController({
       const isInputAmountStillValid = originalQuoteParams.inputAmount === inputValues.value.inputAmount;
       const isOutputAmountStillValid = originalQuoteParams.outputAmount === inputValues.value.outputAmount;
       const areInputAmountsStillValid =
-        originalQuoteParams.lastTypedInput === 'inputAmount' ? isInputAmountStillValid : isOutputAmountStillValid;
+        originalQuoteParams.lastTypedInput === 'inputAmount' || originalQuoteParams.lastTypedInput === 'inputNativeValue'
+          ? isInputAmountStillValid
+          : isOutputAmountStillValid;
 
       // Set prices first regardless of the quote status, as long as the same assets are still selected
       if (inputPrice && isInputUniqueIdStillValid) {
@@ -495,7 +497,7 @@ export function useSwapInputsController({
       }
 
       const quotedInputAmount =
-        lastTypedInputParam === 'outputAmount'
+        lastTypedInputParam === 'outputAmount' || lastTypedInputParam === 'outputNativeValue'
           ? Number(
               convertRawAmountToDecimalFormat(
                 quoteResponse.sellAmount.toString(),
@@ -505,7 +507,7 @@ export function useSwapInputsController({
           : undefined;
 
       const quotedOutputAmount =
-        lastTypedInputParam === 'inputAmount'
+        lastTypedInputParam === 'inputAmount' || lastTypedInputParam === 'inputNativeValue'
           ? Number(
               convertRawAmountToDecimalFormat(
                 quoteResponse.buyAmountMinusFees.toString(),
