@@ -23,6 +23,9 @@ import {
   tapByText,
   delayTime,
   swipeUntilVisible,
+  tapAndLongPressByText,
+  tapAndLongPress,
+  swipe,
 } from './helpers';
 
 import { expect } from '@jest/globals';
@@ -61,39 +64,31 @@ describe('Swap Sheet Interaction Flow', () => {
     await tap('swap-button');
     await delayTime('long');
 
-    await swipeUntilVisible('token-to-buy-dai-1', 'token-to-buy-list', 'up');
+    await swipeUntilVisible('token-to-buy-dai-1', 'token-to-buy-list', 'up', 100);
+    await swipe('token-to-buy-list', 'up', 'slow', 0.1);
 
     await tap('token-to-buy-dai-1');
+    await delayTime('medium');
     const swapInput = await fetchElementAttributes('swap-asset-input');
 
-    // expect inputAsset === .5 * eth balance
     expect(swapInput.label).toContain('ETH');
     expect(swapInput.label).toContain('10');
   });
 
   it('Should be able to go to review and execute a swap', async () => {
-    await tapByText('Review');
-    const reviewActionElements = await fetchElementAttributes('swap-action-button');
-    console.log('reviewActionElements: ', reviewActionElements);
-    expect(reviewActionElements.elements[0].label).toContain('ETH');
-    expect(reviewActionElements.elements[1].label).toContain('DAI');
-    expect(reviewActionElements.elements[2].label).toContain('􀎽 Hold to Swap');
+    await tap('swap-bottom-action-button');
+    const inputAssetActionButton = await fetchElementAttributes('swap-input-asset-action-button');
+    const outputAssetActionButton = await fetchElementAttributes('swap-output-asset-action-button');
+    const holdToSwapButton = await fetchElementAttributes('swap-bottom-action-button');
 
-    /*
-     *
-     * Everything from this point fails. Un-comment out the following line to see behavior.
-     * Currently some spots have chainId 1 and chainId 1337 for various things. I suspect
-     * there is some issue with one of these things. Log the variables in getNonceAndPerformSwap
-     * to see the behavior.
-     *
-     * To run this test:
-     *
-     * yarn clean:ios && yarn fast && yarn start:clean
-     * yarn detox:ios:build && yarn detox test -c ios.sim.debug 8_swaps.spec.ts
-     *
-     */
+    expect(inputAssetActionButton.label).toBe('ETH 􀆏');
+    expect(outputAssetActionButton.label).toBe('DAI 􀆏');
+    expect(holdToSwapButton.label).toBe('􀎽 Hold to Swap');
 
-    // await tapByText('Tap to Swap');
+    await tapAndLongPress('swap-bottom-action-button', 1500);
+
+    // TODO: This doesn't work so need to figure this out eventually...
+    // await checkIfVisible('profile-screen');
   });
 
   it.skip('Should be able to verify swap is happening', async () => {

@@ -48,7 +48,6 @@ export async function importWalletFlow(customSeed?: string) {
     await authenticatePin('1234');
   }
   await device.enableSynchronization();
-  await delayTime('very-long');
   await checkIfVisible('wallet-screen');
 }
 
@@ -199,17 +198,17 @@ export async function clearField(elementId: string | RegExp) {
   }
 }
 
-export async function tapAndLongPress(elementId: string | RegExp) {
+export async function tapAndLongPress(elementId: string | RegExp, duration?: number) {
   try {
-    return await element(by.id(elementId)).longPress();
+    return await element(by.id(elementId)).longPress(duration);
   } catch (error) {
     throw new Error(`Error long-pressing element by id "${elementId}": ${error}`);
   }
 }
 
-export async function tapAndLongPressByText(text: string | RegExp) {
+export async function tapAndLongPressByText(text: string | RegExp, duration?: number) {
   try {
-    return await element(by.text(text)).longPress();
+    return await element(by.text(text)).longPress(duration);
   } catch (error) {
     throw new Error(`Error long-pressing element by text "${text}": ${error}`);
   }
@@ -274,18 +273,28 @@ export async function scrollTo(scrollviewId: string | RegExp, edge: Direction) {
   }
 }
 
-export async function swipeUntilVisible(elementId: string | RegExp, scrollViewId: string, direction: Direction) {
+export async function swipeUntilVisible(
+  elementId: string | RegExp,
+  scrollViewId: string,
+  direction: Direction,
+  percentageVisible?: number
+) {
   let stop = false;
-  console.log('stop: ', stop);
+
+  console.log('starting');
 
   while (!stop) {
     try {
-      await waitFor(element(by.id(elementId)))
-        .toBeVisible()
-        .withTimeout(500);
+      console.log(`Trying to find element: ${elementId}`);
+      await checkIfVisible(elementId, 500);
+      // await waitFor(element(by.id(elementId)))
+      //   .toBeVisible(percentageVisible)
+      //   .withTimeout(500);
+
+      console.log('Element is visible, stopping');
       stop = true;
-      console.log('stop: ', stop);
-    } catch {
+    } catch (e) {
+      console.log(`Element not visible, swiping ${direction}`);
       await swipe(scrollViewId, direction, 'slow', 0.2);
     }
   }

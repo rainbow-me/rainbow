@@ -37,6 +37,7 @@ function SwapInputActionButton() {
 
   return (
     <SwapActionButton
+      testID="swap-input-asset-action-button"
       asset={internalSelectedInputAsset}
       disableShadow={isDarkMode}
       hugContent

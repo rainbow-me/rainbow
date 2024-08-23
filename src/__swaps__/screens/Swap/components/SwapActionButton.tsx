@@ -228,6 +228,7 @@ export const SwapActionButton = ({
   scaleTo,
   style,
   disabled,
+  testID,
   ...props
 }: {
   asset: DerivedValue<ExtendedAnimatedAssetWithColors | null>;
@@ -251,6 +252,7 @@ export const SwapActionButton = ({
   style?: ViewStyle;
   disabled?: DerivedValue<boolean | undefined>;
   opacity?: DerivedValue<number | undefined>;
+  testID?: string;
 }) => {
   const disabledWrapper = useAnimatedStyle(() => {
     return {
@@ -271,7 +273,7 @@ export const SwapActionButton = ({
         style={[hugContent && feedActionButtonStyles.buttonWrapper, style]}
       >
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-        <SwapButton {...props} disabled={disabled} testID={'swap-action-button'}>
+        <SwapButton {...props} disabled={disabled} testID={testID}>
           {holdProgress && <HoldProgress holdProgress={holdProgress} />}
         </SwapButton>
       </GestureHandlerButton>
