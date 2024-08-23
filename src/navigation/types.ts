@@ -72,4 +72,7 @@ export type RootStackParamList = {
     onSuccess: () => Promise<void>;
     onFailure: () => Promise<void>;
   };
+  [Routes.SWAP]: {
+    action?: 'open_swap_settings';
+  };
 };
