@@ -41,22 +41,21 @@ export const filterPositionsData = (
 };
 
 export function parseAsset({ address, asset }: { address: string; asset: AddysAsset }): ParsedAsset {
-  const chainName = asset?.network;
-  const network = chainName;
-  const chainId = ethereumUtils.getChainIdFromNetwork(chainName);
+  const network = asset?.network;
+  const chainId = ethereumUtils.getChainIdFromNetwork(network);
   const mainnetAddress = asset?.networks?.[MAINNET_CHAIN_ID]?.address;
-  const uniqueId = getUniqueId(address, network);
+  const uniqueId = getUniqueId(address, chainId);
 
   const parsedAsset = {
     address,
     color: asset?.colors?.primary,
     colors: asset.colors,
     chainId,
-    chainName,
+    chainName: network,
     decimals: asset?.decimals,
     id: address,
     icon_url: asset?.icon_url,
-    isNativeAsset: isNativeAsset(address, chainName),
+    isNativeAsset: isNativeAsset(address, chainId),
     name: asset?.name || lang.t('account.unknown_token'),
     mainnet_address: mainnetAddress,
     mainnetAddress,

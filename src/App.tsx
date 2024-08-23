@@ -79,17 +79,17 @@ function App({ walletReady }: AppProps) {
     const initialUrl = await Linking.getInitialURL();
 
     branchListenerRef.current = await branchListener(url => {
-      logger.debug(`Branch: listener called`, {}, logger.DebugContext.deeplinks);
+      logger.debug(`[App]: Branch: listener called`, {}, logger.DebugContext.deeplinks);
       try {
         handleDeeplink(url, initialRoute);
       } catch (error) {
         if (error instanceof Error) {
-          logger.error(new RainbowError('Error opening deeplink'), {
+          logger.error(new RainbowError(`[App]: Error opening deeplink`), {
             message: error.message,
             url,
           });
         } else {
-          logger.error(new RainbowError('Error opening deeplink'), {
+          logger.error(new RainbowError(`[App]: Error opening deeplink`), {
             message: 'Unknown error',
             url,
           });
@@ -98,7 +98,7 @@ function App({ walletReady }: AppProps) {
     });
 
     if (initialUrl) {
-      logger.debug(`App: has initial URL, opening with Branch`, { initialUrl });
+      logger.debug(`[App]: has initial URL, opening with Branch`, { initialUrl });
       branch.openURL(initialUrl);
     }
   }, [initialRoute]);
@@ -140,7 +140,7 @@ function App({ walletReady }: AppProps) {
 
   useEffect(() => {
     if (!__DEV__ && isTestFlight) {
-      logger.info(`Test flight usage - ${isTestFlight}`);
+      logger.debug(`[App]: Test flight usage - ${isTestFlight}`);
     }
     identifyFlow();
     eventSubscription.current = AppState.addEventListener('change', handleAppStateChange);
@@ -158,11 +158,11 @@ function App({ walletReady }: AppProps) {
       eventSubscription.current?.remove();
       branchListenerRef.current?.();
     };
-  }, [handleAppStateChange, identifyFlow, setupDeeplinking]);
+  }, []);
 
   useEffect(() => {
     if (walletReady) {
-      logger.info('✅ Wallet ready!');
+      logger.debug(`[App]: ✅ Wallet ready!`);
       runWalletBackupStatusChecks();
     }
   }, [walletReady]);
@@ -249,7 +249,7 @@ function Root() {
        */
       if (deviceIdWasJustCreated && !isReturningUser) {
         // on very first open, set some default data and fire event
-        logger.info(`User opened application for the first time`);
+        logger.debug(`[App]: User opened application for the first time`);
 
         const { width: screenWidth, height: screenHeight, scale: screenScale } = Dimensions.get('screen');
 
@@ -271,13 +271,17 @@ function Root() {
 
     initializeApplication()
       .then(() => {
-        logger.debug(`Application initialized with Sentry and analytics`);
+        logger.debug(`[App]: Application initialized with Sentry and analytics`);
 
         // init complete, load the rest of the app
         setInitializing(false);
       })
-      .catch(() => {
-        logger.error(new RainbowError(`initializeApplication failed`));
+      .catch(error => {
+        logger.error(new RainbowError(`[App]: initializeApplication failed`), {
+          data: {
+            error,
+          },
+        });
 
         // for failure, continue to rest of the app for now
         setInitializing(false);

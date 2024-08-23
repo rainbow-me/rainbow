@@ -53,10 +53,10 @@ export const runWalletBackupStatusChecks = () => {
 
   if (!rainbowWalletsNotBackedUp.length) return;
 
-  logger.debug('there is a rainbow wallet not backed up');
+  logger.debug('[walletReadyEvents]: there is a rainbow wallet not backed up');
 
   const hasSelectedWallet = rainbowWalletsNotBackedUp.find(notBackedUpWallet => notBackedUpWallet.id === selected!.id);
-  logger.debug('rainbow wallet not backed up that is selected?', {
+  logger.debug('[walletReadyEvents]: rainbow wallet not backed up that is selected?', {
     hasSelectedWallet,
   });
 
@@ -70,7 +70,7 @@ export const runWalletBackupStatusChecks = () => {
     }
 
     setTimeout(() => {
-      logger.debug(`showing ${stepType} backup sheet for selected wallet`);
+      logger.debug(`[walletReadyEvents]: showing ${stepType} backup sheet for selected wallet`);
       triggerOnSwipeLayout(() =>
         Navigation.handleAction(Routes.BACKUP_SHEET, {
           step: stepType,
@@ -99,11 +99,11 @@ export const runFeatureUnlockChecks = async (): Promise<boolean> => {
     }
   });
 
-  logger.debug('WALLETS TO CHECK', { walletsToCheck });
+  logger.debug('[walletReadyEvents]: WALLETS TO CHECK', { walletsToCheck });
 
   if (!walletsToCheck.length) return false;
 
-  logger.debug('Feature Unlocks: Running Checks');
+  logger.debug('[walletReadyEvents]: Feature Unlocks: Running Checks');
 
   // short circuits once the first feature is unlocked
   for (const featureUnlockCheck of featureUnlockChecks) {

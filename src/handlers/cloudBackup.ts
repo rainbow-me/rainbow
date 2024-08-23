@@ -115,16 +115,14 @@ export async function encryptAndSaveDataToCloud(data: any, password: any, filena
     );
 
     if (!exists) {
-      logger.info('Backup doesnt exist after completion');
       const error = new Error(CLOUD_BACKUP_ERRORS.INTEGRITY_CHECK_FAILED);
-      logger.error(new RainbowError(error.message));
       throw error;
     }
 
     await RNFS.unlink(path);
     return filename;
   } catch (e: any) {
-    logger.error(new RainbowError('Error during encryptAndSaveDataToCloud'), {
+    logger.error(new RainbowError('[cloudBackup]: Error during encryptAndSaveDataToCloud'), {
       message: e.message,
     });
     throw new Error(CLOUD_BACKUP_ERRORS.GENERAL_ERROR);
@@ -173,7 +171,7 @@ export async function getDataFromCloud(backupPassword: any, filename: string | n
     }
 
     if (!document) {
-      logger.error(new RainbowError('No backup found with that name!'), {
+      logger.error(new RainbowError('[cloudBackup]: No backup found with that name!'), {
         filename,
       });
       const error = new Error(CLOUD_BACKUP_ERRORS.SPECIFIC_BACKUP_NOT_FOUND);
@@ -186,19 +184,19 @@ export async function getDataFromCloud(backupPassword: any, filename: string | n
   const encryptedData = ios ? await getICloudDocument(filename) : await getGoogleDriveDocument(document.id);
 
   if (encryptedData) {
-    logger.info('Got cloud document ', { filename });
+    logger.debug(`[cloudBackup]: Got cloud document ${filename}`);
     const backedUpDataStringified = await encryptor.decrypt(backupPassword, encryptedData);
     if (backedUpDataStringified) {
       const backedUpData = JSON.parse(backedUpDataStringified);
       return backedUpData;
     } else {
-      logger.error(new RainbowError('We couldnt decrypt the data'));
+      logger.error(new RainbowError('[cloudBackup]: We couldnt decrypt the data'));
       const error = new Error(CLOUD_BACKUP_ERRORS.ERROR_DECRYPTING_DATA);
       throw error;
     }
   }
 
-  logger.error(new RainbowError('We couldnt get the encrypted data'));
+  logger.error(new RainbowError('[cloudBackup]: We couldnt get the encrypted data'));
   const error = new Error(CLOUD_BACKUP_ERRORS.ERROR_GETTING_ENCRYPTED_DATA);
   throw error;
 }

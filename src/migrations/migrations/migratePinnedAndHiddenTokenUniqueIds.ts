@@ -2,7 +2,6 @@ import { BooleanMap } from '@/hooks/useCoinListEditOptions';
 import { Migration, MigrationName } from '@/migrations/types';
 import { loadAddress } from '@/model/wallet';
 import { Network } from '@/networks/types';
-import { getUniqueId } from '@/utils/ethereumUtils';
 import { MMKV } from 'react-native-mmkv';
 
 const mmkv = new MMKV();
@@ -20,7 +19,7 @@ export function migratePinnedAndHiddenTokenUniqueIds(): Migration {
       const pinnedCoinsKeys = Object.keys(pinnedCoinsString ? JSON.parse(pinnedCoinsString) : {});
       const newHiddenCoins = hiddenCoinsKeys.reduce((acc, curr) => {
         if (!curr.includes('_')) {
-          acc[getUniqueId(curr, Network.mainnet)] = true;
+          acc[`${curr}_${Network.mainnet}`] = true;
           return acc;
         }
         acc[curr] = true;
@@ -29,7 +28,7 @@ export function migratePinnedAndHiddenTokenUniqueIds(): Migration {
 
       const newPinnedCoins = pinnedCoinsKeys.reduce((acc, curr) => {
         if (!curr.includes('_')) {
-          acc[getUniqueId(curr, Network.mainnet)] = true;
+          acc[`${curr}_${Network.mainnet}`] = true;
           return acc;
         }
         acc[curr] = true;

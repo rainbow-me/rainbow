@@ -80,7 +80,7 @@ const NetworkSwitcherv2 = ({
                     {network === Network.mainnet ? (
                       <EthCoinIcon size={20} />
                     ) : (
-                      <ChainBadge network={network} position="relative" size="small" />
+                      <ChainBadge chainId={chainId} position="relative" size="small" />
                     )}
                     <Bleed top={{ custom: android ? 2 : 0 }}>
                       <Text

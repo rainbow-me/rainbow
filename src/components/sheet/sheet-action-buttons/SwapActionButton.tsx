@@ -85,7 +85,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
       if (inputType === assetInputTypes.in) {
         swapsStore.setState({ inputAsset: userAsset || parsedAsset });
 
-        const nativeAssetForChain = await ethereumUtils.getNativeAssetForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
+        const nativeAssetForChain = await ethereumUtils.getNativeAssetForNetwork(chainId);
         if (nativeAssetForChain && !isSameAsset({ address: nativeAssetForChain.address as AddressOrEth, chainId }, parsedAsset)) {
           const userOutputAsset = userAssetsStore.getState().getUserAsset(`${nativeAssetForChain.address}_${chainId}`);
 

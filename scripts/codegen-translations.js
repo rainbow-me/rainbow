@@ -97,7 +97,7 @@ type ValidScope =${validTagsAsArrays.map(generateTypeForTag).join('')};
  * keys.
  */
 function pushNestedKeysAsArrays(keysArray, object, prefixArray) {
-  for (let key in object) {
+  for (const key in object) {
     const keyRepresentation = prefixArray.concat([key]);
     keysArray.push(keyRepresentation);
 

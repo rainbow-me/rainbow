@@ -164,11 +164,11 @@ export const DEFAULT_CONFIG: RainbowConfig = {
   points_enabled: true,
   points_fully_enabled: true,
   rpc_proxy_enabled: true,
-  remote_cards_enabled: false,
+  remote_cards_enabled: true,
   remote_promo_enabled: false,
   points_notifications_toggle: true,
   dapp_browser: true,
-  swaps_v2: false,
+  swaps_v2: true,
   idfa_check_enabled: true,
   rewards_enabled: true,
 
@@ -179,7 +179,7 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
   const config: RainbowConfig = { ...DEFAULT_CONFIG };
   try {
     await remoteConfig().fetchAndActivate();
-    logger.debug('Remote config fetched successfully');
+    logger.debug(`[remoteConfig]: Remote config fetched successfully`);
     const parameters = remoteConfig().getAll();
     Object.entries(parameters).forEach($ => {
       const [key, entry] = $;
@@ -236,12 +236,12 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
     });
     return config;
   } catch (e) {
-    logger.error(new RainbowError('Failed to fetch remote config'), {
+    logger.error(new RainbowError(`[remoteConfig]: Failed to fetch remote config`), {
       error: e,
     });
     throw e;
   } finally {
-    logger.debug(`Current remote config:\n${JSON.stringify(config, null, 2)}`);
+    logger.debug(`[remoteConfig]: Current remote config:\n${JSON.stringify(config, null, 2)}`);
     const currentNetwork = await getNetwork();
     web3SetHttpProvider(currentNetwork);
     saveNetwork(currentNetwork);

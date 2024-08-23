@@ -189,7 +189,7 @@ const processSubscriptionQueueItem = async (queueItem: WalletNotificationSetting
       await unsubscribeWalletFromAllNotificationTopics(newSettings.oldType, NOTIFICATIONS_DEFAULT_CHAIN_ID, newSettings.address);
       newSettings.oldType = undefined;
     } catch (e) {
-      logger.error(new RainbowError('Failed to unsubscribe old watcher mode notification topics'));
+      logger.error(new RainbowError('[notifications]: Failed to unsubscribe old watcher mode notification topics'));
     }
   }
   if (newSettings.type === WalletNotificationRelationship.OWNER && !newSettings.successfullyFinishedInitialSubscription) {
@@ -198,7 +198,7 @@ const processSubscriptionQueueItem = async (queueItem: WalletNotificationSetting
       newSettings.successfullyFinishedInitialSubscription = true;
       newSettings.enabled = true;
     } catch (e) {
-      logger.error(new RainbowError('Failed to subscribe to default notification topics for newly added wallet'));
+      logger.error(new RainbowError('[notifications]: Failed to subscribe to default notification topics for newly added wallet'));
     }
   }
 

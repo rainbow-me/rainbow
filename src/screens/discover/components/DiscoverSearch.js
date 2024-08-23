@@ -23,6 +23,7 @@ import { Network } from '@/helpers';
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
@@ -50,11 +51,7 @@ export default function DiscoverSearch() {
   const currencySelectionListRef = useRef();
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);
   const [ensResults, setEnsResults] = useState([]);
-  const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList(
-    searchQueryForSearch,
-    ethereumUtils.getChainIdFromNetwork(Network.mainnet),
-    true
-  );
+  const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList(searchQueryForSearch, ChainId.mainnet, true);
 
   // we want to debounce the poap search further
   const [searchQueryForPoap] = useDebounce(searchQueryForSearch, 800);

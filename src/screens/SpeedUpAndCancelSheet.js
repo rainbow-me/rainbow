@@ -17,7 +17,7 @@ import { Emoji, Text } from '../components/text';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { removeRegistrationByName, saveCommitRegistrationParameters } from '@/redux/ensRegistration';
 import { GasFeeTypes } from '@/entities';
-import { getFlashbotsProvider, getProviderForNetwork, isL2Network, toHex } from '@/handlers/web3';
+import { getFlashbotsProvider, getProviderForNetwork, isL2Chain, toHex } from '@/handlers/web3';
 import { greaterThan } from '@/helpers/utilities';
 import { useAccountSettings, useDimensions, useGas, useWallets } from '@/hooks';
 import { sendTransaction } from '@/model/wallet';
@@ -27,8 +27,8 @@ import { updateGasFeeForSpeed } from '@/redux/gas';
 import { ethUnits } from '@/references';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { gasUtils, safeAreaInsetValues } from '@/utils';
-import logger from '@/utils/logger';
+import { ethereumUtils, gasUtils, safeAreaInsetValues } from '@/utils';
+import { logger, RainbowError } from '@/logger';
 import { getNetworkObj } from '@/networks';
 import * as i18n from '@/languages';
 import { updateTransaction } from '@/state/pendingTransactions';
@@ -125,7 +125,7 @@ export default function SpeedUpAndCancelSheet() {
   const [nonce, setNonce] = useState(null);
   const [to, setTo] = useState(tx.to);
   const [value, setValue] = useState(null);
-  const isL2 = isL2Network(tx?.network || null);
+  const isL2 = isL2Chain({ chainId: tx?.chainId });
 
   const getNewTransactionGasParams = useCallback(() => {
     const gasParams = parseGasParamsForTransaction(selectedGasFee);
@@ -174,7 +174,7 @@ export default function SpeedUpAndCancelSheet() {
       updatedTx.type = 'cancel';
       updateTransaction({ address: accountAddress, transaction: updatedTx, network: currentNetwork });
     } catch (e) {
-      logger.log('Error submitting cancel tx', e);
+      logger.error(new RainbowError(`[SpeedUpAndCancelSheet]: error submitting cancel tx: ${e}`));
     } finally {
       // if its a hardware wallet we need to close the hardware tx sheet
       if (isHardwareWallet) {
@@ -244,7 +244,7 @@ export default function SpeedUpAndCancelSheet() {
 
       updateTransaction({ address: accountAddress, transaction: updatedTx, network: currentNetwork });
     } catch (e) {
-      logger.log('Error submitting speed up tx', e);
+      logger.error(new RainbowError(`[SpeedUpAndCancelSheet]: error submitting speed up tx: ${e}`));
     } finally {
       // if its a hardware wallet we need to close the hardware tx sheet
       if (isHardwareWallet) {
@@ -288,10 +288,10 @@ export default function SpeedUpAndCancelSheet() {
       const updateProvider = async () => {
         let provider;
         if (getNetworkObj(tx?.network).features.flashbots && tx.flashbots) {
-          logger.debug('using flashbots provider');
+          logger.debug(`[SpeedUpAndCancelSheet]: using flashbots provider for network ${currentNetwork}`);
           provider = await getFlashbotsProvider();
         } else {
-          logger.debug('using normal provider');
+          logger.debug(`[SpeedUpAndCancelSheet]: using provider for network ${currentNetwork}`);
           provider = getProviderForNetwork(currentNetwork);
         }
         setCurrentProvider(provider);
@@ -342,11 +342,13 @@ export default function SpeedUpAndCancelSheet() {
             setMinGasPrice(calcGasParamRetryValue(hexGasPrice));
           }
         } catch (e) {
-          logger.log('something went wrong while fetching tx info ', e);
-          logger.sentry('Error speeding up or canceling transaction: [error]', e);
-          logger.sentry('Error speeding up or canceling transaction: [transaction]', tx);
-          const speedUpOrCancelError = new Error('Error speeding up or canceling transaction');
-          captureException(speedUpOrCancelError);
+          logger.error(new RainbowError(`[SpeedUpAndCancelSheet]: error fetching tx info: ${e}`), {
+            data: {
+              tx,
+            },
+          });
+
+          // NOTE: We don't care about this for cancellations
           if (type === SPEED_UP) {
             Alert.alert(lang.t('wallet.speed_up.unable_to_speed_up'), lang.t('wallet.speed_up.problem_while_fetching_transaction_data'), [
               {
@@ -354,7 +356,6 @@ export default function SpeedUpAndCancelSheet() {
               },
             ]);
           }
-          // We don't care about this for cancellations
         }
       }
     };
@@ -475,6 +476,7 @@ export default function SpeedUpAndCancelSheet() {
                     <GasSpeedButton
                       asset={{ color: accentColor }}
                       currentNetwork={currentNetwork}
+                      chainId={ethereumUtils.getChainIdFromNetwork(currentNetwork)}
                       flashbotTransaction={tx.flashbots}
                       speeds={speeds}
                       theme={isDarkMode ? 'dark' : 'light'}

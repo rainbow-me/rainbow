@@ -50,9 +50,9 @@ export const swapSearch = async (searchParams: {
     }
     const url = `/${searchParams.chainId}/?${qs.stringify(queryParams)}`;
     const tokenSearch = await tokenSearchApi.get(url);
-    return tokenSearch.data?.data;
+    return { ...tokenSearch.data?.data, chainId: searchParams.chainId };
   } catch (e: any) {
-    logger.error(new RainbowError(`An error occurred while searching for query`), {
+    logger.error(new RainbowError(`[tokenSearch]: An error occurred while searching for query`), {
       query: searchParams.query,
       message: e.message,
     });
@@ -83,7 +83,7 @@ export const tokenSearch = async (searchParams: {
   try {
     if (isAddress(searchParams.query)) {
       // @ts-ignore
-      params.keys = `networks.${params.chainId}.address`;
+      params.keys = `networks.${searchParams.chainId}.address`;
     }
     const url = `/?${qs.stringify(queryParams)}`;
     const tokenSearch = await tokenSearchApi.get<TokenSearchApiResponse>(url);
@@ -98,11 +98,12 @@ export const tokenSearch = async (searchParams: {
         ...token,
         address: token.networks['1']?.address || token.networks[Number(networkKeys[0])]?.address,
         network,
+        chainId: searchParams.chainId,
         mainnet_address: token.networks['1']?.address,
       };
     });
   } catch (e: any) {
-    logger.error(new RainbowError(`An error occurred while searching for query`), {
+    logger.error(new RainbowError(`[tokenSearch]: An error occurred while searching for query`), {
       query: searchParams.query,
       message: e.message,
     });
@@ -120,7 +121,7 @@ export const walletFilter = async (params: { addresses: EthereumAddress[]; fromC
     });
     return filteredAddresses?.data?.data || [];
   } catch (e: any) {
-    logger.error(new RainbowError(`An error occurred while filter wallet addresses`), {
+    logger.error(new RainbowError(`[tokenSearch]: An error occurred while filter wallet addresses`), {
       toChainId: params.toChainId,
       fromChainId: params.fromChainId,
       message: e.message,

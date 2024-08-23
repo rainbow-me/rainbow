@@ -36,7 +36,7 @@ export default function Fallback({
   resetError: () => void;
 }) {
   const handleRestart = () => {
-    logger.error(new RainbowError('RainbowAppRestartFromErrorBoundary'), {
+    logger.error(new RainbowError('[ErrorBoundary]: RainbowAppRestartFromErrorBoundary'), {
       data: {
         error: error.toString(),
         componentStack,

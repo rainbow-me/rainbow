@@ -114,7 +114,7 @@ function serializeUserAssetsState(state: Map<Address, Array<[Address, UserAssets
       version,
     });
   } catch (error) {
-    logger.error(new RainbowError('Failed to serialize state for user assets storage'), { error });
+    logger.error(new RainbowError(`[userAssetsStore]: Failed to serialize state for user assets storage`), { error });
     throw error;
   }
 }
@@ -124,7 +124,7 @@ function deserializeUserAssetsState(serializedState: string) {
   try {
     parsedState = JSON.parse(serializedState);
   } catch (error) {
-    logger.error(new RainbowError('Failed to parse serialized state from user assets storage'), { error });
+    logger.error(new RainbowError(`[userAssetsStore]: Failed to parse serialized state from user assets storage`), { error });
     throw error;
   }
 
@@ -136,7 +136,7 @@ function deserializeUserAssetsState(serializedState: string) {
       chainBalances = new Map(state.chainBalances);
     }
   } catch (error) {
-    logger.error(new RainbowError('Failed to convert chainBalances from user assets storage'), { error });
+    logger.error(new RainbowError(`[userAssetsStore]: Failed to convert chainBalances from user assets storage`), { error });
   }
 
   let idsByChain = new Map<UserAssetFilter, UniqueId[]>();
@@ -145,7 +145,7 @@ function deserializeUserAssetsState(serializedState: string) {
       idsByChain = new Map(state.idsByChain);
     }
   } catch (error) {
-    logger.error(new RainbowError('Failed to convert idsByChain from user assets storage'), { error });
+    logger.error(new RainbowError(`[userAssetsStore]: Failed to convert idsByChain from user assets storage`), { error });
   }
 
   let userAssetsData: Map<UniqueId, ParsedSearchAsset> = new Map();
@@ -154,7 +154,7 @@ function deserializeUserAssetsState(serializedState: string) {
       userAssetsData = new Map(state.userAssets);
     }
   } catch (error) {
-    logger.error(new RainbowError('Failed to convert userAssets from user assets storage'), { error });
+    logger.error(new RainbowError(`[userAssetsStore]: Failed to convert userAssets from user assets storage`), { error });
   }
 
   return {

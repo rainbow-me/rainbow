@@ -128,12 +128,12 @@ export const getTransactionSocketStatus = async (pendingTransaction: RainbowTran
         pending = false;
       }
     } else if (socketResponse.error) {
-      logger.warn('getTransactionSocketStatus transaction check failed', socketResponse.error);
+      logger.warn('[getTransactionSocketStatus]: transaction check failed', socketResponse.error);
       status = TransactionStatus.failed;
       pending = false;
     }
   } catch (e) {
-    logger.error(new RainbowError('getTransactionSocketStatus transaction check caught'));
+    logger.error(new RainbowError('[getTransactionSocketStatus]: transaction check caught'));
     if (IS_TEST) {
       status = swap?.isBridge ? TransactionStatus.bridged : TransactionStatus.swapped;
       pending = false;

@@ -137,7 +137,7 @@ export function CoinRow({ isFavorite, onPress, output, uniqueId, ...assetProps }
                     address={address}
                     mainnetAddress={mainnetAddress}
                     large
-                    network={ethereumUtils.getNetworkFromChainId(chainId)}
+                    chainId={chainId}
                     symbol={symbol || ''}
                     color={colors?.primary}
                   />
@@ -198,8 +198,8 @@ const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId })
     ...(network
       ? {
           blockExplorer: {
-            title: i18n.t(i18n.l.exchange.coin_row.view_on, { blockExplorerName: startCase(ethereumUtils.getBlockExplorer(network)) }),
-            action: () => ethereumUtils.openAddressInBlockExplorer(address, network),
+            title: i18n.t(i18n.l.exchange.coin_row.view_on, { blockExplorerName: startCase(ethereumUtils.getBlockExplorer(chainId)) }),
+            action: () => ethereumUtils.openAddressInBlockExplorer(address, chainId),
           },
         }
       : {}),

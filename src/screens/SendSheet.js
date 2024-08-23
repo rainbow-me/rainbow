@@ -20,8 +20,8 @@ import {
   buildTransaction,
   createSignableTransaction,
   estimateGasLimit,
-  getProviderForNetwork,
-  isL2Network,
+  getProvider,
+  isL2Chain,
   resolveNameOrAddress,
   web3Provider,
 } from '@/handlers/web3';
@@ -53,19 +53,20 @@ import styled from '@/styled-thing';
 import { borders } from '@/styles';
 import { convertAmountAndPriceToNativeDisplay, convertAmountFromNativeValue, formatInputDecimals, lessThan } from '@/helpers/utilities';
 import { deviceUtils, ethereumUtils, getUniqueTokenType, safeAreaInsetValues } from '@/utils';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { NoResults } from '@/components/list';
 import { NoResultsType } from '@/components/list/NoResults';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { Wallet } from '@ethersproject/wallet';
-import { getNetworkObj } from '@/networks';
+import { getNetworkObject } from '@/networks';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { getNextNonce } from '@/state/nonces';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { REGISTRATION_STEPS } from '@/helpers/ens';
 import { userAssetsStore } from '@/state/assets/userAssets';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
@@ -138,8 +139,8 @@ export default function SendSheet(props) {
     isSufficientBalance: false,
     nativeAmount: '',
   });
-  const [currentNetwork, setCurrentNetwork] = useState();
-  const prevNetwork = usePrevious(currentNetwork);
+  const [currentChainId, setCurrentChainId] = useState();
+  const prevChainId = usePrevious(currentChainId);
   const [currentInput, setCurrentInput] = useState('');
 
   const { params } = useRoute();
@@ -187,8 +188,8 @@ export default function SendSheet(props) {
   });
 
   const isL2 = useMemo(() => {
-    return isL2Network(currentNetwork);
-  }, [currentNetwork]);
+    return isL2Chain({ chainId: currentChainId });
+  }, [currentChainId]);
 
   const sendUpdateAssetAmount = useCallback(
     newAssetAmount => {
@@ -269,12 +270,12 @@ export default function SendSheet(props) {
     // We can start fetching gas prices
     // after we know the network that the asset
     // belongs to
-    if (prevNetwork !== currentNetwork) {
+    if (prevChainId !== currentChainId) {
       InteractionManager.runAfterInteractions(() => {
-        startPollingGasFees(currentNetwork);
+        startPollingGasFees(ethereumUtils.getNetworkFromChainId(currentChainId));
       });
     }
-  }, [prevNetwork, startPollingGasFees, selected?.network, currentNetwork]);
+  }, [startPollingGasFees, selected.network, prevChainId, currentChainId]);
 
   // Stop polling when the sheet is unmounted
   useEffect(() => {
@@ -286,21 +287,21 @@ export default function SendSheet(props) {
   }, [stopPollingGasFees]);
 
   useEffect(() => {
-    const assetNetwork = selected?.network;
-    if (assetNetwork && (assetNetwork !== currentNetwork || !currentNetwork || prevNetwork !== currentNetwork)) {
+    const assetChainId = ethereumUtils.getChainIdFromNetwork(selected?.network);
+    const networkChainId = ethereumUtils.getChainIdFromNetwork(network);
+    if (assetChainId && (assetChainId !== currentChainId || !currentChainId || prevChainId !== currentChainId)) {
       let provider = web3Provider;
-      const selectedNetwork = selected?.network;
-      if (network === Network.goerli) {
-        setCurrentNetwork(Network.goerli);
-        provider = getProviderForNetwork(Network.goerli);
+      if (networkChainId === ChainId.goerli) {
+        setCurrentChainId(ChainId.goerli);
+        provider = getProvider({ chainId: ChainId.goerli });
         setCurrentProvider(provider);
       } else {
-        setCurrentNetwork(selectedNetwork);
-        provider = getProviderForNetwork(selectedNetwork);
+        setCurrentChainId(assetChainId);
+        provider = getProvider({ chainId: currentChainId });
         setCurrentProvider(provider);
       }
     }
-  }, [currentNetwork, isNft, network, prevNetwork, selected?.network, sendUpdateSelected]);
+  }, [currentChainId, isNft, network, prevChainId, selected?.network, sendUpdateSelected]);
 
   const onChangeNativeAmount = useCallback(
     newNativeAmount => {
@@ -377,12 +378,12 @@ export default function SendSheet(props) {
           recipient: toAddress,
         },
         currentProvider,
-        currentNetwork
+        ethereumUtils.getNetworkFromChainId(currentChainId)
       );
       const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(txData, currentProvider);
       updateTxFee(updatedGasLimit, null, l1GasFeeOptimism);
     },
-    [accountAddress, amountDetails.assetAmount, currentNetwork, currentProvider, selected, toAddress, updateTxFee]
+    [accountAddress, amountDetails.assetAmount, currentChainId, currentProvider, selected, toAddress, updateTxFee]
   );
 
   const onSubmit = useCallback(
@@ -400,14 +401,15 @@ export default function SendSheet(props) {
       });
       if (!wallet) return;
 
+      const currentChainIdNetwork = ethereumUtils.getNetworkFromChainId(currentChainId);
+
       const validTransaction = isValidAddress && amountDetails.isSufficientBalance && isSufficientGas && isValidGas;
       if (!selectedGasFee?.gasFee?.estimatedFee || !validTransaction) {
-        logger.sentry('preventing tx submit for one of the following reasons:');
-        logger.sentry('selectedGasFee ? ', selectedGasFee);
-        logger.sentry('selectedGasFee.maxFee ? ', selectedGasFee?.maxFee);
-        logger.sentry('validTransaction ? ', validTransaction);
-        logger.sentry('isValidGas ? ', isValidGas);
-        captureEvent('Preventing tx submit');
+        logger.error(new RainbowError(`[SendSheet]: preventing tx submit because selectedGasFee is missing or validTransaction is false`), {
+          selectedGasFee,
+          validTransaction,
+          isValidGas,
+        });
         return false;
       }
 
@@ -415,7 +417,7 @@ export default function SendSheet(props) {
       let updatedGasLimit = null;
 
       // Attempt to update gas limit before sending ERC20 / ERC721
-      if (!isNativeAsset(selected.address, currentNetwork)) {
+      if (!isNativeAsset(selected.address, currentChainId)) {
         try {
           // Estimate the tx with gas limit padding before sending
           updatedGasLimit = await estimateGasLimit(
@@ -427,11 +429,11 @@ export default function SendSheet(props) {
             },
             true,
             currentProvider,
-            currentNetwork
+            currentChainIdNetwork
           );
 
           if (!lessThan(updatedGasLimit, gasLimit)) {
-            if (getNetworkObj(currentNetwork).gas?.OptimismTxFee) {
+            if (getNetworkObject({ chainId: currentChainId }).gas?.OptimismTxFee) {
               updateTxFeeForOptimism(updatedGasLimit);
             } else {
               updateTxFee(updatedGasLimit, null);
@@ -468,8 +470,8 @@ export default function SendSheet(props) {
         asset: selected,
         from: accountAddress,
         gasLimit: gasLimitToUse,
-        network: currentNetwork,
-        nonce: nextNonce ?? (await getNextNonce({ address: accountAddress, network: currentNetwork })),
+        network: currentChainIdNetwork,
+        nonce: nextNonce ?? (await getNextNonce({ address: accountAddress, network: currentChainIdNetwork })),
         to: toAddress,
         ...gasParams,
       };
@@ -481,11 +483,10 @@ export default function SendSheet(props) {
           screen: isENS ? Screens.SEND_ENS : Screens.SEND,
         })(txDetails);
         if (!signableTransaction.to) {
-          logger.sentry('txDetails', txDetails);
-          logger.sentry('signableTransaction', signableTransaction);
-          logger.sentry('"to" field is missing!');
-          const e = new Error('Transaction missing TO field');
-          captureException(e);
+          logger.error(new RainbowError(`[SendSheet]: txDetails is missing the "to" field`), {
+            txDetails,
+            signableTransaction,
+          });
           Alert.alert(lang.t('wallet.transaction.alert.invalid_transaction'));
           submitSuccess = false;
         } else {
@@ -509,7 +510,8 @@ export default function SendSheet(props) {
             submitSuccess = true;
             txDetails.hash = hash;
             txDetails.nonce = nonce;
-            txDetails.network = currentNetwork;
+            txDetails.network = currentChainIdNetwork;
+            txDetails.chainId = currentChainId;
             txDetails.data = data;
             txDetails.value = value;
             txDetails.txTo = signableTransaction.to;
@@ -518,17 +520,17 @@ export default function SendSheet(props) {
             txDetails.status = 'pending';
             addNewTransaction({
               address: accountAddress,
-              network: currentNetwork,
+              network: currentChainIdNetwork,
               transaction: txDetails,
             });
           }
         }
       } catch (error) {
         submitSuccess = false;
-        logger.sentry('TX Details', txDetails);
-        logger.sentry('SendSheet onSubmit error');
-        logger.sentry(error);
-        captureException(error);
+        logger.error(new RainbowError(`[SendSheet]: onSubmit error`), {
+          txDetails,
+          error,
+        });
 
         // if hardware wallet, we need to tell hardware flow there was error
         // have to check inverse or we trigger unwanted BT permissions requests
@@ -542,7 +544,7 @@ export default function SendSheet(props) {
       accountAddress,
       amountDetails.assetAmount,
       amountDetails.isSufficientBalance,
-      currentNetwork,
+      currentChainId,
       currentProvider,
       ensName,
       ensProfile?.data?.coinAddresses,
@@ -565,8 +567,9 @@ export default function SendSheet(props) {
   const submitTransaction = useCallback(
     async (...args) => {
       if (Number(amountDetails.assetAmount) <= 0) {
-        logger.sentry('amountDetails.assetAmount ? ', amountDetails?.assetAmount);
-        captureEvent('Preventing tx submit due to amount <= 0');
+        logger.error(new RainbowError(`[SendSheet]: preventing tx submit because amountDetails.assetAmount is <= 0`), {
+          amountDetails,
+        });
         return false;
       }
       const submitSuccessful = await onSubmit(...args);
@@ -599,7 +602,7 @@ export default function SendSheet(props) {
 
   const { buttonDisabled, buttonLabel } = useMemo(() => {
     const isZeroAssetAmount = Number(amountDetails.assetAmount) <= 0;
-
+    const currentNetworkObject = getNetworkObject({ chainId: currentChainId });
     let disabled = true;
     let label = lang.t('button.confirm_exchange.enter_amount');
 
@@ -611,14 +614,14 @@ export default function SendSheet(props) {
       !selectedGasFee ||
       isEmpty(selectedGasFee?.gasFee) ||
       !toAddress ||
-      (getNetworkObj(currentNetwork).gas?.OptimismTxFee && l1GasFeeOptimism === null)
+      (currentNetworkObject.gas?.OptimismTxFee && l1GasFeeOptimism === null)
     ) {
       label = lang.t('button.confirm_exchange.loading');
       disabled = true;
     } else if (!isZeroAssetAmount && !isSufficientGas) {
       disabled = true;
       label = lang.t('button.confirm_exchange.insufficient_token', {
-        tokenName: getNetworkObj(currentNetwork).nativeCurrency.symbol,
+        tokenName: currentNetworkObject.nativeCurrency.symbol,
       });
     } else if (!isValidGas) {
       disabled = true;
@@ -640,7 +643,7 @@ export default function SendSheet(props) {
     gasFeeParamsBySpeed,
     selectedGasFee,
     toAddress,
-    currentNetwork,
+    currentChainId,
     l1GasFeeOptimism,
     isSufficientGas,
     isValidGas,
@@ -688,7 +691,7 @@ export default function SendSheet(props) {
       isENS,
       isL2,
       isNft,
-      network: currentNetwork,
+      network: ethereumUtils.getNetworkFromChainId(currentChainId),
       profilesEnabled,
       to: recipient,
       toAddress,
@@ -697,7 +700,7 @@ export default function SendSheet(props) {
     amountDetails,
     assetInputRef,
     buttonDisabled,
-    currentNetwork,
+    currentChainId,
     ensProfile,
     isL2,
     isNft,
@@ -765,10 +768,11 @@ export default function SendSheet(props) {
 
   useEffect(() => {
     if (!currentProvider?._network?.chainId) return;
-    const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(Number(currentProvider._network.chainId));
-    const assetNetwork = selected?.network;
 
-    if (assetNetwork === currentNetwork && currentProviderNetwork === currentNetwork && isValidAddress && !isEmpty(selected)) {
+    const assetChainId = ethereumUtils.getChainIdFromNetwork(selected?.network);
+    const currentProviderChainId = currentProvider._network.chainId;
+
+    if (assetChainId === currentChainId && currentProviderChainId === currentChainId && isValidAddress && !isEmpty(selected)) {
       estimateGasLimit(
         {
           address: accountAddress,
@@ -778,24 +782,23 @@ export default function SendSheet(props) {
         },
         false,
         currentProvider,
-        currentNetwork
+        ethereumUtils.getNetworkFromChainId(currentChainId)
       )
         .then(async gasLimit => {
-          if (getNetworkObj(currentNetwork).gas?.OptimismTxFee) {
+          if (getNetworkObject({ chainId: currentChainId }).gas?.OptimismTxFee) {
             updateTxFeeForOptimism(gasLimit);
           } else {
             updateTxFee(gasLimit, null);
           }
         })
         .catch(e => {
-          logger.sentry('Error calculating gas limit', e);
+          logger.error(new RainbowError(`[SendSheet]: error calculating gas limit: ${e}`));
           updateTxFee(null, null);
         });
     }
   }, [
     accountAddress,
     amountDetails.assetAmount,
-    currentNetwork,
     currentProvider,
     isValidAddress,
     recipient,
@@ -805,6 +808,7 @@ export default function SendSheet(props) {
     updateTxFeeForOptimism,
     network,
     isNft,
+    currentChainId,
   ]);
 
   const sendContactListDataKey = useMemo(() => `${ensSuggestions?.[0]?.address || '_'}`, [ensSuggestions]);
@@ -909,7 +913,7 @@ export default function SendSheet(props) {
               <GasSpeedButton
                 asset={selected}
                 fallbackColor={colorForAsset}
-                currentNetwork={currentNetwork}
+                chainId={currentChainId}
                 horizontalPadding={0}
                 marginBottom={17}
                 theme={isDarkMode ? 'dark' : 'light'}

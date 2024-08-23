@@ -29,7 +29,7 @@ import { Box, Row, Rows } from '@/design-system';
 import { GasFee, LegacyGasFee, LegacyGasFeeParams, SwappableAsset } from '@/entities';
 import { ExchangeModalTypes, isKeyboardOpen, Network } from '@/helpers';
 import { KeyboardType } from '@/helpers/keyboardTypes';
-import { getProviderForNetwork, getFlashbotsProvider } from '@/handlers/web3';
+import { getFlashbotsProvider, getProvider } from '@/handlers/web3';
 import { delay, greaterThan } from '@/helpers/utilities';
 import {
   useAccountSettings,
@@ -54,24 +54,23 @@ import { ethUnits } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
-import { ChainId, CrosschainQuote, Quote } from '@rainbow-me/swaps';
+import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
 import store from '@/redux/store';
 import { getCrosschainSwapServiceTime, isUnwrapNative, isWrapNative } from '@/handlers/swap';
 import useParamsForExchangeModal from '@/hooks/useParamsForExchangeModal';
 import { Wallet } from '@ethersproject/wallet';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { useTheme } from '@/theme';
-import { logger as loggr } from '@/logger';
-import { getNetworkObj } from '@/networks';
+import { getNetworkObject } from '@/networks';
 import Animated from 'react-native-reanimated';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
 import { SwapPriceImpactType } from '@/hooks/usePriceImpactDetails';
 import { getNextNonce } from '@/state/nonces';
 import { getChainName } from '@/__swaps__/utils/chains';
-import { ChainName } from '@/__swaps__/types/chains';
+import { ChainId, ChainName } from '@/__swaps__/types/chains';
 import { AddressOrEth, ParsedAsset } from '@/__swaps__/types/assets';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { estimateSwapGasLimit } from '@/raps/actions';
@@ -79,25 +78,26 @@ import { estimateCrosschainSwapGasLimit } from '@/raps/actions/crosschainSwap';
 import { parseGasParamAmounts } from '@/parsers';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
-  [Network.mainnet]: 100,
-  [Network.polygon]: 200,
-  [Network.base]: 200,
-  [Network.bsc]: 200,
+  [ChainId.mainnet]: 100,
+  [ChainId.polygon]: 200,
+  [ChainId.base]: 200,
+  [ChainId.bsc]: 200,
   [Network.optimism]: 200,
-  [Network.arbitrum]: 200,
-  [Network.goerli]: 100,
-  [Network.gnosis]: 200,
-  [Network.zora]: 200,
-  [Network.avalanche]: 200,
-  [Network.blast]: 200,
-  [Network.degen]: 200,
+  [ChainId.arbitrum]: 200,
+  [ChainId.goerli]: 100,
+  [ChainId.gnosis]: 200,
+  [ChainId.zora]: 200,
+  [ChainId.avalanche]: 200,
+  [ChainId.blast]: 200,
+  [ChainId.degen]: 200,
 };
 
-export const getDefaultSlippageFromConfig = (network: Network) => {
+export const getDefaultSlippageFromConfig = (chainId: ChainId) => {
   const configSlippage = getRemoteConfig().default_slippage_bips as unknown as {
     [network: string]: number;
   };
-  const slippage = configSlippage?.[network] ?? DEFAULT_SLIPPAGE_BIPS[network] ?? 100;
+  const network = ethereumUtils.getNetworkFromChainId(chainId);
+  const slippage = configSlippage?.[network] ?? DEFAULT_SLIPPAGE_BIPS[chainId] ?? 100;
   return slippage;
 };
 const NOOP = () => null;
@@ -114,7 +114,7 @@ interface ExchangeModalProps {
   typeSpecificParams: TypeSpecificParameters;
 }
 
-export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, type, typeSpecificParams }: ExchangeModalProps) {
+export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, type, typeSpecificParams }: ExchangeModalProps) {
   const { isHardwareWallet } = useWallets();
   const dispatch = useDispatch();
   const { slippageInBips, maxInputUpdate, flipCurrenciesUpdate } = useSwapSettings();
@@ -146,13 +146,14 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
     updateGasFeeOption,
     updateTxFee,
     txNetwork,
+
     isGasReady,
   } = useGas();
-  const { accountAddress, flashbotsEnabled, nativeCurrency, network } = useAccountSettings();
+  const { accountAddress, flashbotsEnabled, nativeCurrency } = useAccountSettings();
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const prevGasFeesParamsBySpeed = usePrevious(gasFeeParamsBySpeed);
-  const prevTxNetwork = usePrevious(txNetwork);
+  const prevChainId = usePrevious(ethereumUtils.getChainIdFromNetwork(txNetwork));
 
   const keyboardListenerSubscription = useRef<EmitterSubscription>();
 
@@ -172,64 +173,64 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
 
   const { updateInputAmount, updateMaxInputAmount, updateNativeAmount, updateOutputAmount } = useSwapInputHandlers();
 
-  const { inputNetwork, outputNetwork, chainId, currentNetwork, isCrosschainSwap, isBridgeSwap } = useMemo(() => {
-    const inputNetwork = inputCurrency?.network || Network.mainnet;
-    const outputNetwork = outputCurrency?.network || Network.mainnet;
-    const chainId = ethereumUtils.getChainIdFromNetwork(inputNetwork || outputNetwork);
+  const { inputChainId, outputChainId, currentChainId, isCrosschainSwap, isBridgeSwap } = useMemo(() => {
+    const inputChainId = inputCurrency?.chainId || ChainId.mainnet;
+    const outputChainId = outputCurrency?.chainId || ChainId.mainnet;
+    const chainId: ChainId = inputChainId || outputChainId;
 
-    const currentNetwork = ethereumUtils.getNetworkFromChainId(chainId);
-    const isCrosschainSwap = crosschainSwapsEnabled && inputNetwork !== outputNetwork;
+    const isCrosschainSwap = crosschainSwapsEnabled && inputChainId !== outputChainId;
     const isBridgeSwap = inputCurrency?.symbol === outputCurrency?.symbol;
     return {
-      inputNetwork,
-      outputNetwork,
-      chainId,
-      currentNetwork,
+      inputChainId,
+      outputChainId,
+      currentChainId: chainId,
       isCrosschainSwap,
       isBridgeSwap,
     };
-  }, [crosschainSwapsEnabled, inputCurrency?.symbol, inputCurrency?.network, outputCurrency?.symbol, outputCurrency?.network]);
+  }, [inputCurrency?.chainId, inputCurrency?.symbol, outputCurrency?.chainId, outputCurrency?.symbol, crosschainSwapsEnabled]);
 
-  const { flipCurrencies, navigateToSelectInputCurrency, navigateToSelectOutputCurrency, updateAndFocusInputAmount } =
-    useSwapCurrencyHandlers({
-      currentNetwork,
-      inputNetwork,
-      outputNetwork,
-      defaultInputAsset,
-      defaultOutputAsset,
-      fromDiscover,
-      ignoreInitialTypeCheck,
-      inputFieldRef,
-      lastFocusedInputHandle,
-      nativeFieldRef,
-      outputFieldRef,
-      setLastFocusedInputHandle,
-      title,
-      type,
-    });
+  const { flipCurrencies, navigateToSelectInputCurrency, navigateToSelectOutputCurrency } = useSwapCurrencyHandlers({
+    inputChainId,
+    outputChainId,
+    defaultInputAsset,
+    defaultOutputAsset,
+    fromDiscover,
+    ignoreInitialTypeCheck,
+    inputFieldRef,
+    lastFocusedInputHandle,
+    nativeFieldRef,
+    outputFieldRef,
+    setLastFocusedInputHandle,
+    title,
+    type,
+  });
   const speedUrgentSelected = useRef(false);
 
   useEffect(() => {
-    if (!speedUrgentSelected.current && !isEmpty(gasFeeParamsBySpeed) && getNetworkObj(currentNetwork).swaps?.defaultToFastGas) {
+    if (
+      !speedUrgentSelected.current &&
+      !isEmpty(gasFeeParamsBySpeed) &&
+      getNetworkObject({ chainId: currentChainId }).swaps?.defaultToFastGas
+    ) {
       // Default to fast for networks with speed options
       updateGasFeeOption(gasUtils.FAST);
       speedUrgentSelected.current = true;
     }
-  }, [currentNetwork, gasFeeParamsBySpeed, selectedGasFee, updateGasFeeOption, updateTxFee]);
+  }, [currentChainId, gasFeeParamsBySpeed, selectedGasFee, updateGasFeeOption, updateTxFee]);
 
   useEffect(() => {
-    if (currentNetwork !== prevTxNetwork) {
+    if (currentChainId !== prevChainId) {
       speedUrgentSelected.current = false;
     }
-  }, [currentNetwork, prevTxNetwork]);
+  }, [currentChainId, prevChainId, txNetwork]);
 
   const defaultGasLimit = useMemo(() => {
-    return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
-  }, [chainId]);
+    return ethereumUtils.getBasicSwapGasLimit(Number(currentChainId));
+  }, [currentChainId]);
 
   const {
     result: {
-      derivedValues: { inputAmount, nativeAmount, outputAmount },
+      derivedValues: { inputAmount, outputAmount },
       displayValues: { inputAmountDisplay, outputAmountDisplay, nativeAmountDisplay },
       tradeDetails,
     },
@@ -241,11 +242,11 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
   const lastTradeDetails = usePrevious(tradeDetails);
   const isSufficientBalance = useSwapIsSufficientBalance(inputAmount);
 
-  const { priceImpact, outputNativeAmount } = usePriceImpactDetails(inputCurrency, outputCurrency, tradeDetails, currentNetwork);
+  const { priceImpact, outputNativeAmount } = usePriceImpactDetails(inputCurrency, outputCurrency, tradeDetails, currentChainId);
   const [debouncedIsHighPriceImpact] = useDebounce(priceImpact.type !== SwapPriceImpactType.none, 1000);
   // For a limited period after the merge we need to block the use of flashbots.
   // This line should be removed after reenabling flashbots in remote config.
-  const swapSupportsFlashbots = getNetworkObj(currentNetwork).features.flashbots;
+  const swapSupportsFlashbots = getNetworkObject({ chainId: currentChainId }).features.flashbots;
   const flashbots = swapSupportsFlashbots && flashbotsEnabled;
 
   const isDismissing = useRef(false);
@@ -275,15 +276,9 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
   }, [addListener, dangerouslyGetParent, lastFocusedInputHandle]);
 
   useEffect(() => {
-    let slippage = DEFAULT_SLIPPAGE_BIPS?.[currentNetwork];
-    const configSlippage = default_slippage_bips as unknown as {
-      [network: string]: number;
-    };
-    if (configSlippage?.[currentNetwork]) {
-      slippage = configSlippage?.[currentNetwork];
-    }
+    const slippage = getDefaultSlippageFromConfig(currentChainId);
     slippage && dispatch(updateSwapSlippage(slippage));
-  }, [currentNetwork, default_slippage_bips, dispatch]);
+  }, [currentChainId, default_slippage_bips, dispatch]);
 
   useEffect(() => {
     return () => {
@@ -295,17 +290,19 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
 
   const updateGasLimit = useCallback(async () => {
     try {
-      const provider = getProviderForNetwork(currentNetwork);
+      const provider = getProvider({ chainId: currentChainId });
 
       const quote = isCrosschainSwap ? (tradeDetails as CrosschainQuote) : (tradeDetails as Quote);
       const gasLimit = await (isCrosschainSwap ? estimateCrosschainSwapGasLimit : estimateSwapGasLimit)({
-        chainId,
-        quote: quote as any, // this is a temporary fix until we have the correct type coersion here
+        chainId: currentChainId,
+        quote: quote as CrosschainQuote,
       });
+
       if (gasLimit) {
-        if (getNetworkObj(currentNetwork).gas?.OptimismTxFee) {
+        if (getNetworkObject({ chainId: currentChainId }).gas?.OptimismTxFee) {
           if (tradeDetails) {
             const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
               {
                 data: tradeDetails.data,
@@ -326,7 +323,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
     } catch (error) {
       updateTxFee(defaultGasLimit, null);
     }
-  }, [chainId, currentNetwork, defaultGasLimit, isCrosschainSwap, tradeDetails, updateTxFee]);
+  }, [currentChainId, defaultGasLimit, isCrosschainSwap, tradeDetails, updateTxFee]);
 
   useEffect(() => {
     if (tradeDetails && !equal(tradeDetails, lastTradeDetails)) {
@@ -345,24 +342,24 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
   useEffect(() => {
     if (
       !isGasReady ||
-      (!prevTxNetwork && txNetwork !== prevTxNetwork) ||
+      (!prevChainId && currentChainId !== prevChainId) ||
       (!isEmpty(gasFeeParamsBySpeed) && !isEqual(gasFeeParamsBySpeed, prevGasFeesParamsBySpeed))
     ) {
       updateGasLimit();
     }
-  }, [gasFeeParamsBySpeed, isGasReady, prevGasFeesParamsBySpeed, prevTxNetwork, txNetwork, updateGasLimit]);
+  }, [currentChainId, gasFeeParamsBySpeed, isGasReady, prevChainId, prevGasFeesParamsBySpeed, txNetwork, updateGasLimit]);
 
   // Listen to gas prices, Uniswap reserves updates
   useEffect(() => {
     updateDefaultGasLimit(defaultGasLimit);
     InteractionManager.runAfterInteractions(() => {
       // Start polling in the current network
-      startPollingGasFees(currentNetwork, flashbots);
+      startPollingGasFees(ethereumUtils.getNetworkFromChainId(currentChainId), flashbots);
     });
     return () => {
       stopPollingGasFees();
     };
-  }, [defaultGasLimit, currentNetwork, startPollingGasFees, stopPollingGasFees, updateDefaultGasLimit, flashbots]);
+  }, [defaultGasLimit, currentChainId, startPollingGasFees, stopPollingGasFees, updateDefaultGasLimit, flashbots]);
 
   const checkGasVsOutput = async (gasPrice: string, outputPrice: string) => {
     if (greaterThan(outputPrice, 0) && greaterThan(gasPrice, outputPrice) && !(IS_ANDROID && IS_TEST)) {
@@ -396,12 +393,12 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
   });
 
   const submit = useCallback(
-    async (amountInUSD: any): Promise<boolean> => {
+    async (amountInUSD: string): Promise<boolean> => {
       setIsAuthorizing(true);
       const NotificationManager = ios ? NativeModules.NotificationManager : null;
       try {
         // load the correct network provider for the wallet
-        const provider = getProviderForNetwork(currentNetwork);
+        const provider = getProvider({ chainId: currentChainId });
         let wallet = await loadWallet({
           address: accountAddress,
           showErrorIfNotLoaded: false,
@@ -409,48 +406,49 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
         });
         if (!wallet) {
           setIsAuthorizing(false);
-          logger.sentry(`aborting ${type} due to missing wallet`);
+          logger.error(new RainbowError(`[ExchangeModal]: aborting ${type} due to missing wallet`));
           Alert.alert('Unable to determine wallet address');
           return false;
         }
 
         // Switch to the flashbots provider if enabled
         // TODO(skylarbarrera): need to check if ledger and handle differently here
-        if (flashbots && getNetworkObj(currentNetwork).features?.flashbots && wallet instanceof Wallet) {
-          logger.debug('flashbots provider being set on mainnet');
+        if (flashbots && getNetworkObject({ chainId: currentChainId }).features?.flashbots && wallet instanceof Wallet) {
+          logger.debug('[ExchangeModal]: flashbots provider being set on mainnet');
           const flashbotsProvider = await getFlashbotsProvider();
           wallet = new Wallet(wallet.privateKey, flashbotsProvider);
         }
 
         if (!inputAmount || !outputAmount) {
-          logger.log('[exchange - handle submit] inputAmount or outputAmount is missing');
+          logger.error(new RainbowError(`[ExchangeModal]: aborting ${type} due to missing inputAmount or outputAmount`));
           Alert.alert('Input amount or output amount is missing');
           return false;
         }
 
         if (!tradeDetails) {
-          logger.log('[exchange - handle submit] tradeDetails is missing');
+          logger.error(new RainbowError(`[ExchangeModal]: aborting ${type} due to missing tradeDetails`));
           Alert.alert('Missing trade details for swap');
           return false;
         }
 
-        logger.log('[exchange - handle submit] rap');
-        const currentNonce = await getNextNonce({ address: accountAddress, network: currentNetwork });
+        logger.debug(`[ExchangeModal]: getting nonce for account ${accountAddress}`);
+        const currentNonce = await getNextNonce({ address: accountAddress, network: ethereumUtils.getNetworkFromChainId(currentChainId) });
+        logger.debug(`[ExchangeModal]: nonce for account ${accountAddress} is ${currentNonce}`);
         const { independentField, independentValue, slippageInBips, source } = store.getState().swap;
 
         const transformedAssetToSell = {
           ...inputCurrency,
-          chainName: getChainName({ chainId: inputCurrency.chainId! }) as ChainName,
+          chainName: getChainName({ chainId: inputCurrency.chainId as number }) as ChainName,
           address: inputCurrency.address as AddressOrEth,
-          chainId: inputCurrency.chainId!,
+          chainId: inputCurrency.chainId,
           colors: inputCurrency.colors as TokenColors,
         } as ParsedAsset;
 
         const transformedAssetToBuy = {
           ...outputCurrency,
-          chainName: getChainName({ chainId: outputCurrency.chainId! }) as ChainName,
+          chainName: getChainName({ chainId: outputCurrency.chainId as number }) as ChainName,
           address: outputCurrency.address as AddressOrEth,
-          chainId: outputCurrency.chainId!,
+          chainId: outputCurrency.chainId,
           colors: outputCurrency.colors as TokenColors,
         } as ParsedAsset;
 
@@ -469,8 +467,8 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
           );
         };
 
-        const { nonce, errorMessage } = await walletExecuteRap(wallet, isCrosschainSwap ? 'crosschainSwap' : 'swap', {
-          chainId,
+        const { errorMessage } = await walletExecuteRap(wallet, isCrosschainSwap ? 'crosschainSwap' : 'swap', {
+          chainId: currentChainId,
           flashbots,
           nonce: currentNonce,
           assetToSell: transformedAssetToSell,
@@ -498,9 +496,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
         setIsAuthorizing(false);
         // if the transaction was not successful, we need to bubble that up to the caller
         if (errorMessage) {
-          loggr.debug('[ExchangeModal] transaction was not successful', {
-            errorMessage,
-          });
+          logger.error(new RainbowError(`[ExchangeModal]: transaction was not successful: ${errorMessage}`));
           if (wallet instanceof Wallet) {
             Alert.alert(errorMessage);
           } else {
@@ -509,7 +505,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
           return false;
         }
 
-        logger.log('[exchange - handle submit] executed rap!');
+        logger.debug('[ExchangeModal]: executed rap!');
         const slippage = slippageInBips / 100;
         analytics.track(`Completed ${type}`, {
           aggregator: tradeDetails?.source || '',
@@ -523,7 +519,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
           legacyGasPrice: (selectedGasFee?.gasFeeParams as unknown as LegacyGasFeeParams)?.gasPrice?.amount || '',
           liquiditySources: JSON.stringify(tradeDetails?.protocols || []),
           maxNetworkFee: (selectedGasFee?.gasFee as GasFee)?.maxFee?.value?.amount || '',
-          network: currentNetwork,
+          network: ethereumUtils.getNetworkFromChainId(currentChainId),
           networkFee: selectedGasFee?.gasFee?.estimatedFee?.value?.amount || '',
           outputTokenAddress: outputCurrency?.address || '',
           outputTokenName: outputCurrency?.name || '',
@@ -549,7 +545,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
         return true;
       } catch (error) {
         setIsAuthorizing(false);
-        logger.log('[exchange - handle submit] error submitting swap', error);
+        logger.error(new RainbowError(`[ExchangeModal]: error submitting swap: ${error}`));
         setParams({ focused: false });
         // close the hardware wallet modal before navigating
         if (isHardwareWallet) {
@@ -562,10 +558,10 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
     },
     [
       accountAddress,
-      chainId,
-      currentNetwork,
+      currentChainId,
       debouncedIsHighPriceImpact,
       flashbots,
+      gasFeeParamsBySpeed,
       goBack,
       inputAmount,
       inputCurrency,
@@ -576,9 +572,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
       outputAmount,
       outputCurrency,
       priceImpact.percentDisplay,
-      selectedGasFee?.gasFee,
-      selectedGasFee?.gasFeeParams,
-      selectedGasFee?.option,
+      selectedGasFee,
       setParams,
       tradeDetails,
       type,
@@ -592,7 +586,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
       // Tell iOS we're running a rap (for tracking purposes)
       NotificationManager?.postNotification('rapInProgress');
     } catch (e) {
-      logger.log('error getting the swap amount in USD price', e);
+      logger.error(new RainbowError(`[ExchangeModal]: error posting notification for rapInProgress: ${e}`));
     } finally {
       const slippage = slippageInBips / 100;
       analytics.track(`Submitted ${type}`, {
@@ -606,7 +600,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
         legacyGasPrice: (selectedGasFee?.gasFeeParams as unknown as LegacyGasFeeParams)?.gasPrice?.amount || '',
         liquiditySources: JSON.stringify(tradeDetails?.protocols || []),
         maxNetworkFee: (selectedGasFee?.gasFee as GasFee)?.maxFee?.value?.amount || '',
-        network: currentNetwork,
+        network: ethereumUtils.getNetworkFromChainId(currentChainId),
         networkFee: selectedGasFee?.gasFee?.estimatedFee?.value?.amount || '',
         outputTokenAddress: outputCurrency?.address || '',
         outputTokenName: outputCurrency?.name || '',
@@ -636,26 +630,26 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
     selectedGasFee?.gasFee,
     selectedGasFee?.option,
     selectedGasFee?.gasFeeParams,
-    inputCurrency?.address,
-    inputCurrency?.name,
-    inputCurrency?.symbol,
-    outputCurrency?.address,
-    outputCurrency?.name,
-    outputCurrency?.symbol,
     slippageInBips,
     type,
     tradeDetails?.source,
     tradeDetails?.protocols,
+    inputCurrency?.address,
+    inputCurrency?.name,
+    inputCurrency?.symbol,
     isHardwareWallet,
     debouncedIsHighPriceImpact,
-    currentNetwork,
+    currentChainId,
+    outputCurrency?.address,
+    outputCurrency?.name,
+    outputCurrency?.symbol,
     priceImpact.percentDisplay,
     submit,
   ]);
 
   const confirmButtonProps = useMemoOne(
     () => ({
-      currentNetwork,
+      currentNetwork: ethereumUtils.getNetworkFromChainId(currentChainId),
       disabled: !Number(inputAmount) || (!loading && !tradeDetails),
       inputAmount,
       isAuthorizing,
@@ -670,7 +664,6 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
       isBridgeSwap,
     }),
     [
-      currentNetwork,
       loading,
       handleSubmit,
       inputAmount,
@@ -698,7 +691,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
       setParams({ focused: false });
       navigate(Routes.SWAP_SETTINGS_SHEET, {
         asset: outputCurrency,
-        network: currentNetwork,
+        network: ethereumUtils.getNetworkFromChainId(currentChainId),
         restoreFocusOnSwapModal: () => {
           android && (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
           setParams({ focused: true });
@@ -721,7 +714,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
     setParams,
     navigate,
     outputCurrency,
-    currentNetwork,
+    currentChainId,
     swapSupportsFlashbots,
   ]);
 
@@ -738,7 +731,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
         setParams({ focused: false });
         navigate(Routes.SWAP_DETAILS_SHEET, {
           confirmButtonProps,
-          currentNetwork,
+          currentNetwork: ethereumUtils.getNetworkFromChainId(currentChainId),
           flashbotTransaction: flashbots,
           isRefuelTx,
           restoreFocusOnSwapModal: () => {
@@ -765,7 +758,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
     },
     [
       confirmButtonProps,
-      currentNetwork,
+      currentChainId,
       flashbots,
       inputCurrency?.address,
       inputCurrency?.name,
@@ -788,8 +781,8 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
     lastFocusedInput?.blur();
     navigate(Routes.EXPLAIN_SHEET, {
       inputToken: inputCurrency?.symbol,
-      fromNetwork: inputNetwork,
-      toNetwork: outputNetwork,
+      fromNetwork: ethereumUtils.getNetworkFromChainId(inputChainId),
+      toNetwork: ethereumUtils.getNetworkFromChainId(outputChainId),
       isCrosschainSwap,
       isBridgeSwap,
       onClose: () => {
@@ -804,13 +797,13 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
     });
   }, [
     inputCurrency?.symbol,
-    inputNetwork,
+    inputChainId,
     isBridgeSwap,
     isCrosschainSwap,
     lastFocusedInputHandle,
     navigate,
     outputCurrency?.symbol,
-    outputNetwork,
+    outputChainId,
   ]);
 
   const showConfirmButton = !!inputCurrency && !!outputCurrency;
@@ -842,6 +835,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
                 <ExchangeHeader testID={testID} title={title} />
                 <ExchangeInputField
                   color={inputCurrencyColor}
+                  chainId={inputChainId}
                   disableInputCurrencySelection={false}
                   editable={!!inputCurrency}
                   inputAmount={inputAmountDisplay}
@@ -855,7 +849,6 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
                   nativeAmount={nativeAmountDisplay}
                   nativeCurrency={nativeCurrency}
                   nativeFieldRef={nativeFieldRef}
-                  network={inputNetwork}
                   onFocus={handleFocus}
                   onPressMaxBalance={updateMaxInputAmount}
                   onPressSelectInputCurrency={chainId => {
@@ -869,11 +862,12 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
                 <ExchangeOutputField
                   color={outputCurrencyColor}
                   editable={!!outputCurrency && !isCrosschainSwap}
-                  network={outputNetwork}
+                  chainId={outputChainId}
                   onFocus={handleFocus}
                   onPressSelectOutputCurrency={() => {
-                    navigateToSelectOutputCurrency(chainId);
+                    navigateToSelectOutputCurrency(currentChainId);
                   }}
+                  // eslint-disable-next-line react/jsx-props-no-spreading
                   {...(isCrosschainSwap &&
                     !!outputCurrency && {
                       onTapWhileDisabled: handleTapWhileDisabled,
@@ -915,6 +909,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
             <Row height="content">
               {showConfirmButton && (
                 <ConfirmExchangeButton
+                  // eslint-disable-next-line react/jsx-props-no-spreading
                   {...confirmButtonProps}
                   onPressViewDetails={handleConfirmExchangePress}
                   testID={`${testID}-confirm-button`}
@@ -925,7 +920,7 @@ export default function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, te
               {/* @ts-expect-error - Javascript Component */}
               <GasSpeedButton
                 asset={outputCurrency}
-                currentNetwork={currentNetwork}
+                chainId={currentChainId}
                 flashbotTransaction={flashbots}
                 marginBottom={0}
                 marginTop={0}

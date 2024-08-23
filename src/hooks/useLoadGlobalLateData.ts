@@ -6,7 +6,7 @@ import { keyboardHeightsLoadState } from '@/redux/keyboardHeight';
 import { AppState } from '@/redux/store';
 import { transactionSignaturesLoadState } from '@/redux/transactionSignatures';
 import { promiseUtils } from '@/utils';
-import logger from '@/utils/logger';
+import { logger } from '@/logger';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -21,7 +21,7 @@ export default function useLoadGlobalLateData() {
     if (!walletReady) {
       return false;
     }
-    logger.sentry('Load wallet global late data');
+    logger.debug('[useLoadGlobalLateData]: Load wallet global late data');
     const promises = [];
 
     // mainnet eth balances for all wallets
