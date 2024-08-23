@@ -21,7 +21,6 @@ import { useRemoteConfig } from '@/model/remoteConfig';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { AddressOrEth, AssetType } from '@/__swaps__/types/assets';
-import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
 import { ChainId } from '@/networks/types';

@@ -1,10 +1,9 @@
 import { celo, fantom, harmonyOne, moonbeam } from 'viem/chains';
 import { NATIVE_ASSETS_PER_CHAIN } from '@/references';
 import { AddressOrEth } from '@/__swaps__/types/assets';
-import { ChainId, ChainName, chainNameToIdMapping } from '@/networks/types';
+import { ChainId, ChainName } from '@/networks/types';
 import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
-import { getNetworkFromChainId } from '@/utils/ethereumUtils';
-import { chainsName } from '@/networks/chains';
+import { chainsIdByName } from '@/networks/chains';
 
 // @ts-expect-error Property '[ChainId.hardhat]' is missing
 export const customChainIdsToAssetNames: Record<ChainId, string> = {
@@ -50,7 +49,7 @@ export function isNativeAsset(address: AddressOrEth, chainId: ChainId) {
 }
 
 export function chainIdFromChainName(chainName: ChainName) {
-  return chainNameToIdMapping[chainName];
+  return chainsIdByName[chainName];
 }
 
 export const chainIdToUse = (connectedToHardhat: boolean, connectedToHardhatOp: boolean, activeSessionChainId: number) => {

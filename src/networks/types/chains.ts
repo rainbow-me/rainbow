@@ -100,43 +100,6 @@ export enum ChainId {
   degen = chains.degen.id,
 }
 
-export const chainNameToIdMapping: {
-  [key in ChainName | 'ethereum' | 'ethereum-sepolia']: ChainId;
-} = {
-  ['ethereum']: ChainId.mainnet,
-  [ChainName.arbitrum]: ChainId.arbitrum,
-  [ChainName.arbitrumNova]: ChainId.arbitrumNova,
-  [ChainName.arbitrumSepolia]: ChainId.arbitrumSepolia,
-  [ChainName.avalanche]: ChainId.avalanche,
-  [ChainName.avalancheFuji]: ChainId.avalancheFuji,
-  [ChainName.base]: ChainId.base,
-  [ChainName.bsc]: ChainId.bsc,
-  [ChainName.celo]: ChainId.celo,
-  [ChainName.gnosis]: ChainId.gnosis,
-  [ChainName.linea]: ChainId.linea,
-  [ChainName.manta]: ChainId.manta,
-  [ChainName.optimism]: ChainId.optimism,
-  [ChainName.polygon]: ChainId.polygon,
-  [ChainName.polygonZkEvm]: ChainId.polygonZkEvm,
-  [ChainName.rari]: ChainId.rari,
-  [ChainName.scroll]: ChainId.scroll,
-  [ChainName.zora]: ChainId.zora,
-  [ChainName.mainnet]: ChainId.mainnet,
-  [ChainName.holesky]: ChainId.holesky,
-  [ChainName.hardhat]: ChainId.hardhat,
-  [ChainName.hardhatOptimism]: ChainId.hardhatOptimism,
-  ['ethereum-sepolia']: ChainId.sepolia,
-  [ChainName.sepolia]: ChainId.sepolia,
-  [ChainName.optimismSepolia]: ChainId.optimismSepolia,
-  [ChainName.bscTestnet]: ChainId.bscTestnet,
-  [ChainName.baseSepolia]: ChainId.baseSepolia,
-  [ChainName.zoraSepolia]: ChainId.zoraSepolia,
-  [ChainName.blast]: ChainId.blast,
-  [ChainName.blastSepolia]: ChainId.blastSepolia,
-  [ChainName.polygonAmoy]: ChainId.polygonAmoy,
-  [ChainName.degen]: ChainId.degen,
-};
-
 export interface BackendNetworkServices {
   meteorology: {
     enabled: boolean;

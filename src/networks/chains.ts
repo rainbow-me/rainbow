@@ -56,6 +56,14 @@ export const chainsName: Record<number, string> = backendNetworks.networks.reduc
   {} as Record<number, string>
 );
 
+export const chainsIdByName: Record<string, number> = backendNetworks.networks.reduce(
+  (acc, backendNetwork: BackendNetwork) => {
+    acc[backendNetwork.name] = parseInt(backendNetwork.id, 10);
+    return acc;
+  },
+  {} as Record<string, number>
+);
+
 const defaultGasSpeeds = (chainId: ChainId) => {
   switch (chainId) {
     case ChainId.bsc:
