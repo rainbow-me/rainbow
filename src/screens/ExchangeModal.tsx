@@ -68,14 +68,13 @@ import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
 import { SwapPriceImpactType } from '@/hooks/usePriceImpactDetails';
 import { getNextNonce } from '@/state/nonces';
-import { getChainName } from '@/__swaps__/utils/chains';
-import { ChainId, ChainName } from '@/networks/types';
+import { ChainId } from '@/networks/types';
 import { AddressOrEth, ParsedAsset } from '@/__swaps__/types/assets';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { estimateSwapGasLimit } from '@/raps/actions';
 import { estimateCrosschainSwapGasLimit } from '@/raps/actions/crosschainSwap';
 import { parseGasParamAmounts } from '@/parsers';
-import { needsL1SecurityFeeChains, shouldDefaultToFastGasChainIds, supportedFlashbotsChainIds } from '@/networks/chains';
+import { chainsName, needsL1SecurityFeeChains, shouldDefaultToFastGasChainIds, supportedFlashbotsChainIds } from '@/networks/chains';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [ChainId.mainnet]: 100,
@@ -433,7 +432,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
 
         const transformedAssetToSell = {
           ...inputCurrency,
-          chainName: getChainName({ chainId: inputCurrency.chainId as number }) as ChainName,
+          chainName: chainsName[inputCurrency.chainId],
           address: inputCurrency.address as AddressOrEth,
           chainId: inputCurrency.chainId,
           colors: inputCurrency.colors as TokenColors,
@@ -441,7 +440,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
 
         const transformedAssetToBuy = {
           ...outputCurrency,
-          chainName: getChainName({ chainId: outputCurrency.chainId as number }) as ChainName,
+          chainName: chainsName[outputCurrency.chainId],
           address: outputCurrency.address as AddressOrEth,
           chainId: outputCurrency.chainId,
           colors: outputCurrency.colors as TokenColors,

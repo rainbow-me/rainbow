@@ -45,11 +45,6 @@ export const customChainIdsToAssetNames: Record<ChainId, string> = {
   324: 'zksync',
 };
 
-export const getChainName = ({ chainId }: { chainId: number }) => {
-  const network = getNetworkFromChainId(chainId);
-  return ChainNameDisplay[chainId] || network;
-};
-
 export function isNativeAsset(address: AddressOrEth, chainId: ChainId) {
   return isLowerCaseMatch(NATIVE_ASSETS_PER_CHAIN[chainId], address);
 }
