@@ -26,6 +26,7 @@ import {
   convertRawAmountToDecimalFormat,
 } from '@/__swaps__/utils/numbers';
 import { isLowerCaseMatch, isLowerCaseMatchWorklet } from '@/__swaps__/utils/strings';
+import { chainsName } from '@/networks/chains';
 
 export const isSameAsset = (a1: Pick<ParsedAsset, 'chainId' | 'address'>, a2: Pick<ParsedAsset, 'chainId' | 'address'>) =>
   +a1.chainId === +a2.chainId && isLowerCaseMatch(a1.address, a2.address);
@@ -289,7 +290,7 @@ export const parseSearchAsset = ({
   isNativeAsset: isNativeAsset(searchAsset.address, searchAsset.chainId),
   address: searchAsset.address,
   chainId: searchAsset.chainId,
-  chainName: chainNameFromChainId(searchAsset.chainId),
+  chainName: chainsName[searchAsset.chainId],
   native: {
     balance: userAsset?.native.balance || {
       amount: '0',

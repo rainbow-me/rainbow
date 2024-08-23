@@ -24,9 +24,9 @@ import { AddressOrEth, AssetType } from '@/__swaps__/types/assets';
 import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
-import { ChainId, chainIdToNameMapping } from '@/networks/types';
+import { ChainId } from '@/networks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { chainsLabel, defaultChains, supportedSwapChainIds } from '@/networks/chains';
+import { chainsLabel, chainsName, defaultChains, supportedSwapChainIds } from '@/networks/chains';
 import { isL2Chain } from '@/handlers/web3';
 
 const NOOP = () => null;
@@ -96,7 +96,7 @@ const AvailableNetworksv2 = ({
             address: newAsset.address as AddressOrEth,
             type: newAsset.type as AssetType,
             chainId: asset.chainId,
-            chainName: chainNameFromChainId(asset.chainId),
+            chainName: chainsName[asset.chainId],
             isNativeAsset: false,
             native: {},
           },
@@ -104,7 +104,7 @@ const AvailableNetworksv2 = ({
             ...newAsset,
             uniqueId,
             chainId: asset.chainId,
-            chainName: chainNameFromChainId(asset.chainId),
+            chainName: chainsName[asset.chainId],
             address: newAsset.address as AddressOrEth,
             highLiquidity: newAsset.highLiquidity ?? false,
             isRainbowCurated: newAsset.isRainbowCurated ?? false,
@@ -237,7 +237,7 @@ const AvailableNetworksv2 = ({
                           availableNetworks: availableChainIds?.length,
                         })
                       : lang.t('expanded_state.asset.available_networkv2', {
-                          availableNetwork: chainIdToNameMapping[availableChainIds[0]],
+                          availableNetwork: chainsName[availableChainIds[0]],
                         })}
                   </Text>
                 </Box>

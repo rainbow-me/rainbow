@@ -36,7 +36,6 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { Address } from 'viem';
 import { ChainId } from '@/networks/types';
 import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/networks/chains';
-import { networkObjects } from '@/networks';
 
 export enum RequestSource {
   WALLETCONNECT = 'walletconnect',
@@ -106,9 +105,6 @@ export const handleMobileWalletProtocolRequest = async ({
     if (isHandshakeAction(action)) {
       logger.debug(`Processing handshake action for ${action.appId}`);
 
-	  const chainIds = Object.values(networkObjects)
-	  .filter(networkObject => networkObject.enabled && networkObject.networkType !== 'testnet')
-	  .map(networkObject => networkObject.id);
       const receivedTimestamp = Date.now();
 
       const dappMetadata = await fetchClientAppMetadata();
@@ -116,7 +112,7 @@ export const handleMobileWalletProtocolRequest = async ({
         const routeParams: WalletconnectApprovalSheetRouteParams = {
           receivedTimestamp,
           meta: {
-            chainIds,
+            chainIds: SUPPORTED_MAINNET_CHAIN_IDS,
             dappName: dappMetadata?.appName || dappMetadata?.appUrl || action.appName || action.appIconUrl || action.appId || '',
             dappUrl: dappMetadata?.appUrl || action.appId || '',
             imageUrl: maybeSignUri(dappMetadata?.iconUrl || action.appIconUrl),
@@ -162,8 +158,7 @@ export const handleMobileWalletProtocolRequest = async ({
       }
 
       if (action.method === 'wallet_switchEthereumChain') {
-        const chainId = BigNumber.from(action.params.chainId).toNumber();
-        const isSupportedChain = Object.values(ChainId).includes(chainId);
+        const isSupportedChain = SUPPORTED_MAINNET_CHAIN_IDS.includes(BigNumber.from(action.params.chainId).toNumber());
         if (!isSupportedChain) {
           await rejectAction(action, {
             message: 'Unsupported chain',

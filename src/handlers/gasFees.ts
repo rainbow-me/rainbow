@@ -1,5 +1,6 @@
+import { chainsName } from '@/networks/chains';
 import { RainbowFetchClient } from '../rainbow-fetch';
-import { ChainId, chainIdToNameMapping } from '@/networks/types';
+import { ChainId } from '@/networks/types';
 
 const rainbowMeteorologyApi = new RainbowFetchClient({
   baseURL: 'https://metadata.p.rainbow.me',
@@ -10,5 +11,4 @@ const rainbowMeteorologyApi = new RainbowFetchClient({
   timeout: 30000, // 30 secs
 });
 
-export const rainbowMeteorologyGetData = (chainId: ChainId) =>
-  rainbowMeteorologyApi.get(`/meteorology/v1/gas/${chainIdToNameMapping[chainId]}`, {});
+export const rainbowMeteorologyGetData = (chainId: ChainId) => rainbowMeteorologyApi.get(`/meteorology/v1/gas/${chainsName[chainId]}`, {});

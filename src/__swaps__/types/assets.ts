@@ -28,7 +28,7 @@ export interface ExtendedAnimatedAssetWithColors extends ParsedSearchAsset {
 export interface ParsedAsset {
   address: AddressOrEth;
   chainId: ChainId;
-  chainName: ChainName;
+  chainName: string;
   colors?: {
     primary?: string;
     fallback?: string;

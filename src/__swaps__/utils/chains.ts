@@ -1,9 +1,10 @@
 import { celo, fantom, harmonyOne, moonbeam } from 'viem/chains';
 import { NATIVE_ASSETS_PER_CHAIN } from '@/references';
 import { AddressOrEth } from '@/__swaps__/types/assets';
-import { ChainId, ChainName, ChainNameDisplay, chainIdToNameMapping, chainNameToIdMapping } from '@/networks/types';
+import { ChainId, ChainName, ChainNameDisplay, chainNameToIdMapping } from '@/networks/types';
 import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
+import { chainsName } from '@/networks/chains';
 
 // @ts-expect-error Property '[ChainId.hardhat]' is missing
 export const customChainIdsToAssetNames: Record<ChainId, string> = {
@@ -61,16 +62,15 @@ export function chainNameForChainIdWithMainnetSubstitution(chainId: ChainId) {
   if (chainId === ChainId.mainnet) {
     return 'ethereum';
   }
-  return chainIdToNameMapping[chainId];
+  return chainsName[chainId];
 }
 
-export function chainNameFromChainId(chainId: ChainId): ChainName {
-  return chainIdToNameMapping[chainId];
+export function chainNameFromChainId(chainId: ChainId): string {
+  return chainsName[chainId];
 }
 
-export function chainNameFromChainIdWorklet(chainId: ChainId): ChainName {
-  'worklet';
-  return chainIdToNameMapping[chainId];
+export function chainNameFromChainIdWorklet(chainId: ChainId): string {
+  return chainsName[chainId];
 }
 
 export const chainIdToUse = (connectedToHardhat: boolean, connectedToHardhatOp: boolean, activeSessionChainId: number) => {

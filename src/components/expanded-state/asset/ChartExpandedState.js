@@ -36,8 +36,7 @@ import { Box } from '@/design-system';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { greaterThanOrEqualTo } from '@/helpers/utilities';
-import { chainIdToNameMapping } from '@/networks/types';
-import { supportedSwapChainIds } from '@/networks/chains';
+import { chainsName, supportedSwapChainIds } from '@/networks/chains';
 
 const defaultCarouselHeight = 60;
 const baseHeight = 386 + (android && 20 - getSoftMenuBarHeight()) - defaultCarouselHeight;
@@ -166,7 +165,7 @@ export default function ChartExpandedState({ asset }) {
             chainId: asset.chainId,
             network: asset.network,
             address: asset.address,
-            mainnetAddress: asset?.networks?.[chainIdToNameMapping[asset.chainId]]?.address,
+            mainnetAddress: asset?.networks?.[chainsName[asset.chainId]]?.address,
           }
         : asset;
   }, [asset, genericAsset, hasBalance]);

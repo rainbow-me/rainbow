@@ -28,7 +28,7 @@ import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { InfoAlert } from '@/components/info-alert/info-alert';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import { ChainId, chainIdToNameMapping } from '@/networks/types';
+import { ChainId } from '@/networks/types';
 import { chainsLabel, chainsName, chainsNativeAsset, defaultChains, supportedWalletConnectChainIds } from '@/networks/chains';
 import { isL2Chain } from '@/handlers/web3';
 
@@ -139,7 +139,7 @@ const NetworkPill = ({ chainIds }) => {
 
               <Box paddingLeft="6px">
                 <Text color="primary (Deprecated)" numberOfLines={1} size="18px / 27px (Deprecated)" weight="bold">
-                  {chainIdToNameMapping[availableNetworkChainIds[0]]}
+                  {chainsLabel[availableNetworkChainIds[0]]}
                 </Text>
               </Box>
             </Inline>
@@ -405,7 +405,7 @@ export default function WalletConnectApprovalSheet() {
                   {type === WalletConnectApprovalSheetType.connect
                     ? lang.t(lang.l.walletconnect.wants_to_connect)
                     : lang.t(lang.l.walletconnect.wants_to_connect_to_network, {
-                        network: chainIdToNameMapping[chainId],
+                        network: chainsLabel[chainId],
                       })}
                 </Text>
               </Column>

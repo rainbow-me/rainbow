@@ -28,7 +28,8 @@ import { Box } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { SignTransactionSheetRouteProp } from '@/screens/SignTransactionSheet';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
-import { ChainId, chainIdToNameMapping } from '@/networks/types';
+import { ChainId } from '@/networks/types';
+import { chainsName } from '@/networks/chains';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 
@@ -490,7 +491,7 @@ export const ensAdditionalRecordsSheetConfig: PartialNavigatorConfigOptions = {
 };
 
 export const explainSheetConfig: PartialNavigatorConfigOptions = {
-  options: ({ route: { params = { network: chainIdToNameMapping[ChainId.mainnet] } } }) => {
+  options: ({ route: { params = { network: chainsName[ChainId.mainnet] } } }) => {
     // @ts-ignore
     const explainerConfig = explainers(params.network)[params?.type];
     return buildCoolModalConfig({

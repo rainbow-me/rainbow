@@ -9,8 +9,7 @@ import { Text } from '../text';
 import { padding, position } from '@/styles';
 import { showActionSheetWithOptions } from '@/utils';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
-import { chainIdToNameMapping } from '@/networks/types';
-import { chainsLabel, defaultChains, supportedSwapChainIds } from '@/networks/chains';
+import { chainsLabel, chainsName, defaultChains, supportedSwapChainIds } from '@/networks/chains';
 import { isL2Chain } from '@/handlers/web3';
 
 const networkMenuItems = supportedSwapChainIds
@@ -94,7 +93,7 @@ const NetworkSwitcherv1 = ({
               weight={prominent ? 'heavy' : 'bold'}
             >
               {lang.t('expanded_state.swap.network_switcher', {
-                network: chainIdToNameMapping[currentChainId],
+                network: chainsName[currentChainId],
               })}
             </Text>
           </Column>

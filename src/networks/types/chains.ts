@@ -137,41 +137,6 @@ export const chainNameToIdMapping: {
   [ChainName.degen]: ChainId.degen,
 };
 
-export const chainIdToNameMapping: {
-  [key in ChainId]: ChainName;
-} = {
-  [ChainId.arbitrum]: ChainName.arbitrum,
-  [ChainId.arbitrumNova]: ChainName.arbitrumNova,
-  [ChainId.arbitrumSepolia]: ChainName.arbitrumSepolia,
-  [ChainId.avalanche]: ChainName.avalanche,
-  [ChainId.avalancheFuji]: ChainName.avalancheFuji,
-  [ChainId.base]: ChainName.base,
-  [ChainId.blast]: ChainName.blast,
-  [ChainId.blastSepolia]: ChainName.blastSepolia,
-  [ChainId.bsc]: ChainName.bsc,
-  [ChainId.celo]: ChainName.celo,
-  [ChainId.gnosis]: ChainName.gnosis,
-  [ChainId.linea]: ChainName.linea,
-  [ChainId.manta]: ChainName.manta,
-  [ChainId.optimism]: ChainName.optimism,
-  [ChainId.polygon]: ChainName.polygon,
-  [ChainId.polygonZkEvm]: ChainName.polygonZkEvm,
-  [ChainId.rari]: ChainName.rari,
-  [ChainId.scroll]: ChainName.scroll,
-  [ChainId.zora]: ChainName.zora,
-  [ChainId.mainnet]: ChainName.mainnet,
-  [ChainId.holesky]: ChainName.holesky,
-  [ChainId.hardhat]: ChainName.hardhat,
-  [ChainId.hardhatOptimism]: ChainName.hardhatOptimism,
-  [ChainId.sepolia]: ChainName.sepolia,
-  [ChainId.optimismSepolia]: ChainName.optimismSepolia,
-  [ChainId.bscTestnet]: ChainName.bscTestnet,
-  [ChainId.baseSepolia]: ChainName.baseSepolia,
-  [ChainId.zoraSepolia]: ChainName.zoraSepolia,
-  [ChainId.polygonAmoy]: ChainName.polygonAmoy,
-  [ChainId.degen]: ChainName.degen,
-};
-
 export interface BackendNetworkServices {
   meteorology: {
     enabled: boolean;
