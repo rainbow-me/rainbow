@@ -65,7 +65,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
     const eip155Account = namespaces.eip155?.accounts?.[0] || undefined;
 
     if (!eip155Account) {
-      const e = new RainbowError(`WalletConnectV2ListItem: unsupported namespace`);
+      const e = new RainbowError(`[WalletConnectV2ListItem]: unsupported namespace`);
       logger.error(e);
 
       // defensive, just for types, should never happen
@@ -76,7 +76,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
     const chainIds = (chains?.map(chain => parseInt(chain.split(':')[1]))?.filter(isSupportedChain) ?? []) as ChainId[];
 
     if (!address) {
-      const e = new RainbowError(`WalletConnectV2ListItem: could not parse address`);
+      const e = new RainbowError(`[WalletConnectV2ListItem]: could not parse address`);
       logger.error(e);
 
       // defensive, just for types, should never happen

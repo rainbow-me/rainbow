@@ -276,7 +276,7 @@ export const getPolygonGasPrices = async () => {
     };
     return polygonGasStationPrices;
   } catch (e) {
-    logger.error(new RainbowError(`failed to fetch polygon gas prices ${e}`));
+    logger.error(new RainbowError(`[redux/gas]: failed to fetch polygon gas prices ${e}`));
     return null;
   }
 };
@@ -307,7 +307,7 @@ export const getBscGasPrices = async () => {
     };
     return bscGasStationPrices;
   } catch (e) {
-    logger.error(new RainbowError(`failed to fetch BSC gas prices ${e}`));
+    logger.error(new RainbowError(`[redux/gas]: failed to fetch BSC gas prices ${e}`));
     return null;
   }
 };
@@ -603,13 +603,12 @@ export const gasPricesStartPolling =
                     type: GAS_FEES_SUCCESS,
                   });
                 } catch (e) {
-                  logger.error(new RainbowError(`Etherscan gas estimates error: ${e}`));
-                  logger.debug('falling back to eth gas station');
+                  logger.error(new RainbowError(`[redux/gas]: Etherscan gas estimates error: ${e}`));
                 }
               }
               fetchResolve(true);
             } catch (e) {
-              logger.error(new RainbowError(`Gas Estimates Failed for ${network}: ${e}`));
+              logger.error(new RainbowError(`[redux/gas]: Gas Estimates Failed for ${network}: ${e}`));
               fetchReject(e);
             }
           })

@@ -55,12 +55,12 @@ export default function useHideSplashScreen() {
       if (appIcon === 'poolboy') {
         const sound = new Sound(require('../assets/sounds/RainbowSega.mp3'), (error: any) => {
           if (error) {
-            logger.error(new RainbowError('Error playing poolboy sound'));
+            logger.error(new RainbowError('[useHideSplashScreen]: Error playing poolboy sound'));
             return;
           }
 
           sound.play((success: any) => {
-            logger.debug('playing poolboy sound');
+            logger.debug('[useHideSplashScreen]: playing poolboy sound');
           });
         });
       }

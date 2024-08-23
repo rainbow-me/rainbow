@@ -176,7 +176,7 @@ export const PointsProfileProvider = ({ children }: { children: React.ReactNode 
             Alert.alert(i18n.t(i18n.l.points.console.generic_alert));
             break;
         }
-        logger.info('Points: Failed to onboard user', { errorType });
+        logger.error(new RainbowError('[PointsProfileContext]: Failed to onboard user'), { errorType });
         analyticsV2.track(analyticsV2.event.pointsOnboardingScreenFailedToSignIn, {
           deeplinked,
           referralCode: !!referralCode,
@@ -201,7 +201,7 @@ export const PointsProfileProvider = ({ children }: { children: React.ReactNode 
         hardwareWallet: isHardwareWallet,
         errorType: undefined,
       });
-      logger.error(new RainbowError('Points: signIn error'), { error });
+      logger.error(new RainbowError('[PointsProfileContext]: signIn error'), { error });
     }
   }, [accountAddress, deeplinked, goBack, isHardwareWallet, referralCode]);
 

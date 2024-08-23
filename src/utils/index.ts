@@ -19,7 +19,6 @@ export { default as haptics } from './haptics';
 export { default as isETH } from './isETH';
 export { default as isLowerCaseMatch } from './isLowerCaseMatch';
 export { default as labelhash } from './labelhash';
-export { default as logger } from './logger';
 export { default as magicMemo } from './magicMemo';
 export { default as measureText } from './measureText';
 export { default as neverRerender } from './neverRerender';

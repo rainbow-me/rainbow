@@ -11,7 +11,6 @@ import * as keychain from '@/model/keychain';
 import * as kc from '@/keychain';
 import { AllRainbowWallets, allWalletsVersion, createWallet, RainbowWallet } from './wallet';
 import { analytics } from '@/analytics';
-import oldLogger from '@/utils/logger';
 import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID, IS_DEV } from '@/env';
 import AesEncryptor from '../handlers/aesEncryption';
@@ -152,7 +151,7 @@ export async function backupAllWalletsToCloud({
       );
 
     const now = Date.now();
-    logger.debug(`Creating backup with all wallets to ${cloudPlatform}`, {
+    logger.debug(`[backup]: Creating backup with all wallets to ${cloudPlatform}`, {
       category: 'backup',
       time: now,
       label: cloudPlatform,
@@ -204,7 +203,7 @@ export async function backupAllWalletsToCloud({
     const walletIdsToUpdate = Object.keys(wallets);
     await dispatch(setAllWalletsWithIdsAsBackedUp(walletIdsToUpdate, WalletBackupTypes.cloud, updatedBackupFile));
 
-    logger.debug(`Successfully backed up all wallets to ${cloudPlatform}`, {
+    logger.debug(`[backup]: Successfully backed up all wallets to ${cloudPlatform}`, {
       category: 'backup',
       time: now,
       label: cloudPlatform,
@@ -430,7 +429,7 @@ export async function restoreCloudBackup({
     if (message === CLOUD_BACKUP_ERRORS.ERROR_DECRYPTING_DATA) {
       return RestoreCloudBackupResultStates.incorrectPassword;
     }
-    logger.error(new RainbowError('Error while restoring back up'), {
+    logger.error(new RainbowError(`[backup]: Error while restoring back up`), {
       message,
     });
     return RestoreCloudBackupResultStates.failedWhenRestoring;
@@ -521,8 +520,7 @@ async function restoreSpecificBackupIntoKeychain(backedUpData: BackedUpData, use
     }
     return true;
   } catch (e) {
-    oldLogger.sentry('error in restoreSpecificBackupIntoKeychain');
-    captureException(e);
+    logger.error(new RainbowError(`[backup]: Error restoring specific backup into keychain: ${e}`));
     return false;
   }
 }
@@ -590,8 +588,7 @@ async function restoreCurrentBackupIntoKeychain(backedUpData: BackedUpData, newP
 
     return true;
   } catch (e) {
-    oldLogger.sentry('error in restoreBackupIntoKeychain');
-    captureException(e);
+    logger.error(new RainbowError(`[backup]: Error restoring current backup into keychain: ${e}`));
     return false;
   }
 }
@@ -620,7 +617,7 @@ async function decryptSecretFromBackupPin({ secret, backupPIN }: { secret?: stri
       }
       processedSecret = decryptedSecretToUse;
     } else {
-      logger.error(new RainbowError('Failed to decrypt backed up seed phrase using backup PIN.'));
+      logger.error(new RainbowError(`[backup]: Failed to decrypt backed up seed phrase using backup PIN.`));
       return processedSecret;
     }
   }
@@ -673,8 +670,7 @@ export async function fetchBackupPassword(): Promise<null | BackupPassword> {
     }
     return null;
   } catch (e) {
-    oldLogger.sentry('Error while fetching backup password', e);
-    captureException(e);
+    logger.error(new RainbowError(`[backup]: Error while fetching backup password: ${e}`));
     return null;
   }
 }
@@ -687,7 +683,7 @@ export async function getDeviceUUID(): Promise<string | null> {
   return new Promise(resolve => {
     DeviceUUID.getUUID((error: unknown, uuid: string[]) => {
       if (error) {
-        logger.error(new RainbowError('Received error when trying to get uuid from Native side'), {
+        logger.error(new RainbowError(`[backup]: Received error when trying to get uuid from Native side`), {
           error,
         });
         resolve(null);
@@ -739,7 +735,7 @@ export async function checkIdentifierOnLaunch() {
     if (currentIdentifier.error) {
       switch (currentIdentifier.error) {
         case kc.ErrorType.Unavailable: {
-          logger.debug('Value for current identifier not found, setting it to new UUID...', {
+          logger.debug(`[backup]: Value for current identifier not found, setting it to new UUID...`, {
             uuid,
             error: currentIdentifier.error,
           });
@@ -748,7 +744,7 @@ export async function checkIdentifierOnLaunch() {
         }
 
         default:
-          logger.error(new RainbowError('Error while checking identifier on launch'), {
+          logger.error(new RainbowError(`[backup]: Error while checking identifier on launch`), {
             error: currentIdentifier.error,
           });
           break;
@@ -798,10 +794,8 @@ export async function checkIdentifierOnLaunch() {
       });
     });
   } catch (error) {
-    logger.error(new RainbowError('Error while checking identifier on launch'), {
-      extra: {
-        error,
-      },
+    logger.error(new RainbowError(`[backup]: Error while checking identifier on launch`), {
+      error,
     });
   }
 
