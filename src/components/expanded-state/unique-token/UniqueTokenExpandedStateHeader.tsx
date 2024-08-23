@@ -343,12 +343,12 @@ const UniqueTokenExpandedStateHeader = ({
     // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === AssetActionsEnum.etherscan) {
-        ethereumUtils.openNftInBlockExplorer(
+        ethereumUtils.openNftInBlockExplorer({
           // @ts-expect-error address could be undefined?
-          asset.asset_contract.address,
-          asset.id,
-          asset.network
-        );
+          constractAddress: asset.asset_contract.address,
+          tokenId: asset.id,
+          chainId: asset.chainId,
+        });
       } else if (actionKey === AssetActionsEnum.rainbowWeb) {
         Linking.openURL(rainbowWebUrl);
       } else if (actionKey === AssetActionsEnum.opensea) {

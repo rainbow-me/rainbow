@@ -372,8 +372,7 @@ function openTokenEtherscanURL({ address, chainId }: { address: EthereumAddress;
   Linking.openURL(`${explorer}/token/${address}`);
 }
 
-function openNftInBlockExplorer(contractAddress: string, tokenId: string, network: Network) {
-  const chainId = chainsIdByName[network];
+function openNftInBlockExplorer({ contractAddress, tokenId, chainId }: { contractAddress: string; tokenId: string; chainId: ChainId }) {
   const explorer = defaultChains[chainId]?.blockExplorers?.default?.url;
   Linking.openURL(`${explorer}/token/${contractAddress}?a=${tokenId}`);
 }
