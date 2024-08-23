@@ -5,7 +5,6 @@ import Routes from '@/navigation/routesNames';
 import { PortalSheetProps } from '@/screens/Portal';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { CampaignCheckResult } from '@/components/remote-promo-sheet/checkForCampaign';
-import { UniqueId } from '@/__swaps__/types/assets';
 
 export type PartialNavigatorConfigOptions = Pick<Partial<Parameters<ReturnType<typeof createStackNavigator>['Screen']>[0]>, 'options'>;
 
