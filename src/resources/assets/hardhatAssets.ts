@@ -45,7 +45,7 @@ const fetchHardhatBalancesWithBalanceChecker = async (
  * @returns The balances of the hardhat assets for the given account address and network.
  */
 export const fetchHardhatBalances = async (accountAddress: string, network: Network = Network.mainnet): Promise<RainbowAddressAssets> => {
-  const chainAssetsMap = keyBy(chainAssets[network as keyof typeof chainAssets], ({ asset }) => `${asset.asset_code}_${asset.network}`);
+  const chainAssetsMap = keyBy(chainAssets[network as keyof typeof chainAssets], ({ asset }) => `${asset.asset_code}_${asset.chainId}`);
 
   const tokenAddresses = Object.values(chainAssetsMap).map(({ asset: { asset_code } }) =>
     asset_code === ETH_ADDRESS ? AddressZero : asset_code.toLowerCase()
