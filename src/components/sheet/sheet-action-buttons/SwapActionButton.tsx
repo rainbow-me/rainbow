@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import SheetActionButton from './SheetActionButton';
-import { useExpandedStateNavigation, useSwapCurrencyHandlers, useWallets } from '@/hooks';
+import { useAccountSettings, useExpandedStateNavigation, useSwapCurrencyHandlers, useWallets } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme';
 import { RainbowToken } from '@/entities';
@@ -31,6 +31,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
   const { colors } = useTheme();
   const { swaps_v2 } = useRemoteConfig();
   const { navigate } = useNavigation();
+  const { accountAddress } = useAccountSettings();
   const swapsV2Enabled = useExperimentalFlag(SWAPS_V2);
   const { isReadOnlyWallet } = useWallets();
 
@@ -53,7 +54,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
 
       const chainId = ethereumUtils.getChainIdFromNetwork(asset.network);
       const uniqueId = `${asset.address}_${chainId}`;
-      const userAsset = userAssetsStore.getState().userAssets.get(uniqueId);
+      const userAsset = userAssetsStore.getState(accountAddress).userAssets.get(uniqueId);
 
       const parsedAsset = parseSearchAsset({
         assetWithPrice: {
@@ -87,7 +88,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
 
         const nativeAssetForChain = await ethereumUtils.getNativeAssetForNetwork(chainId);
         if (nativeAssetForChain && !isSameAsset({ address: nativeAssetForChain.address as AddressOrEth, chainId }, parsedAsset)) {
-          const userOutputAsset = userAssetsStore.getState().getUserAsset(`${nativeAssetForChain.address}_${chainId}`);
+          const userOutputAsset = userAssetsStore.getState(accountAddress).getUserAsset(`${nativeAssetForChain.address}_${chainId}`);
 
           if (userOutputAsset) {
             swapsStore.setState({ outputAsset: userOutputAsset });
@@ -125,7 +126,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
         }
       } else {
         const largestBalanceSameChainUserAsset = userAssetsStore
-          .getState()
+          .getState(accountAddress)
           .getUserAssets()
           .find(userAsset => userAsset.chainId === chainId && userAsset.address !== asset.address);
         if (largestBalanceSameChainUserAsset) {

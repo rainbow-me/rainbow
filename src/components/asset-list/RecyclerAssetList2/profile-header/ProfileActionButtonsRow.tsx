@@ -181,7 +181,7 @@ function SwapButton() {
       });
       if (swapsV2Enabled) {
         swapsStore.setState({
-          inputAsset: userAssetsStore.getState().getHighestValueEth(),
+          inputAsset: userAssetsStore.getState(accountAddress).getHighestValueEth(),
         });
         InteractionManager.runAfterInteractions(() => {
           navigate(Routes.SWAP);

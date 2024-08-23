@@ -11,7 +11,7 @@ import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections'
 import { useLegacyNFTs } from '@/resources/nfts';
 import useNftSort from './useNFTsSortBy';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 export default function useWalletSectionsData({
   type,
@@ -20,13 +20,10 @@ export default function useWalletSectionsData({
 } = {}) {
   const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
   const { selectedWallet, isReadOnlyWallet } = useWallets();
-  const { isLoadingUserAssets, sortedAssets } = userAssetsStore(state => {
-    const isAddressSynced = state.associatedWalletAddress === accountAddress;
-    return {
-      sortedAssets: isAddressSynced ? state.legacyUserAssets : [],
-      isLoadingUserAssets: isAddressSynced ? state.isLoadingUserAssets : true,
-    };
-  });
+  const { isLoadingUserAssets, sortedAssets } = useUserAssetsStore(accountAddress, state => ({
+    sortedAssets: state.legacyUserAssets,
+    isLoadingUserAssets: state.isLoadingUserAssets,
+  }));
   const isWalletEthZero = useIsWalletEthZero();
 
   const { nftSort } = useNftSort();

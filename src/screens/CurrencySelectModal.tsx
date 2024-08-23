@@ -39,7 +39,7 @@ import DiscoverSearchInput from '@/components/discover/DiscoverSearchInput';
 import { externalTokenQueryKey, fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { queryClient } from '@/react-query/queryClient';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ChainId } from '@/__swaps__/types/chains';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
@@ -121,12 +121,7 @@ export default function CurrencySelectModal() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);
-  const { sortedAssets } = userAssetsStore(state => {
-    const isAddressSynced = state.associatedWalletAddress === accountAddress;
-    return {
-      sortedAssets: isAddressSynced ? state.legacyUserAssets : [],
-    };
-  });
+  const sortedAssets = useUserAssetsStore(accountAddress, state => state.legacyUserAssets);
   const assetsInWallet = sortedAssets as SwappableAsset[];
 
   const [currentChainId, setCurrentChainId] = useState(chainId);

@@ -6,48 +6,47 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { swapsStore } from '../swaps/swapsStore';
-import { ParsedAddressAsset } from '@/entities';
+import { useStore } from 'zustand';
+import { useCallback } from 'react';
 import { getNetworkFromChainId, getUniqueId } from '@/utils/ethereumUtils';
+import { ParsedAddressAsset } from '@/entities';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 
-const parsedSearchAssetToParsedAddressAsset = (asset: ParsedSearchAsset): ParsedAddressAsset => {
-  const network = getNetworkFromChainId(asset.chainId);
-  return {
-    balance: {
-      amount: asset.balance.amount,
-      display: asset.balance.display,
-    },
-    network,
-    name: asset.name,
-    chainId: asset.chainId,
-    color: asset.colors?.primary ?? asset.colors?.fallback,
-    colors: asset.colors?.primary
-      ? {
-          primary: asset.colors.primary,
-          fallback: asset.colors.fallback,
-          shadow: asset.colors.shadow,
-        }
-      : undefined,
-    icon_url: asset.icon_url,
-    price: {
-      changed_at: undefined,
-      relative_change_24h: asset.price?.relative_change_24h,
-      value: asset.price?.value,
-    },
-    type: asset.type,
-    uniqueId: getUniqueId(asset.address, network),
-    mainnet_address: asset.mainnetAddress,
-    isNativeAsset: asset.isNativeAsset,
-    address: asset.address,
-    decimals: asset.decimals,
-    symbol: asset.symbol,
-    highLiquidity: asset.highLiquidity,
-    isVerified: asset.isVerified,
-    shadowColor: asset.colors?.shadow,
-    networks: asset.networks,
-  };
-};
+const parsedSearchAssetToParsedAddressAsset = (asset: ParsedSearchAsset): ParsedAddressAsset => ({
+  balance: {
+    amount: asset.balance.amount,
+    display: asset.balance.display,
+  },
+  network: getNetworkFromChainId(asset.chainId),
+  name: asset.name,
+  chainId: asset.chainId,
+  color: asset.colors?.primary ?? asset.colors?.fallback,
+  colors: asset.colors?.primary
+    ? {
+        primary: asset.colors.primary,
+        fallback: asset.colors.fallback,
+        shadow: asset.colors.shadow,
+      }
+    : undefined,
+  icon_url: asset.icon_url,
+  price: {
+    changed_at: undefined,
+    relative_change_24h: asset.price?.relative_change_24h,
+    value: asset.price?.value,
+  },
+  type: asset.type,
+  uniqueId: getUniqueId(asset.address, asset.chainId),
+  mainnet_address: asset.mainnetAddress,
+  isNativeAsset: asset.isNativeAsset,
+  address: asset.address,
+  decimals: asset.decimals,
+  symbol: asset.symbol,
+  highLiquidity: asset.highLiquidity,
+  isVerified: asset.isVerified,
+  shadowColor: asset.colors?.shadow,
+  networks: asset.networks,
+});
 
 const getSearchQueryKey = ({ filter, searchQuery }: { filter: UserAssetFilter; searchQuery: string }) => `${filter}${searchQuery}`;
 
@@ -64,7 +63,6 @@ const getDefaultCacheKeys = (): Set<string> => {
 const CACHE_ITEMS_TO_PRESERVE = getDefaultCacheKeys();
 
 export interface UserAssetsState {
-  associatedWalletAddress: Address | undefined;
   chainBalances: Map<ChainId, number>;
   currentAbortController: AbortController;
   filter: UserAssetFilter;
@@ -84,93 +82,11 @@ export interface UserAssetsState {
   selectUserAssets: (selector: (asset: ParsedSearchAsset) => boolean) => Generator<[UniqueId, ParsedSearchAsset], void, unknown>;
   setSearchCache: (queryKey: string, filteredIds: UniqueId[]) => void;
   setSearchQuery: (query: string) => void;
-  setUserAssets: (associatedWalletAddress: Address, userAssets: Map<UniqueId, ParsedSearchAsset> | ParsedSearchAsset[]) => void;
+  setUserAssets: (userAssets: Map<UniqueId, ParsedSearchAsset> | ParsedSearchAsset[]) => void;
 }
 
-export type AllUserAssetsState = Map<Address, UserAssetsState>;
-
-// NOTE: We are serializing Map as an Array<[UniqueId, ParsedSearchAsset]>
-type UserAssetsStateWithTransforms = Omit<Partial<UserAssetsState>, 'chainBalances' | 'idsByChain' | 'userAssets'> & {
-  chainBalances: Array<[ChainId, number]>;
-  idsByChain: Array<[UserAssetFilter, UniqueId[]]>;
-  userAssets: Array<[UniqueId, ParsedSearchAsset]>;
-};
-
-type AllUserAssetsStateWithTransforms = Map<Address, Array<[Address, UserAssetsState]>>;
-
-function serializeUserAssetsState(state: Map<Address, Array<[Address, UserAssetsState]>>, version?: number) {
-  try {
-    const transformedStateToPersist: UserAssetsStateWithTransforms = {
-      ...state,
-      chainBalances: state.chainBalances ? Array.from(state.chainBalances.entries()) : [],
-      idsByChain: state.idsByChain ? Array.from(state.idsByChain.entries()) : [],
-      userAssets: state.userAssets ? Array.from(state.userAssets.entries()) : [],
-    };
-
-    const x = Array.from(state.entries()).map();
-
-    return JSON.stringify({
-      state: transformedStateToPersist,
-      version,
-    });
-  } catch (error) {
-    logger.error(new RainbowError(`[userAssetsStore]: Failed to serialize state for user assets storage`), { error });
-    throw error;
-  }
-}
-
-function deserializeUserAssetsState(serializedState: string) {
-  let parsedState: { state: UserAssetsStateWithTransforms; version: number };
-  try {
-    parsedState = JSON.parse(serializedState);
-  } catch (error) {
-    logger.error(new RainbowError(`[userAssetsStore]: Failed to parse serialized state from user assets storage`), { error });
-    throw error;
-  }
-
-  const { state, version } = parsedState;
-
-  let chainBalances = new Map<ChainId, number>();
-  try {
-    if (state.chainBalances) {
-      chainBalances = new Map(state.chainBalances);
-    }
-  } catch (error) {
-    logger.error(new RainbowError(`[userAssetsStore]: Failed to convert chainBalances from user assets storage`), { error });
-  }
-
-  let idsByChain = new Map<UserAssetFilter, UniqueId[]>();
-  try {
-    if (state.idsByChain) {
-      idsByChain = new Map(state.idsByChain);
-    }
-  } catch (error) {
-    logger.error(new RainbowError(`[userAssetsStore]: Failed to convert idsByChain from user assets storage`), { error });
-  }
-
-  let userAssetsData: Map<UniqueId, ParsedSearchAsset> = new Map();
-  try {
-    if (state.userAssets.length) {
-      userAssetsData = new Map(state.userAssets);
-    }
-  } catch (error) {
-    logger.error(new RainbowError(`[userAssetsStore]: Failed to convert userAssets from user assets storage`), { error });
-  }
-
-  return {
-    state: {
-      ...state,
-      chainBalances,
-      idsByChain,
-      userAssets: userAssetsData,
-    },
-    version,
-  };
-}
-
-export const userAssetsStore = createRainbowStore<UserAssetsState>(
-  (set, get) => ({
-    associatedWalletAddress: undefined,
+export const createUserAssetsStore = (address: Address | string) =>
+  createRainbowStore<UserAssetsState>((set, get) => ({
     chainBalances: new Map(),
     currentAbortController: new AbortController(),
     filter: 'all',
@@ -180,6 +96,7 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
     userAssets: new Map(),
     legacyUserAssets: [],
     isLoadingUserAssets: false,
+
     getBalanceSortedChainList: () => {
       const chainBalances = [...get().chainBalances.entries()];
       chainBalances.sort(([, balanceA], [, balanceB]) => balanceB - balanceA);
@@ -201,7 +118,7 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
       const queryKey = getSearchQueryKey({ filter, searchQuery: inputSearchQuery });
 
       // Use an external function to get the cache to prevent updates in response to changes in the cache
-      const cachedData = getCurrentCache().get(queryKey);
+      const cachedData = getCurrentSearchCache(address)?.get(queryKey);
 
       // Check if the search results are already cached
       if (cachedData) {
@@ -315,7 +232,7 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
       });
     },
 
-    setUserAssets: (associatedWalletAddress: Address, userAssets: Map<UniqueId, ParsedSearchAsset> | ParsedSearchAsset[]) =>
+    setUserAssets: (userAssets: Map<UniqueId, ParsedSearchAsset> | ParsedSearchAsset[]) =>
       set(() => {
         const idsByChain = new Map<UserAssetFilter, UniqueId[]>();
         const unsortedChainBalances = new Map<ChainId, number>();
@@ -369,10 +286,9 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
         searchCache.set('all', filteredAllIdsArray);
 
         if (isMap) {
-          return { associatedWalletAddress, chainBalances, idsByChain, legacyUserAssets, searchCache, userAssets };
+          return { chainBalances, idsByChain, legacyUserAssets, searchCache, userAssets };
         } else
           return {
-            associatedWalletAddress,
             chainBalances,
             idsByChain,
             legacyUserAssets,
@@ -380,22 +296,146 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
             userAssets: userAssetsMap,
           };
       }),
+  }));
+
+type UserAssetsStoreType = ReturnType<typeof createUserAssetsStore>;
+
+interface StoreManagerState {
+  stores: Map<Address | string, UserAssetsStoreType>;
+}
+
+// NOTE: We are serializing Map as an Array<[UniqueId, ParsedSearchAsset]>
+type UserAssetsStateWithTransforms = Omit<Partial<UserAssetsState>, 'chainBalances' | 'idsByChain' | 'userAssets'> & {
+  chainBalances: Array<[ChainId, number]>;
+  idsByChain: Array<[UserAssetFilter, UniqueId[]]>;
+  userAssets: Array<[UniqueId, ParsedSearchAsset]>;
+};
+
+type StoreManagerStateWithTransforms = { stores: Array<[Address | string, UserAssetsStateWithTransforms]> };
+
+function serializeStoreManager(state: Partial<StoreManagerState>, version?: number) {
+  try {
+    const transformedStateToPersist: StoreManagerStateWithTransforms = {
+      stores: state.stores
+        ? Array.from(state.stores.entries()).map(([address, store]) => {
+            const storeState = store.getState();
+            const transformedStore = {
+              chainBalances: storeState.chainBalances ? Array.from(storeState.chainBalances.entries()) : [],
+              idsByChain: storeState.idsByChain ? Array.from(storeState.idsByChain.entries()) : [],
+              userAssets: storeState.userAssets ? Array.from(storeState.userAssets.entries()) : [],
+            };
+            return [address, transformedStore];
+          })
+        : [],
+    };
+
+    return JSON.stringify({
+      state: transformedStateToPersist,
+      version,
+    });
+  } catch (error) {
+    logger.error(new RainbowError('[userAssetsStore]: Failed to serialize state for user assets storage'), { error });
+    throw error;
+  }
+}
+
+function deserializeStoreManager(serializedState: string) {
+  let parsedState: { state: StoreManagerStateWithTransforms; version: number };
+  try {
+    parsedState = JSON.parse(serializedState);
+  } catch (error) {
+    logger.error(new RainbowError('[userAssetsStore]: Failed to parse serialized state from user assets storage'), { error });
+    throw error;
+  }
+
+  const { state, version } = parsedState;
+
+  const stores = new Map<Address | string, UserAssetsStoreType>();
+
+  state.stores.forEach(([address, transformedStore]) => {
+    let chainBalances = new Map<ChainId, number>();
+    try {
+      if (transformedStore.chainBalances) {
+        chainBalances = new Map(transformedStore.chainBalances);
+      }
+    } catch (error) {
+      logger.error(new RainbowError('[userAssetsStore]: Failed to convert chainBalances from user assets storage'), { error });
+    }
+
+    let idsByChain = new Map<UserAssetFilter, UniqueId[]>();
+    try {
+      if (transformedStore.idsByChain) {
+        idsByChain = new Map(transformedStore.idsByChain);
+      }
+    } catch (error) {
+      logger.error(new RainbowError('[userAssetsStore]: Failed to convert idsByChain from user assets storage'), { error });
+    }
+
+    let userAssets: Map<UniqueId, ParsedSearchAsset> = new Map();
+    try {
+      if (transformedStore.userAssets.length) {
+        userAssets = new Map(transformedStore.userAssets);
+      }
+    } catch (error) {
+      logger.error(new RainbowError('[userAssetsStore]: Failed to convert userAssets from user assets storage'), { error });
+    }
+
+    const rehydratedStore = createUserAssetsStore(address);
+
+    rehydratedStore.setState({
+      chainBalances,
+      idsByChain,
+      userAssets,
+    });
+
+    stores.set(address, rehydratedStore);
+  });
+
+  return {
+    state: {
+      stores: stores,
+    },
+    version,
+  };
+}
+
+const storeManager = createRainbowStore<StoreManagerState>(
+  () => ({
+    stores: new Map(),
   }),
   {
-    deserializer: deserializeUserAssetsState,
-    partialize: state => ({
-      associatedWalletAddress: state.associatedWalletAddress,
-      chainBalances: state.chainBalances,
-      idsByChain: state.idsByChain,
-      userAssets: state.userAssets,
-      legacyUserAssets: state.legacyUserAssets,
-    }),
-    serializer: serializeUserAssetsState,
-    storageKey: 'userAssets',
-    version: 3,
+    storageKey: 'userAssetsStoreManager',
+    version: 1,
+    serializer: serializeStoreManager,
+    deserializer: deserializeStoreManager,
   }
 );
 
-function getCurrentCache(): Map<string, UniqueId[]> {
-  return userAssetsStore.getState().searchCache;
+function getOrCreateStore(address: Address | string): UserAssetsStoreType {
+  const { stores } = storeManager.getState();
+  let store = stores.get(address);
+
+  if (!store) {
+    store = createUserAssetsStore(address);
+    storeManager.setState(state => ({
+      stores: new Map(state.stores).set(address, store as UserAssetsStoreType),
+    }));
+  }
+
+  return store;
+}
+
+export const userAssetsStore = {
+  getState: (address: Address | string) => getOrCreateStore(address).getState(),
+  setState: (address: Address | string, partial: Partial<UserAssetsState> | ((state: UserAssetsState) => Partial<UserAssetsState>)) =>
+    getOrCreateStore(address).setState(partial),
+};
+
+export function useUserAssetsStore<T>(address: Address | string, selector: (state: UserAssetsState) => T) {
+  const store = getOrCreateStore(address);
+  return useStore(store, useCallback(selector, [address]));
+}
+
+function getCurrentSearchCache(address: Address | string): Map<string, UniqueId[]> | undefined {
+  return getOrCreateStore(address).getState().searchCache;
 }

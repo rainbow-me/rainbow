@@ -31,27 +31,27 @@ export const USER_ASSETS_STALE_INTERVAL = 30000;
 // Query Types
 
 export type UserAssetsArgs = {
-  address: Address;
+  address: Address | string;
   currency: SupportedCurrencyKey;
   testnetMode?: boolean;
 };
 
 type SetUserAssetsArgs = {
-  address: Address;
+  address: Address | string;
   currency: SupportedCurrencyKey;
   userAssets?: UserAssetsResult;
   testnetMode?: boolean;
 };
 
 type SetUserDefaultsArgs = {
-  address: Address;
+  address: Address | string;
   currency: SupportedCurrencyKey;
   staleTime: number;
   testnetMode?: boolean;
 };
 
 type FetchUserAssetsArgs = {
-  address: Address;
+  address: Address | string;
   currency: SupportedCurrencyKey;
   testnetMode?: boolean;
 };
@@ -138,7 +138,7 @@ async function userAssetsQueryFunctionRetryByChain({
   currency,
   testnetMode,
 }: {
-  address: Address;
+  address: Address | string;
   chainIds: ChainId[];
   currency: SupportedCurrencyKey;
   testnetMode?: boolean;

@@ -65,7 +65,7 @@ import { getNextNonce } from '@/state/nonces';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { REGISTRATION_STEPS } from '@/helpers/ens';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ChainId } from '@/__swaps__/types/chains';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
@@ -102,12 +102,7 @@ const validateRecipient = (toAddress, tokenAddress) => {
 export default function SendSheet(props) {
   const { goBack, navigate } = useNavigation();
   const { accountAddress, nativeCurrency, network } = useAccountSettings();
-  const { sortedAssets } = userAssetsStore(state => {
-    const isAddressSynced = state.associatedWalletAddress === accountAddress;
-    return {
-      sortedAssets: isAddressSynced ? state.legacyUserAssets : [],
-    };
-  });
+  const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
   const {
     gasFeeParamsBySpeed,
     gasLimit,

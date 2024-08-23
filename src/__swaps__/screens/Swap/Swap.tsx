@@ -28,6 +28,7 @@ import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { SwapWarning } from './components/SwapWarning';
 import { clearCustomGasSettings } from './hooks/useCustomGas';
 import { SwapProvider, useSwapContext } from './providers/swap-provider';
+import { useAccountSettings } from '@/hooks';
 import { NavigateToSwapSettingsTrigger } from './components/NavigateToSwapSettingsTrigger';
 
 /** README
@@ -105,9 +106,11 @@ const useMountSignal = () => {
 };
 
 const useCleanupOnUnmount = () => {
+  const { accountAddress } = useAccountSettings();
+
   useEffect(() => {
     return () => {
-      const highestValueEth = userAssetsStore.getState().getHighestValueEth();
+      const highestValueEth = userAssetsStore.getState(accountAddress).getHighestValueEth();
       const parsedAsset = highestValueEth
         ? parseSearchAsset({
             assetWithPrice: undefined,
@@ -125,22 +128,22 @@ const useCleanupOnUnmount = () => {
         selectedOutputChainId: parsedAsset?.chainId ?? ChainId.mainnet,
       });
 
-      userAssetsStore.setState({ filter: 'all', inputSearchQuery: '' });
+      userAssetsStore.setState(accountAddress, { filter: 'all', inputSearchQuery: '' });
 
       clearCustomGasSettings();
     };
-  }, []);
+  }, [accountAddress]);
 };
 
 const WalletAddressObserver = () => {
-  const currentWalletAddress = userAssetsStore(state => state.associatedWalletAddress);
+  const { accountAddress } = useAccountSettings();
   const { setAsset } = useSwapContext();
 
   const setNewInputAsset = useCallback(() => {
-    const newHighestValueEth = userAssetsStore.getState().getHighestValueEth();
+    const newHighestValueEth = userAssetsStore.getState(accountAddress).getHighestValueEth();
 
-    if (userAssetsStore.getState().filter !== 'all') {
-      userAssetsStore.setState({ filter: 'all' });
+    if (userAssetsStore.getState(accountAddress).filter !== 'all') {
+      userAssetsStore.setState(accountAddress, { filter: 'all' });
     }
 
     setAsset({
@@ -148,16 +151,16 @@ const WalletAddressObserver = () => {
       asset: newHighestValueEth,
     });
 
-    if (userAssetsStore.getState().userAssets.size === 0) {
+    if (userAssetsStore.getState(accountAddress).userAssets.size === 0) {
       setAsset({
         type: SwapAssetType.outputAsset,
         asset: null,
       });
     }
-  }, [setAsset]);
+  }, [accountAddress, setAsset]);
 
   useAnimatedReaction(
-    () => currentWalletAddress,
+    () => accountAddress,
     (current, previous) => {
       const didWalletAddressChange = previous && current !== previous;
 

@@ -4,9 +4,10 @@ import { ContextMenuButton } from '@/components/context-menu';
 import { Bleed, Box, Inline, Text, TextProps } from '@/design-system';
 import * as i18n from '@/languages';
 import { ChainId, ChainNameDisplay } from '@/__swaps__/types/chains';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { showActionSheetWithOptions } from '@/utils';
-import { userAssetsStore } from '@/state/assets/userAssets';
 import { chainNameForChainIdWithMainnetSubstitution } from '@/__swaps__/utils/chains';
+import { useAccountSettings } from '@/hooks';
 
 interface DefaultButtonOptions {
   iconColor?: TextProps['color'];
@@ -40,6 +41,7 @@ export const ChainContextMenu = ({
   selectedChainId,
   showAllNetworksOption = true,
 }: ChainContextMenuProps) => {
+  const { accountAddress } = useAccountSettings();
   const {
     iconColor = 'labelSecondary',
     iconSize = 'icon 13px',
@@ -49,7 +51,7 @@ export const ChainContextMenu = ({
     textWeight = 'heavy',
   } = defaultButtonOptions;
 
-  const balanceSortedChains = userAssetsStore(state =>
+  const balanceSortedChains = useUserAssetsStore(accountAddress, state =>
     // eslint-disable-next-line no-nested-ternary
     chainsToDisplay ? chainsToDisplay : excludeChainsWithNoBalance ? state.getChainsWithBalance() : state.getBalanceSortedChainList()
   );

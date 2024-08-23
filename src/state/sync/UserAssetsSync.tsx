@@ -1,5 +1,4 @@
 import { memo, useEffect } from 'react';
-import { Address } from 'viem';
 import { useAccountSettings } from '@/hooks';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
@@ -9,18 +8,17 @@ import { ChainId } from '@/__swaps__/types/chains';
 import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
 
 export const UserAssetsSync = memo(function UserAssetsSync() {
-  const { accountAddress: currentAddress, nativeCurrency: currentCurrency } = useAccountSettings();
+  const { accountAddress, nativeCurrency: currentCurrency } = useAccountSettings();
 
-  const userAssetsWalletAddress = userAssetsStore(state => state.associatedWalletAddress);
   const isSwapsOpen = useSwapsStore(state => state.isSwapsOpen);
 
   const { isLoading } = useUserAssets(
     {
-      address: currentAddress as Address,
+      address: accountAddress,
       currency: currentCurrency,
     },
     {
-      enabled: !!currentAddress && (!isSwapsOpen || userAssetsWalletAddress !== currentAddress),
+      enabled: !!accountAddress && !isSwapsOpen,
       staleTime: 1000 * 60,
       select: data =>
         selectorFilterByUserChains({
@@ -28,10 +26,10 @@ export const UserAssetsSync = memo(function UserAssetsSync() {
           selector: selectUserAssetsList,
         }),
       onSuccess: data => {
-        if (!isSwapsOpen || userAssetsWalletAddress !== currentAddress) {
-          userAssetsStore.getState().setUserAssets(currentAddress as Address, data as ParsedSearchAsset[]);
+        if (!isSwapsOpen) {
+          userAssetsStore.getState(accountAddress).setUserAssets(data as ParsedSearchAsset[]);
 
-          const inputAsset = userAssetsStore.getState().getHighestValueEth();
+          const inputAsset = userAssetsStore.getState(accountAddress).getHighestValueEth();
           useSwapsStore.setState({
             inputAsset,
             selectedOutputChainId: inputAsset?.chainId ?? ChainId.mainnet,
@@ -41,7 +39,7 @@ export const UserAssetsSync = memo(function UserAssetsSync() {
     }
   );
 
-  useEffect(() => userAssetsStore.setState({ isLoadingUserAssets: isLoading }), [isLoading]);
+  useEffect(() => userAssetsStore.setState(accountAddress, { isLoadingUserAssets: isLoading }), [accountAddress, isLoading]);
 
   return null;
 });
