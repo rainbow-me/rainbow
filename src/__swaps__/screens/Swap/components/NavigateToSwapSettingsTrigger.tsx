@@ -12,7 +12,7 @@ export const NavigateToSwapSettingsTrigger = () => {
   useAnimatedReaction(
     () => route.params,
     (current, previous) => {
-      if (current === previous) return;
+      if (!current || current === previous) return;
 
       if (current.action === 'open_swap_settings') {
         SwapNavigation.handleShowSettings();
