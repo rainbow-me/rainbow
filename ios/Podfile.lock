@@ -1543,7 +1543,7 @@ PODS:
     - React-Core
   - react-native-screen-corner-radius (0.2.2):
     - React
-  - react-native-skia (1.3.8):
+  - react-native-skia (1.3.11):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2049,11 +2049,11 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNSentry (5.22.0):
+  - RNSentry (5.30.0):
     - hermes-engine
     - React-Core
     - React-hermes
-    - Sentry/HybridSDK (= 8.24.0)
+    - Sentry/HybridSDK (= 8.34.0)
   - RNShare (8.2.1):
     - React-Core
   - RNSound (0.11.2):
@@ -2075,7 +2075,7 @@ PODS:
   - SDWebImageWebPCoder (0.14.6):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
-  - Sentry/HybridSDK (8.24.0)
+  - Sentry/HybridSDK (8.34.0)
   - Shimmer (1.0.2)
   - SocketRocket (0.7.0)
   - SRSRadialGradient (1.0.10):
@@ -2655,7 +2655,7 @@ SPEC CHECKSUMS:
   react-native-restart: 733a51ad137f15b0f8dc34c4082e55af7da00979
   react-native-safe-area-context: dcab599c527c2d7de2d76507a523d20a0b83823d
   react-native-screen-corner-radius: 67064efbb78f2d48f01626713ae8142f6a20f925
-  react-native-skia: 7c49f9716077fdcc35b9435b85f079d9ee2552b9
+  react-native-skia: 68be40d53b1957f6c276cec19bcd50d293173868
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
   react-native-udp: 96a517e5a121cfe69f4b05eeeafefe00c623debf
@@ -2715,7 +2715,7 @@ SPEC CHECKSUMS:
   RNReanimated: 7892f7ef3a5b9c941b3145aa3398effac3d7809d
   RNRudderSdk: 805d4b7064714f3295bf5f152d3812cc67f67a93
   RNScreens: ca47818a6197d1b14782f0aa3bb4157a512e96dd
-  RNSentry: 7ae2a06a5563de39ec09dcb1e751ac0c67f1883c
+  RNSentry: 038afe562a53fa0ec791e1cd9fb66239c77a2818
   RNShare: eaee3dd5a06dad397c7d3b14762007035c5de405
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
   RNSVG: a48668fd382115bc89761ce291a81c4ca5f2fd2e
@@ -2725,7 +2725,7 @@ SPEC CHECKSUMS:
   RudderKit: f272f9872183946452ac94cd7bb2244a71e6ca8f
   SDWebImage: 2d6d229046fea284d62e36bfb8ebe8287dfc5b10
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
-  Sentry: 2f6baed15a3f8056b875fc903dc3dcb2903117f4
+  Sentry: 1183df2306eea74ff0564c4bb1c2577ccd15d054
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   SRSRadialGradient: e5a34825dff88c9cf773b58bf39ed6a02e59a084
