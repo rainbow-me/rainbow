@@ -1,5 +1,5 @@
 import { AddressOrEth } from '@/__swaps__/types/assets';
-import { ChainId, ChainNameDisplay, Network } from '@/networks/types';
+import { ChainId, Network } from '@/networks/types';
 import { Asset } from '@/entities';
 import { AddressZero } from '@ethersproject/constants';
 
@@ -28,6 +28,7 @@ import {
   blast,
   degen,
 } from 'viem/chains';
+import { chainsLabel } from '@/networks/chains';
 
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
 export { default as chainAssets } from './chain-assets.json';
@@ -225,13 +226,13 @@ export const REFERRER_CLAIM: ReferrerType = 'app-claim';
 
 export const SUPPORTED_MAINNET_CHAINS: Chain[] = [mainnet, polygon, optimism, arbitrum, base, zora, bsc, avalanche, blast].map(chain => ({
   ...chain,
-  name: ChainNameDisplay[chain.id],
+  name: chainsLabel[chain.id],
 }));
 
 export const SUPPORTED_CHAINS = ({ testnetMode = false }: { testnetMode?: boolean }): Chain[] => {
-  const mainnetChains: Chain[] = [mainnet, base, optimism, arbitrum, polygon, zora, blast, degen, avalanche, bsc];
+  return [mainnet, base, optimism, arbitrum, polygon, zora, blast, degen, avalanche, bsc,
+	    // Testnets
 
-  const testnetChains: Chain[] = [
     goerli,
     holesky,
     sepolia,
@@ -243,12 +244,13 @@ export const SUPPORTED_CHAINS = ({ testnetMode = false }: { testnetMode?: boolea
     zoraSepolia,
     avalancheFuji,
     bscTestnet,
-  ];
-
-  const allChains = mainnetChains.concat(testnetMode ? testnetChains : []);
-
-  return allChains.map(chain => ({ ...chain, name: ChainNameDisplay[chain.id] ?? chain.name }));
-};
+  ].reduce((chainList, chain) => {
+    if (testnetMode || !chain.testnet) {
+      chainList.push({ ...chain, name: chainsLabel[chain.id] });
+    }
+    return chainList;
+  }, [] as Chain[]);
+}
 
 export const SUPPORTED_CHAIN_IDS = ({ testnetMode = false }: { testnetMode?: boolean }): ChainId[] =>
   SUPPORTED_CHAINS({ testnetMode }).map(chain => chain.id);

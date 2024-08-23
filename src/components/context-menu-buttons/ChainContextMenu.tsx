@@ -3,7 +3,7 @@ import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ContextMenuButton } from '@/components/context-menu';
 import { Bleed, Box, Inline, Text, TextProps } from '@/design-system';
 import * as i18n from '@/languages';
-import { ChainId, ChainNameDisplay } from '@/networks/types';
+import { ChainId } from '@/networks/types';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { showActionSheetWithOptions } from '@/utils';
 import { chainsLabel, chainsName } from '@/networks/chains';
@@ -111,7 +111,7 @@ export const ChainContextMenu = ({
 
   const displayName = useMemo(() => {
     if (!selectedChainId) return allNetworksText;
-    const name = ChainNameDisplay[selectedChainId];
+    const name = chainsLabel[selectedChainId];
     return name.endsWith(' Chain') ? name.slice(0, -6) : name;
   }, [allNetworksText, selectedChainId]);
 

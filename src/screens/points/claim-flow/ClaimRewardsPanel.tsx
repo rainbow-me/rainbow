@@ -5,7 +5,7 @@ import { Bleed, Box, Text, TextShadow, globalColors, useBackgroundColor, useColo
 import * as i18n from '@/languages';
 import { ListHeader, ListPanel, Panel, TapToDismiss, controlPanelStyles } from '@/components/SmoothPager/ListPanel';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { ChainId, ChainNameDisplay } from '@/networks/types';
+import { ChainId } from '@/networks/types';
 import ethereumUtils, { useNativeAsset } from '@/utils/ethereumUtils';
 import { useAccountAccentColor, useAccountProfile, useAccountSettings } from '@/hooks';
 import { safeAreaInsetValues } from '@/utils';
@@ -34,7 +34,7 @@ import { useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { RainbowError, logger } from '@/logger';
 import { RewardsActionButton } from '../components/RewardsActionButton';
-import { chainsName } from '@/networks/chains';
+import { chainsLabel, chainsName } from '@/networks/chains';
 
 type ClaimStatus = 'idle' | 'claiming' | 'success' | PointsErrorType | 'error' | 'bridge-error';
 type ClaimNetwork = '10' | '8453' | '7777777';
@@ -93,7 +93,7 @@ export const ClaimRewardsPanel = () => {
 const NETWORK_LIST_ITEMS = CLAIM_NETWORKS.map(chainId => {
   return {
     IconComponent: <ChainImage chainId={chainId} size={36} />,
-    label: ChainNameDisplay[chainId],
+    label: chainsLabel[chainId],
     uniqueId: chainId.toString(),
     selected: false,
   };
@@ -340,15 +340,15 @@ const ClaimingRewards = ({
     switch (claimStatus) {
       case 'idle':
         return i18n.t(i18n.l.points.points.claim_on_network, {
-          network: chainId ? ChainNameDisplay[chainId] : '',
+          network: chainId ? chainsLabel[chainId] : '',
         });
       case 'claiming':
         return i18n.t(i18n.l.points.points.claiming_on_network, {
-          network: chainId ? ChainNameDisplay[chainId] : '',
+          network: chainId ? chainsLabel[chainId] : '',
         });
       case 'success':
         return i18n.t(i18n.l.points.points.claimed_on_network, {
-          network: chainId ? ChainNameDisplay[chainId] : '',
+          network: chainId ? chainsLabel[chainId] : '',
         });
       case 'bridge-error':
         return i18n.t(i18n.l.points.points.bridge_error);
@@ -494,7 +494,7 @@ const ClaimingRewards = ({
                   <Box paddingHorizontal="44px">
                     <Text align="center" color="labelQuaternary" size="13pt / 135%" weight="semibold">
                       {i18n.t(i18n.l.points.points.bridge_error_explainer, {
-                        network: chainId ? ChainNameDisplay[chainId] : '',
+                        network: chainId ? chainsLabel[chainId] : '',
                       })}
                     </Text>
                   </Box>

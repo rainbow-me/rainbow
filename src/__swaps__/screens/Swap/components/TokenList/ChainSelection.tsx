@@ -6,7 +6,7 @@ import { Text as RNText, StyleSheet } from 'react-native';
 import Animated, { useDerivedValue, useSharedValue } from 'react-native-reanimated';
 
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { ChainId, ChainNameDisplay } from '@/networks/types';
+import { ChainId } from '@/networks/types';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
@@ -48,10 +48,10 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
 
   const chainName = useDerivedValue(() => {
     return output
-      ? ChainNameDisplay[selectedOutputChainId.value]
+      ? chainsLabel[selectedOutputChainId.value]
       : inputListFilter.value === 'all'
         ? allText
-        : ChainNameDisplay[inputListFilter.value as ChainId];
+        : chainsLabel[inputListFilter.value as ChainId];
   });
 
   const handleSelectChain = useCallback(
