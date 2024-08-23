@@ -5,15 +5,16 @@ import Toast from './Toast';
 import { useInternetStatus } from '@/hooks';
 import { ChainId } from '@/networks/types';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
-import { chainsNativeAsset } from '@/networks/chains';
+import { chainsName, chainsNativeAsset } from '@/networks/chains';
 
 const TestnetToast = ({ chainId }) => {
   const { connectedToHardhat } = useConnectedToHardhatStore();
   const isConnected = useInternetStatus();
   const nativeAsset = chainsNativeAsset[chainId];
+  const name = chainsName[chainId];
   const color = isDarkMode ? nativeAsset.colors.primary : nativeAsset.colors.fallback || nativeAsset.colors.primary;
   const [visible, setVisible] = useState(true);
-  const [networkName, setNetworkName] = useState(name);
+  const [networkName, setNetworkName] = useState();
 
   useEffect(() => {
     if (chainId === ChainId.mainnet) {
@@ -27,7 +28,7 @@ const TestnetToast = ({ chainId }) => {
       setVisible(true);
       setNetworkName(name + (isConnected ? '' : ' (offline)'));
     }
-  }, [isConnected, chainId, connectedToHardhat, chainId.rpcUrls.default.http]);
+  }, [isConnected, chainId, connectedToHardhat, name]);
 
   const { colors, isDarkMode } = useTheme();
 
