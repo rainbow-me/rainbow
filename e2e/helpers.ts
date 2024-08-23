@@ -459,14 +459,13 @@ export const getProvider: ProviderFunction = () => {
   return getProvider._instance;
 };
 
-export async function sendETHtoTestWallet() {
+export async function sendETHtoTestWallet(amount: number = 20) {
   const provider = getProvider();
   // Hardhat account 0 that has 10000 ETH
   const wallet = new Wallet('0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80', provider);
-  // Sending 20 ETH so we have enough to pay the tx fees even when the gas is too high
   await wallet.sendTransaction({
     to: TESTING_WALLET,
-    value: parseEther('20'),
+    value: parseEther(`${amount}`),
   });
   return true;
 }

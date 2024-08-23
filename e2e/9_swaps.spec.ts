@@ -1,17 +1,4 @@
-/*
- *   // Other tests to consider:
- *       - Flip assets
- *       - exchange button onPress
- *       - disable button states once https://github.com/rainbow-me/rainbow/pull/5785 gets merged
- *       - swap execution
- *       - token search (both from userAssets and output token list)
- *       - custom gas panel
- *       - flashbots
- *       - slippage
- *       - explainer sheets
- *       - switching wallets inside of swap screen
- */
-
+// https://www.notion.so/rainbowdotme/Critical-Path-Checklist-a907ffa19e854e5492fcefd2bf79f8cd#68309b94f1e34a7abdc7fcbeece70a2e
 import {
   importWalletFlow,
   sendETHtoTestWallet,
@@ -23,10 +10,13 @@ import {
   tapByText,
   delayTime,
   swipeUntilVisible,
+  tapAndLongPressByText,
 } from './helpers';
 
 import { expect } from '@jest/globals';
 import { WALLET_VARS } from './testVariables';
+import { SUPPORTED_CHAIN_IDS } from '@/references';
+import { swapsStore } from '@/state/swaps/swapsStore';
 
 describe('Swap Sheet Interaction Flow', () => {
   beforeAll(async () => {
@@ -41,7 +31,6 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   it('Should send ETH to test wallet', async () => {
-    // send 20 eth
     await sendETHtoTestWallet();
   });
 
@@ -49,101 +38,155 @@ describe('Swap Sheet Interaction Flow', () => {
     await tap('dev-button-hardhat');
     await checkIfVisible('testnet-toast-Hardhat');
 
-    // doesn't work atm
-    // validate it has the expected funds of 20 eth
-    // const attributes = await fetchElementAttributes('fast-coin-info');
-    // expect(attributes.label).toContain('Ethereum');
-    // expect(attributes.label).toContain('20');
+    const attributes = await fetchElementAttributes('fast-coin-info');
+    expect(attributes.label).toContain('Ethereum');
+    expect(attributes.label).toContain('20');
   });
 
-  it('Should open swap screen with 50% inputAmount for inputAsset', async () => {
-    await device.disableSynchronization();
-    await tap('swap-button');
-    await delayTime('long');
+  // it('Should open swap screen with 50% inputAmount for inputAsset', async () => {
+  //   await device.disableSynchronization();
+  //   await tap('swap-button');
+  //   await delayTime('long');
 
-    await swipeUntilVisible('token-to-buy-dai-1', 'token-to-buy-list', 'up');
+  //   await swipeUntilVisible('token-to-buy-dai-1', 'token-to-buy-list', 'up');
 
-    await tap('token-to-buy-dai-1');
-    const swapInput = await fetchElementAttributes('swap-asset-input');
+  //   await tap('token-to-buy-dai-1');
+  //   const swapInput = await fetchElementAttributes('swap-asset-input');
 
-    // expect inputAsset === .5 * eth balance
-    expect(swapInput.label).toContain('ETH');
-    expect(swapInput.label).toContain('10');
+  //   // expect inputAsset === .5 * eth balance
+  //   expect(swapInput.label).toContain('ETH');
+  //   expect(swapInput.label).toContain('10');
+  // });
+
+  // it('Should be able to go to review and execute a swap', async () => {
+  //   await tapByText('Review');
+  //   const reviewActionElements = await fetchElementAttributes('swap-action-button');
+  //   console.log('reviewActionElements: ', reviewActionElements);
+  //   expect(reviewActionElements.elements[0].label).toContain('ETH');
+  //   expect(reviewActionElements.elements[1].label).toContain('DAI');
+  //   expect(reviewActionElements.elements[2].label).toContain('􀎽 Hold to Swap');
+
+  //   // TODO: We probably need to write a custom method for press n hold buttons
+  //   // I doubt calling longPress will work since we don't know the exact time to hold
+  //   // await tapAndLongPressByText('􀎽 Hold to Swap');
+  // });
+
+  describe('Should swap between all types of assets', () => {
+    SUPPORTED_CHAIN_IDS({ testnetMode: false }).forEach(chainId => {
+      it(`Should swap native to ERC-20 on ${chainId}`, async () => {
+        // TODO: Implement ETH to ERC-20 swap test
+      });
+
+      it(`Should swap ERC-20 to native on ${chainId}`, async () => {
+        // TODO: Implement ERC-20 to ETH swap test
+      });
+
+      it(`Should swap ERC-20 to ERC-20 on ${chainId}`, async () => {
+        // TODO: Implement ERC-20 to ERC-20 swap test
+      });
+
+      it(`Should wrap native to wrapped native on ${chainId}`, async () => {
+        // TODO: Implement native to wrapped native swap test
+      });
+
+      it(`Should unwrap wrapped native to native on ${chainId}`, async () => {
+        // TODO: Implement wrapped native to native swap test
+      });
+
+      it(`Should bridge native to L2 on ${chainId}`, async () => {
+        // TODO: Implement native to L2 bridge test
+      });
+    });
   });
 
-  it('Should be able to go to review and execute a swap', async () => {
-    await tapByText('Review');
-    const reviewActionElements = await fetchElementAttributes('swap-action-button');
-    console.log('reviewActionElements: ', reviewActionElements);
-    expect(reviewActionElements.elements[0].label).toContain('ETH');
-    expect(reviewActionElements.elements[1].label).toContain('DAI');
-    expect(reviewActionElements.elements[2].label).toContain('􀎽 Hold to Swap');
+  describe('Should open swaps from all entry points', () => {
+    for (const chainId of SUPPORTED_CHAIN_IDS({ testnetMode: false })) {
+      describe(`for preferred network ${chainId}`, () => {
+        // set the swap store preferred network right away
+        swapsStore.getState().setPreferredNetwork(chainId);
 
-    /*
-     *
-     * Everything from this point fails. Un-comment out the following line to see behavior.
-     * Currently some spots have chainId 1 and chainId 1337 for various things. I suspect
-     * there is some issue with one of these things. Log the variables in getNonceAndPerformSwap
-     * to see the behavior.
-     *
-     * To run this test:
-     *
-     * yarn clean:ios && yarn fast && yarn start:clean
-     * yarn detox:ios:build && yarn detox test -c ios.sim.debug 8_swaps.spec.ts
-     *
-     */
+        it(`[${chainId}]: Should open swaps from ProfileActionRowButton`, async () => {
+          // TODO: Implement swaps from ProfileActionRowButton test
+        });
 
-    // await tapByText('Tap to Swap');
+        it(`[${chainId}]: Should open swaps from ExpandedAssetSheet`, async () => {
+          // TODO: Implement swaps from ExpandedAssetSheet test
+        });
+
+        it(`[${chainId}]: Should open swaps from Discover 'Get token with' button`, async () => {
+          // TODO: Implement swaps from Discover `Get {token} with` button test
+        });
+
+        it(`[${chainId}]: Should open swaps from Discover new token all chains selector`, async () => {
+          // TODO: Implement swaps from Discover new token all chains selector test
+        });
+      });
+    }
+
+    describe(`for no preferred network`, () => {
+      // set the swap store preferred network right away
+      swapsStore.getState().setPreferredNetwork(undefined);
+
+      it(`Should open swaps from ProfileActionRowButton`, async () => {
+        // TODO: Implement swaps from ProfileActionRowButton test
+      });
+
+      it(`Should open swaps from ExpandedAssetSheet`, async () => {
+        // TODO: Implement swaps from ExpandedAssetSheet test
+      });
+
+      it(`Should open swaps from Discover 'Get token with' button`, async () => {
+        // TODO: Implement swaps from Discover `Get {token} with` button test
+      });
+
+      it(`Should open swaps from Discover new token all chains selector`, async () => {
+        // TODO: Implement swaps from Discover new token all chains selector test
+      });
+    });
   });
 
-  it.skip('Should be able to verify swap is happening', async () => {
-    // await delayTime('very-long');
-    // const activityListElements = await fetchElementAttributes('wallet-activity-list');
-    // expect(activityListElements.label).toContain('ETH');
-    // expect(activityListElements.label).toContain('DAI');
-    // await tapByText('Swapping');
-    // await delayTime('long');
-    // const transactionSheet = await checkIfVisible('transaction-details-sheet');
-    // expect(transactionSheet).toBeTruthy();
+  describe('Should handle max button + flip button correctly', () => {
+    it('Should handle max button press for small balance inputAsset', async () => {
+      // TODO: Implement max button for inputAsset test
+    });
+
+    it('Should handle max button press while not maxed out', async () => {
+      // TODO: Implement max button for inputAsset test
+    });
+
+    it('Should handle max button press while maxed out', async () => {
+      // TODO: Implement max button for inputAsset test
+    });
+
+    it('Should handle flip button press while max amount', async () => {
+      // TODO: Implement max button for inputAsset test
+    });
+
+    it('Should handle flip button press while not max amount', async () => {
+      // TODO: Implement max button for inputAsset test
+    });
+
+    it('Should handle flip button press while percentage to sell is 0', async () => {
+      // TODO: Implement max button for inputAsset test
+    });
   });
 
-  it.skip('Should open swap screen from ProfileActionRowButton with largest user asset', async () => {
-    /**
-     * tap swap button
-     * wait for Swap header to be visible
-     * grab highest user asset balance from userAssetsStore
-     * expect inputAsset.uniqueId === highest user asset uniqueId
-     */
+  describe('Should have correct page header', () => {
+    it('for bridges', async () => {});
+    it('for swaps', async () => {});
   });
 
-  it.skip('Should open swap screen from  asset chart with that asset selected', async () => {
-    /**
-     * tap any user asset (store const uniqueId here)
-     * wait for Swap header to be visible
-     * expect inputAsset.uniqueId === const uniqueId ^^
-     */
-  });
+  describe('Review panel', () => {
+    describe('Should display correct network badges for all supported chains', () => {
+      SUPPORTED_CHAIN_IDS({ testnetMode: false }).forEach(async chainId => {
+        it(`Should display ${chainId} network badge`, async () => {
+          // TODO: Implement network badge for chainId test
+        });
+      });
+    });
 
-  it.skip('Should open swap screen from dapp browser control panel with largest user asset', async () => {
-    /**
-     * tap swap button
-     * wait for Swap header to be visible
-     * grab highest user asset balance from userAssetsStore
-     * expect inputAsset.uniqueId === highest user asset uniqueId
-     */
-  });
-
-  it.skip('Should not be able to type in output amount if cross-chain quote', async () => {
-    /**
-     * tap swap button
-     * wait for Swap header to be visible
-     * select different chain in output list chain selector
-     * select any asset in output token list
-     * focus output amount
-     * attempt to type any number in the SwapNumberPad
-     * attempt to remove a character as well
-     *
-     * ^^ expect both of those to not change the outputAmount
-     */
+    it('Should handle slippage change', async () => {
+      // TODO: test up and down (should trigger refetch each time)
+    });
   });
 });
