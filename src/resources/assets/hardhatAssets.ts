@@ -1,5 +1,4 @@
 import { Contract } from '@ethersproject/contracts';
-import { captureException } from '@sentry/react-native';
 import { keyBy, mapValues } from 'lodash';
 import { Network } from '@/helpers/networkTypes';
 import { web3Provider } from '@/handlers/web3'; // TODO JIN
@@ -7,7 +6,7 @@ import { getNetworkObj } from '@/networks';
 import { balanceCheckerContractAbi, chainAssets, ETH_ADDRESS } from '@/references';
 import { parseAddressAsset } from './assets';
 import { RainbowAddressAssets } from './types';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
 
 const ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT = '0x0000000000000000000000000000000000000000';
 
@@ -29,8 +28,7 @@ const fetchHardhatBalancesWithBalanceChecker = async (
     });
     return balances;
   } catch (e) {
-    logger.sentry('Error fetching balances from balanceCheckerContract', network, e);
-    captureException(new Error('fallbackExplorer::balanceChecker failure'));
+    logger.error(new RainbowError(`[hardhatAssets]: Error fetching balances from balanceCheckerContract: ${e}`));
     return null;
   }
 };

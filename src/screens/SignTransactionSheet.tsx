@@ -241,18 +241,18 @@ export const SignTransactionSheet = () => {
     const provider = getProvider({ chainId: currentChainId });
     try {
       // attempt to re-run estimation
-      logger.debug('WC: Estimating gas limit', { gas }, logger.DebugContext.walletconnect);
+      logger.debug('[SignTransactionSheet]: Estimating gas limit', { gas }, logger.DebugContext.walletconnect);
       // safety precaution: we want to ensure these properties are not used for gas estimation
       const cleanTxPayload = omitFlatten(txPayload, ['gas', 'gasLimit', 'gasPrice', 'maxFeePerGas', 'maxPriorityFeePerGas']);
       const rawGasLimit = await estimateGas(cleanTxPayload, provider);
-      logger.debug('WC: Estimated gas limit', { rawGasLimit }, logger.DebugContext.walletconnect);
+      logger.debug('[SignTransactionSheet]: Estimated gas limit', { rawGasLimit }, logger.DebugContext.walletconnect);
       if (rawGasLimit) {
         gas = toHex(rawGasLimit);
       }
     } catch (error) {
-      logger.error(new RainbowError('WC: error estimating gas'), { error });
+      logger.error(new RainbowError('[SignTransactionSheet]: error estimating gas'), { error });
     } finally {
-      logger.debug('WC: Setting gas limit to', { gas: convertHexToString(gas) }, logger.DebugContext.walletconnect);
+      logger.debug('[SignTransactionSheet]: Setting gas limit to', { gas: convertHexToString(gas) }, logger.DebugContext.walletconnect);
       const networkObject = getNetworkObject({ chainId: currentChainId });
       if (networkObject && networkObject.gas.OptimismTxFee) {
         const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(txPayload, provider);
@@ -459,7 +459,7 @@ export const SignTransactionSheet = () => {
           }
         }
       } catch (error) {
-        logger.error(new RainbowError('Error while simulating'), { error });
+        logger.error(new RainbowError('[SignTransactionSheet]: Error while simulating'), { error });
       } finally {
         setIsLoading(false);
       }
@@ -519,7 +519,7 @@ export const SignTransactionSheet = () => {
           closeScreen(true);
         }, 300);
       } catch (error) {
-        logger.error(new RainbowError('WC: error while handling cancel request'), { error });
+        logger.error(new RainbowError('[SignTransactionSheet]: error while handling cancel request'), { error });
         closeScreen(true);
       }
     },
@@ -608,7 +608,7 @@ export const SignTransactionSheet = () => {
     if (!currentChainId) return;
     try {
       logger.debug(
-        'WC: gas suggested by dapp',
+        '[SignTransactionSheet]: gas suggested by dapp',
         {
           gas: convertHexToString(gas),
           gasLimitFromPayload: convertHexToString(gasLimitFromPayload),
@@ -629,11 +629,15 @@ export const SignTransactionSheet = () => {
         (!isNil(gas) && greaterThan(rawGasLimit, convertHexToString(gas))) ||
         (!isNil(gasLimitFromPayload) && greaterThan(rawGasLimit, convertHexToString(gasLimitFromPayload)))
       ) {
-        logger.debug('WC: using padded estimation!', { gas: rawGasLimit.toString() }, logger.DebugContext.walletconnect);
+        logger.debug(
+          '[SignTransactionSheet]: using padded estimation!',
+          { gas: rawGasLimit.toString() },
+          logger.DebugContext.walletconnect
+        );
         gas = toHex(rawGasLimit);
       }
     } catch (error) {
-      logger.error(new RainbowError('WC: error estimating gas'), { error });
+      logger.error(new RainbowError('[SignTransactionSheet]: error estimating gas'), { error });
     }
     // clean gas prices / fees sent from the dapp
     const cleanTxPayload = omitFlatten(txPayload, ['gasPrice', 'maxFeePerGas', 'maxPriorityFeePerGas']);
@@ -649,7 +653,7 @@ export const SignTransactionSheet = () => {
     };
     txPayloadUpdated = omitFlatten(txPayloadUpdated, ['from', 'gas', 'chainId']);
 
-    logger.debug(`WC: ${transactionDetails.payload.method} payload`, {
+    logger.debug(`[SignTransactionSheet]: ${transactionDetails.payload.method} payload`, {
       txPayload,
       txPayloadUpdated,
     });
@@ -703,7 +707,7 @@ export const SignTransactionSheet = () => {
         });
       }
     } catch (e) {
-      logger.error(new RainbowError(`WC: Error while ${sendInsteadOfSign ? 'sending' : 'signing'} transaction`));
+      logger.error(new RainbowError(`[SignTransactionSheet]: Error while ${sendInsteadOfSign ? 'sending' : 'signing'} transaction`));
     }
 
     if (response?.result) {
@@ -774,7 +778,7 @@ export const SignTransactionSheet = () => {
         });
       }
     } else {
-      logger.error(new RainbowError(`WC: Tx failure - ${formattedDappUrl}`), {
+      logger.error(new RainbowError(`[SignTransactionSheet]: Tx failure - ${formattedDappUrl}`), {
         dappName: transactionDetails?.dappName,
         dappUrl: transactionDetails?.dappUrl,
         formattedDappUrl,
@@ -1471,7 +1475,7 @@ const MessageCard = ({
       displayMessage = sanitizedMessage;
       // eslint-disable-next-line no-empty
     } catch (e) {
-      logger.warn('');
+      logger.warn('[SignTransactionSheet]: Error while parsing message');
     }
 
     displayMessage = JSON.stringify(displayMessage, null, 4);

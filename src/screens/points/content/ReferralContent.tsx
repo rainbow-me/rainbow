@@ -87,7 +87,7 @@ export function ReferralContent() {
           setStatus('invalid');
           haptics.notificationError();
         } else {
-          logger.error(new RainbowError('Error validating referral code'), {
+          logger.error(new RainbowError('[ReferralContent]: Error validating referral code'), {
             referralCode: code,
           });
           Alert.alert(i18n.t(i18n.l.points.referral.error));

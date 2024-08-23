@@ -34,13 +34,13 @@ export function Coinbase({ accountAddress, config }: { accountAddress: string; c
             sessionId,
           });
 
-          logger.info('F2C: opening provider', {
+          logger.debug('[AddCash]: opening provider', {
             provider: FiatProviderName.Coinbase,
           });
 
           Linking.openURL(url);
         } catch (e) {
-          logger.error(new RainbowError('F2C: failed to open provider'), {
+          logger.error(new RainbowError('[AddCash]: failed to open provider'), {
             provider: FiatProviderName.Coinbase,
             message: (e as Error).message,
           });

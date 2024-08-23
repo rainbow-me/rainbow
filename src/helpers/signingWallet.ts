@@ -8,9 +8,8 @@ import { signingWalletAddress, signingWallet as signingWalletKeychain } from '..
 import { EthereumAddress } from '@/entities';
 import AesEncryptor from '@/handlers/aesEncryption';
 import { addHexPrefix } from '@/handlers/web3';
-import { logger } from '@/utils';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
-import { logger as Logger, RainbowError } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 
 export async function getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded(): Promise<EthereumAddress> {
   let alreadyExistingWallet = await loadString(signingWalletAddress);
@@ -20,7 +19,7 @@ export async function getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded(): P
     const { wallet, address } = await deriveAccountFromWalletInput(walletSeed);
 
     if (!wallet || !address) {
-      Logger.error(new RainbowError('signingWallet - wallet or address undefined'));
+      logger.error(new RainbowError('[signingWallet]: wallet or address undefined'));
       // @ts-ignore need to handle types in case wallet or address are null
       return null;
     }
@@ -35,7 +34,7 @@ export async function getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded(): P
     await saveString(signingWalletAddress, address, publicAccessControlOptions);
     alreadyExistingWallet = address;
   }
-  logger.log('Signing wallet already existing');
+  logger.debug('[signingWallet]: Signing wallet already existing');
   return alreadyExistingWallet;
 }
 
@@ -48,7 +47,7 @@ export async function getSignatureForSigningWalletAndCreateSignatureIfNeeded(add
     if (address === verifyMessage(publicKeyForTheSigningWallet, decryptedSignature)) {
       return decryptedSignature;
     } else {
-      logger.log('Signature does not match. Creating a new one.');
+      logger.debug('[signingWallet]: Signature does not match. Creating a new one.');
       alreadyExistingEncodedSignature = null;
       return createSignature(address);
     }
@@ -61,14 +60,14 @@ export async function signWithSigningWallet(messageToSign: string): Promise<stri
   const encryptedPrivateKeyOfTheSigningWallet = await loadString(signingWalletKeychain, publicAccessControlOptions);
   const encryptor = new AesEncryptor();
   const decryptedPrivateKeyOfTheSigningWallet = await encryptor.decrypt(RAINBOW_MASTER_KEY, encryptedPrivateKeyOfTheSigningWallet);
-  logger.log('Signing with a signing wallet.');
+  logger.debug('[signingWallet]: Signing with a signing wallet.');
 
   const signingWallet = new Wallet(decryptedPrivateKeyOfTheSigningWallet);
   return signingWallet.signMessage(messageToSign);
 }
 
 export async function createSignature(address: EthereumAddress, privateKey: string | null = null) {
-  logger.log('Creating a signature');
+  logger.debug('[signingWallet]: Creating a signature');
   const publicKeyForTheSigningWallet = await getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded();
 
   const mainWallet = privateKey ? new Wallet(privateKey) : await loadWallet({ address, showErrorIfNotLoaded: false });
@@ -79,7 +78,7 @@ export async function createSignature(address: EthereumAddress, privateKey: stri
     const encryptedSignature = (await encryptor.encrypt(RAINBOW_MASTER_KEY, signatureForSigningWallet)) as string;
 
     await saveString(`signature_${address}`, encryptedSignature, publicAccessControlOptions);
-    logger.log('Saved a new signature for signing wallet.');
+    logger.debug('[signingWallet]: Saved a new signature for signing wallet.');
 
     return signatureForSigningWallet;
   }

@@ -41,7 +41,7 @@ export const NoResults = ({ onL2, type }: { onL2?: boolean; type: NoResultsType 
       break;
     default:
       title = lang.t('exchange.no_results.nothing_found');
-      logger.warn('NoResults: unknown type, falling back to default message');
+      logger.warn('[NoResults]: unknown type, falling back to default message');
       break;
   }
 

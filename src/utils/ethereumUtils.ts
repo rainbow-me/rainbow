@@ -522,7 +522,7 @@ const calculateL1FeeOptimism = async (tx: RainbowTransaction, provider: Provider
     const l1FeeInWei = await OVM_GasPriceOracle.getL1Fee(serializedTx);
     return l1FeeInWei;
   } catch (e: any) {
-    logger.error(new RainbowError('error calculating l1 fee'), {
+    logger.error(new RainbowError(`[ethereumUtils]: error calculating l1 fee`), {
       message: e.message,
     });
   }

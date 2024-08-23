@@ -240,7 +240,7 @@ export function NFTSingleOfferSheet() {
         },
       });
     } catch {
-      logger.error(new RainbowError('NFT Offer: Failed to estimate gas'));
+      logger.error(new RainbowError('[NFTSingleOfferSheet]: Failed to estimate gas'));
     }
   }, [accountAddress, feeParam, offerChainId, offer, updateTxFee]);
 
@@ -256,7 +256,7 @@ export function NFTSingleOfferSheet() {
   }, [estimateGas, isExpired, isReadOnlyWallet, offer?.network, startPollingGasFees, stopPollingGasFees, updateTxFee]);
 
   const acceptOffer = useCallback(async () => {
-    logger.info(`Initiating sale of NFT ${offer.nft.contractAddress}:${offer.nft.tokenId}`);
+    logger.debug(`[NFTSingleOfferSheet]: Initiating sale of NFT ${offer.nft.contractAddress}:${offer.nft.tokenId}`);
     const analyticsEventObject = {
       nft: {
         contractAddress: offer.nft.contractAddress,
@@ -394,7 +394,7 @@ export function NFTSingleOfferSheet() {
         }
       );
 
-      logger.info(`Completed sale of NFT ${offer.nft.contractAddress}:${offer.nft.tokenId}`);
+      logger.debug(`[NFTSingleOfferSheet]: Completed sale of NFT ${offer.nft.contractAddress}:${offer.nft.tokenId}`);
       analyticsV2.track(analyticsV2.event.nftOffersAcceptedOffer, {
         status: 'completed',
         ...analyticsEventObject,
@@ -404,7 +404,7 @@ export function NFTSingleOfferSheet() {
     } catch (e) {
       logger.error(
         new RainbowError(
-          `Error selling NFT ${offer.nft.contractAddress} #${offer.nft.tokenId} on marketplace ${offer.marketplace.name}: ${e}`
+          `[NFTSingleOfferSheet]: Error selling NFT ${offer.nft.contractAddress} #${offer.nft.tokenId} on marketplace ${offer.marketplace.name}: ${e}`
         )
       );
       analyticsV2.track(analyticsV2.event.nftOffersAcceptedOffer, {

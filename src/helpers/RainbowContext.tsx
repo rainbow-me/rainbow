@@ -3,25 +3,13 @@ import { MMKV } from 'react-native-mmkv';
 import { useSharedValue } from 'react-native-reanimated';
 import DevButton from '../components/dev-buttons/DevButton';
 import Emoji from '../components/text/Emoji';
-import {
-  showReloadButton,
-  showSwitchModeButton,
-  // @ts-ignore
-  showConnectToHardhatButton,
-} from '../config/debug';
+import { showReloadButton, showSwitchModeButton, showConnectToHardhatButton } from '../config/debug';
 import { defaultConfig } from '../config/experimental';
 import { useDispatch } from 'react-redux';
 
 import { useTheme } from '../theme/ThemeContext';
 import { STORAGE_IDS } from '@/model/mmkv';
-import {
-  // @ts-ignore
-  HARDHAT_URL_ANDROID,
-  // @ts-ignore
-  HARDHAT_URL_IOS,
-  // @ts-ignore
-  IS_TESTING,
-} from 'react-native-dotenv';
+import { IS_TESTING } from 'react-native-dotenv';
 import { web3SetHttpProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
 import networkTypes from '@/helpers/networkTypes';
@@ -76,10 +64,10 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
   const connectToHardhat = useCallback(async () => {
     try {
       const ready = await web3SetHttpProvider('http://127.0.0.1:8545');
-      logger.debug('connected to hardhat', { ready });
+      logger.debug('[RainbowContext]: connected to hardhat', { ready });
     } catch (e: any) {
       await web3SetHttpProvider(networkTypes.mainnet);
-      logger.error(new RainbowError('error connecting to hardhat'), {
+      logger.error(new RainbowError('[RainbowContext]: error connecting to hardhat'), {
         message: e.message,
       });
     }

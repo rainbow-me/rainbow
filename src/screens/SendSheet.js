@@ -54,7 +54,7 @@ import styled from '@/styled-thing';
 import { borders } from '@/styles';
 import { convertAmountAndPriceToNativeDisplay, convertAmountFromNativeValue, formatInputDecimals, lessThan } from '@/helpers/utilities';
 import { deviceUtils, ethereumUtils, getUniqueTokenType, safeAreaInsetValues } from '@/utils';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { NoResults } from '@/components/list';
 import { NoResultsType } from '@/components/list/NoResults';
@@ -400,12 +400,11 @@ export default function SendSheet(props) {
 
       const validTransaction = isValidAddress && amountDetails.isSufficientBalance && isSufficientGas && isValidGas;
       if (!selectedGasFee?.gasFee?.estimatedFee || !validTransaction) {
-        logger.sentry('preventing tx submit for one of the following reasons:');
-        logger.sentry('selectedGasFee ? ', selectedGasFee);
-        logger.sentry('selectedGasFee.maxFee ? ', selectedGasFee?.maxFee);
-        logger.sentry('validTransaction ? ', validTransaction);
-        logger.sentry('isValidGas ? ', isValidGas);
-        captureEvent('Preventing tx submit');
+        logger.error(new RainbowError(`[SendSheet]: preventing tx submit because selectedGasFee is missing or validTransaction is false`), {
+          selectedGasFee,
+          validTransaction,
+          isValidGas,
+        });
         return false;
       }
 
@@ -479,11 +478,10 @@ export default function SendSheet(props) {
           screen: isENS ? Screens.SEND_ENS : Screens.SEND,
         })(txDetails);
         if (!signableTransaction.to) {
-          logger.sentry('txDetails', txDetails);
-          logger.sentry('signableTransaction', signableTransaction);
-          logger.sentry('"to" field is missing!');
-          const e = new Error('Transaction missing TO field');
-          captureException(e);
+          logger.error(new RainbowError(`[SendSheet]: txDetails is missing the "to" field`), {
+            txDetails,
+            signableTransaction,
+          });
           Alert.alert(lang.t('wallet.transaction.alert.invalid_transaction'));
           submitSuccess = false;
         } else {
@@ -524,10 +522,10 @@ export default function SendSheet(props) {
         }
       } catch (error) {
         submitSuccess = false;
-        logger.sentry('TX Details', txDetails);
-        logger.sentry('SendSheet onSubmit error');
-        logger.sentry(error);
-        captureException(error);
+        logger.error(new RainbowError(`[SendSheet]: onSubmit error`), {
+          txDetails,
+          error,
+        });
 
         // if hardware wallet, we need to tell hardware flow there was error
         // have to check inverse or we trigger unwanted BT permissions requests
@@ -564,8 +562,9 @@ export default function SendSheet(props) {
   const submitTransaction = useCallback(
     async (...args) => {
       if (Number(amountDetails.assetAmount) <= 0) {
-        logger.sentry('amountDetails.assetAmount ? ', amountDetails?.assetAmount);
-        captureEvent('Preventing tx submit due to amount <= 0');
+        logger.error(new RainbowError(`[SendSheet]: preventing tx submit because amountDetails.assetAmount is <= 0`), {
+          amountDetails,
+        });
         return false;
       }
       const submitSuccessful = await onSubmit(...args);
@@ -788,7 +787,7 @@ export default function SendSheet(props) {
           }
         })
         .catch(e => {
-          logger.sentry('Error calculating gas limit', e);
+          logger.error(new RainbowError(`[SendSheet]: error calculating gas limit: ${e}`));
           updateTxFee(null, null);
         });
     }

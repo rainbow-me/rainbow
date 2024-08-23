@@ -20,7 +20,7 @@ export const GoogleAccountSection: React.FC = () => {
         setAccountDetails(accountDetails ?? undefined);
       })
       .catch(error => {
-        logger.error(new RainbowError(`Fetching google account data to display in Backups Section failed`), {
+        logger.error(new RainbowError(`[GoogleAccountSection]: Fetching google account data to display in Backups Section failed`), {
           error: (error as Error).message,
         });
       })
@@ -66,7 +66,7 @@ export const GoogleAccountSection: React.FC = () => {
       const accountDetails = await getGoogleAccountUserData();
       setAccountDetails(accountDetails ?? undefined);
     } catch (error) {
-      logger.error(new RainbowError(`Logging into Google Drive failed.`), {
+      logger.error(new RainbowError(`[GoogleAccountSection]: Logging into Google Drive failed`), {
         error: (error as Error).message,
       });
     } finally {

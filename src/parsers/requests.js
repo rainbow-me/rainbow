@@ -43,7 +43,11 @@ export const getRequestDisplayDetails = (payload, nativeCurrency, chainId) => {
         message = toUtf8String(message);
       }
     } catch (error) {
-      logger.debug('WC v2: getting display details, unable to decode hex message to UTF8 string', {}, logger.DebugContext.walletconnect);
+      logger.warn(
+        '[parsers/requests]: WC v2: getting display details, unable to decode hex message to UTF8 string',
+        { error },
+        logger.DebugContext.walletconnect
+      );
     }
     return getMessageDisplayDetails(message, timestampInMs);
   }
