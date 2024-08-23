@@ -26,7 +26,6 @@ import { useNavigation } from '@/navigation';
 import { RapSwapActionParameters } from '@/raps/references';
 import { walletExecuteRap } from '@/raps/execute';
 import { ParsedAsset } from '@/__swaps__/types/assets';
-import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 import { loadWallet } from '@/model/wallet';
 import { getProvider } from '@/handlers/web3';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
@@ -35,6 +34,7 @@ import { useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { RainbowError, logger } from '@/logger';
 import { RewardsActionButton } from '../components/RewardsActionButton';
+import { chainsName } from '@/networks/chains';
 
 type ClaimStatus = 'idle' | 'claiming' | 'success' | PointsErrorType | 'error' | 'bridge-error';
 type ClaimNetwork = '10' | '8453' | '7777777';
@@ -213,7 +213,7 @@ const ClaimingRewards = ({
       const opEth_ = await ethereumUtils.getNativeAssetForNetwork({ chainId: ChainId.optimism });
       const opEth = {
         ...opEth_,
-        chainName: chainNameFromChainId(ChainId.optimism),
+        chainName: chainsName[ChainId.optimism],
       };
 
       // Fetch the native asset from the destination chain
@@ -229,7 +229,7 @@ const ClaimingRewards = ({
       // Add missing properties to match types
       const destinationEth = {
         ...destinationEth_,
-        chainName: chainNameFromChainId(chainId as ChainId),
+        chainName: chainsName[chainId as ChainId],
       };
 
       const selectedGas = {

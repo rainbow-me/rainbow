@@ -58,17 +58,6 @@ export function chainIdFromChainName(chainName: ChainName) {
   return chainNameToIdMapping[chainName];
 }
 
-export function chainNameForChainIdWithMainnetSubstitution(chainId: ChainId) {
-  if (chainId === ChainId.mainnet) {
-    return 'ethereum';
-  }
-  return chainsName[chainId];
-}
-
-export function chainNameFromChainId(chainId: ChainId): string {
-  return chainsName[chainId];
-}
-
 export function chainNameFromChainIdWorklet(chainId: ChainId): string {
   return chainsName[chainId];
 }

@@ -6,7 +6,7 @@ import * as i18n from '@/languages';
 import { ChainId, ChainNameDisplay } from '@/networks/types';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { showActionSheetWithOptions } from '@/utils';
-import { chainNameForChainIdWithMainnetSubstitution } from '@/__swaps__/utils/chains';
+import { chainsLabel, chainsName } from '@/networks/chains';
 
 interface DefaultButtonOptions {
   iconColor?: TextProps['color'];
@@ -56,15 +56,12 @@ export const ChainContextMenu = ({
 
   const menuConfig = useMemo(() => {
     const chainItems = balanceSortedChains.map(chainId => {
-      const networkName = chainNameForChainIdWithMainnetSubstitution(chainId);
-      const displayName = ChainNameDisplay[chainId];
-
       return {
         actionKey: `${chainId}`,
-        actionTitle: displayName,
+        actionTitle: chainsLabel[chainId],
         icon: {
           iconType: 'ASSET',
-          iconValue: `${networkName}Badge${chainId === ChainId.mainnet ? '' : 'NoShadow'}`,
+          iconValue: `${chainsName[chainId]}Badge${chainId === ChainId.mainnet ? '' : 'NoShadow'}`,
         },
       };
     });

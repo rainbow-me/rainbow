@@ -17,7 +17,7 @@ import { ChainId, ChainName } from '@/networks/types';
 import * as i18n from '@/languages';
 import { SearchAsset } from '@/__swaps__/types/search';
 
-import { chainIdFromChainName, chainNameFromChainId, customChainIdsToAssetNames, isNativeAsset } from '@/__swaps__/utils/chains';
+import { chainIdFromChainName, customChainIdsToAssetNames, isNativeAsset } from '@/__swaps__/utils/chains';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToBalanceDisplay,
@@ -172,7 +172,7 @@ export function parseAssetMetadata({
   const parsedAsset = {
     address,
     chainId,
-    chainName: chainNameFromChainId(chainId),
+    chainName: chainsName[chainId],
     colors: asset?.colors,
     decimals: asset?.decimals,
     icon_url: asset?.iconUrl,

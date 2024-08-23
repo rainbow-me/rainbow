@@ -40,6 +40,7 @@ import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from
 import { inputKeys } from '../types/swap';
 import { valueBasedDecimalFormatter } from './decimalFormatter';
 import { convertAmountToRawAmount } from './numbers';
+import { chainsName } from '@/networks/chains';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -347,18 +348,9 @@ export const slippageInBipsToStringWorklet = (slippageInBips: number) => {
 };
 
 export const getDefaultSlippage = (chainId: ChainId, config: RainbowConfig) => {
-  const chainName = chainNameFromChainId(chainId) as
-    | ChainName.mainnet
-    | ChainName.optimism
-    | ChainName.polygon
-    | ChainName.arbitrum
-    | ChainName.base
-    | ChainName.zora
-    | ChainName.bsc
-    | ChainName.avalanche;
   return slippageInBipsToString(
     // NOTE: JSON.parse doesn't type the result as a Record<ChainName, number>
-    (config.default_slippage_bips as unknown as Record<ChainName, number>)[chainName] || DEFAULT_SLIPPAGE_BIPS[chainId]
+    (config.default_slippage_bips as unknown as Record<string, number>)[chainsName[chainId]] || DEFAULT_SLIPPAGE_BIPS[chainId]
   );
 };
 

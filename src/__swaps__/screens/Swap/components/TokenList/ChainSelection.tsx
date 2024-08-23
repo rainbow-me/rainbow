@@ -7,7 +7,6 @@ import Animated, { useDerivedValue, useSharedValue } from 'react-native-reanimat
 
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { ChainId, ChainNameDisplay } from '@/networks/types';
-import { chainNameForChainIdWithMainnetSubstitution } from '@/__swaps__/utils/chains';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
@@ -19,6 +18,7 @@ import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { showActionSheetWithOptions } from '@/utils';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
+import { chainsLabel, chainsName } from '@/networks/chains';
 
 type ChainSelectionProps = {
   allText?: string;
@@ -76,15 +76,12 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
 
   const menuConfig = useMemo(() => {
     const supportedChains = balanceSortedChainList.map(chainId => {
-      const networkName = chainNameForChainIdWithMainnetSubstitution(chainId);
-      const displayName = ChainNameDisplay[chainId];
-
       return {
         actionKey: `${chainId}`,
-        actionTitle: displayName as string,
+        actionTitle: chainsLabel[chainId],
         icon: {
           iconType: 'ASSET',
-          iconValue: `${networkName}Badge${chainId === ChainId.mainnet ? '' : 'NoShadow'}`,
+          iconValue: `${chainsName[chainId]}Badge${chainId === ChainId.mainnet ? '' : 'NoShadow'}`,
         },
       };
     });
