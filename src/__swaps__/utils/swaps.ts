@@ -10,7 +10,6 @@ import {
   STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS,
 } from '@/__swaps__/screens/Swap/constants';
 import { ChainId, ChainName } from '@/networks/types';
-import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { isLowerCaseMatchWorklet } from '@/__swaps__/utils/strings';
 import { globalColors } from '@/design-system';
 import { ForegroundColor, palettes } from '@/design-system/color/palettes';
@@ -357,18 +356,8 @@ export const getDefaultSlippage = (chainId: ChainId, config: RainbowConfig) => {
 export const getDefaultSlippageWorklet = (chainId: ChainId, config: RainbowConfig) => {
   'worklet';
 
-  const chainName = chainNameFromChainIdWorklet(chainId) as
-    | ChainName.mainnet
-    | ChainName.optimism
-    | ChainName.polygon
-    | ChainName.arbitrum
-    | ChainName.base
-    | ChainName.zora
-    | ChainName.bsc
-    | ChainName.avalanche
-    | ChainName.blast;
   return slippageInBipsToStringWorklet(
-    (config.default_slippage_bips as unknown as { [key: string]: number })[chainName] || DEFAULT_SLIPPAGE_BIPS[chainId]
+    (config.default_slippage_bips as unknown as { [key: string]: number })[chainsName[chainId]] || DEFAULT_SLIPPAGE_BIPS[chainId]
   );
 };
 
