@@ -18,7 +18,6 @@ export default {
   getBnbPriceUnit: jest.fn(),
   getMultichainAssetAddress: jest.fn(),
   getNativeAssetForNetwork: jest.fn(),
-  getNetworkNameFromChainId: jest.fn(),
   getNetworkNativeAsset: jest.fn(),
   getPriceOfNativeAssetForNetwork: jest.fn(),
   getUniqueId: jest.fn(),

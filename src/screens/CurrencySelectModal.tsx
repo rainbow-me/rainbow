@@ -28,7 +28,7 @@ import {
 import { delayNext } from '@/hooks/useMagicAutofocus';
 import { getActiveRoute, useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils, filterList } from '@/utils';
+import { filterList } from '@/utils';
 import NetworkSwitcherv2 from '@/components/exchange/NetworkSwitcherv2';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { SwappableAsset } from '@/entities';
@@ -314,9 +314,8 @@ export default function CurrencySelectModal() {
   const checkForRequiredAssets = useCallback(
     (item: any) => {
       if (type === CurrencySelectionTypes.output && currentChainId && currentChainId !== ChainId.mainnet) {
-        const currentL2Name = ethereumUtils.getNetworkNameFromChainId(currentChainId);
         const currentL2WalletAssets = assetsInWallet.filter(
-          ({ network }) => network && network?.toLowerCase() === currentL2Name?.toLowerCase()
+          ({ network }) => network && network?.toLowerCase() === chainsName[currentChainId]?.toLowerCase()
         );
         if (currentL2WalletAssets?.length < 1) {
           Keyboard.dismiss();

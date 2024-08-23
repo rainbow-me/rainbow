@@ -277,14 +277,6 @@ const getDataString = (func: string, arrVals: string[]) => {
 };
 
 /**
- * @desc get network string from chainId
- * @param  {Number} chainId
- */
-const getNetworkNameFromChainId = (chainId: ChainId): string => {
-  return defaultChains[chainId]?.name || defaultChains[ChainId.mainnet].name;
-};
-
-/**
  * @desc get etherscan host from network string
  * @param  {String} network
  */
@@ -553,7 +545,6 @@ export default {
   getAvaxPriceUnit,
   getDegenPriceUnit,
   getNativeAssetForNetwork,
-  getNetworkNameFromChainId,
   getNetworkNativeAsset,
   getPriceOfNativeAssetForNetwork,
   getUniqueId,
