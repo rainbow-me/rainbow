@@ -4,6 +4,7 @@ import { NativeSyntheticEvent } from 'react-native';
 import { setClipboard } from '../../hooks/useClipboard';
 import { abbreviations, ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
 import { ChainId } from '@/networks/types';
+import { chainsIdByName } from '@/networks/chains';
 
 const buildBlockExplorerAction = (chainId: ChainId) => {
   const blockExplorerText = lang.t('exchange.coin_row.view_on', {
@@ -43,7 +44,7 @@ export default function contextMenuProps(item: any, onCopySwapDetailsText: (addr
   };
 
   const onPressAndroid = () => {
-    const blockExplorerText = `View on ${startCase(ethereumUtils.getBlockExplorer({ chainId: ethereumUtils.getChainIdFromNetwork(item?.network) }))}`;
+    const blockExplorerText = `View on ${startCase(ethereumUtils.getBlockExplorer({ chainId: chainsIdByName[item?.network] }))}`;
     const androidContractActions = [lang.t('wallet.action.copy_contract_address'), blockExplorerText, lang.t('button.cancel')];
 
     showActionSheetWithOptions(
@@ -64,7 +65,7 @@ export default function contextMenuProps(item: any, onCopySwapDetailsText: (addr
     );
   };
 
-  const blockExplorerAction = buildBlockExplorerAction(ethereumUtils.getChainIdFromNetwork(item?.network));
+  const blockExplorerAction = buildBlockExplorerAction(chainsIdByName[item?.network]);
   const menuConfig = {
     menuItems: [
       blockExplorerAction,

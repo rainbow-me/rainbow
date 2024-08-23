@@ -13,7 +13,6 @@ import {
 import { InteractionManager } from 'react-native';
 import { SEND_TRANSACTION } from './signingMethods';
 import { handleSessionRequestResponse } from '@/walletConnect';
-import ethereumUtils from './ethereumUtils';
 import { getRequestDisplayDetails } from '@/parsers';
 import { maybeSignUri } from '@/handlers/imgix';
 import { getActiveRoute } from '@/navigation/Navigation';
@@ -35,7 +34,7 @@ import { toUtf8String } from '@ethersproject/strings';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Address } from 'viem';
 import { ChainId } from '@/networks/types';
-import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/networks/chains';
+import { chainsName, SUPPORTED_MAINNET_CHAIN_IDS } from '@/networks/chains';
 
 export enum RequestSource {
   WALLETCONNECT = 'walletconnect',
@@ -393,7 +392,7 @@ export const handleWalletConnectRequest = async (request: WalletconnectRequestDa
 
   // @ts-expect-error Property '_chainId' is private and only accessible within class 'Connector'.ts(2341)
   const chainId = request?.walletConnectV2RequestValues?.chainId || walletConnector?._chainId;
-  const network = ethereumUtils.getNetworkFromChainId(chainId);
+  const network = chainsName[chainId];
   // @ts-expect-error Property '_accounts' is private and only accessible within class 'Connector'.ts(2341)
   const address = request?.walletConnectV2RequestValues?.address || walletConnector?._accounts?.[0];
 

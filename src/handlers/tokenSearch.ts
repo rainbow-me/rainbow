@@ -6,6 +6,7 @@ import { logger, RainbowError } from '@/logger';
 import { EthereumAddress } from '@rainbow-me/swaps';
 import { RainbowToken, TokenSearchToken } from '@/entities/tokens';
 import ethereumUtils from '@/utils/ethereumUtils';
+import { chainsName } from '@/networks/chains';
 
 type TokenSearchApiResponse = {
   data: TokenSearchToken[];
@@ -94,7 +95,7 @@ export const tokenSearch = async (searchParams: {
     return tokenSearch.data.data.map(token => {
       const networkKeys = Object.keys(token.networks);
       const chainId = Number(networkKeys[0]);
-      const network = ethereumUtils.getNetworkFromChainId(chainId);
+      const network = chainsName[chainId];
       return {
         ...token,
         chainId,

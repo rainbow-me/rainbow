@@ -16,7 +16,7 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
 import { AddressOrEth, AssetType, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import exchangeModalTypes from '@/helpers/exchangeModalTypes';
-import { chainsName } from '@/networks/chains';
+import { chainsIdByName, chainsName } from '@/networks/chains';
 
 type SwapActionButtonProps = {
   asset: RainbowToken;
@@ -51,7 +51,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
         return;
       }
 
-      const chainId = ethereumUtils.getChainIdFromNetwork(asset.network);
+      const chainId = chainsIdByName[asset.network];
       const uniqueId = `${asset.address}_${chainId}`;
       const userAsset = userAssetsStore.getState().userAssets.get(uniqueId);
 

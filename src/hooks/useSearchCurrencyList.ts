@@ -11,7 +11,7 @@ import { tokenSearch } from '@/handlers/tokenSearch';
 import { addHexPrefix, getProvider } from '@/handlers/web3';
 import tokenSectionTypes from '@/helpers/tokenSectionTypes';
 import { DAI_ADDRESS, erc20ABI, ETH_ADDRESS, rainbowTokenList, USDC_ADDRESS, WBTC_ADDRESS, WETH_ADDRESS } from '@/references';
-import { ethereumUtils, filterList, isLowerCaseMatch } from '@/utils';
+import { filterList, isLowerCaseMatch } from '@/utils';
 import { logger } from '@/logger';
 import useSwapCurrencies from '@/hooks/useSwapCurrencies';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
@@ -19,6 +19,7 @@ import { IS_TEST } from '@/env';
 import { useFavorites } from '@/resources/favorites';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { ChainId } from '@/networks/types';
+import { chainsName } from '@/networks/chains';
 
 type swapCurrencyListType =
   | 'verifiedAssets'
@@ -195,7 +196,7 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
                   },
                 },
                 symbol,
-                network: ethereumUtils.getNetworkFromChainId(chainId),
+                network: chainsName[chainId],
                 uniqueId,
               } as RainbowToken,
             ];

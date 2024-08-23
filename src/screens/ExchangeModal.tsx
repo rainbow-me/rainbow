@@ -95,7 +95,7 @@ export const getDefaultSlippageFromConfig = (chainId: ChainId) => {
   const configSlippage = getRemoteConfig().default_slippage_bips as unknown as {
     [network: string]: number;
   };
-  const network = ethereumUtils.getNetworkFromChainId(chainId);
+  const network = chainsName[chainId];
   const slippage = configSlippage?.[network] ?? DEFAULT_SLIPPAGE_BIPS[chainId] ?? 100;
   return slippage;
 };
@@ -513,7 +513,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
           legacyGasPrice: (selectedGasFee?.gasFeeParams as unknown as LegacyGasFeeParams)?.gasPrice?.amount || '',
           liquiditySources: JSON.stringify(tradeDetails?.protocols || []),
           maxNetworkFee: (selectedGasFee?.gasFee as GasFee)?.maxFee?.value?.amount || '',
-          network: ethereumUtils.getNetworkFromChainId(currentChainId),
+          network: chainsName[currentChainId],
           networkFee: selectedGasFee?.gasFee?.estimatedFee?.value?.amount || '',
           outputTokenAddress: outputCurrency?.address || '',
           outputTokenName: outputCurrency?.name || '',
@@ -594,7 +594,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
         legacyGasPrice: (selectedGasFee?.gasFeeParams as unknown as LegacyGasFeeParams)?.gasPrice?.amount || '',
         liquiditySources: JSON.stringify(tradeDetails?.protocols || []),
         maxNetworkFee: (selectedGasFee?.gasFee as GasFee)?.maxFee?.value?.amount || '',
-        network: ethereumUtils.getNetworkFromChainId(currentChainId),
+        network: chainsName[currentChainId],
         networkFee: selectedGasFee?.gasFee?.estimatedFee?.value?.amount || '',
         outputTokenAddress: outputCurrency?.address || '',
         outputTokenName: outputCurrency?.name || '',
@@ -725,7 +725,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
         setParams({ focused: false });
         navigate(Routes.SWAP_DETAILS_SHEET, {
           confirmButtonProps,
-          currentNetwork: ethereumUtils.getNetworkFromChainId(currentChainId),
+          currentNetwork: chainsName[currentChainId],
           flashbotTransaction: flashbots,
           isRefuelTx,
           restoreFocusOnSwapModal: () => {

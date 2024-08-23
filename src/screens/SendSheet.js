@@ -63,7 +63,7 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { REGISTRATION_STEPS } from '@/helpers/ens';
 import { ChainId } from '@/networks/types';
-import { chainsNativeAsset, needsL1SecurityFeeChains } from '@/networks/chains';
+import { chainsName, chainsNativeAsset, needsL1SecurityFeeChains } from '@/networks/chains';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
@@ -368,12 +368,12 @@ export default function SendSheet(props) {
           recipient: toAddress,
         },
         currentProvider,
-        ethereumUtils.getNetworkFromChainId(currentChainId)
+        chainsName[chainId]
       );
       const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(txData, currentProvider);
       updateTxFee(updatedGasLimit, null, l1GasFeeOptimism);
     },
-    [accountAddress, amountDetails.assetAmount, currentChainId, currentProvider, selected, toAddress, updateTxFee]
+    [accountAddress, amountDetails.assetAmount, chainId, currentProvider, selected, toAddress, updateTxFee]
   );
 
   const onSubmit = useCallback(
@@ -391,7 +391,7 @@ export default function SendSheet(props) {
       });
       if (!wallet) return;
 
-      const currentChainIdNetwork = ethereumUtils.getNetworkFromChainId(currentChainId);
+      const currentChainIdNetwork = chainsName[currentChainId];
 
       const validTransaction = isValidAddress && amountDetails.isSufficientBalance && isSufficientGas && isValidGas;
       if (!selectedGasFee?.gasFee?.estimatedFee || !validTransaction) {

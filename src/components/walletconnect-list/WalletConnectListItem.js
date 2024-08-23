@@ -22,9 +22,9 @@ import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
+import { showActionSheetWithOptions } from '@/utils';
 import { ChainId } from '@/networks/types';
-import { chainsLabel, chainsNativeAsset } from '@/networks/chains';
+import { chainsIdByName, chainsLabel, chainsNativeAsset } from '@/networks/chains';
 
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;
@@ -133,8 +133,7 @@ export default function WalletConnectListItem({ account, chainId, dappIcon, dapp
         handlePressChangeWallet();
       } else if (actionKey.indexOf(NETWORK_MENU_ACTION_KEY_FILTER) !== -1) {
         const networkValue = actionKey.replace(NETWORK_MENU_ACTION_KEY_FILTER, '');
-        const chainId = ethereumUtils.getChainIdFromNetwork(networkValue);
-        walletConnectUpdateSessionConnectorByDappUrl(dappUrl, account, chainId);
+        walletConnectUpdateSessionConnectorByDappUrl(dappUrl, account, chainsIdByName[networkValue]);
       }
     },
     [account, dappName, dappUrl, handlePressChangeWallet, walletConnectDisconnectAllByDappUrl, walletConnectUpdateSessionConnectorByDappUrl]

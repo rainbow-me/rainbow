@@ -38,9 +38,9 @@ import { IS_TEST } from '@/env';
 import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import DiscoverSearchInput from '@/components/discover/DiscoverSearchInput';
 import { externalTokenQueryKey, fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { queryClient } from '@/react-query/queryClient';
 import { ChainId, Network } from '@/networks/types';
+import { chainsName } from '@/networks/chains';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;
@@ -365,7 +365,7 @@ export default function CurrencySelectModal() {
             ...newAsset,
             decimals: item?.networks?.[currentChainId]?.decimals || item.decimals,
             address: item?.address || item?.networks?.[currentChainId]?.address,
-            network: getNetworkFromChainId(currentChainId),
+            network: chainsName[currentChainId],
             ...externalAsset,
           };
         }

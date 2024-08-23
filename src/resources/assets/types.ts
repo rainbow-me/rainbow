@@ -61,7 +61,7 @@ export interface ParsedAsset {
   isNativeAsset?: boolean;
   name: string;
   mainnet_address?: string;
-  network: Network;
+  network: string;
   networks?: Record<string, AddysNetworkDetails>;
   price?: {
     changed_at?: number;

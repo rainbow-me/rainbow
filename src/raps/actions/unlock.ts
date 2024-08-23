@@ -18,10 +18,10 @@ import { convertAmountToRawAmount, greaterThan } from '@/helpers/utilities';
 import { ActionProps, RapActionResult } from '../references';
 
 import { overrideWithFastSpeedIfNeeded } from './../utils';
-import { ethereumUtils } from '@/utils';
 import { toHex } from '@/__swaps__/utils/hex';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { ParsedAsset } from '@/resources/assets/types';
+import { chainsName } from '@/networks/chains';
 
 export const getAssetRawAllowance = async ({
   owner,
@@ -266,7 +266,7 @@ export const unlock = async ({
   const transaction = {
     asset: {
       ...assetToUnlock,
-      network: ethereumUtils.getNetworkFromChainId(assetToUnlock.chainId),
+      network: chainsName[assetToUnlock.chainId],
       colors: assetToUnlock.colors as TokenColors,
     } as ParsedAsset,
     data: approval.data,
@@ -275,8 +275,7 @@ export const unlock = async ({
     from: parameters.fromAddress,
     to: assetAddress,
     hash: approval.hash as TxHash,
-    // TODO: MARK - Replace this once we migrate network => chainId
-    network: ethereumUtils.getNetworkFromChainId(chainId),
+    network: chainsName[chainId],
     chainId: approval.chainId,
     nonce: approval.nonce,
     status: 'pending',

@@ -1,7 +1,8 @@
 import { Address } from 'viem';
 
-import { Network, ChainId, networkToIdMapping } from '@/networks/types';
+import { Network, ChainId } from '@/networks/types';
 import { createRainbowStore } from '../internal/createRainbowStore';
+import { chainsIdByName } from '@/networks/chains';
 
 export interface AppSessionV0 {
   activeSessionAddress: Address;
@@ -175,7 +176,7 @@ export const useAppSessionsStore = createRainbowStore<AppSessionsStore<AppSessio
             (acc, addr) => {
               const address = addr as Address;
               const network = sessions[address];
-              acc[address] = networkToIdMapping[network];
+              acc[address] = chainsIdByName[network];
               return acc as Record<Address, ChainId>;
             },
             {} as Record<Address, ChainId>

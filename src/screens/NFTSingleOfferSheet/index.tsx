@@ -47,12 +47,12 @@ import { getRainbowFeeAddress } from '@/resources/reservoir/utils';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import ethereumUtils, { getUniqueId } from '@/utils/ethereumUtils';
+import { getUniqueId } from '@/utils/ethereumUtils';
 import { getNextNonce } from '@/state/nonces';
 import { metadataPOSTClient } from '@/graphql';
 import { ethUnits } from '@/references';
 import { Transaction } from '@/graphql/__generated__/metadataPOST';
-import { chainsNativeAsset, defaultChains, getChainDefaultRpc } from '@/networks/chains';
+import { chainsIdByName, chainsNativeAsset, defaultChains, getChainDefaultRpc } from '@/networks/chains';
 
 const NFT_IMAGE_HEIGHT = 160;
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
@@ -94,7 +94,7 @@ export function NFTSingleOfferSheet() {
   } = useLegacyNFTs({ address: accountAddress });
 
   const { offer } = params as { offer: NftOffer };
-  const offerChainId = ethereumUtils.getChainIdFromNetwork(offer.network as Network);
+  const offerChainId = chainsIdByName[offer.network as Network];
   const { data: externalAsset } = useExternalToken({
     address: offer.paymentToken.address,
     chainId: offerChainId,

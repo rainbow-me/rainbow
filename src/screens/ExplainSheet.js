@@ -159,7 +159,7 @@ const ENS_CONFIGURATION_EXPLAINER =
 export const explainers = (params, theme) => {
   const colors = theme?.colors;
   const chainId = params?.chainId;
-  const network = ethereumUtils.getNetworkFromChainId(chainId);
+  const network = chainsName[chainId];
   const fromChainId = params?.fromChainId;
   const toChainId = params?.toChainId;
   return {

@@ -27,7 +27,6 @@ import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
 import { isUnwrapNative, isWrapNative } from '@/handlers/swap';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, logger } from '@/logger';
-import { ethereumUtils } from '@/utils';
 
 import { gasUnits, REFERRER } from '@/references';
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
@@ -49,6 +48,7 @@ import { ParsedAsset } from '@/resources/assets/types';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { Screens, TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
+import { chainsName } from '@/networks/chains';
 
 const WRAP_GAS_PADDING = 1.002;
 
@@ -324,7 +324,7 @@ export const swap = async ({
     // asset: parameters.assetToBuy,
     asset: {
       ...parameters.assetToBuy,
-      network: ethereumUtils.getNetworkFromChainId(parameters.assetToBuy.chainId),
+      network: chainsName[parameters.assetToBuy.chainId],
       colors: parameters.assetToBuy.colors as TokenColors,
       price: nativePriceForAssetToBuy,
     } as ParsedAsset,
@@ -335,7 +335,7 @@ export const swap = async ({
         // asset: parameters.assetToSell,
         asset: {
           ...parameters.assetToSell,
-          network: ethereumUtils.getNetworkFromChainId(parameters.assetToSell.chainId),
+          network: chainsName[parameters.assetToSell.chainId],
           colors: parameters.assetToSell.colors as TokenColors,
           price: nativePriceForAssetToSell,
           native: undefined,
@@ -348,7 +348,7 @@ export const swap = async ({
         // asset: parameters.assetToBuy,
         asset: {
           ...parameters.assetToBuy,
-          network: ethereumUtils.getNetworkFromChainId(parameters.assetToBuy.chainId),
+          network: chainsName[parameters.assetToBuy.chainId],
           colors: parameters.assetToBuy.colors as TokenColors,
           price: nativePriceForAssetToBuy,
           native: undefined,
@@ -358,8 +358,7 @@ export const swap = async ({
     ],
     gasLimit,
     hash: swap.hash as TxHash,
-    // TODO: MARK - Replace this once we migrate network => chainId
-    network: ethereumUtils.getNetworkFromChainId(parameters.chainId),
+    network: chainsName[parameters.chainId],
     // chainId: parameters.chainId,
     nonce: swap.nonce,
     status: 'pending',

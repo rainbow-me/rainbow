@@ -7,7 +7,7 @@ import { Box, Inline, Text } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { position } from '@/styles';
-import { ethereumUtils, watchingAlert } from '@/utils';
+import { watchingAlert } from '@/utils';
 import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
 import { useSwapCurrencyHandlers, useWallets } from '@/hooks';
 import { RainbowToken } from '@/entities';
@@ -134,7 +134,7 @@ const AvailableNetworksv2 = ({
       }
 
       newAsset.uniqueId = getUniqueId(asset.address, chainId);
-      newAsset.type = ethereumUtils.getNetworkFromChainId(chainId);
+      newAsset.type = chainsName[chainId];
 
       navigate(Routes.EXCHANGE_MODAL, {
         params: {

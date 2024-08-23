@@ -56,7 +56,7 @@ export interface RainbowTransaction {
     amount: string;
     display: string;
   };
-  network: Network;
+  network: string;
   nft?: UniqueAsset;
   nonce?: number | null;
   protocol?: ProtocolType | null;

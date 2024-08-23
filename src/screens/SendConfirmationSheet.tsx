@@ -55,7 +55,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { ethereumUtils, getUniqueTokenType, promiseUtils } from '@/utils';
+import { getUniqueTokenType, promiseUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID } from '@/env';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';

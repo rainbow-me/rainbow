@@ -19,6 +19,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import WalletTypes from '@/helpers/walletTypes';
 import { Linking } from 'react-native';
+import { Network } from '@/networks/types';
 
 type Props = {
   transaction: RainbowTransaction;
@@ -29,7 +30,6 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
   const { colors } = useTheme();
   const hash = useMemo(() => ethereumUtils.getHash(transaction), [transaction]);
   const { network, status } = transaction;
-  const chainId = ethereumUtils.getChainIdFromNetwork(network);
   const isReadOnly = useSelector((state: AppState) => state.wallets.selected?.type === WalletTypes.readOnly ?? true);
   // Retry swap related data
   const retrySwapMetadata = useMemo(() => {
@@ -70,7 +70,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
     if (transaction.explorerUrl) {
       Linking.openURL(transaction.explorerUrl);
     } else {
-      ethereumUtils.openTransactionInBlockExplorer(hash, network);
+      ethereumUtils.openTransactionInBlockExplorer(hash, network as Network);
     }
   };
 
@@ -101,7 +101,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
             weight="heavy"
             onPress={onViewOnBlockExplorerPress}
             label={i18n.t(i18n.l.wallet.action.view_on, {
-              blockExplorerName: transaction.explorerLabel ?? startCase(ethereumUtils.getBlockExplorer({ chainId })),
+              blockExplorerName: transaction.explorerLabel ?? startCase(ethereumUtils.getBlockExplorer({ chainId: transaction.chainId })),
             })}
             lightShadows
           />
