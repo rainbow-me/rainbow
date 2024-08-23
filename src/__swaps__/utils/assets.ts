@@ -17,7 +17,7 @@ import { ChainId, ChainName } from '@/networks/types';
 import * as i18n from '@/languages';
 import { SearchAsset } from '@/__swaps__/types/search';
 
-import { chainIdFromChainName, customChainIdsToAssetNames, isNativeAsset } from '@/__swaps__/utils/chains';
+import { customChainIdsToAssetNames, isNativeAsset } from '@/__swaps__/utils/chains';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToBalanceDisplay,
@@ -26,7 +26,7 @@ import {
   convertRawAmountToDecimalFormat,
 } from '@/__swaps__/utils/numbers';
 import { isLowerCaseMatch, isLowerCaseMatchWorklet } from '@/__swaps__/utils/strings';
-import { chainsName } from '@/networks/chains';
+import { chainsIdByName, chainsName } from '@/networks/chains';
 
 export const isSameAsset = (a1: Pick<ParsedAsset, 'chainId' | 'address'>, a2: Pick<ParsedAsset, 'chainId' | 'address'>) =>
   +a1.chainId === +a2.chainId && isLowerCaseMatch(a1.address, a2.address);
@@ -80,7 +80,7 @@ const getUniqueIdForAsset = ({ asset }: { asset: ZerionAsset | AssetApiResponse 
   const address = asset.asset_code;
   const chainName = asset.network ?? ChainName.mainnet;
   const networks = 'networks' in asset ? asset.networks || {} : {};
-  const chainId = ('chain_id' in asset && asset.chain_id) || chainIdFromChainName(chainName) || Number(Object.keys(networks)[0]);
+  const chainId = ('chain_id' in asset && asset.chain_id) || chainsIdByName[chainName] || Number(Object.keys(networks)[0]);
 
   // ZerionAsset should be removed when we move fully away from websckets/refraction api
   const mainnetAddress = isZerionAsset(asset)
@@ -94,7 +94,7 @@ export function parseAsset({ asset, currency }: { asset: ZerionAsset | AssetApiR
   const address = asset.asset_code;
   const chainName = asset.network ?? ChainName.mainnet;
   const networks = 'networks' in asset ? asset.networks || {} : {};
-  const chainId = ('chain_id' in asset && asset.chain_id) || chainIdFromChainName(chainName) || Number(Object.keys(networks)[0]);
+  const chainId = ('chain_id' in asset && asset.chain_id) || chainsIdByName[chainName] || Number(Object.keys(networks)[0]);
 
   // ZerionAsset should be removed when we move fully away from websckets/refraction api
   const mainnetAddress = isZerionAsset(asset)
