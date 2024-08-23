@@ -317,7 +317,7 @@ export const sendTransaction = async ({
 }> => {
   let isHardwareWallet = false;
   try {
-    logger.debug('[wallet]: sending transaction', { transaction });
+    logger.debug('[wallet]: sending transaction', { transaction }, DebugContext.wallet);
     const wallet =
       existingWallet ||
       (await loadWallet({
@@ -365,7 +365,7 @@ export const signTransaction = async ({
 }> => {
   let isHardwareWallet = false;
   try {
-    logger.debug('[wallet]: signing transaction');
+    logger.debug('[wallet]: signing transaction', {}, DebugContext.wallet);
     const wallet =
       existingWallet ||
       (await loadWallet({
@@ -411,7 +411,7 @@ export const signPersonalMessage = async (
 }> => {
   let isHardwareWallet = false;
   try {
-    logger.debug('[wallet]: signing personal message', { message });
+    logger.debug('[wallet]: signing personal message', { message }, DebugContext.wallet);
     const wallet =
       existingWallet ||
       (await loadWallet({
@@ -459,7 +459,7 @@ export const signTypedDataMessage = async (
 }> => {
   let isHardwareWallet = false;
   try {
-    logger.debug('[wallet]: signing typed data message', { message });
+    logger.debug('[wallet]: signing typed data message', { message }, DebugContext.wallet);
     const wallet =
       existingWallet ||
       (await loadWallet({
@@ -617,7 +617,7 @@ export const createWallet = async ({
     callbackAfterSeeds = null;
   }
   const isImported = !!seed;
-  logger.debug(`[wallet]: ${isImported ? 'Importing new wallet' : 'Creating new wallet'}`);
+  logger.debug(`[wallet]: ${isImported ? 'Importing new wallet' : 'Creating new wallet'}`, {}, DebugContext.wallet);
   const walletSeed = seed || generateMnemonic();
   const addresses: RainbowAccount[] = [];
   try {
@@ -1161,19 +1161,19 @@ export const generateAccount = async (id: RainbowWallet['id'], index: number): P
 
 const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
   try {
-    logger.debug('[wallet]: Migrating wallet secrets');
+    logger.debug('[wallet]: Migrating wallet secrets', {}, DebugContext.wallet);
     const seedphrase = await oldLoadSeedPhrase();
 
     if (!seedphrase) {
-      logger.debug('[wallet]: old seed doesnt exist!');
+      logger.debug('[wallet]: old seed doesnt exist!', {}, DebugContext.wallet);
       // Save the migration flag to prevent this flow in the future
       await keychain.saveString(oldSeedPhraseMigratedKey, 'true', keychain.publicAccessControlOptions);
-      logger.debug('[wallet]: marking secrets as migrated');
+      logger.debug('[wallet]: marking secrets as migrated', {}, DebugContext.wallet);
       return null;
     }
 
     const type = identifyWalletType(seedphrase);
-    logger.debug(`[wallet]: wallet type: ${type}`);
+    logger.debug(`[wallet]: wallet type: ${type}`, {}, DebugContext.wallet);
     let hdnode: undefined | HDNode, node: undefined | HDNode, existingAccount: undefined | Wallet;
     switch (type) {
       case EthereumWalletType.privateKey:
@@ -1195,10 +1195,10 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
     }
 
     if (!existingAccount && hdnode) {
-      logger.debug('[wallet]: No existing account, so we have to derive it');
+      logger.debug('[wallet]: No existing account, so we have to derive it', {}, DebugContext.wallet);
       node = hdnode.derivePath(getHdPath({ type: WalletLibraryType.ethers, index: 0 }));
       existingAccount = new Wallet(node.privateKey);
-      logger.debug('[wallet]: Got existing account');
+      logger.debug('[wallet]: Got existing account', {}, DebugContext.wallet);
     }
 
     if (!existingAccount) {
@@ -1208,10 +1208,10 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
     // Check that wasn't migrated already!
     const pkeyExists = await keychain.hasKey(`${existingAccount.address}_${privateKeyKey}`);
     if (!pkeyExists) {
-      logger.debug('[wallet]: new pkey didnt exist so we should save it');
+      logger.debug('[wallet]: new pkey didnt exist so we should save it', {}, DebugContext.wallet);
       // Save the private key in the new format
       await saveKeyForWallet(existingAccount.address, existingAccount.privateKey, false);
-      logger.debug('[wallet]: new pkey saved');
+      logger.debug('[wallet]: new pkey saved', {}, DebugContext.wallet);
     }
 
     const selectedWalletData = await getSelectedWallet();
@@ -1223,13 +1223,13 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
     // Save the seedphrase in the new format
     const seedExists = await keychain.hasKey(`${wallet.id}_${seedPhraseKey}`);
     if (!seedExists) {
-      logger.debug('[wallet]: new seed didnt exist so we should save it');
+      logger.debug('[wallet]: new seed didnt exist so we should save it', {}, DebugContext.wallet);
       await saveSeedPhrase(seedphrase, wallet.id);
-      logger.debug('[wallet]: new seed saved');
+      logger.debug('[wallet]: new seed saved', {}, DebugContext.wallet);
     }
     // Save the migration flag to prevent this flow in the future
     await keychain.saveString(oldSeedPhraseMigratedKey, 'true', keychain.publicAccessControlOptions);
-    logger.debug('[wallet]: saved migrated key');
+    logger.debug('[wallet]: saved migrated key', {}, DebugContext.wallet);
     return {
       hdnode,
       privateKey: existingAccount.privateKey,
@@ -1272,10 +1272,10 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (id: RainbowWallet['id']):
     // First we need to check if that key already exists
     const keyFound = await keychain.hasKey(`${id}_${seedPhraseKey}`);
     if (!keyFound) {
-      logger.debug('[wallet]: key not found, should need migration');
+      logger.debug('[wallet]: key not found, should need migration', {}, DebugContext.wallet);
       // if it doesn't we might have a migration pending
       const isSeedPhraseMigrated = await keychain.loadString(oldSeedPhraseMigratedKey);
-      logger.debug(`[wallet]: Migration pending? ${!isSeedPhraseMigrated}`);
+      logger.debug(`[wallet]: Migration pending? ${!isSeedPhraseMigrated}`, {}, DebugContext.wallet);
 
       // We need to migrate the seedphrase & private key first
       // In that case we regenerate the existing private key to store it with the new format
@@ -1286,13 +1286,13 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (id: RainbowWallet['id']):
         logger.error(new RainbowError('[wallet]: Migrated flag was set but there is no key!'), { id });
       }
     } else {
-      logger.debug('[wallet]: Getting seed directly');
+      logger.debug('[wallet]: Getting seed directly', {}, DebugContext.wallet);
       const androidEncryptionPin = IS_ANDROID && !(await kc.getSupportedBiometryType()) ? await authenticateWithPIN() : undefined;
       const seedData = await getSeedPhrase(id, { androidEncryptionPin });
       seedPhrase = seedData?.seedphrase ?? null;
 
       if (seedPhrase) {
-        logger.debug('[wallet]: got seed succesfully');
+        logger.debug('[wallet]: got seed succesfully', {}, DebugContext.wallet);
       } else {
         logger.error(new RainbowError('[wallet]: Missing seed for wallet - (Key exists but value isnt valid)!'));
       }

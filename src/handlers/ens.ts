@@ -1,7 +1,6 @@
 import { formatsByCoinType, formatsByName } from '@ensdomains/address-encoder';
 import { getAddress } from '@ethersproject/address';
 import { Resolver } from '@ethersproject/providers';
-import { captureException } from '@sentry/react-native';
 import { Duration, sub } from 'date-fns';
 import { isValidAddress, isZeroAddress } from 'ethereumjs-util';
 import { BigNumber } from '@ethersproject/bignumber';

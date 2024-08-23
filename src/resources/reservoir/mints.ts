@@ -39,7 +39,7 @@ export const navigateToMintCollection = async (contractAddress: EthereumAddress,
       showAlert();
     }
   } catch (e) {
-    logger.error(new RainbowError(`[mints]: navigateToMintCollection error`), {
+    logger.warn(`[mints]: navigateToMintCollection error`, {
       contractAddress,
       network,
       error: e,
