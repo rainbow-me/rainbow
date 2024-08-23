@@ -13,7 +13,8 @@ import { ChainBadge } from '../coin-icon';
 import Divider from '../Divider';
 import { Text } from '../text';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
-import { ChainId, chainIdToNameMapping } from '@/networks/types';
+import { ChainId } from '@/networks/types';
+import { defaultChains } from '@/networks/chains';
 
 const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginBottom = 24, marginHorizontal = 19, prominent }) => {
   const { colors } = useTheme();
@@ -86,7 +87,7 @@ const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginBottom = 24, 
                     availableNetworks: availableChainIds?.length,
                   })
                 : lang.t('expanded_state.asset.available_network', {
-                    availableNetwork: chainIdToNameMapping[availableChainIds[0]]?.name,
+                    availableNetwork: defaultChains[availableChainIds[0]]?.name,
                   })}
             </Text>
           </Column>

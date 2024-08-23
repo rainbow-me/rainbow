@@ -24,7 +24,7 @@ import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
 import { ChainId } from '@/networks/types';
-import { chainsNativeAsset, defaultChains } from '@/networks/chains';
+import { chainsLabel, chainsNativeAsset } from '@/networks/chains';
 
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;
@@ -71,11 +71,10 @@ export default function WalletConnectListItem({ account, chainId, dappIcon, dapp
 
   const connectionNetworkInfo = useMemo(() => {
     const nativeAsset = chainsNativeAsset[chainId];
-    const chain = defaultChains[chainId];
     return {
       id: chainId,
       color: isDarkMode ? nativeAsset.colors.primary : nativeAsset.colors.fallback || nativeAsset.colors.primary,
-      name: chain.name,
+      name: chainsLabel[chainId],
     };
   }, [chainId, isDarkMode]);
 

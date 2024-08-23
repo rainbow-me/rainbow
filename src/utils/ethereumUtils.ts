@@ -281,32 +281,10 @@ const getDataString = (func: string, arrVals: string[]) => {
  * @param  {Number} chainId
  */
 export const getNetworkFromChainId = (chainId: ChainId): Network => {
-  switch (chainId) {
-    case ChainId.arbitrum:
-      return Network.arbitrum;
-    case ChainId.goerli:
-      return Network.goerli;
-    case ChainId.optimism:
-      return Network.optimism;
-    case ChainId.polygon:
-      return Network.polygon;
-    case ChainId.base:
-      return Network.base;
-    case ChainId.bsc:
-      return Network.bsc;
-    case ChainId.zora:
-      return Network.zora;
-    case ChainId.gnosis:
-      return Network.gnosis;
-    case ChainId.avalanche:
-      return Network.avalanche;
-    case ChainId.blast:
-      return Network.blast;
-    case ChainId.degen:
-      return Network.degen;
-    default:
-      return Network.mainnet;
+  if (chainId === ChainId.gnosis) {
+    return Network.gnosis;
   }
+  return defaultChains[chainId].name as Network;
 };
 
 /**

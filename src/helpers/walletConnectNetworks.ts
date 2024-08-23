@@ -2,7 +2,7 @@ import store from '@/redux/store';
 import { showActionSheetWithOptions } from '@/utils';
 import * as i18n from '@/languages';
 import { ChainId } from '@/networks/types';
-import { defaultChains, supportedWalletConnectChainIds } from '@/networks/chains';
+import { chainsLabel, defaultChains, supportedWalletConnectChainIds } from '@/networks/chains';
 import { isL2Chain } from '@/handlers/web3';
 
 const walletConnectChains = supportedWalletConnectChainIds.map(chainId => defaultChains[chainId]);
@@ -20,7 +20,7 @@ export const networksMenuItems = () => {
     .filter(({ testnet }) => testnetsEnabled || !testnet)
     .map(chain => ({
       actionKey: `${NETWORK_MENU_ACTION_KEY_FILTER}${chain.id}`,
-      actionTitle: chain.name,
+      actionTitle: chainsLabel[chain.id],
       icon: {
         iconType: 'ASSET',
         iconValue: `${isL2Chain({ chainId: chain.id }) ? `${chain.name}BadgeNoShadow` : 'ethereumBadge'}`,

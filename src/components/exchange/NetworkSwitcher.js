@@ -10,14 +10,14 @@ import { padding, position } from '@/styles';
 import { showActionSheetWithOptions } from '@/utils';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 import { chainIdToNameMapping } from '@/networks/types';
-import { defaultChains, supportedSwapChainIds } from '@/networks/chains';
+import { chainsLabel, defaultChains, supportedSwapChainIds } from '@/networks/chains';
 import { isL2Chain } from '@/handlers/web3';
 
 const networkMenuItems = supportedSwapChainIds
   .map(chainId => defaultChains[chainId])
   .map(chain => ({
     actionKey: chain.id,
-    actionTitle: chain.name,
+    actionTitle: chainsLabel[chain.id],
     icon: {
       iconType: 'ASSET',
       iconValue: `${isL2Chain({ chainId: chain.id }) ? `${chain.name}BadgeNoShadow` : 'ethereumBadge'}`,

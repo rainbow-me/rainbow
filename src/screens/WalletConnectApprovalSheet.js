@@ -29,7 +29,7 @@ import { InfoAlert } from '@/components/info-alert/info-alert';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { ChainId, chainIdToNameMapping } from '@/networks/types';
-import { chainsNativeAsset, defaultChains, supportedWalletConnectChainIds } from '@/networks/chains';
+import { chainsLabel, chainsName, chainsNativeAsset, defaultChains, supportedWalletConnectChainIds } from '@/networks/chains';
 import { isL2Chain } from '@/handlers/web3';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }) => ({
@@ -74,7 +74,7 @@ const NetworkPill = ({ chainIds }) => {
       .filter(({ id }) => chainIds.includes(id))
       .map(chain => ({
         actionKey: chain.id,
-        actionTitle: chain.name,
+        actionTitle: chainsLabel[chain.id],
         icon: {
           iconType: 'ASSET',
           iconValue: `${isL2Chain({ chainId: chain.id }) ? `${chain.name}BadgeNoShadow` : 'ethereumBadge'}`,
@@ -364,7 +364,7 @@ export default function WalletConnectApprovalSheet() {
             </Centered>
             <LabelText align="right" numberOfLines={1}>
               {`${
-                type === WalletConnectApprovalSheetType.connect ? approvalNetworkInfo.name : chainIdToNameMapping[chainId]
+                type === WalletConnectApprovalSheetType.connect ? approvalNetworkInfo.name : chainsName[chainId]
               } ${type === WalletConnectApprovalSheetType.connect && menuItems.length > 1 ? '􀁰' : ''}`}
             </LabelText>
           </ButtonPressAnimation>

@@ -26,7 +26,7 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
 import { ChainId, chainIdToNameMapping } from '@/networks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { defaultChains, supportedSwapChainIds } from '@/networks/chains';
+import { chainsLabel, defaultChains, supportedSwapChainIds } from '@/networks/chains';
 import { isL2Chain } from '@/handlers/web3';
 
 const NOOP = () => null;
@@ -172,7 +172,7 @@ const AvailableNetworksv2 = ({
     .map(chainId => defaultChains[chainId])
     .map(chain => ({
       actionKey: chain.id,
-      actionTitle: chain.name,
+      actionTitle: chainsLabel[chain.id],
       icon: {
         iconType: 'ASSET',
         iconValue: `${isL2Chain({ chainId: chain.id }) ? `${chain.name}BadgeNoShadow` : 'ethereumBadge'}`,

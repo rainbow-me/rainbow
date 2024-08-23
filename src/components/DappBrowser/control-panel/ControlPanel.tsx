@@ -62,7 +62,7 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { greaterThan } from '@/helpers/utilities';
 import { ChainId } from '@/networks/types';
-import { defaultChains, supportedWalletConnectChainIds } from '@/networks/chains';
+import { chainsLabel, defaultChains, supportedWalletConnectChainIds } from '@/networks/chains';
 
 const PAGES = {
   HOME: 'home',
@@ -189,7 +189,7 @@ export const ControlPanel = () => {
       .map(chain => {
         return {
           IconComponent: <ChainImage chainId={chain.id} size={36} />,
-          label: chain.name,
+          label: chainsLabel[chain.id],
           secondaryLabel: i18n.t(
             isConnected && chain.id === currentChainId
               ? i18n.l.dapp_browser.control_panel.connected
