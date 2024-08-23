@@ -281,20 +281,14 @@ export async function swipeUntilVisible(
 ) {
   let stop = false;
 
-  console.log('starting');
-
   while (!stop) {
     try {
-      console.log(`Trying to find element: ${elementId}`);
-      await checkIfVisible(elementId, 500);
-      // await waitFor(element(by.id(elementId)))
-      //   .toBeVisible(percentageVisible)
-      //   .withTimeout(500);
+      await waitFor(element(by.id(elementId)))
+        .toBeVisible(percentageVisible)
+        .withTimeout(500);
 
-      console.log('Element is visible, stopping');
       stop = true;
     } catch (e) {
-      console.log(`Element not visible, swiping ${direction}`);
       await swipe(scrollViewId, direction, 'slow', 0.2);
     }
   }
