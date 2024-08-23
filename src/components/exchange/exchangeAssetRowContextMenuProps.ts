@@ -59,7 +59,7 @@ export default function contextMenuProps(item: any, onCopySwapDetailsText: (addr
           handleCopyContractAddress(item?.address);
         }
         if (idx === 1) {
-          ethereumUtils.openTokenEtherscanURL(item?.address, item?.network);
+          ethereumUtils.openTokenEtherscanURL({ address: item?.address, chainId: chainsIdByName[item?.network] });
         }
       }
     );
@@ -81,7 +81,7 @@ export default function contextMenuProps(item: any, onCopySwapDetailsText: (addr
     if (actionKey === CoinRowActionsEnum.copyAddress) {
       handleCopyContractAddress(item?.address);
     } else if (actionKey === CoinRowActionsEnum.blockExplorer) {
-      ethereumUtils.openTokenEtherscanURL(item?.address, item?.network);
+      ethereumUtils.openTokenEtherscanURL({ address: item?.address, chainId: chainsIdByName[item?.network] });
     }
   };
   return {

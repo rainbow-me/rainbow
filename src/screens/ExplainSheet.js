@@ -367,7 +367,7 @@ export const explainers = (params, theme) => {
           {lang.t('explain.unverified.fragment1')}
           <Text
             color={colors?.appleBlue}
-            onPress={() => ethereumUtils.openTokenEtherscanURL(params?.asset.address, params?.asset?.network)}
+            onPress={() => ethereumUtils.openTokenEtherscanURL({ address: params?.asset?.address, chainId: params?.asset?.chainId })}
             size="large"
             suppressHighlighting
             weight="semibold"

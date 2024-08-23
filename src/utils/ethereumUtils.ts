@@ -366,9 +366,8 @@ function openAddressInBlockExplorer({ address, chainId }: { address: EthereumAdd
   Linking.openURL(`${explorer}/address/${address}`);
 }
 
-function openTokenEtherscanURL(address: EthereumAddress, network: Network) {
+function openTokenEtherscanURL({ address, chainId }: { address: EthereumAddress; chainId: ChainId }) {
   if (!isString(address)) return;
-  const chainId = chainsIdByName[network];
   const explorer = defaultChains[chainId]?.blockExplorers?.default?.url;
   Linking.openURL(`${explorer}/token/${address}`);
 }

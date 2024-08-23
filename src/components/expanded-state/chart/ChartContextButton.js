@@ -32,10 +32,10 @@ export default function ChartContextButton({ asset, color }) {
         setHiddenCoins();
       } else if (buttonIndex === 2 && !asset?.isNativeAsset) {
         // 🔍 View on Etherscan
-        ethereumUtils.openTokenEtherscanURL(asset?.address, asset?.network);
+        ethereumUtils.openTokenEtherscanURL({ address: asset?.address, chainId: asset?.chainId });
       }
     },
-    [asset?.address, asset?.isNativeAsset, asset?.network, setHiddenCoins, setPinnedCoins]
+    [asset?.address, asset?.isNativeAsset, asset?.chainId, setHiddenCoins, setPinnedCoins]
   );
 
   const options = useMemo(
