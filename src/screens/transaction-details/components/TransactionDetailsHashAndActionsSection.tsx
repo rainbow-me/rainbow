@@ -19,7 +19,6 @@ import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import WalletTypes from '@/helpers/walletTypes';
 import { Linking } from 'react-native';
-import { Network } from '@/networks/types';
 
 type Props = {
   transaction: RainbowTransaction;
@@ -29,7 +28,7 @@ type Props = {
 export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ transaction, presentToast }) => {
   const { colors } = useTheme();
   const hash = useMemo(() => ethereumUtils.getHash(transaction), [transaction]);
-  const { network, status } = transaction;
+  const { network, status, chainId } = transaction;
   const isReadOnly = useSelector((state: AppState) => state.wallets.selected?.type === WalletTypes.readOnly ?? true);
   // Retry swap related data
   const retrySwapMetadata = useMemo(() => {
@@ -70,7 +69,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
     if (transaction.explorerUrl) {
       Linking.openURL(transaction.explorerUrl);
     } else {
-      ethereumUtils.openTransactionInBlockExplorer(hash, network as Network);
+      ethereumUtils.openTransactionInBlockExplorer({ hash, chainId });
     }
   };
 

@@ -377,10 +377,9 @@ function openNftInBlockExplorer({ contractAddress, tokenId, chainId }: { contrac
   Linking.openURL(`${explorer}/token/${contractAddress}?a=${tokenId}`);
 }
 
-function openTransactionInBlockExplorer(hash: string, network: Network) {
+function openTransactionInBlockExplorer({ hash, chainId }: { hash: string; chainId: ChainId }) {
   const normalizedHash = hash.replace(/-.*/g, '');
   if (!isString(hash)) return;
-  const chainId = chainsIdByName[network];
   const explorer = defaultChains[chainId]?.blockExplorers?.default?.url;
   Linking.openURL(`${explorer}/tx/${normalizedHash}`);
 }
