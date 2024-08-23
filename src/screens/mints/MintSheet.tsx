@@ -264,7 +264,7 @@ const MintSheet = () => {
             const txs: Transaction[] = [];
             steps.forEach(step => {
               if (step.error) {
-                logger.error(new RainbowError(`NFT Mints: Gas Step Error: ${step.error}`));
+                logger.error(new RainbowError(`[MintSheet]: Gas Step Error: ${step.error}`));
                 return;
               }
               step.items?.forEach(item => {
@@ -296,7 +296,7 @@ const MintSheet = () => {
         });
       } catch (e) {
         setGasError(true);
-        logger.error(new RainbowError(`NFT Mints: Gas Step Error: ${(e as Error).message}`));
+        logger.error(new RainbowError(`[MintSheet]: Gas Step Error: ${(e as Error).message}`));
       }
     };
     estimateMintGas();
@@ -344,7 +344,7 @@ const MintSheet = () => {
       return;
     }
 
-    logger.info('Minting NFT', { name: mintCollection.name });
+    logger.debug('[MintSheet]: Minting NFT', { name: mintCollection.name });
     analyticsV2.track(event.mintsMintingNFT, {
       collectionName: mintCollection.name || '',
       contract: mintCollection.id || '',
@@ -381,7 +381,7 @@ const MintSheet = () => {
         onProgress: (steps: Execute['steps']) => {
           steps.forEach(step => {
             if (step.error) {
-              logger.error(new RainbowError(`Error minting NFT: ${step.error}`));
+              logger.error(new RainbowError(`[MintSheet]: Error minting NFT: ${step.error}`));
               setMintStatus('error');
               return;
             }
@@ -462,7 +462,7 @@ const MintSheet = () => {
         quantity,
         priceInEth: mintPriceAmount,
       });
-      logger.error(new RainbowError(`Error minting NFT: ${(e as Error).message}`));
+      logger.error(new RainbowError(`[MintSheet]: Error minting NFT: ${(e as Error).message}`));
     }
   }, [
     accountAddress,

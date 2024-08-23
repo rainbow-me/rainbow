@@ -140,7 +140,7 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
     default:
       secondaryTextColor = 'labelTertiary';
       secondaryText = '';
-      logger.error(new RainbowError('NFTOffersCard: invalid sort criterion'));
+      logger.error(new RainbowError('[NFTOffersCard]: invalid sort criterion'));
       break;
   }
 

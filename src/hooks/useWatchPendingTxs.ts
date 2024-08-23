@@ -98,10 +98,9 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         } else {
           throw new Error('Pending transaction missing chain id');
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (e: any) {
-        logger.error(new RainbowError(`useWatchPendingTransaction: Failed to watch transaction`), {
-          message: e.message,
+      } catch (e) {
+        logger.error(new RainbowError(`[useWatchPendingTransaction]: Failed to watch transaction`), {
+          message: (e as Error)?.message || 'Unknown error',
         });
       }
 

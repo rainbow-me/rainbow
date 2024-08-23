@@ -15,7 +15,7 @@ import { analyticsV2 } from '@/analytics';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useAccountSettings } from '@/hooks';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
-import { RainbowError, logger } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { queryClient } from '@/react-query';
 import store from '@/redux/store';
@@ -389,18 +389,19 @@ export function useSwapInputsController({
       inputAsset: ExtendedAnimatedAssetWithColors | null;
       outputAsset: ExtendedAnimatedAssetWithColors | null;
     }) => {
-      return Promise.all(
-        [
-          {
-            asset: inputAsset,
-            type: 'inputAsset',
-          },
-          {
-            asset: outputAsset,
-            type: 'outputAsset',
-          },
-        ].map(getAssetNativePrice)
-      ).then(([inputPrice, outputPrice]) => ({ inputPrice, outputPrice }));
+      const assetsToFetch = [];
+
+      assetsToFetch.push({
+        asset: inputAsset,
+        type: 'inputAsset',
+      });
+
+      assetsToFetch.push({
+        asset: outputAsset,
+        type: 'outputAsset',
+      });
+
+      return Promise.all(assetsToFetch.map(getAssetNativePrice)).then(([inputPrice, outputPrice]) => ({ inputPrice, outputPrice }));
     },
     [getAssetNativePrice]
   );
@@ -431,18 +432,54 @@ export function useSwapInputsController({
       return;
     }
 
+    const originalQuoteParams = {
+      assetToBuyUniqueId: originalOutputAssetUniqueId,
+      assetToSellUniqueId: originalInputAssetUniqueId,
+      inputAmount: inputAmount,
+      lastTypedInput: lastTypedInputParam,
+      outputAmount: outputAmount,
+    };
+
     try {
-      const quoteResponse = await (params.swapType === SwapType.crossChain ? getCrosschainQuote(params) : getQuote(params));
-      if (!quoteResponse || 'error' in quoteResponse) throw '';
+      const [quoteResponse, fetchedPrices] = await Promise.all([
+        params.swapType === SwapType.crossChain ? getCrosschainQuote(params) : getQuote(params),
+        fetchAssetPrices({
+          inputAsset: internalSelectedInputAsset.value,
+          outputAsset: internalSelectedOutputAsset.value,
+        }),
+      ]);
+
+      const inputAsset = internalSelectedInputAsset.value;
+      const outputAsset = internalSelectedOutputAsset.value;
+
+      analyticsV2.track(analyticsV2.event.swapsReceivedQuote, {
+        inputAsset,
+        outputAsset,
+        quote: quoteResponse,
+      });
+
+      if (!quoteResponse || 'error' in quoteResponse) {
+        runOnUI(() => {
+          setQuote({
+            data: quoteResponse,
+            inputAmount: undefined,
+            inputPrice: undefined,
+            outputAmount: undefined,
+            outputPrice: undefined,
+            originalQuoteParams,
+            quoteFetchingInterval,
+          });
+        })();
+
+        return;
+      }
 
       const quotedInputAmount =
         lastTypedInputParam === 'outputAmount'
           ? Number(
               convertRawAmountToDecimalFormat(
                 quoteResponse.sellAmount.toString(),
-                internalSelectedInputAsset.value?.networks[internalSelectedInputAsset.value.chainId]?.decimals ||
-                  internalSelectedInputAsset.value?.decimals ||
-                  18
+                inputAsset?.networks[inputAsset.chainId]?.decimals || inputAsset?.decimals || 18
               )
             )
           : undefined;
@@ -452,37 +489,23 @@ export function useSwapInputsController({
           ? Number(
               convertRawAmountToDecimalFormat(
                 quoteResponse.buyAmountMinusFees.toString(),
-                internalSelectedOutputAsset.value?.networks[internalSelectedOutputAsset.value.chainId]?.decimals ||
-                  internalSelectedOutputAsset.value?.decimals ||
-                  18
+                outputAsset?.networks[outputAsset.chainId]?.decimals || outputAsset?.decimals || 18
               )
             )
           : undefined;
-
-      analyticsV2.track(analyticsV2.event.swapsReceivedQuote, {
-        inputAsset: internalSelectedInputAsset.value,
-        outputAsset: internalSelectedOutputAsset.value,
-        quote: quoteResponse,
-      });
 
       runOnUI(() => {
         setQuote({
           data: quoteResponse,
           inputAmount: quotedInputAmount,
-          inputPrice: quoteResponse.sellTokenAsset.price.value,
-          originalQuoteParams: {
-            assetToBuyUniqueId: originalOutputAssetUniqueId,
-            assetToSellUniqueId: originalInputAssetUniqueId,
-            inputAmount: inputAmount,
-            lastTypedInput: lastTypedInputParam,
-            outputAmount: outputAmount,
-          },
+          inputPrice: quoteResponse?.sellTokenAsset?.price?.value || fetchedPrices.inputPrice,
           outputAmount: quotedOutputAmount,
-          outputPrice: quoteResponse.buyTokenAsset.price.value,
+          outputPrice: quoteResponse?.buyTokenAsset?.price?.value || fetchedPrices.outputPrice,
+          originalQuoteParams,
           quoteFetchingInterval,
         });
       })();
-    } catch (error) {
+    } catch {
       runOnUI(resetFetchingStatus)({ fromError: true, quoteFetchingInterval });
     }
   };

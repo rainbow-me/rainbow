@@ -13,7 +13,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
 // DO NOT REMOVE THESE COMMENTED ENV VARS
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { IS_TESTING } from 'react-native-dotenv';
+import { IS_APK_BUILD, IS_TESTING } from 'react-native-dotenv';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { analytics } from '@/analytics';
 import { EthereumAddress } from '@/entities';
@@ -78,7 +78,7 @@ const getInputAmount = async (
 
     const buyAmount = convertAmountToRawAmount(convertNumberToString(outputAmount), outputToken.decimals);
 
-    logger.info(`[getInputAmount]: `, {
+    logger.debug('[useSwapDerivedOutputs]: ', {
       outputToken,
       outputChainId,
       outputNetwork: outputToken?.network,
@@ -105,7 +105,7 @@ const getInputAmount = async (
     };
 
     const rand = Math.floor(Math.random() * 100);
-    logger.debug('[getInputAmount]: Getting quote', { rand, quoteParams });
+    logger.debug('[useSwapDerivedOutputs]: Getting quote', { rand, quoteParams });
     // Do not deleeeet the comment below 😤
     // @ts-ignore About to get quote
 
@@ -115,7 +115,7 @@ const getInputAmount = async (
     if (!quote || (quote as QuoteError).error || !(quote as Quote).sellAmount) {
       if ((quote as QuoteError).error) {
         const quoteError = quote as unknown as QuoteError;
-        logger.error(new RainbowError('[getInputAmount]: Quote error'), {
+        logger.error(new RainbowError('[useSwapDerivedOutputs]: Quote error'), {
           code: quoteError.error_code,
           msg: quoteError.message,
         });
@@ -173,15 +173,13 @@ const getOutputAmount = async (
     const sellAmount = convertAmountToRawAmount(convertNumberToString(inputAmount), inputToken.decimals);
     const isCrosschainSwap = outputChainId !== inputChainId;
 
-    // logger.info(`[getOutputAmount]: `, {
-    //   outputToken,
-    //   outputChainId,
-    //   outputNetwork,
-    //   inputToken,
-    //   inputChainId,
-    //   inputNetwork,
-    //   isCrosschainSwap,
-    // });
+    logger.debug(`[useSwapDerivedOutputs]: `, {
+      outputToken,
+      outputChainId,
+      inputToken,
+      inputChainId,
+      isCrosschainSwap,
+    });
 
     const quoteSource = getSource(source);
     const quoteParams: QuoteParams = {
@@ -200,16 +198,16 @@ const getOutputAmount = async (
     };
 
     const rand = Math.floor(Math.random() * 100);
-    logger.debug('[getOutputAmount]: Getting quote', { rand, quoteParams });
+    logger.debug('[useSwapDerivedOutputs]: Getting quote', { rand, quoteParams });
     // Do not deleeeet the comment below 😤
     // @ts-ignore About to get quote
     const quote: Quote | CrosschainQuote | QuoteError | null = await (isCrosschainSwap ? getCrosschainQuote : getQuote)(quoteParams);
-    logger.debug('[getOutputAmount]: Got quote', { rand, quote });
+    logger.debug('[useSwapDerivedOutputs]: Got quote', { rand, quote });
 
     if (!quote || (quote as QuoteError)?.error || !(quote as Quote)?.buyAmount) {
       const quoteError = quote as QuoteError;
       if (quoteError.error) {
-        logger.error(new RainbowError('[getOutputAmount]: Quote error'), {
+        logger.error(new RainbowError('[useSwapDerivedOutputs]: Quote error'), {
           code: quoteError.error_code,
           msg: quoteError.message,
         });
@@ -329,7 +327,7 @@ export default function useSwapDerivedOutputs(type: string) {
       };
     }
 
-    logger.debug('[getTradeDetails]: Getting trade details', {
+    logger.debug('[useSwapDerivedOutputs]: Getting trade details', {
       independentField,
       independentValue,
       inputCurrency,
@@ -450,7 +448,7 @@ export default function useSwapDerivedOutputs(type: string) {
       tradeDetails,
     };
 
-    logger.debug('[getTradeDetails]: Got trade details', {
+    logger.debug('[useSwapDerivedOutputs]: Got trade details', {
       data,
     });
 

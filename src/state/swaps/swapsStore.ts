@@ -66,7 +66,7 @@ function serialize(state: Partial<SwapsState>, version?: number) {
       version,
     });
   } catch (error) {
-    logger.error(new RainbowError('Failed to serialize state for swaps storage'), { error });
+    logger.error(new RainbowError(`[swapsStore]: Failed to serialize state for swaps storage`), { error });
     throw error;
   }
 }
@@ -76,7 +76,7 @@ function deserialize(serializedState: string) {
   try {
     parsedState = JSON.parse(serializedState);
   } catch (error) {
-    logger.error(new RainbowError('Failed to parse serialized state from swaps storage'), { error });
+    logger.error(new RainbowError(`[swapsStore]: Failed to parse serialized state from swaps storage`), { error });
     throw error;
   }
 
@@ -88,7 +88,7 @@ function deserialize(serializedState: string) {
       recentSwaps = new Map(state.recentSwaps);
     }
   } catch (error) {
-    logger.error(new RainbowError('Failed to convert recentSwaps from swaps storage'), { error });
+    logger.error(new RainbowError(`[swapsStore]: Failed to convert recentSwaps from swaps storage`), { error });
   }
 
   let latestSwapAt: Map<ChainId, number> = new Map();
@@ -97,7 +97,7 @@ function deserialize(serializedState: string) {
       latestSwapAt = new Map(state.latestSwapAt);
     }
   } catch (error) {
-    logger.error(new RainbowError('Failed to convert latestSwapAt from swaps storage'), { error });
+    logger.error(new RainbowError(`[swapsStore]: Failed to convert latestSwapAt from swaps storage`), { error });
   }
 
   return {

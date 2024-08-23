@@ -42,7 +42,7 @@ export async function fetchReservoirNFTFloorPrice(nft: UniqueAsset): Promise<str
         return `${roundedDecimal} ${res?.data?.collections?.[0]?.floorAsk?.price?.currency?.symbol}`;
       }
     } catch (e) {
-      logger.error(new RainbowError(`Error fetching NFT floor price from Reservoir: ${e}`));
+      logger.error(new RainbowError(`[nfts]: Error fetching NFT floor price from Reservoir: ${e}`));
     }
   }
   return undefined;

@@ -7,7 +7,7 @@ import { Box } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { useTheme } from '@/theme';
-import Logger from '@/utils/logger';
+import { logger } from '@/logger';
 import { analytics } from '@/analytics';
 import { AppIcon, AppIconKey, UnlockableAppIcon, UnlockableAppIconKey, freeAppIcons, unlockableAppIcons } from '@/appIcons/appIcons';
 import { unlockableAppIconStorage } from '@/featuresToUnlock/unlockableAppIconCheck';
@@ -18,7 +18,7 @@ const AppIconSection = () => {
 
   const onSelectIcon = useCallback(
     (icon: string) => {
-      Logger.log('onSelectIcon', icon);
+      logger.debug(`[AppIconSection]: onSelectIcon: ${icon}`);
       analytics.track('Set App Icon', { appIcon: icon });
       settingsChangeAppIcon(icon);
     },
@@ -32,9 +32,9 @@ const AppIconSection = () => {
         (unlockedAppIcons, appIconKey) => {
           const appIcon = unlockableAppIcons[appIconKey];
           const unlocked = unlockableAppIconStorage.getBoolean(appIconKey);
-          Logger.log('checking if unlocked', appIcon.displayName, unlocked, appIconKey);
+          logger.debug(`[AppIconSection]: checking if unlocked ${appIcon.displayName} ${unlocked} ${appIconKey}`);
           if (unlocked) {
-            Logger.log('unlocked', appIcon.displayName);
+            logger.debug(`[AppIconSection]: unlocked ${appIcon.displayName}`);
             unlockedAppIcons[appIconKey] = appIcon;
           }
           return unlockedAppIcons;

@@ -92,7 +92,7 @@ const lazyPersist = <S>({ name, serializer, storageKey, value }: LazyPersistPara
         const serializedValue = serializer(value.state, value.version ?? 0);
         rainbowStorage.set(key, serializedValue);
       } catch (error) {
-        logger.error(new RainbowError('Failed to serialize persisted store data'), { error });
+        logger.error(new RainbowError(`[createRainbowStore]: Failed to serialize persisted store data`), { error });
       }
     },
     PERSIST_RATE_LIMIT_MS,
@@ -109,7 +109,7 @@ function defaultSerializeState<S>(state: StorageValue<Partial<S>>['state'], vers
   try {
     return JSON.stringify({ state, version });
   } catch (error) {
-    logger.error(new RainbowError('Failed to serialize Rainbow store data'), { error });
+    logger.error(new RainbowError(`[createRainbowStore]: Failed to serialize Rainbow store data`), { error });
     throw error;
   }
 }
@@ -123,7 +123,7 @@ function defaultDeserializeState<S>(serializedState: string): StorageValue<Parti
   try {
     return JSON.parse(serializedState);
   } catch (error) {
-    logger.error(new RainbowError('Failed to deserialize persisted Rainbow store data'), { error });
+    logger.error(new RainbowError(`[createRainbowStore]: Failed to deserialize persisted Rainbow store data`), { error });
     throw error;
   }
 }

@@ -179,7 +179,9 @@ export const WalletsAndBackup = () => {
         });
       } catch (e) {
         Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
-        logger.error(e as RainbowError);
+        logger.error(new RainbowError(`[WalletsAndBackup]: Logging into Google Drive failed`), {
+          error: e,
+        });
       }
     } else {
       const isAvailable = await isCloudBackupAvailable();
@@ -232,10 +234,8 @@ export const WalletsAndBackup = () => {
           // @ts-expect-error - no params
           await initializeWallet();
         } catch (err) {
-          logger.error(new RainbowError('Failed to create new secret phrase'), {
-            extra: {
-              error: err,
-            },
+          logger.error(new RainbowError(`[WalletsAndBackup]: Failed to create new secret phrase`), {
+            error: err,
           });
         }
       },

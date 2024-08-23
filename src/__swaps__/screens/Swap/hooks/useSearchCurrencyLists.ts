@@ -27,6 +27,7 @@ export interface AssetToBuySection {
 
 const MAX_UNVERIFIED_RESULTS = 8;
 const MAX_VERIFIED_RESULTS = 48;
+const MAX_POPULAR_RESULTS = 3;
 
 const mergeAssetsFavoriteStatus = ({
   assets,
@@ -177,7 +178,7 @@ const buildListSectionsData = ({
       assets: combinedData.popularAssets,
       recentSwaps: combinedData.recentSwaps,
       filteredBridgeAssetAddress,
-    }).slice(0, 6);
+    }).slice(0, MAX_POPULAR_RESULTS);
     addSection(
       'popular',
       mergeAssetsFavoriteStatus({

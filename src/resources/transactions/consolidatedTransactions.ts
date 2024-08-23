@@ -83,7 +83,7 @@ export async function consolidatedTransactionsQueryFunction({
       transactions: consolidatedTransactions,
     };
   } catch (e) {
-    logger.error(new RainbowError('consolidatedTransactionsQueryFunction: '), {
+    logger.error(new RainbowError('[consolidatedTransactions]: '), {
       message: e,
     });
     return { transactions: [] };

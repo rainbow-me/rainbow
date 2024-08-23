@@ -55,7 +55,7 @@ export async function runMigration({ debug, name, migrate, defer }: Migration) {
    * should exit early
    */
   if (debug && env.IS_PROD) {
-    logger.error(new RainbowError(`Migration is in debug mode`), {
+    logger.error(new RainbowError(`[migrations]: is in debug mode`), {
       migration: name,
     });
     return;
@@ -66,7 +66,7 @@ export async function runMigration({ debug, name, migrate, defer }: Migration) {
   if (handler) {
     try {
       logger.debug(
-        `Migrating`,
+        `[migrations]: Migrating`,
         {
           migration: name,
         },
@@ -75,19 +75,19 @@ export async function runMigration({ debug, name, migrate, defer }: Migration) {
       await handler();
       if (!debug) storage.set([name], new Date().toUTCString());
       logger.debug(
-        `Migrating complete`,
+        `[migrations]: Migrating complete`,
         {
           migration: name,
         },
         MIGRATIONS_DEBUG_CONTEXT
       );
     } catch (e) {
-      logger.error(new RainbowError(`Migration failed`), {
+      logger.error(new RainbowError(`[migrations]: Migration failed`), {
         migration: name,
       });
     }
   } else {
-    logger.error(new RainbowError(`Migration had no handler`), {
+    logger.error(new RainbowError(`[migrations]: Migration had no handler`), {
       migration: name,
     });
   }
@@ -112,11 +112,11 @@ export async function runMigrations(migrations: Migration[]) {
 
       ranMigrations.push(migration.name);
     } else {
-      logger.debug(`Already migrated`, { migration: migration.name }, MIGRATIONS_DEBUG_CONTEXT);
+      logger.debug(`[migrations]: Already migrated`, { migration: migration.name }, MIGRATIONS_DEBUG_CONTEXT);
     }
   }
 
-  logger.info(`Ran or scheduled migrations`, {
+  logger.debug(`[migrations]: Ran or scheduled migrations`, {
     migrations: ranMigrations,
   });
 }

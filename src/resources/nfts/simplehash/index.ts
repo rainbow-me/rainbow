@@ -23,7 +23,7 @@ export async function fetchSimpleHashNFT(
   const chain = getNetworkObj(network as Network).nfts.simplehashNetwork;
 
   if (!chain) {
-    logger.error(new RainbowError(`fetchSimpleHashNFT: no SimpleHash chain for network: ${network}`));
+    logger.warn(`[simplehash]: no SimpleHash chain for network: ${network}`);
     return;
   }
 
@@ -48,7 +48,7 @@ export async function fetchSimpleHashNFTListing(
   const chain = getNetworkObj(network as Network).nfts.simplehashNetwork;
 
   if (!chain) {
-    logger.error(new RainbowError(`fetchSimpleHashNFTListing: no SimpleHash chain for network: ${network}`));
+    logger.warn(`[simplehash]: no SimpleHash chain for network: ${network}`);
     return;
   }
 
@@ -87,7 +87,7 @@ export async function refreshNFTContractMetadata(nft: UniqueAsset) {
   const chain = (nft.isPoap ? getGnosisNetworkObject() : getNetworkObj(nft.network)).nfts.simplehashNetwork;
 
   if (!chain) {
-    logger.error(new RainbowError(`refreshNFTContractMetadata: no SimpleHash chain for network: ${nft.network}`));
+    logger.warn(`[simplehash]: no SimpleHash chain for network: ${nft.network}`);
     return;
   }
 
@@ -105,7 +105,7 @@ export async function refreshNFTContractMetadata(nft: UniqueAsset) {
     );
   } catch {
     logger.warn(
-      `refreshNFTContractMetadata: failed to refresh metadata for NFT contract ${nft.asset_contract.address}, falling back to refreshing NFT #${nft.id}`
+      `[simplehash]: failed to refresh metadata for NFT contract ${nft.asset_contract.address}, falling back to refreshing NFT #${nft.id}`
     );
     try {
       // If the collection has > 20k NFTs, the above request will fail.
@@ -124,7 +124,7 @@ export async function refreshNFTContractMetadata(nft: UniqueAsset) {
     } catch {
       logger.error(
         new RainbowError(
-          `refreshNFTContractMetadata: failed to refresh metadata for NFT #${nft.id} after failing to refresh metadata for NFT contract ${nft.asset_contract.address}`
+          `[simplehash]: failed to refresh metadata for NFT #${nft.id} after failing to refresh metadata for NFT contract ${nft.asset_contract.address}`
         )
       );
     }
@@ -139,7 +139,7 @@ export async function reportNFT(nft: UniqueAsset) {
   const chain = (nft.isPoap ? getGnosisNetworkObject() : getNetworkObj(nft.network)).nfts.simplehashNetwork;
 
   if (!chain) {
-    logger.error(new RainbowError(`reportNFT: no SimpleHash chain for network: ${nft.network}`));
+    logger.warn(`[simplehash]: no SimpleHash chain for network: ${nft.network}`);
     return;
   }
 
@@ -161,6 +161,6 @@ export async function reportNFT(nft: UniqueAsset) {
       }
     );
   } catch {
-    logger.error(new RainbowError(`reportNFT: failed to report NFT ${nft.asset_contract.address} #${nft.id} as spam to SimpleHash`));
+    logger.error(new RainbowError(`[simplehash]: failed to report NFT ${nft.asset_contract.address} #${nft.id} as spam to SimpleHash`));
   }
 }
