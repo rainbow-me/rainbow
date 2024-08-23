@@ -28,7 +28,7 @@ async function tokenSearchQueryFunction({ queryKey: [{ chainId }] }: QueryFuncti
     const tokenSearch = await tokenSearchHttp.get<{ data: SearchAsset[] }>(url);
     return parseTokenSearch(tokenSearch.data.data, chainId);
   } catch (e) {
-    logger.error(new RainbowError('Token discovery failed'), { url });
+    logger.error(new RainbowError('[tokenSearchQueryFunction]: Token discovery failed'), { url });
     return [];
   }
 }

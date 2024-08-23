@@ -17,7 +17,7 @@ import { ENS_DOMAIN, generateSalt, getRentPrice, REGISTRATION_STEPS } from '@/he
 import { loadWallet } from '@/model/wallet';
 import { timeUnits } from '@/references';
 import Routes from '@/navigation/routesNames';
-import { labelhash, logger } from '@/utils';
+import { labelhash } from '@/utils';
 import { getNextNonce } from '@/state/nonces';
 import { Network } from '@/networks/types';
 import { Hex } from 'viem';
@@ -25,6 +25,7 @@ import { executeENSRap } from '@/raps/actions/ens';
 import store from '@/redux/store';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { noop } from 'lodash';
+import { logger, RainbowError } from '@/logger';
 
 // Generic type for action functions
 type ActionFunction<P extends any[] = [], R = void> = (...params: P) => Promise<R>;
@@ -379,7 +380,9 @@ async function uploadRecordImages(records: Partial<Records> | undefined, imageMe
         });
         return url;
       } catch (error) {
-        logger.sentry('[uploadRecordImages] Failed to upload image.', error);
+        logger.error(new RainbowError('[useENSRegistrationActionHandler]: Failed to upload image.'), {
+          error,
+        });
         return undefined;
       }
     }

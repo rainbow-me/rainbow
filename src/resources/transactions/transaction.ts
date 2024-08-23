@@ -57,7 +57,7 @@ export const fetchTransaction = async ({
     if (!parsedTx) throw new Error('Failed to parse transaction');
     return parsedTx;
   } catch (e) {
-    logger.error(new RainbowError('fetchTransaction: '), {
+    logger.error(new RainbowError('[transaction]: Failed to fetch transaction'), {
       message: (e as Error)?.message,
     });
     return null;

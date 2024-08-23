@@ -4,7 +4,7 @@ import { getNetworkObj } from '@/networks';
 import { Navigation } from '@/navigation';
 import { Network } from '@/networks/types';
 import Routes from '@/navigation/routesNames';
-import { logger } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as lang from '@/languages';
 import { BigNumberish } from '@ethersproject/bignumber';
@@ -18,7 +18,7 @@ const showAlert = () => {
   );
 };
 export const navigateToMintCollection = async (contractAddress: EthereumAddress, pricePerMint: BigNumberish, network: Network) => {
-  logger.debug('Mints: Navigating to Mint Collection', {
+  logger.debug('[mints]: Navigating to Mint Collection', {
     contractAddress,
     network,
   });
@@ -35,11 +35,11 @@ export const navigateToMintCollection = async (contractAddress: EthereumAddress,
         pricePerMint,
       });
     } else {
-      logger.warn('Mints: No collection found', { contractAddress, network });
+      logger.warn('[mints]: No collection found', { contractAddress, network });
       showAlert();
     }
   } catch (e) {
-    logger.warn('Mints: navigateToMintCollection error', {
+    logger.warn(`[mints]: navigateToMintCollection error`, {
       contractAddress,
       network,
       error: e,

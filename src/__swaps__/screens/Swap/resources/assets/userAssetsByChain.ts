@@ -82,7 +82,7 @@ export async function userAssetsByChainQueryFunction({
       return cachedDataForChain;
     }
   } catch (e) {
-    logger.error(new RainbowError(`userAssetsByChainQueryFunction - chainId = ${chainId}:`), {
+    logger.error(new RainbowError(`[userAssetsByChainQueryFunction]: Failed to fetch user assets for ${chainId}`), {
       message: (e as Error)?.message,
     });
     return cachedDataForChain;

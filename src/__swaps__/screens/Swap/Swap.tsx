@@ -29,6 +29,7 @@ import { SwapWarning } from './components/SwapWarning';
 import { clearCustomGasSettings } from './hooks/useCustomGas';
 import { SwapProvider, useSwapContext } from './providers/swap-provider';
 import { useAccountSettings } from '@/hooks';
+import { NavigateToSwapSettingsTrigger } from './components/NavigateToSwapSettingsTrigger';
 
 /** README
  * This prototype is largely driven by Reanimated and Gesture Handler, which
@@ -86,6 +87,7 @@ export function SwapScreen() {
       </SwapSheetGestureBlocker>
       <WalletAddressObserver />
       <AbsolutePortalRoot />
+      <NavigateToSwapSettingsTrigger />
     </SwapProvider>
   );
 }
