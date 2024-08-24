@@ -53,6 +53,7 @@ import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { AnimatedSwitch } from './AnimatedSwitch';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
+import { logger, RainbowError } from '@/logger';
 
 const UNKNOWN_LABEL = i18n.t(i18n.l.swap.unknown);
 const REVIEW_LABEL = i18n.t(i18n.l.expanded_state.swap_details.review);
@@ -88,12 +89,14 @@ const RainbowFee = () => {
       const feePercentage = convertRawAmountToBalance(quote.feePercentageBasisPoints, {
         decimals: 18,
       }).amount;
-
+      console.log('WE SHOULD GET HERE (MAYBE)');
       const { display: feeDisplay } = convertRawAmountToBalance(quote.fee.toString(), {
-        decimals: quote?.feeTokenAsset?.decimals || 18,
-        symbol: quote?.feeTokenAsset?.symbol || 'ETH',
+        // @ts-ignore
+        decimals: quote.feeTokenAsset.decimals,
+        // @ts-ignore
+        symbol: quote.feeTokenAsset.symbol,
       });
-
+      console.log('WE SHOULD NEVER GET HERE');
       rainbowFee.value = [feeDisplay, `${handleSignificantDecimals(multiply(feePercentage, 100), 2)}%`];
     },
     [rainbowFee]

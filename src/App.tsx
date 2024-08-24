@@ -1,7 +1,18 @@
 import './languages';
 import * as Sentry from '@sentry/react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { AppRegistry, AppState, AppStateStatus, Dimensions, InteractionManager, Linking, LogBox, View } from 'react-native';
+import {
+  AppRegistry,
+  AppState,
+  AppStateStatus,
+  Button,
+  Dimensions,
+  InteractionManager,
+  Linking,
+  LogBox,
+  StyleSheet,
+  View,
+} from 'react-native';
 import branch from 'react-native-branch';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -54,6 +65,7 @@ import { Address } from 'viem';
 import { IS_DEV } from './env';
 import { checkIdentifierOnLaunch } from './model/backup';
 import { prefetchDefaultFavorites } from './resources/favorites';
+import { runOnJS, useAnimatedReaction, useSharedValue, withSpring } from 'react-native-reanimated';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -187,10 +199,6 @@ export type AppStore = typeof store;
 export type RootState = ReturnType<AppStore['getState']>;
 export type AppDispatch = AppStore['dispatch'];
 
-const AppWithRedux = connect<unknown, AppDispatch, unknown, RootState>(state => ({
-  walletReady: state.appState.walletReady,
-}))(App);
-
 function Root() {
   const [initializing, setInitializing] = React.useState(true);
 
@@ -301,9 +309,7 @@ function Root() {
               <GestureHandlerRootView style={{ flex: 1 }}>
                 <RainbowContextWrapper>
                   <SharedValuesProvider>
-                    <ErrorBoundary>
-                      <AppWithRedux walletReady={false} />
-                    </ErrorBoundary>
+                    <AppWithRedux />
                   </SharedValuesProvider>
                 </RainbowContextWrapper>
               </GestureHandlerRootView>
@@ -315,8 +321,84 @@ function Root() {
   );
 }
 
+const AppThatWillCrash = () => {
+  const handleStart = useCallback(() => {
+    setShow(true);
+  }, []);
+
+  const [show, setShow] = React.useState(false);
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.box}>
+        {!show && <Button onPress={handleStart} title="Start" color={'white'} />}
+        {show && <ViewThatWillCauseTheCrash />}
+      </View>
+    </View>
+  );
+};
+
+const ViewThatWillCauseTheCrash = () => {
+  const height = useSharedValue<number>(100);
+  const anotherSharedValue = useSharedValue<string>('');
+
+  const handlePressCrash = () => {
+    height.value = withSpring(height.value + 50);
+  };
+
+  type WrongType = {
+    prop: { childProp: any };
+  };
+
+  const someOtherFunction = ({ param }: { param: any }) => {
+    console.log(param);
+    return param.reverse();
+  };
+
+  const fnToCrashMe = useCallback(
+    (obj: WrongType) => {
+      const something = someOtherFunction({ param: obj.prop.childProp });
+      anotherSharedValue.value = something;
+    },
+    [anotherSharedValue]
+  );
+
+  useAnimatedReaction(
+    () => height.value,
+    () => {
+      const objWithWrongType = {} as WrongType;
+      return runOnJS(fnToCrashMe)(objWithWrongType);
+    }
+  );
+
+  return (
+    // <ErrorBoundary>
+    <View>
+      <Button onPress={handlePressCrash} title="Tap to Crash me" color={'white'} />
+    </View>
+    // </ErrorBoundary>
+  );
+};
+
+const AppWithRedux = connect<unknown, AppDispatch, unknown, RootState>(state => ({
+  walletReady: state.appState.walletReady,
+}))(AppThatWillCrash);
+
+const styles = StyleSheet.create({
+  container: {
+    marginTop: 100,
+    flex: 1,
+    alignItems: 'center',
+  },
+  box: {
+    width: 200,
+    height: 40,
+    backgroundColor: '#b58df1',
+    borderRadius: 20,
+  },
+});
+
 /** Wrapping Root allows Sentry to accurately track startup times */
-const RootWithSentry = Sentry.wrap(Root);
 
 const PlaygroundWithReduxStore = () => (
   // @ts-expect-error - Property 'children' does not exist on type 'IntrinsicAttributes & IntrinsicClassAttributes<Provider<AppStateUpdateAction | ChartsUpdateAction | ContactsAction | ... 13 more ... | WalletsAction>> & Readonly<...>'
@@ -325,4 +407,4 @@ const PlaygroundWithReduxStore = () => (
   </ReduxProvider>
 );
 
-AppRegistry.registerComponent('Rainbow', () => (designSystemPlaygroundEnabled ? PlaygroundWithReduxStore : RootWithSentry));
+AppRegistry.registerComponent('Rainbow', () => (designSystemPlaygroundEnabled ? PlaygroundWithReduxStore : Root));
