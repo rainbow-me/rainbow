@@ -98,6 +98,7 @@ export function SwapBottomPanel() {
           </Animated.View>
           <Box style={{ flex: 1 }}>
             <SwapActionButton
+              testID="swap-bottom-action-button"
               asset={internalSelectedOutputAsset}
               holdProgress={holdProgress}
               icon={icon}

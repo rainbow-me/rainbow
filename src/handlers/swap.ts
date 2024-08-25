@@ -205,7 +205,7 @@ export const isUnwrapNative = ({
   buyTokenAddress: string;
 }) => {
   return (
-    sellTokenAddress.toLowerCase() === WRAPPED_ASSET[chainId].toLowerCase() &&
+    sellTokenAddress.toLowerCase() === WRAPPED_ASSET[chainId]?.toLowerCase() &&
     buyTokenAddress.toLowerCase() === ETH_ADDRESS_AGGREGATORS.toLowerCase()
   );
 };
@@ -221,7 +221,7 @@ export const isWrapNative = ({
 }) => {
   return (
     sellTokenAddress.toLowerCase() === ETH_ADDRESS_AGGREGATORS.toLowerCase() &&
-    buyTokenAddress.toLowerCase() === WRAPPED_ASSET[chainId].toLowerCase()
+    buyTokenAddress.toLowerCase() === WRAPPED_ASSET[chainId]?.toLowerCase()
   );
 };
 

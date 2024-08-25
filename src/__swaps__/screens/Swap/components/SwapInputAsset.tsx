@@ -37,6 +37,7 @@ function SwapInputActionButton() {
 
   return (
     <SwapActionButton
+      testID="swap-input-asset-action-button"
       asset={internalSelectedInputAsset}
       disableShadow={isDarkMode}
       hugContent
@@ -72,7 +73,14 @@ function SwapInputAmount() {
         }}
       >
         <MaskedView maskElement={<FadeMask fadeEdgeInset={2} fadeWidth={8} height={36} side="right" />} style={styles.inputTextMask}>
-          <AnimatedText ellipsizeMode="clip" numberOfLines={1} size="30pt" style={SwapTextStyles.inputAmountTextStyle} weight="bold">
+          <AnimatedText
+            testID={'swap-asset-amount'}
+            ellipsizeMode="clip"
+            numberOfLines={1}
+            size="30pt"
+            style={SwapTextStyles.inputAmountTextStyle}
+            weight="bold"
+          >
             {SwapInputController.formattedInputAmount}
           </AnimatedText>
           <Animated.View style={[styles.caretContainer, SwapTextStyles.inputCaretStyle]}>
@@ -123,7 +131,7 @@ export function SwapInputAsset() {
 
   return (
     <SwapInput asset={internalSelectedInputAsset} otherInputProgress={outputProgress} progress={inputProgress}>
-      <Box as={Animated.View} style={AnimatedSwapStyles.inputStyle}>
+      <Box testID={'swap-asset-input'} as={Animated.View} style={AnimatedSwapStyles.inputStyle}>
         <Stack space="16px">
           <Columns alignHorizontal="justify" alignVertical="center">
             <Column width="content">

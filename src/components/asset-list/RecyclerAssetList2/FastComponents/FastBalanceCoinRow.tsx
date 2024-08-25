@@ -94,7 +94,7 @@ const MemoizedBalanceCoinRow = React.memo(
     const chainId = ethereumUtils.getChainIdFromNetwork(item?.network);
 
     return (
-      <View style={sx.flex}>
+      <View style={sx.flex} testID={'fast-coin-info'}>
         <ButtonPressAnimation onPress={handlePress} scaleTo={0.96} testID={`balance-coin-row-${item?.name}`}>
           <View style={[sx.container]}>
             <View style={sx.iconContainer}>

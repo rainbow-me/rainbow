@@ -106,7 +106,6 @@ const ActivityList = ({
     if (!ref) return;
     setScrollToTopRef(ref);
   };
-
   if (network === networkTypes.mainnet) {
     return (
       <SectionList
