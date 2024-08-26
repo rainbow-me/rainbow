@@ -3,7 +3,7 @@ name: iOS e2e tests
 on: [pull_request, workflow_dispatch]
 jobs:
   ios-e2e:
-    runs-on: ["self-hosted"]
+    runs-on: ["self-hosted", "CI-8"]
     concurrency: 
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
@@ -79,6 +79,32 @@ jobs:
 
       - name: Build the app in release mode
         run: yarn detox build --configuration ios.sim.release
+      
+      # Upload .app file to AWS S3
+      - name: Upload to AWS S3
+        env:
+          AWS_BUCKET: rainbow-app-team-production
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+          COMMIT_HASH: ${{ github.sha }}
+        run: |
+          APP_PATH=$(find . -name "*.app" | head -n 1)
+          aws s3 cp "$APP_PATH" "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.app"
+
+
+      # Add comment to the pull request with the link to the .app file
+      - name: Post comment to PR
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+          COMMIT_HASH: ${{ github.sha }}
+        run: |
+          COMMENT="Here's the app file: https://app-team.p.rainbow.me/${BRANCH_NAME}/${COMMIT_HASH}.app"
+          curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
+          -d "{\"body\":\"$COMMENT\"}" \
+          "${{ github.event.pull_request.comments_url }}"
 
       # change the '3' here to how many times you want the tests to rerun on failure
       - name: Run iOS e2e tests with retry
