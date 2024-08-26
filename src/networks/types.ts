@@ -70,6 +70,7 @@ export enum ChainName {
   celo = 'celo',
   degen = 'degen',
   gnosis = 'gnosis',
+  goerli = 'goerli',
   linea = 'linea',
   manta = 'manta',
   optimism = 'optimism',
