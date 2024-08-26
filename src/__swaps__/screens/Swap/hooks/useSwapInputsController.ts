@@ -872,7 +872,6 @@ export function useSwapInputsController({
       }
     }
   );
-
   return {
     debouncedFetchQuote,
     formattedInputAmount,
