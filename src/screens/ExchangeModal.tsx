@@ -408,7 +408,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
         // Switch to the flashbots provider if enabled
         // TODO(skylarbarrera): need to check if ledger and handle differently here
         if (flashbots && supportedFlashbotsChainIds.includes(currentChainId) && wallet instanceof Wallet) {
-			logger.debug('[ExchangeModal]: flashbots provider being set on mainnet');
+          logger.debug('[ExchangeModal]: flashbots provider being set on mainnet');
           const flashbotsProvider = await getFlashbotsProvider();
           wallet = new Wallet(wallet.privateKey, flashbotsProvider);
         }
