@@ -316,6 +316,7 @@ type UserAssetsStateWithTransforms = Omit<Partial<UserAssetsState>, 'chainBalanc
   chainBalances: Array<[ChainId, number]>;
   idsByChain: Array<[UserAssetFilter, UniqueId[]]>;
   userAssets: Array<[UniqueId, ParsedSearchAsset]>;
+  legacyUserAssets: ParsedAddressAsset[];
 };
 
 type StoreManagerStateWithTransforms = { stores: Array<[Address | string, UserAssetsStateWithTransforms]> };
@@ -330,6 +331,7 @@ function serializeStoreManager(state: Partial<StoreManagerState>, version?: numb
               chainBalances: storeState.chainBalances ? Array.from(storeState.chainBalances.entries()) : [],
               idsByChain: storeState.idsByChain ? Array.from(storeState.idsByChain.entries()) : [],
               userAssets: storeState.userAssets ? Array.from(storeState.userAssets.entries()) : [],
+              legacyUserAssets: storeState.legacyUserAssets,
             };
             return [address, transformedStore];
           })
@@ -393,6 +395,7 @@ function deserializeStoreManager(serializedState: string) {
       chainBalances,
       idsByChain,
       userAssets,
+      legacyUserAssets: transformedStore.legacyUserAssets,
     });
 
     stores.set(address, rehydratedStore);
