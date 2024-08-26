@@ -244,7 +244,7 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
     });
     throw e;
   } finally {
-	logger.debug(`[remoteConfig]: Current remote config:\n${JSON.stringify(config, null, 2)}`);
+    logger.debug(`[remoteConfig]: Current remote config:\n${JSON.stringify(config, null, 2)}`);
     const currentChainId = await getChainId();
     web3SetHttpProvider(currentChainId);
     saveChainId(currentChainId);

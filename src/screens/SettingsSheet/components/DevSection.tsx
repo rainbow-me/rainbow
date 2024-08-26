@@ -71,7 +71,7 @@ const DevSection = () => {
     try {
       const connectToHardhat = useConnectedToHardhatStore.getState().connectedToHardhat;
       setConnectedToHardhat(!connectToHardhat);
-	  logger.debug(`[DevSection] connected to hardhat`);
+      logger.debug(`[DevSection] connected to hardhat`);
     } catch (e) {
       setConnectedToHardhat(false);
       logger.error(new RainbowError(`[DevSection] error connecting to hardhat: ${e}`));

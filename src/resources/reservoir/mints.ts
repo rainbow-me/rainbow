@@ -18,10 +18,10 @@ const showAlert = () => {
 };
 
 export const navigateToMintCollection = async (contractAddress: EthereumAddress, pricePerMint: BigNumberish, chainId: ChainId) => {
-	logger.debug('[mints]: Navigating to Mint Collection', {
-		contractAddress,
-		chainId,
-	});
+  logger.debug('[mints]: Navigating to Mint Collection', {
+    contractAddress,
+    chainId,
+  });
 
   try {
     const res = await arcClient.getReservoirCollection({
