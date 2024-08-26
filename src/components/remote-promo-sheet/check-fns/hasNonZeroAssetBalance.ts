@@ -1,8 +1,10 @@
 import store from '@/redux/store';
 import { EthereumAddress } from '@/entities';
 import { ActionFn } from '../checkForCampaign';
-import { fetchUserAssets } from '@/resources/assets/UserAssetsQuery';
 import { Network } from '@/helpers';
+import { userAssetsFetchQuery } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
+import { selectorFilterByUserChains, selectUserAssetsList } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
+import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 
 type props = {
   assetAddress: EthereumAddress;
@@ -12,19 +14,22 @@ type props = {
 export const hasNonZeroAssetBalance: ActionFn<props> = async ({ assetAddress, network }) => {
   const { accountAddress, nativeCurrency } = store.getState().settings;
 
-  const assets = await fetchUserAssets({
+  const userAssetsDictByChain = await userAssetsFetchQuery({
     address: accountAddress,
     currency: nativeCurrency,
-    connectedToHardhat: false,
+    testnetMode: false,
   });
-  if (!assets || Object.keys(assets).length === 0) return false;
 
-  const desiredAsset = Object.values(assets).find(asset => {
+  const assets = selectorFilterByUserChains({ data: userAssetsDictByChain, selector: selectUserAssetsList });
+  if (!assets || assets.length === 0) return false;
+
+  const desiredAsset = assets.find(asset => {
     if (!network) {
       return asset.uniqueId.toLowerCase() === assetAddress.toLowerCase();
     }
 
-    return asset.uniqueId.toLowerCase() === assetAddress.toLowerCase() && asset.network === network;
+    const assetNetwork = getNetworkFromChainId(asset.chainId);
+    return asset.uniqueId.toLowerCase() === assetAddress.toLowerCase() && assetNetwork === network;
   });
   if (!desiredAsset) return false;
 

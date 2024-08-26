@@ -25,7 +25,7 @@ const addysHttp = new RainbowFetchClient({
 
 const USER_ASSETS_REFETCH_INTERVAL = 60000;
 const USER_ASSETS_TIMEOUT_DURATION = 20000;
-export const USER_ASSETS_STALE_INTERVAL = 30000;
+const USER_ASSETS_STALE_INTERVAL = 30000;
 
 // ///////////////////////////////////////////////
 // Query Types
@@ -68,7 +68,7 @@ type UserAssetsQueryKey = ReturnType<typeof userAssetsQueryKey>;
 // Query Function
 
 export const userAssetsFetchQuery = ({ address, currency, testnetMode }: FetchUserAssetsArgs) => {
-  queryClient.fetchQuery(userAssetsQueryKey({ address, currency, testnetMode }), userAssetsQueryFunction);
+  return queryClient.fetchQuery(userAssetsQueryKey({ address, currency, testnetMode }), userAssetsQueryFunction);
 };
 
 export const userAssetsSetQueryDefaults = ({ address, currency, staleTime, testnetMode }: SetUserDefaultsArgs) => {
@@ -216,6 +216,6 @@ export function useUserAssets<TSelectResult = UserAssetsResult>(
   return useQuery(userAssetsQueryKey({ address, currency, testnetMode: isHardhatConnected }), userAssetsQueryFunction, {
     ...config,
     refetchInterval: USER_ASSETS_REFETCH_INTERVAL,
-    staleTime: process.env.IS_TESTING === 'true' ? 0 : 1000,
+    staleTime: process.env.IS_TESTING === 'true' ? 0 : USER_ASSETS_STALE_INTERVAL,
   });
 }

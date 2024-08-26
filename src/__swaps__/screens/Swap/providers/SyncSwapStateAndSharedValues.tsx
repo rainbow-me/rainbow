@@ -13,7 +13,6 @@ import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { ChainId } from '@/__swaps__/types/chains';
 import { add } from '@/__swaps__/utils/numbers';
 import { ParsedAddressAsset } from '@/entities';
-import { useUserNativeNetworkAsset } from '@/resources/assets/useUserAsset';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { debounce } from 'lodash';
 import { useEffect } from 'react';
@@ -24,6 +23,10 @@ import { calculateGasFee } from '../hooks/useEstimatedGasFee';
 import { useSelectedGas } from '../hooks/useSelectedGas';
 import { useSwapEstimatedGasLimit } from '../hooks/useSwapEstimatedGasLimit';
 import { useSwapContext } from './swap-provider';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { useAccountSettings } from '@/hooks';
+import { getNetworkObject } from '@/networks';
+import { getUniqueId } from '@/utils/ethereumUtils';
 
 const BUFFER_RATIO = 0.5;
 
@@ -87,12 +90,18 @@ const getHasEnoughFundsForGas = (quote: Quote, gasFee: string, nativeNetworkAsse
 };
 
 export function SyncGasStateToSharedValues() {
+  const { accountAddress } = useAccountSettings();
   const { hasEnoughFundsForGas, internalSelectedInputAsset } = useSwapContext();
 
   const { assetToSell, chainId = ChainId.mainnet, quote } = useSyncedSwapQuoteStore();
 
   const gasSettings = useSelectedGas(chainId);
-  const { data: userNativeNetworkAsset, isLoading: isLoadingNativeNetworkAsset } = useUserNativeNetworkAsset(chainId);
+  const { userNativeNetworkAsset, isLoadingNativeNetworkAsset } = useUserAssetsStore(accountAddress, state => {
+    const { nativeCurrency } = getNetworkObject({ chainId });
+    const { address } = nativeCurrency;
+    const uniqueId = getUniqueId(address, chainId);
+    return { userNativeNetworkAsset: state.getLegacyUserAsset(uniqueId), isLoadingNativeNetworkAsset: state.isLoadingUserAssets };
+  });
   const { data: estimatedGasLimit } = useSwapEstimatedGasLimit({ chainId, assetToSell, quote });
 
   const gasFeeRange = useSharedValue<[string, string] | null>(null);

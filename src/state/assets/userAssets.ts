@@ -77,6 +77,7 @@ export interface UserAssetsState {
   getFilteredUserAssetIds: () => UniqueId[];
   getHighestValueEth: () => ParsedSearchAsset | null;
   getUserAsset: (uniqueId: UniqueId) => ParsedSearchAsset | null;
+  getLegacyUserAsset: (uniqueId: UniqueId) => ParsedAddressAsset | null;
   getUserAssets: () => ParsedSearchAsset[];
   selectUserAssetIds: (selector: (asset: ParsedSearchAsset) => boolean, filter?: UserAssetFilter) => Generator<UniqueId, void, unknown>;
   selectUserAssets: (selector: (asset: ParsedSearchAsset) => boolean) => Generator<[UniqueId, ParsedSearchAsset], void, unknown>;
@@ -168,6 +169,12 @@ export const createUserAssetsStore = (address: Address | string) =>
     },
 
     getUserAsset: (uniqueId: UniqueId) => get().userAssets.get(uniqueId) || null,
+
+    getLegacyUserAsset: (uniqueId: UniqueId) => {
+      const asset = get().userAssets.get(uniqueId);
+      if (!asset) return null;
+      return parsedSearchAssetToParsedAddressAsset(asset);
+    },
 
     getUserAssets: () => Array.from(get().userAssets.values()) || [],
 

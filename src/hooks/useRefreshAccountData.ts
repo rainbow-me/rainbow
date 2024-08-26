@@ -8,8 +8,7 @@ import useAccountSettings from './useAccountSettings';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { logger, RainbowError } from '@/logger';
 import { queryClient } from '@/react-query';
-import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
-import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
+import { userAssetsQueryKey as swapsUserAssetsQueryKey, userAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { nftsQueryKey } from '@/resources/nfts';
 import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import useNftSort from './useNFTsSortBy';
@@ -37,7 +36,9 @@ export default function useRefreshAccountData() {
     queryClient.invalidateQueries(nftsQueryKey({ address: accountAddress, sortBy: nftSort }));
     queryClient.invalidateQueries(positionsQueryKey({ address: accountAddress as Address, currency: nativeCurrency }));
     queryClient.invalidateQueries(addysSummaryQueryKey({ addresses: allAddresses, currency: nativeCurrency }));
-    queryClient.invalidateQueries(userAssetsQueryKey({ address: accountAddress, currency: nativeCurrency, connectedToHardhat }));
+    queryClient.invalidateQueries(
+      userAssetsQueryKey({ address: accountAddress, currency: nativeCurrency, testnetMode: connectedToHardhat })
+    );
     queryClient.invalidateQueries(
       swapsUserAssetsQueryKey({ address: accountAddress as Address, currency: nativeCurrency, testnetMode: !!connectedToHardhat })
     );

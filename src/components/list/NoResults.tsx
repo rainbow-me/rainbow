@@ -4,7 +4,8 @@ import { neverRerender } from '@/utils';
 import { Inset, Stack, Text } from '@/design-system';
 import { useTheme } from '@/theme';
 import { logger } from '@/logger';
-import { useUserAssetCount } from '@/resources/assets/useUserAssetCount';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { useAccountSettings } from '@/hooks';
 
 export enum NoResultsType {
   Discover = 'discover',
@@ -14,7 +15,8 @@ export enum NoResultsType {
 
 export const NoResults = ({ onL2, type }: { onL2?: boolean; type: NoResultsType }) => {
   const { colors } = useTheme();
-  const { data: assetCount } = useUserAssetCount();
+  const { accountAddress } = useAccountSettings();
+  const assetCount = useUserAssetsStore(accountAddress, state => state.legacyUserAssets.length);
 
   let title;
   let description;

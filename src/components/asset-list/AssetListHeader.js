@@ -9,14 +9,14 @@ import { ListHeader, ListHeaderHeight } from '../list';
 import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import { H1, TruncatedText } from '../text';
 import { StickyHeader } from './RecyclerAssetList2/core/StickyHeaders';
-import { useAccountProfile, useDimensions } from '@/hooks';
+import { useAccountProfile, useAccountSettings, useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { useUserAssetCount } from '@/resources/assets/useUserAssetCount';
 import styled from '@/styled-thing';
 import { fonts, position } from '@/styles';
 import { useTheme } from '@/theme';
 import * as lang from '@/languages';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 export const AssetListHeaderHeight = ListHeaderHeight;
 
@@ -103,8 +103,9 @@ const WalletSelectButton = ({ accountName, onChangeWallet, deviceWidth, textWidt
 const AssetListHeader = ({ contextMenuOptions, isCoinListEdited, title, totalValue, isSticky = true, ...props }) => {
   const { width: deviceWidth } = useDimensions();
   const { accountName } = useAccountProfile();
+  const { accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
-  const { isLoading: isLoadingUserAssets } = useUserAssetCount();
+  const { isLoadingUserAssets } = useUserAssetsStore(accountAddress, state => state.isLoadingUserAssets);
 
   const onChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);

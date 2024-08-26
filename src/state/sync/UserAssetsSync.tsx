@@ -19,7 +19,6 @@ export const UserAssetsSync = memo(function UserAssetsSync() {
     },
     {
       enabled: !!accountAddress && !isSwapsOpen,
-      staleTime: 1000 * 60,
       select: data =>
         selectorFilterByUserChains({
           data,

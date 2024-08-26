@@ -66,7 +66,9 @@ interface MemoizedBalanceCoinRowProps {
 const MemoizedBalanceCoinRow = React.memo(
   ({ uniqueId, nativeCurrency, theme, navigate, nativeCurrencySymbol, isHidden, maybeCallback }: MemoizedBalanceCoinRowProps) => {
     const item = useAccountAsset(uniqueId, nativeCurrency) as any;
-
+    if (!item) {
+      console.log(uniqueId);
+    }
     const handlePress = useCallback(() => {
       if (maybeCallback.current) {
         maybeCallback.current();

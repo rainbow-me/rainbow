@@ -2,7 +2,6 @@ import { BigNumberish } from '@ethersproject/bignumber';
 import { Provider } from '@ethersproject/providers';
 import { serialize } from '@ethersproject/transactions';
 import { RainbowAddressAssets } from '@/resources/assets/types';
-import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { queryClient } from '@/react-query';
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'eth-... Remove this comment to see the full error message
@@ -51,6 +50,7 @@ import {
   useExternalToken,
 } from '@/resources/assets/externalAssetsQuery';
 import { ChainId } from '@/__swaps__/types/chains';
+import { userAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 
 const getNetworkNativeAsset = (chainId: ChainId): ParsedAddressAsset | undefined => {
   const nativeAssetAddress = getNetworkObject({ chainId }).nativeCurrency.address;
@@ -123,7 +123,7 @@ const getUserAssetFromCache = (uniqueId: string) => {
     userAssetsQueryKey({
       address: accountAddress,
       currency: nativeCurrency,
-      connectedToHardhat,
+      testnetMode: connectedToHardhat,
     })
   )?.state?.data || {}) as RainbowAddressAssets;
   return cachedAddressAssets?.[uniqueId];
