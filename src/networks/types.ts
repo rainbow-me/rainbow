@@ -124,6 +124,7 @@ export const chainNameToIdMapping: {
   [ChainName.linea]: ChainId.linea,
   [ChainName.manta]: ChainId.manta,
   [ChainName.optimism]: ChainId.optimism,
+  [ChainName.goerli]: ChainId.goerli,
   [ChainName.polygon]: ChainId.polygon,
   [ChainName.polygonZkEvm]: ChainId.polygonZkEvm,
   [ChainName.rari]: ChainId.rari,
