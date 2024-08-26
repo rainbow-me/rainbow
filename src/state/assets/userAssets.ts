@@ -1,15 +1,15 @@
+import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
+import { ChainId } from '@/__swaps__/types/chains';
 import { Address } from 'viem';
 import { RainbowError, logger } from '@/logger';
 import reduxStore from '@/redux/store';
 import { ETH_ADDRESS, SUPPORTED_CHAIN_IDS, supportedNativeCurrencies } from '@/references';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
-import { ChainId } from '@/__swaps__/types/chains';
-import { swapsStore } from '../swaps/swapsStore';
 import { useStore } from 'zustand';
 import { useCallback } from 'react';
 import { getNetworkFromChainId, getUniqueId } from '@/utils/ethereumUtils';
 import { ParsedAddressAsset } from '@/entities';
+import { swapsStore } from '@/state/swaps/swapsStore';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 
@@ -222,7 +222,6 @@ export const createUserAssetsStore = (address: Address | string) =>
           return filteredIds;
         }
       },
-
       getHighestValueEth: () => {
         const preferredNetwork = swapsStore.getState().preferredNetwork;
         const assets = get().userAssets;
