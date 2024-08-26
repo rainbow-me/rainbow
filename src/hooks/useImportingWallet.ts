@@ -133,7 +133,6 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             Alert.alert(lang.t('wallet.invalid_ens_name'));
             return;
           }
-          // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string' is not assignable to par... Remove this comment to see the full error message
           setResolvedAddress(address);
           name = forceEmoji ? `${forceEmoji} ${input}` : input;
           avatarUrl = avatarUrl || avatar?.imageUrl;
