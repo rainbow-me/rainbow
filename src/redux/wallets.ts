@@ -157,7 +157,7 @@ export const walletsLoadState =
         } else {
           keys(wallets).some(key => {
             const someWallet = wallets[key];
-            const found = someWallet.addresses.some(account => {
+            const found = (someWallet.addresses || []).some(account => {
               return toChecksumAddress(account.address) === toChecksumAddress(address!);
             });
             if (found) {
@@ -184,7 +184,7 @@ export const walletsLoadState =
         const allWallets = Object.values(allWalletsResult?.wallets || {});
         let account = null;
         for (const wallet of allWallets) {
-          for (const rainbowAccount of wallet.addresses) {
+          for (const rainbowAccount of wallet.addresses || []) {
             if (rainbowAccount.visible) {
               account = rainbowAccount;
               break;
@@ -358,7 +358,7 @@ export const updateWalletBackupStatusesBasedOnCloudUserData =
     // build hashmap of address to wallet based on backup metadata
     const addressToWalletLookup = new Map<string, RainbowWallet>();
     Object.values(currentUserData.wallets).forEach(wallet => {
-      wallet.addresses.forEach(account => {
+      (wallet.addresses || []).forEach(account => {
         addressToWalletLookup.set(account.address, wallet);
       });
     });
@@ -376,7 +376,7 @@ export const updateWalletBackupStatusesBasedOnCloudUserData =
       const localWalletId = wallet.id;
 
       let relatedCloudWalletId: string | null = null;
-      for (const account of wallet.addresses) {
+      for (const account of wallet.addresses || []) {
         const walletDataForCurrentAddress = addressToWalletLookup.get(account.address);
         if (!walletDataForCurrentAddress) {
           return;
@@ -584,7 +584,7 @@ export const fetchWalletNames = () => async (dispatch: Dispatch<WalletsUpdateNam
   // Fetch ENS names
   await Promise.all(
     Object.values(wallets ?? {}).flatMap(wallet => {
-      const visibleAccounts = wallet.addresses?.filter(address => address.visible);
+      const visibleAccounts = (wallet.addresses || []).filter(address => address.visible);
       return visibleAccounts.map(async account => {
         try {
           const ens = await fetchReverseRecordWithRetry(account.address);
@@ -659,7 +659,7 @@ export const checkKeychainIntegrity = () => async (dispatch: ThunkDispatch<AppSt
         logger.debug('[redux/wallets]: seed key is present');
       }
 
-      for (const account of wallet.addresses) {
+      for (const account of wallet.addresses || []) {
         const pkeyFound = await hasKey(`${account.address}_${privateKeyKey}`);
         if (!pkeyFound) {
           healthyWallet = false;
