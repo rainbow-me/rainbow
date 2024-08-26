@@ -27,7 +27,16 @@ export function SwapInputValuesCaret({ inputCaretType }: { inputCaretType: input
   const inputValues = SwapInputController.inputValues;
 
   const caretStyle = useAnimatedStyle(() => {
+    let disabled = false;
+    if (inputCaretType === 'inputNativeValue' || inputCaretType === 'outputNativeValue') {
+      // disable caret for native inputs when corresponding asset is missing price
+      const asset = inputCaretType === 'inputNativeValue' ? internalSelectedInputAsset : internalSelectedOutputAsset;
+      const assetPrice = asset.value?.nativePrice || asset.value?.price?.value || 0;
+      disabled = !assetPrice || equalWorklet(assetPrice, 0);
+    }
+
     const shouldShow =
+      !disabled &&
       configProgress.value === NavigationSteps.INPUT_ELEMENT_FOCUSED &&
       focusedInput.value === inputCaretType &&
       inputProgress.value === 0 &&
