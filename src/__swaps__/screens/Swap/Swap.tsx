@@ -106,11 +106,9 @@ const useMountSignal = () => {
 };
 
 const useCleanupOnUnmount = () => {
-  const { accountAddress } = useAccountSettings();
-
   useEffect(() => {
     return () => {
-      const highestValueEth = userAssetsStore.getState(accountAddress).getHighestValueEth();
+      const highestValueEth = userAssetsStore.getState().getHighestValueEth();
       const parsedAsset = highestValueEth
         ? parseSearchAsset({
             assetWithPrice: undefined,
@@ -128,11 +126,11 @@ const useCleanupOnUnmount = () => {
         selectedOutputChainId: parsedAsset?.chainId ?? ChainId.mainnet,
       });
 
-      userAssetsStore.setState(accountAddress, { filter: 'all', inputSearchQuery: '' });
+      userAssetsStore.setState({ filter: 'all', inputSearchQuery: '' });
 
       clearCustomGasSettings();
     };
-  }, [accountAddress]);
+  }, []);
 };
 
 const WalletAddressObserver = () => {
@@ -140,10 +138,10 @@ const WalletAddressObserver = () => {
   const { setAsset } = useSwapContext();
 
   const setNewInputAsset = useCallback(() => {
-    const newHighestValueEth = userAssetsStore.getState(accountAddress).getHighestValueEth();
+    const newHighestValueEth = userAssetsStore.getState().getHighestValueEth();
 
-    if (userAssetsStore.getState(accountAddress).filter !== 'all') {
-      userAssetsStore.setState(accountAddress, { filter: 'all' });
+    if (userAssetsStore.getState().filter !== 'all') {
+      userAssetsStore.setState({ filter: 'all' });
     }
 
     setAsset({
@@ -151,13 +149,13 @@ const WalletAddressObserver = () => {
       asset: newHighestValueEth,
     });
 
-    if (userAssetsStore.getState(accountAddress).userAssets.size === 0) {
+    if (userAssetsStore.getState().userAssets.size === 0) {
       setAsset({
         type: SwapAssetType.outputAsset,
         asset: null,
       });
     }
-  }, [accountAddress, setAsset]);
+  }, [setAsset]);
 
   useAnimatedReaction(
     () => accountAddress,

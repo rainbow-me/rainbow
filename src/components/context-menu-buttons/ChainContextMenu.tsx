@@ -7,7 +7,6 @@ import { ChainId, ChainNameDisplay } from '@/__swaps__/types/chains';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { showActionSheetWithOptions } from '@/utils';
 import { chainNameForChainIdWithMainnetSubstitution } from '@/__swaps__/utils/chains';
-import { useAccountSettings } from '@/hooks';
 
 interface DefaultButtonOptions {
   iconColor?: TextProps['color'];
@@ -41,7 +40,6 @@ export const ChainContextMenu = ({
   selectedChainId,
   showAllNetworksOption = true,
 }: ChainContextMenuProps) => {
-  const { accountAddress } = useAccountSettings();
   const {
     iconColor = 'labelSecondary',
     iconSize = 'icon 13px',
@@ -51,7 +49,7 @@ export const ChainContextMenu = ({
     textWeight = 'heavy',
   } = defaultButtonOptions;
 
-  const balanceSortedChains = useUserAssetsStore(accountAddress, state =>
+  const balanceSortedChains = useUserAssetsStore(state =>
     // eslint-disable-next-line no-nested-ternary
     chainsToDisplay ? chainsToDisplay : excludeChainsWithNoBalance ? state.getChainsWithBalance() : state.getBalanceSortedChainList()
   );

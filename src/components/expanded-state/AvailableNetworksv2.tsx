@@ -9,7 +9,7 @@ import Routes from '@/navigation/routesNames';
 import { position } from '@/styles';
 import { ethereumUtils, watchingAlert } from '@/utils';
 import { CurrencySelectionTypes, ExchangeModalTypes, Network } from '@/helpers';
-import { useAccountSettings, useSwapCurrencyHandlers, useWallets } from '@/hooks';
+import { useSwapCurrencyHandlers, useWallets } from '@/hooks';
 import { RainbowToken } from '@/entities';
 import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../animations';
@@ -42,7 +42,6 @@ const AvailableNetworksv2 = ({
 }) => {
   const { colors } = useTheme();
   const { goBack, navigate } = useNavigation();
-  const { accountAddress } = useAccountSettings();
   const { swaps_v2 } = useRemoteConfig();
   const swapsV2Enabled = useExperimentalFlag(SWAPS_V2);
   const { isReadOnlyWallet } = useWallets();
@@ -87,7 +86,7 @@ const AvailableNetworksv2 = ({
       if (swapsV2Enabled || swaps_v2) {
         const chainId = ethereumUtils.getChainIdFromNetwork(newAsset.network);
         const uniqueId = `${newAsset.address}_${chainId}`;
-        const userAsset = userAssetsStore.getState(accountAddress).userAssets.get(uniqueId);
+        const userAsset = userAssetsStore.getState().userAssets.get(uniqueId);
 
         const parsedAsset = parseSearchAsset({
           assetWithPrice: {
@@ -117,7 +116,7 @@ const AvailableNetworksv2 = ({
         });
 
         const largestBalanceSameChainUserAsset = userAssetsStore
-          .getState(accountAddress)
+          .getState()
           .getUserAssets()
           .find(userAsset => userAsset.chainId === chainId && userAsset.address !== newAsset.address);
         if (largestBalanceSameChainUserAsset) {
@@ -152,7 +151,7 @@ const AvailableNetworksv2 = ({
         screen: Routes.CURRENCY_SELECT_SCREEN,
       });
     },
-    [accountAddress, asset, goBack, navigate, networks, swapsV2Enabled, swaps_v2, updateInputCurrency]
+    [asset, goBack, isReadOnlyWallet, navigate, networks, swapsV2Enabled, swaps_v2, updateInputCurrency]
   );
 
   const handlePressContextMenu = useCallback(
