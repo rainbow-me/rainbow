@@ -1,1 +1,424 @@
-{"networks":[{"id":"137","name":"polygon","label":"Polygon","icons":{"badgeURL":"https://rainbowme-res.cloudinary.com/image/upload/v1715645720/networks/polygonBadgeLarge_3x_iriklh.png"},"testnet":false,"opStack":false,"defaultExplorer":{"url":"https://polygonscan.com","label":"Polygonscan","transactionURL":"https://polygonscan.com/tx/","tokenURL":"https://polygonscan.com/token/"},"defaultRPC":{"enabledDevices":["APP","BX"],"url":"https://rpc.rainbow.me/v1/137/"},"gasUnits":{"basic":{"approval":"55000","swap":"600000","swapPermit":"400000","eoaTransfer":"21000","tokenTransfer":"50000"},"wrapped":{"wrap":"37000","unwrap":"56000"}},"nativeAsset":{"address":"0x0000000000000000000000000000000000001010","name":"Matic","symbol":"MATIC","decimals":18,"iconURL":"https://rainbowme-res.cloudinary.com/image/upload/v1668633495/assets/ethereum/0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0.png","colors":{"primary":"#2891F9","fallback":"#81D5F8","shadow":""}},"nativeWrappedAsset":{"address":"0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270","name":"Wrapped Matic","symbol":"WMATIC","decimals":18,"iconURL":"https://rainbowme-res.cloudinary.com/image/upload/v1654687285/assets/polygon/0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270.png","colors":{"primary":"#8048E8","fallback":"#B890F0","shadow":""}},"enabledServices":{"meteorology":{"enabled":true},"swap":{"enabled":true},"addys":{"approvals":true,"transactions":true,"assets":true,"positions":true},"tokenSearch":{"enabled":true},"nftProxy":{"enabled":true}}},{"id":"1","name":"mainnet","label":"Ethereum","icons":{"badgeURL":"https://rainbowme-res.cloudinary.com/image/upload/v1715645829/networks/ethereum_pw2edf.png"},"testnet":false,"opStack":false,"defaultExplorer":{"url":"https://etherscan.io","label":"Etherscan","transactionURL":"https://etherscan.io/tx/","tokenURL":"https://etherscan.io/token/"},"defaultRPC":{"enabledDevices":["APP","BX"],"url":"https://rpc.rainbow.me/v1/1/"},"gasUnits":{"basic":{"approval":"55000","swap":"200000","swapPermit":"400000","eoaTransfer":"21000","tokenTransfer":"50000"},"wrapped":{"wrap":"31000","unwrap":"40000"}},"nativeAsset":{"address":"eth","name":"Ethereum","symbol":"ETH","decimals":18,"iconURL":"https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png","colors":{"primary":"#808088","fallback":"#E8EAF5","shadow":""}},"nativeWrappedAsset":{"address":"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2","name":"Wrapped Ether","symbol":"WETH","decimals":18,"iconURL":"https://rainbowme-res.cloudinary.com/image/upload/v1668633499/assets/ethereum/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png","colors":{"primary":"#25292E","fallback":"#B6B6B7","shadow":""}},"enabledServices":{"meteorology":{"enabled":true},"swap":{"enabled":true},"addys":{"approvals":true,"transactions":true,"assets":true,"positions":true},"tokenSearch":{"enabled":true},"nftProxy":{"enabled":true}}},{"id":"43114","name":"avalanche","label":"Avalanche","icons":{"badgeURL":"https://rainbowme-res.cloudinary.com/image/upload/v1715645723/networks/avalancheBadgeLarge_3x_xt2ilf.png"},"testnet":false,"opStack":false,"defaultExplorer":{"url":"https://43114.snowtrace.io","label":"Snowtrace","transactionURL":"https://43114.snowtrace.io/tx/","tokenURL":"https://43114.snowtrace.io/token/"},"defaultRPC":{"enabledDevices":["APP","BX"],"url":"https://rpc.rainbow.me/v1/43114/"},"gasUnits":{"basic":{"approval":"55000","swap":"350000","swapPermit":"400000","eoaTransfer":"21000","tokenTransfer":"50000"},"wrapped":{"wrap":"37000","unwrap":"56000"}},"nativeAsset":{"address":"0x0000000000000000000000000000000000000000","name":"Avalanche","symbol":"AVAX","decimals":18,"iconURL":"https://rainbowme-res.cloudinary.com/image/upload/v1693266228/assets/avalanchec/0x0000000000000000000000000000000000000000.png","colors":{"primary":"#E84040","fallback":"#F08787","shadow":""}},"nativeWrappedAsset":{"address":"0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7","name":"Wrapped AVAX","symbol":"WAVAX","decimals":18,"iconURL":"https://rainbowme-res.cloudinary.com/image/upload/v1705329005/assets/avalanchec/0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7.png","colors":{"primary":"#E84040","fallback":"#F08888","shadow":""}},"enabledServices":{"meteorology":{"enabled":true},"swap":{"enabled":true},"addys":{"approvals":true,"transactions":true,"assets":true,"positions":true},"tokenSearch":{"enabled":true},"nftProxy":{"enabled":true}}},{"id":"10","name":"optimism","label":"Optimism","icons":{"badgeURL":"https://rainbowme-res.cloudinary.com/image/upload/v1715645720/networks/optimismBadgeLarge_3x_zljbtz.png"},"testnet":false,"opStack":true,"defaultExplorer":{"url":"https://optimistic.etherscan.io","label":"Optimism","transactionURL":"https://optimistic.etherscan.io/tx/","tokenURL":"https://optimistic.etherscan.io/token/"},"defaultRPC":{"enabledDevices":["APP","BX"],"url":"https://rpc.rainbow.me/v1/10/"},"gasUnits":{"basic":{"approval":"55000","swap":"350000","swapPermit":"400000","eoaTransfer":"21000","tokenTransfer":"50000"},"wrapped":{"wrap":"37000","unwrap":"56000"}},"nativeAsset":{"address":"0x0000000000000000000000000000000000000000","name":"Ethereum","symbol":"ETH","decimals":18,"iconURL":"https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png","colors":{"primary":"#808088","fallback":"#E8EAF5","shadow":""}},"nativeWrappedAsset":{"address":"0x4200000000000000000000000000000000000006","name":"Wrapped Ether","symbol":"WETH","decimals":18,"iconURL":"https://rainbowme-res.cloudinary.com/image/upload/v1668633499/assets/ethereum/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png","colors":{"primary":"#25292E","fallback":"#B6B6B7","shadow":""}},"enabledServices":{"meteorology":{"enabled":true},"swap":{"enabled":true},"addys":{"approvals":true,"transactions":true,"assets":true,"positions":true},"tokenSearch":{"enabled":true},"nftProxy":{"enabled":true}}},{"id":"81457","name":"blast","label":"Blast","icons":{"badgeURL":"https://rainbowme-res.cloudinary.com/image/upload/v1715645724/networks/blastBadgeLarge_3x_s7r6cb.png"},"testnet":false,"opStack":true,"defaultExplorer":{"url":"https://blastscan.io","label":"Blastscan","transactionURL":"https://blastscan.io/tx/","tokenURL":"https://blastscan.io/token/"},"defaultRPC":{"enabledDevices":["APP","BX"],"url":"https://rpc.rainbow.me/v1/81457/"},"gasUnits":{"basic":{"approval":"55000","swap":"300000","swapPermit":"400000","eoaTransfer":"21000","tokenTransfer":"50000"},"wrapped":{"wrap":"37000","unwrap":"56000"}},"nativeAsset":{"address":"0x0000000000000000000000000000000000000000","name":"Ethereum","symbol":"ETH","decimals":18,"iconURL":"https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png","colors":{"primary":"#808088","fallback":"#E8EAF5","shadow":""}},"nativeWrappedAsset":{"address":"0x4300000000000000000000000000000000000004","name":"Wrapped Ether","symbol":"WETH","decimals":18,"iconURL":"https://rainbowme-res.cloudinary.com/image/upload/v1668633499/assets/ethereum/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png","colors":{"primary":"#25292E","fallback":"#B6B6B7","shadow":""}},"enabledServices":{"meteorology":{"enabled":true},"swap":{"enabled":true},"addys":{"approvals":true,"transactions":true,"assets":true,"positions":true},"tokenSearch":{"enabled":true},"nftProxy":{"enabled":true}}},{"id":"42161","name":"arbitrum","label":"Arbitrum","icons":{"badgeURL":"https://rainbowme-res.cloudinary.com/image/upload/v1715645719/networks/arbitrumBadgeLarge_3x_cbjnws.png"},"testnet":false,"opStack":false,"defaultExplorer":{"url":"https://arbiscan.io","label":"Arbiscan","transactionURL":"https://arbiscan.io/tx/","tokenURL":"https://arbiscan.io/token/"},"defaultRPC":{"enabledDevices":["APP","BX"],"url":"https://rpc.rainbow.me/v1/42161/"},"gasUnits":{"basic":{"approval":"55000","swap":"350000","swapPermit":"400000","eoaTransfer":"21000","tokenTransfer":"50000"},"wrapped":{"wrap":"37000","unwrap":"56000"}},"nativeAsset":{"address":"0x0000000000000000000000000000000000000000","name":"Ethereum","symbol":"ETH","decimals":18,"iconURL":"https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png","colors":{"primary":"#808088","fallback":"#E8EAF5","shadow":""}},"nativeWrappedAsset":{"address":"0x82af49447d8a07e3bd95bd0d56f35241523fbab1","name":"Wrapped Ether","symbol":"WETH","decimals":18,"iconURL":"https://rainbowme-res.cloudinary.com/image/upload/v1668633499/assets/ethereum/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png","colors":{"primary":"#25292E","fallback":"#B6B6B7","shadow":""}},"enabledServices":{"meteorology":{"enabled":true},"swap":{"enabled":true},"addys":{"approvals":true,"transactions":true,"assets":true,"positions":true},"tokenSearch":{"enabled":true},"nftProxy":{"enabled":true}}},{"id":"7777777","name":"zora","label":"Zora","icons":{"badgeURL":"https://rainbowme-res.cloudinary.com/image/upload/v1715645722/networks/zoraBadgeLarge_3x_hywf0f.png"},"testnet":false,"opStack":true,"defaultExplorer":{"url":"https://explorer.zora.energy","label":"Zora","transactionURL":"https://explorer.zora.energy/tx/","tokenURL":"https://explorer.zora.energy/token/"},"defaultRPC":{"enabledDevices":["APP","BX"],"url":"https://rpc.rainbow.me/v1/7777777/"},"gasUnits":{"basic":{"approval":"55000","swap":"1000000","swapPermit":"400000","eoaTransfer":"21000","tokenTransfer":"50000"},"wrapped":{"wrap":"37000","unwrap":"56000"}},"nativeAsset":{"address":"0x0000000000000000000000000000000000000000","name":"Ethereum","symbol":"ETH","decimals":18,"iconURL":"https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png","colors":{"primary":"#808088","fallback":"#E8EAF5","shadow":""}},"nativeWrappedAsset":{"address":"0x4200000000000000000000000000000000000006","name":"Wrapped Ether","symbol":"WETH","decimals":18,"iconURL":"https://rainbowme-res.cloudinary.com/image/upload/v1668633499/assets/ethereum/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png","colors":{"primary":"#25292E","fallback":"#B6B6B7","shadow":""}},"enabledServices":{"meteorology":{"enabled":true},"swap":{"enabled":true},"addys":{"approvals":true,"transactions":true,"assets":true,"positions":true},"tokenSearch":{"enabled":true},"nftProxy":{"enabled":true}}},{"id":"56","name":"bsc","label":"BSC","icons":{"badgeURL":"https://rainbowme-res.cloudinary.com/image/upload/v1715645721/networks/bscBadgeLarge_3x_ht2ill.png"},"testnet":false,"opStack":false,"defaultExplorer":{"url":"https://bscscan.com","label":"Bscscan","transactionURL":"https://bscscan.com/tx/","tokenURL":"https://bscscan.com/token/"},"defaultRPC":{"enabledDevices":["APP","BX"],"url":"https://rpc.rainbow.me/v1/56/"},"gasUnits":{"basic":{"approval":"55000","swap":"600000","swapPermit":"400000","eoaTransfer":"21000","tokenTransfer":"50000"},"wrapped":{"wrap":"37000","unwrap":"56000"}},"nativeAsset":{"address":"0x0000000000000000000000000000000000000000","name":"BNB","symbol":"BNB","decimals":18,"iconURL":"https://rainbowme-res.cloudinary.com/image/upload/v1668633498/assets/ethereum/0xb8c77482e45f1f44de1745f52c74426c631bdd52.png","colors":{"primary":"#f3ba2f","fallback":"#F8D888","shadow":""}},"nativeWrappedAsset":{"address":"0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c","name":"Wrapped BNB","symbol":"WBNB","decimals":18,"iconURL":"https://rainbowme-res.cloudinary.com/image/upload/v1668565086/assets/smartchain/0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c.png","colors":{"primary":"#F0B808","fallback":"#F8D880","shadow":""}},"enabledServices":{"meteorology":{"enabled":true},"swap":{"enabled":true},"addys":{"approvals":true,"transactions":true,"assets":true,"positions":true},"tokenSearch":{"enabled":true},"nftProxy":{"enabled":true}}},{"id":"666666666","name":"degen","label":"Degen","icons":{"badgeURL":"https://rainbowme-res.cloudinary.com/image/upload/v1715645725/networks/degenBadgeLarge_3x_ns2ncb.png"},"testnet":false,"opStack":false,"defaultExplorer":{"url":"https://explorer.degen.tips","label":"Degen","transactionURL":"https://explorer.degen.tips/tx/","tokenURL":"https://explorer.degen.tips/token/"},"defaultRPC":{"enabledDevices":["APP","BX"],"url":"https://rpc.rainbow.me/v1/666666666/"},"gasUnits":{"basic":{"approval":"55000","swap":"350000","swapPermit":"400000","eoaTransfer":"21000","tokenTransfer":"50000"},"wrapped":{"wrap":"37000","unwrap":"56000"}},"nativeAsset":{"address":"0x0000000000000000000000000000000000000000","name":"Degen","symbol":"DEGEN","decimals":18,"iconURL":"https://rainbowme-res.cloudinary.com/image/upload/v1706144378/assets/base/0x4ed4e862860bed51a9570b96d89af5e1b0efefed.png","colors":{"primary":"#F800F8","fallback":"#7878F8","shadow":""}},"nativeWrappedAsset":{"address":"0xeb54dacb4c2ccb64f8074eceea33b5ebb38e5387","name":"Wrapped Degen","symbol":"wDEGEN","decimals":18,"iconURL":"https://rainbowme-res.cloudinary.com/image/upload/v1713386747/assets/degen/0xeb54dacb4c2ccb64f8074eceea33b5ebb38e5387.png","colors":{"primary":"#F800F8","fallback":"#482898","shadow":""}},"enabledServices":{"meteorology":{"enabled":true},"swap":{"enabled":true},"addys":{"approvals":false,"transactions":true,"assets":true,"positions":true},"tokenSearch":{"enabled":true},"nftProxy":{"enabled":true}}},{"id":"8453","name":"base","label":"Base","icons":{"badgeURL":"https://rainbowme-res.cloudinary.com/image/upload/v1715645723/networks/baseBadgeLarge_3x_j7ffwe.png"},"testnet":false,"opStack":true,"defaultExplorer":{"url":"https://basescan.org","label":"Basescan","transactionURL":"https://basescan.org/tx/","tokenURL":"https://basescan.org/token/"},"defaultRPC":{"enabledDevices":["APP","BX"],"url":"https://rpc.rainbow.me/v1/8453/"},"gasUnits":{"basic":{"approval":"55000","swap":"350000","swapPermit":"400000","eoaTransfer":"21000","tokenTransfer":"50000"},"wrapped":{"wrap":"37000","unwrap":"56000"}},"nativeAsset":{"address":"0x0000000000000000000000000000000000000000","name":"Ethereum","symbol":"ETH","decimals":18,"iconURL":"https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png","colors":{"primary":"#808088","fallback":"#E8EAF5","shadow":""}},"nativeWrappedAsset":{"address":"0x4200000000000000000000000000000000000006","name":"Wrapped Ether","symbol":"WETH","decimals":18,"iconURL":"https://rainbowme-res.cloudinary.com/image/upload/v1668633499/assets/ethereum/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png","colors":{"primary":"#25292E","fallback":"#B6B6B7","shadow":""}},"enabledServices":{"meteorology":{"enabled":true},"swap":{"enabled":true},"addys":{"approvals":true,"transactions":true,"assets":true,"positions":true},"tokenSearch":{"enabled":true},"nftProxy":{"enabled":true}}}]}
+{
+  "networks": [
+    {
+      "id": "137",
+      "name": "polygon",
+      "label": "Polygon",
+      "icons": { "badgeURL": "https://rainbowme-res.cloudinary.com/image/upload/v1715645720/networks/polygonBadgeLarge_3x_iriklh.png" },
+      "testnet": false,
+      "opStack": false,
+      "defaultExplorer": {
+        "url": "https://polygonscan.com",
+        "label": "Polygonscan",
+        "transactionURL": "https://polygonscan.com/tx/",
+        "tokenURL": "https://polygonscan.com/token/"
+      },
+      "defaultRPC": { "enabledDevices": ["APP", "BX"], "url": "https://rpc.rainbow.me/v1/137/" },
+      "gasUnits": {
+        "basic": { "approval": "55000", "swap": "600000", "swapPermit": "400000", "eoaTransfer": "21000", "tokenTransfer": "50000" },
+        "wrapped": { "wrap": "37000", "unwrap": "56000" }
+      },
+      "nativeAsset": {
+        "address": "0x0000000000000000000000000000000000001010",
+        "name": "Matic",
+        "symbol": "MATIC",
+        "decimals": 18,
+        "iconURL": "https://rainbowme-res.cloudinary.com/image/upload/v1668633495/assets/ethereum/0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0.png",
+        "colors": { "primary": "#2891F9", "fallback": "#81D5F8", "shadow": "" }
+      },
+      "nativeWrappedAsset": {
+        "address": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+        "name": "Wrapped Matic",
+        "symbol": "WMATIC",
+        "decimals": 18,
+        "iconURL": "https://rainbowme-res.cloudinary.com/image/upload/v1654687285/assets/polygon/0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270.png",
+        "colors": { "primary": "#8048E8", "fallback": "#B890F0", "shadow": "" }
+      },
+      "enabledServices": {
+        "meteorology": { "enabled": true },
+        "swap": { "enabled": true },
+        "addys": { "approvals": true, "transactions": true, "assets": true, "positions": true },
+        "tokenSearch": { "enabled": true },
+        "nftProxy": { "enabled": true }
+      }
+    },
+    {
+      "id": "1",
+      "name": "mainnet",
+      "label": "Ethereum",
+      "icons": { "badgeURL": "https://rainbowme-res.cloudinary.com/image/upload/v1715645829/networks/ethereum_pw2edf.png" },
+      "testnet": false,
+      "opStack": false,
+      "defaultExplorer": {
+        "url": "https://etherscan.io",
+        "label": "Etherscan",
+        "transactionURL": "https://etherscan.io/tx/",
+        "tokenURL": "https://etherscan.io/token/"
+      },
+      "defaultRPC": { "enabledDevices": ["APP", "BX"], "url": "https://rpc.rainbow.me/v1/1/" },
+      "gasUnits": {
+        "basic": { "approval": "55000", "swap": "200000", "swapPermit": "400000", "eoaTransfer": "21000", "tokenTransfer": "50000" },
+        "wrapped": { "wrap": "31000", "unwrap": "40000" }
+      },
+      "nativeAsset": {
+        "address": "eth",
+        "name": "Ethereum",
+        "symbol": "ETH",
+        "decimals": 18,
+        "iconURL": "https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png",
+        "colors": { "primary": "#808088", "fallback": "#E8EAF5", "shadow": "" }
+      },
+      "nativeWrappedAsset": {
+        "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "name": "Wrapped Ether",
+        "symbol": "WETH",
+        "decimals": 18,
+        "iconURL": "https://rainbowme-res.cloudinary.com/image/upload/v1668633499/assets/ethereum/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
+        "colors": { "primary": "#25292E", "fallback": "#B6B6B7", "shadow": "" }
+      },
+      "enabledServices": {
+        "meteorology": { "enabled": true },
+        "swap": { "enabled": true },
+        "addys": { "approvals": true, "transactions": true, "assets": true, "positions": true },
+        "tokenSearch": { "enabled": true },
+        "nftProxy": { "enabled": true }
+      }
+    },
+    {
+      "id": "43114",
+      "name": "avalanche",
+      "label": "Avalanche",
+      "icons": { "badgeURL": "https://rainbowme-res.cloudinary.com/image/upload/v1715645723/networks/avalancheBadgeLarge_3x_xt2ilf.png" },
+      "testnet": false,
+      "opStack": false,
+      "defaultExplorer": {
+        "url": "https://43114.snowtrace.io",
+        "label": "Snowtrace",
+        "transactionURL": "https://43114.snowtrace.io/tx/",
+        "tokenURL": "https://43114.snowtrace.io/token/"
+      },
+      "defaultRPC": { "enabledDevices": ["APP", "BX"], "url": "https://rpc.rainbow.me/v1/43114/" },
+      "gasUnits": {
+        "basic": { "approval": "55000", "swap": "350000", "swapPermit": "400000", "eoaTransfer": "21000", "tokenTransfer": "50000" },
+        "wrapped": { "wrap": "37000", "unwrap": "56000" }
+      },
+      "nativeAsset": {
+        "address": "0x0000000000000000000000000000000000000000",
+        "name": "Avalanche",
+        "symbol": "AVAX",
+        "decimals": 18,
+        "iconURL": "https://rainbowme-res.cloudinary.com/image/upload/v1693266228/assets/avalanchec/0x0000000000000000000000000000000000000000.png",
+        "colors": { "primary": "#E84040", "fallback": "#F08787", "shadow": "" }
+      },
+      "nativeWrappedAsset": {
+        "address": "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+        "name": "Wrapped AVAX",
+        "symbol": "WAVAX",
+        "decimals": 18,
+        "iconURL": "https://rainbowme-res.cloudinary.com/image/upload/v1705329005/assets/avalanchec/0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7.png",
+        "colors": { "primary": "#E84040", "fallback": "#F08888", "shadow": "" }
+      },
+      "enabledServices": {
+        "meteorology": { "enabled": true },
+        "swap": { "enabled": true },
+        "addys": { "approvals": true, "transactions": true, "assets": true, "positions": true },
+        "tokenSearch": { "enabled": true },
+        "nftProxy": { "enabled": true }
+      }
+    },
+    {
+      "id": "10",
+      "name": "optimism",
+      "label": "Optimism",
+      "icons": { "badgeURL": "https://rainbowme-res.cloudinary.com/image/upload/v1715645720/networks/optimismBadgeLarge_3x_zljbtz.png" },
+      "testnet": false,
+      "opStack": true,
+      "defaultExplorer": {
+        "url": "https://optimistic.etherscan.io",
+        "label": "Optimism",
+        "transactionURL": "https://optimistic.etherscan.io/tx/",
+        "tokenURL": "https://optimistic.etherscan.io/token/"
+      },
+      "defaultRPC": { "enabledDevices": ["APP", "BX"], "url": "https://rpc.rainbow.me/v1/10/" },
+      "gasUnits": {
+        "basic": { "approval": "55000", "swap": "350000", "swapPermit": "400000", "eoaTransfer": "21000", "tokenTransfer": "50000" },
+        "wrapped": { "wrap": "37000", "unwrap": "56000" }
+      },
+      "nativeAsset": {
+        "address": "0x0000000000000000000000000000000000000000",
+        "name": "Ethereum",
+        "symbol": "ETH",
+        "decimals": 18,
+        "iconURL": "https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png",
+        "colors": { "primary": "#808088", "fallback": "#E8EAF5", "shadow": "" }
+      },
+      "nativeWrappedAsset": {
+        "address": "0x4200000000000000000000000000000000000006",
+        "name": "Wrapped Ether",
+        "symbol": "WETH",
+        "decimals": 18,
+        "iconURL": "https://rainbowme-res.cloudinary.com/image/upload/v1668633499/assets/ethereum/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
+        "colors": { "primary": "#25292E", "fallback": "#B6B6B7", "shadow": "" }
+      },
+      "enabledServices": {
+        "meteorology": { "enabled": true },
+        "swap": { "enabled": true },
+        "addys": { "approvals": true, "transactions": true, "assets": true, "positions": true },
+        "tokenSearch": { "enabled": true },
+        "nftProxy": { "enabled": true }
+      }
+    },
+    {
+      "id": "81457",
+      "name": "blast",
+      "label": "Blast",
+      "icons": { "badgeURL": "https://rainbowme-res.cloudinary.com/image/upload/v1715645724/networks/blastBadgeLarge_3x_s7r6cb.png" },
+      "testnet": false,
+      "opStack": true,
+      "defaultExplorer": {
+        "url": "https://blastscan.io",
+        "label": "Blastscan",
+        "transactionURL": "https://blastscan.io/tx/",
+        "tokenURL": "https://blastscan.io/token/"
+      },
+      "defaultRPC": { "enabledDevices": ["APP", "BX"], "url": "https://rpc.rainbow.me/v1/81457/" },
+      "gasUnits": {
+        "basic": { "approval": "55000", "swap": "300000", "swapPermit": "400000", "eoaTransfer": "21000", "tokenTransfer": "50000" },
+        "wrapped": { "wrap": "37000", "unwrap": "56000" }
+      },
+      "nativeAsset": {
+        "address": "0x0000000000000000000000000000000000000000",
+        "name": "Ethereum",
+        "symbol": "ETH",
+        "decimals": 18,
+        "iconURL": "https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png",
+        "colors": { "primary": "#808088", "fallback": "#E8EAF5", "shadow": "" }
+      },
+      "nativeWrappedAsset": {
+        "address": "0x4300000000000000000000000000000000000004",
+        "name": "Wrapped Ether",
+        "symbol": "WETH",
+        "decimals": 18,
+        "iconURL": "https://rainbowme-res.cloudinary.com/image/upload/v1668633499/assets/ethereum/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
+        "colors": { "primary": "#25292E", "fallback": "#B6B6B7", "shadow": "" }
+      },
+      "enabledServices": {
+        "meteorology": { "enabled": true },
+        "swap": { "enabled": true },
+        "addys": { "approvals": true, "transactions": true, "assets": true, "positions": true },
+        "tokenSearch": { "enabled": true },
+        "nftProxy": { "enabled": true }
+      }
+    },
+    {
+      "id": "42161",
+      "name": "arbitrum",
+      "label": "Arbitrum",
+      "icons": { "badgeURL": "https://rainbowme-res.cloudinary.com/image/upload/v1715645719/networks/arbitrumBadgeLarge_3x_cbjnws.png" },
+      "testnet": false,
+      "opStack": false,
+      "defaultExplorer": {
+        "url": "https://arbiscan.io",
+        "label": "Arbiscan",
+        "transactionURL": "https://arbiscan.io/tx/",
+        "tokenURL": "https://arbiscan.io/token/"
+      },
+      "defaultRPC": { "enabledDevices": ["APP", "BX"], "url": "https://rpc.rainbow.me/v1/42161/" },
+      "gasUnits": {
+        "basic": { "approval": "55000", "swap": "350000", "swapPermit": "400000", "eoaTransfer": "21000", "tokenTransfer": "50000" },
+        "wrapped": { "wrap": "37000", "unwrap": "56000" }
+      },
+      "nativeAsset": {
+        "address": "0x0000000000000000000000000000000000000000",
+        "name": "Ethereum",
+        "symbol": "ETH",
+        "decimals": 18,
+        "iconURL": "https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png",
+        "colors": { "primary": "#808088", "fallback": "#E8EAF5", "shadow": "" }
+      },
+      "nativeWrappedAsset": {
+        "address": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+        "name": "Wrapped Ether",
+        "symbol": "WETH",
+        "decimals": 18,
+        "iconURL": "https://rainbowme-res.cloudinary.com/image/upload/v1668633499/assets/ethereum/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
+        "colors": { "primary": "#25292E", "fallback": "#B6B6B7", "shadow": "" }
+      },
+      "enabledServices": {
+        "meteorology": { "enabled": true },
+        "swap": { "enabled": true },
+        "addys": { "approvals": true, "transactions": true, "assets": true, "positions": true },
+        "tokenSearch": { "enabled": true },
+        "nftProxy": { "enabled": true }
+      }
+    },
+    {
+      "id": "7777777",
+      "name": "zora",
+      "label": "Zora",
+      "icons": { "badgeURL": "https://rainbowme-res.cloudinary.com/image/upload/v1715645722/networks/zoraBadgeLarge_3x_hywf0f.png" },
+      "testnet": false,
+      "opStack": true,
+      "defaultExplorer": {
+        "url": "https://explorer.zora.energy",
+        "label": "Zora",
+        "transactionURL": "https://explorer.zora.energy/tx/",
+        "tokenURL": "https://explorer.zora.energy/token/"
+      },
+      "defaultRPC": { "enabledDevices": ["APP", "BX"], "url": "https://rpc.rainbow.me/v1/7777777/" },
+      "gasUnits": {
+        "basic": { "approval": "55000", "swap": "1000000", "swapPermit": "400000", "eoaTransfer": "21000", "tokenTransfer": "50000" },
+        "wrapped": { "wrap": "37000", "unwrap": "56000" }
+      },
+      "nativeAsset": {
+        "address": "0x0000000000000000000000000000000000000000",
+        "name": "Ethereum",
+        "symbol": "ETH",
+        "decimals": 18,
+        "iconURL": "https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png",
+        "colors": { "primary": "#808088", "fallback": "#E8EAF5", "shadow": "" }
+      },
+      "nativeWrappedAsset": {
+        "address": "0x4200000000000000000000000000000000000006",
+        "name": "Wrapped Ether",
+        "symbol": "WETH",
+        "decimals": 18,
+        "iconURL": "https://rainbowme-res.cloudinary.com/image/upload/v1668633499/assets/ethereum/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
+        "colors": { "primary": "#25292E", "fallback": "#B6B6B7", "shadow": "" }
+      },
+      "enabledServices": {
+        "meteorology": { "enabled": true },
+        "swap": { "enabled": true },
+        "addys": { "approvals": true, "transactions": true, "assets": true, "positions": true },
+        "tokenSearch": { "enabled": true },
+        "nftProxy": { "enabled": true }
+      }
+    },
+    {
+      "id": "56",
+      "name": "bsc",
+      "label": "BSC",
+      "icons": { "badgeURL": "https://rainbowme-res.cloudinary.com/image/upload/v1715645721/networks/bscBadgeLarge_3x_ht2ill.png" },
+      "testnet": false,
+      "opStack": false,
+      "defaultExplorer": {
+        "url": "https://bscscan.com",
+        "label": "Bscscan",
+        "transactionURL": "https://bscscan.com/tx/",
+        "tokenURL": "https://bscscan.com/token/"
+      },
+      "defaultRPC": { "enabledDevices": ["APP", "BX"], "url": "https://rpc.rainbow.me/v1/56/" },
+      "gasUnits": {
+        "basic": { "approval": "55000", "swap": "600000", "swapPermit": "400000", "eoaTransfer": "21000", "tokenTransfer": "50000" },
+        "wrapped": { "wrap": "37000", "unwrap": "56000" }
+      },
+      "nativeAsset": {
+        "address": "0x0000000000000000000000000000000000000000",
+        "name": "BNB",
+        "symbol": "BNB",
+        "decimals": 18,
+        "iconURL": "https://rainbowme-res.cloudinary.com/image/upload/v1668633498/assets/ethereum/0xb8c77482e45f1f44de1745f52c74426c631bdd52.png",
+        "colors": { "primary": "#f3ba2f", "fallback": "#F8D888", "shadow": "" }
+      },
+      "nativeWrappedAsset": {
+        "address": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+        "name": "Wrapped BNB",
+        "symbol": "WBNB",
+        "decimals": 18,
+        "iconURL": "https://rainbowme-res.cloudinary.com/image/upload/v1668565086/assets/smartchain/0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c.png",
+        "colors": { "primary": "#F0B808", "fallback": "#F8D880", "shadow": "" }
+      },
+      "enabledServices": {
+        "meteorology": { "enabled": true },
+        "swap": { "enabled": true },
+        "addys": { "approvals": true, "transactions": true, "assets": true, "positions": true },
+        "tokenSearch": { "enabled": true },
+        "nftProxy": { "enabled": true }
+      }
+    },
+    {
+      "id": "666666666",
+      "name": "degen",
+      "label": "Degen",
+      "icons": { "badgeURL": "https://rainbowme-res.cloudinary.com/image/upload/v1715645725/networks/degenBadgeLarge_3x_ns2ncb.png" },
+      "testnet": false,
+      "opStack": false,
+      "defaultExplorer": {
+        "url": "https://explorer.degen.tips",
+        "label": "Degen",
+        "transactionURL": "https://explorer.degen.tips/tx/",
+        "tokenURL": "https://explorer.degen.tips/token/"
+      },
+      "defaultRPC": { "enabledDevices": ["APP", "BX"], "url": "https://rpc.rainbow.me/v1/666666666/" },
+      "gasUnits": {
+        "basic": { "approval": "55000", "swap": "350000", "swapPermit": "400000", "eoaTransfer": "21000", "tokenTransfer": "50000" },
+        "wrapped": { "wrap": "37000", "unwrap": "56000" }
+      },
+      "nativeAsset": {
+        "address": "0x0000000000000000000000000000000000000000",
+        "name": "Degen",
+        "symbol": "DEGEN",
+        "decimals": 18,
+        "iconURL": "https://rainbowme-res.cloudinary.com/image/upload/v1706144378/assets/base/0x4ed4e862860bed51a9570b96d89af5e1b0efefed.png",
+        "colors": { "primary": "#F800F8", "fallback": "#7878F8", "shadow": "" }
+      },
+      "nativeWrappedAsset": {
+        "address": "0xeb54dacb4c2ccb64f8074eceea33b5ebb38e5387",
+        "name": "Wrapped Degen",
+        "symbol": "wDEGEN",
+        "decimals": 18,
+        "iconURL": "https://rainbowme-res.cloudinary.com/image/upload/v1713386747/assets/degen/0xeb54dacb4c2ccb64f8074eceea33b5ebb38e5387.png",
+        "colors": { "primary": "#F800F8", "fallback": "#482898", "shadow": "" }
+      },
+      "enabledServices": {
+        "meteorology": { "enabled": true },
+        "swap": { "enabled": true },
+        "addys": { "approvals": false, "transactions": true, "assets": true, "positions": true },
+        "tokenSearch": { "enabled": true },
+        "nftProxy": { "enabled": true }
+      }
+    },
+    {
+      "id": "8453",
+      "name": "base",
+      "label": "Base",
+      "icons": { "badgeURL": "https://rainbowme-res.cloudinary.com/image/upload/v1715645723/networks/baseBadgeLarge_3x_j7ffwe.png" },
+      "testnet": false,
+      "opStack": true,
+      "defaultExplorer": {
+        "url": "https://basescan.org",
+        "label": "Basescan",
+        "transactionURL": "https://basescan.org/tx/",
+        "tokenURL": "https://basescan.org/token/"
+      },
+      "defaultRPC": { "enabledDevices": ["APP", "BX"], "url": "https://rpc.rainbow.me/v1/8453/" },
+      "gasUnits": {
+        "basic": { "approval": "55000", "swap": "350000", "swapPermit": "400000", "eoaTransfer": "21000", "tokenTransfer": "50000" },
+        "wrapped": { "wrap": "37000", "unwrap": "56000" }
+      },
+      "nativeAsset": {
+        "address": "0x0000000000000000000000000000000000000000",
+        "name": "Ethereum",
+        "symbol": "ETH",
+        "decimals": 18,
+        "iconURL": "https://rainbowme-res.cloudinary.com/image/upload/v1668565116/assets/ethereum/eth.png",
+        "colors": { "primary": "#808088", "fallback": "#E8EAF5", "shadow": "" }
+      },
+      "nativeWrappedAsset": {
+        "address": "0x4200000000000000000000000000000000000006",
+        "name": "Wrapped Ether",
+        "symbol": "WETH",
+        "decimals": 18,
+        "iconURL": "https://rainbowme-res.cloudinary.com/image/upload/v1668633499/assets/ethereum/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
+        "colors": { "primary": "#25292E", "fallback": "#B6B6B7", "shadow": "" }
+      },
+      "enabledServices": {
+        "meteorology": { "enabled": true },
+        "swap": { "enabled": true },
+        "addys": { "approvals": true, "transactions": true, "assets": true, "positions": true },
+        "tokenSearch": { "enabled": true },
+        "nftProxy": { "enabled": true }
+      }
+    }
+  ]
+}
