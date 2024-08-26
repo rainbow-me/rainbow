@@ -1,31 +1,31 @@
-import { useCallback } from 'react';
+import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';
 import { MMKV, useMMKVString } from 'react-native-mmkv';
 import useAccountSettings from './useAccountSettings';
-import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 
 const mmkv = new MMKV();
 const getStorageKey = (accountAddress: string) => `nfts-sort-${accountAddress}`;
 
-export const getNftSortForAddress = (accountAddress: string) => {
-  return mmkv.getString(getStorageKey(accountAddress)) as NftCollectionSortCriterion;
+const parseNftSort = (s: string | undefined) => {
+  if (!s) return [];
+  return s.split('|') as [sortBy: NftCollectionSortCriterion, sortDirection?: SortDirection];
 };
 
-export default function useNftSort(): {
-  nftSort: NftCollectionSortCriterion;
-  updateNFTSort: (sortBy: NftCollectionSortCriterion) => void;
-} {
+export const getNftSortForAddress = (accountAddress: string) => {
+  const [sortBy] = parseNftSort(mmkv.getString(getStorageKey(accountAddress)));
+  return sortBy;
+};
+
+const changeDirection = (sortDirection: SortDirection) => (sortDirection === SortDirection.Asc ? SortDirection.Desc : SortDirection.Asc);
+
+export function useNftSort() {
   const { accountAddress } = useAccountSettings();
-  const [nftSort, setNftSort] = useMMKVString(getStorageKey(accountAddress));
+  const [nftSortData, setNftSortData] = useMMKVString(getStorageKey(accountAddress));
+  const [nftSort = NftCollectionSortCriterion.MostRecent, nftSortDirection = SortDirection.Desc] = parseNftSort(nftSortData);
 
-  const updateNFTSort = useCallback(
-    (sortBy: NftCollectionSortCriterion) => {
-      setNftSort(sortBy);
-    },
-    [setNftSort]
-  );
-
-  return {
-    updateNFTSort,
-    nftSort: (nftSort as NftCollectionSortCriterion) || NftCollectionSortCriterion.MostRecent,
+  const updateNFTSort = (sortBy: NftCollectionSortCriterion) => {
+    const sortDirection = sortBy === nftSort ? changeDirection(nftSortDirection) : nftSortDirection;
+    setNftSortData(`${sortBy}|${sortDirection}`);
   };
+
+  return { updateNFTSort, nftSort, nftSortDirection };
 }

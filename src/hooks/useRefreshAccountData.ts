@@ -1,21 +1,21 @@
+import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
+import { PROFILES, useExperimentalFlag } from '@/config';
+import { getIsHardhatConnected } from '@/handlers/web3';
+import { queryClient } from '@/react-query';
+import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
+import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
+import { nftsQueryKey } from '@/resources/nfts';
+import { addysSummaryQueryKey } from '@/resources/summary/summary';
+import logger from '@/utils/logger';
 import { captureException } from '@sentry/react-native';
 import delay from 'delay';
 import { useCallback, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { getIsHardhatConnected } from '@/handlers/web3';
+import { Address } from 'viem';
 import { walletConnectLoadState } from '../redux/walletconnect';
 import { fetchWalletENSAvatars, fetchWalletNames } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
-import { PROFILES, useExperimentalFlag } from '@/config';
-import logger from '@/utils/logger';
-import { queryClient } from '@/react-query';
-import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
-import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
-import { nftsQueryKey } from '@/resources/nfts';
-import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
-import useNftSort from './useNFTsSortBy';
-import { Address } from 'viem';
-import { addysSummaryQueryKey } from '@/resources/summary/summary';
+import { useNftSort } from './useNFTsSortBy';
 import useWallets from './useWallets';
 
 export default function useRefreshAccountData() {
@@ -23,7 +23,7 @@ export default function useRefreshAccountData() {
   const { accountAddress, nativeCurrency } = useAccountSettings();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const { nftSort } = useNftSort();
+  const { nftSort, nftSortDirection } = useNftSort();
 
   const { wallets } = useWallets();
 
@@ -35,7 +35,7 @@ export default function useRefreshAccountData() {
   const fetchAccountData = useCallback(async () => {
     const connectedToHardhat = getIsHardhatConnected();
 
-    queryClient.invalidateQueries(nftsQueryKey({ address: accountAddress, sortBy: nftSort }));
+    queryClient.invalidateQueries(nftsQueryKey({ address: accountAddress, sortBy: nftSort, sortDirection: nftSortDirection }));
     queryClient.invalidateQueries(positionsQueryKey({ address: accountAddress as Address, currency: nativeCurrency }));
     queryClient.invalidateQueries(addysSummaryQueryKey({ addresses: allAddresses, currency: nativeCurrency }));
     queryClient.invalidateQueries(userAssetsQueryKey({ address: accountAddress, currency: nativeCurrency, connectedToHardhat }));
@@ -58,7 +58,7 @@ export default function useRefreshAccountData() {
       captureException(error);
       throw error;
     }
-  }, [accountAddress, dispatch, nativeCurrency, profilesEnabled]);
+  }, [accountAddress, allAddresses, dispatch, nativeCurrency, nftSort, nftSortDirection, profilesEnabled]);
 
   const refresh = useCallback(async () => {
     if (isRefreshing) return;

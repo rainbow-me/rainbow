@@ -1,16 +1,16 @@
+import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
+import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
+import { useLegacyNFTs } from '@/resources/nfts';
 import { useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
 import useCoinListEditOptions from './useCoinListEditOptions';
 import useCoinListEdited from './useCoinListEdited';
 import useHiddenTokens from './useHiddenTokens';
 import useIsWalletEthZero from './useIsWalletEthZero';
+import { useNftSort } from './useNFTsSortBy';
 import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
 import useWallets from './useWallets';
-import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
-import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
-import { useLegacyNFTs } from '@/resources/nfts';
-import useNftSort from './useNFTsSortBy';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 
 export default function useWalletSectionsData({
@@ -22,7 +22,7 @@ export default function useWalletSectionsData({
   const { isLoading: isLoadingUserAssets, data: sortedAssets = [] } = useSortedUserAssets();
   const isWalletEthZero = useIsWalletEthZero();
 
-  const { nftSort } = useNftSort();
+  const { nftSort, nftSortDirection } = useNftSort();
 
   const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
@@ -32,6 +32,7 @@ export default function useWalletSectionsData({
   } = useLegacyNFTs({
     address: accountAddress,
     sortBy: nftSort,
+    sortDirection: nftSortDirection,
   });
 
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
