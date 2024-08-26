@@ -89,8 +89,10 @@ jobs:
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
           COMMIT_HASH: ${{ github.sha }}
         run: |
-          APP_PATH=$(find . -name "*.app" | head -n 1)
-          aws s3 cp "$APP_PATH" "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.app"
+          APP_DIR=$(find . -name "*.app" | head -n 1)
+          ZIP_FILE="${APP_DIR%.*}.zip"
+          zip -r "$ZIP_FILE" "$APP_DIR"
+          aws s3 cp "$ZIP_FILE" "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.zip"
 
 
       # Add comment to the pull request with the link to the .app file
