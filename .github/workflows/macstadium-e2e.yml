@@ -101,7 +101,7 @@ jobs:
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
           COMMIT_HASH: ${{ github.sha }}
         run: |
-          COMMENT="Here's the app file: https://app-team.p.rainbow.me/${BRANCH_NAME}/${COMMIT_HASH}.app"
+          COMMENT="Here's the app file: http://localhost:29070/install/ios?virtual=https://app-team.p.rainbow.me/${BRANCH_NAME}/${COMMIT_HASH}.app"
           curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
           -d "{\"body\":\"$COMMENT\"}" \
           "${{ github.event.pull_request.comments_url }}"
