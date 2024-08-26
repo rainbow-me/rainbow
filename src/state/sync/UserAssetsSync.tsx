@@ -26,9 +26,9 @@ export const UserAssetsSync = memo(function UserAssetsSync() {
         }),
       onSuccess: data => {
         if (!isSwapsOpen) {
-          userAssetsStore.getState(accountAddress).setUserAssets(data as ParsedSearchAsset[]);
+          userAssetsStore.getState().setUserAssets(data as ParsedSearchAsset[]);
 
-          const inputAsset = userAssetsStore.getState(accountAddress).getHighestValueEth();
+          const inputAsset = userAssetsStore.getState().getHighestValueEth();
           useSwapsStore.setState({
             inputAsset,
             selectedOutputChainId: inputAsset?.chainId ?? ChainId.mainnet,

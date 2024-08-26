@@ -569,7 +569,6 @@ export const priceForAsset = ({
 type ParseAssetAndExtendProps = {
   asset: ParsedSearchAsset | null;
   insertUserAssetBalance?: boolean;
-  walletAddress: string;
 };
 
 const ETH_COLORS: Colors = {
@@ -586,7 +585,6 @@ export const getStandardizedUniqueIdWorklet = ({ address, chainId }: { address: 
 export const parseAssetAndExtend = ({
   asset,
   insertUserAssetBalance,
-  walletAddress,
 }: ParseAssetAndExtendProps): ExtendedAnimatedAssetWithColors | null => {
   if (!asset) {
     return null;
@@ -598,9 +596,7 @@ export const parseAssetAndExtend = ({
   });
 
   const uniqueId = getStandardizedUniqueIdWorklet({ address: asset.address, chainId: asset.chainId });
-  const balance = insertUserAssetBalance
-    ? userAssetsStore.getState(walletAddress).getUserAsset(uniqueId)?.balance || asset.balance
-    : asset.balance;
+  const balance = insertUserAssetBalance ? userAssetsStore.getState().getUserAsset(uniqueId)?.balance || asset.balance : asset.balance;
 
   return {
     ...asset,

@@ -52,7 +52,6 @@ interface InputCoinRowProps {
   onPress: (asset: ParsedSearchAsset | null) => void;
   output?: false | undefined;
   uniqueId: string;
-  walletAddress: string;
 }
 
 type PartialAsset = Pick<SearchAsset, 'address' | 'chainId' | 'colors' | 'icon_url' | 'mainnetAddress' | 'name' | 'symbol' | 'uniqueId'>;
@@ -63,13 +62,12 @@ interface OutputCoinRowProps extends PartialAsset {
   output: true;
   nativePriceChange?: string;
   isTrending?: boolean;
-  walletAddress: string;
 }
 
 type CoinRowProps = InputCoinRowProps | OutputCoinRowProps;
 
-export function CoinRow({ isFavorite, onPress, output, uniqueId, walletAddress, ...assetProps }: CoinRowProps) {
-  const inputAsset = useUserAssetsStore(walletAddress, state => (output ? undefined : state.getUserAsset(uniqueId)));
+export function CoinRow({ isFavorite, onPress, output, uniqueId, ...assetProps }: CoinRowProps) {
+  const inputAsset = useUserAssetsStore(state => (output ? undefined : state.getUserAsset(uniqueId)));
   const outputAsset = output ? (assetProps as PartialAsset) : undefined;
 
   const asset = output ? outputAsset : inputAsset;

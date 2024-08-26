@@ -13,7 +13,7 @@ import { analyticsV2 } from '@/analytics';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ContextMenuButton } from '@/components/context-menu';
 import { AnimatedText, Bleed, Box, Inline, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
-import { useAccountAccentColor, useAccountSettings } from '@/hooks';
+import { useAccountAccentColor } from '@/hooks';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
@@ -28,11 +28,10 @@ type ChainSelectionProps = {
 export const ChainSelection = memo(function ChainSelection({ allText, output }: ChainSelectionProps) {
   const { isDarkMode } = useColorMode();
   const { accentColor: accountColor } = useAccountAccentColor();
-  const { accountAddress } = useAccountSettings();
   const { selectedOutputChainId, setSelectedOutputChainId } = useSwapContext();
 
   // chains sorted by balance on output, chains without balance hidden on input
-  const { balanceSortedChainList, filter } = useUserAssetsStore(accountAddress, state => ({
+  const { balanceSortedChainList, filter } = useUserAssetsStore(state => ({
     balanceSortedChainList: output ? state.getBalanceSortedChainList() : state.getChainsWithBalance(),
     filter: state.filter,
   }));
@@ -67,12 +66,12 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
         setSelectedOutputChainId(Number(actionKey) as ChainId);
       } else {
         inputListFilter.value = actionKey === 'all' ? 'all' : (Number(actionKey) as ChainId);
-        userAssetsStore.setState(accountAddress, {
+        userAssetsStore.setState({
           filter: actionKey === 'all' ? 'all' : (Number(actionKey) as ChainId),
         });
       }
     },
-    [accountAddress, inputListFilter, output, setSelectedOutputChainId]
+    [inputListFilter, output, setSelectedOutputChainId]
   );
 
   const menuConfig = useMemo(() => {
@@ -192,9 +191,8 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
 
 const ChainButtonIcon = ({ output }: { output: boolean | undefined }) => {
   const { selectedOutputChainId: animatedSelectedOutputChainId } = useSwapContext();
-  const { accountAddress } = useAccountSettings();
 
-  const userAssetsFilter = useUserAssetsStore(accountAddress, state => (output ? undefined : state.filter));
+  const userAssetsFilter = useUserAssetsStore(state => (output ? undefined : state.filter));
   const selectedOutputChainId = useSharedValueState(animatedSelectedOutputChainId, { pauseSync: !output });
 
   return (

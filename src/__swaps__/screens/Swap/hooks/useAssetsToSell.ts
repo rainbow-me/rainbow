@@ -22,7 +22,7 @@ const sortBy = (by: UserAssetFilter) => {
 export const useAssetsToSell = () => {
   const { accountAddress: currentAddress, nativeCurrency: currentCurrency } = useAccountSettings();
 
-  const { filter, searchQuery } = useUserAssetsStore(currentAddress, state => ({
+  const { filter, searchQuery } = useUserAssetsStore(state => ({
     filter: state.filter,
     searchQuery: state.inputSearchQuery,
   }));

@@ -17,7 +17,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 import { SearchInputButton } from './SearchInputButton';
-import { useAccountSettings } from '@/hooks';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
 
@@ -35,13 +34,12 @@ export const SearchInput = ({
 }) => {
   const { isDarkMode } = useColorMode();
   const { inputProgress, inputSearchRef, outputProgress, outputSearchRef } = useSwapContext();
-  const { accountAddress } = useAccountSettings();
 
   const fillTertiary = useForegroundColor('fillTertiary');
   const label = useForegroundColor('label');
   const labelQuaternary = useForegroundColor('labelQuaternary');
 
-  const onInputSearchQueryChange = useUserAssetsStore(accountAddress, state => state.setSearchQuery);
+  const onInputSearchQueryChange = useUserAssetsStore(state => state.setSearchQuery);
 
   const onOutputSearchQueryChange = useDebouncedCallback((text: string) => useSwapsStore.setState({ outputSearchQuery: text }), 100, {
     leading: false,
@@ -110,8 +108,8 @@ export const SearchInput = ({
                           useSwapsStore.setState({ outputSearchQuery: '' });
                         }
                       } else {
-                        if (userAssetsStore.getState(accountAddress).inputSearchQuery !== '') {
-                          userAssetsStore.getState(accountAddress).setSearchQuery('');
+                        if (userAssetsStore.getState().inputSearchQuery !== '') {
+                          userAssetsStore.getState().setSearchQuery('');
                         }
                       }
                     }

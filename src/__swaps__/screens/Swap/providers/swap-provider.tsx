@@ -131,7 +131,7 @@ interface SwapProviderProps {
 }
 
 export const SwapProvider = ({ children }: SwapProviderProps) => {
-  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const { nativeCurrency } = useAccountSettings();
 
   const isFetching = useSharedValue(false);
   const isQuoteStale = useSharedValue(0); // TODO: Convert this to a boolean
@@ -146,8 +146,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const lastTypedInput = useSharedValue<inputKeys>('inputAmount');
   const focusedInput = useSharedValue<inputKeys>('inputAmount');
 
-  const initialSelectedInputAsset = parseAssetAndExtend({ asset: swapsStore.getState().inputAsset, walletAddress: accountAddress });
-  const initialSelectedOutputAsset = parseAssetAndExtend({ asset: swapsStore.getState().outputAsset, walletAddress: accountAddress });
+  const initialSelectedInputAsset = parseAssetAndExtend({ asset: swapsStore.getState().inputAsset });
+  const initialSelectedOutputAsset = parseAssetAndExtend({ asset: swapsStore.getState().outputAsset });
 
   const internalSelectedInputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(initialSelectedInputAsset);
   const internalSelectedOutputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(initialSelectedOutputAsset);
@@ -552,7 +552,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const setAsset = useCallback(
     ({ type, asset }: { type: SwapAssetType; asset: ParsedSearchAsset | null }) => {
       const insertUserAssetBalance = type !== SwapAssetType.inputAsset;
-      const extendedAsset = parseAssetAndExtend({ asset, insertUserAssetBalance, walletAddress: accountAddress });
+      const extendedAsset = parseAssetAndExtend({ asset, insertUserAssetBalance });
 
       const otherSelectedAsset = type === SwapAssetType.inputAsset ? internalSelectedOutputAsset.value : internalSelectedInputAsset.value;
       const isSameAsOtherAsset = !!(otherSelectedAsset && otherSelectedAsset.uniqueId === extendedAsset?.uniqueId);
@@ -598,7 +598,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         const assetToSet = insertUserAssetBalance
           ? {
               ...asset,
-              balance: (asset && userAssetsStore.getState(accountAddress).getUserAsset(asset.uniqueId)?.balance) || asset?.balance,
+              balance: (asset && userAssetsStore.getState().getUserAsset(asset.uniqueId)?.balance) || asset?.balance,
             }
           : asset;
 
@@ -650,7 +650,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     },
     [
       SwapInputController.quoteFetchingInterval,
-      accountAddress,
       handleProgressNavigation,
       internalSelectedInputAsset.value,
       internalSelectedOutputAsset.value,

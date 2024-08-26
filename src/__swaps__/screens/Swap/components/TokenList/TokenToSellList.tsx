@@ -15,7 +15,6 @@ import React, { useCallback, useMemo } from 'react';
 import Animated, { runOnUI, useAnimatedProps, useAnimatedStyle } from 'react-native-reanimated';
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
 import { ChainSelection } from './ChainSelection';
-import { useAccountSettings } from '@/hooks';
 
 export const SELL_LIST_HEADER_HEIGHT = 20 + 10 + 14; // paddingTop + height + paddingBottom
 
@@ -32,9 +31,8 @@ export const TokenToSellList = () => {
 
 const TokenToSellListComponent = () => {
   const { inputProgress, internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, setAsset } = useSwapContext();
-  const { accountAddress } = useAccountSettings();
 
-  const userAssetIds = useUserAssetsStore(accountAddress, state => state.getFilteredUserAssetIds());
+  const userAssetIds = useUserAssetsStore(state => state.getFilteredUserAssetIds());
 
   const handleSelectToken = useCallback(
     (token: ParsedSearchAsset | null) => {
@@ -55,7 +53,7 @@ const TokenToSellListComponent = () => {
         asset: token,
       });
 
-      const { inputSearchQuery } = userAssetsStore.getState(accountAddress);
+      const { inputSearchQuery } = userAssetsStore.getState();
 
       // track what search query the user had prior to selecting an asset
       if (inputSearchQuery.trim().length) {
@@ -65,7 +63,7 @@ const TokenToSellListComponent = () => {
         });
       }
     },
-    [accountAddress, internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, setAsset]
+    [internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, setAsset]
   );
 
   const animatedListPadding = useAnimatedStyle(() => {
@@ -94,14 +92,7 @@ const TokenToSellListComponent = () => {
       estimatedListSize={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}
       keyExtractor={uniqueId => uniqueId}
       renderItem={({ item: uniqueId }) => {
-        return (
-          <CoinRow
-            onPress={(asset: ParsedSearchAsset | null) => handleSelectToken(asset)}
-            output={false}
-            uniqueId={uniqueId}
-            walletAddress={accountAddress}
-          />
-        );
+        return <CoinRow onPress={(asset: ParsedSearchAsset | null) => handleSelectToken(asset)} output={false} uniqueId={uniqueId} />;
       }}
       renderScrollComponent={props => {
         return (

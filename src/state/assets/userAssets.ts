@@ -1,6 +1,6 @@
 import { Address } from 'viem';
 import { RainbowError, logger } from '@/logger';
-import store from '@/redux/store';
+import reduxStore from '@/redux/store';
 import { ETH_ADDRESS, SUPPORTED_CHAIN_IDS, supportedNativeCurrencies } from '@/references';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
@@ -71,13 +71,13 @@ export const createUserAssetsStore = (address: Address | string) =>
     getFilteredUserAssetIds: () => {
       const { filter, inputSearchQuery: rawSearchQuery, selectUserAssetIds, setSearchCache } = get();
 
-      const smallBalanceThreshold = supportedNativeCurrencies[store.getState().settings.nativeCurrency].userAssetsSmallThreshold;
+      const smallBalanceThreshold = supportedNativeCurrencies[reduxStore.getState().settings.nativeCurrency].userAssetsSmallThreshold;
 
       const inputSearchQuery = rawSearchQuery.trim().toLowerCase();
       const queryKey = getSearchQueryKey({ filter, searchQuery: inputSearchQuery });
 
       // Use an external function to get the cache to prevent updates in response to changes in the cache
-      const cachedData = getCurrentSearchCache(address)?.get(queryKey);
+      const cachedData = getCurrentSearchCache()?.get(queryKey);
 
       // Check if the search results are already cached
       if (cachedData) {
@@ -225,7 +225,7 @@ export const createUserAssetsStore = (address: Address | string) =>
 
         idsByChain.set('all', allIdsArray);
 
-        const smallBalanceThreshold = supportedNativeCurrencies[store.getState().settings.nativeCurrency].userAssetsSmallThreshold;
+        const smallBalanceThreshold = supportedNativeCurrencies[reduxStore.getState().settings.nativeCurrency].userAssetsSmallThreshold;
 
         const filteredAllIdsArray = allIdsArray.filter(id => {
           const asset = userAssetsMap.get(id);
@@ -366,7 +366,8 @@ const storeManager = createRainbowStore<StoreManagerState>(
   }
 );
 
-function getOrCreateStore(address: Address | string): UserAssetsStoreType {
+function getOrCreateStore(): UserAssetsStoreType {
+  const address = reduxStore.getState().settings.accountAddress;
   const { stores } = storeManager.getState();
   let store = stores.get(address);
 
@@ -381,16 +382,16 @@ function getOrCreateStore(address: Address | string): UserAssetsStoreType {
 }
 
 export const userAssetsStore = {
-  getState: (address: Address | string) => getOrCreateStore(address).getState(),
-  setState: (address: Address | string, partial: Partial<UserAssetsState> | ((state: UserAssetsState) => Partial<UserAssetsState>)) =>
-    getOrCreateStore(address).setState(partial),
+  getState: () => getOrCreateStore().getState(),
+  setState: (partial: Partial<UserAssetsState> | ((state: UserAssetsState) => Partial<UserAssetsState>)) =>
+    getOrCreateStore().setState(partial),
 };
 
-export function useUserAssetsStore<T>(address: Address | string, selector: (state: UserAssetsState) => T) {
-  const store = getOrCreateStore(address);
-  return useStore(store, useCallback(selector, [address]));
+export function useUserAssetsStore<T>(selector: (state: UserAssetsState) => T) {
+  const store = getOrCreateStore();
+  return useStore(store, useCallback(selector, []));
 }
 
-function getCurrentSearchCache(address: Address | string): Map<string, UniqueId[]> | undefined {
-  return getOrCreateStore(address).getState().searchCache;
+function getCurrentSearchCache(): Map<string, UniqueId[]> | undefined {
+  return getOrCreateStore().getState().searchCache;
 }

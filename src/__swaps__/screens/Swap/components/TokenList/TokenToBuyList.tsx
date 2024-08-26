@@ -22,7 +22,6 @@ import { ScrollViewProps } from 'react-native';
 import Animated, { runOnUI, useAnimatedProps, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
 import { ChainSelection } from './ChainSelection';
-import { useAccountSettings } from '@/hooks';
 
 export const BUY_LIST_HEADER_HEIGHT = 20 + 10 + 8; // paddingTop + height + paddingBottom
 
@@ -87,7 +86,6 @@ const ScrollViewWithRef = forwardRef<Animated.ScrollView>(function ScrollViewWit
 export const TokenToBuyList = () => {
   const { internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, outputProgress, setAsset } = useSwapContext();
   const { results: sections, isLoading } = useSearchCurrencyLists();
-  const { accountAddress } = useAccountSettings();
 
   const handleSelectToken = useCallback(
     (token: SearchAsset) => {
@@ -101,7 +99,7 @@ export const TokenToBuyList = () => {
         }
       })();
 
-      const userAsset = userAssetsStore.getState(accountAddress).getUserAsset(token.uniqueId);
+      const userAsset = userAssetsStore.getState().getUserAsset(token.uniqueId);
       const parsedAsset = parseSearchAsset({
         assetWithPrice: undefined,
         searchAsset: token,
@@ -123,7 +121,7 @@ export const TokenToBuyList = () => {
         });
       }
     },
-    [accountAddress, internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, setAsset]
+    [internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, setAsset]
   );
 
   const animatedListPadding = useAnimatedStyle(() => {
@@ -174,7 +172,6 @@ export const TokenToBuyList = () => {
               output
               symbol={item.symbol}
               uniqueId={item.uniqueId}
-              walletAddress={accountAddress}
             />
           );
         }}
