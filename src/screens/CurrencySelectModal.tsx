@@ -97,7 +97,7 @@ export default function CurrencySelectModal() {
   const isFocused = useIsFocused();
   const prevIsFocused = usePrevious(isFocused);
   const { goBack, navigate, getState: dangerouslyGetState } = useNavigation();
-  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const { nativeCurrency } = useAccountSettings();
   const { colors } = useTheme();
   const {
     params: {
@@ -121,7 +121,7 @@ export default function CurrencySelectModal() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);
-  const sortedAssets = useUserAssetsStore(accountAddress, state => state.legacyUserAssets);
+  const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
   const assetsInWallet = sortedAssets as SwappableAsset[];
 
   const [currentChainId, setCurrentChainId] = useState(chainId);

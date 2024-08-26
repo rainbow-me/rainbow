@@ -1,7 +1,7 @@
 import { SwappableAsset } from '@/entities';
 import { walletFilter } from '@/handlers/tokenSearch';
 import { Network } from '@/helpers';
-import { useAccountSettings, useCoinListEditOptions } from '@/hooks';
+import { useCoinListEditOptions } from '@/hooks';
 import { ETH_ADDRESS } from '@/references';
 import { EthereumAddress, ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS } from '@rainbow-me/swaps';
 import { ethereumUtils } from '@/utils';
@@ -13,8 +13,7 @@ type SwappableAddresses = Record<Network, EthereumAddress[]>;
 
 export const useSwappableUserAssets = (params: { outputCurrency: SwappableAsset }) => {
   const { outputCurrency } = params;
-  const { accountAddress } = useAccountSettings();
-  const sortedAssets = useUserAssetsStore(accountAddress, state => state.legacyUserAssets);
+  const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
   const assetsInWallet = sortedAssets as SwappableAsset[];
   const { hiddenCoinsObj } = useCoinListEditOptions();
 

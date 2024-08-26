@@ -38,7 +38,7 @@ export const UserAssetsSync = memo(function UserAssetsSync() {
     }
   );
 
-  useEffect(() => userAssetsStore.setState(accountAddress, { isLoadingUserAssets: isLoading }), [accountAddress, isLoading]);
+  useEffect(() => userAssetsStore.setState({ isLoadingUserAssets: isLoading }), [isLoading]);
 
   return null;
 });

@@ -20,7 +20,7 @@ export default function useWalletSectionsData({
 } = {}) {
   const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
   const { selectedWallet, isReadOnlyWallet } = useWallets();
-  const { isLoadingUserAssets, sortedAssets = [] } = useUserAssetsStore(accountAddress, state => ({
+  const { isLoadingUserAssets, sortedAssets = [] } = useUserAssetsStore(state => ({
     sortedAssets: state.legacyUserAssets,
     isLoadingUserAssets: state.isLoadingUserAssets,
   }));

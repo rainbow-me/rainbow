@@ -24,7 +24,6 @@ import { useSelectedGas } from '../hooks/useSelectedGas';
 import { useSwapEstimatedGasLimit } from '../hooks/useSwapEstimatedGasLimit';
 import { useSwapContext } from './swap-provider';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { useAccountSettings } from '@/hooks';
 import { getNetworkObject } from '@/networks';
 import { getUniqueId } from '@/utils/ethereumUtils';
 
@@ -90,13 +89,12 @@ const getHasEnoughFundsForGas = (quote: Quote, gasFee: string, nativeNetworkAsse
 };
 
 export function SyncGasStateToSharedValues() {
-  const { accountAddress } = useAccountSettings();
   const { hasEnoughFundsForGas, internalSelectedInputAsset } = useSwapContext();
 
   const { assetToSell, chainId = ChainId.mainnet, quote } = useSyncedSwapQuoteStore();
 
   const gasSettings = useSelectedGas(chainId);
-  const { userNativeNetworkAsset, isLoadingNativeNetworkAsset } = useUserAssetsStore(accountAddress, state => {
+  const { userNativeNetworkAsset, isLoadingNativeNetworkAsset } = useUserAssetsStore(state => {
     const { nativeCurrency } = getNetworkObject({ chainId });
     const { address } = nativeCurrency;
     const uniqueId = getUniqueId(address, chainId);
