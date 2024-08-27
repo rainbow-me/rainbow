@@ -650,8 +650,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     [
       SwapInputController.quoteFetchingInterval,
       handleProgressNavigation,
-      internalSelectedInputAsset.value,
-      internalSelectedOutputAsset.value,
+      internalSelectedInputAsset,
+      internalSelectedOutputAsset,
       selectedOutputChainId,
       updateAssetValue,
     ]

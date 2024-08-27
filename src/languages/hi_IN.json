@@ -748,8 +748,8 @@
       },
       "swap_details_v2": {
         "automatic": "ऑटो",
-        "degen_mode": "डिजन मोड",
-        "degen_mode_description": "तेज स्वैप करने के लिए समीक्षा शीट को छोड़ें",
+        "degen_mode": "Degen मोड",
+        "degen_mode_description": "फ़ास्ट स्वैप के लिए समीक्षा चरण को छोड़ें",
         "maximum_sold": "अधिकतम बेचा गया",
         "minimum_received": "न्यूनतम प्राप्त",
         "preferred_network": "पसंदीदा नेटवर्क",
@@ -1321,10 +1321,16 @@
     "nfts": {
       "selling": "बिक्री",
       "sort": {
+        "ABC": "एबीसी",
         "abc": "एबीसी",
+        "MOST_RECENT": "हाल का",
         "most_recent": "सबसे हालिया",
+        "FLOOR_PRICE": "मंजिल मूल्य",
         "floor_price": "मंजिल मूल्य"
-      }
+      },
+      "empty": "संग्रह",
+      "collect_now": "अभी इकट्ठा करें",
+      "will_appear_here": "आपके संग्रह योग्य सामग्री यहाँ दिखाई देंगे"
     },
     "nft_offers": {
       "card": {
@@ -2068,6 +2074,7 @@
     "token_search": {
       "section_header": {
         "recent": "हाल का",
+        "popular": "रेनबो में लोकप्रिय",
         "favorites": "पसंदीदा",
         "bridge": "ब्रिज",
         "verified": "सत्यापित",
@@ -2496,7 +2503,7 @@
       "balance_title": "बैलेंस",
       "buy": "खरीदें",
       "change_wallet": {
-        "no_balance": "कोई बैलेंस नहीं",
+        "loading_balance": "शेष लोड हो रहा है...",
         "balance_eth": "%{balanceEth} ETH",
         "watching": "देख रहा है",
         "ledger": "लेजर"

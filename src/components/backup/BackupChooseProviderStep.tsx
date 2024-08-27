@@ -88,7 +88,9 @@ export default function BackupSheetSectionNoProvider() {
 
   const onManualBackup = async () => {
     const title =
-      selectedWallet?.imported && selectedWallet.type === walletTypes.privateKey ? selectedWallet.addresses[0].label : selectedWallet.name;
+      selectedWallet?.imported && selectedWallet.type === walletTypes.privateKey
+        ? (selectedWallet.addresses || [])[0].label
+        : selectedWallet.name;
 
     goBack();
     navigate(Routes.SETTINGS_SHEET, {

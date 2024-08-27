@@ -5,7 +5,7 @@ export function findWalletWithAccount(wallets: { [key: string]: RainbowWallet },
   let walletWithAccount: RainbowWallet | undefined;
   sortedKeys.forEach(key => {
     const wallet = wallets[key];
-    const found = wallet.addresses.find((account: any) => account.address === accountAddress);
+    const found = wallet.addresses?.find((account: any) => account.address === accountAddress);
     if (found) {
       walletWithAccount = wallet;
     }

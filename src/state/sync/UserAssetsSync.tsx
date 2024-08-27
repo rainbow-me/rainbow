@@ -1,4 +1,4 @@
-import { memo, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useAccountSettings } from '@/hooks';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
@@ -8,7 +8,7 @@ import { ChainId } from '@/__swaps__/types/chains';
 import { getIsHardhatConnected } from '@/handlers/web3';
 import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
 
-export const UserAssetsSync = memo(function UserAssetsSync() {
+export const UserAssetsSync = function UserAssetsSync() {
   const { accountAddress, nativeCurrency: currentCurrency } = useAccountSettings();
 
   const isSwapsOpen = useSwapsStore(state => state.isSwapsOpen);
@@ -43,4 +43,4 @@ export const UserAssetsSync = memo(function UserAssetsSync() {
   useEffect(() => userAssetsStore.setState({ isLoadingUserAssets: isLoading }), [isLoading]);
 
   return null;
-});
+};

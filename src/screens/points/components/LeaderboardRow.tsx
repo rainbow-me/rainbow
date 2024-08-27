@@ -52,9 +52,8 @@ export const LeaderboardRow = memo(function LeaderboardRow({
   const { setClipboard } = useClipboard();
   const { contacts, onRemoveContact } = useContacts();
   const isSelectedWallet = useMemo(() => {
-    const visibleWallet = selectedWallet.addresses.find((wallet: { visible: boolean }) => wallet.visible);
-    ``;
-    return visibleWallet.address.toLowerCase() === address?.toLowerCase();
+    const visibleWallet = selectedWallet.addresses?.find((wallet: { visible: boolean }) => wallet.visible);
+    return visibleWallet?.address.toLowerCase() === address?.toLowerCase();
   }, [selectedWallet.addresses, address]);
 
   const contact = address ? contacts[address.toLowerCase()] : undefined;

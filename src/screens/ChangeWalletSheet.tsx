@@ -167,14 +167,14 @@ export default function ChangeWalletSheet() {
         ...wallets,
         [walletId]: {
           ...currentWallet,
-          addresses: (currentWallet.addresses ?? []).map(account =>
+          addresses: (currentWallet.addresses || []).map(account =>
             account.address.toLowerCase() === address.toLowerCase() ? { ...account, visible: false } : account
           ),
         },
       };
       // If there are no visible wallets
       // then delete the wallet
-      const visibleAddresses = (newWallets as any)[walletId].addresses.filter((account: any) => account.visible);
+      const visibleAddresses = ((newWallets as any)[walletId]?.addresses || []).filter((account: any) => account.visible);
       if (visibleAddresses.length === 0) {
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete newWallets[walletId];
@@ -191,7 +191,7 @@ export default function ChangeWalletSheet() {
     (walletId: string, address: string) => {
       const wallet = wallets?.[walletId];
       if (!wallet) return;
-      const account = wallet.addresses.find(account => account.address === address);
+      const account = wallet.addresses?.find(account => account.address === address);
 
       InteractionManager.runAfterInteractions(() => {
         goBack();
