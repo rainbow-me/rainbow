@@ -701,7 +701,8 @@ export function useSwapInputsController({
       if (areBothAssetsSet) {
         fetchQuoteAndAssetPrices();
       }
-    }
+    },
+    []
   );
 
   /**
@@ -722,7 +723,8 @@ export function useSwapInputsController({
         });
         fetchQuoteAndAssetPrices();
       }
-    }
+    },
+    []
   );
 
   /**
@@ -752,7 +754,8 @@ export function useSwapInputsController({
           }
         }
       }
-    }
+    },
+    []
   );
 
   /**
@@ -870,7 +873,8 @@ export function useSwapInputsController({
           }
         }
       }
-    }
+    },
+    []
   );
   return {
     debouncedFetchQuote,

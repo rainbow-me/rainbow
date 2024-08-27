@@ -669,7 +669,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     () => isFetching.value,
     fetching => {
       if (fetching) hasEnoughFundsForGas.value = undefined;
-    }
+    },
+    []
   );
 
   const confirmButtonProps: SwapContextType['confirmButtonProps'] = useDerivedValue(() => {

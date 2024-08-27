@@ -105,7 +105,8 @@ const RainbowFee = () => {
       if (!current.isQuoteStale && !current.isFetching && current.quote && !(current.quote as QuoteError)?.error) {
         runOnJS(calculateRainbowFeeFromQuoteData)(current.quote as Quote | CrosschainQuote);
       }
-    }
+    },
+    []
   );
 
   return (

@@ -164,7 +164,8 @@ const WalletAddressObserver = () => {
       if (didWalletAddressChange) {
         runOnJS(setNewInputAsset)();
       }
-    }
+    },
+    []
   );
 
   return null;

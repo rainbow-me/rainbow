@@ -21,11 +21,12 @@ export const useNativeAssetForChain = ({ inputAsset }: { inputAsset: SharedValue
 
   useAnimatedReaction(
     () => chainId.value,
-    (currentChainId, previoudChainId) => {
-      if (currentChainId !== previoudChainId) {
+    (currentChainId, previousChainId) => {
+      if (currentChainId !== previousChainId) {
         runOnJS(getNativeAssetForNetwork)(currentChainId);
       }
-    }
+    },
+    []
   );
 
   return {

@@ -275,7 +275,8 @@ export function useSearchCurrencyLists() {
           toChainId: current.toChainId,
         });
       }
-    }
+    },
+    []
   );
 
   const selectTopSearchResults = useCallback(

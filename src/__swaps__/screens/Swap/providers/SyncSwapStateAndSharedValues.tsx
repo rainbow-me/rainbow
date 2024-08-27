@@ -122,7 +122,8 @@ export function SyncGasStateToSharedValues() {
           });
         }
       }
-    }
+    },
+    []
   );
 
   useEffect(() => {
