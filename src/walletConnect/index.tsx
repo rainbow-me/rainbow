@@ -8,7 +8,7 @@ import { isAddress, getAddress } from '@ethersproject/address';
 import { formatJsonRpcResult, formatJsonRpcError } from '@json-rpc-tools/utils';
 import { gretch } from 'gretchen';
 import messaging from '@react-native-firebase/messaging';
-import { Core } from '@walletconnect/core';
+import WalletConnectCore, { Core } from '@walletconnect/core';
 import { Web3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
 import { isHexString } from '@ethersproject/bytes';
 import { toUtf8String } from '@ethersproject/strings';
@@ -45,7 +45,6 @@ import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 import { PerformanceMetrics } from '@/performance/tracking/types/PerformanceMetrics';
 import { PerformanceTracking } from '@/performance/tracking';
-import { Core as TypeCore } from '@walletconnect/core/dist/types/core';
 
 const SUPPORTED_EVM_CHAIN_IDS = RainbowNetworks.filter(({ features }) => features.walletconnect).map(({ id }) => id);
 
@@ -98,7 +97,7 @@ let syncWeb3WalletClient: Awaited<ReturnType<(typeof Web3Wallet)['init']>> | und
 
 let lastConnector: string | undefined = undefined;
 
-let walletConnectCore: TypeCore | undefined;
+let walletConnectCore: WalletConnectCore | undefined;
 
 let web3WalletClient: ReturnType<(typeof Web3Wallet)['init']> | undefined;
 
