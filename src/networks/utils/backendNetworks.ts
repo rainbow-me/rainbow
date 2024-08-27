@@ -2,9 +2,10 @@ import { Chain } from 'viem';
 import { mainnet } from 'viem/chains';
 
 import { BackendNetwork } from '../types/chains';
+import { RPC_PROXY_API_KEY } from '@/env';
 
 const proxyBackendNetworkRpcEndpoint = (endpoint: string) => {
-  return `${endpoint}${process.env.RPC_PROXY_API_KEY}`;
+  return `${endpoint}${RPC_PROXY_API_KEY}`;
 };
 
 export function transformBackendNetworkToChain(network: BackendNetwork): Chain {
