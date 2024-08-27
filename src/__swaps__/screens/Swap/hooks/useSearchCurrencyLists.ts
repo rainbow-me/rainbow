@@ -259,8 +259,13 @@ export function useSearchCurrencyLists() {
   });
 
   // Delays the state set by a frame or two to give animated UI that responds to selectedOutputChainId.value
-  // a moment to update before the heavy re-renders kicked off by these state changes occur.
+  // a moment to update before the heavy re-renders kicked off by these state changes occur. This is used
+  // when the user changes the selected chain in the output token list.
   const debouncedStateSet = useDebouncedCallback(setState, 20, { leading: false, trailing: true });
+
+  // This is used when the input asset is changed. To avoid a heavy re-render while the input bubble is collapsing,
+  // we use a longer delay as in this case the list is not visible, so it doesn't need to react immediately.
+  const changedInputAssetStateSet = useDebouncedCallback(setState, 600, { leading: false, trailing: true });
 
   useAnimatedReaction(
     () => ({
@@ -268,13 +273,19 @@ export function useSearchCurrencyLists() {
       toChainId: selectedOutputChainId.value ?? ChainId.mainnet,
     }),
     (current, previous) => {
-      if (previous && (current.isCrosschainSearch !== previous.isCrosschainSearch || current.toChainId !== previous.toChainId)) {
-        runOnJS(debouncedStateSet)({
-          fromChainId: assetToSell.value ? assetToSell.value.chainId ?? ChainId.mainnet : undefined,
-          isCrosschainSearch: current.isCrosschainSearch,
-          toChainId: current.toChainId,
-        });
-      }
+      const toChainIdChanged = previous && current.toChainId !== previous.toChainId;
+      const isCrosschainSearchChanged = previous && current.isCrosschainSearch !== previous.isCrosschainSearch;
+
+      if (!toChainIdChanged && !isCrosschainSearchChanged) return;
+
+      const newState = {
+        fromChainId: assetToSell.value ? assetToSell.value.chainId ?? ChainId.mainnet : undefined,
+        isCrosschainSearch: current.isCrosschainSearch,
+        toChainId: current.toChainId,
+      };
+
+      if (toChainIdChanged) runOnJS(debouncedStateSet)(newState);
+      else if (isCrosschainSearchChanged) runOnJS(changedInputAssetStateSet)(newState);
     },
     []
   );
