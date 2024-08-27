@@ -6,7 +6,7 @@ project(':react-native-palette-full').projectDir = new File(rootProject.projectD
 apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
 include ':app'
 
-/*include ':detox'
+include ':detox'
 project(':detox').projectDir = new File(rootProject.projectDir, '../node_modules/detox/android/detox')
-*/
+
 includeBuild('../node_modules/@react-native/gradle-plugin')
