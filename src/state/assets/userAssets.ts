@@ -10,6 +10,7 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 
+const escapeRegExp = (string: string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const getSearchQueryKey = ({ filter, searchQuery }: { filter: UserAssetFilter; searchQuery: string }) => `${filter}${searchQuery}`;
 
 const getDefaultCacheKeys = (): Set<string> => {
@@ -160,7 +161,7 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
         return cachedData;
       } else {
         const chainIdFilter = filter === 'all' ? null : filter;
-        const searchRegex = inputSearchQuery.length > 0 ? new RegExp(inputSearchQuery, 'i') : null;
+        const searchRegex = inputSearchQuery.length > 0 ? new RegExp(escapeRegExp(inputSearchQuery), 'i') : null;
 
         const filteredIds = Array.from(
           selectUserAssetIds(
