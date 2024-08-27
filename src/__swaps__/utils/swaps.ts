@@ -252,7 +252,7 @@ export function niceIncrementFormatter({
   const niceIncrement = findNiceIncrement(inputAssetBalance);
   const incrementDecimalPlaces = countDecimalPlaces(niceIncrement);
 
-  if (percentageToSwap === 0 || equalWorklet(niceIncrement, 0)) return '0';
+  if (percentageToSwap === 0 || equalWorklet(niceIncrement, 0)) return 0;
   if (percentageToSwap === 0.25) {
     const amount = mulWorklet(inputAssetBalance, 0.25);
     return valueBasedDecimalFormatter({
