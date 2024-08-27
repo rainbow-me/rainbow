@@ -95,8 +95,10 @@ export function maybeGoBackAndClearHasPendingRedirect({ delay = 0 }: { delay?: n
  */
 let syncWeb3WalletClient: Awaited<ReturnType<(typeof Web3Wallet)['init']>> | undefined;
 
-const walletConnectCore = new Core({ projectId: WC_PROJECT_ID });
+let lastConnector: string | undefined = undefined;
 
+const walletConnectCore = new Core({ projectId: WC_PROJECT_ID });
+console.log('======+>>>>>> INITIALIZING WEB3 WALLET CLIENT =======<<<<<<<<<<');
 const web3WalletClient = Web3Wallet.init({
   core: walletConnectCore,
   metadata: {
@@ -320,9 +322,23 @@ async function rejectProposal({
   });
 }
 
+// listen for THIS topic pairing, and clear timeout if received
+function trackTopicHandler(proposal: Web3WalletTypes.SessionProposal | Web3WalletTypes.AuthRequest) {
+  logger.debug(`[walletConnect]: pair: handler`, { proposal });
+
+  const { metadata } =
+    (proposal as Web3WalletTypes.SessionProposal).params.proposer || (proposal as Web3WalletTypes.AuthRequest).params.requester;
+
+  analytics.track(analytics.event.wcNewPairing, {
+    dappName: metadata.name,
+    dappUrl: metadata.url,
+    connector: lastConnector || 'unknown',
+  });
+}
+
 export async function pair({ uri, connector }: { uri: string; connector?: string }) {
   logger.debug(`[walletConnect]: pair`, { uri }, logger.DebugContext.walletconnect);
-
+  lastConnector = connector;
   /**
    * Make sure this is cleared if we get multiple pairings in rapid succession
    */
@@ -332,25 +348,8 @@ export async function pair({ uri, connector }: { uri: string; connector?: string
 
   logger.debug(`[walletConnect]: pair: parsed uri`, { topic, rest });
 
-  // listen for THIS topic pairing, and clear timeout if received
-  function handler(proposal: Web3WalletTypes.SessionProposal | Web3WalletTypes.AuthRequest) {
-    logger.debug(`[walletConnect]: pair: handler`, { proposal });
-
-    const { metadata } =
-      (proposal as Web3WalletTypes.SessionProposal).params.proposer || (proposal as Web3WalletTypes.AuthRequest).params.requester;
-    analytics.track(analytics.event.wcNewPairing, {
-      dappName: metadata.name,
-      dappUrl: metadata.url,
-      connector,
-    });
-  }
-
-  // CAN get fired on subsequent pairs, so need to make sure we clean up
-  client.on('session_proposal', handler);
-  client.on('auth_request', handler);
-
   // init pairing
-  await client.core.pairing.pair({ uri });
+  await client.pair({ uri });
 }
 
 export async function initListeners() {
@@ -429,6 +428,8 @@ async function subscribeToEchoServer({ client_id, token }: { client_id: string; 
 
 export async function onSessionProposal(proposal: Web3WalletTypes.SessionProposal) {
   try {
+    trackTopicHandler(proposal);
+
     logger.debug(`[walletConnect]: session_proposal`, { proposal }, logger.DebugContext.walletconnect);
 
     const verifiedData = proposal.verifyContext.verified;
@@ -828,6 +829,8 @@ export async function handleSessionRequestResponse(
 }
 
 export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
+  trackTopicHandler(event);
+
   const client = await getWeb3WalletClient();
 
   logger.debug(`[walletConnect]: auth_request`, { event }, logger.DebugContext.walletconnect);

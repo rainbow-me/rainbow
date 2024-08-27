@@ -1171,7 +1171,7 @@ PODS:
     - React-Core
   - react-native-cloud-fs (2.6.1):
     - React
-  - react-native-compat (2.11.2):
+  - react-native-compat (2.15.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2322,7 +2322,7 @@ SPEC CHECKSUMS:
   react-native-cameraroll: b5ce04a1ee4081d7eea921918de979f0b41d8e22
   react-native-change-icon: ea9bb7255b09e89f41cbf282df16eade91ab1833
   react-native-cloud-fs: e7103d1f693c57b481f820fa5e6b6b0522a5a31e
-  react-native-compat: 0468620f537a51ce0d3f4ba65bda6872240b9a0d
+  react-native-compat: 408a4b320fa4426f2c25ab74ed5764be6b3eb5aa
   react-native-get-random-values: 1404bd5cc0ab0e287f75ee1c489555688fc65f89
   react-native-ios-context-menu: e529171ba760a1af7f2ef0729f5a7f4d226171c5
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
@@ -2413,7 +2413,7 @@ SPEC CHECKSUMS:
   TOCropViewController: b9b2905938c0424f289ea2d9964993044913fac6
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   VisionCamera: 2af28201c3de77245f8c58b7a5274d5979df70df
-  Yoga: 88480008ccacea6301ff7bf58726e27a72931c8d
+  Yoga: 04f1db30bb810187397fa4c37dd1868a27af229c
 
 PODFILE CHECKSUM: 0839e4141c8f26133bf9a961f5ded1ea3127af54
 
