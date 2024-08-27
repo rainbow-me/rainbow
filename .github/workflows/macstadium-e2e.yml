@@ -103,9 +103,8 @@ jobs:
           COMMIT_HASH: ${{ github.sha }}
         run: |
           APP_DIR=$(find . -name "*.app" | head -n 1)
-          APP_FILE="$APP_DIR/ios/build/Build/Products/Release-iphonesimulator/Rainbow.app"
-          aws s3 cp "$APP_FILE" "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.app"
-
+          cd $APP_DIR && zip -r ../App.zip && cd ..
+          aws s3 cp "App.zip "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.zip"
       - name: Post comment to PR
         if: github.event_name == 'pull_request'
         env:
