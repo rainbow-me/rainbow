@@ -45,6 +45,7 @@ import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 import { PerformanceMetrics } from '@/performance/tracking/types/PerformanceMetrics';
 import { PerformanceTracking } from '@/performance/tracking';
+import { Core as TypeCore } from '@walletconnect/core/dist/types/core';
 
 const SUPPORTED_EVM_CHAIN_IDS = RainbowNetworks.filter(({ features }) => features.walletconnect).map(({ id }) => id);
 
@@ -97,32 +98,44 @@ let syncWeb3WalletClient: Awaited<ReturnType<(typeof Web3Wallet)['init']>> | und
 
 let lastConnector: string | undefined = undefined;
 
-const walletConnectCore = new Core({ projectId: WC_PROJECT_ID });
-console.log('======+>>>>>> INITIALIZING WEB3 WALLET CLIENT =======<<<<<<<<<<');
-const web3WalletClient = Web3Wallet.init({
-  core: walletConnectCore,
-  metadata: {
-    name: '🌈 Rainbow',
-    description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
-    url: 'https://rainbow.me',
-    icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
-    redirect: {
-      native: 'rainbow://wc',
-      universal: 'https://rnbwapp.com/wc',
-    },
-  },
-});
+let walletConnectCore: TypeCore | undefined;
+
+let web3WalletClient: ReturnType<(typeof Web3Wallet)['init']> | undefined;
 
 let initPromise: ReturnType<(typeof Web3Wallet)['init']> | null = null;
+
+export const initializeWCv2 = async () => {
+  walletConnectCore = new Core({ projectId: WC_PROJECT_ID });
+
+  web3WalletClient = Web3Wallet.init({
+    core: walletConnectCore,
+    metadata: {
+      name: '🌈 Rainbow',
+      description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
+      url: 'https://rainbow.me',
+      icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
+      redirect: {
+        native: 'rainbow://wc',
+        universal: 'https://rnbwapp.com/wc',
+      },
+    },
+  });
+  return web3WalletClient;
+};
 
 // this function ensures we only initialize the client once
 export async function getWeb3WalletClient() {
   if (!syncWeb3WalletClient) {
     if (!initPromise) {
-      initPromise = web3WalletClient.then(client => {
-        syncWeb3WalletClient = client;
-        return client;
-      });
+      if (web3WalletClient) {
+        initPromise = web3WalletClient.then(client => {
+          syncWeb3WalletClient = client;
+          return client;
+        });
+      } else {
+        await initializeWCv2();
+        return getWeb3WalletClient();
+      }
     }
     // Wait for the initialization promise to resolve
     return initPromise;
@@ -385,7 +398,7 @@ export async function initListeners() {
       /**
        * Ensure that if the FCM token changes we update the echo server
        */
-      messaging().onTokenRefresh(async token => {
+      messaging().onTokenRefresh(async (token: string) => {
         await subscribeToEchoServer({ token, client_id });
       });
     } else {
