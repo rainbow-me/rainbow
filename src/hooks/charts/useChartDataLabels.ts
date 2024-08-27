@@ -1,6 +1,6 @@
+import { useCallback, useMemo } from 'react';
 import ChartTypes, { ChartType } from '@/helpers/chartTypes';
 import { toFixedDecimals } from '@/helpers/utilities';
-import { useCallback, useMemo } from 'react';
 import { ChartData } from './useChartInfo';
 
 const formatPercentChange = (change = 0) => toFixedDecimals(change, 2);

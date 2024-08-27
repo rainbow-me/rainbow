@@ -1,12 +1,12 @@
-import { metadataClient } from '@/graphql';
-import { Network } from '@/helpers';
-import { getNetworkObj } from '@/networks';
-import { NetworkProperties } from '@/networks/types';
-import { createQueryKey } from '@/react-query';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useQuery } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { DEFAULT_CHART_TYPE } from '../../redux/charts';
+import { metadataClient } from '@/graphql';
+import { useQuery } from '@tanstack/react-query';
+import { createQueryKey } from '@/react-query';
+import { getNetworkObj } from '@/networks';
+import { NetworkProperties } from '@/networks/types';
+import { Network } from '@/helpers';
 
 const chartTimes = ['hour', 'day', 'week', 'month', 'year'] as const;
 type ChartTime = (typeof chartTimes)[number];

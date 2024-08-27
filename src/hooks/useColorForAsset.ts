@@ -1,8 +1,8 @@
+import { useMemo } from 'react';
+import { lightModeThemeColors } from '../styles/colors';
 import { ParsedAddressAsset } from '@/entities';
 import { useTheme } from '@/theme';
 import { ethereumUtils, isETH, pseudoRandomArrayItemFromString } from '@/utils';
-import { useMemo } from 'react';
-import { lightModeThemeColors } from '../styles/colors';
 import { usePersistentDominantColorFromImage } from './usePersistentDominantColorFromImage';
 
 export default function useColorForAsset(

@@ -1,8 +1,8 @@
-import { useAccountSettings, useChartDataLabels, useColorForAsset } from '@/hooks';
-import { monotoneCubicInterpolation } from '@/react-native-animated-charts/src';
-import { useRoute } from '@react-navigation/native';
 import { debounce } from 'lodash';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { monotoneCubicInterpolation } from '@/react-native-animated-charts/src';
+import { useAccountSettings, useChartDataLabels, useColorForAsset } from '@/hooks';
+import { useRoute } from '@react-navigation/native';
 
 import { useNavigation } from '@/navigation';
 import { ETH_ADDRESS } from '@/references';
