@@ -15,7 +15,7 @@ export default function useUserAccounts() {
     const filteredWallets = values(walletsWithBalancesAndNames).filter(wallet => wallet.type !== walletTypes.readOnly);
     const addresses: (RainbowAccount & { network: Network })[] = [];
     filteredWallets.forEach(wallet => {
-      wallet.addresses.forEach(account => {
+      wallet.addresses?.forEach(account => {
         addresses.push({
           ...account,
           network,
@@ -29,7 +29,7 @@ export default function useUserAccounts() {
     const filteredWallets = values(walletsWithBalancesAndNames).filter(wallet => wallet.type === walletTypes.readOnly);
     const addresses: (RainbowAccount & { network: Network })[] = [];
     filteredWallets.forEach(wallet => {
-      wallet.addresses.forEach(account => {
+      wallet.addresses?.forEach(account => {
         addresses.push({
           ...account,
           network,

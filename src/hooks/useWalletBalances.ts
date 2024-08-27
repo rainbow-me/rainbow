@@ -32,7 +32,7 @@ const useWalletBalances = (wallets: AllRainbowWallets): WalletBalanceResult => {
   const { nativeCurrency } = useAccountSettings();
 
   const allAddresses = useMemo(
-    () => Object.values(wallets).flatMap(wallet => wallet.addresses.map(account => account.address as Address)),
+    () => Object.values(wallets).flatMap(wallet => (wallet.addresses || []).map(account => account.address as Address)),
     [wallets]
   );
 

@@ -127,7 +127,7 @@ export default function WalletList({
     const sortedKeys = Object.keys(allWallets).sort();
     sortedKeys.forEach(key => {
       const wallet = allWallets[key];
-      const filteredAccounts = wallet.addresses.filter((account: any) => account.visible);
+      const filteredAccounts = (wallet.addresses || []).filter((account: any) => account.visible);
       filteredAccounts.forEach((account: any) => {
         const row = {
           ...account,

@@ -183,7 +183,7 @@ export default function RestoreCloudStep() {
           const walletKeys = Object.keys(newWalletsState || {});
           // @ts-expect-error TypeScript doesn't play nicely with Redux types here
           const firstWallet = walletKeys.length > 0 ? (newWalletsState || {})[walletKeys[0]] : undefined;
-          const firstAddress = firstWallet ? firstWallet.addresses[0].address : undefined;
+          const firstAddress = firstWallet ? (firstWallet.addresses || [])[0].address : undefined;
           const p1 = dispatch(walletsSetSelected(firstWallet));
           const p2 = dispatch(addressSetSelected(firstAddress));
           await Promise.all([p1, p2]);

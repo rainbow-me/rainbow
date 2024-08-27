@@ -652,7 +652,7 @@ export const createWallet = async ({
       // Checking if the generated account already exists and is visible
       logger.debug('[wallet]: checking if account already exists', {}, DebugContext.wallet);
       const alreadyExistingWallet = Object.values(allWallets).find((someWallet: RainbowWallet) => {
-        return !!someWallet.addresses.find(
+        return !!someWallet.addresses?.find(
           account => toChecksumAddress(account.address) === toChecksumAddress(walletAddress) && account.visible
         );
       });
@@ -759,7 +759,7 @@ export const createWallet = async ({
         let discoveredWalletId: RainbowWallet['id'] | undefined;
 
         Object.values(allWallets).forEach(someWallet => {
-          const existingAccount = someWallet.addresses.find(
+          const existingAccount = someWallet.addresses?.find(
             account => toChecksumAddress(account.address) === toChecksumAddress(nextWallet.address)
           );
           if (existingAccount) {

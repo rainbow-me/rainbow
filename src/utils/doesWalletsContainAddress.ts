@@ -5,7 +5,7 @@ export default function doesWalletsContainAddress({ address, wallets }: { addres
   for (let i = 0; i < Object.keys(wallets).length; i++) {
     const key = Object.keys(wallets)[i];
     const someWallet = wallets[key];
-    const found = someWallet.addresses.find((account: any) => account.visible && account.address !== address);
+    const found = someWallet.addresses?.find((account: any) => account.visible && account.address !== address);
 
     if (found) {
       return { key, wallet: found };

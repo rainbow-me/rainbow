@@ -1,13 +1,13 @@
 import { QueryConfigWithSelect, createQueryKey } from '@/react-query';
 import { useMutation } from '@tanstack/react-query';
-import { arcClient } from '@/graphql';
+import { arcPOSTClient } from '@/graphql';
 
-export type TrackFeaturedResultVariables = Parameters<typeof arcClient.trackFeaturedResult>['0'];
-export type TrackFeaturedResultResult = Awaited<ReturnType<typeof arcClient.trackFeaturedResult>>;
+export type TrackFeaturedResultVariables = Parameters<typeof arcPOSTClient.trackFeaturedResult>['0'];
+export type TrackFeaturedResultResult = Awaited<ReturnType<typeof arcPOSTClient.trackFeaturedResult>>;
 
 // ///////////////////////////////////////////////
 // Mutation Key
-export const trackFeaturedResultMutationKey = (props: TrackFeaturedResultVariables) =>
+export const trackFeaturedResultMutationKey = (props: Partial<TrackFeaturedResultVariables>) =>
   createQueryKey('track-featured-result', props, { persisterVersion: 1 });
 
 export type TrackFeaturedResultMutationKey = ReturnType<typeof trackFeaturedResultMutationKey>;
@@ -16,10 +16,10 @@ export type TrackFeaturedResultMutationKey = ReturnType<typeof trackFeaturedResu
 // Query Hook
 
 export function useTrackFeaturedResult(
-  props: TrackFeaturedResultVariables,
+  props: Partial<TrackFeaturedResultVariables> = {},
   config: QueryConfigWithSelect<TrackFeaturedResultResult, Error, TrackFeaturedResultResult, TrackFeaturedResultMutationKey> = {}
 ) {
-  return useMutation(trackFeaturedResultMutationKey(props), () => arcClient.trackFeaturedResult(props), {
+  return useMutation(trackFeaturedResultMutationKey(props), arcPOSTClient.trackFeaturedResult, {
     ...config,
   });
 }

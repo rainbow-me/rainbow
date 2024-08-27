@@ -8,7 +8,7 @@ import { isAddress, getAddress } from '@ethersproject/address';
 import { formatJsonRpcResult, formatJsonRpcError } from '@json-rpc-tools/utils';
 import { gretch } from 'gretchen';
 import messaging from '@react-native-firebase/messaging';
-import { Core } from '@walletconnect/core';
+import WalletConnectCore, { Core } from '@walletconnect/core';
 import { Web3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
 import { isHexString } from '@ethersproject/bytes';
 import { toUtf8String } from '@ethersproject/strings';
@@ -95,32 +95,46 @@ export function maybeGoBackAndClearHasPendingRedirect({ delay = 0 }: { delay?: n
  */
 let syncWeb3WalletClient: Awaited<ReturnType<(typeof Web3Wallet)['init']>> | undefined;
 
-const walletConnectCore = new Core({ projectId: WC_PROJECT_ID });
+let lastConnector: string | undefined = undefined;
 
-const web3WalletClient = Web3Wallet.init({
-  core: walletConnectCore,
-  metadata: {
-    name: '🌈 Rainbow',
-    description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
-    url: 'https://rainbow.me',
-    icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
-    redirect: {
-      native: 'rainbow://wc',
-      universal: 'https://rnbwapp.com/wc',
-    },
-  },
-});
+let walletConnectCore: WalletConnectCore | undefined;
+
+let web3WalletClient: ReturnType<(typeof Web3Wallet)['init']> | undefined;
 
 let initPromise: ReturnType<(typeof Web3Wallet)['init']> | null = null;
+
+export const initializeWCv2 = async () => {
+  walletConnectCore = new Core({ projectId: WC_PROJECT_ID });
+
+  web3WalletClient = Web3Wallet.init({
+    core: walletConnectCore,
+    metadata: {
+      name: '🌈 Rainbow',
+      description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
+      url: 'https://rainbow.me',
+      icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
+      redirect: {
+        native: 'rainbow://wc',
+        universal: 'https://rnbwapp.com/wc',
+      },
+    },
+  });
+  return web3WalletClient;
+};
 
 // this function ensures we only initialize the client once
 export async function getWeb3WalletClient() {
   if (!syncWeb3WalletClient) {
     if (!initPromise) {
-      initPromise = web3WalletClient.then(client => {
-        syncWeb3WalletClient = client;
-        return client;
-      });
+      if (web3WalletClient) {
+        initPromise = web3WalletClient.then(client => {
+          syncWeb3WalletClient = client;
+          return client;
+        });
+      } else {
+        await initializeWCv2();
+        return getWeb3WalletClient();
+      }
     }
     // Wait for the initialization promise to resolve
     return initPromise;
@@ -320,9 +334,23 @@ async function rejectProposal({
   });
 }
 
+// listen for THIS topic pairing, and clear timeout if received
+function trackTopicHandler(proposal: Web3WalletTypes.SessionProposal | Web3WalletTypes.AuthRequest) {
+  logger.debug(`[walletConnect]: pair: handler`, { proposal });
+
+  const { metadata } =
+    (proposal as Web3WalletTypes.SessionProposal).params.proposer || (proposal as Web3WalletTypes.AuthRequest).params.requester;
+
+  analytics.track(analytics.event.wcNewPairing, {
+    dappName: metadata.name,
+    dappUrl: metadata.url,
+    connector: lastConnector || 'unknown',
+  });
+}
+
 export async function pair({ uri, connector }: { uri: string; connector?: string }) {
   logger.debug(`[walletConnect]: pair`, { uri }, logger.DebugContext.walletconnect);
-
+  lastConnector = connector;
   /**
    * Make sure this is cleared if we get multiple pairings in rapid succession
    */
@@ -332,25 +360,8 @@ export async function pair({ uri, connector }: { uri: string; connector?: string
 
   logger.debug(`[walletConnect]: pair: parsed uri`, { topic, rest });
 
-  // listen for THIS topic pairing, and clear timeout if received
-  function handler(proposal: Web3WalletTypes.SessionProposal | Web3WalletTypes.AuthRequest) {
-    logger.debug(`[walletConnect]: pair: handler`, { proposal });
-
-    const { metadata } =
-      (proposal as Web3WalletTypes.SessionProposal).params.proposer || (proposal as Web3WalletTypes.AuthRequest).params.requester;
-    analytics.track(analytics.event.wcNewPairing, {
-      dappName: metadata.name,
-      dappUrl: metadata.url,
-      connector,
-    });
-  }
-
-  // CAN get fired on subsequent pairs, so need to make sure we clean up
-  client.on('session_proposal', handler);
-  client.on('auth_request', handler);
-
   // init pairing
-  await client.core.pairing.pair({ uri });
+  await client.pair({ uri });
 }
 
 export async function initListeners() {
@@ -386,7 +397,7 @@ export async function initListeners() {
       /**
        * Ensure that if the FCM token changes we update the echo server
        */
-      messaging().onTokenRefresh(async token => {
+      messaging().onTokenRefresh(async (token: string) => {
         await subscribeToEchoServer({ token, client_id });
       });
     } else {
@@ -429,6 +440,8 @@ async function subscribeToEchoServer({ client_id, token }: { client_id: string; 
 
 export async function onSessionProposal(proposal: Web3WalletTypes.SessionProposal) {
   try {
+    trackTopicHandler(proposal);
+
     logger.debug(`[walletConnect]: session_proposal`, { proposal }, logger.DebugContext.walletconnect);
 
     const verifiedData = proposal.verifyContext.verified;
@@ -828,6 +841,8 @@ export async function handleSessionRequestResponse(
 }
 
 export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
+  trackTopicHandler(event);
+
   const client = await getWeb3WalletClient();
 
   logger.debug(`[walletConnect]: auth_request`, { event }, logger.DebugContext.walletconnect);

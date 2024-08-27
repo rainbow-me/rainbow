@@ -749,7 +749,7 @@
       "swap_details_v2": {
         "automatic": "Oto",
         "degen_mode": "Degen Modu",
-        "degen_mode_description": "Hızlı Takas İçin İnceleme Sayfasını Atlayın",
+        "degen_mode_description": "İnceleme adımını atlayarak daha hızlı takas yapın",
         "maximum_sold": "Azami Satılan",
         "minimum_received": "Asgari Alınan",
         "preferred_network": "Tercih Edilen Ağ",
@@ -1321,10 +1321,16 @@
     "nfts": {
       "selling": "Satış",
       "sort": {
+        "ABC": "Abc",
         "abc": "Abc",
+        "MOST_RECENT": "Son",
         "most_recent": "En Yeni",
+        "FLOOR_PRICE": "Taban Fiyatı",
         "floor_price": "Taban Fiyatı"
-      }
+      },
+      "empty": "Koleksiyonlar",
+      "collect_now": "Şimdi Koleksiyon Yap",
+      "will_appear_here": "Koleksiyonlarınız Burada Görünecek"
     },
     "nft_offers": {
       "card": {
@@ -2068,6 +2074,7 @@
     "token_search": {
       "section_header": {
         "recent": "Son",
+        "popular": "Rainbow'da Popüler",
         "favorites": "Favoriler",
         "bridge": "Köprü",
         "verified": "Doğrulanmış",
@@ -2496,7 +2503,7 @@
       "balance_title": "Bakiye",
       "buy": "Satın Al",
       "change_wallet": {
-        "no_balance": "Bakiye Yok",
+        "loading_balance": "Bakiye Yükleniyor...",
         "balance_eth": "%{balanceEth} ETH",
         "watching": "İzliyor",
         "ledger": "Ledger"
