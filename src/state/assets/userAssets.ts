@@ -2,12 +2,13 @@ import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/
 import { ChainId } from '@/__swaps__/types/chains';
 import { Address } from 'viem';
 import { RainbowError, logger } from '@/logger';
-import reduxStore from '@/redux/store';
+import reduxStore, { AppState } from '@/redux/store';
 import { ETH_ADDRESS, SUPPORTED_CHAIN_IDS, supportedNativeCurrencies } from '@/references';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { useStore } from 'zustand';
 import { useCallback } from 'react';
 import { swapsStore } from '@/state/swaps/swapsStore';
+import { useSelector } from 'react-redux';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 
@@ -345,15 +346,15 @@ const storeManager = createRainbowStore<StoreManagerState>(() => ({
   stores: new Map(),
 }));
 
-function getOrCreateStore(): UserAssetsStoreType {
-  const address = reduxStore.getState().settings.accountAddress;
+function getOrCreateStore(address?: Address | string): UserAssetsStoreType {
+  const accountAddress = address ?? reduxStore.getState().settings.accountAddress;
   const { stores } = storeManager.getState();
-  let store = stores.get(address);
+  let store = stores.get(accountAddress);
 
   if (!store) {
-    store = createUserAssetsStore(address);
+    store = createUserAssetsStore(accountAddress);
     storeManager.setState(state => ({
-      stores: new Map(state.stores).set(address, store as UserAssetsStoreType),
+      stores: new Map(state.stores).set(accountAddress, store as UserAssetsStoreType),
     }));
   }
 
@@ -367,7 +368,8 @@ export const userAssetsStore = {
 };
 
 export function useUserAssetsStore<T>(selector: (state: UserAssetsState) => T) {
-  const store = getOrCreateStore();
+  const address = useSelector((state: AppState) => state.settings.accountAddress);
+  const store = getOrCreateStore(address);
   return useStore(store, useCallback(selector, []));
 }
 
