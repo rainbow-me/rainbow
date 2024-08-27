@@ -1,3 +1,4 @@
+import { FlatList } from 'react-native';
 import { COIN_ROW_WITH_PADDING_HEIGHT, CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
@@ -10,7 +11,6 @@ import * as i18n from '@/languages';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { FlashList } from '@shopify/flash-list';
 import React, { useCallback, useMemo } from 'react';
 import Animated, { useAnimatedProps, useAnimatedStyle } from 'react-native-reanimated';
 import { runOnUIImmediately } from '@/reanimated';
@@ -22,6 +22,12 @@ export const SELL_LIST_HEADER_HEIGHT = 20 + 10 + 14; // paddingTop + height + pa
 const isInitialInputAssetNull = () => {
   return !swapsStore.getState().inputAsset;
 };
+
+const getItemLayout = (_: ArrayLike<string> | null | undefined, index: number) => ({
+  length: COIN_ROW_WITH_PADDING_HEIGHT,
+  offset: COIN_ROW_WITH_PADDING_HEIGHT * index,
+  index,
+});
 
 export const TokenToSellList = () => {
   const skipDelayedMount = useMemo(() => isInitialInputAssetNull(), []);
@@ -82,16 +88,13 @@ const TokenToSellListComponent = () => {
   });
 
   return (
-    <FlashList
+    <FlatList
       ListEmptyComponent={<ListEmpty />}
       ListFooterComponent={<Animated.View style={[animatedListPadding, { width: '100%' }]} />}
       ListHeaderComponent={<ChainSelection allText={i18n.t(i18n.l.exchange.all_networks)} output={false} />}
       contentContainerStyle={{ paddingBottom: 16 }}
-      // For some reason shallow copying the list data allows FlashList to more quickly pick up changes
-      data={userAssetIds.slice(0)}
-      estimatedFirstItemOffset={SELL_LIST_HEADER_HEIGHT}
-      estimatedItemSize={COIN_ROW_WITH_PADDING_HEIGHT}
-      estimatedListSize={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}
+      data={userAssetIds}
+      getItemLayout={getItemLayout}
       keyExtractor={uniqueId => uniqueId}
       renderItem={({ item: uniqueId }) => {
         return <CoinRow onPress={(asset: ParsedSearchAsset | null) => handleSelectToken(asset)} output={false} uniqueId={uniqueId} />;
