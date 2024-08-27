@@ -372,7 +372,7 @@
     "ts-migrate": "0.1.26",
     "typescript": "5.1.6",
     "typescript-coverage-report": "0.6.1",
-    "webpack": "5.90.3",
+    "webpack": "5.94.0",
     "webpack-cli": "5.1.4"
   },
   "engines": {
