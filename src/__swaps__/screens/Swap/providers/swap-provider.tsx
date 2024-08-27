@@ -664,15 +664,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     };
   }, []);
 
-  const hasEnoughFundsForGas = useSharedValue<boolean | undefined>(undefined);
-  useAnimatedReaction(
-    () => isFetching.value,
-    fetching => {
-      if (fetching) hasEnoughFundsForGas.value = undefined;
-    },
-    []
-  );
-
   const confirmButtonProps: SwapContextType['confirmButtonProps'] = useDerivedValue(() => {
     if (isSwapping.value) {
       return { label: swapping, disabled: true, type: 'hold' };
