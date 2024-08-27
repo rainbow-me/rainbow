@@ -7,7 +7,6 @@ import { Block, Network as EthersNetwork, StaticJsonRpcProvider, TransactionRequ
 import { parseEther } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
-import { getRemoteConfig } from '@/model/remoteConfig';
 import { AssetType, NewTransaction, ParsedAddressAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import { isUnstoppableAddressFormat } from '@/helpers/validators';
@@ -49,54 +48,8 @@ export const chainsProviders = new Map<ChainId, StaticJsonRpcProvider>();
  * Creates an rpc endpoint for a given chain id using the Rainbow rpc proxy.
  * If the firebase config flag is disabled, it will fall back to the deprecated rpc.
  */
-export const proxyRpcEndpoint = (chainId: number, customEndpoint?: string) => {
-  const {
-    rpc_proxy_enabled,
-    arbitrum_mainnet_rpc,
-    ethereum_goerli_rpc,
-    optimism_mainnet_rpc,
-    polygon_mainnet_rpc,
-    base_mainnet_rpc,
-    bsc_mainnet_rpc,
-    zora_mainnet_rpc,
-    avalanche_mainnet_rpc,
-    ethereum_mainnet_rpc,
-    blast_mainnet_rpc,
-    degen_mainnet_rpc,
-  } = getRemoteConfig();
-  if (rpc_proxy_enabled) {
-    return `${RPC_PROXY_BASE_URL}/${chainId}/${RPC_PROXY_API_KEY}${
-      customEndpoint ? `?custom_rpc=${encodeURIComponent(customEndpoint)}` : ''
-    }`;
-  } else {
-    if (customEndpoint) return customEndpoint;
-    switch (chainId) {
-      case ChainId.arbitrum:
-        return arbitrum_mainnet_rpc;
-      case ChainId.goerli:
-        return ethereum_goerli_rpc;
-      case ChainId.optimism:
-        return optimism_mainnet_rpc;
-      case ChainId.polygon:
-        return polygon_mainnet_rpc;
-      case ChainId.base:
-        return base_mainnet_rpc;
-      case ChainId.bsc:
-        return bsc_mainnet_rpc;
-      case ChainId.zora:
-        return zora_mainnet_rpc;
-      case ChainId.avalanche:
-        return avalanche_mainnet_rpc;
-      case ChainId.blast:
-        return blast_mainnet_rpc;
-      case ChainId.degen:
-        return degen_mainnet_rpc;
-      case ChainId.gnosis:
-      case ChainId.mainnet:
-      default:
-        return ethereum_mainnet_rpc;
-    }
-  }
+export const proxyCustomRpcEndpoint = (chainId: number, customEndpoint: string) => {
+  return `${RPC_PROXY_BASE_URL}/${chainId}/${RPC_PROXY_API_KEY}?custom_rpc=${encodeURIComponent(customEndpoint)}`;
 };
 
 /**
@@ -177,7 +130,7 @@ export const isTestnetChain = ({ chainId = ChainId.mainnet }: { chainId?: ChainI
 // shoudl figure out better way to include this in networks
 export const getFlashbotsProvider = async () => {
   return new StaticJsonRpcProvider(
-    proxyRpcEndpoint(
+    proxyCustomRpcEndpoint(
       ChainId.mainnet,
       'https://rpc.flashbots.net/?hint=hash&builder=flashbots&builder=f1b.io&builder=rsync&builder=beaverbuild.org&builder=builder0x69&builder=titan&builder=eigenphi&builder=boba-builder'
     )
