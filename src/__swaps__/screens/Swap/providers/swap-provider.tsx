@@ -667,6 +667,20 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     };
   }, []);
 
+  // Stop auto-fetching if there is a quote error or no input asset balance
+  useAnimatedReaction(
+    () =>
+      SwapWarning.swapWarning.value.type === SwapWarningType.no_quote_available ||
+      SwapWarning.swapWarning.value.type === SwapWarningType.no_route_found ||
+      (internalSelectedInputAsset.value && equalWorklet(internalSelectedInputAsset.value.maxSwappableAmount, '0')),
+    (shouldStop, previous) => {
+      if (shouldStop && previous === false) {
+        SwapInputController.quoteFetchingInterval.stop();
+      }
+    },
+    []
+  );
+
   const confirmButtonProps: SwapContextType['confirmButtonProps'] = useDerivedValue(() => {
     if (isSwapping.value) {
       return { label: swapping, disabled: true, type: 'hold' };
