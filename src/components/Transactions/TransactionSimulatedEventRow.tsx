@@ -17,6 +17,7 @@ import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { EventInfo, EventType } from '@/components/Transactions/types';
 import { infoForEventType, CARD_ROW_HEIGHT } from '@/components/Transactions/constants';
 import { EventIcon } from '@/components/Transactions/TransactionIcons';
+import { ethereumUtils } from '@/utils';
 
 type TransactionSimulatedEventRowProps = {
   amount: string | 'unlimited';
@@ -28,9 +29,12 @@ type TransactionSimulatedEventRowProps = {
 export const TransactionSimulatedEventRow = ({ amount, asset, eventType, price }: TransactionSimulatedEventRowProps) => {
   const theme = useTheme();
   const { nativeCurrency } = useAccountSettings();
+
+  const chainId = ethereumUtils.getChainIdFromNetwork((asset?.network as Network) || Network.mainnet);
+
   const { data: externalAsset } = useExternalToken({
     address: asset?.assetCode || '',
-    network: (asset?.network as Network) || Network.mainnet,
+    chainId,
     currency: nativeCurrency,
   });
 
@@ -85,7 +89,7 @@ export const TransactionSimulatedEventRow = ({ amount, asset, eventType, price }
               <RainbowCoinIcon
                 size={16}
                 icon={externalAsset?.icon_url}
-                network={(asset?.network as Network) || Network.mainnet}
+                chainId={chainId}
                 symbol={externalAsset?.symbol || ''}
                 theme={theme}
                 colors={externalAsset?.colors}

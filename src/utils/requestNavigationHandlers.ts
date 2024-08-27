@@ -180,7 +180,6 @@ export const handleMobileWalletProtocolRequest = async ({
       }
 
       const nativeCurrency = store.getState().settings.nativeCurrency;
-      const network = ethereumUtils.getNetworkFromChainId(request.account?.networkId ?? ChainId.mainnet);
 
       // @ts-expect-error - coinbase host protocol types are NOT correct e.g. {"data": [72, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100], "type": "Buffer"}
       if ((action as PersonalSignAction).params.message && (action as PersonalSignAction).params.message.type === 'Buffer') {
@@ -194,14 +193,14 @@ export const handleMobileWalletProtocolRequest = async ({
         params: constructEthereumActionPayload(action),
       };
 
-      const displayDetails = await getRequestDisplayDetails(payload, nativeCurrency, network);
+      const displayDetails = await getRequestDisplayDetails(payload, nativeCurrency, request.account?.networkId ?? ChainId.mainnet);
 
       const requestWithDetails: RequestData = {
         dappName: session?.dappName ?? session?.dappId ?? '',
         dappUrl: session?.dappURL ?? '',
         imageUrl: session?.dappImageURL ?? '',
         address: (action as PersonalSignAction).params.address ?? accountAddress,
-        network,
+        chainId: request.account?.networkId ?? ChainId.mainnet,
         payload,
         displayDetails,
       };
@@ -236,7 +235,7 @@ export const handleMobileWalletProtocolRequest = async ({
           onSuccess,
           onCancel,
           onCloseScreen: noop,
-          network,
+          chainId: request.account?.networkId ?? ChainId.mainnet,
           address: accountAddress,
           source: RequestSource.MOBILE_WALLET_PROTOCOL,
         });
