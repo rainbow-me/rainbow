@@ -1,6 +1,3 @@
-import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
-import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
-import { useLegacyNFTs } from '@/resources/nfts';
 import { useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
 import useCoinListEditOptions from './useCoinListEditOptions';
@@ -11,6 +8,9 @@ import { useNftSort } from './useNFTsSortBy';
 import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
 import useWallets from './useWallets';
+import { buildBriefWalletSectionsSelector } from '@/helpers/buildWalletSections';
+import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
+import { useLegacyNFTs } from '@/resources/nfts';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 
 export default function useWalletSectionsData({
