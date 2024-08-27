@@ -141,7 +141,7 @@
     "@walletconnect/react-native-compat": "2.15.1",
     "@walletconnect/types": "2.15.1",
     "@walletconnect/utils": "2.15.1",
-    "@walletconnect/web3wallet": "1.10.2",
+    "@walletconnect/web3wallet": "1.14.1",
     "assert": "1.5.0",
     "async-mutex": "0.3.2",
     "asyncstorage-down": "4.2.0",
