@@ -13,6 +13,7 @@ import {
   useDerivedValue,
   useSharedValue,
 } from 'react-native-reanimated';
+import { runOnUIImmediately } from '@/reanimated';
 
 import { equalWorklet, lessThanOrEqualToWorklet, sumWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { INITIAL_SLIDER_POSITION, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
@@ -569,7 +570,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
           ? internalSelectedInputAsset.value?.uniqueId !== extendedAsset?.uniqueId
           : internalSelectedOutputAsset.value?.uniqueId !== extendedAsset?.uniqueId;
 
-      runOnUI(() => {
+      runOnUIImmediately(() => {
+        'worklet';
         const didSelectedAssetChange =
           type === SwapAssetType.inputAsset
             ? internalSelectedInputAsset.value?.uniqueId !== extendedAsset?.uniqueId

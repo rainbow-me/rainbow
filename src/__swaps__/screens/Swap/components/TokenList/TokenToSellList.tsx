@@ -12,7 +12,8 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { FlashList } from '@shopify/flash-list';
 import React, { useCallback, useMemo } from 'react';
-import Animated, { runOnUI, useAnimatedProps, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { useAnimatedProps, useAnimatedStyle } from 'react-native-reanimated';
+import { runOnUIImmediately } from '@/reanimated';
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
 import { ChainSelection } from './ChainSelection';
 
@@ -38,7 +39,8 @@ const TokenToSellListComponent = () => {
     (token: ParsedSearchAsset | null) => {
       if (!token) return;
 
-      runOnUI(() => {
+      runOnUIImmediately(() => {
+        'worklet';
         if (
           internalSelectedOutputAsset.value &&
           getStandardizedUniqueIdWorklet({ address: token.address, chainId: token.chainId }) !== internalSelectedInputAsset.value?.uniqueId

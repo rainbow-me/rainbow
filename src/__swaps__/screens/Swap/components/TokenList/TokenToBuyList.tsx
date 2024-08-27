@@ -13,13 +13,14 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, Inline, Stack, Text, TextIcon, useColorMode } from '@/design-system';
 import { palettes } from '@/design-system/color/palettes';
 import * as i18n from '@/languages';
+import { runOnUIImmediately } from '@/reanimated';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { FlashList } from '@shopify/flash-list';
 import React, { ComponentType, forwardRef, memo, useCallback, useMemo } from 'react';
 import { ScrollViewProps } from 'react-native';
-import Animated, { runOnUI, useAnimatedProps, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedProps, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
 import { ChainSelection } from './ChainSelection';
 
@@ -89,7 +90,8 @@ export const TokenToBuyList = () => {
 
   const handleSelectToken = useCallback(
     (token: SearchAsset) => {
-      runOnUI(() => {
+      runOnUIImmediately(() => {
+        'worklet';
         if (
           internalSelectedInputAsset.value &&
           getStandardizedUniqueIdWorklet({ address: token.address, chainId: token.chainId }) !== internalSelectedOutputAsset.value?.uniqueId
