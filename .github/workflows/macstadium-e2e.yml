@@ -47,13 +47,27 @@ jobs:
 
       - name: Install dependencies
         run: |
-          yarn cache clean --all && yarn install && yarn setup
+          yarn install && yarn setup
+
+      - name: Upload Yarn cache
+        uses: actions/upload-artifact@v3
+        with:
+          name: yarn-cache
+          path: |
+            .yarn/cache
+            .yarn/install-state.gz
 
   # Job for linting and unit tests
   linting-and-unit-tests:
     runs-on: ["self-hosted"]
     needs: install-deps
     steps:
+      - name: Download Yarn cache
+        uses: actions/download-artifact@v3
+        with:
+          name: yarn-cache
+          path: .yarn
+
       - name: Check for frozen lockfile
         run: ./scripts/check-lockfile.sh
 
@@ -66,11 +80,17 @@ jobs:
       - name: Unit tests
         run: yarn test
 
-  # Job to set up iOS dependencies
-  ios-deps:
+  # iOS build and e2e tests
+  ios:
     runs-on: ["self-hosted"]
     needs: install-deps
     steps:
+      - name: Download Yarn cache
+        uses: actions/download-artifact@v3
+        with:
+          name: yarn-cache
+          path: .yarn
+
       - name: Rebuild detox cache
         run: ./node_modules/.bin/detox clean-framework-cache && ./node_modules/.bin/detox build-framework-cache
 
@@ -81,16 +101,6 @@ jobs:
       - name: Install pods
         run: yarn install-bundle && yarn install-pods
 
-      - name: Fix permissions
-        run: |
-          chmod -R +x node_modules/react-native/scripts
-          chmod -R +x node_modules/@sentry/react-native/scripts
-
-  # Job to build iOS TopHat and upload to S3
-  ios-tophat-build:
-    runs-on: ["self-hosted"]
-    needs: ios-deps
-    steps:
       - name: Build the app in release mode
         run: xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ios/build
 
@@ -105,6 +115,7 @@ jobs:
           APP_DIR=$(find . -name "*.app" | head -n 1)
           cd $APP_DIR && zip -r ../App.zip . && cd ..
           aws s3 cp "App.zip" "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.zip"
+
       - name: Post comment to PR
         if: github.event_name == 'pull_request'
         env:
@@ -112,17 +123,13 @@ jobs:
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
           COMMIT_HASH: ${{ github.sha }}
         run: |
-          COMMENT="Here's the app file: http://localhost:29070/install/ios?virtual=https://app-team.p.rainbow.me/${BRANCH_NAME}/${COMMIT_HASH}.app"
+          COMMENT="Launch the iOS app [here](http://localhost:29070/install/ios?virtual=https://app-team.p.rainbow.me/${BRANCH_NAME}/${COMMIT_HASH}.zip)"
           curl -s -H "Authorization: token $TOPHAT_GITHUB_TOKEN" -X POST \
           -d "{\"body\":\"$COMMENT\"}" \
           "${{ github.event.pull_request.comments_url }}"
 
-           # Job for running iOS e2e tests
-  ios-e2e-tests:
-    runs-on: ["self-hosted"]
-    needs: ios-tophat-build
-    steps:
       - name: Run iOS e2e tests with retry
         run: |
           sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e 
+          yarn detox build --configuration ios.sim.release
           ./scripts/run-retry-tests.sh 3
