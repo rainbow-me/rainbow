@@ -20,7 +20,7 @@ import { useAccountSettings, useInitializeWallet, useWallets, useWalletsWithBala
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { doesWalletsContainAddress, showActionSheetWithOptions } from '@/utils';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
 import { useTheme } from '@/theme';
 import { EthereumAddress } from '@/entities';
 import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
@@ -149,7 +149,9 @@ export default function ChangeWalletSheet() {
           setTimeout(runChecks, 10_000);
         }
       } catch (e) {
-        logger.log('error while switching account', e);
+        logger.error(new RainbowError('[ChangeWalletSheet]: Error while switching account'), {
+          error: e,
+        });
       }
     },
     [currentAddress, dispatch, editMode, goBack, initializeWallet, onChangeWallet, runChecks, wallets, watchOnly]

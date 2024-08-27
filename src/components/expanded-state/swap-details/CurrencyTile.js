@@ -9,6 +9,7 @@ import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { ethereumUtils } from '@/utils';
 
 export const CurrencyTileHeight = android ? 153 : 143;
 
@@ -77,7 +78,7 @@ export default function CurrencyTile({
             <RainbowCoinIcon
               size={50}
               icon={asset?.icon_url}
-              network={asset?.network}
+              chainId={ethereumUtils.getChainIdFromNetwork(asset?.network)}
               symbol={asset?.symbol}
               colors={asset?.colors}
               theme={theme}

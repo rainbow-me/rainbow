@@ -2,7 +2,7 @@ import './languages';
 import * as Sentry from '@sentry/react-native';
 import React, { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import { AppRegistry, Dimensions, LogBox, StyleSheet, View } from 'react-native';
-import { MobileWalletProtocolProvider, useMobileWalletProtocolHost } from '@coinbase/mobile-wallet-protocol-host';
+import { MobileWalletProtocolProvider } from '@coinbase/mobile-wallet-protocol-host';
 import { DeeplinkHandler } from '@/components/DeeplinkHandler';
 import { AppStateChangeHandler } from '@/components/AppStateChangeHandler';
 import { useApplicationSetup } from '@/hooks/useApplicationSetup';
@@ -156,7 +156,7 @@ function Root() {
        */
       if (deviceIdWasJustCreated && !isReturningUser) {
         // on very first open, set some default data and fire event
-        logger.info(`User opened application for the first time`);
+        logger.debug(`[App]: User opened application for the first time`);
 
         const { width: screenWidth, height: screenHeight, scale: screenScale } = Dimensions.get('screen');
 
@@ -178,13 +178,17 @@ function Root() {
 
     initializeApplication()
       .then(() => {
-        logger.debug(`Application initialized with Sentry and analytics`);
+        logger.debug(`[App]: Application initialized with Sentry and analytics`);
 
         // init complete, load the rest of the app
         setInitializing(false);
       })
-      .catch(() => {
-        logger.error(new RainbowError(`initializeApplication failed`));
+      .catch(error => {
+        logger.error(new RainbowError(`[App]: initializeApplication failed`), {
+          data: {
+            error,
+          },
+        });
 
         // for failure, continue to rest of the app for now
         setInitializing(false);

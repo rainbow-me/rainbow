@@ -1,16 +1,15 @@
 import { createQueryKey, QueryConfig, QueryFunctionArgs } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
-import { Network } from '@/networks/types';
 import { RainbowError, logger } from '@/logger';
 import { metadataPOSTClient } from '@/graphql';
 import { TransactionErrorType, TransactionScanResultType, TransactionSimulationResult } from '@/graphql/__generated__/metadataPOST';
-import { ethereumUtils } from '@/utils';
 import { isNil } from 'lodash';
 import { RequestData } from '@/redux/requests';
+import { ChainId } from '@/__swaps__/types/chains';
 
 type SimulationArgs = {
   accountAddress: string;
-  currentNetwork: Network;
+  currentChainId: ChainId;
   isMessageRequest: boolean;
   nativeCurrency: string;
   req: any; // Replace 'any' with the correct type for 'req'
@@ -27,7 +26,7 @@ type SimulationResult = {
 
 const simulationQueryKey = ({
   accountAddress,
-  currentNetwork,
+  currentChainId,
   isMessageRequest,
   nativeCurrency,
   req,
@@ -39,7 +38,7 @@ const simulationQueryKey = ({
     'txSimulation',
     {
       accountAddress,
-      currentNetwork,
+      currentChainId,
       isMessageRequest,
       nativeCurrency,
       req,
@@ -52,17 +51,16 @@ const simulationQueryKey = ({
 
 const fetchSimulation = async ({
   queryKey: [
-    { accountAddress, currentNetwork, isMessageRequest, nativeCurrency, req, requestMessage, simulationUnavailable, transactionDetails },
+    { accountAddress, currentChainId, isMessageRequest, nativeCurrency, req, requestMessage, simulationUnavailable, transactionDetails },
   ],
 }: QueryFunctionArgs<typeof simulationQueryKey>): Promise<SimulationResult> => {
   try {
-    const chainId = ethereumUtils.getChainIdFromNetwork(currentNetwork);
     let simulationData;
 
     if (isMessageRequest) {
       simulationData = await metadataPOSTClient.simulateMessage({
         address: accountAddress,
-        chainId: chainId,
+        chainId: currentChainId,
         message: {
           method: transactionDetails?.payload?.method,
           params: [requestMessage],
@@ -91,7 +89,7 @@ const fetchSimulation = async ({
       }
     } else {
       simulationData = await metadataPOSTClient.simulateTransactions({
-        chainId: chainId,
+        chainId: currentChainId,
         currency: nativeCurrency?.toLowerCase(),
         transactions: [
           {
@@ -141,7 +139,7 @@ export const useSimulation = (
   config: QueryConfig<SimulationResult, Error, ReturnType<typeof simulationQueryKey>> = {}
 ) => {
   return useQuery(simulationQueryKey(args), fetchSimulation, {
-    enabled: !!args.accountAddress && !!args.currentNetwork,
+    enabled: !!args.accountAddress && !!args.currentChainId,
     retry: 3,
     refetchOnWindowFocus: false,
     staleTime: Infinity,

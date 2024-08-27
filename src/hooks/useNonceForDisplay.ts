@@ -1,21 +1,22 @@
 import { useEffect, useState } from 'react';
-import { Network } from '@/networks/types';
 import { getNextNonce } from '@/state/nonces';
+import { ChainId } from '@/__swaps__/types/chains';
+import { ethereumUtils } from '@/utils';
 
 type UseNonceParams = {
   isMessageRequest: boolean;
   currentAddress: string;
-  currentNetwork: Network;
+  currentChainId: ChainId;
 };
 
-export const useNonceForDisplay = ({ isMessageRequest, currentAddress, currentNetwork }: UseNonceParams) => {
+export const useNonceForDisplay = ({ isMessageRequest, currentAddress, currentChainId }: UseNonceParams) => {
   const [nonceForDisplay, setNonceForDisplay] = useState<string>();
 
   useEffect(() => {
     if (!isMessageRequest && !nonceForDisplay) {
       (async () => {
         try {
-          const nonce = await getNextNonce({ address: currentAddress, network: currentNetwork });
+          const nonce = await getNextNonce({ address: currentAddress, network: ethereumUtils.getNetworkFromChainId(currentChainId) });
           if (nonce || nonce === 0) {
             const nonceAsString = nonce.toString();
             setNonceForDisplay(nonceAsString);
@@ -25,7 +26,7 @@ export const useNonceForDisplay = ({ isMessageRequest, currentAddress, currentNe
         }
       })();
     }
-  }, [currentAddress, currentNetwork, isMessageRequest, nonceForDisplay]);
+  }, [currentAddress, currentChainId, isMessageRequest, nonceForDisplay]);
 
   return { nonceForDisplay };
 };

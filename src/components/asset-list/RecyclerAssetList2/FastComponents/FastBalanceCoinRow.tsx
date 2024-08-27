@@ -11,6 +11,7 @@ import { useAccountAsset, useCoinListFinishEditingOptions } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { borders, colors, padding, shadow } from '@/styles';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { ethereumUtils } from '@/utils';
 
 interface CoinCheckButtonProps {
   isHidden: boolean;
@@ -90,15 +91,17 @@ const MemoizedBalanceCoinRow = React.memo(
 
     const valueColor = nativeDisplay ? theme.colors.dark : theme.colors.blueGreyLight;
 
+    const chainId = ethereumUtils.getChainIdFromNetwork(item?.network);
+
     return (
-      <View style={sx.flex}>
+      <View style={sx.flex} testID={'fast-coin-info'}>
         <ButtonPressAnimation onPress={handlePress} scaleTo={0.96} testID={`balance-coin-row-${item?.name}`}>
           <View style={[sx.container]}>
             <View style={sx.iconContainer}>
               <RainbowCoinIcon
                 size={40}
                 icon={item?.icon_url}
-                network={item?.network}
+                chainId={chainId}
                 symbol={item?.symbol}
                 theme={theme}
                 colors={item?.colors}

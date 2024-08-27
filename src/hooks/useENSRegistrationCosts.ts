@@ -14,7 +14,6 @@ import {
   estimateENSSetRecordsGasLimit,
   fetchReverseRecord,
 } from '@/handlers/ens';
-import { NetworkTypes } from '@/helpers';
 import {
   ENS_DOMAIN,
   formatEstimatedNetworkFee,
@@ -29,6 +28,7 @@ import { Network } from '@/helpers/networkTypes';
 import { add, addBuffer, addDisplay, fromWei, greaterThanOrEqualTo, multiply } from '@/helpers/utilities';
 import { ethUnits, timeUnits } from '@/references';
 import { ethereumUtils, gasUtils } from '@/utils';
+import { ChainId } from '@/__swaps__/types/chains';
 
 enum QUERY_KEYS {
   GET_COMMIT_GAS_LIMIT = 'GET_COMMIT_GAS_LIMIT',
@@ -93,7 +93,7 @@ export default function useENSRegistrationCosts({
   const rentPriceInWei = rentPrice?.wei?.toString();
 
   const checkIfSufficientEth = useCallback((wei: string) => {
-    const nativeAsset = ethereumUtils.getNetworkNativeAsset(NetworkTypes.mainnet);
+    const nativeAsset = ethereumUtils.getNetworkNativeAsset(ChainId.mainnet);
     const balanceAmount = nativeAsset?.balance?.amount || 0;
     const txFeeAmount = fromWei(wei);
     const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);

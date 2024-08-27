@@ -106,11 +106,10 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
       onSecretLoaded?.(!!seedPhrase);
     } catch (error) {
       const message = (error as Error)?.message;
-      logger.error(new RainbowError('Error while trying to reveal secret'), {
+      logger.error(new RainbowError('[SecretDisplaySection]: Error while trying to reveal secret'), {
         error: message,
       });
       setSectionState(message === createdWithBiometricError ? SecretDisplayStates.securedWithBiometrics : SecretDisplayStates.noSeed);
-      captureException(error);
       onSecretLoaded?.(false);
     }
   }, [onSecretLoaded, privateKeyAddress, onWalletTypeIdentified, walletId]);
@@ -234,7 +233,7 @@ export function SecretDisplaySection({ onSecretLoaded, onWalletTypeIdentified }:
         </Box>
       );
     default:
-      logger.error(new RainbowError('Secret display section tries to present an unknown state'));
+      logger.error(new RainbowError(`[SecretDisplaySection]: Secret display section state unknown ${sectionState}`));
       return null;
   }
 }

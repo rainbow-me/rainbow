@@ -6,19 +6,19 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { Box, Inline, Text } from '@/design-system';
 
-import { Network } from '@/networks/types';
 import { DetailIcon, DetailBadge, IconContainer } from '@/components/Transactions/TransactionIcons';
 import { SMALL_CARD_ROW_HEIGHT } from '@/components/Transactions/constants';
 import { DetailType, DetailInfo } from '@/components/Transactions/types';
+import { ChainId } from '@/__swaps__/types/chains';
 
 interface TransactionDetailsRowProps {
-  currentNetwork?: Network;
+  currentChainId?: ChainId;
   detailType: DetailType;
   onPress?: () => void;
   value: string;
 }
 
-export const TransactionDetailsRow = ({ currentNetwork, detailType, onPress, value }: TransactionDetailsRowProps) => {
+export const TransactionDetailsRow = ({ currentChainId, detailType, onPress, value }: TransactionDetailsRowProps) => {
   const detailInfo: DetailInfo = infoForDetailType[detailType];
 
   return (
@@ -35,7 +35,7 @@ export const TransactionDetailsRow = ({ currentNetwork, detailType, onPress, val
           {detailType === 'sourceCodeVerification' && (
             <DetailBadge type={value === 'VERIFIED' ? 'verified' : value === 'UNVERIFIED' ? 'unverified' : 'unknown'} value={value} />
           )}
-          {detailType === 'chain' && currentNetwork && <ChainImage size={12} chain={currentNetwork} />}
+          {detailType === 'chain' && currentChainId && <ChainImage size={12} chainId={currentChainId} />}
           {detailType !== 'function' && detailType !== 'sourceCodeVerification' && (
             <Text align="right" color="labelTertiary" numberOfLines={1} size="15pt" weight="semibold">
               {value}

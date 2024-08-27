@@ -18,61 +18,61 @@ import BlastBadge from '@/assets/badges/blastBadge.png';
 import BlastBadgeDark from '@/assets/badges/blastBadgeDark.png';
 import DegenBadge from '@/assets/badges/degenBadge.png';
 import DegenBadgeDark from '@/assets/badges/degenBadgeDark.png';
-import { Network } from '@/networks/types';
+import { ChainId } from '@/__swaps__/types/chains';
 
 interface FastChainBadgeProps {
-  network: Network;
+  chainId: ChainId;
   theme: any;
 }
 
 const AssetIconsByTheme: {
-  [key in Network]?: {
+  [key in ChainId]?: {
     dark: ImageSourcePropType;
     light: ImageSourcePropType;
   };
 } = {
-  [Network.arbitrum]: {
+  [ChainId.arbitrum]: {
     dark: ArbitrumBadgeDark,
     light: ArbitrumBadge,
   },
-  [Network.optimism]: {
+  [ChainId.optimism]: {
     dark: OptimismBadgeDark,
     light: OptimismBadge,
   },
-  [Network.polygon]: {
+  [ChainId.polygon]: {
     dark: PolygonBadgeDark,
     light: PolygonBadge,
   },
-  [Network.bsc]: {
+  [ChainId.bsc]: {
     dark: BscBadgeDark,
     light: BscBadge,
   },
-  [Network.zora]: {
+  [ChainId.zora]: {
     dark: ZoraBadgeDark,
     light: ZoraBadge,
   },
-  [Network.base]: {
+  [ChainId.base]: {
     dark: BaseBadgeDark,
     light: BaseBadge,
   },
-  [Network.avalanche]: {
+  [ChainId.avalanche]: {
     dark: AvalancheBadgeDark,
     light: AvalancheBadge,
   },
-  [Network.blast]: {
+  [ChainId.blast]: {
     dark: BlastBadgeDark,
     light: BlastBadge,
   },
-  [Network.degen]: {
+  [ChainId.degen]: {
     dark: DegenBadgeDark,
     light: DegenBadge,
   },
 };
 
-export const FastChainBadge = React.memo(function FastChainBadge({ network, theme }: FastChainBadgeProps) {
+export const FastChainBadge = React.memo(function FastChainBadge({ chainId, theme }: FastChainBadgeProps) {
   const { isDarkMode } = theme;
 
-  const source = AssetIconsByTheme[network]?.[isDarkMode ? 'dark' : 'light'];
+  const source = AssetIconsByTheme[chainId]?.[isDarkMode ? 'dark' : 'light'];
 
   if (!source) return null;
 

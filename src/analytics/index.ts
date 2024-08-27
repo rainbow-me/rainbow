@@ -19,9 +19,9 @@ export class Analytics {
     this.client = rudderClient;
     this.disabled = isTesting || !!device.get(['doNotTrack']);
     if (isTesting) {
-      logger.debug('Analytics is disabled for testing');
+      logger.debug('[Analytics]: disabled for testing');
     } else {
-      logger.debug('Analytics client initialized');
+      logger.debug('[Analytics]: client initialized');
     }
   }
 
@@ -71,7 +71,7 @@ export class Analytics {
         dataPlaneUrl: RUDDERSTACK_DATA_PLANE_URL,
       });
     } catch (error) {
-      logger.error(new RainbowError('Unable to initialize Rudderstack'), { error });
+      logger.error(new RainbowError('[Analytics]: Unable to initialize Rudderstack'), { error });
     }
   }
 
@@ -80,7 +80,7 @@ export class Analytics {
    * `identify()`, you must do that on your own.
    */
   setDeviceId(deviceId: string) {
-    logger.debug(`Set deviceId on analytics instance`);
+    logger.debug(`[Analytics]: Set deviceId on analytics instance`);
     this.deviceId = deviceId;
   }
 
@@ -89,7 +89,7 @@ export class Analytics {
    * `identify()`, you must do that on your own.
    */
   setCurrentWalletAddressHash(currentWalletAddressHash: string) {
-    logger.debug(`Set currentWalletAddressHash on analytics instance`);
+    logger.debug(`[Analytics]: Set currentWalletAddressHash on analytics instance`);
     this.currentWalletAddressHash = currentWalletAddressHash;
   }
 

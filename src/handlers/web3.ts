@@ -36,8 +36,10 @@ import {
 import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
-import { getNetworkObj } from '@/networks';
+import { getNetworkObj, getNetworkObject } from '@/networks';
 import store from '@/redux/store';
+import { getNetworkFromChainId } from '@/utils/ethereumUtils';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export enum TokenStandard {
   ERC1155 = 'ERC1155',
@@ -170,11 +172,11 @@ export const web3SetHttpProvider = async (network: Network | string): Promise<Et
 
 /**
  * @desc Checks if the given network is a Layer 2.
- * @param network The network to check.
+ * @param chainId The network to check.
  * @return Whether or not the network is a L2 network.
  */
-export const isL2Network = (network: Network | string): boolean => {
-  return getNetworkObj(network as Network).networkType === 'layer2';
+export const isL2Chain = ({ chainId }: { chainId: ChainId }): boolean => {
+  return getNetworkObject({ chainId }).networkType === 'layer2';
 };
 
 /**
@@ -216,6 +218,26 @@ export const getCachedProviderForNetwork = (network: Network = Network.mainnet):
  * @return The provider for the network.
  */
 export const getProviderForNetwork = (network: Network | string = Network.mainnet): StaticJsonRpcProvider => {
+  const isSupportedNetwork = isNetworkEnum(network);
+  const cachedProvider = isSupportedNetwork ? networkProviders.get(network) : undefined;
+
+  if (isSupportedNetwork && cachedProvider) {
+    return cachedProvider;
+  }
+
+  if (!isSupportedNetwork) {
+    const provider = new StaticJsonRpcProvider(network, Network.mainnet);
+    networkProviders.set(Network.mainnet, provider);
+    return provider;
+  } else {
+    const provider = new StaticJsonRpcProvider(getNetworkObj(network).rpc(), getNetworkObj(network).id);
+    networkProviders.set(network, provider);
+    return provider;
+  }
+};
+
+export const getProvider = ({ chainId }: { chainId: number }): StaticJsonRpcProvider => {
+  const network = getNetworkFromChainId(chainId);
   const isSupportedNetwork = isNetworkEnum(network);
   const cachedProvider = isSupportedNetwork ? networkProviders.get(network) : undefined;
 
@@ -392,16 +414,16 @@ export async function estimateGasWithPadding(
     const code = to ? await p.getCode(to) : undefined;
     // 2 - if it's not a contract AND it doesn't have any data use the default gas limit
     if ((!contractCallEstimateGas && !to) || (to && !data && (!code || code === '0x'))) {
-      logger.debug('⛽ Skipping estimates, using default', {
+      logger.debug('[web3]: ⛽ Skipping estimates, using default', {
         ethUnits: ethUnits.basic_tx.toString(),
       });
       return ethUnits.basic_tx.toString();
     }
 
-    logger.debug('⛽ Calculating safer gas limit for last block');
+    logger.debug('[web3]: ⛽ Calculating safer gas limit for last block');
     // 3 - If it is a contract, call the RPC method `estimateGas` with a safe value
     const saferGasLimit = fraction(gasLimit.toString(), 19, 20);
-    logger.debug('⛽ safer gas limit for last block is', { saferGasLimit });
+    logger.debug('[web3]: ⛽ safer gas limit for last block is', { saferGasLimit });
 
     txPayloadToEstimate[contractCallEstimateGas ? 'gasLimit' : 'gas'] = toHex(saferGasLimit);
 
@@ -413,7 +435,7 @@ export async function estimateGasWithPadding(
 
     const lastBlockGasLimit = addBuffer(gasLimit.toString(), 0.9);
     const paddedGas = addBuffer(estimatedGas.toString(), paddingFactor.toString());
-    logger.debug('⛽ GAS CALCULATIONS!', {
+    logger.debug('[web3]: ⛽ GAS CALCULATIONS!', {
       estimatedGas: estimatedGas.toString(),
       gasLimit: gasLimit.toString(),
       lastBlockGasLimit: lastBlockGasLimit,
@@ -422,24 +444,24 @@ export async function estimateGasWithPadding(
 
     // If the safe estimation is above the last block gas limit, use it
     if (greaterThan(estimatedGas.toString(), lastBlockGasLimit)) {
-      logger.debug('⛽ returning orginal gas estimation', {
+      logger.debug('[web3]: ⛽ returning orginal gas estimation', {
         esimatedGas: estimatedGas.toString(),
       });
       return estimatedGas.toString();
     }
     // If the estimation is below the last block gas limit, use the padded estimate
     if (greaterThan(lastBlockGasLimit, paddedGas)) {
-      logger.debug('⛽ returning padded gas estimation', { paddedGas });
+      logger.debug('[web3]: ⛽ returning padded gas estimation', { paddedGas });
       return paddedGas;
     }
     // otherwise default to the last block gas limit
-    logger.debug('⛽ returning last block gas limit', { lastBlockGasLimit });
+    logger.debug('[web3]: ⛽ returning last block gas limit', { lastBlockGasLimit });
     return lastBlockGasLimit;
   } catch (e) {
     /*
      * Reported ~400x per day, but if it's not actionable it might as well be a warning.
      */
-    logger.warn('Error calculating gas limit with padding', { message: e instanceof Error ? e.message : 'Unknown error' });
+    logger.warn('[web3]: Error calculating gas limit with padding', { message: e instanceof Error ? e.message : 'Unknown error' });
     return null;
   }
 }
@@ -530,7 +552,7 @@ export const resolveUnstoppableDomain = async (domain: string): Promise<string |
       return address;
     })
     .catch(error => {
-      logger.error(new RainbowError(`resolveUnstoppableDomain error`), {
+      logger.error(new RainbowError(`[web3]: resolveUnstoppableDomain error`), {
         message: error.message,
       });
       return null;
@@ -755,7 +777,7 @@ export const buildTransaction = async (
       from: address,
       to: contractAddress,
     };
-  } else if (!isNativeAsset(asset.address, network)) {
+  } else if (!isNativeAsset(asset.address, ethereumUtils.getChainIdFromNetwork(network))) {
     const transferData = getDataForTokenTransfer(value, _recipient);
     txData = {
       data: transferData,

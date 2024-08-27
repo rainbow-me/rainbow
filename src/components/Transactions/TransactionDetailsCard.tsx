@@ -7,9 +7,9 @@ import { TextColor } from '@/design-system/color/palettes';
 
 import { abbreviations, ethereumUtils } from '@/utils';
 import { TransactionSimulationMeta } from '@/graphql/__generated__/metadataPOST';
-import { Network } from '@/networks/types';
+import { ChainId } from '@/__swaps__/types/chains';
 
-import { getNetworkObj } from '@/networks';
+import { getNetworkObj, getNetworkObject } from '@/networks';
 import { TransactionDetailsRow } from '@/components/Transactions/TransactionDetailsRow';
 import { FadedScrollCard } from '@/components/FadedScrollCard';
 import { IconContainer } from '@/components/Transactions/TransactionIcons';
@@ -23,7 +23,7 @@ import {
 } from '@/components/Transactions/constants';
 
 interface TransactionDetailsCardProps {
-  currentNetwork: Network;
+  currentChainId: ChainId;
   expandedCardBottomInset: number;
   isBalanceEnough: boolean | undefined;
   isLoading: boolean;
@@ -35,7 +35,7 @@ interface TransactionDetailsCardProps {
 }
 
 export const TransactionDetailsCard = ({
-  currentNetwork,
+  currentChainId,
   expandedCardBottomInset,
   isBalanceEnough,
   isLoading,
@@ -48,6 +48,8 @@ export const TransactionDetailsCard = ({
   const cardHeight = useSharedValue(COLLAPSED_CARD_HEIGHT);
   const contentHeight = useSharedValue(COLLAPSED_CARD_HEIGHT - CARD_BORDER_WIDTH * 2);
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const currentNetwork = getNetworkObject({ chainId: currentChainId });
 
   const listStyle = useAnimatedStyle(() => ({
     opacity: interpolate(
@@ -93,14 +95,14 @@ export const TransactionDetailsCard = ({
         </Box>
         <Animated.View style={listStyle}>
           <Stack space="24px">
-            {<TransactionDetailsRow currentNetwork={currentNetwork} detailType="chain" value={getNetworkObj(currentNetwork).name} />}
+            {<TransactionDetailsRow currentChainId={currentChainId} detailType="chain" value={currentNetwork.name} />}
             {!!(meta?.to?.address || toAddress || showTransferToRow) && (
               <TransactionDetailsRow
                 detailType={isContract ? 'contract' : 'to'}
                 onPress={() =>
                   ethereumUtils.openAddressInBlockExplorer(
                     meta?.to?.address || toAddress || meta?.transferTo?.address || '',
-                    currentNetwork
+                    currentChainId
                   )
                 }
                 value={

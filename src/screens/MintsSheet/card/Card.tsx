@@ -12,9 +12,9 @@ import { useTheme } from '@/theme';
 import { analyticsV2 } from '@/analytics';
 import * as i18n from '@/languages';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
-import { Network } from '@/helpers';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export const NUM_NFTS = 3;
 
@@ -56,8 +56,8 @@ export function Card({ collection }: { collection: MintableCollection }) {
             </Inset>
             <Cover alignVertical="top" alignHorizontal="right">
               <Bleed vertical="3px">
-                {network !== Network.mainnet ? (
-                  <ChainBadge network={network} position="relative" size="medium" />
+                {collection.chainId !== ChainId.mainnet ? (
+                  <ChainBadge chainId={collection.chainId} position="relative" size="medium" />
                 ) : (
                   <EthCoinIcon size={20} />
                 )}

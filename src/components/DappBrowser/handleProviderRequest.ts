@@ -6,7 +6,7 @@ import { Provider } from '@ethersproject/providers';
 
 import { RainbowNetworks, getNetworkObj } from '@/networks';
 import { getProviderForNetwork } from '@/handlers/web3';
-import { getNetworkFromChainId } from '@/utils/ethereumUtils';
+import ethereumUtils, { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { UserRejectedRequestError } from 'viem';
 import { convertHexToString } from '@/helpers/utilities';
 import { logger } from '@/logger';
@@ -17,6 +17,7 @@ import { Tab } from '@rainbow-me/provider/dist/references/messengers';
 import { getDappMetadata } from '@/resources/metadata/dapp';
 import { useAppSessionsStore } from '@/state/appSessions';
 import { BigNumber } from '@ethersproject/bignumber';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export type ProviderRequestPayload = RequestArguments & {
   id: number;
@@ -157,9 +158,9 @@ const messengerProviderRequestFn = async (messenger: Messenger, request: Provide
       dappName: dappData?.appName || request.meta?.sender.title || request.meta?.sender.url || '',
       imageUrl: dappData?.appLogo || '',
       address: appSession?.address || '',
-      network: appSession?.network || Network.mainnet,
       dappUrl: request.meta?.sender.url || '',
       payload: request,
+      chainId: appSession?.network ? ethereumUtils.getChainIdFromNetwork(appSession.network) : ChainId.mainnet,
     });
   }
 
@@ -289,7 +290,7 @@ export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger:
       // TODO - Open add / switch ethereum chain
       return { chainAlreadyAdded: true };
     } else {
-      logger.info('[DAPPBROWSER]: NOT SUPPORTED CHAIN');
+      logger.debug(`[handleProviderRequestApp]: Dapp requested unsupported chain ${chainId}`);
       return { chainAlreadyAdded: false };
     }
   };

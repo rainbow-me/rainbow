@@ -1,16 +1,16 @@
 import * as i18n from '@/languages';
 import { useCallback, useEffect, useState } from 'react';
 import { InteractionManager } from 'react-native';
-import { Network } from '@/networks/types';
 import useGas from '@/hooks/useGas';
 import { methodRegistryLookupAndParse } from '@/utils/methodRegistry';
-import { getNetworkObj } from '@/networks';
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
+import { ChainId } from '@/__swaps__/types/chains';
+import { ethereumUtils } from '@/utils';
 
 type TransactionSetupParams = {
-  currentNetwork: Network;
+  currentChainId: ChainId;
   startPollingGasFees: ReturnType<typeof useGas>['startPollingGasFees'];
   stopPollingGasFees: ReturnType<typeof useGas>['stopPollingGasFees'];
   isMessageRequest: boolean;
@@ -19,7 +19,7 @@ type TransactionSetupParams = {
 };
 
 export const useTransactionSetup = ({
-  currentNetwork,
+  currentChainId,
   startPollingGasFees,
   stopPollingGasFees,
   isMessageRequest,
@@ -32,7 +32,7 @@ export const useTransactionSetup = ({
     async (data: string) => {
       const methodSignaturePrefix = data.substr(0, 10);
       try {
-        const { name } = await methodRegistryLookupAndParse(methodSignaturePrefix, getNetworkObj(currentNetwork).id);
+        const { name } = await methodRegistryLookupAndParse(methodSignaturePrefix, currentChainId);
         if (name) {
           setMethodName(name);
         }
@@ -40,14 +40,15 @@ export const useTransactionSetup = ({
         setMethodName(data);
       }
     },
-    [currentNetwork]
+    [currentChainId]
   );
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
-      if (currentNetwork) {
+      if (currentChainId) {
         if (!isMessageRequest) {
-          startPollingGasFees(currentNetwork);
+          const network = ethereumUtils.getNetworkFromChainId(currentChainId);
+          startPollingGasFees(network);
           fetchMethodName(transactionDetails?.payload?.params?.[0].data);
         } else {
           setMethodName(i18n.t(i18n.l.wallet.message_signing.request));
@@ -63,7 +64,7 @@ export const useTransactionSetup = ({
     };
   }, [
     isMessageRequest,
-    currentNetwork,
+    currentChainId,
     transactionDetails?.payload?.params,
     source,
     fetchMethodName,

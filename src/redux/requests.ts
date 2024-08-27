@@ -5,9 +5,8 @@ import { maybeSignUri } from '@/handlers/imgix';
 import { getLocalRequests, removeLocalRequest, saveLocalRequests } from '@/handlers/localstorage/walletconnectRequests';
 import { omitFlatten } from '@/helpers/utilities';
 import { getRequestDisplayDetails } from '@/parsers';
-import { ethereumUtils } from '@/utils';
-import logger from '@/utils/logger';
-import { Network } from '@/networks/types';
+import { logger } from '@/logger';
+import { ChainId } from '@/__swaps__/types/chains';
 
 // -- Constants --------------------------------------- //
 
@@ -23,7 +22,7 @@ export interface RequestData {
   dappName: string;
   imageUrl: string | undefined;
   address: string;
-  network: Network;
+  chainId: ChainId;
   dappUrl: string;
   payload: any;
   displayDetails: RequestDisplayDetails | null | Record<string, never>;
@@ -162,18 +161,16 @@ export const addRequestToApprove =
     const walletConnector = walletConnectors[peerId];
     // @ts-expect-error "_chainId" is private.
     const chainId = walletConnector._chainId;
-    const requestNetwork = ethereumUtils.getNetworkFromChainId(Number(chainId));
     // @ts-expect-error "_accounts" is private.
     const address = walletConnector._accounts[0];
-    const dappNetwork = ethereumUtils.getNetworkFromChainId(Number(chainId));
-    const displayDetails = await getRequestDisplayDetails(payload, nativeCurrency, dappNetwork);
+    const displayDetails = await getRequestDisplayDetails(payload, nativeCurrency, chainId);
     const oneHourAgoTs = Date.now() - EXPIRATION_THRESHOLD_IN_MS;
     // @ts-expect-error This fails to compile as `displayDetails` does not
     // always return an object with `timestampInMs`. Still, the error thrown
     // by an invalid access might be caught or expected elsewhere, so for now
     // `ts-expect-error` is used.
     if (displayDetails.timestampInMs < oneHourAgoTs) {
-      logger.log('request expired!');
+      logger.debug(`[redux/requests]: [${requestId}] request expired!`);
       return;
     }
     const unsafeImageUrl = peerMeta?.icons?.[0];
@@ -184,7 +181,7 @@ export const addRequestToApprove =
 
     const request: WalletconnectRequestData = {
       address,
-      network: requestNetwork,
+      chainId,
       clientId,
       dappName,
       dappScheme,

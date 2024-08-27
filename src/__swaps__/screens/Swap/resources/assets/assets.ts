@@ -50,7 +50,7 @@ export async function assetsQueryFunction({
     const parsedAssets = parseAssets(results, chainId, currency);
     return parsedAssets;
   } catch (e) {
-    logger.error(new RainbowError('assetsQueryFunction: '), {
+    logger.error(new RainbowError('[assetsQueryFunction]: Failed to fetch assets'), {
       message: (e as Error)?.message,
     });
     return {};

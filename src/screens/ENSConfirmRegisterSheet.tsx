@@ -40,6 +40,7 @@ import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDomina
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
 import { ActionTypes } from '@/hooks/useENSRegistrationActionHandler';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export const ENSConfirmRegisterSheetHeight = 600;
 export const ENSConfirmRenewSheetHeight = 560;
@@ -84,7 +85,7 @@ function TransactionActionRow({
         {/* @ts-expect-error JavaScript component */}
         <GasSpeedButton
           asset={{ color: accentColor }}
-          currentNetwork="mainnet"
+          chainId={ChainId.mainnet}
           marginBottom={DeviceInfo.hasNotch() ? 0 : undefined}
           theme="light"
         />

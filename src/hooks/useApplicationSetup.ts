@@ -36,7 +36,7 @@ export function useApplicationSetup() {
 
   useEffect(() => {
     if (!IS_DEV && isTestFlight) {
-      logger.info(`Test flight usage - ${isTestFlight}`);
+      logger.debug(`[App]: Test flight usage - ${isTestFlight}`);
     }
     identifyFlow();
 

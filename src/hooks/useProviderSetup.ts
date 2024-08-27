@@ -1,34 +1,39 @@
 import { useEffect, useState } from 'react';
-import { Network } from '@/networks/types';
-import { getFlashbotsProvider, getProviderForNetwork } from '@/handlers/web3';
+import { getFlashbotsProvider, getProvider } from '@/handlers/web3';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { ethereumUtils } from '@/utils';
 import { getOnchainAssetBalance } from '@/handlers/assets';
 import { ParsedAddressAsset } from '@/entities';
+import { ChainId } from '@/__swaps__/types/chains';
 
-export const useProviderSetup = (currentNetwork: Network, accountAddress: string) => {
+export const useProviderSetup = (currentChainId: ChainId, accountAddress: string) => {
   const [provider, setProvider] = useState<StaticJsonRpcProvider | null>(null);
   const [nativeAsset, setNativeAsset] = useState<ParsedAddressAsset | null>(null);
 
   useEffect(() => {
     const initProvider = async () => {
       let p;
-      if (currentNetwork === Network.mainnet) {
+      if (currentChainId === ChainId.mainnet) {
         p = await getFlashbotsProvider();
       } else {
-        p = getProviderForNetwork(currentNetwork);
+        p = getProvider({ chainId: currentChainId });
       }
       setProvider(p);
     };
     initProvider();
-  }, [currentNetwork]);
+  }, [currentChainId]);
 
   useEffect(() => {
     const fetchNativeAsset = async () => {
       if (provider) {
-        const asset = await ethereumUtils.getNativeAssetForNetwork(currentNetwork, accountAddress);
+        const asset = await ethereumUtils.getNativeAssetForNetwork(currentChainId, accountAddress);
         if (asset) {
-          const balance = await getOnchainAssetBalance(asset, accountAddress, currentNetwork, provider);
+          const balance = await getOnchainAssetBalance(
+            asset,
+            accountAddress,
+            ethereumUtils.getNetworkFromChainId(currentChainId),
+            provider
+          );
           if (balance) {
             const assetWithOnchainBalance: ParsedAddressAsset = { ...asset, balance };
             setNativeAsset(assetWithOnchainBalance);
@@ -39,7 +44,7 @@ export const useProviderSetup = (currentNetwork: Network, accountAddress: string
       }
     };
     fetchNativeAsset();
-  }, [accountAddress, currentNetwork, provider]);
+  }, [accountAddress, currentChainId, provider]);
 
   return { provider, nativeAsset };
 };

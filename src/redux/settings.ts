@@ -27,7 +27,7 @@ import { Network } from '@/helpers/networkTypes';
 import { explorerClearState, explorerInit } from '@/redux/explorer';
 import { AppState } from '@/redux/store';
 import { ethereumUtils } from '@/utils';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
 
 // -- Constants ------------------------------------------------------------- //
 const SETTINGS_UPDATE_SETTINGS_ADDRESS = 'settings/SETTINGS_UPDATE_SETTINGS_ADDRESS';
@@ -145,7 +145,7 @@ export const settingsLoadState =
         type: SETTINGS_UPDATE_ACCOUNT_SETTINGS_SUCCESS,
       });
     } catch (error) {
-      logger.log('Error loading native currency and testnets pref', error);
+      logger.error(new RainbowError(`[redux/settings]: Error loading native currency and testnets pref: ${error}`));
     }
   };
 
@@ -159,7 +159,7 @@ export const settingsLoadNetwork = () => async (dispatch: Dispatch<SettingsState
       type: SETTINGS_UPDATE_NETWORK_SUCCESS,
     });
   } catch (error) {
-    logger.log('Error loading network settings', error);
+    logger.error(new RainbowError(`[redux/settings]: Error loading network settings: ${error}`));
   }
 };
 
@@ -175,7 +175,7 @@ export const settingsLoadLanguage = () => async (dispatch: Dispatch<SettingsStat
       language,
     });
   } catch (error) {
-    logger.log('Error loading language settings', error);
+    logger.error(new RainbowError(`[redux/settings]: Error loading language settings: ${error}`));
   }
 };
 
@@ -190,17 +190,17 @@ export const settingsChangeTestnetsEnabled =
 
 export const settingsChangeAppIcon = (appIcon: string) => (dispatch: Dispatch<SettingsStateUpdateAppIconSuccessAction>) => {
   const callback = async () => {
-    logger.log('changing app icon to', appIcon);
+    logger.debug(`[redux/settings]: changing app icon to ${appIcon}`);
     try {
       await changeIcon(appIcon);
-      logger.log('icon changed to ', appIcon);
+      logger.debug(`[redux/settings]: icon changed to ${appIcon}`);
       saveAppIcon(appIcon);
       dispatch({
         payload: appIcon,
         type: SETTINGS_UPDATE_APP_ICON_SUCCESS,
       });
     } catch (error) {
-      logger.log('Error changing app icon', error);
+      logger.error(new RainbowError(`[redux/settings]: Error changing app icon: ${error}`));
     }
   };
 
@@ -247,7 +247,7 @@ export const settingsUpdateNetwork = (network: Network) => async (dispatch: Disp
     });
     saveNetwork(network);
   } catch (error) {
-    logger.log('Error updating network settings', error);
+    logger.error(new RainbowError(`[redux/settings]: Error updating network settings: ${error}`));
   }
 };
 
@@ -261,7 +261,7 @@ export const settingsChangeLanguage = (language: Language) => async (dispatch: D
     saveLanguage(language);
     analytics.identify({ language });
   } catch (error) {
-    logger.log('Error changing language', error);
+    logger.error(new RainbowError(`[redux/settings]: Error changing language: ${error}`));
   }
 };
 
@@ -278,7 +278,7 @@ export const settingsChangeNativeCurrency =
       saveNativeCurrency(nativeCurrency);
       analytics.identify({ currency: nativeCurrency });
     } catch (error) {
-      logger.log('Error changing native currency', error);
+      logger.error(new RainbowError(`[redux/settings]: Error changing native currency: ${error}`));
     }
   };
 

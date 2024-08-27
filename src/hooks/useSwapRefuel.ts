@@ -51,8 +51,8 @@ export default function useSwapRefuel({
 
   const { data: minRefuelAmount } = useMinRefuelAmount(
     {
-      chainId,
-      toChainId,
+      chainId: chainId as number,
+      toChainId: toChainId as number,
     },
     { enabled: isCrosschainSwap }
   );
@@ -60,16 +60,16 @@ export default function useSwapRefuel({
   useEffect(() => {
     const getNativeInputOutputAssets = async () => {
       if (!outputNetwork || !inputNetwork || !accountAddress) return;
-      const outputNativeAsset = await ethereumUtils.getNativeAssetForNetwork(outputNetwork, accountAddress);
-      const inputNativeAsset = await ethereumUtils.getNativeAssetForNetwork(inputNetwork, accountAddress);
+      const outputNativeAsset = await ethereumUtils.getNativeAssetForNetwork(toChainId, accountAddress);
+      const inputNativeAsset = await ethereumUtils.getNativeAssetForNetwork(chainId, accountAddress);
       setOutputNativeAsset(outputNativeAsset);
       setInputNativeAsset(inputNativeAsset);
     };
     getNativeInputOutputAssets();
-  }, [outputNetwork, inputNetwork, accountAddress]);
+  }, [outputNetwork, inputNetwork, accountAddress, toChainId, chainId]);
 
   const { showRefuelSheet, refuelState } = useMemo(() => {
-    const swappingToNativeAsset = isNativeAsset(outputCurrency?.address, outputNetwork);
+    const swappingToNativeAsset = isNativeAsset(outputCurrency?.address, toChainId);
     // // If the swap is going into a native token on the destination chain, in which case we can ignore all refuel functionality
     if (swappingToNativeAsset) {
       return { showRefuelSheet: false, refuelState: null };
@@ -95,7 +95,7 @@ export default function useSwapRefuel({
     // Check the existing source native asset balance
     const inputNativeAssetAmount = toWei(inputNativeAsset?.balance?.amount || '0');
     // Check if swapping from native asset
-    const swappingFromNativeAsset = isNativeAsset(inputCurrency?.address, inputNetwork);
+    const swappingFromNativeAsset = isNativeAsset(inputCurrency?.address, chainId);
 
     const gasFeesPlusRefuelAmount = add(gasFee, refuelAmount.toString());
     // - If they wont have enough after the swap of the source native asset then we should offer to deduct some of the input amount into the refuel amount
@@ -123,15 +123,16 @@ export default function useSwapRefuel({
 
     return { showRefuelSheet: true, refuelState: RefuelState.Notice };
   }, [
+    chainId,
     inputCurrency?.address,
     inputNativeAsset?.balance?.amount,
-    inputNetwork,
     isCrosschainSwap,
     minRefuelAmount,
     outputCurrency?.address,
     outputNativeAsset?.balance?.amount,
     outputNetwork,
     selectedGasFee?.gasFee?.estimatedFee?.value?.amount,
+    toChainId,
     tradeDetails?.sellAmount,
   ]);
 

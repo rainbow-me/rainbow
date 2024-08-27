@@ -2,8 +2,7 @@ import { useEffect, useRef, useCallback } from 'react';
 import { estimateGas, web3Provider, toHex } from '@/handlers/web3';
 import { convertHexToString, omitFlatten } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
-import { Network } from '@/helpers';
-import { getNetworkObj } from '@/networks';
+import { getNetworkObject } from '@/networks';
 import { ethereumUtils } from '@/utils';
 import { hexToNumber, isHex } from 'viem';
 import { isEmpty } from 'lodash';
@@ -11,6 +10,7 @@ import { InteractionManager } from 'react-native';
 import { GasFeeParamsBySpeed } from '@/entities';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { useGas } from '@/hooks';
+import { ChainId } from '@/__swaps__/types/chains';
 
 type CalculateGasLimitProps = {
   isMessageRequest: boolean;
@@ -18,11 +18,17 @@ type CalculateGasLimitProps = {
   provider: StaticJsonRpcProvider | null;
   req: any;
   updateTxFee: ReturnType<typeof useGas>['updateTxFee'];
-  currentNetwork: Network;
+  currentChainId: ChainId;
 };
 
-export const useCalculateGasLimit = (props: CalculateGasLimitProps) => {
-  const { isMessageRequest, gasFeeParamsBySpeed, provider, req, updateTxFee, currentNetwork } = props;
+export const useCalculateGasLimit = ({
+  isMessageRequest,
+  gasFeeParamsBySpeed,
+  provider,
+  req,
+  updateTxFee,
+  currentChainId,
+}: CalculateGasLimitProps) => {
   const calculatingGasLimit = useRef(false);
 
   const calculateGasLimit = useCallback(async () => {
@@ -46,14 +52,15 @@ export const useCalculateGasLimit = (props: CalculateGasLimitProps) => {
     } finally {
       logger.debug('WC: Setting gas limit to', { gas: convertHexToString(gas) }, logger.DebugContext.walletconnect);
 
-      if (currentNetwork && getNetworkObj(currentNetwork).gas.OptimismTxFee) {
+      const networkObject = getNetworkObject({ chainId: currentChainId });
+      if (currentChainId && networkObject.gas.OptimismTxFee) {
         const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(txPayload, provider || web3Provider);
         updateTxFee(gas, null, l1GasFeeOptimism);
       } else {
         updateTxFee(gas, null);
       }
     }
-  }, [currentNetwork, req, updateTxFee, provider]);
+  }, [currentChainId, req, updateTxFee, provider]);
 
   useEffect(() => {
     if (!isEmpty(gasFeeParamsBySpeed) && !calculatingGasLimit.current && !isMessageRequest && provider) {

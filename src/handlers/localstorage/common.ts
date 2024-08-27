@@ -1,4 +1,4 @@
-/*global storage*/
+/* global storage*/
 import { legacy } from '@/storage/legacy';
 import { logger, RainbowError } from '@/logger';
 
@@ -17,7 +17,7 @@ export const saveLocal = (key = '', data = {}) => {
   try {
     legacy.set([key], data);
   } catch (error) {
-    logger.error(new RainbowError('Legacy Storage: saveLocal error'));
+    logger.error(new RainbowError('[localstorage/common]: saveLocal error'));
   }
 };
 
@@ -51,7 +51,7 @@ export const deprecatedSaveLocal = async (key = '', data = {}, version = default
       key,
     });
   } catch (error) {
-    logger.error(new RainbowError('Storage: deprecatedSaveLocal error'));
+    logger.error(new RainbowError('[localstorage/common]: deprecatedSaveLocal error'));
   }
 };
 
@@ -90,7 +90,7 @@ export const deprecatedGetLocal = async (key = '', version = defaultVersion) => 
       case 'ExpiredError':
         break;
       default:
-        logger.error(new RainbowError('Storage: deprecatedGetLocal error'));
+        logger.error(new RainbowError('[localstorage/common]: deprecatedGetLocal error'));
     }
 
     return null;
@@ -109,7 +109,7 @@ export const deprecatedRemoveLocal = (key = '') => {
     // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'storage'. Did you mean 'Storage'... Remove this comment to see the full error message
     storage.remove({ key });
   } catch (error) {
-    logger.error(new RainbowError('Storage: deprecatedRemoveLocal error'));
+    logger.error(new RainbowError('[localstorage/common]: deprecatedRemoveLocal error'));
   }
 };
 

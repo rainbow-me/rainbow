@@ -55,8 +55,8 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { getUniqueTokenType, promiseUtils } from '@/utils';
-import logger from '@/utils/logger';
+import { ethereumUtils, getUniqueTokenType, promiseUtils } from '@/utils';
+import { logger, RainbowError } from '@/logger';
 import { getNetworkObj } from '@/networks';
 import { IS_ANDROID } from '@/env';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
@@ -318,7 +318,7 @@ export const SendConfirmationSheet = () => {
           updateTxFee(gasLimit, null);
         })
         .catch(e => {
-          logger.sentry('Error calculating gas limit', e);
+          logger.error(new RainbowError(`[SendConfirmationSheet]: error calculating gas limit: ${e}`));
           updateTxFee(null, null);
         });
     }
@@ -395,7 +395,7 @@ export const SendConfirmationSheet = () => {
               await callback();
             }
           } catch (e) {
-            logger.sentry('TX submit failed', e);
+            logger.error(new RainbowError(`[SendConfirmationSheet]: error submitting transaction: ${e}`));
             setIsAuthorizing(false);
           }
         },
@@ -508,7 +508,7 @@ export const SendConfirmationSheet = () => {
                     <RainbowCoinIcon
                       size={50}
                       icon={asset?.icon_url}
-                      network={asset?.network}
+                      chainId={ethereumUtils.getChainIdFromNetwork(asset?.network)}
                       symbol={asset?.symbol || ''}
                       theme={theme}
                       colors={asset?.colors}
@@ -670,7 +670,7 @@ export const SendConfirmationSheet = () => {
           </SendButtonWrapper>
           {isENS && (
             /* @ts-expect-error JavaScript component */
-            <GasSpeedButton currentNetwork={network} theme={theme.isDarkMode ? 'dark' : 'light'} />
+            <GasSpeedButton chainId={ethereumUtils.getChainIdFromNetwork(network)} theme={theme.isDarkMode ? 'dark' : 'light'} />
           )}
         </Column>
       </SlackSheet>

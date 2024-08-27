@@ -109,10 +109,10 @@ export function PairHardwareWalletSigningSheet() {
   const importHardwareWallet = useCallback(
     async (deviceId: string) => {
       if (busy) {
-        logger.debug('[importHardwareWallet] - busy, already trying to import', { deviceId }, DebugContext.ledger);
+        logger.debug('[PairHardwareWalletSigningSheet]: busy, already trying to import', { deviceId }, DebugContext.ledger);
         return;
       }
-      logger.debug('[importHardwareWallet] - importing Hardware Wallet', { deviceId }, DebugContext.ledger);
+      logger.debug('[PairHardwareWalletSigningSheet]: importing Hardware Wallet', { deviceId }, DebugContext.ledger);
       handleSetSeedPhrase(deviceId);
       handlePressImportButton(null, deviceId, null, null);
     },
@@ -137,8 +137,7 @@ export function PairHardwareWalletSigningSheet() {
           },
         });
       } else {
-        logger.error(new RainbowError('[importHardwareWallet] - Disconnected or Unkown Error'), { errorType });
-        logger.info('[importHardwareWallet] - issue connecting, trying again ');
+        logger.error(new RainbowError('[PairHardwareWalletSigningSheet]: Disconnected or Unkown Error'), { errorType });
         const transport = await TransportBLE.open(deviceId);
         await checkLedgerConnection({
           transport,

@@ -1,5 +1,5 @@
 import { NativeCurrencyKey, NewTransactionOrAddCashTransaction, RainbowTransaction } from '@/entities';
-import { isL2Network } from '@/handlers/web3';
+import { isL2Chain } from '@/handlers/web3';
 import { ETH_ADDRESS } from '@/references';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToBalanceDisplay } from '@/helpers/utilities';
 import { ethereumUtils } from '@/utils';
@@ -28,6 +28,7 @@ export const parseNewTransaction = async (
     maxFeePerGas,
     maxPriorityFeePerGas,
     network,
+    chainId,
     nft,
     nonce,
     hash,
@@ -52,12 +53,13 @@ export const parseNewTransaction = async (
   const assetPrice = asset?.price?.value ?? ethereumUtils.getAssetPrice(asset?.address);
 
   const native =
-    network && isL2Network(network)
+    chainId && isL2Chain({ chainId })
       ? { amount: '', display: '' }
       : convertAmountAndPriceToNativeDisplay(amount ?? 0, assetPrice, nativeCurrency);
 
   return {
     address: asset?.address ?? ETH_ADDRESS,
+    chainId,
     balance,
     data,
     ensCommitRegistrationName,

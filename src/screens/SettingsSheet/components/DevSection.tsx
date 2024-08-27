@@ -31,7 +31,7 @@ import { clearImageMetadataCache } from '@/redux/imageMetadata';
 import store from '@/redux/store';
 import { walletsUpdate } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
-import logger from 'logger';
+import { logger, RainbowError } from '@/logger';
 import {
   removeNotificationSettingsForWallet,
   useAllNotificationSettingsFromStorage,
@@ -76,10 +76,10 @@ const DevSection = () => {
   const connectToHardhat = useCallback(async () => {
     try {
       const ready = await web3SetHttpProvider((ios && HARDHAT_URL_IOS) || (android && HARDHAT_URL_ANDROID) || 'http://127.0.0.1:8545');
-      logger.log('connected to hardhat', ready);
+      logger.debug(`[DevSection] connected to hardhat: ${ready}`);
     } catch (e) {
       await web3SetHttpProvider(networkTypes.mainnet);
-      logger.log('error connecting to hardhat', e);
+      logger.error(new RainbowError(`[DevSection] error connecting to hardhat: ${e}`));
     }
     navigate(Routes.PROFILE_SCREEN);
     dispatch(explorerInit());

@@ -15,6 +15,42 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.36] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.36)
+
+### Fixed
+
+- Fixed Sentry logging issues (#6012, #6018, #6019)
+- Fixed issue in swaps where certain errors were not being handled (#6017)
+- Fixed a bug with wrapping and unwrapping ETH (#6022, #6026)
+- Fixed a crash that was happening on asset balance (#6025)
+- Fixed missing pricing on swaps (#6023)
+
+## [1.9.35] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.35)
+
+### Added
+
+- Added translations for swaps v2, gas, backups and ETH rewards (#5980)
+- Added a popular tokens section in swaps token search list (#5990)
+
+### Changed
+
+- Bump fast-xml-parser from 4.4.0 to 4.4.1 (#5965)
+- Convert App.js => App.tsx (#5792)
+- No longer have the restricted codeowners for reviews (#5991)
+- Changed the trending Dapps section to backend endpoint (#5974)
+- The default swap input currency is now the network with the most ETH (#5994)
+- Design system improvements (#5984)
+- Dapp browser improvements (#5978)
+- Updated swaps SDK (#5996)
+- Changed the fee domination from USD to actual payment token (#6000)
+- Sentry bot resilience updates (#5995)
+
+### Fixed
+
+- Fixed a crash on an empty profile screen along with adding a placeholder for no transactions on activity screen (#5975)
+- Fixed a bug where some tokens had a missing asset balance (#5998)
+- Fixed account balance discrepancies in different places (#5959)
+
 ## [1.9.34] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.34)
 
 ### Added

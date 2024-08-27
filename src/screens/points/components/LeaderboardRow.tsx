@@ -20,6 +20,7 @@ import { useTheme } from '@/theme';
 import LinearGradient from 'react-native-linear-gradient';
 import { ButtonPressAnimation } from '@/components/animations';
 import { noop } from 'lodash';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const ACTIONS = {
   ADD_CONTACT: 'add-contact',
@@ -128,7 +129,7 @@ export const LeaderboardRow = memo(function LeaderboardRow({
         setClipboard(address);
       }
       if (address && actionKey === ACTIONS.ETHERSCAN) {
-        ethereumUtils.openAddressInBlockExplorer(address, Network.mainnet);
+        ethereumUtils.openAddressInBlockExplorer(address, ChainId.mainnet);
       }
       if (actionKey === ACTIONS.ADD_CONTACT) {
         navigate(Routes.MODAL_SCREEN, {

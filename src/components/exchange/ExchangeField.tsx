@@ -11,6 +11,7 @@ import { useTheme } from '@/theme';
 import { AccentColorProvider, Box, Space } from '@/design-system';
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 import { TokenColors } from '@/graphql/__generated__/metadata';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const ExchangeFieldHeight = android ? 64 : 38;
 const ExchangeFieldPadding: Space = android ? '15px (Deprecated)' : '19px (Deprecated)';
@@ -33,7 +34,7 @@ interface ExchangeFieldProps {
   editable: boolean;
   loading: boolean;
   type?: string;
-  network: Network;
+  chainId: ChainId;
   onBlur?: (event: FocusEvent) => void;
   onFocus: (event: FocusEvent) => void;
   onPressSelectCurrency: (chainId: any) => void;
@@ -55,7 +56,7 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
     disableCurrencySelection,
     editable,
     loading,
-    network,
+    chainId,
     onBlur,
     onFocus,
     onPressSelectCurrency,
@@ -126,7 +127,7 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
       paddingRight={ExchangeFieldPadding}
       width="full"
       style={style}
-      testID={`${testID}-${symbol || 'empty'}-${network || 'empty'}`}
+      testID={`${testID}-${symbol || 'empty'}-${chainId || 'empty'}`}
     >
       <TouchableWithoutFeedback onPress={onTapWhileDisabled ?? handleFocusField}>
         <Box
@@ -141,13 +142,13 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
         >
           <Box paddingRight="10px">
             {symbol ? (
-              <RainbowCoinIcon size={40} icon={icon} network={network} symbol={symbol} theme={theme} colors={colors} />
+              <RainbowCoinIcon size={40} icon={icon} chainId={chainId} symbol={symbol} theme={theme} colors={colors} />
             ) : (
               <Box>
                 <AccentColorProvider color={theme.colors.alpha(theme.colors.blueGreyDark, 0.1)}>
                   <Box background="accent" style={{ ...borders.buildCircleAsObject(CoinIconSize) }} />
                 </AccentColorProvider>
-                <ChainBadge network={network} />
+                <ChainBadge chainId={chainId} />
               </Box>
             )}
           </Box>

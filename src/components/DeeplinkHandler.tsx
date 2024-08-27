@@ -20,7 +20,7 @@ export function DeeplinkHandler({ initialRoute, walletReady }: DeeplinkHandlerPr
     const initialUrl = await Linking.getInitialURL();
 
     branchListenerRef.current = await branchListener(async url => {
-      logger.debug(`Branch: listener called`, {}, logger.DebugContext.deeplinks);
+      logger.debug(`[App]: Branch listener called`, {}, logger.DebugContext.deeplinks);
 
       try {
         handleDeeplink({
@@ -45,7 +45,7 @@ export function DeeplinkHandler({ initialRoute, walletReady }: DeeplinkHandlerPr
     });
 
     if (initialUrl) {
-      logger.debug(`App: has initial URL, opening with Branch`, { initialUrl });
+      logger.debug(`[App]: has initial URL, opening with Branch`, { initialUrl });
       branch.openURL(initialUrl);
     }
   }, [handleRequestUrl, initialRoute, sendFailureToClient]);

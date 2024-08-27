@@ -52,6 +52,7 @@ interface InputCoinRowProps {
   onPress: (asset: ParsedSearchAsset | null) => void;
   output?: false | undefined;
   uniqueId: string;
+  testID?: string;
 }
 
 type PartialAsset = Pick<SearchAsset, 'address' | 'chainId' | 'colors' | 'icon_url' | 'mainnetAddress' | 'name' | 'symbol' | 'uniqueId'>;
@@ -62,11 +63,12 @@ interface OutputCoinRowProps extends PartialAsset {
   output: true;
   nativePriceChange?: string;
   isTrending?: boolean;
+  testID?: string;
 }
 
 type CoinRowProps = InputCoinRowProps | OutputCoinRowProps;
 
-export function CoinRow({ isFavorite, onPress, output, uniqueId, ...assetProps }: CoinRowProps) {
+export function CoinRow({ isFavorite, onPress, output, uniqueId, testID, ...assetProps }: CoinRowProps) {
   const inputAsset = userAssetsStore(state => (output ? undefined : state.getUserAsset(uniqueId)));
   const outputAsset = output ? (assetProps as PartialAsset) : undefined;
 
@@ -116,7 +118,7 @@ export function CoinRow({ isFavorite, onPress, output, uniqueId, ...assetProps }
   if (!address || !chainId) return null;
 
   return (
-    <Box style={{ height: COIN_ROW_WITH_PADDING_HEIGHT, width: '100%' }}>
+    <Box testID={testID} style={{ height: COIN_ROW_WITH_PADDING_HEIGHT, width: '100%' }}>
       <Columns alignVertical="center">
         <Column>
           <ButtonPressAnimation disallowInterruption onPress={onPressHandler} scaleTo={0.95}>
@@ -137,7 +139,7 @@ export function CoinRow({ isFavorite, onPress, output, uniqueId, ...assetProps }
                     address={address}
                     mainnetAddress={mainnetAddress}
                     large
-                    network={ethereumUtils.getNetworkFromChainId(chainId)}
+                    chainId={chainId}
                     symbol={symbol || ''}
                     color={colors?.primary}
                   />
@@ -198,8 +200,8 @@ const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId })
     ...(network
       ? {
           blockExplorer: {
-            title: i18n.t(i18n.l.exchange.coin_row.view_on, { blockExplorerName: startCase(ethereumUtils.getBlockExplorer(network)) }),
-            action: () => ethereumUtils.openAddressInBlockExplorer(address, network),
+            title: i18n.t(i18n.l.exchange.coin_row.view_on, { blockExplorerName: startCase(ethereumUtils.getBlockExplorer(chainId)) }),
+            action: () => ethereumUtils.openAddressInBlockExplorer(address, chainId),
           },
         }
       : {}),
