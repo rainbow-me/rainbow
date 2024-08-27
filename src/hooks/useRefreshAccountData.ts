@@ -1,4 +1,3 @@
-import { captureException } from '@sentry/react-native';
 import delay from 'delay';
 import { useCallback, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -7,7 +6,7 @@ import { walletConnectLoadState } from '../redux/walletconnect';
 import { fetchWalletENSAvatars, fetchWalletNames } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import { PROFILES, useExperimentalFlag } from '@/config';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
 import { queryClient } from '@/react-query';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
@@ -54,8 +53,7 @@ export default function useRefreshAccountData() {
         wc,
       ]);
     } catch (error) {
-      logger.log('Error refreshing data', error);
-      captureException(error);
+      logger.error(new RainbowError(`[useRefreshAccountData]: Error refreshing data: ${error}`));
       throw error;
     }
   }, [accountAddress, dispatch, nativeCurrency, profilesEnabled]);
@@ -67,8 +65,8 @@ export default function useRefreshAccountData() {
 
     try {
       await fetchAccountData();
-    } catch (e) {
-      logger.error(e);
+    } catch (error) {
+      logger.error(new RainbowError(`[useRefreshAccountData]: Error calling fetchAccountData: ${error}`));
     } finally {
       setIsRefreshing(false);
     }

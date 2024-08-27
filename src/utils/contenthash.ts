@@ -12,7 +12,7 @@ export function encodeContenthash(text: string) {
   let encoded = '';
   let error;
   if (text) {
-    let matched = matchProtocol(text);
+    const matched = matchProtocol(text);
     if (matched) {
       contentType = matched[1];
       content = matched[2];

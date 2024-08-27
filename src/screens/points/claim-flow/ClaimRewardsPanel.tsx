@@ -290,7 +290,7 @@ const ClaimingRewards = ({
             setClaimStatus('bridge-error');
           }
 
-          logger.error(new RainbowError('ETH REWARDS CLAIM ERROR'), { message: errorMessage });
+          logger.error(new RainbowError('[ClaimRewardsPanel]: Failed to claim ETH rewards'), { message: errorMessage });
 
           return { nonce: null };
         }

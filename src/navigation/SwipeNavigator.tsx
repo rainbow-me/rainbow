@@ -92,7 +92,13 @@ const ActivityTabIcon = React.memo(
     }, [pendingCount]);
 
     return pendingCount > 0 ? (
-      <Box width={{ custom: 28 }} height={{ custom: 28 }} alignItems="center" justifyContent="center">
+      <Box
+        testID="transactions-pending-tab-icon"
+        width={{ custom: 28 }}
+        height={{ custom: 28 }}
+        alignItems="center"
+        justifyContent="center"
+      >
         <AnimatedSpinner color={accentColor} isLoading requireSrc={require('@/assets/tabSpinner.png')} size={28} />
         <Cover>
           <Box width="full" height="full" alignItems="center" justifyContent="center">

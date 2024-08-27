@@ -130,7 +130,7 @@ export const crosschainSwap = async ({
       quote,
     });
   } catch (e) {
-    logger.error(new RainbowError('crosschainSwap: error estimateCrosschainSwapGasLimit'), {
+    logger.error(new RainbowError('[raps/crosschainSwap]: error estimateCrosschainSwapGasLimit'), {
       message: (e as Error)?.message,
     });
     throw e;
@@ -158,11 +158,13 @@ export const crosschainSwap = async ({
       },
     })(swapParams);
   } catch (e) {
-    logger.error(new RainbowError('crosschainSwap: error executeCrosschainSwap'), { message: (e as Error)?.message });
+    logger.error(new RainbowError('[raps/crosschainSwap]: error executeCrosschainSwap'), {
+      message: (e as Error)?.message,
+    });
     throw e;
   }
 
-  if (!swap) throw new RainbowError('crosschainSwap: error executeCrosschainSwap');
+  if (!swap) throw new RainbowError('[raps/crosschainSwap]: error executeCrosschainSwap');
 
   // TODO: MARK - Replace this once we migrate network => chainId
   const network = ethereumUtils.getNetworkFromChainId(parameters.chainId);

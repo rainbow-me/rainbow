@@ -26,31 +26,31 @@ export default function useCloudBackups() {
       setIsFetching(true);
       const isAvailable = isCloudBackupAvailable();
       if (!isAvailable) {
-        logger.log('Cloud backup is not available');
+        logger.debug('[useCloudBackups]: Cloud backup is not available');
         setIsFetching(false);
         setStep(CloudBackupStep.IDLE);
         return;
       }
 
       setStep(CloudBackupStep.SYNCING);
-      logger.log('Syncing with cloud');
+      logger.debug('[useCloudBackups]: Syncing with cloud');
       await syncCloud();
 
       setStep(CloudBackupStep.FETCHING_USER_DATA);
-      logger.log('Fetching user data');
+      logger.debug('[useCloudBackups]: Fetching user data');
       const userData = await fetchUserDataFromCloud();
       setUserData(userData);
 
       setStep(CloudBackupStep.FETCHING_ALL_BACKUPS);
-      logger.log('Fetching all backups');
+      logger.debug('[useCloudBackups]: Fetching all backups');
       const backups = await fetchAllBackups();
 
-      logger.log(`Retrieved ${backups.files.length} backup files`);
+      logger.debug(`[useCloudBackups]: Retrieved ${backups.files.length} backup files`);
       setBackups(backups);
       setStep(CloudBackupStep.IDLE);
     } catch (e) {
       setStep(CloudBackupStep.FAILED);
-      logger.error(new RainbowError('Failed to fetch all backups'), {
+      logger.error(new RainbowError('[useCloudBackups]: Failed to fetch all backups'), {
         error: e,
       });
     }

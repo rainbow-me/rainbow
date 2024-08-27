@@ -1,0 +1,24 @@
+diff --git a/node_modules/@candlefinance/faster-image/ios/FasterImageViewManager.swift b/node_modules/@candlefinance/faster-image/ios/FasterImageViewManager.swift
+index a8dee30..e8e38d3 100644
+--- a/node_modules/@candlefinance/faster-image/ios/FasterImageViewManager.swift
++++ b/node_modules/@candlefinance/faster-image/ios/FasterImageViewManager.swift
+@@ -233,17 +233,9 @@ final class FasterImageView: UIView {
+         }
+     }
+ 
+-    var showActivityIndicator = false {
+-        didSet {
+-            let activity = UIActivityIndicatorView()
+-            if self.activityColor != nil {
+-                activity.color = self.activityColor
+-            }
+-            lazyImageView.placeholderView = activity
+-        }
+-    }
++    var showActivityIndicator = false
+ 
+-    var activityColor: UIColor?
++    var activityColor: UIColor? = Color.clear
+ 
+     var resizeMode = "contain" {
+         didSet {

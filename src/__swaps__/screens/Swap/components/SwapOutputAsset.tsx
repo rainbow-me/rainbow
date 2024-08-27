@@ -39,6 +39,7 @@ function SwapOutputActionButton() {
 
   return (
     <SwapActionButton
+      testID="swap-output-asset-action-button"
       asset={internalSelectedOutputAsset}
       disableShadow={isDarkMode}
       hugContent

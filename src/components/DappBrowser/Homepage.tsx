@@ -20,7 +20,7 @@ import {
 } from '@/design-system';
 import { ImgixImage } from '@/components/images';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { IS_ANDROID, IS_IOS } from '@/env';
+import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
 import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { FavoritedSite, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
@@ -89,7 +89,7 @@ export const Homepage = ({ tabId }: { tabId: string }) => {
 const DappBrowserFeaturedResults = () => {
   const { goToUrl } = useBrowserContext();
   const { featured_results } = useRemoteConfig();
-  const featuredResultsEnabled = useExperimentalFlag(FEATURED_RESULTS) || featured_results;
+  const featuredResultsEnabled = (useExperimentalFlag(FEATURED_RESULTS) || featured_results) && !IS_TEST;
 
   const onNavigate = useCallback(
     (href: string) => {

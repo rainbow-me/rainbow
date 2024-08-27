@@ -62,7 +62,7 @@ export const defaultConfig: Record<string, ExperimentalValue> = {
   [REMOTE_CARDS]: { settings: true, value: false },
   [POINTS_NOTIFICATIONS_TOGGLE]: { settings: true, value: false },
   [DAPP_BROWSER]: { settings: true, value: !!IS_TEST },
-  [SWAPS_V2]: { settings: true, value: false },
+  [SWAPS_V2]: { settings: true, value: !!IS_TEST },
   [ETH_REWARDS]: { settings: true, value: false },
   [DEGEN_MODE]: { settings: true, value: false },
   [FEATURED_RESULTS]: { settings: true, value: false },
