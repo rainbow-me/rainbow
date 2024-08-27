@@ -8,7 +8,7 @@ import { StyleSheet } from 'react-native';
 
 const { width: SCREEN_WIDTH } = deviceUtils.dimensions;
 const CARD_WIDTH = SCREEN_WIDTH - HORIZONTAL_PADDING * 2;
-const IMAGE_ASPECT_RATIO = 16 / 9;
+const CARD_HEIGHT = 238;
 
 type DiscoverFeaturedResultsCardProps = {
   handlePress: () => void;
@@ -32,7 +32,7 @@ export const DiscoverFeaturedResultsCard = ({ handlePress, featuredResult }: Dis
 const styles = StyleSheet.create({
   image: {
     width: CARD_WIDTH,
-    height: CARD_WIDTH / IMAGE_ASPECT_RATIO,
+    height: CARD_HEIGHT,
     borderRadius: 12,
   },
 });
