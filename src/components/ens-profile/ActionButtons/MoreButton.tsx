@@ -34,9 +34,9 @@ export default function MoreButton({ address, ensName }: { address?: string; ens
     params: { setIsSearchModeEnabled },
   } = useRoute<any>();
   const isSelectedWallet = useMemo(() => {
-    const visibleWallet = (selectedWallet.addresses || []).find((wallet: { visible: boolean }) => wallet.visible);
+    const visibleWallet = selectedWallet.addresses?.find((wallet: { visible: boolean }) => wallet.visible);
 
-    return visibleWallet.address.toLowerCase() === address?.toLowerCase();
+    return visibleWallet?.address.toLowerCase() === address?.toLowerCase();
   }, [selectedWallet.addresses, address]);
 
   const contact = address ? contacts[address.toLowerCase()] : undefined;

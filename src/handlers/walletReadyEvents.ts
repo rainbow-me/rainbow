@@ -41,7 +41,7 @@ export const runWalletBackupStatusChecks = () => {
   const { backupProvider } = checkWalletsForBackupStatus(wallets);
 
   const rainbowWalletsNotBackedUp = Object.values(wallets).filter(wallet => {
-    const hasVisibleAccount = (wallet.addresses || []).find((account: RainbowAccount) => account.visible);
+    const hasVisibleAccount = wallet.addresses?.find((account: RainbowAccount) => account.visible);
     return (
       !wallet.imported &&
       !!hasVisibleAccount &&

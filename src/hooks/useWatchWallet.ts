@@ -66,7 +66,7 @@ export default function useWatchWallet({
       // it's deletable
       const isLastAvailableWallet = Object.keys(wallets!).find(key => {
         const someWallet = wallets![key];
-        const otherAccount = (someWallet.addresses || []).find((account: any) => account.visible && account.address !== accountAddress);
+        const otherAccount = someWallet.addresses?.find((account: any) => account.visible && account.address !== accountAddress);
         if (otherAccount) {
           return true;
         }

@@ -358,7 +358,7 @@ export const updateWalletBackupStatusesBasedOnCloudUserData =
     // build hashmap of address to wallet based on backup metadata
     const addressToWalletLookup = new Map<string, RainbowWallet>();
     Object.values(currentUserData.wallets).forEach(wallet => {
-      (wallet.addresses || []).forEach(account => {
+      wallet.addresses?.forEach(account => {
         addressToWalletLookup.set(account.address, wallet);
       });
     });

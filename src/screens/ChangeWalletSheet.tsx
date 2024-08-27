@@ -191,7 +191,7 @@ export default function ChangeWalletSheet() {
     (walletId: string, address: string) => {
       const wallet = wallets?.[walletId];
       if (!wallet) return;
-      const account = (wallet.addresses || []).find(account => account.address === address);
+      const account = wallet.addresses?.find(account => account.address === address);
 
       InteractionManager.runAfterInteractions(() => {
         goBack();
