@@ -1,8 +1,9 @@
 import { ListHeaderMenu } from '@/components/list/ListHeaderMenu';
 import { Box, Inline, Text } from '@/design-system';
-import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
-import { useNftSort } from '@/hooks/useNFTsSortBy';
+import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';
+import { NftSort, useNftSort } from '@/hooks/useNFTsSortBy';
 import * as i18n from '@/languages';
+import { colors } from '@/styles';
 import React from 'react';
 
 const TokenFamilyHeaderHeight = 48;
@@ -30,7 +31,7 @@ const getMenuItemIcon = (value: NftCollectionSortCriterion) => {
 };
 
 const CollectiblesHeader = () => {
-  const { nftSort, updateNFTSort } = useNftSort();
+  const { nftSort, nftSortDirection, updateNFTSort } = useNftSort();
   return (
     <Box
       height={{ custom: TokenFamilyHeaderHeight }}
@@ -46,14 +47,44 @@ const CollectiblesHeader = () => {
         </Text>
 
         <ListHeaderMenu
-          selected={nftSort}
-          menuItems={Object.entries(NftCollectionSortCriterion).map(([key, value]) => ({
-            actionKey: value,
-            actionTitle: i18n.t(i18n.l.nfts.sort[value]),
-            icon: { iconType: 'SYSTEM', iconValue: getMenuItemIcon(value) },
-            menuState: nftSort === key ? 'on' : 'off',
-          }))}
-          selectItem={string => updateNFTSort(string as NftCollectionSortCriterion)}
+          selected={`${nftSort}|${nftSortDirection}`}
+          menuItems={Object.values(NftCollectionSortCriterion).map(sortCriterion => {
+            return {
+              icon: { iconType: 'SYSTEM', iconValue: getMenuItemIcon(sortCriterion) },
+              ...(nftSort === sortCriterion
+                ? {
+                    menuTitle: i18n.t(i18n.l.nfts.sort[sortCriterion]),
+                    menuPreferredElementSize: 'small',
+                    menuState: 'on',
+                    menuItems: [
+                      {
+                        actionKey: `${sortCriterion}|${SortDirection.Asc}`,
+                        actionTitle: 'Ascending order',
+                        icon: {
+                          iconType: 'SYSTEM',
+                          iconValue: 'arrow.up.circle',
+                          iconTint: nftSortDirection === SortDirection.Asc ? undefined : colors.grey,
+                        },
+                      },
+                      {
+                        actionKey: `${sortCriterion}|${SortDirection.Desc}`,
+                        actionTitle: 'Descending order',
+                        icon: {
+                          iconType: 'SYSTEM',
+                          iconValue: 'arrow.down.circle',
+                          iconTint: nftSortDirection === SortDirection.Desc ? undefined : colors.grey,
+                        },
+                      },
+                    ],
+                  }
+                : {
+                    actionKey: `${sortCriterion}|${SortDirection.Desc}`,
+                    actionTitle: i18n.t(i18n.l.nfts.sort[sortCriterion]),
+                    menuState: 'off',
+                  }),
+            };
+          })}
+          selectItem={string => updateNFTSort(string as NftSort)}
           icon={getIconForSortType(nftSort)}
           text={i18n.t(i18n.l.nfts.sort[nftSort])}
         />

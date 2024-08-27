@@ -1,21 +1,20 @@
-import { useCallback, useMemo } from 'react';
-import useAccountSettings from './useAccountSettings';
-import { RainbowTransaction, MinedTransaction } from '@/entities/transactions/transaction';
-import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
-import { transactionFetchQuery } from '@/resources/transactions/transaction';
-import { RainbowError, logger } from '@/logger';
-import { Network } from '@/networks/types';
-import { getIsHardhatConnected, getProviderForNetwork } from '@/handlers/web3';
-import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
-import { RainbowNetworks } from '@/networks';
-import { queryClient } from '@/react-query/queryClient';
+import { MinedTransaction, RainbowTransaction } from '@/entities/transactions/transaction';
 import { getTransactionFlashbotStatus } from '@/handlers/transactions';
-import { usePendingTransactionsStore } from '@/state/pendingTransactions';
+import { getIsHardhatConnected, getProviderForNetwork } from '@/handlers/web3';
+import { RainbowError, logger } from '@/logger';
+import { RainbowNetworks } from '@/networks';
+import { Network } from '@/networks/types';
+import { queryClient } from '@/react-query/queryClient';
+import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
+import { invalidateAddressNftsQueries } from '@/resources/nfts';
+import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
+import { transactionFetchQuery } from '@/resources/transactions/transaction';
 import { useNonceStore } from '@/state/nonces';
+import { usePendingTransactionsStore } from '@/state/pendingTransactions';
+import { useCallback, useMemo } from 'react';
 import { Address } from 'viem';
-import { nftsQueryKey } from '@/resources/nfts';
-import { getNftSortForAddress } from './useNFTsSortBy';
+import useAccountSettings from './useAccountSettings';
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
   const { storePendingTransactions, setPendingTransactions } = usePendingTransactionsStore(state => ({
@@ -47,7 +46,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
           testnetMode: !!connectedToHardhat,
         })
       );
-      queryClient.invalidateQueries(nftsQueryKey({ address, sortBy: getNftSortForAddress(address) }));
+      invalidateAddressNftsQueries(address);
     },
     [address, nativeCurrency]
   );

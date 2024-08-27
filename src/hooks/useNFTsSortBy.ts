@@ -6,26 +6,27 @@ const mmkv = new MMKV();
 const getStorageKey = (accountAddress: string) => `nfts-sort-${accountAddress}`;
 
 const parseNftSort = (s: string | undefined) => {
-  if (!s) return [];
-  return s.split('|') as [sortBy: NftCollectionSortCriterion, sortDirection?: SortDirection];
+  const [sortBy = NftCollectionSortCriterion.MostRecent, sortDirection = SortDirection.Desc] = (s?.split('|') || []) as [
+    sortBy?: NftCollectionSortCriterion,
+    sortDirection?: SortDirection,
+  ];
+  return { sortBy, sortDirection } as const;
 };
 
 export const getNftSortForAddress = (accountAddress: string) => {
-  const [sortBy] = parseNftSort(mmkv.getString(getStorageKey(accountAddress)));
-  return sortBy;
+  return parseNftSort(mmkv.getString(getStorageKey(accountAddress)));
 };
 
-const changeDirection = (sortDirection: SortDirection) => (sortDirection === SortDirection.Asc ? SortDirection.Desc : SortDirection.Asc);
+export type NftSort = `${NftCollectionSortCriterion}|${SortDirection}`;
 
 export function useNftSort() {
   const { accountAddress } = useAccountSettings();
   const [nftSortData, setNftSortData] = useMMKVString(getStorageKey(accountAddress));
-  const [nftSort = NftCollectionSortCriterion.MostRecent, nftSortDirection = SortDirection.Desc] = parseNftSort(nftSortData);
+  const { sortBy, sortDirection } = parseNftSort(nftSortData);
 
-  const updateNFTSort = (sortBy: NftCollectionSortCriterion) => {
-    const sortDirection = sortBy === nftSort ? changeDirection(nftSortDirection) : nftSortDirection;
-    setNftSortData(`${sortBy}|${sortDirection}`);
+  return {
+    updateNFTSort: (nftSort: NftSort) => setNftSortData(nftSort),
+    nftSort: sortBy,
+    nftSortDirection: sortDirection,
   };
-
-  return { updateNFTSort, nftSort, nftSortDirection };
 }

@@ -2,7 +2,7 @@ import { UniqueAsset } from '@/entities';
 import { arcClient } from '@/graphql';
 import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';
 import { Network } from '@/helpers';
-import { QueryConfigWithSelect, createQueryKey } from '@/react-query';
+import { QueryConfigWithSelect, createQueryKey, queryClient } from '@/react-query';
 import { AppState } from '@/redux/store';
 import { fetchSimpleHashNFTListing } from '@/resources/nfts/simplehash';
 import { simpleHashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
@@ -22,7 +22,11 @@ export const nftsQueryKey = ({
   address: string;
   sortBy: NftCollectionSortCriterion;
   sortDirection: SortDirection;
-}) => createQueryKey('nfts', { address, sortBy, sortDirection }, { persisterVersion: 41123123313 });
+}) => createQueryKey('nfts', { address, sortBy, sortDirection }, { persisterVersion: 1 });
+
+export const invalidateAddressNftsQueries = (address: string) => {
+  queryClient.invalidateQueries(createQueryKey('nfts', { address }));
+};
 
 export const nftListingQueryKey = ({
   contractAddress,

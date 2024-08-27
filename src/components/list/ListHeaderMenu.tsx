@@ -1,19 +1,14 @@
-import React from 'react';
-import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { ButtonPressAnimation } from '@/components/animations';
+import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Bleed, Box, Inline, Text, useForegroundColor } from '@/design-system';
+import { NftSort } from '@/hooks/useNFTsSortBy';
 import { haptics } from '@/utils';
-import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
-
-type MenuItem = {
-  actionKey: string;
-  actionTitle: string;
-  menuState?: 'on' | 'off';
-};
+import React from 'react';
+import { MenuConfig } from 'react-native-ios-context-menu';
 
 type ListHeaderMenuProps = {
-  selected: NftCollectionSortCriterion;
-  menuItems: MenuItem[];
+  selected: NftSort;
+  menuItems: MenuConfig['menuItems'];
   selectItem: (item: string) => void;
   icon: string;
   text: string;
