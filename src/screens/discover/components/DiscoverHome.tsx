@@ -1,5 +1,12 @@
-import React, { useMemo } from 'react';
-import useExperimentalFlag, { OP_REWARDS, PROFILES, HARDWARE_WALLETS, MINTS, NFT_OFFERS } from '@rainbow-me/config/experimentalHooks';
+import React, { useCallback } from 'react';
+import useExperimentalFlag, {
+  OP_REWARDS,
+  PROFILES,
+  HARDWARE_WALLETS,
+  MINTS,
+  NFT_OFFERS,
+  FEATURED_RESULTS,
+} from '@rainbow-me/config/experimentalHooks';
 import { isTestnetNetwork } from '@/handlers/web3';
 import { Inline, Inset, Stack, Box } from '@/design-system';
 import { useAccountSettings, useWallets } from '@/hooks';
@@ -17,26 +24,43 @@ import { MintsCard } from '@/components/cards/MintsCard/MintsCard';
 import { FeaturedMintCard } from '@/components/cards/FeaturedMintCard';
 import { IS_TEST } from '@/env';
 import { RemoteCardCarousel } from '@/components/cards/remote-cards';
+import { FeaturedResultStack } from '@/components/FeaturedResult/FeaturedResultStack';
+import Routes from '@/navigation/routesNames';
+import { useNavigation } from '@/navigation';
+import { DiscoverFeaturedResultsCard } from './DiscoverFeaturedResultsCard';
+
+export const HORIZONTAL_PADDING = 20;
 
 export default function DiscoverHome() {
-  const { profiles_enabled, mints_enabled, op_rewards_enabled } = useRemoteConfig();
+  const { profiles_enabled, mints_enabled, op_rewards_enabled, featured_results } = useRemoteConfig();
   const { network } = useAccountSettings();
   const profilesEnabledLocalFlag = useExperimentalFlag(PROFILES);
   const profilesEnabledRemoteFlag = profiles_enabled;
   const hardwareWalletsEnabled = useExperimentalFlag(HARDWARE_WALLETS);
   const nftOffersEnabled = useExperimentalFlag(NFT_OFFERS);
+  const featuredResultsEnabled = (useExperimentalFlag(FEATURED_RESULTS) || featured_results) && !IS_TEST;
   const mintsEnabled = (useExperimentalFlag(MINTS) || mints_enabled) && !IS_TEST;
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
   const opRewardsRemoteFlag = op_rewards_enabled;
   const testNetwork = isTestnetNetwork(network);
+  const { navigate } = useNavigation();
   const isProfilesEnabled = profilesEnabledLocalFlag && profilesEnabledRemoteFlag;
 
   const { wallets } = useWallets();
 
-  const hasHardwareWallets = Object.keys(wallets || {}).filter(key => wallets[key].type === walletTypes.bluetooth).length > 0;
+  const hasHardwareWallets = Object.keys(wallets || {}).filter(key => (wallets || {})[key].type === walletTypes.bluetooth).length > 0;
+
+  const onNavigate = useCallback(
+    (url: string) => {
+      navigate(Routes.DAPP_BROWSER_SCREEN, {
+        url,
+      });
+    },
+    [navigate]
+  );
 
   return (
-    <Inset top="20px" bottom={{ custom: 200 }} horizontal="20px">
+    <Inset top="20px" bottom={{ custom: 200 }} horizontal={{ custom: HORIZONTAL_PADDING }}>
       {!testNetwork ? (
         <Box gap={20}>
           <Inline wrap={false} space="20px">
@@ -55,6 +79,9 @@ export default function DiscoverHome() {
           {/* FIXME: IS_TESTING disables nftOffers this makes some DETOX tests hang forever at exit - investigate */}
           {!IS_TEST && nftOffersEnabled && <NFTOffersCard />}
           {/* We have both flags here to be able to override the remote flag and show the card anyway in Dev*/}
+          {featuredResultsEnabled && (
+            <FeaturedResultStack onNavigate={onNavigate} placementId="discover_big" Card={DiscoverFeaturedResultsCard} />
+          )}
           {(opRewardsRemoteFlag || opRewardsLocalFlag) && <OpRewardsCard />}
           {hardwareWalletsEnabled && !hasHardwareWallets && <LedgerCard />}
           {isProfilesEnabled && <ENSCreateProfileCard />}
