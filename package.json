@@ -3,7 +3,7 @@
   "version": "1.9.39-1",
   "private": true,
   "scripts": {
-    "setup": "yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn postinstall && yarn graphql-codegen",
+    "setup": "yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn postinstall && yarn graphql-codegen && && yarn fetch:networks",
     "setup-ci": "./scripts/setup-ci.sh",
     "adb-all": "adb devices | tail -n +2 | cut -sf 1 | xargs -I {} adb -s {}",
     "android": "yarn uninstall:android && react-native run-android",
@@ -31,7 +31,7 @@
     "detox:ios:release": "detox build -c ios.sim.release && detox test -c ios.sim.release --maxWorkers 2 -- --bail 1",
     "ds:install": "cd src/design-system/docs && yarn install",
     "ds": "cd src/design-system/docs && yarn dev",
-    "fast": "yarn install && yarn setup && yarn install-pods-fast && yarn fetch:networks",
+    "fast": "yarn install && yarn setup && yarn install-pods-fast",
     "gradle": "cd android && ./gradlew",
     "hardhat": "sh ./scripts/hardhat.sh",
     "install-all": "yarn install && yarn setup && yarn install-pods",
