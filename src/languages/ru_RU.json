@@ -749,7 +749,7 @@
       "swap_details_v2": {
         "automatic": "Авто",
         "degen_mode": "Режим Degen",
-        "degen_mode_description": "Пропустите лист проверки для ускорения обмена",
+        "degen_mode_description": "Пропустить этап обзора, чтобы ускорить обмен",
         "maximum_sold": "Максимум продано",
         "minimum_received": "Минимальная получаемая",
         "preferred_network": "Предпочитаемая сеть",
@@ -1321,10 +1321,16 @@
     "nfts": {
       "selling": "Продажа",
       "sort": {
+        "ABC": "АБВ",
         "abc": "АБВ",
+        "MOST_RECENT": "Последние",
         "most_recent": "Самые последние",
+        "FLOOR_PRICE": "Начальная цена",
         "floor_price": "Начальная цена"
-      }
+      },
+      "empty": "Коллекционные предметы",
+      "collect_now": "Соберите сейчас",
+      "will_appear_here": "Ваши коллекции появятся здесь"
     },
     "nft_offers": {
       "card": {
@@ -2068,6 +2074,7 @@
     "token_search": {
       "section_header": {
         "recent": "Последние",
+        "popular": "Популярное в Rainbow",
         "favorites": "Избранное",
         "bridge": "Мост",
         "verified": "Проверенные",
@@ -2496,7 +2503,7 @@
       "balance_title": "Баланс",
       "buy": "Купить",
       "change_wallet": {
-        "no_balance": "Нет Баланса",
+        "loading_balance": "Загрузка баланса...",
         "balance_eth": "%{balanceEth} ETH",
         "watching": "Наблюдение",
         "ledger": "Ledger"
