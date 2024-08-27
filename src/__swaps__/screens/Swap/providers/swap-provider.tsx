@@ -59,6 +59,7 @@ import { getRemoteConfig } from '@/model/remoteConfig';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
+const holdToBridge = i18n.t(i18n.l.swap.actions.hold_to_bridge);
 const done = i18n.t(i18n.l.button.done);
 const enterAmount = i18n.t(i18n.l.swap.actions.enter_amount);
 const review = i18n.t(i18n.l.swap.actions.review);
@@ -163,6 +164,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const configProgress = useSharedValue<NavigationSteps>(NavigationSteps.INPUT_ELEMENT_FOCUSED);
 
   const slippage = useSharedValue(getDefaultSlippageWorklet(initialSelectedInputAsset?.chainId || ChainId.mainnet, getRemoteConfig()));
+
+  const hasEnoughFundsForGas = useSharedValue<boolean | undefined>(undefined);
 
   const SwapInputController = useSwapInputsController({
     focusedInput,
@@ -682,51 +685,55 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return { label: selectToken, disabled: true, type: 'hold' };
     }
 
+    const sellAsset = internalSelectedInputAsset.value;
+    const enoughFundsForSwap =
+      sellAsset &&
+      !equalWorklet(sellAsset.maxSwappableAmount, '0') &&
+      lessThanOrEqualToWorklet(SwapInputController.inputValues.value.inputAmount, sellAsset.maxSwappableAmount);
+
+    if (!enoughFundsForSwap && hasEnoughFundsForGas.value !== undefined) {
+      return { label: insufficientFunds, disabled: true, type: 'hold' };
+    }
+
     const isInputZero = equalWorklet(SwapInputController.inputValues.value.inputAmount, 0);
     const isOutputZero = equalWorklet(SwapInputController.inputValues.value.outputAmount, 0);
 
     const userHasNotEnteredAmount = SwapInputController.inputMethod.value !== 'slider' && isInputZero && isOutputZero;
-
     const userHasNotMovedSlider = SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0;
 
     if (userHasNotEnteredAmount || userHasNotMovedSlider) {
       return { label: enterAmount, disabled: true, opacity: 1, type: 'hold' };
     }
 
-    if (
-      [SwapWarningType.no_quote_available, SwapWarningType.no_route_found, SwapWarningType.insufficient_liquidity].includes(
-        SwapWarning.swapWarning.value.type
-      )
-    ) {
-      return { icon: '􀕹', label: review, disabled: true, type: 'hold' };
-    }
-
-    const sellAsset = internalSelectedInputAsset.value;
-    const enoughFundsForSwap =
-      sellAsset && lessThanOrEqualToWorklet(SwapInputController.inputValues.value.inputAmount, sellAsset.maxSwappableAmount);
-
-    if (!enoughFundsForSwap) {
-      return { label: insufficientFunds, disabled: true, type: 'hold' };
-    }
+    const holdLabel = swapInfo.value.isBridging ? holdToBridge : holdToSwap;
+    const reviewLabel = SwapSettings.degenMode.value ? holdLabel : review;
 
     const isQuoteError = quote.value && 'error' in quote.value;
     const isLoadingGas = !isQuoteError && hasEnoughFundsForGas.value === undefined;
     const isReviewSheetOpen = configProgress.value === NavigationSteps.SHOW_REVIEW || SwapSettings.degenMode.value;
 
-    if ((isFetching.value || isLoadingGas) && !isQuoteError) {
-      const disabled = (isReviewSheetOpen && (isFetching.value || isLoadingGas)) || !quote.value;
+    const isStale =
+      !!isQuoteStale.value &&
+      (SwapInputController.inputMethod.value !== 'slider' || sliderPressProgress.value === SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
+
+    if ((isFetching.value || isLoadingGas || isStale) && !isQuoteError) {
+      const disabled = (isReviewSheetOpen && (isFetching.value || isLoadingGas || isStale)) || !quote.value;
       const buttonType = isReviewSheetOpen ? 'hold' : 'tap';
       return { label: fetchingPrices, disabled, type: buttonType };
     }
 
-    const reviewLabel = SwapSettings.degenMode.value ? holdToSwap : review;
+    const quoteUnavailable = [
+      SwapWarningType.no_quote_available,
+      SwapWarningType.no_route_found,
+      SwapWarningType.insufficient_liquidity,
+    ].includes(SwapWarning.swapWarning.value.type);
 
-    if (isQuoteError) {
+    if (quoteUnavailable || isQuoteError) {
       const icon = isReviewSheetOpen ? undefined : '􀕹';
       return { icon, label: isReviewSheetOpen ? quoteError : reviewLabel, disabled: true, type: 'hold' };
     }
 
-    if (!hasEnoughFundsForGas.value) {
+    if (hasEnoughFundsForGas.value === false) {
       const nativeCurrency = RainbowNetworkByChainId[sellAsset?.chainId || ChainId.mainnet].nativeCurrency;
       return {
         label: `${insufficient} ${nativeCurrency.symbol}`,
@@ -736,23 +743,15 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
 
     if (isReviewSheetOpen) {
-      return { icon: '􀎽', label: holdToSwap, disabled: false, type: 'hold' };
+      const isDraggingSlider = !!isQuoteStale.value && sliderPressProgress.value !== SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT;
+      return { icon: '􀎽', label: holdLabel, disabled: isDraggingSlider, type: 'hold' };
     }
 
     return { icon: '􀕹', label: reviewLabel, disabled: false, type: 'tap' };
   });
 
   const confirmButtonIconStyle = useAnimatedStyle(() => {
-    const isInputZero = equalWorklet(SwapInputController.inputValues.value.inputAmount, 0);
-    const isOutputZero = equalWorklet(SwapInputController.inputValues.value.outputAmount, 0);
-
-    const sliderCondition =
-      SwapInputController.inputMethod.value === 'slider' &&
-      (SwapInputController.percentageToSwap.value === 0 || isInputZero || isOutputZero);
-    const inputCondition = SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching.value;
-
-    const shouldHide = sliderCondition || inputCondition;
-
+    const shouldHide = !confirmButtonProps.value.icon;
     return {
       display: shouldHide ? 'none' : 'flex',
     };
