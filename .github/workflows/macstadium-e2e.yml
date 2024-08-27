@@ -86,16 +86,6 @@ jobs:
           chmod -R +x node_modules/react-native/scripts
           chmod -R +x node_modules/@sentry/react-native/scripts
 
-  # Job for running iOS e2e tests
-  ios-e2e-tests:
-    runs-on: ["self-hosted"]
-    needs: ios-deps
-    steps:
-      - name: Run iOS e2e tests with retry
-        run: |
-          sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e 
-          ./scripts/run-retry-tests.sh 3
-
   # Job to build iOS TopHat and upload to S3
   ios-tophat-build:
     runs-on: ["self-hosted"]
@@ -127,3 +117,13 @@ jobs:
           curl -s -H "Authorization: token $TOPHAT_GITHUB_TOKEN" -X POST \
           -d "{\"body\":\"$COMMENT\"}" \
           "${{ github.event.pull_request.comments_url }}"
+
+           # Job for running iOS e2e tests
+  ios-e2e-tests:
+    runs-on: ["self-hosted"]
+    needs: ios-tophat-build
+    steps:
+      - name: Run iOS e2e tests with retry
+        run: |
+          sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e 
+          ./scripts/run-retry-tests.sh 3
