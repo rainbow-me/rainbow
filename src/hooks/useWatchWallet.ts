@@ -25,7 +25,9 @@ export default function useWatchWallet({
   const { wallets } = useWallets();
 
   const watchingWallet = useMemo(() => {
-    return Object.values<RainbowWallet>(wallets || {}).find(wallet => wallet.addresses.some(({ address }) => address === primaryAddress));
+    return Object.values<RainbowWallet>(wallets || {}).find(wallet =>
+      (wallet.addresses || []).some(({ address }) => address === primaryAddress)
+    );
   }, [primaryAddress, wallets]);
   const isWatching = useMemo(() => Boolean(watchingWallet), [watchingWallet]);
 
@@ -64,7 +66,7 @@ export default function useWatchWallet({
       // it's deletable
       const isLastAvailableWallet = Object.keys(wallets!).find(key => {
         const someWallet = wallets![key];
-        const otherAccount = someWallet.addresses.find((account: any) => account.visible && account.address !== accountAddress);
+        const otherAccount = someWallet.addresses?.find((account: any) => account.visible && account.address !== accountAddress);
         if (otherAccount) {
           return true;
         }
