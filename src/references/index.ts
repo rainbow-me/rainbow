@@ -224,11 +224,6 @@ export type ReferrerType = 'native-app' | 'app-claim';
 export const REFERRER: ReferrerType = 'native-app';
 export const REFERRER_CLAIM: ReferrerType = 'app-claim';
 
-export const SUPPORTED_MAINNET_CHAINS: Chain[] = [mainnet, polygon, optimism, arbitrum, base, zora, bsc, avalanche, blast].map(chain => ({
-  ...chain,
-  name: chainsLabel[chain.id],
-}));
-
 export const SUPPORTED_CHAINS = ({ testnetMode = false }: { testnetMode?: boolean }): Chain[] => {
   return [
     mainnet,
