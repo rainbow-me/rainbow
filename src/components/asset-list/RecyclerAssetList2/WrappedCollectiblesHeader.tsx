@@ -59,7 +59,7 @@ const CollectiblesHeader = () => {
                     menuItems: [
                       {
                         actionKey: `${sortCriterion}|${SortDirection.Asc}`,
-                        actionTitle: 'Ascending order',
+                        actionTitle: i18n.t(i18n.l.nfts.sort.order.asc),
                         icon: {
                           iconType: 'SYSTEM',
                           iconValue: 'arrow.up.circle',
@@ -68,7 +68,7 @@ const CollectiblesHeader = () => {
                       },
                       {
                         actionKey: `${sortCriterion}|${SortDirection.Desc}`,
-                        actionTitle: 'Descending order',
+                        actionTitle: i18n.t(i18n.l.nfts.sort.order.desc),
                         icon: {
                           iconType: 'SYSTEM',
                           iconValue: 'arrow.down.circle',
