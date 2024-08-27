@@ -1,16 +1,16 @@
 name: iOS e2e tests
 
 on: [pull_request, workflow_dispatch]
+
 jobs:
-  ios-e2e:
+  # Job to install dependencies
+  install-deps:
     runs-on: ["self-hosted"]
     concurrency: 
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
-
     permissions:
       contents: read
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -29,8 +29,7 @@ jobs:
           git clone git@github.com:rainbow-me/rainbow-env.git
           mv rainbow-env/dotenv .env && rm -rf rainbow-env
           eval $CI_SCRIPTS
-          sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e 
-      
+
       - name: Get Yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
@@ -50,6 +49,11 @@ jobs:
         run: |
           yarn cache clean --all && yarn install && yarn setup
 
+  # Job for linting and unit tests
+  linting-and-unit-tests:
+    runs-on: ["self-hosted"]
+    needs: install-deps
+    steps:
       - name: Check for frozen lockfile
         run: ./scripts/check-lockfile.sh
 
@@ -62,13 +66,18 @@ jobs:
       - name: Unit tests
         run: yarn test
 
+  # Job to set up iOS dependencies
+  ios-deps:
+    runs-on: ["self-hosted"]
+    needs: install-deps
+    steps:
       - name: Rebuild detox cache
         run: ./node_modules/.bin/detox clean-framework-cache && ./node_modules/.bin/detox build-framework-cache
-      
+
       - name: Version debug
         run: |
           npx react-native info
-      
+
       - name: Install pods
         run: yarn install-bundle && yarn install-pods
 
@@ -77,10 +86,24 @@ jobs:
           chmod -R +x node_modules/react-native/scripts
           chmod -R +x node_modules/@sentry/react-native/scripts
 
+  # Job for running iOS e2e tests
+  ios-e2e-tests:
+    runs-on: ["self-hosted"]
+    needs: ios-deps
+    steps:
+      - name: Run iOS e2e tests with retry
+        run: |
+          sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e 
+          ./scripts/run-retry-tests.sh 3
+
+  # Job to build iOS TopHat and upload to S3
+  ios-tophat-build:
+    runs-on: ["self-hosted"]
+    needs: ios-deps
+    steps:
       - name: Build the app in release mode
-        run: yarn detox build --configuration ios.sim.release
-      
-      # Upload .app file to AWS S3
+        run: xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ios/build
+
       - name: Upload to AWS S3
         env:
           AWS_BUCKET: rainbow-app-team-production
@@ -90,24 +113,17 @@ jobs:
           COMMIT_HASH: ${{ github.sha }}
         run: |
           APP_DIR=$(find . -name "*.app" | head -n 1)
-          ZIP_FILE="${APP_DIR%.*}.zip"
-          zip -r "$ZIP_FILE" "$APP_DIR"
-          aws s3 cp "$ZIP_FILE" "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.zip"
+          APP_FILE="$APP_DIR/ios/build/Build/Products/Release-iphonesimulator/Rainbow.app"
+          aws s3 cp "$APP_FILE" "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.app"
 
-
-      # Add comment to the pull request with the link to the .app file
       - name: Post comment to PR
         if: github.event_name == 'pull_request'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TOPHAT_GITHUB_TOKEN: ${{ secrets.TOPHAT_GITHUB_TOKEN }}
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
           COMMIT_HASH: ${{ github.sha }}
         run: |
           COMMENT="Here's the app file: http://localhost:29070/install/ios?virtual=https://app-team.p.rainbow.me/${BRANCH_NAME}/${COMMIT_HASH}.app"
-          curl -s -H "Authorization: token $GITHUB_TOKEN" -X POST \
+          curl -s -H "Authorization: token $TOPHAT_GITHUB_TOKEN" -X POST \
           -d "{\"body\":\"$COMMENT\"}" \
           "${{ github.event.pull_request.comments_url }}"
-
-      # change the '3' here to how many times you want the tests to rerun on failure
-      - name: Run iOS e2e tests with retry
-        run: ./scripts/run-retry-tests.sh 3
