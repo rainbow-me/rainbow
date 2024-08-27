@@ -1,10 +1,10 @@
-import { ListHeaderMenu } from '@/components/list/ListHeaderMenu';
+import React from 'react';
 import { Box, Inline, Text } from '@/design-system';
+import * as i18n from '@/languages';
+import { ListHeaderMenu } from '@/components/list/ListHeaderMenu';
 import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';
 import { NftSort, useNftSort } from '@/hooks/useNFTsSortBy';
-import * as i18n from '@/languages';
 import { colors } from '@/styles';
-import React from 'react';
 
 const TokenFamilyHeaderHeight = 48;
 
