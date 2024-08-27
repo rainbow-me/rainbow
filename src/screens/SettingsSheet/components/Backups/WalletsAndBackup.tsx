@@ -253,7 +253,7 @@ export const WalletsAndBackup = () => {
     (walletId: string, name: string) => {
       const wallet = wallets?.[walletId];
 
-      const title = wallet?.imported && wallet.type === WalletTypes.privateKey ? wallet.addresses[0].label : name;
+      const title = wallet?.imported && wallet.type === WalletTypes.privateKey ? (wallet.addresses || [])[0].label : name;
       navigate(SETTINGS_BACKUP_ROUTES.VIEW_WALLET_BACKUP, {
         imported: wallet?.imported,
         title,

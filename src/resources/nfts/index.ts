@@ -38,7 +38,7 @@ const isImportedWalletSelector = createSelector(
       return false;
     }
     for (const wallet of Object.values(wallets)) {
-      if (wallet.addresses.some(account => account.address === address)) {
+      if ((wallet.addresses || []).some(account => account.address === address)) {
         return true;
       }
     }
