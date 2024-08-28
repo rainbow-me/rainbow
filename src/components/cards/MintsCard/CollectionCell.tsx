@@ -6,7 +6,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { useTheme } from '@/theme';
 import { View } from 'react-native';
 import { MintableCollection } from '@/graphql/__generated__/arc';
-import ethereumUtils, { useNativeAsset } from '@/utils/ethereumUtils';
+import { useNativeAsset } from '@/utils/ethereumUtils';
 import { analyticsV2 } from '@/analytics';
 import * as i18n from '@/languages';
 import { IS_IOS } from '@/env';

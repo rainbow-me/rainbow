@@ -4,7 +4,6 @@ import { getTimeElapsedFromDate } from '../utils';
 import { Bleed, Box, Cover, Inline, Inset, Stack, Text, useForegroundColor } from '@/design-system';
 import { abbreviateNumber, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
 import { getNetworkObject } from '@/networks';
-import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Placeholder, RecentMintCell } from './RecentMintCell';
 import { View } from 'react-native';
@@ -31,8 +30,6 @@ export function Card({ collection }: { collection: MintableCollection }) {
   const price = convertRawAmountToRoundedDecimal(collection.mintStatus.price, 18, 6);
   const currencySymbol = getNetworkObject({ chainId: collection.chainId }).nativeCurrency.symbol;
   const isFree = !price;
-
-  const network = getNetworkFromChainId(collection.chainId);
 
   // update elapsed time every minute if it's less than an hour
   useEffect(() => {

@@ -27,7 +27,6 @@ import { Media } from '../Media';
 import { analyticsV2 } from '@/analytics';
 import * as i18n from '@/languages';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
-import { ethereumUtils } from '@/utils';
 
 const IMAGE_SIZE = 111;
 

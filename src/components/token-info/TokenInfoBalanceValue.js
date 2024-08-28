@@ -3,7 +3,7 @@ import { RowWithMargins } from '../layout';
 import TokenInfoValue from './TokenInfoValue';
 import { useColorForAsset } from '@/hooks';
 import styled from '@/styled-thing';
-import { ethereumUtils, magicMemo } from '@/utils';
+import { magicMemo } from '@/utils';
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 import { useTheme } from '@/theme';
 import { View } from 'react-native';

@@ -92,8 +92,6 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText, showFavoriteButton }) 
     [onCopySwapDetailsText, setClipboard]
   );
 
-  console.log('- CoinRowInfoButton', item);
-
   const onPressAndroid = useCallback(() => {
     const blockExplorerText = `View on ${startCase(ethereumUtils.getBlockExplorer(item?.chainId))}`;
     const androidContractActions = [lang.t('wallet.action.copy_contract_address'), blockExplorerText, lang.t('button.cancel')];

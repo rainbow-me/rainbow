@@ -3,7 +3,6 @@ import { getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
 import { EthereumAddress, RainbowToken } from '@/entities';
 import { createQueryKey, persistOptions, queryClient } from '@/react-query';
 import { favoritesQueryKey } from '@/resources/favorites';
-import { ethereumUtils } from '@/utils';
 import { persistQueryClientRestore, persistQueryClientSave } from '@tanstack/react-query-persist-client';
 import { Migration, MigrationName } from '../types';
 
