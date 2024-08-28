@@ -12,11 +12,11 @@ const TestnetToast = ({ chainId }) => {
   const { connectedToHardhat } = useConnectedToHardhatStore();
   const isConnected = useInternetStatus();
   const { name, colors: networkColors } = getNetworkObject({ chainId });
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(chainId !== ChainId.mainnet);
   const [networkName, setNetworkName] = useState(name);
 
   useEffect(() => {
-    if ((connectedToHardhat, chainId === ChainId.mainnet)) {
+    if (connectedToHardhat && chainId === ChainId.mainnet) {
       const networkObject = getNetworkObject({ chainId });
       const providerUrl = networkObject.rpc();
       if (isHardHat(providerUrl)) {
