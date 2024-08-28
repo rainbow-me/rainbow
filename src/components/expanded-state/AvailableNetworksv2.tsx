@@ -78,7 +78,7 @@ const AvailableNetworksv2 = ({
       const newAsset = asset;
 
       // we need to convert the mainnet asset to the selected network's
-      newAsset.mainnet_address = networks?.[chainId]?.address ?? asset.address;
+      newAsset.mainnet_address = networks?.[ChainId.mainnet]?.address ?? asset.address;
       newAsset.address = networks?.[chainId].address;
       newAsset.chainId = chainId;
 
