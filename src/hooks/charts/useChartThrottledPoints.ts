@@ -100,6 +100,7 @@ export default function useChartThrottledPoints({
     address: asset.address,
     network: asset.network,
     mainnetAddress: asset?.mainnet_address || asset?.mainnetAddress,
+    currency: nativeCurrency,
   });
   const [throttledPoints, setThrottledPoints] = useState(() => traverseData({ nativePoints: [], points: [] }, chart));
 
