@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { NavigationContainer, NavigationContainerRef } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext } from 'react';
 import { AddCashSheet } from '../screens/AddCash';
@@ -90,7 +90,6 @@ import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPanel';
 import { ClaimRewardsPanel } from '@/screens/points/claim-flow/ClaimRewardsPanel';
-import { RootStackParamList } from './types';
 
 const Stack = createStackNavigator();
 const OuterStack = createStackNavigator();
@@ -270,13 +269,25 @@ function AuthNavigator() {
   );
 }
 
-const AppContainerWithAnalytics = React.forwardRef<NavigationContainerRef<RootStackParamList>, { onReady: () => void }>((props, ref) => (
-  <NavigationContainer onReady={props.onReady} onStateChange={onNavigationStateChange} ref={ref}>
-    <PointsProfileProvider>
-      <AuthNavigator />
-    </PointsProfileProvider>
-  </NavigationContainer>
-));
+const AppContainerWithAnalytics = React.forwardRef(
+  (
+    props: {
+      onReady: () => void;
+    },
+    ref
+  ) => (
+    <NavigationContainer
+      onReady={props.onReady}
+      onStateChange={onNavigationStateChange}
+      // @ts-ignore
+      ref={ref}
+    >
+      <PointsProfileProvider>
+        <AuthNavigator />
+      </PointsProfileProvider>
+    </NavigationContainer>
+  )
+);
 
 AppContainerWithAnalytics.displayName = 'AppContainerWithAnalytics';
 

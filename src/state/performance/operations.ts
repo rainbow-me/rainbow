@@ -4,7 +4,6 @@ export enum Screens {
   SEND = 'Send',
   SEND_ENS = 'SendENS',
   WALLETCONNECT = 'WalletConnect',
-  MOBILE_WALLET_PROTOCOL = 'MobileWalletProtocol',
 }
 
 type RouteValues = (typeof Screens)[keyof typeof Screens];
