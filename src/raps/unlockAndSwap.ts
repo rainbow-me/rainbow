@@ -67,10 +67,8 @@ export const estimateUnlockAndSwap = async ({
     }
   }
 
-  let unlockGasLimit;
-
   if (swapAssetNeedsUnlocking) {
-    unlockGasLimit = await estimateApprove({
+    const unlockGasLimit = await estimateApprove({
       owner: accountAddress,
       tokenAddress: sellTokenAddress,
       spender: getRainbowRouterContractAddress(chainId),
@@ -85,7 +83,14 @@ export const estimateUnlockAndSwap = async ({
     quote,
   });
 
+  if (swapGasLimit === null || swapGasLimit === undefined || isNaN(Number(swapGasLimit))) {
+    return null;
+  }
+
   const gasLimit = gasLimits.concat(swapGasLimit).reduce((acc, limit) => add(acc, limit), '0');
+  if (isNaN(Number(gasLimit))) {
+    return null;
+  }
 
   return gasLimit.toString();
 };

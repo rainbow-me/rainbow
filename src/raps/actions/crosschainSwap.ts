@@ -71,7 +71,11 @@ export const estimateCrosschainSwapGasLimit = async ({
       SWAP_GAS_PADDING
     );
 
-    return gasLimit || getCrosschainSwapDefaultGasLimit(quote);
+    if (gasLimit === null || gasLimit === undefined || isNaN(Number(gasLimit))) {
+      return getCrosschainSwapDefaultGasLimit(quote) || getDefaultGasLimitForTrade(quote, chainId);
+    }
+
+    return gasLimit;
   } catch (error) {
     return getCrosschainSwapDefaultGasLimit(quote);
   }
