@@ -26,7 +26,7 @@ const TestnetToast = ({ chainId }) => {
         setVisible(false);
       }
     } else {
-      setVisible(true);
+      setVisible(false);
       setNetworkName(name + (isConnected ? '' : ' (offline)'));
     }
   }, [name, isConnected, chainId, connectedToHardhat]);
