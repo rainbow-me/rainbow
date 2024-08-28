@@ -69,6 +69,7 @@ describe('Swap Sheet Interaction Flow', () => {
 
     await tap('token-to-buy-dai-1');
     await delayTime('medium');
+
     const swapInput = await fetchElementAttributes('swap-asset-input');
 
     expect(swapInput.label).toContain('ETH');
