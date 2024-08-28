@@ -1,10 +1,5 @@
 name: iOS builds
-on:
-    workflow_run:
-        workflows: ["iOS e2e tests"]
-        types:
-        - completed
-    workflow_dispatch:
+on: [pull_request, workflow_dispatch]
 
 jobs:
   # Job to install dependencies
