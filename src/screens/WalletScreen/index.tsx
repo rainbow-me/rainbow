@@ -33,6 +33,8 @@ import { IS_ANDROID } from '@/env';
 import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
 import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
 import { UserAssetsSync } from '@/state/sync/UserAssetsSync';
+import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
+import { runWalletBackupStatusChecks } from '@/handlers/walletReadyEvents';
 
 const WalletPage = styled(Page)({
   ...position.sizeAsObject('100%'),
@@ -106,6 +108,7 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
     if (walletReady) {
       loadAccountLateData();
       loadGlobalLateData();
+      runWalletBackupStatusChecks();
     }
   }, [loadAccountLateData, loadGlobalLateData, walletReady]);
 
@@ -147,6 +150,9 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
         <UserAssetsSync />
         <RemoteCardsSync />
         <RemotePromoSheetSync />
+
+        {/* NOTE: This component listens for Mobile Wallet Protocol requests and handles them */}
+        <MobileWalletProtocolListener />
       </WalletPage>
     </View>
   );

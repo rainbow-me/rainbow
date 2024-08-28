@@ -2835,6 +2835,7 @@
             "unavailable_personal_sign": "Simulation for personal signs is not yet supported",
             "unavailable_zora_network": "Simulation on Zora is not yet supported",
             "failed_to_simulate": "The simulation failed, which suggests your transaction is likely to fail. This may be an issue with the app you’re using.",
+            "tx_api_error": "We are unable to determine whether or not your transaction will succeed or fail. Proceed with caution.",
             "warning": "No known malicious behavior was detected, but this transaction has characteristics that may pose a risk to your wallet.",
             "malicious": "Signing this transaction could result in losing access to everything in your wallet."
           },
