@@ -2,7 +2,7 @@ import messaging from '@react-native-firebase/messaging';
 
 import { getLocal, saveLocal } from '@/handlers/localstorage/common';
 import { getPermissionStatus } from '@/notifications/permissions';
-import { logger } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 
 export const registerTokenRefreshListener = () =>
   messaging().onTokenRefresh(fcmToken => {

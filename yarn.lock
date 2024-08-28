@@ -2095,21 +2095,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@coinbase/mobile-wallet-protocol-host@npm:0.1.7":
-  version: 0.1.7
-  resolution: "@coinbase/mobile-wallet-protocol-host@npm:0.1.7"
-  dependencies:
-    buffer: "npm:^6.0.3"
-    events: "npm:^3.3.0"
-    react-native-url-polyfill: "npm:^1.3.0"
-    react-native-uuid: "npm:^2.0.1"
-  peerDependencies:
-    react: "*"
-    react-native: "*"
-  checksum: 10c0/9139b3886bec9f61e12dc5609aa86d3ea9670f9da42dd00295cf73d95c86099896a37492b60e3579440d1e75486b7d6782aa601d7e3f3ff604cb50a376f4e9ba
-  languageName: node
-  linkType: hard
-
 "@daybrush/utils@npm:^0.11.0":
   version: 0.11.0
   resolution: "@daybrush/utils@npm:0.11.0"
@@ -7825,7 +7810,6 @@ __metadata:
     "@bradgarropy/use-countdown": "npm:1.4.1"
     "@candlefinance/faster-image": "npm:1.6.2"
     "@capsizecss/core": "npm:3.0.0"
-    "@coinbase/mobile-wallet-protocol-host": "npm:0.1.7"
     "@ensdomains/address-encoder": "npm:0.2.16"
     "@ensdomains/content-hash": "npm:2.5.7"
     "@ensdomains/eth-ens-namehash": "npm:2.0.15"
@@ -21468,24 +21452,6 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   peerDependencies:
     react-native: "*"
   checksum: 10c0/a48e6978f5a2c9e225bb93cc5f9985a8ac0fe7d8122105bcd88ef8d8420a3b33a67ce5d2bda2b606bf5fa94af9f6d04efce354580b60900e7c967fd2ebdc42cf
-  languageName: node
-  linkType: hard
-
-"react-native-url-polyfill@npm:^1.3.0":
-  version: 1.3.0
-  resolution: "react-native-url-polyfill@npm:1.3.0"
-  dependencies:
-    whatwg-url-without-unicode: "npm:8.0.0-3"
-  peerDependencies:
-    react-native: "*"
-  checksum: 10c0/d8167ad2cc17261906ffde19970279406db63d61b9ca85d85b02f5592e53a83db70aace3c1d89081ce46ddcfacbdac6a7faaa329b5235c6b980e1f533de5b318
-  languageName: node
-  linkType: hard
-
-"react-native-uuid@npm:^2.0.1":
-  version: 2.0.2
-  resolution: "react-native-uuid@npm:2.0.2"
-  checksum: 10c0/326678b3e1d076e7cda6db41ab3ee073695b31217a0e849f87bae3616a7f79e876fd8b5d735bee030275bddd44312eea9b6bfc5217997b2001d68a5d4aceec96
   languageName: node
   linkType: hard
 
