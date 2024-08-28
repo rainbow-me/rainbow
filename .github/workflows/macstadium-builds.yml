@@ -44,12 +44,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: Download Yarn cache
-        uses: actions/download-artifact@v3
-        with:
-            name: yarn-cache
-            path: .yarn
-
       - name: Install dependencies
         run: |
           yarn install && yarn setup
