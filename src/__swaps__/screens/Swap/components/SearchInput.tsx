@@ -7,9 +7,15 @@ import * as i18n from '@/languages';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import React from 'react';
-import Animated, { runOnJS, useAnimatedProps, useAnimatedReaction, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import Animated, {
+  runOnJS,
+  runOnUI,
+  useAnimatedProps,
+  useAnimatedReaction,
+  useDerivedValue,
+  useSharedValue,
+} from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
-import { runOnUIImmediately } from '@/reanimated';
 import { SearchInputButton } from './SearchInputButton';
 
 const AnimatedInput = Animated.createAnimatedComponent(Input);
@@ -109,7 +115,7 @@ export const SearchInput = ({
                       }
                     }
                   }}
-                  onFocus={() => runOnUIImmediately(handleFocusSearchWorklet)()}
+                  onFocus={() => runOnUI(handleFocusSearchWorklet)()}
                   placeholder={output ? FIND_A_TOKEN_TO_BUY_LABEL : SEARCH_YOUR_TOKENS_LABEL}
                   placeholderTextColor={isDarkMode ? opacity(labelQuaternary, 0.3) : labelQuaternary}
                   selectTextOnFocus

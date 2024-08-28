@@ -14,12 +14,11 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box, Inline, Stack, Text, TextIcon, useColorMode } from '@/design-system';
 import { palettes } from '@/design-system/color/palettes';
 import * as i18n from '@/languages';
-import { runOnUIImmediately } from '@/reanimated';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import React, { memo, useCallback, useMemo } from 'react';
-import Animated, { useAnimatedProps, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { runOnUI, useAnimatedProps, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
 import { ChainSelection } from './ChainSelection';
 
@@ -99,8 +98,7 @@ export const TokenToBuyList = () => {
 
   const handleSelectToken = useCallback(
     (token: SearchAsset) => {
-      runOnUIImmediately(() => {
-        'worklet';
+      runOnUI(() => {
         if (
           internalSelectedInputAsset.value &&
           getStandardizedUniqueIdWorklet({ address: token.address, chainId: token.chainId }) !== internalSelectedOutputAsset.value?.uniqueId

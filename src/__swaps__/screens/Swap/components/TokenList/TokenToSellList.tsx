@@ -12,8 +12,7 @@ import { userAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import React, { useCallback, useMemo } from 'react';
-import Animated, { useAnimatedProps, useAnimatedStyle } from 'react-native-reanimated';
-import { runOnUIImmediately } from '@/reanimated';
+import Animated, { runOnUI, useAnimatedProps, useAnimatedStyle } from 'react-native-reanimated';
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
 import { ChainSelection } from './ChainSelection';
 
@@ -45,8 +44,7 @@ const TokenToSellListComponent = () => {
     (token: ParsedSearchAsset | null) => {
       if (!token) return;
 
-      runOnUIImmediately(() => {
-        'worklet';
+      runOnUI(() => {
         if (
           internalSelectedOutputAsset.value &&
           getStandardizedUniqueIdWorklet({ address: token.address, chainId: token.chainId }) !== internalSelectedInputAsset.value?.uniqueId
