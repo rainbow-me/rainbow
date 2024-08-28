@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { useTheme } from '../../theme/ThemeContext';
-import { ethereumUtils, initials } from '../../utils';
+import { initials } from '../../utils';
 import ChainBadge from './ChainBadge';
 import { Centered } from '../layout';
 import { Text } from '../text';
@@ -33,7 +33,7 @@ export default function RequestVendorLogoIcon({
   shouldPrioritizeImageLoading,
   showLargeShadow,
   size = CoinIconSize,
-  network,
+  chainId,
   ...props
 }) {
   const [error, setError] = useState(null);
@@ -71,7 +71,7 @@ export default function RequestVendorLogoIcon({
           )}
         </Content>
       </ShadowStack>
-      <ChainBadge chainId={ethereumUtils.getChainIdFromNetwork(network)} badgeYPosition={badgeYPosition} />
+      <ChainBadge chainId={chainId} badgeYPosition={badgeYPosition} />
     </View>
   );
 }

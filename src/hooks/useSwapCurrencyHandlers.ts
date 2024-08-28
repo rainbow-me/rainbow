@@ -119,8 +119,6 @@ export default function useSwapCurrencyHandlers({
           }
         : null;
 
-      // prefetchExternalToken({address: newInputCurrency.address, network: newInputCurrency.network, currency: nativeCurrency})
-
       dispatch(updateSwapInputCurrency(newInputCurrency, crosschainSwapsEnabled));
       setLastFocusedInputHandle?.(inputFieldRef);
       handleNavigate?.(newInputCurrency);
@@ -136,7 +134,6 @@ export default function useSwapCurrencyHandlers({
           }
         : null;
 
-      // prefetchExternalToken({address: newOutputCurrency.address, network: newOutputCurrency.network, currency: nativeCurrency})
       dispatch(updateSwapOutputCurrency(newOutputCurrency, crosschainSwapsEnabled));
       setLastFocusedInputHandle?.(inputFieldRef);
       handleNavigate?.(newOutputCurrency);

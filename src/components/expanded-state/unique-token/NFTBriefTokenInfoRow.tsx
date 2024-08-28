@@ -54,7 +54,7 @@ export default function NFTBriefTokenInfoRow({ asset }: { asset: UniqueAsset }) 
   const { data: listing } = useNFTListing({
     contractAddress: asset?.asset_contract?.address ?? '',
     tokenId: asset?.id,
-    network: asset?.network,
+    chainId: asset?.chainId,
   });
 
   const listingValue = listing && convertRawAmountToRoundedDecimal(listing?.price, listing?.payment_token?.decimals, 3);

@@ -1,13 +1,12 @@
 import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId, Network } from '@/networks/types';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { UnlockableAppIconKey } from '@/appIcons/appIcons';
 import { CardType } from '@/components/cards/GenericCard';
 import { LearnCategory } from '@/components/cards/utils/types';
 import { FiatProviderName } from '@/entities/f2c';
-import { Network } from '@/networks/types';
 import { RapSwapActionParameters } from '@/raps/references';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';

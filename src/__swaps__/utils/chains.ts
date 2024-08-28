@@ -1,7 +1,7 @@
 import { celo, fantom, harmonyOne, moonbeam } from 'viem/chains';
 import { NATIVE_ASSETS_PER_CHAIN } from '@/references';
 import { AddressOrEth } from '@/__swaps__/types/assets';
-import { ChainId, ChainName, ChainNameDisplay, chainIdToNameMapping, chainNameToIdMapping } from '@/__swaps__/types/chains';
+import { ChainId, ChainName, ChainNameDisplay, chainIdToNameMapping, chainNameToIdMapping } from '@/networks/types';
 import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 

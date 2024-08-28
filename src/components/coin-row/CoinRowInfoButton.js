@@ -93,7 +93,7 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText, showFavoriteButton }) 
   );
 
   const onPressAndroid = useCallback(() => {
-    const blockExplorerText = `View on ${startCase(ethereumUtils.getBlockExplorer(ethereumUtils.getChainIdFromNetwork(item?.network)))}`;
+    const blockExplorerText = `View on ${startCase(ethereumUtils.getBlockExplorer(item?.chainId))}`;
     const androidContractActions = [lang.t('wallet.action.copy_contract_address'), blockExplorerText, lang.t('button.cancel')];
 
     showActionSheetWithOptions(
@@ -115,7 +115,7 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText, showFavoriteButton }) 
   }, [item, handleCopyContractAddress]);
 
   const menuConfig = useMemo(() => {
-    const blockExplorerAction = buildBlockExplorerAction(ethereumUtils.getChainIdFromNetwork(item?.network));
+    const blockExplorerAction = buildBlockExplorerAction(item?.chainId);
     return {
       menuItems: [
         blockExplorerAction,
@@ -126,7 +126,7 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText, showFavoriteButton }) 
       ],
       menuTitle: `${item?.name} (${item?.symbol})`,
     };
-  }, [item?.address, item?.name, item?.network, item?.symbol]);
+  }, [item?.address, item?.chainId, item?.name, item?.symbol]);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {

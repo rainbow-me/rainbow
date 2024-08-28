@@ -22,7 +22,7 @@ import { Navigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import { AppState as ApplicationState, AppStateStatus, NativeEventSubscription } from 'react-native';
 import notifee, { Event as NotifeeEvent, EventType } from '@notifee/react-native';
-import { ethereumUtils, isLowerCaseMatch } from '@/utils';
+import { isLowerCaseMatch } from '@/utils';
 import walletTypes from '@/helpers/walletTypes';
 import {
   NotificationSubscriptionChangesListener,
@@ -165,10 +165,11 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
       }
       Navigation.handleAction(Routes.PROFILE_SCREEN, {});
 
-      const network = ethereumUtils.getNetworkFromChainId(parseInt(data.chain, 10));
+      const chainId = parseInt(data.chain, 10);
+
       const transaction = await transactionFetchQuery({
         hash: data.hash,
-        network: network,
+        chainId,
         address: walletAddress,
         currency: nativeCurrency,
       });

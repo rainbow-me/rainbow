@@ -4,11 +4,11 @@ import RadialGradient from 'react-native-radial-gradient';
 import { ButtonPressAnimation } from '../animations';
 import ChainBadge from '../coin-icon/ChainBadge';
 import { Bleed, Box, Columns, Inline, Text } from '@/design-system';
-import { Network } from '@/helpers';
 import { position } from '@rainbow-me/styles';
 import { useTheme } from '@/theme';
 import { sortNetworks } from '@/networks';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
+import { ChainId } from '@/networks/types';
 
 const NetworkSwitcherv2 = ({
   currentChainId,
@@ -31,10 +31,10 @@ const NetworkSwitcherv2 = ({
       }));
   }, []);
 
-  const radialGradientProps = (network: Network) => {
+  const radialGradientProps = (chainId: ChainId) => {
     return {
       center: [0, 1],
-      colors: [colors.alpha(colors.networkColors[network], 0.1), colors.alpha(colors.networkColors[network], 0.02)],
+      colors: [colors.alpha(colors.networkColors[chainId], 0.1), colors.alpha(colors.networkColors[chainId], 0.02)],
       pointerEvents: 'none',
       style: {
         ...position.coverAsObject,
@@ -55,7 +55,7 @@ const NetworkSwitcherv2 = ({
           testID={'network-switcher-scroll-view'}
         >
           <Columns space="8px">
-            {networkMenuItems.map(({ chainId, title, network }) => {
+            {networkMenuItems.map(({ chainId, title }) => {
               const isSelected = currentChainId === chainId;
               return (
                 <Box
@@ -66,28 +66,28 @@ const NetworkSwitcherv2 = ({
 
                   onPress={() => setCurrentChainId(chainId)}
                   padding="8px"
-                  testID={`${testID}-${network}`}
+                  testID={`${testID}-${chainId}`}
                 >
                   {isSelected && (
                     <RadialGradient
-                      {...radialGradientProps(network)}
+                      {...radialGradientProps(chainId)}
                       // @ts-ignore overloaded props
 
                       borderRadius={30}
                     />
                   )}
                   <Inline alignHorizontal="center" alignVertical="center" horizontalSpace="4px" wrap={false}>
-                    {network === Network.mainnet ? (
+                    {chainId === ChainId.mainnet ? (
                       <EthCoinIcon size={20} />
                     ) : (
                       <ChainBadge chainId={chainId} position="relative" size="small" />
                     )}
                     <Bleed top={{ custom: android ? 2 : 0 }}>
                       <Text
-                        color={isSelected ? { custom: colors.networkColors[network] } : 'secondary50 (Deprecated)'}
+                        color={isSelected ? { custom: colors.networkColors[chainId] } : 'secondary50 (Deprecated)'}
                         size="16px / 22px (Deprecated)"
                         weight="bold"
-                        testID={`network-switcher-item-${network}`}
+                        testID={`network-switcher-item-${chainId}`}
                       >
                         {title}
                       </Text>

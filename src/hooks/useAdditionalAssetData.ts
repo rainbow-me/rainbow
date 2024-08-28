@@ -1,9 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { NativeCurrencyKey } from '@/entities';
-import { Network } from '@/networks/types';
 import { metadataClient } from '@/graphql';
-import { ethereumUtils } from '@/utils';
 import { Token } from '@/graphql/__generated__/metadata';
+import { ChainId } from '@/networks/types';
 
 // Types
 type TokenMetadata = Pick<
@@ -14,21 +13,20 @@ type TokenMetadata = Pick<
 // Types for the query arguments
 type AdditionalAssetDataArgs = {
   address: string;
-  network: Network;
+  chainId: ChainId;
   currency: NativeCurrencyKey;
 };
 
 // Query Key function
-const createAdditionalAssetDataQueryKey = ({ address, network, currency }: AdditionalAssetDataArgs) => [
+const createAdditionalAssetDataQueryKey = ({ address, chainId, currency }: AdditionalAssetDataArgs) => [
   'additionalAssetData',
   address,
-  network,
+  chainId,
   currency,
 ];
 
 // Refactor the getAdditionalAssetData function to accept the new parameters
-async function getAdditionalAssetData({ address, network, currency }: AdditionalAssetDataArgs): Promise<TokenMetadata | null> {
-  const chainId = ethereumUtils.getChainIdFromNetwork(network);
+async function getAdditionalAssetData({ address, chainId, currency }: AdditionalAssetDataArgs): Promise<TokenMetadata | null> {
   const data = await metadataClient.tokenMetadata({
     address,
     chainId,
@@ -42,12 +40,12 @@ async function getAdditionalAssetData({ address, network, currency }: Additional
 }
 
 // Usage of the useQuery hook
-export default function useAdditionalAssetData({ address, network, currency }: AdditionalAssetDataArgs) {
+export default function useAdditionalAssetData({ address, chainId, currency }: AdditionalAssetDataArgs) {
   return useQuery<TokenMetadata | null>(
-    createAdditionalAssetDataQueryKey({ address, network, currency }),
-    () => getAdditionalAssetData({ address, network, currency }),
+    createAdditionalAssetDataQueryKey({ address, chainId, currency }),
+    () => getAdditionalAssetData({ address, chainId, currency }),
     {
-      enabled: !!address && !!network && !!currency, // Ensure all parameters are provided
+      enabled: !!address && !!chainId && !!currency, // Ensure all parameters are provided
     }
   );
 }

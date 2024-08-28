@@ -7,7 +7,7 @@ import { magicMemo } from '../../utils';
 import ProfileModal from './profile/ProfileModal';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
-import { useAccountSettings, useContacts, useENSAvatar } from '@/hooks';
+import { useContacts, useENSAvatar } from '@/hooks';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 
@@ -24,16 +24,14 @@ const ContactProfileState = ({ address, color, contact, ens, nickname }) => {
 
   const colorIndex = useMemo(() => color || addressHashedColorIndex(address) || 0, [address, color]);
 
-  const { network } = useAccountSettings();
-
   const handleAddContact = useCallback(() => {
     const nickname = profilesEnabled ? value : (emoji ? `${emoji} ${value}` : value).trim();
     if (value?.length > 0) {
-      onAddOrUpdateContacts(address, nickname, colors.avatarBackgrounds[colorIndex || 0], network, ens);
+      onAddOrUpdateContacts(address, nickname, colors.avatarBackgrounds[colorIndex || 0], ens);
       goBack();
     }
     android && Keyboard.dismiss();
-  }, [address, colorIndex, colors.avatarBackgrounds, emoji, ens, goBack, network, onAddOrUpdateContacts, profilesEnabled, value]);
+  }, [address, colorIndex, colors.avatarBackgrounds, emoji, ens, goBack, onAddOrUpdateContacts, profilesEnabled, value]);
 
   const handleCancel = useCallback(() => {
     goBack();
