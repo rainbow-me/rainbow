@@ -776,7 +776,7 @@ export const explainers = (params, theme) => {
           {lang.t('explain.obtain_l2_asset.fragment3')}
         </Text>
       ),
-      logo: <ChainBadge chainId={fromChainId} marginBottom={8} position="relative" size="large" />,
+      logo: <ChainBadge chainId={chainId} marginBottom={8} position="relative" size="large" />,
       title: lang.t('explain.obtain_l2_asset.title', {
         networkName: params?.networkName,
       }),
