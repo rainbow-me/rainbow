@@ -92,6 +92,7 @@ platform :ios do
     )
 
     match(
+      username: ENV["FASTLANE_USER"],
       force: true,
       type: "adhoc",
       app_identifier: ["me.rainbow", "me.rainbow.PriceWidget", "me.rainbow.SelectTokenIntent", "me.rainbow.ImageNotification", "me.rainbow.OpenInRainbow", "me.rainbow.ShareWithRainbow"],
