@@ -114,7 +114,7 @@ jobs:
         run: |
           APP_DIR=$(find . -name "*.app" | head -n 1)
           cd $APP_DIR && zip -r ../App.zip . && cd ..
-          aws s3 cp "App.zip" "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.zip"
+          aws s3 cp "App.zip" "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.app.zip"
 
       - name: Post comment to PR
         if: github.event_name == 'pull_request'
@@ -123,7 +123,7 @@ jobs:
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
           COMMIT_HASH: ${{ github.sha }}
         run: |
-          COMMENT="Launch the iOS app [here](http://localhost:29070/install/ios?virtual=https://app-team.p.rainbow.me/${BRANCH_NAME}/${COMMIT_HASH}.zip)"
+          COMMENT="Launch the iOS app [here](http://localhost:29070/install/ios?virtual=https://app-team.p.rainbow.me/${BRANCH_NAME}/${COMMIT_HASH}.app.zip)"
           curl -s -H "Authorization: token $TOPHAT_GITHUB_TOKEN" -X POST \
           -d "{\"body\":\"$COMMENT\"}" \
           "${{ github.event.pull_request.comments_url }}"
