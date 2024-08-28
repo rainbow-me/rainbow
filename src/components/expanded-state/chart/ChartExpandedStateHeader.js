@@ -11,7 +11,6 @@ import { useAccountSettings, useBooleanState } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { ethereumUtils } from '@/utils';
 
 const noPriceData = lang.t('expanded_state.chart.no_price_data');
 
