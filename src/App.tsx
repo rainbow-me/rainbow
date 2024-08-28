@@ -85,7 +85,7 @@ function App({ walletReady }: AppProps) {
   );
 }
 
-const AppWithRedux = connect<unknown, AppDispatch, unknown, AppState>(state => ({
+const AppWithRedux = connect<AppProps, AppDispatch, AppProps, AppState>((state: AppState) => ({
   walletReady: state.appState.walletReady,
 }))(App);
 
