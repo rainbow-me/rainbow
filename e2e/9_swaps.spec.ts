@@ -72,8 +72,8 @@ describe('Swap Sheet Interaction Flow', () => {
 
     const swapInput = await fetchElementAttributes('swap-asset-input');
 
-    expect(swapInput.label).toContain('ETH');
     expect(swapInput.label).toContain('10');
+    expect(swapInput.label).toContain('ETH');
   });
 
   it('Should be able to go to review and execute a swap', async () => {

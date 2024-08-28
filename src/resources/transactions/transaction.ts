@@ -57,7 +57,7 @@ export const fetchTransaction = async ({
     return parsedTx;
   } catch (e) {
     logger.error(new RainbowError('[transaction]: Failed to fetch transaction'), {
-      message: `${(e as Error)?.message} ${chainId}`,
+      message: (e as Error)?.message,
     });
     return null;
   }
