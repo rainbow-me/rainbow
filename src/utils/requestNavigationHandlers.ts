@@ -104,7 +104,10 @@ export const handleMobileWalletProtocolRequest = async ({
 
     if (isHandshakeAction(action)) {
       logger.debug(`Processing handshake action for ${action.appId}`);
-      const chainIds = Object.values(ChainId).filter(value => typeof value === 'number') as number[];
+
+      const chainIds = RainbowNetworkObjects.filter(network => network.enabled && network.networkType !== 'testnet').map(
+        network => network.id
+      );
       const receivedTimestamp = Date.now();
 
       const dappMetadata = await fetchClientAppMetadata();
@@ -253,7 +256,7 @@ export const handleMobileWalletProtocolRequest = async ({
     }
   };
 
-  const handleActions = async (actions: typeof request.actions, currentIndex: number = 0): Promise<boolean> => {
+  const handleActions = async (actions: typeof request.actions, currentIndex = 0): Promise<boolean> => {
     if (currentIndex >= actions.length) {
       logger.debug(`All actions completed successfully: ${actions.length}`);
       return true;
