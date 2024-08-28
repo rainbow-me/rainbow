@@ -77,4 +77,36 @@ platform :ios do
     )
 
   end
+  desc "Create new build for iOS devices in release mode"
+  lane :build_device do
+
+    update_info_plist(
+      plist_path: "Rainbow/Info.plist",
+      display_name: "Rainbow"
+    )
+
+    update_app_identifier(
+      app_identifier: "me.rainbow",
+      xcodeproj: "Rainbow.xcodeproj",
+      plist_path: "Rainbow/Info.plist",
+    )
+
+    match(
+      force: true,
+      type: "adhoc",
+      app_identifier: ["me.rainbow", "me.rainbow.PriceWidget", "me.rainbow.SelectTokenIntent", "me.rainbow.ImageNotification", "me.rainbow.OpenInRainbow", "me.rainbow.ShareWithRainbow"],
+      git_url: "git@github.com:rainbow-me/rainbow-code-signing.git",
+    )
+
+    gym(
+      workspace: "Rainbow.xcworkspace",
+      scheme: "Rainbow",
+      include_symbols: false,
+      export_method: "ad-hoc",
+      output_directory: "build",
+      output_name: "Rainbow.ipa",
+      archive_path: "build/Rainbow.xcarchive"
+    )
+
+  end
 end

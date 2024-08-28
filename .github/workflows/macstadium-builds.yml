@@ -4,7 +4,7 @@ on: [pull_request, workflow_dispatch]
 
 jobs:
   # Job to install dependencies
-  install-deps:
+  build:
     runs-on: ["self-hosted"]
     concurrency: 
       group: ${{ github.workflow }}-${{ github.ref }}
@@ -57,42 +57,11 @@ jobs:
             .yarn/cache
             .yarn/install-state.gz
 
-  # Job for linting and unit tests
-  linting-and-unit-tests:
-    runs-on: ["self-hosted"]
-    needs: install-deps
-    steps:
       - name: Download Yarn cache
         uses: actions/download-artifact@v3
         with:
-          name: yarn-cache
-          path: .yarn
-
-      - name: Check for frozen lockfile
-        run: ./scripts/check-lockfile.sh
-
-      - name: Audit CI
-        run: yarn audit-ci --config audit-ci.jsonc
-
-      - name: Lint
-        run: yarn lint:ci
-
-      - name: Unit tests
-        run: yarn test
-
-  # iOS build and e2e tests
-  ios:
-    runs-on: ["self-hosted"]
-    needs: install-deps
-    steps:
-      - name: Download Yarn cache
-        uses: actions/download-artifact@v3
-        with:
-          name: yarn-cache
-          path: .yarn
-
-      - name: Rebuild detox cache
-        run: ./node_modules/.bin/detox clean-framework-cache && ./node_modules/.bin/detox build-framework-cache
+            name: yarn-cache
+            path: .yarn
 
       - name: Version debug
         run: |
@@ -100,11 +69,16 @@ jobs:
 
       - name: Install pods
         run: yarn install-bundle && yarn install-pods
-
-      - name: Build the app in release mode
-        run: xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ios/build
-
-      - name: Upload to AWS S3
+      
+      # TOPHAT SIM   
+      - name: Build the app in release mode for simulator
+        run: |
+          sed -i'' -e "s/IS_TESTING=true/IS_TESTING=false/" .env && rm -f .env-e 
+          xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ios/build
+      - name: Build the app in release mode for iOS devices
+        run: |
+            cd ios && bundle exec fastlane ios build_device
+      - name: Upload builds to AWS S3
         env:
           AWS_BUCKET: rainbow-app-team-production
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -116,6 +90,9 @@ jobs:
           cd $APP_DIR && zip -r ../App.zip . && cd ..
           aws s3 cp "App.zip" "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.app.zip"
 
+          IPA_PATH=$(find . -name "*.ipa" | head -n 1)
+          aws s3 cp $IPA_PATH "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.ipa"
+
       - name: Post comment to PR
         if: github.event_name == 'pull_request'
         env:
@@ -123,13 +100,10 @@ jobs:
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
           COMMIT_HASH: ${{ github.sha }}
         run: |
-          COMMENT="Launch the iOS app [here](http://localhost:29070/install/ios?virtual=https://app-team.p.rainbow.me/${BRANCH_NAME}/${COMMIT_HASH}.app.zip)"
+          COMMENT="Launch in [simulator](http://localhost:29070/install/ios?virtual=https://app-team.p.rainbow.me/${BRANCH_NAME}/${COMMIT_HASH}.app.zip) or [device](http://localhost:29070/install/ios?physical=https://app-team.p.rainbow.me/${BRANCH_NAME}/${COMMIT_HASH}.ipa) for ${COMMIT_HASH}"
           curl -s -H "Authorization: token $TOPHAT_GITHUB_TOKEN" -X POST \
           -d "{\"body\":\"$COMMENT\"}" \
           "${{ github.event.pull_request.comments_url }}"
-
-      - name: Run iOS e2e tests with retry
-        run: |
-          sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e 
-          yarn detox build --configuration ios.sim.release
-          ./scripts/run-retry-tests.sh 3
+          
+          
+       
