@@ -92,6 +92,19 @@ export const FadedScrollCard = ({
   const cardStyle = useAnimatedStyle(() => {
     const canExpandFully = contentHeight.value + CARD_BORDER_WIDTH * 2 > MAX_CARD_HEIGHT;
     const expandedCardHeight = Math.min(contentHeight.value + CARD_BORDER_WIDTH * 2, maxExpandedHeight);
+
+    const outputRange = [0, 0];
+
+    const yPos = -yPosition.value;
+    const offset =
+      deviceHeight - (expandedCardBottomInset + expandedCardTopInset) - expandedCardHeight - (yPosition.value + expandedCardHeight);
+
+    if (yPos + expandedCardTopInset + offset >= deviceHeight - expandedCardBottomInset) {
+      outputRange.push(0);
+    } else {
+      outputRange.push(deviceHeight - expandedCardBottomInset - yPosition.value - expandedCardHeight);
+    }
+
     return {
       borderColor: interpolateColor(
         cardHeight.value,
@@ -102,20 +115,7 @@ export const FadedScrollCard = ({
       position: canExpandFully && isFullyExpanded ? 'absolute' : 'relative',
       transform: [
         {
-          translateY: interpolate(
-            cardHeight.value,
-            [0, MAX_CARD_HEIGHT, expandedCardHeight],
-            [
-              0,
-              0,
-              -yPosition.value +
-                expandedCardTopInset +
-                (deviceHeight - (expandedCardBottomInset + expandedCardTopInset) - expandedCardHeight) -
-                (yPosition.value + expandedCardHeight >= deviceHeight - expandedCardBottomInset
-                  ? 0
-                  : deviceHeight - expandedCardBottomInset - yPosition.value - expandedCardHeight),
-            ]
-          ),
+          translateY: interpolate(cardHeight.value, [0, MAX_CARD_HEIGHT, expandedCardHeight], outputRange),
         },
       ],
     };

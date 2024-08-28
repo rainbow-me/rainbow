@@ -67,7 +67,7 @@ import {
 } from '@/components/Transactions/constants';
 import { useCalculateGasLimit } from '@/hooks/useCalculateGasLimit';
 import { useTransactionSetup } from '@/hooks/useTransactionSetup';
-import { useBalanceCheck } from '@/hooks/useHasEnoughBalance';
+import { useHasEnoughBalance } from '@/hooks/useHasEnoughBalance';
 import { useNonceForDisplay } from '@/hooks/useNonceForDisplay';
 import { useProviderSetup } from '@/hooks/useProviderSetup';
 import { useTransactionSubmission } from '@/hooks/useSubmitTransaction';
@@ -153,7 +153,7 @@ export const SignTransactionSheet = () => {
     source,
   });
 
-  const { isBalanceEnough } = useBalanceCheck({
+  const { isBalanceEnough } = useHasEnoughBalance({
     isMessageRequest,
     walletBalance,
     currentChainId,

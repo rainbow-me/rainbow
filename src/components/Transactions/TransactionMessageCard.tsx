@@ -38,9 +38,10 @@ export const TransactionMessageCard = ({ expandedCardBottomInset, message, metho
       const parsedMessage = JSON.parse(message);
       const sanitizedMessage = sanitizeTypedData(parsedMessage);
       displayMessage = sanitizedMessage;
-      // eslint-disable-next-line no-empty
-    } catch (e) {
-      logger.warn('');
+    } catch (error) {
+      logger.warn(`[TransactionMessageCard]: Error parsing signed typed data for ${method}`, {
+        error,
+      });
     }
 
     displayMessage = JSON.stringify(displayMessage, null, 4);

@@ -19,7 +19,7 @@ type BalanceCheckParams = {
   req: any;
 };
 
-export const useBalanceCheck = ({ isMessageRequest, walletBalance, currentChainId, selectedGasFee, req }: BalanceCheckParams) => {
+export const useHasEnoughBalance = ({ isMessageRequest, walletBalance, currentChainId, selectedGasFee, req }: BalanceCheckParams) => {
   const [isBalanceEnough, setIsBalanceEnough] = useState<boolean>();
 
   useEffect(() => {
