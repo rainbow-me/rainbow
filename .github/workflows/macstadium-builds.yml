@@ -1,6 +1,10 @@
 name: iOS builds
-
-on: [pull_request, workflow_dispatch]
+on:
+    workflow_run:
+        workflows: ["iOS e2e tests"]
+        types:
+        - completed
+    workflow_dispatch:
 
 jobs:
   # Job to install dependencies
@@ -45,23 +49,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: Install dependencies
-        run: |
-          yarn install && yarn setup
-
-      - name: Upload Yarn cache
-        uses: actions/upload-artifact@v3
-        with:
-          name: yarn-cache
-          path: |
-            .yarn/cache
-            .yarn/install-state.gz
-
       - name: Download Yarn cache
         uses: actions/download-artifact@v3
         with:
             name: yarn-cache
             path: .yarn
+
+      - name: Install dependencies
+        run: |
+          yarn install && yarn setup
 
       - name: Version debug
         run: |
@@ -69,13 +65,17 @@ jobs:
 
       - name: Install pods
         run: yarn install-bundle && yarn install-pods
-      
-      # TOPHAT SIM   
-      - name: Build the app in release mode for simulator
-        run: |
-          sed -i'' -e "s/IS_TESTING=true/IS_TESTING=false/" .env && rm -f .env-e 
-          xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ios/build
+        # TEMP disabled because it's already working
+        # TOPHAT SIM   
+        #   - name: Build the app in release mode for simulator
+        #     run: |
+        #       sed -i'' -e "s/IS_TESTING=true/IS_TESTING=false/" .env && rm -f .env-e 
+        #       xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ios/build
       - name: Build the app in release mode for iOS devices
+        env: 
+          FASTLANE_USER: ${{ secrets.FASTLANE_USER }}
+          FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         run: |
             cd ios && bundle exec fastlane ios build_device
       - name: Upload builds to AWS S3

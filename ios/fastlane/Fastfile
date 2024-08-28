@@ -23,10 +23,6 @@ platform :ios do
       duration: 1200, # optional
       in_house: false, # optional but may be required if using match/sigh
     )
-
-    upload_symbols_to_crashlytics(
-      dsym_path: './Rainbow.app.dSYM.zip'
-    )
   end
 
   desc "Submit a new Beta build to Apple TestFlight"
@@ -92,12 +88,13 @@ platform :ios do
     )
 
     match(
-      username: ENV["FASTLANE_USER"],
       force: true,
       type: "adhoc",
       app_identifier: ["me.rainbow", "me.rainbow.PriceWidget", "me.rainbow.SelectTokenIntent", "me.rainbow.ImageNotification", "me.rainbow.OpenInRainbow", "me.rainbow.ShareWithRainbow"],
       git_url: "git@github.com:rainbow-me/rainbow-code-signing.git",
     )
+
+    xcversion(version: "15.3")
 
     gym(
       workspace: "Rainbow.xcworkspace",
@@ -106,7 +103,17 @@ platform :ios do
       export_method: "ad-hoc",
       output_directory: "build",
       output_name: "Rainbow.ipa",
-      archive_path: "build/Rainbow.xcarchive"
+      archive_path: "build/Rainbow.xcarchive",
+      export_options: {
+        provisioningProfiles: {
+          "me.rainbow" => "match AdHoc me.rainbow",
+          "me.rainbow.PriceWidget" => "match AdHoc me.rainbow.PriceWidget",
+          "me.rainbow.SelectTokenIntent" => "match AdHoc me.rainbow.SelectTokenIntent",
+          "me.rainbow.ImageNotification" => "match AdHoc me.rainbow.ImageNotification",
+          "me.rainbow.OpenInRainbow" => "match AdHoc me.rainbow.OpenInRainbow",
+          "me.rainbow.ShareWithRainbow" => "match AdHoc me.rainbow.ShareWithRainbow",
+        },
+      }
     )
 
   end
