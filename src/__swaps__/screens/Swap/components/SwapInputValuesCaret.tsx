@@ -1,7 +1,7 @@
 import { Box, useColorMode } from '@/design-system';
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import Animated, { Easing, useAnimatedStyle, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
+import Animated, { Easing, SharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 import { SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, caretConfig } from '@/__swaps__/screens/Swap/constants';
 import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
@@ -9,7 +9,7 @@ import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider
 import { inputKeys } from '@/__swaps__/types/swap';
 import { getColorValueForThemeWorklet } from '@/__swaps__/utils/swaps';
 
-export function SwapInputValuesCaret({ inputCaretType }: { inputCaretType: inputKeys }) {
+export function SwapInputValuesCaret({ inputCaretType, disabled }: { inputCaretType: inputKeys; disabled?: SharedValue<boolean> }) {
   const { isDarkMode } = useColorMode();
   const {
     configProgress,
@@ -27,16 +27,8 @@ export function SwapInputValuesCaret({ inputCaretType }: { inputCaretType: input
   const inputValues = SwapInputController.inputValues;
 
   const caretStyle = useAnimatedStyle(() => {
-    let disabled = false;
-    if (inputCaretType === 'inputNativeValue' || inputCaretType === 'outputNativeValue') {
-      // disable caret for native inputs when corresponding asset is missing price
-      const asset = inputCaretType === 'inputNativeValue' ? internalSelectedInputAsset : internalSelectedOutputAsset;
-      const assetPrice = asset.value?.nativePrice || asset.value?.price?.value || 0;
-      disabled = !assetPrice || equalWorklet(assetPrice, 0);
-    }
-
     const shouldShow =
-      !disabled &&
+      !disabled?.value &&
       configProgress.value === NavigationSteps.INPUT_ELEMENT_FOCUSED &&
       focusedInput.value === inputCaretType &&
       inputProgress.value === 0 &&
