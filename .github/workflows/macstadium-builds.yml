@@ -1,4 +1,4 @@
-name: iOS e2e tests
+name: iOS builds
 
 on: [pull_request, workflow_dispatch]
 
