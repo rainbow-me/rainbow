@@ -1,7 +1,7 @@
 import { getIsHardhatConnected } from '@/handlers/web3';
 import { useAccountSettings } from '@/hooks';
 import { useUserAssets } from '@/resources/assets/UserAssetsQuery';
-import { RainbowAddressAssets } from './types';
+import { RainbowAddressAssets } from '@/resources/assets/types';
 
 const countSelector = (accountAssets: RainbowAddressAssets) => accountAssets?.length;
 

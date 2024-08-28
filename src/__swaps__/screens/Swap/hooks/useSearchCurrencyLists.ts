@@ -16,7 +16,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { TokenToBuyListItem } from '../components/TokenList/TokenToBuyList';
 import { useSwapContext } from '../providers/swap-provider';
 import { RecentSwap } from '@/__swaps__/types/swap';
-import { useTokenDiscovery } from '../resources/search';
+import { useTokenDiscovery } from '@/__swaps__/screens/Swap/resources/search/discovery';
 
 export type AssetToBuySectionId = 'bridge' | 'recent' | 'favorites' | 'verified' | 'unverified' | 'other_networks' | 'popular';
 

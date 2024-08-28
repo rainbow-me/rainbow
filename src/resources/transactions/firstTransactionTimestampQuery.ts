@@ -3,7 +3,7 @@ import PQueue from 'p-queue/dist';
 
 import { createQueryKey, queryClient, QueryConfig, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 import { getFirstTransactionTimestamp } from '@/utils/ethereumUtils';
-import { fetchENSAddress } from '../ens/ensAddressQuery';
+import { fetchENSAddress } from '@/resources/ens/ensAddressQuery';
 
 // ///////////////////////////////////////////////
 // Query Types

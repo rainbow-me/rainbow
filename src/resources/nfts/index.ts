@@ -1,6 +1,5 @@
 import { QueryFunction, useQuery } from '@tanstack/react-query';
 import { QueryConfigWithSelect, createQueryKey } from '@/react-query';
-import { NFT } from '@/resources/nfts/types';
 import { fetchSimpleHashNFTListing } from '@/resources/nfts/simplehash';
 import { simpleHashNFTToUniqueAsset } from '@/resources/nfts/simplehash/utils';
 import { useSelector } from 'react-redux';
