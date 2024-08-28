@@ -1,5 +1,12 @@
 import React, { useCallback } from 'react';
-import useExperimentalFlag, { OP_REWARDS, PROFILES, HARDWARE_WALLETS, MINTS, NFT_OFFERS, FEATURED_RESULTS } from '@rainbow-me/config/experimentalHooks';
+import useExperimentalFlag, {
+  OP_REWARDS,
+  PROFILES,
+  HARDWARE_WALLETS,
+  MINTS,
+  NFT_OFFERS,
+  FEATURED_RESULTS,
+} from '@rainbow-me/config/experimentalHooks';
 import { isTestnetChain } from '@/handlers/web3';
 import { Inline, Inset, Stack, Box } from '@/design-system';
 import { useAccountSettings, useWallets } from '@/hooks';
@@ -35,8 +42,8 @@ export default function DiscoverHome() {
   const mintsEnabled = (useExperimentalFlag(MINTS) || mints_enabled) && !IS_TEST;
   const opRewardsLocalFlag = useExperimentalFlag(OP_REWARDS);
   const opRewardsRemoteFlag = op_rewards_enabled;
-const testNetwork = isTestnetChain({ chainId });
-const { navigate } = useNavigation();
+  const testNetwork = isTestnetChain({ chainId });
+  const { navigate } = useNavigation();
   const isProfilesEnabled = profilesEnabledLocalFlag && profilesEnabledRemoteFlag;
 
   const { wallets } = useWallets();
