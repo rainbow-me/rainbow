@@ -94,8 +94,6 @@ platform :ios do
       git_url: "git@github.com:rainbow-me/rainbow-code-signing.git",
     )
 
-    xcversion(version: "15.3")
-
     gym(
       workspace: "Rainbow.xcworkspace",
       scheme: "Rainbow",
