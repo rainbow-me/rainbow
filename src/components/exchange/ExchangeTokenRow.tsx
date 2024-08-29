@@ -9,7 +9,8 @@ import { IS_IOS } from '@/env';
 import { FavStar, Info } from '../asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
 import { View } from 'react-native';
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
+import { ParsedAddressAsset } from '@/entities';
 
 interface ExchangeTokenRowProps {
   item: any;
@@ -48,7 +49,6 @@ export default React.memo(function ExchangeTokenRow({
         <Box
           paddingLeft="20px"
           as={ButtonPressAnimation}
-          // @ts-ignore
           onPress={onPress}
           style={[disabled && { opacity: 0.5 }]}
           testID={rowTestID}
@@ -59,7 +59,7 @@ export default React.memo(function ExchangeTokenRow({
               <View style={{ height: 59, paddingTop: 9 }}>
                 <RainbowCoinIcon
                   size={40}
-                  icon={item?.icon_url || item?.iconUrl || ''}
+                  icon={item?.icon_url || ''}
                   chainId={chainId}
                   symbol={item?.symbol || symbol}
                   theme={theme}
@@ -72,9 +72,9 @@ export default React.memo(function ExchangeTokenRow({
                 <Text size="15pt" color="primary (Deprecated)" weight="semibold" numberOfLines={1}>
                   {name ?? item?.name}
                 </Text>
-                {showBalance && item?.balance?.display && (
+                {showBalance && (item as ParsedAddressAsset)?.balance?.display && (
                   <Text size="13pt" color={{ custom: theme.colors.blueGreyDark50 }} numberOfLines={1} weight="medium">
-                    {item?.balance?.display ?? ''}
+                    {(item as ParsedAddressAsset)?.balance?.display ?? ''}
                   </Text>
                 )}
                 {!showBalance && (
@@ -92,7 +92,7 @@ export default React.memo(function ExchangeTokenRow({
           {showBalance && (
             <Box background="fillSecondary" padding="8px" borderRadius={15}>
               <Text size="15pt" weight="medium" color="labelSecondary">
-                {item?.native?.balance?.display ?? `${nativeCurrencySymbol}0.00`}
+                {(item as ParsedAddressAsset)?.native?.balance?.display ?? `${nativeCurrencySymbol}0.00`}
               </Text>
             </Box>
           )}

@@ -1,7 +1,6 @@
 import { AddressOrEth } from '@/__swaps__/types/assets';
-import { ChainId, ChainNameDisplay } from '@/__swaps__/types/chains';
+import { ChainId, ChainNameDisplay, Network } from '@/networks/types';
 import { Asset } from '@/entities';
-import { Network } from '@/helpers/networkTypes';
 import { AddressZero } from '@ethersproject/constants';
 
 import type { Address } from 'viem';

@@ -1,3 +1,3 @@
 import { jest } from '@jest/globals';
 
-export const getProviderForNetwork = jest.fn();
+export const getProvider = jest.fn();

@@ -6,7 +6,7 @@ import { getLocalRequests, removeLocalRequest, saveLocalRequests } from '@/handl
 import { omitFlatten } from '@/helpers/utilities';
 import { getRequestDisplayDetails } from '@/parsers';
 import { logger } from '@/logger';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 // -- Constants --------------------------------------- //
 

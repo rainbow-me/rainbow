@@ -9,7 +9,6 @@ import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, isENSNFTRecord } from '@/utils';
 import { address as formatAddress } from '@/utils/abbreviations';
-import { Network } from '@/networks/types';
 import { ContactAvatar, showDeleteContactActionSheet } from '@/components/contacts';
 import { Bleed, Box, Inline, Stack, Text } from '@/design-system';
 import MaskedView from '@react-native-masked-view/masked-view';
@@ -20,7 +19,7 @@ import { useTheme } from '@/theme';
 import LinearGradient from 'react-native-linear-gradient';
 import { ButtonPressAnimation } from '@/components/animations';
 import { noop } from 'lodash';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 const ACTIONS = {
   ADD_CONTACT: 'add-contact',
@@ -128,7 +127,7 @@ export const LeaderboardRow = memo(function LeaderboardRow({
         setClipboard(address);
       }
       if (address && actionKey === ACTIONS.ETHERSCAN) {
-        ethereumUtils.openAddressInBlockExplorer(address, ChainId.mainnet);
+        ethereumUtils.openAddressInBlockExplorer({ address: address, chainId: ChainId.mainnet });
       }
       if (actionKey === ACTIONS.ADD_CONTACT) {
         navigate(Routes.MODAL_SCREEN, {
