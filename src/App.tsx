@@ -1,6 +1,6 @@
-import './languages';
+import '@/languages';
 import * as Sentry from '@sentry/react-native';
-import React, { lazy, Suspense, useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { AppRegistry, Dimensions, LogBox, StyleSheet, View } from 'react-native';
 import { MobileWalletProtocolProvider } from '@coinbase/mobile-wallet-protocol-host';
 import { DeeplinkHandler } from '@/components/DeeplinkHandler';
@@ -11,22 +11,21 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { connect, Provider as ReduxProvider } from 'react-redux';
 import { RecoilRoot } from 'recoil';
-import PortalConsumer from './components/PortalConsumer';
-import ErrorBoundary from './components/error-boundary/ErrorBoundary';
-import { OfflineToast } from './components/toasts';
-import { designSystemPlaygroundEnabled, reactNativeDisableYellowBox, showNetworkRequests, showNetworkResponses } from './config/debug';
-import monitorNetwork from './debugging/network';
-import { Playground } from './design-system/playground/Playground';
-import RainbowContextWrapper from './helpers/RainbowContext';
+import PortalConsumer from '@/components/PortalConsumer';
+import ErrorBoundary from '@/components/error-boundary/ErrorBoundary';
+import { OfflineToast } from '@/components/toasts';
+import { designSystemPlaygroundEnabled, reactNativeDisableYellowBox, showNetworkRequests, showNetworkResponses } from '@/config/debug';
+import monitorNetwork from '@/debugging/network';
+import { Playground } from '@/design-system/playground/Playground';
+import RainbowContextWrapper from '@/helpers/RainbowContext';
 import * as keychain from '@/model/keychain';
-import { Navigation } from './navigation';
-import RoutesComponent from './navigation/Routes';
-import { PersistQueryClientProvider, persistOptions, queryClient } from './react-query';
-import store from './redux/store';
-import { MainThemeProvider } from './theme/ThemeContext';
-import { addressKey } from './utils/keychainConstants';
+import { Navigation } from '@/navigation';
+import { PersistQueryClientProvider, persistOptions, queryClient } from '@/react-query';
+import store, { AppDispatch, type AppState } from '@/redux/store';
+import { MainThemeProvider } from '@/theme/ThemeContext';
+import { addressKey } from '@/utils/keychainConstants';
 import { SharedValuesProvider } from '@/helpers/SharedValuesContext';
-import { InitialRoute, InitialRouteContext } from '@/navigation/initialRoute';
+import { InitialRouteContext } from '@/navigation/initialRoute';
 import { Portal } from '@/react-native-cool-modals/Portal';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
 import { analyticsV2 } from '@/analytics';
@@ -38,12 +37,11 @@ import { initializeReservoirClient } from '@/resources/reservoir/client';
 import { ReviewPromptAction } from '@/storage/schema';
 import { initializeRemoteConfig } from '@/model/remoteConfig';
 import { NavigationContainerRef } from '@react-navigation/native';
-import { RootStackParamList } from './navigation/types';
+import { RootStackParamList } from '@/navigation/types';
 import { Address } from 'viem';
-import { IS_DEV } from './env';
-import { prefetchDefaultFavorites } from './resources/favorites';
-
-const LazyRoutesComponent = lazy(() => import('./navigation/Routes'));
+import { IS_DEV } from '@/env';
+import { prefetchDefaultFavorites } from '@/resources/favorites';
+import Routes from '@/navigation/Routes';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -74,10 +72,7 @@ function App({ walletReady }: AppProps) {
       <View style={sx.container}>
         {initialRoute && (
           <InitialRouteContext.Provider value={initialRoute}>
-            <Suspense fallback={<View />}>
-              {/* @ts-expect-error - Property 'ref' does not exist on the 'IntrinsicAttributes' object */}
-              <LazyRoutesComponent ref={handleNavigatorRef} />
-            </Suspense>
+            <Routes ref={handleNavigatorRef} />
             <PortalConsumer />
           </InitialRouteContext.Provider>
         )}
@@ -90,11 +85,7 @@ function App({ walletReady }: AppProps) {
   );
 }
 
-export type AppStore = typeof store;
-export type RootState = ReturnType<AppStore['getState']>;
-export type AppDispatch = AppStore['dispatch'];
-
-const AppWithRedux = connect<unknown, AppDispatch, unknown, RootState>(state => ({
+const AppWithRedux = connect<AppProps, AppDispatch, AppProps, AppState>(state => ({
   walletReady: state.appState.walletReady,
 }))(App);
 
