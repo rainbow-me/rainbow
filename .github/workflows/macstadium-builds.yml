@@ -65,6 +65,9 @@ jobs:
         run: |
           sed -i'' -e "s/IS_TESTING=true/IS_TESTING=false/" .env && rm -f .env-e 
           xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ios/build
+          APP_DIR=./ios/build/Rainbow.xcarchive/Products/Applications/Rainbow.app
+          cd $APP_DIR && zip -r ../../../../../../App.zip .
+
         # TOPHAT iOS DEVICE  
       - name: Build the app in release mode for iOS devices
         env: 
@@ -81,13 +84,11 @@ jobs:
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
           COMMIT_HASH: ${{ github.sha }}
         run: |
-            IPA_PATH=./ios/build/Rainbow.ipa
-            aws s3 cp "${IPA_PATH}" "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.ipa"
+            APP_FILE=$(find . -name "App.zip" | head -n 1)
+            aws s3 cp "${APP_FILE}" "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.app.zip"
+            IPA_FILE=./ios/build/Rainbow.ipa
+            aws s3 cp "${IPA_FILE}" "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.ipa"
             
-            APP_DIR=$(find . -name "*.app" | head -n 1)
-            cd $APP_DIR && zip -r ../App.zip . && cd ..
-            aws s3 cp "App.zip" "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.app.zip"
-
       - name: Post comment to PR
         if: github.event_name == 'pull_request'
         env:
