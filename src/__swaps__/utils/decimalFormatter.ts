@@ -82,7 +82,7 @@ export function valueBasedDecimalFormatter({
   // Format the number to add separators and trim trailing zeros
   const numberFormatter = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: minimumDecimalPlaces,
-    maximumFractionDigits: maximumDecimalPlaces,
+    maximumFractionDigits: maximumDecimalPlaces || 0,
     useGrouping: !stripSeparators,
   });
 
