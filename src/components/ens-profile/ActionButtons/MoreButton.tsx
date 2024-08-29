@@ -12,7 +12,7 @@ import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 const ACTIONS = {
   ADD_CONTACT: 'add-contact',
@@ -112,7 +112,7 @@ export default function MoreButton({ address, ensName }: { address?: string; ens
         setClipboard(address!);
       }
       if (address && actionKey === ACTIONS.ETHERSCAN) {
-        ethereumUtils.openAddressInBlockExplorer(address, ChainId.mainnet);
+        ethereumUtils.openAddressInBlockExplorer({ address, chainId: ChainId.mainnet });
       }
       if (actionKey === ACTIONS.ADD_CONTACT) {
         navigate(Routes.MODAL_SCREEN, {

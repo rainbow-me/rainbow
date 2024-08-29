@@ -1,10 +1,11 @@
-import { getProviderForNetwork, proxyRpcEndpoint } from '@/handlers/web3';
+import { getProvider, proxyRpcEndpoint } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { zora } from '@wagmi/chains';
 import { ZORA_ETH_ADDRESS } from '@/references';
 import { getZoraGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
+import { ChainId } from '@/networks/types';
 
 export const getZoraNetworkObject = (): NetworkProperties => {
   const { zora_enabled, zora_tx_enabled, op_chains_enabled, op_chains_tx_enabled } = getRemoteConfig();
@@ -26,7 +27,7 @@ export const getZoraNetworkObject = (): NetworkProperties => {
     },
 
     rpc: () => proxyRpcEndpoint(zora.id),
-    getProvider: () => getProviderForNetwork(Network.zora),
+    getProvider: () => getProvider({ chainId: ChainId.arbitrum }),
     balanceCheckerAddress: '0x1C8cFdE3Ba6eFc4FF8Dd5C93044B9A690b6CFf36',
 
     // features

@@ -19,12 +19,12 @@ export default function useSwapInputHandlers() {
   const updateMaxInputAmount = useCallback(() => {
     const inputCurrencyAddress = inputCurrency?.address;
     const inputCurrencyUniqueId = inputCurrency?.uniqueId;
-    const inputCurrencyNetwork = inputCurrency?.network;
+    const inputCurrencyChainId = inputCurrency?.chainId;
 
     const accountAsset = ethereumUtils.getAccountAsset(inputCurrencyUniqueId);
     const oldAmount = accountAsset?.balance?.amount ?? '0';
     let newAmount = oldAmount;
-    if (isNativeAsset(inputCurrencyAddress, ethereumUtils.getChainIdFromNetwork(inputCurrencyNetwork)) && accountAsset) {
+    if (isNativeAsset(inputCurrencyAddress, inputCurrencyChainId) && accountAsset) {
       // this subtracts gas from the balance of the asset
       newAmount = toFixedDecimals(ethereumUtils.getBalanceAmount(selectedGasFee, accountAsset, l1GasFeeOptimism), 6);
 
@@ -39,7 +39,7 @@ export default function useSwapInputHandlers() {
       }
     }
     dispatch(updateSwapInputAmount(newAmount, true));
-  }, [dispatch, inputCurrency?.address, inputCurrency?.network, inputCurrency?.uniqueId, l1GasFeeOptimism, selectedGasFee]);
+  }, [dispatch, inputCurrency?.address, inputCurrency?.chainId, inputCurrency?.uniqueId, l1GasFeeOptimism, selectedGasFee]);
 
   const updateInputAmount = useCallback(
     (value: string | null) => {

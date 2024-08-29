@@ -1,5 +1,4 @@
 import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
-import { ChainId } from '@/__swaps__/types/chains';
 import { getIsHardhatConnected } from '@/handlers/web3';
 import { Address } from 'viem';
 import { RainbowError, logger } from '@/logger';
@@ -7,6 +6,7 @@ import store from '@/redux/store';
 import { ETH_ADDRESS, SUPPORTED_CHAIN_IDS, supportedNativeCurrencies } from '@/references';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { swapsStore } from '@/state/swaps/swapsStore';
+import { ChainId } from '@/networks/types';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 

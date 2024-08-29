@@ -2,7 +2,6 @@ import * as lang from '@/languages';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { SectionList, StyleSheet, View } from 'react-native';
 import sectionListGetItemLayout from 'react-native-section-list-get-item-layout';
-import networkTypes from '../../helpers/networkTypes';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
 import { ButtonPressAnimation } from '../animations';
@@ -14,6 +13,7 @@ import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { useSectionListScrollToTopContext } from '@/navigation/SectionListScrollToTopContext';
 import { safeAreaInsetValues } from '@/utils';
+import { Network } from '@/networks/types';
 
 const sx = StyleSheet.create({
   sectionHeader: {
@@ -106,7 +106,8 @@ const ActivityList = ({
     if (!ref) return;
     setScrollToTopRef(ref);
   };
-  if (network === networkTypes.mainnet) {
+
+  if (network === Network.mainnet) {
     return (
       <SectionList
         ListFooterComponent={() => remainingItemsLabel && <ListFooterComponent label={remainingItemsLabel} onPress={nextPage} />}

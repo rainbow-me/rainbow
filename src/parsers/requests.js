@@ -77,7 +77,7 @@ const getMessageDisplayDetails = (message, timestampInMs) => ({
 
 const getTransactionDisplayDetails = (transaction, nativeCurrency, timestampInMs, chainId) => {
   const tokenTransferHash = smartContractMethods.token_transfer.hash;
-  const nativeAsset = ethereumUtils.getNativeAssetForNetwork(chainId);
+  const nativeAsset = ethereumUtils.getNativeAssetForNetwork({ chainId });
   if (transaction.data === '0x') {
     const value = fromWei(convertHexToString(transaction.value));
     const priceUnit = nativeAsset?.price?.value ?? 0;

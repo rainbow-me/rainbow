@@ -37,16 +37,17 @@ import * as explain from '@/screens/Explain';
 import { Box } from '@/design-system';
 import { AuthRequestAuthenticateSignature, AuthRequestResponseErrorReason, RPCMethod, RPCPayload } from '@/walletConnect/types';
 import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
-import { getProviderForNetwork } from '@/handlers/web3';
-import { RainbowNetworks } from '@/networks';
+import { getProvider } from '@/handlers/web3';
+import { RainbowNetworkObjects } from '@/networks';
 import { uniq } from 'lodash';
 import { fetchDappMetadata } from '@/resources/metadata/dapp';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 import { PerformanceMetrics } from '@/performance/tracking/types/PerformanceMetrics';
 import { PerformanceTracking } from '@/performance/tracking';
+import { ChainId } from '@/networks/types';
 
-const SUPPORTED_EVM_CHAIN_IDS = RainbowNetworks.filter(({ features }) => features.walletconnect).map(({ id }) => id);
+const SUPPORTED_EVM_CHAIN_IDS = RainbowNetworkObjects.filter(({ features }) => features.walletconnect).map(({ id }) => id);
 
 const SUPPORTED_SESSION_EVENTS = ['chainChanged', 'accountsChanged'];
 
@@ -270,7 +271,7 @@ export function isSupportedMethod(method: RPCMethod) {
 }
 
 export function isSupportedChain(chainId: number) {
-  return !!RainbowNetworks.find(({ id, features }) => id === chainId && features.walletconnect);
+  return !!RainbowNetworkObjects.find(({ id, features }) => id === chainId && features.walletconnect);
 }
 
 /**
@@ -878,7 +879,7 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
        * encapsulate reused code.
        */
       const loadWalletAndSignMessage = async () => {
-        const provider = getProviderForNetwork();
+        const provider = getProvider({ chainId: ChainId.arbitrum });
         const wallet = await loadWallet({ address, showErrorIfNotLoaded: false, provider });
 
         if (!wallet) {

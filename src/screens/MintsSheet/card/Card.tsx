@@ -3,8 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { getTimeElapsedFromDate } from '../utils';
 import { Bleed, Box, Cover, Inline, Inset, Stack, Text, useForegroundColor } from '@/design-system';
 import { abbreviateNumber, convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
-import { getNetworkObj } from '@/networks';
-import { getNetworkFromChainId } from '@/utils/ethereumUtils';
+import { getNetworkObject } from '@/networks';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Placeholder, RecentMintCell } from './RecentMintCell';
 import { View } from 'react-native';
@@ -14,7 +13,7 @@ import * as i18n from '@/languages';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 export const NUM_NFTS = 3;
 
@@ -29,10 +28,8 @@ export function Card({ collection }: { collection: MintableCollection }) {
   const separatorTertiary = useForegroundColor('separatorTertiary');
 
   const price = convertRawAmountToRoundedDecimal(collection.mintStatus.price, 18, 6);
-  const currencySymbol = getNetworkObj(getNetworkFromChainId(collection.chainId)).nativeCurrency.symbol;
+  const currencySymbol = getNetworkObject({ chainId: collection.chainId }).nativeCurrency.symbol;
   const isFree = !price;
-
-  const network = getNetworkFromChainId(collection.chainId);
 
   // update elapsed time every minute if it's less than an hour
   useEffect(() => {
@@ -106,7 +103,7 @@ export function Card({ collection }: { collection: MintableCollection }) {
               chainId: collection.chainId,
               priceInEth: price,
             });
-            navigateToMintCollection(collection.contract, collection.mintStatus.price, network);
+            navigateToMintCollection(collection.contract, collection.mintStatus.price, collection.chainId);
           }}
           style={{
             borderRadius: 99,

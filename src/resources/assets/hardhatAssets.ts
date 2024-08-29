@@ -1,23 +1,23 @@
 import { Contract } from '@ethersproject/contracts';
 import { keyBy, mapValues } from 'lodash';
-import { Network } from '@/helpers/networkTypes';
 import { web3Provider } from '@/handlers/web3'; // TODO JIN
-import { getNetworkObj } from '@/networks';
 import { balanceCheckerContractAbi, chainAssets, ETH_ADDRESS, SUPPORTED_CHAIN_IDS } from '@/references';
 import { parseAddressAsset } from './assets';
 import { RainbowAddressAssets } from './types';
 import { logger, RainbowError } from '@/logger';
 import { AddressOrEth, UniqueId, ZerionAsset } from '@/__swaps__/types/assets';
-import { ChainId, ChainName } from '@/__swaps__/types/chains';
 import { AddressZero } from '@ethersproject/constants';
 import chainAssetsByChainId from '@/references/testnet-assets-by-chain';
+import { getNetworkObject } from '@/networks';
+import { ChainId, ChainName, Network } from '@/networks/types';
 
 const fetchHardhatBalancesWithBalanceChecker = async (
   tokens: string[],
   address: string,
-  network: Network = Network.mainnet
+  chainId: ChainId = ChainId.mainnet
 ): Promise<{ [tokenAddress: string]: string } | null> => {
-  const balanceCheckerContract = new Contract(getNetworkObj(network).balanceCheckerAddress, balanceCheckerContractAbi, web3Provider);
+  const networkObject = getNetworkObject({ chainId });
+  const balanceCheckerContract = new Contract(networkObject.balanceCheckerAddress, balanceCheckerContractAbi, web3Provider);
   try {
     const values = await balanceCheckerContract.balances([address], tokens);
     const balances: {
@@ -42,13 +42,16 @@ const fetchHardhatBalancesWithBalanceChecker = async (
  * @param network - The network to fetch the balances for.
  * @returns The balances of the hardhat assets for the given account address and network.
  */
-export const fetchHardhatBalances = async (accountAddress: string, network: Network = Network.mainnet): Promise<RainbowAddressAssets> => {
-  const chainAssetsMap = keyBy(chainAssets[network as keyof typeof chainAssets], ({ asset }) => `${asset.asset_code}_${asset.chainId}`);
+export const fetchHardhatBalances = async (accountAddress: string, chainId: ChainId = ChainId.mainnet): Promise<RainbowAddressAssets> => {
+  const chainAssetsMap = keyBy(
+    chainAssets[`${chainId}` as keyof typeof chainAssets],
+    ({ asset }) => `${asset.asset_code}_${asset.chainId}`
+  );
 
   const tokenAddresses = Object.values(chainAssetsMap).map(({ asset: { asset_code } }) =>
     asset_code === ETH_ADDRESS ? AddressZero : asset_code.toLowerCase()
   );
-  const balances = await fetchHardhatBalancesWithBalanceChecker(tokenAddresses, accountAddress, network);
+  const balances = await fetchHardhatBalancesWithBalanceChecker(tokenAddresses, accountAddress, chainId);
   if (!balances) return {};
 
   const updatedAssets = mapValues(chainAssetsMap, chainAsset => {
@@ -67,7 +70,7 @@ export const fetchHardhatBalances = async (accountAddress: string, network: Netw
 
 export const fetchHardhatBalancesByChainId = async (
   accountAddress: string,
-  network: Network = Network.mainnet
+  chainId: ChainId = ChainId.mainnet
 ): Promise<{
   assets: {
     [uniqueId: UniqueId]: {
@@ -77,12 +80,13 @@ export const fetchHardhatBalancesByChainId = async (
   };
   chainIdsInResponse: ChainId[];
 }> => {
-  const chainAssetsMap = chainAssetsByChainId[network as keyof typeof chainAssets] || {};
+  const chainAssetsMap = chainAssetsByChainId[`${chainId}` as keyof typeof chainAssets] || {};
+
   const tokenAddresses = Object.values(chainAssetsMap).map(({ asset }) =>
     asset.asset_code === ETH_ADDRESS ? AddressZero : asset.asset_code.toLowerCase()
   );
 
-  const balances = await fetchHardhatBalancesWithBalanceChecker(tokenAddresses, accountAddress, network);
+  const balances = await fetchHardhatBalancesWithBalanceChecker(tokenAddresses, accountAddress, chainId);
   if (!balances)
     return {
       assets: {},

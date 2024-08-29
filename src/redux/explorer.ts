@@ -4,8 +4,8 @@ import { ThunkDispatch } from 'redux-thunk';
 import { io, Socket } from 'socket.io-client';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { AppGetState, AppState } from './store';
-import { getProviderForNetwork, isHardHat } from '@/handlers/web3';
-import { Network } from '@/helpers/networkTypes';
+import { getProvider, isHardHat } from '@/handlers/web3';
+import { ChainId } from '@/networks/types';
 
 // -- Constants --------------------------------------- //
 const EXPLORER_UPDATE_SOCKETS = 'explorer/EXPLORER_UPDATE_SOCKETS';
@@ -110,7 +110,7 @@ export const explorerClearState = () => (dispatch: ThunkDispatch<AppState, unkno
  * Initializes the explorer, creating sockets and configuring listeners.
  */
 export const explorerInit = () => (dispatch: ThunkDispatch<AppState, unknown, ExplorerUpdateSocketsAction>, getState: AppGetState) => {
-  const { network, accountAddress } = getState().settings;
+  const { accountAddress, chainId } = getState().settings;
   const { addressSocket } = getState().explorer;
 
   // if there is another socket unsubscribe first
@@ -118,9 +118,9 @@ export const explorerInit = () => (dispatch: ThunkDispatch<AppState, unknown, Ex
     dispatch(explorerUnsubscribe());
   }
 
-  const provider = getProviderForNetwork(network);
+  const provider = getProvider({ chainId });
   const providerUrl = provider?.connection?.url;
-  if (isHardHat(providerUrl) || network !== Network.mainnet) {
+  if (isHardHat(providerUrl) || chainId !== ChainId.mainnet) {
     return;
   }
 

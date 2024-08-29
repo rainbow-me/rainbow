@@ -203,27 +203,6 @@ const SettingsSection = ({
           testID="currency-section"
           titleComponent={<MenuItem.Title text={lang.t(lang.l.settings.currency.title)} />}
         />
-        {/* {(testnetsEnabled || IS_DEV) && (
-          <MenuItem
-            hasRightArrow
-            leftComponent={
-              <MenuItem.ImageIcon
-                source={isDarkMode ? NetworkIconDark : NetworkIcon}
-              />
-            }
-            onPress={onPressNetwork}
-            rightComponent={
-              <MenuItem.Selection>
-                {getNetworkObj(network).name}
-              </MenuItem.Selection>
-            }
-            size={60}
-            testID="network-section"
-            titleComponent={
-              <MenuItem.Title text={lang.t('settings.network')} />
-            }
-          />
-        )} */}
         <ContextMenuButton
           menuConfig={themeMenuConfig}
           {...(android ? { onPress: onPressThemeAndroidActions } : {})}

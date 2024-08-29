@@ -1,4 +1,4 @@
-import { ParsedAddressAsset } from '@/entities';
+import { NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
 import { parseAssetsNative } from '@/parsers';
 import isEmpty from 'lodash/isEmpty';
 import isNil from 'lodash/isNil';
@@ -12,13 +12,13 @@ export function selectUserAssetWithUniqueId(uniqueId: string) {
   };
 }
 
-export function selectSortedUserAssets(nativeCurrency: string) {
+export function selectSortedUserAssets(nativeCurrency: NativeCurrencyKey) {
   return (accountAssets: RainbowAddressAssets) => {
     return sortAssetsByNativeAmount(accountAssets, nativeCurrency);
   };
 }
 
-const sortAssetsByNativeAmount = (accountAssets: RainbowAddressAssets, nativeCurrency: string): ParsedAddressAsset[] => {
+const sortAssetsByNativeAmount = (accountAssets: RainbowAddressAssets, nativeCurrency: NativeCurrencyKey): ParsedAddressAsset[] => {
   let assetsNativePrices = Object.values(accountAssets);
 
   if (!isEmpty(assetsNativePrices)) {
