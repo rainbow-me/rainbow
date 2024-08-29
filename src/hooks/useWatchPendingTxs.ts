@@ -16,6 +16,7 @@ import { Address } from 'viem';
 import { nftsQueryKey } from '@/resources/nfts';
 import { getNftSortForAddress } from './useNFTsSortBy';
 import { ChainId } from '@/networks/types';
+import { staleBalancesStore } from '@/state/staleBalances';
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
   const { storePendingTransactions, setPendingTransactions } = usePendingTransactionsStore(state => ({
@@ -164,6 +165,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
   );
 
   const watchPendingTransactions = useCallback(async () => {
+    const connectedToHardhat = getIsHardhatConnected();
     if (!pendingTransactions?.length) return;
     const updatedPendingTransactions = await Promise.all(
       pendingTransactions.map((tx: RainbowTransaction) => processPendingTransaction(tx))
@@ -190,6 +192,20 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       const chainIds = RainbowNetworkObjects.filter(networkObject => networkObject.enabled && networkObject.networkType !== 'testnet').map(
         networkObject => networkObject.id
       );
+      minedTransactions.forEach(tx => {
+        if (tx.changes?.length) {
+          tx.changes?.forEach(change => {
+            processStaleAsset({ asset: change?.asset, address, transactionHash: tx?.hash });
+          });
+        } else if (tx.asset) {
+          processStaleAsset({ address, asset: tx.asset, transactionHash: tx?.hash });
+        }
+      });
+
+      queryClient.refetchQueries({
+        queryKey: userAssetsQueryKey({ address, currency: nativeCurrency, connectedToHardhat }),
+      });
+
       await queryClient.refetchQueries({
         queryKey: consolidatedTransactionsQueryKey({
           address,
@@ -217,3 +233,27 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
 
   return { watchPendingTransactions };
 };
+
+function processStaleAsset({
+  asset,
+  address,
+  transactionHash,
+}: {
+  asset: RainbowTransaction['asset'];
+  address: string;
+  transactionHash: string;
+}) {
+  const { addStaleBalance } = staleBalancesStore.getState();
+  const chainId = asset?.chainId;
+  if (asset && typeof chainId === 'number') {
+    const changedAssetAddress = asset?.address as Address;
+    addStaleBalance({
+      address,
+      chainId,
+      info: {
+        address: changedAssetAddress,
+        transactionHash,
+      },
+    });
+  }
+}
