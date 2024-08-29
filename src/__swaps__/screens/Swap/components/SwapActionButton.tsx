@@ -109,8 +109,6 @@ function SwapButton({
     return rightIcon;
   });
 
-  console.log('testID', testID, 'aa');
-
   return (
     <Animated.View style={buttonWrapperStyles}>
       <Box
