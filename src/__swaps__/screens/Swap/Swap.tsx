@@ -18,7 +18,7 @@ import { SwapInputAsset } from '@/__swaps__/screens/Swap/components/SwapInputAss
 import { SwapNavbar } from '@/__swaps__/screens/Swap/components/SwapNavbar';
 import { SwapOutputAsset } from '@/__swaps__/screens/Swap/components/SwapOutputAsset';
 import { SwapSheetGestureBlocker } from '@/__swaps__/screens/Swap/components/SwapSheetGestureBlocker';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { AbsolutePortalRoot } from '@/components/AbsolutePortal';

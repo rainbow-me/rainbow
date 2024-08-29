@@ -446,7 +446,7 @@ function SwipeNavigatorScreens() {
 }
 
 export function SwipeNavigator() {
-  const { network } = useAccountSettings();
+  const { chainId } = useAccountSettings();
   const { colors } = useTheme();
 
   return (
@@ -462,7 +462,7 @@ export function SwipeNavigator() {
         </SectionListScrollToTopProvider>
       </BrowserTabViewProgressContextProvider>
 
-      <TestnetToast network={network} web3Provider={web3Provider} />
+      <TestnetToast chainId={chainId} />
     </FlexItem>
   );
 }

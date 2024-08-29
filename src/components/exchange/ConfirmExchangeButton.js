@@ -14,12 +14,12 @@ import Routes from '@/navigation/routesNames';
 import { lightModeThemeColors } from '@/styles';
 import { useTheme } from '@/theme';
 import handleSwapErrorCodes from '@/utils/exchangeErrorCodes';
-import { getNetworkObj } from '@/networks';
+import { getNetworkObject } from '@/networks';
 
 const NOOP = () => null;
 
 export default function ConfirmExchangeButton({
-  currentNetwork,
+  chainId,
   disabled,
   loading,
   isHighPriceImpact,
@@ -95,7 +95,7 @@ export default function ConfirmExchangeButton({
     label = lang.t('button.confirm_exchange.insufficient_funds');
   } else if (isSufficientGas != null && !isSufficientGas) {
     label = lang.t('button.confirm_exchange.insufficient_token', {
-      tokenName: getNetworkObj(currentNetwork).nativeCurrency.symbol,
+      tokenName: getNetworkObject({ chainId }).nativeCurrency.symbol,
     });
   } else if (!isValidGas && isGasReady) {
     label = lang.t('button.confirm_exchange.invalid_fee');

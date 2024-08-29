@@ -4,20 +4,18 @@ import * as lang from '@/languages';
 
 import { Provider } from '@ethersproject/providers';
 
-import { RainbowNetworks, getNetworkObj } from '@/networks';
-import { getProviderForNetwork } from '@/handlers/web3';
-import ethereumUtils, { getNetworkFromChainId } from '@/utils/ethereumUtils';
+import { RainbowNetworkObjects, RainbowSupportedChainIds } from '@/networks';
+import { getProvider } from '@/handlers/web3';
 import { UserRejectedRequestError } from 'viem';
 import { convertHexToString } from '@/helpers/utilities';
 import { logger } from '@/logger';
 import { ActiveSession } from '@rainbow-me/provider/dist/references/appSession';
-import { Network } from '@/helpers';
 import { handleDappBrowserConnectionPrompt, handleDappBrowserRequest } from '@/utils/requestNavigationHandlers';
 import { Tab } from '@rainbow-me/provider/dist/references/messengers';
 import { getDappMetadata } from '@/resources/metadata/dapp';
 import { useAppSessionsStore } from '@/state/appSessions';
 import { BigNumber } from '@ethersproject/bignumber';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 export type ProviderRequestPayload = RequestArguments & {
   id: number;
@@ -123,56 +121,51 @@ const messengerProviderRequestFn = async (messenger: Messenger, request: Provide
     hostSessions && hostSessions.sessions?.[hostSessions.activeSessionAddress]
       ? {
           address: hostSessions.activeSessionAddress,
-          network: hostSessions.sessions[hostSessions.activeSessionAddress],
+          chainId: hostSessions.sessions[hostSessions.activeSessionAddress],
         }
       : null;
-
-  // Wait for response from the popup.
-  let response: unknown | null;
 
   if (request.method === 'eth_requestAccounts') {
     const dappData = await getDappMetadata({ url: getDappHost(request.meta?.sender.url) });
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore - chainId is not defined in the type
     const chainId = request.params?.[0]?.chainId ? BigNumber.from(request.params?.[0]?.chainId).toNumber() : undefined;
-    response = await handleDappBrowserConnectionPrompt({
+    const response = await handleDappBrowserConnectionPrompt({
       dappName: dappData?.appName || request.meta?.sender.title || '',
       dappUrl: request.meta?.sender.url || '',
       chainId,
       address: hostSessions?.activeSessionAddress || undefined,
     });
 
+    if (!response || response instanceof Error) {
+      throw new UserRejectedRequestError(Error('User rejected the request.'));
+    }
+
     useAppSessionsStore.getState().addSession({
       host: getDappHost(request.meta?.sender.url) || '',
-      // @ts-ignore
-      address: response.address,
-      // @ts-ignore
-      network: getNetworkFromChainId(response.chainId),
-      // @ts-ignore
+      address: response?.address,
+      chainId: response.chainId,
       url: request.meta?.sender.url || '',
     });
+    return response;
   } else {
     const dappData = await getDappMetadata({ url: getDappHost(request.meta?.sender.url) });
 
-    response = await handleDappBrowserRequest({
+    const response = await handleDappBrowserRequest({
       dappName: dappData?.appName || request.meta?.sender.title || request.meta?.sender.url || '',
       imageUrl: dappData?.appLogo || '',
       address: appSession?.address || '',
       dappUrl: request.meta?.sender.url || '',
       payload: request,
-      chainId: appSession?.network ? ethereumUtils.getChainIdFromNetwork(appSession.network) : ChainId.mainnet,
+      chainId: appSession?.chainId ? appSession?.chainId : ChainId.mainnet,
     });
+    return response as object;
   }
-
-  if (!response) {
-    throw new UserRejectedRequestError(Error('User rejected the request.'));
-  }
-  return response;
 };
 
 const isSupportedChainId = (chainId: number | string) => {
   const numericChainId = BigNumber.from(chainId).toNumber();
-  return !!RainbowNetworks.find(network => Number(network.id) === numericChainId);
+  return !!RainbowSupportedChainIds.find(chainId => chainId === numericChainId);
 };
 const getActiveSession = ({ host }: { host: string }): ActiveSession => {
   const hostSessions = useAppSessionsStore.getState().getActiveSession({ host });
@@ -180,26 +173,19 @@ const getActiveSession = ({ host }: { host: string }): ActiveSession => {
     hostSessions && hostSessions.sessions?.[hostSessions.activeSessionAddress]
       ? {
           address: hostSessions.activeSessionAddress,
-          network: hostSessions.sessions[hostSessions.activeSessionAddress],
+          chainId: hostSessions.sessions[hostSessions.activeSessionAddress],
         }
       : null;
 
   if (!appSession) return null;
   return {
     address: appSession?.address || '',
-    chainId: getChainIdByNetwork(appSession.network),
+    chainId: appSession.chainId,
   };
   // return null;
 };
 
-const getChainIdByNetwork = (network: Network) => getNetworkObj(network).id;
-
-const getChain = (chainId: number) => RainbowNetworks.find(network => Number(network.id) === chainId);
-
-const getProvider = ({ chainId }: { chainId?: number | undefined }) => {
-  const network = getNetworkFromChainId(chainId || 1);
-  return getProviderForNetwork(network) as unknown as Provider;
-};
+const getChain = (chainId: number) => RainbowNetworkObjects.find(network => Number(network.id) === chainId);
 
 const checkRateLimitFn = async (host: string) => {
   // try {
@@ -284,7 +270,7 @@ export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger:
     callbackOptions?: CallbackOptions;
   }): { chainAlreadyAdded: boolean } => {
     const { chainId } = proposedChain;
-    const supportedChains = RainbowNetworks.filter(network => network.features.walletconnect).map(network => network.id.toString());
+    const supportedChains = RainbowNetworkObjects.filter(network => network.features.walletconnect).map(network => network.id.toString());
     const numericChainId = convertHexToString(chainId);
     if (supportedChains.includes(numericChainId)) {
       // TODO - Open add / switch ethereum chain
@@ -341,14 +327,14 @@ export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger:
     callbackOptions?: CallbackOptions;
   }) => {
     const { chainId } = proposedChain;
-    const supportedChains = RainbowNetworks.filter(network => network.features.walletconnect).map(network => network.id.toString());
+    const supportedChains = RainbowNetworkObjects.filter(network => network.features.walletconnect).map(network => network.id.toString());
     const numericChainId = convertHexToString(chainId);
     const supportedChainId = supportedChains.includes(numericChainId);
     if (supportedChainId) {
       const host = getDappHost(callbackOptions?.sender.url) || '';
       const activeSession = getActiveSession({ host });
       if (activeSession) {
-        useAppSessionsStore.getState().updateActiveSessionNetwork({ host: host, network: getNetworkFromChainId(Number(numericChainId)) });
+        useAppSessionsStore.getState().updateActiveSessionNetwork({ host: host, chainId: Number(numericChainId) });
         messenger.send(`chainChanged:${host}`, Number(numericChainId));
       }
       console.warn('PROVIDER TODO: TODO SEND NOTIFICATION');
@@ -364,7 +350,7 @@ export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger:
     checkRateLimit,
     onSwitchEthereumChainNotSupported,
     onSwitchEthereumChainSupported,
-    getProvider,
+    getProvider: chainId => getProvider({ chainId: chainId as number }) as unknown as Provider,
     getActiveSession,
     getChain,
   });

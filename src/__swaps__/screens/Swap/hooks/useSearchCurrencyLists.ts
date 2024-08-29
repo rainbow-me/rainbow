@@ -1,6 +1,6 @@
 import { TokenSearchResult, useTokenSearch } from '@/__swaps__/screens/Swap/resources/search/search';
 import { AddressOrEth } from '@/__swaps__/types/assets';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 import { SearchAsset, TokenSearchAssetKey, TokenSearchThreshold } from '@/__swaps__/types/search';
 import { addHexPrefix } from '@/__swaps__/utils/hex';
 import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
