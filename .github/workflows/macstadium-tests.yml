@@ -1,11 +1,5 @@
 name: iOS e2e tests
-
-on:
-  workflow_run:
-      workflows: ["iOS e2e tests"]
-      types:
-      - completed
-  workflow_dispatch:
+on: [pull_request, workflow_dispatch]
 
 jobs:
   # Job to install dependencies
@@ -105,6 +99,11 @@ jobs:
 
       - name: Install pods
         run: yarn install-bundle && yarn install-pods
+      
+      - uses: irgaly/xcode-cache@v1
+        with:
+          key: xcode-cache-deriveddata-${{ github.workflow }}-${{ github.sha }}
+          restore-keys: xcode-cache-deriveddata-${{ github.workflow }}-
       
       # Detox iOS e2e tests
       - name: Run iOS e2e tests with retry

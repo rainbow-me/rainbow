@@ -4,7 +4,7 @@ on: [pull_request, workflow_dispatch]
 jobs:
   # Job to install dependencies
   build:
-    runs-on: ["self-hosted", "CI-9"]
+    runs-on: ["self-hosted"]
     concurrency: 
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
@@ -54,12 +54,18 @@ jobs:
 
       - name: Install pods
         run: yarn install-bundle && yarn install-pods
-        # TEMP disabled because it's already working
-        # TOPHAT SIM   
-        #   - name: Build the app in release mode for simulator
-        #     run: |
-        #       sed -i'' -e "s/IS_TESTING=true/IS_TESTING=false/" .env && rm -f .env-e 
-        #       xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ios/build
+
+      - uses: irgaly/xcode-cache@v1
+        with:
+          key: xcode-cache-deriveddata-${{ github.workflow }}-${{ github.sha }}
+          restore-keys: xcode-cache-deriveddata-${{ github.workflow }}-
+        
+        # TOPHAT iOS SIM   
+      - name: Build the app in release mode for simulator
+        run: |
+          sed -i'' -e "s/IS_TESTING=true/IS_TESTING=false/" .env && rm -f .env-e 
+          xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ios/build
+        # TOPHAT iOS DEVICE  
       - name: Build the app in release mode for iOS devices
         env: 
           FASTLANE_USER: ${{ secrets.FASTLANE_USER }}
