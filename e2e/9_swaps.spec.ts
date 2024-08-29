@@ -20,10 +20,8 @@ import {
   afterAllcleanApp,
   fetchElementAttributes,
   tap,
-  tapByText,
   delayTime,
   swipeUntilVisible,
-  tapAndLongPressByText,
   tapAndLongPress,
   swipe,
 } from './helpers';
@@ -60,6 +58,7 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   it('Should open swap screen with 50% inputAmount for inputAsset', async () => {
+    await device.disableSynchronization();
     await tap('swap-button');
     await delayTime('long');
 
