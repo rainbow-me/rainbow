@@ -472,6 +472,11 @@ export async function sendETHtoTestWallet() {
     to: TESTING_WALLET,
     value: parseEther('20'),
   });
+  await delayTime('long');
+  const balance = await provider.getBalance(TESTING_WALLET);
+  if (balance.lt(parseEther('20'))) {
+    throw Error('Error sending ETH to test wallet');
+  }
   return true;
 }
 

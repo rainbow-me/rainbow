@@ -7976,7 +7976,6 @@ __metadata:
     multiformats: "npm:9.6.2"
     nanoid: "npm:3.2.0"
     node-vibrant: "npm:3.2.1-alpha.1"
-    p-queue: "npm:7.2.0"
     p-wait-for: "npm:4.1.0"
     pako: "npm:2.0.4"
     parse-ms: "npm:2.1.0"
@@ -13160,13 +13159,6 @@ __metadata:
   version: 5.0.1
   resolution: "eventemitter3@npm:5.0.1"
   checksum: 10c0/4ba5c00c506e6c786b4d6262cfbce90ddc14c10d4667e5c83ae993c9de88aa856033994dd2b35b83e8dc1170e224e66a319fa80adc4c32adcd2379bbc75da814
-  languageName: node
-  linkType: hard
-
-"eventemitter3@npm:^4.0.7":
-  version: 4.0.7
-  resolution: "eventemitter3@npm:4.0.7"
-  checksum: 10c0/5f6d97cbcbac47be798e6355e3a7639a84ee1f7d9b199a07017f1d2f1e2fe236004d14fa5dfaeba661f94ea57805385e326236a6debbc7145c8877fbc0297c6b
   languageName: node
   linkType: hard
 
@@ -19590,17 +19582,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-queue@npm:7.2.0":
-  version: 7.2.0
-  resolution: "p-queue@npm:7.2.0"
-  dependencies:
-    eventemitter3: "npm:^4.0.7"
-    p-timeout: "npm:^5.0.2"
-  checksum: 10c0/0dad31488d6afe5c27a84ed00a703eef1ed4387338e0debe8155d36172808c6ae0451be5d88a12aa41f1deb4d3583ecd19e5f6ded5f06c937b01ff828d18c6cb
-  languageName: node
-  linkType: hard
-
-"p-timeout@npm:^5.0.0, p-timeout@npm:^5.0.2":
+"p-timeout@npm:^5.0.0":
   version: 5.1.0
   resolution: "p-timeout@npm:5.1.0"
   checksum: 10c0/1b026cf9d5878c64bec4341ca9cda8ec6b8b3aea8a57885ca0fe2b35753a20d767fb6f9d3aa41e1252f42bc95432c05ea33b6b18f271fb10bfb0789591850a41

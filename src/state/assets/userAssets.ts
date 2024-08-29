@@ -1,5 +1,4 @@
 import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
-import { getIsHardhatConnected } from '@/handlers/web3';
 import { Address } from 'viem';
 import { RainbowError, logger } from '@/logger';
 import store from '@/redux/store';
@@ -7,6 +6,7 @@ import { ETH_ADDRESS, SUPPORTED_CHAIN_IDS, supportedNativeCurrencies } from '@/r
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { ChainId } from '@/networks/types';
+import { useConnectedToHardhatStore } from '../connectedToHardhat';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 
@@ -279,7 +279,7 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
         });
 
         // Ensure all supported chains are in the map with a fallback value of 0
-        SUPPORTED_CHAIN_IDS({ testnetMode: getIsHardhatConnected() }).forEach(chainId => {
+        SUPPORTED_CHAIN_IDS({ testnetMode: useConnectedToHardhatStore.getState().connectedToHardhat }).forEach(chainId => {
           if (!unsortedChainBalances.has(chainId)) {
             unsortedChainBalances.set(chainId, 0);
             idsByChain.set(chainId, []);
