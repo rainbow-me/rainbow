@@ -28,7 +28,7 @@ import { getNetworkObject } from '@/networks';
 import { IS_ANDROID } from '@/env';
 import { ContextMenu } from '../context-menu';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 const { GAS_EMOJIS, GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST, getGasLabel } = gasUtils;
 
@@ -310,9 +310,9 @@ const GasSpeedButton = ({
         type: 'crossChainGas',
       });
     } else {
-      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(chainId);
+      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork({ chainId });
       navigate(Routes.EXPLAIN_SHEET, {
-        network: ethereumUtils.getNetworkFromChainId(chainId),
+        chainId,
         type: 'gas',
         nativeAsset,
       });

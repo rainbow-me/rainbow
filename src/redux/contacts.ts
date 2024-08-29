@@ -1,6 +1,5 @@
 import { Dispatch } from 'redux';
 import { getContacts, saveContacts } from '@/handlers/localstorage/contacts';
-import { Network } from '@/helpers/networkTypes';
 import { omitFlatten } from '@/helpers/utilities';
 import { AppGetState } from '@/redux/store';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
@@ -32,11 +31,6 @@ export interface Contact {
    * The address's primary ens name
    */
   ens: string;
-
-  /**
-   * The network.
-   */
-  network: Network;
 
   /**
    * The contact's nickname.
@@ -85,8 +79,7 @@ export const contactsLoadState = () => async (dispatch: Dispatch<ContactsLoadAct
 };
 
 export const contactsAddOrUpdate =
-  (address: string, nickname: string, color: number, network: Network, ens: string) =>
-  (dispatch: Dispatch<ContactsUpdateAction>, getState: AppGetState) => {
+  (address: string, nickname: string, color: number, ens: string) => (dispatch: Dispatch<ContactsUpdateAction>, getState: AppGetState) => {
     const loweredAddress = address.toLowerCase();
     const { contacts } = getState().contacts;
     const updatedContacts = {
@@ -95,7 +88,6 @@ export const contactsAddOrUpdate =
         address: loweredAddress,
         color,
         ens,
-        network,
         nickname,
       },
     };

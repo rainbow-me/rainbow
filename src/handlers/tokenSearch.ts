@@ -93,12 +93,13 @@ export const tokenSearch = async (searchParams: {
 
     return tokenSearch.data.data.map(token => {
       const networkKeys = Object.keys(token.networks);
-      const network = ethereumUtils.getNetworkFromChainId(Number(networkKeys[0]));
+      const chainId = Number(networkKeys[0]);
+      const network = ethereumUtils.getNetworkFromChainId(chainId);
       return {
         ...token,
-        address: token.networks['1']?.address || token.networks[Number(networkKeys[0])]?.address,
+        chainId,
+        address: token.networks['1']?.address || token.networks[chainId]?.address,
         network,
-        chainId: searchParams.chainId,
         mainnet_address: token.networks['1']?.address,
       };
     });

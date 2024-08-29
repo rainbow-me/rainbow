@@ -1,6 +1,5 @@
 import { UniqueId, ZerionAsset } from '@/__swaps__/types/assets';
-import { ChainName } from '@/__swaps__/types/chains';
-import { Network } from '@/helpers';
+import { ChainId, ChainName } from '@/networks/types';
 
 type ChainAssets = {
   [uniqueId: UniqueId]: {
@@ -10,8 +9,8 @@ type ChainAssets = {
 };
 
 // NOTE: Don't import `ETH_ADDRESS` as it's resolving to undefined...
-export const chainAssets: Partial<Record<Network, ChainAssets>> = {
-  [Network.goerli]: {
+export const chainAssets: Partial<Record<ChainId, ChainAssets>> = {
+  [ChainId.goerli]: {
     eth_5: {
       asset: {
         asset_code: 'eth',
@@ -38,7 +37,7 @@ export const chainAssets: Partial<Record<Network, ChainAssets>> = {
       quantity: '0',
     },
   },
-  [Network.mainnet]: {
+  [ChainId.mainnet]: {
     eth_1: {
       asset: {
         asset_code: 'eth',

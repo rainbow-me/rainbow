@@ -3,11 +3,11 @@ import { startCase } from 'lodash';
 import { NativeSyntheticEvent } from 'react-native';
 import { setClipboard } from '../../hooks/useClipboard';
 import { abbreviations, ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 const buildBlockExplorerAction = (chainId: ChainId) => {
   const blockExplorerText = lang.t('exchange.coin_row.view_on', {
-    blockExplorerName: startCase(ethereumUtils.getBlockExplorer(chainId)),
+    blockExplorerName: startCase(ethereumUtils.getBlockExplorer({ chainId })),
   });
   return {
     actionKey: CoinRowActionsEnum.blockExplorer,
@@ -43,7 +43,7 @@ export default function contextMenuProps(item: any, onCopySwapDetailsText: (addr
   };
 
   const onPressAndroid = () => {
-    const blockExplorerText = `View on ${startCase(ethereumUtils.getBlockExplorer(ethereumUtils.getChainIdFromNetwork(item?.network)))}`;
+    const blockExplorerText = `View on ${startCase(ethereumUtils.getBlockExplorer({ chainId: ethereumUtils.getChainIdFromNetwork(item?.network) }))}`;
     const androidContractActions = [lang.t('wallet.action.copy_contract_address'), blockExplorerText, lang.t('button.cancel')];
 
     showActionSheetWithOptions(

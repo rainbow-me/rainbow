@@ -9,7 +9,7 @@ import { ChainBadge } from '@/components/coin-icon';
 import { getNetworkObject } from '@/networks';
 import { useTheme } from '@/theme';
 import * as i18n from '@/languages';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 export function SwapDetailsRewardRow({ reward }: { reward: Reward }) {
   const { navigate } = useNavigation();

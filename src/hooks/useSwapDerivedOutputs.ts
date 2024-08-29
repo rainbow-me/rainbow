@@ -65,13 +65,13 @@ const getInputAmount = async (
   if (!inputToken || !outputAmount || isZero(outputAmount) || !outputToken) return null;
 
   try {
-    const outputChainId = ethereumUtils.getChainIdFromNetwork(outputToken?.network);
+    const outputChainId = outputToken.chainId;
 
-    const inputChainId = ethereumUtils.getChainIdFromNetwork(inputToken?.network);
+    const inputChainId = inputToken.chainId;
 
-    const inputTokenAddress = isNativeAsset(inputToken?.address, inputChainId) ? ETH_ADDRESS_AGGREGATORS : inputToken?.address;
+    const inputTokenAddress = isNativeAsset(inputToken.address, inputChainId) ? ETH_ADDRESS_AGGREGATORS : inputToken.address;
 
-    const outputTokenAddress = isNativeAsset(outputToken?.address, outputChainId) ? ETH_ADDRESS_AGGREGATORS : outputToken?.address;
+    const outputTokenAddress = isNativeAsset(outputToken.address, outputChainId) ? ETH_ADDRESS_AGGREGATORS : outputToken.address;
 
     const isCrosschainSwap = inputChainId !== outputChainId;
     if (isCrosschainSwap) return null;
@@ -164,10 +164,10 @@ const getOutputAmount = async (
   if (!inputAmount || isZero(inputAmount) || !outputToken) return null;
 
   try {
-    const outputChainId = ethereumUtils.getChainIdFromNetwork(outputToken.network);
+    const outputChainId = outputToken.chainId;
     const buyTokenAddress = isNativeAsset(outputToken?.address, outputChainId) ? ETH_ADDRESS_AGGREGATORS : outputToken?.address;
 
-    const inputChainId = ethereumUtils.getChainIdFromNetwork(inputToken.network);
+    const inputChainId = inputToken.chainId;
     const sellTokenAddress = isNativeAsset(inputToken?.address, inputChainId) ? ETH_ADDRESS_AGGREGATORS : inputToken?.address;
 
     const sellAmount = convertAmountToRawAmount(convertNumberToString(inputAmount), inputToken.decimals);
