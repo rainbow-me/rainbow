@@ -214,17 +214,6 @@ export const getProvider = ({ chainId }: { chainId: number }): StaticJsonRpcProv
 };
 
 /**
- * @desc Checks if the active network is Hardhat.
- * @returns boolean: `true` if connected to Hardhat.
- */
-export const getIsHardhatConnected = (): boolean => {
-  const currentChainId = store.getState().settings.chainId;
-  const currentProviderUrl = getCachedProviderForNetwork(currentChainId)?.connection?.url;
-  const connectedToHardhat = !!currentProviderUrl && isHardHat(currentProviderUrl);
-  return connectedToHardhat;
-};
-
-/**
  * @desc Sends an arbitrary RPC call using a given provider, or the default
  * cached provider.
  * @param payload The payload, including a method and parameters, based on

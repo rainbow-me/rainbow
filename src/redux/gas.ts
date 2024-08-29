@@ -23,7 +23,7 @@ import {
 } from '@/entities';
 
 import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
-import { getProvider, isHardHat, toHex, web3Provider } from '@/handlers/web3';
+import { getProvider, isHardHat, toHex } from '@/handlers/web3';
 import {
   defaultGasParamsFormat,
   gweiToWei,
@@ -555,12 +555,8 @@ export const gasPricesStartPolling =
                   // the basefee at the time we fork mainnet during our hardhat tests
                   let baseFee = baseFeePerGas;
                   if (chainId === ChainId.mainnet && IS_TESTING === 'true') {
-                    const providerUrl = (
-                      web3Provider ||
-                      ({} as {
-                        connection: { url: string };
-                      })
-                    )?.connection?.url;
+                    const provider = getProvider({ chainId: ChainId.mainnet });
+                    const providerUrl = provider?.connection?.url;
                     if (isHardHat(providerUrl)) {
                       baseFee = parseGasFeeParam(gweiToWei(1000));
                     }
