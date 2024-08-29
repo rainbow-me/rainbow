@@ -5,7 +5,7 @@ import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { transactionFetchQuery } from '@/resources/transactions/transaction';
 import { RainbowError, logger } from '@/logger';
-import { getIsHardhatConnected, getProvider } from '@/handlers/web3';
+import { getProvider } from '@/handlers/web3';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
 import { RainbowNetworkObjects } from '@/networks';
 import { queryClient } from '@/react-query/queryClient';
@@ -17,12 +17,14 @@ import { nftsQueryKey } from '@/resources/nfts';
 import { getNftSortForAddress } from './useNFTsSortBy';
 import { ChainId } from '@/networks/types';
 import { staleBalancesStore } from '@/state/staleBalances';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
   const { storePendingTransactions, setPendingTransactions } = usePendingTransactionsStore(state => ({
     storePendingTransactions: state.pendingTransactions,
     setPendingTransactions: state.setPendingTransactions,
   }));
+  const { connectedToHardhat } = useConnectedToHardhatStore();
 
   const setNonce = useNonceStore(state => state.setNonce);
 
@@ -33,7 +35,6 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
   const refreshAssets = useCallback(
     (_: RainbowTransaction) => {
       // NOTE: We have two user assets stores right now, so let's invalidate both queries and trigger a refetch
-      const connectedToHardhat = getIsHardhatConnected();
       queryClient.invalidateQueries(
         userAssetsQueryKey({
           address,
@@ -50,7 +51,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       );
       queryClient.invalidateQueries(nftsQueryKey({ address, sortBy: getNftSortForAddress(address) }));
     },
-    [address, nativeCurrency]
+    [address, connectedToHardhat, nativeCurrency]
   );
 
   const processFlashbotsTransaction = useCallback(async (tx: RainbowTransaction): Promise<RainbowTransaction> => {
@@ -165,7 +166,6 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
   );
 
   const watchPendingTransactions = useCallback(async () => {
-    const connectedToHardhat = getIsHardhatConnected();
     if (!pendingTransactions?.length) return;
     const updatedPendingTransactions = await Promise.all(
       pendingTransactions.map((tx: RainbowTransaction) => processPendingTransaction(tx))
@@ -229,7 +229,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       address,
       pendingTransactions: newPendingTransactions,
     });
-  }, [address, nativeCurrency, pendingTransactions, processNonces, processPendingTransaction, setPendingTransactions]);
+  }, [address, connectedToHardhat, nativeCurrency, pendingTransactions, processNonces, processPendingTransaction, setPendingTransactions]);
 
   return { watchPendingTransactions };
 };

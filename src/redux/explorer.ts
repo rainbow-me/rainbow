@@ -4,8 +4,8 @@ import { ThunkDispatch } from 'redux-thunk';
 import { io, Socket } from 'socket.io-client';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { AppGetState, AppState } from './store';
-import { getProvider, isHardHat } from '@/handlers/web3';
 import { ChainId } from '@/networks/types';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 // -- Constants --------------------------------------- //
 const EXPLORER_UPDATE_SOCKETS = 'explorer/EXPLORER_UPDATE_SOCKETS';
@@ -118,9 +118,7 @@ export const explorerInit = () => (dispatch: ThunkDispatch<AppState, unknown, Ex
     dispatch(explorerUnsubscribe());
   }
 
-  const provider = getProvider({ chainId });
-  const providerUrl = provider?.connection?.url;
-  if (isHardHat(providerUrl) || chainId !== ChainId.mainnet) {
+  if (useConnectedToHardhatStore.getState().connectedToHardhat || chainId !== ChainId.mainnet) {
     return;
   }
 

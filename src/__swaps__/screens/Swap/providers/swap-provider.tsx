@@ -29,7 +29,7 @@ import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
 import { getDefaultSlippageWorklet, isUnwrapEthWorklet, isWrapEthWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
-import { getFlashbotsProvider, getIsHardhatConnected, getProvider, isHardHat } from '@/handlers/web3';
+import { getFlashbotsProvider, getProvider } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useAccountSettings } from '@/hooks';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
@@ -56,6 +56,7 @@ import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisable
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { getRemoteConfig } from '@/model/remoteConfig';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
@@ -199,8 +200,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         parameters.flashbots && getNetworkObject({ chainId: parameters.chainId }).features.flashbots
           ? await getFlashbotsProvider()
           : getProvider({ chainId: parameters.chainId });
-      const providerUrl = provider?.connection?.url;
-      const connectedToHardhat = !!providerUrl && isHardHat(providerUrl);
+      const connectedToHardhat = useConnectedToHardhatStore.getState().connectedToHardhat;
 
       const isBridge = swapsStore.getState().inputAsset?.mainnetAddress === swapsStore.getState().outputAsset?.mainnetAddress;
       const isDegenModeEnabled = swapsStore.getState().degenMode;
@@ -258,7 +258,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         };
       }
 
-      const chainId = getIsHardhatConnected() ? ChainId.hardhat : parameters.chainId;
+      const chainId = connectedToHardhat ? ChainId.hardhat : parameters.chainId;
       const { errorMessage } = await performanceTracking.getState().executeFn({
         fn: walletExecuteRap,
         screen: Screens.SWAPS,

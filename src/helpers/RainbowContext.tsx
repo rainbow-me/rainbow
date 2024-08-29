@@ -27,7 +27,7 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
   // This value is hold here to prevent JS VM from shutting down
   // on unmounting all shared values.
   useSharedValue(0);
-  const setConnectedToHardhat = useConnectedToHardhatStore.getState().setConnectedToHardhat;
+  const { setConnectedToHardhat } = useConnectedToHardhatStore();
   const [config, setConfig] = useState<Record<string, boolean>>(
     Object.entries(defaultConfig).reduce((acc, [key, { value }]) => ({ ...acc, [key]: value }), {})
   );

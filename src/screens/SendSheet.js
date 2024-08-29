@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import { captureEvent, captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
 import { isEmpty, isEqual, isString } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -23,7 +22,6 @@ import {
   getProvider,
   isL2Chain,
   resolveNameOrAddress,
-  web3Provider,
 } from '@/handlers/web3';
 import { checkIsValidAddressOrDomain, checkIsValidAddressOrDomainFormat, isENSAddressFormat } from '@/helpers/validators';
 import {
@@ -283,14 +281,13 @@ export default function SendSheet(props) {
   useEffect(() => {
     const assetChainId = selected.chainId;
     if (assetChainId && (assetChainId !== currentChainId || !currentChainId || prevChainId !== currentChainId)) {
-      let provider = web3Provider;
       if (chainId === ChainId.goerli) {
         setCurrentChainId(ChainId.goerli);
-        provider = getProvider({ chainId: ChainId.goerli });
+        const provider = getProvider({ chainId: ChainId.goerli });
         setCurrentProvider(provider);
       } else {
         setCurrentChainId(assetChainId);
-        provider = getProvider({ chainId: currentChainId });
+        const provider = getProvider({ chainId: currentChainId });
         setCurrentProvider(provider);
       }
     }
