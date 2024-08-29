@@ -5,11 +5,11 @@ import { metadataPOSTClient } from '@/graphql';
 import { TransactionErrorType, TransactionScanResultType, TransactionSimulationResult } from '@/graphql/__generated__/metadataPOST';
 import { isNil } from 'lodash';
 import { RequestData } from '@/redux/requests';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 type SimulationArgs = {
   accountAddress: string;
-  currentChainId: ChainId;
+  chainId: ChainId;
   isMessageRequest: boolean;
   nativeCurrency: string;
   req: any; // Replace 'any' with the correct type for 'req'
@@ -26,7 +26,7 @@ type SimulationResult = {
 
 const simulationQueryKey = ({
   accountAddress,
-  currentChainId,
+  chainId,
   isMessageRequest,
   nativeCurrency,
   req,
@@ -38,7 +38,7 @@ const simulationQueryKey = ({
     'txSimulation',
     {
       accountAddress,
-      currentChainId,
+      chainId,
       isMessageRequest,
       nativeCurrency,
       req,
@@ -50,9 +50,7 @@ const simulationQueryKey = ({
   );
 
 const fetchSimulation = async ({
-  queryKey: [
-    { accountAddress, currentChainId, isMessageRequest, nativeCurrency, req, requestMessage, simulationUnavailable, transactionDetails },
-  ],
+  queryKey: [{ accountAddress, chainId, isMessageRequest, nativeCurrency, req, requestMessage, simulationUnavailable, transactionDetails }],
 }: QueryFunctionArgs<typeof simulationQueryKey>): Promise<SimulationResult> => {
   try {
     let simulationData;
@@ -60,7 +58,7 @@ const fetchSimulation = async ({
     if (isMessageRequest) {
       simulationData = await metadataPOSTClient.simulateMessage({
         address: accountAddress,
-        chainId: currentChainId,
+        chainId,
         message: {
           method: transactionDetails?.payload?.method,
           params: [requestMessage],
@@ -89,7 +87,7 @@ const fetchSimulation = async ({
       }
     } else {
       simulationData = await metadataPOSTClient.simulateTransactions({
-        chainId: currentChainId,
+        chainId,
         currency: nativeCurrency?.toLowerCase(),
         transactions: [
           {
@@ -139,7 +137,7 @@ export const useSimulation = (
   config: QueryConfig<SimulationResult, Error, ReturnType<typeof simulationQueryKey>> = {}
 ) => {
   return useQuery(simulationQueryKey(args), fetchSimulation, {
-    enabled: !!args.accountAddress && !!args.currentChainId,
+    enabled: !!args.accountAddress && !!args.chainId,
     retry: 3,
     refetchOnWindowFocus: false,
     staleTime: Infinity,

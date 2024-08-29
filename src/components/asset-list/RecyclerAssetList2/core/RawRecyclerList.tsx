@@ -13,7 +13,7 @@ import rowRenderer from './RowRenderer';
 import { BaseCellType, CellTypes, RecyclerListViewRef } from './ViewTypes';
 import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
-import { UniqueAsset } from '@/entities';
+import { NativeCurrencyKey, UniqueAsset } from '@/entities';
 import { useRecyclerListViewScrollToTopContext } from '@/navigation/RecyclerListViewScrollToTopContext';
 import { useAccountSettings, useCoinListEdited, useCoinListEditOptions, useWallets } from '@/hooks';
 import { useNavigation } from '@/navigation';
@@ -29,7 +29,7 @@ const dataProvider = new DataProvider((r1, r2) => {
 export type ExtendedState = {
   theme: any;
   nativeCurrencySymbol: string;
-  nativeCurrency: string;
+  nativeCurrency: NativeCurrencyKey;
   navigate: any;
   isCoinListEdited: boolean;
   hiddenCoins: BooleanMap;

@@ -15,7 +15,7 @@ import { SEND_TRANSACTION } from './signingMethods';
 import { handleSessionRequestResponse } from '@/walletConnect';
 import ethereumUtils, { getNetworkFromChainId } from './ethereumUtils';
 import { getRequestDisplayDetails } from '@/parsers';
-import { RainbowNetworks } from '@/networks';
+import { RainbowNetworkByChainId, RainbowNetworkObjects } from '@/networks';
 import { maybeSignUri } from '@/handlers/imgix';
 import { getActiveRoute } from '@/navigation/Navigation';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
@@ -30,11 +30,12 @@ import {
   RequestMessage,
   useMobileWalletProtocolHost,
 } from '@coinbase/mobile-wallet-protocol-host';
-import { ChainId } from '@/__swaps__/types/chains';
 import { logger, RainbowError } from '@/logger';
 import { noop } from 'lodash';
 import { toUtf8String } from '@ethersproject/strings';
 import { BigNumber } from '@ethersproject/bignumber';
+import { Address } from 'viem';
+import { ChainId } from '@/networks/types';
 
 export enum RequestSource {
   WALLETCONNECT = 'walletconnect',
@@ -101,7 +102,7 @@ export const handleMobileWalletProtocolRequest = async ({
     if (isHandshakeAction(action)) {
       logger.debug(`Processing handshake action for ${action.appId}`);
 
-      const chainIds = RainbowNetworks.filter(network => network.enabled && network.networkType !== 'testnet').map(network => network.id);
+      const chainIds = Object.values(ChainId).map(chainId => BigNumber.from(chainId).toNumber());
       const receivedTimestamp = Date.now();
 
       const dappMetadata = await fetchClientAppMetadata();
@@ -152,7 +153,8 @@ export const handleMobileWalletProtocolRequest = async ({
       }
 
       if (action.method === 'wallet_switchEthereumChain') {
-        const isSupportedChain = RainbowNetworks.find(network => network.id === BigNumber.from(action.params.chainId).toNumber());
+        const chainId = BigNumber.from(action.params.chainId).toNumber();
+        const isSupportedChain = Object.values(ChainId).includes(chainId);
         if (!isSupportedChain) {
           await rejectAction(action, {
             message: 'Unsupported chain',
@@ -276,9 +278,13 @@ export interface DappConnectionData {
   address?: string;
 }
 
-export const handleDappBrowserConnectionPrompt = (dappData: DappConnectionData): Promise<{ chainId: number; address: string } | Error> => {
+export const handleDappBrowserConnectionPrompt = (
+  dappData: DappConnectionData
+): Promise<{ chainId: ChainId; address: Address } | Error> => {
   return new Promise((resolve, reject) => {
-    const chainIds = RainbowNetworks.filter(network => network.enabled && network.networkType !== 'testnet').map(network => network.id);
+    const chainIds = RainbowNetworkObjects.filter(network => network.enabled && network.networkType !== 'testnet').map(
+      network => network.id
+    );
     const receivedTimestamp = Date.now();
     const routeParams: WalletconnectApprovalSheetRouteParams = {
       receivedTimestamp,

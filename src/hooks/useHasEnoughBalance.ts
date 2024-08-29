@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { fromWei, greaterThanOrEqualTo } from '@/helpers/utilities';
 import BigNumber from 'bignumber.js';
 import { SelectedGasFee } from '@/entities';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 type WalletBalance = {
   amount: string | number;
@@ -14,12 +14,12 @@ type WalletBalance = {
 type BalanceCheckParams = {
   isMessageRequest: boolean;
   walletBalance: WalletBalance;
-  currentChainId: ChainId;
+  chainId: ChainId;
   selectedGasFee: SelectedGasFee;
   req: any;
 };
 
-export const useHasEnoughBalance = ({ isMessageRequest, walletBalance, currentChainId, selectedGasFee, req }: BalanceCheckParams) => {
+export const useHasEnoughBalance = ({ isMessageRequest, walletBalance, chainId, selectedGasFee, req }: BalanceCheckParams) => {
   const [isBalanceEnough, setIsBalanceEnough] = useState<boolean>();
 
   useEffect(() => {
@@ -29,7 +29,7 @@ export const useHasEnoughBalance = ({ isMessageRequest, walletBalance, currentCh
     }
 
     const { gasFee } = selectedGasFee;
-    if (!walletBalance.isLoaded || !currentChainId || !gasFee?.estimatedFee) {
+    if (!walletBalance.isLoaded || !chainId || !gasFee?.estimatedFee) {
       return;
     }
 
@@ -41,7 +41,7 @@ export const useHasEnoughBalance = ({ isMessageRequest, walletBalance, currentCh
     const isEnough = greaterThanOrEqualTo(balanceAmount, totalAmount);
 
     setIsBalanceEnough(isEnough);
-  }, [isMessageRequest, currentChainId, selectedGasFee, walletBalance, req]);
+  }, [isMessageRequest, chainId, selectedGasFee, walletBalance, req]);
 
   return { isBalanceEnough };
 };

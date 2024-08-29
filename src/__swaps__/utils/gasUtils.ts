@@ -12,7 +12,7 @@ import { OVM_GAS_PRICE_ORACLE, gasUnits, supportedNativeCurrencies, optimismGasO
 
 import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/__swaps__/utils/meteorology';
 import { ParsedAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 import { BlocksToConfirmation, GasFeeLegacyParams, GasFeeParam, GasFeeParams, GasSpeed } from '@/__swaps__/types/gas';
 
 import { gweiToWei, weiToGwei } from '@/__swaps__/utils/ethereum';

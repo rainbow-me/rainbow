@@ -13,7 +13,7 @@ const AvalancheBadge = require('@/assets/badges/avalanche.png');
 const BlastBadge = require('@/assets/badges/blast.png');
 const DegenBadge = require('@/assets/badges/degen.png');
 
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 import { globalColors } from '@/design-system';
 import { PIXEL_RATIO } from '@/utils/deviceUtils';
 import { useSwapsStore } from '@/state/swaps/swapsStore';

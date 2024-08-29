@@ -25,9 +25,9 @@ import { useAccountSettings, useGas, useSwitchWallet, useWallets } from '@/hooks
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
 import { IS_IOS } from '@/env';
-import { estimateGasWithPadding, getProvider, getProviderForNetwork, toHex } from '@/handlers/web3';
+import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { GasSpeedButton } from '@/components/gas';
-import { getNetworkObj, getNetworkObject } from '@/networks';
+import { getNetworkObject } from '@/networks';
 import { RainbowError, logger } from '@/logger';
 import {
   PERSONAL_SIGN,
@@ -72,7 +72,7 @@ import { useNonceForDisplay } from '@/hooks/useNonceForDisplay';
 import { useProviderSetup } from '@/hooks/useProviderSetup';
 import { useTransactionSubmission } from '@/hooks/useSubmitTransaction';
 import { useConfirmTransaction } from '@/hooks/useConfirmTransaction';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 type SignTransactionSheetParams = {
   transactionDetails: RequestData;
@@ -100,13 +100,13 @@ export const SignTransactionSheet = () => {
     onSuccess: onSuccessCallback,
     onCancel: onCancelCallback,
     onCloseScreen: onCloseScreenCallback,
-    chainId: currentChainId,
+    chainId,
     address: currentAddress,
     // for request type specific handling
     source,
   } = routeParams;
 
-  const { provider, nativeAsset } = useProviderSetup(currentChainId, accountAddress);
+  const { provider, nativeAsset } = useProviderSetup(chainId, accountAddress);
 
   const isMessageRequest = isMessageDisplayType(transactionDetails.payload.method);
   const isPersonalSignRequest = isPersonalSign(transactionDetails.payload.method);
@@ -145,7 +145,7 @@ export const SignTransactionSheet = () => {
   const { gasLimit, isValidGas, startPollingGasFees, stopPollingGasFees, updateTxFee, selectedGasFee, gasFeeParamsBySpeed } = useGas();
 
   const { methodName } = useTransactionSetup({
-    currentChainId,
+    chainId,
     startPollingGasFees,
     stopPollingGasFees,
     isMessageRequest,
@@ -156,7 +156,7 @@ export const SignTransactionSheet = () => {
   const { isBalanceEnough } = useHasEnoughBalance({
     isMessageRequest,
     walletBalance,
-    currentChainId,
+    chainId,
     selectedGasFee,
     req,
   });
@@ -167,13 +167,13 @@ export const SignTransactionSheet = () => {
     provider,
     req,
     updateTxFee,
-    currentChainId,
+    chainId,
   });
 
   const { nonceForDisplay } = useNonceForDisplay({
     isMessageRequest,
     currentAddress,
-    currentChainId,
+    chainId,
   });
 
   const {
@@ -183,7 +183,7 @@ export const SignTransactionSheet = () => {
   } = useSimulation(
     {
       accountAddress,
-      currentChainId,
+      chainId,
       isMessageRequest,
       nativeCurrency,
       req,
@@ -265,7 +265,7 @@ export const SignTransactionSheet = () => {
     const txPayload = req;
     let { gas } = txPayload;
     const gasLimitFromPayload = txPayload?.gasLimit;
-    if (!currentChainId) return;
+    if (!chainId) return;
     try {
       logger.debug(
         '[SignTransactionSheet]: gas suggested by dapp',
@@ -304,7 +304,7 @@ export const SignTransactionSheet = () => {
     const gasParams = parseGasParamsForTransaction(selectedGasFee);
     const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
 
-    const nonce = await getNextNonce({ address: accountInfo.address, network: ethereumUtils.getNetworkFromChainId(currentChainId) });
+    const nonce = await getNextNonce({ address: accountInfo.address, chainId });
     let txPayloadUpdated = {
       ...cleanTxPayload,
       ...gasParams,
@@ -320,11 +320,11 @@ export const SignTransactionSheet = () => {
 
     let response = null;
     try {
-      if (!currentChainId) {
+      if (!chainId) {
         return;
       }
-      const provider = getProvider({ chainId: currentChainId });
-      if (!provider) {
+      const providerToUse = provider || getProvider({ chainId });
+      if (!providerToUse) {
         return;
       }
       const existingWallet = await performanceTracking.getState().executeFn({
@@ -333,7 +333,7 @@ export const SignTransactionSheet = () => {
         operation: TimeToSignOperation.KeychainRead,
       })({
         address: accountInfo.address,
-        provider,
+        provider: providerToUse,
         timeTracking: {
           screen: SCREEN_FOR_REQUEST_SOURCE[source],
           operation: TimeToSignOperation.Authentication,
@@ -352,7 +352,7 @@ export const SignTransactionSheet = () => {
           operation: TimeToSignOperation.BroadcastTransaction,
         })({
           existingWallet: existingWallet,
-          provider,
+          provider: providerToUse,
           transaction: txPayloadUpdated,
         });
       } else {
@@ -362,7 +362,7 @@ export const SignTransactionSheet = () => {
           operation: TimeToSignOperation.SignTransaction,
         })({
           existingWallet,
-          provider,
+          provider: providerToUse,
           transaction: txPayloadUpdated,
         });
       }
@@ -380,7 +380,7 @@ export const SignTransactionSheet = () => {
       if (sendInsteadOfSign && sendResult?.hash) {
         txDetails = {
           status: 'pending',
-          chainId: currentChainId,
+          chainId,
           asset: displayDetails?.request?.asset || nativeAsset,
           contract: {
             name: transactionDetails.dappName,
@@ -390,7 +390,7 @@ export const SignTransactionSheet = () => {
           from: displayDetails?.request?.from,
           gasLimit,
           hash: sendResult.hash,
-          network: ethereumUtils.getNetworkFromChainId(currentChainId) || Network.mainnet,
+          network: getNetworkObject({ chainId }).value,
           nonce: sendResult.nonce,
           to: displayDetails?.request?.to,
           value: sendResult.value.toString(),
@@ -400,7 +400,7 @@ export const SignTransactionSheet = () => {
         if (accountAddress?.toLowerCase() === txDetails.from?.toLowerCase()) {
           addNewTransaction({
             transaction: txDetails,
-            network: ethereumUtils.getNetworkFromChainId(currentChainId) || Network.mainnet,
+            chainId,
             address: accountAddress,
           });
           txSavedInCurrentWallet = true;
@@ -412,7 +412,7 @@ export const SignTransactionSheet = () => {
         dappName: transactionDetails.dappName,
         dappUrl: transactionDetails.dappUrl,
         isHardwareWallet: accountInfo.isHardwareWallet,
-        network: ethereumUtils.getNetworkFromChainId(currentChainId),
+        network: getNetworkObject({ chainId }).value,
       });
 
       if (!sendInsteadOfSign) {
@@ -432,7 +432,7 @@ export const SignTransactionSheet = () => {
           await switchToWalletWithAddress(txDetails?.from as string);
           addNewTransaction({
             transaction: txDetails as NewTransaction,
-            network: ethereumUtils.getNetworkFromChainId(currentChainId) || Network.mainnet,
+            chainId,
             address: txDetails?.from as string,
           });
         });
@@ -443,7 +443,7 @@ export const SignTransactionSheet = () => {
         dappUrl: transactionDetails?.dappUrl,
         formattedDappUrl,
         rpcMethod: req?.method,
-        network: ethereumUtils.getNetworkFromChainId(currentChainId),
+        network: getNetworkObject({ chainId }).value,
       });
       // If the user is using a hardware wallet, we don't want to close the sheet on an error
       if (!accountInfo.isHardwareWallet) {
@@ -457,7 +457,7 @@ export const SignTransactionSheet = () => {
     transactionDetails.dappUrl,
     transactionDetails.imageUrl,
     req,
-    currentChainId,
+    chainId,
     selectedGasFee,
     gasLimit,
     accountInfo.address,
@@ -477,8 +477,8 @@ export const SignTransactionSheet = () => {
     const message = transactionDetails?.payload?.params.find((p: string) => !isAddress(p));
     let response = null;
 
-    const provider = getProvider({ chainId: currentChainId });
-    if (!provider) {
+    const providerToUse = provider || getProvider({ chainId });
+    if (!providerToUse) {
       return;
     }
 
@@ -488,7 +488,7 @@ export const SignTransactionSheet = () => {
       operation: TimeToSignOperation.KeychainRead,
     })({
       address: accountInfo.address,
-      provider,
+      provider: providerToUse,
       timeTracking: {
         screen: SCREEN_FOR_REQUEST_SOURCE[source],
         operation: TimeToSignOperation.Authentication,
@@ -525,7 +525,7 @@ export const SignTransactionSheet = () => {
         dappName: transactionDetails?.dappName,
         dappUrl: transactionDetails?.dappUrl,
         isHardwareWallet: accountInfo.isHardwareWallet,
-        network: ethereumUtils.getNetworkFromChainId(currentChainId),
+        network: getNetworkObject({ chainId }).value,
       });
       onSuccessCallback?.(response.result);
 
@@ -538,7 +538,7 @@ export const SignTransactionSheet = () => {
     transactionDetails?.payload?.method,
     transactionDetails?.dappName,
     transactionDetails?.dappUrl,
-    currentChainId,
+    chainId,
     accountInfo.address,
     accountInfo.isHardwareWallet,
     source,
@@ -566,7 +566,7 @@ export const SignTransactionSheet = () => {
 
   const expandedCardBottomInset = EXPANDED_CARD_BOTTOM_INSET + (isMessageRequest ? 0 : GAS_BUTTON_SPACE);
 
-  const canPressConfirm = isMessageRequest || (!!walletBalance?.isLoaded && !!currentChainId && !!selectedGasFee?.gasFee?.estimatedFee);
+  const canPressConfirm = isMessageRequest || (!!walletBalance?.isLoaded && !!chainId && !!selectedGasFee?.gasFee?.estimatedFee);
 
   return (
     <PanGestureHandler enabled={IS_IOS}>
@@ -639,7 +639,7 @@ export const SignTransactionSheet = () => {
 
                 <Box style={{ gap: 14, zIndex: 2 }}>
                   <TransactionSimulationCard
-                    currentChainId={currentChainId}
+                    chainId={chainId}
                     expandedCardBottomInset={expandedCardBottomInset}
                     isBalanceEnough={isBalanceEnough}
                     isPersonalSignRequest={isPersonalSignRequest}
@@ -659,7 +659,7 @@ export const SignTransactionSheet = () => {
                     />
                   ) : (
                     <TransactionDetailsCard
-                      currentChainId={currentChainId}
+                      chainId={chainId}
                       expandedCardBottomInset={expandedCardBottomInset}
                       isBalanceEnough={isBalanceEnough}
                       isLoading={txSimulationLoading}
@@ -704,15 +704,15 @@ export const SignTransactionSheet = () => {
                         ) : (
                           <Box style={{ height: 9 }}>
                             <AnimatePresence>
-                              {!!currentChainId && walletBalance?.isLoaded && (
+                              {!!chainId && walletBalance?.isLoaded && (
                                 <MotiView animate={{ opacity: 1 }} from={{ opacity: 0 }} transition={{ opacity: motiTimingConfig }}>
                                   <Inline alignVertical="center" space={{ custom: 5 }} wrap={false}>
                                     <Bleed vertical="4px">
-                                      <ChainImage chainId={currentChainId} size={12} />
+                                      <ChainImage chainId={chainId} size={12} />
                                     </Bleed>
                                     <Text color="labelQuaternary" size="13pt" weight="semibold">
                                       {`${walletBalance?.display} ${i18n.t(i18n.l.walletconnect.simulation.profile_section.on_network, {
-                                        network: getNetworkObject({ chainId: currentChainId })?.name,
+                                        network: getNetworkObject({ chainId })?.name,
                                       })}`}
                                     </Text>
                                   </Inline>
@@ -783,7 +783,7 @@ export const SignTransactionSheet = () => {
                 <GasSpeedButton
                   marginTop={0}
                   horizontalPadding={20}
-                  chainId={currentChainId}
+                  chainId={chainId}
                   theme={'dark'}
                   marginBottom={0}
                   asset={undefined}

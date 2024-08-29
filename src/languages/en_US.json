@@ -487,6 +487,7 @@
       "clear_local_storage": "Clear local storage",
       "clear_mmkv_storage": "Clear MMKV storage",
       "connect_to_hardhat": "Connect to hardhat",
+      "disconnect_to_hardhat": "Disconnect from hardhat",
       "crash_app_render_error": "Crash app (render error)",
       "enable_testnets": "Enable Testnets",
       "installing_update": "Installing update",

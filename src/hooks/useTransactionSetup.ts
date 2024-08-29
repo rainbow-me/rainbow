@@ -6,11 +6,10 @@ import { methodRegistryLookupAndParse } from '@/utils/methodRegistry';
 import { analytics } from '@/analytics';
 import { event } from '@/analytics/event';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
-import { ChainId } from '@/__swaps__/types/chains';
-import { ethereumUtils } from '@/utils';
+import { ChainId } from '@/networks/types';
 
 type TransactionSetupParams = {
-  currentChainId: ChainId;
+  chainId: ChainId;
   startPollingGasFees: ReturnType<typeof useGas>['startPollingGasFees'];
   stopPollingGasFees: ReturnType<typeof useGas>['stopPollingGasFees'];
   isMessageRequest: boolean;
@@ -19,7 +18,7 @@ type TransactionSetupParams = {
 };
 
 export const useTransactionSetup = ({
-  currentChainId,
+  chainId,
   startPollingGasFees,
   stopPollingGasFees,
   isMessageRequest,
@@ -32,7 +31,7 @@ export const useTransactionSetup = ({
     async (data: string) => {
       const methodSignaturePrefix = data.substr(0, 10);
       try {
-        const { name } = await methodRegistryLookupAndParse(methodSignaturePrefix, currentChainId);
+        const { name } = await methodRegistryLookupAndParse(methodSignaturePrefix, chainId);
         if (name) {
           setMethodName(name);
         }
@@ -40,15 +39,14 @@ export const useTransactionSetup = ({
         setMethodName(data);
       }
     },
-    [currentChainId]
+    [chainId]
   );
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
-      if (currentChainId) {
+      if (chainId) {
         if (!isMessageRequest) {
-          const network = ethereumUtils.getNetworkFromChainId(currentChainId);
-          startPollingGasFees(network);
+          startPollingGasFees(chainId);
           fetchMethodName(transactionDetails?.payload?.params?.[0].data);
         } else {
           setMethodName(i18n.t(i18n.l.wallet.message_signing.request));
@@ -62,15 +60,7 @@ export const useTransactionSetup = ({
         stopPollingGasFees();
       }
     };
-  }, [
-    isMessageRequest,
-    currentChainId,
-    transactionDetails?.payload?.params,
-    source,
-    fetchMethodName,
-    startPollingGasFees,
-    stopPollingGasFees,
-  ]);
+  }, [isMessageRequest, chainId, transactionDetails?.payload?.params, source, fetchMethodName, startPollingGasFees, stopPollingGasFees]);
 
   return { methodName };
 };

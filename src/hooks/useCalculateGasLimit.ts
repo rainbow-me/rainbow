@@ -10,7 +10,7 @@ import { InteractionManager } from 'react-native';
 import { GasFeeParamsBySpeed } from '@/entities';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { useGas } from '@/hooks';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 type CalculateGasLimitProps = {
   isMessageRequest: boolean;
@@ -18,7 +18,7 @@ type CalculateGasLimitProps = {
   provider: StaticJsonRpcProvider | null;
   req: any;
   updateTxFee: ReturnType<typeof useGas>['updateTxFee'];
-  currentChainId: ChainId;
+  chainId: ChainId;
 };
 
 export const useCalculateGasLimit = ({
@@ -27,7 +27,7 @@ export const useCalculateGasLimit = ({
   provider,
   req,
   updateTxFee,
-  currentChainId,
+  chainId,
 }: CalculateGasLimitProps) => {
   const calculatingGasLimit = useRef(false);
 
@@ -52,15 +52,15 @@ export const useCalculateGasLimit = ({
     } finally {
       logger.debug('WC: Setting gas limit to', { gas: convertHexToString(gas) }, logger.DebugContext.walletconnect);
 
-      const networkObject = getNetworkObject({ chainId: currentChainId });
-      if (currentChainId && networkObject.gas.OptimismTxFee) {
+      const networkObject = getNetworkObject({ chainId });
+      if (chainId && networkObject.gas.OptimismTxFee) {
         const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(txPayload, provider || web3Provider);
         updateTxFee(gas, null, l1GasFeeOptimism);
       } else {
         updateTxFee(gas, null);
       }
     }
-  }, [currentChainId, req, updateTxFee, provider]);
+  }, [chainId, req, updateTxFee, provider]);
 
   useEffect(() => {
     if (!isEmpty(gasFeeParamsBySpeed) && !calculatingGasLimit.current && !isMessageRequest && provider) {

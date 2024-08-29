@@ -1175,9 +1175,9 @@ PODS:
     - Yoga
   - react-native-change-icon (4.0.0):
     - React-Core
-  - react-native-cloud-fs (2.6.1):
+  - react-native-cloud-fs (2.6.2):
     - React
-  - react-native-compat (2.11.2):
+  - react-native-compat (2.15.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -2333,8 +2333,8 @@ SPEC CHECKSUMS:
   react-native-branch: 960c897d57b9f4912b08b9d06a25284b6e9879da
   react-native-cameraroll: b5ce04a1ee4081d7eea921918de979f0b41d8e22
   react-native-change-icon: ea9bb7255b09e89f41cbf282df16eade91ab1833
-  react-native-cloud-fs: e7103d1f693c57b481f820fa5e6b6b0522a5a31e
-  react-native-compat: 0468620f537a51ce0d3f4ba65bda6872240b9a0d
+  react-native-cloud-fs: c90379f513b8d7ad5cfed610ccf50f27d837016e
+  react-native-compat: 408a4b320fa4426f2c25ab74ed5764be6b3eb5aa
   react-native-get-random-values: 1404bd5cc0ab0e287f75ee1c489555688fc65f89
   react-native-ios-context-menu: e529171ba760a1af7f2ef0729f5a7f4d226171c5
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89

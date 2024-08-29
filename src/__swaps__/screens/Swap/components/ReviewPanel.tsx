@@ -2,8 +2,7 @@ import { AnimatedChainImage } from '@/__swaps__/screens/Swap/components/Animated
 import { ReviewGasButton } from '@/__swaps__/screens/Swap/components/GasButton';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { useNativeAssetForChain } from '@/__swaps__/screens/Swap/hooks/useNativeAssetForChain';
-import { ChainId, ChainNameDisplay } from '@/__swaps__/types/chains';
-import { chainNameFromChainId } from '@/__swaps__/utils/chains';
+import { ChainNameDisplay, ChainId } from '@/networks/types';
 import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
 import {
   convertRawAmountToBalance,
@@ -364,10 +363,10 @@ export function ReviewPanel() {
   });
 
   const openGasExplainer = useCallback(async () => {
-    const nativeAsset = await getNativeAssetForNetwork(swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet);
+    const nativeAsset = await getNativeAssetForNetwork({ chainId: swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet });
 
     navigate(Routes.EXPLAIN_SHEET, {
-      network: chainNameFromChainId(swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet),
+      chainId: swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet,
       type: 'gas',
       nativeAsset,
     });

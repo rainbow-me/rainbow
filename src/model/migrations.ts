@@ -273,8 +273,8 @@ export default async function runMigrations() {
       const wallet = wallets[walletKeys[i]];
       if (wallet.type !== WalletTypes.readOnly) {
         // eslint-disable-next-line @typescript-eslint/prefer-for-of
-        for (let x = 0; x < wallet.addresses.length; x++) {
-          const { address } = wallet.addresses[x];
+        for (let x = 0; x < (wallet.addresses || []).length; x++) {
+          const { address } = (wallet.addresses || [])[x];
           logger.debug(`[runMigrations]: setting web profiles for address ${address}`);
           await store.dispatch(updateWebDataEnabled(true, address));
         }
@@ -308,7 +308,7 @@ export default async function runMigrations() {
       // eslint-disable-next-line @typescript-eslint/prefer-for-of
       for (let i = 0; i < walletKeys.length; i++) {
         const wallet = wallets[walletKeys[i]];
-        const newAddresses = wallet.addresses.map((account: RainbowAccount) => {
+        const newAddresses = (wallet.addresses || []).map((account: RainbowAccount) => {
           const accountEmoji = returnStringFirstEmoji(account?.label);
           return {
             ...account,
@@ -440,8 +440,8 @@ export default async function runMigrations() {
     for (let i = 0; i < walletKeys.length; i++) {
       const wallet = wallets[walletKeys[i]];
       // eslint-disable-next-line @typescript-eslint/prefer-for-of
-      for (let x = 0; x < wallet.addresses.length; x++) {
-        const { address } = wallet.addresses[x];
+      for (let x = 0; x < (wallet.addresses || []).length; x++) {
+        const { address } = (wallet.addresses || [])[x];
 
         const assets = await getAssets(address, network);
         const hiddenCoins = await getHiddenCoins(address, network);
