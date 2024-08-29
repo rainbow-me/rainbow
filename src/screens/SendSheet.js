@@ -785,7 +785,7 @@ export default function SendSheet(props) {
           }
         })
         .catch(e => {
-          logger.error(new RainbowError(`[SendSheet]: error calculating gas limit: ${e}`));
+          logger.warn(new RainbowError(`[SendSheet]: error calculating gas limit: ${e}`));
           updateTxFee(null, null);
         });
     }
