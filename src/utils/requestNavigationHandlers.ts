@@ -13,9 +13,9 @@ import {
 import { InteractionManager } from 'react-native';
 import { SEND_TRANSACTION } from './signingMethods';
 import { handleSessionRequestResponse } from '@/walletConnect';
-import ethereumUtils, { getNetworkFromChainId } from './ethereumUtils';
+import ethereumUtils from './ethereumUtils';
 import { getRequestDisplayDetails } from '@/parsers';
-import { RainbowNetworkByChainId, RainbowNetworkObjects } from '@/networks';
+import { RainbowNetworkObjects } from '@/networks';
 import { maybeSignUri } from '@/handlers/imgix';
 import { getActiveRoute } from '@/navigation/Navigation';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
@@ -88,6 +88,9 @@ export const handleMobileWalletProtocolRequest = async ({
   const { selected } = store.getState().wallets;
   const { accountAddress } = store.getState().settings;
 
+  let addressToUse = accountAddress;
+  let chainIdToUse = ChainId.mainnet;
+
   const isReadOnlyWallet = selected?.type === walletTypes.readOnly;
   if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
     logger.debug('Rejecting request due to read-only wallet');
@@ -101,8 +104,7 @@ export const handleMobileWalletProtocolRequest = async ({
 
     if (isHandshakeAction(action)) {
       logger.debug(`Processing handshake action for ${action.appId}`);
-
-      const chainIds = Object.values(ChainId).map(chainId => BigNumber.from(chainId).toNumber());
+      const chainIds = Object.values(ChainId).filter(value => typeof value === 'number') as number[];
       const receivedTimestamp = Date.now();
 
       const dappMetadata = await fetchClientAppMetadata();
@@ -117,12 +119,15 @@ export const handleMobileWalletProtocolRequest = async ({
             isWalletConnectV2: false,
             peerId: '',
             dappScheme: action.callback,
-            proposedChainId: request.account?.networkId ?? ChainId.mainnet,
-            proposedAddress: request.account?.address || accountAddress,
+            proposedChainId: request.account?.networkId || chainIdToUse,
+            proposedAddress: request.account?.address || addressToUse,
           },
           source: RequestSource.MOBILE_WALLET_PROTOCOL,
           timedOut: false,
-          callback: async approved => {
+          callback: async (approved, chainId, address) => {
+            addressToUse = address;
+            chainIdToUse = chainId;
+
             if (approved) {
               logger.debug(`Handshake approved for ${action.appId}`);
               const success = await approveHandshake(dappMetadata);
@@ -142,6 +147,7 @@ export const handleMobileWalletProtocolRequest = async ({
         );
       });
     } else if (isEthereumAction(action)) {
+      console.log(JSON.stringify(action, null, 2));
       logger.debug(`Processing ethereum action: ${action.method}`);
       if (!supportedMobileWalletProtocolActions.includes(action.method)) {
         logger.error(new RainbowError(`[handleMobileWalletProtocolRequest]: Unsupported action type ${action.method}`));
@@ -174,8 +180,8 @@ export const handleMobileWalletProtocolRequest = async ({
         await approveAction(action, {
           value: JSON.stringify({
             chain: request.account?.chain ?? 'eth',
-            networkId: request.account?.networkId ?? ChainId.mainnet,
-            address: accountAddress,
+            networkId: chainIdToUse,
+            address: addressToUse,
           }),
         });
         return true;
@@ -196,12 +202,12 @@ export const handleMobileWalletProtocolRequest = async ({
       };
 
       const displayDetails = await getRequestDisplayDetails(payload, nativeCurrency, request.account?.networkId ?? ChainId.mainnet);
-
+      const address = (action as PersonalSignAction).params.address || request.account?.address || accountAddress;
       const requestWithDetails: RequestData = {
         dappName: session?.dappName ?? session?.dappId ?? '',
         dappUrl: session?.dappURL ?? '',
         imageUrl: session?.dappImageURL ?? '',
-        address: (action as PersonalSignAction).params.address ?? accountAddress,
+        address,
         chainId: request.account?.networkId ?? ChainId.mainnet,
         payload,
         displayDetails,
@@ -238,7 +244,7 @@ export const handleMobileWalletProtocolRequest = async ({
           onCancel,
           onCloseScreen: noop,
           chainId: request.account?.networkId ?? ChainId.mainnet,
-          address: accountAddress,
+          address,
           source: RequestSource.MOBILE_WALLET_PROTOCOL,
         });
       });

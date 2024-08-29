@@ -4,18 +4,18 @@ import { ChainId } from '@/networks/types';
 
 type UseNonceParams = {
   isMessageRequest: boolean;
-  currentAddress: string;
+  address: string;
   chainId: ChainId;
 };
 
-export const useNonceForDisplay = ({ isMessageRequest, currentAddress, chainId }: UseNonceParams) => {
+export const useNonceForDisplay = ({ isMessageRequest, address, chainId }: UseNonceParams) => {
   const [nonceForDisplay, setNonceForDisplay] = useState<string>();
 
   useEffect(() => {
     if (!isMessageRequest && !nonceForDisplay) {
       (async () => {
         try {
-          const nonce = await getNextNonce({ address: currentAddress, chainId });
+          const nonce = await getNextNonce({ address, chainId });
           if (nonce || nonce === 0) {
             const nonceAsString = nonce.toString();
             setNonceForDisplay(nonceAsString);
@@ -25,7 +25,7 @@ export const useNonceForDisplay = ({ isMessageRequest, currentAddress, chainId }
         }
       })();
     }
-  }, [currentAddress, chainId, isMessageRequest, nonceForDisplay]);
+  }, [address, chainId, isMessageRequest, nonceForDisplay]);
 
   return { nonceForDisplay };
 };

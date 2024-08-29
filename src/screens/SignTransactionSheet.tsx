@@ -12,11 +12,11 @@ import { NewTransaction } from '@/entities';
 import { useNavigation } from '@/navigation';
 
 import { useTheme } from '@/theme';
-import { deviceUtils, ethereumUtils } from '@/utils';
+import { deviceUtils } from '@/utils';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { TransactionScanResultType } from '@/graphql/__generated__/metadataPOST';
-import { Network } from '@/networks/types';
+import { ChainId } from '@/networks/types';
 import { convertHexToString, delay, greaterThan, omitFlatten } from '@/helpers/utilities';
 
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
@@ -72,14 +72,12 @@ import { useNonceForDisplay } from '@/hooks/useNonceForDisplay';
 import { useProviderSetup } from '@/hooks/useProviderSetup';
 import { useTransactionSubmission } from '@/hooks/useSubmitTransaction';
 import { useConfirmTransaction } from '@/hooks/useConfirmTransaction';
-import { ChainId } from '@/networks/types';
 
 type SignTransactionSheetParams = {
   transactionDetails: RequestData;
   onSuccess: (hash: string) => void;
   onCancel: (error?: Error) => void;
   onCloseScreen: (canceled: boolean) => void;
-  network: Network;
   chainId: ChainId;
   address: string;
   source: RequestSource;
@@ -101,12 +99,16 @@ export const SignTransactionSheet = () => {
     onCancel: onCancelCallback,
     onCloseScreen: onCloseScreenCallback,
     chainId,
-    address: currentAddress,
+    address: specifiedAddress,
     // for request type specific handling
     source,
   } = routeParams;
 
-  const { provider, nativeAsset } = useProviderSetup(chainId, accountAddress);
+  console.log({ specifiedAddress });
+
+  const addressToUse = specifiedAddress ?? accountAddress;
+
+  const { provider, nativeAsset } = useProviderSetup(chainId, addressToUse);
 
   const isMessageRequest = isMessageDisplayType(transactionDetails.payload.method);
   const isPersonalSignRequest = isPersonalSign(transactionDetails.payload.method);
@@ -172,7 +174,7 @@ export const SignTransactionSheet = () => {
 
   const { nonceForDisplay } = useNonceForDisplay({
     isMessageRequest,
-    currentAddress,
+    address: addressToUse,
     chainId,
   });
 
@@ -182,7 +184,7 @@ export const SignTransactionSheet = () => {
     error: txSimulationApiError,
   } = useSimulation(
     {
-      accountAddress,
+      address: addressToUse,
       chainId,
       isMessageRequest,
       nativeCurrency,
@@ -205,14 +207,14 @@ export const SignTransactionSheet = () => {
     !!(simulationResult?.simulationData && itemCount === 0) && simulationResult?.simulationScanResult === TransactionScanResultType.Ok;
 
   const accountInfo = useMemo(() => {
-    const selectedWallet = wallets ? findWalletWithAccount(wallets, currentAddress) : undefined;
-    const profileInfo = getAccountProfileInfo(selectedWallet, walletNames, currentAddress);
+    const selectedWallet = wallets ? findWalletWithAccount(wallets, addressToUse) : undefined;
+    const profileInfo = getAccountProfileInfo(selectedWallet, walletNames, addressToUse);
     return {
       ...profileInfo,
-      address: currentAddress,
+      address: addressToUse,
       isHardwareWallet: !!selectedWallet?.deviceId,
     };
-  }, [wallets, currentAddress, walletNames]);
+  }, [wallets, addressToUse, walletNames]);
 
   const closeScreen = useCallback(
     (canceled: boolean) =>
@@ -351,7 +353,7 @@ export const SignTransactionSheet = () => {
           screen: SCREEN_FOR_REQUEST_SOURCE[source],
           operation: TimeToSignOperation.BroadcastTransaction,
         })({
-          existingWallet: existingWallet,
+          existingWallet,
           provider: providerToUse,
           transaction: txPayloadUpdated,
         });
@@ -397,11 +399,11 @@ export const SignTransactionSheet = () => {
           type: 'contract_interaction',
           ...gasParams,
         };
-        if (accountAddress?.toLowerCase() === txDetails.from?.toLowerCase()) {
+        if (accountInfo.address?.toLowerCase() === txDetails.from?.toLowerCase()) {
           addNewTransaction({
             transaction: txDetails,
             chainId,
-            address: accountAddress,
+            address: accountInfo.address,
           });
           txSavedInCurrentWallet = true;
         }
@@ -466,7 +468,6 @@ export const SignTransactionSheet = () => {
     source,
     closeScreen,
     nativeAsset,
-    accountAddress,
     onSuccessCallback,
     switchToWalletWithAddress,
     formattedDappUrl,

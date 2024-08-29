@@ -8,7 +8,7 @@ import { RequestData } from '@/redux/requests';
 import { ChainId } from '@/networks/types';
 
 type SimulationArgs = {
-  accountAddress: string;
+  address: string;
   chainId: ChainId;
   isMessageRequest: boolean;
   nativeCurrency: string;
@@ -25,7 +25,7 @@ type SimulationResult = {
 };
 
 const simulationQueryKey = ({
-  accountAddress,
+  address,
   chainId,
   isMessageRequest,
   nativeCurrency,
@@ -37,7 +37,7 @@ const simulationQueryKey = ({
   createQueryKey(
     'txSimulation',
     {
-      accountAddress,
+      address,
       chainId,
       isMessageRequest,
       nativeCurrency,
@@ -50,14 +50,14 @@ const simulationQueryKey = ({
   );
 
 const fetchSimulation = async ({
-  queryKey: [{ accountAddress, chainId, isMessageRequest, nativeCurrency, req, requestMessage, simulationUnavailable, transactionDetails }],
+  queryKey: [{ address, chainId, isMessageRequest, nativeCurrency, req, requestMessage, simulationUnavailable, transactionDetails }],
 }: QueryFunctionArgs<typeof simulationQueryKey>): Promise<SimulationResult> => {
   try {
     let simulationData;
 
     if (isMessageRequest) {
       simulationData = await metadataPOSTClient.simulateMessage({
-        address: accountAddress,
+        address,
         chainId,
         message: {
           method: transactionDetails?.payload?.method,
@@ -137,7 +137,7 @@ export const useSimulation = (
   config: QueryConfig<SimulationResult, Error, ReturnType<typeof simulationQueryKey>> = {}
 ) => {
   return useQuery(simulationQueryKey(args), fetchSimulation, {
-    enabled: !!args.accountAddress && !!args.chainId,
+    enabled: !!args.address && !!args.chainId,
     retry: 3,
     refetchOnWindowFocus: false,
     staleTime: Infinity,
