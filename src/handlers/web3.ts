@@ -167,15 +167,6 @@ export const isL2Chain = ({ chainId }: { chainId: ChainId }): boolean => {
 };
 
 /**
- * @desc Checks whether a provider is HardHat.
- * @param providerUrl The provider URL.
- * @return Whether or not the provider is HardHat.
- */
-export const isHardHat = (providerUrl: string): boolean => {
-  return providerUrl?.startsWith('http://') && providerUrl?.endsWith('8545');
-};
-
-/**
  * @desc Checks if the given network is a testnet.
  * @param network The network to check.
  * @return Whether or not the network is a testnet.

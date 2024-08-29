@@ -23,7 +23,7 @@ import {
 } from '@/entities';
 
 import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
-import { getProvider, isHardHat, toHex } from '@/handlers/web3';
+import { getProvider, toHex } from '@/handlers/web3';
 import {
   defaultGasParamsFormat,
   gweiToWei,
