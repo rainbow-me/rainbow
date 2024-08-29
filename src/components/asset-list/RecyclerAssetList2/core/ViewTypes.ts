@@ -30,6 +30,11 @@ export enum CellType {
   POSITION = 'POSITION',
   POSITIONS_SPACE_AFTER = 'POSITIONS_SPACE_AFTER',
 
+  CLAIMABLES_SPACE_BEFORE = 'CLAIMABLES_SPACE_BEFORE',
+  CLAIMABLES_HEADER = 'CLAIMABLES_HEADER',
+  CLAIMABLE = 'CLAIMABLE',
+  CLAIMABLES_SPACE_AFTER = 'CLAIMABLEs_SPACE_AFTER',
+
   LOADING_ASSETS = 'LOADING_ASSETS',
   RECEIVE_CARD = 'RECEIVE_CARD',
   ETH_CARD = 'ETH_CARD',
@@ -74,6 +79,13 @@ export type PositionExtraData = {
 export type PositionHeaderExtraData = {
   total: string;
 };
+export type ClaimableExtraData = {
+  uniqueId: string;
+  index: number;
+};
+export type ClaimablesHeaderExtraData = {
+  total: string;
+};
 export type NFTFamilyExtraData = {
   type: CellType.FAMILY_HEADER;
   name: string;
@@ -90,6 +102,8 @@ export type CellExtraData =
   | AssetListHeaderExtraData
   | AssetsHeaderExtraData
   | PositionExtraData
-  | PositionHeaderExtraData;
+  | PositionHeaderExtraData
+  | ClaimableExtraData
+  | ClaimablesHeaderExtraData;
 
 export type CellTypes = BaseCellType & CellExtraData;

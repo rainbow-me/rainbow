@@ -8,6 +8,7 @@ import { ExtendedState } from './RawRecyclerList';
 import {
   AssetsHeaderExtraData,
   CellType,
+  ClaimablesHeaderExtraData,
   CoinDividerExtraData,
   CoinExtraData,
   NFTExtraData,
@@ -33,6 +34,8 @@ import { RemoteCardCarousel } from '@/components/cards/remote-cards';
 import WrappedCollectiblesHeader from '../WrappedCollectiblesHeader';
 import NFTLoadingSkeleton from '../NFTLoadingSkeleton';
 import { NFTEmptyState } from '../NFTEmptyState';
+import WrappedClaimablesListHeader from '../WrappedClaimablesListHeader';
+import WrappedClaimable from '../WrappedClaimable';
 
 function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, extendedState: ExtendedState) {
   const data = extendedState.additionalData[uid];
@@ -51,6 +54,8 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     case CellType.EMPTY_ROW:
     case CellType.POSITIONS_SPACE_AFTER:
     case CellType.POSITIONS_SPACE_BEFORE:
+    case CellType.CLAIMABLES_SPACE_AFTER:
+    case CellType.CLAIMABLES_SPACE_BEFORE:
       return null;
     case CellType.COIN_DIVIDER:
       return (
@@ -160,8 +165,19 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     case CellType.POSITION: {
       const { uniqueId, index } = data as PositionExtraData;
 
-      return <WrappedPosition placement={index % 2 === 0 ? 'left' : 'right'} uniqueId={uniqueId} />;
+      // return <WrappedPosition placement={index % 2 === 0 ? 'left' : 'right'} uniqueId={uniqueId} />;
+      return <WrappedClaimable></WrappedClaimable>;
     }
+    case CellType.CLAIMABLES_HEADER: {
+      const { total } = data as ClaimablesHeaderExtraData;
+      return <WrappedClaimablesListHeader total={total} />;
+    }
+    case CellType.CLAIMABLE:
+      return null;
+    //   const { uniqueId, index } = data as ClaimableExtraData;
+
+    //   return <WrappedClaimable placement={index % 2 === 0 ? 'left' : 'right'} uniqueId={uniqueId} />;
+    // }
 
     case CellType.LOADING_ASSETS:
       return <AssetListItemSkeleton />;
