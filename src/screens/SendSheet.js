@@ -760,7 +760,7 @@ export default function SendSheet(props) {
   }, [checkAddress, debouncedInput]);
 
   useEffect(() => {
-    if (!currentProvider?._network?.chainId) return;
+    if (!currentProvider?._network?.chainId || !toAddress) return;
 
     const assetChainId = selected.chainId;
     const currentProviderChainId = currentProvider._network.chainId;
@@ -785,7 +785,7 @@ export default function SendSheet(props) {
           }
         })
         .catch(e => {
-          logger.warn(new RainbowError(`[SendSheet]: error calculating gas limit: ${e}`));
+          logger.error(new RainbowError(`[SendSheet]: error calculating gas limit: ${e}`));
           updateTxFee(null, null);
         });
     }
