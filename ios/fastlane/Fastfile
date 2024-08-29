@@ -63,7 +63,18 @@ platform :ios do
       scheme: "Rainbow",
       include_symbols: true,
       configuration: "Release",
-      export_method: "app-store"
+      export_method: "app-store",
+      export_options: {
+        signingStyle: "manual",
+        provisioningProfiles: {
+          "me.rainbow" => "match AppStore me.rainbow",
+          "me.rainbow.PriceWidget" => "match AppStore me.rainbow.PriceWidget",
+          "me.rainbow.SelectTokenIntent" => "match AppStore me.rainbow.SelectTokenIntent",
+          "me.rainbow.ImageNotification" => "match AppStore me.rainbow.ImageNotification",
+          "me.rainbow.OpenInRainbow" => "match AppStore me.rainbow.OpenInRainbow",
+          "me.rainbow.ShareWithRainbow" => "match AppStore me.rainbow.ShareWithRainbow",
+        },
+      }
     )
 
     pilot(
@@ -103,6 +114,7 @@ platform :ios do
       output_name: "Rainbow.ipa",
       archive_path: "build/Rainbow.xcarchive",
       export_options: {
+        signingStyle: "manual",
         provisioningProfiles: {
           "me.rainbow" => "match AdHoc me.rainbow",
           "me.rainbow.PriceWidget" => "match AdHoc me.rainbow.PriceWidget",
