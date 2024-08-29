@@ -4,7 +4,7 @@ on: [pull_request, workflow_dispatch]
 jobs:
   # Job to install dependencies
   build:
-    runs-on: ["self-hosted"]
+    runs-on: ["self-hosted", "CI-9"]
     concurrency: 
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
