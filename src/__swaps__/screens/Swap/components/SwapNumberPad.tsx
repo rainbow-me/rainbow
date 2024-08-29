@@ -94,9 +94,12 @@ export const SwapNumberPad = () => {
     SwapInputController.quoteFetchingInterval.stop();
 
     const inputKey = focusedInput.value;
+    const inputMethod = SwapInputController.inputMethod.value;
     const currentValue = removeFormatting(inputKey);
 
-    const newValue = currentValue === '0' ? `${number}` : `${currentValue}${number}`;
+    const isNativePlaceholderValue =
+      (inputKey === 'inputNativeValue' && inputMethod !== inputKey) || (inputKey === 'outputNativeValue' && inputMethod !== inputKey);
+    const newValue = currentValue === '0' || isNativePlaceholderValue ? `${number}` : `${currentValue}${number}`;
 
     // For a uint256, the maximum value is:
     // 2e256 − 1 =115792089237316195423570985008687907853269984665640564039457584007913129639935
@@ -110,7 +113,7 @@ export const SwapNumberPad = () => {
       isQuoteStale.value = 1;
     }
 
-    if (SwapInputController.inputMethod.value !== inputKey) {
+    if (inputMethod !== inputKey) {
       SwapInputController.inputMethod.value = inputKey;
     }
 
