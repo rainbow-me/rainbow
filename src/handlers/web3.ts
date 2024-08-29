@@ -199,11 +199,11 @@ export const getCachedProviderForNetwork = (chainId: ChainId = ChainId.mainnet):
 };
 
 export const getProvider = ({ chainId }: { chainId: number }): StaticJsonRpcProvider => {
-  const cachedProvider = chainsProviders.get(chainId);
+  //   const cachedProvider = chainsProviders.get(chainId);
 
-  if (cachedProvider) {
-    return cachedProvider;
-  }
+  //   if (cachedProvider) {
+  //     return cachedProvider;
+  //   }
 
   const networkObject = getNetworkObject({ chainId });
 

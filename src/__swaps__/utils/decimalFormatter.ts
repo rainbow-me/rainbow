@@ -79,6 +79,7 @@ export function valueBasedDecimalFormatter({
     // Default to normal rounding if no rounding mode is specified
     roundedAmount = divWorklet(roundWorklet(mulWorklet(amount, factor)), factor);
   }
+  console.log('maximumDecimalPlaces', maximumDecimalPlaces);
   // Format the number to add separators and trim trailing zeros
   const numberFormatter = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: minimumDecimalPlaces,
