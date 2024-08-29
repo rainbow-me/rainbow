@@ -23,7 +23,7 @@ import {
 } from '@/entities';
 
 import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
-import { getProvider, isHardHat, toHex, web3Provider } from '@/handlers/web3';
+import { getProvider, toHex } from '@/handlers/web3';
 import {
   defaultGasParamsFormat,
   gweiToWei,
@@ -40,6 +40,7 @@ import { multiply } from '@/helpers/utilities';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { getNetworkObject } from '@/networks';
 import { ChainId } from '@/networks/types';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const { CUSTOM, FAST, NORMAL, SLOW, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
 
@@ -554,16 +555,8 @@ export const gasPricesStartPolling =
                   // Set a really gas estimate to guarantee that we're gonna be over
                   // the basefee at the time we fork mainnet during our hardhat tests
                   let baseFee = baseFeePerGas;
-                  if (chainId === ChainId.mainnet && IS_TESTING === 'true') {
-                    const providerUrl = (
-                      web3Provider ||
-                      ({} as {
-                        connection: { url: string };
-                      })
-                    )?.connection?.url;
-                    if (isHardHat(providerUrl)) {
-                      baseFee = parseGasFeeParam(gweiToWei(1000));
-                    }
+                  if (chainId === ChainId.mainnet && IS_TESTING === 'true' && useConnectedToHardhatStore.getState().connectedToHardhat) {
+                    baseFee = parseGasFeeParam(gweiToWei(1000));
                   }
 
                   if (customGasFeeModifiedByUser) {
