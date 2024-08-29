@@ -144,12 +144,12 @@ function App({ walletReady }: AppProps) {
     }
     identifyFlow();
     eventSubscription.current = AppState.addEventListener('change', handleAppStateChange);
+    initWalletConnectListeners();
 
     const p1 = analyticsV2.initializeRudderstack();
     const p2 = setupDeeplinking();
     const p3 = saveFCMToken();
     Promise.all([p1, p2, p3]).then(() => {
-      initWalletConnectListeners();
       PerformanceTracking.finishMeasuring(PerformanceMetrics.loadRootAppComponent);
       analyticsV2.track(analyticsV2.event.applicationDidMount);
     });
