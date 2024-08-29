@@ -63,7 +63,7 @@ import { getNetworkObject } from '@/networks';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { getNextNonce } from '@/state/nonces';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
-import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
+// import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { REGISTRATION_STEPS } from '@/helpers/ens';
 import { ChainId } from '@/networks/types';
 
@@ -381,16 +381,23 @@ export default function SendSheet(props) {
 
   const onSubmit = useCallback(
     async ({ ens: { setAddress, transferControl, clearRecords } = {} } = {}) => {
-      const wallet = await performanceTracking.getState().executeFn({
-        fn: loadWallet,
-        operation: TimeToSignOperation.KeychainRead,
-        screen: isENS ? Screens.SEND_ENS : Screens.SEND,
-      })({
+      // const wallet = await performanceTracking.getState().executeFn({
+      //   fn: loadWallet,
+      //   operation: TimeToSignOperation.KeychainRead,
+      //   screen: isENS ? Screens.SEND_ENS : Screens.SEND,
+      // })({
+      //   provider: currentProvider,
+      //   timeTracking: {
+      //     screen: isENS ? Screens.SEND_ENS : Screens.SEND,
+      //     operation: TimeToSignOperation.Authentication,
+      //   },
+      // });
+      const wallet = await loadWallet({
         provider: currentProvider,
-        timeTracking: {
-          screen: isENS ? Screens.SEND_ENS : Screens.SEND,
-          operation: TimeToSignOperation.Authentication,
-        },
+        // timeTracking: {
+        //   screen: isENS ? Screens.SEND_ENS : Screens.SEND,
+        //   operation: TimeToSignOperation.Authentication,
+        // },
       });
       if (!wallet) return;
 
@@ -470,11 +477,12 @@ export default function SendSheet(props) {
       };
 
       try {
-        const signableTransaction = await performanceTracking.getState().executeFn({
-          fn: createSignableTransaction,
-          operation: TimeToSignOperation.CreateSignableTransaction,
-          screen: isENS ? Screens.SEND_ENS : Screens.SEND,
-        })(txDetails);
+        // const signableTransaction = await performanceTracking.getState().executeFn({
+        //   fn: createSignableTransaction,
+        //   operation: TimeToSignOperation.CreateSignableTransaction,
+        //   screen: isENS ? Screens.SEND_ENS : Screens.SEND,
+        // })(txDetails);
+        const signableTransaction = await createSignableTransaction(txDetails);
         if (!signableTransaction.to) {
           logger.error(new RainbowError(`[SendSheet]: txDetails is missing the "to" field`), {
             txDetails,
@@ -483,11 +491,16 @@ export default function SendSheet(props) {
           Alert.alert(lang.t('wallet.transaction.alert.invalid_transaction'));
           submitSuccess = false;
         } else {
-          const { result: txResult, error } = await performanceTracking.getState().executeFn({
-            fn: sendTransaction,
-            screen: isENS ? Screens.SEND_ENS : Screens.SEND,
-            operation: TimeToSignOperation.BroadcastTransaction,
-          })({
+          // const { result: txResult, error } = await performanceTracking.getState().executeFn({
+          //   fn: sendTransaction,
+          //   screen: isENS ? Screens.SEND_ENS : Screens.SEND,
+          //   operation: TimeToSignOperation.BroadcastTransaction,
+          // })({
+          //   existingWallet: wallet,
+          //   provider: currentProvider,
+          //   transaction: signableTransaction,
+          // });
+          const { result: txResult, error } = sendTransaction({
             existingWallet: wallet,
             provider: currentProvider,
             transaction: signableTransaction,
@@ -582,12 +595,13 @@ export default function SendSheet(props) {
       };
 
       if (submitSuccessful) {
-        performanceTracking.getState().executeFn({
-          fn: goBackAndNavigate,
-          screen: isENS ? Screens.SEND_ENS : Screens.SEND,
-          operation: TimeToSignOperation.SheetDismissal,
-          endOfOperation: true,
-        })();
+        // performanceTracking.getState().executeFn({
+        //   fn: goBackAndNavigate,
+        //   screen: isENS ? Screens.SEND_ENS : Screens.SEND,
+        //   operation: TimeToSignOperation.SheetDismissal,
+        //   endOfOperation: true,
+        // })();
+        goBackAndNavigate();
       }
     },
     [amountDetails.assetAmount, goBack, isENS, isHardwareWallet, navigate, onSubmit, recipient, selected?.name, selected?.network]
