@@ -10,13 +10,15 @@ import { AddressZero } from '@ethersproject/constants';
 import chainAssetsByChainId from '@/references/testnet-assets-by-chain';
 import { getNetworkObject } from '@/networks';
 import { ChainId, ChainName, Network } from '@/networks/types';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const fetchHardhatBalancesWithBalanceChecker = async (
   tokens: string[],
   address: string,
   chainId: ChainId = ChainId.mainnet
 ): Promise<{ [tokenAddress: string]: string } | null> => {
-  const networkObject = getNetworkObject({ chainId });
+  const connectedToHardhat = useConnectedToHardhatStore.getState().connectedToHardhat;
+  const networkObject = getNetworkObject({ chainId, connectedToHardhat });
   const balanceCheckerContract = new Contract(networkObject.balanceCheckerAddress, balanceCheckerContractAbi, web3Provider);
   try {
     const values = await balanceCheckerContract.balances([address], tokens);
@@ -47,6 +49,8 @@ export const fetchHardhatBalances = async (accountAddress: string, chainId: Chai
     chainAssets[`${chainId}` as keyof typeof chainAssets],
     ({ asset }) => `${asset.asset_code}_${asset.chainId}`
   );
+  console.log('chainAssetsMap', chainAssetsMap);
+  console.log('chainAssetsMap val', Object.values(chainAssetsMap)[0]);
 
   const tokenAddresses = Object.values(chainAssetsMap).map(({ asset: { asset_code } }) =>
     asset_code === ETH_ADDRESS ? AddressZero : asset_code.toLowerCase()
@@ -60,6 +64,7 @@ export const fetchHardhatBalances = async (accountAddress: string, chainId: Chai
       asset: {
         ...chainAsset.asset,
         network: chainAsset.asset.network as Network,
+        chainId: chainAsset.asset.chainId,
       },
       quantity: balances[assetCode],
     };

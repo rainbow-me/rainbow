@@ -1,4 +1,4 @@
-import { ChainId } from '@/networks/types';
+import { ChainId, NetworkProperties } from '@/networks/types';
 import store from '@/redux/store';
 import * as ls from '@/storage';
 import { getArbitrumNetworkObject } from './arbitrum';
@@ -12,7 +12,6 @@ import { getGoerliNetworkObject } from './goerli';
 import { getMainnetNetworkObject } from './mainnet';
 import { getOptimismNetworkObject } from './optimism';
 import { getPolygonNetworkObject } from './polygon';
-import { NetworkProperties } from './types';
 import { getZoraNetworkObject } from './zora';
 
 /**
@@ -52,11 +51,17 @@ export const RainbowSupportedChainIds = [
 /**
  * Helper function to get specific Rainbow Network's Object
  */
-export function getNetworkObject({ chainId }: { chainId: ChainId }): NetworkProperties {
+export function getNetworkObject({
+  chainId,
+  connectedToHardhat = false,
+}: {
+  chainId: ChainId;
+  connectedToHardhat?: boolean;
+}): NetworkProperties {
   switch (chainId) {
     // Mainnet
     case ChainId.mainnet:
-      return getMainnetNetworkObject();
+      return getMainnetNetworkObject({ connectedToHardhat });
 
     // L2s
     case ChainId.arbitrum:
@@ -85,7 +90,7 @@ export function getNetworkObject({ chainId }: { chainId: ChainId }): NetworkProp
 
     // Fallback
     default:
-      return getMainnetNetworkObject();
+      return getMainnetNetworkObject({ connectedToHardhat });
   }
 }
 
