@@ -40,6 +40,7 @@ import { multiply } from '@/helpers/utilities';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { getNetworkObject } from '@/networks';
 import { ChainId } from '@/networks/types';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const { CUSTOM, FAST, NORMAL, SLOW, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
 
@@ -554,12 +555,8 @@ export const gasPricesStartPolling =
                   // Set a really gas estimate to guarantee that we're gonna be over
                   // the basefee at the time we fork mainnet during our hardhat tests
                   let baseFee = baseFeePerGas;
-                  if (chainId === ChainId.mainnet && IS_TESTING === 'true') {
-                    const provider = getProvider({ chainId: ChainId.mainnet });
-                    const providerUrl = provider?.connection?.url;
-                    if (isHardHat(providerUrl)) {
-                      baseFee = parseGasFeeParam(gweiToWei(1000));
-                    }
+                  if (chainId === ChainId.mainnet && IS_TESTING === 'true' && useConnectedToHardhatStore.getState().connectedToHardhat) {
+                    baseFee = parseGasFeeParam(gweiToWei(1000));
                   }
 
                   if (customGasFeeModifiedByUser) {
