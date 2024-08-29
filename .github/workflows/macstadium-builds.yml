@@ -86,7 +86,7 @@ jobs:
           aws s3 cp "App.zip" "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.app.zip"
 
           IPA_PATH=$(find . -name "*.ipa" | head -n 1)
-          aws s3 cp $IPA_PATH "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.ipa"
+          aws s3 cp "${IPA_PATH}" "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.ipa"
 
       - name: Post comment to PR
         if: github.event_name == 'pull_request'
