@@ -14,7 +14,7 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { gasUtils } from '@/utils';
 import React, { PropsWithChildren, ReactNode, useCallback, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
+import { MenuConfig, OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import Animated, { runOnUI, useAnimatedStyle } from 'react-native-reanimated';
 import { THICK_BORDER_WIDTH } from '../constants';
 import { GasSettings, useCustomGasSettings } from '../hooks/useCustomGas';
@@ -157,7 +157,7 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
         actionKey: gasOption,
         actionTitle: i18n.t(i18n.l.gas.speeds[gasOption]),
         discoverabilityTitle: subtitle,
-        icon: { iconType: 'SYSTEM', iconValue: SWAP_GAS_ICONS[gasOption].symbolName },
+        icon: { iconType: 'SYSTEM' as const, iconValue: SWAP_GAS_ICONS[gasOption].symbolName },
       };
     });
     return { menuItems, menuTitle: '' };
@@ -184,11 +184,12 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
         </ContextMenu>
       ) : (
         <ContextMenuButton
+          // @ts-ignore
           activeOpacity={0}
           enableContextMenu
           isAnchoredToRight
           isMenuPrimaryAction
-          menuConfig={menuConfig}
+          menuConfig={menuConfig as MenuConfig}
           onPressMenuItem={handlePressMenuItem}
           useActionSheetFallback={false}
           wrapNativeComponent={false}

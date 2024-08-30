@@ -1,7 +1,7 @@
 import * as i18n from '@/languages';
 import React, { memo, useCallback, useMemo } from 'react';
 import { Keyboard, Share } from 'react-native';
-import { MenuActionConfig } from 'react-native-ios-context-menu';
+import { MenuActionConfig, MenuConfig } from 'react-native-ios-context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { useClipboard, useContacts, useSwitchWallet, useWallets, useWatchWallet } from '@/hooks';
 import { useNavigation } from '@/navigation';
@@ -155,7 +155,7 @@ export const LeaderboardRow = memo(function LeaderboardRow({
     [address, contact, ens, isSelectedWallet, navigate, onRemoveContact, setClipboard, switchToWalletWithAddress]
   );
 
-  const menuConfig = useMemo(() => ({ menuItems, ...(IS_IOS && { menuTitle: '' }) }), [menuItems]);
+  const menuConfig = useMemo(() => ({ menuItems, ...(IS_IOS && { menuTitle: '' }) }) as MenuConfig, [menuItems]);
 
   let gradient;
   let icon;

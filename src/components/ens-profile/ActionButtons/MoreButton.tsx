@@ -2,7 +2,7 @@ import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { Keyboard, Share } from 'react-native';
-import { MenuActionConfig } from 'react-native-ios-context-menu';
+import { MenuActionConfig, MenuConfig } from 'react-native-ios-context-menu';
 import { showDeleteContactActionSheet } from '../../contacts';
 import More from '../MoreButton/MoreButton';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
@@ -150,7 +150,7 @@ export default function MoreButton({ address, ensName }: { address?: string; ens
     ]
   );
 
-  const menuConfig = useMemo(() => ({ menuItems, ...(ios && { menuTitle: '' }) }), [menuItems]);
+  const menuConfig = useMemo(() => ({ menuItems, ...(ios && { menuTitle: '' }) }) as MenuConfig, [menuItems]);
   return (
     <ContextMenuButton
       enableContextMenu

@@ -9,6 +9,7 @@ import ConditionalWrap from 'conditional-wrap';
 import { analyticsV2 } from '@/analytics';
 import { atom, useRecoilState } from 'recoil';
 import { MMKV } from 'react-native-mmkv';
+import { MenuConfig } from 'react-native-ios-context-menu';
 
 const mmkv = new MMKV();
 
@@ -91,9 +92,10 @@ export const SortMenu = ({ type }: { type: 'card' | 'sheet' }) => {
         menuState: sortOption.criterion === SortOptions.Recent.criterion ? 'on' : 'off',
       },
     ],
-  };
+  } satisfies MenuConfig;
 
-  const onPressMenuItem = ({ nativeEvent: { actionKey: sortCriterion } }: { nativeEvent: { actionKey: SortCriterion } }) => {
+  const onPressMenuItem = ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: string } }) => {
+    const sortCriterion = actionKey as SortCriterion;
     haptics.selection();
     setSortCriterion(sortCriterion);
     mmkv.set(MMKV_KEY, sortCriterion);

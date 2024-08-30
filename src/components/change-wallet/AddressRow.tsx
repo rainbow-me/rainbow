@@ -23,6 +23,7 @@ import { toChecksumAddress } from '@/handlers/web3';
 import { IS_IOS, IS_ANDROID } from '@/env';
 import { ContextMenu } from '../context-menu';
 import { useForegroundColor } from '@/design-system';
+import { MenuConfig } from 'react-native-ios-context-menu';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 const NOOP = () => undefined;
@@ -151,7 +152,7 @@ export default function AddressRow({ contextMenuActions, data, editMode, onPress
       actionKey: ContextMenuKeys.Edit,
       actionTitle: lang.t('wallet.action.edit'),
       icon: {
-        iconType: 'SYSTEM',
+        iconType: 'SYSTEM' as const,
         iconValue: 'pencil',
       },
     },
@@ -162,7 +163,7 @@ export default function AddressRow({ contextMenuActions, data, editMode, onPress
             actionKey: ContextMenuKeys.Notifications,
             actionTitle: lang.t('wallet.action.notifications.action_title'),
             icon: {
-              iconType: 'SYSTEM',
+              iconType: 'SYSTEM' as const,
               iconValue: 'bell.fill',
             },
           },
@@ -172,17 +173,17 @@ export default function AddressRow({ contextMenuActions, data, editMode, onPress
       actionKey: ContextMenuKeys.Remove,
       actionTitle: lang.t('wallet.action.remove'),
       icon: {
-        iconType: 'SYSTEM',
+        iconType: 'SYSTEM' as const,
         iconValue: 'trash.fill',
       },
-      menuAttributes: ['destructive'],
+      menuAttributes: ['destructive' as const],
     },
   ];
 
   const menuConfig = {
     menuItems: contextMenuItems,
     menuTitle: walletName,
-  };
+  } satisfies MenuConfig;
 
   const handleSelectActionMenuItem = useCallback(
     (buttonIndex: number) => {

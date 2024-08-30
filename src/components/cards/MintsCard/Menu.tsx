@@ -4,6 +4,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { Inline, Inset, Text } from '@/design-system';
 import { haptics } from '@/utils';
 import { MintsFilter, getMintsFilterLabel, useMintsFilter } from '@/resources/mints';
+import { MenuConfig } from 'react-native-ios-context-menu';
 
 export function Menu() {
   const { filter, setFilter } = useMintsFilter();
@@ -27,11 +28,11 @@ export function Menu() {
         menuState: filter === MintsFilter.Paid ? 'on' : 'off',
       },
     ],
-  };
+  } satisfies MenuConfig;
 
-  const onPressMenuItem = ({ nativeEvent: { actionKey: filter } }: { nativeEvent: { actionKey: MintsFilter } }) => {
+  const onPressMenuItem = ({ nativeEvent: { actionKey: filter } }: { nativeEvent: { actionKey: string } }) => {
     haptics.selection();
-    setFilter(filter);
+    setFilter(filter as MintsFilter);
   };
 
   return (

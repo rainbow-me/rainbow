@@ -36,6 +36,7 @@ import { RAINBOW_HOME } from '../constants';
 import { getNameFromFormattedUrl, handleShareUrl } from '../utils';
 import { useSearchContext } from '../search/SearchContext';
 import showActionSheetWithOptions from '@/utils/actionsheet';
+import { MenuConfig } from 'react-native-ios-context-menu';
 
 export const SEARCH_BAR_HEIGHT = 48;
 const SEARCH_PLACEHOLDER_TEXT = i18n.t(i18n.l.dapp_browser.address_bar.input_placeholder);
@@ -79,7 +80,7 @@ const TheeDotMenu = function TheeDotMenu({
         actionKey: 'share',
         actionTitle: 'Share',
         icon: {
-          iconType: 'SYSTEM',
+          iconType: 'SYSTEM' as const,
           iconValue: 'square.and.arrow.up',
         },
       },
@@ -91,7 +92,7 @@ const TheeDotMenu = function TheeDotMenu({
         actionKey: 'favorite',
         actionTitle: isFavorite ? i18n.t(i18n.l.dapp_browser.menus.undo_favorite) : i18n.t(i18n.l.dapp_browser.menus.favorite),
         icon: {
-          iconType: 'SYSTEM',
+          iconType: 'SYSTEM' as const,
           iconValue: isFavorite ? 'star.slash' : 'star',
         },
       });
@@ -101,7 +102,7 @@ const TheeDotMenu = function TheeDotMenu({
         actionKey: 'forward',
         actionTitle: i18n.t(i18n.l.dapp_browser.menus.forward),
         icon: {
-          iconType: 'SYSTEM',
+          iconType: 'SYSTEM' as const,
           iconValue: 'arrowshape.forward',
         },
       });
@@ -111,7 +112,7 @@ const TheeDotMenu = function TheeDotMenu({
         actionKey: 'back',
         actionTitle: i18n.t(i18n.l.dapp_browser.menus.back),
         icon: {
-          iconType: 'SYSTEM',
+          iconType: 'SYSTEM' as const,
           iconValue: 'arrowshape.backward',
         },
       });
@@ -120,11 +121,11 @@ const TheeDotMenu = function TheeDotMenu({
     return {
       menuTitle: '',
       menuItems,
-    };
+    } satisfies MenuConfig;
   }, [canGoBack, canGoForward, isFavorite, tabUrl]);
 
   const onPressMenuItem = useCallback(
-    async ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: 'share' | 'favorite' | 'back' | 'forward' } }) => {
+    async ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: string } }) => {
       haptics.selection();
       if (actionKey === 'favorite') {
         handleFavoritePress();

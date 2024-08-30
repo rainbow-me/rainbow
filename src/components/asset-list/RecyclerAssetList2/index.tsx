@@ -20,6 +20,7 @@ import useWalletConnectConnections from '@/hooks/useWalletConnectConnections';
 import lang from 'i18n-js';
 import { useWalletConnectV2Sessions } from '@/walletConnect/hooks/useWalletConnectV2Sessions';
 import { IS_ANDROID } from '@/env';
+import { MenuConfig } from 'react-native-ios-context-menu';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 
@@ -159,18 +160,18 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
         {
           actionKey: 'settings',
           actionTitle: lang.t('settings.label'),
-          icon: { iconType: 'SYSTEM', iconValue: 'gear' },
+          icon: { iconType: 'SYSTEM' as const, iconValue: 'gear' },
         },
         {
           actionKey: 'qrCode',
           actionTitle: lang.t('button.my_qr_code'),
-          icon: { iconType: 'SYSTEM', iconValue: 'qrcode' },
+          icon: { iconType: 'SYSTEM' as const, iconValue: 'qrcode' },
         },
 
         {
           actionKey: 'connectedApps',
           actionTitle: lang.t('wallet.connected_apps'),
-          icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
+          icon: { iconType: 'SYSTEM' as const, iconValue: 'app.badge.checkmark' },
         },
       ].filter(Boolean),
       ...(ios ? { menuTitle: '' } : {}),
@@ -259,7 +260,7 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
                 </View>
               </AndroidContextMenu>
             ) : (
-              <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
+              <ContextMenuButton menuConfig={menuConfig as MenuConfig} onPressMenuItem={handlePressMenuItem}>
                 <Navbar.Item testID={'settings-menu'}>
                   <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
                 </Navbar.Item>

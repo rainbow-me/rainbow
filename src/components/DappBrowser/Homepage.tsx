@@ -45,6 +45,7 @@ import { FeaturedResult } from '@/graphql/__generated__/arc';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { FEATURED_RESULTS, useExperimentalFlag } from '@/config';
 import { FeaturedResultStack } from '../FeaturedResult/FeaturedResultStack';
+import { MenuConfig } from 'react-native-ios-context-menu';
 
 const HORIZONTAL_PAGE_INSET = 24;
 const MAX_RECENTS_TO_DISPLAY = 6;
@@ -343,7 +344,7 @@ const Card = memo(function Card({
   }, [dappClickedBefore, goToUrl, index, site.name, site.url]);
 
   const onPressMenuItem = useCallback(
-    async ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: 'favorite' | 'remove' } }) => {
+    async ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: string } }) => {
       haptics.selection();
       if (actionKey === 'favorite') {
         handleFavoritePress();
@@ -360,7 +361,7 @@ const Card = memo(function Card({
         actionKey: 'favorite',
         actionTitle: isFavorite ? i18n.t(i18n.l.dapp_browser.menus.undo_favorite) : i18n.t(i18n.l.dapp_browser.menus.favorite),
         icon: {
-          iconType: 'SYSTEM',
+          iconType: 'SYSTEM' as const,
           iconValue: isFavorite ? 'star.slash' : 'star',
         },
       },
@@ -368,7 +369,7 @@ const Card = memo(function Card({
         actionKey: 'remove',
         actionTitle: i18n.t(i18n.l.dapp_browser.menus.remove),
         icon: {
-          iconType: 'SYSTEM',
+          iconType: 'SYSTEM' as const,
           iconValue: 'trash',
         },
       },
@@ -376,7 +377,7 @@ const Card = memo(function Card({
     return {
       menuTitle: '',
       menuItems,
-    };
+    } satisfies MenuConfig;
   }, [isFavorite]);
 
   const dappIconUrl = useMemo(() => {
