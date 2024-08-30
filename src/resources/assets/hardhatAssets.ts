@@ -1,6 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
 import { keyBy, mapValues } from 'lodash';
-import { web3Provider } from '@/handlers/web3'; // TODO JIN
+import { getProvider } from '@/handlers/web3';
 import { balanceCheckerContractAbi, chainAssets, ETH_ADDRESS, SUPPORTED_CHAIN_IDS } from '@/references';
 import { parseAddressAsset } from './assets';
 import { RainbowAddressAssets } from './types';
@@ -17,7 +17,8 @@ const fetchHardhatBalancesWithBalanceChecker = async (
   chainId: ChainId = ChainId.mainnet
 ): Promise<{ [tokenAddress: string]: string } | null> => {
   const networkObject = getNetworkObject({ chainId });
-  const balanceCheckerContract = new Contract(networkObject.balanceCheckerAddress, balanceCheckerContractAbi, web3Provider);
+  const provider = getProvider({ chainId });
+  const balanceCheckerContract = new Contract(networkObject.balanceCheckerAddress, balanceCheckerContractAbi, provider);
   try {
     const values = await balanceCheckerContract.balances([address], tokens);
     const balances: {

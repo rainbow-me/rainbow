@@ -1,7 +1,6 @@
 import delay from 'delay';
 import { useCallback, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { getIsHardhatConnected } from '@/handlers/web3';
 import { walletConnectLoadState } from '../redux/walletconnect';
 import { fetchWalletENSAvatars, fetchWalletNames } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
@@ -16,6 +15,7 @@ import useNftSort from './useNFTsSortBy';
 import { Address } from 'viem';
 import { addysSummaryQueryKey } from '@/resources/summary/summary';
 import useWallets from './useWallets';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 export default function useRefreshAccountData() {
   const dispatch = useDispatch();
@@ -23,6 +23,7 @@ export default function useRefreshAccountData() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const { nftSort } = useNftSort();
+  const { connectedToHardhat } = useConnectedToHardhatStore();
 
   const { wallets } = useWallets();
 
@@ -32,8 +33,6 @@ export default function useRefreshAccountData() {
   );
 
   const fetchAccountData = useCallback(async () => {
-    const connectedToHardhat = getIsHardhatConnected();
-
     queryClient.invalidateQueries(nftsQueryKey({ address: accountAddress, sortBy: nftSort }));
     queryClient.invalidateQueries(positionsQueryKey({ address: accountAddress as Address, currency: nativeCurrency }));
     queryClient.invalidateQueries(addysSummaryQueryKey({ addresses: allAddresses, currency: nativeCurrency }));
@@ -56,7 +55,7 @@ export default function useRefreshAccountData() {
       logger.error(new RainbowError(`[useRefreshAccountData]: Error refreshing data: ${error}`));
       throw error;
     }
-  }, [accountAddress, dispatch, nativeCurrency, profilesEnabled]);
+  }, [accountAddress, allAddresses, connectedToHardhat, dispatch, nativeCurrency, nftSort, profilesEnabled]);
 
   const refresh = useCallback(async () => {
     if (isRefreshing) return;

@@ -24,7 +24,7 @@ import {
   SelectedGasFee,
 } from '@/entities';
 import { getOnchainAssetBalance } from '@/handlers/assets';
-import { getIsHardhatConnected, getProvider, isTestnetChain, toHex } from '@/handlers/web3';
+import { getProvider, isTestnetChain, toHex } from '@/handlers/web3';
 import { convertRawAmountToDecimalFormat, fromWei, greaterThan, isZero, subtract, add } from '@/helpers/utilities';
 import { Navigation } from '@/navigation';
 import { parseAssetNative } from '@/parsers';
@@ -51,6 +51,7 @@ import {
 } from '@/resources/assets/externalAssetsQuery';
 import { ChainId, Network } from '@/networks/types';
 import { AddressOrEth } from '@/__swaps__/types/assets';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const getNetworkNativeAsset = ({ chainId }: { chainId: ChainId }) => {
   const nativeAssetAddress = getNetworkObject({ chainId }).nativeCurrency.address;
@@ -121,7 +122,7 @@ const getAsset = (accountAssets: Record<string, ParsedAddressAsset>, uniqueId: E
 
 const getUserAssetFromCache = (uniqueId: string) => {
   const { accountAddress, nativeCurrency } = store.getState().settings;
-  const connectedToHardhat = getIsHardhatConnected();
+  const connectedToHardhat = useConnectedToHardhatStore.getState().connectedToHardhat;
 
   const cache = queryClient.getQueryCache();
 
