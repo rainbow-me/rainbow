@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import { captureEvent, captureException } from '@sentry/react-native';
 import lang from 'i18n-js';
 import { isEmpty, isEqual, isString } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -23,9 +22,7 @@ import {
   getProvider,
   isL2Chain,
   resolveNameOrAddress,
-  web3Provider,
 } from '@/handlers/web3';
-import Network from '@/helpers/networkTypes';
 import { checkIsValidAddressOrDomain, checkIsValidAddressOrDomainFormat, isENSAddressFormat } from '@/helpers/validators';
 import {
   prefetchENSAvatar,
@@ -54,7 +51,7 @@ import styled from '@/styled-thing';
 import { borders } from '@/styles';
 import { convertAmountAndPriceToNativeDisplay, convertAmountFromNativeValue, formatInputDecimals, lessThan } from '@/helpers/utilities';
 import { deviceUtils, ethereumUtils, getUniqueTokenType, safeAreaInsetValues } from '@/utils';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { NoResults } from '@/components/list';
 import { NoResultsType } from '@/components/list/NoResults';
@@ -66,7 +63,7 @@ import { getNextNonce } from '@/state/nonces';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { REGISTRATION_STEPS } from '@/helpers/ens';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
@@ -120,7 +117,7 @@ export default function SendSheet(props) {
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
-  const { accountAddress, nativeCurrency, network } = useAccountSettings();
+  const { accountAddress, nativeCurrency, chainId } = useAccountSettings();
   const { isHardwareWallet } = useWallets();
 
   const { action: transferENS } = useENSRegistrationActionHandler({
@@ -267,10 +264,10 @@ export default function SendSheet(props) {
     // belongs to
     if (prevChainId !== currentChainId) {
       InteractionManager.runAfterInteractions(() => {
-        startPollingGasFees(ethereumUtils.getNetworkFromChainId(currentChainId));
+        startPollingGasFees(currentChainId);
       });
     }
-  }, [startPollingGasFees, selected.network, prevChainId, currentChainId]);
+  }, [startPollingGasFees, selected.chainId, prevChainId, currentChainId]);
 
   // Stop polling when the sheet is unmounted
   useEffect(() => {
@@ -282,21 +279,19 @@ export default function SendSheet(props) {
   }, [stopPollingGasFees]);
 
   useEffect(() => {
-    const assetChainId = ethereumUtils.getChainIdFromNetwork(selected?.network);
-    const networkChainId = ethereumUtils.getChainIdFromNetwork(network);
+    const assetChainId = selected.chainId;
     if (assetChainId && (assetChainId !== currentChainId || !currentChainId || prevChainId !== currentChainId)) {
-      let provider = web3Provider;
-      if (networkChainId === ChainId.goerli) {
+      if (chainId === ChainId.goerli) {
         setCurrentChainId(ChainId.goerli);
-        provider = getProvider({ chainId: ChainId.goerli });
+        const provider = getProvider({ chainId: ChainId.goerli });
         setCurrentProvider(provider);
       } else {
         setCurrentChainId(assetChainId);
-        provider = getProvider({ chainId: currentChainId });
+        const provider = getProvider({ chainId: currentChainId });
         setCurrentProvider(provider);
       }
     }
-  }, [currentChainId, isNft, network, prevChainId, selected?.network, sendUpdateSelected]);
+  }, [currentChainId, isNft, chainId, prevChainId, selected?.chainId, sendUpdateSelected]);
 
   const onChangeNativeAmount = useCallback(
     newNativeAmount => {
@@ -400,12 +395,11 @@ export default function SendSheet(props) {
 
       const validTransaction = isValidAddress && amountDetails.isSufficientBalance && isSufficientGas && isValidGas;
       if (!selectedGasFee?.gasFee?.estimatedFee || !validTransaction) {
-        logger.sentry('preventing tx submit for one of the following reasons:');
-        logger.sentry('selectedGasFee ? ', selectedGasFee);
-        logger.sentry('selectedGasFee.maxFee ? ', selectedGasFee?.maxFee);
-        logger.sentry('validTransaction ? ', validTransaction);
-        logger.sentry('isValidGas ? ', isValidGas);
-        captureEvent('Preventing tx submit');
+        logger.error(new RainbowError(`[SendSheet]: preventing tx submit because selectedGasFee is missing or validTransaction is false`), {
+          selectedGasFee,
+          validTransaction,
+          isValidGas,
+        });
         return false;
       }
 
@@ -425,7 +419,7 @@ export default function SendSheet(props) {
             },
             true,
             currentProvider,
-            currentChainIdNetwork
+            currentChainId
           );
 
           if (!lessThan(updatedGasLimit, gasLimit)) {
@@ -467,7 +461,7 @@ export default function SendSheet(props) {
         from: accountAddress,
         gasLimit: gasLimitToUse,
         network: currentChainIdNetwork,
-        nonce: nextNonce ?? (await getNextNonce({ address: accountAddress, network: currentChainIdNetwork })),
+        nonce: nextNonce ?? (await getNextNonce({ address: accountAddress, chainId: currentChainId })),
         to: toAddress,
         ...gasParams,
       };
@@ -479,11 +473,10 @@ export default function SendSheet(props) {
           screen: isENS ? Screens.SEND_ENS : Screens.SEND,
         })(txDetails);
         if (!signableTransaction.to) {
-          logger.sentry('txDetails', txDetails);
-          logger.sentry('signableTransaction', signableTransaction);
-          logger.sentry('"to" field is missing!');
-          const e = new Error('Transaction missing TO field');
-          captureException(e);
+          logger.error(new RainbowError(`[SendSheet]: txDetails is missing the "to" field`), {
+            txDetails,
+            signableTransaction,
+          });
           Alert.alert(lang.t('wallet.transaction.alert.invalid_transaction'));
           submitSuccess = false;
         } else {
@@ -517,17 +510,17 @@ export default function SendSheet(props) {
             txDetails.status = 'pending';
             addNewTransaction({
               address: accountAddress,
-              network: currentChainIdNetwork,
+              chainId: currentChainId,
               transaction: txDetails,
             });
           }
         }
       } catch (error) {
         submitSuccess = false;
-        logger.sentry('TX Details', txDetails);
-        logger.sentry('SendSheet onSubmit error');
-        logger.sentry(error);
-        captureException(error);
+        logger.error(new RainbowError(`[SendSheet]: onSubmit error`), {
+          txDetails,
+          error,
+        });
 
         // if hardware wallet, we need to tell hardware flow there was error
         // have to check inverse or we trigger unwanted BT permissions requests
@@ -564,8 +557,9 @@ export default function SendSheet(props) {
   const submitTransaction = useCallback(
     async (...args) => {
       if (Number(amountDetails.assetAmount) <= 0) {
-        logger.sentry('amountDetails.assetAmount ? ', amountDetails?.assetAmount);
-        captureEvent('Preventing tx submit due to amount <= 0');
+        logger.error(new RainbowError(`[SendSheet]: preventing tx submit because amountDetails.assetAmount is <= 0`), {
+          amountDetails,
+        });
         return false;
       }
       const submitSuccessful = await onSubmit(...args);
@@ -675,7 +669,7 @@ export default function SendSheet(props) {
     const checkboxes = getDefaultCheckboxes({
       ensProfile,
       isENS: true,
-      network,
+      chainId,
       toAddress: recipient,
     });
     navigate(Routes.SEND_CONFIRMATION_SHEET, {
@@ -687,7 +681,7 @@ export default function SendSheet(props) {
       isENS,
       isL2,
       isNft,
-      network: ethereumUtils.getNetworkFromChainId(currentChainId),
+      chainId: currentChainId,
       profilesEnabled,
       to: recipient,
       toAddress,
@@ -702,7 +696,7 @@ export default function SendSheet(props) {
     isNft,
     nativeCurrencyInputRef,
     navigate,
-    network,
+    chainId,
     profilesEnabled,
     recipient,
     selected,
@@ -752,11 +746,11 @@ export default function SendSheet(props) {
   const [ensSuggestions, setEnsSuggestions] = useState([]);
   const [loadingEnsSuggestions, setLoadingEnsSuggestions] = useState(false);
   useEffect(() => {
-    if (network === Network.mainnet && !recipientOverride && recipient?.length) {
+    if (chainId === ChainId.mainnet && !recipientOverride && recipient?.length) {
       setLoadingEnsSuggestions(true);
       debouncedFetchSuggestions(recipient, setEnsSuggestions, setLoadingEnsSuggestions, profilesEnabled);
     }
-  }, [network, recipient, recipientOverride, setEnsSuggestions, watchedAccounts, profilesEnabled]);
+  }, [chainId, recipient, recipientOverride, setEnsSuggestions, watchedAccounts, profilesEnabled]);
 
   useEffect(() => {
     checkAddress(debouncedInput);
@@ -765,7 +759,7 @@ export default function SendSheet(props) {
   useEffect(() => {
     if (!currentProvider?._network?.chainId) return;
 
-    const assetChainId = ethereumUtils.getChainIdFromNetwork(selected?.network);
+    const assetChainId = selected.chainId;
     const currentProviderChainId = currentProvider._network.chainId;
 
     if (assetChainId === currentChainId && currentProviderChainId === currentChainId && isValidAddress && !isEmpty(selected)) {
@@ -778,7 +772,7 @@ export default function SendSheet(props) {
         },
         false,
         currentProvider,
-        ethereumUtils.getNetworkFromChainId(currentChainId)
+        currentChainId
       )
         .then(async gasLimit => {
           if (getNetworkObject({ chainId: currentChainId }).gas?.OptimismTxFee) {
@@ -788,7 +782,7 @@ export default function SendSheet(props) {
           }
         })
         .catch(e => {
-          logger.sentry('Error calculating gas limit', e);
+          logger.error(new RainbowError(`[SendSheet]: error calculating gas limit: ${e}`));
           updateTxFee(null, null);
         });
     }
@@ -802,7 +796,7 @@ export default function SendSheet(props) {
     toAddress,
     updateTxFee,
     updateTxFeeForOptimism,
-    network,
+    chainId,
     isNft,
     currentChainId,
   ]);
@@ -855,7 +849,6 @@ export default function SendSheet(props) {
             <SendAssetList
               hiddenCoins={hiddenCoinsObj}
               nativeCurrency={nativeCurrency}
-              network={network}
               onSelectAsset={sendUpdateSelected}
               pinnedCoins={pinnedCoinsObj}
               sortedAssets={sortedAssets}

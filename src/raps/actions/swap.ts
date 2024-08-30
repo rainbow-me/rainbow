@@ -15,11 +15,11 @@ import {
   unwrapNativeAsset,
   wrapNativeAsset,
 } from '@rainbow-me/swaps';
-import { getProviderForNetwork, estimateGasWithPadding } from '@/handlers/web3';
+import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
 import { Address } from 'viem';
 
 import { metadataPOSTClient } from '@/graphql';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 import { NewTransaction } from '@/entities/transactions';
 import { TxHash } from '@/resources/transactions/types';
 import { add } from '@/helpers/utilities';
@@ -62,7 +62,7 @@ export const estimateSwapGasLimit = async ({
   quote: Quote;
 }): Promise<string> => {
   // TODO: MARK - Replace this once we migrate network => chainId
-  const provider = getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
+  const provider = getProvider({ chainId });
   if (!provider || !quote) {
     return gasUnits.basic_swap[chainId];
   }
@@ -145,8 +145,7 @@ export const estimateUnlockAndSwapFromMetadata = async ({
       chainId,
     });
 
-    // TODO: MARK - Replace this once we migrate network => chainId
-    const provider = getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
+    const provider = getProvider({ chainId });
     const swapTransaction = await populateSwap({
       provider,
       quote,
@@ -267,7 +266,7 @@ export const swap = async ({
       quote,
     });
   } catch (e) {
-    logger.error(new RainbowError('swap: error estimateSwapGasLimit'), {
+    logger.error(new RainbowError('[raps/swap]: error estimateSwapGasLimit'), {
       message: (e as Error)?.message,
     });
 
@@ -295,16 +294,13 @@ export const swap = async ({
       },
     })(swapParams);
   } catch (e) {
-    logger.error(new RainbowError('swap: error executeSwap'), {
+    logger.error(new RainbowError('[raps/swap]: error executeSwap'), {
       message: (e as Error)?.message,
     });
     throw e;
   }
 
   if (!swap || !swap?.hash) throw new RainbowError('swap: error executeSwap');
-
-  // TODO: MARK - Replace this once we migrate network => chainId
-  const network = ethereumUtils.getNetworkFromChainId(parameters.chainId);
 
   const nativePriceForAssetToBuy = (parameters.assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice
     ? {
@@ -342,6 +338,7 @@ export const swap = async ({
           network: ethereumUtils.getNetworkFromChainId(parameters.assetToSell.chainId),
           colors: parameters.assetToSell.colors as TokenColors,
           price: nativePriceForAssetToSell,
+          native: undefined,
         },
         value: quote.sellAmount.toString(),
       },
@@ -354,6 +351,7 @@ export const swap = async ({
           network: ethereumUtils.getNetworkFromChainId(parameters.assetToBuy.chainId),
           colors: parameters.assetToBuy.colors as TokenColors,
           price: nativePriceForAssetToBuy,
+          native: undefined,
         },
         value: quote.buyAmountMinusFees.toString(),
       },
@@ -386,8 +384,7 @@ export const swap = async ({
 
   addNewTransaction({
     address: parameters.quote.from as Address,
-    // chainId: parameters.chainId as ChainId,
-    network,
+    chainId: parameters.chainId,
     transaction,
   });
 

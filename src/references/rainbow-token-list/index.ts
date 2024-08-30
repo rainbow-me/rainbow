@@ -1,14 +1,12 @@
 import { EventEmitter } from 'events';
-import { captureException } from '@sentry/react-native';
 import { keyBy } from 'lodash';
 import { MMKV } from 'react-native-mmkv';
 import { ETH_ADDRESS } from '../index';
 import RAINBOW_TOKEN_LIST_DATA from './rainbow-token-list.json';
 import { RainbowToken } from '@/entities';
 import { STORAGE_IDS } from '@/model/mmkv';
-import logger from '@/utils/logger';
-import { Network } from '@/networks/types';
-import { ChainId } from '@/__swaps__/types/chains';
+import { logger, RainbowError } from '@/logger';
+import { Network, ChainId } from '@/networks/types';
 
 export const rainbowListStorage = new MMKV({
   id: STORAGE_IDS.RAINBOW_TOKEN_LIST,
@@ -79,10 +77,7 @@ function readJson<T>(key: string): T | null {
 
     return JSON.parse(data);
   } catch (error) {
-    logger.sentry('Error parsing token-list-cache data');
-    logger.error(error);
-    captureException(error);
-
+    logger.error(new RainbowError(`[rainbow-token-list]: Error parsing token-list-cache data: ${error}`));
     return null;
   }
 }
@@ -91,9 +86,7 @@ function writeJson<T>(key: string, data: T) {
   try {
     rainbowListStorage.set(key, JSON.stringify(data));
   } catch (error) {
-    logger.sentry(`Token List: Error saving ${key}`);
-    logger.error(error);
-    captureException(error);
+    logger.error(new RainbowError(`[rainbow-token-list]: Error saving ${key}: ${error}`));
   }
 }
 
@@ -115,7 +108,7 @@ class RainbowTokenList extends EventEmitter {
       }
     }
 
-    logger.debug('Token list initialized');
+    logger.debug('[rainbow-token-list]: Token list initialized');
   }
 
   // Wrapping #tokenListDataStorage so we can add events around updates.
@@ -127,7 +120,7 @@ class RainbowTokenList extends EventEmitter {
     this.#tokenListDataStorage = val;
     this.#derivedData = generateDerivedData(RAINBOW_TOKEN_LIST_DATA);
     this.emit('update');
-    logger.debug('Token list data replaced');
+    logger.debug('[rainbow-token-list]: Token list data replaced');
   }
 
   get CURATED_TOKENS() {

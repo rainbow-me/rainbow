@@ -1,7 +1,7 @@
 import { Address } from 'viem';
 
 import { AddressOrEth, AssetType, ParsedAsset, UniqueId } from '@/__swaps__/types/assets';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 import { AssetToBuySectionId } from '../screens/Swap/hooks/useSearchCurrencyLists';
 
 export type TokenSearchAssetKey = keyof ParsedAsset;

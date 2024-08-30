@@ -1,4 +1,4 @@
-import { getProviderForNetwork, proxyRpcEndpoint } from '@/handlers/web3';
+import { getProvider, proxyRpcEndpoint } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { blast } from 'viem/chains';
@@ -6,6 +6,7 @@ import { getBlastGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { BLAST_MAINNET_RPC } from 'react-native-dotenv';
 import { BLAST_ETH_ADDRESS } from '@/references';
+import { ChainId } from '@/networks/types';
 
 export const getBlastNetworkObject = (): NetworkProperties => {
   const { blast_enabled, blast_tx_enabled } = getRemoteConfig();
@@ -29,7 +30,7 @@ export const getBlastNetworkObject = (): NetworkProperties => {
 
     balanceCheckerAddress: '',
     rpc: () => proxyRpcEndpoint(blast.id),
-    getProvider: () => getProviderForNetwork(Network.blast),
+    getProvider: () => getProvider({ chainId: ChainId.blast }),
 
     // features
     features: {

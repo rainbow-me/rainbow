@@ -8,9 +8,9 @@ import { useTheme } from '@/theme';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
 import { RainbowTransaction } from '@/entities';
 import { pendingTransactionsStore, usePendingTransactionsStore } from '@/state/pendingTransactions';
-import { RainbowNetworks } from '@/networks';
-import { Network } from '@/networks/types';
+import { RainbowNetworkObjects } from '@/networks';
 import { nonceStore } from '@/state/nonces';
+import { ChainId } from '@/networks/types';
 
 export const NOE_PAGE = 30;
 
@@ -34,16 +34,16 @@ export default function useAccountTransactions() {
       .filter(t => t.from?.toLowerCase() === accountAddress?.toLowerCase())
       .reduce(
         (latestTxMap, currentTx) => {
-          const currentNetwork = currentTx?.network;
-          if (currentNetwork) {
-            const latestTx = latestTxMap.get(currentNetwork);
+          const currentChainId = currentTx?.chainId;
+          if (currentChainId) {
+            const latestTx = latestTxMap.get(currentChainId);
             if (!latestTx) {
-              latestTxMap.set(currentNetwork, currentTx);
+              latestTxMap.set(currentChainId, currentTx);
             }
           }
           return latestTxMap;
         },
-        new Map(RainbowNetworks.map(chain => [chain.value, null as RainbowTransaction | null]))
+        new Map(RainbowNetworkObjects.map(chain => [chain.id, null as RainbowTransaction | null]))
       );
     watchForPendingTransactionsReportedByRainbowBackend({
       currentAddress: accountAddress,
@@ -56,17 +56,17 @@ export default function useAccountTransactions() {
     latestTransactions,
   }: {
     currentAddress: string;
-    latestTransactions: Map<Network, RainbowTransaction | null>;
+    latestTransactions: Map<ChainId, RainbowTransaction | null>;
   }) {
     const { setNonce } = nonceStore.getState();
     const { setPendingTransactions, pendingTransactions: storePendingTransactions } = pendingTransactionsStore.getState();
     const pendingTransactions = storePendingTransactions[currentAddress] || [];
-    const networks = RainbowNetworks.filter(({ enabled, networkType }) => enabled && networkType !== 'testnet');
+    const networks = RainbowNetworkObjects.filter(({ enabled, networkType }) => enabled && networkType !== 'testnet');
     for (const network of networks) {
-      const latestTxConfirmedByBackend = latestTransactions.get(network.value);
+      const latestTxConfirmedByBackend = latestTransactions.get(network.id);
       if (latestTxConfirmedByBackend) {
         const latestNonceConfirmedByBackend = latestTxConfirmedByBackend.nonce || 0;
-        const [latestPendingTx] = pendingTransactions.filter(tx => tx?.network === network.value);
+        const [latestPendingTx] = pendingTransactions.filter(tx => tx?.chainId === network.id);
 
         let currentNonce;
         if (latestPendingTx) {
@@ -79,7 +79,7 @@ export default function useAccountTransactions() {
 
         setNonce({
           address: currentAddress,
-          network: network.value,
+          chainId: network.id,
           currentNonce,
           latestConfirmedNonce: latestNonceConfirmedByBackend,
         });
@@ -88,7 +88,7 @@ export default function useAccountTransactions() {
 
     const updatedPendingTransactions = pendingTransactions?.filter(tx => {
       const txNonce = tx.nonce || 0;
-      const latestTx = latestTransactions.get(tx.network);
+      const latestTx = latestTransactions.get(tx.chainId);
       const latestTxNonce = latestTx?.nonce || 0;
       // still pending or backend is not returning confirmation yet
       // if !latestTx means that is the first tx of the wallet

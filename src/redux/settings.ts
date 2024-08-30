@@ -10,24 +10,23 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 
 import {
   getAppIcon,
+  getChainId,
   getFlashbotsEnabled,
   getLanguage,
   getNativeCurrency,
-  getNetwork,
   getTestnetsEnabled,
   saveAppIcon,
+  saveChainId,
   saveFlashbotsEnabled,
   saveLanguage,
   saveNativeCurrency,
-  saveNetwork,
   saveTestnetsEnabled,
 } from '@/handlers/localstorage/globalSettings';
 import { web3SetHttpProvider } from '@/handlers/web3';
-import { Network } from '@/helpers/networkTypes';
 import { explorerClearState, explorerInit } from '@/redux/explorer';
 import { AppState } from '@/redux/store';
-import { ethereumUtils } from '@/utils';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
+import { Network, ChainId } from '@/networks/types';
 
 // -- Constants ------------------------------------------------------------- //
 const SETTINGS_UPDATE_SETTINGS_ADDRESS = 'settings/SETTINGS_UPDATE_SETTINGS_ADDRESS';
@@ -105,7 +104,6 @@ interface SettingsStateUpdateNetworkSuccessAction {
   type: typeof SETTINGS_UPDATE_NETWORK_SUCCESS;
   payload: {
     chainId: SettingsState['chainId'];
-    network: SettingsState['network'];
   };
 }
 
@@ -145,21 +143,20 @@ export const settingsLoadState =
         type: SETTINGS_UPDATE_ACCOUNT_SETTINGS_SUCCESS,
       });
     } catch (error) {
-      logger.log('Error loading native currency and testnets pref', error);
+      logger.error(new RainbowError(`[redux/settings]: Error loading native currency and testnets pref: ${error}`));
     }
   };
 
 export const settingsLoadNetwork = () => async (dispatch: Dispatch<SettingsStateUpdateNetworkSuccessAction>) => {
   try {
-    const network = await getNetwork();
-    const chainId = ethereumUtils.getChainIdFromNetwork(network);
-    await web3SetHttpProvider(network);
+    const chainId = await getChainId();
+    await web3SetHttpProvider(chainId);
     dispatch({
-      payload: { chainId, network },
+      payload: { chainId },
       type: SETTINGS_UPDATE_NETWORK_SUCCESS,
     });
   } catch (error) {
-    logger.log('Error loading network settings', error);
+    logger.error(new RainbowError(`[redux/settings]: Error loading network settings: ${error}`));
   }
 };
 
@@ -175,7 +172,7 @@ export const settingsLoadLanguage = () => async (dispatch: Dispatch<SettingsStat
       language,
     });
   } catch (error) {
-    logger.log('Error loading language settings', error);
+    logger.error(new RainbowError(`[redux/settings]: Error loading language settings: ${error}`));
   }
 };
 
@@ -190,17 +187,17 @@ export const settingsChangeTestnetsEnabled =
 
 export const settingsChangeAppIcon = (appIcon: string) => (dispatch: Dispatch<SettingsStateUpdateAppIconSuccessAction>) => {
   const callback = async () => {
-    logger.log('changing app icon to', appIcon);
+    logger.debug(`[redux/settings]: changing app icon to ${appIcon}`);
     try {
       await changeIcon(appIcon);
-      logger.log('icon changed to ', appIcon);
+      logger.debug(`[redux/settings]: icon changed to ${appIcon}`);
       saveAppIcon(appIcon);
       dispatch({
         payload: appIcon,
         type: SETTINGS_UPDATE_APP_ICON_SUCCESS,
       });
     } catch (error) {
-      logger.log('Error changing app icon', error);
+      logger.error(new RainbowError(`[redux/settings]: Error changing app icon: ${error}`));
     }
   };
 
@@ -237,17 +234,16 @@ export const settingsUpdateAccountAddress =
     });
   };
 
-export const settingsUpdateNetwork = (network: Network) => async (dispatch: Dispatch<SettingsStateUpdateNetworkSuccessAction>) => {
-  const chainId = ethereumUtils.getChainIdFromNetwork(network);
-  await web3SetHttpProvider(network);
+export const settingsUpdateNetwork = (chainId: ChainId) => async (dispatch: Dispatch<SettingsStateUpdateNetworkSuccessAction>) => {
+  await web3SetHttpProvider(chainId);
   try {
     dispatch({
-      payload: { chainId, network },
+      payload: { chainId },
       type: SETTINGS_UPDATE_NETWORK_SUCCESS,
     });
-    saveNetwork(network);
+    saveChainId(chainId);
   } catch (error) {
-    logger.log('Error updating network settings', error);
+    logger.error(new RainbowError(`[redux/settings]: Error updating network settings: ${error}`));
   }
 };
 
@@ -261,7 +257,7 @@ export const settingsChangeLanguage = (language: Language) => async (dispatch: D
     saveLanguage(language);
     analytics.identify({ language });
   } catch (error) {
-    logger.log('Error changing language', error);
+    logger.error(new RainbowError(`[redux/settings]: Error changing language: ${error}`));
   }
 };
 
@@ -278,7 +274,7 @@ export const settingsChangeNativeCurrency =
       saveNativeCurrency(nativeCurrency);
       analytics.identify({ currency: nativeCurrency });
     } catch (error) {
-      logger.log('Error changing native currency', error);
+      logger.error(new RainbowError(`[redux/settings]: Error changing native currency: ${error}`));
     }
   };
 
@@ -315,7 +311,6 @@ export default (state = INITIAL_STATE, action: SettingsStateUpdateAction) => {
       return {
         ...state,
         chainId: action.payload.chainId,
-        network: action.payload.network,
       };
     case SETTINGS_UPDATE_LANGUAGE_SUCCESS:
       return {

@@ -8,7 +8,7 @@ import { atom } from 'recoil';
 import { InlineFieldProps } from '../components/inputs/InlineField';
 import { add, addBuffer, convertAmountAndPriceToNativeDisplay, divide, fromWei, handleSignificantDecimals, multiply } from './utilities';
 import { ENSRegistrationRecords, EthereumAddress } from '@/entities';
-import { getProviderForNetwork, toHex } from '@/handlers/web3';
+import { getProvider, toHex } from '@/handlers/web3';
 import { gweiToWei } from '@/parsers';
 import {
   ENSBaseRegistrarImplementationABI,
@@ -25,6 +25,7 @@ import {
 import { colors } from '@/styles';
 import { labelhash } from '@/utils';
 import { encodeContenthash, isValidContenthash } from '@/utils/contenthash';
+import { ChainId } from '@/networks/types';
 
 export const ENS_SECONDS_WAIT = 60;
 export const ENS_SECONDS_PADDING = 5;
@@ -367,27 +368,27 @@ export const deprecatedTextRecordFields = {
 export const ENS_DOMAIN = '.eth';
 
 const getENSRegistrarControllerContract = async (wallet?: Signer, registrarAddress?: string) => {
-  const signerOrProvider = wallet || (await getProviderForNetwork());
+  const signerOrProvider = wallet || (await getProvider({ chainId: ChainId.mainnet }));
   return new Contract(registrarAddress || ensETHRegistrarControllerAddress, ENSETHRegistrarControllerABI, signerOrProvider);
 };
 
 const getENSPublicResolverContract = async (wallet?: Signer, resolverAddress?: EthereumAddress) => {
-  const signerOrProvider = wallet || (await getProviderForNetwork());
+  const signerOrProvider = wallet || (await getProvider({ chainId: ChainId.mainnet }));
   return new Contract(resolverAddress || ensPublicResolverAddress, ENSPublicResolverABI, signerOrProvider);
 };
 
 const getENSReverseRegistrarContract = async (wallet?: Signer) => {
-  const signerOrProvider = wallet || (await getProviderForNetwork());
+  const signerOrProvider = wallet || (await getProvider({ chainId: ChainId.mainnet }));
   return new Contract(ensReverseRegistrarAddress, ENSReverseRegistrarABI, signerOrProvider);
 };
 
 const getENSBaseRegistrarImplementationContract = async (wallet?: Signer) => {
-  const signerOrProvider = wallet || (await getProviderForNetwork());
+  const signerOrProvider = wallet || (await getProvider({ chainId: ChainId.mainnet }));
   return new Contract(ensBaseRegistrarImplementationAddress, ENSBaseRegistrarImplementationABI, signerOrProvider);
 };
 
 const getENSRegistryContract = async (wallet?: Signer) => {
-  const signerOrProvider = wallet ?? (await getProviderForNetwork());
+  const signerOrProvider = wallet ?? (await getProvider({ chainId: ChainId.mainnet }));
   return new Contract(ensRegistryAddress, ENSRegistryWithFallbackABI, signerOrProvider);
 };
 

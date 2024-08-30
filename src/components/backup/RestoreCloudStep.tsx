@@ -151,14 +151,15 @@ export default function RestoreCloudStep() {
             filename = normalizeAndroidBackupFilename(filename);
           }
 
-          logger.info('Done updating backup state');
+          logger.debug('[RestoreCloudStep]: Done updating backup state');
           // NOTE: Marking the restored wallets as backed up
           // @ts-expect-error TypeScript doesn't play nicely with Redux types here
           const walletIdsToUpdate = Object.keys(newWalletsState || {}).filter(walletId => !(prevWalletsState || {})[walletId]);
-          logger.log('updating backup state of wallets with ids', {
+
+          logger.debug('[RestoreCloudStep]: Updating backup state of wallets with ids', {
             walletIds: JSON.stringify(walletIdsToUpdate),
           });
-          logger.log('backupSelected.name', {
+          logger.debug('[RestoreCloudStep]: Selected backup name', {
             fileName: selectedBackup.name,
           });
 
@@ -182,7 +183,7 @@ export default function RestoreCloudStep() {
           const walletKeys = Object.keys(newWalletsState || {});
           // @ts-expect-error TypeScript doesn't play nicely with Redux types here
           const firstWallet = walletKeys.length > 0 ? (newWalletsState || {})[walletKeys[0]] : undefined;
-          const firstAddress = firstWallet ? firstWallet.addresses[0].address : undefined;
+          const firstAddress = firstWallet ? (firstWallet.addresses || [])[0].address : undefined;
           const p1 = dispatch(walletsSetSelected(firstWallet));
           const p2 = dispatch(addressSetSelected(firstAddress));
           await Promise.all([p1, p2]);

@@ -55,8 +55,10 @@ export default function BackupSheetSectionNoProvider() {
           }
         });
       } catch (e) {
+        logger.error(new RainbowError('[BackupSheetSectionNoProvider]: No account found'), {
+          error: e,
+        });
         Alert.alert(lang.t(lang.l.back_up.errors.no_account_found));
-        logger.error(e as RainbowError);
       }
     } else {
       const isAvailable = await isCloudBackupAvailable();
@@ -86,7 +88,9 @@ export default function BackupSheetSectionNoProvider() {
 
   const onManualBackup = async () => {
     const title =
-      selectedWallet?.imported && selectedWallet.type === walletTypes.privateKey ? selectedWallet.addresses[0].label : selectedWallet.name;
+      selectedWallet?.imported && selectedWallet.type === walletTypes.privateKey
+        ? (selectedWallet.addresses || [])[0].label
+        : selectedWallet.name;
 
     goBack();
     navigate(Routes.SETTINGS_SHEET, {

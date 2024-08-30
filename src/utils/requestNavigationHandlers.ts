@@ -15,13 +15,15 @@ import { SEND_TRANSACTION } from './signingMethods';
 import { handleSessionRequestResponse } from '@/walletConnect';
 import ethereumUtils from './ethereumUtils';
 import { getRequestDisplayDetails } from '@/parsers';
-import { RainbowNetworks } from '@/networks';
+import { RainbowNetworkObjects } from '@/networks';
 import { maybeSignUri } from '@/handlers/imgix';
 import { getActiveRoute } from '@/navigation/Navigation';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import walletTypes from '@/helpers/walletTypes';
 import watchingAlert from './watchingAlert';
+import { Address } from 'viem';
+import { ChainId } from '@/networks/types';
 
 export type RequestSource = 'walletconnect' | 'browser';
 
@@ -35,9 +37,13 @@ export interface DappConnectionData {
   address?: string;
 }
 
-export const handleDappBrowserConnectionPrompt = (dappData: DappConnectionData): Promise<{ chainId: number; address: string } | Error> => {
+export const handleDappBrowserConnectionPrompt = (
+  dappData: DappConnectionData
+): Promise<{ chainId: ChainId; address: Address } | Error> => {
   return new Promise((resolve, reject) => {
-    const chainIds = RainbowNetworks.filter(network => network.enabled && network.networkType !== 'testnet').map(network => network.id);
+    const chainIds = RainbowNetworkObjects.filter(network => network.enabled && network.networkType !== 'testnet').map(
+      network => network.id
+    );
     const receivedTimestamp = Date.now();
     const routeParams: WalletconnectApprovalSheetRouteParams = {
       receivedTimestamp,

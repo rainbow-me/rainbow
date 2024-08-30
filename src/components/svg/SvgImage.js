@@ -4,7 +4,7 @@ import { WebView } from 'react-native-webview';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import logger from '@/utils/logger';
+import { logger } from '@/logger';
 import { CardSize } from '../unique-token/CardSize';
 
 const ImageTile = styled(ImgixImage)({
@@ -97,7 +97,7 @@ class SvgImage extends Component {
   }
 
   doFetch = async props => {
-    let uri = props.source && props.source.uri;
+    const uri = props.source && props.source.uri;
     if (uri) {
       props.onLoadStart && props.onLoadStart();
       if (uri.match(/^data:image\/svg/)) {
@@ -110,17 +110,17 @@ class SvgImage extends Component {
           if (text.toLowerCase().indexOf('<svg') !== -1) {
             // TODO APP-526 more thorough investigatation into if/why foreignObject images aren't supported
             if (text.match(/<foreignObject[\s\S]*?<\/foreignObject>/)) {
-              logger.log('foreignObject tag not supported', { text, uri });
+              logger.debug('[SvgImage]: foreignObject tag not supported', { text, uri });
               // return w/o error so we can fallback to png
               return;
             }
             this.mounted && this.setState({ fetchingUrl: uri, svgContent: text });
           } else {
-            logger.log('invalid svg', { text, uri });
+            logger.debug('[SvgImage]: invalid svg', { text, uri });
             this.mounted && props.onError && props.onError('invalid svg');
           }
         } catch (err) {
-          logger.log('error loading remote svg image', err);
+          logger.debug('[SvgImage]: error loading remote svg image', err);
           this.mounted && props.onError && props.onError('error loading remote svg image');
         }
       }
