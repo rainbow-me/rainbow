@@ -9,7 +9,7 @@ import { formatJsonRpcResult, formatJsonRpcError } from '@json-rpc-tools/utils';
 import { gretch } from 'gretchen';
 import messaging from '@react-native-firebase/messaging';
 import WalletConnectCore, { Core } from '@walletconnect/core';
-import { Web3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
+import Client, { Web3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
 import { isHexString } from '@ethersproject/bytes';
 import { toUtf8String } from '@ethersproject/strings';
 
@@ -94,7 +94,6 @@ export function maybeGoBackAndClearHasPendingRedirect({ delay = 0 }: { delay?: n
 /**
  * MAY BE UNDEFINED if WC v2 hasn't been instantiated yet
  */
-let syncWeb3WalletClient: Awaited<ReturnType<(typeof Web3Wallet)['init']>> | undefined;
 
 let lastConnector: string | undefined = undefined;
 
@@ -102,46 +101,41 @@ let walletConnectCore: WalletConnectCore | undefined;
 
 let web3WalletClient: ReturnType<(typeof Web3Wallet)['init']> | undefined;
 
-let initPromise: ReturnType<(typeof Web3Wallet)['init']> | null = null;
+let initPromise: Promise<Client> | undefined = undefined;
+
+let syncWeb3WalletClient: Client | undefined = undefined;
 
 export const initializeWCv2 = async () => {
-  walletConnectCore = new Core({ projectId: WC_PROJECT_ID });
+  if (!walletConnectCore) {
+    walletConnectCore = new Core({ projectId: WC_PROJECT_ID });
+  }
 
-  web3WalletClient = Web3Wallet.init({
-    core: walletConnectCore,
-    metadata: {
-      name: '🌈 Rainbow',
-      description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
-      url: 'https://rainbow.me',
-      icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
-      redirect: {
-        native: 'rainbow://wc',
-        universal: 'https://rnbwapp.com/wc',
+  if (!web3WalletClient) {
+    // eslint-disable-next-line require-atomic-updates
+    web3WalletClient = Web3Wallet.init({
+      core: walletConnectCore,
+      metadata: {
+        name: '🌈 Rainbow',
+        description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
+        url: 'https://rainbow.me',
+        icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
+        redirect: {
+          native: 'rainbow://wc',
+          universal: 'https://rnbwapp.com/wc',
+        },
       },
-    },
-  });
+    });
+  }
+
   return web3WalletClient;
 };
 
-// this function ensures we only initialize the client once
 export async function getWeb3WalletClient() {
-  if (!syncWeb3WalletClient) {
-    if (!initPromise) {
-      if (web3WalletClient) {
-        initPromise = web3WalletClient.then(client => {
-          syncWeb3WalletClient = client;
-          return client;
-        });
-      } else {
-        await initializeWCv2();
-        return getWeb3WalletClient();
-      }
-    }
-    // Wait for the initialization promise to resolve
-    return initPromise;
-  } else {
-    return syncWeb3WalletClient;
+  if (!initPromise) {
+    initPromise = initializeWCv2();
   }
+
+  return initPromise;
 }
 
 /**
@@ -385,11 +379,14 @@ export async function initListeners() {
       events.emit('walletConnectV2SessionDeleted');
     }, 500);
   });
+}
 
+export async function initWalletConnectPushNotifications() {
   try {
     const token = await getFCMToken();
 
     if (token) {
+      const client = await getWeb3WalletClient();
       const client_id = await client.core.crypto.getClientId();
 
       // initial subscription

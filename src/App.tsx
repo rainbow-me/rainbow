@@ -42,7 +42,7 @@ import { getOrCreateDeviceId, securelyHashWalletAddress } from '@/analytics/util
 import { logger, RainbowError } from '@/logger';
 import * as ls from '@/storage';
 import { migrate } from '@/migrations';
-import { initListeners as initWalletConnectListeners } from '@/walletConnect';
+import { initListeners as initWalletConnectListeners, initWalletConnectPushNotifications } from '@/walletConnect';
 import { saveFCMToken } from '@/notifications/tokens';
 import { initializeReservoirClient } from '@/resources/reservoir/client';
 import { ReviewPromptAction } from '@/storage/schema';
@@ -144,12 +144,13 @@ function App({ walletReady }: AppProps) {
     }
     identifyFlow();
     eventSubscription.current = AppState.addEventListener('change', handleAppStateChange);
+    initWalletConnectListeners();
 
     const p1 = analyticsV2.initializeRudderstack();
     const p2 = setupDeeplinking();
     const p3 = saveFCMToken();
     Promise.all([p1, p2, p3]).then(() => {
-      initWalletConnectListeners();
+      initWalletConnectPushNotifications();
       PerformanceTracking.finishMeasuring(PerformanceMetrics.loadRootAppComponent);
       analyticsV2.track(analyticsV2.event.applicationDidMount);
     });
