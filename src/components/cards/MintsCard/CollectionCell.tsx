@@ -6,7 +6,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { useTheme } from '@/theme';
 import { View } from 'react-native';
 import { MintableCollection } from '@/graphql/__generated__/arc';
-import { useNativeAsset } from '@/utils/ethereumUtils';
+import ethereumUtils, { useNativeAsset } from '@/utils/ethereumUtils';
 import { analyticsV2 } from '@/analytics';
 import * as i18n from '@/languages';
 import { IS_IOS } from '@/env';
@@ -58,7 +58,8 @@ export function CollectionCell({ collection }: { collection: MintableCollection 
       priceInEth: amount,
     });
 
-    navigateToMintCollection(collection.contract, collection.mintStatus.price, collection.chainId);
+    const network = ethereumUtils.getNetworkFromChainId(collection.chainId);
+    navigateToMintCollection(collection.contract, collection.mintStatus.price, network);
   }, [amount, collection.chainId, collection.contract, collection.contractAddress, collection.mintStatus.price]);
 
   return (

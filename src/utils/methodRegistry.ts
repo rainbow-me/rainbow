@@ -1,5 +1,5 @@
 import { Contract } from '@ethersproject/contracts';
-import { getProvider } from '../handlers/web3';
+import { web3Provider } from '../handlers/web3';
 import namesOverrides from '../references/method-names-overrides.json';
 import methodRegistryABI from '../references/method-registry-abi.json';
 import { metadataClient } from '@/graphql';
@@ -17,8 +17,7 @@ export const methodRegistryLookupAndParse = async (methodSignatureBytes: any, ch
   if (data?.contractFunction?.text) {
     signature = data.contractFunction.text;
   } else {
-    const provider = getProvider({ chainId });
-    const registry = new Contract(METHOD_REGISTRY_ADDRESS, methodRegistryABI, provider);
+    const registry = new Contract(METHOD_REGISTRY_ADDRESS, methodRegistryABI, web3Provider);
 
     signature = await registry.entries(methodSignatureBytes);
   }

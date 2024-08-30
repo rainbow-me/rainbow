@@ -1,4 +1,4 @@
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/__swaps__/types/chains';
 import { SearchAsset } from '@/__swaps__/types/search';
 import {
   ARBITRUM_ETH_ADDRESS,

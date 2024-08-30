@@ -6,8 +6,7 @@ import { useAccountProfile, useDeleteWallet, useImportingWallet, useInitializeWa
 import { cleanUpWalletKeys, RainbowWallet } from '@/model/wallet';
 import { addressSetSelected, walletsSetSelected } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
-import { doesWalletsContainAddress } from '@/utils';
-import { RainbowError, logger } from '@/logger';
+import { doesWalletsContainAddress, logger } from '@/utils';
 
 export default function useWatchWallet({
   address: primaryAddress,
@@ -25,9 +24,7 @@ export default function useWatchWallet({
   const { wallets } = useWallets();
 
   const watchingWallet = useMemo(() => {
-    return Object.values<RainbowWallet>(wallets || {}).find(wallet =>
-      (wallet.addresses || []).some(({ address }) => address === primaryAddress)
-    );
+    return Object.values<RainbowWallet>(wallets || {}).find(wallet => wallet.addresses.some(({ address }) => address === primaryAddress));
   }, [primaryAddress, wallets]);
   const isWatching = useMemo(() => Boolean(watchingWallet), [watchingWallet]);
 
@@ -45,9 +42,7 @@ export default function useWatchWallet({
         // @ts-expect-error ts-migrate(2554) FIXME: Expected 8-9 arguments, but got 7.
         initializeWallet(null, null, null, false, false, null, true);
       } catch (e) {
-        logger.error(new RainbowError(`[useWatchWallet]: error while switching account`), {
-          error: (e as Error)?.message || 'Unknown error',
-        });
+        logger.log('error while switching account', e);
       }
     },
     [dispatch, initializeWallet, wallets]
@@ -66,7 +61,7 @@ export default function useWatchWallet({
       // it's deletable
       const isLastAvailableWallet = Object.keys(wallets!).find(key => {
         const someWallet = wallets![key];
-        const otherAccount = someWallet.addresses?.find((account: any) => account.visible && account.address !== accountAddress);
+        const otherAccount = someWallet.addresses.find((account: any) => account.visible && account.address !== accountAddress);
         if (otherAccount) {
           return true;
         }

@@ -27,6 +27,7 @@ import { Media } from '../Media';
 import { analyticsV2 } from '@/analytics';
 import * as i18n from '@/languages';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
+import { ethereumUtils } from '@/utils';
 
 const IMAGE_SIZE = 111;
 
@@ -73,7 +74,8 @@ export function FeaturedMintCard() {
         mintsLastHour: featuredMint.totalMints,
         priceInEth: convertRawAmountToRoundedDecimal(featuredMint.mintStatus.price, 18, 6),
       });
-      navigateToMintCollection(featuredMint.contract, featuredMint.mintStatus.price, featuredMint.chainId);
+      const network = ethereumUtils.getNetworkFromChainId(featuredMint.chainId);
+      navigateToMintCollection(featuredMint.contract, featuredMint.mintStatus.price, network);
     }
   }, [featuredMint]);
 

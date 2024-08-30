@@ -3,13 +3,13 @@ import { useDispatch } from 'react-redux';
 import { settingsLoadLanguage, settingsLoadState } from '@/redux/settings';
 
 import { promiseUtils } from '@/utils';
-import { logger } from '@/logger';
+import logger from '@/utils/logger';
 
 export default function useLoadGlobalEarlyData() {
   const dispatch = useDispatch();
 
   const loadGlobalData = useCallback(async () => {
-    logger.debug('[useLoadGlobalEarlyData]: Load wallet global early data');
+    logger.sentry('Load wallet global early data');
     const promises = [];
 
     // native currency, app icon, testnetsEnabled, flashbotsEnabled

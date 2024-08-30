@@ -101,7 +101,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
             weight="heavy"
             onPress={onViewOnBlockExplorerPress}
             label={i18n.t(i18n.l.wallet.action.view_on, {
-              blockExplorerName: transaction.explorerLabel ?? startCase(ethereumUtils.getBlockExplorer({ chainId })),
+              blockExplorerName: transaction.explorerLabel ?? startCase(ethereumUtils.getBlockExplorer(chainId)),
             })}
             lightShadows
           />

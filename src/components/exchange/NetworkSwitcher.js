@@ -8,12 +8,11 @@ import { Column, Row } from '../layout';
 import { Text } from '../text';
 import { padding, position } from '@/styles';
 import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
-import { RainbowNetworkObjects } from '@/networks';
+import { RainbowNetworks, getNetworkObj } from '@/networks';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
-import { chainIdToNameMapping } from '@/networks/types';
 
 const networkMenuItems = () => {
-  return RainbowNetworkObjects.filter(network => network.features.swaps).map(network => ({
+  return RainbowNetworks.filter(network => network.features.swaps).map(network => ({
     actionKey: network.value,
     actionTitle: network.name,
     icon: {
@@ -23,7 +22,7 @@ const networkMenuItems = () => {
   }));
 };
 const androidNetworkMenuItems = () => {
-  return RainbowNetworkObjects.filter(network => network.features.swaps).map(network => network.name);
+  return RainbowNetworks.filter(network => network.features.swaps).map(network => network.name);
 };
 
 const NetworkSwitcherv1 = ({
@@ -94,7 +93,7 @@ const NetworkSwitcherv1 = ({
               weight={prominent ? 'heavy' : 'bold'}
             >
               {lang.t('expanded_state.swap.network_switcher', {
-                network: chainIdToNameMapping[currentChainId],
+                network: getNetworkObj(ethereumUtils.getNetworkFromChainId(currentChainId)).name,
               })}
             </Text>
           </Column>

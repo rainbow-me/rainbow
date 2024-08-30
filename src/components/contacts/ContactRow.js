@@ -58,7 +58,7 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
   const { width: deviceWidth } = useDimensions();
   const { onAddOrUpdateContacts } = useContacts();
   const { colors } = useTheme();
-  const { accountType, balances, ens, image, label, onPress, showcaseItem, testID } = props;
+  const { accountType, balances, ens, image, label, network, onPress, showcaseItem, testID } = props;
 
   const balanceText = balances ? balances.totalBalanceDisplay : i18n.t(i18n.l.wallet.change_wallet.loading_balance);
 
@@ -80,12 +80,12 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
         const name = await fetchReverseRecord(address);
         if (name !== ensName) {
           setENSName(name);
-          onAddOrUpdateContacts(address, name && isENSAddressFormat(nickname) ? name : nickname, color, name);
+          onAddOrUpdateContacts(address, name && isENSAddressFormat(nickname) ? name : nickname, color, network, name);
         }
       };
       fetchENSName();
     }
-  }, [accountType, onAddOrUpdateContacts, address, color, ensName, nickname, profilesEnabled, setENSName]);
+  }, [accountType, onAddOrUpdateContacts, address, color, ensName, network, nickname, profilesEnabled, setENSName]);
 
   let cleanedUpLabel = null;
   if (label) {

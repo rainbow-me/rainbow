@@ -749,7 +749,7 @@
       "swap_details_v2": {
         "automatic": "自动",
         "degen_mode": "Degen 模式",
-        "degen_mode_description": "跳过审查步骤以更快交换",
+        "degen_mode_description": "跳过审核表以更快地交换",
         "maximum_sold": "最大出售量",
         "minimum_received": "最低接收金额",
         "preferred_network": "首选网络",
@@ -1321,16 +1321,10 @@
     "nfts": {
       "selling": "出售",
       "sort": {
-        "ABC": "字母顺序",
         "abc": "字母顺序",
-        "MOST_RECENT": "最近",
         "most_recent": "最新的",
-        "FLOOR_PRICE": "底价",
         "floor_price": "底价"
-      },
-      "empty": "收藏品",
-      "collect_now": "立即收藏",
-      "will_appear_here": "您的收藏品将会出现在这里"
+      }
     },
     "nft_offers": {
       "card": {
@@ -2074,7 +2068,6 @@
     "token_search": {
       "section_header": {
         "recent": "最近",
-        "popular": "在 Rainbow 中流行",
         "favorites": "收藏夹",
         "bridge": "桥接",
         "verified": "已验证",
@@ -2503,7 +2496,7 @@
       "balance_title": "余额",
       "buy": "购买",
       "change_wallet": {
-        "loading_balance": "正在加载余额...",
+        "no_balance": "无余额",
         "balance_eth": "%{balanceEth} ETH",
         "watching": "正在关注",
         "ledger": "分类账"

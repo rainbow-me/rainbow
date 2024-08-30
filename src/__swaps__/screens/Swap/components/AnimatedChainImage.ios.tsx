@@ -11,7 +11,7 @@ import ZoraBadge from '@/assets/badges/zora.png';
 import AvalancheBadge from '@/assets/badges/avalanche.png';
 import BlastBadge from '@/assets/badges/blast.png';
 import DegenBadge from '@/assets/badges/degen.png';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/__swaps__/types/chains';
 import { useAnimatedProps } from 'react-native-reanimated';
 import { AddressOrEth } from '@/__swaps__/types/assets';
 import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';

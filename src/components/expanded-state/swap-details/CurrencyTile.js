@@ -78,7 +78,7 @@ export default function CurrencyTile({
             <RainbowCoinIcon
               size={50}
               icon={asset?.icon_url}
-              chainId={asset?.chainId}
+              chainId={ethereumUtils.getChainIdFromNetwork(asset?.network)}
               symbol={asset?.symbol}
               colors={asset?.colors}
               theme={theme}

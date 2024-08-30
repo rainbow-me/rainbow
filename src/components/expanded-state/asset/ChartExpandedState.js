@@ -15,7 +15,7 @@ import { Chart } from '../../value-chart';
 import ExpandedStateSection from '../ExpandedStateSection';
 import SocialLinks from './SocialLinks';
 import { ChartPathProvider } from '@/react-native-animated-charts/src';
-import { isL2Chain, isTestnetChain } from '@/handlers/web3';
+import { isL2Chain, isTestnetNetwork } from '@/handlers/web3';
 import AssetInputTypes from '@/helpers/assetInputTypes';
 import {
   useAccountSettings,
@@ -29,15 +29,15 @@ import { useNavigation } from '@/navigation';
 import { ETH_ADDRESS } from '@/references';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
-import { safeAreaInsetValues } from '@/utils';
+import { ethereumUtils, safeAreaInsetValues } from '@/utils';
 import AvailableNetworksv2 from '@/components/expanded-state/AvailableNetworksv2';
 import AvailableNetworksv1 from '@/components/expanded-state/AvailableNetworks';
 import { Box } from '@/design-system';
-import { getNetworkObject } from '@/networks';
+import { getNetworkObj } from '@/networks';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { greaterThanOrEqualTo } from '@/helpers/utilities';
-import { ChainId } from '@/networks/types';
+import { Network } from '@/networks/types';
 
 const defaultCarouselHeight = 60;
 const baseHeight = 386 + (android && 20 - getSoftMenuBarHeight()) - defaultCarouselHeight;
@@ -140,11 +140,12 @@ function Description({ text = '' }) {
 }
 
 export default function ChartExpandedState({ asset }) {
-  const { nativeCurrency, chainId: currentChainId } = useAccountSettings();
+  const { nativeCurrency, network: currentNetwork } = useAccountSettings();
+  const assetChainId = ethereumUtils.getChainIdFromNetwork(asset?.network);
 
   const { data: genericAsset } = useExternalToken({
     address: asset?.address,
-    chainId: asset?.chainId,
+    chainId: assetChainId,
     currency: nativeCurrency,
   });
   const {
@@ -163,20 +164,19 @@ export default function ChartExpandedState({ asset }) {
       : genericAsset
         ? {
             ...genericAsset,
-            chainId: asset.chainId,
             network: asset.network,
             address: asset.address,
-            mainnetAddress: asset?.networks?.[getNetworkObject({ chainId: ChainId.mainnet })]?.address,
+            mainnetAddress: asset?.networks?.[getNetworkObj(Network.mainnet)]?.address,
           }
         : asset;
   }, [asset, genericAsset, hasBalance]);
 
-  const isL2 = useMemo(() => isL2Chain({ chainId: asset?.chainId }), [asset?.chainId]);
-  const isTestnet = isTestnetChain({ chainId: currentChainId });
+  const isL2 = useMemo(() => isL2Chain({ chainId: assetChainId }), [assetChainId]);
+  const isTestnet = isTestnetNetwork(currentNetwork);
 
   const { data, isLoading: additionalAssetDataLoading } = useAdditionalAssetData({
     address: asset?.address,
-    chainId: asset?.chainId,
+    network: asset?.network,
     currency: nativeCurrency,
   });
 
@@ -235,13 +235,12 @@ export default function ChartExpandedState({ asset }) {
   const { colors } = useTheme();
 
   const crosschainEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
-
   const AvailableNetworks = !crosschainEnabled ? AvailableNetworksv1 : AvailableNetworksv2;
 
-  const assetChainId = assetWithPrice.chainId;
+  const assetNetwork = assetWithPrice.network;
 
   const { swagg_enabled, f2c_enabled } = useRemoteConfig();
-  const swapEnabled = swagg_enabled && getNetworkObject({ chainId: assetChainId }).features.swaps;
+  const swapEnabled = swagg_enabled && getNetworkObj(assetNetwork).features.swaps;
   const addCashEnabled = f2c_enabled;
 
   const format = useCallback(
@@ -315,7 +314,7 @@ export default function ChartExpandedState({ asset }) {
         </SheetActionButtonRow>
       ) : null}
       {!data?.networks && isL2 && (
-        <L2Disclaimer chainId={assetChainId} colors={colors} onPress={handleL2DisclaimerPress} symbol={assetWithPrice.symbol} />
+        <L2Disclaimer network={assetWithPrice.network} colors={colors} onPress={handleL2DisclaimerPress} symbol={assetWithPrice.symbol} />
       )}
       {data?.networks && !hasBalance && (
         <Box paddingBottom={{ custom: 27 }}>
@@ -376,7 +375,7 @@ export default function ChartExpandedState({ asset }) {
           isNativeAsset={assetWithPrice?.isNativeAsset}
           links={data?.links}
           marginTop={!delayedDescriptions && 19}
-          chainId={asset?.chainId}
+          chainId={ethereumUtils.getChainIdFromNetwork(asset?.network)}
         />
         <Spacer />
       </AdditionalContentWrapper>

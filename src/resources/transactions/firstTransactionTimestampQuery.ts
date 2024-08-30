@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import PQueue from 'p-queue/dist';
 
 import { createQueryKey, queryClient, QueryConfig, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 import { getFirstTransactionTimestamp } from '@/utils/ethereumUtils';
@@ -22,6 +23,8 @@ export type FirstTransactionTimestampQueryKey = ReturnType<typeof firstTransacti
 // ///////////////////////////////////////////////
 // Query Function
 
+const queue = new PQueue({ interval: 1000, intervalCap: 5 });
+
 export async function firstTransactionTimestampQueryFunction({
   queryKey: [{ addressOrName }],
 }: QueryFunctionArgs<typeof firstTransactionTimestampQueryKey>) {
@@ -32,10 +35,7 @@ export async function firstTransactionTimestampQueryFunction({
     address = (await fetchENSAddress({ name: addressOrName })) ?? '';
   }
 
-  let timestamp;
-  if (address) {
-    timestamp = await getFirstTransactionTimestamp(address);
-  }
+  const timestamp = address ? await queue.add(async () => getFirstTransactionTimestamp(address)) : null;
   return timestamp ?? null;
 }
 

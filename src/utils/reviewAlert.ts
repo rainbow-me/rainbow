@@ -30,7 +30,7 @@ export const numberOfTimesBeforePrompt: {
 };
 
 export const handleReviewPromptAction = async (action: ReviewPromptAction) => {
-  logger.debug(`[reviewAlert]: handleReviewPromptAction: ${action}`);
+  logger.debug(`handleReviewPromptAction: ${action}`);
 
   if (IS_TESTING === 'true') {
     return;
@@ -53,10 +53,10 @@ export const handleReviewPromptAction = async (action: ReviewPromptAction) => {
   }
 
   const timeOfLastPrompt = ls.review.get(['timeOfLastPrompt']) || 0;
-  logger.debug(`[reviewAlert]: timeOfLastPrompt: ${timeOfLastPrompt}`);
+  logger.debug(`timeOfLastPrompt: ${timeOfLastPrompt}`);
 
   actionToDispatch.numOfTimesDispatched += 1;
-  logger.debug(`[reviewAlert]: numOfTimesDispatched: ${actionToDispatch.numOfTimesDispatched}`);
+  logger.debug(`numOfTimesDispatched: ${actionToDispatch.numOfTimesDispatched}`);
 
   const hasReachedAmount = actionToDispatch.numOfTimesDispatched >= numberOfTimesBeforePrompt[action];
 
@@ -66,7 +66,7 @@ export const handleReviewPromptAction = async (action: ReviewPromptAction) => {
   }
 
   if (hasReachedAmount && timeOfLastPrompt + TWO_MONTHS <= Date.now()) {
-    logger.debug(`[reviewAlert]: Prompting for review`);
+    logger.debug(`Prompting for review`);
     actionToDispatch.numOfTimesDispatched = 0;
     ls.review.set(['timeOfLastPrompt'], Date.now());
     promptForReview();

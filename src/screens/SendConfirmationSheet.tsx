@@ -56,12 +56,12 @@ import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
 import { ethereumUtils, getUniqueTokenType, promiseUtils } from '@/utils';
-import { logger, RainbowError } from '@/logger';
+import logger from '@/utils/logger';
+import { getNetworkObj } from '@/networks';
 import { IS_ANDROID } from '@/env';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { performanceTracking, TimeToSignOperation, Screens } from '@/state/performance/performance';
-import { ChainId, chainIdToNameMapping } from '@/networks/types';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -97,12 +97,12 @@ const checkboxOffset = 44;
 export function getDefaultCheckboxes({
   isENS,
   ensProfile,
-  chainId,
+  network,
   toAddress,
 }: {
   isENS: boolean;
   ensProfile: ENSProfile;
-  chainId: ChainId;
+  network: string;
   toAddress: string;
 }): Checkbox[] {
   if (isENS) {
@@ -132,7 +132,7 @@ export function getDefaultCheckboxes({
       checked: false,
       id: 'has-wallet-that-supports',
       label: lang.t('wallet.transaction.checkboxes.has_a_wallet_that_supports', {
-        networkName: capitalize(chainIdToNameMapping[chainId]),
+        networkName: capitalize(network),
       }),
     },
   ];
@@ -195,7 +195,7 @@ export const SendConfirmationSheet = () => {
   }, []);
 
   const {
-    params: { amountDetails, asset, callback, ensProfile, isL2, isNft, chainId, to, toAddress },
+    params: { amountDetails, asset, callback, ensProfile, isL2, isNft, network, to, toAddress },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } = useRoute<any>();
 
@@ -229,7 +229,7 @@ export const SendConfirmationSheet = () => {
       transactions.forEach(tx => {
         if (tx.to?.toLowerCase() === toAddress?.toLowerCase() && tx.from?.toLowerCase() === accountAddress?.toLowerCase()) {
           sends += 1;
-          if (tx.chainId === chainId) {
+          if (tx.network === network) {
             sendsCurrentNetwork += 1;
           }
         }
@@ -241,7 +241,7 @@ export const SendConfirmationSheet = () => {
         }
       }
     }
-  }, [accountAddress, isSendingToUserAccount, chainId, toAddress, transactions]);
+  }, [accountAddress, isSendingToUserAccount, network, toAddress, transactions]);
 
   const contact = useMemo(() => {
     return contacts?.[toAddress?.toLowerCase()];
@@ -250,7 +250,7 @@ export const SendConfirmationSheet = () => {
   const uniqueTokenType = getUniqueTokenType(asset);
   const isENS = uniqueTokenType === 'ENS' && profilesEnabled;
 
-  const [checkboxes, setCheckboxes] = useState<Checkbox[]>(getDefaultCheckboxes({ ensProfile, isENS, chainId, toAddress }));
+  const [checkboxes, setCheckboxes] = useState<Checkbox[]>(getDefaultCheckboxes({ ensProfile, isENS, network, toAddress }));
 
   useEffect(() => {
     if (isENS) {
@@ -318,7 +318,7 @@ export const SendConfirmationSheet = () => {
           updateTxFee(gasLimit, null);
         })
         .catch(e => {
-          logger.error(new RainbowError(`[SendConfirmationSheet]: error calculating gas limit: ${e}`));
+          logger.sentry('Error calculating gas limit', e);
           updateTxFee(null, null);
         });
     }
@@ -395,7 +395,7 @@ export const SendConfirmationSheet = () => {
               await callback();
             }
           } catch (e) {
-            logger.error(new RainbowError(`[SendConfirmationSheet]: error submitting transaction: ${e}`));
+            logger.sentry('TX submit failed', e);
             setIsAuthorizing(false);
           }
         },
@@ -500,7 +500,7 @@ export const SendConfirmationSheet = () => {
                       badgeYPosition={0}
                       borderRadius={10}
                       imageUrl={imageUrl}
-                      chainId={asset?.chainId}
+                      network={asset.network}
                       showLargeShadow
                       size={50}
                     />
@@ -508,7 +508,7 @@ export const SendConfirmationSheet = () => {
                     <RainbowCoinIcon
                       size={50}
                       icon={asset?.icon_url}
-                      chainId={asset?.chainId}
+                      chainId={ethereumUtils.getChainIdFromNetwork(asset?.network)}
                       symbol={asset?.symbol || ''}
                       theme={theme}
                       colors={asset?.colors}
@@ -549,7 +549,7 @@ export const SendConfirmationSheet = () => {
                         address: toAddress,
                         name: avatarName || address(to, 4, 8),
                       }}
-                      chainId={chainId}
+                      network={network}
                       scaleTo={0.75}
                     >
                       <Text
@@ -592,7 +592,7 @@ export const SendConfirmationSheet = () => {
                   <Fragment>
                     {/* @ts-expect-error JavaScript component */}
                     <L2Disclaimer
-                      chainId={asset.chainId}
+                      network={asset.network}
                       colors={theme.colors}
                       hideDivider
                       marginBottom={0}
@@ -600,7 +600,7 @@ export const SendConfirmationSheet = () => {
                       onPress={handleL2DisclaimerPress}
                       prominent
                       customText={i18n.t(i18n.l.expanded_state.asset.l2_disclaimer_send, {
-                        network: chainIdToNameMapping[asset.chainId],
+                        network: getNetworkObj(asset.network).name,
                       })}
                       symbol={asset.symbol}
                     />

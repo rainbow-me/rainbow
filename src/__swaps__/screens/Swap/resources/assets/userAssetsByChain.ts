@@ -4,7 +4,7 @@ import { Address } from 'viem';
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
 import { SupportedCurrencyKey } from '@/references';
 import { ParsedAssetsDictByChain, ParsedUserAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/__swaps__/types/chains';
 import { AddressAssetsReceivedMessage } from '@/__swaps__/types/refraction';
 import { RainbowError, logger } from '@/logger';
 
@@ -82,7 +82,7 @@ export async function userAssetsByChainQueryFunction({
       return cachedDataForChain;
     }
   } catch (e) {
-    logger.error(new RainbowError(`[userAssetsByChainQueryFunction]: Failed to fetch user assets for ${chainId}`), {
+    logger.error(new RainbowError(`userAssetsByChainQueryFunction - chainId = ${chainId}:`), {
       message: (e as Error)?.message,
     });
     return cachedDataForChain;

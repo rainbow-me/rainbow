@@ -4,9 +4,10 @@ import { ColumnWithMargins, Row } from '../layout';
 import ExchangeField from './ExchangeField';
 import ExchangeMaxButton from './ExchangeMaxButton';
 import ExchangeNativeField from './ExchangeNativeField';
-import { ChainId } from '@/networks/types';
+import { Network } from '@/helpers';
 import styled from '@/styled-thing';
 import { TokenColors } from '@/graphql/__generated__/metadata';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const Container = styled(ColumnWithMargins).attrs({ margin: 5 })({
   paddingTop: android ? 0 : 6,

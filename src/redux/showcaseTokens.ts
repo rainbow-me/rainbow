@@ -4,8 +4,8 @@ import { Dispatch } from 'redux';
 import { getPreference } from '../model/preferences';
 import { AppGetState } from './store';
 import { getShowcaseTokens, getWebDataEnabled, saveShowcaseTokens, saveWebDataEnabled } from '@/handlers/localstorage/accountLocal';
+import networkTypes from '@/helpers/networkTypes';
 import WalletTypes from '@/helpers/walletTypes';
-import { Network } from '@/networks/types';
 
 // -- Constants --------------------------------------- //
 
@@ -204,7 +204,7 @@ export const removeShowcaseToken = (tokenId: string) => (dispatch: Dispatch<Show
  * @param network The current network.
  */
 export const updateWebDataEnabled =
-  (enabled: boolean, address: string, network = Network.mainnet) =>
+  (enabled: boolean, address: string, network = networkTypes.mainnet) =>
   async (dispatch: Dispatch<ShowcaseTokensUpdateWebDataEnabledAction>) => {
     dispatch({
       payload: enabled,

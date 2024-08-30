@@ -33,13 +33,13 @@ export function useLedgerConnect({
       if (isReady) return;
       if (errorType === LEDGER_ERROR_CODES.DISCONNECTED) {
         setReadyForPolling(false);
-        logger.debug('[useLedgerConnect]: Device Disconnected - Attempting Reconnect', {});
+        logger.info('[LedgerConnect] - Device Disconnected - Attempting Reconnect', {});
         transport.current = undefined;
         try {
           transport.current = await TransportBLE.open(deviceId);
           setReadyForPolling(true);
         } catch (e) {
-          logger.error(new RainbowError('[useLedgerConnect]: Reconnect Error'), {
+          logger.error(new RainbowError('[LedgerConnect] - Reconnect Error'), {
             error: (e as Error).message,
           });
           // temp removing this to see if it fixes an issue
@@ -67,7 +67,7 @@ export function useLedgerConnect({
   const pollerCleanup = (poller: NodeJS.Timer | undefined) => {
     try {
       if (poller) {
-        logger.debug('[useLedgerConnect]: polling tear down', {});
+        logger.debug('[LedgerConnect] - polling tear down', {});
         clearInterval(poller);
         poller?.unref();
         timer.current = undefined;
@@ -78,7 +78,7 @@ export function useLedgerConnect({
   };
   useEffect(() => {
     if (readyForPolling && (!timer.current || triggerPollerCleanup)) {
-      logger.debug('[useLedgerConnect]: init device polling', {});
+      logger.debug('[LedgerConnect] - init device polling', {});
       setTriggerPollerCleanup(false);
       timer.current = setInterval(async () => {
         if (transport.current) {

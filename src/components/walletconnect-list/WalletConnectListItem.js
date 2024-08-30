@@ -23,7 +23,7 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
-import { getNetworkObject } from '@/networks';
+import { getNetworkObj } from '@/networks';
 
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;
@@ -69,7 +69,7 @@ export default function WalletConnectListItem({ account, chainId, dappIcon, dapp
   }, [wallets, walletNames, account]);
 
   const connectionNetworkInfo = useMemo(() => {
-    const networkObj = getNetworkObject({ chainId });
+    const networkObj = getNetworkObj(ethereumUtils.getNetworkFromChainId(Number(chainId)));
     return {
       chainId,
       color: isDarkMode ? networkObj.colors.dark : networkObj.colors.light,
@@ -195,7 +195,7 @@ export default function WalletConnectListItem({ account, chainId, dappIcon, dapp
           >
             <NetworkPill mainnet={connectionNetworkInfo.value === 'mainnet'}>
               <Row align="center">
-                <ChainLogo marginRight={5} chainId={connectionNetworkInfo.chainId} />
+                <ChainLogo marginRight={5} network={connectionNetworkInfo.value} />
                 <LabelText
                   color={
                     connectionNetworkInfo.value === 'mainnet'

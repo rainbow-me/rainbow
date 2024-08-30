@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { explorerInit } from '../redux/explorer';
-import { logger, RainbowError } from '@/logger';
+import logger from '@/utils/logger';
 
 export default function useInitializeAccountData() {
   const dispatch = useDispatch();
@@ -11,11 +11,11 @@ export default function useInitializeAccountData() {
   const initializeAccountData = useCallback(async () => {
     try {
       InteractionManager.runAfterInteractions(() => {
-        logger.debug('[useInitializeAccountData]: Initialize account data');
+        logger.sentry('Initialize account data');
         dispatch(explorerInit());
       });
     } catch (error) {
-      logger.error(new RainbowError(`[useInitializeAccountData]: Error initializing account data: ${error}`));
+      logger.sentry('Error initializing account data');
       captureException(error);
     }
   }, [dispatch]);

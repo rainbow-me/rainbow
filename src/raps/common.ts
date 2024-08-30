@@ -98,7 +98,7 @@ export const createNewENSAction = (type: ENSRapActionType, parameters: ENSAction
     type,
   };
 
-  logger.debug('[raps/common]: Creating a new action', {
+  logger.log('[common] Creating a new action', {
     extra: {
       ...newAction,
     },

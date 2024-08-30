@@ -749,7 +749,7 @@
       "swap_details_v2": {
         "automatic": "Otomatis",
         "degen_mode": "Mode Degen",
-        "degen_mode_description": "Lewati langkah ulasan untuk bertukar lebih cepat",
+        "degen_mode_description": "Lewati lembar tinjauan untuk swap lebih cepat",
         "maximum_sold": "Maksimum Dijual",
         "minimum_received": "Minimum yang diterima",
         "preferred_network": "Jaringan yang Disukai",
@@ -1321,16 +1321,10 @@
     "nfts": {
       "selling": "Menjual",
       "sort": {
-        "ABC": "Abjad",
         "abc": "Abjad",
-        "MOST_RECENT": "Baru-baru ini",
         "most_recent": "Terbaru",
-        "FLOOR_PRICE": "Harga Dasar",
         "floor_price": "Harga Dasar"
-      },
-      "empty": "Koleksi",
-      "collect_now": "Koleksi Sekarang",
-      "will_appear_here": "Koleksi Anda Akan Muncul di Sini"
+      }
     },
     "nft_offers": {
       "card": {
@@ -2074,7 +2068,6 @@
     "token_search": {
       "section_header": {
         "recent": "Baru-baru ini",
-        "popular": "Populer di Rainbow",
         "favorites": "Favorit",
         "bridge": "Jembatan",
         "verified": "Terverifikasi",
@@ -2503,7 +2496,7 @@
       "balance_title": "Saldo",
       "buy": "Beli",
       "change_wallet": {
-        "loading_balance": "Memuat Saldo...",
+        "no_balance": "Tidak Ada Saldo",
         "balance_eth": "%{balanceEth} ETH",
         "watching": "Menonton",
         "ledger": "Ledger"

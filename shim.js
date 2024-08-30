@@ -6,7 +6,7 @@ import ReactNative from 'react-native';
 import Storage from 'react-native-storage';
 // import { debugLayoutAnimations } from './src/config/debug';
 import { mmkvStorageBackend } from '@/handlers/localstorage/mmkvStorageBackend';
-import { logger } from '@/logger';
+import logger from '@/utils/logger';
 import 'fast-text-encoding';
 import globalVariables from './globalVariables';
 
@@ -47,7 +47,7 @@ for (const [key, value] of Object.entries(globalVariables)) {
   Object.defineProperty(global, key, {
     get: () => value,
     set: () => {
-      logger.debug(`[shim]: Trying to override internal Rainbow var ${key}`);
+      logger.sentry(`Trying to override internal Rainbow var ${key}`);
     },
   });
 }
@@ -108,7 +108,7 @@ ReactNative.LayoutAnimation.configureNext = () => null;
 //   debugLayoutAnimations
 // ) {
 //   ReactNative.LayoutAnimation.configureNext = (...args) => {
-//     logger.debug('[shim]: LayoutAnimation.configureNext', args);
+//     logger.sentry('LayoutAnimation.configureNext', args);
 //     oldConfigureNext(...args);
 //   };
 //   ReactNative.LayoutAnimation.configureNext.__shimmed = true;
@@ -122,7 +122,7 @@ if (!ReactNative.InteractionManager._shimmed) {
     if (finishAutomatically) {
       setTimeout(() => {
         ReactNative.InteractionManager.clearInteractionHandle(handle);
-        logger.debug(`[shim]: Interaction finished automatically`);
+        logger.sentry(`Interaction finished automatically`);
       }, 3000);
     }
     return handle;

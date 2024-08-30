@@ -19,9 +19,9 @@ import BaseBadge from '../assets/badges/baseBadge.png';
 import BaseBadgeDark from '../assets/badges/baseBadgeDark.png';
 import BaseBadgeNoShadow from '../assets/badges/baseBadgeNoShadow.png';
 import { Centered } from './layout';
+import networkTypes from '@/helpers/networkTypes';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
-import { ChainId } from '@/networks/types';
 
 const ChainIcon = styled(FastImage)({
   height: ({ size }) => size,
@@ -34,25 +34,25 @@ const Content = styled(Centered)(({ size }) => ({
   overflow: 'visible',
 }));
 
-export default function ChainLogo({ chainId, size = 44, withShadows = true, ...props }) {
+export default function ChainLogo({ network, size = 44, withShadows = true, ...props }) {
   const { isDarkMode } = useTheme();
   const source = useMemo(() => {
     let val = null;
-    if (chainId === ChainId.arbitrum) {
+    if (network === networkTypes.arbitrum) {
       val = withShadows ? (isDarkMode ? ArbitrumBadgeDark : ArbitrumBadge) : ArbitrumBadgeNoShadow;
-    } else if (chainId === ChainId.optimism) {
+    } else if (network === networkTypes.optimism) {
       val = withShadows ? (isDarkMode ? OptimismBadgeDark : OptimismBadge) : OptimismBadgeNoShadow;
-    } else if (chainId === ChainId.polygon) {
+    } else if (network === networkTypes.polygon) {
       val = withShadows ? (isDarkMode ? PolygonBadgeDark : PolygonBadge) : PolygonBadgeNoShadow;
-    } else if (chainId === ChainId.bsc) {
+    } else if (network === networkTypes.bsc) {
       val = withShadows ? (isDarkMode ? BscBadgeDark : BscBadge) : BscBadgeNoShadow;
-    } else if (chainId === ChainId.zora) {
+    } else if (network === networkTypes.zora) {
       val = withShadows ? (isDarkMode ? ZoraBadgeDark : ZoraBadge) : ZoraBadgeNoShadow;
-    } else if (chainId === ChainId.base) {
+    } else if (network === networkTypes.base) {
       val = withShadows ? (isDarkMode ? BaseBadgeDark : BaseBadge) : BaseBadgeNoShadow;
     }
     return val;
-  }, [isDarkMode, chainId, withShadows]);
+  }, [isDarkMode, network, withShadows]);
 
   if (!source) return null;
 

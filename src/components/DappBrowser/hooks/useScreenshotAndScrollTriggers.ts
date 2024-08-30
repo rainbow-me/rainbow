@@ -51,7 +51,7 @@ export function useScreenshotAndScrollTriggers() {
             saveScreenshotToFileSystem(uri, tabId, timestamp, pageUrl);
           })
           .catch(error => {
-            logger.error(new RainbowError('[DappBrowser]: Failed to capture tab screenshot'), {
+            logger.error(new RainbowError('Failed to capture tab screenshot'), {
               error: error.message,
             });
           });

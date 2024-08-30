@@ -7,7 +7,7 @@ import { FallbackIcon as CoinIconTextFallback } from '@/utils';
 import { FastFallbackCoinIconImage } from '../asset-list/RecyclerAssetList2/FastComponents/FastFallbackCoinIconImage';
 import { FastChainBadge } from '../asset-list/RecyclerAssetList2/FastComponents/FastCoinBadge';
 import { TokenColors } from '@/graphql/__generated__/metadata';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const fallbackTextStyles = {
   fontFamily: fonts.family.SFProRounded,

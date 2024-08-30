@@ -52,7 +52,7 @@ export const swapSearch = async (searchParams: {
     const tokenSearch = await tokenSearchApi.get(url);
     return { ...tokenSearch.data?.data, chainId: searchParams.chainId };
   } catch (e: any) {
-    logger.error(new RainbowError(`[tokenSearch]: An error occurred while searching for query`), {
+    logger.error(new RainbowError(`An error occurred while searching for query`), {
       query: searchParams.query,
       message: e.message,
     });
@@ -93,18 +93,17 @@ export const tokenSearch = async (searchParams: {
 
     return tokenSearch.data.data.map(token => {
       const networkKeys = Object.keys(token.networks);
-      const chainId = Number(networkKeys[0]);
-      const network = ethereumUtils.getNetworkFromChainId(chainId);
+      const network = ethereumUtils.getNetworkFromChainId(Number(networkKeys[0]));
       return {
         ...token,
-        chainId,
-        address: token.networks['1']?.address || token.networks[chainId]?.address,
+        address: token.networks['1']?.address || token.networks[Number(networkKeys[0])]?.address,
         network,
+        chainId: searchParams.chainId,
         mainnet_address: token.networks['1']?.address,
       };
     });
   } catch (e: any) {
-    logger.error(new RainbowError(`[tokenSearch]: An error occurred while searching for query`), {
+    logger.error(new RainbowError(`An error occurred while searching for query`), {
       query: searchParams.query,
       message: e.message,
     });
@@ -122,7 +121,7 @@ export const walletFilter = async (params: { addresses: EthereumAddress[]; fromC
     });
     return filteredAddresses?.data?.data || [];
   } catch (e: any) {
-    logger.error(new RainbowError(`[tokenSearch]: An error occurred while filter wallet addresses`), {
+    logger.error(new RainbowError(`An error occurred while filter wallet addresses`), {
       toChainId: params.toChainId,
       fromChainId: params.fromChainId,
       message: e.message,

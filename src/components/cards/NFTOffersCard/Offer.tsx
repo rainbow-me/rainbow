@@ -23,7 +23,6 @@ import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { useAccountSettings } from '@/hooks';
 import { Network } from '@/networks/types';
 import { ethereumUtils } from '@/utils';
-import { AddressOrEth } from '@/__swaps__/types/assets';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 export const CELL_HORIZONTAL_PADDING = 7;
@@ -70,7 +69,7 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
   const { nativeCurrency } = useAccountSettings();
   const offerChainId = ethereumUtils.getChainIdFromNetwork(offer.network as Network);
   const { data: externalAsset } = useExternalToken({
-    address: offer.paymentToken.address as AddressOrEth,
+    address: offer.paymentToken.address,
     chainId: offerChainId,
     currency: nativeCurrency,
   });
@@ -141,7 +140,7 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
     default:
       secondaryTextColor = 'labelTertiary';
       secondaryText = '';
-      logger.error(new RainbowError('[NFTOffersCard]: invalid sort criterion'));
+      logger.error(new RainbowError('NFTOffersCard: invalid sort criterion'));
       break;
   }
 

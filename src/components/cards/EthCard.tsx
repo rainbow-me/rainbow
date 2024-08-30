@@ -22,9 +22,10 @@ import * as i18n from '@/languages';
 import { ButtonPressAnimationTouchEvent } from '@/components/animations/ButtonPressAnimation/types';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import assetTypes from '@/entities/assetTypes';
-import { Network, ChainId } from '@/networks/types';
+import { Network } from '@/networks/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export const ETH_CARD_HEIGHT = 284.3;
 
@@ -44,7 +45,6 @@ export const EthCard = () => {
       ...externalEthAsset,
       address: ETH_ADDRESS,
       network: Network.mainnet,
-      chainId: ChainId.mainnet,
       uniqueId: getUniqueId(ETH_ADDRESS, ChainId.mainnet),
     }),
     [externalEthAsset]

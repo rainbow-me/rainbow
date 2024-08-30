@@ -10,7 +10,6 @@ import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
 import { ParsedAssetsDictByChain, ParsedSearchAsset, UserAssetFilter } from '@/__swaps__/types/assets';
 import { useAccountSettings, useDebounce } from '@/hooks';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const sortBy = (by: UserAssetFilter) => {
   switch (by) {
@@ -29,13 +28,10 @@ export const useAssetsToSell = () => {
 
   const debouncedAssetToSellFilter = useDebounce(searchQuery, 200);
 
-  const { connectedToHardhat } = useConnectedToHardhatStore();
-
   const { data: userAssets = [] } = useUserAssets(
     {
       address: currentAddress as Address,
       currency: currentCurrency,
-      testnetMode: connectedToHardhat,
     },
     {
       select: data =>

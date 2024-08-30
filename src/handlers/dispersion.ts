@@ -1,7 +1,7 @@
 import { RainbowFetchClient } from '../rainbow-fetch';
 import { EthereumAddress, IndexToken, RainbowToken } from '@/entities';
 import UniswapAssetsCache from '@/utils/uniswapAssetsCache';
-import { logger, RainbowError } from '@/logger';
+import { logger } from '@/logger';
 
 const dispersionApi = new RainbowFetchClient({
   baseURL: 'https://metadata.p.rainbow.me',
@@ -25,7 +25,7 @@ export const getUniswapV2Tokens = async (addresses: EthereumAddress[]): Promise<
       return res?.data?.tokens ?? null;
     }
   } catch (e: any) {
-    logger.error(new RainbowError(`[getUniswapV2Tokens]: error fetching uniswap v2 tokens`), {
+    logger.warn(`dispersionApi: error fetching uniswap v2 tokens`, {
       message: e.message,
     });
   }
@@ -37,7 +37,7 @@ export const getTrendingAddresses = async (): Promise<EthereumAddress[] | null> 
     const res = await dispersionApi.get('/dispersion/v1/trending');
     return res?.data?.data?.trending ?? null;
   } catch (e: any) {
-    logger.error(new RainbowError(`[getTrendingAddresses]: error fetching trending addresses`), {
+    logger.warn(`dispersionApi: error fetching trending addresses`, {
       message: e.message,
     });
     return null;
@@ -49,7 +49,7 @@ export const getAdditionalAssetData = async (address: EthereumAddress, chainId =
     const res = await dispersionApi.get(`/dispersion/v1/expanded/${chainId}/${address}`);
     return res?.data?.data ?? null;
   } catch (e: any) {
-    logger.error(new RainbowError(`[getAdditionalAssetData]: error fetching additional asset data`), {
+    logger.warn(`dispersionApi: error fetching additional asset data`, {
       message: e.message,
     });
     return null;

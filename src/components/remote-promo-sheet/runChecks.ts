@@ -15,7 +15,7 @@ export const useRunChecks = (runChecksOnMount = true) => {
   const runChecks = useCallback(() => {
     InteractionManager.runAfterInteractions(async () => {
       if (IS_TEST || !remotePromoSheets) {
-        logger.debug('[useRunChecks]: remote promo sheets is disabled');
+        logger.debug('Campaigns: remote promo sheets is disabled');
         return;
       }
 

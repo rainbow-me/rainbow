@@ -55,7 +55,7 @@ function serializeState(state: Partial<RemotePromoSheetsState>, version?: number
       version,
     });
   } catch (error) {
-    logger.error(new RainbowError(`[remotePromoSheetsStore]: Failed to serialize state for remote promo sheets storage`), { error });
+    logger.error(new RainbowError('Failed to serialize state for remote promo sheets storage'), { error });
     throw error;
   }
 }
@@ -65,9 +65,7 @@ function deserializeState(serializedState: string) {
   try {
     parsedState = JSON.parse(serializedState);
   } catch (error) {
-    logger.error(new RainbowError(`[remotePromoSheetsStore]: Failed to parse serialized state from remote promo sheets storage`), {
-      error,
-    });
+    logger.error(new RainbowError('Failed to parse serialized state from remote promo sheets storage'), { error });
     throw error;
   }
 
@@ -79,7 +77,7 @@ function deserializeState(serializedState: string) {
       sheetsByIdData = new Set(state.sheetsById);
     }
   } catch (error) {
-    logger.error(new RainbowError(`[remotePromoSheetsStore]: Failed to convert sheetsById from remote promo sheets storage`), { error });
+    logger.error(new RainbowError('Failed to convert sheetsById from remote promo sheets storage'), { error });
     throw error;
   }
 
@@ -89,7 +87,7 @@ function deserializeState(serializedState: string) {
       sheetsData = new Map(state.sheets);
     }
   } catch (error) {
-    logger.error(new RainbowError(`[remotePromoSheetsStore]: Failed to convert sheets from remote promo sheets storage`), { error });
+    logger.error(new RainbowError('Failed to convert sheets from remote promo sheets storage'), { error });
     throw error;
   }
 

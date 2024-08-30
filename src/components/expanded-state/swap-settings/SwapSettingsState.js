@@ -32,7 +32,7 @@ function useAndroidDisableGesturesOnFocus() {
 export default function SwapSettingsState({ asset }) {
   const { flashbotsEnabled, settingsChangeFlashbotsEnabled } = useAccountSettings();
   const {
-    params: { swapSupportsFlashbots = false, chainId },
+    params: { swapSupportsFlashbots = false, network },
   } = useRoute();
   const { colors } = useTheme();
   const { setParams, goBack } = useNavigation();
@@ -151,7 +151,7 @@ export default function SwapSettingsState({ asset }) {
                 </Column>
               </Columns>
             )}
-            <MaxToleranceInput colorForAsset={colorForAsset} chainId={chainId} ref={slippageRef} />
+            <MaxToleranceInput colorForAsset={colorForAsset} currentNetwork={network} ref={slippageRef} />
           </Stack>
         </Inset>
       </FloatingPanel>

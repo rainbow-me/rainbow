@@ -5,9 +5,8 @@ import {
   checkIfExists,
   checkIfExistsByText,
   swipe,
+  waitAndTap,
   afterAllcleanApp,
-  tap,
-  delayTime,
 } from './helpers';
 
 const RAINBOW_TEST_WALLET = 'rainbowtestwallet.eth';
@@ -42,20 +41,19 @@ describe('Home Screen', () => {
   });
 
   it('tapping "Swap" opens the swap screen', async () => {
-    await tap('swap-button');
-    await delayTime('long');
+    await waitAndTap('swap-button');
     await checkIfExists('swap-screen');
-    await swipe('swap-screen', 'down', 'fast');
+    await swipe('swap-screen', 'down', 'slow');
   });
 
   it('tapping "Send" opens the send screen', async () => {
-    await tap('send-button');
+    await waitAndTap('send-button');
     await checkIfVisible('send-asset-form-field');
-    await swipe('send-asset-form-field', 'down', 'fast');
+    await swipe('send-asset-form-field', 'down');
   });
 
   it('tapping "Copy" shows copy address toast', async () => {
-    await tap('receive-button');
+    await waitAndTap('receive-button');
     await checkIfVisible('address-copied-toast');
   });
 });

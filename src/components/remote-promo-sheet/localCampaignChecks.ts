@@ -31,7 +31,7 @@ export interface Campaign {
 export const activeCampaigns: Campaign[] = [NotificationsPromoCampaign];
 
 export const runLocalCampaignChecks = async (): Promise<boolean> => {
-  logger.debug('[runLocalCampaignChecks]: Running Checks');
+  logger.debug('Campaigns: Running Checks');
   for (const campaign of activeCampaigns) {
     InteractionManager.runAfterInteractions(async () => {
       const response = await campaign.check();

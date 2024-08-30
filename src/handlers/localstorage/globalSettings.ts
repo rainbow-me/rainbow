@@ -1,6 +1,6 @@
-import { ChainId } from '@/networks/types';
 import { getGlobal, saveGlobal } from './common';
 import { NativeCurrencyKeys } from '@/entities';
+import networkTypes from '@/helpers/networkTypes';
 import { Language } from '@/languages';
 
 export const IMAGE_METADATA = 'imageMetadata';
@@ -8,7 +8,7 @@ const KEYBOARD_HEIGHT = 'keyboardHeight';
 const APP_ICON = 'appIcon';
 const LANGUAGE = 'language';
 const NATIVE_CURRENCY = 'nativeCurrency';
-const CHAIN_ID = 'chainId';
+const NETWORK = 'network';
 const KEYCHAIN_INTEGRITY_STATE = 'keychainIntegrityState';
 const AUTH_TIMELOCK = 'authTimelock';
 const PIN_AUTH_ATTEMPTS_LEFT = 'pinAuthAttemptsLeft';
@@ -32,9 +32,9 @@ export const getLanguage = () => getGlobal(LANGUAGE, Language.EN_US);
 
 export const saveLanguage = (language: any) => saveGlobal(LANGUAGE, language);
 
-export const getChainId = () => getGlobal(CHAIN_ID, ChainId.mainnet);
+export const getNetwork = () => getGlobal(NETWORK, networkTypes.mainnet);
 
-export const saveChainId = (chainId: ChainId) => saveGlobal(CHAIN_ID, chainId);
+export const saveNetwork = (network: any) => saveGlobal(NETWORK, network);
 
 export const getKeyboardHeight = () => getGlobal(KEYBOARD_HEIGHT, null);
 

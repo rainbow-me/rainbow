@@ -60,14 +60,14 @@ export default function CheckIdentifierScreen() {
     const allKeys = await kc.getAllKeys();
 
     if (!allKeys?.length) {
-      logger.error(new RainbowError('[CheckIdentifierScreen]: Unable to retrieve keychain values'));
+      logger.error(new RainbowError('Unable to retrieve keychain values'));
       ErrorAlert();
       return;
     }
 
     const allAccountKeys = allKeys.filter(item => item.username.includes('_rainbowPrivateKey'));
     if (!allAccountKeys?.length) {
-      logger.error(new RainbowError('[CheckIdentifierScreen]: No private keys found in keychain'));
+      logger.error(new RainbowError('No private keys found in keychain'));
       return onFailure();
     }
 
@@ -81,7 +81,7 @@ export default function CheckIdentifierScreen() {
     });
 
     if (hasAccountWithoutPrivateKey) {
-      logger.error(new RainbowError('[CheckIdentifierScreen]: Detected account without matching private key'));
+      logger.error(new RainbowError('Detected account without matching private key'));
       return onFailure();
     }
 

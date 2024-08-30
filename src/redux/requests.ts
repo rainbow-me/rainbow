@@ -5,8 +5,10 @@ import { maybeSignUri } from '@/handlers/imgix';
 import { getLocalRequests, removeLocalRequest, saveLocalRequests } from '@/handlers/localstorage/walletconnectRequests';
 import { omitFlatten } from '@/helpers/utilities';
 import { getRequestDisplayDetails } from '@/parsers';
-import { logger } from '@/logger';
-import { ChainId } from '@/networks/types';
+import { ethereumUtils } from '@/utils';
+import logger from '@/utils/logger';
+import { Network } from '@/networks/types';
+import { ChainId } from '@/__swaps__/types/chains';
 
 // -- Constants --------------------------------------- //
 
@@ -170,7 +172,7 @@ export const addRequestToApprove =
     // by an invalid access might be caught or expected elsewhere, so for now
     // `ts-expect-error` is used.
     if (displayDetails.timestampInMs < oneHourAgoTs) {
-      logger.debug(`[redux/requests]: [${requestId}] request expired!`);
+      logger.log('request expired!');
       return;
     }
     const unsafeImageUrl = peerMeta?.icons?.[0];

@@ -5,7 +5,7 @@ import { Bleed, Box, Text, TextShadow, globalColors, useBackgroundColor, useColo
 import * as i18n from '@/languages';
 import { ListHeader, ListPanel, Panel, TapToDismiss, controlPanelStyles } from '@/components/SmoothPager/ListPanel';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { ChainId, ChainNameDisplay } from '@/networks/types';
+import { ChainId, ChainNameDisplay } from '@/__swaps__/types/chains';
 import ethereumUtils, { useNativeAsset } from '@/utils/ethereumUtils';
 import { useAccountAccentColor, useAccountProfile, useAccountSettings } from '@/hooks';
 import { safeAreaInsetValues } from '@/utils';
@@ -17,6 +17,7 @@ import { PointsErrorType } from '@/graphql/__generated__/metadata';
 import { useMutation } from '@tanstack/react-query';
 import { invalidatePointsQuery, usePoints } from '@/resources/points';
 import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
+import { Network } from '@/helpers';
 import { ButtonPressAnimation } from '@/components/animations';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
@@ -28,7 +29,7 @@ import { walletExecuteRap } from '@/raps/execute';
 import { ParsedAsset } from '@/__swaps__/types/assets';
 import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 import { loadWallet } from '@/model/wallet';
-import { getProvider } from '@/handlers/web3';
+import { getProviderForNetwork } from '@/handlers/web3';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { getGasSettingsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
@@ -210,7 +211,7 @@ const ClaimingRewards = ({
   }>({
     mutationFn: async () => {
       // Fetch the native asset from the origin chain
-      const opEth_ = await ethereumUtils.getNativeAssetForNetwork({ chainId: ChainId.optimism });
+      const opEth_ = await ethereumUtils.getNativeAssetForNetwork(ChainId.optimism);
       const opEth = {
         ...opEth_,
         chainName: chainNameFromChainId(ChainId.optimism),
@@ -219,9 +220,9 @@ const ClaimingRewards = ({
       // Fetch the native asset from the destination chain
       let destinationEth_;
       if (chainId === ChainId.base) {
-        destinationEth_ = await ethereumUtils.getNativeAssetForNetwork({ chainId: ChainId.base });
+        destinationEth_ = await ethereumUtils.getNativeAssetForNetwork(ChainId.base);
       } else if (chainId === ChainId.zora) {
-        destinationEth_ = await ethereumUtils.getNativeAssetForNetwork({ chainId: ChainId.zora });
+        destinationEth_ = await ethereumUtils.getNativeAssetForNetwork(ChainId.zora);
       } else {
         destinationEth_ = opEth;
       }
@@ -260,7 +261,7 @@ const ClaimingRewards = ({
         gasParams,
       } satisfies RapSwapActionParameters<'claimBridge'>;
 
-      const provider = getProvider({ chainId: ChainId.optimism });
+      const provider = getProviderForNetwork(Network.optimism);
       const wallet = await loadWallet({
         address,
         showErrorIfNotLoaded: false,
@@ -289,7 +290,7 @@ const ClaimingRewards = ({
             setClaimStatus('bridge-error');
           }
 
-          logger.error(new RainbowError('[ClaimRewardsPanel]: Failed to claim ETH rewards'), { message: errorMessage });
+          logger.error(new RainbowError('ETH REWARDS CLAIM ERROR'), { message: errorMessage });
 
           return { nonce: null };
         }

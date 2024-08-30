@@ -4,7 +4,7 @@ import { requestMetadata } from '@/graphql';
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
 import { SupportedCurrencyKey } from '@/references';
 import { AddressOrEth, AssetMetadata, ParsedAsset, UniqueId } from '@/__swaps__/types/assets';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/__swaps__/types/chains';
 import { chunkArray, createAssetQuery, parseAssetMetadata } from '@/__swaps__/utils/assets';
 import { RainbowError, logger } from '@/logger';
 export const ASSETS_TIMEOUT_DURATION = 10000;
@@ -50,7 +50,7 @@ export async function assetsQueryFunction({
     const parsedAssets = parseAssets(results, chainId, currency);
     return parsedAssets;
   } catch (e) {
-    logger.error(new RainbowError('[assetsQueryFunction]: Failed to fetch assets'), {
+    logger.error(new RainbowError('assetsQueryFunction: '), {
       message: (e as Error)?.message,
     });
     return {};

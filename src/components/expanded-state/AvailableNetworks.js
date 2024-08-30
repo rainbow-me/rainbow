@@ -3,9 +3,11 @@ import React from 'react';
 import { Linking } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
 import { Box } from '@/design-system';
+import networkInfo from '@/helpers/networkInfo';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { padding, position } from '@/styles';
+import { ethereumUtils } from '@/utils';
 import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../animations';
 import { Column, Row } from '../layout';
@@ -13,11 +15,11 @@ import { ChainBadge } from '../coin-icon';
 import Divider from '../Divider';
 import { Text } from '../text';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
-import { ChainId, chainIdToNameMapping } from '@/networks/types';
 
 const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginBottom = 24, marginHorizontal = 19, prominent }) => {
   const { colors } = useTheme();
   const { navigate } = useNavigation();
+
   const radialGradientProps = {
     center: [0, 1],
     colors: colors.gradients.lightGreyWhite,
@@ -28,7 +30,9 @@ const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginBottom = 24, 
     },
   };
 
-  const availableChainIds = Object.keys(networks).map(network => Number(network));
+  const availableNetworks = Object.keys(networks).map(network => {
+    return ethereumUtils.getNetworkFromChainId(Number(network));
+  });
 
   const linkToHop = useCallback(() => {
     Linking.openURL('https://app.hop.exchange/#/send');
@@ -36,12 +40,12 @@ const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginBottom = 24, 
 
   const handleAvailableNetworksPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
-      chainIds: availableChainIds,
+      networks: availableNetworks,
       onClose: linkToHop,
       tokenSymbol: asset.symbol,
       type: 'availableNetworks',
     });
-  }, [navigate, availableChainIds, linkToHop, asset.symbol]);
+  }, [navigate, availableNetworks, linkToHop, asset.symbol]);
 
   return (
     <>
@@ -49,12 +53,12 @@ const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginBottom = 24, 
         <Row borderRadius={16} marginHorizontal={marginHorizontal} style={padding.object(android ? 6 : 10, 10, android ? 6 : 10, 10)}>
           <RadialGradient {...radialGradientProps} borderRadius={16} radius={600} />
           <Row justify="center">
-            {availableChainIds?.map((chainId, index) => {
+            {availableNetworks?.map((network, index) => {
               return (
                 <Box
                   background="body (Deprecated)"
                   height={{ custom: 22 }}
-                  key={`availbleNetwork-${chainId}`}
+                  key={`availbleNetwork-${network}`}
                   marginLeft={{ custom: -6 }}
                   style={{
                     borderColor: colors.transparent,
@@ -63,10 +67,10 @@ const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginBottom = 24, 
                     zIndex: index,
                   }}
                   width={{ custom: 22 }}
-                  zIndex={availableChainIds?.length - index}
+                  zIndex={availableNetworks?.length - index}
                 >
-                  {chainId !== ChainId.mainnet ? (
-                    <ChainBadge chainId={chainId} position="relative" size="small" />
+                  {network !== 'mainnet' ? (
+                    <ChainBadge chainId={ethereumUtils.getChainIdFromNetwork(network)} position="relative" size="small" />
                   ) : (
                     <EthCoinIcon size={20} />
                   )}
@@ -81,12 +85,12 @@ const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginBottom = 24, 
               size="smedium"
               weight={prominent ? 'heavy' : 'bold'}
             >
-              {availableChainIds?.length > 1
+              {availableNetworks?.length > 1
                 ? lang.t('expanded_state.asset.available_networks', {
-                    availableNetworks: availableChainIds?.length,
+                    availableNetworks: availableNetworks?.length,
                   })
                 : lang.t('expanded_state.asset.available_network', {
-                    availableNetwork: chainIdToNameMapping[availableChainIds[0]]?.name,
+                    availableNetwork: networkInfo[availableNetworks?.[0]]?.name,
                   })}
             </Text>
           </Column>

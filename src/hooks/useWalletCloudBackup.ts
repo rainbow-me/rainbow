@@ -12,7 +12,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { CLOUD_BACKUP_ERRORS, isCloudBackupAvailable } from '@/handlers/cloudBackup';
 import WalletBackupTypes from '@/helpers/walletBackupTypes';
-import { logger, RainbowError } from '@/logger';
+import logger from '@/utils/logger';
 import { getSupportedBiometryType } from '@/keychain';
 import { IS_ANDROID } from '@/env';
 import { authenticateWithPIN } from '@/handlers/authentication';
@@ -98,19 +98,19 @@ export default function useWalletCloudBackup() {
       }
 
       // We have the password and we need to add it to an existing backup
-      logger.debug('[useWalletCloudBackup]: password fetched correctly');
+      logger.log('password fetched correctly');
 
       let updatedBackupFile = null;
       try {
         if (!latestBackup) {
-          logger.debug(`[useWalletCloudBackup]: backing up to ${cloudPlatform}: ${wallets![walletId]}`);
+          logger.log(`backing up to ${cloudPlatform}`, wallets![walletId]);
           updatedBackupFile = await backupWalletToCloud({
             password,
             wallet: wallets![walletId],
             userPIN,
           });
         } else {
-          logger.debug(`[useWalletCloudBackup]: adding wallet to ${cloudPlatform} backup: ${wallets![walletId]}`);
+          logger.log(`adding wallet to ${cloudPlatform} backup`, wallets![walletId]);
           updatedBackupFile = await addWalletToCloudBackup({
             password,
             wallet: wallets![walletId],
@@ -121,7 +121,8 @@ export default function useWalletCloudBackup() {
       } catch (e: any) {
         const userError = getUserError(e);
         !!onError && onError(userError);
-        logger.error(new RainbowError(`[useWalletCloudBackup]: error while trying to backup wallet to ${cloudPlatform}: ${e}`));
+        logger.sentry(`error while trying to backup wallet to ${cloudPlatform}`);
+        captureException(e);
         analytics.track(`Error during ${cloudPlatform} Backup`, {
           category: 'backup',
           error: userError,
@@ -131,13 +132,14 @@ export default function useWalletCloudBackup() {
       }
 
       try {
-        logger.debug('[useWalletCloudBackup]: backup completed!');
+        logger.log('backup completed!');
         await dispatch(setWalletBackedUp(walletId, WalletBackupTypes.cloud, updatedBackupFile));
-        logger.debug('[useWalletCloudBackup]: backup saved everywhere!');
+        logger.log('backup saved everywhere!');
         !!onSuccess && onSuccess();
         return true;
       } catch (e) {
-        logger.error(new RainbowError(`[useWalletCloudBackup]: error while trying to save wallet backup state: ${e}`));
+        logger.sentry('error while trying to save wallet backup state');
+        captureException(e);
         const userError = getUserError(new Error(CLOUD_BACKUP_ERRORS.WALLET_BACKUP_STATUS_UPDATE_FAILED));
         !!onError && onError(userError);
         analytics.track('Error updating Backup status', {

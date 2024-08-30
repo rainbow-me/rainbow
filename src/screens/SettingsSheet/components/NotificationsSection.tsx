@@ -17,7 +17,7 @@ import { abbreviations, deviceUtils } from '@/utils';
 import { Box } from '@/design-system';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { RainbowAccount } from '@/model/wallet';
-import { isTestnetChain } from '@/handlers/web3';
+import { isTestnetNetwork } from '@/handlers/web3';
 import { useFocusEffect } from '@react-navigation/native';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
 import { showNotificationSubscriptionErrorAlert, showOfflineAlert } from '@/screens/SettingsSheet/components/notificationAlerts';
@@ -157,8 +157,8 @@ const WalletRow = ({ ens, groupOff, isTestnet, loading, notificationSettings, wa
 const NotificationsSection = () => {
   const { justBecameActive } = useAppState();
   const { navigate } = useNavigation();
-  const { chainId } = useAccountSettings();
-  const isTestnet = isTestnetChain({ chainId });
+  const { network } = useAccountSettings();
+  const isTestnet = isTestnetNetwork(network);
   const { wallets, walletNames } = useWallets();
   const { isConnected } = useNetInfo();
   const { points_enabled, points_notifications_toggle } = useRemoteConfig();

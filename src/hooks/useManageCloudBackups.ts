@@ -20,7 +20,7 @@ export default function useManageCloudBackups() {
         setAccountDetails(accountDetails ?? undefined);
       })
       .catch(error => {
-        logger.error(new RainbowError(`[useManageCloudBackups]: Error Fetching google account data for Backups Section`), {
+        logger.error(new RainbowError(`Error Fetching google account data for Backups Section`), {
           error: (error as Error).message,
         });
       });
@@ -54,7 +54,7 @@ export default function useManageCloudBackups() {
         const accountDetails = await getGoogleAccountUserData();
         setAccountDetails(accountDetails ?? undefined);
       } catch (error) {
-        logger.error(new RainbowError(`[useManageCloudBackups]: Logging into Google Drive failed.`), {
+        logger.error(new RainbowError(`Logging into Google Drive failed.`), {
           error: (error as Error).message,
         });
       }

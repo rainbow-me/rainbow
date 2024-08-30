@@ -65,7 +65,7 @@ export const useVisibleWallets = ({ wallets, walletTypeCount }: UseVisibleWallet
       .filter(key => wallets[key].type !== WalletTypes.readOnly && wallets[key].type !== WalletTypes.bluetooth)
       .map(key => {
         const wallet = wallets[key];
-        const visibleAccounts = (wallet.addresses || []).filter(a => a.visible);
+        const visibleAccounts = wallet.addresses.filter(a => a.visible);
         const totalAccounts = visibleAccounts.length;
 
         if (

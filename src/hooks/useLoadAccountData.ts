@@ -5,12 +5,12 @@ import { requestsLoadState } from '../redux/requests';
 import { showcaseTokensLoadState } from '../redux/showcaseTokens';
 import { walletConnectLoadState } from '../redux/walletconnect';
 import { promiseUtils } from '../utils';
-import { logger } from '@/logger';
+import logger from '@/utils/logger';
 
 export default function useLoadAccountData() {
   const dispatch = useDispatch();
   const loadAccountData = useCallback(async () => {
-    logger.debug('[useLoadAccountData]: Load wallet account data');
+    logger.sentry('Load wallet account data');
     await dispatch(showcaseTokensLoadState());
     await dispatch(hiddenTokensLoadState());
     const promises = [];

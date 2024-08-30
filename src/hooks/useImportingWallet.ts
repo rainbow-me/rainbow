@@ -17,7 +17,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { fetchReverseRecord } from '@/handlers/ens';
-import { getProvider, isValidBluetoothDeviceId, resolveUnstoppableDomain } from '@/handlers/web3';
+import { getProviderForNetwork, isValidBluetoothDeviceId, resolveUnstoppableDomain } from '@/handlers/web3';
 import { isENSAddressFormat, isUnstoppableAddressFormat, isValidWallet } from '@/helpers/validators';
 import WalletBackupStepTypes from '@/helpers/walletBackupStepTypes';
 import { walletInit } from '@/model/wallet';
@@ -25,13 +25,13 @@ import { Navigation, useNavigation } from '@/navigation';
 import { walletsLoadState } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import { sanitizeSeedPhrase } from '@/utils';
+import logger from '@/utils/logger';
 import { deriveAccountFromWalletInput } from '@/utils/wallet';
-import { logger, RainbowError } from '@/logger';
+import { logger as Logger, RainbowError } from '@/logger';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
 import { checkWalletsForBackupStatus } from '@/screens/SettingsSheet/utils';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
-import { ChainId } from '@/networks/types';
 
 export default function useImportingWallet({ showImportModal = true } = {}) {
   const { accountAddress } = useAccountSettings();
@@ -46,8 +46,8 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
   const [name, setName] = useState<string | null>(null);
   const [image, setImage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [checkedWallet, setCheckedWallet] = useState<Awaited<ReturnType<typeof deriveAccountFromWalletInput>> | null>(null);
-  const [resolvedAddress, setResolvedAddress] = useState<string | null>(null);
+  const [checkedWallet, setCheckedWallet] = useState(null);
+  const [resolvedAddress, setResolvedAddress] = useState(null);
   const wasImporting = usePrevious(isImporting);
   const { updateWalletENSAvatars } = useWalletENSAvatar();
   const profilesEnabled = useExperimentalFlag(PROFILES);
@@ -123,9 +123,9 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
       // Validate ENS
       if (isENSAddressFormat(input)) {
         try {
-          const provider = getProvider({ chainId: ChainId.mainnet });
+          const web3Provider = getProviderForNetwork();
           const [address, avatar] = await Promise.all([
-            provider.resolveName(input),
+            web3Provider.resolveName(input),
             !avatarUrl && profilesEnabled && fetchENSAvatar(input, { swallowError: true }),
           ]);
           if (!address) {
@@ -133,6 +133,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             Alert.alert(lang.t('wallet.invalid_ens_name'));
             return;
           }
+          // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string' is not assignable to par... Remove this comment to see the full error message
           setResolvedAddress(address);
           name = forceEmoji ? `${forceEmoji} ${input}` : input;
           avatarUrl = avatarUrl || avatar?.imageUrl;
@@ -156,6 +157,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             Alert.alert(lang.t('wallet.invalid_unstoppable_name'));
             return;
           }
+          // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string' is not assignable to par... Remove this comment to see the full error message
           setResolvedAddress(address);
           name = forceEmoji ? `${forceEmoji} ${input}` : input;
           setBusy(false);
@@ -185,7 +187,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             input,
           });
         } catch (e) {
-          logger.error(new RainbowError(`[useImportingWallet]: Error resolving ENS during wallet import: ${e}`));
+          logger.log(`Error resolving ENS during wallet import`, e);
         }
         setBusy(false);
         // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 3.
@@ -194,9 +196,10 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
         try {
           setTimeout(async () => {
             const walletResult = await deriveAccountFromWalletInput(input);
+            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ address: string; isHDWallet: b... Remove this comment to see the full error message
             setCheckedWallet(walletResult);
             if (!walletResult.address) {
-              logger.error(new RainbowError('[useImportingWallet]: walletResult address is undefined'));
+              Logger.error(new RainbowError('useImportingWallet - walletResult address is undefined'));
               return null;
             }
             const ens = await fetchReverseRecord(walletResult.address);
@@ -217,7 +220,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             });
           }, 100);
         } catch (error) {
-          logger.error(new RainbowError(`[useImportingWallet]: Error looking up ENS for imported HD type wallet: ${error}`));
+          logger.log('Error looking up ENS for imported HD type wallet', error);
           setBusy(false);
         }
       }
@@ -334,7 +337,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
             .catch(error => {
               handleSetImporting(false);
               android && handleSetImporting(false);
-              logger.error(new RainbowError(`[useImportingWallet]: Error importing seed phrase: ${error}`));
+              logger.error('error importing seed phrase: ', error);
               setTimeout(() => {
                 inputRef.current?.focus();
                 // @ts-expect-error ts-migrate(2554) FIXME: Expected 8-9 arguments, but got 0.

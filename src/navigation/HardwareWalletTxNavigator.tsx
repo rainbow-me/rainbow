@@ -23,7 +23,7 @@ export const ledgerStorage = new MMKV({
 export const HARDWARE_TX_ERROR_KEY = 'hardwareTXError';
 
 export const setHardwareTXError = (value: boolean) => {
-  logger.warn(`[HardwareWalletTxNavigator]: setHardwareTXError`, { value });
+  logger.info(`setHardwareTXError`, { value });
   ledgerStorage.set(HARDWARE_TX_ERROR_KEY, value);
 };
 
@@ -83,14 +83,14 @@ export const HardwareWalletTxNavigator = () => {
   );
 
   const successCallback = useCallback(() => {
-    logger.debug('[HardwareWalletTxNavigator]: submitting tx', {}, DebugContext.ledger);
+    logger.debug('[LedgerTx] - submitting tx', {}, DebugContext.ledger);
     if (!isReady) {
       setReadyForPolling(false);
       setIsReady(true);
       setHardwareTXError(false);
       submit();
     } else {
-      logger.debug('[HardwareWalletTxNavigator]: already submitted', {}, DebugContext.ledger);
+      logger.debug('[LedgerTx] - already submitted', {}, DebugContext.ledger);
     }
   }, [isReady, setIsReady, setReadyForPolling, submit]);
 

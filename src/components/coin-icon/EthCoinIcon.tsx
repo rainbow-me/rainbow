@@ -3,7 +3,7 @@ import { useTheme } from '@/theme';
 import { useNativeAsset } from '@/utils/ethereumUtils';
 import RainbowCoinIcon from './RainbowCoinIcon';
 import { ETH_SYMBOL } from '@/references';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/__swaps__/types/chains';
 
 type EthCoinIconProps = {
   size?: number;

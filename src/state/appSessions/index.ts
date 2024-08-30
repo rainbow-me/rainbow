@@ -1,32 +1,25 @@
 import { Address } from 'viem';
 
-import { Network, ChainId, networkToIdMapping } from '@/networks/types';
+import { Network } from '@/networks/types';
 import { createRainbowStore } from '../internal/createRainbowStore';
 
-export interface AppSessionV0 {
+export interface AppSession {
   activeSessionAddress: Address;
   host: string;
   sessions: Record<Address, Network>;
   url: string;
 }
 
-export interface AppSession {
-  activeSessionAddress: Address;
-  host: string;
-  sessions: Record<Address, ChainId>;
-  url: string;
-}
-
-export interface AppSessionsStore<T extends AppSession | AppSessionV0> {
+export interface AppSessionsStore<T extends AppSession> {
   appSessions: Record<string, T>;
   getActiveSession: ({ host }: { host: string }) => AppSession;
   removeAddressSessions: ({ address }: { address: Address }) => void;
-  addSession: ({ host, address, chainId, url }: { host: string; address: Address; chainId: ChainId; url: string }) => void;
-  removeSession: ({ host, address }: { host: string; address: Address }) => { address: Address; chainId: ChainId } | null;
+  addSession: ({ host, address, network, url }: { host: string; address: Address; network: Network; url: string }) => void;
+  removeSession: ({ host, address }: { host: string; address: Address }) => { address: Address; network: Network } | null;
   removeAppSession: ({ host }: { host: string }) => void;
   updateActiveSession: ({ host, address }: { host: string; address: Address }) => void;
-  updateActiveSessionNetwork: ({ host, chainId }: { host: string; chainId: ChainId }) => void;
-  updateSessionNetwork: ({ address, host, chainId }: { address: Address; host: string; chainId: ChainId }) => void;
+  updateActiveSessionNetwork: ({ host, network }: { host: string; network: Network }) => void;
+  updateSessionNetwork: ({ address, host, network }: { address: Address; host: string; network: Network }) => void;
   clearSessions: () => void;
 }
 
@@ -54,18 +47,18 @@ export const useAppSessionsStore = createRainbowStore<AppSessionsStore<AppSessio
       }
       set({ appSessions: { ...appSessions } });
     },
-    addSession: ({ host, address, chainId, url }) => {
+    addSession: ({ host, address, network, url }) => {
       const appSessions = get().appSessions;
       const existingSession = appSessions[host];
       if (!existingSession || !existingSession.sessions) {
         appSessions[host] = {
           host,
-          sessions: { [address]: chainId },
+          sessions: { [address]: network },
           activeSessionAddress: address,
           url,
         };
       } else {
-        appSessions[host].sessions[address] = chainId;
+        appSessions[host].sessions[address] = network;
         appSessions[host].activeSessionAddress = address;
       }
       set({
@@ -100,7 +93,7 @@ export const useAppSessionsStore = createRainbowStore<AppSessionsStore<AppSessio
         appSession.activeSessionAddress = newActiveSessionAddress;
         newActiveSession = {
           address: newActiveSessionAddress,
-          chainId: appSession.sessions[newActiveSessionAddress],
+          network: appSession.sessions[newActiveSessionAddress],
         };
         set({
           appSessions: {
@@ -127,7 +120,7 @@ export const useAppSessionsStore = createRainbowStore<AppSessionsStore<AppSessio
         },
       });
     },
-    updateActiveSessionNetwork: ({ host, chainId }) => {
+    updateActiveSessionNetwork: ({ host, network }) => {
       const appSessions = get().appSessions;
       const appSession = appSessions[host] || {};
       set({
@@ -137,13 +130,13 @@ export const useAppSessionsStore = createRainbowStore<AppSessionsStore<AppSessio
             ...appSession,
             sessions: {
               ...appSession.sessions,
-              [appSession.activeSessionAddress]: chainId,
+              [appSession.activeSessionAddress]: network,
             },
           },
         },
       });
     },
-    updateSessionNetwork: ({ host, address, chainId }) => {
+    updateSessionNetwork: ({ host, address, network }) => {
       const appSessions = get().appSessions;
       const appSession = appSessions[host];
       if (!appSession) return;
@@ -154,7 +147,7 @@ export const useAppSessionsStore = createRainbowStore<AppSessionsStore<AppSessio
             ...appSession,
             sessions: {
               ...appSession.sessions,
-              [address]: chainId,
+              [address]: network,
             },
           },
         },
@@ -164,35 +157,6 @@ export const useAppSessionsStore = createRainbowStore<AppSessionsStore<AppSessio
   }),
   {
     storageKey: 'appSessions',
-    version: 1,
-    migrate: (persistedState: unknown, version: number) => {
-      if (version === 0) {
-        const oldState = persistedState as AppSessionsStore<AppSessionV0>;
-        const appSessions: AppSessionsStore<AppSession>['appSessions'] = {};
-        for (const [host, session] of Object.entries(oldState.appSessions)) {
-          const sessions = session.sessions;
-          const newSessions = Object.keys(sessions).reduce(
-            (acc, addr) => {
-              const address = addr as Address;
-              const network = sessions[address];
-              acc[address] = networkToIdMapping[network];
-              return acc as Record<Address, ChainId>;
-            },
-            {} as Record<Address, ChainId>
-          );
-          appSessions[host] = {
-            activeSessionAddress: session.activeSessionAddress,
-            host: session.host,
-            sessions: newSessions,
-            url: session.url,
-          };
-        }
-        return {
-          ...oldState,
-          appSessions,
-        };
-      }
-      return persistedState as AppSessionsStore<AppSession>;
-    },
+    version: 0,
   }
 );

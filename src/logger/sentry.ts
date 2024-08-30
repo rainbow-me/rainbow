@@ -21,7 +21,7 @@ export const defaultOptions: Sentry.ReactNativeOptions = {
 
 export function initSentry() {
   if (IS_TEST) {
-    logger.debug(`[sentry]: disabled for test environment`);
+    logger.debug(`Sentry is disabled for test environment`);
     return;
   }
   try {
@@ -34,8 +34,8 @@ export function initSentry() {
       release, // MUST BE A STRING or Sentry will break in native code
     });
 
-    logger.debug(`[sentry]: Successfully initialized`);
+    logger.debug(`Sentry initialized`);
   } catch (e) {
-    logger.error(new RainbowError(`[sentry]: initialization failed`));
+    logger.error(new RainbowError(`Sentry initialization failed`));
   }
 }

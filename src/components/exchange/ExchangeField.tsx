@@ -4,13 +4,14 @@ import { TokenSelectionButton } from '../buttons';
 import { ChainBadge, CoinIconSize } from '../coin-icon';
 import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
-import { ChainId } from '@/networks/types';
+import { Network } from '@/helpers';
 import styled from '@/styled-thing';
 import { borders } from '@/styles';
 import { useTheme } from '@/theme';
 import { AccentColorProvider, Box, Space } from '@/design-system';
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 import { TokenColors } from '@/graphql/__generated__/metadata';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const ExchangeFieldHeight = android ? 64 : 38;
 const ExchangeFieldPadding: Space = android ? '15px (Deprecated)' : '19px (Deprecated)';

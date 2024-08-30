@@ -35,7 +35,7 @@ export async function getOrCreateDeviceId(): Promise<[string, boolean]> {
   const deviceIdFromStorage = ls.device.get(['id']);
 
   if (deviceIdFromStorage) {
-    logger.debug(`[getOrCreateDeviceId]: using existing deviceId from storage ${deviceIdFromStorage}`);
+    logger.debug(`getOrCreateDeviceId using existing deviceId from storage`);
     // if we have a ID in storage, we've already migrated
     return [deviceIdFromStorage, false];
   } else {
@@ -47,11 +47,12 @@ export async function getOrCreateDeviceId(): Promise<[string, boolean]> {
     // set ID
     ls.device.set(['id'], deviceId);
 
+    // log to Sentry
     if (hasExistingDeviceId) {
-      logger.debug(`[getOrCreateDeviceId]: migrating device ID from keychain to local storage`);
+      logger.info(`getOrCreateDeviceId migrating device ID from keychain to local storage`);
     }
 
-    logger.debug(`[getOrCreateDeviceId]: returned new deviceId ${deviceId}`);
+    logger.debug(`getOrCreateDeviceId returned new deviceId`);
 
     // if we had an old device id in keychain, `wasCreated` should be false
     return [deviceId, !hasExistingDeviceId];
@@ -60,7 +61,7 @@ export async function getOrCreateDeviceId(): Promise<[string, boolean]> {
 
 export function securelyHashWalletAddress(walletAddress: `0x${string}`): string | undefined {
   if (!SECURE_WALLET_HASH_KEY) {
-    logger.error(new RainbowError(`[securelyHashWalletAddress]: Required .env variable SECURE_WALLET_HASH_KEY does not exist`));
+    logger.error(new RainbowError(`Required .env variable SECURE_WALLET_HASH_KEY does not exist`));
   }
 
   try {
@@ -72,11 +73,11 @@ export function securelyHashWalletAddress(walletAddress: `0x${string}`): string 
       walletAddress
     );
 
-    logger.debug(`[securelyHashWalletAddress]: Wallet address securely hashed`);
+    logger.debug(`Wallet address securely hashed`);
 
     return hmac;
   } catch (e) {
     // could be an invalid hashing key, or trying to hash an ENS
-    logger.error(new RainbowError(`[securelyHashWalletAddress]: Wallet address hashing failed`));
+    logger.error(new RainbowError(`Wallet address hashing failed`));
   }
 }

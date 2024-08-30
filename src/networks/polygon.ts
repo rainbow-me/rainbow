@@ -1,11 +1,10 @@
-import { getProvider, proxyRpcEndpoint } from '@/handlers/web3';
+import { getProviderForNetwork, proxyRpcEndpoint } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { polygon } from '@wagmi/chains';
 import { MATIC_MAINNET_ADDRESS, MATIC_POLYGON_ADDRESS } from '@/references';
 import { getPolygonGasPrices } from '@/redux/gas';
 import { getRemoteConfig } from '@/model/remoteConfig';
-import { ChainId } from '@/networks/types';
 
 export const getPolygonNetworkObject = (): NetworkProperties => {
   const { polygon_tx_enabled } = getRemoteConfig();
@@ -28,7 +27,7 @@ export const getPolygonNetworkObject = (): NetworkProperties => {
     },
 
     rpc: () => proxyRpcEndpoint(polygon.id),
-    getProvider: () => getProvider({ chainId: ChainId.polygon }),
+    getProvider: () => getProviderForNetwork(Network.polygon),
     balanceCheckerAddress: '0x54A4E5800345c01455a77798E0D96438364e22723',
 
     // features

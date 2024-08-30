@@ -3,13 +3,13 @@ import { maxBy, minBy } from 'lodash';
 export default function simplifyChartData(data: any, destinatedNumberOfPoints: number) {
   if (!data) return null;
 
-  const allSegmentDividers: any = [];
+  let allSegmentDividers: any = [];
   let allSegmentsPoints: any = [];
-  const colors = [];
-  const lines = [];
-  const dividers = [];
-  const lastPoints = [];
-  const createdLastPoints: any = [];
+  let colors = [];
+  let lines = [];
+  let dividers = [];
+  let lastPoints = [];
+  let createdLastPoints: any = [];
 
   if (data.segments.length > 0) {
     for (let i = 0; i < 1; i++) {
@@ -25,13 +25,13 @@ export default function simplifyChartData(data: any, destinatedNumberOfPoints: n
     }
   }
   if (allSegmentsPoints.length > destinatedNumberOfPoints) {
-    const destMul = allSegmentsPoints.length / destinatedNumberOfPoints;
+    let destMul = allSegmentsPoints.length / destinatedNumberOfPoints;
     const maxValue = maxBy(allSegmentsPoints, 'y');
     const minValue = minBy(allSegmentsPoints, 'y');
 
     const dataDiff = allSegmentsPoints[allSegmentsPoints.length - 1].x - allSegmentsPoints[0].x;
     const xMul = Math.floor(dataDiff / allSegmentsPoints.length);
-    const newData = [];
+    let newData = [];
     newData.push({
       isImportant: true,
       x: allSegmentsPoints[0].x - xMul * 2,

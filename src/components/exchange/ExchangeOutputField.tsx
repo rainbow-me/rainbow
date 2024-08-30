@@ -3,7 +3,7 @@ import { TextInput } from 'react-native';
 import ExchangeField from './ExchangeField';
 import { Box } from '@rainbow-me/design-system';
 import { TokenColors } from '@/graphql/__generated__/metadata';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/__swaps__/types/chains';
 
 interface ExchangeOutputFieldProps {
   color: string;

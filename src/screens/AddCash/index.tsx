@@ -53,7 +53,7 @@ export function AddCashSheet() {
       const [{ data, error }] = await wait(1000, [await getProviders()]);
 
       if (!data || error) {
-        const e = new RainbowError('[AddCash]: failed to fetch providers');
+        const e = new RainbowError('F2C: failed to fetch providers');
 
         logger.error(e);
 

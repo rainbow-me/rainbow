@@ -8,7 +8,6 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
-import { ChainId } from '@/networks/types';
 
 const GRADIENT: Gradient = {
   colors: ['#520907', '#B22824'],
@@ -24,7 +23,7 @@ export const OpRewardsCard: React.FC = () => {
   };
 
   return (
-    <AccentColorProvider color={colors.networkColors[ChainId.optimism]}>
+    <AccentColorProvider color={colors.networkColors.optimism}>
       <GenericCard type="stretch" gradient={GRADIENT} onPress={navigateToRewardsSheet} color="accent">
         <Cover>
           <Box

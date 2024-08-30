@@ -6,6 +6,7 @@ import { Source } from 'react-native-fast-image';
 import parse from 'url-parse';
 import { isCloudinaryStorageIconLink, signCloudinaryIconUrl } from '@/handlers/cloudinary';
 import { logger, RainbowError } from '@/logger';
+import { GOOGLE_USER_CONTENT_URL } from '@/utils/getFullResUrl';
 
 const shouldCreateImgixClient = (): ImgixClient | null => {
   if (typeof domain === 'string' && !!domain.length && typeof secureURLToken === 'string' && !!secureURLToken.length) {
@@ -31,7 +32,7 @@ const staticImgixClient = shouldCreateImgixClient();
 //       This might be conditional based upon either the runtime
 //       hardware or the number of unique tokens a user may have.
 const capacity = 1024;
-export const staticSignatureLRU: LRUCache<string, string> = new LRUCache(capacity);
+export let staticSignatureLRU: LRUCache<string, string> = new LRUCache(capacity);
 
 interface ImgOptions {
   w?: number;
@@ -116,7 +117,11 @@ const isPossibleToSignUri = (externalImageUri: string | undefined): boolean => {
   return false;
 };
 
-export const maybeSignUri = (externalImageUri: string | undefined, options?: ImgOptions, skipCaching = false): string | undefined => {
+export const maybeSignUri = (
+  externalImageUri: string | undefined,
+  options?: ImgOptions,
+  skipCaching: boolean = false
+): string | undefined => {
   // If the image has already been signed, return this quickly.
   const signature = `${externalImageUri}-${options?.w}-${options?.fm}`;
   if (typeof externalImageUri === 'string' && staticSignatureLRU.has(signature as string) && !skipCaching) {

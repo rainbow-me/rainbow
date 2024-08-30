@@ -20,16 +20,18 @@ import { useAccountSettings, useWallets } from '@/hooks';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
+import { ethereumUtils } from '@/utils';
+import { Network } from '@/helpers';
 import { Box, Columns, Column as RDSColumn, Inline, Text } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import * as lang from '@/languages';
-import { RainbowNetworkObjects, getNetworkObject } from '@/networks';
+import { RainbowNetworks, getNetworkObj } from '@/networks';
 import { useDappMetadata } from '@/resources/metadata/dapp';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { InfoAlert } from '@/components/info-alert/info-alert';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import { ChainId, chainIdToNameMapping } from '@/networks/types';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.3),
@@ -67,8 +69,8 @@ const NetworkPill = ({ chainIds }) => {
   const availableNetworkChainIds = useMemo(() => chainIds.sort(chainId => (chainId === ChainId.mainnet ? -1 : 1)), [chainIds]);
 
   const networkMenuItems = useMemo(() => {
-    RainbowNetworkObjects.filter(({ features, id }) => features.walletconnect && chainIds.includes(id)).map(network => ({
-      actionKey: network.id,
+    RainbowNetworks.filter(({ features, id }) => features.walletconnect && chainIds.includes(id)).map(network => ({
+      actionKey: network.value,
       actionTitle: network.name,
       icon: {
         iconType: 'ASSET',
@@ -126,7 +128,7 @@ const NetworkPill = ({ chainIds }) => {
             </>
           ) : (
             <Inline alignVertical="center" wrap={false}>
-              {availableNetworkChainIds[0] !== ChainId.mainnet ? (
+              {availableNetworkChainIds[0] !== Network.mainnet ? (
                 <ChainBadge chainId={availableNetworkChainIds[0]} position="relative" size="small" />
               ) : (
                 <EthCoinIcon size={20} />
@@ -134,7 +136,7 @@ const NetworkPill = ({ chainIds }) => {
 
               <Box paddingLeft="6px">
                 <Text color="primary (Deprecated)" numberOfLines={1} size="18px / 27px (Deprecated)" weight="bold">
-                  {chainIdToNameMapping[availableNetworkChainIds[0]]}
+                  {getNetworkObj(availableNetworkChainIds[0]).name}
                 </Text>
               </Box>
             </Inline>
@@ -149,7 +151,7 @@ export default function WalletConnectApprovalSheet() {
   const { colors, isDarkMode } = useTheme();
   const { goBack } = useNavigation();
   const { params } = useRoute();
-  const { chainId: settingsChainId, accountAddress } = useAccountSettings();
+  const { network, accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
   const { selectedWallet, walletNames, wallets } = useWallets();
   const handled = useRef(false);
@@ -180,8 +182,8 @@ export default function WalletConnectApprovalSheet() {
   const failureExplainSheetVariant = params?.failureExplainSheetVariant;
   const chainIds = meta?.chainIds; // WC v2 supports multi-chain
   const chainId = meta?.proposedChainId || chainIds?.[0] || 1; // WC v1 only supports 1
-  const currentChainId = params?.currentChainId;
-  const [approvalChainId, setApprovalChainId] = useState(currentChainId || settingsChainId);
+  const currentNetwork = params?.currentNetwork;
+  const [approvalNetwork, setApprovalNetwork] = useState(currentNetwork || network);
   const isWalletConnectV2 = meta.isWalletConnectV2;
 
   const { dappName, dappUrl, dappScheme, imageUrl, peerId } = meta;
@@ -223,18 +225,18 @@ export default function WalletConnectApprovalSheet() {
    * v2.
    */
   const approvalNetworkInfo = useMemo(() => {
-    const networkObj = getNetworkObject({ chainId: approvalChainId });
+    const networkObj = getNetworkObj(approvalNetwork);
     return {
       chainId: networkObj.id,
       color: isDarkMode ? networkObj.colors.dark : networkObj.colors.light,
       name: networkObj.name,
       value: networkObj.value,
     };
-  }, [approvalChainId, isDarkMode]);
+  }, [approvalNetwork, isDarkMode]);
 
   const handleOnPressNetworksMenuItem = useCallback(
-    ({ nativeEvent }) => setApprovalChainId(nativeEvent.actionKey?.replace(NETWORK_MENU_ACTION_KEY_FILTER, '')),
-    [setApprovalChainId]
+    ({ nativeEvent }) => setApprovalNetwork(nativeEvent.actionKey?.replace(NETWORK_MENU_ACTION_KEY_FILTER, '')),
+    [setApprovalNetwork]
   );
 
   const handleSuccess = useCallback(
@@ -251,7 +253,8 @@ export default function WalletConnectApprovalSheet() {
 
   useEffect(() => {
     if (chainId && type === WalletConnectApprovalSheetType.connect) {
-      setApprovalChainId(chainId);
+      const network = ethereumUtils.getNetworkFromChainId(Number(chainId));
+      setApprovalNetwork(network);
     }
   }, [chainId, type]);
 
@@ -281,7 +284,7 @@ export default function WalletConnectApprovalSheet() {
   }, [handleSuccess, goBack]);
 
   const onPressAndroid = useCallback(() => {
-    androidShowNetworksActionSheet(({ chainId }) => setApprovalChainId(chainId));
+    androidShowNetworksActionSheet(({ network }) => setApprovalNetwork(network));
   }, []);
 
   const handlePressChangeWallet = useCallback(() => {
@@ -355,11 +358,19 @@ export default function WalletConnectApprovalSheet() {
             }}
           >
             <Centered marginRight={5}>
-              <ChainLogo chainId={type === WalletConnectApprovalSheetType.connect ? approvalNetworkInfo.chainId : Number(chainId)} />
+              <ChainLogo
+                network={
+                  type === WalletConnectApprovalSheetType.connect
+                    ? approvalNetworkInfo.value
+                    : ethereumUtils.getNetworkFromChainId(Number(chainId))
+                }
+              />
             </Centered>
             <LabelText align="right" numberOfLines={1}>
               {`${
-                type === WalletConnectApprovalSheetType.connect ? approvalNetworkInfo.name : chainIdToNameMapping[chainId]
+                type === WalletConnectApprovalSheetType.connect
+                  ? approvalNetworkInfo.name
+                  : ethereumUtils.getNetworkNameFromChainId(Number(chainId))
               } ${type === WalletConnectApprovalSheetType.connect && menuItems.length > 1 ? '􀁰' : ''}`}
             </LabelText>
           </ButtonPressAnimation>
@@ -368,8 +379,8 @@ export default function WalletConnectApprovalSheet() {
     }
   }, [
     NetworkSwitcherParent,
-    approvalNetworkInfo.chainId,
     approvalNetworkInfo.name,
+    approvalNetworkInfo.value,
     chainId,
     chainIds,
     handleOnPressNetworksMenuItem,
@@ -400,7 +411,7 @@ export default function WalletConnectApprovalSheet() {
                   {type === WalletConnectApprovalSheetType.connect
                     ? lang.t(lang.l.walletconnect.wants_to_connect)
                     : lang.t(lang.l.walletconnect.wants_to_connect_to_network, {
-                        network: chainIdToNameMapping[chainId],
+                        network: ethereumUtils.getNetworkNameFromChainId(Number(chainId)),
                       })}
                 </Text>
               </Column>

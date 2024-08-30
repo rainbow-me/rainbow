@@ -2,16 +2,15 @@ import isEmpty from 'lodash/isEmpty';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { NativeCurrencyKey } from '@/entities';
 import { saveAccountEmptyState } from '@/handlers/localstorage/accountLocal';
+import { Network } from '@/helpers/networkTypes';
 import { greaterThan } from '@/helpers/utilities';
-import { RainbowNetworkObjects } from '@/networks';
+import { RainbowNetworks } from '@/networks';
 import { rainbowFetch } from '@/rainbow-fetch';
 import { createQueryKey, queryClient, QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { filterPositionsData, parseAddressAsset } from './assets';
 import { fetchHardhatBalances } from './hardhatAssets';
 import { AddysAccountAssetsMeta, AddysAccountAssetsResponse, RainbowAddressAssets } from './types';
-import { Network } from '@/networks/types';
-import { staleBalancesStore } from '@/state/staleBalances';
 
 // ///////////////////////////////////////////////
 // Query Types
@@ -33,26 +32,15 @@ type UserAssetsQueryKey = ReturnType<typeof userAssetsQueryKey>;
 // ///////////////////////////////////////////////
 // Query Function
 
-const fetchUserAssetsForChainIds = async ({
-  address,
-  currency,
-  chainIds,
-  staleBalanceParam,
-}: {
-  address: string;
-  currency: NativeCurrencyKey;
-  chainIds: number[];
-  staleBalanceParam?: string;
-}) => {
+const fetchUserAssetsForChainIds = async (address: string, currency: NativeCurrencyKey, chainIds: number[]) => {
   const chainIdsString = chainIds.join(',');
-  let url = `https://addys.p.rainbow.me/v3/${chainIdsString}/${address}/assets?currency=${currency.toLowerCase()}`;
-
-  if (staleBalanceParam) {
-    url += url + staleBalanceParam;
-  }
+  const url = `https://addys.p.rainbow.me/v3/${chainIdsString}/${address}/assets`;
 
   const response = await rainbowFetch(url, {
     method: 'get',
+    params: {
+      currency: currency.toLowerCase(),
+    },
     headers: {
       Authorization: `Bearer ${ADDYS_API_KEY}`,
     },
@@ -74,14 +62,9 @@ async function userAssetsQueryFunction({
   }
 
   try {
-    const chainIds = RainbowNetworkObjects.filter(network => network.enabled && network.networkType !== 'testnet').map(
-      network => network.id
-    );
+    const chainIds = RainbowNetworks.filter(network => network.enabled && network.networkType !== 'testnet').map(network => network.id);
 
-    staleBalancesStore.getState().clearExpiredData(address);
-    const staleBalanceParam = staleBalancesStore.getState().getStaleBalancesQueryParam(address);
-
-    const { erroredChainIds, results } = await fetchAndParseUserAssetsForChainIds({ address, currency, chainIds, staleBalanceParam });
+    const { erroredChainIds, results } = await fetchAndParseUserAssetsForChainIds(address, currency, chainIds);
     let parsedSuccessResults = results;
 
     // grab cached data for chain IDs with errors
@@ -117,7 +100,7 @@ const retryErroredChainIds = async (
   connectedToHardhat: boolean,
   erroredChainIds: number[]
 ) => {
-  const { meta, results } = await fetchAndParseUserAssetsForChainIds({ address, currency, chainIds: erroredChainIds });
+  const { meta, results } = await fetchAndParseUserAssetsForChainIds(address, currency, erroredChainIds);
   let parsedSuccessResults = results;
   const successChainIds = meta?.chain_ids;
 
@@ -157,18 +140,12 @@ interface AssetsAndMetadata {
   results: RainbowAddressAssets;
 }
 
-const fetchAndParseUserAssetsForChainIds = async ({
-  address,
-  currency,
-  chainIds,
-  staleBalanceParam,
-}: {
-  address: string;
-  currency: NativeCurrencyKey;
-  chainIds: number[];
-  staleBalanceParam?: string;
-}): Promise<AssetsAndMetadata> => {
-  const data = await fetchUserAssetsForChainIds({ address, currency, chainIds, staleBalanceParam });
+const fetchAndParseUserAssetsForChainIds = async (
+  address: string,
+  currency: NativeCurrencyKey,
+  chainIds: number[]
+): Promise<AssetsAndMetadata> => {
+  const data = await fetchUserAssetsForChainIds(address, currency, chainIds);
   let parsedSuccessResults = parseUserAssetsByChain(data);
 
   // filter out positions data

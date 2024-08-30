@@ -4,7 +4,7 @@ import Animated, { runOnJS, useAnimatedReaction, useAnimatedStyle, withDelay, wi
 
 import { MIN_FLASHBOTS_PRIORITY_FEE, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/__swaps__/types/chains';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { gweiToWei, weiToGwei } from '@/__swaps__/utils/ethereum';
 import {

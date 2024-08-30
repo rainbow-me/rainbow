@@ -60,19 +60,19 @@ export default function useInitializeWallet() {
     ) => {
       try {
         PerformanceTracking.startMeasuring(PerformanceMetrics.useInitializeWallet);
-        logger.debug('[useInitializeWallet]: Start wallet setup');
+        logger.debug('Start wallet setup');
         await resetAccountState();
-        logger.debug('[useInitializeWallet]: resetAccountState ran ok');
+        logger.debug('resetAccountState ran ok');
 
         const isImporting = !!seedPhrase;
-        logger.debug(`[useInitializeWallet]: isImporting? ${isImporting}`);
+        logger.debug('isImporting? ' + isImporting);
 
         if (shouldRunMigrations && !seedPhrase) {
-          logger.debug('[useInitializeWallet]: shouldRunMigrations && !seedPhrase? => true');
+          logger.debug('shouldRunMigrations && !seedPhrase? => true');
           await dispatch(walletsLoadState(profilesEnabled));
-          logger.debug('[useInitializeWallet]: walletsLoadState call #1');
+          logger.debug('walletsLoadState call #1');
           await runMigrations();
-          logger.debug('[useInitializeWallet]: done with migrations');
+          logger.debug('done with migrations');
         }
 
         setIsSmallBalancesOpen(false);
@@ -82,7 +82,7 @@ export default function useInitializeWallet() {
 
         const { isNew, walletAddress } = await walletInit(seedPhrase, color, name, overwrite, checkedWallet, network, image, silent);
 
-        logger.debug('[useInitializeWallet]: walletInit returned', {
+        logger.debug('walletInit returned', {
           isNew,
           walletAddress,
         });
@@ -94,12 +94,12 @@ export default function useInitializeWallet() {
         }
 
         if (seedPhrase || isNew) {
-          logger.debug('[useInitializeWallet]: walletsLoadState call #2');
+          logger.debug('walletLoadState call #2');
           await dispatch(walletsLoadState(profilesEnabled));
         }
 
         if (isNil(walletAddress)) {
-          logger.debug('[useInitializeWallet]: walletAddress is nil');
+          logger.debug('walletAddress is nil');
           Alert.alert(lang.t('wallet.import_failed_invalid_private_key'));
           if (!isImporting) {
             dispatch(appStateUpdate({ walletReady: true }));
@@ -109,18 +109,18 @@ export default function useInitializeWallet() {
 
         if (!(isNew || isImporting)) {
           await loadGlobalEarlyData();
-          logger.debug('[useInitializeWallet]: loaded global data...');
+          logger.debug('loaded global data...');
         }
 
         await dispatch(settingsUpdateAccountAddress(walletAddress));
-        logger.debug('[useInitializeWallet]: updated settings address', {
+        logger.debug('updated settings address', {
           walletAddress,
         });
 
         // Newly created / imported accounts have no data in localstorage
         if (!(isNew || isImporting)) {
           await loadAccountData();
-          logger.debug('[useInitializeWallet]: loaded account data', {
+          logger.debug('loaded account data', {
             network,
           });
         }
@@ -128,7 +128,7 @@ export default function useInitializeWallet() {
         try {
           hideSplashScreen();
         } catch (err) {
-          logger.error(new RainbowError('[useInitializeWallet]: Error while hiding splash screen'), {
+          logger.error(new RainbowError('Error while hiding splash screen'), {
             error: err,
           });
         }
@@ -136,7 +136,7 @@ export default function useInitializeWallet() {
         initializeAccountData();
 
         dispatch(appStateUpdate({ walletReady: true }));
-        logger.debug('[useInitializeWallet]: 💰 Wallet initialized');
+        logger.debug('💰 Wallet initialized');
 
         PerformanceTracking.finishMeasuring(PerformanceMetrics.useInitializeWallet, {
           walletStatus: getWalletStatusForPerformanceMetrics(isNew, isImporting),
@@ -145,7 +145,7 @@ export default function useInitializeWallet() {
         return walletAddress;
       } catch (error) {
         PerformanceTracking.clearMeasure(PerformanceMetrics.useInitializeWallet);
-        logger.error(new RainbowError('[useInitializeWallet]: Error while initializing wallet'), {
+        logger.error(new RainbowError('Error while initializing wallet'), {
           error,
         });
         // TODO specify error states more granular
@@ -156,7 +156,7 @@ export default function useInitializeWallet() {
         try {
           hideSplashScreen();
         } catch (err) {
-          logger.error(new RainbowError('[useInitializeWallet]: Error while hiding splash screen'), {
+          logger.error(new RainbowError('Error while hiding splash screen'), {
             error: err,
           });
         }

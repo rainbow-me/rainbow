@@ -1,7 +1,8 @@
 import { AddressOrEth, UniqueId } from '@/__swaps__/types/assets';
-import { ChainId, Network } from '@/networks/types';
+import { ChainId } from '@/__swaps__/types/chains';
 import { getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
 import { NativeCurrencyKeys, RainbowToken } from '@/entities';
+import { Network } from '@/networks/types';
 import { createQueryKey, queryClient } from '@/react-query';
 import { DAI_ADDRESS, ETH_ADDRESS, SOCKS_ADDRESS, WBTC_ADDRESS, WETH_ADDRESS } from '@/references';
 import { promiseUtils } from '@/utils';

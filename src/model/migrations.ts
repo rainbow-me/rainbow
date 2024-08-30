@@ -32,7 +32,7 @@ import { returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { updateWebDataEnabled } from '@/redux/showcaseTokens';
 import { ethereumUtils, profileUtils } from '@/utils';
 import { review } from '@/storage';
-import { logger, RainbowError } from '@/logger';
+import logger from '@/utils/logger';
 import { queryClient } from '@/react-query';
 import { favoritesQueryKey } from '@/resources/favorites';
 import { EthereumAddress, RainbowToken } from '@/entities';
@@ -52,11 +52,13 @@ export default async function runMigrations() {
    * using the updated Keychain settings (THIS_DEVICE_ONLY)
    */
   const v0 = async () => {
+    logger.sentry('Start migration v0');
     const walletAddress = await loadAddress();
     if (walletAddress) {
-      logger.debug('[runMigrations]: v0 migration - Save loaded address');
+      logger.sentry('v0 migration - Save loaded address');
       await saveAddress(walletAddress);
     }
+    logger.sentry('Complete migration v0');
   };
 
   migrations.push(v0);
@@ -68,13 +70,14 @@ export default async function runMigrations() {
    * that were created / imported before we launched this feature
    */
   const v1 = async () => {
+    logger.sentry('Start migration v1');
     const { selected } = store.getState().wallets;
 
     if (!selected) {
       // Read from the old wallet data
       const address = await loadAddress();
       if (address) {
-        logger.debug('[runMigrations]: v1 migration - address found');
+        logger.sentry('v1 migration - address found');
         const id = `wallet_${Date.now()}`;
         const currentWallet = {
           addresses: [
@@ -97,11 +100,12 @@ export default async function runMigrations() {
 
         const wallets = { [id]: currentWallet };
 
-        logger.debug('[runMigrations]: v1 migration - update wallets and selected wallet');
+        logger.sentry('v1 migration - update wallets and selected wallet');
         await store.dispatch(walletsUpdate(wallets));
         await store.dispatch(walletsSetSelected(currentWallet));
       }
     }
+    logger.sentry('Complete migration v1');
   };
 
   migrations.push(v1);
@@ -112,10 +116,11 @@ export default async function runMigrations() {
    * which are the only wallets allowed to create new accounts under it
    */
   const v2 = async () => {
+    logger.sentry('Start migration v2');
     const { wallets, selected } = store.getState().wallets;
 
     if (!wallets) {
-      logger.debug('[runMigrations]: Complete migration v2 early');
+      logger.sentry('Complete migration v2 early');
       return;
     }
 
@@ -126,7 +131,7 @@ export default async function runMigrations() {
     // if there's a wallet with seed phrase that wasn't imported
     // and set it as primary
     if (!primaryWallet) {
-      logger.debug('[runMigrations]: v2 migration - primary wallet not found');
+      logger.sentry('v2 migration - primary wallet not found');
       let primaryWalletKey = null;
       Object.keys(wallets).some(key => {
         const wallet = wallets[key];
@@ -156,7 +161,7 @@ export default async function runMigrations() {
           ...updatedWallets[primaryWalletKey],
           primary: true,
         };
-        logger.debug('[runMigrations]: v2 migration - update wallets');
+        logger.sentry('v2 migration - update wallets');
         await store.dispatch(walletsUpdate(updatedWallets));
         // Additionally, we need to check if it's the selected wallet
         // and if that's the case, update it too
@@ -166,6 +171,7 @@ export default async function runMigrations() {
         }
       }
     }
+    logger.sentry('Complete migration v2');
   };
 
   migrations.push(v2);
@@ -176,7 +182,7 @@ export default async function runMigrations() {
    */
 
   const v3 = async () => {
-    logger.debug('[runMigrations]: Ignoring migration v3');
+    logger.sentry('Ignoring migration v3');
     return true;
   };
 
@@ -188,7 +194,7 @@ export default async function runMigrations() {
    */
 
   const v4 = async () => {
-    logger.debug('[runMigrations]: Ignoring migration v4');
+    logger.sentry('Ignoring migration v4');
     return true;
   };
 
@@ -200,41 +206,43 @@ export default async function runMigrations() {
    * incorrectly by the keychain integrity checks
    */
   const v5 = async () => {
+    logger.sentry('Start migration v5');
     const { wallets, selected } = store.getState().wallets;
 
     if (!wallets) {
-      logger.debug('[runMigrations]: Complete migration v5 early');
+      logger.sentry('Complete migration v5 early');
       return;
     }
 
     const hasMigratedFlag = await hasKey(oldSeedPhraseMigratedKey);
     if (!hasMigratedFlag) {
-      logger.debug('[runMigrations]: Migration flag not set');
+      logger.sentry('Migration flag not set');
       const hasOldSeedphraseKey = await hasKey(seedPhraseKey);
       if (hasOldSeedphraseKey) {
-        logger.debug('[runMigrations]: Old seedphrase is still there');
+        logger.sentry('Old seedphrase is still there');
         let incorrectDamagedWalletId = null;
         const updatedWallets = { ...wallets };
         keys(updatedWallets).forEach(walletId => {
           if (updatedWallets[walletId].damaged && !updatedWallets[walletId].imported) {
-            logger.debug(`[runMigrations]: found incorrect damaged wallet ${walletId}`);
+            logger.sentry('found incorrect damaged wallet', walletId);
             delete updatedWallets[walletId].damaged;
             incorrectDamagedWalletId = walletId;
           }
         });
-        logger.debug('[runMigrations]: updating all wallets');
+        logger.sentry('updating all wallets');
         await store.dispatch(walletsUpdate(updatedWallets));
-        logger.debug('[runMigrations]: done updating all wallets');
+        logger.sentry('done updating all wallets');
         // Additionally, we need to check if it's the selected wallet
         // and if that's the case, update it too
         if (selected!.id === incorrectDamagedWalletId) {
-          logger.debug('[runMigrations]: need to update the selected wallet');
+          logger.sentry('need to update the selected wallet');
           const updatedSelectedWallet = updatedWallets[incorrectDamagedWalletId];
           await store.dispatch(walletsSetSelected(updatedSelectedWallet));
-          logger.debug('[runMigrations]: selected wallet updated');
+          logger.sentry('selected wallet updated');
         }
       }
     }
+    logger.sentry('Complete migration v5');
   };
 
   migrations.push(v5);
@@ -244,7 +252,6 @@ export default async function runMigrations() {
    */
   /* Fix dollars => stablecoins */
   const v6 = async () => {
-    logger.debug('[runMigrations]: Ignoring migration v6');
     // try {
     //   const userLists = await getUserLists();
     //   const newLists = userLists.map((list: { id: string }) => {
@@ -273,9 +280,9 @@ export default async function runMigrations() {
       const wallet = wallets[walletKeys[i]];
       if (wallet.type !== WalletTypes.readOnly) {
         // eslint-disable-next-line @typescript-eslint/prefer-for-of
-        for (let x = 0; x < (wallet.addresses || []).length; x++) {
-          const { address } = (wallet.addresses || [])[x];
-          logger.debug(`[runMigrations]: setting web profiles for address ${address}`);
+        for (let x = 0; x < wallet.addresses.length; x++) {
+          const { address } = wallet.addresses[x];
+          logger.log('setting web profiles for address', address);
           await store.dispatch(updateWebDataEnabled(true, address));
         }
       }
@@ -285,7 +292,7 @@ export default async function runMigrations() {
   migrations.push(v7);
 
   const v8 = async () => {
-    logger.debug('[runMigrations]: wiping old metadata');
+    logger.log('wiping old metadata');
     await deprecatedRemoveLocal(IMAGE_METADATA);
   };
 
@@ -298,6 +305,7 @@ export default async function runMigrations() {
    * same for contacts
    */
   const v9 = async () => {
+    logger.log('Start migration v9');
     // map from old color index to closest new color's index
     const newColorIndexes = [0, 4, 12, 21, 1, 20, 4, 9, 10];
     try {
@@ -308,7 +316,7 @@ export default async function runMigrations() {
       // eslint-disable-next-line @typescript-eslint/prefer-for-of
       for (let i = 0; i < walletKeys.length; i++) {
         const wallet = wallets[walletKeys[i]];
-        const newAddresses = (wallet.addresses || []).map((account: RainbowAccount) => {
+        const newAddresses = wallet.addresses.map((account: RainbowAccount) => {
           const accountEmoji = returnStringFirstEmoji(account?.label);
           return {
             ...account,
@@ -321,12 +329,12 @@ export default async function runMigrations() {
         const newWallet = { ...wallet, addresses: newAddresses };
         updatedWallets[walletKeys[i]] = newWallet;
       }
-      logger.debug('[runMigrations]: update wallets in store to index new colors');
+      logger.log('update wallets in store to index new colors');
       await store.dispatch(walletsUpdate(updatedWallets));
 
       const selectedWalletId = selected?.id;
       if (selectedWalletId) {
-        logger.debug('[runMigrations]: update selected wallet to index new color');
+        logger.log('update selected wallet to index new color');
         await store.dispatch(walletsSetSelected(updatedWallets[selectedWalletId]));
       }
 
@@ -347,10 +355,12 @@ export default async function runMigrations() {
               : getRandomColor(),
         };
       }
-      logger.debug('[runMigrations]: update contacts to index new colors');
+      logger.log('update contacts to index new colors');
       await saveContacts(updatedContacts);
     } catch (error) {
-      logger.error(new RainbowError(`[runMigrations]: Migration v9 failed: ${error}`));
+      logger.sentry('Migration v9 failed: ', error);
+      const migrationError = new Error('Migration 9 failed');
+      captureException(migrationError);
     }
   };
 
@@ -361,6 +371,7 @@ export default async function runMigrations() {
    * This step makes sure all contacts have an emoji set based on the address
    */
   const v10 = async () => {
+    logger.log('Start migration v10');
     try {
       // migrate contacts to corresponding emoji
       const contacts = await getContacts();
@@ -392,10 +403,12 @@ export default async function runMigrations() {
           }
         }
       }
-      logger.debug('[runMigrations]: update contacts to add emojis / colors');
+      logger.log('update contacts to add emojis / colors');
       await saveContacts(updatedContacts);
     } catch (error) {
-      logger.error(new RainbowError(`[runMigrations]: Migration v10 failed: ${error}`));
+      logger.sentry('Migration v10 failed: ', error);
+      const migrationError = new Error('Migration 10 failed');
+      captureException(migrationError);
     }
   };
 
@@ -406,9 +419,9 @@ export default async function runMigrations() {
    * This step resets review timers if we havnt asked in the last 2 weeks prior to running this
    */
   const v11 = async () => {
+    logger.log('Start migration v11');
     const hasReviewed = review.get(['hasReviewed']);
     if (hasReviewed) {
-      logger.debug('[runMigrations]: Migration v11: exiting early - already reviewed');
       return;
     }
 
@@ -417,12 +430,10 @@ export default async function runMigrations() {
     const TWO_MONTHS = 2 * 30 * 24 * 60 * 60 * 1000;
 
     if (Number(reviewAsked) > Date.now() - TWO_WEEKS) {
-      logger.debug('[runMigrations]: Migration v11: exiting early - not reviewed in the last 2 weeks');
       return;
     }
 
     review.set(['timeOfLastPrompt'], Date.now() - TWO_MONTHS);
-    logger.debug('[runMigrations]: Migration v11: updated review timeOfLastPrompt');
   };
 
   migrations.push(v11);
@@ -440,15 +451,15 @@ export default async function runMigrations() {
     for (let i = 0; i < walletKeys.length; i++) {
       const wallet = wallets[walletKeys[i]];
       // eslint-disable-next-line @typescript-eslint/prefer-for-of
-      for (let x = 0; x < (wallet.addresses || []).length; x++) {
-        const { address } = (wallet.addresses || [])[x];
+      for (let x = 0; x < wallet.addresses.length; x++) {
+        const { address } = wallet.addresses[x];
 
         const assets = await getAssets(address, network);
         const hiddenCoins = await getHiddenCoins(address, network);
         const pinnedCoins = await getPinnedCoins(address, network);
 
-        logger.debug(`[runMigrations]: pinnedCoins: ${JSON.stringify({ pinnedCoins }, null, 2)}`);
-        logger.debug(`[runMigrations]: hiddenCoins: ${JSON.stringify({ hiddenCoins }, null, 2)}`);
+        logger.log(JSON.stringify({ pinnedCoins }, null, 2));
+        logger.log(JSON.stringify({ hiddenCoins }, null, 2));
 
         const pinnedCoinsMigrated = pinnedCoins.map((address: string) => {
           const asset = assets?.find((asset: any) => asset.address === address.toLowerCase());
@@ -460,8 +471,8 @@ export default async function runMigrations() {
           return getUniqueIdNetwork(asset?.address, network);
         });
 
-        logger.debug(`[runMigrations]: pinnedCoinsMigrated: ${JSON.stringify({ pinnedCoinsMigrated }, null, 2)}`);
-        logger.debug(`[runMigrations]: hiddenCoinsMigrated: ${JSON.stringify({ hiddenCoinsMigrated }, null, 2)}`);
+        logger.log(JSON.stringify({ pinnedCoinsMigrated }, null, 2));
+        logger.log(JSON.stringify({ hiddenCoinsMigrated }, null, 2));
 
         await savePinnedCoins(uniq(pinnedCoinsMigrated), address, network);
         await saveHiddenCoins(uniq(hiddenCoinsMigrated), address, network);
@@ -503,14 +514,17 @@ export default async function runMigrations() {
           const value = await loadString(key);
           if (typeof value === 'string') {
             await saveString(key, value, publicAccessControlOptions);
-            logger.debug(`[runMigrations]: key migrated: ${key}`);
+            logger.debug('key migrated', key);
           }
         } catch (error) {
-          logger.error(new RainbowError(`[runMigrations]: Error migration 13 :: key ${key}: ${error}`));
+          logger.sentry('Error migration 13 :: key ', key);
+          logger.sentry('reason', error);
         }
       }
     } catch (error) {
-      logger.error(new RainbowError(`[runMigrations]: Migration v13 failed: ${error}`));
+      logger.sentry('Migration v13 failed: ', error);
+      const migrationError = new Error('Migration 13 failed');
+      captureException(migrationError);
     }
   };
 
@@ -543,7 +557,6 @@ export default async function runMigrations() {
    Ignored
    */
   const v15 = async () => {
-    logger.debug('[runMigrations]: Ignoring migration v15');
     return true;
   };
 
@@ -564,7 +577,9 @@ export default async function runMigrations() {
         // we don't care if it fails
       });
     } catch (error: any) {
-      logger.error(new RainbowError(`[runMigrations]: Migration v16 failed: ${error}`));
+      logger.sentry('Migration v16 failed: ', error);
+      const migrationError = new Error('Migration 16 failed');
+      captureException(migrationError);
     }
   };
 
@@ -626,19 +641,9 @@ export default async function runMigrations() {
 
   /**
    *************** Migration v19 ******************
-   * Deleted migration
-   */
-  const v19 = async () => {
-    return;
-  };
-
-  migrations.push(v19);
-
-  /**
-   *************** Migration v20 ******************
    * Migrates dapp browser favorites store from createStore to createRainbowStore
    */
-  const v20 = async () => {
+  const v19 = async () => {
     const initializeLegacyStore = () => {
       return new Promise<void>(resolve => {
         // Give the async legacy store a moment to initialize
@@ -661,20 +666,20 @@ export default async function runMigrations() {
     }
   };
 
-  migrations.push(v20);
+  migrations.push(v19);
 
-  logger.debug(`[runMigrations]: ready to run migrations starting on number ${currentVersion}`);
+  logger.sentry(`Migrations: ready to run migrations starting on number ${currentVersion}`);
   // await setMigrationVersion(17);
   if (migrations.length === currentVersion) {
-    logger.debug(`[runMigrations]: Nothing to run`);
+    logger.sentry(`Migrations: Nothing to run`);
     return;
   }
 
   for (let i = currentVersion; i < migrations.length; i++) {
-    logger.debug(`[runMigrations]: Running migration v${i}`);
+    logger.sentry(`Migrations: Running migration v${i}`);
     // @ts-expect-error
     await migrations[i].apply(null);
-    logger.debug(`[runMigrations]: Migration ${i} completed succesfully`);
+    logger.sentry(`Migrations: Migration ${i} completed succesfully`);
     await setMigrationVersion(i + 1);
   }
 }

@@ -24,12 +24,12 @@ import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextSty
 import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/__swaps__/types/chains';
 import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
 import { getDefaultSlippageWorklet, isUnwrapEthWorklet, isWrapEthWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
-import { getFlashbotsProvider, getProvider } from '@/handlers/web3';
+import { getFlashbotsProvider, getIsHardhatConnected, getProvider, isHardHat } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useAccountSettings } from '@/hooks';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
@@ -56,7 +56,6 @@ import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisable
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { getRemoteConfig } from '@/model/remoteConfig';
-import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
@@ -200,7 +199,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         parameters.flashbots && getNetworkObject({ chainId: parameters.chainId }).features.flashbots
           ? await getFlashbotsProvider()
           : getProvider({ chainId: parameters.chainId });
-      const connectedToHardhat = useConnectedToHardhatStore.getState().connectedToHardhat;
+      const providerUrl = provider?.connection?.url;
+      const connectedToHardhat = !!providerUrl && isHardHat(providerUrl);
 
       const isBridge = swapsStore.getState().inputAsset?.mainnetAddress === swapsStore.getState().outputAsset?.mainnetAddress;
       const isDegenModeEnabled = swapsStore.getState().degenMode;
@@ -258,7 +258,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         };
       }
 
-      const chainId = connectedToHardhat ? ChainId.hardhat : parameters.chainId;
+      const chainId = getIsHardhatConnected() ? ChainId.hardhat : parameters.chainId;
       const { errorMessage } = await performanceTracking.getState().executeFn({
         fn: walletExecuteRap,
         screen: Screens.SWAPS,

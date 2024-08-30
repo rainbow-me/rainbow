@@ -748,8 +748,8 @@
       },
       "swap_details_v2": {
         "automatic": "자동",
-        "degen_mode": "Degen모드",
-        "degen_mode_description": "리뷰 단계를 건너뛰어 더 빠르게 교환",
+        "degen_mode": "디겐 모드",
+        "degen_mode_description": "검토 시트를 건너뛰어 더 빠르게 스왑",
         "maximum_sold": "최대 판매",
         "minimum_received": "최소 수령량",
         "preferred_network": "선호 네트워크",
@@ -1321,16 +1321,10 @@
     "nfts": {
       "selling": "판매",
       "sort": {
-        "ABC": "가나다",
         "abc": "가나다",
-        "MOST_RECENT": "최근",
         "most_recent": "최신순",
-        "FLOOR_PRICE": "최저 가격",
         "floor_price": "최저 가격"
-      },
-      "empty": "수집품",
-      "collect_now": "지금 수집",
-      "will_appear_here": "여기에 수집품이 나타납니다"
+      }
     },
     "nft_offers": {
       "card": {
@@ -2074,7 +2068,6 @@
     "token_search": {
       "section_header": {
         "recent": "최근",
-        "popular": "레인보우에서 인기",
         "favorites": "즐겨찾기",
         "bridge": "브릿지",
         "verified": "인증됨",
@@ -2503,7 +2496,7 @@
       "balance_title": "균형",
       "buy": "구매",
       "change_wallet": {
-        "loading_balance": "잔액 로딩 중...",
+        "no_balance": "잔액 없음",
         "balance_eth": "%{balanceEth} 이더리움",
         "watching": "시청 중",
         "ledger": "렛저"

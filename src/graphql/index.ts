@@ -15,25 +15,7 @@ export const ensClient = getEnsSdk(getFetchRequester(config.ens));
 export const metadataClient = getMetadataSdk(metadataRequester);
 export const metadataPOSTClient = getMetadataSdk(getFetchRequester(config.metadataPOST));
 export const arcClient = IS_PROD ? getArcSdk(getFetchRequester(config.arc)) : getArcDevSdk(getFetchRequester(config.arcDev));
-export const arcPOSTClient = IS_PROD
-  ? getArcSdk(
-      getFetchRequester({
-        ...config.arc,
-        schema: {
-          ...config.arc.schema,
-          method: 'POST',
-        },
-      })
-    )
-  : getArcDevSdk(
-      getFetchRequester({
-        ...config.arcDev,
-        schema: {
-          ...config.arcDev.schema,
-          method: 'POST',
-        },
-      })
-    );
+
 export const requestMetadata = (q: string, options?: Pick<RainbowFetchRequestOpts, 'timeout' | 'headers'>) =>
   metadataRequester(
     gql`

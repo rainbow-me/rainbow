@@ -2,7 +2,7 @@ import { createNavigatorFactory, StackRouter as OldStackRouter, StackActions, us
 import * as React from 'react';
 
 import NativeStackView from './NativeStackView';
-import { logger } from '@/logger';
+import logger from '@/utils/logger';
 
 function NativeStackNavigator(props) {
   const { children, initialRouteName, screenOptions, ...rest } = props;
@@ -13,7 +13,7 @@ function NativeStackNavigator(props) {
       getStateForAction(state, action, options) {
         if (action.type === 'PUSH') {
           if (state.routes[state.routes.length - 1].name === action.payload.name) {
-            logger.debug(`[NativeStackNavigator]: pushing twice the same name is not allowed`);
+            logger.log('pushing twice the same name is not allowed');
             return state;
           }
         }

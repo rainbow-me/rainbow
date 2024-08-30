@@ -1,4 +1,4 @@
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/__swaps__/types/chains';
 import store from '@/redux/store';
 import * as ls from '@/storage';
 import { getArbitrumNetworkObject } from './arbitrum';
@@ -12,14 +12,14 @@ import { getGoerliNetworkObject } from './goerli';
 import { getMainnetNetworkObject } from './mainnet';
 import { getOptimismNetworkObject } from './optimism';
 import { getPolygonNetworkObject } from './polygon';
-import { NetworkProperties } from './types';
+import { Network, NetworkProperties } from './types';
 import { getZoraNetworkObject } from './zora';
 
 /**
  * Array of all Rainbow Networks
  * the ordering is the default sorting
  */
-export const RainbowNetworkObjects = [
+export const RainbowNetworks = [
   getMainnetNetworkObject(),
   getArbitrumNetworkObject(),
   getBaseNetworkObject(),
@@ -34,24 +34,46 @@ export const RainbowNetworkObjects = [
   getDegenNetworkObject(),
 ];
 
-export const RainbowSupportedChainIds = [
-  ChainId.mainnet,
-  ChainId.arbitrum,
-  ChainId.base,
-  ChainId.optimism,
-  ChainId.polygon,
-  ChainId.zora,
-  ChainId.gnosis,
-  ChainId.goerli,
-  ChainId.bsc,
-  ChainId.avalanche,
-  ChainId.blast,
-  ChainId.degen,
-];
-
 /**
  * Helper function to get specific Rainbow Network's Object
  */
+export function getNetworkObj(network: Network): NetworkProperties {
+  switch (network) {
+    // Mainnet
+    case Network.mainnet:
+      return getMainnetNetworkObject();
+
+    // L2s
+    case Network.arbitrum:
+      return getArbitrumNetworkObject();
+    case Network.base:
+      return getBaseNetworkObject();
+    case Network.bsc:
+      return getBSCNetworkObject();
+    case Network.optimism:
+      return getOptimismNetworkObject();
+    case Network.polygon:
+      return getPolygonNetworkObject();
+    case Network.zora:
+      return getZoraNetworkObject();
+    case Network.gnosis:
+      return getGnosisNetworkObject();
+    case Network.avalanche:
+      return getAvalancheNetworkObject();
+    case Network.blast:
+      return getBlastNetworkObject();
+    case Network.degen:
+      return getDegenNetworkObject();
+    // Testnets
+    case Network.goerli:
+      return getGoerliNetworkObject();
+
+    // Fallback
+    default:
+      return getMainnetNetworkObject();
+  }
+}
+
 export function getNetworkObject({ chainId }: { chainId: ChainId }): NetworkProperties {
   switch (chainId) {
     // Mainnet
@@ -103,14 +125,14 @@ export function sortNetworks(): NetworkProperties[] {
     return count1 > count2 ? -1 : 1;
   };
 
-  return RainbowNetworkObjects.sort(tokenSort);
+  return RainbowNetworks.sort(tokenSort);
 }
 
 export function getSwappableNetworks(): NetworkProperties[] {
-  return RainbowNetworkObjects.filter(network => network.features.swaps);
+  return RainbowNetworks.filter(network => network.features.swaps);
 }
 
-export const RainbowNetworkByChainId = RainbowNetworkObjects.reduce(
+export const RainbowNetworkByChainId = RainbowNetworks.reduce(
   (acc, network) => {
     acc[network.id] = network;
     return acc;

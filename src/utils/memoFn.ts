@@ -27,7 +27,7 @@ export function memoFn<TArgs extends unknown[], TReturn>(
     // if no arguments used we just want the developer and run the function as is
     if (args.length === 0) {
       if (IS_DEV) {
-        logger.warn(`[memoFn]: memoized function ${fn.name} was called with no arguments`);
+        logger.warn(`memoized function ${fn.name} was called with no arguments`);
       }
 
       // Call it anyway to not break stuff
@@ -41,7 +41,7 @@ export function memoFn<TArgs extends unknown[], TReturn>(
         if (typeof arg !== 'number' && typeof arg !== 'boolean' && typeof arg !== 'string') {
           if (IS_DEV) {
             logger.warn(
-              `[memoFn]: memoized function ${fn.name} was called with non-supported arguments: ${JSON.stringify(
+              `memoized function ${fn.name} was called with non-supported arguments: ${JSON.stringify(
                 args
               )}. Typeof of ${i + 1} argument is ${typeof arg}`
             );
@@ -57,8 +57,8 @@ export function memoFn<TArgs extends unknown[], TReturn>(
 
     if (cache.has(key)) {
       // For debugging
-      // logger.debug(`[memoFn]: Used cached ${cachedCall++} times result for function  ${fn.name} with arguments ${key});
-      // logger.debug('[memoFn]: Total cached', cachedCalls++);
+      // logger.debug(`Used cached ${cachedCall++} times result for function  ${fn.name} with arguments ${key});
+      // logger.debug('Total cached', cachedCalls++);
       // return cached result
 
       return cache.get(key)!; // we did a check for that key already

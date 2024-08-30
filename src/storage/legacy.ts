@@ -32,7 +32,7 @@ class LegacyStorage<Scopes extends unknown[], Schema> extends Storage<Scopes, Sc
         deprecatedRemoveLocal(key); // then remove if successful
         return this.get(scopes); // continue as normal
       } catch (e) {
-        logger.error(new RainbowError(`[storage]: error migrating legacy data`), {
+        logger.error(new RainbowError(`Storage: error migrating legacy data`), {
           key,
         });
         return undefined;

@@ -186,8 +186,8 @@ export const ZoomableWrapper = ({
     let targetScale = Math.min(scale.value, MAX_IMAGE_SCALE);
 
     // determine whether to snap to screen edges
-    const breakingScaleX = deviceWidth / fullSizeWidth;
-    const breakingScaleY = deviceHeight / fullSizeHeight;
+    let breakingScaleX = deviceWidth / fullSizeWidth;
+    let breakingScaleY = deviceHeight / fullSizeHeight;
 
     const maxDisplacementX = (deviceWidth * (Math.max(1, targetScale / breakingScaleX) - 1)) / 2 / zooming;
     const maxDisplacementY = (deviceHeight * (Math.max(1, targetScale / breakingScaleY) - 1)) / 2 / zooming;

@@ -749,7 +749,7 @@
       "swap_details_v2": {
         "automatic": "Automático",
         "degen_mode": "Modo Degen",
-        "degen_mode_description": "Saltar el paso de revisión para intercambiar más rápido",
+        "degen_mode_description": "Omitir la hoja de revisión para intercambiar más rápido",
         "maximum_sold": "Máximo Vendido",
         "minimum_received": "Mínimo Recibido",
         "preferred_network": "Red preferida",
@@ -1321,16 +1321,10 @@
     "nfts": {
       "selling": "Vendiendo",
       "sort": {
-        "ABC": "Abc",
         "abc": "Abc",
-        "MOST_RECENT": "Reciente",
         "most_recent": "Más Reciente",
-        "FLOOR_PRICE": "Precio Base",
         "floor_price": "Precio Base"
-      },
-      "empty": "Coleccionables",
-      "collect_now": "Colecciona Ahora",
-      "will_appear_here": "Tus coleccionables aparecerán aquí"
+      }
     },
     "nft_offers": {
       "card": {
@@ -2074,7 +2068,6 @@
     "token_search": {
       "section_header": {
         "recent": "Reciente",
-        "popular": "Popular en Rainbow",
         "favorites": "Favoritos",
         "bridge": "Puente",
         "verified": "Verificado",
@@ -2503,7 +2496,7 @@
       "balance_title": "Saldo",
       "buy": "Comprar",
       "change_wallet": {
-        "loading_balance": "Cargando saldo...",
+        "no_balance": "Sin Balance",
         "balance_eth": "%{balanceEth} ETH",
         "watching": "Observando",
         "ledger": "Ledger"

@@ -3,6 +3,7 @@ import lang from 'i18n-js';
 import React, { Fragment, useCallback } from 'react';
 import { Linking, View } from 'react-native';
 import networkInfo from '../helpers/networkInfo';
+import networkTypes from '../helpers/networkTypes';
 import showWalletErrorAlert from '../helpers/support';
 import { useNavigation } from '../navigation/Navigation';
 import { useTheme } from '../theme/ThemeContext';
@@ -19,7 +20,6 @@ import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 import { useRoute } from '@react-navigation/native';
-import { Network } from '@/networks/types';
 
 const ContainerWidth = 261;
 
@@ -213,7 +213,7 @@ const AddFundsInterstitial = ({ network }) => {
 
   return (
     <Container isSmallPhone={isSmallPhone}>
-      {network === Network.mainnet ? (
+      {network === networkTypes.mainnet ? (
         <Fragment>
           <Title>{ios ? lang.t('add_funds.to_get_started_ios') : lang.t('add_funds.to_get_started_android')}</Title>
           <Row justify="space-between" marginVertical={30}>

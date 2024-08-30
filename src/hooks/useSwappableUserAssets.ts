@@ -1,13 +1,13 @@
 import { SwappableAsset } from '@/entities';
 import { walletFilter } from '@/handlers/tokenSearch';
+import { Network } from '@/helpers';
 import { useCoinListEditOptions } from '@/hooks';
 import { ETH_ADDRESS } from '@/references';
 import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import { EthereumAddress, ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS } from '@rainbow-me/swaps';
 import { ethereumUtils } from '@/utils';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { RainbowNetworkObjects, getNetworkObject, getSwappableNetworks } from '@/networks';
-import { Network } from '@/networks/types';
+import { RainbowNetworks, getNetworkObj, getSwappableNetworks } from '@/networks';
 
 type SwappableAddresses = Record<Network, EthereumAddress[]>;
 
@@ -29,7 +29,8 @@ export const useSwappableUserAssets = (params: { outputCurrency: SwappableAsset 
     if (hiddenCoinsObj[asset.uniqueId]) return true;
 
     // filter out networks where swaps are not enabled
-    if (getNetworkObject({ chainId: asset.chainId }).features.swaps) return true;
+    const assetNetwork = asset.network;
+    if (getNetworkObj(assetNetwork).features.swaps) return true;
 
     return false;
   });
@@ -59,7 +60,7 @@ export const useSwappableUserAssets = (params: { outputCurrency: SwappableAsset 
   );
 
   const getSwappableAddressesInWallet = useCallback(async () => {
-    const networks = RainbowNetworkObjects.filter(({ features }) => features.swaps).map(({ value }) => value);
+    const networks = RainbowNetworks.filter(({ features }) => features.swaps).map(({ value }) => value);
 
     const walletFilterRequests: Promise<void>[] = [];
     networks.forEach(network => {

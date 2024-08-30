@@ -9,6 +9,7 @@ import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, isENSNFTRecord } from '@/utils';
 import { address as formatAddress } from '@/utils/abbreviations';
+import { Network } from '@/networks/types';
 import { ContactAvatar, showDeleteContactActionSheet } from '@/components/contacts';
 import { Bleed, Box, Inline, Stack, Text } from '@/design-system';
 import MaskedView from '@react-native-masked-view/masked-view';
@@ -19,7 +20,7 @@ import { useTheme } from '@/theme';
 import LinearGradient from 'react-native-linear-gradient';
 import { ButtonPressAnimation } from '@/components/animations';
 import { noop } from 'lodash';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const ACTIONS = {
   ADD_CONTACT: 'add-contact',
@@ -51,8 +52,9 @@ export const LeaderboardRow = memo(function LeaderboardRow({
   const { setClipboard } = useClipboard();
   const { contacts, onRemoveContact } = useContacts();
   const isSelectedWallet = useMemo(() => {
-    const visibleWallet = selectedWallet.addresses?.find((wallet: { visible: boolean }) => wallet.visible);
-    return visibleWallet?.address.toLowerCase() === address?.toLowerCase();
+    const visibleWallet = selectedWallet.addresses.find((wallet: { visible: boolean }) => wallet.visible);
+    ``;
+    return visibleWallet.address.toLowerCase() === address?.toLowerCase();
   }, [selectedWallet.addresses, address]);
 
   const contact = address ? contacts[address.toLowerCase()] : undefined;
@@ -127,7 +129,7 @@ export const LeaderboardRow = memo(function LeaderboardRow({
         setClipboard(address);
       }
       if (address && actionKey === ACTIONS.ETHERSCAN) {
-        ethereumUtils.openAddressInBlockExplorer({ address: address, chainId: ChainId.mainnet });
+        ethereumUtils.openAddressInBlockExplorer(address, ChainId.mainnet);
       }
       if (actionKey === ACTIONS.ADD_CONTACT) {
         navigate(Routes.MODAL_SCREEN, {

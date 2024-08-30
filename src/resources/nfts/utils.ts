@@ -3,9 +3,9 @@ import { gretch } from 'gretchen';
 import { paths } from '@reservoir0x/reservoir-sdk';
 import { RainbowError, logger } from '@/logger';
 import { handleSignificantDecimals } from '@/helpers/utilities';
+import { Network } from '@/helpers';
 import { IS_PROD } from '@/env';
 import { RESERVOIR_API_KEY_DEV, RESERVOIR_API_KEY_PROD } from 'react-native-dotenv';
-import { Network } from '@/networks/types';
 
 const SUPPORTED_NETWORKS = [Network.mainnet, Network.polygon, Network.bsc, Network.arbitrum, Network.optimism, Network.base, Network.zora];
 
@@ -42,7 +42,7 @@ export async function fetchReservoirNFTFloorPrice(nft: UniqueAsset): Promise<str
         return `${roundedDecimal} ${res?.data?.collections?.[0]?.floorAsk?.price?.currency?.symbol}`;
       }
     } catch (e) {
-      logger.error(new RainbowError(`[nfts]: Error fetching NFT floor price from Reservoir: ${e}`));
+      logger.error(new RainbowError(`Error fetching NFT floor price from Reservoir: ${e}`));
     }
   }
   return undefined;

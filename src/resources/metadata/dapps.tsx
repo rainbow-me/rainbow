@@ -64,7 +64,7 @@ export function useDapps(config?: UseQueryOptions<Dapp[]>): { dapps: Dapp[] } {
             },
           }));
       } catch (e: any) {
-        logger.error(new RainbowError('[dapps]: Failed to fetch dApps'), { message: e.message });
+        logger.error(new RainbowError('Failed to fetch dApps'), { message: e.message });
         return [];
       }
     },

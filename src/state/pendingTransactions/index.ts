@@ -2,8 +2,8 @@ import { RainbowTransaction, NewTransaction } from '@/entities/transactions';
 import { createStore } from '../internal/createStore';
 import create from 'zustand';
 import { parseNewTransaction } from '@/parsers/transactions';
+import { Network } from '@/networks/types';
 import { nonceStore } from '../nonces';
-import { ChainId } from '@/networks/types';
 
 export interface PendingTransactionsState {
   pendingTransactions: Record<string, RainbowTransaction[]>;
@@ -35,7 +35,7 @@ export const pendingTransactionsStore = createStore<PendingTransactionsState>(
           ...currentPendingTransactions,
           [address]: [
             ...addressPendingTransactions.filter(tx => {
-              if (tx.chainId === pendingTransaction.chainId) {
+              if (tx.network === pendingTransaction.network) {
                 return tx.nonce !== pendingTransaction.nonce;
               }
               return true;
@@ -70,11 +70,11 @@ export const usePendingTransactionsStore = create(pendingTransactionsStore);
 
 export const addNewTransaction = ({
   address,
-  chainId,
+  network,
   transaction,
 }: {
   address: string;
-  chainId: ChainId;
+  network: Network;
   transaction: NewTransaction;
 }) => {
   const { addPendingTransaction } = pendingTransactionsStore.getState();
@@ -83,18 +83,18 @@ export const addNewTransaction = ({
   addPendingTransaction({ address, pendingTransaction: parsedTransaction });
   setNonce({
     address,
-    chainId,
+    network,
     currentNonce: transaction.nonce,
   });
 };
 
 export const updateTransaction = ({
   address,
-  chainId,
+  network,
   transaction,
 }: {
   address: string;
-  chainId: ChainId;
+  network: Network;
   transaction: NewTransaction;
 }) => {
   const { updatePendingTransaction } = pendingTransactionsStore.getState();
@@ -103,7 +103,7 @@ export const updateTransaction = ({
   updatePendingTransaction({ address, pendingTransaction: parsedTransaction });
   setNonce({
     address,
-    chainId,
+    network,
     currentNonce: transaction.nonce,
   });
 };

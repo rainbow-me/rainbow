@@ -1,6 +1,6 @@
+import { Network } from '@/helpers/networkTypes';
 import { NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
 import { TokenColors } from '@/graphql/__generated__/metadata';
-import { Network } from '@/networks/types';
 
 export type AddysAccountAssetsResponse = {
   meta: AddysAccountAssetsMeta;
@@ -54,7 +54,7 @@ export interface ParsedAsset {
   address: string;
   color?: string;
   colors?: TokenColors;
-  chainId: number;
+  chainId?: number;
   chainName?: string;
   decimals: number;
   icon_url?: string;

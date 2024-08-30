@@ -6,14 +6,15 @@ import { analytics } from '@/analytics';
 import { ENSRegistrationRecords, NewTransaction, TransactionGasParamAmounts } from '@/entities';
 import { estimateENSTransactionGasLimit, formatRecordsForTransaction } from '@/handlers/ens';
 import { toHex } from '@/handlers/web3';
+import { NetworkTypes } from '@/helpers';
 import { ENSRegistrationTransactionType, getENSExecutionDetails, REGISTRATION_MODES } from '@/helpers/ens';
 import * as i18n from '@/languages';
 import { saveCommitRegistrationParameters, updateTransactionRegistrationParameters } from '@/redux/ensRegistration';
 import store from '@/redux/store';
-import { logger, RainbowError } from '@/logger';
+import logger from '@/utils/logger';
 import { parseGasParamAmounts } from '@/parsers';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { ChainId, Network } from '@/networks/types';
+import { Network } from '@/networks/types';
 import {
   createRegisterENSRap,
   createRenewENSRap,
@@ -24,6 +25,7 @@ import {
 } from '../registerENS';
 import { Logger } from '@ethersproject/logger';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export interface ENSRapActionResponse {
   baseNonce?: number | null;
@@ -306,23 +308,24 @@ const ensAction = async (
   type: ENSRegistrationTransactionType,
   baseNonce?: number
 ): Promise<number | undefined> => {
-  logger.debug(`[raps/ens]: [${actionName}] base nonce ${baseNonce} index: ${index}`);
+  logger.log(`[${actionName}] base nonce`, baseNonce, 'index:', index);
   const { dispatch } = store;
   const { accountAddress: ownerAddress } = store.getState().settings;
 
   const { name, duration, rentPrice, records, salt, toAddress, mode } = parameters;
 
-  logger.debug(`[raps/ens]: [${actionName}] rap for ${name}`);
+  logger.log(`[${actionName}] rap for`, name);
 
   let gasLimit;
   const ensRegistrationRecords = formatRecordsForTransaction(records);
   try {
-    logger.debug(`[raps/ens]: [${actionName}] estimate gas`, {
-      data: {
+    logger.sentry(
+      `[${actionName}] estimate gas`,
+      {
         ...parameters,
-        type,
       },
-    });
+      type
+    );
 
     // when registering the ENS if we try to estimate gas for setting records
     // (MULTICALL || SET_TEXT) it's going to fail if we put the account address
@@ -343,7 +346,8 @@ const ensAction = async (
       type,
     });
   } catch (e) {
-    logger.error(new RainbowError(`[raps/ens]: [${actionName}] Error estimating gas: ${e}`));
+    logger.sentry(`[${actionName}] Error estimating gas`);
+    captureException(e);
     throw e;
   }
   let tx;
@@ -354,11 +358,8 @@ const ensAction = async (
     maxFeePerGas = gasParams.maxFeePerGas;
     maxPriorityFeePerGas = gasParams.maxPriorityFeePerGas;
 
-    logger.debug(`[raps/ens]: [${actionName}] about to ${type}`, {
-      data: {
-        ...parameters,
-        type,
-      },
+    logger.sentry(`[${actionName}] about to ${type}`, {
+      ...parameters,
     });
     const nonce = baseNonce ? baseNonce + index : null;
 
@@ -456,11 +457,12 @@ const ensAction = async (
         });
     }
   } catch (e) {
-    logger.error(new RainbowError(`[raps/ens]: [${actionName}] Error executing: ${e}`));
+    logger.sentry(`[${actionName}] Error executing`);
+    captureException(e);
     throw e;
   }
 
-  logger.debug(`[raps/ens]: [${actionName}] response`, { data: tx });
+  logger.log(`[${actionName}] response`, tx);
 
   const newTransaction: NewTransaction = {
     chainId: ChainId.mainnet,
@@ -479,16 +481,15 @@ const ensAction = async (
     },
     to: tx?.to,
     value: toHex(tx.value),
-    network: Network.mainnet,
+    network: NetworkTypes.mainnet,
     status: 'pending',
   };
-
-  logger.debug(`[raps/ens]: [${actionName}] adding new txn`, { data: newTransaction });
+  logger.log(`[${actionName}] adding new txn`, newTransaction);
 
   addNewTransaction({
     address: ownerAddress,
     transaction: newTransaction,
-    chainId: ChainId.mainnet,
+    network: Network.mainnet,
   });
   return tx?.nonce;
 };
@@ -669,11 +670,11 @@ const executeAction = async (
   rapName: string,
   baseNonce?: number
 ): Promise<ENSRapActionResponse> => {
-  logger.debug(`[raps/ens]: [${rapName}] 1 INNER index: ${index}`);
+  logger.log('[1 INNER] index', index);
   const { type, parameters } = action;
   let nonce;
   try {
-    logger.debug(`[raps/ens]: [${rapName}] 2 INNER executing type: ${type}`);
+    logger.log('[2 INNER] executing type', type);
     const actionPromise = findENSActionByType(type);
     nonce = await performanceTracking.getState().executeFn({
       fn: actionPromise,
@@ -682,7 +683,9 @@ const executeAction = async (
     })(wallet, rap, index, parameters as RapENSActionParameters, baseNonce);
     return { baseNonce: nonce, errorMessage: null };
   } catch (error: any) {
-    logger.error(new RainbowError(`[raps/ens]: [${rapName}] Error executing action: ${action} ${error}`));
+    logger.debug('Rap blew up', error);
+    logger.sentry('[3 INNER] error running action, code:', error?.code);
+    captureException(error);
     analytics.track('Rap failed', {
       category: 'raps',
       failed_action: type,
@@ -691,7 +694,7 @@ const executeAction = async (
     // If the first action failed, return an error message
     if (index === 0) {
       const errorMessage = parseError(error);
-      logger.debug(`[raps/ens]: [${rapName}] 4 INNER displaying error message ${errorMessage}`);
+      logger.log('[4 INNER] displaying error message', errorMessage);
       return { baseNonce: null, errorMessage };
     }
     return { baseNonce: null, errorMessage: null };
@@ -719,7 +722,7 @@ export const executeENSRap = async (
 
   let nonce = parameters?.nonce;
 
-  logger.debug(`[raps/ens]: [${rapName}] actions`, { actions });
+  logger.log('[common - executing rap]: actions', actions);
   if (actions.length) {
     const firstAction = actions[0];
     const { baseNonce, errorMessage } = await executeAction(firstAction, wallet, rap, 0, rapName, nonce);
@@ -741,8 +744,7 @@ export const executeENSRap = async (
     category: 'raps',
     label: rapName,
   });
-
-  logger.debug(`[raps/ens]: [${rapName}] finished execute rap function`);
+  logger.log('[common - executing rap] finished execute rap function');
 
   return { nonce };
 };

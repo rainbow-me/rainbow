@@ -2,10 +2,10 @@ import { Signer } from '@ethersproject/abstract-signer';
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract, PopulatedTransaction } from '@ethersproject/contracts';
 import { parseUnits } from '@ethersproject/units';
-import { getProvider } from '@/handlers/web3';
+import { getProviderForNetwork } from '@/handlers/web3';
 import { Address, erc20Abi, erc721Abi } from 'viem';
 
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/__swaps__/types/chains';
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
 import { NewTransaction } from '@/entities/transactions';
 import { TxHash } from '@/resources/transactions/types';
@@ -35,12 +35,13 @@ export const getAssetRawAllowance = async ({
   chainId: ChainId;
 }) => {
   try {
-    const provider = getProvider({ chainId });
+    // TODO: MARK - Replace this once we migrate network => chainId
+    const provider = getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
     const tokenContract = new Contract(assetAddress, erc20Abi, provider);
     const allowance = await tokenContract.allowance(owner, spender);
     return allowance.toString();
   } catch (error) {
-    logger.error(new RainbowError('[raps/unlock]: error'), {
+    logger.error(new RainbowError('getRawAllowance: error'), {
       message: (error as Error)?.message,
     });
     return null;
@@ -86,14 +87,15 @@ export const estimateApprove = async ({
   chainId: ChainId;
 }): Promise<string> => {
   try {
-    const provider = getProvider({ chainId });
+    // TODO: MARK - Replace this once we migrate network => chainId
+    const provider = getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
     const tokenContract = new Contract(tokenAddress, erc20Abi, provider);
     const gasLimit = await tokenContract.estimateGas.approve(spender, MaxUint256, {
       from: owner,
     });
     return gasLimit ? gasLimit.toString() : `${gasUnits.basic_approval}`;
   } catch (error) {
-    logger.error(new RainbowError('[raps/unlock]: error estimateApprove'), {
+    logger.error(new RainbowError('unlock: error estimateApprove'), {
       message: (error as Error)?.message,
     });
     return `${gasUnits.basic_approval}`;
@@ -112,14 +114,15 @@ export const populateApprove = async ({
   chainId: ChainId;
 }): Promise<PopulatedTransaction | null> => {
   try {
-    const provider = getProvider({ chainId });
+    // TODO: MARK - Replace this once we migrate network => chainId
+    const provider = getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
     const tokenContract = new Contract(tokenAddress, erc20Abi, provider);
     const approveTransaction = await tokenContract.populateTransaction.approve(spender, MaxUint256, {
       from: owner,
     });
     return approveTransaction;
   } catch (error) {
-    logger.error(new RainbowError('[raps/unlock]: error populateApprove'), {
+    logger.error(new RainbowError(' error populateApprove'), {
       message: (error as Error)?.message,
     });
     return null;
@@ -138,14 +141,15 @@ export const estimateERC721Approval = async ({
   chainId: ChainId;
 }): Promise<string> => {
   try {
-    const provider = getProvider({ chainId });
+    // TODO: MARK - Replace this once we migrate network => chainId
+    const provider = getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
     const tokenContract = new Contract(tokenAddress, erc721Abi, provider);
     const gasLimit = await tokenContract.estimateGas.setApprovalForAll(spender, false, {
       from: owner,
     });
     return gasLimit ? gasLimit.toString() : `${gasUnits.basic_approval}`;
   } catch (error) {
-    logger.error(new RainbowError('[raps/unlock]: error estimateApproval'), {
+    logger.error(new RainbowError('estimateERC721Approval: error estimateApproval'), {
       message: (error as Error)?.message,
     });
     return `${gasUnits.basic_approval}`;
@@ -164,7 +168,8 @@ export const populateRevokeApproval = async ({
   type: 'erc20' | 'nft';
 }): Promise<PopulatedTransaction> => {
   if (!tokenAddress || !spenderAddress || !chainId) return {};
-  const provider = getProvider({ chainId });
+  // TODO: MARK - Replace this once we migrate network => chainId
+  const provider = getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
   const tokenContract = new Contract(tokenAddress, erc721Abi, provider);
   if (type === 'erc20') {
     const amountToApprove = parseUnits('0', 'ether');
@@ -229,7 +234,7 @@ export const unlock = async ({
       chainId,
     });
   } catch (e) {
-    logger.error(new RainbowError('[raps/unlock]: error estimateApprove'), {
+    logger.error(new RainbowError('unlock: error estimateApprove'), {
       message: (e as Error)?.message,
     });
     throw e;
@@ -255,13 +260,13 @@ export const unlock = async ({
       chainId,
     });
   } catch (e) {
-    logger.error(new RainbowError('[raps/unlock]: error executeApprove'), {
+    logger.error(new RainbowError('unlock: error executeApprove'), {
       message: (e as Error)?.message,
     });
     throw e;
   }
 
-  if (!approval) throw new RainbowError('[raps/unlock]: error executeApprove');
+  if (!approval) throw new RainbowError('unlock: error executeApprove');
 
   const transaction = {
     asset: {
@@ -285,9 +290,12 @@ export const unlock = async ({
     ...gasParams,
   } satisfies NewTransaction;
 
+  // TODO: MARK - Replace this once we migrate network => chainId
+  const network = ethereumUtils.getNetworkFromChainId(approval.chainId);
+
   addNewTransaction({
     address: parameters.fromAddress as Address,
-    chainId: approval.chainId,
+    network,
     transaction,
   });
 

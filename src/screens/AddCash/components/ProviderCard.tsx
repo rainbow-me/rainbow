@@ -5,18 +5,20 @@ import chroma from 'chroma-js';
 
 import { IS_IOS } from '@/env';
 import { Box, Text, Inline, Bleed, useBackgroundColor } from '@/design-system';
+import { Network } from '@/helpers/networkTypes';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 
 import { Ramp as RampLogo } from '@/components/icons/svg/Ramp';
+import { Ratio as RatioLogo } from '@/components/icons/svg/Ratio';
 import { Coinbase as CoinbaseLogo } from '@/components/icons/svg/Coinbase';
 import { Moonpay as MoonpayLogo } from '@/components/icons/svg/Moonpay';
 
 import { FiatProviderName } from '@/entities/f2c';
-import { convertAPINetworkToInternalChainIds } from '@/screens/AddCash/utils';
+import { convertAPINetworkToInternalNetwork } from '@/screens/AddCash/utils';
 import { ProviderConfig, CalloutType, PaymentMethod } from '@/screens/AddCash/types';
 import * as i18n from '@/languages';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
-import { ChainId } from '@/networks/types';
+import { ethereumUtils } from '@/utils';
 
 type PaymentMethodConfig = {
   name: string;
@@ -79,22 +81,26 @@ function getPaymentMethodConfigs(paymentMethods: { type: PaymentMethod }[]) {
   return methods;
 }
 
-function NetworkIcons({ chainIds }: { chainIds?: ChainId[] }) {
+function NetworkIcons({ networks }: { networks: Network[] }) {
   return (
     <Box flexDirection="row" alignItems="center">
-      {chainIds?.map((chainId, index) => {
+      {networks.map((network, index) => {
         return (
           <Box
-            key={`availableNetwork-${chainId}`}
+            key={`availableNetwork-${network}`}
             marginTop={{ custom: -2 }}
             marginLeft={{ custom: index > 0 ? -6 : 0 }}
             style={{
               position: 'relative',
-              zIndex: chainIds.length - index,
+              zIndex: networks.length - index,
               borderRadius: 30,
             }}
           >
-            {chainId !== ChainId.mainnet ? <ChainBadge chainId={chainId} position="relative" size="small" /> : <EthCoinIcon size={20} />}
+            {network !== Network.mainnet ? (
+              <ChainBadge chainId={ethereumUtils.getChainIdFromNetwork(network)} position="relative" size="small" />
+            ) : (
+              <EthCoinIcon size={20} />
+            )}
           </Box>
         );
       })}
@@ -227,7 +233,7 @@ export function ProviderCard({ config }: { config: ProviderConfig }) {
                     <Box flexDirection="row" alignItems="center" paddingTop="8px">
                       <NetworkIcons
                         /* @ts-ignore */
-                        chainIds={callout.networks.map(convertAPINetworkToInternalChainIds).filter(Boolean)}
+                        networks={callout.networks.map(convertAPINetworkToInternalNetwork).filter(Boolean)}
                       />
                     </Box>
                   );

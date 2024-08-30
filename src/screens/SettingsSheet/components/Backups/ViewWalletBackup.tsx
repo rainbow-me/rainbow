@@ -201,7 +201,7 @@ const ViewWalletBackup = () => {
         });
       } catch (e) {
         Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
-        logger.error(new RainbowError(`[ViewWalletBackup]: Logging into Google Drive failed`), { error: e });
+        logger.error(e as RainbowError);
       }
     } else {
       const isAvailable = await isCloudBackupAvailable();
@@ -281,9 +281,10 @@ const ViewWalletBackup = () => {
                       try {
                         await backupUserDataIntoCloud({ wallets: newWallets });
                       } catch (e) {
-                        logger.error(new RainbowError(`[ViewWalletBackup]: Updating wallet userdata failed after new account creation`), {
-                          error: e,
+                        logger.error(e as RainbowError, {
+                          description: 'Updating wallet userdata failed after new account creation',
                         });
+                        captureException(e);
                         throw e;
                       }
                     }
@@ -300,9 +301,10 @@ const ViewWalletBackup = () => {
                     await initializeWallet();
                   }
                 } catch (e) {
-                  logger.error(new RainbowError(`[ViewWalletBackup]: Error while trying to add account`), {
-                    error: e,
+                  logger.error(e as RainbowError, {
+                    description: 'Error while trying to add account',
                   });
+                  captureException(e);
                   if (isDamaged) {
                     setTimeout(() => {
                       showWalletErrorAlert();
@@ -321,8 +323,8 @@ const ViewWalletBackup = () => {
         }, 50);
       });
     } catch (e) {
-      logger.error(new RainbowError(`[ViewWalletBackup]: Error while trying to add account`), {
-        error: e,
+      logger.error(e as RainbowError, {
+        description: 'Error while trying to add account',
       });
     }
   }, [creatingWallet, dispatch, isDamaged, navigate, initializeWallet, profilesEnabled, wallet]);

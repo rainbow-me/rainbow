@@ -27,7 +27,7 @@ const QRCode = ({
     const dots = [];
     const matrix = generateMatrix(value, ecl);
     const cellSize = size / matrix.length;
-    const qrList = [
+    let qrList = [
       { x: 0, y: 0 },
       { x: 1, y: 0 },
       { x: 0, y: 1 },

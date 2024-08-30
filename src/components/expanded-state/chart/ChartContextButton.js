@@ -46,12 +46,12 @@ export default function ChartContextButton({ asset, color }) {
         ? []
         : [
             `🔍 ${emojiSpacing}${lang.t('wallet.action.view_on', {
-              blockExplorerName: startCase(ethereumUtils.getBlockExplorer({ chainId: asset?.chainId })),
+              blockExplorerName: startCase(ethereumUtils.getBlockExplorer(ethereumUtils.getChainIdFromNetwork(asset?.network))),
             })}`,
           ]),
       ...(ios ? [lang.t('wallet.action.cancel')] : []),
     ],
-    [asset?.chainId, asset?.isNativeAsset, currentAction]
+    [asset?.isNativeAsset, asset?.network, currentAction]
   );
 
   return <ContextCircleButton flex={0} onPressActionSheet={handleActionSheetPress} options={options} tintColor={color} />;

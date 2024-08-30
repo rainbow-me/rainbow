@@ -9,6 +9,7 @@ import saveToCameraRoll from './saveToCameraRoll';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Bleed, Column, Columns, Heading, Inline, Inset, Space, Stack, Text } from '@/design-system';
 import { UniqueAsset } from '@/entities';
+import { Network } from '@/helpers';
 import { useClipboard, useDimensions, useHiddenTokens, useShowcaseTokens } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation/Navigation';
@@ -22,7 +23,6 @@ import { refreshNFTContractMetadata, reportNFT } from '@/resources/nfts/simpleha
 import { ContextCircleButton } from '@/components/context-menu';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { MenuActionConfig, MenuConfig } from 'react-native-ios-context-menu';
-import { ChainId } from '@/networks/types';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
@@ -36,7 +36,7 @@ const AssetActionsEnum = {
   report: 'report',
 } as const;
 
-const getAssetActions = ({ chainId }: { chainId: ChainId }) =>
+const getAssetActions = (network: Network) =>
   ({
     [AssetActionsEnum.copyTokenID]: {
       actionKey: AssetActionsEnum.copyTokenID,
@@ -57,7 +57,7 @@ const getAssetActions = ({ chainId }: { chainId: ChainId }) =>
     [AssetActionsEnum.etherscan]: {
       actionKey: AssetActionsEnum.etherscan,
       actionTitle: lang.t('expanded_state.unique_expanded.view_on_block_explorer', {
-        blockExplorerName: startCase(ethereumUtils.getBlockExplorer({ chainId })),
+        blockExplorerName: startCase(ethereumUtils.getBlockExplorer(ethereumUtils.getChainIdFromNetwork(network))),
       }),
       icon: {
         iconType: 'SYSTEM',
@@ -263,7 +263,7 @@ const UniqueTokenExpandedStateHeader = ({
 
   const isPhotoDownloadAvailable = !isSVG && !isENS;
   const assetMenuConfig: MenuConfig = useMemo(() => {
-    const AssetActions = getAssetActions({ chainId: asset.chainId });
+    const AssetActions = getAssetActions(asset.network);
 
     return {
       menuItems: [
@@ -309,7 +309,7 @@ const UniqueTokenExpandedStateHeader = ({
         {
           ...AssetActions[AssetActionsEnum.etherscan],
         },
-        ...(asset.chainId === ChainId.mainnet
+        ...(asset.network === Network.mainnet
           ? [
               {
                 menuTitle: lang.t('expanded_state.unique_expanded.view_on_marketplace'),
@@ -320,7 +320,7 @@ const UniqueTokenExpandedStateHeader = ({
       ],
       menuTitle: '',
     };
-  }, [asset.id, asset.chainId, isModificationActionsEnabled, isHiddenAsset, isPhotoDownloadAvailable, isSupportedOnRainbowWeb]);
+  }, [asset.id, asset?.network, isPhotoDownloadAvailable, isHiddenAsset, isModificationActionsEnabled, isSupportedOnRainbowWeb]);
 
   const handlePressFamilyMenuItem = useCallback(
     // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly

@@ -1,12 +1,13 @@
 import { EthereumAddress } from '@/entities';
 import { arcClient } from '@/graphql';
+import { getNetworkObj } from '@/networks';
 import { Navigation } from '@/navigation';
+import { Network } from '@/networks/types';
 import Routes from '@/navigation/routesNames';
 import { logger } from '@/logger';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import * as lang from '@/languages';
 import { BigNumberish } from '@ethersproject/bignumber';
-import { ChainId } from '@/networks/types';
 
 const showAlert = () => {
   Alert.alert(
@@ -16,14 +17,14 @@ const showAlert = () => {
     { cancelable: false }
   );
 };
-
-export const navigateToMintCollection = async (contractAddress: EthereumAddress, pricePerMint: BigNumberish, chainId: ChainId) => {
-  logger.debug('[mints]: Navigating to Mint Collection', {
+export const navigateToMintCollection = async (contractAddress: EthereumAddress, pricePerMint: BigNumberish, network: Network) => {
+  logger.debug('Mints: Navigating to Mint Collection', {
     contractAddress,
-    chainId,
+    network,
   });
 
   try {
+    const chainId = getNetworkObj(network).id;
     const res = await arcClient.getReservoirCollection({
       contractAddress,
       chainId,
@@ -34,13 +35,13 @@ export const navigateToMintCollection = async (contractAddress: EthereumAddress,
         pricePerMint,
       });
     } else {
-      logger.warn('[mints]: No collection found', { contractAddress, chainId });
+      logger.warn('Mints: No collection found', { contractAddress, network });
       showAlert();
     }
   } catch (e) {
-    logger.warn(`[mints]: navigateToMintCollection error`, {
+    logger.warn('Mints: navigateToMintCollection error', {
       contractAddress,
-      chainId,
+      network,
       error: e,
     });
     showAlert();

@@ -98,9 +98,8 @@ export default function useChartThrottledPoints({
     updateChartType,
   } = usePriceChart({
     address: asset.address,
-    chainId: asset.chainId,
+    network: asset.network,
     mainnetAddress: asset?.mainnet_address || asset?.mainnetAddress,
-    currency: nativeCurrency,
   });
   const [throttledPoints, setThrottledPoints] = useState(() => traverseData({ nativePoints: [], points: [] }, chart));
 

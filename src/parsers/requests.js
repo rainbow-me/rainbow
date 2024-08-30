@@ -43,11 +43,7 @@ export const getRequestDisplayDetails = (payload, nativeCurrency, chainId) => {
         message = toUtf8String(message);
       }
     } catch (error) {
-      logger.warn(
-        '[parsers/requests]: WC v2: getting display details, unable to decode hex message to UTF8 string',
-        { error },
-        logger.DebugContext.walletconnect
-      );
+      logger.debug('WC v2: getting display details, unable to decode hex message to UTF8 string', {}, logger.DebugContext.walletconnect);
     }
     return getMessageDisplayDetails(message, timestampInMs);
   }
@@ -77,7 +73,7 @@ const getMessageDisplayDetails = (message, timestampInMs) => ({
 
 const getTransactionDisplayDetails = (transaction, nativeCurrency, timestampInMs, chainId) => {
   const tokenTransferHash = smartContractMethods.token_transfer.hash;
-  const nativeAsset = ethereumUtils.getNativeAssetForNetwork({ chainId });
+  const nativeAsset = ethereumUtils.getNativeAssetForNetwork(chainId);
   if (transaction.data === '0x') {
     const value = fromWei(convertHexToString(transaction.value));
     const priceUnit = nativeAsset?.price?.value ?? 0;

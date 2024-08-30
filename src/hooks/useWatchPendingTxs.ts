@@ -1,30 +1,26 @@
 import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
-import { transactionFetchQuery } from '@/resources/transactions/transaction';
-import { RainbowError, logger } from '@/logger';
-import { getProvider } from '@/handlers/web3';
-import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
-import { RainbowNetworkObjects } from '@/networks';
-import { queryClient } from '@/react-query/queryClient';
+import { MinedTransaction, RainbowTransaction } from '@/entities/transactions/transaction';
 import { getTransactionFlashbotStatus } from '@/handlers/transactions';
-import { ChainId } from '@/networks/types';
+import { getIsHardhatConnected, getProviderForNetwork } from '@/handlers/web3';
+import { RainbowError, logger } from '@/logger';
+import { RainbowNetworks } from '@/networks';
+import { Network } from '@/networks/types';
+import { queryClient } from '@/react-query/queryClient';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { invalidateAddressNftsQueries } from '@/resources/nfts';
+import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
+import { transactionFetchQuery } from '@/resources/transactions/transaction';
 import { useNonceStore } from '@/state/nonces';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { useCallback, useMemo } from 'react';
 import { Address } from 'viem';
-import { staleBalancesStore } from '@/state/staleBalances';
-import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 import useAccountSettings from './useAccountSettings';
-import { RainbowTransaction } from '@/entities';
-import { MinedTransaction } from '@/entities/transactions/transaction';
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
   const { storePendingTransactions, setPendingTransactions } = usePendingTransactionsStore(state => ({
     storePendingTransactions: state.pendingTransactions,
     setPendingTransactions: state.setPendingTransactions,
   }));
-  const { connectedToHardhat } = useConnectedToHardhatStore();
 
   const setNonce = useNonceStore(state => state.setNonce);
 
@@ -35,6 +31,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
   const refreshAssets = useCallback(
     (_: RainbowTransaction) => {
       // NOTE: We have two user assets stores right now, so let's invalidate both queries and trigger a refetch
+      const connectedToHardhat = getIsHardhatConnected();
       queryClient.invalidateQueries(
         userAssetsQueryKey({
           address,
@@ -51,7 +48,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       );
       invalidateAddressNftsQueries(address);
     },
-    [address, connectedToHardhat, nativeCurrency]
+    [address, nativeCurrency]
   );
 
   const processFlashbotsTransaction = useCallback(async (tx: RainbowTransaction): Promise<RainbowTransaction> => {
@@ -74,7 +71,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
     async (tx: RainbowTransaction) => {
       const transaction = await transactionFetchQuery({
         hash: tx.hash!,
-        chainId: tx.chainId,
+        network: tx.network,
         address,
         currency: nativeCurrency,
       });
@@ -91,7 +88,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
     async (tx: RainbowTransaction) => {
       let updatedTransaction: RainbowTransaction = { ...tx };
       try {
-        if (tx.chainId && tx.hash && address) {
+        if (tx.network && tx.hash && address) {
           updatedTransaction = await processSupportedNetworkTransaction(updatedTransaction);
           // if flashbots tx and no blockNumber, check if it failed
           if (!(tx as any).blockNumber && tx.flashbots) {
@@ -100,9 +97,10 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         } else {
           throw new Error('Pending transaction missing chain id');
         }
-      } catch (e) {
-        logger.error(new RainbowError(`[useWatchPendingTransaction]: Failed to watch transaction`), {
-          message: (e as Error)?.message || 'Unknown error',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (e: any) {
+        logger.error(new RainbowError(`useWatchPendingTransaction: Failed to watch transaction`), {
+          message: e.message,
         });
       }
 
@@ -117,46 +115,46 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
   const processNonces = useCallback(
     (txs: RainbowTransaction[]) => {
       const userTxs = txs.filter(tx => address?.toLowerCase() === tx.from?.toLowerCase());
-      const chainIds = [
+      const networks = [
         ...new Set(
           userTxs.reduce((acc, tx) => {
-            acc.add(tx.chainId);
+            acc.add(tx.network);
             return acc;
-          }, new Set<ChainId>())
+          }, new Set<Network>())
         ),
       ];
       let flashbotsTxFailed = false;
       const highestNoncePerChainId = userTxs.reduce((acc, tx) => {
         // if tx is not on mainnet, we don't care about the nonce
-        if (tx.chainId !== ChainId.mainnet) {
-          acc.set(tx.chainId, tx.nonce);
+        if (tx.network !== Network.mainnet) {
+          acc.set(tx.network, tx.nonce);
           return acc;
         }
         // if tx is flashbots and failed, we want to use the lowest nonce
         if (tx.flashbots && (tx as any)?.flashbotsStatus === 'FAILED' && tx?.nonce) {
           // if we already have a failed flashbots tx, we want to use the lowest nonce
-          if (flashbotsTxFailed && tx.nonce < acc.get(tx.chainId)) {
-            acc.set(tx.chainId, tx.nonce);
+          if (flashbotsTxFailed && tx.nonce < acc.get(tx.network)) {
+            acc.set(tx.network, tx.nonce);
           } else {
-            acc.set(tx.chainId, tx.nonce);
+            acc.set(tx.network, tx.nonce);
             flashbotsTxFailed = true;
           }
           // if tx succeeded, we want to use the highest nonce
-        } else if (!flashbotsTxFailed && tx?.nonce && tx.nonce > acc.get(tx.chainId)) {
-          acc.set(tx.chainId, tx.nonce);
+        } else if (!flashbotsTxFailed && tx?.nonce && tx.nonce > acc.get(tx.network)) {
+          acc.set(tx.network, tx.nonce);
         }
         return acc;
       }, new Map());
 
-      chainIds.map(async chainId => {
-        const provider = getProvider({ chainId });
+      networks.map(async network => {
+        const provider = getProviderForNetwork(network);
         const providerTransactionCount = await provider.getTransactionCount(address, 'latest');
         const currentProviderNonce = providerTransactionCount - 1;
-        const currentNonceForChainId = highestNoncePerChainId.get(chainId) - 1;
+        const currentNonceForChainId = highestNoncePerChainId.get(network) - 1;
 
         setNonce({
           address,
-          chainId,
+          network: network,
           currentNonce: currentProviderNonce > currentNonceForChainId ? currentProviderNonce : currentNonceForChainId,
           latestConfirmedNonce: currentProviderNonce,
         });
@@ -189,23 +187,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
     );
 
     if (minedTransactions.length) {
-      const chainIds = RainbowNetworkObjects.filter(networkObject => networkObject.enabled && networkObject.networkType !== 'testnet').map(
-        networkObject => networkObject.id
-      );
-      minedTransactions.forEach(tx => {
-        if (tx.changes?.length) {
-          tx.changes?.forEach(change => {
-            processStaleAsset({ asset: change?.asset, address, transactionHash: tx?.hash });
-          });
-        } else if (tx.asset) {
-          processStaleAsset({ address, asset: tx.asset, transactionHash: tx?.hash });
-        }
-      });
-
-      queryClient.refetchQueries({
-        queryKey: userAssetsQueryKey({ address, currency: nativeCurrency, connectedToHardhat }),
-      });
-
+      const chainIds = RainbowNetworks.filter(network => network.enabled && network.networkType !== 'testnet').map(network => network.id);
       await queryClient.refetchQueries({
         queryKey: consolidatedTransactionsQueryKey({
           address,
@@ -229,31 +211,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       address,
       pendingTransactions: newPendingTransactions,
     });
-  }, [address, connectedToHardhat, nativeCurrency, pendingTransactions, processNonces, processPendingTransaction, setPendingTransactions]);
+  }, [address, nativeCurrency, pendingTransactions, processNonces, processPendingTransaction, setPendingTransactions]);
 
   return { watchPendingTransactions };
 };
-
-function processStaleAsset({
-  asset,
-  address,
-  transactionHash,
-}: {
-  asset: RainbowTransaction['asset'];
-  address: string;
-  transactionHash: string;
-}) {
-  const { addStaleBalance } = staleBalancesStore.getState();
-  const chainId = asset?.chainId;
-  if (asset && typeof chainId === 'number') {
-    const changedAssetAddress = asset?.address as Address;
-    addStaleBalance({
-      address,
-      chainId,
-      info: {
-        address: changedAssetAddress,
-        transactionHash,
-      },
-    });
-  }
-}

@@ -1,4 +1,5 @@
 import { AddressZero } from '@ethersproject/constants';
+import isValidDomain from 'is-valid-domain';
 
 import { ETH_ADDRESS, SupportedCurrencyKey } from '@/references';
 import {
@@ -12,7 +13,7 @@ import {
   ZerionAsset,
   ZerionAssetPrice,
 } from '@/__swaps__/types/assets';
-import { ChainId, ChainName } from '@/networks/types';
+import { ChainId, ChainName } from '@/__swaps__/types/chains';
 
 import * as i18n from '@/languages';
 import { SearchAsset } from '@/__swaps__/types/search';

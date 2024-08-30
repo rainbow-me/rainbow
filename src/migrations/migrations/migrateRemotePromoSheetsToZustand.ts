@@ -27,7 +27,7 @@ export function migrateRemotePromoSheetsToZustand(): Migration {
           });
         }
       } catch (error) {
-        logger.error(new RainbowError(`[migrations]: Failed to migrate remote promo sheets to zustand`), {
+        logger.error(new RainbowError(`Failed to migrate remote promo sheets to zustand`), {
           data: error,
         });
       }

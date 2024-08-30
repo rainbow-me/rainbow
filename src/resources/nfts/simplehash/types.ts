@@ -1,4 +1,4 @@
-import { Network } from '@/networks/types';
+import { Network } from '@/helpers';
 
 /**
  * @see https://docs.simplehash.com/reference/sale-model

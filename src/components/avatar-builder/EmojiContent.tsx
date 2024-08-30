@@ -18,10 +18,10 @@ const EmojiContent = ({ data, columns, onEmojiSelect, cellSize, fontSize }: Prop
   const { colors } = useTheme();
 
   const categoryEmojis = useMemo(() => {
-    const categoryEmojis = [];
+    let categoryEmojis = [];
     for (let i = 0; i < data.length; i += columns) {
-      const rowContent = [];
-      const touchableNet = [];
+      let rowContent = [];
+      let touchableNet = [];
       for (let j = 0; j < columns; j++) {
         if (i + j < data.length) {
           rowContent.push(charFromEmojiObject(data[i + j].emoji));

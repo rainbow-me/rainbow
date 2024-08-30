@@ -31,21 +31,21 @@ const timeBetweenPromoSheets = () => {
 };
 
 export const checkForCampaign = async () => {
-  logger.debug('[checkForCampaign]: Running Checks');
+  logger.debug('Campaigns: Running Checks');
   if (timeBetweenPromoSheets() < TIMEOUT_BETWEEN_PROMOS) {
-    logger.debug('[checkForCampaign]: Time between promos has not exceeded timeout');
+    logger.debug('Campaigns: Time between promos has not exceeded timeout');
     return;
   }
 
   const isShown = remotePromoSheetsStore.getState().isShown;
   if (isShown) {
-    logger.debug('[checkForCampaign]: Another remote sheet is currently shown');
+    logger.debug('Campaigns: Another remote sheet is currently shown');
     return;
   }
 
   const isReturningUser = device.get(['isReturningUser']);
   if (!isReturningUser) {
-    logger.debug('[checkForCampaign]: First launch, not showing promo sheet');
+    logger.debug('Campaigns: First launch, not showing promo sheet');
     return;
   }
 
@@ -55,10 +55,10 @@ export const checkForCampaign = async () => {
 
   for (const promo of promoSheetCollection?.items || []) {
     if (!promo) continue;
-    logger.debug(`[checkForCampaign]: Checking ${promo.sys.id}`);
+    logger.debug(`Campaigns: Checking ${promo.sys.id}`);
     const result = await shouldPromptCampaign(promo as PromoSheet);
 
-    logger.debug(`[checkForCampaign]: ${promo.sys.id} will show: ${result}`);
+    logger.debug(`Campaigns: ${promo.sys.id} will show: ${result}`);
     if (result) {
       const isShown = remotePromoSheetsStore.getState().isShown;
       if (!isShown) {
@@ -69,7 +69,7 @@ export const checkForCampaign = async () => {
 };
 
 export const triggerCampaign = async ({ campaignKey, sys: { id: campaignId } }: PromoSheet) => {
-  logger.debug(`[checkForCampaign]: Showing ${campaignKey} Promo`);
+  logger.debug(`Campaigns: Showing ${campaignKey} Promo`);
 
   setTimeout(() => {
     remotePromoSheetsStore.getState().showSheet(campaignId);
@@ -93,14 +93,14 @@ export const shouldPromptCampaign = async (campaign: PromoSheet): Promise<boolea
   if (!campaignKey || !id) return false;
 
   const actionsArray = actions || ([] as ActionObj[]);
-  logger.debug(`[checkForCampaign]: Checking if we should prompt campaign ${campaignKey}`);
+  logger.debug(`Campaigns: Checking if we should prompt campaign ${campaignKey}`);
 
   const isPreviewing = actionsArray.some((action: ActionObj) => action.fn === 'isPreviewing');
   const hasShown = remotePromoSheetsStore.getState().getSheet(id)?.hasBeenShown;
 
   // If the campaign has been viewed already or it's the first app launch, exit early
   if (hasShown && !isPreviewing) {
-    logger.debug(`[checkForCampaign]: User has already been shown ${campaignKey}`);
+    logger.debug(`Campaigns: User has already been shown ${campaignKey}`);
     return false;
   }
 
@@ -113,9 +113,9 @@ export const shouldPromptCampaign = async (campaign: PromoSheet): Promise<boolea
       continue;
     }
 
-    logger.debug(`[checkForCampaign]: Checking action ${fn}`);
+    logger.debug(`Campaigns: Checking action ${fn}`);
     const result = await action({ ...props, ...campaign });
-    logger.debug(`[checkForCampaign]: [${fn}] matches desired outcome: => ${result === outcome}`);
+    logger.debug(`Campaigns: [${fn}] matches desired outcome: => ${result === outcome}`);
 
     if (result !== outcome) {
       shouldPrompt = false;

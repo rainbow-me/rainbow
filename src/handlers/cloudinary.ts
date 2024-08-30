@@ -13,7 +13,7 @@ type CloudinaryConfig = {
 const PixelRatios = [1, 1.5, 2, 2.625, 2.75, 3, 3.5]; // popular ratios.
 const IconsSizes = [40, 36]; // Remove 36 with TopMover
 const allowedIconSizes = PixelRatios.reduce((acc, ratio) => {
-  for (const size of IconsSizes) {
+  for (let size of IconsSizes) {
     acc.push(size * ratio);
   }
   return acc;

@@ -10,7 +10,7 @@ import { containsEmoji } from '@/helpers/strings';
 import WalletTypes from '@/helpers/walletTypes';
 import { updateWebDataEnabled } from '@/redux/showcaseTokens';
 import { AppState } from '@/redux/store';
-import { logger, RainbowError } from '@/logger';
+import logger from '@/utils/logger';
 import { useTheme } from '@/theme';
 
 const getAccountSymbol = (name: string) => {
@@ -98,7 +98,7 @@ export default function useWebData() {
       const response = await getPreference('showcase', accountAddress);
       if (!response || !response.showcase.ids.length) {
         await initWebData(assetIds);
-        logger.debug('[useWebData]: showcase initialized!');
+        logger.log('showcase initialized!');
         return;
       }
 
@@ -112,7 +112,7 @@ export default function useWebData() {
       const response = await getPreference('hidden', accountAddress);
       if (!response || !response.hidden.ids.length) {
         await setPreference(PreferenceActionType.init, 'hidden', accountAddress, assetIds);
-        logger.debug('[useWebData]: hidden initialized!');
+        logger.log('hidden initialized!');
         return;
       }
 
@@ -130,15 +130,15 @@ export default function useWebData() {
           const response = await getPreference('showcase', accountAddress);
           if (!response || !response.showcase.ids.length) {
             await initWebData(showcaseTokens);
-            logger.debug('[useWebData]: showcase initialized!');
+            logger.log('showcase initialized!');
             return;
           }
 
-          logger.debug('[useWebData]: showcase already initialized. skipping');
+          logger.log('showcase already initialized. skipping');
         }
       }
     } catch (e) {
-      logger.error(new RainbowError(`[useWebData]: error while trying to initialize showcase: ${e}`));
+      logger.log('Error trying to initiailze showcase');
     }
   }, [accountAddress, initWebData, showcaseTokens, webDataEnabled]);
 

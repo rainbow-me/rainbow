@@ -1,11 +1,11 @@
+import { getIsHardhatConnected } from '@/handlers/web3';
 import { useAccountSettings } from '@/hooks';
 import { selectSortedUserAssets } from '@/resources/assets/assetSelectors';
 import { useUserAssets } from '@/resources/assets/UserAssetsQuery';
-import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 export function useSortedUserAssets() {
   const { accountAddress, nativeCurrency } = useAccountSettings();
-  const { connectedToHardhat } = useConnectedToHardhatStore();
+  const connectedToHardhat = getIsHardhatConnected();
 
   return useUserAssets(
     {

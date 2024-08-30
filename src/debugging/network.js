@@ -1,5 +1,5 @@
 import XHRInterceptor from 'react-native/Libraries/Network/XHRInterceptor';
-import { logger, RainbowError } from '@/logger';
+import logger from '@/utils/logger';
 
 let internalCounter = 0;
 
@@ -21,10 +21,10 @@ export default function monitorNetwork(showNetworkRequests, showNetworkResponses
   };
 
   const emptyLine = () => {
-    logger.debug('');
+    logger.log('');
   };
   const separator = () => {
-    logger.debug(`----------------------------------------`);
+    logger.log(`----------------------------------------`);
   };
 
   if (showNetworkRequests) {
@@ -35,21 +35,21 @@ export default function monitorNetwork(showNetworkRequests, showNetworkResponses
 
         separator();
         emptyLine();
-        logger.debug(`${PREFIX} ➡️  REQUEST #${xhr._trackingName} -  ${xhr._method} ${xhr._url}`);
+        logger.log(`${PREFIX} ➡️  REQUEST #${xhr._trackingName} -  ${xhr._method} ${xhr._url}`);
         emptyLine();
         if (data) {
           emptyLine();
-          logger.debug(' PARAMETERS: ');
+          logger.log(' PARAMETERS: ');
           emptyLine();
           try {
             const dataObj = JSON.parse(data);
-            logger.debug(' {');
+            logger.log(' {');
             Object.keys(dataObj).forEach(key => {
-              logger.debug(`   ${key} : `, dataObj[key]);
+              logger.log(`   ${key} : `, dataObj[key]);
             });
-            logger.debug(' }');
+            logger.log(' }');
           } catch (e) {
-            logger.error(new RainbowError(`Error parsing data: ${e}`), { data });
+            logger.log(data);
           }
         }
         emptyLine();
@@ -72,33 +72,33 @@ export default function monitorNetwork(showNetworkRequests, showNetworkResponses
 
         separator();
         emptyLine();
-        logger.debug(`${PREFIX} ${getEmojiForStatusCode(status)}  RESPONSE #${rid} -  ${xhr._method} ${url}`);
+        logger.log(`${PREFIX} ${getEmojiForStatusCode(status)}  RESPONSE #${rid} -  ${xhr._method} ${url}`);
         emptyLine();
         if (timeout && status > 400) {
-          logger.debug(` ⚠️ ⚠️  TIMEOUT!  ⚠️ ⚠️ `);
+          logger.log(` ⚠️ ⚠️  TIMEOUT!  ⚠️ ⚠️ `);
         }
 
         if (status) {
-          logger.debug(` Status:  ${status}`);
+          logger.log(` Status:  ${status}`);
         }
 
         if (time) {
-          logger.debug(` Completed in:  ${time / 1000} s`);
+          logger.log(` Completed in:  ${time / 1000} s`);
         }
 
         if (response) {
           emptyLine();
-          logger.debug(' RESPONSE: ');
+          logger.log(' RESPONSE: ');
           emptyLine();
           try {
             const responseObj = JSON.parse(response);
-            logger.debug(' {');
+            logger.log(' {');
             Object.keys(responseObj).forEach(key => {
-              logger.debug(`   ${key} : `, responseObj[key]);
+              logger.log(`   ${key} : `, responseObj[key]);
             });
-            logger.debug(' }');
+            logger.log(' }');
           } catch (e) {
-            logger.error(new RainbowError(`Error parsing response: ${e}`), { data: response });
+            logger.log(response);
           }
         }
         emptyLine();

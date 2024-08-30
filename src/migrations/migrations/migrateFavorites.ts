@@ -3,6 +3,7 @@ import { getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
 import { EthereumAddress, RainbowToken } from '@/entities';
 import { createQueryKey, persistOptions, queryClient } from '@/react-query';
 import { favoritesQueryKey } from '@/resources/favorites';
+import { ethereumUtils } from '@/utils';
 import { persistQueryClientRestore, persistQueryClientSave } from '@tanstack/react-query-persist-client';
 import { Migration, MigrationName } from '../types';
 
@@ -24,7 +25,7 @@ export function migrateFavoritesV2(): Migration {
       for (const favorite of Object.values(v1Data)) {
         const uniqueId = getStandardizedUniqueIdWorklet({
           address: favorite.address as AddressOrEth,
-          chainId: favorite.chainId,
+          chainId: ethereumUtils.getChainIdFromNetwork(favorite.network),
         });
         favorite.uniqueId = uniqueId; // v2 unique uses chainId instead of Network
         migratedFavorites[uniqueId] = favorite;

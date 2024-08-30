@@ -15,7 +15,7 @@ import { Modal } from '../components/modal';
 import { STORAGE_IDS } from '../model/mmkv';
 import { analytics } from '@/analytics';
 import { addHexPrefix, isL2Chain } from '@/handlers/web3';
-import { CurrencySelectionTypes, TokenSectionTypes } from '@/helpers';
+import { CurrencySelectionTypes, Network, TokenSectionTypes } from '@/helpers';
 import {
   useAccountSettings,
   useInteraction,
@@ -40,7 +40,7 @@ import DiscoverSearchInput from '@/components/discover/DiscoverSearchInput';
 import { externalTokenQueryKey, fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { queryClient } from '@/react-query/queryClient';
-import { ChainId, Network } from '@/networks/types';
+import { ChainId } from '@/__swaps__/types/chains';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;
@@ -151,11 +151,15 @@ export default function CurrencySelectModal() {
     (newAsset: any, selectAsset: any, type: any) => {
       const otherAsset = type === 'input' ? outputCurrency : inputCurrency;
       const hasShownWarning = getHasShownWarning();
-      if (otherAsset && newAsset?.chainId !== otherAsset?.chainId && !hasShownWarning) {
+      if (
+        otherAsset &&
+        ethereumUtils.getChainIdFromNetwork(newAsset?.network) !== ethereumUtils.getChainIdFromNetwork(otherAsset?.network) &&
+        !hasShownWarning
+      ) {
         Keyboard.dismiss();
         InteractionManager.runAfterInteractions(() => {
           navigate(Routes.EXPLAIN_SHEET, {
-            chainId: newAsset?.chainId,
+            network: newAsset?.network,
             onClose: () => {
               setHasShownWarning();
               selectAsset();
@@ -209,7 +213,6 @@ export default function CurrencySelectModal() {
             name: 'Unswappable',
             symbol: 'UNSWAP',
             network: Network.mainnet,
-            chainId: ChainId.mainnet,
             id: 'foobar',
             uniqueId: '0x123',
           });
@@ -290,14 +293,14 @@ export default function CurrencySelectModal() {
               screen: Routes.MAIN_EXCHANGE_SCREEN,
             });
             setSearchQuery('');
-            setCurrentChainId(item.chainId);
+            setCurrentChainId(ethereumUtils.getChainIdFromNetwork(item.network));
           },
           android ? 500 : 0
         );
       } else {
         navigate(Routes.MAIN_EXCHANGE_SCREEN);
         setSearchQuery('');
-        setCurrentChainId(item.chainId);
+        setCurrentChainId(ethereumUtils.getChainIdFromNetwork(item.network));
       }
       if (searchQueryForSearch) {
         analytics.track('Selected a search result in Swap', {
@@ -323,7 +326,8 @@ export default function CurrencySelectModal() {
           InteractionManager.runAfterInteractions(() => {
             navigate(Routes.EXPLAIN_SHEET, {
               assetName: item?.symbol,
-              chainId: currentChainId,
+              network: ethereumUtils.getNetworkFromChainId(currentChainId),
+              networkName: currentL2Name,
               onClose: linkToHop,
               type: 'obtainL2Assets',
             });
@@ -426,10 +430,11 @@ export default function CurrencySelectModal() {
   const handleBackButton = useCallback(() => {
     setSearchQuery('');
     InteractionManager.runAfterInteractions(() => {
-      setCurrentChainId(inputCurrency?.chainId);
+      const inputChainId = ethereumUtils.getChainIdFromNetwork(inputCurrency?.network);
+      setCurrentChainId(inputChainId);
     });
     setIsTransitioning(true); // continue to display list while transitiong back
-  }, [inputCurrency?.chainId]);
+  }, [inputCurrency?.network]);
 
   useEffect(() => {
     // check if list has items before attempting to scroll

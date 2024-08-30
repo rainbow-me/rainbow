@@ -120,7 +120,7 @@ export async function handleShareUrl(url: string): Promise<void> {
     await Share.share({ message: url });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
-    logger.error(new RainbowError('[DappBrowser]: Error sharing browser URL'), {
+    logger.error(new RainbowError('Error sharing browser URL'), {
       message: e.message,
       url,
     });

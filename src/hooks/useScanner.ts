@@ -16,7 +16,7 @@ import { Navigation } from '@/navigation';
 import { POAP_BASE_URL, RAINBOW_PROFILES_BASE_URL } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { addressUtils, ethereumUtils, haptics } from '@/utils';
-import { logger, RainbowError } from '@/logger';
+import logger from '@/utils/logger';
 import { checkPushNotificationPermissions } from '@/notifications/permissions';
 import { pair as pairWalletConnect } from '@/walletConnect';
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
@@ -28,12 +28,12 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
   const enabledVar = useRef<boolean>();
 
   const enableScanning = useCallback(() => {
-    logger.debug('[useScanner]: 📠✅  Enabling QR Code Scanner');
+    logger.log('📠✅ Enabling QR Code Scanner');
     enabledVar.current = true;
   }, [enabledVar]);
 
   const disableScanning = useCallback(() => {
-    logger.debug('[useScanner]: 📠🚫  Disabling QR Code Scanner');
+    logger.log('📠🚫 Disabling QR Code Scanner');
     enabledVar.current = false;
   }, [enabledVar]);
 
@@ -113,8 +113,8 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
         } else if (version === 2) {
           await pairWalletConnect({ uri, connector });
         }
-      } catch (error) {
-        logger.error(new RainbowError(`[useScanner]: Error handling WalletConnect QR code: ${error}`));
+      } catch (e) {
+        logger.log('walletConnectOnSessionRequest exception', e);
       }
     },
     [goBack, onSuccess, walletConnectOnSessionRequest]
@@ -190,14 +190,14 @@ export default function useScanner(enabled: boolean, onSuccess: () => unknown) {
 
       if (lowerCaseData.startsWith(`${RAINBOW_PROFILES_BASE_URL}/poap`)) {
         const secretWordOrQrHash = lowerCaseData.split(`${RAINBOW_PROFILES_BASE_URL}/poap/`)?.[1];
-        logger.debug('[useScanner]: handling poap scan', { secretWordOrQrHash });
+        logger.log('onScan: handling poap scan', { secretWordOrQrHash });
         await getPoapAndOpenSheetWithSecretWord(secretWordOrQrHash, true);
         return getPoapAndOpenSheetWithQRHash(secretWordOrQrHash, true);
       }
 
       if (lowerCaseData.startsWith(`rainbow://poap`)) {
         const secretWordOrQrHash = lowerCaseData.split(`rainbow://poap/`)?.[1];
-        logger.debug('[useScanner]: handling poap scan', { secretWordOrQrHash });
+        logger.log('onScan: handling poap scan', { secretWordOrQrHash });
         await getPoapAndOpenSheetWithSecretWord(secretWordOrQrHash, true);
         return getPoapAndOpenSheetWithQRHash(secretWordOrQrHash, true);
       }

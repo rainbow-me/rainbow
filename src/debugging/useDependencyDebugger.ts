@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { logger } from '@/logger';
+import { logger } from '../utils';
 
 const usePrevious = <T>(value: T): T => {
   const ref = useRef<T>(value);
@@ -50,6 +50,6 @@ export const useDependencyDebugger = (dependencies: unknown[] | Record<string, u
   }, {});
 
   if (Object.keys(changedDeps).length) {
-    logger.debug('[use-dependencies-debugger]: changed dependencies', changedDeps);
+    logger.log('[use-dependencies-debugger] ', changedDeps);
   }
 };

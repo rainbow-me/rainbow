@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { Linking } from 'react-native';
 import { ImageOrVideo } from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
@@ -139,7 +139,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
   const isReadOnly = isReadOnlyWallet && !enableActionsOnReadOnlyWallet;
 
   const isENSProfile = profilesEnabled && profileEnabled && isOwner;
-  const isZeroETH = isZero(accountAsset?.balance?.amount || 0);
+  const isZeroETH = isZero(accountAsset?.balance?.amount);
 
   const callback = useCallback(
     async (buttonIndex: number) => {

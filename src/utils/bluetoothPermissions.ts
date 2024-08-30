@@ -60,7 +60,7 @@ export const checkAndRequestAndroidBluetooth = async (): Promise<boolean> => {
   ];
 
   const res = await checkForMultiplePermissions(ANDROID_BT_PERMISSION);
-  logger.debug('[bluetoothPermissions]: Android Permission status: ', { res });
+  logger.debug('[Bluetooth] Android Permission status: ', { res });
 
   const deniedPermissions: AndroidPermission[] = [];
 
@@ -72,13 +72,13 @@ export const checkAndRequestAndroidBluetooth = async (): Promise<boolean> => {
   }
 
   if (deniedPermissions.length === 0) {
-    logger.debug('[bluetoothPermissions]: Android Permissions all granted');
+    logger.debug('[Bluetooth] Android Permissions all granted');
     return true;
   }
   // if we're only missing one, only request one
   else if (deniedPermissions.length === 1) {
     const askResult = await requestPermission(deniedPermissions[0]);
-    logger.debug('[bluetoothPermissions]: Android Permission single askResult: ', {
+    logger.debug('[Bluetooth] Android Permission single askResult: ', {
       askResult,
     });
     if (askResult === RESULTS.GRANTED) {
@@ -97,7 +97,7 @@ export const checkAndRequestAndroidBluetooth = async (): Promise<boolean> => {
     // else request in a group
   } else if (deniedPermissions.length > 1) {
     const askResults = await requestMultiplePermissions(deniedPermissions);
-    logger.debug('[bluetoothPermissions]: Android Bluetooth Permission multiple askResult: ', { askResults });
+    logger.debug('[Bluetooth] Android Bluetooth Permission multiple askResult: ', { askResults });
 
     const deniedOrBlockedPermissions: AndroidPermission[] = [];
     // check if we are missing any permissions

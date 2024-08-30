@@ -35,13 +35,13 @@ export function Moonpay({ accountAddress, config }: { accountAddress: string; co
             sessionId,
           });
 
-          logger.debug('[AddCash]: opening provider', {
+          logger.info('F2C: opening provider', {
             provider: FiatProviderName.Moonpay,
           });
 
           Linking.openURL(url);
         } catch (e) {
-          logger.error(new RainbowError('[AddCash]: failed to open provider'), {
+          logger.error(new RainbowError('F2C: failed to open provider'), {
             provider: FiatProviderName.Moonpay,
             message: (e as Error).message,
           });

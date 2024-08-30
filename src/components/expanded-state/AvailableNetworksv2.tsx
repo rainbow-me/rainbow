@@ -8,14 +8,14 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { position } from '@/styles';
 import { ethereumUtils, watchingAlert } from '@/utils';
-import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
+import { CurrencySelectionTypes, ExchangeModalTypes, Network } from '@/helpers';
 import { useSwapCurrencyHandlers, useWallets } from '@/hooks';
 import { RainbowToken } from '@/entities';
 import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../animations';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { implementation } from '@/entities/dispersion';
-import { RainbowNetworkObjects } from '@/networks';
+import { RainbowNetworks, getNetworkObj } from '@/networks';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 import { SWAPS_V2, enableActionsOnReadOnlyWallet, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
@@ -25,8 +25,7 @@ import { AddressOrEth, AssetType } from '@/__swaps__/types/assets';
 import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
-import { ChainId, chainIdToNameMapping } from '@/networks/types';
-import { getUniqueId } from '@/utils/ethereumUtils';
+import { ChainId } from '@/__swaps__/types/chains';
 
 const NOOP = () => null;
 
@@ -57,11 +56,11 @@ const AvailableNetworksv2 = ({
     },
   };
 
-  const availableChainIds = useMemo(() => {
+  const availableNetworks = useMemo(() => {
     // we dont want to show mainnet
     return Object.keys(networks)
-      .filter(chainId => Number(chainId) !== ChainId.mainnet)
-      .map(chainId => Number(chainId));
+      .map(network => ethereumUtils.getNetworkFromChainId(Number(network)))
+      .filter(network => network !== Network.mainnet);
   }, [networks]);
 
   const { updateInputCurrency } = useSwapCurrencyHandlers({
@@ -69,7 +68,7 @@ const AvailableNetworksv2 = ({
     type: ExchangeModalTypes.swap,
   });
   const convertAssetAndNavigate = useCallback(
-    (chainId: ChainId) => {
+    (chosenNetwork: Network) => {
       if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
         watchingAlert();
         return;
@@ -78,14 +77,15 @@ const AvailableNetworksv2 = ({
       const newAsset = asset;
 
       // we need to convert the mainnet asset to the selected network's
-      newAsset.mainnet_address = networks?.[ChainId.mainnet]?.address ?? asset.address;
-      newAsset.address = networks?.[chainId].address;
-      newAsset.chainId = chainId;
+      newAsset.mainnet_address = networks?.[ethereumUtils.getChainIdFromNetwork(Network.mainnet)]?.address ?? asset.address;
+      newAsset.address = networks?.[ethereumUtils.getChainIdFromNetwork(chosenNetwork)].address;
+      newAsset.network = chosenNetwork;
 
       goBack();
 
       if (swapsV2Enabled || swaps_v2) {
-        const uniqueId = `${newAsset.address}_${asset.chainId}`;
+        const chainId = ethereumUtils.getChainIdFromNetwork(newAsset.network);
+        const uniqueId = `${newAsset.address}_${chainId}`;
         const userAsset = userAssetsStore.getState().userAssets.get(uniqueId);
 
         const parsedAsset = parseSearchAsset({
@@ -94,16 +94,16 @@ const AvailableNetworksv2 = ({
             uniqueId,
             address: newAsset.address as AddressOrEth,
             type: newAsset.type as AssetType,
-            chainId: asset.chainId,
-            chainName: chainNameFromChainId(asset.chainId),
+            chainId,
+            chainName: chainNameFromChainId(chainId),
             isNativeAsset: false,
             native: {},
           },
           searchAsset: {
             ...newAsset,
             uniqueId,
-            chainId: asset.chainId,
-            chainName: chainNameFromChainId(asset.chainId),
+            chainId,
+            chainName: chainNameFromChainId(chainId),
             address: newAsset.address as AddressOrEth,
             highLiquidity: newAsset.highLiquidity ?? false,
             isRainbowCurated: newAsset.isRainbowCurated ?? false,
@@ -118,7 +118,7 @@ const AvailableNetworksv2 = ({
         const largestBalanceSameChainUserAsset = userAssetsStore
           .getState()
           .getUserAssets()
-          .find(userAsset => userAsset.chainId === asset.chainId && userAsset.address !== newAsset.address);
+          .find(userAsset => userAsset.chainId === chainId && userAsset.address !== newAsset.address);
         if (largestBalanceSameChainUserAsset) {
           swapsStore.setState({ inputAsset: largestBalanceSameChainUserAsset });
         } else {
@@ -133,8 +133,8 @@ const AvailableNetworksv2 = ({
         return;
       }
 
-      newAsset.uniqueId = getUniqueId(asset.address, chainId);
-      newAsset.type = ethereumUtils.getNetworkFromChainId(chainId);
+      newAsset.uniqueId = `${asset.address}_${chosenNetwork}`;
+      newAsset.type = chosenNetwork;
 
       navigate(Routes.EXCHANGE_MODAL, {
         params: {
@@ -151,35 +151,37 @@ const AvailableNetworksv2 = ({
         screen: Routes.CURRENCY_SELECT_SCREEN,
       });
     },
-    [asset, goBack, isReadOnlyWallet, navigate, networks, swapsV2Enabled, swaps_v2, updateInputCurrency]
+    [asset, goBack, navigate, networks, swapsV2Enabled, swaps_v2, updateInputCurrency]
   );
 
   const handlePressContextMenu = useCallback(
     // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
-    ({ nativeEvent: { actionKey: chainId } }) => {
-      convertAssetAndNavigate(chainId);
+    ({ nativeEvent: { actionKey: network } }) => {
+      convertAssetAndNavigate(network);
     },
     [convertAssetAndNavigate]
   );
 
   const handlePressButton = useCallback(() => {
-    convertAssetAndNavigate(availableChainIds[0]);
-  }, [availableChainIds, convertAssetAndNavigate]);
+    convertAssetAndNavigate(availableNetworks[0]);
+  }, [availableNetworks, convertAssetAndNavigate]);
 
   const networkMenuItems = useMemo(() => {
-    return RainbowNetworkObjects.filter(({ features, id }) => features.swaps && id !== ChainId.mainnet && !!networks[id]).map(network => ({
-      actionKey: `${network.id}`,
-      actionTitle: network.name,
-      icon: {
-        iconType: 'ASSET',
-        iconValue: `${network.networkType === 'layer2' ? `${network.value}BadgeNoShadow` : 'ethereumBadge'}`,
-      },
-    }));
+    return RainbowNetworks.filter(({ features, value, id }) => features.swaps && value !== Network.mainnet && !!networks[id]).map(
+      network => ({
+        actionKey: network.value,
+        actionTitle: network.name,
+        icon: {
+          iconType: 'ASSET',
+          iconValue: `${network.networkType === 'layer2' ? `${network.value}BadgeNoShadow` : 'ethereumBadge'}`,
+        },
+      })
+    );
   }, [networks]);
 
-  const MenuWrapper = availableChainIds.length > 1 ? ContextMenuButton : Box;
+  const MenuWrapper = availableNetworks.length > 1 ? ContextMenuButton : Box;
 
-  if (availableChainIds.length === 0) return null;
+  if (availableNetworks.length === 0) return null;
   return (
     <>
       <MenuWrapper
@@ -192,7 +194,7 @@ const AvailableNetworksv2 = ({
         <Box
           as={ButtonPressAnimation}
           scaleTo={0.96}
-          onPress={availableChainIds.length === 1 ? handlePressButton : NOOP}
+          onPress={availableNetworks.length === 1 ? handlePressButton : NOOP}
           marginHorizontal={{ custom: marginHorizontal }}
           testID={'available-networks-v2'}
         >
@@ -206,15 +208,16 @@ const AvailableNetworksv2 = ({
             <Inline alignVertical="center" alignHorizontal="justify">
               <Inline alignVertical="center">
                 <Box style={{ flexDirection: 'row' }}>
-                  {availableChainIds?.map((chainId, index) => {
+                  {availableNetworks?.map((network, index) => {
+                    const chainId = ethereumUtils.getChainIdFromNetwork(network);
                     return (
                       <Box
                         background="body (Deprecated)"
-                        key={`availableNetwork-${chainId}`}
+                        key={`availableNetwork-${network}`}
                         marginLeft="-4px"
                         style={{
                           backgroundColor: colors.transparent,
-                          zIndex: availableChainIds?.length - index,
+                          zIndex: availableNetworks?.length - index,
                           borderRadius: 30,
                         }}
                       >
@@ -230,18 +233,18 @@ const AvailableNetworksv2 = ({
 
                 <Box paddingLeft="6px">
                   <Text color="secondary60 (Deprecated)" size="14px / 19px (Deprecated)" weight="semibold" numberOfLines={2}>
-                    {availableChainIds?.length > 1
+                    {availableNetworks?.length > 1
                       ? lang.t('expanded_state.asset.available_networks', {
-                          availableNetworks: availableChainIds?.length,
+                          availableNetworks: availableNetworks?.length,
                         })
                       : lang.t('expanded_state.asset.available_networkv2', {
-                          availableNetwork: chainIdToNameMapping[availableChainIds[0]],
+                          availableNetwork: getNetworkObj(availableNetworks?.[0])?.name,
                         })}
                   </Text>
                 </Box>
               </Inline>
               <Text align="center" color="secondary40 (Deprecated)" size="14px / 19px (Deprecated)" weight="semibold">
-                {availableChainIds?.length > 1 ? '􀁱' : '􀯻'}
+                {availableNetworks?.length > 1 ? '􀁱' : '􀯻'}
               </Text>
             </Inline>
           </Box>

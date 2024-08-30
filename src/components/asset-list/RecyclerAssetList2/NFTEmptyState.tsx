@@ -13,6 +13,7 @@ import { StyleSheet } from 'react-native';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
 import { analyticsV2 } from '@/analytics';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
+import { ethereumUtils } from '@/utils';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 
 type LaunchFeaturedMintButtonProps = {
@@ -31,7 +32,8 @@ const LaunchFeaturedMintButton = ({ featuredMint }: LaunchFeaturedMintButtonProp
         mintsLastHour: featuredMint.totalMints,
         priceInEth: convertRawAmountToRoundedDecimal(featuredMint.mintStatus.price, 18, 6),
       });
-      navigateToMintCollection(featuredMint.contract, featuredMint.mintStatus.price, featuredMint.chainId);
+      const network = ethereumUtils.getNetworkFromChainId(featuredMint.chainId);
+      navigateToMintCollection(featuredMint.contract, featuredMint.mintStatus.price, network);
     }
   }, [featuredMint]);
 

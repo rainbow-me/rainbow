@@ -17,7 +17,7 @@ export function getAccountProfileInfo(selectedWallet: any, walletNames: any, acc
 
   const accountENS = walletNames?.[accountAddress];
 
-  const selectedAccount = selectedWallet.addresses?.find((account: any) => account.address === accountAddress);
+  const selectedAccount = selectedWallet.addresses.find((account: any) => account.address === accountAddress);
 
   if (!selectedAccount) {
     return {};

@@ -40,7 +40,7 @@ export default function CustomGasState({ asset }) {
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
   const colorForAsset = useColorForAsset(asset || {}, fallbackColor, false, true);
-  const { selectedGasFee, currentBlockParams, chainId } = useGas();
+  const { selectedGasFee, currentBlockParams, txNetwork } = useGas();
   const [canGoBack, setCanGoBack] = useState(true);
   const { tradeDetails } = useSelector(state => state.swap);
 
@@ -93,7 +93,7 @@ export default function CustomGasState({ asset }) {
         <GasSpeedButton
           asset={asset}
           canGoBack={canGoBack}
-          chainId={chainId}
+          chainId={txNetwork?.chainId}
           showGasOptions
           testID="swap-details-gas"
           theme="dark"

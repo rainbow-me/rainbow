@@ -10,7 +10,7 @@ import {
   toScaledIntegerWorklet,
 } from '@/__swaps__/safe-math/SafeMath';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/__swaps__/types/chains';
 import { add } from '@/__swaps__/utils/numbers';
 import { ParsedAddressAsset } from '@/entities';
 import { useUserNativeNetworkAsset } from '@/resources/assets/useUserAsset';

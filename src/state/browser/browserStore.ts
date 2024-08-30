@@ -19,7 +19,7 @@ const lazyPersist = debounce(
       const serializedValue = serializeBrowserState(value.state, value.version ?? BROWSER_STORAGE_VERSION);
       browserStorage.set(key, serializedValue);
     } catch (error) {
-      logger.error(new RainbowError(`[browserStore]: Failed to serialize persisted browser data`), { error });
+      logger.error(new RainbowError('Failed to serialize persisted browser data'), { error });
     }
   },
   PERSIST_RATE_LIMIT_MS,
@@ -36,7 +36,7 @@ function serializeBrowserState(state: BrowserState, version: number): string {
       version,
     });
   } catch (error) {
-    logger.error(new RainbowError(`[browserStore]: Failed to serialize state for browser storage`), { error });
+    logger.error(new RainbowError('Failed to serialize state for browser storage'), { error });
     throw error;
   }
 }
@@ -46,7 +46,7 @@ function deserializeBrowserState(serializedState: string): { state: BrowserState
   try {
     parsedState = JSON.parse(serializedState);
   } catch (error) {
-    logger.error(new RainbowError(`[browserStore]: Failed to parse serialized state from browser storage`), { error });
+    logger.error(new RainbowError('Failed to parse serialized state from browser storage'), { error });
     throw error;
   }
 
@@ -56,7 +56,7 @@ function deserializeBrowserState(serializedState: string): { state: BrowserState
   try {
     tabsData = new Map(state.tabsData);
   } catch (error) {
-    logger.error(new RainbowError(`[browserStore]: Failed to convert tabsData from browser storage`), { error });
+    logger.error(new RainbowError('Failed to convert tabsData from browser storage'), { error });
     throw error;
   }
 
@@ -76,7 +76,7 @@ function deserializeBrowserState(serializedState: string): { state: BrowserState
       if (tabData) {
         tabData.url = persistedUrl;
       } else {
-        logger.warn(`[browserStore]: No tabData found for tabId ${tabId} during URL restoration`);
+        logger.warn(`No tabData found for tabId ${tabId} during URL restoration`);
       }
     }
   }

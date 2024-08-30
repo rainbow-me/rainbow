@@ -11,7 +11,7 @@ export default function useWalletsWithBalancesAndNames() {
   const walletsWithBalancesAndNames = useMemo(
     () =>
       mapValues(wallets, wallet => {
-        const updatedAccounts = (wallet.addresses || []).map(account => ({
+        const updatedAccounts = (wallet.addresses ?? []).map(account => ({
           ...account,
           balances: balances[account.address.toLowerCase() as Address],
           ens: walletNames[account.address],

@@ -1,12 +1,12 @@
-import { logger } from '@/logger';
+import logger from '@/utils/logger';
 
 const compareInputs = (oldInputs: any, newInputs: any, prefix: any) => {
   // Edge-case: different array lengths
   if (oldInputs.length !== newInputs.length) {
     // Not helpful to compare item by item, so just output the whole array
-    logger.debug(`[useEffectDebugger]: ${prefix} - Inputs have a different length`, oldInputs, newInputs);
-    logger.debug(`[useEffectDebugger]: Old inputs:`, oldInputs);
-    logger.debug(`[useEffectDebugger]: New inputs:`, newInputs);
+    logger.log(`${prefix} - Inputs have a different length`, oldInputs, newInputs);
+    logger.log('Old inputs:', oldInputs);
+    logger.log('New inputs:', newInputs);
     return;
   }
 
@@ -14,9 +14,9 @@ const compareInputs = (oldInputs: any, newInputs: any, prefix: any) => {
   oldInputs.forEach((oldInput: any, index: any) => {
     const newInput = newInputs[index];
     if (oldInput !== newInput) {
-      logger.debug(`[useEffectDebugger]: ${prefix} - The input changed in position ${index}`);
-      logger.debug(`[useEffectDebugger]: Old value:`, oldInput);
-      logger.debug(`[useEffectDebugger]: New value:`, newInput);
+      logger.log(`${prefix} - The input changed in position ${index}`);
+      logger.log('Old value:', oldInput);
+      logger.log('New value:', newInput);
     }
   });
 };

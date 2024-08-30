@@ -748,8 +748,8 @@
       },
       "swap_details_v2": {
         "automatic": "อัตโนมัติ",
-        "degen_mode": "Degenโหมด",
-        "degen_mode_description": "ข้ามขั้นตอนการตรวจสอบเพื่อการสลับที่เร็วขึ้น",
+        "degen_mode": "โหมดดีเจ็น",
+        "degen_mode_description": "ข้ามหน้าตรวจสอบเพื่อแลกเปลี่ยนเร็วขึ้น",
         "maximum_sold": "ขายสูงสุด",
         "minimum_received": "รับต่ำสุด",
         "preferred_network": "เครือข่ายที่คุณต้องการ",
@@ -1321,16 +1321,10 @@
     "nfts": {
       "selling": "ขาย",
       "sort": {
-        "ABC": "Abc",
         "abc": "Abc",
-        "MOST_RECENT": "ล่าสุด",
         "most_recent": "ล่าสุด",
-        "FLOOR_PRICE": "ราคาพื้น",
         "floor_price": "ราคาพื้น"
-      },
-      "empty": "สะสม",
-      "collect_now": "เก็บสะสมทันที",
-      "will_appear_here": "ของสะสมจะปรากฏที่นี่"
+      }
     },
     "nft_offers": {
       "card": {
@@ -2074,7 +2068,6 @@
     "token_search": {
       "section_header": {
         "recent": "ล่าสุด",
-        "popular": "เป็นที่นิยมใน Rainbow",
         "favorites": "รายการโปรด",
         "bridge": "สะพาน",
         "verified": "ได้รับการตรวจสอบ",
@@ -2503,7 +2496,7 @@
       "balance_title": "ยอดคงเหลือ",
       "buy": "ซื้อ",
       "change_wallet": {
-        "loading_balance": "กำลังโหลดยอดคงเหลือ...",
+        "no_balance": "ไม่มีคงเหลือ",
         "balance_eth": "%{balanceEth} ETH",
         "watching": "กำลังรับชม",
         "ledger": "เลเจอร์"

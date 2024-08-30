@@ -21,7 +21,6 @@ import me.rainbow.NativeModules.RNStartTime.RNStartTimePackage
 import me.rainbow.NativeModules.RNTextAnimatorPackage.RNTextAnimatorPackage
 import me.rainbow.NativeModules.RNZoomableButton.RNZoomableButtonPackage
 import me.rainbow.NativeModules.SystemNavigationBar.SystemNavigationBarPackage
-import me.rainbow.NativeModules.NavbarHeight.NavbarHeightPackage
 
 class MainApplication : Application(), ReactApplication {
     override val reactNativeHost: ReactNativeHost = object : DefaultReactNativeHost(this) {
@@ -42,7 +41,6 @@ class MainApplication : Application(), ReactApplication {
             packages.add(KeychainPackage(KeychainModuleBuilder().withoutWarmUp()))
             packages.add(RNStartTimePackage(START_MARK))
             packages.add(RNHapticsPackage())
-            packages.add(NavbarHeightPackage())
             return packages
         }
 

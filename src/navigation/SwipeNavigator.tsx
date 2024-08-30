@@ -7,7 +7,8 @@ import { TestnetToast } from '@/components/toasts';
 import { DAPP_BROWSER, POINTS, useExperimentalFlag } from '@/config';
 import { Box, Columns, globalColors, Stack, useForegroundColor, Text, Cover, useColorMode } from '@/design-system';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
-import { isUsingButtonNavigation } from '@/utils/deviceUtils';
+import { web3Provider } from '@/handlers/web3';
+import { isUsingButtonNavigation } from '@/helpers/statusBarHelper';
 import { useAccountAccentColor, useAccountSettings, useCoinListEdited, useDimensions, usePendingTransactions } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import RecyclerListViewScrollToTopProvider, {
@@ -51,7 +52,7 @@ function getTabBarHeight() {
     return 82;
   }
   if (!isUsingButtonNavigation()) {
-    return 82;
+    return 72;
   }
   return 48;
 }
@@ -91,13 +92,7 @@ const ActivityTabIcon = React.memo(
     }, [pendingCount]);
 
     return pendingCount > 0 ? (
-      <Box
-        testID="transactions-pending-tab-icon"
-        width={{ custom: 28 }}
-        height={{ custom: 28 }}
-        alignItems="center"
-        justifyContent="center"
-      >
+      <Box width={{ custom: 28 }} height={{ custom: 28 }} alignItems="center" justifyContent="center">
         <AnimatedSpinner color={accentColor} isLoading requireSrc={require('@/assets/tabSpinner.png')} size={28} />
         <Cover>
           <Box width="full" height="full" alignItems="center" justifyContent="center">
@@ -445,7 +440,7 @@ function SwipeNavigatorScreens() {
 }
 
 export function SwipeNavigator() {
-  const { chainId } = useAccountSettings();
+  const { network } = useAccountSettings();
   const { colors } = useTheme();
 
   return (
@@ -461,7 +456,7 @@ export function SwipeNavigator() {
         </SectionListScrollToTopProvider>
       </BrowserTabViewProgressContextProvider>
 
-      <TestnetToast chainId={chainId} />
+      <TestnetToast network={network} web3Provider={web3Provider} />
     </FlexItem>
   );
 }

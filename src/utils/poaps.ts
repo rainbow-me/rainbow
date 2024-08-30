@@ -20,7 +20,7 @@ export const getPoapAndOpenSheetWithSecretWord = async (secretWord: string, goBa
       });
     }
   } catch (e) {
-    logger.warn('[poaps]: Error getting POAP with secret word');
+    logger.warn('Error getting POAP with secret word');
   }
 };
 
@@ -39,6 +39,6 @@ export const getPoapAndOpenSheetWithQRHash = async (qrHash: string, goBack: bool
       });
     }
   } catch {
-    logger.warn('[poaps]: Error getting POAP with qrHash');
+    logger.warn('Error getting POAP with qrHash');
   }
 };

@@ -33,6 +33,7 @@ import {
   multiply,
   toFixedDecimals,
 } from '@/helpers/utilities';
+import { Network } from '@/networks/types';
 
 type BigNumberish = number | string | BigNumber;
 
@@ -97,7 +98,8 @@ const parseGasDataConfirmationTime = (
 };
 
 export const parseRainbowMeteorologyData = (
-  rainbowMeterologyData: RainbowMeteorologyData
+  rainbowMeterologyData: RainbowMeteorologyData,
+  network: Network
 ): {
   gasFeeParamsBySpeed: GasFeeParamsBySpeed;
   baseFeePerGas: GasFeeParam;
