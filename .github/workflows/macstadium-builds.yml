@@ -1,10 +1,14 @@
 name: iOS builds
-on: [pull_request, workflow_dispatch]
+on:
+  pull_request:
+      types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
 
 jobs:
   # Job to install dependencies
   build:
     runs-on: ["self-hosted"]
+    if: github.event.pull_request.draft == false
     concurrency: 
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
