@@ -68,6 +68,8 @@ jobs:
       - name: Build the app in release mode for simulator
         run: |
           sed -i'' -e "s/IS_TESTING=true/IS_TESTING=false/" .env && rm -f .env-e 
+          sed -i '' 's/match AppStore/match AdHoc/g' "ios/Rainbow.xcodeproj/project.pbxproj"
+
           xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ios/build
           APP_DIR=$(find . -name "*.app" | head -n 1)
           cd $APP_DIR && zip -r ../../../../../../App.zip .
