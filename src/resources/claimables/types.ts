@@ -27,17 +27,30 @@ interface Price {
   relative_change_24h: number;
 }
 
-interface ClaimAction {
+interface ClaimActionSponsored {
+  url: string;
+  method: string;
+}
+
+interface ClaimActionTransaction {
   address_to: Address;
   calldata: string;
   chain_id: ChainId;
 }
+
+type ClaimAction = ClaimActionTransaction | ClaimActionSponsored;
 
 interface DApp {
   name: string;
   url: string;
   icon_url: string;
   colors: Colors;
+}
+
+interface AssetColors {
+  primary: string;
+  fallback?: string;
+  shadow?: string;
 }
 
 interface Asset {
@@ -51,7 +64,7 @@ interface Asset {
   symbol: string;
   type?: string;
   interface?: string;
-  colors?: Colors;
+  colors?: AssetColors;
   networks?: Record<ChainId, TokenMapping>;
   // Adding as pointer to avoid showing on NFTs
   bridging?: TokenBridging | null;
@@ -68,12 +81,14 @@ interface Asset {
   creation_date?: Date | null;
 }
 
+type ClaimableType = 'transaction' | 'sponsored';
+
 export interface Claimable {
   name: string;
-  type: string;
+  type: ClaimableType;
   network: ChainId;
   asset: Asset;
-  amout: string;
+  amount: string;
   dapp: DApp;
   claim_action_type?: string | null;
   claim_action?: ClaimAction[];

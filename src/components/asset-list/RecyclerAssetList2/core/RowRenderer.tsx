@@ -8,6 +8,7 @@ import { ExtendedState } from './RawRecyclerList';
 import {
   AssetsHeaderExtraData,
   CellType,
+  ClaimableExtraData,
   ClaimablesHeaderExtraData,
   CoinDividerExtraData,
   CoinExtraData,
@@ -165,19 +166,17 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     case CellType.POSITION: {
       const { uniqueId, index } = data as PositionExtraData;
 
-      // return <WrappedPosition placement={index % 2 === 0 ? 'left' : 'right'} uniqueId={uniqueId} />;
-      return <WrappedClaimable></WrappedClaimable>;
+      return <WrappedPosition placement={index % 2 === 0 ? 'left' : 'right'} uniqueId={uniqueId} />;
     }
     case CellType.CLAIMABLES_HEADER: {
       const { total } = data as ClaimablesHeaderExtraData;
       return <WrappedClaimablesListHeader total={total} />;
     }
-    case CellType.CLAIMABLE:
-      return null;
-    //   const { uniqueId, index } = data as ClaimableExtraData;
+    case CellType.CLAIMABLE: {
+      const { uniqueId, index } = data as ClaimableExtraData;
 
-    //   return <WrappedClaimable placement={index % 2 === 0 ? 'left' : 'right'} uniqueId={uniqueId} />;
-    // }
+      return <WrappedClaimable uniqueId={uniqueId} />;
+    }
 
     case CellType.LOADING_ASSETS:
       return <AssetListItemSkeleton />;

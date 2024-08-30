@@ -1,10 +1,9 @@
 import { NativeCurrencyKey } from '@/entities';
 import { RainbowFetchClient } from '@/rainbow-fetch';
-import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
+import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey } from '@/react-query';
 import { SUPPORTED_CHAIN_IDS } from '@/references';
 import { useQuery } from '@tanstack/react-query';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
-import { Address } from 'viem';
 import { ConsolidatedClaimablesResponse } from './types';
 import { logger, RainbowError } from '@/logger';
 
@@ -19,7 +18,7 @@ const addysHttp = new RainbowFetchClient({
 // Query Types
 
 export type ClaimablesArgs = {
-  address: Address;
+  address: string;
   currency: NativeCurrencyKey;
   testnetMode?: boolean;
 };
@@ -73,6 +72,6 @@ export function useClaimables(
     // staleTime: 1000 * 60 * 2, // Set data to become stale after 2 minutes
     // cacheTime: 1000 * 60 * 60 * 24, // Keep unused data in cache for 24 hours
     staleTime: 0,
-    cacheTime: 0,
+    cacheTime: 60000,
   });
 }

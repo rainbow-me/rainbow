@@ -3,35 +3,30 @@ import { Box, BoxProps, Inline, Text } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
 import { usePositions } from '@/resources/defi/PositionsQuery';
 import { PositionCard } from '@/components/positions/PositionsCard';
+import { useClaimables } from '@/resources/claimables/claimablesQuery';
+import { getIsHardhatConnected } from '@/handlers/web3';
+import { FasterImageView } from '@candlefinance/faster-image';
 
-export default function WrappedClaimable({ uniqueId, placement }: { uniqueId: string; placement: 'left' | 'right' }) {
-  // const { accountAddress, nativeCurrency } = useAccountSettings();
-  // const { data } = usePositions({
-  //   address: accountAddress,
-  //   currency: nativeCurrency,
-  // });
+export default function WrappedClaimable({ uniqueId }: { uniqueId: string }) {
+  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const { data } = useClaimables({
+    address: accountAddress,
+    currency: nativeCurrency,
+    testnetMode: getIsHardhatConnected(),
+  });
 
-  // const position = data?.positions.find(position => position.type === uniqueId);
+  const claimable = data?.find(claimable => claimable.name === uniqueId); // FIXME
 
-  // const placementProps: BoxProps =
-  //   placement === 'left'
-  //     ? {
-  //         alignItems: 'flex-start',
-  //         paddingLeft: '19px (Deprecated)',
-  //         paddingRight: '8px',
-  //       }
-  //     : {
-  //         alignItems: 'flex-end',
-  //         paddingRight: '19px (Deprecated)',
-  //         paddingLeft: '8px',
-  //       };
+  if (!claimable) return null;
 
-  // if (!position) return null;
   const color = 'rgba(7, 17, 32, 0.02)';
   return (
     <Box padding="20px" justifyContent="center">
       <Inline alignVertical="center">
-        <Box style={{ height: 40, width: 40, backgroundColor: 'blue', borderRadius: 11 }}></Box>
+        <FasterImageView
+          source={{ url: claimable.dapp.icon_url }}
+          style={{ height: 40, width: 40, borderRadius: 11, borderWidth: 1, borderColor: 'rgba(0, 0, 0, 0.03)' }}
+        />
         <Box
           alignItems="center"
           justifyContent="center"
@@ -43,7 +38,7 @@ export default function WrappedClaimable({ uniqueId, placement }: { uniqueId: st
           style={{ backgroundColor: color }}
         >
           <Text weight="semibold" color="label" align="center" size="17pt">
-            $662.72
+            {claimable.amount}
           </Text>
         </Box>
       </Inline>

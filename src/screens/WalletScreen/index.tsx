@@ -33,6 +33,8 @@ import { IS_ANDROID } from '@/env';
 import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
 import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
 import { UserAssetsSync } from '@/state/sync/UserAssetsSync';
+import { useClaimables } from '@/resources/claimables/claimablesQuery';
+import { getIsHardhatConnected } from '@/handlers/web3';
 
 const WalletPage = styled(Page)({
   ...position.sizeAsObject('100%'),
@@ -48,7 +50,9 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
   const initializeWallet = useInitializeWallet();
   const { network: currentNetwork, accountAddress, appIcon, nativeCurrency } = useAccountSettings();
   usePositions({ address: accountAddress, currency: nativeCurrency });
+  const { data } = useClaimables({ address: accountAddress, currency: nativeCurrency, testnetMode: getIsHardhatConnected() });
 
+  console.log(data);
   const loadAccountLateData = useLoadAccountLateData();
   const loadGlobalLateData = useLoadGlobalLateData();
   const dispatch = useDispatch();

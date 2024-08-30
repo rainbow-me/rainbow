@@ -4,9 +4,12 @@ import { NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
 import { queryClient } from '@/react-query';
 import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import store from '@/redux/store';
-import { PositionExtraData } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
+import { ClaimableExtraData, PositionExtraData } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { getExperimetalFlag, DEFI_POSITIONS } from '@/config/experimental';
 import { RainbowPositions } from '@/resources/defi/types';
+import { claimablesQueryKey } from '@/resources/claimables/claimablesQuery';
+import { getIsHardhatConnected } from '@/handlers/web3';
+import { Claimable } from '@/resources/claimables/types';
 
 const CONTENT_PLACEHOLDER = [
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },
@@ -57,7 +60,8 @@ const listTypeSelector = (state: any) => state.listType;
 const buildBriefWalletSections = (balanceSectionData: any, uniqueTokenFamiliesSection: any) => {
   const { balanceSection, isEmpty, isLoadingUserAssets } = balanceSectionData;
   const positionSection = withPositionsSection(isLoadingUserAssets);
-  const sections = [balanceSection, positionSection, uniqueTokenFamiliesSection];
+  const claimablesSection = withClaimablesSection(isLoadingUserAssets);
+  const sections = [balanceSection, claimablesSection, positionSection, uniqueTokenFamiliesSection];
 
   const filteredSections = sections.filter(section => section.length !== 0).flat(1);
 
@@ -96,6 +100,46 @@ const withPositionsSection = (isLoadingUserAssets: boolean) => {
         type: 'POSITIONS_HEADER',
         uid: 'positions-header',
         total: positionsObj?.totals.total.display,
+      },
+      ...result,
+    ];
+
+    return res;
+  }
+  return [];
+};
+
+const withClaimablesSection = (isLoadingUserAssets: boolean) => {
+  // check if the feature is enabled
+  // const positionsEnabled = getExperimetalFlag(DEFI_POSITIONS);
+  // if (!positionsEnabled) return [];
+
+  const { accountAddress: address, nativeCurrency: currency } = store.getState().settings;
+  const claimables: Claimable[] | undefined = queryClient.getQueryData(
+    claimablesQueryKey({ address, currency, testnetMode: getIsHardhatConnected() })
+  );
+
+  const result: ClaimableExtraData[] = [];
+  const sortedClaimables = claimables?.sort((a, b) => (a.amount > b.amount ? -1 : 1));
+  sortedClaimables?.forEach((claimable, index) => {
+    const listData = {
+      type: 'CLAIMABLE',
+      uniqueId: claimable.name, // FIXME
+      uid: `position-${claimable.name}`, // FIXME
+      index,
+    };
+    result.push(listData);
+  });
+  if (result.length && !isLoadingUserAssets) {
+    const res = [
+      {
+        type: 'CLAIMABLES_SPACE_BEFORE',
+        uid: 'claimables-header-space-before',
+      },
+      {
+        type: 'CLAIMABLES_HEADER',
+        uid: 'claimables-header',
+        total: '$3,482', // FIXME
       },
       ...result,
     ];
