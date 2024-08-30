@@ -4,7 +4,6 @@ import { address } from '../utils/abbreviations';
 import { addressHashedEmoji, isValidImagePath } from '../utils/profileUtils';
 
 export function getAccountProfileInfo(selectedWallet: any, walletNames: any, accountAddress: any) {
-  console.log({ selectedWallet, walletNames, accountAddress });
   if (!selectedWallet) {
     return {};
   }

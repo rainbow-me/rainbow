@@ -117,7 +117,7 @@ export const identifier = new Storage<[], { identifier: string }>({
  *
  * @todo - fix any type here
  */
-const mwpStorage = new Storage<[], any>({ id: 'mwp', encryptionKey: process.env.MWP_ENCRYPTION_KEY });
+const mwpStorage = new Storage<[], { [key: string]: string }>({ id: 'mwp', encryptionKey: process.env.MWP_ENCRYPTION_KEY });
 
 export const mwp: SecureStorage = {
   get: async function <T>(key: string): Promise<T | undefined> {
