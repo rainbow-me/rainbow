@@ -53,6 +53,7 @@ export function useEstimatedGasFee({
     if (!gasLimit || !gasSettings || !nativeNetworkAsset?.price) return;
 
     const fee = calculateGasFee(gasSettings, gasLimit);
+    if (!fee) return;
 
     const networkAssetPrice = nativeNetworkAsset.price.value?.toString();
     if (!networkAssetPrice) return `${formatNumber(weiToGwei(fee))} Gwei`;
