@@ -27,7 +27,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { Box, Row, Rows } from '@/design-system';
 import { GasFee, LegacyGasFee, LegacyGasFeeParams, SwappableAsset } from '@/entities';
-import { ExchangeModalTypes, isKeyboardOpen, Network } from '@/helpers';
+import { ExchangeModalTypes, isKeyboardOpen } from '@/helpers';
 import { KeyboardType } from '@/helpers/keyboardTypes';
 import { getFlashbotsProvider, getProvider } from '@/handlers/web3';
 import { delay, greaterThan } from '@/helpers/utilities';
@@ -54,7 +54,7 @@ import { ethUnits } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils, gasUtils } from '@/utils';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
 import store from '@/redux/store';
@@ -63,7 +63,6 @@ import useParamsForExchangeModal from '@/hooks/useParamsForExchangeModal';
 import { Wallet } from '@ethersproject/wallet';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { useTheme } from '@/theme';
-import { logger as loggr } from '@/logger';
 import { getNetworkObject } from '@/networks';
 import Animated from 'react-native-reanimated';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
@@ -71,7 +70,7 @@ import { ReviewPromptAction } from '@/storage/schema';
 import { SwapPriceImpactType } from '@/hooks/usePriceImpactDetails';
 import { getNextNonce } from '@/state/nonces';
 import { getChainName } from '@/__swaps__/utils/chains';
-import { ChainId, ChainName } from '@/__swaps__/types/chains';
+import { ChainId, ChainName } from '@/networks/types';
 import { AddressOrEth, ParsedAsset } from '@/__swaps__/types/assets';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { estimateSwapGasLimit } from '@/raps/actions';
@@ -83,7 +82,7 @@ export const DEFAULT_SLIPPAGE_BIPS = {
   [ChainId.polygon]: 200,
   [ChainId.base]: 200,
   [ChainId.bsc]: 200,
-  [Network.optimism]: 200,
+  [ChainId.optimism]: 200,
   [ChainId.arbitrum]: 200,
   [ChainId.goerli]: 100,
   [ChainId.gnosis]: 200,
@@ -146,15 +145,14 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
     updateDefaultGasLimit,
     updateGasFeeOption,
     updateTxFee,
-    txNetwork,
-
+    chainId,
     isGasReady,
   } = useGas();
   const { accountAddress, flashbotsEnabled, nativeCurrency } = useAccountSettings();
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const prevGasFeesParamsBySpeed = usePrevious(gasFeeParamsBySpeed);
-  const prevChainId = usePrevious(ethereumUtils.getChainIdFromNetwork(txNetwork));
+  const prevChainId = usePrevious(chainId);
 
   const keyboardListenerSubscription = useRef<EmitterSubscription>();
 
@@ -223,7 +221,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
     if (currentChainId !== prevChainId) {
       speedUrgentSelected.current = false;
     }
-  }, [currentChainId, prevChainId, txNetwork]);
+  }, [currentChainId, prevChainId]);
 
   const defaultGasLimit = useMemo(() => {
     return ethereumUtils.getBasicSwapGasLimit(Number(currentChainId));
@@ -348,14 +346,14 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
     ) {
       updateGasLimit();
     }
-  }, [currentChainId, gasFeeParamsBySpeed, isGasReady, prevChainId, prevGasFeesParamsBySpeed, txNetwork, updateGasLimit]);
+  }, [currentChainId, gasFeeParamsBySpeed, isGasReady, prevChainId, prevGasFeesParamsBySpeed, updateGasLimit]);
 
   // Listen to gas prices, Uniswap reserves updates
   useEffect(() => {
     updateDefaultGasLimit(defaultGasLimit);
     InteractionManager.runAfterInteractions(() => {
       // Start polling in the current network
-      startPollingGasFees(ethereumUtils.getNetworkFromChainId(currentChainId), flashbots);
+      startPollingGasFees(currentChainId, flashbots);
     });
     return () => {
       stopPollingGasFees();
@@ -407,7 +405,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
         });
         if (!wallet) {
           setIsAuthorizing(false);
-          logger.sentry(`aborting ${type} due to missing wallet`);
+          logger.error(new RainbowError(`[ExchangeModal]: aborting ${type} due to missing wallet`));
           Alert.alert('Unable to determine wallet address');
           return false;
         }
@@ -415,25 +413,26 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
         // Switch to the flashbots provider if enabled
         // TODO(skylarbarrera): need to check if ledger and handle differently here
         if (flashbots && getNetworkObject({ chainId: currentChainId }).features?.flashbots && wallet instanceof Wallet) {
-          logger.debug('flashbots provider being set on mainnet');
+          logger.debug('[ExchangeModal]: flashbots provider being set on mainnet');
           const flashbotsProvider = await getFlashbotsProvider();
           wallet = new Wallet(wallet.privateKey, flashbotsProvider);
         }
 
         if (!inputAmount || !outputAmount) {
-          logger.log('[exchange - handle submit] inputAmount or outputAmount is missing');
+          logger.error(new RainbowError(`[ExchangeModal]: aborting ${type} due to missing inputAmount or outputAmount`));
           Alert.alert('Input amount or output amount is missing');
           return false;
         }
 
         if (!tradeDetails) {
-          logger.log('[exchange - handle submit] tradeDetails is missing');
+          logger.error(new RainbowError(`[ExchangeModal]: aborting ${type} due to missing tradeDetails`));
           Alert.alert('Missing trade details for swap');
           return false;
         }
 
-        logger.log('[exchange - handle submit] rap');
-        const currentNonce = await getNextNonce({ address: accountAddress, network: ethereumUtils.getNetworkFromChainId(currentChainId) });
+        logger.debug(`[ExchangeModal]: getting nonce for account ${accountAddress}`);
+        const currentNonce = await getNextNonce({ address: accountAddress, chainId: currentChainId });
+        logger.debug(`[ExchangeModal]: nonce for account ${accountAddress} is ${currentNonce}`);
         const { independentField, independentValue, slippageInBips, source } = store.getState().swap;
 
         const transformedAssetToSell = {
@@ -496,9 +495,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
         setIsAuthorizing(false);
         // if the transaction was not successful, we need to bubble that up to the caller
         if (errorMessage) {
-          loggr.debug('[ExchangeModal] transaction was not successful', {
-            errorMessage,
-          });
+          logger.error(new RainbowError(`[ExchangeModal]: transaction was not successful: ${errorMessage}`));
           if (wallet instanceof Wallet) {
             Alert.alert(errorMessage);
           } else {
@@ -507,7 +504,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
           return false;
         }
 
-        logger.log('[exchange - handle submit] executed rap!');
+        logger.debug('[ExchangeModal]: executed rap!');
         const slippage = slippageInBips / 100;
         analytics.track(`Completed ${type}`, {
           aggregator: tradeDetails?.source || '',
@@ -547,7 +544,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
         return true;
       } catch (error) {
         setIsAuthorizing(false);
-        logger.log('[exchange - handle submit] error submitting swap', error);
+        logger.error(new RainbowError(`[ExchangeModal]: error submitting swap: ${error}`));
         setParams({ focused: false });
         // close the hardware wallet modal before navigating
         if (isHardwareWallet) {
@@ -588,7 +585,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
       // Tell iOS we're running a rap (for tracking purposes)
       NotificationManager?.postNotification('rapInProgress');
     } catch (e) {
-      logger.log('error getting the swap amount in USD price', e);
+      logger.error(new RainbowError(`[ExchangeModal]: error posting notification for rapInProgress: ${e}`));
     } finally {
       const slippage = slippageInBips / 100;
       analytics.track(`Submitted ${type}`, {
@@ -651,7 +648,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
 
   const confirmButtonProps = useMemoOne(
     () => ({
-      currentNetwork: ethereumUtils.getNetworkFromChainId(currentChainId),
+      chainId: currentChainId,
       disabled: !Number(inputAmount) || (!loading && !tradeDetails),
       inputAmount,
       isAuthorizing,
@@ -693,7 +690,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
       setParams({ focused: false });
       navigate(Routes.SWAP_SETTINGS_SHEET, {
         asset: outputCurrency,
-        network: ethereumUtils.getNetworkFromChainId(currentChainId),
+        chainId: currentChainId,
         restoreFocusOnSwapModal: () => {
           android && (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
           setParams({ focused: true });
@@ -783,8 +780,8 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
     lastFocusedInput?.blur();
     navigate(Routes.EXPLAIN_SHEET, {
       inputToken: inputCurrency?.symbol,
-      fromNetwork: ethereumUtils.getNetworkFromChainId(inputChainId),
-      toNetwork: ethereumUtils.getNetworkFromChainId(outputChainId),
+      fromChainId: inputChainId,
+      toChainId: outputChainId,
       isCrosschainSwap,
       isBridgeSwap,
       onClose: () => {

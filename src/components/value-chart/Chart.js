@@ -24,7 +24,7 @@ const ChartTimespans = [
   ChartTypes.week,
   ChartTypes.month,
   ChartTypes.year,
-  //ChartTypes.max, todo restore after receiving proper data from zerion
+  // ChartTypes.max, todo restore after receiving proper data from zerion
 ];
 
 const ChartContainer = styled.View({

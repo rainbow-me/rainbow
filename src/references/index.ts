@@ -1,7 +1,6 @@
 import { AddressOrEth } from '@/__swaps__/types/assets';
-import { ChainId, ChainNameDisplay } from '@/__swaps__/types/chains';
+import { ChainId, ChainNameDisplay, Network } from '@/networks/types';
 import { Asset } from '@/entities';
-import { Network } from '@/helpers/networkTypes';
 import { AddressZero } from '@ethersproject/constants';
 
 import type { Address } from 'viem';
@@ -229,21 +228,10 @@ export const SUPPORTED_MAINNET_CHAINS: Chain[] = [mainnet, polygon, optimism, ar
   name: ChainNameDisplay[chain.id],
 }));
 
-export const SUPPORTED_CHAINS = ({ testnetMode = false }: { testnetMode?: boolean }): Chain[] =>
-  [
-    // In default order of appearance
-    mainnet,
-    base,
-    optimism,
-    arbitrum,
-    polygon,
-    zora,
-    blast,
-    degen,
-    avalanche,
-    bsc,
+export const SUPPORTED_CHAINS = ({ testnetMode = false }: { testnetMode?: boolean }): Chain[] => {
+  const mainnetChains: Chain[] = [mainnet, base, optimism, arbitrum, polygon, zora, blast, degen, avalanche, bsc];
 
-    // Testnets
+  const testnetChains: Chain[] = [
     goerli,
     holesky,
     sepolia,
@@ -255,12 +243,12 @@ export const SUPPORTED_CHAINS = ({ testnetMode = false }: { testnetMode?: boolea
     zoraSepolia,
     avalancheFuji,
     bscTestnet,
-  ].reduce((chainList, chain) => {
-    if (testnetMode || !chain.testnet) {
-      chainList.push({ ...chain, name: ChainNameDisplay[chain.id] });
-    }
-    return chainList;
-  }, [] as Chain[]);
+  ];
+
+  const allChains = mainnetChains.concat(testnetMode ? testnetChains : []);
+
+  return allChains.map(chain => ({ ...chain, name: ChainNameDisplay[chain.id] ?? chain.name }));
+};
 
 export const SUPPORTED_CHAIN_IDS = ({ testnetMode = false }: { testnetMode?: boolean }): ChainId[] =>
   SUPPORTED_CHAINS({ testnetMode }).map(chain => chain.id);

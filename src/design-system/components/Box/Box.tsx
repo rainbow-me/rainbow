@@ -10,6 +10,10 @@ import { BackgroundProvider, BackgroundProviderProps } from '../BackgroundProvid
 import { Border, BorderProps } from '../Border/Border';
 import { ApplyShadow } from '../private/ApplyShadow/ApplyShadow';
 import type * as Polymorphic from './polymorphic';
+import { IS_TEST } from '@/env';
+import LinearGradient from 'react-native-linear-gradient';
+
+const COMPONENTS_TO_OVERRIDE_IN_TEST_MODE = [LinearGradient];
 
 const positions = ['absolute'] as const;
 type Position = (typeof positions)[number];
@@ -174,7 +178,8 @@ export const Box = forwardRef(function Box(
   const width = typeof widthProp === 'number' ? widthProp : resolveToken(widths, widthProp);
   const height = typeof heightProp === 'number' ? heightProp : resolveToken(heights, heightProp);
 
-  const isView = Component === View || Component === Animated.View;
+  const ComponentToUse = IS_TEST && COMPONENTS_TO_OVERRIDE_IN_TEST_MODE.some(_C => Component instanceof _C) ? View : Component;
+  const isView = ComponentToUse === View || ComponentToUse === Animated.View;
 
   const shadowStylesExist =
     !!styleProp &&
@@ -273,7 +278,7 @@ export const Box = forwardRef(function Box(
     <BackgroundProvider color={background} style={style}>
       {({ backgroundColor, backgroundStyle }) => (
         <ApplyShadow backgroundColor={backgroundColor} shadows={shadows}>
-          <Component style={backgroundStyle} {...restProps} ref={ref}>
+          <ComponentToUse style={backgroundStyle} {...restProps} ref={ref}>
             {children}
             {borderColor || borderWidth ? (
               <Border
@@ -286,12 +291,12 @@ export const Box = forwardRef(function Box(
                 enableInLightMode
               />
             ) : null}
-          </Component>
+          </ComponentToUse>
         </ApplyShadow>
       )}
     </BackgroundProvider>
   ) : (
-    <Component style={style} {...restProps} ref={ref}>
+    <ComponentToUse style={style} {...restProps} ref={ref}>
       {children}
       {borderColor || borderWidth ? (
         <Border
@@ -304,7 +309,7 @@ export const Box = forwardRef(function Box(
           enableInLightMode
         />
       ) : null}
-    </Component>
+    </ComponentToUse>
   );
 }) as PolymorphicBox;
 

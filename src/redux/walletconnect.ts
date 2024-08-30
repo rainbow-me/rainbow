@@ -25,13 +25,15 @@ import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { convertHexToString, delay, omitBy, pickBy } from '@/helpers/utilities';
 import WalletConnectApprovalSheetType from '@/helpers/walletConnectApprovalSheetTypes';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils, watchingAlert } from '@/utils';
+import { watchingAlert } from '@/utils';
 import { getFCMToken } from '@/notifications/tokens';
 import { logger, RainbowError } from '@/logger';
 import { IS_DEV, IS_IOS, IS_TEST } from '@/env';
-import { RainbowNetworks } from '@/networks';
+import { RainbowNetworkObjects } from '@/networks';
 import { Verify } from '@walletconnect/types';
 import { RequestSource, handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
+import { ChainId } from '@/networks/types';
+import { Address } from 'viem';
 
 // -- Variables --------------------------------------- //
 let showRedirectSheetThreshold = 300;
@@ -132,8 +134,8 @@ export type WalletconnectResultType = 'timedOut' | 'sign' | 'transaction' | 'sig
 export interface WalletconnectApprovalSheetRouteParams {
   callback: (
     approved: boolean,
-    chainId: number,
-    accountAddress: string,
+    chainId: ChainId,
+    accountAddress: Address,
     peerId: WalletconnectRequestData['peerId'],
     dappScheme: WalletconnectRequestData['dappScheme'],
     dappName: WalletconnectRequestData['dappName'],
@@ -189,7 +191,7 @@ const getNativeOptions = async () => {
   const token = await getFCMToken();
 
   if (!token && !IS_DEV) {
-    logger.error(new RainbowError(`WC: FCM token not found, push notifications will not be received`));
+    logger.error(new RainbowError(`[redux/walletconnect]: FCM token not found, push notifications will not be received`));
   }
 
   const nativeOptions = {
@@ -353,7 +355,7 @@ export const walletConnectOnSessionRequest =
               error,
               payload,
             });
-            logger.error(new RainbowError('WC: Error on wc session_request'), {
+            logger.error(new RainbowError('[redux/walletconnect]: Error on wc session_request'), {
               error,
               payload,
             });
@@ -424,7 +426,7 @@ export const walletConnectOnSessionRequest =
         }, 2000);
       } catch (error: any) {
         clearTimeout(timeout!);
-        logger.error(new RainbowError('WC: Exception during wc session_request'), { error });
+        logger.error(new RainbowError('[redux/walletconnect]: Exception during wc session_request'), { error });
         analytics.track('Exception on wc session_request', {
           error,
         });
@@ -432,7 +434,7 @@ export const walletConnectOnSessionRequest =
       }
     } catch (error: any) {
       clearTimeout(timeout!);
-      logger.error(new RainbowError('WC: FCM exception during wc session_request'), { error });
+      logger.error(new RainbowError('[redux/walletconnect]: FCM exception during wc session_request'), { error });
       analytics.track('FCM exception on wc session_request', {
         error,
       });
@@ -449,7 +451,7 @@ export const walletConnectOnSessionRequest =
 const listenOnNewMessages =
   (walletConnector: WalletConnect) => (dispatch: ThunkDispatch<StoreAppState, unknown, never>, getState: AppGetState) => {
     walletConnector.on('call_request', async (error, payload) => {
-      logger.debug('WC: Request!', { error, payload }, logger.DebugContext.walletconnect);
+      logger.debug('[redux/walletconnect]: Request!', { error, payload }, logger.DebugContext.walletconnect);
 
       if (error) {
         analytics.track('Error on wc call_request', {
@@ -457,7 +459,7 @@ const listenOnNewMessages =
           error,
           payload,
         });
-        logger.error(new RainbowError('WC: Error on wc call_request'), {
+        logger.error(new RainbowError('[redux/walletconnect]: Error on wc call_request'), {
           message: error,
         });
         return;
@@ -470,11 +472,11 @@ const listenOnNewMessages =
       const requestId = payload.id;
       if (payload.method === 'wallet_addEthereumChain' || payload.method === `wallet_switchEthereumChain`) {
         const { chainId } = payload.params[0];
-        const currentNetwork = ethereumUtils.getNetworkFromChainId(
-          // @ts-expect-error "_chainId" is private.
-          Number(walletConnector._chainId)
+        // @ts-expect-error "_chainId" is private.
+        const currentChainId = Number(walletConnector._chainId);
+        const supportedChains = RainbowNetworkObjects.filter(network => network.features.walletconnect).map(network =>
+          network.id.toString()
         );
-        const supportedChains = RainbowNetworks.filter(network => network.features.walletconnect).map(network => network.id.toString());
         const numericChainId = convertHexToString(chainId);
         if (supportedChains.includes(numericChainId)) {
           dispatch(walletConnectSetPendingRedirect());
@@ -486,7 +488,7 @@ const listenOnNewMessages =
                   result: null,
                 });
                 const { accountAddress } = getState().settings;
-                logger.debug('WC: Updating session for chainID', { numericChainId }, logger.DebugContext.walletconnect);
+                logger.debug('[redux/walletconnect]: Updating session for chainID', { numericChainId }, logger.DebugContext.walletconnect);
                 await walletConnector.updateSession({
                   accounts: [accountAddress],
                   // @ts-expect-error "numericChainId" is a string, not a number.
@@ -511,7 +513,7 @@ const listenOnNewMessages =
                 });
               }
             },
-            currentNetwork,
+            currentChainId,
             meta: {
               chainIds: [Number(numericChainId)],
               dappName,
@@ -521,7 +523,7 @@ const listenOnNewMessages =
             type: WalletConnectApprovalSheetType.switch_chain,
           });
         } else {
-          logger.info('WC: NOT SUPPORTED CHAIN');
+          logger.warn(`[redux/walletconnect]: Unsupported chain ${numericChainId}`);
           walletConnector.rejectRequest({
             error: { message: 'Chain currently not supported' },
             id: requestId,
@@ -573,7 +575,7 @@ const listenOnNewMessages =
     });
     walletConnector.on('disconnect', error => {
       if (error) {
-        logger.error(new RainbowError('WC: Error on wc disconnect'), {
+        logger.error(new RainbowError('[redux/walletconnect]: Error on wc disconnect'), {
           message: error,
         });
 
@@ -620,7 +622,7 @@ export const walletConnectLoadState =
         // @ts-ignore
         error,
       });
-      logger.error(new RainbowError('WC: Error on wc walletConnectLoadState'), {
+      logger.error(new RainbowError('[redux/walletconnect]: Error on wc walletConnectLoadState'), {
         error,
       });
       newWalletConnectors = {};

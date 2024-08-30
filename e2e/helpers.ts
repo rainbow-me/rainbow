@@ -4,8 +4,9 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { expect, device, element, by, waitFor } from 'detox';
 import { parseEther } from '@ethersproject/units';
+import { IosElementAttributes, AndroidElementAttributes } from 'detox/detox';
 
-const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
+const TESTING_WALLET = '0x3637f053D542E6D00Eee42D656dD7C59Fa33a62F';
 
 const DEFAULT_TIMEOUT = 20_000;
 const android = device.getPlatform() === 'android';
@@ -69,6 +70,16 @@ export async function tap(elementId: string | RegExp) {
     throw new Error(`Error tapping element by id "${elementId}": ${error}`);
   }
 }
+
+interface CustomElementAttributes {
+  elements: Array<IosElementAttributes | AndroidElementAttributes>;
+}
+
+type ElementAttributes = IosElementAttributes & AndroidElementAttributes & CustomElementAttributes;
+
+export const fetchElementAttributes = async (testId: string): Promise<ElementAttributes> => {
+  return (await element(by.id(testId)).getAttributes()) as ElementAttributes;
+};
 
 export async function waitAndTap(elementId: string | RegExp, timeout = DEFAULT_TIMEOUT) {
   await delayTime('medium');
@@ -188,17 +199,17 @@ export async function clearField(elementId: string | RegExp) {
   }
 }
 
-export async function tapAndLongPress(elementId: string | RegExp) {
+export async function tapAndLongPress(elementId: string | RegExp, duration?: number) {
   try {
-    return await element(by.id(elementId)).longPress();
+    return await element(by.id(elementId)).longPress(duration);
   } catch (error) {
     throw new Error(`Error long-pressing element by id "${elementId}": ${error}`);
   }
 }
 
-export async function tapAndLongPressByText(text: string | RegExp) {
+export async function tapAndLongPressByText(text: string | RegExp, duration?: number) {
   try {
-    return await element(by.text(text)).longPress();
+    return await element(by.text(text)).longPress(duration);
   } catch (error) {
     throw new Error(`Error long-pressing element by text "${text}": ${error}`);
   }
@@ -263,15 +274,22 @@ export async function scrollTo(scrollviewId: string | RegExp, edge: Direction) {
   }
 }
 
-export async function swipeUntilVisible(elementId: string | RegExp, scrollViewId: string, direction: Direction, pctVisible = 75) {
+export async function swipeUntilVisible(
+  elementId: string | RegExp,
+  scrollViewId: string,
+  direction: Direction,
+  percentageVisible?: number
+) {
   let stop = false;
+
   while (!stop) {
     try {
       await waitFor(element(by.id(elementId)))
-        .toBeVisible(pctVisible)
+        .toBeVisible(percentageVisible)
         .withTimeout(500);
+
       stop = true;
-    } catch {
+    } catch (e) {
       await swipe(scrollViewId, direction, 'slow', 0.2);
     }
   }
@@ -454,6 +472,11 @@ export async function sendETHtoTestWallet() {
     to: TESTING_WALLET,
     value: parseEther('20'),
   });
+  await delayTime('long');
+  const balance = await provider.getBalance(TESTING_WALLET);
+  if (balance.lt(parseEther('20'))) {
+    throw Error('Error sending ETH to test wallet');
+  }
   return true;
 }
 

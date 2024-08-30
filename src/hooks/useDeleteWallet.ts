@@ -13,7 +13,7 @@ export default function useDeleteWallet({ address: primaryAddress }: { address?:
   const [watchingWalletId] = useMemo(() => {
     return (
       Object.entries<RainbowWallet>(wallets || {}).find(([_, wallet]: [string, RainbowWallet]) =>
-        wallet.addresses.some(({ address }: RainbowAccount) => address === primaryAddress)
+        (wallet.addresses || []).some(({ address }: RainbowAccount) => address === primaryAddress)
       ) || ['', '']
     );
   }, [primaryAddress, wallets]);

@@ -15,7 +15,7 @@ import { TokenList } from '@/__swaps__/screens/Swap/components/TokenList/TokenLi
 import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -39,6 +39,7 @@ function SwapOutputActionButton() {
 
   return (
     <SwapActionButton
+      testID="swap-output-asset-action-button"
       asset={internalSelectedOutputAsset}
       disableShadow={isDarkMode}
       hugContent
@@ -58,15 +59,13 @@ function SwapOutputAmount() {
     const { inputAsset, outputAsset } = useSwapsStore.getState();
     const inputTokenSymbol = inputAsset?.symbol;
     const outputTokenSymbol = outputAsset?.symbol;
-    const inputNetwork = ethereumUtils.getNetworkFromChainId(inputAsset?.chainId ?? ChainId.mainnet);
-    const outputNetwork = ethereumUtils.getNetworkFromChainId(outputAsset?.chainId ?? ChainId.mainnet);
     const isCrosschainSwap = inputAsset?.chainId !== outputAsset?.chainId;
     const isBridgeSwap = inputTokenSymbol === outputTokenSymbol;
 
     navigate(Routes.EXPLAIN_SHEET, {
       inputToken: inputTokenSymbol,
-      fromNetwork: inputNetwork,
-      toNetwork: outputNetwork,
+      fromChainId: inputAsset?.chainId ?? ChainId.mainnet,
+      toChainId: outputAsset?.chainId ?? ChainId.mainnet,
       isCrosschainSwap,
       isBridgeSwap,
       outputToken: outputTokenSymbol,

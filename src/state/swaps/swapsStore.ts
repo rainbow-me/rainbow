@@ -2,7 +2,7 @@ import { MIN_FLASHBOTS_PRIORITY_FEE } from '@/__swaps__/screens/Swap/constants';
 import { getCustomGasSettings, setCustomMaxPriorityFee } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { getSelectedGasSpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { RecentSwap } from '@/__swaps__/types/swap';
 import { getCachedGasSuggestions } from '@/__swaps__/utils/meteorology';
@@ -66,7 +66,7 @@ function serialize(state: Partial<SwapsState>, version?: number) {
       version,
     });
   } catch (error) {
-    logger.error(new RainbowError('Failed to serialize state for swaps storage'), { error });
+    logger.error(new RainbowError(`[swapsStore]: Failed to serialize state for swaps storage`), { error });
     throw error;
   }
 }
@@ -76,7 +76,7 @@ function deserialize(serializedState: string) {
   try {
     parsedState = JSON.parse(serializedState);
   } catch (error) {
-    logger.error(new RainbowError('Failed to parse serialized state from swaps storage'), { error });
+    logger.error(new RainbowError(`[swapsStore]: Failed to parse serialized state from swaps storage`), { error });
     throw error;
   }
 
@@ -88,7 +88,7 @@ function deserialize(serializedState: string) {
       recentSwaps = new Map(state.recentSwaps);
     }
   } catch (error) {
-    logger.error(new RainbowError('Failed to convert recentSwaps from swaps storage'), { error });
+    logger.error(new RainbowError(`[swapsStore]: Failed to convert recentSwaps from swaps storage`), { error });
   }
 
   let latestSwapAt: Map<ChainId, number> = new Map();
@@ -97,7 +97,7 @@ function deserialize(serializedState: string) {
       latestSwapAt = new Map(state.latestSwapAt);
     }
   } catch (error) {
-    logger.error(new RainbowError('Failed to convert latestSwapAt from swaps storage'), { error });
+    logger.error(new RainbowError(`[swapsStore]: Failed to convert latestSwapAt from swaps storage`), { error });
   }
 
   return {

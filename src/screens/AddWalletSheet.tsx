@@ -123,10 +123,9 @@ export const AddWalletSheet = () => {
                       try {
                         await backupUserDataIntoCloud({ wallets: newWallets });
                       } catch (e) {
-                        logger.error(e as RainbowError, {
-                          description: 'Updating wallet userdata failed after new account creation',
+                        logger.error(new RainbowError('[AddWalletSheet]: Updating wallet userdata failed after new account creation'), {
+                          error: e,
                         });
-                        captureException(e);
                         throw e;
                       }
                     }
@@ -143,10 +142,9 @@ export const AddWalletSheet = () => {
                     await initializeWallet();
                   }
                 } catch (e) {
-                  logger.error(e as RainbowError, {
-                    description: 'Error while trying to add account',
+                  logger.error(new RainbowError('[AddWalletSheet]: Error while trying to add account'), {
+                    error: e,
                   });
-                  captureException(e);
                   if (isDamaged) {
                     setTimeout(() => {
                       showWalletErrorAlert();
@@ -165,8 +163,8 @@ export const AddWalletSheet = () => {
         }, 50);
       });
     } catch (e) {
-      logger.error(e as RainbowError, {
-        description: 'Error while trying to add account',
+      logger.error(new RainbowError('[AddWalletSheet]: Error while trying to add account'), {
+        error: e,
       });
     }
   };
@@ -213,7 +211,9 @@ export const AddWalletSheet = () => {
         });
       } catch (e) {
         Alert.alert(i18n.t(i18n.l.back_up.errors.no_account_found));
-        logger.error(e as RainbowError);
+        logger.error(new RainbowError('[AddWalletSheet]: Error while trying to restore from cloud'), {
+          error: e,
+        });
       }
     } else {
       const isAvailable = await isCloudBackupAvailable();

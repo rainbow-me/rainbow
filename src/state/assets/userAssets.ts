@@ -1,11 +1,12 @@
+import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
 import { Address } from 'viem';
 import { RainbowError, logger } from '@/logger';
 import store from '@/redux/store';
 import { ETH_ADDRESS, SUPPORTED_CHAIN_IDS, supportedNativeCurrencies } from '@/references';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
-import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
-import { ChainId } from '@/__swaps__/types/chains';
-import { swapsStore } from '../swaps/swapsStore';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import { ChainId } from '@/networks/types';
+import { useConnectedToHardhatStore } from '../connectedToHardhat';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 
@@ -66,7 +67,7 @@ function serializeUserAssetsState(state: Partial<UserAssetsState>, version?: num
       version,
     });
   } catch (error) {
-    logger.error(new RainbowError('Failed to serialize state for user assets storage'), { error });
+    logger.error(new RainbowError(`[userAssetsStore]: Failed to serialize state for user assets storage`), { error });
     throw error;
   }
 }
@@ -76,7 +77,7 @@ function deserializeUserAssetsState(serializedState: string) {
   try {
     parsedState = JSON.parse(serializedState);
   } catch (error) {
-    logger.error(new RainbowError('Failed to parse serialized state from user assets storage'), { error });
+    logger.error(new RainbowError(`[userAssetsStore]: Failed to parse serialized state from user assets storage`), { error });
     throw error;
   }
 
@@ -88,7 +89,7 @@ function deserializeUserAssetsState(serializedState: string) {
       chainBalances = new Map(state.chainBalances);
     }
   } catch (error) {
-    logger.error(new RainbowError('Failed to convert chainBalances from user assets storage'), { error });
+    logger.error(new RainbowError(`[userAssetsStore]: Failed to convert chainBalances from user assets storage`), { error });
   }
 
   let idsByChain = new Map<UserAssetFilter, UniqueId[]>();
@@ -97,7 +98,7 @@ function deserializeUserAssetsState(serializedState: string) {
       idsByChain = new Map(state.idsByChain);
     }
   } catch (error) {
-    logger.error(new RainbowError('Failed to convert idsByChain from user assets storage'), { error });
+    logger.error(new RainbowError(`[userAssetsStore]: Failed to convert idsByChain from user assets storage`), { error });
   }
 
   let userAssetsData: Map<UniqueId, ParsedSearchAsset> = new Map();
@@ -106,7 +107,7 @@ function deserializeUserAssetsState(serializedState: string) {
       userAssetsData = new Map(state.userAssets);
     }
   } catch (error) {
-    logger.error(new RainbowError('Failed to convert userAssets from user assets storage'), { error });
+    logger.error(new RainbowError(`[userAssetsStore]: Failed to convert userAssets from user assets storage`), { error });
   }
 
   return {
@@ -179,7 +180,6 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
         return filteredIds;
       }
     },
-
     getHighestValueEth: () => {
       const preferredNetwork = swapsStore.getState().preferredNetwork;
       const assets = get().userAssets;
@@ -278,7 +278,7 @@ export const userAssetsStore = createRainbowStore<UserAssetsState>(
         });
 
         // Ensure all supported chains are in the map with a fallback value of 0
-        SUPPORTED_CHAIN_IDS({ testnetMode: false }).forEach(chainId => {
+        SUPPORTED_CHAIN_IDS({ testnetMode: useConnectedToHardhatStore.getState().connectedToHardhat }).forEach(chainId => {
           if (!unsortedChainBalances.has(chainId)) {
             unsortedChainBalances.set(chainId, 0);
             idsByChain.set(chainId, []);

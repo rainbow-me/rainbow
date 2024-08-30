@@ -10,12 +10,12 @@ import { STORAGE_IDS } from '@/model/mmkv';
 const mmkv = new MMKV();
 
 export const notificationsCampaignAction = async () => {
-  logger.debug('Notifications promo: showing notifications promo');
+  logger.debug('[notificationsCampaignAction]: showing notifications promo');
 
   mmkv.set(CampaignKey.notificationsLaunch, true);
 
   setTimeout(() => {
-    logger.debug(`Notifications promo: triggering notifications promo action`);
+    logger.debug('[notificationsCampaignAction]: triggering notifications promo action');
 
     Navigation.handleAction(Routes.NOTIFICATIONS_PROMO_SHEET, {});
   }, 1000);
@@ -25,7 +25,7 @@ export const notificationsCampaignCheck = async (): Promise<GenericCampaignCheck
   const hasShownCampaign = mmkv.getBoolean(CampaignKey.notificationsLaunch);
   const isFirstLaunch = mmkv.getBoolean(STORAGE_IDS.FIRST_APP_LAUNCH);
 
-  logger.debug(`Notifications promo`, { hasShownCampaign });
+  logger.debug('[notificationsCampaignCheck]: checking if notifications promo should show', { hasShownCampaign });
 
   const {
     selected: currentWallet,
@@ -40,11 +40,11 @@ export const notificationsCampaignCheck = async (): Promise<GenericCampaignCheck
    * the user is launching Rainbow for the first time
    */
   if (!currentWallet || hasShownCampaign || isFirstLaunch) {
-    logger.debug(`Notifications promo: not activating`);
+    logger.debug('[notificationsCampaignCheck]: not activating notifications promo');
     return GenericCampaignCheckResponse.nonstarter;
   }
 
-  logger.debug(`Notifications promo: activating`);
+  logger.debug('[notificationsCampaignCheck]: activating notifications promo');
 
   NotificationsPromoCampaign.action();
 

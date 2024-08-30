@@ -1,10 +1,10 @@
 import { Signer } from '@ethersproject/abstract-signer';
 import { CrosschainQuote, fillCrosschainQuote } from '@rainbow-me/swaps';
 import { Address } from 'viem';
-import { getProviderForNetwork, estimateGasWithPadding } from '@/handlers/web3';
+import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
 
 import { REFERRER, gasUnits, ReferrerType } from '@/references';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 import { NewTransaction } from '@/entities/transactions';
 import { TxHash } from '@/resources/transactions/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
@@ -39,7 +39,7 @@ export const estimateCrosschainSwapGasLimit = async ({
   quote: CrosschainQuote;
 }): Promise<string> => {
   // TODO: MARK - Replace this once we migrate network => chainId
-  const provider = getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
+  const provider = getProvider({ chainId });
   if (!provider || !quote) {
     return gasUnits.basic_swap[chainId];
   }
@@ -130,7 +130,7 @@ export const crosschainSwap = async ({
       quote,
     });
   } catch (e) {
-    logger.error(new RainbowError('crosschainSwap: error estimateCrosschainSwapGasLimit'), {
+    logger.error(new RainbowError('[raps/crosschainSwap]: error estimateCrosschainSwapGasLimit'), {
       message: (e as Error)?.message,
     });
     throw e;
@@ -158,11 +158,13 @@ export const crosschainSwap = async ({
       },
     })(swapParams);
   } catch (e) {
-    logger.error(new RainbowError('crosschainSwap: error executeCrosschainSwap'), { message: (e as Error)?.message });
+    logger.error(new RainbowError('[raps/crosschainSwap]: error executeCrosschainSwap'), {
+      message: (e as Error)?.message,
+    });
     throw e;
   }
 
-  if (!swap) throw new RainbowError('crosschainSwap: error executeCrosschainSwap');
+  if (!swap) throw new RainbowError('[raps/crosschainSwap]: error executeCrosschainSwap');
 
   // TODO: MARK - Replace this once we migrate network => chainId
   const network = ethereumUtils.getNetworkFromChainId(parameters.chainId);
@@ -199,8 +201,10 @@ export const crosschainSwap = async ({
         asset: {
           ...parameters.assetToSell,
           network: ethereumUtils.getNetworkFromChainId(parameters.assetToSell.chainId),
+          chainId: parameters.assetToSell.chainId,
           colors: parameters.assetToSell.colors as TokenColors,
           price: nativePriceForAssetToSell,
+          native: undefined,
         },
         value: quote.sellAmount.toString(),
       },
@@ -211,8 +215,10 @@ export const crosschainSwap = async ({
         asset: {
           ...parameters.assetToBuy,
           network: ethereumUtils.getNetworkFromChainId(parameters.assetToBuy.chainId),
+          chainId: parameters.assetToBuy.chainId,
           colors: parameters.assetToBuy.colors as TokenColors,
           price: nativePriceForAssetToBuy,
+          native: undefined,
         },
         value: quote.buyAmountMinusFees.toString(),
       },
@@ -221,7 +227,6 @@ export const crosschainSwap = async ({
     hash: swap.hash as TxHash,
     // TODO: MARK - Replace this once we migrate network => chainId
     network,
-    // chainId: parameters.chainId,
     nonce: swap.nonce,
     status: 'pending',
     type: 'swap',
@@ -231,8 +236,7 @@ export const crosschainSwap = async ({
 
   addNewTransaction({
     address: parameters.quote.from as Address,
-    // chainId: parameters.chainId as ChainId,
-    network,
+    chainId,
     transaction,
   });
 
