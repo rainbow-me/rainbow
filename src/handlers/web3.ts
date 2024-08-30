@@ -167,15 +167,6 @@ export const isL2Chain = ({ chainId }: { chainId: ChainId }): boolean => {
 };
 
 /**
- * @desc Checks whether a provider is HardHat.
- * @param providerUrl The provider URL.
- * @return Whether or not the provider is HardHat.
- */
-export const isHardHat = (providerUrl: string): boolean => {
-  return providerUrl?.startsWith('http://') && providerUrl?.endsWith('8545');
-};
-
-/**
  * @desc Checks if the given network is a testnet.
  * @param network The network to check.
  * @return Whether or not the network is a testnet.
@@ -201,27 +192,16 @@ export const getCachedProviderForNetwork = (chainId: ChainId = ChainId.mainnet):
 export const getProvider = ({ chainId }: { chainId: number }): StaticJsonRpcProvider => {
   const cachedProvider = chainsProviders.get(chainId);
 
-  if (cachedProvider) {
+  const networkObject = getNetworkObject({ chainId });
+
+  if (cachedProvider && cachedProvider?.connection.url === networkObject.rpc()) {
     return cachedProvider;
   }
-
-  const networkObject = getNetworkObject({ chainId });
 
   const provider = new StaticJsonRpcProvider(networkObject.rpc(), networkObject.id);
   chainsProviders.set(chainId, provider);
 
   return provider;
-};
-
-/**
- * @desc Checks if the active network is Hardhat.
- * @returns boolean: `true` if connected to Hardhat.
- */
-export const getIsHardhatConnected = (): boolean => {
-  const currentChainId = store.getState().settings.chainId;
-  const currentProviderUrl = getCachedProviderForNetwork(currentChainId)?.connection?.url;
-  const connectedToHardhat = !!currentProviderUrl && isHardHat(currentProviderUrl);
-  return connectedToHardhat;
 };
 
 /**
