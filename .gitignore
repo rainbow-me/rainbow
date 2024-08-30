@@ -131,3 +131,8 @@ InjectedJSBundle.js.LICENSE.txt
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+# Expo
+.expo
+dist/
+web-build/
