@@ -5,7 +5,7 @@ import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { transactionFetchQuery } from '@/resources/transactions/transaction';
 import { RainbowError, logger } from '@/logger';
-import { getIsHardhatConnected, getProvider } from '@/handlers/web3';
+import { getProvider } from '@/handlers/web3';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
 import { RainbowNetworkObjects } from '@/networks';
 import { queryClient } from '@/react-query/queryClient';
@@ -16,12 +16,15 @@ import { Address } from 'viem';
 import { nftsQueryKey } from '@/resources/nfts';
 import { getNftSortForAddress } from './useNFTsSortBy';
 import { ChainId } from '@/networks/types';
+import { staleBalancesStore } from '@/state/staleBalances';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
   const { storePendingTransactions, setPendingTransactions } = usePendingTransactionsStore(state => ({
     storePendingTransactions: state.pendingTransactions,
     setPendingTransactions: state.setPendingTransactions,
   }));
+  const { connectedToHardhat } = useConnectedToHardhatStore();
 
   const setNonce = useNonceStore(state => state.setNonce);
 
@@ -32,7 +35,6 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
   const refreshAssets = useCallback(
     (_: RainbowTransaction) => {
       // NOTE: We have two user assets stores right now, so let's invalidate both queries and trigger a refetch
-      const connectedToHardhat = getIsHardhatConnected();
       queryClient.invalidateQueries(
         userAssetsQueryKey({
           address,
@@ -49,7 +51,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       );
       queryClient.invalidateQueries(nftsQueryKey({ address, sortBy: getNftSortForAddress(address) }));
     },
-    [address, nativeCurrency]
+    [address, connectedToHardhat, nativeCurrency]
   );
 
   const processFlashbotsTransaction = useCallback(async (tx: RainbowTransaction): Promise<RainbowTransaction> => {
@@ -190,6 +192,20 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       const chainIds = RainbowNetworkObjects.filter(networkObject => networkObject.enabled && networkObject.networkType !== 'testnet').map(
         networkObject => networkObject.id
       );
+      minedTransactions.forEach(tx => {
+        if (tx.changes?.length) {
+          tx.changes?.forEach(change => {
+            processStaleAsset({ asset: change?.asset, address, transactionHash: tx?.hash });
+          });
+        } else if (tx.asset) {
+          processStaleAsset({ address, asset: tx.asset, transactionHash: tx?.hash });
+        }
+      });
+
+      queryClient.refetchQueries({
+        queryKey: userAssetsQueryKey({ address, currency: nativeCurrency, connectedToHardhat }),
+      });
+
       await queryClient.refetchQueries({
         queryKey: consolidatedTransactionsQueryKey({
           address,
@@ -213,7 +229,31 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
       address,
       pendingTransactions: newPendingTransactions,
     });
-  }, [address, nativeCurrency, pendingTransactions, processNonces, processPendingTransaction, setPendingTransactions]);
+  }, [address, connectedToHardhat, nativeCurrency, pendingTransactions, processNonces, processPendingTransaction, setPendingTransactions]);
 
   return { watchPendingTransactions };
 };
+
+function processStaleAsset({
+  asset,
+  address,
+  transactionHash,
+}: {
+  asset: RainbowTransaction['asset'];
+  address: string;
+  transactionHash: string;
+}) {
+  const { addStaleBalance } = staleBalancesStore.getState();
+  const chainId = asset?.chainId;
+  if (asset && typeof chainId === 'number') {
+    const changedAssetAddress = asset?.address as Address;
+    addStaleBalance({
+      address,
+      chainId,
+      info: {
+        address: changedAssetAddress,
+        transactionHash,
+      },
+    });
+  }
+}
