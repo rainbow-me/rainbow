@@ -129,12 +129,23 @@ export function SyncGasStateToSharedValues() {
     hasEnoughFundsForGas.value = undefined;
     if (!gasSettings || !estimatedGasLimit || !quote || 'error' in quote || isLoadingNativeNetworkAsset) return;
 
+    // NOTE: if we don't have a gas price or max base fee or max priority fee, we can't calculate the gas fee
+    if (
+      (gasSettings.isEIP1559 && !(gasSettings.maxBaseFee || gasSettings.maxPriorityFee)) ||
+      (!gasSettings.isEIP1559 && !gasSettings.gasPrice)
+    ) {
+      return;
+    }
+
     if (!userNativeNetworkAsset) {
       hasEnoughFundsForGas.value = false;
       return;
     }
 
     const gasFee = calculateGasFee(gasSettings, estimatedGasLimit);
+    if (!gasFee || isNaN(Number(gasFee))) {
+      return;
+    }
 
     const nativeGasFee = divWorklet(gasFee, powWorklet(10, userNativeNetworkAsset.decimals));
 

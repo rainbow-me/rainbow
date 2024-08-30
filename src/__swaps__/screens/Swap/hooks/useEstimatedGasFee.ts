@@ -19,9 +19,22 @@ function safeBigInt(value: string) {
   }
 }
 
+const isFeeNaN = (value: string | undefined) => isNaN(Number(value)) || !value;
+
 export function calculateGasFee(gasSettings: GasSettings, gasLimit: string) {
-  const amount = gasSettings.isEIP1559 ? add(gasSettings.maxBaseFee, gasSettings.maxPriorityFee || '0') : gasSettings.gasPrice;
-  return multiply(gasLimit, amount);
+  if (gasSettings.isEIP1559) {
+    if (isFeeNaN(gasSettings.maxBaseFee) || isFeeNaN(gasSettings.maxPriorityFee)) {
+      return null;
+    }
+
+    return add(gasSettings.maxBaseFee, gasSettings.maxPriorityFee);
+  }
+
+  if (isFeeNaN(gasSettings.gasPrice)) {
+    return null;
+  }
+
+  return multiply(gasLimit, gasSettings.gasPrice);
 }
 
 export function useEstimatedGasFee({
