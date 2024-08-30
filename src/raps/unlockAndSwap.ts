@@ -43,7 +43,6 @@ export const estimateUnlockAndSwap = async ({
   let swapAssetNeedsUnlocking = false;
 
   const nativeAsset = isLowerCaseMatch(ETH_ADDRESS_AGGREGATOR, sellTokenAddress) || isNativeAsset(sellTokenAddress, chainId);
-
   if (!isNativeAssetUnwrapping && !nativeAsset) {
     swapAssetNeedsUnlocking = await assetNeedsUnlocking({
       owner: accountAddress,
@@ -65,9 +64,7 @@ export const estimateUnlockAndSwap = async ({
     if (gasLimitFromMetadata) {
       return gasLimitFromMetadata;
     }
-  }
 
-  if (swapAssetNeedsUnlocking) {
     const unlockGasLimit = await estimateApprove({
       owner: accountAddress,
       tokenAddress: sellTokenAddress,

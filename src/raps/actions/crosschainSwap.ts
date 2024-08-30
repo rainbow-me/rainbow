@@ -77,7 +77,7 @@ export const estimateCrosschainSwapGasLimit = async ({
 
     return gasLimit;
   } catch (error) {
-    return getCrosschainSwapDefaultGasLimit(quote);
+    return getCrosschainSwapDefaultGasLimit(quote) || getDefaultGasLimitForTrade(quote, chainId);
   }
 };
 

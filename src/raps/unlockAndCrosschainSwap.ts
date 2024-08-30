@@ -74,7 +74,6 @@ export const estimateUnlockAndCrosschainSwap = async ({
   }
 
   const gasLimit = gasLimits.concat(swapGasLimit).reduce((acc, limit) => add(acc, limit), '0');
-
   if (isNaN(Number(gasLimit))) {
     return null;
   }

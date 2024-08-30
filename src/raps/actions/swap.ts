@@ -93,7 +93,11 @@ export const estimateSwapGasLimit = async ({
         WRAP_GAS_PADDING
       );
 
-      return gasLimit || quote?.defaultGasLimit || default_estimate;
+      if (gasLimit === null || gasLimit === undefined || isNaN(Number(gasLimit))) {
+        return quote?.defaultGasLimit || default_estimate;
+      }
+
+      return gasLimit;
     } catch (e) {
       return quote?.defaultGasLimit || default_estimate;
     }
