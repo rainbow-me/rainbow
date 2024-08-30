@@ -1,5 +1,8 @@
+import { useCallback, useMemo } from 'react';
+import useAccountSettings from './useAccountSettings';
+import { RainbowTransaction, MinedTransaction } from '@/entities/transactions/transaction';
+import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
-import { MinedTransaction, RainbowTransaction } from '@/entities/transactions/transaction';
 import { transactionFetchQuery } from '@/resources/transactions/transaction';
 import { RainbowError, logger } from '@/logger';
 import { getProvider } from '@/handlers/web3';
@@ -7,14 +10,12 @@ import { consolidatedTransactionsQueryKey } from '@/resources/transactions/conso
 import { RainbowNetworkObjects } from '@/networks';
 import { queryClient } from '@/react-query/queryClient';
 import { getTransactionFlashbotStatus } from '@/handlers/transactions';
-import { ChainId } from '@/networks/types';
-import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
-import { invalidateAddressNftsQueries } from '@/resources/nfts';
-import { useNonceStore } from '@/state/nonces';
 import { usePendingTransactionsStore } from '@/state/pendingTransactions';
-import { useCallback, useMemo } from 'react';
+import { useNonceStore } from '@/state/nonces';
 import { Address } from 'viem';
-import useAccountSettings from './useAccountSettings';
+import { nftsQueryKey } from '@/resources/nfts';
+import { getNftSortForAddress } from './useNFTsSortBy';
+import { ChainId } from '@/networks/types';
 import { staleBalancesStore } from '@/state/staleBalances';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
@@ -48,7 +49,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
           testnetMode: !!connectedToHardhat,
         })
       );
-      invalidateAddressNftsQueries(address);
+      queryClient.invalidateQueries(nftsQueryKey({ address, sortBy: getNftSortForAddress(address) }));
     },
     [address, connectedToHardhat, nativeCurrency]
   );

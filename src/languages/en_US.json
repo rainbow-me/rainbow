@@ -1321,11 +1321,7 @@
         "MOST_RECENT": "Recent",
         "most_recent": "Recent",
         "FLOOR_PRICE": "Floor Price",
-        "floor_price": "Floor Price",
-        "order": {
-          "asc": "Ascending order",
-          "desc": "Descending order"
-        }
+        "floor_price": "Floor Price"
       },
       "empty": "Collectibles",
       "collect_now": "Collect Now",
