@@ -379,11 +379,14 @@ export async function initListeners() {
       events.emit('walletConnectV2SessionDeleted');
     }, 500);
   });
+}
 
+export async function initWalletConnectPushNotifications() {
   try {
     const token = await getFCMToken();
 
     if (token) {
+      const client = await getWeb3WalletClient();
       const client_id = await client.core.crypto.getClientId();
 
       // initial subscription
