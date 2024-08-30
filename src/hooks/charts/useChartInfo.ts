@@ -4,6 +4,7 @@ import { DEFAULT_CHART_TYPE } from '../../redux/charts';
 import { metadataClient } from '@/graphql';
 import { useQuery } from '@tanstack/react-query';
 import { createQueryKey } from '@/react-query';
+import { SupportedCurrencyKey } from '@/references';
 import { ChainId } from '@/networks/types';
 
 const chartTimes = ['hour', 'day', 'week', 'month', 'year'] as const;
@@ -15,9 +16,19 @@ const getChartTimeArg = (selected: ChartTime) =>
 
 export type ChartData = { x: number; y: number };
 
-const fetchPriceChart = async (time: ChartTime, chainId: ChainId, address: string) => {
+const fetchPriceChart = async ({
+  address,
+  chainId,
+  currency,
+  time,
+}: {
+  address: string;
+  chainId: ChainId;
+  currency: SupportedCurrencyKey;
+  time: ChartTime;
+}) => {
   const priceChart = await metadataClient
-    .priceChart({ address, chainId, ...getChartTimeArg(time) })
+    .priceChart({ address, chainId, currency, ...getChartTimeArg(time) })
     .then(d => d.token?.priceCharts[time] as PriceChartTimeData);
   return priceChart?.points?.reduce((result, point) => {
     result.push({ x: point[0], y: point[1] });
@@ -25,7 +36,17 @@ const fetchPriceChart = async (time: ChartTime, chainId: ChainId, address: strin
   }, [] as ChartData[]);
 };
 
-export const usePriceChart = ({ mainnetAddress, address, chainId }: { mainnetAddress?: string; address: string; chainId: ChainId }) => {
+export const usePriceChart = ({
+  mainnetAddress,
+  address,
+  currency,
+  chainId,
+}: {
+  mainnetAddress?: string;
+  address: string;
+  currency: SupportedCurrencyKey;
+  chainId: ChainId;
+}) => {
   const { setParams } = useNavigation();
   const updateChartType = useCallback(
     (type: ChartTime) => {
@@ -41,8 +62,9 @@ export const usePriceChart = ({ mainnetAddress, address, chainId }: { mainnetAdd
   const chartType = params?.chartType ?? DEFAULT_CHART_TYPE;
   const query = useQuery({
     queryFn: async () => {
-      const chart = await fetchPriceChart(chartType, chainId, address);
-      if (!chart && mainnetAddress) return fetchPriceChart(chartType, ChainId.mainnet, mainnetAddress);
+      const chart = await fetchPriceChart({ address, chainId, currency, time: chartType });
+      if (!chart && mainnetAddress)
+        return fetchPriceChart({ address: mainnetAddress, chainId: ChainId.mainnet, currency, time: chartType });
       return chart || null;
     },
     queryKey: createQueryKey('price chart', { address, chainId, chartType }),

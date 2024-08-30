@@ -10,7 +10,7 @@ import Routes from '@/navigation/routesNames';
 import { checkIdentifierOnLaunch } from '@/model/backup';
 import { analyticsV2 } from '@/analytics';
 import { saveFCMToken } from '@/notifications/tokens';
-import { initListeners as initWalletConnectListeners } from '@/walletConnect';
+import { initListeners as initWalletConnectListeners, initWalletConnectPushNotifications } from '@/walletConnect';
 import isTestFlight from '@/helpers/isTestFlight';
 import { PerformanceTracking } from '@/performance/tracking';
 import { PerformanceMetrics } from '@/performance/tracking/types/PerformanceMetrics';
@@ -39,13 +39,14 @@ export function useApplicationSetup() {
       logger.debug(`[App]: Test flight usage - ${isTestFlight}`);
     }
     identifyFlow();
+    initWalletConnectListeners();
 
     Promise.all([analyticsV2.initializeRudderstack(), saveFCMToken()])
       .catch(error => {
         logger.error(new RainbowError('Failed to initialize rudderstack or save FCM token', error));
       })
       .finally(() => {
-        initWalletConnectListeners();
+        initWalletConnectPushNotifications();
         PerformanceTracking.finishMeasuring(PerformanceMetrics.loadRootAppComponent);
         analyticsV2.track(analyticsV2.event.applicationDidMount);
       });
