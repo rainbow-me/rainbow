@@ -9,8 +9,9 @@ import { logger, RainbowError } from '@/logger';
 import { queryClient } from '@/react-query';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
-import { invalidateAddressNftsQueries } from '@/resources/nfts';
+import { nftsQueryKey } from '@/resources/nfts';
 import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
+import useNftSort from './useNFTsSortBy';
 import { Address } from 'viem';
 import { addysSummaryQueryKey } from '@/resources/summary/summary';
 import useWallets from './useWallets';
@@ -21,6 +22,7 @@ export default function useRefreshAccountData() {
   const { accountAddress, nativeCurrency } = useAccountSettings();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const profilesEnabled = useExperimentalFlag(PROFILES);
+  const { nftSort } = useNftSort();
   const { connectedToHardhat } = useConnectedToHardhatStore();
 
   const { wallets } = useWallets();
@@ -31,7 +33,7 @@ export default function useRefreshAccountData() {
   );
 
   const fetchAccountData = useCallback(async () => {
-    invalidateAddressNftsQueries(accountAddress);
+    queryClient.invalidateQueries(nftsQueryKey({ address: accountAddress, sortBy: nftSort }));
     queryClient.invalidateQueries(positionsQueryKey({ address: accountAddress as Address, currency: nativeCurrency }));
     queryClient.invalidateQueries(addysSummaryQueryKey({ addresses: allAddresses, currency: nativeCurrency }));
     queryClient.invalidateQueries(userAssetsQueryKey({ address: accountAddress, currency: nativeCurrency, connectedToHardhat }));
@@ -53,7 +55,7 @@ export default function useRefreshAccountData() {
       logger.error(new RainbowError(`[useRefreshAccountData]: Error refreshing data: ${error}`));
       throw error;
     }
-  }, [accountAddress, allAddresses, connectedToHardhat, dispatch, nativeCurrency, profilesEnabled]);
+  }, [accountAddress, allAddresses, connectedToHardhat, dispatch, nativeCurrency, nftSort, profilesEnabled]);
 
   const refresh = useCallback(async () => {
     if (isRefreshing) return;
