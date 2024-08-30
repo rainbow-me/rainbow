@@ -22,6 +22,7 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import { isENSAddressFormat } from '@/helpers/validators';
 import * as i18n from '@/languages';
 import ContextMenu from '@/components/context-menu/ContextMenu.android';
+import { MenuConfig } from 'react-native-ios-context-menu';
 
 type ContextMenuRendererProps = {
   children: React.ReactNode;
@@ -43,42 +44,43 @@ const ContextMenuRenderer = ({
   onAddressCopied,
 }: ContextMenuRendererProps) => {
   const menuConfig = useMemo(
-    () => ({
-      menuTitle: '',
-      menuItems: [
-        {
-          actionKey: 'send',
-          actionTitle: i18n.t(i18n.l.transaction_details.context_menu.send),
-          icon: {
-            iconType: 'SYSTEM',
-            iconValue: 'paperplane',
+    () =>
+      ({
+        menuTitle: '',
+        menuItems: [
+          {
+            actionKey: 'send',
+            actionTitle: i18n.t(i18n.l.transaction_details.context_menu.send),
+            icon: {
+              iconType: 'SYSTEM',
+              iconValue: 'paperplane',
+            },
           },
-        },
-        ...(!account
-          ? [
-              {
-                actionKey: 'contact',
-                actionTitle: contact
-                  ? i18n.t(i18n.l.transaction_details.context_menu.edit_contact)
-                  : i18n.t(i18n.l.transaction_details.context_menu.add_contact),
-                icon: {
-                  iconType: 'SYSTEM',
-                  iconValue: contact ? 'person.crop.circle' : 'person.crop.circle.badge.plus',
+          ...(!account
+            ? [
+                {
+                  actionKey: 'contact',
+                  actionTitle: contact
+                    ? i18n.t(i18n.l.transaction_details.context_menu.edit_contact)
+                    : i18n.t(i18n.l.transaction_details.context_menu.add_contact),
+                  icon: {
+                    iconType: 'SYSTEM' as const,
+                    iconValue: contact ? 'person.crop.circle' : 'person.crop.circle.badge.plus',
+                  },
                 },
-              },
-            ]
-          : []),
-        {
-          actionKey: 'copy',
-          actionTitle: i18n.t(i18n.l.transaction_details.context_menu.copy_address),
-          actionSubtitle: isENSAddressFormat(name) ? name : formattedAddress,
-          icon: {
-            iconType: 'SYSTEM',
-            iconValue: 'square.on.square',
+              ]
+            : []),
+          {
+            actionKey: 'copy',
+            actionTitle: i18n.t(i18n.l.transaction_details.context_menu.copy_address),
+            actionSubtitle: isENSAddressFormat(name) ? name : formattedAddress,
+            icon: {
+              iconType: 'SYSTEM' as const,
+              iconValue: 'square.on.square',
+            },
           },
-        },
-      ],
-    }),
+        ],
+      }) satisfies MenuConfig,
     [contact, account, formattedAddress, name]
   );
 
@@ -169,7 +171,12 @@ const ContextMenuRenderer = ({
   }
 
   return (
-    <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem} menuAlignmentOverride="left">
+    <ContextMenuButton
+      menuConfig={menuConfig}
+      onPressMenuItem={onPressMenuItem}
+      // @ts-ignore
+      menuAlignmentOverride="left"
+    >
       {children}
     </ContextMenuButton>
   );

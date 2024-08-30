@@ -3,5 +3,15 @@ import React from 'react';
 import { ContextMenuButton, ContextMenuButtonProps } from 'react-native-ios-context-menu';
 
 export default function ContextMenu(props: ContextMenuButtonProps) {
-  return <ContextMenuButton activeOpacity={0} isMenuPrimaryAction useActionSheetFallback={false} wrapNativeComponent={false} {...props} />;
+  return (
+    <ContextMenuButton
+      isMenuPrimaryAction
+      useActionSheetFallback={false}
+      // @ts-ignore
+      activeOpacity={0}
+      // @ts-ignore
+      wrapNativeComponent={false}
+      {...props}
+    />
+  );
 }

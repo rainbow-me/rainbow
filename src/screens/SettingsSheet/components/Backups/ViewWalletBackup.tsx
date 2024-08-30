@@ -40,7 +40,6 @@ import {
   login,
 } from '@/handlers/cloudBackup';
 import { logger, RainbowError } from '@/logger';
-import { captureException } from '@sentry/react-native';
 import { RainbowAccount, createWallet } from '@/model/wallet';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import showWalletErrorAlert from '@/helpers/support';
@@ -55,6 +54,7 @@ import { format } from 'date-fns';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import { Backup, parseTimestampFromFilename } from '@/model/backup';
 import { WrappedAlert as Alert } from '@/helpers/alert';
+import { MenuConfig } from 'react-native-ios-context-menu';
 
 type ViewWalletBackupParams = {
   ViewWalletBackup: { walletId: string; title: string; imported?: boolean };
@@ -108,7 +108,10 @@ type ContextMenuWrapperProps = {
 
 const ContextMenuWrapper = ({ children, account, menuConfig, onPressMenuItem }: ContextMenuWrapperProps) => {
   return IS_IOS ? (
-    <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={(e: MenuEvent) => onPressMenuItem({ ...e, account })}>
+    <ContextMenuButton
+      menuConfig={menuConfig as MenuConfig}
+      onPressMenuItem={e => onPressMenuItem({ ...(e as unknown as MenuEvent), account })}
+    >
       {children}
     </ContextMenuButton>
   ) : (

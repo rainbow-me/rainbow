@@ -2,7 +2,6 @@ import React, { useCallback, useMemo } from 'react';
 import { RainbowTransaction, TransactionStatusTypes } from '@/entities';
 import { Box, Stack, Text } from '@/design-system';
 import { formatTransactionDetailsDate } from '@/screens/transaction-details/helpers/formatTransactionDetailsDate';
-import { capitalize } from 'lodash';
 import { getIconColorAndGradientForTransactionStatus } from '@/screens/transaction-details/helpers/getIconColorAndGradientForTransactionStatus';
 import RadialGradient from 'react-native-radial-gradient';
 import { useTheme } from '@/theme';
@@ -15,6 +14,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
 import { useNavigation } from '@react-navigation/native';
 import * as i18n from '@/languages';
+import { MenuConfig } from 'react-native-ios-context-menu';
 
 const SIZE = 40;
 
@@ -36,36 +36,37 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
   const canBeCancelled = canBeResubmitted && status !== TransactionStatusTypes.cancelling;
 
   const menuConfig = useMemo(
-    () => ({
-      menuTitle: '',
-      menuItems: [
-        ...(canBeResubmitted
-          ? [
-              {
-                actionKey: 'speedUp',
-                actionTitle: i18n.t(i18n.l.transaction_details.actions_menu.speed_up),
-                icon: {
-                  iconType: 'SYSTEM',
-                  iconValue: 'speedometer',
+    () =>
+      ({
+        menuTitle: '',
+        menuItems: [
+          ...(canBeResubmitted
+            ? [
+                {
+                  actionKey: 'speedUp',
+                  actionTitle: i18n.t(i18n.l.transaction_details.actions_menu.speed_up),
+                  icon: {
+                    iconType: 'SYSTEM' as const,
+                    iconValue: 'speedometer',
+                  },
                 },
-              },
-            ]
-          : []),
-        ...(canBeCancelled
-          ? [
-              {
-                actionKey: 'cancel',
-                actionTitle: i18n.t(i18n.l.transaction_details.actions_menu.cancel),
-                menuAttributes: ['destructive'],
-                icon: {
-                  iconType: 'SYSTEM',
-                  iconValue: 'xmark.circle',
+              ]
+            : []),
+          ...(canBeCancelled
+            ? [
+                {
+                  actionKey: 'cancel',
+                  actionTitle: i18n.t(i18n.l.transaction_details.actions_menu.cancel),
+                  menuAttributes: ['destructive' as const],
+                  icon: {
+                    iconType: 'SYSTEM' as const,
+                    iconValue: 'xmark.circle',
+                  },
                 },
-              },
-            ]
-          : []),
-      ],
-    }),
+              ]
+            : []),
+        ],
+      }) satisfies MenuConfig,
     [canBeCancelled, canBeResubmitted]
   );
 
