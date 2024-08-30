@@ -24,7 +24,7 @@ export const MobileWalletProtocolListener = () => {
   useEffect(() => {
     if (IS_DEV) {
       const removeListener = addDiagnosticLogListener(event => {
-        console.log('Event:', JSON.stringify(event, null, 2));
+        logger.debug(`[MobileWalletProtocolListener]: Diagnostic log event: ${JSON.stringify(event, null, 2)}`);
       });
 
       return () => removeListener();

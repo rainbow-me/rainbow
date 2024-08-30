@@ -4,6 +4,7 @@ import Routes from '@/navigation/routesNames';
 import { useNavigation } from '@/navigation';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { SCREEN_FOR_REQUEST_SOURCE } from '@/components/Transactions/constants';
+import { logger, RainbowError } from '@/logger';
 
 export const useTransactionSubmission = ({
   isBalanceEnough,
@@ -25,7 +26,7 @@ export const useTransactionSubmission = ({
       setIsAuthorizing(true);
       await onConfirm();
     } catch (error) {
-      console.error('Error while sending transaction:', error);
+      logger.error(new RainbowError(`[useTransactionSubmission]: Error while sending transaction: ${error}`));
     } finally {
       setIsAuthorizing(false);
     }

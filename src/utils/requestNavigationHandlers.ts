@@ -147,7 +147,6 @@ export const handleMobileWalletProtocolRequest = async ({
         );
       });
     } else if (isEthereumAction(action)) {
-      console.log(JSON.stringify(action, null, 2));
       logger.debug(`Processing ethereum action: ${action.method}`);
       if (!supportedMobileWalletProtocolActions.includes(action.method)) {
         logger.error(new RainbowError(`[handleMobileWalletProtocolRequest]: Unsupported action type ${action.method}`));

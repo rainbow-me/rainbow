@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getNextNonce } from '@/state/nonces';
 import { ChainId } from '@/networks/types';
+import { logger, RainbowError } from '@/logger';
 
 type UseNonceParams = {
   isMessageRequest: boolean;
@@ -21,7 +22,7 @@ export const useNonceForDisplay = ({ isMessageRequest, address, chainId }: UseNo
             setNonceForDisplay(nonceAsString);
           }
         } catch (error) {
-          console.error('Failed to get nonce for display:', error);
+          logger.error(new RainbowError(`[useNonceForDisplay]: Failed to get nonce for display: ${error}`));
         }
       })();
     }
