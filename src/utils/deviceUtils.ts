@@ -41,7 +41,7 @@ const deviceUtils = (function () {
 export const DEVICE_WIDTH = deviceUtils.dimensions.width;
 export const DEVICE_HEIGHT = deviceUtils.dimensions.height;
 export const PIXEL_RATIO = PixelRatio.get();
-export const NAVIGATION_BAR_HEIGHT = NavbarHeight.getNavigationBarHeight() / scale;
+export const NAVIGATION_BAR_HEIGHT = IS_ANDROID ? NavbarHeight.getNavigationBarHeight() / scale : 0;
 export default deviceUtils;
 
 export const isUsingButtonNavigation = () => {
