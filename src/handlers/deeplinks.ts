@@ -19,6 +19,13 @@ import { FiatProviderName } from '@/entities/f2c';
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 import { queryClient } from '@/react-query';
 import { pointsReferralCodeQueryKey } from '@/resources/points';
+import { useMobileWalletProtocolHost } from '@coinbase/mobile-wallet-protocol-host';
+import { InitialRoute } from '@/navigation/initialRoute';
+
+interface DeeplinkHandlerProps extends Pick<ReturnType<typeof useMobileWalletProtocolHost>, 'handleRequestUrl' | 'sendFailureToClient'> {
+  url: string;
+  initialRoute: InitialRoute;
+}
 
 /*
  * You can test these deeplinks with the following command:
@@ -26,7 +33,7 @@ import { pointsReferralCodeQueryKey } from '@/resources/points';
  *    `xcrun simctl openurl booted "https://link.rainbow.me/0x123"`
  */
 
-export default async function handleDeeplink(url: string, initialRoute: any = null) {
+export default async function handleDeeplink({ url, initialRoute, handleRequestUrl, sendFailureToClient }: DeeplinkHandlerProps) {
   if (!url) {
     logger.warn(`[handleDeeplink]: No url provided`);
     return;
@@ -196,6 +203,16 @@ export default async function handleDeeplink(url: string, initialRoute: any = nu
         logger.debug(`[handleDeeplink]: handling dapp`, { url });
         if (url) {
           Navigation.handleAction(Routes.DAPP_BROWSER_SCREEN, { url });
+        }
+        break;
+      }
+
+      case 'wsegue': {
+        const response = await handleRequestUrl(url);
+        if (response.error) {
+          // Return error to client app if session is expired or invalid
+          const { errorMessage, decodedRequest } = response.error;
+          await sendFailureToClient(errorMessage, decodedRequest);
         }
         break;
       }

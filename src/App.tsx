@@ -1,40 +1,31 @@
-import './languages';
+import '@/languages';
 import * as Sentry from '@sentry/react-native';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { AppRegistry, AppState, AppStateStatus, Dimensions, InteractionManager, Linking, LogBox, View } from 'react-native';
-import branch from 'react-native-branch';
-
+import React, { useCallback, useEffect, useState } from 'react';
+import { AppRegistry, Dimensions, LogBox, StyleSheet, View } from 'react-native';
+import { MobileWalletProtocolProvider } from '@coinbase/mobile-wallet-protocol-host';
+import { DeeplinkHandler } from '@/components/DeeplinkHandler';
+import { AppStateChangeHandler } from '@/components/AppStateChangeHandler';
+import { useApplicationSetup } from '@/hooks/useApplicationSetup';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { connect, Provider as ReduxProvider } from 'react-redux';
 import { RecoilRoot } from 'recoil';
-import PortalConsumer from './components/PortalConsumer';
-import ErrorBoundary from './components/error-boundary/ErrorBoundary';
-import { OfflineToast } from './components/toasts';
-import { designSystemPlaygroundEnabled, reactNativeDisableYellowBox, showNetworkRequests, showNetworkResponses } from './config/debug';
-import monitorNetwork from './debugging/network';
-import { Playground } from './design-system/playground/Playground';
-import handleDeeplink from './handlers/deeplinks';
-import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
-import RainbowContextWrapper from './helpers/RainbowContext';
-import isTestFlight from './helpers/isTestFlight';
+import PortalConsumer from '@/components/PortalConsumer';
+import ErrorBoundary from '@/components/error-boundary/ErrorBoundary';
+import { OfflineToast } from '@/components/toasts';
+import { designSystemPlaygroundEnabled, reactNativeDisableYellowBox, showNetworkRequests, showNetworkResponses } from '@/config/debug';
+import monitorNetwork from '@/debugging/network';
+import { Playground } from '@/design-system/playground/Playground';
+import RainbowContextWrapper from '@/helpers/RainbowContext';
 import * as keychain from '@/model/keychain';
-import { loadAddress } from './model/wallet';
-import { Navigation } from './navigation';
-import RoutesComponent from './navigation/Routes';
-import { PerformanceContextMap } from './performance/PerformanceContextMap';
-import { PerformanceTracking } from './performance/tracking';
-import { PerformanceMetrics } from './performance/tracking/types/PerformanceMetrics';
-import { PersistQueryClientProvider, persistOptions, queryClient } from './react-query';
-import store from './redux/store';
-import { walletConnectLoadState } from './redux/walletconnect';
-import { MainThemeProvider } from './theme/ThemeContext';
-import { branchListener } from './utils/branch';
-import { addressKey } from './utils/keychainConstants';
+import { Navigation } from '@/navigation';
+import { PersistQueryClientProvider, persistOptions, queryClient } from '@/react-query';
+import store, { AppDispatch, type AppState } from '@/redux/store';
+import { MainThemeProvider } from '@/theme/ThemeContext';
+import { addressKey } from '@/utils/keychainConstants';
 import { SharedValuesProvider } from '@/helpers/SharedValuesContext';
-import { InitialRoute, InitialRouteContext } from '@/navigation/initialRoute';
-import Routes from '@/navigation/routesNames';
+import { InitialRouteContext } from '@/navigation/initialRoute';
 import { Portal } from '@/react-native-cool-modals/Portal';
 import { NotificationsHandler } from '@/notifications/NotificationsHandler';
 import { analyticsV2 } from '@/analytics';
@@ -42,18 +33,15 @@ import { getOrCreateDeviceId, securelyHashWalletAddress } from '@/analytics/util
 import { logger, RainbowError } from '@/logger';
 import * as ls from '@/storage';
 import { migrate } from '@/migrations';
-import { initListeners as initWalletConnectListeners, initWalletConnectPushNotifications } from '@/walletConnect';
-import { saveFCMToken } from '@/notifications/tokens';
 import { initializeReservoirClient } from '@/resources/reservoir/client';
 import { ReviewPromptAction } from '@/storage/schema';
-import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { initializeRemoteConfig } from '@/model/remoteConfig';
 import { NavigationContainerRef } from '@react-navigation/native';
-import { RootStackParamList } from './navigation/types';
+import { RootStackParamList } from '@/navigation/types';
 import { Address } from 'viem';
-import { IS_DEV } from './env';
-import { checkIdentifierOnLaunch } from './model/backup';
-import { prefetchDefaultFavorites } from './resources/favorites';
+import { IS_DEV } from '@/env';
+import { prefetchDefaultFavorites } from '@/resources/favorites';
+import Routes from '@/navigation/Routes';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -62,140 +50,49 @@ if (IS_DEV) {
 
 enableScreens();
 
-const containerStyle = { flex: 1 };
+const sx = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
 
 interface AppProps {
   walletReady: boolean;
 }
 
 function App({ walletReady }: AppProps) {
-  const [appState, setAppState] = useState(AppState.currentState);
-  const [initialRoute, setInitialRoute] = useState<InitialRoute>(null);
-  const eventSubscription = useRef<ReturnType<typeof AppState.addEventListener> | null>(null);
-  const branchListenerRef = useRef<ReturnType<typeof branch.subscribe> | null>(null);
-  const navigatorRef = useRef<NavigationContainerRef<RootStackParamList> | null>(null);
-
-  const setupDeeplinking = useCallback(async () => {
-    const initialUrl = await Linking.getInitialURL();
-
-    branchListenerRef.current = await branchListener(url => {
-      logger.debug(`[App]: Branch: listener called`, {}, logger.DebugContext.deeplinks);
-      try {
-        handleDeeplink(url, initialRoute);
-      } catch (error) {
-        if (error instanceof Error) {
-          logger.error(new RainbowError(`[App]: Error opening deeplink`), {
-            message: error.message,
-            url,
-          });
-        } else {
-          logger.error(new RainbowError(`[App]: Error opening deeplink`), {
-            message: 'Unknown error',
-            url,
-          });
-        }
-      }
-    });
-
-    if (initialUrl) {
-      logger.debug(`[App]: has initial URL, opening with Branch`, { initialUrl });
-      branch.openURL(initialUrl);
-    }
-  }, [initialRoute]);
-
-  const identifyFlow = useCallback(async () => {
-    const address = await loadAddress();
-    if (address) {
-      setTimeout(() => {
-        InteractionManager.runAfterInteractions(() => {
-          handleReviewPromptAction(ReviewPromptAction.TimesLaunchedSinceInstall);
-        });
-      }, 10_000);
-
-      InteractionManager.runAfterInteractions(checkIdentifierOnLaunch);
-    }
-
-    setInitialRoute(address ? Routes.SWIPE_LAYOUT : Routes.WELCOME_SCREEN);
-    PerformanceContextMap.set('initialRoute', address ? Routes.SWIPE_LAYOUT : Routes.WELCOME_SCREEN);
-  }, []);
-
-  const handleAppStateChange = useCallback(
-    (nextAppState: AppStateStatus) => {
-      if (appState === 'background' && nextAppState === 'active') {
-        store.dispatch(walletConnectLoadState());
-      }
-      setAppState(nextAppState);
-      analyticsV2.track(analyticsV2.event.appStateChange, {
-        category: 'app state',
-        label: nextAppState,
-      });
-    },
-    [appState]
-  );
+  const { initialRoute } = useApplicationSetup();
 
   const handleNavigatorRef = useCallback((ref: NavigationContainerRef<RootStackParamList>) => {
-    navigatorRef.current = ref;
     Navigation.setTopLevelNavigator(ref);
   }, []);
 
-  useEffect(() => {
-    if (!__DEV__ && isTestFlight) {
-      logger.debug(`[App]: Test flight usage - ${isTestFlight}`);
-    }
-    identifyFlow();
-    eventSubscription.current = AppState.addEventListener('change', handleAppStateChange);
-    initWalletConnectListeners();
-
-    const p1 = analyticsV2.initializeRudderstack();
-    const p2 = setupDeeplinking();
-    const p3 = saveFCMToken();
-    Promise.all([p1, p2, p3]).then(() => {
-      initWalletConnectPushNotifications();
-      PerformanceTracking.finishMeasuring(PerformanceMetrics.loadRootAppComponent);
-      analyticsV2.track(analyticsV2.event.applicationDidMount);
-    });
-
-    return () => {
-      eventSubscription.current?.remove();
-      branchListenerRef.current?.();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (walletReady) {
-      logger.debug(`[App]: ✅ Wallet ready!`);
-      runWalletBackupStatusChecks();
-    }
-  }, [walletReady]);
-
   return (
     <Portal>
-      <View style={containerStyle}>
+      <View style={sx.container}>
         {initialRoute && (
           <InitialRouteContext.Provider value={initialRoute}>
-            <RoutesComponent ref={handleNavigatorRef} />
+            <Routes ref={handleNavigatorRef} />
             <PortalConsumer />
           </InitialRouteContext.Provider>
         )}
         <OfflineToast />
       </View>
       <NotificationsHandler walletReady={walletReady} />
+      <DeeplinkHandler initialRoute={initialRoute} walletReady={walletReady} />
+      <AppStateChangeHandler walletReady={walletReady} />
     </Portal>
   );
 }
 
-export type AppStore = typeof store;
-export type RootState = ReturnType<AppStore['getState']>;
-export type AppDispatch = AppStore['dispatch'];
-
-const AppWithRedux = connect<unknown, AppDispatch, unknown, RootState>(state => ({
+const AppWithRedux = connect<AppProps, AppDispatch, AppProps, AppState>(state => ({
   walletReady: state.appState.walletReady,
 }))(App);
 
 function Root() {
-  const [initializing, setInitializing] = React.useState(true);
+  const [initializing, setInitializing] = useState(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
     async function initializeApplication() {
       await initializeRemoteConfig();
       await migrate();
@@ -301,19 +198,21 @@ function Root() {
             prefetchDefaultFavorites();
           }}
         >
-          <SafeAreaProvider>
-            <MainThemeProvider>
-              <GestureHandlerRootView style={{ flex: 1 }}>
-                <RainbowContextWrapper>
-                  <SharedValuesProvider>
-                    <ErrorBoundary>
-                      <AppWithRedux walletReady={false} />
-                    </ErrorBoundary>
-                  </SharedValuesProvider>
-                </RainbowContextWrapper>
-              </GestureHandlerRootView>
-            </MainThemeProvider>
-          </SafeAreaProvider>
+          <MobileWalletProtocolProvider secureStorage={ls.mwp} sessionExpiryDays={7}>
+            <SafeAreaProvider>
+              <MainThemeProvider>
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                  <RainbowContextWrapper>
+                    <SharedValuesProvider>
+                      <ErrorBoundary>
+                        <AppWithRedux walletReady={false} />
+                      </ErrorBoundary>
+                    </SharedValuesProvider>
+                  </RainbowContextWrapper>
+                </GestureHandlerRootView>
+              </MainThemeProvider>
+            </SafeAreaProvider>
+          </MobileWalletProtocolProvider>
         </PersistQueryClientProvider>
       </RecoilRoot>
     </ReduxProvider>
