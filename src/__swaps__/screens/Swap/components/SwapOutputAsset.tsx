@@ -79,7 +79,8 @@ function SwapOutputAmount() {
     v => {
       'worklet';
       runOnJS(setIsPasteEnabled)(v);
-    }
+    },
+    []
   );
 
   return (

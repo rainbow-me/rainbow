@@ -1987,6 +1987,7 @@
     "swap": {
       "actions": {
         "hold_to_swap": "Hold to Swap",
+        "hold_to_bridge": "Hold to Bridge",
         "save": "Save",
         "enter_amount": "Enter Amount",
         "review": "Review",

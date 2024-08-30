@@ -194,7 +194,8 @@ const HoldProgress = ({ holdProgress }: { holdProgress: SharedValue<number> }) =
       if (current && current !== previous) {
         runOnJS(transformColor)(getColorValueForThemeWorklet(current, isDarkMode, true));
       }
-    }
+    },
+    []
   );
 
   return (
