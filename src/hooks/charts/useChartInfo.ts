@@ -63,7 +63,8 @@ export const usePriceChart = ({
   const query = useQuery({
     queryFn: async () => {
       const chart = await fetchPriceChart({ address, chainId, currency, time: chartType });
-      if (!chart && mainnetAddress) return fetchPriceChart({ address: mainnetAddress, chainId: ChainId.mainnet, currency, time: chartType });
+      if (!chart && mainnetAddress)
+        return fetchPriceChart({ address: mainnetAddress, chainId: ChainId.mainnet, currency, time: chartType });
       return chart || null;
     },
     queryKey: createQueryKey('price chart', { address, chainId, chartType }),
