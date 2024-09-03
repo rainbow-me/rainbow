@@ -60,19 +60,30 @@ export function useSwapTextStyles({
   });
 
   const isInputZero = useDerivedValue(() => {
-    const isZero =
-      !internalSelectedInputAsset.value ||
-      (inputValues.value.inputAmount === 0 && inputMethod.value !== 'slider') ||
-      (inputMethod.value === 'slider' && equalWorklet(inputValues.value.inputAmount, 0));
-    return isZero;
+    const isInputAmountZero = inputValues.value.inputAmount === 0;
+    if (!internalSelectedInputAsset.value) return true;
+
+    if (inputMethod.value === 'slider' && equalWorklet(inputValues.value.inputAmount, 0)) return true;
+
+    if (inputMethod.value === 'inputNativeValue' && isInputAmountZero) {
+      return inputValues.value.inputNativeValue === 0;
+    }
+
+    return isInputAmountZero;
   });
 
   const isOutputZero = useDerivedValue(() => {
-    const isZero =
-      !internalSelectedOutputAsset.value ||
-      (inputValues.value.outputAmount === 0 && inputMethod.value !== 'slider') ||
-      (inputMethod.value === 'slider' && equalWorklet(inputValues.value.outputAmount, 0));
-    return isZero;
+    const isOutputAmountZero = inputValues.value.outputAmount === 0;
+
+    if (!internalSelectedOutputAsset.value) return true;
+
+    if (inputMethod.value === 'slider' && equalWorklet(inputValues.value.inputAmount, 0)) return true;
+
+    if (inputMethod.value === 'outputNativeValue' && isOutputAmountZero) {
+      return inputValues.value.outputNativeValue === 0;
+    }
+
+    return isOutputAmountZero;
   });
 
   const inputAssetColor = useDerivedValue(() => {
