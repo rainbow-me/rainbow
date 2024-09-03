@@ -30,7 +30,8 @@ function BuyActionButton({ color: givenColor, asset, ...props }) {
     });
   }, [accountAddress, isDamaged, navigate, routeName]);
 
-  return <SheetActionButton {...props} color={color} label={`􀍰 ${lang.t('button.buy_eth')}`} onPress={handlePress} weight="bold" />;
+  return <SheetActionButton {...props} color={color} label={`􀍰 ${lang.t('button.buy_eth')}`} onPress={handlePress} 
+  weight="bold" accessible={true} accessibilityLabel={lang.t('button.buy_eth')} accessibilityHint={lang.t('accessibility.hint.buy_eth')}/>;
 }
 
 export default React.memo(BuyActionButton);
