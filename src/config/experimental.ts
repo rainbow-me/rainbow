@@ -29,6 +29,7 @@ export const DAPP_BROWSER = 'Dapp Browser';
 export const ETH_REWARDS = 'ETH Rewards';
 export const DEGEN_MODE = 'Degen Mode';
 export const FEATURED_RESULTS = 'Featured Results';
+export const CLAIMABLES = 'Claimables';
 
 /**
  * A developer setting that pushes log lines to an array in-memory so that
@@ -66,6 +67,7 @@ export const defaultConfig: Record<string, ExperimentalValue> = {
   [ETH_REWARDS]: { settings: true, value: false },
   [DEGEN_MODE]: { settings: true, value: false },
   [FEATURED_RESULTS]: { settings: true, value: false },
+  [CLAIMABLES]: { settings: true, value: false },
 };
 
 const storageKey = 'config';

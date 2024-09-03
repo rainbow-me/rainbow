@@ -7,6 +7,8 @@ import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { ConsolidatedClaimablesResponse } from './types';
 import { logger, RainbowError } from '@/logger';
 import { parseClaimables } from './utils';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { CLAIMABLES, OP_REWARDS, useExperimentalFlag } from '@/config';
 
 const addysHttp = new RainbowFetchClient({
   baseURL: 'https://addys.p.rainbow.me/v3',
@@ -68,8 +70,12 @@ export function useClaimables(
   { address, currency, testnetMode }: ClaimablesArgs,
   config: QueryConfigWithSelect<ClaimablesResult, Error, ClaimablesResult, ClaimablesQueryKey> = {}
 ) {
+  const { claimables: remoteFlag } = useRemoteConfig();
+  const localFlag = useExperimentalFlag(CLAIMABLES);
+
   return useQuery(claimablesQueryKey({ address, currency, testnetMode }), claimablesQueryFunction, {
     ...config,
+    enabled: !!address && (remoteFlag || localFlag),
     staleTime: 1000 * 60 * 2,
     cacheTime: 1000 * 60 * 60 * 24,
   });

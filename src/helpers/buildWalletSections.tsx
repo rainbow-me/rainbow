@@ -5,12 +5,13 @@ import { queryClient } from '@/react-query';
 import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import store from '@/redux/store';
 import { ClaimableExtraData, PositionExtraData } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
-import { getExperimetalFlag, DEFI_POSITIONS } from '@/config/experimental';
+import { getExperimetalFlag, DEFI_POSITIONS, CLAIMABLES } from '@/config/experimental';
 import { RainbowPositions } from '@/resources/defi/types';
 import { claimablesQueryKey } from '@/resources/addys/claimables/query';
 import { getIsHardhatConnected } from '@/handlers/web3';
 import { Claimable } from '@/resources/addys/claimables/types';
 import { add, convertAmountToNativeDisplay } from './utilities';
+import { getRemoteConfig } from '@/model/remoteConfig';
 
 const CONTENT_PLACEHOLDER = [
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },
@@ -112,8 +113,8 @@ const withPositionsSection = (isLoadingUserAssets: boolean) => {
 
 const withClaimablesSection = (isLoadingUserAssets: boolean) => {
   // check if the feature is enabled
-  // const positionsEnabled = getExperimetalFlag(DEFI_POSITIONS);
-  // if (!positionsEnabled) return [];
+  const claimablesEnabled = getExperimetalFlag(CLAIMABLES) || getRemoteConfig().claimables;
+  if (!claimablesEnabled) return [];
 
   const { accountAddress: address, nativeCurrency: currency } = store.getState().settings;
   const claimables: Claimable[] | undefined = queryClient.getQueryData(
