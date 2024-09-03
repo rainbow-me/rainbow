@@ -127,6 +127,7 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should be able to verify swap is happening', async () => {
     await delayTime('very-long');
+    await delayTime('very-long');
     await checkIfVisible('profile-screen');
     const activityListElements = await fetchElementAttributes('wallet-activity-list');
     expect(activityListElements.label).toContain('ETH');
