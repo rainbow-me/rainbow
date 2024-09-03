@@ -120,8 +120,12 @@ describe('Swap Sheet Interaction Flow', () => {
 
     expect(inputAssetActionButton.label).toBe('ETH 􀆏');
     expect(outputAssetActionButton.label).toBe('DAI 􀆏');
-    expect(holdToSwapButton.label).toBe('􀎽 Hold to Swap');
 
+    // sometime UI is lagging. If it is, wait a bit. if not, just proceed.
+    if (holdToSwapButton.label === '􀎽 Review') {
+      await delayTime('very-long');
+    }
+    expect(holdToSwapButton.label).toBe('􀎽 Hold to Swap');
     await tapAndLongPress('swap-bottom-action-button', 1500);
   });
 
