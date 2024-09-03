@@ -409,7 +409,7 @@ export const gasPricesStartPolling =
                     // the basefee at the time we fork mainnet during our hardhat tests
                     let baseFee = baseFeePerGas;
                     if (chainId === ChainId.mainnet && IS_TESTING === 'true' && useConnectedToHardhatStore.getState().connectedToHardhat) {
-                        baseFee = parseGasFeeParam(gweiToWei(1000));
+                      baseFee = parseGasFeeParam(gweiToWei(1000));
                     }
 
                     if (customGasFeeModifiedByUser) {

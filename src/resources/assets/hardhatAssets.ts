@@ -16,10 +16,9 @@ const fetchHardhatBalancesWithBalanceChecker = async (
   tokens: string[],
   address: string
 ): Promise<{ [tokenAddress: string]: string } | null> => {
-
   const provider = getProvider({ chainId: ChainId.mainnet });
   const balanceCheckerContract = new Contract(MAINNET_BALANCE_CHECKER, balanceCheckerContractAbi, provider);
-  
+
   try {
     const values = await balanceCheckerContract.balances([address], tokens);
     const balances: {
