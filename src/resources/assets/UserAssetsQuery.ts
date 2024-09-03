@@ -11,7 +11,7 @@ import { fetchHardhatBalances } from './hardhatAssets';
 import { AddysAccountAssetsMeta, AddysAccountAssetsResponse, RainbowAddressAssets } from './types';
 import { Network } from '@/networks/types';
 import { staleBalancesStore } from '@/state/staleBalances';
-import { networkObjects } from '@/networks';
+import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/networks/chains';
 
 // ///////////////////////////////////////////////
 // Query Types
@@ -74,14 +74,15 @@ async function userAssetsQueryFunction({
   }
 
   try {
-    const chainIds = Object.values(networkObjects)
-      .filter(network => network.enabled && network.networkType !== 'testnet')
-      .map(network => network.id);
-
     staleBalancesStore.getState().clearExpiredData(address);
     const staleBalanceParam = staleBalancesStore.getState().getStaleBalancesQueryParam(address);
 
-    const { erroredChainIds, results } = await fetchAndParseUserAssetsForChainIds({ address, currency, chainIds, staleBalanceParam });
+    const { erroredChainIds, results } = await fetchAndParseUserAssetsForChainIds({
+      address,
+      currency,
+      chainIds: SUPPORTED_MAINNET_CHAIN_IDS,
+      staleBalanceParam,
+    });
     let parsedSuccessResults = results;
 
     // grab cached data for chain IDs with errors

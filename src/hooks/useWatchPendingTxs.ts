@@ -17,7 +17,6 @@ import { getNftSortForAddress } from './useNFTsSortBy';
 import { ChainId } from '@/networks/types';
 import { staleBalancesStore } from '@/state/staleBalances';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
-import { networkObjects } from '@/networks';
 import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/networks/chains';
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
@@ -190,10 +189,6 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
     );
 
     if (minedTransactions.length) {
-		const chainIds = Object.values(networkObjects)
-        .filter(networkObject => networkObject.enabled && networkObject.networkType !== 'testnet')
-        .map(networkObject => networkObject.id);
-
       minedTransactions.forEach(tx => {
         if (tx.changes?.length) {
           tx.changes?.forEach(change => {
@@ -212,7 +207,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         queryKey: consolidatedTransactionsQueryKey({
           address,
           currency: nativeCurrency,
-          chainIds,
+          chainIds: SUPPORTED_MAINNET_CHAIN_IDS,
         }),
       });
 
