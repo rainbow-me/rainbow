@@ -1,21 +1,26 @@
 import React from 'react';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { useAccountSettings, useDimensions } from '@/hooks';
-import { useClaimables } from '@/resources/claimables/claimablesQuery';
+import { useClaimables } from '@/resources/addys/claimables/query';
 import { getIsHardhatConnected } from '@/handlers/web3';
 import { FasterImageView } from '@candlefinance/faster-image';
 import { ButtonPressAnimation } from '@/components/animations';
 
 export default function Claimable({ uniqueId }: { uniqueId: string }) {
   const { accountAddress, nativeCurrency } = useAccountSettings();
-  const { data } = useClaimables({
-    address: accountAddress,
-    currency: nativeCurrency,
-    testnetMode: getIsHardhatConnected(),
-  });
+  const { data } = useClaimables(
+    {
+      address: accountAddress,
+      currency: nativeCurrency,
+      testnetMode: getIsHardhatConnected(),
+    },
+    {
+      select: data => data?.filter(claimable => claimable.uniqueId === uniqueId),
+    }
+  );
   const { width: deviceWidth } = useDimensions();
 
-  const claimable = data?.find(claimable => claimable.uniqueId === uniqueId);
+  const claimable = data?.[0];
 
   if (!claimable) return null;
 

@@ -1,8 +1,8 @@
 import { NativeCurrencyKey } from '@/entities';
-import { Claimable, RainbowClaimable } from './types';
+import { AddysClaimable, Claimable } from './types';
 import { convertRawAmountToBalance, convertRawAmountToNativeDisplay } from '@/helpers/utilities';
 
-export const parseClaimables = (claimables: Claimable[], currency: NativeCurrencyKey): RainbowClaimable[] => {
+export const parseClaimables = (claimables: AddysClaimable[], currency: NativeCurrencyKey): Claimable[] => {
   return claimables
     .map(claimable => ({
       name: claimable.name,

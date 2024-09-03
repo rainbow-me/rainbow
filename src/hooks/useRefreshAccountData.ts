@@ -16,7 +16,7 @@ import useNftSort from './useNFTsSortBy';
 import { Address } from 'viem';
 import { addysSummaryQueryKey } from '@/resources/summary/summary';
 import useWallets from './useWallets';
-import { claimablesQueryKey } from '@/resources/claimables/claimablesQuery';
+import { claimablesQueryKey } from '@/resources/addys/claimables/query';
 
 export default function useRefreshAccountData() {
   const dispatch = useDispatch();

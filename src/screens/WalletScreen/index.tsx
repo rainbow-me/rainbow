@@ -33,7 +33,7 @@ import { IS_ANDROID } from '@/env';
 import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
 import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
 import { UserAssetsSync } from '@/state/sync/UserAssetsSync';
-import { useClaimables } from '@/resources/claimables/claimablesQuery';
+import { useClaimables } from '@/resources/addys/claimables/query';
 import { getIsHardhatConnected } from '@/handlers/web3';
 
 const WalletPage = styled(Page)({

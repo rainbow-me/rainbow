@@ -7,10 +7,10 @@ import store from '@/redux/store';
 import { ClaimableExtraData, PositionExtraData } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { getExperimetalFlag, DEFI_POSITIONS } from '@/config/experimental';
 import { RainbowPositions } from '@/resources/defi/types';
-import { claimablesQueryKey } from '@/resources/claimables/claimablesQuery';
+import { claimablesQueryKey } from '@/resources/addys/claimables/query';
 import { getIsHardhatConnected } from '@/handlers/web3';
-import { RainbowClaimable } from '@/resources/claimables/types';
-import { add, convertAmountToBalanceDisplay, convertAmountToNativeDisplay } from './utilities';
+import { Claimable } from '@/resources/addys/claimables/types';
+import { add, convertAmountToNativeDisplay } from './utilities';
 
 const CONTENT_PLACEHOLDER = [
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },
@@ -116,7 +116,7 @@ const withClaimablesSection = (isLoadingUserAssets: boolean) => {
   // if (!positionsEnabled) return [];
 
   const { accountAddress: address, nativeCurrency: currency } = store.getState().settings;
-  const claimables: RainbowClaimable[] | undefined = queryClient.getQueryData(
+  const claimables: Claimable[] | undefined = queryClient.getQueryData(
     claimablesQueryKey({ address, currency, testnetMode: getIsHardhatConnected() })
   );
 
