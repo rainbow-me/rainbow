@@ -17,7 +17,7 @@ import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { EventInfo, EventType } from '@/components/Transactions/types';
 import { infoForEventType, CARD_ROW_HEIGHT } from '@/components/Transactions/constants';
 import { EventIcon } from '@/components/Transactions/TransactionIcons';
-import { ethereumUtils } from '@/utils';
+import { chainsIdByName } from '@/networks/chains';
 
 type TransactionSimulatedEventRowProps = {
   amount: string | 'unlimited';
@@ -30,7 +30,7 @@ export const TransactionSimulatedEventRow = ({ amount, asset, eventType, price }
   const theme = useTheme();
   const { nativeCurrency } = useAccountSettings();
 
-  const chainId = ethereumUtils.getChainIdFromNetwork((asset?.network as Network) || Network.mainnet);
+  const chainId = chainsIdByName[asset?.network as Network];
 
   const { data: externalAsset } = useExternalToken({
     address: asset?.assetCode || '',
