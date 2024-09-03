@@ -519,6 +519,7 @@ const HomePanel = ({
                 icon="􀖅"
                 label={i18n.t(i18n.l.dapp_browser.control_panel.swap)}
                 onPress={handleOnPressSwap}
+                testID={'control-panel-swap'}
               />
               <ControlPanelButton
                 animatedAccentColor={animatedAccentColor}
@@ -875,17 +876,19 @@ const ControlPanelButton = React.memo(function ControlPanelButton({
   icon,
   label,
   onPress,
+  testID,
 }: {
   animatedAccentColor?: SharedValue<string | undefined>;
   icon: string;
   label: string;
   onPress: () => void;
+  testID?: string;
 }) {
   const backgroundColor = useAnimatedStyle(() => ({ backgroundColor: animatedAccentColor?.value }));
   const buttonTextColor = useAnimatedStyle(() => ({ color: getHighContrastTextColorWorklet(animatedAccentColor?.value) }));
 
   return (
-    <ButtonPressAnimation onPress={onPress} style={controlPanelStyles.buttonContainer} scaleTo={0.82}>
+    <ButtonPressAnimation onPress={onPress} style={controlPanelStyles.buttonContainer} scaleTo={0.82} testID={testID}>
       <HitSlop horizontal="16px" vertical="10px">
         <Stack alignHorizontal="center" space="10px">
           <Box as={Animated.View} background="accent" style={[controlPanelStyles.button, backgroundColor]}>

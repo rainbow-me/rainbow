@@ -24,6 +24,8 @@ import {
   swipeUntilVisible,
   tapAndLongPress,
   swipe,
+  tapByText,
+  waitAndTap,
 } from './helpers';
 
 import { expect } from '@jest/globals';
@@ -50,31 +52,67 @@ describe('Swap Sheet Interaction Flow', () => {
     await tap('dev-button-hardhat');
     await checkIfVisible('testnet-toast-Hardhat');
 
-    // doesn't work atm
     // validate it has the expected funds of 20 eth
-    // const attributes = await fetchElementAttributes('fast-coin-info');
-    // expect(attributes.label).toContain('Ethereum');
-    // expect(attributes.label).toContain('20');
+    const attributes = await fetchElementAttributes('fast-coin-info');
+    expect(attributes.label).toContain('Ethereum');
+    expect(attributes.label).toContain('20');
   });
 
-  it('Should open swap screen with 50% inputAmount for inputAsset', async () => {
+  // Swaps entry point 1
+  it('Should open swaps via wallet screen swap button with 50% inputAmount for inputAsset', async () => {
     await device.disableSynchronization();
     await tap('swap-button');
     await delayTime('long');
 
-    await swipeUntilVisible('token-to-buy-dai-1', 'token-to-buy-list', 'up', 100);
-    await swipe('token-to-buy-list', 'up', 'slow', 0.1);
+    const swapInput = await fetchElementAttributes('swap-asset-input');
 
-    await tap('token-to-buy-dai-1');
+    expect(swapInput.label).toContain('10');
+    expect(swapInput.label).toContain('ETH');
+
+    // dismiss swaps sheet
+    await swipe('swap-screen', 'down', 'fast');
+  });
+
+  // Swaps entry point 2
+  it('Should open swaps via asset chart with that asset selected with 50% inputAmount for inputAsset', async () => {
+    await tap('balance-coin-row-Ethereum');
     await delayTime('medium');
+    await tap('swap-action-button');
+    await delayTime('long');
+    const swapInput = await fetchElementAttributes('swap-asset-input');
 
+    expect(swapInput.label).toContain('10');
+    expect(swapInput.label).toContain('ETH');
+
+    // dismiss swaps sheet
+    await swipe('swap-screen', 'down', 'fast');
+
+    // dismiss expanded asset sheet
+    await swipe('expanded-asset-sheet', 'down', 'fast');
+  });
+
+  // Swaps entry point 3
+  it('Should open swaps from browser control panel with 50% inputAmount for inputAsset', async () => {
+    await tap('tab-bar-icon-DappBrowserScreen');
+    await delayTime('long');
+    await checkIfVisible('browser-screen');
+    await tap('account-icon-button');
+    await waitAndTap('control-panel-swap');
+
+    await delayTime('long');
     const swapInput = await fetchElementAttributes('swap-asset-input');
 
     expect(swapInput.label).toContain('10');
     expect(swapInput.label).toContain('ETH');
   });
 
+  // Execute swap
   it('Should be able to go to review and execute a swap', async () => {
+    await delayTime('very-long');
+
+    await swipeUntilVisible('token-to-buy-dai-1', 'token-to-buy-list', 'up', 100);
+    await tap('token-to-buy-dai-1');
+    await delayTime('medium');
     await tap('swap-bottom-action-button');
     const inputAssetActionButton = await fetchElementAttributes('swap-input-asset-action-button');
     const outputAssetActionButton = await fetchElementAttributes('swap-output-asset-action-button');
@@ -85,59 +123,19 @@ describe('Swap Sheet Interaction Flow', () => {
     expect(holdToSwapButton.label).toBe('􀎽 Hold to Swap');
 
     await tapAndLongPress('swap-bottom-action-button', 1500);
-
-    // TODO: This doesn't work so need to figure this out eventually...
-    // await checkIfVisible('profile-screen');
   });
 
-  it.skip('Should be able to verify swap is happening', async () => {
-    // await delayTime('very-long');
-    // const activityListElements = await fetchElementAttributes('wallet-activity-list');
-    // expect(activityListElements.label).toContain('ETH');
-    // expect(activityListElements.label).toContain('DAI');
-    // await tapByText('Swapping');
-    // await delayTime('long');
-    // const transactionSheet = await checkIfVisible('transaction-details-sheet');
-    // expect(transactionSheet).toBeTruthy();
-  });
-
-  it.skip('Should open swap screen from ProfileActionRowButton with largest user asset', async () => {
-    /**
-     * tap swap button
-     * wait for Swap header to be visible
-     * grab highest user asset balance from userAssetsStore
-     * expect inputAsset.uniqueId === highest user asset uniqueId
-     */
-  });
-
-  it.skip('Should open swap screen from  asset chart with that asset selected', async () => {
-    /**
-     * tap any user asset (store const uniqueId here)
-     * wait for Swap header to be visible
-     * expect inputAsset.uniqueId === const uniqueId ^^
-     */
-  });
-
-  it.skip('Should open swap screen from dapp browser control panel with largest user asset', async () => {
-    /**
-     * tap swap button
-     * wait for Swap header to be visible
-     * grab highest user asset balance from userAssetsStore
-     * expect inputAsset.uniqueId === highest user asset uniqueId
-     */
-  });
-
-  it.skip('Should not be able to type in output amount if cross-chain quote', async () => {
-    /**
-     * tap swap button
-     * wait for Swap header to be visible
-     * select different chain in output list chain selector
-     * select any asset in output token list
-     * focus output amount
-     * attempt to type any number in the SwapNumberPad
-     * attempt to remove a character as well
-     *
-     * ^^ expect both of those to not change the outputAmount
-     */
+  it('Should be able to verify swap is happening', async () => {
+    await delayTime('very-long');
+    await checkIfVisible('profile-screen');
+    const activityListElements = await fetchElementAttributes('wallet-activity-list');
+    expect(activityListElements.label).toContain('ETH');
+    expect(activityListElements.label).toContain('DAI');
+    await tapByText('Swapping');
+    await delayTime('long');
+    const transactionSheet = await checkIfVisible('transaction-details-sheet');
+    expect(transactionSheet).toBeTruthy();
+    // dismiss sheet
+    await swipe('transaction-details-sheet', 'down', 'fast');
   });
 });
