@@ -39,7 +39,9 @@ export default function ShareButton({ accountAddress, ...props }) {
   );
 
   return (
-    <ButtonPressAnimation onPress={handlePress} overflowMargin={20} radiusAndroid={28} {...props}>
+    <ButtonPressAnimation onPress={handlePress} overflowMargin={20} radiusAndroid={28} accessible={true} 
+    accessibilityLabel={lang.t('button.share')} accessibilityHint={lang.t('accessibility.share_button_hint')} 
+    {...props}>
       <ShadowStack backgroundColor={isDarkMode ? colors.white : colors.dark} borderRadius={28} height={56} shadows={shadows} width={200}>
         <Centered cover style={{ paddingHorizontal: 10 }}>
           <Label>{`􀈂 ${lang.t('button.share')}`}</Label>
