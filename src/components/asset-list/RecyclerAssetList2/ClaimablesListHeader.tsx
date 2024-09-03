@@ -12,7 +12,7 @@ const AnimatedImgixImage = Animated.createAnimatedComponent(Image);
 const TokenFamilyHeaderAnimationDuration = 200;
 const TokenFamilyHeaderHeight = 48;
 
-const WrappedClaimablesListHeader = ({ total }: { total: string }) => {
+const ClaimablesListHeader = ({ total }: { total: string }) => {
   const { colors } = useTheme();
   const { isClaimablesOpen, toggleOpenClaimables } = useOpenClaimables();
 
@@ -59,37 +59,35 @@ const WrappedClaimablesListHeader = ({ total }: { total: string }) => {
   );
 
   return (
-    <>
-      <ButtonPressAnimation
-        key={`claimables_${isClaimablesOpen}`}
-        onPress={toggleOpenClaimables}
-        scaleTo={1.05}
-        testID={`claimables-list-header`}
-      >
-        <Box height={{ custom: TokenFamilyHeaderHeight }} paddingHorizontal={'19px (Deprecated)'} justifyContent="center">
-          <Inline alignHorizontal="justify" alignVertical="center">
-            <Text size="22pt" color={'label'} weight="heavy">
-              {i18n.t(i18n.l.account.tab_claimables)}
-            </Text>
-            <Inline horizontalSpace={'8px'} alignVertical="center">
-              {!isClaimablesOpen && (
-                <Animated.View style={sumNumberAnimatedStyles}>
-                  <Text size="20pt" color={'label'} weight="regular">
-                    {total}
-                  </Text>
-                </Animated.View>
-              )}
-              <AnimatedImgixImage source={CaretImageSource as any} style={imageAnimatedStyles} tintColor={colors.dark} />
-            </Inline>
+    <ButtonPressAnimation
+      key={`claimables_${isClaimablesOpen}`}
+      onPress={toggleOpenClaimables}
+      scaleTo={1.05}
+      testID={`claimables-list-header`}
+    >
+      <Box height={{ custom: TokenFamilyHeaderHeight }} paddingHorizontal={'19px (Deprecated)'} justifyContent="center">
+        <Inline alignHorizontal="justify" alignVertical="center">
+          <Text size="22pt" color={'label'} weight="heavy">
+            {i18n.t(i18n.l.account.tab_claimables)}
+          </Text>
+          <Inline horizontalSpace={'8px'} alignVertical="center">
+            {!isClaimablesOpen && (
+              <Animated.View style={sumNumberAnimatedStyles}>
+                <Text size="20pt" color={'label'} weight="regular">
+                  {total}
+                </Text>
+              </Animated.View>
+            )}
+            <AnimatedImgixImage source={CaretImageSource} style={imageAnimatedStyles} tintColor={colors.dark} />
           </Inline>
-        </Box>
-      </ButtonPressAnimation>
-    </>
+        </Inline>
+      </Box>
+    </ButtonPressAnimation>
   );
 };
 
-WrappedClaimablesListHeader.animationDuration = TokenFamilyHeaderAnimationDuration;
+ClaimablesListHeader.animationDuration = TokenFamilyHeaderAnimationDuration;
 
-WrappedClaimablesListHeader.height = TokenFamilyHeaderHeight;
+ClaimablesListHeader.height = TokenFamilyHeaderHeight;
 
-export default WrappedClaimablesListHeader;
+export default ClaimablesListHeader;

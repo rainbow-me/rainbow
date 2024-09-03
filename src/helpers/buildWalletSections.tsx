@@ -9,7 +9,8 @@ import { getExperimetalFlag, DEFI_POSITIONS } from '@/config/experimental';
 import { RainbowPositions } from '@/resources/defi/types';
 import { claimablesQueryKey } from '@/resources/claimables/claimablesQuery';
 import { getIsHardhatConnected } from '@/handlers/web3';
-import { Claimable } from '@/resources/claimables/types';
+import { RainbowClaimable } from '@/resources/claimables/types';
+import { add, convertAmountToBalanceDisplay, convertAmountToNativeDisplay } from './utilities';
 
 const CONTENT_PLACEHOLDER = [
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },
@@ -115,21 +116,22 @@ const withClaimablesSection = (isLoadingUserAssets: boolean) => {
   // if (!positionsEnabled) return [];
 
   const { accountAddress: address, nativeCurrency: currency } = store.getState().settings;
-  const claimables: Claimable[] | undefined = queryClient.getQueryData(
+  const claimables: RainbowClaimable[] | undefined = queryClient.getQueryData(
     claimablesQueryKey({ address, currency, testnetMode: getIsHardhatConnected() })
   );
 
   const result: ClaimableExtraData[] = [];
-  const sortedClaimables = claimables?.sort((a, b) => (a.amount > b.amount ? -1 : 1));
-  sortedClaimables?.forEach((claimable, index) => {
+  let totalNativeValue = '0';
+  claimables?.forEach(claimable => {
+    totalNativeValue = add(totalNativeValue, claimable.value.nativeAsset.amount);
     const listData = {
       type: 'CLAIMABLE',
-      uniqueId: claimable.unique_id,
-      uid: `claimable-${claimable.unique_id}`,
-      index,
+      uniqueId: claimable.uniqueId,
+      uid: `claimable-${claimable.uniqueId}`,
     };
     result.push(listData);
   });
+  const totalNativeDisplay = convertAmountToNativeDisplay(totalNativeValue, currency);
   if (result.length && !isLoadingUserAssets) {
     const res = [
       {
@@ -139,7 +141,11 @@ const withClaimablesSection = (isLoadingUserAssets: boolean) => {
       {
         type: 'CLAIMABLES_HEADER',
         uid: 'claimables-header',
-        total: '$3,482', // FIXME
+        total: totalNativeDisplay,
+      },
+      {
+        type: 'CLAIMABLES_SPACE_AFTER',
+        uid: 'claimables-header-space-before',
       },
       ...result,
     ];

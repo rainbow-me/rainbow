@@ -125,3 +125,14 @@ export interface ConsolidatedClaimablesResponse {
   metadata: ConsolidatedClaimablesMetadataResponse;
   payload: ConsolidatedClaimablesPayloadResponse;
 }
+
+// will add more attributes as needed
+export interface RainbowClaimable {
+  name: string;
+  uniqueId: string;
+  iconUrl: string;
+  value: {
+    claimAsset: { amount: string; display: string };
+    nativeAsset: { amount: string; display: string };
+  };
+}

@@ -72,7 +72,7 @@ const ViewDimensions: Record<CellType, Dim> = {
   },
   [CellType.CLAIMABLES_HEADER]: { height: AssetListHeaderHeight },
   [CellType.CLAIMABLES_SPACE_BEFORE]: { height: 10 },
-  [CellType.CLAIMABLES_SPACE_AFTER]: { height: 24 },
+  [CellType.CLAIMABLES_SPACE_AFTER]: { height: 3 },
   [CellType.CLAIMABLE]: {
     height: 60,
     width: deviceUtils.dimensions.width,

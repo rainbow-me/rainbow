@@ -16,6 +16,7 @@ import useNftSort from './useNFTsSortBy';
 import { Address } from 'viem';
 import { addysSummaryQueryKey } from '@/resources/summary/summary';
 import useWallets from './useWallets';
+import { claimablesQueryKey } from '@/resources/claimables/claimablesQuery';
 
 export default function useRefreshAccountData() {
   const dispatch = useDispatch();
@@ -36,6 +37,9 @@ export default function useRefreshAccountData() {
 
     queryClient.invalidateQueries(nftsQueryKey({ address: accountAddress, sortBy: nftSort }));
     queryClient.invalidateQueries(positionsQueryKey({ address: accountAddress as Address, currency: nativeCurrency }));
+    queryClient.invalidateQueries(
+      claimablesQueryKey({ address: accountAddress, currency: nativeCurrency, testnetMode: connectedToHardhat })
+    );
     queryClient.invalidateQueries(addysSummaryQueryKey({ addresses: allAddresses, currency: nativeCurrency }));
     queryClient.invalidateQueries(userAssetsQueryKey({ address: accountAddress, currency: nativeCurrency, connectedToHardhat }));
     queryClient.invalidateQueries(

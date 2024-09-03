@@ -35,8 +35,8 @@ import { RemoteCardCarousel } from '@/components/cards/remote-cards';
 import WrappedCollectiblesHeader from '../WrappedCollectiblesHeader';
 import NFTLoadingSkeleton from '../NFTLoadingSkeleton';
 import { NFTEmptyState } from '../NFTEmptyState';
-import WrappedClaimablesListHeader from '../WrappedClaimablesListHeader';
-import WrappedClaimable from '../WrappedClaimable';
+import Claimable from '../Claimable';
+import ClaimablesListHeader from '../ClaimablesListHeader';
 
 function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, extendedState: ExtendedState) {
   const data = extendedState.additionalData[uid];
@@ -170,12 +170,12 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     }
     case CellType.CLAIMABLES_HEADER: {
       const { total } = data as ClaimablesHeaderExtraData;
-      return <WrappedClaimablesListHeader total={total} />;
+      return <ClaimablesListHeader total={total} />;
     }
     case CellType.CLAIMABLE: {
       const { uniqueId } = data as ClaimableExtraData;
 
-      return <WrappedClaimable uniqueId={uniqueId} />;
+      return <Claimable uniqueId={uniqueId} />;
     }
 
     case CellType.LOADING_ASSETS:

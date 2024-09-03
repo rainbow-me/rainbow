@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { ConsolidatedClaimablesResponse } from './types';
 import { logger, RainbowError } from '@/logger';
+import { parseClaimables } from './utils';
 
 const addysHttp = new RainbowFetchClient({
   baseURL: 'https://addys.p.rainbow.me/v3',
@@ -50,7 +51,7 @@ async function claimablesQueryFunction({ queryKey: [{ address, currency, testnet
       });
     }
 
-    return data.payload.claimables;
+    return parseClaimables(data.payload.claimables, currency);
   } catch (e) {
     logger.error(new RainbowError('[userAssetsQueryFunction]: Failed to fetch user assets (client error)'), {
       message: (e as Error)?.message,
@@ -69,9 +70,7 @@ export function useClaimables(
 ) {
   return useQuery(claimablesQueryKey({ address, currency, testnetMode }), claimablesQueryFunction, {
     ...config,
-    // staleTime: 1000 * 60 * 2, // Set data to become stale after 2 minutes
-    // cacheTime: 1000 * 60 * 60 * 24, // Keep unused data in cache for 24 hours
-    staleTime: 0,
-    cacheTime: 60000,
+    staleTime: 1000 * 60 * 2,
+    cacheTime: 1000 * 60 * 60 * 24,
   });
 }

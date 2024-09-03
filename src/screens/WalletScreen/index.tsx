@@ -50,9 +50,8 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
   const initializeWallet = useInitializeWallet();
   const { network: currentNetwork, accountAddress, appIcon, nativeCurrency } = useAccountSettings();
   usePositions({ address: accountAddress, currency: nativeCurrency });
-  const { data } = useClaimables({ address: accountAddress, currency: nativeCurrency, testnetMode: getIsHardhatConnected() });
+  useClaimables({ address: accountAddress, currency: nativeCurrency, testnetMode: getIsHardhatConnected() });
 
-  console.log(data);
   const loadAccountLateData = useLoadAccountLateData();
   const loadGlobalLateData = useLoadGlobalLateData();
   const dispatch = useDispatch();
