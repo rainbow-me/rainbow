@@ -124,8 +124,8 @@ const withClaimablesSection = (isLoadingUserAssets: boolean) => {
   sortedClaimables?.forEach((claimable, index) => {
     const listData = {
       type: 'CLAIMABLE',
-      uniqueId: claimable.name, // FIXME
-      uid: `position-${claimable.name}`, // FIXME
+      uniqueId: claimable.unique_id,
+      uid: `claimable-${claimable.unique_id}`,
       index,
     };
     result.push(listData);

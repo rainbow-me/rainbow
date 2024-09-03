@@ -173,7 +173,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
       return <WrappedClaimablesListHeader total={total} />;
     }
     case CellType.CLAIMABLE: {
-      const { uniqueId, index } = data as ClaimableExtraData;
+      const { uniqueId } = data as ClaimableExtraData;
 
       return <WrappedClaimable uniqueId={uniqueId} />;
     }

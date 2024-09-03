@@ -1,8 +1,6 @@
 import React from 'react';
-import { Box, BoxProps, Inline, Text } from '@/design-system';
+import { Box, Inline, Text } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
-import { usePositions } from '@/resources/defi/PositionsQuery';
-import { PositionCard } from '@/components/positions/PositionsCard';
 import { useClaimables } from '@/resources/claimables/claimablesQuery';
 import { getIsHardhatConnected } from '@/handlers/web3';
 import { FasterImageView } from '@candlefinance/faster-image';
@@ -15,7 +13,7 @@ export default function WrappedClaimable({ uniqueId }: { uniqueId: string }) {
     testnetMode: getIsHardhatConnected(),
   });
 
-  const claimable = data?.find(claimable => claimable.name === uniqueId); // FIXME
+  const claimable = data?.find(claimable => claimable.unique_id === uniqueId);
 
   if (!claimable) return null;
 

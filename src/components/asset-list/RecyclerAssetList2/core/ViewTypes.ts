@@ -81,7 +81,6 @@ export type PositionHeaderExtraData = {
 };
 export type ClaimableExtraData = {
   uniqueId: string;
-  index: number;
 };
 export type ClaimablesHeaderExtraData = {
   total: string;

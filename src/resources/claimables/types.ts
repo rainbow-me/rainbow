@@ -85,6 +85,7 @@ type ClaimableType = 'transaction' | 'sponsored';
 
 export interface Claimable {
   name: string;
+  unique_id: string;
   type: ClaimableType;
   network: ChainId;
   asset: Asset;
