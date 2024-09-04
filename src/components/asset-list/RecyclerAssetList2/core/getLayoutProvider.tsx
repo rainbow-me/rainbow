@@ -2,6 +2,10 @@ import { Dimension, Layout, LayoutManager, LayoutProvider } from 'recyclerlistvi
 import ViewDimensions from './ViewDimensions';
 import { BaseCellType, CellType } from './ViewTypes';
 import { deviceUtils } from '@/utils';
+import { getRemoteConfig, RainbowConfig } from '@/model/remoteConfig';
+import { NFTS_ENABLED, REMOTE_CARDS, useExperimentalFlag } from '@/config';
+import { useContext } from 'react';
+import { RainbowContextType } from '@/helpers/RainbowContext';
 
 const getStyleOverridesForIndex = (indices: number[]) => (index: number) => {
   if (indices.includes(index)) {
@@ -30,7 +34,26 @@ class BetterLayoutProvider extends LayoutProvider {
   }
 }
 
-const getLayoutProvider = (briefSectionsData: BaseCellType[], isCoinListEdited: boolean, cardIds: string[], isReadOnlyWallet: boolean) => {
+// briefSectionsData: BaseCellType[], isCoinListEdited: boolean, cardIds: string[], isReadOnlyWallet: boolean
+
+const getLayoutProvider = ({
+  briefSectionsData,
+  isCoinListEdited,
+  cardIds,
+  isReadOnlyWallet,
+  experimentalConfig,
+  remoteConfig,
+}: {
+  briefSectionsData: BaseCellType[];
+  isCoinListEdited: boolean;
+  cardIds: string[];
+  isReadOnlyWallet: boolean;
+  experimentalConfig: ReturnType<typeof useContext<RainbowContextType>>['config'];
+  remoteConfig: RainbowConfig;
+}) => {
+  const remoteCardsEnabled = remoteConfig.remote_cards_enabled || experimentalConfig[REMOTE_CARDS];
+  const nftsEnabled = remoteConfig.nfts_enabled || experimentalConfig[NFTS_ENABLED];
+
   const indicesToOverride = [];
   for (let i = 0; i < briefSectionsData.length; i++) {
     const val = briefSectionsData[i];
@@ -55,7 +78,24 @@ const getLayoutProvider = (briefSectionsData: BaseCellType[], isCoinListEdited: 
         dim.height = ViewDimensions[type].height;
         dim.width = ViewDimensions[type].width || dim.width;
 
-        if ((type === CellType.REMOTE_CARD_CAROUSEL && !cardIds.length) || (type === CellType.REMOTE_CARD_CAROUSEL && isReadOnlyWallet)) {
+        // NOTE: If NFTs are disabled, we don't want to render the NFTs section, so adjust the height to 0
+        if (
+          [
+            CellType.NFTS_EMPTY,
+            CellType.NFTS_HEADER_SPACE_AFTER,
+            CellType.NFTS_HEADER_SPACE_BEFORE,
+            CellType.NFTS_HEADER,
+            CellType.NFTS_LOADING,
+            CellType.NFT,
+            CellType.FAMILY_HEADER,
+          ].includes(type) &&
+          !nftsEnabled
+        ) {
+          dim.height = 0;
+        }
+
+        // NOTE: If remote cards are disabled, we don't want to render the remote cards section, so adjust the height to 0
+        if (type === CellType.REMOTE_CARD_CAROUSEL && (!remoteCardsEnabled || !cardIds.length || isReadOnlyWallet)) {
           dim.height = 0;
         }
       }

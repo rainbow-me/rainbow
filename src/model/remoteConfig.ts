@@ -92,6 +92,7 @@ export interface RainbowConfig extends Record<string, string | boolean | number>
 
   degen_mode: boolean;
   featured_results: boolean;
+  nfts_enabled: boolean;
 }
 
 export const DEFAULT_CONFIG: RainbowConfig = {
@@ -175,6 +176,7 @@ export const DEFAULT_CONFIG: RainbowConfig = {
 
   degen_mode: false,
   featured_results: false,
+  nfts_enabled: false,
 };
 
 export async function fetchRemoteConfig(): Promise<RainbowConfig> {
@@ -230,7 +232,8 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
         key === 'idfa_check_enabled' ||
         key === 'rewards_enabled' ||
         key === 'degen_mode' ||
-        key === 'featured_results'
+        key === 'featured_results' ||
+        key === 'nfts_enabled'
       ) {
         config[key] = entry.asBoolean();
       } else {
