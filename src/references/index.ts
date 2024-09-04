@@ -4,31 +4,6 @@ import { Asset } from '@/entities';
 import { AddressZero } from '@ethersproject/constants';
 
 import type { Address } from 'viem';
-import {
-  Chain,
-  arbitrum,
-  arbitrumGoerli,
-  arbitrumSepolia,
-  avalanche,
-  avalancheFuji,
-  base,
-  baseSepolia,
-  bsc,
-  bscTestnet,
-  goerli,
-  holesky,
-  mainnet,
-  optimism,
-  optimismSepolia,
-  polygon,
-  polygonMumbai,
-  zora,
-  zoraSepolia,
-  sepolia,
-  blast,
-  degen,
-} from 'viem/chains';
-import { chainsLabel } from '@/networks/chains';
 
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
 export { default as chainAssets } from './chain-assets.json';
@@ -223,39 +198,3 @@ export const NATIVE_ASSETS_MAP_PER_CHAIN: Record<ChainId, AddressOrEth> = {
 export type ReferrerType = 'native-app' | 'app-claim';
 export const REFERRER: ReferrerType = 'native-app';
 export const REFERRER_CLAIM: ReferrerType = 'app-claim';
-
-export const SUPPORTED_CHAINS = ({ testnetMode = false }: { testnetMode?: boolean }): Chain[] => {
-  return [
-    mainnet,
-    base,
-    optimism,
-    arbitrum,
-    polygon,
-    zora,
-    blast,
-    degen,
-    avalanche,
-    bsc,
-    // Testnets
-
-    goerli,
-    holesky,
-    sepolia,
-    baseSepolia,
-    optimismSepolia,
-    arbitrumGoerli,
-    arbitrumSepolia,
-    polygonMumbai,
-    zoraSepolia,
-    avalancheFuji,
-    bscTestnet,
-  ].reduce((chainList, chain) => {
-    if (testnetMode || !chain.testnet) {
-      chainList.push({ ...chain, name: chainsLabel[chain.id] });
-    }
-    return chainList;
-  }, [] as Chain[]);
-};
-
-export const SUPPORTED_CHAIN_IDS = ({ testnetMode = false }: { testnetMode?: boolean }): ChainId[] =>
-  SUPPORTED_CHAINS({ testnetMode }).map(chain => chain.id);
