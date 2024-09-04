@@ -474,7 +474,6 @@ export const gasPricesStartPolling =
                 defaultGasLimit,
                 gasLimit,
                 selectedGasFee,
-                chainId,
                 selectedGasFee: lastSelectedGasFee,
                 gasFeesBySpeed: lastGasFeesBySpeed,
                 currentBlockParams,
