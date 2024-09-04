@@ -11,7 +11,6 @@ import { useAccountSettings, useBooleanState } from '@/hooks';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { ethereumUtils } from '@/utils';
 
 const noPriceData = lang.t('expanded_state.chart.no_price_data');
 
@@ -52,9 +51,6 @@ export default function ChartExpandedStateHeader({
 }) {
   const theme = useTheme();
   const color = givenColors || theme.colors.dark;
-  const tokens = useMemo(() => {
-    return isPool ? asset.tokens : [asset];
-  }, [asset, isPool]);
   const { nativeCurrency } = useAccountSettings();
   const tabularNums = useTabularNumsWhileScrubbing();
 
@@ -114,7 +110,7 @@ export default function ChartExpandedStateHeader({
         <RainbowCoinIcon
           size={40}
           icon={asset?.icon_url}
-          chainId={ethereumUtils.getChainIdFromNetwork(asset?.network)}
+          chainId={asset?.chainId}
           symbol={asset?.symbol}
           theme={theme}
           colors={asset?.colors}

@@ -47,7 +47,7 @@ export default function useRainbowFee({ tradeDetails, chainId }) {
 
   useEffect(() => {
     const getNativeAsset = async () => {
-      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(chainId, accountAddress);
+      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork({ chainId, address: accountAddress });
       setNativeAsset(nativeAsset);
     };
     !nativeAsset && getNativeAsset();

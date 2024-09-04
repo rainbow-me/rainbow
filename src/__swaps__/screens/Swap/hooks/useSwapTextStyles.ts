@@ -87,7 +87,10 @@ export function useSwapTextStyles({
   });
 
   const isOutputZero = useDerivedValue(() => {
-    const isZero = !internalSelectedOutputAsset.value || equalWorklet(inputValues.value.outputAmount, 0);
+    const isZero =
+      !internalSelectedOutputAsset.value ||
+      (inputValues.value.outputAmount === 0 && inputMethod.value !== 'slider') ||
+      (inputMethod.value === 'slider' && equalWorklet(inputValues.value.outputAmount, 0));
     return isZero;
   });
 

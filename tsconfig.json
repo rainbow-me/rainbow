@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "module": "ESNext",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
@@ -29,7 +30,6 @@
       "@rainbow-me/model/*": ["src/model/*"],
       "@rainbow-me/navigation": ["src/navigation"],
       "@rainbow-me/navigation/*": ["src/navigation/*"],
-      "@rainbow-me/networkTypes": ["./src/helpers/networkTypes"],
       "@rainbow-me/parsers": ["src/parsers"],
       "@rainbow-me/raps": ["src/raps"],
       "@rainbow-me/react-query": ["./src/react-query"],

@@ -1,18 +1,11 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { isEmpty } from 'lodash';
-import { useCallback, useEffect, useState } from 'react';
-import isEqual from 'react-fast-compare';
-import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
-import { useCallbackOne } from 'use-memo-one';
-import { disableCharts } from '../../config/debug';
+import { useCallback } from 'react';
 import { DEFAULT_CHART_TYPE } from '../../redux/charts';
 import { metadataClient } from '@/graphql';
 import { useQuery } from '@tanstack/react-query';
 import { createQueryKey } from '@/react-query';
-import { getNetworkObj } from '@/networks';
-import { NetworkProperties } from '@/networks/types';
-import { Network } from '@/helpers';
+import { SupportedCurrencyKey } from '@/references';
+import { ChainId } from '@/networks/types';
 
 const chartTimes = ['hour', 'day', 'week', 'month', 'year'] as const;
 type ChartTime = (typeof chartTimes)[number];
@@ -23,9 +16,19 @@ const getChartTimeArg = (selected: ChartTime) =>
 
 export type ChartData = { x: number; y: number };
 
-const fetchPriceChart = async (time: ChartTime, chainId: NetworkProperties['id'], address: string) => {
+const fetchPriceChart = async ({
+  address,
+  chainId,
+  currency,
+  time,
+}: {
+  address: string;
+  chainId: ChainId;
+  currency: SupportedCurrencyKey;
+  time: ChartTime;
+}) => {
   const priceChart = await metadataClient
-    .priceChart({ address, chainId, ...getChartTimeArg(time) })
+    .priceChart({ address, chainId, currency, ...getChartTimeArg(time) })
     .then(d => d.token?.priceCharts[time] as PriceChartTimeData);
   return priceChart?.points?.reduce((result, point) => {
     result.push({ x: point[0], y: point[1] });
@@ -33,7 +36,17 @@ const fetchPriceChart = async (time: ChartTime, chainId: NetworkProperties['id']
   }, [] as ChartData[]);
 };
 
-export const usePriceChart = ({ mainnetAddress, address, network }: { mainnetAddress?: string; address: string; network: Network }) => {
+export const usePriceChart = ({
+  mainnetAddress,
+  address,
+  currency,
+  chainId,
+}: {
+  mainnetAddress?: string;
+  address: string;
+  currency: SupportedCurrencyKey;
+  chainId: ChainId;
+}) => {
   const { setParams } = useNavigation();
   const updateChartType = useCallback(
     (type: ChartTime) => {
@@ -47,12 +60,11 @@ export const usePriceChart = ({ mainnetAddress, address, network }: { mainnetAdd
     params: any;
   }>();
   const chartType = params?.chartType ?? DEFAULT_CHART_TYPE;
-  const chainId = getNetworkObj(network).id;
-  const mainnetChainId = getNetworkObj(Network.mainnet).id;
   const query = useQuery({
     queryFn: async () => {
-      const chart = await fetchPriceChart(chartType, chainId, address);
-      if (!chart && mainnetAddress) return fetchPriceChart(chartType, mainnetChainId, mainnetAddress);
+      const chart = await fetchPriceChart({ address, chainId, currency, time: chartType });
+      if (!chart && mainnetAddress)
+        return fetchPriceChart({ address: mainnetAddress, chainId: ChainId.mainnet, currency, time: chartType });
       return chart || null;
     },
     queryKey: createQueryKey('price chart', { address, chainId, chartType }),

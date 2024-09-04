@@ -2,7 +2,7 @@
 import React, { useCallback, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import * as i18n from '@/languages';
-import { PanGestureHandler, TapGestureHandler, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
+import { PanGestureHandler, State, TapGestureHandler, TapGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
   interpolateColor,
@@ -204,21 +204,27 @@ export const SwapSlider = ({
         overshoot.value = calculateOvershoot(overshootX, maxOverscroll);
       }
     },
-    onFinish: (event, ctx: { startX: number }) => {
+    onFinish: (event, ctx: { exceedsMax?: boolean; startX: number }) => {
       const onFinished = () => {
         overshoot.value = withSpring(0, SPRING_CONFIGS.sliderConfig);
+
         if (xPercentage.value >= 0.995) {
           if (isQuoteStale.value === 1) {
             runOnJS(onChangeWrapper)(1);
           }
           sliderXPosition.value = withSpring(width, SPRING_CONFIGS.snappySpringConfig);
+        } else if (event.state === State.FAILED) {
+          SwapInputController.quoteFetchingInterval.start();
+          return;
         } else if (xPercentage.value < 0.005) {
           runOnJS(onChangeWrapper)(0);
           sliderXPosition.value = withSpring(0, SPRING_CONFIGS.snappySpringConfig);
           isQuoteStale.value = 0;
           isFetching.value = false;
-        } else {
+        } else if (ctx.startX !== sliderXPosition.value) {
           runOnJS(onChangeWrapper)(xPercentage.value);
+        } else {
+          SwapInputController.quoteFetchingInterval.start();
         }
       };
 
@@ -392,9 +398,15 @@ export const SwapSlider = ({
   });
 
   return (
-    <PanGestureHandler activeOffsetX={[0, 0]} activeOffsetY={[0, 0]} onGestureEvent={onSlide} simultaneousHandlers={[tapRef]}>
+    <PanGestureHandler
+      activeOffsetX={[0, 0]}
+      activeOffsetY={[0, 0]}
+      onGestureEvent={onSlide}
+      simultaneousHandlers={[tapRef]}
+      waitFor={maxButtonRef}
+    >
       <Animated.View style={AnimatedSwapStyles.hideWhileReviewingOrConfiguringGas}>
-        <TapGestureHandler onGestureEvent={onPressDown} simultaneousHandlers={[maxButtonRef, panRef]}>
+        <TapGestureHandler onGestureEvent={onPressDown} simultaneousHandlers={[maxButtonRef, panRef]} waitFor={maxButtonRef}>
           <Animated.View style={{ gap: 14, paddingBottom: 20, paddingHorizontal: 20 }}>
             <View style={{ zIndex: 10 }}>
               <Columns alignHorizontal="justify" alignVertical="center">
@@ -419,8 +431,8 @@ export const SwapSlider = ({
                 <Column width="content">
                   <GestureHandlerV1Button
                     onPressWorklet={SwapInputController.setValueToMaxSwappableAmount}
-                    style={{ margin: -12, padding: 12 }}
                     ref={maxButtonRef}
+                    style={{ margin: -12, padding: 12 }}
                   >
                     <AnimatedText align="center" size="15pt" style={maxTextColor} weight="heavy">
                       {MAX_LABEL}

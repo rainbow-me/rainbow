@@ -139,7 +139,14 @@ function SwapButton({
           )}
           {typeof label !== 'undefined' && (
             <Column width="content">
-              <AnimatedText align="center" style={textStyles} numberOfLines={1} size={small ? '17pt' : '20pt'} weight="heavy">
+              <AnimatedText
+                testID={`${testID}-text`}
+                align="center"
+                style={textStyles}
+                numberOfLines={1}
+                size={small ? '17pt' : '20pt'}
+                weight="heavy"
+              >
                 {labelValue}
               </AnimatedText>
             </Column>
@@ -187,7 +194,8 @@ const HoldProgress = ({ holdProgress }: { holdProgress: SharedValue<number> }) =
       if (current && current !== previous) {
         runOnJS(transformColor)(getColorValueForThemeWorklet(current, isDarkMode, true));
       }
-    }
+    },
+    []
   );
 
   return (

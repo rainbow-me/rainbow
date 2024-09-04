@@ -38,6 +38,11 @@ interface RainbowPersistConfig<S> {
    * @default 0
    */
   version?: number;
+  /**
+   * A function to perform persisted state migration.
+   * This function will be called when persisted state versions mismatch with the one specified here.
+   */
+  migrate?: (persistedState: unknown, version: number) => S | Promise<S>;
 }
 
 /**
@@ -46,7 +51,7 @@ interface RainbowPersistConfig<S> {
  * @returns An object containing the persist storage and version.
  */
 function createPersistStorage<S = unknown>(config: RainbowPersistConfig<S>) {
-  const { deserializer = defaultDeserializeState, serializer = defaultSerializeState, storageKey, version = 0 } = config;
+  const { deserializer = defaultDeserializeState, serializer = defaultSerializeState, storageKey, version = 0, migrate } = config;
 
   const persistStorage: PersistOptions<S, Partial<S>>['storage'] = {
     getItem: (name: string) => {
@@ -151,6 +156,7 @@ export function createRainbowStore<S = unknown>(
         partialize: persistConfig.partialize || (state => state),
         storage: persistStorage,
         version,
+        migrate: persistConfig.migrate,
       })
     )
   );

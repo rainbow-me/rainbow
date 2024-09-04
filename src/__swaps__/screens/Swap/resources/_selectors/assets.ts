@@ -1,5 +1,5 @@
 import { ParsedAssetsDict, ParsedAssetsDictByChain, ParsedUserAsset, UniqueId } from '@/__swaps__/types/assets';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 import { deriveAddressAndChainWithUniqueId } from '@/__swaps__/utils/address';
 import { add } from '@/__swaps__/utils/numbers';
 
