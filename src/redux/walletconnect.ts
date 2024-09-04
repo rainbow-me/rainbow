@@ -25,13 +25,15 @@ import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { convertHexToString, delay, omitBy, pickBy } from '@/helpers/utilities';
 import WalletConnectApprovalSheetType from '@/helpers/walletConnectApprovalSheetTypes';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils, watchingAlert } from '@/utils';
+import { watchingAlert } from '@/utils';
 import { getFCMToken } from '@/notifications/tokens';
 import { logger, RainbowError } from '@/logger';
 import { IS_DEV, IS_IOS, IS_TEST } from '@/env';
-import { RainbowNetworks } from '@/networks';
+import { RainbowNetworkObjects } from '@/networks';
 import { Verify } from '@walletconnect/types';
 import { RequestSource, handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
+import { ChainId } from '@/networks/types';
+import { Address } from 'viem';
 
 // -- Variables --------------------------------------- //
 let showRedirectSheetThreshold = 300;
@@ -132,8 +134,8 @@ export type WalletconnectResultType = 'timedOut' | 'sign' | 'transaction' | 'sig
 export interface WalletconnectApprovalSheetRouteParams {
   callback: (
     approved: boolean,
-    chainId: number,
-    accountAddress: string,
+    chainId: ChainId,
+    accountAddress: Address,
     peerId: WalletconnectRequestData['peerId'],
     dappScheme: WalletconnectRequestData['dappScheme'],
     dappName: WalletconnectRequestData['dappName'],
@@ -470,11 +472,11 @@ const listenOnNewMessages =
       const requestId = payload.id;
       if (payload.method === 'wallet_addEthereumChain' || payload.method === `wallet_switchEthereumChain`) {
         const { chainId } = payload.params[0];
-        const currentNetwork = ethereumUtils.getNetworkFromChainId(
-          // @ts-expect-error "_chainId" is private.
-          Number(walletConnector._chainId)
+        // @ts-expect-error "_chainId" is private.
+        const currentChainId = Number(walletConnector._chainId);
+        const supportedChains = RainbowNetworkObjects.filter(network => network.features.walletconnect).map(network =>
+          network.id.toString()
         );
-        const supportedChains = RainbowNetworks.filter(network => network.features.walletconnect).map(network => network.id.toString());
         const numericChainId = convertHexToString(chainId);
         if (supportedChains.includes(numericChainId)) {
           dispatch(walletConnectSetPendingRedirect());
@@ -511,7 +513,7 @@ const listenOnNewMessages =
                 });
               }
             },
-            currentNetwork,
+            currentChainId,
             meta: {
               chainIds: [Number(numericChainId)],
               dappName,
@@ -559,7 +561,9 @@ const listenOnNewMessages =
           return;
         }
         const { requests: pendingRequests } = getState().requests;
-        const request = !pendingRequests[requestId] ? dispatch(addRequestToApprove(clientId, peerId, requestId, payload, peerMeta)) : null;
+        const request = !pendingRequests[requestId]
+          ? await dispatch(addRequestToApprove(clientId, peerId, requestId, payload, peerMeta))
+          : null;
         if (request) {
           handleWalletConnectRequest(request);
           InteractionManager.runAfterInteractions(() => {

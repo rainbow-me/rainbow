@@ -10,12 +10,11 @@ import { useDispatch } from 'react-redux';
 import { useTheme } from '../theme/ThemeContext';
 import { STORAGE_IDS } from '@/model/mmkv';
 import { IS_TESTING } from 'react-native-dotenv';
-import { web3SetHttpProvider } from '@/handlers/web3';
 import { logger, RainbowError } from '@/logger';
-import networkTypes from '@/helpers/networkTypes';
 import { explorerInit } from '@/redux/explorer';
 import { Navigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 export const RainbowContext = createContext({});
 const storageKey = 'config';
@@ -28,6 +27,7 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
   // This value is hold here to prevent JS VM from shutting down
   // on unmounting all shared values.
   useSharedValue(0);
+  const { setConnectedToHardhat } = useConnectedToHardhatStore();
   const [config, setConfig] = useState<Record<string, boolean>>(
     Object.entries(defaultConfig).reduce((acc, [key, { value }]) => ({ ...acc, [key]: value }), {})
   );
@@ -63,17 +63,17 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
 
   const connectToHardhat = useCallback(async () => {
     try {
-      const ready = await web3SetHttpProvider('http://127.0.0.1:8545');
-      logger.debug('[RainbowContext]: connected to hardhat', { ready });
+      setConnectedToHardhat(true);
+      logger.debug('connected to hardhat');
     } catch (e: any) {
-      await web3SetHttpProvider(networkTypes.mainnet);
-      logger.error(new RainbowError('[RainbowContext]: error connecting to hardhat'), {
+      setConnectedToHardhat(false);
+      logger.error(new RainbowError('error connecting to hardhat'), {
         message: e.message,
       });
     }
     dispatch(explorerInit());
     Navigation.handleAction(Routes.WALLET_SCREEN, {});
-  }, [dispatch]);
+  }, [dispatch, setConnectedToHardhat]);
 
   return (
     <RainbowContext.Provider value={initialValue}>

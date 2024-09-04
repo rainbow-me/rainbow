@@ -1,22 +1,17 @@
-import { InteractionManager, View } from 'react-native';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { AssetList } from '../../components/asset-list';
 import { Page } from '../../components/layout';
-import { Network } from '@/helpers';
 import { useRemoveFirst } from '@/navigation/useRemoveFirst';
-import { settingsUpdateNetwork } from '@/redux/settings';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Box } from '@/design-system';
 import {
   useAccountAccentColor,
   useAccountSettings,
-  useInitializeAccountData,
   useInitializeWallet,
-  useLoadAccountData,
   useLoadAccountLateData,
   useLoadGlobalLateData,
-  useResetAccountState,
   useWalletSectionsData,
 } from '@/hooks';
 import Routes from '@rainbow-me/routes';
@@ -34,7 +29,9 @@ import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
 import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
 import { UserAssetsSync } from '@/state/sync/UserAssetsSync';
 import { useClaimables } from '@/resources/addys/claimables/query';
-import { getIsHardhatConnected } from '@/handlers/web3';
+import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
+import { runWalletBackupStatusChecks } from '@/handlers/walletReadyEvents';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const WalletPage = styled(Page)({
   ...position.sizeAsObject('100%'),
@@ -49,32 +46,13 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
   const [initialized, setInitialized] = useState(!!params?.initialized);
   const initializeWallet = useInitializeWallet();
   const { network: currentNetwork, accountAddress, appIcon, nativeCurrency } = useAccountSettings();
+  const { connectedToHardhat } = useConnectedToHardhatStore();
   usePositions({ address: accountAddress, currency: nativeCurrency });
-  useClaimables({ address: accountAddress, currency: nativeCurrency, testnetMode: getIsHardhatConnected() });
+  useClaimables({ address: accountAddress, currency: nativeCurrency, testnetMode: connectedToHardhat });
 
   const loadAccountLateData = useLoadAccountLateData();
   const loadGlobalLateData = useLoadGlobalLateData();
-  const dispatch = useDispatch();
-  const resetAccountState = useResetAccountState();
-  const loadAccountData = useLoadAccountData();
-  const initializeAccountData = useInitializeAccountData();
   const insets = useSafeAreaInsets();
-
-  const revertToMainnet = useCallback(async () => {
-    await resetAccountState();
-    await dispatch(settingsUpdateNetwork(Network.mainnet));
-    InteractionManager.runAfterInteractions(async () => {
-      await loadAccountData();
-      initializeAccountData();
-    });
-  }, [dispatch, initializeAccountData, loadAccountData, resetAccountState]);
-
-  useEffect(() => {
-    const supportedNetworks = [Network.mainnet];
-    if (!supportedNetworks.includes(currentNetwork)) {
-      revertToMainnet();
-    }
-  }, [currentNetwork, revertToMainnet]);
 
   const walletReady = useSelector(({ appState: { walletReady } }: AppState) => walletReady);
   const { isWalletEthZero, isLoadingUserAssets, isLoadingBalance, briefSectionsData: walletBriefSectionsData } = useWalletSectionsData();
@@ -109,6 +87,7 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
     if (walletReady) {
       loadAccountLateData();
       loadGlobalLateData();
+      runWalletBackupStatusChecks();
     }
   }, [loadAccountLateData, loadGlobalLateData, walletReady]);
 
@@ -150,6 +129,9 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
         <UserAssetsSync />
         <RemoteCardsSync />
         <RemotePromoSheetSync />
+
+        {/* NOTE: This component listens for Mobile Wallet Protocol requests and handles them */}
+        <MobileWalletProtocolListener />
       </WalletPage>
     </View>
   );

@@ -6,7 +6,7 @@ import { Text as RNText, StyleSheet } from 'react-native';
 import Animated, { useDerivedValue, useSharedValue } from 'react-native-reanimated';
 
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { ChainId, ChainName, ChainNameDisplay } from '@/__swaps__/types/chains';
+import { ChainId, ChainNameDisplay } from '@/networks/types';
 import { chainNameForChainIdWithMainnetSubstitution } from '@/__swaps__/utils/chains';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
@@ -78,7 +78,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
 
       return {
         actionKey: `${chainId}`,
-        actionTitle: displayName,
+        actionTitle: displayName as string,
         icon: {
           iconType: 'ASSET',
           iconValue: `${networkName}Badge${chainId === ChainId.mainnet ? '' : 'NoShadow'}`,
@@ -89,7 +89,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
     if (!output) {
       supportedChains.unshift({
         actionKey: 'all',
-        actionTitle: i18n.t(i18n.l.exchange.all_networks) as ChainName,
+        actionTitle: i18n.t(i18n.l.exchange.all_networks),
         icon: {
           iconType: 'icon',
           iconValue: '􀆪',

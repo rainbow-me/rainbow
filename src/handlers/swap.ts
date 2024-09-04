@@ -15,14 +15,14 @@ import { Contract } from '@ethersproject/contracts';
 import { MaxUint256 } from '@ethersproject/constants';
 import { IS_TESTING } from 'react-native-dotenv';
 import { Token } from '../entities/tokens';
-import { estimateGasWithPadding, getProviderForNetwork, toHexNoLeadingZeros } from './web3';
+import { estimateGasWithPadding, getProvider, toHexNoLeadingZeros } from './web3';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { Asset } from '@/entities';
 import { add, convertRawAmountToDecimalFormat, divide, lessThan, multiply, subtract } from '@/helpers/utilities';
 import { erc20ABI, ethUnits } from '@/references';
 import { ethereumUtils } from '@/utils';
-import { ChainId } from '@/__swaps__/types/chains';
 import { logger, RainbowError } from '@/logger';
+import { ChainId } from '@/networks/types';
 
 export enum Field {
   INPUT = 'INPUT',
@@ -234,8 +234,7 @@ export const estimateSwapGasLimit = async ({
   requiresApprove?: boolean;
   tradeDetails: Quote | null;
 }): Promise<string | number> => {
-  const network = ethereumUtils.getNetworkFromChainId(chainId);
-  const provider = await getProviderForNetwork(network);
+  const provider = await getProvider({ chainId });
   if (!provider || !tradeDetails) {
     return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
   }
@@ -311,8 +310,7 @@ export const estimateCrosschainSwapGasLimit = async ({
   requiresApprove?: boolean;
   tradeDetails: CrosschainQuote;
 }): Promise<string | number> => {
-  const network = ethereumUtils.getNetworkFromChainId(chainId);
-  const provider = await getProviderForNetwork(network);
+  const provider = await getProvider({ chainId });
   if (!provider || !tradeDetails) {
     return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
   }

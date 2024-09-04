@@ -1,4 +1,4 @@
-import { getNetwork, saveNetwork } from '@/handlers/localstorage/globalSettings';
+import { getChainId, saveChainId } from '@/handlers/localstorage/globalSettings';
 import { web3SetHttpProvider } from '@/handlers/web3';
 import { RainbowError, logger } from '@/logger';
 import { createQueryKey, queryClient } from '@/react-query';
@@ -248,9 +248,9 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
     throw e;
   } finally {
     logger.debug(`[remoteConfig]: Current remote config:\n${JSON.stringify(config, null, 2)}`);
-    const currentNetwork = await getNetwork();
-    web3SetHttpProvider(currentNetwork);
-    saveNetwork(currentNetwork);
+    const currentChainId = await getChainId();
+    web3SetHttpProvider(currentChainId);
+    saveChainId(currentChainId);
   }
 }
 
