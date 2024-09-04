@@ -25,7 +25,7 @@ export const FeaturedResultCard = ({ featuredResultId, onNavigate, Card, ...prop
       }
 
       await trackFeaturedResult({
-        featuredResultCreativeId: featuredResult.advertiserId,
+        featuredResultCreativeId: featuredResult.id,
         placementId: featuredResult.placementSlug,
         impressionId: featuredResult.impressionId,
         type: TrackFeaturedResultType.Impression,
