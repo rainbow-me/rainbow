@@ -238,7 +238,7 @@ export default ({ screenType = 'transaction' }: UseOnAvatarPressProps = {}) => {
     ].filter(x => x),
   };
 
-  const avatarActionSheetOptions = avatarContextMenuConfig.menuItems.map(item => item.actionTitle).concat(ios ? ['Cancel'] : []);
+  const avatarActionSheetOptions = avatarContextMenuConfig.menuItems.map(item => item && item.actionTitle).concat(ios ? ['Cancel'] : []);
 
   const onAvatarPressProfile = useCallback(() => {
     navigate(Routes.PROFILE_SHEET, {
