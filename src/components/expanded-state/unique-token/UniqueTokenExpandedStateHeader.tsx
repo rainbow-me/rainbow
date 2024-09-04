@@ -21,7 +21,6 @@ import isSVGImage from '@/utils/isSVG';
 import { refreshNFTContractMetadata, reportNFT } from '@/resources/nfts/simplehash';
 import { ContextCircleButton } from '@/components/context-menu';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { MenuActionConfig, MenuConfig } from 'react-native-ios-context-menu';
 import { ChainId } from '@/networks/types';
 
 const AssetActionsEnum = {
@@ -262,7 +261,7 @@ const UniqueTokenExpandedStateHeader = ({
   const isENS = asset.asset_contract?.address?.toLowerCase() === ENS_NFT_CONTRACT_ADDRESS.toLowerCase();
 
   const isPhotoDownloadAvailable = !isSVG && !isENS;
-  const assetMenuConfig: MenuConfig = useMemo(() => {
+  const assetMenuConfig = useMemo(() => {
     const AssetActions = getAssetActions({ chainId: asset.chainId });
 
     return {
@@ -443,11 +442,7 @@ const UniqueTokenExpandedStateHeader = ({
   const familyNameHitSlop: Space = '19px (Deprecated)';
 
   const assetMenuOptions = useMemo(() => {
-    return (
-      assetMenuConfig?.menuItems
-        ?.filter((item): item is MenuActionConfig => 'actionTitle' in item)
-        .map((item: MenuActionConfig) => item.actionTitle) ?? []
-    );
+    return assetMenuConfig?.menuItems?.filter(item => 'actionTitle' in item).map(item => item.actionTitle) ?? [];
   }, [assetMenuConfig]);
 
   return (
@@ -463,8 +458,8 @@ const UniqueTokenExpandedStateHeader = ({
               <ContextCircleButton
                 options={assetMenuOptions}
                 onPressActionSheet={(index: number) => {
-                  const actionItems = (assetMenuConfig?.menuItems || []).filter((item): item is MenuActionConfig => 'actionTitle' in item);
-                  const actionKey: MenuActionConfig = actionItems[index];
+                  const actionItems = (assetMenuConfig?.menuItems || []).filter(item => 'actionTitle' in item);
+                  const actionKey = actionItems[index];
                   if (!actionKey) return;
                   handlePressAssetMenuItem({
                     nativeEvent: { actionKey: actionKey.actionKey },

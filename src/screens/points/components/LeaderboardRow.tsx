@@ -1,7 +1,6 @@
 import * as i18n from '@/languages';
 import React, { memo, useCallback, useMemo } from 'react';
 import { Keyboard, Share } from 'react-native';
-import { MenuActionConfig } from 'react-native-ios-context-menu';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { useClipboard, useContacts, useSwitchWallet, useWallets, useWatchWallet } from '@/hooks';
 import { useNavigation } from '@/navigation';
@@ -61,14 +60,18 @@ export const LeaderboardRow = memo(function LeaderboardRow({
 
   const menuItems = useMemo(() => {
     return [
-      isWatching && {
-        actionKey: ACTIONS.OPEN_WALLET,
-        actionTitle: i18n.t(i18n.l.profiles.details.open_wallet),
-        icon: {
-          iconType: 'SYSTEM',
-          iconValue: 'iphone.and.arrow.forward',
-        },
-      },
+      ...(isWatching
+        ? [
+            {
+              actionKey: ACTIONS.OPEN_WALLET,
+              actionTitle: i18n.t(i18n.l.profiles.details.open_wallet),
+              icon: {
+                iconType: 'SYSTEM',
+                iconValue: 'iphone.and.arrow.forward',
+              },
+            },
+          ]
+        : []),
       {
         actionKey: ACTIONS.COPY_ADDRESS,
         actionTitle: i18n.t(i18n.l.profiles.details.copy_address),
@@ -111,7 +114,7 @@ export const LeaderboardRow = memo(function LeaderboardRow({
           iconValue: 'square.and.arrow.up',
         },
       },
-    ].filter(Boolean) as MenuActionConfig[];
+    ];
   }, [isWatching, formattedAddress, contact]);
 
   const handlePressMenuItem = useCallback(
