@@ -765,7 +765,15 @@ export default function SendSheet(props) {
     const assetChainId = selected.chainId;
     const currentProviderChainId = currentProvider._network.chainId;
 
-    if (assetChainId === currentChainId && currentProviderChainId === currentChainId && isValidAddress && !isEmpty(selected)) {
+    if (
+      !!accountAddress &&
+      amountDetails.assetAmount !== '' &&
+      Object.entries(selected).length &&
+      assetChainId === currentChainId &&
+      currentProviderChainId === currentChainId &&
+      isValidAddress &&
+      !isEmpty(selected)
+    ) {
       estimateGasLimit(
         {
           address: accountAddress,
