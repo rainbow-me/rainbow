@@ -19,7 +19,7 @@ function safeBigInt(value: string) {
   }
 }
 
-const isFeeNaN = (value: string | undefined) => isNaN(Number(value)) || !value;
+const isFeeNaN = (value: string | undefined) => isNaN(Number(value)) || typeof value === 'undefined';
 
 export function calculateGasFee(gasSettings: GasSettings, gasLimit: string) {
   if (gasSettings.isEIP1559) {

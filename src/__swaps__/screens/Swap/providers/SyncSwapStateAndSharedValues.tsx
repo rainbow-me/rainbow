@@ -143,7 +143,7 @@ export function SyncGasStateToSharedValues() {
     }
 
     const gasFee = calculateGasFee(gasSettings, estimatedGasLimit);
-    if (!gasFee || isNaN(Number(gasFee))) {
+    if (gasFee === null || isNaN(Number(gasFee))) {
       return;
     }
 
