@@ -176,7 +176,7 @@ export const DEFAULT_CONFIG: RainbowConfig = {
 
   degen_mode: false,
   featured_results: false,
-  nfts_enabled: false,
+  nfts_enabled: true,
 };
 
 export async function fetchRemoteConfig(): Promise<RainbowConfig> {
