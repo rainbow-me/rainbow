@@ -135,7 +135,7 @@ export default function useImportingWallet({ showImportModal = true } = {}) {
           }
           setResolvedAddress(address);
           name = forceEmoji ? `${forceEmoji} ${input}` : input;
-          avatarUrl = avatarUrl || avatar?.imageUrl;
+          avatarUrl = avatarUrl || (avatar && avatar?.imageUrl);
           setBusy(false);
           startImportProfile(name, guardedForceColor, address, avatarUrl);
           analytics.track('Show wallet profile modal for ENS address', {
