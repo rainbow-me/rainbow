@@ -79,10 +79,28 @@ export const SyncQuoteSharedValuesToState = () => {
   return null;
 };
 
+const isFeeNaNWorklet = (value: string | undefined) => {
+  'worklet';
+
+  return isNaN(Number(value)) || typeof value === 'undefined';
+};
+
 export function calculateGasFeeWorklet(gasSettings: GasSettings, gasLimit: string) {
   'worklet';
-  const amount = gasSettings.isEIP1559 ? sumWorklet(gasSettings.maxBaseFee, gasSettings.maxPriorityFee || '0') : gasSettings.gasPrice;
-  return mulWorklet(gasLimit, amount);
+
+  if (gasSettings.isEIP1559) {
+    if (isFeeNaNWorklet(gasSettings.maxBaseFee) || isFeeNaNWorklet(gasSettings.maxPriorityFee)) {
+      return null;
+    }
+
+    return sumWorklet(gasSettings.maxBaseFee || '0', gasSettings.maxPriorityFee || '0');
+  }
+
+  if (isFeeNaNWorklet(gasSettings.gasPrice)) {
+    return null;
+  }
+
+  return mulWorklet(gasLimit, gasSettings.gasPrice);
 }
 
 export function formatUnitsWorklet(value: string, decimals: number) {
