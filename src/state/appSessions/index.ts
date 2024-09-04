@@ -2,7 +2,21 @@ import { Address } from 'viem';
 
 import { Network, ChainId } from '@/networks/types';
 import { createRainbowStore } from '../internal/createRainbowStore';
-import { chainsIdByName } from '@/networks/chains';
+
+const chainsIdByNetwork: Record<Network, ChainId> = {
+  [Network.mainnet]: ChainId.mainnet,
+  [Network.polygon]: ChainId.polygon,
+  [Network.avalanche]: ChainId.avalanche,
+  [Network.bsc]: ChainId.bsc,
+  [Network.arbitrum]: ChainId.arbitrum,
+  [Network.optimism]: ChainId.optimism,
+  [Network.zora]: ChainId.zora,
+  [Network.base]: ChainId.base,
+  [Network.degen]: ChainId.degen,
+  [Network.gnosis]: ChainId.gnosis,
+  [Network.blast]: ChainId.blast,
+  [Network.goerli]: ChainId.goerli,
+};
 
 export interface AppSessionV0 {
   activeSessionAddress: Address;
@@ -176,7 +190,7 @@ export const useAppSessionsStore = createRainbowStore<AppSessionsStore<AppSessio
             (acc, addr) => {
               const address = addr as Address;
               const network = sessions[address];
-              acc[address] = chainsIdByName[network];
+              acc[address] = chainsIdByNetwork[network];
               return acc as Record<Address, ChainId>;
             },
             {} as Record<Address, ChainId>
