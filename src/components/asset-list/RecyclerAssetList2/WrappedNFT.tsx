@@ -11,6 +11,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
+import { IS_TEST } from '@/env';
 
 export default React.memo(function WrappedNFT({
   onPress,
@@ -24,7 +25,7 @@ export default React.memo(function WrappedNFT({
   externalAddress?: string;
 }) {
   const { nfts_enabled } = useRemoteConfig();
-  const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
+  const nftsEnabled = (useExperimentalFlag(NFTS_ENABLED) || nfts_enabled) && !IS_TEST;
 
   const assetCollectible = useCollectible(uniqueId, externalAddress);
 

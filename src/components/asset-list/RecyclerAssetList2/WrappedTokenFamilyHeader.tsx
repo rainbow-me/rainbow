@@ -4,6 +4,7 @@ import { useLatestCallback, useOpenFamilies } from '@/hooks';
 import { ThemeContextProps } from '@/theme';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
+import { IS_TEST } from '@/env';
 
 type Props = {
   name: string;
@@ -15,7 +16,7 @@ type Props = {
 
 export default React.memo(function WrappedTokenFamilyHeader({ name, total, image, theme, testID }: Props) {
   const { nfts_enabled } = useRemoteConfig();
-  const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
+  const nftsEnabled = (useExperimentalFlag(NFTS_ENABLED) || nfts_enabled) && !IS_TEST;
 
   const { openFamilies, updateOpenFamilies } = useOpenFamilies();
   const isFamilyOpen = openFamilies[name];

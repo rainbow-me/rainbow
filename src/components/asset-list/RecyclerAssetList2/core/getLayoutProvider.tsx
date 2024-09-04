@@ -6,6 +6,7 @@ import { getRemoteConfig, RainbowConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED, REMOTE_CARDS, useExperimentalFlag } from '@/config';
 import { useContext } from 'react';
 import { RainbowContextType } from '@/helpers/RainbowContext';
+import { IS_TEST } from '@/env';
 
 const getStyleOverridesForIndex = (indices: number[]) => (index: number) => {
   if (indices.includes(index)) {
@@ -34,8 +35,6 @@ class BetterLayoutProvider extends LayoutProvider {
   }
 }
 
-// briefSectionsData: BaseCellType[], isCoinListEdited: boolean, cardIds: string[], isReadOnlyWallet: boolean
-
 const getLayoutProvider = ({
   briefSectionsData,
   isCoinListEdited,
@@ -51,8 +50,8 @@ const getLayoutProvider = ({
   experimentalConfig: ReturnType<typeof useContext<RainbowContextType>>['config'];
   remoteConfig: RainbowConfig;
 }) => {
-  const remoteCardsEnabled = remoteConfig.remote_cards_enabled || experimentalConfig[REMOTE_CARDS];
-  const nftsEnabled = remoteConfig.nfts_enabled || experimentalConfig[NFTS_ENABLED];
+  const remoteCardsEnabled = (remoteConfig.remote_cards_enabled || experimentalConfig[REMOTE_CARDS]) && !IS_TEST;
+  const nftsEnabled = (remoteConfig.nfts_enabled || experimentalConfig[NFTS_ENABLED]) && !IS_TEST;
 
   const indicesToOverride = [];
   for (let i = 0; i < briefSectionsData.length; i++) {

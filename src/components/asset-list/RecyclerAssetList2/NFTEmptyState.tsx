@@ -66,7 +66,7 @@ export function NFTEmptyState() {
     data: { featuredMint },
   } = useMints({ walletAddress: accountAddress });
 
-  const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
+  const nftsEnabled = (useExperimentalFlag(NFTS_ENABLED) || nfts_enabled) && !IS_TEST;
   const mintsEnabled = (useExperimentalFlag(MINTS) || mints_enabled) && !IS_TEST;
 
   if (!nftsEnabled) return null;

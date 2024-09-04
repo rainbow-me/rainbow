@@ -6,6 +6,7 @@ import { opacity } from '@/__swaps__/utils/swaps';
 import { deviceUtils } from '@/utils';
 import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
+import { IS_TEST } from '@/env';
 
 export const TokenFamilyHeaderHeight = 50;
 
@@ -48,7 +49,7 @@ const NFTItem = () => {
 
 const NFTLoadingSkeleton = ({ items = 5 }) => {
   const { nfts_enabled } = useRemoteConfig();
-  const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
+  const nftsEnabled = (useExperimentalFlag(NFTS_ENABLED) || nfts_enabled) && !IS_TEST;
 
   if (!nftsEnabled) return null;
 
