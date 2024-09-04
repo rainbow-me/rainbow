@@ -2,7 +2,6 @@ import React from 'react';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { useAccountSettings, useDimensions } from '@/hooks';
 import { useClaimables } from '@/resources/addys/claimables/query';
-import { getIsHardhatConnected } from '@/handlers/web3';
 import { FasterImageView } from '@candlefinance/faster-image';
 import { ButtonPressAnimation } from '@/components/animations';
 
@@ -12,7 +11,6 @@ export default function Claimable({ uniqueId }: { uniqueId: string }) {
     {
       address: accountAddress,
       currency: nativeCurrency,
-      testnetMode: getIsHardhatConnected(),
     },
     {
       select: data => data?.filter(claimable => claimable.uniqueId === uniqueId),

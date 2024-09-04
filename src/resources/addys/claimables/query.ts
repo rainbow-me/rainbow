@@ -8,7 +8,8 @@ import { ConsolidatedClaimablesResponse } from './types';
 import { logger, RainbowError } from '@/logger';
 import { parseClaimables } from './utils';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { CLAIMABLES, OP_REWARDS, useExperimentalFlag } from '@/config';
+import { CLAIMABLES, useExperimentalFlag } from '@/config';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const addysHttp = new RainbowFetchClient({
   baseURL: 'https://addys.p.rainbow.me/v3',
@@ -67,13 +68,14 @@ type ClaimablesResult = QueryFunctionResult<typeof claimablesQueryFunction>;
 // Query Hook
 
 export function useClaimables(
-  { address, currency, testnetMode }: ClaimablesArgs,
+  { address, currency }: ClaimablesArgs,
   config: QueryConfigWithSelect<ClaimablesResult, Error, ClaimablesResult, ClaimablesQueryKey> = {}
 ) {
   const { claimables: remoteFlag } = useRemoteConfig();
   const localFlag = useExperimentalFlag(CLAIMABLES);
+  const { connectedToHardhat } = useConnectedToHardhatStore();
 
-  return useQuery(claimablesQueryKey({ address, currency, testnetMode }), claimablesQueryFunction, {
+  return useQuery(claimablesQueryKey({ address, currency, testnetMode: connectedToHardhat }), claimablesQueryFunction, {
     ...config,
     enabled: !!address && (remoteFlag || localFlag),
     staleTime: 1000 * 60 * 2,

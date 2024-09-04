@@ -31,7 +31,6 @@ import { UserAssetsSync } from '@/state/sync/UserAssetsSync';
 import { useClaimables } from '@/resources/addys/claimables/query';
 import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
 import { runWalletBackupStatusChecks } from '@/handlers/walletReadyEvents';
-import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const WalletPage = styled(Page)({
   ...position.sizeAsObject('100%'),
@@ -46,9 +45,8 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
   const [initialized, setInitialized] = useState(!!params?.initialized);
   const initializeWallet = useInitializeWallet();
   const { network: currentNetwork, accountAddress, appIcon, nativeCurrency } = useAccountSettings();
-  const { connectedToHardhat } = useConnectedToHardhatStore();
   usePositions({ address: accountAddress, currency: nativeCurrency });
-  useClaimables({ address: accountAddress, currency: nativeCurrency, testnetMode: connectedToHardhat });
+  useClaimables({ address: accountAddress, currency: nativeCurrency });
 
   const loadAccountLateData = useLoadAccountLateData();
   const loadGlobalLateData = useLoadGlobalLateData();
