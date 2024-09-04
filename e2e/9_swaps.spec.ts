@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 /*
  *   // Other tests to consider:
  *       - Flip assets
@@ -21,7 +22,6 @@ import {
   fetchElementAttributes,
   tap,
   delayTime,
-  swipeUntilVisible,
   tapAndLongPress,
   swipe,
   tapByText,
@@ -106,31 +106,49 @@ describe('Swap Sheet Interaction Flow', () => {
     expect(swapInput.label).toContain('ETH');
   });
 
-  // Execute swap
   it('Should be able to go to review and execute a swap', async () => {
     await delayTime('very-long');
 
-    await swipeUntilVisible('token-to-buy-dai-1', 'token-to-buy-list', 'up', 100);
+    await swipe('token-to-buy-list', 'up', 'slow', 0.2);
     await tap('token-to-buy-dai-1');
     await delayTime('medium');
     await tap('swap-bottom-action-button');
+    await delayTime('long');
+
     const inputAssetActionButton = await fetchElementAttributes('swap-input-asset-action-button');
     const outputAssetActionButton = await fetchElementAttributes('swap-output-asset-action-button');
-    const holdToSwapButton = await fetchElementAttributes('swap-bottom-action-button');
-
     expect(inputAssetActionButton.label).toBe('ETH 􀆏');
     expect(outputAssetActionButton.label).toBe('DAI 􀆏');
 
-    // sometime UI is lagging. If it is, wait a bit. if not, just proceed.
-    if (holdToSwapButton.label === '􀎽 Review') {
-      await delayTime('very-long');
-    }
+    // So I was noticing a lot of flakiness here and I found out it's because we are fetching
+    // for a quote somewhat often and it makes the swap action button disabled. I added a longer
+    // fetch time + this loop to check the button label incase it fails for other reasons.
+
+    const pollForCorrectLabel = async (maxAttempts = 10, interval = 1000) => {
+      for (let i = 0; i < maxAttempts; i++) {
+        const holdToSwapButton = await fetchElementAttributes('swap-bottom-action-button');
+        if (holdToSwapButton.label === '􀎽 Hold to Swap') {
+          return holdToSwapButton;
+        }
+        if (i < maxAttempts - 1) {
+          console.log(`Checking swap action button label attempt number ${maxAttempts}...`);
+          await new Promise(resolve => {
+            setTimeout(resolve, interval);
+          });
+          await tap('swap-bottom-action-button');
+          await delayTime('long');
+        }
+      }
+      throw new Error('Failed to reach "Hold to Swap" state after 10 attempts...');
+    };
+
+    const holdToSwapButton = await pollForCorrectLabel();
     expect(holdToSwapButton.label).toBe('􀎽 Hold to Swap');
-    await tapAndLongPress('swap-bottom-action-button', 1500);
+
+    await tapAndLongPress('swap-bottom-action-button', 2_000);
   });
 
   it('Should be able to verify swap is happening', async () => {
-    await delayTime('very-long');
     await delayTime('very-long');
     await checkIfVisible('profile-screen');
     const activityListElements = await fetchElementAttributes('wallet-activity-list');

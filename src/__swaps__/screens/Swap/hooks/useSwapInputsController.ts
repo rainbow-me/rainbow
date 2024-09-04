@@ -32,6 +32,7 @@ import { useCallback } from 'react';
 import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 import { NavigationSteps } from './useSwapNavigation';
+import { IS_TEST } from '@/env';
 
 const REMOTE_CONFIG = getRemoteConfig();
 
@@ -536,7 +537,7 @@ export function useSwapInputsController({
   };
 
   const quoteFetchingInterval = useAnimatedInterval({
-    intervalMs: 12_000,
+    intervalMs: IS_TEST ? 999_999 : 12_000,
     onIntervalWorklet: fetchQuoteAndAssetPrices,
     autoStart: false,
   });

@@ -278,18 +278,20 @@ export async function swipeUntilVisible(
   elementId: string | RegExp,
   scrollViewId: string,
   direction: Direction,
-  percentageVisible?: number
+  percentageVisible = 100,
+  maxAttempts = 10,
+  swipeTimeout = 500
 ) {
-  let stop = false;
-
-  while (!stop) {
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
     try {
       await waitFor(element(by.id(elementId)))
         .toBeVisible(percentageVisible)
-        .withTimeout(500);
-
-      stop = true;
+        .withTimeout(swipeTimeout);
+      return; // Element found, exit the function
     } catch (e) {
+      if (attempt === maxAttempts - 1) {
+        throw new Error(`Element ${elementId} not found after ${maxAttempts} attempts`);
+      }
       await swipe(scrollViewId, direction, 'slow', 0.2);
     }
   }
