@@ -8,10 +8,10 @@ import { ClaimableExtraData, PositionExtraData } from '@/components/asset-list/R
 import { getExperimetalFlag, DEFI_POSITIONS, CLAIMABLES } from '@/config/experimental';
 import { RainbowPositions } from '@/resources/defi/types';
 import { claimablesQueryKey } from '@/resources/addys/claimables/query';
-import { getIsHardhatConnected } from '@/handlers/web3';
 import { Claimable } from '@/resources/addys/claimables/types';
 import { add, convertAmountToNativeDisplay } from './utilities';
 import { getRemoteConfig } from '@/model/remoteConfig';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const CONTENT_PLACEHOLDER = [
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },
@@ -117,14 +117,15 @@ const withClaimablesSection = (isLoadingUserAssets: boolean) => {
   if (!claimablesEnabled) return [];
 
   const { accountAddress: address, nativeCurrency: currency } = store.getState().settings;
+  const isHardhatConnected = useConnectedToHardhatStore.getState().connectedToHardhat;
   const claimables: Claimable[] | undefined = queryClient.getQueryData(
-    claimablesQueryKey({ address, currency, testnetMode: getIsHardhatConnected() })
+    claimablesQueryKey({ address, currency, testnetMode: isHardhatConnected })
   );
 
   const result: ClaimableExtraData[] = [];
   let totalNativeValue = '0';
   claimables?.forEach(claimable => {
-    totalNativeValue = add(totalNativeValue, claimable.value.nativeAsset.amount);
+    totalNativeValue = add(totalNativeValue, claimable.value.nativeAsset.amount ?? '0');
     const listData = {
       type: 'CLAIMABLE',
       uniqueId: claimable.uniqueId,

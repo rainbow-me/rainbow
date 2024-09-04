@@ -1,13 +1,14 @@
 import React from 'react';
 import { Box, Inline, Stack, Text } from '@/design-system';
-import { useAccountSettings, useDimensions } from '@/hooks';
+import { useAccountSettings } from '@/hooks';
 import { useClaimables } from '@/resources/addys/claimables/query';
 import { FasterImageView } from '@candlefinance/faster-image';
 import { ButtonPressAnimation } from '@/components/animations';
+import { deviceUtils } from '@/utils';
 
 export default function Claimable({ uniqueId }: { uniqueId: string }) {
   const { accountAddress, nativeCurrency } = useAccountSettings();
-  const { data } = useClaimables(
+  const { data = [] } = useClaimables(
     {
       address: accountAddress,
       currency: nativeCurrency,
@@ -16,9 +17,8 @@ export default function Claimable({ uniqueId }: { uniqueId: string }) {
       select: data => data?.filter(claimable => claimable.uniqueId === uniqueId),
     }
   );
-  const { width: deviceWidth } = useDimensions();
 
-  const claimable = data?.[0];
+  const [claimable] = data;
 
   if (!claimable) return null;
 
@@ -37,7 +37,14 @@ export default function Claimable({ uniqueId }: { uniqueId: string }) {
           style={{ height: 40, width: 40, borderRadius: 11, borderWidth: 1, borderColor: 'rgba(0, 0, 0, 0.03)' }}
         />
         <Stack space={{ custom: 11 }}>
-          <Text weight="semibold" color="label" size="17pt" ellipsizeMode="tail" numberOfLines={1} style={{ maxWidth: deviceWidth - 220 }}>
+          <Text
+            weight="semibold"
+            color="label"
+            size="17pt"
+            ellipsizeMode="tail"
+            numberOfLines={1}
+            style={{ maxWidth: deviceUtils.dimensions.width - 220 }}
+          >
             {claimable.name}
           </Text>
           <Text weight="semibold" color="labelTertiary" size="13pt">
