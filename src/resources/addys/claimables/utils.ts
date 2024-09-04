@@ -1,6 +1,6 @@
 import { NativeCurrencyKey } from '@/entities';
 import { AddysClaimable, Claimable } from './types';
-import { convertRawAmountToBalance, convertRawAmountToNativeDisplay } from '@/helpers/utilities';
+import { convertRawAmountToBalance, convertRawAmountToNativeDisplay, greaterThan, lessThan } from '@/helpers/utilities';
 
 export const parseClaimables = (claimables: AddysClaimable[], currency: NativeCurrencyKey): Claimable[] => {
   return claimables
@@ -13,5 +13,5 @@ export const parseClaimables = (claimables: AddysClaimable[], currency: NativeCu
         nativeAsset: convertRawAmountToNativeDisplay(claimable.amount, claimable.asset.decimals, claimable.asset.price.value, currency),
       },
     }))
-    .sort((a, b) => (a.value.claimAsset.amount < b.value.claimAsset.amount ? -1 : 1)); // FIXME
+    .sort((a, b) => (greaterThan(a.value.claimAsset.amount ?? '0', b.value.claimAsset.amount ?? '0') ? -1 : 1));
 };

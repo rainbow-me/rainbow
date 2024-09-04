@@ -78,7 +78,9 @@ export function useClaimables(
   return useQuery(claimablesQueryKey({ address, currency, testnetMode: connectedToHardhat }), claimablesQueryFunction, {
     ...config,
     enabled: !!address && (remoteFlag || localFlag),
-    staleTime: 1000 * 60 * 2,
-    cacheTime: 1000 * 60 * 60 * 24,
+    // staleTime: 1000 * 60 * 2,
+    // cacheTime: 1000 * 60 * 60 * 24,
+    staleTime: 0,
+    cacheTime: 0,
   });
 }
