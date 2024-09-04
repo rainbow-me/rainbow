@@ -4,6 +4,9 @@ PODS:
   - BVLinearGradient (2.8.3):
     - React-Core
   - CocoaAsyncSocket (7.6.5)
+  - CoinbaseWalletSDK/Client (1.1.0)
+  - CoinbaseWalletSDK/Host (1.1.0):
+    - CoinbaseWalletSDK/Client
   - DoubleConversion (1.1.6)
   - FasterImage (1.6.2):
     - FasterImage/Nuke (= 1.6.2)
@@ -171,6 +174,9 @@ PODS:
   - MMKV (1.3.9):
     - MMKVCore (~> 1.3.9)
   - MMKVCore (1.3.9)
+  - mobile-wallet-protocol-host (0.1.7):
+    - CoinbaseWalletSDK/Host
+    - React-Core
   - MultiplatformBleAdapter (0.1.9)
   - nanopb (2.30910.0):
     - nanopb/decode (= 2.30910.0)
@@ -1826,6 +1832,7 @@ DEPENDENCIES:
   - GoogleUtilities
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - libwebp
+  - "mobile-wallet-protocol-host (from `../node_modules/@coinbase/mobile-wallet-protocol-host`)"
   - nanopb
   - PanModal (from `https://github.com/rainbow-me/PanModal`, commit `ab97d74279ba28c2891b47a5dc767ed4dd7cf994`)
   - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera`)
@@ -1956,6 +1963,7 @@ SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
     - Branch
     - CocoaAsyncSocket
+    - CoinbaseWalletSDK
     - Firebase
     - FirebaseABTesting
     - FirebaseAnalytics
@@ -2007,6 +2015,8 @@ EXTERNAL SOURCES:
   hermes-engine:
     :podspec: "../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-2024-06-28-RNv0.74.3-7bda0c267e76d11b68a585f84cfdd65000babf85
+  mobile-wallet-protocol-host:
+    :path: "../node_modules/@coinbase/mobile-wallet-protocol-host"
   PanModal:
     :commit: ab97d74279ba28c2891b47a5dc767ed4dd7cf994
     :git: https://github.com/rainbow-me/PanModal
@@ -2257,6 +2267,7 @@ SPEC CHECKSUMS:
   Branch: d99436c6f3d5b2529ba948d273e47e732830f207
   BVLinearGradient: 880f91a7854faff2df62518f0281afb1c60d49a3
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
+  CoinbaseWalletSDK: bd6aa4f5a6460d4279e09e115969868e134126fb
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   FasterImage: af05a76f042ca3654c962b658fdb01cb4d31caee
   FBLazyVector: 7e977dd099937dc5458851233141583abba49ff2
@@ -2282,6 +2293,7 @@ SPEC CHECKSUMS:
   MetricsReporter: 99596ee5003c69949ed2f50acc34aee83c42f843
   MMKV: 817ba1eea17421547e01e087285606eb270a8dcb
   MMKVCore: af055b00e27d88cd92fad301c5fecd1ff9b26dd9
+  mobile-wallet-protocol-host: 8ed897dcf4f846d39b35767540e6a695631cab73
   MultiplatformBleAdapter: 5a6a897b006764392f9cef785e4360f54fb9477d
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
   PanModal: 421fe72d4af5b7e9016aaa3b4db94a2fb71756d3

@@ -33,6 +33,7 @@ import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, us
 import { useDebouncedCallback } from 'use-debounce';
 import { NavigationSteps } from './useSwapNavigation';
 import { IS_TEST } from '@/env';
+import { deepEqualWorklet } from '@/worklets/comparisons';
 
 const REMOTE_CONFIG = getRemoteConfig();
 
@@ -702,7 +703,8 @@ export function useSwapInputsController({
       if (areBothAssetsSet) {
         fetchQuoteAndAssetPrices();
       }
-    }
+    },
+    []
   );
 
   /**
@@ -723,7 +725,8 @@ export function useSwapInputsController({
         });
         fetchQuoteAndAssetPrices();
       }
-    }
+    },
+    []
   );
 
   /**
@@ -753,7 +756,8 @@ export function useSwapInputsController({
           }
         }
       }
-    }
+    },
+    []
   );
 
   /**
@@ -772,11 +776,11 @@ export function useSwapInputsController({
       values: inputValues.value,
     }),
     (current, previous) => {
-      if (previous && current !== previous) {
+      if (previous && !deepEqualWorklet(current, previous)) {
         // Handle updating input values based on the input method
         if (inputMethod.value === 'slider' && internalSelectedInputAsset.value && current.sliderXPosition !== previous.sliderXPosition) {
           // If the slider position changes
-          if (percentageToSwap.value === 0) {
+          if (current.sliderXPosition === 0) {
             resetValuesToZeroWorklet({ updateSlider: false });
           } else {
             // If the change set the slider position to > 0
@@ -871,7 +875,8 @@ export function useSwapInputsController({
           }
         }
       }
-    }
+    },
+    []
   );
   return {
     debouncedFetchQuote,

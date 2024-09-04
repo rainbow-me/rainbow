@@ -4,7 +4,7 @@ import { useSharedValue } from 'react-native-reanimated';
 import DevButton from '../components/dev-buttons/DevButton';
 import Emoji from '../components/text/Emoji';
 import { showReloadButton, showSwitchModeButton, showConnectToHardhatButton } from '../config/debug';
-import { defaultConfig } from '../config/experimental';
+import { defaultConfig } from '@/config/experimental';
 import { useDispatch } from 'react-redux';
 
 import { useTheme } from '../theme/ThemeContext';
@@ -16,7 +16,18 @@ import { Navigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
-export const RainbowContext = createContext({});
+export type RainbowContextType = {
+  config: Record<keyof typeof defaultConfig, boolean>;
+  setConfig: (newConfig: Record<string, boolean>) => void;
+  setGlobalState: (newState: any) => void;
+};
+
+export const RainbowContext = createContext<RainbowContextType>({
+  config: {},
+  setConfig: () => {},
+  setGlobalState: () => {},
+});
+
 const storageKey = 'config';
 
 const storage = new MMKV({

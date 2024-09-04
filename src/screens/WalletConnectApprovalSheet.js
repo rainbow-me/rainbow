@@ -406,11 +406,13 @@ export default function WalletConnectApprovalSheet() {
               </Column>
             </Centered>
             <Row marginBottom={30} marginTop={30}>
-              <Text color={{ custom: accentColor }} size="18px / 27px (Deprecated)" weight="heavy">
-                {isScam && '􁅏 '}
-                {isVerified && '􀇻 '}
-                {formattedDappUrl}
-              </Text>
+              {formattedDappUrl && (
+                <Text color={{ custom: accentColor }} size="18px / 27px (Deprecated)" weight="heavy">
+                  {isScam && '􁅏 '}
+                  {isVerified && '􀇻 '}
+                  {formattedDappUrl}
+                </Text>
+              )}
             </Row>
             <Divider color={colors.rowDividerLight} inset={[0, 84]} />
           </Centered>

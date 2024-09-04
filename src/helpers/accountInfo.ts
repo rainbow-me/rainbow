@@ -1,3 +1,4 @@
+import { RainbowAccount } from '@/model/wallet';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '../helpers/emojiHandler';
 import { address } from '../utils/abbreviations';
 import { addressHashedEmoji, isValidImagePath } from '../utils/profileUtils';
@@ -17,8 +18,10 @@ export function getAccountProfileInfo(selectedWallet: any, walletNames: any, acc
 
   const accountENS = walletNames?.[accountAddress];
 
-  const selectedAccount = selectedWallet.addresses?.find((account: any) => account.address === accountAddress);
-
+  const lowerCaseAccountAddress = accountAddress.toLowerCase();
+  const selectedAccount = selectedWallet.addresses?.find(
+    (account: RainbowAccount) => account.address?.toLowerCase() === lowerCaseAccountAddress
+  );
   if (!selectedAccount) {
     return {};
   }

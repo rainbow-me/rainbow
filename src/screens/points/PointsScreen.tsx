@@ -75,7 +75,7 @@ export function PointsScreen() {
       <Navbar
         hasStatusBarInset
         leftComponent={
-          pointsEnabled && (
+          pointsEnabled ? (
             <ButtonPressAnimation onPress={() => navigate(Routes.CHANGE_WALLET_SHEET)} scaleTo={0.8} overflowMargin={50}>
               {accountImage ? (
                 <ImageAvatar image={accountImage} marginRight={10} size="header" />
@@ -83,7 +83,7 @@ export function PointsScreen() {
                 <ContactAvatar color={accountColor} marginRight={10} size="small" value={accountSymbol} />
               )}
             </ButtonPressAnimation>
-          )
+          ) : null
         }
         rightComponent={pointsNotificationsToggleEnabled ? <NotificationToggleContextMenu /> : undefined}
         title={rewardsEnabled ? i18n.t(i18n.l.account.tab_rewards) : i18n.t(i18n.l.account.tab_points)}
