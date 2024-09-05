@@ -1,4 +1,4 @@
-import React, { LegacyRef, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { LegacyRef, useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 import { LayoutChangeEvent } from 'react-native';
 import { SetterOrUpdater } from 'recoil';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
@@ -21,6 +21,9 @@ import { useTheme } from '@/theme';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { useRoute } from '@react-navigation/native';
 import Routes from '@/navigation/routesNames';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { useExperimentalFlag } from '@/config';
+import { RainbowContext } from '@/helpers/RainbowContext';
 
 const dataProvider = new DataProvider((r1, r2) => {
   return r1.uid !== r2.uid;
@@ -54,6 +57,8 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   scrollIndicatorInsets?: object;
   type?: AssetListType;
 }) {
+  const remoteConfig = useRemoteConfig();
+  const experimentalConfig = useContext(RainbowContext).config;
   const currentDataProvider = useMemoOne(() => dataProvider.cloneWithRows(briefSectionsData), [briefSectionsData]);
   const { isCoinListEdited, setIsCoinListEdited } = useCoinListEdited();
   const y = useRecyclerAssetListPosition()!;
@@ -65,8 +70,16 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   const cardIds = useMemo(() => getCardIdsForScreen(name as keyof typeof Routes), [getCardIdsForScreen, name]);
 
   const layoutProvider = useMemo(
-    () => getLayoutProvider(briefSectionsData, isCoinListEdited, cardIds, isReadOnlyWallet),
-    [briefSectionsData, isCoinListEdited, cardIds, isReadOnlyWallet]
+    () =>
+      getLayoutProvider({
+        briefSectionsData,
+        isCoinListEdited,
+        cardIds,
+        isReadOnlyWallet,
+        remoteConfig,
+        experimentalConfig,
+      }),
+    [briefSectionsData, isCoinListEdited, cardIds, isReadOnlyWallet, experimentalConfig]
   );
 
   const { accountAddress } = useAccountSettings();
