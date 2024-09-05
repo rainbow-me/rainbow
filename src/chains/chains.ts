@@ -2,8 +2,7 @@ import { Chain } from 'viem/chains';
 
 import backendNetworks from '../references/networks.json';
 
-import { BackendNetwork, BackendNetworkServices, chainHardhat, chainHardhatOptimism } from './types/chains';
-import { ChainId } from './types';
+import { ChainId, BackendNetwork, BackendNetworkServices, chainHardhat, chainHardhatOptimism } from './types';
 import { transformBackendNetworksToChains } from './utils/backendNetworks';
 import { gasUtils } from '@/utils';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';

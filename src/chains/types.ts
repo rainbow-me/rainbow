@@ -87,3 +87,113 @@ export enum ChainName {
   zoraSepolia = 'zora-sepolia',
   polygonAmoy = 'polygon-amoy',
 }
+
+export const chainHardhat: chain.Chain = {
+  id: HARDHAT_CHAIN_ID,
+  name: 'Hardhat',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'Hardhat',
+    symbol: 'ETH',
+  },
+  rpcUrls: {
+    public: { http: ['http://127.0.0.1:8545'] },
+    default: { http: ['http://127.0.0.1:8545'] },
+  },
+  testnet: true,
+};
+
+export const chainHardhatOptimism: chain.Chain = {
+  id: HARDHAT_OP_CHAIN_ID,
+  name: 'Hardhat OP',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'Hardhat OP',
+    symbol: 'ETH',
+  },
+  rpcUrls: {
+    public: { http: ['http://127.0.0.1:8545'] },
+    default: { http: ['http://127.0.0.1:8545'] },
+  },
+  testnet: true,
+};
+
+export interface BackendNetworkServices {
+  meteorology: {
+    enabled: boolean;
+  };
+  swap: {
+    enabled: boolean;
+  };
+  addys: {
+    approvals: boolean;
+    transactions: boolean;
+    assets: boolean;
+    positions: boolean;
+  };
+  tokenSearch: {
+    enabled: boolean;
+  };
+  nftProxy: {
+    enabled: boolean;
+  };
+}
+
+export interface BackendNetwork {
+  id: string;
+  name: string;
+  label: string;
+  icons: {
+    badgeURL: string;
+  };
+  testnet: boolean;
+  opStack: boolean;
+  defaultExplorer: {
+    url: string;
+    label: string;
+    transactionURL: string;
+    tokenURL: string;
+  };
+  defaultRPC: {
+    enabledDevices: string[];
+    url: string;
+  };
+  gasUnits: {
+    basic: {
+      approval: string;
+      swap: string;
+      swapPermit: string;
+      eoaTransfer: string;
+      tokenTransfer: string;
+    };
+    wrapped: {
+      wrap: string;
+      unwrap: string;
+    };
+  };
+  nativeAsset: {
+    address: string;
+    name: string;
+    symbol: string;
+    decimals: number;
+    iconURL: string;
+    colors: {
+      primary: string;
+      fallback: string;
+      shadow: string;
+    };
+  };
+  nativeWrappedAsset: {
+    address: string;
+    name: string;
+    symbol: string;
+    decimals: number;
+    iconURL: string;
+    colors: {
+      primary: string;
+      fallback: string;
+      shadow: string;
+    };
+  };
+  enabledServices: BackendNetworkServices;
+}
