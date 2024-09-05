@@ -10,6 +10,7 @@ import { parseClaimables } from './utils';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { CLAIMABLES, useExperimentalFlag } from '@/config';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { IS_TEST } from '@/env';
 
 const addysHttp = new RainbowFetchClient({
   baseURL: 'https://addys.p.rainbow.me/v3',
@@ -77,10 +78,8 @@ export function useClaimables(
 
   return useQuery(claimablesQueryKey({ address, currency, testnetMode: connectedToHardhat }), claimablesQueryFunction, {
     ...config,
-    enabled: !!address && (remoteFlag || localFlag),
-    // staleTime: 1000 * 60 * 2,
-    // cacheTime: 1000 * 60 * 60 * 24,
-    staleTime: 0,
-    cacheTime: 0,
+    enabled: !!address && (remoteFlag || localFlag) && !IS_TEST,
+    staleTime: 1000 * 60 * 2,
+    cacheTime: 1000 * 60 * 60 * 24,
   });
 }

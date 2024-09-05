@@ -5,13 +5,14 @@ import { queryClient } from '@/react-query';
 import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import store from '@/redux/store';
 import { ClaimableExtraData, PositionExtraData } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
-import { getExperimetalFlag, DEFI_POSITIONS, CLAIMABLES } from '@/config/experimental';
+import { getExperimetalFlag, DEFI_POSITIONS, CLAIMABLES, ExperimentalValue } from '@/config/experimental';
 import { RainbowPositions } from '@/resources/defi/types';
 import { claimablesQueryKey } from '@/resources/addys/claimables/query';
 import { Claimable } from '@/resources/addys/claimables/types';
 import { add, convertAmountToNativeDisplay } from './utilities';
-import { getRemoteConfig } from '@/model/remoteConfig';
+import { getRemoteConfig, RainbowConfig } from '@/model/remoteConfig';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { IS_TEST } from '@/env';
 
 const CONTENT_PLACEHOLDER = [
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },
@@ -58,11 +59,22 @@ const uniqueTokensSelector = (state: any) => state.uniqueTokens;
 const nftSortSelector = (state: any) => state.nftSort;
 const isFetchingNftsSelector = (state: any) => state.isFetchingNfts;
 const listTypeSelector = (state: any) => state.listType;
+const remoteConfigSelector = (state: any) => state.remoteConfig;
+const experimentalConfigSelector = (state: any) => state.experimentalConfig;
 
-const buildBriefWalletSections = (balanceSectionData: any, uniqueTokenFamiliesSection: any) => {
+const buildBriefWalletSections = (
+  balanceSectionData: any,
+  uniqueTokenFamiliesSection: any,
+  remoteConfig: RainbowConfig,
+  experimentalConfig: Record<string, ExperimentalValue>
+) => {
   const { balanceSection, isEmpty, isLoadingUserAssets } = balanceSectionData;
-  const positionSection = withPositionsSection(isLoadingUserAssets);
-  const claimablesSection = withClaimablesSection(isLoadingUserAssets);
+
+  const positionsEnabled = experimentalConfig[DEFI_POSITIONS] && !IS_TEST;
+  const claimablesEnabled = (remoteConfig.claimables || experimentalConfig[CLAIMABLES]) && !IS_TEST;
+
+  const positionSection = positionsEnabled ? withPositionsSection(isLoadingUserAssets) : [];
+  const claimablesSection = claimablesEnabled ? withClaimablesSection(isLoadingUserAssets) : [];
   const sections = [balanceSection, claimablesSection, positionSection, uniqueTokenFamiliesSection];
 
   const filteredSections = sections.filter(section => section.length !== 0).flat(1);
@@ -74,10 +86,6 @@ const buildBriefWalletSections = (balanceSectionData: any, uniqueTokenFamiliesSe
 };
 
 const withPositionsSection = (isLoadingUserAssets: boolean) => {
-  // check if the feature is enabled
-  const positionsEnabled = getExperimetalFlag(DEFI_POSITIONS);
-  if (!positionsEnabled) return [];
-
   const { accountAddress: address, nativeCurrency: currency } = store.getState().settings;
   const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(positionsQueryKey({ address, currency }));
 
@@ -112,10 +120,6 @@ const withPositionsSection = (isLoadingUserAssets: boolean) => {
 };
 
 const withClaimablesSection = (isLoadingUserAssets: boolean) => {
-  // check if the feature is enabled
-  const claimablesEnabled = getExperimetalFlag(CLAIMABLES) || getRemoteConfig().claimables;
-  if (!claimablesEnabled) return [];
-
   const { accountAddress: address, nativeCurrency: currency } = store.getState().settings;
   const isHardhatConnected = useConnectedToHardhatStore.getState().connectedToHardhat;
   const claimables: Claimable[] | undefined = queryClient.getQueryData(
@@ -285,6 +289,6 @@ const briefBalanceSectionSelector = createSelector(
 );
 
 export const buildBriefWalletSectionsSelector = createSelector(
-  [briefBalanceSectionSelector, (state: any) => briefUniqueTokenDataSelector(state)],
+  [briefBalanceSectionSelector, (state: any) => briefUniqueTokenDataSelector(state), remoteConfigSelector, experimentalConfigSelector],
   buildBriefWalletSections
 );
