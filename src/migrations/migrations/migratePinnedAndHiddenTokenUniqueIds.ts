@@ -1,7 +1,7 @@
 import { BooleanMap } from '@/hooks/useCoinListEditOptions';
 import { Migration, MigrationName } from '@/migrations/types';
 import { loadAddress } from '@/model/wallet';
-import { Network } from '@/networks/types';
+import { Network } from '@/chains/types';
 import { MMKV } from 'react-native-mmkv';
 
 const mmkv = new MMKV();

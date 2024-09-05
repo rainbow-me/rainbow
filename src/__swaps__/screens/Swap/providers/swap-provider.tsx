@@ -24,7 +24,7 @@ import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextSty
 import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
 import { getDefaultSlippageWorklet, isUnwrapEthWorklet, isWrapEthWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
@@ -56,7 +56,7 @@ import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './Sync
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
-import { chainsNativeAsset, supportedFlashbotsChainIds } from '@/networks/chains';
+import { chainsNativeAsset, supportedFlashbotsChainIds } from '@/chains/chains';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);

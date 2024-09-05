@@ -14,7 +14,7 @@ import Routes from '@/navigation/routesNames';
 import { lightModeThemeColors } from '@/styles';
 import { useTheme } from '@/theme';
 import handleSwapErrorCodes from '@/utils/exchangeErrorCodes';
-import { chainsNativeAsset } from '@/networks/chains';
+import { chainsNativeAsset } from '@/chains/chains';
 
 const NOOP = () => null;
 

@@ -12,8 +12,8 @@ import { CrosschainQuote, QuoteError, SwapType, getClaimBridgeQuote } from '@rai
 import { Address } from 'viem';
 import { ActionProps } from '../references';
 import { executeCrosschainSwap } from './crosschainSwap';
-import { ChainId } from '@/networks/types';
-import { chainsName } from '@/networks/chains';
+import { ChainId } from '@/chains/types';
+import { chainsName } from '@/chains/chains';
 
 // This action is used to bridge the claimed funds to another chain
 export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps<'claimBridge'>) {

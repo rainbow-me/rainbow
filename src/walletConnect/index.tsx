@@ -44,8 +44,8 @@ import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 import { PerformanceMetrics } from '@/performance/tracking/types/PerformanceMetrics';
 import { PerformanceTracking } from '@/performance/tracking';
-import { ChainId } from '@/networks/types';
-import { supportedWalletConnectChainIds } from '@/networks/chains';
+import { ChainId } from '@/chains/types';
+import { supportedWalletConnectChainIds } from '@/chains/chains';
 
 const SUPPORTED_SESSION_EVENTS = ['chainChanged', 'accountsChanged'];
 

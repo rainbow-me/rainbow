@@ -19,7 +19,7 @@ import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
 import { Address } from 'viem';
 
 import { metadataPOSTClient } from '@/graphql';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { NewTransaction } from '@/entities/transactions';
 import { TxHash } from '@/resources/transactions/types';
 import { add } from '@/helpers/utilities';
@@ -48,7 +48,7 @@ import { ParsedAsset } from '@/resources/assets/types';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { Screens, TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { chainsName } from '@/networks/chains';
+import { chainsName } from '@/chains/chains';
 
 const WRAP_GAS_PADDING = 1.002;
 

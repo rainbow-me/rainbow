@@ -16,7 +16,7 @@ import { deviceUtils } from '@/utils';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { TransactionScanResultType } from '@/graphql/__generated__/metadataPOST';
-import { ChainId, Network } from '@/networks/types';
+import { ChainId, Network } from '@/chains/types';
 import { convertHexToString, delay, greaterThan, omitFlatten } from '@/helpers/utilities';
 
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
@@ -72,7 +72,7 @@ import { useProviderSetup } from '@/hooks/useProviderSetup';
 import { useTransactionSubmission } from '@/hooks/useSubmitTransaction';
 import { useConfirmTransaction } from '@/hooks/useConfirmTransaction';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { chainsName, defaultChains } from '@/networks/chains';
+import { chainsName, defaultChains } from '@/chains/chains';
 
 type SignTransactionSheetParams = {
   transactionDetails: RequestData;

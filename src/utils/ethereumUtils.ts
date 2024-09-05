@@ -48,9 +48,9 @@ import {
   fetchExternalToken,
   useExternalToken,
 } from '@/resources/assets/externalAssetsQuery';
-import { ChainId, Network } from '@/networks/types';
+import { ChainId, Network } from '@/chains/types';
 import { AddressOrEth } from '@/__swaps__/types/assets';
-import { chainsIdByName, chainsName, chainsNativeAsset, defaultChains } from '@/networks/chains';
+import { chainsIdByName, chainsName, chainsNativeAsset, defaultChains } from '@/chains/chains';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const getNetworkNativeAsset = ({ chainId }: { chainId: ChainId }) => {

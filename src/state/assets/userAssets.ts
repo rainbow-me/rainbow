@@ -8,8 +8,8 @@ import { useStore } from 'zustand';
 import { useCallback } from 'react';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { useSelector } from 'react-redux';
-import { ChainId } from '@/networks/types';
-import { SUPPORTED_CHAIN_IDS } from '@/networks/chains';
+import { SUPPORTED_CHAIN_IDS } from '@/chains/chains';
+import { ChainId } from '@/chains/types';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 

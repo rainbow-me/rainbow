@@ -1,8 +1,8 @@
 import create from 'zustand';
 import { createStore } from '../internal/createStore';
-import { Network, ChainId } from '@/networks/types';
+import { Network, ChainId } from '@/chains/types';
 import { getProvider } from '@/handlers/web3';
-import { chainsIdByName } from '@/networks/chains';
+import { chainsIdByName } from '@/chains/chains';
 
 type NonceData = {
   currentNonce?: number;

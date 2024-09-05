@@ -7,7 +7,7 @@ import { rainbowFetch } from '@/rainbow-fetch';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { AddysPositionsResponse, PositionsArgs } from './types';
 import { parsePositions } from './utils';
-import { SUPPORTED_CHAIN_IDS } from '@/networks/chains';
+import { SUPPORTED_CHAIN_IDS } from '@/chains/chains';
 
 export const buildPositionsUrl = (address: string) => {
   const networkString = SUPPORTED_CHAIN_IDS.join(',');

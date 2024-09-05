@@ -6,7 +6,7 @@ import { logger, RainbowError } from '@/logger';
 import { EthereumAddress } from '@rainbow-me/swaps';
 import { RainbowToken, TokenSearchToken } from '@/entities/tokens';
 import ethereumUtils from '@/utils/ethereumUtils';
-import { chainsName } from '@/networks/chains';
+import { chainsName } from '@/chains/chains';
 
 type TokenSearchApiResponse = {
   data: TokenSearchToken[];

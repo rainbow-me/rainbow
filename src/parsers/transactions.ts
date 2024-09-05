@@ -20,7 +20,7 @@ import {
   TransactionType,
   TransactionWithChangesType,
 } from '@/resources/transactions/types';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 
 const LAST_TXN_HASH_BUFFER = 20;
 

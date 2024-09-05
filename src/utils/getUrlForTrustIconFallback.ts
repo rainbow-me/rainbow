@@ -1,6 +1,6 @@
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { EthereumAddress } from '@/entities';
-import { chainsName } from '@/networks/chains';
+import { chainsName } from '@/chains/chains';
 
 export default function getUrlForTrustIconFallback(address: EthereumAddress, chainId: ChainId): string | null {
   if (!address) return null;

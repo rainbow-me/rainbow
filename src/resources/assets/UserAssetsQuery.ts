@@ -9,9 +9,9 @@ import { useQuery } from '@tanstack/react-query';
 import { filterPositionsData, parseAddressAsset } from './assets';
 import { fetchHardhatBalances } from './hardhatAssets';
 import { AddysAccountAssetsMeta, AddysAccountAssetsResponse, RainbowAddressAssets } from './types';
-import { Network } from '@/networks/types';
+import { Network } from '@/chains/types';
 import { staleBalancesStore } from '@/state/staleBalances';
-import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/networks/chains';
+import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains/chains';
 
 // ///////////////////////////////////////////////
 // Query Types

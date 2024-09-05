@@ -21,8 +21,8 @@ import {
   sepolia,
 } from 'viem/chains';
 
-import { ChainId } from '@/networks/types';
-import { chainsLabel } from '@/networks/chains';
+import { ChainId } from '@/chains/types';
+import { chainsLabel } from '@/chains/chains';
 
 export const chainIdMap: Record<
   ChainId.mainnet | ChainId.optimism | ChainId.polygon | ChainId.base | ChainId.bsc | ChainId.zora | ChainId.avalanche,

@@ -14,11 +14,11 @@ import { CardSize } from '@/components/unique-token/CardSize';
 import { View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { Network } from '@/networks/types';
+import { Network } from '@/chains/types';
 import { useAccountSettings } from '@/hooks';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { AddressOrEth } from '@/__swaps__/types/assets';
-import { chainsIdByName } from '@/networks/chains';
+import { chainsIdByName } from '@/chains/chains';
 
 const NFT_SIZE = 50;
 const MARKETPLACE_ORB_SIZE = 18;

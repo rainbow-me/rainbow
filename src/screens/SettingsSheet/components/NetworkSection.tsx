@@ -8,8 +8,8 @@ import { analytics } from '@/analytics';
 import { Separator, Stack } from '@/design-system';
 import { useAccountSettings, useInitializeAccountData, useLoadAccountData, useResetAccountState } from '@/hooks';
 import { settingsUpdateNetwork } from '@/redux/settings';
-import { ChainId } from '@/networks/types';
-import { defaultChains } from '@/networks/chains';
+import { ChainId } from '@/chains/types';
+import { defaultChains } from '@/chains/chains';
 import { isL2Chain } from '@/handlers/web3';
 
 interface NetworkSectionProps {

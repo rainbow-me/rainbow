@@ -23,9 +23,9 @@ import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { AddressOrEth, AssetType } from '@/__swaps__/types/assets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { chainsLabel, chainsName, defaultChains, supportedSwapChainIds } from '@/networks/chains';
+import { chainsLabel, chainsName, defaultChains, supportedSwapChainIds } from '@/chains/chains';
 import { isL2Chain } from '@/handlers/web3';
 
 const NOOP = () => null;

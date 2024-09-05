@@ -23,8 +23,8 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { showActionSheetWithOptions } from '@/utils';
-import { ChainId } from '@/networks/types';
-import { chainsIdByName, chainsLabel, chainsNativeAsset } from '@/networks/chains';
+import { ChainId } from '@/chains/types';
+import { chainsIdByName, chainsLabel, chainsNativeAsset } from '@/chains/chains';
 
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;

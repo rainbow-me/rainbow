@@ -3,8 +3,8 @@ import { startCase } from 'lodash';
 import { NativeSyntheticEvent } from 'react-native';
 import { setClipboard } from '../../hooks/useClipboard';
 import { abbreviations, ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
-import { ChainId } from '@/networks/types';
-import { chainsIdByName } from '@/networks/chains';
+import { ChainId } from '@/chains/types';
+import { chainsIdByName } from '@/chains/chains';
 
 const buildBlockExplorerAction = (chainId: ChainId) => {
   const blockExplorerText = lang.t('exchange.coin_row.view_on', {

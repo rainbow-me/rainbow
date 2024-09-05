@@ -61,8 +61,8 @@ import { SWAPS_V2, useExperimentalFlag } from '@/config';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { greaterThan } from '@/helpers/utilities';
-import { ChainId } from '@/networks/types';
-import { chainsLabel, defaultChains, supportedWalletConnectChainIds } from '@/networks/chains';
+import { ChainId } from '@/chains/types';
+import { chainsLabel, defaultChains, supportedWalletConnectChainIds } from '@/chains/chains';
 
 const PAGES = {
   HOME: 'home',

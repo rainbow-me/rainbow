@@ -8,7 +8,7 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { colors } from '@/styles';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 
 const GRADIENT: Gradient = {
   colors: ['#520907', '#B22824'],

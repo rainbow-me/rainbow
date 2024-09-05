@@ -1,6 +1,6 @@
 import { memoFn } from '../utils/memoFn';
 import { gasUtils } from '@/utils';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { isL2Chain } from '@/handlers/web3';
 
 const { GasTrends } = gasUtils;

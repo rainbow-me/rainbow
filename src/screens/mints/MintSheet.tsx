@@ -55,8 +55,8 @@ import { getUniqueId } from '@/utils/ethereumUtils';
 import { getNextNonce } from '@/state/nonces';
 import { metadataPOSTClient } from '@/graphql';
 import { Transaction } from '@/graphql/__generated__/metadataPOST';
-import { ChainId } from '@/networks/types';
-import { chainsName, defaultChains, getChainDefaultRpc } from '@/networks/chains';
+import { ChainId } from '@/chains/types';
+import { chainsName, defaultChains, getChainDefaultRpc } from '@/chains/chains';
 
 const NFT_IMAGE_HEIGHT = 250;
 // inset * 2 -> 28 *2

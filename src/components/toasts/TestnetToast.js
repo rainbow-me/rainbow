@@ -3,9 +3,9 @@ import { Icon } from '../icons';
 import { Nbsp, Text } from '../text';
 import Toast from './Toast';
 import { useInternetStatus } from '@/hooks';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
-import { chainsName, chainsNativeAsset } from '@/networks/chains';
+import { chainsName, chainsNativeAsset } from '@/chains/chains';
 
 const TestnetToast = ({ chainId }) => {
   const { connectedToHardhat } = useConnectedToHardhatStore();

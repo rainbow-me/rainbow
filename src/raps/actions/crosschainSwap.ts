@@ -4,7 +4,7 @@ import { Address } from 'viem';
 import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
 
 import { REFERRER, gasUnits, ReferrerType } from '@/references';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { NewTransaction } from '@/entities/transactions';
 import { TxHash } from '@/resources/transactions/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
@@ -25,7 +25,7 @@ import { ParsedAsset } from '@/resources/assets/types';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { Screens, TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { chainsName } from '@/networks/chains';
+import { chainsName } from '@/chains/chains';
 
 const getCrosschainSwapDefaultGasLimit = (quote: CrosschainQuote) => quote?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
 

@@ -7,8 +7,8 @@ import { Bleed, Box, Columns, Inline, Text } from '@/design-system';
 import { position } from '@rainbow-me/styles';
 import { useTheme } from '@/theme';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
-import { ChainId } from '@/networks/types';
-import { chainsLabel, defaultChains, supportedSwapChainIds } from '@/networks/chains';
+import { ChainId } from '@/chains/types';
+import { chainsLabel, defaultChains, supportedSwapChainIds } from '@/chains/chains';
 
 const NetworkSwitcherv2 = ({
   currentChainId,

@@ -68,13 +68,13 @@ import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
 import { SwapPriceImpactType } from '@/hooks/usePriceImpactDetails';
 import { getNextNonce } from '@/state/nonces';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { AddressOrEth, ParsedAsset } from '@/__swaps__/types/assets';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { estimateSwapGasLimit } from '@/raps/actions';
 import { estimateCrosschainSwapGasLimit } from '@/raps/actions/crosschainSwap';
 import { parseGasParamAmounts } from '@/parsers';
-import { chainsName, needsL1SecurityFeeChains, shouldDefaultToFastGasChainIds, supportedFlashbotsChainIds } from '@/networks/chains';
+import { chainsName, needsL1SecurityFeeChains, shouldDefaultToFastGasChainIds, supportedFlashbotsChainIds } from '@/chains/chains';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [ChainId.mainnet]: 100,

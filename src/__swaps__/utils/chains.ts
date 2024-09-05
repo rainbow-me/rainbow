@@ -1,7 +1,7 @@
 import { celo, fantom, harmonyOne, moonbeam } from 'viem/chains';
 import { NATIVE_ASSETS_PER_CHAIN } from '@/references';
 import { AddressOrEth } from '@/__swaps__/types/assets';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
 
 // @ts-expect-error Property '[ChainId.hardhat]' is missing

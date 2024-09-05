@@ -4,7 +4,7 @@ import { ColumnWithMargins, Row } from '../layout';
 import ExchangeField from './ExchangeField';
 import ExchangeMaxButton from './ExchangeMaxButton';
 import ExchangeNativeField from './ExchangeNativeField';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import styled from '@/styled-thing';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 

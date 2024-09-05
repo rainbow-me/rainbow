@@ -18,8 +18,8 @@ import { IS_TEST } from '@/env';
 import { useFavorites } from '@/resources/favorites';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { logger } from '@/logger';
-import { ChainId, Network } from '@/networks/types';
-import { chainsName } from '@/networks/chains';
+import { ChainId, Network } from '@/chains/types';
+import { chainsName } from '@/chains/chains';
 
 type swapCurrencyListType =
   | 'verifiedAssets'

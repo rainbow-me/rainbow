@@ -13,12 +13,12 @@ import { event } from '@/analytics/event';
 import { IS_ANDROID } from '@/env';
 import { capitalize, uniqBy } from 'lodash';
 import { RainbowDeposit, RainbowPosition } from '@/resources/defi/types';
-import { Network } from '@/networks/types';
+import { Network } from '@/chains/types';
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 import { useAccountSettings } from '@/hooks';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { AddressOrEth } from '@/__swaps__/types/assets';
-import { chainsIdByName } from '@/networks/chains';
+import { chainsIdByName } from '@/chains/chains';
 
 type PositionCardProps = {
   position: RainbowPosition;

@@ -6,7 +6,7 @@ import { Text as RNText, StyleSheet } from 'react-native';
 import Animated, { useDerivedValue, useSharedValue } from 'react-native-reanimated';
 
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { opacity } from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
@@ -18,7 +18,7 @@ import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { showActionSheetWithOptions } from '@/utils';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
-import { chainsLabel, chainsName } from '@/networks/chains';
+import { chainsLabel, chainsName } from '@/chains/chains';
 
 type ChainSelectionProps = {
   allText?: string;

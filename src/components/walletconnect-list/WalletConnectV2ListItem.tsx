@@ -25,8 +25,8 @@ import { changeAccount, disconnectSession } from '@/walletConnect';
 import { Box, Inline } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
-import { ChainId } from '@/networks/types';
-import { supportedWalletConnectChainIds } from '@/networks/chains';
+import { ChainId } from '@/chains/types';
+import { supportedWalletConnectChainIds } from '@/chains/chains';
 
 const CONTAINER_PADDING = 15;
 const VENDOR_LOGO_ICON_SIZE = 50;

@@ -12,7 +12,7 @@ import {
   ZerionAsset,
   ZerionAssetPrice,
 } from '@/__swaps__/types/assets';
-import { ChainId, ChainName } from '@/networks/types';
+import { ChainId, ChainName } from '@/chains/types';
 
 import * as i18n from '@/languages';
 import { SearchAsset } from '@/__swaps__/types/search';
@@ -26,7 +26,7 @@ import {
   convertRawAmountToDecimalFormat,
 } from '@/__swaps__/utils/numbers';
 import { isLowerCaseMatch, isLowerCaseMatchWorklet } from '@/__swaps__/utils/strings';
-import { chainsIdByName, chainsName } from '@/networks/chains';
+import { chainsIdByName, chainsName } from '@/chains/chains';
 
 export const isSameAsset = (a1: Pick<ParsedAsset, 'chainId' | 'address'>, a2: Pick<ParsedAsset, 'chainId' | 'address'>) =>
   +a1.chainId === +a2.chainId && isLowerCaseMatch(a1.address, a2.address);

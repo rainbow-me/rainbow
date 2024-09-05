@@ -3,8 +3,8 @@ import { RainbowFetchClient } from '@/rainbow-fetch';
 import { SimpleHashListing, SimpleHashNFT, SimpleHashMarketplaceId } from '@/resources/nfts/simplehash/types';
 import { UniqueAsset } from '@/entities';
 import { RainbowError, logger } from '@/logger';
-import { ChainId } from '@/networks/types';
-import { chainsSimplehashNetwork } from '@/networks/chains';
+import { ChainId } from '@/chains/types';
+import { chainsSimplehashNetwork } from '@/chains/chains';
 
 export const START_CURSOR = 'start';
 

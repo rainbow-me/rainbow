@@ -5,7 +5,7 @@ import { Bleed, Box, Text, TextShadow, globalColors, useBackgroundColor, useColo
 import * as i18n from '@/languages';
 import { ListHeader, ListPanel, Panel, TapToDismiss, controlPanelStyles } from '@/components/SmoothPager/ListPanel';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import ethereumUtils, { useNativeAsset } from '@/utils/ethereumUtils';
 import { useAccountAccentColor, useAccountProfile, useAccountSettings } from '@/hooks';
 import { safeAreaInsetValues } from '@/utils';
@@ -34,7 +34,7 @@ import { useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { AnimatedSpinner } from '@/components/animations/AnimatedSpinner';
 import { RainbowError, logger } from '@/logger';
 import { RewardsActionButton } from '../components/RewardsActionButton';
-import { chainsLabel, chainsName } from '@/networks/chains';
+import { chainsLabel, chainsName } from '@/chains/chains';
 
 type ClaimStatus = 'idle' | 'claiming' | 'success' | PointsErrorType | 'error' | 'bridge-error';
 type ClaimNetwork = '10' | '8453' | '7777777';

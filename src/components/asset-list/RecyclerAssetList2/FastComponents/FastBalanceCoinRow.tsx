@@ -12,7 +12,7 @@ import Routes from '@/navigation/routesNames';
 import { borders, colors, padding, shadow } from '@/styles';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { NativeCurrencyKey } from '@/entities';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 
 interface CoinCheckButtonProps {
   isHidden: boolean;

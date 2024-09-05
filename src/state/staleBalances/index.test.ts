@@ -3,7 +3,7 @@ import { Address } from 'viem';
 import { staleBalancesStore } from '.';
 import { DAI_ADDRESS, OP_ADDRESS } from '@/references';
 import { ETH_ADDRESS } from '@rainbow-me/swaps';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 
 const TEST_ADDRESS_1 = '0xFOO';
 const TEST_ADDRESS_2 = '0xBAR';

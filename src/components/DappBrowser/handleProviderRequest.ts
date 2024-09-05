@@ -13,8 +13,8 @@ import { Tab } from '@rainbow-me/provider/dist/references/messengers';
 import { getDappMetadata } from '@/resources/metadata/dapp';
 import { useAppSessionsStore } from '@/state/appSessions';
 import { BigNumber } from '@ethersproject/bignumber';
-import { ChainId } from '@/networks/types';
-import { defaultChains, SUPPORTED_CHAIN_IDS } from '@/networks/chains';
+import { ChainId } from '@/chains/types';
+import { defaultChains, SUPPORTED_CHAIN_IDS } from '@/chains/chains';
 import { Chain } from '@wagmi/chains';
 
 export type ProviderRequestPayload = RequestArguments & {

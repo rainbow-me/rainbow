@@ -17,7 +17,7 @@ import {
 import { add, convertAmountToNativeDisplay, convertRawAmountToNativeDisplay, subtract } from '@/helpers/utilities';
 import { maybeSignUri } from '@/handlers/imgix';
 import { ethereumUtils } from '@/utils';
-import { chainsIdByName } from '@/networks/chains';
+import { chainsIdByName } from '@/chains/chains';
 
 export const parsePosition = (position: Position, currency: NativeCurrencyKey): RainbowPosition => {
   let totalDeposits = '0';

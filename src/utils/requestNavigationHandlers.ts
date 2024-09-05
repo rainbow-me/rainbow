@@ -33,8 +33,8 @@ import { noop } from 'lodash';
 import { toUtf8String } from '@ethersproject/strings';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Address } from 'viem';
-import { ChainId } from '@/networks/types';
-import { chainsName, SUPPORTED_MAINNET_CHAIN_IDS } from '@/networks/chains';
+import { ChainId } from '@/chains/types';
+import { chainsName, SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains/chains';
 
 export enum RequestSource {
   WALLETCONNECT = 'walletconnect',

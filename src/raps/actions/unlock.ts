@@ -5,7 +5,7 @@ import { parseUnits } from '@ethersproject/units';
 import { getProvider } from '@/handlers/web3';
 import { Address, erc20Abi, erc721Abi } from 'viem';
 
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
 import { NewTransaction } from '@/entities/transactions';
 import { TxHash } from '@/resources/transactions/types';
@@ -21,7 +21,7 @@ import { overrideWithFastSpeedIfNeeded } from './../utils';
 import { toHex } from '@/__swaps__/utils/hex';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { ParsedAsset } from '@/resources/assets/types';
-import { chainsName } from '@/networks/chains';
+import { chainsName } from '@/chains/chains';
 
 export const getAssetRawAllowance = async ({
   owner,

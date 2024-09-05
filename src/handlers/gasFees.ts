@@ -1,6 +1,6 @@
-import { chainsName } from '@/networks/chains';
+import { chainsName } from '@/chains/chains';
 import { RainbowFetchClient } from '../rainbow-fetch';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 
 const rainbowMeteorologyApi = new RainbowFetchClient({
   baseURL: 'https://metadata.p.rainbow.me',

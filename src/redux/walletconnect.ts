@@ -31,9 +31,9 @@ import { logger, RainbowError } from '@/logger';
 import { IS_DEV, IS_IOS, IS_TEST } from '@/env';
 import { Verify } from '@walletconnect/types';
 import { RequestSource, handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { Address } from 'viem';
-import { supportedWalletConnectChainIds } from '@/networks/chains';
+import { supportedWalletConnectChainIds } from '@/chains/chains';
 
 // -- Variables --------------------------------------- //
 let showRedirectSheetThreshold = 300;

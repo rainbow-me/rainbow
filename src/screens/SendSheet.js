@@ -62,8 +62,8 @@ import { getNextNonce } from '@/state/nonces';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { REGISTRATION_STEPS } from '@/helpers/ens';
-import { ChainId } from '@/networks/types';
-import { chainsName, chainsNativeAsset, needsL1SecurityFeeChains } from '@/networks/chains';
+import { ChainId } from '@/chains/types';
+import { chainsName, chainsNativeAsset, needsL1SecurityFeeChains } from '@/chains/chains';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;

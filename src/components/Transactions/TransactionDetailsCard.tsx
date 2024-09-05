@@ -7,7 +7,7 @@ import { TextColor } from '@/design-system/color/palettes';
 
 import { abbreviations, ethereumUtils } from '@/utils';
 import { TransactionSimulationMeta } from '@/graphql/__generated__/metadataPOST';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 
 import { TransactionDetailsRow } from '@/components/Transactions/TransactionDetailsRow';
 import { FadedScrollCard } from '@/components/FadedScrollCard';
@@ -20,7 +20,7 @@ import {
   CARD_BORDER_WIDTH,
   EXPANDED_CARD_TOP_INSET,
 } from '@/components/Transactions/constants';
-import { chainsName } from '@/networks/chains';
+import { chainsName } from '@/chains/chains';
 
 interface TransactionDetailsCardProps {
   chainId: ChainId;

@@ -6,7 +6,7 @@ import { RainbowError, logger } from '@/logger';
 import { rainbowFetch } from '@/rainbow-fetch';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { parseTransaction } from '@/parsers/transactions';
-import { chainsIdByName, SUPPORTED_MAINNET_CHAIN_IDS } from '@/networks/chains';
+import { chainsIdByName, SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains/chains';
 
 const CONSOLIDATED_TRANSACTIONS_INTERVAL = 30000;
 const CONSOLIDATED_TRANSACTIONS_TIMEOUT = 20000;

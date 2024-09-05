@@ -6,7 +6,7 @@ import { Bleed, Box, Inline, Text } from '@/design-system';
 
 import { useTheme } from '@/theme';
 import { TransactionAssetType, TransactionSimulationAsset } from '@/graphql/__generated__/metadataPOST';
-import { Network } from '@/networks/types';
+import { Network } from '@/chains/types';
 import { convertAmountToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
 
 import { useAccountSettings } from '@/hooks';
@@ -17,7 +17,7 @@ import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { EventInfo, EventType } from '@/components/Transactions/types';
 import { infoForEventType, CARD_ROW_HEIGHT } from '@/components/Transactions/constants';
 import { EventIcon } from '@/components/Transactions/TransactionIcons';
-import { chainsIdByName } from '@/networks/chains';
+import { chainsIdByName } from '@/chains/chains';
 
 type TransactionSimulatedEventRowProps = {
   amount: string | 'unlimited';

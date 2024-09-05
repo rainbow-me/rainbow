@@ -9,8 +9,8 @@ import { useConsolidatedTransactions } from '@/resources/transactions/consolidat
 import { RainbowTransaction } from '@/entities';
 import { pendingTransactionsStore, usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { nonceStore } from '@/state/nonces';
-import { ChainId } from '@/networks/types';
-import { SUPPORTED_CHAIN_IDS, SUPPORTED_MAINNET_CHAIN_IDS } from '@/networks/chains';
+import { ChainId } from '@/chains/types';
+import { SUPPORTED_CHAIN_IDS, SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains/chains';
 
 export const NOE_PAGE = 30;
 

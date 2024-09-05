@@ -25,7 +25,7 @@ import store from '@/redux/store';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { noop } from 'lodash';
 import { logger, RainbowError } from '@/logger';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 
 // Generic type for action functions
 type ActionFunction<P extends any[] = [], R = void> = (...params: P) => Promise<R>;

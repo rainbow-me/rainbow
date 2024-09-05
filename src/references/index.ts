@@ -1,5 +1,5 @@
 import { AddressOrEth } from '@/__swaps__/types/assets';
-import { ChainId, Network } from '@/networks/types';
+import { ChainId, Network } from '@/chains/types';
 import { Asset } from '@/entities';
 import { AddressZero } from '@ethersproject/constants';
 

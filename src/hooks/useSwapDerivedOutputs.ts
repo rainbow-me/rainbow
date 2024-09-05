@@ -34,7 +34,7 @@ import { ethereumUtils } from '@/utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { SwappableAsset } from '../entities/tokens';
 import useAccountSettings from './useAccountSettings';
-import { chainsName } from '@/networks/chains';
+import { chainsName } from '@/chains/chains';
 
 const SWAP_POLLING_INTERVAL = 5000;
 

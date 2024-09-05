@@ -8,8 +8,8 @@ import Routes from '@/navigation/routesNames';
 import { ChainBadge } from '@/components/coin-icon';
 import { useTheme } from '@/theme';
 import * as i18n from '@/languages';
-import { ChainId } from '@/networks/types';
-import { chainsNativeAsset } from '@/networks/chains';
+import { ChainId } from '@/chains/types';
+import { chainsNativeAsset } from '@/chains/chains';
 
 export function SwapDetailsRewardRow({ reward }: { reward: Reward }) {
   const { navigate } = useNavigation();

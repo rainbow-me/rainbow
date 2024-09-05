@@ -18,7 +18,7 @@ import { padding, position } from '@/styles';
 import { abbreviations, ethereumUtils } from '@/utils';
 import { getCrosschainSwapServiceTime } from '@/handlers/swap';
 import { SwapPriceImpactType } from '@/hooks/usePriceImpactDetails';
-import { chainsIdByName } from '@/networks/chains';
+import { chainsIdByName } from '@/chains/chains';
 
 const AnimatedContainer = styled(Animated.View)({
   ...position.sizeAsObject('100%'),

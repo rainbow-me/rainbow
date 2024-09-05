@@ -48,8 +48,8 @@ import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { AnimatedSwitch } from './AnimatedSwitch';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
-import { chainsLabel } from '@/networks/chains';
-import { ChainId } from '@/networks/types';
+import { chainsLabel } from '@/chains/chains';
+import { ChainId } from '@/chains/types';
 
 const UNKNOWN_LABEL = i18n.t(i18n.l.swap.unknown);
 const REVIEW_LABEL = i18n.t(i18n.l.expanded_state.swap_details.review);

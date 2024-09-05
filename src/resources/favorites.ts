@@ -1,5 +1,5 @@
 import { AddressOrEth, UniqueId } from '@/__swaps__/types/assets';
-import { ChainId, Network } from '@/networks/types';
+import { ChainId, Network } from '@/chains/types';
 import { getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
 import { NativeCurrencyKeys, RainbowToken } from '@/entities';
 import { createQueryKey, queryClient } from '@/react-query';
@@ -8,7 +8,7 @@ import { promiseUtils } from '@/utils';
 import { useQuery } from '@tanstack/react-query';
 import { omit } from 'lodash';
 import { externalTokenQueryKey, fetchExternalToken } from './assets/externalAssetsQuery';
-import { chainsIdByName, chainsName } from '@/networks/chains';
+import { chainsIdByName, chainsName } from '@/chains/chains';
 
 export const favoritesQueryKey = createQueryKey('favorites', {}, { persisterVersion: 4 });
 

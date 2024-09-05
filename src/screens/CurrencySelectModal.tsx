@@ -39,8 +39,8 @@ import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import DiscoverSearchInput from '@/components/discover/DiscoverSearchInput';
 import { externalTokenQueryKey, fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { queryClient } from '@/react-query/queryClient';
-import { ChainId, Network } from '@/networks/types';
-import { chainsName } from '@/networks/chains';
+import { ChainId, Network } from '@/chains/types';
+import { chainsName } from '@/chains/chains';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;

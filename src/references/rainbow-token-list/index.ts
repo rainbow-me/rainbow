@@ -6,7 +6,7 @@ import RAINBOW_TOKEN_LIST_DATA from './rainbow-token-list.json';
 import { RainbowToken } from '@/entities';
 import { STORAGE_IDS } from '@/model/mmkv';
 import { logger, RainbowError } from '@/logger';
-import { Network, ChainId } from '@/networks/types';
+import { Network, ChainId } from '@/chains/types';
 
 export const rainbowListStorage = new MMKV({
   id: STORAGE_IDS.RAINBOW_TOKEN_LIST,

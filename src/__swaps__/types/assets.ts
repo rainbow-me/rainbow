@@ -1,7 +1,7 @@
 import type { Address } from 'viem';
 
 import { ETH_ADDRESS } from '@/references';
-import { ChainId, ChainName } from '@/networks/types';
+import { ChainId, ChainName } from '@/chains/types';
 import { SearchAsset } from '@/__swaps__/types/search';
 import { ResponseByTheme } from '../utils/swaps';
 

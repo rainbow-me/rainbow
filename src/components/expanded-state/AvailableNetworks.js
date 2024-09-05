@@ -13,8 +13,8 @@ import { ChainBadge } from '../coin-icon';
 import Divider from '../Divider';
 import { Text } from '../text';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
-import { ChainId } from '@/networks/types';
-import { defaultChains } from '@/networks/chains';
+import { ChainId } from '@/chains/types';
+import { defaultChains } from '@/chains/chains';
 
 const AvailableNetworksv1 = ({ asset, networks, hideDivider, marginBottom = 24, marginHorizontal = 19, prominent }) => {
   const { colors } = useTheme();

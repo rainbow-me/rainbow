@@ -26,7 +26,7 @@ import { ethereumUtils } from '@/utils';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { BNB_MAINNET_ADDRESS, ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@/references';
 import useAccountSettings from './useAccountSettings';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 
 const checkSufficientGas = (txFee: LegacyGasFee | GasFee, chainId: ChainId, nativeAsset?: ParsedAddressAsset) => {
   const isLegacyGasNetwork = !(txFee as GasFee)?.maxFee;

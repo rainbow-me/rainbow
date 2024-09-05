@@ -23,8 +23,8 @@ import { IS_ANDROID } from '@/env';
 import * as i18n from '@/languages';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { ChainId } from '@/networks/types';
-import { chainsLabel, chainsName } from '@/networks/chains';
+import { ChainId } from '@/chains/types';
+import { chainsLabel, chainsName } from '@/chains/chains';
 
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;

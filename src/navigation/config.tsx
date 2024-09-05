@@ -28,8 +28,8 @@ import { Box } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { SignTransactionSheetRouteProp } from '@/screens/SignTransactionSheet';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
-import { ChainId } from '@/networks/types';
-import { chainsName } from '@/networks/chains';
+import { ChainId } from '@/chains/types';
+import { chainsName } from '@/chains/chains';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 

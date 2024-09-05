@@ -39,7 +39,7 @@ import { createWalletClient, http } from 'viem';
 
 import { RainbowError, logger } from '@/logger';
 import { useTheme } from '@/theme';
-import { Network, ChainId } from '@/networks/types';
+import { Network, ChainId } from '@/chains/types';
 import { CardSize } from '@/components/unique-token/CardSize';
 import { queryClient } from '@/react-query';
 import { nftOffersQueryKey } from '@/resources/reservoir/nftOffersQuery';
@@ -52,7 +52,7 @@ import { getNextNonce } from '@/state/nonces';
 import { metadataPOSTClient } from '@/graphql';
 import { ethUnits } from '@/references';
 import { Transaction } from '@/graphql/__generated__/metadataPOST';
-import { chainsIdByName, chainsNativeAsset, defaultChains, getChainDefaultRpc } from '@/networks/chains';
+import { chainsIdByName, chainsNativeAsset, defaultChains, getChainDefaultRpc } from '@/chains/chains';
 
 const NFT_IMAGE_HEIGHT = 160;
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;

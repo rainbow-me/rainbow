@@ -10,7 +10,7 @@ import { usePrevious, useStepper } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { getExchangeIconUrl, magicMemo } from '@/utils';
 import { SocketBridges } from '@/references/swap/bridges';
-import { SUPPORTED_CHAINS } from '@/networks/chains';
+import { SUPPORTED_CHAINS } from '@/chains/chains';
 
 const parseExchangeName = name => {
   const networks = SUPPORTED_CHAINS.map(network => network.name.toLowerCase());

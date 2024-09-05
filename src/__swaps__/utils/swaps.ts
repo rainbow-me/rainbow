@@ -9,7 +9,7 @@ import {
   SLIDER_WIDTH,
   STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS,
 } from '@/__swaps__/screens/Swap/constants';
-import { ChainId, ChainName } from '@/networks/types';
+import { ChainId, ChainName } from '@/chains/types';
 import { isLowerCaseMatchWorklet } from '@/__swaps__/utils/strings';
 import { globalColors } from '@/design-system';
 import { ForegroundColor, palettes } from '@/design-system/color/palettes';
@@ -39,7 +39,7 @@ import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from
 import { inputKeys } from '../types/swap';
 import { valueBasedDecimalFormatter } from './decimalFormatter';
 import { convertAmountToRawAmount } from './numbers';
-import { chainsName } from '@/networks/chains';
+import { chainsName } from '@/chains/chains';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //

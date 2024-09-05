@@ -8,8 +8,8 @@ import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { parseTransaction } from '@/parsers/transactions';
 import { RainbowError, logger } from '@/logger';
 import { TransactionApiResponse } from './types';
-import { ChainId } from '@/networks/types';
-import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/networks/chains';
+import { ChainId } from '@/chains/types';
+import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains/chains';
 
 export type ConsolidatedTransactionsResult = QueryFunctionResult<typeof consolidatedTransactionsQueryFunction>;
 export type PaginatedTransactions = { pages: ConsolidatedTransactionsResult[] };

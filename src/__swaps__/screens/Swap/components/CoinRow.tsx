@@ -1,7 +1,7 @@
 import { BalancePill } from '@/__swaps__/screens/Swap/components/BalancePill';
 import { CoinRowButton } from '@/__swaps__/screens/Swap/components/CoinRowButton';
 import { AddressOrEth, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { SearchAsset } from '@/__swaps__/types/search';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ContextMenuButton } from '@/components/context-menu';
@@ -17,7 +17,7 @@ import React, { useCallback, useMemo } from 'react';
 import { GestureResponderEvent } from 'react-native';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import { SwapCoinIcon } from './SwapCoinIcon';
-import { SUPPORTED_CHAIN_IDS } from '@/networks/chains';
+import { SUPPORTED_CHAIN_IDS } from '@/chains/chains';
 
 export const COIN_ROW_WITH_PADDING_HEIGHT = 56;
 
