@@ -5,19 +5,16 @@ import { selectUserAssetsList, selectorFilterByUserChains } from '@/__swaps__/sc
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
 import { ChainId } from '@/networks/types';
-import { useConnectedToHardhatStore } from '../connectedToHardhat';
 
 export const UserAssetsSync = function UserAssetsSync() {
   const { accountAddress, nativeCurrency: currentCurrency } = useAccountSettings();
 
   const isSwapsOpen = useSwapsStore(state => state.isSwapsOpen);
-  const { connectedToHardhat } = useConnectedToHardhatStore();
 
   useUserAssets(
     {
       address: accountAddress,
       currency: currentCurrency,
-      testnetMode: connectedToHardhat,
     },
     {
       enabled: !isSwapsOpen,
