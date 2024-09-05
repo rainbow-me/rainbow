@@ -90,4 +90,4 @@ ClaimablesListHeader.animationDuration = TokenFamilyHeaderAnimationDuration;
 
 ClaimablesListHeader.height = TokenFamilyHeaderHeight;
 
-export default ClaimablesListHeader;
+export default React.memo(ClaimablesListHeader);

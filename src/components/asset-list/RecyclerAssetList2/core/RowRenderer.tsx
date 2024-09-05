@@ -175,7 +175,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     case CellType.CLAIMABLE: {
       const { uniqueId } = data as ClaimableExtraData;
 
-      return <Claimable uniqueId={uniqueId} />;
+      return <Claimable uniqueId={uniqueId} extendedState={extendedState} />;
     }
 
     case CellType.LOADING_ASSETS:
