@@ -18,7 +18,7 @@ import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { IS_TEST } from '@/env';
 import { useFavorites } from '@/resources/favorites';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 type swapCurrencyListType =
   | 'verifiedAssets'
@@ -86,7 +86,6 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
   const [highLiquidityAssets, setHighLiquidityAssets] = useState<RainbowToken[]>([]);
   const [lowLiquidityAssets, setLowLiquidityAssets] = useState<RainbowToken[]>([]);
   const [verifiedAssets, setVerifiedAssets] = useState<RainbowToken[]>([]);
-
   const [fetchingCrosschainAssets, setFetchingCrosschainAssets] = useState(false);
   const [crosschainVerifiedAssets, setCrosschainVerifiedAssets] = useState<CrosschainVerifiedAssets>({
     [ChainId.mainnet]: [],
@@ -387,7 +386,7 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
       if (inputCurrency?.name && verifiedAssets.length) {
         if (bridgeAsset) {
           list.push({
-            color: colors.networkColors[bridgeAsset.network],
+            color: colors.networkColors[bridgeAsset.chainId],
             data: [bridgeAsset],
             key: 'bridgeAsset',
             title: lang.t(`exchange.token_sections.${tokenSectionTypes.bridgeTokenSection}`),
@@ -430,7 +429,7 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
         bridgeAsset = curatedAssets.find(asset => asset?.name === inputCurrency?.name);
         if (bridgeAsset) {
           list.push({
-            color: colors.networkColors[bridgeAsset.network],
+            color: colors.networkColors[bridgeAsset.chainId],
             data: [bridgeAsset],
             key: 'bridgeAsset',
             title: lang.t(`exchange.token_sections.${tokenSectionTypes.bridgeTokenSection}`),

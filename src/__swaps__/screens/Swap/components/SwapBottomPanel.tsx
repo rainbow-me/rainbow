@@ -22,7 +22,8 @@ import { SwapActionButton } from './SwapActionButton';
 import { SettingsPanel } from './SettingsPanel';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { triggerHapticFeedback } from '@/screens/points/constants';
-import { LONG_PRESS_DURATION_IN_MS } from '@/components/buttons/hold-to-authorize/constants';
+
+const HOLD_TO_SWAP_DURATION_MS = 400;
 
 export function SwapBottomPanel() {
   const { isDarkMode } = useColorMode();
@@ -104,6 +105,7 @@ export function SwapBottomPanel() {
               icon={icon}
               iconStyle={confirmButtonIconStyle}
               label={label}
+              longPressDuration={HOLD_TO_SWAP_DURATION_MS}
               disabled={disabled}
               onPressWorklet={() => {
                 'worklet';
@@ -132,7 +134,7 @@ export function SwapBottomPanel() {
                   holdProgress.value = 0;
                   holdProgress.value = withTiming(
                     100,
-                    { duration: LONG_PRESS_DURATION_IN_MS, easing: Easing.inOut(Easing.sin) },
+                    { duration: HOLD_TO_SWAP_DURATION_MS, easing: Easing.inOut(Easing.sin) },
                     isFinished => {
                       if (isFinished) {
                         holdProgress.value = 0;

@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 import { SharedValue, runOnJS, useAnimatedReaction, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { ParsedAddressAsset } from '@/entities';
@@ -9,11 +9,11 @@ import { ethereumUtils } from '@/utils';
 
 export const useNativeAssetForChain = ({ inputAsset }: { inputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null> }) => {
   const chainId = useDerivedValue(() => inputAsset.value?.chainId ?? ChainId.mainnet);
-  const nativeAsset = useSharedValue<ParsedAddressAsset | undefined>(ethereumUtils.getNetworkNativeAsset(chainId.value));
+  const nativeAsset = useSharedValue<ParsedAddressAsset | undefined>(ethereumUtils.getNetworkNativeAsset({ chainId: chainId.value }));
 
   const getNativeAssetForNetwork = useCallback(
     (chainId: ChainId) => {
-      const asset = ethereumUtils.getNetworkNativeAsset(chainId);
+      const asset = ethereumUtils.getNetworkNativeAsset({ chainId });
       nativeAsset.value = asset;
     },
     [nativeAsset]
@@ -21,11 +21,12 @@ export const useNativeAssetForChain = ({ inputAsset }: { inputAsset: SharedValue
 
   useAnimatedReaction(
     () => chainId.value,
-    (currentChainId, previoudChainId) => {
-      if (currentChainId !== previoudChainId) {
+    (currentChainId, previousChainId) => {
+      if (currentChainId !== previousChainId) {
         runOnJS(getNativeAssetForNetwork)(currentChainId);
       }
-    }
+    },
+    []
   );
 
   return {

@@ -8,8 +8,8 @@ import { isAddress, getAddress } from '@ethersproject/address';
 import { formatJsonRpcResult, formatJsonRpcError } from '@json-rpc-tools/utils';
 import { gretch } from 'gretchen';
 import messaging from '@react-native-firebase/messaging';
-import { Core } from '@walletconnect/core';
-import { Web3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
+import WalletConnectCore, { Core } from '@walletconnect/core';
+import Client, { Web3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
 import { isHexString } from '@ethersproject/bytes';
 import { toUtf8String } from '@ethersproject/strings';
 
@@ -37,16 +37,17 @@ import * as explain from '@/screens/Explain';
 import { Box } from '@/design-system';
 import { AuthRequestAuthenticateSignature, AuthRequestResponseErrorReason, RPCMethod, RPCPayload } from '@/walletConnect/types';
 import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
-import { getProviderForNetwork } from '@/handlers/web3';
-import { RainbowNetworks } from '@/networks';
+import { getProvider } from '@/handlers/web3';
+import { RainbowNetworkObjects } from '@/networks';
 import { uniq } from 'lodash';
 import { fetchDappMetadata } from '@/resources/metadata/dapp';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 import { PerformanceMetrics } from '@/performance/tracking/types/PerformanceMetrics';
 import { PerformanceTracking } from '@/performance/tracking';
+import { ChainId } from '@/networks/types';
 
-const SUPPORTED_EVM_CHAIN_IDS = RainbowNetworks.filter(({ features }) => features.walletconnect).map(({ id }) => id);
+const SUPPORTED_EVM_CHAIN_IDS = RainbowNetworkObjects.filter(({ features }) => features.walletconnect).map(({ id }) => id);
 
 const SUPPORTED_SESSION_EVENTS = ['chainChanged', 'accountsChanged'];
 
@@ -93,40 +94,48 @@ export function maybeGoBackAndClearHasPendingRedirect({ delay = 0 }: { delay?: n
 /**
  * MAY BE UNDEFINED if WC v2 hasn't been instantiated yet
  */
-let syncWeb3WalletClient: Awaited<ReturnType<(typeof Web3Wallet)['init']>> | undefined;
 
-const walletConnectCore = new Core({ projectId: WC_PROJECT_ID });
+let lastConnector: string | undefined = undefined;
 
-const web3WalletClient = Web3Wallet.init({
-  core: walletConnectCore,
-  metadata: {
-    name: '🌈 Rainbow',
-    description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
-    url: 'https://rainbow.me',
-    icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
-    redirect: {
-      native: 'rainbow://wc',
-      universal: 'https://rnbwapp.com/wc',
-    },
-  },
-});
+let walletConnectCore: WalletConnectCore | undefined;
 
-let initPromise: ReturnType<(typeof Web3Wallet)['init']> | null = null;
+let web3WalletClient: ReturnType<(typeof Web3Wallet)['init']> | undefined;
 
-// this function ensures we only initialize the client once
-export async function getWeb3WalletClient() {
-  if (!syncWeb3WalletClient) {
-    if (!initPromise) {
-      initPromise = web3WalletClient.then(client => {
-        syncWeb3WalletClient = client;
-        return client;
-      });
-    }
-    // Wait for the initialization promise to resolve
-    return initPromise;
-  } else {
-    return syncWeb3WalletClient;
+let initPromise: Promise<Client> | undefined = undefined;
+
+let syncWeb3WalletClient: Client | undefined = undefined;
+
+export const initializeWCv2 = async () => {
+  if (!walletConnectCore) {
+    walletConnectCore = new Core({ projectId: WC_PROJECT_ID });
   }
+
+  if (!web3WalletClient) {
+    // eslint-disable-next-line require-atomic-updates
+    web3WalletClient = Web3Wallet.init({
+      core: walletConnectCore,
+      metadata: {
+        name: '🌈 Rainbow',
+        description: 'Rainbow makes exploring Ethereum fun and accessible 🌈',
+        url: 'https://rainbow.me',
+        icons: ['https://avatars2.githubusercontent.com/u/48327834?s=200&v=4'],
+        redirect: {
+          native: 'rainbow://wc',
+          universal: 'https://rnbwapp.com/wc',
+        },
+      },
+    });
+  }
+
+  return web3WalletClient;
+};
+
+export async function getWeb3WalletClient() {
+  if (!initPromise) {
+    initPromise = initializeWCv2();
+  }
+
+  return initPromise;
 }
 
 /**
@@ -256,7 +265,7 @@ export function isSupportedMethod(method: RPCMethod) {
 }
 
 export function isSupportedChain(chainId: number) {
-  return !!RainbowNetworks.find(({ id, features }) => id === chainId && features.walletconnect);
+  return !!RainbowNetworkObjects.find(({ id, features }) => id === chainId && features.walletconnect);
 }
 
 /**
@@ -320,9 +329,23 @@ async function rejectProposal({
   });
 }
 
+// listen for THIS topic pairing, and clear timeout if received
+function trackTopicHandler(proposal: Web3WalletTypes.SessionProposal | Web3WalletTypes.AuthRequest) {
+  logger.debug(`[walletConnect]: pair: handler`, { proposal });
+
+  const { metadata } =
+    (proposal as Web3WalletTypes.SessionProposal).params.proposer || (proposal as Web3WalletTypes.AuthRequest).params.requester;
+
+  analytics.track(analytics.event.wcNewPairing, {
+    dappName: metadata.name,
+    dappUrl: metadata.url,
+    connector: lastConnector || 'unknown',
+  });
+}
+
 export async function pair({ uri, connector }: { uri: string; connector?: string }) {
   logger.debug(`[walletConnect]: pair`, { uri }, logger.DebugContext.walletconnect);
-
+  lastConnector = connector;
   /**
    * Make sure this is cleared if we get multiple pairings in rapid succession
    */
@@ -332,25 +355,8 @@ export async function pair({ uri, connector }: { uri: string; connector?: string
 
   logger.debug(`[walletConnect]: pair: parsed uri`, { topic, rest });
 
-  // listen for THIS topic pairing, and clear timeout if received
-  function handler(proposal: Web3WalletTypes.SessionProposal | Web3WalletTypes.AuthRequest) {
-    logger.debug(`[walletConnect]: pair: handler`, { proposal });
-
-    const { metadata } =
-      (proposal as Web3WalletTypes.SessionProposal).params.proposer || (proposal as Web3WalletTypes.AuthRequest).params.requester;
-    analytics.track(analytics.event.wcNewPairing, {
-      dappName: metadata.name,
-      dappUrl: metadata.url,
-      connector,
-    });
-  }
-
-  // CAN get fired on subsequent pairs, so need to make sure we clean up
-  client.on('session_proposal', handler);
-  client.on('auth_request', handler);
-
   // init pairing
-  await client.core.pairing.pair({ uri });
+  await client.pair({ uri });
 }
 
 export async function initListeners() {
@@ -373,11 +379,14 @@ export async function initListeners() {
       events.emit('walletConnectV2SessionDeleted');
     }, 500);
   });
+}
 
+export async function initWalletConnectPushNotifications() {
   try {
     const token = await getFCMToken();
 
     if (token) {
+      const client = await getWeb3WalletClient();
       const client_id = await client.core.crypto.getClientId();
 
       // initial subscription
@@ -386,7 +395,7 @@ export async function initListeners() {
       /**
        * Ensure that if the FCM token changes we update the echo server
        */
-      messaging().onTokenRefresh(async token => {
+      messaging().onTokenRefresh(async (token: string) => {
         await subscribeToEchoServer({ token, client_id });
       });
     } else {
@@ -429,6 +438,8 @@ async function subscribeToEchoServer({ client_id, token }: { client_id: string; 
 
 export async function onSessionProposal(proposal: Web3WalletTypes.SessionProposal) {
   try {
+    trackTopicHandler(proposal);
+
     logger.debug(`[walletConnect]: session_proposal`, { proposal }, logger.DebugContext.walletconnect);
 
     const verifiedData = proposal.verifyContext.verified;
@@ -707,12 +718,10 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
 
     logger.debug(`[walletConnect]: handling request`, {}, logger.DebugContext.walletconnect);
 
-    const dappNetwork = ethereumUtils.getNetworkFromChainId(chainId);
-    const displayDetails = getRequestDisplayDetails(event.params.request, nativeCurrency, dappNetwork);
+    const displayDetails = await getRequestDisplayDetails(event.params.request, nativeCurrency, chainId);
     const peerMeta = session.peer.metadata;
 
     const metadata = await fetchDappMetadata({ url: peerMeta.url, status: true });
-
     const dappName = metadata?.appName || peerMeta.name || lang.t(lang.l.walletconnect.unknown_url);
     const dappImage = metadata?.appLogo || peerMeta?.icons?.[0];
 
@@ -828,6 +837,8 @@ export async function handleSessionRequestResponse(
 }
 
 export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
+  trackTopicHandler(event);
+
   const client = await getWeb3WalletClient();
 
   logger.debug(`[walletConnect]: auth_request`, { event }, logger.DebugContext.walletconnect);
@@ -863,7 +874,7 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
        * encapsulate reused code.
        */
       const loadWalletAndSignMessage = async () => {
-        const provider = getProviderForNetwork();
+        const provider = getProvider({ chainId: ChainId.arbitrum });
         const wallet = await loadWallet({ address, showErrorIfNotLoaded: false, provider });
 
         if (!wallet) {

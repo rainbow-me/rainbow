@@ -7,8 +7,7 @@ import { TestnetToast } from '@/components/toasts';
 import { DAPP_BROWSER, POINTS, useExperimentalFlag } from '@/config';
 import { Box, Columns, globalColors, Stack, useForegroundColor, Text, Cover, useColorMode } from '@/design-system';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
-import { web3Provider } from '@/handlers/web3';
-import { isUsingButtonNavigation } from '@/helpers/statusBarHelper';
+import { isUsingButtonNavigation } from '@/utils/deviceUtils';
 import { useAccountAccentColor, useAccountSettings, useCoinListEdited, useDimensions, usePendingTransactions } from '@/hooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import RecyclerListViewScrollToTopProvider, {
@@ -52,7 +51,7 @@ function getTabBarHeight() {
     return 82;
   }
   if (!isUsingButtonNavigation()) {
-    return 72;
+    return 82;
   }
   return 48;
 }
@@ -446,7 +445,7 @@ function SwipeNavigatorScreens() {
 }
 
 export function SwipeNavigator() {
-  const { network } = useAccountSettings();
+  const { chainId } = useAccountSettings();
   const { colors } = useTheme();
 
   return (
@@ -462,7 +461,7 @@ export function SwipeNavigator() {
         </SectionListScrollToTopProvider>
       </BrowserTabViewProgressContextProvider>
 
-      <TestnetToast network={network} web3Provider={web3Provider} />
+      <TestnetToast chainId={chainId} />
     </FlexItem>
   );
 }

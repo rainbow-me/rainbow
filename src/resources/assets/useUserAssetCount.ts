@@ -1,13 +1,13 @@
-import { getIsHardhatConnected } from '@/handlers/web3';
 import { useAccountSettings } from '@/hooks';
 import { useUserAssets } from '@/resources/assets/UserAssetsQuery';
 import { RainbowAddressAssets } from './types';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const countSelector = (accountAssets: RainbowAddressAssets) => accountAssets?.length;
 
 export function useUserAssetCount() {
   const { accountAddress, nativeCurrency } = useAccountSettings();
-  const connectedToHardhat = getIsHardhatConnected();
+  const { connectedToHardhat } = useConnectedToHardhatStore();
 
   return useUserAssets(
     {

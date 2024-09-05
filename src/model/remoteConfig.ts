@@ -1,4 +1,4 @@
-import { getNetwork, saveNetwork } from '@/handlers/localstorage/globalSettings';
+import { getChainId, saveChainId } from '@/handlers/localstorage/globalSettings';
 import { web3SetHttpProvider } from '@/handlers/web3';
 import { RainbowError, logger } from '@/logger';
 import { createQueryKey, queryClient } from '@/react-query';
@@ -92,6 +92,7 @@ export interface RainbowConfig extends Record<string, string | boolean | number>
 
   degen_mode: boolean;
   featured_results: boolean;
+  nfts_enabled: boolean;
 }
 
 export const DEFAULT_CONFIG: RainbowConfig = {
@@ -175,6 +176,7 @@ export const DEFAULT_CONFIG: RainbowConfig = {
 
   degen_mode: false,
   featured_results: false,
+  nfts_enabled: true,
 };
 
 export async function fetchRemoteConfig(): Promise<RainbowConfig> {
@@ -230,7 +232,8 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
         key === 'idfa_check_enabled' ||
         key === 'rewards_enabled' ||
         key === 'degen_mode' ||
-        key === 'featured_results'
+        key === 'featured_results' ||
+        key === 'nfts_enabled'
       ) {
         config[key] = entry.asBoolean();
       } else {
@@ -245,9 +248,9 @@ export async function fetchRemoteConfig(): Promise<RainbowConfig> {
     throw e;
   } finally {
     logger.debug(`[remoteConfig]: Current remote config:\n${JSON.stringify(config, null, 2)}`);
-    const currentNetwork = await getNetwork();
-    web3SetHttpProvider(currentNetwork);
-    saveNetwork(currentNetwork);
+    const currentChainId = await getChainId();
+    web3SetHttpProvider(currentChainId);
+    saveChainId(currentChainId);
   }
 }
 

@@ -1,5 +1,4 @@
 import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
-import { ChainId } from '@/__swaps__/types/chains';
 import { Address } from 'viem';
 import { RainbowError, logger } from '@/logger';
 import reduxStore, { AppState } from '@/redux/store';
@@ -9,9 +8,12 @@ import { useStore } from 'zustand';
 import { useCallback } from 'react';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { useSelector } from 'react-redux';
+import { ChainId } from '@/networks/types';
+import { useConnectedToHardhatStore } from '../connectedToHardhat';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 
+const escapeRegExp = (string: string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const getSearchQueryKey = ({ filter, searchQuery }: { filter: UserAssetFilter; searchQuery: string }) => `${filter}${searchQuery}`;
 
 const getDefaultCacheKeys = (): Set<string> => {
@@ -161,7 +163,7 @@ export const createUserAssetsStore = (address: Address | string) =>
           return cachedData;
         } else {
           const chainIdFilter = filter === 'all' ? null : filter;
-          const searchRegex = inputSearchQuery.length > 0 ? new RegExp(inputSearchQuery, 'i') : null;
+          const searchRegex = inputSearchQuery.length > 0 ? new RegExp(escapeRegExp(inputSearchQuery), 'i') : null;
 
           const filteredIds = Array.from(
             selectUserAssetIds(
@@ -279,7 +281,7 @@ export const createUserAssetsStore = (address: Address | string) =>
           });
 
           // Ensure all supported chains are in the map with a fallback value of 0
-          SUPPORTED_CHAIN_IDS({ testnetMode: false }).forEach(chainId => {
+          SUPPORTED_CHAIN_IDS({ testnetMode: useConnectedToHardhatStore.getState().connectedToHardhat }).forEach(chainId => {
             if (!unsortedChainBalances.has(chainId)) {
               unsortedChainBalances.set(chainId, 0);
               idsByChain.set(chainId, []);

@@ -68,7 +68,8 @@ export const AnimatedSpinner = ({
           });
         }
       }
-    }
+    },
+    []
   );
 
   return (

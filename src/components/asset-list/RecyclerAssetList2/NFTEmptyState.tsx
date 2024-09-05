@@ -3,7 +3,7 @@ import Animated from 'react-native-reanimated';
 import { Box, Stack, Text, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import { TokenFamilyHeaderHeight } from './NFTLoadingSkeleton';
-import { MINTS, useExperimentalFlag } from '@/config';
+import { MINTS, NFTS_ENABLED, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { IS_TEST } from '@/env';
 import { useMints } from '@/resources/mints';
@@ -13,7 +13,6 @@ import { StyleSheet } from 'react-native';
 import { LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
 import { analyticsV2 } from '@/analytics';
 import { convertRawAmountToRoundedDecimal } from '@/helpers/utilities';
-import { ethereumUtils } from '@/utils';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 
 type LaunchFeaturedMintButtonProps = {
@@ -32,8 +31,7 @@ const LaunchFeaturedMintButton = ({ featuredMint }: LaunchFeaturedMintButtonProp
         mintsLastHour: featuredMint.totalMints,
         priceInEth: convertRawAmountToRoundedDecimal(featuredMint.mintStatus.price, 18, 6),
       });
-      const network = ethereumUtils.getNetworkFromChainId(featuredMint.chainId);
-      navigateToMintCollection(featuredMint.contract, featuredMint.mintStatus.price, network);
+      navigateToMintCollection(featuredMint.contract, featuredMint.mintStatus.price, featuredMint.chainId);
     }
   }, [featuredMint]);
 
@@ -46,7 +44,8 @@ const LaunchFeaturedMintButton = ({ featuredMint }: LaunchFeaturedMintButtonProp
             as={Animated.View}
             borderRadius={15}
             justifyContent="center"
-            paddingHorizontal="10px"
+            paddingVertical="12px"
+            paddingHorizontal="20px"
             style={[{ backgroundColor: isDarkMode ? SEPARATOR_COLOR : LIGHT_SEPARATOR_COLOR }]}
           >
             <Text size="13pt" color={'label'} style={{ opacity: isDarkMode ? 0.6 : 0.75 }} weight="heavy">
@@ -60,14 +59,17 @@ const LaunchFeaturedMintButton = ({ featuredMint }: LaunchFeaturedMintButtonProp
 };
 
 export function NFTEmptyState() {
-  const { mints_enabled } = useRemoteConfig();
+  const { mints_enabled, nfts_enabled } = useRemoteConfig();
   const { accountAddress } = useAccountSettings();
 
   const {
     data: { featuredMint },
   } = useMints({ walletAddress: accountAddress });
 
+  const nftsEnabled = (useExperimentalFlag(NFTS_ENABLED) || nfts_enabled) && !IS_TEST;
   const mintsEnabled = (useExperimentalFlag(MINTS) || mints_enabled) && !IS_TEST;
+
+  if (!nftsEnabled) return null;
 
   return (
     <Box

@@ -56,7 +56,7 @@ import { getUniqueId } from '@/utils/ethereumUtils';
 import { getNextNonce } from '@/state/nonces';
 import { metadataPOSTClient } from '@/graphql';
 import { Transaction } from '@/graphql/__generated__/metadataPOST';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 
 const NFT_IMAGE_HEIGHT = 250;
 // inset * 2 -> 28 *2
@@ -200,7 +200,7 @@ const MintSheet = () => {
   // check address balance
   useEffect(() => {
     const checkInsufficientEth = async () => {
-      const nativeBalance = (await ethereumUtils.getNativeAssetForNetwork(chainId, accountAddress))?.balance?.amount ?? 0;
+      const nativeBalance = (await ethereumUtils.getNativeAssetForNetwork({ chainId, address: accountAddress }))?.balance?.amount ?? 0;
 
       const totalMintPrice = multiply(price.amount, quantity);
       if (greaterThanOrEqualTo(totalMintPrice, nativeBalance)) {
@@ -237,8 +237,7 @@ const MintSheet = () => {
 
   // start poll gas price
   useEffect(() => {
-    const network = ethereumUtils.getNetworkFromChainId(chainId);
-    startPollingGasFees(network);
+    startPollingGasFees(chainId);
 
     return () => {
       stopPollingGasFees();
@@ -365,9 +364,8 @@ const MintSheet = () => {
     });
 
     const feeAddress = getRainbowFeeAddress(chainId);
-    const nonce = await getNextNonce({ address: accountAddress, network: ethereumUtils.getNetworkFromChainId(chainId) });
+    const nonce = await getNextNonce({ address: accountAddress, chainId });
     try {
-      const currentNetwork = ethereumUtils.getNetworkFromChainId(chainId);
       await getClient()?.actions.mintToken({
         items: [
           {
@@ -388,10 +386,11 @@ const MintSheet = () => {
             step.items?.forEach(item => {
               if (item.txHashes?.[0]?.txHash && txRef.current !== item.txHashes[0].txHash && item.status === 'incomplete') {
                 const asset = {
+                  chainId,
                   type: 'nft',
                   icon_url: imageUrl,
                   address: mintCollection.id || '',
-                  network: currentNetwork,
+                  network: ethereumUtils.getNetworkFromChainId(chainId),
                   name: mintCollection.name || '',
                   decimals: 18,
                   symbol: 'NFT',
@@ -401,7 +400,7 @@ const MintSheet = () => {
                 const paymentAsset = {
                   type: 'nft',
                   address: ETH_ADDRESS,
-                  network: currentNetwork,
+                  network: ethereumUtils.getNetworkFromChainId(chainId),
                   name: mintCollection.publicMintInfo?.price?.currency?.name || 'Ethereum',
                   decimals: mintCollection.publicMintInfo?.price?.currency?.decimals || 18,
                   symbol: ETH_SYMBOL,
@@ -414,7 +413,7 @@ const MintSheet = () => {
                   to: item.data?.to,
                   from: item.data?.from,
                   hash: item.txHashes[0].txHash,
-                  network: currentNetwork,
+                  network: ethereumUtils.getNetworkFromChainId(chainId),
                   nonce,
                   changes: [
                     {
@@ -437,7 +436,7 @@ const MintSheet = () => {
                 addNewTransaction({
                   transaction: tx,
                   address: accountAddress,
-                  network: currentNetwork,
+                  chainId,
                 });
                 analyticsV2.track(event.mintsMintedNFT, {
                   collectionName: mintCollection.name || '',
@@ -683,7 +682,9 @@ const MintSheet = () => {
                     symbol="􀉆"
                     label={i18n.t(i18n.l.minting.contract)}
                     value={
-                      <ButtonPressAnimation onPress={() => ethereumUtils.openAddressInBlockExplorer(mintCollection.id!, chainId)}>
+                      <ButtonPressAnimation
+                        onPress={() => ethereumUtils.openAddressInBlockExplorer({ address: mintCollection.id!, chainId })}
+                      >
                         <Text color={{ custom: imageColor }} align="right" size="17pt" weight="medium">
                           {contractAddressDisplay}
                         </Text>

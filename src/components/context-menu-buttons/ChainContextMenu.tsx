@@ -3,7 +3,7 @@ import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ContextMenuButton } from '@/components/context-menu';
 import { Bleed, Box, Inline, Text, TextProps } from '@/design-system';
 import * as i18n from '@/languages';
-import { ChainId, ChainNameDisplay } from '@/__swaps__/types/chains';
+import { ChainId, ChainNameDisplay } from '@/networks/types';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { showActionSheetWithOptions } from '@/utils';
 import { chainNameForChainIdWithMainnetSubstitution } from '@/__swaps__/utils/chains';
