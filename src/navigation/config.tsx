@@ -277,7 +277,8 @@ export const signTransactionSheetConfig = {
   options: ({ route }: { route: SignTransactionSheetRouteProp }) => ({
     ...buildCoolModalConfig({
       ...route.params,
-      backgroundOpacity: route?.params?.source === RequestSource.WALLETCONNECT ? 1 : 0.7,
+      backgroundOpacity:
+        route?.params?.source === RequestSource.WALLETCONNECT || route?.params?.source === RequestSource.MOBILE_WALLET_PROTOCOL ? 1 : 0.7,
       cornerRadius: 0,
       springDamping: 1,
       topOffset: 0,
