@@ -10,7 +10,14 @@ import { inputKeys } from '@/__swaps__/types/swap';
 import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
 
 export function SwapNativeInput({ nativeInputType }: { nativeInputType: inputKeys }) {
-  const { focusedInput, internalSelectedInputAsset, internalSelectedOutputAsset, SwapTextStyles, SwapInputController } = useSwapContext();
+  const {
+    focusedInput,
+    internalSelectedInputAsset,
+    internalSelectedOutputAsset,
+    outputQuotesAreDisabled,
+    SwapTextStyles,
+    SwapInputController,
+  } = useSwapContext();
 
   const formattedNativeInput =
     nativeInputType === 'inputNativeValue' ? SwapInputController.formattedInputNativeValue : SwapInputController.formattedOutputNativeValue;
@@ -25,7 +32,9 @@ export function SwapNativeInput({ nativeInputType }: { nativeInputType: inputKey
   const disabled = useDerivedValue(() => {
     if (!(nativeInputType === 'inputNativeValue' || nativeInputType === 'outputNativeValue')) return false;
 
-    // disable caret for native inputs when corresponding asset is missing price
+    if (outputQuotesAreDisabled.value) return true;
+
+    // disable caret and pointer events for native inputs when corresponding asset is missing price
     const asset = nativeInputType === 'inputNativeValue' ? internalSelectedInputAsset : internalSelectedOutputAsset;
     const assetPrice = asset.value?.nativePrice || asset.value?.price?.value || 0;
     return !assetPrice || equalWorklet(assetPrice, 0);
