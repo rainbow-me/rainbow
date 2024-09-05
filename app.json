@@ -1,4 +1,5 @@
 {
-  "name": "Rainbow",
-  "displayName": "Rainbow"
+  "expo": {
+    "name": "Rainbow"
+  }
 }

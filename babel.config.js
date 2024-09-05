@@ -31,6 +31,7 @@ module.exports = function (api) {
       },
     ],
     'babel-plugin-styled-components',
+    'babel-preset-expo',
     '@babel/plugin-proposal-numeric-separator',
     'date-fns',
     'graphql-tag',

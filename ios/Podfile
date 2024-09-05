@@ -36,7 +36,6 @@ target 'ImageNotification' do
 end
 
 target 'Rainbow' do
-
   use_expo_modules!
   post_integrate do |installer|
     begin
