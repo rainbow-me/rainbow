@@ -50,7 +50,7 @@ import {
 } from '@/resources/assets/externalAssetsQuery';
 import { ChainId, Network } from '@/chains/types';
 import { AddressOrEth } from '@/__swaps__/types/assets';
-import { chainsIdByName, chainsName, chainsNativeAsset, defaultChains } from '@/chains/chains';
+import { chainsIdByName, chainsName, chainsNativeAsset, defaultChains, getChainGasUnits } from '@/chains/chains';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const getNetworkNativeAsset = ({ chainId }: { chainId: ChainId }) => {
@@ -510,18 +510,7 @@ const calculateL1FeeOptimism = async (tx: RainbowTransaction, provider: Provider
 };
 
 const getBasicSwapGasLimit = (chainId: ChainId) => {
-  switch (chainId) {
-    case ChainId.arbitrum:
-      return ethUnits.basic_swap_arbitrum;
-    case ChainId.polygon:
-      return ethUnits.basic_swap_polygon;
-    case ChainId.bsc:
-      return ethUnits.basic_swap_bsc;
-    case ChainId.optimism:
-      return ethUnits.basic_swap_optimism;
-    default:
-      return ethUnits.basic_swap;
-  }
+  return Number(getChainGasUnits(chainId).basic.swap);
 };
 
 export default {
