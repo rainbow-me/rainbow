@@ -110,7 +110,6 @@ jobs:
         run: |
           sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e 
           yarn detox build --configuration ios.sim.release
-          ./scripts/run-retry-tests.sh 3
 
       # Detox iOS e2e tests
       - name: Run iOS e2e tests with retry
