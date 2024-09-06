@@ -184,6 +184,7 @@ export const NATIVE_ASSETS_PER_CHAIN: Record<ChainId, AddressOrEth> = {
   [ChainId.blast]: AddressZero as Address,
   [ChainId.blastSepolia]: AddressZero as Address,
   [ChainId.polygonAmoy]: AddressZero as Address,
+  [ChainId.degen]: AddressZero,
 };
 
 export const NATIVE_ASSETS_MAP_PER_CHAIN: Record<ChainId, AddressOrEth> = {
@@ -217,6 +218,7 @@ export const NATIVE_ASSETS_MAP_PER_CHAIN: Record<ChainId, AddressOrEth> = {
   [ChainId.sepolia]: ETH_ADDRESS,
   [ChainId.zora]: ETH_ADDRESS,
   [ChainId.zoraSepolia]: ETH_ADDRESS,
+  [ChainId.degen]: AddressZero,
 };
 
 export type ReferrerType = 'native-app' | 'app-claim';
