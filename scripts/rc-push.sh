@@ -1,4 +1,5 @@
 #!/bin/bash
+source .env
 
 # Get the current branch name
 BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
@@ -47,7 +48,7 @@ echo "Notifying Swarmia about the new release"
 # Make the HTTP request to Swarmia
 curl -X POST \
   https://hook.swarmia.com/deployments \
-  -H "Authorization: $SWARMIA_TOKEN" \
+  -H "Authorization: " \
   -H "Content-Type: application/json" \
   -d '{
     "version": "'"$TAG"'",
