@@ -62,7 +62,9 @@ export const checkForCampaign = async () => {
     if (result) {
       const isShown = remotePromoSheetsStore.getState().isShown;
       if (!isShown) {
-        return triggerCampaign(promo as PromoSheet);
+        remotePromoSheetsStore.setState({ isShown: true });
+        triggerCampaign(promo as PromoSheet);
+        break;
       }
     }
   }
