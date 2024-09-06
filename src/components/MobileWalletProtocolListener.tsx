@@ -5,21 +5,44 @@ import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID, IS_DEV } from '@/env';
 
 export const MobileWalletProtocolListener = () => {
-  const { message, handleRequestUrl, sendFailureToClient, ...mwpProps } = useMobileWalletProtocolHost();
+  const { message, handleRequestUrl, sendFailureToClient, session, ...mwpProps } = useMobileWalletProtocolHost();
   const lastMessageUuidRef = useRef<string | null>(null);
+  const pendingMessageRef = useRef<typeof message | null>(null);
 
   useEffect(() => {
-    if (message && lastMessageUuidRef.current !== message.uuid) {
-      lastMessageUuidRef.current = message.uuid;
-      try {
-        handleMobileWalletProtocolRequest({ request: message, ...mwpProps });
-      } catch (error) {
-        logger.error(new RainbowError('Error handling Mobile Wallet Protocol request'), {
-          error,
-        });
+    const handleMessage = async () => {
+      if (message && lastMessageUuidRef.current !== message.uuid) {
+        console.log('message', message);
+        lastMessageUuidRef.current = message.uuid;
+
+        // Check if it's a handshake request
+        const isHandshake = message.actions.some(action => action.kind === 'handshake');
+
+        if (isHandshake || session) {
+          try {
+            await handleMobileWalletProtocolRequest({ request: message, session, ...mwpProps });
+          } catch (error) {
+            logger.error(new RainbowError('Error handling Mobile Wallet Protocol request'), {
+              error,
+            });
+          }
+        } else {
+          // Store the message to process once we have a valid session
+          pendingMessageRef.current = message;
+        }
       }
+    };
+
+    handleMessage();
+  }, [message, session, mwpProps]);
+
+  useEffect(() => {
+    if (session && pendingMessageRef.current) {
+      const pendingMessage = pendingMessageRef.current;
+      pendingMessageRef.current = null;
+      handleMobileWalletProtocolRequest({ request: pendingMessage, session, ...mwpProps });
     }
-  }, [message, mwpProps]);
+  }, [session, mwpProps]);
 
   useEffect(() => {
     if (IS_DEV) {
