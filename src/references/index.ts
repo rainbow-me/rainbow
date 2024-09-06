@@ -187,40 +187,6 @@ export const NATIVE_ASSETS_PER_CHAIN: Record<ChainId, AddressOrEth> = {
   [ChainId.degen]: AddressZero,
 };
 
-export const NATIVE_ASSETS_MAP_PER_CHAIN: Record<ChainId, AddressOrEth> = {
-  [ChainId.arbitrum]: ETH_ADDRESS,
-  [ChainId.arbitrumNova]: ETH_ADDRESS,
-  [ChainId.arbitrumSepolia]: ETH_ADDRESS,
-  [ChainId.avalanche]: AVAX_AVALANCHE_ADDRESS,
-  [ChainId.avalancheFuji]: AVAX_AVALANCHE_ADDRESS,
-  [ChainId.base]: ETH_ADDRESS,
-  [ChainId.baseSepolia]: ETH_ADDRESS,
-  [ChainId.blast]: ETH_ADDRESS,
-  [ChainId.blastSepolia]: ETH_ADDRESS,
-  [ChainId.bsc]: BNB_MAINNET_ADDRESS,
-  [ChainId.bscTestnet]: BNB_MAINNET_ADDRESS,
-  [ChainId.celo]: ETH_ADDRESS,
-  [ChainId.gnosis]: ETH_ADDRESS,
-  [ChainId.hardhat]: ETH_ADDRESS,
-  [ChainId.hardhatOptimism]: ETH_ADDRESS,
-  [ChainId.holesky]: ETH_ADDRESS,
-  [ChainId.linea]: ETH_ADDRESS,
-  [ChainId.mainnet]: ETH_ADDRESS,
-  [ChainId.manta]: ETH_ADDRESS,
-  [ChainId.optimism]: ETH_ADDRESS,
-  [ChainId.optimismSepolia]: ETH_ADDRESS,
-  [ChainId.polygon]: MATIC_MAINNET_ADDRESS,
-  [ChainId.polygonAmoy]: MATIC_MAINNET_ADDRESS,
-  [ChainId.polygonMumbai]: MATIC_MAINNET_ADDRESS,
-  [ChainId.polygonZkEvm]: MATIC_MAINNET_ADDRESS,
-  [ChainId.rari]: ETH_ADDRESS,
-  [ChainId.scroll]: ETH_ADDRESS,
-  [ChainId.sepolia]: ETH_ADDRESS,
-  [ChainId.zora]: ETH_ADDRESS,
-  [ChainId.zoraSepolia]: ETH_ADDRESS,
-  [ChainId.degen]: AddressZero,
-};
-
 export type ReferrerType = 'native-app' | 'app-claim';
 export const REFERRER: ReferrerType = 'native-app';
 export const REFERRER_CLAIM: ReferrerType = 'app-claim';
