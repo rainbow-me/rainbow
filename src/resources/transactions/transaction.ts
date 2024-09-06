@@ -9,7 +9,7 @@ import { parseTransaction } from '@/parsers/transactions';
 import { RainbowError, logger } from '@/logger';
 import { TransactionApiResponse } from './types';
 import { ChainId } from '@/chains/types';
-import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains/chains';
+import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains';
 
 export type ConsolidatedTransactionsResult = QueryFunctionResult<typeof consolidatedTransactionsQueryFunction>;
 export type PaginatedTransactions = { pages: ConsolidatedTransactionsResult[] };

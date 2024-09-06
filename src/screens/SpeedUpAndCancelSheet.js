@@ -30,7 +30,7 @@ import { gasUtils, safeAreaInsetValues } from '@/utils';
 import * as i18n from '@/languages';
 import { updateTransaction } from '@/state/pendingTransactions';
 import { logger, RainbowError } from '@/logger';
-import { supportedFlashbotsChainIds } from '@/chains/chains';
+import { supportedFlashbotsChainIds } from '@/chains';
 import { ChainId } from '@/chains/types';
 
 const { CUSTOM, URGENT } = gasUtils;

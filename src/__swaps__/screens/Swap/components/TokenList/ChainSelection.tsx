@@ -18,7 +18,7 @@ import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { showActionSheetWithOptions } from '@/utils';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
-import { chainsLabel, chainsName } from '@/chains/chains';
+import { chainsLabel, chainsName } from '@/chains';
 
 type ChainSelectionProps = {
   allText?: string;

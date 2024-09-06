@@ -10,7 +10,7 @@ import { darkModeThemeColors } from '@/styles/colors';
 import * as lang from '@/languages';
 import { isL2Chain } from '@/handlers/web3';
 import { EthCoinIcon } from './coin-icon/EthCoinIcon';
-import { chainsName } from '@/chains/chains';
+import { chainsName } from '@/chains';
 
 const L2Disclaimer = ({
   chainId,

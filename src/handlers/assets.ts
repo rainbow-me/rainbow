@@ -3,7 +3,7 @@ import { Contract } from '@ethersproject/contracts';
 import { erc20ABI } from '@/references';
 import { convertAmountToBalanceDisplay, convertRawAmountToDecimalFormat } from '@/helpers/utilities';
 import { ChainId } from '@/chains/types';
-import { chainsNativeAsset } from '@/chains/chains';
+import { chainsNativeAsset } from '@/chains';
 import { isLowerCaseMatch } from '@/utils';
 import { AddressOrEth } from '@/__swaps__/types/assets';
 

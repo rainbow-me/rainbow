@@ -9,7 +9,7 @@ import { Separator, Stack } from '@/design-system';
 import { useAccountSettings, useInitializeAccountData, useLoadAccountData, useResetAccountState } from '@/hooks';
 import { settingsUpdateNetwork } from '@/redux/settings';
 import { ChainId } from '@/chains/types';
-import { defaultChains } from '@/chains/chains';
+import { defaultChains } from '@/chains';
 import { isL2Chain } from '@/handlers/web3';
 
 interface NetworkSectionProps {

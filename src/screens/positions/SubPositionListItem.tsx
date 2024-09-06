@@ -10,7 +10,7 @@ import { NativeDisplay, PositionAsset } from '@/resources/defi/types';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { useAccountSettings } from '@/hooks';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { chainsIdByName } from '@/chains/chains';
+import { chainsIdByName } from '@/chains';
 
 type Props = {
   asset: PositionAsset;

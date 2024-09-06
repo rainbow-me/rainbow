@@ -39,7 +39,7 @@ import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from
 import { inputKeys } from '../types/swap';
 import { valueBasedDecimalFormatter } from './decimalFormatter';
 import { convertAmountToRawAmount } from './numbers';
-import { chainsName } from '@/chains/chains';
+import { chainsName } from '@/chains';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //

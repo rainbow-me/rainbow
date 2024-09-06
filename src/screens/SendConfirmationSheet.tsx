@@ -62,7 +62,7 @@ import { useConsolidatedTransactions } from '@/resources/transactions/consolidat
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { performanceTracking, TimeToSignOperation, Screens } from '@/state/performance/performance';
 import { ChainId } from '@/chains/types';
-import { chainsLabel } from '@/chains/chains';
+import { chainsLabel } from '@/chains';
 
 const Container = styled(Centered).attrs({
   direction: 'column',

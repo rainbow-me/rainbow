@@ -11,7 +11,7 @@ import { fetchHardhatBalances } from './hardhatAssets';
 import { AddysAccountAssetsMeta, AddysAccountAssetsResponse, RainbowAddressAssets } from './types';
 import { Network } from '@/chains/types';
 import { staleBalancesStore } from '@/state/staleBalances';
-import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains/chains';
+import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains';
 
 // ///////////////////////////////////////////////
 // Query Types

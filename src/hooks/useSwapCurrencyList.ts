@@ -19,7 +19,7 @@ import { useFavorites } from '@/resources/favorites';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { logger } from '@/logger';
 import { ChainId, Network } from '@/chains/types';
-import { chainsName } from '@/chains/chains';
+import { chainsName } from '@/chains';
 
 type swapCurrencyListType =
   | 'verifiedAssets'

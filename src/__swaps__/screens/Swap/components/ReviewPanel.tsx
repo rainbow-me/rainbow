@@ -48,7 +48,7 @@ import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { AnimatedSwitch } from './AnimatedSwitch';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
-import { chainsLabel } from '@/chains/chains';
+import { chainsLabel } from '@/chains';
 import { ChainId } from '@/chains/types';
 
 const UNKNOWN_LABEL = i18n.t(i18n.l.swap.unknown);

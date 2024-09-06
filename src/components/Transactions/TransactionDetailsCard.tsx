@@ -20,7 +20,7 @@ import {
   CARD_BORDER_WIDTH,
   EXPANDED_CARD_TOP_INSET,
 } from '@/components/Transactions/constants';
-import { chainsName } from '@/chains/chains';
+import { chainsName } from '@/chains';
 
 interface TransactionDetailsCardProps {
   chainId: ChainId;

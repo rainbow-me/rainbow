@@ -28,7 +28,7 @@ import {
   timingConfig,
 } from '@/components/Transactions/constants';
 import { ChainId } from '@/chains/types';
-import { chainsName } from '@/chains/chains';
+import { chainsName } from '@/chains';
 
 interface TransactionSimulationCardProps {
   chainId: ChainId;

@@ -2,7 +2,7 @@ import store from '@/redux/store';
 import { showActionSheetWithOptions } from '@/utils';
 import * as i18n from '@/languages';
 import { ChainId } from '@/chains/types';
-import { chainsLabel, defaultChains, supportedWalletConnectChainIds } from '@/chains/chains';
+import { chainsLabel, defaultChains, supportedWalletConnectChainIds } from '@/chains';
 import { isL2Chain } from '@/handlers/web3';
 
 const walletConnectChains = supportedWalletConnectChainIds.map(chainId => defaultChains[chainId]);

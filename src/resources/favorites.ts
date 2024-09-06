@@ -8,7 +8,7 @@ import { promiseUtils } from '@/utils';
 import { useQuery } from '@tanstack/react-query';
 import { omit } from 'lodash';
 import { externalTokenQueryKey, fetchExternalToken } from './assets/externalAssetsQuery';
-import { chainsIdByName, chainsName } from '@/chains/chains';
+import { chainsIdByName, chainsName } from '@/chains';
 
 export const favoritesQueryKey = createQueryKey('favorites', {}, { persisterVersion: 4 });
 

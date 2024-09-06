@@ -17,7 +17,7 @@ import React, { useCallback, useMemo } from 'react';
 import { GestureResponderEvent } from 'react-native';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import { SwapCoinIcon } from './SwapCoinIcon';
-import { SUPPORTED_CHAIN_IDS } from '@/chains/chains';
+import { SUPPORTED_CHAIN_IDS } from '@/chains';
 
 export const COIN_ROW_WITH_PADDING_HEIGHT = 56;
 

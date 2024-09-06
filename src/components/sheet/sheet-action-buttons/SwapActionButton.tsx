@@ -16,7 +16,7 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
 import { AddressOrEth, AssetType, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import exchangeModalTypes from '@/helpers/exchangeModalTypes';
-import { chainsIdByName, chainsName } from '@/chains/chains';
+import { chainsIdByName, chainsName } from '@/chains';
 
 type SwapActionButtonProps = {
   asset: RainbowToken;

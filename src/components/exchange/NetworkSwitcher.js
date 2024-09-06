@@ -9,7 +9,7 @@ import { Text } from '../text';
 import { padding, position } from '@/styles';
 import { showActionSheetWithOptions } from '@/utils';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
-import { chainsLabel, chainsName, defaultChains, supportedSwapChainIds } from '@/chains/chains';
+import { chainsLabel, chainsName, defaultChains, supportedSwapChainIds } from '@/chains';
 import { isL2Chain } from '@/handlers/web3';
 
 const networkMenuItems = supportedSwapChainIds

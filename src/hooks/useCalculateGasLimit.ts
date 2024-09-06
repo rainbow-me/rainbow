@@ -10,7 +10,7 @@ import { GasFeeParamsBySpeed } from '@/entities';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { useGas } from '@/hooks';
 import { ChainId } from '@/chains/types';
-import { needsL1SecurityFeeChains } from '@/chains/chains';
+import { needsL1SecurityFeeChains } from '@/chains';
 
 type CalculateGasLimitProps = {
   isMessageRequest: boolean;

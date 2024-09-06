@@ -23,7 +23,7 @@ import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { ChainId, Network } from '@/chains/types';
-import { chainsIdByName } from '@/chains/chains';
+import { chainsIdByName } from '@/chains';
 
 export const SearchContainer = styled(Row)({
   height: '100%',

@@ -24,7 +24,7 @@ import * as i18n from '@/languages';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { ChainId } from '@/chains/types';
-import { chainsLabel, chainsName } from '@/chains/chains';
+import { chainsLabel, chainsName } from '@/chains';
 
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;

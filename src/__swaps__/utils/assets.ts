@@ -26,7 +26,7 @@ import {
   convertRawAmountToDecimalFormat,
 } from '@/__swaps__/utils/numbers';
 import { isLowerCaseMatch, isLowerCaseMatchWorklet } from '@/__swaps__/utils/strings';
-import { chainsIdByName, chainsName } from '@/chains/chains';
+import { chainsIdByName, chainsName } from '@/chains';
 
 export const isSameAsset = (a1: Pick<ParsedAsset, 'chainId' | 'address'>, a2: Pick<ParsedAsset, 'chainId' | 'address'>) =>
   +a1.chainId === +a2.chainId && isLowerCaseMatch(a1.address, a2.address);

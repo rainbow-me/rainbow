@@ -4,7 +4,7 @@ import { SimpleHashListing, SimpleHashNFT, SimpleHashMarketplaceId } from '@/res
 import { UniqueAsset } from '@/entities';
 import { RainbowError, logger } from '@/logger';
 import { ChainId } from '@/chains/types';
-import { chainsSimplehashNetwork } from '@/chains/chains';
+import { chainsSimplehashNetwork } from '@/chains';
 
 export const START_CURSOR = 'start';
 

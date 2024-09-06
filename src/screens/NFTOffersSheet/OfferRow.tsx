@@ -18,7 +18,7 @@ import { Network } from '@/chains/types';
 import { useAccountSettings } from '@/hooks';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { AddressOrEth } from '@/__swaps__/types/assets';
-import { chainsIdByName } from '@/chains/chains';
+import { chainsIdByName } from '@/chains';
 
 const NFT_SIZE = 50;
 const MARKETPLACE_ORB_SIZE = 18;

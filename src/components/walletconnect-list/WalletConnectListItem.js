@@ -24,7 +24,7 @@ import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { showActionSheetWithOptions } from '@/utils';
 import { ChainId } from '@/chains/types';
-import { chainsIdByName, chainsLabel, chainsNativeAsset } from '@/chains/chains';
+import { chainsIdByName, chainsLabel, chainsNativeAsset } from '@/chains';
 
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;

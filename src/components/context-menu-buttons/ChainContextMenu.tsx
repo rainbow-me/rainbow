@@ -6,7 +6,7 @@ import * as i18n from '@/languages';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { showActionSheetWithOptions } from '@/utils';
 import { ChainId } from '@/chains/types';
-import { chainsLabel, chainsName } from '@/chains/chains';
+import { chainsLabel, chainsName } from '@/chains';
 
 interface DefaultButtonOptions {
   iconColor?: TextProps['color'];

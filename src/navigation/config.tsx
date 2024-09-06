@@ -29,7 +29,7 @@ import { IS_ANDROID } from '@/env';
 import { SignTransactionSheetRouteProp } from '@/screens/SignTransactionSheet';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { ChainId } from '@/chains/types';
-import { chainsName } from '@/chains/chains';
+import { chainsName } from '@/chains';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 

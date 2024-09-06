@@ -18,7 +18,7 @@ import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 import { useAccountSettings } from '@/hooks';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { AddressOrEth } from '@/__swaps__/types/assets';
-import { chainsIdByName } from '@/chains/chains';
+import { chainsIdByName } from '@/chains';
 
 type PositionCardProps = {
   position: RainbowPosition;

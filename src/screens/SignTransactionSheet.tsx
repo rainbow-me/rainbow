@@ -72,7 +72,7 @@ import { useProviderSetup } from '@/hooks/useProviderSetup';
 import { useTransactionSubmission } from '@/hooks/useSubmitTransaction';
 import { useConfirmTransaction } from '@/hooks/useConfirmTransaction';
 import { toChecksumAddress } from 'ethereumjs-util';
-import { chainsName, defaultChains } from '@/chains/chains';
+import { chainsName, defaultChains } from '@/chains';
 
 type SignTransactionSheetParams = {
   transactionDetails: RequestData;

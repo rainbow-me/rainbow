@@ -13,7 +13,7 @@ import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { ChainId } from '@/chains/types';
-import { chainsNativeAsset } from '@/chains/chains';
+import { chainsNativeAsset } from '@/chains';
 
 export const NUM_NFTS = 3;
 

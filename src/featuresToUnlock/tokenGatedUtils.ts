@@ -3,7 +3,7 @@ import { EthereumAddress } from '@/entities';
 import { getProvider } from '@/handlers/web3';
 import { tokenGateCheckerAbi } from '@/references';
 import { Network } from '@/chains/types';
-import { chainsIdByName } from '@/chains/chains';
+import { chainsIdByName } from '@/chains';
 
 export type TokenGateCheckerNetwork =
   | Network.arbitrum

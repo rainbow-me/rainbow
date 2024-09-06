@@ -1,4 +1,4 @@
-import { chainsName } from '@/chains/chains';
+import { chainsName } from '@/chains';
 import { RainbowFetchClient } from '../rainbow-fetch';
 import { ChainId } from '@/chains/types';
 

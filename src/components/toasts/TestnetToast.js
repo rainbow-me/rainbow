@@ -5,7 +5,7 @@ import Toast from './Toast';
 import { useInternetStatus } from '@/hooks';
 import { ChainId } from '@/chains/types';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
-import { chainsName, chainsNativeAsset } from '@/chains/chains';
+import { chainsName, chainsNativeAsset } from '@/chains';
 
 const TestnetToast = ({ chainId }) => {
   const { connectedToHardhat } = useConnectedToHardhatStore();

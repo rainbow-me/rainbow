@@ -17,7 +17,7 @@ import { getNftSortForAddress } from './useNFTsSortBy';
 import { ChainId } from '@/chains/types';
 import { staleBalancesStore } from '@/state/staleBalances';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
-import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains/chains';
+import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains';
 
 export const useWatchPendingTransactions = ({ address }: { address: string }) => {
   const { storePendingTransactions, setPendingTransactions } = usePendingTransactionsStore(state => ({

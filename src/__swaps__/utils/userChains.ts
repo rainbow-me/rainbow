@@ -22,7 +22,7 @@ import {
 } from 'viem/chains';
 
 import { ChainId } from '@/chains/types';
-import { chainsLabel } from '@/chains/chains';
+import { chainsLabel } from '@/chains';
 
 export const chainIdMap: Record<
   ChainId.mainnet | ChainId.optimism | ChainId.polygon | ChainId.base | ChainId.bsc | ChainId.zora | ChainId.avalanche,

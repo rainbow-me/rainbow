@@ -1,5 +1,5 @@
 import type { EthereumAddress, RainbowTransaction } from '@/entities';
-import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains/chains';
+import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains';
 import { queryClient } from '@/react-query/queryClient';
 import store from '@/redux/store';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';

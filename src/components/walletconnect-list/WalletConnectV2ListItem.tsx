@@ -26,7 +26,7 @@ import { Box, Inline } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 import { ChainId } from '@/chains/types';
-import { supportedWalletConnectChainIds } from '@/chains/chains';
+import { supportedWalletConnectChainIds } from '@/chains';
 
 const CONTAINER_PADDING = 15;
 const VENDOR_LOGO_ICON_SIZE = 50;

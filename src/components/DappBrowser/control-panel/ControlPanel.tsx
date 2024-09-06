@@ -62,7 +62,7 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { greaterThan } from '@/helpers/utilities';
 import { ChainId } from '@/chains/types';
-import { chainsLabel, defaultChains, supportedWalletConnectChainIds } from '@/chains/chains';
+import { chainsLabel, defaultChains, supportedWalletConnectChainIds } from '@/chains';
 
 const PAGES = {
   HOME: 'home',

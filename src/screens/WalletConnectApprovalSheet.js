@@ -29,7 +29,7 @@ import { InfoAlert } from '@/components/info-alert/info-alert';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { ChainId } from '@/chains/types';
-import { chainsLabel, chainsName, chainsNativeAsset, defaultChains, supportedWalletConnectChainIds } from '@/chains/chains';
+import { chainsLabel, chainsName, chainsNativeAsset, defaultChains, supportedWalletConnectChainIds } from '@/chains';
 import { isL2Chain } from '@/handlers/web3';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }) => ({

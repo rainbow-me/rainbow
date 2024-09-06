@@ -21,7 +21,7 @@ import { overrideWithFastSpeedIfNeeded } from './../utils';
 import { toHex } from '@/__swaps__/utils/hex';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { ParsedAsset } from '@/resources/assets/types';
-import { chainsName } from '@/chains/chains';
+import { chainsName } from '@/chains';
 
 export const getAssetRawAllowance = async ({
   owner,

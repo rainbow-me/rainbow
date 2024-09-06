@@ -25,7 +25,7 @@ import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
 import { ChainId } from '@/chains/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { chainsLabel, chainsName, defaultChains, supportedSwapChainIds } from '@/chains/chains';
+import { chainsLabel, chainsName, defaultChains, supportedSwapChainIds } from '@/chains';
 import { isL2Chain } from '@/handlers/web3';
 
 const NOOP = () => null;

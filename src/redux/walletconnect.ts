@@ -33,7 +33,7 @@ import { Verify } from '@walletconnect/types';
 import { RequestSource, handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 import { ChainId } from '@/chains/types';
 import { Address } from 'viem';
-import { supportedWalletConnectChainIds } from '@/chains/chains';
+import { supportedWalletConnectChainIds } from '@/chains';
 
 // -- Variables --------------------------------------- //
 let showRedirectSheetThreshold = 300;

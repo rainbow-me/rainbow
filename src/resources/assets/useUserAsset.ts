@@ -4,7 +4,7 @@ import { useUserAssets } from '@/resources/assets/UserAssetsQuery';
 import { selectUserAssetWithUniqueId } from '@/resources/assets/assetSelectors';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
-import { chainsNativeAsset } from '@/chains/chains';
+import { chainsNativeAsset } from '@/chains';
 
 export function useUserAsset(uniqueId: string) {
   const { accountAddress, nativeCurrency } = useAccountSettings();

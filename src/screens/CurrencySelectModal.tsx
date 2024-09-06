@@ -40,7 +40,7 @@ import DiscoverSearchInput from '@/components/discover/DiscoverSearchInput';
 import { externalTokenQueryKey, fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { queryClient } from '@/react-query/queryClient';
 import { ChainId, Network } from '@/chains/types';
-import { chainsName } from '@/chains/chains';
+import { chainsName } from '@/chains';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;

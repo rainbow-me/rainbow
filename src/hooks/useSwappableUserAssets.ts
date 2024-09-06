@@ -6,7 +6,7 @@ import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import { EthereumAddress, ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS } from '@rainbow-me/swaps';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { ChainId } from '@/chains/types';
-import { supportedSwapChainIds } from '@/chains/chains';
+import { supportedSwapChainIds } from '@/chains';
 
 type SwappableAddresses = Record<ChainId, EthereumAddress[]>;
 

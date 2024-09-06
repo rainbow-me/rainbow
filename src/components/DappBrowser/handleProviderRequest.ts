@@ -14,7 +14,7 @@ import { getDappMetadata } from '@/resources/metadata/dapp';
 import { useAppSessionsStore } from '@/state/appSessions';
 import { BigNumber } from '@ethersproject/bignumber';
 import { ChainId } from '@/chains/types';
-import { defaultChains, SUPPORTED_CHAIN_IDS } from '@/chains/chains';
+import { defaultChains, SUPPORTED_CHAIN_IDS } from '@/chains';
 import { Chain } from '@wagmi/chains';
 
 export type ProviderRequestPayload = RequestArguments & {

@@ -7,9 +7,9 @@ import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { useStore } from 'zustand';
 import { useCallback } from 'react';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { useSelector } from 'react-redux';
-import { SUPPORTED_CHAIN_IDS } from '@/chains/chains';
 import { ChainId } from '@/chains/types';
+import { SUPPORTED_CHAIN_IDS } from '@/chains';
+import { useSelector } from 'react-redux';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 

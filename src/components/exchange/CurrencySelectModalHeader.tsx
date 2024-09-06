@@ -8,7 +8,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 import { useTheme } from '@/theme';
-import { chainsIdByName } from '@/chains/chains';
+import { chainsIdByName } from '@/chains';
 
 export const CurrencySelectModalHeaderHeight = 59;
 
