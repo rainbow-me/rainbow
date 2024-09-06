@@ -62,7 +62,7 @@ describe('Swap Sheet Interaction Flow', () => {
   it('Should open swaps via wallet screen swap button with 50% inputAmount for inputAsset', async () => {
     await device.disableSynchronization();
     await tap('swap-button');
-    await delayTime('long');
+    await delayTime('very-long');
 
     const swapInput = await fetchElementAttributes('swap-asset-input');
 
