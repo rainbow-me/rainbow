@@ -1,7 +1,7 @@
 import { Contract } from '@ethersproject/contracts';
 import { keyBy, mapValues } from 'lodash';
 import { getProvider } from '@/handlers/web3';
-import { balanceCheckerContractAbi, chainAssets, ETH_ADDRESS, SUPPORTED_CHAIN_IDS } from '@/references';
+import { balanceCheckerContractAbi, chainAssets, ETH_ADDRESS } from '@/references';
 import { parseAddressAsset } from './assets';
 import { RainbowAddressAssets } from './types';
 import { logger, RainbowError } from '@/logger';
@@ -9,6 +9,7 @@ import { AddressOrEth, UniqueId, ZerionAsset } from '@/__swaps__/types/assets';
 import { AddressZero } from '@ethersproject/constants';
 import chainAssetsByChainId from '@/references/testnet-assets-by-chain';
 import { ChainId, ChainName, Network } from '@/chains/types';
+import { SUPPORTED_CHAIN_IDS } from '@/chains';
 
 const MAINNET_BALANCE_CHECKER = '0x4dcf4562268dd384fe814c00fad239f06c2a0c2b';
 
@@ -124,6 +125,6 @@ export const fetchHardhatBalancesByChainId = async (
 
   return {
     assets: updatedAssets,
-    chainIdsInResponse: SUPPORTED_CHAIN_IDS({ testnetMode: true }),
+    chainIdsInResponse: SUPPORTED_CHAIN_IDS,
   };
 };
