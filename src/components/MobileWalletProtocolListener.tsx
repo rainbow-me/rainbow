@@ -1,5 +1,10 @@
 import { useEffect, useRef } from 'react';
-import { addDiagnosticLogListener, getAndroidIntentUrl, useMobileWalletProtocolHost } from '@coinbase/mobile-wallet-protocol-host';
+import {
+  addDiagnosticLogListener,
+  getAndroidIntentUrl,
+  isHandshakeAction,
+  useMobileWalletProtocolHost,
+} from '@coinbase/mobile-wallet-protocol-host';
 import { handleMobileWalletProtocolRequest } from '@/utils/requestNavigationHandlers';
 import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID, IS_DEV } from '@/env';
@@ -16,7 +21,7 @@ export const MobileWalletProtocolListener = () => {
         lastMessageUuidRef.current = message.uuid;
 
         // Check if it's a handshake request
-        const isHandshake = message.actions.some(action => action.kind === 'handshake');
+        const isHandshake = message.actions.some(isHandshakeAction);
 
         if (isHandshake || session) {
           try {
