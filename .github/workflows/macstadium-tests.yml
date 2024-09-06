@@ -82,6 +82,7 @@ jobs:
   # iOS build and e2e tests
   e2e-ios:
     runs-on: ["self-hosted"]
+    timeout-minutes: 60
     needs: install-deps
     steps:
       - name: Download Yarn cache
