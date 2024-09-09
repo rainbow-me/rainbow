@@ -287,8 +287,8 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={ConsoleSheet} name={Routes.CONSOLE_SHEET} {...consoleSheetConfig} />
       <NativeStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} {...appIconUnlockSheetConfig} />
       <NativeStack.Screen component={ControlPanel} name={Routes.DAPP_BROWSER_CONTROL_PANEL} {...panelConfig} />
-      <NativeStack.Screen component={ClaimRewardsPanel} name={Routes.CLAIM_CLAIMABLE_PANEL} {...panelConfig} />
-      <NativeStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_REWARDS_PANEL} {...panelConfig} />
+      <NativeStack.Screen component={ClaimRewardsPanel} name={Routes.CLAIM_REWARDS_PANEL} {...panelConfig} />
+      <NativeStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} {...panelConfig} />
 
       {swapsV2Enabled && <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />}
     </NativeStack.Navigator>
