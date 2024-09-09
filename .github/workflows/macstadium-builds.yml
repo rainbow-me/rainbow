@@ -8,7 +8,8 @@ jobs:
   # Job to install dependencies
   build:
     runs-on: ["self-hosted"]
-    if: github.event.pull_request.draft == false
+    timeout-minutes: 75
+    if: github.event.pull_request.draft == false && github.event.pull_request.merged == false
     concurrency: 
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
