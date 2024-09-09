@@ -115,6 +115,7 @@ export async function get(key: string, options: KeychainOptions = {}): Promise<R
             error: e.toString(),
           },
         });
+
         switch (e.toString()) {
           /*
            * Can happen if the user initially had biometrics enabled, installed
@@ -170,9 +171,16 @@ export async function get(key: string, options: KeychainOptions = {}): Promise<R
             return _get(attempts + 1);
           }
           default: {
-            logger.error(new RainbowError(`[keychain]: _get() handled unknown error`), {
-              message: e.toString(),
-            });
+            // Avoid logging user cancelled operations
+            if (!(e.toString().includes('code: 10') || e.toString().includes('code: 11'))) {
+              logger.error(new RainbowError(`[keychain]: _get() handled unknown error`), {
+                message: e.toString(),
+              });
+              return {
+                value: undefined,
+                error: ErrorType.NotAuthenticated,
+              };
+            }
 
             return {
               value: undefined,

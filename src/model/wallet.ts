@@ -289,6 +289,9 @@ export const loadWallet = async <S extends Screen>({
     privateKey = await loadPrivateKey(addressToUse, isHardwareWallet);
   }
 
+  // -1 means the user cancelled, so we don't wanna do anything
+  // -2 Means the user is not authenticated (maybe removed biometrics).
+  //    In this case we show an alet inside loadPrivateKey
   if (privateKey === -1 || privateKey === -2) {
     return null;
   }
@@ -536,7 +539,7 @@ export const oldLoadSeedPhrase = async (): Promise<null | EthereumWalletSeed> =>
 
 export const loadAddress = (): Promise<null | EthereumAddress> => keychain.loadString(addressKey) as Promise<string | null>;
 
-export const loadPrivateKey = async (address: EthereumAddress, hardware: boolean): Promise<null | EthereumPrivateKey | -1 | -2> => {
+export const loadPrivateKey = async (address: EthereumAddress, hardware: boolean): Promise<null | EthereumPrivateKey | -1 | -2 | -3> => {
   try {
     const isSeedPhraseMigrated = await keychain.loadString(oldSeedPhraseMigratedKey);
 
@@ -550,8 +553,8 @@ export const loadPrivateKey = async (address: EthereumAddress, hardware: boolean
 
     if (!privateKey) {
       const privateKeyData = await getKeyForWallet(address, hardware);
-      if (privateKeyData === -1) {
-        return -1;
+      if (privateKeyData === -1 || privateKeyData === -2 || privateKeyData === -3) {
+        return privateKeyData;
       }
       privateKey = privateKeyData?.privateKey ?? null;
     }
@@ -913,7 +916,7 @@ export const saveKeyForWallet = async (
  * @param hardware If the wallet is a hardware wallet.
  * @return null | PrivateKeyData | -1
  */
-export const getKeyForWallet = async (address: EthereumAddress, hardware: boolean): Promise<null | PrivateKeyData | -1> => {
+export const getKeyForWallet = async (address: EthereumAddress, hardware: boolean): Promise<null | PrivateKeyData | -1 | -2 | -3> => {
   if (hardware) {
     return await getHardwareKey(address);
   } else {
@@ -973,7 +976,7 @@ export const saveHardwareKey = async (
  * @param address The wallet address.
  * @return null | PrivateKeyData | -1
  */
-export const getPrivateKey = async (address: EthereumAddress): Promise<null | PrivateKeyData | -1> => {
+export const getPrivateKey = async (address: EthereumAddress): Promise<null | PrivateKeyData | -1 | -2 | -3> => {
   try {
     const key = `${address}_${privateKeyKey}`;
     const options = { authenticationPrompt };
@@ -984,20 +987,27 @@ export const getPrivateKey = async (address: EthereumAddress): Promise<null | Pr
       androidEncryptionPin,
     });
 
-    switch(error){
+    switch (error) {
       case -1:
-        logger.error(new RainbowError('KC unknown error for PKEY lookup'), { error });
-        break;
+        // User Cancelled - We want to bubble up this error code. No need to track it.
+        return -1;
       case -2:
-        Alert.alert(lang.t('wallet.authenticate.alert.error'), lang.t('wallet.authenticate.alert.current_authentication_not_secure_enough'));
-        return null;
+        // Alert the user and bubble up the error code.
+        Alert.alert(
+          lang.t('wallet.authenticate.alert.error'),
+          lang.t('wallet.authenticate.alert.current_authentication_not_secure_enough')
+        );
+        return -2;
       case -3:
+        // This means we couldn't find any matches for this key.
         logger.error(new RainbowError('KC unavailable for PKEY lookup'), { error });
         break;
+      default:
+        // This is an unknown error
+        logger.error(new RainbowError('KC unknown error for PKEY lookup'), { error });
+        break;
     }
- 
     return pkey || null;
-
   } catch (error) {
     logger.error(new RainbowError('[wallet]: Error in getPrivateKey'), { error });
     return null;
