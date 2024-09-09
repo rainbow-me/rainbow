@@ -104,8 +104,6 @@ export const SignTransactionSheet = () => {
     source,
   } = routeParams;
 
-  console.log({ specifiedAddress });
-
   const addressToUse = specifiedAddress ?? accountAddress;
 
   const { provider, nativeAsset } = useProviderSetup(chainId, addressToUse);
