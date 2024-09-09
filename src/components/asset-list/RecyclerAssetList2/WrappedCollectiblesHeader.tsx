@@ -6,7 +6,6 @@ import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 import useNftSort from '@/hooks/useNFTsSortBy';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
-import { IS_TEST } from '@/env';
 
 const TokenFamilyHeaderHeight = 48;
 
@@ -34,7 +33,7 @@ const getMenuItemIcon = (value: NftCollectionSortCriterion) => {
 
 const CollectiblesHeader = () => {
   const { nfts_enabled } = useRemoteConfig();
-  const nftsEnabled = (useExperimentalFlag(NFTS_ENABLED) || nfts_enabled) && !IS_TEST;
+  const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
   const { nftSort, updateNFTSort } = useNftSort();
 
   if (!nftsEnabled) return null;

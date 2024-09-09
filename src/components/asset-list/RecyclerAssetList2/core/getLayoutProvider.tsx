@@ -2,8 +2,8 @@ import { Dimension, Layout, LayoutManager, LayoutProvider } from 'recyclerlistvi
 import ViewDimensions from './ViewDimensions';
 import { BaseCellType, CellType } from './ViewTypes';
 import { deviceUtils } from '@/utils';
-import { getRemoteConfig, RainbowConfig } from '@/model/remoteConfig';
-import { NFTS_ENABLED, REMOTE_CARDS, useExperimentalFlag } from '@/config';
+import { RainbowConfig } from '@/model/remoteConfig';
+import { NFTS_ENABLED, REMOTE_CARDS } from '@/config';
 import { useContext } from 'react';
 import { RainbowContextType } from '@/helpers/RainbowContext';
 import { IS_TEST } from '@/env';
@@ -50,8 +50,8 @@ const getLayoutProvider = ({
   experimentalConfig: ReturnType<typeof useContext<RainbowContextType>>['config'];
   remoteConfig: RainbowConfig;
 }) => {
-  const remoteCardsEnabled = (remoteConfig.remote_cards_enabled || experimentalConfig[REMOTE_CARDS]) && !IS_TEST;
-  const nftsEnabled = (remoteConfig.nfts_enabled || experimentalConfig[NFTS_ENABLED]) && !IS_TEST;
+  const remoteCardsEnabled = remoteConfig.remote_cards_enabled || experimentalConfig[REMOTE_CARDS];
+  const nftsEnabled = remoteConfig.nfts_enabled || experimentalConfig[NFTS_ENABLED];
 
   const indicesToOverride = [];
   for (let i = 0; i < briefSectionsData.length; i++) {
