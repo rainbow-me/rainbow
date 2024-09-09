@@ -984,12 +984,20 @@ export const getPrivateKey = async (address: EthereumAddress): Promise<null | Pr
       androidEncryptionPin,
     });
 
-    if (error === -2) {
-      Alert.alert(lang.t('wallet.authenticate.alert.error'), lang.t('wallet.authenticate.alert.current_authentication_not_secure_enough'));
-      return null;
+    switch(error){
+      case -1:
+        logger.error(new RainbowError('KC unknown error for PKEY lookup'), { error });
+        break;
+      case -2:
+        Alert.alert(lang.t('wallet.authenticate.alert.error'), lang.t('wallet.authenticate.alert.current_authentication_not_secure_enough'));
+        return null;
+      case -3:
+        logger.error(new RainbowError('KC unavailable for PKEY lookup'), { error });
+        break;
     }
-
+ 
     return pkey || null;
+
   } catch (error) {
     logger.error(new RainbowError('[wallet]: Error in getPrivateKey'), { error });
     return null;
