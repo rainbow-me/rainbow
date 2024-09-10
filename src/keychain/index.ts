@@ -172,16 +172,20 @@ export async function get(key: string, options: KeychainOptions = {}): Promise<R
           }
           default: {
             // Avoid logging user cancelled operations
-            if (!(e.toString().includes('code: 10') || e.toString().includes('code: 13'))) {
+            if (e.toString().includes('code: 10') || e.toString().includes('code: 13')) {
+              return {
+                value: undefined,
+                error: ErrorType.UserCanceled,
+              };
+            } else {
               logger.error(new RainbowError(`[keychain]: _get() handled unknown error`), {
                 message: e.toString(),
               });
+              return {
+                value: undefined,
+                error: ErrorType.Unknown,
+              };
             }
-
-            return {
-              value: undefined,
-              error: ErrorType.Unknown,
-            };
           }
         }
       }
