@@ -38,7 +38,10 @@ export const UserAssetsSync = function UserAssetsSync() {
     }
   );
 
-  useEffect(() => userAssetsStore.setState({ isLoadingUserAssets: isLoading }), [isLoading]);
+  useEffect(() => {
+    userAssetsStore.setState({ isLoadingUserAssets: isLoading });
+    return () => userAssetsStore.setState({ isLoadingUserAssets: false });
+  }, [isLoading]);
 
   return null;
 };

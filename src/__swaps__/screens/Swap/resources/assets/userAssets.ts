@@ -17,6 +17,7 @@ import { fetchUserAssetsByChain } from './userAssetsByChain';
 import { fetchHardhatBalancesByChainId } from '@/resources/assets/hardhatAssets';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 import { staleBalancesStore } from '@/state/staleBalances';
+import { IS_TEST } from '@/env';
 
 const addysHttp = new RainbowFetchClient({
   baseURL: 'https://addys.p.rainbow.me/v3',
@@ -240,6 +241,6 @@ export function useUserAssets<TSelectResult = UserAssetsResult>(
   return useQuery(userAssetsQueryKey({ address, currency, testnetMode: connectedToHardhat }), userAssetsQueryFunction, {
     ...config,
     refetchInterval: USER_ASSETS_REFETCH_INTERVAL,
-    staleTime: process.env.IS_TESTING === 'true' ? 0 : USER_ASSETS_STALE_INTERVAL,
+    staleTime: IS_TEST ? 0 : USER_ASSETS_STALE_INTERVAL,
   });
 }
