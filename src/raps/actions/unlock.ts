@@ -92,7 +92,7 @@ export const estimateApprove = async ({
       from: owner,
     });
 
-    if (gasLimit === null || gasLimit === undefined || isNaN(Number(gasLimit))) {
+    if (gasLimit === null || gasLimit === undefined || isNaN(Number(gasLimit.toString()))) {
       return `${gasUnits.basic_approval}`;
     }
 
