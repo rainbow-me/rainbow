@@ -82,6 +82,7 @@ jobs:
   # iOS build and e2e tests
   e2e-ios:
     runs-on: ["self-hosted"]
+    timeout-minutes: 60
     needs: install-deps
     steps:
       - name: Download Yarn cache
@@ -105,10 +106,11 @@ jobs:
           key: xcode-cache-deriveddata-${{ github.workflow }}-${{ github.sha }}
           restore-keys: xcode-cache-deriveddata-${{ github.workflow }}-
       
-      # Detox iOS e2e tests
-      - name: Run iOS e2e tests with retry
+      - name: Modify env and build app in release mode
         run: |
           sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e 
           yarn detox build --configuration ios.sim.release
+
+      - name: Detox iOS e2e tests
+        run: |
           ./scripts/run-retry-tests.sh 3
-      
