@@ -176,10 +176,6 @@ export async function get(key: string, options: KeychainOptions = {}): Promise<R
               logger.error(new RainbowError(`[keychain]: _get() handled unknown error`), {
                 message: e.toString(),
               });
-              return {
-                value: undefined,
-                error: ErrorType.NotAuthenticated,
-              };
             }
 
             return {
