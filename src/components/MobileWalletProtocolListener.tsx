@@ -17,7 +17,6 @@ export const MobileWalletProtocolListener = () => {
   useEffect(() => {
     const handleMessage = async () => {
       if (message && lastMessageUuidRef.current !== message.uuid) {
-        
         lastMessageUuidRef.current = message.uuid;
 
         // Check if it's a handshake request
