@@ -172,7 +172,7 @@ export async function get(key: string, options: KeychainOptions = {}): Promise<R
           }
           default: {
             // Avoid logging user cancelled operations
-            if (!(e.toString().includes('code: 10') || e.toString().includes('code: 11'))) {
+            if (!(e.toString().includes('code: 10') || e.toString().includes('code: 13'))) {
               logger.error(new RainbowError(`[keychain]: _get() handled unknown error`), {
                 message: e.toString(),
               });
