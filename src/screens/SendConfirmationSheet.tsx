@@ -669,8 +669,16 @@ export const SendConfirmationSheet = () => {
             />
           </SendButtonWrapper>
           {isENS && (
-            /* @ts-expect-error JavaScript component */
-            <GasSpeedButton chainId={ethereumUtils.getChainIdFromNetwork(network)} theme={theme.isDarkMode ? 'dark' : 'light'} />
+            <GasSpeedButton
+              asset={undefined}
+              fallbackColor={undefined}
+              testID={undefined}
+              showGasOptions={undefined}
+              validateGasParams={undefined}
+              crossChainServiceTime={undefined}
+              chainId={chainId}
+              theme={theme.isDarkMode ? 'dark' : 'light'}
+            />
           )}
         </Column>
       </SlackSheet>

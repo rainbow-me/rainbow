@@ -28,6 +28,7 @@ import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { SwapWarning } from './components/SwapWarning';
 import { clearCustomGasSettings } from './hooks/useCustomGas';
 import { SwapProvider, useSwapContext } from './providers/swap-provider';
+import { useAccountSettings } from '@/hooks';
 import { NavigateToSwapSettingsTrigger } from './components/NavigateToSwapSettingsTrigger';
 
 /** README
@@ -133,7 +134,7 @@ const useCleanupOnUnmount = () => {
 };
 
 const WalletAddressObserver = () => {
-  const currentWalletAddress = userAssetsStore(state => state.associatedWalletAddress);
+  const { accountAddress } = useAccountSettings();
   const { setAsset } = useSwapContext();
 
   const setNewInputAsset = useCallback(() => {
@@ -157,7 +158,7 @@ const WalletAddressObserver = () => {
   }, [setAsset]);
 
   useAnimatedReaction(
-    () => currentWalletAddress,
+    () => accountAddress,
     (current, previous) => {
       const didWalletAddressChange = previous && current !== previous;
 
