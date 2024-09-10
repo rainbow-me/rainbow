@@ -9,6 +9,7 @@ import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '../constants';
 import { useClipboard } from '@/hooks';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
+import { triggerHapticFeedback } from '@/screens/points/constants';
 
 const CANCEL_LABEL = i18n.t(i18n.l.button.cancel);
 const CLOSE_LABEL = i18n.t(i18n.l.button.close);
@@ -51,31 +52,45 @@ export const SearchInputButton = ({
     return PASTE_LABEL;
   });
 
-  const onPaste = useCallback(() => {
-    Clipboard.getString().then(text => {
-      // to prevent users from mistakingly pasting long ass texts when copying the wrong thing
-      // we slice the string to 42 which is the size of a eth address,
-      // no token name query search should be that big anyway
-      const v = text.trim().slice(0, 42);
-      pastedSearchInputValue.value = v;
-      useSwapsStore.setState({ outputSearchQuery: v });
-    });
-  }, []);
+  const onPaste = useCallback(
+    (isPasteDisabled: boolean) => {
+      if (isPasteDisabled) {
+        triggerHapticFeedback('notificationError');
+        return;
+      }
 
-  const buttonVisibilityStyle = useAnimatedStyle(() => {
+      Clipboard.getString().then(text => {
+        // Slice the pasted text to the length of an ETH address
+        const v = text.trim().slice(0, 42);
+        pastedSearchInputValue.value = v;
+        useSwapsStore.setState({ outputSearchQuery: v });
+      });
+    },
+    [pastedSearchInputValue]
+  );
+
+  const buttonInfo = useDerivedValue(() => {
     const isInputSearchFocused = inputProgress.value === NavigationSteps.SEARCH_FOCUSED;
     const isOutputSearchFocused = outputProgress.value === NavigationSteps.SEARCH_FOCUSED;
+    const isOutputTokenListFocused = outputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED;
 
-    const isVisible =
-      isInputSearchFocused ||
-      isOutputSearchFocused ||
-      (output && (internalSelectedOutputAsset.value || hasClipboardData)) ||
-      (!output && internalSelectedInputAsset.value);
+    const isVisible = isInputSearchFocused || isOutputSearchFocused || output || (!output && !!internalSelectedInputAsset.value);
+
+    const isPasteDisabled = output && !internalSelectedOutputAsset.value && isOutputTokenListFocused && !hasClipboardData;
+    const visibleOpacity = isPasteDisabled ? 0.4 : 1;
 
     return {
-      display: isVisible ? 'flex' : 'none',
-      opacity: isVisible ? withTiming(1, TIMING_CONFIGS.slowerFadeConfig) : 0,
-      pointerEvents: isVisible ? 'auto' : 'none',
+      isPasteDisabled,
+      isVisible,
+      visibleOpacity,
+    };
+  });
+
+  const buttonVisibilityStyle = useAnimatedStyle(() => {
+    return {
+      display: buttonInfo.value.isVisible ? 'flex' : 'none',
+      opacity: buttonInfo.value.isVisible ? withTiming(buttonInfo.value.visibleOpacity, TIMING_CONFIGS.tabPressConfig) : 0,
+      pointerEvents: buttonInfo.value.isVisible ? 'auto' : 'none',
     };
   });
 
@@ -88,7 +103,7 @@ export const SearchInputButton = ({
         onPressWorklet={() => {
           'worklet';
           if (output && outputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED && !internalSelectedOutputAsset.value) {
-            runOnJS(onPaste)();
+            runOnJS(onPaste)(buttonInfo.value.isPasteDisabled);
           }
 
           if (isSearchFocused.value || (output && internalSelectedOutputAsset.value) || (!output && internalSelectedInputAsset.value)) {

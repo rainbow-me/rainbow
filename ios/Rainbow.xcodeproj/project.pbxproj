@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		0299CE7B2886202800B5C7E7 /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = 0299CE7A2886202800B5C7E7 /* NotificationService.m */; };
 		0299CE7F2886202800B5C7E7 /* ImageNotification.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 0299CE772886202800B5C7E7 /* ImageNotification.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		0C2E322C01EE0F31C4776094 /* libPods-PriceWidgetExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 42118C9C036DBC88A3A29F6C /* libPods-PriceWidgetExtension.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
@@ -35,7 +34,8 @@
 		66A1FEB624AB641100C3F539 /* RNCMScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A1FEB324AB641100C3F539 /* RNCMScreen.m */; };
 		66A1FEBC24ACBBE600C3F539 /* RNCMPortal.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A1FEBB24ACBBE600C3F539 /* RNCMPortal.m */; };
 		66A28EB024CAF1B500410A88 /* TestFlight.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A28EAF24CAF1B500410A88 /* TestFlight.m */; };
-		A2AAF523E5B2B1EBC8137D09 /* libPods-SelectTokenIntent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B6D10CD2C122665B8935B51 /* libPods-SelectTokenIntent.a */; };
+		86913359E129076B2E94167D /* libPods-Rainbow.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6875B4873D0949D4D7AAAE07 /* libPods-Rainbow.a */; };
+		8A822C422360198E62AD7BFA /* libPods-SelectTokenIntent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BCDB57FCE228B5380B3618D3 /* libPods-SelectTokenIntent.a */; };
 		A4277D9F23CBD1910042BAF4 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4277D9E23CBD1910042BAF4 /* Extensions.swift */; };
 		A4277DA323CFE85F0042BAF4 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4277DA223CFE85F0042BAF4 /* Theme.swift */; };
 		A4D04BA923D12F99008C1DEC /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4D04BA823D12F99008C1DEC /* Button.swift */; };
@@ -68,6 +68,7 @@
 		B5CE8FFF29A5758100EB1EFA /* pooly@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B5CE8FFD29A5758100EB1EFA /* pooly@3x.png */; };
 		B5D7F2F029E8D41E003D6A54 /* finiliar@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = B5D7F2EE29E8D41D003D6A54 /* finiliar@3x.png */; };
 		B5D7F2F129E8D41E003D6A54 /* finiliar@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B5D7F2EF29E8D41E003D6A54 /* finiliar@2x.png */; };
+		B8CD55BCF7A0AB6EFF7E2107 /* libPods-ImageNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 025D857C7770B9D5627327FA /* libPods-ImageNotification.a */; };
 		C04D10F025AFC8C1003BEF7A /* Extras.json in Resources */ = {isa = PBXBuildFile; fileRef = C04D10EF25AFC8C1003BEF7A /* Extras.json */; };
 		C1038325273C2D0C00B18210 /* PriceWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16DCF75272BA7AA00FF5C78 /* PriceWidgetView.swift */; };
 		C1038337273C5C4200B18210 /* PriceWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16DCF62272BA6EF00FF5C78 /* PriceWidget.swift */; };
@@ -128,7 +129,6 @@
 		C1C61A932731A05700E5C0B3 /* RainbowTokenList.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C61A902731A05700E5C0B3 /* RainbowTokenList.swift */; };
 		C1EB01302731B68400830E70 /* TokenDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1EB012E2731B68400830E70 /* TokenDetails.swift */; };
 		C1EB01312731B68400830E70 /* TokenDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1EB012E2731B68400830E70 /* TokenDetails.swift */; };
-		C5931485B6F3169BD50DFD30 /* libPods-Rainbow.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A601D2BCA4F452ED5E54002 /* libPods-Rainbow.a */; };
 		C72F456C99A646399192517D /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 98AED33BAB4247CEBEF8464D /* libz.tbd */; };
 		C97EAD8D2BD6C6DF00322D53 /* RCTDeviceUUID.m in Sources */ = {isa = PBXBuildFile; fileRef = C97EAD8B2BD6C6DF00322D53 /* RCTDeviceUUID.m */; };
 		C9B378A22C5159880085E5D0 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9B378A12C5159880085E5D0 /* UniformTypeIdentifiers.framework */; };
@@ -139,8 +139,8 @@
 		C9B378BB2C515A860085E5D0 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9B378BA2C515A860085E5D0 /* ShareViewController.swift */; };
 		C9B378BE2C515A860085E5D0 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = C9B378BD2C515A860085E5D0 /* Base */; };
 		C9B378C22C515A860085E5D0 /* ShareWithRainbow.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = C9B378B82C515A860085E5D0 /* ShareWithRainbow.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		CE27C1EECE64497C72CC5B3A /* libPods-PriceWidgetExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D346B122505933DBFA22D04A /* libPods-PriceWidgetExtension.a */; };
 		ED2971652150620600B7C4FE /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2971642150620600B7C4FE /* JavaScriptCore.framework */; };
-		F1AF02D17F8CA2658D40F850 /* libPods-ImageNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BB0FE095E68092461A6D109F /* libPods-ImageNotification.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -203,14 +203,14 @@
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* RainbowTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RainbowTests.m; sourceTree = "<group>"; };
-		010FF25289284C29C641D30F /* Pods-PriceWidgetExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PriceWidgetExtension.release.xcconfig"; path = "Target Support Files/Pods-PriceWidgetExtension/Pods-PriceWidgetExtension.release.xcconfig"; sourceTree = "<group>"; };
+		025D857C7770B9D5627327FA /* libPods-ImageNotification.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ImageNotification.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0299CE772886202800B5C7E7 /* ImageNotification.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ImageNotification.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		0299CE792886202800B5C7E7 /* NotificationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
 		0299CE7A2886202800B5C7E7 /* NotificationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
 		0299CE7C2886202800B5C7E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0299CE852886246C00B5C7E7 /* libFirebaseCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFirebaseCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		0BF4990455B5D9113BEF5606 /* Pods-PriceWidgetExtension.localrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PriceWidgetExtension.localrelease.xcconfig"; path = "Target Support Files/Pods-PriceWidgetExtension/Pods-PriceWidgetExtension.localrelease.xcconfig"; sourceTree = "<group>"; };
-		0DD21FBAC7D56C7D954F4AE7 /* Pods-ImageNotification.localrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImageNotification.localrelease.xcconfig"; path = "Target Support Files/Pods-ImageNotification/Pods-ImageNotification.localrelease.xcconfig"; sourceTree = "<group>"; };
+		0C374E26CF6ED7C5C2C823ED /* Pods-ImageNotification.localrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImageNotification.localrelease.xcconfig"; path = "Target Support Files/Pods-ImageNotification/Pods-ImageNotification.localrelease.xcconfig"; sourceTree = "<group>"; };
+		0EF5903F6DA2DDF4181D7872 /* Pods-SelectTokenIntent.localrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SelectTokenIntent.localrelease.xcconfig"; path = "Target Support Files/Pods-SelectTokenIntent/Pods-SelectTokenIntent.localrelease.xcconfig"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Rainbow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rainbow.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Rainbow/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = Rainbow/AppDelegate.mm; sourceTree = "<group>"; };
@@ -248,21 +248,19 @@
 		24979E7C20F84004007EB0DA /* FirebaseCoreDiagnostics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseCoreDiagnostics.framework; path = Frameworks/FirebaseCoreDiagnostics.framework; sourceTree = "<group>"; };
 		24979E7D20F84005007EB0DA /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; name = module.modulemap; path = Frameworks/module.modulemap; sourceTree = "<group>"; };
 		24979E7E20F84005007EB0DA /* nanopb.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = nanopb.framework; path = Frameworks/nanopb.framework; sourceTree = "<group>"; };
+		33BC79874A51AA3880F7C4AC /* Pods-SelectTokenIntent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SelectTokenIntent.debug.xcconfig"; path = "Target Support Files/Pods-SelectTokenIntent/Pods-SelectTokenIntent.debug.xcconfig"; sourceTree = "<group>"; };
 		3C379D5D20FD1F92009AF81F /* Rainbow.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Rainbow.entitlements; path = Rainbow/Rainbow.entitlements; sourceTree = "<group>"; };
 		3CBE29CB2381E43800BE05AC /* Rainbow-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Rainbow-Bridging-Header.h"; sourceTree = "<group>"; };
-		42118C9C036DBC88A3A29F6C /* libPods-PriceWidgetExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PriceWidgetExtension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		4C646731A50EDF3C5FAF8373 /* Pods-Rainbow.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.staging.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.staging.xcconfig"; sourceTree = "<group>"; };
+		4AE8D68F8252F11480F2D99E /* Pods-ImageNotification.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImageNotification.debug.xcconfig"; path = "Target Support Files/Pods-ImageNotification/Pods-ImageNotification.debug.xcconfig"; sourceTree = "<group>"; };
+		4C6224CF2221F931780B3CE6 /* Pods-Rainbow.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.staging.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.staging.xcconfig"; sourceTree = "<group>"; };
 		4D098C2D2811A979006A801A /* RNStartTime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNStartTime.h; sourceTree = "<group>"; };
 		4D098C2E2811A9A5006A801A /* RNStartTime.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNStartTime.m; sourceTree = "<group>"; };
-		4EC548A22626AE26F665F38E /* Pods-ImageNotification.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImageNotification.staging.xcconfig"; path = "Target Support Files/Pods-ImageNotification/Pods-ImageNotification.staging.xcconfig"; sourceTree = "<group>"; };
-		563BF5960D163F0670167BF0 /* Pods-PriceWidgetExtension.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PriceWidgetExtension.staging.xcconfig"; path = "Target Support Files/Pods-PriceWidgetExtension/Pods-PriceWidgetExtension.staging.xcconfig"; sourceTree = "<group>"; };
-		599A5384115FEFEF13D00D9A /* Pods-Rainbow.localrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.localrelease.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.localrelease.xcconfig"; sourceTree = "<group>"; };
-		6432E4F9BF277F50B8A4A508 /* Pods-ImageNotification.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImageNotification.debug.xcconfig"; path = "Target Support Files/Pods-ImageNotification/Pods-ImageNotification.debug.xcconfig"; sourceTree = "<group>"; };
 		6630540824A38A1900E5B030 /* RainbowText.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RainbowText.m; sourceTree = "<group>"; };
 		6635730524939991006ACFA6 /* SafeStoreReview.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SafeStoreReview.m; sourceTree = "<group>"; };
 		664612EC2748489B00B43F5A /* PriceWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PriceWidgetExtension.entitlements; sourceTree = "<group>"; };
 		664612ED274848B000B43F5A /* SelectTokenIntent.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SelectTokenIntent.entitlements; sourceTree = "<group>"; };
 		6655FFB325BB2B0700642961 /* ThemeModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThemeModule.m; sourceTree = "<group>"; };
+		6657A4835F27FC0FFFFBF340 /* Pods-ImageNotification.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImageNotification.release.xcconfig"; path = "Target Support Files/Pods-ImageNotification/Pods-ImageNotification.release.xcconfig"; sourceTree = "<group>"; };
 		668ADB2C25A4E3A40050859D /* Stickers.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Stickers.xcassets; sourceTree = "<group>"; };
 		668ADB2E25A4E3A40050859D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		66A1FEAF24AB641100C3F539 /* RNCMScreenStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNCMScreenStack.h; path = "../src/react-native-cool-modals/ios/RNCMScreenStack.h"; sourceTree = "<group>"; };
@@ -273,19 +271,17 @@
 		66A1FEBB24ACBBE600C3F539 /* RNCMPortal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNCMPortal.m; path = "../src/react-native-cool-modals/ios/RNCMPortal.m"; sourceTree = "<group>"; };
 		66A28EAF24CAF1B500410A88 /* TestFlight.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TestFlight.m; sourceTree = "<group>"; };
 		66A29CCA2511074500481F4A /* ReaHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReaHeader.h; sourceTree = SOURCE_ROOT; };
-		71467CB869A27C2DCB7D5593 /* Pods-ImageNotification.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImageNotification.release.xcconfig"; path = "Target Support Files/Pods-ImageNotification/Pods-ImageNotification.release.xcconfig"; sourceTree = "<group>"; };
-		7A04E036E763AF405B3F9877 /* Pods-Rainbow.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.release.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.release.xcconfig"; sourceTree = "<group>"; };
-		7A601D2BCA4F452ED5E54002 /* libPods-Rainbow.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Rainbow.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		87B20DF1029C0FACF89CC70B /* Pods-SelectTokenIntent.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SelectTokenIntent.staging.xcconfig"; path = "Target Support Files/Pods-SelectTokenIntent/Pods-SelectTokenIntent.staging.xcconfig"; sourceTree = "<group>"; };
+		675045CF6F69ECCABFA7ED3C /* Pods-PriceWidgetExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PriceWidgetExtension.release.xcconfig"; path = "Target Support Files/Pods-PriceWidgetExtension/Pods-PriceWidgetExtension.release.xcconfig"; sourceTree = "<group>"; };
+		6875B4873D0949D4D7AAAE07 /* libPods-Rainbow.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Rainbow.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6FF8A19FD539CD5755E2A363 /* Pods-Rainbow.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.release.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.release.xcconfig"; sourceTree = "<group>"; };
+		7A533038ADA944A6493A66D1 /* Pods-Rainbow.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.debug.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.debug.xcconfig"; sourceTree = "<group>"; };
+		8148434135865DD9B63D5991 /* Pods-Rainbow.localrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.localrelease.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.localrelease.xcconfig"; sourceTree = "<group>"; };
 		98AED33BAB4247CEBEF8464D /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
-		9B6D10CD2C122665B8935B51 /* libPods-SelectTokenIntent.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SelectTokenIntent.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DEADFA4826D4D0BAA950D21 /* libRNFIRMessaging.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFIRMessaging.a; sourceTree = "<group>"; };
-		9E3D92B05F3FA768E29E7A3C /* Pods-PriceWidgetExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PriceWidgetExtension.debug.xcconfig"; path = "Target Support Files/Pods-PriceWidgetExtension/Pods-PriceWidgetExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		A4277D9E23CBD1910042BAF4 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		A4277DA223CFE85F0042BAF4 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		A4D04BA823D12F99008C1DEC /* Button.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Button.swift; sourceTree = "<group>"; };
 		A4D04BAB23D12FD5008C1DEC /* ButtonManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ButtonManager.m; sourceTree = "<group>"; };
-		A6C0C57C6C7EE4B4A24F3850 /* Pods-Rainbow.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.debug.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.debug.xcconfig"; sourceTree = "<group>"; };
 		AA0B1CB82B00C5E100EAF77D /* SF-Mono-Semibold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Mono-Semibold.otf"; path = "../src/assets/fonts/SF-Mono-Semibold.otf"; sourceTree = "<group>"; };
 		AA0B1CB92B00C5E100EAF77D /* SF-Mono-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Mono-Bold.otf"; path = "../src/assets/fonts/SF-Mono-Bold.otf"; sourceTree = "<group>"; };
 		AA0B1CBA2B00C5E100EAF77D /* SF-Pro-Rounded-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Black.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Black.otf"; sourceTree = "<group>"; };
@@ -295,9 +291,8 @@
 		AA6228ED24272B200078BDAA /* SF-Pro-Rounded-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Medium.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Medium.otf"; sourceTree = "<group>"; };
 		AA6228EE24272B200078BDAA /* SF-Pro-Rounded-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SF-Pro-Rounded-Regular.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Regular.otf"; sourceTree = "<group>"; };
 		AAA0EF342BF5A4AD00A19A53 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		B04D80FD63CAEB682250EB0A /* Pods-PriceWidgetExtension.localrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PriceWidgetExtension.localrelease.xcconfig"; path = "Target Support Files/Pods-PriceWidgetExtension/Pods-PriceWidgetExtension.localrelease.xcconfig"; sourceTree = "<group>"; };
 		B0C692B061D7430D8194DC98 /* ToolTipMenuTests.xctest */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ToolTipMenuTests.xctest; sourceTree = "<group>"; };
-		B15D3037AC12E33A43C1EAAC /* Pods-SelectTokenIntent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SelectTokenIntent.release.xcconfig"; path = "Target Support Files/Pods-SelectTokenIntent/Pods-SelectTokenIntent.release.xcconfig"; sourceTree = "<group>"; };
-		B295DCB35322858F3C197E67 /* Pods-SelectTokenIntent.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SelectTokenIntent.debug.xcconfig"; path = "Target Support Files/Pods-SelectTokenIntent/Pods-SelectTokenIntent.debug.xcconfig"; sourceTree = "<group>"; };
 		B50C9AE92A9D18DC00EB0019 /* adworld@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "adworld@3x.png"; sourceTree = "<group>"; };
 		B50C9AEA2A9D18DC00EB0019 /* adworld@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "adworld@2x.png"; sourceTree = "<group>"; };
 		B52242E428B1B11F0024D19D /* smol@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "smol@2x.png"; sourceTree = "<group>"; };
@@ -318,7 +313,8 @@
 		B5CE8FFD29A5758100EB1EFA /* pooly@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pooly@3x.png"; sourceTree = "<group>"; };
 		B5D7F2EE29E8D41D003D6A54 /* finiliar@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "finiliar@3x.png"; sourceTree = "<group>"; };
 		B5D7F2EF29E8D41E003D6A54 /* finiliar@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "finiliar@2x.png"; sourceTree = "<group>"; };
-		BB0FE095E68092461A6D109F /* libPods-ImageNotification.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ImageNotification.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B7B49161FD8417A90F7CB9A8 /* Pods-PriceWidgetExtension.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PriceWidgetExtension.staging.xcconfig"; path = "Target Support Files/Pods-PriceWidgetExtension/Pods-PriceWidgetExtension.staging.xcconfig"; sourceTree = "<group>"; };
+		BCDB57FCE228B5380B3618D3 /* libPods-SelectTokenIntent.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SelectTokenIntent.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C04D10EF25AFC8C1003BEF7A /* Extras.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Extras.json; sourceTree = "<group>"; };
 		C11640E7274DC10B00C9120A /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		C1272389274EBBB6006AC743 /* CurrencyDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyDetails.swift; sourceTree = "<group>"; };
@@ -358,10 +354,14 @@
 		C9B378BA2C515A860085E5D0 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		C9B378BD2C515A860085E5D0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		C9B378BF2C515A860085E5D0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D346B122505933DBFA22D04A /* libPods-PriceWidgetExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PriceWidgetExtension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D755E71324B04FEE9C691D14 /* libRNFirebase.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFirebase.a; sourceTree = "<group>"; };
-		EC702D07AE19DB5AA566838D /* Pods-SelectTokenIntent.localrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SelectTokenIntent.localrelease.xcconfig"; path = "Target Support Files/Pods-SelectTokenIntent/Pods-SelectTokenIntent.localrelease.xcconfig"; sourceTree = "<group>"; };
+		E00C89EED34D89AE4F2A3462 /* Pods-ImageNotification.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImageNotification.staging.xcconfig"; path = "Target Support Files/Pods-ImageNotification/Pods-ImageNotification.staging.xcconfig"; sourceTree = "<group>"; };
+		E1179CDF5117977A37C590EE /* Pods-SelectTokenIntent.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SelectTokenIntent.release.xcconfig"; path = "Target Support Files/Pods-SelectTokenIntent/Pods-SelectTokenIntent.release.xcconfig"; sourceTree = "<group>"; };
+		E2E91009BF4E2373D0EAA867 /* Pods-PriceWidgetExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PriceWidgetExtension.debug.xcconfig"; path = "Target Support Files/Pods-PriceWidgetExtension/Pods-PriceWidgetExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
+		FD8F690D66D4FC3337BC4317 /* Pods-SelectTokenIntent.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SelectTokenIntent.staging.xcconfig"; path = "Target Support Files/Pods-SelectTokenIntent/Pods-SelectTokenIntent.staging.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -369,7 +369,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F1AF02D17F8CA2658D40F850 /* libPods-ImageNotification.a in Frameworks */,
+				B8CD55BCF7A0AB6EFF7E2107 /* libPods-ImageNotification.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -379,7 +379,7 @@
 			files = (
 				ED2971652150620600B7C4FE /* JavaScriptCore.framework in Frameworks */,
 				C72F456C99A646399192517D /* libz.tbd in Frameworks */,
-				C5931485B6F3169BD50DFD30 /* libPods-Rainbow.a in Frameworks */,
+				86913359E129076B2E94167D /* libPods-Rainbow.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -389,7 +389,7 @@
 			files = (
 				C16DCF60272BA6EF00FF5C78 /* SwiftUI.framework in Frameworks */,
 				C16DCF5E272BA6EF00FF5C78 /* WidgetKit.framework in Frameworks */,
-				0C2E322C01EE0F31C4776094 /* libPods-PriceWidgetExtension.a in Frameworks */,
+				CE27C1EECE64497C72CC5B3A /* libPods-PriceWidgetExtension.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -398,7 +398,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C16DCF81272BAB9500FF5C78 /* Intents.framework in Frameworks */,
-				A2AAF523E5B2B1EBC8137D09 /* libPods-SelectTokenIntent.a in Frameworks */,
+				8A822C422360198E62AD7BFA /* libPods-SelectTokenIntent.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -575,10 +575,10 @@
 				C16DCF80272BAB9500FF5C78 /* Intents.framework */,
 				C16DCF8B272BAB9600FF5C78 /* IntentsUI.framework */,
 				C9B378A12C5159880085E5D0 /* UniformTypeIdentifiers.framework */,
-				BB0FE095E68092461A6D109F /* libPods-ImageNotification.a */,
-				42118C9C036DBC88A3A29F6C /* libPods-PriceWidgetExtension.a */,
-				7A601D2BCA4F452ED5E54002 /* libPods-Rainbow.a */,
-				9B6D10CD2C122665B8935B51 /* libPods-SelectTokenIntent.a */,
+				025D857C7770B9D5627327FA /* libPods-ImageNotification.a */,
+				D346B122505933DBFA22D04A /* libPods-PriceWidgetExtension.a */,
+				6875B4873D0949D4D7AAAE07 /* libPods-Rainbow.a */,
+				BCDB57FCE228B5380B3618D3 /* libPods-SelectTokenIntent.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -733,22 +733,22 @@
 		C640359C0E6575CE0A7ECD73 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				6432E4F9BF277F50B8A4A508 /* Pods-ImageNotification.debug.xcconfig */,
-				71467CB869A27C2DCB7D5593 /* Pods-ImageNotification.release.xcconfig */,
-				0DD21FBAC7D56C7D954F4AE7 /* Pods-ImageNotification.localrelease.xcconfig */,
-				4EC548A22626AE26F665F38E /* Pods-ImageNotification.staging.xcconfig */,
-				9E3D92B05F3FA768E29E7A3C /* Pods-PriceWidgetExtension.debug.xcconfig */,
-				010FF25289284C29C641D30F /* Pods-PriceWidgetExtension.release.xcconfig */,
-				0BF4990455B5D9113BEF5606 /* Pods-PriceWidgetExtension.localrelease.xcconfig */,
-				563BF5960D163F0670167BF0 /* Pods-PriceWidgetExtension.staging.xcconfig */,
-				A6C0C57C6C7EE4B4A24F3850 /* Pods-Rainbow.debug.xcconfig */,
-				7A04E036E763AF405B3F9877 /* Pods-Rainbow.release.xcconfig */,
-				599A5384115FEFEF13D00D9A /* Pods-Rainbow.localrelease.xcconfig */,
-				4C646731A50EDF3C5FAF8373 /* Pods-Rainbow.staging.xcconfig */,
-				B295DCB35322858F3C197E67 /* Pods-SelectTokenIntent.debug.xcconfig */,
-				B15D3037AC12E33A43C1EAAC /* Pods-SelectTokenIntent.release.xcconfig */,
-				EC702D07AE19DB5AA566838D /* Pods-SelectTokenIntent.localrelease.xcconfig */,
-				87B20DF1029C0FACF89CC70B /* Pods-SelectTokenIntent.staging.xcconfig */,
+				4AE8D68F8252F11480F2D99E /* Pods-ImageNotification.debug.xcconfig */,
+				6657A4835F27FC0FFFFBF340 /* Pods-ImageNotification.release.xcconfig */,
+				0C374E26CF6ED7C5C2C823ED /* Pods-ImageNotification.localrelease.xcconfig */,
+				E00C89EED34D89AE4F2A3462 /* Pods-ImageNotification.staging.xcconfig */,
+				E2E91009BF4E2373D0EAA867 /* Pods-PriceWidgetExtension.debug.xcconfig */,
+				675045CF6F69ECCABFA7ED3C /* Pods-PriceWidgetExtension.release.xcconfig */,
+				B04D80FD63CAEB682250EB0A /* Pods-PriceWidgetExtension.localrelease.xcconfig */,
+				B7B49161FD8417A90F7CB9A8 /* Pods-PriceWidgetExtension.staging.xcconfig */,
+				7A533038ADA944A6493A66D1 /* Pods-Rainbow.debug.xcconfig */,
+				6FF8A19FD539CD5755E2A363 /* Pods-Rainbow.release.xcconfig */,
+				8148434135865DD9B63D5991 /* Pods-Rainbow.localrelease.xcconfig */,
+				4C6224CF2221F931780B3CE6 /* Pods-Rainbow.staging.xcconfig */,
+				33BC79874A51AA3880F7C4AC /* Pods-SelectTokenIntent.debug.xcconfig */,
+				E1179CDF5117977A37C590EE /* Pods-SelectTokenIntent.release.xcconfig */,
+				0EF5903F6DA2DDF4181D7872 /* Pods-SelectTokenIntent.localrelease.xcconfig */,
+				FD8F690D66D4FC3337BC4317 /* Pods-SelectTokenIntent.staging.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -796,11 +796,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0299CE842886202800B5C7E7 /* Build configuration list for PBXNativeTarget "ImageNotification" */;
 			buildPhases = (
-				36D99880F36CB5AA484ABD9C /* [CP] Check Pods Manifest.lock */,
+				FD10D710D0C7F8EEE6EB0F77 /* [CP] Check Pods Manifest.lock */,
 				0299CE732886202800B5C7E7 /* Sources */,
 				0299CE742886202800B5C7E7 /* Frameworks */,
 				0299CE752886202800B5C7E7 /* Resources */,
-				A749F3F91297420815BF1CA6 /* [CP] Copy Pods Resources */,
+				BB2F78BEBE245D7D48C41820 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -815,16 +815,16 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Rainbow" */;
 			buildPhases = (
-				779A2E9F0850050C42F07ED9 /* [CP] Check Pods Manifest.lock */,
+				2D9D26600F4C9E0D02F62A88 /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				9FF961FEA7AF435FA18ED988 /* Upload Debug Symbols to Sentry */,
 				668ADB3225A4E3A40050859D /* Embed App Extensions */,
-				E25F1DAB12B818820CCCC7DA /* [CP] Embed Pods Frameworks */,
-				89D80C8A947BAC7AC4044C2B /* [CP] Copy Pods Resources */,
-				1D879D4B18B4DC04F228E2C7 /* [CP-User] [RNFB] Core Configuration */,
+				6B4739E5535DF7E99F0022D2 /* [CP] Embed Pods Frameworks */,
+				F7FE6D014143799E2E6894D9 /* [CP] Copy Pods Resources */,
+				3340F01A333AFB189AD85476 /* [CP-User] [RNFB] Core Configuration */,
 			);
 			buildRules = (
 			);
@@ -844,11 +844,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C16DCF6E272BA6F100FF5C78 /* Build configuration list for PBXNativeTarget "PriceWidgetExtension" */;
 			buildPhases = (
-				E01A15A23F18E701327D899B /* [CP] Check Pods Manifest.lock */,
+				7B777DFB693FD28E1DB8F77A /* [CP] Check Pods Manifest.lock */,
 				C16DCF58272BA6EF00FF5C78 /* Sources */,
 				C16DCF59272BA6EF00FF5C78 /* Frameworks */,
 				C16DCF5A272BA6EF00FF5C78 /* Resources */,
-				9DD9574443FD0F3A6EA845CD /* [CP] Copy Pods Resources */,
+				BB62BF1016C4CA862C515CFC /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -863,11 +863,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C16DCF9F272BAB9600FF5C78 /* Build configuration list for PBXNativeTarget "SelectTokenIntent" */;
 			buildPhases = (
-				F54110CBD33132601634482D /* [CP] Check Pods Manifest.lock */,
+				3F02A98D7D1EC5BBE267C4DD /* [CP] Check Pods Manifest.lock */,
 				C16DCF7B272BAB9500FF5C78 /* Sources */,
 				C16DCF7C272BAB9500FF5C78 /* Frameworks */,
 				C16DCF7D272BAB9500FF5C78 /* Resources */,
-				4B758949E4EFCB338FE38BB7 /* [CP] Copy Pods Resources */,
+				EE77FD4F5751D4E858F705B1 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -925,12 +925,12 @@
 					0299CE762886202800B5C7E7 = {
 						CreatedOnToolsVersion = 13.3.1;
 						DevelopmentTeam = L74NQAQB8H;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 					};
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = L74NQAQB8H;
 						LastSwiftMigration = 1120;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 						SystemCapabilities = {
 							com.apple.Push = {
 								enabled = 1;
@@ -943,22 +943,22 @@
 					C16DCF5B272BA6EF00FF5C78 = {
 						CreatedOnToolsVersion = 12.5.1;
 						DevelopmentTeam = L74NQAQB8H;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 					};
 					C16DCF7E272BAB9500FF5C78 = {
 						CreatedOnToolsVersion = 12.5.1;
 						DevelopmentTeam = L74NQAQB8H;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 					};
 					C9B3789F2C5159880085E5D0 = {
 						CreatedOnToolsVersion = 15.4;
 						DevelopmentTeam = L74NQAQB8H;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 					};
 					C9B378B72C515A860085E5D0 = {
 						CreatedOnToolsVersion = 15.4;
 						DevelopmentTeam = L74NQAQB8H;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 					};
 				};
 			};
@@ -1098,20 +1098,7 @@
 			shellScript = "export SENTRY_PROPERTIES=sentry.properties\nexport EXTRA_PACKAGER_ARGS=\"--sourcemap-output $DERIVED_FILE_DIR/main.jsbundle.map\"\nset -ex\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\nSENTRY_CLI=\"../node_modules/@sentry/cli/bin/sentry-cli\"\n\n\n/bin/sh -c \"$WITH_ENVIRONMENT \\\"$SENTRY_CLI react-native xcode $REACT_NATIVE_XCODE\\\"\"\n";
 			showEnvVarsInLog = 0;
 		};
-		1D879D4B18B4DC04F228E2C7 /* [CP-User] [RNFB] Core Configuration */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
-			);
-			name = "[CP-User] [RNFB] Core Configuration";
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\n\n##########################################################################\n##########################################################################\n#\n#  NOTE THAT IF YOU CHANGE THIS FILE YOU MUST RUN pod install AFTERWARDS\n#\n#  This file is installed as an Xcode build script in the project file\n#  by cocoapods, and you will not see your changes until you pod install\n#\n##########################################################################\n##########################################################################\n\nset -e\n\n_MAX_LOOKUPS=2;\n_SEARCH_RESULT=''\n_RN_ROOT_EXISTS=''\n_CURRENT_LOOKUPS=1\n_JSON_ROOT=\"'react-native'\"\n_JSON_FILE_NAME='firebase.json'\n_JSON_OUTPUT_BASE64='e30=' # { }\n_CURRENT_SEARCH_DIR=${PROJECT_DIR}\n_PLIST_BUDDY=/usr/libexec/PlistBuddy\n_TARGET_PLIST=\"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\n_DSYM_PLIST=\"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist\"\n\n# plist arrays\n_PLIST_ENTRY_KEYS=()\n_PLIST_ENTRY_TYPES=()\n_PLIST_ENTRY_VALUES=()\n\nfunction setPlistValue {\n  echo \"info:      setting plist entry '$1' of type '$2' in file '$4'\"\n  ${_PLIST_BUDDY} -c \"Add :$1 $2 '$3'\" $4 || echo \"info:      '$1' already exists\"\n}\n\nfunction getFirebaseJsonKeyValue () {\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    ruby -Ku -e \"require 'rubygems';require 'json'; output=JSON.parse('$1'); puts output[$_JSON_ROOT]['$2']\"\n  else\n    echo \"\"\n  fi;\n}\n\nfunction jsonBoolToYesNo () {\n  if [[ $1 == \"false\" ]]; then\n    echo \"NO\"\n  elif [[ $1 == \"true\" ]]; then\n    echo \"YES\"\n  else echo \"NO\"\n  fi\n}\n\necho \"info: -> RNFB build script started\"\necho \"info: 1) Locating ${_JSON_FILE_NAME} file:\"\n\nif [[ -z ${_CURRENT_SEARCH_DIR} ]]; then\n  _CURRENT_SEARCH_DIR=$(pwd)\nfi;\n\nwhile true; do\n  _CURRENT_SEARCH_DIR=$(dirname \"$_CURRENT_SEARCH_DIR\")\n  if [[ \"$_CURRENT_SEARCH_DIR\" == \"/\" ]] || [[ ${_CURRENT_LOOKUPS} -gt ${_MAX_LOOKUPS} ]]; then break; fi;\n  echo \"info:      ($_CURRENT_LOOKUPS of $_MAX_LOOKUPS) Searching in '$_CURRENT_SEARCH_DIR' for a ${_JSON_FILE_NAME} file.\"\n  _SEARCH_RESULT=$(find \"$_CURRENT_SEARCH_DIR\" -maxdepth 2 -name ${_JSON_FILE_NAME} -print | /usr/bin/head -n 1)\n  if [[ ${_SEARCH_RESULT} ]]; then\n    echo \"info:      ${_JSON_FILE_NAME} found at $_SEARCH_RESULT\"\n    break;\n  fi;\n  _CURRENT_LOOKUPS=$((_CURRENT_LOOKUPS+1))\ndone\n\nif [[ ${_SEARCH_RESULT} ]]; then\n  _JSON_OUTPUT_RAW=$(cat \"${_SEARCH_RESULT}\")\n  _RN_ROOT_EXISTS=$(ruby -Ku -e \"require 'rubygems';require 'json'; output=JSON.parse('$_JSON_OUTPUT_RAW'); puts output[$_JSON_ROOT]\" || echo '')\n\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    if ! python3 --version >/dev/null 2>&1; then echo \"python3 not found, firebase.json file processing error.\" && exit 1; fi\n    _JSON_OUTPUT_BASE64=$(python3 -c 'import json,sys,base64;print(base64.b64encode(bytes(json.dumps(json.loads(open('\"'${_SEARCH_RESULT}'\"', '\"'rb'\"').read())['${_JSON_ROOT}']), '\"'utf-8'\"')).decode())' || echo \"e30=\")\n  fi\n\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n\n  # config.app_data_collection_default_enabled\n  _APP_DATA_COLLECTION_ENABLED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"app_data_collection_default_enabled\")\n  if [[ $_APP_DATA_COLLECTION_ENABLED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseDataCollectionDefaultEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_APP_DATA_COLLECTION_ENABLED\")\")\n  fi\n\n  # config.analytics_auto_collection_enabled\n  _ANALYTICS_AUTO_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_auto_collection_enabled\")\n  if [[ $_ANALYTICS_AUTO_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FIREBASE_ANALYTICS_COLLECTION_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AUTO_COLLECTION\")\")\n  fi\n\n  # config.analytics_collection_deactivated\n  _ANALYTICS_DEACTIVATED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_collection_deactivated\")\n  if [[ $_ANALYTICS_DEACTIVATED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_DEACTIVATED\")\")\n  fi\n\n  # config.analytics_idfv_collection_enabled\n  _ANALYTICS_IDFV_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_idfv_collection_enabled\")\n  if [[ $_ANALYTICS_IDFV_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_IDFV_COLLECTION_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_IDFV_COLLECTION\")\")\n  fi\n\n  # config.analytics_default_allow_analytics_storage\n  _ANALYTICS_STORAGE=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_analytics_storage\")\n  if [[ $_ANALYTICS_STORAGE ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_ANALYTICS_STORAGE\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_STORAGE\")\")\n  fi\n\n  # config.analytics_default_allow_ad_storage\n  _ANALYTICS_AD_STORAGE=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_ad_storage\")\n  if [[ $_ANALYTICS_AD_STORAGE ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_STORAGE\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AD_STORAGE\")\")\n  fi\n\n  # config.analytics_default_allow_ad_user_data\n  _ANALYTICS_AD_USER_DATA=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_ad_user_data\")\n  if [[ $_ANALYTICS_AD_USER_DATA ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_USER_DATA\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AD_USER_DATA\")\")\n  fi\n\n  # config.analytics_default_allow_ad_personalization_signals\n  _ANALYTICS_PERSONALIZATION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_ad_personalization_signals\")\n  if [[ $_ANALYTICS_PERSONALIZATION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_PERSONALIZATION\")\")\n  fi\n\n  # config.analytics_registration_with_ad_network_enabled\n  _ANALYTICS_REGISTRATION_WITH_AD_NETWORK=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"google_analytics_registration_with_ad_network_enabled\")\n  if [[ $_ANALYTICS_REGISTRATION_WITH_AD_NETWORK ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_REGISTRATION_WITH_AD_NETWORK_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_REGISTRATION_WITH_AD_NETWORK\")\")\n  fi\n\n  # config.google_analytics_automatic_screen_reporting_enabled\n  _ANALYTICS_AUTO_SCREEN_REPORTING=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"google_analytics_automatic_screen_reporting_enabled\")\n  if [[ $_ANALYTICS_AUTO_SCREEN_REPORTING ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseAutomaticScreenReportingEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AUTO_SCREEN_REPORTING\")\")\n  fi\n\n  # config.perf_auto_collection_enabled\n  _PERF_AUTO_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"perf_auto_collection_enabled\")\n  if [[ $_PERF_AUTO_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"firebase_performance_collection_enabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_PERF_AUTO_COLLECTION\")\")\n  fi\n\n  # config.perf_collection_deactivated\n  _PERF_DEACTIVATED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"perf_collection_deactivated\")\n  if [[ $_PERF_DEACTIVATED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"firebase_performance_collection_deactivated\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_PERF_DEACTIVATED\")\")\n  fi\n\n  # config.messaging_auto_init_enabled\n  _MESSAGING_AUTO_INIT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"messaging_auto_init_enabled\")\n  if [[ $_MESSAGING_AUTO_INIT ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseMessagingAutoInitEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_MESSAGING_AUTO_INIT\")\")\n  fi\n\n  # config.in_app_messaging_auto_colllection_enabled\n  _FIAM_AUTO_INIT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"in_app_messaging_auto_collection_enabled\")\n  if [[ $_FIAM_AUTO_INIT ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseInAppMessagingAutomaticDataCollectionEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_FIAM_AUTO_INIT\")\")\n  fi\n\n  # config.app_check_token_auto_refresh\n  _APP_CHECK_TOKEN_AUTO_REFRESH=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"app_check_token_auto_refresh\")\n  if [[ $_APP_CHECK_TOKEN_AUTO_REFRESH ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseAppCheckTokenAutoRefreshEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_APP_CHECK_TOKEN_AUTO_REFRESH\")\")\n  fi\n\n  # config.crashlytics_disable_auto_disabler - undocumented for now - mainly for debugging, document if becomes useful\n  _CRASHLYTICS_AUTO_DISABLE_ENABLED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"crashlytics_disable_auto_disabler\")\n  if [[ $_CRASHLYTICS_AUTO_DISABLE_ENABLED == \"true\" ]]; then\n    echo \"Disabled Crashlytics auto disabler.\" # do nothing\n  else\n    _PLIST_ENTRY_KEYS+=(\"FirebaseCrashlyticsCollectionEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"NO\")\n  fi\nelse\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n  echo \"warning:   A firebase.json file was not found, whilst this file is optional it is recommended to include it to configure firebase services in React Native Firebase.\"\nfi;\n\necho \"info: 2) Injecting Info.plist entries: \"\n\n# Log out the keys we're adding\nfor i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n  echo \"    ->  $i) ${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\"\ndone\n\nfor plist in \"${_TARGET_PLIST}\" \"${_DSYM_PLIST}\" ; do\n  if [[ -f \"${plist}\" ]]; then\n\n    # paths with spaces break the call to setPlistValue. temporarily modify\n    # the shell internal field separator variable (IFS), which normally\n    # includes spaces, to consist only of line breaks\n    oldifs=$IFS\n    IFS=\"\n\"\n\n    for i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n      setPlistValue \"${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\" \"${plist}\"\n    done\n\n    # restore the original internal field separator value\n    IFS=$oldifs\n  else\n    echo \"warning:   A Info.plist build output file was not found (${plist})\"\n  fi\ndone\n\necho \"info: <- RNFB build script finished\"\n";
-		};
-		36D99880F36CB5AA484ABD9C /* [CP] Check Pods Manifest.lock */ = {
+		2D9D26600F4C9E0D02F62A88 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1126,14 +1113,178 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-ImageNotification-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-Rainbow-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		4B758949E4EFCB338FE38BB7 /* [CP] Copy Pods Resources */ = {
+		3340F01A333AFB189AD85476 /* [CP-User] [RNFB] Core Configuration */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			name = "[CP-User] [RNFB] Core Configuration";
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\n\n##########################################################################\n##########################################################################\n#\n#  NOTE THAT IF YOU CHANGE THIS FILE YOU MUST RUN pod install AFTERWARDS\n#\n#  This file is installed as an Xcode build script in the project file\n#  by cocoapods, and you will not see your changes until you pod install\n#\n##########################################################################\n##########################################################################\n\nset -e\n\n_MAX_LOOKUPS=2;\n_SEARCH_RESULT=''\n_RN_ROOT_EXISTS=''\n_CURRENT_LOOKUPS=1\n_JSON_ROOT=\"'react-native'\"\n_JSON_FILE_NAME='firebase.json'\n_JSON_OUTPUT_BASE64='e30=' # { }\n_CURRENT_SEARCH_DIR=${PROJECT_DIR}\n_PLIST_BUDDY=/usr/libexec/PlistBuddy\n_TARGET_PLIST=\"${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}\"\n_DSYM_PLIST=\"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist\"\n\n# plist arrays\n_PLIST_ENTRY_KEYS=()\n_PLIST_ENTRY_TYPES=()\n_PLIST_ENTRY_VALUES=()\n\nfunction setPlistValue {\n  echo \"info:      setting plist entry '$1' of type '$2' in file '$4'\"\n  ${_PLIST_BUDDY} -c \"Add :$1 $2 '$3'\" $4 || echo \"info:      '$1' already exists\"\n}\n\nfunction getFirebaseJsonKeyValue () {\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    ruby -Ku -e \"require 'rubygems';require 'json'; output=JSON.parse('$1'); puts output[$_JSON_ROOT]['$2']\"\n  else\n    echo \"\"\n  fi;\n}\n\nfunction jsonBoolToYesNo () {\n  if [[ $1 == \"false\" ]]; then\n    echo \"NO\"\n  elif [[ $1 == \"true\" ]]; then\n    echo \"YES\"\n  else echo \"NO\"\n  fi\n}\n\necho \"info: -> RNFB build script started\"\necho \"info: 1) Locating ${_JSON_FILE_NAME} file:\"\n\nif [[ -z ${_CURRENT_SEARCH_DIR} ]]; then\n  _CURRENT_SEARCH_DIR=$(pwd)\nfi;\n\nwhile true; do\n  _CURRENT_SEARCH_DIR=$(dirname \"$_CURRENT_SEARCH_DIR\")\n  if [[ \"$_CURRENT_SEARCH_DIR\" == \"/\" ]] || [[ ${_CURRENT_LOOKUPS} -gt ${_MAX_LOOKUPS} ]]; then break; fi;\n  echo \"info:      ($_CURRENT_LOOKUPS of $_MAX_LOOKUPS) Searching in '$_CURRENT_SEARCH_DIR' for a ${_JSON_FILE_NAME} file.\"\n  _SEARCH_RESULT=$(find \"$_CURRENT_SEARCH_DIR\" -maxdepth 2 -name ${_JSON_FILE_NAME} -print | /usr/bin/head -n 1)\n  if [[ ${_SEARCH_RESULT} ]]; then\n    echo \"info:      ${_JSON_FILE_NAME} found at $_SEARCH_RESULT\"\n    break;\n  fi;\n  _CURRENT_LOOKUPS=$((_CURRENT_LOOKUPS+1))\ndone\n\nif [[ ${_SEARCH_RESULT} ]]; then\n  _JSON_OUTPUT_RAW=$(cat \"${_SEARCH_RESULT}\")\n  _RN_ROOT_EXISTS=$(ruby -Ku -e \"require 'rubygems';require 'json'; output=JSON.parse('$_JSON_OUTPUT_RAW'); puts output[$_JSON_ROOT]\" || echo '')\n\n  if [[ ${_RN_ROOT_EXISTS} ]]; then\n    if ! python3 --version >/dev/null 2>&1; then echo \"python3 not found, firebase.json file processing error.\" && exit 1; fi\n    _JSON_OUTPUT_BASE64=$(python3 -c 'import json,sys,base64;print(base64.b64encode(bytes(json.dumps(json.loads(open('\"'${_SEARCH_RESULT}'\"', '\"'rb'\"').read())['${_JSON_ROOT}']), '\"'utf-8'\"')).decode())' || echo \"e30=\")\n  fi\n\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n\n  # config.app_data_collection_default_enabled\n  _APP_DATA_COLLECTION_ENABLED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"app_data_collection_default_enabled\")\n  if [[ $_APP_DATA_COLLECTION_ENABLED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseDataCollectionDefaultEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_APP_DATA_COLLECTION_ENABLED\")\")\n  fi\n\n  # config.analytics_auto_collection_enabled\n  _ANALYTICS_AUTO_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_auto_collection_enabled\")\n  if [[ $_ANALYTICS_AUTO_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FIREBASE_ANALYTICS_COLLECTION_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AUTO_COLLECTION\")\")\n  fi\n\n  # config.analytics_collection_deactivated\n  _ANALYTICS_DEACTIVATED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_collection_deactivated\")\n  if [[ $_ANALYTICS_DEACTIVATED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_DEACTIVATED\")\")\n  fi\n\n  # config.analytics_idfv_collection_enabled\n  _ANALYTICS_IDFV_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_idfv_collection_enabled\")\n  if [[ $_ANALYTICS_IDFV_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_IDFV_COLLECTION_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_IDFV_COLLECTION\")\")\n  fi\n\n  # config.analytics_default_allow_analytics_storage\n  _ANALYTICS_STORAGE=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_analytics_storage\")\n  if [[ $_ANALYTICS_STORAGE ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_ANALYTICS_STORAGE\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_STORAGE\")\")\n  fi\n\n  # config.analytics_default_allow_ad_storage\n  _ANALYTICS_AD_STORAGE=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_ad_storage\")\n  if [[ $_ANALYTICS_AD_STORAGE ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_STORAGE\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AD_STORAGE\")\")\n  fi\n\n  # config.analytics_default_allow_ad_user_data\n  _ANALYTICS_AD_USER_DATA=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_ad_user_data\")\n  if [[ $_ANALYTICS_AD_USER_DATA ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_USER_DATA\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AD_USER_DATA\")\")\n  fi\n\n  # config.analytics_default_allow_ad_personalization_signals\n  _ANALYTICS_PERSONALIZATION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"analytics_default_allow_ad_personalization_signals\")\n  if [[ $_ANALYTICS_PERSONALIZATION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_PERSONALIZATION\")\")\n  fi\n\n  # config.analytics_registration_with_ad_network_enabled\n  _ANALYTICS_REGISTRATION_WITH_AD_NETWORK=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"google_analytics_registration_with_ad_network_enabled\")\n  if [[ $_ANALYTICS_REGISTRATION_WITH_AD_NETWORK ]]; then\n    _PLIST_ENTRY_KEYS+=(\"GOOGLE_ANALYTICS_REGISTRATION_WITH_AD_NETWORK_ENABLED\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_REGISTRATION_WITH_AD_NETWORK\")\")\n  fi\n\n  # config.google_analytics_automatic_screen_reporting_enabled\n  _ANALYTICS_AUTO_SCREEN_REPORTING=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"google_analytics_automatic_screen_reporting_enabled\")\n  if [[ $_ANALYTICS_AUTO_SCREEN_REPORTING ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseAutomaticScreenReportingEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_ANALYTICS_AUTO_SCREEN_REPORTING\")\")\n  fi\n\n  # config.perf_auto_collection_enabled\n  _PERF_AUTO_COLLECTION=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"perf_auto_collection_enabled\")\n  if [[ $_PERF_AUTO_COLLECTION ]]; then\n    _PLIST_ENTRY_KEYS+=(\"firebase_performance_collection_enabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_PERF_AUTO_COLLECTION\")\")\n  fi\n\n  # config.perf_collection_deactivated\n  _PERF_DEACTIVATED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"perf_collection_deactivated\")\n  if [[ $_PERF_DEACTIVATED ]]; then\n    _PLIST_ENTRY_KEYS+=(\"firebase_performance_collection_deactivated\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_PERF_DEACTIVATED\")\")\n  fi\n\n  # config.messaging_auto_init_enabled\n  _MESSAGING_AUTO_INIT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"messaging_auto_init_enabled\")\n  if [[ $_MESSAGING_AUTO_INIT ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseMessagingAutoInitEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_MESSAGING_AUTO_INIT\")\")\n  fi\n\n  # config.in_app_messaging_auto_colllection_enabled\n  _FIAM_AUTO_INIT=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"in_app_messaging_auto_collection_enabled\")\n  if [[ $_FIAM_AUTO_INIT ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseInAppMessagingAutomaticDataCollectionEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_FIAM_AUTO_INIT\")\")\n  fi\n\n  # config.app_check_token_auto_refresh\n  _APP_CHECK_TOKEN_AUTO_REFRESH=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"app_check_token_auto_refresh\")\n  if [[ $_APP_CHECK_TOKEN_AUTO_REFRESH ]]; then\n    _PLIST_ENTRY_KEYS+=(\"FirebaseAppCheckTokenAutoRefreshEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"$(jsonBoolToYesNo \"$_APP_CHECK_TOKEN_AUTO_REFRESH\")\")\n  fi\n\n  # config.crashlytics_disable_auto_disabler - undocumented for now - mainly for debugging, document if becomes useful\n  _CRASHLYTICS_AUTO_DISABLE_ENABLED=$(getFirebaseJsonKeyValue \"$_JSON_OUTPUT_RAW\" \"crashlytics_disable_auto_disabler\")\n  if [[ $_CRASHLYTICS_AUTO_DISABLE_ENABLED == \"true\" ]]; then\n    echo \"Disabled Crashlytics auto disabler.\" # do nothing\n  else\n    _PLIST_ENTRY_KEYS+=(\"FirebaseCrashlyticsCollectionEnabled\")\n    _PLIST_ENTRY_TYPES+=(\"bool\")\n    _PLIST_ENTRY_VALUES+=(\"NO\")\n  fi\nelse\n  _PLIST_ENTRY_KEYS+=(\"firebase_json_raw\")\n  _PLIST_ENTRY_TYPES+=(\"string\")\n  _PLIST_ENTRY_VALUES+=(\"$_JSON_OUTPUT_BASE64\")\n  echo \"warning:   A firebase.json file was not found, whilst this file is optional it is recommended to include it to configure firebase services in React Native Firebase.\"\nfi;\n\necho \"info: 2) Injecting Info.plist entries: \"\n\n# Log out the keys we're adding\nfor i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n  echo \"    ->  $i) ${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\"\ndone\n\nfor plist in \"${_TARGET_PLIST}\" \"${_DSYM_PLIST}\" ; do\n  if [[ -f \"${plist}\" ]]; then\n\n    # paths with spaces break the call to setPlistValue. temporarily modify\n    # the shell internal field separator variable (IFS), which normally\n    # includes spaces, to consist only of line breaks\n    oldifs=$IFS\n    IFS=\"\n\"\n\n    for i in \"${!_PLIST_ENTRY_KEYS[@]}\"; do\n      setPlistValue \"${_PLIST_ENTRY_KEYS[$i]}\" \"${_PLIST_ENTRY_TYPES[$i]}\" \"${_PLIST_ENTRY_VALUES[$i]}\" \"${plist}\"\n    done\n\n    # restore the original internal field separator value\n    IFS=$oldifs\n  else\n    echo \"warning:   A Info.plist build output file was not found (${plist})\"\n  fi\ndone\n\necho \"info: <- RNFB build script finished\"\n";
+		};
+		3F02A98D7D1EC5BBE267C4DD /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SelectTokenIntent-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		6B4739E5535DF7E99F0022D2 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Rainbow/Pods-Rainbow-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Rainbow/Pods-Rainbow-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7B777DFB693FD28E1DB8F77A /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-PriceWidgetExtension-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		9FF961FEA7AF435FA18ED988 /* Upload Debug Symbols to Sentry */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Upload Debug Symbols to Sentry";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SelectTokenIntent-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export SENTRY_PROPERTIES=sentry.properties\n../node_modules/@sentry/cli/bin/sentry-cli upload-dsym\n";
+		};
+		BB2F78BEBE245D7D48C41820 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-ImageNotification/Pods-ImageNotification-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseABTesting/FirebaseABTesting_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseCore/FirebaseCore_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseCoreExtension/FirebaseCoreExtension_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseCoreInternal/FirebaseCoreInternal_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseInstallations/FirebaseInstallations_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseRemoteConfig/FirebaseRemoteConfig_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/GoogleDataTransport/GoogleDataTransport_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/GoogleUtilities/GoogleUtilities_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/PromisesObjC/FBLPromises_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/nanopb/nanopb_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMessaging/FirebaseMessaging_Privacy.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseABTesting_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseCore_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseCoreExtension_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseCoreInternal_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseInstallations_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseRemoteConfig_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleDataTransport_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleUtilities_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FBLPromises_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/nanopb_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseMessaging_Privacy.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ImageNotification/Pods-ImageNotification-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		BB62BF1016C4CA862C515CFC /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-PriceWidgetExtension/Pods-PriceWidgetExtension-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseABTesting/FirebaseABTesting_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseCore/FirebaseCore_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseCoreExtension/FirebaseCoreExtension_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseCoreInternal/FirebaseCoreInternal_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseInstallations/FirebaseInstallations_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseRemoteConfig/FirebaseRemoteConfig_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/GoogleDataTransport/GoogleDataTransport_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/GoogleUtilities/GoogleUtilities_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/PromisesObjC/FBLPromises_Privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/nanopb/nanopb_Privacy.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseABTesting_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseCore_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseCoreExtension_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseCoreInternal_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseInstallations_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseRemoteConfig_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleDataTransport_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleUtilities_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FBLPromises_Privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/nanopb_Privacy.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PriceWidgetExtension/Pods-PriceWidgetExtension-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		EE77FD4F5751D4E858F705B1 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1169,29 +1320,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SelectTokenIntent/Pods-SelectTokenIntent-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		779A2E9F0850050C42F07ED9 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Rainbow-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		89D80C8A947BAC7AC4044C2B /* [CP] Copy Pods Resources */ = {
+		F7FE6D014143799E2E6894D9 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1247,96 +1376,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Rainbow/Pods-Rainbow-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		9DD9574443FD0F3A6EA845CD /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-PriceWidgetExtension/Pods-PriceWidgetExtension-resources.sh",
-				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseABTesting/FirebaseABTesting_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseCore/FirebaseCore_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseCoreExtension/FirebaseCoreExtension_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseCoreInternal/FirebaseCoreInternal_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseInstallations/FirebaseInstallations_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseRemoteConfig/FirebaseRemoteConfig_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/GoogleDataTransport/GoogleDataTransport_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/GoogleUtilities/GoogleUtilities_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/PromisesObjC/FBLPromises_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/nanopb/nanopb_Privacy.bundle",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseABTesting_Privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseCore_Privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseCoreExtension_Privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseCoreInternal_Privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseInstallations_Privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseRemoteConfig_Privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleDataTransport_Privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleUtilities_Privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FBLPromises_Privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/nanopb_Privacy.bundle",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PriceWidgetExtension/Pods-PriceWidgetExtension-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		9FF961FEA7AF435FA18ED988 /* Upload Debug Symbols to Sentry */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Upload Debug Symbols to Sentry";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SelectTokenIntent-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "export SENTRY_PROPERTIES=sentry.properties\n../node_modules/@sentry/cli/bin/sentry-cli upload-dsym\n";
-		};
-		A749F3F91297420815BF1CA6 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-ImageNotification/Pods-ImageNotification-resources.sh",
-				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseABTesting/FirebaseABTesting_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseCore/FirebaseCore_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseCoreExtension/FirebaseCoreExtension_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseCoreInternal/FirebaseCoreInternal_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseInstallations/FirebaseInstallations_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseRemoteConfig/FirebaseRemoteConfig_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/GoogleDataTransport/GoogleDataTransport_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/GoogleUtilities/GoogleUtilities_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/PromisesObjC/FBLPromises_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/nanopb/nanopb_Privacy.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/FirebaseMessaging/FirebaseMessaging_Privacy.bundle",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseABTesting_Privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseCore_Privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseCoreExtension_Privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseCoreInternal_Privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseInstallations_Privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseRemoteConfig_Privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleDataTransport_Privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleUtilities_Privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FBLPromises_Privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/nanopb_Privacy.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FirebaseMessaging_Privacy.bundle",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ImageNotification/Pods-ImageNotification-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E01A15A23F18E701327D899B /* [CP] Check Pods Manifest.lock */ = {
+		FD10D710D0C7F8EEE6EB0F77 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1351,47 +1391,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-PriceWidgetExtension-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E25F1DAB12B818820CCCC7DA /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Rainbow/Pods-Rainbow-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Rainbow/Pods-Rainbow-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		F54110CBD33132601634482D /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SelectTokenIntent-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-ImageNotification-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1583,7 +1583,7 @@
 /* Begin XCBuildConfiguration section */
 		0299CE802886202800B5C7E7 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6432E4F9BF277F50B8A4A508 /* Pods-ImageNotification.debug.xcconfig */;
+			baseConfigurationReference = 4AE8D68F8252F11480F2D99E /* Pods-ImageNotification.debug.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1602,8 +1602,8 @@
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -1623,7 +1623,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.ImageNotification;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "match Development me.rainbow.ImageNotification";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
@@ -1633,7 +1633,7 @@
 		};
 		0299CE812886202800B5C7E7 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 71467CB869A27C2DCB7D5593 /* Pods-ImageNotification.release.xcconfig */;
+			baseConfigurationReference = 6657A4835F27FC0FFFFBF340 /* Pods-ImageNotification.release.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1653,11 +1653,13 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = L74NQAQB8H;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = L74NQAQB8H;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -1672,6 +1674,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.ImageNotification;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore me.rainbow.ImageNotification";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
@@ -1681,7 +1684,7 @@
 		};
 		0299CE822886202800B5C7E7 /* LocalRelease */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0DD21FBAC7D56C7D954F4AE7 /* Pods-ImageNotification.localrelease.xcconfig */;
+			baseConfigurationReference = 0C374E26CF6ED7C5C2C823ED /* Pods-ImageNotification.localrelease.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1700,8 +1703,8 @@
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -1719,7 +1722,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.ImageNotification;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "match Development me.rainbow.ImageNotification";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
@@ -1729,7 +1732,7 @@
 		};
 		0299CE832886202800B5C7E7 /* Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4EC548A22626AE26F665F38E /* Pods-ImageNotification.staging.xcconfig */;
+			baseConfigurationReference = E00C89EED34D89AE4F2A3462 /* Pods-ImageNotification.staging.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1748,8 +1751,8 @@
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -1767,7 +1770,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.ImageNotification;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "match Development me.rainbow.ImageNotification";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
@@ -1777,7 +1780,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A6C0C57C6C7EE4B4A24F3850 /* Pods-Rainbow.debug.xcconfig */;
+			baseConfigurationReference = 7A533038ADA944A6493A66D1 /* Pods-Rainbow.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				APPLICATION_EXTENSION_API_ONLY = NO;
@@ -1787,8 +1790,8 @@
 				ASSETCATALOG_COMPILER_OPTIMIZATION = time;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Rainbow/RainbowDebug.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
@@ -1833,7 +1836,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.9.37;
+				MARKETING_VERSION = 1.9.38;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1843,7 +1846,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow;
 				PRODUCT_NAME = Rainbow;
 				PROVISIONING_PROFILE = "";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "match Development me.rainbow";
 				SWIFT_OBJC_BRIDGING_HEADER = "Rainbow-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
@@ -1854,7 +1857,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7A04E036E763AF405B3F9877 /* Pods-Rainbow.release.xcconfig */;
+			baseConfigurationReference = 6FF8A19FD539CD5755E2A363 /* Pods-Rainbow.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				APPLICATION_EXTENSION_API_ONLY = NO;
@@ -1864,11 +1867,13 @@
 				ASSETCATALOG_COMPILER_OPTIMIZATION = "";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Rainbow/RainbowRelease.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = L74NQAQB8H;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = L74NQAQB8H;
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1895,7 +1900,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.9.37;
+				MARKETING_VERSION = 1.9.38;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1905,7 +1910,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow;
 				PRODUCT_NAME = Rainbow;
 				PROVISIONING_PROFILE = "";
-				PROVISIONING_PROFILE_SPECIFIER = "match AppStore me.rainbow";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore me.rainbow";
 				SWIFT_OBJC_BRIDGING_HEADER = "Rainbow-Bridging-Header.h";
 				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
 				SWIFT_VERSION = 5.0;
@@ -1971,7 +1977,7 @@
 		};
 		2C6A799821127ED9003AFB37 /* Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4C646731A50EDF3C5FAF8373 /* Pods-Rainbow.staging.xcconfig */;
+			baseConfigurationReference = 4C6224CF2221F931780B3CE6 /* Pods-Rainbow.staging.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				APPLICATION_EXTENSION_API_ONLY = NO;
@@ -1981,8 +1987,8 @@
 				ASSETCATALOG_COMPILER_OPTIMIZATION = "";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Rainbow/Rainbow.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = L74NQAQB8H;
@@ -2011,7 +2017,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.9.37;
+				MARKETING_VERSION = 1.9.38;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -2021,7 +2027,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow;
 				PRODUCT_NAME = Rainbow;
 				PROVISIONING_PROFILE = "";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "match Development me.rainbow";
 				SWIFT_OBJC_BRIDGING_HEADER = "Rainbow-Bridging-Header.h";
 				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
 				SWIFT_VERSION = 5.0;
@@ -2087,7 +2093,7 @@
 		};
 		2C87B79A2197FA1900682EC4 /* LocalRelease */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 599A5384115FEFEF13D00D9A /* Pods-Rainbow.localrelease.xcconfig */;
+			baseConfigurationReference = 8148434135865DD9B63D5991 /* Pods-Rainbow.localrelease.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				APPLICATION_EXTENSION_API_ONLY = NO;
@@ -2097,8 +2103,8 @@
 				ASSETCATALOG_COMPILER_OPTIMIZATION = time;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Rainbow/Rainbow.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = L74NQAQB8H;
@@ -2127,7 +2133,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.9.37;
+				MARKETING_VERSION = 1.9.38;
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -2137,7 +2143,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow;
 				PRODUCT_NAME = Rainbow;
 				PROVISIONING_PROFILE = "";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "match Development me.rainbow";
 				SWIFT_OBJC_BRIDGING_HEADER = "Rainbow-Bridging-Header.h";
 				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
 				SWIFT_VERSION = 5.0;
@@ -2260,7 +2266,7 @@
 		};
 		C16DCF6A272BA6F100FF5C78 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9E3D92B05F3FA768E29E7A3C /* Pods-PriceWidgetExtension.debug.xcconfig */;
+			baseConfigurationReference = E2E91009BF4E2373D0EAA867 /* Pods-PriceWidgetExtension.debug.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -2282,8 +2288,8 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_ENTITLEMENTS = PriceWidgetExtension.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = L74NQAQB8H;
 				ENABLE_TESTABILITY = YES;
@@ -2297,7 +2303,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.PriceWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "match Development me.rainbow.PriceWidget";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -2309,7 +2315,7 @@
 		};
 		C16DCF6B272BA6F100FF5C78 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 010FF25289284C29C641D30F /* Pods-PriceWidgetExtension.release.xcconfig */;
+			baseConfigurationReference = 675045CF6F69ECCABFA7ED3C /* Pods-PriceWidgetExtension.release.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -2332,10 +2338,12 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_ENTITLEMENTS = PriceWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = L74NQAQB8H;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = L74NQAQB8H;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -2346,6 +2354,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.PriceWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore me.rainbow.PriceWidget";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
@@ -2356,7 +2365,7 @@
 		};
 		C16DCF6C272BA6F100FF5C78 /* LocalRelease */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0BF4990455B5D9113BEF5606 /* Pods-PriceWidgetExtension.localrelease.xcconfig */;
+			baseConfigurationReference = B04D80FD63CAEB682250EB0A /* Pods-PriceWidgetExtension.localrelease.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -2378,8 +2387,8 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_ENTITLEMENTS = PriceWidgetExtension.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = L74NQAQB8H;
@@ -2392,7 +2401,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.PriceWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "match Development me.rainbow.PriceWidget";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
@@ -2403,7 +2412,7 @@
 		};
 		C16DCF6D272BA6F100FF5C78 /* Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 563BF5960D163F0670167BF0 /* Pods-PriceWidgetExtension.staging.xcconfig */;
+			baseConfigurationReference = B7B49161FD8417A90F7CB9A8 /* Pods-PriceWidgetExtension.staging.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -2450,7 +2459,7 @@
 		};
 		C16DCFA0272BAB9600FF5C78 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B295DCB35322858F3C197E67 /* Pods-SelectTokenIntent.debug.xcconfig */;
+			baseConfigurationReference = 33BC79874A51AA3880F7C4AC /* Pods-SelectTokenIntent.debug.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -2470,8 +2479,8 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_ENTITLEMENTS = SelectTokenIntent/SelectTokenIntent.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = L74NQAQB8H;
 				ENABLE_TESTABILITY = YES;
@@ -2485,7 +2494,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.SelectTokenIntent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "match Development me.rainbow.SelectTokenIntent";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -2497,7 +2506,7 @@
 		};
 		C16DCFA1272BAB9600FF5C78 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B15D3037AC12E33A43C1EAAC /* Pods-SelectTokenIntent.release.xcconfig */;
+			baseConfigurationReference = E1179CDF5117977A37C590EE /* Pods-SelectTokenIntent.release.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -2518,10 +2527,12 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_ENTITLEMENTS = SelectTokenIntent/SelectTokenIntent.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = L74NQAQB8H;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = L74NQAQB8H;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -2532,6 +2543,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.SelectTokenIntent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore me.rainbow.SelectTokenIntent";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
@@ -2542,7 +2554,7 @@
 		};
 		C16DCFA2272BAB9600FF5C78 /* LocalRelease */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EC702D07AE19DB5AA566838D /* Pods-SelectTokenIntent.localrelease.xcconfig */;
+			baseConfigurationReference = 0EF5903F6DA2DDF4181D7872 /* Pods-SelectTokenIntent.localrelease.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -2562,8 +2574,8 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_ENTITLEMENTS = SelectTokenIntent/SelectTokenIntent.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = L74NQAQB8H;
@@ -2576,7 +2588,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.SelectTokenIntent;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "match Development me.rainbow.SelectTokenIntent";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
@@ -2587,7 +2599,7 @@
 		};
 		C16DCFA3272BAB9600FF5C78 /* Staging */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 87B20DF1029C0FACF89CC70B /* Pods-SelectTokenIntent.staging.xcconfig */;
+			baseConfigurationReference = FD8F690D66D4FC3337BC4317 /* Pods-SelectTokenIntent.staging.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -2652,11 +2664,12 @@
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = L74NQAQB8H;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = L74NQAQB8H;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -2678,6 +2691,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.OpenInRainbow;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development me.rainbow.OpenInRainbow";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -2710,11 +2724,13 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = L74NQAQB8H;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = L74NQAQB8H;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -2730,6 +2746,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.OpenInRainbow;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore me.rainbow.OpenInRainbow";
 				SKIP_INSTALL = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -2760,12 +2777,13 @@
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = L74NQAQB8H;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = L74NQAQB8H;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -2781,6 +2799,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.OpenInRainbow;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development me.rainbow.OpenInRainbow";
 				SKIP_INSTALL = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -2811,12 +2830,13 @@
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = L74NQAQB8H;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = L74NQAQB8H;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -2832,6 +2852,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.OpenInRainbow;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development me.rainbow.OpenInRainbow";
 				SKIP_INSTALL = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -2862,11 +2883,12 @@
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = L74NQAQB8H;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = L74NQAQB8H;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -2888,6 +2910,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.ShareWithRainbow;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development me.rainbow.ShareWithRainbow";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -2920,11 +2943,13 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = L74NQAQB8H;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = L74NQAQB8H;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -2940,6 +2965,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.ShareWithRainbow;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore me.rainbow.ShareWithRainbow";
 				SKIP_INSTALL = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -2970,12 +2996,13 @@
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = L74NQAQB8H;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = L74NQAQB8H;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -2991,6 +3018,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.ShareWithRainbow;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development me.rainbow.ShareWithRainbow";
 				SKIP_INSTALL = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -3021,12 +3049,13 @@
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = L74NQAQB8H;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = L74NQAQB8H;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -3042,6 +3071,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow.ShareWithRainbow;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development me.rainbow.ShareWithRainbow";
 				SKIP_INSTALL = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_EMIT_LOC_STRINGS = YES;

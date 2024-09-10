@@ -9,7 +9,7 @@ export function isNativeAsset(address: string, chainId: ChainId) {
   return getNetworkObject({ chainId }).nativeCurrency.address.toLowerCase() === address?.toLowerCase();
 }
 
-export async function getOnchainAssetBalance({ address, decimals, symbol }: any, userAddress: any, chainId: any, provider: any) {
+export async function getOnchainAssetBalance({ address, decimals, symbol }: any, userAddress: any, chainId: ChainId, provider: any) {
   // Check if it's the native chain asset
   if (isNativeAsset(address, chainId)) {
     return getOnchainNativeAssetBalance({ decimals, symbol }, userAddress, provider);

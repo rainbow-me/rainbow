@@ -428,7 +428,8 @@ export function GasPanel() {
       if (previous === NavigationSteps.SHOW_GAS && current !== NavigationSteps.SHOW_GAS) {
         runOnJS(saveCustomGasSettings)();
       }
-    }
+    },
+    []
   );
 
   const styles = useAnimatedStyle(() => {

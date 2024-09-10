@@ -1,7 +1,6 @@
 import { AnimatedChainImage } from '@/__swaps__/screens/Swap/components/AnimatedChainImage';
 import { ReviewGasButton } from '@/__swaps__/screens/Swap/components/GasButton';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import { useNativeAssetForChain } from '@/__swaps__/screens/Swap/hooks/useNativeAssetForChain';
 import { ChainNameDisplay, ChainId } from '@/networks/types';
 import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
 import {
@@ -27,11 +26,9 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
-import { useAccountSettings } from '@/hooks';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { getNetworkObject } from '@/networks';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
@@ -64,11 +61,8 @@ const MAX_SLIPPAGE_LABEL = i18n.t(i18n.l.exchange.slippage_tolerance);
 const ESTIMATED_NETWORK_FEE_LABEL = i18n.t(i18n.l.gas.network_fee);
 
 const RainbowFee = () => {
-  const { nativeCurrency } = useAccountSettings();
   const { isDarkMode } = useColorMode();
-  const { isFetching, isQuoteStale, quote, internalSelectedInputAsset } = useSwapContext();
-
-  const { nativeAsset } = useNativeAssetForChain({ inputAsset: internalSelectedInputAsset });
+  const { isFetching, isQuoteStale, quote } = useSwapContext();
 
   const index = useSharedValue(0);
   const rainbowFee = useSharedValue<string[]>([UNKNOWN_LABEL, UNKNOWN_LABEL]);
@@ -104,7 +98,8 @@ const RainbowFee = () => {
       if (!current.isQuoteStale && !current.isFetching && current.quote && !(current.quote as QuoteError)?.error) {
         runOnJS(calculateRainbowFeeFromQuoteData)(current.quote as Quote | CrosschainQuote);
       }
-    }
+    },
+    []
   );
 
   return (
@@ -139,15 +134,10 @@ function EstimatedArrivalTime() {
 function FlashbotsToggle() {
   const { SwapSettings } = useSwapContext();
 
-  const inputAssetChainId = swapsStore(state => state.inputAsset?.chainId) ?? ChainId.mainnet;
-  const isFlashbotsEnabledForNetwork = getNetworkObject({ chainId: inputAssetChainId }).features.flashbots;
-  const flashbotsToggleValue = useDerivedValue(() => isFlashbotsEnabledForNetwork && SwapSettings.flashbots.value);
-
   return (
     <AnimatedSwitch
       onToggle={SwapSettings.onToggleFlashbots}
-      disabled={!isFlashbotsEnabledForNetwork}
-      value={flashbotsToggleValue}
+      value={SwapSettings.flashbots}
       activeLabel={i18n.t(i18n.l.expanded_state.swap.on)}
       inactiveLabel={i18n.t(i18n.l.expanded_state.swap.off)}
     />

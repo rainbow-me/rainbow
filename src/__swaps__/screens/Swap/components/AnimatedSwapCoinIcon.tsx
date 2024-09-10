@@ -41,69 +41,54 @@ export const AnimatedSwapCoinIcon = memo(function FeedCoinIcon({
   showBadge?: boolean;
 }) {
   const { isDarkMode, colors } = useTheme();
-
   const { internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
+
   const asset = assetType === 'input' ? internalSelectedInputAsset : internalSelectedOutputAsset;
+  const size = small ? 16 : large ? 36 : 32;
 
   const didErrorForUniqueId = useSharedValue<string | undefined>(undefined);
 
-  const size = small ? 16 : large ? 36 : 32;
-
   // Shield animated props from unnecessary updates to avoid flicker
-  const coinIconUrl = useDerivedValue(() => asset.value?.icon_url ?? '');
+  const coinIconUrl = useDerivedValue(() => asset.value?.icon_url || '');
 
   const animatedIconSource = useAnimatedProps(() => {
     return {
       source: {
         ...DEFAULT_FASTER_IMAGE_CONFIG,
         borderRadius: IS_ANDROID ? (size / 2) * PIXEL_RATIO : undefined,
-        transitionDuration: 0,
         url: coinIconUrl.value,
       },
     };
   });
 
-  const animatedCoinIconWrapperStyles = useAnimatedStyle(() => {
+  const visibility = useDerivedValue(() => {
     const showEmptyState = !asset.value?.uniqueId;
-    const showFallback = didErrorForUniqueId.value === asset.value?.uniqueId;
-    const shouldDisplay = !showFallback && !showEmptyState;
+    const showFallback = !showEmptyState && (didErrorForUniqueId.value === asset.value?.uniqueId || !asset.value?.icon_url);
+    const showCoinIcon = !showFallback && !showEmptyState;
 
-    return {
-      shadowColor: shouldDisplay ? (isDarkMode ? colors.shadow : asset.value?.shadowColor['light']) : 'transparent',
-    };
+    return { showCoinIcon, showEmptyState, showFallback };
   });
 
-  const animatedCoinIconStyles = useAnimatedStyle(() => {
-    const showEmptyState = !asset.value?.uniqueId;
-    const showFallback = didErrorForUniqueId.value === asset.value?.uniqueId;
-    const shouldDisplay = !showFallback && !showEmptyState;
+  const animatedCoinIconWrapperStyles = useAnimatedStyle(() => ({
+    shadowColor: visibility.value.showCoinIcon ? (isDarkMode ? colors.shadow : asset.value?.shadowColor['light']) : 'transparent',
+  }));
 
-    return {
-      display: shouldDisplay ? 'flex' : 'none',
-      pointerEvents: shouldDisplay ? 'auto' : 'none',
-      opacity: withTiming(shouldDisplay ? 1 : 0, fadeConfig),
-    };
-  });
+  const animatedCoinIconStyles = useAnimatedStyle(() => ({
+    display: visibility.value.showCoinIcon ? 'flex' : 'none',
+    pointerEvents: visibility.value.showCoinIcon ? 'auto' : 'none',
+    opacity: withTiming(visibility.value.showCoinIcon ? 1 : 0, fadeConfig),
+  }));
 
-  const animatedEmptyStateStyles = useAnimatedStyle(() => {
-    const showEmptyState = !asset.value?.uniqueId;
+  const animatedEmptyStateStyles = useAnimatedStyle(() => ({
+    display: visibility.value.showEmptyState ? 'flex' : 'none',
+    opacity: withTiming(visibility.value.showEmptyState ? 1 : 0, fadeConfig),
+  }));
 
-    return {
-      display: showEmptyState ? 'flex' : 'none',
-      opacity: withTiming(showEmptyState ? 1 : 0, fadeConfig),
-    };
-  });
-
-  const animatedFallbackStyles = useAnimatedStyle(() => {
-    const showEmptyState = !asset.value?.uniqueId;
-    const showFallback = !showEmptyState && didErrorForUniqueId.value === asset.value?.uniqueId;
-
-    return {
-      display: showFallback ? 'flex' : 'none',
-      pointerEvents: showFallback ? 'auto' : 'none',
-      opacity: withTiming(showFallback ? 1 : 0, fadeConfig),
-    };
-  });
+  const animatedFallbackStyles = useAnimatedStyle(() => ({
+    display: visibility.value.showFallback ? 'flex' : 'none',
+    pointerEvents: visibility.value.showFallback ? 'auto' : 'none',
+    opacity: withTiming(visibility.value.showFallback ? 1 : 0, fadeConfig),
+  }));
 
   return (
     <View style={small ? sx.containerSmall : large ? sx.containerLarge : sx.container}>

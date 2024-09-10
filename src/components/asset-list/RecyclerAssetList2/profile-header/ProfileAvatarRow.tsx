@@ -35,7 +35,7 @@ export function ProfileAvatarRow({ size = ProfileAvatarSize }: { size?: number }
   const ContextMenuButton = onAvatarPressProfile ? React.Fragment : ContextMenu;
 
   const handlePressMenuItem = useLatestCallback((e: any) => {
-    const index = avatarContextMenuConfig.menuItems?.findIndex(item => item.actionKey === e.nativeEvent.actionKey);
+    const index = avatarContextMenuConfig?.menuItems?.findIndex(item => item && item.actionKey === e.nativeEvent.actionKey);
     onSelectionCallback(index);
   });
 

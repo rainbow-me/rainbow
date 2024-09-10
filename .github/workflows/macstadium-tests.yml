@@ -1,16 +1,15 @@
 name: iOS e2e tests
-
 on: [pull_request, workflow_dispatch]
+
 jobs:
-  ios-e2e:
+  # Job to install dependencies
+  install-deps:
     runs-on: ["self-hosted"]
     concurrency: 
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
-
     permissions:
       contents: read
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -29,8 +28,7 @@ jobs:
           git clone git@github.com:rainbow-me/rainbow-env.git
           mv rainbow-env/dotenv .env && rm -rf rainbow-env
           eval $CI_SCRIPTS
-          sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e 
-      
+
       - name: Get Yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
@@ -48,7 +46,26 @@ jobs:
 
       - name: Install dependencies
         run: |
-          yarn cache clean --all && yarn install && yarn setup
+          yarn install && yarn setup
+
+      - name: Upload Yarn cache
+        uses: actions/upload-artifact@v3
+        with:
+          name: yarn-cache
+          path: |
+            .yarn/cache
+            .yarn/install-state.gz
+
+  # Job for linting and unit tests
+  linting-and-unit-tests:
+    runs-on: ["self-hosted"]
+    needs: install-deps
+    steps:
+      - name: Download Yarn cache
+        uses: actions/download-artifact@v3
+        with:
+          name: yarn-cache
+          path: .yarn
 
       - name: Check for frozen lockfile
         run: ./scripts/check-lockfile.sh
@@ -62,24 +79,38 @@ jobs:
       - name: Unit tests
         run: yarn test
 
+  # iOS build and e2e tests
+  e2e-ios:
+    runs-on: ["self-hosted"]
+    timeout-minutes: 60
+    needs: install-deps
+    steps:
+      - name: Download Yarn cache
+        uses: actions/download-artifact@v3
+        with:
+          name: yarn-cache
+          path: .yarn
+
       - name: Rebuild detox cache
         run: ./node_modules/.bin/detox clean-framework-cache && ./node_modules/.bin/detox build-framework-cache
-      
+
       - name: Version debug
         run: |
           npx react-native info
-      
+
       - name: Install pods
         run: yarn install-bundle && yarn install-pods
-
-      - name: Fix permissions
+      
+      - uses: irgaly/xcode-cache@v1
+        with:
+          key: xcode-cache-deriveddata-${{ github.workflow }}-${{ github.sha }}
+          restore-keys: xcode-cache-deriveddata-${{ github.workflow }}-
+      
+      - name: Modify env and build app in release mode
         run: |
-          chmod -R +x node_modules/react-native/scripts
-          chmod -R +x node_modules/@sentry/react-native/scripts
+          sed -i'' -e "s/IS_TESTING=false/IS_TESTING=true/" .env && rm -f .env-e 
+          yarn detox build --configuration ios.sim.release
 
-      - name: Build the app in release mode
-        run: yarn detox build --configuration ios.sim.release
-
-      # change the '3' here to how many times you want the tests to rerun on failure
-      - name: Run iOS e2e tests with retry
-        run: ./scripts/run-retry-tests.sh 3
+      - name: Detox iOS e2e tests
+        run: |
+          ./scripts/run-retry-tests.sh 3

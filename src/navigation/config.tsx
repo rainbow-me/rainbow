@@ -27,6 +27,7 @@ import { BottomSheetNavigationOptions } from '@/navigation/bottom-sheet/types';
 import { Box } from '@/design-system';
 import { IS_ANDROID } from '@/env';
 import { SignTransactionSheetRouteProp } from '@/screens/SignTransactionSheet';
+import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { ChainId, chainIdToNameMapping } from '@/networks/types';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
@@ -276,7 +277,7 @@ export const signTransactionSheetConfig = {
   options: ({ route }: { route: SignTransactionSheetRouteProp }) => ({
     ...buildCoolModalConfig({
       ...route.params,
-      backgroundOpacity: route?.params?.source === 'walletconnect' ? 1 : 0.7,
+      backgroundOpacity: [RequestSource.WALLETCONNECT, RequestSource.MOBILE_WALLET_PROTOCOL].includes(route?.params?.source) ? 1 : 0.7,
       cornerRadius: 0,
       springDamping: 1,
       topOffset: 0,
