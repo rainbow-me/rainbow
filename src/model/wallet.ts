@@ -291,7 +291,7 @@ export const loadWallet = async <S extends Screen>({
 
   // -1 means the user cancelled, so we don't wanna do anything
   // -2 Means the user is not authenticated (maybe removed biometrics).
-  //    In this case we show an alet inside loadPrivateKey
+  //    In this case we show an alert inside loadPrivateKey
   if (privateKey === -1 || privateKey === -2) {
     return null;
   }
@@ -539,7 +539,7 @@ export const oldLoadSeedPhrase = async (): Promise<null | EthereumWalletSeed> =>
 
 export const loadAddress = (): Promise<null | EthereumAddress> => keychain.loadString(addressKey) as Promise<string | null>;
 
-export const loadPrivateKey = async (address: EthereumAddress, hardware: boolean): Promise<null | EthereumPrivateKey | -1 | -2 | -3> => {
+export const loadPrivateKey = async (address: EthereumAddress, hardware: boolean): Promise<null | EthereumPrivateKey | -1 | -2> => {
   try {
     const isSeedPhraseMigrated = await keychain.loadString(oldSeedPhraseMigratedKey);
 
@@ -553,7 +553,7 @@ export const loadPrivateKey = async (address: EthereumAddress, hardware: boolean
 
     if (!privateKey) {
       const privateKeyData = await getKeyForWallet(address, hardware);
-      if (privateKeyData === -1 || privateKeyData === -2 || privateKeyData === -3) {
+      if (privateKeyData === -1 || privateKeyData === -2) {
         return privateKeyData;
       }
       privateKey = privateKeyData?.privateKey ?? null;
@@ -916,7 +916,7 @@ export const saveKeyForWallet = async (
  * @param hardware If the wallet is a hardware wallet.
  * @return null | PrivateKeyData | -1
  */
-export const getKeyForWallet = async (address: EthereumAddress, hardware: boolean): Promise<null | PrivateKeyData | -1 | -2 | -3> => {
+export const getKeyForWallet = async (address: EthereumAddress, hardware: boolean): Promise<null | PrivateKeyData | -1 | -2> => {
   if (hardware) {
     return await getHardwareKey(address);
   } else {
@@ -976,7 +976,7 @@ export const saveHardwareKey = async (
  * @param address The wallet address.
  * @return null | PrivateKeyData | -1
  */
-export const getPrivateKey = async (address: EthereumAddress): Promise<null | PrivateKeyData | -1 | -2 | -3> => {
+export const getPrivateKey = async (address: EthereumAddress): Promise<null | PrivateKeyData | -1 | -2> => {
   try {
     const key = `${address}_${privateKeyKey}`;
     const options = { authenticationPrompt };
