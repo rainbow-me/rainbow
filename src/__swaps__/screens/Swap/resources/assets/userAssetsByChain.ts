@@ -11,6 +11,7 @@ import { RainbowError, logger } from '@/logger';
 import { parseUserAssets, userAssetsQueryKey } from './userAssets';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
+import { staleBalancesStore } from '@/state/staleBalances';
 
 const USER_ASSETS_REFETCH_INTERVAL = 60000;
 
@@ -66,7 +67,12 @@ export async function userAssetsByChainQueryFunction({
   const cachedUserAssets = (cache.find(userAssetsQueryKey({ address, currency }))?.state?.data || {}) as ParsedAssetsDictByChain;
   const cachedDataForChain = cachedUserAssets?.[chainId];
   try {
-    const url = `/${chainId}/${address}/assets/?currency=${currency.toLowerCase()}`;
+    staleBalancesStore.getState().clearExpiredData(address);
+    const staleBalanceParam = staleBalancesStore.getState().getStaleBalancesQueryParam(address);
+    let url = `/${chainId}/${address}/assets/?currency=${currency.toLowerCase()}`;
+    if (staleBalanceParam) {
+      url += url + staleBalanceParam;
+    }
     const res = await addysHttp.get<AddressAssetsReceivedMessage>(url);
     const chainIdsInResponse = res?.data?.meta?.chain_ids || [];
     const assets = res?.data?.payload?.assets || [];

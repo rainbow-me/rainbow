@@ -14,8 +14,9 @@ import { parseUserAsset } from '@/__swaps__/utils/assets';
 import { greaterThan } from '@/__swaps__/utils/numbers';
 
 import { fetchUserAssetsByChain } from './userAssetsByChain';
-import { fetchHardhatBalances, fetchHardhatBalancesByChainId } from '@/resources/assets/hardhatAssets';
+import { fetchHardhatBalancesByChainId } from '@/resources/assets/hardhatAssets';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { staleBalancesStore } from '@/state/staleBalances';
 
 const addysHttp = new RainbowFetchClient({
   baseURL: 'https://addys.p.rainbow.me/v3',
@@ -108,15 +109,18 @@ async function userAssetsQueryFunction({
 
     return parsedAssetsDict;
   }
+
   const cache = queryClient.getQueryCache();
   const cachedUserAssets = (cache.find(userAssetsQueryKey({ address, currency, testnetMode }))?.state?.data ||
     {}) as ParsedAssetsDictByChain;
   try {
-    const url = `/${SUPPORTED_CHAIN_IDS({ testnetMode }).join(',')}/${address}/assets`;
+    staleBalancesStore.getState().clearExpiredData(address);
+    const staleBalanceParam = staleBalancesStore.getState().getStaleBalancesQueryParam(address);
+    let url = `/${SUPPORTED_CHAIN_IDS({ testnetMode }).join(',')}/${address}/assets?currency=${currency.toLowerCase()}`;
+    if (staleBalanceParam) {
+      url += url + staleBalanceParam;
+    }
     const res = await addysHttp.get<AddressAssetsReceivedMessage>(url, {
-      params: {
-        currency: currency.toLowerCase(),
-      },
       timeout: USER_ASSETS_TIMEOUT_DURATION,
     });
     const chainIdsInResponse = res?.data?.meta?.chain_ids || [];
@@ -127,7 +131,6 @@ async function userAssetsQueryFunction({
         address,
         chainIds: chainIdsWithErrorsInResponse,
         currency,
-        testnetMode,
       });
       if (assets.length && chainIdsInResponse.length) {
         const parsedAssetsDict = await parseUserAssets({
@@ -159,17 +162,15 @@ async function userAssetsQueryFunctionRetryByChain({
   address,
   chainIds,
   currency,
-  testnetMode,
 }: {
   address: Address | string;
   chainIds: ChainId[];
   currency: SupportedCurrencyKey;
-  testnetMode?: boolean;
 }) {
   try {
     const cache = queryClient.getQueryCache();
     const cachedUserAssets =
-      (cache.find(userAssetsQueryKey({ address, currency, testnetMode }))?.state?.data as ParsedAssetsDictByChain) || {};
+      (cache.find(userAssetsQueryKey({ address, currency, testnetMode: false }))?.state?.data as ParsedAssetsDictByChain) || {};
     const retries = [];
     for (const chainIdWithError of chainIds) {
       retries.push(
@@ -190,7 +191,7 @@ async function userAssetsQueryFunctionRetryByChain({
         cachedUserAssets[values[0].chainId] = parsedAssets;
       }
     }
-    queryClient.setQueryData(userAssetsQueryKey({ address, currency, testnetMode }), cachedUserAssets);
+    queryClient.setQueryData(userAssetsQueryKey({ address, currency, testnetMode: false }), cachedUserAssets);
   } catch (e) {
     logger.error(new RainbowError('[userAssetsQueryFunctionRetryByChain]: Failed to retry fetching user assets'), {
       message: (e as Error)?.message,
