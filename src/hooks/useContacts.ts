@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { contactsAddOrUpdate, removeContact } from '../redux/contacts';
 import { AppState } from '@/redux/store';
-import { Network } from '@/chains/types';
 
 const contactsSelector = createSelector(
   ({ contacts: { contacts } }: AppState) => contacts,
