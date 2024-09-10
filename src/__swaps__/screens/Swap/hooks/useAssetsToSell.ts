@@ -9,7 +9,6 @@ import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
 import { ParsedAssetsDictByChain, ParsedSearchAsset, UserAssetFilter } from '@/__swaps__/types/assets';
 import { useAccountSettings, useDebounce } from '@/hooks';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { getIsHardhatConnected } from '@/handlers/web3';
 
 const sortBy = (by: UserAssetFilter) => {
   switch (by) {
@@ -23,8 +22,6 @@ const sortBy = (by: UserAssetFilter) => {
 export const useAssetsToSell = () => {
   const { accountAddress: currentAddress, nativeCurrency: currentCurrency } = useAccountSettings();
 
-  const connectedToHardhat = getIsHardhatConnected();
-
   const { filter, searchQuery } = useUserAssetsStore(state => ({
     filter: state.filter,
     searchQuery: state.inputSearchQuery,
@@ -36,7 +33,6 @@ export const useAssetsToSell = () => {
     {
       address: currentAddress,
       currency: currentCurrency,
-      testnetMode: connectedToHardhat,
     },
     {
       select: data =>

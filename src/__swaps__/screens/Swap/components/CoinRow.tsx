@@ -1,14 +1,14 @@
 import { BalancePill } from '@/__swaps__/screens/Swap/components/BalancePill';
 import { CoinRowButton } from '@/__swaps__/screens/Swap/components/CoinRowButton';
 import { AddressOrEth, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 import { SearchAsset } from '@/__swaps__/types/search';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ContextMenuButton } from '@/components/context-menu';
 import { Box, Column, Columns, HitSlop, Inline, Text } from '@/design-system';
 import { setClipboard } from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
-import { RainbowNetworks } from '@/networks';
+import { RainbowNetworkObjects } from '@/networks';
 import { BASE_DEGEN_ADDRESS, DEGEN_CHAIN_DEGEN_ADDRESS, ETH_ADDRESS } from '@/references';
 import { toggleFavorite } from '@/resources/favorites';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
@@ -185,7 +185,7 @@ export function CoinRow({ isFavorite, onPress, output, uniqueId, testID, ...asse
 }
 
 const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId }) => {
-  const network = RainbowNetworks.find(network => network.id === chainId)?.value;
+  const networkObject = RainbowNetworkObjects.find(networkObject => networkObject.id === chainId)?.value;
 
   const handleCopy = useCallback(() => {
     haptics.selection();
@@ -197,11 +197,11 @@ const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId })
       title: i18n.t(i18n.l.exchange.coin_row.copy_contract_address),
       action: handleCopy,
     },
-    ...(network
+    ...(networkObject
       ? {
           blockExplorer: {
-            title: i18n.t(i18n.l.exchange.coin_row.view_on, { blockExplorerName: startCase(ethereumUtils.getBlockExplorer(chainId)) }),
-            action: () => ethereumUtils.openAddressInBlockExplorer(address, chainId),
+            title: i18n.t(i18n.l.exchange.coin_row.view_on, { blockExplorerName: startCase(ethereumUtils.getBlockExplorer({ chainId })) }),
+            action: () => ethereumUtils.openAddressInBlockExplorer({ address, chainId }),
           },
         }
       : {}),
@@ -217,7 +217,7 @@ const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId })
           iconValue: 'doc.on.doc',
         },
       },
-      ...(network
+      ...(networkObject
         ? [
             {
               actionKey: 'blockExplorer',
@@ -236,7 +236,7 @@ const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId })
   const handlePressMenuItem = async ({ nativeEvent: { actionKey } }: OnPressMenuItemEventObject) => {
     if (actionKey === 'copyAddress') {
       options.copy.action();
-    } else if (actionKey === 'blockExplorer' && network) {
+    } else if (actionKey === 'blockExplorer' && networkObject) {
       options.blockExplorer?.action();
     }
   };
@@ -244,14 +244,14 @@ const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId })
   const onPressAndroid = () =>
     showActionSheetWithOptions(
       {
-        options: [options.copy.title, ...(network ? [options.blockExplorer?.title] : [])],
+        options: [options.copy.title, ...(networkObject ? [options.blockExplorer?.title] : [])],
         showSeparators: true,
       },
       (idx: number) => {
         if (idx === 0) {
           options.copy.action();
         }
-        if (idx === 1 && network) {
+        if (idx === 1 && networkObject) {
           options.blockExplorer?.action();
         }
       }

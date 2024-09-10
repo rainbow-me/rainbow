@@ -9,7 +9,7 @@ import {
   SLIDER_WIDTH,
   STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS,
 } from '@/__swaps__/screens/Swap/constants';
-import { ChainId, ChainName } from '@/__swaps__/types/chains';
+import { ChainId, ChainName } from '@/networks/types';
 import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
 import { isLowerCaseMatchWorklet } from '@/__swaps__/utils/strings';
 import { globalColors } from '@/design-system';
@@ -252,7 +252,7 @@ export function niceIncrementFormatter({
   const niceIncrement = findNiceIncrement(inputAssetBalance);
   const incrementDecimalPlaces = countDecimalPlaces(niceIncrement);
 
-  if (percentageToSwap === 0 || equalWorklet(niceIncrement, 0)) return '0';
+  if (percentageToSwap === 0 || equalWorklet(niceIncrement, 0)) return 0;
   if (percentageToSwap === 0.25) {
     const amount = mulWorklet(inputAssetBalance, 0.25);
     return valueBasedDecimalFormatter({

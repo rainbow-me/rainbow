@@ -1,9 +1,10 @@
-import { getProviderForNetwork } from '@/handlers/web3';
+import { getProvider } from '@/handlers/web3';
 import { Network, NetworkProperties } from './types';
 import { gasUtils } from '@/utils';
 import { gnosis } from '@wagmi/chains';
 import { ETH_ADDRESS } from '@/references';
 import { getOptimismGasPrices } from '@/redux/gas';
+import { ChainId } from '@/networks/types';
 
 export const getGnosisNetworkObject = (): NetworkProperties => {
   return {
@@ -24,7 +25,7 @@ export const getGnosisNetworkObject = (): NetworkProperties => {
     },
 
     rpc: () => '',
-    getProvider: () => getProviderForNetwork(Network.optimism),
+    getProvider: () => getProvider({ chainId: ChainId.gnosis }),
     balanceCheckerAddress: '',
 
     // features

@@ -70,7 +70,8 @@ export const SearchInput = ({
         if (output) runOnJS(onOutputSearchQueryChange)('');
         else runOnJS(onInputSearchQueryChange)('');
       }
-    }
+    },
+    []
   );
 
   return (

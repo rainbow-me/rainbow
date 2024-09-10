@@ -1,0 +1,112 @@
+name: iOS builds
+on:
+  pull_request:
+      types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+
+jobs:
+  # Job to install dependencies
+  build:
+    runs-on: ["self-hosted"]
+    timeout-minutes: 75
+    if: github.event.pull_request.draft == false && github.event.pull_request.merged == false
+    concurrency: 
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up github keys
+        run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
+
+      - name: Clean iOS app
+        run: yarn clean:ios > /dev/null 2>&1 || true
+
+      - name: Set up ENV vars & scripts
+        env:
+          CI_SCRIPTS: ${{ secrets.CI_SCRIPTS }}
+        run: |
+          source ~/.zshrc
+          git clone git@github.com:rainbow-me/rainbow-env.git
+          mv rainbow-env/dotenv .env && rm -rf rainbow-env
+          eval $CI_SCRIPTS
+
+      - name: Get Yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            .yarn/cache
+            .yarn/install-state.gz
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        run: |
+          yarn install && yarn setup
+
+      - name: Version debug
+        run: |
+          npx react-native info
+
+      - name: Install pods
+        run: yarn install-bundle && yarn install-pods
+
+      - uses: irgaly/xcode-cache@v1
+        with:
+          key: xcode-cache-deriveddata-${{ github.workflow }}-${{ github.sha }}
+          restore-keys: xcode-cache-deriveddata-${{ github.workflow }}-
+        
+        # TOPHAT iOS SIM   
+      - name: Build the app in release mode for simulator
+        run: |
+          sed -i'' -e "s/IS_TESTING=true/IS_TESTING=false/" .env && rm -f .env-e 
+          sed -i '' 's/match AppStore/match AdHoc/g' "ios/Rainbow.xcodeproj/project.pbxproj"
+
+          xcodebuild -workspace ios/Rainbow.xcworkspace -scheme Rainbow -configuration Release -sdk iphonesimulator -derivedDataPath ios/build
+          APP_DIR=$(find . -name "*.app" | head -n 1)
+          cd $APP_DIR && zip -r ../../../../../../App.zip .
+
+        # TOPHAT iOS DEVICE  
+      - name: Build the app in release mode for iOS devices
+        env: 
+          FASTLANE_USER: ${{ secrets.FASTLANE_USER }}
+          FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        run: |
+            cd ios && bundle exec fastlane ios build_device
+      - name: Upload builds to AWS S3
+        env:
+          AWS_BUCKET: rainbow-app-team-production
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+          COMMIT_HASH: ${{ github.sha }}
+        run: |
+            APP_FILE=$(find . -name "App.zip" | head -n 1)
+            aws s3 cp "${APP_FILE}" "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.app.zip"
+            IPA_FILE=./ios/build/Rainbow.ipa
+            aws s3 cp "${IPA_FILE}" "s3://${AWS_BUCKET}/${BRANCH_NAME}/${COMMIT_HASH}.ipa"
+            
+      - name: Post comment to PR
+        if: github.event_name == 'pull_request'
+        env:
+          TOPHAT_GITHUB_TOKEN: ${{ secrets.TOPHAT_GITHUB_TOKEN }}
+          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+          COMMIT_HASH: ${{ github.sha }}
+        run: |
+          COMMENT="Launch in [simulator](http://localhost:29070/install/ios?virtual=https://app-team.p.rainbow.me/${BRANCH_NAME}/${COMMIT_HASH}.app.zip) or [device](http://localhost:29070/install/ios?physical=https://app-team.p.rainbow.me/${BRANCH_NAME}/${COMMIT_HASH}.ipa) for ${COMMIT_HASH}"
+          curl -s -H "Authorization: token $TOPHAT_GITHUB_TOKEN" -X POST \
+          -d "{\"body\":\"$COMMENT\"}" \
+          "${{ github.event.pull_request.comments_url }}"
+          
+          
+       

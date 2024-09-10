@@ -1,4 +1,4 @@
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 import { SearchAsset } from '@/__swaps__/types/search';
 import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';

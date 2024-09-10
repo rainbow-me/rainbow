@@ -4,7 +4,7 @@ import { Address } from 'viem';
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
 import { SupportedCurrencyKey } from '@/references';
 import { ParsedAssetsDictByChain, ParsedUserAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 import { AddressAssetsReceivedMessage } from '@/__swaps__/types/refraction';
 import { RainbowError, logger } from '@/logger';
 

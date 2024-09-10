@@ -130,7 +130,8 @@ export const ExchangeRateBubble = () => {
           break;
         }
       }
-    }
+    },
+    []
   );
 
   const bubbleVisibilityWrapper = useAnimatedStyle(() => {

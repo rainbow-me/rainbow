@@ -13,10 +13,10 @@ import { loadWallet, signPersonalMessage } from '@/model/wallet';
 import { RainbowError, logger } from '@/logger';
 import { queryClient } from '@/react-query';
 import { useNavigation } from '@/navigation';
-import { getProviderForNetwork } from '@/handlers/web3';
-import { Network } from '@/networks/types';
+import { getProvider } from '@/handlers/web3';
 import { analyticsV2 } from '@/analytics';
 import { delay } from '@/utils/delay';
+import { ChainId } from '@/networks/types';
 
 type PointsProfileContext = {
   step: RainbowPointsFlowSteps;
@@ -134,7 +134,7 @@ export const PointsProfileProvider = ({ children }: { children: React.ReactNode 
         Alert.alert(i18n.t(i18n.l.points.console.generic_alert));
         throw new RainbowError('Points: Error getting onboard challenge');
       }
-      const provider = getProviderForNetwork(Network.mainnet);
+      const provider = getProvider({ chainId: ChainId.mainnet });
       const wallet = await loadWallet({ address: accountAddress, provider });
       if (!wallet) {
         Alert.alert(i18n.t(i18n.l.points.console.generic_alert));

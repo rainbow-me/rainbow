@@ -1,9 +1,10 @@
+import { NativeCurrencyKey } from '@/entities';
 import useAccountSettings from './useAccountSettings';
 import { parseAssetNative } from '@/parsers';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 // this is meant to be used for assets contained in the current wallet
-export default function useAccountAsset(uniqueId: string, nativeCurrency: string | undefined = undefined) {
+export default function useAccountAsset(uniqueId: string, nativeCurrency: NativeCurrencyKey | undefined = undefined) {
   const accountAsset = useUserAssetsStore(state => state.getLegacyUserAsset(uniqueId));
 
   // this is temporary for FastBalanceCoinRow to make a tiny bit faster

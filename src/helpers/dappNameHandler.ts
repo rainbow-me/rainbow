@@ -5,6 +5,9 @@ export const getDappHostname = memoFn(url => {
   // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
   const urlObject = new URL(url);
   let hostname;
+  if (!urlObject.hostname) {
+    return null;
+  }
   const subdomains = urlObject.hostname.split('.');
   if (subdomains.length === 2) {
     hostname = urlObject.hostname;

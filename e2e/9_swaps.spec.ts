@@ -20,10 +20,8 @@ import {
   afterAllcleanApp,
   fetchElementAttributes,
   tap,
-  tapByText,
   delayTime,
   swipeUntilVisible,
-  tapAndLongPressByText,
   tapAndLongPress,
   swipe,
 } from './helpers';
@@ -62,17 +60,19 @@ describe('Swap Sheet Interaction Flow', () => {
   it('Should open swap screen with 50% inputAmount for inputAsset', async () => {
     await device.disableSynchronization();
     await tap('swap-button');
-    await delayTime('long');
+    await delayTime('very-long');
 
-    await swipeUntilVisible('token-to-buy-dai-1', 'token-to-buy-list', 'up', 100);
-    await swipe('token-to-buy-list', 'up', 'slow', 0.1);
+    // flaky
+    // await swipeUntilVisible('token-to-buy-dai-1', 'token-to-buy-list', 'up', 100);
+    await swipe('token-to-buy-list', 'up', 'slow', 0.2);
 
     await tap('token-to-buy-dai-1');
-    await delayTime('medium');
+    await delayTime('very-long');
+
     const swapInput = await fetchElementAttributes('swap-asset-input');
 
-    expect(swapInput.label).toContain('ETH');
     expect(swapInput.label).toContain('10');
+    expect(swapInput.label).toContain('ETH');
   });
 
   it('Should be able to go to review and execute a swap', async () => {

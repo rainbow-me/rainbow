@@ -4,9 +4,8 @@ import { userAssetsStore } from '@/state/assets/userAssets';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { selectUserAssetsList, selectorFilterByUserChains } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/__swaps__/types/chains';
-import { getIsHardhatConnected } from '@/handlers/web3';
 import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
+import { ChainId } from '@/networks/types';
 
 export const UserAssetsSync = function UserAssetsSync() {
   const { accountAddress, nativeCurrency: currentCurrency } = useAccountSettings();
@@ -17,7 +16,6 @@ export const UserAssetsSync = function UserAssetsSync() {
     {
       address: accountAddress,
       currency: currentCurrency,
-      testnetMode: getIsHardhatConnected(),
     },
     {
       enabled: !!accountAddress && !isSwapsOpen,

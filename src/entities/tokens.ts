@@ -1,8 +1,7 @@
 import { EthereumAddress } from '.';
 import { Chain } from '@wagmi/chains';
-import { Network } from '@/networks/types';
+import { Network, ChainId } from '@/networks/types';
 import { TokenColors } from '@/graphql/__generated__/metadata';
-import { ChainId } from '@/__swaps__/types/chains';
 
 export interface ZerionAssetPrice {
   value: number;
@@ -54,7 +53,7 @@ export interface ParsedAddressAsset extends Asset, Partial<RainbowTokenOwnFields
     amount?: string;
     display?: string;
   };
-  chainId?: number;
+  chainId: number;
   color?: string;
   colors?: TokenColors;
   icon_url?: string;
@@ -67,6 +66,17 @@ export interface ParsedAddressAsset extends Asset, Partial<RainbowTokenOwnFields
   type?: string;
   id?: string;
   uniqueId: string;
+  native?: {
+    balance?: {
+      amount?: string;
+      display?: string;
+    };
+    change?: string;
+    price?: {
+      amount?: string;
+      display?: string;
+    };
+  };
   mainnet_address?: EthereumAddress;
   isNativeAsset?: boolean;
   network: Network;
@@ -81,7 +91,6 @@ export interface SwappableAsset extends ParsedAddressAsset {
   implementations?: {
     [network: string]: { address: EthereumAddress; decimals: number };
   };
-  network: Network;
 }
 
 export interface TokenSearchNetwork {

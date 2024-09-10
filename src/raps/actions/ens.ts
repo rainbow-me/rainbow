@@ -6,7 +6,6 @@ import { analytics } from '@/analytics';
 import { ENSRegistrationRecords, NewTransaction, TransactionGasParamAmounts } from '@/entities';
 import { estimateENSTransactionGasLimit, formatRecordsForTransaction } from '@/handlers/ens';
 import { toHex } from '@/handlers/web3';
-import { NetworkTypes } from '@/helpers';
 import { ENSRegistrationTransactionType, getENSExecutionDetails, REGISTRATION_MODES } from '@/helpers/ens';
 import * as i18n from '@/languages';
 import { saveCommitRegistrationParameters, updateTransactionRegistrationParameters } from '@/redux/ensRegistration';
@@ -14,7 +13,7 @@ import store from '@/redux/store';
 import { logger, RainbowError } from '@/logger';
 import { parseGasParamAmounts } from '@/parsers';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { Network } from '@/networks/types';
+import { ChainId, Network } from '@/networks/types';
 import {
   createRegisterENSRap,
   createRenewENSRap,
@@ -25,7 +24,6 @@ import {
 } from '../registerENS';
 import { Logger } from '@ethersproject/logger';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
-import { ChainId } from '@/__swaps__/types/chains';
 
 export interface ENSRapActionResponse {
   baseNonce?: number | null;
@@ -481,7 +479,7 @@ const ensAction = async (
     },
     to: tx?.to,
     value: toHex(tx.value),
-    network: NetworkTypes.mainnet,
+    network: Network.mainnet,
     status: 'pending',
   };
 
@@ -490,7 +488,7 @@ const ensAction = async (
   addNewTransaction({
     address: ownerAddress,
     transaction: newTransaction,
-    network: Network.mainnet,
+    chainId: ChainId.mainnet,
   });
   return tx?.nonce;
 };

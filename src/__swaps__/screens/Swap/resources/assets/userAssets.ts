@@ -4,18 +4,18 @@ import { Address } from 'viem';
 
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
 
-import { getIsHardhatConnected } from '@/handlers/web3';
 import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { SupportedCurrencyKey, SUPPORTED_CHAIN_IDS } from '@/references';
 import { ParsedAssetsDictByChain, ZerionAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/networks/types';
 import { AddressAssetsReceivedMessage } from '@/__swaps__/types/refraction';
 import { parseUserAsset } from '@/__swaps__/utils/assets';
 import { greaterThan } from '@/__swaps__/utils/numbers';
 
 import { fetchUserAssetsByChain } from './userAssetsByChain';
 import { fetchHardhatBalances, fetchHardhatBalancesByChainId } from '@/resources/assets/hardhatAssets';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const addysHttp = new RainbowFetchClient({
   baseURL: 'https://addys.p.rainbow.me/v3',
@@ -231,10 +231,12 @@ export async function parseUserAssets({
 // Query Hook
 
 export function useUserAssets<TSelectResult = UserAssetsResult>(
-  { address, currency, testnetMode }: UserAssetsArgs,
+  { address, currency }: UserAssetsArgs,
   config: QueryConfigWithSelect<UserAssetsResult, Error, TSelectResult, UserAssetsQueryKey> = {}
 ) {
-  return useQuery(userAssetsQueryKey({ address, currency, testnetMode }), userAssetsQueryFunction, {
+  const { connectedToHardhat } = useConnectedToHardhatStore();
+
+  return useQuery(userAssetsQueryKey({ address, currency, testnetMode: connectedToHardhat }), userAssetsQueryFunction, {
     ...config,
     refetchInterval: USER_ASSETS_REFETCH_INTERVAL,
     staleTime: process.env.IS_TESTING === 'true' ? 0 : USER_ASSETS_STALE_INTERVAL,

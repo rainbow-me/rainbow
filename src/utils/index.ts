@@ -12,7 +12,6 @@ export { default as ethereumUtils } from './ethereumUtils';
 export { default as formatURLForDisplay } from './formatURLForDisplay';
 export { default as gasUtils } from './gas';
 export { default as getDominantColorFromImage } from './getDominantColorFromImage';
-export { default as getTokenMetadata } from './getTokenMetadata';
 export { getUniqueTokenFormat, getUniqueTokenType } from './uniqueTokens';
 export { default as getUrlForTrustIconFallback } from './getUrlForTrustIconFallback';
 export { default as haptics } from './haptics';
