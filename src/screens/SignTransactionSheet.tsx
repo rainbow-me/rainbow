@@ -72,6 +72,7 @@ import { useNonceForDisplay } from '@/hooks/useNonceForDisplay';
 import { useProviderSetup } from '@/hooks/useProviderSetup';
 import { useTransactionSubmission } from '@/hooks/useSubmitTransaction';
 import { useConfirmTransaction } from '@/hooks/useConfirmTransaction';
+import { toChecksumAddress } from 'ethereumjs-util';
 
 type SignTransactionSheetParams = {
   transactionDetails: RequestData;
@@ -332,7 +333,7 @@ export const SignTransactionSheet = () => {
         screen: SCREEN_FOR_REQUEST_SOURCE[source],
         operation: TimeToSignOperation.KeychainRead,
       })({
-        address: accountInfo.address,
+        address: toChecksumAddress(accountInfo.address),
         provider: providerToUse,
         timeTracking: {
           screen: SCREEN_FOR_REQUEST_SOURCE[source],
