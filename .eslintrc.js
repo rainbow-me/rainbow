@@ -39,5 +39,7 @@ module.exports = {
     ],
     'jest/expect-expect': 'off',
     'jest/no-disabled-tests': 'off',
+    'react/react-in-jsx-scope': 'off',
+    'react/jsx-uses-react': 'off',
   },
 };

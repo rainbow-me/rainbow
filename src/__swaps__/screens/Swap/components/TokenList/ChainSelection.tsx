@@ -11,7 +11,6 @@ import { chainNameForChainIdWithMainnetSubstitution } from '@/__swaps__/utils/ch
 import { opacity } from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
-import { ContextMenuButton } from '@/components/context-menu';
 import { AnimatedText, Bleed, Box, Inline, Text, TextIcon, globalColors, useColorMode } from '@/design-system';
 import { useAccountAccentColor } from '@/hooks';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
@@ -19,6 +18,7 @@ import { userAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { showActionSheetWithOptions } from '@/utils';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
+import { DropdownMenu } from '@/components/dropdown-menu/dropdown-menu';
 
 type ChainSelectionProps = {
   allText?: string;
@@ -162,14 +162,7 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
           </Inline>
         )}
 
-        <ContextMenuButton
-          hitSlop={20}
-          menuItems={menuConfig.menuItems}
-          menuTitle=""
-          onPressMenuItem={handleSelectChain}
-          onPressAndroid={onShowActionSheet}
-          testID={`chain-selection-${output ? 'output' : 'input'}`}
-        >
+        <DropdownMenu items={menuConfig.menuItems} testID={`chain-selection-${output ? 'output' : 'input'}`}>
           <Inline alignVertical="center" space="6px" wrap={false}>
             {/* TODO: We need to add some ethereum utils to handle worklet functions */}
             <ChainButtonIcon output={output} />
@@ -180,7 +173,16 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
               􀆏
             </Text>
           </Inline>
-        </ContextMenuButton>
+        </DropdownMenu>
+
+        {/* <ContextMenuButton
+          hitSlop={20}
+          menuItems={menuConfig.menuItems}
+          menuTitle=""
+          onPressMenuItem={handleSelectChain}
+          onPressAndroid={onShowActionSheet}
+          testID={`chain-selection-${output ? 'output' : 'input'}`}
+        ></ContextMenuButton> */}
       </Inline>
     </Box>
   );
