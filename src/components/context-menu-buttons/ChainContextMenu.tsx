@@ -4,8 +4,8 @@ import { ContextMenuButton } from '@/components/context-menu';
 import { Bleed, Box, Inline, Text, TextProps } from '@/design-system';
 import * as i18n from '@/languages';
 import { ChainId, ChainNameDisplay } from '@/networks/types';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { showActionSheetWithOptions } from '@/utils';
-import { userAssetsStore } from '@/state/assets/userAssets';
 import { chainNameForChainIdWithMainnetSubstitution } from '@/__swaps__/utils/chains';
 
 interface DefaultButtonOptions {
@@ -49,7 +49,7 @@ export const ChainContextMenu = ({
     textWeight = 'heavy',
   } = defaultButtonOptions;
 
-  const balanceSortedChains = userAssetsStore(state =>
+  const balanceSortedChains = useUserAssetsStore(state =>
     // eslint-disable-next-line no-nested-ternary
     chainsToDisplay ? chainsToDisplay : excludeChainsWithNoBalance ? state.getChainsWithBalance() : state.getBalanceSortedChainList()
   );

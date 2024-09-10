@@ -15,6 +15,7 @@ import { greaterThan } from '@/__swaps__/utils/numbers';
 
 import { fetchUserAssetsByChain } from './userAssetsByChain';
 import { fetchHardhatBalances, fetchHardhatBalancesByChainId } from '@/resources/assets/hardhatAssets';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const addysHttp = new RainbowFetchClient({
   baseURL: 'https://addys.p.rainbow.me/v3',
@@ -31,27 +32,27 @@ export const USER_ASSETS_STALE_INTERVAL = 30000;
 // Query Types
 
 export type UserAssetsArgs = {
-  address: Address;
+  address: Address | string;
   currency: SupportedCurrencyKey;
   testnetMode?: boolean;
 };
 
 type SetUserAssetsArgs = {
-  address: Address;
+  address: Address | string;
   currency: SupportedCurrencyKey;
   userAssets?: UserAssetsResult;
   testnetMode?: boolean;
 };
 
 type SetUserDefaultsArgs = {
-  address: Address;
+  address: Address | string;
   currency: SupportedCurrencyKey;
   staleTime: number;
   testnetMode?: boolean;
 };
 
 type FetchUserAssetsArgs = {
-  address: Address;
+  address: Address | string;
   currency: SupportedCurrencyKey;
   testnetMode?: boolean;
 };
@@ -160,7 +161,7 @@ async function userAssetsQueryFunctionRetryByChain({
   currency,
   testnetMode,
 }: {
-  address: Address;
+  address: Address | string;
   chainIds: ChainId[];
   currency: SupportedCurrencyKey;
   testnetMode?: boolean;
@@ -230,10 +231,12 @@ export async function parseUserAssets({
 // Query Hook
 
 export function useUserAssets<TSelectResult = UserAssetsResult>(
-  { address, currency, testnetMode }: UserAssetsArgs,
+  { address, currency }: UserAssetsArgs,
   config: QueryConfigWithSelect<UserAssetsResult, Error, TSelectResult, UserAssetsQueryKey> = {}
 ) {
-  return useQuery(userAssetsQueryKey({ address, currency, testnetMode }), userAssetsQueryFunction, {
+  const { connectedToHardhat } = useConnectedToHardhatStore();
+
+  return useQuery(userAssetsQueryKey({ address, currency, testnetMode: connectedToHardhat }), userAssetsQueryFunction, {
     ...config,
     refetchInterval: USER_ASSETS_REFETCH_INTERVAL,
     staleTime: process.env.IS_TESTING === 'true' ? 0 : 1000,
