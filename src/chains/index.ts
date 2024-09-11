@@ -6,12 +6,11 @@ import { ChainId, BackendNetwork, BackendNetworkServices, chainHardhat, chainHar
 import { transformBackendNetworksToChains } from './utils/backendNetworks';
 import { gasUtils } from '@/utils';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
-
-const IS_TESTING = process.env.IS_TESTING === 'true';
+import { IS_TEST } from '@/env';
 
 const BACKEND_CHAINS = transformBackendNetworksToChains(backendNetworks.networks);
 
-export const SUPPORTED_CHAINS: Chain[] = IS_TESTING ? [...BACKEND_CHAINS, chainHardhat, chainHardhatOptimism] : BACKEND_CHAINS;
+export const SUPPORTED_CHAINS: Chain[] = IS_TEST ? [...BACKEND_CHAINS, chainHardhat, chainHardhatOptimism] : BACKEND_CHAINS;
 
 export const defaultChains: Record<ChainId, Chain> = SUPPORTED_CHAINS.reduce(
   (acc, chain) => {
