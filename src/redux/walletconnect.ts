@@ -22,7 +22,7 @@ import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { enableActionsOnReadOnlyWallet } from '@/config/debug';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import { delay, omitBy, pickBy } from '@/helpers/utilities';
+import { convertHexToString, delay, omitBy, pickBy } from '@/helpers/utilities';
 import WalletConnectApprovalSheetType from '@/helpers/walletConnectApprovalSheetTypes';
 import Routes from '@/navigation/routesNames';
 import { watchingAlert } from '@/utils';
@@ -474,7 +474,8 @@ const listenOnNewMessages =
         const { chainId } = payload.params[0];
         // @ts-expect-error "_chainId" is private.
         const currentChainId = Number(walletConnector._chainId);
-        if (supportedWalletConnectChainIds.includes(currentChainId)) {
+        const numericChainId = Number(convertHexToString(chainId));
+        if (supportedWalletConnectChainIds.includes(numericChainId)) {
           dispatch(walletConnectSetPendingRedirect());
           Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
             callback: async (approved: boolean) => {
@@ -484,7 +485,7 @@ const listenOnNewMessages =
                   result: null,
                 });
                 const { accountAddress } = getState().settings;
-                logger.debug('WC: Updating session for chainID', { chainId: currentChainId }, logger.DebugContext.walletconnect);
+                logger.debug('WC: Updating session for chainID', { chainId: numericChainId }, logger.DebugContext.walletconnect);
                 await walletConnector.updateSession({
                   accounts: [accountAddress],
                   // @ts-expect-error "numericChainId" is a string, not a number.
@@ -511,7 +512,7 @@ const listenOnNewMessages =
             },
             currentChainId,
             meta: {
-              chainIds: [currentChainId],
+              chainIds: [numericChainId],
               dappName,
               dappUrl,
               imageUrl,
@@ -519,7 +520,7 @@ const listenOnNewMessages =
             type: WalletConnectApprovalSheetType.switch_chain,
           });
         } else {
-          logger.warn(`[redux/walletconnect]: Unsupported chain ${currentChainId}`);
+          logger.warn(`[redux/walletconnect]: Unsupported chain ${numericChainId}`);
           walletConnector.rejectRequest({
             error: { message: 'Chain currently not supported' },
             id: requestId,
