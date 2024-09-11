@@ -32,7 +32,7 @@ import {
   multiply,
   toFixedDecimals,
 } from '@/helpers/utilities';
-import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
+import { MeteorologyResponse } from '@/entities/gas';
 
 type BigNumberish = number | string | BigNumber;
 
@@ -144,20 +144,6 @@ export const parseRainbowMeteorologyData = (
     gasFeeParamsBySpeed: parsedFees,
     secondsPerNewBlock,
   };
-};
-
-export const parseLegacyRainbowMeteorologyData = (rainbowMeterologyData: MeteorologyLegacyResponse): GasPricesAPIData => {
-  const { fastGasPrice, proposeGasPrice, safeGasPrice } = rainbowMeterologyData.data.legacy;
-
-  const priceData = {
-    fast: gweiToWei(fastGasPrice),
-    fastWait: 0.34,
-    normal: gweiToWei(proposeGasPrice),
-    normalWait: 0.34,
-    urgent: gweiToWei(safeGasPrice),
-    urgentWait: 0.34,
-  };
-  return priceData;
 };
 
 /**
