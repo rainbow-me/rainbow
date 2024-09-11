@@ -13,8 +13,8 @@ const TestnetToast = ({ chainId }) => {
   const nativeAsset = chainsNativeAsset[chainId];
   const name = chainsName[chainId];
   const color = isDarkMode ? nativeAsset.colors.primary : nativeAsset.colors.fallback || nativeAsset.colors.primary;
-  const [visible, setVisible] = useState(true);
-  const [networkName, setNetworkName] = useState();
+  const [visible, setVisible] = useState(chainId !== ChainId.mainnet);
+  const [networkName, setNetworkName] = useState(name);
 
   useEffect(() => {
     if (chainId === ChainId.mainnet) {

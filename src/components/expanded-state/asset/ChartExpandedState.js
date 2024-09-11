@@ -37,6 +37,7 @@ import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { greaterThanOrEqualTo } from '@/helpers/utilities';
 import { chainsName, supportedSwapChainIds } from '@/chains';
+import { ChainId } from '@/chains/types';
 
 const defaultCarouselHeight = 60;
 const baseHeight = 386 + (android && 20 - getSoftMenuBarHeight()) - defaultCarouselHeight;
@@ -165,7 +166,7 @@ export default function ChartExpandedState({ asset }) {
             chainId: asset.chainId,
             network: asset.network,
             address: asset.address,
-            mainnetAddress: asset?.networks?.[chainsName[asset.chainId]]?.address,
+            mainnetAddress: asset?.networks?.[chainsName[ChainId.mainnet]]?.address,
           }
         : asset;
   }, [asset, genericAsset, hasBalance]);

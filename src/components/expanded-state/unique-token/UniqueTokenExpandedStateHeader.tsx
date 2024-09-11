@@ -345,7 +345,7 @@ const UniqueTokenExpandedStateHeader = ({
       if (actionKey === AssetActionsEnum.etherscan) {
         ethereumUtils.openNftInBlockExplorer({
           // @ts-expect-error address could be undefined?
-          constractAddress: asset.asset_contract.address,
+          contractAddress: asset.asset_contract.address,
           tokenId: asset.id,
           chainId: asset.chainId,
         });
