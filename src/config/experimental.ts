@@ -69,7 +69,7 @@ export const defaultConfig: Record<string, ExperimentalValue> = {
   [DEGEN_MODE]: { settings: true, value: false },
   [FEATURED_RESULTS]: { settings: true, value: false },
   [CLAIMABLES]: { settings: true, value: false },
-  [NFTS_ENABLED]: { settings: true, value: false },
+  [NFTS_ENABLED]: { settings: true, value: !!IS_TEST },
 };
 
 const storageKey = 'config';

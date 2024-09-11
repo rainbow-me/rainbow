@@ -48,7 +48,7 @@ const fetchUserAssetsForChainIds = async ({
   let url = `https://addys.p.rainbow.me/v3/${chainIdsString}/${address}/assets?currency=${currency.toLowerCase()}`;
 
   if (staleBalanceParam) {
-    url += url + staleBalanceParam;
+    url = url + staleBalanceParam;
   }
 
   const response = await rainbowFetch(url, {

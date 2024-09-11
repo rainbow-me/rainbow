@@ -4,7 +4,7 @@ import { opacity } from '@/__swaps__/utils/swaps';
 import { Input } from '@/components/inputs';
 import { Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
 import * as i18n from '@/languages';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import React from 'react';
 import Animated, {
@@ -39,7 +39,7 @@ export const SearchInput = ({
   const label = useForegroundColor('label');
   const labelQuaternary = useForegroundColor('labelQuaternary');
 
-  const onInputSearchQueryChange = userAssetsStore(state => state.setSearchQuery);
+  const onInputSearchQueryChange = useUserAssetsStore(state => state.setSearchQuery);
 
   const onOutputSearchQueryChange = useDebouncedCallback((text: string) => useSwapsStore.setState({ outputSearchQuery: text }), 100, {
     leading: false,

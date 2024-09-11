@@ -503,6 +503,8 @@ const calculateL1FeeOptimism = async (tx: RainbowTransaction, provider: Provider
     }
 
     // @ts-expect-error operand should be optional
+    delete newTx?.chainId;
+    // @ts-expect-error operand should be optional
     delete newTx?.from;
     // @ts-expect-error gas is not in type RainbowTransaction
     delete newTx?.gas;

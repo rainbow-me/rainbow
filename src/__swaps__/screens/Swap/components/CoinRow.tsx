@@ -11,7 +11,7 @@ import * as i18n from '@/languages';
 import { RainbowNetworkObjects } from '@/networks';
 import { BASE_DEGEN_ADDRESS, DEGEN_CHAIN_DEGEN_ADDRESS, ETH_ADDRESS } from '@/references';
 import { toggleFavorite } from '@/resources/favorites';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
 import { startCase } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
@@ -69,7 +69,7 @@ interface OutputCoinRowProps extends PartialAsset {
 type CoinRowProps = InputCoinRowProps | OutputCoinRowProps;
 
 export function CoinRow({ isFavorite, onPress, output, uniqueId, testID, ...assetProps }: CoinRowProps) {
-  const inputAsset = userAssetsStore(state => (output ? undefined : state.getUserAsset(uniqueId)));
+  const inputAsset = useUserAssetsStore(state => (output ? undefined : state.getUserAsset(uniqueId)));
   const outputAsset = output ? (assetProps as PartialAsset) : undefined;
 
   const asset = output ? outputAsset : inputAsset;

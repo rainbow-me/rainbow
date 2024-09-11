@@ -289,7 +289,10 @@ export const loadWallet = async <S extends Screen>({
     privateKey = await loadPrivateKey(addressToUse, isHardwareWallet);
   }
 
-  if (privateKey === -1 || privateKey === -2) {
+  // kc.ErrorType.UserCanceled means the user cancelled, so we don't wanna do anything
+  // kc.ErrorType.NotAuthenticated means the user is not authenticated (maybe removed biometrics).
+  //    In this case we show an alert inside loadPrivateKey
+  if (privateKey === kc.ErrorType.UserCanceled || privateKey === kc.ErrorType.NotAuthenticated) {
     return null;
   }
   if (isHardwareWalletKey(privateKey)) {
@@ -536,7 +539,10 @@ export const oldLoadSeedPhrase = async (): Promise<null | EthereumWalletSeed> =>
 
 export const loadAddress = (): Promise<null | EthereumAddress> => keychain.loadString(addressKey) as Promise<string | null>;
 
-export const loadPrivateKey = async (address: EthereumAddress, hardware: boolean): Promise<null | EthereumPrivateKey | -1 | -2> => {
+export const loadPrivateKey = async (
+  address: EthereumAddress,
+  hardware: boolean
+): Promise<null | EthereumPrivateKey | kc.ErrorType.UserCanceled | kc.ErrorType.NotAuthenticated> => {
   try {
     const isSeedPhraseMigrated = await keychain.loadString(oldSeedPhraseMigratedKey);
 
@@ -550,8 +556,8 @@ export const loadPrivateKey = async (address: EthereumAddress, hardware: boolean
 
     if (!privateKey) {
       const privateKeyData = await getKeyForWallet(address, hardware);
-      if (privateKeyData === -1) {
-        return -1;
+      if (privateKeyData === kc.ErrorType.UserCanceled || privateKeyData === kc.ErrorType.NotAuthenticated) {
+        return privateKeyData;
       }
       privateKey = privateKeyData?.privateKey ?? null;
     }
@@ -911,9 +917,12 @@ export const saveKeyForWallet = async (
  * @desc Gets wallet keys for the given address depending wallet type
  * @param address The wallet address.
  * @param hardware If the wallet is a hardware wallet.
- * @return null | PrivateKeyData | -1
+ * @return null | PrivateKeyData | kc.ErrorType.UserCanceled | kc.ErrorType.NotAuthenticated
  */
-export const getKeyForWallet = async (address: EthereumAddress, hardware: boolean): Promise<null | PrivateKeyData | -1> => {
+export const getKeyForWallet = async (
+  address: EthereumAddress,
+  hardware: boolean
+): Promise<null | PrivateKeyData | kc.ErrorType.UserCanceled | kc.ErrorType.NotAuthenticated> => {
   if (hardware) {
     return await getHardwareKey(address);
   } else {
@@ -971,9 +980,11 @@ export const saveHardwareKey = async (
 /**
  * @desc Gets wallet private key for a given address.
  * @param address The wallet address.
- * @return null | PrivateKeyData | -1
+ * @return null | PrivateKeyData | kc.ErrorType.UserCanceled | kc.ErrorType.NotAuthenticated
  */
-export const getPrivateKey = async (address: EthereumAddress): Promise<null | PrivateKeyData | -1> => {
+export const getPrivateKey = async (
+  address: EthereumAddress
+): Promise<null | PrivateKeyData | kc.ErrorType.UserCanceled | kc.ErrorType.NotAuthenticated> => {
   try {
     const key = `${address}_${privateKeyKey}`;
     const options = { authenticationPrompt };
@@ -984,11 +995,26 @@ export const getPrivateKey = async (address: EthereumAddress): Promise<null | Pr
       androidEncryptionPin,
     });
 
-    if (error === -2) {
-      Alert.alert(lang.t('wallet.authenticate.alert.error'), lang.t('wallet.authenticate.alert.current_authentication_not_secure_enough'));
-      return null;
+    switch (error) {
+      case kc.ErrorType.UserCanceled:
+        // User Cancelled - We want to bubble up this error code. No need to track it.
+        return kc.ErrorType.UserCanceled;
+      case kc.ErrorType.NotAuthenticated:
+        // Alert the user and bubble up the error code.
+        Alert.alert(
+          lang.t('wallet.authenticate.alert.error'),
+          lang.t('wallet.authenticate.alert.current_authentication_not_secure_enough')
+        );
+        return kc.ErrorType.NotAuthenticated;
+      case kc.ErrorType.Unavailable:
+        // This means we couldn't find any matches for this key.
+        logger.error(new RainbowError('KC unavailable for PKEY lookup'), { error });
+        break;
+      default:
+        // This is an unknown error
+        logger.error(new RainbowError('KC unknown error for PKEY lookup'), { error });
+        break;
     }
-
     return pkey || null;
   } catch (error) {
     logger.error(new RainbowError('[wallet]: Error in getPrivateKey'), { error });
@@ -1043,7 +1069,7 @@ export const getSeedPhrase = async (
       androidEncryptionPin,
     });
 
-    if (error === -2) {
+    if (error === kc.ErrorType.NotAuthenticated) {
       Alert.alert(lang.t('wallet.authenticate.alert.error'), lang.t('wallet.authenticate.alert.current_authentication_not_secure_enough'));
       return null;
     }
