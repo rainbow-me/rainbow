@@ -222,7 +222,6 @@ export const crosschainSwap = async ({
     ],
     gasLimit,
     hash: swap.hash as TxHash,
-    // TODO: MARK - Replace this once we migrate network => chainId
     network: chainsName[parameters.chainId],
     nonce: swap.nonce,
     status: 'pending',

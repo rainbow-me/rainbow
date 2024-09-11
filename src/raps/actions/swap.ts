@@ -358,7 +358,7 @@ export const swap = async ({
     ],
     gasLimit,
     hash: swap.hash as TxHash,
-    // chainId: parameters.chainId,
+    network: chainsName[parameters.chainId],
     nonce: swap.nonce,
     status: 'pending',
     type: 'swap',
