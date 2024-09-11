@@ -6,7 +6,7 @@ import { ListHeader, ListPanel, Panel, TapToDismiss, controlPanelStyles } from '
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { ChainId, ChainNameDisplay } from '@/networks/types';
 import { useAccountSettings } from '@/hooks';
-import { safeAreaInsetValues } from '@/utils';
+import { ethereumUtils, safeAreaInsetValues } from '@/utils';
 import { View } from 'react-native';
 import { IS_IOS } from '@/env';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -17,6 +17,14 @@ import { useTheme } from '@/theme';
 import { FasterImageView } from '@candlefinance/faster-image';
 import { ContextMenuButton } from '@/components/context-menu';
 import { useClaimables } from '@/resources/addys/claimables/query';
+import { logger } from '@/logger';
+import { getGasSettingsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
+import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
+import { chainNameFromChainId } from '@/__swaps__/utils/chains';
+import { useMutation } from '@tanstack/react-query';
+import { loadWallet } from '@/model/wallet';
+import { RapSwapActionParameters } from '@/raps/references';
+import { walletExecuteRap } from '@/raps/execute';
 
 const CLAIM_NETWORKS = [ChainId.base, ChainId.optimism, ChainId.zora];
 
@@ -148,6 +156,123 @@ const ClaimingClaimable = ({ chainId, claimable, goBack }: { chainId: ChainId; c
   const onShowActionSheet = useCallback(() => {}, []);
 
   const chainName = ChainNameDisplay[chainId];
+
+  const { mutate: claimRewards } = useMutation<{
+    nonce: number | null;
+  }>({
+    mutationFn: async () => {
+      // Fetch the native asset from the origin chain
+      const opEth_ = await ethereumUtils.getNativeAssetForNetwork({ chainId: ChainId.optimism });
+      const opEth = {
+        ...opEth_,
+        chainName: chainNameFromChainId(ChainId.optimism),
+      };
+
+      // Fetch the native asset from the destination chain
+      let destinationEth_;
+      if (chainId === ChainId.base) {
+        destinationEth_ = await ethereumUtils.getNativeAssetForNetwork({ chainId: ChainId.base });
+      } else if (chainId === ChainId.zora) {
+        destinationEth_ = await ethereumUtils.getNativeAssetForNetwork({ chainId: ChainId.zora });
+      } else {
+        destinationEth_ = opEth;
+      }
+
+      // Add missing properties to match types
+      const destinationEth = {
+        ...destinationEth_,
+        chainName: chainNameFromChainId(chainId as ChainId),
+      };
+
+      const selectedGas = {
+        maxBaseFee: meteorologyData?.fast.maxBaseFee,
+        maxPriorityFee: meteorologyData?.fast.maxPriorityFee,
+      };
+
+      let gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = {} as
+        | TransactionGasParamAmounts
+        | LegacyTransactionGasParamAmounts;
+
+      gasParams = {
+        maxFeePerGas: selectedGas?.maxBaseFee as string,
+        maxPriorityFeePerGas: selectedGas?.maxPriorityFee as string,
+      };
+      const gasFeeParamsBySpeed = getGasSettingsBySpeed(ChainId.optimism);
+
+      const actionParams = {
+        address,
+        toChainId: chainId,
+        sellAmount: claimable as string,
+        chainId: ChainId.optimism,
+        assetToSell: opEth as ParsedAsset,
+        assetToBuy: destinationEth as ParsedAsset,
+        quote: undefined,
+        // @ts-expect-error - collision between old gas types and new
+        gasFeeParamsBySpeed,
+        gasParams,
+      } satisfies RapSwapActionParameters<'claimBridge'>;
+
+      const provider = getProvider({ chainId: ChainId.optimism });
+      const wallet = await loadWallet({
+        address,
+        showErrorIfNotLoaded: false,
+        provider,
+      });
+      if (!wallet) {
+        // Biometrics auth failure (retry possible)
+        setClaimStatus('error');
+        return { nonce: null };
+      }
+
+      try {
+        const { errorMessage, nonce: bridgeNonce } = await walletExecuteRap(
+          wallet,
+          'claimBridge',
+          // @ts-expect-error - collision between old gas types and new
+          actionParams
+        );
+
+        if (errorMessage) {
+          if (errorMessage.includes('[CLAIM]')) {
+            // Claim error (retry possible)
+            setClaimStatus('error');
+          } else {
+            // Bridge error (retry not possible)
+            setClaimStatus('bridge-error');
+          }
+
+          logger.error(new RainbowError('[ClaimRewardsPanel]: Failed to claim ETH rewards'), { message: errorMessage });
+
+          return { nonce: null };
+        }
+
+        if (typeof bridgeNonce === 'number') {
+          // Clear and refresh claim data so available claim UI disappears
+          invalidatePointsQuery(address);
+          refetch();
+          return { nonce: bridgeNonce };
+        } else {
+          setClaimStatus('error');
+          return { nonce: null };
+        }
+      } catch (e) {
+        setClaimStatus('error');
+        return { nonce: null };
+      }
+    },
+    onError: error => {
+      const errorCode =
+        error && typeof error === 'object' && 'code' in error && isClaimError(error.code as PointsErrorType)
+          ? (error.code as PointsErrorType)
+          : 'error';
+      setClaimStatus(errorCode);
+    },
+    onSuccess: async ({ nonce }: { nonce: number | null }) => {
+      if (typeof nonce === 'number') {
+        setClaimStatus('success');
+      }
+    },
+  });
 
   return (
     <Panel>
