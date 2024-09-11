@@ -368,12 +368,12 @@ export default function SendSheet(props) {
           recipient: toAddress,
         },
         currentProvider,
-        chainsName[chainId]
+        chainsName[currentChainId]
       );
       const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(txData, currentProvider);
       updateTxFee(updatedGasLimit, null, l1GasFeeOptimism);
     },
-    [accountAddress, amountDetails.assetAmount, chainId, currentProvider, selected, toAddress, updateTxFee]
+    [accountAddress, amountDetails.assetAmount, currentChainId, currentProvider, selected, toAddress, updateTxFee]
   );
 
   const onSubmit = useCallback(
