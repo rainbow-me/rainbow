@@ -750,7 +750,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return { icon, label: isReviewSheetOpen ? quoteError : reviewLabel, disabled: true, type: 'hold' };
     }
 
-    if (!hasEnoughFundsForGas.value) {
+    if (!hasEnoughFundsForGas.value === false) {
       const nativeCurrency = chainsNativeAsset[sellAsset?.chainId || ChainId.mainnet];
       return {
         label: `${insufficient} ${nativeCurrency.symbol}`,
