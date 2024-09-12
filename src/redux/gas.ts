@@ -32,6 +32,7 @@ import {
   parseL2GasPrices,
   parseLegacyGasFeesBySpeed,
   parseRainbowMeteorologyData,
+  weiToGwei,
 } from '@/parsers';
 import { ethUnits } from '@/references';
 import { ethereumUtils, gasUtils } from '@/utils';
@@ -249,8 +250,7 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (dispa
 export const getProviderGasPrices = async ({ chainId }: { chainId: ChainId }) => {
   const provider = getProvider({ chainId });
   const baseGasPrice = await provider.getGasPrice();
-
-  const normalGasPrice = toHex(Math.ceil(Number(addBuffer(baseGasPrice.toString(), 1.05))));
+  const normalGasPrice = weiToGwei(addBuffer(baseGasPrice.toString(), 1.05));
 
   const priceData = {
     fast: normalGasPrice,
