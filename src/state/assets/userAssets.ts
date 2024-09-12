@@ -228,7 +228,7 @@ export const createUserAssetsStore = (address: Address | string) =>
         const { currentAbortController, userAssets } = get();
 
         for (const [id, asset] of userAssets) {
-          if (currentAbortController?.signal.aborted) {
+          if (currentAbortController?.signal?.aborted) {
             return;
           }
           if (selector(asset)) {
@@ -242,7 +242,7 @@ export const createUserAssetsStore = (address: Address | string) =>
           const { currentAbortController } = state;
 
           // Abort any ongoing search work
-          currentAbortController.abort();
+          currentAbortController?.abort?.();
 
           // Create a new AbortController for the new query
           const abortController = new AbortController();
