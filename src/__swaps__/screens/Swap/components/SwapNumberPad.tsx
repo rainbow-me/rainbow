@@ -11,6 +11,7 @@ import Animated, {
   withDelay,
   withTiming,
 } from 'react-native-reanimated';
+import { supportedNativeCurrencies } from '@/references';
 import { Bleed, Box, Columns, HitSlop, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
 import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { stripNonDecimalNumbers } from '@/__swaps__/utils/swaps';
@@ -30,6 +31,7 @@ import { colors } from '@/styles';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { IS_IOS } from '@/env';
 import { inputKeys } from '@/__swaps__/types/swap';
+import { useAccountSettings } from '@/hooks';
 
 type numberPadCharacter = number | 'backspace' | '.';
 
@@ -49,6 +51,7 @@ const getFormattedInputKey = (inputKey: inputKeys) => {
 
 export const SwapNumberPad = () => {
   const { isDarkMode } = useColorMode();
+  const { nativeCurrency } = useAccountSettings();
   const {
     focusedInput,
     internalSelectedInputAsset,
@@ -66,11 +69,14 @@ export const SwapNumberPad = () => {
     return stripNonDecimalNumbers(SwapInputController[getFormattedInputKey(inputKey)].value);
   };
 
-  const ignoreChange = () => {
+  const ignoreChange = (currentValue?: string) => {
     'worklet';
+    // ignore when: outputQuotesAreDisabled and we are updating the output amount or output native value
     if ((focusedInput.value === 'outputAmount' || focusedInput.value === 'outputNativeValue') && outputQuotesAreDisabled.value) {
       return true;
     }
+
+    // ignore when: corresponding asset does not have a price and we are updating native inputs
     const inputAssetPrice = internalSelectedInputAsset.value?.nativePrice || internalSelectedInputAsset.value?.price?.value || 0;
     const outputAssetPrice = internalSelectedOutputAsset.value?.nativePrice || internalSelectedOutputAsset.value?.price?.value || 0;
     const outputAssetHasNoPrice = !outputAssetPrice || equalWorklet(outputAssetPrice, 0);
@@ -81,21 +87,34 @@ export const SwapNumberPad = () => {
     ) {
       return true;
     }
+
+    // ignore when: decimals exceed native currency decimals
+    if (currentValue) {
+      const currentValueDecimals = currentValue.split('.')?.[1]?.length || 0;
+      const nativeCurrencyDecimals = supportedNativeCurrencies[nativeCurrency].decimals;
+
+      if (
+        (focusedInput.value === 'inputNativeValue' || focusedInput.value === 'outputNativeValue') &&
+        currentValueDecimals >= nativeCurrencyDecimals
+      ) {
+        return true;
+      }
+    }
     return false;
   };
 
   const addNumber = (number?: number) => {
     'worklet';
-    if (ignoreChange()) {
+    const inputKey = focusedInput.value;
+    const currentValue = removeFormatting(inputKey);
+    if (ignoreChange(currentValue)) {
       return;
     }
 
     // Immediately stop the quote fetching interval
     SwapInputController.quoteFetchingInterval.stop();
 
-    const inputKey = focusedInput.value;
     const inputMethod = SwapInputController.inputMethod.value;
-    const currentValue = removeFormatting(inputKey);
 
     const isNativePlaceholderValue =
       (inputKey === 'inputNativeValue' && inputMethod !== inputKey) || (inputKey === 'outputNativeValue' && inputMethod !== inputKey);
