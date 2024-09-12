@@ -599,7 +599,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       if (didSelectedAssetChange) {
         const assetToSet = insertUserAssetBalance
-          ? { ...asset, balance: (asset && userAssetsStore.getState().getUserAsset(asset.uniqueId)?.balance) || asset?.balance }
+          ? {
+              ...asset,
+              balance: (asset && userAssetsStore.getState().getUserAsset(asset.uniqueId)?.balance) || asset?.balance,
+            }
           : asset;
 
         if (isSameAsOtherAsset) {

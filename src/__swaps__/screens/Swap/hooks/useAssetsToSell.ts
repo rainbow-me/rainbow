@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { Address } from 'viem';
 
 import {
   selectUserAssetsList,
@@ -9,8 +8,7 @@ import {
 import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
 import { ParsedAssetsDictByChain, ParsedSearchAsset, UserAssetFilter } from '@/__swaps__/types/assets';
 import { useAccountSettings, useDebounce } from '@/hooks';
-import { userAssetsStore } from '@/state/assets/userAssets';
-import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 
 const sortBy = (by: UserAssetFilter) => {
   switch (by) {
@@ -24,18 +22,17 @@ const sortBy = (by: UserAssetFilter) => {
 export const useAssetsToSell = () => {
   const { accountAddress: currentAddress, nativeCurrency: currentCurrency } = useAccountSettings();
 
-  const filter = userAssetsStore(state => state.filter);
-  const searchQuery = userAssetsStore(state => state.inputSearchQuery);
+  const { filter, searchQuery } = useUserAssetsStore(state => ({
+    filter: state.filter,
+    searchQuery: state.inputSearchQuery,
+  }));
 
   const debouncedAssetToSellFilter = useDebounce(searchQuery, 200);
 
-  const { connectedToHardhat } = useConnectedToHardhatStore();
-
   const { data: userAssets = [] } = useUserAssets(
     {
-      address: currentAddress as Address,
+      address: currentAddress,
       currency: currentCurrency,
-      testnetMode: connectedToHardhat,
     },
     {
       select: data =>

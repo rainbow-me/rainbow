@@ -16,7 +16,7 @@ module.exports = {
     ],
   },
   transformIgnorePatterns: [
-    'node_modules/(?!((jest-)?react-native|react-native-keyboard-area|imgix-core-js|react-native-payments|@react-native-firebase|@react-native(-community)?|react-native-reanimated)/)',
+    'node_modules/(?!((jest-)?react-native|react-native-keyboard-area|imgix-core-js|react-native-payments|@react-native-firebase|@react-native(-community)?|react-native-reanimated|react-native-linear-gradient)/)',
   ],
   moduleNameMapper: {
     ...pathsToModuleNameMapper(compilerOptions.paths, {
