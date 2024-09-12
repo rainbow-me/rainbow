@@ -19,7 +19,7 @@ import {
   RapTypes,
 } from './references';
 import { createUnlockAndCrosschainSwapRap } from './unlockAndCrosschainSwap';
-import { createClaimAndBridgeRap } from './claimAndBridge';
+import { createClaimRewardsAndBridgeRap } from './claimRewardsAndBridge';
 import { createUnlockAndSwapRap } from './unlockAndSwap';
 import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { Screens, TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
@@ -31,7 +31,7 @@ export function createSwapRapByType<T extends RapTypes>(
 ): Promise<{ actions: RapAction<RapActionTypes>[] }> {
   switch (type) {
     case 'claimRewardsBridge':
-      return createClaimAndBridgeRap(swapParameters as RapSwapActionParameters<'claimRewardsBridge'>);
+      return createClaimRewardsAndBridgeRap(swapParameters as RapSwapActionParameters<'claimRewardsBridge'>);
     case 'crosschainSwap':
       return createUnlockAndCrosschainSwapRap(swapParameters as RapSwapActionParameters<'crosschainSwap'>);
     case 'swap':

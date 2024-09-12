@@ -1,7 +1,7 @@
 import { createNewAction, createNewRap } from './common';
-import { RapAction, RapClaimActionParameters } from './references';
+import { RapAction, RapClaimRewardsActionParameters } from './references';
 
-export const createClaimAndBridgeRap = async (claimParameters: RapClaimActionParameters) => {
+export const createClaimRewardsAndBridgeRap = async (claimParameters: RapClaimRewardsActionParameters) => {
   let actions: RapAction<'claimRewards' | 'claimRewardsBridge'>[] = [];
   const { assetToSell, sellAmount, assetToBuy, meta, chainId, toChainId, address, gasParams } = claimParameters;
 
@@ -21,7 +21,7 @@ export const createClaimAndBridgeRap = async (claimParameters: RapClaimActionPar
       assetToBuy,
       quote: undefined,
       gasParams,
-    } satisfies RapClaimActionParameters);
+    } satisfies RapClaimRewardsActionParameters);
 
     actions = actions.concat(bridge);
   }

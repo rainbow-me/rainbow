@@ -67,7 +67,7 @@ export interface RapUnlockActionParameters {
   chainId: number;
 }
 
-export interface RapClaimActionParameters {
+export interface RapClaimRewardsActionParameters {
   address?: Address;
   assetToSell: ParsedAsset;
   sellAmount: string;
@@ -82,7 +82,7 @@ export interface RapClaimActionParameters {
 export type RapActionParameters =
   | RapSwapActionParameters<'swap'>
   | RapSwapActionParameters<'crosschainSwap'>
-  | RapClaimActionParameters
+  | RapClaimRewardsActionParameters
   | RapUnlockActionParameters;
 
 export interface RapActionTransaction {
@@ -93,8 +93,8 @@ export type RapActionParameterMap = {
   swap: RapSwapActionParameters<'swap'>;
   crosschainSwap: RapSwapActionParameters<'crosschainSwap'>;
   unlock: RapUnlockActionParameters;
-  claimRewards: RapClaimActionParameters;
-  claimRewardsBridge: RapClaimActionParameters;
+  claimRewards: RapClaimRewardsActionParameters;
+  claimRewardsBridge: RapClaimRewardsActionParameters;
 };
 
 export interface RapAction<T extends RapActionTypes> {
