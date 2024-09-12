@@ -370,6 +370,10 @@ export async function estimateGasWithPadding(
       ? contractCallEstimateGas(...(callArguments ?? []), txPayloadToEstimate)
       : p.estimateGas(cleanTxPayload));
 
+    if (!BigNumber.isBigNumber(estimatedGas)) {
+      throw new Error('Invalid gas limit type');
+    }
+
     const lastBlockGasLimit = addBuffer(gasLimit.toString(), 0.9);
     const paddedGas = addBuffer(estimatedGas.toString(), paddingFactor.toString());
     logger.debug('[web3]: ⛽ GAS CALCULATIONS!', {

@@ -93,9 +93,13 @@ export const estimateSwapGasLimit = async ({
         WRAP_GAS_PADDING
       );
 
-      return gasLimit || String(quote?.defaultGasLimit) || String(default_estimate);
+      if (gasLimit === null || gasLimit === undefined || isNaN(Number(gasLimit))) {
+        return quote?.defaultGasLimit || default_estimate;
+      }
+
+      return gasLimit;
     } catch (e) {
-      return String(quote?.defaultGasLimit) || String(default_estimate);
+      return quote?.defaultGasLimit || default_estimate;
     }
     // Swap
   } else {
@@ -116,8 +120,11 @@ export const estimateSwapGasLimit = async ({
       }
 
       const gasLimit = await estimateGasWithPadding(params, method, methodArgs, provider, SWAP_GAS_PADDING);
+      if (gasLimit === null || gasLimit === undefined || isNaN(Number(gasLimit))) {
+        return getDefaultGasLimitForTrade(quote, chainId);
+      }
 
-      return gasLimit || getDefaultGasLimitForTrade(quote, chainId);
+      return gasLimit;
     } catch (error) {
       return getDefaultGasLimitForTrade(quote, chainId);
     }
