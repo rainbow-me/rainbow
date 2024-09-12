@@ -488,7 +488,6 @@ const listenOnNewMessages =
                 logger.debug('WC: Updating session for chainID', { chainId: numericChainId }, logger.DebugContext.walletconnect);
                 await walletConnector.updateSession({
                   accounts: [accountAddress],
-                  // @ts-expect-error "numericChainId" is a string, not a number.
                   chainId: numericChainId,
                 });
                 dispatch(setWalletConnector(walletConnector));
