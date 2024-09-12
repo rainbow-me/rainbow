@@ -538,7 +538,7 @@ export function useSwapInputsController({
   };
 
   const quoteFetchingInterval = useAnimatedInterval({
-    intervalMs: IS_TEST ? 999_999 : 12_000,
+    intervalMs: 12_000,
     onIntervalWorklet: fetchQuoteAndAssetPrices,
     autoStart: false,
   });
