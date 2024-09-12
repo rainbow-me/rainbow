@@ -38,10 +38,10 @@ export type SwapMetadata = {
 export type QuoteTypeMap = {
   swap: Quote;
   crosschainSwap: CrosschainQuote;
-  claimBridge: undefined;
+  claimRewardsBridge: undefined;
 };
 
-export interface RapSwapActionParameters<T extends 'swap' | 'crosschainSwap' | 'claimBridge'> {
+export interface RapSwapActionParameters<T extends 'swap' | 'crosschainSwap' | 'claimRewardsBridge'> {
   amount?: string | null;
   sellAmount: string;
   buyAmount?: string;
@@ -93,8 +93,8 @@ export type RapActionParameterMap = {
   swap: RapSwapActionParameters<'swap'>;
   crosschainSwap: RapSwapActionParameters<'crosschainSwap'>;
   unlock: RapUnlockActionParameters;
-  claim: RapClaimActionParameters;
-  claimBridge: RapClaimActionParameters;
+  claimRewards: RapClaimActionParameters;
+  claimRewardsBridge: RapClaimActionParameters;
 };
 
 export interface RapAction<T extends RapActionTypes> {
@@ -104,15 +104,15 @@ export interface RapAction<T extends RapActionTypes> {
 }
 
 export interface Rap {
-  actions: RapAction<'swap' | 'crosschainSwap' | 'unlock' | 'claim' | 'claimBridge'>[];
+  actions: RapAction<'swap' | 'crosschainSwap' | 'unlock' | 'claimRewards' | 'claimRewardsBridge'>[];
 }
 
 export enum rapActions {
   swap = 'swap',
   crosschainSwap = 'crosschainSwap',
   unlock = 'unlock',
-  claim = 'claim',
-  claimBridge = 'claimBridge',
+  claimRewards = 'claimRewards',
+  claimRewardsBridge = 'claimRewardsBridge',
 }
 
 export type RapActionTypes = keyof typeof rapActions;
@@ -120,7 +120,7 @@ export type RapActionTypes = keyof typeof rapActions;
 export enum rapTypes {
   swap = 'swap',
   crosschainSwap = 'crosschainSwap',
-  claimBridge = 'claimBridge',
+  claimRewardsBridge = 'claimRewardsBridge',
 }
 
 export type RapTypes = keyof typeof rapTypes;
@@ -147,6 +147,6 @@ export interface ActionProps<T extends RapActionTypes> {
 }
 
 export interface WalletExecuteRapProps {
-  rapActionParameters: RapSwapActionParameters<'swap' | 'crosschainSwap' | 'claimBridge'>;
+  rapActionParameters: RapSwapActionParameters<'swap' | 'crosschainSwap' | 'claimRewardsBridge'>;
   type: RapTypes;
 }

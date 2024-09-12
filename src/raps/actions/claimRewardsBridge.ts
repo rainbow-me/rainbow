@@ -15,12 +15,12 @@ import { executeCrosschainSwap } from './crosschainSwap';
 import { ChainId } from '@/networks/types';
 
 // This action is used to bridge the claimed funds to another chain
-export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps<'claimBridge'>) {
+export async function claimRewardsBridge({ parameters, wallet, baseNonce }: ActionProps<'claimRewardsBridge'>) {
   const { address, toChainId, sellAmount, chainId } = parameters;
   // Check if the address and toChainId are valid
   // otherwise we can't continue
   if (!toChainId || !address) {
-    throw new RainbowError('claimBridge: error getClaimBridgeQuote');
+    throw new RainbowError('claimRewardsBridge: error getClaimBridgeQuote');
   }
 
   let maxBridgeableAmount = sellAmount;
@@ -43,7 +43,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
 
   // if we don't get a quote or there's an error we can't continue
   if (!claimBridgeQuote || (claimBridgeQuote as QuoteError)?.error) {
-    throw new Error('[CLAIM-BRIDGE]: error getting getClaimBridgeQuote');
+    throw new Error('[CLAIM-REWARDS-BRIDGE]: error getting getClaimBridgeQuote');
   }
 
   let bridgeQuote = claimBridgeQuote as CrosschainQuote;
@@ -80,7 +80,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
   if (lessThan(subtract(balance.toString(), sellAmount), gasFeeInWei)) {
     // if the balance is less than the gas fee we can't continue
     if (lessThan(sellAmount, gasFeeInWei)) {
-      throw new Error('[CLAIM-BRIDGE]: error insufficient funds to pay gas fee');
+      throw new Error('[CLAIM-REWARDS-BRIDGE]: error insufficient funds to pay gas fee');
     } else {
       // otherwie we bridge the maximum amount we can afford
       maxBridgeableAmount = subtract(sellAmount, gasFeeInWei);
@@ -103,7 +103,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
     });
 
     if (!newQuote || (newQuote as QuoteError)?.error) {
-      throw new Error('[CLAIM-BRIDGE]: error getClaimBridgeQuote (new)');
+      throw new Error('[CLAIM-REWARDS-BRIDGE]: error getClaimBridgeQuote (new)');
     }
 
     bridgeQuote = newQuote as CrosschainQuote;
@@ -125,7 +125,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
   }
 
   if (!gasLimit) {
-    throw new Error('[CLAIM-BRIDGE]: error estimating gas or using default gas limit');
+    throw new Error('[CLAIM-REWARDS-BRIDGE]: error estimating gas or using default gas limit');
   }
 
   // we need to bump the base nonce to next available one
@@ -146,11 +146,11 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
   try {
     swap = await executeCrosschainSwap(swapParams);
   } catch (e) {
-    throw new Error('[CLAIM-BRIDGE]: crosschainSwap error');
+    throw new Error('[CLAIM-REWARDS-BRIDGE]: crosschainSwap error');
   }
 
   if (!swap) {
-    throw new Error('[CLAIM-BRIDGE]: executeCrosschainSwap returned undefined');
+    throw new Error('[CLAIM-REWARDS-BRIDGE]: executeCrosschainSwap returned undefined');
   }
 
   const typedAssetToBuy: ParsedAddressAsset = {

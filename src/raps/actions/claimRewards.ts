@@ -15,10 +15,10 @@ const DO_FAKE_CLAIM = false;
 // This action is used to claim the rewards of the user
 // by making an api call to the backend which would use a relayer
 // to do the claim and send the funds to the user
-export async function claim({ parameters, wallet, baseNonce }: ActionProps<'claim'>) {
+export async function claimRewards({ parameters, wallet, baseNonce }: ActionProps<'claimRewards'>) {
   const { address } = parameters;
   if (!address) {
-    throw new Error('[CLAIM]: missing address');
+    throw new Error('[CLAIM-REWARDS]: missing address');
   }
   // when DO_FAKE_CLAIM is true, we use mock data (can do as many as we want)
   // otherwise we do a real claim (can be done once, then backend needs to reset it)
@@ -29,7 +29,7 @@ export async function claim({ parameters, wallet, baseNonce }: ActionProps<'clai
   if (!txHash) {
     // If there's no transaction hash the relayer didn't submit the transaction
     // so we can't contnue
-    throw new Error('[CLAIM]: missing tx hash from backend');
+    throw new Error('[CLAIM-REWARDS]: missing tx hash from backend');
   }
 
   // We need to make sure the transaction is mined
@@ -37,7 +37,7 @@ export async function claim({ parameters, wallet, baseNonce }: ActionProps<'clai
   const claimTx = await wallet?.provider?.getTransaction(txHash);
   if (!claimTx) {
     // If we can't get the transaction we can't continue
-    throw new Error('[CLAIM]: tx not found');
+    throw new Error('[CLAIM-REWARDS]: tx not found');
   }
 
   // then we wait for the receipt of the transaction
@@ -45,14 +45,14 @@ export async function claim({ parameters, wallet, baseNonce }: ActionProps<'clai
   const receipt = await claimTx?.wait();
   if (!receipt) {
     // If we can't get the receipt we can't continue
-    throw new Error('[CLAIM]: tx not mined');
+    throw new Error('[CLAIM-REWARDS]: tx not mined');
   }
 
   // finally we check if the transaction was successful
   const success = receipt?.status === 1;
   if (!success) {
     // The transaction failed, we can't continue
-    throw new Error('[CLAIM]: claim tx failed onchain');
+    throw new Error('[CLAIM-REWARDS]: claim rewards tx failed onchain');
   }
 
   // If the transaction was successful we can return the hash

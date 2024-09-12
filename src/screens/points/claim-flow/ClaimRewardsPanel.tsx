@@ -258,7 +258,7 @@ const ClaimingRewards = ({
         // @ts-expect-error - collision between old gas types and new
         gasFeeParamsBySpeed,
         gasParams,
-      } satisfies RapSwapActionParameters<'claimBridge'>;
+      } satisfies RapSwapActionParameters<'claimRewardsBridge'>;
 
       const provider = getProvider({ chainId: ChainId.optimism });
       const wallet = await loadWallet({
@@ -275,7 +275,7 @@ const ClaimingRewards = ({
       try {
         const { errorMessage, nonce: bridgeNonce } = await walletExecuteRap(
           wallet,
-          'claimBridge',
+          'claimRewardsBridge',
           // @ts-expect-error - collision between old gas types and new
           actionParams
         );
