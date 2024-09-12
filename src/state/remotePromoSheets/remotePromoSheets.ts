@@ -161,5 +161,10 @@ export const remotePromoSheetsStore = createRainbowStore<RemotePromoSheetsState>
     version: 1,
     serializer: serializeState,
     deserializer: deserializeState,
+    partialize: state => ({
+      sheetsById: state.sheetsById,
+      sheets: state.sheets,
+      lastShownTimestamp: state.lastShownTimestamp,
+    }),
   }
 );

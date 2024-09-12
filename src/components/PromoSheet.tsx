@@ -1,13 +1,12 @@
-import React, { useCallback, useEffect, useReducer } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { ImageSourcePropType, StatusBar, ImageBackground } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { SheetActionButton, SheetHandle, SlackSheet } from '@/components/sheet';
 import { CampaignKey } from '@/components/remote-promo-sheet/localCampaignChecks';
 import { analyticsV2 } from '@/analytics';
-import { AccentColorProvider, Box, Stack, Text, Bleed, Column, Columns, useForegroundColor } from '@/design-system';
+import { AccentColorProvider, Box, Stack, Text, Bleed, Column, Columns, useForegroundColor, useAccentColor } from '@/design-system';
 import { useDimensions } from '@/hooks';
-import { sharedCoolModalTopOffset } from '@/navigation/config';
 import { useTheme } from '@/theme';
 import { IS_ANDROID } from '@/env';
 import { safeAreaInsetValues } from '@/utils';
@@ -165,7 +164,7 @@ export function PromoSheet({
                     label={primaryButtonProps.label}
                     lightShadows
                     onPress={primaryButtonOnPress}
-                    textColor={primaryButtonProps.textColor || backgroundColor}
+                    textColor={primaryButtonProps.textColor}
                     textSize="large"
                     weight="heavy"
                   />
