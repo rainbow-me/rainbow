@@ -36,6 +36,7 @@ import { logger, RainbowError } from '@/logger';
 import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
 import { ChainId } from '@/chains/types';
 import { defaultChains } from '@/chains';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 export enum TokenStandard {
   ERC1155 = 'ERC1155',
@@ -142,6 +143,13 @@ export const getCachedProviderForNetwork = (chainId: ChainId = ChainId.mainnet):
 };
 
 export const getProvider = ({ chainId = ChainId.mainnet }: { chainId?: number }): StaticJsonRpcProvider => {
+  if (useConnectedToHardhatStore.getState().connectedToHardhat) {
+    const provider = new StaticJsonRpcProvider('http://127.0.0.1:8545/', ChainId.mainnet);
+    chainsProviders.set(chainId, provider);
+
+    return provider;
+  }
+
   const cachedProvider = chainsProviders.get(chainId);
 
   const providerUrl = defaultChains[chainId]?.rpcUrls?.default?.http?.[0];
