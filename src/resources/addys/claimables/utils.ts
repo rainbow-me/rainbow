@@ -1,10 +1,16 @@
 import { NativeCurrencyKey } from '@/entities';
 import { AddysClaimable, Claimable } from './types';
-import { convertRawAmountToBalance, convertRawAmountToNativeDisplay, greaterThan, lessThan } from '@/helpers/utilities';
+import { convertRawAmountToBalance, convertRawAmountToNativeDisplay, greaterThan } from '@/helpers/utilities';
 
 export const parseClaimables = (claimables: AddysClaimable[], currency: NativeCurrencyKey): Claimable[] => {
   return claimables
     .map(claimable => ({
+      asset: {
+        iconUrl: claimable.asset.icon_url,
+        name: claimable.asset.name,
+        symbol: claimable.asset.symbol,
+      },
+      chainId: claimable.network,
       name: claimable.name,
       uniqueId: claimable.unique_id,
       iconUrl: claimable.dapp.icon_url,

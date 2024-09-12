@@ -1,6 +1,6 @@
-import { ChainId } from '@rainbow-me/swaps';
 import { Address } from 'viem';
 import { AddysAsset, AddysConsolidatedError, AddysResponseStatus } from '../types';
+import { ChainId } from '@/networks/types';
 
 interface Colors {
   primary: string;
@@ -63,6 +63,12 @@ export interface ConsolidatedClaimablesResponse {
 
 // will add more attributes as needed
 export interface Claimable {
+  asset: {
+    iconUrl: string;
+    name: string;
+    symbol: string;
+  };
+  chainId: ChainId;
   name: string;
   uniqueId: string;
   iconUrl: string;
