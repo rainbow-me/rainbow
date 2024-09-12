@@ -1,4 +1,3 @@
-import create from 'zustand';
 import { createRainbowStore } from '../internal/createRainbowStore';
 
 export interface ConnectedToHardhatState {

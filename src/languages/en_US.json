@@ -16,6 +16,7 @@
       "tab_balances": "Balances",
       "tab_balances_empty_state": "Balance",
       "tab_balances_tooltip": "Ethereum and Token Balances",
+      "tab_claimables": "Claimables",
       "tab_collectibles": "Collectibles",
       "tab_interactions": "Interactions",
       "tab_interactions_tooltip": "Smart Contract Interactions",
