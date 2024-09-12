@@ -159,7 +159,6 @@ const ENS_CONFIGURATION_EXPLAINER =
 export const explainers = (params, theme) => {
   const colors = theme?.colors;
   const chainId = params?.chainId;
-  const network = chainsName[chainId];
   const fromChainId = params?.fromChainId;
   const toChainId = params?.toChainId;
   return {
@@ -224,7 +223,7 @@ export const explainers = (params, theme) => {
             toNetwork: chainsLabel[toChainId],
           })
         : lang.t('explain.output_disabled.text', {
-            fromNetwork: chainsLabel[fromChainId]?.name,
+            fromNetwork: chainsLabel[fromChainId],
             inputToken: params?.inputToken,
             outputToken: params?.outputToken,
           }),
@@ -252,7 +251,7 @@ export const explainers = (params, theme) => {
         />
       ),
       extraHeight: 2,
-      text: gasExplainer(chainsName[chainId]),
+      text: gasExplainer(chainsLabel[chainId]),
       title: lang.t('explain.gas.title', {
         networkName: chainsLabel[chainId],
       }),
@@ -537,7 +536,7 @@ export const explainers = (params, theme) => {
       button: {
         label: `Continue with ${chainsLabel[chainId]}`,
         bgColor: colors?.networkColors[chainId] && colors?.alpha(colors?.networkColors[chainId], 0.06),
-        textColor: colors?.networkColors[chainId] && colors?.networkColors?.[network],
+        textColor: colors?.networkColors?.[chainId],
       },
       emoji: '🔐',
       extraHeight: -90,

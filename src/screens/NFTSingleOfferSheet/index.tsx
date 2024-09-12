@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import lang from 'i18n-js';
 import { Linking, View } from 'react-native';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -164,7 +164,7 @@ export function NFTSingleOfferSheet() {
   const feesPercentage = Math.floor(offer.feesPercentage * 10) / 10;
   const royaltiesPercentage = Math.floor(offer.royaltiesPercentage * 10) / 10;
 
-  const chain = useMemo(() => defaultChains[offerChainId], [offerChainId]);
+  const chain = defaultChains[offerChainId];
 
   useEffect(() => {
     setParams({ longFormHeight: height });
