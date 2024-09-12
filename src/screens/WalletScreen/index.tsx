@@ -124,7 +124,7 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
         {/* NOTE: The components below render null and are solely for keeping react-query and Zustand in sync */}
         <UserAssetsSync />
         <RemoteCardsSync />
-        <RemotePromoSheetSync />
+        <RemotePromoSheetSync walletReady={walletReady} />
 
         {/* NOTE: This component listens for Mobile Wallet Protocol requests and handles them */}
         <MobileWalletProtocolListener />

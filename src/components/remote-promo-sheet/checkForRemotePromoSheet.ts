@@ -22,7 +22,7 @@ export type CampaignCheckResult = {
   campaignKey: string;
 };
 
-const TIMEOUT_BETWEEN_PROMOS = 5 * 60 * 1000; // 5 minutes in milliseconds
+const TIMEOUT_BETWEEN_PROMOS = 5 * 60 * 1000; // 5 minutes
 
 const timeBetweenPromoSheets = () => {
   const lastShownAt = remotePromoSheetsStore.getState().lastShownTimestamp;
@@ -30,22 +30,22 @@ const timeBetweenPromoSheets = () => {
   return Date.now() - lastShownAt;
 };
 
-export const checkForCampaign = async () => {
-  logger.debug('[checkForCampaign]: Running Checks');
+export const checkForRemotePromoSheet = async () => {
+  logger.debug('[checkForPromoSheet]: Running Checks');
   if (timeBetweenPromoSheets() < TIMEOUT_BETWEEN_PROMOS) {
-    logger.debug('[checkForCampaign]: Time between promos has not exceeded timeout');
+    logger.debug('[checkForPromoSheet]: Time between promotions has not exceeded timeout');
     return;
   }
 
   const isShown = remotePromoSheetsStore.getState().isShown;
   if (isShown) {
-    logger.debug('[checkForCampaign]: Another remote sheet is currently shown');
+    logger.debug('[checkForPromoSheet]: Another promo sheet is currently shown');
     return;
   }
 
   const isReturningUser = device.get(['isReturningUser']);
   if (!isReturningUser) {
-    logger.debug('[checkForCampaign]: First launch, not showing promo sheet');
+    logger.debug('[checkForPromoSheet]: First launch, not showing promo sheet');
     return;
   }
 
@@ -55,23 +55,19 @@ export const checkForCampaign = async () => {
 
   for (const promo of promoSheetCollection?.items || []) {
     if (!promo) continue;
-    logger.debug(`[checkForCampaign]: Checking ${promo.sys.id}`);
+    logger.debug(`[checkForPromoSheet]: Checking ${promo.campaignKey}`);
     const result = await shouldPromptCampaign(promo as PromoSheet);
-
-    logger.debug(`[checkForCampaign]: ${promo.sys.id} will show: ${result}`);
-    if (result) {
-      const isShown = remotePromoSheetsStore.getState().isShown;
-      if (!isShown) {
-        remotePromoSheetsStore.setState({ isShown: true });
-        triggerCampaign(promo as PromoSheet);
-        break;
-      }
+    if (!result) {
+      logger.debug(`[checkForPromoSheet]: ${promo.campaignKey} will not show`);
+      continue;
     }
+
+    return triggerCampaign(promo as PromoSheet);
   }
 };
 
 export const triggerCampaign = async ({ campaignKey, sys: { id: campaignId } }: PromoSheet) => {
-  logger.debug(`[checkForCampaign]: Showing ${campaignKey} Promo`);
+  logger.debug(`[checkForPromoSheet]: Showing ${campaignKey} Promo`);
 
   setTimeout(() => {
     remotePromoSheetsStore.getState().showSheet(campaignId);
@@ -95,14 +91,13 @@ export const shouldPromptCampaign = async (campaign: PromoSheet): Promise<boolea
   if (!campaignKey || !id) return false;
 
   const actionsArray = actions || ([] as ActionObj[]);
-  logger.debug(`[checkForCampaign]: Checking if we should prompt campaign ${campaignKey}`);
+  logger.debug(`[checkForPromoSheet]: Checking if we should prompt campaign ${campaignKey}`);
 
-  const isPreviewing = actionsArray.some((action: ActionObj) => action.fn === 'isPreviewing');
   const hasShown = remotePromoSheetsStore.getState().getSheet(id)?.hasBeenShown;
 
-  // If the campaign has been viewed already or it's the first app launch, exit early
-  if (hasShown && !isPreviewing) {
-    logger.debug(`[checkForCampaign]: User has already been shown ${campaignKey}`);
+  // If the campaign has been viewed, exit early
+  if (hasShown) {
+    logger.debug(`[checkForPromoSheet]: User has already been shown promo sheet: ${campaignKey}`);
     return false;
   }
 
@@ -115,9 +110,9 @@ export const shouldPromptCampaign = async (campaign: PromoSheet): Promise<boolea
       continue;
     }
 
-    logger.debug(`[checkForCampaign]: Checking action ${fn}`);
+    logger.debug(`[checkForPromoSheet]: Checking action ${fn}`);
     const result = await action({ ...props, ...campaign });
-    logger.debug(`[checkForCampaign]: [${fn}] matches desired outcome: => ${result === outcome}`);
+    logger.debug(`[checkForPromoSheet]: [${fn}] matches desired outcome: => ${result === outcome}`);
 
     if (result !== outcome) {
       shouldPrompt = false;

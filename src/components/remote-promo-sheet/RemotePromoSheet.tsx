@@ -55,11 +55,6 @@ export function RemotePromoSheet() {
   const { language } = useAccountSettings();
 
   useEffect(() => {
-    remotePromoSheetsStore.setState({
-      isShown: true,
-      lastShownTimestamp: Date.now(),
-    });
-
     return () => {
       remotePromoSheetsStore.setState({
         isShown: false,
@@ -101,6 +96,7 @@ export function RemotePromoSheet() {
   }, [goBack, navigate, data?.promoSheet]);
 
   if (!data?.promoSheet || error) {
+    goBack();
     return null;
   }
 
@@ -116,9 +112,11 @@ export function RemotePromoSheet() {
     secondaryButtonProps,
   } = data.promoSheet;
 
-  const accentColor = (colors as { [key: string]: any })[accentColorString as string] ?? accentColorString;
-  const backgroundColor = (colors as { [key: string]: any })[backgroundColorString as string] ?? backgroundColorString;
-  const sheetHandleColor = (colors as { [key: string]: any })[sheetHandleColorString as string] ?? sheetHandleColorString;
+  const accentColor = accentColorString ? (colors as { [key: string]: any })[accentColorString as string] : colors.appleBlue;
+  const backgroundColor = backgroundColorString ? (colors as { [key: string]: any })[backgroundColorString as string] : colors.dark;
+  const sheetHandleColor = sheetHandleColorString
+    ? (colors as { [key: string]: any })[sheetHandleColorString as string]
+    : colors.whiteLabel;
 
   const backgroundSignedImageUrl = backgroundImage?.url ? maybeSignUri(backgroundImage.url) : undefined;
   const headerSignedImageUrl = headerImage?.url ? maybeSignUri(headerImage.url) : undefined;

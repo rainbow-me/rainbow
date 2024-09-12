@@ -144,17 +144,14 @@ export const remotePromoSheetsStore = createRainbowStore<RemotePromoSheetsState>
     },
 
     showSheet: (id: string) => {
-      const sheet = get().sheets.get(id);
+      const { sheets } = get();
+      const sheet = sheets.get(id);
       if (!sheet) return;
 
-      const newSheets = new Map<string, OmittedPromoSheet>(get().sheets);
+      const newSheets = new Map<string, OmittedPromoSheet>(sheets);
       newSheets.set(id, { ...sheet, hasBeenShown: true });
 
-      set({
-        isShown: true,
-        lastShownTimestamp: Date.now(),
-        sheets: newSheets,
-      });
+      set({ sheets: newSheets, isShown: true, lastShownTimestamp: Date.now() });
     },
 
     getSheet: (id: string) => get().sheets.get(id),

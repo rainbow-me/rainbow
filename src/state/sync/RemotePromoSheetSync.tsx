@@ -6,7 +6,7 @@ import { GetPromoSheetCollectionQuery, PromoSheetOrder } from '@/graphql/__gener
 import { useRunChecks } from '@/components/remote-promo-sheet/runChecks';
 import { IS_TEST } from '@/env';
 
-const RemotePromoSheetSyncComponent = () => {
+const RemotePromoSheetSyncComponent = ({ walletReady }: { walletReady: boolean }) => {
   const onSuccess = useCallback((data: GetPromoSheetCollectionQuery) => {
     remotePromoSheetsStore.getState().setSheets(data);
   }, []);
@@ -15,13 +15,13 @@ const RemotePromoSheetSyncComponent = () => {
     { order: [PromoSheetOrder.PriorityDesc] },
     {
       onSuccess,
-      enabled: !IS_TEST,
+      enabled: !IS_TEST && walletReady,
     }
   );
 
-  useRunChecks();
+  useRunChecks({ walletReady });
 
   return null;
 };
 
-export const RemotePromoSheetSync = React.memo(RemotePromoSheetSyncComponent, () => true);
+export const RemotePromoSheetSync = React.memo(RemotePromoSheetSyncComponent);
