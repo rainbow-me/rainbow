@@ -22,7 +22,7 @@ import {
 } from '@/entities';
 
 import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
-import { getProvider, toHex } from '@/handlers/web3';
+import { getProvider } from '@/handlers/web3';
 import {
   defaultGasParamsFormat,
   gweiToWei,
@@ -40,7 +40,7 @@ import { ChainId } from '@/chains/types';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 import { chainsSwapPollingInterval, meteorologySupportedChainIds, needsL1SecurityFeeChains } from '@/chains';
 import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
-import { addBuffer, multiply } from '@/helpers/utilities';
+import { addBuffer } from '@/helpers/utilities';
 
 const { CUSTOM, FAST, NORMAL, SLOW, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
 
@@ -338,15 +338,8 @@ export const gasPricesStartPolling =
               const { nativeCurrency } = getState().settings;
 
               let dataIsReady = true;
-              const isLegacyGasNetwork = !!(lastSelectedGasFee as LegacyGasFee)?.estimatedFee;
               const meteorologySupportsChainId = meteorologySupportedChainIds.includes(chainId);
-
               if (!meteorologySupportsChainId) {
-                // OP chains have an additional fee we need to load
-                if (needsL1SecurityFeeChains.includes(chainId)) {
-                  dataIsReady = l1GasFeeOptimism !== null;
-                }
-
                 const adjustedGasFees = await getProviderGasPrices({ chainId });
 
                 if (!adjustedGasFees) return;
@@ -365,7 +358,7 @@ export const gasPricesStartPolling =
                       _selectedGasFeeOption,
                       chainId,
                       l1GasFeeOptimism,
-                      isLegacyGasNetwork
+                      true
                     )
                   : {
                       gasFeesBySpeed: lastGasFeesBySpeed,
@@ -381,8 +374,11 @@ export const gasPricesStartPolling =
                 });
               } else {
                 try {
+                  // OP chains have an additional fee we need to load
+                  if (needsL1SecurityFeeChains.includes(chainId)) {
+                    dataIsReady = l1GasFeeOptimism !== null;
+                  }
                   const meteorologyGasParams = await getMeteorologyGasParams(chainId);
-
                   if (meteorologyGasParams.feeType === 'eip1559') {
                     const { gasFeeParamsBySpeed, baseFeePerGas, trend, currentBaseFee, blocksToConfirmation, secondsPerNewBlock } =
                       meteorologyGasParams as MeterologyGasParams;
@@ -434,7 +430,7 @@ export const gasPricesStartPolling =
                       _selectedGasFeeOption,
                       chainId,
                       l1GasFeeOptimism,
-                      isLegacyGasNetwork
+                      false
                     );
 
                     dispatch({
@@ -474,7 +470,7 @@ export const gasPricesStartPolling =
                           _selectedGasFeeOption,
                           chainId,
                           l1GasFeeOptimism,
-                          isLegacyGasNetwork
+                          true
                         )
                       : {
                           gasFeesBySpeed: lastGasFeesBySpeed,
