@@ -39,6 +39,7 @@ import { ChainId } from '@/chains/types';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 import { chainsSwapPollingInterval, meteorologySupportedChainIds, needsL1SecurityFeeChains } from '@/chains';
 import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
+import { addBuffer, multiply } from '@/helpers/utilities';
 
 const { CUSTOM, FAST, NORMAL, SLOW, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
 
@@ -249,7 +250,7 @@ export const getProviderGasPrices = async ({ chainId }: { chainId: ChainId }) =>
   const provider = getProvider({ chainId });
   const baseGasPrice = await provider.getGasPrice();
 
-  const normalGasPrice = toHex(Math.ceil(Number((baseGasPrice.toString(), 1.05))));
+  const normalGasPrice = toHex(Math.ceil(Number(addBuffer(baseGasPrice.toString(), 1.05))));
 
   const priceData = {
     fast: normalGasPrice,
