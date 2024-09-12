@@ -368,7 +368,7 @@ export default function SendSheet(props) {
           recipient: toAddress,
         },
         currentProvider,
-        chainsName[currentChainId]
+        currentChainId
       );
       const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(txData, currentProvider);
       updateTxFee(updatedGasLimit, null, l1GasFeeOptimism);
