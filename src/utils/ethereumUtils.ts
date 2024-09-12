@@ -175,16 +175,12 @@ const getAssetPrice = (address: EthereumAddress = ETH_ADDRESS): number => {
 };
 
 export const useNativeAsset = ({ chainId }: { chainId: ChainId }) => {
-  let address = (chainsNativeAsset[chainId]?.address || ETH_ADDRESS) as AddressOrEth;
-  let internalChainId = ChainId.mainnet;
   const { nativeCurrency } = store.getState().settings;
-  if (chainId === ChainId.avalanche || chainId === ChainId.degen) {
-    address = chainsNativeAsset[chainId]?.address as AddressOrEth;
-    internalChainId = chainId;
-  }
+  const address = (chainsNativeAsset[chainId]?.address || ETH_ADDRESS) as AddressOrEth;
+
   const { data: nativeAsset } = useExternalToken({
     address,
-    chainId: internalChainId,
+    chainId,
     currency: nativeCurrency,
   });
 
