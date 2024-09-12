@@ -144,7 +144,7 @@ export const getCachedProviderForNetwork = (chainId: ChainId = ChainId.mainnet):
 export const getProvider = ({ chainId = ChainId.mainnet }: { chainId?: number }): StaticJsonRpcProvider => {
   const cachedProvider = chainsProviders.get(chainId);
 
-  const providerUrl = defaultChains[chainId].rpcUrls.default.http[0];
+  const providerUrl = defaultChains[chainId]?.rpcUrls?.default?.http?.[0];
 
   if (cachedProvider && cachedProvider?.connection.url === providerUrl) {
     return cachedProvider;
