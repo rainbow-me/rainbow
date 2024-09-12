@@ -214,7 +214,7 @@ export const createUserAssetsStore = (address: Address | string) =>
         const assetIds = filter ? idsByChain.get(filter) || [] : idsByChain.get('all') || [];
 
         for (const id of assetIds) {
-          if (currentAbortController?.signal.aborted) {
+          if (currentAbortController?.signal?.aborted) {
             return;
           }
           const asset = userAssets.get(id);
