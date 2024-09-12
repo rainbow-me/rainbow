@@ -1,15 +1,20 @@
-import { AnimatedText, Box, Inline } from '@/design-system';
+import { AnimatedText, Box } from '@/design-system';
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import Animated, { useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
+import Animated, { runOnJS, useAnimatedStyle, useDerivedValue } from 'react-native-reanimated';
 
 import { SwapInputValuesCaret } from '@/__swaps__/screens/Swap/components/SwapInputValuesCaret';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { inputKeys } from '@/__swaps__/types/swap';
 import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
 
-export function SwapNativeInput({ nativeInputType }: { nativeInputType: inputKeys }) {
+export function SwapNativeInput({
+  nativeInputType,
+  handleTapWhileDisabled,
+}: {
+  nativeInputType: 'inputNativeValue' | 'outputNativeValue';
+  handleTapWhileDisabled?: () => void;
+}) {
   const {
     focusedInput,
     internalSelectedInputAsset,
@@ -30,9 +35,7 @@ export function SwapNativeInput({ nativeInputType }: { nativeInputType: inputKey
   });
 
   const disabled = useDerivedValue(() => {
-    if (!(nativeInputType === 'inputNativeValue' || nativeInputType === 'outputNativeValue')) return false;
-
-    if (outputQuotesAreDisabled.value) return true;
+    if (nativeInputType === 'outputNativeValue' && outputQuotesAreDisabled.value) return true;
 
     // disable caret and pointer events for native inputs when corresponding asset is missing price
     const asset = nativeInputType === 'inputNativeValue' ? internalSelectedInputAsset : internalSelectedOutputAsset;
@@ -51,11 +54,14 @@ export function SwapNativeInput({ nativeInputType }: { nativeInputType: inputKey
       disableButtonPressWrapper
       onPressStartWorklet={() => {
         'worklet';
-        focusedInput.value = nativeInputType;
+        if (outputQuotesAreDisabled.value && handleTapWhileDisabled && nativeInputType === 'outputNativeValue') {
+          runOnJS(handleTapWhileDisabled)();
+        } else {
+          focusedInput.value = nativeInputType;
+        }
       }}
-      style={pointerEventsStyle}
     >
-      <Inline alignVertical="center">
+      <Box as={Animated.View} style={[styles.nativeRowContainer, pointerEventsStyle]}>
         <AnimatedText numberOfLines={1} size="17pt" style={textStyle} weight="heavy">
           {nativeCurrencySymbol}
         </AnimatedText>
@@ -65,11 +71,12 @@ export function SwapNativeInput({ nativeInputType }: { nativeInputType: inputKey
           </AnimatedText>
           <SwapInputValuesCaret inputCaretType={nativeInputType} disabled={disabled} />
         </Box>
-      </Inline>
+      </Box>
     </GestureHandlerButton>
   );
 }
 
 export const styles = StyleSheet.create({
   nativeContainer: { alignItems: 'center', flexDirection: 'row', height: 17, pointerEvents: 'box-only' },
+  nativeRowContainer: { alignItems: 'center', flexDirection: 'row' },
 });

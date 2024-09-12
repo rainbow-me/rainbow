@@ -22,7 +22,6 @@ import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { ethereumUtils } from '@/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { CopyPasteMenu } from './CopyPasteMenu';
 
@@ -53,27 +52,8 @@ function SwapOutputActionButton() {
   );
 }
 
-function SwapOutputAmount() {
-  const { navigate } = useNavigation();
+function SwapOutputAmount({ handleTapWhileDisabled }: { handleTapWhileDisabled: () => void }) {
   const { focusedInput, SwapTextStyles, SwapInputController, outputQuotesAreDisabled } = useSwapContext();
-
-  const handleTapWhileDisabled = useCallback(() => {
-    const { inputAsset, outputAsset } = useSwapsStore.getState();
-    const inputTokenSymbol = inputAsset?.symbol;
-    const outputTokenSymbol = outputAsset?.symbol;
-    const isCrosschainSwap = inputAsset?.chainId !== outputAsset?.chainId;
-    const isBridgeSwap = inputTokenSymbol === outputTokenSymbol;
-
-    navigate(Routes.EXPLAIN_SHEET, {
-      inputToken: inputTokenSymbol,
-      fromChainId: inputAsset?.chainId ?? ChainId.mainnet,
-      toChainId: outputAsset?.chainId ?? ChainId.mainnet,
-      isCrosschainSwap,
-      isBridgeSwap,
-      outputToken: outputTokenSymbol,
-      type: 'output_disabled',
-    });
-  }, [navigate]);
 
   const [isPasteEnabled, setIsPasteEnabled] = useState(() => !outputQuotesAreDisabled.value);
   useAnimatedReaction(
@@ -148,6 +128,25 @@ function OutputAssetBalanceBadge() {
 
 export function SwapOutputAsset() {
   const { outputProgress, inputProgress, AnimatedSwapStyles, internalSelectedOutputAsset, SwapNavigation } = useSwapContext();
+  const { navigate } = useNavigation();
+
+  const handleTapWhileDisabled = useCallback(() => {
+    const { inputAsset, outputAsset } = useSwapsStore.getState();
+    const inputTokenSymbol = inputAsset?.symbol;
+    const outputTokenSymbol = outputAsset?.symbol;
+    const isCrosschainSwap = inputAsset?.chainId !== outputAsset?.chainId;
+    const isBridgeSwap = inputTokenSymbol === outputTokenSymbol;
+
+    navigate(Routes.EXPLAIN_SHEET, {
+      inputToken: inputTokenSymbol,
+      fromChainId: inputAsset?.chainId ?? ChainId.mainnet,
+      toChainId: outputAsset?.chainId ?? ChainId.mainnet,
+      isCrosschainSwap,
+      isBridgeSwap,
+      outputToken: outputTokenSymbol,
+      type: 'output_disabled',
+    });
+  }, [navigate]);
 
   return (
     <SwapInput asset={internalSelectedOutputAsset} bottomInput otherInputProgress={inputProgress} progress={outputProgress}>
@@ -157,13 +156,13 @@ export function SwapOutputAsset() {
             <Column width="content">
               <SwapOutputIcon />
             </Column>
-            <SwapOutputAmount />
+            <SwapOutputAmount handleTapWhileDisabled={handleTapWhileDisabled} />
             <Column width="content">
               <SwapOutputActionButton />
             </Column>
           </Columns>
           <Columns alignHorizontal="justify" alignVertical="center" space="10px">
-            <SwapNativeInput nativeInputType="outputNativeValue" />
+            <SwapNativeInput nativeInputType="outputNativeValue" handleTapWhileDisabled={handleTapWhileDisabled} />
             <Column width="content">
               <OutputAssetBalanceBadge />
             </Column>
