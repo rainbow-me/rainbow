@@ -69,7 +69,7 @@ export const SwapNumberPad = () => {
     return stripNonDecimalNumbers(SwapInputController[getFormattedInputKey(inputKey)].value);
   };
 
-  const ignoreChange = (currentValue?: string) => {
+  const ignoreChange = ({ currentValue, addingDecimal = false }: { currentValue?: string; addingDecimal?: boolean }) => {
     'worklet';
     // ignore when: outputQuotesAreDisabled and we are updating the output amount or output native value
     if ((focusedInput.value === 'outputAmount' || focusedInput.value === 'outputNativeValue') && outputQuotesAreDisabled.value) {
@@ -90,10 +90,12 @@ export const SwapNumberPad = () => {
 
     // ignore when: decimals exceed native currency decimals
     if (currentValue) {
-      const currentValueDecimals = currentValue.split('.')?.[1]?.length || 0;
+      const currentValueDecimals = currentValue.split('.')?.[1]?.length ?? -1;
       const nativeCurrencyDecimals = supportedNativeCurrencies[nativeCurrency].decimals;
 
-      if (
+      if (addingDecimal && nativeCurrencyDecimals === 0) {
+        return true;
+      } else if (
         (focusedInput.value === 'inputNativeValue' || focusedInput.value === 'outputNativeValue') &&
         currentValueDecimals >= nativeCurrencyDecimals
       ) {
@@ -107,7 +109,8 @@ export const SwapNumberPad = () => {
     'worklet';
     const inputKey = focusedInput.value;
     const currentValue = removeFormatting(inputKey);
-    if (ignoreChange(currentValue)) {
+
+    if (ignoreChange({ currentValue })) {
       return;
     }
 
@@ -117,7 +120,8 @@ export const SwapNumberPad = () => {
     const inputMethod = SwapInputController.inputMethod.value;
 
     const isNativePlaceholderValue =
-      (inputKey === 'inputNativeValue' && inputMethod !== inputKey) || (inputKey === 'outputNativeValue' && inputMethod !== inputKey);
+      equalWorklet(currentValue, 0) && inputMethod !== inputKey && (inputKey === 'inputNativeValue' || inputKey === 'outputNativeValue');
+
     const newValue = currentValue === '0' || isNativePlaceholderValue ? `${number}` : `${currentValue}${number}`;
 
     // For a uint256, the maximum value is:
@@ -149,6 +153,10 @@ export const SwapNumberPad = () => {
     const inputKey = focusedInput.value;
     const currentValue = removeFormatting(inputKey);
 
+    if (ignoreChange({ currentValue, addingDecimal: true })) {
+      return;
+    }
+
     if (!currentValue.includes('.')) {
       if (SwapInputController.inputMethod.value !== inputKey) {
         SwapInputController.inputMethod.value = inputKey;
@@ -168,7 +176,7 @@ export const SwapNumberPad = () => {
   const deleteLastCharacter = () => {
     'worklet';
 
-    if (ignoreChange()) {
+    if (ignoreChange({})) {
       return;
     }
 
