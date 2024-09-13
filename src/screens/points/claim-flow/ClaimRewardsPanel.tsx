@@ -281,7 +281,7 @@ const ClaimingRewards = ({
         );
 
         if (errorMessage) {
-          if (errorMessage.includes('[CLAIM]')) {
+          if (errorMessage.includes('[CLAIM-REWARDS]')) {
             // Claim error (retry possible)
             setClaimStatus('error');
           } else {

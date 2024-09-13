@@ -39,9 +39,10 @@ export type QuoteTypeMap = {
   swap: Quote;
   crosschainSwap: CrosschainQuote;
   claimRewardsBridge: undefined;
+  claimClaimableSwapBridge: undefined;
 };
 
-export interface RapSwapActionParameters<T extends 'swap' | 'crosschainSwap' | 'claimRewardsBridge'> {
+export interface RapSwapActionParameters<T extends 'swap' | 'crosschainSwap' | 'claimRewardsBridge' | 'claimClaimableSwapBridge'> {
   amount?: string | null;
   sellAmount: string;
   buyAmount?: string;
@@ -79,6 +80,18 @@ export interface RapClaimRewardsActionParameters {
   gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
 }
 
+export interface RapClaimClaimableActionParameters {
+  address?: Address;
+  assetToSell: ParsedAsset;
+  sellAmount: string;
+  assetToBuy: ParsedAsset;
+  meta?: SwapMetadata;
+  chainId: ChainId;
+  toChainId?: ChainId;
+  quote: undefined;
+  gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
+}
+
 export type RapActionParameters =
   | RapSwapActionParameters<'swap'>
   | RapSwapActionParameters<'crosschainSwap'>
@@ -95,6 +108,7 @@ export type RapActionParameterMap = {
   unlock: RapUnlockActionParameters;
   claimRewards: RapClaimRewardsActionParameters;
   claimRewardsBridge: RapClaimRewardsActionParameters;
+  claimClaimable: RapClaimClaimableActionParameters;
 };
 
 export interface RapAction<T extends RapActionTypes> {
@@ -104,7 +118,7 @@ export interface RapAction<T extends RapActionTypes> {
 }
 
 export interface Rap {
-  actions: RapAction<'swap' | 'crosschainSwap' | 'unlock' | 'claimRewards' | 'claimRewardsBridge'>[];
+  actions: RapAction<'swap' | 'crosschainSwap' | 'unlock' | 'claimRewards' | 'claimRewardsBridge' | 'claimClaimable'>[];
 }
 
 export enum rapActions {
@@ -113,6 +127,7 @@ export enum rapActions {
   unlock = 'unlock',
   claimRewards = 'claimRewards',
   claimRewardsBridge = 'claimRewardsBridge',
+  claimClaimable = 'claimClaimable',
 }
 
 export type RapActionTypes = keyof typeof rapActions;
@@ -121,6 +136,7 @@ export enum rapTypes {
   swap = 'swap',
   crosschainSwap = 'crosschainSwap',
   claimRewardsBridge = 'claimRewardsBridge',
+  claimClaimableSwapBridge = 'claimClaimableSwapBridge',
 }
 
 export type RapTypes = keyof typeof rapTypes;

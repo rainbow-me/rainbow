@@ -24,12 +24,16 @@ import { createUnlockAndSwapRap } from './unlockAndSwap';
 import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { Screens, TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
+import { createClaimClaimableAndSwapBridgeRap } from './claimClaimableAndSwapBridge';
+import { claimClaimable } from './actions/claimClaimable';
 
 export function createSwapRapByType<T extends RapTypes>(
   type: T,
   swapParameters: RapSwapActionParameters<T>
 ): Promise<{ actions: RapAction<RapActionTypes>[] }> {
   switch (type) {
+    case 'claimClaimableSwapBridge':
+      return createClaimClaimableAndSwapBridgeRap(swapParameters as RapSwapActionParameters<'claimClaimableSwapBridge'>);
     case 'claimRewardsBridge':
       return createClaimRewardsAndBridgeRap(swapParameters as RapSwapActionParameters<'claimRewardsBridge'>);
     case 'crosschainSwap':
@@ -43,6 +47,8 @@ export function createSwapRapByType<T extends RapTypes>(
 
 function typeAction<T extends RapActionTypes>(type: T, props: ActionProps<T>) {
   switch (type) {
+    case 'claimClaimable':
+      return () => claimClaimable(props as ActionProps<'claimClaimable'>);
     case 'claimRewards':
       return () => claimRewards(props as ActionProps<'claimRewards'>);
     case 'unlock':
@@ -128,11 +134,11 @@ const waitForNodeAck = async (hash: string, provider: Signer['provider']): Promi
 export const walletExecuteRap = async (
   wallet: Signer,
   type: RapTypes,
-  parameters: RapSwapActionParameters<'swap' | 'crosschainSwap' | 'claimRewardsBridge'>
+  parameters: RapSwapActionParameters<'swap' | 'crosschainSwap' | 'claimRewardsBridge' | 'claimClaimableSwapBridge'>
 ): Promise<{ nonce: number | undefined; errorMessage: string | null }> => {
   // NOTE: We don't care to track claimRewardsBridge raps
   const rap =
-    type === 'claimRewardsBridge'
+    type === 'claimRewardsBridge' || type === 'claimClaimableSwapBridge'
       ? await createSwapRapByType(type, parameters)
       : await performanceTracking.getState().executeFn({
           fn: createSwapRapByType,

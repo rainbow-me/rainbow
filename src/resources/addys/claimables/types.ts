@@ -28,19 +28,32 @@ interface DApp {
   colors: Colors;
 }
 
-type ClaimableType = 'transaction' | 'sponsored';
-
-export interface AddysClaimable {
+interface AddysBaseClaimable {
   name: string;
   unique_id: string;
-  type: ClaimableType;
+  type: string;
   network: ChainId;
   asset: AddysAsset;
   amount: string;
   dapp: DApp;
-  claim_action_type?: string | null;
+}
+
+interface AddysTransactionClaimable extends AddysBaseClaimable {
+  claim_action_type: 'transaction';
+  claim_action: ClaimActionTransaction[];
+}
+
+interface AddysSponsoredClaimable extends AddysBaseClaimable {
+  claim_action_type: 'sponsored';
+  claim_action: ClaimActionSponsored[];
+}
+
+interface AddysUnsupportedClaimable extends AddysBaseClaimable {
+  claim_action_type?: 'unknown' | null;
   claim_action?: ClaimAction[];
 }
+
+export type AddysClaimable = AddysTransactionClaimable | AddysSponsoredClaimable | AddysUnsupportedClaimable;
 
 interface ConsolidatedClaimablesPayloadResponse {
   claimables: AddysClaimable[];
@@ -61,8 +74,7 @@ export interface ConsolidatedClaimablesResponse {
   payload: ConsolidatedClaimablesPayloadResponse;
 }
 
-// will add more attributes as needed
-export interface Claimable {
+interface BaseClaimable {
   asset: {
     iconUrl: string;
     name: string;
@@ -77,3 +89,15 @@ export interface Claimable {
     nativeAsset: { amount: string; display: string };
   };
 }
+
+interface TransactionClaimable extends BaseClaimable {
+  type: 'transaction';
+  action: { to: Address; data: string };
+}
+
+interface SponsoredClaimable extends BaseClaimable {
+  type: 'sponsored';
+  action: { url: string; method: string };
+}
+
+export type Claimable = TransactionClaimable | SponsoredClaimable;
