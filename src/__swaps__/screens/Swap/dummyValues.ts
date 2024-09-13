@@ -1,4 +1,4 @@
-import { Network } from '@/networks/types';
+import { Network } from '@/chains/types';
 
 // /---- 🗑️ TODO: Delete these dummy values 🗑️ ----/ //
 //

@@ -28,6 +28,7 @@ import { IS_ANDROID } from '@/env';
 import { RemoteCardsSync } from '@/state/sync/RemoteCardsSync';
 import { RemotePromoSheetSync } from '@/state/sync/RemotePromoSheetSync';
 import { UserAssetsSync } from '@/state/sync/UserAssetsSync';
+import { useClaimables } from '@/resources/addys/claimables/query';
 import { MobileWalletProtocolListener } from '@/components/MobileWalletProtocolListener';
 import { runWalletBackupStatusChecks } from '@/handlers/walletReadyEvents';
 
@@ -45,6 +46,7 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
   const initializeWallet = useInitializeWallet();
   const { network: currentNetwork, accountAddress, appIcon, nativeCurrency } = useAccountSettings();
   usePositions({ address: accountAddress, currency: nativeCurrency });
+  useClaimables({ address: accountAddress, currency: nativeCurrency });
 
   const loadAccountLateData = useLoadAccountLateData();
   const loadGlobalLateData = useLoadGlobalLateData();

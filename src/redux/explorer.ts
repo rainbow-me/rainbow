@@ -4,7 +4,7 @@ import { ThunkDispatch } from 'redux-thunk';
 import { io, Socket } from 'socket.io-client';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { AppGetState, AppState } from './store';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 // -- Constants --------------------------------------- //

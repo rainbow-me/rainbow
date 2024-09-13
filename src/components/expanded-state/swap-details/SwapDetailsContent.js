@@ -20,7 +20,7 @@ import { useNavigation } from '@/navigation';
 import { SwapDetailsRewardRow } from './SwapDetailsRewardRow';
 import useExperimentalFlag, { OP_REWARDS } from '@rainbow-me/config/experimentalHooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 
 const Container = styled(Box).attrs({
   flex: 1,

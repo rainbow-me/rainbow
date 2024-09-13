@@ -5,7 +5,6 @@ import * as i18n from '@/languages';
 import { TokenFamilyHeaderHeight } from './NFTLoadingSkeleton';
 import { MINTS, NFTS_ENABLED, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { IS_TEST } from '@/env';
 import { useMints } from '@/resources/mints';
 import { useAccountSettings } from '@/hooks';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
@@ -66,8 +65,8 @@ export function NFTEmptyState() {
     data: { featuredMint },
   } = useMints({ walletAddress: accountAddress });
 
-  const nftsEnabled = (useExperimentalFlag(NFTS_ENABLED) || nfts_enabled) && !IS_TEST;
-  const mintsEnabled = (useExperimentalFlag(MINTS) || mints_enabled) && !IS_TEST;
+  const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
+  const mintsEnabled = useExperimentalFlag(MINTS) || mints_enabled;
 
   if (!nftsEnabled) return null;
 

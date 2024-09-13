@@ -22,8 +22,9 @@ import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
-import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
-import { getNetworkObject } from '@/networks';
+import { showActionSheetWithOptions } from '@/utils';
+import { ChainId } from '@/chains/types';
+import { chainsIdByName, chainsLabel, chainsNativeAsset } from '@/chains';
 
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;
@@ -69,12 +70,11 @@ export default function WalletConnectListItem({ account, chainId, dappIcon, dapp
   }, [wallets, walletNames, account]);
 
   const connectionNetworkInfo = useMemo(() => {
-    const networkObj = getNetworkObject({ chainId });
+    const nativeAsset = chainsNativeAsset[chainId];
     return {
-      chainId,
-      color: isDarkMode ? networkObj.colors.dark : networkObj.colors.light,
-      name: networkObj.name,
-      value: networkObj.value,
+      id: chainId,
+      color: isDarkMode ? nativeAsset.colors.primary : nativeAsset.colors.fallback || nativeAsset.colors.primary,
+      name: chainsLabel[chainId],
     };
   }, [chainId, isDarkMode]);
 
@@ -133,8 +133,7 @@ export default function WalletConnectListItem({ account, chainId, dappIcon, dapp
         handlePressChangeWallet();
       } else if (actionKey.indexOf(NETWORK_MENU_ACTION_KEY_FILTER) !== -1) {
         const networkValue = actionKey.replace(NETWORK_MENU_ACTION_KEY_FILTER, '');
-        const chainId = ethereumUtils.getChainIdFromNetwork(networkValue);
-        walletConnectUpdateSessionConnectorByDappUrl(dappUrl, account, chainId);
+        walletConnectUpdateSessionConnectorByDappUrl(dappUrl, account, chainsIdByName[networkValue]);
       }
     },
     [account, dappName, dappUrl, handlePressChangeWallet, walletConnectDisconnectAllByDappUrl, walletConnectUpdateSessionConnectorByDappUrl]
@@ -193,12 +192,12 @@ export default function WalletConnectListItem({ account, chainId, dappIcon, dapp
             onPressAndroid={onPressAndroid}
             onPressMenuItem={handleOnPressMenuItem}
           >
-            <NetworkPill mainnet={connectionNetworkInfo.value === 'mainnet'}>
+            <NetworkPill mainnet={connectionNetworkInfo.id === ChainId.mainnet}>
               <Row align="center">
-                <ChainLogo marginRight={5} chainId={connectionNetworkInfo.chainId} />
+                <ChainLogo marginRight={5} chainId={connectionNetworkInfo.id} />
                 <LabelText
                   color={
-                    connectionNetworkInfo.value === 'mainnet'
+                    connectionNetworkInfo.is === ChainId.mainnet
                       ? colors.alpha(colors.blueGreyDark, 0.5)
                       : colors.alpha(colors.blueGreyDark, 0.8)
                   }

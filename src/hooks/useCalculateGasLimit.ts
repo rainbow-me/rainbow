@@ -2,7 +2,6 @@ import { useEffect, useRef, useCallback } from 'react';
 import { estimateGas, web3Provider, toHex } from '@/handlers/web3';
 import { convertHexToString, omitFlatten } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
-import { getNetworkObject } from '@/networks';
 import { ethereumUtils } from '@/utils';
 import { hexToNumber, isHex } from 'viem';
 import { isEmpty } from 'lodash';
@@ -10,7 +9,8 @@ import { InteractionManager } from 'react-native';
 import { GasFeeParamsBySpeed } from '@/entities';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { useGas } from '@/hooks';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
+import { needsL1SecurityFeeChains } from '@/chains';
 
 type CalculateGasLimitProps = {
   isMessageRequest: boolean;
@@ -52,8 +52,8 @@ export const useCalculateGasLimit = ({
     } finally {
       logger.debug('WC: Setting gas limit to', { gas: convertHexToString(gas) }, logger.DebugContext.walletconnect);
 
-      const networkObject = getNetworkObject({ chainId });
-      if (chainId && networkObject.gas.OptimismTxFee) {
+      const needsL1SecurityFee = needsL1SecurityFeeChains.includes(chainId);
+      if (needsL1SecurityFee) {
         const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(txPayload, provider || web3Provider);
         updateTxFee(gas, null, l1GasFeeOptimism);
       } else {

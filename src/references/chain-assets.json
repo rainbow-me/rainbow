@@ -9,7 +9,6 @@
           "fallback": "#E8EAF5",
           "primary": "#808088"
         },
-        "chainId": 5,
         "decimals": 18,
         "icon_url": "https://s3.amazonaws.com/icons.assets/ETH.png",
         "name": "Goerli",
@@ -39,7 +38,6 @@
           "fallback": "#E8EAF5",
           "primary": "#808088"
         },
-        "chainId": 1,
         "decimals": 18,
         "icon_url": "https://s3.amazonaws.com/icons.assets/ETH.png",
         "name": "Ethereum",

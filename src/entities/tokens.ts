@@ -1,6 +1,6 @@
 import { EthereumAddress } from '.';
 import { Chain } from '@wagmi/chains';
-import { Network, ChainId } from '@/networks/types';
+import { Network, ChainId } from '@/chains/types';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 
 export interface ZerionAssetPrice {
@@ -79,7 +79,7 @@ export interface ParsedAddressAsset extends Asset, Partial<RainbowTokenOwnFields
   };
   mainnet_address?: EthereumAddress;
   isNativeAsset?: boolean;
-  network: Network;
+  network: string;
 }
 
 export interface SwappableAsset extends ParsedAddressAsset {
@@ -127,7 +127,7 @@ export interface RainbowToken extends Asset {
   shadowColor?: string;
   uniqueId: string;
   type?: string;
-  network: Network;
+  network: string;
   mainnet_address?: EthereumAddress;
   networks?: any;
 }

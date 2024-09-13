@@ -28,8 +28,7 @@ type Props = {
 export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ transaction, presentToast }) => {
   const { colors } = useTheme();
   const hash = useMemo(() => ethereumUtils.getHash(transaction), [transaction]);
-  const { network, status } = transaction;
-  const chainId = ethereumUtils.getChainIdFromNetwork(network);
+  const { network, status, chainId } = transaction;
   const isReadOnly = useSelector((state: AppState) => state.wallets.selected?.type === WalletTypes.readOnly ?? true);
   // Retry swap related data
   const retrySwapMetadata = useMemo(() => {
@@ -70,7 +69,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
     if (transaction.explorerUrl) {
       Linking.openURL(transaction.explorerUrl);
     } else {
-      ethereumUtils.openTransactionInBlockExplorer(hash, network);
+      ethereumUtils.openTransactionInBlockExplorer({ hash, chainId });
     }
   };
 
@@ -101,7 +100,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
             weight="heavy"
             onPress={onViewOnBlockExplorerPress}
             label={i18n.t(i18n.l.wallet.action.view_on, {
-              blockExplorerName: transaction.explorerLabel ?? startCase(ethereumUtils.getBlockExplorer({ chainId })),
+              blockExplorerName: transaction.explorerLabel ?? startCase(ethereumUtils.getBlockExplorer({ chainId: transaction.chainId })),
             })}
             lightShadows
           />

@@ -1,9 +1,9 @@
 {
   "name": "Rainbow",
-  "version": "1.9.38-1",
+  "version": "1.9.39-1",
   "private": true,
   "scripts": {
-    "setup": "yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn postinstall && yarn graphql-codegen",
+    "setup": "yarn graphql-codegen:install && yarn ds:install && yarn allow-scripts && yarn postinstall && yarn graphql-codegen && yarn fetch:networks",
     "setup-ci": "./scripts/setup-ci.sh",
     "adb-all": "adb devices | tail -n +2 | cut -sf 1 | xargs -I {} adb -s {}",
     "android": "yarn uninstall:android && react-native run-android",
@@ -21,6 +21,7 @@
     "clean:packager": "watchman watch-del-all",
     "clean:node": "rm -rf node_modules",
     "nuke": "./scripts/nuke.sh",
+    "rc-push": "./scripts/rc-push.sh",
     "detox:android:release": "detox build -c android.emu.release && detox test -c android.emu.release",
     "detox:android:tests": "detox test -c android.emu.debug --maxWorkers 2 -- --bail 1",
     "detox:android": "detox build -c android.emu.debug && yarn detox:android:tests",
@@ -63,7 +64,9 @@
     "check-translations": "./scripts/check-translations.sh ./src './src/languages/*.json' lang.t",
     "codegen-translations": "node ./scripts/codegen-translations.js",
     "prepare": "husky install",
-    "bundle-inpage": "yarn webpack --config src/browser/webpack.config.js && cp InjectedJSBundle.js android/app/src/main/res/raw/injected_js_bundle.js"
+    "bundle-inpage": "yarn webpack --config src/browser/webpack.config.js && cp InjectedJSBundle.js android/app/src/main/res/raw/injected_js_bundle.js",
+    "// Fetch backend networks": "",
+    "fetch:networks": "node ./scripts/networks.js"
   },
   "dependencies": {
     "@bankify/react-native-animate-number": "0.2.1",
@@ -104,7 +107,7 @@
     "@notifee/react-native": "7.8.2",
     "@rainbow-me/provider": "0.0.12",
     "@rainbow-me/react-native-animated-number": "0.0.2",
-    "@rainbow-me/swaps": "0.24.0",
+    "@rainbow-me/swaps": "0.26.0",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-camera-roll/camera-roll": "7.7.0",
     "@react-native-clipboard/clipboard": "1.13.2",

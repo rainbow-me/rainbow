@@ -1,8 +1,4 @@
 import React, { useCallback, useMemo } from 'react';
-import {
-  // @ts-ignore
-  IS_TESTING,
-} from 'react-native-dotenv';
 import { UniqueTokenCard } from '../../unique-token';
 import { Box, BoxProps } from '@/design-system';
 import { UniqueAsset } from '@/entities';
@@ -11,7 +7,6 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
-import { IS_TEST } from '@/env';
 
 export default React.memo(function WrappedNFT({
   onPress,
@@ -25,7 +20,7 @@ export default React.memo(function WrappedNFT({
   externalAddress?: string;
 }) {
   const { nfts_enabled } = useRemoteConfig();
-  const nftsEnabled = (useExperimentalFlag(NFTS_ENABLED) || nfts_enabled) && !IS_TEST;
+  const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
 
   const assetCollectible = useCollectible(uniqueId, externalAddress);
 

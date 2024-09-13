@@ -13,7 +13,7 @@ import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { useSectionListScrollToTopContext } from '@/navigation/SectionListScrollToTopContext';
 import { safeAreaInsetValues } from '@/utils';
-import { Network } from '@/networks/types';
+import { Network } from '@/chains/types';
 
 const sx = StyleSheet.create({
   sectionHeader: {

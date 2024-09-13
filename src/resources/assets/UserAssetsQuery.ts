@@ -3,15 +3,15 @@ import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { NativeCurrencyKey } from '@/entities';
 import { saveAccountEmptyState } from '@/handlers/localstorage/accountLocal';
 import { greaterThan } from '@/helpers/utilities';
-import { RainbowNetworkObjects } from '@/networks';
 import { rainbowFetch } from '@/rainbow-fetch';
 import { createQueryKey, queryClient, QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult } from '@/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { filterPositionsData, parseAddressAsset } from './assets';
 import { fetchHardhatBalances } from './hardhatAssets';
 import { AddysAccountAssetsMeta, AddysAccountAssetsResponse, RainbowAddressAssets } from './types';
-import { Network } from '@/networks/types';
+import { Network } from '@/chains/types';
 import { staleBalancesStore } from '@/state/staleBalances';
+import { SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains';
 
 // ///////////////////////////////////////////////
 // Query Types
@@ -48,7 +48,7 @@ const fetchUserAssetsForChainIds = async ({
   let url = `https://addys.p.rainbow.me/v3/${chainIdsString}/${address}/assets?currency=${currency.toLowerCase()}`;
 
   if (staleBalanceParam) {
-    url += url + staleBalanceParam;
+    url = url + staleBalanceParam;
   }
 
   const response = await rainbowFetch(url, {
@@ -74,14 +74,15 @@ async function userAssetsQueryFunction({
   }
 
   try {
-    const chainIds = RainbowNetworkObjects.filter(network => network.enabled && network.networkType !== 'testnet').map(
-      network => network.id
-    );
-
     staleBalancesStore.getState().clearExpiredData(address);
     const staleBalanceParam = staleBalancesStore.getState().getStaleBalancesQueryParam(address);
 
-    const { erroredChainIds, results } = await fetchAndParseUserAssetsForChainIds({ address, currency, chainIds, staleBalanceParam });
+    const { erroredChainIds, results } = await fetchAndParseUserAssetsForChainIds({
+      address,
+      currency,
+      chainIds: SUPPORTED_MAINNET_CHAIN_IDS,
+      staleBalanceParam,
+    });
     let parsedSuccessResults = results;
 
     // grab cached data for chain IDs with errors

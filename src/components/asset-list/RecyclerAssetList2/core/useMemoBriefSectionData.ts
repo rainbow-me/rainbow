@@ -12,6 +12,7 @@ import {
 } from '@/hooks';
 import useOpenPositionCards from '@/hooks/useOpenPositionCards';
 import * as ls from '@/storage';
+import useOpenClaimables from '@/hooks/useOpenClaimables';
 
 const FILTER_TYPES = {
   'ens-profile': [CellType.NFT_SPACE_AFTER, CellType.NFT, CellType.FAMILY_HEADER],
@@ -47,6 +48,7 @@ export default function useMemoBriefSectionData({
 
   const { isSmallBalancesOpen } = useOpenSmallBalances();
   const { isPositionCardsOpen } = useOpenPositionCards();
+  const { isClaimablesOpen } = useOpenClaimables();
   const { isCoinListEdited } = useCoinListEdited();
   const { hiddenCoinsObj } = useCoinListEditOptions();
   const { openFamilies } = useOpenFamilies();
@@ -107,6 +109,10 @@ export default function useMemoBriefSectionData({
           return false;
         }
 
+        if (data.type === CellType.CLAIMABLE && !isClaimablesOpen) {
+          return false;
+        }
+
         index++;
         return true;
       })
@@ -114,7 +120,7 @@ export default function useMemoBriefSectionData({
         return { type: cellType, uid };
       });
     return briefSectionsDataFiltered;
-  }, [sectionsDataToUse, type, isCoinListEdited, isSmallBalancesOpen, hiddenCoinsObj, isPositionCardsOpen, openFamilies]);
+  }, [sectionsDataToUse, type, isCoinListEdited, isSmallBalancesOpen, hiddenCoinsObj, isPositionCardsOpen, isClaimablesOpen, openFamilies]);
   const memoizedResult = useDeepCompareMemo(() => result, [result]);
   const additionalData = useDeepCompareMemo(
     () =>

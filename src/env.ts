@@ -1,12 +1,5 @@
 import ReactNative from 'react-native';
-import {
-  ENABLE_DEV_MODE,
-  IS_TESTING,
-  RPC_PROXY_BASE_URL_PROD,
-  RPC_PROXY_BASE_URL_DEV,
-  RPC_PROXY_API_KEY_PROD,
-  RPC_PROXY_API_KEY_DEV,
-} from 'react-native-dotenv';
+import { ENABLE_DEV_MODE, IS_TESTING, RPC_PROXY_BASE_URL_PROD, RPC_PROXY_API_KEY_PROD } from 'react-native-dotenv';
 
 /**
  * @deprecated use IS_ANDROID
@@ -28,5 +21,5 @@ export const IS_DEV = (typeof __DEV__ === 'boolean' && __DEV__) || !!Number(ENAB
 export const IS_TEST = IS_TESTING === 'true';
 export const IS_PROD = !IS_DEV && !IS_TEST;
 
-export const RPC_PROXY_BASE_URL = IS_PROD ? RPC_PROXY_BASE_URL_PROD : RPC_PROXY_BASE_URL_DEV;
-export const RPC_PROXY_API_KEY = IS_PROD ? RPC_PROXY_API_KEY_PROD : RPC_PROXY_API_KEY_DEV;
+export const RPC_PROXY_BASE_URL = RPC_PROXY_BASE_URL_PROD;
+export const RPC_PROXY_API_KEY = RPC_PROXY_API_KEY_PROD;
