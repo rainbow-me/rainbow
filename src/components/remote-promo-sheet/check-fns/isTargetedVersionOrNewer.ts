@@ -1,6 +1,6 @@
 import { getVersion } from 'react-native-device-info';
 
-export async function isVersionGreaterThanOrEqualToAppVersion(versionToCheck: string) {
+export async function isTargetedVersionOrNewer(versionToCheck: string) {
   const currentAppVersion = getVersion();
   return isGreaterThanOrEqualToVersion(currentAppVersion, versionToCheck);
 }
