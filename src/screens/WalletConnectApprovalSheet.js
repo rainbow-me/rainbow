@@ -23,13 +23,14 @@ import styled from '@/styled-thing';
 import { Box, Columns, Column as RDSColumn, Inline, Text } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import * as lang from '@/languages';
-import { RainbowNetworkObjects, getNetworkObject } from '@/networks';
 import { useDappMetadata } from '@/resources/metadata/dapp';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { InfoAlert } from '@/components/info-alert/info-alert';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
-import { ChainId, chainIdToNameMapping } from '@/networks/types';
+import { ChainId } from '@/chains/types';
+import { chainsLabel, chainsNativeAsset, defaultChains, supportedWalletConnectChainIds } from '@/chains';
+import { isL2Chain } from '@/handlers/web3';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.3),
@@ -66,16 +67,20 @@ const NetworkPill = ({ chainIds }) => {
 
   const availableNetworkChainIds = useMemo(() => chainIds.sort(chainId => (chainId === ChainId.mainnet ? -1 : 1)), [chainIds]);
 
+  const walletConnectSupportedChains = supportedWalletConnectChainIds.map(chainId => defaultChains[chainId]);
+
   const networkMenuItems = useMemo(() => {
-    RainbowNetworkObjects.filter(({ features, id }) => features.walletconnect && chainIds.includes(id)).map(network => ({
-      actionKey: network.id,
-      actionTitle: network.name,
-      icon: {
-        iconType: 'ASSET',
-        iconValue: `${network.networkType === 'layer2' ? `${network.value}BadgeNoShadow` : 'ethereumBadge'}`,
-      },
-    }));
-  }, [chainIds]);
+    walletConnectSupportedChains
+      .filter(({ id }) => chainIds.includes(id))
+      .map(chain => ({
+        actionKey: chain.id,
+        actionTitle: chainsLabel[chain.id],
+        icon: {
+          iconType: 'ASSET',
+          iconValue: `${isL2Chain({ chainId: chain.id }) ? `${chain.name}BadgeNoShadow` : 'ethereumBadge'}`,
+        },
+      }));
+  }, [chainIds, walletConnectSupportedChains]);
 
   if (availableNetworkChainIds.length === 0) return null;
 
@@ -134,7 +139,7 @@ const NetworkPill = ({ chainIds }) => {
 
               <Box paddingLeft="6px">
                 <Text color="primary (Deprecated)" numberOfLines={1} size="18px / 27px (Deprecated)" weight="bold">
-                  {chainIdToNameMapping[availableNetworkChainIds[0]]}
+                  {chainsLabel[availableNetworkChainIds[0]]}
                 </Text>
               </Box>
             </Inline>
@@ -223,12 +228,12 @@ export default function WalletConnectApprovalSheet() {
    * v2.
    */
   const approvalNetworkInfo = useMemo(() => {
-    const networkObj = getNetworkObject({ chainId: approvalChainId });
+    const chain = defaultChains[approvalChainId || ChainId.mainnet];
+    const nativeAsset = chainsNativeAsset[chain.id];
     return {
-      chainId: networkObj.id,
-      color: isDarkMode ? networkObj.colors.dark : networkObj.colors.light,
-      name: networkObj.name,
-      value: networkObj.value,
+      chainId: chain.id,
+      color: isDarkMode ? nativeAsset.colors.primary : nativeAsset.colors.fallback || nativeAsset.colors.primary,
+      name: chain.name,
     };
   }, [approvalChainId, isDarkMode]);
 
@@ -359,7 +364,7 @@ export default function WalletConnectApprovalSheet() {
             </Centered>
             <LabelText align="right" numberOfLines={1}>
               {`${
-                type === WalletConnectApprovalSheetType.connect ? approvalNetworkInfo.name : chainIdToNameMapping[chainId]
+                type === WalletConnectApprovalSheetType.connect ? approvalNetworkInfo.name : chainsLabel[chainId]
               } ${type === WalletConnectApprovalSheetType.connect && menuItems.length > 1 ? '􀁰' : ''}`}
             </LabelText>
           </ButtonPressAnimation>
@@ -400,7 +405,7 @@ export default function WalletConnectApprovalSheet() {
                   {type === WalletConnectApprovalSheetType.connect
                     ? lang.t(lang.l.walletconnect.wants_to_connect)
                     : lang.t(lang.l.walletconnect.wants_to_connect_to_network, {
-                        network: chainIdToNameMapping[chainId],
+                        network: chainsLabel[chainId],
                       })}
                 </Text>
               </Column>

@@ -38,16 +38,14 @@ import { Box } from '@/design-system';
 import { AuthRequestAuthenticateSignature, AuthRequestResponseErrorReason, RPCMethod, RPCPayload } from '@/walletConnect/types';
 import { AuthRequest } from '@/walletConnect/sheets/AuthRequest';
 import { getProvider } from '@/handlers/web3';
-import { RainbowNetworkObjects } from '@/networks';
 import { uniq } from 'lodash';
 import { fetchDappMetadata } from '@/resources/metadata/dapp';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 import { PerformanceMetrics } from '@/performance/tracking/types/PerformanceMetrics';
 import { PerformanceTracking } from '@/performance/tracking';
-import { ChainId } from '@/networks/types';
-
-const SUPPORTED_EVM_CHAIN_IDS = RainbowNetworkObjects.filter(({ features }) => features.walletconnect).map(({ id }) => id);
+import { ChainId } from '@/chains/types';
+import { supportedWalletConnectChainIds } from '@/chains';
 
 const SUPPORTED_SESSION_EVENTS = ['chainChanged', 'accountsChanged'];
 
@@ -264,10 +262,6 @@ export function isSupportedMethod(method: RPCMethod) {
   return isSupportedSigningMethod(method) || isSupportedTransactionMethod(method);
 }
 
-export function isSupportedChain(chainId: number) {
-  return !!RainbowNetworkObjects.find(({ id, features }) => id === chainId && features.walletconnect);
-}
-
 /**
  * Navigates to `ExplainSheet` by way of `WalletConnectApprovalSheet`, and
  * shows the text configured by the `reason` string, which is a key of the
@@ -453,7 +447,7 @@ export async function onSessionProposal(proposal: Web3WalletTypes.SessionProposa
 
     // we already checked for eip155 namespace above
     const chainIds = chains?.map(chain => parseInt(chain.split('eip155:')[1]));
-    const supportedChainIds = chainIds.filter(isSupportedChain);
+    const supportedChainIds = chainIds.filter(chainId => supportedWalletConnectChainIds.includes(chainId));
 
     const peerMeta = proposer.metadata;
     const metadata = await fetchDappMetadata({ url: peerMeta.url, status: true });
@@ -493,7 +487,7 @@ export async function onSessionProposal(proposal: Web3WalletTypes.SessionProposa
           const supportedEvents = requiredNamespaces?.eip155?.events || SUPPORTED_SESSION_EVENTS;
 
           /** @see https://chainagnostic.org/CAIPs/caip-2 */
-          const caip2ChainIds = SUPPORTED_EVM_CHAIN_IDS.map(id => `eip155:${id}`);
+          const caip2ChainIds = supportedWalletConnectChainIds.map(id => `eip155:${id}`);
           const namespaces = getApprovedNamespaces({
             proposal: proposal.params,
             supportedNamespaces: {

@@ -1,4 +1,4 @@
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { getCachedGasSuggestions, useMeteorologySuggestions } from '@/__swaps__/utils/meteorology';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';

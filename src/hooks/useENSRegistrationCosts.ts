@@ -27,7 +27,7 @@ import {
 import { add, addBuffer, addDisplay, fromWei, greaterThanOrEqualTo, multiply } from '@/helpers/utilities';
 import { ethUnits, timeUnits } from '@/references';
 import { ethereumUtils, gasUtils } from '@/utils';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 
 enum QUERY_KEYS {
   GET_COMMIT_GAS_LIMIT = 'GET_COMMIT_GAS_LIMIT',

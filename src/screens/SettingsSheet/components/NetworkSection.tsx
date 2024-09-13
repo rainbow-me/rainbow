@@ -1,4 +1,3 @@
-import { values } from 'lodash';
 import React, { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -9,10 +8,9 @@ import { analytics } from '@/analytics';
 import { Separator, Stack } from '@/design-system';
 import { useAccountSettings, useInitializeAccountData, useLoadAccountData, useResetAccountState } from '@/hooks';
 import { settingsUpdateNetwork } from '@/redux/settings';
-import { RainbowNetworkObjects } from '@/networks';
-import { ChainId } from '@/networks/types';
-
-const networkObjects = values(RainbowNetworkObjects).filter(({ networkType }) => networkType !== 'layer2');
+import { ChainId } from '@/chains/types';
+import { defaultChains } from '@/chains';
+import { isL2Chain } from '@/handlers/web3';
 
 interface NetworkSectionProps {
   inDevSection?: boolean;
@@ -39,23 +37,21 @@ const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
   );
 
   const renderNetworkList = useCallback(() => {
-    return networkObjects.map(({ name, id, networkType }) => (
-      <MenuItem
-        disabled={!testnetsEnabled && networkType === 'testnet'}
-        key={id}
-        onPress={() => onNetworkChange(id)}
-        rightComponent={id === chainId && <MenuItem.StatusIcon status="selected" />}
-        size={52}
-        testID={`${id}-network`}
-        titleComponent={
-          <MenuItem.Title
-            disabled={!testnetsEnabled && networkType === 'testnet'}
-            text={name}
-            weight={inDevSection ? 'medium' : 'semibold'}
-          />
-        }
-      />
-    ));
+    return Object.values(defaultChains)
+      .filter(({ id }) => !isL2Chain({ chainId: id }))
+      .map(({ name, id, testnet }) => (
+        <MenuItem
+          disabled={!testnetsEnabled && testnet}
+          key={id}
+          onPress={() => onNetworkChange(id)}
+          rightComponent={id === chainId && <MenuItem.StatusIcon status="selected" />}
+          size={52}
+          testID={`${id}-network`}
+          titleComponent={
+            <MenuItem.Title disabled={!testnetsEnabled && testnet} text={name} weight={inDevSection ? 'medium' : 'semibold'} />
+          }
+        />
+      ));
   }, [inDevSection, chainId, onNetworkChange, testnetsEnabled]);
 
   return inDevSection ? (

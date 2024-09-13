@@ -1,6 +1,6 @@
 import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { ChainId, Network } from '@/networks/types';
+import { ChainId, Network } from '@/chains/types';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { UnlockableAppIconKey } from '@/appIcons/appIcons';

@@ -5,7 +5,7 @@ import { RainbowError, logger } from '@/logger';
 import { handleSignificantDecimals } from '@/helpers/utilities';
 import { IS_PROD } from '@/env';
 import { RESERVOIR_API_KEY_DEV, RESERVOIR_API_KEY_PROD } from 'react-native-dotenv';
-import { Network } from '@/networks/types';
+import { Network } from '@/chains/types';
 
 const SUPPORTED_NETWORKS = [Network.mainnet, Network.polygon, Network.bsc, Network.arbitrum, Network.optimism, Network.base, Network.zora];
 

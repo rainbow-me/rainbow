@@ -8,7 +8,7 @@ import { SwapMetadata } from '@/raps/references';
 import { UniqueAsset } from '../uniqueAssets';
 import { ParsedAsset } from '@/resources/assets/types';
 import { TransactionStatus, TransactionType } from '@/resources/transactions/types';
-import { ChainId, Network } from '@/networks/types';
+import { ChainId, Network } from '@/chains/types';
 
 export type TransactionDirection = 'in' | 'out' | 'self';
 
@@ -56,7 +56,7 @@ export interface RainbowTransaction {
     amount: string;
     display: string;
   };
-  network: Network;
+  network: string;
   nft?: UniqueAsset;
   nonce?: number | null;
   protocol?: ProtocolType | null;

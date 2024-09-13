@@ -69,7 +69,7 @@ const CoinRowActions = {
 
 const buildBlockExplorerAction = chainId => {
   const blockExplorerText = lang.t('exchange.coin_row.view_on', {
-    blockExplorerName: startCase(ethereumUtils.getBlockExplorer(chainId)),
+    blockExplorerName: startCase(ethereumUtils.getBlockExplorer({ chainId })),
   });
   return {
     actionKey: CoinRowActionsEnum.blockExplorer,
@@ -93,7 +93,7 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText, showFavoriteButton }) 
   );
 
   const onPressAndroid = useCallback(() => {
-    const blockExplorerText = `View on ${startCase(ethereumUtils.getBlockExplorer(item?.chainId))}`;
+    const blockExplorerText = `View on ${startCase(ethereumUtils.getBlockExplorer({ chainId: item?.chainId }))}`;
     const androidContractActions = [lang.t('wallet.action.copy_contract_address'), blockExplorerText, lang.t('button.cancel')];
 
     showActionSheetWithOptions(
@@ -108,7 +108,7 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText, showFavoriteButton }) 
           handleCopyContractAddress(item?.address);
         }
         if (idx === 1) {
-          ethereumUtils.openTokenEtherscanURL(item?.address, item?.network);
+          ethereumUtils.openTokenEtherscanURL({ address: item?.address, chainId: item?.chainId });
         }
       }
     );
@@ -133,7 +133,7 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText, showFavoriteButton }) 
       if (actionKey === CoinRowActionsEnum.copyAddress) {
         handleCopyContractAddress(item?.address);
       } else if (actionKey === CoinRowActionsEnum.blockExplorer) {
-        ethereumUtils.openTokenEtherscanURL(item?.address, item?.network);
+        ethereumUtils.openTokenEtherscanURL({ address: item?.address, chainId: item?.chainId });
       }
     },
     [item, handleCopyContractAddress]

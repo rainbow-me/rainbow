@@ -15,7 +15,7 @@ import ImgixImage from '@/components/images/ImgixImage';
 import { View } from 'react-native';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { checkForPendingSwap } from '../helpers/checkForPendingSwap';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 
 type Props = {
   transaction: RainbowTransaction;

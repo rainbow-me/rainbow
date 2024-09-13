@@ -13,7 +13,7 @@ import {
   toScaledIntegerWorklet,
 } from '@/__swaps__/safe-math/SafeMath';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { ParsedAddressAsset } from '@/entities';
 import { useUserNativeNetworkAsset } from '@/resources/assets/useUserAsset';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';

@@ -13,7 +13,7 @@ import store from '@/redux/store';
 import { logger, RainbowError } from '@/logger';
 import { parseGasParamAmounts } from '@/parsers';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { ChainId, Network } from '@/networks/types';
+import { ChainId, Network } from '@/chains/types';
 import {
   createRegisterENSRap,
   createRenewENSRap,

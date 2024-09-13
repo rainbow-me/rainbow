@@ -16,7 +16,7 @@ import { convertAPINetworkToInternalChainIds } from '@/screens/AddCash/utils';
 import { ProviderConfig, CalloutType, PaymentMethod } from '@/screens/AddCash/types';
 import * as i18n from '@/languages';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 
 type PaymentMethodConfig = {
   name: string;

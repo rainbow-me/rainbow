@@ -1,33 +1,9 @@
 import { AddressOrEth } from '@/__swaps__/types/assets';
-import { ChainId, ChainNameDisplay, Network } from '@/networks/types';
+import { ChainId, Network } from '@/chains/types';
 import { Asset } from '@/entities';
 import { AddressZero } from '@ethersproject/constants';
 
 import type { Address } from 'viem';
-import {
-  Chain,
-  arbitrum,
-  arbitrumGoerli,
-  arbitrumSepolia,
-  avalanche,
-  avalancheFuji,
-  base,
-  baseSepolia,
-  bsc,
-  bscTestnet,
-  goerli,
-  holesky,
-  mainnet,
-  optimism,
-  optimismSepolia,
-  polygon,
-  polygonMumbai,
-  zora,
-  zoraSepolia,
-  sepolia,
-  blast,
-  degen,
-} from 'viem/chains';
 
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
 export { default as chainAssets } from './chain-assets.json';
@@ -222,33 +198,3 @@ export const NATIVE_ASSETS_MAP_PER_CHAIN: Record<ChainId, AddressOrEth> = {
 export type ReferrerType = 'native-app' | 'app-claim';
 export const REFERRER: ReferrerType = 'native-app';
 export const REFERRER_CLAIM: ReferrerType = 'app-claim';
-
-export const SUPPORTED_MAINNET_CHAINS: Chain[] = [mainnet, polygon, optimism, arbitrum, base, zora, bsc, avalanche, blast].map(chain => ({
-  ...chain,
-  name: ChainNameDisplay[chain.id],
-}));
-
-export const SUPPORTED_CHAINS = ({ testnetMode = false }: { testnetMode?: boolean }): Chain[] => {
-  const mainnetChains: Chain[] = [mainnet, base, optimism, arbitrum, polygon, zora, blast, degen, avalanche, bsc];
-
-  const testnetChains: Chain[] = [
-    goerli,
-    holesky,
-    sepolia,
-    baseSepolia,
-    optimismSepolia,
-    arbitrumGoerli,
-    arbitrumSepolia,
-    polygonMumbai,
-    zoraSepolia,
-    avalancheFuji,
-    bscTestnet,
-  ];
-
-  const allChains = mainnetChains.concat(testnetMode ? testnetChains : []);
-
-  return allChains.map(chain => ({ ...chain, name: ChainNameDisplay[chain.id] ?? chain.name }));
-};
-
-export const SUPPORTED_CHAIN_IDS = ({ testnetMode = false }: { testnetMode?: boolean }): ChainId[] =>
-  SUPPORTED_CHAINS({ testnetMode }).map(chain => chain.id);

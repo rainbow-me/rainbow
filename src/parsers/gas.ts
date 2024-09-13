@@ -16,7 +16,6 @@ import {
   MaxPriorityFeeSuggestions,
   NativeCurrencyKey,
   Numberish,
-  RainbowMeteorologyData,
   SelectedGasFee,
   TransactionGasParamAmounts,
 } from '@/entities';
@@ -33,6 +32,7 @@ import {
   multiply,
   toFixedDecimals,
 } from '@/helpers/utilities';
+import { MeteorologyResponse } from '@/entities/gas';
 
 type BigNumberish = number | string | BigNumber;
 
@@ -97,7 +97,7 @@ const parseGasDataConfirmationTime = (
 };
 
 export const parseRainbowMeteorologyData = (
-  rainbowMeterologyData: RainbowMeteorologyData
+  rainbowMeterologyData: MeteorologyResponse
 ): {
   gasFeeParamsBySpeed: GasFeeParamsBySpeed;
   baseFeePerGas: GasFeeParam;
@@ -106,11 +106,12 @@ export const parseRainbowMeteorologyData = (
   blocksToConfirmation: BlocksToConfirmation;
   secondsPerNewBlock: number;
 } => {
-  const { baseFeeSuggestion, baseFeeTrend, maxPriorityFeeSuggestions, currentBaseFee, secondsPerNewBlock } = rainbowMeterologyData.data;
+  const { data } = rainbowMeterologyData as MeteorologyResponse;
+  const { baseFeeSuggestion, baseFeeTrend, maxPriorityFeeSuggestions, currentBaseFee, secondsPerNewBlock } = data;
 
   const blocksToConfirmation: BlocksToConfirmation = {
-    byBaseFee: rainbowMeterologyData.data.blocksToConfirmationByBaseFee,
-    byPriorityFee: rainbowMeterologyData.data.blocksToConfirmationByPriorityFee,
+    byBaseFee: data.blocksToConfirmationByBaseFee,
+    byPriorityFee: data.blocksToConfirmationByPriorityFee,
   };
 
   const parsedFees: GasFeeParamsBySpeed = {};

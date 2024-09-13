@@ -6,15 +6,16 @@ import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQu
 
 import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
-import { SupportedCurrencyKey, SUPPORTED_CHAIN_IDS } from '@/references';
+import { SupportedCurrencyKey } from '@/references';
 import { ParsedAssetsDictByChain, ZerionAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { AddressAssetsReceivedMessage } from '@/__swaps__/types/refraction';
 import { parseUserAsset } from '@/__swaps__/utils/assets';
 import { greaterThan } from '@/__swaps__/utils/numbers';
 
 import { fetchUserAssetsByChain } from './userAssetsByChain';
-import { fetchHardhatBalances, fetchHardhatBalancesByChainId } from '@/resources/assets/hardhatAssets';
+import { fetchHardhatBalancesByChainId } from '@/resources/assets/hardhatAssets';
+import { SUPPORTED_CHAIN_IDS } from '@/chains';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const addysHttp = new RainbowFetchClient({
@@ -112,7 +113,7 @@ async function userAssetsQueryFunction({
   const cachedUserAssets = (cache.find(userAssetsQueryKey({ address, currency, testnetMode }))?.state?.data ||
     {}) as ParsedAssetsDictByChain;
   try {
-    const url = `/${SUPPORTED_CHAIN_IDS({ testnetMode }).join(',')}/${address}/assets`;
+    const url = `/${SUPPORTED_CHAIN_IDS.join(',')}/${address}/assets`;
     const res = await addysHttp.get<AddressAssetsReceivedMessage>(url, {
       params: {
         currency: currency.toLowerCase(),

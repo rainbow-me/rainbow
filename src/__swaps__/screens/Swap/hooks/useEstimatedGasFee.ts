@@ -1,4 +1,4 @@
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { weiToGwei } from '@/__swaps__/utils/ethereum';
 import { add, convertAmountToNativeDisplayWorklet, formatNumber, multiply } from '@/__swaps__/utils/numbers';
 import { useNativeAsset } from '@/utils/ethereumUtils';

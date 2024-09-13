@@ -1,24 +1,25 @@
 import { Contract } from '@ethersproject/contracts';
 import { keyBy, mapValues } from 'lodash';
 import { getProvider } from '@/handlers/web3';
-import { balanceCheckerContractAbi, chainAssets, ETH_ADDRESS, SUPPORTED_CHAIN_IDS } from '@/references';
+import { balanceCheckerContractAbi, chainAssets, ETH_ADDRESS } from '@/references';
 import { parseAddressAsset } from './assets';
 import { RainbowAddressAssets } from './types';
 import { logger, RainbowError } from '@/logger';
 import { AddressOrEth, UniqueId, ZerionAsset } from '@/__swaps__/types/assets';
 import { AddressZero } from '@ethersproject/constants';
 import chainAssetsByChainId from '@/references/testnet-assets-by-chain';
-import { getNetworkObject } from '@/networks';
-import { ChainId, ChainName, Network } from '@/networks/types';
+import { ChainId, ChainName, Network } from '@/chains/types';
+import { SUPPORTED_CHAIN_IDS } from '@/chains';
+
+const MAINNET_BALANCE_CHECKER = '0x4dcf4562268dd384fe814c00fad239f06c2a0c2b';
 
 const fetchHardhatBalancesWithBalanceChecker = async (
   tokens: string[],
-  address: string,
-  chainId: ChainId = ChainId.mainnet
+  address: string
 ): Promise<{ [tokenAddress: string]: string } | null> => {
-  const networkObject = getNetworkObject({ chainId });
-  const provider = getProvider({ chainId });
-  const balanceCheckerContract = new Contract(networkObject.balanceCheckerAddress, balanceCheckerContractAbi, provider);
+  const provider = getProvider({ chainId: ChainId.mainnet });
+  const balanceCheckerContract = new Contract(MAINNET_BALANCE_CHECKER, balanceCheckerContractAbi, provider);
+
   try {
     const values = await balanceCheckerContract.balances([address], tokens);
     const balances: {
@@ -52,7 +53,7 @@ export const fetchHardhatBalances = async (accountAddress: string, chainId: Chai
   const tokenAddresses = Object.values(chainAssetsMap).map(({ asset: { asset_code } }) =>
     asset_code === ETH_ADDRESS ? AddressZero : asset_code.toLowerCase()
   );
-  const balances = await fetchHardhatBalancesWithBalanceChecker(tokenAddresses, accountAddress, chainId);
+  const balances = await fetchHardhatBalancesWithBalanceChecker(tokenAddresses, accountAddress);
   if (!balances) return {};
 
   const updatedAssets = mapValues(chainAssetsMap, chainAsset => {
@@ -87,7 +88,7 @@ export const fetchHardhatBalancesByChainId = async (
     asset.asset_code === ETH_ADDRESS ? AddressZero : asset.asset_code.toLowerCase()
   );
 
-  const balances = await fetchHardhatBalancesWithBalanceChecker(tokenAddresses, accountAddress, chainId);
+  const balances = await fetchHardhatBalancesWithBalanceChecker(tokenAddresses, accountAddress);
   if (!balances)
     return {
       assets: {},
@@ -124,6 +125,6 @@ export const fetchHardhatBalancesByChainId = async (
 
   return {
     assets: updatedAssets,
-    chainIdsInResponse: SUPPORTED_CHAIN_IDS({ testnetMode: true }),
+    chainIdsInResponse: SUPPORTED_CHAIN_IDS,
   };
 };

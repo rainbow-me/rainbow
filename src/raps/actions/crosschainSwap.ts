@@ -4,7 +4,7 @@ import { Address } from 'viem';
 import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
 
 import { REFERRER, gasUnits, ReferrerType } from '@/references';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { NewTransaction } from '@/entities/transactions';
 import { TxHash } from '@/resources/transactions/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
@@ -20,12 +20,12 @@ import {
   getDefaultGasLimitForTrade,
   overrideWithFastSpeedIfNeeded,
 } from '../utils';
-import { ethereumUtils } from '@/utils';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { ParsedAsset } from '@/resources/assets/types';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { Screens, TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
+import { chainsName } from '@/chains';
 
 const getCrosschainSwapDefaultGasLimit = (quote: CrosschainQuote) => quote?.routes?.[0]?.userTxs?.[0]?.gasFees?.gasLimit;
 
@@ -170,9 +170,6 @@ export const crosschainSwap = async ({
 
   if (!swap) throw new RainbowError('[raps/crosschainSwap]: error executeCrosschainSwap');
 
-  // TODO: MARK - Replace this once we migrate network => chainId
-  const network = ethereumUtils.getNetworkFromChainId(parameters.chainId);
-
   const nativePriceForAssetToBuy = (parameters.assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice
     ? {
         value: (parameters.assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice,
@@ -193,7 +190,7 @@ export const crosschainSwap = async ({
     value: parameters.quote.value?.toString(),
     asset: {
       ...parameters.assetToBuy,
-      network: ethereumUtils.getNetworkFromChainId(parameters.assetToBuy.chainId),
+      network: chainsName[parameters.assetToBuy.chainId],
       colors: parameters.assetToBuy.colors as TokenColors,
       price: nativePriceForAssetToBuy,
     } as ParsedAsset,
@@ -204,7 +201,7 @@ export const crosschainSwap = async ({
         // asset: parameters.assetToSell,
         asset: {
           ...parameters.assetToSell,
-          network: ethereumUtils.getNetworkFromChainId(parameters.assetToSell.chainId),
+          network: chainsName[parameters.assetToSell.chainId],
           chainId: parameters.assetToSell.chainId,
           colors: parameters.assetToSell.colors as TokenColors,
           price: nativePriceForAssetToSell,
@@ -218,7 +215,7 @@ export const crosschainSwap = async ({
         // asset: parameters.assetToBuy,
         asset: {
           ...parameters.assetToBuy,
-          network: ethereumUtils.getNetworkFromChainId(parameters.assetToBuy.chainId),
+          network: chainsName[parameters.assetToBuy.chainId],
           chainId: parameters.assetToBuy.chainId,
           colors: parameters.assetToBuy.colors as TokenColors,
           price: nativePriceForAssetToBuy,
@@ -229,8 +226,7 @@ export const crosschainSwap = async ({
     ],
     gasLimit,
     hash: swap.hash as TxHash,
-    // TODO: MARK - Replace this once we migrate network => chainId
-    network,
+    network: chainsName[parameters.chainId],
     nonce: swap.nonce,
     status: 'pending',
     type: 'swap',
