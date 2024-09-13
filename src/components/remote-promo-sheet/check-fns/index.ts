@@ -1,5 +1,4 @@
 export * from './hasNftOffers';
-export * from './hasNonZeroAssetBalance';
 export * from './hasNonZeroTotalBalance';
 export * from './hasSwapTxn';
 export * from './isAfterCampaignLaunch';

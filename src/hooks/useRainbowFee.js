@@ -4,7 +4,7 @@ import { convertRawAmountToDecimalFormat, divide, multiply, subtract } from '@/h
 import { useAccountSettings, useSwapCurrencies } from '@/hooks';
 import { ethereumUtils } from '@/utils';
 
-export default function useRainbowFee({ tradeDetails, network }) {
+export default function useRainbowFee({ tradeDetails, chainId }) {
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
   const { accountAddress } = useAccountSettings();
   const [nativeAsset, setNativeAsset] = useState(null);
@@ -47,11 +47,11 @@ export default function useRainbowFee({ tradeDetails, network }) {
 
   useEffect(() => {
     const getNativeAsset = async () => {
-      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(network, accountAddress);
+      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork({ chainId, address: accountAddress });
       setNativeAsset(nativeAsset);
     };
     !nativeAsset && getNativeAsset();
-  }, [nativeAsset, network, accountAddress]);
+  }, [nativeAsset, chainId, accountAddress]);
 
   return { rainbowFeeNative, rainbowFeePercentage };
 }

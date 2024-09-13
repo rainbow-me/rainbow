@@ -15,6 +15,92 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.38] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.36)
+
+### Fixed
+
+- Added missing dapp metadata for certain eth actions (#6086)
+- Fixed an issue where Polygon chainID was misconfigured causing some issues with users sends (#6093)
+- Fixed and issue with wrong messages during MWP Flow (#6094)
+
+## [1.9.37] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.37)
+
+### Added
+
+- Implement NFTs v2 Arc endpoint (#5973)
+- Added mutation and queries needed for spindl integration (#6031)
+- Added translations for degen mode and popular in rainbow (#6020)
+- Added featured results to the dapp browser trending dapps section on the discover screen (#6046, #6049)
+- Implemented perceived finality where a pending transaction is detected and confirmed, we are flagging the affected assets’ addresses and refetching updated user assets balances from BE (#6037)
+- Implemented Mobile Wallet Protocol (#6061)
+- Added ability to hide collectibles section (#6073)
+
+### Changed
+
+- Use chainId instead of network parts 1 and 2 (#5981, #5997)
+- Shortened popular tokens list from 6 to 3 (#6028)
+- Removed old logger and cleaned up logging (#6021)
+- Added support for navigating to swap settings as a route (#6036)
+- Upgraded some packages to the latest version (#6040)
+- Cleaned up e2e on Android (#5970)
+- Bumped WC and did some refactoring (#6047, #6064)
+- Bumped webpack from 5.90.3 to 5.94.0 (#6048)
+- Bumped fastlane (#6062)
+
+### Fixed
+
+- Fixed an issue on android where a user couldn’t access dexscreener in the dapp browser (#6003)
+- Fixed Dapp Browser webview height on Android devices (#6004)
+- Fixed Android button navigation colors (#6005)
+- Fixed TokenToBuyList line break in search results when favoriting a token (#6002)
+- Fixed a bug where the terminal UI for ETH rewards was missing (#6007)
+- Fixed a bug where a user’s favorites wouldn’t migrate after updating app (#6029)
+- Fixed an issue where we were not able to build android locally (#6027)
+- Fixed a sentry error boundary crash where users would see the oops something went wrong message (#6044)
+- Fixed an issue when certain sites won’t load if using the http prefix (#6054)
+- Fixed an issue on ERC20 sends that would show contract address instead of recipient address (#6052)
+- Fixed some crashes on PFP button, and send flow (#6063)
+- Fixed a bug where WC was not confirming transactions (#6074)
+- Fixed a bug where attempting to send an ENS caused a crash (#6075)
+- Fixed a discrepancy where gas on l2s were showing higher in send flow than in swaps flow (#6076)
+- Fixed a wrong ID being used for spindl integration (#6078)
+
+## [1.9.36] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.36)
+
+### Fixed
+
+- Fixed Sentry logging issues (#6012, #6018, #6019)
+- Fixed issue in swaps where certain errors were not being handled (#6017)
+- Fixed a bug with wrapping and unwrapping ETH (#6022, #6026)
+- Fixed a crash that was happening on asset balance (#6025)
+- Fixed missing pricing on swaps (#6023)
+
+## [1.9.35] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.35)
+
+### Added
+
+- Added translations for swaps v2, gas, backups and ETH rewards (#5980)
+- Added a popular tokens section in swaps token search list (#5990)
+
+### Changed
+
+- Bump fast-xml-parser from 4.4.0 to 4.4.1 (#5965)
+- Convert App.js => App.tsx (#5792)
+- No longer have the restricted codeowners for reviews (#5991)
+- Changed the trending Dapps section to backend endpoint (#5974)
+- The default swap input currency is now the network with the most ETH (#5994)
+- Design system improvements (#5984)
+- Dapp browser improvements (#5978)
+- Updated swaps SDK (#5996)
+- Changed the fee domination from USD to actual payment token (#6000)
+- Sentry bot resilience updates (#5995)
+
+### Fixed
+
+- Fixed a crash on an empty profile screen along with adding a placeholder for no transactions on activity screen (#5975)
+- Fixed a bug where some tokens had a missing asset balance (#5998)
+- Fixed account balance discrepancies in different places (#5959)
+
 ## [1.9.34] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.34)
 
 ### Added

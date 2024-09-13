@@ -4,18 +4,15 @@ import { useDispatch } from 'react-redux';
 import { delayNext } from './useMagicAutofocus';
 import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
 import { updatePrecisionToDisplay } from '@/helpers/utilities';
-import { useAccountSettings, useSwapDerivedValues, useSwapInputHandlers } from '@/hooks';
+import { useSwapDerivedValues, useSwapInputHandlers } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import { flipSwapCurrencies, updateSwapInputAmount, updateSwapInputCurrency, updateSwapOutputCurrency } from '@/redux/swap';
 import Routes from '@/navigation/routesNames';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
-import { queryClient } from '@/react-query';
-import { prefetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 
 const { currentlyFocusedInput, focusTextInput } = TextInput.State;
 
 export default function useSwapCurrencyHandlers({
-  currentNetwork,
   inputNetwork,
   outputNetwork,
   defaultInputAsset,
@@ -30,7 +27,6 @@ export default function useSwapCurrencyHandlers({
   title,
   type,
 }: any = {}) {
-  const { nativeCurrency } = useAccountSettings();
   const dispatch = useDispatch();
   const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);
   const { navigate, setParams, getParent: dangerouslyGetParent } = useNavigation();
@@ -102,7 +98,6 @@ export default function useSwapCurrencyHandlers({
       flipSwapCurrenciesWithTimeout(inputFieldRef, false, derivedValues?.outputAmount);
     }
   }, [
-    currentNetwork,
     inputNetwork,
     outputNetwork,
     nativeFieldRef,
@@ -124,13 +119,11 @@ export default function useSwapCurrencyHandlers({
           }
         : null;
 
-      // prefetchExternalToken({address: newInputCurrency.address, network: newInputCurrency.network, currency: nativeCurrency})
-
       dispatch(updateSwapInputCurrency(newInputCurrency, crosschainSwapsEnabled));
       setLastFocusedInputHandle?.(inputFieldRef);
       handleNavigate?.(newInputCurrency);
     },
-    [crosschainSwapsEnabled, dispatch, inputFieldRef, nativeCurrency, setLastFocusedInputHandle]
+    [crosschainSwapsEnabled, dispatch, inputFieldRef, setLastFocusedInputHandle]
   );
 
   const updateOutputCurrency = useCallback(
@@ -141,7 +134,6 @@ export default function useSwapCurrencyHandlers({
           }
         : null;
 
-      // prefetchExternalToken({address: newOutputCurrency.address, network: newOutputCurrency.network, currency: nativeCurrency})
       dispatch(updateSwapOutputCurrency(newOutputCurrency, crosschainSwapsEnabled));
       setLastFocusedInputHandle?.(inputFieldRef);
       handleNavigate?.(newOutputCurrency);

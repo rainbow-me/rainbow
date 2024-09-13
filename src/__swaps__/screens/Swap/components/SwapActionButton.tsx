@@ -34,6 +34,7 @@ function SwapButton({
   disabled,
   opacity,
   children,
+  testID,
 }: {
   asset: DerivedValue<ExtendedAnimatedAssetWithColors | null>;
   borderRadius?: number;
@@ -47,6 +48,7 @@ function SwapButton({
   disabled?: DerivedValue<boolean | undefined>;
   opacity?: DerivedValue<number | undefined>;
   children?: React.ReactNode;
+  testID?: string;
 }) {
   const { isDarkMode } = useColorMode();
   const fallbackColor = useForegroundColor('label');
@@ -110,6 +112,7 @@ function SwapButton({
   return (
     <Animated.View style={buttonWrapperStyles}>
       <Box
+        testID={testID}
         as={Animated.View}
         paddingHorizontal={{ custom: small ? 14 : 20 - (outline ? 2 : 0) }}
         paddingLeft={small && icon ? '10px' : undefined}
@@ -136,7 +139,14 @@ function SwapButton({
           )}
           {typeof label !== 'undefined' && (
             <Column width="content">
-              <AnimatedText align="center" style={textStyles} numberOfLines={1} size={small ? '17pt' : '20pt'} weight="heavy">
+              <AnimatedText
+                testID={`${testID}-text`}
+                align="center"
+                style={textStyles}
+                numberOfLines={1}
+                size={small ? '17pt' : '20pt'}
+                weight="heavy"
+              >
                 {labelValue}
               </AnimatedText>
             </Column>
@@ -184,7 +194,8 @@ const HoldProgress = ({ holdProgress }: { holdProgress: SharedValue<number> }) =
       if (current && current !== previous) {
         runOnJS(transformColor)(getColorValueForThemeWorklet(current, isDarkMode, true));
       }
-    }
+    },
+    []
   );
 
   return (
@@ -225,6 +236,7 @@ export const SwapActionButton = ({
   scaleTo,
   style,
   disabled,
+  testID,
   ...props
 }: {
   asset: DerivedValue<ExtendedAnimatedAssetWithColors | null>;
@@ -248,6 +260,7 @@ export const SwapActionButton = ({
   style?: ViewStyle;
   disabled?: DerivedValue<boolean | undefined>;
   opacity?: DerivedValue<number | undefined>;
+  testID?: string;
 }) => {
   const disabledWrapper = useAnimatedStyle(() => {
     return {
@@ -268,7 +281,7 @@ export const SwapActionButton = ({
         style={[hugContent && feedActionButtonStyles.buttonWrapper, style]}
       >
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-        <SwapButton {...props} disabled={disabled}>
+        <SwapButton {...props} disabled={disabled} testID={testID}>
           {holdProgress && <HoldProgress holdProgress={holdProgress} />}
         </SwapButton>
       </GestureHandlerButton>

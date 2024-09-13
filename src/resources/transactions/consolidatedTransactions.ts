@@ -5,8 +5,8 @@ import { TransactionApiResponse, TransactionsReceivedMessage } from './types';
 import { RainbowError, logger } from '@/logger';
 import { rainbowFetch } from '@/rainbow-fetch';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
-import { RainbowNetworks } from '@/networks';
 import { parseTransaction } from '@/parsers/transactions';
+import { chainsIdByName, SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains';
 
 const CONSOLIDATED_TRANSACTIONS_INTERVAL = 30000;
 const CONSOLIDATED_TRANSACTIONS_TIMEOUT = 20000;
@@ -82,7 +82,7 @@ export async function consolidatedTransactionsQueryFunction({
       transactions: consolidatedTransactions,
     };
   } catch (e) {
-    logger.error(new RainbowError('consolidatedTransactionsQueryFunction: '), {
+    logger.error(new RainbowError('[consolidatedTransactions]: '), {
       message: e,
     });
     return { transactions: [] };
@@ -107,7 +107,7 @@ async function parseConsolidatedTransactions(
 ): Promise<RainbowTransaction[]> {
   const data = message?.payload?.transactions || [];
 
-  const parsedTransactionPromises = data.map((tx: TransactionApiResponse) => parseTransaction(tx, currency));
+  const parsedTransactionPromises = data.map((tx: TransactionApiResponse) => parseTransaction(tx, currency, chainsIdByName[tx.network]));
   // Filter out undefined values immediately
 
   const parsedConsolidatedTransactions = (await Promise.all(parsedTransactionPromises)).flat(); // Filter out any remaining undefined values
@@ -122,13 +122,11 @@ export function useConsolidatedTransactions(
   { address, currency }: Pick<ConsolidatedTransactionsArgs, 'address' | 'currency'>,
   config: InfiniteQueryConfig<ConsolidatedTransactionsResult, Error, ConsolidatedTransactionsResult> = {}
 ) {
-  const chainIds = RainbowNetworks.filter(network => network.enabled && network.networkType !== 'testnet').map(network => network.id);
-
   return useInfiniteQuery(
     consolidatedTransactionsQueryKey({
       address,
       currency,
-      chainIds,
+      chainIds: SUPPORTED_MAINNET_CHAIN_IDS,
     }),
     consolidatedTransactionsQueryFunction,
     {

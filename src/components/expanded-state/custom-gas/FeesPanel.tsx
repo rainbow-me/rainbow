@@ -16,7 +16,7 @@ import Routes from '@/navigation/routesNames';
 import { gasUtils } from '@/utils';
 import { Box, Inline, Inset, Row, Rows, Text } from '@/design-system';
 import { IS_ANDROID } from '@/env';
-import { getNetworkObj } from '@/networks';
+import { isL2Chain } from '@/handlers/web3';
 
 const MAX_TEXT_WIDTH = 210;
 const { CUSTOM, GAS_TRENDS, NORMAL, URGENT, FLASHBOTS_MIN_TIP } = gasUtils;
@@ -48,7 +48,7 @@ type AlertInfo = {
 } | null;
 
 export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack, validateGasParams, openCustomOptions }: FeesPanelProps) {
-  const { selectedGasFee, currentBlockParams, customGasFeeModifiedByUser, gasFeeParamsBySpeed, updateToCustomGasFee, txNetwork } = useGas();
+  const { selectedGasFee, currentBlockParams, customGasFeeModifiedByUser, gasFeeParamsBySpeed, updateToCustomGasFee, chainId } = useGas();
 
   const { navigate, getState: dangerouslyGetState } = useNavigation();
   const { colors } = useTheme();
@@ -74,7 +74,7 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
   const [startPriorityFeeTimeout, stopPriorityFeeTimeout] = useTimeout();
   const [startBaseFeeTimeout, stopBaseFeeTimeout] = useTimeout();
 
-  const isL2 = getNetworkObj(txNetwork)?.networkType === 'layer2';
+  const isL2 = isL2Chain({ chainId });
 
   const [maxPriorityFeeWarning, setMaxPriorityFeeWarning] = useState<AlertInfo>(null);
   const [maxPriorityFeeError, setMaxPriorityFeeError] = useState<AlertInfo>(null);
@@ -248,12 +248,12 @@ export default function FeesPanel({ currentGasTrend, colorForAsset, setCanGoBack
   );
 
   const addMinerTip = useCallback(() => {
-    updatePriorityFeePerGas(calculateMinerTipAddDifference(maxPriorityFee, txNetwork));
-  }, [maxPriorityFee, txNetwork, updatePriorityFeePerGas]);
+    updatePriorityFeePerGas(calculateMinerTipAddDifference(maxPriorityFee, chainId));
+  }, [maxPriorityFee, chainId, updatePriorityFeePerGas]);
 
   const substMinerTip = useCallback(() => {
-    updatePriorityFeePerGas(-calculateMinerTipSubstDifference(maxPriorityFee, txNetwork));
-  }, [maxPriorityFee, txNetwork, updatePriorityFeePerGas]);
+    updatePriorityFeePerGas(-calculateMinerTipSubstDifference(maxPriorityFee, chainId));
+  }, [maxPriorityFee, chainId, updatePriorityFeePerGas]);
 
   const addMaxFee = useCallback(() => {
     updateFeePerGas(isL2 ? GAS_FEE_L2_INCREMENT : GAS_FEE_INCREMENT);

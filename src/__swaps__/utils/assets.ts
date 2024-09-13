@@ -1,5 +1,4 @@
 import { AddressZero } from '@ethersproject/constants';
-import isValidDomain from 'is-valid-domain';
 
 import { ETH_ADDRESS, SupportedCurrencyKey } from '@/references';
 import {
@@ -13,12 +12,12 @@ import {
   ZerionAsset,
   ZerionAssetPrice,
 } from '@/__swaps__/types/assets';
-import { ChainId, ChainName } from '@/__swaps__/types/chains';
+import { ChainId, ChainName } from '@/chains/types';
 
 import * as i18n from '@/languages';
 import { SearchAsset } from '@/__swaps__/types/search';
 
-import { chainIdFromChainName, chainNameFromChainId, customChainIdsToAssetNames, isNativeAsset } from '@/__swaps__/utils/chains';
+import { customChainIdsToAssetNames, isNativeAsset } from '@/__swaps__/utils/chains';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToBalanceDisplay,
@@ -27,6 +26,7 @@ import {
   convertRawAmountToDecimalFormat,
 } from '@/__swaps__/utils/numbers';
 import { isLowerCaseMatch, isLowerCaseMatchWorklet } from '@/__swaps__/utils/strings';
+import { chainsIdByName, chainsName } from '@/chains';
 
 export const isSameAsset = (a1: Pick<ParsedAsset, 'chainId' | 'address'>, a2: Pick<ParsedAsset, 'chainId' | 'address'>) =>
   +a1.chainId === +a2.chainId && isLowerCaseMatch(a1.address, a2.address);
@@ -80,7 +80,7 @@ const getUniqueIdForAsset = ({ asset }: { asset: ZerionAsset | AssetApiResponse 
   const address = asset.asset_code;
   const chainName = asset.network ?? ChainName.mainnet;
   const networks = 'networks' in asset ? asset.networks || {} : {};
-  const chainId = ('chain_id' in asset && asset.chain_id) || chainIdFromChainName(chainName) || Number(Object.keys(networks)[0]);
+  const chainId = ('chain_id' in asset && asset.chain_id) || chainsIdByName[chainName] || Number(Object.keys(networks)[0]);
 
   // ZerionAsset should be removed when we move fully away from websckets/refraction api
   const mainnetAddress = isZerionAsset(asset)
@@ -94,7 +94,7 @@ export function parseAsset({ asset, currency }: { asset: ZerionAsset | AssetApiR
   const address = asset.asset_code;
   const chainName = asset.network ?? ChainName.mainnet;
   const networks = 'networks' in asset ? asset.networks || {} : {};
-  const chainId = ('chain_id' in asset && asset.chain_id) || chainIdFromChainName(chainName) || Number(Object.keys(networks)[0]);
+  const chainId = ('chain_id' in asset && asset.chain_id) || chainsIdByName[chainName] || Number(Object.keys(networks)[0]);
 
   // ZerionAsset should be removed when we move fully away from websckets/refraction api
   const mainnetAddress = isZerionAsset(asset)
@@ -172,7 +172,7 @@ export function parseAssetMetadata({
   const parsedAsset = {
     address,
     chainId,
-    chainName: chainNameFromChainId(chainId),
+    chainName: chainsName[chainId],
     colors: asset?.colors,
     decimals: asset?.decimals,
     icon_url: asset?.iconUrl,
@@ -290,7 +290,7 @@ export const parseSearchAsset = ({
   isNativeAsset: isNativeAsset(searchAsset.address, searchAsset.chainId),
   address: searchAsset.address,
   chainId: searchAsset.chainId,
-  chainName: chainNameFromChainId(searchAsset.chainId),
+  chainName: chainsName[searchAsset.chainId],
   native: {
     balance: userAsset?.native.balance || {
       amount: '0',

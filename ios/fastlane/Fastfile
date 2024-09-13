@@ -23,10 +23,6 @@ platform :ios do
       duration: 1200, # optional
       in_house: false, # optional but may be required if using match/sigh
     )
-
-    upload_symbols_to_crashlytics(
-      dsym_path: './Rainbow.app.dSYM.zip'
-    )
   end
 
   desc "Submit a new Beta build to Apple TestFlight"
@@ -67,13 +63,67 @@ platform :ios do
       scheme: "Rainbow",
       include_symbols: true,
       configuration: "Release",
-      export_method: "app-store"
+      export_method: "app-store",
+      export_options: {
+        signingStyle: "manual",
+        provisioningProfiles: {
+          "me.rainbow" => "match AppStore me.rainbow",
+          "me.rainbow.PriceWidget" => "match AppStore me.rainbow.PriceWidget",
+          "me.rainbow.SelectTokenIntent" => "match AppStore me.rainbow.SelectTokenIntent",
+          "me.rainbow.ImageNotification" => "match AppStore me.rainbow.ImageNotification",
+          "me.rainbow.OpenInRainbow" => "match AppStore me.rainbow.OpenInRainbow",
+          "me.rainbow.ShareWithRainbow" => "match AppStore me.rainbow.ShareWithRainbow",
+        },
+      }
     )
 
     pilot(
       app_identifier: "me.rainbow",
       skip_waiting_for_build_processing: true,
       changelog:  "#{ENV['BITRISE_GIT_BRANCH']} - #{ENV['BITRISE_GIT_MESSAGE']}",
+    )
+
+  end
+  desc "Create new build for iOS devices in release mode"
+  lane :build_device do
+
+    update_info_plist(
+      plist_path: "Rainbow/Info.plist",
+      display_name: "Rainbow"
+    )
+
+    update_app_identifier(
+      app_identifier: "me.rainbow",
+      xcodeproj: "Rainbow.xcodeproj",
+      plist_path: "Rainbow/Info.plist",
+    )
+
+    match(
+      force: true,
+      type: "adhoc",
+      app_identifier: ["me.rainbow", "me.rainbow.PriceWidget", "me.rainbow.SelectTokenIntent", "me.rainbow.ImageNotification", "me.rainbow.OpenInRainbow", "me.rainbow.ShareWithRainbow"],
+      git_url: "git@github.com:rainbow-me/rainbow-code-signing.git",
+    )
+
+    gym(
+      workspace: "Rainbow.xcworkspace",
+      scheme: "Rainbow",
+      include_symbols: false,
+      export_method: "ad-hoc",
+      output_directory: "build",
+      output_name: "Rainbow.ipa",
+      archive_path: "build/Rainbow.xcarchive",
+      export_options: {
+        signingStyle: "manual",
+        provisioningProfiles: {
+          "me.rainbow" => "match AdHoc me.rainbow",
+          "me.rainbow.PriceWidget" => "match AdHoc me.rainbow.PriceWidget",
+          "me.rainbow.SelectTokenIntent" => "match AdHoc me.rainbow.SelectTokenIntent",
+          "me.rainbow.ImageNotification" => "match AdHoc me.rainbow.ImageNotification",
+          "me.rainbow.OpenInRainbow" => "match AdHoc me.rainbow.OpenInRainbow",
+          "me.rainbow.ShareWithRainbow" => "match AdHoc me.rainbow.ShareWithRainbow",
+        },
+      }
     )
 
   end

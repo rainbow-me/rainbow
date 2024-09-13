@@ -4,7 +4,7 @@ import { ColumnWithMargins, Row } from '../layout';
 import ExchangeField from './ExchangeField';
 import ExchangeMaxButton from './ExchangeMaxButton';
 import ExchangeNativeField from './ExchangeNativeField';
-import { Network } from '@/helpers';
+import { ChainId } from '@/chains/types';
 import styled from '@/styled-thing';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 
@@ -30,10 +30,10 @@ interface ExchangeInputFieldProps {
   nativeAmount: string | null;
   nativeCurrency: string;
   nativeFieldRef: MutableRefObject<TextInput | null>;
-  network: Network;
+  chainId: ChainId;
   onFocus: ({ target }: { target: Element }) => void;
   onPressMaxBalance: () => void;
-  onPressSelectInputCurrency: (chainId: any) => void;
+  onPressSelectInputCurrency: (chainId: ChainId) => void;
   inputAmount: string | null;
   inputCurrencyIcon?: string;
   inputCurrencyColors?: TokenColors;
@@ -63,7 +63,7 @@ export default function ExchangeInputField({
   nativeAmount,
   nativeCurrency,
   nativeFieldRef,
-  network,
+  chainId,
   inputCurrencyNetwork,
   onFocus,
   onPressMaxBalance,
@@ -85,7 +85,7 @@ export default function ExchangeInputField({
         editable={editable}
         loading={loading}
         mainnetAddress={inputCurrencyMainnetAddress}
-        network={network}
+        chainId={chainId}
         onFocus={onFocus}
         onPressSelectCurrency={onPressSelectInputCurrency}
         ref={inputFieldRef}

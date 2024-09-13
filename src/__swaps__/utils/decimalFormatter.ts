@@ -36,7 +36,7 @@ export function valueBasedDecimalFormatter({
     maximumDecimalPlaces: number;
   } {
     const orderOfMagnitude = orderOfMagnitudeWorklet(amount);
-    let minDecimalsForOneCent = nativePrice ? Math.round(Math.max(0, Math.log10(nativePrice / 0.01))) : MAXIMUM_SIGNIFICANT_DECIMALS;
+    const minDecimalsForOneCent = nativePrice ? Math.round(Math.max(0, Math.log10(nativePrice / 0.01))) : MAXIMUM_SIGNIFICANT_DECIMALS;
 
     const significantDecimals = significantDecimalsWorklet(amount);
 
@@ -82,7 +82,7 @@ export function valueBasedDecimalFormatter({
   // Format the number to add separators and trim trailing zeros
   const numberFormatter = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: minimumDecimalPlaces,
-    maximumFractionDigits: maximumDecimalPlaces,
+    maximumFractionDigits: maximumDecimalPlaces || 0,
     useGrouping: !stripSeparators,
   });
 

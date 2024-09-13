@@ -7,10 +7,10 @@ import MenuItem from './MenuItem';
 import { analytics } from '@/analytics';
 import { useAccountSettings } from '@/hooks';
 import { ETH_ADDRESS, WBTC_ADDRESS, emojis, supportedNativeCurrencies } from '@/references';
-import { Network } from '@/networks/types';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useTheme } from '@/theme';
+import { ChainId } from '@/chains/types';
 
 const emojiData = Object.entries(emojis).map(([emoji, { name }]) => [name, emoji]);
 
@@ -24,8 +24,8 @@ const currencyListItems = Object.values(supportedNativeCurrencies).map(({ curren
 const CurrencySection = () => {
   const { nativeCurrency, settingsChangeNativeCurrency } = useAccountSettings();
   const theme = useTheme();
-  const { data: WBTC } = useExternalToken({ address: WBTC_ADDRESS, network: Network.mainnet, currency: nativeCurrency });
-  const { data: ETH } = useExternalToken({ address: ETH_ADDRESS, network: Network.mainnet, currency: nativeCurrency });
+  const { data: WBTC } = useExternalToken({ address: WBTC_ADDRESS, chainId: ChainId.mainnet, currency: nativeCurrency });
+  const { data: ETH } = useExternalToken({ address: ETH_ADDRESS, chainId: ChainId.mainnet, currency: nativeCurrency });
 
   const onSelectCurrency = useCallback(
     (currency: any) => {
@@ -54,7 +54,7 @@ const CurrencySection = () => {
                     icon={currency === ETH?.symbol ? ETH?.icon_url : WBTC?.icon_url}
                     size={23}
                     symbol={currency}
-                    network={Network.mainnet}
+                    chainId={ChainId.mainnet}
                     theme={theme}
                   />
                 </View>

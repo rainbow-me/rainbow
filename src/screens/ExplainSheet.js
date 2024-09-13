@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import { useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
@@ -10,20 +11,20 @@ import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import { DoubleChevron } from '@/components/icons';
 import { Box } from '@/design-system';
-import networkTypes from '@/helpers/networkTypes';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, padding, position } from '@/styles';
-import { ethereumUtils, gasUtils, getTokenMetadata } from '@/utils';
+import { ethereumUtils, gasUtils } from '@/utils';
 import { buildRainbowLearnUrl } from '@/utils/buildRainbowUrl';
 import { cloudPlatformAccountName } from '@/utils/platform';
 import { useTheme } from '@/theme';
-import { isL2Network } from '@/handlers/web3';
+import { isL2Chain } from '@/handlers/web3';
 import { IS_ANDROID } from '@/env';
 import * as i18n from '@/languages';
-import { getNetworkObj } from '@/networks';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { ChainId } from '@/chains/types';
+import { chainsLabel } from '@/chains';
 
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;
@@ -77,8 +78,8 @@ const FLOOR_PRICE_EXPLAINER = lang.t('explain.floor_price.text');
 
 const gasExplainer = network => lang.t('explain.gas.text', { networkName: network });
 
-const availableNetworksExplainer = (tokenSymbol, networks) => {
-  const readableNetworks = networks?.map(network => getNetworkObj(network).name)?.join(', ');
+const availableNetworksExplainer = (tokenSymbol, chainIds) => {
+  const readableNetworks = chainIds?.map(chainId => chainsLabel[chainId])?.join(', ');
 
   return lang.t('explain.available_networks.text', {
     tokenSymbol: tokenSymbol,
@@ -157,6 +158,9 @@ const ENS_CONFIGURATION_EXPLAINER =
 
 export const explainers = (params, theme) => {
   const colors = theme?.colors;
+  const chainId = params?.chainId;
+  const fromChainId = params?.fromChainId;
+  const toChainId = params?.toChainId;
   return {
     op_rewards_airdrop_timing: {
       emoji: '📦',
@@ -207,7 +211,7 @@ export const explainers = (params, theme) => {
       title: params?.inputToken
         ? lang.t(`explain.output_disabled.${params?.isCrosschainSwap ? 'title_crosschain' : 'title'}`, {
             inputToken: params?.inputToken,
-            fromNetwork: getNetworkObj(params?.fromNetwork).name,
+            fromNetwork: chainsLabel[fromChainId],
           })
         : lang.t('explain.output_disabled.title_empty'),
 
@@ -215,18 +219,18 @@ export const explainers = (params, theme) => {
         ? lang.t(`explain.output_disabled.${params?.isBridgeSwap ? 'text_bridge' : 'text_crosschain'}`, {
             inputToken: params?.inputToken,
             outputToken: params?.outputToken,
-            fromNetwork: getNetworkObj(params?.fromNetwork).name,
-            toNetwork: getNetworkObj(params?.toNetwork).name,
+            fromNetwork: chainsLabel[fromChainId],
+            toNetwork: chainsLabel[toChainId],
           })
         : lang.t('explain.output_disabled.text', {
-            fromNetwork: getNetworkObj(params?.fromNetwork)?.name,
+            fromNetwork: chainsLabel[fromChainId],
             inputToken: params?.inputToken,
             outputToken: params?.outputToken,
           }),
-      logo: !isL2Network(params?.fromNetwork) ? (
+      logo: !isL2Chain({ chainId: fromChainId }) ? (
         <EthCoinIcon size={40} />
       ) : (
-        <ChainBadge network={params?.fromNetwork} marginBottom={8} position="relative" size="large" />
+        <ChainBadge chainId={fromChainId} marginBottom={8} position="relative" size="large" />
       ),
     },
     floor_price: {
@@ -241,15 +245,15 @@ export const explainers = (params, theme) => {
           size={40}
           icon={params?.nativeAsset?.icon_url}
           symbol={params?.nativeAsset?.symbol}
-          network={params?.network?.toLowerCase()}
+          chainId={chainId}
           colors={params?.nativeAsset?.colors}
           theme={theme}
         />
       ),
       extraHeight: 2,
-      text: gasExplainer(getNetworkObj(params?.network).name),
+      text: gasExplainer(chainsLabel[chainId]),
       title: lang.t('explain.gas.title', {
-        networkName: getNetworkObj(params?.network).name,
+        networkName: chainsLabel[chainId],
       }),
     },
     ens_primary_name: {
@@ -362,7 +366,7 @@ export const explainers = (params, theme) => {
           {lang.t('explain.unverified.fragment1')}
           <Text
             color={colors?.appleBlue}
-            onPress={() => ethereumUtils.openTokenEtherscanURL(params?.asset.address, params?.asset?.network)}
+            onPress={() => ethereumUtils.openTokenEtherscanURL({ address: params?.asset?.address, chainId: params?.asset?.chainId })}
             size="large"
             suppressHighlighting
             weight="semibold"
@@ -376,7 +380,7 @@ export const explainers = (params, theme) => {
     optimism: {
       emoji: '⛽️',
       extraHeight: 150,
-      logo: <ChainBadge network={networkTypes.optimism} marginBottom={8} position="relative" size="large" />,
+      logo: <ChainBadge chainId={ChainId.optimism} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
         url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
@@ -389,7 +393,7 @@ export const explainers = (params, theme) => {
     arbitrum: {
       emoji: '⛽️',
       extraHeight: 144,
-      logo: <ChainBadge network={networkTypes.arbitrum} marginBottom={8} position="relative" size="large" />,
+      logo: <ChainBadge chainId={ChainId.arbitrum} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
         url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
@@ -402,7 +406,7 @@ export const explainers = (params, theme) => {
     polygon: {
       emoji: '⛽️',
       extraHeight: 120,
-      logo: <ChainBadge network={networkTypes.polygon} marginBottom={8} position="relative" size="large" />,
+      logo: <ChainBadge chainId={ChainId.polygon} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
         url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
@@ -415,7 +419,7 @@ export const explainers = (params, theme) => {
     bsc: {
       emoji: '⛽️',
       extraHeight: IS_ANDROID ? 120 : 160,
-      logo: <ChainBadge network={networkTypes.bsc} marginBottom={8} position="relative" size="large" />,
+      logo: <ChainBadge chainId={ChainId.bsc} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
         url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
@@ -428,7 +432,7 @@ export const explainers = (params, theme) => {
     zora: {
       emoji: '⛽️',
       extraHeight: 144,
-      logo: <ChainBadge network={networkTypes.zora} marginBottom={8} position="relative" size="large" />,
+      logo: <ChainBadge chainId={ChainId.zora} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
         url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
@@ -441,7 +445,7 @@ export const explainers = (params, theme) => {
     base: {
       emoji: '⛽️',
       extraHeight: 144,
-      logo: <ChainBadge network={networkTypes.base} marginBottom={8} position="relative" size="large" />,
+      logo: <ChainBadge chainId={ChainId.base} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
         url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
@@ -454,7 +458,7 @@ export const explainers = (params, theme) => {
     avalanche: {
       emoji: '⛽️',
       extraHeight: 144,
-      logo: <ChainBadge network={networkTypes.avalanche} marginBottom={8} position="relative" size="large" />,
+      logo: <ChainBadge chainId={ChainId.avalanche} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
         url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
@@ -467,7 +471,7 @@ export const explainers = (params, theme) => {
     degen: {
       emoji: '⛽️',
       extraHeight: 144,
-      logo: <ChainBadge network={networkTypes.degen} marginBottom={8} position="relative" size="large" />,
+      logo: <ChainBadge chainId={ChainId.degen} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
         url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
@@ -480,7 +484,7 @@ export const explainers = (params, theme) => {
     blast: {
       emoji: '⛽️',
       extraHeight: 144,
-      logo: <ChainBadge network={networkTypes.blast} marginBottom={8} position="relative" size="large" />,
+      logo: <ChainBadge chainId={ChainId.blast} marginBottom={8} position="relative" size="large" />,
       readMoreLink: buildRainbowLearnUrl({
         url: 'https://learn.rainbow.me/layer-2-and-layer-3-networks',
         query: {
@@ -530,17 +534,17 @@ export const explainers = (params, theme) => {
     },
     swapResetInputs: {
       button: {
-        label: `Continue with ${getNetworkObj(params?.network)?.name}`,
-        bgColor: colors?.networkColors[params?.network] && colors?.alpha(colors?.networkColors[params?.network], 0.06),
-        textColor: colors?.networkColors[params?.network] && colors?.networkColors?.[params?.network],
+        label: `Continue with ${chainsLabel[chainId]}`,
+        bgColor: colors?.networkColors[chainId] && colors?.alpha(colors?.networkColors[chainId], 0.06),
+        textColor: colors?.networkColors?.[chainId],
       },
       emoji: '🔐',
       extraHeight: -90,
       text: SWAP_RESET_EXPLAINER,
-      title: `Switching to ${getNetworkObj(params?.network)?.name}`,
+      title: `Switching to ${chainsLabel[chainId]}`,
       logo:
-        params?.network !== 'mainnet' ? (
-          <ChainBadge network={networkTypes[params?.network]} marginBottom={8} position="relative" size="large" />
+        chainId !== ChainId.mainnet ? (
+          <ChainBadge chainId={chainId} marginBottom={8} position="relative" size="large" />
         ) : (
           <EthCoinIcon size={40} />
         ),
@@ -588,7 +592,7 @@ export const explainers = (params, theme) => {
             size={40}
             icon={params?.inputCurrency?.icon_url}
             symbol={params?.inputCurrency?.symbol}
-            network={params?.inputCurrency?.network}
+            chainId={params?.inputCurrency?.chainId}
             colors={params?.inputCurrency?.colors}
             theme={theme}
           />
@@ -644,7 +648,7 @@ export const explainers = (params, theme) => {
             size={40}
             icon={params?.inputCurrency?.icon_url}
             symbol={params?.inputCurrency?.symbol}
-            network={params?.inputCurrency?.network}
+            chainId={params?.inputCurrency?.chainId}
             colors={params?.inputCurrency?.colors}
             theme={theme}
           />
@@ -653,7 +657,7 @@ export const explainers = (params, theme) => {
             size={40}
             icon={params?.outputCurrency?.icon_url}
             symbol={params?.outputCurrency?.symbol}
-            network={params?.outputCurrency?.network}
+            chainId={params?.outputCurrency?.chainId}
             colors={params?.outputCurrency?.colors}
             theme={theme}
           />
@@ -670,7 +674,7 @@ export const explainers = (params, theme) => {
             size={40}
             icon={params?.inputCurrency?.icon_url}
             symbol={params?.inputCurrency?.symbol}
-            network={params?.inputCurrency?.network}
+            chainId={params?.inputCurrency?.chainId}
             colors={params?.inputCurrency?.colors}
             theme={theme}
           />
@@ -679,7 +683,7 @@ export const explainers = (params, theme) => {
             size={40}
             icon={params?.outputCurrency?.icon_url}
             symbol={params?.outputCurrency?.symbol}
-            network={params?.outputCurrency?.network}
+            chainId={params?.outputCurrency?.chainId}
             colors={params?.outputCurrency?.colors}
             theme={theme}
           />
@@ -689,24 +693,24 @@ export const explainers = (params, theme) => {
     availableNetworks: {
       buttonText: `Go to Hop`,
       extraHeight: -90,
-      text: availableNetworksExplainer(params?.tokenSymbol, params?.networks),
+      text: availableNetworksExplainer(params?.tokenSymbol, params?.chainIds),
       title:
-        params?.networks?.length > 1
+        params?.chainIds?.length > 1
           ? lang.t('explain.available_networks.title_plural', {
-              length: params?.networks?.length,
+              length: params?.chainIds?.length,
             })
           : lang.t('explain.available_networks.title_singular', {
-              network: params?.networks?.[0],
+              network: params?.chainIds?.[0],
             }),
       logo: (
         <Row justify="center" marginBottom={10}>
-          {params?.networks?.map((network, index) => {
+          {params?.chainIds?.map((chainId, index) => {
             return (
               <Box
                 height={{ custom: 40 }}
-                key={`networks-${network}`}
+                key={`chainId-${chainId}`}
                 marginLeft={{
-                  custom: index > 0 ? -12 : params?.networks?.length % 2 === 0 ? -2 : -30,
+                  custom: index > 0 ? -12 : params?.chainIds?.length % 2 === 0 ? -2 : -30,
                 }}
                 style={{
                   borderColor: colors.transparent,
@@ -715,10 +719,10 @@ export const explainers = (params, theme) => {
                   zIndex: index,
                 }}
                 width={{ custom: 40 }}
-                zIndex={params?.networks?.length - index}
+                zIndex={params?.chainIds?.length - index}
               >
-                {network !== 'mainnet' ? (
-                  <ChainBadge network={network} position="relative" size="large" />
+                {chainId !== ChainId.mainnet ? (
+                  <ChainBadge chainId={chainId} position="relative" size="large" />
                 ) : (
                   <View style={{ marginTop: 4 }}>
                     <EthCoinIcon size={40} />
@@ -771,7 +775,7 @@ export const explainers = (params, theme) => {
           {lang.t('explain.obtain_l2_asset.fragment3')}
         </Text>
       ),
-      logo: <ChainBadge network={params?.network} marginBottom={8} position="relative" size="large" />,
+      logo: <ChainBadge chainId={chainId} marginBottom={8} position="relative" size="large" />,
       title: lang.t('explain.obtain_l2_asset.title', {
         networkName: params?.networkName,
       }),
@@ -859,19 +863,12 @@ export const explainers = (params, theme) => {
     },
     swap_refuel_add: {
       logo: (
-        <DashedWrapper
-          size={50}
-          childXPosition={10}
-          colors={[
-            colors?.networkColors[params?.network],
-            getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ?? colors?.appleBlue,
-          ]}
-        >
+        <DashedWrapper size={50} childXPosition={10} colors={[colors?.networkColors[chainId], colors?.appleBlue]}>
           <RainbowCoinIcon
             size={30}
             icon={params?.nativeAsset?.icon_url}
             symbol={params?.nativeAsset?.symbol}
-            network={params?.nativeAsset?.network}
+            chainId={params?.nativeAsset?.chainId}
             colors={params?.nativeAssety?.colors}
             theme={theme}
             ignoreBadge
@@ -897,26 +894,19 @@ export const explainers = (params, theme) => {
           networkName: params?.networkName,
           gasToken: params?.gasToken,
         }),
-        textColor: colors?.networkColors[params?.network],
-        bgColor: colors?.networkColors[params?.network] && colors?.alpha(colors?.networkColors[params?.network], 0.05),
+        textColor: colors?.networkColors[chainId],
+        bgColor: colors?.networkColors[chainId] && colors?.alpha(colors?.networkColors[chainId], 0.05),
         onPress: params?.onRefuel,
       },
     },
     swap_refuel_deduct: {
       logo: (
-        <DashedWrapper
-          size={50}
-          childXPosition={10}
-          colors={[
-            colors?.networkColors[params?.network],
-            getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ?? colors?.appleBlue,
-          ]}
-        >
+        <DashedWrapper size={50} childXPosition={10} colors={[colors?.networkColors[chainId], colors?.appleBlue]}>
           <RainbowCoinIcon
             size={30}
             icon={params?.nativeAsset?.icon_url}
             symbol={params?.nativeAsset?.symbol}
-            network={params?.nativeAsset?.network}
+            chainId={params?.nativeAsset?.chainId}
             colors={params?.nativeAsset?.colors}
             theme={theme}
             ignoreBadge
@@ -942,27 +932,20 @@ export const explainers = (params, theme) => {
           networkName: params?.networkName,
           gasToken: params?.gasToken,
         }),
-        textColor: colors?.networkColors[params?.network],
-        bgColor: colors?.networkColors[params?.network] && colors?.alpha(colors?.networkColors[params?.network], 0.05),
+        textColor: colors?.networkColors[chainId],
+        bgColor: colors?.networkColors[chainId] && colors?.alpha(colors?.networkColors[chainId], 0.05),
         onPress: params?.onRefuel,
       },
     },
     swap_refuel_notice: {
       extraHeight: 50,
       logo: (
-        <DashedWrapper
-          size={50}
-          childXPosition={10}
-          colors={[
-            colors?.networkColors[params?.network],
-            getTokenMetadata(params?.nativeAsset?.mainnet_address)?.color ?? colors?.appleBlue,
-          ]}
-        >
+        <DashedWrapper size={50} childXPosition={10} colors={[colors?.networkColors[chainId], colors?.appleBlue]}>
           <RainbowCoinIcon
             size={30}
             icon={params?.nativeAsset?.icon_url}
             symbol={params?.nativeAsset?.symbol}
-            network={params?.nativeAsset?.network}
+            chainId={params?.nativeAsset?.chainId}
             colors={params?.nativeAsset?.colors}
             theme={theme}
           />

@@ -2,7 +2,7 @@ import messaging from '@react-native-firebase/messaging';
 
 import { getLocal, saveLocal } from '@/handlers/localstorage/common';
 import { getPermissionStatus } from '@/notifications/permissions';
-import { logger, RainbowError } from '@/logger';
+import { logger } from '@/logger';
 
 export const registerTokenRefreshListener = () =>
   messaging().onTokenRefresh(fcmToken => {
@@ -19,7 +19,7 @@ export const saveFCMToken = async () => {
       }
     }
   } catch (error) {
-    logger.warn('Error while getting and saving FCM token', {
+    logger.warn('[notifications]: Error while getting and saving FCM token', {
       error,
     });
   }
@@ -30,7 +30,7 @@ export async function getFCMToken(): Promise<string | undefined> {
   const token = fcmTokenLocal?.data || undefined;
 
   if (!token) {
-    logger.debug('getFCMToken: No FCM token found');
+    logger.debug('[notifications]: getFCMToken No FCM token found');
   }
 
   return token;

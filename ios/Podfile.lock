@@ -4,14 +4,17 @@ PODS:
   - BVLinearGradient (2.8.3):
     - React-Core
   - CocoaAsyncSocket (7.6.5)
+  - CoinbaseWalletSDK/Client (1.1.0)
+  - CoinbaseWalletSDK/Host (1.1.0):
+    - CoinbaseWalletSDK/Client
   - DoubleConversion (1.1.6)
-  - FasterImage (1.5.0):
-    - FasterImage/Nuke (= 1.5.0)
-    - FasterImage/NukeUI (= 1.5.0)
+  - FasterImage (1.6.2):
+    - FasterImage/Nuke (= 1.6.2)
+    - FasterImage/NukeUI (= 1.6.2)
     - React-Core
-  - FasterImage/Nuke (1.5.0):
+  - FasterImage/Nuke (1.6.2):
     - React-Core
-  - FasterImage/NukeUI (1.5.0):
+  - FasterImage/NukeUI (1.6.2):
     - React-Core
   - FBLazyVector (0.74.3)
   - Firebase (10.27.0):
@@ -27,7 +30,7 @@ PODS:
   - Firebase/RemoteConfig (10.27.0):
     - Firebase/CoreOnly
     - FirebaseRemoteConfig (~> 10.27.0)
-  - FirebaseABTesting (10.28.0):
+  - FirebaseABTesting (10.29.0):
     - FirebaseCore (~> 10.0)
   - FirebaseAnalytics (10.27.0):
     - FirebaseAnalytics/AdIdSupport (= 10.27.0)
@@ -51,11 +54,11 @@ PODS:
     - FirebaseCoreInternal (~> 10.0)
     - GoogleUtilities/Environment (~> 7.12)
     - GoogleUtilities/Logger (~> 7.12)
-  - FirebaseCoreExtension (10.28.0):
+  - FirebaseCoreExtension (10.29.0):
     - FirebaseCore (~> 10.0)
-  - FirebaseCoreInternal (10.28.0):
+  - FirebaseCoreInternal (10.29.0):
     - "GoogleUtilities/NSData+zlib (~> 7.8)"
-  - FirebaseInstallations (10.28.0):
+  - FirebaseInstallations (10.29.0):
     - FirebaseCore (~> 10.0)
     - GoogleUtilities/Environment (~> 7.8)
     - GoogleUtilities/UserDefaults (~> 7.8)
@@ -77,8 +80,8 @@ PODS:
     - FirebaseSharedSwift (~> 10.0)
     - GoogleUtilities/Environment (~> 7.8)
     - "GoogleUtilities/NSData+zlib (~> 7.8)"
-  - FirebaseRemoteConfigInterop (10.28.0)
-  - FirebaseSharedSwift (10.28.0)
+  - FirebaseRemoteConfigInterop (10.29.0)
+  - FirebaseSharedSwift (10.29.0)
   - FLAnimatedImage (1.0.17)
   - fmt (9.1.0)
   - glog (0.3.5)
@@ -168,9 +171,12 @@ PODS:
   - MetricsReporter (1.2.1):
     - RSCrashReporter (= 1.0.1)
     - RudderKit (= 1.4.0)
-  - MMKV (1.3.7):
-    - MMKVCore (~> 1.3.7)
-  - MMKVCore (1.3.7)
+  - MMKV (1.3.9):
+    - MMKVCore (~> 1.3.9)
+  - MMKVCore (1.3.9)
+  - mobile-wallet-protocol-host (0.1.7):
+    - CoinbaseWalletSDK/Host
+    - React-Core
   - MultiplatformBleAdapter (0.1.9)
   - nanopb (2.30910.0):
     - nanopb/decode (= 2.30910.0)
@@ -1169,9 +1175,9 @@ PODS:
     - Yoga
   - react-native-change-icon (4.0.0):
     - React-Core
-  - react-native-cloud-fs (2.6.1):
+  - react-native-cloud-fs (2.6.2):
     - React
-  - react-native-compat (2.11.2):
+  - react-native-compat (2.15.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1241,7 +1247,7 @@ PODS:
     - React-Core
   - react-native-screen-corner-radius (0.2.2):
     - React
-  - react-native-skia (1.3.8):
+  - react-native-skia (1.3.11):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1624,7 +1630,7 @@ PODS:
     - Yoga
   - RNFS (2.16.6):
     - React
-  - RNGestureHandler (2.17.1):
+  - RNGestureHandler (2.18.1):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1670,7 +1676,51 @@ PODS:
     - React-Core
   - RNReactNativeHapticFeedback (2.2.0):
     - React-Core
-  - RNReanimated (3.14.0):
+  - RNReanimated (3.15.0):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - RNReanimated/reanimated (= 3.15.0)
+    - RNReanimated/worklets (= 3.15.0)
+    - Yoga
+  - RNReanimated/reanimated (3.15.0):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - RNReanimated/worklets (3.15.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1694,7 +1744,7 @@ PODS:
   - RNRudderSdk (1.12.1):
     - React
     - Rudder (< 2.0.0, >= 1.24.1)
-  - RNScreens (3.32.0):
+  - RNScreens (3.34.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1728,7 +1778,7 @@ PODS:
     - RNSound/Core (= 0.11.2)
   - RNSound/Core (0.11.2):
     - React-Core
-  - RNSVG (15.3.0):
+  - RNSVG (15.6.0):
     - React-Core
   - RNTextSize (4.0.0-rc.1):
     - React
@@ -1782,6 +1832,7 @@ DEPENDENCIES:
   - GoogleUtilities
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - libwebp
+  - "mobile-wallet-protocol-host (from `../node_modules/@coinbase/mobile-wallet-protocol-host`)"
   - nanopb
   - PanModal (from `https://github.com/rainbow-me/PanModal`, commit `ab97d74279ba28c2891b47a5dc767ed4dd7cf994`)
   - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera`)
@@ -1912,6 +1963,7 @@ SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
     - Branch
     - CocoaAsyncSocket
+    - CoinbaseWalletSDK
     - Firebase
     - FirebaseABTesting
     - FirebaseAnalytics
@@ -1963,6 +2015,8 @@ EXTERNAL SOURCES:
   hermes-engine:
     :podspec: "../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-2024-06-28-RNv0.74.3-7bda0c267e76d11b68a585f84cfdd65000babf85
+  mobile-wallet-protocol-host:
+    :path: "../node_modules/@coinbase/mobile-wallet-protocol-host"
   PanModal:
     :commit: ab97d74279ba28c2891b47a5dc767ed4dd7cf994
     :git: https://github.com/rainbow-me/PanModal
@@ -2213,20 +2267,21 @@ SPEC CHECKSUMS:
   Branch: d99436c6f3d5b2529ba948d273e47e732830f207
   BVLinearGradient: 880f91a7854faff2df62518f0281afb1c60d49a3
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
+  CoinbaseWalletSDK: bd6aa4f5a6460d4279e09e115969868e134126fb
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
-  FasterImage: 1f65cdb2966c47b2a7b83162e5fc712534e50149
+  FasterImage: af05a76f042ca3654c962b658fdb01cb4d31caee
   FBLazyVector: 7e977dd099937dc5458851233141583abba49ff2
   Firebase: 26b040b20866a55f55eb3611b9fcf3ae64816b86
-  FirebaseABTesting: 589bc28c0ab3e5554336895a34aa262e24276665
+  FirebaseABTesting: d87f56707159bae64e269757a6e963d490f2eebe
   FirebaseAnalytics: f9211b719db260cc91aebee8bb539cb367d0dfd1
   FirebaseCore: a2b95ae4ce7c83ceecfbbbe3b6f1cddc7415a808
-  FirebaseCoreExtension: f63147b723e2a700fe0f34ec6fb7f358d6fe83e0
-  FirebaseCoreInternal: 58d07f1362fddeb0feb6a857d1d1d1c5e558e698
-  FirebaseInstallations: 60c1d3bc1beef809fd1ad1189a8057a040c59f2e
+  FirebaseCoreExtension: 705ca5b14bf71d2564a0ddc677df1fc86ffa600f
+  FirebaseCoreInternal: df84dd300b561c27d5571684f389bf60b0a5c934
+  FirebaseInstallations: 913cf60d0400ebd5d6b63a28b290372ab44590dd
   FirebaseMessaging: 585984d0a1df120617eb10b44cad8968b859815e
   FirebaseRemoteConfig: 37a2ba3c8c454be8553a41ba1a2f4a4f0b845670
-  FirebaseRemoteConfigInterop: 70d200c6956ef3b5c3592a95e824c1210682d785
-  FirebaseSharedSwift: 48de4aec81a6b79bb30404e5e6db43ea74848fed
+  FirebaseRemoteConfigInterop: 6efda51fb5e2f15b16585197e26eaa09574e8a4d
+  FirebaseSharedSwift: 20530f495084b8d840f78a100d8c5ee613375f6e
   FLAnimatedImage: bbf914596368867157cc71b38a8ec834b3eeb32b
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: fdfdfe5479092de0c4bdbebedd9056951f092c4f
@@ -2236,8 +2291,9 @@ SPEC CHECKSUMS:
   hermes-engine: 1f547997900dd0752dc0cc0ae6dd16173c49e09b
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
   MetricsReporter: 99596ee5003c69949ed2f50acc34aee83c42f843
-  MMKV: 36a22a9ec84c9bb960613a089ddf6f48be9312b0
-  MMKVCore: 158e61c8516401a9fac730288acb29e6fc19bbf9
+  MMKV: 817ba1eea17421547e01e087285606eb270a8dcb
+  MMKVCore: af055b00e27d88cd92fad301c5fecd1ff9b26dd9
+  mobile-wallet-protocol-host: 8ed897dcf4f846d39b35767540e6a695631cab73
   MultiplatformBleAdapter: 5a6a897b006764392f9cef785e4360f54fb9477d
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
   PanModal: 421fe72d4af5b7e9016aaa3b4db94a2fb71756d3
@@ -2277,8 +2333,8 @@ SPEC CHECKSUMS:
   react-native-branch: 960c897d57b9f4912b08b9d06a25284b6e9879da
   react-native-cameraroll: b5ce04a1ee4081d7eea921918de979f0b41d8e22
   react-native-change-icon: ea9bb7255b09e89f41cbf282df16eade91ab1833
-  react-native-cloud-fs: e7103d1f693c57b481f820fa5e6b6b0522a5a31e
-  react-native-compat: 0468620f537a51ce0d3f4ba65bda6872240b9a0d
+  react-native-cloud-fs: c90379f513b8d7ad5cfed610ccf50f27d837016e
+  react-native-compat: 408a4b320fa4426f2c25ab74ed5764be6b3eb5aa
   react-native-get-random-values: 1404bd5cc0ab0e287f75ee1c489555688fc65f89
   react-native-ios-context-menu: e529171ba760a1af7f2ef0729f5a7f4d226171c5
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
@@ -2293,7 +2349,7 @@ SPEC CHECKSUMS:
   react-native-restart: 733a51ad137f15b0f8dc34c4082e55af7da00979
   react-native-safe-area-context: dcab599c527c2d7de2d76507a523d20a0b83823d
   react-native-screen-corner-radius: 67064efbb78f2d48f01626713ae8142f6a20f925
-  react-native-skia: 929b6d19b41e3483a33a410f5c1efdf002929230
+  react-native-skia: 8da84ea9410504bf27f0db229539a43f6caabb6a
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
   react-native-udp: 96a517e5a121cfe69f4b05eeeafefe00c623debf
@@ -2338,7 +2394,7 @@ SPEC CHECKSUMS:
   RNFBRemoteConfig: a8325e2d3772127358dd2e7d5e39c9ad3e3379ac
   RNFlashList: e9b57a5553639f9b528cc50ab53f25831722ed62
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
-  RNGestureHandler: 8dbcccada4a7e702e7dec9338c251b1cf393c960
+  RNGestureHandler: efed690b8493a00b99654043daeb1335276ac4a2
   RNImageCropPicker: 13eab07a785c7a8f8047a1146f7e59d1911c7bb8
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeyboard: 14793d75953d99c6d950090b8e9698b234c5d08c
@@ -2347,13 +2403,13 @@ SPEC CHECKSUMS:
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
   RNPermissions: 4e3714e18afe7141d000beae3755e5b5fb2f5e05
   RNReactNativeHapticFeedback: ec56a5f81c3941206fd85625fa669ffc7b4545f9
-  RNReanimated: f4ff116e33e0afc3d127f70efe928847c7c66355
+  RNReanimated: 45553a3ae29a75a76269595f8554d07d4090e392
   RNRudderSdk: 805d4b7064714f3295bf5f152d3812cc67f67a93
-  RNScreens: 5aeecbb09aa7285379b6e9f3c8a3c859bb16401c
+  RNScreens: aa943ad421c3ced3ef5a47ede02b0cbfc43a012e
   RNSentry: 7ae2a06a5563de39ec09dcb1e751ac0c67f1883c
   RNShare: eaee3dd5a06dad397c7d3b14762007035c5de405
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
-  RNSVG: a48668fd382115bc89761ce291a81c4ca5f2fd2e
+  RNSVG: 5da7a24f31968ec74f0b091e3440080f347e279b
   RNTextSize: 21c94a67819fbf2c358a219bf6d251e3be9e5f29
   RSCrashReporter: 6b8376ac729b0289ebe0908553e5f56d8171f313
   Rudder: 3cfcd9e6c5359cd6d49f411101ed9b894e3b64bd
@@ -2369,7 +2425,7 @@ SPEC CHECKSUMS:
   TOCropViewController: b9b2905938c0424f289ea2d9964993044913fac6
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   VisionCamera: 2af28201c3de77245f8c58b7a5274d5979df70df
-  Yoga: 88480008ccacea6301ff7bf58726e27a72931c8d
+  Yoga: 04f1db30bb810187397fa4c37dd1868a27af229c
 
 PODFILE CHECKSUM: 0839e4141c8f26133bf9a961f5ded1ea3127af54
 

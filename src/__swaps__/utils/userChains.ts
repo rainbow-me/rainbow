@@ -21,7 +21,8 @@ import {
   sepolia,
 } from 'viem/chains';
 
-import { ChainId, ChainNameDisplay } from '@/__swaps__/types/chains';
+import { ChainId } from '@/chains/types';
+import { chainsLabel } from '@/chains';
 
 export const chainIdMap: Record<
   ChainId.mainnet | ChainId.optimism | ChainId.polygon | ChainId.base | ChainId.bsc | ChainId.zora | ChainId.avalanche,
@@ -41,14 +42,14 @@ export const chainLabelMap: Record<
   ChainId.mainnet | ChainId.optimism | ChainId.polygon | ChainId.base | ChainId.bsc | ChainId.zora | ChainId.avalanche,
   string[]
 > = {
-  [ChainId.mainnet]: [ChainNameDisplay[goerli.id], ChainNameDisplay[sepolia.id], ChainNameDisplay[holesky.id]],
-  [ChainId.optimism]: [ChainNameDisplay[optimismSepolia.id]],
-  [ChainId.arbitrum]: [ChainNameDisplay[arbitrumGoerli.id], ChainNameDisplay[arbitrumSepolia.id]],
-  [ChainId.polygon]: [ChainNameDisplay[polygonMumbai.id]],
-  [ChainId.base]: [ChainNameDisplay[baseSepolia.id]],
-  [ChainId.bsc]: [ChainNameDisplay[bscTestnet.id]],
-  [ChainId.zora]: [ChainNameDisplay[zoraSepolia.id]],
-  [ChainId.avalanche]: [ChainNameDisplay[avalancheFuji.id]],
+  [ChainId.mainnet]: [chainsLabel[goerli.id], chainsLabel[sepolia.id], chainsLabel[holesky.id]],
+  [ChainId.optimism]: [chainsLabel[optimismSepolia.id]],
+  [ChainId.arbitrum]: [chainsLabel[arbitrumGoerli.id], chainsLabel[arbitrumSepolia.id]],
+  [ChainId.polygon]: [chainsLabel[polygonMumbai.id]],
+  [ChainId.base]: [chainsLabel[baseSepolia.id]],
+  [ChainId.bsc]: [chainsLabel[bscTestnet.id]],
+  [ChainId.zora]: [chainsLabel[zoraSepolia.id]],
+  [ChainId.avalanche]: [chainsLabel[avalancheFuji.id]],
 };
 
 export const sortNetworks = (order: ChainId[], chains: Chain[]) => {

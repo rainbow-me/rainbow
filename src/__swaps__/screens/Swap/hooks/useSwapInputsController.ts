@@ -1,7 +1,7 @@
 import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/chains/types';
 import { RequestNewQuoteParams, inputKeys, inputMethods, inputValuesType } from '@/__swaps__/types/swap';
 import { valueBasedDecimalFormatter } from '@/__swaps__/utils/decimalFormatter';
 import { getInputValuesForSliderPositionWorklet, updateInputValuesAfterFlip } from '@/__swaps__/utils/flipAssets';
@@ -15,7 +15,7 @@ import { analyticsV2 } from '@/analytics';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { useAccountSettings } from '@/hooks';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
-import { RainbowError, logger } from '@/logger';
+import { logger, RainbowError } from '@/logger';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { queryClient } from '@/react-query';
 import store from '@/redux/store';
@@ -27,12 +27,12 @@ import {
 } from '@/resources/assets/externalAssetsQuery';
 import { triggerHapticFeedback } from '@/screens/points/constants';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { ethereumUtils } from '@/utils';
 import { CrosschainQuote, Quote, QuoteError, SwapType, getCrosschainQuote, getQuote } from '@rainbow-me/swaps';
 import { useCallback } from 'react';
 import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 import { NavigationSteps } from './useSwapNavigation';
+import { deepEqualWorklet } from '@/worklets/comparisons';
 
 const REMOTE_CONFIG = getRemoteConfig();
 
@@ -349,31 +349,31 @@ export function useSwapInputsController({
     if (!asset) return null;
 
     const address = asset.address;
-    const network = ethereumUtils.getNetworkFromChainId(asset.chainId);
+    const chainId = asset.chainId;
     const currency = store.getState().settings.nativeCurrency;
 
     try {
       const tokenData = await fetchExternalToken({
         address,
-        network,
+        chainId,
         currency,
       });
 
       if (tokenData?.price.value) {
-        queryClient.setQueryData(externalTokenQueryKey({ address, network, currency }), tokenData);
+        queryClient.setQueryData(externalTokenQueryKey({ address, chainId, currency }), tokenData);
         return tokenData.price.value;
       }
     } catch (error) {
       logger.error(new RainbowError('[useSwapInputsController]: get asset prices failed'));
 
       const now = Date.now();
-      const state = queryClient.getQueryState<ExternalTokenQueryFunctionResult>(externalTokenQueryKey({ address, network, currency }));
+      const state = queryClient.getQueryState<ExternalTokenQueryFunctionResult>(externalTokenQueryKey({ address, chainId, currency }));
       const price = state?.data?.price.value;
       if (price) {
         const updatedAt = state.dataUpdatedAt;
         // NOTE: if the data is older than 60 seconds, we need to invalidate it and not use it
         if (now - updatedAt > EXTERNAL_TOKEN_STALE_TIME) {
-          queryClient.invalidateQueries(externalTokenQueryKey({ address, network, currency }));
+          queryClient.invalidateQueries(externalTokenQueryKey({ address, chainId, currency }));
           return null;
         }
         return price;
@@ -390,18 +390,19 @@ export function useSwapInputsController({
       inputAsset: ExtendedAnimatedAssetWithColors | null;
       outputAsset: ExtendedAnimatedAssetWithColors | null;
     }) => {
-      return Promise.all(
-        [
-          {
-            asset: inputAsset,
-            type: 'inputAsset',
-          },
-          {
-            asset: outputAsset,
-            type: 'outputAsset',
-          },
-        ].map(getAssetNativePrice)
-      ).then(([inputPrice, outputPrice]) => ({ inputPrice, outputPrice }));
+      const assetsToFetch = [];
+
+      assetsToFetch.push({
+        asset: inputAsset,
+        type: 'inputAsset',
+      });
+
+      assetsToFetch.push({
+        asset: outputAsset,
+        type: 'outputAsset',
+      });
+
+      return Promise.all(assetsToFetch.map(getAssetNativePrice)).then(([inputPrice, outputPrice]) => ({ inputPrice, outputPrice }));
     },
     [getAssetNativePrice]
   );
@@ -432,18 +433,54 @@ export function useSwapInputsController({
       return;
     }
 
+    const originalQuoteParams = {
+      assetToBuyUniqueId: originalOutputAssetUniqueId,
+      assetToSellUniqueId: originalInputAssetUniqueId,
+      inputAmount: inputAmount,
+      lastTypedInput: lastTypedInputParam,
+      outputAmount: outputAmount,
+    };
+
     try {
-      const quoteResponse = await (params.swapType === SwapType.crossChain ? getCrosschainQuote(params) : getQuote(params));
-      if (!quoteResponse || 'error' in quoteResponse) throw '';
+      const [quoteResponse, fetchedPrices] = await Promise.all([
+        params.swapType === SwapType.crossChain ? getCrosschainQuote(params) : getQuote(params),
+        fetchAssetPrices({
+          inputAsset: internalSelectedInputAsset.value,
+          outputAsset: internalSelectedOutputAsset.value,
+        }),
+      ]);
+
+      const inputAsset = internalSelectedInputAsset.value;
+      const outputAsset = internalSelectedOutputAsset.value;
+
+      analyticsV2.track(analyticsV2.event.swapsReceivedQuote, {
+        inputAsset,
+        outputAsset,
+        quote: quoteResponse,
+      });
+
+      if (!quoteResponse || 'error' in quoteResponse) {
+        runOnUI(() => {
+          setQuote({
+            data: quoteResponse,
+            inputAmount: undefined,
+            inputPrice: undefined,
+            outputAmount: undefined,
+            outputPrice: undefined,
+            originalQuoteParams,
+            quoteFetchingInterval,
+          });
+        })();
+
+        return;
+      }
 
       const quotedInputAmount =
         lastTypedInputParam === 'outputAmount'
           ? Number(
               convertRawAmountToDecimalFormat(
                 quoteResponse.sellAmount.toString(),
-                internalSelectedInputAsset.value?.networks[internalSelectedInputAsset.value.chainId]?.decimals ||
-                  internalSelectedInputAsset.value?.decimals ||
-                  18
+                inputAsset?.networks[inputAsset.chainId]?.decimals || inputAsset?.decimals || 18
               )
             )
           : undefined;
@@ -453,37 +490,23 @@ export function useSwapInputsController({
           ? Number(
               convertRawAmountToDecimalFormat(
                 quoteResponse.buyAmountMinusFees.toString(),
-                internalSelectedOutputAsset.value?.networks[internalSelectedOutputAsset.value.chainId]?.decimals ||
-                  internalSelectedOutputAsset.value?.decimals ||
-                  18
+                outputAsset?.networks[outputAsset.chainId]?.decimals || outputAsset?.decimals || 18
               )
             )
           : undefined;
-
-      analyticsV2.track(analyticsV2.event.swapsReceivedQuote, {
-        inputAsset: internalSelectedInputAsset.value,
-        outputAsset: internalSelectedOutputAsset.value,
-        quote: quoteResponse,
-      });
 
       runOnUI(() => {
         setQuote({
           data: quoteResponse,
           inputAmount: quotedInputAmount,
-          inputPrice: quoteResponse.sellTokenAsset.price.value,
-          originalQuoteParams: {
-            assetToBuyUniqueId: originalOutputAssetUniqueId,
-            assetToSellUniqueId: originalInputAssetUniqueId,
-            inputAmount: inputAmount,
-            lastTypedInput: lastTypedInputParam,
-            outputAmount: outputAmount,
-          },
+          inputPrice: quoteResponse?.sellTokenAsset?.price?.value || fetchedPrices.inputPrice,
           outputAmount: quotedOutputAmount,
-          outputPrice: quoteResponse.buyTokenAsset.price.value,
+          outputPrice: quoteResponse?.buyTokenAsset?.price?.value || fetchedPrices.outputPrice,
+          originalQuoteParams,
           quoteFetchingInterval,
         });
       })();
-    } catch (error) {
+    } catch {
       runOnUI(resetFetchingStatus)({ fromError: true, quoteFetchingInterval });
     }
   };
@@ -679,7 +702,8 @@ export function useSwapInputsController({
       if (areBothAssetsSet) {
         fetchQuoteAndAssetPrices();
       }
-    }
+    },
+    []
   );
 
   /**
@@ -700,7 +724,8 @@ export function useSwapInputsController({
         });
         fetchQuoteAndAssetPrices();
       }
-    }
+    },
+    []
   );
 
   /**
@@ -730,7 +755,8 @@ export function useSwapInputsController({
           }
         }
       }
-    }
+    },
+    []
   );
 
   /**
@@ -749,11 +775,11 @@ export function useSwapInputsController({
       values: inputValues.value,
     }),
     (current, previous) => {
-      if (previous && current !== previous) {
+      if (previous && !deepEqualWorklet(current, previous)) {
         // Handle updating input values based on the input method
         if (inputMethod.value === 'slider' && internalSelectedInputAsset.value && current.sliderXPosition !== previous.sliderXPosition) {
           // If the slider position changes
-          if (percentageToSwap.value === 0) {
+          if (current.sliderXPosition === 0) {
             resetValuesToZeroWorklet({ updateSlider: false });
           } else {
             // If the change set the slider position to > 0
@@ -848,9 +874,9 @@ export function useSwapInputsController({
           }
         }
       }
-    }
+    },
+    []
   );
-
   return {
     debouncedFetchQuote,
     formattedInputAmount,

@@ -17,7 +17,9 @@ export async function getExistingPIN(): Promise<string | undefined> {
       return userPIN as string;
     }
   } catch (error) {
-    logger.error(new RainbowError('Error while trying to get existing PIN code.'), { message: (error as Error).message });
+    logger.error(new RainbowError('[getExistingPIN]: Error while trying to get existing PIN code.'), {
+      message: (error as Error).message,
+    });
   }
   return;
 }
@@ -39,7 +41,7 @@ export async function savePIN(pin: string | undefined) {
       await keychain.saveString(pinKey, encryptedPin);
     }
   } catch (error) {
-    logger.error(new RainbowError('savePin error'), {
+    logger.error(new RainbowError('[savePIN]: savePin error'), {
       message: (error as Error).message,
     });
   }

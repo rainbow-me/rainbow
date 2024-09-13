@@ -7,13 +7,13 @@ import { Column, Row } from './layout';
 import { Text } from './text';
 import { padding, position } from '@/styles';
 import { darkModeThemeColors } from '@/styles/colors';
-import { getNetworkObj } from '@/networks';
 import * as lang from '@/languages';
-import { isL2Network } from '@/handlers/web3';
+import { isL2Chain } from '@/handlers/web3';
 import { EthCoinIcon } from './coin-icon/EthCoinIcon';
+import { chainsName } from '@/chains';
 
 const L2Disclaimer = ({
-  network,
+  chainId,
   colors,
   hideDivider,
   isNft = false,
@@ -36,7 +36,7 @@ const L2Disclaimer = ({
     },
   };
 
-  const isL2 = isL2Network(network);
+  const isL2 = isL2Chain({ chainId });
 
   return (
     <>
@@ -44,7 +44,7 @@ const L2Disclaimer = ({
         <Row borderRadius={16} marginHorizontal={marginHorizontal} style={padding.object(android ? 6 : 10, 10, android ? 6 : 10, 10)}>
           <RadialGradient {...radialGradientProps} borderRadius={16} radius={600} />
           <Column justify="center">
-            {isL2 ? <ChainBadge network={network} position="relative" size="small" forceDark={forceDarkMode} /> : <EthCoinIcon size={20} />}
+            {isL2 ? <ChainBadge chainId={chainId} position="relative" size="small" forceDark={forceDarkMode} /> : <EthCoinIcon size={20} />}
           </Column>
           <Column flex={1} justify="center" marginHorizontal={8}>
             <Text
@@ -57,7 +57,7 @@ const L2Disclaimer = ({
                 ? customText
                 : lang.t(lang.l.expanded_state.asset.l2_disclaimer, {
                     symbol,
-                    network: getNetworkObj(network).name,
+                    network: chainsName[chainId],
                   })}
             </Text>
           </Column>

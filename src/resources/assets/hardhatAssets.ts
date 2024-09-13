@@ -1,22 +1,25 @@
 import { Contract } from '@ethersproject/contracts';
-import { captureException } from '@sentry/react-native';
 import { keyBy, mapValues } from 'lodash';
-import { Network } from '@/helpers/networkTypes';
-import { web3Provider } from '@/handlers/web3'; // TODO JIN
-import { getNetworkObj } from '@/networks';
+import { getProvider } from '@/handlers/web3';
 import { balanceCheckerContractAbi, chainAssets, ETH_ADDRESS } from '@/references';
 import { parseAddressAsset } from './assets';
 import { RainbowAddressAssets } from './types';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
+import { AddressOrEth, UniqueId, ZerionAsset } from '@/__swaps__/types/assets';
+import { AddressZero } from '@ethersproject/constants';
+import chainAssetsByChainId from '@/references/testnet-assets-by-chain';
+import { ChainId, ChainName, Network } from '@/chains/types';
+import { SUPPORTED_CHAIN_IDS } from '@/chains';
 
-const ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT = '0x0000000000000000000000000000000000000000';
+const MAINNET_BALANCE_CHECKER = '0x4dcf4562268dd384fe814c00fad239f06c2a0c2b';
 
 const fetchHardhatBalancesWithBalanceChecker = async (
   tokens: string[],
-  address: string,
-  network: Network = Network.mainnet
+  address: string
 ): Promise<{ [tokenAddress: string]: string } | null> => {
-  const balanceCheckerContract = new Contract(getNetworkObj(network).balanceCheckerAddress, balanceCheckerContractAbi, web3Provider);
+  const provider = getProvider({ chainId: ChainId.mainnet });
+  const balanceCheckerContract = new Contract(MAINNET_BALANCE_CHECKER, balanceCheckerContractAbi, provider);
+
   try {
     const values = await balanceCheckerContract.balances([address], tokens);
     const balances: {
@@ -24,24 +27,33 @@ const fetchHardhatBalancesWithBalanceChecker = async (
     } = {};
     tokens.forEach((tokenAddr, tokenIdx) => {
       const balance = values[tokenIdx];
-      const assetCode = tokenAddr === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT ? ETH_ADDRESS : tokenAddr;
+      const assetCode = tokenAddr === AddressZero ? ETH_ADDRESS : tokenAddr;
       balances[assetCode] = balance.toString();
     });
     return balances;
   } catch (e) {
-    logger.sentry('Error fetching balances from balanceCheckerContract', network, e);
-    captureException(new Error('fallbackExplorer::balanceChecker failure'));
+    logger.error(new RainbowError(`[hardhatAssets]: Error fetching balances from balanceCheckerContract: ${e}`));
     return null;
   }
 };
 
-export const fetchHardhatBalances = async (accountAddress: string, network: Network = Network.mainnet): Promise<RainbowAddressAssets> => {
-  const chainAssetsMap = keyBy(chainAssets[network as keyof typeof chainAssets], ({ asset }) => `${asset.asset_code}_${asset.network}`);
+/**
+ * @deprecated - to be removed once rest of the app is converted to new userAssetsStore
+ * Fetches the balances of the hardhat assets for the given account address and network.
+ * @param accountAddress - The address of the account to fetch the balances for.
+ * @param network - The network to fetch the balances for.
+ * @returns The balances of the hardhat assets for the given account address and network.
+ */
+export const fetchHardhatBalances = async (accountAddress: string, chainId: ChainId = ChainId.mainnet): Promise<RainbowAddressAssets> => {
+  const chainAssetsMap = keyBy(
+    chainAssets[`${chainId}` as keyof typeof chainAssets],
+    ({ asset }) => `${asset.asset_code}_${asset.chainId}`
+  );
 
   const tokenAddresses = Object.values(chainAssetsMap).map(({ asset: { asset_code } }) =>
-    asset_code === ETH_ADDRESS ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT : asset_code.toLowerCase()
+    asset_code === ETH_ADDRESS ? AddressZero : asset_code.toLowerCase()
   );
-  const balances = await fetchHardhatBalancesWithBalanceChecker(tokenAddresses, accountAddress, network);
+  const balances = await fetchHardhatBalancesWithBalanceChecker(tokenAddresses, accountAddress);
   if (!balances) return {};
 
   const updatedAssets = mapValues(chainAssetsMap, chainAsset => {
@@ -56,4 +68,63 @@ export const fetchHardhatBalances = async (accountAddress: string, network: Netw
     return parseAddressAsset({ assetData: updatedAsset });
   });
   return updatedAssets;
+};
+
+export const fetchHardhatBalancesByChainId = async (
+  accountAddress: string,
+  chainId: ChainId = ChainId.mainnet
+): Promise<{
+  assets: {
+    [uniqueId: UniqueId]: {
+      asset: ZerionAsset;
+      quantity: string;
+    };
+  };
+  chainIdsInResponse: ChainId[];
+}> => {
+  const chainAssetsMap = chainAssetsByChainId[`${chainId}` as keyof typeof chainAssets] || {};
+
+  const tokenAddresses = Object.values(chainAssetsMap).map(({ asset }) =>
+    asset.asset_code === ETH_ADDRESS ? AddressZero : asset.asset_code.toLowerCase()
+  );
+
+  const balances = await fetchHardhatBalancesWithBalanceChecker(tokenAddresses, accountAddress);
+  if (!balances)
+    return {
+      assets: {},
+      chainIdsInResponse: [],
+    };
+
+  const updatedAssets = Object.entries(chainAssetsMap).reduce(
+    (acc, [uniqueId, chainAsset]) => {
+      const assetCode = chainAsset.asset.asset_code || ETH_ADDRESS;
+      const quantity = balances[assetCode.toLowerCase()] || '0';
+
+      const asset: ZerionAsset = {
+        ...chainAsset.asset,
+        asset_code: assetCode as AddressOrEth,
+        mainnet_address: (chainAsset.asset.mainnet_address as AddressOrEth) || (assetCode as AddressOrEth),
+        network: (chainAsset.asset.network as ChainName) || ChainName.mainnet,
+        bridging: chainAsset.asset.bridging || {
+          bridgeable: false,
+          networks: {},
+        },
+        implementations: chainAsset.asset.implementations || {},
+        name: chainAsset.asset.name || 'Unknown Token',
+        symbol: chainAsset.asset.symbol || 'UNKNOWN',
+        decimals: chainAsset.asset.decimals || 18,
+        icon_url: chainAsset.asset.icon_url || '',
+        price: chainAsset.asset.price || { value: 0, relative_change_24h: 0 },
+      };
+
+      acc[uniqueId] = { asset, quantity };
+      return acc;
+    },
+    {} as { [uniqueId: UniqueId]: { asset: ZerionAsset; quantity: string } }
+  );
+
+  return {
+    assets: updatedAssets,
+    chainIdsInResponse: SUPPORTED_CHAIN_IDS,
+  };
 };

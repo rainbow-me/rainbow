@@ -1,9 +1,8 @@
 import { celo, fantom, harmonyOne, moonbeam } from 'viem/chains';
 import { NATIVE_ASSETS_PER_CHAIN } from '@/references';
 import { AddressOrEth } from '@/__swaps__/types/assets';
-import { ChainId, ChainName, ChainNameDisplay, chainIdToNameMapping, chainNameToIdMapping } from '@/__swaps__/types/chains';
+import { ChainId } from '@/chains/types';
 import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
-import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 
 // @ts-expect-error Property '[ChainId.hardhat]' is missing
 export const customChainIdsToAssetNames: Record<ChainId, string> = {
@@ -44,60 +43,8 @@ export const customChainIdsToAssetNames: Record<ChainId, string> = {
   324: 'zksync',
 };
 
-export const getChainName = ({ chainId }: { chainId: number }) => {
-  const network = getNetworkFromChainId(chainId);
-  return ChainNameDisplay[chainId] || network;
-};
-
-/**
- * @desc Checks if the given chain is a Layer 2.
- * @param chain The chain name to check.
- * @return Whether or not the chain is an L2 network.
- */
-export const isL2Chain = (chain: ChainName | ChainId): boolean => {
-  switch (chain) {
-    case ChainName.arbitrum:
-    case ChainName.base:
-    case ChainName.bsc:
-    case ChainName.optimism:
-    case ChainName.polygon:
-    case ChainName.zora:
-    case ChainName.avalanche:
-    case ChainId.arbitrum:
-    case ChainId.base:
-    case ChainId.bsc:
-    case ChainId.optimism:
-    case ChainId.polygon:
-    case ChainId.zora:
-    case ChainId.avalanche:
-      return true;
-    default:
-      return false;
-  }
-};
-
 export function isNativeAsset(address: AddressOrEth, chainId: ChainId) {
   return isLowerCaseMatch(NATIVE_ASSETS_PER_CHAIN[chainId], address);
-}
-
-export function chainIdFromChainName(chainName: ChainName) {
-  return chainNameToIdMapping[chainName];
-}
-
-export function chainNameForChainIdWithMainnetSubstitution(chainId: ChainId) {
-  if (chainId === ChainId.mainnet) {
-    return 'ethereum';
-  }
-  return chainIdToNameMapping[chainId];
-}
-
-export function chainNameFromChainId(chainId: ChainId): ChainName {
-  return chainIdToNameMapping[chainId];
-}
-
-export function chainNameFromChainIdWorklet(chainId: ChainId): ChainName {
-  'worklet';
-  return chainIdToNameMapping[chainId];
 }
 
 export const chainIdToUse = (connectedToHardhat: boolean, connectedToHardhatOp: boolean, activeSessionChainId: number) => {

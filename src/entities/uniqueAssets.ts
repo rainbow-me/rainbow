@@ -1,4 +1,4 @@
-import { Network } from '../helpers/networkTypes';
+import { Network, ChainId } from '@/chains/types';
 import { AssetContract, AssetType } from '.';
 
 interface UniqueAssetLastSale {
@@ -11,6 +11,7 @@ interface UniqueAssetLastSale {
 
 export interface UniqueAsset {
   animation_url?: string | null;
+  chainId: ChainId;
   description?: string | null;
   external_link?: string | null;
   image_original_url?: string | null;

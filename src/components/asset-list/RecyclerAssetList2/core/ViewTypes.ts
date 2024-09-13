@@ -17,6 +17,8 @@ export enum CellType {
   PROFILE_NAME_ROW_SPACE_AFTER = 'PROFILE_NAME_ROW_SPACE_AFTER',
   PROFILE_STICKY_HEADER = 'PROFILE_STICKY_HEADER',
   NFTS_HEADER = 'NFTS_HEADER',
+  NFTS_LOADING = 'NFTS_LOADING',
+  NFTS_EMPTY = 'NFTS_EMPTY',
   NFTS_HEADER_SPACE_BEFORE = 'NFTS_HEADER_SPACE_BEFORE',
   NFTS_HEADER_SPACE_AFTER = 'NFTS_HEADER_SPACE_AFTER',
   FAMILY_HEADER = 'FAMILY_HEADER',
@@ -27,6 +29,11 @@ export enum CellType {
   POSITIONS_HEADER = 'POSITIONS_HEADER',
   POSITION = 'POSITION',
   POSITIONS_SPACE_AFTER = 'POSITIONS_SPACE_AFTER',
+
+  CLAIMABLES_SPACE_BEFORE = 'CLAIMABLES_SPACE_BEFORE',
+  CLAIMABLES_HEADER = 'CLAIMABLES_HEADER',
+  CLAIMABLE = 'CLAIMABLE',
+  CLAIMABLES_SPACE_AFTER = 'CLAIMABLES_SPACE_AFTER',
 
   LOADING_ASSETS = 'LOADING_ASSETS',
   RECEIVE_CARD = 'RECEIVE_CARD',
@@ -72,6 +79,12 @@ export type PositionExtraData = {
 export type PositionHeaderExtraData = {
   total: string;
 };
+export type ClaimableExtraData = {
+  uniqueId: string;
+};
+export type ClaimablesHeaderExtraData = {
+  total: string;
+};
 export type NFTFamilyExtraData = {
   type: CellType.FAMILY_HEADER;
   name: string;
@@ -88,6 +101,8 @@ export type CellExtraData =
   | AssetListHeaderExtraData
   | AssetsHeaderExtraData
   | PositionExtraData
-  | PositionHeaderExtraData;
+  | PositionHeaderExtraData
+  | ClaimableExtraData
+  | ClaimablesHeaderExtraData;
 
 export type CellTypes = BaseCellType & CellExtraData;

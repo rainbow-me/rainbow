@@ -1,18 +1,19 @@
-import { NewTransaction, TransactionGasParamAmounts } from '@/entities';
-import { getProviderForNetwork } from '@/handlers/web3';
-import { Network } from '@/helpers';
+import { NewTransaction, ParsedAddressAsset, TransactionGasParamAmounts } from '@/entities';
+import { getProvider } from '@/handlers/web3';
 import { add, addBuffer, greaterThan, lessThan, multiply, subtract } from '@/helpers/utilities';
 import { RainbowError } from '@/logger';
 import store from '@/redux/store';
 import { REFERRER_CLAIM } from '@/references';
 import { TxHash } from '@/resources/transactions/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import ethereumUtils, { getNetworkFromChainId } from '@/utils/ethereumUtils';
+import ethereumUtils from '@/utils/ethereumUtils';
 import { AddressZero } from '@ethersproject/constants';
 import { CrosschainQuote, QuoteError, SwapType, getClaimBridgeQuote } from '@rainbow-me/swaps';
 import { Address } from 'viem';
 import { ActionProps } from '../references';
 import { executeCrosschainSwap } from './crosschainSwap';
+import { ChainId } from '@/chains/types';
+import { chainsName } from '@/chains';
 
 // This action is used to bridge the claimed funds to another chain
 export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps<'claimBridge'>) {
@@ -51,7 +52,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
   // 2 - We use the default gas limit (already inflated) from the quote to calculate the aproximate gas fee
   const initalGasLimit = bridgeQuote.defaultGasLimit as string;
 
-  const provider = getProviderForNetwork(Network.optimism);
+  const provider = getProvider({ chainId: ChainId.optimism });
 
   const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
     // @ts-ignore
@@ -153,21 +154,26 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
     throw new Error('[CLAIM-BRIDGE]: executeCrosschainSwap returned undefined');
   }
 
-  const typedAssetToBuy = {
+  const typedAssetToBuy: ParsedAddressAsset = {
     ...parameters.assetToBuy,
-    network: getNetworkFromChainId(parameters.assetToBuy.chainId),
+    network: chainsName[parameters.assetToBuy.chainId],
+    chainId: parameters.assetToBuy.chainId,
     colors: undefined,
     networks: undefined,
+    native: undefined,
   };
   const typedAssetToSell = {
     ...parameters.assetToSell,
-    network: getNetworkFromChainId(parameters.assetToSell.chainId),
+    network: chainsName[parameters.assetToSell.chainId],
+    chainId: parameters.assetToSell.chainId,
     colors: undefined,
     networks: undefined,
+    native: undefined,
   };
 
   // 5 - if the swap was successful we add the transaction to the store
   const transaction = {
+    chainId,
     data: bridgeQuote.data,
     value: bridgeQuote.value?.toString(),
     asset: typedAssetToBuy,
@@ -186,7 +192,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
     from: bridgeQuote.from as Address,
     to: bridgeQuote.to as Address,
     hash: swap.hash as TxHash,
-    network: getNetworkFromChainId(parameters.chainId),
+    network: chainsName[parameters.chainId],
     nonce: swap.nonce,
     status: 'pending',
     type: 'bridge',
@@ -196,7 +202,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
 
   addNewTransaction({
     address: bridgeQuote.from as Address,
-    network: getNetworkFromChainId(parameters.chainId),
+    chainId: parameters.chainId,
     transaction,
   });
 

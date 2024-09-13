@@ -2,36 +2,42 @@ import React from 'react';
 import { Box, Inline, Text } from '@/design-system';
 import * as i18n from '@/languages';
 import { ListHeaderMenu } from '@/components/list/ListHeaderMenu';
-import useNftSort, { CollectibleSortByOptions } from '@/hooks/useNFTsSortBy';
+import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
+import useNftSort from '@/hooks/useNFTsSortBy';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
 
 const TokenFamilyHeaderHeight = 48;
 
-const getIconForSortType = (selected: string) => {
+const getIconForSortType = (selected: NftCollectionSortCriterion) => {
   switch (selected) {
-    case CollectibleSortByOptions.ABC:
+    case NftCollectionSortCriterion.Abc:
       return '􀋲';
-    case CollectibleSortByOptions.FLOOR_PRICE:
+    case NftCollectionSortCriterion.FloorPrice:
       return '􀅺';
-    case CollectibleSortByOptions.MOST_RECENT:
+    case NftCollectionSortCriterion.MostRecent:
       return '􀐫';
   }
-  return '';
 };
 
-const getMenuItemIcon = (value: CollectibleSortByOptions) => {
+const getMenuItemIcon = (value: NftCollectionSortCriterion) => {
   switch (value) {
-    case CollectibleSortByOptions.ABC:
+    case NftCollectionSortCriterion.Abc:
       return 'list.bullet';
-    case CollectibleSortByOptions.FLOOR_PRICE:
+    case NftCollectionSortCriterion.FloorPrice:
       return 'plus.forwardslash.minus';
-    case CollectibleSortByOptions.MOST_RECENT:
+    case NftCollectionSortCriterion.MostRecent:
       return 'clock';
   }
-  return '';
 };
 
 const CollectiblesHeader = () => {
+  const { nfts_enabled } = useRemoteConfig();
+  const nftsEnabled = useExperimentalFlag(NFTS_ENABLED) || nfts_enabled;
   const { nftSort, updateNFTSort } = useNftSort();
+
+  if (!nftsEnabled) return null;
+
   return (
     <Box
       height={{ custom: TokenFamilyHeaderHeight }}
@@ -48,13 +54,13 @@ const CollectiblesHeader = () => {
 
         <ListHeaderMenu
           selected={nftSort}
-          menuItems={Object.entries(CollectibleSortByOptions).map(([key, value]) => ({
+          menuItems={Object.entries(NftCollectionSortCriterion).map(([key, value]) => ({
             actionKey: value,
             actionTitle: i18n.t(i18n.l.nfts.sort[value]),
             icon: { iconType: 'SYSTEM', iconValue: getMenuItemIcon(value) },
             menuState: nftSort === key ? 'on' : 'off',
           }))}
-          selectItem={string => updateNFTSort(string as CollectibleSortByOptions)}
+          selectItem={string => updateNFTSort(string as NftCollectionSortCriterion)}
           icon={getIconForSortType(nftSort)}
           text={i18n.t(i18n.l.nfts.sort[nftSort])}
         />

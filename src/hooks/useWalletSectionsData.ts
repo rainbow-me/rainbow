@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
 import useCoinListEditOptions from './useCoinListEditOptions';
 import useCoinListEdited from './useCoinListEdited';
@@ -12,6 +12,8 @@ import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import { useLegacyNFTs } from '@/resources/nfts';
 import useNftSort from './useNFTsSortBy';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { RainbowContext } from '@/helpers/RainbowContext';
 
 export default function useWalletSectionsData({
   type,
@@ -22,12 +24,16 @@ export default function useWalletSectionsData({
   const { isLoading: isLoadingUserAssets, data: sortedAssets = [] } = useSortedUserAssets();
   const isWalletEthZero = useIsWalletEthZero();
 
+  const { nftSort } = useNftSort();
+
   const { accountAddress, language, network, nativeCurrency } = useAccountSettings();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const {
     data: { nfts: allUniqueTokens },
+    isLoading: isFetchingNfts,
   } = useLegacyNFTs({
     address: accountAddress,
+    sortBy: nftSort,
   });
 
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
@@ -39,11 +45,12 @@ export default function useWalletSectionsData({
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
 
+  const remoteConfig = useRemoteConfig();
+  const experimentalConfig = useContext(RainbowContext).config;
+
   const { hiddenCoinsObj: hiddenCoins, pinnedCoinsObj: pinnedCoins } = useCoinListEditOptions();
 
   const { isCoinListEdited } = useCoinListEdited();
-
-  const { nftSort } = useNftSort();
 
   const walletSections = useMemo(() => {
     const accountInfo = {
@@ -65,10 +72,13 @@ export default function useWalletSectionsData({
       listType: type,
       showcaseTokens,
       uniqueTokens: allUniqueTokens,
+      isFetchingNfts,
       nftSort,
+      remoteConfig,
+      experimentalConfig,
     };
 
-    const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(accountInfo, nftSort);
+    const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(accountInfo);
     const hasNFTs = allUniqueTokens.length > 0;
 
     return {
@@ -89,14 +99,17 @@ export default function useWalletSectionsData({
     pinnedCoins,
     sendableUniqueTokens,
     sortedAssets,
-    accountWithBalance,
+    accountWithBalance?.balances,
     isWalletEthZero,
     hiddenTokens,
     isReadOnlyWallet,
     type,
     showcaseTokens,
     allUniqueTokens,
+    isFetchingNfts,
     nftSort,
+    remoteConfig,
+    experimentalConfig,
   ]);
   return walletSections;
 }

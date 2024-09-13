@@ -4,13 +4,13 @@ import { StyleSheet, View } from 'react-native';
 import EthIcon from '@/assets/eth-icon.png';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { globalColors } from '@/design-system';
-import { Network } from '@/networks/types';
 import { borders, fonts } from '@/styles';
 import { useTheme } from '@/theme';
 import { FallbackIcon as CoinIconTextFallback, isETH } from '@/utils';
 import { FastFallbackCoinIconImage } from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastFallbackCoinIconImage';
 import Animated from 'react-native-reanimated';
 import FastImage, { Source } from 'react-native-fast-image';
+import { ChainId } from '@/chains/types';
 
 // TODO: Delete this and replace with RainbowCoinIcon
 // ⚠️ When replacing this component with RainbowCoinIcon, make sure
@@ -45,17 +45,15 @@ const smallFallbackIconStyle = {
  * @param param0 - optional mainnetAddress, address and network
  * @returns a proper type and address to use for the url
  */
-function resolveNetworkAndAddress({ address, mainnetAddress, network }: { mainnetAddress?: string; address: string; network: Network }) {
+function resolveChainIdAndAddress({ address, mainnetAddress }: { mainnetAddress?: string; address: string }) {
   if (mainnetAddress) {
     return {
       resolvedAddress: mainnetAddress,
-      resolvedNetwork: Network.mainnet,
     };
   }
 
   return {
     resolvedAddress: address,
-    resolvedNetwork: network,
   };
 }
 
@@ -67,7 +65,7 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
   forceDarkMode,
   large,
   mainnetAddress,
-  network,
+  chainId,
   small,
   symbol,
 }: {
@@ -78,16 +76,15 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
   forceDarkMode?: boolean;
   large?: boolean;
   mainnetAddress?: string;
-  network: Network;
+  chainId: ChainId;
   small?: boolean;
   symbol: string;
 }) {
   const theme = useTheme();
 
-  const { resolvedNetwork, resolvedAddress } = resolveNetworkAndAddress({
+  const { resolvedAddress } = resolveChainIdAndAddress({
     address,
     mainnetAddress,
-    network,
   });
 
   const fallbackIconColor = color ?? theme.colors.purpleUniswap;
@@ -115,7 +112,6 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
         <FastFallbackCoinIconImage
           size={small ? 16 : large ? 36 : 32}
           icon={iconUrl}
-          network={resolvedNetwork}
           shadowColor={shadowColor}
           symbol={symbol}
           theme={theme}
@@ -133,9 +129,9 @@ export const SwapCoinIcon = React.memo(function FeedCoinIcon({
         </FastFallbackCoinIconImage>
       )}
 
-      {network && network !== Network.mainnet && !small && (
+      {chainId && chainId !== ChainId.mainnet && !small && (
         <View style={sx.badge}>
-          <ChainImage chain={network} size={16} />
+          <ChainImage chainId={chainId} size={16} />
         </View>
       )}
     </View>

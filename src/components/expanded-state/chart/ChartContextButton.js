@@ -32,10 +32,10 @@ export default function ChartContextButton({ asset, color }) {
         setHiddenCoins();
       } else if (buttonIndex === 2 && !asset?.isNativeAsset) {
         // 🔍 View on Etherscan
-        ethereumUtils.openTokenEtherscanURL(asset?.address, asset?.network);
+        ethereumUtils.openTokenEtherscanURL({ address: asset?.address, chainId: asset?.chainId });
       }
     },
-    [asset?.address, asset?.isNativeAsset, asset?.network, setHiddenCoins, setPinnedCoins]
+    [asset?.address, asset?.isNativeAsset, asset?.chainId, setHiddenCoins, setPinnedCoins]
   );
 
   const options = useMemo(
@@ -46,12 +46,12 @@ export default function ChartContextButton({ asset, color }) {
         ? []
         : [
             `🔍 ${emojiSpacing}${lang.t('wallet.action.view_on', {
-              blockExplorerName: startCase(ethereumUtils.getBlockExplorer(asset?.network)),
+              blockExplorerName: startCase(ethereumUtils.getBlockExplorer({ chainId: asset?.chainId })),
             })}`,
           ]),
       ...(ios ? [lang.t('wallet.action.cancel')] : []),
     ],
-    [asset?.isNativeAsset, asset?.network, currentAction]
+    [asset?.chainId, asset?.isNativeAsset, currentAction]
   );
 
   return <ContextCircleButton flex={0} onPressActionSheet={handleActionSheetPress} options={options} tintColor={color} />;

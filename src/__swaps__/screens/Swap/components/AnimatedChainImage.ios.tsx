@@ -11,18 +11,15 @@ import ZoraBadge from '@/assets/badges/zora.png';
 import AvalancheBadge from '@/assets/badges/avalanche.png';
 import BlastBadge from '@/assets/badges/blast.png';
 import DegenBadge from '@/assets/badges/degen.png';
-import { ChainId } from '@/__swaps__/types/chains';
-import { useAnimatedProps } from 'react-native-reanimated';
-import { AddressOrEth } from '@/__swaps__/types/assets';
+import { ChainId } from '@/chains/types';
+import { useAnimatedProps, useDerivedValue } from 'react-native-reanimated';
 import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 import { globalColors } from '@/design-system';
-import { customChainIdsToAssetNames } from '@/__swaps__/utils/chains';
-import { AddressZero } from '@ethersproject/constants';
-import { ETH_ADDRESS } from '@/references';
 import { IS_ANDROID } from '@/env';
 import { PIXEL_RATIO } from '@/utils/deviceUtils';
 import { useSwapContext } from '../providers/swap-provider';
+import { BLANK_BASE64_PIXEL } from '@/components/DappBrowser/constants';
 
 const networkBadges = {
   [ChainId.mainnet]: Image.resolveAssetSource(EthereumBadge).uri,
@@ -47,19 +44,6 @@ const networkBadges = {
   [ChainId.degen]: Image.resolveAssetSource(DegenBadge).uri,
 };
 
-const getCustomChainIconUrlWorklet = (chainId: ChainId, address: AddressOrEth) => {
-  'worklet';
-
-  if (!chainId || !customChainIdsToAssetNames[chainId]) return '';
-  const baseUrl = 'https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/';
-
-  if (address === AddressZero || address === ETH_ADDRESS) {
-    return `${baseUrl}${customChainIdsToAssetNames[chainId]}/info/logo.png`;
-  } else {
-    return `${baseUrl}${customChainIdsToAssetNames[chainId]}/assets/${address}/logo.png`;
-  }
-};
-
 export function AnimatedChainImage({
   assetType,
   showMainnetBadge = false,
@@ -70,41 +54,27 @@ export function AnimatedChainImage({
   size?: number;
 }) {
   const { internalSelectedInputAsset, internalSelectedOutputAsset } = useSwapContext();
-  const asset = assetType === 'input' ? internalSelectedInputAsset : internalSelectedOutputAsset;
 
-  const animatedIconSource = useAnimatedProps(() => {
-    const base = {
-      source: {
-        ...DEFAULT_FASTER_IMAGE_CONFIG,
-        borderRadius: IS_ANDROID ? (size / 2) * PIXEL_RATIO : size / 2,
-        url: '',
-      },
-    };
-    if (!asset?.value) {
-      if (!showMainnetBadge) {
-        return base;
-      }
+  const url = useDerivedValue(() => {
+    const asset = assetType === 'input' ? internalSelectedInputAsset : internalSelectedOutputAsset;
+    const chainId = asset?.value?.chainId;
 
-      base.source.url = networkBadges[ChainId.mainnet];
-      return base;
+    let url = 'eth';
+
+    if (chainId !== undefined && !(!showMainnetBadge && chainId === ChainId.mainnet)) {
+      url = networkBadges[chainId];
     }
-
-    if (networkBadges[asset.value.chainId]) {
-      if (!showMainnetBadge && asset.value.chainId === ChainId.mainnet) {
-        return base;
-      }
-      base.source.url = networkBadges[asset.value.chainId];
-      return base;
-    }
-
-    const url = getCustomChainIconUrlWorklet(asset.value.chainId, asset.value.address);
-    if (url) {
-      base.source.url = url;
-      return base;
-    }
-
-    return base;
+    return url;
   });
+
+  const animatedIconSource = useAnimatedProps(() => ({
+    source: {
+      ...DEFAULT_FASTER_IMAGE_CONFIG,
+      base64Placeholder: BLANK_BASE64_PIXEL,
+      borderRadius: IS_ANDROID ? (size / 2) * PIXEL_RATIO : size / 2,
+      url: url.value,
+    },
+  }));
 
   return (
     <View style={[sx.badge, { borderRadius: size / 2, height: size, width: size }]}>

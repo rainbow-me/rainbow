@@ -9,8 +9,7 @@ import {
   SLIDER_WIDTH,
   STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS,
 } from '@/__swaps__/screens/Swap/constants';
-import { ChainId, ChainName } from '@/__swaps__/types/chains';
-import { chainNameFromChainId, chainNameFromChainIdWorklet } from '@/__swaps__/utils/chains';
+import { ChainId, ChainName } from '@/chains/types';
 import { isLowerCaseMatchWorklet } from '@/__swaps__/utils/strings';
 import { globalColors } from '@/design-system';
 import { ForegroundColor, palettes } from '@/design-system/color/palettes';
@@ -40,6 +39,7 @@ import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from
 import { inputKeys } from '../types/swap';
 import { valueBasedDecimalFormatter } from './decimalFormatter';
 import { convertAmountToRawAmount } from './numbers';
+import { chainsName } from '@/chains';
 
 // /---- 🎨 Color functions 🎨 ----/ //
 //
@@ -252,7 +252,7 @@ export function niceIncrementFormatter({
   const niceIncrement = findNiceIncrement(inputAssetBalance);
   const incrementDecimalPlaces = countDecimalPlaces(niceIncrement);
 
-  if (percentageToSwap === 0 || equalWorklet(niceIncrement, 0)) return '0';
+  if (percentageToSwap === 0 || equalWorklet(niceIncrement, 0)) return 0;
   if (percentageToSwap === 0.25) {
     const amount = mulWorklet(inputAssetBalance, 0.25);
     return valueBasedDecimalFormatter({
@@ -347,36 +347,17 @@ export const slippageInBipsToStringWorklet = (slippageInBips: number) => {
 };
 
 export const getDefaultSlippage = (chainId: ChainId, config: RainbowConfig) => {
-  const chainName = chainNameFromChainId(chainId) as
-    | ChainName.mainnet
-    | ChainName.optimism
-    | ChainName.polygon
-    | ChainName.arbitrum
-    | ChainName.base
-    | ChainName.zora
-    | ChainName.bsc
-    | ChainName.avalanche;
   return slippageInBipsToString(
     // NOTE: JSON.parse doesn't type the result as a Record<ChainName, number>
-    (config.default_slippage_bips as unknown as Record<ChainName, number>)[chainName] || DEFAULT_SLIPPAGE_BIPS[chainId]
+    (config.default_slippage_bips as unknown as Record<string, number>)[chainsName[chainId]] || DEFAULT_SLIPPAGE_BIPS[chainId]
   );
 };
 
 export const getDefaultSlippageWorklet = (chainId: ChainId, config: RainbowConfig) => {
   'worklet';
 
-  const chainName = chainNameFromChainIdWorklet(chainId) as
-    | ChainName.mainnet
-    | ChainName.optimism
-    | ChainName.polygon
-    | ChainName.arbitrum
-    | ChainName.base
-    | ChainName.zora
-    | ChainName.bsc
-    | ChainName.avalanche
-    | ChainName.blast;
   return slippageInBipsToStringWorklet(
-    (config.default_slippage_bips as unknown as { [key: string]: number })[chainName] || DEFAULT_SLIPPAGE_BIPS[chainId]
+    (config.default_slippage_bips as unknown as { [key: string]: number })[chainsName[chainId]] || DEFAULT_SLIPPAGE_BIPS[chainId]
   );
 };
 

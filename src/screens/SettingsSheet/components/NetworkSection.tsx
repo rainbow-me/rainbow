@@ -1,4 +1,3 @@
-import { values } from 'lodash';
 import React, { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -9,54 +8,51 @@ import { analytics } from '@/analytics';
 import { Separator, Stack } from '@/design-system';
 import { useAccountSettings, useInitializeAccountData, useLoadAccountData, useResetAccountState } from '@/hooks';
 import { settingsUpdateNetwork } from '@/redux/settings';
-import { Network } from '@/helpers';
-import { RainbowNetworks } from '@/networks';
-
-const networks = values(RainbowNetworks).filter(({ networkType }) => networkType !== 'layer2');
+import { ChainId } from '@/chains/types';
+import { defaultChains } from '@/chains';
+import { isL2Chain } from '@/handlers/web3';
 
 interface NetworkSectionProps {
   inDevSection?: boolean;
 }
 
 const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
-  const { network, testnetsEnabled } = useAccountSettings();
+  const { chainId, testnetsEnabled } = useAccountSettings();
   const resetAccountState = useResetAccountState();
   const loadAccountData = useLoadAccountData();
   const initializeAccountData = useInitializeAccountData();
   const dispatch = useDispatch();
 
   const onNetworkChange = useCallback(
-    async (network: Network) => {
+    async (chainId: ChainId) => {
       await resetAccountState();
-      await dispatch(settingsUpdateNetwork(network));
+      await dispatch(settingsUpdateNetwork(chainId));
       InteractionManager.runAfterInteractions(async () => {
         await loadAccountData();
         initializeAccountData();
-        analytics.track('Changed network', { network });
+        analytics.track('Changed network', { chainId });
       });
     },
     [dispatch, initializeAccountData, loadAccountData, resetAccountState]
   );
 
   const renderNetworkList = useCallback(() => {
-    return networks.map(({ name, value, networkType }) => (
-      <MenuItem
-        disabled={!testnetsEnabled && networkType === 'testnet'}
-        key={value}
-        onPress={() => onNetworkChange(value)}
-        rightComponent={value === network && <MenuItem.StatusIcon status="selected" />}
-        size={52}
-        testID={`${value}-network`}
-        titleComponent={
-          <MenuItem.Title
-            disabled={!testnetsEnabled && networkType === 'testnet'}
-            text={name}
-            weight={inDevSection ? 'medium' : 'semibold'}
-          />
-        }
-      />
-    ));
-  }, [inDevSection, network, onNetworkChange, testnetsEnabled]);
+    return Object.values(defaultChains)
+      .filter(({ id }) => !isL2Chain({ chainId: id }))
+      .map(({ name, id, testnet }) => (
+        <MenuItem
+          disabled={!testnetsEnabled && testnet}
+          key={id}
+          onPress={() => onNetworkChange(id)}
+          rightComponent={id === chainId && <MenuItem.StatusIcon status="selected" />}
+          size={52}
+          testID={`${id}-network`}
+          titleComponent={
+            <MenuItem.Title disabled={!testnetsEnabled && testnet} text={name} weight={inDevSection ? 'medium' : 'semibold'} />
+          }
+        />
+      ));
+  }, [inDevSection, chainId, onNetworkChange, testnetsEnabled]);
 
   return inDevSection ? (
     <Stack separator={<Separator color="divider60 (Deprecated)" />}>{renderNetworkList()}</Stack>

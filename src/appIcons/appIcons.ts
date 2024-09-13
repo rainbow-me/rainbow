@@ -1,5 +1,4 @@
 import { EthereumAddress } from '@/entities';
-import { Network } from '@/helpers';
 import { ImageSourcePropType } from 'react-native';
 import AppIconFiniliar from '@/assets/appIconFiniliar.png';
 import AppIconGoldDoge from '@/assets/appIconGoldDoge.png';
@@ -15,6 +14,7 @@ import AppIconPoolboy from '@/assets/appIconPoolboy.png';
 import AppIconAdworld from '@/assets/appIconAdworld.png';
 import AppIconFarcaster from '@/assets/appIconFarcaster.png';
 import { TokenGateCheckerNetwork } from '@/featuresToUnlock/tokenGatedUtils';
+import { Network } from '@/chains/types';
 
 // optimism app icon unlocking NFTs
 const OPTIMISTIC_EXPLORER_NFT_ADDRESS: EthereumAddress = '0x81b30ff521D1fEB67EDE32db726D95714eb00637';

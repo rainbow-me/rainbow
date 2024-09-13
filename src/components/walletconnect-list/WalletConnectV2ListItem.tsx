@@ -17,15 +17,16 @@ import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
-import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
+import { showActionSheetWithOptions } from '@/utils';
 import * as lang from '@/languages';
 import { useTheme } from '@/theme';
 import { logger, RainbowError } from '@/logger';
-import { changeAccount, disconnectSession, isSupportedChain } from '@/walletConnect';
+import { changeAccount, disconnectSession } from '@/walletConnect';
 import { Box, Inline } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
-import { Network } from '@/helpers';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
+import { ChainId } from '@/chains/types';
+import { supportedWalletConnectChainIds } from '@/chains';
 
 const CONTAINER_PADDING = 15;
 const VENDOR_LOGO_ICON_SIZE = 50;
@@ -65,7 +66,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
     const eip155Account = namespaces.eip155?.accounts?.[0] || undefined;
 
     if (!eip155Account) {
-      const e = new RainbowError(`WalletConnectV2ListItem: unsupported namespace`);
+      const e = new RainbowError(`[WalletConnectV2ListItem]: unsupported namespace`);
       logger.error(e);
 
       // defensive, just for types, should never happen
@@ -73,10 +74,12 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
     }
 
     const address = eip155Account?.split(':')?.[2];
-    const chainIds = chains?.map(chain => parseInt(chain.split(':')[1]))?.filter(isSupportedChain) ?? [];
+    const chainIds = (chains
+      ?.map(chain => parseInt(chain.split(':')[1]))
+      ?.filter(chainId => supportedWalletConnectChainIds.includes(chainId)) ?? []) as ChainId[];
 
     if (!address) {
-      const e = new RainbowError(`WalletConnectV2ListItem: could not parse address`);
+      const e = new RainbowError(`[WalletConnectV2ListItem]: could not parse address`);
       logger.error(e);
 
       // defensive, just for types, should never happen
@@ -92,11 +95,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
     };
   }, [session]);
 
-  const availableNetworks = useMemo(() => {
-    return chainIds
-      .map(network => ethereumUtils.getNetworkFromChainId(Number(network)))
-      .sort(network => (network === Network.mainnet ? -1 : 1));
-  }, [chainIds]);
+  const availableNetworksChainIds = useMemo(() => chainIds.sort(chainId => (chainId === ChainId.mainnet ? -1 : 1)), [chainIds]);
 
   const approvalAccountInfo = useMemo(() => {
     const selectedWallet = findWalletWithAccount(wallets!, address);
@@ -116,7 +115,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
       },
       watchOnly: true,
     });
-  }, [session, address, dappUrl, goBack]);
+  }, [address, session, reload, goBack]);
 
   const onPressAndroid = useCallback(() => {
     showActionSheetWithOptions(
@@ -138,7 +137,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
         }
       }
     );
-  }, [session, address, dappName, dappUrl, handlePressChangeWallet]);
+  }, [dappName, handlePressChangeWallet, session, reload, dappUrl]);
 
   const handleOnPressMenuItem = useCallback(
     // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
@@ -154,7 +153,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
         handlePressChangeWallet();
       }
     },
-    [address, dappName, dappUrl, handlePressChangeWallet]
+    [dappName, dappUrl, handlePressChangeWallet, reload, session]
   );
 
   return (
@@ -206,7 +205,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
               </Centered>
             </SessionRow>
           </ColumnWithMargins>
-          {!!availableNetworks?.length && (
+          {!!availableNetworksChainIds?.length && (
             <Box borderRadius={99} paddingVertical="8px" paddingHorizontal="12px" justifyContent="center">
               <RadialGradient
                 {...radialGradientProps}
@@ -217,20 +216,20 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
               <Inline alignVertical="center" alignHorizontal="justify">
                 <Inline alignVertical="center">
                   <Box style={{ flexDirection: 'row' }}>
-                    {availableNetworks?.map((network, index) => {
+                    {availableNetworksChainIds?.map((chainId, index) => {
                       return (
                         <Box
                           background="body (Deprecated)"
-                          key={`availableNetwork-${network}`}
+                          key={`availableNetwork-${chainId}`}
                           marginLeft={{ custom: index > 0 ? -4 : 0 }}
                           style={{
                             backgroundColor: colors.transparent,
-                            zIndex: availableNetworks?.length - index,
+                            zIndex: availableNetworksChainIds?.length - index,
                             borderRadius: 30,
                           }}
                         >
-                          {network !== Network.mainnet ? (
-                            <ChainBadge network={network} position="relative" size="small" />
+                          {chainId !== ChainId.mainnet ? (
+                            <ChainBadge chainId={chainId} position="relative" size="small" />
                           ) : (
                             <EthCoinIcon size={20} />
                           )}

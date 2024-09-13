@@ -4,7 +4,7 @@ import { TokenSelectionButton } from '../buttons';
 import { ChainBadge, CoinIconSize } from '../coin-icon';
 import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
-import { Network } from '@/helpers';
+import { ChainId } from '@/chains/types';
 import styled from '@/styled-thing';
 import { borders } from '@/styles';
 import { useTheme } from '@/theme';
@@ -33,7 +33,7 @@ interface ExchangeFieldProps {
   editable: boolean;
   loading: boolean;
   type?: string;
-  network: Network;
+  chainId: ChainId;
   onBlur?: (event: FocusEvent) => void;
   onFocus: (event: FocusEvent) => void;
   onPressSelectCurrency: (chainId: any) => void;
@@ -55,7 +55,7 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
     disableCurrencySelection,
     editable,
     loading,
-    network,
+    chainId,
     onBlur,
     onFocus,
     onPressSelectCurrency,
@@ -126,7 +126,7 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
       paddingRight={ExchangeFieldPadding}
       width="full"
       style={style}
-      testID={`${testID}-${symbol || 'empty'}-${network || 'empty'}`}
+      testID={`${testID}-${symbol || 'empty'}-${chainId || 'empty'}`}
     >
       <TouchableWithoutFeedback onPress={onTapWhileDisabled ?? handleFocusField}>
         <Box
@@ -141,13 +141,13 @@ const ExchangeField: ForwardRefRenderFunction<TextInput, ExchangeFieldProps> = (
         >
           <Box paddingRight="10px">
             {symbol ? (
-              <RainbowCoinIcon size={40} icon={icon} network={network} symbol={symbol} theme={theme} colors={colors} />
+              <RainbowCoinIcon size={40} icon={icon} chainId={chainId} symbol={symbol} theme={theme} colors={colors} />
             ) : (
               <Box>
                 <AccentColorProvider color={theme.colors.alpha(theme.colors.blueGreyDark, 0.1)}>
                   <Box background="accent" style={{ ...borders.buildCircleAsObject(CoinIconSize) }} />
                 </AccentColorProvider>
-                <ChainBadge network={network} />
+                <ChainBadge chainId={chainId} />
               </Box>
             )}
           </Box>

@@ -1,17 +1,16 @@
 import { AddressOrEth, UniqueId } from '@/__swaps__/types/assets';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId, Network } from '@/chains/types';
 import { getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
 import { NativeCurrencyKeys, RainbowToken } from '@/entities';
-import { Network } from '@/networks/types';
 import { createQueryKey, queryClient } from '@/react-query';
 import { DAI_ADDRESS, ETH_ADDRESS, SOCKS_ADDRESS, WBTC_ADDRESS, WETH_ADDRESS } from '@/references';
 import { promiseUtils } from '@/utils';
-import ethereumUtils from '@/utils/ethereumUtils';
 import { useQuery } from '@tanstack/react-query';
 import { omit } from 'lodash';
 import { externalTokenQueryKey, fetchExternalToken } from './assets/externalAssetsQuery';
+import { chainsIdByName, chainsName } from '@/chains';
 
-export const favoritesQueryKey = createQueryKey('favorites', {}, { persisterVersion: 3 });
+export const favoritesQueryKey = createQueryKey('favorites', {}, { persisterVersion: 4 });
 
 const DEFAULT_FAVORITES = [DAI_ADDRESS, ETH_ADDRESS, SOCKS_ADDRESS, WBTC_ADDRESS];
 
@@ -23,14 +22,13 @@ const getUniqueId = (address: AddressOrEth, chainId: ChainId) => getStandardized
 async function fetchMetadata(addresses: string[], chainId = ChainId.mainnet) {
   const favoritesMetadata: Record<UniqueId, RainbowToken> = {};
   const newFavoritesMeta: Record<UniqueId, RainbowToken> = {};
-
-  const network = ethereumUtils.getNetworkFromChainId(chainId);
+  const network = chainsName[chainId];
 
   // Map addresses to an array of promises returned by fetchExternalToken
   const fetchPromises: Promise<void>[] = addresses.map(async address => {
     const externalAsset = await queryClient.fetchQuery(
-      externalTokenQueryKey({ address, network, currency: NativeCurrencyKeys.USD }),
-      async () => fetchExternalToken({ address, network, currency: NativeCurrencyKeys.USD }),
+      externalTokenQueryKey({ address, chainId, currency: NativeCurrencyKeys.USD }),
+      async () => fetchExternalToken({ address, chainId, currency: NativeCurrencyKeys.USD }),
       {
         staleTime: Infinity,
       }
@@ -40,6 +38,7 @@ async function fetchMetadata(addresses: string[], chainId = ChainId.mainnet) {
       const uniqueId = getUniqueId(externalAsset?.networks[chainId]?.address, chainId);
       newFavoritesMeta[uniqueId] = {
         ...externalAsset,
+        chainId,
         network,
         address,
         networks: externalAsset.networks,
@@ -87,8 +86,8 @@ export async function refreshFavorites() {
 
   const favoritesByNetwork = Object.values(favorites).reduce(
     (favoritesByChain, token) => {
-      favoritesByChain[token.network] ??= [];
-      favoritesByChain[token.network].push(token.address);
+      favoritesByChain[token.network as Network] ??= [];
+      favoritesByChain[token.network as Network].push(token.address);
       return favoritesByChain;
     },
     {} as Record<Network, string[]>
@@ -96,7 +95,7 @@ export async function refreshFavorites() {
 
   const updatedMetadataByNetwork = await Promise.all(
     Object.entries(favoritesByNetwork).map(async ([network, networkFavorites]) =>
-      fetchMetadata(networkFavorites, ethereumUtils.getChainIdFromNetwork(network as Network))
+      fetchMetadata(networkFavorites, chainsIdByName[network as Network])
     )
   );
 

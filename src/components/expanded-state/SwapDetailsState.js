@@ -15,9 +15,10 @@ import { useHeight, usePrevious, usePriceImpactDetails, useSwapCurrencies } from
 import { useNavigation } from '@/navigation';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
-import { abbreviations } from '@/utils';
+import { abbreviations, ethereumUtils } from '@/utils';
 import { getCrosschainSwapServiceTime } from '@/handlers/swap';
 import { SwapPriceImpactType } from '@/hooks/usePriceImpactDetails';
+import { chainsIdByName } from '@/chains';
 
 const AnimatedContainer = styled(Animated.View)({
   ...position.sizeAsObject('100%'),
@@ -71,6 +72,7 @@ export default function SwapDetailsState({ confirmButtonProps, restoreFocusOnSwa
   const prevIsFocused = usePrevious(isFocused);
   const { params: { longFormHeight, currentNetwork, flashbotTransaction, isRefuelTx, onClose } = {} } = useRoute();
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
+  const chainId = chainsIdByName[currentNetwork];
 
   const {
     derivedValues: { inputAmount, outputAmount },
@@ -168,7 +170,7 @@ export default function SwapDetailsState({ confirmButtonProps, restoreFocusOnSwa
             <ConfirmExchangeButton {...confirmButtonProps} testID="swap-details-confirm-button" />
             <GasSpeedButton
               asset={outputCurrency}
-              currentNetwork={currentNetwork}
+              chainId={chainId}
               flashbotTransaction={flashbotTransaction}
               testID="swap-details-gas"
               theme="light"

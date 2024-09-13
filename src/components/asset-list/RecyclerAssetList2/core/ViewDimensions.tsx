@@ -52,8 +52,14 @@ const ViewDimensions: Record<CellType, Dim> = {
   [CellType.FAMILY_HEADER]: { height: TokenFamilyHeaderHeight },
   [CellType.NFT]: {
     // @ts-expect-error
-    height: UniqueTokenRow.cardSize + UniqueTokenRow.cardMargin,
+    height: UniqueTokenRow.height,
     width: deviceUtils.dimensions.width / 2 - 0.1,
+  },
+  [CellType.NFTS_LOADING]: {
+    height: TokenFamilyHeaderHeight * 5,
+  },
+  [CellType.NFTS_EMPTY]: {
+    height: TokenFamilyHeaderHeight * 5,
   },
   [CellType.NFT_SPACE_AFTER]: { height: 5 },
   [CellType.LOADING_ASSETS]: { height: AssetListItemSkeletonHeight },
@@ -63,6 +69,13 @@ const ViewDimensions: Record<CellType, Dim> = {
   [CellType.POSITION]: {
     height: 130,
     width: deviceUtils.dimensions.width / 2 - 0.1,
+  },
+  [CellType.CLAIMABLES_HEADER]: { height: AssetListHeaderHeight },
+  [CellType.CLAIMABLES_SPACE_BEFORE]: { height: 10 },
+  [CellType.CLAIMABLES_SPACE_AFTER]: { height: 3 },
+  [CellType.CLAIMABLE]: {
+    height: 60,
+    width: deviceUtils.dimensions.width,
   },
   [CellType.REMOTE_CARD_CAROUSEL]: { height: 112 },
 };

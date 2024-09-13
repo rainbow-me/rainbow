@@ -24,6 +24,13 @@ export const FakeAvatar = styled.View({
   borderRadius: 20,
 });
 
+// @ts-expect-error Property 'View' does not exist on type...
+export const FakeNFT = styled.View({
+  ...position.sizeAsObject(32),
+  backgroundColor: ({ theme: { colors }, color }: FakeItemProps) => color ?? colors.skeleton,
+  borderRadius: 16,
+});
+
 export const FakeRow = styled(Row).attrs({
   align: 'flex-end',
   flex: 0,

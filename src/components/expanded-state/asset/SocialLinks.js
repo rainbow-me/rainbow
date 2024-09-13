@@ -27,9 +27,9 @@ const CommunityLink = styled(Link).attrs({
   paddingTop: ios ? 9.5 : 5,
 });
 
-export default function SocialLinks({ address, color, isNativeAsset, links, marginTop, type }) {
-  const etherscanURL = ethereumUtils.getEtherscanHostForNetwork(type);
-  const blockExplorerName = ethereumUtils.getBlockExplorer(type);
+export default function SocialLinks({ address, color, isNativeAsset, links, marginTop, chainId }) {
+  const etherscanURL = ethereumUtils.getEtherscanHostForNetwork({ chainId });
+  const blockExplorerName = ethereumUtils.getBlockExplorer({ chainId });
   return (
     <>
       <Carousel height={59} marginBottom={1} marginTop={marginTop || 0}>

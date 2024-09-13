@@ -32,7 +32,7 @@ export function CloudBackupProvider({ children }: PropsWithChildren) {
       setIsFetching(true);
       const isAvailable = await isCloudBackupAvailable();
       if (!isAvailable) {
-        logger.log('Cloud backup is not available');
+        logger.debug('[CloudBackupProvider]: Cloud backup is not available');
         setIsFetching(false);
         return;
       }
@@ -44,20 +44,20 @@ export function CloudBackupProvider({ children }: PropsWithChildren) {
         }
       }
 
-      logger.log('Syncing with cloud');
+      logger.debug('[CloudBackupProvider]: Syncing with cloud');
       await syncCloud();
 
-      logger.log('Fetching user data');
+      logger.debug('[CloudBackupProvider]: Fetching user data');
       const userData = await fetchUserDataFromCloud();
       setUserData(userData);
 
-      logger.log('Fetching all backups');
+      logger.debug('[CloudBackupProvider]: Fetching all backups');
       const backups = await fetchAllBackups();
 
-      logger.log(`Retrieved ${backups.files.length} backup files`);
+      logger.debug(`[CloudBackupProvider]: Retrieved ${backups.files.length} backup files`);
       setBackups(backups);
     } catch (e) {
-      logger.error(new RainbowError('Failed to fetch all backups'), {
+      logger.error(new RainbowError('[CloudBackupProvider]: Failed to fetch all backups'), {
         error: e,
       });
     }

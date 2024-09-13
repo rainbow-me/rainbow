@@ -14,7 +14,6 @@ import {
   estimateENSSetRecordsGasLimit,
   fetchReverseRecord,
 } from '@/handlers/ens';
-import { NetworkTypes } from '@/helpers';
 import {
   ENS_DOMAIN,
   formatEstimatedNetworkFee,
@@ -25,10 +24,10 @@ import {
   REGISTRATION_MODES,
   REGISTRATION_STEPS,
 } from '@/helpers/ens';
-import { Network } from '@/helpers/networkTypes';
 import { add, addBuffer, addDisplay, fromWei, greaterThanOrEqualTo, multiply } from '@/helpers/utilities';
 import { ethUnits, timeUnits } from '@/references';
 import { ethereumUtils, gasUtils } from '@/utils';
+import { ChainId } from '@/chains/types';
 
 enum QUERY_KEYS {
   GET_COMMIT_GAS_LIMIT = 'GET_COMMIT_GAS_LIMIT',
@@ -93,7 +92,7 @@ export default function useENSRegistrationCosts({
   const rentPriceInWei = rentPrice?.wei?.toString();
 
   const checkIfSufficientEth = useCallback((wei: string) => {
-    const nativeAsset = ethereumUtils.getNetworkNativeAsset(NetworkTypes.mainnet);
+    const nativeAsset = ethereumUtils.getNetworkNativeAsset({ chainId: ChainId.mainnet });
     const balanceAmount = nativeAsset?.balance?.amount || 0;
     const txFeeAmount = fromWei(wei);
     const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
@@ -248,7 +247,7 @@ export default function useENSRegistrationCosts({
   );
 
   const estimatedFee = useMemo(() => {
-    const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(Network.mainnet);
+    const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork({ chainId: ChainId.mainnet });
     const { gasFeeParamsBySpeed, currentBaseFee } = gasFeeParams;
 
     let estimatedGasLimit = '';
@@ -334,7 +333,7 @@ export default function useENSRegistrationCosts({
 
   const data = useMemo(() => {
     const rentPricePerYearInWei = rentPrice?.perYear?.wei?.toString();
-    const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork(Network.mainnet);
+    const nativeAssetPrice = ethereumUtils.getPriceOfNativeAssetForNetwork({ chainId: ChainId.mainnet });
 
     if (rentPricePerYearInWei) {
       const rentPriceInWei = multiply(rentPricePerYearInWei, yearsDuration);

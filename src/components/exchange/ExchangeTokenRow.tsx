@@ -2,7 +2,6 @@ import React from 'react';
 import isEqual from 'react-fast-compare';
 import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
-import { Network } from '@/networks/types';
 import { useAsset, useDimensions } from '@/hooks';
 import { ButtonPressAnimation } from '../animations';
 import { FloatingEmojis } from '../floating-emojis';
@@ -10,6 +9,8 @@ import { IS_IOS } from '@/env';
 import { FavStar, Info } from '../asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
 import { View } from 'react-native';
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
+import { ChainId } from '@/chains/types';
+import { ParsedAddressAsset } from '@/entities';
 
 interface ExchangeTokenRowProps {
   item: any;
@@ -17,6 +18,7 @@ interface ExchangeTokenRowProps {
 
 export default React.memo(function ExchangeTokenRow({
   item: {
+    chainId,
     showBalance,
     showFavoriteButton,
     onPress,
@@ -29,26 +31,24 @@ export default React.memo(function ExchangeTokenRow({
     address,
     name,
     testID,
-    network,
     disabled,
   },
 }: ExchangeTokenRowProps) {
   const { width: deviceWidth } = useDimensions();
   const item = useAsset({
     address,
-    network,
+    chainId,
   });
 
-  const rowTestID = `${testID}-exchange-coin-row-${symbol ?? item?.symbol ?? ''}-${network || Network.mainnet}`;
+  const rowTestID = `${testID}-exchange-coin-row-${symbol ?? item?.symbol ?? ''}-${chainId || ChainId.mainnet}`;
 
-  const isInfoButtonVisible = !item?.isNativeAsset || (!isNativeAsset(address ?? item?.address, network) && !showBalance);
+  const isInfoButtonVisible = !item?.isNativeAsset || (!isNativeAsset(address ?? item?.address, chainId) && !showBalance);
   return (
     <Columns alignVertical="center" space="10px">
       <Column>
         <Box
           paddingLeft="20px"
           as={ButtonPressAnimation}
-          // @ts-ignore
           onPress={onPress}
           style={[disabled && { opacity: 0.5 }]}
           testID={rowTestID}
@@ -59,8 +59,8 @@ export default React.memo(function ExchangeTokenRow({
               <View style={{ height: 59, paddingTop: 9 }}>
                 <RainbowCoinIcon
                   size={40}
-                  icon={item?.icon_url || item?.iconUrl || ''}
-                  network={network}
+                  icon={item?.icon_url || ''}
+                  chainId={chainId}
                   symbol={item?.symbol || symbol}
                   theme={theme}
                   colors={item?.colors || undefined}
@@ -72,9 +72,9 @@ export default React.memo(function ExchangeTokenRow({
                 <Text size="15pt" color="primary (Deprecated)" weight="semibold" numberOfLines={1}>
                   {name ?? item?.name}
                 </Text>
-                {showBalance && item?.balance?.display && (
+                {showBalance && (item as ParsedAddressAsset)?.balance?.display && (
                   <Text size="13pt" color={{ custom: theme.colors.blueGreyDark50 }} numberOfLines={1} weight="medium">
-                    {item?.balance?.display ?? ''}
+                    {(item as ParsedAddressAsset)?.balance?.display ?? ''}
                   </Text>
                 )}
                 {!showBalance && (
@@ -92,7 +92,7 @@ export default React.memo(function ExchangeTokenRow({
           {showBalance && (
             <Box background="fillSecondary" padding="8px" borderRadius={15}>
               <Text size="15pt" weight="medium" color="labelSecondary">
-                {item?.native?.balance?.display ?? `${nativeCurrencySymbol}0.00`}
+                {(item as ParsedAddressAsset)?.native?.balance?.display ?? `${nativeCurrencySymbol}0.00`}
               </Text>
             </Box>
           )}

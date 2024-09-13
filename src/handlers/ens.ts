@@ -1,33 +1,30 @@
 import { formatsByCoinType, formatsByName } from '@ensdomains/address-encoder';
 import { getAddress } from '@ethersproject/address';
 import { Resolver } from '@ethersproject/providers';
-import { captureException } from '@sentry/react-native';
 import { Duration, sub } from 'date-fns';
 import { isValidAddress, isZeroAddress } from 'ethereumjs-util';
 import { BigNumber } from '@ethersproject/bignumber';
 import { debounce, isEmpty, sortBy } from 'lodash';
-import { fetchENSAvatar, prefetchENSAvatar } from '../hooks/useENSAvatar';
+import { fetchENSAvatar } from '../hooks/useENSAvatar';
 import { prefetchENSCover } from '../hooks/useENSCover';
 import { prefetchENSRecords } from '../hooks/useENSRecords';
 import { ENSActionParameters, ENSRapActionType } from '@/raps/common';
 import { getENSData, getNameFromLabelhash, saveENSData } from './localstorage/ens';
-import { estimateGasWithPadding, getProviderForNetwork, TokenStandard } from './web3';
+import { estimateGasWithPadding, getProvider, TokenStandard } from './web3';
 import { ENSRegistrationRecords, Records, UniqueAsset } from '@/entities';
-import { Network } from '@/helpers';
 import { ENS_DOMAIN, ENS_RECORDS, ENSRegistrationTransactionType, generateSalt, getENSExecutionDetails, getNameOwner } from '@/helpers/ens';
 import { add } from '@/helpers/utilities';
 import { ImgixImage } from '@/components/images';
 import { ENS_NFT_CONTRACT_ADDRESS, ethUnits } from '@/references';
-import { labelhash, logger, profileUtils } from '@/utils';
+import { labelhash, profileUtils } from '@/utils';
 import { AvatarResolver } from '@/ens-avatar/src';
 import { ensClient } from '@/graphql';
 import { prefetchFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
 import { prefetchENSAddress } from '@/resources/ens/ensAddressQuery';
-import { ENS_MARQUEE_QUERY_KEY } from '@/resources/metadata/ensMarqueeQuery';
-import { queryClient } from '@/react-query';
-import { EnsMarqueeAccount } from '@/graphql/__generated__/metadata';
 import { MimeType, handleNFTImages } from '@/utils/handleNFTImages';
 import store from '@/redux/store';
+import { logger, RainbowError } from '@/logger';
+import { ChainId, Network } from '@/chains/types';
 
 const DUMMY_RECORDS = {
   description: 'description',
@@ -54,6 +51,7 @@ const buildEnsToken = ({
   });
   return {
     acquisition_date: undefined,
+    chainId: ChainId.mainnet,
     animation_url: null,
     asset_contract: {
       address: contractAddress,
@@ -137,8 +135,9 @@ export const fetchMetadata = async ({
     const image_url = `https://metadata.ens.domains/mainnet/${contractAddress}/${tokenId}/image`;
     return { image_url, name };
   } catch (error) {
-    logger.sentry('ENS: Error getting ENS metadata', error);
-    captureException(new Error('ENS: Error getting ENS metadata'));
+    logger.error(new RainbowError(`[ENS]: fetchMetadata failed`), {
+      error,
+    });
     throw error;
   }
 };
@@ -175,8 +174,9 @@ export const fetchEnsTokens = async ({
         .filter(<TToken>(token: TToken | null | undefined): token is TToken => !!token) || []
     );
   } catch (error) {
-    logger.sentry('ENS: Error getting ENS unique tokens', error);
-    captureException(new Error('ENS: Error getting ENS unique tokens'));
+    logger.error(new RainbowError(`[ENS]: fetchEnsTokens failed`), {
+      error,
+    });
     return [];
   }
 };
@@ -322,7 +322,7 @@ export const fetchAccountDomains = async (address: string) => {
 
 export const fetchImage = async (imageType: 'avatar' | 'header', ensName: string) => {
   let imageUrl;
-  const provider = await getProviderForNetwork();
+  const provider = await getProvider({ chainId: ChainId.mainnet });
   try {
     const avatarResolver = new AvatarResolver(provider);
     imageUrl = await avatarResolver.getImage(ensName, {
@@ -347,7 +347,7 @@ export const fetchRecords = async (ensName: string, { supportedOnly = true }: { 
   const data = response.domains[0] || {};
   const rawRecordKeys = data.resolver?.texts || [];
 
-  const provider = await getProviderForNetwork();
+  const provider = await getProvider({ chainId: ChainId.mainnet });
   const resolver = await provider.getResolver(ensName);
   const supportedRecords = Object.values(ENS_RECORDS);
   const recordKeys = (rawRecordKeys as ENS_RECORDS[]).filter(key => (supportedOnly ? supportedRecords.includes(key) : true));
@@ -369,7 +369,7 @@ export const fetchCoinAddresses = async (
   const response = await ensClient.getCoinTypesByName({ name: ensName });
   const data = response.domains[0] || {};
   const supportedRecords = Object.values(ENS_RECORDS);
-  const provider = await getProviderForNetwork();
+  const provider = await getProvider({ chainId: ChainId.mainnet });
   const resolver = await provider.getResolver(ensName);
   const rawCoinTypes: number[] = data.resolver?.coinTypes || [];
   const rawCoinTypesNames: string[] = rawCoinTypes.map(type => formatsByCoinType[type].name);
@@ -402,7 +402,7 @@ export const fetchCoinAddresses = async (
 };
 
 export const fetchContenthash = async (ensName: string) => {
-  const provider = await getProviderForNetwork();
+  const provider = await getProvider({ chainId: ChainId.mainnet });
   const resolver = await provider.getResolver(ensName);
   const contenthash = await resolver?.getContentHash();
   return contenthash;
@@ -449,7 +449,7 @@ export const fetchRegistration = async (ensName: string) => {
 };
 
 export const fetchPrimary = async (ensName: string) => {
-  const provider = await getProviderForNetwork();
+  const provider = await getProvider({ chainId: ChainId.mainnet });
   const address = await provider.resolveName(ensName);
   return {
     address,
@@ -888,7 +888,7 @@ export const getRapActionTypeForTxType = (txType: ENSRegistrationTransactionType
 export const fetchReverseRecord = async (address: string) => {
   try {
     const checksumAddress = getAddress(address);
-    const provider = await getProviderForNetwork();
+    const provider = await getProvider({ chainId: ChainId.mainnet });
     const reverseRecord = await provider.lookupAddress(checksumAddress);
     return reverseRecord ?? '';
   } catch (e) {
@@ -898,7 +898,7 @@ export const fetchReverseRecord = async (address: string) => {
 
 export const fetchResolver = async (ensName: string) => {
   try {
-    const provider = await getProviderForNetwork();
+    const provider = await getProvider({ chainId: ChainId.mainnet });
     const resolver = await provider.getResolver(ensName);
     return resolver ?? ({} as Resolver);
   } catch (e) {

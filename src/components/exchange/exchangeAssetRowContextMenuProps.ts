@@ -2,12 +2,13 @@ import lang from 'i18n-js';
 import { startCase } from 'lodash';
 import { NativeSyntheticEvent } from 'react-native';
 import { setClipboard } from '../../hooks/useClipboard';
-import { Network } from '@/helpers/networkTypes';
 import { abbreviations, ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
+import { ChainId } from '@/chains/types';
+import { chainsIdByName } from '@/chains';
 
-const buildBlockExplorerAction = (type: Network) => {
+const buildBlockExplorerAction = (chainId: ChainId) => {
   const blockExplorerText = lang.t('exchange.coin_row.view_on', {
-    blockExplorerName: startCase(ethereumUtils.getBlockExplorer(type)),
+    blockExplorerName: startCase(ethereumUtils.getBlockExplorer({ chainId })),
   });
   return {
     actionKey: CoinRowActionsEnum.blockExplorer,
@@ -43,7 +44,7 @@ export default function contextMenuProps(item: any, onCopySwapDetailsText: (addr
   };
 
   const onPressAndroid = () => {
-    const blockExplorerText = `View on ${startCase(ethereumUtils.getBlockExplorer(item?.network))}`;
+    const blockExplorerText = `View on ${startCase(ethereumUtils.getBlockExplorer({ chainId: chainsIdByName[item?.network] }))}`;
     const androidContractActions = [lang.t('wallet.action.copy_contract_address'), blockExplorerText, lang.t('button.cancel')];
 
     showActionSheetWithOptions(
@@ -58,13 +59,13 @@ export default function contextMenuProps(item: any, onCopySwapDetailsText: (addr
           handleCopyContractAddress(item?.address);
         }
         if (idx === 1) {
-          ethereumUtils.openTokenEtherscanURL(item?.address, item?.network);
+          ethereumUtils.openTokenEtherscanURL({ address: item?.address, chainId: chainsIdByName[item?.network] });
         }
       }
     );
   };
 
-  const blockExplorerAction = buildBlockExplorerAction(item?.network);
+  const blockExplorerAction = buildBlockExplorerAction(chainsIdByName[item?.network]);
   const menuConfig = {
     menuItems: [
       blockExplorerAction,
@@ -80,7 +81,7 @@ export default function contextMenuProps(item: any, onCopySwapDetailsText: (addr
     if (actionKey === CoinRowActionsEnum.copyAddress) {
       handleCopyContractAddress(item?.address);
     } else if (actionKey === CoinRowActionsEnum.blockExplorer) {
-      ethereumUtils.openTokenEtherscanURL(item?.address, item?.network);
+      ethereumUtils.openTokenEtherscanURL({ address: item?.address, chainId: chainsIdByName[item?.network] });
     }
   };
   return {

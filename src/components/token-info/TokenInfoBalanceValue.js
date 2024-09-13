@@ -28,7 +28,7 @@ const TokenInfoBalanceValue = ({ align, asset, ...props }) => {
         <RainbowCoinIcon
           size={20}
           icon={asset?.icon_url}
-          network={asset?.network}
+          chainId={asset?.chainId}
           symbol={asset?.symbol}
           theme={theme}
           colors={asset?.colors}

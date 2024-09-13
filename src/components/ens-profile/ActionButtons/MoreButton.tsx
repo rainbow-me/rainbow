@@ -12,7 +12,7 @@ import { RAINBOW_PROFILES_BASE_URL } from '@/references';
 import Routes from '@/navigation/routesNames';
 import { ethereumUtils } from '@/utils';
 import { formatAddressForDisplay } from '@/utils/abbreviations';
-import { Network } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 
 const ACTIONS = {
   ADD_CONTACT: 'add-contact',
@@ -34,9 +34,9 @@ export default function MoreButton({ address, ensName }: { address?: string; ens
     params: { setIsSearchModeEnabled },
   } = useRoute<any>();
   const isSelectedWallet = useMemo(() => {
-    const visibleWallet = selectedWallet.addresses.find((wallet: { visible: boolean }) => wallet.visible);
+    const visibleWallet = selectedWallet.addresses?.find((wallet: { visible: boolean }) => wallet.visible);
 
-    return visibleWallet.address.toLowerCase() === address?.toLowerCase();
+    return visibleWallet?.address.toLowerCase() === address?.toLowerCase();
   }, [selectedWallet.addresses, address]);
 
   const contact = address ? contacts[address.toLowerCase()] : undefined;
@@ -112,7 +112,7 @@ export default function MoreButton({ address, ensName }: { address?: string; ens
         setClipboard(address!);
       }
       if (address && actionKey === ACTIONS.ETHERSCAN) {
-        ethereumUtils.openAddressInBlockExplorer(address, Network.mainnet);
+        ethereumUtils.openAddressInBlockExplorer({ address, chainId: ChainId.mainnet });
       }
       if (actionKey === ACTIONS.ADD_CONTACT) {
         navigate(Routes.MODAL_SCREEN, {

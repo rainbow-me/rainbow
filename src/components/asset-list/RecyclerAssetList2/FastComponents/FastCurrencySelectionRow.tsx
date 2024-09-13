@@ -1,11 +1,7 @@
 import React from 'react';
 import isEqual from 'react-fast-compare';
 import { Text as RNText, StyleSheet, View } from 'react-native';
-import {
-  // @ts-ignore
-  IS_TESTING,
-} from 'react-native-dotenv';
-// @ts-ignore
+import { IS_TESTING } from 'react-native-dotenv';
 import RadialGradient from 'react-native-radial-gradient';
 import { ButtonPressAnimation } from '../../../animations';
 import { CoinRowHeight } from '../../../coin-row';
@@ -13,11 +9,11 @@ import { FloatingEmojis } from '../../../floating-emojis';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Text } from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
-import { Network } from '@/networks/types';
 import { colors, fonts, fontWithWidth, getFontSize } from '@/styles';
 import { deviceUtils } from '@/utils';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
+import { ChainId } from '@/chains/types';
 
 const SafeRadialGradient = (IS_TESTING === 'true' ? View : RadialGradient) as typeof RadialGradient;
 
@@ -102,15 +98,14 @@ export default React.memo(function FastCurrencySelectionRow({
     address,
     name,
     testID,
-    network,
+    chainId,
     disabled,
   },
 }: FastCurrencySelectionRowProps) {
   const { colors } = theme;
-
-  const { data: item } = useExternalToken({ address, network, currency: nativeCurrency });
-  const rowTestID = `${testID}-exchange-coin-row-${symbol ?? item?.symbol ?? ''}-${network || Network.mainnet}`;
-  const isInfoButtonVisible = !isNativeAsset(address, network) && !showBalance;
+  const { data: item } = useExternalToken({ address, chainId, currency: nativeCurrency });
+  const rowTestID = `${testID}-exchange-coin-row-${symbol ?? item?.symbol ?? ''}-${chainId || ChainId.mainnet}`;
+  const isInfoButtonVisible = !isNativeAsset(address, chainId) && !showBalance;
 
   return (
     <View style={sx.row}>
@@ -126,7 +121,7 @@ export default React.memo(function FastCurrencySelectionRow({
             <RainbowCoinIcon
               size={40}
               icon={item?.iconUrl || ''}
-              network={network}
+              chainId={chainId}
               symbol={item?.symbol || symbol}
               theme={theme}
               colors={item?.colors || undefined}
@@ -177,7 +172,7 @@ export default React.memo(function FastCurrencySelectionRow({
         <View style={sx.fav}>
           {isInfoButtonVisible && <Info contextMenuProps={contextMenuProps} showFavoriteButton={showFavoriteButton} theme={theme} />}
           {showFavoriteButton &&
-            network === Network.mainnet &&
+            chainId === ChainId.mainnet &&
             (ios ? (
               // @ts-ignore
               <FloatingEmojis

@@ -7,23 +7,23 @@ import { ContextMenuButton } from '../context-menu';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import { padding, position } from '@/styles';
-import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
-import { RainbowNetworks, getNetworkObj } from '@/networks';
+import { showActionSheetWithOptions } from '@/utils';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
+import { chainsLabel, chainsName, defaultChains, supportedSwapChainIds } from '@/chains';
+import { isL2Chain } from '@/handlers/web3';
 
-const networkMenuItems = () => {
-  return RainbowNetworks.filter(network => network.features.swaps).map(network => ({
-    actionKey: network.value,
-    actionTitle: network.name,
+const networkMenuItems = supportedSwapChainIds
+  .map(chainId => defaultChains[chainId])
+  .map(chain => ({
+    actionKey: chain.id,
+    actionTitle: chainsLabel[chain.id],
     icon: {
       iconType: 'ASSET',
-      iconValue: `${network.networkType === 'layer2' ? `${network.value}BadgeNoShadow` : 'ethereumBadge'}`,
+      iconValue: `${isL2Chain({ chainId: chain.id }) ? `${chain.name}BadgeNoShadow` : 'ethereumBadge'}`,
     },
   }));
-};
-const androidNetworkMenuItems = () => {
-  return RainbowNetworks.filter(network => network.features.swaps).map(network => network.name);
-};
+
+const androidNetworkMenuItems = supportedSwapChainIds.map(chainId => defaultChains[chainId].id);
 
 const NetworkSwitcherv1 = ({
   colors,
@@ -47,12 +47,12 @@ const NetworkSwitcherv1 = ({
 
   const handleOnPressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
-      setCurrentChainId(ethereumUtils.getChainIdFromNetwork(actionKey));
+      setCurrentChainId(actionKey);
     },
     [setCurrentChainId]
   );
   const onPressAndroid = useCallback(() => {
-    const networkActions = androidNetworkMenuItems();
+    const networkActions = androidNetworkMenuItems;
     showActionSheetWithOptions(
       {
         options: networkActions,
@@ -60,7 +60,7 @@ const NetworkSwitcherv1 = ({
       },
       idx => {
         if (idx !== undefined) {
-          setCurrentChainId(ethereumUtils.getChainIdFromNetwork(networkActions[idx]));
+          setCurrentChainId(networkActions[idx]);
         }
       }
     );
@@ -69,7 +69,7 @@ const NetworkSwitcherv1 = ({
   return (
     <>
       <ContextMenuButton
-        menuItems={networkMenuItems()}
+        menuItems={networkMenuItems}
         menuTitle=""
         onPressAndroid={onPressAndroid}
         onPressMenuItem={handleOnPressMenuItem}
@@ -83,11 +83,7 @@ const NetworkSwitcherv1 = ({
         >
           <RadialGradient {...radialGradientProps} borderRadius={16} radius={600} />
           <Column justify="center">
-            {currentChainId !== 1 ? (
-              <ChainBadge network={ethereumUtils.getNetworkFromChainId(currentChainId)} position="relative" size="small" />
-            ) : (
-              <EthCoinIcon size={20} />
-            )}
+            {currentChainId !== 1 ? <ChainBadge chainId={currentChainId} position="relative" size="small" /> : <EthCoinIcon size={20} />}
           </Column>
           <Column flex={1} justify="center" marginHorizontal={8}>
             <Text
@@ -97,7 +93,7 @@ const NetworkSwitcherv1 = ({
               weight={prominent ? 'heavy' : 'bold'}
             >
               {lang.t('expanded_state.swap.network_switcher', {
-                network: getNetworkObj(ethereumUtils.getNetworkFromChainId(currentChainId)).name,
+                network: chainsName[currentChainId],
               })}
             </Text>
           </Column>

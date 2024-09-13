@@ -298,8 +298,8 @@ fragment simpleHashPaymentToken on SimpleHashPaymentToken {
   decimals
 }
 
-query getNFTs($walletAddress: String!) {
-  nfts(walletAddress: $walletAddress) {
+query getNFTs($walletAddress: String!, $sortBy: NFTCollectionSortCriterion, $sortDirection: SortDirection) {
+  nftsV2(walletAddress: $walletAddress, sortBy: $sortBy, sortDirection: $sortDirection) {
     nft_id
     chain
     contract_address
@@ -471,5 +471,45 @@ query getNFTs($walletAddress: String!) {
         display_type
       }
     }
+  }
+}
+
+query getFeaturedResults($placementId: String!, $walletAddress: String!, $country: String, $limit: Int) {
+  featuredResults(placementId: $placementId, walletAddress: $walletAddress, country: $country, limit: $limit) {
+    items {
+      id
+      type
+      impressionId
+      advertiserId
+      placementSlug
+      title
+      context {
+        text
+      }
+      description
+      imageUrl
+      category
+      imageAltText
+      ctas {
+        title
+        href
+      }
+    }
+  }
+}
+
+mutation trackFeaturedResult(
+  $type: TrackFeaturedResultType!
+  $placementId: String!
+  $impressionId: String!
+  $featuredResultCreativeId: String!
+) {
+  trackFeaturedResult(
+    type: $type
+    placementId: $placementId
+    impressionId: $impressionId
+    featuredResultCreativeId: $featuredResultCreativeId
+  ) {
+    message
   }
 }

@@ -17,10 +17,10 @@ import styled from '@/styled-thing';
 import { padding } from '@/styles';
 
 import { useNavigation } from '@/navigation';
-import { Network } from '@/helpers';
 import { SwapDetailsRewardRow } from './SwapDetailsRewardRow';
 import useExperimentalFlag, { OP_REWARDS } from '@rainbow-me/config/experimentalHooks';
 import { useRemoteConfig } from '@/model/remoteConfig';
+import { ChainId } from '@/chains/types';
 
 const Container = styled(Box).attrs({
   flex: 1,
@@ -36,8 +36,8 @@ export default function SwapDetailsContent({ isHighPriceImpact, isRefuelTx, onCo
   const [detailsExpanded, setDetailsExpanded] = useState(false);
 
   const colorForAsset = useColorForAsset(outputCurrency, undefined, true, true);
-  const inputCurrencyNetwork = inputCurrency.network;
-  const outputCurrencyNetwork = outputCurrency.network;
+  const inputChainId = inputCurrency.chainId;
+  const outputChainId = outputCurrency.chainId;
   const { op_rewards_enabled } = useRemoteConfig();
   const hasReward = (useExperimentalFlag(OP_REWARDS) || op_rewards_enabled) && !!tradeDetails.reward?.[0];
 
@@ -61,10 +61,10 @@ export default function SwapDetailsContent({ isHighPriceImpact, isRefuelTx, onCo
             />
           )}
           {tradeDetails.feePercentageBasisPoints !== 0 && (
-            <SwapDetailsFeeRow network={outputCurrencyNetwork} testID="swaps-details-fee-row" tradeDetails={tradeDetails} />
+            <SwapDetailsFeeRow chainId={outputChainId} testID="swaps-details-fee-row" tradeDetails={tradeDetails} />
           )}
           {hasReward && <SwapDetailsRewardRow reward={tradeDetails.reward?.[0]} />}
-          {flashbotsEnabled && inputCurrencyNetwork === Network.mainnet && (
+          {flashbotsEnabled && inputChainId === ChainId.mainnet && (
             <SwapDetailsRow
               labelPress={() =>
                 navigate(Routes.EXPLAIN_SHEET, {
@@ -112,10 +112,10 @@ export default function SwapDetailsContent({ isHighPriceImpact, isRefuelTx, onCo
             <Rows space="24px">
               <Separator color="divider80 (Deprecated)" />
               <SwapDetailsPriceRow testID="swaps-details-price-row" tradeDetails={tradeDetails} />
-              {!isNativeAsset(inputCurrency?.address, inputCurrencyNetwork) && (
+              {!isNativeAsset(inputCurrency?.address, inputChainId) && (
                 <SwapDetailsContractRow asset={inputCurrency} onCopySwapDetailsText={onCopySwapDetailsText} />
               )}
-              {!isNativeAsset(outputCurrency?.address, inputCurrencyNetwork) && (
+              {!isNativeAsset(outputCurrency?.address, outputChainId) && (
                 <SwapDetailsContractRow asset={outputCurrency} onCopySwapDetailsText={onCopySwapDetailsText} />
               )}
             </Rows>

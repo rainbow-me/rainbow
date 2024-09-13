@@ -1,9 +1,6 @@
 import { AnimatedChainImage } from '@/__swaps__/screens/Swap/components/AnimatedChainImage';
 import { ReviewGasButton } from '@/__swaps__/screens/Swap/components/GasButton';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
-import { useNativeAssetForChain } from '@/__swaps__/screens/Swap/hooks/useNativeAssetForChain';
-import { ChainId, ChainNameDisplay } from '@/__swaps__/types/chains';
-import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 import { useEstimatedTime } from '@/__swaps__/utils/meteorology';
 import {
   convertRawAmountToBalance,
@@ -28,13 +25,10 @@ import {
   useColorMode,
   useForegroundColor,
 } from '@/design-system';
-import { useAccountSettings } from '@/hooks';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { getNetworkObj } from '@/networks';
 import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
-import { ethereumUtils } from '@/utils';
 import { getNativeAssetForNetwork } from '@/utils/ethereumUtils';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import React, { useCallback } from 'react';
@@ -54,6 +48,8 @@ import { NavigationSteps, useSwapContext } from '../providers/swap-provider';
 import { AnimatedSwitch } from './AnimatedSwitch';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
 import { UnmountOnAnimatedReaction } from './UnmountOnAnimatedReaction';
+import { chainsLabel } from '@/chains';
+import { ChainId } from '@/chains/types';
 
 const UNKNOWN_LABEL = i18n.t(i18n.l.swap.unknown);
 const REVIEW_LABEL = i18n.t(i18n.l.expanded_state.swap_details.review);
@@ -66,11 +62,8 @@ const MAX_SLIPPAGE_LABEL = i18n.t(i18n.l.exchange.slippage_tolerance);
 const ESTIMATED_NETWORK_FEE_LABEL = i18n.t(i18n.l.gas.network_fee);
 
 const RainbowFee = () => {
-  const { nativeCurrency } = useAccountSettings();
   const { isDarkMode } = useColorMode();
-  const { isFetching, isQuoteStale, quote, internalSelectedInputAsset } = useSwapContext();
-
-  const { nativeAsset } = useNativeAssetForChain({ inputAsset: internalSelectedInputAsset });
+  const { isFetching, isQuoteStale, quote } = useSwapContext();
 
   const index = useSharedValue(0);
   const rainbowFee = useSharedValue<string[]>([UNKNOWN_LABEL, UNKNOWN_LABEL]);
@@ -91,13 +84,13 @@ const RainbowFee = () => {
       }).amount;
 
       const { display: feeDisplay } = convertRawAmountToBalance(quote.fee.toString(), {
-        decimals: quote.feeTokenAsset.decimals,
-        symbol: quote.feeTokenAsset.symbol,
+        decimals: quote?.feeTokenAsset?.decimals || 18,
+        symbol: quote?.feeTokenAsset?.symbol || 'ETH',
       });
 
       rainbowFee.value = [feeDisplay, `${handleSignificantDecimals(multiply(feePercentage, 100), 2)}%`];
     },
-    [nativeAsset?.value?.decimals, nativeAsset?.value?.price?.value, nativeCurrency, rainbowFee]
+    [rainbowFee]
   );
 
   useAnimatedReaction(
@@ -106,7 +99,8 @@ const RainbowFee = () => {
       if (!current.isQuoteStale && !current.isFetching && current.quote && !(current.quote as QuoteError)?.error) {
         runOnJS(calculateRainbowFeeFromQuoteData)(current.quote as Quote | CrosschainQuote);
       }
-    }
+    },
+    []
   );
 
   return (
@@ -141,15 +135,10 @@ function EstimatedArrivalTime() {
 function FlashbotsToggle() {
   const { SwapSettings } = useSwapContext();
 
-  const inputAssetChainId = swapsStore(state => state.inputAsset?.chainId) ?? ChainId.mainnet;
-  const isFlashbotsEnabledForNetwork = getNetworkObj(ethereumUtils.getNetworkFromChainId(inputAssetChainId)).features.flashbots;
-  const flashbotsToggleValue = useDerivedValue(() => isFlashbotsEnabledForNetwork && SwapSettings.flashbots.value);
-
   return (
     <AnimatedSwitch
       onToggle={SwapSettings.onToggleFlashbots}
-      disabled={!isFlashbotsEnabledForNetwork}
-      value={flashbotsToggleValue}
+      value={SwapSettings.flashbots}
       activeLabel={i18n.t(i18n.l.expanded_state.swap.on)}
       inactiveLabel={i18n.t(i18n.l.expanded_state.swap.off)}
     />
@@ -336,7 +325,7 @@ export function ReviewPanel() {
 
   const unknown = i18n.t(i18n.l.swap.unknown);
 
-  const chainName = useDerivedValue(() => ChainNameDisplay[internalSelectedInputAsset.value?.chainId ?? ChainId.mainnet]);
+  const chainName = useDerivedValue(() => chainsLabel[internalSelectedInputAsset.value?.chainId ?? ChainId.mainnet]);
 
   const minReceivedOrMaxSoldLabel = useDerivedValue(() => {
     const isInputBasedTrade = lastTypedInput.value === 'inputAmount' || lastTypedInput.value === 'inputNativeValue';
@@ -365,12 +354,10 @@ export function ReviewPanel() {
   });
 
   const openGasExplainer = useCallback(async () => {
-    const nativeAsset = await getNativeAssetForNetwork(
-      ethereumUtils.getNetworkFromChainId(swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet)
-    );
+    const nativeAsset = await getNativeAssetForNetwork({ chainId: swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet });
 
     navigate(Routes.EXPLAIN_SHEET, {
-      network: chainNameFromChainId(swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet),
+      chainId: swapsStore.getState().inputAsset?.chainId ?? ChainId.mainnet,
       type: 'gas',
       nativeAsset,
     });

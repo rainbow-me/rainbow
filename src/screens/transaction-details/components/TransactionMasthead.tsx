@@ -32,9 +32,9 @@ import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/em
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import ImageAvatar from '@/components/contacts/ImageAvatar';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { Network } from '@/networks/types';
 import * as lang from '@/languages';
 import { checkForPendingSwap } from '../helpers/checkForPendingSwap';
+import { ChainId } from '@/chains/types';
 
 const TransactionMastheadHeight = android ? 153 : 135;
 
@@ -128,7 +128,7 @@ function CurrencyTile({
         }
       });
     }
-  }, []);
+  }, [accountName, address, addressContact?.nickname]);
 
   useEffect(() => {
     if (!addressAccount?.image && (fetchedEnsName || addressContact?.ens)) {
@@ -169,7 +169,7 @@ function CurrencyTile({
               <RainbowCoinIcon
                 size={40}
                 icon={asset?.icon_url}
-                network={asset?.network || Network.mainnet}
+                chainId={asset?.chainId || ChainId.mainnet}
                 symbol={asset?.symbol || ''}
                 theme={theme}
                 colors={asset?.colors}

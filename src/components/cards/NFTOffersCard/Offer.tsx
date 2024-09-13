@@ -13,7 +13,6 @@ import Routes from '@/navigation/routesNames';
 import { analyticsV2 } from '@/analytics';
 import { useTheme } from '@/theme';
 import { CardSize } from '@/components/unique-token/CardSize';
-// import { deviceUtils } from '@/utils';
 import * as i18n from '@/languages';
 import { useRecoilValue } from 'recoil';
 import { nftOffersSortAtom } from '@/components/nft-offers/SortMenu';
@@ -22,7 +21,9 @@ import Svg, { Path } from 'react-native-svg';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { useAccountSettings } from '@/hooks';
-import { Network } from '@/networks/types';
+import { Network } from '@/chains/types';
+import { AddressOrEth } from '@/__swaps__/types/assets';
+import { chainsIdByName } from '@/chains';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 export const CELL_HORIZONTAL_PADDING = 7;
@@ -67,9 +68,10 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
   const { colorMode } = useColorMode();
   const theme = useTheme();
   const { nativeCurrency } = useAccountSettings();
+  const offerChainId = chainsIdByName[offer.network as Network];
   const { data: externalAsset } = useExternalToken({
-    address: offer.paymentToken.address,
-    network: offer.network as Network,
+    address: offer.paymentToken.address as AddressOrEth,
+    chainId: offerChainId,
     currency: nativeCurrency,
   });
 
@@ -139,7 +141,7 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
     default:
       secondaryTextColor = 'labelTertiary';
       secondaryText = '';
-      logger.error(new RainbowError('NFTOffersCard: invalid sort criterion'));
+      logger.error(new RainbowError('[NFTOffersCard]: invalid sort criterion'));
       break;
   }
 
@@ -238,7 +240,7 @@ export const Offer = ({ offer }: { offer: NftOffer }) => {
           <RainbowCoinIcon
             size={12}
             icon={externalAsset?.icon_url}
-            network={offer?.network as Network}
+            chainId={offerChainId}
             symbol={offer.paymentToken.symbol}
             theme={theme}
             colors={externalAsset?.colors}

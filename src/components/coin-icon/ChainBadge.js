@@ -40,7 +40,7 @@ import { Centered } from '../layout';
 import styled from '@/styled-thing';
 import { position as positions } from '@/styles';
 import { ChainBadgeSizeConfigs } from '@/components/coin-icon/ChainBadgeSizeConfigs';
-import { Network } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 
 const ChainIcon = styled(FastImage)({
   height: ({ containerSize }) => containerSize,
@@ -60,7 +60,7 @@ const IndicatorIconContainer = styled(Centered)(({ marginBottom, iconSize, badge
 }));
 
 export default function ChainBadge({
-  network,
+  chainId,
   badgeXPosition = -7,
   badgeYPosition = 0,
   marginBottom = 0,
@@ -76,48 +76,48 @@ export default function ChainBadge({
   const source = useMemo(() => {
     let val = null;
     if (size === 'large') {
-      if (network === Network.arbitrum) {
+      if (chainId === ChainId.arbitrum) {
         val = isDarkMode ? ArbitrumBadgeLargeDark : ArbitrumBadgeLarge;
-      } else if (network === Network.optimism) {
+      } else if (chainId === ChainId.optimism) {
         val = isDarkMode ? OptimismBadgeLargeDark : OptimismBadgeLarge;
-      } else if (network === Network.polygon) {
+      } else if (chainId === ChainId.polygon) {
         val = isDarkMode ? PolygonBadgeLargeDark : PolygonBadgeLarge;
-      } else if (network === Network.bsc) {
+      } else if (chainId === ChainId.bsc) {
         val = isDarkMode ? BscBadgeLargeDark : BscBadgeLarge;
-      } else if (network === Network.zora) {
+      } else if (chainId === ChainId.zora) {
         val = isDarkMode ? ZoraBadgeLargeDark : ZoraBadgeLarge;
-      } else if (network === Network.base) {
+      } else if (chainId === ChainId.base) {
         val = isDarkMode ? BaseBadgeLargeDark : BaseBadgeLarge;
-      } else if (network === Network.avalanche) {
+      } else if (chainId === ChainId.avalanche) {
         val = isDarkMode ? AvalancheBadgeLargeDark : AvalancheBadgeLarge;
-      } else if (network === Network.blast) {
+      } else if (chainId === ChainId.blast) {
         val = isDarkMode ? BlastBadgeLargeDark : BlastBadgeLarge;
-      } else if (network === Network.degen) {
+      } else if (chainId === ChainId.degen) {
         val = isDarkMode ? DegenBadgeLargeDark : DegenBadgeLarge;
       }
     } else {
-      if (network === Network.arbitrum) {
+      if (chainId === ChainId.arbitrum) {
         val = isDarkMode ? ArbitrumBadgeDark : ArbitrumBadge;
-      } else if (network === Network.optimism) {
+      } else if (chainId === ChainId.optimism) {
         val = isDarkMode ? OptimismBadgeDark : OptimismBadge;
-      } else if (network === Network.polygon) {
+      } else if (chainId === ChainId.polygon) {
         val = isDarkMode ? PolygonBadgeDark : PolygonBadge;
-      } else if (network === Network.bsc) {
+      } else if (chainId === ChainId.bsc) {
         val = isDarkMode ? BscBadgeDark : BscBadge;
-      } else if (network === Network.zora) {
+      } else if (chainId === ChainId.zora) {
         val = isDarkMode ? ZoraBadgeDark : ZoraBadge;
-      } else if (network === Network.base) {
+      } else if (chainId === ChainId.base) {
         val = isDarkMode ? BaseBadgeDark : BaseBadge;
-      } else if (network === Network.avalanche) {
+      } else if (chainId === ChainId.avalanche) {
         val = isDarkMode ? AvalancheBadgeDark : AvalancheBadge;
-      } else if (network === Network.blast) {
+      } else if (chainId === ChainId.blast) {
         val = isDarkMode ? BlastBadgeDark : BlastBadge;
-      } else if (network === Network.degen) {
+      } else if (chainId === ChainId.degen) {
         val = isDarkMode ? DegenBadgeDark : DegenBadge;
       }
     }
     return val;
-  }, [network, isDarkMode, size]);
+  }, [chainId, isDarkMode, size]);
 
   if (!source) return null;
 

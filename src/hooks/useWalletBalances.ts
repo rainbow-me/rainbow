@@ -32,7 +32,7 @@ const useWalletBalances = (wallets: AllRainbowWallets): WalletBalanceResult => {
   const { nativeCurrency } = useAccountSettings();
 
   const allAddresses = useMemo(
-    () => Object.values(wallets).flatMap(wallet => wallet.addresses.map(account => account.address as Address)),
+    () => Object.values(wallets).flatMap(wallet => (wallet.addresses || []).map(account => account.address as Address)),
     [wallets]
   );
 
@@ -62,7 +62,7 @@ const useWalletBalances = (wallets: AllRainbowWallets): WalletBalanceResult => {
 
     for (const address of allAddresses) {
       const lowerCaseAddress = address.toLowerCase() as Address;
-      const assetBalance = summaryData?.data?.addresses?.[lowerCaseAddress]?.summary?.asset_value.toString() || '0';
+      const assetBalance = summaryData?.data?.addresses?.[lowerCaseAddress]?.summary?.asset_value?.toString() || '0';
 
       const positionData = queryClient.getQueryData<RainbowPositions | undefined>(positionsQueryKey({ address, currency: nativeCurrency }));
       const positionsBalance = positionData?.totals?.total?.amount || '0';
@@ -79,7 +79,7 @@ const useWalletBalances = (wallets: AllRainbowWallets): WalletBalanceResult => {
     }
 
     return result;
-  }, [allAddresses, summaryData, nativeCurrency]);
+  }, [isLoading, allAddresses, summaryData?.data?.addresses, nativeCurrency]);
 
   return {
     balances,

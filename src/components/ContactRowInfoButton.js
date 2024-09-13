@@ -67,9 +67,9 @@ const ContactRowActions = {
   },
 };
 
-const buildBlockExplorerAction = type => {
+const buildBlockExplorerAction = chainId => {
   const blockExplorerText = lang.t('wallet.action.view_on', {
-    blockExplorerName: startCase(ethereumUtils.getBlockExplorer(type)),
+    blockExplorerName: startCase(ethereumUtils.getBlockExplorer({ chainId })),
   });
 
   return {
@@ -82,7 +82,7 @@ const buildBlockExplorerAction = type => {
   };
 };
 
-const ContactRowInfoButton = ({ children, item, network, scaleTo }) => {
+const ContactRowInfoButton = ({ children, item, chainId, scaleTo }) => {
   const { setClipboard } = useClipboard();
   const handleCopyAddress = useCallback(
     address => {
@@ -93,7 +93,7 @@ const ContactRowInfoButton = ({ children, item, network, scaleTo }) => {
   );
 
   const onPressAndroid = useCallback(() => {
-    const blockExplorerText = `View on ${startCase(ethereumUtils.getBlockExplorer(item?.network))}`;
+    const blockExplorerText = `View on ${startCase(ethereumUtils.getBlockExplorer({ chainId }))}`;
     const androidContractActions = [lang.t('wallet.action.copy_contract_address'), blockExplorerText, lang.t('button.cancel')];
     showActionSheetWithOptions(
       {
@@ -107,14 +107,14 @@ const ContactRowInfoButton = ({ children, item, network, scaleTo }) => {
           handleCopyAddress(item?.address);
         }
         if (idx === 1) {
-          ethereumUtils.openAddressInBlockExplorer(item?.address, network);
+          ethereumUtils.openAddressInBlockExplorer({ address: item?.address, chainId });
         }
       }
     );
-  }, [item?.network, item?.name, item?.address, handleCopyAddress, network]);
+  }, [item?.name, item?.address, handleCopyAddress, chainId]);
 
   const menuConfig = useMemo(() => {
-    const blockExplorerAction = buildBlockExplorerAction(item?.network);
+    const blockExplorerAction = buildBlockExplorerAction(chainId);
     return {
       menuItems: [
         blockExplorerAction,
@@ -125,17 +125,17 @@ const ContactRowInfoButton = ({ children, item, network, scaleTo }) => {
       ],
       menuTitle: `${item?.name}`,
     };
-  }, [item]);
+  }, [chainId, item?.address, item?.name]);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === ContactRowActionsEnum.copyAddress) {
         handleCopyAddress(item?.address);
       } else if (actionKey === ContactRowActionsEnum.blockExplorer) {
-        ethereumUtils.openAddressInBlockExplorer(item?.address);
+        ethereumUtils.openAddressInBlockExplorer({ address: item?.address, chainId });
       }
     },
-    [item, handleCopyAddress]
+    [handleCopyAddress, item?.address, chainId]
   );
 
   const Container = children ? Centered : InfoButton;

@@ -7,10 +7,8 @@ import { Block, Network as EthersNetwork, StaticJsonRpcProvider, TransactionRequ
 import { parseEther } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
-import { getRemoteConfig } from '@/model/remoteConfig';
 import { AssetType, NewTransaction, ParsedAddressAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
-import { Network } from '@/helpers/networkTypes';
 import { isUnstoppableAddressFormat } from '@/helpers/validators';
 import {
   ARBITRUM_ETH_ADDRESS,
@@ -36,69 +34,23 @@ import {
 import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
-import { getNetworkObj } from '@/networks';
-import store from '@/redux/store';
+import { ChainId } from '@/chains/types';
+import { defaultChains } from '@/chains';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 export enum TokenStandard {
   ERC1155 = 'ERC1155',
   ERC721 = 'ERC721',
 }
 
-export const networkProviders = new Map<Network, StaticJsonRpcProvider>();
+export const chainsProviders = new Map<ChainId, StaticJsonRpcProvider>();
 
 /**
  * Creates an rpc endpoint for a given chain id using the Rainbow rpc proxy.
  * If the firebase config flag is disabled, it will fall back to the deprecated rpc.
  */
-export const proxyRpcEndpoint = (chainId: number, customEndpoint?: string) => {
-  const {
-    rpc_proxy_enabled,
-    arbitrum_mainnet_rpc,
-    ethereum_goerli_rpc,
-    optimism_mainnet_rpc,
-    polygon_mainnet_rpc,
-    base_mainnet_rpc,
-    bsc_mainnet_rpc,
-    zora_mainnet_rpc,
-    avalanche_mainnet_rpc,
-    ethereum_mainnet_rpc,
-    blast_mainnet_rpc,
-    degen_mainnet_rpc,
-  } = getRemoteConfig();
-  if (rpc_proxy_enabled) {
-    return `${RPC_PROXY_BASE_URL}/${chainId}/${RPC_PROXY_API_KEY}${
-      customEndpoint ? `?custom_rpc=${encodeURIComponent(customEndpoint)}` : ''
-    }`;
-  } else {
-    if (customEndpoint) return customEndpoint;
-    const network = ethereumUtils.getNetworkFromChainId(chainId);
-    switch (network) {
-      case Network.arbitrum:
-        return arbitrum_mainnet_rpc;
-      case Network.goerli:
-        return ethereum_goerli_rpc;
-      case Network.optimism:
-        return optimism_mainnet_rpc;
-      case Network.polygon:
-        return polygon_mainnet_rpc;
-      case Network.base:
-        return base_mainnet_rpc;
-      case Network.bsc:
-        return bsc_mainnet_rpc;
-      case Network.zora:
-        return zora_mainnet_rpc;
-      case Network.avalanche:
-        return avalanche_mainnet_rpc;
-      case Network.blast:
-        return blast_mainnet_rpc;
-      case Network.degen:
-        return degen_mainnet_rpc;
-      case Network.gnosis:
-      case Network.mainnet:
-      default:
-        return ethereum_mainnet_rpc;
-    }
-  }
+export const proxyCustomRpcEndpoint = (chainId: number, customEndpoint: string) => {
+  return `${RPC_PROXY_BASE_URL}/${chainId}/${RPC_PROXY_API_KEY}?custom_rpc=${encodeURIComponent(customEndpoint)}`;
 };
 
 /**
@@ -117,7 +69,7 @@ type GasParamsInput = { gasPrice: BigNumberish } & {
 /**
  * The input data provied to `getTxDetails`.
  */
-type TransactionDetailsInput = Pick<NewTransactionNonNullable, 'from' | 'to' | 'data' | 'gasLimit' | 'network' | 'nonce'> &
+type TransactionDetailsInput = Pick<NewTransactionNonNullable, 'from' | 'to' | 'data' | 'gasLimit' | 'chainId' | 'nonce'> &
   Pick<NewTransaction, 'amount'> &
   GasParamsInput;
 
@@ -128,7 +80,7 @@ type TransactionDetailsReturned = {
   data?: TransactionRequest['data'];
   from?: TransactionRequest['from'];
   gasLimit?: string;
-  network?: Network | string;
+  chainId?: ChainId | string;
   to?: TransactionRequest['to'];
   value?: TransactionRequest['value'];
   nonce?: TransactionRequest['nonce'];
@@ -149,41 +101,22 @@ type NewTransactionNonNullable = {
 export let web3Provider: StaticJsonRpcProvider = null as unknown as StaticJsonRpcProvider;
 
 /**
- * @desc Checks whether or not a `Network | string` union type should be
- * treated as a `Network` based on its prefix, as opposed to a `string` type.
- * @param network The network to check.
- * @return A type predicate of `network is Network`.
- */
-const isNetworkEnum = (network: Network | string): network is Network => {
-  return !network.startsWith('http://');
-};
-
-/**
  * @desc Sets a different web3 provider.
  * @param network The network to set.
  * @return A promise that resolves with an Ethers Network when the provider is ready.
  */
-export const web3SetHttpProvider = async (network: Network | string): Promise<EthersNetwork> => {
-  web3Provider = await getProviderForNetwork(network);
+export const web3SetHttpProvider = async (chainId: ChainId): Promise<EthersNetwork> => {
+  web3Provider = await getProvider({ chainId });
   return web3Provider.ready;
 };
 
 /**
  * @desc Checks if the given network is a Layer 2.
- * @param network The network to check.
+ * @param chainId The network to check.
  * @return Whether or not the network is a L2 network.
  */
-export const isL2Network = (network: Network | string): boolean => {
-  return getNetworkObj(network as Network).networkType === 'layer2';
-};
-
-/**
- * @desc Checks whether a provider is HardHat.
- * @param providerUrl The provider URL.
- * @return Whether or not the provider is HardHat.
- */
-export const isHardHat = (providerUrl: string): boolean => {
-  return providerUrl?.startsWith('http://') && providerUrl?.endsWith('8545');
+export const isL2Chain = ({ chainId = ChainId.mainnet }: { chainId?: ChainId }): boolean => {
+  return defaultChains[chainId].id !== ChainId.mainnet && !defaultChains[chainId].testnet;
 };
 
 /**
@@ -191,58 +124,43 @@ export const isHardHat = (providerUrl: string): boolean => {
  * @param network The network to check.
  * @return Whether or not the network is a testnet.
  */
-export const isTestnetNetwork = (network: Network): boolean => {
-  return getNetworkObj(network as Network).networkType === 'testnet';
+export const isTestnetChain = ({ chainId = ChainId.mainnet }: { chainId?: ChainId }): boolean => {
+  return !!defaultChains[chainId].testnet;
 };
 
 // shoudl figure out better way to include this in networks
 export const getFlashbotsProvider = async () => {
   return new StaticJsonRpcProvider(
-    proxyRpcEndpoint(
-      1,
+    proxyCustomRpcEndpoint(
+      ChainId.mainnet,
       'https://rpc.flashbots.net/?hint=hash&builder=flashbots&builder=f1b.io&builder=rsync&builder=beaverbuild.org&builder=builder0x69&builder=titan&builder=eigenphi&builder=boba-builder'
-    ),
-    Network.mainnet
+    )
   );
 };
 
-export const getCachedProviderForNetwork = (network: Network = Network.mainnet): StaticJsonRpcProvider | undefined => {
-  return networkProviders.get(network);
+export const getCachedProviderForNetwork = (chainId: ChainId = ChainId.mainnet): StaticJsonRpcProvider | undefined => {
+  return chainsProviders.get(chainId);
 };
 
-/**
- * @desc Gets or constructs a web3 provider for the specified network.
- * @param network The network as a `Network` or string.
- * @return The provider for the network.
- */
-export const getProviderForNetwork = (network: Network | string = Network.mainnet): StaticJsonRpcProvider => {
-  const isSupportedNetwork = isNetworkEnum(network);
-  const cachedProvider = isSupportedNetwork ? networkProviders.get(network) : undefined;
+export const getProvider = ({ chainId = ChainId.mainnet }: { chainId?: number }): StaticJsonRpcProvider => {
+  if (useConnectedToHardhatStore.getState().connectedToHardhat) {
+    const provider = new StaticJsonRpcProvider('http://127.0.0.1:8545/', ChainId.mainnet);
+    chainsProviders.set(chainId, provider);
 
-  if (isSupportedNetwork && cachedProvider) {
+    return provider;
+  }
+
+  const cachedProvider = chainsProviders.get(chainId);
+
+  const providerUrl = defaultChains[chainId]?.rpcUrls?.default?.http?.[0];
+
+  if (cachedProvider && cachedProvider?.connection.url === providerUrl) {
     return cachedProvider;
   }
+  const provider = new StaticJsonRpcProvider(providerUrl, chainId);
+  chainsProviders.set(chainId, provider);
 
-  if (!isSupportedNetwork) {
-    const provider = new StaticJsonRpcProvider(network, Network.mainnet);
-    networkProviders.set(Network.mainnet, provider);
-    return provider;
-  } else {
-    const provider = new StaticJsonRpcProvider(getNetworkObj(network).rpc(), getNetworkObj(network).id);
-    networkProviders.set(network, provider);
-    return provider;
-  }
-};
-
-/**
- * @desc Checks if the active network is Hardhat.
- * @returns boolean: `true` if connected to Hardhat.
- */
-export const getIsHardhatConnected = (): boolean => {
-  const currentNetwork = store.getState().settings.network;
-  const currentProviderUrl = getCachedProviderForNetwork(currentNetwork)?.connection?.url;
-  const connectedToHardhat = !!currentProviderUrl && isHardHat(currentProviderUrl);
-  return connectedToHardhat;
+  return provider;
 };
 
 /**
@@ -392,16 +310,16 @@ export async function estimateGasWithPadding(
     const code = to ? await p.getCode(to) : undefined;
     // 2 - if it's not a contract AND it doesn't have any data use the default gas limit
     if ((!contractCallEstimateGas && !to) || (to && !data && (!code || code === '0x'))) {
-      logger.debug('⛽ Skipping estimates, using default', {
+      logger.debug('[web3]: ⛽ Skipping estimates, using default', {
         ethUnits: ethUnits.basic_tx.toString(),
       });
       return ethUnits.basic_tx.toString();
     }
 
-    logger.debug('⛽ Calculating safer gas limit for last block');
+    logger.debug('[web3]: ⛽ Calculating safer gas limit for last block');
     // 3 - If it is a contract, call the RPC method `estimateGas` with a safe value
     const saferGasLimit = fraction(gasLimit.toString(), 19, 20);
-    logger.debug('⛽ safer gas limit for last block is', { saferGasLimit });
+    logger.debug('[web3]: ⛽ safer gas limit for last block is', { saferGasLimit });
 
     txPayloadToEstimate[contractCallEstimateGas ? 'gasLimit' : 'gas'] = toHex(saferGasLimit);
 
@@ -411,9 +329,13 @@ export async function estimateGasWithPadding(
       ? contractCallEstimateGas(...(callArguments ?? []), txPayloadToEstimate)
       : p.estimateGas(cleanTxPayload));
 
+    if (!BigNumber.isBigNumber(estimatedGas)) {
+      throw new Error('Invalid gas limit type');
+    }
+
     const lastBlockGasLimit = addBuffer(gasLimit.toString(), 0.9);
     const paddedGas = addBuffer(estimatedGas.toString(), paddingFactor.toString());
-    logger.debug('⛽ GAS CALCULATIONS!', {
+    logger.debug('[web3]: ⛽ GAS CALCULATIONS!', {
       estimatedGas: estimatedGas.toString(),
       gasLimit: gasLimit.toString(),
       lastBlockGasLimit: lastBlockGasLimit,
@@ -422,24 +344,24 @@ export async function estimateGasWithPadding(
 
     // If the safe estimation is above the last block gas limit, use it
     if (greaterThan(estimatedGas.toString(), lastBlockGasLimit)) {
-      logger.debug('⛽ returning orginal gas estimation', {
+      logger.debug('[web3]: ⛽ returning orginal gas estimation', {
         esimatedGas: estimatedGas.toString(),
       });
       return estimatedGas.toString();
     }
     // If the estimation is below the last block gas limit, use the padded estimate
     if (greaterThan(lastBlockGasLimit, paddedGas)) {
-      logger.debug('⛽ returning padded gas estimation', { paddedGas });
+      logger.debug('[web3]: ⛽ returning padded gas estimation', { paddedGas });
       return paddedGas;
     }
     // otherwise default to the last block gas limit
-    logger.debug('⛽ returning last block gas limit', { lastBlockGasLimit });
+    logger.debug('[web3]: ⛽ returning last block gas limit', { lastBlockGasLimit });
     return lastBlockGasLimit;
   } catch (e) {
     /*
      * Reported ~400x per day, but if it's not actionable it might as well be a warning.
      */
-    logger.warn('Error calculating gas limit with padding', { message: e instanceof Error ? e.message : 'Unknown error' });
+    logger.warn('[web3]: Error calculating gas limit with padding', { message: e instanceof Error ? e.message : 'Unknown error' });
     return null;
   }
 }
@@ -474,8 +396,8 @@ export const getTransactionCount = async (address: string): Promise<number | nul
  * get transaction gas params depending on network
  * @returns - object with `gasPrice` or `maxFeePerGas` and `maxPriorityFeePerGas`
  */
-export const getTransactionGasParams = (transaction: Pick<NewTransactionNonNullable, 'network'> & GasParamsInput): GasParamsReturned => {
-  return getNetworkObj(transaction.network).gas.gasType === 'legacy'
+export const getTransactionGasParams = (transaction: Pick<NewTransactionNonNullable, 'chainId'> & GasParamsInput): GasParamsReturned => {
+  return transaction.gasPrice
     ? {
         gasPrice: toHex(transaction.gasPrice),
       }
@@ -530,7 +452,7 @@ export const resolveUnstoppableDomain = async (domain: string): Promise<string |
       return address;
     })
     .catch(error => {
-      logger.error(new RainbowError(`resolveUnstoppableDomain error`), {
+      logger.error(new RainbowError(`[web3]: resolveUnstoppableDomain error`), {
         message: error.message,
       });
       return null;
@@ -551,7 +473,7 @@ export const resolveNameOrAddress = async (nameOrAddress: string): Promise<strin
       const resolvedAddress = await resolveUnstoppableDomain(nameOrAddress);
       return resolvedAddress;
     }
-    const p = getProviderForNetwork(Network.mainnet);
+    const p = getProvider({ chainId: ChainId.mainnet });
     const resolvedAddress = await p?.resolveName(nameOrAddress);
 
     return resolvedAddress;
@@ -569,7 +491,7 @@ export const resolveNameOrAddress = async (nameOrAddress: string): Promise<strin
 export const getTransferNftTransaction = async (
   transaction: Pick<
     NewTransactionNonNullable,
-    'asset' | 'from' | 'to' | 'gasPrice' | 'gasLimit' | 'network' | 'nonce' | 'maxFeePerGas' | 'maxPriorityFeePerGas'
+    'asset' | 'from' | 'to' | 'gasPrice' | 'gasLimit' | 'nonce' | 'maxFeePerGas' | 'maxPriorityFeePerGas' | 'chainId'
   >
 ): Promise<TransactionDetailsReturned> => {
   const recipient = await resolveNameOrAddress(transaction.to);
@@ -586,7 +508,7 @@ export const getTransferNftTransaction = async (
     data,
     from,
     gasLimit: transaction.gasLimit?.toString(),
-    network: transaction.network,
+    chainId: transaction.chainId,
     nonce,
     to: contractAddress,
     ...gasParams,
@@ -602,7 +524,7 @@ export const getTransferNftTransaction = async (
 export const getTransferTokenTransaction = async (
   transaction: Pick<
     NewTransactionNonNullable,
-    'asset' | 'from' | 'to' | 'amount' | 'gasPrice' | 'gasLimit' | 'network' | 'maxFeePerGas' | 'maxPriorityFeePerGas'
+    'asset' | 'from' | 'to' | 'amount' | 'gasPrice' | 'gasLimit' | 'chainId' | 'maxFeePerGas' | 'maxPriorityFeePerGas'
   >
 ): Promise<TransactionDetailsReturned> => {
   const value = convertAmountToRawAmount(transaction.amount, transaction.asset.decimals);
@@ -613,7 +535,7 @@ export const getTransferTokenTransaction = async (
     data,
     from: transaction.from,
     gasLimit: transaction.gasLimit?.toString(),
-    network: transaction.network,
+    chainId: transaction.chainId,
     to: transaction.asset.address,
     ...gasParams,
   };
@@ -686,10 +608,10 @@ export const getDataForNftTransfer = (from: string, to: string, asset: ParsedAdd
   const lowercasedContractAddress = asset.asset_contract.address.toLowerCase();
   const standard = asset.asset_contract?.schema_name;
   let data: string | undefined;
-  if (lowercasedContractAddress === CRYPTO_KITTIES_NFT_ADDRESS && asset.network === Network.mainnet) {
+  if (lowercasedContractAddress === CRYPTO_KITTIES_NFT_ADDRESS && asset.chainId === ChainId.mainnet) {
     const transferMethod = smartContractMethods.token_transfer;
     data = ethereumUtils.getDataString(transferMethod.hash, [ethereumUtils.removeHexPrefix(to), convertStringToHex(asset.id)]);
-  } else if (lowercasedContractAddress === CRYPTO_PUNKS_NFT_ADDRESS && asset.network === Network.mainnet) {
+  } else if (lowercasedContractAddress === CRYPTO_PUNKS_NFT_ADDRESS && asset.chainId === ChainId.mainnet) {
     const transferMethod = smartContractMethods.punk_transfer;
     data = ethereumUtils.getDataString(transferMethod.hash, [ethereumUtils.removeHexPrefix(to), convertStringToHex(asset.id)]);
   } else if (standard === TokenStandard.ERC1155) {
@@ -718,7 +640,7 @@ export const getDataForNftTransfer = (from: string, to: string, asset: ParsedAdd
  * @param [{address, amount, asset, gasLimit, recipient}] The transaction
  * initialization details.
  * @param provider The RCP provider to use.
- * @param network The network for the transaction
+ * @param chainId The chainId for the transaction
  * @return The transaction request.
  */
 export const buildTransaction = async (
@@ -736,7 +658,7 @@ export const buildTransaction = async (
     gasLimit?: string;
   },
   provider: StaticJsonRpcProvider | null,
-  network: Network
+  chainId: ChainId
 ): Promise<TransactionRequest> => {
   const _amount = amount && Number(amount) ? convertAmountToRawAmount(amount, asset.decimals) : estimateAssetBalancePortion(asset);
   const value = _amount.toString();
@@ -755,7 +677,7 @@ export const buildTransaction = async (
       from: address,
       to: contractAddress,
     };
-  } else if (!isNativeAsset(asset.address, network)) {
+  } else if (!isNativeAsset(asset.address, chainId)) {
     const transferData = getDataForTokenTransfer(value, _recipient);
     txData = {
       data: transferData,
@@ -775,7 +697,7 @@ export const buildTransaction = async (
  * to `false`.
  * @param provider If provided, a provider to use instead of the default
  * cached `web3Provider`.
- * @param network The network to use, defaulting to `Network.mainnet`.
+ * @param chainId The chainId to use, defaulting to `ChainId.mainnet`.
  * @returns The estimated gas limit.
  */
 export const estimateGasLimit = async (
@@ -792,9 +714,9 @@ export const estimateGasLimit = async (
   },
   addPadding = false,
   provider: StaticJsonRpcProvider | null = null,
-  network: Network = Network.mainnet
+  chainId: ChainId = ChainId.mainnet
 ): Promise<string | null> => {
-  const estimateGasData = await buildTransaction({ address, amount, asset, recipient }, provider, network);
+  const estimateGasData = await buildTransaction({ address, amount, asset, recipient }, provider, chainId);
 
   if (addPadding) {
     return estimateGasWithPadding(estimateGasData, null, null, provider);

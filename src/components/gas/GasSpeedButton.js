@@ -15,8 +15,7 @@ import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import { GasSpeedLabelPager } from '.';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
-import { isL2Network } from '@/handlers/web3';
-import { Network } from '@/helpers/networkTypes';
+import { isL2Chain } from '@/handlers/web3';
 import { add, greaterThan, toFixedDecimals } from '@/helpers/utilities';
 import { getCrossChainTimeEstimate } from '@/utils/crossChainTimeEstimates';
 import { useAccountSettings, useColorForAsset, useGas, usePrevious, useSwapCurrencies } from '@/hooks';
@@ -25,10 +24,11 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, margin, padding } from '@/styles';
 import { ethereumUtils, gasUtils } from '@/utils';
-import { getNetworkObj } from '@/networks';
 import { IS_ANDROID } from '@/env';
 import { ContextMenu } from '../context-menu';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
+import { ChainId } from '@/chains/types';
+import { chainsGasSpeeds } from '@/chains';
 
 const { GAS_EMOJIS, GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST, getGasLabel } = gasUtils;
 
@@ -121,9 +121,19 @@ const TransactionTimeLabel = ({ formatter, isLongWait, theme }) => {
   );
 };
 
+const shouldRoundGasDisplay = chainId => {
+  switch (chainId) {
+    case ChainId.bsc:
+    case ChainId.polygon:
+      return false;
+    default:
+      return true;
+  }
+};
+
 const GasSpeedButton = ({
   asset,
-  currentNetwork,
+  chainId,
   horizontalPadding = 19,
   fallbackColor,
   marginBottom = 20,
@@ -168,8 +178,9 @@ const GasSpeedButton = ({
       .trim();
   }, [nativeCurrencySymbol, selectedGasFee]);
 
-  const isL2 = useMemo(() => isL2Network(currentNetwork), [currentNetwork]);
-  const isLegacyGasNetwork = getNetworkObj(currentNetwork).gas.gasType === 'legacy';
+  const isL2 = useMemo(() => isL2Chain({ chainId }), [chainId]);
+
+  const isLegacyGasNetwork = !selectedGasFee?.gasFee?.maxFee;
 
   const gasIsNotReady = useMemo(
     () => isNil(price) || isEmpty(gasFeeParamsBySpeed) || isEmpty(selectedGasFee?.gasFee),
@@ -291,12 +302,16 @@ const GasSpeedButton = ({
       return '';
     }
     return `${timeSymbol}${time} ${estimatedTimeUnit}`;
-  }, [crossChainServiceTime, currentNetwork, gasPriceReady, selectedGasFee?.estimatedTime?.amount, selectedGasFee?.estimatedTime?.display]);
+  }, [
+    crossChainServiceTime,
+    gasPriceReady,
+    isLegacyGasNetwork,
+    selectedGasFee?.estimatedTime?.amount,
+    selectedGasFee?.estimatedTime?.display,
+  ]);
 
   const openGasHelper = useCallback(async () => {
     Keyboard.dismiss();
-    const networkObj = getNetworkObj(currentNetwork);
-    const networkName = networkObj.name;
     if (crossChainServiceTime) {
       navigate(Routes.EXPLAIN_SHEET, {
         inputCurrency,
@@ -304,14 +319,14 @@ const GasSpeedButton = ({
         type: 'crossChainGas',
       });
     } else {
-      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(currentNetwork);
+      const nativeAsset = await ethereumUtils.getNativeAssetForNetwork({ chainId });
       navigate(Routes.EXPLAIN_SHEET, {
-        network: currentNetwork,
+        chainId,
         type: 'gas',
         nativeAsset,
       });
     }
-  }, [crossChainServiceTime, currentNetwork, inputCurrency, navigate, outputCurrency]);
+  }, [chainId, crossChainServiceTime, inputCurrency, navigate, outputCurrency]);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
@@ -341,17 +356,17 @@ const GasSpeedButton = ({
 
   const speedOptions = useMemo(() => {
     if (speeds) return speeds;
-    return getNetworkObj(currentNetwork).gas.speeds;
-  }, [currentNetwork, speeds]);
+    return chainsGasSpeeds[chainId];
+  }, [chainId, speeds]);
 
   const menuConfig = useMemo(() => {
-    const menuOptions = speedOptions.map(gasOption => {
+    const menuOptions = speedOptions?.map(gasOption => {
       if (IS_ANDROID) return gasOption;
 
       const totalGwei = add(gasFeeParamsBySpeed[gasOption]?.maxBaseFee?.gwei, gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei);
       const estimatedGwei = add(currentBlockParams?.baseFeePerGas?.gwei, gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei);
 
-      const shouldRoundGwei = getNetworkObj(currentNetwork).gas.roundGasDisplay;
+      const shouldRoundGwei = shouldRoundGasDisplay(chainId);
       const gweiDisplay = !shouldRoundGwei
         ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
         : gasOption === 'custom' && selectedGasFeeOption !== 'custom'
@@ -373,9 +388,9 @@ const GasSpeedButton = ({
       menuItems: menuOptions,
       menuTitle: '',
     };
-  }, [currentBlockParams?.baseFeePerGas?.gwei, currentNetwork, gasFeeParamsBySpeed, selectedGasFeeOption, speedOptions, isL2]);
+  }, [speedOptions, gasFeeParamsBySpeed, currentBlockParams?.baseFeePerGas?.gwei, chainId, selectedGasFeeOption, isL2]);
 
-  const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [speedOptions.length]);
+  const gasOptionsAvailable = useMemo(() => speedOptions?.length > 1, [speedOptions?.length]);
 
   const onDonePress = useCallback(() => {
     if (canGoBack) {
@@ -395,7 +410,6 @@ const GasSpeedButton = ({
             ? makeColorMoreChill(rawColorForAsset || colors.appleBlue, colors.shadowBlack)
             : colors.alpha(colors.blueGreyDark, 0.12)
         }
-        currentNetwork={currentNetwork}
         dropdownEnabled={gasOptionsAvailable}
         label={label}
         showGasOptions={showGasOptions}
@@ -438,9 +452,9 @@ const GasSpeedButton = ({
     );
   }, [
     colors,
-    currentNetwork,
     gasIsNotReady,
     gasOptionsAvailable,
+    handlePressActionSheet,
     handlePressMenuItem,
     menuConfig,
     rawColorForAsset,
@@ -476,7 +490,7 @@ const GasSpeedButton = ({
           <Row>
             <NativeCoinIconWrapper>
               <AnimatePresence>
-                {!!currentNetwork && (
+                {!!chainId && (
                   <MotiView
                     animate={{ opacity: 1 }}
                     from={{ opacity: 0 }}
@@ -486,10 +500,10 @@ const GasSpeedButton = ({
                       type: 'timing',
                     }}
                   >
-                    {currentNetwork === Network.mainnet ? (
+                    {chainId === ChainId.mainnet ? (
                       <EthCoinIcon size={18} />
                     ) : (
-                      <ChainBadge network={currentNetwork} size="gas" position="relative" />
+                      <ChainBadge chainId={chainId} size="gas" position="relative" />
                     )}
                   </MotiView>
                 )}
@@ -535,7 +549,7 @@ const GasSpeedButton = ({
           <Centered>
             {isLegacyGasNetwork ? (
               <ChainBadgeContainer>
-                <ChainBadge network={currentNetwork} position="relative" />
+                <ChainBadge chainId={chainId} position="relative" />
               </ChainBadgeContainer>
             ) : showGasOptions ? (
               <CustomGasButton

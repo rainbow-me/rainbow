@@ -4,17 +4,19 @@ import { Address } from 'viem';
 
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
 
-import { getIsHardhatConnected } from '@/handlers/web3';
 import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
-import { SupportedCurrencyKey, SUPPORTED_CHAIN_IDS } from '@/references';
+import { SupportedCurrencyKey } from '@/references';
 import { ParsedAssetsDictByChain, ZerionAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/chains/types';
 import { AddressAssetsReceivedMessage } from '@/__swaps__/types/refraction';
 import { parseUserAsset } from '@/__swaps__/utils/assets';
 import { greaterThan } from '@/__swaps__/utils/numbers';
 
 import { fetchUserAssetsByChain } from './userAssetsByChain';
+import { fetchHardhatBalancesByChainId } from '@/resources/assets/hardhatAssets';
+import { SUPPORTED_CHAIN_IDS } from '@/chains';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const addysHttp = new RainbowFetchClient({
   baseURL: 'https://addys.p.rainbow.me/v3',
@@ -31,27 +33,27 @@ export const USER_ASSETS_STALE_INTERVAL = 30000;
 // Query Types
 
 export type UserAssetsArgs = {
-  address: Address;
+  address: Address | string;
   currency: SupportedCurrencyKey;
   testnetMode?: boolean;
 };
 
 type SetUserAssetsArgs = {
-  address: Address;
+  address: Address | string;
   currency: SupportedCurrencyKey;
   userAssets?: UserAssetsResult;
   testnetMode?: boolean;
 };
 
 type SetUserDefaultsArgs = {
-  address: Address;
+  address: Address | string;
   currency: SupportedCurrencyKey;
   staleTime: number;
   testnetMode?: boolean;
 };
 
 type FetchUserAssetsArgs = {
-  address: Address;
+  address: Address | string;
   currency: SupportedCurrencyKey;
   testnetMode?: boolean;
 };
@@ -81,15 +83,37 @@ export const userAssetsSetQueryData = ({ address, currency, userAssets, testnetM
   queryClient.setQueryData(userAssetsQueryKey({ address, currency, testnetMode }), userAssets);
 };
 
-async function userAssetsQueryFunction({ queryKey: [{ address, currency, testnetMode }] }: QueryFunctionArgs<typeof userAssetsQueryKey>) {
+async function userAssetsQueryFunction({
+  queryKey: [{ address, currency, testnetMode }],
+}: QueryFunctionArgs<typeof userAssetsQueryKey>): Promise<ParsedAssetsDictByChain> {
   if (!address) {
     return {};
+  }
+  if (testnetMode) {
+    const { assets, chainIdsInResponse } = await fetchHardhatBalancesByChainId(address);
+    const parsedAssets: Array<{
+      asset: ZerionAsset;
+      quantity: string;
+      small_balances: boolean;
+    }> = Object.values(assets).map(asset => ({
+      asset: asset.asset,
+      quantity: asset.quantity,
+      small_balances: false,
+    }));
+
+    const parsedAssetsDict = await parseUserAssets({
+      assets: parsedAssets,
+      chainIds: chainIdsInResponse,
+      currency,
+    });
+
+    return parsedAssetsDict;
   }
   const cache = queryClient.getQueryCache();
   const cachedUserAssets = (cache.find(userAssetsQueryKey({ address, currency, testnetMode }))?.state?.data ||
     {}) as ParsedAssetsDictByChain;
   try {
-    const url = `/${SUPPORTED_CHAIN_IDS({ testnetMode }).join(',')}/${address}/assets`;
+    const url = `/${SUPPORTED_CHAIN_IDS.join(',')}/${address}/assets`;
     const res = await addysHttp.get<AddressAssetsReceivedMessage>(url, {
       params: {
         currency: currency.toLowerCase(),
@@ -123,7 +147,7 @@ async function userAssetsQueryFunction({ queryKey: [{ address, currency, testnet
     }
     return cachedUserAssets;
   } catch (e) {
-    logger.error(new RainbowError('userAssetsQueryFunction: '), {
+    logger.error(new RainbowError('[userAssetsQueryFunction]: Failed to fetch user assets'), {
       message: (e as Error)?.message,
     });
     return cachedUserAssets;
@@ -138,7 +162,7 @@ async function userAssetsQueryFunctionRetryByChain({
   currency,
   testnetMode,
 }: {
-  address: Address;
+  address: Address | string;
   chainIds: ChainId[];
   currency: SupportedCurrencyKey;
   testnetMode?: boolean;
@@ -169,7 +193,7 @@ async function userAssetsQueryFunctionRetryByChain({
     }
     queryClient.setQueryData(userAssetsQueryKey({ address, currency, testnetMode }), cachedUserAssets);
   } catch (e) {
-    logger.error(new RainbowError('userAssetsQueryFunctionRetryByChain: '), {
+    logger.error(new RainbowError('[userAssetsQueryFunctionRetryByChain]: Failed to retry fetching user assets'), {
       message: (e as Error)?.message,
     });
   }
@@ -211,9 +235,9 @@ export function useUserAssets<TSelectResult = UserAssetsResult>(
   { address, currency }: UserAssetsArgs,
   config: QueryConfigWithSelect<UserAssetsResult, Error, TSelectResult, UserAssetsQueryKey> = {}
 ) {
-  const isHardhatConnected = getIsHardhatConnected();
+  const { connectedToHardhat } = useConnectedToHardhatStore();
 
-  return useQuery(userAssetsQueryKey({ address, currency, testnetMode: isHardhatConnected }), userAssetsQueryFunction, {
+  return useQuery(userAssetsQueryKey({ address, currency, testnetMode: connectedToHardhat }), userAssetsQueryFunction, {
     ...config,
     refetchInterval: USER_ASSETS_REFETCH_INTERVAL,
     staleTime: process.env.IS_TESTING === 'true' ? 0 : 1000,

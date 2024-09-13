@@ -10,7 +10,7 @@ import Routes from '@rainbow-me/routes';
 import { ImgixImage } from '../images';
 import { CardSize } from '../unique-token/CardSize';
 import { ChainBadge } from '../coin-icon';
-import { Network } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { address } from '@/utils/abbreviations';
 import { TransactionType } from '@/resources/transactions/types';
 import {
@@ -294,7 +294,7 @@ export const ActivityIcon = ({
             }}
           />
         </View>
-        {transaction.network !== Network.mainnet && <ChainBadge network={transaction.network} badgeYPosition={0} />}
+        {transaction.chainId !== ChainId.mainnet && <ChainBadge chainId={transaction.chainId} badgeYPosition={0} />}
       </View>
     );
   }
@@ -367,7 +367,7 @@ export const ActivityIcon = ({
             </Box>
           )}
         </View>
-        {transaction.network !== Network.mainnet && <ChainBadge network={transaction.network} badgeYPosition={0} />}
+        {transaction.chainId !== ChainId.mainnet && <ChainBadge chainId={transaction.chainId} badgeYPosition={0} />}
       </View>
     );
   }
@@ -377,7 +377,7 @@ export const ActivityIcon = ({
       <RainbowCoinIcon
         size={40}
         icon={transaction?.asset?.icon_url}
-        network={transaction?.asset?.network || Network.mainnet}
+        chainId={transaction?.asset?.chainId || ChainId.mainnet}
         symbol={transaction?.asset?.symbol || ''}
         theme={theme}
         colors={transaction?.asset?.colors}
@@ -407,7 +407,7 @@ export default React.memo(function TransactionCoinRow({
   const [topValue] = activityValues(item, nativeCurrency) ?? [];
 
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} uniqueId={`${item.hash}-${item.network}`}>
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} uniqueId={`${item.hash}-${item.chainId}`}>
       <View style={sx.wholeRow} testID={`${item.title}-${item.description}-${item.balance?.display}`}>
         <View style={sx.icon}>
           <ActivityIcon size={40} transaction={item} theme={theme} />

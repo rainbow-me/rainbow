@@ -30,7 +30,6 @@ import { IS_ANDROID, IS_IOS } from '@/env';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import { useAccountSettings, useInitializeWallet, useWallets, useWalletsWithBalancesAndNames } from '@/hooks';
 import { useSyncSharedValue } from '@/hooks/reanimated/useSyncSharedValue';
-import { Network } from '@/networks/types';
 import { useBrowserStore } from '@/state/browser/browserStore';
 import { colors } from '@/styles';
 import { deviceUtils, watchingAlert } from '@/utils';
@@ -41,7 +40,6 @@ import { TOP_INSET } from '../Dimensions';
 import { formatUrl } from '../utils';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { toHex } from 'viem';
-import { RainbowNetworks } from '@/networks';
 import * as i18n from '@/languages';
 import { useDispatch } from 'react-redux';
 import store from '@/redux/store';
@@ -63,6 +61,8 @@ import { SWAPS_V2, useExperimentalFlag } from '@/config';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { greaterThan } from '@/helpers/utilities';
+import { ChainId } from '@/chains/types';
+import { chainsLabel, defaultChains, supportedWalletConnectChainIds } from '@/chains';
 
 const PAGES = {
   HOME: 'home',
@@ -101,7 +101,7 @@ export const ControlPanel = () => {
       hostSessions && hostSessions.sessions?.[hostSessions.activeSessionAddress]
         ? {
             address: hostSessions.activeSessionAddress,
-            network: hostSessions.sessions[hostSessions.activeSessionAddress],
+            chainId: hostSessions.sessions[hostSessions.activeSessionAddress],
           }
         : null,
     [hostSessions]
@@ -111,7 +111,7 @@ export const ControlPanel = () => {
   const [currentAddress, setCurrentAddress] = useState<string>(
     currentSession?.address || hostSessions?.activeSessionAddress || accountAddress
   );
-  const [currentNetwork, setCurrentNetwork] = useState<Network>(currentSession?.network || Network.mainnet);
+  const [currentChainId, setCurrentChainId] = useState<ChainId>(currentSession?.chainId || ChainId.mainnet);
 
   // listens to the current active tab and sets the account
   useEffect(() => {
@@ -127,8 +127,8 @@ export const ControlPanel = () => {
         setCurrentAddress(accountAddress);
       }
 
-      if (currentSession?.network) {
-        setCurrentNetwork(currentSession?.network);
+      if (currentSession?.chainId) {
+        setCurrentChainId(currentSession?.chainId);
       }
     }
   }, [accountAddress, activeTabHost, currentSession]);
@@ -141,7 +141,7 @@ export const ControlPanel = () => {
     const accountBalances: Record<string, string> = {};
 
     Object.values(walletsWithBalancesAndNames).forEach(wallet => {
-      wallet.addresses
+      (wallet.addresses || [])
         .filter(account => account.visible)
         .forEach(account => {
           const balanceText = account.balances ? account.balances.totalBalanceDisplay : i18n.t(i18n.l.wallet.change_wallet.loading_balance);
@@ -183,27 +183,28 @@ export const ControlPanel = () => {
   const { testnetsEnabled } = store.getState().settings;
 
   const allNetworkItems = useMemo(() => {
-    return RainbowNetworks.filter(
-      ({ networkType, features: { walletconnect } }) => walletconnect && (testnetsEnabled || networkType !== 'testnet')
-    ).map(network => {
-      return {
-        IconComponent: <ChainImage chain={network.value} size={36} />,
-        label: network.name,
-        secondaryLabel: i18n.t(
-          isConnected && network.value === currentNetwork
-            ? i18n.l.dapp_browser.control_panel.connected
-            : i18n.l.dapp_browser.control_panel.not_connected
-        ),
-        uniqueId: network.value,
-        selected: network.value === currentNetwork,
-      };
-    });
-  }, [currentNetwork, isConnected, testnetsEnabled]);
+    const chains = supportedWalletConnectChainIds.map(chainId => defaultChains[chainId]);
+    return chains
+      .filter(({ testnet }) => testnetsEnabled || !testnet)
+      .map(chain => {
+        return {
+          IconComponent: <ChainImage chainId={chain.id} size={36} />,
+          label: chainsLabel[chain.id],
+          secondaryLabel: i18n.t(
+            isConnected && chain.id === currentChainId
+              ? i18n.l.dapp_browser.control_panel.connected
+              : i18n.l.dapp_browser.control_panel.not_connected
+          ),
+          uniqueId: String(chain.id),
+          selected: chain.id === currentChainId,
+        };
+      });
+  }, [currentChainId, isConnected, testnetsEnabled]);
 
   const selectedWallet = allWalletItems.find(item => item.selected);
 
   const animatedAccentColor = useSharedValue(selectedWallet?.color || globalColors.blue10);
-  const selectedNetworkId = useSharedValue(currentNetwork?.toString() || RainbowNetworks[0].value);
+  const selectedNetworkId = useSharedValue(currentChainId?.toString() || ChainId.mainnet.toString());
   const selectedWalletId = useSharedValue(selectedWallet?.uniqueId || accountAddress);
 
   const handleSwitchWallet = useCallback(
@@ -211,21 +212,21 @@ export const ControlPanel = () => {
       const address = selectedItemId;
       updateActiveSession({ host: activeTabHost, address: address as `0x${string}` });
       if (isConnected) {
-        updateActiveSessionNetwork({ host: activeTabHost, network: currentNetwork });
+        updateActiveSessionNetwork({ host: activeTabHost, chainId: currentChainId });
         // need to emit these events to the dapp
         activeTabRef.current?.injectJavaScript(`window.ethereum.emit('accountsChanged', ['${address}']); true;`);
       }
       setCurrentAddress(address);
     },
-    [activeTabHost, activeTabRef, currentNetwork, isConnected, updateActiveSession, updateActiveSessionNetwork]
+    [activeTabHost, activeTabRef, currentChainId, isConnected, updateActiveSession, updateActiveSessionNetwork]
   );
 
   const handleNetworkSwitch = useCallback(
     (selectedItemId: string) => {
-      updateActiveSessionNetwork({ host: activeTabHost, network: selectedItemId as Network });
-      const chainId = RainbowNetworks.find(({ value }) => value === (selectedItemId as Network))?.id as number;
+      const chainId = Number(selectedItemId) as ChainId;
+      updateActiveSessionNetwork({ host: activeTabHost, chainId });
       activeTabRef.current?.injectJavaScript(`window.ethereum.emit('chainChanged', ${toHex(chainId)}); true;`);
-      setCurrentNetwork(selectedItemId as Network);
+      setCurrentChainId(Number(selectedItemId) as ChainId);
     },
     [activeTabHost, activeTabRef, updateActiveSessionNetwork]
   );
@@ -233,23 +234,21 @@ export const ControlPanel = () => {
   const handleConnect = useCallback(async () => {
     const activeTabHost = getDappHost(activeTabUrl || '');
     const address = selectedWalletId.value;
-    const network = selectedNetworkId.value as Network;
+    const chainId = Number(selectedNetworkId.value);
 
     addSession({
       host: activeTabHost || '',
       address: address as `0x${string}`,
-      network,
+      chainId,
       url: activeTabUrl || '',
     });
-
-    const chainId = ethereumUtils.getChainIdFromNetwork(network);
 
     activeTabRef.current?.injectJavaScript(
       `window.ethereum.emit('accountsChanged', ['${address}']); window.ethereum.emit('connect', { address: '${address}', chainId: '${toHex(chainId)}' }); true;`
     );
     setIsConnected(true);
     setCurrentAddress(address);
-    setCurrentNetwork(network);
+    setCurrentChainId(chainId);
   }, [activeTabUrl, selectedWalletId.value, selectedNetworkId.value, addSession, activeTabRef]);
 
   const handleDisconnect = useCallback(() => {
@@ -271,7 +270,7 @@ export const ControlPanel = () => {
               <HomePanel
                 animatedAccentColor={animatedAccentColor}
                 goToPage={goToPage}
-                selectedNetwork={currentNetwork}
+                selectedChainId={currentChainId}
                 selectedWallet={selectedWallet}
                 allNetworkItems={allNetworkItems}
                 isConnected={isConnected}
@@ -362,7 +361,7 @@ const AccentColorSetter = ({
 const HomePanel = ({
   animatedAccentColor,
   goToPage,
-  selectedNetwork,
+  selectedChainId,
   selectedWallet,
   allNetworkItems,
   isConnected,
@@ -371,7 +370,7 @@ const HomePanel = ({
 }: {
   animatedAccentColor: SharedValue<string | undefined>;
   goToPage: (pageId: string) => void;
-  selectedNetwork: string;
+  selectedChainId: ChainId;
   selectedWallet: ControlPanelMenuItemProps | undefined;
   allNetworkItems: ControlPanelMenuItemProps[];
   isConnected: boolean;
@@ -391,8 +390,8 @@ const HomePanel = ({
     const walletLabel = selectedWallet?.label || '';
     const walletSecondaryLabel = selectedWallet?.secondaryLabel || '';
 
-    const network = allNetworkItems.find(item => item.uniqueId === selectedNetwork);
-    const networkIcon = <ChainImage chain={(network?.uniqueId as Network) || 'mainnet'} size={36} />;
+    const network = allNetworkItems.find(item => item.uniqueId === String(selectedChainId));
+    const networkIcon = <ChainImage chainId={Number(network?.uniqueId) || ChainId.mainnet} size={36} />;
     const networkLabel = network?.label || '';
     const networkSecondaryLabel = network?.secondaryLabel || '';
 
@@ -418,7 +417,7 @@ const HomePanel = ({
         />
       </Stack>
     );
-  }, [allNetworkItems, animatedAccentColor, goToPage, selectedNetwork, selectedWallet]);
+  }, [allNetworkItems, animatedAccentColor, goToPage, selectedChainId, selectedWallet]);
 
   const runWalletChecksBeforeSwapOrBridge = useCallback(async () => {
     if (!selectedWallet || !wallets) return false;
@@ -458,7 +457,7 @@ const HomePanel = ({
       return;
     }
 
-    const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(Network.mainnet, selectedWallet?.uniqueId);
+    const mainnetEth = await ethereumUtils.getNativeAssetForNetwork({ chainId: ChainId.mainnet, address: selectedWallet?.uniqueId });
     Navigation.handleAction(Routes.EXCHANGE_MODAL, {
       fromDiscover: true,
       params: {
@@ -486,7 +485,7 @@ const HomePanel = ({
       return;
     }
 
-    const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(Network.mainnet, selectedWallet?.uniqueId);
+    const mainnetEth = await ethereumUtils.getNativeAssetForNetwork({ chainId: ChainId.mainnet, address: selectedWallet?.uniqueId });
     Navigation.handleAction(Routes.EXCHANGE_MODAL, {
       fromDiscover: true,
       params: {

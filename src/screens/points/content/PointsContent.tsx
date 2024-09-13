@@ -57,12 +57,12 @@ import EthIcon from '@/assets/eth-icon.png';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import Animated, { runOnUI, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
-import { useNativeAssetForNetwork } from '@/utils/ethereumUtils';
-import { Network } from '@/helpers';
+import { useNativeAsset } from '@/utils/ethereumUtils';
 import { format, intervalToDuration, isToday } from 'date-fns';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { ETH_REWARDS, useExperimentalFlag } from '@/config';
 import { RewardsActionButton } from '../components/RewardsActionButton';
+import { ChainId } from '@/chains/types';
 
 const InfoCards = ({ points }: { points: GetPointsDataForWalletQuery | undefined }) => {
   const labelSecondary = useForegroundColor('labelSecondary');
@@ -673,7 +673,7 @@ export function PointsContent() {
   const rank = points?.points?.user.stats.position.current;
   const isUnranked = !!points?.points?.user?.stats?.position?.unranked;
 
-  const eth = useNativeAssetForNetwork(Network.mainnet);
+  const eth = useNativeAsset({ chainId: ChainId.mainnet });
   const rewards = points?.points?.user?.rewards;
   const { claimed, claimable } = rewards || {};
   const showClaimYourPoints = claimable && claimable !== '0';

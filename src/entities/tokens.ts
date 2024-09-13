@@ -1,7 +1,6 @@
-import { ChainId } from '@rainbow-me/swaps';
 import { EthereumAddress } from '.';
 import { Chain } from '@wagmi/chains';
-import { Network } from '@/networks/types';
+import { Network, ChainId } from '@/chains/types';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 
 export interface ZerionAssetPrice {
@@ -54,7 +53,7 @@ export interface ParsedAddressAsset extends Asset, Partial<RainbowTokenOwnFields
     amount?: string;
     display?: string;
   };
-  chainId?: number;
+  chainId: number;
   color?: string;
   colors?: TokenColors;
   icon_url?: string;
@@ -67,9 +66,20 @@ export interface ParsedAddressAsset extends Asset, Partial<RainbowTokenOwnFields
   type?: string;
   id?: string;
   uniqueId: string;
+  native?: {
+    balance?: {
+      amount?: string;
+      display?: string;
+    };
+    change?: string;
+    price?: {
+      amount?: string;
+      display?: string;
+    };
+  };
   mainnet_address?: EthereumAddress;
   isNativeAsset?: boolean;
-  network: Network;
+  network: string;
 }
 
 export interface SwappableAsset extends ParsedAddressAsset {
@@ -81,7 +91,6 @@ export interface SwappableAsset extends ParsedAddressAsset {
   implementations?: {
     [network: string]: { address: EthereumAddress; decimals: number };
   };
-  network: Network;
 }
 
 export interface TokenSearchNetwork {
@@ -108,6 +117,7 @@ export interface TokenSearchToken {
 }
 
 export interface RainbowToken extends Asset {
+  chainId: ChainId;
   color?: string;
   highLiquidity?: boolean;
   totalLiquidity?: number;
@@ -117,7 +127,7 @@ export interface RainbowToken extends Asset {
   shadowColor?: string;
   uniqueId: string;
   type?: string;
-  network: Network;
+  network: string;
   mainnet_address?: EthereumAddress;
   networks?: any;
 }

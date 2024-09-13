@@ -9,7 +9,6 @@ import saveToCameraRoll from './saveToCameraRoll';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { Bleed, Column, Columns, Heading, Inline, Inset, Space, Stack, Text } from '@/design-system';
 import { UniqueAsset } from '@/entities';
-import { Network } from '@/helpers';
 import { useClipboard, useDimensions, useHiddenTokens, useShowcaseTokens } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { useNavigation } from '@/navigation/Navigation';
@@ -23,6 +22,7 @@ import { refreshNFTContractMetadata, reportNFT } from '@/resources/nfts/simpleha
 import { ContextCircleButton } from '@/components/context-menu';
 import { IS_ANDROID, IS_IOS } from '@/env';
 import { MenuActionConfig, MenuConfig } from 'react-native-ios-context-menu';
+import { ChainId } from '@/chains/types';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
@@ -36,7 +36,7 @@ const AssetActionsEnum = {
   report: 'report',
 } as const;
 
-const getAssetActions = (network: Network) =>
+const getAssetActions = ({ chainId }: { chainId: ChainId }) =>
   ({
     [AssetActionsEnum.copyTokenID]: {
       actionKey: AssetActionsEnum.copyTokenID,
@@ -57,7 +57,7 @@ const getAssetActions = (network: Network) =>
     [AssetActionsEnum.etherscan]: {
       actionKey: AssetActionsEnum.etherscan,
       actionTitle: lang.t('expanded_state.unique_expanded.view_on_block_explorer', {
-        blockExplorerName: startCase(ethereumUtils.getBlockExplorer(network)),
+        blockExplorerName: startCase(ethereumUtils.getBlockExplorer({ chainId })),
       }),
       icon: {
         iconType: 'SYSTEM',
@@ -263,7 +263,7 @@ const UniqueTokenExpandedStateHeader = ({
 
   const isPhotoDownloadAvailable = !isSVG && !isENS;
   const assetMenuConfig: MenuConfig = useMemo(() => {
-    const AssetActions = getAssetActions(asset.network);
+    const AssetActions = getAssetActions({ chainId: asset.chainId });
 
     return {
       menuItems: [
@@ -309,7 +309,7 @@ const UniqueTokenExpandedStateHeader = ({
         {
           ...AssetActions[AssetActionsEnum.etherscan],
         },
-        ...(asset.network === Network.mainnet
+        ...(asset.chainId === ChainId.mainnet
           ? [
               {
                 menuTitle: lang.t('expanded_state.unique_expanded.view_on_marketplace'),
@@ -320,7 +320,7 @@ const UniqueTokenExpandedStateHeader = ({
       ],
       menuTitle: '',
     };
-  }, [asset.id, asset?.network, isPhotoDownloadAvailable, isHiddenAsset, isModificationActionsEnabled, isSupportedOnRainbowWeb]);
+  }, [asset.id, asset.chainId, isModificationActionsEnabled, isHiddenAsset, isPhotoDownloadAvailable, isSupportedOnRainbowWeb]);
 
   const handlePressFamilyMenuItem = useCallback(
     // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
@@ -343,12 +343,12 @@ const UniqueTokenExpandedStateHeader = ({
     // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === AssetActionsEnum.etherscan) {
-        ethereumUtils.openNftInBlockExplorer(
+        ethereumUtils.openNftInBlockExplorer({
           // @ts-expect-error address could be undefined?
-          asset.asset_contract.address,
-          asset.id,
-          asset.network
-        );
+          contractAddress: asset.asset_contract.address,
+          tokenId: asset.id,
+          chainId: asset.chainId,
+        });
       } else if (actionKey === AssetActionsEnum.rainbowWeb) {
         Linking.openURL(rainbowWebUrl);
       } else if (actionKey === AssetActionsEnum.opensea) {

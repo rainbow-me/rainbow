@@ -2,20 +2,18 @@ import { Contract } from '@ethersproject/contracts';
 
 import { erc20ABI } from '@/references';
 import { convertAmountToBalanceDisplay, convertRawAmountToDecimalFormat } from '@/helpers/utilities';
-import { getNetworkObj } from '@/networks';
-import { Network } from '@/networks/types';
+import { ChainId } from '@/chains/types';
+import { chainsNativeAsset } from '@/chains';
+import { isLowerCaseMatch } from '@/utils';
+import { AddressOrEth } from '@/__swaps__/types/assets';
 
-export function isL2Asset(network: Network) {
-  return getNetworkObj(network).networkType === 'layer2';
+export function isNativeAsset(address: AddressOrEth | string, chainId: ChainId) {
+  return isLowerCaseMatch(chainsNativeAsset[chainId].address, address);
 }
 
-export function isNativeAsset(address: string, network: string) {
-  return getNetworkObj(network as Network).nativeCurrency.address.toLowerCase() === address?.toLowerCase();
-}
-
-export async function getOnchainAssetBalance({ address, decimals, symbol }: any, userAddress: any, network: any, provider: any) {
+export async function getOnchainAssetBalance({ address, decimals, symbol }: any, userAddress: any, chainId: ChainId, provider: any) {
   // Check if it's the native chain asset
-  if (isNativeAsset(address, network)) {
+  if (isNativeAsset(address, chainId)) {
     return getOnchainNativeAssetBalance({ decimals, symbol }, userAddress, provider);
   }
   return getOnchainTokenBalance({ address, decimals, symbol }, userAddress, provider);
