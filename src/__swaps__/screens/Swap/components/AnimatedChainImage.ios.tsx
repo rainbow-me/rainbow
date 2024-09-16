@@ -59,18 +59,17 @@ export function AnimatedChainImage({
     const asset = assetType === 'input' ? internalSelectedInputAsset : internalSelectedOutputAsset;
     const chainId = asset?.value?.chainId;
 
-    let url = 'eth';
-
-    if (chainId !== undefined && !(!showMainnetBadge && chainId === ChainId.mainnet)) {
-      url = networkBadges[chainId];
+    if (!chainId || (!showMainnetBadge && chainId === ChainId.mainnet)) {
+      return '';
     }
-    return url;
+
+    return networkBadges[chainId];
   });
 
   const animatedIconSource = useAnimatedProps(() => ({
     source: {
       ...DEFAULT_FASTER_IMAGE_CONFIG,
-      // base64Placeholder: BLANK_BASE64_PIXEL,
+      base64Placeholder: BLANK_BASE64_PIXEL,
       borderRadius: IS_ANDROID ? (size / 2) * PIXEL_RATIO : size / 2,
       url: url.value,
     },

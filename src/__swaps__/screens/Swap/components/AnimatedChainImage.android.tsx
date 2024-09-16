@@ -53,15 +53,11 @@ export function AnimatedChainImage({
   const chainIdState = useSwapsStore(state => state[assetType === 'input' ? 'inputAsset' : 'outputAsset']?.chainId);
 
   const iconSource = useMemo(() => {
-    let source = { uri: '' };
-
-    if (chainIdState !== undefined && !(!showMainnetBadge && chainIdState === ChainId.mainnet)) {
-      source = networkBadges[chainIdState];
-    } else {
-      source = { uri: '' };
+    if (!chainIdState || (!showMainnetBadge && chainIdState === ChainId.mainnet)) {
+      return { uri: '' };
     }
 
-    return source;
+    return networkBadges[chainIdState];
   }, [chainIdState, showMainnetBadge]);
 
   return (
