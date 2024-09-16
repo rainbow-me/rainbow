@@ -7,9 +7,8 @@ import { logger } from '@/logger';
 import { PromoSheet, PromoSheetOrder } from '@/graphql/__generated__/arc';
 import { device } from '@/storage';
 
-import * as fns from './check-fns';
+import * as fns from '@/components/remote-promo-sheet/check-fns';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
-import store from '@/redux/store';
 
 type ActionObj = {
   fn: string;
@@ -24,17 +23,18 @@ export type CampaignCheckResult = {
   campaignKey: string;
 };
 
-const TIMEOUT_BETWEEN_PROMOS = 5 * 60 * 1000; // 5 minutes
+const TIMEOUT_BETWEEN_PROMOS = 5 * 60 * 1_000; // 5 minutes
+const TIMEOUT_TO_SHOW_PROMO = 1_000;
 
-const timeBetweenPromoSheets = () => {
-  const lastShownAt = remotePromoSheetsStore.getState().lastShownTimestampForAddress.get(store.getState().settings.accountAddress);
+const timeBetweenPromoSheets = (accountAddress: string) => {
+  const lastShownAt = remotePromoSheetsStore.getState().lastShownTimestampForAddress.get(accountAddress);
   if (!lastShownAt) return TIMEOUT_BETWEEN_PROMOS;
   return Date.now() - lastShownAt;
 };
 
 export const checkForRemotePromoSheet = async (accountAddress: string) => {
   logger.debug('[checkForPromoSheet]: Running Checks');
-  if (timeBetweenPromoSheets() < TIMEOUT_BETWEEN_PROMOS) {
+  if (timeBetweenPromoSheets(accountAddress) < TIMEOUT_BETWEEN_PROMOS) {
     logger.debug('[checkForPromoSheet]: Time between promotions has not exceeded timeout');
     return;
   }
@@ -63,17 +63,16 @@ export const checkForRemotePromoSheet = async (accountAddress: string) => {
 };
 
 export const triggerCampaign = async ({ campaignKey, sys: { id: campaignId } }: PromoSheet, accountAddress: string) => {
-  logger.debug(`[checkForPromoSheet]: Showing ${campaignKey} Promo`);
-
   setTimeout(() => {
-    remotePromoSheetsStore.getState().showSheet(campaignId, accountAddress);
     InteractionManager.runAfterInteractions(() => {
+      logger.debug(`[checkForPromoSheet]: Showing ${campaignKey} Promo`);
+      remotePromoSheetsStore.getState().showSheet(campaignId, accountAddress);
       Navigation.handleAction(Routes.REMOTE_PROMO_SHEET, {
         campaignId,
         campaignKey,
       });
     });
-  }, 1000);
+  }, TIMEOUT_TO_SHOW_PROMO);
 };
 
 export const shouldPromptCampaign = async (campaign: PromoSheet, accountAddress: string): Promise<boolean> => {

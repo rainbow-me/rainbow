@@ -77,7 +77,7 @@ export function RemotePromoSheet() {
     };
   }, []);
 
-  const { data, error } = usePromoSheetQuery(
+  const { data } = usePromoSheetQuery(
     {
       id: campaignId,
     },
@@ -110,7 +110,7 @@ export function RemotePromoSheet() {
     );
   }, [goBack, navigate, data?.promoSheet]);
 
-  if (!data?.promoSheet || error) {
+  if (!data?.promoSheet) {
     goBack();
     return null;
   }
@@ -130,10 +130,10 @@ export function RemotePromoSheet() {
   const accentColor = getHexOrThemeColor(colors, accentColorString, 'appleBlue');
   const backgroundColor = getHexOrThemeColor(colors, backgroundColorString, 'white');
   const sheetHandleColor = getHexOrThemeColor(colors, sheetHandleColorString, 'whiteLabel');
-  const primaryButtonColorBgColor = getHexOrThemeColor(colors, primaryButtonProps.color, 'appleBlue');
-  const primaryButtonColorTextColor = getHexOrThemeColor(colors, primaryButtonProps.textColor, 'whiteLabel');
-  const secondaryButtonColorBgColor = getHexOrThemeColor(colors, secondaryButtonProps.color, 'transparent');
-  const secondaryButtonColorTextColor = getHexOrThemeColor(
+  const primaryButtonBgColor = getHexOrThemeColor(colors, primaryButtonProps.color, 'appleBlue');
+  const primaryButtonTextColor = getHexOrThemeColor(colors, primaryButtonProps.textColor, 'whiteLabel');
+  const secondaryButtonBgColor = getHexOrThemeColor(colors, secondaryButtonProps.color, 'transparent');
+  const secondaryButtonTextColor = getHexOrThemeColor(
     colors,
     secondaryButtonProps.textColor || getHighContrastColor(backgroundColor)[isDarkMode ? 'dark' : 'light'],
     'whiteLabel'
@@ -155,15 +155,15 @@ export function RemotePromoSheet() {
       subHeader={getKeyForLanguage('subHeader', data.promoSheet, language as Language)}
       primaryButtonProps={{
         ...primaryButtonProps,
-        color: primaryButtonColorBgColor,
-        textColor: primaryButtonColorTextColor,
+        color: primaryButtonBgColor,
+        textColor: primaryButtonTextColor,
         label: getKeyForLanguage('primaryButtonProps.label', data.promoSheet, language as Language),
         onPress: getButtonForType(data.promoSheet.primaryButtonProps.type),
       }}
       secondaryButtonProps={{
         ...secondaryButtonProps,
-        color: secondaryButtonColorBgColor,
-        textColor: secondaryButtonColorTextColor,
+        color: secondaryButtonBgColor,
+        textColor: secondaryButtonTextColor,
         label: getKeyForLanguage('secondaryButtonProps.label', data.promoSheet, language as Language),
         onPress: goBack,
       }}

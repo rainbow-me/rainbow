@@ -19,7 +19,7 @@ const RemotePromoSheetSyncComponent = () => {
     { order: [PromoSheetOrder.PriorityDesc] },
     {
       onSuccess,
-      enabled: !IS_TEST && walletReady,
+      enabled: !IS_TEST,
     }
   );
 

@@ -151,7 +151,6 @@ export const remotePromoSheetsStore = createRainbowStore<RemotePromoSheetsState>
     shownSheetsForAddress: new Map<Address, string[]>(),
     lastShownTimestampForAddress: new Map<Address, number>(),
 
-    lastShownTimestamp: 0,
     isShown: false,
 
     setSheet: (id: string, sheet: OmittedPromoSheet) => {
@@ -168,6 +167,7 @@ export const remotePromoSheetsStore = createRainbowStore<RemotePromoSheetsState>
     },
 
     setSheets: (data: GetPromoSheetCollectionQuery) => {
+      logger.debug('[remotePromoSheetsStore]: Setting sheets', { count: data.promoSheetCollection?.items?.length });
       const sheets = (data.promoSheetCollection?.items ?? []) as OmittedPromoSheet[];
 
       const sheetsData = new Map<string, OmittedPromoSheet>();
@@ -193,6 +193,7 @@ export const remotePromoSheetsStore = createRainbowStore<RemotePromoSheetsState>
     },
 
     showSheet: (id: string, accountAddress: Address | string) => {
+      logger.debug(`[remotePromoSheetsStore]: Showing sheet ${id} for address ${accountAddress}`);
       const { sheets, hasSheetBeenShown, shownSheetsForAddress } = get();
       const sheet = sheets.get(id);
       if (!sheet) return;
