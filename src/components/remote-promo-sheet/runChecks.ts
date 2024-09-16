@@ -7,8 +7,10 @@ import { useCallback, useEffect } from 'react';
 import { InteractionManager } from 'react-native';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { REMOTE_PROMO_SHEETS, useExperimentalFlag } from '@/config';
+import { useAccountSettings } from '@/hooks';
 
 export const useRunChecks = ({ runChecksOnMount = true, walletReady }: { runChecksOnMount?: boolean; walletReady: boolean }) => {
+  const { accountAddress } = useAccountSettings();
   const { remote_promo_enabled } = useRemoteConfig();
   const remotePromoSheets = useExperimentalFlag(REMOTE_PROMO_SHEETS) || remote_promo_enabled;
 
@@ -30,9 +32,9 @@ export const useRunChecks = ({ runChecksOnMount = true, walletReady }: { runChec
         return;
       }
 
-      checkForRemotePromoSheet();
+      checkForRemotePromoSheet(accountAddress);
     });
-  }, [remotePromoSheets]);
+  }, [remotePromoSheets, accountAddress]);
 
   useEffect(() => {
     if (runChecksOnMount && walletReady) {

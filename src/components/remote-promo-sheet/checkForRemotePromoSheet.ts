@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import { InteractionManager } from 'react-native';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -8,6 +9,7 @@ import { device } from '@/storage';
 
 import * as fns from './check-fns';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
+import store from '@/redux/store';
 
 type ActionObj = {
   fn: string;
@@ -25,21 +27,15 @@ export type CampaignCheckResult = {
 const TIMEOUT_BETWEEN_PROMOS = 5 * 60 * 1000; // 5 minutes
 
 const timeBetweenPromoSheets = () => {
-  const lastShownAt = remotePromoSheetsStore.getState().lastShownTimestamp;
+  const lastShownAt = remotePromoSheetsStore.getState().lastShownTimestampForAddress.get(store.getState().settings.accountAddress);
   if (!lastShownAt) return TIMEOUT_BETWEEN_PROMOS;
   return Date.now() - lastShownAt;
 };
 
-export const checkForRemotePromoSheet = async () => {
+export const checkForRemotePromoSheet = async (accountAddress: string) => {
   logger.debug('[checkForPromoSheet]: Running Checks');
   if (timeBetweenPromoSheets() < TIMEOUT_BETWEEN_PROMOS) {
     logger.debug('[checkForPromoSheet]: Time between promotions has not exceeded timeout');
-    return;
-  }
-
-  const isShown = remotePromoSheetsStore.getState().isShown;
-  if (isShown) {
-    logger.debug('[checkForPromoSheet]: Another promo sheet is currently shown');
     return;
   }
 
@@ -56,21 +52,21 @@ export const checkForRemotePromoSheet = async () => {
   for (const promo of promoSheetCollection?.items || []) {
     if (!promo) continue;
     logger.debug(`[checkForPromoSheet]: Checking ${promo.campaignKey}`);
-    const result = await shouldPromptCampaign(promo as PromoSheet);
+    const result = await shouldPromptCampaign(promo as PromoSheet, accountAddress);
     if (!result) {
       logger.debug(`[checkForPromoSheet]: ${promo.campaignKey} will not show`);
       continue;
     }
 
-    return triggerCampaign(promo as PromoSheet);
+    return triggerCampaign(promo as PromoSheet, accountAddress);
   }
 };
 
-export const triggerCampaign = async ({ campaignKey, sys: { id: campaignId } }: PromoSheet) => {
+export const triggerCampaign = async ({ campaignKey, sys: { id: campaignId } }: PromoSheet, accountAddress: string) => {
   logger.debug(`[checkForPromoSheet]: Showing ${campaignKey} Promo`);
 
   setTimeout(() => {
-    remotePromoSheetsStore.getState().showSheet(campaignId);
+    remotePromoSheetsStore.getState().showSheet(campaignId, accountAddress);
     InteractionManager.runAfterInteractions(() => {
       Navigation.handleAction(Routes.REMOTE_PROMO_SHEET, {
         campaignId,
@@ -80,7 +76,7 @@ export const triggerCampaign = async ({ campaignKey, sys: { id: campaignId } }: 
   }, 1000);
 };
 
-export const shouldPromptCampaign = async (campaign: PromoSheet): Promise<boolean> => {
+export const shouldPromptCampaign = async (campaign: PromoSheet, accountAddress: string): Promise<boolean> => {
   const {
     campaignKey,
     sys: { id },
@@ -93,7 +89,7 @@ export const shouldPromptCampaign = async (campaign: PromoSheet): Promise<boolea
   const actionsArray = actions || ([] as ActionObj[]);
   logger.debug(`[checkForPromoSheet]: Checking if we should prompt campaign ${campaignKey}`);
 
-  const hasShown = remotePromoSheetsStore.getState().getSheet(id)?.hasBeenShown;
+  const hasShown = remotePromoSheetsStore.getState().hasSheetBeenShown(id, accountAddress);
 
   // If the campaign has been viewed, exit early
   if (hasShown) {

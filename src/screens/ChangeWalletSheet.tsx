@@ -27,6 +27,7 @@ import { getNotificationSettingsForWalletWithAddress } from '@/notifications/set
 import { useRunChecks } from '@/components/remote-promo-sheet/runChecks';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
 
 const FOOTER_HEIGHT = getExperimetalFlag(HARDWARE_WALLETS) ? 100 : 60;
 const LIST_PADDING_BOTTOM = 6;
@@ -149,7 +150,8 @@ export default function ChangeWalletSheet() {
         initializeWallet(null, null, null, false, false, null, true);
         if (!fromDeletion) {
           goBack();
-          setTimeout(runChecks, 10_000);
+          remotePromoSheetsStore.setState({ isShown: false });
+          runChecks();
         }
       } catch (e) {
         logger.error(new RainbowError('[ChangeWalletSheet]: Error while switching account'), {
