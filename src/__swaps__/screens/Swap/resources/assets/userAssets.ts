@@ -120,7 +120,7 @@ async function userAssetsQueryFunction({
     const staleBalanceParam = staleBalancesStore.getState().getStaleBalancesQueryParam(address);
     let url = `/${SUPPORTED_CHAIN_IDS.join(',')}/${address}/assets?currency=${currency.toLowerCase()}`;
     if (staleBalanceParam) {
-      url += url + staleBalanceParam;
+      url += staleBalanceParam;
     }
     const res = await addysHttp.get<AddressAssetsReceivedMessage>(url, {
       timeout: USER_ASSETS_TIMEOUT_DURATION,

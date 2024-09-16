@@ -71,7 +71,7 @@ export async function userAssetsByChainQueryFunction({
     const staleBalanceParam = staleBalancesStore.getState().getStaleBalancesQueryParam(address);
     let url = `/${chainId}/${address}/assets/?currency=${currency.toLowerCase()}`;
     if (staleBalanceParam) {
-      url += url + staleBalanceParam;
+      url += staleBalanceParam;
     }
     const res = await addysHttp.get<AddressAssetsReceivedMessage>(url);
     const chainIdsInResponse = res?.data?.meta?.chain_ids || [];

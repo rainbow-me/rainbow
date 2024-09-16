@@ -22,7 +22,7 @@ import { NavigationSteps, useSwapNavigation } from '@/__swaps__/screens/Swap/hoo
 import { useSwapSettings } from '@/__swaps__/screens/Swap/hooks/useSwapSettings';
 import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextStyles';
 import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
-import { userAssetsQueryKey as swapsUserAssetsQueryKey, userAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
+import { userAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/chains/types';
 import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
@@ -306,13 +306,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       queryClient.invalidateQueries(
         userAssetsQueryKey({
           address: parameters.quote.from,
-          currency: nativeCurrency,
-          testnetMode: connectedToHardhat,
-        })
-      );
-      queryClient.invalidateQueries(
-        swapsUserAssetsQueryKey({
-          address: parameters.quote.from as Address,
           currency: nativeCurrency,
           testnetMode: connectedToHardhat,
         })
