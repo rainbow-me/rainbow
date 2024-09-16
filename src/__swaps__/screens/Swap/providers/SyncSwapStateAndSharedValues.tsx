@@ -26,8 +26,8 @@ import { useSelectedGas } from '../hooks/useSelectedGas';
 import { useSwapEstimatedGasLimit } from '../hooks/useSwapEstimatedGasLimit';
 import { useSwapContext } from './swap-provider';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { getNetworkObject } from '@/networks';
 import { getUniqueId } from '@/utils/ethereumUtils';
+import { chainsNativeAsset } from '@/chains';
 
 const BUFFER_RATIO = 0.5;
 
@@ -145,10 +145,10 @@ export function SyncGasStateToSharedValues() {
   const { assetToSell, chainId = initialChainId, quote } = useSyncedSwapQuoteStore();
 
   const gasSettings = useSelectedGas(chainId);
+
   const { userNativeNetworkAsset, isLoadingNativeNetworkAsset } = useUserAssetsStore(state => {
-    const { nativeCurrency } = getNetworkObject({ chainId });
-    const { address } = nativeCurrency;
-    const uniqueId = getUniqueId(address, chainId);
+    const { address: nativeCurrencyAddress } = chainsNativeAsset[chainId];
+    const uniqueId = getUniqueId(nativeCurrencyAddress, chainId);
     return { userNativeNetworkAsset: state.getLegacyUserAsset(uniqueId), isLoadingNativeNetworkAsset: state.isLoadingUserAssets };
   });
   const { data: estimatedGasLimit } = useSwapEstimatedGasLimit({ chainId, assetToSell, quote });
