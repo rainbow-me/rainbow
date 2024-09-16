@@ -27,30 +27,18 @@ export type OmittedPromoSheet = Omit<
 export interface RemotePromoSheetsState {
   sheetsById: Set<string>;
   sheets: Map<string, OmittedPromoSheet>;
-
   isShown: boolean;
+  lastShownTimestamp: number;
 
-  // TODO: FIXME use Address type instead of string
-  shownSheetsForAddress: Map<Address | string, string[]>;
-  lastShownTimestampForAddress: Map<Address | string, number>;
-
-  showSheet: (id: string, accountAddress: Address | string) => void;
-
-  hasSheetBeenShown: (id: string, accountAddress: Address | string) => boolean;
-
+  showSheet: (id: string) => void;
   setSheet: (id: string, sheet: OmittedPromoSheet) => void;
   setSheets: (data: GetPromoSheetCollectionQuery) => void;
   getSheet: (id: string) => OmittedPromoSheet | undefined;
 }
 
-type RemotePromoSheetsStateWithTransforms = Omit<
-  Partial<RemotePromoSheetsState>,
-  'sheets' | 'sheetsById' | 'shownSheetsForAddress' | 'lastShownTimestampForAddress'
-> & {
+type RemotePromoSheetsStateWithTransforms = Omit<Partial<RemotePromoSheetsState>, 'sheets' | 'sheetsById'> & {
   sheetsById: Array<string>;
   sheets: Array<[string, OmittedPromoSheet]>;
-  shownSheetsForAddress: Array<[string, string[]]>;
-  lastShownTimestampForAddress: Array<[string, number]>;
 };
 
 function serializeState(state: Partial<RemotePromoSheetsState>, version?: number) {
@@ -59,8 +47,6 @@ function serializeState(state: Partial<RemotePromoSheetsState>, version?: number
       ...state,
       sheetsById: state.sheetsById ? Array.from(state.sheetsById) : [],
       sheets: state.sheets ? Array.from(state.sheets.entries()) : [],
-      shownSheetsForAddress: state.shownSheetsForAddress ? Array.from(state.shownSheetsForAddress.entries()) : [],
-      lastShownTimestampForAddress: state.lastShownTimestampForAddress ? Array.from(state.lastShownTimestampForAddress.entries()) : [],
     };
 
     return JSON.stringify({
@@ -106,38 +92,11 @@ function deserializeState(serializedState: string) {
     throw error;
   }
 
-  let shownSheetsForAddressData = new Map<Address | string, string[]>();
-  try {
-    if (state.shownSheetsForAddress.length) {
-      shownSheetsForAddressData = new Map(state.shownSheetsForAddress);
-    }
-  } catch (error) {
-    logger.error(new RainbowError(`[remotePromoSheetsStore]: Failed to convert shownSheetsForAddress from remote promo sheets storage`), {
-      error,
-    });
-    throw error;
-  }
-
-  let lastShownTimestampForAddressData = new Map<Address | string, number>();
-  try {
-    if (state.lastShownTimestampForAddress.length) {
-      lastShownTimestampForAddressData = new Map(state.lastShownTimestampForAddress);
-    }
-  } catch (error) {
-    logger.error(
-      new RainbowError(`[remotePromoSheetsStore]: Failed to convert lastShownTimestampForAddress from remote promo sheets storage`),
-      { error }
-    );
-    throw error;
-  }
-
   return {
     state: {
       ...state,
       sheetsById: sheetsByIdData,
       sheets: sheetsData,
-      shownSheetsForAddress: shownSheetsForAddressData,
-      lastShownTimestampForAddress: lastShownTimestampForAddressData,
     },
     version,
   };
@@ -147,10 +106,7 @@ export const remotePromoSheetsStore = createRainbowStore<RemotePromoSheetsState>
   (set, get) => ({
     sheets: new Map<string, OmittedPromoSheet>(),
     sheetsById: new Set<string>(),
-
-    shownSheetsForAddress: new Map<Address, string[]>(),
-    lastShownTimestampForAddress: new Map<Address, number>(),
-
+    lastShownTimestamp: 0,
     isShown: false,
 
     setSheet: (id: string, sheet: OmittedPromoSheet) => {
@@ -186,27 +142,16 @@ export const remotePromoSheetsStore = createRainbowStore<RemotePromoSheetsState>
       });
     },
 
-    hasSheetBeenShown: (id: string, accountAddress: Address | string) => {
-      const { shownSheetsForAddress } = get();
-      const shownSheets = shownSheetsForAddress.get(accountAddress);
-      return shownSheets?.some(sheet => sheet === id) ?? false;
-    },
-
-    showSheet: (id: string, accountAddress: Address | string) => {
-      logger.debug(`[remotePromoSheetsStore]: Showing sheet ${id} for address ${accountAddress}`);
-      const { sheets, hasSheetBeenShown, shownSheetsForAddress } = get();
+    showSheet: (id: string) => {
+      logger.debug(`[remotePromoSheetsStore]: Showing sheet ${id}`);
+      const { sheets } = get();
       const sheet = sheets.get(id);
       if (!sheet) return;
 
-      if (hasSheetBeenShown(id, accountAddress)) return;
+      const newSheets = new Map<string, OmittedPromoSheet>(get().sheets);
+      newSheets.set(id, { ...sheet, hasBeenShown: true });
 
-      const shownSheets = new Map<Address | string, string[]>(get().shownSheetsForAddress);
-      shownSheets.set(accountAddress, [...(shownSheetsForAddress.get(accountAddress) ?? []), id]);
-
-      const lastShownTimestamp = new Map<Address | string, number>(get().lastShownTimestampForAddress);
-      lastShownTimestamp.set(accountAddress, Date.now());
-
-      set({ shownSheetsForAddress: shownSheets, lastShownTimestampForAddress: lastShownTimestamp, isShown: true });
+      set({ sheets: newSheets, isShown: true, lastShownTimestamp: Date.now() });
     },
 
     getSheet: (id: string) => get().sheets.get(id),
@@ -219,8 +164,7 @@ export const remotePromoSheetsStore = createRainbowStore<RemotePromoSheetsState>
     partialize: state => ({
       sheetsById: state.sheetsById,
       sheets: state.sheets,
-      lastShownTimestampForAddress: state.lastShownTimestampForAddress,
-      shownSheetsForAddress: state.shownSheetsForAddress,
+      lastShownTimestamp: state.lastShownTimestamp,
     }),
   }
 );
