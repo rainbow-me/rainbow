@@ -435,7 +435,7 @@ export const userAssetsStore = {
 export function useUserAssetsStore<T>(selector: (state: UserAssetsState) => T) {
   const address = useSelector((state: AppState) => state.settings.accountAddress);
   const store = getOrCreateStore(address);
-  return useStore(store, useCallback(selector, []));
+  return useStore(store, useCallback(selector, [address]));
 }
 
 function getCurrentSearchCache(): Map<string, UniqueId[]> | undefined {
