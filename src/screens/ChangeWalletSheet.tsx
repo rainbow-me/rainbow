@@ -101,10 +101,6 @@ export default function ChangeWalletSheet() {
   const { params = {} as any } = useRoute();
   const { onChangeWallet, watchOnly = false, currentAccountAddress } = params;
   const { selectedWallet, wallets } = useWallets();
-  // const { runChecks } = useRunChecks({
-  //   runChecksOnMount: false,
-  //   walletReady: true,
-  // });
 
   const { colors } = useTheme();
   const { updateWebProfile } = useWebData();
