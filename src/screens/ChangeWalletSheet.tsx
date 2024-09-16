@@ -24,9 +24,9 @@ import { logger, RainbowError } from '@/logger';
 import { useTheme } from '@/theme';
 import { EthereumAddress } from '@/entities';
 import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
-import { useRunChecks } from '@/components/remote-promo-sheet/runChecks';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
 
 const FOOTER_HEIGHT = getExperimetalFlag(HARDWARE_WALLETS) ? 100 : 60;
 const LIST_PADDING_BOTTOM = 6;
@@ -101,7 +101,6 @@ export default function ChangeWalletSheet() {
   const { params = {} as any } = useRoute();
   const { onChangeWallet, watchOnly = false, currentAccountAddress } = params;
   const { selectedWallet, wallets } = useWallets();
-  const { runChecks } = useRunChecks(false);
 
   const { colors } = useTheme();
   const { updateWebProfile } = useWebData();
@@ -142,11 +141,11 @@ export default function ChangeWalletSheet() {
         const p1 = dispatch(walletsSetSelected(wallet));
         const p2 = dispatch(addressSetSelected(address));
         await Promise.all([p1, p2]);
+        remotePromoSheetsStore.setState({ isShown: false });
         // @ts-expect-error initializeWallet is not typed correctly
         initializeWallet(null, null, null, false, false, null, true);
         if (!fromDeletion) {
           goBack();
-          setTimeout(runChecks, 10_000);
         }
       } catch (e) {
         logger.error(new RainbowError('[ChangeWalletSheet]: Error while switching account'), {
@@ -154,7 +153,7 @@ export default function ChangeWalletSheet() {
         });
       }
     },
-    [currentAddress, dispatch, editMode, goBack, initializeWallet, onChangeWallet, runChecks, wallets, watchOnly]
+    [currentAddress, dispatch, editMode, goBack, initializeWallet, onChangeWallet, wallets, watchOnly]
   );
 
   const deleteWallet = useCallback(

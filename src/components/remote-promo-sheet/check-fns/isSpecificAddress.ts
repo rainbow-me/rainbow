@@ -1,6 +1,6 @@
 import store from '@/redux/store';
 import { EthereumAddress } from '@/entities';
-import { ActionFn } from '../checkForCampaign';
+import { ActionFn } from '@/components/remote-promo-sheet/checkForRemotePromoSheet';
 
 type props = {
   addresses: EthereumAddress[];
