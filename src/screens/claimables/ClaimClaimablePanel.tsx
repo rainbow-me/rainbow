@@ -17,7 +17,8 @@ import { useClaimables } from '@/resources/addys/claimables/query';
 import { useMutation } from '@tanstack/react-query';
 import { RapSwapActionParameters } from '@/raps/references';
 import { loadWallet } from '@/model/wallet';
-import { getGasSettingsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
+import { getGasSettings, getGasSettingsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
+import { GasSpeed } from '@/__swaps__/types/gas';
 // import { ContextMenuButton } from '@/components/context-menu';
 
 type RouteParams = {
@@ -114,7 +115,7 @@ const ClaimingClaimable = ({ claimable }: { claimable: Claimable }) => {
         maxFeePerGas: selectedGas?.maxBaseFee as string,
         maxPriorityFeePerGas: selectedGas?.maxPriorityFee as string,
       };
-      const gasFeeParamsBySpeed = getGasSettingsBySpeed(claimable.chainId);
+      const gasFeeParamsBySpeed = getGasSettings(GasSpeed.FAST, claimable.chainId);
 
       const actionParams = {
         address: accountAddress,
@@ -130,25 +131,17 @@ const ClaimingClaimable = ({ claimable }: { claimable: Claimable }) => {
       } satisfies RapSwapActionParameters<'claimRewardsBridge'>;
 
      const tx = {
-        to?: string,
-        from?: string,
-        nonce?: BigNumberish,
+        to: claimable.action.to,
+        from: accountAddress,
+
+        data: claimable.action.data,
+        chainId: claimable.chainId,
     
         gasLimit?: BigNumberish,
         gasPrice?: BigNumberish,
     
-        data?: BytesLike,
-        value?: BigNumberish,
-        chainId?: number
-    
-        type?: number;
-        accessList?: AccessListish;
-    
         maxPriorityFeePerGas?: BigNumberish;
         maxFeePerGas?: BigNumberish;
-    
-        customData?: Record<string, any>;
-        ccipReadEnabled?: boolean;
     }
 
       const provider = getProvider({ chainId: ChainId.optimism });
