@@ -28,4 +28,4 @@ const RemotePromoSheetSyncComponent = () => {
   return null;
 };
 
-export const RemotePromoSheetSync = React.memo(RemotePromoSheetSyncComponent);
+export const RemotePromoSheetSync = React.memo(RemotePromoSheetSyncComponent, () => true);
