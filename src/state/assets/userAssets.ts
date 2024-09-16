@@ -96,7 +96,7 @@ export interface UserAssetsState {
   selectUserAssets: (selector: (asset: ParsedSearchAsset) => boolean) => Generator<[UniqueId, ParsedSearchAsset], void, unknown>;
   setSearchCache: (queryKey: string, filteredIds: UniqueId[]) => void;
   setSearchQuery: (query: string) => void;
-  setUserAssets: (userAssets: Map<UniqueId, ParsedSearchAsset> | ParsedSearchAsset[]) => void;
+  setUserAssets: (userAssets: ParsedSearchAsset[]) => void;
 }
 
 // NOTE: We are serializing Map as an Array<[UniqueId, ParsedSearchAsset]>
@@ -327,7 +327,7 @@ export const createUserAssetsStore = (address: Address | string) =>
         });
       },
 
-      setUserAssets: (userAssets: Map<UniqueId, ParsedSearchAsset> | ParsedSearchAsset[]) =>
+      setUserAssets: (userAssets: ParsedSearchAsset[]) =>
         set(() => {
           const idsByChain = new Map<UserAssetFilter, UniqueId[]>();
           const unsortedChainBalances = new Map<ChainId, number>();
@@ -355,12 +355,9 @@ export const createUserAssetsStore = (address: Address | string) =>
             idsByChain.set(chainId, idsByChain.get(chainId) || []);
           });
 
-          const isMap = userAssets instanceof Map;
-          const allIdsArray = isMap ? Array.from(userAssets.keys()) : userAssets.map(asset => asset.uniqueId);
-          const userAssetsMap = isMap ? userAssets : new Map(userAssets.map(asset => [asset.uniqueId, asset]));
-          const legacyUserAssets = (isMap ? Array.from(userAssets.values()) : userAssets).map(asset =>
-            parsedSearchAssetToParsedAddressAsset(asset)
-          );
+          const allIdsArray = userAssets.map(asset => asset.uniqueId);
+          const userAssetsMap = new Map(userAssets.map(asset => [asset.uniqueId, asset]));
+          const legacyUserAssets = userAssets.map(asset => parsedSearchAssetToParsedAddressAsset(asset));
 
           idsByChain.set('all', allIdsArray);
 
@@ -380,16 +377,13 @@ export const createUserAssetsStore = (address: Address | string) =>
 
           searchCache.set('all', filteredAllIdsArray);
 
-          if (isMap) {
-            return { chainBalances, idsByChain, legacyUserAssets, searchCache, userAssets };
-          } else
-            return {
-              chainBalances,
-              idsByChain,
-              legacyUserAssets,
-              searchCache,
-              userAssets: userAssetsMap,
-            };
+          return {
+            chainBalances,
+            idsByChain,
+            legacyUserAssets,
+            searchCache,
+            userAssets: userAssetsMap,
+          };
         }),
     }),
     {
