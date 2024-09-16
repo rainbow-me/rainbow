@@ -6,7 +6,6 @@ import { ETH_ADDRESS, supportedNativeCurrencies } from '@/references';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { useStore } from 'zustand';
 import { useCallback } from 'react';
-import { getUniqueId } from '@/utils/ethereumUtils';
 import { ParsedAddressAsset } from '@/entities';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { ChainId } from '@/chains/types';
@@ -57,7 +56,7 @@ const parsedSearchAssetToParsedAddressAsset = (asset: ParsedSearchAsset): Parsed
   shadowColor: asset.colors?.shadow,
   symbol: asset.symbol,
   type: asset.type,
-  uniqueId: getUniqueId(asset.address, asset.chainId),
+  uniqueId: asset.uniqueId,
 });
 
 const escapeRegExp = (string: string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
