@@ -16,6 +16,7 @@ import { useSelector } from 'react-redux';
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 
 const parsedSearchAssetToParsedAddressAsset = (asset: ParsedSearchAsset): ParsedAddressAsset => ({
+  address: asset.address,
   balance: {
     amount: asset.balance.amount,
     display: asset.balance.display,
@@ -31,34 +32,32 @@ const parsedSearchAssetToParsedAddressAsset = (asset: ParsedSearchAsset): Parsed
         shadow: asset.colors.shadow,
       }
     : undefined,
+  decimals: asset.decimals,
+  highLiquidity: asset.highLiquidity,
   icon_url: asset.icon_url,
+  id: asset.networks?.[ChainId.mainnet]?.address,
+  isNativeAsset: asset.isNativeAsset,
   price: {
     changed_at: undefined,
     relative_change_24h: asset.price?.relative_change_24h,
     value: asset.price?.value,
   },
+  mainnet_address: asset.mainnetAddress,
+  native: {
+    balance: {
+      amount: asset.native.balance.amount,
+      display: asset.native.balance.display,
+    },
+    change: asset.native.price?.change,
+    price: {
+      amount: asset.native.price?.amount?.toString(),
+      display: asset.native.price?.display,
+    },
+  },
+  shadowColor: asset.colors?.shadow,
+  symbol: asset.symbol,
   type: asset.type,
   uniqueId: getUniqueId(asset.address, asset.chainId),
-  mainnet_address: asset.mainnetAddress,
-  isNativeAsset: asset.isNativeAsset,
-
-  address: asset.address,
-  decimals: asset.decimals,
-  symbol: asset.symbol,
-
-  // asset_contract?: AssetContract;
-  // id?: string;
-  // native?: {
-  //   balance?: {
-  //     amount?: string;
-  //     display?: string;
-  //   };
-  //   change?: string;
-  //   price?: {
-  //     amount?: string;
-  //     display?: string;
-  //   };
-  // };
 });
 
 const escapeRegExp = (string: string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
