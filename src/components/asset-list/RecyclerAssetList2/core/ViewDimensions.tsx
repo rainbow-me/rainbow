@@ -70,6 +70,13 @@ const ViewDimensions: Record<CellType, Dim> = {
     height: 130,
     width: deviceUtils.dimensions.width / 2 - 0.1,
   },
+  [CellType.CLAIMABLES_HEADER]: { height: AssetListHeaderHeight },
+  [CellType.CLAIMABLES_SPACE_BEFORE]: { height: 10 },
+  [CellType.CLAIMABLES_SPACE_AFTER]: { height: 3 },
+  [CellType.CLAIMABLE]: {
+    height: 60,
+    width: deviceUtils.dimensions.width,
+  },
   [CellType.REMOTE_CARD_CAROUSEL]: { height: 112 },
 };
 

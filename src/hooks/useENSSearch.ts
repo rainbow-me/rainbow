@@ -6,7 +6,7 @@ import { fetchRegistrationDate } from '@/handlers/ens';
 import { ENS_DOMAIN, formatRentPrice, getAvailable, getENSRegistrarControllerContract, getNameExpires, getRentPrice } from '@/helpers/ens';
 import { timeUnits } from '@/references';
 import { ethereumUtils, validateENS } from '@/utils';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 
 const formatTime = (timestamp: string, abbreviated = true) => {
   const style = abbreviated ? 'MMM d, y' : 'MMMM d, y';

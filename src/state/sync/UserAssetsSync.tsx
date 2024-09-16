@@ -5,7 +5,7 @@ import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { selectUserAssetsList, selectorFilterByUserChains } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
 import { ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 
 export const UserAssetsSync = function UserAssetsSync() {
   const { accountAddress, nativeCurrency: currentCurrency } = useAccountSettings();

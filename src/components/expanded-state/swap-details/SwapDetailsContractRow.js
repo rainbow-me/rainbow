@@ -123,7 +123,7 @@ export default function SwapDetailsContractRow({ asset, onCopySwapDetailsText, .
       if (actionKey === ContractActionsEnum.copyAddress) {
         handleCopyContractAddress(asset?.address);
       } else if (actionKey === ContractActionsEnum.blockExplorer) {
-        ethereumUtils.openTokenEtherscanURL(asset?.address, asset?.chainId);
+        ethereumUtils.openTokenEtherscanURL({ address: asset?.address, chainId: asset?.chainId });
       }
     },
     [asset, handleCopyContractAddress]
@@ -146,7 +146,7 @@ export default function SwapDetailsContractRow({ asset, onCopySwapDetailsText, .
           handleCopyContractAddress(asset?.address);
         }
         if (idx === 1) {
-          ethereumUtils.openTokenEtherscanURL(asset?.address, asset?.chainId);
+          ethereumUtils.openTokenEtherscanURL({ address: asset?.address, chainId: asset?.chainId });
         }
       }
     );

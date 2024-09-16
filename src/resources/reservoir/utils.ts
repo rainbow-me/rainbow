@@ -1,4 +1,4 @@
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 
 const RAINBOW_FEE_ADDRESS_MAINNET = '0x69d6d375de8c7ade7e44446df97f49e661fdad7d';
 const RAINBOW_FEE_ADDRESS_POLYGON = '0xfb9af3db5e19c4165f413f53fe3bbe6226834548';

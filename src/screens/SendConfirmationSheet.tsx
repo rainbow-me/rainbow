@@ -3,7 +3,7 @@ import { useRoute } from '@react-navigation/native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
 import * as i18n from '@/languages';
-import { capitalize, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -55,13 +55,14 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { useTheme } from '@/theme';
-import { ethereumUtils, getUniqueTokenType, promiseUtils } from '@/utils';
+import { getUniqueTokenType, promiseUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID } from '@/env';
 import { useConsolidatedTransactions } from '@/resources/transactions/consolidatedTransactions';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { performanceTracking, TimeToSignOperation, Screens } from '@/state/performance/performance';
-import { ChainId, chainIdToNameMapping } from '@/networks/types';
+import { ChainId } from '@/chains/types';
+import { chainsLabel } from '@/chains';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -132,7 +133,7 @@ export function getDefaultCheckboxes({
       checked: false,
       id: 'has-wallet-that-supports',
       label: lang.t('wallet.transaction.checkboxes.has_a_wallet_that_supports', {
-        networkName: capitalize(chainIdToNameMapping[chainId]),
+        networkName: chainsLabel[chainId],
       }),
     },
   ];
@@ -600,7 +601,7 @@ export const SendConfirmationSheet = () => {
                       onPress={handleL2DisclaimerPress}
                       prominent
                       customText={i18n.t(i18n.l.expanded_state.asset.l2_disclaimer_send, {
-                        network: chainIdToNameMapping[asset.chainId],
+                        network: chainsLabel[asset.chainId],
                       })}
                       symbol={asset.symbol}
                     />

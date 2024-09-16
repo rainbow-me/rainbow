@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { fromWei, greaterThanOrEqualTo } from '@/helpers/utilities';
 import BigNumber from 'bignumber.js';
 import { SelectedGasFee } from '@/entities';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 
 type WalletBalance = {
   amount: string | number;

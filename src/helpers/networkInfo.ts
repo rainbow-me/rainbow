@@ -1,4 +1,4 @@
-import { Network } from '@/networks/types';
+import { Network } from '@/chains/types';
 
 // TODO: networkInfo is DEPRECATED after the new network support changes
 const networkInfo = {

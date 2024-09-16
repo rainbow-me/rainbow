@@ -13,7 +13,7 @@ import {
   toScaledIntegerWorklet,
 } from '@/__swaps__/safe-math/SafeMath';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { ParsedAddressAsset } from '@/entities';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { deepEqualWorklet } from '@/worklets/comparisons';
@@ -81,10 +81,28 @@ export const SyncQuoteSharedValuesToState = () => {
   return null;
 };
 
+const isFeeNaNWorklet = (value: string | undefined) => {
+  'worklet';
+
+  return isNaN(Number(value)) || typeof value === 'undefined';
+};
+
 export function calculateGasFeeWorklet(gasSettings: GasSettings, gasLimit: string) {
   'worklet';
-  const amount = gasSettings.isEIP1559 ? sumWorklet(gasSettings.maxBaseFee, gasSettings.maxPriorityFee || '0') : gasSettings.gasPrice;
-  return mulWorklet(gasLimit, amount);
+
+  if (gasSettings.isEIP1559) {
+    if (isFeeNaNWorklet(gasSettings.maxBaseFee) || isFeeNaNWorklet(gasSettings.maxPriorityFee)) {
+      return null;
+    }
+
+    return sumWorklet(gasSettings.maxBaseFee || '0', gasSettings.maxPriorityFee || '0');
+  }
+
+  if (isFeeNaNWorklet(gasSettings.gasPrice)) {
+    return null;
+  }
+
+  return mulWorklet(gasLimit, gasSettings.gasPrice);
 }
 
 export function formatUnitsWorklet(value: string, decimals: number) {
@@ -173,12 +191,23 @@ export function SyncGasStateToSharedValues() {
       hasEnoughFundsForGas.value = undefined;
       if (!gasSettings || !estimatedGasLimit || !quote || 'error' in quote || isLoadingNativeNetworkAsset) return;
 
+      // NOTE: if we don't have a gas price or max base fee or max priority fee, we can't calculate the gas fee
+      if (
+        (gasSettings.isEIP1559 && !(gasSettings.maxBaseFee || gasSettings.maxPriorityFee)) ||
+        (!gasSettings.isEIP1559 && !gasSettings.gasPrice)
+      ) {
+        return;
+      }
+
       if (!userNativeNetworkAsset) {
         hasEnoughFundsForGas.value = false;
         return;
       }
 
       const gasFee = calculateGasFeeWorklet(gasSettings, estimatedGasLimit);
+      if (gasFee === null || isNaN(Number(gasFee))) {
+        return;
+      }
 
       const nativeGasFee = divWorklet(gasFee, powWorklet(10, userNativeNetworkAsset.decimals));
 

@@ -10,10 +10,10 @@ import { setHiddenCoins } from '@/redux/editOptions';
 import store from '@/redux/store';
 import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import { RainbowPositions } from '@/resources/defi/types';
-import { ethereumUtils } from '@/utils';
 import { AddysAddressAsset, AddysAsset, ParsedAsset, RainbowAddressAssets } from './types';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
+import { chainsIdByName } from '@/chains';
 
 const storage = new MMKV();
 
@@ -40,7 +40,7 @@ export const filterPositionsData = (
 
 export function parseAsset({ address, asset }: { address: string; asset: AddysAsset }): ParsedAsset {
   const network = asset?.network;
-  const chainId = ethereumUtils.getChainIdFromNetwork(network);
+  const chainId = chainsIdByName[network];
   const mainnetAddress = asset?.networks?.[ChainId.mainnet]?.address;
   const uniqueId = getUniqueId(address, chainId);
 

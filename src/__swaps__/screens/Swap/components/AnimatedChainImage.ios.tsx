@@ -11,7 +11,7 @@ import ZoraBadge from '@/assets/badges/zora.png';
 import AvalancheBadge from '@/assets/badges/avalanche.png';
 import BlastBadge from '@/assets/badges/blast.png';
 import DegenBadge from '@/assets/badges/degen.png';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { useAnimatedProps, useDerivedValue } from 'react-native-reanimated';
 import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';

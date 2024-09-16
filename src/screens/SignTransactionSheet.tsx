@@ -16,7 +16,7 @@ import { deviceUtils } from '@/utils';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { TransactionScanResultType } from '@/graphql/__generated__/metadataPOST';
-import { ChainId } from '@/networks/types';
+import { ChainId, Network } from '@/chains/types';
 import { convertHexToString, delay, greaterThan, omitFlatten } from '@/helpers/utilities';
 
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
@@ -27,7 +27,6 @@ import { ContactAvatar } from '@/components/contacts';
 import { IS_IOS } from '@/env';
 import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { GasSpeedButton } from '@/components/gas';
-import { getNetworkObject } from '@/networks';
 import { RainbowError, logger } from '@/logger';
 import {
   PERSONAL_SIGN,
@@ -72,6 +71,8 @@ import { useNonceForDisplay } from '@/hooks/useNonceForDisplay';
 import { useProviderSetup } from '@/hooks/useProviderSetup';
 import { useTransactionSubmission } from '@/hooks/useSubmitTransaction';
 import { useConfirmTransaction } from '@/hooks/useConfirmTransaction';
+import { toChecksumAddress } from 'ethereumjs-util';
+import { chainsName, defaultChains } from '@/chains';
 
 type SignTransactionSheetParams = {
   transactionDetails: RequestData;
@@ -332,7 +333,7 @@ export const SignTransactionSheet = () => {
         screen: SCREEN_FOR_REQUEST_SOURCE[source],
         operation: TimeToSignOperation.KeychainRead,
       })({
-        address: accountInfo.address,
+        address: toChecksumAddress(accountInfo.address),
         provider: providerToUse,
         timeTracking: {
           screen: SCREEN_FOR_REQUEST_SOURCE[source],
@@ -390,7 +391,7 @@ export const SignTransactionSheet = () => {
           from: displayDetails?.request?.from,
           gasLimit,
           hash: sendResult.hash,
-          network: getNetworkObject({ chainId }).value,
+          network: chainsName[chainId] as Network,
           nonce: sendResult.nonce,
           to: displayDetails?.request?.to,
           value: sendResult.value.toString(),
@@ -412,7 +413,7 @@ export const SignTransactionSheet = () => {
         dappName: transactionDetails.dappName,
         dappUrl: transactionDetails.dappUrl,
         isHardwareWallet: accountInfo.isHardwareWallet,
-        network: getNetworkObject({ chainId }).value,
+        network: chainsName[chainId] as Network,
       });
 
       if (!sendInsteadOfSign) {
@@ -443,7 +444,7 @@ export const SignTransactionSheet = () => {
         dappUrl: transactionDetails?.dappUrl,
         formattedDappUrl,
         rpcMethod: req?.method,
-        network: getNetworkObject({ chainId }).value,
+        network: chainsName[chainId] as Network,
       });
       // If the user is using a hardware wallet, we don't want to close the sheet on an error
       if (!accountInfo.isHardwareWallet) {
@@ -524,7 +525,7 @@ export const SignTransactionSheet = () => {
         dappName: transactionDetails?.dappName,
         dappUrl: transactionDetails?.dappUrl,
         isHardwareWallet: accountInfo.isHardwareWallet,
-        network: getNetworkObject({ chainId }).value,
+        network: chainsName[chainId] as Network,
       });
       onSuccessCallback?.(response.result);
 
@@ -537,10 +538,11 @@ export const SignTransactionSheet = () => {
     transactionDetails?.payload?.method,
     transactionDetails?.dappName,
     transactionDetails?.dappUrl,
+    provider,
     chainId,
+    source,
     accountInfo.address,
     accountInfo.isHardwareWallet,
-    source,
     onSuccessCallback,
     closeScreen,
     onCancel,
@@ -711,7 +713,7 @@ export const SignTransactionSheet = () => {
                                     </Bleed>
                                     <Text color="labelQuaternary" size="13pt" weight="semibold">
                                       {`${walletBalance?.display} ${i18n.t(i18n.l.walletconnect.simulation.profile_section.on_network, {
-                                        network: getNetworkObject({ chainId })?.name,
+                                        network: defaultChains[chainId]?.name,
                                       })}`}
                                     </Text>
                                   </Inline>

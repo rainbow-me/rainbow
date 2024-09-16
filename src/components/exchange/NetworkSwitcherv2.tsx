@@ -6,9 +6,9 @@ import ChainBadge from '../coin-icon/ChainBadge';
 import { Bleed, Box, Columns, Inline, Text } from '@/design-system';
 import { position } from '@rainbow-me/styles';
 import { useTheme } from '@/theme';
-import { sortNetworks } from '@/networks';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
+import { chainsLabel, defaultChains, supportedSwapChainIds } from '@/chains';
 
 const NetworkSwitcherv2 = ({
   currentChainId,
@@ -22,12 +22,11 @@ const NetworkSwitcherv2 = ({
   const { colors } = useTheme();
   const scrollViewRef = useRef<ScrollView>(null);
   const networkMenuItems = useMemo(() => {
-    return sortNetworks()
-      .filter(network => network.features.swaps)
-      .map(network => ({
-        chainId: network.id,
-        network: network.value,
-        title: network.name,
+    return Object.values(defaultChains)
+      .filter(chain => supportedSwapChainIds.includes(chain.id))
+      .map(chain => ({
+        chainId: chain.id,
+        title: chainsLabel[chain.id],
       }));
   }, []);
 

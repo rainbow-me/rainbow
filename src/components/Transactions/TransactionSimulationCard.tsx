@@ -14,7 +14,6 @@ import { TextColor } from '@/design-system/color/palettes';
 
 import { TransactionErrorType, TransactionSimulationResult, TransactionScanResultType } from '@/graphql/__generated__/metadataPOST';
 
-import { getNetworkObject } from '@/networks';
 import { isEmpty } from 'lodash';
 import { TransactionSimulatedEventRow } from '@/components/Transactions/TransactionSimulatedEventRow';
 import { FadedScrollCard } from '@/components/FadedScrollCard';
@@ -28,7 +27,8 @@ import {
   rotationConfig,
   timingConfig,
 } from '@/components/Transactions/constants';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
+import { chainsName } from '@/chains';
 
 interface TransactionSimulationCardProps {
   chainId: ChainId;
@@ -271,7 +271,7 @@ export const TransactionSimulationCard = ({
               <Text color="labelQuaternary" size="13pt" weight="semibold">
                 {i18n.t(i18n.l.walletconnect.simulation.simulation_card.messages.need_more_native, {
                   symbol: walletBalance?.symbol,
-                  network: getNetworkObject({ chainId }).name,
+                  network: chainsName[chainId],
                 })}
               </Text>
             ) : (

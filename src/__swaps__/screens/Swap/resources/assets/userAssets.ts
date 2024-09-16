@@ -6,15 +6,19 @@ import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQu
 
 import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
-import { SupportedCurrencyKey, SUPPORTED_CHAIN_IDS } from '@/references';
+import { SupportedCurrencyKey } from '@/references';
 import { ParsedAssetsDictByChain, ZerionAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { AddressAssetsReceivedMessage } from '@/__swaps__/types/refraction';
 import { parseUserAsset } from '@/__swaps__/utils/assets';
 import { greaterThan } from '@/__swaps__/utils/numbers';
 
 import { fetchUserAssetsByChain } from './userAssetsByChain';
 import { fetchHardhatBalancesByChainId } from '@/resources/assets/hardhatAssets';
+<<<<<<< HEAD
+=======
+import { SUPPORTED_CHAIN_IDS } from '@/chains';
+>>>>>>> 64d1387835ac4fd8991e8fcaf2a7f231323f44db
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 import { staleBalancesStore } from '@/state/staleBalances';
 import { IS_TEST } from '@/env';
@@ -115,12 +119,16 @@ async function userAssetsQueryFunction({
   const cachedUserAssets = (cache.find(userAssetsQueryKey({ address, currency, testnetMode }))?.state?.data ||
     {}) as ParsedAssetsDictByChain;
   try {
+<<<<<<< HEAD
     staleBalancesStore.getState().clearExpiredData(address);
     const staleBalanceParam = staleBalancesStore.getState().getStaleBalancesQueryParam(address);
     let url = `/${SUPPORTED_CHAIN_IDS({ testnetMode }).join(',')}/${address}/assets?currency=${currency.toLowerCase()}`;
     if (staleBalanceParam) {
       url += url + staleBalanceParam;
     }
+=======
+    const url = `/${SUPPORTED_CHAIN_IDS.join(',')}/${address}/assets`;
+>>>>>>> 64d1387835ac4fd8991e8fcaf2a7f231323f44db
     const res = await addysHttp.get<AddressAssetsReceivedMessage>(url, {
       timeout: USER_ASSETS_TIMEOUT_DURATION,
     });

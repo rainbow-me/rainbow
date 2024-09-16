@@ -4,7 +4,7 @@ import { TokenSelectionButton } from '../buttons';
 import { ChainBadge, CoinIconSize } from '../coin-icon';
 import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import styled from '@/styled-thing';
 import { borders } from '@/styles';
 import { useTheme } from '@/theme';

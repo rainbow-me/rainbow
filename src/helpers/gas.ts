@@ -1,7 +1,7 @@
 import { memoFn } from '../utils/memoFn';
 import { gasUtils } from '@/utils';
-import { getNetworkObject } from '@/networks';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
+import { isL2Chain } from '@/handlers/web3';
 
 const { GasTrends } = gasUtils;
 const { FALLING, NO_TREND, RISING, STABLE, SURGING } = GasTrends;
@@ -26,8 +26,7 @@ export const getTrendKey = memoFn((trend: number) => {
 });
 
 export const calculateMinerTipAddDifference = memoFn((maxPriorityFee: string, chainId: ChainId) => {
-  const networkObject = getNetworkObject({ chainId });
-  const isL2 = networkObject.networkType === 'layer2';
+  const isL2 = isL2Chain({ chainId });
   const FEE_INCREMENT = isL2 ? PRIORITY_FEE_L2_INCREMENT : PRIORITY_FEE_INCREMENT;
   const FEE_THRESHOLD = isL2 ? PRIORITY_FEE_L2_THRESHOLD : PRIORITY_FEE_THRESHOLD;
   const diff = Math.round((Number(maxPriorityFee) % FEE_INCREMENT) * 100) / 100;
@@ -39,8 +38,7 @@ export const calculateMinerTipAddDifference = memoFn((maxPriorityFee: string, ch
 });
 
 export const calculateMinerTipSubstDifference = memoFn((maxPriorityFee: string, chainId: ChainId) => {
-  const networkObject = getNetworkObject({ chainId });
-  const isL2 = networkObject.networkType === 'layer2';
+  const isL2 = isL2Chain({ chainId });
   const FEE_INCREMENT = isL2 ? PRIORITY_FEE_L2_INCREMENT : PRIORITY_FEE_INCREMENT;
   const FEE_THRESHOLD = isL2 ? PRIORITY_FEE_L2_THRESHOLD : PRIORITY_FEE_THRESHOLD;
   const diff = Math.round((Number(maxPriorityFee) % FEE_INCREMENT) * 100) / 100;

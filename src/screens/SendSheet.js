@@ -56,14 +56,14 @@ import { NoResults } from '@/components/list';
 import { NoResultsType } from '@/components/list/NoResults';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { Wallet } from '@ethersproject/wallet';
-import { getNetworkObject } from '@/networks';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { getNextNonce } from '@/state/nonces';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { REGISTRATION_STEPS } from '@/helpers/ens';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
+import { chainsName, chainsNativeAsset, needsL1SecurityFeeChains } from '@/chains';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
@@ -368,7 +368,7 @@ export default function SendSheet(props) {
           recipient: toAddress,
         },
         currentProvider,
-        ethereumUtils.getNetworkFromChainId(currentChainId)
+        currentChainId
       );
       const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(txData, currentProvider);
       updateTxFee(updatedGasLimit, null, l1GasFeeOptimism);
@@ -391,7 +391,7 @@ export default function SendSheet(props) {
       });
       if (!wallet) return;
 
-      const currentChainIdNetwork = ethereumUtils.getNetworkFromChainId(currentChainId);
+      const currentChainIdNetwork = chainsName[currentChainId];
 
       const validTransaction = isValidAddress && amountDetails.isSufficientBalance && isSufficientGas && isValidGas;
       if (!selectedGasFee?.gasFee?.estimatedFee || !validTransaction) {
@@ -423,7 +423,7 @@ export default function SendSheet(props) {
           );
 
           if (!lessThan(updatedGasLimit, gasLimit)) {
-            if (getNetworkObject({ chainId: currentChainId }).gas?.OptimismTxFee) {
+            if (needsL1SecurityFeeChains.includes(currentChainId)) {
               updateTxFeeForOptimism(updatedGasLimit);
             } else {
               updateTxFee(updatedGasLimit, null);
@@ -593,7 +593,6 @@ export default function SendSheet(props) {
 
   const { buttonDisabled, buttonLabel } = useMemo(() => {
     const isZeroAssetAmount = Number(amountDetails.assetAmount) <= 0;
-    const currentNetworkObject = getNetworkObject({ chainId: currentChainId });
     let disabled = true;
     let label = lang.t('button.confirm_exchange.enter_amount');
 
@@ -605,14 +604,14 @@ export default function SendSheet(props) {
       !selectedGasFee ||
       isEmpty(selectedGasFee?.gasFee) ||
       !toAddress ||
-      (currentNetworkObject.gas?.OptimismTxFee && l1GasFeeOptimism === null)
+      (needsL1SecurityFeeChains.includes(currentChainId) && l1GasFeeOptimism === null)
     ) {
       label = lang.t('button.confirm_exchange.loading');
       disabled = true;
     } else if (!isZeroAssetAmount && !isSufficientGas) {
       disabled = true;
       label = lang.t('button.confirm_exchange.insufficient_token', {
-        tokenName: currentNetworkObject.nativeCurrency.symbol,
+        tokenName: chainsNativeAsset[currentChainId || ChainId.mainnet].symbol,
       });
     } else if (!isValidGas) {
       disabled = true;
@@ -784,7 +783,7 @@ export default function SendSheet(props) {
         currentChainId
       )
         .then(async gasLimit => {
-          if (getNetworkObject({ chainId: currentChainId }).gas?.OptimismTxFee) {
+          if (needsL1SecurityFeeChains.includes(currentChainId)) {
             updateTxFeeForOptimism(gasLimit);
           } else {
             updateTxFee(gasLimit, null);

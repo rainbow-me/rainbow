@@ -24,7 +24,7 @@ import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextSty
 import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { userAssetsQueryKey as swapsUserAssetsQueryKey, userAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
 import { getDefaultSlippageWorklet, isUnwrapEthWorklet, isWrapEthWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
@@ -38,7 +38,6 @@ import { RainbowError, logger } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { RainbowNetworkByChainId, getNetworkObject } from '@/networks';
 import { walletExecuteRap } from '@/raps/execute';
 import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
 import { queryClient } from '@/react-query';
@@ -56,6 +55,7 @@ import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './Sync
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { chainsNativeAsset, supportedFlashbotsChainIds } from '@/chains';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
@@ -199,7 +199,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       NotificationManager?.postNotification('rapInProgress');
 
       const provider =
-        parameters.flashbots && getNetworkObject({ chainId: parameters.chainId }).features.flashbots
+        parameters.flashbots && supportedFlashbotsChainIds.includes(parameters.chainId)
           ? await getFlashbotsProvider()
           : getProvider({ chainId: parameters.chainId });
       const connectedToHardhat = useConnectedToHardhatStore.getState().connectedToHardhat;
@@ -380,7 +380,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       const type = inputAsset.chainId !== outputAsset.chainId ? 'crosschainSwap' : 'swap';
       const quoteData = q as QuoteTypeMap[typeof type];
-      const flashbots = (SwapSettings.flashbots.value && inputAsset.chainId === ChainId.mainnet) ?? false;
+      const flashbots = (SwapSettings.flashbots.value && !!supportedFlashbotsChainIds.includes(inputAsset.chainId)) ?? false;
 
       const isNativeWrapOrUnwrap =
         isWrapEthWorklet({
@@ -750,7 +750,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
 
     if (hasEnoughFundsForGas.value === false) {
-      const nativeCurrency = RainbowNetworkByChainId[sellAsset?.chainId || ChainId.mainnet].nativeCurrency;
+      const nativeCurrency = chainsNativeAsset[sellAsset?.chainId || ChainId.mainnet];
       return {
         label: `${insufficient} ${nativeCurrency.symbol}`,
         disabled: true,

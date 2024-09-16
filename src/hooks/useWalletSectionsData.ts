@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
 import useCoinListEditOptions from './useCoinListEditOptions';
 import useCoinListEdited from './useCoinListEdited';
@@ -12,6 +12,8 @@ import { useLegacyNFTs } from '@/resources/nfts';
 import useNftSort from './useNFTsSortBy';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { useRemoteConfig } from '@/model/remoteConfig';
+import { RainbowContext } from '@/helpers/RainbowContext';
 
 export default function useWalletSectionsData({
   type,
@@ -46,6 +48,9 @@ export default function useWalletSectionsData({
   const { showcaseTokens } = useShowcaseTokens();
   const { hiddenTokens } = useHiddenTokens();
 
+  const remoteConfig = useRemoteConfig();
+  const experimentalConfig = useContext(RainbowContext).config;
+
   const { hiddenCoinsObj: hiddenCoins, pinnedCoinsObj: pinnedCoins } = useCoinListEditOptions();
 
   const { isCoinListEdited } = useCoinListEdited();
@@ -72,6 +77,8 @@ export default function useWalletSectionsData({
       uniqueTokens: allUniqueTokens,
       isFetchingNfts,
       nftSort,
+      remoteConfig,
+      experimentalConfig,
     };
 
     const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(accountInfo);
@@ -95,7 +102,7 @@ export default function useWalletSectionsData({
     pinnedCoins,
     sendableUniqueTokens,
     sortedAssets,
-    accountWithBalance,
+    accountWithBalance?.balances,
     isWalletEthZero,
     hiddenTokens,
     isReadOnlyWallet,
@@ -104,6 +111,8 @@ export default function useWalletSectionsData({
     allUniqueTokens,
     isFetchingNfts,
     nftSort,
+    remoteConfig,
+    experimentalConfig,
   ]);
   return walletSections;
 }

@@ -31,7 +31,6 @@ import * as i18n from '@/languages';
 import { analyticsV2 } from '@/analytics';
 import { event } from '@/analytics/event';
 import { ETH_ADDRESS, ETH_SYMBOL } from '@/references';
-import { getNetworkObject } from '@/networks';
 import { fetchReverseRecord } from '@/handlers/ens';
 import { ContactAvatar } from '@/components/contacts';
 import { addressHashedColorIndex } from '@/utils/profileUtils';
@@ -56,7 +55,8 @@ import { getUniqueId } from '@/utils/ethereumUtils';
 import { getNextNonce } from '@/state/nonces';
 import { metadataPOSTClient } from '@/graphql';
 import { Transaction } from '@/graphql/__generated__/metadataPOST';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
+import { chainsName, defaultChains, getChainDefaultRpc } from '@/chains';
 
 const NFT_IMAGE_HEIGHT = 250;
 // inset * 2 -> 28 *2
@@ -247,17 +247,16 @@ const MintSheet = () => {
   // estimate gas limit
   useEffect(() => {
     const estimateMintGas = async () => {
-      const networkObj = getNetworkObject({ chainId });
       const signer = createWalletClient({
         account: accountAddress,
-        chain: networkObj,
-        transport: http(networkObj.rpc()),
+        chain: defaultChains[chainId],
+        transport: http(getChainDefaultRpc(chainId)),
       });
       try {
         await getClient()?.actions.mintToken({
           items: [{ collection: mintCollection.id!, quantity }],
           wallet: signer!,
-          chainId: networkObj.id,
+          chainId,
           precheck: true,
           onProgress: async (steps: Execute['steps']) => {
             const txs: Transaction[] = [];
@@ -280,7 +279,7 @@ const MintSheet = () => {
             const txSimEstimate = parseInt(
               (
                 await metadataPOSTClient.simulateTransactions({
-                  chainId: networkObj.id,
+                  chainId,
                   transactions: txs,
                 })
               )?.simulateTransactions?.[0]?.gas?.estimate ?? '0x0',
@@ -356,11 +355,11 @@ const MintSheet = () => {
     const privateKey = await loadPrivateKey(accountAddress, false);
     // @ts-ignore
     const account = privateKeyToAccount(privateKey);
-    const networkObj = getNetworkObject({ chainId });
+    const chain = defaultChains[chainId];
     const signer = createWalletClient({
       account,
-      chain: networkObj,
-      transport: http(networkObj.rpc()),
+      chain,
+      transport: http(getChainDefaultRpc(chainId)),
     });
 
     const feeAddress = getRainbowFeeAddress(chainId);
@@ -375,7 +374,7 @@ const MintSheet = () => {
           },
         ],
         wallet: signer!,
-        chainId: networkObj.id,
+        chainId,
         onProgress: (steps: Execute['steps']) => {
           steps.forEach(step => {
             if (step.error) {
@@ -390,7 +389,7 @@ const MintSheet = () => {
                   type: 'nft',
                   icon_url: imageUrl,
                   address: mintCollection.id || '',
-                  network: ethereumUtils.getNetworkFromChainId(chainId),
+                  network: chainsName[chainId],
                   name: mintCollection.name || '',
                   decimals: 18,
                   symbol: 'NFT',
@@ -400,7 +399,7 @@ const MintSheet = () => {
                 const paymentAsset = {
                   type: 'nft',
                   address: ETH_ADDRESS,
-                  network: ethereumUtils.getNetworkFromChainId(chainId),
+                  network: chainsName[chainId],
                   name: mintCollection.publicMintInfo?.price?.currency?.name || 'Ethereum',
                   decimals: mintCollection.publicMintInfo?.price?.currency?.decimals || 18,
                   symbol: ETH_SYMBOL,
@@ -413,7 +412,7 @@ const MintSheet = () => {
                   to: item.data?.to,
                   from: item.data?.from,
                   hash: item.txHashes[0].txHash,
-                  network: ethereumUtils.getNetworkFromChainId(chainId),
+                  network: chainsName[chainId],
                   nonce,
                   changes: [
                     {
@@ -705,7 +704,7 @@ const MintSheet = () => {
                           <ChainBadge chainId={chainId} position="relative" size="small" forceDark={true} />
                         )}
                         <Text color="labelSecondary" align="right" size="17pt" weight="medium">
-                          {`${getNetworkObject({ chainId }).name}`}
+                          {`${defaultChains[chainId].name}`}
                         </Text>
                       </Inline>
                     </Inset>

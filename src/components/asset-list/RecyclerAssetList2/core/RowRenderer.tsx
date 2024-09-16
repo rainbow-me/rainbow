@@ -8,6 +8,8 @@ import { ExtendedState } from './RawRecyclerList';
 import {
   AssetsHeaderExtraData,
   CellType,
+  ClaimableExtraData,
+  ClaimablesHeaderExtraData,
   CoinDividerExtraData,
   CoinExtraData,
   NFTExtraData,
@@ -33,6 +35,8 @@ import { RemoteCardCarousel } from '@/components/cards/remote-cards';
 import WrappedCollectiblesHeader from '../WrappedCollectiblesHeader';
 import NFTLoadingSkeleton from '../NFTLoadingSkeleton';
 import { NFTEmptyState } from '../NFTEmptyState';
+import Claimable from '../Claimable';
+import ClaimablesListHeader from '../ClaimablesListHeader';
 
 function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, extendedState: ExtendedState) {
   const data = extendedState.additionalData[uid];
@@ -51,6 +55,8 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     case CellType.EMPTY_ROW:
     case CellType.POSITIONS_SPACE_AFTER:
     case CellType.POSITIONS_SPACE_BEFORE:
+    case CellType.CLAIMABLES_SPACE_AFTER:
+    case CellType.CLAIMABLES_SPACE_BEFORE:
       return null;
     case CellType.COIN_DIVIDER:
       return (
@@ -161,6 +167,15 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
       const { uniqueId, index } = data as PositionExtraData;
 
       return <WrappedPosition placement={index % 2 === 0 ? 'left' : 'right'} uniqueId={uniqueId} />;
+    }
+    case CellType.CLAIMABLES_HEADER: {
+      const { total } = data as ClaimablesHeaderExtraData;
+      return <ClaimablesListHeader total={total} />;
+    }
+    case CellType.CLAIMABLE: {
+      const { uniqueId } = data as ClaimableExtraData;
+
+      return <Claimable uniqueId={uniqueId} />;
     }
 
     case CellType.LOADING_ASSETS:

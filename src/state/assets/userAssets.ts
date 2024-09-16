@@ -2,16 +2,16 @@ import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/
 import { Address } from 'viem';
 import { RainbowError, logger } from '@/logger';
 import reduxStore, { AppState } from '@/redux/store';
-import { ETH_ADDRESS, SUPPORTED_CHAIN_IDS, supportedNativeCurrencies } from '@/references';
+import { ETH_ADDRESS, supportedNativeCurrencies } from '@/references';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 import { useStore } from 'zustand';
 import { useCallback } from 'react';
-import { getNetworkFromChainId, getUniqueId } from '@/utils/ethereumUtils';
+import { getUniqueId } from '@/utils/ethereumUtils';
 import { ParsedAddressAsset } from '@/entities';
 import { swapsStore } from '@/state/swaps/swapsStore';
+import { ChainId } from '@/chains/types';
+import { chainsName, SUPPORTED_CHAIN_IDS } from '@/chains';
 import { useSelector } from 'react-redux';
-import { ChainId } from '@/networks/types';
-import { useConnectedToHardhatStore } from '../connectedToHardhat';
 
 const SEARCH_CACHE_MAX_ENTRIES = 50;
 
@@ -20,7 +20,7 @@ const parsedSearchAssetToParsedAddressAsset = (asset: ParsedSearchAsset): Parsed
     amount: asset.balance.amount,
     display: asset.balance.display,
   },
-  network: getNetworkFromChainId(asset.chainId),
+  network: chainsName[asset.chainId],
   name: asset.name,
   chainId: asset.chainId,
   color: asset.colors?.primary ?? asset.colors?.fallback,
@@ -41,13 +41,24 @@ const parsedSearchAssetToParsedAddressAsset = (asset: ParsedSearchAsset): Parsed
   uniqueId: getUniqueId(asset.address, asset.chainId),
   mainnet_address: asset.mainnetAddress,
   isNativeAsset: asset.isNativeAsset,
+
   address: asset.address,
   decimals: asset.decimals,
   symbol: asset.symbol,
-  highLiquidity: asset.highLiquidity,
-  isVerified: asset.isVerified,
-  shadowColor: asset.colors?.shadow,
-  networks: asset.networks,
+
+  // asset_contract?: AssetContract;
+  // id?: string;
+  // native?: {
+  //   balance?: {
+  //     amount?: string;
+  //     display?: string;
+  //   };
+  //   change?: string;
+  //   price?: {
+  //     amount?: string;
+  //     display?: string;
+  //   };
+  // };
 });
 
 const escapeRegExp = (string: string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -58,7 +69,7 @@ const getDefaultCacheKeys = (): Set<string> => {
   const queryKeysToPreserve = new Set<string>();
   queryKeysToPreserve.add('all');
 
-  for (const chainId of SUPPORTED_CHAIN_IDS({ testnetMode: false })) {
+  for (const chainId of SUPPORTED_CHAIN_IDS) {
     queryKeysToPreserve.add(`${chainId}`);
   }
   return queryKeysToPreserve;
@@ -263,7 +274,7 @@ export const createUserAssetsStore = (address: Address | string) =>
         const assetIds = filter ? idsByChain.get(filter) || [] : idsByChain.get('all') || [];
 
         for (const id of assetIds) {
-          if (currentAbortController?.signal.aborted) {
+          if (currentAbortController?.signal?.aborted) {
             return;
           }
           const asset = userAssets.get(id);
@@ -277,7 +288,7 @@ export const createUserAssetsStore = (address: Address | string) =>
         const { currentAbortController, userAssets } = get();
 
         for (const [id, asset] of userAssets) {
-          if (currentAbortController?.signal.aborted) {
+          if (currentAbortController?.signal?.aborted) {
             return;
           }
           if (selector(asset)) {
@@ -291,7 +302,7 @@ export const createUserAssetsStore = (address: Address | string) =>
           const { currentAbortController } = state;
 
           // Abort any ongoing search work
-          currentAbortController.abort();
+          currentAbortController?.abort?.();
 
           // Create a new AbortController for the new query
           const abortController = new AbortController();
@@ -330,7 +341,7 @@ export const createUserAssetsStore = (address: Address | string) =>
           });
 
           // Ensure all supported chains are in the map with a fallback value of 0
-          SUPPORTED_CHAIN_IDS({ testnetMode: useConnectedToHardhatStore.getState().connectedToHardhat }).forEach(chainId => {
+          SUPPORTED_CHAIN_IDS.forEach(chainId => {
             if (!unsortedChainBalances.has(chainId)) {
               unsortedChainBalances.set(chainId, 0);
               idsByChain.set(chainId, []);

@@ -4,7 +4,7 @@ import { Address } from 'viem';
 
 import { ParsedAsset } from '@/__swaps__/types/assets';
 import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 
 export enum SwapModalField {
   input = 'inputAmount',

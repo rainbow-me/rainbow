@@ -10,10 +10,10 @@ import { usePrevious, useStepper } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { getExchangeIconUrl, magicMemo } from '@/utils';
 import { SocketBridges } from '@/references/swap/bridges';
-import { RainbowNetworkObjects } from '@/networks';
+import { SUPPORTED_CHAINS } from '@/chains';
 
 const parseExchangeName = name => {
-  const networks = RainbowNetworkObjects.map(network => network.name.toLowerCase());
+  const networks = SUPPORTED_CHAINS.map(network => network.name.toLowerCase());
 
   const removeNetworks = name =>
     networks.some(network => name.toLowerCase().includes(network)) ? name.slice(name.indexOf('_') + 1, name.length) : name;
@@ -22,6 +22,7 @@ const parseExchangeName = name => {
 
   return removeNetworks(removeBridge(name));
 };
+
 const ExchangeIcon = magicMemo(
   function ExchangeIcon({ index = 1, icon, protocol }) {
     const { colors } = useTheme();
