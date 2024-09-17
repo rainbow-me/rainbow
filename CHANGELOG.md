@@ -15,6 +15,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.38] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.36)
+
+### Fixed
+
+- Added missing dapp metadata for certain eth actions (#6086)
+- Fixed an issue where Polygon chainID was misconfigured causing some issues with users sends (#6093)
+- Fixed and issue with wrong messages during MWP Flow (#6094)
+
 ## [1.9.37] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.37)
 
 ### Added

@@ -63,19 +63,18 @@ import useParamsForExchangeModal from '@/hooks/useParamsForExchangeModal';
 import { Wallet } from '@ethersproject/wallet';
 import { setHardwareTXError } from '@/navigation/HardwareWalletTxNavigator';
 import { useTheme } from '@/theme';
-import { getNetworkObject } from '@/networks';
 import Animated from 'react-native-reanimated';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
 import { ReviewPromptAction } from '@/storage/schema';
 import { SwapPriceImpactType } from '@/hooks/usePriceImpactDetails';
 import { getNextNonce } from '@/state/nonces';
-import { getChainName } from '@/__swaps__/utils/chains';
-import { ChainId, ChainName } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { AddressOrEth, ParsedAsset } from '@/__swaps__/types/assets';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { estimateSwapGasLimit } from '@/raps/actions';
 import { estimateCrosschainSwapGasLimit } from '@/raps/actions/crosschainSwap';
 import { parseGasParamAmounts } from '@/parsers';
+import { chainsName, needsL1SecurityFeeChains, shouldDefaultToFastGasChainIds, supportedFlashbotsChainIds } from '@/chains';
 
 export const DEFAULT_SLIPPAGE_BIPS = {
   [ChainId.mainnet]: 100,
@@ -96,7 +95,7 @@ export const getDefaultSlippageFromConfig = (chainId: ChainId) => {
   const configSlippage = getRemoteConfig().default_slippage_bips as unknown as {
     [network: string]: number;
   };
-  const network = ethereumUtils.getNetworkFromChainId(chainId);
+  const network = chainsName[chainId];
   const slippage = configSlippage?.[network] ?? DEFAULT_SLIPPAGE_BIPS[chainId] ?? 100;
   return slippage;
 };
@@ -206,11 +205,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
   const speedUrgentSelected = useRef(false);
 
   useEffect(() => {
-    if (
-      !speedUrgentSelected.current &&
-      !isEmpty(gasFeeParamsBySpeed) &&
-      getNetworkObject({ chainId: currentChainId }).swaps?.defaultToFastGas
-    ) {
+    if (!speedUrgentSelected.current && !isEmpty(gasFeeParamsBySpeed) && shouldDefaultToFastGasChainIds.includes(currentChainId)) {
       // Default to fast for networks with speed options
       updateGasFeeOption(gasUtils.FAST);
       speedUrgentSelected.current = true;
@@ -245,7 +240,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
   const [debouncedIsHighPriceImpact] = useDebounce(priceImpact.type !== SwapPriceImpactType.none, 1000);
   // For a limited period after the merge we need to block the use of flashbots.
   // This line should be removed after reenabling flashbots in remote config.
-  const swapSupportsFlashbots = getNetworkObject({ chainId: currentChainId }).features.flashbots;
+  const swapSupportsFlashbots = supportedFlashbotsChainIds.includes(currentChainId);
   const flashbots = swapSupportsFlashbots && flashbotsEnabled;
 
   const isDismissing = useRef(false);
@@ -298,7 +293,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
       });
 
       if (gasLimit) {
-        if (getNetworkObject({ chainId: currentChainId }).gas?.OptimismTxFee) {
+        if (needsL1SecurityFeeChains.includes(currentChainId)) {
           if (tradeDetails) {
             const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -412,7 +407,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
 
         // Switch to the flashbots provider if enabled
         // TODO(skylarbarrera): need to check if ledger and handle differently here
-        if (flashbots && getNetworkObject({ chainId: currentChainId }).features?.flashbots && wallet instanceof Wallet) {
+        if (flashbots && supportedFlashbotsChainIds.includes(currentChainId) && wallet instanceof Wallet) {
           logger.debug('[ExchangeModal]: flashbots provider being set on mainnet');
           const flashbotsProvider = await getFlashbotsProvider();
           wallet = new Wallet(wallet.privateKey, flashbotsProvider);
@@ -437,7 +432,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
 
         const transformedAssetToSell = {
           ...inputCurrency,
-          chainName: getChainName({ chainId: inputCurrency.chainId as number }) as ChainName,
+          chainName: chainsName[inputCurrency.chainId],
           address: inputCurrency.address as AddressOrEth,
           chainId: inputCurrency.chainId,
           colors: inputCurrency.colors as TokenColors,
@@ -445,7 +440,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
 
         const transformedAssetToBuy = {
           ...outputCurrency,
-          chainName: getChainName({ chainId: outputCurrency.chainId as number }) as ChainName,
+          chainName: chainsName[outputCurrency.chainId],
           address: outputCurrency.address as AddressOrEth,
           chainId: outputCurrency.chainId,
           colors: outputCurrency.colors as TokenColors,
@@ -518,7 +513,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
           legacyGasPrice: (selectedGasFee?.gasFeeParams as unknown as LegacyGasFeeParams)?.gasPrice?.amount || '',
           liquiditySources: JSON.stringify(tradeDetails?.protocols || []),
           maxNetworkFee: (selectedGasFee?.gasFee as GasFee)?.maxFee?.value?.amount || '',
-          network: ethereumUtils.getNetworkFromChainId(currentChainId),
+          network: chainsName[currentChainId],
           networkFee: selectedGasFee?.gasFee?.estimatedFee?.value?.amount || '',
           outputTokenAddress: outputCurrency?.address || '',
           outputTokenName: outputCurrency?.name || '',
@@ -599,7 +594,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
         legacyGasPrice: (selectedGasFee?.gasFeeParams as unknown as LegacyGasFeeParams)?.gasPrice?.amount || '',
         liquiditySources: JSON.stringify(tradeDetails?.protocols || []),
         maxNetworkFee: (selectedGasFee?.gasFee as GasFee)?.maxFee?.value?.amount || '',
-        network: ethereumUtils.getNetworkFromChainId(currentChainId),
+        network: chainsName[currentChainId],
         networkFee: selectedGasFee?.gasFee?.estimatedFee?.value?.amount || '',
         outputTokenAddress: outputCurrency?.address || '',
         outputTokenName: outputCurrency?.name || '',
@@ -730,7 +725,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
         setParams({ focused: false });
         navigate(Routes.SWAP_DETAILS_SHEET, {
           confirmButtonProps,
-          currentNetwork: ethereumUtils.getNetworkFromChainId(currentChainId),
+          currentNetwork: chainsName[currentChainId],
           flashbotTransaction: flashbots,
           isRefuelTx,
           restoreFocusOnSwapModal: () => {

@@ -1,4 +1,4 @@
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
 
 export type EIP1159GasSettings = {

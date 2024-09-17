@@ -14,6 +14,7 @@ import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import { Address } from 'viem';
 import { addysSummaryQueryKey } from '@/resources/summary/summary';
 import useWallets from './useWallets';
+import { claimablesQueryKey } from '@/resources/addys/claimables/query';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 export default function useRefreshAccountData() {
@@ -33,6 +34,7 @@ export default function useRefreshAccountData() {
   const fetchAccountData = useCallback(async () => {
     invalidateAddressNftsQueries(accountAddress);
     queryClient.invalidateQueries(positionsQueryKey({ address: accountAddress as Address, currency: nativeCurrency }));
+    queryClient.invalidateQueries(claimablesQueryKey({ address: accountAddress, currency: nativeCurrency }));
     queryClient.invalidateQueries(addysSummaryQueryKey({ addresses: allAddresses, currency: nativeCurrency }));
     queryClient.invalidateQueries(userAssetsQueryKey({ address: accountAddress, currency: nativeCurrency, connectedToHardhat }));
     queryClient.invalidateQueries(

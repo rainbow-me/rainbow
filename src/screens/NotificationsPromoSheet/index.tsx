@@ -83,7 +83,16 @@ export function NotificationsPromoSheetInner({
         permissions,
       });
     }
-  }, [goBack, permissions, hasSettingsEnabled, notificationsDenied, notificationsEnabled, notificationsBlocked, navigateToNotifications]);
+  }, [
+    notificationsDenied,
+    hasSettingsEnabled,
+    notificationsBlocked,
+    notificationsEnabled,
+    requestNotificationPermissions,
+    goBack,
+    navigateToNotifications,
+    permissions,
+  ]);
 
   return (
     <PromoSheet
@@ -101,10 +110,12 @@ export function NotificationsPromoSheetInner({
           notificationsEnabled && hasSettingsEnabled
             ? `􀜊 ${i18n.t(TRANSLATIONS.primary_button.permissions_enabled)}`
             : `􀝖 ${i18n.t(TRANSLATIONS.primary_button.permissions_not_enabled)}`,
+        textColor: colors.trueBlack,
         onPress: primaryButtonOnPress,
       }}
       secondaryButtonProps={{
         label: i18n.t(TRANSLATIONS.secondary_button),
+        textColor: colors.whiteLabel,
         onPress: goBack,
       }}
       items={[

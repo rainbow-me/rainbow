@@ -8,7 +8,7 @@ import { getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 import * as i18n from '@/languages';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import React, { useCallback, useMemo } from 'react';
@@ -38,7 +38,7 @@ export const TokenToSellList = () => {
 const TokenToSellListComponent = () => {
   const { inputProgress, internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, setAsset } = useSwapContext();
 
-  const userAssetIds = userAssetsStore(state => state.getFilteredUserAssetIds());
+  const userAssetIds = useUserAssetsStore(state => state.getFilteredUserAssetIds());
 
   const handleSelectToken = useCallback(
     (token: ParsedSearchAsset | null) => {

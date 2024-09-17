@@ -7,7 +7,6 @@ import { Block, Network as EthersNetwork, StaticJsonRpcProvider, TransactionRequ
 import { parseEther } from '@ethersproject/units';
 import Resolution from '@unstoppabledomains/resolution';
 import { startsWith } from 'lodash';
-import { getRemoteConfig } from '@/model/remoteConfig';
 import { AssetType, NewTransaction, ParsedAddressAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import { isUnstoppableAddressFormat } from '@/helpers/validators';
@@ -35,9 +34,9 @@ import {
 import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
 import { IS_IOS, RPC_PROXY_API_KEY, RPC_PROXY_BASE_URL } from '@/env';
-import { getNetworkObject } from '@/networks';
-import store from '@/redux/store';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
+import { defaultChains } from '@/chains';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 export enum TokenStandard {
   ERC1155 = 'ERC1155',
@@ -50,54 +49,8 @@ export const chainsProviders = new Map<ChainId, StaticJsonRpcProvider>();
  * Creates an rpc endpoint for a given chain id using the Rainbow rpc proxy.
  * If the firebase config flag is disabled, it will fall back to the deprecated rpc.
  */
-export const proxyRpcEndpoint = (chainId: number, customEndpoint?: string) => {
-  const {
-    rpc_proxy_enabled,
-    arbitrum_mainnet_rpc,
-    ethereum_goerli_rpc,
-    optimism_mainnet_rpc,
-    polygon_mainnet_rpc,
-    base_mainnet_rpc,
-    bsc_mainnet_rpc,
-    zora_mainnet_rpc,
-    avalanche_mainnet_rpc,
-    ethereum_mainnet_rpc,
-    blast_mainnet_rpc,
-    degen_mainnet_rpc,
-  } = getRemoteConfig();
-  if (rpc_proxy_enabled) {
-    return `${RPC_PROXY_BASE_URL}/${chainId}/${RPC_PROXY_API_KEY}${
-      customEndpoint ? `?custom_rpc=${encodeURIComponent(customEndpoint)}` : ''
-    }`;
-  } else {
-    if (customEndpoint) return customEndpoint;
-    switch (chainId) {
-      case ChainId.arbitrum:
-        return arbitrum_mainnet_rpc;
-      case ChainId.goerli:
-        return ethereum_goerli_rpc;
-      case ChainId.optimism:
-        return optimism_mainnet_rpc;
-      case ChainId.polygon:
-        return polygon_mainnet_rpc;
-      case ChainId.base:
-        return base_mainnet_rpc;
-      case ChainId.bsc:
-        return bsc_mainnet_rpc;
-      case ChainId.zora:
-        return zora_mainnet_rpc;
-      case ChainId.avalanche:
-        return avalanche_mainnet_rpc;
-      case ChainId.blast:
-        return blast_mainnet_rpc;
-      case ChainId.degen:
-        return degen_mainnet_rpc;
-      case ChainId.gnosis:
-      case ChainId.mainnet:
-      default:
-        return ethereum_mainnet_rpc;
-    }
-  }
+export const proxyCustomRpcEndpoint = (chainId: number, customEndpoint: string) => {
+  return `${RPC_PROXY_BASE_URL}/${chainId}/${RPC_PROXY_API_KEY}?custom_rpc=${encodeURIComponent(customEndpoint)}`;
 };
 
 /**
@@ -162,8 +115,8 @@ export const web3SetHttpProvider = async (chainId: ChainId): Promise<EthersNetwo
  * @param chainId The network to check.
  * @return Whether or not the network is a L2 network.
  */
-export const isL2Chain = ({ chainId }: { chainId: ChainId }): boolean => {
-  return getNetworkObject({ chainId }).networkType === 'layer2';
+export const isL2Chain = ({ chainId = ChainId.mainnet }: { chainId?: ChainId }): boolean => {
+  return defaultChains[chainId].id !== ChainId.mainnet && !defaultChains[chainId].testnet;
 };
 
 /**
@@ -171,14 +124,14 @@ export const isL2Chain = ({ chainId }: { chainId: ChainId }): boolean => {
  * @param network The network to check.
  * @return Whether or not the network is a testnet.
  */
-export const isTestnetChain = ({ chainId }: { chainId: ChainId }): boolean => {
-  return getNetworkObject({ chainId }).networkType === 'testnet';
+export const isTestnetChain = ({ chainId = ChainId.mainnet }: { chainId?: ChainId }): boolean => {
+  return !!defaultChains[chainId].testnet;
 };
 
 // shoudl figure out better way to include this in networks
 export const getFlashbotsProvider = async () => {
   return new StaticJsonRpcProvider(
-    proxyRpcEndpoint(
+    proxyCustomRpcEndpoint(
       ChainId.mainnet,
       'https://rpc.flashbots.net/?hint=hash&builder=flashbots&builder=f1b.io&builder=rsync&builder=beaverbuild.org&builder=builder0x69&builder=titan&builder=eigenphi&builder=boba-builder'
     )
@@ -189,16 +142,22 @@ export const getCachedProviderForNetwork = (chainId: ChainId = ChainId.mainnet):
   return chainsProviders.get(chainId);
 };
 
-export const getProvider = ({ chainId }: { chainId: number }): StaticJsonRpcProvider => {
-  const cachedProvider = chainsProviders.get(chainId);
+export const getProvider = ({ chainId = ChainId.mainnet }: { chainId?: number }): StaticJsonRpcProvider => {
+  if (useConnectedToHardhatStore.getState().connectedToHardhat) {
+    const provider = new StaticJsonRpcProvider('http://127.0.0.1:8545/', ChainId.mainnet);
+    chainsProviders.set(chainId, provider);
 
-  const networkObject = getNetworkObject({ chainId });
-
-  if (cachedProvider && cachedProvider?.connection.url === networkObject.rpc()) {
-    return cachedProvider;
+    return provider;
   }
 
-  const provider = new StaticJsonRpcProvider(networkObject.rpc(), networkObject.id);
+  const cachedProvider = chainsProviders.get(chainId);
+
+  const providerUrl = defaultChains[chainId]?.rpcUrls?.default?.http?.[0];
+
+  if (cachedProvider && cachedProvider?.connection.url === providerUrl) {
+    return cachedProvider;
+  }
+  const provider = new StaticJsonRpcProvider(providerUrl, chainId);
   chainsProviders.set(chainId, provider);
 
   return provider;
@@ -370,6 +329,10 @@ export async function estimateGasWithPadding(
       ? contractCallEstimateGas(...(callArguments ?? []), txPayloadToEstimate)
       : p.estimateGas(cleanTxPayload));
 
+    if (!BigNumber.isBigNumber(estimatedGas)) {
+      throw new Error('Invalid gas limit type');
+    }
+
     const lastBlockGasLimit = addBuffer(gasLimit.toString(), 0.9);
     const paddedGas = addBuffer(estimatedGas.toString(), paddingFactor.toString());
     logger.debug('[web3]: ⛽ GAS CALCULATIONS!', {
@@ -434,7 +397,7 @@ export const getTransactionCount = async (address: string): Promise<number | nul
  * @returns - object with `gasPrice` or `maxFeePerGas` and `maxPriorityFeePerGas`
  */
 export const getTransactionGasParams = (transaction: Pick<NewTransactionNonNullable, 'chainId'> & GasParamsInput): GasParamsReturned => {
-  return getNetworkObject({ chainId: transaction.chainId }).gas.gasType === 'legacy'
+  return transaction.gasPrice
     ? {
         gasPrice: toHex(transaction.gasPrice),
       }

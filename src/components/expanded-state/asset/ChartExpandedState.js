@@ -33,11 +33,11 @@ import { safeAreaInsetValues } from '@/utils';
 import AvailableNetworksv2 from '@/components/expanded-state/AvailableNetworksv2';
 import AvailableNetworksv1 from '@/components/expanded-state/AvailableNetworks';
 import { Box } from '@/design-system';
-import { getNetworkObject } from '@/networks';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { bigNumberFormat } from '@/helpers/bigNumberFormat';
 import { greaterThanOrEqualTo } from '@/helpers/utilities';
-import { ChainId } from '@/networks/types';
+import { chainsName, supportedSwapChainIds } from '@/chains';
+import { ChainId } from '@/chains/types';
 
 const defaultCarouselHeight = 60;
 const baseHeight = 386 + (android && 20 - getSoftMenuBarHeight()) - defaultCarouselHeight;
@@ -166,7 +166,7 @@ export default function ChartExpandedState({ asset }) {
             chainId: asset.chainId,
             network: asset.network,
             address: asset.address,
-            mainnetAddress: asset?.networks?.[getNetworkObject({ chainId: ChainId.mainnet })]?.address,
+            mainnetAddress: asset?.networks?.[chainsName[ChainId.mainnet]]?.address,
           }
         : asset;
   }, [asset, genericAsset, hasBalance]);
@@ -241,7 +241,7 @@ export default function ChartExpandedState({ asset }) {
   const assetChainId = assetWithPrice.chainId;
 
   const { swagg_enabled, f2c_enabled } = useRemoteConfig();
-  const swapEnabled = swagg_enabled && getNetworkObject({ chainId: assetChainId }).features.swaps;
+  const swapEnabled = swagg_enabled && supportedSwapChainIds.includes(assetChainId);
   const addCashEnabled = f2c_enabled;
 
   const format = useCallback(

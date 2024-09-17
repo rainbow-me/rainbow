@@ -29,6 +29,7 @@ export const DAPP_BROWSER = 'Dapp Browser';
 export const ETH_REWARDS = 'ETH Rewards';
 export const DEGEN_MODE = 'Degen Mode';
 export const FEATURED_RESULTS = 'Featured Results';
+export const CLAIMABLES = 'Claimables';
 export const NFTS_ENABLED = 'Nfts Enabled';
 
 /**
@@ -67,6 +68,7 @@ export const defaultConfig: Record<string, ExperimentalValue> = {
   [ETH_REWARDS]: { settings: true, value: false },
   [DEGEN_MODE]: { settings: true, value: false },
   [FEATURED_RESULTS]: { settings: true, value: false },
+  [CLAIMABLES]: { settings: true, value: false },
   [NFTS_ENABLED]: { settings: true, value: !!IS_TEST },
 };
 

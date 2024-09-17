@@ -6,15 +6,17 @@ import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQu
 
 import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
-import { SupportedCurrencyKey, SUPPORTED_CHAIN_IDS } from '@/references';
+import { SupportedCurrencyKey } from '@/references';
 import { ParsedAssetsDictByChain, ZerionAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { AddressAssetsReceivedMessage } from '@/__swaps__/types/refraction';
 import { parseUserAsset } from '@/__swaps__/utils/assets';
 import { greaterThan } from '@/__swaps__/utils/numbers';
 
 import { fetchUserAssetsByChain } from './userAssetsByChain';
-import { fetchHardhatBalances, fetchHardhatBalancesByChainId } from '@/resources/assets/hardhatAssets';
+import { fetchHardhatBalancesByChainId } from '@/resources/assets/hardhatAssets';
+import { SUPPORTED_CHAIN_IDS } from '@/chains';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
 const addysHttp = new RainbowFetchClient({
   baseURL: 'https://addys.p.rainbow.me/v3',
@@ -31,27 +33,27 @@ export const USER_ASSETS_STALE_INTERVAL = 30000;
 // Query Types
 
 export type UserAssetsArgs = {
-  address: Address;
+  address: Address | string;
   currency: SupportedCurrencyKey;
   testnetMode?: boolean;
 };
 
 type SetUserAssetsArgs = {
-  address: Address;
+  address: Address | string;
   currency: SupportedCurrencyKey;
   userAssets?: UserAssetsResult;
   testnetMode?: boolean;
 };
 
 type SetUserDefaultsArgs = {
-  address: Address;
+  address: Address | string;
   currency: SupportedCurrencyKey;
   staleTime: number;
   testnetMode?: boolean;
 };
 
 type FetchUserAssetsArgs = {
-  address: Address;
+  address: Address | string;
   currency: SupportedCurrencyKey;
   testnetMode?: boolean;
 };
@@ -111,7 +113,7 @@ async function userAssetsQueryFunction({
   const cachedUserAssets = (cache.find(userAssetsQueryKey({ address, currency, testnetMode }))?.state?.data ||
     {}) as ParsedAssetsDictByChain;
   try {
-    const url = `/${SUPPORTED_CHAIN_IDS({ testnetMode }).join(',')}/${address}/assets`;
+    const url = `/${SUPPORTED_CHAIN_IDS.join(',')}/${address}/assets`;
     const res = await addysHttp.get<AddressAssetsReceivedMessage>(url, {
       params: {
         currency: currency.toLowerCase(),
@@ -160,7 +162,7 @@ async function userAssetsQueryFunctionRetryByChain({
   currency,
   testnetMode,
 }: {
-  address: Address;
+  address: Address | string;
   chainIds: ChainId[];
   currency: SupportedCurrencyKey;
   testnetMode?: boolean;
@@ -230,10 +232,12 @@ export async function parseUserAssets({
 // Query Hook
 
 export function useUserAssets<TSelectResult = UserAssetsResult>(
-  { address, currency, testnetMode }: UserAssetsArgs,
+  { address, currency }: UserAssetsArgs,
   config: QueryConfigWithSelect<UserAssetsResult, Error, TSelectResult, UserAssetsQueryKey> = {}
 ) {
-  return useQuery(userAssetsQueryKey({ address, currency, testnetMode }), userAssetsQueryFunction, {
+  const { connectedToHardhat } = useConnectedToHardhatStore();
+
+  return useQuery(userAssetsQueryKey({ address, currency, testnetMode: connectedToHardhat }), userAssetsQueryFunction, {
     ...config,
     refetchInterval: USER_ASSETS_REFETCH_INTERVAL,
     staleTime: process.env.IS_TESTING === 'true' ? 0 : 1000,

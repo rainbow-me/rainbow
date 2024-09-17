@@ -40,7 +40,6 @@ import { TOP_INSET } from '../Dimensions';
 import { formatUrl } from '../utils';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { toHex } from 'viem';
-import { RainbowNetworkObjects } from '@/networks';
 import * as i18n from '@/languages';
 import { useDispatch } from 'react-redux';
 import store from '@/redux/store';
@@ -62,7 +61,8 @@ import { SWAPS_V2, useExperimentalFlag } from '@/config';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { greaterThan } from '@/helpers/utilities';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
+import { chainsLabel, defaultChains, supportedWalletConnectChainIds } from '@/chains';
 
 const PAGES = {
   HOME: 'home',
@@ -183,27 +183,28 @@ export const ControlPanel = () => {
   const { testnetsEnabled } = store.getState().settings;
 
   const allNetworkItems = useMemo(() => {
-    return RainbowNetworkObjects.filter(
-      ({ networkType, features: { walletconnect } }) => walletconnect && (testnetsEnabled || networkType !== 'testnet')
-    ).map(network => {
-      return {
-        IconComponent: <ChainImage chainId={network.id} size={36} />,
-        label: network.name,
-        secondaryLabel: i18n.t(
-          isConnected && network.id === currentChainId
-            ? i18n.l.dapp_browser.control_panel.connected
-            : i18n.l.dapp_browser.control_panel.not_connected
-        ),
-        uniqueId: String(network.id),
-        selected: network.id === currentChainId,
-      };
-    });
+    const chains = supportedWalletConnectChainIds.map(chainId => defaultChains[chainId]);
+    return chains
+      .filter(({ testnet }) => testnetsEnabled || !testnet)
+      .map(chain => {
+        return {
+          IconComponent: <ChainImage chainId={chain.id} size={36} />,
+          label: chainsLabel[chain.id],
+          secondaryLabel: i18n.t(
+            isConnected && chain.id === currentChainId
+              ? i18n.l.dapp_browser.control_panel.connected
+              : i18n.l.dapp_browser.control_panel.not_connected
+          ),
+          uniqueId: String(chain.id),
+          selected: chain.id === currentChainId,
+        };
+      });
   }, [currentChainId, isConnected, testnetsEnabled]);
 
   const selectedWallet = allWalletItems.find(item => item.selected);
 
   const animatedAccentColor = useSharedValue(selectedWallet?.color || globalColors.blue10);
-  const selectedNetworkId = useSharedValue(currentChainId?.toString() || RainbowNetworkObjects[0].value);
+  const selectedNetworkId = useSharedValue(currentChainId?.toString() || ChainId.mainnet.toString());
   const selectedWalletId = useSharedValue(selectedWallet?.uniqueId || accountAddress);
 
   const handleSwitchWallet = useCallback(
@@ -222,8 +223,8 @@ export const ControlPanel = () => {
 
   const handleNetworkSwitch = useCallback(
     (selectedItemId: string) => {
-      updateActiveSessionNetwork({ host: activeTabHost, chainId: Number(selectedItemId) as ChainId });
-      const chainId = RainbowNetworkObjects.find(({ id }) => id === (Number(selectedItemId) as ChainId))?.id as number;
+      const chainId = Number(selectedItemId) as ChainId;
+      updateActiveSessionNetwork({ host: activeTabHost, chainId });
       activeTabRef.current?.injectJavaScript(`window.ethereum.emit('chainChanged', ${toHex(chainId)}); true;`);
       setCurrentChainId(Number(selectedItemId) as ChainId);
     },

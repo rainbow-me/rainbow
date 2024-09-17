@@ -24,11 +24,11 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { fonts, fontWithWidth, margin, padding } from '@/styles';
 import { ethereumUtils, gasUtils } from '@/utils';
-import { getNetworkObject } from '@/networks';
 import { IS_ANDROID } from '@/env';
 import { ContextMenu } from '../context-menu';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
+import { chainsGasSpeeds } from '@/chains';
 
 const { GAS_EMOJIS, GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST, getGasLabel } = gasUtils;
 
@@ -121,6 +121,16 @@ const TransactionTimeLabel = ({ formatter, isLongWait, theme }) => {
   );
 };
 
+const shouldRoundGasDisplay = chainId => {
+  switch (chainId) {
+    case ChainId.bsc:
+    case ChainId.polygon:
+      return false;
+    default:
+      return true;
+  }
+};
+
 const GasSpeedButton = ({
   asset,
   chainId,
@@ -169,9 +179,8 @@ const GasSpeedButton = ({
   }, [nativeCurrencySymbol, selectedGasFee]);
 
   const isL2 = useMemo(() => isL2Chain({ chainId }), [chainId]);
-  const networkObject = useMemo(() => getNetworkObject({ chainId }), [chainId]);
 
-  const isLegacyGasNetwork = networkObject.gas.gasType === 'legacy';
+  const isLegacyGasNetwork = !selectedGasFee?.gasFee?.maxFee;
 
   const gasIsNotReady = useMemo(
     () => isNil(price) || isEmpty(gasFeeParamsBySpeed) || isEmpty(selectedGasFee?.gasFee),
@@ -347,17 +356,17 @@ const GasSpeedButton = ({
 
   const speedOptions = useMemo(() => {
     if (speeds) return speeds;
-    return networkObject.gas.speeds;
-  }, [networkObject.gas.speeds, speeds]);
+    return chainsGasSpeeds[chainId];
+  }, [chainId, speeds]);
 
   const menuConfig = useMemo(() => {
-    const menuOptions = speedOptions.map(gasOption => {
+    const menuOptions = speedOptions?.map(gasOption => {
       if (IS_ANDROID) return gasOption;
 
       const totalGwei = add(gasFeeParamsBySpeed[gasOption]?.maxBaseFee?.gwei, gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei);
       const estimatedGwei = add(currentBlockParams?.baseFeePerGas?.gwei, gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei);
 
-      const shouldRoundGwei = networkObject.gas.roundGasDisplay;
+      const shouldRoundGwei = shouldRoundGasDisplay(chainId);
       const gweiDisplay = !shouldRoundGwei
         ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
         : gasOption === 'custom' && selectedGasFeeOption !== 'custom'
@@ -379,16 +388,9 @@ const GasSpeedButton = ({
       menuItems: menuOptions,
       menuTitle: '',
     };
-  }, [
-    speedOptions,
-    gasFeeParamsBySpeed,
-    currentBlockParams?.baseFeePerGas?.gwei,
-    networkObject.gas.roundGasDisplay,
-    selectedGasFeeOption,
-    isL2,
-  ]);
+  }, [speedOptions, gasFeeParamsBySpeed, currentBlockParams?.baseFeePerGas?.gwei, chainId, selectedGasFeeOption, isL2]);
 
-  const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [speedOptions.length]);
+  const gasOptionsAvailable = useMemo(() => speedOptions?.length > 1, [speedOptions?.length]);
 
   const onDonePress = useCallback(() => {
     if (canGoBack) {

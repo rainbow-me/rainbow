@@ -4,7 +4,7 @@ import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { ethereumUtils } from '@/utils';
 import { getOnchainAssetBalance } from '@/handlers/assets';
 import { ParsedAddressAsset } from '@/entities';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 
 export const useProviderSetup = (chainId: ChainId, address: string) => {
   const [provider, setProvider] = useState<StaticJsonRpcProvider | null>(null);

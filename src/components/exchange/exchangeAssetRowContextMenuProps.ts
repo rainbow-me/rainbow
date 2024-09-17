@@ -3,7 +3,8 @@ import { startCase } from 'lodash';
 import { NativeSyntheticEvent } from 'react-native';
 import { setClipboard } from '../../hooks/useClipboard';
 import { abbreviations, ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
+import { chainsIdByName } from '@/chains';
 
 const buildBlockExplorerAction = (chainId: ChainId) => {
   const blockExplorerText = lang.t('exchange.coin_row.view_on', {
@@ -43,7 +44,7 @@ export default function contextMenuProps(item: any, onCopySwapDetailsText: (addr
   };
 
   const onPressAndroid = () => {
-    const blockExplorerText = `View on ${startCase(ethereumUtils.getBlockExplorer({ chainId: ethereumUtils.getChainIdFromNetwork(item?.network) }))}`;
+    const blockExplorerText = `View on ${startCase(ethereumUtils.getBlockExplorer({ chainId: chainsIdByName[item?.network] }))}`;
     const androidContractActions = [lang.t('wallet.action.copy_contract_address'), blockExplorerText, lang.t('button.cancel')];
 
     showActionSheetWithOptions(
@@ -58,13 +59,13 @@ export default function contextMenuProps(item: any, onCopySwapDetailsText: (addr
           handleCopyContractAddress(item?.address);
         }
         if (idx === 1) {
-          ethereumUtils.openTokenEtherscanURL(item?.address, item?.network);
+          ethereumUtils.openTokenEtherscanURL({ address: item?.address, chainId: chainsIdByName[item?.network] });
         }
       }
     );
   };
 
-  const blockExplorerAction = buildBlockExplorerAction(ethereumUtils.getChainIdFromNetwork(item?.network));
+  const blockExplorerAction = buildBlockExplorerAction(chainsIdByName[item?.network]);
   const menuConfig = {
     menuItems: [
       blockExplorerAction,
@@ -80,7 +81,7 @@ export default function contextMenuProps(item: any, onCopySwapDetailsText: (addr
     if (actionKey === CoinRowActionsEnum.copyAddress) {
       handleCopyContractAddress(item?.address);
     } else if (actionKey === CoinRowActionsEnum.blockExplorer) {
-      ethereumUtils.openTokenEtherscanURL(item?.address, item?.network);
+      ethereumUtils.openTokenEtherscanURL({ address: item?.address, chainId: chainsIdByName[item?.network] });
     }
   };
   return {

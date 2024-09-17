@@ -4,7 +4,7 @@ import { Address } from 'viem';
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
 import { SupportedCurrencyKey } from '@/references';
 import { ParsedAssetsDictByChain, ParsedUserAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { AddressAssetsReceivedMessage } from '@/__swaps__/types/refraction';
 import { RainbowError, logger } from '@/logger';
 
@@ -25,7 +25,7 @@ const addysHttp = new RainbowFetchClient({
 // Query Types
 
 export type UserAssetsByChainArgs = {
-  address: Address;
+  address: Address | string;
   chainId: ChainId;
   currency: SupportedCurrencyKey;
 };

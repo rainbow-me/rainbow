@@ -22,7 +22,6 @@ import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
 import { useRoute } from '@react-navigation/native';
 import Routes from '@/navigation/routesNames';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { useExperimentalFlag } from '@/config';
 import { RainbowContext } from '@/helpers/RainbowContext';
 
 const dataProvider = new DataProvider((r1, r2) => {
@@ -79,7 +78,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
         remoteConfig,
         experimentalConfig,
       }),
-    [briefSectionsData, isCoinListEdited, cardIds, isReadOnlyWallet, experimentalConfig]
+    [briefSectionsData, isCoinListEdited, cardIds, isReadOnlyWallet, remoteConfig, experimentalConfig]
   );
 
   const { accountAddress } = useAccountSettings();

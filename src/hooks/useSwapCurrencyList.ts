@@ -11,14 +11,15 @@ import { swapSearch } from '@/handlers/tokenSearch';
 import { addHexPrefix, getProvider } from '@/handlers/web3';
 import tokenSectionTypes from '@/helpers/tokenSectionTypes';
 import { DAI_ADDRESS, erc20ABI, ETH_ADDRESS, rainbowTokenList, USDC_ADDRESS, WBTC_ADDRESS, WETH_ADDRESS } from '@/references';
-import { ethereumUtils, filterList, isLowerCaseMatch } from '@/utils';
+import { filterList, isLowerCaseMatch } from '@/utils';
 import useSwapCurrencies from '@/hooks/useSwapCurrencies';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { IS_TEST } from '@/env';
 import { useFavorites } from '@/resources/favorites';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { logger } from '@/logger';
-import { ChainId, Network } from '@/networks/types';
+import { ChainId, Network } from '@/chains/types';
+import { chainsName } from '@/chains';
 
 type swapCurrencyListType =
   | 'verifiedAssets'
@@ -204,7 +205,7 @@ const useSwapCurrencyList = (searchQuery: string, searchChainId = ChainId.mainne
                   },
                 },
                 symbol,
-                network: ethereumUtils.getNetworkFromChainId(chainId),
+                network: chainsName[chainId],
                 uniqueId,
               } as RainbowToken,
             ];

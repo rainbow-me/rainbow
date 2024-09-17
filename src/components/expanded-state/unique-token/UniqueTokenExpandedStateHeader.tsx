@@ -21,7 +21,7 @@ import isSVGImage from '@/utils/isSVG';
 import { refreshNFTContractMetadata, reportNFT } from '@/resources/nfts/simplehash';
 import { ContextCircleButton } from '@/components/context-menu';
 import { IS_ANDROID, IS_IOS } from '@/env';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
@@ -342,12 +342,12 @@ const UniqueTokenExpandedStateHeader = ({
     // @ts-expect-error ContextMenu is an untyped JS component and can't type its onPress handler properly
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === AssetActionsEnum.etherscan) {
-        ethereumUtils.openNftInBlockExplorer(
+        ethereumUtils.openNftInBlockExplorer({
           // @ts-expect-error address could be undefined?
-          asset.asset_contract.address,
-          asset.id,
-          asset.network
-        );
+          contractAddress: asset.asset_contract.address,
+          tokenId: asset.id,
+          chainId: asset.chainId,
+        });
       } else if (actionKey === AssetActionsEnum.rainbowWeb) {
         Linking.openURL(rainbowWebUrl);
       } else if (actionKey === AssetActionsEnum.opensea) {

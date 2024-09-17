@@ -34,6 +34,7 @@ import { ethereumUtils } from '@/utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { SwappableAsset } from '../entities/tokens';
 import useAccountSettings from './useAccountSettings';
+import { chainsName } from '@/chains';
 
 const SWAP_POLLING_INTERVAL = 5000;
 
@@ -465,7 +466,7 @@ export default function useSwapDerivedOutputs(type: string) {
       inputTokenName: inputCurrency?.name || '',
       inputTokenSymbol: inputCurrency?.symbol || '',
       liquiditySources: (data.tradeDetails?.protocols as any[]) || [],
-      network: ethereumUtils.getNetworkFromChainId(inputCurrency.chainId),
+      network: chainsName[inputCurrency?.chainId],
       outputTokenAddress: outputCurrency?.address || '',
       outputTokenName: outputCurrency?.name || '',
       outputTokenSymbol: outputCurrency?.symbol || '',
