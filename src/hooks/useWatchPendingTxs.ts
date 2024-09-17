@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
 import { RainbowTransaction, MinedTransaction } from '@/entities/transactions/transaction';
-import { userAssetsQueryKey as swapsUserAssetsQueryKey, userAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
+import { userAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { transactionFetchQuery } from '@/resources/transactions/transaction';
 import { RainbowError, logger } from '@/logger';
 import { getProvider } from '@/handlers/web3';
@@ -39,13 +39,6 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
           address,
           currency: nativeCurrency,
           testnetMode: connectedToHardhat,
-        })
-      );
-      queryClient.invalidateQueries(
-        swapsUserAssetsQueryKey({
-          address: address as Address,
-          currency: nativeCurrency,
-          testnetMode: !!connectedToHardhat,
         })
       );
       queryClient.invalidateQueries(nftsQueryKey({ address, sortBy: getNftSortForAddress(address) }));
