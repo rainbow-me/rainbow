@@ -85,7 +85,6 @@ export interface UserAssetsState {
   userAssets: Map<UniqueId, ParsedSearchAsset>;
   legacyUserAssets: ParsedAddressAsset[];
   isLoadingUserAssets: boolean;
-  userAssetsCount: number;
   getBalanceSortedChainList: () => ChainId[];
   getChainsWithBalance: () => ChainId[];
   getFilteredUserAssetIds: () => UniqueId[];
@@ -187,7 +186,6 @@ export const createUserAssetsStore = (address: Address | string) =>
       userAssets: new Map(),
       legacyUserAssets: [],
       isLoadingUserAssets: false,
-      userAssetsCount: 0,
 
       getBalanceSortedChainList: () => {
         const chainBalances = [...get().chainBalances.entries()];
@@ -385,7 +383,6 @@ export const createUserAssetsStore = (address: Address | string) =>
             legacyUserAssets,
             searchCache,
             userAssets: userAssetsMap,
-            userAssetsCount: userAssets.length,
           };
         }),
     }),
