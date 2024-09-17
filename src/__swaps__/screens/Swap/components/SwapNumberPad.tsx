@@ -93,10 +93,13 @@ export const SwapNumberPad = () => {
       const currentValueDecimals = currentValue.split('.')?.[1]?.length ?? -1;
       const nativeCurrencyDecimals = supportedNativeCurrencies[nativeCurrency].decimals;
 
+      const isNativePlaceholderValue = equalWorklet(currentValue, 0) && SwapInputController.inputMethod.value !== focusedInput.value;
+
       if (addingDecimal && nativeCurrencyDecimals === 0) {
         return true;
       } else if (
         (focusedInput.value === 'inputNativeValue' || focusedInput.value === 'outputNativeValue') &&
+        !isNativePlaceholderValue &&
         currentValueDecimals >= nativeCurrencyDecimals
       ) {
         return true;
