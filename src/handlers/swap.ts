@@ -22,7 +22,7 @@ import { add, convertRawAmountToDecimalFormat, divide, lessThan, multiply, subtr
 import { erc20ABI, ethUnits } from '@/references';
 import { ethereumUtils } from '@/utils';
 import { logger, RainbowError } from '@/logger';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 
 export enum Field {
   INPUT = 'INPUT',

@@ -23,7 +23,7 @@ import { safeAreaInsetValues } from '@/utils';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { DerivedValue, SharedValue, interpolate, useAnimatedStyle, useDerivedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { NavigationSteps } from './useSwapNavigation';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 
 const INSET_BOTTOM = IS_ANDROID ? getSoftMenuBarHeight() - 24 : safeAreaInsetValues.bottom + 16;

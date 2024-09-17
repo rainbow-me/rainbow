@@ -10,7 +10,7 @@ import Routes from '@rainbow-me/routes';
 import { ImgixImage } from '../images';
 import { CardSize } from '../unique-token/CardSize';
 import { ChainBadge } from '../coin-icon';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { address } from '@/utils/abbreviations';
 import { TransactionType } from '@/resources/transactions/types';
 import {

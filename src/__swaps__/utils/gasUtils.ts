@@ -10,9 +10,8 @@ import { globalColors } from '@/design-system';
 import * as i18n from '@/languages';
 import { OVM_GAS_PRICE_ORACLE, gasUnits, supportedNativeCurrencies, optimismGasOracleAbi, SupportedCurrencyKey } from '@/references';
 
-import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/__swaps__/utils/meteorology';
 import { ParsedAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { BlocksToConfirmation, GasFeeLegacyParams, GasFeeParam, GasFeeParams, GasSpeed } from '@/__swaps__/types/gas';
 
 import { gweiToWei, weiToGwei } from '@/__swaps__/utils/ethereum';
@@ -29,6 +28,7 @@ import {
   multiply,
 } from '@/__swaps__/utils/numbers';
 import { getMinimalTimeUnitStringForMs } from '@/__swaps__/utils/time';
+import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
 
 export const FLASHBOTS_MIN_TIP = 6;
 

@@ -1,7 +1,6 @@
 import { NativeCurrencyKey } from '@/entities';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey } from '@/react-query';
-import { SUPPORTED_CHAIN_IDS } from '@/references';
 import { useQuery } from '@tanstack/react-query';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { ConsolidatedClaimablesResponse } from './types';
@@ -9,8 +8,8 @@ import { logger, RainbowError } from '@/logger';
 import { parseClaimables } from './utils';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { CLAIMABLES, useExperimentalFlag } from '@/config';
-import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 import { IS_TEST } from '@/env';
+import { SUPPORTED_CHAIN_IDS } from '@/chains';
 
 const addysHttp = new RainbowFetchClient({
   baseURL: 'https://addys.p.rainbow.me/v3',
@@ -25,23 +24,22 @@ const addysHttp = new RainbowFetchClient({
 export type ClaimablesArgs = {
   address: string;
   currency: NativeCurrencyKey;
-  testnetMode?: boolean;
 };
 
 // ///////////////////////////////////////////////
 // Query Key
 
-export const claimablesQueryKey = ({ address, currency, testnetMode }: ClaimablesArgs) =>
-  createQueryKey('claimables', { address, currency, testnetMode }, { persisterVersion: 1 });
+export const claimablesQueryKey = ({ address, currency }: ClaimablesArgs) =>
+  createQueryKey('claimables', { address, currency }, { persisterVersion: 1 });
 
 type ClaimablesQueryKey = ReturnType<typeof claimablesQueryKey>;
 
 // ///////////////////////////////////////////////
 // Query Function
 
-async function claimablesQueryFunction({ queryKey: [{ address, currency, testnetMode }] }: QueryFunctionArgs<typeof claimablesQueryKey>) {
+async function claimablesQueryFunction({ queryKey: [{ address, currency }] }: QueryFunctionArgs<typeof claimablesQueryKey>) {
   try {
-    const url = `/${SUPPORTED_CHAIN_IDS({ testnetMode }).join(',')}/${address}/claimables`;
+    const url = `/${SUPPORTED_CHAIN_IDS.join(',')}/${address}/claimables`;
     const { data } = await addysHttp.get<ConsolidatedClaimablesResponse>(url, {
       params: {
         currency: currency.toLowerCase(),
@@ -74,9 +72,8 @@ export function useClaimables(
 ) {
   const { claimables: remoteFlag } = useRemoteConfig();
   const localFlag = useExperimentalFlag(CLAIMABLES);
-  const { connectedToHardhat } = useConnectedToHardhatStore();
 
-  return useQuery(claimablesQueryKey({ address, currency, testnetMode: connectedToHardhat }), claimablesQueryFunction, {
+  return useQuery(claimablesQueryKey({ address, currency }), claimablesQueryFunction, {
     ...config,
     enabled: !!address && (remoteFlag || localFlag) && !IS_TEST,
     staleTime: 1000 * 60 * 2,

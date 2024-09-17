@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getNextNonce } from '@/state/nonces';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { logger, RainbowError } from '@/logger';
 
 type UseNonceParams = {

@@ -28,7 +28,7 @@ import {
 import { delayNext } from '@/hooks/useMagicAutofocus';
 import { getActiveRoute, useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { ethereumUtils, filterList } from '@/utils';
+import { filterList } from '@/utils';
 import NetworkSwitcherv2 from '@/components/exchange/NetworkSwitcherv2';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { SwappableAsset } from '@/entities';
@@ -38,9 +38,9 @@ import { IS_TEST } from '@/env';
 import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import DiscoverSearchInput from '@/components/discover/DiscoverSearchInput';
 import { externalTokenQueryKey, fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { queryClient } from '@/react-query/queryClient';
-import { ChainId, Network } from '@/networks/types';
+import { ChainId, Network } from '@/chains/types';
+import { chainsName } from '@/chains';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;
@@ -314,9 +314,8 @@ export default function CurrencySelectModal() {
   const checkForRequiredAssets = useCallback(
     (item: any) => {
       if (type === CurrencySelectionTypes.output && currentChainId && currentChainId !== ChainId.mainnet) {
-        const currentL2Name = ethereumUtils.getNetworkNameFromChainId(currentChainId);
         const currentL2WalletAssets = assetsInWallet.filter(
-          ({ network }) => network && network?.toLowerCase() === currentL2Name?.toLowerCase()
+          ({ network }) => network && network?.toLowerCase() === chainsName[currentChainId]?.toLowerCase()
         );
         if (currentL2WalletAssets?.length < 1) {
           Keyboard.dismiss();
@@ -365,7 +364,7 @@ export default function CurrencySelectModal() {
             ...newAsset,
             decimals: item?.networks?.[currentChainId]?.decimals || item.decimals,
             address: item?.address || item?.networks?.[currentChainId]?.address,
-            network: getNetworkFromChainId(currentChainId),
+            network: chainsName[currentChainId],
             ...externalAsset,
           };
         }

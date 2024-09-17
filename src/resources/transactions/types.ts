@@ -2,7 +2,7 @@ import { TransactionResponse } from '@ethersproject/providers';
 
 import { ZerionAsset } from '@/entities/tokens';
 import { LegacyTransactionGasParams, TransactionGasParams } from '@/entities/gas';
-import { Network } from '@/networks/types';
+import { Network } from '@/chains/types';
 import { AddysAsset, ParsedAsset } from '../assets/types';
 
 type ChainId = number;

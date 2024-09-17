@@ -1,12 +1,5 @@
 import ReactNative from 'react-native';
-import {
-  ENABLE_DEV_MODE,
-  IS_TESTING,
-  RPC_PROXY_BASE_URL_PROD,
-  RPC_PROXY_BASE_URL_DEV,
-  RPC_PROXY_API_KEY_PROD,
-  RPC_PROXY_API_KEY_DEV,
-} from 'react-native-dotenv';
+import { ENABLE_DEV_MODE, IS_TESTING, RPC_PROXY_BASE_URL_PROD, RPC_PROXY_API_KEY_PROD } from 'react-native-dotenv';
 
 /**
  * @deprecated use IS_ANDROID

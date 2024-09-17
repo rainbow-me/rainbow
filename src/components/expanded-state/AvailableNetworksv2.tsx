@@ -7,7 +7,7 @@ import { Box, Inline, Text } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { position } from '@/styles';
-import { ethereumUtils, watchingAlert } from '@/utils';
+import { watchingAlert } from '@/utils';
 import { CurrencySelectionTypes, ExchangeModalTypes } from '@/helpers';
 import { useSwapCurrencyHandlers, useWallets } from '@/hooks';
 import { RainbowToken } from '@/entities';
@@ -15,18 +15,18 @@ import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../animations';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { implementation } from '@/entities/dispersion';
-import { RainbowNetworkObjects } from '@/networks';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 import { SWAPS_V2, enableActionsOnReadOnlyWallet, useExperimentalFlag } from '@/config';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { AddressOrEth, AssetType } from '@/__swaps__/types/assets';
-import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
-import { ChainId, chainIdToNameMapping } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { getUniqueId } from '@/utils/ethereumUtils';
+import { chainsLabel, chainsName, defaultChains, supportedSwapChainIds } from '@/chains';
+import { isL2Chain } from '@/handlers/web3';
 
 const NOOP = () => null;
 
@@ -95,7 +95,7 @@ const AvailableNetworksv2 = ({
             address: newAsset.address as AddressOrEth,
             type: newAsset.type as AssetType,
             chainId: asset.chainId,
-            chainName: chainNameFromChainId(asset.chainId),
+            chainName: chainsName[asset.chainId],
             isNativeAsset: false,
             native: {},
           },
@@ -103,7 +103,7 @@ const AvailableNetworksv2 = ({
             ...newAsset,
             uniqueId,
             chainId: asset.chainId,
-            chainName: chainNameFromChainId(asset.chainId),
+            chainName: chainsName[asset.chainId],
             address: newAsset.address as AddressOrEth,
             highLiquidity: newAsset.highLiquidity ?? false,
             isRainbowCurated: newAsset.isRainbowCurated ?? false,
@@ -134,7 +134,7 @@ const AvailableNetworksv2 = ({
       }
 
       newAsset.uniqueId = getUniqueId(asset.address, chainId);
-      newAsset.type = ethereumUtils.getNetworkFromChainId(chainId);
+      newAsset.type = chainsName[chainId];
 
       navigate(Routes.EXCHANGE_MODAL, {
         params: {
@@ -166,16 +166,17 @@ const AvailableNetworksv2 = ({
     convertAssetAndNavigate(availableChainIds[0]);
   }, [availableChainIds, convertAssetAndNavigate]);
 
-  const networkMenuItems = useMemo(() => {
-    return RainbowNetworkObjects.filter(({ features, id }) => features.swaps && id !== ChainId.mainnet && !!networks[id]).map(network => ({
-      actionKey: `${network.id}`,
-      actionTitle: network.name,
+  const networkMenuItems = supportedSwapChainIds
+    .filter(chainId => chainId !== ChainId.mainnet)
+    .map(chainId => defaultChains[chainId])
+    .map(chain => ({
+      actionKey: chain.id,
+      actionTitle: chainsLabel[chain.id],
       icon: {
         iconType: 'ASSET',
-        iconValue: `${network.networkType === 'layer2' ? `${network.value}BadgeNoShadow` : 'ethereumBadge'}`,
+        iconValue: `${isL2Chain({ chainId: chain.id }) ? `${chain.name}BadgeNoShadow` : 'ethereumBadge'}`,
       },
     }));
-  }, [networks]);
 
   const MenuWrapper = availableChainIds.length > 1 ? ContextMenuButton : Box;
 
@@ -235,7 +236,7 @@ const AvailableNetworksv2 = ({
                           availableNetworks: availableChainIds?.length,
                         })
                       : lang.t('expanded_state.asset.available_networkv2', {
-                          availableNetwork: chainIdToNameMapping[availableChainIds[0]],
+                          availableNetwork: chainsName[availableChainIds[0]],
                         })}
                   </Text>
                 </Box>

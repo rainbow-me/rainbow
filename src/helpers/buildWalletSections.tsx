@@ -5,13 +5,12 @@ import { queryClient } from '@/react-query';
 import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import store from '@/redux/store';
 import { ClaimableExtraData, PositionExtraData } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
-import { getExperimetalFlag, DEFI_POSITIONS, CLAIMABLES, ExperimentalValue } from '@/config/experimental';
+import { DEFI_POSITIONS, CLAIMABLES, ExperimentalValue } from '@/config/experimental';
 import { RainbowPositions } from '@/resources/defi/types';
 import { claimablesQueryKey } from '@/resources/addys/claimables/query';
 import { Claimable } from '@/resources/addys/claimables/types';
 import { add, convertAmountToNativeDisplay } from './utilities';
-import { getRemoteConfig, RainbowConfig } from '@/model/remoteConfig';
-import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { RainbowConfig } from '@/model/remoteConfig';
 import { IS_TEST } from '@/env';
 
 const CONTENT_PLACEHOLDER = [
@@ -121,10 +120,7 @@ const withPositionsSection = (isLoadingUserAssets: boolean) => {
 
 const withClaimablesSection = (isLoadingUserAssets: boolean) => {
   const { accountAddress: address, nativeCurrency: currency } = store.getState().settings;
-  const isHardhatConnected = useConnectedToHardhatStore.getState().connectedToHardhat;
-  const claimables: Claimable[] | undefined = queryClient.getQueryData(
-    claimablesQueryKey({ address, currency, testnetMode: isHardhatConnected })
-  );
+  const claimables: Claimable[] | undefined = queryClient.getQueryData(claimablesQueryKey({ address, currency }));
 
   const result: ClaimableExtraData[] = [];
   let totalNativeValue = '0';

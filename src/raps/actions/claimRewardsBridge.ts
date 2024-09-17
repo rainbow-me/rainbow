@@ -6,13 +6,14 @@ import store from '@/redux/store';
 import { REFERRER_CLAIM } from '@/references';
 import { TxHash } from '@/resources/transactions/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import ethereumUtils, { getNetworkFromChainId } from '@/utils/ethereumUtils';
+import ethereumUtils from '@/utils/ethereumUtils';
 import { AddressZero } from '@ethersproject/constants';
 import { CrosschainQuote, QuoteError, SwapType, getClaimBridgeQuote } from '@rainbow-me/swaps';
 import { Address } from 'viem';
 import { ActionProps } from '../references';
 import { executeCrosschainSwap } from './crosschainSwap';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
+import { chainsName } from '@/chains';
 
 // This action is used to bridge the claimed funds to another chain
 export async function claimRewardsBridge({ parameters, wallet, baseNonce }: ActionProps<'claimRewardsBridge'>) {
@@ -155,7 +156,7 @@ export async function claimRewardsBridge({ parameters, wallet, baseNonce }: Acti
 
   const typedAssetToBuy: ParsedAddressAsset = {
     ...parameters.assetToBuy,
-    network: getNetworkFromChainId(parameters.assetToBuy.chainId),
+    network: chainsName[parameters.assetToBuy.chainId],
     chainId: parameters.assetToBuy.chainId,
     colors: undefined,
     networks: undefined,
@@ -163,7 +164,7 @@ export async function claimRewardsBridge({ parameters, wallet, baseNonce }: Acti
   };
   const typedAssetToSell = {
     ...parameters.assetToSell,
-    network: getNetworkFromChainId(parameters.assetToSell.chainId),
+    network: chainsName[parameters.assetToSell.chainId],
     chainId: parameters.assetToSell.chainId,
     colors: undefined,
     networks: undefined,
@@ -191,7 +192,7 @@ export async function claimRewardsBridge({ parameters, wallet, baseNonce }: Acti
     from: bridgeQuote.from as Address,
     to: bridgeQuote.to as Address,
     hash: swap.hash as TxHash,
-    network: getNetworkFromChainId(parameters.chainId),
+    network: chainsName[parameters.chainId],
     nonce: swap.nonce,
     status: 'pending',
     type: 'bridge',

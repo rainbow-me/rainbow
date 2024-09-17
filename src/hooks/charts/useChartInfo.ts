@@ -5,7 +5,7 @@ import { metadataClient } from '@/graphql';
 import { useQuery } from '@tanstack/react-query';
 import { createQueryKey } from '@/react-query';
 import { SupportedCurrencyKey } from '@/references';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 
 const chartTimes = ['hour', 'day', 'week', 'month', 'year'] as const;
 type ChartTime = (typeof chartTimes)[number];
@@ -65,7 +65,7 @@ export const usePriceChart = ({
       const chart = await fetchPriceChart({ address, chainId, currency, time: chartType });
       if (!chart && mainnetAddress)
         return fetchPriceChart({ address: mainnetAddress, chainId: ChainId.mainnet, currency, time: chartType });
-      return chart || null;
+      return chart || [];
     },
     queryKey: createQueryKey('price chart', { address, chainId, chartType }),
     keepPreviousData: true,

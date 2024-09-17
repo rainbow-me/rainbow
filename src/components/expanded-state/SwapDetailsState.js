@@ -18,6 +18,7 @@ import { padding, position } from '@/styles';
 import { abbreviations, ethereumUtils } from '@/utils';
 import { getCrosschainSwapServiceTime } from '@/handlers/swap';
 import { SwapPriceImpactType } from '@/hooks/usePriceImpactDetails';
+import { chainsIdByName } from '@/chains';
 
 const AnimatedContainer = styled(Animated.View)({
   ...position.sizeAsObject('100%'),
@@ -71,7 +72,7 @@ export default function SwapDetailsState({ confirmButtonProps, restoreFocusOnSwa
   const prevIsFocused = usePrevious(isFocused);
   const { params: { longFormHeight, currentNetwork, flashbotTransaction, isRefuelTx, onClose } = {} } = useRoute();
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
-  const chainId = ethereumUtils.getChainIdFromNetwork(currentNetwork);
+  const chainId = chainsIdByName[currentNetwork];
 
   const {
     derivedValues: { inputAmount, outputAmount },

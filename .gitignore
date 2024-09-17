@@ -131,3 +131,5 @@ InjectedJSBundle.js.LICENSE.txt
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+src/references/networks.json

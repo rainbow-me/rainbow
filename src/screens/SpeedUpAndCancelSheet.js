@@ -27,10 +27,11 @@ import { ethUnits } from '@/references';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 import { gasUtils, safeAreaInsetValues } from '@/utils';
-import { logger, RainbowError } from '@/logger';
-import { getNetworkObject } from '@/networks';
 import * as i18n from '@/languages';
 import { updateTransaction } from '@/state/pendingTransactions';
+import { logger, RainbowError } from '@/logger';
+import { supportedFlashbotsChainIds } from '@/chains';
+import { ChainId } from '@/chains/types';
 
 const { CUSTOM, URGENT } = gasUtils;
 
@@ -294,7 +295,7 @@ export default function SpeedUpAndCancelSheet() {
       startPollingGasFees(currentChainId, tx.flashbots);
       const updateProvider = async () => {
         let provider;
-        if (getNetworkObject({ chainId: tx?.chainId })?.features?.flashbots && tx.flashbots) {
+        if (supportedFlashbotsChainIds.includes(tx.chainId || ChainId.mainnet) && tx.flashbots) {
           logger.debug(`[SpeedUpAndCancelSheet]: using flashbots provider for chainId ${tx?.chainId}`);
           provider = await getFlashbotsProvider();
         } else {
@@ -393,6 +394,7 @@ export default function SpeedUpAndCancelSheet() {
   const marginTop = android ? deviceHeight - sheetHeight + (type === CANCEL_TX ? 290 : 340) : null;
 
   const { colors, isDarkMode } = useTheme();
+
   const speeds = useMemo(() => {
     const defaultSpeeds = [URGENT];
     if (!isL2) {

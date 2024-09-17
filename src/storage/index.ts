@@ -2,8 +2,8 @@ import { MMKV } from 'react-native-mmkv';
 
 import { Account, Cards, Campaigns, Device, Review } from '@/storage/schema';
 import { EthereumAddress, RainbowTransaction } from '@/entities';
-import { Network } from '@/networks/types';
 import { SecureStorage } from '@coinbase/mobile-wallet-protocol-host';
+import { ChainId } from '@/chains/types';
 
 /**
  * Generic storage class. DO NOT use this directly. Instead, use the exported
@@ -91,7 +91,7 @@ export class Storage<Scopes extends unknown[], Schema> {
  */
 export const device = new Storage<[], Device>({ id: 'global' });
 
-export const account = new Storage<[EthereumAddress, Network], Account>({
+export const account = new Storage<[EthereumAddress, ChainId], Account>({
   id: 'account',
 });
 

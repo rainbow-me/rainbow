@@ -14,7 +14,7 @@ import AppIconPoolboy from '@/assets/appIconPoolboy.png';
 import AppIconAdworld from '@/assets/appIconAdworld.png';
 import AppIconFarcaster from '@/assets/appIconFarcaster.png';
 import { TokenGateCheckerNetwork } from '@/featuresToUnlock/tokenGatedUtils';
-import { Network } from '@/networks/types';
+import { Network } from '@/chains/types';
 
 // optimism app icon unlocking NFTs
 const OPTIMISTIC_EXPLORER_NFT_ADDRESS: EthereumAddress = '0x81b30ff521D1fEB67EDE32db726D95714eb00637';

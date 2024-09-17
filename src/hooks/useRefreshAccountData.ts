@@ -36,9 +36,7 @@ export default function useRefreshAccountData() {
   const fetchAccountData = useCallback(async () => {
     queryClient.invalidateQueries(nftsQueryKey({ address: accountAddress, sortBy: nftSort }));
     queryClient.invalidateQueries(positionsQueryKey({ address: accountAddress as Address, currency: nativeCurrency }));
-    queryClient.invalidateQueries(
-      claimablesQueryKey({ address: accountAddress, currency: nativeCurrency, testnetMode: connectedToHardhat })
-    );
+    queryClient.invalidateQueries(claimablesQueryKey({ address: accountAddress, currency: nativeCurrency }));
     queryClient.invalidateQueries(addysSummaryQueryKey({ addresses: allAddresses, currency: nativeCurrency }));
     queryClient.invalidateQueries(userAssetsQueryKey({ address: accountAddress, currency: nativeCurrency, connectedToHardhat }));
     queryClient.invalidateQueries(

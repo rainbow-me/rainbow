@@ -7,9 +7,8 @@ import { TextColor } from '@/design-system/color/palettes';
 
 import { abbreviations, ethereumUtils } from '@/utils';
 import { TransactionSimulationMeta } from '@/graphql/__generated__/metadataPOST';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 
-import { getNetworkObject } from '@/networks';
 import { TransactionDetailsRow } from '@/components/Transactions/TransactionDetailsRow';
 import { FadedScrollCard } from '@/components/FadedScrollCard';
 import { IconContainer } from '@/components/Transactions/TransactionIcons';
@@ -21,6 +20,7 @@ import {
   CARD_BORDER_WIDTH,
   EXPANDED_CARD_TOP_INSET,
 } from '@/components/Transactions/constants';
+import { chainsName } from '@/chains';
 
 interface TransactionDetailsCardProps {
   chainId: ChainId;
@@ -48,8 +48,6 @@ export const TransactionDetailsCard = ({
   const cardHeight = useSharedValue(COLLAPSED_CARD_HEIGHT);
   const contentHeight = useSharedValue(COLLAPSED_CARD_HEIGHT - CARD_BORDER_WIDTH * 2);
   const [isExpanded, setIsExpanded] = useState(false);
-
-  const currentNetwork = getNetworkObject({ chainId });
 
   const listStyle = useAnimatedStyle(() => ({
     opacity: interpolate(
@@ -95,7 +93,7 @@ export const TransactionDetailsCard = ({
         </Box>
         <Animated.View style={listStyle}>
           <Stack space="24px">
-            {<TransactionDetailsRow chainId={chainId} detailType="chain" value={currentNetwork.name} />}
+            {<TransactionDetailsRow chainId={chainId} detailType="chain" value={chainsName[chainId]} />}
             {!!(meta?.to?.address || toAddress || showTransferToRow) && (
               <TransactionDetailsRow
                 detailType={isContract ? 'contract' : 'to'}

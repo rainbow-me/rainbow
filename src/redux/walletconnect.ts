@@ -29,11 +29,11 @@ import { watchingAlert } from '@/utils';
 import { getFCMToken } from '@/notifications/tokens';
 import { logger, RainbowError } from '@/logger';
 import { IS_DEV, IS_IOS, IS_TEST } from '@/env';
-import { RainbowNetworkObjects } from '@/networks';
 import { Verify } from '@walletconnect/types';
 import { RequestSource, handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { Address } from 'viem';
+import { supportedWalletConnectChainIds } from '@/chains';
 
 // -- Variables --------------------------------------- //
 let showRedirectSheetThreshold = 300;
@@ -474,11 +474,8 @@ const listenOnNewMessages =
         const { chainId } = payload.params[0];
         // @ts-expect-error "_chainId" is private.
         const currentChainId = Number(walletConnector._chainId);
-        const supportedChains = RainbowNetworkObjects.filter(network => network.features.walletconnect).map(network =>
-          network.id.toString()
-        );
-        const numericChainId = convertHexToString(chainId);
-        if (supportedChains.includes(numericChainId)) {
+        const numericChainId = Number(convertHexToString(chainId));
+        if (supportedWalletConnectChainIds.includes(numericChainId)) {
           dispatch(walletConnectSetPendingRedirect());
           Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
             callback: async (approved: boolean) => {
@@ -488,10 +485,9 @@ const listenOnNewMessages =
                   result: null,
                 });
                 const { accountAddress } = getState().settings;
-                logger.debug('[redux/walletconnect]: Updating session for chainID', { numericChainId }, logger.DebugContext.walletconnect);
+                logger.debug('WC: Updating session for chainID', { chainId: numericChainId }, logger.DebugContext.walletconnect);
                 await walletConnector.updateSession({
                   accounts: [accountAddress],
-                  // @ts-expect-error "numericChainId" is a string, not a number.
                   chainId: numericChainId,
                 });
                 dispatch(setWalletConnector(walletConnector));
@@ -515,7 +511,7 @@ const listenOnNewMessages =
             },
             currentChainId,
             meta: {
-              chainIds: [Number(numericChainId)],
+              chainIds: [numericChainId],
               dappName,
               dappUrl,
               imageUrl,

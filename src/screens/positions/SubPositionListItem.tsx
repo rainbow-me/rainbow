@@ -10,7 +10,7 @@ import { NativeDisplay, PositionAsset } from '@/resources/defi/types';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { useAccountSettings } from '@/hooks';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { ethereumUtils } from '@/utils';
+import { chainsIdByName } from '@/chains';
 
 type Props = {
   asset: PositionAsset;
@@ -23,7 +23,7 @@ type Props = {
 export const SubPositionListItem: React.FC<Props> = ({ asset, apy, quantity, native, positionColor }) => {
   const theme = useTheme();
   const { nativeCurrency } = useAccountSettings();
-  const chainId = ethereumUtils.getChainIdFromNetwork(asset.network);
+  const chainId = chainsIdByName[asset.network];
   const { data: externalAsset } = useExternalToken({ address: asset.asset_code, chainId, currency: nativeCurrency });
 
   const priceChangeColor = (asset.price?.relative_change_24h || 0) < 0 ? theme.colors.blueGreyDark60 : theme.colors.green;

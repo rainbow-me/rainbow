@@ -4,7 +4,7 @@ import { getUniqueId } from '@/utils/ethereumUtils';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { Address } from 'viem';
 
 // To fetch an asset from account assets,

@@ -122,23 +122,49 @@ export interface MaxPriorityFeeSuggestions {
   urgent: string;
 }
 
-export interface RainbowMeteorologyData {
+export type MeteorologyResponse = {
   data: {
-    currentBaseFee: string;
     baseFeeSuggestion: string;
     baseFeeTrend: number;
-    blocksToConfirmationByPriorityFee: BlocksToConfirmationByPriorityFee;
-    blocksToConfirmationByBaseFee: BlocksToConfirmationByBaseFee;
-    maxPriorityFeeSuggestions: MaxPriorityFeeSuggestions;
+    blocksToConfirmationByBaseFee: {
+      '4': string;
+      '8': string;
+      '40': string;
+      '120': string;
+      '240': string;
+    };
+    blocksToConfirmationByPriorityFee: {
+      '1': string;
+      '2': string;
+      '3': string;
+      '4': string;
+    };
+    confirmationTimeByPriorityFee?: {
+      '15': string;
+      '30': string;
+      '45': string;
+      '60': string;
+    };
+    currentBaseFee: string;
+    maxPriorityFeeSuggestions: {
+      fast: string;
+      normal: string;
+      urgent: string;
+    };
     secondsPerNewBlock: number;
+    meta: {
+      blockNumber: number;
+      provider: string;
+    };
   };
   meta: {
-    blockNumber: number;
+    feeType: 'legacy' | 'eip1559';
+    blockNumber: string;
     provider: string;
   };
-}
+};
 
-export interface RainbowMeteorologyLegacyData {
+export type MeteorologyLegacyResponse = {
   data: {
     legacy: {
       fastGasPrice: string;
@@ -147,7 +173,8 @@ export interface RainbowMeteorologyLegacyData {
     };
   };
   meta: {
+    feeType: 'legacy' | 'eip1559';
     blockNumber: number;
     provider: string;
   };
-}
+};

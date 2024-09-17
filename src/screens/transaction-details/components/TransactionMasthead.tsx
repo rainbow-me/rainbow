@@ -34,7 +34,7 @@ import ImageAvatar from '@/components/contacts/ImageAvatar';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import * as lang from '@/languages';
 import { checkForPendingSwap } from '../helpers/checkForPendingSwap';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 
 const TransactionMastheadHeight = android ? 153 : 135;
 

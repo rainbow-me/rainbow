@@ -1,33 +1,9 @@
 import { AddressOrEth } from '@/__swaps__/types/assets';
-import { ChainId, ChainNameDisplay, Network } from '@/networks/types';
+import { ChainId, Network } from '@/chains/types';
 import { Asset } from '@/entities';
 import { AddressZero } from '@ethersproject/constants';
 
 import type { Address } from 'viem';
-import {
-  Chain,
-  arbitrum,
-  arbitrumGoerli,
-  arbitrumSepolia,
-  avalanche,
-  avalancheFuji,
-  base,
-  baseSepolia,
-  bsc,
-  bscTestnet,
-  goerli,
-  holesky,
-  mainnet,
-  optimism,
-  optimismSepolia,
-  polygon,
-  polygonMumbai,
-  zora,
-  zoraSepolia,
-  sepolia,
-  blast,
-  degen,
-} from 'viem/chains';
 
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
 export { default as chainAssets } from './chain-assets.json';
@@ -161,94 +137,32 @@ export const AddCashCurrencyInfo: {
 };
 
 export const NATIVE_ASSETS_PER_CHAIN: Record<ChainId, AddressOrEth> = {
-  [ChainId.mainnet]: ETH_ADDRESS as Address,
-  [ChainId.hardhat]: AddressZero as Address,
-  [ChainId.sepolia]: AddressZero as Address,
-  [ChainId.holesky]: AddressZero as Address,
-  [ChainId.arbitrum]: AddressZero as Address,
-  [ChainId.arbitrumSepolia]: AddressZero as Address,
-  [ChainId.bsc]: AddressZero as Address,
-  [ChainId.bscTestnet]: AddressZero as Address,
-  [ChainId.optimism]: AddressZero as Address,
-  [ChainId.hardhatOptimism]: AddressZero as Address,
-  [ChainId.optimismSepolia]: AddressZero as Address,
-  [ChainId.rari]: AddressZero as Address,
-  [ChainId.base]: AddressZero as Address,
-  [ChainId.baseSepolia]: AddressZero as Address,
-  [ChainId.zora]: AddressZero as Address,
-  [ChainId.zoraSepolia]: AddressZero as Address,
-  [ChainId.polygon]: MATIC_POLYGON_ADDRESS as Address,
-  [ChainId.polygonMumbai]: AddressZero as Address,
-  [ChainId.avalanche]: AVAX_AVALANCHE_ADDRESS as Address,
-  [ChainId.avalancheFuji]: AddressZero as Address,
-  [ChainId.blast]: AddressZero as Address,
-  [ChainId.blastSepolia]: AddressZero as Address,
-  [ChainId.polygonAmoy]: AddressZero as Address,
-};
-
-export const NATIVE_ASSETS_MAP_PER_CHAIN: Record<ChainId, AddressOrEth> = {
-  [ChainId.arbitrum]: ETH_ADDRESS,
-  [ChainId.arbitrumNova]: ETH_ADDRESS,
-  [ChainId.arbitrumSepolia]: ETH_ADDRESS,
-  [ChainId.avalanche]: AVAX_AVALANCHE_ADDRESS,
-  [ChainId.avalancheFuji]: AVAX_AVALANCHE_ADDRESS,
-  [ChainId.base]: ETH_ADDRESS,
-  [ChainId.baseSepolia]: ETH_ADDRESS,
-  [ChainId.blast]: ETH_ADDRESS,
-  [ChainId.blastSepolia]: ETH_ADDRESS,
-  [ChainId.bsc]: BNB_MAINNET_ADDRESS,
-  [ChainId.bscTestnet]: BNB_MAINNET_ADDRESS,
-  [ChainId.celo]: ETH_ADDRESS,
-  [ChainId.gnosis]: ETH_ADDRESS,
-  [ChainId.hardhat]: ETH_ADDRESS,
-  [ChainId.hardhatOptimism]: ETH_ADDRESS,
-  [ChainId.holesky]: ETH_ADDRESS,
-  [ChainId.linea]: ETH_ADDRESS,
   [ChainId.mainnet]: ETH_ADDRESS,
-  [ChainId.manta]: ETH_ADDRESS,
-  [ChainId.optimism]: ETH_ADDRESS,
-  [ChainId.optimismSepolia]: ETH_ADDRESS,
-  [ChainId.polygon]: MATIC_MAINNET_ADDRESS,
-  [ChainId.polygonAmoy]: MATIC_MAINNET_ADDRESS,
-  [ChainId.polygonMumbai]: MATIC_MAINNET_ADDRESS,
-  [ChainId.polygonZkEvm]: MATIC_MAINNET_ADDRESS,
-  [ChainId.rari]: ETH_ADDRESS,
-  [ChainId.scroll]: ETH_ADDRESS,
-  [ChainId.sepolia]: ETH_ADDRESS,
-  [ChainId.zora]: ETH_ADDRESS,
-  [ChainId.zoraSepolia]: ETH_ADDRESS,
+  [ChainId.hardhat]: AddressZero,
+  [ChainId.sepolia]: AddressZero,
+  [ChainId.holesky]: AddressZero,
+  [ChainId.arbitrum]: AddressZero,
+  [ChainId.arbitrumSepolia]: AddressZero,
+  [ChainId.bsc]: AddressZero,
+  [ChainId.bscTestnet]: AddressZero,
+  [ChainId.optimism]: AddressZero,
+  [ChainId.hardhatOptimism]: AddressZero,
+  [ChainId.optimismSepolia]: AddressZero,
+  [ChainId.rari]: AddressZero,
+  [ChainId.base]: AddressZero,
+  [ChainId.baseSepolia]: AddressZero,
+  [ChainId.zora]: AddressZero,
+  [ChainId.zoraSepolia]: AddressZero,
+  [ChainId.polygon]: MATIC_POLYGON_ADDRESS,
+  [ChainId.polygonMumbai]: AddressZero,
+  [ChainId.avalanche]: AVAX_AVALANCHE_ADDRESS,
+  [ChainId.avalancheFuji]: AddressZero,
+  [ChainId.blast]: AddressZero,
+  [ChainId.blastSepolia]: AddressZero,
+  [ChainId.polygonAmoy]: AddressZero,
+  [ChainId.degen]: AddressZero,
 };
 
 export type ReferrerType = 'native-app' | 'app-claim';
 export const REFERRER: ReferrerType = 'native-app';
 export const REFERRER_CLAIM: ReferrerType = 'app-claim';
-
-export const SUPPORTED_MAINNET_CHAINS: Chain[] = [mainnet, polygon, optimism, arbitrum, base, zora, bsc, avalanche, blast].map(chain => ({
-  ...chain,
-  name: ChainNameDisplay[chain.id],
-}));
-
-export const SUPPORTED_CHAINS = ({ testnetMode = false }: { testnetMode?: boolean }): Chain[] => {
-  const mainnetChains: Chain[] = [mainnet, base, optimism, arbitrum, polygon, zora, blast, degen, avalanche, bsc];
-
-  const testnetChains: Chain[] = [
-    goerli,
-    holesky,
-    sepolia,
-    baseSepolia,
-    optimismSepolia,
-    arbitrumGoerli,
-    arbitrumSepolia,
-    polygonMumbai,
-    zoraSepolia,
-    avalancheFuji,
-    bscTestnet,
-  ];
-
-  const allChains = mainnetChains.concat(testnetMode ? testnetChains : []);
-
-  return allChains.map(chain => ({ ...chain, name: ChainNameDisplay[chain.id] ?? chain.name }));
-};
-
-export const SUPPORTED_CHAIN_IDS = ({ testnetMode = false }: { testnetMode?: boolean }): ChainId[] =>
-  SUPPORTED_CHAINS({ testnetMode }).map(chain => chain.id);

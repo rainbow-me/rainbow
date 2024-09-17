@@ -26,7 +26,7 @@ import { web3SetHttpProvider } from '@/handlers/web3';
 import { explorerClearState, explorerInit } from '@/redux/explorer';
 import { AppState } from '@/redux/store';
 import { logger, RainbowError } from '@/logger';
-import { Network, ChainId } from '@/networks/types';
+import { Network, ChainId } from '@/chains/types';
 
 // -- Constants ------------------------------------------------------------- //
 const SETTINGS_UPDATE_SETTINGS_ADDRESS = 'settings/SETTINGS_UPDATE_SETTINGS_ADDRESS';
