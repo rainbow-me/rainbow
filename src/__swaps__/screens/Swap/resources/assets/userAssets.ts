@@ -127,7 +127,7 @@ async function userAssetsQueryFunction({
     });
     const chainIdsInResponse = res?.data?.meta?.chain_ids || [];
     const chainIdsWithErrorsInResponse = res?.data?.meta?.chain_ids_with_errors || [];
-    const assets = res?.data?.payload?.assets?.filter(asset => asset.asset.defi_position === false) || [];
+    const assets = res?.data?.payload?.assets?.filter(asset => !asset.asset.defi_position) || [];
     if (address) {
       userAssetsQueryFunctionRetryByChain({
         address,
