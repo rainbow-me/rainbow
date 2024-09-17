@@ -11,7 +11,8 @@ import { useAccountAsset, useCoinListFinishEditingOptions } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import { borders, colors, padding, shadow } from '@/styles';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { ethereumUtils } from '@/utils';
+import { NativeCurrencyKey } from '@/entities';
+import { ChainId } from '@/chains/types';
 
 interface CoinCheckButtonProps {
   isHidden: boolean;
@@ -55,7 +56,7 @@ const formatPercentageString = (percentString?: string) => (percentString ? perc
 
 interface MemoizedBalanceCoinRowProps {
   uniqueId: string;
-  nativeCurrency: string;
+  nativeCurrency: NativeCurrencyKey;
   theme: any;
   navigate: any;
   nativeCurrencySymbol: string;
@@ -65,7 +66,7 @@ interface MemoizedBalanceCoinRowProps {
 
 const MemoizedBalanceCoinRow = React.memo(
   ({ uniqueId, nativeCurrency, theme, navigate, nativeCurrencySymbol, isHidden, maybeCallback }: MemoizedBalanceCoinRowProps) => {
-    const item = useAccountAsset(uniqueId, nativeCurrency) as any;
+    const item = useAccountAsset(uniqueId, nativeCurrency);
 
     const handlePress = useCallback(() => {
       if (maybeCallback.current) {
@@ -80,7 +81,7 @@ const MemoizedBalanceCoinRow = React.memo(
       }
     }, [navigate, item, maybeCallback]);
 
-    const percentChange = item?.native?.change;
+    const percentChange = item?.native?.change || undefined;
     const percentageChangeDisplay = formatPercentageString(percentChange);
 
     const isPositive = percentChange && percentageChangeDisplay.charAt(0) !== '-';
@@ -91,10 +92,10 @@ const MemoizedBalanceCoinRow = React.memo(
 
     const valueColor = nativeDisplay ? theme.colors.dark : theme.colors.blueGreyLight;
 
-    const chainId = ethereumUtils.getChainIdFromNetwork(item?.network);
+    const chainId = item?.chainId || ChainId.mainnet;
 
     return (
-      <View style={sx.flex}>
+      <View style={sx.flex} testID={'fast-coin-info'}>
         <ButtonPressAnimation onPress={handlePress} scaleTo={0.96} testID={`balance-coin-row-${item?.name}`}>
           <View style={[sx.container]}>
             <View style={sx.iconContainer}>
@@ -102,7 +103,7 @@ const MemoizedBalanceCoinRow = React.memo(
                 size={40}
                 icon={item?.icon_url}
                 chainId={chainId}
-                symbol={item?.symbol}
+                symbol={item?.symbol || ''}
                 theme={theme}
                 colors={item?.colors}
               />

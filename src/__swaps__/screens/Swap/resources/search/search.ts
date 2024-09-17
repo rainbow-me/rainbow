@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/chains/types';
 import { SearchAsset, TokenSearchAssetKey, TokenSearchListId, TokenSearchThreshold } from '@/__swaps__/types/search';
 import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
@@ -90,7 +90,7 @@ async function tokenSearchQueryFunction({
       return parseTokenSearch(tokenSearch.data.data, chainId);
     }
   } catch (e) {
-    logger.error(new RainbowError('Token search failed'), { url });
+    logger.error(new RainbowError('[tokenSearchQueryFunction]: Token search failed'), { url });
     return [];
   }
 }

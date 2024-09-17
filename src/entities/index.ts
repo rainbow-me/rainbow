@@ -21,8 +21,6 @@ export type {
   MaxPriorityFeeSuggestions,
   TransactionGasParamAmounts,
   TransactionGasParams,
-  RainbowMeteorologyData,
-  RainbowMeteorologyLegacyData,
   SelectedGasFee,
 } from './gas';
 export { NativeCurrencyKeys } from './nativeCurrencyTypes';

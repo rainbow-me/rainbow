@@ -34,7 +34,7 @@ import ImageAvatar from '@/components/contacts/ImageAvatar';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import * as lang from '@/languages';
 import { checkForPendingSwap } from '../helpers/checkForPendingSwap';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/chains/types';
 
 const TransactionMastheadHeight = android ? 153 : 135;
 
@@ -128,7 +128,7 @@ function CurrencyTile({
         }
       });
     }
-  }, []);
+  }, [accountName, address, addressContact?.nickname]);
 
   useEffect(() => {
     if (!addressAccount?.image && (fetchedEnsName || addressContact?.ens)) {

@@ -1,4 +1,4 @@
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/chains/types';
 import { SearchAsset } from '@/__swaps__/types/search';
 import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
@@ -28,7 +28,7 @@ async function tokenSearchQueryFunction({ queryKey: [{ chainId }] }: QueryFuncti
     const tokenSearch = await tokenSearchHttp.get<{ data: SearchAsset[] }>(url);
     return parseTokenSearch(tokenSearch.data.data, chainId);
   } catch (e) {
-    logger.error(new RainbowError('Token discovery failed'), { url });
+    logger.error(new RainbowError('[tokenSearchQueryFunction]: Token discovery failed'), { url });
     return [];
   }
 }

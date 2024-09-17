@@ -38,6 +38,11 @@ interface RainbowPersistConfig<S> {
    * @default 0
    */
   version?: number;
+  /**
+   * A function to perform persisted state migration.
+   * This function will be called when persisted state versions mismatch with the one specified here.
+   */
+  migrate?: (persistedState: unknown, version: number) => S | Promise<S>;
 }
 
 /**
@@ -46,7 +51,7 @@ interface RainbowPersistConfig<S> {
  * @returns An object containing the persist storage and version.
  */
 function createPersistStorage<S = unknown>(config: RainbowPersistConfig<S>) {
-  const { deserializer = defaultDeserializeState, serializer = defaultSerializeState, storageKey, version = 0 } = config;
+  const { deserializer = defaultDeserializeState, serializer = defaultSerializeState, storageKey, version = 0, migrate } = config;
 
   const persistStorage: PersistOptions<S, Partial<S>>['storage'] = {
     getItem: (name: string) => {
@@ -92,7 +97,7 @@ const lazyPersist = <S>({ name, serializer, storageKey, value }: LazyPersistPara
         const serializedValue = serializer(value.state, value.version ?? 0);
         rainbowStorage.set(key, serializedValue);
       } catch (error) {
-        logger.error(new RainbowError('Failed to serialize persisted store data'), { error });
+        logger.error(new RainbowError(`[createRainbowStore]: Failed to serialize persisted store data`), { error });
       }
     },
     PERSIST_RATE_LIMIT_MS,
@@ -109,7 +114,7 @@ function defaultSerializeState<S>(state: StorageValue<Partial<S>>['state'], vers
   try {
     return JSON.stringify({ state, version });
   } catch (error) {
-    logger.error(new RainbowError('Failed to serialize Rainbow store data'), { error });
+    logger.error(new RainbowError(`[createRainbowStore]: Failed to serialize Rainbow store data`), { error });
     throw error;
   }
 }
@@ -123,7 +128,7 @@ function defaultDeserializeState<S>(serializedState: string): StorageValue<Parti
   try {
     return JSON.parse(serializedState);
   } catch (error) {
-    logger.error(new RainbowError('Failed to deserialize persisted Rainbow store data'), { error });
+    logger.error(new RainbowError(`[createRainbowStore]: Failed to deserialize persisted Rainbow store data`), { error });
     throw error;
   }
 }
@@ -151,6 +156,7 @@ export function createRainbowStore<S = unknown>(
         partialize: persistConfig.partialize || (state => state),
         storage: persistStorage,
         version,
+        migrate: persistConfig.migrate,
       })
     )
   );

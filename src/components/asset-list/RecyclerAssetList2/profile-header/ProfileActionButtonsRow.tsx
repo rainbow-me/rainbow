@@ -20,7 +20,7 @@ import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/chains/types';
 
 export const ProfileActionButtonsRowHeight = 80;
 
@@ -191,7 +191,7 @@ function SwapButton() {
 
       android && delayNext();
 
-      const mainnetEth = await ethereumUtils.getNativeAssetForNetwork(ChainId.mainnet, accountAddress);
+      const mainnetEth = await ethereumUtils.getNativeAssetForNetwork({ chainId: ChainId.mainnet, address: accountAddress });
       navigate(Routes.EXCHANGE_MODAL, {
         fromDiscover: true,
         params: {

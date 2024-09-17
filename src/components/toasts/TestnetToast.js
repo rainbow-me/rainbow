@@ -1,22 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import networkTypes from '../../helpers/networkTypes';
 import { Icon } from '../icons';
 import { Nbsp, Text } from '../text';
 import Toast from './Toast';
-import { isHardHat } from '@/handlers/web3';
 import { useInternetStatus } from '@/hooks';
-import { getNetworkObj } from '@/networks';
+import { ChainId } from '@/chains/types';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { chainsName, chainsNativeAsset } from '@/chains';
 
-const TestnetToast = ({ network, web3Provider }) => {
+const TestnetToast = ({ chainId }) => {
+  const { connectedToHardhat } = useConnectedToHardhatStore();
   const isConnected = useInternetStatus();
-  const providerUrl = web3Provider?.connection?.url;
-  const { name, colors: networkColors } = getNetworkObj(network);
-  const [visible, setVisible] = useState(!network === networkTypes.mainnet);
+  const nativeAsset = chainsNativeAsset[chainId];
+  const name = chainsName[chainId];
+  const color = isDarkMode ? nativeAsset.colors.primary : nativeAsset.colors.fallback || nativeAsset.colors.primary;
+  const [visible, setVisible] = useState(chainId !== ChainId.mainnet);
   const [networkName, setNetworkName] = useState(name);
 
   useEffect(() => {
-    if (network === networkTypes.mainnet) {
-      if (isHardHat(providerUrl)) {
+    if (chainId === ChainId.mainnet) {
+      if (connectedToHardhat) {
         setVisible(true);
         setNetworkName('Hardhat');
       } else {
@@ -26,13 +28,13 @@ const TestnetToast = ({ network, web3Provider }) => {
       setVisible(true);
       setNetworkName(name + (isConnected ? '' : ' (offline)'));
     }
-  }, [name, network, providerUrl, isConnected]);
+  }, [isConnected, chainId, connectedToHardhat, name]);
 
   const { colors, isDarkMode } = useTheme();
 
   return (
     <Toast isVisible={visible} testID={`testnet-toast-${networkName}`}>
-      <Icon color={isDarkMode ? networkColors.dark : networkColors.light} marginHorizontal={5} marginTop={1} name="dot" />
+      <Icon color={color} marginHorizontal={5} marginTop={1} name="dot" />
       <Text color={colors.white} size="smedium" weight="semibold">
         <Nbsp /> {networkName} <Nbsp />
       </Text>

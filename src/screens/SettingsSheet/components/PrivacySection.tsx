@@ -25,7 +25,7 @@ const PrivacySection = () => {
     analyticsEnabled => {
       if (analyticsEnabled) {
         device.set(['doNotTrack'], true);
-        logger.debug(`Analytics tracking disabled`);
+        logger.debug(`[PrivacySection]: Analytics tracking disabled`);
         analyticsV2.track(analyticsV2.event.analyticsTrackingDisabled);
         logger.disable();
         analyticsV2.disable();
@@ -34,7 +34,7 @@ const PrivacySection = () => {
         device.set(['doNotTrack'], false);
         logger.enable();
         analyticsV2.enable();
-        logger.debug(`Analytics tracking enabled`);
+        logger.debug(`[PrivacySection]: Analytics tracking enabled`);
         analyticsV2.track(analyticsV2.event.analyticsTrackingEnabled);
         return true;
       }

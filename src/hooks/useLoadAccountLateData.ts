@@ -3,7 +3,7 @@ import { promiseUtils } from '../utils';
 import { prefetchAccountENSDomains } from './useAccountENSDomains';
 import useAccountSettings from './useAccountSettings';
 import useWallets from './useWallets';
-import logger from '@/utils/logger';
+import { logger } from '@/logger';
 import { ensRegistrationsLoadState } from '@/redux/ensRegistration';
 import { useDispatch } from 'react-redux';
 import { showcaseTokensUpdateStateFromWeb } from '@/redux/showcaseTokens';
@@ -15,7 +15,7 @@ export default function useLoadAccountLateData() {
   const dispatch = useDispatch();
 
   const loadAccountLateData = useCallback(async () => {
-    logger.sentry('Load wallet account late data');
+    logger.debug('[useLoadAccountLateData]: Load wallet account late data');
 
     const promises = [];
 

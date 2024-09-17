@@ -20,7 +20,7 @@ import {
   TransactionType,
   TransactionWithChangesType,
 } from '@/resources/transactions/types';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/chains/types';
 
 const LAST_TXN_HASH_BUFFER = 20;
 
@@ -113,10 +113,16 @@ export const parseTransaction = async (
     iconUrl: meta.contract_icon_url,
   };
 
+  // NOTE: For send transactions, the to address should be pulled from the outgoing change directly, not the txn.address_to
+  let to = txn.address_to;
+  if (meta.type === 'send') {
+    to = txn.changes.find(change => change?.direction === 'out')?.address_to ?? txn.address_to;
+  }
+
   return {
     chainId,
     from: txn.address_from,
-    to: txn.address_to,
+    to,
     title: `${type}.${status}`,
     description,
     hash,

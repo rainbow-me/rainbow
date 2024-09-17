@@ -20,13 +20,13 @@ import { useAccountSettings, useInitializeWallet, useWallets, useWalletsWithBala
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { doesWalletsContainAddress, showActionSheetWithOptions } from '@/utils';
-import logger from '@/utils/logger';
+import { logger, RainbowError } from '@/logger';
 import { useTheme } from '@/theme';
 import { EthereumAddress } from '@/entities';
 import { getNotificationSettingsForWalletWithAddress } from '@/notifications/settings/storage';
-import { useRunChecks } from '@/components/remote-promo-sheet/runChecks';
 import { DEVICE_HEIGHT } from '@/utils/deviceUtils';
 import { IS_ANDROID, IS_IOS } from '@/env';
+import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
 
 const FOOTER_HEIGHT = getExperimetalFlag(HARDWARE_WALLETS) ? 100 : 60;
 const LIST_PADDING_BOTTOM = 6;
@@ -101,7 +101,6 @@ export default function ChangeWalletSheet() {
   const { params = {} as any } = useRoute();
   const { onChangeWallet, watchOnly = false, currentAccountAddress } = params;
   const { selectedWallet, wallets } = useWallets();
-  const { runChecks } = useRunChecks(false);
 
   const { colors } = useTheme();
   const { updateWebProfile } = useWebData();
@@ -142,17 +141,19 @@ export default function ChangeWalletSheet() {
         const p1 = dispatch(walletsSetSelected(wallet));
         const p2 = dispatch(addressSetSelected(address));
         await Promise.all([p1, p2]);
+        remotePromoSheetsStore.setState({ isShown: false });
         // @ts-expect-error initializeWallet is not typed correctly
         initializeWallet(null, null, null, false, false, null, true);
         if (!fromDeletion) {
           goBack();
-          setTimeout(runChecks, 10_000);
         }
       } catch (e) {
-        logger.log('error while switching account', e);
+        logger.error(new RainbowError('[ChangeWalletSheet]: Error while switching account'), {
+          error: e,
+        });
       }
     },
-    [currentAddress, dispatch, editMode, goBack, initializeWallet, onChangeWallet, runChecks, wallets, watchOnly]
+    [currentAddress, dispatch, editMode, goBack, initializeWallet, onChangeWallet, wallets, watchOnly]
   );
 
   const deleteWallet = useCallback(
@@ -165,14 +166,14 @@ export default function ChangeWalletSheet() {
         ...wallets,
         [walletId]: {
           ...currentWallet,
-          addresses: (currentWallet.addresses ?? []).map(account =>
+          addresses: (currentWallet.addresses || []).map(account =>
             account.address.toLowerCase() === address.toLowerCase() ? { ...account, visible: false } : account
           ),
         },
       };
       // If there are no visible wallets
       // then delete the wallet
-      const visibleAddresses = (newWallets as any)[walletId].addresses.filter((account: any) => account.visible);
+      const visibleAddresses = ((newWallets as any)[walletId]?.addresses || []).filter((account: any) => account.visible);
       if (visibleAddresses.length === 0) {
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete newWallets[walletId];
@@ -189,7 +190,7 @@ export default function ChangeWalletSheet() {
     (walletId: string, address: string) => {
       const wallet = wallets?.[walletId];
       if (!wallet) return;
-      const account = wallet.addresses.find(account => account.address === address);
+      const account = wallet.addresses?.find(account => account.address === address);
 
       InteractionManager.runAfterInteractions(() => {
         goBack();

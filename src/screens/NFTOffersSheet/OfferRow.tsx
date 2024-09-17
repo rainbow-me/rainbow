@@ -14,10 +14,11 @@ import { CardSize } from '@/components/unique-token/CardSize';
 import { View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { Network } from '@/networks/types';
+import { Network } from '@/chains/types';
 import { useAccountSettings } from '@/hooks';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { ethereumUtils } from '@/utils';
+import { AddressOrEth } from '@/__swaps__/types/assets';
+import { chainsIdByName } from '@/chains';
 
 const NFT_SIZE = 50;
 const MARKETPLACE_ORB_SIZE = 18;
@@ -98,9 +99,9 @@ export const OfferRow = ({ offer }: { offer: NftOffer }) => {
   const { colorMode } = useColorMode();
   const theme = useTheme();
   const bgColor = useBackgroundColor('surfaceSecondaryElevated');
-  const chainId = ethereumUtils.getChainIdFromNetwork(offer.network as Network);
+  const chainId = chainsIdByName[offer.network as Network];
   const { data: externalAsset } = useExternalToken({
-    address: offer.paymentToken.address,
+    address: offer.paymentToken.address as AddressOrEth,
     chainId,
     currency: nativeCurrency,
   });

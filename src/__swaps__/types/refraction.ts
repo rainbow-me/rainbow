@@ -1,5 +1,5 @@
 import { ZerionAsset } from '@/__swaps__/types/assets';
-import { ChainId, ChainName } from '@/__swaps__/types/chains';
+import { ChainId, ChainName } from '@/chains/types';
 import { PaginatedTransactionsApiResponse } from '@/resources/transactions/types';
 
 /**

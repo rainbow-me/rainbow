@@ -1,8 +1,9 @@
+import { FlatList } from 'react-native';
 import { COIN_ROW_WITH_PADDING_HEIGHT, CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
 import { ListEmpty } from '@/__swaps__/screens/Swap/components/TokenList/ListEmpty';
 import { AssetToBuySectionId, useSearchCurrencyLists } from '@/__swaps__/screens/Swap/hooks/useSearchCurrencyLists';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/chains/types';
 import { SearchAsset } from '@/__swaps__/types/search';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
@@ -16,9 +17,7 @@ import * as i18n from '@/languages';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { FlashList } from '@shopify/flash-list';
-import React, { ComponentType, forwardRef, memo, useCallback, useMemo } from 'react';
-import { ScrollViewProps } from 'react-native';
+import React, { memo, useCallback, useMemo } from 'react';
 import Animated, { runOnUI, useAnimatedProps, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
 import { ChainSelection } from './ChainSelection';
@@ -73,15 +72,25 @@ export type HeaderItem = { listItemType: 'header'; id: AssetToBuySectionId; data
 export type CoinRowItem = SearchAsset & { listItemType: 'coinRow'; sectionId: AssetToBuySectionId };
 export type TokenToBuyListItem = HeaderItem | CoinRowItem;
 
-const ScrollViewWithRef = forwardRef<Animated.ScrollView>(function ScrollViewWithRef(props, ref) {
-  const { outputProgress } = useSwapContext();
-  const animatedListProps = useAnimatedProps(() => {
-    const isFocused = outputProgress.value === 2;
-    return { scrollIndicatorInsets: { bottom: 28 + (isFocused ? EXPANDED_INPUT_HEIGHT - FOCUSED_INPUT_HEIGHT : 0) } };
-  });
-  // eslint-disable-next-line react/jsx-props-no-spreading
-  return <Animated.ScrollView {...props} ref={ref} animatedProps={animatedListProps} />;
-});
+const getItemLayout = (data: ArrayLike<TokenToBuyListItem> | null | undefined, index: number) => {
+  if (!data) return { length: 0, offset: 0, index };
+
+  const item = data[index];
+  const length = item?.listItemType === 'header' ? BUY_LIST_HEADER_HEIGHT : COIN_ROW_WITH_PADDING_HEIGHT;
+
+  // Count headers up to this index
+  let headerCount = 0;
+  for (let i = 0; i < index; i++) {
+    if (data[i]?.listItemType === 'header') {
+      headerCount += 1;
+    }
+  }
+
+  const coinRowCount = index - headerCount;
+  const offset = headerCount * BUY_LIST_HEADER_HEIGHT + coinRowCount * COIN_ROW_WITH_PADDING_HEIGHT;
+
+  return { length, offset, index };
+};
 
 export const TokenToBuyList = () => {
   const { internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, outputProgress, setAsset } = useSwapContext();
@@ -130,29 +139,29 @@ export const TokenToBuyList = () => {
     return { height: bottomPadding };
   });
 
-  const averageItemSize = useMemo(() => {
-    const numberOfHeaders = sections.filter(section => section.listItemType === 'header').length;
-    const numberOfCoinRows = sections.filter(section => section.listItemType === 'coinRow').length;
-    const totalHeight = numberOfHeaders * BUY_LIST_HEADER_HEIGHT + numberOfCoinRows * COIN_ROW_WITH_PADDING_HEIGHT;
-    return totalHeight / (numberOfHeaders + numberOfCoinRows);
-  }, [sections]);
+  const animatedListProps = useAnimatedProps(() => {
+    const isFocused = outputProgress.value === 2;
+    return {
+      scrollIndicatorInsets: { bottom: 28 + (isFocused ? EXPANDED_INPUT_HEIGHT - FOCUSED_INPUT_HEIGHT : 0) },
+    };
+  });
 
   if (isLoading) return null;
 
+  const getFormattedTestId = (name: string, chainId: ChainId) => {
+    return `token-to-buy-${name}-${chainId}`.toLowerCase().replace(/\s+/g, '-');
+  };
+
   return (
-    <Box style={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}>
-      <FlashList
+    <Box style={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }} testID={'token-to-buy-list'}>
+      <FlatList
         keyboardShouldPersistTaps="always"
         ListEmptyComponent={<ListEmpty output />}
         ListFooterComponent={<Animated.View style={[animatedListPadding, { width: '100%' }]} />}
         ListHeaderComponent={<ChainSelection output />}
         contentContainerStyle={{ paddingBottom: 16 }}
-        // For some reason shallow copying the list data allows FlashList to more quickly pick up changes
-        data={sections.slice(0)}
-        estimatedFirstItemOffset={BUY_LIST_HEADER_HEIGHT}
-        estimatedItemSize={averageItemSize || undefined}
-        estimatedListSize={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}
-        getItemType={item => item.listItemType}
+        data={sections}
+        getItemLayout={getItemLayout}
         keyExtractor={item => `${item.listItemType}-${item.listItemType === 'coinRow' ? item.uniqueId : item.id}`}
         renderItem={({ item }) => {
           if (item.listItemType === 'header') {
@@ -160,6 +169,7 @@ export const TokenToBuyList = () => {
           }
           return (
             <CoinRow
+              testID={getFormattedTestId(item.name, item.chainId)}
               address={item.address}
               chainId={item.chainId}
               colors={item.colors}
@@ -175,7 +185,15 @@ export const TokenToBuyList = () => {
             />
           );
         }}
-        renderScrollComponent={ScrollViewWithRef as ComponentType<ScrollViewProps>}
+        renderScrollComponent={props => {
+          return (
+            <Animated.ScrollView
+              // eslint-disable-next-line react/jsx-props-no-spreading
+              {...props}
+              animatedProps={animatedListProps}
+            />
+          );
+        }}
         style={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }}
       />
     </Box>

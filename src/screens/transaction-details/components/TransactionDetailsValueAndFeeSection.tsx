@@ -6,8 +6,6 @@ import { Box, Stack, globalColors } from '@/design-system';
 import { TransactionDetailsDivider } from '@/screens/transaction-details/components/TransactionDetailsDivider';
 import * as i18n from '@/languages';
 
-import { Network } from '@/networks/types';
-
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { convertAmountAndPriceToNativeDisplay, convertRawAmountToBalance } from '@/helpers/utilities';
 import { useAccountSettings } from '@/hooks';
@@ -17,7 +15,7 @@ import ImgixImage from '@/components/images/ImgixImage';
 import { View } from 'react-native';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { checkForPendingSwap } from '../helpers/checkForPendingSwap';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/chains/types';
 
 type Props = {
   transaction: RainbowTransaction;

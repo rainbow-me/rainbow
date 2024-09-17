@@ -1,6 +1,7 @@
 import { GetPromoSheetCollectionQuery, PromoSheet } from '@/graphql/__generated__/arc';
 import { RainbowError, logger } from '@/logger';
 import { createRainbowStore } from '@/state/internal/createRainbowStore';
+import { Address } from 'viem';
 
 export type OmittedPromoSheet = Omit<
   PromoSheet,
@@ -26,12 +27,10 @@ export type OmittedPromoSheet = Omit<
 export interface RemotePromoSheetsState {
   sheetsById: Set<string>;
   sheets: Map<string, OmittedPromoSheet>;
-
-  lastShownTimestamp: number;
   isShown: boolean;
+  lastShownTimestamp: number;
 
   showSheet: (id: string) => void;
-
   setSheet: (id: string, sheet: OmittedPromoSheet) => void;
   setSheets: (data: GetPromoSheetCollectionQuery) => void;
   getSheet: (id: string) => OmittedPromoSheet | undefined;
@@ -55,7 +54,7 @@ function serializeState(state: Partial<RemotePromoSheetsState>, version?: number
       version,
     });
   } catch (error) {
-    logger.error(new RainbowError('Failed to serialize state for remote promo sheets storage'), { error });
+    logger.error(new RainbowError(`[remotePromoSheetsStore]: Failed to serialize state for remote promo sheets storage`), { error });
     throw error;
   }
 }
@@ -65,7 +64,9 @@ function deserializeState(serializedState: string) {
   try {
     parsedState = JSON.parse(serializedState);
   } catch (error) {
-    logger.error(new RainbowError('Failed to parse serialized state from remote promo sheets storage'), { error });
+    logger.error(new RainbowError(`[remotePromoSheetsStore]: Failed to parse serialized state from remote promo sheets storage`), {
+      error,
+    });
     throw error;
   }
 
@@ -77,7 +78,7 @@ function deserializeState(serializedState: string) {
       sheetsByIdData = new Set(state.sheetsById);
     }
   } catch (error) {
-    logger.error(new RainbowError('Failed to convert sheetsById from remote promo sheets storage'), { error });
+    logger.error(new RainbowError(`[remotePromoSheetsStore]: Failed to convert sheetsById from remote promo sheets storage`), { error });
     throw error;
   }
 
@@ -87,7 +88,7 @@ function deserializeState(serializedState: string) {
       sheetsData = new Map(state.sheets);
     }
   } catch (error) {
-    logger.error(new RainbowError('Failed to convert sheets from remote promo sheets storage'), { error });
+    logger.error(new RainbowError(`[remotePromoSheetsStore]: Failed to convert sheets from remote promo sheets storage`), { error });
     throw error;
   }
 
@@ -105,7 +106,6 @@ export const remotePromoSheetsStore = createRainbowStore<RemotePromoSheetsState>
   (set, get) => ({
     sheets: new Map<string, OmittedPromoSheet>(),
     sheetsById: new Set<string>(),
-
     lastShownTimestamp: 0,
     isShown: false,
 
@@ -123,6 +123,7 @@ export const remotePromoSheetsStore = createRainbowStore<RemotePromoSheetsState>
     },
 
     setSheets: (data: GetPromoSheetCollectionQuery) => {
+      logger.debug('[remotePromoSheetsStore]: Setting sheets', { count: data.promoSheetCollection?.items?.length });
       const sheets = (data.promoSheetCollection?.items ?? []) as OmittedPromoSheet[];
 
       const sheetsData = new Map<string, OmittedPromoSheet>();
@@ -142,17 +143,15 @@ export const remotePromoSheetsStore = createRainbowStore<RemotePromoSheetsState>
     },
 
     showSheet: (id: string) => {
-      const sheet = get().sheets.get(id);
+      logger.debug(`[remotePromoSheetsStore]: Showing sheet ${id}`);
+      const { sheets } = get();
+      const sheet = sheets.get(id);
       if (!sheet) return;
 
       const newSheets = new Map<string, OmittedPromoSheet>(get().sheets);
       newSheets.set(id, { ...sheet, hasBeenShown: true });
 
-      set({
-        isShown: true,
-        lastShownTimestamp: Date.now(),
-        sheets: newSheets,
-      });
+      set({ sheets: newSheets, isShown: true, lastShownTimestamp: Date.now() });
     },
 
     getSheet: (id: string) => get().sheets.get(id),
@@ -162,5 +161,10 @@ export const remotePromoSheetsStore = createRainbowStore<RemotePromoSheetsState>
     version: 1,
     serializer: serializeState,
     deserializer: deserializeState,
+    partialize: state => ({
+      sheetsById: state.sheetsById,
+      sheets: state.sheets,
+      lastShownTimestamp: state.lastShownTimestamp,
+    }),
   }
 );

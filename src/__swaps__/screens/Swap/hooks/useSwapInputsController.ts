@@ -1,7 +1,7 @@
 import { divWorklet, equalWorklet, greaterThanWorklet, isNumberStringWorklet, mulWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { SCRUBBER_WIDTH, SLIDER_WIDTH, snappySpringConfig } from '@/__swaps__/screens/Swap/constants';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/chains/types';
 import { RequestNewQuoteParams, inputKeys, inputMethods, inputValuesType } from '@/__swaps__/types/swap';
 import { valueBasedDecimalFormatter } from '@/__swaps__/utils/decimalFormatter';
 import { getInputValuesForSliderPositionWorklet, updateInputValuesAfterFlip } from '@/__swaps__/utils/flipAssets';
@@ -32,6 +32,7 @@ import { useCallback } from 'react';
 import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 import { NavigationSteps } from './useSwapNavigation';
+import { deepEqualWorklet } from '@/worklets/comparisons';
 
 const REMOTE_CONFIG = getRemoteConfig();
 
@@ -701,7 +702,8 @@ export function useSwapInputsController({
       if (areBothAssetsSet) {
         fetchQuoteAndAssetPrices();
       }
-    }
+    },
+    []
   );
 
   /**
@@ -722,7 +724,8 @@ export function useSwapInputsController({
         });
         fetchQuoteAndAssetPrices();
       }
-    }
+    },
+    []
   );
 
   /**
@@ -752,7 +755,8 @@ export function useSwapInputsController({
           }
         }
       }
-    }
+    },
+    []
   );
 
   /**
@@ -771,11 +775,11 @@ export function useSwapInputsController({
       values: inputValues.value,
     }),
     (current, previous) => {
-      if (previous && current !== previous) {
+      if (previous && !deepEqualWorklet(current, previous)) {
         // Handle updating input values based on the input method
         if (inputMethod.value === 'slider' && internalSelectedInputAsset.value && current.sliderXPosition !== previous.sliderXPosition) {
           // If the slider position changes
-          if (percentageToSwap.value === 0) {
+          if (current.sliderXPosition === 0) {
             resetValuesToZeroWorklet({ updateSlider: false });
           } else {
             // If the change set the slider position to > 0
@@ -870,9 +874,9 @@ export function useSwapInputsController({
           }
         }
       }
-    }
+    },
+    []
   );
-
   return {
     debouncedFetchQuote,
     formattedInputAmount,

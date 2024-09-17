@@ -11,12 +11,12 @@ import { SWAPS_V2, useExperimentalFlag, enableActionsOnReadOnlyWallet } from '@/
 import { ethereumUtils, watchingAlert } from '@/utils';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { isSameAsset, parseSearchAsset } from '@/__swaps__/utils/assets';
-import { chainNameFromChainId } from '@/__swaps__/utils/chains';
 import assetInputTypes from '@/helpers/assetInputTypes';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
 import { AddressOrEth, AssetType, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import exchangeModalTypes from '@/helpers/exchangeModalTypes';
+import { chainsIdByName, chainsName } from '@/chains';
 
 type SwapActionButtonProps = {
   asset: RainbowToken;
@@ -51,7 +51,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
         return;
       }
 
-      const chainId = ethereumUtils.getChainIdFromNetwork(asset.network);
+      const chainId = chainsIdByName[asset.network];
       const uniqueId = `${asset.address}_${chainId}`;
       const userAsset = userAssetsStore.getState().userAssets.get(uniqueId);
 
@@ -62,7 +62,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
           address: asset.address as AddressOrEth,
           type: asset.type as AssetType,
           chainId,
-          chainName: chainNameFromChainId(chainId),
+          chainName: chainsName[chainId],
           isNativeAsset: false,
           native: {},
         },
@@ -70,7 +70,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
           ...asset,
           uniqueId,
           chainId,
-          chainName: chainNameFromChainId(chainId),
+          chainName: chainsName[chainId],
           address: asset.address as AddressOrEth,
           highLiquidity: asset.highLiquidity ?? false,
           isRainbowCurated: asset.isRainbowCurated ?? false,
@@ -85,7 +85,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
       if (inputType === assetInputTypes.in) {
         swapsStore.setState({ inputAsset: userAsset || parsedAsset });
 
-        const nativeAssetForChain = await ethereumUtils.getNativeAssetForNetwork(chainId);
+        const nativeAssetForChain = await ethereumUtils.getNativeAssetForNetwork({ chainId });
         if (nativeAssetForChain && !isSameAsset({ address: nativeAssetForChain.address as AddressOrEth, chainId }, parsedAsset)) {
           const userOutputAsset = userAssetsStore.getState().getUserAsset(`${nativeAssetForChain.address}_${chainId}`);
 
@@ -96,7 +96,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, fromDisc
               ...nativeAssetForChain,
               uniqueId: `${nativeAssetForChain.address}_${chainId}`,
               chainId,
-              chainName: chainNameFromChainId(chainId),
+              chainName: chainsName[chainId],
               address: nativeAssetForChain.address as AddressOrEth,
               type: nativeAssetForChain.type as AssetType,
               mainnetAddress: nativeAssetForChain.mainnet_address as AddressOrEth,

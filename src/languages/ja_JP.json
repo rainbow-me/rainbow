@@ -748,8 +748,8 @@
       },
       "swap_details_v2": {
         "automatic": "自動",
-        "degen_mode": "デゲンモード",
-        "degen_mode_description": "レビューページをスキップして速くスワップする",
+        "degen_mode": "Degenモード",
+        "degen_mode_description": "レビューステップをスキップしてより早くスワップ",
         "maximum_sold": "最大売却数量",
         "minimum_received": "受け取る最小額",
         "preferred_network": "優先ネットワーク",
@@ -1321,10 +1321,16 @@
     "nfts": {
       "selling": "販売",
       "sort": {
+        "ABC": "Abc",
         "abc": "Abc",
+        "MOST_RECENT": "最近の",
         "most_recent": "最新順",
+        "FLOOR_PRICE": "フロア価格",
         "floor_price": "フロア価格"
-      }
+      },
+      "empty": "コレクタブル",
+      "collect_now": "今すぐコレクト",
+      "will_appear_here": "あなたのコレクティブルはこちらに表示されます"
     },
     "nft_offers": {
       "card": {
@@ -2068,6 +2074,7 @@
     "token_search": {
       "section_header": {
         "recent": "最近の",
+        "popular": "Rainbowの人気",
         "favorites": "お気に入り",
         "bridge": "ブリッジ",
         "verified": "確認済み",
@@ -2496,7 +2503,7 @@
       "balance_title": "残高",
       "buy": "購入",
       "change_wallet": {
-        "no_balance": "残高なし",
+        "loading_balance": "残高を読み込み中...",
         "balance_eth": "%{balanceEth} ETH",
         "watching": "ウォッチ中",
         "ledger": "Ledger"

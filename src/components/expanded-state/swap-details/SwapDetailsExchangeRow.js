@@ -1,7 +1,6 @@
 import lang from 'i18n-js';
 import { capitalize } from 'lodash';
 import React, { Fragment, useMemo } from 'react';
-import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { convertAmountToPercentageDisplay } from '../../../helpers/utilities';
 import Pill from '../../Pill';
 import { ButtonPressAnimation } from '../../animations';
@@ -11,10 +10,10 @@ import { usePrevious, useStepper } from '@/hooks';
 import { ImgixImage } from '@/components/images';
 import { getExchangeIconUrl, magicMemo } from '@/utils';
 import { SocketBridges } from '@/references/swap/bridges';
-import { RainbowNetworks } from '@/networks';
+import { SUPPORTED_CHAINS } from '@/chains';
 
 const parseExchangeName = name => {
-  const networks = RainbowNetworks.map(network => network.name.toLowerCase());
+  const networks = SUPPORTED_CHAINS.map(network => network.name.toLowerCase());
 
   const removeNetworks = name =>
     networks.some(network => name.toLowerCase().includes(network)) ? name.slice(name.indexOf('_') + 1, name.length) : name;
@@ -23,6 +22,7 @@ const parseExchangeName = name => {
 
   return removeNetworks(removeBridge(name));
 };
+
 const ExchangeIcon = magicMemo(
   function ExchangeIcon({ index = 1, icon, protocol }) {
     const { colors } = useTheme();

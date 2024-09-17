@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from
 import { StyleSheet } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import networkTypes from '../../helpers/networkTypes';
 import WalletTypes from '../../helpers/walletTypes';
 import { address } from '../../utils/abbreviations';
 import Divider from '../Divider';
@@ -19,6 +18,7 @@ import { position } from '@/styles';
 import { EditWalletContextMenuActions } from '@/screens/ChangeWalletSheet';
 import { HARDWARE_WALLETS, useExperimentalFlag } from '@/config';
 import { Inset, Stack } from '@/design-system';
+import { Network } from '@/chains/types';
 
 const listTopPadding = 7.5;
 const rowHeight = 59;
@@ -127,7 +127,7 @@ export default function WalletList({
     const sortedKeys = Object.keys(allWallets).sort();
     sortedKeys.forEach(key => {
       const wallet = allWallets[key];
-      const filteredAccounts = wallet.addresses.filter((account: any) => account.visible);
+      const filteredAccounts = (wallet.addresses || []).filter((account: any) => account.visible);
       filteredAccounts.forEach((account: any) => {
         const row = {
           ...account,
@@ -138,7 +138,7 @@ export default function WalletList({
           isReadOnly: wallet.type === WalletTypes.readOnly,
           isLedger: wallet.type === WalletTypes.bluetooth,
           isSelected: accountAddress === account.address && (watchOnly || wallet?.id === currentWallet?.id),
-          label: network !== networkTypes.mainnet && account.ens === account.label ? address(account.address, 6, 4) : account.label,
+          label: network !== Network.mainnet && account.ens === account.label ? address(account.address, 6, 4) : account.label,
           onPress: () => onChangeAccount(wallet?.id, account.address),
           rowType: RowTypes.ADDRESS,
           walletId: wallet?.id,

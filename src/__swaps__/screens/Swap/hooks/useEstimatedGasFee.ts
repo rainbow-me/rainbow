@@ -1,4 +1,4 @@
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/chains/types';
 import { weiToGwei } from '@/__swaps__/utils/ethereum';
 import { add, convertAmountToNativeDisplayWorklet, formatNumber, multiply } from '@/__swaps__/utils/numbers';
 import { useNativeAsset } from '@/utils/ethereumUtils';
@@ -19,9 +19,22 @@ function safeBigInt(value: string) {
   }
 }
 
+const isFeeNaN = (value: string | undefined) => isNaN(Number(value)) || typeof value === 'undefined';
+
 export function calculateGasFee(gasSettings: GasSettings, gasLimit: string) {
-  const amount = gasSettings.isEIP1559 ? add(gasSettings.maxBaseFee, gasSettings.maxPriorityFee || '0') : gasSettings.gasPrice;
-  return multiply(gasLimit, amount);
+  if (gasSettings.isEIP1559) {
+    if (isFeeNaN(gasSettings.maxBaseFee) || isFeeNaN(gasSettings.maxPriorityFee)) {
+      return null;
+    }
+
+    return add(gasSettings.maxBaseFee, gasSettings.maxPriorityFee);
+  }
+
+  if (isFeeNaN(gasSettings.gasPrice)) {
+    return null;
+  }
+
+  return multiply(gasLimit, gasSettings.gasPrice);
 }
 
 export function useEstimatedGasFee({
@@ -40,6 +53,7 @@ export function useEstimatedGasFee({
     if (!gasLimit || !gasSettings || !nativeNetworkAsset?.price) return;
 
     const fee = calculateGasFee(gasSettings, gasLimit);
+    if (!fee) return;
 
     const networkAssetPrice = nativeNetworkAsset.price.value?.toString();
     if (!networkAssetPrice) return `${formatNumber(weiToGwei(fee))} Gwei`;

@@ -9,15 +9,15 @@ import { ETH_ADDRESS } from '@/references';
 
 import { ModalContext } from '@/react-native-cool-modals/NativeStackView';
 import { DEFAULT_CHART_TYPE } from '@/redux/charts';
-import { usePriceChart } from './useChartInfo';
+import { ChartData, usePriceChart } from './useChartInfo';
 
 export const UniBalanceHeightDifference = 100;
 
-const traverseData = (prev: any, data: any) => {
+const traverseData = (prev: { nativePoints: ChartData[]; points: ChartData[] }, data: ChartData[]) => {
   if (!data || data.length === 0) {
     return prev;
   }
-  const filtered = data.filter(({ y }: any) => y);
+  const filtered = data.filter(({ y }) => y);
   if (filtered[0]?.y === prev?.nativePoints[0]?.y && filtered[0]?.x === prev?.nativePoints[0]?.x) {
     return prev;
   }
@@ -98,8 +98,9 @@ export default function useChartThrottledPoints({
     updateChartType,
   } = usePriceChart({
     address: asset.address,
-    network: asset.network,
+    chainId: asset.chainId,
     mainnetAddress: asset?.mainnet_address || asset?.mainnetAddress,
+    currency: nativeCurrency,
   });
   const [throttledPoints, setThrottledPoints] = useState(() => traverseData({ nativePoints: [], points: [] }, chart));
 
@@ -110,8 +111,7 @@ export default function useChartThrottledPoints({
   const initialChartDataLabels = useChartDataLabels({
     asset,
     chartType,
-    color,
-    points: throttledPoints?.points ?? [],
+    points: throttledPoints.points ?? [],
   });
 
   useEffect(() => {

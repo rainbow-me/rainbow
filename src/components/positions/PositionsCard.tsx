@@ -13,11 +13,12 @@ import { event } from '@/analytics/event';
 import { IS_ANDROID } from '@/env';
 import { capitalize, uniqBy } from 'lodash';
 import { RainbowDeposit, RainbowPosition } from '@/resources/defi/types';
-import { Network } from '@/networks/types';
+import { Network } from '@/chains/types';
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 import { useAccountSettings } from '@/hooks';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
-import { ethereumUtils } from '@/utils';
+import { AddressOrEth } from '@/__swaps__/types/assets';
+import { chainsIdByName } from '@/chains';
 
 type PositionCardProps = {
   position: RainbowPosition;
@@ -32,8 +33,8 @@ type CoinStackToken = {
 function CoinIconForStack({ token }: { token: CoinStackToken }) {
   const theme = useTheme();
   const { nativeCurrency } = useAccountSettings();
-  const chainId = ethereumUtils.getChainIdFromNetwork(token.network);
-  const { data: externalAsset } = useExternalToken({ address: token.address, chainId, currency: nativeCurrency });
+  const chainId = chainsIdByName[token.network];
+  const { data: externalAsset } = useExternalToken({ address: token.address as AddressOrEth, chainId, currency: nativeCurrency });
 
   return (
     <RainbowCoinIcon

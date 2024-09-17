@@ -24,12 +24,12 @@ import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextSty
 import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/chains/types';
 import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
 import { getDefaultSlippageWorklet, isUnwrapEthWorklet, isWrapEthWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
-import { getFlashbotsProvider, getIsHardhatConnected, getProvider, isHardHat } from '@/handlers/web3';
+import { getFlashbotsProvider, getProvider } from '@/handlers/web3';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { useAccountSettings } from '@/hooks';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
@@ -38,7 +38,6 @@ import { RainbowError, logger } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { RainbowNetworkByChainId, getNetworkObject } from '@/networks';
 import { walletExecuteRap } from '@/raps/execute';
 import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
 import { queryClient } from '@/react-query';
@@ -56,9 +55,12 @@ import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisable
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { getRemoteConfig } from '@/model/remoteConfig';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { chainsNativeAsset, supportedFlashbotsChainIds } from '@/chains';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
+const holdToBridge = i18n.t(i18n.l.swap.actions.hold_to_bridge);
 const done = i18n.t(i18n.l.button.done);
 const enterAmount = i18n.t(i18n.l.swap.actions.enter_amount);
 const review = i18n.t(i18n.l.swap.actions.review);
@@ -164,6 +166,8 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
   const slippage = useSharedValue(getDefaultSlippageWorklet(initialSelectedInputAsset?.chainId || ChainId.mainnet, getRemoteConfig()));
 
+  const hasEnoughFundsForGas = useSharedValue<boolean | undefined>(undefined);
+
   const SwapInputController = useSwapInputsController({
     focusedInput,
     lastTypedInput,
@@ -196,11 +200,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       NotificationManager?.postNotification('rapInProgress');
 
       const provider =
-        parameters.flashbots && getNetworkObject({ chainId: parameters.chainId }).features.flashbots
+        parameters.flashbots && supportedFlashbotsChainIds.includes(parameters.chainId)
           ? await getFlashbotsProvider()
           : getProvider({ chainId: parameters.chainId });
-      const providerUrl = provider?.connection?.url;
-      const connectedToHardhat = !!providerUrl && isHardHat(providerUrl);
+      const connectedToHardhat = useConnectedToHardhatStore.getState().connectedToHardhat;
 
       const isBridge = swapsStore.getState().inputAsset?.mainnetAddress === swapsStore.getState().outputAsset?.mainnetAddress;
       const isDegenModeEnabled = swapsStore.getState().degenMode;
@@ -258,7 +261,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         };
       }
 
-      const chainId = getIsHardhatConnected() ? ChainId.hardhat : parameters.chainId;
+      const chainId = connectedToHardhat ? ChainId.hardhat : parameters.chainId;
       const { errorMessage } = await performanceTracking.getState().executeFn({
         fn: walletExecuteRap,
         screen: Screens.SWAPS,
@@ -378,7 +381,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       const type = inputAsset.chainId !== outputAsset.chainId ? 'crosschainSwap' : 'swap';
       const quoteData = q as QuoteTypeMap[typeof type];
-      const flashbots = (SwapSettings.flashbots.value && inputAsset.chainId === ChainId.mainnet) ?? false;
+      const flashbots = (SwapSettings.flashbots.value && !!supportedFlashbotsChainIds.includes(inputAsset.chainId)) ?? false;
 
       const isNativeWrapOrUnwrap =
         isWrapEthWorklet({
@@ -596,7 +599,10 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       if (didSelectedAssetChange) {
         const assetToSet = insertUserAssetBalance
-          ? { ...asset, balance: (asset && userAssetsStore.getState().getUserAsset(asset.uniqueId)?.balance) || asset?.balance }
+          ? {
+              ...asset,
+              balance: (asset && userAssetsStore.getState().getUserAsset(asset.uniqueId)?.balance) || asset?.balance,
+            }
           : asset;
 
         if (isSameAsOtherAsset) {
@@ -664,12 +670,18 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     };
   }, []);
 
-  const hasEnoughFundsForGas = useSharedValue<boolean | undefined>(undefined);
+  // Stop auto-fetching if there is a quote error or no input asset balance
   useAnimatedReaction(
-    () => isFetching.value,
-    fetching => {
-      if (fetching) hasEnoughFundsForGas.value = undefined;
-    }
+    () =>
+      SwapWarning.swapWarning.value.type === SwapWarningType.no_quote_available ||
+      SwapWarning.swapWarning.value.type === SwapWarningType.no_route_found ||
+      (internalSelectedInputAsset.value && equalWorklet(internalSelectedInputAsset.value.maxSwappableAmount, '0')),
+    (shouldStop, previous) => {
+      if (shouldStop && previous === false) {
+        SwapInputController.quoteFetchingInterval.stop();
+      }
+    },
+    []
   );
 
   const confirmButtonProps: SwapContextType['confirmButtonProps'] = useDerivedValue(() => {
@@ -690,52 +702,56 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       return { label: selectToken, disabled: true, type: 'hold' };
     }
 
+    const sellAsset = internalSelectedInputAsset.value;
+    const enoughFundsForSwap =
+      sellAsset &&
+      !equalWorklet(sellAsset.maxSwappableAmount, '0') &&
+      lessThanOrEqualToWorklet(SwapInputController.inputValues.value.inputAmount, sellAsset.maxSwappableAmount);
+
+    if (!enoughFundsForSwap && hasEnoughFundsForGas.value !== undefined) {
+      return { label: insufficientFunds, disabled: true, type: 'hold' };
+    }
+
     const isInputZero = equalWorklet(SwapInputController.inputValues.value.inputAmount, 0);
     const isOutputZero = equalWorklet(SwapInputController.inputValues.value.outputAmount, 0);
 
     const userHasNotEnteredAmount = SwapInputController.inputMethod.value !== 'slider' && isInputZero && isOutputZero;
-
     const userHasNotMovedSlider = SwapInputController.inputMethod.value === 'slider' && SwapInputController.percentageToSwap.value === 0;
 
     if (userHasNotEnteredAmount || userHasNotMovedSlider) {
       return { label: enterAmount, disabled: true, opacity: 1, type: 'hold' };
     }
 
-    if (
-      [SwapWarningType.no_quote_available, SwapWarningType.no_route_found, SwapWarningType.insufficient_liquidity].includes(
-        SwapWarning.swapWarning.value.type
-      )
-    ) {
-      return { icon: '􀕹', label: review, disabled: true, type: 'hold' };
-    }
-
-    const sellAsset = internalSelectedInputAsset.value;
-    const enoughFundsForSwap =
-      sellAsset && lessThanOrEqualToWorklet(SwapInputController.inputValues.value.inputAmount, sellAsset.maxSwappableAmount);
-
-    if (!enoughFundsForSwap) {
-      return { label: insufficientFunds, disabled: true, type: 'hold' };
-    }
+    const holdLabel = swapInfo.value.isBridging ? holdToBridge : holdToSwap;
+    const reviewLabel = SwapSettings.degenMode.value ? holdLabel : review;
 
     const isQuoteError = quote.value && 'error' in quote.value;
     const isLoadingGas = !isQuoteError && hasEnoughFundsForGas.value === undefined;
     const isReviewSheetOpen = configProgress.value === NavigationSteps.SHOW_REVIEW || SwapSettings.degenMode.value;
 
-    if ((isFetching.value || isLoadingGas) && !isQuoteError) {
-      const disabled = (isReviewSheetOpen && (isFetching.value || isLoadingGas)) || !quote.value;
+    const isStale =
+      !!isQuoteStale.value &&
+      (SwapInputController.inputMethod.value !== 'slider' || sliderPressProgress.value === SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
+
+    if ((isFetching.value || isLoadingGas || isStale) && !isQuoteError) {
+      const disabled = (isReviewSheetOpen && (isFetching.value || isLoadingGas || isStale)) || !quote.value;
       const buttonType = isReviewSheetOpen ? 'hold' : 'tap';
       return { label: fetchingPrices, disabled, type: buttonType };
     }
 
-    const reviewLabel = SwapSettings.degenMode.value ? holdToSwap : review;
+    const quoteUnavailable = [
+      SwapWarningType.no_quote_available,
+      SwapWarningType.no_route_found,
+      SwapWarningType.insufficient_liquidity,
+    ].includes(SwapWarning.swapWarning.value.type);
 
-    if (isQuoteError) {
+    if (quoteUnavailable || isQuoteError) {
       const icon = isReviewSheetOpen ? undefined : '􀕹';
       return { icon, label: isReviewSheetOpen ? quoteError : reviewLabel, disabled: true, type: 'hold' };
     }
 
-    if (!hasEnoughFundsForGas.value) {
-      const nativeCurrency = RainbowNetworkByChainId[sellAsset?.chainId || ChainId.mainnet].nativeCurrency;
+    if (hasEnoughFundsForGas.value === false) {
+      const nativeCurrency = chainsNativeAsset[sellAsset?.chainId || ChainId.mainnet];
       return {
         label: `${insufficient} ${nativeCurrency.symbol}`,
         disabled: true,
@@ -744,23 +760,15 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     }
 
     if (isReviewSheetOpen) {
-      return { icon: '􀎽', label: holdToSwap, disabled: false, type: 'hold' };
+      const isDraggingSlider = !!isQuoteStale.value && sliderPressProgress.value !== SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT;
+      return { icon: '􀎽', label: holdLabel, disabled: isDraggingSlider, type: 'hold' };
     }
 
     return { icon: '􀕹', label: reviewLabel, disabled: false, type: 'tap' };
   });
 
   const confirmButtonIconStyle = useAnimatedStyle(() => {
-    const isInputZero = equalWorklet(SwapInputController.inputValues.value.inputAmount, 0);
-    const isOutputZero = equalWorklet(SwapInputController.inputValues.value.outputAmount, 0);
-
-    const sliderCondition =
-      SwapInputController.inputMethod.value === 'slider' &&
-      (SwapInputController.percentageToSwap.value === 0 || isInputZero || isOutputZero);
-    const inputCondition = SwapInputController.inputMethod.value !== 'slider' && (isInputZero || isOutputZero) && !isFetching.value;
-
-    const shouldHide = sliderCondition || inputCondition;
-
+    const shouldHide = !confirmButtonProps.value.icon;
     return {
       display: shouldHide ? 'none' : 'flex',
     };

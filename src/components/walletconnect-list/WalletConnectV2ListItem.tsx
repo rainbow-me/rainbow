@@ -17,15 +17,16 @@ import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding, position } from '@/styles';
-import { ethereumUtils, showActionSheetWithOptions } from '@/utils';
+import { showActionSheetWithOptions } from '@/utils';
 import * as lang from '@/languages';
 import { useTheme } from '@/theme';
 import { logger, RainbowError } from '@/logger';
-import { changeAccount, disconnectSession, isSupportedChain } from '@/walletConnect';
+import { changeAccount, disconnectSession } from '@/walletConnect';
 import { Box, Inline } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/chains/types';
+import { supportedWalletConnectChainIds } from '@/chains';
 
 const CONTAINER_PADDING = 15;
 const VENDOR_LOGO_ICON_SIZE = 50;
@@ -65,7 +66,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
     const eip155Account = namespaces.eip155?.accounts?.[0] || undefined;
 
     if (!eip155Account) {
-      const e = new RainbowError(`WalletConnectV2ListItem: unsupported namespace`);
+      const e = new RainbowError(`[WalletConnectV2ListItem]: unsupported namespace`);
       logger.error(e);
 
       // defensive, just for types, should never happen
@@ -73,10 +74,12 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
     }
 
     const address = eip155Account?.split(':')?.[2];
-    const chainIds = (chains?.map(chain => parseInt(chain.split(':')[1]))?.filter(isSupportedChain) ?? []) as ChainId[];
+    const chainIds = (chains
+      ?.map(chain => parseInt(chain.split(':')[1]))
+      ?.filter(chainId => supportedWalletConnectChainIds.includes(chainId)) ?? []) as ChainId[];
 
     if (!address) {
-      const e = new RainbowError(`WalletConnectV2ListItem: could not parse address`);
+      const e = new RainbowError(`[WalletConnectV2ListItem]: could not parse address`);
       logger.error(e);
 
       // defensive, just for types, should never happen

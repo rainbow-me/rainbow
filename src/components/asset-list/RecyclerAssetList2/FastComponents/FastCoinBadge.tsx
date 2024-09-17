@@ -18,7 +18,7 @@ import BlastBadge from '@/assets/badges/blastBadge.png';
 import BlastBadgeDark from '@/assets/badges/blastBadgeDark.png';
 import DegenBadge from '@/assets/badges/degenBadge.png';
 import DegenBadgeDark from '@/assets/badges/degenBadgeDark.png';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/chains/types';
 
 interface FastChainBadgeProps {
   chainId: ChainId;

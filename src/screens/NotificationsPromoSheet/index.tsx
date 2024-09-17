@@ -61,7 +61,7 @@ export function NotificationsPromoSheetInner({
 
   const primaryButtonOnPress = React.useCallback(async () => {
     if (notificationsDenied) {
-      logger.debug(`NotificationsPromoSheet: notifications permissions denied (could be default state)`);
+      logger.debug(`[NotificationsPromoSheet]: notifications permissions denied (could be default state)`);
       const result = await requestNotificationPermissions();
       if (result.status === perms.RESULTS.BLOCKED) {
         analyticsV2.track(analyticsV2.event.notificationsPromoPermissionsBlocked);
@@ -71,11 +71,11 @@ export function NotificationsPromoSheetInner({
         analyticsV2.track(analyticsV2.event.notificationsPromoPermissionsGranted);
       }
     } else if (!hasSettingsEnabled || notificationsBlocked) {
-      logger.debug(`NotificationsPromoSheet: notifications permissions either blocked or all settings are disabled`);
+      logger.debug(`[NotificationsPromoSheet]: notifications permissions either blocked or all settings are disabled`);
       analyticsV2.track(analyticsV2.event.notificationsPromoSystemSettingsOpened);
       await perms.openSettings();
     } else if (notificationsEnabled) {
-      logger.debug(`NotificationsPromoSheet: notifications permissions enabled`);
+      logger.debug(`[NotificationsPromoSheet]: notifications permissions enabled`);
       analyticsV2.track(analyticsV2.event.notificationsPromoNotificationSettingsOpened);
       navigateToNotifications();
     } else {
@@ -83,7 +83,16 @@ export function NotificationsPromoSheetInner({
         permissions,
       });
     }
-  }, [goBack, permissions, hasSettingsEnabled, notificationsDenied, notificationsEnabled, notificationsBlocked, navigateToNotifications]);
+  }, [
+    notificationsDenied,
+    hasSettingsEnabled,
+    notificationsBlocked,
+    notificationsEnabled,
+    requestNotificationPermissions,
+    goBack,
+    navigateToNotifications,
+    permissions,
+  ]);
 
   return (
     <PromoSheet
@@ -101,10 +110,12 @@ export function NotificationsPromoSheetInner({
           notificationsEnabled && hasSettingsEnabled
             ? `􀜊 ${i18n.t(TRANSLATIONS.primary_button.permissions_enabled)}`
             : `􀝖 ${i18n.t(TRANSLATIONS.primary_button.permissions_not_enabled)}`,
+        textColor: colors.trueBlack,
         onPress: primaryButtonOnPress,
       }}
       secondaryButtonProps={{
         label: i18n.t(TRANSLATIONS.secondary_button),
+        textColor: colors.whiteLabel,
         onPress: goBack,
       }}
       items={[

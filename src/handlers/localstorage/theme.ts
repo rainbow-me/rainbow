@@ -2,7 +2,7 @@ import { IS_ANDROID } from '@/env';
 import { getGlobal, saveGlobal } from './common';
 import { NativeModules } from 'react-native';
 import { colors } from '@/styles';
-import { isUsingButtonNavigation } from '@/helpers/statusBarHelper';
+import { isUsingButtonNavigation } from '@/utils/deviceUtils';
 import { Themes, ThemesType } from '@/theme';
 
 const { NavigationBar } = NativeModules;

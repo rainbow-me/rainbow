@@ -1,23 +1,23 @@
 import { BalancePill } from '@/__swaps__/screens/Swap/components/BalancePill';
 import { CoinRowButton } from '@/__swaps__/screens/Swap/components/CoinRowButton';
 import { AddressOrEth, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/chains/types';
 import { SearchAsset } from '@/__swaps__/types/search';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ContextMenuButton } from '@/components/context-menu';
 import { Box, Column, Columns, HitSlop, Inline, Text } from '@/design-system';
 import { setClipboard } from '@/hooks/useClipboard';
 import * as i18n from '@/languages';
-import { RainbowNetworks } from '@/networks';
 import { BASE_DEGEN_ADDRESS, DEGEN_CHAIN_DEGEN_ADDRESS, ETH_ADDRESS } from '@/references';
 import { toggleFavorite } from '@/resources/favorites';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
 import { startCase } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { GestureResponderEvent } from 'react-native';
 import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import { SwapCoinIcon } from './SwapCoinIcon';
+import { SUPPORTED_CHAIN_IDS } from '@/chains';
 
 export const COIN_ROW_WITH_PADDING_HEIGHT = 56;
 
@@ -52,6 +52,7 @@ interface InputCoinRowProps {
   onPress: (asset: ParsedSearchAsset | null) => void;
   output?: false | undefined;
   uniqueId: string;
+  testID?: string;
 }
 
 type PartialAsset = Pick<SearchAsset, 'address' | 'chainId' | 'colors' | 'icon_url' | 'mainnetAddress' | 'name' | 'symbol' | 'uniqueId'>;
@@ -62,12 +63,13 @@ interface OutputCoinRowProps extends PartialAsset {
   output: true;
   nativePriceChange?: string;
   isTrending?: boolean;
+  testID?: string;
 }
 
 type CoinRowProps = InputCoinRowProps | OutputCoinRowProps;
 
-export function CoinRow({ isFavorite, onPress, output, uniqueId, ...assetProps }: CoinRowProps) {
-  const inputAsset = userAssetsStore(state => (output ? undefined : state.getUserAsset(uniqueId)));
+export function CoinRow({ isFavorite, onPress, output, uniqueId, testID, ...assetProps }: CoinRowProps) {
+  const inputAsset = useUserAssetsStore(state => (output ? undefined : state.getUserAsset(uniqueId)));
   const outputAsset = output ? (assetProps as PartialAsset) : undefined;
 
   const asset = output ? outputAsset : inputAsset;
@@ -116,7 +118,7 @@ export function CoinRow({ isFavorite, onPress, output, uniqueId, ...assetProps }
   if (!address || !chainId) return null;
 
   return (
-    <Box style={{ height: COIN_ROW_WITH_PADDING_HEIGHT, width: '100%' }}>
+    <Box testID={testID} style={{ height: COIN_ROW_WITH_PADDING_HEIGHT, width: '100%' }}>
       <Columns alignVertical="center">
         <Column>
           <ButtonPressAnimation disallowInterruption onPress={onPressHandler} scaleTo={0.95}>
@@ -183,7 +185,7 @@ export function CoinRow({ isFavorite, onPress, output, uniqueId, ...assetProps }
 }
 
 const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId }) => {
-  const network = RainbowNetworks.find(network => network.id === chainId)?.value;
+  const supportedChain = SUPPORTED_CHAIN_IDS.includes(chainId);
 
   const handleCopy = useCallback(() => {
     haptics.selection();
@@ -195,11 +197,11 @@ const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId })
       title: i18n.t(i18n.l.exchange.coin_row.copy_contract_address),
       action: handleCopy,
     },
-    ...(network
+    ...(supportedChain
       ? {
           blockExplorer: {
-            title: i18n.t(i18n.l.exchange.coin_row.view_on, { blockExplorerName: startCase(ethereumUtils.getBlockExplorer(chainId)) }),
-            action: () => ethereumUtils.openAddressInBlockExplorer(address, chainId),
+            title: i18n.t(i18n.l.exchange.coin_row.view_on, { blockExplorerName: startCase(ethereumUtils.getBlockExplorer({ chainId })) }),
+            action: () => ethereumUtils.openAddressInBlockExplorer({ address, chainId }),
           },
         }
       : {}),
@@ -215,7 +217,7 @@ const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId })
           iconValue: 'doc.on.doc',
         },
       },
-      ...(network
+      ...(supportedChain
         ? [
             {
               actionKey: 'blockExplorer',
@@ -234,7 +236,7 @@ const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId })
   const handlePressMenuItem = async ({ nativeEvent: { actionKey } }: OnPressMenuItemEventObject) => {
     if (actionKey === 'copyAddress') {
       options.copy.action();
-    } else if (actionKey === 'blockExplorer' && network) {
+    } else if (actionKey === 'blockExplorer' && supportedChain) {
       options.blockExplorer?.action();
     }
   };
@@ -242,14 +244,14 @@ const InfoButton = ({ address, chainId }: { address: string; chainId: ChainId })
   const onPressAndroid = () =>
     showActionSheetWithOptions(
       {
-        options: [options.copy.title, ...(network ? [options.blockExplorer?.title] : [])],
+        options: [options.copy.title, ...(supportedChain ? [options.blockExplorer?.title] : [])],
         showSeparators: true,
       },
       (idx: number) => {
         if (idx === 0) {
           options.copy.action();
         }
-        if (idx === 1 && network) {
+        if (idx === 1 && supportedChain) {
           options.blockExplorer?.action();
         }
       }

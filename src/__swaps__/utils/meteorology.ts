@@ -1,61 +1,20 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/chains/types';
 import { rainbowMeteorologyGetData } from '@/handlers/gasFees';
 import { abs, lessThan, subtract } from '@/helpers/utilities';
 import { gweiToWei } from '@/parsers';
 import { QueryConfig, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { getNetworkFromChainId } from '@/utils/ethereumUtils';
 import { useCallback } from 'react';
 import { MIN_FLASHBOTS_PRIORITY_FEE } from '../screens/Swap/constants';
 import { GasSettings } from '../screens/Swap/hooks/useCustomGas';
 import { getSelectedGasSpeed, useGasSettings } from '../screens/Swap/hooks/useSelectedGas';
 import { GasSpeed } from '../types/gas';
 import { getMinimalTimeUnitStringForMs } from './time';
+import { MeteorologyLegacyResponse, MeteorologyResponse } from '@/entities/gas';
 
 // Query Types
-
-export type MeteorologyResponse = {
-  data: {
-    baseFeeSuggestion: string;
-    baseFeeTrend: number;
-    blocksToConfirmationByBaseFee: {
-      [baseFee: string]: string;
-    };
-    blocksToConfirmationByPriorityFee: {
-      [priorityFee: string]: string;
-    };
-    confirmationTimeByPriorityFee: {
-      [priorityFee: string]: string;
-    };
-    currentBaseFee: string;
-    maxPriorityFeeSuggestions: {
-      fast: string;
-      normal: string;
-      urgent: string;
-    };
-    secondsPerNewBlock: number;
-    meta: {
-      blockNumber: number;
-      provider: string;
-    };
-  };
-};
-
-export type MeteorologyLegacyResponse = {
-  data: {
-    legacy: {
-      fastGasPrice: string;
-      proposeGasPrice: string;
-      safeGasPrice: string;
-    };
-    meta: {
-      blockNumber: number;
-      provider: string;
-    };
-  };
-};
 
 export type MeteorologyArgs = {
   chainId: ChainId;
@@ -72,8 +31,7 @@ type MeteorologyQueryKey = ReturnType<typeof meteorologyQueryKey>;
 // Query Function
 
 async function meteorologyQueryFunction({ queryKey: [{ chainId }] }: QueryFunctionArgs<typeof meteorologyQueryKey>) {
-  const network = getNetworkFromChainId(chainId);
-  const parsedResponse = await rainbowMeteorologyGetData(network);
+  const parsedResponse = await rainbowMeteorologyGetData(chainId);
   const meteorologyData = parsedResponse.data as MeteorologyResponse | MeteorologyLegacyResponse;
   return meteorologyData;
 }
@@ -206,8 +164,8 @@ function findClosestValue(target: string, array: string[]) {
 function selectEstimatedTime({ data }: MeteorologyResult, selectedGas: GasSettings | undefined) {
   if ('legacy' in data) return undefined;
   if (!selectedGas?.isEIP1559) return undefined;
-  const value = findClosestValue(selectedGas.maxPriorityFee, Object.values(data.confirmationTimeByPriorityFee));
-  const [time] = Object.entries(data.confirmationTimeByPriorityFee).find(([, v]) => v === value) || [];
+  const value = findClosestValue(selectedGas.maxPriorityFee, Object.values(data?.confirmationTimeByPriorityFee || {}));
+  const [time] = Object.entries(data?.confirmationTimeByPriorityFee || {}).find(([, v]) => v === value) || [];
   if (!time) return undefined;
   return `${+time >= 3600 ? '> ' : '~'}${getMinimalTimeUnitStringForMs(+time * 1000)}`;
 }

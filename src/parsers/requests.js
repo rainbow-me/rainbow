@@ -9,7 +9,7 @@ import { isSignTypedData, SIGN, PERSONAL_SIGN, SEND_TRANSACTION, SIGN_TRANSACTIO
 import { isAddress } from '@ethersproject/address';
 import { toUtf8String } from '@ethersproject/strings';
 
-export const getRequestDisplayDetails = (payload, nativeCurrency, chainId) => {
+export const getRequestDisplayDetails = async (payload, nativeCurrency, chainId) => {
   const timestampInMs = Date.now();
   if (payload.method === SEND_TRANSACTION || payload.method === SIGN_TRANSACTION) {
     const transaction = Object.assign(payload?.params?.[0] ?? null);
@@ -43,7 +43,11 @@ export const getRequestDisplayDetails = (payload, nativeCurrency, chainId) => {
         message = toUtf8String(message);
       }
     } catch (error) {
-      logger.debug('WC v2: getting display details, unable to decode hex message to UTF8 string', {}, logger.DebugContext.walletconnect);
+      logger.warn(
+        '[parsers/requests]: WC v2: getting display details, unable to decode hex message to UTF8 string',
+        { error },
+        logger.DebugContext.walletconnect
+      );
     }
     return getMessageDisplayDetails(message, timestampInMs);
   }
@@ -71,9 +75,9 @@ const getMessageDisplayDetails = (message, timestampInMs) => ({
   timestampInMs,
 });
 
-const getTransactionDisplayDetails = (transaction, nativeCurrency, timestampInMs, chainId) => {
+const getTransactionDisplayDetails = async (transaction, nativeCurrency, timestampInMs, chainId) => {
   const tokenTransferHash = smartContractMethods.token_transfer.hash;
-  const nativeAsset = ethereumUtils.getNativeAssetForNetwork(chainId);
+  const nativeAsset = await ethereumUtils.getNativeAssetForNetwork({ chainId });
   if (transaction.data === '0x') {
     const value = fromWei(convertHexToString(transaction.value));
     const priceUnit = nativeAsset?.price?.value ?? 0;

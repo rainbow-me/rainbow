@@ -3,7 +3,6 @@ apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 
-
 def getPassword(String currentUser, String keyChain) {
     def stdout = new ByteArrayOutputStream()
     def stderr = new ByteArrayOutputStream()
@@ -30,15 +29,9 @@ def getPassword(String currentUser, String keyChain) {
     stdout.toString().trim()
 }
 
-
 import com.android.build.OutputFile
 
-
-
 apply plugin: "com.facebook.react"
-
-
-
 apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
 
 react {
@@ -117,11 +110,9 @@ def enableProguardInReleaseBuilds = false
  */
 def jscFlavor = 'org.webkit:android-jsc:+'
 
-
-
 android {
     def envFile = project.file('../../.env')
-    def env =[:]
+    def env = [:]
     envFile.eachLine {
         if (it.contains('=') && (!it.startsWith("#"))) {
             def (key, value) = it.split('=')
@@ -142,24 +133,24 @@ android {
         applicationId "me.rainbow"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 228
-        versionName "1.9.37"
+        versionCode 231
+        versionName "1.9.39"
         missingDimensionStrategy 'react-native-camera', 'general'
         renderscriptTargetApi 23
         renderscriptSupportModeEnabled true
         multiDexEnabled true
-        testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
+        testBuildType System.getProperty('testBuildType', 'debug')
+        missingDimensionStrategy 'detox', 'full'        
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
         manifestPlaceholders = [
-		    BRANCH_KEY: env.get('BRANCH_KEY')
-	    ]
+            BRANCH_KEY: env.get('BRANCH_KEY')
+        ]
 
         ndk {
-            abiFilters 'armeabi-v7a','arm64-v8a','x86','x86_64'
+            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
         }
     }
-
 
     signingConfigs {
         debug {
@@ -190,7 +181,7 @@ android {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             // Detox-specific additions to pro-guard
-            //proguardFile "${rootProject.projectDir}/../node_modules/detox/android/detox/proguard-rules-app.pro"
+            proguardFile "${rootProject.projectDir}/../node_modules/detox/android/detox/proguard-rules-app.pro"
         }
     }
 
@@ -202,8 +193,17 @@ android {
         pickFirst '**/x86_64/libc++_shared.so'
         pickFirst '**/x86/libjsc.so'
         pickFirst '**/armeabi-v7a/libjsc.so'
+        // exclude
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
+        exclude("META-INF/*.kotlin_module")
     }
-
 }
 
 dependencies {
@@ -232,8 +232,8 @@ dependencies {
     }
 
     // DETOX
-    //androidTestImplementation('com.wix:detox:+')
-
+    androidTestImplementation('com.wix:detox:+') { transitive = true }
+    androidTestImplementation(project(path: ":detox"))
 }
 
 // Run this once to be able to run the application with BUCK
@@ -244,6 +244,3 @@ task copyDownloadableDepsToLibs(type: Copy) {
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
-
-
-

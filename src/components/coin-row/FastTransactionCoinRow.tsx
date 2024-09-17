@@ -10,7 +10,7 @@ import Routes from '@rainbow-me/routes';
 import { ImgixImage } from '../images';
 import { CardSize } from '../unique-token/CardSize';
 import { ChainBadge } from '../coin-icon';
-import { Network } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 import { address } from '@/utils/abbreviations';
 import { TransactionType } from '@/resources/transactions/types';
 import {
@@ -26,7 +26,6 @@ import Spinner from '../Spinner';
 import * as lang from '@/languages';
 import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
 import { checkForPendingSwap } from '@/screens/transaction-details/helpers/checkForPendingSwap';
-import { ChainId } from '@/__swaps__/types/chains';
 
 export const getApprovalLabel = ({ approvalAmount, asset, type }: Pick<RainbowTransaction, 'type' | 'asset' | 'approvalAmount'>) => {
   if (!approvalAmount || !asset) return;
@@ -408,7 +407,7 @@ export default React.memo(function TransactionCoinRow({
   const [topValue] = activityValues(item, nativeCurrency) ?? [];
 
   return (
-    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} uniqueId={`${item.hash}-${item.network}`}>
+    <ButtonPressAnimation onPress={onPress} scaleTo={0.96} uniqueId={`${item.hash}-${item.chainId}`}>
       <View style={sx.wholeRow} testID={`${item.title}-${item.description}-${item.balance?.display}`}>
         <View style={sx.icon}>
           <ActivityIcon size={40} transaction={item} theme={theme} />

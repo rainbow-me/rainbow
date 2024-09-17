@@ -15,11 +15,11 @@ import {
   unwrapNativeAsset,
   wrapNativeAsset,
 } from '@rainbow-me/swaps';
-import { getProviderForNetwork, estimateGasWithPadding } from '@/handlers/web3';
+import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
 import { Address } from 'viem';
 
 import { metadataPOSTClient } from '@/graphql';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/chains/types';
 import { NewTransaction } from '@/entities/transactions';
 import { TxHash } from '@/resources/transactions/types';
 import { add } from '@/helpers/utilities';
@@ -27,7 +27,6 @@ import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
 import { isUnwrapNative, isWrapNative } from '@/handlers/swap';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, logger } from '@/logger';
-import { ethereumUtils } from '@/utils';
 
 import { gasUnits, REFERRER } from '@/references';
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
@@ -49,6 +48,7 @@ import { ParsedAsset } from '@/resources/assets/types';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { Screens, TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
+import { chainsName } from '@/chains';
 
 const WRAP_GAS_PADDING = 1.002;
 
@@ -62,7 +62,7 @@ export const estimateSwapGasLimit = async ({
   quote: Quote;
 }): Promise<string> => {
   // TODO: MARK - Replace this once we migrate network => chainId
-  const provider = getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
+  const provider = getProvider({ chainId });
   if (!provider || !quote) {
     return gasUnits.basic_swap[chainId];
   }
@@ -93,9 +93,13 @@ export const estimateSwapGasLimit = async ({
         WRAP_GAS_PADDING
       );
 
-      return gasLimit || String(quote?.defaultGasLimit) || String(default_estimate);
+      if (gasLimit === null || gasLimit === undefined || isNaN(Number(gasLimit))) {
+        return quote?.defaultGasLimit || default_estimate;
+      }
+
+      return gasLimit;
     } catch (e) {
-      return String(quote?.defaultGasLimit) || String(default_estimate);
+      return quote?.defaultGasLimit || default_estimate;
     }
     // Swap
   } else {
@@ -116,8 +120,11 @@ export const estimateSwapGasLimit = async ({
       }
 
       const gasLimit = await estimateGasWithPadding(params, method, methodArgs, provider, SWAP_GAS_PADDING);
+      if (gasLimit === null || gasLimit === undefined || isNaN(Number(gasLimit))) {
+        return getDefaultGasLimitForTrade(quote, chainId);
+      }
 
-      return gasLimit || getDefaultGasLimitForTrade(quote, chainId);
+      return gasLimit;
     } catch (error) {
       return getDefaultGasLimitForTrade(quote, chainId);
     }
@@ -145,8 +152,7 @@ export const estimateUnlockAndSwapFromMetadata = async ({
       chainId,
     });
 
-    // TODO: MARK - Replace this once we migrate network => chainId
-    const provider = getProviderForNetwork(ethereumUtils.getNetworkFromChainId(chainId));
+    const provider = getProvider({ chainId });
     const swapTransaction = await populateSwap({
       provider,
       quote,
@@ -267,7 +273,7 @@ export const swap = async ({
       quote,
     });
   } catch (e) {
-    logger.error(new RainbowError('swap: error estimateSwapGasLimit'), {
+    logger.error(new RainbowError('[raps/swap]: error estimateSwapGasLimit'), {
       message: (e as Error)?.message,
     });
 
@@ -295,16 +301,13 @@ export const swap = async ({
       },
     })(swapParams);
   } catch (e) {
-    logger.error(new RainbowError('swap: error executeSwap'), {
+    logger.error(new RainbowError('[raps/swap]: error executeSwap'), {
       message: (e as Error)?.message,
     });
     throw e;
   }
 
   if (!swap || !swap?.hash) throw new RainbowError('swap: error executeSwap');
-
-  // TODO: MARK - Replace this once we migrate network => chainId
-  const network = ethereumUtils.getNetworkFromChainId(parameters.chainId);
 
   const nativePriceForAssetToBuy = (parameters.assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice
     ? {
@@ -328,7 +331,7 @@ export const swap = async ({
     // asset: parameters.assetToBuy,
     asset: {
       ...parameters.assetToBuy,
-      network: ethereumUtils.getNetworkFromChainId(parameters.assetToBuy.chainId),
+      network: chainsName[parameters.assetToBuy.chainId],
       colors: parameters.assetToBuy.colors as TokenColors,
       price: nativePriceForAssetToBuy,
     } as ParsedAsset,
@@ -339,9 +342,10 @@ export const swap = async ({
         // asset: parameters.assetToSell,
         asset: {
           ...parameters.assetToSell,
-          network: ethereumUtils.getNetworkFromChainId(parameters.assetToSell.chainId),
+          network: chainsName[parameters.assetToSell.chainId],
           colors: parameters.assetToSell.colors as TokenColors,
           price: nativePriceForAssetToSell,
+          native: undefined,
         },
         value: quote.sellAmount.toString(),
       },
@@ -351,18 +355,17 @@ export const swap = async ({
         // asset: parameters.assetToBuy,
         asset: {
           ...parameters.assetToBuy,
-          network: ethereumUtils.getNetworkFromChainId(parameters.assetToBuy.chainId),
+          network: chainsName[parameters.assetToBuy.chainId],
           colors: parameters.assetToBuy.colors as TokenColors,
           price: nativePriceForAssetToBuy,
+          native: undefined,
         },
         value: quote.buyAmountMinusFees.toString(),
       },
     ],
     gasLimit,
     hash: swap.hash as TxHash,
-    // TODO: MARK - Replace this once we migrate network => chainId
-    network: ethereumUtils.getNetworkFromChainId(parameters.chainId),
-    // chainId: parameters.chainId,
+    network: chainsName[parameters.chainId],
     nonce: swap.nonce,
     status: 'pending',
     type: 'swap',
@@ -386,8 +389,7 @@ export const swap = async ({
 
   addNewTransaction({
     address: parameters.quote.from as Address,
-    // chainId: parameters.chainId as ChainId,
-    network,
+    chainId: parameters.chainId,
     transaction,
   });
 

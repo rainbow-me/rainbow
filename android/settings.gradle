@@ -10,7 +10,7 @@ apply from: file("../node_modules/@react-native-community/cli-platform-android/n
 
 include ':app'
 
-/*include ':detox'
+include ':detox'
 project(':detox').projectDir = new File(rootProject.projectDir, '../node_modules/detox/android/detox')
-*/
+
 includeBuild('../node_modules/@react-native/gradle-plugin')

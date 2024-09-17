@@ -3,7 +3,6 @@ import isEmpty from 'lodash/isEmpty';
 import { MMKV } from 'react-native-mmkv';
 import { NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
-import { Network } from '@/helpers/networkTypes';
 import { convertRawAmountToBalance } from '@/helpers/utilities';
 import { BooleanMap } from '@/hooks/useCoinListEditOptions';
 import { queryClient } from '@/react-query';
@@ -11,13 +10,12 @@ import { setHiddenCoins } from '@/redux/editOptions';
 import store from '@/redux/store';
 import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import { RainbowPositions } from '@/resources/defi/types';
-import { ethereumUtils } from '@/utils';
 import { AddysAddressAsset, AddysAsset, ParsedAsset, RainbowAddressAssets } from './types';
 import { getUniqueId } from '@/utils/ethereumUtils';
+import { ChainId } from '@/chains/types';
+import { chainsIdByName } from '@/chains';
 
 const storage = new MMKV();
-
-const MAINNET_CHAIN_ID = ethereumUtils.getChainIdFromNetwork(Network.mainnet);
 
 export const filterPositionsData = (
   address: string,
@@ -42,8 +40,8 @@ export const filterPositionsData = (
 
 export function parseAsset({ address, asset }: { address: string; asset: AddysAsset }): ParsedAsset {
   const network = asset?.network;
-  const chainId = ethereumUtils.getChainIdFromNetwork(network);
-  const mainnetAddress = asset?.networks?.[MAINNET_CHAIN_ID]?.address;
+  const chainId = chainsIdByName[network];
+  const mainnetAddress = asset?.networks?.[ChainId.mainnet]?.address;
   const uniqueId = getUniqueId(address, chainId);
 
   const parsedAsset = {
@@ -74,6 +72,7 @@ export function parseAddressAsset({ assetData }: { assetData: AddysAddressAsset 
   const asset = assetData?.asset;
   const quantity = assetData?.quantity;
   const address = assetData?.asset?.asset_code;
+
   const parsedAsset = parseAsset({
     address,
     asset,

@@ -94,7 +94,7 @@ export async function executeAction<T extends RapActionTypes>({
     const { nonce, hash } = (await typeAction<T>(type, actionProps)()) as RapActionResult;
     return { baseNonce: nonce, errorMessage: null, hash };
   } catch (error) {
-    logger.error(new RainbowError(`rap: ${rapName} - error execute action`), {
+    logger.error(new RainbowError(`[raps/execute]: ${rapName} - error execute action`), {
       message: (error as Error)?.message,
     });
     if (index === 0) {

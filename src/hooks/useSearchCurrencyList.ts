@@ -11,13 +11,15 @@ import { tokenSearch } from '@/handlers/tokenSearch';
 import { addHexPrefix, getProvider } from '@/handlers/web3';
 import tokenSectionTypes from '@/helpers/tokenSectionTypes';
 import { DAI_ADDRESS, erc20ABI, ETH_ADDRESS, rainbowTokenList, USDC_ADDRESS, WBTC_ADDRESS, WETH_ADDRESS } from '@/references';
-import { ethereumUtils, filterList, isLowerCaseMatch, logger } from '@/utils';
+import { filterList, isLowerCaseMatch } from '@/utils';
+import { logger } from '@/logger';
 import useSwapCurrencies from '@/hooks/useSwapCurrencies';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { IS_TEST } from '@/env';
 import { useFavorites } from '@/resources/favorites';
 import { getUniqueId } from '@/utils/ethereumUtils';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/chains/types';
+import { chainsName } from '@/chains';
 
 type swapCurrencyListType =
   | 'verifiedAssets'
@@ -85,7 +87,6 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
   const [highLiquidityAssets, setHighLiquidityAssets] = useState<RainbowToken[]>([]);
   const [lowLiquidityAssets, setLowLiquidityAssets] = useState<RainbowToken[]>([]);
   const [verifiedAssets, setVerifiedAssets] = useState<RainbowToken[]>([]);
-
   const [fetchingCrosschainAssets, setFetchingCrosschainAssets] = useState(false);
   const [crosschainVerifiedAssets, setCrosschainVerifiedAssets] = useState<CrosschainVerifiedAssets>({
     [ChainId.mainnet]: [],
@@ -195,13 +196,12 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
                   },
                 },
                 symbol,
-                network: ethereumUtils.getNetworkFromChainId(chainId),
+                network: chainsName[chainId],
                 uniqueId,
               } as RainbowToken,
             ];
           } catch (e) {
-            logger.log('error getting token data');
-            logger.log(e);
+            logger.warn('[useSearchCurrencyList]: error getting token data', { error: (e as Error).message });
             return null;
           }
         }
@@ -387,7 +387,7 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
       if (inputCurrency?.name && verifiedAssets.length) {
         if (bridgeAsset) {
           list.push({
-            color: colors.networkColors[bridgeAsset.network],
+            color: colors.networkColors[bridgeAsset.chainId],
             data: [bridgeAsset],
             key: 'bridgeAsset',
             title: lang.t(`exchange.token_sections.${tokenSectionTypes.bridgeTokenSection}`),
@@ -430,7 +430,7 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
         bridgeAsset = curatedAssets.find(asset => asset?.name === inputCurrency?.name);
         if (bridgeAsset) {
           list.push({
-            color: colors.networkColors[bridgeAsset.network],
+            color: colors.networkColors[bridgeAsset.chainId],
             data: [bridgeAsset],
             key: 'bridgeAsset',
             title: lang.t(`exchange.token_sections.${tokenSectionTypes.bridgeTokenSection}`),

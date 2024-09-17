@@ -18,7 +18,7 @@ import { SwapInputAsset } from '@/__swaps__/screens/Swap/components/SwapInputAss
 import { SwapNavbar } from '@/__swaps__/screens/Swap/components/SwapNavbar';
 import { SwapOutputAsset } from '@/__swaps__/screens/Swap/components/SwapOutputAsset';
 import { SwapSheetGestureBlocker } from '@/__swaps__/screens/Swap/components/SwapSheetGestureBlocker';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId } from '@/chains/types';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { AbsolutePortalRoot } from '@/components/AbsolutePortal';
@@ -28,6 +28,8 @@ import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { SwapWarning } from './components/SwapWarning';
 import { clearCustomGasSettings } from './hooks/useCustomGas';
 import { SwapProvider, useSwapContext } from './providers/swap-provider';
+import { useAccountSettings } from '@/hooks';
+import { NavigateToSwapSettingsTrigger } from './components/NavigateToSwapSettingsTrigger';
 
 /** README
  * This prototype is largely driven by Reanimated and Gesture Handler, which
@@ -85,6 +87,7 @@ export function SwapScreen() {
       </SwapSheetGestureBlocker>
       <WalletAddressObserver />
       <AbsolutePortalRoot />
+      <NavigateToSwapSettingsTrigger />
     </SwapProvider>
   );
 }
@@ -131,7 +134,7 @@ const useCleanupOnUnmount = () => {
 };
 
 const WalletAddressObserver = () => {
-  const currentWalletAddress = userAssetsStore(state => state.associatedWalletAddress);
+  const { accountAddress } = useAccountSettings();
   const { setAsset } = useSwapContext();
 
   const setNewInputAsset = useCallback(() => {
@@ -155,14 +158,15 @@ const WalletAddressObserver = () => {
   }, [setAsset]);
 
   useAnimatedReaction(
-    () => currentWalletAddress,
+    () => accountAddress,
     (current, previous) => {
       const didWalletAddressChange = previous && current !== previous;
 
       if (didWalletAddressChange) {
         runOnJS(setNewInputAsset)();
       }
-    }
+    },
+    []
   );
 
   return null;

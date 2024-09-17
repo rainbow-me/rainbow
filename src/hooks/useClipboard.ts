@@ -1,5 +1,5 @@
 import Clipboard from '@react-native-clipboard/clipboard';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import useAppState from './useAppState';
 import { deviceUtils } from '@/utils';
 
@@ -27,7 +27,7 @@ export default function useClipboard() {
   );
 
   // Get initial clipboardData
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (deviceUtils.isIOS14) {
       checkClipboard();
     } else if (!deviceUtils.hasClipboardProtection) {
@@ -60,7 +60,7 @@ export default function useClipboard() {
     clipboard: clipboardData,
     enablePaste: deviceUtils.isIOS14 ? hasClipboardData : deviceUtils.hasClipboardProtection || !!clipboardData,
     getClipboard,
-    hasClipboardData,
+    hasClipboardData: hasClipboardData || !!clipboardData,
     setClipboard,
   };
 }

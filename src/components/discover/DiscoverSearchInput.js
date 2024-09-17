@@ -11,9 +11,9 @@ import { analytics } from '@/analytics';
 import { ImgixImage } from '@/components/images';
 import styled from '@/styled-thing';
 import { margin, padding } from '@/styles';
-import { deviceUtils, ethereumUtils } from '@/utils';
+import { deviceUtils } from '@/utils';
 import DiscoverSheetContext from '@/screens/discover/DiscoverScreenContext';
-import { getNetworkObj } from '@/networks';
+import { chainsName } from '@/chains';
 
 export const ExchangeSearchHeight = 40;
 const ExchangeSearchWidth = deviceUtils.dimensions.width - 30;
@@ -131,9 +131,8 @@ const ExchangeSearch = (
 
   const placeholder = useMemo(() => {
     if (!currentChainId) return placeholderText;
-    const network = getNetworkObj(ethereumUtils.getNetworkFromChainId(currentChainId));
     return lang.t('button.exchange_search_placeholder_network', {
-      network: network.name,
+      network: chainsName[currentChainId],
     });
   }, [currentChainId, placeholderText]);
 

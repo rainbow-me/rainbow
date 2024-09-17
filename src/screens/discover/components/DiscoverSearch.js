@@ -19,11 +19,11 @@ import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { useTheme } from '@/theme';
 import { ethereumUtils } from '@/utils';
-import { Network } from '@/helpers';
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
-import { ChainId } from '@/__swaps__/types/chains';
+import { ChainId, Network } from '@/chains/types';
+import { chainsIdByName } from '@/chains';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
@@ -134,7 +134,7 @@ export default function DiscoverSearch() {
           network === Network.optimism;
         }
         const contractAddress = query.split('/')[1];
-        navigateToMintCollection(contractAddress, network);
+        navigateToMintCollection(contractAddress, chainsIdByName[network]);
       }
     };
     checkAndHandleMint(searchQuery);

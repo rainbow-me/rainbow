@@ -3,33 +3,31 @@ import { MMKV } from 'react-native-mmkv';
 import { useSharedValue } from 'react-native-reanimated';
 import DevButton from '../components/dev-buttons/DevButton';
 import Emoji from '../components/text/Emoji';
-import {
-  showReloadButton,
-  showSwitchModeButton,
-  // @ts-ignore
-  showConnectToHardhatButton,
-} from '../config/debug';
-import { defaultConfig } from '../config/experimental';
+import { showReloadButton, showSwitchModeButton, showConnectToHardhatButton } from '../config/debug';
+import { defaultConfig } from '@/config/experimental';
 import { useDispatch } from 'react-redux';
 
 import { useTheme } from '../theme/ThemeContext';
 import { STORAGE_IDS } from '@/model/mmkv';
-import {
-  // @ts-ignore
-  HARDHAT_URL_ANDROID,
-  // @ts-ignore
-  HARDHAT_URL_IOS,
-  // @ts-ignore
-  IS_TESTING,
-} from 'react-native-dotenv';
-import { web3SetHttpProvider } from '@/handlers/web3';
+import { IS_TESTING } from 'react-native-dotenv';
 import { logger, RainbowError } from '@/logger';
-import networkTypes from '@/helpers/networkTypes';
 import { explorerInit } from '@/redux/explorer';
 import { Navigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
+import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 
-export const RainbowContext = createContext({});
+export type RainbowContextType = {
+  config: Record<keyof typeof defaultConfig, boolean>;
+  setConfig: (newConfig: Record<string, boolean>) => void;
+  setGlobalState: (newState: any) => void;
+};
+
+export const RainbowContext = createContext<RainbowContextType>({
+  config: {},
+  setConfig: () => {},
+  setGlobalState: () => {},
+});
+
 const storageKey = 'config';
 
 const storage = new MMKV({
@@ -40,6 +38,7 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
   // This value is hold here to prevent JS VM from shutting down
   // on unmounting all shared values.
   useSharedValue(0);
+  const { setConnectedToHardhat } = useConnectedToHardhatStore();
   const [config, setConfig] = useState<Record<string, boolean>>(
     Object.entries(defaultConfig).reduce((acc, [key, { value }]) => ({ ...acc, [key]: value }), {})
   );
@@ -75,17 +74,17 @@ export default function RainbowContextWrapper({ children }: PropsWithChildren) {
 
   const connectToHardhat = useCallback(async () => {
     try {
-      const ready = await web3SetHttpProvider('http://127.0.0.1:8545');
-      logger.debug('connected to hardhat', { ready });
+      setConnectedToHardhat(true);
+      logger.debug('connected to hardhat');
     } catch (e: any) {
-      await web3SetHttpProvider(networkTypes.mainnet);
+      setConnectedToHardhat(false);
       logger.error(new RainbowError('error connecting to hardhat'), {
         message: e.message,
       });
     }
     dispatch(explorerInit());
     Navigation.handleAction(Routes.WALLET_SCREEN, {});
-  }, [dispatch]);
+  }, [dispatch, setConnectedToHardhat]);
 
   return (
     <RainbowContext.Provider value={initialValue}>

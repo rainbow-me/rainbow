@@ -1,5 +1,5 @@
-import { Network } from '@/helpers/networkTypes';
 import { Asset, AssetContract, AssetType } from '@/entities';
+import { Network } from '@/chains/types';
 import { UniqueTokenType } from '@/utils/uniqueTokens';
 
 export enum NFTMarketplaceId {

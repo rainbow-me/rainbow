@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { globalColors } from '@/design-system';
 import currentColors from '../theme/currentColors';
 import { memoFn } from '../utils/memoFn';
+import { ChainId } from '@/chains/types';
 
 export type Colors = ReturnType<typeof getColorsByTheme>;
 
@@ -186,18 +187,18 @@ const getColorsByTheme = (darkMode?: boolean) => {
   };
 
   let networkColors = {
-    arbitrum: '#2D374B',
-    base: '#0052FF',
-    goerli: '#f6c343',
-    gnosis: '#479E9C',
-    mainnet: '#25292E',
-    optimism: '#FF4040',
-    polygon: '#8247E5',
-    bsc: '#F0B90B',
-    zora: '#2B5DF0',
-    avalanche: '#E84142',
-    degen: '#A36EFD',
-    blast: '#25292E',
+    [ChainId.arbitrum]: '#2D374B',
+    [ChainId.base]: '#0052FF',
+    [ChainId.goerli]: '#f6c343',
+    [ChainId.gnosis]: '#479E9C',
+    [ChainId.mainnet]: '#25292E',
+    [ChainId.optimism]: '#FF4040',
+    [ChainId.polygon]: '#8247E5',
+    [ChainId.bsc]: '#F0B90B',
+    [ChainId.zora]: '#2B5DF0',
+    [ChainId.avalanche]: '#E84142',
+    [ChainId.degen]: '#A36EFD',
+    [ChainId.blast]: '#25292E',
   };
 
   let gradients = {
@@ -328,18 +329,18 @@ const getColorsByTheme = (darkMode?: boolean) => {
     };
 
     networkColors = {
-      arbitrum: '#ADBFE3',
-      base: '#3979FF',
-      goerli: '#f6c343',
-      gnosis: '#479E9C',
-      mainnet: '#E0E8FF',
-      optimism: '#FF6A6A',
-      polygon: '#A275EE',
-      bsc: '#F0B90B',
-      zora: '#6183F0',
-      avalanche: '#FF5D5E',
-      degen: '#A36EFD',
-      blast: '#FCFC03',
+      [ChainId.arbitrum]: '#ADBFE3',
+      [ChainId.base]: '#3979FF',
+      [ChainId.goerli]: '#f6c343',
+      [ChainId.gnosis]: '#479E9C',
+      [ChainId.mainnet]: '#E0E8FF',
+      [ChainId.optimism]: '#FF6A6A',
+      [ChainId.polygon]: '#A275EE',
+      [ChainId.bsc]: '#F0B90B',
+      [ChainId.zora]: '#6183F0',
+      [ChainId.avalanche]: '#FF5D5E',
+      [ChainId.degen]: '#A36EFD',
+      [ChainId.blast]: '#FCFC03',
     };
   }
 

@@ -28,6 +28,9 @@ export const SWAPS_V2 = 'SwapsV2';
 export const DAPP_BROWSER = 'Dapp Browser';
 export const ETH_REWARDS = 'ETH Rewards';
 export const DEGEN_MODE = 'Degen Mode';
+export const FEATURED_RESULTS = 'Featured Results';
+export const CLAIMABLES = 'Claimables';
+export const NFTS_ENABLED = 'Nfts Enabled';
 
 /**
  * A developer setting that pushes log lines to an array in-memory so that
@@ -61,9 +64,12 @@ export const defaultConfig: Record<string, ExperimentalValue> = {
   [REMOTE_CARDS]: { settings: true, value: false },
   [POINTS_NOTIFICATIONS_TOGGLE]: { settings: true, value: false },
   [DAPP_BROWSER]: { settings: true, value: !!IS_TEST },
-  [SWAPS_V2]: { settings: true, value: false },
+  [SWAPS_V2]: { settings: true, value: !!IS_TEST },
   [ETH_REWARDS]: { settings: true, value: false },
   [DEGEN_MODE]: { settings: true, value: false },
+  [FEATURED_RESULTS]: { settings: true, value: false },
+  [CLAIMABLES]: { settings: true, value: false },
+  [NFTS_ENABLED]: { settings: true, value: !!IS_TEST },
 };
 
 const storageKey = 'config';

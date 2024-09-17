@@ -3,9 +3,9 @@ import { Dispatch } from 'react';
 import { AppDispatch, AppGetState } from './store';
 import { ENSRegistrations, ENSRegistrationState, Records, RegistrationParameters, TransactionRegistrationParameters } from '@/entities';
 import { getLocalENSRegistrations, saveLocalENSRegistrations } from '@/handlers/localstorage/accountLocal';
-import { NetworkTypes } from '@/helpers';
 import { ENS_RECORDS, REGISTRATION_MODES } from '@/helpers/ens';
 import { omitFlatten } from '@/helpers/utilities';
+import { Network } from '@/chains/types';
 
 const ENS_REGISTRATION_SET_CHANGED_RECORDS = 'ensRegistration/ENS_REGISTRATION_SET_CHANGED_RECORDS';
 const ENS_REGISTRATION_SET_INITIAL_RECORDS = 'ensRegistration/ENS_REGISTRATION_SET_INITIAL_RECORDS';
@@ -345,7 +345,7 @@ export const saveCommitRegistrationParameters =
       },
     };
 
-    saveLocalENSRegistrations(updatedEnsRegistrationManager.registrations, accountAddress, NetworkTypes.mainnet);
+    saveLocalENSRegistrations(updatedEnsRegistrationManager.registrations, accountAddress, Network.mainnet);
 
     dispatch({
       payload: updatedEnsRegistrationManager,
@@ -382,7 +382,7 @@ export const updateTransactionRegistrationParameters =
       },
     };
 
-    saveLocalENSRegistrations(updatedEnsRegistrationManager.registrations, accountAddress, NetworkTypes.mainnet);
+    saveLocalENSRegistrations(updatedEnsRegistrationManager.registrations, accountAddress, Network.mainnet);
 
     dispatch({
       payload: updatedEnsRegistrationManager,
@@ -408,7 +408,7 @@ export const removeRegistrationByName = (name: string) => async (dispatch: AppDi
     },
   };
 
-  saveLocalENSRegistrations(updatedEnsRegistrationManager.registrations, accountAddress, NetworkTypes.mainnet);
+  saveLocalENSRegistrations(updatedEnsRegistrationManager.registrations, accountAddress, Network.mainnet);
 
   dispatch({
     payload: updatedEnsRegistrationManager,
