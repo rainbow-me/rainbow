@@ -1024,7 +1024,9 @@ export const getPrivateKey = async (
         break;
       default:
         // This is an unknown error
-        logger.error(new RainbowError('KC unknown error for PKEY lookup'), { error });
+        if (typeof error !== 'undefined') {
+          logger.error(new RainbowError('KC unknown error for PKEY lookup'), { error });
+        }
         break;
     }
     return pkey || null;

@@ -119,7 +119,7 @@ const waitForNodeAck = async (hash: string, provider: Signer['provider']): Promi
       resolve();
     } else {
       // Wait for 1 second and try again
-      await delay(1000);
+      await delay(100);
       return waitForNodeAck(hash, provider);
     }
   });
@@ -146,45 +146,52 @@ export const walletExecuteRap = async (
   const { actions } = rap;
   const rapName = getRapFullName(rap.actions);
   let nonce = parameters?.nonce;
-  let errorMessage = null;
-  if (actions.length) {
-    const firstAction = actions[0];
+  const errorMessage = null;
+
+  if (!actions.length) {
+    return { nonce, errorMessage };
+  }
+
+  const [firstAction] = actions;
+  const actionParams = {
+    action: firstAction,
+    wallet,
+    rap,
+    index: 0,
+    baseNonce: nonce,
+    rapName,
+    flashbots: parameters?.flashbots,
+    gasParams: parameters?.gasParams,
+    gasFeeParamsBySpeed: parameters?.gasFeeParamsBySpeed,
+  };
+
+  const { baseNonce, errorMessage: error, hash } = await executeAction(actionParams);
+  if (typeof baseNonce !== 'number') {
+    return { nonce, errorMessage: error };
+  }
+
+  // NOTE: Wait for approval action ack before proceeding to swaps / crosschain swaps
+  if (actions.length > 1 && hash) {
+    await waitForNodeAck(hash, wallet.provider);
+  }
+
+  for (let index = 1; index < actions.length; index++) {
+    const action = actions[index];
     const actionParams = {
-      action: firstAction,
+      action,
       wallet,
       rap,
-      index: 0,
-      baseNonce: nonce,
+      index,
+      baseNonce,
       rapName,
       flashbots: parameters?.flashbots,
       gasParams: parameters?.gasParams,
       gasFeeParamsBySpeed: parameters?.gasFeeParamsBySpeed,
     };
-
-    const { baseNonce, errorMessage: error, hash } = await executeAction(actionParams);
-
-    if (typeof baseNonce === 'number') {
-      actions.length > 1 && hash && (await waitForNodeAck(hash, wallet.provider));
-      for (let index = 1; index < actions.length; index++) {
-        const action = actions[index];
-        const actionParams = {
-          action,
-          wallet,
-          rap,
-          index,
-          baseNonce,
-          rapName,
-          flashbots: parameters?.flashbots,
-          gasParams: parameters?.gasParams,
-          gasFeeParamsBySpeed: parameters?.gasFeeParamsBySpeed,
-        };
-        const { hash } = await executeAction(actionParams);
-        hash && (await waitForNodeAck(hash, wallet.provider));
-      }
-      nonce = baseNonce + actions.length - 1;
-    } else {
-      errorMessage = error;
-    }
+    await executeAction(actionParams);
   }
+
+  nonce = baseNonce + actions.length - 1;
+
   return { nonce, errorMessage };
 };
