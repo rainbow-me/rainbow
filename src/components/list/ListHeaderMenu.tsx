@@ -28,7 +28,7 @@ export function ListHeaderMenu({ menuItems, selectItem, icon, text }: ListHeader
 
   return (
     <Bleed space="10px">
-      <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem}>
+      <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={onPressMenuItem} isAnchoredToRight>
         <ButtonPressAnimation style={{ padding: 10 }}>
           <Bleed bottom="2px">
             <Box

@@ -182,6 +182,7 @@ const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; c
       ) : (
         <ContextMenuButton
           enableContextMenu
+          isAnchoredToRight
           isMenuPrimaryAction
           menuConfig={menuConfig}
           onPressMenuItem={handlePressMenuItem}
