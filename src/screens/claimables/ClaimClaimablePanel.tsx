@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { AccentColorProvider, Bleed, Box, Inline, Text, TextShadow, globalColors, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import { ListHeader, Panel, TapToDismiss, controlPanelStyles } from '@/components/SmoothPager/ListPanel';
-import { ChainNameDisplay } from '@/networks/types';
-import { useAccountSettings } from '@/hooks';
+import { useAccountSettings, useGas } from '@/hooks';
 import { ethereumUtils, safeAreaInsetValues } from '@/utils';
 import { View } from 'react-native';
 import { IS_IOS } from '@/env';
@@ -19,6 +18,13 @@ import { RapSwapActionParameters } from '@/raps/references';
 import { loadWallet } from '@/model/wallet';
 import { getGasSettings, getGasSettingsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { GasSpeed } from '@/__swaps__/types/gas';
+import { estimateGasWithPadding } from '@/handlers/web3';
+import { parseGasParamsForTransaction } from '@/parsers';
+import { BigNumber } from '@ethersproject/bignumber';
+import { getNextNonce } from '@/state/nonces';
+import { TransactionRequest } from '@ethersproject/providers';
+import { chainsName } from '@/chains';
+import { RainbowError } from '@/logger';
 // import { ContextMenuButton } from '@/components/context-menu';
 
 type RouteParams = {
@@ -63,8 +69,10 @@ export const ClaimClaimablePanel = () => {
 const ClaimingClaimable = ({ claimable }: { claimable: Claimable }) => {
   const { isDarkMode } = useColorMode();
   const { accountAddress } = useAccountSettings();
+  const { selectedGasFee, startPollingGasFees } = useGas();
   const theme = useTheme();
 
+  const [txPayload, setTxPayload] = useState<TransactionRequest | undefined>();
   // const menuConfig = useMemo(() => {
   //   return {
   //     menuItems: {},
@@ -73,138 +81,170 @@ const ClaimingClaimable = ({ claimable }: { claimable: Claimable }) => {
 
   // const onShowActionSheet = useCallback(() => {}, []);
 
-  const chainName = ChainNameDisplay[claimable.chainId];
+  const chainName = chainsName[claimable.chainId];
 
-  const { mutate: claimRewards } = useMutation<{
-    nonce: number | null;
-  }>({
-    mutationFn: async () => {
-      // Fetch the native asset from the origin chain
-      const opEth_ = await ethereumUtils.getNativeAssetForNetwork({ chainId: ChainId.optimism });
-      const opEth = {
-        ...opEth_,
-        chainName: chainNameFromChainId(ChainId.optimism),
-      };
-
-      // Fetch the native asset from the destination chain
-      let destinationEth_;
-      if (chainId === ChainId.base) {
-        destinationEth_ = await ethereumUtils.getNativeAssetForNetwork({ chainId: ChainId.base });
-      } else if (chainId === ChainId.zora) {
-        destinationEth_ = await ethereumUtils.getNativeAssetForNetwork({ chainId: ChainId.zora });
-      } else {
-        destinationEth_ = opEth;
-      }
-
-      // Add missing properties to match types
-      const destinationEth = {
-        ...destinationEth_,
-        chainName: chainNameFromChainId(chainId as ChainId),
-      };
-
-      const selectedGas = {
-        maxBaseFee: meteorologyData?.fast.maxBaseFee,
-        maxPriorityFee: meteorologyData?.fast.maxPriorityFee,
-      };
-
-      let gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = {} as
-        | TransactionGasParamAmounts
-        | LegacyTransactionGasParamAmounts;
-
-      gasParams = {
-        maxFeePerGas: selectedGas?.maxBaseFee as string,
-        maxPriorityFeePerGas: selectedGas?.maxPriorityFee as string,
-      };
-      const gasFeeParamsBySpeed = getGasSettings(GasSpeed.FAST, claimable.chainId);
-
-      const actionParams = {
-        address: accountAddress,
-        toChainId: claimable.chainId,
-        sellAmount: claimable as string,
-        chainId: ChainId.optimism,
-        assetToSell: opEth as ParsedAsset,
-        assetToBuy: destinationEth as ParsedAsset,
-        quote: undefined,
-        // @ts-expect-error - collision between old gas types and new
-        gasFeeParamsBySpeed,
-        gasParams,
-      } satisfies RapSwapActionParameters<'claimRewardsBridge'>;
-
-     const tx = {
-        to: claimable.action.to,
-        from: accountAddress,
-
-        data: claimable.action.data,
-        chainId: claimable.chainId,
-    
-        gasLimit?: BigNumberish,
-        gasPrice?: BigNumberish,
-    
-        maxPriorityFeePerGas?: BigNumberish;
-        maxFeePerGas?: BigNumberish;
+  const buildTxPayload = useCallback(async () => {
+    if (claimable.type !== 'transaction') {
+      throw new RainbowError('[ClaimingClaimablePanel]: attempted to build tx payload for non-transaction type claimable');
     }
+    console.log(selectedGasFee);
+    startPollingGasFees();
+    const gasParams = parseGasParamsForTransaction(selectedGasFee);
+    console.log('CLOP');
+    const payload = {
+      amount: BigNumber.from(0),
+      data: claimable.action.data,
+      from: accountAddress,
+      network: chainName,
+      chainId: claimable.chainId,
+      nonce: await getNextNonce({ address: accountAddress, chainId: claimable.chainId }),
+      to: claimable.action.to,
+      ...gasParams,
+    };
 
-      const provider = getProvider({ chainId: ChainId.optimism });
-      const wallet = await loadWallet({
-        address,
-        showErrorIfNotLoaded: false,
-        provider,
+    setTxPayload(payload);
+    return payload;
+  }, [accountAddress, chainName, claimable, selectedGasFee, startPollingGasFees]);
+
+  useEffect(() => {
+    if (claimable.type === 'transaction') {
+      buildTxPayload().then(async payload => {
+        const estimatedGas = await estimateGasWithPadding(payload);
+        console.log(estimatedGas);
       });
-      if (!wallet) {
-        // Biometrics auth failure (retry possible)
-        setClaimStatus('error');
-        return { nonce: null };
-      }
+    }
+  }, [buildTxPayload, claimable.type]);
 
-      try {
-        const { errorMessage, nonce: bridgeNonce } = await walletExecuteRap(
-          wallet,
-          'claimRewardsBridge',
-          // @ts-expect-error - collision between old gas types and new
-          actionParams
-        );
+  // const { mutate: claimRewards } = useMutation<{
+  //   nonce: number | null;
+  // }>({
+  //   mutationFn: async () => {
+  //     // Fetch the native asset from the origin chain
+  //     const opEth_ = await ethereumUtils.getNativeAssetForNetwork({ chainId: ChainId.optimism });
+  //     const opEth = {
+  //       ...opEth_,
+  //       chainName: chainNameFromChainId(ChainId.optimism),
+  //     };
 
-        if (errorMessage) {
-          if (errorMessage.includes('[CLAIM-REWARDS]')) {
-            // Claim error (retry possible)
-            setClaimStatus('error');
-          } else {
-            // Bridge error (retry not possible)
-            setClaimStatus('bridge-error');
-          }
+  //     // Fetch the native asset from the destination chain
+  //     let destinationEth_;
+  //     if (chainId === ChainId.base) {
+  //       destinationEth_ = await ethereumUtils.getNativeAssetForNetwork({ chainId: ChainId.base });
+  //     } else if (chainId === ChainId.zora) {
+  //       destinationEth_ = await ethereumUtils.getNativeAssetForNetwork({ chainId: ChainId.zora });
+  //     } else {
+  //       destinationEth_ = opEth;
+  //     }
 
-          logger.error(new RainbowError('[ClaimRewardsPanel]: Failed to claim ETH rewards'), { message: errorMessage });
+  //     // Add missing properties to match types
+  //     const destinationEth = {
+  //       ...destinationEth_,
+  //       chainName: chainNameFromChainId(chainId as ChainId),
+  //     };
 
-          return { nonce: null };
-        }
+  //     const selectedGas = {
+  //       maxBaseFee: meteorologyData?.fast.maxBaseFee,
+  //       maxPriorityFee: meteorologyData?.fast.maxPriorityFee,
+  //     };
 
-        if (typeof bridgeNonce === 'number') {
-          // Clear and refresh claim data so available claim UI disappears
-          invalidatePointsQuery(address);
-          refetch();
-          return { nonce: bridgeNonce };
-        } else {
-          setClaimStatus('error');
-          return { nonce: null };
-        }
-      } catch (e) {
-        setClaimStatus('error');
-        return { nonce: null };
-      }
-    },
-    onError: error => {
-      const errorCode =
-        error && typeof error === 'object' && 'code' in error && isClaimError(error.code as PointsErrorType)
-          ? (error.code as PointsErrorType)
-          : 'error';
-      setClaimStatus(errorCode);
-    },
-    onSuccess: async ({ nonce }: { nonce: number | null }) => {
-      if (typeof nonce === 'number') {
-        setClaimStatus('success');
-      }
-    },
-  });
+  //     let gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = {} as
+  //       | TransactionGasParamAmounts
+  //       | LegacyTransactionGasParamAmounts;
+
+  //     gasParams = {
+  //       maxFeePerGas: selectedGas?.maxBaseFee as string,
+  //       maxPriorityFeePerGas: selectedGas?.maxPriorityFee as string,
+  //     };
+  //     const gasFeeParamsBySpeed = getGasSettings(GasSpeed.FAST, claimable.chainId);
+
+  //     const actionParams = {
+  //       address: accountAddress,
+  //       toChainId: claimable.chainId,
+  //       sellAmount: claimable as string,
+  //       chainId: ChainId.optimism,
+  //       assetToSell: opEth as ParsedAsset,
+  //       assetToBuy: destinationEth as ParsedAsset,
+  //       quote: undefined,
+  //       // @ts-expect-error - collision between old gas types and new
+  //       gasFeeParamsBySpeed,
+  //       gasParams,
+  //     } satisfies RapSwapActionParameters<'claimRewardsBridge'>;
+
+  //    const tx = {
+  //       to: claimable.action.to,
+  //       from: accountAddress,
+
+  //       data: claimable.action.data,
+  //       chainId: claimable.chainId,
+
+  //       gasLimit?: BigNumberish,
+  //       gasPrice?: BigNumberish,
+
+  //       maxPriorityFeePerGas?: BigNumberish;
+  //       maxFeePerGas?: BigNumberish;
+  //   }
+
+  //     const provider = getProvider({ chainId: ChainId.optimism });
+  //     const wallet = await loadWallet({
+  //       address,
+  //       showErrorIfNotLoaded: false,
+  //       provider,
+  //     });
+  //     if (!wallet) {
+  //       // Biometrics auth failure (retry possible)
+  //       setClaimStatus('error');
+  //       return { nonce: null };
+  //     }
+
+  //     try {
+  //       const { errorMessage, nonce: bridgeNonce } = await walletExecuteRap(
+  //         wallet,
+  //         'claimRewardsBridge',
+  //         // @ts-expect-error - collision between old gas types and new
+  //         actionParams
+  //       );
+
+  //       if (errorMessage) {
+  //         if (errorMessage.includes('[CLAIM-REWARDS]')) {
+  //           // Claim error (retry possible)
+  //           setClaimStatus('error');
+  //         } else {
+  //           // Bridge error (retry not possible)
+  //           setClaimStatus('bridge-error');
+  //         }
+
+  //         logger.error(new RainbowError('[ClaimRewardsPanel]: Failed to claim ETH rewards'), { message: errorMessage });
+
+  //         return { nonce: null };
+  //       }
+
+  //       if (typeof bridgeNonce === 'number') {
+  //         // Clear and refresh claim data so available claim UI disappears
+  //         invalidatePointsQuery(address);
+  //         refetch();
+  //         return { nonce: bridgeNonce };
+  //       } else {
+  //         setClaimStatus('error');
+  //         return { nonce: null };
+  //       }
+  //     } catch (e) {
+  //       setClaimStatus('error');
+  //       return { nonce: null };
+  //     }
+  //   },
+  //   onError: error => {
+  //     const errorCode =
+  //       error && typeof error === 'object' && 'code' in error && isClaimError(error.code as PointsErrorType)
+  //         ? (error.code as PointsErrorType)
+  //         : 'error';
+  //     setClaimStatus(errorCode);
+  //   },
+  //   onSuccess: async ({ nonce }: { nonce: number | null }) => {
+  //     if (typeof nonce === 'number') {
+  //       setClaimStatus('success');
+  //     }
+  //   },
+  // });
 
   return (
     <Panel>
