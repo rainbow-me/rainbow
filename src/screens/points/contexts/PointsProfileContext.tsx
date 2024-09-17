@@ -140,7 +140,12 @@ export const PointsProfileProvider = ({ children }: { children: React.ReactNode 
         Alert.alert(i18n.t(i18n.l.points.console.generic_alert));
         throw new RainbowError('Points: Error loading wallet');
       }
-      const signatureResponse = await signPersonalMessage(challenge, wallet, provider);
+      const signatureResponse = await signPersonalMessage({
+        message: challenge,
+        existingWallet: wallet,
+        address: accountAddress,
+        provider,
+      });
       if (signatureResponse && isHardwareWallet) {
         goBack();
       }

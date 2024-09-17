@@ -160,6 +160,7 @@ export default function SpeedUpAndCancelSheet() {
         ...newGasParams,
       };
       const res = await sendTransaction({
+        address: accountAddress,
         provider: currentProvider,
         transaction: cancelTxPayload,
       });
@@ -233,6 +234,7 @@ export default function SpeedUpAndCancelSheet() {
       };
 
       const res = await sendTransaction({
+        address: accountAddress,
         provider: currentProvider,
         transaction: fasterTxPayload,
       });

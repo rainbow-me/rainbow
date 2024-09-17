@@ -26,7 +26,6 @@ import * as kc from '@/keychain';
 import { PreferenceActionType, setPreference } from './preferences';
 import { LedgerSigner } from '@/handlers/LedgerSigner';
 import { WrappedAlert as Alert } from '@/helpers/alert';
-import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { EthereumAddress } from '@/entities';
 import { authenticateWithPIN, authenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
 import { saveAccountEmptyState } from '@/handlers/localstorage/accountLocal';
@@ -71,8 +70,16 @@ interface WalletInitialized {
 }
 
 interface TransactionRequestParam {
+  address: EthereumAddress;
   transaction: TransactionRequest;
+  existingWallet: Wallet | LedgerSigner;
+  provider?: Provider;
+}
+
+interface SignPersonalMessageParam {
+  message: string | Uint8Array;
   existingWallet?: Signer;
+  address: EthereumAddress;
   provider?: Provider;
 }
 
@@ -264,29 +271,21 @@ export const loadWallet = async <S extends Screen>({
   provider,
   timeTracking,
 }: {
-  address?: EthereumAddress;
+  address: EthereumAddress;
   showErrorIfNotLoaded?: boolean;
   provider?: Provider;
   timeTracking?: ExecuteFnParamsWithoutFn<S>;
 }): Promise<null | Wallet | LedgerSigner> => {
-  const addressToUse = address || (await loadAddress());
-  if (!addressToUse) {
-    return null;
-  }
-
-  // checks if the address is a hardware wallet for proper handling
-  const { wallets } = store.getState().wallets;
-  const selectedWallet = findWalletWithAccount(wallets!, addressToUse);
-  const isHardwareWallet = selectedWallet?.type === walletTypes.bluetooth;
+  const isHardwareWallet = store.getState().wallets.selected?.type === walletTypes.bluetooth;
 
   let privateKey: Awaited<ReturnType<typeof loadPrivateKey>>;
   if (timeTracking) {
     privateKey = await performanceTracking.getState().executeFn({
       ...timeTracking,
       fn: loadPrivateKey,
-    })(addressToUse, isHardwareWallet);
+    })(address, isHardwareWallet);
   } else {
-    privateKey = await loadPrivateKey(addressToUse, isHardwareWallet);
+    privateKey = await loadPrivateKey(address, isHardwareWallet);
   }
 
   // kc.ErrorType.UserCanceled means the user cancelled, so we don't wanna do anything
@@ -313,6 +312,7 @@ export const loadWallet = async <S extends Screen>({
 export const sendTransaction = async ({
   transaction,
   existingWallet,
+  address,
   provider,
 }: TransactionRequestParam): Promise<null | {
   result?: Transaction;
@@ -324,6 +324,7 @@ export const sendTransaction = async ({
     const wallet =
       existingWallet ||
       (await loadWallet({
+        address,
         provider,
       }));
     // have to check inverse or we trigger unwanted BT permissions requests
@@ -361,6 +362,7 @@ export const sendTransaction = async ({
 export const signTransaction = async ({
   transaction,
   existingWallet,
+  address,
   provider,
 }: TransactionRequestParam): Promise<null | {
   result?: string;
@@ -372,6 +374,7 @@ export const signTransaction = async ({
     const wallet =
       existingWallet ||
       (await loadWallet({
+        address,
         provider,
       }));
     // have to check inverse or we trigger unwanted BT permissions requests
@@ -404,11 +407,12 @@ export const signTransaction = async ({
   }
 };
 
-export const signPersonalMessage = async (
-  message: string | Uint8Array,
-  existingWallet?: Signer,
-  provider?: Provider
-): Promise<null | {
+export const signPersonalMessage = async ({
+  message,
+  existingWallet,
+  address,
+  provider,
+}: SignPersonalMessageParam): Promise<null | {
   result?: string;
   error?: any;
 }> => {
@@ -418,6 +422,7 @@ export const signPersonalMessage = async (
     const wallet =
       existingWallet ||
       (await loadWallet({
+        address,
         provider,
       }));
     // have to check inverse or we trigger unwanted BT permissions requests
@@ -452,11 +457,17 @@ export const signPersonalMessage = async (
   }
 };
 
-export const signTypedDataMessage = async (
-  message: string | TypedData,
-  existingWallet?: Signer,
-  provider?: Provider
-): Promise<null | {
+export const signTypedDataMessage = async ({
+  message,
+  existingWallet,
+  address,
+  provider,
+}: {
+  message: string | TypedData;
+  existingWallet: Signer;
+  address: EthereumAddress;
+  provider?: Provider;
+}): Promise<null | {
   result?: string;
   error?: any;
 }> => {
@@ -466,6 +477,7 @@ export const signTypedDataMessage = async (
     const wallet =
       existingWallet ||
       (await loadWallet({
+        address,
         provider,
       }));
     if (!wallet) return null;

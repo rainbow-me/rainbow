@@ -20,7 +20,7 @@ export async function getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded(): P
 
     if (!wallet || !address) {
       logger.error(new RainbowError('[signingWallet]: wallet or address undefined'));
-      // @ts-ignore need to handle types in case wallet or address are null
+      // @ts-expect-error need to handle types in case wallet or address are null
       return null;
     }
 

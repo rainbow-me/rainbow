@@ -352,6 +352,7 @@ export const SignTransactionSheet = () => {
           screen: SCREEN_FOR_REQUEST_SOURCE[source],
           operation: TimeToSignOperation.BroadcastTransaction,
         })({
+          address: accountInfo.address,
           existingWallet,
           provider: providerToUse,
           transaction: txPayloadUpdated,
@@ -362,6 +363,7 @@ export const SignTransactionSheet = () => {
           screen: SCREEN_FOR_REQUEST_SOURCE[source],
           operation: TimeToSignOperation.SignTransaction,
         })({
+          address: accountInfo.address,
           existingWallet,
           provider: providerToUse,
           transaction: txPayloadUpdated,
@@ -504,7 +506,12 @@ export const SignTransactionSheet = () => {
           fn: signPersonalMessage,
           screen: SCREEN_FOR_REQUEST_SOURCE[source],
           operation: TimeToSignOperation.SignTransaction,
-        })(message, existingWallet);
+        })({
+          message,
+          existingWallet,
+          address: accountInfo.address,
+          provider: providerToUse,
+        });
         break;
       case SIGN_TYPED_DATA_V4:
       case SIGN_TYPED_DATA:
@@ -512,7 +519,12 @@ export const SignTransactionSheet = () => {
           fn: signTypedDataMessage,
           screen: SCREEN_FOR_REQUEST_SOURCE[source],
           operation: TimeToSignOperation.SignTransaction,
-        })(message, existingWallet);
+        })({
+          message,
+          existingWallet,
+          address: accountInfo.address,
+          provider: providerToUse,
+        });
         break;
       default:
         break;

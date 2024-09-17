@@ -383,6 +383,7 @@ export default function SendSheet(props) {
         operation: TimeToSignOperation.KeychainRead,
         screen: isENS ? Screens.SEND_ENS : Screens.SEND,
       })({
+        address: accountAddress,
         provider: currentProvider,
         timeTracking: {
           screen: isENS ? Screens.SEND_ENS : Screens.SEND,
@@ -486,6 +487,7 @@ export default function SendSheet(props) {
             screen: isENS ? Screens.SEND_ENS : Screens.SEND,
             operation: TimeToSignOperation.BroadcastTransaction,
           })({
+            address: wallet.address,
             existingWallet: wallet,
             provider: currentProvider,
             transaction: signableTransaction,
