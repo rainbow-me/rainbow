@@ -75,7 +75,7 @@ export async function userAssetsByChainQueryFunction({
     }
     const res = await addysHttp.get<AddressAssetsReceivedMessage>(url);
     const chainIdsInResponse = res?.data?.meta?.chain_ids || [];
-    const assets = res?.data?.payload?.assets || [];
+    const assets = res?.data?.payload?.assets?.filter(asset => asset.asset.defi_position === false) || [];
     if (assets.length && chainIdsInResponse.length) {
       const parsedAssetsDict = await parseUserAssets({
         assets,
