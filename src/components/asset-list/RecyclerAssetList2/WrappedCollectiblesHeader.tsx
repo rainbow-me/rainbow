@@ -70,7 +70,7 @@ const CollectiblesHeader = () => {
                         icon: {
                           iconType: 'SYSTEM',
                           iconValue: 'arrow.up.circle',
-                          iconTint: nftSortDirection === SortDirection.Asc ? undefined : colors.grey,
+                          iconTint: nftSortDirection === SortDirection.Asc ? colors.grey : undefined,
                         },
                       },
                       {
@@ -79,7 +79,7 @@ const CollectiblesHeader = () => {
                         icon: {
                           iconType: 'SYSTEM',
                           iconValue: 'arrow.down.circle',
-                          iconTint: nftSortDirection === SortDirection.Desc ? undefined : colors.grey,
+                          iconTint: nftSortDirection === SortDirection.Desc ? colors.grey : undefined,
                         },
                       },
                     ],
