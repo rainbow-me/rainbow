@@ -3,7 +3,6 @@ import { lightModeThemeColors } from '../styles/colors';
 import { ParsedAddressAsset } from '@/entities';
 import { ethereumUtils, isETH, pseudoRandomArrayItemFromString } from '@/utils';
 import { usePersistentDominantColorFromImage } from './usePersistentDominantColorFromImage';
-import { useTheme } from '@/theme';
 
 export default function useColorForAsset(
   asset: Partial<ParsedAddressAsset> = {},
@@ -11,6 +10,7 @@ export default function useColorForAsset(
   forceLightMode = false,
   forceETHColor = false
 ) {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { isDarkMode: isDarkModeTheme, colors } = useTheme();
   const accountAsset = ethereumUtils.getAssetFromAllAssets(asset?.uniqueId || asset?.mainnet_address || asset?.address);
   const resolvedAddress = asset?.mainnet_address || asset?.address || accountAsset?.address;
@@ -63,7 +63,7 @@ export default function useColorForAsset(
 
     try {
       // brighten up dark colors in dark mode
-      if (isDarkMode && color2Return && colors.isColorDark(color2Return)) {
+      if (isDarkMode && colors.isColorDark(color2Return)) {
         return colors.brighten(color2Return);
       }
       return color2Return;
