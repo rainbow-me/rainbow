@@ -69,7 +69,7 @@ export const ClaimClaimablePanel = () => {
 const ClaimingClaimable = ({ claimable }: { claimable: Claimable }) => {
   const { isDarkMode } = useColorMode();
   const { accountAddress } = useAccountSettings();
-  const { selectedGasFee, startPollingGasFees, stopPollingGasFees, updateTxFee } = useGas();
+  const { isGasReady, isSufficientGas, isValidGas, selectedGasFee, startPollingGasFees, stopPollingGasFees, updateTxFee } = useGas();
   const theme = useTheme();
 
   const [baseTxPayload, setBaseTxPayload] = useState<TransactionRequest | undefined>();
@@ -134,8 +134,17 @@ const ClaimingClaimable = ({ claimable }: { claimable: Claimable }) => {
     }
 
     if (needsL1SecurityFeeChains.includes(claimable.chainId)) {
-      // @ts-expect-error - type mismatch, but this logic is the same as in SendSheet.js
-      const l1SecurityFee = await ethereumUtils.calculateL1FeeOptimism(updatedTxPayload, provider);
+      const l1SecurityFee = await ethereumUtils.calculateL1FeeOptimism(
+        // @ts-expect-error - type mismatch, but this tx request structure is the same as in SendSheet.js
+        {
+          to: updatedTxPayload.to ?? null,
+          from: updatedTxPayload.from ?? null,
+          value: updatedTxPayload.value,
+          data: updatedTxPayload.data as string,
+        },
+        provider
+      );
+
       if (!l1SecurityFee) {
         updateTxFee(null, null);
         logger.error(new RainbowError('[ClaimingClaimablePanel]: Failed to calculate L1 security fee'));
@@ -155,6 +164,8 @@ const ClaimingClaimable = ({ claimable }: { claimable: Claimable }) => {
       estimateGas();
     }
   }, [claimable.type, estimateGas, selectedGasFee, baseTxPayload]);
+
+  const isTransactionReady = isGasReady && isSufficientGas && isValidGas && txPayload?.gasLimit;
 
   // const { mutate: claimRewards } = useMutation<{
   //   nonce: number | null;
@@ -409,8 +420,8 @@ const ClaimingClaimable = ({ claimable }: { claimable: Claimable }) => {
           </Inline> */}
         {/* </Box> */}
         <Box gap={20} alignItems="center" width="full">
-          <ButtonPressAnimation style={{ width: '100%', paddingHorizontal: 18 }} scaleTo={0.96}>
-            <AccentColorProvider color="#295AF7">
+          <ButtonPressAnimation disabled={!isTransactionReady} style={{ width: '100%', paddingHorizontal: 18 }} scaleTo={0.96}>
+            <AccentColorProvider color={`rgba(41, 90, 247, ${isTransactionReady ? 1 : 0.2})`}>
               <Box
                 background="accent"
                 shadow="30px accent"
@@ -420,22 +431,30 @@ const ClaimingClaimable = ({ claimable }: { claimable: Claimable }) => {
                 alignItems="center"
                 justifyContent="center"
               >
-                <Inline alignVertical="center" space="6px">
+                {isSufficientGas ? (
+                  <Inline alignVertical="center" space="6px">
+                    <TextShadow shadowOpacity={0.3}>
+                      <Text align="center" color="label" size="icon 20px" weight="heavy">
+                        􀎽
+                      </Text>
+                    </TextShadow>
+                    <TextShadow shadowOpacity={0.3}>
+                      <Text align="center" color="label" size="20pt" weight="heavy">
+                        {`Claim ${claimable.value.claimAsset.display}`}
+                      </Text>
+                    </TextShadow>
+                  </Inline>
+                ) : (
                   <TextShadow shadowOpacity={0.3}>
                     <Text align="center" color="label" size="icon 20px" weight="heavy">
-                      􀎽
+                      Insufficient Funds
                     </Text>
                   </TextShadow>
-                  <TextShadow shadowOpacity={0.3}>
-                    <Text align="center" color="label" size="20pt" weight="heavy">
-                      {`Claim ${claimable.value.claimAsset.display}`}
-                    </Text>
-                  </TextShadow>
-                </Inline>
+                )}
               </Box>
             </AccentColorProvider>
           </ButtonPressAnimation>
-          {gasFee ? (
+          {txPayload?.gasLimit ? (
             <Inline alignVertical="center" space="2px">
               <Text align="center" color="labelQuaternary" size="icon 10px" weight="heavy">
                 􀵟
@@ -446,7 +465,7 @@ const ClaimingClaimable = ({ claimable }: { claimable: Claimable }) => {
             </Inline>
           ) : (
             <Text color="labelQuaternary" size="13pt" weight="bold">
-              Calculating gas fees...
+              Calculating gas fee...
             </Text>
           )}
         </Box>
