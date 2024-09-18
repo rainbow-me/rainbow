@@ -274,8 +274,17 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
     }
   }, [isReportSpamToastActive]);
 
-  const { description, familyImage, familyName, isSendable, marketplaceName, traits, uniqueId, fullUniqueId } = asset;
-  const { description: familyDescription, external_url: familyLink, slug } = asset.collection || {};
+  const {
+    collection: { description: familyDescription, external_url: familyLink, slug } = {},
+    description,
+    familyImage,
+    familyName,
+    isSendable,
+    marketplaceName,
+    traits,
+    uniqueId,
+    fullUniqueId,
+  } = asset;
 
   const filteredTraits = traits.filter(
     trait => trait.value !== undefined && trait.value !== null && trait.value !== '' && trait.trait_type && !isHttpUrl(trait.value)
