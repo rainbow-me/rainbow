@@ -13,13 +13,14 @@ export default function useColorForAsset(
 ) {
   const { isDarkMode: isDarkModeTheme, colors } = useTheme();
   const accountAsset = ethereumUtils.getAssetFromAllAssets(asset.uniqueId || asset.mainnet_address || asset.address);
-  const resolvedAddress = asset.mainnet_address || asset.address || accountAsset.address;
+
+  const resolvedAddress = asset.mainnet_address || asset.address || accountAsset?.address;
 
   const derivedColor = usePersistentDominantColorFromImage(accountAsset?.icon_url || asset?.icon_url);
   const isDarkMode = forceLightMode || isDarkModeTheme;
 
   const colorDerivedFromAddress = useMemo(() => {
-    if (!isETH(resolvedAddress)) {
+    if (resolvedAddress && !isETH(resolvedAddress)) {
       return pseudoRandomArrayItemFromString(resolvedAddress, colors.avatarBackgrounds);
     }
 
