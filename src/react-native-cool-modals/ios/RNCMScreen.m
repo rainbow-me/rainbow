@@ -9,7 +9,6 @@
 // lib
 #import "Rainbow-Swift.h"
 
-
 @interface RNCMScreenView () <UIAdaptivePresentationControllerDelegate, RCTInvalidating>
 @end
 
@@ -66,7 +65,6 @@
 - (void) setIsShortFormEnabled:(BOOL)isShortFormEnabled {
   _isShortFormEnabled = isShortFormEnabled;
   [(PanModalViewController*) [_controller parentVC] panModalSetNeedsLayoutUpdateWrapper];
-  
 }
 
 - (void) layout {
@@ -83,7 +81,6 @@
       }
       [(PanModalViewController*) [_controller parentVC] hide];
     });
-   
   }
 }
 
@@ -130,7 +127,6 @@
 {
   [_bridge.uiManager setSize:self.bounds.size forView:self];
 }
-
 
 - (void)setPointerEvents:(RCTPointerEvents)pointerEvents
 {
@@ -335,11 +331,14 @@
 
 - (void)presentModally:(UIViewController *)viewControllerToPresent animated:(BOOL)flag completion:(void (^)(void))completion  slackStack:(BOOL)slackStack {
   return [_parentVC presentModally:viewControllerToPresent animated:flag completion:completion slackStack:slackStack];
-  
 }
 
 - (void)dismissViewControllerAnimated:(BOOL)flag completion:(void (^)(void))completion {
-  return [_parentVC dismissViewControllerAnimated:flag completion:completion];
+  if (self.parentViewController) {
+    [self.parentViewController dismissViewControllerAnimated:flag completion:completion];
+  } else {
+    [super dismissViewControllerAnimated:flag completion:completion];
+  }
 }
 
 - (UIViewController *)presentedViewController {
@@ -358,6 +357,16 @@
   if (!CGRectEqualToRect(_lastViewFrame, self.view.frame)) {
     _lastViewFrame = self.view.frame;
     [((RNCMScreenView *)self.viewIfLoaded) updateBounds];
+  }
+}
+
+- (void)presentViewController:(UIViewController *)viewControllerToPresent animated:(BOOL)flag completion:(void (^)(void))completion {
+  BOOL isContextMenu = [viewControllerToPresent isKindOfClass:NSClassFromString(@"_UIContextMenuActionsOnlyViewController")];
+  
+  if (isContextMenu) {
+    [_parentVC presentViewController:viewControllerToPresent animated:flag completion:completion];
+  } else {
+    [super presentViewController:viewControllerToPresent animated:flag completion:completion];
   }
 }
 
@@ -426,7 +435,6 @@ RCT_EXPORT_METHOD(jumpTo:(nonnull NSNumber*)point tag:(nonnull NSNumber*) reactT
     }
     [(RNCMScreenView *) view jumpTo:point];
   }];
-  
 }
 
 RCT_EXPORT_METHOD(layout:(nonnull NSNumber*) reactTag) {
@@ -438,9 +446,7 @@ RCT_EXPORT_METHOD(layout:(nonnull NSNumber*) reactTag) {
     }
     [(RNCMScreenView *) view layout];
   }];
-  
 }
-
 
 RCT_EXPORT_MODULE()
 
@@ -476,7 +482,6 @@ RCT_EXPORT_VIEW_PROPERTY(startFromShortForm, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(ignoreBottomOffset, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(hidden, BOOL)
 
-
 - (UIView *)view
 {
   return [[RNCMScreenView alloc] initWithBridge:self.bridge];
@@ -494,15 +499,13 @@ RCT_ENUM_CONVERTER(RNSScreenStackPresentation, (@{
   @"containedModal": @(RNSScreenStackPresentationContainedModal),
   @"transparentModal": @(RNSScreenStackPresentationTransparentModal),
   @"containedTransparentModal": @(RNSScreenStackPresentationContainedTransparentModal)
-                                                }), RNSScreenStackPresentationPush, integerValue)
+}), RNSScreenStackPresentationPush, integerValue)
 
 RCT_ENUM_CONVERTER(RNSScreenStackAnimation, (@{
   @"default": @(RNSScreenStackAnimationDefault),
   @"none": @(RNSScreenStackAnimationNone),
   @"fade": @(RNSScreenStackAnimationFade),
   @"flip": @(RNSScreenStackAnimationFlip),
-                                             }), RNSScreenStackAnimationDefault, integerValue)
-
+}), RNSScreenStackAnimationDefault, integerValue)
 
 @end
-
