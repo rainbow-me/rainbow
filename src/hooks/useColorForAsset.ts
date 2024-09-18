@@ -63,8 +63,8 @@ export default function useColorForAsset(
 
     try {
       // brighten up dark colors in dark mode
-      if (isDarkMode && colors.isColorDark(color2Return || '')) {
-        return colors.brighten(color2Return || '');
+      if (isDarkMode && color2Return && colors.isColorDark(color2Return)) {
+        return colors.brighten(color2Return);
       }
       return color2Return;
     } catch (e) {
