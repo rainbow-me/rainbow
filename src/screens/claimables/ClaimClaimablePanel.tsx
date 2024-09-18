@@ -8,7 +8,7 @@ import { View } from 'react-native';
 import { IS_IOS } from '@/env';
 import { ButtonPressAnimation } from '@/components/animations';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { Claimable } from '@/resources/addys/claimables/types';
+import { Claimable, TransactionClaimable } from '@/resources/addys/claimables/types';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useTheme } from '@/theme';
 import { FasterImageView } from '@candlefinance/faster-image';
@@ -25,6 +25,7 @@ import { getNextNonce } from '@/state/nonces';
 import { TransactionRequest } from '@ethersproject/providers';
 import { chainsLabel, chainsName, needsL1SecurityFeeChains } from '@/chains';
 import { logger, RainbowError } from '@/logger';
+import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 // import { ContextMenuButton } from '@/components/context-menu';
 
 type RouteParams = {
@@ -36,7 +37,10 @@ export const ClaimClaimablePanel = () => {
     params: { uniqueId },
   } = useRoute<RouteProp<RouteParams, 'ClaimClaimablePanelParams'>>();
 
+  const { isDarkMode } = useColorMode();
+  const theme = useTheme();
   const { accountAddress, nativeCurrency } = useAccountSettings();
+
   const { data = [] } = useClaimables(
     {
       address: accountAddress,
@@ -49,7 +53,7 @@ export const ClaimClaimablePanel = () => {
 
   const [claimable] = data;
 
-  if (!claimable) return null;
+  if (!claimable || claimable.type !== 'transaction') return null;
 
   return (
     <>
@@ -59,36 +63,72 @@ export const ClaimClaimablePanel = () => {
           { bottom: Math.max(safeAreaInsetValues.bottom + 5, IS_IOS ? 8 : 30), alignItems: 'center', width: '100%' },
         ]}
       >
-        <ClaimingClaimable claimable={claimable} />
+        <Panel>
+          <ListHeader
+            TitleComponent={
+              <Box alignItems="center" flexDirection="row" gap={10} justifyContent="center">
+                <Box
+                  as={FasterImageView}
+                  source={{ url: claimable.iconUrl }}
+                  style={{ height: 20, width: 20, borderRadius: 6, borderWidth: 1, borderColor: 'rgba(0, 0, 0, 0.03)' }}
+                />
+                <TextShadow shadowOpacity={0.3}>
+                  <Text align="center" color="label" size="20pt" weight="heavy">
+                    Claim
+                  </Text>
+                </TextShadow>
+              </Box>
+            }
+            showBackButton={false}
+          />
+
+          <Box alignItems="center" paddingTop="44px" paddingBottom="24px" gap={42}>
+            <Box alignItems="center" flexDirection="row" gap={8} justifyContent="center">
+              <Bleed vertical={{ custom: 4.5 }}>
+                <View
+                  style={
+                    IS_IOS && isDarkMode
+                      ? {
+                          shadowColor: globalColors.grey100,
+                          shadowOpacity: 0.2,
+                          shadowOffset: { height: 4, width: 0 },
+                          shadowRadius: 6,
+                        }
+                      : {}
+                  }
+                >
+                  <RainbowCoinIcon
+                    size={40}
+                    icon={claimable.asset.iconUrl}
+                    chainId={claimable.chainId}
+                    symbol={claimable.asset.symbol}
+                    theme={theme}
+                    colors={undefined}
+                  />
+                </View>
+              </Bleed>
+              <TextShadow blur={12} color={globalColors.grey100} shadowOpacity={0.1} y={4}>
+                <Text align="center" color="label" size="44pt" weight="black">
+                  {claimable.value.nativeAsset.display}
+                </Text>
+              </TextShadow>
+            </Box>
+            <ClaimingTransactionClaimable claimable={claimable} />
+          </Box>
+        </Panel>
       </Box>
       <TapToDismiss />
     </>
   );
 };
 
-const ClaimingClaimable = ({ claimable }: { claimable: Claimable }) => {
-  const { isDarkMode } = useColorMode();
-  const { accountAddress } = useAccountSettings();
+const ClaimingTransactionClaimable = ({ claimable }: { claimable: TransactionClaimable }) => {
+  const { accountAddress, nativeCurrency } = useAccountSettings();
   const { isGasReady, isSufficientGas, isValidGas, selectedGasFee, startPollingGasFees, stopPollingGasFees, updateTxFee } = useGas();
-  const theme = useTheme();
 
-  const [baseTxPayload, setBaseTxPayload] = useState<TransactionRequest | undefined>();
   const [txPayload, setTxPayload] = useState<TransactionRequest | undefined>();
 
-  const gasFee = selectedGasFee?.gasFee?.estimatedFee?.native?.value?.display;
-  // const menuConfig = useMemo(() => {
-  //   return {
-  //     menuItems: {},
-  //   };
-  // }, []);
-
-  // const onShowActionSheet = useCallback(() => {}, []);
-
   const buildTxPayload = useCallback(async () => {
-    if (claimable.type !== 'transaction') {
-      throw new RainbowError('[ClaimingClaimablePanel]: attempted to build tx payload for non-transaction type claimable');
-    }
-
     const payload = {
       value: '0x0',
       data: claimable.action.data,
@@ -99,31 +139,29 @@ const ClaimingClaimable = ({ claimable }: { claimable: Claimable }) => {
       to: claimable.action.to,
     };
 
-    setBaseTxPayload(payload);
-  }, [accountAddress, claimable, setBaseTxPayload]);
+    setTxPayload(payload);
+  }, [accountAddress, claimable.action.to, claimable.action.data, claimable.chainId, setTxPayload]);
 
   useEffect(() => {
     buildTxPayload();
   }, [buildTxPayload]);
 
   useEffect(() => {
-    if (claimable.type === 'transaction') {
-      startPollingGasFees();
-      return () => {
-        stopPollingGasFees();
-      };
-    }
-  }, [claimable.type, startPollingGasFees, stopPollingGasFees]);
+    startPollingGasFees();
+    return () => {
+      stopPollingGasFees();
+    };
+  }, [startPollingGasFees, stopPollingGasFees]);
 
   const estimateGas = useCallback(async () => {
-    if (!baseTxPayload) {
+    if (!txPayload) {
       throw new RainbowError('[ClaimingClaimablePanel]: attempted to estimate gas without a tx payload');
     }
 
     const provider = getProvider({ chainId: claimable.chainId });
 
     const gasParams = parseGasParamsForTransaction(selectedGasFee);
-    const updatedTxPayload: TransactionRequest = { ...baseTxPayload, ...gasParams };
+    const updatedTxPayload: TransactionRequest = { ...txPayload, ...gasParams };
 
     const gasLimit = await estimateGasWithPadding(updatedTxPayload, null, null, provider);
 
@@ -157,15 +195,20 @@ const ClaimingClaimable = ({ claimable }: { claimable: Claimable }) => {
     }
 
     setTxPayload({ ...updatedTxPayload, gasLimit });
-  }, [baseTxPayload, claimable.chainId, selectedGasFee, updateTxFee]);
+  }, [txPayload, claimable.chainId, selectedGasFee, updateTxFee]);
 
   useEffect(() => {
-    if (claimable.type === 'transaction' && baseTxPayload) {
+    if (txPayload) {
       estimateGas();
     }
-  }, [claimable.type, estimateGas, selectedGasFee, baseTxPayload]);
+  }, [estimateGas, selectedGasFee, txPayload]);
 
   const isTransactionReady = isGasReady && isSufficientGas && isValidGas && txPayload?.gasLimit;
+
+  const nativeCurrencyGasFee = useMemo(
+    () => convertAmountToNativeDisplay(selectedGasFee?.gasFee?.estimatedFee?.native?.value?.amount, nativeCurrency),
+    [nativeCurrency, selectedGasFee?.gasFee?.estimatedFee?.native?.value?.amount]
+  );
 
   // const { mutate: claimRewards } = useMutation<{
   //   nonce: number | null;
@@ -299,177 +342,55 @@ const ClaimingClaimable = ({ claimable }: { claimable: Claimable }) => {
   // });
 
   return (
-    <Panel>
-      <ListHeader
-        TitleComponent={
-          <Box alignItems="center" flexDirection="row" gap={10} justifyContent="center">
-            <Box
-              as={FasterImageView}
-              source={{ url: claimable.iconUrl }}
-              style={{ height: 20, width: 20, borderRadius: 6, borderWidth: 1, borderColor: 'rgba(0, 0, 0, 0.03)' }}
-            />
-            <TextShadow shadowOpacity={0.3}>
-              <Text align="center" color="label" size="20pt" weight="heavy">
-                {'Claim'}
-              </Text>
-            </TextShadow>
+    <Box gap={20} alignItems="center" width="full">
+      <ButtonPressAnimation disabled={!isTransactionReady} style={{ width: '100%', paddingHorizontal: 18 }} scaleTo={0.96}>
+        <AccentColorProvider color={`rgba(41, 90, 247, ${isTransactionReady ? 1 : 0.2})`}>
+          <Box
+            background="accent"
+            shadow="30px accent"
+            borderRadius={43}
+            height={{ custom: 48 }}
+            width="full"
+            alignItems="center"
+            justifyContent="center"
+          >
+            {isSufficientGas ? (
+              <Inline alignVertical="center" space="6px">
+                <TextShadow shadowOpacity={0.3}>
+                  <Text align="center" color="label" size="icon 20px" weight="heavy">
+                    􀎽
+                  </Text>
+                </TextShadow>
+                <TextShadow shadowOpacity={0.3}>
+                  <Text align="center" color="label" size="20pt" weight="heavy">
+                    {`Claim ${claimable.value.claimAsset.display}`}
+                  </Text>
+                </TextShadow>
+              </Inline>
+            ) : (
+              <TextShadow shadowOpacity={0.3}>
+                <Text align="center" color="label" size="icon 20px" weight="heavy">
+                  Insufficient Funds
+                </Text>
+              </TextShadow>
+            )}
           </Box>
-        }
-        showBackButton={false}
-      />
-
-      <Box alignItems="center" paddingTop="44px" paddingBottom="24px" gap={42}>
-        {/* <Box alignItems="center" gap={20}> */}
-        <Box alignItems="center" flexDirection="row" gap={8} justifyContent="center">
-          <Bleed vertical={{ custom: 4.5 }}>
-            <View
-              style={
-                IS_IOS && isDarkMode
-                  ? {
-                      shadowColor: globalColors.grey100,
-                      shadowOpacity: 0.2,
-                      shadowOffset: { height: 4, width: 0 },
-                      shadowRadius: 6,
-                    }
-                  : {}
-              }
-            >
-              <RainbowCoinIcon
-                size={40}
-                icon={claimable.asset.iconUrl}
-                chainId={claimable.chainId}
-                symbol={claimable.asset.symbol}
-                theme={theme}
-                colors={undefined}
-              />
-            </View>
-          </Bleed>
-          <TextShadow blur={12} color={globalColors.grey100} shadowOpacity={0.1} y={4}>
-            <Text align="center" color="label" size="44pt" weight="black">
-              {claimable.value.nativeAsset.display}
-            </Text>
-          </TextShadow>
-        </Box>
-        {/* <Inline space={{ custom: 5 }} alignVertical="center">
-            <TextShadow shadowOpacity={0.3}>
-              <Text align="center" color="labelTertiary" size="17pt" weight="bold">
-                {'Receive'}
-              </Text>
-            </TextShadow>
-            <ContextMenuButton
-              hitSlop={20}
-              menuItems={menuConfig.menuItems}
-              menuTitle=""
-              onPressMenuItem={() => {}}
-              onPressAndroid={onShowActionSheet}
-              testID={undefined}
-            >
-              <Box
-                height={{ custom: 28 }}
-                paddingHorizontal={{ custom: 7 }}
-                alignItems="center"
-                justifyContent="center"
-                borderRadius={12}
-                borderWidth={1.33}
-                style={{ backgroundColor: 'rgba(9, 17, 31, 0.02)' }}
-                borderColor={{ custom: 'rgba(9, 17, 31, 0.02)' }}
-              >
-                <Inline alignVertical="center" space="4px" wrap={false}>
-                  <Text align="center" color="label" size="17pt" weight="heavy">
-                    {'USDC'}
-                  </Text>
-                  <Text align="center" color="labelSecondary" size="icon 12px" weight="heavy">
-                    􀆏
-                  </Text>
-                </Inline>
-              </Box>
-            </ContextMenuButton>
-            <TextShadow shadowOpacity={0.3}>
-              <Text align="center" color="labelTertiary" size="17pt" weight="bold">
-                {'on'}
-              </Text>
-            </TextShadow>
-            <ContextMenuButton
-              hitSlop={20}
-              menuItems={menuConfig.menuItems}
-              menuTitle=""
-              onPressMenuItem={() => {}}
-              onPressAndroid={onShowActionSheet}
-              testID={undefined}
-            >
-              <Box
-                height={{ custom: 28 }}
-                paddingHorizontal={{ custom: 7 }}
-                alignItems="center"
-                justifyContent="center"
-                borderRadius={12}
-                borderWidth={1.33}
-                style={{ backgroundColor: 'rgba(9, 17, 31, 0.02)' }}
-                borderColor={{ custom: 'rgba(9, 17, 31, 0.02)' }}
-              >
-                <Inline alignVertical="center" space="4px" wrap={false}>
-                  <Text align="center" color="label" size="17pt" weight="heavy">
-                    {chainName}
-                  </Text>
-                  <Text align="center" color="labelSecondary" size="icon 12px" weight="heavy">
-                    􀆏
-                  </Text>
-                </Inline>
-              </Box>
-            </ContextMenuButton>
-          </Inline> */}
-        {/* </Box> */}
-        <Box gap={20} alignItems="center" width="full">
-          <ButtonPressAnimation disabled={!isTransactionReady} style={{ width: '100%', paddingHorizontal: 18 }} scaleTo={0.96}>
-            <AccentColorProvider color={`rgba(41, 90, 247, ${isTransactionReady ? 1 : 0.2})`}>
-              <Box
-                background="accent"
-                shadow="30px accent"
-                borderRadius={43}
-                height={{ custom: 48 }}
-                width="full"
-                alignItems="center"
-                justifyContent="center"
-              >
-                {isSufficientGas ? (
-                  <Inline alignVertical="center" space="6px">
-                    <TextShadow shadowOpacity={0.3}>
-                      <Text align="center" color="label" size="icon 20px" weight="heavy">
-                        􀎽
-                      </Text>
-                    </TextShadow>
-                    <TextShadow shadowOpacity={0.3}>
-                      <Text align="center" color="label" size="20pt" weight="heavy">
-                        {`Claim ${claimable.value.claimAsset.display}`}
-                      </Text>
-                    </TextShadow>
-                  </Inline>
-                ) : (
-                  <TextShadow shadowOpacity={0.3}>
-                    <Text align="center" color="label" size="icon 20px" weight="heavy">
-                      Insufficient Funds
-                    </Text>
-                  </TextShadow>
-                )}
-              </Box>
-            </AccentColorProvider>
-          </ButtonPressAnimation>
-          {txPayload?.gasLimit ? (
-            <Inline alignVertical="center" space="2px">
-              <Text align="center" color="labelQuaternary" size="icon 10px" weight="heavy">
-                􀵟
-              </Text>
-              <Text color="labelQuaternary" size="13pt" weight="bold">
-                {`${gasFee} to claim on ${chainsLabel[claimable.chainId]}`}
-              </Text>
-            </Inline>
-          ) : (
-            <Text color="labelQuaternary" size="13pt" weight="bold">
-              Calculating gas fee...
-            </Text>
-          )}
-        </Box>
-      </Box>
-    </Panel>
+        </AccentColorProvider>
+      </ButtonPressAnimation>
+      {txPayload?.gasLimit ? (
+        <Inline alignVertical="center" space="2px">
+          <Text align="center" color="labelQuaternary" size="icon 10px" weight="heavy">
+            􀵟
+          </Text>
+          <Text color="labelQuaternary" size="13pt" weight="bold">
+            {`${nativeCurrencyGasFee} to claim on ${chainsLabel[claimable.chainId]}`}
+          </Text>
+        </Inline>
+      ) : (
+        <Text color="labelQuaternary" size="13pt" weight="bold">
+          Calculating gas fee...
+        </Text>
+      )}
+    </Box>
   );
 };

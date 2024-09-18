@@ -90,12 +90,12 @@ interface BaseClaimable {
   };
 }
 
-interface TransactionClaimable extends BaseClaimable {
+export interface TransactionClaimable extends BaseClaimable {
   type: 'transaction';
   action: { to: Address; data: string };
 }
 
-interface SponsoredClaimable extends BaseClaimable {
+export interface SponsoredClaimable extends BaseClaimable {
   type: 'sponsored';
   action: { url: string; method: string };
 }
