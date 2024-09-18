@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { lightModeThemeColors } from '../styles/colors';
 import { ParsedAddressAsset } from '@/entities';
-import { useTheme } from '@/theme';
 import { ethereumUtils, isETH, pseudoRandomArrayItemFromString } from '@/utils';
 import { usePersistentDominantColorFromImage } from './usePersistentDominantColorFromImage';
 
@@ -11,28 +10,27 @@ export default function useColorForAsset(
   forceLightMode = false,
   forceETHColor = false
 ) {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { isDarkMode: isDarkModeTheme, colors } = useTheme();
-  const accountAsset = ethereumUtils.getAssetFromAllAssets(asset.uniqueId || asset.mainnet_address || asset.address);
-  const resolvedAddress = asset.mainnet_address || asset.address || accountAsset.address;
+  const accountAsset = ethereumUtils.getAssetFromAllAssets(asset?.uniqueId || asset?.mainnet_address || asset?.address);
+  const resolvedAddress = asset?.mainnet_address || asset?.address || accountAsset?.address;
 
   const derivedColor = usePersistentDominantColorFromImage(accountAsset?.icon_url || asset?.icon_url);
   const isDarkMode = forceLightMode || isDarkModeTheme;
 
   const colorDerivedFromAddress = useMemo(() => {
-    if (!isETH(resolvedAddress)) {
-      return pseudoRandomArrayItemFromString(resolvedAddress, colors.avatarBackgrounds);
-    }
-
-    if (isDarkMode) {
-      if (forceETHColor) return colors.appleBlue;
-      return colors.brighten(lightModeThemeColors.dark);
-    }
-
-    return colors.dark;
+    const color = isETH(resolvedAddress)
+      ? isDarkMode
+        ? forceETHColor
+          ? colors.appleBlue
+          : colors.brighten(lightModeThemeColors.dark)
+        : colors.dark
+      : pseudoRandomArrayItemFromString(resolvedAddress, colors.avatarBackgrounds);
+    return color;
   }, [colors, forceETHColor, isDarkMode, resolvedAddress]);
 
   return useMemo(() => {
-    let color2Return: string;
+    let color2Return;
 
     // we have special handling for eth color
     if (isETH(resolvedAddress)) {
