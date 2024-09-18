@@ -127,27 +127,32 @@ const ClaimingClaimable = ({ claimable }: { claimable: Claimable }) => {
 
     const gasLimit = await estimateGasWithPadding(updatedTxPayload, null, null, provider);
 
-    if (gasLimit) {
-      if (needsL1SecurityFeeChains.includes(claimable.chainId)) {
-        // @ts-expect-error - type mismatch, but this logic is the same as in SendSheet.js
-        const l1SecurityFee = await ethereumUtils.calculateL1FeeOptimism(updatedTxPayload, provider);
-        if (l1SecurityFee) {
-          updateTxFee(gasLimit, null, l1SecurityFee);
-        } else {
-          logger.error(new RainbowError('[ClaimingClaimablePanel]: Failed to calculate L1 security fee'));
-        }
-      } else {
-        updateTxFee(gasLimit, null);
-      }
-      setTxPayload({ ...updatedTxPayload, gasLimit });
-    } else {
+    if (!gasLimit) {
+      updateTxFee(null, null);
       logger.error(new RainbowError('[ClaimingClaimablePanel]: Failed to estimate gas limit'));
+      return;
     }
+
+    if (needsL1SecurityFeeChains.includes(claimable.chainId)) {
+      // @ts-expect-error - type mismatch, but this logic is the same as in SendSheet.js
+      const l1SecurityFee = await ethereumUtils.calculateL1FeeOptimism(updatedTxPayload, provider);
+      if (!l1SecurityFee) {
+        updateTxFee(null, null);
+        logger.error(new RainbowError('[ClaimingClaimablePanel]: Failed to calculate L1 security fee'));
+        return;
+      }
+
+      updateTxFee(gasLimit, null, l1SecurityFee);
+    } else {
+      updateTxFee(gasLimit, null);
+    }
+
+    setTxPayload({ ...updatedTxPayload, gasLimit });
   }, [baseTxPayload, claimable.chainId, selectedGasFee, updateTxFee]);
 
   useEffect(() => {
     if (claimable.type === 'transaction' && baseTxPayload) {
-      setInterval(estimateGas, 30000);
+      estimateGas();
     }
   }, [claimable.type, estimateGas, selectedGasFee, baseTxPayload]);
 
