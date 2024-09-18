@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { AccentColorProvider, Bleed, Box, Inline, Text, TextShadow, globalColors, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import { ListHeader, Panel, TapToDismiss, controlPanelStyles } from '@/components/SmoothPager/ListPanel';
@@ -18,13 +18,13 @@ import { RapSwapActionParameters } from '@/raps/references';
 import { loadWallet } from '@/model/wallet';
 import { getGasSettings, getGasSettingsBySpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { GasSpeed } from '@/__swaps__/types/gas';
-import { estimateGasWithPadding } from '@/handlers/web3';
+import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
 import { parseGasParamsForTransaction } from '@/parsers';
 import { BigNumber } from '@ethersproject/bignumber';
 import { getNextNonce } from '@/state/nonces';
 import { TransactionRequest } from '@ethersproject/providers';
-import { chainsName } from '@/chains';
-import { RainbowError } from '@/logger';
+import { chainsLabel, chainsName, needsL1SecurityFeeChains } from '@/chains';
+import { logger, RainbowError } from '@/logger';
 // import { ContextMenuButton } from '@/components/context-menu';
 
 type RouteParams = {
@@ -69,10 +69,13 @@ export const ClaimClaimablePanel = () => {
 const ClaimingClaimable = ({ claimable }: { claimable: Claimable }) => {
   const { isDarkMode } = useColorMode();
   const { accountAddress } = useAccountSettings();
-  const { selectedGasFee, startPollingGasFees } = useGas();
+  const { selectedGasFee, startPollingGasFees, stopPollingGasFees, updateTxFee } = useGas();
   const theme = useTheme();
 
+  const [baseTxPayload, setBaseTxPayload] = useState<TransactionRequest | undefined>();
   const [txPayload, setTxPayload] = useState<TransactionRequest | undefined>();
+
+  const gasFee = selectedGasFee?.gasFee?.estimatedFee?.native?.value?.display;
   // const menuConfig = useMemo(() => {
   //   return {
   //     menuItems: {},
@@ -81,39 +84,72 @@ const ClaimingClaimable = ({ claimable }: { claimable: Claimable }) => {
 
   // const onShowActionSheet = useCallback(() => {}, []);
 
-  const chainName = chainsName[claimable.chainId];
-
   const buildTxPayload = useCallback(async () => {
     if (claimable.type !== 'transaction') {
       throw new RainbowError('[ClaimingClaimablePanel]: attempted to build tx payload for non-transaction type claimable');
     }
-    console.log(selectedGasFee);
-    startPollingGasFees();
-    const gasParams = parseGasParamsForTransaction(selectedGasFee);
-    console.log('CLOP');
+
     const payload = {
-      amount: BigNumber.from(0),
+      value: '0x0',
       data: claimable.action.data,
       from: accountAddress,
-      network: chainName,
+      network: chainsName[claimable.chainId],
       chainId: claimable.chainId,
       nonce: await getNextNonce({ address: accountAddress, chainId: claimable.chainId }),
       to: claimable.action.to,
-      ...gasParams,
     };
 
-    setTxPayload(payload);
-    return payload;
-  }, [accountAddress, chainName, claimable, selectedGasFee, startPollingGasFees]);
+    setBaseTxPayload(payload);
+  }, [accountAddress, claimable, setBaseTxPayload]);
+
+  useEffect(() => {
+    buildTxPayload();
+  }, [buildTxPayload]);
 
   useEffect(() => {
     if (claimable.type === 'transaction') {
-      buildTxPayload().then(async payload => {
-        const estimatedGas = await estimateGasWithPadding(payload);
-        console.log(estimatedGas);
-      });
+      startPollingGasFees();
+      return () => {
+        stopPollingGasFees();
+      };
     }
-  }, [buildTxPayload, claimable.type]);
+  }, [claimable.type, startPollingGasFees, stopPollingGasFees]);
+
+  const estimateGas = useCallback(async () => {
+    if (!baseTxPayload) {
+      throw new RainbowError('[ClaimingClaimablePanel]: attempted to estimate gas without a tx payload');
+    }
+
+    const provider = getProvider({ chainId: claimable.chainId });
+
+    const gasParams = parseGasParamsForTransaction(selectedGasFee);
+    const updatedTxPayload: TransactionRequest = { ...baseTxPayload, ...gasParams };
+
+    const gasLimit = await estimateGasWithPadding(updatedTxPayload, null, null, provider);
+
+    if (gasLimit) {
+      if (needsL1SecurityFeeChains.includes(claimable.chainId)) {
+        // @ts-expect-error - type mismatch, but this logic is the same as in SendSheet.js
+        const l1SecurityFee = await ethereumUtils.calculateL1FeeOptimism(updatedTxPayload, provider);
+        if (l1SecurityFee) {
+          updateTxFee(gasLimit, null, l1SecurityFee);
+        } else {
+          logger.error(new RainbowError('[ClaimingClaimablePanel]: Failed to calculate L1 security fee'));
+        }
+      } else {
+        updateTxFee(gasLimit, null);
+      }
+      setTxPayload({ ...updatedTxPayload, gasLimit });
+    } else {
+      logger.error(new RainbowError('[ClaimingClaimablePanel]: Failed to estimate gas limit'));
+    }
+  }, [baseTxPayload, claimable.chainId, selectedGasFee, updateTxFee]);
+
+  useEffect(() => {
+    if (claimable.type === 'transaction' && baseTxPayload) {
+      setInterval(estimateGas, 30000);
+    }
+  }, [claimable.type, estimateGas, selectedGasFee, baseTxPayload]);
 
   // const { mutate: claimRewards } = useMutation<{
   //   nonce: number | null;
@@ -394,14 +430,20 @@ const ClaimingClaimable = ({ claimable }: { claimable: Claimable }) => {
               </Box>
             </AccentColorProvider>
           </ButtonPressAnimation>
-          <Inline alignVertical="center" space="2px">
-            <Text align="center" color="labelQuaternary" size="icon 10px" weight="heavy">
-              􀵟
-            </Text>
+          {gasFee ? (
+            <Inline alignVertical="center" space="2px">
+              <Text align="center" color="labelQuaternary" size="icon 10px" weight="heavy">
+                􀵟
+              </Text>
+              <Text color="labelQuaternary" size="13pt" weight="bold">
+                {`${gasFee} to claim on ${chainsLabel[claimable.chainId]}`}
+              </Text>
+            </Inline>
+          ) : (
             <Text color="labelQuaternary" size="13pt" weight="bold">
-              {`$0.01 to claim on ${chainName}`}
+              Calculating gas fees...
             </Text>
-          </Inline>
+          )}
         </Box>
       </Box>
     </Panel>
