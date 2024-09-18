@@ -1,6 +1,6 @@
 import { BlurView } from '@react-native-community/blur';
 import React, { memo, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { PixelRatio, ScrollView, StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { ButtonPressAnimation } from '@/components/animations';
@@ -499,6 +499,17 @@ const Card = memo(function Card({
   );
 });
 
+const getImageForDevicePixelRatio = ({ imageUrl, imageVariants }: FeaturedResult) => {
+  if (!imageVariants) return imageUrl;
+
+  const pixelRatio = PixelRatio.get();
+  const { x1, x2, x3 } = imageVariants;
+
+  if (pixelRatio < 1.5) return x1?.url || imageUrl;
+  if (pixelRatio < 3) return x2?.url || x1?.url || imageUrl;
+  return x3?.url || x2?.url || x1?.url || imageUrl;
+};
+
 export const DappBrowserFeaturedResultsCard = memo(function Card({
   handlePress,
   featuredResult,
@@ -507,6 +518,8 @@ export const DappBrowserFeaturedResultsCard = memo(function Card({
   featuredResult: FeaturedResult;
 }) {
   const { isDarkMode } = useColorMode();
+
+  const imageUrl = getImageForDevicePixelRatio(featuredResult);
 
   return (
     <ButtonPressAnimation onPress={handlePress} scaleTo={0.94}>
@@ -524,12 +537,7 @@ export const DappBrowserFeaturedResultsCard = memo(function Card({
           style={[styles.cardContainer, isDarkMode && styles.cardContainerDark]}
           width={{ custom: CARD_WIDTH }}
         >
-          <ImgixImage
-            enableFasterImage
-            size={CARD_WIDTH}
-            source={{ uri: featuredResult.imageUrl }}
-            style={{ height: CARD_HEIGHT, width: CARD_WIDTH }}
-          />
+          <ImgixImage enableFasterImage size={CARD_WIDTH} source={{ uri: imageUrl }} style={{ height: CARD_HEIGHT, width: CARD_WIDTH }} />
         </Box>
         {IS_IOS && (
           <Box
