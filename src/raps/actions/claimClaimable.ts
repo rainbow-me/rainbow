@@ -17,6 +17,7 @@ const DO_FAKE_CLAIM = false;
 // to do the claim and send the funds to the user
 export async function claimClaimable({ parameters, wallet, baseNonce }: ActionPropsV2<'claimClaimable'>) {
   const { claimTx } = parameters;
+
   if (!address) {
     throw new Error('[CLAIM-REWARDS]: missing address');
   }

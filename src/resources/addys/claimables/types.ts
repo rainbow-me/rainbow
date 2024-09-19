@@ -1,6 +1,6 @@
 import { Address } from 'viem';
 import { AddysAsset, AddysConsolidatedError, AddysResponseStatus } from '../types';
-import { ChainId } from '@/networks/types';
+import { ChainId } from '@/chains/types';
 
 interface Colors {
   primary: string;

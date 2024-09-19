@@ -210,7 +210,7 @@ const ClaimingTransactionClaimable = ({ claimable }: { claimable: TransactionCla
     () => convertAmountToNativeDisplay(selectedGasFee?.gasFee?.estimatedFee?.native?.value?.amount, nativeCurrency),
     [nativeCurrency, selectedGasFee?.gasFee?.estimatedFee?.native?.value?.amount]
   );
-  console.log(txPayload);
+
   // const { mutate: claimRewards } = useMutation<{
   //   nonce: number | null;
   // }>({
