@@ -588,13 +588,21 @@ export default function SendSheet(props) {
         })();
       }
     },
-    [amountDetails.assetAmount, goBack, isENS, isHardwareWallet, navigate, onSubmit, recipient, selected?.name, selected?.network]
+    [amountDetails, goBack, isENS, isHardwareWallet, navigate, onSubmit, recipient, selected?.name, selected?.network]
   );
 
   const { buttonDisabled, buttonLabel } = useMemo(() => {
     const isZeroAssetAmount = Number(amountDetails.assetAmount) <= 0;
     let disabled = true;
     let label = lang.t('button.confirm_exchange.enter_amount');
+
+    console.log({
+      empty: isEmpty(gasFeeParamsBySpeed),
+      selectedGasFee: !selectedGasFee,
+      gasFee: isEmpty(selectedGasFee?.gasFee),
+      toAddress: !toAddress,
+      needsL1SecurityFeeChains: needsL1SecurityFeeChains.includes(currentChainId) && l1GasFeeOptimism === null,
+    });
 
     if (isENS && !ensProfile.isSuccess) {
       label = lang.t('button.confirm_exchange.loading');
@@ -764,7 +772,6 @@ export default function SendSheet(props) {
 
     if (
       !!accountAddress &&
-      amountDetails.assetAmount !== '' &&
       Object.entries(selected).length &&
       assetChainId === currentChainId &&
       currentProviderChainId === currentChainId &&
