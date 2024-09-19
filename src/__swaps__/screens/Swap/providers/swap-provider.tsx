@@ -35,7 +35,7 @@ import { useAccountSettings } from '@/hooks';
 import { useAnimatedInterval } from '@/hooks/reanimated/useAnimatedInterval';
 import * as i18n from '@/languages';
 import { RainbowError, logger } from '@/logger';
-import { loadWallet } from '@/model/wallet';
+import { loadWalletForSelectedWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import { walletExecuteRap } from '@/raps/execute';
@@ -199,18 +199,19 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       const NotificationManager = IS_IOS ? NativeModules.NotificationManager : null;
       NotificationManager?.postNotification('rapInProgress');
 
-      const provider =
-        parameters.flashbots && supportedFlashbotsChainIds.includes(parameters.chainId)
-          ? await getFlashbotsProvider()
-          : getProvider({ chainId: parameters.chainId });
       const connectedToHardhat = useConnectedToHardhatStore.getState().connectedToHardhat;
-
       const isBridge = swapsStore.getState().inputAsset?.mainnetAddress === swapsStore.getState().outputAsset?.mainnetAddress;
       const isDegenModeEnabled = swapsStore.getState().degenMode;
       const slippage = swapsStore.getState().slippage;
       const isSwappingToPopularAsset = swapsStore.getState().outputAsset?.sectionId === 'popular';
 
-      const selectedGas = getSelectedGas(parameters.chainId);
+      const [provider, selectedGas] = await Promise.all([
+        parameters.flashbots && supportedFlashbotsChainIds.includes(parameters.chainId)
+          ? await getFlashbotsProvider()
+          : getProvider({ chainId: parameters.chainId }),
+        getSelectedGas(parameters.chainId),
+      ]);
+
       if (!selectedGas) {
         isSwapping.value = false;
         Alert.alert(i18n.t(i18n.l.gas.unable_to_determine_selected_gas));
@@ -218,14 +219,13 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }
 
       const wallet = await performanceTracking.getState().executeFn({
-        fn: loadWallet,
+        fn: loadWalletForSelectedWallet,
         screen: Screens.SWAPS,
         operation: TimeToSignOperation.KeychainRead,
         metadata: {
           degenMode: isDegenModeEnabled,
         },
       })({
-        address: parameters.quote.from,
         showErrorIfNotLoaded: false,
         provider,
         timeTracking: {

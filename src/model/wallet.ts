@@ -258,6 +258,48 @@ export const walletInit = async (
   return { isNew, walletAddress };
 };
 
+export const loadWalletForSelectedWallet = async <S extends Screen>({
+  showErrorIfNotLoaded = true,
+  provider,
+  timeTracking,
+}: {
+  showErrorIfNotLoaded?: boolean;
+  provider?: Provider;
+  timeTracking?: ExecuteFnParamsWithoutFn<S>;
+}) => {
+  const { selected } = store.getState().wallets;
+  const { accountAddress } = store.getState().settings;
+
+  const isHardwareWallet = selected?.type === walletTypes.bluetooth;
+
+  let privateKey: Awaited<ReturnType<typeof loadPrivateKey>>;
+  if (timeTracking) {
+    privateKey = await performanceTracking.getState().executeFn({
+      ...timeTracking,
+      fn: loadPrivateKey,
+    })(accountAddress, isHardwareWallet);
+  } else {
+    privateKey = await loadPrivateKey(accountAddress, isHardwareWallet);
+  }
+
+  if (privateKey === kc.ErrorType.UserCanceled || privateKey === kc.ErrorType.NotAuthenticated) {
+    return null;
+  }
+  if (isHardwareWalletKey(privateKey)) {
+    const index = privateKey?.split('/')[1];
+    const deviceId = privateKey?.split('/')[0];
+    if (typeof index !== undefined && provider && deviceId) {
+      return new LedgerSigner(provider, getHdPath({ type: WalletLibraryType.ledger, index: Number(index) }), deviceId);
+    }
+  } else if (privateKey) {
+    return new Wallet(privateKey, provider || web3Provider);
+  }
+  if (ios && showErrorIfNotLoaded) {
+    showWalletErrorAlert();
+  }
+  return null;
+};
+
 export const loadWallet = async <S extends Screen>({
   address,
   showErrorIfNotLoaded = true,
@@ -1011,8 +1053,10 @@ export const getPrivateKey = async (
         logger.error(new RainbowError('KC unavailable for PKEY lookup'), { error });
         break;
       default:
-        // This is an unknown error
-        logger.error(new RainbowError('KC unknown error for PKEY lookup'), { error });
+        if (typeof error !== 'undefined') {
+          // This is an unknown error
+          logger.error(new RainbowError('KC unknown error for PKEY lookup'), { error });
+        }
         break;
     }
     return pkey || null;
