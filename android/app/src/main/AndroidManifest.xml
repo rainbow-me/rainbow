@@ -28,7 +28,6 @@
       android:requestLegacyExternalStorage="true"
       android:resizeableActivity="false"
       tools:ignore="GoogleAppIndexingWarning"
-      android:supportsRtl="true"
     >
       <meta-data
           android:name="com.google.mlkit.vision.DEPENDENCIES"
