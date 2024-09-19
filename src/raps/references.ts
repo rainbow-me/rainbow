@@ -81,21 +81,26 @@ export interface RapClaimRewardsActionParameters {
 }
 
 export interface RapClaimClaimableActionParameters {
-  address?: Address;
-  assetToSell: ParsedAsset;
-  sellAmount: string;
-  assetToBuy: ParsedAsset;
-  meta?: SwapMetadata;
-  chainId: ChainId;
-  toChainId?: ChainId;
-  quote: undefined;
-  gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
+  claimTx: {
+    to: string;
+    from: string;
+    nonce: number;
+    gasLimit: number;
+    data: string;
+    value: '0x0';
+    chainId: number;
+  };
+}
+
+export interface RapClaimClaimableAndSwapBridgeParameters {
+  claimClaimableActionParameters: RapClaimClaimableActionParameters;
 }
 
 export type RapActionParameters =
   | RapSwapActionParameters<'swap'>
   | RapSwapActionParameters<'crosschainSwap'>
   | RapClaimRewardsActionParameters
+  | RapClaimClaimableActionParameters
   | RapUnlockActionParameters;
 
 export interface RapActionTransaction {
@@ -109,6 +114,13 @@ export type RapActionParameterMap = {
   claimRewards: RapClaimRewardsActionParameters;
   claimRewardsBridge: RapClaimRewardsActionParameters;
   claimClaimable: RapClaimClaimableActionParameters;
+};
+
+export type RapParameterMap = {
+  swap: undefined; // TODO
+  crosschainSwap: undefined; // TODO
+  claimRewardsBridge: undefined; // TODO
+  claimClaimableSwapBridge: RapClaimClaimableAndSwapBridgeParameters;
 };
 
 export interface RapAction<T extends RapActionTypes> {
@@ -162,7 +174,20 @@ export interface ActionProps<T extends RapActionTypes> {
   gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
 }
 
+export interface ActionPropsV2<T extends RapActionTypes> {
+  baseNonce?: number;
+  index: number;
+  parameters: RapActionParameterMap[T];
+  wallet: Signer;
+  currentRap: Rap;
+}
+
 export interface WalletExecuteRapProps {
   rapActionParameters: RapSwapActionParameters<'swap' | 'crosschainSwap' | 'claimRewardsBridge'>;
   type: RapTypes;
+}
+
+export interface RapResponse {
+  nonce: number | undefined;
+  errorMessage: string | null;
 }

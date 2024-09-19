@@ -155,7 +155,8 @@ const ClaimingTransactionClaimable = ({ claimable }: { claimable: TransactionCla
 
   const estimateGas = useCallback(async () => {
     if (!txPayload) {
-      throw new RainbowError('[ClaimingClaimablePanel]: attempted to estimate gas without a tx payload');
+      logger.error(new RainbowError('[ClaimingClaimablePanel]: attempted to estimate gas without a tx payload'));
+      return;
     }
 
     const provider = getProvider({ chainId: claimable.chainId });
@@ -209,7 +210,7 @@ const ClaimingTransactionClaimable = ({ claimable }: { claimable: TransactionCla
     () => convertAmountToNativeDisplay(selectedGasFee?.gasFee?.estimatedFee?.native?.value?.amount, nativeCurrency),
     [nativeCurrency, selectedGasFee?.gasFee?.estimatedFee?.native?.value?.amount]
   );
-
+  console.log(txPayload);
   // const { mutate: claimRewards } = useMutation<{
   //   nonce: number | null;
   // }>({

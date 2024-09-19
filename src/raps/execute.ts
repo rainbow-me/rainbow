@@ -10,11 +10,18 @@ import { crosschainSwap } from './actions/crosschainSwap';
 import { claimRewardsBridge } from './actions/claimRewardsBridge';
 import {
   ActionProps,
+  ActionPropsV2,
+  RapResponse,
   Rap,
   RapAction,
+  RapActionParameterMap,
+  RapActionParameters,
   RapActionResponse,
   RapActionResult,
   RapActionTypes,
+  RapClaimClaimableActionParameters,
+  RapClaimClaimableAndSwapBridgeParameters,
+  RapParameterMap,
   RapSwapActionParameters,
   RapTypes,
 } from './references';
@@ -32,14 +39,25 @@ export function createSwapRapByType<T extends RapTypes>(
   swapParameters: RapSwapActionParameters<T>
 ): Promise<{ actions: RapAction<RapActionTypes>[] }> {
   switch (type) {
-    case 'claimClaimableSwapBridge':
-      return createClaimClaimableAndSwapBridgeRap(swapParameters as RapSwapActionParameters<'claimClaimableSwapBridge'>);
     case 'claimRewardsBridge':
       return createClaimRewardsAndBridgeRap(swapParameters as RapSwapActionParameters<'claimRewardsBridge'>);
     case 'crosschainSwap':
       return createUnlockAndCrosschainSwapRap(swapParameters as RapSwapActionParameters<'crosschainSwap'>);
     case 'swap':
       return createUnlockAndSwapRap(swapParameters as RapSwapActionParameters<'swap'>);
+    default:
+      return Promise.resolve({ actions: [] });
+  }
+}
+
+export function createRapByType<T extends RapTypes>(
+  type: T,
+  parameters: NonNullable<RapParameterMap[T]>
+): Promise<{ actions: RapAction<RapActionTypes>[] }> {
+  switch (type) {
+    case 'claimClaimableSwapBridge':
+      return createClaimClaimableAndSwapBridgeRap(parameters);
+    // TODO: other types
     default:
       return Promise.resolve({ actions: [] });
   }
@@ -59,6 +77,26 @@ function typeAction<T extends RapActionTypes>(type: T, props: ActionProps<T>) {
       return () => claimRewardsBridge(props as ActionProps<'claimRewardsBridge'>);
     case 'crosschainSwap':
       return () => crosschainSwap(props as ActionProps<'crosschainSwap'>);
+    default:
+      // eslint-disable-next-line react/display-name
+      return () => null;
+  }
+}
+
+function typeActionV2<T extends RapActionTypes>(type: T, props: ActionPropsV2<T>) {
+  switch (type) {
+    case 'claimClaimable':
+      return () => claimClaimable(props as ActionPropsV2<'claimClaimable'>);
+    // case 'claimRewards':
+    // return () => claimRewards(props as ActionProps<'claimRewards'>);
+    // case 'unlock':
+    //   return () => unlock(props as ActionProps<'unlock'>);
+    // case 'swap':
+    // return () => swap(props as ActionProps<'swap'>);
+    // case 'claimRewardsBridge':
+    //   return () => claimRewardsBridge(props as ActionProps<'claimRewardsBridge'>);
+    // case 'crosschainSwap':
+    //   return () => crosschainSwap(props as ActionProps<'crosschainSwap'>);
     default:
       // eslint-disable-next-line react/display-name
       return () => null;
@@ -110,6 +148,43 @@ export async function executeAction<T extends RapActionTypes>({
   }
 }
 
+export async function executeActionV2<T extends RapActionTypes>({
+  action,
+  wallet,
+  rap,
+  index,
+  baseNonce,
+  rapName,
+}: {
+  action: RapAction<T>;
+  wallet: Signer;
+  rap: Rap;
+  index: number;
+  baseNonce?: number;
+  rapName: string;
+}): Promise<RapActionResponse> {
+  const { type, parameters } = action;
+  try {
+    const actionProps = {
+      wallet,
+      currentRap: rap,
+      index,
+      parameters,
+      baseNonce,
+    };
+    const { nonce, hash } = (await typeActionV2<T>(type, actionProps)()) as RapActionResult;
+    return { baseNonce: nonce, errorMessage: null, hash };
+  } catch (error) {
+    logger.error(new RainbowError(`[raps/execute]: ${rapName} - error execute action`), {
+      message: (error as Error)?.message,
+    });
+    if (index === 0) {
+      return { baseNonce: null, errorMessage: String(error) };
+    }
+    return { baseNonce: null, errorMessage: null };
+  }
+}
+
 function getRapFullName<T extends RapActionTypes>(actions: RapAction<T>[]) {
   const actionTypes = actions.map(action => action.type);
   return actionTypes.join(' + ');
@@ -131,11 +206,66 @@ const waitForNodeAck = async (hash: string, provider: Signer['provider']): Promi
   });
 };
 
+// export const executeClaimClaimableRap = async (
+//   wallet: Signer,
+//   parameters: RapClaimClaimableAndSwapBridgeParameters
+// ): Promise<RapResponse> => {
+//   const rap = await createClaimClaimableAndSwapBridgeRap(parameters);
+//   return executeRap(wallet, rap, parameters.claimClaimableActionParameters.claimTx.nonce);
+// };
+
+const executeRap = async (
+  wallet: Signer,
+  rap: {
+    actions: RapAction<RapActionTypes>[];
+  },
+  nonce?: number | undefined
+): Promise<RapResponse> => {
+  let currentNonce = nonce;
+  const { actions } = rap;
+  const rapName = getRapFullName(rap.actions);
+  let errorMessage = null;
+  if (actions.length) {
+    const firstAction = actions[0];
+    const actionParams = {
+      action: firstAction,
+      wallet,
+      rap,
+      index: 0,
+      baseNonce: nonce,
+      rapName,
+    };
+
+    const { baseNonce, errorMessage: error, hash } = await executeActionV2(actionParams);
+
+    if (typeof baseNonce === 'number') {
+      actions.length > 1 && hash && (await waitForNodeAck(hash, wallet.provider));
+      for (let index = 1; index < actions.length; index++) {
+        const action = actions[index];
+        const actionParams = {
+          action,
+          wallet,
+          rap,
+          index,
+          baseNonce,
+          rapName,
+        };
+        const { hash } = await executeActionV2(actionParams);
+        hash && (await waitForNodeAck(hash, wallet.provider));
+      }
+      currentNonce = baseNonce + actions.length - 1;
+    } else {
+      errorMessage = error;
+    }
+  }
+  return { nonce: currentNonce, errorMessage };
+};
+
 export const walletExecuteRap = async (
   wallet: Signer,
   type: RapTypes,
   parameters: RapSwapActionParameters<'swap' | 'crosschainSwap' | 'claimRewardsBridge' | 'claimClaimableSwapBridge'>
-): Promise<{ nonce: number | undefined; errorMessage: string | null }> => {
+): Promise<RapResponse> => {
   // NOTE: We don't care to track claimRewardsBridge raps
   const rap =
     type === 'claimRewardsBridge' || type === 'claimClaimableSwapBridge'
@@ -194,3 +324,13 @@ export const walletExecuteRap = async (
   }
   return { nonce, errorMessage };
 };
+
+export async function walletExecuteRapV2<T extends RapTypes>(
+  wallet: Signer,
+  type: T,
+  parameters: NonNullable<RapParameterMap[T]>,
+  nonce?: number | undefined
+): Promise<RapResponse> {
+  const rap = await createRapByType(type, parameters);
+  return executeRap(wallet, rap, nonce);
+}

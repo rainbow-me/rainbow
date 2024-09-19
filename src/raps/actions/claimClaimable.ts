@@ -1,5 +1,5 @@
 import { metadataPOSTClient } from '@/graphql';
-import { ActionProps } from '../references';
+import { ActionProps, ActionPropsV2 } from '../references';
 
 const CLAIM_MOCK_DATA = {
   claimUserRewards: {
@@ -15,8 +15,8 @@ const DO_FAKE_CLAIM = false;
 // This action is used to claim the rewards of the user
 // by making an api call to the backend which would use a relayer
 // to do the claim and send the funds to the user
-export async function claimClaimable({ parameters, wallet, baseNonce }: ActionProps<'claimClaimable'>) {
-  const { address } = parameters;
+export async function claimClaimable({ parameters, wallet, baseNonce }: ActionPropsV2<'claimClaimable'>) {
+  const { claimTx } = parameters;
   if (!address) {
     throw new Error('[CLAIM-REWARDS]: missing address');
   }
