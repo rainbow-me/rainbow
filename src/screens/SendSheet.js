@@ -596,6 +596,14 @@ export default function SendSheet(props) {
     let disabled = true;
     let label = lang.t('button.confirm_exchange.enter_amount');
 
+    console.log({
+      isEmpty: isEmpty(gasFeeParamsBySpeed),
+      notSelectedGasFee: !selectedGasFee,
+      gasFee: isEmpty(selectedGasFee?.gasFee),
+      toAddress: !toAddress,
+      l1GasFeeOptimism: needsL1SecurityFeeChains.includes(currentChainId) && l1GasFeeOptimism === null,
+    });
+
     if (isENS && !ensProfile.isSuccess) {
       label = lang.t('button.confirm_exchange.loading');
       disabled = true;
@@ -713,8 +721,11 @@ export default function SendSheet(props) {
       const isValid = checkIsValidAddressOrDomainFormat(text);
       if (!isValid) {
         setIsValidAddress();
+        setToAddress();
+      } else {
+        setIsValidAddress(true);
+        setToAddress(text);
       }
-      setToAddress();
       setCurrentInput(text);
       setRecipient(text);
       setNickname(text);
