@@ -74,7 +74,7 @@ export const SearchInputButton = ({
     const isInputSearchFocused = inputProgress.value === NavigationSteps.SEARCH_FOCUSED;
     const isOutputSearchFocused = outputProgress.value === NavigationSteps.SEARCH_FOCUSED;
     const isOutputTokenListFocused = outputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED;
-    
+
     const clipboardDataAvailable = hasClipboardData || IS_ANDROID;
 
     const isPasteDisabled = output && !internalSelectedOutputAsset.value && isOutputTokenListFocused && !clipboardDataAvailable;
