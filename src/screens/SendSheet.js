@@ -345,7 +345,6 @@ export default function SendSheet(props) {
       const isValid = checkIsValidAddressOrDomainFormat(debouncedRecipient);
       if (isValid) {
         const resolvedAddress = await resolveNameOrAddress(debouncedRecipient);
-        console.log({ resolvedAddress });
         if (resolvedAddress && typeof resolvedAddress === 'string') {
           setToAddress(resolvedAddress);
         } else {
@@ -597,14 +596,6 @@ export default function SendSheet(props) {
     let disabled = true;
     let label = lang.t('button.confirm_exchange.enter_amount');
 
-    console.log({
-      isEmpty: isEmpty(gasFeeParamsBySpeed),
-      notSelectedGasFee: !selectedGasFee,
-      gasFee: isEmpty(selectedGasFee?.gasFee),
-      toAddress: !toAddress,
-      l1GasFeeOptimism: needsL1SecurityFeeChains.includes(currentChainId) && l1GasFeeOptimism === null,
-    });
-
     if (isENS && !ensProfile.isSuccess) {
       label = lang.t('button.confirm_exchange.loading');
       disabled = true;
@@ -720,7 +711,6 @@ export default function SendSheet(props) {
   const onChangeInput = useCallback(
     text => {
       const isValid = checkIsValidAddressOrDomainFormat(text);
-      console.log({ isValid, text });
       if (!isValid) {
         setIsValidAddress();
         setToAddress();
