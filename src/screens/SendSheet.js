@@ -345,6 +345,7 @@ export default function SendSheet(props) {
       const isValid = checkIsValidAddressOrDomainFormat(debouncedRecipient);
       if (isValid) {
         const resolvedAddress = await resolveNameOrAddress(debouncedRecipient);
+        console.log({ resolvedAddress });
         if (resolvedAddress && typeof resolvedAddress === 'string') {
           setToAddress(resolvedAddress);
         } else {
@@ -719,12 +720,13 @@ export default function SendSheet(props) {
   const onChangeInput = useCallback(
     text => {
       const isValid = checkIsValidAddressOrDomainFormat(text);
+      console.log({ isValid, text });
       if (!isValid) {
         setIsValidAddress();
         setToAddress();
       } else {
-        setIsValidAddress(true);
         setToAddress(text);
+        setIsValidAddress(true);
       }
       setCurrentInput(text);
       setRecipient(text);
@@ -823,6 +825,12 @@ export default function SendSheet(props) {
 
   const isEmptyWallet = !sortedAssets?.length && !sendableUniqueTokens?.length;
 
+  const filteredUserAccountsFromContacts = useMemo(() => {
+    return userAccounts.filter(
+      account => !filteredContacts.some(contact => contact.address.toLowerCase() === account.address.toLowerCase())
+    );
+  }, [userAccounts, filteredContacts]);
+
   return (
     <Container testID="send-sheet">
       <SheetContainer>
@@ -842,7 +850,7 @@ export default function SendSheet(props) {
           recipientFieldRef={recipientFieldRef}
           removeContact={onRemoveContact}
           showAssetList={showAssetList}
-          userAccounts={userAccounts}
+          userAccounts={filteredUserAccountsFromContacts}
           watchedAccounts={watchedAccounts}
         />
         {showEmptyState && (
@@ -858,7 +866,7 @@ export default function SendSheet(props) {
               setNickname(nickname);
             }}
             removeContact={onRemoveContact}
-            userAccounts={userAccounts}
+            userAccounts={filteredUserAccountsFromContacts}
             watchedAccounts={watchedAccounts}
           />
         )}
