@@ -714,9 +714,6 @@ export default function SendSheet(props) {
       if (!isValid) {
         setIsValidAddress();
         setToAddress();
-      } else {
-        setToAddress(text);
-        setIsValidAddress(true);
       }
       setCurrentInput(text);
       setRecipient(text);
