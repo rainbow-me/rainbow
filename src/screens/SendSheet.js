@@ -596,14 +596,6 @@ export default function SendSheet(props) {
     let disabled = true;
     let label = lang.t('button.confirm_exchange.enter_amount');
 
-    console.log({
-      empty: isEmpty(gasFeeParamsBySpeed),
-      selectedGasFee: !selectedGasFee,
-      gasFee: isEmpty(selectedGasFee?.gasFee),
-      toAddress: !toAddress,
-      needsL1SecurityFeeChains: needsL1SecurityFeeChains.includes(currentChainId) && l1GasFeeOptimism === null,
-    });
-
     if (isENS && !ensProfile.isSuccess) {
       label = lang.t('button.confirm_exchange.loading');
       disabled = true;
