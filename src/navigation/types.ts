@@ -5,6 +5,7 @@ import Routes from '@/navigation/routesNames';
 import { PortalSheetProps } from '@/screens/Portal';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { CampaignCheckResult } from '@/components/remote-promo-sheet/checkForRemotePromoSheet';
+import { ParsedAddressAsset } from '@/entities';
 
 export type PartialNavigatorConfigOptions = Pick<Partial<Parameters<ReturnType<typeof createStackNavigator>['Screen']>[0]>, 'options'>;
 
@@ -17,6 +18,11 @@ declare global {
 }
 
 export type RootStackParamList = {
+  [Routes.SEND_SHEET]: {
+    asset?: ParsedAddressAsset;
+    address?: string;
+    nativeAmount?: string;
+  };
   [Routes.CHANGE_WALLET_SHEET]: {
     watchOnly: boolean;
     currentAccountAddress: string;
