@@ -36,6 +36,7 @@ export const SearchInputButton = ({
     outputSearchRef,
     AnimatedSwapStyles,
   } = useSwapContext();
+
   const { hasClipboardData } = useClipboard();
 
   const btnText = useDerivedValue(() => {
