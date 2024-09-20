@@ -24,7 +24,6 @@ import * as lang from '@/languages';
 import store from '@/redux/store';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import WalletTypes from '@/helpers/walletTypes';
-import ethereumUtils from '@/utils/ethereumUtils';
 import { getRequestDisplayDetails } from '@/parsers/requests';
 import { WalletconnectRequestData, REQUESTS_UPDATE_REQUESTS_TO_APPROVE, removeRequest } from '@/redux/requests';
 import { saveLocalRequests } from '@/handlers/localstorage/walletconnectRequests';
@@ -868,7 +867,7 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
        * encapsulate reused code.
        */
       const loadWalletAndSignMessage = async () => {
-        const provider = getProvider({ chainId: ChainId.arbitrum });
+        const provider = getProvider({ chainId: ChainId.mainnet });
         const wallet = await loadWallet({ address, showErrorIfNotLoaded: false, provider });
 
         if (!wallet) {
