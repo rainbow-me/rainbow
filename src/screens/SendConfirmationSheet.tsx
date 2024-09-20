@@ -420,7 +420,7 @@ export const SendConfirmationSheet = () => {
     return existingAcct;
   }, [toAddress, userAccounts, watchedAccounts]);
 
-  let avatarName = removeFirstEmojiFromString(existingAccount?.label || contact?.nickname);
+  let avatarName = removeFirstEmojiFromString(contact?.nickname || existingAccount?.label);
 
   if (!avatarName) {
     if (isValidDomainFormat(to)) {

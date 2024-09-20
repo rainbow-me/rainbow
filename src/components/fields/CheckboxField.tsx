@@ -48,7 +48,7 @@ export default function CheckboxField({
         </Box>
         <Box flexShrink={1}>
           <AccentColorProvider color={customColor || action}>
-            <Text color={isChecked ? 'accent' : 'secondary80 (Deprecated)'} size="16px / 22px (Deprecated)" weight="bold">
+            <Text color={isChecked ? 'accent' : 'secondary80 (Deprecated)'} size="15pt" weight="bold">
               {label}
             </Text>
           </AccentColorProvider>
