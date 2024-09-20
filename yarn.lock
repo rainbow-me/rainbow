@@ -4377,9 +4377,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rainbow-me/provider@npm:0.0.12":
-  version: 0.0.12
-  resolution: "@rainbow-me/provider@npm:0.0.12"
+"@rainbow-me/provider@npm:0.1.1":
+  version: 0.1.1
+  resolution: "@rainbow-me/provider@npm:0.1.1"
   dependencies:
     "@ethersproject/abstract-provider": "npm:5.7.0"
     "@ethersproject/bignumber": "npm:5.7.0"
@@ -4387,7 +4387,7 @@ __metadata:
     "@metamask/eth-sig-util": "npm:7.0.1"
     eventemitter3: "npm:5.0.1"
     viem: "npm:1.21.4"
-  checksum: 10c0/532e06fa477996f2f56758d8c68da91bc678eaa72e200fcd4fe589498e453e908033e0858a039aed1af66db3431d7dd9dcd7283b874516c2ebaea9cace2c3291
+  checksum: 10c0/dcc62cbaf3e6a999e89d794bfbc95c62b2e3debb3c9370aef0d59a52dda623b64bc15a1f6eafc7eb8e15a6a37797e13f2b49c539efeb582b3d2a3dd12e2f8c60
   languageName: node
   linkType: hard
 
@@ -7860,7 +7860,7 @@ __metadata:
     "@nomiclabs/hardhat-ethers": "npm:2.2.3"
     "@nomiclabs/hardhat-waffle": "npm:2.0.6"
     "@notifee/react-native": "npm:7.8.2"
-    "@rainbow-me/provider": "npm:0.0.12"
+    "@rainbow-me/provider": "npm:0.1.1"
     "@rainbow-me/react-native-animated-number": "npm:0.0.2"
     "@rainbow-me/swaps": "npm:0.26.0"
     "@react-native-async-storage/async-storage": "npm:1.23.1"
