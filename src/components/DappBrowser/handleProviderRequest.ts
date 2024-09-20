@@ -343,7 +343,7 @@ export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger:
     checkRateLimit,
     onSwitchEthereumChainNotSupported,
     onSwitchEthereumChainSupported,
-    getProvider: ({ chainId }) => getProvider({ chainId: chainId as number }),
+    getProvider,
     getActiveSession,
     getChainNativeCurrency: chainId => chainsNativeAsset[chainId],
   });
