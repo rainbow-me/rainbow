@@ -91,12 +91,7 @@ export const estimateApprove = async ({
     const gasLimit = await tokenContract.estimateGas.approve(spender, MaxUint256, {
       from: owner,
     });
-
-    if (gasLimit === null || gasLimit === undefined || isNaN(Number(gasLimit.toString()))) {
-      return `${gasUnits.basic_approval}`;
-    }
-
-    return gasLimit.toString();
+    return gasLimit ? gasLimit.toString() : `${gasUnits.basic_approval}`;
   } catch (error) {
     logger.error(new RainbowError('[raps/unlock]: error estimateApprove'), {
       message: (error as Error)?.message,
