@@ -175,6 +175,7 @@
     "ethereumjs-util": "6.2.1",
     "ethereumjs-wallet": "1.0.1",
     "events": "3.3.0",
+    "expo": "^51.0.0",
     "fast-text-encoding": "1.0.4",
     "global": "4.4.0",
     "grapheme-splitter": "1.0.4",
@@ -308,6 +309,7 @@
     "viem": "2.9.16",
     "vm-browserify": "0.0.4",
     "w2t": "3.0.2",
+    "zeego": "1.10.0",
     "zod": "3.23.8",
     "zustand": "4.5.4"
   },
@@ -318,6 +320,7 @@
     "@babel/plugin-proposal-nullish-coalescing-operator": "7.18.6",
     "@babel/plugin-proposal-numeric-separator": "7.18.6",
     "@babel/plugin-proposal-optional-chaining": "7.21.0",
+    "@babel/plugin-transform-export-namespace-from": "7.24.7",
     "@babel/plugin-transform-react-inline-elements": "7.18.6",
     "@babel/plugin-transform-runtime": "7.18.10",
     "@babel/preset-env": "7.22.0",
