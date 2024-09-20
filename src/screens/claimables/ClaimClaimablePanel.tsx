@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { AccentColorProvider, Bleed, Box, Inline, Text, TextShadow, globalColors, useColorMode } from '@/design-system';
+import * as i18n from '@/languages';
 import { ListHeader, Panel, TapToDismiss, controlPanelStyles } from '@/components/SmoothPager/ListPanel';
 import { useAccountSettings, useGas } from '@/hooks';
 import { ethereumUtils, safeAreaInsetValues } from '@/utils';
@@ -7,45 +8,363 @@ import { View } from 'react-native';
 import { IS_IOS } from '@/env';
 import { ButtonPressAnimation } from '@/components/animations';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { SponsoredClaimable, TransactionClaimable } from '@/resources/addys/claimables/types';
+import { Claimable, SponsoredClaimable, TransactionClaimable } from '@/resources/addys/claimables/types';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useTheme } from '@/theme';
 import { FasterImageView } from '@candlefinance/faster-image';
-import { useClaimables } from '@/resources/addys/claimables/query';
+import { claimablesQueryKey, useClaimables } from '@/resources/addys/claimables/query';
+import { useMutation } from '@tanstack/react-query';
+import { ClaimClaimableTxPayload } from '@/raps/references';
 import { loadWallet } from '@/model/wallet';
 import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
 import { parseGasParamsForTransaction } from '@/parsers';
 import { getNextNonce } from '@/state/nonces';
-import { TransactionRequest } from '@ethersproject/providers';
 import { chainsLabel, needsL1SecurityFeeChains } from '@/chains';
 import { logger, RainbowError } from '@/logger';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { walletExecuteRapV2 } from '@/raps/execute';
+import { queryClient } from '@/react-query';
+import { useNavigation } from '@/navigation';
+import { TextColor } from '@/design-system/color/palettes';
 
 type RouteParams = {
-  ClaimClaimablePanelParams: { uniqueId: string };
+  ClaimClaimablePanelParams: { claimable: Claimable };
 };
+
+type ClaimStatus = 'idle' | 'claiming' | 'success' | 'error';
 
 export const ClaimClaimablePanel = () => {
   const {
-    params: { uniqueId },
+    params: { claimable },
   } = useRoute<RouteProp<RouteParams, 'ClaimClaimablePanelParams'>>();
 
-  const { isDarkMode } = useColorMode();
-  const theme = useTheme();
+  return claimable.type === 'transaction' ? (
+    <ClaimingTransactionClaimable claimable={claimable} />
+  ) : (
+    <ClaimingSponsoredClaimable claimable={claimable} />
+  );
+};
+
+const ClaimingSponsoredClaimable = ({ claimable }: { claimable: SponsoredClaimable }) => {
   const { accountAddress, nativeCurrency } = useAccountSettings();
 
-  const { data = [] } = useClaimables(
-    {
-      address: accountAddress,
-      currency: nativeCurrency,
+  const { refetch } = useClaimables({ address: accountAddress, currency: nativeCurrency });
+
+  const [claimStatus, setClaimStatus] = useState<ClaimStatus>('idle');
+
+  const { mutate: claimClaimable } = useMutation<{
+    nonce: number | null;
+  }>({
+    mutationFn: async () => {
+      const provider = getProvider({ chainId: claimable.chainId });
+      const wallet = await loadWallet({
+        address: accountAddress,
+        showErrorIfNotLoaded: true,
+        provider,
+      });
+
+      if (!wallet) {
+        // Biometrics auth failure (retry possible)
+        setClaimStatus('error');
+        return { nonce: null };
+      }
+
+      try {
+        const { errorMessage, nonce } = await walletExecuteRapV2(wallet, 'claimSponsoredClaimableSwapBridge', {
+          claimSponsoredClaimableActionParameters: { url: claimable.action.url, method: claimable.action.method as 'POST' | 'GET' },
+        });
+
+        if (errorMessage) {
+          setClaimStatus('error');
+          logger.error(new RainbowError('[ClaimingSponsoredClaimable]: Failed to claim claimable due to rap error'), {
+            message: errorMessage,
+          });
+          return { nonce: null };
+        } else {
+          setClaimStatus('success');
+          // Clear and refresh claimables data
+          queryClient.invalidateQueries(claimablesQueryKey({ address: accountAddress, currency: nativeCurrency }));
+          refetch();
+          return { nonce: nonce ?? null };
+        }
+      } catch (e) {
+        logger.error(new RainbowError('[ClaimingSponsoredClaimable]: Failed to claim claimable due to unknown error'), {
+          message: (e as Error)?.message,
+        });
+        return { nonce: null };
+      }
     },
-    {
-      select: data => data?.filter(claimable => claimable.uniqueId === uniqueId),
+    onError: e => {
+      setClaimStatus('error');
+      logger.error(new RainbowError('[ClaimingSponsoredClaimable]: Failed to claim claimable due to unhandled error'), {
+        message: (e as Error)?.message,
+      });
+    },
+  });
+
+  return <ClaimingClaimableUI claim={claimClaimable} claimable={claimable} claimStatus={claimStatus} setClaimStatus={setClaimStatus} />;
+};
+
+const ClaimingTransactionClaimable = ({ claimable }: { claimable: TransactionClaimable }) => {
+  const { accountAddress, nativeCurrency } = useAccountSettings();
+  const { isGasReady, isSufficientGas, isValidGas, selectedGasFee, startPollingGasFees, stopPollingGasFees, updateTxFee } = useGas();
+
+  const [baseTxPayload, setBaseTxPayload] = useState<
+    Omit<ClaimClaimableTxPayload, 'gasLimit' | 'maxPriorityFeePerGas' | 'maxFeePerGas'> | undefined
+  >();
+  const [txPayload, setTxPayload] = useState<ClaimClaimableTxPayload | undefined>();
+  const [claimStatus, setClaimStatus] = useState<ClaimStatus>('idle');
+
+  const { refetch } = useClaimables({ address: accountAddress, currency: nativeCurrency });
+
+  const provider = useMemo(() => getProvider({ chainId: claimable.chainId }), [claimable.chainId]);
+
+  const buildTxPayload = useCallback(async () => {
+    const payload = {
+      value: '0x0' as const,
+      data: claimable.action.data,
+      from: accountAddress,
+      chainId: claimable.chainId,
+      nonce: await getNextNonce({ address: accountAddress, chainId: claimable.chainId }),
+      to: claimable.action.to,
+    };
+
+    setBaseTxPayload(payload);
+  }, [accountAddress, claimable.action.to, claimable.action.data, claimable.chainId, setBaseTxPayload]);
+
+  useEffect(() => {
+    buildTxPayload();
+  }, [buildTxPayload]);
+
+  useEffect(() => {
+    startPollingGasFees();
+    return () => {
+      stopPollingGasFees();
+    };
+  }, [startPollingGasFees, stopPollingGasFees]);
+
+  const estimateGas = useCallback(async () => {
+    if (!baseTxPayload) {
+      logger.error(new RainbowError('[ClaimingTransactionClaimable]: attempted to estimate gas without a tx payload'));
+      return;
     }
+
+    const gasParams = parseGasParamsForTransaction(selectedGasFee);
+    const updatedTxPayload = { ...baseTxPayload, ...gasParams };
+
+    const gasLimit = await estimateGasWithPadding(updatedTxPayload, null, null, provider);
+
+    if (!gasLimit) {
+      updateTxFee(null, null);
+      logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to estimate gas limit'));
+      return;
+    }
+
+    if (needsL1SecurityFeeChains.includes(claimable.chainId)) {
+      const l1SecurityFee = await ethereumUtils.calculateL1FeeOptimism(
+        // @ts-expect-error - type mismatch, but this tx request structure is the same as in SendSheet.js
+        {
+          to: claimable.action.to,
+          from: accountAddress,
+          value: '0x0',
+          data: claimable.action.data,
+        },
+        provider
+      );
+
+      if (!l1SecurityFee) {
+        updateTxFee(null, null);
+        logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to calculate L1 security fee'));
+        return;
+      }
+
+      updateTxFee(gasLimit, null, l1SecurityFee);
+    } else {
+      updateTxFee(gasLimit, null);
+    }
+
+    setTxPayload({ ...updatedTxPayload, gasLimit });
+  }, [baseTxPayload, selectedGasFee, provider, claimable.chainId, claimable.action.to, claimable.action.data, updateTxFee, accountAddress]);
+
+  useEffect(() => {
+    if (baseTxPayload) {
+      estimateGas();
+    }
+  }, [baseTxPayload, estimateGas, selectedGasFee]);
+
+  const isTransactionReady = !!(isGasReady && isSufficientGas && isValidGas && txPayload);
+
+  const nativeCurrencyGasFeeDisplay = useMemo(
+    () => convertAmountToNativeDisplay(selectedGasFee?.gasFee?.estimatedFee?.native?.value?.amount, nativeCurrency),
+    [nativeCurrency, selectedGasFee?.gasFee?.estimatedFee?.native?.value?.amount]
   );
 
-  const [claimable] = data;
+  const { mutate: claimClaimable } = useMutation<{
+    nonce: number | null;
+  }>({
+    mutationFn: async () => {
+      if (!txPayload) {
+        setClaimStatus('error');
+        logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to missing tx payload'));
+        return { nonce: null };
+      }
+
+      const wallet = await loadWallet({
+        address: accountAddress,
+        showErrorIfNotLoaded: false,
+        provider,
+      });
+
+      if (!wallet) {
+        // Biometrics auth failure (retry possible)
+        setClaimStatus('error');
+        return { nonce: null };
+      }
+
+      try {
+        const { errorMessage, nonce } = await walletExecuteRapV2(
+          wallet,
+          'claimClaimableSwapBridge',
+          { claimClaimableActionParameters: { claimTx: txPayload } },
+          txPayload.nonce
+        );
+
+        if (errorMessage) {
+          setClaimStatus('error');
+          logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to rap error'), {
+            message: errorMessage,
+          });
+          return { nonce: null };
+        }
+
+        if (typeof nonce === 'number') {
+          // Clear and refresh claimables data
+          queryClient.invalidateQueries(claimablesQueryKey({ address: accountAddress, currency: nativeCurrency }));
+          refetch();
+          return { nonce };
+        } else {
+          setClaimStatus('error');
+          logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable, claim tx returned invalid nonce'));
+          return { nonce: null };
+        }
+      } catch (e) {
+        setClaimStatus('error');
+        logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to unknown error'), {
+          message: (e as Error)?.message,
+        });
+        return { nonce: null };
+      }
+    },
+    onError: e => {
+      setClaimStatus('error');
+      logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to unhandled error'), {
+        message: (e as Error)?.message,
+      });
+    },
+    onSuccess: ({ nonce }: { nonce: number | null }) => {
+      if (typeof nonce === 'number') {
+        setClaimStatus('success');
+      }
+    },
+  });
+
+  return (
+    <ClaimingClaimableUI
+      claim={claimClaimable}
+      claimable={claimable}
+      claimStatus={claimStatus}
+      hasSufficientFunds={isSufficientGas}
+      isGasReady={!!txPayload?.gasLimit}
+      isTransactionReady={isTransactionReady}
+      nativeCurrencyGasFeeDisplay={nativeCurrencyGasFeeDisplay}
+      setClaimStatus={setClaimStatus}
+    />
+  );
+};
+
+const ClaimingClaimableUI = ({
+  claim,
+  claimable,
+  claimStatus,
+  hasSufficientFunds,
+  isGasReady,
+  isTransactionReady,
+  nativeCurrencyGasFeeDisplay,
+  setClaimStatus,
+}:
+  | {
+      claim: () => void;
+      claimable: TransactionClaimable;
+      claimStatus: ClaimStatus;
+      hasSufficientFunds: boolean;
+      isGasReady: boolean;
+      isTransactionReady: boolean;
+      nativeCurrencyGasFeeDisplay: string;
+      setClaimStatus: React.Dispatch<React.SetStateAction<ClaimStatus>>;
+    }
+  | {
+      claim: () => void;
+      claimable: SponsoredClaimable;
+      claimStatus: ClaimStatus;
+      hasSufficientFunds?: never;
+      isGasReady?: never;
+      isTransactionReady?: never;
+      nativeCurrencyGasFeeDisplay?: never;
+      setClaimStatus: React.Dispatch<React.SetStateAction<ClaimStatus>>;
+    }) => {
+  const { isDarkMode } = useColorMode();
+  const theme = useTheme();
+  const { goBack } = useNavigation();
+
+  const isButtonDisabled =
+    claimStatus === 'claiming' || (claimStatus !== 'success' && claimable.type === 'transaction' && !isTransactionReady);
+  const shouldShowClaimText =
+    (claimStatus === 'idle' || claimStatus === 'claiming') && (claimable.type !== 'transaction' || hasSufficientFunds);
+
+  const buttonLabel = useMemo(() => {
+    switch (claimStatus) {
+      case 'idle':
+        if (shouldShowClaimText) {
+          return `Claim ${claimable.value.claimAsset.display}`;
+        } else {
+          return 'Insufficient Funds';
+        }
+      case 'claiming':
+        return `Claim ${claimable.value.claimAsset.display}`;
+      case 'success':
+        return i18n.t(i18n.l.button.done);
+      case 'error':
+      default:
+        return i18n.t(i18n.l.points.points.try_again);
+    }
+  }, [claimStatus, claimable.value.claimAsset.display, shouldShowClaimText]);
+
+  const panelTitle = useMemo(() => {
+    switch (claimStatus) {
+      case 'idle':
+        return 'Claim';
+      case 'claiming':
+        return 'Claiming...';
+      case 'success':
+        return 'Claimed!';
+      case 'error':
+      default:
+        return i18n.t(i18n.l.points.points.error_claiming);
+    }
+  }, [claimStatus]);
+
+  const panelTitleColor: TextColor = useMemo(() => {
+    switch (claimStatus) {
+      case 'idle':
+      case 'claiming':
+        return 'label';
+      case 'success':
+        return 'green';
+      case 'error':
+      default:
+        return 'red';
+    }
+  }, [claimStatus]);
 
   return (
     <>
@@ -65,8 +384,8 @@ export const ClaimClaimablePanel = () => {
                   style={{ height: 20, width: 20, borderRadius: 6, borderWidth: 1, borderColor: 'rgba(0, 0, 0, 0.03)' }}
                 />
                 <TextShadow shadowOpacity={0.3}>
-                  <Text align="center" color="label" size="20pt" weight="heavy">
-                    Claim
+                  <Text align="center" color={panelTitleColor} size="20pt" weight="heavy">
+                    {panelTitle}
                   </Text>
                 </TextShadow>
               </Box>
@@ -105,231 +424,68 @@ export const ClaimClaimablePanel = () => {
                 </Text>
               </TextShadow>
             </Box>
-            {claimable.type === 'transaction' ? (
-              <ClaimingTransactionClaimable claimable={claimable} />
-            ) : (
-              <ClaimingSponsoredClaimable claimable={claimable} />
-            )}
+            <Box gap={20} alignItems="center" width="full">
+              {/* TODO: needs shimmer when claimStatus === 'claiming' */}
+              <ButtonPressAnimation
+                disabled={isButtonDisabled}
+                style={{ width: '100%', paddingHorizontal: 18 }}
+                scaleTo={0.96}
+                onPress={() => {
+                  if (claimStatus === 'idle' || claimStatus === 'error') {
+                    setClaimStatus('claiming');
+                    claim();
+                  } else if (claimStatus === 'success') {
+                    goBack();
+                  }
+                }}
+              >
+                <AccentColorProvider color={`rgba(41, 90, 247, ${claimable.type !== 'transaction' || isTransactionReady ? 1 : 0.2})`}>
+                  <Box
+                    background="accent"
+                    shadow="30px accent"
+                    borderRadius={43}
+                    height={{ custom: 48 }}
+                    width="full"
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <Inline alignVertical="center" space="6px">
+                      {shouldShowClaimText && (
+                        <TextShadow shadowOpacity={0.3}>
+                          <Text align="center" color="label" size="icon 20px" weight="heavy">
+                            􀎽
+                          </Text>
+                        </TextShadow>
+                      )}
+                      <TextShadow shadowOpacity={0.3}>
+                        <Text align="center" color="label" size="20pt" weight="heavy">
+                          {buttonLabel}
+                        </Text>
+                      </TextShadow>
+                    </Inline>
+                  </Box>
+                </AccentColorProvider>
+              </ButtonPressAnimation>
+              {claimable.type === 'transaction' &&
+                (isGasReady ? (
+                  <Inline alignVertical="center" space="2px">
+                    <Text align="center" color="labelQuaternary" size="icon 10px" weight="heavy">
+                      􀵟
+                    </Text>
+                    <Text color="labelQuaternary" size="13pt" weight="bold">
+                      {`${nativeCurrencyGasFeeDisplay} to claim on ${chainsLabel[claimable.chainId]}`}
+                    </Text>
+                  </Inline>
+                ) : (
+                  <Text color="labelQuaternary" size="13pt" weight="bold">
+                    Calculating gas fee...
+                  </Text>
+                ))}
+            </Box>
           </Box>
         </Panel>
       </Box>
       <TapToDismiss />
     </>
-  );
-};
-
-const ClaimingTransactionClaimable = ({ claimable }: { claimable: TransactionClaimable }) => {
-  const { accountAddress, nativeCurrency } = useAccountSettings();
-  const { isGasReady, isSufficientGas, isValidGas, selectedGasFee, startPollingGasFees, stopPollingGasFees, updateTxFee } = useGas();
-
-  const [txPayload, setTxPayload] = useState<TransactionRequest | undefined>();
-
-  const buildTxPayload = useCallback(async () => {
-    const payload = {
-      value: '0x0',
-      data: claimable.action.data,
-      from: accountAddress,
-      // network: chainsName[claimable.chainId],
-      chainId: claimable.chainId,
-      nonce: await getNextNonce({ address: accountAddress, chainId: claimable.chainId }),
-      to: claimable.action.to,
-    };
-
-    setTxPayload(payload);
-  }, [accountAddress, claimable.action.to, claimable.action.data, claimable.chainId, setTxPayload]);
-
-  useEffect(() => {
-    buildTxPayload();
-  }, [buildTxPayload]);
-
-  useEffect(() => {
-    startPollingGasFees();
-    return () => {
-      stopPollingGasFees();
-    };
-  }, [startPollingGasFees, stopPollingGasFees]);
-
-  const estimateGas = useCallback(async () => {
-    if (!txPayload) {
-      logger.error(new RainbowError('[ClaimingClaimablePanel]: attempted to estimate gas without a tx payload'));
-      return;
-    }
-
-    const provider = getProvider({ chainId: claimable.chainId });
-
-    const gasParams = parseGasParamsForTransaction(selectedGasFee);
-    const updatedTxPayload: TransactionRequest = { ...txPayload, ...gasParams };
-
-    const gasLimit = await estimateGasWithPadding(updatedTxPayload, null, null, provider);
-
-    if (!gasLimit) {
-      updateTxFee(null, null);
-      logger.error(new RainbowError('[ClaimingClaimablePanel]: Failed to estimate gas limit'));
-      return;
-    }
-
-    if (needsL1SecurityFeeChains.includes(claimable.chainId)) {
-      const l1SecurityFee = await ethereumUtils.calculateL1FeeOptimism(
-        // @ts-expect-error - type mismatch, but this tx request structure is the same as in SendSheet.js
-        {
-          to: updatedTxPayload.to ?? null,
-          from: updatedTxPayload.from ?? null,
-          value: updatedTxPayload.value,
-          data: updatedTxPayload.data as string,
-        },
-        provider
-      );
-
-      if (!l1SecurityFee) {
-        updateTxFee(null, null);
-        logger.error(new RainbowError('[ClaimingClaimablePanel]: Failed to calculate L1 security fee'));
-        return;
-      }
-
-      updateTxFee(gasLimit, null, l1SecurityFee);
-    } else {
-      updateTxFee(gasLimit, null);
-    }
-
-    setTxPayload({ ...updatedTxPayload, gasLimit });
-  }, [txPayload, claimable.chainId, selectedGasFee, updateTxFee]);
-
-  useEffect(() => {
-    if (txPayload) {
-      estimateGas();
-    }
-  }, [estimateGas, selectedGasFee, txPayload]);
-
-  const isTransactionReady = isGasReady && isSufficientGas && isValidGas && txPayload?.gasLimit;
-
-  const nativeCurrencyGasFee = useMemo(
-    () => convertAmountToNativeDisplay(selectedGasFee?.gasFee?.estimatedFee?.native?.value?.amount, nativeCurrency),
-    [nativeCurrency, selectedGasFee?.gasFee?.estimatedFee?.native?.value?.amount]
-  );
-
-  return (
-    <Box gap={20} alignItems="center" width="full">
-      <ButtonPressAnimation
-        disabled={!isTransactionReady}
-        style={{ width: '100%', paddingHorizontal: 18 }}
-        scaleTo={0.96}
-        onPress={async () => {
-          if (txPayload?.gasLimit) {
-            const provider = getProvider({ chainId: claimable.chainId });
-            const wallet = await loadWallet({
-              address: accountAddress,
-              showErrorIfNotLoaded: true,
-              provider,
-            });
-            if (wallet) {
-              walletExecuteRapV2(
-                wallet,
-                'claimClaimableSwapBridge',
-                //@ts-ignore
-                { claimClaimableActionParameters: { claimTx: txPayload } },
-                txPayload?.nonce
-              );
-            }
-          }
-        }}
-      >
-        <AccentColorProvider color={`rgba(41, 90, 247, ${isTransactionReady ? 1 : 0.2})`}>
-          <Box
-            background="accent"
-            shadow="30px accent"
-            borderRadius={43}
-            height={{ custom: 48 }}
-            width="full"
-            alignItems="center"
-            justifyContent="center"
-          >
-            {isSufficientGas ? (
-              <Inline alignVertical="center" space="6px">
-                <TextShadow shadowOpacity={0.3}>
-                  <Text align="center" color="label" size="icon 20px" weight="heavy">
-                    􀎽
-                  </Text>
-                </TextShadow>
-                <TextShadow shadowOpacity={0.3}>
-                  <Text align="center" color="label" size="20pt" weight="heavy">
-                    {`Claim ${claimable.value.claimAsset.display}`}
-                  </Text>
-                </TextShadow>
-              </Inline>
-            ) : (
-              <TextShadow shadowOpacity={0.3}>
-                <Text align="center" color="label" size="icon 20px" weight="heavy">
-                  Insufficient Funds
-                </Text>
-              </TextShadow>
-            )}
-          </Box>
-        </AccentColorProvider>
-      </ButtonPressAnimation>
-      {txPayload?.gasLimit ? (
-        <Inline alignVertical="center" space="2px">
-          <Text align="center" color="labelQuaternary" size="icon 10px" weight="heavy">
-            􀵟
-          </Text>
-          <Text color="labelQuaternary" size="13pt" weight="bold">
-            {`${nativeCurrencyGasFee} to claim on ${chainsLabel[claimable.chainId]}`}
-          </Text>
-        </Inline>
-      ) : (
-        <Text color="labelQuaternary" size="13pt" weight="bold">
-          Calculating gas fee...
-        </Text>
-      )}
-    </Box>
-  );
-};
-
-const ClaimingSponsoredClaimable = ({ claimable }: { claimable: SponsoredClaimable }) => {
-  const { accountAddress } = useAccountSettings();
-  return (
-    <Box gap={20} alignItems="center" width="full">
-      <ButtonPressAnimation
-        style={{ width: '100%', paddingHorizontal: 18 }}
-        scaleTo={0.96}
-        onPress={async () => {
-          const provider = getProvider({ chainId: claimable.chainId });
-          const wallet = await loadWallet({
-            address: accountAddress,
-            showErrorIfNotLoaded: true,
-            provider,
-          });
-          if (wallet) {
-            walletExecuteRapV2(wallet, 'claimSponsoredClaimableSwapBridge', {
-              claimSponsoredClaimableActionParameters: { url: claimable.action.url, method: claimable.action.method as 'POST' | 'GET' },
-            });
-          }
-        }}
-      >
-        <AccentColorProvider color={`rgba(41, 90, 247, 1)`}>
-          <Box
-            background="accent"
-            shadow="30px accent"
-            borderRadius={43}
-            height={{ custom: 48 }}
-            width="full"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Inline alignVertical="center" space="6px">
-              <TextShadow shadowOpacity={0.3}>
-                <Text align="center" color="label" size="icon 20px" weight="heavy">
-                  􀎽
-                </Text>
-              </TextShadow>
-              <TextShadow shadowOpacity={0.3}>
-                <Text align="center" color="label" size="20pt" weight="heavy">
-                  {`Claim ${claimable.value.claimAsset.display}`}
-                </Text>
-              </TextShadow>
-            </Inline>
-          </Box>
-        </AccentColorProvider>
-      </ButtonPressAnimation>
-    </Box>
   );
 };

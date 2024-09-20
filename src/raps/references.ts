@@ -5,6 +5,7 @@ import { Address } from 'viem';
 import { ParsedAsset } from '@/__swaps__/types/assets';
 import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { ChainId } from '@/chains/types';
+import { TransactionRequest } from '@ethersproject/abstract-provider';
 
 export enum SwapModalField {
   input = 'inputAmount',
@@ -80,16 +81,33 @@ export interface RapClaimRewardsActionParameters {
   gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
 }
 
+export type ClaimClaimableTxPayload = TransactionRequest &
+  (
+    | {
+        to: string;
+        from: string;
+        nonce: number;
+        gasLimit: string;
+        maxFeePerGas: string;
+        maxPriorityFeePerGas: string;
+        data: string;
+        value: '0x0';
+        chainId: number;
+      }
+    | {
+        to: string;
+        from: string;
+        nonce: number;
+        gasLimit: string;
+        gasPrice: string;
+        data: string;
+        value: '0x0';
+        chainId: number;
+      }
+  );
+
 export interface RapClaimClaimableActionParameters {
-  claimTx: {
-    to: string;
-    from: string;
-    nonce: number;
-    gasLimit: number;
-    data: string;
-    value: '0x0';
-    chainId: number;
-  };
+  claimTx: ClaimClaimableTxPayload;
 }
 
 export interface RapClaimSponsoredClaimableActionParameters {
