@@ -14,8 +14,7 @@ import { getDappMetadata } from '@/resources/metadata/dapp';
 import { useAppSessionsStore } from '@/state/appSessions';
 import { BigNumber } from '@ethersproject/bignumber';
 import { ChainId } from '@/chains/types';
-import { defaultChains, SUPPORTED_CHAIN_IDS } from '@/chains';
-import { Chain } from '@wagmi/chains';
+import { chainsNativeAsset, defaultChains, SUPPORTED_CHAIN_IDS } from '@/chains';
 
 export type ProviderRequestPayload = RequestArguments & {
   id: number;
@@ -178,11 +177,11 @@ const getActiveSession = ({ host }: { host: string }): ActiveSession => {
       : null;
 
   if (!appSession) return null;
+
   return {
     address: appSession?.address || '',
     chainId: appSession.chainId,
   };
-  // return null;
 };
 
 const checkRateLimitFn = async (host: string) => {
@@ -346,7 +345,7 @@ export const handleProviderRequestApp = ({ messenger, data, meta }: { messenger:
     onSwitchEthereumChainSupported,
     getProvider: chainId => getProvider({ chainId: chainId as number }) as unknown as Provider,
     getActiveSession,
-    getChain: chainId => defaultChains[chainId] as Chain,
+    getChainNativeCurrency: chainId => chainsNativeAsset[chainId],
   });
 
   // @ts-ignore
