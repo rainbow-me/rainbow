@@ -588,7 +588,7 @@ export default function SendSheet(props) {
         })();
       }
     },
-    [amountDetails.assetAmount, goBack, isENS, isHardwareWallet, navigate, onSubmit, recipient, selected?.name, selected?.network]
+    [amountDetails, goBack, isENS, isHardwareWallet, navigate, onSubmit, recipient, selected?.name, selected?.network]
   );
 
   const { buttonDisabled, buttonLabel } = useMemo(() => {
@@ -713,8 +713,8 @@ export default function SendSheet(props) {
       const isValid = checkIsValidAddressOrDomainFormat(text);
       if (!isValid) {
         setIsValidAddress();
+        setToAddress();
       }
-      setToAddress();
       setCurrentInput(text);
       setRecipient(text);
       setNickname(text);
@@ -764,7 +764,6 @@ export default function SendSheet(props) {
 
     if (
       !!accountAddress &&
-      amountDetails.assetAmount !== '' &&
       Object.entries(selected).length &&
       assetChainId === currentChainId &&
       currentProviderChainId === currentChainId &&
@@ -813,6 +812,12 @@ export default function SendSheet(props) {
 
   const isEmptyWallet = !sortedAssets?.length && !sendableUniqueTokens?.length;
 
+  const filteredUserAccountsFromContacts = useMemo(() => {
+    return userAccounts.filter(
+      account => !filteredContacts.some(contact => contact.address.toLowerCase() === account.address.toLowerCase())
+    );
+  }, [userAccounts, filteredContacts]);
+
   return (
     <Container testID="send-sheet">
       <SheetContainer>
@@ -832,7 +837,7 @@ export default function SendSheet(props) {
           recipientFieldRef={recipientFieldRef}
           removeContact={onRemoveContact}
           showAssetList={showAssetList}
-          userAccounts={userAccounts}
+          userAccounts={filteredUserAccountsFromContacts}
           watchedAccounts={watchedAccounts}
         />
         {showEmptyState && (
@@ -848,7 +853,7 @@ export default function SendSheet(props) {
               setNickname(nickname);
             }}
             removeContact={onRemoveContact}
-            userAccounts={userAccounts}
+            userAccounts={filteredUserAccountsFromContacts}
             watchedAccounts={watchedAccounts}
           />
         )}
