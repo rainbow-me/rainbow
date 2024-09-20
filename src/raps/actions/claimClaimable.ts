@@ -7,20 +7,8 @@ import { addNewTransaction } from '@/state/pendingTransactions';
 import { NewTransaction } from '@/entities';
 import { chainsName } from '@/chains';
 
-const CLAIM_MOCK_DATA = {
-  claimUserRewards: {
-    error: null,
-    chainID: 10,
-    uoHash: '0x0edba9b7e5abb9a48db607fa66f6ff60aa1b342ef728c028782e6215b986e01e',
-    txHash: '0x73b0f5615698f0e2f34628267940a4fabcb17c44ff9da4b99b6c493dfca52e57',
-  },
-};
+export const CLAIM_CLAIMABLE_FAILED_TX_ERROR = '[CLAIM-CLAIMABLE]: failed to execute claim transaction';
 
-const DO_FAKE_CLAIM = false;
-
-// This action is used to claim the rewards of the user
-// by making an api call to the backend which would use a relayer
-// to do the claim and send the funds to the user
 export async function claimClaimable({ parameters, wallet, baseNonce }: ActionPropsV2<'claimClaimable'>) {
   const { claimTx } = parameters;
 
@@ -28,7 +16,7 @@ export async function claimClaimable({ parameters, wallet, baseNonce }: ActionPr
   const result = await sendTransaction({ transaction: claimTx, existingWallet: wallet, provider });
 
   if (!result?.result || !!result.error || !result.result.hash) {
-    throw new RainbowError('[CLAIM-CLAIMABLE]: failed to execute claim transaction');
+    throw new RainbowError(CLAIM_CLAIMABLE_FAILED_TX_ERROR);
   }
 
   const transaction = {
