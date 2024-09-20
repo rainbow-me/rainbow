@@ -26,6 +26,7 @@ import { TransactionRequest } from '@ethersproject/providers';
 import { chainsLabel, chainsName, needsL1SecurityFeeChains } from '@/chains';
 import { logger, RainbowError } from '@/logger';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
+import { walletExecuteRapV2 } from '@/raps/execute';
 // import { ContextMenuButton } from '@/components/context-menu';
 
 type RouteParams = {
@@ -133,7 +134,7 @@ const ClaimingTransactionClaimable = ({ claimable }: { claimable: TransactionCla
       value: '0x0',
       data: claimable.action.data,
       from: accountAddress,
-      network: chainsName[claimable.chainId],
+      // network: chainsName[claimable.chainId],
       chainId: claimable.chainId,
       nonce: await getNextNonce({ address: accountAddress, chainId: claimable.chainId }),
       to: claimable.action.to,
@@ -344,7 +345,30 @@ const ClaimingTransactionClaimable = ({ claimable }: { claimable: TransactionCla
 
   return (
     <Box gap={20} alignItems="center" width="full">
-      <ButtonPressAnimation disabled={!isTransactionReady} style={{ width: '100%', paddingHorizontal: 18 }} scaleTo={0.96}>
+      <ButtonPressAnimation
+        disabled={!isTransactionReady}
+        style={{ width: '100%', paddingHorizontal: 18 }}
+        scaleTo={0.96}
+        onPress={async () => {
+          if (txPayload?.gasLimit) {
+            const provider = getProvider({ chainId: claimable.chainId });
+            const wallet = await loadWallet({
+              address: accountAddress,
+              showErrorIfNotLoaded: true,
+              provider,
+            });
+            if (wallet) {
+              walletExecuteRapV2(
+                wallet,
+                'claimClaimableSwapBridge',
+                //@ts-ignore
+                { claimClaimableActionParameters: { claimTx: txPayload } },
+                txPayload?.nonce
+              );
+            }
+          }
+        }}
+      >
         <AccentColorProvider color={`rgba(41, 90, 247, ${isTransactionReady ? 1 : 0.2})`}>
           <Box
             background="accent"

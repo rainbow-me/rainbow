@@ -1,5 +1,11 @@
 import { metadataPOSTClient } from '@/graphql';
 import { ActionProps, ActionPropsV2 } from '../references';
+import { loadWallet, sendTransaction } from '@/model/wallet';
+import { getProvider } from '@/handlers/web3';
+import { logger, RainbowError } from '@/logger';
+import { addNewTransaction } from '@/state/pendingTransactions';
+import { NewTransaction } from '@/entities';
+import { chainsName } from '@/chains';
 
 const CLAIM_MOCK_DATA = {
   claimUserRewards: {
@@ -18,48 +24,34 @@ const DO_FAKE_CLAIM = false;
 export async function claimClaimable({ parameters, wallet, baseNonce }: ActionPropsV2<'claimClaimable'>) {
   const { claimTx } = parameters;
 
-  if (!address) {
-    throw new Error('[CLAIM-REWARDS]: missing address');
-  }
-  // when DO_FAKE_CLAIM is true, we use mock data (can do as many as we want)
-  // otherwise we do a real claim (can be done once, then backend needs to reset it)
-  const claimInfo = DO_FAKE_CLAIM ? CLAIM_MOCK_DATA : await metadataPOSTClient.claimUserRewards({ address });
+  const provider = getProvider({ chainId: claimTx.chainId });
+  const result = await sendTransaction({ transaction: claimTx, existingWallet: wallet, provider });
 
-  // Checking ig we got the tx hash
-  const txHash = claimInfo.claimUserRewards?.txHash;
-  if (!txHash) {
-    // If there's no transaction hash the relayer didn't submit the transaction
-    // so we can't contnue
-    throw new Error('[CLAIM-REWARDS]: missing tx hash from backend');
+  if (!result?.result || !!result.error || !result.result.hash) {
+    throw new RainbowError('[CLAIM-CLAIMABLE]: failed to execute claim transaction');
   }
 
-  // We need to make sure the transaction is mined
-  // so we get the transaction
-  const claimTx = await wallet?.provider?.getTransaction(txHash);
-  if (!claimTx) {
-    // If we can't get the transaction we can't continue
-    throw new Error('[CLAIM-REWARDS]: tx not found');
-  }
+  const transaction = {
+    amount: result.result.value.toString(),
+    gasLimit: result.result.gasLimit,
+    from: result.result.from ?? null,
+    to: result.result.to ?? null,
+    chainId: result.result.chainId,
+    hash: result.result.hash,
+    network: chainsName[result.result.chainId],
+    status: 'pending',
+    type: 'send',
+    nonce: result.result.nonce,
+  } satisfies NewTransaction;
 
-  // then we wait for the receipt of the transaction
-  // to conirm it was mined
-  const receipt = await claimTx?.wait();
-  if (!receipt) {
-    // If we can't get the receipt we can't continue
-    throw new Error('[CLAIM-REWARDS]: tx not mined');
-  }
-
-  // finally we check if the transaction was successful
-  const success = receipt?.status === 1;
-  if (!success) {
-    // The transaction failed, we can't continue
-    throw new Error('[CLAIM-REWARDS]: claim rewards tx failed onchain');
-  }
-
-  // If the transaction was successful we can return the hash
+  addNewTransaction({
+    address: claimTx.from,
+    chainId: claimTx.chainId,
+    transaction,
+  });
 
   return {
-    nonce: (baseNonce || 0) - 1,
-    hash: txHash,
+    nonce: result?.result?.nonce,
+    hash: result?.result?.hash,
   };
 }
