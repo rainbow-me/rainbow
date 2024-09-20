@@ -1239,7 +1239,7 @@ PODS:
     - React-Core
   - react-native-mail (4.1.0):
     - React
-  - react-native-menu (1.0.3):
+  - react-native-menu (1.1.2):
     - React
   - react-native-minimizer (1.3.5):
     - React
@@ -2401,7 +2401,7 @@ SPEC CHECKSUMS:
   react-native-get-random-values: 1404bd5cc0ab0e287f75ee1c489555688fc65f89
   react-native-ios-context-menu: e529171ba760a1af7f2ef0729f5a7f4d226171c5
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
-  react-native-menu: 2e368669c7375dd1049ef3c7b2cab190ebe45d9e
+  react-native-menu: d32728a357dfb360cf01cd5979cf7713c5acbb95
   react-native-minimizer: b94809a769ac3825b46fd081d4f0ae2560791536
   react-native-mmkv: 8c9a677e64a1ac89b0c6cf240feea528318b3074
   react-native-netinfo: 5b664b2945a8f02102b296f0f812bddd6827ed9c
