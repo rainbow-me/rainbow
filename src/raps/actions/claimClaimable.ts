@@ -1,13 +1,10 @@
-import { metadataPOSTClient } from '@/graphql';
-import { ActionProps, ActionPropsV2 } from '../references';
-import { loadWallet, sendTransaction } from '@/model/wallet';
+import { ActionPropsV2 } from '../references';
+import { sendTransaction } from '@/model/wallet';
 import { getProvider } from '@/handlers/web3';
-import { logger, RainbowError } from '@/logger';
+import { RainbowError } from '@/logger';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { NewTransaction } from '@/entities';
 import { chainsName } from '@/chains';
-
-export const CLAIM_CLAIMABLE_FAILED_TX_ERROR = '[CLAIM-CLAIMABLE]: failed to execute claim transaction';
 
 export async function claimClaimable({ parameters, wallet, baseNonce }: ActionPropsV2<'claimClaimable'>) {
   const { claimTx } = parameters;
@@ -16,7 +13,7 @@ export async function claimClaimable({ parameters, wallet, baseNonce }: ActionPr
   const result = await sendTransaction({ transaction: claimTx, existingWallet: wallet, provider });
 
   if (!result?.result || !!result.error || !result.result.hash) {
-    throw new RainbowError(CLAIM_CLAIMABLE_FAILED_TX_ERROR);
+    throw new RainbowError('[CLAIM-CLAIMABLE]: failed to execute claim transaction');
   }
 
   const transaction = {

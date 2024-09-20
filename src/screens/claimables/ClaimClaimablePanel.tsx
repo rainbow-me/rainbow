@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { AccentColorProvider, Bleed, Box, Inline, Text, TextShadow, globalColors, useColorMode, useForegroundColor } from '@/design-system';
+import { AccentColorProvider, Bleed, Box, Inline, Text, TextShadow, globalColors, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import { ListHeader, Panel, TapToDismiss, controlPanelStyles } from '@/components/SmoothPager/ListPanel';
 import { useAccountSettings, useGas } from '@/hooks';
@@ -23,7 +23,6 @@ import { chainsLabel, needsL1SecurityFeeChains } from '@/chains';
 import { logger, RainbowError } from '@/logger';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { walletExecuteRapV2 } from '@/raps/execute';
-import { CLAIM_CLAIMABLE_FAILED_TX_ERROR } from '@/raps/actions/claimClaimable';
 import { queryClient } from '@/react-query';
 import { useNavigation } from '@/navigation';
 import { TextColor } from '@/design-system/color/palettes';
@@ -39,7 +38,71 @@ export const ClaimClaimablePanel = () => {
     params: { claimable },
   } = useRoute<RouteProp<RouteParams, 'ClaimClaimablePanelParams'>>();
 
-  return claimable.type === 'transaction' ? <ClaimingTransactionClaimable claimable={claimable} /> : <></>;
+  return claimable.type === 'transaction' ? (
+    <ClaimingTransactionClaimable claimable={claimable} />
+  ) : (
+    <ClaimingSponsoredClaimable claimable={claimable} />
+  );
+};
+
+const ClaimingSponsoredClaimable = ({ claimable }: { claimable: SponsoredClaimable }) => {
+  const { accountAddress, nativeCurrency } = useAccountSettings();
+
+  const { refetch } = useClaimables({ address: accountAddress, currency: nativeCurrency });
+
+  const [claimStatus, setClaimStatus] = useState<ClaimStatus>('idle');
+
+  const { mutate: claimClaimable } = useMutation<{
+    nonce: number | null;
+  }>({
+    mutationFn: async () => {
+      const provider = getProvider({ chainId: claimable.chainId });
+      const wallet = await loadWallet({
+        address: accountAddress,
+        showErrorIfNotLoaded: true,
+        provider,
+      });
+
+      if (!wallet) {
+        // Biometrics auth failure (retry possible)
+        setClaimStatus('error');
+        return { nonce: null };
+      }
+
+      try {
+        const { errorMessage, nonce } = await walletExecuteRapV2(wallet, 'claimSponsoredClaimableSwapBridge', {
+          claimSponsoredClaimableActionParameters: { url: claimable.action.url, method: claimable.action.method as 'POST' | 'GET' },
+        });
+
+        if (errorMessage) {
+          setClaimStatus('error');
+          logger.error(new RainbowError('[ClaimingSponsoredClaimable]: Failed to claim claimable due to rap error'), {
+            message: errorMessage,
+          });
+          return { nonce: null };
+        } else {
+          setClaimStatus('success');
+          // Clear and refresh claimables data
+          queryClient.invalidateQueries(claimablesQueryKey({ address: accountAddress, currency: nativeCurrency }));
+          refetch();
+          return { nonce: nonce ?? null };
+        }
+      } catch (e) {
+        logger.error(new RainbowError('[ClaimingSponsoredClaimable]: Failed to claim claimable due to unknown error'), {
+          message: (e as Error)?.message,
+        });
+        return { nonce: null };
+      }
+    },
+    onError: e => {
+      setClaimStatus('error');
+      logger.error(new RainbowError('[ClaimingSponsoredClaimable]: Failed to claim claimable due to unhandled error'), {
+        message: (e as Error)?.message,
+      });
+    },
+  });
+
+  return <ClaimingClaimableUI claim={claimClaimable} claimable={claimable} claimStatus={claimStatus} setClaimStatus={setClaimStatus} />;
 };
 
 const ClaimingTransactionClaimable = ({ claimable }: { claimable: TransactionClaimable }) => {
@@ -82,7 +145,7 @@ const ClaimingTransactionClaimable = ({ claimable }: { claimable: TransactionCla
 
   const estimateGas = useCallback(async () => {
     if (!baseTxPayload) {
-      logger.error(new RainbowError('[ClaimingClaimablePanel]: attempted to estimate gas without a tx payload'));
+      logger.error(new RainbowError('[ClaimingTransactionClaimable]: attempted to estimate gas without a tx payload'));
       return;
     }
 
@@ -93,7 +156,7 @@ const ClaimingTransactionClaimable = ({ claimable }: { claimable: TransactionCla
 
     if (!gasLimit) {
       updateTxFee(null, null);
-      logger.error(new RainbowError('[ClaimingClaimablePanel]: Failed to estimate gas limit'));
+      logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to estimate gas limit'));
       return;
     }
 
@@ -111,7 +174,7 @@ const ClaimingTransactionClaimable = ({ claimable }: { claimable: TransactionCla
 
       if (!l1SecurityFee) {
         updateTxFee(null, null);
-        logger.error(new RainbowError('[ClaimingClaimablePanel]: Failed to calculate L1 security fee'));
+        logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to calculate L1 security fee'));
         return;
       }
 
@@ -141,7 +204,8 @@ const ClaimingTransactionClaimable = ({ claimable }: { claimable: TransactionCla
   }>({
     mutationFn: async () => {
       if (!txPayload) {
-        logger.error(new RainbowError('[ClaimClaimablePanel]: attempted to claim claimable without a tx payload'));
+        setClaimStatus('error');
+        logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to missing tx payload'));
         return { nonce: null };
       }
 
@@ -166,13 +230,10 @@ const ClaimingTransactionClaimable = ({ claimable }: { claimable: TransactionCla
         );
 
         if (errorMessage) {
-          if (errorMessage.includes(CLAIM_CLAIMABLE_FAILED_TX_ERROR)) {
-            // Claim error (retry possible)
-            setClaimStatus('error');
-          }
-
-          logger.error(new RainbowError('[ClaimClaimablePanel]: Failed to claim claimable'), { message: errorMessage });
-
+          setClaimStatus('error');
+          logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to rap error'), {
+            message: errorMessage,
+          });
           return { nonce: null };
         }
 
@@ -183,15 +244,24 @@ const ClaimingTransactionClaimable = ({ claimable }: { claimable: TransactionCla
           return { nonce };
         } else {
           setClaimStatus('error');
+          logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable, claim tx returned invalid nonce'));
           return { nonce: null };
         }
       } catch (e) {
         setClaimStatus('error');
+        logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to unknown error'), {
+          message: (e as Error)?.message,
+        });
         return { nonce: null };
       }
     },
-    onError: () => setClaimStatus('error'),
-    onSuccess: async ({ nonce }: { nonce: number | null }) => {
+    onError: e => {
+      setClaimStatus('error');
+      logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to unhandled error'), {
+        message: (e as Error)?.message,
+      });
+    },
+    onSuccess: ({ nonce }: { nonce: number | null }) => {
       if (typeof nonce === 'number') {
         setClaimStatus('success');
       }
@@ -236,10 +306,10 @@ const ClaimingClaimableUI = ({
       claim: () => void;
       claimable: SponsoredClaimable;
       claimStatus: ClaimStatus;
-      hasSufficientFunds: never;
-      isGasReady: never;
-      isTransactionReady: never;
-      nativeCurrencyGasFeeDisplay: never;
+      hasSufficientFunds?: never;
+      isGasReady?: never;
+      isTransactionReady?: never;
+      nativeCurrencyGasFeeDisplay?: never;
       setClaimStatus: React.Dispatch<React.SetStateAction<ClaimStatus>>;
     }) => {
   const { isDarkMode } = useColorMode();

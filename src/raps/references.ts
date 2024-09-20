@@ -110,8 +110,17 @@ export interface RapClaimClaimableActionParameters {
   claimTx: ClaimClaimableTxPayload;
 }
 
+export interface RapClaimSponsoredClaimableActionParameters {
+  url: string;
+  method: 'POST' | 'GET';
+}
+
 export interface RapClaimClaimableAndSwapBridgeParameters {
   claimClaimableActionParameters: RapClaimClaimableActionParameters;
+}
+
+export interface RapClaimSponsoredClaimableAndSwapBridgeParameters {
+  claimSponsoredClaimableActionParameters: RapClaimSponsoredClaimableActionParameters;
 }
 
 export type RapActionParameters =
@@ -119,6 +128,7 @@ export type RapActionParameters =
   | RapSwapActionParameters<'crosschainSwap'>
   | RapClaimRewardsActionParameters
   | RapClaimClaimableActionParameters
+  | RapClaimSponsoredClaimableActionParameters
   | RapUnlockActionParameters;
 
 export interface RapActionTransaction {
@@ -132,6 +142,7 @@ export type RapActionParameterMap = {
   claimRewards: RapClaimRewardsActionParameters;
   claimRewardsBridge: RapClaimRewardsActionParameters;
   claimClaimable: RapClaimClaimableActionParameters;
+  claimSponsoredClaimable: RapClaimSponsoredClaimableActionParameters;
 };
 
 export type RapParameterMap = {
@@ -139,6 +150,7 @@ export type RapParameterMap = {
   crosschainSwap: undefined; // TODO
   claimRewardsBridge: undefined; // TODO
   claimClaimableSwapBridge: RapClaimClaimableAndSwapBridgeParameters;
+  claimSponsoredClaimableSwapBridge: RapClaimSponsoredClaimableAndSwapBridgeParameters;
 };
 
 export interface RapAction<T extends RapActionTypes> {
@@ -148,7 +160,9 @@ export interface RapAction<T extends RapActionTypes> {
 }
 
 export interface Rap {
-  actions: RapAction<'swap' | 'crosschainSwap' | 'unlock' | 'claimRewards' | 'claimRewardsBridge' | 'claimClaimable'>[];
+  actions: RapAction<
+    'swap' | 'crosschainSwap' | 'unlock' | 'claimRewards' | 'claimRewardsBridge' | 'claimClaimable' | 'claimSponsoredClaimable'
+  >[];
 }
 
 export enum rapActions {
@@ -158,6 +172,7 @@ export enum rapActions {
   claimRewards = 'claimRewards',
   claimRewardsBridge = 'claimRewardsBridge',
   claimClaimable = 'claimClaimable',
+  claimSponsoredClaimable = 'claimSponsoredClaimable',
 }
 
 export type RapActionTypes = keyof typeof rapActions;
@@ -167,6 +182,7 @@ export enum rapTypes {
   crosschainSwap = 'crosschainSwap',
   claimRewardsBridge = 'claimRewardsBridge',
   claimClaimableSwapBridge = 'claimClaimableSwapBridge',
+  claimSponsoredClaimableSwapBridge = 'claimSponsoredClaimableSwapBridge',
 }
 
 export type RapTypes = keyof typeof rapTypes;
