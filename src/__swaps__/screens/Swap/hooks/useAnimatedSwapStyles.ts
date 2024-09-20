@@ -212,18 +212,6 @@ export function useAnimatedSwapStyles({
     };
   });
 
-  const assetToSellCaretStyle = useAnimatedStyle(() => {
-    return {
-      backgroundColor: getColorValueForThemeWorklet(internalSelectedInputAsset.value?.highContrastColor, isDarkMode, true),
-    };
-  });
-
-  const assetToBuyCaretStyle = useAnimatedStyle(() => {
-    return {
-      backgroundColor: getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode, true),
-    };
-  });
-
   const flipButtonFetchingStyle = useAnimatedStyle(() => {
     if (IS_ANDROID) return { borderWidth: 0 };
     return {
@@ -309,9 +297,7 @@ export function useAnimatedSwapStyles({
     outputTokenListStyle,
     swapActionWrapperStyle,
     assetToSellIconStyle,
-    assetToSellCaretStyle,
     assetToBuyIconStyle,
-    assetToBuyCaretStyle,
     hideWhileReviewingOrConfiguringGas,
     flipButtonFetchingStyle,
     searchInputAssetButtonStyle,
