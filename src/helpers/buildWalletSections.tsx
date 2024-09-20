@@ -1,13 +1,10 @@
 import { createSelector } from 'reselect';
 import { buildBriefCoinsList, buildBriefUniqueTokenList } from './assets';
 import { NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
-import { queryClient } from '@/react-query';
-import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import store from '@/redux/store';
 import { ClaimableExtraData, PositionExtraData } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { DEFI_POSITIONS, CLAIMABLES, ExperimentalValue } from '@/config/experimental';
 import { RainbowPositions } from '@/resources/defi/types';
-import { claimablesQueryKey } from '@/resources/addys/claimables/query';
 import { Claimable } from '@/resources/addys/claimables/types';
 import { add, convertAmountToNativeDisplay } from './utilities';
 import { RainbowConfig } from '@/model/remoteConfig';
@@ -60,20 +57,24 @@ const isFetchingNftsSelector = (state: any) => state.isFetchingNfts;
 const listTypeSelector = (state: any) => state.listType;
 const remoteConfigSelector = (state: any) => state.remoteConfig;
 const experimentalConfigSelector = (state: any) => state.experimentalConfig;
+const positionsSelector = (state: any) => state.positions;
+const claimablesSelector = (state: any) => state.claimables;
 
 const buildBriefWalletSections = (
   balanceSectionData: any,
   uniqueTokenFamiliesSection: any,
   remoteConfig: RainbowConfig,
-  experimentalConfig: Record<string, ExperimentalValue>
+  experimentalConfig: Record<string, ExperimentalValue>,
+  positions: RainbowPositions | undefined,
+  claimables: Claimable[] | undefined
 ) => {
   const { balanceSection, isEmpty, isLoadingUserAssets } = balanceSectionData;
 
   const positionsEnabled = experimentalConfig[DEFI_POSITIONS] && !IS_TEST;
   const claimablesEnabled = (remoteConfig.claimables || experimentalConfig[CLAIMABLES]) && !IS_TEST;
 
-  const positionSection = positionsEnabled ? withPositionsSection(isLoadingUserAssets) : [];
-  const claimablesSection = claimablesEnabled ? withClaimablesSection(isLoadingUserAssets) : [];
+  const positionSection = positionsEnabled ? withPositionsSection(positions, isLoadingUserAssets) : [];
+  const claimablesSection = claimablesEnabled ? withClaimablesSection(claimables, isLoadingUserAssets) : [];
   const sections = [balanceSection, claimablesSection, positionSection, uniqueTokenFamiliesSection];
 
   const filteredSections = sections.filter(section => section.length !== 0).flat(1);
@@ -84,10 +85,7 @@ const buildBriefWalletSections = (
   };
 };
 
-const withPositionsSection = (isLoadingUserAssets: boolean) => {
-  const { accountAddress: address, nativeCurrency: currency } = store.getState().settings;
-  const positionsObj: RainbowPositions | undefined = queryClient.getQueryData(positionsQueryKey({ address, currency }));
-
+const withPositionsSection = (positionsObj: RainbowPositions | undefined, isLoadingUserAssets: boolean) => {
   const result: PositionExtraData[] = [];
   const sortedPositions = positionsObj?.positions?.sort((a, b) => (a.totals.totals.amount > b.totals.totals.amount ? -1 : 1));
   sortedPositions?.forEach((position, index) => {
@@ -118,9 +116,8 @@ const withPositionsSection = (isLoadingUserAssets: boolean) => {
   return [];
 };
 
-const withClaimablesSection = (isLoadingUserAssets: boolean) => {
-  const { accountAddress: address, nativeCurrency: currency } = store.getState().settings;
-  const claimables: Claimable[] | undefined = queryClient.getQueryData(claimablesQueryKey({ address, currency }));
+const withClaimablesSection = (claimables: Claimable[] | undefined, isLoadingUserAssets: boolean) => {
+  const { nativeCurrency: currency } = store.getState().settings;
 
   const result: ClaimableExtraData[] = [];
   let totalNativeValue = '0';
@@ -285,6 +282,13 @@ const briefBalanceSectionSelector = createSelector(
 );
 
 export const buildBriefWalletSectionsSelector = createSelector(
-  [briefBalanceSectionSelector, (state: any) => briefUniqueTokenDataSelector(state), remoteConfigSelector, experimentalConfigSelector],
+  [
+    briefBalanceSectionSelector,
+    (state: any) => briefUniqueTokenDataSelector(state),
+    remoteConfigSelector,
+    experimentalConfigSelector,
+    positionsSelector,
+    claimablesSelector,
+  ],
   buildBriefWalletSections
 );
