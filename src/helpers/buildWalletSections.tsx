@@ -121,7 +121,6 @@ const withPositionsSection = (isLoadingUserAssets: boolean) => {
 const withClaimablesSection = (isLoadingUserAssets: boolean) => {
   const { accountAddress: address, nativeCurrency: currency } = store.getState().settings;
   const claimables: Claimable[] | undefined = queryClient.getQueryData(claimablesQueryKey({ address, currency }));
-
   const result: ClaimableExtraData[] = [];
   let totalNativeValue = '0';
   claimables?.forEach(claimable => {

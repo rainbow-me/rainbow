@@ -14,13 +14,9 @@ import {
   RapResponse,
   Rap,
   RapAction,
-  RapActionParameterMap,
-  RapActionParameters,
   RapActionResponse,
   RapActionResult,
   RapActionTypes,
-  RapClaimClaimableActionParameters,
-  RapClaimClaimableAndSwapBridgeParameters,
   RapParameterMap,
   RapSwapActionParameters,
   RapTypes,
@@ -33,6 +29,8 @@ import { Screens, TimeToSignOperation, performanceTracking } from '@/state/perfo
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { createClaimClaimableAndSwapBridgeRap } from './claimClaimableAndSwapBridge';
 import { claimClaimable } from './actions/claimClaimable';
+import { createSponsoredClaimClaimableAndSwapBridgeRap } from './claimSponsoredClaimableAndSwapBridge';
+import { claimSponsoredClaimable } from './actions/claimSponsoredClaimable';
 
 export function createSwapRapByType<T extends RapTypes>(
   type: T,
@@ -56,8 +54,15 @@ export function createRapByType<T extends RapTypes>(
 ): Promise<{ actions: RapAction<RapActionTypes>[] }> {
   switch (type) {
     case 'claimClaimableSwapBridge':
-      return createClaimClaimableAndSwapBridgeRap(parameters);
-    // TODO: other types
+      if ('claimClaimableActionParameters' in parameters) {
+        return createClaimClaimableAndSwapBridgeRap(parameters);
+      }
+      return Promise.resolve({ actions: [] });
+    case 'claimSponsoredClaimableSwapBridge':
+      if ('claimSponsoredClaimableActionParameters' in parameters) {
+        return createSponsoredClaimClaimableAndSwapBridgeRap(parameters);
+      }
+      return Promise.resolve({ actions: [] });
     default:
       return Promise.resolve({ actions: [] });
   }
@@ -87,6 +92,8 @@ function typeActionV2<T extends RapActionTypes>(type: T, props: ActionPropsV2<T>
   switch (type) {
     case 'claimClaimable':
       return () => claimClaimable(props as ActionPropsV2<'claimClaimable'>);
+    case 'claimSponsoredClaimable':
+      return () => claimSponsoredClaimable(props as ActionPropsV2<'claimSponsoredClaimable'>);
     // case 'claimRewards':
     // return () => claimRewards(props as ActionProps<'claimRewards'>);
     // case 'unlock':
@@ -205,14 +212,6 @@ const waitForNodeAck = async (hash: string, provider: Signer['provider']): Promi
     }
   });
 };
-
-// export const executeClaimClaimableRap = async (
-//   wallet: Signer,
-//   parameters: RapClaimClaimableAndSwapBridgeParameters
-// ): Promise<RapResponse> => {
-//   const rap = await createClaimClaimableAndSwapBridgeRap(parameters);
-//   return executeRap(wallet, rap, parameters.claimClaimableActionParameters.claimTx.nonce);
-// };
 
 const executeRap = async (
   wallet: Signer,

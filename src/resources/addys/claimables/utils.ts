@@ -44,9 +44,7 @@ export const parseClaimables = (claimables: AddysClaimable[], currency: NativeCu
           action: { method: claimable.claim_action[0].method, url: claimable.claim_action[0].url },
         };
       }
-
-      return undefined;
     })
-    .filter((claimable): claimable is Claimable => claimable?.type === 'transaction')
+    .filter(c => !!c)
     .sort((a, b) => (greaterThan(a.value.claimAsset.amount ?? '0', b.value.claimAsset.amount ?? '0') ? -1 : 1));
 };
