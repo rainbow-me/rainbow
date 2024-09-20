@@ -117,17 +117,15 @@ export default function SendHeader({
   const isPreExistingContact = (contact?.nickname?.length || 0) > 0;
 
   const name =
-    removeFirstEmojiFromString(userWallet?.label || contact?.nickname || nickname) || userWallet?.ens || contact?.ens || recipient;
+    removeFirstEmojiFromString(contact?.nickname || userWallet?.label || nickname) || userWallet?.ens || contact?.ens || recipient;
 
   const handleNavigateToContact = useCallback(() => {
-    let nickname = profilesEnabled ? (!isHexString(recipient) ? recipient : null) : recipient;
     let color = '';
+    const nickname = !isHexString(name) ? name : '';
     if (!profilesEnabled) {
       color = contact?.color;
       if (color !== 0 && !color) {
-        const emoji = profileUtils.addressHashedEmoji(hexAddress);
         color = profileUtils.addressHashedColorIndex(hexAddress) || 0;
-        nickname = isHexString(recipient) ? emoji : `${emoji} ${recipient}`;
       }
     }
 
@@ -142,7 +140,7 @@ export default function SendHeader({
       onRefocusInput,
       type: 'contact_profile',
     });
-  }, [contact, hexAddress, navigate, onRefocusInput, profilesEnabled, recipient]);
+  }, [contact, hexAddress, name, navigate, onRefocusInput, profilesEnabled, recipient]);
 
   const handleOpenContactActionSheet = useCallback(async () => {
     return showActionSheetWithOptions(
@@ -162,7 +160,7 @@ export default function SendHeader({
             address: hexAddress,
             nickname: name,
             onDelete: () => {
-              onChangeAddressInput(contact?.ens);
+              onChangeAddressInput(contact?.ens ? contact?.ens : contact?.address);
             },
             removeContact: removeContact,
           });
@@ -175,7 +173,17 @@ export default function SendHeader({
         }
       }
     );
-  }, [contact?.ens, handleNavigateToContact, hexAddress, onRefocusInput, removeContact, setClipboard, name, onChangeAddressInput]);
+  }, [
+    hexAddress,
+    name,
+    removeContact,
+    onChangeAddressInput,
+    contact?.ens,
+    contact?.address,
+    handleNavigateToContact,
+    onRefocusInput,
+    setClipboard,
+  ]);
 
   const onChange = useCallback(
     text => {
