@@ -11,6 +11,8 @@ import { FadeMask } from '@/__swaps__/screens/Swap/components/FadeMask';
 import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
 import { SwapActionButton } from '@/__swaps__/screens/Swap/components/SwapActionButton';
 import { SwapInput } from '@/__swaps__/screens/Swap/components/SwapInput';
+import { SwapNativeInput } from '@/__swaps__/screens/Swap/components/SwapNativeInput';
+import { SwapInputValuesCaret } from '@/__swaps__/screens/Swap/components/SwapInputValuesCaret';
 import { TokenList } from '@/__swaps__/screens/Swap/components/TokenList/TokenList';
 import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH, INPUT_PADDING, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 
@@ -50,7 +52,7 @@ function SwapInputActionButton() {
 }
 
 function SwapInputAmount() {
-  const { focusedInput, SwapTextStyles, SwapInputController, AnimatedSwapStyles } = useSwapContext();
+  const { focusedInput, SwapTextStyles, SwapInputController } = useSwapContext();
 
   return (
     <CopyPasteMenu
@@ -83,9 +85,7 @@ function SwapInputAmount() {
           >
             {SwapInputController.formattedInputAmount}
           </AnimatedText>
-          <Animated.View style={[styles.caretContainer, SwapTextStyles.inputCaretStyle]}>
-            <Box as={Animated.View} borderRadius={1} style={[styles.caret, AnimatedSwapStyles.assetToSellCaretStyle]} />
-          </Animated.View>
+          <SwapInputValuesCaret inputCaretType="inputAmount" />
         </MaskedView>
       </GestureHandlerButton>
     </CopyPasteMenu>
@@ -119,15 +119,7 @@ function InputAssetBalanceBadge() {
 }
 
 export function SwapInputAsset() {
-  const {
-    outputProgress,
-    inputProgress,
-    AnimatedSwapStyles,
-    SwapTextStyles,
-    SwapInputController,
-    internalSelectedInputAsset,
-    SwapNavigation,
-  } = useSwapContext();
+  const { outputProgress, inputProgress, AnimatedSwapStyles, internalSelectedInputAsset, SwapNavigation } = useSwapContext();
 
   return (
     <SwapInput asset={internalSelectedInputAsset} otherInputProgress={outputProgress} progress={inputProgress}>
@@ -143,9 +135,7 @@ export function SwapInputAsset() {
             </Column>
           </Columns>
           <Columns alignHorizontal="justify" alignVertical="center" space="10px">
-            <AnimatedText numberOfLines={1} size="17pt" style={SwapTextStyles.inputNativeValueStyle} weight="heavy">
-              {SwapInputController.formattedInputNativeValue}
-            </AnimatedText>
+            <SwapNativeInput nativeInputType="inputNativeValue" />
             <Column width="content">
               <InputAssetBalanceBadge />
             </Column>
@@ -173,14 +163,6 @@ export function SwapInputAsset() {
 export const styles = StyleSheet.create({
   backgroundOverlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.88)',
-  },
-  caret: {
-    height: 32,
-    width: 2,
-  },
-  caretContainer: {
-    flexGrow: 100,
-    flexShrink: 0,
   },
   flipButton: {
     borderRadius: 15,
