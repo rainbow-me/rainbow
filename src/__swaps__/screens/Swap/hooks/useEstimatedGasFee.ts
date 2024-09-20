@@ -27,7 +27,7 @@ export function calculateGasFee(gasSettings: GasSettings, gasLimit: string) {
       return null;
     }
 
-    return add(gasSettings.maxBaseFee, gasSettings.maxPriorityFee);
+    return multiply(gasLimit, add(gasSettings.maxBaseFee, gasSettings.maxPriorityFee));
   }
 
   if (isFeeNaN(gasSettings.gasPrice)) {

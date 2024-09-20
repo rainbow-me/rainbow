@@ -93,7 +93,7 @@ export function calculateGasFeeWorklet(gasSettings: GasSettings, gasLimit: strin
       return null;
     }
 
-    return sumWorklet(gasSettings.maxBaseFee || '0', gasSettings.maxPriorityFee || '0');
+    return mulWorklet(gasLimit, sumWorklet(gasSettings.maxBaseFee || '0', gasSettings.maxPriorityFee || '0'));
   }
 
   if (isFeeNaNWorklet(gasSettings.gasPrice)) {
