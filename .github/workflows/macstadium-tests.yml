@@ -50,7 +50,7 @@ jobs:
           yarn install && yarn setup
 
       - name: Upload Yarn cache
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: yarn-cache
           path: |
