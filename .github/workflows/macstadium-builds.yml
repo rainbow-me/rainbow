@@ -46,9 +46,9 @@ jobs:
             .yarn/cache
             .yarn/install-state.gz
             !.eslintcache # Exclude eslint cache
-          key: ${{ runner.os }}-yarn-${{ github.ref_name }}-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-yarn-${{ github.sha }}  # Cache per commit
           restore-keys: |
-            ${{ runner.os }}-yarn-${{ github.ref_name }}-
+            ${{ runner.os }}-yarn-
 
       - name: Install dependencies
         run: |

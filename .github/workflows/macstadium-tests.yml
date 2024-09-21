@@ -41,9 +41,9 @@ jobs:
             .yarn/cache
             .yarn/install-state.gz
             !.eslintcache # Exclude eslint cache
-          key: ${{ runner.os }}-yarn-${{ github.ref_name }}-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-yarn-${{ github.sha }}  # Cache per commit
           restore-keys: |
-            ${{ runner.os }}-yarn-${{ github.ref_name }}-
+            ${{ runner.os }}-yarn-
 
       - name: Install dependencies
         run: |
@@ -63,7 +63,7 @@ jobs:
     needs: install-deps
     steps:
       - name: Download Yarn cache
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: yarn-cache
           path: .yarn
@@ -90,7 +90,7 @@ jobs:
     needs: install-deps
     steps:
       - name: Download Yarn cache
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: yarn-cache
           path: .yarn
