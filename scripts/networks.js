@@ -69,6 +69,9 @@ async function fetchData() {
         meteorology {
           enabled
         }
+        notifications {
+          enabled
+        }
         swap {
           enabled
         }
