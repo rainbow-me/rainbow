@@ -125,6 +125,9 @@ export interface BackendNetworkServices {
   meteorology: {
     enabled: boolean;
   };
+  notifications: {
+    enabled: boolean;
+  };
   swap: {
     enabled: boolean;
   };
