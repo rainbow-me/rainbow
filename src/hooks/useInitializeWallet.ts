@@ -12,7 +12,6 @@ import { settingsLoadNetwork, settingsUpdateAccountAddress } from '../redux/sett
 import { walletsLoadState } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useHideSplashScreen from './useHideSplashScreen';
-import useInitializeAccountData from './useInitializeAccountData';
 import useLoadAccountData from './useLoadAccountData';
 import useLoadGlobalEarlyData from './useLoadGlobalEarlyData';
 import useOpenSmallBalances from './useOpenSmallBalances';
@@ -27,7 +26,6 @@ export default function useInitializeWallet() {
   const resetAccountState = useResetAccountState();
   const loadAccountData = useLoadAccountData();
   const loadGlobalEarlyData = useLoadGlobalEarlyData();
-  const initializeAccountData = useInitializeAccountData();
   const { network } = useAccountSettings();
   const hideSplashScreen = useHideSplashScreen();
   const { setIsSmallBalancesOpen } = useOpenSmallBalances();
@@ -133,8 +131,6 @@ export default function useInitializeWallet() {
           });
         }
 
-        initializeAccountData();
-
         dispatch(appStateUpdate({ walletReady: true }));
         logger.debug('[useInitializeWallet]: 💰 Wallet initialized');
 
@@ -167,17 +163,7 @@ export default function useInitializeWallet() {
         return null;
       }
     },
-    [
-      dispatch,
-      hideSplashScreen,
-      initializeAccountData,
-      loadAccountData,
-      loadGlobalEarlyData,
-      network,
-      profilesEnabled,
-      resetAccountState,
-      setIsSmallBalancesOpen,
-    ]
+    [dispatch, hideSplashScreen, loadAccountData, loadGlobalEarlyData, network, profilesEnabled, resetAccountState, setIsSmallBalancesOpen]
   );
 
   return initializeWallet;
