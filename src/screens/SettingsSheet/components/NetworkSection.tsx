@@ -6,7 +6,7 @@ import MenuContainer from './MenuContainer';
 import MenuItem from './MenuItem';
 import { analytics } from '@/analytics';
 import { Separator, Stack } from '@/design-system';
-import { useAccountSettings, useInitializeAccountData, useLoadAccountData, useResetAccountState } from '@/hooks';
+import { useAccountSettings, useLoadAccountData, useResetAccountState } from '@/hooks';
 import { settingsUpdateNetwork } from '@/redux/settings';
 import { ChainId } from '@/chains/types';
 import { defaultChains } from '@/chains';
@@ -20,7 +20,6 @@ const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
   const { chainId, testnetsEnabled } = useAccountSettings();
   const resetAccountState = useResetAccountState();
   const loadAccountData = useLoadAccountData();
-  const initializeAccountData = useInitializeAccountData();
   const dispatch = useDispatch();
 
   const onNetworkChange = useCallback(
@@ -29,11 +28,10 @@ const NetworkSection = ({ inDevSection }: NetworkSectionProps) => {
       await dispatch(settingsUpdateNetwork(chainId));
       InteractionManager.runAfterInteractions(async () => {
         await loadAccountData();
-        initializeAccountData();
         analytics.track('Changed network', { chainId });
       });
     },
-    [dispatch, initializeAccountData, loadAccountData, resetAccountState]
+    [dispatch, loadAccountData, resetAccountState]
   );
 
   const renderNetworkList = useCallback(() => {
