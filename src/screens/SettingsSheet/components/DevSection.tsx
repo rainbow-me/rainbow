@@ -18,7 +18,6 @@ import { wipeKeychain } from '@/model/keychain';
 import { clearAllStorages } from '@/model/mmkv';
 import { Navigation } from '@/navigation';
 import { useNavigation } from '@/navigation/Navigation';
-import { explorerInit } from '@/redux/explorer';
 import { clearImageMetadataCache } from '@/redux/imageMetadata';
 import store from '@/redux/store';
 import { walletsUpdate } from '@/redux/wallets';
@@ -77,7 +76,6 @@ const DevSection = () => {
       logger.error(new RainbowError(`[DevSection] error connecting to hardhat: ${e}`));
     }
     navigate(Routes.PROFILE_SCREEN);
-    dispatch(explorerInit());
   }, [dispatch, navigate, setConnectedToHardhat]);
 
   const checkAlert = useCallback(async () => {

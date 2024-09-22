@@ -23,7 +23,6 @@ import {
   saveTestnetsEnabled,
 } from '@/handlers/localstorage/globalSettings';
 import { web3SetHttpProvider } from '@/handlers/web3';
-import { explorerClearState, explorerInit } from '@/redux/explorer';
 import { AppState } from '@/redux/store';
 import { logger, RainbowError } from '@/logger';
 import { Network, ChainId } from '@/chains/types';
@@ -264,13 +263,11 @@ export const settingsChangeLanguage = (language: Language) => async (dispatch: D
 export const settingsChangeNativeCurrency =
   (nativeCurrency: NativeCurrencyKey) =>
   async (dispatch: ThunkDispatch<AppState, unknown, SettingsStateUpdateNativeCurrencySuccessAction>) => {
-    dispatch(explorerClearState());
     try {
       dispatch({
         payload: nativeCurrency,
         type: SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS,
       });
-      dispatch(explorerInit());
       saveNativeCurrency(nativeCurrency);
       analytics.identify({ currency: nativeCurrency });
     } catch (error) {
