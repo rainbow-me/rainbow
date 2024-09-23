@@ -141,14 +141,14 @@ export type RapActionParameterMap = {
   unlock: RapUnlockActionParameters;
   claimRewards: RapClaimRewardsActionParameters;
   claimRewardsBridge: RapClaimRewardsActionParameters;
+};
+
+export type RapActionParameterMapV2 = {
   claimClaimable: RapClaimClaimableActionParameters;
   claimSponsoredClaimable: RapClaimSponsoredClaimableActionParameters;
 };
 
-export type RapParameterMap = {
-  swap: undefined; // TODO
-  crosschainSwap: undefined; // TODO
-  claimRewardsBridge: undefined; // TODO
+export type RapParameterMapV2 = {
   claimClaimableSwapBridge: RapClaimClaimableAndSwapBridgeParameters;
   claimSponsoredClaimableSwapBridge: RapClaimSponsoredClaimableAndSwapBridgeParameters;
 };
@@ -159,10 +159,18 @@ export interface RapAction<T extends RapActionTypes> {
   type: T;
 }
 
+export interface RapActionV2<T extends RapActionTypesV2> {
+  parameters: RapActionParameterMapV2[T];
+  transaction: RapActionTransaction;
+  type: T;
+}
+
 export interface Rap {
-  actions: RapAction<
-    'swap' | 'crosschainSwap' | 'unlock' | 'claimRewards' | 'claimRewardsBridge' | 'claimClaimable' | 'claimSponsoredClaimable'
-  >[];
+  actions: RapAction<'swap' | 'crosschainSwap' | 'unlock' | 'claimRewards' | 'claimRewardsBridge'>[];
+}
+
+export interface RapV2 {
+  actions: RapActionV2<'claimClaimable' | 'claimSponsoredClaimable'>[];
 }
 
 export enum rapActions {
@@ -171,21 +179,31 @@ export enum rapActions {
   unlock = 'unlock',
   claimRewards = 'claimRewards',
   claimRewardsBridge = 'claimRewardsBridge',
+}
+
+export enum rapActionsV2 {
   claimClaimable = 'claimClaimable',
   claimSponsoredClaimable = 'claimSponsoredClaimable',
 }
 
 export type RapActionTypes = keyof typeof rapActions;
 
+export type RapActionTypesV2 = keyof typeof rapActionsV2;
+
 export enum rapTypes {
   swap = 'swap',
   crosschainSwap = 'crosschainSwap',
   claimRewardsBridge = 'claimRewardsBridge',
+}
+
+export enum rapTypesV2 {
   claimClaimableSwapBridge = 'claimClaimableSwapBridge',
   claimSponsoredClaimableSwapBridge = 'claimSponsoredClaimableSwapBridge',
 }
 
 export type RapTypes = keyof typeof rapTypes;
+
+export type RapTypesV2 = keyof typeof rapTypesV2;
 
 export interface RapActionResponse {
   baseNonce?: number | null;
@@ -208,12 +226,12 @@ export interface ActionProps<T extends RapActionTypes> {
   gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
 }
 
-export interface ActionPropsV2<T extends RapActionTypes> {
+export interface ActionPropsV2<T extends RapActionTypesV2> {
   baseNonce?: number;
   index: number;
-  parameters: RapActionParameterMap[T];
+  parameters: RapActionParameterMapV2[T];
   wallet: Signer;
-  currentRap: Rap;
+  currentRap: RapV2;
 }
 
 export interface WalletExecuteRapProps {

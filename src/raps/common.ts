@@ -1,5 +1,5 @@
 import { MMKV } from 'react-native-mmkv';
-import { RapAction, RapActionParameterMap, RapActionTypes } from './references';
+import { RapAction, RapActionParameterMap, RapActionParameterMapV2, RapActionTypes, RapActionTypesV2, RapActionV2 } from './references';
 import { STORAGE_IDS } from '@/model/mmkv';
 import { logger } from '@/logger';
 import { EthereumAddress, LegacyGasFeeParamsBySpeed, LegacySelectedGasFee, Records, SelectedGasFee, GasFeeParamsBySpeed } from '@/entities';
@@ -75,7 +75,22 @@ export function createNewAction<T extends RapActionTypes>(type: T, parameters: R
   return newAction;
 }
 
+export function createNewActionV2<T extends RapActionTypesV2>(type: T, parameters: RapActionParameterMapV2[T]): RapActionV2<T> {
+  const newAction = {
+    parameters,
+    transaction: { confirmed: null, hash: null },
+    type,
+  };
+  return newAction;
+}
+
 export function createNewRap<T extends RapActionTypes>(actions: RapAction<T>[]) {
+  return {
+    actions,
+  };
+}
+
+export function createNewRapV2<T extends RapActionTypesV2>(actions: RapActionV2<T>[]) {
   return {
     actions,
   };

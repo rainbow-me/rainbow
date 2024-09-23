@@ -1,13 +1,13 @@
-import { createNewAction, createNewRap } from './common';
-import { RapAction, RapClaimSponsoredClaimableAndSwapBridgeParameters } from './references';
+import { createNewActionV2, createNewRapV2 } from './common';
+import { RapActionV2, RapClaimSponsoredClaimableAndSwapBridgeParameters } from './references';
 
 export const createSponsoredClaimClaimableAndSwapBridgeRap = async (parameters: RapClaimSponsoredClaimableAndSwapBridgeParameters) => {
-  let actions: RapAction<'claimSponsoredClaimable'>[] = [];
+  let actions: RapActionV2<'claimSponsoredClaimable'>[] = [];
 
-  const claim = createNewAction('claimSponsoredClaimable', parameters.claimSponsoredClaimableActionParameters);
+  const claim = createNewActionV2('claimSponsoredClaimable', parameters.claimSponsoredClaimableActionParameters);
   actions = actions.concat(claim);
 
   // create the overall rap
-  const newRap = createNewRap(actions);
+  const newRap = createNewRapV2(actions);
   return newRap;
 };
