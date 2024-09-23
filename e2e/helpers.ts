@@ -202,7 +202,7 @@ export async function clearField(elementId: string | RegExp) {
 
 export async function tapAndLongPress(elementId: string | RegExp, duration?: number) {
   try {
-    // @ts-ignore
+    // @ts-expect-error
     return await element(by.id(elementId)).longPress(duration);
   } catch (error) {
     throw new Error(`Error long-pressing element by id "${elementId}": ${error}`);
