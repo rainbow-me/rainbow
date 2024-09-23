@@ -6,7 +6,7 @@ import { addNewTransaction } from '@/state/pendingTransactions';
 import { NewTransaction } from '@/entities';
 import { chainsName } from '@/chains';
 
-export async function claimTransactionClaimable({ parameters, wallet, baseNonce }: ActionPropsV2<'claimTransactionClaimableAction'>) {
+export async function claimTransactionClaimable({ parameters, wallet }: ActionPropsV2<'claimTransactionClaimableAction'>) {
   const { claimTx } = parameters;
 
   const provider = getProvider({ chainId: claimTx.chainId });

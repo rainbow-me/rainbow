@@ -213,9 +213,20 @@ export interface RapActionResponse {
   hash?: string | null;
 }
 
+export interface RapActionResponseV2 {
+  nonce: number | null;
+  errorMessage: string | null;
+  hash: string | null;
+}
+
 export interface RapActionResult {
   nonce?: number | undefined;
   hash?: string | undefined;
+}
+
+export interface RapActionResultV2 {
+  nonce: number | null;
+  hash: string | null;
 }
 
 export interface ActionProps<T extends RapActionTypes> {
@@ -229,8 +240,7 @@ export interface ActionProps<T extends RapActionTypes> {
 }
 
 export interface ActionPropsV2<T extends RapActionTypesV2> {
-  baseNonce?: number;
-  index: number;
+  nonceToUse?: number;
   parameters: RapActionParameterMapV2[T];
   wallet: Signer;
   currentRap: RapV2;
@@ -243,5 +253,9 @@ export interface WalletExecuteRapProps {
 
 export interface RapResponse {
   nonce: number | undefined;
+  errorMessage: string | null;
+}
+
+export interface RapResponseV2 {
   errorMessage: string | null;
 }

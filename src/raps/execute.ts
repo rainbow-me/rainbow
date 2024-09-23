@@ -23,6 +23,8 @@ import {
   RapActionV2,
   RapV2,
   RapParameters,
+  RapActionResponseV2,
+  RapResponseV2,
 } from './references';
 import { createUnlockAndCrosschainSwapRap } from './unlockAndCrosschainSwap';
 import { createClaimRewardsAndBridgeRap } from './claimRewardsAndBridge';
@@ -87,8 +89,7 @@ function typeActionV2<T extends RapActionTypesV2>(type: T, props: ActionPropsV2<
     case 'claimTransactionClaimableAction':
       return () => claimTransactionClaimable(props as ActionPropsV2<'claimTransactionClaimableAction'>);
     default:
-      // eslint-disable-next-line react/display-name
-      return () => null;
+      throw new RainbowError(`[raps/execute]: typeActionV2 - unknown type ${type}`);
   }
 }
 
@@ -141,36 +142,30 @@ export async function executeActionV2<T extends RapActionTypesV2>({
   action,
   wallet,
   rap,
-  index,
-  baseNonce,
+  nonceToUse,
   rapName,
 }: {
   action: RapActionV2<T>;
   wallet: Signer;
   rap: RapV2;
-  index: number;
-  baseNonce?: number;
+  nonceToUse: number | undefined;
   rapName: string;
-}): Promise<RapActionResponse> {
+}): Promise<RapActionResponseV2> {
   const { type, parameters } = action;
   try {
     const actionProps = {
       wallet,
       currentRap: rap,
-      index,
       parameters,
-      baseNonce,
+      nonceToUse,
     };
-    const { nonce, hash } = (await typeActionV2<T>(type, actionProps)()) as RapActionResult;
-    return { baseNonce: nonce, errorMessage: null, hash };
+    const { nonce, hash } = await typeActionV2<T>(type, actionProps)();
+    return { nonce, errorMessage: null, hash };
   } catch (error) {
     logger.error(new RainbowError(`[raps/execute]: ${rapName} - error execute action`), {
       message: (error as Error)?.message,
     });
-    if (index === 0) {
-      return { baseNonce: null, errorMessage: String(error) };
-    }
-    return { baseNonce: null, errorMessage: null };
+    return { nonce: null, errorMessage: String(error), hash: null };
   }
 }
 
@@ -200,51 +195,33 @@ const waitForNodeAck = async (hash: string, provider: Signer['provider']): Promi
   });
 };
 
-const executeRap = async (
-  wallet: Signer,
-  rap: {
-    actions: RapActionV2<RapActionTypesV2>[];
-  },
-  nonce?: number | undefined
-): Promise<RapResponse> => {
-  let currentNonce = nonce;
+const executeRap = async (wallet: Signer, rap: RapV2): Promise<RapResponseV2> => {
   const { actions } = rap;
   const rapName = getRapFullNameV2(rap.actions);
-  let errorMessage = null;
-  if (actions.length) {
-    const firstAction = actions[0];
-    const actionParams = {
-      action: firstAction,
+  let nonceToUse: number | undefined;
+
+  while (actions.length) {
+    const action = actions.shift();
+
+    if (!action) break;
+
+    const { nonce, errorMessage, hash } = await executeActionV2({
+      action,
       wallet,
       rap,
-      index: 0,
-      baseNonce: nonce,
+      nonceToUse,
       rapName,
-    };
+    });
 
-    const { baseNonce, errorMessage: error, hash } = await executeActionV2(actionParams);
+    if (errorMessage) return { errorMessage };
 
-    if (typeof baseNonce === 'number') {
-      actions.length > 1 && hash && (await waitForNodeAck(hash, wallet.provider));
-      for (let index = 1; index < actions.length; index++) {
-        const action = actions[index];
-        const actionParams = {
-          action,
-          wallet,
-          rap,
-          index,
-          baseNonce,
-          rapName,
-        };
-        const { hash } = await executeActionV2(actionParams);
-        hash && (await waitForNodeAck(hash, wallet.provider));
-      }
-      currentNonce = baseNonce + actions.length - 1;
-    } else {
-      errorMessage = error;
+    if (typeof nonce === 'number') {
+      actions.length >= 1 && hash && (await waitForNodeAck(hash, wallet.provider));
+      nonceToUse = nonce + 1;
     }
   }
-  return { nonce: currentNonce, errorMessage };
+
+  return { errorMessage: null };
 };
 
 export const walletExecuteRap = async (
@@ -311,7 +288,7 @@ export const walletExecuteRap = async (
   return { nonce, errorMessage };
 };
 
-export async function walletExecuteRapV2(wallet: Signer, rapParameters: RapParameters, nonce?: number | undefined): Promise<RapResponse> {
+export async function walletExecuteRapV2(wallet: Signer, rapParameters: RapParameters): Promise<RapResponseV2> {
   const rap = await createRap(rapParameters);
-  return executeRap(wallet, rap, nonce);
+  return executeRap(wallet, rap);
 }

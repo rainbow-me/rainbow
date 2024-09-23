@@ -32,7 +32,7 @@ export async function claimSponsoredClaimable({ parameters }: ActionPropsV2<'cla
   }
 
   return {
-    nonce: undefined,
-    hash: undefined,
+    nonce: null,
+    hash: null,
   };
 }
