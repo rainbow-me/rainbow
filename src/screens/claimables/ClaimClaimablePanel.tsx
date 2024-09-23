@@ -14,7 +14,6 @@ import { useTheme } from '@/theme';
 import { FasterImageView } from '@candlefinance/faster-image';
 import { claimablesQueryKey, useClaimables } from '@/resources/addys/claimables/query';
 import { useMutation } from '@tanstack/react-query';
-import { ClaimClaimableTxPayload } from '@/raps/references';
 import { loadWallet } from '@/model/wallet';
 import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
 import { parseGasParamsForTransaction } from '@/parsers';
@@ -26,6 +25,7 @@ import { walletExecuteRapV2 } from '@/raps/execute';
 import { queryClient } from '@/react-query';
 import { useNavigation } from '@/navigation';
 import { TextColor } from '@/design-system/color/palettes';
+import { TransactionClaimableTxPayload } from '@/raps/references';
 
 type RouteParams = {
   ClaimClaimablePanelParams: { claimable: Claimable };
@@ -52,9 +52,7 @@ const ClaimingSponsoredClaimable = ({ claimable }: { claimable: SponsoredClaimab
 
   const [claimStatus, setClaimStatus] = useState<ClaimStatus>('idle');
 
-  const { mutate: claimClaimable } = useMutation<{
-    nonce: number | null;
-  }>({
+  const { mutate: claimClaimable } = useMutation({
     mutationFn: async () => {
       const provider = getProvider({ chainId: claimable.chainId });
       const wallet = await loadWallet({
@@ -66,11 +64,12 @@ const ClaimingSponsoredClaimable = ({ claimable }: { claimable: SponsoredClaimab
       if (!wallet) {
         // Biometrics auth failure (retry possible)
         setClaimStatus('error');
-        return { nonce: null };
+        return;
       }
 
       try {
-        const { errorMessage, nonce } = await walletExecuteRapV2(wallet, 'claimSponsoredClaimableSwapBridge', {
+        const { errorMessage } = await walletExecuteRapV2(wallet, {
+          type: 'claimSponsoredClaimableRap',
           claimSponsoredClaimableActionParameters: { url: claimable.action.url, method: claimable.action.method as 'POST' | 'GET' },
         });
 
@@ -79,19 +78,16 @@ const ClaimingSponsoredClaimable = ({ claimable }: { claimable: SponsoredClaimab
           logger.error(new RainbowError('[ClaimingSponsoredClaimable]: Failed to claim claimable due to rap error'), {
             message: errorMessage,
           });
-          return { nonce: null };
         } else {
           setClaimStatus('success');
           // Clear and refresh claimables data
           queryClient.invalidateQueries(claimablesQueryKey({ address: accountAddress, currency: nativeCurrency }));
           refetch();
-          return { nonce: nonce ?? null };
         }
       } catch (e) {
         logger.error(new RainbowError('[ClaimingSponsoredClaimable]: Failed to claim claimable due to unknown error'), {
           message: (e as Error)?.message,
         });
-        return { nonce: null };
       }
     },
     onError: e => {
@@ -110,9 +106,9 @@ const ClaimingTransactionClaimable = ({ claimable }: { claimable: TransactionCla
   const { isGasReady, isSufficientGas, isValidGas, selectedGasFee, startPollingGasFees, stopPollingGasFees, updateTxFee } = useGas();
 
   const [baseTxPayload, setBaseTxPayload] = useState<
-    Omit<ClaimClaimableTxPayload, 'gasLimit' | 'maxPriorityFeePerGas' | 'maxFeePerGas'> | undefined
+    Omit<TransactionClaimableTxPayload, 'gasLimit' | 'maxPriorityFeePerGas' | 'maxFeePerGas'> | undefined
   >();
-  const [txPayload, setTxPayload] = useState<ClaimClaimableTxPayload | undefined>();
+  const [txPayload, setTxPayload] = useState<TransactionClaimableTxPayload | undefined>();
   const [claimStatus, setClaimStatus] = useState<ClaimStatus>('idle');
 
   const { refetch } = useClaimables({ address: accountAddress, currency: nativeCurrency });
@@ -199,14 +195,12 @@ const ClaimingTransactionClaimable = ({ claimable }: { claimable: TransactionCla
     [nativeCurrency, selectedGasFee?.gasFee?.estimatedFee?.native?.value?.amount]
   );
 
-  const { mutate: claimClaimable } = useMutation<{
-    nonce: number | null;
-  }>({
+  const { mutate: claimClaimable } = useMutation({
     mutationFn: async () => {
       if (!txPayload) {
         setClaimStatus('error');
         logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to missing tx payload'));
-        return { nonce: null };
+        return;
       }
 
       const wallet = await loadWallet({
@@ -218,41 +212,31 @@ const ClaimingTransactionClaimable = ({ claimable }: { claimable: TransactionCla
       if (!wallet) {
         // Biometrics auth failure (retry possible)
         setClaimStatus('error');
-        return { nonce: null };
+        return;
       }
 
       try {
-        const { errorMessage, nonce } = await walletExecuteRapV2(
-          wallet,
-          'claimClaimableSwapBridge',
-          { claimClaimableActionParameters: { claimTx: txPayload } },
-          txPayload.nonce
-        );
+        const { errorMessage } = await walletExecuteRapV2(wallet, {
+          type: 'claimTransactionClaimableRap',
+          claimTransactionClaimableActionParameters: { claimTx: txPayload },
+        });
 
         if (errorMessage) {
           setClaimStatus('error');
           logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to rap error'), {
             message: errorMessage,
           });
-          return { nonce: null };
-        }
-
-        if (typeof nonce === 'number') {
+        } else {
+          setClaimStatus('success');
           // Clear and refresh claimables data
           queryClient.invalidateQueries(claimablesQueryKey({ address: accountAddress, currency: nativeCurrency }));
           refetch();
-          return { nonce };
-        } else {
-          setClaimStatus('error');
-          logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable, claim tx returned invalid nonce'));
-          return { nonce: null };
         }
       } catch (e) {
         setClaimStatus('error');
         logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to unknown error'), {
           message: (e as Error)?.message,
         });
-        return { nonce: null };
       }
     },
     onError: e => {
@@ -260,11 +244,6 @@ const ClaimingTransactionClaimable = ({ claimable }: { claimable: TransactionCla
       logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to unhandled error'), {
         message: (e as Error)?.message,
       });
-    },
-    onSuccess: ({ nonce }: { nonce: number | null }) => {
-      if (typeof nonce === 'number') {
-        setClaimStatus('success');
-      }
     },
   });
 
