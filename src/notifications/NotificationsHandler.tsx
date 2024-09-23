@@ -34,7 +34,7 @@ import {
 import { AddressWithRelationship, WalletNotificationRelationship } from '@/notifications/settings';
 import {
   initializeGlobalNotificationSettings,
-  initializeNotificationSettingsForAllAddressesAndCleanupSettingsForRemovedWallets,
+  initializeNotificationSettingsForAllAddresses,
 } from '@/notifications/settings/initialization';
 import { logger } from '@/logger';
 import { transactionFetchQuery } from '@/resources/transactions/transaction';
@@ -256,7 +256,7 @@ export const NotificationsHandler = ({ walletReady }: Props) => {
         )
       );
       initializeGlobalNotificationSettings();
-      initializeNotificationSettingsForAllAddressesAndCleanupSettingsForRemovedWallets(addresses);
+      initializeNotificationSettingsForAllAddresses(addresses);
 
       alreadyRanInitialization.current = true;
     }

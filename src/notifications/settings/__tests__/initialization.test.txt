@@ -10,8 +10,7 @@ import {
 } from '@/notifications/settings/constants';
 import {
   _prepareInitializationState,
-  _prepareSubscriptionQueueAndCreateInitialSettings,
-  _processSubscriptionQueue,
+  createInitialSettingsForNewlyAddedAddresses,
 } from '@/notifications/settings/initialization';
 
 const TEST_ADDRESS_1 = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045';
@@ -59,7 +58,7 @@ describe('Notification settings initialization', () => {
 
       const initState = _prepareInitializationState();
       expect(initState).toEqual(EMPTY_INIT_STATE);
-      const queue = _prepareSubscriptionQueueAndCreateInitialSettings(
+      const queue = createInitialSettingsForNewlyAddedAddresses(
         [],
         initState
       );
@@ -78,7 +77,7 @@ describe('Notification settings initialization', () => {
       expect(storedBefore).toBeUndefined();
       const initState = _prepareInitializationState();
       expect(initState).toEqual(EMPTY_INIT_STATE);
-      const queue = _prepareSubscriptionQueueAndCreateInitialSettings(
+      const queue = createInitialSettingsForNewlyAddedAddresses(
         [
           {
             address: TEST_ADDRESS_1,
@@ -128,7 +127,7 @@ describe('Notification settings initialization', () => {
       expect(storedBefore).toBeUndefined();
       const initState = _prepareInitializationState();
       expect(initState).toEqual(EMPTY_INIT_STATE);
-      const queue = _prepareSubscriptionQueueAndCreateInitialSettings(
+      const queue = createInitialSettingsForNewlyAddedAddresses(
         [
           {
             address: TEST_ADDRESS_1,
@@ -205,7 +204,7 @@ describe('Notification settings initialization', () => {
           ],
         ]),
       });
-      const queue = _prepareSubscriptionQueueAndCreateInitialSettings(
+      const queue = createInitialSettingsForNewlyAddedAddresses(
         [
           {
             address: TEST_ADDRESS_1,
@@ -270,7 +269,7 @@ describe('Notification settings initialization', () => {
           ],
         ]),
       });
-      const queue = _prepareSubscriptionQueueAndCreateInitialSettings(
+      const queue = createInitialSettingsForNewlyAddedAddresses(
         [
           {
             address: TEST_ADDRESS_1,
@@ -337,7 +336,7 @@ describe('Notification settings initialization', () => {
           ],
         ]),
       });
-      const queue = _prepareSubscriptionQueueAndCreateInitialSettings(
+      const queue = createInitialSettingsForNewlyAddedAddresses(
         [
           {
             address: TEST_ADDRESS_1,
@@ -393,7 +392,6 @@ describe('Notification settings initialization', () => {
           },
         ])
       );
-      await _processSubscriptionQueue([]);
       expect(
         JSON.parse(
           notificationSettingsStorage.getString(WALLET_TOPICS_STORAGE_KEY) ??
@@ -424,15 +422,6 @@ describe('Notification settings initialization', () => {
         ])
       );
 
-      await _processSubscriptionQueue([
-        {
-          address: TEST_ADDRESS_1,
-          type: WalletNotificationRelationship.OWNER,
-          successfullyFinishedInitialSubscription: false,
-          topics: DEFAULT_ENABLED_TOPIC_SETTINGS,
-          enabled: false,
-        },
-      ]);
       const stateAfter = {
         address: TEST_ADDRESS_1,
         type: WalletNotificationRelationship.OWNER,
@@ -461,7 +450,6 @@ describe('Notification settings initialization', () => {
         JSON.stringify([stateBefore])
       );
 
-      await _processSubscriptionQueue([stateBefore]);
       const stateAfter = {
         ...stateBefore,
         successfullyFinishedInitialSubscription: true,
@@ -491,7 +479,6 @@ describe('Notification settings initialization', () => {
         ])
       );
 
-      await _processSubscriptionQueue([]);
       expect(
         JSON.parse(
           notificationSettingsStorage.getString(WALLET_TOPICS_STORAGE_KEY) ??
@@ -529,7 +516,6 @@ describe('Notification settings initialization', () => {
         WALLET_TOPICS_STORAGE_KEY,
         JSON.stringify(stateBefore)
       );
-      await _processSubscriptionQueue(stateBefore);
 
       expect(
         JSON.parse(
