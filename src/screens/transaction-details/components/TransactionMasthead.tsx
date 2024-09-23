@@ -25,7 +25,7 @@ import { ContactAvatar } from '@/components/contacts';
 import { isLowerCaseMatch } from '@/utils';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
-import { useContacts, useUserAccounts } from '@/hooks';
+import { useAccountSettings, useContacts, useUserAccounts } from '@/hooks';
 import { useTiming } from 'react-native-redash';
 import Animated, { Easing, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
@@ -79,9 +79,8 @@ function CurrencyTile({
   address?: string;
   onAddressCopied: () => void;
 }) {
-  const accountAddress = useSelector((state: AppState) => state.settings.accountAddress);
+  const { accountAddress } = useAccountSettings();
   const theme = useTheme();
-
   const { contacts } = useContacts();
 
   const { userAccounts, watchedAccounts } = useUserAccounts();
@@ -366,7 +365,7 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
     if (transaction.type === 'contract_interaction' || transaction.type === 'approve') {
       return {
         title: contractName,
-        subtitle: transaction?.from || '',
+        subtitle: transaction?.to || '',
         image: contractImage,
       };
     }

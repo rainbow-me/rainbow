@@ -911,7 +911,6 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
               )}
             </Row>
             <Row height="content">
-              {/* @ts-expect-error - Javascript Component */}
               <GasSpeedButton
                 asset={outputCurrency}
                 chainId={currentChainId}

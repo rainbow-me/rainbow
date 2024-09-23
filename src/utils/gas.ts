@@ -20,7 +20,9 @@ const NO_TREND = 'notrend';
 const GasSpeedOrder = [NORMAL, FAST, URGENT, CUSTOM];
 const GasTrends = { FALLING, NO_TREND, RISING, STABLE, SURGING };
 
-const GAS_ICONS = {
+const GAS_ICONS: {
+  [key: string]: string;
+} = {
   [CUSTOM]: 'gear',
   [FAST]: 'rocket',
   [NORMAL]: 'stopwatch',
@@ -54,7 +56,9 @@ const SWAP_GAS_ICONS: SwapGasIcons = {
   },
 };
 
-const GAS_EMOJIS = {
+const GAS_EMOJIS: {
+  [key: string]: string;
+} = {
   [CUSTOM]: '⚙️',
   [FAST]: '🚀',
   [NORMAL]: IS_IOS ? '⏱' : '🕘',

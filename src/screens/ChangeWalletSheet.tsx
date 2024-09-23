@@ -386,10 +386,7 @@ export default function ChangeWalletSheet() {
             </Row>
           )}
         </Centered>
-        {showDividers && (
-          // @ts-expect-error JS component
-          <Divider color={colors.rowDividerExtraLight} inset={[0, 15]} />
-        )}
+        {showDividers && <Divider color={colors.rowDividerExtraLight} inset={[0, 15]} />}
       </Column>
       <WalletList
         accountAddress={currentAddress}

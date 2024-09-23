@@ -583,7 +583,6 @@ export const SendConfirmationSheet = () => {
                 )}
               </Column>
             </Row>
-            {/* @ts-expect-error JavaScript component */}
             <Divider color={theme.colors.rowDividerExtraLight} inset={[0]} />
           </Column>
           {(isL2 || isENS || shouldShowChecks) && (

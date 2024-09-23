@@ -377,7 +377,7 @@ export const SignTransactionSheet = () => {
       let txSavedInCurrentWallet = false;
       const displayDetails = transactionDetails.displayDetails;
 
-      let txDetails: NewTransaction | null = null;
+      let txDetails: NewTransaction | undefined;
       if (sendInsteadOfSign && sendResult?.hash) {
         txDetails = {
           status: 'pending',
@@ -398,6 +398,7 @@ export const SignTransactionSheet = () => {
           type: 'contract_interaction',
           ...gasParams,
         };
+
         if (accountInfo.address?.toLowerCase() === txDetails.from?.toLowerCase()) {
           addNewTransaction({
             transaction: txDetails,
@@ -427,17 +428,19 @@ export const SignTransactionSheet = () => {
       closeScreen(false);
       // When the tx is sent from a different wallet,
       // we need to switch to that wallet before saving the tx
+      InteractionManager.runAfterInteractions(async () => {
+        if (!txSavedInCurrentWallet && !isNil(txDetails)) {
+          if (txDetails?.from) {
+            await switchToWalletWithAddress(txDetails?.from as string);
+          }
 
-      if (!txSavedInCurrentWallet && !isNil(txDetails)) {
-        InteractionManager.runAfterInteractions(async () => {
-          await switchToWalletWithAddress(txDetails?.from as string);
           addNewTransaction({
-            transaction: txDetails as NewTransaction,
+            transaction: txDetails,
             chainId,
             address: txDetails?.from as string,
           });
-        });
-      }
+        }
+      });
     } else {
       logger.error(new RainbowError(`[SignTransactionSheet]: Tx failure - ${formattedDappUrl}`), {
         dappName: transactionDetails?.dappName,

@@ -5,6 +5,7 @@ import { convertAmountAndPriceToNativeDisplay, convertAmountToBalanceDisplay } f
 import { ethereumUtils } from '@/utils';
 
 /**
+ * @deprecated - use @parsers/transactions.ts instead
  * @desc parse transactions from native prices
  * @param  {Object} [txDetails=null]
  * @param  {Object} [nativeCurrency='']

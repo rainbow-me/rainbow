@@ -114,7 +114,6 @@ const CollectiblesSendRow = React.memo(
       <Fragment>
         {isFirstRow && (
           <Centered height={dividerHeight}>
-            {/* @ts-expect-error JavaScript component */}
             <Divider color={colors.rowDividerLight} />
           </Centered>
         )}

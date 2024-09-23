@@ -82,7 +82,6 @@ function TransactionActionRow({
         </SheetActionButtonRow>
       </Box>
       <Box alignItems="center" justifyContent="center">
-        {/* @ts-expect-error JavaScript component */}
         <GasSpeedButton
           asset={{ color: accentColor }}
           chainId={ChainId.mainnet}

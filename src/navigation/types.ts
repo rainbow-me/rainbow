@@ -5,6 +5,7 @@ import Routes from '@/navigation/routesNames';
 import { PortalSheetProps } from '@/screens/Portal';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { CampaignCheckResult } from '@/components/remote-promo-sheet/checkForRemotePromoSheet';
+import { NewTransaction } from '@/entities';
 
 export type PartialNavigatorConfigOptions = Pick<Partial<Parameters<ReturnType<typeof createStackNavigator>['Screen']>[0]>, 'options'>;
 
@@ -24,12 +25,12 @@ export type RootStackParamList = {
   };
   [Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET]: {
     accentColor?: string;
-    tx: Record<string, any>;
+    tx: NewTransaction;
     type: 'speed_up' | 'cancel';
   };
   [Routes.SPEED_UP_AND_CANCEL_SHEET]: {
     accentColor?: string;
-    tx: Record<string, any>;
+    tx: NewTransaction;
     type: 'speed_up' | 'cancel';
   };
   [Routes.BACKUP_SHEET]: {

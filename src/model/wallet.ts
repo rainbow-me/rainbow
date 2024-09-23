@@ -1,7 +1,7 @@
 import { TransactionRequest } from '@ethersproject/abstract-provider';
 import { arrayify } from '@ethersproject/bytes';
 import { HDNode } from '@ethersproject/hdnode';
-import { Provider } from '@ethersproject/providers';
+import { Provider, StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Transaction } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
 import { signTypedData, SignTypedDataVersion, TypedMessage } from '@metamask/eth-sig-util';
@@ -73,7 +73,7 @@ interface WalletInitialized {
 interface TransactionRequestParam {
   transaction: TransactionRequest;
   existingWallet?: Signer;
-  provider?: Provider;
+  provider?: StaticJsonRpcProvider;
 }
 
 interface MessageTypeProperty {

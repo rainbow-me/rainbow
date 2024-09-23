@@ -8,7 +8,7 @@ import { coverMetadataAtom } from '../components/ens-registration/RegistrationCo
 import { ENSActionParameters, ENSRapActionType } from '@/raps/common';
 import usePendingTransactions from './usePendingTransactions';
 import { useAccountSettings, useENSRegistration, useWalletENSAvatar, useWallets } from '.';
-import { Records, RegistrationParameters } from '@/entities';
+import { NewTransaction, Records, RegistrationParameters } from '@/entities';
 import { fetchResolver } from '@/handlers/ens';
 import { saveNameFromLabelhash } from '@/handlers/localstorage/ens';
 import { uploadImage } from '@/handlers/pinata';
@@ -26,6 +26,7 @@ import { performanceTracking, Screens, TimeToSignOperation } from '@/state/perfo
 import { noop } from 'lodash';
 import { logger, RainbowError } from '@/logger';
 import { ChainId } from '@/chains/types';
+import { IS_IOS } from '@/env';
 
 // Generic type for action functions
 type ActionFunction<P extends any[] = [], R = void> = (...params: P) => Promise<R>;
@@ -171,13 +172,21 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
       const commitTransactionHash = registrationParameters?.commitTransactionHash;
 
       const tx = getPendingTransactionByHash(commitTransactionHash || '');
-      commitTransactionHash &&
-        tx &&
-        navigate(ios ? Routes.SPEED_UP_AND_CANCEL_SHEET : Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET, {
-          accentColor,
-          tx,
-          type: 'speed_up',
-        });
+      if (commitTransactionHash && tx) {
+        if (IS_IOS) {
+          navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
+            accentColor,
+            tx: tx as NewTransaction,
+            type: 'speed_up',
+          });
+        } else {
+          navigate(Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET, {
+            accentColor,
+            tx: tx as NewTransaction,
+            type: 'speed_up',
+          });
+        }
+      }
     },
     [getPendingTransactionByHash, navigate, registrationParameters?.commitTransactionHash]
   );
