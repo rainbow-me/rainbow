@@ -19,11 +19,10 @@ import {
   RapActionTypes,
   RapSwapActionParameters,
   RapTypes,
-  RapTypesV2,
-  RapParameterMapV2,
   RapActionTypesV2,
   RapActionV2,
   RapV2,
+  RapParameters,
 } from './references';
 import { createUnlockAndCrosschainSwapRap } from './unlockAndCrosschainSwap';
 import { createClaimRewardsAndBridgeRap } from './claimRewardsAndBridge';
@@ -31,9 +30,9 @@ import { createUnlockAndSwapRap } from './unlockAndSwap';
 import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { Screens, TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { createClaimClaimableAndSwapBridgeRap } from './claimClaimableAndSwapBridge';
-import { claimClaimable } from './actions/claimClaimable';
-import { createSponsoredClaimClaimableAndSwapBridgeRap } from './claimSponsoredClaimableAndSwapBridge';
+import { createClaimTransactionClaimableRap } from './claimTransactionClaimable';
+import { claimTransactionClaimable } from './actions/claimTransactionClaimable';
+import { createClaimSponsoredClaimableRap } from './claimSponsoredClaimable';
 import { claimSponsoredClaimable } from './actions/claimSponsoredClaimable';
 
 export function createSwapRapByType<T extends RapTypes>(
@@ -52,21 +51,12 @@ export function createSwapRapByType<T extends RapTypes>(
   }
 }
 
-export function createRapByType<T extends RapTypesV2>(
-  type: T,
-  parameters: NonNullable<RapParameterMapV2[T]>
-): Promise<{ actions: RapActionV2<RapActionTypesV2>[] }> {
-  switch (type) {
-    case 'claimClaimableSwapBridge':
-      if ('claimClaimableActionParameters' in parameters) {
-        return createClaimClaimableAndSwapBridgeRap(parameters);
-      }
-      return Promise.resolve({ actions: [] });
-    case 'claimSponsoredClaimableSwapBridge':
-      if ('claimSponsoredClaimableActionParameters' in parameters) {
-        return createSponsoredClaimClaimableAndSwapBridgeRap(parameters);
-      }
-      return Promise.resolve({ actions: [] });
+export function createRap(parameters: RapParameters): Promise<{ actions: RapActionV2<RapActionTypesV2>[] }> {
+  switch (parameters.type) {
+    case 'claimTransactionClaimableRap':
+      return createClaimTransactionClaimableRap(parameters);
+    case 'claimSponsoredClaimableRap':
+      return createClaimSponsoredClaimableRap(parameters);
     default:
       return Promise.resolve({ actions: [] });
   }
@@ -92,20 +82,10 @@ function typeAction<T extends RapActionTypes>(type: T, props: ActionProps<T>) {
 
 function typeActionV2<T extends RapActionTypesV2>(type: T, props: ActionPropsV2<T>) {
   switch (type) {
-    case 'claimClaimable':
-      return () => claimClaimable(props as ActionPropsV2<'claimClaimable'>);
-    case 'claimSponsoredClaimable':
-      return () => claimSponsoredClaimable(props as ActionPropsV2<'claimSponsoredClaimable'>);
-    // case 'claimRewards':
-    // return () => claimRewards(props as ActionProps<'claimRewards'>);
-    // case 'unlock':
-    //   return () => unlock(props as ActionProps<'unlock'>);
-    // case 'swap':
-    // return () => swap(props as ActionProps<'swap'>);
-    // case 'claimRewardsBridge':
-    //   return () => claimRewardsBridge(props as ActionProps<'claimRewardsBridge'>);
-    // case 'crosschainSwap':
-    //   return () => crosschainSwap(props as ActionProps<'crosschainSwap'>);
+    case 'claimSponsoredClaimableAction':
+      return () => claimSponsoredClaimable(props as ActionPropsV2<'claimSponsoredClaimableAction'>);
+    case 'claimTransactionClaimableAction':
+      return () => claimTransactionClaimable(props as ActionPropsV2<'claimTransactionClaimableAction'>);
     default:
       // eslint-disable-next-line react/display-name
       return () => null;
@@ -331,12 +311,7 @@ export const walletExecuteRap = async (
   return { nonce, errorMessage };
 };
 
-export async function walletExecuteRapV2<T extends RapTypesV2>(
-  wallet: Signer,
-  type: T,
-  parameters: NonNullable<RapParameterMapV2[T]>,
-  nonce?: number | undefined
-): Promise<RapResponse> {
-  const rap = await createRapByType(type, parameters);
+export async function walletExecuteRapV2(wallet: Signer, rapParameters: RapParameters, nonce?: number | undefined): Promise<RapResponse> {
+  const rap = await createRap(rapParameters);
   return executeRap(wallet, rap, nonce);
 }

@@ -81,7 +81,7 @@ export interface RapClaimRewardsActionParameters {
   gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
 }
 
-export type ClaimClaimableTxPayload = TransactionRequest &
+export type TransactionClaimableTxPayload = TransactionRequest &
   (
     | {
         to: string;
@@ -106,29 +106,27 @@ export type ClaimClaimableTxPayload = TransactionRequest &
       }
   );
 
-export interface RapClaimClaimableActionParameters {
-  claimTx: ClaimClaimableTxPayload;
+export interface ClaimTransactionClaimableActionParameters {
+  claimTx: TransactionClaimableTxPayload;
 }
 
-export interface RapClaimSponsoredClaimableActionParameters {
+export interface ClaimSponsoredClaimableActionParameters {
   url: string;
   method: 'POST' | 'GET';
 }
 
-export interface RapClaimClaimableAndSwapBridgeParameters {
-  claimClaimableActionParameters: RapClaimClaimableActionParameters;
+export interface ClaimTransactionClaimableRapParameters {
+  claim: ClaimTransactionClaimableActionParameters;
 }
 
-export interface RapClaimSponsoredClaimableAndSwapBridgeParameters {
-  claimSponsoredClaimableActionParameters: RapClaimSponsoredClaimableActionParameters;
+export interface ClaimSponsoredClaimableRapParameters {
+  claim: ClaimSponsoredClaimableActionParameters;
 }
 
 export type RapActionParameters =
   | RapSwapActionParameters<'swap'>
   | RapSwapActionParameters<'crosschainSwap'>
   | RapClaimRewardsActionParameters
-  | RapClaimClaimableActionParameters
-  | RapClaimSponsoredClaimableActionParameters
   | RapUnlockActionParameters;
 
 export interface RapActionTransaction {
@@ -144,14 +142,18 @@ export type RapActionParameterMap = {
 };
 
 export type RapActionParameterMapV2 = {
-  claimClaimable: RapClaimClaimableActionParameters;
-  claimSponsoredClaimable: RapClaimSponsoredClaimableActionParameters;
+  claimTransactionClaimableAction: ClaimTransactionClaimableActionParameters;
+  claimSponsoredClaimableAction: ClaimSponsoredClaimableActionParameters;
 };
 
 export type RapParameterMapV2 = {
-  claimClaimableSwapBridge: RapClaimClaimableAndSwapBridgeParameters;
-  claimSponsoredClaimableSwapBridge: RapClaimSponsoredClaimableAndSwapBridgeParameters;
+  claimTransactionClaimableRap: ClaimTransactionClaimableRapParameters;
+  claimSponsoredClaimableRap: ClaimSponsoredClaimableRapParameters;
 };
+
+export type RapParameters =
+  | { type: 'claimTransactionClaimableRap'; claimTransactionClaimableActionParameters: ClaimTransactionClaimableActionParameters }
+  | { type: 'claimSponsoredClaimableRap'; claimSponsoredClaimableActionParameters: ClaimSponsoredClaimableActionParameters };
 
 export interface RapAction<T extends RapActionTypes> {
   parameters: RapActionParameterMap[T];
@@ -170,7 +172,7 @@ export interface Rap {
 }
 
 export interface RapV2 {
-  actions: RapActionV2<'claimClaimable' | 'claimSponsoredClaimable'>[];
+  actions: RapActionV2<'claimTransactionClaimableAction' | 'claimSponsoredClaimableAction'>[];
 }
 
 export enum rapActions {
@@ -182,8 +184,8 @@ export enum rapActions {
 }
 
 export enum rapActionsV2 {
-  claimClaimable = 'claimClaimable',
-  claimSponsoredClaimable = 'claimSponsoredClaimable',
+  claimTransactionClaimableAction = 'claimTransactionClaimableAction',
+  claimSponsoredClaimableAction = 'claimSponsoredClaimableAction',
 }
 
 export type RapActionTypes = keyof typeof rapActions;
@@ -197,8 +199,8 @@ export enum rapTypes {
 }
 
 export enum rapTypesV2 {
-  claimClaimableSwapBridge = 'claimClaimableSwapBridge',
-  claimSponsoredClaimableSwapBridge = 'claimSponsoredClaimableSwapBridge',
+  claimTransactionClaimableRap = 'claimTransactionClaimableRap',
+  claimSponsoredClaimableRap = 'claimSponsoredClaimableRap',
 }
 
 export type RapTypes = keyof typeof rapTypes;

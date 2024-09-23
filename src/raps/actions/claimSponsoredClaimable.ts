@@ -12,7 +12,7 @@ const addysHttp = new RainbowFetchClient({
   },
 });
 
-export async function claimSponsoredClaimable({ parameters }: ActionPropsV2<'claimSponsoredClaimable'>) {
+export async function claimSponsoredClaimable({ parameters }: ActionPropsV2<'claimSponsoredClaimableAction'>) {
   const { url, method } = parameters;
 
   const path = url.replace(ADDYS_BASE_URL, '');
