@@ -211,7 +211,7 @@ export async function tapAndLongPress(elementId: string | RegExp, duration?: num
 
 export async function tapAndLongPressByText(text: string | RegExp, duration?: number) {
   try {
-    // @ts-ignore
+    // @ts-expect-error
     return await element(by.text(text)).longPress(duration);
   } catch (error) {
     throw new Error(`Error long-pressing element by text "${text}": ${error}`);
