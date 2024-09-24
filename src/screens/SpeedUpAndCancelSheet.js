@@ -336,7 +336,7 @@ export default function SpeedUpAndCancelSheet() {
           setNonce(tx.nonce);
           setValue(hexValue);
           setData(hexData);
-          setTo(tx.txTo);
+          setTo(tx.to);
           setGasLimit(hexGasLimit);
           if (!isL2) {
             setTxType(GasFeeTypes.eip1559);
