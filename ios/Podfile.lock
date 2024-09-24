@@ -1651,15 +1651,15 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNImageCropPicker (0.41.0):
+  - RNImageCropPicker (0.41.2):
     - React-Core
     - React-RCTImage
-    - RNImageCropPicker/QBImagePickerController (= 0.41.0)
-    - TOCropViewController (~> 2.7.3)
-  - RNImageCropPicker/QBImagePickerController (0.41.0):
+    - RNImageCropPicker/QBImagePickerController (= 0.41.2)
+    - TOCropViewController (~> 2.7.4)
+  - RNImageCropPicker/QBImagePickerController (0.41.2):
     - React-Core
     - React-RCTImage
-    - TOCropViewController (~> 2.7.3)
+    - TOCropViewController (~> 2.7.4)
   - RNInputMask (4.1.0)
   - RNKeyboard (1.0.6):
     - React
@@ -1766,11 +1766,29 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNSentry (5.22.0):
+  - RNSentry (5.31.1):
+    - DoubleConversion
+    - glog
     - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
     - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
     - React-hermes
-    - Sentry/HybridSDK (= 8.24.0)
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Sentry/HybridSDK (= 8.36.0)
+    - Yoga
   - RNShare (8.2.1):
     - React-Core
   - RNSound (0.11.2):
@@ -1792,7 +1810,7 @@ PODS:
   - SDWebImageWebPCoder (0.14.6):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
-  - Sentry/HybridSDK (8.24.0)
+  - Sentry/HybridSDK (8.36.0)
   - Shimmer (1.0.2)
   - SocketRocket (0.7.0)
   - SRSRadialGradient (1.0.10):
@@ -1801,7 +1819,7 @@ PODS:
   - TcpSockets (3.3.2):
     - CocoaAsyncSocket
     - React
-  - TOCropViewController (2.7.3)
+  - TOCropViewController (2.7.4)
   - ToolTipMenu (5.2.1):
     - React
   - VisionCamera (4.4.2):
@@ -1954,7 +1972,7 @@ DEPENDENCIES:
   - SRSRadialGradient (from `../node_modules/react-native-radial-gradient/ios`)
   - swift-vibrant
   - TcpSockets (from `../node_modules/react-native-tcp`)
-  - TOCropViewController (= 2.7.3)
+  - TOCropViewController (~> 2.7.4)
   - ToolTipMenu (from `../node_modules/react-native-tooltip`)
   - VisionCamera (from `../node_modules/react-native-vision-camera`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -2395,7 +2413,7 @@ SPEC CHECKSUMS:
   RNFlashList: e9b57a5553639f9b528cc50ab53f25831722ed62
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
   RNGestureHandler: efed690b8493a00b99654043daeb1335276ac4a2
-  RNImageCropPicker: 13eab07a785c7a8f8047a1146f7e59d1911c7bb8
+  RNImageCropPicker: 771e2ca319d2cf92e04ebf334ece892ee9a6728f
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeyboard: 14793d75953d99c6d950090b8e9698b234c5d08c
   RNKeychain: 4f63aada75ebafd26f4bc2c670199461eab85d94
@@ -2406,7 +2424,7 @@ SPEC CHECKSUMS:
   RNReanimated: 45553a3ae29a75a76269595f8554d07d4090e392
   RNRudderSdk: 805d4b7064714f3295bf5f152d3812cc67f67a93
   RNScreens: aa943ad421c3ced3ef5a47ede02b0cbfc43a012e
-  RNSentry: 7ae2a06a5563de39ec09dcb1e751ac0c67f1883c
+  RNSentry: 2c78e72aaa6e55d61ce60d98a62f01b666f76513
   RNShare: eaee3dd5a06dad397c7d3b14762007035c5de405
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
   RNSVG: 5da7a24f31968ec74f0b091e3440080f347e279b
@@ -2416,17 +2434,17 @@ SPEC CHECKSUMS:
   RudderKit: f272f9872183946452ac94cd7bb2244a71e6ca8f
   SDWebImage: 2d6d229046fea284d62e36bfb8ebe8287dfc5b10
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
-  Sentry: 2f6baed15a3f8056b875fc903dc3dcb2903117f4
+  Sentry: f8374b5415bc38dfb5645941b3ae31230fbeae57
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   SRSRadialGradient: e5a34825dff88c9cf773b58bf39ed6a02e59a084
   swift-vibrant: 3def73c5c281db74f420ec386590d9c1c5b0995c
   TcpSockets: bd31674146c0931a064fc254a59812dfd1a73ae0
-  TOCropViewController: b9b2905938c0424f289ea2d9964993044913fac6
+  TOCropViewController: 80b8985ad794298fb69d3341de183f33d1853654
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   VisionCamera: 2af28201c3de77245f8c58b7a5274d5979df70df
   Yoga: 04f1db30bb810187397fa4c37dd1868a27af229c
 
-PODFILE CHECKSUM: 0839e4141c8f26133bf9a961f5ded1ea3127af54
+PODFILE CHECKSUM: 40f081f682acbe2d1d2129eb3335352ea01aab70
 
 COCOAPODS: 1.14.3

@@ -18,7 +18,7 @@ jobs:
         run: git config core.sshCommand "ssh -i ~/.ssh/id_ed25519 -F /dev/null"
 
       - name: Clean iOS app
-        run: yarn clean:ios > /dev/null 2>&1 || true
+        run: yarn cache clean && yarn clean:ios > /dev/null 2>&1 || true
 
       - name: Set up ENV vars & scripts
         env:
@@ -40,7 +40,8 @@ jobs:
             ${{ steps.yarn-cache-dir-path.outputs.dir }}
             .yarn/cache
             .yarn/install-state.gz
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+            !.eslintcache # Exclude eslint cache
+          key: ${{ runner.os }}-yarn-${{ github.sha }}  # Cache per commit
           restore-keys: |
             ${{ runner.os }}-yarn-
 
@@ -49,7 +50,7 @@ jobs:
           yarn install && yarn setup
 
       - name: Upload Yarn cache
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: yarn-cache
           path: |
@@ -62,7 +63,7 @@ jobs:
     needs: install-deps
     steps:
       - name: Download Yarn cache
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: yarn-cache
           path: .yarn
@@ -72,6 +73,9 @@ jobs:
 
       - name: Audit CI
         run: yarn audit-ci --config audit-ci.jsonc
+
+      - name: Remove ESLint cache
+        run: rm -f .eslintcache
 
       - name: Lint
         run: yarn lint:ci
@@ -86,7 +90,7 @@ jobs:
     needs: install-deps
     steps:
       - name: Download Yarn cache
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: yarn-cache
           path: .yarn
