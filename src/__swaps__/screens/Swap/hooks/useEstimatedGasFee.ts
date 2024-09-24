@@ -35,13 +35,15 @@ export function useEstimatedGasFee({
   return useMemo(() => {
     if (!gasLimit || !gasSettings || !nativeNetworkAsset?.price) return;
 
-    const fee = calculateGasFeeWorklet(gasSettings, gasLimit);
-    if (!fee) return;
+    const gasFee = calculateGasFeeWorklet(gasSettings, gasLimit);
+    if (isNaN(Number(gasFee))) {
+      return;
+    }
 
     const networkAssetPrice = nativeNetworkAsset.price.value?.toString();
-    if (!networkAssetPrice) return `${formatNumber(weiToGwei(fee))} Gwei`;
+    if (!networkAssetPrice) return `${formatNumber(weiToGwei(gasFee))} Gwei`;
 
-    const feeFormatted = formatUnits(safeBigInt(fee), nativeNetworkAsset.decimals).toString();
+    const feeFormatted = formatUnits(safeBigInt(gasFee), nativeNetworkAsset.decimals).toString();
     const feeInUserCurrency = multiply(networkAssetPrice, feeFormatted);
 
     return convertAmountToNativeDisplayWorklet(feeInUserCurrency, nativeCurrency, true);
