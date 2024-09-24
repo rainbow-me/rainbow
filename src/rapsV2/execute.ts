@@ -19,10 +19,10 @@ export function createRap(parameters: RapParameters): Promise<{ actions: RapActi
   }
 }
 
-function typeAction<T extends RapActionTypes>(type: T, props: ActionProps<T>) {
+function getActionExecutableByType<T extends RapActionTypes>(type: T, props: ActionProps<T>) {
   switch (type) {
     case 'claimTransactionClaimableAction':
-      return () => claimTransactionClaimable(props as ActionProps<'claimTransactionClaimableAction'>);
+      return () => claimTransactionClaimable(props);
     default:
       throw new RainbowError(`[raps/execute]: typeAction - unknown type ${type}`);
   }
@@ -49,7 +49,7 @@ export async function executeAction<T extends RapActionTypes>({
       parameters,
       nonceToUse,
     };
-    const { nonce, hash } = await typeAction<T>(type, actionProps)();
+    const { nonce, hash } = await getActionExecutableByType<T>(type, actionProps)();
     return { nonce, errorMessage: null, hash };
   } catch (error) {
     logger.error(new RainbowError(`[raps/execute]: ${rapName} - error execute action`), {
