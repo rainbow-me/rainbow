@@ -38,7 +38,7 @@ export type MenuItem<T> = Omit<MenuActionConfig, 'icon'> & {
   icon?: MenuItemIcon | { iconType: string; iconValue: string };
 };
 
-export type MenuConfig<T> = Omit<_MenuConfig, 'menuItems' | 'menuTitle'> & {
+export type MenuConfig<T extends string> = Omit<_MenuConfig, 'menuItems' | 'menuTitle'> & {
   menuTitle?: string;
   menuItems: Array<MenuItem<T>>;
 };
@@ -65,7 +65,7 @@ const buildIconConfig = (icon?: MenuItemIcon) => {
   return null;
 };
 
-export const DropdownMenu = <T extends string>({
+export function DropdownMenu<T extends string>({
   children,
   menuConfig,
   onPressMenuItem,
@@ -75,7 +75,7 @@ export const DropdownMenu = <T extends string>({
   side = 'right',
   alignOffset = 5,
   avoidCollisions = true,
-}: DropDownMenuProps<T>) => {
+}: DropDownMenuProps<T>) {
   const handleSelectItem = useCallback(
     (actionKey: T) => {
       onPressMenuItem(actionKey);
@@ -106,8 +106,7 @@ export const DropdownMenu = <T extends string>({
           const Icon = buildIconConfig(item.icon as MenuItemIcon);
 
           return (
-            <DropdownMenuItem value={item.menuState ?? 'off'} key={item.actionKey} onSelect={() => handleSelectItem(item.actionKey as T)}>
-              <DropdownMenuPrimitive.ItemIndicator />
+            <DropdownMenuItem value={item.menuState ?? 'off'} key={item.actionKey} onSelect={() => handleSelectItem(item.actionKey)}>
               <DropdownMenuItemTitle>{item.actionTitle}</DropdownMenuItemTitle>
               {Icon}
             </DropdownMenuItem>
@@ -116,4 +115,4 @@ export const DropdownMenu = <T extends string>({
       </DropdownMenuContent>
     </DropdownMenuRoot>
   );
-};
+}

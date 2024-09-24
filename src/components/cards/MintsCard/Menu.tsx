@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { ButtonPressAnimation } from '@/components/animations';
 import { Inline, Inset, Text } from '@/design-system';
 import { haptics } from '@/utils';
@@ -8,7 +8,7 @@ import { DropdownMenu, MenuConfig } from '@/components/DropdownMenu';
 export function Menu() {
   const { filter, setFilter } = useMintsFilter();
 
-  const menuConfig: MenuConfig<MintsFilter> = useMemo(() => {
+  const menuConfig = useMemo<MenuConfig<MintsFilter>>(() => {
     return {
       menuItems: [
         {
@@ -30,13 +30,16 @@ export function Menu() {
     };
   }, [filter]);
 
-  const onPressMenuItem = (key: MintsFilter) => {
-    haptics.selection();
-    setFilter(key);
-  };
+  const onPressMenuItem = useCallback(
+    (selection: MintsFilter) => {
+      haptics.selection();
+      setFilter(selection);
+    },
+    [setFilter]
+  );
 
   return (
-    <DropdownMenu menuConfig={menuConfig} onPressMenuItem={onPressMenuItem}>
+    <DropdownMenu<MintsFilter> menuConfig={menuConfig} onPressMenuItem={onPressMenuItem}>
       <ButtonPressAnimation>
         <Inset top="2px">
           <Inline alignVertical="center" space={{ custom: 5 }}>
