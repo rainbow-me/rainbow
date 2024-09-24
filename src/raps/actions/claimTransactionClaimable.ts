@@ -13,7 +13,7 @@ export async function claimTransactionClaimable({ parameters, wallet }: ActionPr
   const result = await sendTransaction({ transaction: claimTx, existingWallet: wallet, provider });
 
   if (!result?.result || !!result.error || !result.result.hash) {
-    throw new RainbowError('[CLAIM-CLAIMABLE]: failed to execute claim transaction');
+    throw new RainbowError('[CLAIM-TRANSACTION-CLAIMABLE]: failed to execute claim transaction');
   }
 
   const transaction = {
@@ -36,7 +36,7 @@ export async function claimTransactionClaimable({ parameters, wallet }: ActionPr
   });
 
   return {
-    nonce: result?.result?.nonce,
-    hash: result?.result?.hash,
+    nonce: result.result.nonce,
+    hash: result.result.hash,
   };
 }
