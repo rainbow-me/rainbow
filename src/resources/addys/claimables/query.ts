@@ -11,8 +11,10 @@ import { CLAIMABLES, useExperimentalFlag } from '@/config';
 import { IS_TEST } from '@/env';
 import { SUPPORTED_CHAIN_IDS } from '@/chains';
 
-const addysHttp = new RainbowFetchClient({
-  baseURL: 'https://addys.p.rainbow.me/v3',
+export const ADDYS_BASE_URL = 'https://addys.p.rainbow.me/v3';
+
+export const addysHttp = new RainbowFetchClient({
+  baseURL: ADDYS_BASE_URL,
   headers: {
     Authorization: `Bearer ${ADDYS_API_KEY}`,
   },

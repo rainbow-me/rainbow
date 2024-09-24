@@ -11,10 +11,10 @@ import { getNextNonce } from '@/state/nonces';
 import { needsL1SecurityFeeChains } from '@/chains';
 import { logger, RainbowError } from '@/logger';
 import { convertAmountToNativeDisplay } from '@/helpers/utilities';
-import { walletExecuteRapV2 } from '@/raps/execute';
 import { queryClient } from '@/react-query';
 import { TransactionClaimableTxPayload } from '@/raps/references';
 import { ClaimingClaimableSharedUI, ClaimStatus } from './ClaimingClaimableSharedUI';
+import { walletExecuteRap } from '@/rapsV2/execute';
 
 export const ClaimingTransactionClaimable = ({ claimable }: { claimable: TransactionClaimable }) => {
   const { accountAddress, nativeCurrency } = useAccountSettings();
@@ -130,28 +130,21 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
         return;
       }
 
-      try {
-        const { errorMessage } = await walletExecuteRapV2(wallet, {
-          type: 'claimTransactionClaimableRap',
-          claimTransactionClaimableActionParameters: { claimTx: txPayload },
-        });
+      const { errorMessage } = await walletExecuteRap(wallet, {
+        type: 'claimTransactionClaimableRap',
+        claimTransactionClaimableActionParameters: { claimTx: txPayload },
+      });
 
-        if (errorMessage) {
-          setClaimStatus('error');
-          logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to rap error'), {
-            message: errorMessage,
-          });
-        } else {
-          setClaimStatus('success');
-          // Clear and refresh claimables data
-          queryClient.invalidateQueries(claimablesQueryKey({ address: accountAddress, currency: nativeCurrency }));
-          refetch();
-        }
-      } catch (e) {
+      if (errorMessage) {
         setClaimStatus('error');
-        logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to unknown error'), {
-          message: (e as Error)?.message,
+        logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to rap error'), {
+          message: errorMessage,
         });
+      } else {
+        setClaimStatus('success');
+        // Clear and refresh claimables data
+        queryClient.invalidateQueries(claimablesQueryKey({ address: accountAddress, currency: nativeCurrency }));
+        refetch();
       }
     },
     onError: e => {
@@ -159,6 +152,14 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
       logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to unhandled error'), {
         message: (e as Error)?.message,
       });
+    },
+    onSuccess: () => {
+      if (claimStatus === 'claiming') {
+        logger.error(
+          new RainbowError('[ClaimingTransactionClaimable]: claim function completed but never resolved status to success or error state')
+        );
+        setClaimStatus('error');
+      }
     },
   });
 

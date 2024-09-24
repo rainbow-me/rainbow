@@ -34,8 +34,6 @@ import { Screens, TimeToSignOperation, performanceTracking } from '@/state/perfo
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { createClaimTransactionClaimableRap } from './claimTransactionClaimable';
 import { claimTransactionClaimable } from './actions/claimTransactionClaimable';
-import { createClaimSponsoredClaimableRap } from './claimSponsoredClaimable';
-import { claimSponsoredClaimable } from './actions/claimSponsoredClaimable';
 
 export function createSwapRapByType<T extends RapTypes>(
   type: T,
@@ -57,8 +55,6 @@ export function createRap(parameters: RapParameters): Promise<{ actions: RapActi
   switch (parameters.type) {
     case 'claimTransactionClaimableRap':
       return createClaimTransactionClaimableRap(parameters);
-    case 'claimSponsoredClaimableRap':
-      return createClaimSponsoredClaimableRap(parameters);
     default:
       return Promise.resolve({ actions: [] });
   }
@@ -84,8 +80,6 @@ function typeAction<T extends RapActionTypes>(type: T, props: ActionProps<T>) {
 
 function typeActionV2<T extends RapActionTypesV2>(type: T, props: ActionPropsV2<T>) {
   switch (type) {
-    case 'claimSponsoredClaimableAction':
-      return () => claimSponsoredClaimable(props as ActionPropsV2<'claimSponsoredClaimableAction'>);
     case 'claimTransactionClaimableAction':
       return () => claimTransactionClaimable(props as ActionPropsV2<'claimTransactionClaimableAction'>);
     default:

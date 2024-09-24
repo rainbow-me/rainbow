@@ -109,17 +109,8 @@ export interface ClaimTransactionClaimableActionParameters {
   claimTx: TransactionClaimableTxPayload;
 }
 
-export interface ClaimSponsoredClaimableActionParameters {
-  url: string;
-  method: 'POST' | 'GET';
-}
-
 export interface ClaimTransactionClaimableRapParameters {
   claim: ClaimTransactionClaimableActionParameters;
-}
-
-export interface ClaimSponsoredClaimableRapParameters {
-  claim: ClaimSponsoredClaimableActionParameters;
 }
 
 export type RapActionParameters =
@@ -142,17 +133,16 @@ export type RapActionParameterMap = {
 
 export type RapActionParameterMapV2 = {
   claimTransactionClaimableAction: ClaimTransactionClaimableActionParameters;
-  claimSponsoredClaimableAction: ClaimSponsoredClaimableActionParameters;
 };
 
 export type RapParameterMapV2 = {
   claimTransactionClaimableRap: ClaimTransactionClaimableRapParameters;
-  claimSponsoredClaimableRap: ClaimSponsoredClaimableRapParameters;
 };
 
-export type RapParameters =
-  | { type: 'claimTransactionClaimableRap'; claimTransactionClaimableActionParameters: ClaimTransactionClaimableActionParameters }
-  | { type: 'claimSponsoredClaimableRap'; claimSponsoredClaimableActionParameters: ClaimSponsoredClaimableActionParameters };
+export type RapParameters = {
+  type: 'claimTransactionClaimableRap';
+  claimTransactionClaimableActionParameters: ClaimTransactionClaimableActionParameters;
+};
 
 export interface RapAction<T extends RapActionTypes> {
   parameters: RapActionParameterMap[T];
@@ -171,7 +161,7 @@ export interface Rap {
 }
 
 export interface RapV2 {
-  actions: RapActionV2<'claimTransactionClaimableAction' | 'claimSponsoredClaimableAction'>[];
+  actions: RapActionV2<'claimTransactionClaimableAction'>[];
 }
 
 export enum rapActions {
@@ -184,7 +174,6 @@ export enum rapActions {
 
 export enum rapActionsV2 {
   claimTransactionClaimableAction = 'claimTransactionClaimableAction',
-  claimSponsoredClaimableAction = 'claimSponsoredClaimableAction',
 }
 
 export type RapActionTypes = keyof typeof rapActions;
