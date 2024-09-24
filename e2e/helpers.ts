@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable no-await-in-loop */
 import { exec } from 'child_process';
 import { JsonRpcProvider } from '@ethersproject/providers';
@@ -201,6 +202,7 @@ export async function clearField(elementId: string | RegExp) {
 
 export async function tapAndLongPress(elementId: string | RegExp, duration?: number) {
   try {
+    // @ts-expect-error
     return await element(by.id(elementId)).longPress(duration);
   } catch (error) {
     throw new Error(`Error long-pressing element by id "${elementId}": ${error}`);
@@ -209,6 +211,7 @@ export async function tapAndLongPress(elementId: string | RegExp, duration?: num
 
 export async function tapAndLongPressByText(text: string | RegExp, duration?: number) {
   try {
+    // @ts-expect-error
     return await element(by.text(text)).longPress(duration);
   } catch (error) {
     throw new Error(`Error long-pressing element by text "${text}": ${error}`);

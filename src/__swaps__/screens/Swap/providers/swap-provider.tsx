@@ -439,17 +439,12 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   });
 
   const SwapTextStyles = useSwapTextStyles({
-    configProgress,
-    focusedInput,
     inputMethod: SwapInputController.inputMethod,
-    inputProgress,
     inputValues: SwapInputController.inputValues,
     internalSelectedInputAsset,
     internalSelectedOutputAsset,
     isFetching,
     isQuoteStale,
-    outputProgress,
-    sliderPressProgress,
   });
 
   const SwapNavigation = useSwapNavigation({
