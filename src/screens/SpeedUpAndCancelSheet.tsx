@@ -347,25 +347,22 @@ export default function SpeedUpAndCancelSheet() {
         try {
           fetchedTx.current = true;
 
-          console.log(JSON.stringify(tx, null, 2));
+          if (tx.value) {
+            setValue(toHex(tx?.value?.toString()));
+          }
+
+          if (tx.to) {
+            setTo(tx.to);
+          }
 
           // NOTE: If we don't have a supplied gas limit, we don't need to set it.
           if (tx?.gasLimit) {
             setGasLimit(toHex(tx?.gasLimit?.toString()));
           }
-          const hexValue = toHex(tx?.value?.toString() || '0x');
-          const hexData = tx?.data;
-
-          console.log({ to: tx?.to });
-
-          if (tx?.to) {
-            setTo(tx.to);
-          }
 
           setReady(true);
           setNonce(tx.nonce);
-          setValue(hexValue);
-          setData(hexData);
+          setData(tx?.data);
           if (!isL2) {
             setTxType(GasFeeTypes.eip1559);
             if (tx.maxPriorityFeePerGas) {
