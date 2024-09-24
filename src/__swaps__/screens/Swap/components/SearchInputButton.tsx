@@ -143,5 +143,4 @@ export const SearchInputButton = ({
       </GestureHandlerButton>
     </Animated.View>
   );
-
 };
