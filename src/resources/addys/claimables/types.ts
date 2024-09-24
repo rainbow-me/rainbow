@@ -101,3 +101,16 @@ export interface SponsoredClaimable extends BaseClaimable {
 }
 
 export type Claimable = TransactionClaimable | SponsoredClaimable;
+
+interface ClaimTransactionStatus {
+  network: ChainId;
+  transaction_hash: string;
+  explorer_url: string;
+  sponsored_status: string;
+}
+
+export interface ClaimResponse {
+  success: boolean;
+  claimable: Claimable | null;
+  claim_transaction_status: ClaimTransactionStatus | null;
+}
