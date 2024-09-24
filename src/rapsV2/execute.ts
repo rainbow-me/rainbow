@@ -26,7 +26,7 @@ function getActionExecutableByType<T extends RapActionTypes>(type: T, props: Act
     case 'claimTransactionClaimableAction':
       return () => claimTransactionClaimable(props);
     default:
-      throw new RainbowError(`[raps/execute]: typeAction - unknown type ${type}`);
+      throw new RainbowError(`[raps/execute]: T - unknown action type ${type}`);
   }
 }
 
