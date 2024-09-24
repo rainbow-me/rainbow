@@ -40,10 +40,9 @@ export type QuoteTypeMap = {
   swap: Quote;
   crosschainSwap: CrosschainQuote;
   claimRewardsBridge: undefined;
-  claimClaimableSwapBridge: undefined;
 };
 
-export interface RapSwapActionParameters<T extends 'swap' | 'crosschainSwap' | 'claimRewardsBridge' | 'claimClaimableSwapBridge'> {
+export interface RapSwapActionParameters<T extends 'swap' | 'crosschainSwap' | 'claimRewardsBridge'> {
   amount?: string | null;
   sellAmount: string;
   buyAmount?: string;
