@@ -53,6 +53,7 @@ enableScreens();
 const sx = StyleSheet.create({
   container: {
     flex: 1,
+    overflow: 'hidden',
   },
 });
 
@@ -201,7 +202,7 @@ function Root() {
           <MobileWalletProtocolProvider secureStorage={ls.mwp} sessionExpiryDays={7}>
             <SafeAreaProvider>
               <MainThemeProvider>
-                <GestureHandlerRootView style={{ flex: 1 }}>
+                <GestureHandlerRootView style={sx.container}>
                   <RainbowContextWrapper>
                     <SharedValuesProvider>
                       <ErrorBoundary>
