@@ -67,14 +67,9 @@ export enum rapTypes {
 export type RapTypes = keyof typeof rapTypes;
 
 export interface RapActionResponse {
-  nonce: number | null;
+  nonce: number | null | undefined;
   errorMessage: string | null;
-  hash: string | null;
-}
-
-export interface RapActionResult {
-  nonce: number | null;
-  hash: string | null;
+  hash: string | null | undefined;
 }
 
 export interface ActionProps<T extends RapActionTypes> {
