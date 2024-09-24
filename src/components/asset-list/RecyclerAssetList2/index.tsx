@@ -20,7 +20,6 @@ import useWalletConnectConnections from '@/hooks/useWalletConnectConnections';
 import lang from 'i18n-js';
 import { useWalletConnectV2Sessions } from '@/walletConnect/hooks/useWalletConnectV2Sessions';
 import { IS_ANDROID } from '@/env';
-import { DropdownMenu } from '@/components/DropdownMenu';
 
 export type AssetListType = 'wallet' | 'ens-profile' | 'select-nft';
 
@@ -174,8 +173,9 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
           icon: { iconType: 'SYSTEM', iconValue: 'app.badge.checkmark' },
         },
       ].filter(Boolean),
+      ...(ios ? { menuTitle: '' } : {}),
     }),
-    []
+    [activeWCV2Sessions.length, mostRecentWalletConnectors.length]
   );
 
   const handlePressMenuItem = React.useCallback(
@@ -196,19 +196,18 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
   return (
     <Box
       as={RNAnimated.View}
-      style={{ top: navbarHeight + insets.top, zIndex: 100 }}
-      // style={[
-      //   {
-      //     shadowColor: isDarkMode ? colors.shadowBlack : colors.rowDividerExtraLight,
-      //     shadowOffset: { width: 0, height: isDarkMode ? 4 : 1 },
-      //     // shadowOpacity: isDarkMode ? 0.4 : 0.04,
-      //     shadowRadius: isDarkMode ? 20 : 0,
-      //     zIndex: 1,
-      //   },
-      //   shadowOpacityStyle,
-      // ]}
+      style={[
+        {
+          shadowColor: isDarkMode ? colors.shadowBlack : colors.rowDividerExtraLight,
+          shadowOffset: { width: 0, height: isDarkMode ? 4 : 1 },
+          // shadowOpacity: isDarkMode ? 0.4 : 0.04,
+          shadowRadius: isDarkMode ? 20 : 0,
+          zIndex: 1,
+        },
+        shadowOpacityStyle,
+      ]}
     >
-      {/* <Box
+      <Box
         as={RNAnimated.View}
         background="surfacePrimary"
         style={[
@@ -234,37 +233,52 @@ function NavbarOverlay({ accentColor, position }: { accentColor?: string; positi
             top: insets.top + 24,
           }}
         />
-      </Box> */}
-      {/* <Box style={{ top: navbarHeight + insets.top, zIndex: 100 }}> */}
-      <Navbar
-        hasStatusBarInset
-        leftComponent={
-          <Navbar.Item onPress={handlePressQRScanner}>
-            <Navbar.TextIcon color={accentColor as string} icon="􀎹" />
-          </Navbar.Item>
-        }
-        rightComponent={
-          <DropdownMenu menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
-            <View style={{ zIndex: 1000 }}>
-              <Navbar.Item testID={'settings-menu'}>
-                <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
-              </Navbar.Item>
-            </View>
-          </DropdownMenu>
-        }
-        titleComponent={
-          <Box
-            alignItems="center"
-            as={RNAnimated.View}
-            height={{ custom: navbarHeight }}
-            justifyContent="center"
-            style={[walletNameStyle, { alignSelf: 'center', bottom: 2, zIndex: -1 }]}
-          >
-            <ProfileNameRow variant="header" />
-          </Box>
-        }
-      />
-      {/* </Box> */}
+      </Box>
+      <Box style={{ top: navbarHeight + insets.top, zIndex: 100 }}>
+        <Navbar
+          hasStatusBarInset
+          leftComponent={
+            <Navbar.Item onPress={handlePressQRScanner}>
+              <Navbar.TextIcon color={accentColor as string} icon="􀎹" />
+            </Navbar.Item>
+          }
+          rightComponent={
+            IS_ANDROID ? (
+              <AndroidContextMenu
+                dynamicOptions={undefined}
+                options={menuConfig.menuItems.map(item => item?.actionTitle)}
+                cancelButtonIndex={menuConfig.menuItems.length - 1}
+                onPressActionSheet={(buttonIndex: number) => {
+                  handlePressMenuItem({ nativeEvent: { actionKey: menuConfig.menuItems[buttonIndex]?.actionKey } });
+                }}
+              >
+                <View>
+                  <Navbar.Item>
+                    <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
+                  </Navbar.Item>
+                </View>
+              </AndroidContextMenu>
+            ) : (
+              <ContextMenuButton menuConfig={menuConfig} onPressMenuItem={handlePressMenuItem}>
+                <Navbar.Item testID={'settings-menu'}>
+                  <Navbar.TextIcon color={accentColor as string} icon="􀍠" />
+                </Navbar.Item>
+              </ContextMenuButton>
+            )
+          }
+          titleComponent={
+            <Box
+              alignItems="center"
+              as={RNAnimated.View}
+              height={{ custom: navbarHeight }}
+              justifyContent="center"
+              style={[walletNameStyle, { alignSelf: 'center', bottom: 2, zIndex: -1 }]}
+            >
+              <ProfileNameRow variant="header" />
+            </Box>
+          }
+        />
+      </Box>
     </Box>
   );
 }

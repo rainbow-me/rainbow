@@ -31,13 +31,13 @@ export function Navbar({
   const { ref } = useRecyclerListViewRef();
 
   return (
-    <Box testID={testID} style={{ backgroundColor: 'transparent', overflow: 'hidden' }}>
+    <Box testID={testID} style={{ backgroundColor: 'transparent' }}>
       {hasStatusBarInset && <Box style={{ backgroundColor: 'transparent' }} height={{ custom: topInset }} />}
-      <Box alignItems="center" height={{ custom: navbarHeight }} justifyContent="center">
+      <Box alignItems="center" height={{ custom: navbarHeight }} justifyContent="center" style={{ backgroundColor: 'transparent' }}>
         <Cover alignVertical="center" alignHorizontal="justify">
           <Box style={{ backgroundColor: 'transparent' }} width="full">
             <Inset horizontal="20px">
-              <Inline alignHorizontal="justify" alignVertical="center" >
+              <Inline alignHorizontal="justify" alignVertical="center">
                 {leftComponent}
                 {rightComponent}
               </Inline>

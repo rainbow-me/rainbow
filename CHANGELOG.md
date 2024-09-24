@@ -15,6 +15,39 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.39] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.39)
+
+### Added
+
+- Added rc-push script for release tracking and cleanup (#6088)
+- Built the react query for addys claimables endpoint along with wallet screen UI (#6071)
+
+### Changed
+
+- Swaps performance improvements (#6050)
+- Improved CI jobs for build and tests for Tophat (#6043, #6089)
+- Removed some test env for some vars that aren’t needed anymore (#6077)
+- userAssetsStore refactor (#6015)
+- Bumped swaps sdk to 0.26 (#6098)
+- Final implementation for network to chainId migration (#6039)
+
+### Fixed
+
+- Fixed swaps spec in e2e so that all assets balances will update correctly (#6060)
+- Fixed an issue with charts where it was using USD for points instead of user’s selected currency (#6051)
+- Fixed an issue on Android nav bar where it was covered by the systems navigation bar (#6053)
+- Fixed e2e flakiness (#6084, #6090)
+- Fixed an issue with opacity on mwp sign txn sheet (#6083)
+- Fixed a crash that happened when searching input token in swaps (#6104)
+- Fixed and issue with degen native asset address, degen ↔ wdegen (#6087, #6091)
+- Fixed a crash on token details chart for cannot read property ‘y’ of undefined (#6009)
+- Fixed issues with remote promo sheets (#6085)
+- Fixed a bug on iOS 18 which caused context menu dismissals (#6112)
+- Fixed a crash that was happening on send flow (#6116)
+- Fixed a bug where the paste button was disabled on swaps flow for android devices (#6118)
+- Fixed an issue where deleting a contact would cause loading issues on send flow (#6119)
+- Fixed a bug where chainId wasn’t being passed in the dapp browser (#6121)
+
 ## [1.9.38] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.36)
 
 ### Fixed
