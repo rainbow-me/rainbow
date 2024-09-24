@@ -2,6 +2,7 @@ import { RainbowFetchClient } from '@/rainbow-fetch';
 import { ActionPropsV2 } from '../references';
 import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { RainbowError } from '@/logger';
+import { ClaimResponse } from '@/resources/addys/claimables/types';
 
 const ADDYS_BASE_URL = 'https://addys.p.rainbow.me/v3';
 
@@ -16,7 +17,7 @@ export async function claimSponsoredClaimable({ parameters }: ActionPropsV2<'cla
   const { url, method } = parameters;
 
   const path = url.replace(ADDYS_BASE_URL, '');
-  let response: { data: { success: boolean } };
+  let response: { data: ClaimResponse };
   try {
     if (method === 'GET') {
       response = await addysHttp.get(path);
@@ -24,7 +25,7 @@ export async function claimSponsoredClaimable({ parameters }: ActionPropsV2<'cla
       response = await addysHttp.post(path);
     }
 
-    if (!response?.data?.success) {
+    if (!response?.data?.payload?.success) {
       throw new RainbowError('[CLAIM-SPONSORED-CLAIMABLE]: failed to execute sponsored claim call');
     }
   } catch (e) {

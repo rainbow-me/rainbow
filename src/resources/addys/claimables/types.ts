@@ -109,8 +109,21 @@ interface ClaimTransactionStatus {
   sponsored_status: string;
 }
 
-export interface ClaimResponse {
+interface ClaimPayloadResponse {
   success: boolean;
   claimable: Claimable | null;
   claim_transaction_status: ClaimTransactionStatus | null;
+}
+
+interface ClaimMetadataResponse {
+  address: string;
+  chain_id: ChainId;
+  currency: string;
+  claim_type: string;
+  error: string;
+}
+
+export interface ClaimResponse {
+  metadata: ClaimMetadataResponse;
+  payload: ClaimPayloadResponse;
 }
