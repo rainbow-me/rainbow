@@ -15,7 +15,7 @@ import { SheetActionButton, SheetActionButtonRow, SheetHandleFixedToTop, SheetKe
 import { Emoji, Text } from '../components/text';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { removeRegistrationByName, saveCommitRegistrationParameters } from '@/redux/ensRegistration';
-import { GasFeeType, GasFeeTypes, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
+import { GasFeeType, GasFeeTypes, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts, TransactionStatus } from '@/entities';
 import { getFlashbotsProvider, getProvider, isL2Chain, toHex } from '@/handlers/web3';
 import { greaterThan } from '@/helpers/utilities';
 import { useAccountSettings, useDimensions, useGas, useWallets } from '@/hooks';
@@ -186,7 +186,7 @@ export default function SpeedUpAndCancelSheet() {
       if (res?.result?.hash) {
         updatedTx.hash = res.result.hash;
       }
-      updatedTx.status = 'pending';
+      updatedTx.status = TransactionStatus.pending;
       updatedTx.type = 'cancel';
       updateTransaction({
         address: accountAddress,
@@ -261,7 +261,7 @@ export default function SpeedUpAndCancelSheet() {
       if (res?.result?.hash) {
         updatedTx.hash = res.result.hash;
       }
-      updatedTx.status = 'pending';
+      updatedTx.status = TransactionStatus.pending;
       updatedTx.type = 'speed_up';
 
       updateTransaction({

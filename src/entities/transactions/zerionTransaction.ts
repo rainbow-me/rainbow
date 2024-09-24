@@ -1,7 +1,6 @@
-import { TransactionType } from '@/resources/transactions/types';
 import { ProtocolType } from '../protocolTypes';
 import { ZerionAsset } from '../tokens';
-import { TransactionDirection } from './transactionDirection';
+import { TransactionDirection, TransactionType } from '@/entities';
 
 interface ZerionTransactionFee {
   price: number;

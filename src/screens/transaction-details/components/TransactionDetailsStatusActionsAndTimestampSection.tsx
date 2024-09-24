@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { NewTransaction, RainbowTransaction, TransactionStatusTypes } from '@/entities';
+import { NewTransaction, RainbowTransaction, TransactionStatus } from '@/entities';
 import { Box, Stack, Text } from '@/design-system';
 import { formatTransactionDetailsDate } from '@/screens/transaction-details/helpers/formatTransactionDetailsDate';
 import { getIconColorAndGradientForTransactionStatus } from '@/screens/transaction-details/helpers/getIconColorAndGradientForTransactionStatus';
@@ -32,7 +32,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
 
   const isOutgoing = from?.toLowerCase() === accountAddress?.toLowerCase();
   const canBeResubmitted = isOutgoing && !minedAt;
-  const canBeCancelled = canBeResubmitted && status !== TransactionStatusTypes.cancelling;
+  const canBeCancelled = canBeResubmitted && status !== TransactionStatus.cancelling;
 
   const menuConfig = useMemo(
     () => ({

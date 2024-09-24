@@ -20,8 +20,7 @@ import { Address } from 'viem';
 
 import { metadataPOSTClient } from '@/graphql';
 import { ChainId } from '@/chains/types';
-import { NewTransaction } from '@/entities/transactions';
-import { TxHash } from '@/resources/transactions/types';
+import { NewTransaction, TxHash, TransactionStatus, TransactionDirection } from '@/entities';
 import { add } from '@/helpers/utilities';
 import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
 import { isUnwrapNative, isWrapNative } from '@/handlers/swap';
@@ -337,7 +336,7 @@ export const swap = async ({
     } as ParsedAsset,
     changes: [
       {
-        direction: 'out',
+        direction: TransactionDirection.OUT,
         // TODO: MARK - Replace this once we migrate network => chainId
         // asset: parameters.assetToSell,
         asset: {
@@ -350,7 +349,7 @@ export const swap = async ({
         value: quote.sellAmount.toString(),
       },
       {
-        direction: 'in',
+        direction: TransactionDirection.IN,
         // TODO: MARK - Replace this once we migrate network => chainId
         // asset: parameters.assetToBuy,
         asset: {
@@ -367,7 +366,7 @@ export const swap = async ({
     hash: swap.hash as TxHash,
     network: chainsName[parameters.chainId],
     nonce: swap.nonce,
-    status: 'pending',
+    status: TransactionStatus.sending,
     type: 'swap',
     swap: {
       type: SwapType.normal,

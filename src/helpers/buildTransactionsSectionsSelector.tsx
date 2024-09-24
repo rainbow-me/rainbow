@@ -3,12 +3,11 @@ import { capitalize, groupBy, isEmpty } from 'lodash';
 import React from 'react';
 import { FastTransactionCoinRow, RequestCoinRow } from '../components/coin-row';
 import { thisMonthTimestamp, thisYearTimestamp, todayTimestamp, yesterdayTimestamp } from './transactions';
-import { NativeCurrencyKey, RainbowTransaction, TransactionStatusTypes } from '@/entities';
+import { NativeCurrencyKey, RainbowTransaction, TransactionStatus } from '@/entities';
 import * as i18n from '@/languages';
 import { WalletconnectRequestData } from '@/redux/requests';
 import { ThemeContextProps } from '@/theme';
 import { Contact } from '@/redux/contacts';
-import { TransactionStatus } from '@/resources/transactions/types';
 
 type RainbowTransactionWithContact = RainbowTransaction & {
   contact: Contact | null;
@@ -44,7 +43,7 @@ const addContactInfo =
     contact: Contact | null;
   } => {
     const { from, to, status } = txn;
-    const isSent = status === TransactionStatusTypes.sent;
+    const isSent = status === TransactionStatus.sent;
     const contactAddress = (isSent ? to : from) || '';
     const contact = contacts?.[contactAddress?.toLowerCase()] ?? null;
     return {

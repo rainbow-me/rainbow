@@ -1,10 +1,16 @@
-import { NewTransaction, ParsedAddressAsset, TransactionGasParamAmounts } from '@/entities';
+import {
+  NewTransaction,
+  ParsedAddressAsset,
+  TransactionDirection,
+  TransactionGasParamAmounts,
+  TransactionStatus,
+  TxHash,
+} from '@/entities';
 import { getProvider } from '@/handlers/web3';
 import { add, addBuffer, greaterThan, lessThan, multiply, subtract } from '@/helpers/utilities';
 import { RainbowError } from '@/logger';
 import store from '@/redux/store';
 import { REFERRER_CLAIM } from '@/references';
-import { TxHash } from '@/resources/transactions/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import ethereumUtils from '@/utils/ethereumUtils';
 import { AddressZero } from '@ethersproject/constants';
@@ -55,7 +61,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
   const provider = getProvider({ chainId: ChainId.optimism });
 
   const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
-    // @ts-ignore
+    // @ts-expect-error - TODO: fix improper arguments here
     {
       data: bridgeQuote.data,
       from: bridgeQuote.from,
@@ -179,12 +185,12 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
     asset: typedAssetToBuy,
     changes: [
       {
-        direction: 'out',
+        direction: TransactionDirection.OUT,
         asset: typedAssetToSell,
         value: bridgeQuote.sellAmount.toString(),
       },
       {
-        direction: 'in',
+        direction: TransactionDirection.IN,
         asset: typedAssetToBuy,
         value: bridgeQuote.buyAmount.toString(),
       },
@@ -194,7 +200,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
     hash: swap.hash as TxHash,
     network: chainsName[parameters.chainId],
     nonce: swap.nonce,
-    status: 'pending',
+    status: TransactionStatus.pending,
     type: 'bridge',
     flashbots: false,
     ...gasParams,

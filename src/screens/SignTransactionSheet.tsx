@@ -8,7 +8,7 @@ import { Transaction } from '@ethersproject/transactions';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { SheetActionButton } from '@/components/sheet';
 import { Bleed, Box, Columns, Inline, Inset, Stack, Text, globalColors, useBackgroundColor, useForegroundColor } from '@/design-system';
-import { NewTransaction } from '@/entities';
+import { NewTransaction, TransactionStatus } from '@/entities';
 import { useNavigation } from '@/navigation';
 
 import { useTheme } from '@/theme';
@@ -380,7 +380,7 @@ export const SignTransactionSheet = () => {
       let txDetails: NewTransaction | undefined;
       if (sendInsteadOfSign && sendResult?.hash) {
         txDetails = {
-          status: 'pending',
+          status: TransactionStatus.pending,
           chainId,
           asset: displayDetails?.request?.asset || nativeAsset,
           contract: {

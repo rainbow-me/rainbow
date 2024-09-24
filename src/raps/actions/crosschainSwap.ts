@@ -5,8 +5,7 @@ import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
 
 import { REFERRER, gasUnits, ReferrerType } from '@/references';
 import { ChainId } from '@/chains/types';
-import { NewTransaction } from '@/entities/transactions';
-import { TxHash } from '@/resources/transactions/types';
+import { NewTransaction, TransactionDirection, TransactionStatus, TxHash } from '@/entities';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, logger } from '@/logger';
 
@@ -196,7 +195,7 @@ export const crosschainSwap = async ({
     } as ParsedAsset,
     changes: [
       {
-        direction: 'out',
+        direction: TransactionDirection.OUT,
         // TODO: MARK - Replace this once we migrate network => chainId
         // asset: parameters.assetToSell,
         asset: {
@@ -210,7 +209,7 @@ export const crosschainSwap = async ({
         value: quote.sellAmount.toString(),
       },
       {
-        direction: 'in',
+        direction: TransactionDirection.IN,
         // TODO: MARK - Replace this once we migrate network => chainId
         // asset: parameters.assetToBuy,
         asset: {
@@ -228,7 +227,7 @@ export const crosschainSwap = async ({
     hash: swap.hash as TxHash,
     network: chainsName[parameters.chainId],
     nonce: swap.nonce,
-    status: 'pending',
+    status: TransactionStatus.sending,
     type: 'swap',
     flashbots: parameters.flashbots,
     ...gasParamsToUse,

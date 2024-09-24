@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
 import FastTransactionStatusBadge from './FastTransactionStatusBadge';
 import { Bleed, Box, Inline, Text, globalColors, useForegroundColor } from '@/design-system';
-import { NativeCurrencyKey, RainbowTransaction } from '@/entities';
+import { NativeCurrencyKey, RainbowTransaction, TransactionType } from '@/entities';
 import { ThemeContextProps } from '@/theme';
 import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
@@ -12,7 +12,6 @@ import { CardSize } from '../unique-token/CardSize';
 import { ChainBadge } from '../coin-icon';
 import { ChainId } from '@/chains/types';
 import { address } from '@/utils/abbreviations';
-import { TransactionType } from '@/resources/transactions/types';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToBalanceDisplay,
