@@ -6,10 +6,11 @@ import { useMemo } from 'react';
 import { formatUnits } from 'viem';
 
 import { useAccountSettings } from '@/hooks';
-import { useSyncedSwapQuoteStore } from '../providers/SyncSwapStateAndSharedValues';
+import { calculateGasFeeWorklet, useSyncedSwapQuoteStore } from '../providers/SyncSwapStateAndSharedValues';
 import { GasSettings } from './useCustomGas';
 import { useSelectedGas } from './useSelectedGas';
 import { useSwapEstimatedGasLimit } from './useSwapEstimatedGasLimit';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
 
 function safeBigInt(value: string) {
   try {
@@ -17,24 +18,6 @@ function safeBigInt(value: string) {
   } catch {
     return 0n;
   }
-}
-
-const isFeeNaN = (value: string | undefined) => isNaN(Number(value)) || typeof value === 'undefined';
-
-export function calculateGasFee(gasSettings: GasSettings, gasLimit: string) {
-  if (gasSettings.isEIP1559) {
-    if (isFeeNaN(gasSettings.maxBaseFee) || isFeeNaN(gasSettings.maxPriorityFee)) {
-      return null;
-    }
-
-    return multiply(gasLimit, add(gasSettings.maxBaseFee, gasSettings.maxPriorityFee));
-  }
-
-  if (isFeeNaN(gasSettings.gasPrice)) {
-    return null;
-  }
-
-  return multiply(gasLimit, gasSettings.gasPrice);
 }
 
 export function useEstimatedGasFee({
@@ -52,7 +35,7 @@ export function useEstimatedGasFee({
   return useMemo(() => {
     if (!gasLimit || !gasSettings || !nativeNetworkAsset?.price) return;
 
-    const fee = calculateGasFee(gasSettings, gasLimit);
+    const fee = calculateGasFeeWorklet(gasSettings, gasLimit);
     if (!fee) return;
 
     const networkAssetPrice = nativeNetworkAsset.price.value?.toString();
@@ -66,7 +49,8 @@ export function useEstimatedGasFee({
 }
 
 export function useSwapEstimatedGasFee(overrideGasSettings?: GasSettings) {
-  const { assetToSell, quote, chainId = ChainId.mainnet } = useSyncedSwapQuoteStore();
+  const preferredNetwork = useSwapsStore(s => s.preferredNetwork);
+  const { assetToSell, quote, chainId = preferredNetwork || ChainId.mainnet } = useSyncedSwapQuoteStore();
   const gasSettings = useSelectedGas(chainId);
 
   const { data: estimatedGasLimit, isFetching } = useSwapEstimatedGasLimit({ chainId, assetToSell, quote });

@@ -24,7 +24,7 @@ import { parseSearchAsset } from '@/__swaps__/utils/assets';
 import { AbsolutePortalRoot } from '@/components/AbsolutePortal';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { swapsStore, useSwapsStore } from '@/state/swaps/swapsStore';
 import { SwapWarning } from './components/SwapWarning';
 import { clearCustomGasSettings } from './hooks/useCustomGas';
 import { SwapProvider, useSwapContext } from './providers/swap-provider';
@@ -109,6 +109,7 @@ const useCleanupOnUnmount = () => {
   useEffect(() => {
     return () => {
       const highestValueEth = userAssetsStore.getState().getHighestValueEth();
+      const preferredNetwork = swapsStore.getState().preferredNetwork;
       const parsedAsset = highestValueEth
         ? parseSearchAsset({
             assetWithPrice: undefined,
@@ -123,7 +124,7 @@ const useCleanupOnUnmount = () => {
         outputAsset: null,
         outputSearchQuery: '',
         quote: null,
-        selectedOutputChainId: parsedAsset?.chainId ?? ChainId.mainnet,
+        selectedOutputChainId: parsedAsset?.chainId ?? preferredNetwork ?? ChainId.mainnet,
       });
 
       userAssetsStore.setState({ filter: 'all', inputSearchQuery: '' });
