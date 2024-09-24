@@ -10,6 +10,7 @@ import { createClaimTransactionClaimableRap } from './claimTransactionClaimableR
 import { claimTransactionClaimable } from './actions/claimTransactionClaimableAction';
 import { delay } from '@/utils/delay';
 
+// get the rap by type
 export function createRap(parameters: RapParameters): Promise<{ actions: RapAction<RapActionTypes>[] }> {
   switch (parameters.type) {
     case 'claimTransactionClaimableRap':
@@ -19,6 +20,7 @@ export function createRap(parameters: RapParameters): Promise<{ actions: RapActi
   }
 }
 
+// get the action executable by type
 function getActionExecutableByType<T extends RapActionTypes>(type: T, props: ActionProps<T>) {
   switch (type) {
     case 'claimTransactionClaimableAction':
@@ -28,6 +30,9 @@ function getActionExecutableByType<T extends RapActionTypes>(type: T, props: Act
   }
 }
 
+// executes a single action in the rap
+// if the action executes a tx on-chain, it will return the nonce it used
+// if an error occurs, we return the error message
 export async function executeAction<T extends RapActionTypes>({
   action,
   wallet,
@@ -78,6 +83,9 @@ const waitForNodeAck = async (hash: string, provider: Signer['provider']): Promi
   });
 };
 
+// goes through each action in the rap and executes it
+// if an action executes a tx on-chain, increment the nonceToUse for the next tx
+// if an action fails, it will return the error message
 const executeRap = async (wallet: Signer, rap: Rap): Promise<RapResponse> => {
   const { actions } = rap;
   const rapName = getRapFullName(rap.actions);
