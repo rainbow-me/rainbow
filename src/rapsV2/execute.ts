@@ -10,6 +10,7 @@ import { createClaimTransactionClaimableRap } from './claimTransactionClaimableR
 import { claimTransactionClaimable } from './actions/claimTransactionClaimableAction';
 import { delay } from '@/utils/delay';
 
+// get the rap by type
 export function createRap(parameters: RapParameters): Promise<{ actions: RapAction<RapActionTypes>[] }> {
   switch (parameters.type) {
     case 'claimTransactionClaimableRap':
@@ -19,15 +20,19 @@ export function createRap(parameters: RapParameters): Promise<{ actions: RapActi
   }
 }
 
-function typeAction<T extends RapActionTypes>(type: T, props: ActionProps<T>) {
+// get the action executable by type
+function getActionExecutableByType<T extends RapActionTypes>(type: T, props: ActionProps<T>) {
   switch (type) {
     case 'claimTransactionClaimableAction':
-      return () => claimTransactionClaimable(props as ActionProps<'claimTransactionClaimableAction'>);
+      return () => claimTransactionClaimable(props);
     default:
-      throw new RainbowError(`[raps/execute]: typeAction - unknown type ${type}`);
+      throw new RainbowError(`[rapsV2/execute]: T - unknown action type ${type}`);
   }
 }
 
+// executes a single action in the rap
+// if the action executes a tx on-chain, it will return the nonce it used
+// if an error occurs, we return the error message
 export async function executeAction<T extends RapActionTypes>({
   action,
   wallet,
@@ -49,10 +54,10 @@ export async function executeAction<T extends RapActionTypes>({
       parameters,
       nonceToUse,
     };
-    const { nonce, hash } = await typeAction<T>(type, actionProps)();
+    const { nonce, hash } = await getActionExecutableByType<T>(type, actionProps)();
     return { nonce, errorMessage: null, hash };
   } catch (error) {
-    logger.error(new RainbowError(`[raps/execute]: ${rapName} - error execute action`), {
+    logger.error(new RainbowError(`[rapsV2/execute]: ${rapName} - error execute action`), {
       message: (error as Error)?.message,
     });
     return { nonce: null, errorMessage: String(error), hash: null };
@@ -78,6 +83,9 @@ const waitForNodeAck = async (hash: string, provider: Signer['provider']): Promi
   });
 };
 
+// goes through each action in the rap and executes it
+// if an action executes a tx on-chain, increment the nonceToUse for the next tx
+// if an action fails, it will return the error message
 const executeRap = async (wallet: Signer, rap: Rap): Promise<RapResponse> => {
   const { actions } = rap;
   const rapName = getRapFullName(rap.actions);
