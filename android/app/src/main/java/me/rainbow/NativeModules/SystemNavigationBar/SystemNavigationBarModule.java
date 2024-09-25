@@ -60,9 +60,6 @@ public class SystemNavigationBarModule extends ReactContextBaseJavaModule {
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    // Add log for method entry
-                    android.util.Log.d("NavigationBar", "changeBarColors called - isDarkMode: " + isDarkMode + ", translucentLightStr: " + translucentLightStr + ", translucentDarkStr: " + translucentDarkStr);
-
                     /**
                      * Handle the color setting
                      */
@@ -82,9 +79,6 @@ public class SystemNavigationBarModule extends ReactContextBaseJavaModule {
                         translucentDarkColor = Color.parseColor(translucentDarkStr);
                     }
 
-                    // Log the parsed colors
-                    android.util.Log.d("NavigationBar", "Parsed colors - translucentLightColor: " + String.format("#%08X", translucentLightColor) + ", translucentDarkColor: " + String.format("#%08X", translucentDarkColor));
-
                     // Set the navbar to be drawn over
                     // Both flags were added in Level 16
                     int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
@@ -97,21 +91,17 @@ public class SystemNavigationBarModule extends ReactContextBaseJavaModule {
                     // O was the first version that supported light mode nav bar
                     boolean shouldUseTransparentNavBar = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && (isDarkModeTransparent || isLightModeTransparent);
 
-                    android.util.Log.d("NavigationBar", "SDK Version checks - shouldUseTransparentStatusBar: " + shouldUseTransparentStatusBar + ", shouldUseTransparentNavBar: " + shouldUseTransparentNavBar);
-
                     if (shouldUseTransparentStatusBar) {
                         window.setStatusBarColor(Color.TRANSPARENT);
                         if (!isDarkMode) {
                             flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
                         }
-                        android.util.Log.d("NavigationBar", "Set status bar to transparent, isDarkMode: " + isDarkMode);
                     } else {
                         int statusBarColor = isDarkMode ? translucentDarkColor : translucentLightColor;
                         window.setStatusBarColor(statusBarColor);
                         if (!isDarkMode) {
                             flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
                         }
-                        android.util.Log.d("NavigationBar", "Set status bar color: " + String.format("#%08X", statusBarColor));
                     }
 
                     if (shouldUseTransparentNavBar) {
@@ -119,20 +109,17 @@ public class SystemNavigationBarModule extends ReactContextBaseJavaModule {
                         if (!isDarkMode) {
                             flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
                         }
-                        android.util.Log.d("NavigationBar", "Set navigation bar to transparent, isDarkMode: " + isDarkMode);
                     } else {
                         int navBarColor = isDarkMode ? translucentDarkColor : translucentLightColor;
                         window.setNavigationBarColor(navBarColor);
                         if (!isDarkMode) {
                             flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
                         }
-                        android.util.Log.d("NavigationBar", "Set navigation bar color: " + String.format("#%08X", navBarColor));
                     }
 
                     window.getDecorView().setSystemUiVisibility(flags);
                     WindowInsetsControllerCompat insetsController = WindowCompat.getInsetsController(window, window.getDecorView());
                     insetsController.setAppearanceLightNavigationBars(!isDarkMode);
-                    android.util.Log.d("NavigationBar", "Final system UI visibility flags: " + flags);
                 }
             });
         } else {
