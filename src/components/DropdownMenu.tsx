@@ -97,9 +97,6 @@ export function DropdownMenu<T extends string>({
         avoidCollisions={avoidCollisions}
         sideOffset={sideOffset}
         collisionPadding={12}
-        style={{
-          backgroundColor: isDarkMode ? colors.alpha('#191A1C', IS_IOS ? 0.7 : 1) : colors.alpha(colors.white, IS_IOS ? 0.7 : 1),
-        }}
       >
         {!!menuConfig.menuTitle?.trim() && (
           <DropdownMenuPrimitive.Group>
