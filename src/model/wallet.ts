@@ -1006,10 +1006,17 @@ export const getPrivateKey = async (
           lang.t('wallet.authenticate.alert.current_authentication_not_secure_enough')
         );
         return kc.ErrorType.NotAuthenticated;
-      case kc.ErrorType.Unavailable:
+      case kc.ErrorType.Unavailable: {
+        // Retry with checksummed address if needed
+        // (This is to mimic the behavior of other wallets like CB)
+        const checksumAddress = toChecksumAddress(address);
+        if (address !== checksumAddress) {
+          return getPrivateKey(checksumAddress);
+        }
         // This means we couldn't find any matches for this key.
         logger.error(new RainbowError('KC unavailable for PKEY lookup'), { error });
         break;
+      }
       default:
         // This is an unknown error
         logger.error(new RainbowError('KC unknown error for PKEY lookup'), { error });
