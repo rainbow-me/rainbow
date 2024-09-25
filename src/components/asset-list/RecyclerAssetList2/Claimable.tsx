@@ -5,9 +5,13 @@ import { useClaimables } from '@/resources/addys/claimables/query';
 import { FasterImageView } from '@candlefinance/faster-image';
 import { ButtonPressAnimation } from '@/components/animations';
 import { deviceUtils } from '@/utils';
+import Routes from '@/navigation/routesNames';
+import { ExtendedState } from './core/RawRecyclerList';
 
-export default function Claimable({ uniqueId }: { uniqueId: string }) {
+export default React.memo(function Claimable({ uniqueId, extendedState }: { uniqueId: string; extendedState: ExtendedState }) {
   const { accountAddress, nativeCurrency } = useAccountSettings();
+  const { navigate } = extendedState;
+
   const { data = [] } = useClaimables(
     {
       address: accountAddress,
@@ -25,6 +29,7 @@ export default function Claimable({ uniqueId }: { uniqueId: string }) {
   return (
     <Box
       as={ButtonPressAnimation}
+      onPress={() => navigate(Routes.CLAIM_CLAIMABLE_PANEL, { claimable })}
       scaleTo={0.96}
       paddingHorizontal="20px"
       justifyContent="space-between"
@@ -68,4 +73,4 @@ export default function Claimable({ uniqueId }: { uniqueId: string }) {
       </Box>
     </Box>
   );
-}
+});
