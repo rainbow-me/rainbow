@@ -7,7 +7,7 @@ import { DeeplinkHandler } from '@/components/DeeplinkHandler';
 import { AppStateChangeHandler } from '@/components/AppStateChangeHandler';
 import { useApplicationSetup } from '@/hooks/useApplicationSetup';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { connect, Provider as ReduxProvider } from 'react-redux';
 import { RecoilRoot } from 'recoil';
@@ -22,7 +22,7 @@ import * as keychain from '@/model/keychain';
 import { Navigation } from '@/navigation';
 import { PersistQueryClientProvider, persistOptions, queryClient } from '@/react-query';
 import store, { AppDispatch, type AppState } from '@/redux/store';
-import { MainThemeProvider } from '@/theme/ThemeContext';
+import { MainThemeProvider, useTheme } from '@/theme/ThemeContext';
 import { addressKey } from '@/utils/keychainConstants';
 import { SharedValuesProvider } from '@/helpers/SharedValuesContext';
 import { InitialRouteContext } from '@/navigation/initialRoute';
@@ -39,12 +39,9 @@ import { initializeRemoteConfig } from '@/model/remoteConfig';
 import { NavigationContainerRef } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import { Address } from 'viem';
-import { IS_DEV } from '@/env';
+import { IS_ANDROID, IS_DEV } from '@/env';
 import { prefetchDefaultFavorites } from '@/resources/favorites';
 import Routes from '@/navigation/Routes';
-import { DropdownMenu } from './components/DropdownMenu';
-import { Menu } from './components/cards/MintsCard/Menu';
-import { useHideSplashScreen } from './hooks';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -65,24 +62,27 @@ interface AppProps {
 }
 
 function App({ walletReady }: AppProps) {
-  // const { initialRoute } = useApplicationSetup();
-  const hideSplashScreen = useHideSplashScreen();
-  // const handleNavigatorRef = useCallback((ref: NavigationContainerRef<RootStackParamList>) => {
-  //   Navigation.setTopLevelNavigator(ref);
-  // }, []);
-
-  hideSplashScreen();
+  const { initialRoute } = useApplicationSetup();
+  const { bottom } = useSafeAreaInsets();
+  const handleNavigatorRef = useCallback((ref: NavigationContainerRef<RootStackParamList>) => {
+    Navigation.setTopLevelNavigator(ref);
+  }, []);
 
   return (
-    <View style={[sx.container, { top: 100, right: 16, position: 'absolute' }]}>
-      <Menu />
-    </View>
-    // <Portal>
-
-    //   <NotificationsHandler walletReady={walletReady} />
-    //   <DeeplinkHandler initialRoute={initialRoute} walletReady={walletReady} />
-    //   <AppStateChangeHandler walletReady={walletReady} />
-    // </Portal>
+    <Portal>
+      <View style={[sx.container, { paddingBottom: IS_ANDROID ? bottom : 0 }]}>
+        {initialRoute && (
+          <InitialRouteContext.Provider value={initialRoute}>
+            <Routes ref={handleNavigatorRef} />
+            <PortalConsumer />
+          </InitialRouteContext.Provider>
+        )}
+        <OfflineToast />
+      </View>
+      <NotificationsHandler walletReady={walletReady} />
+      <DeeplinkHandler initialRoute={initialRoute} walletReady={walletReady} />
+      <AppStateChangeHandler walletReady={walletReady} />
+    </Portal>
   );
 }
 
@@ -189,11 +189,34 @@ function Root() {
   }, [setInitializing]);
 
   return initializing ? null : (
-    <RecoilRoot>
-      <GestureHandlerRootView style={sx.container}>
-        <App walletReady={true} />
-      </GestureHandlerRootView>
-    </RecoilRoot>
+    // @ts-expect-error - Property 'children' does not exist on type 'IntrinsicAttributes & IntrinsicClassAttributes<Provider<AppStateUpdateAction | ChartsUpdateAction | ContactsAction | ... 13 more ... | WalletsAction>> & Readonly<...>'
+    <ReduxProvider store={store}>
+      <RecoilRoot>
+        <PersistQueryClientProvider
+          client={queryClient}
+          persistOptions={persistOptions}
+          onSuccess={() => {
+            prefetchDefaultFavorites();
+          }}
+        >
+          <MobileWalletProtocolProvider secureStorage={ls.mwp} sessionExpiryDays={7}>
+            <SafeAreaProvider>
+              <MainThemeProvider>
+                <GestureHandlerRootView style={sx.container}>
+                  <RainbowContextWrapper>
+                    <SharedValuesProvider>
+                      <ErrorBoundary>
+                        <AppWithRedux walletReady={false} />
+                      </ErrorBoundary>
+                    </SharedValuesProvider>
+                  </RainbowContextWrapper>
+                </GestureHandlerRootView>
+              </MainThemeProvider>
+            </SafeAreaProvider>
+          </MobileWalletProtocolProvider>
+        </PersistQueryClientProvider>
+      </RecoilRoot>
+    </ReduxProvider>
   );
 }
 

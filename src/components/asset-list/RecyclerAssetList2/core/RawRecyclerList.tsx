@@ -161,6 +161,8 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
 
   return (
     <RecyclerListView
+      style={{ width: '100%', minHeight: 1 }}
+      canChangeSize
       automaticallyAdjustScrollIndicatorInsets={true}
       dataProvider={currentDataProvider}
       extendedState={mergedExtendedState}

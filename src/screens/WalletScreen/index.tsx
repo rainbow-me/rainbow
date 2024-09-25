@@ -103,8 +103,7 @@ const WalletScreen: React.FC<any> = ({ navigation, route }) => {
   return (
     <View
       style={{
-        height: '100%',
-        width: '100%',
+        flex: 1,
       }}
     >
       <WalletPage testID="wallet-screen">
