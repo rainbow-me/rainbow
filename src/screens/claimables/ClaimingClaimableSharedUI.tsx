@@ -2,10 +2,10 @@ import React, { useEffect, useMemo } from 'react';
 import { AccentColorProvider, Bleed, Box, Inline, Text, TextShadow, globalColors, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import { ListHeader, Panel, TapToDismiss, controlPanelStyles } from '@/components/SmoothPager/ListPanel';
-import { safeAreaInsetValues } from '@/utils';
+import { deviceUtils, safeAreaInsetValues } from '@/utils';
 import { View } from 'react-native';
 import { IS_IOS } from '@/env';
-import { ButtonPressAnimation } from '@/components/animations';
+import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
 import { SponsoredClaimable, TransactionClaimable } from '@/resources/addys/claimables/types';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useTheme } from '@/theme';
@@ -14,6 +14,7 @@ import { chainsLabel } from '@/chains';
 import { useNavigation } from '@/navigation';
 import { TextColor } from '@/design-system/color/palettes';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { colors } from '@/styles';
 
 export type ClaimStatus =
   | 'idle' // initial state
@@ -219,6 +220,11 @@ export const ClaimingClaimableSharedUI = ({
                     alignItems="center"
                     justifyContent="center"
                   >
+                    <ShimmerAnimation
+                      color="#FFFFFF"
+                      enabled={!isButtonDisabled || claimStatus === 'claiming'}
+                      width={deviceUtils.dimensions.width - 52}
+                    />
                     <Inline alignVertical="center" space="6px">
                       {shouldShowClaimText && (
                         <TextShadow shadowOpacity={0.3}>
