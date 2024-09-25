@@ -450,6 +450,20 @@
         "action": "Continue"
       }
     },
+    "claimables": {
+      "panel": {
+        "calculating_gas_fee": "Calculating gas fee...",
+        "amount_to_claim_on_network": "%{amount} to claim on %{network}",
+        "claim": "Claim",
+        "claiming": "Claiming...",
+        "claimed": "Claimed!",
+        "claiming_failed": "Claim Failed",
+        "insufficient_funds": "Insufficient Funds",
+        "claim_amount": "Claim %{amount}",
+        "done": "Done",
+        "try_again": "Try Again"
+      }
+    },
     "cloud": {
       "backup_success": "Your wallet has been backed up successfully!"
     },

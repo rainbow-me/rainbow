@@ -76,14 +76,14 @@ export const ClaimingClaimableSharedUI = ({
   const panelTitle = useMemo(() => {
     switch (claimStatus) {
       case 'idle':
-        return 'Claim';
+        return i18n.t(i18n.l.claimables.panel.claim);
       case 'claiming':
-        return 'Claiming...';
+        return i18n.t(i18n.l.claimables.panel.claiming);
       case 'success':
-        return 'Claimed!';
+        return i18n.t(i18n.l.claimables.panel.claimed);
       case 'error':
       default:
-        return i18n.t(i18n.l.points.points.error_claiming);
+        return i18n.t(i18n.l.claimables.panel.claiming_failed);
     }
   }, [claimStatus]);
 
@@ -207,12 +207,15 @@ export const ClaimingClaimableSharedUI = ({
                       􀵟
                     </Text>
                     <Text color="labelQuaternary" size="13pt" weight="bold">
-                      {`${nativeCurrencyGasFeeDisplay} to claim on ${chainsLabel[claimable.chainId]}`}
+                      {i18n.t(i18n.l.claimables.panel.amount_to_claim_on_network, {
+                        amount: nativeCurrencyGasFeeDisplay,
+                        network: chainsLabel[claimable.chainId],
+                      })}
                     </Text>
                   </Inline>
                 ) : (
                   <Text color="labelQuaternary" size="13pt" weight="bold">
-                    Calculating gas fee...
+                    {i18n.t(i18n.l.claimables.panel.calculating_gas_fee)}
                   </Text>
                 ))}
             </Box>
