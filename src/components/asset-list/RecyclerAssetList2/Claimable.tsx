@@ -29,7 +29,7 @@ export default React.memo(function Claimable({ uniqueId, extendedState }: { uniq
   return (
     <Box
       as={ButtonPressAnimation}
-      // onPress={() => navigate(Routes.CLAIM_CLAIMABLE_PANEL, { claimable })}
+      onPress={() => navigate(Routes.CLAIM_CLAIMABLE_PANEL, { claimable })}
       scaleTo={0.96}
       paddingHorizontal="20px"
       justifyContent="space-between"
