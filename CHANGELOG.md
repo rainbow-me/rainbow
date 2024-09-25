@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [1.9.40] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.40)
 
-### Fixed 
+### Fixed
 
 - Fixed a bug with speed up and cancel (#6133)
 
