@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { AccentColorProvider, Bleed, Box, Inline, Text, TextShadow, globalColors, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import { ListHeader, Panel, TapToDismiss, controlPanelStyles } from '@/components/SmoothPager/ListPanel';
@@ -13,8 +13,14 @@ import { FasterImageView } from '@candlefinance/faster-image';
 import { chainsLabel } from '@/chains';
 import { useNavigation } from '@/navigation';
 import { TextColor } from '@/design-system/color/palettes';
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
-export type ClaimStatus = 'idle' | 'claiming' | 'pending' | 'success' | 'error';
+export type ClaimStatus =
+  | 'idle' // initial state
+  | 'claiming' // user has pressed the claim button
+  | 'pending' // claim has been submitted but we don't have a tx hash
+  | 'success' // claim has been submitted and we have a tx hash
+  | 'error'; // claim has failed
 
 export const ClaimingClaimableSharedUI = ({
   claim,
@@ -106,6 +112,30 @@ export const ClaimingClaimableSharedUI = ({
     }
   }, [claimStatus]);
 
+  const animationProgress = useSharedValue(0);
+
+  useEffect(() => {
+    switch (claimStatus) {
+      case 'idle':
+      case 'error':
+        animationProgress.value = withTiming(0, { duration: 300 });
+        break;
+      case 'claiming':
+      case 'pending':
+      case 'success':
+      default:
+        animationProgress.value = withTiming(1, { duration: 300 });
+        break;
+    }
+  }, [claimStatus, animationProgress]);
+
+  const gasAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      height: (1 - animationProgress.value) * 30,
+      opacity: 1 - animationProgress.value,
+    };
+  });
+
   return (
     <>
       <Box
@@ -132,7 +162,6 @@ export const ClaimingClaimableSharedUI = ({
             }
             showBackButton={false}
           />
-
           <Box alignItems="center" paddingTop="44px" paddingBottom="24px" gap={42}>
             <Box alignItems="center" flexDirection="row" gap={8} justifyContent="center">
               <Bleed vertical={{ custom: 4.5 }}>
@@ -164,7 +193,7 @@ export const ClaimingClaimableSharedUI = ({
                 </Text>
               </TextShadow>
             </Box>
-            <Box gap={20} alignItems="center" width="full">
+            <Box alignItems="center" width="full">
               <ButtonPressAnimation
                 disabled={isButtonDisabled}
                 style={{ width: '100%', paddingHorizontal: 18 }}
@@ -207,24 +236,29 @@ export const ClaimingClaimableSharedUI = ({
                   </Box>
                 </AccentColorProvider>
               </ButtonPressAnimation>
-              {claimable.type === 'transaction' &&
-                (isGasReady ? (
-                  <Inline alignVertical="center" space="2px">
-                    <Text align="center" color="labelQuaternary" size="icon 10px" weight="heavy">
-                      􀵟
-                    </Text>
-                    <Text color="labelQuaternary" size="13pt" weight="bold">
-                      {i18n.t(i18n.l.claimables.panel.amount_to_claim_on_network, {
-                        amount: nativeCurrencyGasFeeDisplay,
-                        network: chainsLabel[claimable.chainId],
-                      })}
-                    </Text>
-                  </Inline>
-                ) : (
-                  <Text color="labelQuaternary" size="13pt" weight="bold">
-                    {i18n.t(i18n.l.claimables.panel.calculating_gas_fee)}
-                  </Text>
-                ))}
+              {claimable.type === 'transaction' && (
+                <Animated.View style={gasAnimatedStyle}>
+                  <Box paddingTop="20px">
+                    {isGasReady ? (
+                      <Inline alignVertical="center" space="2px">
+                        <Text align="center" color="labelQuaternary" size="icon 10px" weight="heavy">
+                          􀵟
+                        </Text>
+                        <Text color="labelQuaternary" size="13pt" weight="bold">
+                          {i18n.t(i18n.l.claimables.panel.amount_to_claim_on_network, {
+                            amount: nativeCurrencyGasFeeDisplay,
+                            network: chainsLabel[claimable.chainId],
+                          })}
+                        </Text>
+                      </Inline>
+                    ) : (
+                      <Text color="labelQuaternary" size="13pt" weight="bold">
+                        {i18n.t(i18n.l.claimables.panel.calculating_gas_fee)}
+                      </Text>
+                    )}
+                  </Box>
+                </Animated.View>
+              )}
             </Box>
           </Box>
         </Panel>
