@@ -42,6 +42,9 @@ import { Address } from 'viem';
 import { IS_DEV } from '@/env';
 import { prefetchDefaultFavorites } from '@/resources/favorites';
 import Routes from '@/navigation/Routes';
+import { DropdownMenu } from './components/DropdownMenu';
+import { Menu } from './components/cards/MintsCard/Menu';
+import { useHideSplashScreen } from './hooks';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -62,27 +65,24 @@ interface AppProps {
 }
 
 function App({ walletReady }: AppProps) {
-  const { initialRoute } = useApplicationSetup();
+  // const { initialRoute } = useApplicationSetup();
+  const hideSplashScreen = useHideSplashScreen();
+  // const handleNavigatorRef = useCallback((ref: NavigationContainerRef<RootStackParamList>) => {
+  //   Navigation.setTopLevelNavigator(ref);
+  // }, []);
 
-  const handleNavigatorRef = useCallback((ref: NavigationContainerRef<RootStackParamList>) => {
-    Navigation.setTopLevelNavigator(ref);
-  }, []);
+  hideSplashScreen();
 
   return (
-    <Portal>
-      <View style={sx.container}>
-        {initialRoute && (
-          <InitialRouteContext.Provider value={initialRoute}>
-            <Routes ref={handleNavigatorRef} />
-            <PortalConsumer />
-          </InitialRouteContext.Provider>
-        )}
-        <OfflineToast />
-      </View>
-      <NotificationsHandler walletReady={walletReady} />
-      <DeeplinkHandler initialRoute={initialRoute} walletReady={walletReady} />
-      <AppStateChangeHandler walletReady={walletReady} />
-    </Portal>
+    <View style={[sx.container, { top: 100, right: 16, position: 'absolute' }]}>
+      <Menu />
+    </View>
+    // <Portal>
+
+    //   <NotificationsHandler walletReady={walletReady} />
+    //   <DeeplinkHandler initialRoute={initialRoute} walletReady={walletReady} />
+    //   <AppStateChangeHandler walletReady={walletReady} />
+    // </Portal>
   );
 }
 
@@ -189,34 +189,11 @@ function Root() {
   }, [setInitializing]);
 
   return initializing ? null : (
-    // @ts-expect-error - Property 'children' does not exist on type 'IntrinsicAttributes & IntrinsicClassAttributes<Provider<AppStateUpdateAction | ChartsUpdateAction | ContactsAction | ... 13 more ... | WalletsAction>> & Readonly<...>'
-    <ReduxProvider store={store}>
-      <RecoilRoot>
-        <PersistQueryClientProvider
-          client={queryClient}
-          persistOptions={persistOptions}
-          onSuccess={() => {
-            prefetchDefaultFavorites();
-          }}
-        >
-          <MobileWalletProtocolProvider secureStorage={ls.mwp} sessionExpiryDays={7}>
-            <SafeAreaProvider>
-              <MainThemeProvider>
-                <GestureHandlerRootView style={sx.container}>
-                  <RainbowContextWrapper>
-                    <SharedValuesProvider>
-                      <ErrorBoundary>
-                        <AppWithRedux walletReady={false} />
-                      </ErrorBoundary>
-                    </SharedValuesProvider>
-                  </RainbowContextWrapper>
-                </GestureHandlerRootView>
-              </MainThemeProvider>
-            </SafeAreaProvider>
-          </MobileWalletProtocolProvider>
-        </PersistQueryClientProvider>
-      </RecoilRoot>
-    </ReduxProvider>
+    <RecoilRoot>
+      <GestureHandlerRootView style={sx.container}>
+        <App walletReady={true} />
+      </GestureHandlerRootView>
+    </RecoilRoot>
   );
 }
 
