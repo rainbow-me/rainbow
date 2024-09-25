@@ -1,31 +1,5 @@
+import { TransactionClaimableTxPayload } from '@/screens/claimables/ClaimingTransactionClaimable';
 import { Signer } from '@ethersproject/abstract-signer';
-import { TransactionRequest } from '@ethersproject/abstract-provider';
-
-// supports legacy and new gas types
-export type TransactionClaimableTxPayload = TransactionRequest &
-  (
-    | {
-        to: string;
-        from: string;
-        nonce: number;
-        gasLimit: string;
-        maxFeePerGas: string;
-        maxPriorityFeePerGas: string;
-        data: string;
-        value: '0x0';
-        chainId: number;
-      }
-    | {
-        to: string;
-        from: string;
-        nonce: number;
-        gasLimit: string;
-        gasPrice: string;
-        data: string;
-        value: '0x0';
-        chainId: number;
-      }
-  );
 
 export interface ClaimTransactionClaimableActionParameters {
   claimTx: TransactionClaimableTxPayload;
