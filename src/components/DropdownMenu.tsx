@@ -6,8 +6,6 @@ import { ImageSystemSymbolConfiguration } from 'react-native-ios-context-menu/li
 import { ImageSourcePropType } from 'react-native';
 import type { SFSymbols5_0 } from 'sf-symbols-typescript';
 import type { DropdownMenuContentProps } from '@radix-ui/react-dropdown-menu';
-import { useTheme } from '@/theme';
-import { IS_IOS } from '@/env';
 
 export const DropdownMenuRoot = DropdownMenuPrimitive.Root;
 export const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
@@ -78,7 +76,6 @@ export function DropdownMenu<T extends string>({
   alignOffset = 5,
   avoidCollisions = true,
 }: DropDownMenuProps<T>) {
-  const { isDarkMode, colors } = useTheme();
   const handleSelectItem = useCallback(
     (actionKey: T) => {
       onPressMenuItem(actionKey);
