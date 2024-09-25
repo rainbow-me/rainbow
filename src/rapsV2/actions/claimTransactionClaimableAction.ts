@@ -7,36 +7,39 @@ import { NewTransaction } from '@/entities';
 import { chainsName } from '@/chains';
 
 export async function claimTransactionClaimable({ parameters, wallet }: ActionProps<'claimTransactionClaimableAction'>) {
-  const { claimTx } = parameters;
+  // will uncomment actual logic in follow-up PR, don't worry about it for now
+  return { nonce: undefined, hash: undefined };
 
-  const provider = getProvider({ chainId: claimTx.chainId });
-  const result = await sendTransaction({ transaction: claimTx, existingWallet: wallet, provider });
+  // const { claimTx } = parameters;
 
-  if (!result?.result || !!result.error || !result.result.hash) {
-    throw new RainbowError('[CLAIM-TRANSACTION-CLAIMABLE]: failed to execute claim transaction');
-  }
+  // const provider = getProvider({ chainId: claimTx.chainId });
+  // const result = await sendTransaction({ transaction: claimTx, existingWallet: wallet, provider });
 
-  const transaction = {
-    amount: result.result.value.toString(),
-    gasLimit: result.result.gasLimit,
-    from: result.result.from ?? null,
-    to: result.result.to ?? null,
-    chainId: result.result.chainId,
-    hash: result.result.hash,
-    network: chainsName[result.result.chainId],
-    status: 'pending',
-    type: 'send',
-    nonce: result.result.nonce,
-  } satisfies NewTransaction;
+  // if (!result?.result || !!result.error || !result.result.hash) {
+  //   throw new RainbowError('[CLAIM-TRANSACTION-CLAIMABLE]: failed to execute claim transaction');
+  // }
 
-  addNewTransaction({
-    address: claimTx.from,
-    chainId: claimTx.chainId,
-    transaction,
-  });
+  // const transaction = {
+  //   amount: result.result.value.toString(),
+  //   gasLimit: result.result.gasLimit,
+  //   from: result.result.from ?? null,
+  //   to: result.result.to ?? null,
+  //   chainId: result.result.chainId,
+  //   hash: result.result.hash,
+  //   network: chainsName[result.result.chainId],
+  //   status: 'pending',
+  //   type: 'send',
+  //   nonce: result.result.nonce,
+  // } satisfies NewTransaction;
 
-  return {
-    nonce: result.result.nonce,
-    hash: result.result.hash,
-  };
+  // addNewTransaction({
+  //   address: claimTx.from,
+  //   chainId: claimTx.chainId,
+  //   transaction,
+  // });
+
+  // return {
+  //   nonce: result.result.nonce,
+  //   hash: result.result.hash,
+  // };
 }
