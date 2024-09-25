@@ -14,7 +14,7 @@ import { chainsLabel } from '@/chains';
 import { useNavigation } from '@/navigation';
 import { TextColor } from '@/design-system/color/palettes';
 
-export type ClaimStatus = 'idle' | 'claiming' | 'success' | 'error';
+export type ClaimStatus = 'idle' | 'claiming' | 'pending' | 'success' | 'error';
 
 export const ClaimingClaimableSharedUI = ({
   claim,
@@ -51,7 +51,9 @@ export const ClaimingClaimableSharedUI = ({
   const { goBack } = useNavigation();
 
   const isButtonDisabled =
-    claimStatus === 'claiming' || (claimStatus !== 'success' && claimable.type === 'transaction' && !isTransactionReady);
+    claimStatus === 'claiming' ||
+    (claimStatus !== 'success' && claimStatus !== 'pending' && claimable.type === 'transaction' && !isTransactionReady);
+
   const shouldShowClaimText =
     (claimStatus === 'idle' || claimStatus === 'claiming') && (claimable.type !== 'transaction' || hasSufficientFunds);
 
@@ -59,12 +61,13 @@ export const ClaimingClaimableSharedUI = ({
     switch (claimStatus) {
       case 'idle':
         if (shouldShowClaimText) {
-          return `Claim ${claimable.value.claimAsset.display}`;
+          return i18n.t(i18n.l.claimables.panel.claim_amount, { amount: claimable.value.claimAsset.display });
         } else {
-          return 'Insufficient Funds';
+          return i18n.t(i18n.l.claimables.panel.insufficient_funds);
         }
       case 'claiming':
-        return `Claim ${claimable.value.claimAsset.display}`;
+        return i18n.t(i18n.l.claimables.panel.claim_amount, { amount: claimable.value.claimAsset.display });
+      case 'pending':
       case 'success':
         return i18n.t(i18n.l.button.done);
       case 'error':
@@ -79,6 +82,8 @@ export const ClaimingClaimableSharedUI = ({
         return i18n.t(i18n.l.claimables.panel.claim);
       case 'claiming':
         return i18n.t(i18n.l.claimables.panel.claiming);
+      case 'pending':
+        return i18n.t(i18n.l.claimables.panel.tokens_on_the_way);
       case 'success':
         return i18n.t(i18n.l.claimables.panel.claimed);
       case 'error':
@@ -92,6 +97,7 @@ export const ClaimingClaimableSharedUI = ({
       case 'idle':
       case 'claiming':
         return 'label';
+      case 'pending':
       case 'success':
         return 'green';
       case 'error':
@@ -159,7 +165,6 @@ export const ClaimingClaimableSharedUI = ({
               </TextShadow>
             </Box>
             <Box gap={20} alignItems="center" width="full">
-              {/* TODO: needs shimmer when claimStatus === 'claiming' */}
               <ButtonPressAnimation
                 disabled={isButtonDisabled}
                 style={{ width: '100%', paddingHorizontal: 18 }}
@@ -168,12 +173,14 @@ export const ClaimingClaimableSharedUI = ({
                   if (claimStatus === 'idle' || claimStatus === 'error') {
                     setClaimStatus('claiming');
                     claim();
-                  } else if (claimStatus === 'success') {
+                  } else if (claimStatus === 'success' || claimStatus === 'pending') {
                     goBack();
                   }
                 }}
               >
-                <AccentColorProvider color={`rgba(41, 90, 247, ${claimable.type !== 'transaction' || isTransactionReady ? 1 : 0.2})`}>
+                <AccentColorProvider
+                  color={`rgba(41, 90, 247, ${(claimable.type === 'transaction' && !isTransactionReady) || claimStatus === 'claiming' ? 0.2 : 1})`}
+                >
                   <Box
                     background="accent"
                     shadow="30px accent"

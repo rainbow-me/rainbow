@@ -461,7 +461,8 @@
         "insufficient_funds": "Insufficient Funds",
         "claim_amount": "Claim %{amount}",
         "done": "Done",
-        "try_again": "Try Again"
+        "try_again": "Try Again",
+        "tokens_on_the_way": "Tokens on the way!"
       }
     },
     "cloud": {
