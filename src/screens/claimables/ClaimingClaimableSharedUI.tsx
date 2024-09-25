@@ -164,7 +164,7 @@ export const ClaimingClaimableSharedUI = ({
                 disabled={isButtonDisabled}
                 style={{ width: '100%', paddingHorizontal: 18 }}
                 scaleTo={0.96}
-                onPress={() => {
+                onLongPress={() => {
                   if (claimStatus === 'idle' || claimStatus === 'error') {
                     setClaimStatus('claiming');
                     claim();
