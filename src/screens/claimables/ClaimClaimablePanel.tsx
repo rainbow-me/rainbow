@@ -1,17 +1,13 @@
 import React from 'react';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { Claimable } from '@/resources/addys/claimables/types';
 import { ClaimingTransactionClaimable } from './ClaimingTransactionClaimable';
 import { ClaimingSponsoredClaimable } from './ClaimingSponsoredClaimable';
-
-type RouteParams = {
-  ClaimClaimablePanelParams: { claimable: Claimable };
-};
+import { RootStackParamList } from '@/navigation/types';
 
 export const ClaimClaimablePanel = () => {
   const {
     params: { claimable },
-  } = useRoute<RouteProp<RouteParams, 'ClaimClaimablePanelParams'>>();
+  } = useRoute<RouteProp<RootStackParamList, 'ClaimClaimablePanel'>>();
 
   return claimable.type === 'transaction' ? (
     <ClaimingTransactionClaimable claimable={claimable} />
