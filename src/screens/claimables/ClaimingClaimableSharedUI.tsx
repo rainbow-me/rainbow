@@ -14,7 +14,9 @@ import { chainsLabel } from '@/chains';
 import { useNavigation } from '@/navigation';
 import { TextColor } from '@/design-system/color/palettes';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { colors } from '@/styles';
+import { lessThan } from '@/helpers/utilities';
+import { convertAmountToNativeDisplayWorklet, handleSignificantDecimalsWithThreshold } from '@/__swaps__/utils/numbers';
+import { useAccountSettings } from '@/hooks';
 
 export type ClaimStatus =
   | 'idle' // initial state
@@ -54,6 +56,7 @@ export const ClaimingClaimableSharedUI = ({
       setClaimStatus: React.Dispatch<React.SetStateAction<ClaimStatus>>;
     }) => {
   const { isDarkMode } = useColorMode();
+  const { nativeCurrency } = useAccountSettings();
   const theme = useTheme();
   const { goBack } = useNavigation();
 
@@ -64,16 +67,26 @@ export const ClaimingClaimableSharedUI = ({
   const shouldShowClaimText =
     (claimStatus === 'idle' || claimStatus === 'claiming') && (claimable.type !== 'transaction' || hasSufficientFunds);
 
+  const claimAmountDisplay = useMemo(
+    () => `${handleSignificantDecimalsWithThreshold(claimable.value.claimAsset.amount, 4, '0.001')} ${claimable.asset.symbol}`,
+    [claimable.asset.symbol, claimable.value.claimAsset.amount]
+  );
+
+  const claimAmountNativeDisplay = useMemo(
+    () => convertAmountToNativeDisplayWorklet(claimable.value.nativeAsset.amount, nativeCurrency, true),
+    [claimable.value.nativeAsset.amount, nativeCurrency]
+  );
+
   const buttonLabel = useMemo(() => {
     switch (claimStatus) {
       case 'idle':
         if (shouldShowClaimText) {
-          return i18n.t(i18n.l.claimables.panel.claim_amount, { amount: claimable.value.claimAsset.display });
+          return i18n.t(i18n.l.claimables.panel.claim_amount, { amount: claimAmountDisplay });
         } else {
           return i18n.t(i18n.l.claimables.panel.insufficient_funds);
         }
       case 'claiming':
-        return i18n.t(i18n.l.claimables.panel.claim_amount, { amount: claimable.value.claimAsset.display });
+        return i18n.t(i18n.l.claimables.panel.claim_amount, { amount: claimAmountDisplay });
       case 'pending':
       case 'success':
         return i18n.t(i18n.l.button.done);
@@ -81,7 +94,7 @@ export const ClaimingClaimableSharedUI = ({
       default:
         return i18n.t(i18n.l.points.points.try_again);
     }
-  }, [claimStatus, claimable.value.claimAsset.display, shouldShowClaimText]);
+  }, [claimAmountDisplay, claimStatus, shouldShowClaimText]);
 
   const panelTitle = useMemo(() => {
     switch (claimStatus) {
@@ -190,7 +203,7 @@ export const ClaimingClaimableSharedUI = ({
               </Bleed>
               <TextShadow blur={12} color={globalColors.grey100} shadowOpacity={0.1} y={4}>
                 <Text align="center" color="label" size="44pt" weight="black">
-                  {claimable.value.nativeAsset.display}
+                  {claimAmountNativeDisplay}
                 </Text>
               </TextShadow>
             </Box>
