@@ -144,7 +144,7 @@ export const lessOrEqualThan = (numberOne: BigNumberish, numberTwo: BigNumberish
 
 export const handleSignificantDecimalsWithThreshold = (value: BigNumberish, decimals: number, threshold = '0.0001') => {
   const result = toFixedDecimals(value, decimals);
-  return lessThan(result, threshold) ? `< ${threshold}` : result;
+  return lessThan(result, threshold) ? `<${threshold}` : result;
 };
 
 export const handleSignificantDecimalsWorklet = (value: number | string, decimals: number, buffer = 3): string => {
@@ -293,7 +293,7 @@ export const convertAmountToPercentageDisplay = (value: BigNumberish, buffer?: n
  */
 export const convertAmountToPercentageDisplayWithThreshold = (value: BigNumberish, decimals = 2, threshold = '0.0001'): string => {
   if (lessThan(value, threshold)) {
-    return '< 0.01%';
+    return '<0.01%';
   } else {
     const display = new BigNumber(value).times(100).toFixed(decimals);
     return `${display}%`;
@@ -339,7 +339,7 @@ export const convertAmountToNativeDisplayWorklet = (
         maximumFractionDigits: decimals,
       });
 
-  const nativeDisplay = `${thresholdReached ? '< ' : ''}${alignment === 'left' || ignoreAlignment ? symbol : ''}${nativeValue}${!ignoreAlignment && alignment === 'right' ? symbol : ''}`;
+  const nativeDisplay = `${thresholdReached ? '<' : ''}${alignment === 'left' || ignoreAlignment ? symbol : ''}${nativeValue}${!ignoreAlignment && alignment === 'right' ? symbol : ''}`;
 
   return nativeDisplay;
 };
@@ -363,7 +363,7 @@ const lessThanPrefix = '<';
 
 export const formatNumber = (value: string, options?: { decimals?: number }) => {
   if (!+value) return `0${decimalSeparator}0`;
-  if (+value < 0.0001) return `${lessThanPrefix} 0${decimalSeparator}0001`;
+  if (+value < 0.0001) return `${lessThanPrefix}0${decimalSeparator}0001`;
 
   const [whole, fraction = ''] = value.split(decimalSeparator);
   const decimals = options?.decimals;
