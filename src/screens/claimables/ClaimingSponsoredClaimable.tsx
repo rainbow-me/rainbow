@@ -56,7 +56,11 @@ export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: Sponsored
         setClaimStatus('error');
         logger.warn('[ClaimSponsoredClaimable]: sponsored claim api call returned unsuccessful response');
       } else {
-        setClaimStatus('success');
+        if (response.data.payload.claim_transaction_status?.transaction_hash) {
+          setClaimStatus('success');
+        } else {
+          setClaimStatus('pending');
+        }
         // Clear and refresh claimables data
         queryClient.invalidateQueries(claimablesQueryKey({ address: accountAddress, currency: nativeCurrency }));
         refetch();
