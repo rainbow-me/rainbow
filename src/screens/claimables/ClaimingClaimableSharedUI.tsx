@@ -191,7 +191,7 @@ export const ClaimingClaimableSharedUI = ({
                 >
                   <RainbowCoinIcon
                     size={40}
-                    icon={claimable.asset.iconUrl}
+                    icon={claimable.asset.icon_url}
                     chainId={claimable.chainId}
                     symbol={claimable.asset.symbol}
                     theme={theme}

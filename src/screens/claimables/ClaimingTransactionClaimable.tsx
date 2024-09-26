@@ -15,6 +15,7 @@ import { walletExecuteRap } from '@/rapsV2/execute';
 import { loadWallet } from '@/model/wallet';
 import { useMutation } from '@tanstack/react-query';
 import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
+import { parseAsset } from '@/resources/assets/assets';
 
 // supports legacy and new gas types
 export type TransactionClaimableTxPayload = TransactionRequest &
@@ -157,7 +158,7 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
 
       const { errorMessage } = await walletExecuteRap(wallet, {
         type: 'claimTransactionClaimableRap',
-        claimTransactionClaimableActionParameters: { claimTx: txPayload },
+        claimTransactionClaimableActionParameters: { claimTx: txPayload, asset: claimable.asset },
       });
 
       if (errorMessage) {

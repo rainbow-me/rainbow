@@ -1,8 +1,10 @@
+import { ParsedAddressAsset } from '@/entities';
 import { TransactionClaimableTxPayload } from '@/screens/claimables/ClaimingTransactionClaimable';
 import { Signer } from '@ethersproject/abstract-signer';
 
 export interface ClaimTransactionClaimableActionParameters {
   claimTx: TransactionClaimableTxPayload;
+  asset: ParsedAddressAsset;
 }
 
 export interface RapActionTransaction {

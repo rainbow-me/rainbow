@@ -7,7 +7,7 @@ import { NewTransaction } from '@/entities';
 import { chainsName } from '@/chains';
 
 export async function claimTransactionClaimable({ parameters, wallet }: ActionProps<'claimTransactionClaimableAction'>) {
-  const { claimTx } = parameters;
+  const { claimTx, asset } = parameters;
 
   const provider = getProvider({ chainId: claimTx.chainId });
   const result = await sendTransaction({ transaction: claimTx, existingWallet: wallet, provider });
@@ -17,7 +17,7 @@ export async function claimTransactionClaimable({ parameters, wallet }: ActionPr
   }
 
   const transaction = {
-    amount: result.result.value.toString(),
+    amount: '0x0',
     gasLimit: result.result.gasLimit,
     from: result.result.from ?? null,
     to: result.result.to ?? null,
@@ -27,6 +27,7 @@ export async function claimTransactionClaimable({ parameters, wallet }: ActionPr
     status: 'pending',
     type: 'send',
     nonce: result.result.nonce,
+    asset,
   } satisfies NewTransaction;
 
   addNewTransaction({
