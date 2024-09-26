@@ -64,8 +64,7 @@ export const ClaimingClaimableSharedUI = ({
     claimStatus === 'claiming' ||
     (claimStatus !== 'success' && claimStatus !== 'pending' && claimable.type === 'transaction' && !isTransactionReady);
 
-  const shouldShowClaimText =
-    (claimStatus === 'idle' || claimStatus === 'claiming') && (claimable.type !== 'transaction' || hasSufficientFunds);
+  const shouldShowClaimText = claimStatus === 'idle' && (claimable.type !== 'transaction' || hasSufficientFunds);
 
   const claimAmountDisplay = useMemo(
     () => `${handleSignificantDecimalsWithThreshold(claimable.value.claimAsset.amount, 4, '0.001')} ${claimable.asset.symbol}`,
@@ -86,7 +85,7 @@ export const ClaimingClaimableSharedUI = ({
           return i18n.t(i18n.l.claimables.panel.insufficient_funds);
         }
       case 'claiming':
-        return i18n.t(i18n.l.claimables.panel.claim_amount, { amount: claimAmountDisplay });
+        return i18n.t(i18n.l.claimables.panel.claim_in_progress);
       case 'pending':
       case 'success':
         return i18n.t(i18n.l.button.done);
