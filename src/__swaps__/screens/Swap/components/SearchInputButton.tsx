@@ -10,6 +10,7 @@ import { THICK_BORDER_WIDTH } from '../constants';
 import { useClipboard } from '@/hooks';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { triggerHapticFeedback } from '@/screens/points/constants';
+import { IS_ANDROID } from '@/env';
 
 const CANCEL_LABEL = i18n.t(i18n.l.button.cancel);
 const CLOSE_LABEL = i18n.t(i18n.l.button.close);
@@ -35,6 +36,7 @@ export const SearchInputButton = ({
     outputSearchRef,
     AnimatedSwapStyles,
   } = useSwapContext();
+
   const { hasClipboardData } = useClipboard();
 
   const btnText = useDerivedValue(() => {
@@ -74,9 +76,10 @@ export const SearchInputButton = ({
     const isOutputSearchFocused = outputProgress.value === NavigationSteps.SEARCH_FOCUSED;
     const isOutputTokenListFocused = outputProgress.value === NavigationSteps.TOKEN_LIST_FOCUSED;
 
-    const isVisible = isInputSearchFocused || isOutputSearchFocused || output || (!output && !!internalSelectedInputAsset.value);
+    const clipboardDataAvailable = hasClipboardData || IS_ANDROID;
 
-    const isPasteDisabled = output && !internalSelectedOutputAsset.value && isOutputTokenListFocused && !hasClipboardData;
+    const isPasteDisabled = output && !internalSelectedOutputAsset.value && isOutputTokenListFocused && !clipboardDataAvailable;
+    const isVisible = isInputSearchFocused || isOutputSearchFocused || output || (!output && !!internalSelectedInputAsset.value);
     const visibleOpacity = isPasteDisabled ? 0.4 : 1;
 
     return {

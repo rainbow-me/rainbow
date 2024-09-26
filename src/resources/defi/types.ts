@@ -40,6 +40,7 @@ export type PositionsTotals = {
 export type Claimable = {
   asset: PositionAsset;
   quantity: string;
+  omit_from_total?: boolean;
 };
 export type Deposit = {
   apr: string;
@@ -47,6 +48,7 @@ export type Deposit = {
   asset: PositionAsset;
   quantity: string;
   total_asset: string; // what does this mean?
+  omit_from_total?: boolean;
   underlying: { asset: PositionAsset; quantity: string }[];
 };
 export type Borrow = {
@@ -55,6 +57,7 @@ export type Borrow = {
   asset: PositionAsset;
   quantity: string;
   total_asset: string; // what does this mean?
+  omit_from_total?: boolean;
   underlying: { asset: PositionAsset; quantity: string }[];
 };
 

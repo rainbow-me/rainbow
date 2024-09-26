@@ -1,5 +1,4 @@
-import { ExtendedAnimatedAssetWithColors, UniqueId } from './assets';
-import { SearchAsset } from './search';
+import { ExtendedAnimatedAssetWithColors } from './assets';
 
 export type inputKeys = 'inputAmount' | 'inputNativeValue' | 'outputAmount' | 'outputNativeValue';
 export type inputMethods = inputKeys | 'slider';

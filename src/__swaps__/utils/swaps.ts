@@ -17,7 +17,7 @@ import { TokenColors } from '@/graphql/__generated__/metadata';
 import * as i18n from '@/languages';
 import { RainbowConfig } from '@/model/remoteConfig';
 import store from '@/redux/store';
-import { ETH_ADDRESS } from '@/references';
+import { ETH_ADDRESS, supportedNativeCurrencies } from '@/references';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { colors } from '@/styles';
 import { BigNumberish } from '@ethersproject/bignumber';
@@ -197,6 +197,8 @@ export const findNiceIncrement = (availableBalance: string | number | undefined)
 
 // /---- 🔵 Worklet utils 🔵 ----/ //
 //
+type nativeCurrencyType = typeof supportedNativeCurrencies;
+
 export function addCommasToNumber<T extends 0 | '0' | '0.00'>(number: string | number, fallbackValue: T = 0 as T): T | string {
   'worklet';
   if (isNaN(Number(number))) {
@@ -217,14 +219,25 @@ export function addCommasToNumber<T extends 0 | '0' | '0.00'>(number: string | n
   }
 }
 
+export const addSymbolToNativeDisplayWorklet = (value: number | string, nativeCurrency: keyof nativeCurrencyType): string => {
+  'worklet';
+
+  const nativeSelected = supportedNativeCurrencies?.[nativeCurrency];
+  const { symbol } = nativeSelected;
+
+  const nativeValueWithCommas = addCommasToNumber(value, '0');
+
+  return `${symbol}${nativeValueWithCommas}`;
+};
+
 export function clamp(value: number, lowerBound: number, upperBound: number) {
   'worklet';
   return Math.min(Math.max(lowerBound, value), upperBound);
 }
 
-export function stripCommas(value: string) {
+export function stripNonDecimalNumbers(value: string) {
   'worklet';
-  return value.replace(/,/g, '');
+  return value.replace(/[^0-9.]/g, '');
 }
 
 export function trimTrailingZeros(value: string) {
@@ -628,7 +641,6 @@ export const buildQuoteParams = ({
     fromAddress: currentAddress,
     sellTokenAddress: inputAsset.isNativeAsset ? ETH_ADDRESS_AGGREGATOR : inputAsset.address,
     buyTokenAddress: outputAsset.isNativeAsset ? ETH_ADDRESS_AGGREGATOR : outputAsset.address,
-    // TODO: Handle native input cases below
     sellAmount:
       lastTypedInput === 'inputAmount' || lastTypedInput === 'inputNativeValue'
         ? convertAmountToRawAmount(inputAmount.toString(), inputAsset.decimals)
