@@ -5,7 +5,6 @@ import { TokenSearchThreshold, TokenSearchTokenListId, TokenSearchUniswapAssetKe
 import { logger, RainbowError } from '@/logger';
 import { EthereumAddress } from '@rainbow-me/swaps';
 import { RainbowToken, TokenSearchToken } from '@/entities/tokens';
-import ethereumUtils from '@/utils/ethereumUtils';
 import { chainsName } from '@/chains';
 
 type TokenSearchApiResponse = {
@@ -13,7 +12,7 @@ type TokenSearchApiResponse = {
 };
 
 const tokenSearchApi = new RainbowFetchClient({
-  baseURL: 'https://token-search.rainbow.me/v2',
+  baseURL: 'https://token-search-v2.rainbowdotme.workers.dev/v2',
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
@@ -105,6 +104,7 @@ export const tokenSearch = async (searchParams: {
       };
     });
   } catch (e: any) {
+    console.log(e);
     logger.error(new RainbowError(`[tokenSearch]: An error occurred while searching for query`), {
       query: searchParams.query,
       message: e.message,

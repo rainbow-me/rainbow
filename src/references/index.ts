@@ -3,8 +3,6 @@ import { ChainId, Network } from '@/chains/types';
 import { Asset } from '@/entities';
 import { AddressZero } from '@ethersproject/constants';
 
-import type { Address } from 'viem';
-
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
 export { default as chainAssets } from './chain-assets.json';
 export { signatureRegistryABI, SIGNATURE_REGISTRY_ADDRESS } from './signatureRegistry';
@@ -71,6 +69,9 @@ export const BLAST_ETH_ADDRESS = AddressZero;
 export const DAI_AVALANCHE_ADDRESS = '0x6b175474e89094c44da98b954eedeac495271d0f';
 export const USDC_AVALANCHE_ADDRESS = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
 export const WBTC_AVALANCHE_ADDRESS = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599';
+export const APECOIN_MAINNET_ADDRESS = '0x4d224452801aced8b2f0aebe155379bb5d594381';
+export const APECOIN_ARBITRUM_ADDRESS = '0x7f9FBf9bDd3F4105C478b996B648FE6e828a1e98';
+export const APECOIN_APECHAIN_ADDRESS = AddressZero;
 
 export const WETH_ADDRESS = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 export const WETH_POLYGON_ADDRESS = '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619';
@@ -161,6 +162,7 @@ export const NATIVE_ASSETS_PER_CHAIN: Record<ChainId, AddressOrEth> = {
   [ChainId.blastSepolia]: AddressZero,
   [ChainId.polygonAmoy]: AddressZero,
   [ChainId.degen]: AddressZero,
+  [ChainId.apechain]: AddressZero,
 };
 
 export type ReferrerType = 'native-app' | 'app-claim';

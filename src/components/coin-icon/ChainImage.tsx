@@ -11,11 +11,14 @@ import ZoraBadge from '@/assets/badges/zora.png';
 import AvalancheBadge from '@/assets/badges/avalanche.png';
 import BlastBadge from '@/assets/badges/blast.png';
 import DegenBadge from '@/assets/badges/degen.png';
+import ApechainBadge from '@/assets/badges/apechainBadge.png';
 import FastImage, { Source } from 'react-native-fast-image';
 
 export function ChainImage({ chainId, size = 20 }: { chainId: ChainId | null | undefined; size?: number }) {
   const source = useMemo(() => {
     switch (chainId) {
+      case ChainId.apechain:
+        return ApechainBadge;
       case ChainId.arbitrum:
         return ArbitrumBadge;
       case ChainId.base:
