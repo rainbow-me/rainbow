@@ -12,7 +12,7 @@ type TokenSearchApiResponse = {
 };
 
 const tokenSearchApi = new RainbowFetchClient({
-  baseURL: 'https://token-search-v2.rainbowdotme.workers.dev/v2',
+  baseURL: 'https://token-search.rainbow.me/v2',
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
@@ -104,7 +104,6 @@ export const tokenSearch = async (searchParams: {
       };
     });
   } catch (e: any) {
-    console.log(e);
     logger.error(new RainbowError(`[tokenSearch]: An error occurred while searching for query`), {
       query: searchParams.query,
       message: e.message,

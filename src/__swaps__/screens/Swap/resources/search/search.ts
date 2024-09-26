@@ -12,7 +12,7 @@ import { parseTokenSearch } from './utils';
 const ALL_VERIFIED_TOKENS_PARAM = '/?list=verifiedAssets';
 
 const tokenSearchHttp = new RainbowFetchClient({
-  baseURL: 'https://token-search-v2.rainbowdotme.workers.dev/v2',
+  baseURL: 'https://token-search.rainbow.me/v2',
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
