@@ -254,13 +254,6 @@ const FreezableWebViewComponent = ({
     [addRecent, animatedActiveTabIndex, backgroundColor, currentlyOpenTabIds, setLogo, setTitle, tabId, tabUrl]
   );
 
-  const handleOnLoadStart = useCallback(
-    (event: { nativeEvent: { url: string | URL; title: string } }) => {
-      // placeholder
-    },
-    [webViewRef, tabId]
-  );
-
   const handleOnLoad = useCallback(
     (event: WebViewEvent) => {
       if (event.nativeEvent.loading) return;
@@ -271,21 +264,12 @@ const FreezableWebViewComponent = ({
         if (!webViewRef?.current) {
           return;
         }
-        console.log('Setting up messenger for tab', tabId, origin);
         const messenger = appMessenger(webViewRef.current, tabId, origin);
         currentMessengerRef.current = messenger;
       }
     },
     [webViewRef, tabId]
   );
-
-  const handleOnLoadEnd = useCallback(() => {
-    return;
-  }, []);
-
-  const handleOnError = useCallback(() => {
-    return;
-  }, []);
 
   const handleShouldStartLoadWithRequest = useCallback(
     (request: { url: string }) => {
@@ -315,7 +299,6 @@ const FreezableWebViewComponent = ({
   const handleNavigationStateChange = useCallback(
     (navState: WebViewNavigation) => {
       if (navState.navigationType !== 'other' || getDappHost(navState.url) === getDappHost(tabUrl)) {
-        console.log('actually updating URL from ', tabUrl, ' to ', navState.url);
         // ⚠️ TODO: Reintegrate canGoBack/canGoForward - we can just set it here now, reliably, because this
         // function no longer modifies the same URL state that's passed to the WebView's source prop.
         runOnUI(updateTabUrlWorklet)(navState.url, tabId);
@@ -369,10 +352,7 @@ const FreezableWebViewComponent = ({
     <Freeze freeze={!isActiveTab}>
       <TabWebView
         onContentProcessDidTerminate={handleOnContentProcessDidTerminate}
-        onError={handleOnError}
         onLoad={handleOnLoad}
-        onLoadStart={handleOnLoadStart}
-        onLoadEnd={handleOnLoadEnd}
         onLoadProgress={handleOnLoadProgress}
         onMessage={handleOnMessage}
         onNavigationStateChange={handleNavigationStateChange}
