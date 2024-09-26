@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
 import { useClaimables } from '@/resources/addys/claimables/query';
@@ -7,6 +7,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { deviceUtils } from '@/utils';
 import Routes from '@/navigation/routesNames';
 import { ExtendedState } from './core/RawRecyclerList';
+import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
 
 export default React.memo(function Claimable({ uniqueId, extendedState }: { uniqueId: string; extendedState: ExtendedState }) {
   const { accountAddress, nativeCurrency } = useAccountSettings();
@@ -23,6 +24,11 @@ export default React.memo(function Claimable({ uniqueId, extendedState }: { uniq
   );
 
   const [claimable] = data;
+
+  const nativeDisplay = useMemo(
+    () => convertAmountToNativeDisplayWorklet(claimable.value.nativeAsset.amount, nativeCurrency, true),
+    [claimable.value.nativeAsset.amount, nativeCurrency]
+  );
 
   if (!claimable) return null;
 
@@ -68,7 +74,7 @@ export default React.memo(function Claimable({ uniqueId, extendedState }: { uniq
         style={{ backgroundColor: 'rgba(7, 17, 32, 0.02)' }}
       >
         <Text weight="semibold" color="label" align="center" size="17pt">
-          {claimable.value.nativeAsset.display}
+          {nativeDisplay}
         </Text>
       </Box>
     </Box>
