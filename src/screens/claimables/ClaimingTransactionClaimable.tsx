@@ -7,7 +7,6 @@ import { parseGasParamsForTransaction } from '@/parsers';
 import { getNextNonce } from '@/state/nonces';
 import { needsL1SecurityFeeChains } from '@/chains';
 import { logger, RainbowError } from '@/logger';
-import { convertAmountToNativeDisplay } from '@/helpers/utilities';
 import { ClaimingClaimableSharedUI, ClaimStatus } from './ClaimingClaimableSharedUI';
 import { TransactionRequest } from '@ethersproject/providers';
 import { queryClient } from '@/react-query';
@@ -15,6 +14,7 @@ import { claimablesQueryKey, useClaimables } from '@/resources/addys/claimables/
 import { walletExecuteRap } from '@/rapsV2/execute';
 import { loadWallet } from '@/model/wallet';
 import { useMutation } from '@tanstack/react-query';
+import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
 
 // supports legacy and new gas types
 export type TransactionClaimableTxPayload = TransactionRequest &
@@ -131,7 +131,7 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
   const isTransactionReady = !!(isGasReady && isSufficientGas && isValidGas && txPayload);
 
   const nativeCurrencyGasFeeDisplay = useMemo(
-    () => convertAmountToNativeDisplay(selectedGasFee?.gasFee?.estimatedFee?.native?.value?.amount, nativeCurrency),
+    () => convertAmountToNativeDisplayWorklet(selectedGasFee?.gasFee?.estimatedFee?.native?.value?.amount, nativeCurrency, true),
     [nativeCurrency, selectedGasFee?.gasFee?.estimatedFee?.native?.value?.amount]
   );
 

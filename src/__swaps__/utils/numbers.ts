@@ -339,7 +339,7 @@ export const convertAmountToNativeDisplayWorklet = (
         maximumFractionDigits: decimals,
       });
 
-  const nativeDisplay = `${thresholdReached ? '<' : ''}${alignment === 'left' || ignoreAlignment ? symbol : ''}${nativeValue}${!ignoreAlignment && alignment === 'right' ? symbol : ''}`;
+  const nativeDisplay = `${thresholdReached ? '< ' : ''}${alignment === 'left' || ignoreAlignment ? symbol : ''}${nativeValue}${!ignoreAlignment && alignment === 'right' ? symbol : ''}`;
 
   return nativeDisplay;
 };
@@ -363,7 +363,7 @@ const lessThanPrefix = '<';
 
 export const formatNumber = (value: string, options?: { decimals?: number }) => {
   if (!+value) return `0${decimalSeparator}0`;
-  if (+value < 0.0001) return `${lessThanPrefix}0${decimalSeparator}0001`;
+  if (+value < 0.0001) return `${lessThanPrefix} 0${decimalSeparator}0001`;
 
   const [whole, fraction = ''] = value.split(decimalSeparator);
   const decimals = options?.decimals;
