@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 import { AccentColorProvider, Bleed, Box, Inline, Text, TextShadow, globalColors, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import { ListHeader, Panel, TapToDismiss, controlPanelStyles } from '@/components/SmoothPager/ListPanel';
-import { deviceUtils, safeAreaInsetValues } from '@/utils';
+import { deviceUtils, safeAreaInsetValues, watchingAlert } from '@/utils';
 import { View } from 'react-native';
 import { IS_IOS } from '@/env';
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
@@ -15,7 +15,8 @@ import { useNavigation } from '@/navigation';
 import { TextColor } from '@/design-system/color/palettes';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { convertAmountToNativeDisplayWorklet, handleSignificantDecimalsWithThreshold } from '@/__swaps__/utils/numbers';
-import { useAccountSettings } from '@/hooks';
+import { useAccountSettings, useWallets } from '@/hooks';
+import { enableActionsOnReadOnlyWallet } from '@/config';
 
 export type ClaimStatus =
   | 'idle' // initial state
@@ -58,6 +59,7 @@ export const ClaimingClaimableSharedUI = ({
   const { nativeCurrency } = useAccountSettings();
   const theme = useTheme();
   const { goBack } = useNavigation();
+  const { isReadOnlyWallet } = useWallets();
 
   const isButtonDisabled =
     claimStatus === 'claiming' ||
@@ -216,9 +218,13 @@ export const ClaimingClaimableSharedUI = ({
                   }
                 }}
                 onLongPress={() => {
-                  if (claimStatus === 'idle' || claimStatus === 'error') {
-                    setClaimStatus('claiming');
-                    claim();
+                  if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
+                    if (claimStatus === 'idle' || claimStatus === 'error') {
+                      setClaimStatus('claiming');
+                      claim();
+                    }
+                  } else {
+                    watchingAlert();
                   }
                 }}
               >
