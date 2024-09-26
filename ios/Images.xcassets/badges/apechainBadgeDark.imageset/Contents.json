@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "apechainBadgeNoShadow.png",
+      "filename" : "apechainBadgeDark.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "apechainBadgeNoShadow@2x.png",
+      "filename" : "apechainBadgeDark@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "apechainBadgeNoShadow@3x.png",
+      "filename" : "apechainBadgeDark@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
