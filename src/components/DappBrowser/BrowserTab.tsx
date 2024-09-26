@@ -257,7 +257,6 @@ const FreezableWebViewComponent = ({
   const handleOnLoad = useCallback(
     (event: WebViewEvent) => {
       if (event.nativeEvent.loading) return;
-      // placeholder
       const { origin } = new URL(event.nativeEvent.url);
 
       if (typeof webViewRef !== 'function' && webViewRef?.current) {
