@@ -278,7 +278,7 @@ const getDataString = (func: string, arrVals: string[]) => {
  */
 function getEtherscanHostForNetwork({ chainId }: { chainId: ChainId }): string {
   const base_host = 'etherscan.io';
-  const blockExplorer = defaultChains[chainId].blockExplorers?.default?.url;
+  const blockExplorer = defaultChains[chainId]?.blockExplorers?.default?.url;
   const network = chainsName[chainId];
 
   if (network && isTestnetChain({ chainId })) {
@@ -354,7 +354,7 @@ export const getFirstTransactionTimestamp = async (address: EthereumAddress): Pr
 };
 
 function getBlockExplorer({ chainId }: { chainId: ChainId }) {
-  return defaultChains[chainId].blockExplorers?.default.name || 'etherscan';
+  return defaultChains[chainId]?.blockExplorers?.default.name || 'etherscan';
 }
 
 function openAddressInBlockExplorer({ address, chainId }: { address: EthereumAddress; chainId: ChainId }) {
