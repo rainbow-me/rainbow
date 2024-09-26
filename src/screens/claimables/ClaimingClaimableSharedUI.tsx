@@ -14,7 +14,6 @@ import { chainsLabel } from '@/chains';
 import { useNavigation } from '@/navigation';
 import { TextColor } from '@/design-system/color/palettes';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { lessThan } from '@/helpers/utilities';
 import { convertAmountToNativeDisplayWorklet, handleSignificantDecimalsWithThreshold } from '@/__swaps__/utils/numbers';
 import { useAccountSettings } from '@/hooks';
 
