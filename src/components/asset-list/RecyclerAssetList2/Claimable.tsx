@@ -9,7 +9,7 @@ import Routes from '@/navigation/routesNames';
 import { ExtendedState } from './core/RawRecyclerList';
 import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
 
-export default React.memo(function Claimable({ uniqueId, extendedState }: { uniqueId: string; extendedState: ExtendedState }) {
+export const Claimable = React.memo(function Claimable({ uniqueId, extendedState }: { uniqueId: string; extendedState: ExtendedState }) {
   const { accountAddress, nativeCurrency } = useAccountSettings();
   const { navigate } = extendedState;
 
