@@ -17,6 +17,8 @@ import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-na
 import { convertAmountToNativeDisplayWorklet, handleSignificantDecimalsWithThreshold } from '@/__swaps__/utils/numbers';
 import { useAccountSettings } from '@/hooks';
 
+const BUTTON_WIDTH = deviceUtils.dimensions.width - 52;
+
 export type ClaimStatus =
   | 'idle' // initial state
   | 'claiming' // user has pressed the claim button
@@ -230,15 +232,11 @@ export const ClaimingClaimableSharedUI = ({
                     shadow="30px accent"
                     borderRadius={43}
                     height={{ custom: 48 }}
-                    width="full"
+                    width={{ custom: BUTTON_WIDTH }}
                     alignItems="center"
                     justifyContent="center"
                   >
-                    <ShimmerAnimation
-                      color="#FFFFFF"
-                      enabled={!isButtonDisabled || claimStatus === 'claiming'}
-                      width={deviceUtils.dimensions.width - 52}
-                    />
+                    <ShimmerAnimation color="#FFFFFF" enabled={!isButtonDisabled || claimStatus === 'claiming'} width={BUTTON_WIDTH} />
                     <Inline alignVertical="center" space="6px">
                       {shouldShowClaimText && (
                         <TextShadow shadowOpacity={0.3}>
