@@ -48,7 +48,7 @@ import {
   USER_AGENT,
   USER_AGENT_APPLICATION_NAME,
 } from './constants';
-import { handleProviderRequestApp } from './handleProviderRequest';
+import { getDappHost, handleProviderRequestApp } from './handleProviderRequest';
 import { useAnimatedTab } from './hooks/useAnimatedTab';
 import { useTabScreenshotProvider } from './hooks/useTabScreenshotProvider';
 import { freezeWebsite, getWebsiteMetadata, unfreezeWebsite } from './scripts';
@@ -254,34 +254,21 @@ const FreezableWebViewComponent = ({
     [addRecent, animatedActiveTabIndex, backgroundColor, currentlyOpenTabIds, setLogo, setTitle, tabId, tabUrl]
   );
 
-  const handleOnLoadStart = useCallback(
-    (event: { nativeEvent: { url: string | URL; title: string } }) => {
+  const handleOnLoad = useCallback(
+    (event: WebViewEvent) => {
+      if (event.nativeEvent.loading) return;
       const { origin } = new URL(event.nativeEvent.url);
 
       if (typeof webViewRef !== 'function' && webViewRef?.current) {
         if (!webViewRef?.current) {
           return;
         }
-
         const messenger = appMessenger(webViewRef.current, tabId, origin);
         currentMessengerRef.current = messenger;
       }
     },
     [webViewRef, tabId]
   );
-
-  const handleOnLoad = useCallback((event: WebViewEvent) => {
-    if (event.nativeEvent.loading) return;
-    // placeholder
-  }, []);
-
-  const handleOnLoadEnd = useCallback(() => {
-    return;
-  }, []);
-
-  const handleOnError = useCallback(() => {
-    return;
-  }, []);
 
   const handleShouldStartLoadWithRequest = useCallback(
     (request: { url: string }) => {
@@ -310,13 +297,13 @@ const FreezableWebViewComponent = ({
 
   const handleNavigationStateChange = useCallback(
     (navState: WebViewNavigation) => {
-      if (navState.url) {
-        runOnUI(updateTabUrlWorklet)(navState.url, tabId);
+      if (navState.navigationType !== 'other' || getDappHost(navState.url) === getDappHost(tabUrl)) {
         // ⚠️ TODO: Reintegrate canGoBack/canGoForward - we can just set it here now, reliably, because this
         // function no longer modifies the same URL state that's passed to the WebView's source prop.
+        runOnUI(updateTabUrlWorklet)(navState.url, tabId);
       }
     },
-    [tabId, updateTabUrlWorklet]
+    [tabUrl, updateTabUrlWorklet, tabId]
   );
 
   const handleOnOpenWindow = useCallback(
@@ -364,10 +351,7 @@ const FreezableWebViewComponent = ({
     <Freeze freeze={!isActiveTab}>
       <TabWebView
         onContentProcessDidTerminate={handleOnContentProcessDidTerminate}
-        onError={handleOnError}
         onLoad={handleOnLoad}
-        onLoadStart={handleOnLoadStart}
-        onLoadEnd={handleOnLoadEnd}
         onLoadProgress={handleOnLoadProgress}
         onMessage={handleOnMessage}
         onNavigationStateChange={handleNavigationStateChange}
