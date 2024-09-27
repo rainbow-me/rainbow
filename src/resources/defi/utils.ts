@@ -3,10 +3,7 @@ import {
   AddysPositionsResponse,
   Borrow,
   Claimable,
-  Deposit,
-  NativeDisplay,
   Position,
-  PositionAsset,
   PositionsTotals,
   RainbowBorrow,
   RainbowClaimable,
@@ -21,66 +18,58 @@ import { chainsIdByName } from '@/chains';
 
 export const parsePosition = (position: Position, currency: NativeCurrencyKey): RainbowPosition => {
   let totalDeposits = '0';
-  const parsedDeposits = position.deposits?.map((deposit: Deposit): RainbowDeposit => {
-    deposit.underlying = deposit.underlying?.map(
-      (underlying: {
-        asset: PositionAsset;
-        quantity: string;
-      }): {
-        asset: PositionAsset;
-        quantity: string;
-        native: NativeDisplay;
-      } => {
+  const parsedDeposits = position.deposits?.map((deposit): RainbowDeposit => {
+    return {
+      ...deposit,
+      underlying: deposit.underlying?.map(underlying => {
         const nativeDisplay = convertRawAmountToNativeDisplay(
           underlying.quantity,
           underlying.asset.decimals,
           underlying.asset.price?.value!,
           currency
         );
-        totalDeposits = add(totalDeposits, nativeDisplay.amount);
+        if (!deposit.omit_from_total) {
+          totalDeposits = add(totalDeposits, nativeDisplay.amount);
+        }
 
         return {
           ...underlying,
           native: nativeDisplay,
         };
-      }
-    );
-    return deposit as RainbowDeposit;
+      }),
+    };
   });
 
   let totalBorrows = '0';
 
   const parsedBorrows = position.borrows?.map((borrow: Borrow): RainbowBorrow => {
-    borrow.underlying = borrow.underlying.map(
-      (underlying: {
-        asset: PositionAsset;
-        quantity: string;
-      }): {
-        asset: PositionAsset;
-        quantity: string;
-        native: NativeDisplay;
-      } => {
+    return {
+      ...borrow,
+      underlying: borrow.underlying.map(underlying => {
         const nativeDisplay = convertRawAmountToNativeDisplay(
           underlying.quantity,
           underlying.asset.decimals,
           underlying.asset.price?.value!,
           currency
         );
-        totalBorrows = add(totalBorrows, nativeDisplay.amount);
+        if (!borrow.omit_from_total) {
+          totalBorrows = add(totalBorrows, nativeDisplay.amount);
+        }
 
         return {
           ...underlying,
           native: nativeDisplay,
         };
-      }
-    );
-    return borrow as RainbowBorrow;
+      }),
+    };
   });
 
   let totalClaimables = '0';
   const parsedClaimables = position.claimables?.map((claim: Claimable): RainbowClaimable => {
     const nativeDisplay = convertRawAmountToNativeDisplay(claim.quantity, claim.asset.decimals, claim.asset.price?.value!, currency);
-    totalClaimables = add(totalClaimables, nativeDisplay.amount);
+    if (!claim.omit_from_total) {
+      totalClaimables = add(totalClaimables, nativeDisplay.amount);
+    }
     return {
       asset: claim.asset,
       quantity: claim.quantity,

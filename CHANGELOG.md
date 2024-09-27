@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.40] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.40)
+
+### Fixed
+
+- Fixed a bug with speed up and cancel (#6133)
+
 ## [1.9.39] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.39)
 
 ### Added
@@ -48,7 +54,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 - Fixed an issue where deleting a contact would cause loading issues on send flow (#6119)
 - Fixed a bug where chainId wasn’t being passed in the dapp browser (#6121)
 
-## [1.9.38] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.36)
+## [1.9.38] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.38)
 
 ### Fixed
 
