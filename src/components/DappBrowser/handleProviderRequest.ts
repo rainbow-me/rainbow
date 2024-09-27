@@ -2,8 +2,6 @@ import { Messenger } from '@/browserMessaging/AppMessenger';
 import { AddEthereumChainProposedChain, RequestArguments, RequestResponse, handleProviderRequest } from '@rainbow-me/provider';
 import * as lang from '@/languages';
 
-import { Provider } from '@ethersproject/providers';
-
 import { getProvider } from '@/handlers/web3';
 import { UserRejectedRequestError } from 'viem';
 import { logger } from '@/logger';
