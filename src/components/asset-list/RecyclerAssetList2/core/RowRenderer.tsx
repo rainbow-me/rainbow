@@ -35,8 +35,8 @@ import { RemoteCardCarousel } from '@/components/cards/remote-cards';
 import WrappedCollectiblesHeader from '../WrappedCollectiblesHeader';
 import NFTLoadingSkeleton from '../NFTLoadingSkeleton';
 import { NFTEmptyState } from '../NFTEmptyState';
-import Claimable from '../Claimable';
-import ClaimablesListHeader from '../ClaimablesListHeader';
+import { ClaimablesListHeader } from '../ClaimablesListHeader';
+import { Claimable } from '../Claimable';
 
 function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, extendedState: ExtendedState) {
   const data = extendedState.additionalData[uid];
