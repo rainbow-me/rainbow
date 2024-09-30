@@ -1,6 +1,6 @@
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-import Divider from './Divider';
+import Divider from './Divider.tsx';
 import ButtonPressAnimation from './animations/ButtonPressAnimation';
 import ChainBadge from './coin-icon/ChainBadge';
 import { Column, Row } from './layout';

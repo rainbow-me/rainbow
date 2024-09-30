@@ -22,6 +22,7 @@ export type RootStackParamList = {
     asset?: ParsedAddressAsset | UniqueAsset;
     address?: string;
     nativeAmount?: string;
+    fromProfile?: boolean;
   };
   [Routes.CHANGE_WALLET_SHEET]: {
     watchOnly: boolean;

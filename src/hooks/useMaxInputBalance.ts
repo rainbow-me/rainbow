@@ -9,7 +9,11 @@ export default function useMaxInputBalance() {
   const { selectedGasFee, l1GasFeeOptimism } = useGas();
 
   const updateMaxInputBalance = useCallback(
-    (inputCurrency: ParsedAddressAsset | UniqueAsset) => {
+    (inputCurrency: ParsedAddressAsset | UniqueAsset | undefined) => {
+      const isUniqueAsset = !inputCurrency || 'collection' in inputCurrency;
+      if (isUniqueAsset) {
+        return '0';
+      }
       // Update current balance
       const newInputBalance = ethereumUtils.getBalanceAmount(selectedGasFee, inputCurrency, l1GasFeeOptimism);
 

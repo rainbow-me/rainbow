@@ -8,7 +8,8 @@ import { SwapMetadata } from '@/raps/references';
 import { UniqueAsset } from '../uniqueAssets';
 import { ParsedAsset } from '@/resources/assets/types';
 import { TransactionStatus, TransactionType } from '@/resources/transactions/types';
-import { ChainId, Network } from '@/chains/types';
+import { ChainId } from '@/chains/types';
+import { BytesLike } from '@ethersproject/bytes';
 
 export type TransactionDirection = 'in' | 'out' | 'self';
 
@@ -43,7 +44,7 @@ export interface RainbowTransaction {
   };
   direction?: TransactionDirection;
   description?: string;
-  data?: string; // for pending tx
+  data?: string | BytesLike; // for pending tx
   from: EthereumAddress | null;
   gasLimit?: BigNumberish;
   gasPrice?: BigNumberish;

@@ -7,7 +7,7 @@ import showWalletErrorAlert from '../helpers/support';
 import { useNavigation } from '../navigation/Navigation';
 import { useTheme } from '../theme/ThemeContext';
 import { deviceUtils, magicMemo } from '../utils';
-import Divider from './Divider';
+import Divider from './Divider.tsx';
 import { ButtonPressAnimation, ScaleButtonZoomableAndroid } from './animations';
 import { Icon } from './icons';
 import { Centered, Row, RowWithMargins } from './layout';

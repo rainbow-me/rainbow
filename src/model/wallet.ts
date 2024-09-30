@@ -58,6 +58,7 @@ import { Signer } from '@ethersproject/abstract-signer';
 import { sanitizeTypedData } from '@/utils/signingUtils';
 import { ExecuteFnParamsWithoutFn, performanceTracking, Screen } from '@/state/performance/performance';
 import { Network } from '@/chains/types';
+import { WalletBalanceResult } from '@/hooks/useWalletBalances';
 
 export type EthereumPrivateKey = string;
 type EthereumMnemonic = string;
@@ -122,6 +123,7 @@ export interface RainbowAccount {
   avatar: null | string;
   color: number;
   visible: boolean;
+  ens?: string;
   image?: string | null;
 }
 

@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ActivityIndicator, InteractionManager } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import ChainLogo from '../components/ChainLogo';
-import Divider from '../components/Divider';
+import Divider from '../components/Divider.tsx';
 import Spinner from '../components/Spinner';
 import ButtonPressAnimation from '../components/animations/ButtonPressAnimation';
 import { RequestVendorLogoIcon } from '../components/coin-icon';

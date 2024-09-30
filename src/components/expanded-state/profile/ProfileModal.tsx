@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import React, { useCallback, useRef } from 'react';
 import { View } from 'react-native';
-import Divider from '../../Divider';
+import Divider from '@/components/Divider';
 import { ButtonPressAnimation } from '../../animations';
 import { BiometricButtonContent } from '../../buttons';
 import CopyTooltip from '../../copy-tooltip';
