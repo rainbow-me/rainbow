@@ -38,6 +38,16 @@ export const initializeGlobalNotificationSettings = () => {
   );
 };
 
+export const subscribeExistingNotificationsSettings = () => {
+  const currentSettings = getAllWalletNotificationSettingsFromStorage();
+
+  if (!currentSettings) return;
+
+  InteractionManager.runAfterInteractions(() => {
+    publishAndSaveWalletSettings(currentSettings, true);
+  });
+};
+
 /**
  * schedules subscribing to wallets that haven't been successfully subscribed to yet
  * called from NotificationsHandler run on every cold start
