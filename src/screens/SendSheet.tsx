@@ -2,7 +2,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import { isEmpty, isEqual, isString } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Keyboard, StatusBar, TextInput, View } from 'react-native';
+import { InteractionManager, Keyboard, StatusBar, View } from 'react-native';
 import { useDebounce } from 'use-debounce';
 import { GasSpeedButton } from '../components/gas';
 import { Column } from '../components/layout';
@@ -64,19 +64,18 @@ import { performanceTracking, Screens, TimeToSignOperation } from '@/state/perfo
 import { REGISTRATION_STEPS } from '@/helpers/ens';
 import { ChainId } from '@/chains/types';
 import { chainsName, chainsNativeAsset, needsL1SecurityFeeChains } from '@/chains';
-import { ThemeContextProps, useTheme } from '@/theme';
 import { RootStackParamList } from '@/navigation/types';
-import { StaticJsonRpcProvider } from '@ethersproject/providers';
+import { ThemeContextProps, useTheme } from '@/theme';
 
 const sheetHeight = deviceUtils.dimensions.height - (IS_ANDROID ? 30 : 10);
 const statusBarHeight = IS_IOS ? safeAreaInsetValues.top : StatusBar.currentHeight;
 
-type WithThemeProps = {
+type ComponentPropsWithTheme = {
   theme: ThemeContextProps;
 };
 
 const Container = styled(View)({
-  backgroundColor: ({ theme: { colors } }: WithThemeProps) => colors.transparent,
+  backgroundColor: ({ theme: { colors } }: ComponentPropsWithTheme) => colors.transparent,
   flex: 1,
   paddingTop: IS_IOS ? 0 : statusBarHeight,
   width: '100%',
@@ -87,30 +86,24 @@ const SheetContainer = styled(Column).attrs({
   flex: 1,
 })({
   ...borders.buildRadiusAsObject('top', IS_IOS ? 0 : 16),
-  backgroundColor: ({ theme: { colors } }: WithThemeProps) => colors.white,
+  backgroundColor: ({ theme: { colors } }: ComponentPropsWithTheme) => colors.white,
   height: sheetHeight,
   width: '100%',
 });
 
 const validateRecipient = (toAddress?: string, tokenAddress?: string) => {
-  if (!toAddress || !tokenAddress) {
+  if (!toAddress || toAddress?.toLowerCase() === tokenAddress?.toLowerCase()) {
     return false;
   }
 
-  const toAddressLower = toAddress.toLowerCase();
-  const tokenAddressLower = tokenAddress.toLowerCase();
-
-  if (toAddressLower === tokenAddressLower) {
-    return false;
-  }
   // Don't allow send to known ERC20 contracts on mainnet
-  if (rainbowTokenList.RAINBOW_TOKEN_LIST[toAddressLower]) {
+  if (rainbowTokenList.RAINBOW_TOKEN_LIST[toAddress.toLowerCase()]) {
     return false;
   }
   return true;
 };
 
-export default function SendSheet(props: any) {
+export default function SendSheet(props: Record<string, never>) {
   const { goBack, navigate } = useNavigation();
   const { data: sortedAssets } = useSortedUserAssets();
   const {
@@ -125,7 +118,7 @@ export default function SendSheet(props: any) {
     updateTxFee,
     l1GasFeeOptimism,
   } = useGas();
-  const recipientFieldRef = useRef<TextInput>();
+  const recipientFieldRef = useRef();
   const profilesEnabled = useExperimentalFlag(PROFILES);
 
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
@@ -139,13 +132,13 @@ export default function SendSheet(props: any) {
   });
 
   const { hiddenCoinsObj, pinnedCoinsObj } = useCoinListEditOptions();
-  const [toAddress, setToAddress] = useState<string | undefined>();
+  const [toAddress, setToAddress] = useState();
   const [amountDetails, setAmountDetails] = useState({
     assetAmount: '',
     isSufficientBalance: false,
     nativeAmount: '',
   });
-  const [currentChainId, setCurrentChainId] = useState<ChainId>(ChainId.mainnet);
+  const [currentChainId, setCurrentChainId] = useState();
   const prevChainId = usePrevious(currentChainId);
   const [currentInput, setCurrentInput] = useState('');
 
@@ -157,7 +150,7 @@ export default function SendSheet(props: any) {
   const nativeAmountOverride = params?.nativeAmount;
   const [recipient, setRecipient] = useState('');
   const [nickname, setNickname] = useState('');
-  const [selected, setSelected] = useState<ParsedAddressAsset | UniqueAsset>();
+  const [selected, setSelected] = useState<ParsedAddressAsset | UniqueAsset | undefined>();
   const [maxEnabled, setMaxEnabled] = useState(false);
   const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
 
@@ -165,7 +158,7 @@ export default function SendSheet(props: any) {
   const [debouncedRecipient] = useDebounce(recipient, 500);
 
   const [isValidAddress, setIsValidAddress] = useState(!!recipientOverride);
-  const [currentProvider, setCurrentProvider] = useState<StaticJsonRpcProvider | undefined>();
+  const [currentProvider, setCurrentProvider] = useState();
   const theme = useTheme();
   const { colors, isDarkMode } = theme;
 
@@ -176,21 +169,18 @@ export default function SendSheet(props: any) {
   const showAssetForm = isValidAddress && !isEmpty(selected);
 
   const isNft = selected?.type === AssetTypes.nft;
-
-  const isSelectedParsedAddressAsset = selected && 'price' in selected;
-  const isSelectedUniqueAsset = selected && 'lowResUrl' in selected;
+  const isUniqueAsset = selected && 'collection' in selected;
 
   let colorForAsset = useColorForAsset(selected, undefined, false, true);
-  const nftColor = usePersistentDominantColorFromImage(isSelectedUniqueAsset ? selected.lowResUrl : undefined) ?? colors.appleBlue;
-
+  const nftColor = usePersistentDominantColorFromImage(isUniqueAsset && isNft ? selected?.lowResUrl : null) ?? colors.appleBlue;
   if (isNft) {
     colorForAsset = nftColor;
   }
 
-  const uniqueTokenType = isNft ? getUniqueTokenType(selected as UniqueAsset) : undefined;
+  const uniqueTokenType = isUniqueAsset && isNft ? getUniqueTokenType(selected) : undefined;
   const isENS = uniqueTokenType === 'ENS';
 
-  const ensName = selected?.uniqueId ? selected.uniqueId?.split(' ')?.[0] : '';
+  const ensName = selected?.uniqueId ? selected.uniqueId?.split(' ')?.[0] : selected?.uniqueId ?? '';
   const ensProfile = useENSProfile(ensName, {
     enabled: isENS,
     supportedRecordsOnly: false,
@@ -205,7 +195,7 @@ export default function SendSheet(props: any) {
       const _assetAmount = newAssetAmount.replace(/[^0-9.]/g, '');
       let _nativeAmount = '';
       if (_assetAmount.length) {
-        const priceUnit = isSelectedParsedAddressAsset ? selected.price?.value ?? 0 : 0;
+        const priceUnit = selected?.price?.value ?? 0;
         const { amount: convertedNativeAmount } = convertAmountAndPriceToNativeDisplay(_assetAmount, priceUnit, nativeCurrency);
         _nativeAmount = formatInputDecimals(convertedNativeAmount, _assetAmount);
       }
@@ -218,11 +208,11 @@ export default function SendSheet(props: any) {
         nativeAmount: _nativeAmount,
       });
     },
-    [maxInputBalance, nativeCurrency, isSelectedParsedAddressAsset, selected]
+    [maxInputBalance, nativeCurrency, selected]
   );
 
   const sendUpdateSelected = useCallback(
-    (newSelected: ParsedAddressAsset & UniqueAsset) => {
+    (newSelected: ParsedAddressAsset | UniqueAsset) => {
       if (isEqual(newSelected, selected)) return;
       updateMaxInputBalance(newSelected);
       if (newSelected?.type === AssetTypes.nft) {
@@ -284,7 +274,7 @@ export default function SendSheet(props: any) {
         startPollingGasFees(currentChainId);
       });
     }
-  }, [startPollingGasFees, selected?.chainId, prevChainId, currentChainId]);
+  }, [startPollingGasFees, selected.chainId, prevChainId, currentChainId]);
 
   // Stop polling when the sheet is unmounted
   useEffect(() => {
@@ -296,7 +286,7 @@ export default function SendSheet(props: any) {
   }, [stopPollingGasFees]);
 
   useEffect(() => {
-    const assetChainId = selected?.chainId;
+    const assetChainId = selected.chainId;
     if (assetChainId && (assetChainId !== currentChainId || !currentChainId || prevChainId !== currentChainId)) {
       if (chainId === ChainId.goerli) {
         setCurrentChainId(ChainId.goerli);
@@ -345,7 +335,7 @@ export default function SendSheet(props: any) {
   }, [selected, sendUpdateAssetAmount, updateMaxInputBalance, selectedGasFee, maxEnabled]);
 
   const onChangeAssetAmount = useCallback(
-    (newAssetAmount: string | number) => {
+    (newAssetAmount: string) => {
       if (isString(newAssetAmount)) {
         if (maxEnabled) {
           setMaxEnabled(false);
@@ -375,20 +365,16 @@ export default function SendSheet(props: any) {
   }, [debouncedRecipient]);
 
   const updateTxFeeForOptimism = useCallback(
-    async (updatedGasLimit: string) => {
-      if (isNaN(Number(amountDetails.assetAmount))) {
-        return;
-      }
-
+    async updatedGasLimit => {
       const txData = await buildTransaction(
         {
           address: accountAddress,
-          amount: Number(amountDetails.assetAmount),
+          amount: amountDetails.assetAmount,
           asset: selected,
           gasLimit: updatedGasLimit,
-          recipient: toAddress ?? '',
+          recipient: toAddress,
         },
-        currentProvider ?? null,
+        currentProvider,
         currentChainId
       );
       const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(txData, currentProvider);
@@ -428,7 +414,7 @@ export default function SendSheet(props: any) {
       let updatedGasLimit = null;
 
       // Attempt to update gas limit before sending ERC20 / ERC721
-      if (!isNativeAsset(selected?.address, currentChainId)) {
+      if (!isNativeAsset(selected.address, currentChainId)) {
         try {
           // Estimate the tx with gas limit padding before sending
           updatedGasLimit = await estimateGasLimit(
@@ -609,7 +595,7 @@ export default function SendSheet(props: any) {
         })();
       }
     },
-    [amountDetails.assetAmount, goBack, isENS, isHardwareWallet, navigate, onSubmit, recipient, selected?.name, selected?.network]
+    [amountDetails, goBack, isENS, isHardwareWallet, navigate, onSubmit, recipient, selected?.name, selected?.network]
   );
 
   const { buttonDisabled, buttonLabel } = useMemo(() => {
@@ -734,8 +720,8 @@ export default function SendSheet(props: any) {
       const isValid = checkIsValidAddressOrDomainFormat(text);
       if (!isValid) {
         setIsValidAddress();
+        setToAddress();
       }
-      setToAddress();
       setCurrentInput(text);
       setRecipient(text);
       setNickname(text);
@@ -785,7 +771,6 @@ export default function SendSheet(props: any) {
 
     if (
       !!accountAddress &&
-      amountDetails.assetAmount !== '' &&
       Object.entries(selected).length &&
       assetChainId === currentChainId &&
       currentProviderChainId === currentChainId &&
@@ -834,6 +819,12 @@ export default function SendSheet(props: any) {
 
   const isEmptyWallet = !sortedAssets?.length && !sendableUniqueTokens?.length;
 
+  const filteredUserAccountsFromContacts = useMemo(() => {
+    return userAccounts.filter(
+      account => !filteredContacts.some(contact => contact.address.toLowerCase() === account.address.toLowerCase())
+    );
+  }, [userAccounts, filteredContacts]);
+
   return (
     <Container testID="send-sheet">
       <SheetContainer>
@@ -853,7 +844,7 @@ export default function SendSheet(props: any) {
           recipientFieldRef={recipientFieldRef}
           removeContact={onRemoveContact}
           showAssetList={showAssetList}
-          userAccounts={userAccounts}
+          userAccounts={filteredUserAccountsFromContacts}
           watchedAccounts={watchedAccounts}
         />
         {showEmptyState && (
@@ -869,7 +860,7 @@ export default function SendSheet(props: any) {
               setNickname(nickname);
             }}
             removeContact={onRemoveContact}
-            userAccounts={userAccounts}
+            userAccounts={filteredUserAccountsFromContacts}
             watchedAccounts={watchedAccounts}
           />
         )}
