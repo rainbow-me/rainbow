@@ -9,11 +9,6 @@ import { needsL1SecurityFeeChains } from '@/chains';
 import { logger, RainbowError } from '@/logger';
 import { ClaimingClaimableSharedUI, ClaimStatus } from './ClaimingClaimableSharedUI';
 import { TransactionRequest } from '@ethersproject/providers';
-import { queryClient } from '@/react-query';
-import { claimablesQueryKey, useClaimables } from '@/resources/addys/claimables/query';
-import { walletExecuteRap } from '@/rapsV2/execute';
-import { loadWallet } from '@/model/wallet';
-import { useMutation } from '@tanstack/react-query';
 import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
 
 // supports legacy and new gas types
@@ -45,7 +40,6 @@ export type TransactionClaimableTxPayload = TransactionRequest &
 export const ClaimingTransactionClaimable = ({ claimable }: { claimable: TransactionClaimable }) => {
   const { accountAddress, nativeCurrency } = useAccountSettings();
   const { isGasReady, isSufficientGas, isValidGas, selectedGasFee, startPollingGasFees, stopPollingGasFees, updateTxFee } = useGas();
-  const { refetch } = useClaimables({ address: accountAddress, currency: nativeCurrency });
 
   const [baseTxPayload, setBaseTxPayload] = useState<
     Omit<TransactionClaimableTxPayload, 'gasLimit' | 'maxPriorityFeePerGas' | 'maxFeePerGas'> | undefined
@@ -140,62 +134,9 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
     true
   );
 
-  const { mutate: claimClaimable } = useMutation({
-    mutationFn: async () => {
-      if (!txPayload) {
-        setClaimStatus('error');
-        logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to missing tx payload'));
-        return;
-      }
-
-      const wallet = await loadWallet({
-        address: accountAddress,
-        showErrorIfNotLoaded: false,
-        provider,
-      });
-
-      if (!wallet) {
-        // Biometrics auth failure (retry possible)
-        setClaimStatus('error');
-        return;
-      }
-
-      const { errorMessage } = await walletExecuteRap(wallet, {
-        type: 'claimTransactionClaimableRap',
-        claimTransactionClaimableActionParameters: { claimTx: txPayload },
-      });
-
-      if (errorMessage) {
-        setClaimStatus('error');
-        logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to rap error'), {
-          message: errorMessage,
-        });
-      } else {
-        setClaimStatus('success');
-        // Clear and refresh claimables data
-        queryClient.invalidateQueries(claimablesQueryKey({ address: accountAddress, currency: nativeCurrency }));
-        refetch();
-      }
-    },
-    onError: e => {
-      setClaimStatus('error');
-      logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to unhandled error'), {
-        message: (e as Error)?.message,
-      });
-    },
-    onSuccess: () => {
-      if (claimStatus === 'claiming') {
-        logger.error(
-          new RainbowError('[ClaimingTransactionClaimable]: claim function completed but never resolved status to success or error state')
-        );
-        setClaimStatus('error');
-      }
-    },
-  });
-
   return (
     <ClaimingClaimableSharedUI
-      claim={claimClaimable}
+      claim={() => {}}
       claimable={claimable}
       claimStatus={claimStatus}
       hasSufficientFunds={isSufficientGas}
