@@ -1,3 +1,4 @@
+require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 platform :ios, '15.0'
 source 'https://github.com/CocoaPods/Specs.git'
 #use_modular_headers!
@@ -36,6 +37,14 @@ end
 
 target 'Rainbow' do
 
+  use_expo_modules!
+  post_integrate do |installer|
+    begin
+      expo_patch_react_imports!(installer)
+    rescue => e
+      Pod::UI.warn e
+    end
+  end
   # Pods for Rainbow
   config = use_native_modules!
 

@@ -1,4 +1,7 @@
 package me.rainbow
+import android.content.res.Configuration
+import expo.modules.ApplicationLifecycleDispatcher
+import expo.modules.ReactNativeHostWrapper
 
 import android.app.Application
 import android.content.Context
@@ -24,7 +27,7 @@ import me.rainbow.NativeModules.SystemNavigationBar.SystemNavigationBarPackage
 import me.rainbow.NativeModules.NavbarHeight.NavbarHeightPackage
 
 class MainApplication : Application(), ReactApplication {
-    override val reactNativeHost: ReactNativeHost = object : DefaultReactNativeHost(this) {
+    override val reactNativeHost: ReactNativeHost = ReactNativeHostWrapper(this, object : DefaultReactNativeHost(this) {
         override fun getUseDeveloperSupport(): Boolean {
             return BuildConfig.DEBUG
         }
@@ -54,7 +57,7 @@ class MainApplication : Application(), ReactApplication {
             get() = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
         override val isHermesEnabled: Boolean
             get() = BuildConfig.IS_HERMES_ENABLED
-    }
+    })
 
     override fun onCreate() {
         super.onCreate()
@@ -67,7 +70,8 @@ class MainApplication : Application(), ReactApplication {
         // Branch logging for debugging
         RNBranchModule.enableLogging()
         RNBranchModule.getAutoInstance(this)
-    }
+      ApplicationLifecycleDispatcher.onApplicationCreate(this)
+  }
 
     companion object {
         private val START_MARK = System.currentTimeMillis()
@@ -75,4 +79,9 @@ class MainApplication : Application(), ReactApplication {
 
         fun getAppContext(): Context = appContext
     }
+
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    super.onConfigurationChanged(newConfig)
+    ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig)
+  }
 }
