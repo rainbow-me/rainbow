@@ -130,9 +130,10 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
 
   const isTransactionReady = !!(isGasReady && isSufficientGas && isValidGas && txPayload);
 
-  const nativeCurrencyGasFeeDisplay = useMemo(
-    () => convertAmountToNativeDisplayWorklet(selectedGasFee?.gasFee?.estimatedFee?.native?.value?.amount, nativeCurrency, true),
-    [nativeCurrency, selectedGasFee?.gasFee?.estimatedFee?.native?.value?.amount]
+  const nativeCurrencyGasFeeDisplay = convertAmountToNativeDisplayWorklet(
+    selectedGasFee?.gasFee?.estimatedFee?.native?.value?.amount,
+    nativeCurrency,
+    true
   );
 
   const { mutate: claimClaimable } = useMutation({
