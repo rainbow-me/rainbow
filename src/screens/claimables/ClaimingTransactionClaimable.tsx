@@ -9,13 +9,12 @@ import { needsL1SecurityFeeChains } from '@/chains';
 import { logger, RainbowError } from '@/logger';
 import { ClaimingClaimableSharedUI, ClaimStatus } from './ClaimingClaimableSharedUI';
 import { TransactionRequest } from '@ethersproject/providers';
-import { queryClient } from '@/react-query';
-import { claimablesQueryKey, useClaimables } from '@/resources/addys/claimables/query';
-import { walletExecuteRap } from '@/rapsV2/execute';
-import { loadWallet } from '@/model/wallet';
-import { useMutation } from '@tanstack/react-query';
 import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
-import { parseAsset } from '@/resources/assets/assets';
+import { useMutation } from '@tanstack/react-query';
+import { loadWallet } from '@/model/wallet';
+import { walletExecuteRap } from '@/rapsV2/execute';
+import { claimablesQueryKey } from '@/resources/addys/claimables/query';
+import { queryClient } from '@/react-query';
 
 // supports legacy and new gas types
 export type TransactionClaimableTxPayload = TransactionRequest &
@@ -46,7 +45,6 @@ export type TransactionClaimableTxPayload = TransactionRequest &
 export const ClaimingTransactionClaimable = ({ claimable }: { claimable: TransactionClaimable }) => {
   const { accountAddress, nativeCurrency } = useAccountSettings();
   const { isGasReady, isSufficientGas, isValidGas, selectedGasFee, startPollingGasFees, stopPollingGasFees, updateTxFee } = useGas();
-  const { refetch } = useClaimables({ address: accountAddress, currency: nativeCurrency });
 
   const [baseTxPayload, setBaseTxPayload] = useState<
     Omit<TransactionClaimableTxPayload, 'gasLimit' | 'maxPriorityFeePerGas' | 'maxFeePerGas'> | undefined
@@ -125,15 +123,20 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
 
   useEffect(() => {
     if (baseTxPayload) {
-      estimateGas();
+      try {
+        estimateGas();
+      } catch (e) {
+        logger.warn('[ClaimingTransactionClaimable]: Failed to estimate gas', { error: e });
+      }
     }
   }, [baseTxPayload, estimateGas, selectedGasFee]);
 
   const isTransactionReady = !!(isGasReady && isSufficientGas && isValidGas && txPayload);
 
-  const nativeCurrencyGasFeeDisplay = useMemo(
-    () => convertAmountToNativeDisplayWorklet(selectedGasFee?.gasFee?.estimatedFee?.native?.value?.amount, nativeCurrency, true),
-    [nativeCurrency, selectedGasFee?.gasFee?.estimatedFee?.native?.value?.amount]
+  const nativeCurrencyGasFeeDisplay = convertAmountToNativeDisplayWorklet(
+    selectedGasFee?.gasFee?.estimatedFee?.native?.value?.amount,
+    nativeCurrency,
+    true
   );
 
   const { mutate: claimClaimable } = useMutation({
@@ -170,7 +173,6 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
         setClaimStatus('success');
         // Clear and refresh claimables data
         queryClient.invalidateQueries(claimablesQueryKey({ address: accountAddress, currency: nativeCurrency }));
-        refetch();
       }
     },
     onError: e => {
