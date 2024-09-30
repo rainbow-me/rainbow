@@ -14,6 +14,8 @@ import { useLegacyNFTs } from '@/resources/nfts';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { RainbowContext } from '@/helpers/RainbowContext';
+import { usePositions } from '@/resources/defi/PositionsQuery';
+import { useClaimables } from '@/resources/addys/claimables/query';
 
 export default function useWalletSectionsData({
   type,
@@ -36,6 +38,8 @@ export default function useWalletSectionsData({
     sortBy: nftSort,
     sortDirection: nftSortDirection,
   });
+  const { data: positions } = usePositions({ address: accountAddress, currency: nativeCurrency });
+  const { data: claimables } = useClaimables({ address: accountAddress, currency: nativeCurrency });
 
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
 
@@ -77,6 +81,8 @@ export default function useWalletSectionsData({
       nftSort,
       remoteConfig,
       experimentalConfig,
+      positions,
+      claimables,
     };
 
     const { briefSectionsData, isEmpty } = buildBriefWalletSectionsSelector(accountInfo);
@@ -111,6 +117,8 @@ export default function useWalletSectionsData({
     nftSort,
     remoteConfig,
     experimentalConfig,
+    positions,
+    claimables,
   ]);
   return walletSections;
 }
