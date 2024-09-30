@@ -246,37 +246,6 @@ export function parseUserAssetBalances({
   };
 }
 
-export function parseParsedUserAsset({
-  parsedAsset,
-  currency,
-  quantity,
-}: {
-  parsedAsset: ParsedUserAsset;
-  currency: SupportedCurrencyKey;
-  quantity: string;
-}): ParsedUserAsset {
-  const amount = convertRawAmountToDecimalFormat(quantity, parsedAsset?.decimals);
-  return {
-    ...parsedAsset,
-    balance: {
-      amount,
-      display: convertAmountToBalanceDisplay(amount, {
-        decimals: parsedAsset?.decimals,
-        symbol: parsedAsset?.symbol,
-      }),
-    },
-    native: {
-      ...parsedAsset.native,
-      balance: getNativeAssetBalance({
-        currency,
-        decimals: parsedAsset?.decimals,
-        priceUnit: parsedAsset?.price?.value || 0,
-        value: amount,
-      }),
-    },
-  };
-}
-
 export const parseSearchAsset = ({
   assetWithPrice,
   searchAsset,

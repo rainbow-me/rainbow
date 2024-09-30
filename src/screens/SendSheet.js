@@ -45,7 +45,6 @@ import { loadWallet, sendTransaction } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import { parseGasParamsForTransaction } from '@/parsers';
 import { rainbowTokenList } from '@/references';
-import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { borders } from '@/styles';
@@ -62,6 +61,7 @@ import { getNextNonce } from '@/state/nonces';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';
 import { REGISTRATION_STEPS } from '@/helpers/ens';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ChainId } from '@/chains/types';
 import { chainsName, chainsNativeAsset, needsL1SecurityFeeChains } from '@/chains';
 
@@ -98,7 +98,7 @@ const validateRecipient = (toAddress, tokenAddress) => {
 
 export default function SendSheet(props) {
   const { goBack, navigate } = useNavigation();
-  const { data: sortedAssets } = useSortedUserAssets();
+  const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
   const {
     gasFeeParamsBySpeed,
     gasLimit,

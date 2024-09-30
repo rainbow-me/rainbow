@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useAccountSettings } from '@/hooks';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
@@ -11,13 +12,13 @@ export const UserAssetsSync = function UserAssetsSync() {
 
   const isSwapsOpen = useSwapsStore(state => state.isSwapsOpen);
 
-  useUserAssets(
+  const { isLoading } = useUserAssets(
     {
       address: accountAddress,
       currency: currentCurrency,
     },
     {
-      enabled: !isSwapsOpen,
+      enabled: !!accountAddress && !isSwapsOpen,
       select: data =>
         selectorFilterByUserChains({
           data,
@@ -36,6 +37,11 @@ export const UserAssetsSync = function UserAssetsSync() {
       },
     }
   );
+
+  useEffect(() => {
+    userAssetsStore.setState({ isLoadingUserAssets: isLoading });
+    return () => userAssetsStore.setState({ isLoadingUserAssets: false });
+  }, [isLoading]);
 
   return null;
 };

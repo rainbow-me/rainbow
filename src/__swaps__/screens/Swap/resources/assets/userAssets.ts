@@ -17,6 +17,8 @@ import { fetchUserAssetsByChain } from './userAssetsByChain';
 import { fetchHardhatBalancesByChainId } from '@/resources/assets/hardhatAssets';
 import { SUPPORTED_CHAIN_IDS } from '@/chains';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { staleBalancesStore } from '@/state/staleBalances';
+import { IS_TEST } from '@/env';
 
 const addysHttp = new RainbowFetchClient({
   baseURL: 'https://addys.p.rainbow.me/v3',
@@ -27,7 +29,7 @@ const addysHttp = new RainbowFetchClient({
 
 const USER_ASSETS_REFETCH_INTERVAL = 60000;
 const USER_ASSETS_TIMEOUT_DURATION = 20000;
-export const USER_ASSETS_STALE_INTERVAL = 30000;
+const USER_ASSETS_STALE_INTERVAL = 30000;
 
 // ///////////////////////////////////////////////
 // Query Types
@@ -70,7 +72,7 @@ type UserAssetsQueryKey = ReturnType<typeof userAssetsQueryKey>;
 // Query Function
 
 export const userAssetsFetchQuery = ({ address, currency, testnetMode }: FetchUserAssetsArgs) => {
-  queryClient.fetchQuery(userAssetsQueryKey({ address, currency, testnetMode }), userAssetsQueryFunction);
+  return queryClient.fetchQuery(userAssetsQueryKey({ address, currency, testnetMode }), userAssetsQueryFunction);
 };
 
 export const userAssetsSetQueryDefaults = ({ address, currency, staleTime, testnetMode }: SetUserDefaultsArgs) => {
@@ -109,26 +111,28 @@ async function userAssetsQueryFunction({
 
     return parsedAssetsDict;
   }
+
   const cache = queryClient.getQueryCache();
   const cachedUserAssets = (cache.find(userAssetsQueryKey({ address, currency, testnetMode }))?.state?.data ||
     {}) as ParsedAssetsDictByChain;
   try {
-    const url = `/${SUPPORTED_CHAIN_IDS.join(',')}/${address}/assets`;
+    staleBalancesStore.getState().clearExpiredData(address);
+    const staleBalanceParam = staleBalancesStore.getState().getStaleBalancesQueryParam(address);
+    let url = `/${SUPPORTED_CHAIN_IDS.join(',')}/${address}/assets?currency=${currency.toLowerCase()}`;
+    if (staleBalanceParam) {
+      url += staleBalanceParam;
+    }
     const res = await addysHttp.get<AddressAssetsReceivedMessage>(url, {
-      params: {
-        currency: currency.toLowerCase(),
-      },
       timeout: USER_ASSETS_TIMEOUT_DURATION,
     });
     const chainIdsInResponse = res?.data?.meta?.chain_ids || [];
     const chainIdsWithErrorsInResponse = res?.data?.meta?.chain_ids_with_errors || [];
-    const assets = res?.data?.payload?.assets || [];
+    const assets = res?.data?.payload?.assets?.filter(asset => !asset.asset.defi_position) || [];
     if (address) {
       userAssetsQueryFunctionRetryByChain({
         address,
         chainIds: chainIdsWithErrorsInResponse,
         currency,
-        testnetMode,
       });
       if (assets.length && chainIdsInResponse.length) {
         const parsedAssetsDict = await parseUserAssets({
@@ -160,17 +164,15 @@ async function userAssetsQueryFunctionRetryByChain({
   address,
   chainIds,
   currency,
-  testnetMode,
 }: {
   address: Address | string;
   chainIds: ChainId[];
   currency: SupportedCurrencyKey;
-  testnetMode?: boolean;
 }) {
   try {
     const cache = queryClient.getQueryCache();
     const cachedUserAssets =
-      (cache.find(userAssetsQueryKey({ address, currency, testnetMode }))?.state?.data as ParsedAssetsDictByChain) || {};
+      (cache.find(userAssetsQueryKey({ address, currency, testnetMode: false }))?.state?.data as ParsedAssetsDictByChain) || {};
     const retries = [];
     for (const chainIdWithError of chainIds) {
       retries.push(
@@ -191,7 +193,7 @@ async function userAssetsQueryFunctionRetryByChain({
         cachedUserAssets[values[0].chainId] = parsedAssets;
       }
     }
-    queryClient.setQueryData(userAssetsQueryKey({ address, currency, testnetMode }), cachedUserAssets);
+    queryClient.setQueryData(userAssetsQueryKey({ address, currency, testnetMode: false }), cachedUserAssets);
   } catch (e) {
     logger.error(new RainbowError('[userAssetsQueryFunctionRetryByChain]: Failed to retry fetching user assets'), {
       message: (e as Error)?.message,
@@ -240,6 +242,6 @@ export function useUserAssets<TSelectResult = UserAssetsResult>(
   return useQuery(userAssetsQueryKey({ address, currency, testnetMode: connectedToHardhat }), userAssetsQueryFunction, {
     ...config,
     refetchInterval: USER_ASSETS_REFETCH_INTERVAL,
-    staleTime: process.env.IS_TESTING === 'true' ? 0 : 1000,
+    staleTime: IS_TEST ? 0 : USER_ASSETS_STALE_INTERVAL,
   });
 }

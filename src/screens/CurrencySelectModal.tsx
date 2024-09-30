@@ -35,10 +35,10 @@ import { SwappableAsset } from '@/entities';
 import { Box, Row, Rows } from '@/design-system';
 import { useTheme } from '@/theme';
 import { IS_TEST } from '@/env';
-import { useSortedUserAssets } from '@/resources/assets/useSortedUserAssets';
 import DiscoverSearchInput from '@/components/discover/DiscoverSearchInput';
 import { externalTokenQueryKey, fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { queryClient } from '@/react-query/queryClient';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { ChainId, Network } from '@/chains/types';
 import { chainsName } from '@/chains';
 
@@ -121,7 +121,7 @@ export default function CurrencySelectModal() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);
-  const { data: sortedAssets } = useSortedUserAssets();
+  const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
   const assetsInWallet = sortedAssets as SwappableAsset[];
 
   const [currentChainId, setCurrentChainId] = useState(chainId);
