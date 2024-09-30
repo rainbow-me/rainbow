@@ -1,5 +1,5 @@
 import { neverRerender } from '../../utils';
-import Divider from '../Divider.tsx';
+import Divider from '@/components/Divider';
 import styled from '@/styled-thing';
 
 const SheetDivider = styled(Divider).attrs(({ theme: { colors } }) => ({
