@@ -57,7 +57,8 @@ function EstimatedGasFee() {
 }
 
 function SelectedGas({ isPill }: { isPill?: boolean }) {
-  const chainId = swapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
+  const preferredNetwork = swapsStore(s => s.preferredNetwork);
+  const chainId = swapsStore(s => s.inputAsset?.chainId || preferredNetwork || ChainId.mainnet);
   const selectedGasSpeed = useSelectedGasSpeed(chainId);
 
   return (
@@ -107,7 +108,8 @@ function keys<const T extends string>(obj: Record<T, unknown> | undefined) {
 const GasMenu = ({ backToReview = false, children }: { backToReview?: boolean; children: ReactNode }) => {
   const { SwapNavigation } = useSwapContext();
 
-  const chainId = swapsStore(s => s.inputAsset?.chainId || ChainId.mainnet);
+  const preferredNetwork = swapsStore(s => s.preferredNetwork);
+  const chainId = swapsStore(s => s.inputAsset?.chainId || preferredNetwork || ChainId.mainnet);
   const metereologySuggestions = useMeteorologySuggestions({ chainId });
   const customGasSettings = useCustomGasSettings(chainId);
 
