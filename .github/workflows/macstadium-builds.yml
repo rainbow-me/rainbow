@@ -45,7 +45,8 @@ jobs:
             ${{ steps.yarn-cache-dir-path.outputs.dir }}
             .yarn/cache
             .yarn/install-state.gz
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+            !.eslintcache # Exclude eslint cache
+          key: ${{ runner.os }}-yarn-${{ github.sha }}  # Cache per commit
           restore-keys: |
             ${{ runner.os }}-yarn-
 

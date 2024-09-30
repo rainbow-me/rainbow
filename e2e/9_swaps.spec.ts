@@ -62,9 +62,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await tap('swap-button');
     await delayTime('very-long');
 
-    // flaky
-    // await swipeUntilVisible('token-to-buy-dai-1', 'token-to-buy-list', 'up', 100);
-    await swipe('token-to-buy-list', 'up', 'slow', 0.2);
+    await swipeUntilVisible('token-to-buy-dai-1', 'token-to-buy-list', 'up', 100);
 
     await tap('token-to-buy-dai-1');
     await delayTime('very-long');
