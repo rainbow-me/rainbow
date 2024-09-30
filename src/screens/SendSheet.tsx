@@ -115,7 +115,7 @@ type OnSubmitProps = {
   };
 };
 
-export default function SendSheet(props: Record<string, never>) {
+export default function SendSheet() {
   const { goBack, navigate } = useNavigation();
   const { data: sortedAssets } = useSortedUserAssets();
   const {
@@ -381,13 +381,13 @@ export default function SendSheet(props: Record<string, never>) {
 
   const updateTxFeeForOptimism = useCallback(
     async (updatedGasLimit: string) => {
-      if (!selected || isUniqueAsset) return;
+      if (!selected) return;
 
       const txData = await buildTransaction(
         {
           address: accountAddress,
           amount: Number(amountDetails.assetAmount),
-          asset: selected,
+          asset: selected as ParsedAddressAsset,
           gasLimit: updatedGasLimit,
           recipient: toAddress,
         },
@@ -397,7 +397,7 @@ export default function SendSheet(props: Record<string, never>) {
       const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(txData, currentProvider || web3Provider);
       updateTxFee(updatedGasLimit, null, l1GasFeeOptimism);
     },
-    [accountAddress, amountDetails.assetAmount, currentChainId, currentProvider, isUniqueAsset, selected, toAddress, updateTxFee]
+    [accountAddress, amountDetails.assetAmount, currentChainId, currentProvider, selected, toAddress, updateTxFee]
   );
 
   const onSubmit = useCallback(
@@ -835,7 +835,6 @@ export default function SendSheet(props: Record<string, never>) {
 
     if (
       selected &&
-      !isUniqueAsset &&
       !!accountAddress &&
       Object.entries(selected || {}).length &&
       assetChainId === currentChainId &&
@@ -847,7 +846,7 @@ export default function SendSheet(props: Record<string, never>) {
         {
           address: accountAddress,
           amount: Number(amountDetails.assetAmount),
-          asset: selected,
+          asset: selected as ParsedAddressAsset,
           recipient: toAddress,
         },
         false,
@@ -879,7 +878,6 @@ export default function SendSheet(props: Record<string, never>) {
     chainId,
     isNft,
     currentChainId,
-    isUniqueAsset,
   ]);
 
   const sendContactListDataKey = useMemo(() => `${ensSuggestions?.[0]?.address || '_'}`, [ensSuggestions]);
@@ -958,7 +956,6 @@ export default function SendSheet(props: Record<string, never>) {
           ))}
         {showAssetForm && (
           <SendAssetForm
-            {...props}
             assetAmount={amountDetails.assetAmount}
             assetInputRef={assetInputRef}
             buttonRenderer={
