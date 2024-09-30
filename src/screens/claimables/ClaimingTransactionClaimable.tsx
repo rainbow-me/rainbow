@@ -124,7 +124,11 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
 
   useEffect(() => {
     if (baseTxPayload) {
-      estimateGas();
+      try {
+        estimateGas();
+      } catch (e) {
+        logger.warn('[ClaimingTransactionClaimable]: Failed to estimate gas', { error: e });
+      }
     }
   }, [baseTxPayload, estimateGas, selectedGasFee]);
 
