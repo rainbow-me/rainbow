@@ -5,7 +5,12 @@
 
 #import "Firebase.h"
 #import "AppDelegate.h"
+
+// expo modules MUST be imported before Rainbow-Swift.h
+#import "ExpoModulesCore-Swift.h"
 #import "Rainbow-Swift.h"
+// end expo modules
+
 #import <RNBranch/RNBranch.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTLinkingManager.h>
