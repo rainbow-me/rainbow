@@ -77,6 +77,6 @@ jobs:
       - name: Build the app in Release mode
         run: yarn detox build --configuration android.emu.release
 
-      # change the '3' here to how many times you want the tests to rerun on failure
+      # change the 1to how many times you want the tests to rerun on failure
       - name: Run iOS e2e tests with retry
         run: ./scripts/run-retry-tests.sh 3
