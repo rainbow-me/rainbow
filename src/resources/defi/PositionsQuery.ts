@@ -8,6 +8,8 @@ import { ADDYS_API_KEY } from 'react-native-dotenv';
 import { AddysPositionsResponse, PositionsArgs } from './types';
 import { parsePositions } from './utils';
 import { SUPPORTED_CHAIN_IDS } from '@/chains';
+import { DEFI_POSITIONS, useExperimentalFlag } from '@/config';
+import { IS_TEST } from '@/env';
 
 export const buildPositionsUrl = (address: string) => {
   const networkString = SUPPORTED_CHAIN_IDS.join(',');
@@ -77,5 +79,9 @@ export async function fetchPositions(
 // Query Hook
 
 export function usePositions({ address, currency }: PositionsArgs, config: QueryConfig<PositionsResult, Error, PositionsQueryKey> = {}) {
-  return useQuery(positionsQueryKey({ address, currency }), positionsQueryFunction, { ...config, enabled: !!address });
+  const positionsEnabled = useExperimentalFlag(DEFI_POSITIONS);
+  return useQuery(positionsQueryKey({ address, currency }), positionsQueryFunction, {
+    ...config,
+    enabled: !!(address && positionsEnabled && !IS_TEST),
+  });
 }

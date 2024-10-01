@@ -248,7 +248,7 @@ export const consoleSheetConfig = {
   }),
 };
 
-export const dappBrowserControlPanelConfig = {
+export const panelConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
