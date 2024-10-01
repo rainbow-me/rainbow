@@ -365,7 +365,7 @@ export default function TransactionMasthead({ transaction }: { transaction: Rain
     if (transaction.type === 'contract_interaction' || transaction.type === 'approve') {
       return {
         title: contractName,
-        subtitle: transaction?.to || '',
+        subtitle: transaction?.from || '',
         image: contractImage,
       };
     }
