@@ -1,5 +1,4 @@
-import { AddressOrEth } from '@/__swaps__/types/assets';
-import { ChainId, Network } from '@/chains/types';
+import { Network } from '@/chains/types';
 import { Asset } from '@/entities';
 import { AddressZero } from '@ethersproject/constants';
 
@@ -135,34 +134,6 @@ export const AddCashCurrencyInfo: {
       symbol: 'ETH',
     },
   },
-};
-
-export const NATIVE_ASSETS_PER_CHAIN: Record<ChainId, AddressOrEth> = {
-  [ChainId.mainnet]: ETH_ADDRESS,
-  [ChainId.hardhat]: AddressZero,
-  [ChainId.sepolia]: AddressZero,
-  [ChainId.holesky]: AddressZero,
-  [ChainId.arbitrum]: AddressZero,
-  [ChainId.arbitrumSepolia]: AddressZero,
-  [ChainId.bsc]: AddressZero,
-  [ChainId.bscTestnet]: AddressZero,
-  [ChainId.optimism]: AddressZero,
-  [ChainId.hardhatOptimism]: AddressZero,
-  [ChainId.optimismSepolia]: AddressZero,
-  [ChainId.rari]: AddressZero,
-  [ChainId.base]: AddressZero,
-  [ChainId.baseSepolia]: AddressZero,
-  [ChainId.zora]: AddressZero,
-  [ChainId.zoraSepolia]: AddressZero,
-  [ChainId.polygon]: MATIC_POLYGON_ADDRESS,
-  [ChainId.polygonMumbai]: AddressZero,
-  [ChainId.avalanche]: AVAX_AVALANCHE_ADDRESS,
-  [ChainId.avalancheFuji]: AddressZero,
-  [ChainId.blast]: AddressZero,
-  [ChainId.blastSepolia]: AddressZero,
-  [ChainId.polygonAmoy]: AddressZero,
-  [ChainId.degen]: AddressZero,
-  [ChainId.apechain]: AddressZero,
 };
 
 export type ReferrerType = 'native-app' | 'app-claim';
