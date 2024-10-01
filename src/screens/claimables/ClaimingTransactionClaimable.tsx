@@ -72,11 +72,11 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
   }, [buildTxPayload]);
 
   useEffect(() => {
-    startPollingGasFees();
+    startPollingGasFees(claimable.chainId);
     return () => {
       stopPollingGasFees();
     };
-  }, [startPollingGasFees, stopPollingGasFees]);
+  }, [claimable.chainId, startPollingGasFees, stopPollingGasFees]);
 
   const estimateGas = useCallback(async () => {
     if (!baseTxPayload) {
