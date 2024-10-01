@@ -207,7 +207,7 @@ export default function SendSheet() {
       const _assetAmount = newAssetAmount.replace(/[^0-9.]/g, '');
       let _nativeAmount = '';
       if (_assetAmount.length) {
-        const priceUnit = !isUniqueAsset ? selected?.price?.value ?? 0 : 0;
+        const priceUnit = !isUniqueAsset ? selected?.price?.value ?? 0 : selected?.currentPrice ?? 0;
         const { amount: convertedNativeAmount } = convertAmountAndPriceToNativeDisplay(_assetAmount, priceUnit, nativeCurrency);
         _nativeAmount = formatInputDecimals(convertedNativeAmount, _assetAmount);
       }
@@ -263,7 +263,7 @@ export default function SendSheet() {
       updateMaxInputBalance(assetOverride);
     }
 
-    if (nativeAmountOverride && !amountDetails.assetAmount && maxInputBalance) {
+    if (nativeAmountOverride && maxInputBalance) {
       sendUpdateAssetAmount(nativeAmountOverride);
     }
   }, [
@@ -312,7 +312,7 @@ export default function SendSheet() {
         setCurrentProvider(provider);
       }
     }
-  }, [currentChainId, isNft, chainId, prevChainId, selected?.chainId, sendUpdateSelected]);
+  }, [currentChainId, isNft, chainId, prevChainId, selected?.chainId]);
 
   const onChangeNativeAmount = useCallback(
     (newNativeAmount: string) => {
@@ -777,6 +777,7 @@ export default function SendSheet() {
   const onResetAssetSelection = useCallback(() => {
     analytics.track('Reset asset selection in Send flow');
     sendUpdateSelected(undefined);
+    setMaxEnabled(false);
   }, [sendUpdateSelected]);
 
   const onChangeInput = useCallback(

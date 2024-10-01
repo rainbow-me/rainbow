@@ -10,8 +10,8 @@ export default function useMaxInputBalance() {
 
   const updateMaxInputBalance = useCallback(
     (inputCurrency: ParsedAddressAsset | UniqueAsset | undefined) => {
-      const isUniqueAsset = !inputCurrency || 'collection' in inputCurrency;
-      if (isUniqueAsset) {
+      const isUniqueAssetOrUndefined = typeof inputCurrency === 'undefined' || 'collection' in inputCurrency;
+      if (isUniqueAssetOrUndefined) {
         return '0';
       }
       // Update current balance
