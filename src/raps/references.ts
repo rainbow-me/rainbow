@@ -55,7 +55,6 @@ export interface RapSwapActionParameters<T extends 'swap' | 'crosschainSwap' | '
   gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
   gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
   nonce?: number;
-  isBridge?: boolean;
   flashbots?: boolean;
   quote: QuoteTypeMap[T];
   address?: Address;
