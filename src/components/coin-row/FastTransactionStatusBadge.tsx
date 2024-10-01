@@ -31,21 +31,14 @@ export default React.memo(function FastTransactionStatusBadge({
     statusColor = colors.red;
   }
 
-  const getStatusTitle = useCallback((status: TransactionStatus, title: string) => {
-    const transactionType = lang.l.transactions.type[title as keyof typeof lang.l.transactions.type];
-    if (typeof transactionType === 'string') {
-      return transactionType;
-    }
-    return transactionType[status as keyof typeof transactionType] || '';
-  }, []);
-
   return (
     <View style={[sx.row, style]}>
       <View style={sx.icon}>
         <ActivityTypeIcon transaction={transaction} color={statusColor} />
       </View>
       <Text color={{ custom: statusColor }} size="14px / 19px (Deprecated)" weight="semibold">
-        {getStatusTitle(transaction?.status, transaction?.title)}
+        {/* @ts-expect-error - some of these are dot.notation and some are strings */}
+        {lang.t(lang.l.transactions.type[transaction?.title])}{' '}
       </Text>
     </View>
   );

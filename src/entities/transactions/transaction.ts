@@ -310,7 +310,7 @@ export type PendingTransaction = BaseTransaction & {
 };
 
 export const TransactionType = {
-  withoutChanges: ['cancel', 'contract_interaction', 'deployment', 'approve', 'revoke', 'speed_up'],
+  withoutChanges: ['cancel', 'contract_interaction', 'deployment', 'approve', 'revoke', 'speed_up'] as readonly string[],
   withChanges: [
     'sale',
     'bridge',
@@ -331,7 +331,7 @@ export const TransactionType = {
     'stake',
     'unstake',
     'purchase',
-  ],
+  ] as readonly string[],
 } as const;
 
 export type TransactionWithChangesType = (typeof TransactionType.withChanges)[number];

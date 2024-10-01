@@ -188,14 +188,8 @@ export const getDescription = (asset: ParsedAsset | undefined, type: Transaction
   return asset?.name || meta.action;
 };
 
-export const isValidTransactionType = (type: string | undefined): type is TransactionType =>
-  !!type &&
-  // @ts-expect-error - Ts doesnt like the weird type structure here
-  (transactionTypes.withChanges.includes(type as TransactionType) ||
-    // @ts-expect-error - Ts doesnt like the weird type structure here
-    transactionTypes.withoutChanges.includes(type as TransactionType) ||
-    type === ('sale' as TransactionType));
+export const isValidTransactionType = (type: TransactionType | undefined): type is TransactionType =>
+  !!type && (TransactionType.withChanges.includes(type) || TransactionType.withoutChanges.includes(type));
 
 export const transactionTypeShouldHaveChanges = (type: TransactionType): type is TransactionWithChangesType =>
-  // @ts-expect-error - Ts doesnt like the weird type structure here
-  transactionTypes.withChanges.includes(type);
+  TransactionType.withChanges.includes(type);
