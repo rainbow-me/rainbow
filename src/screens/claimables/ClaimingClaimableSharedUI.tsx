@@ -159,7 +159,10 @@ export const ClaimingClaimableSharedUI = ({
                 <Box
                   as={FasterImageView}
                   source={{ url: claimable.iconUrl }}
-                  style={{ height: 20, width: 20, borderRadius: 6, borderWidth: 1, borderColor: 'rgba(0, 0, 0, 0.03)' }}
+                  style={{ height: 20, width: 20 }}
+                  borderRadius={6}
+                  borderWidth={1}
+                  borderColor={{ custom: 'rgba(0, 0, 0, 0.03)' }}
                 />
                 <TextShadow shadowOpacity={0.3}>
                   <Text align="center" color={panelTitleColor} size="20pt" weight="heavy">

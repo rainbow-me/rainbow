@@ -40,9 +40,13 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
       flexDirection="row"
     >
       <Inline alignVertical="center" space="12px">
-        <FasterImageView
+        <Box
+          as={FasterImageView}
           source={{ url: claimable.iconUrl }}
-          style={{ height: 40, width: 40, borderRadius: 11, borderWidth: 1, borderColor: 'rgba(0, 0, 0, 0.03)' }}
+          style={{ height: 40, width: 40 }}
+          borderRadius={11}
+          borderWidth={1}
+          borderColor={{ custom: 'rgba(0, 0, 0, 0.03)' }}
         />
         <Stack space={{ custom: 11 }}>
           <Text
