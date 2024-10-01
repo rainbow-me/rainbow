@@ -1,5 +1,6 @@
 import messaging from '@react-native-firebase/messaging';
-import { requestNotifications } from 'react-native-permissions';
+import { PermissionStatus, requestNotifications, RESULTS } from 'react-native-permissions';
+import { subscribeExistingNotificationsSettings } from '@/notifications/settings/initialization';
 import { Alert } from '@/components/alerts';
 import lang from 'i18n-js';
 import { saveFCMToken } from '@/notifications/tokens';
@@ -9,14 +10,14 @@ import * as i18n from '@/languages';
 
 export const getPermissionStatus = () => messaging().hasPermission();
 
-export const requestPermission = (): Promise<boolean> => {
-  return new Promise((resolve, reject) => {
-    requestNotifications(['alert', 'sound', 'badge'])
-      .then(({ status }) => {
-        resolve(status === 'granted');
-      })
-      .catch(e => reject(e));
-  });
+export const requestNotificationPermission = async (): Promise<PermissionStatus> => {
+  const notificationSetting = await requestNotifications(['alert', 'sound', 'badge']);
+  const { status } = notificationSetting;
+  const enabled = status === RESULTS.GRANTED || status === RESULTS.LIMITED;
+  if (enabled) {
+    subscribeExistingNotificationsSettings();
+  }
+  return status;
 };
 
 export const checkPushNotificationPermissions = async () => {
@@ -36,8 +37,9 @@ export const checkPushNotificationPermissions = async () => {
           {
             onPress: async () => {
               try {
-                const status = await requestPermission();
-                trackPushNotificationPermissionStatus(status ? 'enabled' : 'disabled');
+                const status = await requestNotificationPermission();
+                const enabled = status === RESULTS.GRANTED || status === RESULTS.LIMITED;
+                trackPushNotificationPermissionStatus(enabled ? 'enabled' : 'disabled');
                 await saveFCMToken();
               } catch (error) {
                 logger.error(new RainbowError('[notifications]: Error while getting permissions'), { error });
