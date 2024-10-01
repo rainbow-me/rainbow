@@ -6,6 +6,7 @@ import { PortalSheetProps } from '@/screens/Portal';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { CampaignCheckResult } from '@/components/remote-promo-sheet/checkForRemotePromoSheet';
 import { ParsedAddressAsset, UniqueAsset } from '@/entities';
+import { Claimable } from '@/resources/addys/claimables/types';
 
 export type PartialNavigatorConfigOptions = Pick<Partial<Parameters<ReturnType<typeof createStackNavigator>['Screen']>[0]>, 'options'>;
 
@@ -81,5 +82,8 @@ export type RootStackParamList = {
   };
   [Routes.SWAP]: {
     action?: 'open_swap_settings';
+  };
+  [Routes.CLAIM_CLAIMABLE_PANEL]: {
+    claimable: Claimable;
   };
 };
