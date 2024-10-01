@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
 import { useClaimables } from '@/resources/addys/claimables/query';
@@ -25,10 +25,7 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
 
   const [claimable] = data;
 
-  const nativeDisplay = useMemo(
-    () => convertAmountToNativeDisplayWorklet(claimable.value.nativeAsset.amount, nativeCurrency, true),
-    [claimable.value.nativeAsset.amount, nativeCurrency]
-  );
+  const nativeDisplay = convertAmountToNativeDisplayWorklet(claimable.value.nativeAsset.amount, nativeCurrency, true);
 
   if (!claimable) return null;
 

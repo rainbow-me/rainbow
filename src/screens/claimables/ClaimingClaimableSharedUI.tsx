@@ -69,21 +69,13 @@ export const ClaimingClaimableSharedUI = ({
 
   const shouldShowClaimText = claimStatus === 'idle' && (claimable.type !== 'transaction' || hasSufficientFunds);
 
-  const claimAmountDisplay = useMemo(
-    () => `${handleSignificantDecimalsWithThreshold(claimable.value.claimAsset.amount, 4, '0.001')} ${claimable.asset.symbol}`,
-    [claimable.asset.symbol, claimable.value.claimAsset.amount]
-  );
-
-  const claimAmountNativeDisplay = useMemo(
-    () => convertAmountToNativeDisplayWorklet(claimable.value.nativeAsset.amount, nativeCurrency, true),
-    [claimable.value.nativeAsset.amount, nativeCurrency]
-  );
+  const claimAmountNativeDisplay = convertAmountToNativeDisplayWorklet(claimable.value.nativeAsset.amount, nativeCurrency, true);
 
   const buttonLabel = useMemo(() => {
     switch (claimStatus) {
       case 'idle':
         if (shouldShowClaimText) {
-          return i18n.t(i18n.l.claimables.panel.claim_amount, { amount: claimAmountDisplay });
+          return i18n.t(i18n.l.claimables.panel.claim_amount, { amount: claimable.value.claimAsset.display });
         } else {
           return i18n.t(i18n.l.claimables.panel.insufficient_funds);
         }
@@ -96,7 +88,7 @@ export const ClaimingClaimableSharedUI = ({
       default:
         return i18n.t(i18n.l.points.points.try_again);
     }
-  }, [claimAmountDisplay, claimStatus, shouldShowClaimText]);
+  }, [claimable.value.claimAsset.display, claimStatus, shouldShowClaimText]);
 
   const panelTitle = useMemo(() => {
     switch (claimStatus) {
