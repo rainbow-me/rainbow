@@ -90,6 +90,7 @@ import { SwapScreen } from '@/__swaps__/screens/Swap/Swap';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { ControlPanel } from '@/components/DappBrowser/control-panel/ControlPanel';
 import { ClaimRewardsPanel } from '@/screens/points/claim-flow/ClaimRewardsPanel';
+import { ClaimClaimablePanel } from '@/screens/claimables/ClaimClaimablePanel';
 import { RootStackParamList } from './types';
 
 const Stack = createStackNavigator();
@@ -247,6 +248,7 @@ function BSNavigator() {
       <BSStack.Screen component={AppIconUnlockSheet} name={Routes.APP_ICON_UNLOCK_SHEET} options={appIconUnlockSheetPreset} />
       <BSStack.Screen component={ControlPanel} name={Routes.DAPP_BROWSER_CONTROL_PANEL} />
       <BSStack.Screen component={ClaimRewardsPanel} name={Routes.CLAIM_REWARDS_PANEL} />
+      <BSStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} />
       <BSStack.Screen component={ChangeWalletSheet} name={Routes.CHANGE_WALLET_SHEET} options={{ ...bottomSheetPreset }} />
       {swapsV2Enabled && <BSStack.Screen component={SwapScreen} name={Routes.SWAP} options={swapSheetPreset} />}
     </BSStack.Navigator>

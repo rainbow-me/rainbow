@@ -12,7 +12,7 @@ const AnimatedImgixImage = Animated.createAnimatedComponent(Image);
 const TokenFamilyHeaderAnimationDuration = 200;
 const TokenFamilyHeaderHeight = 48;
 
-const ClaimablesListHeader = ({ total }: { total: string }) => {
+export const ClaimablesListHeader = React.memo(function ClaimablesListHeader({ total }: { total: string }) {
   const { colors } = useTheme();
   const { isClaimablesOpen, toggleOpenClaimables } = useOpenClaimables();
 
@@ -84,10 +84,4 @@ const ClaimablesListHeader = ({ total }: { total: string }) => {
       </Box>
     </ButtonPressAnimation>
   );
-};
-
-ClaimablesListHeader.animationDuration = TokenFamilyHeaderAnimationDuration;
-
-ClaimablesListHeader.height = TokenFamilyHeaderHeight;
-
-export default ClaimablesListHeader;
+});

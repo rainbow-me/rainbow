@@ -13,6 +13,7 @@ const Routes = {
   CHANGE_WALLET_SHEET: 'ChangeWalletSheet',
   CHANGE_WALLET_SHEET_NAVIGATOR: 'ChangeWalletSheetNavigator',
   CHECK_IDENTIFIER_SCREEN: 'CheckIdentifierScreen',
+  CLAIM_CLAIMABLE_PANEL: 'ClaimClaimablePanel',
   CONFIRM_REQUEST: 'ConfirmRequest',
   CONNECTED_DAPPS: 'ConnectedDapps',
   CONSOLE_SHEET: 'ConsoleSheet',

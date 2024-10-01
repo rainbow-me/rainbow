@@ -150,6 +150,7 @@ export interface BackendNetwork {
     badgeURL: string;
   };
   testnet: boolean;
+  internal: boolean;
   opStack: boolean;
   defaultExplorer: {
     url: string;

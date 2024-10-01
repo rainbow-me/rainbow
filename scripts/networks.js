@@ -17,6 +17,7 @@ async function fetchData() {
         badgeURL
       }
       testnet
+      internal
       opStack
       defaultExplorer {
         url
