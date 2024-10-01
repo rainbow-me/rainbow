@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { QueryConfigWithSelect, QueryFunctionArgs, createQueryKey, queryClient } from '@/react-query';
 import { BackendNetwork } from '@/chains/types';
+import { BACKEND_NETWORKS_QUERY } from './sharedQueries';
 
 // ///////////////////////////////////////////////
 // Query Types
@@ -12,6 +13,12 @@ export interface BackendNetworksResponse {
 // ///////////////////////////////////////////////
 // Query Key
 
+/**
+ * GraphQL query to fetch backend networks
+ * @see scripts/networks.js - for the build time version of this query
+ */
+export const GRAPHQL_QUERY = BACKEND_NETWORKS_QUERY;
+
 export const backendNetworksQueryKey = () => createQueryKey('backendNetworks', {}, { persisterVersion: 1 });
 
 export type BackendNetworksQueryKey = ReturnType<typeof backendNetworksQueryKey>;
@@ -20,93 +27,11 @@ export type BackendNetworksQueryKey = ReturnType<typeof backendNetworksQueryKey>
 // Query Function
 
 export async function fetchBackendNetworks(): Promise<BackendNetworksResponse> {
-  const graphqlQuery = `
-    query getNetworks($device: Device!, $includeTestnets: Boolean!) {
-      networks(device: $device, includeTestnets: $includeTestnets) {
-        id
-        name
-        label
-        icons {
-          badgeURL
-        }
-        testnet
-        opStack
-        defaultExplorer {
-          url
-          label
-          transactionURL
-          tokenURL
-        }
-        defaultRPC {
-          enabledDevices
-          url
-        }
-        gasUnits {
-          basic {
-            approval
-            swap
-            swapPermit
-            eoaTransfer
-            tokenTransfer
-          }
-          wrapped {
-            wrap
-            unwrap
-          }
-        }
-        nativeAsset {
-          address
-          name
-          symbol
-          decimals
-          iconURL
-          colors {
-            primary
-            fallback
-            shadow
-          }
-        }
-        nativeWrappedAsset {
-          address
-          name
-          symbol
-          decimals
-          iconURL
-          colors {
-            primary
-            fallback
-            shadow
-          }
-        }
-        enabledServices {
-          meteorology {
-            enabled
-          }
-          swap {
-            enabled
-          }
-          addys {
-            approvals
-            transactions
-            assets
-            positions
-          }
-          tokenSearch {
-            enabled
-          }
-          nftProxy {
-            enabled
-          }
-        }
-      }
-    }
-  `;
-
   const response = await fetch('https://metadata.p.rainbow.me/v1/graph', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      query: graphqlQuery,
+      query: BACKEND_NETWORKS_QUERY,
       variables: { device: 'APP', includeTestnets: true },
     }),
   });
