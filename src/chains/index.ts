@@ -1,6 +1,10 @@
 import { Chain } from 'viem/chains';
+import { queryClient } from '@/react-query';
+import { backendNetworksQueryKey, BackendNetworksResponse } from '@/resources/metadata/backendNetworks';
 
-import backendNetworks from '../references/networks.json';
+import buildTimeNetworks from '@/references/networks.json';
+
+const backendNetworks = queryClient.getQueryData<BackendNetworksResponse>(backendNetworksQueryKey()) ?? buildTimeNetworks;
 
 import { ChainId, BackendNetwork, BackendNetworkServices, chainHardhat, chainHardhatOptimism } from './types';
 import { transformBackendNetworksToChains } from './utils/backendNetworks';
