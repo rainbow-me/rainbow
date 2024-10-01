@@ -58,7 +58,7 @@ export const initializeNotificationSettingsForAllAddresses = (addresses: Address
   if (!newSettings) return;
 
   InteractionManager.runAfterInteractions(() => {
-    publishAndSaveWalletSettings(newSettings, true);
+    publishAndSaveWalletSettings(newSettings);
   });
 };
 

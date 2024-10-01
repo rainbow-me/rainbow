@@ -11,7 +11,7 @@ import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import WalletTypes from '@/helpers/walletTypes';
 import { useAccountSettings, useAppState, useWallets } from '@/hooks';
-import { requestPermission } from '@/notifications/permissions';
+import { requestNotificationPermission } from '@/notifications/permissions';
 import profileUtils from '@/utils/profileUtils';
 import { abbreviations, deviceUtils } from '@/utils';
 import { Box } from '@/design-system';
@@ -226,10 +226,7 @@ const NotificationsSection = () => {
       return;
     }
     setOwnedState(prev => ({ status: !prev.status, loading: true }));
-    const isSuccess = await updateGroupSettingsAndSubscriptions(
-      WalletNotificationRelationship.OWNER,
-      !storedOwnerEnabled
-    );
+    const isSuccess = await updateGroupSettingsAndSubscriptions(WalletNotificationRelationship.OWNER, !storedOwnerEnabled);
     if (isSuccess) {
       setOwnedState(prev => ({ ...prev, loading: false }));
     } else {
@@ -244,10 +241,7 @@ const NotificationsSection = () => {
       return;
     }
     setWatchedState(prev => ({ status: !prev.status, loading: true }));
-    const isSuccess = await updateGroupSettingsAndSubscriptions(
-      WalletNotificationRelationship.WATCHER,
-      !storedWatcherEnabled
-    );
+    const isSuccess = await updateGroupSettingsAndSubscriptions(WalletNotificationRelationship.WATCHER, !storedWatcherEnabled);
     if (isSuccess) {
       setWatchedState(prev => ({ ...prev, loading: false }));
     } else {
@@ -286,13 +280,13 @@ const NotificationsSection = () => {
   const openNetworkSettings = useCallback(() => navigate(Routes.NETWORK_SWITCHER), [navigate]);
 
   const requestNotificationPermissions = useCallback(async () => {
-    requestPermission().then(allowed => {
-      if (allowed) {
-        setPermissionStatus(RESULTS.GRANTED);
-      } else {
-        openSystemSettings();
-      }
-    });
+    const status = await requestNotificationPermission();
+    const allowed = status === RESULTS.GRANTED || status === RESULTS.LIMITED;
+    if (allowed) {
+      setPermissionStatus(RESULTS.GRANTED);
+    } else {
+      openSystemSettings();
+    }
   }, [openSystemSettings]);
 
   const checkPermissions = useCallback(async () => {
