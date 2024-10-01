@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box, Inline, Stack, Text } from '@/design-system';
 import { useAccountSettings } from '@/hooks';
 import { useClaimables } from '@/resources/addys/claimables/query';
@@ -7,6 +7,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { deviceUtils } from '@/utils';
 import Routes from '@/navigation/routesNames';
 import { ExtendedState } from './core/RawRecyclerList';
+import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
 
 export const Claimable = React.memo(function Claimable({ uniqueId, extendedState }: { uniqueId: string; extendedState: ExtendedState }) {
   const { accountAddress, nativeCurrency } = useAccountSettings();
@@ -24,12 +25,17 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
 
   const [claimable] = data;
 
+  const nativeDisplay = useMemo(
+    () => convertAmountToNativeDisplayWorklet(claimable.value.nativeAsset.amount, nativeCurrency, true),
+    [claimable.value.nativeAsset.amount, nativeCurrency]
+  );
+
   if (!claimable) return null;
 
   return (
     <Box
       as={ButtonPressAnimation}
-      // onPress={() => navigate(Routes.CLAIM_CLAIMABLE_PANEL, { claimable })}
+      onPress={() => navigate(Routes.CLAIM_CLAIMABLE_PANEL, { claimable })}
       scaleTo={0.96}
       paddingHorizontal="20px"
       justifyContent="space-between"
@@ -68,7 +74,7 @@ export const Claimable = React.memo(function Claimable({ uniqueId, extendedState
         style={{ backgroundColor: 'rgba(7, 17, 32, 0.02)' }}
       >
         <Text weight="semibold" color="label" align="center" size="17pt">
-          {claimable.value.nativeAsset.display}
+          {nativeDisplay}
         </Text>
       </Box>
     </Box>
