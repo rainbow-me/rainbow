@@ -92,7 +92,6 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
 
     if (needsL1SecurityFeeChains.includes(claimable.chainId)) {
       const l1SecurityFee = await ethereumUtils.calculateL1FeeOptimism(
-        // @ts-expect-error - type mismatch, but this tx request structure is the same as in SendSheet.js
         {
           to: claimable.action.to,
           from: accountAddress,
