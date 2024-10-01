@@ -837,11 +837,12 @@ export default function SendSheet() {
     if (
       selected &&
       !!accountAddress &&
-      Object.entries(selected || {}).length &&
       assetChainId === currentChainId &&
       currentProviderChainId === currentChainId &&
+      toAddress &&
       isValidAddress &&
-      !isEmpty(selected)
+      !isEmpty(selected) &&
+      (isUniqueAsset || Number(amountDetails.assetAmount) >= 0)
     ) {
       estimateGasLimit(
         {
@@ -879,6 +880,7 @@ export default function SendSheet() {
     chainId,
     isNft,
     currentChainId,
+    isUniqueAsset,
   ]);
 
   const sendContactListDataKey = useMemo(() => `${ensSuggestions?.[0]?.address || '_'}`, [ensSuggestions]);
