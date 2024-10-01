@@ -10,6 +10,11 @@ import { logger, RainbowError } from '@/logger';
 import { ClaimingClaimableSharedUI, ClaimStatus } from './ClaimingClaimableSharedUI';
 import { TransactionRequest } from '@ethersproject/providers';
 import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
+import { useMutation } from '@tanstack/react-query';
+import { loadWallet } from '@/model/wallet';
+import { walletExecuteRap } from '@/rapsV2/execute';
+import { claimablesQueryKey } from '@/resources/addys/claimables/query';
+import { queryClient } from '@/react-query';
 
 // supports legacy and new gas types
 export type TransactionClaimableTxPayload = TransactionRequest &
@@ -134,9 +139,61 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
     true
   );
 
+  const { mutate: claimClaimable } = useMutation({
+    mutationFn: async () => {
+      if (!txPayload) {
+        setClaimStatus('error');
+        logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to missing tx payload'));
+        return;
+      }
+
+      const wallet = await loadWallet({
+        address: accountAddress,
+        showErrorIfNotLoaded: false,
+        provider,
+      });
+
+      if (!wallet) {
+        // Biometrics auth failure (retry possible)
+        setClaimStatus('error');
+        return;
+      }
+
+      const { errorMessage } = await walletExecuteRap(wallet, {
+        type: 'claimTransactionClaimableRap',
+        claimTransactionClaimableActionParameters: { claimTx: txPayload, asset: claimable.asset },
+      });
+
+      if (errorMessage) {
+        setClaimStatus('error');
+        logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to rap error'), {
+          message: errorMessage,
+        });
+      } else {
+        setClaimStatus('success');
+        // Clear and refresh claimables data
+        queryClient.invalidateQueries(claimablesQueryKey({ address: accountAddress, currency: nativeCurrency }));
+      }
+    },
+    onError: e => {
+      setClaimStatus('error');
+      logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to unhandled error'), {
+        message: (e as Error)?.message,
+      });
+    },
+    onSuccess: () => {
+      if (claimStatus === 'claiming') {
+        logger.error(
+          new RainbowError('[ClaimingTransactionClaimable]: claim function completed but never resolved status to success or error state')
+        );
+        setClaimStatus('error');
+      }
+    },
+  });
+
   return (
     <ClaimingClaimableSharedUI
-      claim={() => {}}
+      claim={claimClaimable}
       claimable={claimable}
       claimStatus={claimStatus}
       hasSufficientFunds={isSufficientGas}
