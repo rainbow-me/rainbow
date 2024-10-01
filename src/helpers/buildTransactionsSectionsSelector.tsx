@@ -15,7 +15,7 @@ type RainbowTransactionWithContact = RainbowTransaction & {
 
 // bad news
 const groupTransactionByDate = ({ status, minedAt }: { status: TransactionStatus; minedAt: string }) => {
-  if (status === 'pending') {
+  if (status === TransactionStatus.pending) {
     return i18n.t(i18n.l.transactions.pending_title);
   }
 

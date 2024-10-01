@@ -106,7 +106,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         });
       }
 
-      if (updatedTransaction?.status !== 'pending') {
+      if (updatedTransaction?.status !== TransactionStatus.pending) {
         refreshAssets(tx);
       }
       return updatedTransaction;

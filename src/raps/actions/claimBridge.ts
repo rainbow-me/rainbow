@@ -195,7 +195,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
         value: bridgeQuote.buyAmount.toString(),
       },
     ],
-    from: bridgeQuote.from as Address,
+    from: bridgeQuote.from,
     to: bridgeQuote.to as Address,
     hash: swap.hash as TxHash,
     network: chainsName[parameters.chainId],
@@ -207,7 +207,7 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
   } satisfies NewTransaction;
 
   addNewTransaction({
-    address: bridgeQuote.from as Address,
+    address: bridgeQuote.from,
     chainId: parameters.chainId,
     transaction,
   });

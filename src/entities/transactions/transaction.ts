@@ -12,6 +12,7 @@ import { ChainId, Network } from '@/chains/types';
 import { TransactionResponse } from '@ethersproject/providers';
 
 import { LegacyTransactionGasParams, TransactionGasParams } from '@/entities/gas';
+import { Address } from 'viem';
 
 export enum TransactionDirection {
   IN = 'in',
@@ -53,7 +54,7 @@ export enum TransactionStatus {
 }
 
 export interface RainbowTransaction {
-  address?: string;
+  address?: Address;
   asset?:
     | (ParsedAsset & {
         asset_contract?: {
@@ -125,9 +126,17 @@ export interface RainbowTransaction {
   explorerUrl?: string;
 }
 
+export enum FlashbotsStatus {
+  PENDING = 'PENDING',
+  INCLUDED = 'INCLUDED',
+  FAILED = 'FAILED',
+  CANCELLED = 'CANCELLED',
+  UNKNOWN = 'UNKNOWN',
+}
+
 export type MinedTransaction = RainbowTransaction & {
   status: TransactionStatus.confirmed | TransactionStatus.failed;
-  flashbotsStatus?: 'CANCELLED' | 'FAILED' | 'INCLUDED';
+  flashbotsStatus?: FlashbotsStatus;
   blockNumber: number;
   minedAt: number;
   confirmations: number;

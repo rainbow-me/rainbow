@@ -1,6 +1,6 @@
 import { ProtocolType } from '../protocolTypes';
 import { ZerionAsset } from '../tokens';
-import { TransactionDirection, TransactionType } from '@/entities';
+import { TransactionDirection, TransactionStatus, TransactionType } from '@/entities';
 
 interface ZerionTransactionFee {
   price: number;
@@ -11,12 +11,6 @@ interface ZerionTransactionMeta {
   action?: string | null;
   application?: string | null;
   asset?: ZerionAsset;
-}
-
-enum ZerionTransactionStatus {
-  confirmed = 'confirmed',
-  failed = 'failed',
-  pending = 'pending',
 }
 
 export interface ZerionTransactionChange {
@@ -42,6 +36,6 @@ export interface ZerionTransaction {
   mined_at: number;
   nonce: number | null;
   protocol: ProtocolType;
-  status: ZerionTransactionStatus;
+  status: TransactionStatus.pending | TransactionStatus.confirmed | TransactionStatus.failed;
   type: TransactionType;
 }

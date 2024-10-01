@@ -9,14 +9,13 @@ export function getIconColorAndGradientForTransactionStatus(
   color: 'red' | 'blue' | 'labelSecondary';
   gradient: string[];
 } {
-  if (status === 'pending') {
+  if (status === TransactionStatus.pending) {
     return {
       icon: '􀖇',
       color: 'labelSecondary',
       gradient: colors.gradients.transparentToLightGrey,
     };
-  }
-  if (status === 'failed') {
+  } else if (status === TransactionStatus.failed) {
     return {
       icon: '􀆄',
       color: 'red',

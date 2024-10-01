@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Text, useForegroundColor } from '@/design-system';
-import { RainbowTransaction } from '@/entities';
+import { RainbowTransaction, TransactionStatus } from '@/entities';
 import { ThemeContextProps } from '@/theme';
 import * as lang from '@/languages';
 import { ActivityTypeIcon } from './FastTransactionCoinRow';
@@ -25,11 +25,19 @@ export default React.memo(function FastTransactionStatusBadge({
   style?: StyleProp<ViewStyle>;
 }) {
   let statusColor = useForegroundColor('labelTertiary');
-  if (transaction?.status === 'pending') {
+  if (transaction?.status === TransactionStatus.pending) {
     statusColor = colors.appleBlue;
   } else if (transaction?.status === 'failed') {
     statusColor = colors.red;
   }
+
+  const getStatusTitle = useCallback((status: TransactionStatus, title: string) => {
+    const transactionType = lang.l.transactions.type[title as keyof typeof lang.l.transactions.type];
+    if (typeof transactionType === 'string') {
+      return transactionType;
+    }
+    return transactionType[status as keyof typeof transactionType] || '';
+  }, []);
 
   return (
     <View style={[sx.row, style]}>
@@ -37,8 +45,7 @@ export default React.memo(function FastTransactionStatusBadge({
         <ActivityTypeIcon transaction={transaction} color={statusColor} />
       </View>
       <Text color={{ custom: statusColor }} size="14px / 19px (Deprecated)" weight="semibold">
-        {/* @ts-ignore */}
-        {lang.t(lang.l.transactions.type[transaction?.title])}
+        {getStatusTitle(transaction?.status, transaction?.title)}
       </Text>
     </View>
   );
