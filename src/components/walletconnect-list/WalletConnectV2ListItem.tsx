@@ -91,7 +91,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
 
   const handlePressChangeWallet = useCallback(() => {
     Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
-      currentAccountAddress: accountInfo?.accountAddress,
+      currentAccountAddress: address,
       onChangeWallet: async (address: string) => {
         const success = await changeAccount(session, { address });
         if (success) {
