@@ -402,7 +402,7 @@ export default function SendSheet() {
 
   const onSubmit = useCallback(
     async ({ ens }: OnSubmitProps = {}) => {
-      if (!selected || isUniqueAsset) return;
+      if (!selected) return;
 
       const wallet = await performanceTracking.getState().executeFn({
         fn: loadWallet,
@@ -493,7 +493,7 @@ export default function SendSheet() {
       const gasParams = parseGasParamsForTransaction(selectedGasFee);
       const txDetails: Partial<NewTransaction> = {
         amount: amountDetails.assetAmount,
-        asset: selected,
+        asset: selected as ParsedAddressAsset,
         from: accountAddress,
         gasLimit: gasLimitToUse,
         network: currentChainIdNetwork,
