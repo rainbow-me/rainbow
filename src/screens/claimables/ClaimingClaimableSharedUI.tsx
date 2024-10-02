@@ -156,14 +156,9 @@ export const ClaimingClaimableSharedUI = ({
           <ListHeader
             TitleComponent={
               <Box alignItems="center" flexDirection="row" gap={10} justifyContent="center">
-                <Box
-                  as={FasterImageView}
-                  source={{ url: claimable.iconUrl }}
-                  style={{ height: 20, width: 20 }}
-                  borderRadius={6}
-                  borderWidth={1}
-                  borderColor={{ custom: 'rgba(0, 0, 0, 0.03)' }}
-                />
+                <Box borderRadius={6} borderWidth={1} borderColor={{ custom: 'rgba(0, 0, 0, 0.03)' }}>
+                  <FasterImageView source={{ url: claimable.iconUrl }} style={{ height: 20, width: 20 }} />
+                </Box>
                 <TextShadow shadowOpacity={0.3}>
                   <Text align="center" color={panelTitleColor} size="20pt" weight="heavy">
                     {panelTitle}
