@@ -8,6 +8,7 @@ import { loadWallet } from '@/model/wallet';
 import { useMutation } from '@tanstack/react-query';
 import { getProvider } from '@/handlers/web3';
 import { useAccountSettings } from '@/hooks';
+import { haptics } from '@/utils';
 
 export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: SponsoredClaimable }) => {
   const { accountAddress, nativeCurrency } = useAccountSettings();
@@ -25,6 +26,7 @@ export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: Sponsored
 
       if (!wallet) {
         // Biometrics auth failure (retry possible)
+        haptics.notificationError();
         setClaimStatus('error');
         return;
       }
@@ -36,6 +38,7 @@ export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: Sponsored
         try {
           response = await addysHttp.get(path);
         } catch (e) {
+          haptics.notificationError();
           setClaimStatus('error');
           logger.error(new RainbowError('[ClaimSponsoredClaimable]: failed to execute sponsored claim api call'));
           return;
@@ -44,6 +47,7 @@ export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: Sponsored
         try {
           response = await addysHttp.post(path);
         } catch (e) {
+          haptics.notificationError();
           setClaimStatus('error');
           logger.error(new RainbowError('[ClaimSponsoredClaimable]: failed to execute sponsored claim api call'));
           return;
@@ -51,12 +55,15 @@ export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: Sponsored
       }
 
       if (!response.data.payload.success) {
+        haptics.notificationError();
         setClaimStatus('error');
-        logger.warn('[ClaimSponsoredClaimable]: sponsored claim api call returned unsuccessful response');
+        logger.error(new RainbowError('[ClaimSponsoredClaimable]: sponsored claim api call returned unsuccessful response'));
       } else {
         if (response.data.payload.claim_transaction_status?.transaction_hash) {
+          haptics.notificationSuccess();
           setClaimStatus('success');
         } else {
+          haptics.notificationSuccess();
           setClaimStatus('pending');
         }
         // Clear and refresh claimables data
@@ -64,6 +71,7 @@ export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: Sponsored
       }
     },
     onError: e => {
+      haptics.notificationError();
       setClaimStatus('error');
       logger.error(new RainbowError('[ClaimingSponsoredClaimable]: Failed to claim claimable due to unhandled error'), {
         message: (e as Error)?.message,
@@ -71,10 +79,11 @@ export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: Sponsored
     },
     onSuccess: () => {
       if (claimStatus === 'claiming') {
+        haptics.notificationError();
+        setClaimStatus('error');
         logger.error(
           new RainbowError('[ClaimingSponsoredClaimable]: claim function completed but never resolved status to success or error state')
         );
-        setClaimStatus('error');
       }
     },
   });

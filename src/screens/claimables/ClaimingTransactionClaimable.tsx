@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAccountSettings, useGas } from '@/hooks';
-import { ethereumUtils } from '@/utils';
+import { ethereumUtils, haptics } from '@/utils';
 import { TransactionClaimable } from '@/resources/addys/claimables/types';
 import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
 import { parseGasParamsForTransaction } from '@/parsers';
@@ -72,11 +72,11 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
   }, [buildTxPayload]);
 
   useEffect(() => {
-    startPollingGasFees();
+    startPollingGasFees(claimable.chainId);
     return () => {
       stopPollingGasFees();
     };
-  }, [startPollingGasFees, stopPollingGasFees]);
+  }, [claimable.chainId, startPollingGasFees, stopPollingGasFees]);
 
   const estimateGas = useCallback(async () => {
     if (!baseTxPayload) {
@@ -142,6 +142,7 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
   const { mutate: claimClaimable } = useMutation({
     mutationFn: async () => {
       if (!txPayload) {
+        haptics.notificationError();
         setClaimStatus('error');
         logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to missing tx payload'));
         return;
@@ -155,6 +156,7 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
 
       if (!wallet) {
         // Biometrics auth failure (retry possible)
+        haptics.notificationError();
         setClaimStatus('error');
         return;
       }
@@ -165,17 +167,20 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
       });
 
       if (errorMessage) {
+        haptics.notificationError();
         setClaimStatus('error');
         logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to rap error'), {
           message: errorMessage,
         });
       } else {
+        haptics.notificationSuccess();
         setClaimStatus('success');
         // Clear and refresh claimables data
         queryClient.invalidateQueries(claimablesQueryKey({ address: accountAddress, currency: nativeCurrency }));
       }
     },
     onError: e => {
+      haptics.notificationError();
       setClaimStatus('error');
       logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to unhandled error'), {
         message: (e as Error)?.message,
@@ -183,10 +188,11 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
     },
     onSuccess: () => {
       if (claimStatus === 'claiming') {
+        haptics.notificationError();
+        setClaimStatus('error');
         logger.error(
           new RainbowError('[ClaimingTransactionClaimable]: claim function completed but never resolved status to success or error state')
         );
-        setClaimStatus('error');
       }
     },
   });
