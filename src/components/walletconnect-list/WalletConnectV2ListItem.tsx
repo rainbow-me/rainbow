@@ -143,8 +143,6 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
     [dappName, dappUrl, handlePressChangeWallet, reload, session]
   );
 
-  console.log(session.namespaces.eip155?.accounts?.[0]);
-
   return (
     <ContextMenuButton
       testID="wallet_connect_v2_list_item"
