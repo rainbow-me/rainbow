@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { SessionTypes } from '@walletconnect/types';
 import RadialGradient from 'react-native-radial-gradient';
 
@@ -20,7 +20,6 @@ import { padding, position } from '@/styles';
 import { showActionSheetWithOptions } from '@/utils';
 import * as lang from '@/languages';
 import { useTheme } from '@/theme';
-import { logger, RainbowError } from '@/logger';
 import { changeAccount, disconnectSession } from '@/walletConnect';
 import { Box, Inline } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
@@ -48,6 +47,9 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
   const { colors } = useTheme();
   const { wallets, walletNames } = useWallets();
 
+  const [address, setAddress] = useState<string | undefined>(undefined);
+  const [accountInfo, setAccountInfo] = useState<ReturnType<typeof getAccountProfileInfo> | undefined>(undefined);
+
   const radialGradientProps = {
     center: [0, 1],
     colors: colors.gradients.lightGreyWhite,
@@ -58,64 +60,49 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
     },
   };
 
-  const { dappName, dappUrl, dappLogo, address, chainIds } = React.useMemo(() => {
-    const { namespaces, requiredNamespaces, peer } = session;
-    const { metadata } = peer;
-    const chains = requiredNamespaces?.eip155?.chains || [];
+  const { namespaces, peer } = session;
+  const { metadata } = peer;
 
-    const eip155Account = namespaces.eip155?.accounts?.[0] || undefined;
-
-    if (!eip155Account) {
-      const e = new RainbowError(`[WalletConnectV2ListItem]: unsupported namespace`);
-      logger.error(e);
-
-      // defensive, just for types, should never happen
-      throw e;
-    }
-
+  useEffect(() => {
+    const eip155Account = session.namespaces.eip155?.accounts?.[0] || undefined;
     const address = eip155Account?.split(':')?.[2];
-    const chainIds = (chains
-      ?.map(chain => parseInt(chain.split(':')[1]))
-      ?.filter(chainId => supportedWalletConnectChainIds.includes(chainId)) ?? []) as ChainId[];
-
-    if (!address) {
-      const e = new RainbowError(`[WalletConnectV2ListItem]: could not parse address`);
-      logger.error(e);
-
-      // defensive, just for types, should never happen
-      throw e;
-    }
-
-    return {
-      dappName: metadata.name || 'Unknown Dapp',
-      dappUrl: metadata.url || 'Unknown URL',
-      dappLogo: metadata && metadata.icons ? metadata.icons[0] : undefined,
-      address,
-      chainIds,
-    };
+    setAddress(address);
   }, [session]);
+
+  useEffect(() => {
+    if (address) {
+      setAccountInfo(getAccountProfileInfo(findWalletWithAccount(wallets || {}, address), walletNames, address));
+    }
+  }, [address, walletNames, wallets]);
+
+  const chains = useMemo(() => namespaces?.eip155?.chains || [], [namespaces]);
+  const chainIds = useMemo(
+    () =>
+      (chains?.map(chain => parseInt(chain.split(':')[1]))?.filter(chainId => supportedWalletConnectChainIds.includes(chainId)) ??
+        []) as ChainId[],
+    [chains]
+  );
+
+  const dappName = metadata.name || 'Unknown Dapp';
+  const dappUrl = metadata.url || 'Unknown URL';
+  const dappLogo = metadata && metadata.icons ? metadata.icons[0] : undefined;
 
   const availableNetworksChainIds = useMemo(() => chainIds.sort(chainId => (chainId === ChainId.mainnet ? -1 : 1)), [chainIds]);
 
-  const approvalAccountInfo = useMemo(() => {
-    const selectedWallet = findWalletWithAccount(wallets!, address);
-    const approvalAccountInfo = getAccountProfileInfo(selectedWallet, walletNames, address);
-    return {
-      ...approvalAccountInfo,
-    };
-  }, [wallets, walletNames, address]);
-
   const handlePressChangeWallet = useCallback(() => {
     Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
-      currentAccountAddress: address,
+      currentAccountAddress: accountInfo?.accountAddress,
       onChangeWallet: async (address: string) => {
-        await changeAccount(session, { address });
-        reload();
+        const success = await changeAccount(session, { address });
+        if (success) {
+          setAddress(address);
+          reload();
+        }
         goBack();
       },
       watchOnly: true,
     });
-  }, [address, session, reload, goBack]);
+  }, [accountInfo, session, reload, goBack]);
 
   const onPressAndroid = useCallback(() => {
     showActionSheetWithOptions(
@@ -156,6 +143,8 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
     [dappName, dappUrl, handlePressChangeWallet, reload, session]
   );
 
+  console.log(session.namespaces.eip155?.accounts?.[0]);
+
   return (
     <ContextMenuButton
       testID="wallet_connect_v2_list_item"
@@ -181,13 +170,13 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
                   paddingLeft: 10,
                 }}
               >
-                {approvalAccountInfo.accountImage ? (
-                  <ImageAvatar image={approvalAccountInfo.accountImage} size="smaller" />
+                {accountInfo?.accountImage ? (
+                  <ImageAvatar image={accountInfo.accountImage} size="smaller" />
                 ) : (
                   <ContactAvatar
-                    color={isNaN(approvalAccountInfo.accountColor) ? colors.skeleton : approvalAccountInfo.accountColor}
+                    color={isNaN(accountInfo?.accountColor ?? 0) ? colors.skeleton : accountInfo?.accountColor}
                     size="smaller"
-                    value={approvalAccountInfo.accountSymbol}
+                    value={accountInfo?.accountSymbol}
                   />
                 )}
                 <TruncatedText
@@ -200,7 +189,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
                   }}
                   weight="bold"
                 >
-                  {approvalAccountInfo.accountName}
+                  {accountInfo?.accountName}
                 </TruncatedText>
               </Centered>
             </SessionRow>
