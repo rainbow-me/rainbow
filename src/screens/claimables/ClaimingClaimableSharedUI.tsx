@@ -65,7 +65,7 @@ export const ClaimingClaimableSharedUI = ({
 
   const isButtonDisabled =
     claimStatus === 'claiming' ||
-    (claimStatus !== 'success' && claimStatus !== 'pending' && claimable.type === 'transaction' && !isTransactionReady);
+    ((claimStatus === 'idle' || claimStatus === 'error') && claimable.type === 'transaction' && !isTransactionReady);
 
   const shouldShowClaimText = claimStatus === 'idle' && (claimable.type !== 'transaction' || hasSufficientFunds);
 
@@ -226,9 +226,7 @@ export const ClaimingClaimableSharedUI = ({
                   }
                 }}
               >
-                <AccentColorProvider
-                  color={`rgba(41, 90, 247, ${(claimable.type === 'transaction' && !isTransactionReady) || claimStatus === 'claiming' ? 0.2 : 1})`}
-                >
+                <AccentColorProvider color={`rgba(41, 90, 247, ${isButtonDisabled ? 0.2 : 1})`}>
                   <Box
                     background="accent"
                     shadow="30px accent"
@@ -241,13 +239,13 @@ export const ClaimingClaimableSharedUI = ({
                     <ShimmerAnimation color="#FFFFFF" enabled={!isButtonDisabled || claimStatus === 'claiming'} width={BUTTON_WIDTH} />
                     <Inline alignVertical="center" space="6px">
                       {shouldShowClaimText && (
-                        <TextShadow shadowOpacity={0.3}>
+                        <TextShadow shadowOpacity={isButtonDisabled ? 0 : 0.3}>
                           <Text align="center" color="label" size="icon 20px" weight="heavy">
                             􀎽
                           </Text>
                         </TextShadow>
                       )}
-                      <TextShadow shadowOpacity={0.3}>
+                      <TextShadow shadowOpacity={isButtonDisabled ? 0 : 0.3}>
                         <Text align="center" color="label" size="20pt" weight="heavy">
                           {buttonLabel}
                         </Text>
