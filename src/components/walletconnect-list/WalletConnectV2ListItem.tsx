@@ -102,7 +102,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
       },
       watchOnly: true,
     });
-  }, [accountInfo, session, reload, goBack]);
+  }, [address, session, goBack, reload]);
 
   const onPressAndroid = useCallback(() => {
     showActionSheetWithOptions(
