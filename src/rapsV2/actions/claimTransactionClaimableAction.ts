@@ -16,12 +16,6 @@ export async function claimTransactionClaimable({ parameters, wallet }: ActionPr
     throw new RainbowError('[CLAIM-TRANSACTION-CLAIMABLE]: failed to execute claim transaction');
   }
 
-  const tx = await wallet?.provider?.getTransaction(result.result.hash);
-  const receipt = await tx?.wait();
-  if (!receipt) {
-    throw new RainbowError('[CLAIM-TRANSACTION-CLAIMABLE]: tx not mined');
-  }
-
   const transaction = {
     amount: '0x0',
     gasLimit: result.result.gasLimit,
@@ -41,6 +35,12 @@ export async function claimTransactionClaimable({ parameters, wallet }: ActionPr
     chainId: claimTx.chainId,
     transaction,
   });
+
+  const tx = await wallet?.provider?.getTransaction(result.result.hash);
+  const receipt = await tx?.wait();
+  if (!receipt) {
+    throw new RainbowError('[CLAIM-TRANSACTION-CLAIMABLE]: tx not mined');
+  }
 
   return {
     nonce: result.result.nonce,
