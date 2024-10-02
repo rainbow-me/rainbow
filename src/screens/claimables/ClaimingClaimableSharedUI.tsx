@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 import { AccentColorProvider, Bleed, Box, Inline, Text, TextShadow, globalColors, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import { ListHeader, Panel, TapToDismiss, controlPanelStyles } from '@/components/SmoothPager/ListPanel';
-import { deviceUtils, safeAreaInsetValues, watchingAlert } from '@/utils';
+import { deviceUtils, haptics, safeAreaInsetValues, watchingAlert } from '@/utils';
 import { View } from 'react-native';
 import { IS_IOS } from '@/env';
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
@@ -65,25 +65,17 @@ export const ClaimingClaimableSharedUI = ({
 
   const isButtonDisabled =
     claimStatus === 'claiming' ||
-    (claimStatus !== 'success' && claimStatus !== 'pending' && claimable.type === 'transaction' && !isTransactionReady);
+    ((claimStatus === 'idle' || claimStatus === 'error') && claimable.type === 'transaction' && !isTransactionReady);
 
   const shouldShowClaimText = claimStatus === 'idle' && (claimable.type !== 'transaction' || hasSufficientFunds);
 
-  const claimAmountDisplay = useMemo(
-    () => `${handleSignificantDecimalsWithThreshold(claimable.value.claimAsset.amount, 4, '0.001')} ${claimable.asset.symbol}`,
-    [claimable.asset.symbol, claimable.value.claimAsset.amount]
-  );
-
-  const claimAmountNativeDisplay = useMemo(
-    () => convertAmountToNativeDisplayWorklet(claimable.value.nativeAsset.amount, nativeCurrency, true),
-    [claimable.value.nativeAsset.amount, nativeCurrency]
-  );
+  const claimAmountNativeDisplay = convertAmountToNativeDisplayWorklet(claimable.value.nativeAsset.amount, nativeCurrency, true);
 
   const buttonLabel = useMemo(() => {
     switch (claimStatus) {
       case 'idle':
         if (shouldShowClaimText) {
-          return i18n.t(i18n.l.claimables.panel.claim_amount, { amount: claimAmountDisplay });
+          return i18n.t(i18n.l.claimables.panel.claim_amount, { amount: claimable.value.claimAsset.display });
         } else {
           return i18n.t(i18n.l.claimables.panel.insufficient_funds);
         }
@@ -96,7 +88,7 @@ export const ClaimingClaimableSharedUI = ({
       default:
         return i18n.t(i18n.l.points.points.try_again);
     }
-  }, [claimAmountDisplay, claimStatus, shouldShowClaimText]);
+  }, [claimable.value.claimAsset.display, claimStatus, shouldShowClaimText]);
 
   const panelTitle = useMemo(() => {
     switch (claimStatus) {
@@ -167,7 +159,10 @@ export const ClaimingClaimableSharedUI = ({
                 <Box
                   as={FasterImageView}
                   source={{ url: claimable.iconUrl }}
-                  style={{ height: 20, width: 20, borderRadius: 6, borderWidth: 1, borderColor: 'rgba(0, 0, 0, 0.03)' }}
+                  style={{ height: 20, width: 20 }}
+                  borderRadius={6}
+                  borderWidth={1}
+                  borderColor={{ custom: 'rgba(0, 0, 0, 0.03)' }}
                 />
                 <TextShadow shadowOpacity={0.3}>
                   <Text align="center" color={panelTitleColor} size="20pt" weight="heavy">
@@ -220,6 +215,7 @@ export const ClaimingClaimableSharedUI = ({
                   }
                 }}
                 onLongPress={() => {
+                  haptics.impactHeavy();
                   if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
                     if (claimStatus === 'idle' || claimStatus === 'error') {
                       setClaimStatus('claiming');
@@ -230,9 +226,7 @@ export const ClaimingClaimableSharedUI = ({
                   }
                 }}
               >
-                <AccentColorProvider
-                  color={`rgba(41, 90, 247, ${(claimable.type === 'transaction' && !isTransactionReady) || claimStatus === 'claiming' ? 0.2 : 1})`}
-                >
+                <AccentColorProvider color={`rgba(41, 90, 247, ${isButtonDisabled ? 0.2 : 1})`}>
                   <Box
                     background="accent"
                     shadow="30px accent"
@@ -245,13 +239,13 @@ export const ClaimingClaimableSharedUI = ({
                     <ShimmerAnimation color="#FFFFFF" enabled={!isButtonDisabled || claimStatus === 'claiming'} width={BUTTON_WIDTH} />
                     <Inline alignVertical="center" space="6px">
                       {shouldShowClaimText && (
-                        <TextShadow shadowOpacity={0.3}>
+                        <TextShadow shadowOpacity={isButtonDisabled ? 0 : 0.3}>
                           <Text align="center" color="label" size="icon 20px" weight="heavy">
                             􀎽
                           </Text>
                         </TextShadow>
                       )}
-                      <TextShadow shadowOpacity={0.3}>
+                      <TextShadow shadowOpacity={isButtonDisabled ? 0 : 0.3}>
                         <Text align="center" color="label" size="20pt" weight="heavy">
                           {buttonLabel}
                         </Text>
