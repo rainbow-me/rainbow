@@ -25,7 +25,7 @@ export async function claimTransactionClaimable({ parameters, wallet }: ActionPr
     hash: result.result.hash,
     network: chainsName[result.result.chainId],
     status: 'pending',
-    type: 'send',
+    type: 'claim',
     nonce: result.result.nonce,
     asset,
   } satisfies NewTransaction;
