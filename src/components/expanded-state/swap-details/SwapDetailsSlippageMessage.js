@@ -1,6 +1,6 @@
 import lang from 'i18n-js';
 import React from 'react';
-import Divider from '../../Divider';
+import Divider from '@/components/Divider';
 import { Centered, Column, ColumnWithMargins, Row } from '../../layout';
 import { Emoji, Text } from '../../text';
 import styled from '@/styled-thing';

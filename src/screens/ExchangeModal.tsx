@@ -911,7 +911,6 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
               )}
             </Row>
             <Row height="content">
-              {/* @ts-expect-error - Javascript Component */}
               <GasSpeedButton
                 asset={outputCurrency}
                 chainId={currentChainId}
@@ -919,6 +918,7 @@ export function ExchangeModal({ fromDiscover, ignoreInitialTypeCheck, testID, ty
                 marginBottom={0}
                 marginTop={0}
                 testID={`${testID}-gas`}
+                // @ts-expect-error - invalid prop type but fixed in the next PR
                 crossChainServiceTime={getCrosschainSwapServiceTime(tradeDetails as CrosschainQuote)}
               />
             </Row>

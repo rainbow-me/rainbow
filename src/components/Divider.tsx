@@ -3,10 +3,12 @@ import React from 'react';
 import { magicMemo } from '../utils';
 import styled from '@/styled-thing';
 import { borders, position } from '@/styles';
+import { StyleProp, View, ViewProps, ViewStyle } from 'react-native';
+import { ThemeContextProps, useTheme } from '@/theme';
 
 export const DividerSize = 2;
 
-const buildInsetFromProps = inset => {
+const buildInsetFromProps = (inset: number | number[]) => {
   if (!inset) return [0, 0, 0, 0];
   if (isNumber(inset)) return [inset, inset, inset, inset];
 
@@ -15,35 +17,41 @@ const buildInsetFromProps = inset => {
   return [inset[0], rightInset, inset[2] || inset[0], !isNil(inset[3]) ? inset[3] : rightInset];
 };
 
-const horizontalBorderLineStyles = inset => `
+const horizontalBorderLineStyles = (inset: number[]) => `
   ${inset[3] ? borders.buildRadius('left', 2) : ''}
   ${inset[1] ? borders.buildRadius('right', 2) : ''}
   left: ${inset[3]};
   right: ${inset[1]};
 `;
 
-horizontalBorderLineStyles.object = inset => ({
+horizontalBorderLineStyles.object = (inset: number[]) => ({
   ...(inset[3] ? borders.buildRadiusAsObject('left', 2) : {}),
   ...(inset[1] ? borders.buildRadiusAsObject('right', 2) : {}),
   left: inset[3],
   right: inset[1],
 });
 
-const verticalBorderLineStyles = inset => `
+const verticalBorderLineStyles = (inset: number[]) => `
   ${inset[2] ? borders.buildRadius('bottom', 2) : ''}
   ${inset[0] ? borders.buildRadius('top', 2) : ''}
   bottom: ${inset[2]};
   top: ${inset[0]};
 `;
 
-verticalBorderLineStyles.object = inset => ({
+verticalBorderLineStyles.object = (inset: number[]) => ({
   ...(inset[2] ? borders.buildRadiusAsObject('bottom', 2) : {}),
   ...(inset[0] ? borders.buildRadiusAsObject('top', 2) : {}),
   bottom: inset[2],
   top: inset[0],
 });
 
-const BorderLine = styled.View(({ color, horizontal, inset }) => {
+type BorderLineProps = {
+  color: string;
+  horizontal: boolean;
+  inset: number | number[];
+};
+
+const BorderLine = styled(View)(({ color, horizontal, inset }: BorderLineProps) => {
   const insetFromProps = buildInsetFromProps(inset);
   return {
     ...position.coverAsObject,
@@ -52,14 +60,37 @@ const BorderLine = styled.View(({ color, horizontal, inset }) => {
   };
 });
 
-const Container = styled.View({
-  backgroundColor: ({ backgroundColor, theme: { colors } }) => backgroundColor || colors.white,
+type ContainerProps = {
+  backgroundColor: string;
+  horizontal: boolean;
+  size: number;
+  theme: ThemeContextProps;
+};
+
+const Container = styled(View)({
+  backgroundColor: ({ backgroundColor, theme: { colors } }: ContainerProps) => backgroundColor || colors.white,
   flexShrink: 0,
-  height: ({ horizontal, size }) => (horizontal ? size : '100%'),
-  width: ({ horizontal, size }) => (horizontal ? '100%' : size),
+  height: ({ horizontal, size }: ContainerProps) => (horizontal ? size : '100%'),
+  width: ({ horizontal, size }: ContainerProps) => (horizontal ? '100%' : size),
 });
 
-const Divider = ({ backgroundColor, color, horizontal = true, inset = [0, 0, 0, 19], size = DividerSize, ...props }) => {
+type DividerProps = {
+  backgroundColor?: string;
+  color?: string;
+  horizontal?: boolean;
+  inset?: number | number[];
+  size?: number;
+  flex?: number;
+};
+
+const Divider = ({
+  backgroundColor = undefined,
+  color = undefined,
+  horizontal = true,
+  inset = [0, 0, 0, 19],
+  size = DividerSize,
+  ...props
+}: DividerProps) => {
   const { colors } = useTheme();
   return (
     <Container {...props} backgroundColor={backgroundColor} horizontal={horizontal} size={size}>

@@ -1,13 +1,13 @@
 import { isHexString } from '@ethersproject/bytes';
 import lang from 'i18n-js';
 import isEmpty from 'lodash/isEmpty';
-import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
-import { ActivityIndicator, Keyboard } from 'react-native';
+import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator, Keyboard, TextInput } from 'react-native';
 import { useNavigation } from '../../navigation/Navigation';
-import { useTheme } from '../../theme/ThemeContext';
-import Divider from '../Divider';
-import Spinner from '../Spinner';
-import { ButtonPressAnimation } from '../animations';
+import { ThemeContextProps, useTheme } from '../../theme/ThemeContext';
+import Divider from '@/components/Divider';
+import Spinner from '@/components/Spinner';
+import { ButtonPressAnimation } from '@/components/animations';
 import { PasteAddressButton } from '../buttons';
 import showDeleteContactActionSheet from '../contacts/showDeleteContactActionSheet';
 import { AddressField } from '../fields';
@@ -17,35 +17,46 @@ import { Label, Text } from '../text';
 import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import { resolveNameOrAddress } from '@/handlers/web3';
 import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
-import { useClipboard, useDimensions } from '@/hooks';
+import { useClipboard, useDimensions, useContacts } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { padding } from '@/styles';
 import { profileUtils, showActionSheetWithOptions } from '@/utils';
+import { IS_ANDROID } from '@/env';
+import { RainbowAccount } from '@/model/wallet';
+import { Contact } from '@/redux/contacts';
 
-const AddressInputContainer = styled(Row).attrs({ align: 'center' })(({ isSmallPhone, theme: { colors }, isTinyPhone }) => ({
-  ...(android
-    ? padding.object(0, 19)
-    : isTinyPhone
-      ? padding.object(23, 15, 10)
-      : isSmallPhone
-        ? padding.object(11, 19, 15)
-        : padding.object(18, 19, 19)),
-  backgroundColor: colors.white,
-  overflow: 'hidden',
-  width: '100%',
-}));
+type ComponentPropsWithTheme = {
+  theme: ThemeContextProps;
+  isSmallPhone: boolean;
+  isTinyPhone: boolean;
+};
+
+const AddressInputContainer = styled(Row).attrs({ align: 'center' })(
+  ({ isSmallPhone, theme: { colors }, isTinyPhone }: ComponentPropsWithTheme) => ({
+    ...(IS_ANDROID
+      ? padding.object(0, 19)
+      : isTinyPhone
+        ? padding.object(23, 15, 10)
+        : isSmallPhone
+          ? padding.object(11, 19, 15)
+          : padding.object(18, 19, 19)),
+    backgroundColor: colors.white,
+    overflow: 'hidden',
+    width: '100%',
+  })
+);
 
 const AddressFieldLabel = styled(Label).attrs({
   size: 'large',
   weight: 'bold',
 })({
-  color: ({ theme: { colors } }) => colors.alpha(colors.blueGreyDark, 0.6),
+  color: ({ theme: { colors } }: ComponentPropsWithTheme) => colors.alpha(colors.blueGreyDark, 0.6),
   marginRight: 4,
   opacity: 1,
 });
 
-const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }) => ({
+const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }: ComponentPropsWithTheme) => ({
   color: colors.alpha(colors.blueGreyDark, 0.3),
 }))({
   marginRight: 2,
@@ -64,11 +75,31 @@ const defaultContactItem = {
   nickname: '',
 };
 
+type AccountWithContact = RainbowAccount & Contact;
+
+type SendHeaderProps = {
+  contacts: ReturnType<typeof useContacts>['contacts'];
+  hideDivider: boolean;
+  isValidAddress: boolean;
+  fromProfile?: boolean;
+  nickname: string;
+  onChangeAddressInput: (text: string) => void;
+  onFocus?: () => void;
+  onPressPaste: (recipient: string) => void;
+  onRefocusInput?: () => void;
+  recipient: string;
+  recipientFieldRef: React.RefObject<TextInput>;
+  removeContact: (address: string) => void;
+  showAssetList: boolean;
+  userAccounts: RainbowAccount[];
+  watchedAccounts: RainbowAccount[];
+};
+
 export default function SendHeader({
   contacts,
   hideDivider,
   isValidAddress,
-  fromProfile,
+  fromProfile = false,
   nickname,
   onChangeAddressInput,
   onFocus,
@@ -80,7 +111,7 @@ export default function SendHeader({
   showAssetList,
   userAccounts,
   watchedAccounts,
-}) {
+}: SendHeaderProps) {
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const { setClipboard } = useClipboard();
   const { isSmallPhone, isTinyPhone } = useDimensions();
@@ -120,7 +151,7 @@ export default function SendHeader({
     removeFirstEmojiFromString(contact?.nickname || userWallet?.label || nickname) || userWallet?.ens || contact?.ens || recipient;
 
   const handleNavigateToContact = useCallback(() => {
-    let color = '';
+    let color = 0;
     const nickname = !isHexString(name) ? name : '';
     if (!profilesEnabled) {
       color = contact?.color;
@@ -154,7 +185,7 @@ export default function SendHeader({
           lang.t('contacts.options.cancel'), // <-- cancelButtonIndex
         ],
       },
-      async buttonIndex => {
+      async (buttonIndex: number) => {
         if (buttonIndex === 0) {
           showDeleteContactActionSheet({
             address: hexAddress,
@@ -166,10 +197,10 @@ export default function SendHeader({
           });
         } else if (buttonIndex === 1) {
           handleNavigateToContact();
-          onRefocusInput();
+          onRefocusInput?.();
         } else if (buttonIndex === 2) {
           setClipboard(hexAddress);
-          onRefocusInput();
+          onRefocusInput?.();
         }
       }
     );
@@ -186,7 +217,7 @@ export default function SendHeader({
   ]);
 
   const onChange = useCallback(
-    text => {
+    (text: string) => {
       onChangeAddressInput(text);
       setHexAddress('');
     },

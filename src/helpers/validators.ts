@@ -33,8 +33,7 @@ export const isENSAddressFormat = memoFn(address => {
   return true;
 });
 
-export const isUnstoppableAddressFormat = memoFn(address => {
-  // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
+export const isUnstoppableAddressFormat = memoFn((address: string) => {
   const parts = !!address && address.split('.');
   if (
     !parts ||
@@ -89,7 +88,7 @@ export const checkIsValidAddressOrDomain = async (address: any) => {
  * @param  {String} ENS, or Unstoppable
  * @return {Boolean}
  */
-export const isValidDomainFormat = memoFn(domain => {
+export const isValidDomainFormat = memoFn((domain: string) => {
   return isUnstoppableAddressFormat(domain) || isENSAddressFormat(domain);
 });
 /**
