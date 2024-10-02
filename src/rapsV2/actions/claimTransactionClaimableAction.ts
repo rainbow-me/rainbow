@@ -36,6 +36,12 @@ export async function claimTransactionClaimable({ parameters, wallet }: ActionPr
     transaction,
   });
 
+  const tx = await wallet?.provider?.getTransaction(result.result.hash);
+  const receipt = await tx?.wait();
+  if (!receipt) {
+    throw new RainbowError('[CLAIM-TRANSACTION-CLAIMABLE]: tx not mined');
+  }
+
   return {
     nonce: result.result.nonce,
     hash: result.result.hash,
