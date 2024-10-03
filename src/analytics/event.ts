@@ -1,5 +1,5 @@
 import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
-import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId, Network } from '@/chains/types';
 import { GasSpeed } from '@/__swaps__/types/gas';
 import { SwapAssetType } from '@/__swaps__/types/swap';
@@ -149,18 +149,26 @@ export const event = {
 
   performanceTimeToSign: 'performance.time_to_sign',
   performanceTimeToSignOperation: 'performance.time_to_sign.operation',
+
+  addFavoriteToken: 'add_favorite_token',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
-  createdAt: number;
   type: T;
-  bridge: boolean;
-  inputNativeValue: string | number;
-  outputNativeValue: string | number;
-  parameters: Omit<RapSwapActionParameters<T>, 'gasParams' | 'gasFeeParamsBySpeed' | 'selectedGasFee'>;
-  selectedGas: GasSettings;
-  selectedGasSpeed: GasSpeed;
-  slippage: string;
+  isBridge: boolean;
+  inputAssetSymbol: string;
+  inputAssetName: string;
+  inputAssetAddress: AddressOrEth;
+  inputAssetChainId: ChainId;
+  inputAssetAmount: number;
+  outputAssetSymbol: string;
+  outputAssetName: string;
+  outputAssetAddress: AddressOrEth;
+  outputAssetChainId: ChainId;
+  outputAssetAmount: number;
+  mainnetAddress: string;
+  flashbots: boolean;
+  tradeAmountUSD: number;
   degenMode: boolean;
   isSwappingToPopularAsset: boolean;
 };
@@ -571,4 +579,11 @@ export type EventProperties = {
   };
 
   [event.performanceTimeToSignOperation]: AnyPerformanceLog;
+
+  [event.addFavoriteToken]: {
+    address: AddressOrEth;
+    chainId: ChainId;
+    name: string;
+    symbol: string;
+  };
 };
