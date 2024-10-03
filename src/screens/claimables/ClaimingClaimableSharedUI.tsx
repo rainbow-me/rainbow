@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { AccentColorProvider, Bleed, Box, Inline, Text, TextShadow, globalColors, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import { ListHeader, Panel, TapToDismiss, controlPanelStyles } from '@/components/SmoothPager/ListPanel';
@@ -17,6 +17,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-na
 import { convertAmountToNativeDisplayWorklet, handleSignificantDecimalsWithThreshold } from '@/__swaps__/utils/numbers';
 import { useAccountSettings, useWallets } from '@/hooks';
 import { enableActionsOnReadOnlyWallet } from '@/config';
+import { debounce } from 'lodash';
 
 const BUTTON_WIDTH = deviceUtils.dimensions.width - 52;
 
@@ -144,6 +145,22 @@ export const ClaimingClaimableSharedUI = ({
     };
   });
 
+  const onPress = useCallback(
+    debounce(() => {
+      if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
+        if (claimStatus === 'idle' || claimStatus === 'error') {
+          setClaimStatus('claiming');
+          claim();
+        } else if (claimStatus === 'success' || claimStatus === 'pending') {
+          goBack();
+        }
+      } else {
+        watchingAlert();
+      }
+    }, 300),
+    [claimStatus, claim, goBack, isReadOnlyWallet, setClaimStatus]
+  );
+
   return (
     <>
       <Box
@@ -204,18 +221,7 @@ export const ClaimingClaimableSharedUI = ({
                 disabled={isButtonDisabled}
                 style={{ width: '100%', paddingHorizontal: 18 }}
                 scaleTo={0.96}
-                onPress={() => {
-                  if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
-                    if (claimStatus === 'idle' || claimStatus === 'error') {
-                      setClaimStatus('claiming');
-                      claim();
-                    } else if (claimStatus === 'success' || claimStatus === 'pending') {
-                      goBack();
-                    }
-                  } else {
-                    watchingAlert();
-                  }
-                }}
+                onPress={onPress}
               >
                 <AccentColorProvider color={`rgba(41, 90, 247, ${isButtonDisabled ? 0.2 : 1})`}>
                   <Box
