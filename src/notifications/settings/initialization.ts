@@ -4,7 +4,7 @@ import {
   WALLET_GROUPS_STORAGE_KEY,
 } from '@/notifications/settings/constants';
 import { AddressWithRelationship, WalletNotificationSettings } from '@/notifications/settings/types';
-import { publishAndSaveWalletSettings, toggleGlobalNotificationTopic } from '@/notifications/settings/settings';
+import { publishAndSaveNotificationSettings, toggleGlobalNotificationTopic } from '@/notifications/settings/settings';
 import {
   getAllGlobalNotificationSettingsFromStorage,
   getAllWalletNotificationSettingsFromStorage,
@@ -40,11 +40,12 @@ export const initializeGlobalNotificationSettings = () => {
 
 export const subscribeExistingNotificationsSettings = () => {
   const currentSettings = getAllWalletNotificationSettingsFromStorage();
+  const globalSettings = getAllGlobalNotificationSettingsFromStorage();
 
   if (!currentSettings) return;
 
   InteractionManager.runAfterInteractions(() => {
-    publishAndSaveWalletSettings(currentSettings, true);
+    publishAndSaveNotificationSettings({ globalSettings, walletSettings: currentSettings, skipPreSave: true });
   });
 };
 
@@ -54,11 +55,12 @@ export const subscribeExistingNotificationsSettings = () => {
  */
 export const initializeNotificationSettingsForAllAddresses = (addresses: AddressWithRelationship[]) => {
   const newSettings = createInitialSettingsForAllAddresses(addresses);
+  const globalSettings = getAllGlobalNotificationSettingsFromStorage();
 
   if (!newSettings) return;
 
   InteractionManager.runAfterInteractions(() => {
-    publishAndSaveWalletSettings(newSettings);
+    publishAndSaveNotificationSettings({ globalSettings, walletSettings: newSettings });
   });
 };
 
@@ -68,8 +70,9 @@ export const initializeNotificationSettingsForAllAddresses = (addresses: Address
  */
 export const initializeNotificationSettingsForAddresses = (addresses: AddressWithRelationship[]) => {
   const proposedSettings = createInitialSettingsForNewlyAddedAddresses(addresses);
+  const globalSettings = getAllGlobalNotificationSettingsFromStorage();
   InteractionManager.runAfterInteractions(() => {
-    publishAndSaveWalletSettings(proposedSettings);
+    publishAndSaveNotificationSettings({ globalSettings, walletSettings: proposedSettings });
   });
 };
 

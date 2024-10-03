@@ -2,12 +2,11 @@ import { NOTIFICATIONS_API_KEY } from 'react-native-dotenv';
 import { logger, RainbowError } from '@/logger';
 import { supportedNotificationsChainIds } from '@/chains';
 import {
+  GlobalNotificationTopics,
   GlobalNotificationTopicType,
   NotificationSubscriptionWalletsType,
   WalletNotificationSettings,
 } from '@/notifications/settings/types';
-import messaging from '@react-native-firebase/messaging';
-import { trackChangedNotificationSettings } from '@/notifications/analytics';
 import { getFCMToken, saveFCMToken } from '@/notifications/tokens';
 import { rainbowFetch } from '@/rainbow-fetch';
 
@@ -20,13 +19,19 @@ type NotificationsSubscriptionResponse = {
   shouldRetry: boolean;
 };
 
-const updateNotificationSubscription = async (
-  firebaseToken: string,
-  wallets: NotificationSubscriptionWalletsType[]
-): Promise<NotificationsSubscriptionResponse> => {
+const updateNotificationSubscription = async ({
+  firebaseToken,
+  marketingTopics,
+  wallets,
+}: {
+  firebaseToken: string;
+  marketingTopics: GlobalNotificationTopicType[];
+  wallets: NotificationSubscriptionWalletsType[];
+}): Promise<NotificationsSubscriptionResponse> => {
   try {
     const options = {
       firebase_token: firebaseToken,
+      marketing_topics: marketingTopics,
       wallets: wallets,
     };
     await rainbowFetch(NOTIFICATION_SUBSCRIPTIONS_URL, {
@@ -62,11 +67,16 @@ const updateNotificationSubscription = async (
   }
 };
 
-const updateNotificationSubscriptionWithRetry = async (
-  firebaseToken: string,
-  wallets: NotificationSubscriptionWalletsType[]
-): Promise<boolean> => {
-  const subscriptionResponse = await updateNotificationSubscription(firebaseToken, wallets);
+const updateNotificationSubscriptionWithRetry = async ({
+  firebaseToken,
+  marketingTopics,
+  wallets,
+}: {
+  firebaseToken: string;
+  marketingTopics: GlobalNotificationTopicType[];
+  wallets: NotificationSubscriptionWalletsType[];
+}): Promise<boolean> => {
+  const subscriptionResponse = await updateNotificationSubscription({ firebaseToken, marketingTopics, wallets });
 
   if (!subscriptionResponse.error) {
     // success
@@ -77,7 +87,11 @@ const updateNotificationSubscriptionWithRetry = async (
     const refreshedFirebaseToken = await getFCMToken();
     if (!refreshedFirebaseToken) return false;
 
-    const subscriptionRetryResponse = await updateNotificationSubscription(refreshedFirebaseToken, wallets);
+    const subscriptionRetryResponse = await updateNotificationSubscription({
+      firebaseToken: refreshedFirebaseToken,
+      marketingTopics,
+      wallets,
+    });
     return !subscriptionRetryResponse.error;
   } else {
     return false;
@@ -85,11 +99,16 @@ const updateNotificationSubscriptionWithRetry = async (
 };
 
 // returns updated wallet settings on success, undefined otherwise
-export const publishWalletSettings = async (
-  walletSettings: WalletNotificationSettings[]
-): Promise<WalletNotificationSettings[] | undefined> => {
+export const publishWalletSettings = async ({
+  globalSettings,
+  walletSettings,
+}: {
+  globalSettings: GlobalNotificationTopics;
+  walletSettings: WalletNotificationSettings[];
+}): Promise<WalletNotificationSettings[] | undefined> => {
   try {
-    const subscriptionPayload = parseWalletSettings(walletSettings);
+    const wallets = parseWalletSettings(walletSettings);
+    const marketingTopics = Object.keys(globalSettings).filter(topic => globalSettings[topic]);
     let firebaseToken = await getFCMToken();
 
     // refresh the FCM token if not found
@@ -99,7 +118,7 @@ export const publishWalletSettings = async (
       if (!firebaseToken) return;
     }
 
-    const success = await updateNotificationSubscriptionWithRetry(firebaseToken, subscriptionPayload);
+    const success = await updateNotificationSubscriptionWithRetry({ firebaseToken, marketingTopics, wallets });
     if (success) {
       return walletSettings.map(setting => {
         return {
@@ -132,20 +151,4 @@ const parseWalletSettings = (walletSettings: WalletNotificationSettings[]): Noti
       };
     });
   });
-};
-
-export const subscribeToGlobalNotificationTopic = async (topic: GlobalNotificationTopicType): Promise<void> => {
-  logger.debug(`[notifications]: subscribing to [ ${topic.toUpperCase()} ]`, {}, logger.DebugContext.notifications);
-  return messaging()
-    .subscribeToTopic(topic)
-    .then(() => trackChangedNotificationSettings(topic, 'subscribe'));
-};
-
-export const unsubscribeFromGlobalNotificationTopic = async (topic: GlobalNotificationTopicType) => {
-  logger.debug(`[notifications]: unsubscribing from [ ${topic.toUpperCase()} ]`, {}, logger.DebugContext.notifications);
-  return messaging()
-    .unsubscribeFromTopic(topic)
-    .then(() => {
-      trackChangedNotificationSettings(topic, 'unsubscribe');
-    });
 };

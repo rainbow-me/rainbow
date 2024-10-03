@@ -1,11 +1,17 @@
 import { DEFAULT_ENABLED_TOPIC_SETTINGS } from '@/notifications/settings/constants';
-import { GlobalNotificationTopicType, WalletNotificationTopicType, WalletNotificationSettings } from '@/notifications/settings/types';
-import { getAllWalletNotificationSettingsFromStorage, setAllWalletNotificationSettingsToStorage } from '@/notifications/settings/storage';
 import {
-  subscribeToGlobalNotificationTopic,
-  unsubscribeFromGlobalNotificationTopic,
-  publishWalletSettings,
-} from '@/notifications/settings/firebase';
+  GlobalNotificationTopics,
+  GlobalNotificationTopicType,
+  WalletNotificationTopicType,
+  WalletNotificationSettings,
+} from '@/notifications/settings/types';
+import {
+  getAllGlobalNotificationSettingsFromStorage,
+  getAllWalletNotificationSettingsFromStorage,
+  setAllWalletNotificationSettingsToStorage,
+} from '@/notifications/settings/storage';
+
+import { publishWalletSettings } from '@/notifications/settings/firebase';
 
 /**
  1. Reads notification settings for all wallets from storage.
@@ -14,16 +20,17 @@ import {
  4. Updates the notification subscription
  */
 export const removeNotificationSettingsForWallet = async (address: string): Promise<void> => {
-  const allSettings = getAllWalletNotificationSettingsFromStorage();
-  const settingsForWallet = allSettings.find((wallet: WalletNotificationSettings) => wallet.address === address);
+  const walletSettings = getAllWalletNotificationSettingsFromStorage();
+  const globalSettings = getAllGlobalNotificationSettingsFromStorage();
+  const settingsForWallet = walletSettings.find((wallet: WalletNotificationSettings) => wallet.address === address);
 
   if (!settingsForWallet) {
     return;
   }
 
-  const newSettings = allSettings.filter((wallet: WalletNotificationSettings) => wallet.address !== address);
+  const newWalletSettings = walletSettings.filter((wallet: WalletNotificationSettings) => wallet.address !== address);
 
-  publishAndSaveWalletSettings(newSettings);
+  publishAndSaveNotificationSettings({ globalSettings, walletSettings: newWalletSettings });
 };
 
 /**
@@ -32,13 +39,14 @@ export const removeNotificationSettingsForWallet = async (address: string): Prom
  when using the `Allow Notifications` switch in the wallet settings view.
  */
 export async function toggleGroupNotifications(wallets: WalletNotificationSettings[], enableNotifications: boolean): Promise<boolean> {
-  const allSettings = getAllWalletNotificationSettingsFromStorage();
+  const walletSettings = getAllWalletNotificationSettingsFromStorage();
+  const globalSettings = getAllGlobalNotificationSettingsFromStorage();
   const toBeUpdated = new Map<string, boolean>();
   wallets.forEach(entry => {
     toBeUpdated.set(entry.address, true);
   });
 
-  const proposedSettings = allSettings.map(walletSetting => {
+  const proposedWalletSettings = walletSettings.map(walletSetting => {
     if (toBeUpdated.get(walletSetting.address)) {
       return {
         ...walletSetting,
@@ -50,15 +58,16 @@ export async function toggleGroupNotifications(wallets: WalletNotificationSettin
     return walletSetting;
   });
 
-  return publishAndSaveWalletSettings(proposedSettings, true);
+  return publishAndSaveNotificationSettings({ globalSettings, walletSettings: proposedWalletSettings, skipPreSave: true });
 }
 
 /**
  Function for subscribing/unsubscribing a wallet to/from a single notification topic.
  */
 export async function toggleTopicForWallet(address: string, topic: WalletNotificationTopicType, enableTopic: boolean): Promise<boolean> {
-  const allSettings = getAllWalletNotificationSettingsFromStorage();
-  const newSettings = allSettings.map(walletSetting => {
+  const walletSettings = getAllWalletNotificationSettingsFromStorage();
+  const globalSettings = getAllGlobalNotificationSettingsFromStorage();
+  const newSettings = walletSettings.map(walletSetting => {
     if (walletSetting.address !== address) {
       return walletSetting;
     }
@@ -71,28 +80,35 @@ export async function toggleTopicForWallet(address: string, topic: WalletNotific
       },
     };
   });
-  return publishAndSaveWalletSettings(newSettings, true);
+  return publishAndSaveNotificationSettings({ globalSettings, walletSettings: newSettings, skipPreSave: true });
 }
 
 /**
- Function for subscribing/unsubscribing the app to/from a single notification topic.
+ Function for subscribing/unsubscribing the app to/from a global notification topic.
  */
-export function toggleGlobalNotificationTopic(topic: GlobalNotificationTopicType, enableTopic: boolean): Promise<void> {
-  if (enableTopic) {
-    return subscribeToGlobalNotificationTopic(topic);
-  } else {
-    return unsubscribeFromGlobalNotificationTopic(topic);
-  }
-}
+export const toggleGlobalNotificationTopic = (topic: GlobalNotificationTopicType, enableTopic: boolean): Promise<boolean> => {
+  const walletSettings = getAllWalletNotificationSettingsFromStorage();
+  const currentGlobalSettings = getAllGlobalNotificationSettingsFromStorage();
+  const globalSettings = {
+    ...currentGlobalSettings,
+    [topic]: enableTopic,
+  };
+  return publishAndSaveNotificationSettings({ globalSettings, walletSettings });
+};
 
-export const publishAndSaveWalletSettings = async (
-  proposedSettings: WalletNotificationSettings[],
-  skipPreSave: boolean = false
-): Promise<boolean> => {
+export const publishAndSaveNotificationSettings = async ({
+  globalSettings,
+  walletSettings,
+  skipPreSave = false,
+}: {
+  globalSettings: GlobalNotificationTopics;
+  walletSettings: WalletNotificationSettings[];
+  skipPreSave?: boolean;
+}): Promise<boolean> => {
   if (!skipPreSave) {
-    setAllWalletNotificationSettingsToStorage(proposedSettings);
+    setAllWalletNotificationSettingsToStorage(walletSettings);
   }
-  const finalizedSettings = await publishWalletSettings(proposedSettings);
+  const finalizedSettings = await publishWalletSettings({ globalSettings, walletSettings });
   if (finalizedSettings) {
     setAllWalletNotificationSettingsToStorage(finalizedSettings);
     return true;
