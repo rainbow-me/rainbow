@@ -9,6 +9,8 @@ import { handleMobileWalletProtocolRequest } from '@/utils/requestNavigationHand
 import { logger, RainbowError } from '@/logger';
 import { IS_ANDROID, IS_DEV } from '@/env';
 
+const ERROR_MESSAGES_TO_IGNORE = ['User rejected the handshake', 'User rejected request', 'Aborted'];
+
 export const MobileWalletProtocolListener = () => {
   const { message, handleRequestUrl, sendFailureToClient, session, ...mwpProps } = useMobileWalletProtocolHost();
   const lastMessageUuidRef = useRef<string | null>(null);
@@ -26,9 +28,17 @@ export const MobileWalletProtocolListener = () => {
           try {
             await handleMobileWalletProtocolRequest({ request: message, session, ...mwpProps });
           } catch (error) {
-            logger.error(new RainbowError('Error handling Mobile Wallet Protocol request'), {
-              error,
-            });
+            if (error instanceof Error && ERROR_MESSAGES_TO_IGNORE.includes(error.message)) {
+              logger.debug(`[MobileWalletProtocolListener]: Error handling Mobile Wallet Protocol request`, {
+                error,
+                message,
+              });
+            } else {
+              logger.error(new RainbowError(`[MobileWalletProtocolListener]: Error handling Mobile Wallet Protocol request`), {
+                error,
+                message,
+              });
+            }
           }
         } else {
           // Store the message to process once we have a valid session
