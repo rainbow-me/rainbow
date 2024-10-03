@@ -4,7 +4,7 @@ import {
   WALLET_GROUPS_STORAGE_KEY,
 } from '@/notifications/settings/constants';
 import { AddressWithRelationship, WalletNotificationSettings } from '@/notifications/settings/types';
-import { publishAndSaveNotificationSettings, toggleGlobalNotificationTopic } from '@/notifications/settings/settings';
+import { publishAndSaveNotificationSettings } from '@/notifications/settings/settings';
 import {
   getAllGlobalNotificationSettingsFromStorage,
   getAllWalletNotificationSettingsFromStorage,
@@ -27,15 +27,6 @@ export const addDefaultNotificationGroupSettings = (override = false) => {
     };
     notificationSettingsStorage.set(WALLET_GROUPS_STORAGE_KEY, JSON.stringify(defaultSettings));
   }
-};
-
-export const initializeGlobalNotificationSettings = () => {
-  const currentSettings = getAllGlobalNotificationSettingsFromStorage();
-  return Promise.all(
-    Object.entries(currentSettings).map(([topic, isEnabled]) => {
-      toggleGlobalNotificationTopic(topic, isEnabled);
-    })
-  );
 };
 
 export const subscribeExistingNotificationsSettings = () => {
