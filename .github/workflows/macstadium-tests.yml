@@ -103,8 +103,10 @@ jobs:
           npx react-native info
 
       - name: Install pods
-        run: yarn install-bundle && yarn install-pods
-      
+        run: |
+          rm -rf /Users/administrator/.cocoapods/repos/cocoapods/.git/index.lock
+          yarn install-bundle && yarn install-pods
+
       - uses: irgaly/xcode-cache@v1
         with:
           key: xcode-cache-deriveddata-${{ github.workflow }}-${{ github.sha }}
