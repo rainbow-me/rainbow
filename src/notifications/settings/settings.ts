@@ -1,29 +1,11 @@
-import {
-  DEFAULT_ENABLED_GLOBAL_TOPIC_SETTINGS,
-  DEFAULT_ENABLED_TOPIC_SETTINGS,
-} from '@/notifications/settings/constants';
-import {
-  GlobalNotificationTopicType,
-  WalletNotificationTopicType,
-  WalletNotificationSettings,
-} from '@/notifications/settings/types';
-import {
-  getAllWalletNotificationSettingsFromStorage,
-  setAllGlobalNotificationSettingsToStorage,
-  setAllWalletNotificationSettingsToStorage,
-} from '@/notifications/settings/storage';
+import { DEFAULT_ENABLED_TOPIC_SETTINGS } from '@/notifications/settings/constants';
+import { GlobalNotificationTopicType, WalletNotificationTopicType, WalletNotificationSettings } from '@/notifications/settings/types';
+import { getAllWalletNotificationSettingsFromStorage, setAllWalletNotificationSettingsToStorage } from '@/notifications/settings/storage';
 import {
   subscribeToGlobalNotificationTopic,
-  unsubscribeFromAllGlobalNotificationTopics,
   unsubscribeFromGlobalNotificationTopic,
+  publishWalletSettings,
 } from '@/notifications/settings/firebase';
-import { publishWalletSettings } from '@/notifications/settings/firebase';
-
-export const removeGlobalNotificationSettings = (): Promise<void> => {
-  return unsubscribeFromAllGlobalNotificationTopics().then(() =>
-    setAllGlobalNotificationSettingsToStorage(DEFAULT_ENABLED_GLOBAL_TOPIC_SETTINGS)
-  );
-};
 
 /**
  1. Reads notification settings for all wallets from storage.
@@ -31,13 +13,9 @@ export const removeGlobalNotificationSettings = (): Promise<void> => {
  3. Excludes that wallet from the array and saves the new array.
  4. Updates the notification subscription
  */
-export const removeNotificationSettingsForWallet = async (
-  address: string
-): Promise<void> => {
+export const removeNotificationSettingsForWallet = async (address: string): Promise<void> => {
   const allSettings = getAllWalletNotificationSettingsFromStorage();
-  const settingsForWallet = allSettings.find(
-    (wallet: WalletNotificationSettings) => wallet.address === address
-  );
+  const settingsForWallet = allSettings.find((wallet: WalletNotificationSettings) => wallet.address === address);
 
   if (!settingsForWallet) {
     return;
@@ -53,10 +31,7 @@ export const removeNotificationSettingsForWallet = async (
  Also used to batch toggle notifications for a single wallet
  when using the `Allow Notifications` switch in the wallet settings view.
  */
-export async function toggleGroupNotifications(
-  wallets: WalletNotificationSettings[],
-  enableNotifications: boolean
-): Promise<boolean> {
+export async function toggleGroupNotifications(wallets: WalletNotificationSettings[], enableNotifications: boolean): Promise<boolean> {
   const allSettings = getAllWalletNotificationSettingsFromStorage();
   const toBeUpdated = new Map<string, boolean>();
   wallets.forEach(entry => {
@@ -81,11 +56,7 @@ export async function toggleGroupNotifications(
 /**
  Function for subscribing/unsubscribing a wallet to/from a single notification topic.
  */
-export async function toggleTopicForWallet(
-  address: string,
-  topic: WalletNotificationTopicType,
-  enableTopic: boolean
-): Promise<boolean> {
+export async function toggleTopicForWallet(address: string, topic: WalletNotificationTopicType, enableTopic: boolean): Promise<boolean> {
   const allSettings = getAllWalletNotificationSettingsFromStorage();
   const newSettings = allSettings.map(walletSetting => {
     if (walletSetting.address !== address) {
