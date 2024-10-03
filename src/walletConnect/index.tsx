@@ -323,11 +323,10 @@ async function rejectProposal({
 }
 
 // listen for THIS topic pairing, and clear timeout if received
-function trackTopicHandler(proposal: WalletKitTypes.SessionProposal | WalletKitTypes.AuthRequest) {
+function trackTopicHandler(proposal: WalletKitTypes.SessionProposal) {
   logger.debug(`[walletConnect]: pair: handler`, { proposal });
 
-  const { metadata } =
-    (proposal as WalletKitTypes.SessionProposal).params.proposer || (proposal as WalletKitTypes.AuthRequest).params.requester;
+  const { metadata } = (proposal as WalletKitTypes.SessionProposal).params.proposer;
 
   analytics.track(analytics.event.wcNewPairing, {
     dappName: metadata.name,
@@ -846,7 +845,9 @@ export async function handleSessionRequestResponse(
   store.dispatch(removeRequest(sessionRequestEvent.id));
 }
 
-export async function onSessionAuthenticate(event: WalletKitTypes.AuthRequest) {
+export async function onSessionAuthenticate(event: WalletKitTypes.SessionAuthenticate) {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore Can be fixed once we wipe wc v1 from the codebase
   trackTopicHandler(event);
 
   const client = await getWalletKitClient();
@@ -862,6 +863,8 @@ export async function onSessionAuthenticate(event: WalletKitTypes.AuthRequest) {
 
       // exit early if possible
       if (selectedWallet?.type === WalletTypes.readOnly) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore Can be fixed once we wipe wc v1 from the codebase
         await client.respondAuthRequest(
           {
             id: event.id,
@@ -892,7 +895,8 @@ export async function onSessionAuthenticate(event: WalletKitTypes.AuthRequest) {
 
           return undefined;
         }
-
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore Can be fixed once we wipe wc v1 from the codebase
         const message = client.formatMessage(event.params.cacaoPayload, iss);
         // prompt the user to sign the message
         return wallet.signMessage(message);
@@ -921,6 +925,8 @@ export async function onSessionAuthenticate(event: WalletKitTypes.AuthRequest) {
       }
 
       // respond to WC
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore Can be fixed once we wipe wc v1 from the codebase
       await client.respondAuthRequest(
         {
           id: event.id,
