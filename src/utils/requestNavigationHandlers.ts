@@ -21,6 +21,7 @@ import { enableActionsOnReadOnlyWallet } from '@/config';
 import walletTypes from '@/helpers/walletTypes';
 import watchingAlert from './watchingAlert';
 import {
+  AppMetadata,
   EthereumAction,
   isEthereumAction,
   isHandshakeAction,
@@ -106,7 +107,16 @@ export const handleMobileWalletProtocolRequest = async ({
 
       const receivedTimestamp = Date.now();
 
-      const dappMetadata = await fetchClientAppMetadata();
+      let dappMetadata: AppMetadata | null = null;
+      try {
+        dappMetadata = await fetchClientAppMetadata();
+      } catch (error) {
+        logger.error(new RainbowError(`[handleMobileWalletProtocolRequest]: Failed to fetch client app metadata`), {
+          error,
+          action,
+        });
+      }
+
       return new Promise((resolve, reject) => {
         const routeParams: WalletconnectApprovalSheetRouteParams = {
           receivedTimestamp,
