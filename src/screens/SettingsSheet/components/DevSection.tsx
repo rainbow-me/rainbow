@@ -36,7 +36,6 @@ import { serialize } from '@/logger/logDump';
 import { isAuthenticated } from '@/utils/authentication';
 
 import { getFCMToken } from '@/notifications/tokens';
-import { removeGlobalNotificationSettings } from '@/notifications/settings/settings';
 import { nonceStore } from '@/state/nonces';
 import { pendingTransactionsStore } from '@/state/pendingTransactions';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
@@ -124,7 +123,6 @@ const DevSection = () => {
     // loop through notification settings and unsubscribe all wallets
     // from firebase first or we’re gonna keep getting them even after
     // clearing storage and before changing settings
-    removeGlobalNotificationSettings();
     if (walletNotificationSettings.length > 0) {
       return Promise.all(walletNotificationSettings.map(wallet => removeNotificationSettingsForWallet(wallet.address)));
     }
