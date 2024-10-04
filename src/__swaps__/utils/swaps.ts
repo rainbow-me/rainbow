@@ -615,7 +615,6 @@ export const buildQuoteParams = ({
         : undefined,
     slippage: Number(slippage),
     refuel: false,
-    swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
     toChainId: isCrosschainSwap ? outputAsset.chainId : inputAsset.chainId,
     currency: store.getState().settings.nativeCurrency,
   };

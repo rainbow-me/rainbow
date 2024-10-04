@@ -445,6 +445,8 @@ export function useSwapInputsController({
       outputAsset: internalSelectedOutputAsset.value,
     });
 
+    const isCrosschainSwap = internalSelectedInputAsset.value?.chainId !== internalSelectedOutputAsset.value?.chainId;
+
     logger.debug(`[useSwapInputsController]: quote params`, {
       data: params,
     });
@@ -464,7 +466,7 @@ export function useSwapInputsController({
 
     try {
       const [quoteResponse, fetchedPrices] = await Promise.all([
-        params.swapType === SwapType.crossChain ? getCrosschainQuote(params) : getQuote(params),
+        isCrosschainSwap ? getCrosschainQuote(params) : getQuote(params),
         fetchAssetPrices({
           inputAsset: internalSelectedInputAsset.value,
           outputAsset: internalSelectedOutputAsset.value,

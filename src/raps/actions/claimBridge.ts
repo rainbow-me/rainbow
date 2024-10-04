@@ -38,7 +38,6 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
     buyTokenAddress: AddressZero,
     sellAmount: sellAmount,
     slippage: 2,
-    swapType: SwapType.crossChain,
     currency,
   });
 
@@ -99,7 +98,6 @@ export async function claimBridge({ parameters, wallet, baseNonce }: ActionProps
       buyTokenAddress: AddressZero,
       sellAmount: maxBridgeableAmount,
       slippage: 2,
-      swapType: SwapType.crossChain,
       currency,
     });
 
