@@ -96,7 +96,6 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
     [ChainId.arbitrum]: [],
     [ChainId.base]: [],
     [ChainId.avalanche]: [],
-    [ChainId.optimism]: [],
     [ChainId.blast]: [],
     [ChainId.apechain]: [],
   });

@@ -118,4 +118,4 @@ function WalletScreen() {
   );
 }
 
-export default React.memo(WalletScreen);
+export default WalletScreen;
