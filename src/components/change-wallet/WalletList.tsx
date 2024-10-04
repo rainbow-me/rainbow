@@ -6,7 +6,7 @@ import { FlatList } from 'react-native-gesture-handler';
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import WalletTypes from '../../helpers/walletTypes';
 import { address } from '../../utils/abbreviations';
-import Divider from '../Divider';
+import Divider from '@/components/Divider';
 import { EmptyAssetList } from '../asset-list';
 import { Column } from '../layout';
 import AddressRow from './AddressRow';

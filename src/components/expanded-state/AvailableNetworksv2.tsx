@@ -1,8 +1,8 @@
 import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-import Divider from '../Divider';
-import ChainBadge from '../coin-icon/ChainBadge';
+import Divider from '@/components/Divider';
+import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { Box, Inline, Text } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';

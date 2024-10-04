@@ -1,0 +1,71 @@
+name: Comments watchdog
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  discussion_comment:
+    types: [created]
+
+jobs:
+  remove_spam_comments:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up environment
+        run: |
+          # Create an empty file to log deleted comments
+          touch deleted_comments_log.txt
+
+      - name: Get list of organization members
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Fetch the list of users in the organization
+          ORG_MEMBERS=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+          "https://api.github.com/orgs/${{ github.repository_owner }}/members" | jq -r '.[].login')
+          
+          # Save the allowlisted users in a file
+          echo "$ORG_MEMBERS" > allowlisted_users.txt
+
+      - name: Check comment for spam
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          COMMENT_ID=$(jq -r '.comment.id' < "$GITHUB_EVENT_PATH")
+          COMMENT_BODY=$(jq -r '.comment.body' < "$GITHUB_EVENT_PATH")
+          COMMENT_USER=$(jq -r '.comment.user.login' < "$GITHUB_EVENT_PATH")
+          
+          # Check if the comment user is allowlisted
+          if grep -q "$COMMENT_USER" allowlisted_users.txt; then
+            echo "Comment by $COMMENT_USER is from an allowlisted user. No action taken."
+            exit 0
+          fi
+
+          # Define enhanced spam keywords/phrases regex
+          SPAM_KEYWORDS="(message (support|help)|contact support|contact (agent|live agent)|telegram|live chat|https?://t\.me/|resolve your (issue|request))"
+
+          # Check if the comment contains any spam patterns
+          if echo "$COMMENT_BODY" | grep -iE "$SPAM_KEYWORDS"; then
+            echo "Spam comment detected: $COMMENT_BODY"
+            
+            # Delete the comment using the GitHub API
+            curl -X DELETE \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/${{ github.repository }}/issues/comments/$COMMENT_ID" || \
+              "https://api.github.com/repos/${{ github.repository }}/pulls/comments/$COMMENT_ID" || \
+              "https://api.github.com/repos/${{ github.repository }}/discussions/comments/$COMMENT_ID"
+              
+            echo "Spam comment deleted"
+            # Log the deleted comment
+            echo "Deleted comment from user $COMMENT_USER: $COMMENT_BODY" >> deleted_comments_log.txt
+          else
+            echo "No spam detected"
+          fi
+
+      - name: Upload deleted comments log as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: deleted-comments-log
+          path: deleted_comments_log.txt

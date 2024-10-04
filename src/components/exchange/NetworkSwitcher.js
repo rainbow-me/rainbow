@@ -1,9 +1,9 @@
 import lang from 'i18n-js';
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-import Divider from '../Divider';
-import ChainBadge from '../coin-icon/ChainBadge';
-import { ContextMenuButton } from '../context-menu';
+import Divider from '@/components/Divider';
+import ChainBadge from '@/components/coin-icon/ChainBadge';
+import { ContextMenuButton } from '@/components/context-menu';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import { padding, position } from '@/styles';

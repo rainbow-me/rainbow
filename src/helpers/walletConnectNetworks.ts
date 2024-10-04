@@ -4,6 +4,7 @@ import * as i18n from '@/languages';
 import { ChainId } from '@/chains/types';
 import { chainsLabel, defaultChains, supportedWalletConnectChainIds } from '@/chains';
 import { isL2Chain } from '@/handlers/web3';
+import { MenuActionConfig } from 'react-native-ios-context-menu';
 
 const walletConnectChains = supportedWalletConnectChainIds.map(chainId => defaultChains[chainId]);
 
@@ -14,7 +15,7 @@ const androidNetworkActions = () => {
 
 export const NETWORK_MENU_ACTION_KEY_FILTER = 'switch-to-network-';
 
-export const networksMenuItems = () => {
+export const networksMenuItems: () => MenuActionConfig[] = () => {
   const { testnetsEnabled } = store.getState().settings;
   return walletConnectChains
     .filter(({ testnet }) => testnetsEnabled || !testnet)

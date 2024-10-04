@@ -1,5 +1,5 @@
 import { BigNumberish } from '@ethersproject/bignumber';
-import { Provider } from '@ethersproject/providers';
+import { Provider, StaticJsonRpcProvider, TransactionRequest } from '@ethersproject/providers';
 import { serialize } from '@ethersproject/transactions';
 import { RainbowAddressAssets } from '@/resources/assets/types';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
@@ -278,7 +278,7 @@ const getDataString = (func: string, arrVals: string[]) => {
  */
 function getEtherscanHostForNetwork({ chainId }: { chainId: ChainId }): string {
   const base_host = 'etherscan.io';
-  const blockExplorer = defaultChains[chainId].blockExplorers?.default?.url;
+  const blockExplorer = defaultChains[chainId]?.blockExplorers?.default?.url;
   const network = chainsName[chainId];
 
   if (network && isTestnetChain({ chainId })) {
@@ -354,7 +354,7 @@ export const getFirstTransactionTimestamp = async (address: EthereumAddress): Pr
 };
 
 function getBlockExplorer({ chainId }: { chainId: ChainId }) {
-  return defaultChains[chainId].blockExplorers?.default.name || 'etherscan';
+  return defaultChains[chainId]?.blockExplorers?.default.name || 'etherscan';
 }
 
 function openAddressInBlockExplorer({ address, chainId }: { address: EthereumAddress; chainId: ChainId }) {
@@ -460,7 +460,10 @@ export const getAddressAndChainIdFromUniqueId = (uniqueId: string): { address: A
   return { address, chainId };
 };
 
-const calculateL1FeeOptimism = async (tx: RainbowTransaction, provider: Provider): Promise<BigNumberish | undefined> => {
+const calculateL1FeeOptimism = async (
+  tx: RainbowTransaction | TransactionRequest,
+  provider: StaticJsonRpcProvider
+): Promise<BigNumberish | undefined> => {
   const newTx = cloneDeep(tx);
   try {
     if (newTx.value) {
@@ -470,9 +473,7 @@ const calculateL1FeeOptimism = async (tx: RainbowTransaction, provider: Provider
       newTx.nonce = Number(await provider.getTransactionCount(newTx.from));
     }
 
-    // @ts-expect-error operand should be optional
     delete newTx?.chainId;
-    // @ts-expect-error operand should be optional
     delete newTx?.from;
     // @ts-expect-error gas is not in type RainbowTransaction
     delete newTx?.gas;

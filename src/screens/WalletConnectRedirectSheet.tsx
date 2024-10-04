@@ -1,14 +1,16 @@
-import { useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import lang from 'i18n-js';
 import React, { useEffect } from 'react';
-import { Centered } from '../components/layout';
-import { Sheet } from '../components/sheet';
-import { Text } from '../components/text';
-import { useNavigation } from '../navigation/Navigation';
+import { Centered } from '@/components/layout';
+import { Sheet } from '@/components/sheet';
+import { Text } from '@/components/text';
+import { useNavigation } from '@/navigation/Navigation';
 import { useAppState } from '@/hooks';
 import styled from '@/styled-thing';
+import { ThemeContextProps, useTheme } from '@/theme';
+import { RootStackParamList } from '@/navigation/types';
 
-const BodyText = styled(Text).attrs(({ theme: { colors } }) => ({
+const BodyText = styled(Text).attrs(({ theme: { colors } }: { theme: ThemeContextProps }) => ({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.6),
   lineHeight: 'loosest',
@@ -20,6 +22,7 @@ const BodyText = styled(Text).attrs(({ theme: { colors } }) => ({
 
 const emojisMap = {
   'connect': '🥳',
+  'timedOut': '👻',
   'reject': '👻',
   'sign': '🥳',
   'sign-canceled': '👻',
@@ -29,6 +32,7 @@ const emojisMap = {
 
 const titlesMap = {
   'connect': lang.t('walletconnect.titles.connect'),
+  'timedOut': lang.t('walletconnect.titles.reject'),
   'reject': lang.t('walletconnect.titles.reject'),
   'sign': lang.t('walletconnect.titles.sign'),
   'sign-canceled': lang.t('walletconnect.titles.sign_canceled'),
@@ -36,11 +40,11 @@ const titlesMap = {
   'transaction-canceled': lang.t('walletconnect.titles.transaction_canceled'),
 };
 
-const WalletConnectRedirectSheet = () => {
+function WalletConnectRedirectSheet() {
   const { colors } = useTheme();
   const { goBack } = useNavigation();
   const { appState } = useAppState();
-  const { params } = useRoute();
+  const { params } = useRoute<RouteProp<RootStackParamList, 'WalletConnectRedirectSheet'>>();
 
   const type = params?.type;
 
@@ -65,6 +69,6 @@ const WalletConnectRedirectSheet = () => {
       </Centered>
     </Sheet>
   );
-};
+}
 
 export default React.memo(WalletConnectRedirectSheet);

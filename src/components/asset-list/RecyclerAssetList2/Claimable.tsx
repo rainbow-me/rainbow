@@ -5,9 +5,14 @@ import { useClaimables } from '@/resources/addys/claimables/query';
 import { FasterImageView } from '@candlefinance/faster-image';
 import { ButtonPressAnimation } from '@/components/animations';
 import { deviceUtils } from '@/utils';
+import Routes from '@/navigation/routesNames';
+import { ExtendedState } from './core/RawRecyclerList';
+import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
 
-export default function Claimable({ uniqueId }: { uniqueId: string }) {
+export const Claimable = React.memo(function Claimable({ uniqueId, extendedState }: { uniqueId: string; extendedState: ExtendedState }) {
   const { accountAddress, nativeCurrency } = useAccountSettings();
+  const { navigate } = extendedState;
+
   const { data = [] } = useClaimables(
     {
       address: accountAddress,
@@ -20,11 +25,14 @@ export default function Claimable({ uniqueId }: { uniqueId: string }) {
 
   const [claimable] = data;
 
+  const nativeDisplay = convertAmountToNativeDisplayWorklet(claimable.value.nativeAsset.amount, nativeCurrency, true);
+
   if (!claimable) return null;
 
   return (
     <Box
       as={ButtonPressAnimation}
+      onPress={() => navigate(Routes.CLAIM_CLAIMABLE_PANEL, { claimable })}
       scaleTo={0.96}
       paddingHorizontal="20px"
       justifyContent="space-between"
@@ -32,10 +40,9 @@ export default function Claimable({ uniqueId }: { uniqueId: string }) {
       flexDirection="row"
     >
       <Inline alignVertical="center" space="12px">
-        <FasterImageView
-          source={{ url: claimable.iconUrl }}
-          style={{ height: 40, width: 40, borderRadius: 11, borderWidth: 1, borderColor: 'rgba(0, 0, 0, 0.03)' }}
-        />
+        <Box borderRadius={11} borderWidth={1} borderColor={{ custom: 'rgba(0, 0, 0, 0.03)' }}>
+          <FasterImageView source={{ url: claimable.iconUrl }} style={{ height: 40, width: 40 }} />
+        </Box>
         <Stack space={{ custom: 11 }}>
           <Text
             weight="semibold"
@@ -63,9 +70,9 @@ export default function Claimable({ uniqueId }: { uniqueId: string }) {
         style={{ backgroundColor: 'rgba(7, 17, 32, 0.02)' }}
       >
         <Text weight="semibold" color="label" align="center" size="17pt">
-          {claimable.value.nativeAsset.display}
+          {nativeDisplay}
         </Text>
       </Box>
     </Box>
   );
-}
+});

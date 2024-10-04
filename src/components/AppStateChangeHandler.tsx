@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AppState, AppStateStatus, Linking } from 'react-native';
+import { AppState, AppStateStatus } from 'react-native';
 import { analyticsV2 } from '@/analytics';
 import store from '@/redux/store';
 import { walletConnectLoadState } from '@/redux/walletconnect';
@@ -32,7 +32,7 @@ export function AppStateChangeHandler({ walletReady }: AppStateChangeHandlerProp
     eventSubscription.current = AppState.addEventListener('change', handleAppStateChange);
 
     return () => eventSubscription.current?.remove();
-  }, [handleAppStateChange]);
+  }, [handleAppStateChange, walletReady]);
 
   return null;
 }
