@@ -3,7 +3,7 @@ import { PressableProps, TouchableWithoutFeedback } from 'react-native';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import { useTheme } from '../../theme/ThemeContext';
 import { deviceUtils, getUniqueTokenType, magicMemo } from '../../utils';
-import Divider from '../Divider';
+import Divider from '@/components/Divider';
 import { ButtonPressAnimation } from '../animations';
 import { RequestVendorLogoIcon } from '../coin-icon';
 import { Centered } from '../layout';

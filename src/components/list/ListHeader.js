@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
-import React, { createElement, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import { Share } from 'react-native';
-import Divider from '../Divider';
+import Divider from '@/components/Divider';
 import { ButtonPressAnimation } from '../animations';
 import CoinDividerButtonLabel from '../coin-divider/CoinDividerButtonLabel';
 import { ContextMenu } from '../context-menu';

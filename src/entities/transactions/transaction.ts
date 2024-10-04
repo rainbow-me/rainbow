@@ -8,11 +8,10 @@ import { SwapMetadata } from '@/raps/references';
 import { UniqueAsset } from '../uniqueAssets';
 import { ParsedAsset, AddysAsset } from '@/resources/assets/types';
 import { ChainId, Network } from '@/chains/types';
-
 import { TransactionResponse } from '@ethersproject/providers';
 
 import { LegacyTransactionGasParams, TransactionGasParams } from '@/entities/gas';
-import { Address } from 'viem';
+import { BytesLike } from '@ethersproject/bytes';
 
 export enum TransactionDirection {
   IN = 'in',
@@ -84,7 +83,7 @@ export interface RainbowTransaction {
   };
   direction?: TransactionDirection;
   description?: string;
-  data?: string; // for pending tx
+  data?: string | BytesLike; // for pending tx
   from: EthereumAddress | null;
   gasLimit?: BigNumberish;
   gasPrice?: BigNumberish;

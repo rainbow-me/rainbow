@@ -2,10 +2,10 @@ import { useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, InteractionManager } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
-import ChainLogo from '../components/ChainLogo';
-import Divider from '../components/Divider';
-import Spinner from '../components/Spinner';
-import ButtonPressAnimation from '../components/animations/ButtonPressAnimation';
+import ChainLogo from '@/components/ChainLogo';
+import Divider from '@/components/Divider';
+import Spinner from '@/components/Spinner';
+import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
 import { ContactAvatar } from '../components/contacts';
 import ImageAvatar from '../components/contacts/ImageAvatar';
@@ -196,7 +196,7 @@ export default function WalletConnectApprovalSheet() {
     url: verifiedData?.origin || dappUrl,
   });
 
-  const isScam = metadata?.status === DAppStatus.Scam;
+  const isScam = metadata?.status === DAppStatus.Scam || verifiedData?.isScam;
 
   // we can only safely mark a dapp as verified if the source is the browser
   const isVerified = metadata?.status === DAppStatus.Verified && source === 'browser';

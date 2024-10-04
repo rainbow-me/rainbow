@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAccountSettings, useGas } from '@/hooks';
-import { ethereumUtils } from '@/utils';
+import { ethereumUtils, haptics } from '@/utils';
 import { TransactionClaimable } from '@/resources/addys/claimables/types';
 import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
 import { parseGasParamsForTransaction } from '@/parsers';
@@ -10,6 +10,11 @@ import { logger, RainbowError } from '@/logger';
 import { ClaimingClaimableSharedUI, ClaimStatus } from './ClaimingClaimableSharedUI';
 import { TransactionRequest } from '@ethersproject/providers';
 import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
+import { useMutation } from '@tanstack/react-query';
+import { loadWallet } from '@/model/wallet';
+import { walletExecuteRap } from '@/rapsV2/execute';
+import { claimablesQueryKey } from '@/resources/addys/claimables/query';
+import { queryClient } from '@/react-query';
 
 // supports legacy and new gas types
 export type TransactionClaimableTxPayload = TransactionRequest &
@@ -67,11 +72,11 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
   }, [buildTxPayload]);
 
   useEffect(() => {
-    startPollingGasFees();
+    startPollingGasFees(claimable.chainId);
     return () => {
       stopPollingGasFees();
     };
-  }, [startPollingGasFees, stopPollingGasFees]);
+  }, [claimable.chainId, startPollingGasFees, stopPollingGasFees]);
 
   const estimateGas = useCallback(async () => {
     if (!baseTxPayload) {
@@ -92,7 +97,6 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
 
     if (needsL1SecurityFeeChains.includes(claimable.chainId)) {
       const l1SecurityFee = await ethereumUtils.calculateL1FeeOptimism(
-        // @ts-expect-error - type mismatch, but this tx request structure is the same as in SendSheet.js
         {
           to: claimable.action.to,
           from: accountAddress,
@@ -134,9 +138,67 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
     true
   );
 
+  const { mutate: claimClaimable } = useMutation({
+    mutationFn: async () => {
+      if (!txPayload) {
+        haptics.notificationError();
+        setClaimStatus('error');
+        logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to missing tx payload'));
+        return;
+      }
+
+      const wallet = await loadWallet({
+        address: accountAddress,
+        showErrorIfNotLoaded: false,
+        provider,
+      });
+
+      if (!wallet) {
+        // Biometrics auth failure (retry possible)
+        haptics.notificationError();
+        setClaimStatus('error');
+        return;
+      }
+
+      const { errorMessage } = await walletExecuteRap(wallet, {
+        type: 'claimTransactionClaimableRap',
+        claimTransactionClaimableActionParameters: { claimTx: txPayload, asset: claimable.asset },
+      });
+
+      if (errorMessage) {
+        haptics.notificationError();
+        setClaimStatus('error');
+        logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to rap error'), {
+          message: errorMessage,
+        });
+      } else {
+        haptics.notificationSuccess();
+        setClaimStatus('success');
+        // Clear and refresh claimables data
+        queryClient.invalidateQueries(claimablesQueryKey({ address: accountAddress, currency: nativeCurrency }));
+      }
+    },
+    onError: e => {
+      haptics.notificationError();
+      setClaimStatus('error');
+      logger.error(new RainbowError('[ClaimingTransactionClaimable]: Failed to claim claimable due to unhandled error'), {
+        message: (e as Error)?.message,
+      });
+    },
+    onSuccess: () => {
+      if (claimStatus === 'claiming') {
+        haptics.notificationError();
+        setClaimStatus('error');
+        logger.error(
+          new RainbowError('[ClaimingTransactionClaimable]: claim function completed but never resolved status to success or error state')
+        );
+      }
+    },
+  });
+
   return (
     <ClaimingClaimableSharedUI
-      claim={() => {}}
+      claim={claimClaimable}
       claimable={claimable}
       claimStatus={claimStatus}
       hasSufficientFunds={isSufficientGas}

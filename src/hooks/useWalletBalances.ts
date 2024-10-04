@@ -14,7 +14,7 @@ const QUERY_CONFIG = {
   cacheTime: 1000 * 60 * 60 * 24, // 24 hours
 };
 
-type WalletBalance = {
+export type WalletBalance = {
   assetBalanceAmount: string;
   assetBalanceDisplay: string;
   positionsBalanceAmount: string;
@@ -23,7 +23,7 @@ type WalletBalance = {
   totalBalanceDisplay: string;
 };
 
-type WalletBalanceResult = {
+export type WalletBalanceResult = {
   balances: Record<Address, WalletBalance>;
   isLoading: boolean;
 };

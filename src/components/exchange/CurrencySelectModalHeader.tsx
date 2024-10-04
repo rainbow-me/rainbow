@@ -39,7 +39,6 @@ export default function CurrencySelectModalHeader({
 
   return (
     <Box height={{ custom: CurrencySelectModalHeaderHeight }} justifyContent="center" alignItems="center" width="full" flexDirection="row">
-      {/** @ts-expect-error JavaScript component */}
       {showHandle && <SheetHandleFixedToTop />}
       {showBackButton && (
         <Box position="absolute" bottom="0px" left="0px" top={{ custom: 3 }} justifyContent="center" alignItems="center">

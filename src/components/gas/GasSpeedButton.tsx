@@ -168,13 +168,13 @@ const GasSpeedButton = ({
   marginBottom = 20,
   marginTop = 18,
   speeds = [],
-  testID,
+  testID = 'gas-speed-button',
   theme = 'dark',
   canGoBack = true,
-  showGasOptions,
-  validateGasParams,
+  showGasOptions = false,
+  validateGasParams = undefined,
   flashbotTransaction = false,
-  crossChainServiceTime,
+  crossChainServiceTime = undefined,
   loading = false,
 }: GasSpeedButtonProps) => {
   const { colors } = useTheme();

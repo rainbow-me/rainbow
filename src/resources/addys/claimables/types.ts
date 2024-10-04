@@ -1,6 +1,7 @@
 import { Address } from 'viem';
 import { AddysAsset, AddysConsolidatedError, AddysResponseStatus } from '../types';
 import { ChainId } from '@/chains/types';
+import { ParsedAddressAsset } from '@/entities';
 
 interface Colors {
   primary: string;
@@ -75,11 +76,7 @@ export interface ConsolidatedClaimablesResponse {
 }
 
 interface BaseClaimable {
-  asset: {
-    iconUrl: string;
-    name: string;
-    symbol: string;
-  };
+  asset: ParsedAddressAsset;
   chainId: ChainId;
   name: string;
   uniqueId: string;

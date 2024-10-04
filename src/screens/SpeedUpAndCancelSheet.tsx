@@ -7,7 +7,7 @@ import React, { ComponentProps, Fragment, useCallback, useEffect, useMemo, useRe
 import { ActivityIndicator, View } from 'react-native';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
-import Divider from '../components/Divider';
+import Divider from '@/components/Divider';
 import Spinner from '../components/Spinner';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, Column, Row } from '../components/layout';
@@ -36,6 +36,7 @@ import { ThemeContextProps, useTheme } from '@/theme';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { RootStackParamList } from '@/navigation/types';
 import { StaticJsonRpcProvider } from '@ethersproject/providers';
+import { BytesLike } from '@ethersproject/bytes';
 
 const { CUSTOM, URGENT } = gasUtils;
 
@@ -132,7 +133,7 @@ export default function SpeedUpAndCancelSheet() {
   const fetchedTx = useRef(false);
   const [currentChainId, setCurrentChainId] = useState<ChainId>(ChainId.mainnet);
   const [currentProvider, setCurrentProvider] = useState<StaticJsonRpcProvider>();
-  const [data, setData] = useState<string>();
+  const [data, setData] = useState<BytesLike>();
   const [gasLimit, setGasLimit] = useState<BigNumberish>();
   const [nonce, setNonce] = useState<BigNumberish>();
   const [to, setTo] = useState<string | undefined>(tx?.to ?? undefined);

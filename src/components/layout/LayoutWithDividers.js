@@ -1,5 +1,5 @@
 import React, { Children, createElement, Fragment, useMemo } from 'react';
-import Divider from '../Divider';
+import Divider from '@/components/Divider';
 import Flex from './Flex';
 
 const LayoutWithDividers = ({ children, dividerHorizontal, dividerRenderer = Divider, ...props }, ref) => {
