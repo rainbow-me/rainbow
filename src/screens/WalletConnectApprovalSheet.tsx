@@ -213,7 +213,7 @@ export function WalletConnectApprovalSheet() {
     url: verifiedData?.origin || dappUrl,
   });
 
-  const isScam = metadata?.status === DAppStatus.Scam;
+  const isScam = metadata?.status === DAppStatus.Scam || verifiedData?.isScam;
 
   // we can only safely mark a dapp as verified if the source is the browser
   const isVerified = metadata?.status === DAppStatus.Verified && source === 'browser';

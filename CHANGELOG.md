@@ -15,6 +15,29 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 
+## [1.9.41] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.41)
+
+### Added
+
+- Added support for typing into native inputs in swap (#6100)
+- Implementation of claimables (#6140, #6141, #6138, #6146, #6155, #6158, #6159)
+
+### Changed
+
+- Updated arbitrum default back to mainnet for WC message signing (#6122)
+- Bumped dependencies for xcode 16 compatibility (#6110)
+- Bumped CI to work with xcode 16/ iOS 18 (#6129)
+- Now using backend to omit certain defi positions from users wallet balance (#6103)
+- We are now filtering out backend driven networks that are internal and not in production (#6148)
+
+### Fixed
+
+- Fixed Spindl featured image resolution on dapp browser (#6114)
+- Fixed a bug where an error would occur during personal signing using MWP (#6142)
+- Updated url navigation to fix a bug in dapp browser (#6150)
+- Fixed a bug with improper gas fee calculation on mainnet (#6125)
+- Fixed a crash on token search for newly added chains (#6147)
+
 ## [1.9.40] (https://github.com/rainbow-me/rainbow/releases/tag/v1.9.40)
 
 ### Fixed
