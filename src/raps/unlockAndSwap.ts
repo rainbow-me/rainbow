@@ -28,19 +28,18 @@ export const estimateUnlockAndSwap = async ({
     from: accountAddress,
     sellTokenAddress,
     buyTokenAddress,
+    allowanceNeeded,
   } = quote as {
     from: Address;
     sellTokenAddress: Address;
     buyTokenAddress: Address;
+    allowanceNeeded: boolean;
   };
-
-  const isNativeAssetUnwrapping = quote.swapType === SwapType.unwrap;
 
   let gasLimits: (string | number)[] = [];
   let swapAssetNeedsUnlocking = false;
 
-  const nativeAsset = isLowerCaseMatch(ETH_ADDRESS_AGGREGATOR, sellTokenAddress) || isNativeAsset(sellTokenAddress, chainId);
-  if (!isNativeAssetUnwrapping && !nativeAsset) {
+  if (allowanceNeeded) {
     swapAssetNeedsUnlocking = await assetNeedsUnlocking({
       owner: accountAddress,
       amount: sellAmount,
@@ -98,20 +97,20 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
     from: accountAddress,
     sellTokenAddress,
     buyTokenAddress,
+    allowanceNeeded,
   } = quote as {
     from: Address;
     sellTokenAddress: Address;
     buyTokenAddress: Address;
+    allowanceNeeded: boolean;
   };
-
-  const isNativeAssetUnwrapping = quote.swapType === SwapType.unwrap;
 
   // Aggregators represent native asset as 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
   const nativeAsset = isLowerCaseMatch(ETH_ADDRESS_AGGREGATOR, sellTokenAddress) || isNativeAsset(sellTokenAddress, chainId);
 
   let swapAssetNeedsUnlocking = false;
 
-  if (!isNativeAssetUnwrapping && !nativeAsset) {
+  if (allowanceNeeded) {
     swapAssetNeedsUnlocking = await assetNeedsUnlocking({
       owner: accountAddress,
       amount: sellAmount as string,
