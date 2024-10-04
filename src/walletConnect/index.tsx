@@ -323,10 +323,10 @@ async function rejectProposal({
 }
 
 // listen for THIS topic pairing, and clear timeout if received
-function trackTopicHandler(proposal: WalletKitTypes.SessionProposal) {
+function trackTopicHandler(proposal: WalletKitTypes.SessionProposal | WalletKitTypes.SessionAuthenticate) {
   logger.debug(`[walletConnect]: pair: handler`, { proposal });
 
-  const { metadata } = (proposal as WalletKitTypes.SessionProposal).params.proposer;
+  const { metadata } = 'proposer' in proposal.params ? proposal.params.proposer : proposal.params.requester;
 
   analytics.track(analytics.event.wcNewPairing, {
     dappName: metadata.name,
@@ -613,7 +613,9 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
   logger.debug(`[walletConnect]: session_request`, {}, logger.DebugContext.walletconnect);
 
   const { id, topic } = event;
-  const { method, params } = event.params.request;
+  const { method: _method, params } = event.params.request;
+
+  const method = _method as RPCMethod;
 
   logger.debug(`[walletConnect]: session_request method`, { method, params }, logger.DebugContext.walletconnect);
 
@@ -631,10 +633,10 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
     });
     return;
   }
-  if (isSupportedMethod(method as RPCMethod)) {
-    const isSigningMethod = isSupportedSigningMethod(method as RPCMethod);
+  if (isSupportedMethod(method)) {
+    const isSigningMethod = isSupportedSigningMethod(method);
     const { address, message } = parseRPCParams({
-      method: method as RPCMethod,
+      method,
       params,
     });
     if (!address) {
@@ -846,8 +848,6 @@ export async function handleSessionRequestResponse(
 }
 
 export async function onSessionAuthenticate(event: WalletKitTypes.SessionAuthenticate) {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore Can be fixed once we wipe wc v1 from the codebase
   trackTopicHandler(event);
 
   const client = await getWalletKitClient();
@@ -857,24 +857,23 @@ export async function onSessionAuthenticate(event: WalletKitTypes.SessionAuthent
   const authenticate: AuthRequestAuthenticateSignature = async ({ address }) => {
     try {
       const { wallets } = store.getState().wallets;
-      const selectedWallet = findWalletWithAccount(wallets!, address);
+      const selectedWallet = findWalletWithAccount(wallets || {}, address);
       const isHardwareWallet = selectedWallet?.type === WalletTypes.bluetooth;
       const iss = `did:pkh:eip155:1:${address}`;
 
       // exit early if possible
       if (selectedWallet?.type === WalletTypes.readOnly) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore Can be fixed once we wipe wc v1 from the codebase
-        await client.respondAuthRequest(
-          {
+        await client.respondSessionRequest({
+          topic: event.topic,
+          response: {
             id: event.id,
             error: {
               code: 0,
               message: `Wallet is read-only`,
             },
+            jsonrpc: '2.0',
           },
-          iss
-        );
+        });
 
         return {
           success: false,
@@ -895,9 +894,10 @@ export async function onSessionAuthenticate(event: WalletKitTypes.SessionAuthent
 
           return undefined;
         }
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore Can be fixed once we wipe wc v1 from the codebase
-        const message = client.formatMessage(event.params.cacaoPayload, iss);
+        const message = client.formatAuthMessage({
+          iss,
+          request: event.params.authPayload,
+        });
         // prompt the user to sign the message
         return wallet.signMessage(message);
       };
@@ -925,18 +925,19 @@ export async function onSessionAuthenticate(event: WalletKitTypes.SessionAuthent
       }
 
       // respond to WC
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore Can be fixed once we wipe wc v1 from the codebase
-      await client.respondAuthRequest(
-        {
+      await client.respondSessionRequest({
+        topic: event.topic,
+        response: {
           id: event.id,
-          signature: {
-            s: signature,
-            t: 'eip191',
-          },
+          result: JSON.stringify({
+            signature: {
+              s: signature,
+              t: 'eip191',
+            },
+          }),
+          jsonrpc: '2.0',
         },
-        iss
-      );
+      });
 
       // only handled on success
       maybeGoBackAndClearHasPendingRedirect({ delay: 300 });
@@ -951,9 +952,7 @@ export async function onSessionAuthenticate(event: WalletKitTypes.SessionAuthent
   };
 
   // need to prefetch dapp metadata since portal is static
-  const url =
-    // @ts-ignore WalletKitTypes.AuthRequest type is missing VerifyContext
-    event?.verifyContext?.origin || event.params.requester.metadata.url;
+  const url = event?.verifyContext?.verified?.origin || event.params.requester.metadata.url;
   const metadata = await fetchDappMetadata({ url, status: true });
 
   const isScam = metadata.status === DAppStatus.Scam;
@@ -962,8 +961,7 @@ export async function onSessionAuthenticate(event: WalletKitTypes.SessionAuthent
       AuthRequest({
         authenticate,
         requesterMeta: event.params.requester.metadata,
-        // @ts-ignore WalletKitTypes.AuthRequest type is missing VerifyContext
-        verifiedData: event?.verifyContext,
+        verifiedData: event?.verifyContext.verified,
       }),
     { sheetHeight: IS_ANDROID ? 560 : 520 + (isScam ? 40 : 0) }
   );
