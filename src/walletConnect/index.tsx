@@ -467,15 +467,11 @@ export async function onSessionProposal(proposal: WalletKitTypes.SessionProposal
       verifiedData,
       timedOut: false,
       callback: async (approved, approvedChainId, accountAddress) => {
-        console.log('[WC DEBUG] executing callback');
         const client = await getWalletKitClient();
-        console.log('[WC DEBUG] got client');
 
         const { id, proposer, requiredNamespaces } = proposal.params;
 
         if (approved) {
-          console.log('[WC DEBUG] approved true');
-
           logger.debug(
             `[walletConnect]: session approved`,
             {
@@ -506,11 +502,7 @@ export async function onSessionProposal(proposal: WalletKitTypes.SessionProposal
           logger.debug(`[walletConnect]: session approved namespaces`, { namespaces }, logger.DebugContext.walletconnect);
 
           try {
-            console.log('[WC DEBUG] try');
-
             if (namespaces.success) {
-              console.log('[WC DEBUG] namespaces success');
-
               /**
                * This is equivalent handling of setPendingRequest and
                * walletConnectApproveSession, since setPendingRequest is only used
@@ -523,8 +515,6 @@ export async function onSessionProposal(proposal: WalletKitTypes.SessionProposal
                 id,
                 namespaces: namespaces.result,
               });
-
-              console.log('[WC DEBUG] session approved');
 
               // let the ConnectedDappsSheet know we've got a new one
               events.emit('walletConnectV2SessionCreated');
@@ -543,8 +533,6 @@ export async function onSessionProposal(proposal: WalletKitTypes.SessionProposal
                 });
               }
             } else {
-              console.log('[WC DEBUG] rejected proposal');
-
               await rejectProposal({
                 proposal,
                 reason: 'INVALID_SESSION_SETTLE_REQUEST',
@@ -558,8 +546,6 @@ export async function onSessionProposal(proposal: WalletKitTypes.SessionProposal
               });
             }
           } catch (e) {
-            console.log('[WC DEBUG] catch', e);
-
             setHasPendingDeeplinkPendingRedirect(false);
 
             Alert({
@@ -580,8 +566,6 @@ export async function onSessionProposal(proposal: WalletKitTypes.SessionProposal
             });
           }
         } else if (!approved) {
-          console.log('[WC DEBUG] not approved');
-
           await rejectProposal({ proposal, reason: 'USER_REJECTED' });
         }
       },
