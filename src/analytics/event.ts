@@ -1,13 +1,10 @@
-import { GasSettings } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId, Network } from '@/chains/types';
-import { GasSpeed } from '@/__swaps__/types/gas';
 import { SwapAssetType } from '@/__swaps__/types/swap';
 import { UnlockableAppIconKey } from '@/appIcons/appIcons';
 import { CardType } from '@/components/cards/GenericCard';
 import { LearnCategory } from '@/components/cards/utils/types';
 import { FiatProviderName } from '@/entities/f2c';
-import { RapSwapActionParameters } from '@/raps/references';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { AnyPerformanceLog, Screen } from '../state/performance/operations';
@@ -151,6 +148,8 @@ export const event = {
   performanceTimeToSignOperation: 'performance.time_to_sign.operation',
 
   addFavoriteToken: 'add_favorite_token',
+  watchWallet: 'watch_wallet',
+  watchedWalletCohort: 'watched_wallet_cohort',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -585,5 +584,15 @@ export type EventProperties = {
     chainId: ChainId;
     name: string;
     symbol: string;
+  };
+
+  [event.watchWallet]: {
+    addressOrEnsName: string;
+    address: string;
+  };
+
+  [event.watchedWalletCohort]: {
+    numWatchedWallets: number;
+    watchedWalletsAddresses: string[];
   };
 };
