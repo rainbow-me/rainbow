@@ -29,7 +29,7 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
   const { colors } = useTheme();
   const hash = useMemo(() => ethereumUtils.getHash(transaction), [transaction]);
   const { network, status, chainId } = transaction;
-  const isReadOnly = useSelector((state: AppState) => state.wallets.selected?.type === WalletTypes.readOnly ?? true);
+  const isReadOnly = useSelector((state: AppState) => state.wallets.selected?.type === WalletTypes.readOnly);
   // Retry swap related data
   const retrySwapMetadata = useMemo(() => {
     const data = swapMetadataStorage.getString(hash ?? '');

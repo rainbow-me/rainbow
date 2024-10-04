@@ -78,6 +78,7 @@ export { default as useScanner } from './useScanner';
 export { default as useSelectImageMenu } from './useSelectImageMenu';
 export { default as useSendSheetInputRefs } from './useSendSheetInputRefs';
 export { default as useSendableUniqueTokens } from './useSendableUniqueTokens';
+export { default as useSearchCurrencyList } from './useSearchCurrencyList';
 export { default as useSendFeedback } from './useSendFeedback';
 export { default as useShakeAnimation } from './useShakeAnimation';
 export { default as useShowcaseTokens } from './useShowcaseTokens';

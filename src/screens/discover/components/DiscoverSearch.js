@@ -51,7 +51,7 @@ export default function DiscoverSearch() {
   const currencySelectionListRef = useRef();
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);
   const [ensResults, setEnsResults] = useState([]);
-  const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList(searchQueryForSearch, ChainId.mainnet, true);
+  const { swapCurrencyList, swapCurrencyListLoading } = useSearchCurrencyList(searchQueryForSearch, ChainId.mainnet);
 
   // we want to debounce the poap search further
   const [searchQueryForPoap] = useDebounce(searchQueryForSearch, 800);
