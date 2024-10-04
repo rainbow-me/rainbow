@@ -142,7 +142,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const inputSearchRef = useAnimatedRef<TextInput>();
   const outputSearchRef = useAnimatedRef<TextInput>();
 
-  const sliderXPosition = useSharedValue(SLIDER_WIDTH * INITIAL_SLIDER_POSITION);
+  const sliderXPosition = useSharedValue(SLIDER_WIDTH * swapsStore.getState().percentageToSell);
   const sliderPressProgress = useSharedValue(SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
 
   const lastTypedInput = useSharedValue<inputKeys>('inputAmount');
