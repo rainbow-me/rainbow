@@ -36,7 +36,7 @@ export default function useWatchWallet({
   const initializeWallet = useInitializeWallet();
   const changeAccount = useCallback(
     async (walletId: string, address: string) => {
-      const wallet = wallets![walletId];
+      const wallet = (wallets || {})[walletId];
       try {
         const p1 = dispatch(walletsSetSelected(wallet));
         const p2 = dispatch(addressSetSelected(address));
@@ -60,13 +60,16 @@ export default function useWatchWallet({
   const watchWallet = useCallback(async () => {
     if (!isWatching) {
       handleSetSeedPhrase(ensName ?? '');
-      handlePressImportButton(null, ensName, null, avatarUrl);
+      handlePressImportButton({
+        forceAddress: ensName,
+        avatarUrl: avatarUrl ?? undefined,
+      });
     } else {
       // If there's more than 1 account,
       // it's deletable
-      const isLastAvailableWallet = Object.keys(wallets!).find(key => {
-        const someWallet = wallets![key];
-        const otherAccount = someWallet.addresses?.find((account: any) => account.visible && account.address !== accountAddress);
+      const isLastAvailableWallet = Object.keys(wallets || {}).find(key => {
+        const someWallet = (wallets || {})[key];
+        const otherAccount = someWallet.addresses?.find(account => account.visible && account.address !== accountAddress);
         if (otherAccount) {
           return true;
         }
@@ -85,7 +88,7 @@ export default function useWatchWallet({
           const { wallet: foundWallet, key } =
             doesWalletsContainAddress({
               address: primaryAddress,
-              wallets: wallets!,
+              wallets: wallets || {},
             }) || {};
           if (foundWallet && key) {
             await changeAccount(key, foundWallet.address);

@@ -594,7 +594,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
                                 {...asset}
                                 color={imageColor}
                                 hideNftMarketplaceAction={hideNftMarketplaceAction}
-                                slug={slug}
+                                slug={slug ?? ''}
                               />
                             </Section>
                           ) : null}
