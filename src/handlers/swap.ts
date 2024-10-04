@@ -5,11 +5,11 @@ import {
   CrosschainQuote,
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
   getQuoteExecutionDetails,
+  getRainbowRouterContractAddress,
   getWrappedAssetMethod,
   PermitSupportedTokenList,
   Quote,
-  getRainbowRouterContractAddress,
-  WRAPPED_ASSET,
+  SwapType,
 } from '@rainbow-me/swaps';
 import { Contract } from '@ethersproject/contracts';
 import { MaxUint256 } from '@ethersproject/constants';
@@ -195,36 +195,6 @@ export const getSwapGasLimitWithFakeApproval = async (
   return getDefaultGasLimitForTrade(tradeDetails, chainId);
 };
 
-export const isUnwrapNative = ({
-  buyTokenAddress,
-  chainId,
-  sellTokenAddress,
-}: {
-  chainId: ChainId;
-  sellTokenAddress: string;
-  buyTokenAddress: string;
-}) => {
-  return (
-    sellTokenAddress.toLowerCase() === WRAPPED_ASSET[chainId]?.toLowerCase() &&
-    buyTokenAddress.toLowerCase() === ETH_ADDRESS_AGGREGATORS.toLowerCase()
-  );
-};
-
-export const isWrapNative = ({
-  buyTokenAddress,
-  chainId,
-  sellTokenAddress,
-}: {
-  chainId: ChainId;
-  sellTokenAddress: string;
-  buyTokenAddress: string;
-}) => {
-  return (
-    sellTokenAddress.toLowerCase() === ETH_ADDRESS_AGGREGATORS.toLowerCase() &&
-    buyTokenAddress.toLowerCase() === WRAPPED_ASSET[chainId]?.toLowerCase()
-  );
-};
-
 export const estimateSwapGasLimit = async ({
   chainId,
   requiresApprove,
@@ -239,16 +209,8 @@ export const estimateSwapGasLimit = async ({
     return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
   }
   const { sellTokenAddress, buyTokenAddress } = tradeDetails;
-  const isWrapNativeAsset = isWrapNative({
-    buyTokenAddress,
-    sellTokenAddress,
-    chainId,
-  });
-  const isUnwrapNativeAsset = isUnwrapNative({
-    buyTokenAddress,
-    sellTokenAddress,
-    chainId,
-  });
+  const isWrapNativeAsset = tradeDetails.swapType === SwapType.wrap;
+  const isUnwrapNativeAsset = tradeDetails.swapType === SwapType.unwrap;
 
   // Wrap / Unwrap Eth
   if (isWrapNativeAsset || isUnwrapNativeAsset) {

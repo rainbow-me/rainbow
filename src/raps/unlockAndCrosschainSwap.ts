@@ -1,4 +1,3 @@
-import { ALLOWS_PERMIT, ChainId, ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR, PermitSupportedTokenList, WRAPPED_ASSET } from '@rainbow-me/swaps';
 import { Address } from 'viem';
 
 import { isNativeAsset } from '@/handlers/assets';

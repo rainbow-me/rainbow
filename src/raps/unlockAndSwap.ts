@@ -1,9 +1,9 @@
 import {
   ALLOWS_PERMIT,
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR,
-  PermitSupportedTokenList,
-  WRAPPED_ASSET,
   getRainbowRouterContractAddress,
+  PermitSupportedTokenList,
+  SwapType,
 } from '@rainbow-me/swaps';
 import { Address } from 'viem';
 
@@ -13,7 +13,6 @@ import { add } from '@/helpers/utilities';
 import { isLowerCaseMatch } from '@/utils';
 import { ETH_ADDRESS } from '../references';
 
-import { isUnwrapNative } from '@/handlers/swap';
 import { assetNeedsUnlocking, estimateApprove, estimateSwapGasLimit } from './actions';
 import { estimateUnlockAndSwapFromMetadata } from './actions/swap';
 import { createNewAction, createNewRap } from './common';
@@ -35,9 +34,7 @@ export const estimateUnlockAndSwap = async ({
     buyTokenAddress: Address;
   };
 
-  const isNativeAssetUnwrapping =
-    isLowerCaseMatch(sellTokenAddress, WRAPPED_ASSET?.[chainId]) &&
-    (isLowerCaseMatch(buyTokenAddress, ETH_ADDRESS?.[chainId]) || isLowerCaseMatch(buyTokenAddress, ETH_ADDRESS_AGGREGATOR?.[chainId]));
+  const isNativeAssetUnwrapping = quote.swapType === SwapType.unwrap;
 
   let gasLimits: (string | number)[] = [];
   let swapAssetNeedsUnlocking = false;
@@ -107,11 +104,7 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
     buyTokenAddress: Address;
   };
 
-  const isNativeAssetUnwrapping = isUnwrapNative({
-    chainId,
-    sellTokenAddress,
-    buyTokenAddress,
-  });
+  const isNativeAssetUnwrapping = quote.swapType === SwapType.unwrap;
 
   // Aggregators represent native asset as 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
   const nativeAsset = isLowerCaseMatch(ETH_ADDRESS_AGGREGATOR, sellTokenAddress) || isNativeAsset(sellTokenAddress, chainId);
