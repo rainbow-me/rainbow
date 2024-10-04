@@ -8,7 +8,7 @@ import {
   WALLET_TOPICS_STORAGE_KEY,
   GroupSettings,
   WalletNotificationRelationshipType,
-  WalletNotificationTopicType,
+  GlobalNotificationTopicType,
   WalletNotificationSettings,
   notificationSettingsStorage,
 } from '@/notifications/settings';
@@ -22,17 +22,10 @@ export const trackTappedPushNotification = (notification: MinimalNotification | 
   });
 };
 
-export const trackChangedNotificationSettings = (
-  topic: WalletNotificationTopicType,
-  action: 'subscribe' | 'unsubscribe',
-  chainId?: number,
-  type?: WalletNotificationRelationshipType
-) => {
-  analytics.track('Changed Notification Settings', {
-    chainId,
+export const trackChangedGlobalNotificationSettings = (topic: GlobalNotificationTopicType, enableTopic: boolean) => {
+  analytics.track('Changed Global Notification Settings', {
     topic,
-    type,
-    action,
+    action: enableTopic ? 'subscribe' : 'unsubscribe',
   });
 };
 
