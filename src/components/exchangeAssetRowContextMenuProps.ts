@@ -1,7 +1,7 @@
 import lang from 'i18n-js';
 import { startCase } from 'lodash';
 import { NativeSyntheticEvent } from 'react-native';
-import { setClipboard } from '../../hooks/useClipboard';
+import { setClipboard } from '@/hooks/useClipboard';
 import { abbreviations, ethereumUtils, haptics, showActionSheetWithOptions } from '@/utils';
 import { ChainId } from '@/chains/types';
 import { chainsIdByName } from '@/chains';

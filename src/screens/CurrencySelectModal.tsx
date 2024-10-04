@@ -8,8 +8,10 @@ import { MMKV } from 'react-native-mmkv';
 import Animated from 'react-native-reanimated';
 import { useDebounce } from 'use-debounce';
 import GestureBlocker from '../components/GestureBlocker';
-import { CurrencySelectionList, CurrencySelectModalHeader, ExchangeSearch } from '../components/exchange';
-import NetworkSwitcherv1 from '../components/exchange/NetworkSwitcher';
+import ExchangeSearch from '@/components/ExchangeSearch';
+import NetworkSwitcherv1 from '@/components/NetworkSwitcher';
+import CurrencySelectionList from '@/components/CurrencySelectionList';
+import CurrencySelectModalHeader from '@/components/CurrencySelectModalHeader';
 import { KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import { STORAGE_IDS } from '../model/mmkv';
@@ -29,7 +31,7 @@ import { delayNext } from '@/hooks/useMagicAutofocus';
 import { getActiveRoute, useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { filterList } from '@/utils';
-import NetworkSwitcherv2 from '@/components/exchange/NetworkSwitcherv2';
+import NetworkSwitcherv2 from '@/components/NetworkSwitcherv2';
 import { CROSSCHAIN_SWAPS, useExperimentalFlag } from '@/config';
 import { SwappableAsset } from '@/entities';
 import { Box, Row, Rows } from '@/design-system';
@@ -41,6 +43,8 @@ import { externalTokenQueryKey, fetchExternalToken } from '@/resources/assets/ex
 import { queryClient } from '@/react-query/queryClient';
 import { ChainId, Network } from '@/chains/types';
 import { chainsName } from '@/chains';
+import { swapsStore } from '@/state/swaps/swapsStore';
+import { userAssetsStore } from '@/state/assets/userAssets';
 
 export interface EnrichedExchangeAsset extends SwappableAsset {
   ens: boolean;
@@ -279,21 +283,20 @@ export default function CurrencySelectModal() {
       dangerouslyGetState().index = 1;
       if (fromDiscover) {
         goBack();
-        setTimeout(
-          () => {
-            navigate(Routes.EXCHANGE_MODAL, {
-              params: {
-                inputAsset: type === CurrencySelectionTypes.output ? defaultInputAsset : item,
-                outputAsset: type === CurrencySelectionTypes.input ? defaultOutputAsset : item,
-                ...params,
-              },
-              screen: Routes.MAIN_EXCHANGE_SCREEN,
-            });
-            setSearchQuery('');
-            setCurrentChainId(item.chainId);
-          },
-          android ? 500 : 0
-        );
+
+        const inputAsset = type === CurrencySelectionTypes.output ? userAssetsStore.getState().getHighestValueEth() : item;
+        const outputAsset = type === CurrencySelectionTypes.input ? userAssetsStore.getState().getHighestValueEth() : item;
+
+        // TODO: Verify that item is the type we want
+        swapsStore.setState({
+          inputAsset,
+          outputAsset,
+        });
+
+        setSearchQuery('');
+        setCurrentChainId(item.chainId);
+
+        InteractionManager.runAfterInteractions(() => navigate(Routes.SWAP));
       } else {
         navigate(Routes.MAIN_EXCHANGE_SCREEN);
         setSearchQuery('');
@@ -309,7 +312,7 @@ export default function CurrencySelectModal() {
         });
       }
     },
-    [dangerouslyGetState, defaultInputAsset, defaultOutputAsset, fromDiscover, goBack, navigate, params, searchQueryForSearch, type]
+    [dangerouslyGetState, fromDiscover, goBack, navigate, searchQueryForSearch, type]
   );
   const checkForRequiredAssets = useCallback(
     (item: any) => {

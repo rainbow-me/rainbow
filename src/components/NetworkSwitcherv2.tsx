@@ -1,12 +1,12 @@
 import React, { useRef, useMemo } from 'react';
 import { ScrollView } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
-import { ButtonPressAnimation } from '../animations';
-import ChainBadge from '../coin-icon/ChainBadge';
+import { ButtonPressAnimation } from '@/components/animations';
+import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { Bleed, Box, Columns, Inline, Text } from '@/design-system';
 import { position } from '@rainbow-me/styles';
 import { useTheme } from '@/theme';
-import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
+import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { ChainId } from '@/chains/types';
 import { chainsLabel, defaultChains, supportedSwapChainIds } from '@/chains';
 
