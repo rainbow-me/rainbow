@@ -45,7 +45,6 @@ import {
   explainSheetConfig,
   externalLinkWarningSheetConfig,
   mintsSheetConfig,
-  nativeStackDefaultConfig,
   nftOffersSheetConfig,
   nftSingleOfferSheetConfig,
   pairHardwareWalletNavigatorConfig,
@@ -78,8 +77,7 @@ import { InitialRouteContext } from './initialRoute';
 import { nativeStackConfig } from './nativeStackConfig';
 import { onNavigationStateChange } from './onNavigationStateChange';
 import Routes from './routesNames';
-import { ExchangeModalNavigator } from './index';
-import useExperimentalFlag, { PROFILES, SWAPS_V2 } from '@/config/experimentalHooks';
+import useExperimentalFlag, { PROFILES } from '@/config/experimentalHooks';
 import createNativeStackNavigator from '@/react-native-cool-modals/createNativeStackNavigator';
 import QRScannerScreen from '@/screens/QRScannerScreen';
 import { PairHardwareWalletNavigator } from './PairHardwareWalletNavigator';
@@ -142,9 +140,7 @@ function MainStack() {
 }
 
 function NativeStackNavigator() {
-  const remoteConfig = useRemoteConfig();
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const swapsV2Enabled = useExperimentalFlag(SWAPS_V2) || remoteConfig.swaps_v2;
 
   return (
     <NativeStack.Navigator {...nativeStackConfig}>
@@ -152,11 +148,6 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={LearnWebViewScreen} name={Routes.LEARN_WEB_VIEW_SCREEN} {...learnWebViewScreenConfig} />
       <NativeStack.Screen component={ReceiveModal} name={Routes.RECEIVE_MODAL} {...recieveModalSheetConfig} />
       <NativeStack.Screen component={SettingsSheet} name={Routes.SETTINGS_SHEET} {...settingsSheetConfig} />
-      <NativeStack.Screen
-        component={ExchangeModalNavigator}
-        name={Routes.EXCHANGE_MODAL}
-        options={{ ...nativeStackDefaultConfig, relevantScrollViewDepth: 2 }}
-      />
       <NativeStack.Screen component={ExpandedAssetSheet} name={Routes.EXPANDED_ASSET_SHEET} {...expandedAssetSheetConfigWithLimit} />
       <NativeStack.Screen component={PoapSheet} name={Routes.POAP_SHEET} {...expandedAssetSheetConfigWithLimit} />
       <NativeStack.Screen component={MintSheet} name={Routes.MINT_SHEET} {...expandedAssetSheetConfigWithLimit} />
@@ -231,7 +222,6 @@ function NativeStackNavigator() {
       />
       <NativeStack.Screen component={RestoreSheet} name={Routes.RESTORE_SHEET} {...restoreSheetConfig} />
       <NativeStack.Screen component={SignTransactionSheet} name={Routes.CONFIRM_REQUEST} {...signTransactionSheetConfig} />
-      <NativeStack.Screen component={ExpandedAssetSheet} name={Routes.CUSTOM_GAS_SHEET} {...customGasSheetConfig} />
       <NativeStack.Screen component={ExpandedAssetSheet} name={Routes.SWAP_DETAILS_SHEET} {...swapDetailsSheetConfig} />
       <NativeStack.Screen component={ExpandedAssetSheet} name={Routes.SWAP_SETTINGS_SHEET} {...customGasSheetConfig} />
       <NativeStack.Screen component={QRScannerScreen} name={Routes.QR_SCANNER_SCREEN} {...qrScannerConfig} />
@@ -289,8 +279,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={ControlPanel} name={Routes.DAPP_BROWSER_CONTROL_PANEL} {...panelConfig} />
       <NativeStack.Screen component={ClaimRewardsPanel} name={Routes.CLAIM_REWARDS_PANEL} {...panelConfig} />
       <NativeStack.Screen component={ClaimClaimablePanel} name={Routes.CLAIM_CLAIMABLE_PANEL} {...panelConfig} />
-
-      {swapsV2Enabled && <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />}
+      <NativeStack.Screen component={SwapScreen} name={Routes.SWAP} {...swapConfig} />
     </NativeStack.Navigator>
   );
 }

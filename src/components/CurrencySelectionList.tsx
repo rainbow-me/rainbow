@@ -1,15 +1,15 @@
 import React, { forwardRef, ForwardRefRenderFunction } from 'react';
 import { SectionList } from 'react-native';
-import { magicMemo } from '../../utils';
-import { EmptyAssetList } from '../asset-list';
-import { Centered } from '../layout';
-import { NoResults } from '../list';
-import { CurrencySelectModalHeaderHeight } from './CurrencySelectModalHeader';
-import ExchangeAssetList from './ExchangeAssetList';
-import { ExchangeSearchHeight } from './ExchangeSearch';
+import { magicMemo } from '@/utils';
+import { EmptyAssetList } from '@/components/asset-list';
+import { Centered } from '@/components/layout';
+import { NoResults } from '@/components/list';
+import { CurrencySelectModalHeaderHeight } from '@/components/CurrencySelectModalHeader';
+import ExchangeAssetList from '@/components/ExchangeAssetList';
+import { ExchangeSearchHeight } from '@/components/ExchangeSearch';
 import { Box } from '@/design-system';
 import { EnrichedExchangeAsset } from '@/screens/CurrencySelectModal';
-import { NoResultsType } from '../list/NoResults';
+import { NoResultsType } from '@/components/list/NoResults';
 
 interface CurrencySelectionListProps {
   keyboardDismissMode?: 'none' | 'interactive' | 'on-drag';

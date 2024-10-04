@@ -44,13 +44,9 @@ export const TransactionDetailsHashAndActionsSection: React.FC<Props> = ({ trans
 
   const onRetrySwap = useCallback(() => {
     Navigation.handleAction(Routes.WALLET_SCREEN, {});
-    Navigation.handleAction(Routes.EXCHANGE_MODAL, {
-      params: {
-        meta: retrySwapMetadata,
-        inputAsset: retrySwapMetadata?.inputAsset,
-        outputAsset: retrySwapMetadata?.outputAsset,
-      },
-    });
+
+    // TODO: Add retry swap logic back for swaps
+    Navigation.handleAction(Routes.SWAP, {});
   }, [retrySwapMetadata]);
 
   if (!hash || !network) {

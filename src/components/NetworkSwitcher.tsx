@@ -1,16 +1,18 @@
 import lang from 'i18n-js';
-import React from 'react';
+import React, { useCallback } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import Divider from '@/components/Divider';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { ContextMenuButton } from '@/components/context-menu';
-import { Column, Row } from '../layout';
-import { Text } from '../text';
-import { padding, position } from '@/styles';
+import { Column, Row } from '@/components/layout';
+import { Text } from '@/components/text';
+import { Colors, padding, position } from '@/styles';
 import { showActionSheetWithOptions } from '@/utils';
-import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
+import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { chainsLabel, chainsName, defaultChains, supportedSwapChainIds } from '@/chains';
 import { isL2Chain } from '@/handlers/web3';
+import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
+import { ChainId } from '@/chains/types';
 
 const networkMenuItems = supportedSwapChainIds
   .map(chainId => defaultChains[chainId])
@@ -25,6 +27,17 @@ const networkMenuItems = supportedSwapChainIds
 
 const androidNetworkMenuItems = supportedSwapChainIds.map(chainId => defaultChains[chainId].id);
 
+type NetworkSwitcherProps = {
+  colors: Colors;
+  hideDivider: boolean;
+  marginVertical?: number;
+  marginHorizontal?: number;
+  currentChainId: number;
+  setCurrentChainId: (chainId: ChainId) => void;
+  testID: string;
+  prominent: boolean;
+};
+
 const NetworkSwitcherv1 = ({
   colors,
   hideDivider,
@@ -34,7 +47,7 @@ const NetworkSwitcherv1 = ({
   setCurrentChainId,
   testID,
   prominent,
-}) => {
+}: NetworkSwitcherProps) => {
   const radialGradientProps = {
     center: [0, 1],
     colors: colors.gradients.lightGreyWhite,
@@ -46,8 +59,8 @@ const NetworkSwitcherv1 = ({
   };
 
   const handleOnPressMenuItem = useCallback(
-    ({ nativeEvent: { actionKey } }) => {
-      setCurrentChainId(actionKey);
+    ({ nativeEvent: { actionKey } }: OnPressMenuItemEventObject) => {
+      setCurrentChainId(Number(actionKey));
     },
     [setCurrentChainId]
   );
@@ -58,7 +71,7 @@ const NetworkSwitcherv1 = ({
         options: networkActions,
         showSeparators: true,
       },
-      idx => {
+      (idx: number) => {
         if (idx !== undefined) {
           setCurrentChainId(networkActions[idx]);
         }
@@ -81,6 +94,7 @@ const NetworkSwitcherv1 = ({
           marginVertical={marginVertical}
           style={padding.object(android ? 6 : 10, 10, android ? 6 : 10, 10)}
         >
+          {/* @ts-expect-error - borderRadius is not a valid prop for RadialGradient */}
           <RadialGradient {...radialGradientProps} borderRadius={16} radius={600} />
           <Column justify="center">
             {currentChainId !== 1 ? <ChainBadge chainId={currentChainId} position="relative" size="small" /> : <EthCoinIcon size={20} />}

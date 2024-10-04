@@ -1,12 +1,12 @@
 import { useRoute } from '@react-navigation/native';
 import React, { useCallback } from 'react';
-import { delayNext } from '../../hooks/useMagicAutofocus';
-import { BackButton } from '../header';
-import { SheetHandleFixedToTop } from '../sheet';
+import { delayNext } from '@/hooks/useMagicAutofocus';
+import { BackButton } from '@/components/header';
+import { SheetHandleFixedToTop } from '@/components/sheet';
 import { Box, Inset, Text } from '@/design-system';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useTheme } from '@/theme';
 import { chainsIdByName } from '@/chains';
 

@@ -7,7 +7,7 @@ import { useDebounce } from 'use-debounce';
 import CurrencySelectionTypes from '@/helpers/currencySelectionTypes';
 
 import deviceUtils from '@/utils/deviceUtils';
-import { CurrencySelectionList } from '@/components/exchange';
+import { CurrencySelectionList } from '@/components/CurrencySelectionList';
 import { Row } from '@/components/layout';
 import DiscoverSheetContext from '../DiscoverScreenContext';
 import { analytics } from '@/analytics';

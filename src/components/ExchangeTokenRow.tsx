@@ -3,12 +3,12 @@ import isEqual from 'react-fast-compare';
 import { Box, Column, Columns, Inline, Stack, Text } from '@/design-system';
 import { isNativeAsset } from '@/handlers/assets';
 import { useAsset, useDimensions } from '@/hooks';
-import { ButtonPressAnimation } from '../animations';
-import { FloatingEmojis } from '../floating-emojis';
+import { ButtonPressAnimation } from '@/components/animations';
+import { FloatingEmojis } from '@/components/floating-emojis';
 import { IS_IOS } from '@/env';
-import { FavStar, Info } from '../asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
+import { FavStar, Info } from '@/components/asset-list/RecyclerAssetList2/FastComponents/FastCurrencySelectionRow';
 import { View } from 'react-native';
-import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { ChainId } from '@/chains/types';
 import { ParsedAddressAsset } from '@/entities';
 

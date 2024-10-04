@@ -97,4 +97,9 @@ export type RootStackParamList = {
   [Routes.WALLET_CONNECT_REDIRECT_SHEET]: {
     type: WalletconnectResultType;
   };
+  [Routes.EXPANDED_ASSET_SHEET]: {
+    longFormHeight: number;
+    type: 'token' | 'unique_token';
+    asset: ParsedAddressAsset | UniqueAsset;
+  };
 };
