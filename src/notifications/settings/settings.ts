@@ -10,6 +10,7 @@ import {
   getAllWalletNotificationSettingsFromStorage,
   setAllWalletNotificationSettingsToStorage,
 } from '@/notifications/settings/storage';
+import { trackChangedGlobalNotificationSettings } from '@/notifications/analytics';
 
 import { publishWalletSettings } from '@/notifications/settings/firebase';
 
@@ -86,14 +87,16 @@ export async function toggleTopicForWallet(address: string, topic: WalletNotific
 /**
  Function for subscribing/unsubscribing the app to/from a global notification topic.
  */
-export const toggleGlobalNotificationTopic = (topic: GlobalNotificationTopicType, enableTopic: boolean): Promise<boolean> => {
+export const toggleGlobalNotificationTopic = async (topic: GlobalNotificationTopicType, enableTopic: boolean): Promise<boolean> => {
   const walletSettings = getAllWalletNotificationSettingsFromStorage();
   const currentGlobalSettings = getAllGlobalNotificationSettingsFromStorage();
   const globalSettings = {
     ...currentGlobalSettings,
     [topic]: enableTopic,
   };
-  return publishAndSaveNotificationSettings({ globalSettings, walletSettings });
+  const success = await publishAndSaveNotificationSettings({ globalSettings, walletSettings });
+  if (success) trackChangedGlobalNotificationSettings(topic, enableTopic);
+  return success;
 };
 
 export const publishAndSaveNotificationSettings = async ({
