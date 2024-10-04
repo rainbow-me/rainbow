@@ -1,3 +1,4 @@
+import isEmpty from 'lodash/isEmpty';
 import {
   DEFAULT_ENABLED_TOPIC_SETTINGS,
   WalletNotificationRelationship,
@@ -33,7 +34,7 @@ export const subscribeExistingNotificationsSettings = () => {
   const currentSettings = getAllWalletNotificationSettingsFromStorage();
   const globalSettings = getAllGlobalNotificationSettingsFromStorage();
 
-  if (!currentSettings) return;
+  if (isEmpty(currentSettings)) return;
 
   InteractionManager.runAfterInteractions(() => {
     publishAndSaveNotificationSettings({ globalSettings, walletSettings: currentSettings, skipPreSave: true });
