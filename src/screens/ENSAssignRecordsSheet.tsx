@@ -307,7 +307,6 @@ export function ENSAssignRecordsBottomActions({
                 </Inset>
               </Row>
               <Row height="content">
-                {/* @ts-expect-error JavaScript component */}
                 <SheetActionButtonRow
                   {...(android
                     ? {
