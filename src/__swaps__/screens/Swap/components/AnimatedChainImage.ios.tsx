@@ -11,6 +11,7 @@ import ZoraBadge from '@/assets/badges/zora.png';
 import AvalancheBadge from '@/assets/badges/avalanche.png';
 import BlastBadge from '@/assets/badges/blast.png';
 import DegenBadge from '@/assets/badges/degen.png';
+import ApechainBadge from '@/assets/badges/apechainBadge.png';
 import { ChainId } from '@/chains/types';
 import { useAnimatedProps, useDerivedValue } from 'react-native-reanimated';
 import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
@@ -22,26 +23,27 @@ import { useSwapContext } from '../providers/swap-provider';
 import { BLANK_BASE64_PIXEL } from '@/components/DappBrowser/constants';
 
 const networkBadges = {
-  [ChainId.mainnet]: Image.resolveAssetSource(EthereumBadge).uri,
-  [ChainId.polygon]: Image.resolveAssetSource(PolygonBadge).uri,
-  [ChainId.optimism]: Image.resolveAssetSource(OptimismBadge).uri,
+  [ChainId.apechain]: Image.resolveAssetSource(ApechainBadge).uri,
   [ChainId.arbitrum]: Image.resolveAssetSource(ArbitrumBadge).uri,
-  [ChainId.base]: Image.resolveAssetSource(BaseBadge).uri,
-  [ChainId.zora]: Image.resolveAssetSource(ZoraBadge).uri,
-  [ChainId.bsc]: Image.resolveAssetSource(BscBadge).uri,
-  [ChainId.avalanche]: Image.resolveAssetSource(AvalancheBadge).uri,
-  [ChainId.sepolia]: Image.resolveAssetSource(EthereumBadge).uri,
-  [ChainId.holesky]: Image.resolveAssetSource(EthereumBadge).uri,
-  [ChainId.optimismSepolia]: Image.resolveAssetSource(OptimismBadge).uri,
-  [ChainId.bscTestnet]: Image.resolveAssetSource(BscBadge).uri,
-  [ChainId.polygonAmoy]: Image.resolveAssetSource(PolygonBadge).uri,
   [ChainId.arbitrumSepolia]: Image.resolveAssetSource(ArbitrumBadge).uri,
-  [ChainId.baseSepolia]: Image.resolveAssetSource(BaseBadge).uri,
-  [ChainId.zoraSepolia]: Image.resolveAssetSource(ZoraBadge).uri,
+  [ChainId.avalanche]: Image.resolveAssetSource(AvalancheBadge).uri,
   [ChainId.avalancheFuji]: Image.resolveAssetSource(AvalancheBadge).uri,
+  [ChainId.base]: Image.resolveAssetSource(BaseBadge).uri,
+  [ChainId.baseSepolia]: Image.resolveAssetSource(BaseBadge).uri,
   [ChainId.blast]: Image.resolveAssetSource(BlastBadge).uri,
   [ChainId.blastSepolia]: Image.resolveAssetSource(BlastBadge).uri,
+  [ChainId.bsc]: Image.resolveAssetSource(BscBadge).uri,
+  [ChainId.bscTestnet]: Image.resolveAssetSource(BscBadge).uri,
   [ChainId.degen]: Image.resolveAssetSource(DegenBadge).uri,
+  [ChainId.holesky]: Image.resolveAssetSource(EthereumBadge).uri,
+  [ChainId.mainnet]: Image.resolveAssetSource(EthereumBadge).uri,
+  [ChainId.optimism]: Image.resolveAssetSource(OptimismBadge).uri,
+  [ChainId.optimismSepolia]: Image.resolveAssetSource(OptimismBadge).uri,
+  [ChainId.polygon]: Image.resolveAssetSource(PolygonBadge).uri,
+  [ChainId.polygonAmoy]: Image.resolveAssetSource(PolygonBadge).uri,
+  [ChainId.sepolia]: Image.resolveAssetSource(EthereumBadge).uri,
+  [ChainId.zora]: Image.resolveAssetSource(ZoraBadge).uri,
+  [ChainId.zoraSepolia]: Image.resolveAssetSource(ZoraBadge).uri,
 };
 
 export function AnimatedChainImage({
