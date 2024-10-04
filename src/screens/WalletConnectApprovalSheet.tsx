@@ -1,26 +1,27 @@
-import { useRoute } from '@react-navigation/native';
+/* eslint-disable react/jsx-props-no-spreading */
+import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, InteractionManager } from 'react-native';
-import { ContextMenuButton } from 'react-native-ios-context-menu';
+import { ContextMenuButton, OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
 import ChainLogo from '@/components/ChainLogo';
 import Divider from '@/components/Divider';
 import Spinner from '@/components/Spinner';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
-import { RequestVendorLogoIcon } from '../components/coin-icon';
-import { ContactAvatar } from '../components/contacts';
-import ImageAvatar from '../components/contacts/ImageAvatar';
-import { Centered, Column, Flex, Row } from '../components/layout';
-import { Sheet, SheetActionButton, SheetActionButtonRow } from '../components/sheet';
+import { RequestVendorLogoIcon } from '@/components/coin-icon';
+import { ContactAvatar } from '@/components/contacts';
+import ImageAvatar from '@/components/contacts/ImageAvatar';
+import { Centered, Column, Flex, Row } from '@/components/layout';
+import { Sheet, SheetActionButton, SheetActionButtonRow } from '@/components/sheet';
 import { analytics } from '@/analytics';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
 import { getDappHostname } from '@/helpers/dappNameHandler';
-import WalletConnectApprovalSheetType from '@/helpers/walletConnectApprovalSheetTypes';
-import { androidShowNetworksActionSheet, NETWORK_MENU_ACTION_KEY_FILTER, networksMenuItems } from '@/helpers/walletConnectNetworks';
+import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
+import { NETWORK_MENU_ACTION_KEY_FILTER, networksMenuItems } from '@/helpers/walletConnectNetworks';
 import { useAccountSettings, useWallets } from '@/hooks';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
-import { Box, Columns, Column as RDSColumn, Inline, Text } from '@/design-system';
+import { Box, Columns, Column as RDSColumn, Inline, Text, TextProps } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import * as lang from '@/languages';
 import { useDappMetadata } from '@/resources/metadata/dapp';
@@ -31,13 +32,24 @@ import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { ChainId } from '@/chains/types';
 import { chainsLabel, chainsNativeAsset, defaultChains, supportedWalletConnectChainIds } from '@/chains';
 import { isL2Chain } from '@/handlers/web3';
+import { ThemeContextProps, useTheme } from '@/theme';
+import { noop } from 'lodash';
+import { RootStackParamList } from '@/navigation/types';
+import { Address } from 'viem';
+import { RainbowWallet } from '@/model/wallet';
+import { IS_IOS } from '@/env';
+import { WalletconnectMeta } from '@/redux/walletconnect';
 
-const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }) => ({
+type WithThemeProps = {
+  theme: ThemeContextProps;
+};
+
+const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(({ theme: { colors } }: WithThemeProps) => ({
   color: colors.alpha(colors.blueGreyDark, 0.3),
   size: android ? 40 : 'large',
 }))({});
 
-const DappLogo = styled(RequestVendorLogoIcon).attrs(({ theme: { colors } }) => ({
+const DappLogo = styled(RequestVendorLogoIcon).attrs(({ theme: { colors } }: WithThemeProps) => ({
   backgroundColor: colors.transparent,
   borderRadius: 18,
   showLargeShadow: true,
@@ -46,23 +58,23 @@ const DappLogo = styled(RequestVendorLogoIcon).attrs(({ theme: { colors } }) => 
   marginBottom: 24,
 });
 
-const LabelText = ({ children, ...props }) => {
+const LabelText = ({ children, ...props }: Partial<TextProps>) => {
   return (
-    <Text color="primary (Deprecated)" numberOfLines={1} size="18px / 27px (Deprecated)" weight="bold" {...props}>
+    <Text {...props} color="primary (Deprecated)" numberOfLines={1} size="18px / 27px (Deprecated)" weight="bold" containsEmoji={false}>
       {children}
     </Text>
   );
 };
 
-const SwitchText = ({ children, ...props }) => {
+const SwitchText = ({ children, ...props }: Partial<TextProps>) => {
   return (
-    <Text color="secondary40 (Deprecated)" size="14px / 19px (Deprecated)" weight="semibold" {...props}>
+    <Text {...props} color="secondary40 (Deprecated)" size="14px / 19px (Deprecated)" weight="semibold" containsEmoji={false}>
       {children}
     </Text>
   );
 };
 
-const NetworkPill = ({ chainIds }) => {
+const NetworkPill = ({ chainIds }: { chainIds: ChainId[] }) => {
   const { colors } = useTheme();
 
   const availableNetworkChainIds = useMemo(() => chainIds.sort(chainId => (chainId === ChainId.mainnet ? -1 : 1)), [chainIds]);
@@ -89,20 +101,19 @@ const NetworkPill = ({ chainIds }) => {
       // @ts-expect-error overloaded props ContextMenuButton
       menuConfig={{ menuItems: networkMenuItems, menuTitle: '' }}
       isMenuPrimaryAction
-      onPressMenuItem={() => {}}
+      onPressMenuItem={noop}
       useActionSheetFallback={false}
       width="100%"
     >
       <Box
         as={ButtonPressAnimation}
-        // @ts-expect-error overloaded props ButtonPressAnimation
         scaleTo={0.96}
-        onPress={() => {}}
+        onPress={noop}
         testID={'available-networks-v2'}
         paddingTop="8px"
         marginRight={{ custom: -2 }}
       >
-        <Box flexDirection="row" justifyContent="flex-end" alignItems="center" width="100%">
+        <Box flexDirection="row" justifyContent="flex-end" alignItems="center" width="full">
           {availableNetworkChainIds.length > 1 ? (
             <>
               {availableNetworkChainIds.map((chainId, index) => {
@@ -150,24 +161,30 @@ const NetworkPill = ({ chainIds }) => {
   );
 };
 
-export default function WalletConnectApprovalSheet() {
+export function WalletConnectApprovalSheet() {
   const { colors, isDarkMode } = useTheme();
   const { goBack } = useNavigation();
-  const { params } = useRoute();
+  const { params } = useRoute<RouteProp<RootStackParamList, 'WalletConnectApprovalSheet'>>();
   const { chainId: settingsChainId, accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
   const { selectedWallet, walletNames, wallets } = useWallets();
   const handled = useRef(false);
-  const initialApprovalAccount = useMemo(
-    () =>
-      params?.meta?.proposedAddress
-        ? { address: params.meta.proposedAddress, wallet: findWalletWithAccount(wallets, params.meta.proposedAddress) }
-        : {
-            address: accountAddress,
-            wallet: selectedWallet,
-          },
-    [accountAddress, params?.meta?.proposedAddress, selectedWallet, wallets]
-  );
+  const initialApprovalAccount = useMemo<{ address: Address; wallet: RainbowWallet }>(() => {
+    const accountAddressAsAddress = accountAddress as Address;
+
+    if (!params?.meta?.proposedAddress) {
+      return { address: accountAddressAsAddress, wallet: selectedWallet };
+    }
+
+    const wallet = findWalletWithAccount(wallets || {}, params?.meta?.proposedAddress);
+    if (!wallet) {
+      return { address: accountAddressAsAddress, wallet: selectedWallet };
+    }
+
+    const proposedAddressAsAddress = params?.meta?.proposedAddress as Address;
+
+    return { address: proposedAddressAsAddress, wallet };
+  }, [accountAddress, params?.meta?.proposedAddress, selectedWallet, wallets]);
   const [approvalAccount, setApprovalAccount] = useState(initialApprovalAccount);
 
   const type = params?.type || WalletConnectApprovalSheetType.connect;
@@ -177,7 +194,7 @@ export default function WalletConnectApprovalSheet() {
    * CAN BE UNDEFINED if we navigated here with no data. This is how we show a
    * loading state.
    */
-  const meta = params?.meta || {};
+  const meta = params?.meta || ({} as WalletconnectMeta);
   const timeout = params?.timeout;
   const callback = params?.callback;
   const receivedTimestamp = params?.receivedTimestamp;
@@ -186,7 +203,7 @@ export default function WalletConnectApprovalSheet() {
   const chainIds = meta?.chainIds; // WC v2 supports multi-chain
   const chainId = meta?.proposedChainId || chainIds?.[0] || 1; // WC v1 only supports 1
   const currentChainId = params?.currentChainId;
-  const [approvalChainId, setApprovalChainId] = useState(currentChainId || settingsChainId);
+  const [approvalChainId, setApprovalChainId] = useState<ChainId>(currentChainId || settingsChainId);
   const isWalletConnectV2 = meta.isWalletConnectV2;
 
   const { dappName, dappUrl, dappScheme, imageUrl, peerId } = meta;
@@ -196,7 +213,7 @@ export default function WalletConnectApprovalSheet() {
     url: verifiedData?.origin || dappUrl,
   });
 
-  const isScam = metadata?.status === DAppStatus.Scam;
+  const isScam = metadata?.status === DAppStatus.Scam || verifiedData?.isScam;
 
   // we can only safely mark a dapp as verified if the source is the browser
   const isVerified = metadata?.status === DAppStatus.Verified && source === 'browser';
@@ -205,7 +222,9 @@ export default function WalletConnectApprovalSheet() {
 
   useEffect(() => {
     return () => {
-      clearTimeout(timeout);
+      if (timeout) {
+        clearTimeout(timeout);
+      }
     };
   }, [timeout]);
 
@@ -238,7 +257,8 @@ export default function WalletConnectApprovalSheet() {
   }, [approvalChainId, isDarkMode]);
 
   const handleOnPressNetworksMenuItem = useCallback(
-    ({ nativeEvent }) => setApprovalChainId(nativeEvent.actionKey?.replace(NETWORK_MENU_ACTION_KEY_FILTER, '')),
+    ({ nativeEvent }: OnPressMenuItemEventObject) =>
+      setApprovalChainId(Number(nativeEvent.actionKey?.replace(NETWORK_MENU_ACTION_KEY_FILTER, ''))),
     [setApprovalChainId]
   );
 
@@ -285,15 +305,15 @@ export default function WalletConnectApprovalSheet() {
     handleSuccess(false);
   }, [handleSuccess, goBack]);
 
-  const onPressAndroid = useCallback(() => {
-    androidShowNetworksActionSheet(({ chainId }) => setApprovalChainId(chainId));
+  const onPressAndroid = useCallback(({ chainId }: { chainId: ChainId }) => {
+    setApprovalChainId(chainId);
   }, []);
 
   const handlePressChangeWallet = useCallback(() => {
     type === WalletConnectApprovalSheetType.connect &&
       Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
         currentAccountAddress: approvalAccount.address,
-        onChangeWallet: (address, wallet) => {
+        onChangeWallet: (address: Address, wallet: RainbowWallet) => {
           setApprovalAccount({ address, wallet });
           goBack();
         },
@@ -341,8 +361,8 @@ export default function WalletConnectApprovalSheet() {
     } else {
       return (
         <NetworkSwitcherParent
-          activeOpacity={0}
           isMenuPrimaryAction
+          {...(IS_IOS ? { wrapNativeComponent: false, activeOpacity: 0 } : {})}
           {...(android ? { onPress: onPressAndroid } : {})}
           menuConfig={{
             menuItems,
@@ -350,7 +370,6 @@ export default function WalletConnectApprovalSheet() {
           }}
           onPressMenuItem={handleOnPressNetworksMenuItem}
           useActionSheetFallback={false}
-          wrapNativeComponent={false}
         >
           <ButtonPressAnimation
             style={{
@@ -506,3 +525,5 @@ export default function WalletConnectApprovalSheet() {
     </Sheet>
   );
 }
+
+export default WalletConnectApprovalSheet;

@@ -94,6 +94,10 @@ const useSearchCurrencyList = (searchQuery: string, searchChainId = ChainId.main
     [ChainId.polygon]: [],
     [ChainId.bsc]: [],
     [ChainId.arbitrum]: [],
+    [ChainId.base]: [],
+    [ChainId.avalanche]: [],
+    [ChainId.blast]: [],
+    [ChainId.apechain]: [],
   });
 
   const crosschainSwapsEnabled = useExperimentalFlag(CROSSCHAIN_SWAPS);

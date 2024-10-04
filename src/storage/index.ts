@@ -1,6 +1,6 @@
 import { MMKV } from 'react-native-mmkv';
 
-import { Account, Cards, Campaigns, Device, Review } from '@/storage/schema';
+import { Account, Cards, Campaigns, Device, Review, WatchedWalletCohort } from '@/storage/schema';
 import { EthereumAddress, RainbowTransaction } from '@/entities';
 import { SecureStorage } from '@coinbase/mobile-wallet-protocol-host';
 import { ChainId } from '@/chains/types';
@@ -135,3 +135,5 @@ export const mwp: SecureStorage = {
     mwpStorage.remove([key]);
   },
 };
+
+export const watchedWalletCohort = new Storage<[], WatchedWalletCohort>({ id: 'watchedWalletCohort' });

@@ -9,6 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 import { omit } from 'lodash';
 import { externalTokenQueryKey, fetchExternalToken } from './assets/externalAssetsQuery';
 import { chainsIdByName, chainsName } from '@/chains';
+import { analyticsV2 } from '@/analytics';
 
 export const favoritesQueryKey = createQueryKey('favorites', {}, { persisterVersion: 4 });
 
@@ -123,6 +124,13 @@ export async function toggleFavorite(address: string, chainId = ChainId.mainnet)
     queryClient.setQueryData(favoritesQueryKey, omit(favorites, uniqueId));
   } else {
     const metadata = await fetchMetadata([lowercasedAddress], chainId);
+    analyticsV2.track(analyticsV2.event.addFavoriteToken, {
+      address: lowercasedAddress,
+      chainId,
+      name: metadata[uniqueId].name,
+      symbol: metadata[uniqueId].symbol,
+    });
+
     queryClient.setQueryData(favoritesQueryKey, { ...favorites, ...metadata });
   }
 }

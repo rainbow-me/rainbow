@@ -975,8 +975,7 @@ export async function addAccountToSession(session: SessionTypes.Struct, { addres
     const client = await getWalletKitClient();
 
     const namespaces: Parameters<typeof client.updateSession>[0]['namespaces'] = {};
-
-    for (const [key, value] of Object.entries(session.requiredNamespaces)) {
+    for (const [key, value] of Object.entries(session.namespaces)) {
       /**
        * The `namespace` that corresponds to the `requiredNamespace` that was
        * requested when connecting the session. The `requiredNamespace` does
@@ -987,6 +986,7 @@ export async function addAccountToSession(session: SessionTypes.Struct, { addres
       const ns = session.namespaces[key];
 
       namespaces[key] = {
+        ...ns,
         accounts: ns.accounts || [],
         methods: value.methods,
         events: value.events,
@@ -1041,7 +1041,7 @@ export async function changeAccount(session: SessionTypes.Struct, { address }: {
      */
     await addAccountToSession(session, { address });
 
-    for (const value of Object.values(session.requiredNamespaces)) {
+    for (const value of Object.values(session.namespaces)) {
       if (!value.chains) {
         logger.debug(`[walletConnect]: changeAccount, no chains found for namespace`);
         continue;
@@ -1069,11 +1069,13 @@ export async function changeAccount(session: SessionTypes.Struct, { address }: {
     }
 
     logger.debug(`[walletConnect]: changeAccount complete`);
+    return true;
   } catch (e: any) {
     logger.error(new RainbowError(`[walletConnect]: error changing account`), {
       message: e.message,
     });
   }
+  return false;
 }
 
 /**

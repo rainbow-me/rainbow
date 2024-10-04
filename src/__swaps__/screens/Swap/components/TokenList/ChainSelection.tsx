@@ -81,7 +81,8 @@ export const ChainSelection = memo(function ChainSelection({ allText, output }: 
         actionTitle: chainsLabel[chainId],
         icon: {
           iconType: 'ASSET',
-          iconValue: `${chainsName[chainId]}Badge${chainId === ChainId.mainnet ? '' : 'NoShadow'}`,
+          // NOTE: chainsName[chainId] for mainnet is 'mainnet' and we need it to be 'ethereum'
+          iconValue: chainId === ChainId.mainnet ? 'ethereumBadge' : `${chainsName[chainId]}BadgeNoShadow`,
         },
       };
     });
