@@ -5,20 +5,29 @@ import { ChainId } from '@/chains/types';
 import { chainsLabel, defaultChains, supportedWalletConnectChainIds } from '@/chains';
 import { isL2Chain } from '@/handlers/web3';
 import { MenuActionConfig } from 'react-native-ios-context-menu';
+import { queryClient } from '@/react-query';
+import { backendNetworksQueryKey, BackendNetworksResponse } from '@/resources/metadata/backendNetworks';
+import { logger } from '@/logger';
 
-const walletConnectChains = supportedWalletConnectChainIds.map(chainId => defaultChains[chainId]).filter(chain => chain !== null);
+const walletConnectChains = supportedWalletConnectChainIds.map(chainId => defaultChains[chainId]).filter(chain => chain !== undefined);
 
 const androidNetworkActions = () => {
   const { testnetsEnabled } = store.getState().settings;
-  return walletConnectChains.filter(({ testnet }) => testnetsEnabled || !testnet).map(chain => chain.id);
+  return walletConnectChains.filter(chain => testnetsEnabled || !chain.testnet).map(chain => chain.id);
 };
 
 export const NETWORK_MENU_ACTION_KEY_FILTER = 'switch-to-network-';
 
 export const networksMenuItems: () => MenuActionConfig[] = () => {
   const { testnetsEnabled } = store.getState().settings;
+
+  logger.debug('walletConnectChains', {
+    walletConnectChains,
+    queryClientData: queryClient.getQueryData<BackendNetworksResponse>(backendNetworksQueryKey()),
+  });
+
   return walletConnectChains
-    .filter(({ testnet }) => testnetsEnabled || !testnet)
+    .filter(chain => testnetsEnabled || !chain.testnet)
     .map(chain => ({
       actionKey: `${NETWORK_MENU_ACTION_KEY_FILTER}${chain.id}`,
       actionTitle: chainsLabel[chain.id],

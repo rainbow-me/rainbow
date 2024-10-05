@@ -173,7 +173,6 @@ export const supportedTokenSearchChainIds = filterChainIdsByService(services => 
 export const supportedNftChainIds = filterChainIdsByService(services => services.nftProxy.enabled);
 
 export const supportedWalletConnectChainIds = [
-  ChainId.apechain,
   ChainId.arbitrum,
   ChainId.avalanche,
   ChainId.base,
