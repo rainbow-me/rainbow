@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { QueryConfigWithSelect, QueryFunctionArgs, createQueryKey, queryClient } from '@/react-query';
 import { BackendNetwork } from '@/chains/types';
-import { BACKEND_NETWORKS_QUERY } from './sharedQueries';
 
 // ///////////////////////////////////////////////
 // Query Types
@@ -17,7 +16,88 @@ export interface BackendNetworksResponse {
  * GraphQL query to fetch backend networks
  * @see scripts/networks.js - for the build time version of this query
  */
-export const GRAPHQL_QUERY = BACKEND_NETWORKS_QUERY;
+const BACKEND_NETWORKS_QUERY = `
+  query getNetworks($device: Device!, $includeTestnets: Boolean!) {
+    networks(device: $device, includeTestnets: $includeTestnets) {
+      id
+      name
+      label
+      icons {
+        badgeURL
+      }
+      internal
+      testnet
+      opStack
+      defaultExplorer {
+        url
+        label
+        transactionURL
+        tokenURL
+      }
+      defaultRPC {
+        enabledDevices
+        url
+      }
+      gasUnits {
+        basic {
+          approval
+          swap
+          swapPermit
+          eoaTransfer
+          tokenTransfer
+        }
+        wrapped {
+          wrap
+          unwrap
+        }
+      }
+      nativeAsset {
+        address
+        name
+        symbol
+        decimals
+        iconURL
+        colors {
+          primary
+          fallback
+          shadow
+        }
+      }
+      nativeWrappedAsset {
+        address
+        name
+        symbol
+        decimals
+        iconURL
+        colors {
+          primary
+          fallback
+          shadow
+        }
+      }
+      enabledServices {
+        meteorology {
+          enabled
+        }
+        swap {
+          enabled
+        }
+        addys {
+          approvals
+          transactions
+          assets
+          positions
+        }
+        tokenSearch {
+          enabled
+        }
+        nftProxy {
+          enabled
+        }
+      }
+    }
+  }
+`;
 
 export const backendNetworksQueryKey = () => createQueryKey('backendNetworks', {}, { persisterVersion: 1 });
 
