@@ -16,6 +16,8 @@ import styled from '@/styled-thing';
 import { margin } from '@/styles';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import * as i18n from '@/languages';
+import { COIN_ROW_WITH_PADDING_HEIGHT } from '@/__swaps__/screens/Swap/components/CoinRow';
+import { Box } from '@/design-system';
 
 const ContactAddress = styled(TruncatedAddress).attrs(({ theme: { colors }, lite }) => ({
   align: 'left',
@@ -109,44 +111,47 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
   const colorIndex = useMemo(() => (address ? addressHashedColorIndex(address) : 0), [address]);
   const bgColor = color ?? colors.avatarBackgrounds[colorIndex || 0];
 
+  console.log('here');
   return (
-    <ButtonPressAnimation exclusive isInteraction ref={ref} scaleTo={0.98} {...props} onPress={handlePress}>
-      <RowWithMargins
-        height={40}
-        margin={10}
-        style={symmetricalMargins ? css.symmetrical : css.default}
-        testID={`${testID}-contact-row-${removeFirstEmojiFromString(nickname) || ''}`}
-      >
-        {imageAvatar ? (
-          <ImageAvatar image={imageAvatar} marginRight={10} size="medium" />
-        ) : (
-          <ContactAvatar color={bgColor} marginRight={10} size="medium" value={emojiAvatar} />
-        )}
-        <Column justify={ios ? 'space-between' : 'center'}>
-          {accountType === 'accounts' || accountType === 'watching' ? (
-            <Fragment>
-              {cleanedUpLabel || ens ? (
-                <ContactName deviceWidth={deviceWidth}>{cleanedUpLabel || ens}</ContactName>
-              ) : (
-                <ContactName deviceWidth={deviceWidth}>
-                  {isValidDomainFormat(address) ? address : abbreviations.address(address, 4, 6)}
-                </ContactName>
-              )}
-              <BottomRowText color={colors.alpha(colors.blueGreyDark, 0.5)} letterSpacing="roundedMedium" weight="medium">
-                {balanceText}
-              </BottomRowText>
-            </Fragment>
+    <Box testID={testID} style={{ height: COIN_ROW_WITH_PADDING_HEIGHT, width: '100%' }}>
+      <ButtonPressAnimation exclusive isInteraction ref={ref} scaleTo={0.98} {...props} onPress={handlePress}>
+        <RowWithMargins
+          height={40}
+          margin={10}
+          style={symmetricalMargins ? css.symmetrical : css.default}
+          testID={`${testID}-contact-row-${removeFirstEmojiFromString(nickname) || ''}`}
+        >
+          {imageAvatar ? (
+            <ImageAvatar image={imageAvatar} marginRight={10} size="medium" />
           ) : (
-            <Fragment>
-              <ContactName deviceWidth={deviceWidth} lite={!!showcaseItem}>
-                {removeFirstEmojiFromString(nickname)}
-              </ContactName>
-              {isValidDomainFormat(address) ? <ContactENS ens={address} /> : <ContactAddress address={address} lite={!!showcaseItem} />}
-            </Fragment>
+            <ContactAvatar color={bgColor} marginRight={10} size="medium" value={emojiAvatar} />
           )}
-        </Column>
-      </RowWithMargins>
-    </ButtonPressAnimation>
+          <Column justify={ios ? 'space-between' : 'center'}>
+            {accountType === 'accounts' || accountType === 'watching' ? (
+              <Fragment>
+                {cleanedUpLabel || ens ? (
+                  <ContactName deviceWidth={deviceWidth}>{cleanedUpLabel || ens}</ContactName>
+                ) : (
+                  <ContactName deviceWidth={deviceWidth}>
+                    {isValidDomainFormat(address) ? address : abbreviations.address(address, 4, 6)}
+                  </ContactName>
+                )}
+                <BottomRowText color={colors.alpha(colors.blueGreyDark, 0.5)} letterSpacing="roundedMedium" weight="medium">
+                  {balanceText}
+                </BottomRowText>
+              </Fragment>
+            ) : (
+              <Fragment>
+                <ContactName deviceWidth={deviceWidth} lite={!!showcaseItem}>
+                  {removeFirstEmojiFromString(nickname)}
+                </ContactName>
+                {isValidDomainFormat(address) ? <ContactENS ens={address} /> : <ContactAddress address={address} lite={!!showcaseItem} />}
+              </Fragment>
+            )}
+          </Column>
+        </RowWithMargins>
+      </ButtonPressAnimation>
+    </Box>
   );
 };
 

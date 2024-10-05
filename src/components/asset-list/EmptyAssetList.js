@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { RefreshControl, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AddFundsInterstitial from '../AddFundsInterstitial';
-import { FabWrapperBottomPosition } from '../fab';
+import { FabWrapperBottomPosition } from '@/components/asset-list/AssetList';
 import { Centered, Column } from '../layout';
 import AssetListHeader, { AssetListHeaderHeight } from './AssetListHeader';
 import AssetListItemSkeleton from './AssetListItemSkeleton';

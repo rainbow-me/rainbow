@@ -293,6 +293,8 @@ export const fetchSuggestions = async (
 
     return suggestions;
   }
+
+  return [];
 };
 
 export const debouncedFetchSuggestions = debounce(fetchSuggestions, 200);

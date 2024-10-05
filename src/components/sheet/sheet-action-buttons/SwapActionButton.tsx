@@ -14,7 +14,7 @@ import assetInputTypes from '@/helpers/assetInputTypes';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
 import { AddressOrEth, AssetType, ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { chainsIdByName, chainsName } from '@/chains';
+import { chainsName } from '@/chains';
 
 type SwapActionButtonProps = {
   asset: RainbowToken;
@@ -26,7 +26,7 @@ type SwapActionButtonProps = {
 
 function SwapActionButton({ asset, color: givenColor, inputType, label, weight = 'heavy', ...props }: SwapActionButtonProps) {
   const { colors } = useTheme();
-  const { navigate } = useNavigation();
+  const { goBack, navigate } = useNavigation();
   const { isReadOnlyWallet } = useWallets();
 
   const color = givenColor || colors.swapPurple;
@@ -37,7 +37,7 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, weight =
       return;
     }
 
-    const chainId = chainsIdByName[asset.network];
+    const chainId = asset.chainId;
     const uniqueId = `${asset.address}_${chainId}`;
     const userAsset = userAssetsStore.getState().userAssets.get(uniqueId);
 
@@ -68,13 +68,12 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, weight =
       userAsset,
     });
 
+    const nativeAssetForChain = await ethereumUtils.getNativeAssetForNetwork({ chainId });
+
     if (inputType === assetInputTypes.in) {
       swapsStore.setState({ inputAsset: userAsset || parsedAsset });
-
-      const nativeAssetForChain = await ethereumUtils.getNativeAssetForNetwork({ chainId });
       if (nativeAssetForChain && !isSameAsset({ address: nativeAssetForChain.address as AddressOrEth, chainId }, parsedAsset)) {
         const userOutputAsset = userAssetsStore.getState().getUserAsset(`${nativeAssetForChain.address}_${chainId}`);
-
         if (userOutputAsset) {
           swapsStore.setState({ outputAsset: userOutputAsset });
         } else {
@@ -110,22 +109,30 @@ function SwapActionButton({ asset, color: givenColor, inputType, label, weight =
         }
       }
     } else {
-      const largestBalanceSameChainUserAsset = userAssetsStore
-        .getState()
-        .getUserAssets()
-        .find(userAsset => userAsset.chainId === chainId && userAsset.address !== asset.address);
-      if (largestBalanceSameChainUserAsset) {
-        swapsStore.setState({ inputAsset: largestBalanceSameChainUserAsset });
-      } else {
-        swapsStore.setState({ inputAsset: null });
+      if (nativeAssetForChain && !isSameAsset({ address: nativeAssetForChain.address as AddressOrEth, chainId }, parsedAsset)) {
+        const userOutputAsset = userAssetsStore.getState().getUserAsset(`${nativeAssetForChain.address}_${chainId}`);
+        if (userOutputAsset) {
+          swapsStore.setState({ inputAsset: userOutputAsset });
+        } else {
+          const largestBalanceSameChainUserAsset = userAssetsStore
+            .getState()
+            .getUserAssets()
+            .find(userAsset => userAsset.chainId === chainId && userAsset.address !== asset.address);
+          if (largestBalanceSameChainUserAsset) {
+            swapsStore.setState({ inputAsset: largestBalanceSameChainUserAsset });
+          } else {
+            swapsStore.setState({ inputAsset: null });
+          }
+        }
+        swapsStore.setState({ outputAsset: parsedAsset });
       }
-      swapsStore.setState({ outputAsset: parsedAsset });
     }
 
     InteractionManager.runAfterInteractions(() => {
+      goBack();
       navigate(Routes.SWAP);
     });
-  }, [asset, inputType, isReadOnlyWallet, navigate]);
+  }, [asset, goBack, inputType, isReadOnlyWallet, navigate]);
 
   return (
     <SheetActionButton

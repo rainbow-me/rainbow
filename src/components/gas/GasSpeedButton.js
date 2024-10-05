@@ -18,7 +18,7 @@ import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { isL2Chain } from '@/handlers/web3';
 import { add, greaterThan, toFixedDecimals } from '@/helpers/utilities';
 import { getCrossChainTimeEstimate } from '@/utils/crossChainTimeEstimates';
-import { useAccountSettings, useColorForAsset, useGas, usePrevious, useSwapCurrencies } from '@/hooks';
+import { useAccountSettings, useColorForAsset, useGas, usePrevious } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
@@ -154,7 +154,7 @@ const GasSpeedButton = ({
   const rawColorForAsset = useColorForAsset(asset || {}, fallbackColor, false, true);
   const [isLongWait, setIsLongWait] = useState(false);
 
-  const { inputCurrency, outputCurrency } = useSwapCurrencies();
+  // const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
   const { gasFeeParamsBySpeed, updateGasFeeOption, selectedGasFee, selectedGasFeeOption, currentBlockParams } = useGas();
 
@@ -326,7 +326,7 @@ const GasSpeedButton = ({
         nativeAsset,
       });
     }
-  }, [chainId, crossChainServiceTime, inputCurrency, navigate, outputCurrency]);
+  }, [chainId, crossChainServiceTime, navigate]);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {

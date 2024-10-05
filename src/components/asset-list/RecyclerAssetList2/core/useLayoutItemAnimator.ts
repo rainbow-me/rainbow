@@ -2,9 +2,10 @@ import { MutableRefObject, useMemo } from 'react';
 import { LayoutAnimation, LayoutAnimationConfig } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BaseItemAnimator } from 'recyclerlistview';
-import { FabWrapperBottomPosition, FloatingActionButtonSize } from '../../../fab';
-import { ListFooter } from '../../../list';
-import { AssetListHeaderHeight } from '../../AssetListHeader';
+import { FabWrapperBottomPosition } from '@/components/asset-list/AssetList';
+import { FloatingActionButtonSize } from '@/components/fab';
+import { ListFooter } from '@/components/list';
+import { AssetListHeaderHeight } from '@/components/asset-list/AssetListHeader';
 import { RecyclerListViewRef } from './ViewTypes';
 import { deviceUtils } from '@/utils';
 

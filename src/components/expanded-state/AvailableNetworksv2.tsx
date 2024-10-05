@@ -73,8 +73,6 @@ const AvailableNetworksv2 = ({
       newAsset.address = networks?.[chainId].address;
       newAsset.chainId = chainId;
 
-      goBack();
-
       const uniqueId = `${newAsset.address}_${asset.chainId}`;
       const userAsset = userAssetsStore.getState().userAssets.get(uniqueId);
 
@@ -117,6 +115,7 @@ const AvailableNetworksv2 = ({
       swapsStore.setState({ outputAsset: parsedAsset });
 
       InteractionManager.runAfterInteractions(() => {
+        goBack();
         navigate(Routes.SWAP);
       });
     },

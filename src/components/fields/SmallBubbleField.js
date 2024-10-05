@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { useTheme } from '../../theme/ThemeContext';
-import { ExchangeInput } from '../exchange';
-import { Column, Row } from '../layout';
-import { Text } from '../text';
+import { useTheme } from '@/theme';
+import { ExchangeInput } from '@/components/ExchangeInput';
+import { Column, Row } from '@/components/layout';
+import { Text } from '@/components/text';
 import { useDimensions } from '@/hooks';
 import styled from '@/styled-thing';
 const BubbleInput = styled(ExchangeInput).attrs(({ isSmallPhone, isTinyPhone, theme: { isDarkMode } }) => ({

@@ -15,22 +15,23 @@ import { Box, Inline, Stack, Text, TextIcon, useColorMode } from '@/design-syste
 import { palettes } from '@/design-system/color/palettes';
 import * as i18n from '@/languages';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { swapsStore } from '@/state/swaps/swapsStore';
+import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import React, { memo, useCallback, useMemo } from 'react';
 import Animated, { runOnUI, useAnimatedProps, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { EXPANDED_INPUT_HEIGHT, FOCUSED_INPUT_HEIGHT } from '../../constants';
 import { ChainSelection } from './ChainSelection';
+import { fetchSuggestions } from '@/handlers/ens';
 
 export const BUY_LIST_HEADER_HEIGHT = 20 + 10 + 8; // paddingTop + height + paddingBottom
 
-interface SectionHeaderProp {
+export interface SectionHeaderProp {
   color: string | undefined;
   symbol: string;
   title: string;
 }
 
-const SECTION_HEADER_INFO: { [id in AssetToBuySectionId]: SectionHeaderProp } = {
+export const SECTION_HEADER_INFO: { [id in AssetToBuySectionId]: SectionHeaderProp } = {
   popular: {
     title: i18n.t(i18n.l.token_search.section_header.popular),
     symbol: '􀙬',
@@ -56,6 +57,11 @@ const SECTION_HEADER_INFO: { [id in AssetToBuySectionId]: SectionHeaderProp } = 
     symbol: '􀇻',
     color: 'rgba(38, 143, 255, 1)',
   },
+  profiles: {
+    title: i18n.t(i18n.l.discover.search.profiles),
+    symbol: '􀉮',
+    color: palettes.dark.foregroundColors.purple,
+  },
   unverified: {
     title: i18n.t(i18n.l.token_search.section_header.unverified),
     symbol: '􀇿',
@@ -70,9 +76,17 @@ const SECTION_HEADER_INFO: { [id in AssetToBuySectionId]: SectionHeaderProp } = 
 
 export type HeaderItem = { listItemType: 'header'; id: AssetToBuySectionId; data: SearchAsset[] };
 export type CoinRowItem = SearchAsset & { listItemType: 'coinRow'; sectionId: AssetToBuySectionId };
-export type TokenToBuyListItem = HeaderItem | CoinRowItem;
+export type ProfileRowItem = Awaited<ReturnType<typeof fetchSuggestions>>[number] & {
+  listItemType: 'profileRow';
+  sectionId: AssetToBuySectionId;
+};
+export type TokenToBuyListItem = HeaderItem | CoinRowItem | ProfileRowItem;
 
-const getItemLayout = (data: ArrayLike<TokenToBuyListItem> | null | undefined, index: number) => {
+export const getFormattedTestId = (name: string, chainId: ChainId) => {
+  return `token-to-buy-${name}-${chainId}`.toLowerCase().replace(/\s+/g, '-');
+};
+
+export const getItemLayout = (data: ArrayLike<TokenToBuyListItem> | null | undefined, index: number) => {
   if (!data) return { length: 0, offset: 0, index };
 
   const item = data[index];
@@ -94,7 +108,13 @@ const getItemLayout = (data: ArrayLike<TokenToBuyListItem> | null | undefined, i
 
 export const TokenToBuyList = () => {
   const { internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, outputProgress, setAsset } = useSwapContext();
-  const { results: sections, isLoading } = useSearchCurrencyLists();
+
+  const outputSearchQuery = useSwapsStore(state => state.outputSearchQuery.trim().toLowerCase());
+  const { results: sections, isLoading } = useSearchCurrencyLists({
+    assetToSell: internalSelectedInputAsset.value,
+    selectedOutputChainId: internalSelectedOutputAsset.value?.chainId ?? ChainId.mainnet,
+    searchQuery: outputSearchQuery,
+  });
 
   const handleSelectToken = useCallback(
     (token: SearchAsset) => {
@@ -120,17 +140,15 @@ export const TokenToBuyList = () => {
         asset: parsedAsset,
       });
 
-      const { outputSearchQuery } = swapsStore.getState();
-
       // track what search query the user had prior to selecting an asset
-      if (outputSearchQuery.trim().length) {
+      if (outputSearchQuery) {
         analyticsV2.track(analyticsV2.event.swapsSearchedForToken, {
           query: outputSearchQuery,
           type: 'output',
         });
       }
     },
-    [internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, setAsset]
+    [internalSelectedInputAsset.value, internalSelectedOutputAsset.value?.uniqueId, isFetching, isQuoteStale, outputSearchQuery, setAsset]
   );
 
   const animatedListPadding = useAnimatedStyle(() => {
@@ -148,10 +166,6 @@ export const TokenToBuyList = () => {
 
   if (isLoading) return null;
 
-  const getFormattedTestId = (name: string, chainId: ChainId) => {
-    return `token-to-buy-${name}-${chainId}`.toLowerCase().replace(/\s+/g, '-');
-  };
-
   return (
     <Box style={{ height: EXPANDED_INPUT_HEIGHT - 77, width: DEVICE_WIDTH - 24 }} testID={'token-to-buy-list'}>
       <FlatList
@@ -165,8 +179,14 @@ export const TokenToBuyList = () => {
         keyExtractor={item => `${item.listItemType}-${item.listItemType === 'coinRow' ? item.uniqueId : item.id}`}
         renderItem={({ item }) => {
           if (item.listItemType === 'header') {
+            if (item.id !== 'profiles') return null;
+
             return <TokenToBuySectionHeader section={{ data: item.data, id: item.id }} />;
           }
+          if (item.listItemType === 'profileRow') {
+            return null;
+          }
+
           return (
             <CoinRow
               testID={getFormattedTestId(item.name, item.chainId)}
@@ -204,7 +224,7 @@ interface TokenToBuySectionHeaderProps {
   section: { id: AssetToBuySectionId; data: SearchAsset[] };
 }
 
-const TokenToBuySectionHeader = memo(function TokenToBuySectionHeader({ section }: TokenToBuySectionHeaderProps) {
+export const TokenToBuySectionHeader = memo(function TokenToBuySectionHeader({ section }: TokenToBuySectionHeaderProps) {
   const { symbol, title } = SECTION_HEADER_INFO[section.id];
 
   const iconColor = useMemo(() => {
@@ -236,7 +256,7 @@ const TokenToBuySectionHeader = memo(function TokenToBuySectionHeader({ section 
   );
 });
 
-const BridgeHeaderIcon = memo(function BridgeHeaderIcon() {
+export const BridgeHeaderIcon = memo(function BridgeHeaderIcon() {
   const { isDarkMode } = useColorMode();
   const { selectedOutputChainId } = useSwapContext();
 

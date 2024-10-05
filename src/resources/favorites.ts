@@ -4,7 +4,7 @@ import { getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
 import { NativeCurrencyKeys, RainbowToken } from '@/entities';
 import { createQueryKey, queryClient } from '@/react-query';
 import { DAI_ADDRESS, ETH_ADDRESS, SOCKS_ADDRESS, WBTC_ADDRESS, WETH_ADDRESS } from '@/references';
-import { promiseUtils } from '@/utils';
+import { haptics, promiseUtils } from '@/utils';
 import { useQuery } from '@tanstack/react-query';
 import { omit } from 'lodash';
 import { externalTokenQueryKey, fetchExternalToken } from './assets/externalAssetsQuery';
@@ -121,9 +121,11 @@ export async function toggleFavorite(address: string, chainId = ChainId.mainnet)
   const uniqueId = getUniqueId(lowercasedAddress, chainId);
   if (Object.keys(favorites || {}).includes(uniqueId)) {
     queryClient.setQueryData(favoritesQueryKey, omit(favorites, uniqueId));
+    haptics.selection();
   } else {
     const metadata = await fetchMetadata([lowercasedAddress], chainId);
     queryClient.setQueryData(favoritesQueryKey, { ...favorites, ...metadata });
+    haptics.notificationSuccess();
   }
 }
 
