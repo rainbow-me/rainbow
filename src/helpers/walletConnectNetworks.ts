@@ -6,7 +6,7 @@ import { chainsLabel, defaultChains, supportedWalletConnectChainIds } from '@/ch
 import { isL2Chain } from '@/handlers/web3';
 import { MenuActionConfig } from 'react-native-ios-context-menu';
 
-const walletConnectChains = supportedWalletConnectChainIds.map(chainId => defaultChains[chainId]);
+const walletConnectChains = supportedWalletConnectChainIds.map(chainId => defaultChains[chainId]).filter(chain => chain !== null);
 
 const androidNetworkActions = () => {
   const { testnetsEnabled } = store.getState().settings;
