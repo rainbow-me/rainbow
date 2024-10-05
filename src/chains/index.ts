@@ -9,7 +9,7 @@ import { IS_TEST } from '@/env';
 import buildTimeNetworks from '@/references/networks.json';
 
 // NOTE: Prefer runtime data from backendNetworksQueryKey, but fallback to buildTimeNetworks if needed
-const backendNetworks = queryClient.getQueryData<BackendNetworksResponse>(backendNetworksQueryKey()) ?? buildTimeNetworks;
+const backendNetworks = buildTimeNetworks;
 
 const BACKEND_CHAINS = transformBackendNetworksToChains(backendNetworks.networks);
 
