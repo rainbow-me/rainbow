@@ -9,7 +9,7 @@ import {
   SLIDER_WIDTH,
   STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS,
 } from '@/__swaps__/screens/Swap/constants';
-import { ChainId } from '@/chains/types';
+import { ChainId, ChainName } from '@/chains/types';
 import { isLowerCaseMatchWorklet } from '@/__swaps__/utils/strings';
 import { globalColors } from '@/design-system';
 import { ForegroundColor, palettes } from '@/design-system/color/palettes';
@@ -341,17 +341,15 @@ export const opacityWorklet = (color: string, opacity: number) => {
 // /---- END worklet utils ----/ //
 
 export const DEFAULT_SLIPPAGE_BIPS = {
-  [ChainId.apechain]: 200,
+  [ChainId.mainnet]: 100,
+  [ChainId.polygon]: 200,
+  [ChainId.bsc]: 200,
+  [ChainId.optimism]: 200,
+  [ChainId.base]: 200,
+  [ChainId.zora]: 200,
   [ChainId.arbitrum]: 200,
   [ChainId.avalanche]: 200,
-  [ChainId.base]: 200,
   [ChainId.blast]: 200,
-  [ChainId.bsc]: 200,
-  [ChainId.degen]: 200,
-  [ChainId.mainnet]: 100,
-  [ChainId.optimism]: 200,
-  [ChainId.polygon]: 200,
-  [ChainId.zora]: 200,
 };
 
 export const slippageInBipsToString = (slippageInBips: number) => (slippageInBips / 100).toFixed(1);

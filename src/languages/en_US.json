@@ -936,16 +936,12 @@
         "title": "What's Avalanche"
       },
       "degen": {
-        "text": "Degen Chain is a Layer 3 network that runs on top of Arbitrum Orbit and Ethereum.",
+        "text": "Degen Chain is a Layer 3 network that runs on top of Arbitrum and Ethereum, offering incredibly fast and cheap transactions denominated in the Farcaster community token $degen.",
         "title": "What's Degen Chain?"
       },
       "blast": {
         "text": "Blast is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",
         "title": "What's Blast?"
-      },
-      "apechain": {
-        "text": "ApeChain is a Layer 3 network that runs on top of Arbitrum Orbit and Ethereum. It significantly enhances ApeCoin's utility, fostering a robust and dynamic economy driven by $APE.",
-        "title": "What's ApeChain?"
       },
       "zora": {
         "text": "Zora is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.\n\nIt bundles lots of transactions together in a \"roll up\" before sending them down to live permanently on Ethereum.",

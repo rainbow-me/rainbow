@@ -5,6 +5,7 @@ import { TokenSearchThreshold, TokenSearchTokenListId, TokenSearchUniswapAssetKe
 import { logger, RainbowError } from '@/logger';
 import { EthereumAddress } from '@rainbow-me/swaps';
 import { RainbowToken, TokenSearchToken } from '@/entities/tokens';
+import ethereumUtils from '@/utils/ethereumUtils';
 import { chainsName } from '@/chains';
 
 type TokenSearchApiResponse = {

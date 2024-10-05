@@ -42,7 +42,6 @@ import { Address } from 'viem';
 import { IS_DEV } from '@/env';
 import { prefetchDefaultFavorites } from '@/resources/favorites';
 import Routes from '@/navigation/Routes';
-import { BackendNetworks } from '@/components/BackendNetworks';
 
 if (IS_DEV) {
   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
@@ -82,7 +81,6 @@ function App({ walletReady }: AppProps) {
       <NotificationsHandler walletReady={walletReady} />
       <DeeplinkHandler initialRoute={initialRoute} walletReady={walletReady} />
       <AppStateChangeHandler walletReady={walletReady} />
-      <BackendNetworks />
     </Portal>
   );
 }

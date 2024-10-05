@@ -199,7 +199,6 @@ const getColorsByTheme = (darkMode?: boolean) => {
     [ChainId.avalanche]: '#E84142',
     [ChainId.degen]: '#A36EFD',
     [ChainId.blast]: '#25292E',
-    [ChainId.apechain]: '#0054FA',
   };
 
   let gradients = {
@@ -342,7 +341,6 @@ const getColorsByTheme = (darkMode?: boolean) => {
       [ChainId.avalanche]: '#FF5D5E',
       [ChainId.degen]: '#A36EFD',
       [ChainId.blast]: '#FCFC03',
-      [ChainId.apechain]: '#397BFF',
     };
   }
 

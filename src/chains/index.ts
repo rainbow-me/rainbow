@@ -1,15 +1,12 @@
 import { Chain } from 'viem/chains';
-import { queryClient } from '@/react-query';
-import { backendNetworksQueryKey, BackendNetworksResponse } from '@/resources/metadata/backendNetworks';
+
+import backendNetworks from '../references/networks.json';
+
 import { ChainId, BackendNetwork, BackendNetworkServices, chainHardhat, chainHardhatOptimism } from './types';
 import { transformBackendNetworksToChains } from './utils/backendNetworks';
 import { gasUtils } from '@/utils';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 import { IS_TEST } from '@/env';
-import buildTimeNetworks from '@/references/networks.json';
-
-// NOTE: Prefer runtime data from backendNetworksQueryKey, but fallback to buildTimeNetworks if needed
-const backendNetworks = buildTimeNetworks;
 
 const BACKEND_CHAINS = transformBackendNetworksToChains(backendNetworks.networks);
 
@@ -108,8 +105,6 @@ export const chainsSwapPollingInterval: Record<ChainId, number> = backendNetwork
 
 const defaultSimplehashNetworks = (chainId: ChainId) => {
   switch (chainId) {
-    case ChainId.apechain:
-      return 'apechain';
     case ChainId.arbitrum:
       return 'arbitrum';
     case ChainId.avalanche:
@@ -173,7 +168,6 @@ export const supportedTokenSearchChainIds = filterChainIdsByService(services => 
 export const supportedNftChainIds = filterChainIdsByService(services => services.nftProxy.enabled);
 
 export const supportedWalletConnectChainIds = [
-  ChainId.apechain,
   ChainId.arbitrum,
   ChainId.avalanche,
   ChainId.base,
