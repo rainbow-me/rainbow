@@ -4,7 +4,7 @@ import { analytics } from '@/analytics';
 import { ChainId } from '@/chains/types';
 import React, { createContext, Dispatch, SetStateAction, RefObject, useState, useRef, useCallback } from 'react';
 import { FlatList, TextInput } from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated, { useSharedValue } from 'react-native-reanimated';
 
 type DiscoverScreenContextType = {
   flatListRef: RefObject<FlatList<TokenToBuyListItem>>;
@@ -39,12 +39,14 @@ const DiscoverScreenProvider = ({ children }: { children: React.ReactNode }) => 
   const [searchQuery, setSearchQuery] = useState('');
   const searchInputRef = useRef<TextInput>(null);
 
+  const selectedOutputChainId = useSharedValue(ChainId.mainnet);
+
   const flatListRef = useRef<FlatList>(null);
   const scrollViewRef = useRef<Animated.ScrollView>(null);
 
   const { isLoading, results: sections } = useSearchCurrencyLists({
     assetToSell: null,
-    selectedOutputChainId: ChainId.mainnet,
+    selectedOutputChainId,
     searchQuery,
     searchProfiles: true,
   });

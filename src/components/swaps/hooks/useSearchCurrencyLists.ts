@@ -10,7 +10,7 @@ import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { isAddress } from '@ethersproject/address';
 import { rankings } from 'match-sorter';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
+import { runOnJS, SharedValue, useAnimatedReaction } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 import { TokenToBuyListItem } from '@/components/swaps/TokenToBuyList';
 import { RecentSwap } from '@/components/swaps/types/swap';
@@ -267,7 +267,7 @@ export function useSearchCurrencyLists({
   searchProfiles = false,
 }: {
   assetToSell: ExtendedAnimatedAssetWithColors | null;
-  selectedOutputChainId: ChainId;
+  selectedOutputChainId: SharedValue<ChainId>;
   searchQuery: string;
   searchProfiles?: boolean;
 }) {
@@ -275,8 +275,8 @@ export function useSearchCurrencyLists({
 
   const [state, setState] = useState<State>({
     fromChainId: assetToSell ? assetToSell.chainId ?? ChainId.mainnet : undefined,
-    isCrosschainSearch: assetToSell ? assetToSell.chainId !== selectedOutputChainId : false,
-    toChainId: selectedOutputChainId ?? ChainId.mainnet,
+    isCrosschainSearch: assetToSell ? assetToSell.chainId !== selectedOutputChainId.value : false,
+    toChainId: selectedOutputChainId.value ?? ChainId.mainnet,
     profiles: [],
   });
 
@@ -291,8 +291,8 @@ export function useSearchCurrencyLists({
 
   useAnimatedReaction(
     () => ({
-      isCrosschainSearch: assetToSell ? assetToSell.chainId !== selectedOutputChainId : false,
-      toChainId: selectedOutputChainId ?? ChainId.mainnet,
+      isCrosschainSearch: assetToSell ? assetToSell.chainId !== selectedOutputChainId.value : false,
+      toChainId: selectedOutputChainId.value ?? ChainId.mainnet,
     }),
     (current, previous) => {
       const toChainIdChanged = previous && current.toChainId !== previous.toChainId;
@@ -384,12 +384,12 @@ export function useSearchCurrencyLists({
     const threshold: TokenSearchThreshold = queryIsAddress ? 'CASE_SENSITIVE_EQUAL' : 'CONTAINS';
     const enableUnverifiedSearch = searchQuery.length > 2;
 
-    const inputAssetBridgedToSelectedChainAddress = assetToSell?.networks?.[selectedOutputChainId]?.address;
+    const inputAssetBridgedToSelectedChainAddress = assetToSell?.networks?.[selectedOutputChainId.value]?.address;
 
     const bridgeAsset =
       state.isCrosschainSearch && inputAssetBridgedToSelectedChainAddress
         ? verifiedAssets?.find(
-            asset => asset.address === inputAssetBridgedToSelectedChainAddress && asset.chainId === selectedOutputChainId
+            asset => asset.address === inputAssetBridgedToSelectedChainAddress && asset.chainId === selectedOutputChainId.value
           )
         : null;
 
@@ -468,7 +468,7 @@ export function useSearchCurrencyLists({
   }, [debouncedStateSet, profiles, searchProfiles]);
 
   return useMemo(() => {
-    const toChainId = selectedOutputChainId ?? ChainId.mainnet;
+    const toChainId = selectedOutputChainId.value ?? ChainId.mainnet;
     const bridgeResult = memoizedData.filteredBridgeAsset ?? undefined;
     const crosschainMatches = searchQuery === '' ? undefined : verifiedAssets?.filter(asset => asset.chainId !== toChainId);
     const verifiedResults = searchQuery === '' ? verifiedAssets : verifiedAssets?.filter(asset => asset.chainId === toChainId);

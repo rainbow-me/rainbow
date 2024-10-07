@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { useTheme } from '@/theme';
-import { ExchangeInput } from '@/components/ExchangeInput';
+import ExchangeInput from '@/components/ExchangeInput';
 import { Column, Row } from '@/components/layout';
 import { Text } from '@/components/text';
 import { useDimensions } from '@/hooks';

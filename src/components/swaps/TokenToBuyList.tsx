@@ -107,12 +107,20 @@ export const getItemLayout = (data: ArrayLike<TokenToBuyListItem> | null | undef
 };
 
 export const TokenToBuyList = () => {
-  const { internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, outputProgress, setAsset } = useSwapContext();
+  const {
+    internalSelectedInputAsset,
+    internalSelectedOutputAsset,
+    selectedOutputChainId,
+    isFetching,
+    isQuoteStale,
+    outputProgress,
+    setAsset,
+  } = useSwapContext();
 
   const outputSearchQuery = useSwapsStore(state => state.outputSearchQuery.trim().toLowerCase());
   const { results: sections, isLoading } = useSearchCurrencyLists({
     assetToSell: internalSelectedInputAsset.value,
-    selectedOutputChainId: internalSelectedOutputAsset.value?.chainId ?? ChainId.mainnet,
+    selectedOutputChainId,
     searchQuery: outputSearchQuery,
   });
 
@@ -187,8 +195,7 @@ export const TokenToBuyList = () => {
         }}
         renderItem={({ item }) => {
           if (item.listItemType === 'header') {
-            if (item.id !== 'profiles') return null;
-
+            if (item.id === 'profiles') return null;
             return <TokenToBuySectionHeader section={{ data: item.data, id: item.id }} />;
           }
           if (item.listItemType === 'profileRow') {
