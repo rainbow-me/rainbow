@@ -222,8 +222,6 @@ export function WalletConnectApprovalSheet() {
     };
   }, [walletNames, approvalAccount.wallet, approvalAccount.address]);
 
-  console.log({ initialApprovalAccount, approvalAccountInfo });
-
   /**
    * In WC v1 this was the network the dapp was requesting, which was editable
    * by the end-user on this approval screen. In v2, the dapp choses one or
