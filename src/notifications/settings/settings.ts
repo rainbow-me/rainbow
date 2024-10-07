@@ -99,6 +99,15 @@ export const toggleGlobalNotificationTopic = async (topic: GlobalNotificationTop
   return success;
 };
 
+// used only for DevSection clearing of storage
+export const unsubscribeAllNotifications = () => {
+  return publishAndSaveNotificationSettings({
+    globalSettings: {},
+    walletSettings: [],
+    skipPreSave: true,
+  });
+};
+
 export const publishAndSaveNotificationSettings = async ({
   globalSettings,
   walletSettings,
