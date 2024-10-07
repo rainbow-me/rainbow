@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { Web3WalletTypes } from '@walletconnect/web3wallet';
 
 import { Box, Text, Separator, BackgroundProvider, AccentColorProvider } from '@/design-system';
 import ButtonPressAnimation from '@/components/animations/ButtonPressAnimation';
@@ -19,13 +18,14 @@ import { Verify } from '@walletconnect/types';
 import { useDappMetadata } from '@/resources/metadata/dapp';
 import { DAppStatus } from '@/graphql/__generated__/metadata';
 import { InfoAlert } from '@/components/info-alert/info-alert';
+import { WalletKitTypes } from '@reown/walletkit';
 
 export function AuthRequest({
   requesterMeta,
   authenticate,
   verifiedData,
 }: {
-  requesterMeta: Web3WalletTypes.AuthRequest['params']['requester']['metadata'];
+  requesterMeta: WalletKitTypes.SessionProposal['params']['proposer']['metadata'];
   authenticate: AuthRequestAuthenticateSignature;
   verifiedData?: Verify.Context['verified'];
 }) {
