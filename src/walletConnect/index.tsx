@@ -44,7 +44,7 @@ import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 import { PerformanceMetrics } from '@/performance/tracking/types/PerformanceMetrics';
 import { PerformanceTracking } from '@/performance/tracking';
 import { ChainId } from '@/chains/types';
-import { supportedWalletConnectChainIds } from '@/chains';
+import { SUPPORTED_CHAIN_IDS } from '@/chains';
 
 const SUPPORTED_SESSION_EVENTS = ['chainChanged', 'accountsChanged'];
 
@@ -446,7 +446,7 @@ export async function onSessionProposal(proposal: Web3WalletTypes.SessionProposa
 
     // we already checked for eip155 namespace above
     const chainIds = chains?.map(chain => parseInt(chain.split('eip155:')[1]));
-    const supportedChainIds = chainIds.filter(chainId => supportedWalletConnectChainIds.includes(chainId));
+    const supportedChainIds = chainIds.filter(chainId => SUPPORTED_CHAIN_IDS.includes(chainId));
 
     const peerMeta = proposer.metadata;
     const metadata = await fetchDappMetadata({ url: peerMeta.url, status: true });
@@ -486,7 +486,7 @@ export async function onSessionProposal(proposal: Web3WalletTypes.SessionProposa
           const supportedEvents = requiredNamespaces?.eip155?.events || SUPPORTED_SESSION_EVENTS;
 
           /** @see https://chainagnostic.org/CAIPs/caip-2 */
-          const caip2ChainIds = supportedWalletConnectChainIds.map(id => `eip155:${id}`);
+          const caip2ChainIds = SUPPORTED_CHAIN_IDS.map(id => `eip155:${id}`);
           const namespaces = getApprovedNamespaces({
             proposal: proposal.params,
             supportedNamespaces: {

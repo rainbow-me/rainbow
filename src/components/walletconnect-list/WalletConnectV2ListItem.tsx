@@ -25,7 +25,7 @@ import { Box, Inline } from '@/design-system';
 import ChainBadge from '@/components/coin-icon/ChainBadge';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 import { ChainId } from '@/chains/types';
-import { supportedWalletConnectChainIds } from '@/chains';
+import { SUPPORTED_CHAIN_IDS } from '@/chains';
 
 const CONTAINER_PADDING = 15;
 const VENDOR_LOGO_ICON_SIZE = 50;
@@ -78,8 +78,7 @@ export function WalletConnectV2ListItem({ session, reload }: { session: SessionT
   const chains = useMemo(() => namespaces?.eip155?.chains || [], [namespaces]);
   const chainIds = useMemo(
     () =>
-      (chains?.map(chain => parseInt(chain.split(':')[1]))?.filter(chainId => supportedWalletConnectChainIds.includes(chainId)) ??
-        []) as ChainId[],
+      (chains?.map(chain => parseInt(chain.split(':')[1]))?.filter(chainId => SUPPORTED_CHAIN_IDS.includes(chainId)) ?? []) as ChainId[],
     [chains]
   );
 

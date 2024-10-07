@@ -16,7 +16,7 @@ import { analytics } from '@/analytics';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
 import { getDappHostname } from '@/helpers/dappNameHandler';
 import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
-import { NETWORK_MENU_ACTION_KEY_FILTER, networksMenuItems, walletConnectSupportedChains } from '@/helpers/walletConnectNetworks';
+import { NETWORK_MENU_ACTION_KEY_FILTER, networksMenuItems } from '@/helpers/walletConnectNetworks';
 import { useAccountSettings, useWallets } from '@/hooks';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -31,7 +31,6 @@ import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { ChainId } from '@/chains/types';
 import { chainsLabel, chainsNativeAsset, defaultChains } from '@/chains';
-import { isL2Chain } from '@/handlers/web3';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { noop } from 'lodash';
 import { RootStackParamList } from '@/navigation/types';
@@ -79,29 +78,14 @@ const NetworkPill = ({ chainIds }: { chainIds: ChainId[] }) => {
 
   const availableNetworkChainIds = useMemo(() => chainIds.sort(chainId => (chainId === ChainId.mainnet ? -1 : 1)), [chainIds]);
 
-  const networkMenuItems = useMemo(() => {
-    walletConnectSupportedChains
-      .filter(({ id }) => chainIds.includes(id))
-      .map(chain => ({
-        actionKey: chain.id,
-        actionTitle: chainsLabel[chain.id],
-        icon: {
-          iconType: 'ASSET',
-          iconValue: `${isL2Chain({ chainId: chain.id }) ? `${chain.name}BadgeNoShadow` : 'ethereumBadge'}`,
-        },
-      }));
-  }, [chainIds]);
-
   if (availableNetworkChainIds.length === 0) return null;
 
   return (
     <ContextMenuButton
-      // @ts-expect-error overloaded props ContextMenuButton
-      menuConfig={{ menuItems: networkMenuItems, menuTitle: '' }}
+      menuConfig={{ menuItems: networksMenuItems(), menuTitle: '' }}
       isMenuPrimaryAction
       onPressMenuItem={noop}
       useActionSheetFallback={false}
-      width="100%"
     >
       <Box
         as={ButtonPressAnimation}

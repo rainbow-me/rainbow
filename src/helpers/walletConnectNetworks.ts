@@ -2,17 +2,15 @@ import store from '@/redux/store';
 import { showActionSheetWithOptions } from '@/utils';
 import * as i18n from '@/languages';
 import { ChainId } from '@/chains/types';
-import { chainsLabel, defaultChains, supportedWalletConnectChainIds } from '@/chains';
+import { chainsLabel, defaultChains } from '@/chains';
 import { isL2Chain } from '@/handlers/web3';
 import { MenuActionConfig } from 'react-native-ios-context-menu';
 
-export const walletConnectSupportedChains = supportedWalletConnectChainIds
-  .map(chainId => defaultChains[chainId])
-  .filter(chain => chain !== undefined);
-
 const androidNetworkActions = () => {
   const { testnetsEnabled } = store.getState().settings;
-  return walletConnectSupportedChains.filter(chain => testnetsEnabled || !chain.testnet).map(chain => chain.id);
+  return Object.values(defaultChains)
+    .filter(chain => testnetsEnabled || !chain.testnet)
+    .map(chain => chain.id);
 };
 
 export const NETWORK_MENU_ACTION_KEY_FILTER = 'switch-to-network-';
@@ -20,7 +18,7 @@ export const NETWORK_MENU_ACTION_KEY_FILTER = 'switch-to-network-';
 export const networksMenuItems: () => MenuActionConfig[] = () => {
   const { testnetsEnabled } = store.getState().settings;
 
-  return walletConnectSupportedChains
+  return Object.values(defaultChains)
     .filter(chain => testnetsEnabled || !chain.testnet)
     .map(chain => ({
       actionKey: `${NETWORK_MENU_ACTION_KEY_FILTER}${chain.id}`,
@@ -78,10 +76,10 @@ export const androidShowNetworksActionSheet = (callback: any) => {
       showSeparators: true,
       title: i18n.t(i18n.l.walletconnect.menu_options.available_networks),
     },
-    (idx: any) => {
+    (idx: number) => {
       if (idx !== undefined) {
         const networkActions = androidNetworkActions();
-        const chain = walletConnectSupportedChains.find(chain => chain.id === networkActions[idx]) || defaultChains[ChainId.mainnet];
+        const chain = defaultChains[networkActions[idx]] || defaultChains[ChainId.mainnet];
         callback({ chainId: chain.id });
       }
     }
