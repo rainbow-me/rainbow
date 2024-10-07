@@ -6,7 +6,7 @@ import { useSwapContext } from '@/components/swaps/providers/SwapProvider';
 import { ChainId } from '@/chains/types';
 import { SearchAsset } from '@/components/swaps/types/search';
 import { SwapAssetType } from '@/components/swaps/types/swap';
-import { parseSearchAsset } from '@/resources/assets/assets';
+import { parseSearchAsset } from '@/components/swaps/utils/assets';
 import { getChainColorWorklet, getStandardizedUniqueIdWorklet } from '@/components/swaps/utils/swaps';
 import { analyticsV2 } from '@/analytics';
 import { AnimatedTextIcon } from '@/components/AnimatedComponents/AnimatedTextIcon';

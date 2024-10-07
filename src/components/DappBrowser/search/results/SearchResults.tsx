@@ -48,11 +48,11 @@ const search = (query: string, dapps: Dapp[], numberOfResults = 4): Dapp[] => {
 
       return relevance > 0.5 ? { ...dapp, relevance } : null;
     })
-    .filter(dapp => dapp !== null)
+    .filter((dapp): dapp is Dapp & { relevance: number } => dapp !== null)
     .sort((a, b) => {
       // Prioritize trending
-      if (b?.trending === true && a?.trending !== true) return 1;
-      if (a?.trending === true && b?.trending !== true) return -1;
+      if (b.trending === true && a.trending !== true) return 1;
+      if (a.trending === true && b.trending !== true) return -1;
 
       const relevanceDiff = b.relevance - a.relevance;
       if (relevanceDiff === 0) {
@@ -65,10 +65,10 @@ const search = (query: string, dapps: Dapp[], numberOfResults = 4): Dapp[] => {
     .slice(0, numberOfResults);
 
   // if the query is a valid URL and is not already in the results, add it to the results
-  if (isValidURLWorklet(query) && !filteredDapps.some(dapp => dapp?.urlDisplay.startsWith(query))) {
+  if (isValidURLWorklet(query) && !filteredDapps.some(dapp => dapp.urlDisplay.startsWith(query))) {
     const shouldTrimLastResult = filteredDapps.length === numberOfResults && DEVICE_HEIGHT <= deviceUtils.iPhone15ProHeight;
     const dappResults = shouldTrimLastResult ? filteredDapps.slice(0, numberOfResults - 1) : filteredDapps;
-    return [{ url: query, urlDisplay: query, name: query, isDirect: true } as unknown as Dapp, ...(dappResults as Dapp[])];
+    return [{ url: query, urlDisplay: query, name: query, isDirect: true } as Dapp, ...dappResults];
   }
 
   return filteredDapps;

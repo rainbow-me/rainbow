@@ -243,7 +243,7 @@ export function NFTSingleOfferSheet() {
     } catch {
       logger.error(new RainbowError('[NFTSingleOfferSheet]: Failed to estimate gas'));
     }
-  }, [accountAddress, feeParam, offerChainId, offer, updateTxFee]);
+  }, [accountAddress, chain, offerChainId, offer.nft.contractAddress, offer.nft.tokenId, feeParam, updateTxFee]);
 
   // estimate gas
   useEffect(() => {
@@ -333,6 +333,7 @@ export function NFTSingleOfferSheet() {
                     nonce: item?.txHashes?.length > 1 ? nonce + 1 : nonce,
                     asset: {
                       ...offer.paymentToken,
+                      network: offer.network as Network,
                       chainId: offerChainId,
                       chainName: chainsName[offerChainId],
                       uniqueId: getUniqueId(offer.paymentToken.address, offerChainId),

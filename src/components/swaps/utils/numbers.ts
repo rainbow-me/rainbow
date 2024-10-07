@@ -1,4 +1,4 @@
-import { BigNumber as EthersBigNumber, BigNumberish } from '@ethersproject/bignumber';
+import { BigNumber as EthersBigNumber } from '@ethersproject/bignumber';
 import BigNumber from 'bignumber.js';
 import currency from 'currency.js';
 import { isNil } from 'lodash';
@@ -6,34 +6,33 @@ import { isNil } from 'lodash';
 import { supportedNativeCurrencies } from '@/references';
 import { divWorklet, lessThanWorklet, orderOfMagnitudeWorklet, powWorklet } from '@/safe-math/SafeMath';
 
+type BigNumberish = number | string | BigNumber;
+
 type nativeCurrencyType = typeof supportedNativeCurrencies;
 
 export const toBigNumber = (v?: string | number | BigNumber) => (v ? EthersBigNumber.from(v) : undefined);
 
-export const abs = (value: BigNumberish): string => new BigNumber(value.toString()).abs().toFixed();
+export const abs = (value: BigNumberish): string => new BigNumber(value).abs().toFixed();
 
-export const isPositive = (value: BigNumberish): boolean => new BigNumber(value.toString()).isPositive();
+export const isPositive = (value: BigNumberish): boolean => new BigNumber(value).isPositive();
 
 export const subtract = (numberOne: BigNumberish, numberTwo: BigNumberish): string =>
-  new BigNumber(numberOne.toString()).minus(new BigNumber(numberTwo.toString())).toFixed();
+  new BigNumber(numberOne).minus(new BigNumber(numberTwo)).toFixed();
 
 export const convertAmountToRawAmount = (value: BigNumberish, decimals: number | string): string =>
-  new BigNumber(value.toString()).times(new BigNumber(10).pow(decimals)).toFixed();
+  new BigNumber(value).times(new BigNumber(10).pow(decimals)).toFixed();
 
-export const isZero = (value: BigNumberish): boolean => new BigNumber(value.toString()).isZero();
+export const isZero = (value: BigNumberish): boolean => new BigNumber(value).isZero();
 
-export const toFixedDecimals = (value: BigNumberish, decimals: number): string => new BigNumber(value.toString()).toFixed(decimals);
+export const toFixedDecimals = (value: BigNumberish, decimals: number): string => new BigNumber(value).toFixed(decimals);
 
-export const convertNumberToString = (value: BigNumberish): string => new BigNumber(value.toString()).toFixed();
+export const convertNumberToString = (value: BigNumberish): string => new BigNumber(value).toFixed();
 
-export const greaterThan = (numberOne: BigNumberish, numberTwo: BigNumberish): boolean =>
-  new BigNumber(numberOne.toString()).gt(numberTwo.toString());
+export const greaterThan = (numberOne: BigNumberish, numberTwo: BigNumberish): boolean => new BigNumber(numberOne).gt(numberTwo);
 
-export const greaterThanOrEqualTo = (numberOne: BigNumberish, numberTwo: BigNumberish): boolean =>
-  new BigNumber(numberOne.toString()).gte(numberTwo.toString());
+export const greaterThanOrEqualTo = (numberOne: BigNumberish, numberTwo: BigNumberish): boolean => new BigNumber(numberOne).gte(numberTwo);
 
-export const isEqual = (numberOne: BigNumberish, numberTwo: BigNumberish): boolean =>
-  new BigNumber(numberOne.toString()).eq(numberTwo.toString());
+export const isEqual = (numberOne: BigNumberish, numberTwo: BigNumberish): boolean => new BigNumber(numberOne).eq(numberTwo);
 
 export const formatFixedDecimals = (value: BigNumberish, decimals: number): string => {
   const _value = convertNumberToString(value);
@@ -42,7 +41,7 @@ export const formatFixedDecimals = (value: BigNumberish, decimals: number): stri
 };
 
 export const mod = (numberOne: BigNumberish, numberTwo: BigNumberish): string =>
-  new BigNumber(numberOne.toString()).mod(new BigNumber(numberTwo.toString())).toFixed();
+  new BigNumber(numberOne).mod(new BigNumber(numberTwo)).toFixed();
 
 /**
  * @desc real floor divides two numbers
@@ -51,14 +50,14 @@ export const mod = (numberOne: BigNumberish, numberTwo: BigNumberish): string =>
  * @return {String}
  */
 export const floorDivide = (numberOne: BigNumberish, numberTwo: BigNumberish): string =>
-  new BigNumber(numberOne.toString()).dividedToIntegerBy(new BigNumber(numberTwo.toString())).toFixed();
+  new BigNumber(numberOne).dividedToIntegerBy(new BigNumber(numberTwo)).toFixed();
 
 /**
  * @desc count value's number of decimals places
  * @param  {String}   value
  * @return {String}
  */
-export const countDecimalPlaces = (value: BigNumberish): number => new BigNumber(value.toString()).dp();
+export const countDecimalPlaces = (value: BigNumberish): number => new BigNumber(value).dp();
 
 /**
  * @desc update the amount to display precision
@@ -73,9 +72,9 @@ export const countDecimalPlaces = (value: BigNumberish): number => new BigNumber
 export const updatePrecisionToDisplay = (amount: BigNumberish, nativePrice?: BigNumberish, roundUp = false): string => {
   if (!amount) return '0';
   const roundingMode = roundUp ? BigNumber.ROUND_UP : BigNumber.ROUND_DOWN;
-  if (!nativePrice) return new BigNumber(amount.toString()).decimalPlaces(6, roundingMode).toFixed();
-  const bnAmount = new BigNumber(amount.toString());
-  const significantDigitsOfNativePriceInteger = new BigNumber(nativePrice.toString()).decimalPlaces(0, BigNumber.ROUND_DOWN).sd(true);
+  if (!nativePrice) return new BigNumber(amount).decimalPlaces(6, roundingMode).toFixed();
+  const bnAmount = new BigNumber(amount);
+  const significantDigitsOfNativePriceInteger = new BigNumber(nativePrice).decimalPlaces(0, BigNumber.ROUND_DOWN).sd(true);
   const truncatedPrecision = new BigNumber(significantDigitsOfNativePriceInteger).plus(2, 10).toNumber();
   const truncatedAmount = bnAmount.decimalPlaces(truncatedPrecision, BigNumber.ROUND_DOWN);
   return truncatedAmount.isZero()
@@ -97,11 +96,9 @@ export const formatInputDecimals = (inputOne: BigNumberish, inputTwo: BigNumberi
   return result;
 };
 
-export const add = (numberOne: BigNumberish, numberTwo: BigNumberish): string =>
-  new BigNumber(numberOne.toString()).plus(numberTwo.toString()).toFixed();
+export const add = (numberOne: BigNumberish, numberTwo: BigNumberish): string => new BigNumber(numberOne).plus(numberTwo).toFixed();
 
-export const minus = (numberOne: BigNumberish, numberTwo: BigNumberish): string =>
-  new BigNumber(numberOne.toString()).minus(numberTwo.toString()).toFixed();
+export const minus = (numberOne: BigNumberish, numberTwo: BigNumberish): string => new BigNumber(numberOne).minus(numberTwo).toFixed();
 
 export const addDisplay = (numberOne: string, numberTwo: string): string => {
   const unit = numberOne.replace(/[\d.-]/g, '');
@@ -112,20 +109,19 @@ export const addDisplay = (numberOne: string, numberTwo: string): string => {
     .format();
 };
 
-export const multiply = (numberOne: BigNumberish, numberTwo: BigNumberish): string =>
-  new BigNumber(numberOne.toString()).times(numberTwo.toString()).toFixed();
+export const multiply = (numberOne: BigNumberish, numberTwo: BigNumberish): string => new BigNumber(numberOne).times(numberTwo).toFixed();
 
 export const addBuffer = (numberOne: BigNumberish, buffer: BigNumberish = '1.2'): string =>
-  new BigNumber(numberOne.toString()).times(buffer.toString()).toFixed(0);
+  new BigNumber(numberOne).times(buffer).toFixed(0);
 
 export const divide = (numberOne: BigNumberish, numberTwo: BigNumberish): string => {
   if (!(numberOne || numberTwo)) return '0';
-  return new BigNumber(numberOne.toString()).dividedBy(numberTwo.toString()).toFixed();
+  return new BigNumber(numberOne).dividedBy(numberTwo).toFixed();
 };
 
 export const fraction = (target: BigNumberish, numerator: BigNumberish, denominator: BigNumberish): string => {
   if (!target || !numerator || !denominator) return '0';
-  return new BigNumber(target.toString()).times(numerator.toString()).dividedBy(denominator.toString()).toFixed(0);
+  return new BigNumber(target).times(numerator).dividedBy(denominator).toFixed(0);
 };
 
 /**
@@ -137,16 +133,15 @@ export const fraction = (target: BigNumberish, numerator: BigNumberish, denomina
  */
 export const convertAmountFromNativeValue = (value: BigNumberish, priceUnit: BigNumberish, decimals = 18): string => {
   if (isNil(priceUnit) || isZero(priceUnit)) return '0';
-  return new BigNumber(new BigNumber(value.toString()).dividedBy(priceUnit.toString()).toFixed(decimals, BigNumber.ROUND_DOWN)).toFixed();
+  return new BigNumber(new BigNumber(value).dividedBy(priceUnit).toFixed(decimals, BigNumber.ROUND_DOWN)).toFixed();
 };
 
-export const convertStringToNumber = (value: BigNumberish) => new BigNumber(value.toString()).toNumber();
+export const convertStringToNumber = (value: BigNumberish) => new BigNumber(value).toNumber();
 
-export const lessThan = (numberOne: BigNumberish, numberTwo: BigNumberish): boolean =>
-  new BigNumber(numberOne.toString()).lt(numberTwo.toString());
+export const lessThan = (numberOne: BigNumberish, numberTwo: BigNumberish): boolean => new BigNumber(numberOne).lt(numberTwo);
 
 export const lessOrEqualThan = (numberOne: BigNumberish, numberTwo: BigNumberish): boolean =>
-  new BigNumber(numberOne.toString()).lt(numberTwo.toString()) || new BigNumber(numberOne.toString()).eq(numberTwo.toString());
+  new BigNumber(numberOne).lt(numberTwo) || new BigNumber(numberOne).eq(numberTwo);
 
 export const handleSignificantDecimalsWithThreshold = (value: BigNumberish, decimals: number, threshold = '0.0001') => {
   const result = toFixedDecimals(value, decimals);
@@ -173,19 +168,19 @@ export const handleSignificantDecimalsWorklet = (value: number | string, decimal
 
 export const handleSignificantDecimals = (value: BigNumberish, decimals: number, buffer = 3, skipDecimals = false): string => {
   let dec;
-  if (lessThan(new BigNumber(value.toString()).abs(), 1)) {
-    dec = new BigNumber(value.toString()).toFixed()?.slice?.(2).search(/[^0]/g) + buffer;
+  if (lessThan(new BigNumber(value).abs(), 1)) {
+    dec = new BigNumber(value).toFixed()?.slice?.(2).search(/[^0]/g) + buffer;
     dec = Math.min(dec, 8);
   } else {
     dec = Math.min(decimals, buffer);
   }
-  const result = new BigNumber(new BigNumber(value.toString()).toFixed(dec)).toFixed();
+  const result = new BigNumber(new BigNumber(value).toFixed(dec)).toFixed();
   const resultBN = new BigNumber(result);
   return resultBN.dp() <= 2 ? resultBN.toFormat(skipDecimals ? 0 : 2) : resultBN.toFormat();
 };
 
 export const handleSignificantDecimalsAsNumber = (value: BigNumberish, decimals: number): string => {
-  return new BigNumber(new BigNumber(multiply(value, new BigNumber(10).pow(decimals).toString())).toFixed(0))
+  return new BigNumber(new BigNumber(multiply(value, new BigNumber(10).pow(decimals))).toFixed(0))
     .dividedBy(new BigNumber(10).pow(decimals))
     .toFixed();
 };
@@ -301,7 +296,7 @@ export const convertAmountToPercentageDisplayWithThreshold = (value: BigNumberis
   if (lessThan(value, threshold)) {
     return '< 0.01%';
   } else {
-    const display = new BigNumber(value.toString()).times(100).toFixed(decimals);
+    const display = new BigNumber(value).times(100).toFixed(decimals);
     return `${display}%`;
   }
 };
@@ -311,7 +306,7 @@ export const convertAmountToPercentageDisplayWithThreshold = (value: BigNumberis
  */
 export const convertBipsToPercentage = (value: BigNumberish, decimals = 2): string => {
   if (value === null) return '0';
-  return new BigNumber(value.toString()).shiftedBy(-2).toFixed(decimals);
+  return new BigNumber(value || 0).shiftedBy(-2).toFixed(decimals);
 };
 
 /**
@@ -354,7 +349,7 @@ export const convertAmountToNativeDisplayWorklet = (
  * @desc convert from raw amount to decimal format
  */
 export const convertRawAmountToDecimalFormat = (value: BigNumberish, decimals = 18): string =>
-  new BigNumber(value.toString()).dividedBy(new BigNumber(10).pow(decimals)).toFixed();
+  new BigNumber(value).dividedBy(new BigNumber(10).pow(decimals)).toFixed();
 
 /**
  * @desc convert from decimal format to raw amount

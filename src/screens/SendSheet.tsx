@@ -493,7 +493,7 @@ export default function SendSheet() {
       const gasParams = parseGasParamsForTransaction(selectedGasFee);
       const txDetails: Partial<NewTransaction> = {
         amount: amountDetails.assetAmount,
-        asset: selected,
+        asset: selected as ParsedAddressAsset,
         from: accountAddress,
         gasLimit: gasLimitToUse,
         network: currentChainIdNetwork,

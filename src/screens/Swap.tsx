@@ -20,7 +20,7 @@ import { SwapOutputAsset } from '@/components/swaps/SwapOutputAsset';
 import { SwapSheetGestureBlocker } from '@/components/swaps/SwapSheetGestureBlocker';
 import { ChainId } from '@/chains/types';
 import { SwapAssetType } from '@/components/swaps/types/swap';
-import { parseSearchAsset } from '@/resources/assets/assets';
+import { parseSearchAsset } from '@/components/swaps/utils/assets';
 import { AbsolutePortalRoot } from '@/components/AbsolutePortal';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 import { userAssetsStore } from '@/state/assets/userAssets';

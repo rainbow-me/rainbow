@@ -18,8 +18,9 @@ import { ActionProps, RapActionResult } from '../references';
 
 import { overrideWithFastSpeedIfNeeded } from './../utils';
 import { TokenColors } from '@/graphql/__generated__/metadata';
-import { ParsedAsset } from '@/resources/assets/types';
+import { ParsedAsset } from '@/components/swaps/types/assets';
 import { chainsName } from '@/chains';
+import { AddysNetworkDetails } from '@/resources/assets/types';
 
 export const getAssetRawAllowance = async ({
   owner,
@@ -62,7 +63,7 @@ export const assetNeedsUnlocking = async ({
 
   const allowance = await getAssetRawAllowance({
     owner,
-    assetAddress: assetToUnlock.address,
+    assetAddress: assetToUnlock.address as Address,
     spender,
     chainId,
   });
@@ -269,9 +270,11 @@ export const unlock = async ({
   const transaction = {
     asset: {
       ...assetToUnlock,
-      network: chainsName[assetToUnlock.chainId],
+      chainName: chainsName[assetToUnlock.chainId],
       colors: assetToUnlock.colors as TokenColors,
-    } as ParsedAsset,
+      network: chainsName[assetToUnlock.chainId],
+      networks: assetToUnlock.networks as Record<string, AddysNetworkDetails>,
+    },
     data: approval.data,
     value: approval.value?.toString(),
     changes: [],

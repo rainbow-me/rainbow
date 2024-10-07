@@ -10,7 +10,7 @@ import { enableActionsOnReadOnlyWallet } from '@/config';
 import { ethereumUtils, watchingAlert } from '@/utils';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { isSameAsset } from '@/helpers/assets';
-import { parseSearchAsset } from '@/resources/assets/assets';
+import { parseSearchAsset } from '@/components/swaps/utils/assets';
 import assetInputTypes from '@/helpers/assetInputTypes';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';

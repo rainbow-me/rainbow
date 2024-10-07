@@ -1,8 +1,6 @@
-import { NativeCurrencyKey, ParsedAddressAsset, ZerionAssetPrice } from '@/entities';
+import { NativeCurrencyKey, ParsedAddressAsset } from '@/entities';
 import { TokenColors } from '@/graphql/__generated__/metadata';
-import { ChainId, Network } from '@/chains/types';
-import { AddressOrEth, AssetApiResponse, AssetType, ParsedSearchAsset, UniqueId } from '@/components/swaps/types/assets';
-import { ResponseByTheme } from '@/components/swaps/utils/swaps';
+import { Network } from '@/chains/types';
 
 export type AddysAccountAssetsResponse = {
   meta: AddysAccountAssetsMeta;
@@ -53,53 +51,26 @@ export type AddysAssetPrice = {
 };
 
 export interface ParsedAsset {
-  address: AddressOrEth;
-  chainId: ChainId;
-  chainName: string;
-  colors?: {
-    fallback?: string;
-    primary: string;
-    shadow?: string;
-  };
-  isNativeAsset?: boolean;
-  name: string;
-  native: {
-    price?: {
-      change: string;
-      amount: number;
-      display: string;
-    };
-  };
-  mainnetAddress?: AddressOrEth;
-  price?: ZerionAssetPrice;
-  symbol: string;
-  uniqueId: UniqueId;
+  address: string;
+  color?: string;
+  colors?: TokenColors;
+  chainId: number;
+  chainName?: string;
   decimals: number;
   icon_url?: string;
-  type?: AssetType;
-  smallBalance?: boolean;
-  standard?: 'erc-721' | 'erc-1155';
-  networks?: AssetApiResponse['networks'];
-  bridging?: {
-    isBridgeable: boolean;
-    networks: { [id in ChainId]?: { bridgeable: boolean } };
+  isNativeAsset?: boolean;
+  name: string;
+  mainnet_address?: string;
+  network: string;
+  networks?: Record<string, AddysNetworkDetails>;
+  price?: {
+    changed_at?: number;
+    relative_change_24h?: number;
+    value?: number;
   };
-}
-
-export interface ExtendedAnimatedAssetWithColors extends ParsedSearchAsset {
-  // colors
-  color: ResponseByTheme<string>;
-  shadowColor: ResponseByTheme<string>;
-  mixedShadowColor: ResponseByTheme<string>;
-  textColor: ResponseByTheme<string>;
-  tintedBackgroundColor: ResponseByTheme<string>;
-  highContrastColor: ResponseByTheme<string>;
-
-  // total balance minus gas fee if native token
-  maxSwappableAmount: string;
-
-  // price information
-  nativePrice: number | undefined;
+  symbol: string;
+  type?: string;
+  uniqueId: string;
 }
 
 export type RainbowAddressAssets = Record<string, ParsedAddressAsset>;

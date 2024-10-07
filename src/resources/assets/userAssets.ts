@@ -10,7 +10,7 @@ import { SupportedCurrencyKey } from '@/references';
 import { ParsedAssetsDictByChain, ZerionAsset } from '@/components/swaps/types/assets';
 import { ChainId } from '@/chains/types';
 import { AddressAssetsReceivedMessage } from '@/components/swaps/types/refraction';
-import { parseUserAsset } from './assets';
+import { parseUserAsset } from '@/components/swaps/utils/assets';
 import { greaterThan } from '@/components/swaps/utils/numbers';
 
 import { fetchUserAssetsByChain } from './userAssetsByChain';
