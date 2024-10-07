@@ -10,18 +10,17 @@ import {
   STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS,
 } from '@/__swaps__/screens/Swap/constants';
 import { ChainId } from '@/chains/types';
-import { isLowerCaseMatchWorklet } from '@/__swaps__/utils/strings';
 import { globalColors } from '@/design-system';
 import { ForegroundColor, palettes } from '@/design-system/color/palettes';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import * as i18n from '@/languages';
 import { RainbowConfig } from '@/model/remoteConfig';
 import store from '@/redux/store';
-import { ETH_ADDRESS, supportedNativeCurrencies } from '@/references';
+import { supportedNativeCurrencies } from '@/references';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { colors } from '@/styles';
 import { BigNumberish } from '@ethersproject/bignumber';
-import { CrosschainQuote, ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR, Quote, QuoteParams, SwapType } from '@rainbow-me/swaps';
+import { CrosschainQuote, ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR, Quote, QuoteParams } from '@rainbow-me/swaps';
 import { swapsStore } from '../../state/swaps/swapsStore';
 import {
   divWorklet,

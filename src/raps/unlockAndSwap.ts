@@ -3,7 +3,6 @@ import {
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATOR,
   getRainbowRouterContractAddress,
   PermitSupportedTokenList,
-  SwapType,
 } from '@rainbow-me/swaps';
 import { Address } from 'viem';
 
@@ -11,7 +10,6 @@ import { ChainId } from '@/chains/types';
 import { isNativeAsset } from '@/handlers/assets';
 import { add } from '@/helpers/utilities';
 import { isLowerCaseMatch } from '@/utils';
-import { ETH_ADDRESS } from '../references';
 
 import { assetNeedsUnlocking, estimateApprove, estimateSwapGasLimit } from './actions';
 import { estimateUnlockAndSwapFromMetadata } from './actions/swap';
@@ -27,12 +25,10 @@ export const estimateUnlockAndSwap = async ({
   const {
     from: accountAddress,
     sellTokenAddress,
-    buyTokenAddress,
     allowanceNeeded,
   } = quote as {
     from: Address;
     sellTokenAddress: Address;
-    buyTokenAddress: Address;
     allowanceNeeded: boolean;
   };
 
@@ -96,12 +92,10 @@ export const createUnlockAndSwapRap = async (swapParameters: RapSwapActionParame
   const {
     from: accountAddress,
     sellTokenAddress,
-    buyTokenAddress,
     allowanceNeeded,
   } = quote as {
     from: Address;
     sellTokenAddress: Address;
-    buyTokenAddress: Address;
     allowanceNeeded: boolean;
   };
 

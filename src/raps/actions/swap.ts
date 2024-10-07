@@ -3,7 +3,6 @@ import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Transaction } from '@ethersproject/transactions';
 import {
   CrosschainQuote,
-  ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
   Quote,
   ChainId as SwapChainId,
   SwapType,
@@ -22,7 +21,6 @@ import { ChainId } from '@/chains/types';
 import { NewTransaction } from '@/entities/transactions';
 import { TxHash } from '@/resources/transactions/types';
 import { add } from '@/helpers/utilities';
-import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, logger } from '@/logger';
 
@@ -65,7 +63,6 @@ export const estimateSwapGasLimit = async ({
     return gasUnits.basic_swap[chainId];
   }
 
-  const { sellTokenAddress, buyTokenAddress } = quote;
   const isWrapNativeAsset = quote.swapType === SwapType.wrap;
   const isUnwrapNativeAsset = quote.swapType === SwapType.unwrap;
 

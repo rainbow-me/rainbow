@@ -41,7 +41,7 @@ import {
 } from '@/resources/assets/externalAssetsQuery';
 import { triggerHapticFeedback } from '@/screens/points/constants';
 import { swapsStore } from '@/state/swaps/swapsStore';
-import { CrosschainQuote, Quote, QuoteError, SwapType, getCrosschainQuote, getQuote } from '@rainbow-me/swaps';
+import { CrosschainQuote, Quote, QuoteError, getCrosschainQuote, getQuote } from '@rainbow-me/swaps';
 import { useCallback } from 'react';
 import { SharedValue, runOnJS, runOnUI, useAnimatedReaction, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';

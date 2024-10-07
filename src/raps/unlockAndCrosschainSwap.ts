@@ -1,9 +1,6 @@
 import { Address } from 'viem';
 
-import { isNativeAsset } from '@/handlers/assets';
 import { add } from '@/helpers/utilities';
-import { isLowerCaseMatch } from '@/utils';
-import { ETH_ADDRESS } from '../references';
 
 import { assetNeedsUnlocking, estimateApprove } from './actions';
 import { estimateCrosschainSwapGasLimit } from './actions/crosschainSwap';
@@ -19,13 +16,11 @@ export const estimateUnlockAndCrosschainSwap = async ({
   const {
     from: accountAddress,
     sellTokenAddress,
-    buyTokenAddress,
     allowanceTarget,
     allowanceNeeded,
   } = quote as {
     from: Address;
     sellTokenAddress: Address;
-    buyTokenAddress: Address;
     allowanceTarget: Address;
     allowanceNeeded: boolean;
   };

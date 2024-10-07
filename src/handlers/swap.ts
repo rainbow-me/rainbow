@@ -3,7 +3,6 @@ import { Block, StaticJsonRpcProvider } from '@ethersproject/providers';
 import {
   ALLOWS_PERMIT,
   CrosschainQuote,
-  ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
   getQuoteExecutionDetails,
   getRainbowRouterContractAddress,
   getWrappedAssetMethod,
@@ -208,7 +207,6 @@ export const estimateSwapGasLimit = async ({
   if (!provider || !tradeDetails) {
     return ethereumUtils.getBasicSwapGasLimit(Number(chainId));
   }
-  const { sellTokenAddress, buyTokenAddress } = tradeDetails;
   const isWrapNativeAsset = tradeDetails.swapType === SwapType.wrap;
   const isUnwrapNativeAsset = tradeDetails.swapType === SwapType.unwrap;
 
