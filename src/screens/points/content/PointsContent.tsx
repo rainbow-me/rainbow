@@ -747,16 +747,16 @@ export function PointsContent() {
           </Inset>
           {!shouldDisplayError ? (
             <Inset horizontal="20px" top="24px">
-              <Stack space="28px">
-                <Stack space="20px">
+              <Box gap={28}>
+                <Box gap={20}>
                   <Text color="label" size="20pt" style={{ marginLeft: 4 }} weight="heavy">
                     {i18n.t(i18n.l.points.points.my_points)}
                   </Text>
                   <Box flexDirection="row" alignItems="center" paddingLeft="4px">
                     {canDisplayTotalPoints ? <RainbowText totalPointsString={totalPointsString} /> : <Skeleton height={31} width={200} />}
                   </Box>
-                </Stack>
-                <Box gap={24}>
+                </Box>
+                <Box width="full" gap={24}>
                   {!!cardIds.length && !isReadOnlyWallet && <RemoteCardCarousel key="remote-cards" />}
                   <InfoCards points={points} />
                 </Box>
@@ -877,7 +877,7 @@ export function PointsContent() {
                     <Separator color={isDarkMode ? 'separatorSecondary' : 'separatorTertiary'} thickness={1} />
                   </>
                 )}
-                <Stack space="20px">
+                <Box gap={20}>
                   <Inset left="4px">
                     <Text color="label" size="20pt" weight="heavy">
                       {i18n.t(i18n.l.points.points.leaderboard)}
@@ -944,8 +944,8 @@ export function PointsContent() {
                   ) : (
                     <Skeleton height={400} width={deviceWidth - 40} />
                   )}
-                </Stack>
-              </Stack>
+                </Box>
+              </Box>
             </Inset>
           ) : (
             <Box alignItems="center" justifyContent="center" height="full" width="full">

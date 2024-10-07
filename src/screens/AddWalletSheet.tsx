@@ -182,7 +182,7 @@ export const AddWalletSheet = () => {
   };
 
   const onPressWatch = () => {
-    analytics.track('Tapped "Add an existing wallet"');
+    analytics.track('Tapped "Watch an Ethereum Address"');
     analyticsV2.track(analyticsV2.event.addWalletFlowStarted, {
       isFirstWallet,
       type: 'watch',
