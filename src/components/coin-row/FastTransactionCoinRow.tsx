@@ -276,7 +276,7 @@ export const ActivityIcon = ({
       >
         <View
           style={{
-            shadowColor: !transaction?.asset?.color ? globalColors.grey100 : transaction.asset.color,
+            shadowColor: !transaction?.asset?.colors?.primary ? globalColors.grey100 : transaction.asset.colors?.primary,
             shadowOffset: { width: 0, height: 6 },
             shadowOpacity: 0.24,
             shadowRadius: 9,
@@ -331,7 +331,7 @@ export const ActivityIcon = ({
       >
         <View
           style={{
-            shadowColor: !transaction?.asset?.color ? globalColors.grey100 : transaction.asset.color,
+            shadowColor: !transaction?.asset?.colors?.primary ? globalColors.grey100 : transaction.asset.colors?.primary,
             shadowOffset: { width: 0, height: 6 },
             shadowOpacity: 0.24,
             shadowRadius: 9,

@@ -3,7 +3,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, { Easing, SharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 import { SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, caretConfig } from '@/__swaps__/screens/Swap/constants';
-import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { equalWorklet } from '@/safe-math/SafeMath';
 import { NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigation';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { inputKeys } from '@/__swaps__/types/swap';

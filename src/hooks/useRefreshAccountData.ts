@@ -8,7 +8,7 @@ import { PROFILES, useExperimentalFlag } from '@/config';
 import { logger, RainbowError } from '@/logger';
 import { queryClient } from '@/react-query';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
-import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
+import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/resources/assets/userAssets';
 import { nftsQueryKey } from '@/resources/nfts';
 import { positionsQueryKey } from '@/resources/defi/PositionsQuery';
 import useNftSort from './useNFTsSortBy';

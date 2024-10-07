@@ -1,5 +1,7 @@
-import { checkIsValidAddressOrDomain } from '../helpers/validators';
+import { UniqueId, AddressOrEth } from '@/__swaps__/types/assets';
+import { checkIsValidAddressOrDomain } from '@/helpers/validators';
 import { EthereumAddress } from '@/entities';
+import { ChainId } from '@/chains/types';
 
 /**
  * @desc get ethereum address from raw QR Code data
@@ -20,6 +22,16 @@ export const getEthereumAddressFromQRCodeData = async (data: string): Promise<Et
 
   return null;
 };
+
+export function deriveAddressAndChainWithUniqueId(uniqueId: UniqueId) {
+  const fragments = uniqueId.split('_');
+  const address = fragments[0] as AddressOrEth;
+  const chain = parseInt(fragments[1], 10) as ChainId;
+  return {
+    address,
+    chain,
+  };
+}
 
 export const maxLength = 42;
 

@@ -1,13 +1,12 @@
-import { TokenSearchResult, useTokenSearch } from '@/__swaps__/screens/Swap/resources/search/search';
+import { TokenSearchResult, useTokenSearch } from '@/resources/search/search';
 import { AddressOrEth, ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { ChainId } from '@/chains/types';
 import { SearchAsset, TokenSearchAssetKey, TokenSearchThreshold } from '@/__swaps__/types/search';
-import { addHexPrefix } from '@/__swaps__/utils/hex';
-import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
+import { addHexPrefix } from '@/handlers/web3';
+import { isLowerCaseMatch, filterList } from '@/utils';
 import { getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
 import { useFavorites } from '@/resources/favorites';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { filterList } from '@/utils';
 import { isAddress } from '@ethersproject/address';
 import { rankings } from 'match-sorter';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -15,7 +14,7 @@ import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 import { TokenToBuyListItem } from '../components/TokenList/TokenToBuyList';
 import { RecentSwap } from '@/__swaps__/types/swap';
-import { useTokenDiscovery } from '../resources/search';
+import { useTokenDiscovery } from '../../../../resources/search';
 import { fetchSuggestions } from '@/handlers/ens';
 import { noop } from 'lodash';
 

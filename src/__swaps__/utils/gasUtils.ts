@@ -15,7 +15,8 @@ import { ChainId } from '@/chains/types';
 import { BlocksToConfirmation, GasFeeLegacyParams, GasFeeParam, GasFeeParams, GasSpeed } from '@/__swaps__/types/gas';
 
 import { gweiToWei, weiToGwei } from '@/__swaps__/utils/ethereum';
-import { addHexPrefix, convertStringToHex, toHex } from '@/__swaps__/utils/hex';
+import { convertStringToHex } from '@/helpers/utilities';
+import { addHexPrefix, toHex } from '@/handlers/web3';
 import {
   add,
   addBuffer,

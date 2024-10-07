@@ -3,7 +3,7 @@ import { inputKeys, inputMethods, inputValuesType } from '@/__swaps__/types/swap
 import { valueBasedDecimalFormatter } from '@/__swaps__/utils/decimalFormatter';
 import { niceIncrementFormatter } from '@/__swaps__/utils/swaps';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { divWorklet, equalWorklet, greaterThanWorklet, mulWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { divWorklet, equalWorklet, greaterThanWorklet, mulWorklet } from '@/safe-math/SafeMath';
 
 export function getInputValuesForSliderPositionWorklet({
   selectedInputAsset,

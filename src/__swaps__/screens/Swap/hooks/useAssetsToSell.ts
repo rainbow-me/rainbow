@@ -4,8 +4,8 @@ import {
   selectUserAssetsList,
   selectUserAssetsListByChainId,
   selectorFilterByUserChains,
-} from '@/__swaps__/screens/Swap/resources/_selectors/assets';
-import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
+} from '@/resources/assets/_selectors/assets';
+import { useUserAssets } from '@/resources/assets/userAssets';
 import { ParsedAssetsDictByChain, ParsedSearchAsset, UserAssetFilter } from '@/__swaps__/types/assets';
 import { useAccountSettings, useDebounce } from '@/hooks';
 import { useUserAssetsStore } from '@/state/assets/userAssets';

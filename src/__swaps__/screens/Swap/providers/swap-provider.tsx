@@ -14,7 +14,7 @@ import {
   useSharedValue,
 } from 'react-native-reanimated';
 
-import { equalWorklet, lessThanOrEqualToWorklet, sumWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { equalWorklet, lessThanOrEqualToWorklet, sumWorklet } from '@/safe-math/SafeMath';
 import { INITIAL_SLIDER_POSITION, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useAnimatedSwapStyles } from '@/__swaps__/screens/Swap/hooks/useAnimatedSwapStyles';
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
@@ -22,7 +22,7 @@ import { NavigationSteps, useSwapNavigation } from '@/__swaps__/screens/Swap/hoo
 import { useSwapSettings } from '@/__swaps__/screens/Swap/hooks/useSwapSettings';
 import { useSwapTextStyles } from '@/__swaps__/screens/Swap/hooks/useSwapTextStyles';
 import { SwapWarningType, useSwapWarning } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
-import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
+import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/resources/assets/userAssets';
 import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/chains/types';
 import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
@@ -50,7 +50,7 @@ import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { IS_IOS } from '@/env';
 import { Address } from 'viem';
 import { clearCustomGasSettings } from '../hooks/useCustomGas';
-import { getGasSettingsBySpeed, getSelectedGas, getSelectedGasSpeed } from '../hooks/useSelectedGas';
+import { getGasSettingsBySpeed, getSelectedGas } from '../hooks/useSelectedGas';
 import { useSwapOutputQuotesDisabled } from '../hooks/useSwapOutputQuotesDisabled';
 import { SyncGasStateToSharedValues, SyncQuoteSharedValuesToState } from './SyncSwapStateAndSharedValues';
 import { performanceTracking, Screens, TimeToSignOperation } from '@/state/performance/performance';

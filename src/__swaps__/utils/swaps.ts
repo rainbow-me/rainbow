@@ -10,7 +10,7 @@ import {
   STABLECOIN_MINIMUM_SIGNIFICANT_DECIMALS,
 } from '@/__swaps__/screens/Swap/constants';
 import { ChainId } from '@/chains/types';
-import { isLowerCaseMatchWorklet } from '@/__swaps__/utils/strings';
+import { isLowerCaseMatchWorklet } from '@/utils/isLowerCaseMatch';
 import { globalColors } from '@/design-system';
 import { ForegroundColor, palettes } from '@/design-system/color/palettes';
 import { TokenColors } from '@/graphql/__generated__/metadata';
@@ -34,7 +34,7 @@ import {
   powWorklet,
   roundWorklet,
   toFixedWorklet,
-} from '../safe-math/SafeMath';
+} from '../../safe-math/SafeMath';
 import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '../types/assets';
 import { inputKeys } from '../types/swap';
 import { valueBasedDecimalFormatter } from './decimalFormatter';

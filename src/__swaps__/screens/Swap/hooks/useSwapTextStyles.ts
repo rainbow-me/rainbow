@@ -14,7 +14,7 @@ import { ETH_COLOR_DARK, ETH_COLOR_DARK_ACCENT, pulsingConfig } from '@/__swaps_
 import { inputMethods, inputValuesType } from '@/__swaps__/types/swap';
 import { getColorValueForThemeWorklet, opacity } from '@/__swaps__/utils/swaps';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
-import { equalWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { equalWorklet } from '@/safe-math/SafeMath';
 import { SPRING_CONFIGS, TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 
 export function useSwapTextStyles({

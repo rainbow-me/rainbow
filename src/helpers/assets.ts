@@ -3,10 +3,11 @@ import { chunk, compact, groupBy, isEmpty, slice, sortBy } from 'lodash';
 import { add, greaterThan } from './utilities';
 import { AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { supportedNativeCurrencies } from '@/references';
-import { getUniqueTokenFormat, getUniqueTokenType } from '@/utils';
+import { getUniqueTokenFormat, getUniqueTokenType, isLowerCaseMatch } from '@/utils';
 import * as i18n from '@/languages';
 import { UniqueAsset } from '@/entities';
 import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
+import { ParsedAsset } from '@/__swaps__/types/assets';
 
 const COINS_TO_SHOW = 5;
 
@@ -155,10 +156,6 @@ export const buildBriefCoinsList = (sortedAssets: any, nativeCurrency: any, isCo
 
   return { briefAssets, totalBalancesValue };
 };
-
-interface Dictionary<T> {
-  [index: string]: T;
-}
 
 export const buildUniqueTokenList = (uniqueTokens: any, selectedShowcaseTokens: any[] = []) => {
   let rows: any = [];
@@ -375,3 +372,6 @@ export const buildUniqueTokenName = ({ collection, id, name, uniqueId }: any) =>
   if (id) return `${collection?.name} #${id}`;
   return uniqueId;
 };
+
+export const isSameAsset = (a1: Pick<ParsedAsset, 'chainId' | 'address'>, a2: Pick<ParsedAsset, 'chainId' | 'address'>) =>
+  +a1.chainId === +a2.chainId && isLowerCaseMatch(a1.address, a2.address);

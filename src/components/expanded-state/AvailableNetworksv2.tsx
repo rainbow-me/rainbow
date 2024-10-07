@@ -17,7 +17,7 @@ import { implementation } from '@/entities/dispersion';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import { userAssetsStore } from '@/state/assets/userAssets';
-import { parseSearchAsset } from '@/__swaps__/utils/assets';
+import { parseSearchAsset } from '@/resources/assets/assets';
 import { AddressOrEth, AssetType } from '@/__swaps__/types/assets';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';

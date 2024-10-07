@@ -7,7 +7,7 @@ import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { getCrossChainTimeEstimateWorklet, getQuoteServiceTimeWorklet } from '@/__swaps__/utils/swaps';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { highPriceImpactThreshold, severePriceImpactThreshold } from '@/__swaps__/screens/Swap/constants';
-import { divWorklet, greaterThanOrEqualToWorklet, subWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { divWorklet, greaterThanOrEqualToWorklet, subWorklet } from '@/safe-math/SafeMath';
 import { inputValuesType } from '@/__swaps__/types/swap';
 import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
 
