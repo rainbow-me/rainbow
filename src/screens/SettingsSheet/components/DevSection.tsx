@@ -23,11 +23,6 @@ import store from '@/redux/store';
 import { walletsUpdate } from '@/redux/wallets';
 import Routes from '@/navigation/routesNames';
 import { logger, RainbowError } from '@/logger';
-import {
-  removeNotificationSettingsForWallet,
-  useAllNotificationSettingsFromStorage,
-  addDefaultNotificationGroupSettings,
-} from '@/notifications/settings';
 import { IS_DEV } from '@/env';
 import { getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded } from '@/helpers/signingWallet';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
@@ -39,13 +34,14 @@ import { getFCMToken } from '@/notifications/tokens';
 import { nonceStore } from '@/state/nonces';
 import { pendingTransactionsStore } from '@/state/pendingTransactions';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import { addDefaultNotificationGroupSettings } from '@/notifications/settings/initialization';
+import { unsubscribeAllNotifications } from '@/notifications/settings/settings';
 
 const DevSection = () => {
   const { navigate } = useNavigation();
   const { config, setConfig } = useContext(RainbowContext) as any;
   const { wallets } = useWallets();
   const setConnectedToHardhat = useConnectedToHardhatStore.getState().setConnectedToHardhat;
-  const { walletNotificationSettings } = useAllNotificationSettingsFromStorage();
   const dispatch = useDispatch();
 
   const [loadingStates, setLoadingStates] = useState({
@@ -119,16 +115,6 @@ const DevSection = () => {
     setErrorObj({ error: 'this throws render error' });
   };
 
-  const clearAllNotificationSettings = useCallback(async () => {
-    // loop through notification settings and unsubscribe all wallets
-    // from firebase first or we’re gonna keep getting them even after
-    // clearing storage and before changing settings
-    if (walletNotificationSettings.length > 0) {
-      return Promise.all(walletNotificationSettings.map(wallet => removeNotificationSettingsForWallet(wallet.address)));
-    }
-    return Promise.resolve();
-  }, [walletNotificationSettings]);
-
   const clearPendingTransactions = async () => {
     const { clearPendingTransactions: clearPendingTxs } = pendingTransactionsStore.getState();
     const { clearNonces } = nonceStore.getState();
@@ -140,7 +126,7 @@ const DevSection = () => {
   const clearLocalStorage = async () => {
     setLoadingStates(prev => ({ ...prev, clearLocalStorage: true }));
 
-    await clearAllNotificationSettings();
+    await unsubscribeAllNotifications();
     await AsyncStorage.clear();
     clearAllStorages();
     addDefaultNotificationGroupSettings(true);
@@ -157,7 +143,7 @@ const DevSection = () => {
   const clearMMKVStorage = async () => {
     setLoadingStates(prev => ({ ...prev, clearMmkvStorage: true }));
 
-    await clearAllNotificationSettings();
+    await unsubscribeAllNotifications();
     clearAllStorages();
     addDefaultNotificationGroupSettings(true);
 
