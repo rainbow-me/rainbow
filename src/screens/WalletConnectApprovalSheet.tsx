@@ -30,8 +30,7 @@ import { InfoAlert } from '@/components/info-alert/info-alert';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { ChainId } from '@/chains/types';
-import { chainsLabel, chainsNativeAsset, defaultChains, supportedWalletConnectChainIds } from '@/chains';
-import { isL2Chain } from '@/handlers/web3';
+import { chainsLabel, chainsNativeAsset, defaultChains } from '@/chains';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { noop } from 'lodash';
 import { RootStackParamList } from '@/navigation/types';
@@ -79,31 +78,14 @@ const NetworkPill = ({ chainIds }: { chainIds: ChainId[] }) => {
 
   const availableNetworkChainIds = useMemo(() => chainIds.sort(chainId => (chainId === ChainId.mainnet ? -1 : 1)), [chainIds]);
 
-  const walletConnectSupportedChains = supportedWalletConnectChainIds.map(chainId => defaultChains[chainId]);
-
-  const networkMenuItems = useMemo(() => {
-    walletConnectSupportedChains
-      .filter(({ id }) => chainIds.includes(id))
-      .map(chain => ({
-        actionKey: chain.id,
-        actionTitle: chainsLabel[chain.id],
-        icon: {
-          iconType: 'ASSET',
-          iconValue: `${isL2Chain({ chainId: chain.id }) ? `${chain.name}BadgeNoShadow` : 'ethereumBadge'}`,
-        },
-      }));
-  }, [chainIds, walletConnectSupportedChains]);
-
   if (availableNetworkChainIds.length === 0) return null;
 
   return (
     <ContextMenuButton
-      // @ts-expect-error overloaded props ContextMenuButton
-      menuConfig={{ menuItems: networkMenuItems, menuTitle: '' }}
+      menuConfig={{ menuItems: networksMenuItems(), menuTitle: '' }}
       isMenuPrimaryAction
       onPressMenuItem={noop}
       useActionSheetFallback={false}
-      width="100%"
     >
       <Box
         as={ButtonPressAnimation}
@@ -113,7 +95,7 @@ const NetworkPill = ({ chainIds }: { chainIds: ChainId[] }) => {
         paddingTop="8px"
         marginRight={{ custom: -2 }}
       >
-        <Box flexDirection="row" justifyContent="flex-end" alignItems="center" width="full">
+        <Box flexDirection="row" justifyContent="flex-end" alignItems="center">
           {availableNetworkChainIds.length > 1 ? (
             <>
               {availableNetworkChainIds.map((chainId, index) => {
