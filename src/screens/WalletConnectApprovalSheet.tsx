@@ -16,7 +16,7 @@ import { analytics } from '@/analytics';
 import { getAccountProfileInfo } from '@/helpers/accountInfo';
 import { getDappHostname } from '@/helpers/dappNameHandler';
 import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
-import { NETWORK_MENU_ACTION_KEY_FILTER, networksMenuItems } from '@/helpers/walletConnectNetworks';
+import { NETWORK_MENU_ACTION_KEY_FILTER, networksMenuItems, walletConnectSupportedChains } from '@/helpers/walletConnectNetworks';
 import { useAccountSettings, useWallets } from '@/hooks';
 import { Navigation, useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
@@ -30,7 +30,7 @@ import { InfoAlert } from '@/components/info-alert/info-alert';
 import { EthCoinIcon } from '@/components/coin-icon/EthCoinIcon';
 import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { ChainId } from '@/chains/types';
-import { chainsLabel, chainsNativeAsset, defaultChains, supportedWalletConnectChainIds } from '@/chains';
+import { chainsLabel, chainsNativeAsset, defaultChains } from '@/chains';
 import { isL2Chain } from '@/handlers/web3';
 import { ThemeContextProps, useTheme } from '@/theme';
 import { noop } from 'lodash';
@@ -79,8 +79,6 @@ const NetworkPill = ({ chainIds }: { chainIds: ChainId[] }) => {
 
   const availableNetworkChainIds = useMemo(() => chainIds.sort(chainId => (chainId === ChainId.mainnet ? -1 : 1)), [chainIds]);
 
-  const walletConnectSupportedChains = supportedWalletConnectChainIds.map(chainId => defaultChains[chainId]);
-
   const networkMenuItems = useMemo(() => {
     walletConnectSupportedChains
       .filter(({ id }) => chainIds.includes(id))
@@ -92,7 +90,7 @@ const NetworkPill = ({ chainIds }: { chainIds: ChainId[] }) => {
           iconValue: `${isL2Chain({ chainId: chain.id }) ? `${chain.name}BadgeNoShadow` : 'ethereumBadge'}`,
         },
       }));
-  }, [chainIds, walletConnectSupportedChains]);
+  }, [chainIds]);
 
   if (availableNetworkChainIds.length === 0) return null;
 

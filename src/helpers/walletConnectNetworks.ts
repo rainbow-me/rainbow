@@ -6,11 +6,13 @@ import { chainsLabel, defaultChains, supportedWalletConnectChainIds } from '@/ch
 import { isL2Chain } from '@/handlers/web3';
 import { MenuActionConfig } from 'react-native-ios-context-menu';
 
-const walletConnectChains = supportedWalletConnectChainIds.map(chainId => defaultChains[chainId]).filter(chain => chain !== undefined);
+export const walletConnectSupportedChains = supportedWalletConnectChainIds
+  .map(chainId => defaultChains[chainId])
+  .filter(chain => chain !== undefined);
 
 const androidNetworkActions = () => {
   const { testnetsEnabled } = store.getState().settings;
-  return walletConnectChains.filter(chain => testnetsEnabled || !chain.testnet).map(chain => chain.id);
+  return walletConnectSupportedChains.filter(chain => testnetsEnabled || !chain.testnet).map(chain => chain.id);
 };
 
 export const NETWORK_MENU_ACTION_KEY_FILTER = 'switch-to-network-';
@@ -18,7 +20,7 @@ export const NETWORK_MENU_ACTION_KEY_FILTER = 'switch-to-network-';
 export const networksMenuItems: () => MenuActionConfig[] = () => {
   const { testnetsEnabled } = store.getState().settings;
 
-  return walletConnectChains
+  return walletConnectSupportedChains
     .filter(chain => testnetsEnabled || !chain.testnet)
     .map(chain => ({
       actionKey: `${NETWORK_MENU_ACTION_KEY_FILTER}${chain.id}`,
@@ -79,7 +81,7 @@ export const androidShowNetworksActionSheet = (callback: any) => {
     (idx: any) => {
       if (idx !== undefined) {
         const networkActions = androidNetworkActions();
-        const chain = walletConnectChains.find(chain => chain.id === networkActions[idx]) || defaultChains[ChainId.mainnet];
+        const chain = walletConnectSupportedChains.find(chain => chain.id === networkActions[idx]) || defaultChains[ChainId.mainnet];
         callback({ chainId: chain.id });
       }
     }
