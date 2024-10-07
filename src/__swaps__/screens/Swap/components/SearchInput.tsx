@@ -1,24 +1,15 @@
 import { INPUT_PADDING, LIGHT_SEPARATOR_COLOR, SEPARATOR_COLOR, THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { NavigationSteps, useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { opacity } from '@/__swaps__/utils/swaps';
-import { Input } from '@/components/inputs';
 import { Bleed, Box, Column, Columns, Text, useColorMode, useForegroundColor } from '@/design-system';
 import * as i18n from '@/languages';
 import { userAssetsStore, useUserAssetsStore } from '@/state/assets/userAssets';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
 import React from 'react';
-import Animated, {
-  runOnJS,
-  runOnUI,
-  useAnimatedProps,
-  useAnimatedReaction,
-  useDerivedValue,
-  useSharedValue,
-} from 'react-native-reanimated';
+import { runOnJS, runOnUI, useAnimatedProps, useAnimatedReaction, useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { useDebouncedCallback } from 'use-debounce';
 import { SearchInputButton } from './SearchInputButton';
-
-const AnimatedInput = Animated.createAnimatedComponent(Input);
+import { AnimatedInput } from '@/components/AnimatedComponents/AnimatedInput';
 
 const FIND_A_TOKEN_TO_BUY_LABEL = i18n.t(i18n.l.swap.find_a_token_to_buy);
 const SEARCH_YOUR_TOKENS_LABEL = i18n.t(i18n.l.swap.search_your_tokens);

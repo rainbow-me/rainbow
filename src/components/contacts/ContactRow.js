@@ -111,7 +111,6 @@ const ContactRow = ({ address, color, nickname, symmetricalMargins, ...props }, 
   const colorIndex = useMemo(() => (address ? addressHashedColorIndex(address) : 0), [address]);
   const bgColor = color ?? colors.avatarBackgrounds[colorIndex || 0];
 
-  console.log('here');
   return (
     <Box testID={testID} style={{ height: COIN_ROW_WITH_PADDING_HEIGHT, width: '100%' }}>
       <ButtonPressAnimation exclusive isInteraction ref={ref} scaleTo={0.98} {...props} onPress={handlePress}>

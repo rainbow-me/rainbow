@@ -144,7 +144,6 @@ const buildListSectionsData = ({
   const formattedData: TokenToBuyListItem[] = [];
 
   const addSection = (id: AssetToBuySectionId, data: SearchAsset[], listItemType: 'coinRow' | 'profileRow' = 'coinRow') => {
-    console.log(data);
     if (data.length > 0) {
       formattedData.push({ listItemType: 'header', id, data });
       // @ts-expect-error - ens profiles doesn't match the SearchAsset type
@@ -345,7 +344,7 @@ export function useSearchCurrencyLists({
     [searchQuery, state.toChainId]
   );
 
-  const { data: verifiedAssets, isLoading: isLoadingVerifiedAssets } = useTokenSearch(
+  const { data: verifiedAssets, isFetching: isLoadingVerifiedAssets } = useTokenSearch(
     {
       list: 'verifiedAssets',
       chainId: isAddress(searchQuery) ? state.toChainId : undefined,
@@ -360,7 +359,7 @@ export function useSearchCurrencyLists({
     }
   );
 
-  const { data: popularAssets, isLoading: isLoadingPopularAssets } = useTokenDiscovery({ chainId: state.toChainId });
+  const { data: popularAssets, isFetching: isLoadingPopularAssets } = useTokenDiscovery({ chainId: state.toChainId });
 
   const { favoritesMetadata: favorites } = useFavorites();
 
@@ -423,7 +422,7 @@ export function useSearchCurrencyLists({
 
   const profiles = useMemo(async () => {
     if (!searchProfiles) return [];
-    return await fetchSuggestions(searchQuery, noop, noop, true);
+    return await fetchSuggestions(searchQuery, noop, noop, searchProfiles);
   }, [searchProfiles, searchQuery]);
 
   const favoritesList = useMemo(() => {
@@ -441,7 +440,7 @@ export function useSearchCurrencyLists({
     }
   }, [memoizedData.keys, memoizedData.queryIsAddress, searchQuery, unfilteredFavorites]);
 
-  const { data: unverifiedAssets, isLoading: isLoadingUnverifiedAssets } = useTokenSearch(
+  const { data: unverifiedAssets, isFetching: isLoadingUnverifiedAssets } = useTokenSearch(
     {
       chainId: state.toChainId,
       keys: isAddress(searchQuery) ? ['address'] : ['name', 'symbol'],

@@ -1,9 +1,9 @@
-import React, { useCallback, useContext, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { FlatList, InteractionManager, View } from 'react-native';
 
 import deviceUtils from '@/utils/deviceUtils';
 import { Row } from '@/components/layout';
-import DiscoverSheetContext from '../DiscoverScreenContext';
+import { useDiscoverScreenContext } from '../DiscoverScreenContext';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
 import { useAccountSettings, useHardwareBackOnFocus } from '@/hooks';
@@ -16,7 +16,6 @@ import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { ChainId } from '@/chains/types';
 import { chainsIdByName } from '@/chains';
-import { useSearchCurrencyLists } from '@/__swaps__/screens/Swap/hooks/useSearchCurrencyLists';
 import {
   getFormattedTestId,
   getItemLayout,
@@ -33,19 +32,12 @@ export const SearchContainer = styled(Row)({
 export default function DiscoverSearch() {
   const { navigate } = useNavigation();
   const { accountAddress } = useAccountSettings();
-  const { isFetchingEns, setIsSearching, searchQuery, isSearchModeEnabled, setIsSearchModeEnabled, searchInputRef, cancelSearch } =
-    useContext(DiscoverSheetContext);
+
+  const { isSearching, setIsSearching, cancelSearch, setSearchQuery, searchQuery, searchInputRef, sections, flatListRef } =
+    useDiscoverScreenContext();
 
   const profilesEnabled = useExperimentalFlag(PROFILES);
   const marginBottom = TAB_BAR_HEIGHT;
-
-  const flatListRef = useRef<FlatList<TokenToBuyListItem> | null>(null);
-  const { isLoading, results: sections } = useSearchCurrencyLists({
-    assetToSell: null,
-    selectedOutputChainId: ChainId.mainnet,
-    searchQuery,
-    searchProfiles: true,
-  });
 
   useHardwareBackOnFocus(() => {
     cancelSearch();
@@ -88,10 +80,11 @@ export default function DiscoverSearch() {
         }
         const contractAddress = query.split('/')[1];
         navigateToMintCollection(contractAddress, undefined, chainId);
+        setSearchQuery('');
       }
     };
     checkAndHandleMint(searchQuery);
-  }, [accountAddress, navigate, searchQuery]);
+  }, [accountAddress, navigate, searchQuery, setSearchQuery]);
 
   const handlePress = useCallback(
     (item: TokenToBuyListItem) => {
@@ -102,7 +95,7 @@ export default function DiscoverSearch() {
           navigate(profilesEnabled ? Routes.PROFILE_SHEET : Routes.SHOWCASE_SHEET, {
             address: item.nickname,
             fromRoute: 'DiscoverSearch',
-            setIsSearchModeEnabled,
+            setIsSearchModeEnabled: setIsSearching,
           });
           if (profilesEnabled) {
             analytics.track('Viewed ENS profile', {
@@ -122,14 +115,8 @@ export default function DiscoverSearch() {
         });
       }
     },
-    [navigate, profilesEnabled, searchInputRef, setIsSearchModeEnabled]
+    [navigate, profilesEnabled, searchInputRef, setIsSearching]
   );
-
-  useEffect(() => {
-    if (!isLoading && !isFetchingEns) {
-      setIsSearching(false);
-    }
-  }, [isFetchingEns, setIsSearching, isLoading]);
 
   useEffect(() => {
     if (!flatListRef.current?.props.data?.length) {
@@ -140,7 +127,7 @@ export default function DiscoverSearch() {
       offset: 0,
       animated: true,
     });
-  }, [isSearchModeEnabled]);
+  }, [flatListRef, isSearching]);
 
   return (
     <View style={{ height: deviceUtils.dimensions.height - 140 - marginBottom }}>
@@ -164,7 +151,6 @@ export default function DiscoverSearch() {
             if (item.listItemType === 'header') {
               return <TokenToBuySectionHeader section={{ data: item.data, id: item.id }} />;
             } else if (item.listItemType === 'profileRow') {
-              console.log('profileRow: ', item);
               return (
                 <ContactRow
                   accountType="contact"
