@@ -5,7 +5,7 @@ import { convertAmountToBalanceDisplay, convertRawAmountToDecimalFormat } from '
 import { ChainId } from '@/chains/types';
 import { chainsNativeAsset } from '@/chains';
 import { isLowerCaseMatch } from '@/utils';
-import { AddressOrEth } from '@/__swaps__/types/assets';
+import { AddressOrEth } from '@/components/swaps/types/assets';
 
 export function isNativeAsset(address: AddressOrEth | string, chainId: ChainId) {
   return isLowerCaseMatch(chainsNativeAsset[chainId].address, address);

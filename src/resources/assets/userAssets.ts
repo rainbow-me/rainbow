@@ -7,11 +7,11 @@ import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQu
 import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { SupportedCurrencyKey } from '@/references';
-import { ParsedAssetsDictByChain, ZerionAsset } from '@/__swaps__/types/assets';
+import { ParsedAssetsDictByChain, ZerionAsset } from '@/components/swaps/types/assets';
 import { ChainId } from '@/chains/types';
-import { AddressAssetsReceivedMessage } from '@/__swaps__/types/refraction';
-import { parseUserAsset } from '@/__swaps__/utils/assets';
-import { greaterThan } from '@/__swaps__/utils/numbers';
+import { AddressAssetsReceivedMessage } from '@/components/swaps/types/refraction';
+import { parseUserAsset } from './assets';
+import { greaterThan } from '@/components/swaps/utils/numbers';
 
 import { fetchUserAssetsByChain } from './userAssetsByChain';
 import { fetchHardhatBalancesByChainId } from '@/resources/assets/hardhatAssets';

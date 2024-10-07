@@ -22,7 +22,7 @@ import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { useAccountSettings } from '@/hooks';
 import { Network } from '@/chains/types';
-import { AddressOrEth } from '@/__swaps__/types/assets';
+import { AddressOrEth } from '@/components/swaps/types/assets';
 import { chainsIdByName } from '@/chains';
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;

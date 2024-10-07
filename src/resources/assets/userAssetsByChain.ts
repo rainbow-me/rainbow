@@ -3,9 +3,9 @@ import { Address } from 'viem';
 
 import { QueryConfigWithSelect, QueryFunctionArgs, QueryFunctionResult, createQueryKey, queryClient } from '@/react-query';
 import { SupportedCurrencyKey } from '@/references';
-import { ParsedAssetsDictByChain, ParsedUserAsset } from '@/__swaps__/types/assets';
+import { ParsedAssetsDictByChain, ParsedUserAsset } from '@/components/swaps/types/assets';
 import { ChainId } from '@/chains/types';
-import { AddressAssetsReceivedMessage } from '@/__swaps__/types/refraction';
+import { AddressAssetsReceivedMessage } from '@/components/swaps/types/refraction';
 import { RainbowError, logger } from '@/logger';
 
 import { parseUserAssets, userAssetsQueryKey } from './userAssets';

@@ -15,7 +15,7 @@ import { deviceUtils } from '@/utils';
 import { chainsName } from '@/chains';
 import { ThemeContextProps } from '@/theme';
 import { ChainId } from '@/chains/types';
-import { TextInput } from 'react-native';
+import { useDiscoverScreenContext } from '@/screens/discover/DiscoverScreenContext';
 
 export const ExchangeSearchHeight = 40;
 const ExchangeSearchWidth = deviceUtils.dimensions.width - 30;
@@ -108,7 +108,7 @@ const timingConfig = {
   duration: 300,
 };
 
-type ExchangeSearchProps = {
+type DiscoverSearchInputProps = {
   isDiscover: boolean;
   isSearching: boolean;
   isLoading?: boolean;
@@ -122,119 +122,113 @@ type ExchangeSearchProps = {
   currentChainId?: ChainId;
 };
 
-const ExchangeSearch = React.forwardRef<TextInput, ExchangeSearchProps>(
-  (
-    {
-      isDiscover,
-      isSearching,
-      isLoading = false,
-      onChangeText,
-      onFocus,
-      onBlur,
-      searchQuery,
-      testID,
-      placeholderText = lang.t('button.exchange_search_placeholder'),
-      clearTextOnFocus = true,
-      currentChainId,
-    },
-    ref
-  ) => {
-    const handleClearInput = useCallback(() => {
-      if (isDiscover && searchQuery.length > 1) {
-        analytics.track('Search Query', {
-          category: 'discover',
-          length: searchQuery.length,
-          query: searchQuery,
-        });
-      }
-      ref?.current?.clear();
-      onChangeText?.('');
-    }, [isDiscover, searchQuery, ref, onChangeText]);
-
-    const spinnerRotation = useSharedValue(0);
-    const spinnerScale = useSharedValue(0);
-
-    const placeholder = useMemo(() => {
-      if (!currentChainId) return placeholderText;
-      return lang.t('button.exchange_search_placeholder_network', {
-        network: chainsName[currentChainId],
+const DiscoverSearchInput = ({
+  isDiscover,
+  isSearching,
+  isLoading = false,
+  onChangeText,
+  onFocus,
+  onBlur,
+  searchQuery,
+  testID,
+  placeholderText = lang.t('button.exchange_search_placeholder'),
+  clearTextOnFocus = true,
+  currentChainId,
+}: DiscoverSearchInputProps) => {
+  const { searchInputRef } = useDiscoverScreenContext();
+  const handleClearInput = useCallback(() => {
+    if (isDiscover && searchQuery.length > 1) {
+      analytics.track('Search Query', {
+        category: 'discover',
+        length: searchQuery.length,
+        query: searchQuery,
       });
-    }, [currentChainId, placeholderText]);
+    }
+    searchInputRef?.current?.clear();
+    onChangeText?.('');
+  }, [isDiscover, searchQuery, searchInputRef, onChangeText]);
 
-    const spinnerTimeout = useRef<NodeJS.Timeout | null>(null);
-    useEffect(() => {
-      if (isLoading && !isEmpty(searchQuery)) {
-        if (spinnerTimeout.current) {
-          clearTimeout(spinnerTimeout.current);
-        }
-        spinnerRotation.value = 0;
-        spinnerRotation.value = withRepeat(withTiming(360, rotationConfig), -1, false);
-        spinnerScale.value = withTiming(1, timingConfig);
-      } else {
-        spinnerScale.value = withTiming(0, timingConfig);
-        spinnerTimeout.current = setTimeout(() => (spinnerRotation.value = 0), timingConfig.duration);
+  const spinnerRotation = useSharedValue(0);
+  const spinnerScale = useSharedValue(0);
+
+  const placeholder = useMemo(() => {
+    if (!currentChainId) return placeholderText;
+    return lang.t('button.exchange_search_placeholder_network', {
+      network: chainsName[currentChainId],
+    });
+  }, [currentChainId, placeholderText]);
+
+  const spinnerTimeout = useRef<NodeJS.Timeout | null>(null);
+  useEffect(() => {
+    if (isLoading && !isEmpty(searchQuery)) {
+      if (spinnerTimeout.current) {
+        clearTimeout(spinnerTimeout.current);
       }
-    }, [isLoading, searchQuery, spinnerRotation, spinnerScale]);
+      spinnerRotation.value = 0;
+      spinnerRotation.value = withRepeat(withTiming(360, rotationConfig), -1, false);
+      spinnerScale.value = withTiming(1, timingConfig);
+    } else {
+      spinnerScale.value = withTiming(0, timingConfig);
+      spinnerTimeout.current = setTimeout(() => (spinnerRotation.value = 0), timingConfig.duration);
+    }
+  }, [isLoading, searchQuery, spinnerRotation, spinnerScale]);
 
-    const searchIconStyle = useAnimatedStyle(() => {
-      return {
-        opacity: 1 - spinnerScale.value,
-        transform: [{ scale: 1 - spinnerScale.value }],
-      };
-    });
+  const searchIconStyle = useAnimatedStyle(() => {
+    return {
+      opacity: 1 - spinnerScale.value,
+      transform: [{ scale: 1 - spinnerScale.value }],
+    };
+  });
 
-    const spinnerStyle = useAnimatedStyle(() => {
-      return {
-        opacity: spinnerScale.value,
-        transform: [{ rotate: `${spinnerRotation.value}deg` }, { scale: spinnerScale.value }],
-      };
-    });
+  const spinnerStyle = useAnimatedStyle(() => {
+    return {
+      opacity: spinnerScale.value,
+      transform: [{ rotate: `${spinnerRotation.value}deg` }, { scale: spinnerScale.value }],
+    };
+  });
 
-    const searchInputValue = useAnimatedProps(() => {
-      // Removing the value when the input is focused allows the input to be reset to the correct value on blur
-      const query = isSearching ? undefined : '';
-      return {
-        text: query,
-        defaultValue: '',
-      };
-    });
+  const searchInputValue = useAnimatedProps(() => {
+    // Removing the value when the input is focused allows the input to be reset to the correct value on blur
+    const query = isSearching ? undefined : '';
+    return {
+      text: query,
+      defaultValue: '',
+    };
+  });
 
-    return (
-      <Container isSearching={isSearching}>
-        <BackgroundGradient isDiscover={isDiscover} />
-        {isSearching && (
-          <>
-            <SearchIconWrapper style={searchIconStyle}>
-              <SearchIcon>􀊫</SearchIcon>
-            </SearchIconWrapper>
-            <SearchSpinnerWrapper style={spinnerStyle}>
-              <SearchSpinner />
-            </SearchSpinnerWrapper>
-          </>
-        )}
-        <SearchInput
-          animatedProps={searchInputValue}
-          clearTextOnFocus={clearTextOnFocus}
-          isSearching={isSearching}
-          isLoading={isLoading}
-          onChangeText={onChangeText}
-          onFocus={onFocus}
-          onBlur={onBlur}
-          placeholder={placeholder}
-          ref={ref}
-          testID={testID + '-input'}
-        />
-        <ClearInputDecorator
-          inputHeight={ExchangeSearchHeight}
-          isVisible={searchQuery !== ''}
-          onPress={handleClearInput}
-          testID={testID + '-clear-input'}
-        />
-      </Container>
-    );
-  }
-);
+  return (
+    <Container isSearching={isSearching}>
+      <BackgroundGradient isDiscover={isDiscover} />
+      {isSearching && (
+        <>
+          <SearchIconWrapper style={searchIconStyle}>
+            <SearchIcon>􀊫</SearchIcon>
+          </SearchIconWrapper>
+          <SearchSpinnerWrapper style={spinnerStyle}>
+            <SearchSpinner />
+          </SearchSpinnerWrapper>
+        </>
+      )}
+      <SearchInput
+        animatedProps={searchInputValue}
+        clearTextOnFocus={clearTextOnFocus}
+        isSearching={isSearching}
+        isLoading={isLoading}
+        onChangeText={onChangeText}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        placeholder={placeholder}
+        ref={searchInputRef}
+        testID={testID + '-input'}
+      />
+      <ClearInputDecorator
+        inputHeight={ExchangeSearchHeight}
+        isVisible={searchQuery !== ''}
+        onPress={handleClearInput}
+        testID={testID + '-clear-input'}
+      />
+    </Container>
+  );
+};
 
-ExchangeSearch.displayName = 'ExchangeSearch';
-
-export default ExchangeSearch;
+export default DiscoverSearchInput;

@@ -1,4 +1,4 @@
-import { LIGHT_SEPARATOR_COLOR } from '@/__swaps__/screens/Swap/constants';
+import { LIGHT_SEPARATOR_COLOR } from '@/components/swaps/constants';
 import { BrowserTabViewProgressContextProvider, useBrowserTabViewProgressContext } from '@/components/DappBrowser/BrowserContext';
 import { ButtonPressAnimation } from '@/components/animations';
 import { TabBarIcon } from '@/components/icons/TabBarIcon';
@@ -237,13 +237,11 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
         }, 5);
       } else if (isFocused && tabBarIcon === 'tabDiscover') {
         if (delta < DOUBLE_PRESS_DELAY) {
-          // @ts-expect-error No call signatures
           discoverOpenSearchFnRef?.();
           return;
         }
 
         if (discoverScrollToTopFnRef?.() === 0) {
-          // @ts-expect-error No call signatures
           discoverOpenSearchFnRef?.();
           return;
         }
@@ -271,7 +269,6 @@ const TabBar = ({ descriptors, jumpTo, navigation, state }: TabBarProps) => {
       if (tabBarIcon === 'tabDiscover') {
         navigation.navigate(Routes.DISCOVER_SCREEN);
         InteractionManager.runAfterInteractions(() => {
-          // @ts-expect-error No call signatures
           discoverOpenSearchFnRef?.();
         });
       }

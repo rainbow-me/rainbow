@@ -16,7 +16,7 @@ import { useAccountSettings } from '@/hooks';
 import { remotePromoSheetsStore } from '@/state/remotePromoSheets/remotePromoSheets';
 import { RootStackParamList } from '@/navigation/types';
 import { Colors } from '@/styles';
-import { getHighContrastColor } from '@/__swaps__/utils/swaps';
+import { getHighContrastColor } from '@/components/swaps/utils/swaps';
 
 const DEFAULT_HEADER_HEIGHT = 285;
 const DEFAULT_HEADER_WIDTH = 390;

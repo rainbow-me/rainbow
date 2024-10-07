@@ -1,4 +1,4 @@
-import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
+import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/components/swaps/types/assets';
 import { Address } from 'viem';
 import { RainbowError, logger } from '@/logger';
 import reduxStore, { AppState } from '@/redux/store';

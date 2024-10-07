@@ -20,10 +20,17 @@ import { AddysAddressAsset, ParsedAsset, RainbowAddressAssets } from './types';
 import { getUniqueId } from '@/utils/ethereumUtils';
 import { ChainId, ChainName } from '@/chains/types';
 import { chainsIdByName, chainsName } from '@/chains';
-import { AddressOrEth, AssetApiResponse, AssetMetadata, ParsedSearchAsset, ParsedUserAsset, ZerionAsset } from '@/__swaps__/types/assets';
+import {
+  AddressOrEth,
+  AssetApiResponse,
+  AssetMetadata,
+  ParsedSearchAsset,
+  ParsedUserAsset,
+  ZerionAsset,
+} from '@/components/swaps/types/assets';
 import { SupportedCurrencyKey } from '@/references';
-import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
-import { SearchAsset } from '@/__swaps__/types/search';
+import { convertAmountToNativeDisplayWorklet } from '@/components/swaps/utils/numbers';
+import { SearchAsset } from '@/components/swaps/types/search';
 
 const storage = new MMKV();
 
@@ -169,23 +176,7 @@ export function parseAssetMetadata({
   currency: SupportedCurrencyKey;
 }): ParsedAsset {
   const mainnetAddress = asset.networks?.[ChainId.mainnet]?.address || address;
-  const uniqueId = getUniqueIdForAsset({
-    asset: {
-      ...asset,
-      asset_code: address,
-      chain_id: chainId,
-      icon_url: '',
-      price: {
-        changed_at: -1,
-        relative_change_24h: asset.price.relativeChange24h,
-        value: asset.price.value,
-      },
-      bridging: {
-        bridgeable: false,
-        networks: {},
-      },
-    } as AssetApiResponse,
-  });
+  const uniqueId = getUniqueId(address, chainId);
   const priceData = {
     relative_change_24h: asset?.price?.relativeChange24h,
     value: asset?.price?.value,

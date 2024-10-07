@@ -1,8 +1,8 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, { SharedValue, interpolate, useAnimatedStyle } from 'react-native-reanimated';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { THICK_BORDER_WIDTH } from '@/components/swaps/constants';
+import { opacity } from '@/components/swaps/utils/swaps';
 import { Cover, globalColors } from '@/design-system';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { useBrowserContext } from './BrowserContext';

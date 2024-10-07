@@ -1,5 +1,5 @@
-import { TokenToBuyListItem } from '@/__swaps__/screens/Swap/components/TokenList/TokenToBuyList';
-import { useSearchCurrencyLists } from '@/__swaps__/screens/Swap/hooks/useSearchCurrencyLists';
+import { TokenToBuyListItem } from '@/components/swaps/TokenToBuyList';
+import { useSearchCurrencyLists } from '@/components/swaps/hooks/useSearchCurrencyLists';
 import { analytics } from '@/analytics';
 import { ChainId } from '@/chains/types';
 import React, { createContext, Dispatch, SetStateAction, RefObject, useState, useRef, useCallback } from 'react';
@@ -17,7 +17,6 @@ type DiscoverScreenContextType = {
   cancelSearch: () => void;
   scrollToTop: () => number | null;
   onTapSearch: () => void;
-  setIsInputFocused: (value: boolean) => void;
 
   isLoading: boolean;
   sections: TokenToBuyListItem[];

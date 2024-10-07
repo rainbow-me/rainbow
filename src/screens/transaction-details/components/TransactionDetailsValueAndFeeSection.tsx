@@ -65,7 +65,8 @@ export const TransactionDetailsValueAndFeeSection: React.FC<Props> = ({ transact
                   >
                     <View
                       style={{
-                        shadowColor: theme.colorScheme === 'dark' || !assetData.color ? globalColors.grey100 : assetData.color,
+                        shadowColor:
+                          theme.colorScheme === 'dark' || !assetData.colors?.primary ? globalColors.grey100 : assetData.colors?.primary,
                         shadowOffset: { width: 0, height: 6 },
                         shadowOpacity: 0.24,
                         shadowRadius: 9,

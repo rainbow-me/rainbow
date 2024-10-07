@@ -1,7 +1,7 @@
-import { ParsedAssetsDict, ParsedAssetsDictByChain, ParsedUserAsset, UniqueId } from '@/__swaps__/types/assets';
+import { ParsedAssetsDict, ParsedAssetsDictByChain, ParsedUserAsset, UniqueId } from '@/components/swaps/types/assets';
 import { ChainId } from '@/chains/types';
 import { deriveAddressAndChainWithUniqueId } from '@/utils/address';
-import { add } from '@/__swaps__/utils/numbers';
+import { add } from '@/helpers/utilities';
 
 // selectors
 export function selectorFilterByUserChains<T>({

@@ -1,8 +1,8 @@
 import { NativeCurrencyKey, ParsedAddressAsset, ZerionAssetPrice } from '@/entities';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { ChainId, Network } from '@/chains/types';
-import { AddressOrEth, AssetApiResponse, AssetType, ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
-import { ResponseByTheme } from '@/__swaps__/utils/swaps';
+import { AddressOrEth, AssetApiResponse, AssetType, ParsedSearchAsset, UniqueId } from '@/components/swaps/types/assets';
+import { ResponseByTheme } from '@/components/swaps/utils/swaps';
 
 export type AddysAccountAssetsResponse = {
   meta: AddysAccountAssetsMeta;
@@ -56,7 +56,11 @@ export interface ParsedAsset {
   address: AddressOrEth;
   chainId: ChainId;
   chainName: string;
-  colors?: TokenColors;
+  colors?: {
+    fallback?: string;
+    primary: string;
+    shadow?: string;
+  };
   isNativeAsset?: boolean;
   name: string;
   native: {

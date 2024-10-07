@@ -1,5 +1,5 @@
 import { ChainId } from '@/chains/types';
-import { SearchAsset } from '@/__swaps__/types/search';
+import { SearchAsset } from '@/components/swaps/types/search';
 import {
   ARBITRUM_ETH_ADDRESS,
   AVAX_AVALANCHE_ADDRESS,

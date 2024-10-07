@@ -7,7 +7,7 @@ import { getUniqueTokenFormat, getUniqueTokenType, isLowerCaseMatch } from '@/ut
 import * as i18n from '@/languages';
 import { UniqueAsset } from '@/entities';
 import { NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
-import { ParsedAsset } from '@/__swaps__/types/assets';
+import { ParsedAsset } from '@/components/swaps/types/assets';
 
 const COINS_TO_SHOW = 5;
 

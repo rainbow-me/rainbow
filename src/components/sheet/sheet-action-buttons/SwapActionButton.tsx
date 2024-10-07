@@ -14,7 +14,7 @@ import { parseSearchAsset } from '@/resources/assets/assets';
 import assetInputTypes from '@/helpers/assetInputTypes';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { InteractionManager } from 'react-native';
-import { AddressOrEth, AssetType, ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { AddressOrEth, AssetType, ParsedSearchAsset } from '@/components/swaps/types/assets';
 import { chainsName } from '@/chains';
 
 type SwapActionButtonProps = {

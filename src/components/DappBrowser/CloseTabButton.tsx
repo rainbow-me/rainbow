@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import Animated, { SharedValue, interpolate, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { Box, TextIcon, useColorMode } from '@/design-system';
 import { IS_IOS } from '@/env';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/swaps/GestureHandlerButton';
 import { deviceUtils } from '@/utils';
 import { AnimatedBlurView } from '../AnimatedComponents/AnimatedBlurView';
 import { TIMING_CONFIGS } from '../animations/animationConfigs';

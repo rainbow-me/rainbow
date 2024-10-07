@@ -1,5 +1,5 @@
 import { ChainId } from '@/chains/types';
-import { SearchAsset } from '@/__swaps__/types/search';
+import { SearchAsset } from '@/components/swaps/types/search';
 import { RainbowError, logger } from '@/logger';
 import { RainbowFetchClient } from '@/rainbow-fetch';
 import { QueryFunctionArgs, createQueryKey } from '@/react-query';

@@ -16,7 +16,7 @@ import styled from '@/styled-thing';
 import { margin } from '@/styles';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 import * as i18n from '@/languages';
-import { COIN_ROW_WITH_PADDING_HEIGHT } from '@/__swaps__/screens/Swap/components/CoinRow';
+import { COIN_ROW_WITH_PADDING_HEIGHT } from '@/components/swaps/CoinRow';
 import { Box } from '@/design-system';
 
 const ContactAddress = styled(TruncatedAddress).attrs(({ theme: { colors }, lite }) => ({

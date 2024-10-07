@@ -1,4 +1,4 @@
-import { UniqueId, AddressOrEth } from '@/__swaps__/types/assets';
+import { UniqueId, AddressOrEth } from '@/components/swaps/types/assets';
 import { checkIsValidAddressOrDomain } from '@/helpers/validators';
 import { EthereumAddress } from '@/entities';
 import { ChainId } from '@/chains/types';

@@ -16,13 +16,8 @@ import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
 import { ChainId } from '@/chains/types';
 import { chainsIdByName } from '@/chains';
-import {
-  getFormattedTestId,
-  getItemLayout,
-  TokenToBuyListItem,
-  TokenToBuySectionHeader,
-} from '@/__swaps__/screens/Swap/components/TokenList/TokenToBuyList';
-import { CoinRow } from '@/__swaps__/screens/Swap/components/CoinRow';
+import { getFormattedTestId, getItemLayout, TokenToBuyListItem, TokenToBuySectionHeader } from '@/components/swaps/TokenToBuyList';
+import { CoinRow } from '@/components/swaps/CoinRow';
 import { ContactRow } from '@/components/contacts';
 
 export const SearchContainer = styled(Row)({

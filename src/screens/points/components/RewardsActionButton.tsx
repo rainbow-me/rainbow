@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Text, TextShadow, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/components/swaps/utils/swaps';
 
 export const RewardsActionButton = memo(function RewardsActionButton({
   borderRadius = 20,
