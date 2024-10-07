@@ -95,7 +95,7 @@ const NetworkPill = ({ chainIds }: { chainIds: ChainId[] }) => {
         paddingTop="8px"
         marginRight={{ custom: -2 }}
       >
-        <Box flexDirection="row" justifyContent="flex-end" alignItems="center" width="full">
+        <Box flexDirection="row" justifyContent="flex-end" alignItems="center">
           {availableNetworkChainIds.length > 1 ? (
             <>
               {availableNetworkChainIds.map((chainId, index) => {
@@ -221,6 +221,8 @@ export function WalletConnectApprovalSheet() {
       accountLabel: approvalAccountInfo.accountENS || approvalAccountInfo.accountName || approvalAccount.address,
     };
   }, [walletNames, approvalAccount.wallet, approvalAccount.address]);
+
+  console.log({ initialApprovalAccount, approvalAccountInfo });
 
   /**
    * In WC v1 this was the network the dapp was requesting, which was editable
