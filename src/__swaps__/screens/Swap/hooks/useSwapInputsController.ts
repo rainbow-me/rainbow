@@ -50,10 +50,37 @@ import { deepEqualWorklet } from '@/worklets/comparisons';
 
 const REMOTE_CONFIG = getRemoteConfig();
 
+function getInitialInputValues({
+  inputAsset,
+  inputAmount,
+  outputAsset,
+  outputAmount,
+  percentageToSwap,
+  sliderXPosition,
+}: {
+  inputAsset: ExtendedAnimatedAssetWithColors | null;
+  inputAmount: string | undefined;
+  outputAsset: ExtendedAnimatedAssetWithColors | null;
+  outputAmount: string | undefined;
+  percentageToSwap: number;
+  sliderXPosition: number;
+}) {
+  if (inputAsset && inputAmount) {
+    const inputNativeValue = mulWorklet(inputAmount, inputAsset?.price?.value ?? 0);
+    return { inputAmount, inputNativeValue, outputAmount: 0, outputNativeValue: 0 };
+  }
+  if (outputAsset && outputAmount) {
+    const outputNativeValue = mulWorklet(outputAmount, outputAsset?.price?.value ?? 0);
+    return { inputAmount: 0, inputNativeValue: 0, outputAmount, outputNativeValue };
+  }
+
+  const slider = getInputValuesForSliderPositionWorklet({ selectedInputAsset: inputAsset, percentageToSwap, sliderXPosition });
+  return { inputAmount: slider.inputAmount, inputNativeValue: slider.inputNativeValue, outputAmount: 0, outputNativeValue: 0 };
+}
+
 export function useSwapInputsController({
   focusedInput,
   inputProgress,
-  initialSelectedInputAsset,
   internalSelectedInputAsset,
   internalSelectedOutputAsset,
   isFetching,
@@ -63,10 +90,10 @@ export function useSwapInputsController({
   quote,
   sliderXPosition,
   slippage,
+  initialValues,
 }: {
   focusedInput: SharedValue<inputKeys>;
   inputProgress: SharedValue<number>;
-  initialSelectedInputAsset: ExtendedAnimatedAssetWithColors | null;
   internalSelectedInputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   internalSelectedOutputAsset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
   isFetching: SharedValue<boolean>;
@@ -76,27 +103,30 @@ export function useSwapInputsController({
   quote: SharedValue<Quote | CrosschainQuote | QuoteError | null>;
   sliderXPosition: SharedValue<number>;
   slippage: SharedValue<string>;
+  initialValues: {
+    inputAmount?: string;
+    outputAmount?: string;
+    inputMethod?: inputMethods;
+  };
 }) {
   const percentageToSwap = useDerivedValue(() => {
     return Math.round(clamp((sliderXPosition.value - SCRUBBER_WIDTH / SLIDER_WIDTH) / SLIDER_WIDTH, 0, 1) * 100) / 100;
   });
 
-  const { inputAmount: initialInputAmount, inputNativeValue: initialInputNativeValue } = getInputValuesForSliderPositionWorklet({
-    selectedInputAsset: initialSelectedInputAsset,
-    percentageToSwap: percentageToSwap.value,
-    sliderXPosition: sliderXPosition.value,
-  });
-
   const { nativeCurrency: currentCurrency } = useAccountSettings();
   const setSlippage = swapsStore(state => state.setSlippage);
 
-  const inputValues = useSharedValue<inputValuesType>({
-    inputAmount: initialInputAmount,
-    inputNativeValue: initialInputNativeValue,
-    outputAmount: 0,
-    outputNativeValue: 0,
-  });
-  const inputMethod = useSharedValue<inputMethods>('slider');
+  const inputValues = useSharedValue<inputValuesType>(
+    getInitialInputValues({
+      inputAsset: internalSelectedInputAsset.value,
+      inputAmount: initialValues.inputAmount,
+      outputAsset: internalSelectedOutputAsset.value,
+      outputAmount: initialValues.outputAmount,
+      percentageToSwap: percentageToSwap.value,
+      sliderXPosition: sliderXPosition.value,
+    })
+  );
+  const inputMethod = useSharedValue<inputMethods>(initialValues.inputMethod || 'slider');
 
   const inputNativePrice = useDerivedValue(() => {
     return internalSelectedInputAsset.value?.nativePrice || internalSelectedInputAsset.value?.price?.value || 0;
@@ -563,6 +593,10 @@ export function useSwapInputsController({
     autoStart: false,
   });
 
+  if (internalSelectedInputAsset.value && internalSelectedOutputAsset.value) {
+    fetchQuoteAndAssetPrices();
+  }
+
   const onChangedPercentage = useDebouncedCallback(
     (percentage: number) => {
       lastTypedInput.value = 'inputAmount';
@@ -657,6 +691,7 @@ export function useSwapInputsController({
       assetToSellNetwork: internalSelectedInputAsset.value?.chainId,
     }),
     (current, previous) => {
+      if (!previous) return;
       const didInputAssetChange = current.assetToSellId !== previous?.assetToSellId;
       const didOutputAssetChange = current.assetToBuyId !== previous?.assetToBuyId;
 

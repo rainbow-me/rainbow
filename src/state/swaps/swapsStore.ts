@@ -1,4 +1,4 @@
-import { MIN_FLASHBOTS_PRIORITY_FEE } from '@/__swaps__/screens/Swap/constants';
+import { INITIAL_SLIDER_POSITION, MIN_FLASHBOTS_PRIORITY_FEE } from '@/__swaps__/screens/Swap/constants';
 import { getCustomGasSettings, setCustomMaxPriorityFee } from '@/__swaps__/screens/Swap/hooks/useCustomGas';
 import { getSelectedGasSpeed } from '@/__swaps__/screens/Swap/hooks/useSelectedGas';
 import { ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
@@ -26,6 +26,9 @@ export interface SwapsState {
 
   selectedOutputChainId: ChainId;
   outputSearchQuery: string;
+
+  percentageToSell: number; // Value between 0 and 1, e.g., 0.5, 0.1, 0.25
+  setPercentageToSell: (percentageToSell: number) => void; // Accepts values from 0 to 1
 
   // settings
   flashbots: boolean;
@@ -141,6 +144,9 @@ export const swapsStore = createRainbowStore<SwapsState>(
 
     selectedOutputChainId: ChainId.mainnet,
     outputSearchQuery: '',
+
+    percentageToSell: INITIAL_SLIDER_POSITION,
+    setPercentageToSell: (percentageToSell: number) => set({ percentageToSell }),
 
     flashbots: false,
     setFlashbots: (flashbots: boolean) => {

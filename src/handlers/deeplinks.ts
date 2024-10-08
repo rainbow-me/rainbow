@@ -21,6 +21,17 @@ import { queryClient } from '@/react-query';
 import { pointsReferralCodeQueryKey } from '@/resources/points';
 import { useMobileWalletProtocolHost } from '@coinbase/mobile-wallet-protocol-host';
 import { InitialRoute } from '@/navigation/initialRoute';
+import { ParsedSearchAsset, UniqueId } from '@/__swaps__/types/assets';
+import { GasSpeed } from '@/__swaps__/types/gas';
+import { deriveAddressAndChainWithUniqueId } from '@/__swaps__/utils/address';
+import { parseSearchAsset } from '@/__swaps__/utils/assets';
+import { supportedSwapChainIds } from '@/chains';
+import { queryTokenSearch } from '@/__swaps__/screens/Swap/resources/search/search';
+import { clamp } from '@/__swaps__/utils/swaps';
+import { isAddress } from 'viem';
+import { settingsUpdateAccountAddress } from '@/redux/settings';
+import { queryUserAssets } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
+import { navigateToSwaps, SwapsParams } from '@/__swaps__/screens/Swap/navigateToSwaps';
 
 interface DeeplinkHandlerProps extends Pick<ReturnType<typeof useMobileWalletProtocolHost>, 'handleRequestUrl' | 'sendFailureToClient'> {
   url: string;
@@ -207,6 +218,12 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
         break;
       }
 
+      case 'swap': {
+        logger.debug(`[handleDeeplink]: swap`, { url });
+        handleSwapsDeeplink(url);
+        break;
+      }
+
       case 'wsegue': {
         const response = await handleRequestUrl(url);
         if (response.error) {
@@ -336,4 +353,72 @@ function handleWalletConnect(uri?: string, connector?: string) {
     setHasPendingDeeplinkPendingRedirect(true);
     store.dispatch(walletConnectSetPendingRedirect());
   }
+}
+
+const isValidAsset = (s: string | undefined): s is UniqueId => {
+  if (!s) return false;
+  const [address, chainId] = s.split('_');
+  return supportedSwapChainIds.includes(parseInt(chainId, 10)) && (address === 'eth' || address.length === 42);
+};
+
+const querySearchAsset = async (uniqueId: string | undefined): Promise<ParsedSearchAsset | undefined> => {
+  if (!isValidAsset(uniqueId)) return;
+
+  const { address, chainId } = deriveAddressAndChainWithUniqueId(uniqueId);
+
+  const userAsset = queryUserAssets().then(allUserAssets => allUserAssets[chainId][uniqueId]);
+
+  const searchAsset = await queryTokenSearch({
+    chainId,
+    query: address.toLowerCase(),
+    keys: ['address'],
+    threshold: 'CASE_SENSITIVE_EQUAL',
+    list: 'verifiedAssets',
+  }).then(res => res[0]);
+
+  // @ts-expect-error aaaa
+  if (!searchAsset) return userAsset;
+
+  return parseSearchAsset({ searchAsset, userAsset: await userAsset });
+};
+
+function isValidGasSpeed(s: string | undefined): s is GasSpeed {
+  if (!s) return false;
+  return Object.values(GasSpeed).includes(s as GasSpeed);
+}
+
+function setFromWallet(address: string | undefined) {
+  if (!address || !isAddress(address)) return;
+
+  const userWallets = store.getState().wallets.wallets!;
+  const userAddresses = Object.values(userWallets).flatMap(w => w.addresses.map(a => a.address));
+
+  if (userAddresses.includes(address)) {
+    store.dispatch(settingsUpdateAccountAddress(address));
+  }
+}
+
+async function handleSwapsDeeplink(url: string) {
+  const { query } = new URL(url, true);
+
+  setFromWallet(query.from);
+
+  const params: SwapsParams = {};
+
+  const inputAsset = querySearchAsset(query.inputAsset);
+  const outputAsset = querySearchAsset(query.outputAsset);
+  params.inputAsset = await inputAsset;
+  params.outputAsset = await outputAsset;
+
+  if ('flashbots' in query) params.flashbots = query.flashbots === 'true';
+  if ('slippage' in query) params.slippage = query.slippage;
+
+  if (query.percentageToSell) params.percentageToSell = clamp(+query.percentageToSell, 0, 1);
+  else if (query.inputAmount) params.inputAmount = query.inputAmount;
+  else if (query.outputAmount) params.outputAmount = query.outputAmount;
+
+  const gasSpeed = query.gasSpeed?.toLowerCase();
+  if (isValidGasSpeed(gasSpeed)) params.gasSpeed = gasSpeed;
+
+  navigateToSwaps(params);
 }
