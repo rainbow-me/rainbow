@@ -429,7 +429,7 @@ export const SignTransactionSheet = () => {
       // When the tx is sent from a different wallet,
       // we need to switch to that wallet before saving the tx
       InteractionManager.runAfterInteractions(async () => {
-        if (!txSavedInCurrentWallet && !isNil(txDetails)) {
+        if (!txSavedInCurrentWallet && !!txDetails) {
           if (txDetails?.from) {
             await switchToWalletWithAddress(txDetails?.from as string);
           }

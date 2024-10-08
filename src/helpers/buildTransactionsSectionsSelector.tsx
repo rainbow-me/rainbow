@@ -129,7 +129,7 @@ export const buildTransactionsSections = ({
   }
 
   if (!isEmpty(requests)) {
-    sectionedTransactions.push({
+    sectionedTransactions.unshift({
       data: requests,
       renderItem: ({ item }: { item: WalletconnectRequestData }) => <RequestCoinRow item={item} theme={theme} />,
       title: i18n.t(i18n.l.walletconnect.requests),

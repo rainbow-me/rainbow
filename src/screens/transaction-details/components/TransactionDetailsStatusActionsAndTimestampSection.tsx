@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { NewTransaction, RainbowTransaction, TransactionStatus } from '@/entities';
+import { PendingTransaction, RainbowTransaction, TransactionStatus } from '@/entities';
 import { Box, Stack, Text } from '@/design-system';
 import { formatTransactionDetailsDate } from '@/screens/transaction-details/helpers/formatTransactionDetailsDate';
 import { getIconColorAndGradientForTransactionStatus } from '@/screens/transaction-details/helpers/getIconColorAndGradientForTransactionStatus';
@@ -76,13 +76,13 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
       switch (actionKey) {
         case 'speedUp':
           navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
-            tx: transaction as NewTransaction,
+            tx: transaction as PendingTransaction,
             type: 'speed_up',
           });
           return;
         case 'cancel':
           navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
-            tx: transaction as NewTransaction,
+            tx: transaction as PendingTransaction,
             type: 'cancel',
           });
           return;

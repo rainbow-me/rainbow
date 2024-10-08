@@ -57,7 +57,7 @@ const SWAP_GAS_ICONS: SwapGasIcons = {
 };
 
 const GAS_EMOJIS: {
-  [key: string]: string;
+  [key in (typeof GasSpeedOrder)[number]]: string;
 } = {
   [CUSTOM]: '⚙️',
   [FAST]: '🚀',

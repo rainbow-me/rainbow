@@ -5,7 +5,7 @@ import Routes from '@/navigation/routesNames';
 import { PortalSheetProps } from '@/screens/Portal';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { CampaignCheckResult } from '@/components/remote-promo-sheet/checkForRemotePromoSheet';
-import { NewTransaction, ParsedAddressAsset, UniqueAsset } from '@/entities';
+import { ParsedAddressAsset, PendingTransaction, UniqueAsset } from '@/entities';
 import { Claimable } from '@/resources/addys/claimables/types';
 import { WalletconnectApprovalSheetRouteParams, WalletconnectResultType } from '@/redux/walletconnect';
 import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
@@ -34,12 +34,12 @@ export type RootStackParamList = {
   };
   [Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET]: {
     accentColor?: string;
-    tx: NewTransaction;
+    tx: PendingTransaction;
     type: 'speed_up' | 'cancel';
   };
   [Routes.SPEED_UP_AND_CANCEL_SHEET]: {
     accentColor?: string;
-    tx: NewTransaction;
+    tx: PendingTransaction;
     type: 'speed_up' | 'cancel';
   };
   [Routes.BACKUP_SHEET]: {

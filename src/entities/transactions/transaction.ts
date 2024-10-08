@@ -10,7 +10,6 @@ import { ParsedAsset, AddysAsset } from '@/resources/assets/types';
 import { ChainId, Network } from '@/chains/types';
 import { TransactionResponse } from '@ethersproject/providers';
 
-import { LegacyTransactionGasParams, TransactionGasParams } from '@/entities/gas';
 import { BytesLike } from '@ethersproject/bytes';
 
 export enum TransactionDirection {
@@ -101,6 +100,7 @@ export interface RainbowTransaction {
   nonce?: number | null;
   protocol?: ProtocolType | null;
   flashbots?: boolean;
+  flashbotsStatus?: FlashbotsStatus;
   approvalAmount?: 'UNLIMITED' | (string & Record<string, never>);
   ensCommitRegistrationName?: string;
   ensRegistration?: boolean;
@@ -135,7 +135,6 @@ export enum FlashbotsStatus {
 
 export type MinedTransaction = RainbowTransaction & {
   status: TransactionStatus.confirmed | TransactionStatus.failed;
-  flashbotsStatus?: FlashbotsStatus;
   blockNumber: number;
   minedAt: number;
   confirmations: number;
@@ -256,55 +255,7 @@ export interface AssetPricesReceivedMessage {
 
 export type TxHash = `0x${string}`;
 
-type BaseTransaction = {
-  hash: TxHash;
-  nonce: number; // -2 when not from the wallet user
-  from: string;
-  to?: string; // it may not have a to if it's a contract deployment (covalent)
-  data?: string;
-  network: Network;
-
-  changes?: Array<
-    | {
-        asset: ParsedAsset;
-        direction: TransactionDirection;
-        address_from?: string;
-        address_to?: string;
-        value?: number | string;
-        price?: number | string;
-      }
-    | undefined
-  >;
-  direction?: TransactionDirection;
-  flashbots?: boolean;
-
-  value?: string; // network asset amount sent with the tx (like eth or matic)
-  fee?: string;
-  native?: {
-    // fee and value but in the user prefered currency terms (USD, EUR, etc)
-    value?: string;
-    fee?: string;
-  };
-
-  type: TransactionType;
-  protocol?: string;
-  title: string;
-  description?: string;
-
-  asset?: AddysAsset; // this is the relevant tx asset, like the asset being sold/approved/withdrawn etc
-  approvalAmount?: 'UNLIMITED' | (string & object);
-  contract?: {
-    name: string;
-    iconUrl?: string;
-  };
-
-  feeType?: 'legacy' | 'eip-1559';
-  gasPrice?: string;
-  gasLimit?: string;
-  baseFee?: string;
-} & Partial<TransactionGasParams & LegacyTransactionGasParams>;
-
-export type PendingTransaction = BaseTransaction & {
+export type PendingTransaction = RainbowTransaction & {
   status: TransactionStatus.pending;
 };
 

@@ -182,7 +182,7 @@ export default function SpeedUpAndCancelSheet() {
       if (tx?.ensCommitRegistrationName) {
         cancelCommitTransactionHash();
       }
-      const updatedTx = { ...tx };
+      const updatedTx = { ...tx, nonce: tx.nonce ?? 0 };
       // Update the hash on the copy of the original tx
       if (res?.result?.hash) {
         updatedTx.hash = res.result.hash;
@@ -257,7 +257,7 @@ export default function SpeedUpAndCancelSheet() {
       if (tx?.ensCommitRegistrationName && res?.result?.hash) {
         saveCommitTransactionHash(res.result.hash);
       }
-      const updatedTx = { ...tx };
+      const updatedTx = { ...tx, nonce: tx.nonce ?? 0 };
       // Update the hash on the copy of the original tx
       if (res?.result?.hash) {
         updatedTx.hash = res.result.hash;
@@ -362,7 +362,7 @@ export default function SpeedUpAndCancelSheet() {
           }
 
           setReady(true);
-          setNonce(tx.nonce);
+          setNonce(tx.nonce ?? 0);
           setData(tx?.data);
           if (!isL2) {
             setTxType(GasFeeTypes.eip1559);

@@ -28,7 +28,7 @@ const ActivityListEmptyState = ({ children, emoji, label }: ActivityListEmptySta
 
   return (
     <View>
-      {children && children}
+      {children}
       <Container height={deviceUtils.dimensions.height - (navbarHeight + topInset) * 2}>
         <Centered>
           <Text align="center" letterSpacing="zero" size="h2">

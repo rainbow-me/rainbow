@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
-import { RainbowTransaction, MinedTransaction, TransactionStatus } from '@/entities';
+import { RainbowTransaction, MinedTransaction, TransactionStatus, FlashbotsStatus } from '@/entities';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { transactionFetchQuery } from '@/resources/transactions/transaction';
@@ -65,7 +65,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         minedAt,
         title,
         flashbotsStatus,
-      } as RainbowTransaction;
+      } as MinedTransaction;
     }
     return tx;
   }, []);
@@ -94,7 +94,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         if (tx.chainId && tx.hash && address) {
           updatedTransaction = await processSupportedNetworkTransaction(updatedTransaction);
           // if flashbots tx and no blockNumber, check if it failed
-          if (!(tx as MinedTransaction).blockNumber && tx.flashbots) {
+          if (tx.flashbots && !('blockNumber' in tx)) {
             updatedTransaction = await processFlashbotsTransaction(updatedTransaction);
           }
         } else {
@@ -133,7 +133,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
           return acc;
         }
         // if tx is flashbots and failed, we want to use the lowest nonce
-        if (tx.flashbots && (tx as MinedTransaction)?.flashbotsStatus === 'FAILED' && tx?.nonce) {
+        if (tx.flashbots && tx?.flashbotsStatus === FlashbotsStatus.FAILED && tx?.nonce) {
           // if we already have a failed flashbots tx, we want to use the lowest nonce
           if (flashbotsTxFailed && tx.nonce < acc.get(tx.chainId)) {
             acc.set(tx.chainId, tx.nonce);

@@ -8,7 +8,7 @@ import { coverMetadataAtom } from '../components/ens-registration/RegistrationCo
 import { ENSActionParameters, ENSRapActionType } from '@/raps/common';
 import usePendingTransactions from './usePendingTransactions';
 import { useAccountSettings, useENSRegistration, useWalletENSAvatar, useWallets } from '.';
-import { NewTransaction, Records, RegistrationParameters } from '@/entities';
+import { PendingTransaction, Records, RegistrationParameters } from '@/entities';
 import { fetchResolver } from '@/handlers/ens';
 import { saveNameFromLabelhash } from '@/handlers/localstorage/ens';
 import { uploadImage } from '@/handlers/pinata';
@@ -176,13 +176,13 @@ const useENSRegistrationActionHandler: UseENSRegistrationActionHandler = ({ step
         if (IS_IOS) {
           navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
             accentColor,
-            tx: tx as NewTransaction,
+            tx: tx as PendingTransaction,
             type: 'speed_up',
           });
         } else {
           navigate(Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET, {
             accentColor,
-            tx: tx as NewTransaction,
+            tx: tx as PendingTransaction,
             type: 'speed_up',
           });
         }
