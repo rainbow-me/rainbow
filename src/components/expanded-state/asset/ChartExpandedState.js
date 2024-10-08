@@ -173,6 +173,7 @@ export default function ChartExpandedState({ asset }) {
 
   const isL2 = useMemo(() => isL2Chain({ chainId: asset?.chainId }), [asset?.chainId]);
   const isTestnet = isTestnetChain({ chainId: currentChainId });
+  const isTransferable = asset?.transferable ?? genericAsset?.transferable ?? true;
 
   const { data, isLoading: additionalAssetDataLoading } = useAdditionalAssetData({
     address: asset?.address,
@@ -293,7 +294,9 @@ export default function ChartExpandedState({ asset }) {
             <SwapActionButton asset={assetWithPrice} color={color} inputType={AssetInputTypes.in} />
           )}
           {hasBalance ? (
-            <SendActionButton asset={assetWithPrice} color={color} fromDiscover={fromDiscover} />
+            isTransferable ? (
+              <SendActionButton asset={assetWithPrice} color={color} fromDiscover={fromDiscover} />
+            ) : null
           ) : swapEnabled ? (
             <SwapActionButton
               asset={assetWithPrice}
