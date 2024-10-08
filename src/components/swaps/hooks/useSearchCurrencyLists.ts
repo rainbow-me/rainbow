@@ -28,6 +28,7 @@ export interface AssetToBuySection {
 const MAX_UNVERIFIED_RESULTS = 8;
 const MAX_VERIFIED_RESULTS = 48;
 const MAX_POPULAR_RESULTS = 3;
+const MAX_PROFILES_RESULTS = 6;
 
 const mergeAssetsFavoriteStatus = ({
   assets,
@@ -213,7 +214,7 @@ const buildListSectionsData = ({
 
   if (combinedData.profiles?.length) {
     // @ts-expect-error - ens profiles doesn't match the SearchAsset type
-    addSection('profiles', combinedData.profiles, 'profileRow');
+    addSection('profiles', combinedData.profiles.slice(0, MAX_PROFILES_RESULTS), 'profileRow');
   }
 
   if (!formattedData.length && combinedData.crosschainExactMatches?.length) {
@@ -419,10 +420,24 @@ export function useSearchCurrencyLists({
     });
   }, [popularAssets, searchQuery, memoizedData.keys, memoizedData.queryIsAddress]);
 
-  const profiles = useMemo(async () => {
-    if (!searchProfiles) return [];
-    return await fetchSuggestions(searchQuery, noop, noop, searchProfiles);
-  }, [searchProfiles, searchQuery]);
+  const debouncedFetchProfiles = useDebouncedCallback(
+    async (query: string) => {
+      if (!searchProfiles) return;
+
+      if (!query.trim()) {
+        return setState(prev => ({ ...prev, profiles: [] }));
+      }
+
+      const results = await fetchSuggestions(query, noop, noop, true);
+      setState(prev => ({ ...prev, profiles: results }));
+    },
+    300,
+    { leading: false, trailing: true }
+  );
+
+  useEffect(() => {
+    debouncedFetchProfiles(searchQuery);
+  }, [debouncedFetchProfiles, searchQuery]);
 
   const favoritesList = useMemo(() => {
     if (searchQuery === '') {
@@ -455,18 +470,6 @@ export function useSearchCurrencyLists({
     }
   );
 
-  useEffect(() => {
-    if (searchProfiles) {
-      profiles.then(results => {
-        if (results.length) {
-          debouncedStateSet(prev => ({ ...prev, profiles: results }));
-        } else {
-          debouncedStateSet(prev => ({ ...prev, profiles: [] }));
-        }
-      });
-    }
-  }, [debouncedStateSet, profiles, searchProfiles]);
-
   return useMemo(() => {
     const toChainId = selectedOutputChainId.value ?? ChainId.mainnet;
     const bridgeResult = memoizedData.filteredBridgeAsset ?? undefined;
@@ -474,17 +477,21 @@ export function useSearchCurrencyLists({
     const verifiedResults = searchQuery === '' ? verifiedAssets : verifiedAssets?.filter(asset => asset.chainId === toChainId);
     const unverifiedResults = memoizedData.enableUnverifiedSearch ? unverifiedAssets : undefined;
 
+    const combinedData = {
+      bridgeAsset: bridgeResult,
+      crosschainExactMatches: crosschainMatches,
+      unverifiedAssets: unverifiedResults,
+      verifiedAssets: verifiedResults,
+      recentSwaps: recentsForChain,
+      popularAssets: popularAssetsForChain,
+      profiles: state.profiles,
+    };
+
+    console.log(`Number of profiles in combinedData: ${combinedData.profiles.map(profile => profile.nickname)}`);
+
     return {
       results: buildListSectionsData({
-        combinedData: {
-          bridgeAsset: bridgeResult,
-          crosschainExactMatches: crosschainMatches,
-          unverifiedAssets: unverifiedResults,
-          verifiedAssets: verifiedResults,
-          recentSwaps: recentsForChain,
-          popularAssets: popularAssetsForChain,
-          profiles: state.profiles,
-        },
+        combinedData,
         favoritesList,
         filteredBridgeAssetAddress: memoizedData.filteredBridgeAsset?.address,
       }),

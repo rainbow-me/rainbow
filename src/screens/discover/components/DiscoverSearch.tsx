@@ -10,7 +10,7 @@ import { useAccountSettings, useHardwareBackOnFocus } from '@/hooks';
 import { useNavigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
-import { ethereumUtils } from '@/utils';
+import { ethereumUtils, safeAreaInsetValues } from '@/utils';
 import { getPoapAndOpenSheetWithQRHash, getPoapAndOpenSheetWithSecretWord } from '@/utils/poaps';
 import { navigateToMintCollection } from '@/resources/reservoir/mints';
 import { TAB_BAR_HEIGHT } from '@/navigation/SwipeNavigator';
@@ -19,6 +19,8 @@ import { chainsIdByName } from '@/chains';
 import { getFormattedTestId, getItemLayout, TokenToBuyListItem, TokenToBuySectionHeader } from '@/components/swaps/TokenToBuyList';
 import { CoinRow } from '@/components/swaps/CoinRow';
 import { ContactRow } from '@/components/contacts';
+import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
+import { navbarHeight } from '@/components/navbar/Navbar';
 
 export const SearchContainer = styled(Row)({
   height: '100%',
@@ -32,7 +34,8 @@ export default function DiscoverSearch() {
     useDiscoverScreenContext();
 
   const profilesEnabled = useExperimentalFlag(PROFILES);
-  const marginBottom = TAB_BAR_HEIGHT;
+  const marginBottom = TAB_BAR_HEIGHT + safeAreaInsetValues.bottom + 16;
+  const TOP_OFFSET = safeAreaInsetValues.top + navbarHeight;
 
   useHardwareBackOnFocus(() => {
     cancelSearch();
@@ -125,7 +128,7 @@ export default function DiscoverSearch() {
   }, [flatListRef, isSearching]);
 
   return (
-    <View style={{ height: deviceUtils.dimensions.height - 140 - marginBottom }}>
+    <View style={{ height: deviceUtils.dimensions.height - TOP_OFFSET - marginBottom }}>
       <SearchContainer>
         <FlatList
           ref={flatListRef}
@@ -137,7 +140,9 @@ export default function DiscoverSearch() {
             let id;
             if (item.listItemType === 'header') {
               id = item.id;
-            } else if (item.listItemType === 'coinRow' || item.listItemType === 'profileRow') {
+            } else if (item.listItemType === 'profileRow') {
+              id = removeFirstEmojiFromString(item.nickname) || '';
+            } else if (item.listItemType === 'coinRow') {
               id = item.uniqueId;
             }
             return `${item.listItemType}-${id}`;
@@ -154,7 +159,7 @@ export default function DiscoverSearch() {
                   nickname={item.nickname}
                   onPress={() => handlePress(item)}
                   showcaseItem={item}
-                  testID={`ens-${item.uniqueId}`}
+                  testID={`discover-currency-select-list-exchange-contact-row-${removeFirstEmojiFromString(item.nickname) || ''}`}
                 />
               );
             } else {

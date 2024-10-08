@@ -219,6 +219,7 @@ const DiscoverSearchInput = ({
         onBlur={onBlur}
         placeholder={placeholder}
         ref={searchInputRef}
+        value={searchQuery}
         testID={testID + '-input'}
       />
       <ClearInputDecorator

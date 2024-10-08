@@ -63,10 +63,9 @@ describe('Discover Screen Flow', () => {
 
   it('Should search and open expanded state for SOCKS', async () => {
     await typeText('discover-search-input', 'SOCKS\n', true);
-    await delayTime('very-long');
-    await checkIfVisible('discover-currency-select-list-exchange-coin-row-SOCKS-1');
-    await checkIfNotVisible('discover-currency-select-list-exchange-coin-row-ETH-1');
-    await waitAndTap('discover-currency-select-list-exchange-coin-row-SOCKS-1');
+    await checkIfVisible('discover-currency-select-list-exchange-coin-row-unisocks-1');
+    await checkIfNotVisible('discover-currency-select-list-exchange-coin-row-eth-1');
+    await waitAndTap('discover-currency-select-list-exchange-coin-row-unisocks-1');
     await checkIfVisible('chart-header-Unisocks');
   });
 
@@ -75,24 +74,25 @@ describe('Discover Screen Flow', () => {
       // RNBW-4035
       await swipe('expanded-state-header', 'down');
     }
-    await checkIfNotVisible('discover-currency-select-list-exchange-coin-row-ETH-1');
+    await checkIfNotVisible('discover-currency-select-list-exchange-coin-row-eth-1');
   });
 
   it('Should display search results in the correct order', async () => {
     await waitAndTap('discover-search-clear-input');
     await typeText('discover-search-input', 'bitcoin', true);
     await delayTime('long');
-    await checkIfVisible('favorites-0');
-    await checkIfVisible('verified-1');
-    await checkIfExists('profiles-2');
-    await checkIfExists('highLiquidity-3');
+    await checkIfVisible('popular-token-to-buy-section-header');
+    await checkIfVisible('favorites-token-to-buy-section-header');
+    await checkIfExists('verified-token-to-buy-section-header');
+    await checkIfExists('profiles-token-to-buy-section-header');
+    await checkIfExists('unverified-token-to-buy-section-header');
   });
 
   it.skip('Should search and open Profile Sheet for rainbowwallet.eth', async () => {
     await waitAndTap('discover-search-clear-input');
     await typeText('discover-search-input', 'rainbowwallet.eth\n', true);
-    await checkIfVisible('discover-currency-select-list-contact-row-rainbowwallet.eth');
-    await checkIfNotVisible('discover-currency-select-list-exchange-coin-row-ETH-1');
+    await checkIfVisible('discover-currency-select-list-exchange-contact-row-rainbowwallet.eth');
+    await checkIfNotVisible('discover-currency-select-list-exchange-coin-row-eth-1');
     await waitAndTap('discover-currency-select-list-contact-row-rainbowwallet.eth');
     await checkIfVisible('profile-sheet');
   });
@@ -104,7 +104,7 @@ describe('Discover Screen Flow', () => {
   it.skip('Should close profile and return to Search on swiping down', async () => {
     await swipe('profile-sheet', 'down');
     await waitAndTap('discover-search-clear-input');
-    await checkIfVisible('discover-currency-select-list-exchange-coin-row-ETH-1');
+    await checkIfVisible('discover-currency-select-list-exchange-coin-row-eth-1');
   });
 
   it('Should close search and return to Discover Home on pressing Done', async () => {
