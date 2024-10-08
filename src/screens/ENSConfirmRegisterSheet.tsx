@@ -66,7 +66,6 @@ function TransactionActionRow({
   return (
     <>
       <Box>
-        {/* @ts-expect-error JavaScript component */}
         <SheetActionButtonRow paddingBottom={5}>
           {/* @ts-expect-error JavaScript component */}
           <HoldToAuthorizeButton

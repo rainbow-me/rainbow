@@ -9,7 +9,7 @@ import { formatJsonRpcResult, formatJsonRpcError } from '@json-rpc-tools/utils';
 import { gretch } from 'gretchen';
 import messaging from '@react-native-firebase/messaging';
 import WalletConnectCore, { Core } from '@walletconnect/core';
-import Client, { Web3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet';
+import { WalletKit, WalletKitTypes, IWalletKit } from '@reown/walletkit';
 import { isHexString } from '@ethersproject/bytes';
 import { toUtf8String } from '@ethersproject/strings';
 
@@ -44,7 +44,7 @@ import { handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 import { PerformanceMetrics } from '@/performance/tracking/types/PerformanceMetrics';
 import { PerformanceTracking } from '@/performance/tracking';
 import { ChainId } from '@/chains/types';
-import { supportedWalletConnectChainIds } from '@/chains';
+import { SUPPORTED_CHAIN_IDS } from '@/chains';
 
 const SUPPORTED_SESSION_EVENTS = ['chainChanged', 'accountsChanged'];
 
@@ -96,20 +96,20 @@ let lastConnector: string | undefined = undefined;
 
 let walletConnectCore: WalletConnectCore | undefined;
 
-let web3WalletClient: ReturnType<(typeof Web3Wallet)['init']> | undefined;
+let walletKitClient: ReturnType<(typeof WalletKit)['init']> | undefined;
 
-let initPromise: Promise<Client> | undefined = undefined;
+let initPromise: Promise<IWalletKit> | undefined = undefined;
 
-let syncWeb3WalletClient: Client | undefined = undefined;
+let syncWalletKitClient: IWalletKit | undefined = undefined;
 
 export const initializeWCv2 = async () => {
   if (!walletConnectCore) {
     walletConnectCore = new Core({ projectId: WC_PROJECT_ID });
   }
 
-  if (!web3WalletClient) {
+  if (!walletKitClient) {
     // eslint-disable-next-line require-atomic-updates
-    web3WalletClient = Web3Wallet.init({
+    walletKitClient = WalletKit.init({
       core: walletConnectCore,
       metadata: {
         name: '🌈 Rainbow',
@@ -124,10 +124,10 @@ export const initializeWCv2 = async () => {
     });
   }
 
-  return web3WalletClient;
+  return walletKitClient;
 };
 
-export async function getWeb3WalletClient() {
+export async function getWalletKitClient() {
   if (!initPromise) {
     initPromise = initializeWCv2();
   }
@@ -196,7 +196,7 @@ export function parseRPCParams({ method, params }: RPCPayload): {
 /**
  * Better signature for this type of function
  *
- * @see https://docs.walletconnect.com/2.0/web/web3wallet/wallet-usage#-namespaces-builder-util
+ * @see https://docs.walletconnect.com/2.0/web/walletKit/wallet-usage#-namespaces-builder-util
  */
 export function getApprovedNamespaces(props: Parameters<typeof buildApprovedNamespaces>[0]):
   | {
@@ -303,7 +303,7 @@ async function rejectProposal({
   proposal,
   reason,
 }: {
-  proposal: Web3WalletTypes.SessionProposal;
+  proposal: WalletKitTypes.SessionProposal;
   reason: Parameters<typeof getSdkError>[0];
 }) {
   logger.warn(`[walletConnect]: session approval denied`, {
@@ -311,7 +311,7 @@ async function rejectProposal({
     proposal,
   });
 
-  const client = await getWeb3WalletClient();
+  const client = await getWalletKitClient();
   const { id, proposer } = proposal.params;
 
   await client.rejectSession({ id, reason: getSdkError(reason) });
@@ -323,11 +323,10 @@ async function rejectProposal({
 }
 
 // listen for THIS topic pairing, and clear timeout if received
-function trackTopicHandler(proposal: Web3WalletTypes.SessionProposal | Web3WalletTypes.AuthRequest) {
+function trackTopicHandler(proposal: WalletKitTypes.SessionProposal | WalletKitTypes.SessionAuthenticate) {
   logger.debug(`[walletConnect]: pair: handler`, { proposal });
 
-  const { metadata } =
-    (proposal as Web3WalletTypes.SessionProposal).params.proposer || (proposal as Web3WalletTypes.AuthRequest).params.requester;
+  const { metadata } = 'proposer' in proposal.params ? proposal.params.proposer : proposal.params.requester;
 
   analytics.track(analytics.event.wcNewPairing, {
     dappName: metadata.name,
@@ -344,7 +343,7 @@ export async function pair({ uri, connector }: { uri: string; connector?: string
    */
 
   const { topic, ...rest } = parseUri(uri);
-  const client = await getWeb3WalletClient();
+  const client = await getWalletKitClient();
 
   logger.debug(`[walletConnect]: pair: parsed uri`, { topic, rest });
 
@@ -355,16 +354,16 @@ export async function pair({ uri, connector }: { uri: string; connector?: string
 export async function initListeners() {
   PerformanceTracking.startMeasuring(PerformanceMetrics.initializeWalletconnect);
 
-  const client = await getWeb3WalletClient();
+  const client = await getWalletKitClient();
   PerformanceTracking.finishMeasuring(PerformanceMetrics.initializeWalletconnect);
 
-  syncWeb3WalletClient = client;
+  syncWalletKitClient = client;
 
-  logger.debug(`[walletConnect]: web3WalletClient initialized, initListeners`, {}, logger.DebugContext.walletconnect);
+  logger.debug(`[walletConnect]: walletKitClient initialized, initListeners`, {}, logger.DebugContext.walletconnect);
 
   client.on('session_proposal', onSessionProposal);
   client.on('session_request', onSessionRequest);
-  client.on('auth_request', onAuthRequest);
+  client.on('session_authenticate', onSessionAuthenticate);
   client.on('session_delete', () => {
     logger.debug(`[walletConnect]: session_delete`, {}, logger.DebugContext.walletconnect);
 
@@ -379,7 +378,7 @@ export async function initWalletConnectPushNotifications() {
     const token = await getFCMToken();
 
     if (token) {
-      const client = await getWeb3WalletClient();
+      const client = await getWalletKitClient();
       const client_id = await client.core.crypto.getClientId();
 
       // initial subscription
@@ -429,7 +428,7 @@ async function subscribeToEchoServer({ client_id, token }: { client_id: string; 
   }
 }
 
-export async function onSessionProposal(proposal: Web3WalletTypes.SessionProposal) {
+export async function onSessionProposal(proposal: WalletKitTypes.SessionProposal) {
   try {
     trackTopicHandler(proposal);
 
@@ -446,7 +445,7 @@ export async function onSessionProposal(proposal: Web3WalletTypes.SessionProposa
 
     // we already checked for eip155 namespace above
     const chainIds = chains?.map(chain => parseInt(chain.split('eip155:')[1]));
-    const supportedChainIds = chainIds.filter(chainId => supportedWalletConnectChainIds.includes(chainId));
+    const supportedChainIds = chainIds.filter(chainId => SUPPORTED_CHAIN_IDS.includes(chainId));
 
     const peerMeta = proposer.metadata;
     const metadata = await fetchDappMetadata({ url: peerMeta.url, status: true });
@@ -468,7 +467,8 @@ export async function onSessionProposal(proposal: Web3WalletTypes.SessionProposa
       verifiedData,
       timedOut: false,
       callback: async (approved, approvedChainId, accountAddress) => {
-        const client = await getWeb3WalletClient();
+        const client = await getWalletKitClient();
+
         const { id, proposer, requiredNamespaces } = proposal.params;
 
         if (approved) {
@@ -486,7 +486,7 @@ export async function onSessionProposal(proposal: Web3WalletTypes.SessionProposa
           const supportedEvents = requiredNamespaces?.eip155?.events || SUPPORTED_SESSION_EVENTS;
 
           /** @see https://chainagnostic.org/CAIPs/caip-2 */
-          const caip2ChainIds = supportedWalletConnectChainIds.map(id => `eip155:${id}`);
+          const caip2ChainIds = SUPPORTED_CHAIN_IDS.map(id => `eip155:${id}`);
           const namespaces = getApprovedNamespaces({
             proposal: proposal.params,
             supportedNamespaces: {
@@ -592,12 +592,14 @@ export async function onSessionProposal(proposal: Web3WalletTypes.SessionProposa
 // For WC v2
 export async function onSessionRequest(event: SignClientTypes.EventArguments['session_request']) {
   setHasPendingDeeplinkPendingRedirect(true);
-  const client = await getWeb3WalletClient();
+  const client = await getWalletKitClient();
 
   logger.debug(`[walletConnect]: session_request`, {}, logger.DebugContext.walletconnect);
 
   const { id, topic } = event;
-  const { method, params } = event.params.request;
+  const { method: _method, params } = event.params.request;
+
+  const method = _method as RPCMethod;
 
   logger.debug(`[walletConnect]: session_request method`, { method, params }, logger.DebugContext.walletconnect);
 
@@ -615,10 +617,10 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
     });
     return;
   }
-  if (isSupportedMethod(method as RPCMethod)) {
-    const isSigningMethod = isSupportedSigningMethod(method as RPCMethod);
+  if (isSupportedMethod(method)) {
+    const isSigningMethod = isSupportedSigningMethod(method);
     const { address, message } = parseRPCParams({
-      method: method as RPCMethod,
+      method,
       params,
     });
     if (!address) {
@@ -808,7 +810,7 @@ export async function handleSessionRequestResponse(
     success: Boolean(result),
   });
 
-  const client = await getWeb3WalletClient();
+  const client = await getWalletKitClient();
   const { topic, id } = sessionRequestEvent;
   if (result) {
     const payload = {
@@ -829,32 +831,33 @@ export async function handleSessionRequestResponse(
   store.dispatch(removeRequest(sessionRequestEvent.id));
 }
 
-export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
+export async function onSessionAuthenticate(event: WalletKitTypes.SessionAuthenticate) {
   trackTopicHandler(event);
 
-  const client = await getWeb3WalletClient();
+  const client = await getWalletKitClient();
 
   logger.debug(`[walletConnect]: auth_request`, { event }, logger.DebugContext.walletconnect);
 
   const authenticate: AuthRequestAuthenticateSignature = async ({ address }) => {
     try {
       const { wallets } = store.getState().wallets;
-      const selectedWallet = findWalletWithAccount(wallets!, address);
+      const selectedWallet = findWalletWithAccount(wallets || {}, address);
       const isHardwareWallet = selectedWallet?.type === WalletTypes.bluetooth;
       const iss = `did:pkh:eip155:1:${address}`;
 
       // exit early if possible
       if (selectedWallet?.type === WalletTypes.readOnly) {
-        await client.respondAuthRequest(
-          {
+        await client.respondSessionRequest({
+          topic: event.topic,
+          response: {
             id: event.id,
             error: {
               code: 0,
               message: `Wallet is read-only`,
             },
+            jsonrpc: '2.0',
           },
-          iss
-        );
+        });
 
         return {
           success: false,
@@ -875,8 +878,10 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
 
           return undefined;
         }
-
-        const message = client.formatMessage(event.params.cacaoPayload, iss);
+        const message = client.formatAuthMessage({
+          iss,
+          request: event.params.authPayload,
+        });
         // prompt the user to sign the message
         return wallet.signMessage(message);
       };
@@ -904,16 +909,19 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
       }
 
       // respond to WC
-      await client.respondAuthRequest(
-        {
+      await client.respondSessionRequest({
+        topic: event.topic,
+        response: {
           id: event.id,
-          signature: {
-            s: signature,
-            t: 'eip191',
-          },
+          result: JSON.stringify({
+            signature: {
+              s: signature,
+              t: 'eip191',
+            },
+          }),
+          jsonrpc: '2.0',
         },
-        iss
-      );
+      });
 
       // only handled on success
       maybeGoBackAndClearHasPendingRedirect({ delay: 300 });
@@ -928,9 +936,7 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
   };
 
   // need to prefetch dapp metadata since portal is static
-  const url =
-    // @ts-ignore Web3WalletTypes.AuthRequest type is missing VerifyContext
-    event?.verifyContext?.origin || event.params.requester.metadata.url;
+  const url = event?.verifyContext?.verified?.origin || event.params.requester.metadata.url;
   const metadata = await fetchDappMetadata({ url, status: true });
 
   const isScam = metadata.status === DAppStatus.Scam;
@@ -939,8 +945,7 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
       AuthRequest({
         authenticate,
         requesterMeta: event.params.requester.metadata,
-        // @ts-ignore Web3WalletTypes.AuthRequest type is missing VerifyContext
-        verifiedData: event?.verifyContext,
+        verifiedData: event?.verifyContext.verified,
       }),
     { sheetHeight: IS_ANDROID ? 560 : 520 + (isScam ? 40 : 0) }
   );
@@ -950,7 +955,7 @@ export async function onAuthRequest(event: Web3WalletTypes.AuthRequest) {
  * Returns all active settings in a type-safe manner.
  */
 export async function getAllActiveSessions() {
-  const client = await getWeb3WalletClient();
+  const client = await getWalletKitClient();
   return Object.values(client?.getActiveSessions() || {}) || [];
 }
 
@@ -959,7 +964,7 @@ export async function getAllActiveSessions() {
  * in a type-safe manner.
  */
 export function getAllActiveSessionsSync() {
-  return Object.values(syncWeb3WalletClient?.getActiveSessions() || {}) || [];
+  return Object.values(syncWalletKitClient?.getActiveSessions() || {}) || [];
 }
 
 /**
@@ -967,7 +972,7 @@ export function getAllActiveSessionsSync() {
  */
 export async function addAccountToSession(session: SessionTypes.Struct, { address }: { address?: string }) {
   try {
-    const client = await getWeb3WalletClient();
+    const client = await getWalletKitClient();
 
     const namespaces: Parameters<typeof client.updateSession>[0]['namespaces'] = {};
     for (const [key, value] of Object.entries(session.namespaces)) {
@@ -1028,7 +1033,7 @@ export async function addAccountToSession(session: SessionTypes.Struct, { addres
 
 export async function changeAccount(session: SessionTypes.Struct, { address }: { address?: string }) {
   try {
-    const client = await getWeb3WalletClient();
+    const client = await getWalletKitClient();
 
     /*
      * Before we can effectively switch accounts, we need to add the account to
@@ -1078,7 +1083,7 @@ export async function changeAccount(session: SessionTypes.Struct, { address }: {
  * within a dapp is handled internally by WC v2.
  */
 export async function disconnectSession(session: SessionTypes.Struct) {
-  const client = await getWeb3WalletClient();
+  const client = await getWalletKitClient();
 
   await client.disconnectSession({
     topic: session.topic,

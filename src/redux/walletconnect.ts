@@ -33,7 +33,7 @@ import { Verify } from '@walletconnect/types';
 import { RequestSource, handleWalletConnectRequest } from '@/utils/requestNavigationHandlers';
 import { ChainId } from '@/chains/types';
 import { Address } from 'viem';
-import { supportedWalletConnectChainIds } from '@/chains';
+import { SUPPORTED_CHAIN_IDS } from '@/chains';
 
 // -- Variables --------------------------------------- //
 let showRedirectSheetThreshold = 300;
@@ -128,6 +128,19 @@ interface WalletconnectAddUriAction {
  */
 export type WalletconnectResultType = 'timedOut' | 'sign' | 'transaction' | 'sign-canceled' | 'transaction-canceled' | 'connect' | 'reject';
 
+export type WalletconnectMeta = {
+  /**
+   * WC v2 introduced multi-chain support, while v1 only supported a single
+   * chain at a time. To avoid confusion, we now send both as an array
+   * `chainIds`. WC v1 will always be an array with length `1`, while v2 can
+   * have more than one.
+   */
+  chainIds: number[];
+  isWalletConnectV2?: boolean;
+  proposedChainId?: number;
+  proposedAddress?: string;
+} & Pick<WalletconnectRequestData, 'dappName' | 'dappScheme' | 'dappUrl' | 'imageUrl' | 'peerId'>;
+
 /**
  * Route parameters sent to a WalletConnect approval sheet.
  */
@@ -142,18 +155,8 @@ export interface WalletconnectApprovalSheetRouteParams {
     dappUrl: WalletconnectRequestData['dappUrl']
   ) => Promise<unknown>;
   receivedTimestamp: number;
-  meta?: {
-    /**
-     * WC v2 introduced multi-chain support, while v1 only supported a single
-     * chain at a time. To avoid confusion, we now send both as an array
-     * `chainIds`. WC v1 will always be an array with length `1`, while v2 can
-     * have more than one.
-     */
-    chainIds: number[];
-    isWalletConnectV2?: boolean;
-    proposedChainId?: number;
-    proposedAddress?: string;
-  } & Pick<WalletconnectRequestData, 'dappName' | 'dappScheme' | 'dappUrl' | 'imageUrl' | 'peerId'>;
+  currentChainId?: ChainId;
+  meta?: WalletconnectMeta;
   timeout?: ReturnType<typeof setTimeout> | null;
   timedOut?: boolean;
   failureExplainSheetVariant?: string;
@@ -455,7 +458,6 @@ const listenOnNewMessages =
 
       if (error) {
         analytics.track('Error on wc call_request', {
-          // @ts-ignore
           error,
           payload,
         });
@@ -475,7 +477,7 @@ const listenOnNewMessages =
         // @ts-expect-error "_chainId" is private.
         const currentChainId = Number(walletConnector._chainId);
         const numericChainId = Number(convertHexToString(chainId));
-        if (supportedWalletConnectChainIds.includes(numericChainId)) {
+        if (SUPPORTED_CHAIN_IDS.includes(numericChainId)) {
           dispatch(walletConnectSetPendingRedirect());
           Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
             callback: async (approved: boolean) => {

@@ -7,6 +7,8 @@ import { REGISTRATION_MODES } from '@/helpers/ens';
 import { CampaignCheckResult } from '@/components/remote-promo-sheet/checkForRemotePromoSheet';
 import { NewTransaction, ParsedAddressAsset, UniqueAsset } from '@/entities';
 import { Claimable } from '@/resources/addys/claimables/types';
+import { WalletconnectApprovalSheetRouteParams, WalletconnectResultType } from '@/redux/walletconnect';
+import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
 
 export type PartialNavigatorConfigOptions = Pick<Partial<Parameters<ReturnType<typeof createStackNavigator>['Screen']>[0]>, 'options'>;
 
@@ -61,7 +63,10 @@ export type RootStackParamList = {
     [key: string]: any;
   };
   [Routes.PORTAL]: PortalSheetProps;
-  [Routes.WALLET_SCREEN]: any;
+  [Routes.WALLET_SCREEN]: {
+    initialized?: boolean;
+    emptyWallet?: boolean;
+  };
   [Routes.PROFILE_SCREEN]: any;
   [Routes.SWAP_SETTINGS_SHEET]: any;
   [Routes.SWAP_DETAILS_SHEET]: any;
@@ -85,5 +90,11 @@ export type RootStackParamList = {
   };
   [Routes.CLAIM_CLAIMABLE_PANEL]: {
     claimable: Claimable;
+  };
+  [Routes.WALLET_CONNECT_APPROVAL_SHEET]: WalletconnectApprovalSheetRouteParams & {
+    type: WalletConnectApprovalSheetType;
+  };
+  [Routes.WALLET_CONNECT_REDIRECT_SHEET]: {
+    type: WalletconnectResultType;
   };
 };

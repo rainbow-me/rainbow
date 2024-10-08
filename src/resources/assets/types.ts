@@ -37,6 +37,7 @@ export type AddysAsset = {
   price?: AddysAssetPrice;
   symbol: string;
   type?: string;
+  transferable?: boolean;
 };
 
 export type AddysNetworkDetails = {

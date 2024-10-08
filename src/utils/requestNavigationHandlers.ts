@@ -21,6 +21,7 @@ import { enableActionsOnReadOnlyWallet } from '@/config';
 import walletTypes from '@/helpers/walletTypes';
 import watchingAlert from './watchingAlert';
 import {
+  AppMetadata,
   EthereumAction,
   isEthereumAction,
   isHandshakeAction,
@@ -35,6 +36,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { Address } from 'viem';
 import { ChainId } from '@/chains/types';
 import { chainsName, SUPPORTED_MAINNET_CHAIN_IDS } from '@/chains';
+import { MobileWalletProtocolUserErrors } from '@/components/MobileWalletProtocolListener';
 
 export enum RequestSource {
   WALLETCONNECT = 'walletconnect',
@@ -94,7 +96,7 @@ export const handleMobileWalletProtocolRequest = async ({
   if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
     logger.debug('Rejecting request due to read-only wallet');
     watchingAlert();
-    return Promise.reject(new Error('This wallet is read-only.'));
+    return Promise.reject(new Error(MobileWalletProtocolUserErrors.READ_ONLY_WALLET));
   }
 
   const handleAction = async (currentIndex: number): Promise<boolean> => {
@@ -106,7 +108,16 @@ export const handleMobileWalletProtocolRequest = async ({
 
       const receivedTimestamp = Date.now();
 
-      const dappMetadata = await fetchClientAppMetadata();
+      let dappMetadata: AppMetadata | null = null;
+      try {
+        dappMetadata = await fetchClientAppMetadata();
+      } catch (error) {
+        logger.error(new RainbowError(`[handleMobileWalletProtocolRequest]: Failed to fetch client app metadata`), {
+          error,
+          action,
+        });
+      }
+
       return new Promise((resolve, reject) => {
         const routeParams: WalletconnectApprovalSheetRouteParams = {
           receivedTimestamp,
@@ -133,8 +144,8 @@ export const handleMobileWalletProtocolRequest = async ({
               resolve(success);
             } else {
               logger.debug(`Handshake rejected for ${action.appId}`);
-              await rejectHandshake('User rejected the handshake');
-              reject('User rejected the handshake');
+              await rejectHandshake(MobileWalletProtocolUserErrors.USER_REJECTED_HANDSHAKE);
+              reject(MobileWalletProtocolUserErrors.USER_REJECTED_HANDSHAKE);
             }
           },
         };
@@ -228,10 +239,10 @@ export const handleMobileWalletProtocolRequest = async ({
           } else {
             logger.debug(`Ethereum action rejected: [${action.method}]: User rejected request`);
             await rejectAction(action, {
-              message: 'User rejected request',
+              message: MobileWalletProtocolUserErrors.USER_REJECTED_REQUEST,
               code: 4001,
             });
-            reject('User rejected request');
+            reject(MobileWalletProtocolUserErrors.USER_REJECTED_REQUEST);
           }
         };
 
