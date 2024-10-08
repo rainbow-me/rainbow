@@ -14,9 +14,12 @@ import { initListeners as initWalletConnectListeners, initWalletConnectPushNotif
 import isTestFlight from '@/helpers/isTestFlight';
 import { PerformanceTracking } from '@/performance/tracking';
 import { PerformanceMetrics } from '@/performance/tracking/types/PerformanceMetrics';
+import { useRunWatchedWalletCohort } from '@/helpers/runWatchedWalletCohort';
 
 export function useApplicationSetup() {
   const [initialRoute, setInitialRoute] = useState<InitialRoute>(null);
+
+  useRunWatchedWalletCohort();
 
   const identifyFlow = useCallback(async () => {
     const address = await loadAddress();

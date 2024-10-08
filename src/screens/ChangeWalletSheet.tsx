@@ -4,9 +4,9 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Alert, InteractionManager, View } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
-import Divider from '../components/Divider';
-import { ButtonPressAnimation } from '../components/animations';
-import WalletList from '../components/change-wallet/WalletList';
+import Divider from '@/components/Divider';
+import { ButtonPressAnimation } from '@/components/animations';
+import WalletList from '@/components/change-wallet/WalletList';
 import { Centered, Column, Row } from '../components/layout';
 import { Sheet, SheetTitle } from '../components/sheet';
 import { Text } from '../components/text';
@@ -386,10 +386,7 @@ export default function ChangeWalletSheet() {
             </Row>
           )}
         </Centered>
-        {showDividers && (
-          // @ts-expect-error JS component
-          <Divider color={colors.rowDividerExtraLight} inset={[0, 15]} />
-        )}
+        {showDividers && <Divider color={colors.rowDividerExtraLight} inset={[0, 15]} />}
       </Column>
       <WalletList
         accountAddress={currentAddress}

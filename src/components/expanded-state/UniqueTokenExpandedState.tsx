@@ -275,7 +275,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
   }, [isReportSpamToastActive]);
 
   const {
-    collection: { description: familyDescription, external_url: familyLink, slug },
+    collection: { description: familyDescription, external_url: familyLink, slug } = {},
     description,
     familyImage,
     familyName,
@@ -594,7 +594,7 @@ const UniqueTokenExpandedState = ({ asset: passedAsset, external }: UniqueTokenE
                                 {...asset}
                                 color={imageColor}
                                 hideNftMarketplaceAction={hideNftMarketplaceAction}
-                                slug={slug}
+                                slug={slug ?? ''}
                               />
                             </Section>
                           ) : null}

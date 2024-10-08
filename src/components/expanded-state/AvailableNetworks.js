@@ -10,7 +10,7 @@ import { useTheme } from '@/theme';
 import { ButtonPressAnimation } from '../animations';
 import { Column, Row } from '../layout';
 import { ChainBadge } from '../coin-icon';
-import Divider from '../Divider';
+import Divider from '@/components/Divider';
 import { Text } from '../text';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 import { ChainId } from '@/chains/types';

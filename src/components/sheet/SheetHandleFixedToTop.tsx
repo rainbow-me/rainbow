@@ -18,7 +18,7 @@ const Container = styled(Centered)({
   zIndex: 9,
 });
 
-export default function SheetHandleFixedToTop({ showBlur }) {
+export default function SheetHandleFixedToTop({ showBlur = false }) {
   return (
     <Container>
       <SheetHandle showBlur={showBlur} />

@@ -114,7 +114,9 @@ export function PairHardwareWalletSigningSheet() {
       }
       logger.debug('[PairHardwareWalletSigningSheet]: importing Hardware Wallet', { deviceId }, DebugContext.ledger);
       handleSetSeedPhrase(deviceId);
-      handlePressImportButton(null, deviceId, null, null);
+      handlePressImportButton({
+        forceAddress: deviceId,
+      });
     },
     [busy, handlePressImportButton, handleSetSeedPhrase]
   );

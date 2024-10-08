@@ -207,7 +207,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
 
       const isBridge = swapsStore.getState().inputAsset?.mainnetAddress === swapsStore.getState().outputAsset?.mainnetAddress;
       const isDegenModeEnabled = swapsStore.getState().degenMode;
-      const slippage = swapsStore.getState().slippage;
       const isSwappingToPopularAsset = swapsStore.getState().outputAsset?.sectionId === 'popular';
 
       const selectedGas = getSelectedGas(parameters.chainId);
@@ -244,7 +243,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       }
 
       const gasFeeParamsBySpeed = getGasSettingsBySpeed(parameters.chainId);
-      const selectedGasSpeed = getSelectedGasSpeed(parameters.chainId);
 
       let gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts = {} as
         | TransactionGasParamAmounts
@@ -282,18 +280,26 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         SwapInputController.quoteFetchingInterval.start();
 
         analyticsV2.track(analyticsV2.event.swapsFailed, {
-          createdAt: Date.now(),
           type,
-          parameters,
-          selectedGas,
-          selectedGasSpeed,
-          slippage,
-          bridge: isBridge,
-          errorMessage,
-          inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
-          outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
+          isBridge: isBridge,
+          inputAssetSymbol: internalSelectedInputAsset.value?.symbol || '',
+          inputAssetName: internalSelectedInputAsset.value?.name || '',
+          inputAssetAddress: internalSelectedInputAsset.value?.address as AddressOrEth,
+          inputAssetChainId: internalSelectedInputAsset.value?.chainId || ChainId.mainnet,
+          inputAssetAmount: parameters.quote.sellAmount as number,
+          outputAssetSymbol: internalSelectedOutputAsset.value?.symbol || '',
+          outputAssetName: internalSelectedOutputAsset.value?.name || '',
+          outputAssetAddress: internalSelectedOutputAsset.value?.address as AddressOrEth,
+          outputAssetChainId: internalSelectedOutputAsset.value?.chainId || ChainId.mainnet,
+          outputAssetAmount: parameters.quote.buyAmount as number,
+          mainnetAddress: (parameters.assetToBuy.chainId === ChainId.mainnet
+            ? parameters.assetToBuy.address
+            : parameters.assetToSell.mainnetAddress) as AddressOrEth,
+          flashbots: parameters.flashbots ?? false,
+          tradeAmountUSD: parameters.quote.tradeAmountUSD,
           degenMode: isDegenModeEnabled,
           isSwappingToPopularAsset,
+          errorMessage,
         });
 
         if (errorMessage !== 'handled') {
@@ -333,15 +339,23 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
       })(Routes.PROFILE_SCREEN, {});
 
       analyticsV2.track(analyticsV2.event.swapsSubmitted, {
-        createdAt: Date.now(),
         type,
-        parameters,
-        selectedGas,
-        selectedGasSpeed,
-        slippage,
-        bridge: isBridge,
-        inputNativeValue: SwapInputController.inputValues.value.inputNativeValue,
-        outputNativeValue: SwapInputController.inputValues.value.outputNativeValue,
+        isBridge: isBridge,
+        inputAssetSymbol: internalSelectedInputAsset.value?.symbol || '',
+        inputAssetName: internalSelectedInputAsset.value?.name || '',
+        inputAssetAddress: internalSelectedInputAsset.value?.address as AddressOrEth,
+        inputAssetChainId: internalSelectedInputAsset.value?.chainId || ChainId.mainnet,
+        inputAssetAmount: parameters.quote.sellAmount as number,
+        outputAssetSymbol: internalSelectedOutputAsset.value?.symbol || '',
+        outputAssetName: internalSelectedOutputAsset.value?.name || '',
+        outputAssetAddress: internalSelectedOutputAsset.value?.address as AddressOrEth,
+        outputAssetChainId: internalSelectedOutputAsset.value?.chainId || ChainId.mainnet,
+        outputAssetAmount: parameters.quote.buyAmount as number,
+        mainnetAddress: (parameters.assetToBuy.chainId === ChainId.mainnet
+          ? parameters.assetToBuy.address
+          : parameters.assetToSell.mainnetAddress) as AddressOrEth,
+        flashbots: parameters.flashbots ?? false,
+        tradeAmountUSD: parameters.quote.tradeAmountUSD,
         degenMode: isDegenModeEnabled,
         isSwappingToPopularAsset,
       });

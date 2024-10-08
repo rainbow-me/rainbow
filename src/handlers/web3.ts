@@ -91,7 +91,7 @@ type TransactionDetailsReturned = {
  * This is useful for functions that assume that certain fields are not set
  * to null on a `NewTransaction`.
  */
-type NewTransactionNonNullable = {
+export type NewTransactionNonNullable = {
   [key in keyof NewTransaction]-?: NonNullable<NewTransaction[key]>;
 };
 
@@ -657,7 +657,7 @@ export const buildTransaction = async (
     amount: number;
     gasLimit?: string;
   },
-  provider: StaticJsonRpcProvider | null,
+  provider: StaticJsonRpcProvider | undefined,
   chainId: ChainId
 ): Promise<TransactionRequest> => {
   const _amount = amount && Number(amount) ? convertAmountToRawAmount(amount, asset.decimals) : estimateAssetBalancePortion(asset);
@@ -713,7 +713,7 @@ export const estimateGasLimit = async (
     amount: number;
   },
   addPadding = false,
-  provider: StaticJsonRpcProvider | null = null,
+  provider: StaticJsonRpcProvider | undefined = undefined,
   chainId: ChainId = ChainId.mainnet
 ): Promise<string | null> => {
   const estimateGasData = await buildTransaction({ address, amount, asset, recipient }, provider, chainId);
