@@ -14,7 +14,7 @@ import {
   useSharedValue,
 } from 'react-native-reanimated';
 
-import { equalWorklet, lessThanOrEqualToWorklet, sumWorklet } from '@/__swaps__/safe-math/SafeMath';
+import { divWorklet, equalWorklet, lessThanOrEqualToWorklet, mulWorklet, sumWorklet } from '@/__swaps__/safe-math/SafeMath';
 import { INITIAL_SLIDER_POSITION, SLIDER_COLLAPSED_HEIGHT, SLIDER_HEIGHT, SLIDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
 import { useAnimatedSwapStyles } from '@/__swaps__/screens/Swap/hooks/useAnimatedSwapStyles';
 import { useSwapInputsController } from '@/__swaps__/screens/Swap/hooks/useSwapInputsController';
@@ -26,7 +26,7 @@ import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/scree
 import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
 import { ChainId } from '@/chains/types';
 import { SwapAssetType, inputKeys } from '@/__swaps__/types/swap';
-import { getDefaultSlippageWorklet, isUnwrapEthWorklet, isWrapEthWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
+import { clamp, getDefaultSlippageWorklet, isUnwrapEthWorklet, isWrapEthWorklet, parseAssetAndExtend } from '@/__swaps__/utils/swaps';
 import { analyticsV2 } from '@/analytics';
 import { LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { getFlashbotsProvider, getProvider } from '@/handlers/web3';
@@ -57,6 +57,7 @@ import { performanceTracking, Screens, TimeToSignOperation } from '@/state/perfo
 import { getRemoteConfig } from '@/model/remoteConfig';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
 import { chainsNativeAsset, supportedFlashbotsChainIds } from '@/chains';
+import { getSwapsNavigationParams } from '../navigateToSwaps';
 
 const swapping = i18n.t(i18n.l.swap.actions.swapping);
 const holdToSwap = i18n.t(i18n.l.swap.actions.hold_to_swap);
@@ -132,8 +133,23 @@ interface SwapProviderProps {
   children: ReactNode;
 }
 
+const getInitialSliderXPosition = ({
+  inputAmount,
+  maxSwappableAmount,
+}: {
+  inputAmount: string | undefined;
+  maxSwappableAmount: string | undefined;
+}) => {
+  if (inputAmount && maxSwappableAmount) {
+    return clamp(+mulWorklet(divWorklet(inputAmount, maxSwappableAmount), SLIDER_WIDTH), 0, SLIDER_WIDTH);
+  }
+  return SLIDER_WIDTH * swapsStore.getState().percentageToSell;
+};
+
 export const SwapProvider = ({ children }: SwapProviderProps) => {
   const { nativeCurrency } = useAccountSettings();
+
+  const initialValues = getSwapsNavigationParams();
 
   const isFetching = useSharedValue(false);
   const isQuoteStale = useSharedValue(0); // TODO: Convert this to a boolean
@@ -142,17 +158,22 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
   const inputSearchRef = useAnimatedRef<TextInput>();
   const outputSearchRef = useAnimatedRef<TextInput>();
 
-  const sliderXPosition = useSharedValue(SLIDER_WIDTH * swapsStore.getState().percentageToSell);
-  const sliderPressProgress = useSharedValue(SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
+  const lastTypedInput = useSharedValue<inputKeys>(initialValues.lastTypedInput);
+  const focusedInput = useSharedValue<inputKeys>(initialValues.focusedInput);
 
-  const lastTypedInput = useSharedValue<inputKeys>('inputAmount');
-  const focusedInput = useSharedValue<inputKeys>('inputAmount');
-
-  const initialSelectedInputAsset = parseAssetAndExtend({ asset: swapsStore.getState().inputAsset });
-  const initialSelectedOutputAsset = parseAssetAndExtend({ asset: swapsStore.getState().outputAsset });
+  const initialSelectedInputAsset = parseAssetAndExtend({ asset: initialValues.inputAsset });
+  const initialSelectedOutputAsset = parseAssetAndExtend({ asset: initialValues.outputAsset });
 
   const internalSelectedInputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(initialSelectedInputAsset);
   const internalSelectedOutputAsset = useSharedValue<ExtendedAnimatedAssetWithColors | null>(initialSelectedOutputAsset);
+
+  const sliderXPosition = useSharedValue(
+    getInitialSliderXPosition({
+      inputAmount: initialValues.inputAmount,
+      maxSwappableAmount: initialSelectedInputAsset?.maxSwappableAmount,
+    })
+  );
+  const sliderPressProgress = useSharedValue(SLIDER_COLLAPSED_HEIGHT / SLIDER_HEIGHT);
 
   const selectedOutputChainId = useSharedValue<ChainId>(initialSelectedInputAsset?.chainId || ChainId.mainnet);
   const quote = useSharedValue<Quote | CrosschainQuote | QuoteError | null>(null);
@@ -173,7 +194,6 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     lastTypedInput,
     inputProgress,
     outputProgress,
-    initialSelectedInputAsset,
     internalSelectedInputAsset,
     internalSelectedOutputAsset,
     isFetching,
@@ -181,6 +201,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
     sliderXPosition,
     slippage,
     quote,
+    initialValues,
   });
 
   const SwapSettings = useSwapSettings({

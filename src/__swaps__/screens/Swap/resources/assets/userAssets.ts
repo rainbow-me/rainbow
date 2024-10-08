@@ -17,6 +17,7 @@ import { fetchUserAssetsByChain } from './userAssetsByChain';
 import { fetchHardhatBalancesByChainId } from '@/resources/assets/hardhatAssets';
 import { SUPPORTED_CHAIN_IDS } from '@/chains';
 import { useConnectedToHardhatStore } from '@/state/connectedToHardhat';
+import store from '@/redux/store';
 
 const addysHttp = new RainbowFetchClient({
   baseURL: 'https://addys.p.rainbow.me/v3',
@@ -70,8 +71,21 @@ type UserAssetsQueryKey = ReturnType<typeof userAssetsQueryKey>;
 // Query Function
 
 export const userAssetsFetchQuery = ({ address, currency, testnetMode }: FetchUserAssetsArgs) => {
-  queryClient.fetchQuery(userAssetsQueryKey({ address, currency, testnetMode }), userAssetsQueryFunction);
+  return queryClient.fetchQuery(userAssetsQueryKey({ address, currency, testnetMode }), userAssetsQueryFunction);
 };
+
+export async function queryUserAssets({
+  address = store.getState().settings.accountAddress,
+  currency = store.getState().settings.nativeCurrency,
+  testnetMode = false,
+}: Partial<FetchUserAssetsArgs> = {}) {
+  const queryKey = userAssetsQueryKey({ address, currency, testnetMode });
+
+  const cachedData = queryClient.getQueryData<ParsedAssetsDictByChain>(queryKey);
+  if (cachedData) return cachedData;
+
+  return userAssetsFetchQuery({ address, currency, testnetMode });
+}
 
 export const userAssetsSetQueryDefaults = ({ address, currency, staleTime, testnetMode }: SetUserDefaultsArgs) => {
   queryClient.setQueryDefaults(userAssetsQueryKey({ address, currency, testnetMode }), {

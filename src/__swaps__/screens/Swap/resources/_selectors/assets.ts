@@ -59,8 +59,8 @@ export function selectUserAssetAddressMapByChainId(assets: ParsedAssetsDictByCha
 // selector generators
 export function selectUserAssetWithUniqueId(uniqueId: UniqueId) {
   return (assets: ParsedAssetsDictByChain) => {
-    const { chain } = deriveAddressAndChainWithUniqueId(uniqueId);
-    return assets?.[chain]?.[uniqueId];
+    const { chainId } = deriveAddressAndChainWithUniqueId(uniqueId);
+    return assets?.[chainId]?.[uniqueId];
   };
 }
 
