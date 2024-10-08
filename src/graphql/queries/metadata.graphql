@@ -539,6 +539,7 @@ query externalToken($address: String!, $chainId: Int!, $currency: String) {
     iconUrl
     name
     networks
+    transferable
     price {
       relativeChange24h
       value
