@@ -160,7 +160,7 @@ export default function DiscoverSearch() {
             } else {
               return (
                 <CoinRow
-                  testID={getFormattedTestId(item.name, item.chainId)}
+                  testID={getFormattedTestId('discover-currency-select-list-exchange-coin-row', item.name, item.chainId)}
                   address={item.address}
                   chainId={item.chainId}
                   colors={item.colors}

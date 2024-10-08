@@ -82,8 +82,8 @@ export type ProfileRowItem = Awaited<ReturnType<typeof fetchSuggestions>>[number
 };
 export type TokenToBuyListItem = HeaderItem | CoinRowItem | ProfileRowItem;
 
-export const getFormattedTestId = (name: string, chainId: ChainId) => {
-  return `token-to-buy-${name}-${chainId}`.toLowerCase().replace(/\s+/g, '-');
+export const getFormattedTestId = (prefix: string, name: string, chainId: ChainId) => {
+  return `${prefix}-${name}-${chainId}`.toLowerCase().replace(/\s+/g, '-');
 };
 
 export const getItemLayout = (data: ArrayLike<TokenToBuyListItem> | null | undefined, index: number) => {
@@ -204,7 +204,7 @@ export const TokenToBuyList = () => {
 
           return (
             <CoinRow
-              testID={getFormattedTestId(item.name, item.chainId)}
+              testID={getFormattedTestId('token-to-buy', item.name, item.chainId)}
               address={item.address}
               chainId={item.chainId}
               colors={item.colors}
