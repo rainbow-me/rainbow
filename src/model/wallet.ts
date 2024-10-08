@@ -297,14 +297,19 @@ export const loadWallet = async <S extends Screen>({
   if (privateKey === kc.ErrorType.UserCanceled || privateKey === kc.ErrorType.NotAuthenticated) {
     return null;
   }
+  console.log('about to load wallet', { privateKey, isHardwareWallet });
   if (isHardwareWalletKey(privateKey)) {
     const index = privateKey?.split('/')[1];
     const deviceId = privateKey?.split('/')[0];
-    if (typeof index !== undefined && provider && deviceId) {
-      return new LedgerSigner(provider, getHdPath({ type: WalletLibraryType.ledger, index: Number(index) }), deviceId);
+    console.log('about to load ledger signer', { provider, index, deviceId });
+    if (typeof index !== undefined && deviceId) {
+      console.log('about to load ledger signer', { index, deviceId });
+      return new LedgerSigner(provider || web3Provider, getHdPath({ type: WalletLibraryType.ledger, index: Number(index) }), deviceId);
     }
   } else if (privateKey) {
     return new Wallet(privateKey, provider || web3Provider);
+  } else {
+    console.log('not a hw');
   }
   if (ios && showErrorIfNotLoaded) {
     showWalletErrorAlert();
@@ -334,6 +339,7 @@ export const sendTransaction = async ({
     }
     if (!wallet) return null;
     try {
+      console.log('about to send tx with wallet', { isHardwareWallet });
       const result = await wallet.sendTransaction(transaction);
       logger.debug(`[wallet]: send - tx result`, { result }, DebugContext.wallet);
       return { result };

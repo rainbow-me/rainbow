@@ -307,8 +307,10 @@ export default function SendSheet() {
         const provider = getProvider({ chainId: ChainId.goerli });
         setCurrentProvider(provider);
       } else {
+        console.log('setting current provider :: assetChainId', { assetChainId });
         setCurrentChainId(assetChainId);
         const provider = getProvider({ chainId: currentChainId });
+        console.log('setting current provider', { provider });
         setCurrentProvider(provider);
       }
     }
@@ -403,6 +405,8 @@ export default function SendSheet() {
   const onSubmit = useCallback(
     async ({ ens }: OnSubmitProps = {}) => {
       if (!selected) return;
+
+      console.log('currentProvider', currentProvider);
 
       const wallet = await performanceTracking.getState().executeFn({
         fn: loadWallet,

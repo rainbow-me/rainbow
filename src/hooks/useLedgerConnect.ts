@@ -56,7 +56,9 @@ export function useLedgerConnect({
    * Handles successful ledger connection
    */
   const handleLedgerSuccess = useCallback(() => {
+    console.log('handleLedgerSuccess');
     if (!readyForPolling) return;
+    console.log('about to call successCallback', deviceId);
     successCallback?.(deviceId);
     pollerCleanup(timer.current);
   }, [deviceId, readyForPolling, successCallback]);
