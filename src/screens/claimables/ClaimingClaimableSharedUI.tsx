@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import { AccentColorProvider, Bleed, Box, Inline, Text, TextShadow, globalColors, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import { ListHeader, Panel, TapToDismiss, controlPanelStyles } from '@/components/SmoothPager/ListPanel';
-import { deviceUtils, haptics, safeAreaInsetValues, watchingAlert } from '@/utils';
+import { deviceUtils, safeAreaInsetValues, watchingAlert } from '@/utils';
 import { View } from 'react-native';
 import { IS_IOS } from '@/env';
 import { ButtonPressAnimation, ShimmerAnimation } from '@/components/animations';
@@ -14,7 +14,7 @@ import { chainsLabel } from '@/chains';
 import { useNavigation } from '@/navigation';
 import { TextColor } from '@/design-system/color/palettes';
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import { convertAmountToNativeDisplayWorklet, handleSignificantDecimalsWithThreshold } from '@/__swaps__/utils/numbers';
+import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
 import { useAccountSettings, useWallets } from '@/hooks';
 import { enableActionsOnReadOnlyWallet } from '@/config';
 import { debounce } from 'lodash';
@@ -146,7 +146,7 @@ export const ClaimingClaimableSharedUI = ({
   });
 
   const onPress = useCallback(
-    debounce(() => {
+    debounce(async () => {
       if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
         if (claimStatus === 'idle' || claimStatus === 'error') {
           setClaimStatus('claiming');

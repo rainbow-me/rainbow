@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ClaimResponse, SponsoredClaimable } from '@/resources/addys/claimables/types';
+import { Claimable, ClaimResponse, SponsoredClaimable } from '@/resources/addys/claimables/types';
 import { ClaimingClaimableSharedUI, ClaimStatus } from './ClaimingClaimableSharedUI';
 import { logger, RainbowError } from '@/logger';
 import { queryClient } from '@/react-query';
@@ -9,11 +9,14 @@ import { useMutation } from '@tanstack/react-query';
 import { getProvider } from '@/handlers/web3';
 import { useAccountSettings } from '@/hooks';
 import { haptics } from '@/utils';
+import { delay } from 'lodash';
 
 export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: SponsoredClaimable }) => {
   const { accountAddress, nativeCurrency } = useAccountSettings();
 
   const [claimStatus, setClaimStatus] = useState<ClaimStatus>('idle');
+
+  const queryKey = claimablesQueryKey({ address: accountAddress, currency: nativeCurrency });
 
   const { mutate: claimClaimable } = useMutation({
     mutationFn: async () => {
@@ -59,15 +62,16 @@ export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: Sponsored
         setClaimStatus('error');
         logger.error(new RainbowError('[ClaimSponsoredClaimable]: sponsored claim api call returned unsuccessful response'));
       } else {
+        haptics.notificationSuccess();
+
         if (response.data.payload.claim_transaction_status?.transaction_hash) {
-          haptics.notificationSuccess();
           setClaimStatus('success');
         } else {
-          haptics.notificationSuccess();
           setClaimStatus('pending');
         }
-        // Clear and refresh claimables data
-        queryClient.invalidateQueries(claimablesQueryKey({ address: accountAddress, currency: nativeCurrency }));
+
+        // Immediately remove the claimable from cached data
+        queryClient.setQueryData(queryKey, (oldData: Claimable[] | undefined) => oldData?.filter(c => c.uniqueId !== claimable.uniqueId));
       }
     },
     onError: e => {
@@ -85,6 +89,10 @@ export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: Sponsored
           new RainbowError('[ClaimingSponsoredClaimable]: claim function completed but never resolved status to success or error state')
         );
       }
+    },
+    onSettled: () => {
+      // Clear and refresh claimables data 30s after claim button is pressed, regardless of success or failure
+      delay(() => queryClient.invalidateQueries(queryKey), 20_000);
     },
   });
 
