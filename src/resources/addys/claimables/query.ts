@@ -79,6 +79,7 @@ export function useClaimables(
     ...config,
     enabled: !!address && (remoteFlag || localFlag) && !IS_TEST,
     staleTime: 1000 * 60 * 2,
+    refetchInterval: 1000 * 60 * 2,
     cacheTime: 1000 * 60 * 60 * 24,
   });
 }
