@@ -67,8 +67,7 @@
     "prepare": "husky install",
     "bundle-inpage": "yarn webpack --config src/browser/webpack.config.js && cp InjectedJSBundle.js android/app/src/main/res/raw/injected_js_bundle.js",
     "// Fetch backend networks": "",
-    "fetch:networks": "node ./scripts/networks.js",
-    "knip": "knip"
+    "fetch:networks": "node ./scripts/networks.js"
   },
   "dependencies": {
     "@bankify/react-native-animate-number": "0.2.1",
