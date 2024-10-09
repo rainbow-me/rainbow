@@ -3,11 +3,9 @@ import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Transaction } from '@ethersproject/transactions';
 import {
   CrosschainQuote,
-  ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
   Quote,
   ChainId as SwapChainId,
   SwapType,
-  WRAPPED_ASSET,
   fillQuote,
   getQuoteExecutionDetails,
   getRainbowRouterContractAddress,
@@ -22,8 +20,6 @@ import { metadataPOSTClient } from '@/graphql';
 import { ChainId } from '@/chains/types';
 import { NewTransaction, TxHash, TransactionStatus, TransactionDirection } from '@/entities';
 import { add } from '@/helpers/utilities';
-import { isLowerCaseMatch } from '@/__swaps__/utils/strings';
-import { isUnwrapNative, isWrapNative } from '@/handlers/swap';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, logger } from '@/logger';
 
@@ -66,12 +62,8 @@ export const estimateSwapGasLimit = async ({
     return gasUnits.basic_swap[chainId];
   }
 
-  const { sellTokenAddress, buyTokenAddress } = quote;
-  const isWrapNativeAsset =
-    isLowerCaseMatch(sellTokenAddress, ETH_ADDRESS_AGGREGATORS) && isLowerCaseMatch(buyTokenAddress, WRAPPED_ASSET[chainId]);
-
-  const isUnwrapNativeAsset =
-    isLowerCaseMatch(sellTokenAddress, WRAPPED_ASSET[chainId]) && isLowerCaseMatch(buyTokenAddress, ETH_ADDRESS_AGGREGATORS);
+  const isWrapNativeAsset = quote.swapType === SwapType.wrap;
+  const isUnwrapNativeAsset = quote.swapType === SwapType.unwrap;
 
   // Wrap / Unwrap Eth
   if (isWrapNativeAsset || isUnwrapNativeAsset) {
@@ -230,10 +222,10 @@ export const executeSwap = async ({
   };
 
   // Wrap Eth
-  if (isWrapNative({ buyTokenAddress, sellTokenAddress, chainId })) {
+  if (quote.swapType === SwapType.wrap) {
     return wrapNativeAsset(quote.buyAmount, wallet, chainId as unknown as SwapChainId, transactionParams);
     // Unwrap Weth
-  } else if (isUnwrapNative({ buyTokenAddress, sellTokenAddress, chainId })) {
+  } else if (quote.swapType === SwapType.unwrap) {
     return unwrapNativeAsset(quote.sellAmount, wallet, chainId as unknown as SwapChainId, transactionParams);
     // Swap
   } else {
