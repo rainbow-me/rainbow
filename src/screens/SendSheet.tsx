@@ -170,7 +170,7 @@ export default function SendSheet() {
   const [debouncedRecipient] = useDebounce(recipient, 500);
 
   const [isValidAddress, setIsValidAddress] = useState(!!recipientOverride);
-  const [currentProvider, setCurrentProvider] = useState<StaticJsonRpcProvider | undefined>();
+  const [currentProvider, setCurrentProvider] = useState<StaticJsonRpcProvider | undefined>(getProvider({ chainId: ChainId.mainnet }));
   const theme = useTheme();
   const { colors, isDarkMode } = theme;
 
@@ -307,10 +307,8 @@ export default function SendSheet() {
         const provider = getProvider({ chainId: ChainId.goerli });
         setCurrentProvider(provider);
       } else {
-        console.log('setting current provider :: assetChainId', { assetChainId });
         setCurrentChainId(assetChainId);
         const provider = getProvider({ chainId: currentChainId });
-        console.log('setting current provider', { provider });
         setCurrentProvider(provider);
       }
     }
@@ -405,9 +403,6 @@ export default function SendSheet() {
   const onSubmit = useCallback(
     async ({ ens }: OnSubmitProps = {}) => {
       if (!selected) return;
-
-      console.log('currentProvider', currentProvider);
-
       const wallet = await performanceTracking.getState().executeFn({
         fn: loadWallet,
         operation: TimeToSignOperation.KeychainRead,
