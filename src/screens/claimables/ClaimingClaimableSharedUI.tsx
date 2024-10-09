@@ -146,7 +146,7 @@ export const ClaimingClaimableSharedUI = ({
   });
 
   const onPress = useCallback(
-    debounce(async () => {
+    debounce(() => {
       if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
         if (claimStatus === 'idle' || claimStatus === 'error') {
           setClaimStatus('claiming');

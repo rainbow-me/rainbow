@@ -91,7 +91,7 @@ export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: Sponsored
       }
     },
     onSettled: () => {
-      // Clear and refresh claimables data 30s after claim button is pressed, regardless of success or failure
+      // Clear and refresh claimables data 20s after claim button is pressed, regardless of success or failure
       delay(() => queryClient.invalidateQueries(queryKey), 20_000);
     },
   });
