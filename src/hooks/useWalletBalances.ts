@@ -65,7 +65,7 @@ const useWalletBalances = (wallets: AllRainbowWallets): WalletBalanceResult => {
       const assetBalance = summaryData?.data?.addresses?.[lowerCaseAddress]?.summary?.asset_value?.toString() || '0';
 
       const positionData = queryClient.getQueryData<RainbowPositions | undefined>(positionsQueryKey({ address, currency: nativeCurrency }));
-      const positionsBalance = positionData?.totals?.total?.amount || '0';
+      const positionsBalance = positionData?.totals?.omittedTotal?.amount || '0';
       const totalAccountBalance = add(assetBalance, positionsBalance);
 
       result[lowerCaseAddress] = {
