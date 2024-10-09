@@ -12,7 +12,7 @@ import deviceUtils, { DEVICE_HEIGHT, DEVICE_WIDTH } from '@/utils/deviceUtils';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { isValidURLWorklet } from '../../utils';
 import * as i18n from '@/languages';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
+import { THICK_BORDER_WIDTH } from '@/components/swaps/constants';
 
 const search = (query: string, dapps: Dapp[], numberOfResults = 4): Dapp[] => {
   'worklet';
@@ -48,18 +48,15 @@ const search = (query: string, dapps: Dapp[], numberOfResults = 4): Dapp[] => {
 
       return relevance > 0.5 ? { ...dapp, relevance } : null;
     })
-    .filter(dapp => dapp !== null)
+    .filter((dapp): dapp is Dapp & { relevance: number } => dapp !== null)
     .sort((a, b) => {
       // Prioritize trending
-      if (b?.trending === true && a?.trending !== true) return 1;
-      if (a?.trending === true && b?.trending !== true) return -1;
+      if (b.trending === true && a.trending !== true) return 1;
+      if (a.trending === true && b.trending !== true) return -1;
 
-      // @ts-expect-error: Need to fix these types
       const relevanceDiff = b.relevance - a.relevance;
       if (relevanceDiff === 0) {
-        // @ts-expect-error: Same here
         const aWordCount = a.name.split(' ').length;
-        // @ts-expect-error: Same here
         const bWordCount = b.name.split(' ').length;
         return aWordCount - bWordCount;
       }
@@ -68,13 +65,12 @@ const search = (query: string, dapps: Dapp[], numberOfResults = 4): Dapp[] => {
     .slice(0, numberOfResults);
 
   // if the query is a valid URL and is not already in the results, add it to the results
-  if (isValidURLWorklet(query) && !filteredDapps.some(dapp => dapp?.urlDisplay.startsWith(query))) {
+  if (isValidURLWorklet(query) && !filteredDapps.some(dapp => dapp.urlDisplay.startsWith(query))) {
     const shouldTrimLastResult = filteredDapps.length === numberOfResults && DEVICE_HEIGHT <= deviceUtils.iPhone15ProHeight;
     const dappResults = shouldTrimLastResult ? filteredDapps.slice(0, numberOfResults - 1) : filteredDapps;
-    return [{ url: query, urlDisplay: query, name: query, isDirect: true } as unknown as Dapp, ...(dappResults as Dapp[])];
+    return [{ url: query, urlDisplay: query, name: query, isDirect: true } as Dapp, ...dappResults];
   }
 
-  // @ts-expect-error: Same here
   return filteredDapps;
 };
 

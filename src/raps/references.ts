@@ -2,7 +2,7 @@ import { Signer } from '@ethersproject/abstract-signer';
 import { CrosschainQuote, Quote } from '@rainbow-me/swaps';
 import { Address } from 'viem';
 
-import { ParsedAsset } from '@/__swaps__/types/assets';
+import { ParsedAsset } from '@/components/swaps/types/assets';
 import { GasFeeParamsBySpeed, LegacyGasFeeParamsBySpeed, LegacyTransactionGasParamAmounts, TransactionGasParamAmounts } from '@/entities';
 import { ChainId } from '@/chains/types';
 

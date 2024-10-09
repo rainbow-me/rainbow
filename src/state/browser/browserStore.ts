@@ -2,7 +2,7 @@ import { debounce } from 'lodash';
 import { MMKV } from 'react-native-mmkv';
 import { create } from 'zustand';
 import { PersistStorage, StorageValue, persist, subscribeWithSelector } from 'zustand/middleware';
-import { DEFAULT_TAB_URL } from '@/components/DappBrowser/constants';
+import { RAINBOW_HOME } from '@/components/DappBrowser/constants';
 import { TabData, TabId } from '@/components/DappBrowser/types';
 import { generateUniqueId, normalizeUrl } from '@/components/DappBrowser/utils';
 import { RainbowError, logger } from '@/logger';
@@ -105,8 +105,8 @@ const persistedBrowserStorage: PersistStorage<BrowserState> = {
 
 const INITIAL_ACTIVE_TAB_INDEX = 0;
 const INITIAL_TAB_IDS = [generateUniqueId()];
-const INITIAL_TABS_DATA = new Map([[INITIAL_TAB_IDS[0], { url: DEFAULT_TAB_URL }]]);
-const INITIAL_PERSISTED_TAB_URLS: Record<TabId, string> = { [INITIAL_TAB_IDS[0]]: DEFAULT_TAB_URL };
+const INITIAL_TABS_DATA = new Map([[INITIAL_TAB_IDS[0], { url: RAINBOW_HOME }]]);
+const INITIAL_PERSISTED_TAB_URLS: Record<TabId, string> = { [INITIAL_TAB_IDS[0]]: RAINBOW_HOME };
 
 interface BrowserStore {
   activeTabIndex: number;
@@ -146,7 +146,7 @@ export const useBrowserStore = create<BrowserStore>()(
 
         getActiveTabUrl: () => get().persistedTabUrls[get().getActiveTabId()],
 
-        getTabData: (tabId: string) => get().tabsData.get(tabId) || { url: DEFAULT_TAB_URL },
+        getTabData: (tabId: string) => get().tabsData.get(tabId) || { url: RAINBOW_HOME },
 
         goToPage: (url: string, tabId?: string) =>
           set(state => {
@@ -187,7 +187,7 @@ export const useBrowserStore = create<BrowserStore>()(
             const existingTabIds = state.tabIds.filter(id => newTabIds.includes(id));
             const addedTabIds = newTabIds.filter(id => !state.tabIds.includes(id));
             const newTabsData = new Map(state.tabsData);
-            addedTabIds.forEach(id => newTabsData.set(id, { url: DEFAULT_TAB_URL }));
+            addedTabIds.forEach(id => newTabsData.set(id, { url: RAINBOW_HOME }));
             return { tabIds: [...existingTabIds, ...addedTabIds], tabsData: newTabsData };
           }),
 

@@ -21,8 +21,8 @@ import {
 import { ImgixImage } from '@/components/images';
 import ContextMenuButton from '@/components/native-context-menu/contextMenu';
 import { IS_ANDROID, IS_IOS, IS_TEST } from '@/env';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { THICK_BORDER_WIDTH } from '@/components/swaps/constants';
+import { opacity } from '@/components/swaps/utils/swaps';
 import { FavoritedSite, useFavoriteDappsStore } from '@/state/browser/favoriteDappsStore';
 import { Site, useBrowserHistoryStore } from '@/state/browserHistory';
 import { getDappHost } from './handleProviderRequest';
@@ -40,7 +40,7 @@ import { useBrowserContext } from './BrowserContext';
 import { getNameFromFormattedUrl } from './utils';
 import { useTrendingDApps } from '@/resources/metadata/trendingDapps';
 import { DApp } from '@/graphql/__generated__/metadata';
-import { DEFAULT_TAB_URL } from './constants';
+import { RAINBOW_HOME } from './constants';
 import { FeaturedResult } from '@/graphql/__generated__/arc';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { FEATURED_RESULTS, useExperimentalFlag } from '@/config';
@@ -175,7 +175,7 @@ const Favorites = ({ goToUrl, tabId }: { goToUrl: (url: string) => void; tabId: 
     ({ currentGridSort, isActiveTab }: { currentGridSort: string[] | undefined; isActiveTab: boolean }) => {
       'worklet';
       const homepageTabsCount = currentlyOpenTabIds.value.filter(
-        tabId => !animatedTabUrls.value[tabId] || animatedTabUrls.value[tabId] === DEFAULT_TAB_URL
+        tabId => !animatedTabUrls.value[tabId] || animatedTabUrls.value[tabId] === RAINBOW_HOME
       ).length;
       const inactiveAndMounted = !isActiveTab && currentGridSort !== undefined;
 

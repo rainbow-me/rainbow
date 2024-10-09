@@ -156,7 +156,7 @@ const RefreshButton = ({ refresh, isRefreshing, dataUpdatedAt }: RefreshButtonPr
   const { colorMode } = useColorMode();
 
   const [canRefresh, setCanRefresh] = useState(dataUpdatedAt < Date.now() - 30_000);
-  const interval = useRef<NodeJS.Timer>();
+  const interval = useRef<ReturnType<typeof setInterval>>();
 
   useEffect(() => {
     const checkRefresh = () => {

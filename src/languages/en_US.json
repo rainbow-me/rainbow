@@ -664,7 +664,7 @@
         "read_more_button": "Read more",
         "available_networks": "Available on %{availableNetworks} networks",
         "available_network": "Available on the %{availableNetwork} network",
-        "available_networkv2": "Only available on %{availableNetwork}",
+        "available_networkv2": "Also available on %{availableNetwork}",
         "l2_disclaimer": "This %{symbol} is on the %{network} network",
         "l2_disclaimer_send": "Sending on the %{network} network",
         "l2_disclaimer_dapp": "This app on the %{network} network",

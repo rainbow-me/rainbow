@@ -1,4 +1,4 @@
-import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/__swaps__/types/assets';
+import { ParsedSearchAsset, UniqueId, UserAssetFilter } from '@/components/swaps/types/assets';
 import { Address } from 'viem';
 import { RainbowError, logger } from '@/logger';
 import reduxStore, { AppState } from '@/redux/store';
@@ -168,7 +168,7 @@ export const createUserAssetsStore = (address: Address | string) =>
           const filteredIds = Array.from(
             selectUserAssetIds(
               asset =>
-                (+asset.native?.balance?.amount ?? 0) > smallBalanceThreshold &&
+                +asset.native?.balance?.amount > smallBalanceThreshold &&
                 (!chainIdFilter || asset.chainId === chainIdFilter) &&
                 (!searchRegex ||
                   searchRegex.test(asset.name) ||
@@ -307,7 +307,7 @@ export const createUserAssetsStore = (address: Address | string) =>
 
           const filteredAllIdsArray = allIdsArray.filter(id => {
             const asset = userAssetsMap.get(id);
-            return asset && (+asset.native?.balance?.amount ?? 0) > smallBalanceThreshold;
+            return asset && +asset.native?.balance?.amount > smallBalanceThreshold;
           });
 
           const searchCache = new Map<string, UniqueId[]>();

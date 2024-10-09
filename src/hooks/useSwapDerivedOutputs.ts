@@ -28,15 +28,34 @@ import {
   updatePrecisionToDisplay,
 } from '@/helpers/utilities';
 import { logger, RainbowError } from '@/logger';
-import store, { AppState } from '@/redux/store';
-import { SwapModalField, updateSwapQuote } from '@/redux/swap';
+import store, { AppState as _AppState } from '@/redux/store';
 import { ethereumUtils } from '@/utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { SwappableAsset } from '../entities/tokens';
 import useAccountSettings from './useAccountSettings';
 import { chainsName } from '@/chains';
 
+type AppState = _AppState & {
+  swap: {
+    independentField: SwapModalField;
+    independentValue: string | null;
+    maxInputUpdate: number;
+    inputCurrency: SwappableAsset;
+    outputCurrency: SwappableAsset | null;
+    slippageInBips: number;
+    source: Source;
+  };
+};
+
 const SWAP_POLLING_INTERVAL = 5000;
+
+export enum SwapModalField {
+  input = 'inputAmount',
+  native = 'nativeAmount',
+  output = 'outputAmount',
+}
+
+const updateSwapQuote = (data: any) => {};
 
 enum DisplayValue {
   input = 'inputAmountDisplay',
@@ -419,7 +438,7 @@ export default function useSwapDerivedOutputs(type: string) {
         independentValue,
         inputCurrency,
         outputCurrency,
-        inputPrice,
+        inputPrice ? inputPrice.toString() : null,
         slippagePercentage,
         source,
         accountAddress

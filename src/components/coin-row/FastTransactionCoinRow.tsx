@@ -24,8 +24,8 @@ import {
 import { TwoCoinsIcon } from '../coin-icon/TwoCoinsIcon';
 import Spinner from '../Spinner';
 import * as lang from '@/languages';
-import RainbowCoinIcon from '../coin-icon/RainbowCoinIcon';
-import { checkForPendingSwap } from '@/screens/transaction-details/helpers/checkForPendingSwap';
+import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
+import { checkForPendingSwap } from '@/helpers/checkForPendingSwap';
 
 export const getApprovalLabel = ({ approvalAmount, asset, type }: Pick<RainbowTransaction, 'type' | 'asset' | 'approvalAmount'>) => {
   if (!approvalAmount || !asset) return;
@@ -276,7 +276,7 @@ export const ActivityIcon = ({
       >
         <View
           style={{
-            shadowColor: !transaction?.asset?.color ? globalColors.grey100 : transaction.asset.color,
+            shadowColor: !transaction?.asset?.colors?.primary ? globalColors.grey100 : transaction.asset.colors?.primary,
             shadowOffset: { width: 0, height: 6 },
             shadowOpacity: 0.24,
             shadowRadius: 9,
@@ -331,7 +331,7 @@ export const ActivityIcon = ({
       >
         <View
           style={{
-            shadowColor: !transaction?.asset?.color ? globalColors.grey100 : transaction.asset.color,
+            shadowColor: !transaction?.asset?.colors?.primary ? globalColors.grey100 : transaction.asset.colors?.primary,
             shadowOffset: { width: 0, height: 6 },
             shadowOpacity: 0.24,
             shadowRadius: 9,

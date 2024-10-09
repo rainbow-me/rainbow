@@ -1,6 +1,6 @@
-import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/__swaps__/types/assets';
+import { AddressOrEth, ExtendedAnimatedAssetWithColors, ParsedSearchAsset } from '@/components/swaps/types/assets';
 import { ChainId, Network } from '@/chains/types';
-import { SwapAssetType } from '@/__swaps__/types/swap';
+import { SwapAssetType } from '@/components/swaps/types/swap';
 import { UnlockableAppIconKey } from '@/appIcons/appIcons';
 import { CardType } from '@/components/cards/GenericCard';
 import { LearnCategory } from '@/components/cards/utils/types';

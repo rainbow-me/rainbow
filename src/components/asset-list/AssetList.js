@@ -1,12 +1,14 @@
 import React from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { FabWrapperBottomPosition, FloatingActionButtonSize } from '../fab';
-import { ListFooter } from '../list';
+import { FloatingActionButtonSize } from '@/components/fab';
+import { ListFooter } from '@/components/list';
 import RecyclerAssetList from './RecyclerAssetList';
 import RecyclerAssetList2 from './RecyclerAssetList2';
 import EmptyAssetList from './EmptyAssetList';
 import * as i18n from '@/languages';
+import { safeAreaInsetValues } from '@/utils';
 
+export const FabWrapperBottomPosition = 21 + safeAreaInsetValues.bottom;
 const FabSizeWithPadding = FloatingActionButtonSize + FabWrapperBottomPosition * 2;
 
 const AssetList = ({

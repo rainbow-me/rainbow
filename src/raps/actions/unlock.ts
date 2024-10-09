@@ -2,26 +2,25 @@ import { Signer } from '@ethersproject/abstract-signer';
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract, PopulatedTransaction } from '@ethersproject/contracts';
 import { parseUnits } from '@ethersproject/units';
-import { getProvider } from '@/handlers/web3';
+import { getProvider, toHex } from '@/handlers/web3';
 import { Address, erc20Abi, erc721Abi } from 'viem';
 
 import { ChainId } from '@/chains/types';
-import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
+import { TransactionGasParams, TransactionLegacyGasParams } from '@/components/swaps/types/gas';
 import { NewTransaction } from '@/entities/transactions';
 import { TxHash } from '@/resources/transactions/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, logger } from '@/logger';
 
 import { ETH_ADDRESS, gasUnits } from '@/references';
-import { ParsedAsset as SwapsParsedAsset } from '@/__swaps__/types/assets';
 import { convertAmountToRawAmount, greaterThan } from '@/helpers/utilities';
 import { ActionProps, RapActionResult } from '../references';
 
 import { overrideWithFastSpeedIfNeeded } from './../utils';
-import { toHex } from '@/__swaps__/utils/hex';
 import { TokenColors } from '@/graphql/__generated__/metadata';
-import { ParsedAsset } from '@/resources/assets/types';
+import { ParsedAsset } from '@/components/swaps/types/assets';
 import { chainsName } from '@/chains';
+import { AddysNetworkDetails } from '@/resources/assets/types';
 
 export const getAssetRawAllowance = async ({
   owner,
@@ -56,7 +55,7 @@ export const assetNeedsUnlocking = async ({
 }: {
   owner: Address;
   amount: string;
-  assetToUnlock: SwapsParsedAsset;
+  assetToUnlock: ParsedAsset;
   spender: Address;
   chainId: ChainId;
 }) => {
@@ -64,7 +63,7 @@ export const assetNeedsUnlocking = async ({
 
   const allowance = await getAssetRawAllowance({
     owner,
-    assetAddress: assetToUnlock.address,
+    assetAddress: assetToUnlock.address as Address,
     spender,
     chainId,
   });
@@ -271,9 +270,11 @@ export const unlock = async ({
   const transaction = {
     asset: {
       ...assetToUnlock,
-      network: chainsName[assetToUnlock.chainId],
+      chainName: chainsName[assetToUnlock.chainId],
       colors: assetToUnlock.colors as TokenColors,
-    } as ParsedAsset,
+      network: chainsName[assetToUnlock.chainId],
+      networks: assetToUnlock.networks as Record<string, AddysNetworkDetails>,
+    },
     data: approval.data,
     value: approval.value?.toString(),
     changes: [],

@@ -90,7 +90,7 @@ export enum IN_DAPP_NOTIFICATION_STATUS {
  */
 export const addHexPrefix = (value: string): string => (value.startsWith('0x') ? value : `0x${value}`);
 
-export const convertStringToHex = (stringToConvert: string): string => new BigNumber(stringToConvert).toString(16);
+export const convertStringToHex = (stringToConvert: string): string => addHexPrefix(new BigNumber(stringToConvert).toString(16));
 
 export const toHex = (stringToConvert: string): string => addHexPrefix(convertStringToHex(stringToConvert));
 

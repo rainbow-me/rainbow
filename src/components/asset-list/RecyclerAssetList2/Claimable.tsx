@@ -7,7 +7,7 @@ import { ButtonPressAnimation } from '@/components/animations';
 import { deviceUtils } from '@/utils';
 import Routes from '@/navigation/routesNames';
 import { ExtendedState } from './core/RawRecyclerList';
-import { convertAmountToNativeDisplayWorklet } from '@/__swaps__/utils/numbers';
+import { convertAmountToNativeDisplayWorklet } from '@/components/swaps/utils/numbers';
 
 export const Claimable = React.memo(function Claimable({ uniqueId, extendedState }: { uniqueId: string; extendedState: ExtendedState }) {
   const { accountAddress, nativeCurrency } = useAccountSettings();

@@ -1,7 +1,7 @@
 import React, { ReactElement, useMemo } from 'react';
 import { StyleProp, TextStyle, View, ViewStyle } from 'react-native';
 import { IS_IOS } from '@/env';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/components/swaps/utils/swaps';
 import { useColorMode } from '../../color/ColorMode';
 import { useForegroundColor } from '../../color/useForegroundColor';
 import { Text, TextProps } from '../Text/Text';

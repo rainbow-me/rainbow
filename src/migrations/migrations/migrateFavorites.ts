@@ -1,5 +1,5 @@
-import { AddressOrEth, UniqueId } from '@/__swaps__/types/assets';
-import { getStandardizedUniqueIdWorklet } from '@/__swaps__/utils/swaps';
+import { AddressOrEth, UniqueId } from '@/components/swaps/types/assets';
+import { getStandardizedUniqueIdWorklet } from '@/components/swaps/utils/swaps';
 import { EthereumAddress, RainbowToken } from '@/entities';
 import { createQueryKey, persistOptions, queryClient } from '@/react-query';
 import { favoritesQueryKey } from '@/resources/favorites';

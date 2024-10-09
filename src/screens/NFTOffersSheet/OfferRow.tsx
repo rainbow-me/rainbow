@@ -17,7 +17,7 @@ import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { Network } from '@/chains/types';
 import { useAccountSettings } from '@/hooks';
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
-import { AddressOrEth } from '@/__swaps__/types/assets';
+import { AddressOrEth } from '@/components/swaps/types/assets';
 import { chainsIdByName } from '@/chains';
 
 const NFT_SIZE = 50;

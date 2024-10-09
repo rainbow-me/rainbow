@@ -91,6 +91,11 @@ export type RootStackParamList = {
   [Routes.CLAIM_CLAIMABLE_PANEL]: {
     claimable: Claimable;
   };
+  [Routes.EXPANDED_ASSET_SHEET]: {
+    longFormHeight: number;
+    type: 'token' | 'unique_token';
+    asset: ParsedAddressAsset | UniqueAsset;
+  };
   [Routes.WALLET_CONNECT_APPROVAL_SHEET]: WalletconnectApprovalSheetRouteParams & {
     type: WalletConnectApprovalSheetType;
   };

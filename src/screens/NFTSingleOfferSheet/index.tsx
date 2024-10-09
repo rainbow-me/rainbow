@@ -52,7 +52,7 @@ import { getNextNonce } from '@/state/nonces';
 import { metadataPOSTClient } from '@/graphql';
 import { ethUnits } from '@/references';
 import { Transaction } from '@/graphql/__generated__/metadataPOST';
-import { chainsIdByName, chainsNativeAsset, defaultChains, getChainDefaultRpc } from '@/chains';
+import { chainsIdByName, chainsName, chainsNativeAsset, defaultChains, getChainDefaultRpc } from '@/chains';
 
 const NFT_IMAGE_HEIGHT = 160;
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
@@ -243,7 +243,7 @@ export function NFTSingleOfferSheet() {
     } catch {
       logger.error(new RainbowError('[NFTSingleOfferSheet]: Failed to estimate gas'));
     }
-  }, [accountAddress, feeParam, offerChainId, offer, updateTxFee]);
+  }, [accountAddress, chain, offerChainId, offer.nft.contractAddress, offer.nft.tokenId, feeParam, updateTxFee]);
 
   // estimate gas
   useEffect(() => {
@@ -333,8 +333,9 @@ export function NFTSingleOfferSheet() {
                     nonce: item?.txHashes?.length > 1 ? nonce + 1 : nonce,
                     asset: {
                       ...offer.paymentToken,
-                      chainId: offerChainId,
                       network: offer.network as Network,
+                      chainId: offerChainId,
+                      chainName: chainsName[offerChainId],
                       uniqueId: getUniqueId(offer.paymentToken.address, offerChainId),
                     },
                     changes: [

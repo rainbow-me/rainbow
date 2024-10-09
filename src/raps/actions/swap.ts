@@ -13,7 +13,7 @@ import {
   unwrapNativeAsset,
   wrapNativeAsset,
 } from '@rainbow-me/swaps';
-import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
+import { estimateGasWithPadding, getProvider, toHex } from '@/handlers/web3';
 import { Address } from 'viem';
 
 import { metadataPOSTClient } from '@/graphql';
@@ -25,8 +25,7 @@ import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, logger } from '@/logger';
 
 import { gasUnits, REFERRER } from '@/references';
-import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
-import { toHex } from '@/__swaps__/utils/hex';
+import { TransactionGasParams, TransactionLegacyGasParams } from '@/components/swaps/types/gas';
 import { ActionProps, RapActionResult } from '../references';
 import {
   CHAIN_IDS_WITH_TRACE_SUPPORT,
@@ -41,7 +40,7 @@ import { populateApprove } from './unlock';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { swapMetadataStorage } from '../common';
 import { ParsedAsset } from '@/resources/assets/types';
-import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
+import { ExtendedAnimatedAssetWithColors } from '@/components/swaps/types/assets';
 import { Screens, TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { chainsName } from '@/chains';

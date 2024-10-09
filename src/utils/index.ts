@@ -16,7 +16,7 @@ export { getUniqueTokenFormat, getUniqueTokenType } from './uniqueTokens';
 export { default as getUrlForTrustIconFallback } from './getUrlForTrustIconFallback';
 export { default as haptics } from './haptics';
 export { default as isETH } from './isETH';
-export { default as isLowerCaseMatch } from './isLowerCaseMatch';
+export { isLowerCaseMatch } from './isLowerCaseMatch';
 export { default as labelhash } from './labelhash';
 export { default as magicMemo } from './magicMemo';
 export { default as measureText } from './measureText';

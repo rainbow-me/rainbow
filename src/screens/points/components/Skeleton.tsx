@@ -1,7 +1,7 @@
 import React from 'react';
 import { ShimmerAnimation } from '@/components/animations';
 import { AccentColorProvider, Box, useBackgroundColor, useColorMode } from '@/design-system';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { opacity } from '@/components/swaps/utils/swaps';
 
 export const Skeleton = ({ width, height }: { width: number; height: number }) => {
   const { isDarkMode } = useColorMode();

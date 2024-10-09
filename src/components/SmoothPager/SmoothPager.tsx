@@ -12,7 +12,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { clamp } from '@/__swaps__/utils/swaps';
+import { clamp } from '@/components/swaps/utils/swaps';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { Box } from '@/design-system';
 import { AlignVertical, alignVerticalToFlexAlign } from '@/design-system/layout/alignment';

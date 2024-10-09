@@ -1,9 +1,9 @@
 import { useAccountSettings } from '@/hooks';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
-import { selectUserAssetsList, selectorFilterByUserChains } from '@/__swaps__/screens/Swap/resources/_selectors/assets';
-import { ParsedSearchAsset } from '@/__swaps__/types/assets';
-import { useUserAssets } from '@/__swaps__/screens/Swap/resources/assets';
+import { selectUserAssetsList, selectorFilterByUserChains } from '@/resources/assets/_selectors/assets';
+import { ParsedSearchAsset } from '@/components/swaps/types/assets';
+import { useUserAssets } from '@/resources/assets';
 import { ChainId } from '@/chains/types';
 
 export const UserAssetsSync = function UserAssetsSync() {

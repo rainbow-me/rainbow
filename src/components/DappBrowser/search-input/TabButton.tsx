@@ -1,5 +1,5 @@
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { THICK_BORDER_WIDTH } from '@/components/swaps/constants';
+import { opacity } from '@/components/swaps/utils/swaps';
 import { Bleed, Box, Text, globalColors, useColorMode, useForegroundColor } from '@/design-system';
 import { IS_IOS } from '@/env';
 import position from '@/styles/position';
@@ -7,7 +7,7 @@ import { BlurView } from '@react-native-community/blur';
 import React from 'react';
 import { TextInput } from 'react-native';
 import { BrowserButtonShadows } from '../DappBrowserShadows';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/swaps/GestureHandlerButton';
 import { AnimatedRef, SharedValue, runOnJS } from 'react-native-reanimated';
 import { useSharedValueState } from '@/hooks/reanimated/useSharedValueState';
 

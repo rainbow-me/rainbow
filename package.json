@@ -338,7 +338,7 @@
     "@types/dedent": "0.7.0",
     "@types/jest": "29.5.12",
     "@types/mocha": "9.0.0",
-    "@types/node": "16.11.6",
+    "@types/node": "22.7.4",
     "@types/qs": "6.9.7",
     "@types/react": "18.2.65",
     "@types/react-native-extra-dimensions-android": "1.2.3",

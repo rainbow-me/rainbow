@@ -14,7 +14,6 @@ import keyboardHeight from './keyboardHeight';
 import requests from './requests';
 import settings from './settings';
 import showcaseTokens from './showcaseTokens';
-import swap from './swap';
 import transactionSignatures from './transactionSignatures';
 import walletconnect from './walletconnect';
 import wallets from './wallets';
@@ -33,7 +32,6 @@ export default combineReducers({
   requests,
   settings,
   showcaseTokens,
-  swap,
   transactionSignatures,
   walletconnect,
   wallets,

@@ -15,7 +15,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { analyticsV2 } from '@/analytics';
 import { FlashList } from '@shopify/flash-list';
 import { remoteCardsStore } from '@/state/remoteCards/remoteCards';
-import { GestureHandlerButton } from '@/__swaps__/screens/Swap/components/GestureHandlerButton';
+import { GestureHandlerButton } from '@/components/swaps/GestureHandlerButton';
 
 const ICON_SIZE = 36;
 const CARD_BORDER_RADIUS = 20;

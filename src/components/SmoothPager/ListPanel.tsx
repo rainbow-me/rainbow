@@ -1,8 +1,8 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { ScrollView, ScrollViewProps, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
-import { THICK_BORDER_WIDTH } from '@/__swaps__/screens/Swap/constants';
-import { opacity } from '@/__swaps__/utils/swaps';
+import { THICK_BORDER_WIDTH } from '@/components/swaps/constants';
+import { opacity } from '@/components/swaps/utils/swaps';
 import { ButtonPressAnimation } from '@/components/animations';
 import { ImgixImage } from '@/components/images';
 import {
