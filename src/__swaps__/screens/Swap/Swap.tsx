@@ -209,7 +209,10 @@ const ExchangeRateBubbleAndWarning = () => {
 
 export const styles = StyleSheet.create({
   rootViewBackground: {
-    borderRadius: IS_ANDROID ? 20 : ScreenCornerRadius,
+    borderTopLeftRadius: IS_ANDROID ? 20 : ScreenCornerRadius,
+    borderTopRightRadius: IS_ANDROID ? 20 : ScreenCornerRadius,
+    borderBottomLeftRadius: IS_ANDROID ? 0 : ScreenCornerRadius,
+    borderBottomRightRadius: IS_ANDROID ? 0 : ScreenCornerRadius,
     flex: 1,
     overflow: 'hidden',
     marginTop: StatusBar.currentHeight ?? 0,

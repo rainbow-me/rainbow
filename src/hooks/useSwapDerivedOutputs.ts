@@ -101,7 +101,6 @@ const getInputAmount = async (
       // Add 5% slippage for testing to prevent flaky tests
       slippage: IS_TESTING !== 'true' ? slippage : 5,
       ...(quoteSource ? { source } : {}),
-      swapType: SwapType.normal,
       currency: store.getState().settings.nativeCurrency,
     };
 
@@ -192,7 +191,6 @@ const getOutputAmount = async (
       // Add 5% slippage for testing to prevent flaky tests
       slippage: IS_TESTING !== 'true' ? slippage : 5,
       ...(quoteSource ? { source } : {}),
-      swapType: isCrosschainSwap ? SwapType.crossChain : SwapType.normal,
       toChainId: Number(outputChainId),
       refuel,
       currency: store.getState().settings.nativeCurrency,

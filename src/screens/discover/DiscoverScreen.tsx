@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { Keyboard, ScrollView } from 'react-native';
+import { Keyboard } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { Box } from '@/design-system';
 import { Page } from '@/components/layout';
@@ -18,7 +18,7 @@ import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native
 
 export let discoverScrollToTopFnRef: () => number | null = () => null;
 export default function DiscoverScreen() {
-  const ref = React.useRef<ScrollView>(null);
+  const ref = React.useRef<Animated.ScrollView>(null);
   const { navigate } = useNavigation();
   const isFocused = useIsFocused();
   const { accountSymbol, accountColor, accountImage } = useAccountProfile();
@@ -83,7 +83,6 @@ export default function DiscoverScreen() {
           title={isSearchModeEnabled ? i18n.t(i18n.l.discover.search.search) : i18n.t(i18n.l.discover.search.discover)}
         />
         <Box
-          // @ts-expect-error not picking up the ScrollView ref prop
           ref={ref}
           as={Animated.ScrollView}
           automaticallyAdjustsScrollIndicatorInsets={false}
