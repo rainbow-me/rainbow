@@ -18,7 +18,11 @@ export const parseClaimables = (claimables: AddysClaimable[], currency: NativeCu
       const baseClaimable = {
         asset: parseAsset({
           address: claimable.asset.asset_code,
-          asset: { ...claimable.asset, network: chainsName[claimable.network] as Network },
+          asset: {
+            ...claimable.asset,
+            network: chainsName[claimable.network] as Network,
+            transferable: claimable.asset.transferable ?? false,
+          },
         }),
         chainId: claimable.network,
         name: claimable.name,

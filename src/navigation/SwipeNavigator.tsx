@@ -44,17 +44,7 @@ import { ScrollPositionContext } from './ScrollPositionContext';
 import SectionListScrollToTopProvider, { useSectionListScrollToTopContext } from './SectionListScrollToTopContext';
 import { TextSize } from '@/design-system/components/Text/Text';
 
-export const TAB_BAR_HEIGHT = getTabBarHeight();
-
-function getTabBarHeight() {
-  if (IS_IOS) {
-    return 82;
-  }
-  if (!isUsingButtonNavigation()) {
-    return 82;
-  }
-  return 48;
-}
+export const TAB_BAR_HEIGHT = IS_IOS ? 82 : 54;
 
 const HORIZONTAL_TAB_BAR_INSET = 6;
 const HORIZONTAL_TAB_BAR_INSET_5_TABS = 10;
