@@ -15,7 +15,6 @@ import { loadWallet } from '@/model/wallet';
 import { walletExecuteRap } from '@/rapsV2/execute';
 import { claimablesQueryKey } from '@/resources/addys/claimables/query';
 import { queryClient } from '@/react-query';
-import { delay } from 'lodash';
 
 // supports legacy and new gas types
 export type TransactionClaimableTxPayload = TransactionRequest &
@@ -200,7 +199,7 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
     },
     onSettled: () => {
       // Clear and refresh claimables data 20s after claim button is pressed, regardless of success or failure
-      delay(() => queryClient.invalidateQueries(queryKey), 20_000);
+      setTimeout(() => queryClient.invalidateQueries(queryKey), 20_000);
     },
   });
 

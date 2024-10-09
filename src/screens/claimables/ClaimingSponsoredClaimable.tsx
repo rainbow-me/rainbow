@@ -9,7 +9,6 @@ import { useMutation } from '@tanstack/react-query';
 import { getProvider } from '@/handlers/web3';
 import { useAccountSettings } from '@/hooks';
 import { haptics } from '@/utils';
-import { delay } from 'lodash';
 
 export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: SponsoredClaimable }) => {
   const { accountAddress, nativeCurrency } = useAccountSettings();
@@ -92,7 +91,7 @@ export const ClaimingSponsoredClaimable = ({ claimable }: { claimable: Sponsored
     },
     onSettled: () => {
       // Clear and refresh claimables data 20s after claim button is pressed, regardless of success or failure
-      delay(() => queryClient.invalidateQueries(queryKey), 20_000);
+      setTimeout(() => queryClient.invalidateQueries(queryKey), 20_000);
     },
   });
 
