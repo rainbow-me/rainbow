@@ -224,7 +224,6 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
                 </Box>
               </Box>
             </Box>
-            <Border borderRadius={CARD_BORDER_RADIUS} />
           </GestureHandlerButton>
         </Column>
         {card.dismissable && (
@@ -241,6 +240,7 @@ export const RemoteCard: React.FC<RemoteCardProps> = ({ id, gutterSize, carousel
           </Column>
         )}
       </Columns>
+      <Border borderRadius={CARD_BORDER_RADIUS} />
     </Box>
   );
 };

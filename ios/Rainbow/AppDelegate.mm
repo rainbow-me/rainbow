@@ -5,7 +5,12 @@
 
 #import "Firebase.h"
 #import "AppDelegate.h"
+
+// expo modules MUST be imported before Rainbow-Swift.h
+#import "ExpoModulesCore-Swift.h"
 #import "Rainbow-Swift.h"
+// end expo modules
+
 #import <RNBranch/RNBranch.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTLinkingManager.h>
@@ -114,7 +119,7 @@ RCT_EXPORT_METHOD(hideAnimated) {
 - (NSURL *)bundleURL
 {
   #if DEBUG
-    return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
+    return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@".expo/.virtual-metro-entry"];
   #else
    return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
   #endif
