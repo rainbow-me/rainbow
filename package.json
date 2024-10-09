@@ -175,7 +175,7 @@
     "ethereumjs-util": "6.2.1",
     "ethereumjs-wallet": "1.0.1",
     "events": "3.3.0",
-    "expo": "51.0.0",
+    "expo": "51.0.33",
     "fast-text-encoding": "1.0.4",
     "global": "4.4.0",
     "grapheme-splitter": "1.0.4",
