@@ -12,6 +12,15 @@ const useExperimentalFlag = (name: any) => {
     return defaultConfig[name].value;
   }
 };
+
+export const useExperimentalConfig = () => {
+  if (IS_DEV || isTestFlight) {
+    return useContext(RainbowContext).config;
+  } else {
+    return defaultConfig;
+  }
+};
+
 export default useExperimentalFlag;
 
 export * from './experimental';

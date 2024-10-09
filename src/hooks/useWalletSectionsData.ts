@@ -1,4 +1,4 @@
-import { useContext, useMemo } from 'react';
+import { useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
 import useCoinListEditOptions from './useCoinListEditOptions';
 import useCoinListEdited from './useCoinListEdited';
@@ -13,9 +13,9 @@ import { useLegacyNFTs } from '@/resources/nfts';
 import useNftSort from './useNFTsSortBy';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
 import { useRemoteConfig } from '@/model/remoteConfig';
-import { RainbowContext } from '@/helpers/RainbowContext';
 import { usePositions } from '@/resources/defi/PositionsQuery';
 import { useClaimables } from '@/resources/addys/claimables/query';
+import { useExperimentalConfig } from '@/config/experimentalHooks';
 
 export default function useWalletSectionsData({
   type,
@@ -50,7 +50,7 @@ export default function useWalletSectionsData({
   const { hiddenTokens } = useHiddenTokens();
 
   const remoteConfig = useRemoteConfig();
-  const experimentalConfig = useContext(RainbowContext).config;
+  const experimentalConfig = useExperimentalConfig();
 
   const { hiddenCoinsObj: hiddenCoins, pinnedCoinsObj: pinnedCoins } = useCoinListEditOptions();
 
