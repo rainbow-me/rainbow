@@ -28,36 +28,12 @@ import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
 
 public class SystemNavigationBarModule extends ReactContextBaseJavaModule {
     public static final String REACT_CLASS = "NavigationBar";
-    private static final String ERROR_NO_ACTIVITY = "E_NO_ACTIVITY";
-    private static final String ERROR_NO_ACTIVITY_MESSAGE = "Tried to change the navigation bar while not attached to an Activity";
-    private static final String ERROR_API_LEVEL = "API_LEVEl";
-    private static final String ERROR_API_LEVEL_MESSAGE = "Only Android Oreo and above is supported";
-    private static ReactApplicationContext reactContext = null;
-    private static final int UI_FLAG_HIDE_NAV_BAR = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
     public SystemNavigationBarModule(ReactApplicationContext context) {
         // Pass in the context to the constructor and save it so you can emit events
         // https://facebook.github.io/react-native/docs/native-modules-android.html#the-toast-module
         super(context);
-        reactContext = context;
     }
-
-    public void setNavigationBarTheme(Activity activity, Boolean light) {
-        if (activity != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Window window = activity.getWindow();
-            int flags = window.getDecorView().getSystemUiVisibility();
-            if (light) {
-                flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
-            } else {
-                flags &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
-            }
-            window.getDecorView().setSystemUiVisibility(flags);
-        }
-    }
-
 
     @Override
     public String getName() {
@@ -77,97 +53,77 @@ public class SystemNavigationBarModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void changeNavigationBarColor(final String color, final Boolean light, final Boolean animated, final Promise promise) {
-        final WritableMap map = Arguments.createMap();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (getCurrentActivity() != null) {
-                try {
-                    final Window window = getCurrentActivity().getWindow();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            WindowInsetsControllerCompat insetsController = WindowCompat.getInsetsController(window, window.getDecorView());
-                            insetsController.setAppearanceLightNavigationBars(!light);
-                            
-                            if (color.equals("transparent") || color.equals("translucent")) {
-                                window.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-                                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-                                if (color.equals("transparent")) {
-                                    window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-                                } else {
-                                    window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION, WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-                                }
-                            } else {
-                                window.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-                                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-                                if (animated) {
-                                    Integer colorFrom = window.getNavigationBarColor();
-                                    Integer colorTo = Color.parseColor(String.valueOf(color));
-                                    ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
-                                    colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                                        @Override
-                                        public void onAnimationUpdate(ValueAnimator animator) {
-                                            window.setNavigationBarColor((Integer) animator.getAnimatedValue());
-                                        }
-                                    });
-                                    colorAnimation.start();
-                                } else {
-                                    window.setNavigationBarColor(Color.parseColor(String.valueOf(color)));
-                                }
-                            }
-                            setNavigationBarTheme(getCurrentActivity(), light);
-                            map.putBoolean("success", true);
-                            promise.resolve(map);
+    public void changeBarColors(final Boolean isDarkMode, final String translucentLightStr, final String translucentDarkStr) {
+        Activity activity = getCurrentActivity();
+        if (activity != null) {
+            final Window window = activity.getWindow();
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    /**
+                     * Handle the color setting
+                     */
+                    int translucentLightColor;
+                    if (translucentLightStr.isEmpty()) {
+                        translucentLightColor = Color.parseColor("#50000000");
+                    } else if (translucentLightStr.equals("transparent")) {
+                        translucentLightColor = Color.TRANSPARENT;
+                    } else {
+                        translucentLightColor = Color.parseColor(translucentLightStr);
+                    }
+
+                    int translucentDarkColor;
+                    if (translucentDarkStr.isEmpty() || translucentDarkStr.equals("transparent")) {
+                        translucentDarkColor = Color.TRANSPARENT;
+                    } else {
+                        translucentDarkColor = Color.parseColor(translucentDarkStr);
+                    }
+
+                    // Set the navbar to be drawn over
+                    // Both flags were added in Level 16
+                    int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+
+                    boolean isDarkModeTransparent = isDarkMode && translucentDarkStr.equals("transparent");
+                    boolean isLightModeTransparent = !isDarkMode && translucentLightStr.equals("transparent");
+
+                    // M was the first version that supported light mode status bar
+                    boolean shouldUseTransparentStatusBar = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
+                    // O was the first version that supported light mode nav bar
+                    boolean shouldUseTransparentNavBar = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && (isDarkModeTransparent || isLightModeTransparent);
+
+                    if (shouldUseTransparentStatusBar) {
+                        window.setStatusBarColor(Color.TRANSPARENT);
+                        if (!isDarkMode) {
+                            flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
                         }
-                    });
-                } catch (IllegalViewOperationException e) {
-                    map.putBoolean("success", false);
-                    promise.reject("error", e);
+                    } else {
+                        int statusBarColor = isDarkMode ? translucentDarkColor : translucentLightColor;
+                        window.setStatusBarColor(statusBarColor);
+                        if (!isDarkMode) {
+                            flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+                        }
+                    }
+
+                    if (shouldUseTransparentNavBar) {
+                        window.setNavigationBarColor(Color.TRANSPARENT);
+                        if (!isDarkMode) {
+                            flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+                        }
+                    } else {
+                        int navBarColor = isDarkMode ? translucentDarkColor : translucentLightColor;
+                        window.setNavigationBarColor(navBarColor);
+                        if (!isDarkMode) {
+                            flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+                        }
+                    }
+
+                    window.getDecorView().setSystemUiVisibility(flags);
+                    WindowInsetsControllerCompat insetsController = WindowCompat.getInsetsController(window, window.getDecorView());
+                    insetsController.setAppearanceLightNavigationBars(!isDarkMode);
                 }
-            } else {
-                promise.reject(ERROR_NO_ACTIVITY, new Throwable(ERROR_NO_ACTIVITY_MESSAGE));
-            }
+            });
         } else {
-            promise.reject(ERROR_API_LEVEL, new Throwable(ERROR_API_LEVEL_MESSAGE));
-        }
-    }
-
-    @ReactMethod
-    public void hideNavigationBar(Promise promise) {
-        try {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (getCurrentActivity() != null) {
-                        View decorView = getCurrentActivity().getWindow().getDecorView();
-                        decorView.setSystemUiVisibility(UI_FLAG_HIDE_NAV_BAR);
-                    }
-                }
-            });
-        } catch (IllegalViewOperationException e) {
-            WritableMap map = Arguments.createMap();
-            map.putBoolean("success", false);
-            promise.reject("error", e);
-        }
-    }
-
-    @ReactMethod
-    public void showNavigationBar(Promise promise) {
-        try {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (getCurrentActivity() != null) {
-                        View decorView = getCurrentActivity().getWindow().getDecorView();
-                        int uiOptions = View.SYSTEM_UI_FLAG_VISIBLE;
-                        decorView.setSystemUiVisibility(uiOptions);
-                    }
-                }
-            });
-        } catch (IllegalViewOperationException e) {
-            WritableMap map = Arguments.createMap();
-            map.putBoolean("success", false);
-            promise.reject("error", e);
+            android.util.Log.e("NavigationBar", "Activity is null, cannot change bar colors");
         }
     }
 }

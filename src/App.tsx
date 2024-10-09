@@ -7,7 +7,7 @@ import { DeeplinkHandler } from '@/components/DeeplinkHandler';
 import { AppStateChangeHandler } from '@/components/AppStateChangeHandler';
 import { useApplicationSetup } from '@/hooks/useApplicationSetup';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { connect, Provider as ReduxProvider } from 'react-redux';
 import { RecoilRoot } from 'recoil';
@@ -22,7 +22,7 @@ import * as keychain from '@/model/keychain';
 import { Navigation } from '@/navigation';
 import { PersistQueryClientProvider, persistOptions, queryClient } from '@/react-query';
 import store, { AppDispatch, type AppState } from '@/redux/store';
-import { MainThemeProvider } from '@/theme/ThemeContext';
+import { MainThemeProvider, useTheme } from '@/theme/ThemeContext';
 import { addressKey } from '@/utils/keychainConstants';
 import { SharedValuesProvider } from '@/helpers/SharedValuesContext';
 import { InitialRouteContext } from '@/navigation/initialRoute';
@@ -39,7 +39,7 @@ import { initializeRemoteConfig } from '@/model/remoteConfig';
 import { NavigationContainerRef } from '@react-navigation/native';
 import { RootStackParamList } from '@/navigation/types';
 import { Address } from 'viem';
-import { IS_DEV } from '@/env';
+import { IS_ANDROID, IS_DEV } from '@/env';
 import { prefetchDefaultFavorites } from '@/resources/favorites';
 import Routes from '@/navigation/Routes';
 import { BackendNetworks } from '@/components/BackendNetworks';
@@ -54,6 +54,7 @@ enableScreens();
 const sx = StyleSheet.create({
   container: {
     flex: 1,
+    overflow: 'hidden',
   },
 });
 
@@ -63,14 +64,14 @@ interface AppProps {
 
 function App({ walletReady }: AppProps) {
   const { initialRoute } = useApplicationSetup();
-
+  const { bottom } = useSafeAreaInsets();
   const handleNavigatorRef = useCallback((ref: NavigationContainerRef<RootStackParamList>) => {
     Navigation.setTopLevelNavigator(ref);
   }, []);
 
   return (
     <Portal>
-      <View style={sx.container}>
+      <View style={[sx.container, { paddingBottom: IS_ANDROID ? bottom : 0 }]}>
         {initialRoute && (
           <InitialRouteContext.Provider value={initialRoute}>
             <Routes ref={handleNavigatorRef} />
@@ -203,7 +204,7 @@ function Root() {
           <MobileWalletProtocolProvider secureStorage={ls.mwp} sessionExpiryDays={7}>
             <SafeAreaProvider>
               <MainThemeProvider>
-                <GestureHandlerRootView style={{ flex: 1 }}>
+                <GestureHandlerRootView style={sx.container}>
                   <RainbowContextWrapper>
                     <SharedValuesProvider>
                       <ErrorBoundary>
