@@ -31,8 +31,7 @@ import { logger } from '@/logger';
 import { IS_ANDROID, IS_TEST } from '@/env';
 import { WelcomeScreenRainbowButton } from '@/screens/WelcomeScreen/WelcomeScreenRainbowButton';
 
-// @ts-expect-error Our implementation of SC complains
-const Container = styled.View({
+const Container = styled(View)({
   ...position.coverAsObject,
   alignItems: 'center',
   backgroundColor: ({ theme: { colors } }: { theme: ThemeContextProps }) => colors.white,
