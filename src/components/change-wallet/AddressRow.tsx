@@ -23,6 +23,7 @@ import { toChecksumAddress } from '@/handlers/web3';
 import { IS_IOS, IS_ANDROID } from '@/env';
 import { ContextMenu } from '../context-menu';
 import { useForegroundColor } from '@/design-system';
+import { MenuActionConfig } from 'react-native-ios-context-menu';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 const NOOP = () => undefined;
@@ -157,7 +158,7 @@ export default function AddressRow({ contextMenuActions, data, editMode, onPress
     },
 
     ...(notificationsEnabled
-      ? [
+      ? ([
           {
             actionKey: ContextMenuKeys.Notifications,
             actionTitle: lang.t('wallet.action.notifications.action_title'),
@@ -166,18 +167,15 @@ export default function AddressRow({ contextMenuActions, data, editMode, onPress
               iconValue: 'bell.fill',
             },
           },
-        ]
+        ] as const)
       : []),
     {
       actionKey: ContextMenuKeys.Remove,
       actionTitle: lang.t('wallet.action.remove'),
-      icon: {
-        iconType: 'SYSTEM',
-        iconValue: 'trash.fill',
-      },
+      icon: { iconType: 'SYSTEM', iconValue: 'trash.fill' },
       menuAttributes: ['destructive'],
     },
-  ];
+  ] satisfies MenuActionConfig[];
 
   const menuConfig = {
     menuItems: contextMenuItems,

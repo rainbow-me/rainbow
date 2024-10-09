@@ -54,12 +54,9 @@ const search = (query: string, dapps: Dapp[], numberOfResults = 4): Dapp[] => {
       if (b?.trending === true && a?.trending !== true) return 1;
       if (a?.trending === true && b?.trending !== true) return -1;
 
-      // @ts-expect-error: Need to fix these types
       const relevanceDiff = b.relevance - a.relevance;
       if (relevanceDiff === 0) {
-        // @ts-expect-error: Same here
         const aWordCount = a.name.split(' ').length;
-        // @ts-expect-error: Same here
         const bWordCount = b.name.split(' ').length;
         return aWordCount - bWordCount;
       }
@@ -74,7 +71,6 @@ const search = (query: string, dapps: Dapp[], numberOfResults = 4): Dapp[] => {
     return [{ url: query, urlDisplay: query, name: query, isDirect: true } as unknown as Dapp, ...(dappResults as Dapp[])];
   }
 
-  // @ts-expect-error: Same here
   return filteredDapps;
 };
 

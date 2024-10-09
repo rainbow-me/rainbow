@@ -27,7 +27,7 @@ export function Menu() {
         menuState: filter === MintsFilter.Paid ? 'on' : 'off',
       },
     ],
-  };
+  } as const;
 
   const onPressMenuItem = ({ nativeEvent: { actionKey: filter } }: { nativeEvent: { actionKey: MintsFilter } }) => {
     haptics.selection();
