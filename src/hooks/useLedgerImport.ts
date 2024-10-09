@@ -117,7 +117,6 @@ export function useLedgerImport({
         },
       });
       observer.current = newObserver;
-      console.log('observer set');
     } catch (e) {
       logger.error(new RainbowError('[useLedgerImport]: Error Pairing'), { errorMessage: (e as Error).message });
       handlePairError(e as Error);
@@ -131,14 +130,12 @@ export function useLedgerImport({
 
   useEffect(() => {
     const asyncFn = async () => {
-      console.log('useLedgerImport :: asyncFn');
       logger.debug('[useLedgerImport]: init device polling', {});
 
       const isBluetoothEnabled = IS_ANDROID ? await checkAndRequestAndroidBluetooth() : true;
       logger.debug('[useLedgerImport]: bluetooth enabled? ', { isBluetoothEnabled });
 
       if (isBluetoothEnabled) {
-        console.log('search and pair');
         searchAndPair();
       }
     };
