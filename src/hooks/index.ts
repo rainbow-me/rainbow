@@ -108,3 +108,4 @@ export { default as useLatestCallback } from './useLatestCallback';
 export { default as useHiddenTokens } from './useHiddenTokens';
 export { useAccountAccentColor } from './useAccountAccentColor';
 export { useDebounce } from './useDebounce';
+export { default as useSearchCurrencyList } from './useSearchCurrencyList';

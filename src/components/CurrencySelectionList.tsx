@@ -4,12 +4,12 @@ import { magicMemo } from '@/utils';
 import { EmptyAssetList } from '@/components/asset-list';
 import { Centered } from '@/components/layout';
 import { NoResults } from '@/components/list';
-import { CurrencySelectModalHeaderHeight } from '@/components/CurrencySelectModalHeader';
-import ExchangeAssetList from '@/components/ExchangeAssetList';
+import ExchangeAssetList, { EnrichedExchangeAsset } from '@/components/ExchangeAssetList';
 import { ExchangeSearchHeight } from '@/components/ExchangeSearch';
 import { Box } from '@/design-system';
-import { EnrichedExchangeAsset } from '@/screens/CurrencySelectModal';
 import { NoResultsType } from '@/components/list/NoResults';
+
+export const CurrencySelectModalHeaderHeight = 59;
 
 interface CurrencySelectionListProps {
   keyboardDismissMode?: 'none' | 'interactive' | 'on-drag';

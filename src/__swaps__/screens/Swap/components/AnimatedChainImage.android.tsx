@@ -12,7 +12,7 @@ const ZoraBadge = require('@/assets/badges/zora.png');
 const AvalancheBadge = require('@/assets/badges/avalanche.png');
 const BlastBadge = require('@/assets/badges/blast.png');
 const DegenBadge = require('@/assets/badges/degen.png');
-const ApechainBadge = require('@/assets/badges/apechainBadge.png');
+const ApechainBadge = require('@/assets/badges/apechain.png');
 
 import { ChainId } from '@/chains/types';
 import { globalColors } from '@/design-system';

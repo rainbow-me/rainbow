@@ -29,10 +29,21 @@ import { useTheme } from '@/theme';
 import { abbreviations, deviceUtils, haptics, magicMemo } from '@/utils';
 import { Box, Text } from '@/design-system';
 import { colors, Colors } from '@/styles';
-import { EnrichedExchangeAsset } from '@/screens/CurrencySelectModal';
 import ExchangeTokenRow from '@/components/ExchangeTokenRow';
 import { SwappableAsset } from '@/entities';
 import { toggleFavorite, useFavorites } from '@/resources/favorites';
+
+export interface EnrichedExchangeAsset extends SwappableAsset {
+  ens: boolean;
+  color: string;
+  nickname: string;
+  onPress: (el: ReactElement) => void;
+  testID: string;
+  useGradientText: boolean;
+  title?: string;
+  key: string;
+  disabled?: boolean;
+}
 
 const deviceWidth = deviceUtils.dimensions.width;
 
