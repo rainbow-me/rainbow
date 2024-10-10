@@ -8,6 +8,7 @@ import { FiatProviderName } from '@/entities/f2c';
 import { RequestSource } from '@/utils/requestNavigationHandlers';
 import { CrosschainQuote, Quote, QuoteError } from '@rainbow-me/swaps';
 import { AnyPerformanceLog, Screen } from '../state/performance/operations';
+import { FavoritedSite } from '@/state/browser/favoriteDappsStore';
 
 /**
  * All events, used by `analytics.track()`
@@ -572,16 +573,8 @@ export type EventProperties = {
     hasClickedBefore: boolean;
     index: number;
   };
-  [event.browserAddFavorite]: {
-    url: string;
-    name: string;
-    image: string;
-  };
-  [event.browserTapFavorite]: {
-    url: string;
-    name: string;
-    image: string;
-  };
+  [event.browserAddFavorite]: FavoritedSite;
+  [event.browserTapFavorite]: FavoritedSite;
 
   [event.performanceTimeToSign]: {
     screen: Screen;
