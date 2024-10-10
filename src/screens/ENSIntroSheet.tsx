@@ -223,7 +223,6 @@ export default function ENSIntroSheet() {
                 <Inset space="19px (Deprecated)" {...(isSmallPhone && { bottom: '8px' })}>
                   {isLoading && (
                     <Box alignItems="center" paddingBottom="15px (Deprecated)">
-                      {/* @ts-expect-error JavaScript component */}
                       <ActivityIndicator />
                     </Box>
                   )}

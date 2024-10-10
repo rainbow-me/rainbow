@@ -2,7 +2,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { createElement } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import TouchableBackdrop from '../components/TouchableBackdrop';
-import { ChartExpandedState, UniqueTokenExpandedState } from '../components/expanded-state';
+import { CustomGasState, ChartExpandedState, UniqueTokenExpandedState } from '../components/expanded-state';
 import { Centered } from '../components/layout';
 import { useDimensions } from '@/hooks';
 import { useNavigation } from '@/navigation';
@@ -11,6 +11,7 @@ import { position } from '@/styles';
 import { RootStackParamList } from '@/navigation/types';
 
 const ScreenTypes = {
+  custom_gas: CustomGasState,
   token: ChartExpandedState,
   unique_token: UniqueTokenExpandedState,
 };

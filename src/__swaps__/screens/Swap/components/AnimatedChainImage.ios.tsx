@@ -1,17 +1,6 @@
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
-import ArbitrumBadge from '@/assets/badges/arbitrum.png';
-import BaseBadge from '@/assets/badges/base.png';
-import BscBadge from '@/assets/badges/bsc.png';
-import EthereumBadge from '@/assets/badges/ethereum.png';
-import OptimismBadge from '@/assets/badges/optimism.png';
-import PolygonBadge from '@/assets/badges/polygon.png';
-import ZoraBadge from '@/assets/badges/zora.png';
-import AvalancheBadge from '@/assets/badges/avalanche.png';
-import BlastBadge from '@/assets/badges/blast.png';
-import DegenBadge from '@/assets/badges/degen.png';
-import ApechainBadge from '@/assets/badges/apechain.png';
 import { ChainId } from '@/chains/types';
 import { useAnimatedProps, useDerivedValue } from 'react-native-reanimated';
 import { AnimatedFasterImage } from '@/components/AnimatedComponents/AnimatedFasterImage';
@@ -21,6 +10,18 @@ import { IS_ANDROID } from '@/env';
 import { PIXEL_RATIO } from '@/utils/deviceUtils';
 import { useSwapContext } from '../providers/swap-provider';
 import { BLANK_BASE64_PIXEL } from '@/components/DappBrowser/constants';
+
+import ApechainBadge from '@/assets/badges/apechain.png';
+import ArbitrumBadge from '@/assets/badges/arbitrum.png';
+import AvalancheBadge from '@/assets/badges/avalanche.png';
+import BaseBadge from '@/assets/badges/base.png';
+import BlastBadge from '@/assets/badges/blast.png';
+import BscBadge from '@/assets/badges/bsc.png';
+import DegenBadge from '@/assets/badges/degen.png';
+import EthereumBadge from '@/assets/badges/ethereum.png';
+import OptimismBadge from '@/assets/badges/optimism.png';
+import PolygonBadge from '@/assets/badges/polygon.png';
+import ZoraBadge from '@/assets/badges/zora.png';
 
 const networkBadges = {
   [ChainId.apechain]: Image.resolveAssetSource(ApechainBadge).uri,

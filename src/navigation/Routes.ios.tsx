@@ -222,8 +222,7 @@ function NativeStackNavigator() {
       />
       <NativeStack.Screen component={RestoreSheet} name={Routes.RESTORE_SHEET} {...restoreSheetConfig} />
       <NativeStack.Screen component={SignTransactionSheet} name={Routes.CONFIRM_REQUEST} {...signTransactionSheetConfig} />
-      <NativeStack.Screen component={ExpandedAssetSheet} name={Routes.SWAP_DETAILS_SHEET} {...swapDetailsSheetConfig} />
-      <NativeStack.Screen component={ExpandedAssetSheet} name={Routes.SWAP_SETTINGS_SHEET} {...customGasSheetConfig} />
+      <NativeStack.Screen component={ExpandedAssetSheet} name={Routes.CUSTOM_GAS_SHEET} {...customGasSheetConfig} />
       <NativeStack.Screen component={QRScannerScreen} name={Routes.QR_SCANNER_SCREEN} {...qrScannerConfig} />
       <NativeStack.Screen
         component={PairHardwareWalletNavigator}

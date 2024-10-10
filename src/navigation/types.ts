@@ -5,7 +5,7 @@ import Routes from '@/navigation/routesNames';
 import { PortalSheetProps } from '@/screens/Portal';
 import { REGISTRATION_MODES } from '@/helpers/ens';
 import { CampaignCheckResult } from '@/components/remote-promo-sheet/checkForRemotePromoSheet';
-import { ParsedAddressAsset, UniqueAsset } from '@/entities';
+import { ParsedAddressAsset, PendingTransaction, UniqueAsset } from '@/entities';
 import { Claimable } from '@/resources/addys/claimables/types';
 import { WalletconnectApprovalSheetRouteParams, WalletconnectResultType } from '@/redux/walletconnect';
 import { WalletConnectApprovalSheetType } from '@/helpers/walletConnectApprovalSheetTypes';
@@ -34,12 +34,12 @@ export type RootStackParamList = {
   };
   [Routes.SPEED_UP_AND_CANCEL_BOTTOM_SHEET]: {
     accentColor?: string;
-    tx: Record<string, any>;
+    tx: PendingTransaction;
     type: 'speed_up' | 'cancel';
   };
   [Routes.SPEED_UP_AND_CANCEL_SHEET]: {
     accentColor?: string;
-    tx: Record<string, any>;
+    tx: PendingTransaction;
     type: 'speed_up' | 'cancel';
   };
   [Routes.BACKUP_SHEET]: {
@@ -68,8 +68,6 @@ export type RootStackParamList = {
     emptyWallet?: boolean;
   };
   [Routes.PROFILE_SCREEN]: any;
-  [Routes.SWAP_SETTINGS_SHEET]: any;
-  [Routes.SWAP_DETAILS_SHEET]: any;
   [Routes.WELCOME_SCREEN]: any;
   [Routes.ENS_CONFIRM_REGISTER_SHEET]: any;
   [Routes.PROFILE_SHEET]: {

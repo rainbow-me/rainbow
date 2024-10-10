@@ -70,6 +70,10 @@ export const defaultConfig: Record<string, ExperimentalValue> = {
   [NFTS_ENABLED]: { settings: true, value: !!IS_TEST },
 };
 
+export const defaultConfigValues: Record<string, boolean> = Object.fromEntries(
+  Object.entries(defaultConfig).map(([key, { value }]) => [key, value])
+);
+
 const storageKey = 'config';
 
 const storage = new MMKV({

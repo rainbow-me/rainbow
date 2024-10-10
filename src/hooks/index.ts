@@ -109,3 +109,4 @@ export { default as useHiddenTokens } from './useHiddenTokens';
 export { useAccountAccentColor } from './useAccountAccentColor';
 export { useDebounce } from './useDebounce';
 export { default as useSearchCurrencyList } from './useSearchCurrencyList';
+export { default as useFeesPanelInputRefs } from './useFeePanelInputRefs';

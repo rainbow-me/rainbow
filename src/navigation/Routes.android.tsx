@@ -193,6 +193,13 @@ function BSNavigator() {
       <BSStack.Screen component={ModalScreen} {...closeKeyboardOnClose} name={Routes.MODAL_SCREEN} />
       <BSStack.Screen component={SendConfirmationSheet} name={Routes.SEND_CONFIRMATION_SHEET} options={sheetPreset} />
       <BSStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.CUSTOM_GAS_SHEET}
+        options={{
+          backdropOpacity: 1,
+        }}
+      />
+      <BSStack.Screen
         component={BackupSheet}
         name={Routes.BACKUP_SHEET}
         options={route => {
