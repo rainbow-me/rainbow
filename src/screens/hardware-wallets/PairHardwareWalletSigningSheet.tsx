@@ -109,10 +109,10 @@ export function PairHardwareWalletSigningSheet() {
   const importHardwareWallet = useCallback(
     async (deviceId: string) => {
       if (busy) {
-        logger.debug('[PairHardwareWalletSigningSheet]: busy, already trying to import', { deviceId }, DebugContext.ledger);
+        logger.debug('[PairHardwareWalletSigningSheet]: busy, already trying to import', { deviceId });
         return;
       }
-      logger.debug('[PairHardwareWalletSigningSheet]: importing Hardware Wallet', { deviceId }, DebugContext.ledger);
+      logger.debug('[PairHardwareWalletSigningSheet]: importing Hardware Wallet', { deviceId });
       handleSetSeedPhrase(deviceId);
       handlePressImportButton({
         forceAddress: deviceId,

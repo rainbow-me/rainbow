@@ -170,7 +170,7 @@ export default function SendSheet() {
   const [debouncedRecipient] = useDebounce(recipient, 500);
 
   const [isValidAddress, setIsValidAddress] = useState(!!recipientOverride);
-  const [currentProvider, setCurrentProvider] = useState<StaticJsonRpcProvider | undefined>();
+  const [currentProvider, setCurrentProvider] = useState<StaticJsonRpcProvider | undefined>(getProvider({ chainId: ChainId.mainnet }));
   const theme = useTheme();
   const { colors, isDarkMode } = theme;
 
@@ -403,7 +403,6 @@ export default function SendSheet() {
   const onSubmit = useCallback(
     async ({ ens }: OnSubmitProps = {}) => {
       if (!selected) return;
-
       const wallet = await performanceTracking.getState().executeFn({
         fn: loadWallet,
         operation: TimeToSignOperation.KeychainRead,

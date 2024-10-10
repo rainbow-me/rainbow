@@ -30,14 +30,7 @@ import { findWalletWithAccount } from '@/helpers/findWalletWithAccount';
 import { EthereumAddress } from '@/entities';
 import { authenticateWithPIN, authenticateWithPINAndCreateIfNeeded } from '@/handlers/authentication';
 import { saveAccountEmptyState } from '@/handlers/localstorage/accountLocal';
-import {
-  addHexPrefix,
-  isHexString,
-  isHexStringIgnorePrefix,
-  isValidBluetoothDeviceId,
-  isValidMnemonic,
-  web3Provider,
-} from '@/handlers/web3';
+import { addHexPrefix, isHexString, isHexStringIgnorePrefix, isValidBluetoothDeviceId, isValidMnemonic } from '@/handlers/web3';
 import { createSignature } from '@/helpers/signingWallet';
 import showWalletErrorAlert from '@/helpers/support';
 import walletTypes, { EthereumWalletType } from '@/helpers/walletTypes';
@@ -300,11 +293,11 @@ export const loadWallet = async <S extends Screen>({
   if (isHardwareWalletKey(privateKey)) {
     const index = privateKey?.split('/')[1];
     const deviceId = privateKey?.split('/')[0];
-    if (typeof index !== undefined && provider && deviceId) {
+    if (typeof index !== undefined && deviceId && provider) {
       return new LedgerSigner(provider, getHdPath({ type: WalletLibraryType.ledger, index: Number(index) }), deviceId);
     }
   } else if (privateKey) {
-    return new Wallet(privateKey, provider || web3Provider);
+    return new Wallet(privateKey, provider);
   }
   if (ios && showErrorIfNotLoaded) {
     showWalletErrorAlert();
