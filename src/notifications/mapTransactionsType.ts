@@ -1,5 +1,5 @@
 import { NotificationTransactionTypesType } from '@/notifications/types';
-import { TransactionType } from '@/resources/transactions/types';
+import { TransactionType } from '@/entities';
 
 /**
  * Mapping of notification backend transaction types sent in notification

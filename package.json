@@ -342,6 +342,7 @@
     "@types/qs": "6.9.7",
     "@types/react": "18.2.65",
     "@types/react-native-extra-dimensions-android": "1.2.3",
+    "@types/react-native-indicators": "0.16.6",
     "@types/react-test-renderer": "18.3.0",
     "@types/styled-components": "5.1.7",
     "@types/url-parse": "1.4.3",
