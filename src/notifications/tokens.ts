@@ -4,9 +4,11 @@ import { getLocal, saveLocal } from '@/handlers/localstorage/common';
 import { getPermissionStatus } from '@/notifications/permissions';
 import { logger } from '@/logger';
 
+const RAINBOW_FCM_TOKEN_KEY = 'rainbowFcmToken';
+
 export const registerTokenRefreshListener = () =>
   messaging().onTokenRefresh(fcmToken => {
-    saveLocal('rainbowFcmToken', { data: fcmToken });
+    saveLocal(RAINBOW_FCM_TOKEN_KEY, { data: fcmToken });
   });
 
 export const saveFCMToken = async () => {
@@ -15,7 +17,7 @@ export const saveFCMToken = async () => {
     if (permissionStatus === messaging.AuthorizationStatus.AUTHORIZED || permissionStatus === messaging.AuthorizationStatus.PROVISIONAL) {
       const fcmToken = await messaging().getToken();
       if (fcmToken) {
-        saveLocal('rainbowFcmToken', { data: fcmToken });
+        saveLocal(RAINBOW_FCM_TOKEN_KEY, { data: fcmToken });
       }
     }
   } catch (error) {
@@ -26,7 +28,7 @@ export const saveFCMToken = async () => {
 };
 
 export async function getFCMToken(): Promise<string | undefined> {
-  const fcmTokenLocal = await getLocal('rainbowFcmToken');
+  const fcmTokenLocal = await getLocal(RAINBOW_FCM_TOKEN_KEY);
   const token = fcmTokenLocal?.data || undefined;
 
   if (!token) {

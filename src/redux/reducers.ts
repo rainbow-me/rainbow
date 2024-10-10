@@ -6,7 +6,6 @@ import contacts from './contacts';
 
 import editOptions from './editOptions';
 import ensRegistration from './ensRegistration';
-import explorer from './explorer';
 import gas from './gas';
 import hiddenTokens from './hiddenTokens';
 import imageMetadata from './imageMetadata';
@@ -25,7 +24,6 @@ export default combineReducers({
   contacts,
   editOptions,
   ensRegistration,
-  explorer,
   gas,
   hiddenTokens,
   imageMetadata,

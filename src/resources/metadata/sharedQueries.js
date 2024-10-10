@@ -61,6 +61,9 @@ const BACKEND_NETWORKS_QUERY = `
         meteorology {
           enabled
         }
+        notifications {
+          enabled
+        }
         swap {
           enabled
         }
