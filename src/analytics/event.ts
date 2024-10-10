@@ -143,6 +143,8 @@ export const event = {
 
   // app browser events
   browserTrendingDappClicked: 'browser.trending_dapp_pressed',
+  browserAddFavorite: 'browser.add_favorite',
+  browserTapFavorite: 'browser.tap_favorite',
 
   performanceTimeToSign: 'performance.time_to_sign',
   performanceTimeToSignOperation: 'performance.time_to_sign.operation',
@@ -569,6 +571,16 @@ export type EventProperties = {
     url: string;
     hasClickedBefore: boolean;
     index: number;
+  };
+  [event.browserAddFavorite]: {
+    url: string;
+    name: string;
+    image: string;
+  };
+  [event.browserTapFavorite]: {
+    url: string;
+    name: string;
+    image: string;
   };
 
   [event.performanceTimeToSign]: {
