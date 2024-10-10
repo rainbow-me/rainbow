@@ -338,7 +338,7 @@
     "@types/dedent": "0.7.0",
     "@types/jest": "29.5.12",
     "@types/mocha": "9.0.0",
-    "@types/node": "22.7.4",
+    "@types/node": "16.11.6",
     "@types/qs": "6.9.7",
     "@types/react": "18.2.65",
     "@types/react-native-extra-dimensions-android": "1.2.3",
@@ -377,7 +377,7 @@
     "ts-jest": "29.1.1",
     "ts-loader": "9.5.1",
     "ts-migrate": "0.1.26",
-    "typescript": "5.6.2",
+    "typescript": "5.1.6",
     "typescript-coverage-report": "0.6.1",
     "webpack": "5.94.0",
     "webpack-cli": "5.1.4"
