@@ -87,7 +87,7 @@ function ListFooterComponent({ label, onPress }: { label: string; onPress: () =>
 const ActivityList = () => {
   const { accountAddress, nativeCurrency } = useAccountSettings();
 
-  const { setScrollToTopRef } = useSectionListScrollToTopContext();
+  const { setScrollToTopRef } = useSectionListScrollToTopContext<TransactionItemForSectionList, TransactionSections>();
   const { sections, nextPage, transactionsCount, remainingItemsLabel } = useAccountTransactions();
   const pendingTransactions = usePendingTransactionsStore(state => state.pendingTransactions[accountAddress] || []);
 
@@ -99,7 +99,6 @@ const ActivityList = () => {
 
   const handleScrollToTopRef = (ref: SectionList<TransactionItemForSectionList, TransactionSections> | null) => {
     if (!ref) return;
-    // @ts-expect-error - no idea why this is not working
     setScrollToTopRef(ref);
   };
 
