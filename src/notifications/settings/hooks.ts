@@ -32,21 +32,23 @@ export const useAllNotificationSettingsFromStorage = () => {
     useState<WalletNotificationSettings[]>(walletNotificationSettingsData);
   const [globalNotificationSettings, setGlobalNotificationSettings] = useState<GlobalNotificationTopics>(globalNotificationSettingsData);
   const [existingGroupSettings, setExistingGroupSettings] = useState<GroupSettings>(existingGroupSettingsData);
-  const listener = notificationSettingsStorage.addOnValueChangedListener(changedKey => {
-    if (changedKey === WALLET_TOPICS_STORAGE_KEY) {
-      const newSettings = notificationSettingsStorage.getString(changedKey);
-      newSettings && setWalletNotificationSettings(JSON.parse(newSettings));
-    } else if (changedKey === WALLET_GROUPS_STORAGE_KEY) {
-      const newSettings = notificationSettingsStorage.getString(changedKey);
-      newSettings && setExistingGroupSettings(JSON.parse(newSettings));
-    } else if (changedKey === GLOBAL_TOPICS_STORAGE_KEY) {
-      const newSettings = notificationSettingsStorage.getString(changedKey);
-      newSettings && setGlobalNotificationSettings(JSON.parse(newSettings));
-    }
-  });
-  useEffect(() => () => {
-    listener.remove();
-  });
+  useEffect(() => {
+    const listener = notificationSettingsStorage.addOnValueChangedListener(changedKey => {
+      if (changedKey === WALLET_TOPICS_STORAGE_KEY) {
+        const newSettings = notificationSettingsStorage.getString(changedKey);
+        newSettings && setWalletNotificationSettings(JSON.parse(newSettings));
+      } else if (changedKey === WALLET_GROUPS_STORAGE_KEY) {
+        const newSettings = notificationSettingsStorage.getString(changedKey);
+        newSettings && setExistingGroupSettings(JSON.parse(newSettings));
+      } else if (changedKey === GLOBAL_TOPICS_STORAGE_KEY) {
+        const newSettings = notificationSettingsStorage.getString(changedKey);
+        newSettings && setGlobalNotificationSettings(JSON.parse(newSettings));
+      }
+    });
+    return () => {
+      listener.remove();
+    };
+  }, []);
   return {
     globalNotificationSettings,
     walletNotificationSettings,
@@ -108,13 +110,9 @@ export const useWalletGroupNotificationSettings = () => {
         ...options,
       };
 
-      const walletsToUpdate =
-        type === WalletNotificationRelationship.OWNER ? ownedWallets : watchedWallets;
+      const walletsToUpdate = type === WalletNotificationRelationship.OWNER ? ownedWallets : watchedWallets;
 
-      const isSuccess = await toggleGroupNotifications(
-        walletsToUpdate,
-        enabled
-      );
+      const isSuccess = await toggleGroupNotifications(walletsToUpdate, enabled);
       if (isSuccess) {
         updateGroupSettings(newSettings);
       }
