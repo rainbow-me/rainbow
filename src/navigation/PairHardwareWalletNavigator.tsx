@@ -57,10 +57,17 @@ export function PairHardwareWalletNavigator() {
     <BackgroundProvider color="surfaceSecondary">
       {({ backgroundColor }) => (
         <SimpleSheet backgroundColor={backgroundColor as string} onDismiss={onDismiss} scrollEnabled={false}>
+          {(currentRouteName === Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET ||
+            currentRouteName === Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET) && (
+            <NanoXDeviceAnimation
+              state={currentRouteName === Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET ? 'loading' : 'idle'}
+              isConnected={deviceId !== ''}
+            />
+          )}
           <Swipe.Navigator
             initialLayout={{ height, width }}
             initialRouteName={currentRouteName}
-            sceneContainerStyle={{ backgroundColor }}
+            sceneContainerStyle={{ backgroundColor: 'transparent' }}
             screenOptions={{ swipeEnabled: false, lazy: true }}
             tabBar={() => null}
           >
@@ -92,13 +99,6 @@ export function PairHardwareWalletNavigator() {
               }}
             />
           </Swipe.Navigator>
-          {(currentRouteName === Routes.PAIR_HARDWARE_WALLET_INTRO_SHEET ||
-            currentRouteName === Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET) && (
-            <NanoXDeviceAnimation
-              state={currentRouteName === Routes.PAIR_HARDWARE_WALLET_SEARCH_SHEET ? 'loading' : 'idle'}
-              isConnected={deviceId !== ''}
-            />
-          )}
         </SimpleSheet>
       )}
     </BackgroundProvider>
