@@ -21,7 +21,7 @@ const GasSpeedOrder = [NORMAL, FAST, URGENT, CUSTOM];
 const GasTrends = { FALLING, NO_TREND, RISING, STABLE, SURGING };
 
 const GAS_ICONS: {
-  [key: string]: string;
+  [key in (typeof GasSpeedOrder)[number]]: string;
 } = {
   [CUSTOM]: 'gear',
   [FAST]: 'rocket',

@@ -188,8 +188,11 @@ export const getDescription = (asset: ParsedAsset | undefined, type: Transaction
   return asset?.name || meta.action;
 };
 
-export const isValidTransactionType = (type: TransactionType | undefined): type is TransactionType =>
-  !!type && (TransactionType.withChanges.includes(type) || TransactionType.withoutChanges.includes(type));
+export const isValidTransactionType = (type: string | undefined): type is TransactionType =>
+  !!type &&
+  (TransactionType.withChanges.includes(type as TransactionType) ||
+    TransactionType.withoutChanges.includes(type as TransactionType) ||
+    type === ('sale' as TransactionType));
 
 export const transactionTypeShouldHaveChanges = (type: TransactionType): type is TransactionWithChangesType =>
   TransactionType.withChanges.includes(type);

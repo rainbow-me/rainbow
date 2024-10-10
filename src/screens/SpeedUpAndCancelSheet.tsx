@@ -132,7 +132,7 @@ export default function SpeedUpAndCancelSheet() {
   const [minMaxFeePerGas, setMinMaxFeePerGas] = useState(tx?.maxFeePerGas ? calcGasParamRetryValue(tx.maxFeePerGas) : undefined);
   const fetchedTx = useRef(false);
   const [currentChainId, setCurrentChainId] = useState<ChainId>(ChainId.mainnet);
-  const [currentProvider, setCurrentProvider] = useState<StaticJsonRpcProvider>();
+  const [currentProvider, setCurrentProvider] = useState<StaticJsonRpcProvider>(getProvider({ chainId: ChainId.mainnet }));
   const [data, setData] = useState<BytesLike>();
   const [gasLimit, setGasLimit] = useState<BigNumberish>();
   const [nonce, setNonce] = useState<BigNumberish>();
