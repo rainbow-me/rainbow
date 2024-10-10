@@ -168,7 +168,7 @@ export const createUserAssetsStore = (address: Address | string) =>
           const filteredIds = Array.from(
             selectUserAssetIds(
               asset =>
-                +asset.native?.balance?.amount > smallBalanceThreshold &&
+                (+asset.native?.balance?.amount ?? 0) > smallBalanceThreshold &&
                 (!chainIdFilter || asset.chainId === chainIdFilter) &&
                 (!searchRegex ||
                   searchRegex.test(asset.name) ||
@@ -307,7 +307,7 @@ export const createUserAssetsStore = (address: Address | string) =>
 
           const filteredAllIdsArray = allIdsArray.filter(id => {
             const asset = userAssetsMap.get(id);
-            return asset && +asset.native?.balance?.amount > smallBalanceThreshold;
+            return asset && (+asset.native?.balance?.amount ?? 0) > smallBalanceThreshold;
           });
 
           const searchCache = new Map<string, UniqueId[]>();
