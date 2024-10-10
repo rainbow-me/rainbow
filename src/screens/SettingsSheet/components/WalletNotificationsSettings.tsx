@@ -15,10 +15,7 @@ import {
   useWalletGroupNotificationSettings,
   WalletNotificationSettings,
 } from '@/notifications/settings';
-import {
-  toggleGroupNotifications,
-  toggleTopicForWallet,
-} from '@/notifications/settings/settings';
+import { toggleGroupNotifications, toggleTopicForWallet } from '@/notifications/settings/settings';
 import { SettingsLoadingIndicator } from '@/screens/SettingsSheet/components/SettingsLoadingIndicator';
 import { showNotificationSubscriptionErrorAlert, showOfflineAlert } from '@/screens/SettingsSheet/components/notificationAlerts';
 import { useNetInfo } from '@react-native-community/netinfo';
@@ -110,7 +107,7 @@ const WalletNotificationsSettings = () => {
     const notificationsSectionEnabled = ownedWallet ? ownerEnabled : watcherEnabled;
     const lastWalletEnabled = ownedWallet ? lastOwnedWalletEnabled : lastWatchedWalletEnabled;
     return {
-      notificationsEnabled: notificationsSectionEnabled && notifications.enabled,
+      notificationsEnabled: notifications.enabled,
       notificationsSectionEnabled,
       lastWalletEnabled,
     };
@@ -136,15 +133,9 @@ const WalletNotificationsSettings = () => {
       return;
     }
     setAllState(prev => ({ status: !prev.status, loading: true }));
-    const success = await toggleGroupNotifications(
-      [notifications],
-      !notificationsEnabled
-    );
+    const success = await toggleGroupNotifications([notifications], !notificationsEnabled);
     if (success) {
-      if (
-        !notificationsSectionEnabled ||
-        (notificationsSectionEnabled && lastWalletEnabled)
-      ) {
+      if (!notificationsSectionEnabled || (notificationsSectionEnabled && lastWalletEnabled)) {
         updateGroupSettings({
           [notifications.type]: !notificationsEnabled,
         });
@@ -158,14 +149,7 @@ const WalletNotificationsSettings = () => {
       showNotificationSubscriptionErrorAlert();
       setAllState(prev => ({ status: !prev.status, loading: false }));
     }
-  }, [
-    notificationsSectionEnabled,
-    lastWalletEnabled,
-    updateSettings,
-    notificationsEnabled,
-    notifications,
-    isConnected,
-  ]);
+  }, [notificationsSectionEnabled, lastWalletEnabled, updateSettings, notificationsEnabled, notifications, isConnected]);
 
   const toggleTopic = useCallback(
     async (topic: WalletNotificationTopicType) => {
@@ -175,11 +159,7 @@ const WalletNotificationsSettings = () => {
       }
       toggleStateForTopic(topic);
       setTopicSubscriptionInProgress(topic);
-      const success = await toggleTopicForWallet(
-        notifications.address,
-        topic,
-        !notifications?.topics[topic]
-      );
+      const success = await toggleTopicForWallet(notifications.address, topic, !notifications?.topics[topic]);
       if (success) {
         updateSettings({
           topics: {
