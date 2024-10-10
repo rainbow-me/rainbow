@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { darkModeThemeColors } from '../../styles/colors';
 import { useTheme } from '../../theme/ThemeContext';
-import { magicMemo } from '../../utils';
+import { magicMemo, safeAreaInsetValues } from '../../utils';
 import ButtonPressAnimation, { ScaleButtonZoomableAndroid } from '../animations/ButtonPressAnimation';
 import { Centered, InnerBorder } from '../layout';
 import styled from '@/styled-thing';
@@ -9,6 +9,7 @@ import { borders, position } from '@/styles';
 import ShadowStack from '@/react-native-shadow-stack';
 
 export const FloatingActionButtonSize = 56;
+export const FabWrapperBottomPosition = 21 + safeAreaInsetValues.bottom;
 
 export const FloatingActionButtonShadow = colors => [
   [0, 2, 5, colors.shadow, 0.2],

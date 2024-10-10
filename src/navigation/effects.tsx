@@ -392,16 +392,6 @@ export const expandedPreset: StackNavigationOptions = {
   detachPreviousScreen: false,
 };
 
-export const swapSettingsPreset: StackNavigationOptions = {
-  cardOverlayEnabled: true,
-  cardShadowEnabled: true,
-  cardStyle: { backgroundColor: 'transparent', overflow: 'visible' },
-  cardStyleInterpolator: expandStyleInterpolator(1),
-  gestureDirection: 'vertical',
-  gestureResponseDistance,
-  transitionSpec: { close: closeSpec, open: openSpec },
-};
-
 export const overlayExpandedPreset: StackNavigationOptions = {
   cardOverlayEnabled: true,
   cardShadowEnabled: false,
@@ -510,17 +500,6 @@ export const settingsPreset = ({ route }: any) => ({
   ...sheetPreset({ route }),
   cardStyleInterpolator: sheetStyleInterpolator(0.7),
 });
-
-export const exchangeModalPreset = {
-  cardStyle: { backgroundColor: 'black' },
-  cardStyleInterpolator: () => ({
-    overlayStyle: {
-      backgroundColor: 'black',
-    },
-  }),
-  gestureEnabled: true,
-  gestureResponseDistance,
-};
 
 export const swapDetailsPreset = {
   cardOverlayEnabled: true,

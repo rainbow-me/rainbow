@@ -8308,6 +8308,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-native-text-input-mask@npm:0.7.10":
+  version: 0.7.10
+  resolution: "@types/react-native-text-input-mask@npm:0.7.10"
+  dependencies:
+    "@types/react": "npm:*"
+    react-native: "npm:*"
+  checksum: 10c0/6167393cb110e76a6b1445c97d562d3442457ddf8db14253a49a5f6b5986c72968362a6b728ed6763638970b3653693576e16ac5f6f679293e47d85bcec735be
+  languageName: node
+  linkType: hard
+
 "@types/react-native@npm:*":
   version: 0.72.8
   resolution: "@types/react-native@npm:0.72.8"
@@ -9745,6 +9755,7 @@ __metadata:
     "@types/react": "npm:18.2.65"
     "@types/react-native-extra-dimensions-android": "npm:1.2.3"
     "@types/react-native-indicators": "npm:0.16.6"
+    "@types/react-native-text-input-mask": "npm:0.7.10"
     "@types/react-redux": "npm:7.1.9"
     "@types/react-test-renderer": "npm:18.3.0"
     "@types/styled-components": "npm:5.1.7"
