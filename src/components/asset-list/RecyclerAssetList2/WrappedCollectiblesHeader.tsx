@@ -3,10 +3,11 @@ import { Box, Inline, Text } from '@/design-system';
 import * as i18n from '@/languages';
 import { ListHeaderMenu } from '@/components/list/ListHeaderMenu';
 import { NftCollectionSortCriterion, SortDirection } from '@/graphql/__generated__/arc';
-import { NftSort, useNftSort } from '@/hooks/useNFTsSortBy';
+import { NftSort, parseNftSort, useNftSort } from '@/hooks/useNFTsSortBy';
 import { colors } from '@/styles';
 import { useRemoteConfig } from '@/model/remoteConfig';
 import { NFTS_ENABLED, useExperimentalFlag } from '@/config';
+import { IS_ANDROID, IS_IOS } from '@/env';
 
 const TokenFamilyHeaderHeight = 48;
 
@@ -58,7 +59,7 @@ const CollectiblesHeader = () => {
           menuItems={Object.values(NftCollectionSortCriterion).map(sortCriterion => {
             return {
               icon: { iconType: 'SYSTEM', iconValue: getMenuItemIcon(sortCriterion) },
-              ...(nftSort === sortCriterion
+              ...(nftSort === sortCriterion && IS_IOS // submenus look weird in android, so it toggles when clicking the same item
                 ? {
                     menuTitle: i18n.t(i18n.l.nfts.sort[sortCriterion]),
                     menuPreferredElementSize: 'small',
@@ -91,7 +92,17 @@ const CollectiblesHeader = () => {
                   }),
             };
           })}
-          selectItem={string => updateNFTSort(string as NftSort)}
+          selectItem={actionKey => {
+            const sort = actionKey as NftSort;
+            if (IS_ANDROID) {
+              const [criterion, direction] = parseNftSort(sort);
+              if (criterion !== nftSort) return updateNFTSort(sort);
+              const toggledDirection = direction === SortDirection.Asc ? SortDirection.Desc : SortDirection.Asc;
+              updateNFTSort(`${criterion}|${toggledDirection}`);
+            } else {
+              updateNFTSort(sort);
+            }
+          }}
           icon={getIconForSortType(nftSort)}
           text={i18n.t(i18n.l.nfts.sort[nftSort])}
         />
