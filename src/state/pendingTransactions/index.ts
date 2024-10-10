@@ -1,7 +1,7 @@
 import { RainbowTransaction, NewTransaction } from '@/entities/transactions';
 import { createStore } from '../internal/createStore';
 import create from 'zustand';
-import { parseNewTransaction } from '@/parsers/transactions';
+import { convertNewTransactionToRainbowTransaction } from '@/parsers/transactions';
 import { nonceStore } from '../nonces';
 import { ChainId } from '@/chains/types';
 
@@ -79,7 +79,7 @@ export const addNewTransaction = ({
 }) => {
   const { addPendingTransaction } = pendingTransactionsStore.getState();
   const { setNonce } = nonceStore.getState();
-  const parsedTransaction = parseNewTransaction(transaction);
+  const parsedTransaction = convertNewTransactionToRainbowTransaction(transaction);
   addPendingTransaction({ address, pendingTransaction: parsedTransaction });
   setNonce({
     address,
@@ -99,7 +99,7 @@ export const updateTransaction = ({
 }) => {
   const { updatePendingTransaction } = pendingTransactionsStore.getState();
   const { setNonce } = nonceStore.getState();
-  const parsedTransaction = parseNewTransaction(transaction);
+  const parsedTransaction = convertNewTransactionToRainbowTransaction(transaction);
   updatePendingTransaction({ address, pendingTransaction: parsedTransaction });
   setNonce({
     address,

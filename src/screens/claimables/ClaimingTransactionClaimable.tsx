@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAccountSettings, useGas } from '@/hooks';
 import { ethereumUtils, haptics } from '@/utils';
-import { TransactionClaimable } from '@/resources/addys/claimables/types';
+import { Claimable, TransactionClaimable } from '@/resources/addys/claimables/types';
 import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
 import { parseGasParamsForTransaction } from '@/parsers';
 import { getNextNonce } from '@/state/nonces';
@@ -51,6 +51,8 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
   >();
   const [txPayload, setTxPayload] = useState<TransactionClaimableTxPayload | undefined>();
   const [claimStatus, setClaimStatus] = useState<ClaimStatus>('idle');
+
+  const queryKey = claimablesQueryKey({ address: accountAddress, currency: nativeCurrency });
 
   const provider = useMemo(() => getProvider({ chainId: claimable.chainId }), [claimable.chainId]);
 
@@ -174,8 +176,9 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
       } else {
         haptics.notificationSuccess();
         setClaimStatus('success');
-        // Clear and refresh claimables data
-        queryClient.invalidateQueries(claimablesQueryKey({ address: accountAddress, currency: nativeCurrency }));
+
+        // Immediately remove the claimable from cached data
+        queryClient.setQueryData(queryKey, (oldData: Claimable[] | undefined) => oldData?.filter(c => c.uniqueId !== claimable.uniqueId));
       }
     },
     onError: e => {
@@ -193,6 +196,10 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
           new RainbowError('[ClaimingTransactionClaimable]: claim function completed but never resolved status to success or error state')
         );
       }
+    },
+    onSettled: () => {
+      // Clear and refresh claimables data 20s after claim button is pressed, regardless of success or failure
+      setTimeout(() => queryClient.invalidateQueries(queryKey), 20_000);
     },
   });
 

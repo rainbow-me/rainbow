@@ -7,8 +7,7 @@ import { Address, erc20Abi, erc721Abi } from 'viem';
 
 import { ChainId } from '@/chains/types';
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
-import { NewTransaction } from '@/entities/transactions';
-import { TxHash } from '@/resources/transactions/types';
+import { NewTransaction, TransactionStatus, TxHash } from '@/entities';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, logger } from '@/logger';
 
@@ -283,7 +282,7 @@ export const unlock = async ({
     network: chainsName[chainId],
     chainId: approval.chainId,
     nonce: approval.nonce,
-    status: 'pending',
+    status: TransactionStatus.pending,
     type: 'approve',
     approvalAmount: 'UNLIMITED',
     ...gasParams,

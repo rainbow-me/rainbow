@@ -18,8 +18,7 @@ import { Address } from 'viem';
 
 import { metadataPOSTClient } from '@/graphql';
 import { ChainId } from '@/chains/types';
-import { NewTransaction } from '@/entities/transactions';
-import { TxHash } from '@/resources/transactions/types';
+import { NewTransaction, TxHash, TransactionStatus, TransactionDirection } from '@/entities';
 import { add } from '@/helpers/utilities';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, logger } from '@/logger';
@@ -40,7 +39,7 @@ import {
 import { populateApprove } from './unlock';
 import { TokenColors } from '@/graphql/__generated__/metadata';
 import { swapMetadataStorage } from '../common';
-import { ParsedAsset } from '@/resources/assets/types';
+import { AddysNetworkDetails, ParsedAsset } from '@/resources/assets/types';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { Screens, TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
@@ -313,43 +312,42 @@ export const swap = async ({
       }
     : parameters.assetToSell.price;
 
+  const assetToBuy = {
+    ...parameters.assetToBuy,
+    network: chainsName[parameters.assetToBuy.chainId],
+    networks: parameters.assetToBuy.networks as Record<string, AddysNetworkDetails>,
+    colors: parameters.assetToBuy.colors as TokenColors,
+    price: nativePriceForAssetToBuy,
+  } satisfies ParsedAsset;
+
+  const assetToSell = {
+    ...parameters.assetToSell,
+    network: chainsName[parameters.assetToSell.chainId],
+    networks: parameters.assetToSell.networks as Record<string, AddysNetworkDetails>,
+    colors: parameters.assetToSell.colors as TokenColors,
+    price: nativePriceForAssetToSell,
+  } satisfies ParsedAsset;
+
   const transaction = {
     chainId: parameters.chainId,
-    data: swap.data,
-    from: swap.from as Address,
-    to: swap.to as Address,
-    value: quote.value?.toString(),
-    // TODO: MARK - Replace this once we migrate network => chainId
-    // asset: parameters.assetToBuy,
-    asset: {
-      ...parameters.assetToBuy,
-      network: chainsName[parameters.assetToBuy.chainId],
-      colors: parameters.assetToBuy.colors as TokenColors,
-      price: nativePriceForAssetToBuy,
-    } as ParsedAsset,
+    data: parameters.quote.data,
+    from: parameters.quote.from,
+    to: parameters.quote.to as Address,
+    value: parameters.quote.value?.toString(),
+    asset: assetToBuy,
     changes: [
       {
-        direction: 'out',
-        // TODO: MARK - Replace this once we migrate network => chainId
-        // asset: parameters.assetToSell,
+        direction: TransactionDirection.OUT,
         asset: {
-          ...parameters.assetToSell,
-          network: chainsName[parameters.assetToSell.chainId],
-          colors: parameters.assetToSell.colors as TokenColors,
-          price: nativePriceForAssetToSell,
+          ...assetToSell,
           native: undefined,
         },
         value: quote.sellAmount.toString(),
       },
       {
-        direction: 'in',
-        // TODO: MARK - Replace this once we migrate network => chainId
-        // asset: parameters.assetToBuy,
+        direction: TransactionDirection.IN,
         asset: {
-          ...parameters.assetToBuy,
-          network: chainsName[parameters.assetToBuy.chainId],
-          colors: parameters.assetToBuy.colors as TokenColors,
-          price: nativePriceForAssetToBuy,
+          ...assetToBuy,
           native: undefined,
         },
         value: quote.buyAmountMinusFees.toString(),
@@ -359,7 +357,7 @@ export const swap = async ({
     hash: swap.hash as TxHash,
     network: chainsName[parameters.chainId],
     nonce: swap.nonce,
-    status: 'pending',
+    status: TransactionStatus.pending,
     type: 'swap',
     swap: {
       type: SwapType.normal,
@@ -380,7 +378,7 @@ export const swap = async ({
   }
 
   addNewTransaction({
-    address: parameters.quote.from as Address,
+    address: parameters.quote.from,
     chainId: parameters.chainId,
     transaction,
   });
