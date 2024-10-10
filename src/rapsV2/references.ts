@@ -35,15 +35,19 @@ export interface CrosschainSwapActionParameters {
 }
 
 export interface UnlockActionParameters {
-  amount: string;
+  fromAddress: Address;
   assetToUnlock: ParsedAsset;
   contractAddress: Address;
   chainId: number;
+  gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
+  gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
 }
 
 export interface ClaimTransactionClaimableActionParameters {
   claimTx: TransactionClaimableTxPayload;
   asset: ParsedAddressAsset;
+  gasParams?: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
+  gasFeeParamsBySpeed?: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
 }
 
 export interface RapActionTransaction {
@@ -60,6 +64,10 @@ export type RapParameters =
   | {
       type: 'claimTransactionClaimableRap';
       claimTransactionClaimableActionParameters: ClaimTransactionClaimableActionParameters;
+      crosschainSwapActionParameters: CrosschainSwapActionParameters;
+      unlockActionParameters: UnlockActionParameters;
+      gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
+      gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
     }
   | {
       type: 'crosschainSwapRap';

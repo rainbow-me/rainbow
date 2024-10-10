@@ -106,12 +106,7 @@ export const executeCrosschainSwap = async ({
   return fillCrosschainQuote(quote, transactionParams, wallet, referrer);
 };
 
-export const crosschainSwap = async ({
-  wallet,
-  parameters,
-  nonceToUse,
-  expediteTransaction,
-}: ActionProps<'crosschainSwapAction'>): Promise<RapActionResult> => {
+export const crosschainSwap = async ({ wallet, parameters, nonceToUse }: ActionProps<'crosschainSwapAction'>): Promise<RapActionResult> => {
   const { swapData } = parameters;
   const { assetToBuy, assetToSell, chainId, flashbots, gasFeeParamsBySpeed, gasParams, requiresApprove, quote } = swapData;
 

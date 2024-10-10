@@ -15,7 +15,7 @@ import { RainbowError, logger } from '@/logger';
 import { ETH_ADDRESS, gasUnits } from '@/references';
 import { ParsedAsset as SwapsParsedAsset } from '@/__swaps__/types/assets';
 import { convertAmountToRawAmount, greaterThan } from '@/helpers/utilities';
-import { ActionProps, RapActionResult } from '../references';
+import { ActionProps } from '../references';
 
 import { overrideWithFastSpeedIfNeeded } from './../utils';
 import { toHex } from '@/__swaps__/utils/hex';
@@ -40,7 +40,7 @@ export const getAssetRawAllowance = async ({
     const allowance = await tokenContract.allowance(owner, spender);
     return allowance.toString();
   } catch (error) {
-    logger.error(new RainbowError('[raps/unlock]: error'), {
+    logger.error(new RainbowError('[rapsV2/unlock]: error'), {
       message: (error as Error)?.message,
     });
     return null;
@@ -98,7 +98,7 @@ export const estimateApprove = async ({
 
     return gasLimit.toString();
   } catch (error) {
-    logger.error(new RainbowError('[raps/unlock]: error estimateApprove'), {
+    logger.error(new RainbowError('[rapsV2/unlock]: error estimateApprove'), {
       message: (error as Error)?.message,
     });
     return `${gasUnits.basic_approval}`;
@@ -124,7 +124,7 @@ export const populateApprove = async ({
     });
     return approveTransaction;
   } catch (error) {
-    logger.error(new RainbowError('[raps/unlock]: error populateApprove'), {
+    logger.error(new RainbowError('[rapsV2/unlock]: error populateApprove'), {
       message: (error as Error)?.message,
     });
     return null;
@@ -150,7 +150,7 @@ export const estimateERC721Approval = async ({
     });
     return gasLimit ? gasLimit.toString() : `${gasUnits.basic_approval}`;
   } catch (error) {
-    logger.error(new RainbowError('[raps/unlock]: error estimateApproval'), {
+    logger.error(new RainbowError('[rapsV2/unlock]: error estimateApproval'), {
       message: (error as Error)?.message,
     });
     return `${gasUnits.basic_approval}`;
@@ -209,14 +209,8 @@ export const executeApprove = async ({
   });
 };
 
-export const unlock = async ({
-  parameters,
-  wallet,
-  gasParams,
-  gasFeeParamsBySpeed,
-  nonceToUse,
-}: ActionProps<'unlockAction'>): Promise<RapActionResult> => {
-  const { assetToUnlock, contractAddress, chainId } = parameters;
+export const unlock = async ({ parameters, wallet, nonceToUse }: ActionProps<'unlockAction'>) => {
+  const { assetToUnlock, contractAddress, chainId, fromAddress, gasParams, gasFeeParamsBySpeed } = parameters;
 
   let gasParamsToUse = gasParams;
 
@@ -227,13 +221,13 @@ export const unlock = async ({
   let gasLimit;
   try {
     gasLimit = await estimateApprove({
-      owner: parameters.fromAddress,
+      owner: fromAddress,
       tokenAddress: assetAddress,
       spender: contractAddress,
       chainId,
     });
   } catch (e) {
-    logger.error(new RainbowError('[raps/unlock]: error estimateApprove'), {
+    logger.error(new RainbowError('[rapsV2/unlock]: error estimateApprove'), {
       message: (e as Error)?.message,
     });
     throw e;
@@ -257,13 +251,13 @@ export const unlock = async ({
       chainId,
     });
   } catch (e) {
-    logger.error(new RainbowError('[raps/unlock]: error executeApprove'), {
+    logger.error(new RainbowError('[rapsV2/unlock]: error executeApprove'), {
       message: (e as Error)?.message,
     });
     throw e;
   }
 
-  if (!approval) throw new RainbowError('[raps/unlock]: error executeApprove');
+  if (!approval) throw new RainbowError('[rapsV2/unlock]: error executeApprove');
 
   const transaction = {
     asset: {
@@ -274,7 +268,7 @@ export const unlock = async ({
     data: approval.data,
     value: approval.value?.toString(),
     changes: [],
-    from: parameters.fromAddress,
+    from: fromAddress,
     to: assetAddress,
     hash: approval.hash as TxHash,
     network: chainsName[chainId],
@@ -287,7 +281,7 @@ export const unlock = async ({
   } satisfies NewTransaction;
 
   addNewTransaction({
-    address: parameters.fromAddress as Address,
+    address: fromAddress,
     chainId: approval.chainId,
     transaction,
   });
