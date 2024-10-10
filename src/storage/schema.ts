@@ -81,3 +81,7 @@ export type Campaigns = CampaignKeys & CampaignMetadata;
 export type Cards = {
   [cardKey: string]: boolean;
 };
+
+export type WatchedWalletCohort = {
+  lastReported: ReturnType<typeof Date.now>;
+};

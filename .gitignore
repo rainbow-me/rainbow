@@ -133,3 +133,7 @@ InjectedJSBundle.js.LICENSE.txt
 !.yarn/versions
 
 src/references/networks.json
+# Expo
+.expo
+dist/
+web-build/
