@@ -27,7 +27,7 @@ import ConditionalWrap from 'conditional-wrap';
 import Routes from '@/navigation/routesNames';
 import { useLegacyNFTs } from '@/resources/nfts';
 import { useAccountSettings, useGas, useWallets } from '@/hooks';
-import { NewTransaction, TransactionDirection, TransactionStatus } from '@/entities';
+import { NewTransaction } from '@/entities';
 import { analyticsV2 } from '@/analytics';
 import { BigNumber } from '@ethersproject/bignumber';
 import { HoldToAuthorizeButton } from '@/components/buttons';
@@ -324,7 +324,7 @@ export function NFTSingleOfferSheet() {
                 };
                 if (step.id === 'sale') {
                   tx = {
-                    status: TransactionStatus.pending,
+                    status: 'pending',
                     chainId: offerChainId,
                     to: item.data?.to,
                     from: item.data?.from,
@@ -339,12 +339,12 @@ export function NFTSingleOfferSheet() {
                     },
                     changes: [
                       {
-                        direction: TransactionDirection.OUT,
+                        direction: 'out',
                         asset,
                         value: 1,
                       },
                       {
-                        direction: TransactionDirection.IN,
+                        direction: 'in',
                         asset: {
                           ...offer.paymentToken,
                           network: offer.network as Network,
@@ -358,7 +358,7 @@ export function NFTSingleOfferSheet() {
                   };
                 } else if (step.id === 'nft-approval') {
                   tx = {
-                    status: TransactionStatus.pending,
+                    status: 'pending',
                     chainId: offerChainId,
                     to: item.data?.to,
                     from: item.data?.from,

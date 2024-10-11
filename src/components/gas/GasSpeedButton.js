@@ -1,11 +1,12 @@
 /* eslint-disable no-nested-ternary */
+/* eslint-disable no-undef */
 import AnimateNumber from '@bankify/react-native-animate-number';
 import lang from 'i18n-js';
-import { isEmpty, isNaN, isNil, noop } from 'lodash';
+import { isEmpty, isNaN, isNil } from 'lodash';
 import makeColorMoreChill from 'make-color-more-chill';
 import { AnimatePresence, MotiView } from 'moti';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Keyboard, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { InteractionManager, Keyboard } from 'react-native';
 import { Easing } from 'react-native-reanimated';
 import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
@@ -28,20 +29,8 @@ import { ContextMenu } from '../context-menu';
 import { EthCoinIcon } from '../coin-icon/EthCoinIcon';
 import { ChainId } from '@/chains/types';
 import { chainsGasSpeeds } from '@/chains';
-import { ThemeContextProps, useTheme } from '@/theme';
-import { OnPressMenuItemEventObject } from 'react-native-ios-context-menu';
-import { ParsedAddressAsset } from '@/entities';
 
 const { GAS_EMOJIS, GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST, getGasLabel } = gasUtils;
-
-type WithThemeProps = {
-  borderColor: string;
-  color: string;
-  theme: ThemeContextProps;
-  marginBottom: number;
-  marginTop: number;
-  horizontalPadding: number;
-};
 
 const CustomGasButton = styled(ButtonPressAnimation).attrs({
   align: 'center',
@@ -51,7 +40,7 @@ const CustomGasButton = styled(ButtonPressAnimation).attrs({
   justifyContent: 'center',
   scaleTo: 0.8,
 })({
-  borderColor: ({ borderColor, color, theme: { colors } }: WithThemeProps) => borderColor || color || colors.appleBlue,
+  borderColor: ({ borderColor, color, theme: { colors } }) => borderColor || color || colors.appleBlue,
   borderRadius: 19,
   borderWidth: 2,
   ...padding.object(android ? 2 : 3, 0),
@@ -80,7 +69,7 @@ const DoneCustomGas = styled(Text).attrs({
   bottom: 0.5,
 });
 
-const ChainBadgeContainer = styled(View).attrs({
+const ChainBadgeContainer = styled.View.attrs({
   hapticType: 'impactHeavy',
   scaleTo: 0.9,
 })({
@@ -100,16 +89,16 @@ const Container = styled(Column).attrs({
   alignItems: 'center',
   hapticType: 'impactHeavy',
   justifyContent: 'center',
-})(({ marginBottom, marginTop, horizontalPadding }: WithThemeProps) => ({
+})(({ marginBottom, marginTop, horizontalPadding }) => ({
   ...margin.object(marginTop, 0, marginBottom),
   ...padding.object(0, horizontalPadding),
   width: '100%',
 }));
 
-const Label = styled(Text).attrs(({ size }: { size: string }) => ({
+const Label = styled(Text).attrs(({ size }) => ({
   lineHeight: 'normal',
   size: size || 'lmedium',
-}))(({ weight }: { weight: string }) => fontWithWidth(weight || fonts.weight.semibold));
+}))(({ weight }) => fontWithWidth(weight || fonts.weight.semibold));
 
 const GasSpeedPagerCentered = styled(Centered).attrs(() => ({
   marginRight: 8,
@@ -117,7 +106,7 @@ const GasSpeedPagerCentered = styled(Centered).attrs(() => ({
 
 const TextContainer = styled(Column).attrs(() => ({}))({});
 
-const TransactionTimeLabel = ({ formatter, isLongWait, theme }: { formatter: () => string; isLongWait: boolean; theme: string }) => {
+const TransactionTimeLabel = ({ formatter, isLongWait, theme }) => {
   const { colors } = useTheme();
   let color = theme === 'dark' ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6) : colors.alpha(colors.blueGreyDark, 0.6);
 
@@ -132,7 +121,7 @@ const TransactionTimeLabel = ({ formatter, isLongWait, theme }: { formatter: () 
   );
 };
 
-const shouldRoundGasDisplay = (chainId: ChainId) => {
+const shouldRoundGasDisplay = chainId => {
   switch (chainId) {
     case ChainId.bsc:
     case ChainId.polygon:
@@ -142,24 +131,6 @@ const shouldRoundGasDisplay = (chainId: ChainId) => {
   }
 };
 
-type GasSpeedButtonProps = {
-  asset?: Partial<ParsedAddressAsset>;
-  chainId: ChainId;
-  horizontalPadding?: number;
-  fallbackColor?: string;
-  marginBottom?: number;
-  marginTop?: number;
-  speeds?: string[];
-  testID?: string;
-  theme?: string;
-  canGoBack?: boolean;
-  showGasOptions?: boolean;
-  validateGasParams?: React.RefObject<(callback?: () => void) => void>;
-  flashbotTransaction?: boolean;
-  crossChainServiceTime?: number;
-  loading?: boolean;
-};
-
 const GasSpeedButton = ({
   asset,
   chainId,
@@ -167,7 +138,7 @@ const GasSpeedButton = ({
   fallbackColor,
   marginBottom = 20,
   marginTop = 18,
-  speeds = [],
+  speeds = null,
   testID = 'gas-speed-button',
   theme = 'dark',
   canGoBack = true,
@@ -176,7 +147,7 @@ const GasSpeedButton = ({
   flashbotTransaction = false,
   crossChainServiceTime = undefined,
   loading = false,
-}: GasSpeedButtonProps) => {
+}) => {
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
@@ -188,10 +159,7 @@ const GasSpeedButton = ({
   const { gasFeeParamsBySpeed, updateGasFeeOption, selectedGasFee, selectedGasFeeOption, currentBlockParams } = useGas();
 
   const [gasPriceReady, setGasPriceReady] = useState(false);
-  const [shouldOpenCustomGasSheet, setShouldOpenCustomGasSheet] = useState<{
-    focusTo: string | null;
-    shouldOpen: boolean;
-  }>({
+  const [shouldOpenCustomGasSheet, setShouldOpenCustomGasSheet] = useState({
     focusTo: null,
     shouldOpen: false,
   });
@@ -220,7 +188,7 @@ const GasSpeedButton = ({
   );
 
   const formatGasPrice = useCallback(
-    (animatedValue: string) => {
+    animatedValue => {
       if (animatedValue === null || loading || isNaN(animatedValue)) {
         return 0;
       }
@@ -245,7 +213,7 @@ const GasSpeedButton = ({
     [loading, gasPriceReady, isLegacyGasNetwork, nativeCurrencySymbol, nativeCurrency]
   );
 
-  const openCustomOptionsRef = useRef<any>();
+  const openCustomOptionsRef = useRef();
 
   const openCustomGasSheet = useCallback(() => {
     if (gasIsNotReady) return;
@@ -254,14 +222,14 @@ const GasSpeedButton = ({
       fallbackColor,
       flashbotTransaction,
       focusTo: shouldOpenCustomGasSheet.focusTo,
-      openCustomOptions: (focusTo: string) => openCustomOptionsRef?.current?.(focusTo),
+      openCustomOptions: focusTo => openCustomOptionsRef.current(focusTo),
       speeds: speeds ?? GasSpeedOrder,
       type: 'custom_gas',
     });
   }, [gasIsNotReady, navigate, asset, shouldOpenCustomGasSheet.focusTo, flashbotTransaction, speeds, fallbackColor]);
 
   const openCustomOptions = useCallback(
-    (focusTo: string) => {
+    focusTo => {
       if (ios) {
         setShouldOpenCustomGasSheet({ focusTo, shouldOpen: true });
       } else {
@@ -274,7 +242,7 @@ const GasSpeedButton = ({
   openCustomOptionsRef.current = openCustomOptions;
 
   const renderGasPriceText = useCallback(
-    (animatedNumber: number) => {
+    animatedNumber => {
       const priceText = animatedNumber === 0 || loading ? lang.t('swap.loading') : animatedNumber;
       return (
         <Text
@@ -292,7 +260,7 @@ const GasSpeedButton = ({
 
   // I'M SHITTY CODE BUT GOT THINGS DONE REFACTOR ME ASAP
   const handlePressSpeedOption = useCallback(
-    (selectedSpeed: string) => {
+    selectedSpeed => {
       if (selectedSpeed === CUSTOM) {
         if (ios) {
           InteractionManager.runAfterInteractions(() => {
@@ -326,7 +294,7 @@ const GasSpeedButton = ({
     }
 
     const estimatedTime = (selectedGasFee?.estimatedTime?.display || '').split(' ');
-    const [estimatedTimeValue = '0', estimatedTimeUnit = 'min'] = estimatedTime;
+    const [estimatedTimeValue = 0, estimatedTimeUnit = 'min'] = estimatedTime;
     const time = parseFloat(estimatedTimeValue).toFixed(0);
 
     const timeSymbol = estimatedTimeUnit === 'hr' ? '>' : '~';
@@ -361,14 +329,14 @@ const GasSpeedButton = ({
   }, [chainId, crossChainServiceTime, inputCurrency, navigate, outputCurrency]);
 
   const handlePressMenuItem = useCallback(
-    ({ nativeEvent: { actionKey } }: OnPressMenuItemEventObject) => {
+    ({ nativeEvent: { actionKey } }) => {
       handlePressSpeedOption(actionKey);
     },
     [handlePressSpeedOption]
   );
 
   const handlePressActionSheet = useCallback(
-    (buttonIndex: number) => {
+    buttonIndex => {
       switch (buttonIndex) {
         case 0:
           handlePressSpeedOption(NORMAL);
@@ -400,8 +368,7 @@ const GasSpeedButton = ({
 
       const shouldRoundGwei = shouldRoundGasDisplay(chainId);
       const gweiDisplay = !shouldRoundGwei
-        ? // @ts-expect-error - legacy gas params has `gasPrice`
-          gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
+        ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
         : gasOption === 'custom' && selectedGasFeeOption !== 'custom'
           ? ''
           : greaterThan(estimatedGwei, totalGwei)
@@ -444,8 +411,9 @@ const GasSpeedButton = ({
             : colors.alpha(colors.blueGreyDark, 0.12)
         }
         dropdownEnabled={gasOptionsAvailable}
-        onPress={noop}
         label={label}
+        showGasOptions={showGasOptions}
+        showPager
         theme={theme}
       />
     );
@@ -509,7 +477,7 @@ const GasSpeedButton = ({
   // would make the expanded sheet come up with too much force
   // instead calling it from `useEffect` makes it appear smoothly
   useEffect(() => {
-    if (shouldOpenCustomGasSheet.shouldOpen && !prevShouldOpenCustomGasSheet?.shouldOpen) {
+    if (shouldOpenCustomGasSheet.shouldOpen && !prevShouldOpenCustomGasSheet.shouldOpen) {
       openCustomGasSheet();
       setShouldOpenCustomGasSheet({ focusTo: null, shouldOpen: false });
     }
@@ -526,7 +494,6 @@ const GasSpeedButton = ({
                   <MotiView
                     animate={{ opacity: 1 }}
                     from={{ opacity: 0 }}
-                    // @ts-expect-error - MotiTransitionProp is not assignable to TransitionConfig
                     transition={{
                       duration: 300,
                       easing: Easing.bezier(0.2, 0, 0, 1),

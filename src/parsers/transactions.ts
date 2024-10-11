@@ -1,14 +1,6 @@
-import {
-  NativeCurrencyKey,
-  RainbowTransaction,
-  TransactionDirection,
-  PaginatedTransactionsApiResponse,
-  TransactionApiResponse,
-  TransactionChanges,
-  TransactionStatus,
-  TransactionType,
-  TransactionWithChangesType,
-} from '@/entities';
+import { slice } from 'lodash';
+import { parseAllTxnsOnReceive } from '../config/debug';
+import { NativeCurrencyKey, RainbowTransaction, ZerionTransaction } from '@/entities';
 
 import {
   convertAmountAndPriceToNativeDisplay,
@@ -20,8 +12,17 @@ import {
 import { NewTransaction, RainbowTransactionFee } from '@/entities/transactions/transaction';
 import { parseAddressAsset, parseAsset } from '@/resources/assets/assets';
 import { ParsedAsset } from '@/resources/assets/types';
-
+import { transactionTypes } from '@/entities/transactions/transactionType';
+import {
+  PaginatedTransactionsApiResponse,
+  TransactionApiResponse,
+  TransactionChanges,
+  TransactionType,
+  TransactionWithChangesType,
+} from '@/resources/transactions/types';
 import { ChainId } from '@/chains/types';
+
+const LAST_TXN_HASH_BUFFER = 20;
 
 const TransactionOutTypes = [
   'burn',
@@ -36,11 +37,25 @@ const TransactionOutTypes = [
   'revoke',
   'deployment',
   'contract_interaction',
-] as readonly string[];
+] as const;
 
-export const getDirection = (type: TransactionType): TransactionDirection => {
-  if (TransactionOutTypes.includes(type)) return TransactionDirection.OUT;
-  return TransactionDirection.IN;
+export const getDirection = (type: TransactionType) => {
+  // @ts-expect-error - Ts doesnt like the weird type structure here
+  if (TransactionOutTypes.includes(type as TransactionType)) return 'out';
+  return 'in';
+};
+
+const dataFromLastTxHash = (transactionData: ZerionTransaction[], transactions: RainbowTransaction[]): ZerionTransaction[] => {
+  if (__DEV__ && parseAllTxnsOnReceive) return transactionData;
+  const lastSuccessfulTxn = transactions.find(txn => !!txn.hash && txn.status !== 'pending');
+  const lastTxHash = lastSuccessfulTxn?.hash;
+  if (lastTxHash) {
+    const lastTxnHashIndex = transactionData.findIndex(txn => lastTxHash.startsWith(txn.hash));
+    if (lastTxnHashIndex > -1) {
+      return slice(transactionData, 0, lastTxnHashIndex + LAST_TXN_HASH_BUFFER);
+    }
+  }
+  return transactionData;
 };
 
 export const getAssetFromChanges = (changes: TransactionChanges, type: TransactionType) => {
@@ -132,12 +147,12 @@ export const parseTransaction = async (
   } as RainbowTransaction;
 };
 
-export const convertNewTransactionToRainbowTransaction = (tx: NewTransaction): RainbowTransaction => {
+export const parseNewTransaction = (tx: NewTransaction): RainbowTransaction => {
   const asset = tx?.changes?.[0]?.asset || tx.asset;
 
   return {
     ...tx,
-    status: TransactionStatus.pending,
+    status: 'pending',
     data: tx.data,
     title: `${tx.type}.${tx.status}`,
     description: asset?.name,
@@ -190,9 +205,12 @@ export const getDescription = (asset: ParsedAsset | undefined, type: Transaction
 
 export const isValidTransactionType = (type: string | undefined): type is TransactionType =>
   !!type &&
-  (TransactionType.withChanges.includes(type as TransactionType) ||
-    TransactionType.withoutChanges.includes(type as TransactionType) ||
+  // @ts-expect-error - Ts doesnt like the weird type structure here
+  (transactionTypes.withChanges.includes(type as TransactionType) ||
+    // @ts-expect-error - Ts doesnt like the weird type structure here
+    transactionTypes.withoutChanges.includes(type as TransactionType) ||
     type === ('sale' as TransactionType));
 
 export const transactionTypeShouldHaveChanges = (type: TransactionType): type is TransactionWithChangesType =>
-  TransactionType.withChanges.includes(type);
+  // @ts-expect-error - Ts doesnt like the weird type structure here
+  transactionTypes.withChanges.includes(type);

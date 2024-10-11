@@ -1,22 +1,20 @@
 import React, { createContext, useState } from 'react';
 import { SectionList } from 'react-native';
 
-type SectionListScrollToTopContextType<ItemT, SectionT> = {
+export const SectionListScrollToTopContext = createContext<{
   scrollToTop: () => void;
-  setScrollToTopRef: (ref: SectionList<ItemT, SectionT> | null) => void;
-};
-
-export const SectionListScrollToTopContext = createContext<SectionListScrollToTopContextType<any, any>>({
+  setScrollToTopRef: (ref: SectionList | null) => void;
+}>({
   scrollToTop: () => {},
   setScrollToTopRef: () => {},
 });
 
-type ScrollToTopProviderProps<ItemT, SectionT> = {
+type ScrollToTopProviderProps = {
   children: React.ReactNode;
 };
 
-function SectionListScrollToTopProvider<ItemT, SectionT>({ children }: ScrollToTopProviderProps<ItemT, SectionT>) {
-  const [scrollToTopRef, setScrollToTopRef] = useState<SectionList<ItemT, SectionT> | null>(null);
+const SectionListScrollToTopProvider: React.FC<ScrollToTopProviderProps> = ({ children }) => {
+  const [scrollToTopRef, setScrollToTopRef] = useState<SectionList | null>(null);
 
   const scrollToTop = () => {
     if (!scrollToTopRef?.props.sections.length) return;
@@ -30,10 +28,8 @@ function SectionListScrollToTopProvider<ItemT, SectionT>({ children }: ScrollToT
   return (
     <SectionListScrollToTopContext.Provider value={{ scrollToTop, setScrollToTopRef }}>{children}</SectionListScrollToTopContext.Provider>
   );
-}
+};
 
-export function useSectionListScrollToTopContext<ItemT, SectionT>() {
-  return React.useContext(SectionListScrollToTopContext) as SectionListScrollToTopContextType<ItemT, SectionT>;
-}
+export const useSectionListScrollToTopContext = () => React.useContext(SectionListScrollToTopContext);
 
 export default SectionListScrollToTopProvider;

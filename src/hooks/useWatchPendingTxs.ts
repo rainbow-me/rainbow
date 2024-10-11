@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import useAccountSettings from './useAccountSettings';
-import { RainbowTransaction, MinedTransaction, TransactionStatus, FlashbotsStatus } from '@/entities';
+import { RainbowTransaction, MinedTransaction } from '@/entities/transactions/transaction';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
 import { userAssetsQueryKey as swapsUserAssetsQueryKey } from '@/__swaps__/screens/Swap/resources/assets/userAssets';
 import { transactionFetchQuery } from '@/resources/transactions/transaction';
@@ -55,7 +55,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
   );
 
   const processFlashbotsTransaction = useCallback(async (tx: RainbowTransaction): Promise<RainbowTransaction> => {
-    const flashbotsTxStatus = await getTransactionFlashbotStatus(tx, tx.hash);
+    const flashbotsTxStatus = await getTransactionFlashbotStatus(tx, tx.hash!);
     if (flashbotsTxStatus) {
       const { flashbotsStatus, status, minedAt, title } = flashbotsTxStatus;
 
@@ -65,7 +65,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         minedAt,
         title,
         flashbotsStatus,
-      } as MinedTransaction;
+      } as RainbowTransaction;
     }
     return tx;
   }, []);
@@ -73,7 +73,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
   const processSupportedNetworkTransaction = useCallback(
     async (tx: RainbowTransaction) => {
       const transaction = await transactionFetchQuery({
-        hash: tx.hash,
+        hash: tx.hash!,
         chainId: tx.chainId,
         address,
         currency: nativeCurrency,
@@ -94,11 +94,11 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         if (tx.chainId && tx.hash && address) {
           updatedTransaction = await processSupportedNetworkTransaction(updatedTransaction);
           // if flashbots tx and no blockNumber, check if it failed
-          if (tx.flashbots && !('blockNumber' in tx)) {
+          if (!(tx as any).blockNumber && tx.flashbots) {
             updatedTransaction = await processFlashbotsTransaction(updatedTransaction);
           }
         } else {
-          throw new Error('Pending transaction missing chainId, hash, or address');
+          throw new Error('Pending transaction missing chain id');
         }
       } catch (e) {
         logger.error(new RainbowError(`[useWatchPendingTransaction]: Failed to watch transaction`), {
@@ -106,7 +106,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         });
       }
 
-      if (updatedTransaction?.status !== TransactionStatus.pending) {
+      if (updatedTransaction?.status !== 'pending') {
         refreshAssets(tx);
       }
       return updatedTransaction;
@@ -133,7 +133,7 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
           return acc;
         }
         // if tx is flashbots and failed, we want to use the lowest nonce
-        if (tx.flashbots && tx?.flashbotsStatus === FlashbotsStatus.FAILED && tx?.nonce) {
+        if (tx.flashbots && (tx as any)?.flashbotsStatus === 'FAILED' && tx?.nonce) {
           // if we already have a failed flashbots tx, we want to use the lowest nonce
           if (flashbotsTxFailed && tx.nonce < acc.get(tx.chainId)) {
             acc.set(tx.chainId, tx.nonce);
@@ -173,12 +173,9 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
 
     processNonces(updatedPendingTransactions);
 
-    const { newPendingTransactions, minedTransactions } = updatedPendingTransactions.reduce<{
-      newPendingTransactions: RainbowTransaction[];
-      minedTransactions: MinedTransaction[];
-    }>(
+    const { newPendingTransactions, minedTransactions } = updatedPendingTransactions.reduce(
       (acc, tx) => {
-        if (tx?.status === TransactionStatus.pending) {
+        if (tx?.status === 'pending') {
           acc.newPendingTransactions.push(tx);
         } else {
           acc.minedTransactions.push(tx as MinedTransaction);
@@ -186,8 +183,8 @@ export const useWatchPendingTransactions = ({ address }: { address: string }) =>
         return acc;
       },
       {
-        newPendingTransactions: [],
-        minedTransactions: [],
+        newPendingTransactions: [] as RainbowTransaction[],
+        minedTransactions: [] as MinedTransaction[],
       }
     );
 

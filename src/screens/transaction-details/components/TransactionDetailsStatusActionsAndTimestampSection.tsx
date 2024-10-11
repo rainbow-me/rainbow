@@ -1,7 +1,8 @@
 import React, { useCallback, useMemo } from 'react';
-import { PendingTransaction, RainbowTransaction, TransactionStatus } from '@/entities';
+import { RainbowTransaction, TransactionStatusTypes } from '@/entities';
 import { Box, Stack, Text } from '@/design-system';
 import { formatTransactionDetailsDate } from '@/screens/transaction-details/helpers/formatTransactionDetailsDate';
+import { capitalize } from 'lodash';
 import { getIconColorAndGradientForTransactionStatus } from '@/screens/transaction-details/helpers/getIconColorAndGradientForTransactionStatus';
 import RadialGradient from 'react-native-radial-gradient';
 import { useTheme } from '@/theme';
@@ -32,7 +33,7 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
 
   const isOutgoing = from?.toLowerCase() === accountAddress?.toLowerCase();
   const canBeResubmitted = isOutgoing && !minedAt;
-  const canBeCancelled = canBeResubmitted && status !== TransactionStatus.cancelling;
+  const canBeCancelled = canBeResubmitted && status !== TransactionStatusTypes.cancelling;
 
   const menuConfig = useMemo(
     () => ({
@@ -76,13 +77,13 @@ export const TransactionDetailsStatusActionsAndTimestampSection: React.FC<Props>
       switch (actionKey) {
         case 'speedUp':
           navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
-            tx: transaction as PendingTransaction,
+            tx: transaction,
             type: 'speed_up',
           });
           return;
         case 'cancel':
           navigate(Routes.SPEED_UP_AND_CANCEL_SHEET, {
-            tx: transaction as PendingTransaction,
+            tx: transaction,
             type: 'cancel',
           });
           return;

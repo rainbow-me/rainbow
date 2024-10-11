@@ -137,7 +137,7 @@ export default function useGas({ nativeAsset }: { nativeAsset?: ParsedAddressAss
   const updateGasFeeOption = useCallback((option: string) => dispatch(gasUpdateGasFeeOption(option)), [dispatch]);
 
   const updateTxFee = useCallback(
-    (newGasLimit: any, overrideGasOption?: any, l1GasFeeOptimism: any = null) => {
+    (newGasLimit: any, overrideGasOption: any, l1GasFeeOptimism: any = null) => {
       dispatch(gasUpdateTxFee(newGasLimit, overrideGasOption, l1GasFeeOptimism));
     },
     [dispatch]
