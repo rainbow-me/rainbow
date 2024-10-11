@@ -1,7 +1,7 @@
 import React from 'react';
 import { InteractionManager } from 'react-native';
 import { SignClientTypes, SessionTypes } from '@walletconnect/types';
-import { getSdkError, parseUri, buildApprovedNamespaces } from '@walletconnect/utils';
+import { getSdkError, parseUri, buildApprovedNamespaces, buildAuthObject, populateAuthPayload } from '@walletconnect/utils';
 import { WC_PROJECT_ID } from 'react-native-dotenv';
 import Minimizer from 'react-native-minimizer';
 import { isAddress, getAddress } from '@ethersproject/address';
@@ -45,6 +45,9 @@ import { PerformanceMetrics } from '@/performance/tracking/types/PerformanceMetr
 import { PerformanceTracking } from '@/performance/tracking';
 import { ChainId } from '@/chains/types';
 import { SUPPORTED_CHAIN_IDS } from '@/chains';
+import { toChecksumAddress } from 'ethereumjs-util';
+import { verifyMessage } from '@ethersproject/wallet';
+import { log } from 'console';
 
 const SUPPORTED_SESSION_EVENTS = ['chainChanged', 'accountsChanged'];
 
@@ -444,7 +447,7 @@ export async function onSessionProposal(proposal: WalletKitTypes.SessionProposal
     const chains = uniq([...requiredChains, ...optionalChains]);
 
     // we already checked for eip155 namespace above
-    const chainIds = chains?.map(chain => parseInt(chain.split('eip155:')[1]));
+    const chainIds = chains?.map(chain => parseInt(chain.split('eip155:')[1], 10));
     const supportedChainIds = chainIds.filter(chainId => SUPPORTED_CHAIN_IDS.includes(chainId));
 
     const peerMeta = proposer.metadata;
@@ -836,14 +839,14 @@ export async function onSessionAuthenticate(event: WalletKitTypes.SessionAuthent
 
   const client = await getWalletKitClient();
 
-  logger.debug(`[walletConnect]: auth_request`, { event }, logger.DebugContext.walletconnect);
+  logger.debug(`[walletConnect]: auth_request`, { event });
 
   const authenticate: AuthRequestAuthenticateSignature = async ({ address }) => {
     try {
       const { wallets } = store.getState().wallets;
       const selectedWallet = findWalletWithAccount(wallets || {}, address);
       const isHardwareWallet = selectedWallet?.type === WalletTypes.bluetooth;
-      const iss = `did:pkh:eip155:1:${address}`;
+      const iss = `eip155:1:${toChecksumAddress(address)}`;
 
       // exit early if possible
       if (selectedWallet?.type === WalletTypes.readOnly) {
@@ -865,6 +868,19 @@ export async function onSessionAuthenticate(event: WalletKitTypes.SessionAuthent
         };
       }
 
+      const suggestedChains = event.params.authPayload.chains || [];
+      const supportedMethods = ['personal_sign', 'eth_sendTransaction', 'eth_signTypedData'];
+      // filter out chains that we don't support
+      const suggestedChainIds = suggestedChains?.map(chain => parseInt(chain.split('eip155:')[1], 10));
+      const supportedChainIds = suggestedChainIds.filter(chainId => SUPPORTED_CHAIN_IDS.includes(chainId));
+      const supportedChains = supportedChainIds.map(id => `eip155:${id}`);
+
+      const authPayload = populateAuthPayload({
+        authPayload: event.params.authPayload,
+        chains: supportedChains,
+        methods: supportedMethods,
+      });
+
       /**
        * Locally scoped to this `authenticate` function. Simply here to
        * encapsulate reused code.
@@ -883,7 +899,19 @@ export async function onSessionAuthenticate(event: WalletKitTypes.SessionAuthent
           request: event.params.authPayload,
         });
         // prompt the user to sign the message
-        return wallet.signMessage(message);
+        const signature = await wallet.signMessage(message);
+
+        const signedBy = await verifyMessage(message, signature);
+        logger.debug(`[walletConnect]: verifyMessage`, { signedBy });
+        if (signedBy !== toChecksumAddress(address)) {
+          logger.error(new RainbowError(`[walletConnect]: signature verification failed`), {
+            signedBy,
+            address,
+          });
+          return undefined;
+        }
+
+        return signature;
       };
 
       // Get signature either directly, or via hardware wallet flow
@@ -908,19 +936,23 @@ export async function onSessionAuthenticate(event: WalletKitTypes.SessionAuthent
         };
       }
 
-      // respond to WC
-      await client.respondSessionRequest({
-        topic: event.topic,
-        response: {
-          id: event.id,
-          result: JSON.stringify({
-            signature: {
-              s: signature,
-              t: 'eip191',
-            },
-          }),
-          jsonrpc: '2.0',
+      logger.debug(`[walletConnect]: got signature`, { signature });
+
+      const auth = buildAuthObject(
+        authPayload,
+        {
+          t: 'eip191',
+          s: signature,
         },
+        iss
+      );
+
+      logger.debug(`[walletConnect]: signing auth_request`, { auth });
+
+      // Approve
+      await client.approveSessionAuthenticate({
+        id: event.id,
+        auths: [auth],
       });
 
       // only handled on success
