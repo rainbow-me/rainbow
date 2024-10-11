@@ -1,4 +1,4 @@
-// @ts-expect-error
+// @ts-expect-error: No types for this library
 import AnimateNumber from '@bankify/react-native-animate-number';
 import { useIsFocused } from '@react-navigation/native';
 import * as i18n from '@/languages';
@@ -60,8 +60,7 @@ export const GasCard = () => {
   const isCurrentGweiLoaded = currentGwei && Number(currentGwei) > 0;
 
   const renderGweiText = useCallback(
-    // @ts-expect-error passed to an untyped JS component
-    animatedNumber => {
+    (animatedNumber: number) => {
       const priceText =
         animatedNumber === 0
           ? isCurrentGweiLoaded

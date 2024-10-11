@@ -1,14 +1,13 @@
-import { NewTransaction, ParsedAddressAsset, TransactionGasParamAmounts } from '@/entities';
+import { NewTransaction, ParsedAddressAsset, TransactionGasParamAmounts, TxHash } from '@/entities';
 import { getProvider } from '@/handlers/web3';
 import { add, addBuffer, greaterThan, lessThan, multiply, subtract } from '@/helpers/utilities';
 import { RainbowError } from '@/logger';
 import store from '@/redux/store';
 import { REFERRER_CLAIM } from '@/references';
-import { TxHash } from '@/resources/transactions/types';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import ethereumUtils from '@/utils/ethereumUtils';
 import { AddressZero } from '@ethersproject/constants';
-import { CrosschainQuote, QuoteError, SwapType, getClaimBridgeQuote } from '@rainbow-me/swaps';
+import { CrosschainQuote, QuoteError, getClaimBridgeQuote } from '@rainbow-me/swaps';
 import { Address } from 'viem';
 import { ActionProps } from '../references';
 import { executeCrosschainSwap } from './crosschainSwap';

@@ -1,10 +1,9 @@
-import { useIsFocused } from '@react-navigation/native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 import { ActivityList } from '../components/activity-list';
 import { Page } from '../components/layout';
 import { useNavigation } from '../navigation/Navigation';
 import { ButtonPressAnimation } from '@/components/animations';
-import { useAccountProfile, useAccountSettings, useAccountTransactions, useRequests } from '@/hooks';
+import { useAccountProfile, useAccountSettings } from '@/hooks';
 import Routes from '@/navigation/routesNames';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
@@ -13,33 +12,17 @@ import ImageAvatar from '@/components/contacts/ImageAvatar';
 import { ContactAvatar } from '@/components/contacts';
 import { usePendingTransactionWatcher } from '@/hooks/usePendingTransactionWatcher';
 
-const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;
-
 const ProfileScreenPage = styled(Page)({
   ...position.sizeAsObject('100%'),
   flex: 1,
 });
 
 export default function ProfileScreen() {
-  const [activityListInitialized, setActivityListInitialized] = useState(false);
-  const isFocused = useIsFocused();
   const { navigate } = useNavigation();
 
-  const accountTransactions = useAccountTransactions(activityListInitialized, isFocused);
-
-  const { isLoadingTransactions: isLoading, sections, transactionsCount } = accountTransactions;
-  const { pendingRequestCount } = useRequests();
-  const { network, accountAddress } = useAccountSettings();
+  const { accountAddress } = useAccountSettings();
   const { accountSymbol, accountColor, accountImage } = useAccountProfile();
   usePendingTransactionWatcher({ address: accountAddress });
-
-  const isEmpty = !transactionsCount && !pendingRequestCount;
-
-  useEffect(() => {
-    setTimeout(() => {
-      setActivityListInitialized(true);
-    }, ACTIVITY_LIST_INITIALIZATION_DELAY);
-  }, []);
 
   const onChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);
@@ -61,7 +44,7 @@ export default function ProfileScreen() {
         }
       />
 
-      <ActivityList network={network} sections={sections} {...accountTransactions} />
+      <ActivityList />
     </ProfileScreenPage>
   );
 }

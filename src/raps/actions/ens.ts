@@ -1,5 +1,4 @@
 import { Signer } from '@ethersproject/abstract-signer';
-import { captureException } from '@sentry/react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { ENSActionParameters, ENSRap, ENSRapActionType, RapENSAction, RapENSActionParameters } from '@/raps/common';
 import { analytics } from '@/analytics';
