@@ -606,8 +606,6 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
 
   logger.debug(`[walletConnect]: session_request method`, { method, params }, logger.DebugContext.walletconnect);
 
-  hideWalletConnectToast();
-
   // we allow eth sign for connections but we dont want to support actual signing
   if (method === RPCMethod.Sign) {
     await client.respondSessionRequest({

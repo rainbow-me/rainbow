@@ -257,6 +257,7 @@ export default async function handleDeeplink({ url, initialRoute, handleRequestU
             pathname,
             query,
           });
+          console.log('unhandled deeplink');
         }
       }
     }
@@ -290,6 +291,7 @@ const walletConnectURICache = new Set();
 function handleWalletConnect(uri?: string, connector?: string) {
   if (!uri) {
     logger.debug(`[handleWalletConnect]: skipping uri empty`);
+    showWalletConnectToast({ isTransactionRequest: true });
     return;
   }
 
@@ -336,6 +338,7 @@ function handleWalletConnect(uri?: string, connector?: string) {
     logger.debug(`[handleWalletConnect]: handling fallback`, { uri });
     // This is when we get focused by WC due to a signing request
     // Don't add this URI to cache
+    showWalletConnectToast({ isTransactionRequest: true });
     setHasPendingDeeplinkPendingRedirect(true);
     store.dispatch(walletConnectSetPendingRedirect());
   }

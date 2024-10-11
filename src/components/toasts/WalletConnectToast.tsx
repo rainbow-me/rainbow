@@ -16,10 +16,10 @@ export const hideWalletConnectToast = () => {
   toast.dismiss(WALLETCONNECT_TOAST_ID);
 };
 
-export const showWalletConnectToast = async () => {
+export const showWalletConnectToast = async ({ isTransactionRequest = false }: { isTransactionRequest?: boolean } = {}) => {
   const isDarkMode = await isDarkTheme();
 
-  toast(i18n.t(i18n.l.walletconnect.connecting), {
+  toast(i18n.t(i18n.l.walletconnect[isTransactionRequest ? 'loading' : 'connecting']), {
     dismissible: false,
     duration: 10000, // Hide after 10 seconds
     icon: <EmptyComponent />,
