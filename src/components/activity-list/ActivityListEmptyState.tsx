@@ -16,7 +16,13 @@ const Container = styled(Column)({
   width: 200,
 });
 
-const ActivityListEmptyState = ({ children, emoji, label }) => {
+type ActivityListEmptyStateProps = {
+  children?: React.ReactNode;
+  emoji: string;
+  label: string;
+};
+
+const ActivityListEmptyState = ({ children, emoji, label }: ActivityListEmptyStateProps) => {
   const { top: topInset } = useSafeAreaInsets();
   const { colors, isDarkMode } = useTheme();
 

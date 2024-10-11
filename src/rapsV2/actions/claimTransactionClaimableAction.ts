@@ -3,7 +3,7 @@ import { sendTransaction } from '@/model/wallet';
 import { getProvider } from '@/handlers/web3';
 import { RainbowError } from '@/logger';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { LegacyTransactionGasParamAmounts, NewTransaction, TransactionGasParamAmounts } from '@/entities';
+import { LegacyTransactionGasParamAmounts, NewTransaction, TransactionGasParamAmounts, TransactionStatus } from '@/entities';
 import { chainsName } from '@/chains';
 import { overrideWithFastSpeedIfNeeded } from '../utils';
 
@@ -38,7 +38,7 @@ export async function claimTransactionClaimable({ parameters, wallet, shouldExpe
     chainId: result.result.chainId,
     hash: result.result.hash,
     network: chainsName[result.result.chainId],
-    status: 'pending',
+    status: TransactionStatus.pending,
     type: 'claim',
     nonce: result.result.nonce,
     asset,

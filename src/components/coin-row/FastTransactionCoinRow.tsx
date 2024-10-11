@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { ButtonPressAnimation } from '../animations';
 import FastTransactionStatusBadge from './FastTransactionStatusBadge';
 import { Bleed, Box, Inline, Text, globalColors, useForegroundColor } from '@/design-system';
-import { NativeCurrencyKey, RainbowTransaction } from '@/entities';
+import { NativeCurrencyKey, RainbowTransaction, TransactionStatus, TransactionType } from '@/entities';
 import { ThemeContextProps } from '@/theme';
 import { useNavigation } from '@/navigation';
 import Routes from '@rainbow-me/routes';
@@ -12,7 +12,6 @@ import { CardSize } from '../unique-token/CardSize';
 import { ChainBadge } from '../coin-icon';
 import { ChainId } from '@/chains/types';
 import { address } from '@/utils/abbreviations';
-import { TransactionType } from '@/resources/transactions/types';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToBalanceDisplay,
@@ -54,7 +53,7 @@ const swapTypeValues = (changes: RainbowTransaction['changes'], status: RainbowT
 
   // NOTE: For pending txns let's use the change values instead of
   // the transaction balance change since that hasn't happened yet
-  if (status === 'pending') {
+  if (status === TransactionStatus.pending) {
     const valueOut = `${handleSignificantDecimals(convertRawAmountToDecimalFormat(tokenOut?.value?.toString() || '0', tokenOut?.asset.decimals || 18), tokenOut?.asset.decimals || 18)} ${tokenOut?.asset.symbol}`;
     const valueIn = `+${handleSignificantDecimals(convertRawAmountToDecimalFormat(tokenIn?.value?.toString() || '0', tokenIn?.asset.decimals || 18), tokenIn?.asset.decimals || 18)} ${tokenIn?.asset.symbol}`;
 
@@ -143,8 +142,7 @@ export const ActivityTypeIcon = ({
   transaction: Pick<RainbowTransaction, 'status' | 'type'>;
   color: string;
 }) => {
-  // if (status === 'pending') return null;
-  if (status === 'pending') {
+  if (status === TransactionStatus.pending) {
     return <Spinner color={color} size={11} style={{ marginTop: -1, paddingRight: 2 }} />;
   }
 

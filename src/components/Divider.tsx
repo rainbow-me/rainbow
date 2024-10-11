@@ -3,7 +3,7 @@ import React from 'react';
 import { magicMemo } from '../utils';
 import styled from '@/styled-thing';
 import { borders, position } from '@/styles';
-import { StyleProp, View, ViewProps, ViewStyle } from 'react-native';
+import { View } from 'react-native';
 import { ThemeContextProps, useTheme } from '@/theme';
 
 export const DividerSize = 2;

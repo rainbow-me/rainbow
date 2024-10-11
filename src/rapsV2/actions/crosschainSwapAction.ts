@@ -5,8 +5,7 @@ import { estimateGasWithPadding, getProvider } from '@/handlers/web3';
 
 import { REFERRER, gasUnits, ReferrerType } from '@/references';
 import { ChainId } from '@/chains/types';
-import { NewTransaction } from '@/entities/transactions';
-import { TxHash } from '@/resources/transactions/types';
+import { NewTransaction, TransactionDirection, TransactionStatus, TxHash } from '@/entities/transactions';
 import { addNewTransaction } from '@/state/pendingTransactions';
 import { RainbowError, logger } from '@/logger';
 
@@ -21,7 +20,7 @@ import {
   overrideWithFastSpeedIfNeeded,
 } from '../utils';
 import { TokenColors } from '@/graphql/__generated__/metadata';
-import { ParsedAsset } from '@/resources/assets/types';
+import { AddysNetworkDetails, ParsedAsset } from '@/resources/assets/types';
 import { ExtendedAnimatedAssetWithColors } from '@/__swaps__/types/assets';
 import { Screens, TimeToSignOperation, performanceTracking } from '@/state/performance/performance';
 import { swapsStore } from '@/state/swaps/swapsStore';
@@ -107,7 +106,7 @@ export const executeCrosschainSwap = async ({
 };
 
 export const crosschainSwap = async ({ wallet, parameters, nonceToUse, shouldExpedite }: ActionProps<'crosschainSwapAction'>) => {
-  const { assetToBuy, assetToSell, chainId, flashbots, gasFeeParamsBySpeed, gasParams, requiresApprove, quote } = parameters;
+  const { chainId, flashbots, gasFeeParamsBySpeed, gasParams, requiresApprove, quote } = parameters;
 
   let gasParamsToUse = gasParams;
   if (shouldExpedite) {
@@ -160,55 +159,53 @@ export const crosschainSwap = async ({ wallet, parameters, nonceToUse, shouldExp
 
   if (!swap) throw new RainbowError('[raps/crosschainSwap]: error executeCrosschainSwap');
 
-  const nativePriceForAssetToBuy = (assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice
+  const nativePriceForAssetToBuy = (parameters.assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice
     ? {
-        value: (assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice,
+        value: (parameters.assetToBuy as ExtendedAnimatedAssetWithColors)?.nativePrice,
       }
-    : assetToBuy.price;
+    : parameters.assetToBuy.price;
+  const nativePriceForAssetToSell = (parameters.assetToSell as ExtendedAnimatedAssetWithColors)?.nativePrice
+    ? {
+        value: (parameters.assetToSell as ExtendedAnimatedAssetWithColors)?.nativePrice,
+      }
+    : parameters.assetToSell.price;
 
-  const nativePriceForAssetToSell = (assetToSell as ExtendedAnimatedAssetWithColors)?.nativePrice
-    ? {
-        value: (assetToSell as ExtendedAnimatedAssetWithColors)?.nativePrice,
-      }
-    : assetToSell.price;
+  const assetToBuy = {
+    ...parameters.assetToBuy,
+    network: chainsName[parameters.assetToBuy.chainId],
+    networks: parameters.assetToBuy.networks as Record<string, AddysNetworkDetails>,
+    colors: parameters.assetToBuy.colors as TokenColors,
+    price: nativePriceForAssetToBuy,
+  } satisfies ParsedAsset;
+
+  const assetToSell = {
+    ...parameters.assetToSell,
+    network: chainsName[parameters.assetToSell.chainId],
+    networks: parameters.assetToSell.networks as Record<string, AddysNetworkDetails>,
+    colors: parameters.assetToSell.colors as TokenColors,
+    price: nativePriceForAssetToSell,
+  } satisfies ParsedAsset;
 
   const transaction = {
     chainId,
-    data: quote.data,
-    from: quote.from as Address,
-    to: quote.to as Address,
-    value: quote.value?.toString(),
-    asset: {
-      ...assetToBuy,
-      network: chainsName[assetToBuy.chainId],
-      colors: assetToBuy.colors as TokenColors,
-      price: nativePriceForAssetToBuy,
-    } as ParsedAsset,
+    data: parameters.quote.data,
+    from: parameters.quote.from,
+    to: parameters.quote.to as Address,
+    value: parameters.quote.value?.toString(),
+    asset: assetToBuy,
     changes: [
       {
-        direction: 'out',
-        // TODO: MARK - Replace this once we migrate network => chainId
-        // asset: parameters.assetToSell,
+        direction: TransactionDirection.OUT,
         asset: {
           ...assetToSell,
-          network: chainsName[assetToSell.chainId],
-          chainId: assetToSell.chainId,
-          colors: assetToSell.colors as TokenColors,
-          price: nativePriceForAssetToSell,
           native: undefined,
         },
         value: quote.sellAmount.toString(),
       },
       {
-        direction: 'in',
-        // TODO: MARK - Replace this once we migrate network => chainId
-        // asset: parameters.assetToBuy,
+        direction: TransactionDirection.IN,
         asset: {
           ...assetToBuy,
-          network: chainsName[assetToBuy.chainId],
-          chainId: assetToBuy.chainId,
-          colors: assetToBuy.colors as TokenColors,
-          price: nativePriceForAssetToBuy,
           native: undefined,
         },
         value: quote.buyAmountMinusFees.toString(),
@@ -216,16 +213,16 @@ export const crosschainSwap = async ({ wallet, parameters, nonceToUse, shouldExp
     ],
     gasLimit,
     hash: swap.hash as TxHash,
-    network: chainsName[chainId],
+    network: chainsName[parameters.chainId],
     nonce: swap.nonce,
-    status: 'pending',
+    status: TransactionStatus.pending,
     type: 'swap',
-    flashbots,
+    flashbots: parameters.flashbots,
     ...gasParamsToUse,
   } satisfies NewTransaction;
 
   addNewTransaction({
-    address: quote.from as Address,
+    address: parameters.quote.from,
     chainId,
     transaction,
   });

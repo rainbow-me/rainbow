@@ -3,7 +3,11 @@ import { AssetListItemSkeleton } from '../asset-list';
 import { Column } from '../layout';
 import { times } from '@/helpers/utilities';
 
-const LoadingState = ({ children }) => (
+type LoadingStateProps = {
+  children: React.ReactNode;
+};
+
+const LoadingState = ({ children }: LoadingStateProps) => (
   <Column flex={1}>
     {children}
     <Column flex={1}>
