@@ -150,6 +150,11 @@ export const event = {
   addFavoriteToken: 'add_favorite_token',
   watchWallet: 'watch_wallet',
   watchedWalletCohort: 'watched_wallet_cohort',
+
+  // claimables
+  claimClaimableSucceeded: 'claim_claimable.succeeded',
+  claimClaimableFailed: 'claim_claimable.failed',
+  claimablePanelOpened: 'claimable_panel.opened',
 } as const;
 
 type SwapEventParameters<T extends 'swap' | 'crosschainSwap'> = {
@@ -594,5 +599,39 @@ export type EventProperties = {
   [event.watchedWalletCohort]: {
     numWatchedWallets: number;
     watchedWalletsAddresses: string[];
+  };
+
+  [event.claimClaimableSucceeded]: {
+    claimableId: string;
+    claimableType: 'transaction' | 'sponsored';
+    chainId: ChainId;
+    asset: {
+      symbol: string;
+      address: string;
+    };
+    amount: string;
+  };
+
+  [event.claimClaimableFailed]: {
+    claimableId: string;
+    claimableType: 'transaction' | 'sponsored';
+    chainId: ChainId;
+    asset: {
+      symbol: string;
+      address: string;
+    };
+    amount: string;
+    errorMessage: string;
+  };
+
+  [event.claimablePanelOpened]: {
+    claimableId: string;
+    claimableType: 'transaction' | 'sponsored';
+    chainId: ChainId;
+    asset: {
+      symbol: string;
+      address: string;
+    };
+    amount: string;
   };
 };
