@@ -11,17 +11,26 @@ import { opacity } from '@/__swaps__/utils/swaps';
 import { isDarkTheme } from '@/theme/ThemeContext';
 
 const WALLETCONNECT_TOAST_ID = 'walletConnect';
+const HIDE_BUFFER_MS = 750;
+
+let lastHideTime = 0;
 
 export const hideWalletConnectToast = () => {
+  lastHideTime = Date.now();
   toast.dismiss(WALLETCONNECT_TOAST_ID);
 };
 
 export const showWalletConnectToast = async ({ isTransactionRequest = false }: { isTransactionRequest?: boolean } = {}) => {
+  if (Date.now() - lastHideTime <= HIDE_BUFFER_MS) {
+    // If the transaction request loads and hide is called before the toast is shown, skip showing it
+    return;
+  }
+
   const isDarkMode = await isDarkTheme();
 
   toast(i18n.t(i18n.l.walletconnect[isTransactionRequest ? 'loading' : 'connecting']), {
     dismissible: false,
-    duration: 10000, // Hide after 10 seconds
+    duration: 10000, // Auto hide after 10 seconds
     icon: <EmptyComponent />,
     id: WALLETCONNECT_TOAST_ID,
     position: 'top-center',
