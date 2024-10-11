@@ -15,6 +15,8 @@ import { loadWallet } from '@/model/wallet';
 import { walletExecuteRap } from '@/rapsV2/execute';
 import { claimablesQueryKey } from '@/resources/addys/claimables/query';
 import { queryClient } from '@/react-query';
+import { getCrosschainQuote } from '@rainbow-me/swaps';
+import { buildQuoteParams } from '@/__swaps__/utils/swaps';
 
 // supports legacy and new gas types
 export type TransactionClaimableTxPayload = TransactionRequest &
@@ -161,6 +163,31 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
         setClaimStatus('error');
         return;
       }
+
+      // source?: Source;
+      // chainId: number;
+      // fromAddress: EthereumAddress;
+      // sellTokenAddress: EthereumAddress;
+      // buyTokenAddress: EthereumAddress;
+      // sellAmount?: BigNumberish;
+      // buyAmount?: BigNumberish;
+      // slippage: number;
+      // destReceiver?: EthereumAddress;
+      // refuel?: boolean;
+      // feePercentageBasisPoints?: number;
+      // toChainId?: number;
+      // currency: string;
+
+      const params = buildQuoteParams({
+        currentAddress: store.getState().settings.accountAddress,
+        inputAmount: maxAdjustedInputAmount,
+        inputAsset: internalSelectedInputAsset.value,
+        lastTypedInput: lastTypedInputParam,
+        outputAmount,
+        outputAsset: internalSelectedOutputAsset.value,
+      });
+
+      const x = await getCrosschainQuote({ currentAddress });
 
       const { errorMessage } = await walletExecuteRap(wallet, {
         type: 'claimTransactionClaimableRap',
