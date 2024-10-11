@@ -24,8 +24,7 @@ export async function createClaimTransactionClaimableRap(parameters: Extract<Rap
   );
   actions = actions.concat(claim);
 
-  const { sellAmount, assetToBuy, quote, chainId, assetToSell, meta, gasFeeParamsBySpeed, gasParams } =
-    parameters.crosschainSwapActionParameters;
+  const { sellAmount, assetToBuy, quote, chainId, assetToSell, meta } = parameters.crosschainSwapActionParameters;
 
   const {
     from: accountAddress,

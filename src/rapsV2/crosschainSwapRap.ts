@@ -1,25 +1,20 @@
 import { Address } from 'viem';
-
-import { isNativeAsset } from '@/handlers/assets';
 import { add } from '@/helpers/utilities';
-import { isLowerCaseMatch } from '@/utils';
-import { ETH_ADDRESS } from '../references';
-
-import { assetNeedsUnlocking, estimateApprove } from './actions';
-import { estimateCrosschainSwapGasLimit } from './actions/crosschainSwap';
 import { createNewAction, createNewRap } from './common';
-import { RapAction, RapSwapActionParameters, RapUnlockActionParameters } from './references';
+import { CrosschainSwapActionParameters, RapAction, RapParameters } from './references';
+import { assetNeedsUnlocking, estimateApprove } from './actions';
+import { estimateCrosschainSwapGasLimit } from './actions/crosschainSwapAction';
+import { RainbowError } from '@/logger';
 
 export const estimateUnlockAndCrosschainSwap = async ({
   sellAmount,
   quote,
   chainId,
   assetToSell,
-}: Pick<RapSwapActionParameters<'crosschainSwapAction'>, 'sellAmount' | 'quote' | 'chainId' | 'assetToSell'>) => {
+}: Pick<CrosschainSwapActionParameters, 'sellAmount' | 'quote' | 'chainId' | 'assetToSell'>) => {
   const {
     from: accountAddress,
     sellTokenAddress,
-    buyTokenAddress,
     allowanceTarget,
     allowanceNeeded,
   } = quote as {
@@ -71,14 +66,13 @@ export const estimateUnlockAndCrosschainSwap = async ({
   return gasLimit.toString();
 };
 
-export const createUnlockAndCrosschainSwapRap = async (swapParameters: RapSwapActionParameters<'crosschainSwapAction'>) => {
+export const createUnlockAndCrosschainSwapRap = async (parameters: Extract<RapParameters, { type: 'crosschainSwapRap' }>) => {
   let actions: RapAction<'crosschainSwapAction' | 'unlockAction'>[] = [];
-  const { sellAmount, assetToBuy, quote, chainId, assetToSell } = swapParameters;
+  const { sellAmount, assetToBuy, quote, chainId, assetToSell, meta, gasParams, gasFeeParamsBySpeed } =
+    parameters.crosschainSwapActionParameters;
 
   const {
     from: accountAddress,
-    sellTokenAddress,
-    buyTokenAddress,
     allowanceTarget,
     allowanceNeeded,
   } = quote as {
@@ -102,13 +96,22 @@ export const createUnlockAndCrosschainSwapRap = async (swapParameters: RapSwapAc
   }
 
   if (swapAssetNeedsUnlocking) {
-    const unlock = createNewAction('unlockAction', {
-      fromAddress: accountAddress,
-      amount: sellAmount,
-      assetToUnlock: assetToSell,
-      chainId,
-      contractAddress: quote.to,
-    } as RapUnlockActionParameters);
+    if (!quote.to) throw new RainbowError('[rapsV2/crosschainSwapRap]: quote.to is undefined');
+
+    const unlock = createNewAction(
+      'unlockAction',
+      {
+        fromAddress: accountAddress,
+        assetToUnlock: assetToSell,
+        chainId,
+        contractAddress: quote.to as Address,
+        gas: {
+          gasFeeParamsBySpeed: parameters.crosschainSwapActionParameters.gasFeeParamsBySpeed,
+          gasParams: parameters.crosschainSwapActionParameters.gasParams,
+        },
+      },
+      true
+    );
     actions = actions.concat(unlock);
   }
 
@@ -117,13 +120,13 @@ export const createUnlockAndCrosschainSwapRap = async (swapParameters: RapSwapAc
     chainId,
     requiresApprove: swapAssetNeedsUnlocking,
     quote,
-    meta: swapParameters.meta,
+    meta,
     assetToSell,
     sellAmount,
     assetToBuy,
-    gasParams: swapParameters.gasParams,
-    gasFeeParamsBySpeed: swapParameters.gasFeeParamsBySpeed,
-  } satisfies RapSwapActionParameters<'crosschainSwapAction'>);
+    gasParams,
+    gasFeeParamsBySpeed,
+  });
   actions = actions.concat(swap);
 
   // create the overall rap

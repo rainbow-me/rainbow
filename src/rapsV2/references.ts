@@ -64,12 +64,10 @@ export type RapParameters =
       type: 'claimTransactionClaimableRap';
       claimTransactionClaimableActionParameters: ClaimTransactionClaimableActionParameters;
       crosschainSwapActionParameters: CrosschainSwapActionParameters;
-      unlockActionParameters: UnlockActionParameters;
     }
   | {
       type: 'crosschainSwapRap';
       crosschainSwapActionParameters: CrosschainSwapActionParameters;
-      unlockActionParameters: UnlockActionParameters;
     };
 
 export interface RapAction<T extends RapActionTypes> {
@@ -93,6 +91,7 @@ export type RapActionTypes = keyof typeof rapActions;
 
 export enum rapTypes {
   claimTransactionClaimableRap = 'claimTransactionClaimableRap',
+  crosschainSwapRap = 'crosschainSwapRap',
 }
 
 export type RapTypes = keyof typeof rapTypes;

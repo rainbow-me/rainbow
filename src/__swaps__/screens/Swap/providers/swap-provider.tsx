@@ -38,7 +38,7 @@ import { logger, RainbowError } from '@/logger';
 import { loadWallet } from '@/model/wallet';
 import { Navigation } from '@/navigation';
 import Routes from '@/navigation/routesNames';
-import { walletExecuteRap } from '@/raps/execute';
+import { walletExecuteRap } from '@/rapsV2/execute';
 import { QuoteTypeMap, RapSwapActionParameters } from '@/raps/references';
 import { queryClient } from '@/react-query';
 import { userAssetsQueryKey } from '@/resources/assets/UserAssetsQuery';
@@ -267,13 +267,7 @@ export const SwapProvider = ({ children }: SwapProviderProps) => {
         metadata: {
           degenMode: isDegenModeEnabled,
         },
-      })(wallet, type, {
-        ...parameters,
-        chainId,
-        gasParams,
-        // @ts-expect-error - collision between old gas types and new
-        gasFeeParamsBySpeed: gasFeeParamsBySpeed,
-      });
+      })(wallet, { type: 'crosschainSwapRap', crosschainSwapActionParameters: { ...parameters, chainId, gasParams, gasFeeParamsBySpeed } });
       isSwapping.value = false;
 
       if (errorMessage) {
