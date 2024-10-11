@@ -1,4 +1,5 @@
 import React from 'react';
+// @ts-expect-error - No types for this library
 import { UIActivityIndicator } from 'react-native-indicators';
 import { useTheme } from '../theme/ThemeContext';
 import { Centered } from './layout';
