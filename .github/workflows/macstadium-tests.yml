@@ -52,7 +52,7 @@ jobs:
       - name: Upload Yarn cache
         uses: actions/upload-artifact@v4
         with:
-          name: yarn-cache-${{ github.ref_name }}
+          name: yarn-cache-${{ github.ref_name | replace('/', '-') }}
           path: |
             .yarn/cache
             .yarn/install-state.gz
@@ -65,7 +65,7 @@ jobs:
       - name: Download Yarn cache
         uses: actions/download-artifact@v4
         with:
-          name: yarn-cache-${{ github.ref_name }}
+          name: yarn-cache-${{ github.ref_name | replace('/', '-') }}
           path: .yarn
 
       - name: Check for frozen lockfile
@@ -92,7 +92,7 @@ jobs:
       - name: Download Yarn cache
         uses: actions/download-artifact@v4
         with:
-          name: yarn-cache-${{ github.ref_name }}
+          name: yarn-cache-${{ github.ref_name | replace('/', '-') }}
           path: .yarn
 
       - name: Rebuild detox cache
