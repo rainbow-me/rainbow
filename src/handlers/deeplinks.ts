@@ -5,6 +5,7 @@ import store from '@/redux/store';
 import { walletConnectOnSessionRequest, walletConnectRemovePendingRedirect, walletConnectSetPendingRedirect } from '@/redux/walletconnect';
 
 import { fetchReverseRecordWithRetry } from '@/utils/profileUtils';
+import { showWalletConnectToast } from '@/components/toasts/WalletConnectToast';
 import { defaultConfig } from '@/config/experimental';
 import { PROFILES } from '@/config/experimentalHooks';
 import { delay } from '@/utils/delay';
@@ -311,6 +312,8 @@ function handleWalletConnect(uri?: string, connector?: string) {
   if (uri && query && parsedUri) {
     // make sure we don't handle this again
     walletConnectURICache.add(cacheKey);
+
+    showWalletConnectToast();
 
     if (parsedUri.version === 1) {
       store.dispatch(walletConnectSetPendingRedirect());

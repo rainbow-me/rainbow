@@ -2765,6 +2765,7 @@
       }
     },
     "walletconnect": {
+      "connecting": "Connecting",
       "requests": "Requests",
       "wants_to_connect": "wants to connect to your wallet",
       "wants_to_connect_to_network": "wants to connect to the %{network} network",

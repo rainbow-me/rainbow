@@ -9933,6 +9933,7 @@ __metadata:
     schedule: "npm:0.5.0"
     smitter: "npm:1.1.1"
     socket.io-client: "npm:4.5.3"
+    sonner-native: "npm:0.15.0"
     stream-browserify: "npm:1.0.0"
     string.fromcodepoint: "npm:0.2.1"
     string_decoder: "npm:0.10.31"
@@ -26231,6 +26232,25 @@ react-native-safe-area-view@rainbow-me/react-native-safe-area-view:
   dependencies:
     atomic-sleep: "npm:^1.0.0"
   checksum: 10c0/6b40f2e91a999819b1dc24018a5d1c8b74e66e5d019eabad17d5b43fc309b32255b7c405ed6ec885693c8f2b969099ce96aeefde027180928bc58c034234a86d
+  languageName: node
+  linkType: hard
+
+"sonner-native@npm:0.15.0":
+  version: 0.15.0
+  resolution: "sonner-native@npm:0.15.0"
+  peerDependencies:
+    nativewind: "*"
+    react: "*"
+    react-native: "*"
+    react-native-gesture-handler: ">=2.16.1"
+    react-native-reanimated: ">=3.10.1"
+    react-native-safe-area-context: ">=4.10.5"
+    react-native-screens: ">=3.31.1"
+    react-native-svg: ">=15.6.0"
+  peerDependenciesMeta:
+    nativewind:
+      optional: true
+  checksum: 10c0/cb9e8bdf3d31e2c89ba9f3adad0db954916a336af764d281f7ca484299477894654d8004385891f340e9a1ecbb4be64f3305da44c98dcb6c122a6678038a4749
   languageName: node
   linkType: hard
 

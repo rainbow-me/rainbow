@@ -293,6 +293,7 @@
     "rn-fetch-blob": "0.12.0",
     "smitter": "1.1.1",
     "socket.io-client": "4.5.3",
+    "sonner-native": "0.15.0",
     "stream-browserify": "1.0.0",
     "string.fromcodepoint": "0.2.1",
     "string_decoder": "0.10.31",

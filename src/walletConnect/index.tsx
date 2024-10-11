@@ -45,6 +45,7 @@ import { PerformanceMetrics } from '@/performance/tracking/types/PerformanceMetr
 import { PerformanceTracking } from '@/performance/tracking';
 import { ChainId } from '@/chains/types';
 import { SUPPORTED_CHAIN_IDS } from '@/chains';
+import { hideWalletConnectToast } from '@/components/toasts/WalletConnectToast';
 
 const SUPPORTED_SESSION_EVENTS = ['chainChanged', 'accountsChanged'];
 
@@ -571,6 +572,8 @@ export async function onSessionProposal(proposal: WalletKitTypes.SessionProposal
       },
     };
 
+    hideWalletConnectToast();
+
     /**
      * We might see this at any point in the app, so only use `replace`
      * sometimes if the user is already looking at the approval sheet.
@@ -603,7 +606,9 @@ export async function onSessionRequest(event: SignClientTypes.EventArguments['se
 
   logger.debug(`[walletConnect]: session_request method`, { method, params }, logger.DebugContext.walletconnect);
 
-  // we allow eth sign for connections but we dont want to support actual singing
+  hideWalletConnectToast();
+
+  // we allow eth sign for connections but we dont want to support actual signing
   if (method === RPCMethod.Sign) {
     await client.respondSessionRequest({
       topic,
