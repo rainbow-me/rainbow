@@ -179,9 +179,9 @@ export const ClaimingTransactionClaimable = ({ claimable }: { claimable: Transac
       // currency: string;
 
       const params = buildQuoteParams({
-        currentAddress: store.getState().settings.accountAddress,
+        currentAddress: accountAddress,
         inputAmount: maxAdjustedInputAmount,
-        inputAsset: internalSelectedInputAsset.value,
+        inputAsset: claimable.asset,
         lastTypedInput: lastTypedInputParam,
         outputAmount,
         outputAsset: internalSelectedOutputAsset.value,
