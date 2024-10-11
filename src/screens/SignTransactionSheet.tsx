@@ -8,7 +8,7 @@ import { Transaction } from '@ethersproject/transactions';
 import { ChainImage } from '@/components/coin-icon/ChainImage';
 import { SheetActionButton } from '@/components/sheet';
 import { Bleed, Box, Columns, Inline, Inset, Stack, Text, globalColors, useBackgroundColor, useForegroundColor } from '@/design-system';
-import { NewTransaction, TransactionStatus } from '@/entities';
+import { NewTransaction } from '@/entities';
 import { useNavigation } from '@/navigation';
 
 import { useTheme } from '@/theme';
@@ -377,10 +377,10 @@ export const SignTransactionSheet = () => {
       let txSavedInCurrentWallet = false;
       const displayDetails = transactionDetails.displayDetails;
 
-      let txDetails: NewTransaction | undefined;
+      let txDetails: NewTransaction | null = null;
       if (sendInsteadOfSign && sendResult?.hash) {
         txDetails = {
-          status: TransactionStatus.pending,
+          status: 'pending',
           chainId,
           asset: displayDetails?.request?.asset || nativeAsset,
           contract: {
@@ -398,7 +398,6 @@ export const SignTransactionSheet = () => {
           type: 'contract_interaction',
           ...gasParams,
         };
-
         if (accountInfo.address?.toLowerCase() === txDetails.from?.toLowerCase()) {
           addNewTransaction({
             transaction: txDetails,
@@ -428,19 +427,17 @@ export const SignTransactionSheet = () => {
       closeScreen(false);
       // When the tx is sent from a different wallet,
       // we need to switch to that wallet before saving the tx
-      InteractionManager.runAfterInteractions(async () => {
-        if (!txSavedInCurrentWallet && !!txDetails) {
-          if (txDetails?.from) {
-            await switchToWalletWithAddress(txDetails?.from as string);
-          }
 
+      if (!txSavedInCurrentWallet && !isNil(txDetails)) {
+        InteractionManager.runAfterInteractions(async () => {
+          await switchToWalletWithAddress(txDetails?.from as string);
           addNewTransaction({
-            transaction: txDetails,
+            transaction: txDetails as NewTransaction,
             chainId,
             address: txDetails?.from as string,
           });
-        }
-      });
+        });
+      }
     } else {
       logger.error(new RainbowError(`[SignTransactionSheet]: Tx failure - ${formattedDappUrl}`), {
         dappName: transactionDetails?.dappName,

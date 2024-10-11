@@ -2131,9 +2131,9 @@
           "failed": "Send Failed"
         },
         "receive": {
-          "pending": "Receiving",
+          "pending": "",
           "confirmed": "Received",
-          "failed": "Receive Failed"
+          "failed": ""
         },
         "withdraw": {
           "pending": "Withdrawing",

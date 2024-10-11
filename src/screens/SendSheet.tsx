@@ -12,7 +12,7 @@ import { getDefaultCheckboxes } from './SendConfirmationSheet';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { analytics } from '@/analytics';
 import { PROFILES, useExperimentalFlag } from '@/config';
-import { AssetTypes, NewTransaction, ParsedAddressAsset, TransactionStatus, UniqueAsset } from '@/entities';
+import { AssetTypes, NewTransaction, ParsedAddressAsset, UniqueAsset } from '@/entities';
 import { isNativeAsset } from '@/handlers/assets';
 import { debouncedFetchSuggestions } from '@/handlers/ens';
 import {
@@ -574,7 +574,7 @@ export default function SendSheet() {
             txDetails.chainId = currentChainId;
             txDetails.txTo = signableTransaction.to;
             txDetails.type = 'send';
-            txDetails.status = TransactionStatus.pending;
+            txDetails.status = 'pending';
             addNewTransaction({
               address: accountAddress,
               chainId: currentChainId,

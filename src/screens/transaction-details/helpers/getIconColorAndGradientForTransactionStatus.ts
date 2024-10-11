@@ -1,4 +1,4 @@
-import { TransactionStatus } from '@/entities';
+import { TransactionStatus } from '@/resources/transactions/types';
 import { ThemeContextProps } from '@/theme';
 
 export function getIconColorAndGradientForTransactionStatus(
@@ -9,13 +9,14 @@ export function getIconColorAndGradientForTransactionStatus(
   color: 'red' | 'blue' | 'labelSecondary';
   gradient: string[];
 } {
-  if (status === TransactionStatus.pending) {
+  if (status === 'pending') {
     return {
       icon: '􀖇',
       color: 'labelSecondary',
       gradient: colors.gradients.transparentToLightGrey,
     };
-  } else if (status === TransactionStatus.failed) {
+  }
+  if (status === 'failed') {
     return {
       icon: '􀆄',
       color: 'red',

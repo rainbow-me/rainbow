@@ -5,15 +5,9 @@ import { Centered } from './layout';
 import styled from '@/styled-thing';
 import { position } from '@/styles';
 
-const Container = styled(Centered)(({ size }: { size: number }) => position.sizeAsObject(Number(size)));
+const Container = styled(Centered)(({ size }) => position.sizeAsObject(Number(size)));
 
-type ActivityIndicatorProps = {
-  color?: string;
-  isInteraction?: boolean;
-  size?: number;
-};
-
-export default function ActivityIndicator({ color, isInteraction = false, size = 25, ...props }: ActivityIndicatorProps) {
+export default function ActivityIndicator({ color, isInteraction = false, size = 25, ...props }) {
   const { colors } = useTheme();
   return (
     <Container size={size} {...props}>

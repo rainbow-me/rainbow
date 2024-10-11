@@ -25,7 +25,7 @@ import { ContactAvatar } from '@/components/contacts';
 import { isLowerCaseMatch } from '@/utils';
 import { useSelector } from 'react-redux';
 import { AppState } from '@/redux/store';
-import { useAccountSettings, useContacts, useUserAccounts } from '@/hooks';
+import { useContacts, useUserAccounts } from '@/hooks';
 import { useTiming } from 'react-native-redash';
 import Animated, { Easing, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
@@ -79,8 +79,9 @@ function CurrencyTile({
   address?: string;
   onAddressCopied: () => void;
 }) {
-  const { accountAddress } = useAccountSettings();
+  const accountAddress = useSelector((state: AppState) => state.settings.accountAddress);
   const theme = useTheme();
+
   const { contacts } = useContacts();
 
   const { userAccounts, watchedAccounts } = useUserAccounts();

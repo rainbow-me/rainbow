@@ -38,7 +38,16 @@ export type {
   ZerionAsset,
   ZerionAssetPrice,
 } from './tokens';
-export * from './transactions';
+export type {
+  GasFeeType,
+  NewTransaction,
+  NewTransactionOrAddCashTransaction,
+  RainbowTransaction,
+  ZerionTransaction,
+  ZerionTransactionChange,
+  transactionTypes,
+} from './transactions';
+export { GasFeeTypes, TransactionDirection, TransactionDirections, TransactionStatus, TransactionStatusTypes } from './transactions';
 export type { EthereumAddress } from './wallet';
 export type { TokenSearchThreshold, TokenSearchTokenListId, TokenSearchUniswapAssetKey } from './tokenSearch';
 export type {

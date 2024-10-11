@@ -13,5 +13,6 @@ export {
   defaultGasParamsFormat,
   parseRainbowMeteorologyData,
 } from './gas';
+export { parseNewTransaction } from './newTransaction';
 export { getRequestDisplayDetails } from './requests';
-export { getDescription, convertNewTransactionToRainbowTransaction } from './transactions';
+export { getDescription } from './transactions';
