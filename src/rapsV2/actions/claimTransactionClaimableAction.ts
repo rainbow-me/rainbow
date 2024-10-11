@@ -3,14 +3,28 @@ import { sendTransaction } from '@/model/wallet';
 import { getProvider } from '@/handlers/web3';
 import { RainbowError } from '@/logger';
 import { addNewTransaction } from '@/state/pendingTransactions';
-import { NewTransaction } from '@/entities';
+import { LegacyTransactionGasParamAmounts, NewTransaction, TransactionGasParamAmounts } from '@/entities';
 import { chainsName } from '@/chains';
+import { overrideWithFastSpeedIfNeeded } from '../utils';
 
-export async function claimTransactionClaimable({ parameters, wallet }: ActionProps<'claimTransactionClaimableAction'>) {
-  const { claimTx, asset } = parameters;
+export async function claimTransactionClaimable({ parameters, wallet, shouldExpedite }: ActionProps<'claimTransactionClaimableAction'>) {
+  const { claimTx, asset, gas } = parameters;
 
   const provider = getProvider({ chainId: claimTx.chainId });
-  const result = await sendTransaction({ transaction: claimTx, existingWallet: wallet, provider });
+
+  let expeditedTx = claimTx;
+
+  if (shouldExpedite && gas) {
+    const expeditedGas = overrideWithFastSpeedIfNeeded({
+      gasParams: gas.gasParams,
+      chainId: claimTx.chainId,
+      gasFeeParamsBySpeed: gas.gasFeeParamsBySpeed,
+    });
+
+    expeditedTx = { ...expeditedTx, ...expeditedGas };
+  }
+
+  const result = await sendTransaction({ transaction: expeditedTx, existingWallet: wallet, provider });
 
   if (!result?.result || !!result.error || !result.result.hash) {
     throw new RainbowError('[CLAIM-TRANSACTION-CLAIMABLE]: failed to execute claim transaction');

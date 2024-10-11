@@ -9,6 +9,8 @@ import { ActionProps, RapResponse, Rap, RapAction, RapActionResponse, RapActionT
 import { createClaimTransactionClaimableRap } from './claimTransactionClaimableRap';
 import { claimTransactionClaimable } from './actions/claimTransactionClaimableAction';
 import { delay } from '@/utils/delay';
+import { crosschainSwap } from './actions/crosschainSwapAction';
+import { unlock } from './actions/unlockAction';
 
 // get the rap by type
 export function createRap(parameters: RapParameters): Promise<{ actions: RapAction<RapActionTypes>[] }> {
@@ -25,6 +27,10 @@ function getActionExecutableByType<T extends RapActionTypes>(type: T, props: Act
   switch (type) {
     case 'claimTransactionClaimableAction':
       return () => claimTransactionClaimable(props);
+    case 'crosschainSwapAction':
+      return () => crosschainSwap(props);
+    case 'unlockAction':
+      return () => unlock(props);
     default:
       throw new RainbowError(`[rapsV2/execute]: T - unknown action type ${type}`);
   }
@@ -46,13 +52,14 @@ export async function executeAction<T extends RapActionTypes>({
   nonceToUse: number | undefined;
   rapName: string;
 }): Promise<RapActionResponse> {
-  const { type, parameters } = action;
+  const { type, parameters, shouldExpedite } = action;
   try {
     const actionProps = {
       wallet,
       currentRap: rap,
       parameters,
       nonceToUse,
+      shouldExpedite,
     };
     const { nonce, hash } = await getActionExecutableByType<T>(type, actionProps)();
     return { nonce, errorMessage: null, hash };

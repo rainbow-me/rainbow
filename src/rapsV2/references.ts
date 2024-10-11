@@ -12,7 +12,12 @@ import { Signer } from '@ethersproject/abstract-signer';
 import { CrosschainQuote } from '@rainbow-me/swaps';
 import { Address } from 'viem';
 
-interface SwapData {
+interface Gas {
+  gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
+  gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
+}
+
+type SwapData = {
   amount?: string | null;
   sellAmount: string;
   buyAmount?: string;
@@ -23,31 +28,25 @@ interface SwapData {
   meta?: SwapMetadata;
   assetToSell: ParsedAsset;
   assetToBuy: ParsedAsset;
-  gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
-  gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
   nonce?: number;
   flashbots?: boolean;
   address?: Address;
-}
+} & Gas;
 
-export interface CrosschainSwapActionParameters {
-  swapData: SwapData & { quote: CrosschainQuote };
-}
+export type CrosschainSwapActionParameters = SwapData & { quote: CrosschainQuote };
 
 export interface UnlockActionParameters {
   fromAddress: Address;
   assetToUnlock: ParsedAsset;
   contractAddress: Address;
   chainId: number;
-  gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
-  gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
+  gas: Gas;
 }
 
 export interface ClaimTransactionClaimableActionParameters {
   claimTx: TransactionClaimableTxPayload;
   asset: ParsedAddressAsset;
-  gasParams?: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
-  gasFeeParamsBySpeed?: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
+  gas?: Gas;
 }
 
 export interface RapActionTransaction {
@@ -66,21 +65,18 @@ export type RapParameters =
       claimTransactionClaimableActionParameters: ClaimTransactionClaimableActionParameters;
       crosschainSwapActionParameters: CrosschainSwapActionParameters;
       unlockActionParameters: UnlockActionParameters;
-      gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
-      gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
     }
   | {
       type: 'crosschainSwapRap';
       crosschainSwapActionParameters: CrosschainSwapActionParameters;
       unlockActionParameters: UnlockActionParameters;
-      gasParams: TransactionGasParamAmounts | LegacyTransactionGasParamAmounts;
-      gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
     };
 
 export interface RapAction<T extends RapActionTypes> {
   parameters: RapActionParameterMap[T];
   transaction: RapActionTransaction;
   type: T;
+  shouldExpedite?: boolean;
 }
 
 export interface Rap {
@@ -111,6 +107,7 @@ export interface ActionProps<T extends RapActionTypes> {
   nonceToUse: number | undefined;
   parameters: RapActionParameterMap[T];
   wallet: Signer;
+  shouldExpedite?: boolean;
 }
 
 export interface RapResponse {

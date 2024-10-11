@@ -12,7 +12,7 @@ import { RainbowError, logger } from '@/logger';
 
 import { TransactionGasParams, TransactionLegacyGasParams } from '@/__swaps__/types/gas';
 import { toHex } from '@/__swaps__/utils/hex';
-import { ActionProps, RapActionResult } from '../references';
+import { ActionProps } from '../references';
 import {
   CHAIN_IDS_WITH_TRACE_SUPPORT,
   SWAP_GAS_PADDING,
@@ -106,12 +106,11 @@ export const executeCrosschainSwap = async ({
   return fillCrosschainQuote(quote, transactionParams, wallet, referrer);
 };
 
-export const crosschainSwap = async ({ wallet, parameters, nonceToUse }: ActionProps<'crosschainSwapAction'>): Promise<RapActionResult> => {
-  const { swapData } = parameters;
-  const { assetToBuy, assetToSell, chainId, flashbots, gasFeeParamsBySpeed, gasParams, requiresApprove, quote } = swapData;
+export const crosschainSwap = async ({ wallet, parameters, nonceToUse, shouldExpedite }: ActionProps<'crosschainSwapAction'>) => {
+  const { assetToBuy, assetToSell, chainId, flashbots, gasFeeParamsBySpeed, gasParams, requiresApprove, quote } = parameters;
 
   let gasParamsToUse = gasParams;
-  if (expediteTransaction) {
+  if (shouldExpedite) {
     gasParamsToUse = overrideWithFastSpeedIfNeeded({
       gasParams,
       chainId,

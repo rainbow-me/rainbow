@@ -209,10 +209,10 @@ export const executeApprove = async ({
   });
 };
 
-export const unlock = async ({ parameters, wallet, nonceToUse }: ActionProps<'unlockAction'>) => {
-  const { assetToUnlock, contractAddress, chainId, fromAddress, gasParams, gasFeeParamsBySpeed } = parameters;
+export const unlock = async ({ parameters, wallet, nonceToUse, shouldExpedite }: ActionProps<'unlockAction'>) => {
+  const { assetToUnlock, contractAddress, chainId, fromAddress, gas } = parameters;
 
-  let gasParamsToUse = gasParams;
+  let gasParamsToUse = gas.gasParams;
 
   const { address: assetAddress } = assetToUnlock;
 
@@ -233,11 +233,13 @@ export const unlock = async ({ parameters, wallet, nonceToUse }: ActionProps<'un
     throw e;
   }
 
-  gasParamsToUse = overrideWithFastSpeedIfNeeded({
-    gasParams,
-    chainId,
-    gasFeeParamsBySpeed,
-  });
+  if (shouldExpedite) {
+    gasParamsToUse = overrideWithFastSpeedIfNeeded({
+      gasParams: gas.gasParams,
+      chainId,
+      gasFeeParamsBySpeed: gas.gasFeeParamsBySpeed,
+    });
+  }
 
   let approval;
   try {
@@ -277,7 +279,7 @@ export const unlock = async ({ parameters, wallet, nonceToUse }: ActionProps<'un
     status: 'pending',
     type: 'approve',
     approvalAmount: 'UNLIMITED',
-    ...gasParams,
+    ...gas.gasParams,
   } satisfies NewTransaction;
 
   addNewTransaction({
